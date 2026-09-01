@@ -321,6 +321,107 @@ journal-counter pattern the tree already demonstrates). The deleted
 read-time revision ledger does not return; no projection ledger exists
 because no projection exists.
 
+### The storage interfaces, concretely
+
+How the graph attaches to the existing storage architecture, member by
+member — and what changes where:
+
+**What exists (verified):**
+
+```text
+storage.Storage (interface, 28 role accessors)      ← contract; adding a
+  IssueLifecycle() / IssueReader() / ... / Memories()   required method BREAKS
+      ▲ implemented by                                   out-of-tree stores
+*dolt.DoltStore (concrete)
+      ▲ wrapped by (each embeds + forwards the interface)
+HookFiringStore → telemetry.Storage → ...           ← methods OUTSIDE the
+      ▲ or, separately                                   embedded interface
+uow.UnitOfWorkProvider (RunTxRead/RunTx)                 are NOT promoted
+      ▲ consumed by
+cmd/bd/serve role-source table                      ← one concrete hook peel,
+                                                      telemetry KEPT, never
+                                                      storage.UnwrapStore
+```
+
+**What is added (and precisely what is not):**
+
+1. **`storage.Storage` does not change.** No new required method — the
+   documented breaking-change policy holds. The graph capability is a
+   separate, optional interface:
+
+   ```go
+   package storage // or graphops, re-exported
+
+   type GraphCapable interface {
+       BeadGraph() (graphops.Store, error) // read roles now; write roles P3
+   }
+   ```
+
+   `*dolt.DoltStore` implements it concretely. Out-of-tree stores may
+   implement it or not; absence is honest (decision 12's fallback).
+
+2. **Decorators do not forward it.** Forwarding through every wrapper is
+   the failure mode the tree already documents. Instead, resolution does
+   what `bd serve` already does — targeted peels, telemetry retained:
+
+   ```go
+   func ResolveGraphReadSource(s storage.Storage) (GraphReadSource, bool)
+   // peels exactly the known hook layer (never storage.UnwrapStore),
+   // keeps telemetry, then asserts GraphCapable on what remains; the
+   // result names every peeled/retained layer.
+   func ResolveGraphReadSourceFromUOW(p uow.UnitOfWorkProvider) (GraphReadSource, bool)
+   // adapts the UOW access path: RunTxRead supplies the transaction the
+   // snapshot rides in.
+   ```
+
+   Telemetry re-wraps the returned graph port, so graph reads carry the
+   same layers issue reads carry.
+
+3. **The one genuinely new storage primitive: the snapshot lease.**
+   Existing read helpers are per-call — `withReadTx` opens and closes a
+   transaction inside each role call, which is exactly why they cannot
+   serve BDP snapshot semantics. `GraphReadSource` therefore exposes:
+
+   ```go
+   type GraphReadSource interface {
+       OpenSnapshot(ctx context.Context) (ReadSnapshot, error)
+   }
+   type ReadSnapshot interface {
+       graphops.Scope           // all reads answer from ONE transaction
+       Close(ctx context.Context) error
+   }
+   ```
+
+   A snapshot is request-scoped: opened by the BDP handler after
+   `ScopeResolver`, closed when the response is written. This is a new
+   *lifetime* discipline, not a new engine feature — it rides the same
+   Dolt/SQL transaction machinery `withReadTx` uses, held open for the
+   request instead of per call. Its interaction with connection pooling
+   and server-side timeouts is a P1 design item with tests (a leaked
+   snapshot must not pin a pool connection indefinitely).
+
+4. **Schema machinery: normal series, no special cases.** Graph tables
+   (beads, links, type descriptors, allocation/tombstone ledger) are
+   ordinary migrations in the existing series, subject to the existing
+   version gate (older binary refuses newer DB — §1's contract). No
+   changes to the migration framework itself.
+
+5. **`bd serve` role-source table gains one entry**, populated via
+   `ResolveGraphReadSource` at assembly time. Resolution failure (a
+   non-capable store) leaves the table without BDP routes — existing
+   serve behavior exactly as before, per decision 12.
+
+6. **`backend/` (out-of-tree implementers): additive and gated.** The
+   graph contract joins `backend/conformance` as an optional family
+   (like the families `RunAll` already gates); `graphops` types get
+   public aliases per the completeness guard ONLY when the capability is
+   opened out-of-tree — until then it is documented in-tree-only.
+
+7. **`issueops`, the journal, sync, and every legacy role: untouched.**
+   The graph store is a sibling under the same DoltStore, not a layer
+   over the issue roles — with the projection withdrawn, nothing in the
+   graph path calls them at all.
+
 ### Replication participation matrix (review High 4, corrected round 2)
 
 Each row is policy decided in P-1, not discovered in CI. "Byte-identical
