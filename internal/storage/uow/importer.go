@@ -6,6 +6,7 @@ import (
 
 	"github.com/steveyegge/beads/internal/storage"
 	storageissueops "github.com/steveyegge/beads/internal/storage/issueops"
+	"github.com/steveyegge/beads/internal/types"
 	publicops "github.com/steveyegge/beads/issueops"
 )
 
@@ -84,10 +85,26 @@ func (o *importer) ImportBatch(ctx context.Context, request publicops.ImportBatc
 					result.StaleRejectedIDs = append(result.StaleRejectedIDs, issueID)
 				},
 			}
-			if _, err := storageissueops.CreateIssuesInTxWithResult(ctx, runner, request.Issues, request.Actor, opts); err != nil {
+			// TWO PASSES OVER ONE TRANSACTION, and only when the batch
+			// actually carries a regular<->wisp edge onto another of its own
+			// rows: the engine skip-reports such an edge while both endpoints
+			// are rows of one batch, so writing the rows first and those edges
+			// after is what wires them (wy-zdfs6r; the classic chunked import
+			// does the same across its chunks, wy-4276q8). It is still ONE
+			// unit of work and ONE history entry — the passes share this
+			// transaction, so the second one's targets are rows this same
+			// transaction already wrote, and a failure in either rolls the
+			// whole import back.
+			rows, deferredPlanes := storageissueops.SplitCrossPlaneBatchEdges(request.Issues)
+			if _, err := storageissueops.CreateIssuesInTxWithResult(ctx, runner, rows, request.Actor, opts); err != nil {
 				return publicops.ImportBatchResult{}, "", err
 			}
+			// Created counts the ROWS the batch wrote, so it is computed from
+			// the request before the edge pass, which writes none.
 			result.Created = len(request.Issues) - len(staleRejected)
+			if err := wireDeferredCrossPlaneEdges(ctx, runner, deferredPlanes, staleRejected, request.Actor, opts); err != nil {
+				return publicops.ImportBatchResult{}, "", err
+			}
 		}
 
 		for _, memory := range request.Memories {
@@ -111,6 +128,50 @@ func (o *importer) ImportBatch(ctx context.Context, request publicops.ImportBatc
 
 		return result, importBatchCommitMessage(request, result), nil
 	})
+}
+
+// wireDeferredCrossPlaneEdges applies the regular<->wisp edges
+// SplitCrossPlaneBatchEdges held back, one single-plane batch at a time, now
+// that every target is a row this transaction has already written.
+//
+// ConflictSkip because the row write already happened in the first pass and a
+// second full upsert here would rewrite it; with it the engine leaves the
+// stored row untouched and still wires the batch's dependencies. The
+// stale-rejection callback is cleared for the same reason no row write here
+// can be rejected: a second signal could only misreport a row whose first
+// pass landed. A row the stale guard DID reject keeps its deferred edges out
+// too — its snapshot is the older version of the bead, and merging its aux
+// data is the loss bd-578h9.8 closed.
+//
+// Every edge dropped for an ordinary reason (an absent target, a cycle) is
+// still reported: opts keeps the caller's OnSkippedDependency, so this pass
+// reports exactly what the one-pass write would have.
+func wireDeferredCrossPlaneEdges(ctx context.Context, runner storageissueops.DBTX, planes [][]*types.Issue, staleRejected map[string]struct{}, actor string, opts storage.BatchCreateOptions) error {
+	if len(planes) == 0 {
+		return nil
+	}
+	depOpts := opts
+	depOpts.ConflictSkip = true
+	depOpts.OnStaleRejected = nil
+	for _, plane := range planes {
+		rows := plane
+		if len(staleRejected) > 0 {
+			rows = plane[:0:0]
+			for _, row := range plane {
+				if _, stale := staleRejected[row.ID]; stale {
+					continue
+				}
+				rows = append(rows, row)
+			}
+		}
+		if len(rows) == 0 {
+			continue
+		}
+		if _, err := storageissueops.CreateIssuesInTxWithResult(ctx, runner, rows, actor, depOpts); err != nil {
+			return err
+		}
+	}
+	return nil
 }
 
 // importBatchCommitMessage names what LANDED, in the exact shape the classic

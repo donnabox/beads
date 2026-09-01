@@ -36,10 +36,18 @@ import (
 //
 // So this contract does not restate a rejected promise. It states the
 // obligation the rejection creates: the report is the whole justification for
-// the drop, and an importer whose report is empty has committed exactly the
-// data loss BatchCreator refuses. Every case here therefore asserts the report
-// as hard as it asserts the store, and none of them accepts "a skip was
-// mentioned somewhere" for an answer.
+// the drop, and an importer that dropped an edge and reported nothing has
+// committed exactly the data loss BatchCreator refuses. Every case here
+// therefore asserts the report as hard as it asserts the store, and none of
+// them accepts "a skip was mentioned somewhere" for an answer.
+//
+// THE OBLIGATION CUTS BOTH WAYS, which is why one case below asserts an EMPTY
+// report. An edge the role could have written and dropped anyway is not
+// excused by naming it: the cross-plane in-batch edge is refused only while
+// both endpoints are rows of one batch, and the batching is the importer's own
+// choice, so it writes the rows and then the edge rather than reporting a loss
+// it inflicted on itself (RunImporterWiresTheCrossPlaneInBatchEdge, wy-zdfs6r).
+// A report is the price of a drop, never a license for one.
 //
 // THERE IS ONE WIRING, NOT THREE, AND THAT IS A FINDING RATHER THAN AN
 // OVERSIGHT. A capability in this repo is a role plus an accessor
@@ -235,23 +243,42 @@ func RunImporterReportsTheAbsentTargetItDroppedOnce(t *testing.T, ctx context.Co
 	assertImporterSkipped(t, result, []publicops.SkippedDependency{{IssueID: source, DependsOnID: absent}})
 }
 
-// RunImporterReportsTheCrossPlaneEdgeItDropped pins the same obligation for the
-// plane rule. The request is the one RunBatchCreatorRefusesACrossPlaneInBatchEdge
-// sends and refuses whole — a durable item and an ephemeral item created
-// together with an edge between them — where the import keeps BOTH ROWS and
-// drops only the edge.
+// RunImporterWiresTheCrossPlaneInBatchEdge pins the ONE case where this role
+// does not take the drop-and-report branch at all. The request is the one
+// RunBatchCreatorRefusesACrossPlaneInBatchEdge sends and refuses whole — a
+// durable item and an ephemeral item created together with an edge between
+// them — and the import keeps both rows AND the edge.
 //
-// BOTH ROWS ARE ASSERTED, on their own tables. The dropped edge is the visible
-// part, and an implementation that dropped the ephemeral item along with it
-// would satisfy every statement about the edge: there is no edge because there
-// is no wisp. The audit twin's arm (b) reads both rows back through GetIssue,
-// which resolves across planes and so cannot say WHICH table either landed in.
+// WHY THIS IS NOT AN EXCEPTION TO THE FILE'S RULE BUT AN APPLICATION OF IT.
+// The other two cases are about edges that CANNOT be written: an absent target
+// does not exist, and one edge of a cycle must go for the graph to stay
+// acyclic. Nothing is wrong with this edge. The engine refuses it only while
+// both endpoints are rows of the same batch — the store legs commit the two
+// planes on separate transactions, so a same-batch target is invisible to the
+// existence check — and "the same batch" is the importer's own choice, not a
+// fact about the data. So the report would be a report of a loss the role
+// inflicted on itself, and a caller told to "create the issues first, then add
+// the dependency" would be told to do what the importer could have done. It
+// writes the rows, then the edge (issueops.SplitCrossPlaneBatchEdges), and the
+// skip list stays empty (wy-zdfs6r).
 //
-// The report is again an exact list. Arm (b) of the audit case asserts no
-// report at all — it passes a nil skip callback — so a silent cross-plane drop
-// is invisible to it, which is precisely the drop BatchCreator calls data
-// loss.
-func RunImporterReportsTheCrossPlaneEdgeItDropped(t *testing.T, ctx context.Context, fixture ImporterFixture) {
+// THE EMPTY REPORT IS ASSERTED AS HARD AS THE EDGE, and that pairing is the
+// whole case: an implementation that wired the edge and reported it anyway
+// would send a caller re-adding a relationship that is already there, and one
+// that reported it and did not wire it is the data loss this file exists to
+// refuse. Neither half alone separates the three.
+//
+// BOTH ROWS ARE ASSERTED, on their own tables. The edge is the visible part,
+// and an implementation that had quietly moved the ephemeral row onto the
+// durable plane would satisfy every statement about the edge — there is no
+// cross-plane edge because there is no wisp. The audit twin's arm (b) reads
+// both rows back through GetIssue, which resolves across planes and so cannot
+// say WHICH table either landed in.
+//
+// WHAT IT DEPENDS ON FROM OUTSIDE ITSELF: nothing. Both ids are this case's
+// own, minted under its own prefix, and the batch that creates them is the
+// batch under test.
+func RunImporterWiresTheCrossPlaneInBatchEdge(t *testing.T, ctx context.Context, fixture ImporterFixture) {
 	t.Helper()
 	durable := fixture.IssuePrefix + "-impplane-durable"
 	wisp := fixture.IssuePrefix + "-impplane-wisp"
@@ -267,10 +294,10 @@ func RunImporterReportsTheCrossPlaneEdgeItDropped(t *testing.T, ctx context.Cont
 	assertImporterRowCount(t, ctx, fixture, "issues", durable, 1)
 	assertImporterRowCount(t, ctx, fixture, "wisps", wisp, 1)
 	if result.Created != 2 {
-		t.Errorf("Created = %d, want 2: dropping an edge costs the batch neither row", result.Created)
+		t.Errorf("Created = %d, want 2: both rows landed", result.Created)
 	}
-	assertImporterEdgeCount(t, ctx, fixture, wisp, durable, 0)
-	assertImporterSkipped(t, result, []publicops.SkippedDependency{{IssueID: wisp, DependsOnID: durable}})
+	assertImporterEdgeCount(t, ctx, fixture, wisp, durable, 1)
+	assertImporterSkipped(t, result, nil)
 }
 
 // RunImporterReportsTheCycleEdgeItDropped pins the last of the three drops: an

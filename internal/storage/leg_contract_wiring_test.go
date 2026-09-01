@@ -38,14 +38,14 @@ func init() {
 	registerContractLegWaivers("dolt", map[string]string{
 		"RunImporterRejectsAStaleRowAndNamesIt":          importerOneAccessorWaiverReason,
 		"RunImporterReportsTheAbsentTargetItDroppedOnce": importerOneAccessorWaiverReason,
-		"RunImporterReportsTheCrossPlaneEdgeItDropped":   importerOneAccessorWaiverReason,
+		"RunImporterWiresTheCrossPlaneInBatchEdge":       importerOneAccessorWaiverReason,
 		"RunImporterReportsTheCycleEdgeItDropped":        importerOneAccessorWaiverReason,
 		"RunBootstrapperRecordsExactlyOneHistoryEntry":   bootstrapSplitWaiverReason,
 	})
 	registerContractLegWaivers("embeddeddolt", map[string]string{
 		"RunImporterRejectsAStaleRowAndNamesIt":          importerOneAccessorWaiverReason,
 		"RunImporterReportsTheAbsentTargetItDroppedOnce": importerOneAccessorWaiverReason,
-		"RunImporterReportsTheCrossPlaneEdgeItDropped":   importerOneAccessorWaiverReason,
+		"RunImporterWiresTheCrossPlaneInBatchEdge":       importerOneAccessorWaiverReason,
 		"RunImporterReportsTheCycleEdgeItDropped":        importerOneAccessorWaiverReason,
 		"RunBootstrapperRecordsExactlyOneHistoryEntry":   bootstrapSplitWaiverReason,
 	})

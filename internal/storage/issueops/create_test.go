@@ -591,3 +591,108 @@ func TestReconcileChildCountersReturnsWispLookupError(t *testing.T) {
 		t.Fatalf("unmet expectations: %v", err)
 	}
 }
+
+// TestSplitCrossPlaneBatchEdges pins the partition the proxied import relies on
+// (wy-zdfs6r): the rows keep every edge the engine can write in one batch, the
+// cross-plane in-batch edges come back as edge-only copies, and the deferred
+// batches are SINGLE-PLANE so handing one back to the engine cannot re-trigger
+// filterCreateIssuesMixedBucketDependencies.
+func TestSplitCrossPlaneBatchEdges(t *testing.T) {
+	mk := func(id string, wisp bool, deps ...*types.Dependency) *types.Issue {
+		return &types.Issue{ID: id, IssueType: types.TypeTask, Ephemeral: wisp, Dependencies: deps}
+	}
+	dep := func(source, target string) *types.Dependency {
+		return &types.Dependency{IssueID: source, DependsOnID: target, Type: types.DepBlocks}
+	}
+
+	t.Run("SinglePlaneBatchIsUntouched", func(t *testing.T) {
+		issues := []*types.Issue{mk("r1", false, dep("r1", "r2")), mk("r2", false)}
+		rows, planes := SplitCrossPlaneBatchEdges(issues)
+		if len(planes) != 0 {
+			t.Fatalf("deferredPlanes = %#v, want none: no plane boundary is crossed", planes)
+		}
+		if &rows[0] != &issues[0] {
+			t.Fatalf("rows was copied for a batch with nothing to defer")
+		}
+	})
+
+	t.Run("EdgeOutOfTheBatchIsWiredInline", func(t *testing.T) {
+		// The target is NOT a row of this batch, so it is an ordinary
+		// committed row the engine's existence check finds: deferring it would
+		// be work for nothing.
+		issues := []*types.Issue{mk("r1", false, dep("r1", "w-elsewhere")), mk("w1", true)}
+		rows, planes := SplitCrossPlaneBatchEdges(issues)
+		if len(planes) != 0 {
+			t.Fatalf("deferredPlanes = %#v, want none for an out-of-batch target", planes)
+		}
+		if len(rows[0].Dependencies) != 1 {
+			t.Fatalf("rows[0].Dependencies = %#v, want the edge kept inline", rows[0].Dependencies)
+		}
+	})
+
+	t.Run("CrossPlaneInBatchEdgesDeferOntoTheirOwnPlanes", func(t *testing.T) {
+		// r1 -> w1 crosses; r1 -> r2 does not and must stay inline. w1 -> r2
+		// crosses the other way, so the two deferred sources sit on opposite
+		// planes and MUST NOT share a batch: w1 is r1's deferred target, and a
+		// mixed second pass would skip-report r1 -> w1 all over again.
+		issues := []*types.Issue{
+			mk("r1", false, dep("r1", "w1"), dep("r1", "r2")),
+			mk("r2", false),
+			mk("w1", true, dep("w1", "r2")),
+		}
+		rows, planes := SplitCrossPlaneBatchEdges(issues)
+
+		if len(rows) != 3 {
+			t.Fatalf("len(rows) = %d, want 3", len(rows))
+		}
+		if len(rows[0].Dependencies) != 1 || rows[0].Dependencies[0].DependsOnID != "r2" {
+			t.Fatalf("rows[0].Dependencies = %#v, want only the same-plane r1 -> r2", rows[0].Dependencies)
+		}
+		if len(rows[2].Dependencies) != 0 {
+			t.Fatalf("rows[2].Dependencies = %#v, want none", rows[2].Dependencies)
+		}
+		// The caller's own issues are never mutated.
+		if len(issues[0].Dependencies) != 2 || len(issues[2].Dependencies) != 1 {
+			t.Fatalf("caller's issues were mutated: %#v / %#v", issues[0].Dependencies, issues[2].Dependencies)
+		}
+
+		if len(planes) != 2 {
+			t.Fatalf("deferredPlanes = %d batches, want 2 (one per plane)", len(planes))
+		}
+		for i, plane := range planes {
+			wisp := IsWisp(plane[0])
+			for _, row := range plane {
+				if IsWisp(row) != wisp {
+					t.Fatalf("deferredPlanes[%d] mixes planes: %#v", i, plane)
+				}
+			}
+		}
+		if len(planes[0]) != 1 || planes[0][0].ID != "r1" || IsWisp(planes[0][0]) {
+			t.Fatalf("deferredPlanes[0] = %#v, want the regular source r1", planes[0])
+		}
+		if got := planes[0][0].Dependencies; len(got) != 1 || got[0].DependsOnID != "w1" {
+			t.Fatalf("r1's deferred edges = %#v, want only r1 -> w1", got)
+		}
+		if len(planes[1]) != 1 || planes[1][0].ID != "w1" || !IsWisp(planes[1][0]) {
+			t.Fatalf("deferredPlanes[1] = %#v, want the wisp source w1", planes[1])
+		}
+	})
+
+	t.Run("EdgeOnlyCopiesCarryNoAuxData", func(t *testing.T) {
+		// The row's labels and comments merge with the row in the first pass;
+		// a second merge would re-run their inserts for nothing.
+		source := mk("r1", false, dep("r1", "w1"))
+		source.Labels = []string{"lane:test"}
+		source.Comments = []*types.Comment{{ID: "c1", Text: "carried"}}
+		_, planes := SplitCrossPlaneBatchEdges([]*types.Issue{source, mk("w1", true)})
+		if len(planes) != 1 || len(planes[0]) != 1 {
+			t.Fatalf("deferredPlanes = %#v, want one row on one plane", planes)
+		}
+		if planes[0][0].Labels != nil || planes[0][0].Comments != nil {
+			t.Fatalf("edge-only copy carries aux data: labels=%#v comments=%#v", planes[0][0].Labels, planes[0][0].Comments)
+		}
+		if len(source.Labels) != 1 || len(source.Comments) != 1 {
+			t.Fatalf("caller's row lost its aux data: %#v / %#v", source.Labels, source.Comments)
+		}
+	})
+}

@@ -377,6 +377,127 @@ func stageableChangedTables(changed map[string]bool) map[string]bool {
 	return dirty
 }
 
+// SplitCrossPlaneBatchEdges partitions a batch a caller means to write in TWO
+// passes over one transaction: the rows to create, with every regular<->wisp
+// edge onto another row of the SAME batch removed, and those removed edges as
+// edge-only row copies grouped into SINGLE-PLANE batches to apply once the
+// rows are written.
+//
+// WHY A CALLER WOULD WANT THAT. filterCreateIssuesMixedBucketDependencies
+// refuses a cross-plane edge whose target is a row of the same batch, because
+// the store legs commit the two planes on separate transactions and the
+// target is invisible to the edge's existence check. The batch is the unit it
+// judges, so the refusal dissolves the moment the target is an ordinary
+// written row: writing the rows first and the edges after wires the edge
+// instead of skip-reporting it. The chunked import does exactly this across
+// its chunks (cmd/bd/import_shared.go), where dropping the edge instead lost
+// every regular<->wisp `blocks` edge of a restored export and no re-run could
+// backfill it (wy-4276q8). This is the same partition for a caller whose
+// whole import is ONE batch rather than a chunk sequence.
+//
+// THE DEFERRED BATCHES ARE SINGLE-PLANE, which is load-bearing rather than
+// tidy: a deferred edge's target may itself be another deferred edge's
+// source, so a mixed second pass would re-trigger the very filter this exists
+// to avoid. With every batch on one plane no in-batch target can be on the
+// other and the filter short-circuits before it looks at an edge at all.
+//
+// Nothing is mutated. A row whose dependencies change is copied, exactly as
+// the filter copies, and each edge-only copy carries the deferred edges alone:
+// its labels and comments merge with the row in the first pass and must not
+// merge a second time. A batch with no cross-plane in-batch edge returns the
+// caller's own slice and no deferred batches, so the two-pass shape costs
+// nothing when it is not needed.
+func SplitCrossPlaneBatchEdges(issues []*types.Issue) (rows []*types.Issue, deferredPlanes [][]*types.Issue) {
+	batchWispByID := make(map[string]bool, len(issues))
+	hasRegular := false
+	hasWisp := false
+	for _, issue := range issues {
+		if issue == nil {
+			continue
+		}
+		isWisp := IsWisp(issue)
+		if isWisp {
+			hasWisp = true
+		} else {
+			hasRegular = true
+		}
+		if issue.ID != "" {
+			batchWispByID[issue.ID] = isWisp
+		}
+	}
+	if !hasRegular || !hasWisp {
+		return issues, nil
+	}
+
+	var regularPlane, wispPlane []*types.Issue
+	for issueIndex, issue := range issues {
+		if issue == nil {
+			continue
+		}
+		var keptDeps, deferredDeps []*types.Dependency
+		splitDeps := false
+		for depIndex, dep := range issue.Dependencies {
+			if dep == nil {
+				if splitDeps {
+					keptDeps = append(keptDeps, dep)
+				}
+				continue
+			}
+			// Source bucket resolution mirrors the filter's: the owning row's
+			// bucket unless the edge names another batch row as its source.
+			sourceIsWisp := IsWisp(issue)
+			if dep.IssueID != "" {
+				if isWisp, ok := batchWispByID[dep.IssueID]; ok {
+					sourceIsWisp = isWisp
+				}
+			}
+			targetIsWisp, targetInBatch := batchWispByID[dep.DependsOnID]
+			if targetInBatch && sourceIsWisp != targetIsWisp {
+				if !splitDeps {
+					keptDeps = append([]*types.Dependency(nil), issue.Dependencies[:depIndex]...)
+					splitDeps = true
+				}
+				deferredDeps = append(deferredDeps, dep)
+				continue
+			}
+			if splitDeps {
+				keptDeps = append(keptDeps, dep)
+			}
+		}
+		if !splitDeps {
+			continue
+		}
+		if rows == nil {
+			rows = append([]*types.Issue(nil), issues...)
+		}
+		rowCopy := *issue
+		rowCopy.Dependencies = keptDeps
+		rows[issueIndex] = &rowCopy
+
+		edgeCopy := *issue
+		edgeCopy.Dependencies = deferredDeps
+		edgeCopy.Labels = nil
+		edgeCopy.Comments = nil
+		// Grouped by the OWNING row's plane, which is the plane the engine
+		// will route the edge-only copy to.
+		if IsWisp(issue) {
+			wispPlane = append(wispPlane, &edgeCopy)
+		} else {
+			regularPlane = append(regularPlane, &edgeCopy)
+		}
+	}
+	if rows == nil {
+		return issues, nil
+	}
+	if len(regularPlane) > 0 {
+		deferredPlanes = append(deferredPlanes, regularPlane)
+	}
+	if len(wispPlane) > 0 {
+		deferredPlanes = append(deferredPlanes, wispPlane)
+	}
+	return rows, deferredPlanes
+}
+
 // ValidateCreateIssuesMixedBucketDependencies rejects same-batch dependency
 // edges between regular issues and wisps. Dependencies are stored in separate
 // backing tables per bucket, so a batch cannot create both ends atomically when
