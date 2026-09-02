@@ -1,9 +1,10 @@
 # BDP in beads: the bead-graph plan
 
-**Status:** Draft v9 — feat/bead-graph (thirteen adversarial review rounds:
+**Status:** Draft v10 — feat/bead-graph (thirteen adversarial review rounds:
 1–7 on the whole plan, SOUND at round 7; 8–13 on the storage-interfaces
 section, SOUND-ADDITION at round 13; v6 withdrew the Issue projection from
-v0 on review-round-5 counterexamples; v9 records the first ruling tranche)
+v0 on review-round-5 counterexamples; v9–v10 record the P-1 ruling tranches — all
+twelve decisions are now ruled, one spelling open)
 **Date:** 2026-09-02 (v1: 2026-08-31)
 **Owners:** Donna Box (ruling), janet (drafting/implementation)
 **References:** the BDP spec (gastownhall/bdp `docs/specs/bdp.md`), beads#6051,
@@ -341,7 +342,10 @@ change (no-op preserves revision); owned-Link version coupling enforced in
 the write transaction.
 Where this plan says "ledger" it now means exactly one thing: the GRAPH-STORE
 allocation/tombstone table written inside graph write transactions (the
-journal-counter pattern the tree already demonstrates). The deleted
+journal-counter pattern the tree already demonstrates). Ruling 3's
+condition is a contract obligation: testing whether a canonical ID was
+ever allocated is a keyed point lookup — O(1) or O(log n) — never a scan;
+the ledger is keyed by canonical URL. The deleted
 read-time revision ledger does not return; no projection ledger exists
 because no projection exists.
 
@@ -482,11 +486,11 @@ cmd/bd/serve role-source table                      ← one concrete hook peel,
    assembly by the source-appropriate resolver (store arm or UOW provider
    arm), with a conditional route-registration seam. `ErrGraphUnsupported` leaves BDP routes
    unregistered (existing serve behavior exactly as before); an
-   operational error still aborts; and capability-present-but-graph-
-   uninitialized is a THIRD state with its own explicit representation,
-   surfaced per whichever branch of decision 12 is ruled (honest empty
-   Scope, or no routes until `bd graph init`) — never conflated with
-   absence. The optional field is populated via the source-appropriate
+   operational error still aborts; and capability-present-but-no-Scope-
+   yet is a THIRD state with its own explicit representation — per
+   ruling 12, `bd serve` mints the Scope on first serve under a configured
+   URL and then serves it honestly empty; without a configured URL there
+   are no BDP routes — never conflated with capability absence. The optional field is populated via the source-appropriate
    resolver (`ResolveGraphReadSource` for the store arm,
    `ResolveGraphReadSourceFromUOW` for the provider arm — `serve.go`
    assembles from both).
@@ -505,6 +509,31 @@ cmd/bd/serve role-source table                      ← one concrete hook peel,
    over the issue roles — with the projection withdrawn, nothing in the
    graph path calls them at all.
 
+### Lifecycle commands (ruling 12)
+
+Three commands, three responsibilities — the store, the Scope, and the
+client:
+
+1. **`bd init` initializes the graph store** alongside everything it
+   initializes today: graph tables, the allocation/tombstone ledger, and the
+   Type Descriptor bootstrap, all against the normalized storage interfaces
+   (any provider). No separate `bd graph init`. A workspace therefore always
+   has a graph store; it does not yet have a *Scope*.
+2. **`bd serve` creates the BDP Scope on top of the store**: on first serve
+   under a configured `bdp.scope_url` (ruling 7a) it mints the authority
+   marker (URL + authority id) into the store and serves the Scope —
+   honestly empty at birth, with `beads/`, `links/`, and `types/` all
+   present. Subsequent serves and the CLI recognize the persisted marker.
+   Without a configured URL, `bd serve` registers no BDP routes (dev-mode
+   `local-test` derivation aside).
+3. **A client-wiring command (spelling TBD)** designates a BDP server for a
+   workspace, after which the CLI's graph verbs speak BDP to that server
+   instead of opening the store directly — the CLI becomes a BDP client of
+   the serve's authority (ruling 9: both are clients of one authority;
+   remotely, the wire is BDP). Issue verbs are untouched. Open: the
+   command's spelling and config placement; which verbs route remotely
+   (v0: graph verbs only).
+
 ### Replication participation matrix (review High 4, corrected round 2)
 
 Each row is policy decided in P-1, not discovered in CI. "Byte-identical
@@ -518,7 +547,7 @@ split by topology where the tree differs:
 | Federation type-filtering | **server-topology-specific**; deletes `issues` rows by type | graph tables get their own filter hook per topology; filtering one endpoint must also drop/deny the Link (never emit a dangling edge) |
 | Journal (frozen v0 vocabulary) | Issue/Dependency/Comment payloads only | **graph events are excluded**; a separate graph changefeed carries them; the frozen vocabulary is not extended |
 | Export/JSONL (contract class) | contractual shapes | graph gets its own export lane; legacy shapes untouched |
-| Backup | whole-database state (a different contract class from export) | graph tables ride along by construction |
+| Backup / restore | whole-database state (a different contract class from export) | ruling 11: the allocation/tombstone ledger is append-only and restorable independently of state, so older-state + current-ledger preserves non-reuse; a provider DECLARES (contract capability) whether its ledger survives restore; when it cannot — ledger lost, unknown-provenance backup, non-declaring provider — `bd graph restore` rotates the Scope URL and epoch and refuses to serve the old URL (spec: an identity-losing restore is a different logical Scope) |
 | Wisps | private/transient; excluded from export/federation by default | **P-1 policy decision** — excluded from BDP serving in v0 (proposed) |
 
 ## 5. Thrust 3 — Issues/Dependencies beside the graph
@@ -742,18 +771,22 @@ of that.
    product surface.
 2. **Substrate — RULED: S1** (graph tables: beads, links, Type
    Descriptors, allocation/tombstone ledger, authority marker).
-3. **Graph-store allocation/tombstone design** (§4): the graph store's write path owns
-   a durable allocation/tombstone table (journal-counter pattern);
-   committed URLs are never reassigned. (Namespace-vs-issue-grammar and
-   legacy-ID eligibility move to the C lane with the projection.)
+3. **Allocation/tombstone ledger — RULED:** append-only allocation record
+   per committed canonical ID (URL, birth authority id, epoch,
+   tombstoned-at), consulted before every create and by restore;
+   condition accepted as a contract obligation — the ID test is a keyed
+   point lookup, O(1)/O(log n), never a scan. (Namespace-vs-issue-grammar
+   and legacy-ID eligibility move to the C lane with the projection.)
 4. *(Moved to the C lane — cross-realization Links cannot arise in v0;
    see §5's historical record.)*
 5. **Projection withdrawal — RULED: ratified.** The v0 Scope serves graph
    beads and links only; Issues, Dependencies, and wisps keep their
    existing surfaces and join via the C lane (wisps inherit every Issue
    counterexample — they are plane-routed Issues).
-6. **Wisps**: moot for v0 serving (nothing legacy is served); recorded as
-   a C-lane visibility decision.
+6. **Wisps — RULED:** moot for v0 serving; recorded as a C-lane
+   *visibility* decision (wisps are private/transient by default today, so
+   their eventual graph entry needs a visibility ruling, not just plane
+   routing).
 7a. **Scope URL scheme — RULED:** mirror BDP's pinned startup contract.
    An explicit `bdp.scope_url` (`BDP_SCOPE_URL`) is required to serve a
    real Scope; a `local-test` URL derived from the listener is permitted
@@ -761,16 +794,21 @@ of that.
    identity; the URL is persisted in the graph store beside the authority
    marker; never derived from a git remote or workspace path; one Scope
    per workspace, path-distinguished under one host.
-7b. **Listener** (open): not "same port or new," but which choice preserves
-   today's bearer-auth and project-identity semantics unchanged while
-   carrying the P-1 authorization-view mapping (no view concept exists
-   today — §2).
-8. **Journal/changefeed:** ratify "frozen v0 journal untouched; separate
-   graph changefeed."
+7b. **Listener — RULED:** same listener, same table-driven middleware
+   path; BDP routes register conditionally (ruling 12) inside the existing
+   table, so bearer-auth and project-identity semantics are preserved by
+   construction. v0 authorization-view mapping: one view per bearer
+   token = the whole Scope (no hidden Resources) — honest and conformant
+   until real views exist; federation/multi-view later changes the
+   mapping, not the listener.
+8. **Journal/changefeed — RULED:** frozen v0 journal untouched; the graph
+   store gets its own changefeed as a contract capability arriving with
+   P3 writes (providers with a native event log realize it over that).
 9. **Serving authority — RULED (corrected model):** the authority is the
    graph store *as reached through the normalized storage abstraction*,
    whichever provider realizes it — not `bd serve`, and not Dolt. The
-   authority marker (Scope URL + authority id, minted at graph init),
+   authority marker (Scope URL + authority id, minted by `bd serve` on
+   first serve under a configured URL — ruling 12),
    single-serialized history, non-authority refusal (of graph writes AND
    BDP serving for that URL), and the snapshot lease are graph-CONTRACT
    obligations proven by the graph conformance suite; the CLI graph verbs
@@ -783,17 +821,20 @@ of that.
    defines replica labeling (candidate note for gastownhall/beads#6051).
 10. *(Absorbed into decision 5 — the round-5 review closed this fork:
    withholding is the only conformant option.)*
-11. **Restore vs identity** (round-6): a whole-database restore of an older
-   backup forgets later allocations, permitting URL reuse under the same
-   Scope URL — which BDP forbids. Rule one of: durable allocation
-   preservation across restore (the ledger survives outside the restored
-   state), or canonical Scope-URL rotation on any identity-losing restore.
-   An epoch change alone is insufficient.
-12. **Empty-at-birth Scope policy** (round-6): for an existing legacy-only
-   workspace, either advertise an honest EMPTY graph Scope (stable URL;
-   required `beads/`, `links/`, `types/` all present and empty), or
-   advertise no BDP Scope until explicit graph initialization
-   (`bd graph init`, proposed). Either way: tests prove legacy Issues
-   never leak into graph inventories, and a registered backend without
-   `GraphReadSource` keeps its existing `bd serve` behavior — BDP routes
-   absent, never a startup failure.
+11. **Restore vs identity — RULED: both, layered.** The ledger is
+   append-only and restorable independently of state (older state +
+   current ledger preserves non-reuse); providers declare whether their
+   ledger survives restore; when preservation cannot be guaranteed,
+   `bd graph restore` rotates the Scope URL and epoch and refuses the old
+   URL. An epoch change alone is never sufficient.
+12. **Store, Scope, client — RULED (replaces "empty-at-birth"):** three
+   commands, three responsibilities (§4 "Lifecycle commands"). `bd init`
+   initializes the graph store with everything else, against the
+   interfaces — no separate graph init. `bd serve` creates the Scope on
+   top of the store on first serve under a configured URL (minting the
+   marker) and serves it honestly empty; no URL → no BDP routes. A
+   client-wiring command (**spelling TBD — the one open item**) designates
+   a BDP server for the workspace, after which the CLI's graph verbs
+   speak BDP to it. Tests prove Issues never leak into graph inventories;
+   a provider without the capability keeps existing `bd serve` behavior —
+   routes absent, never a startup failure.
