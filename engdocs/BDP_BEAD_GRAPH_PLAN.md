@@ -281,12 +281,14 @@ concrete hook peel and keeps telemetry, `cmd/bd/serve.go:671`). Resolution
 follows that model — targeted single-layer peels, each named in the result:
 
 ```go
-// GraphReadSource is what a plumbing stack must yield to serve graph
-// reads: the snapshot opener plus the telemetry it must retain.
+package graphsource // internal/storage/graphsource
+
+// graphops.GraphReadSource is what a plumbing stack must yield to serve
+// graph reads: the snapshot opener plus the telemetry it must retain.
 // (Full contract in "The storage interfaces, concretely" below:
 // ErrGraphUnsupported = absence; any other error = operational failure.)
-func ResolveGraphReadSource(s storage.Storage) (GraphReadSource, error)
-func ResolveGraphReadSourceFromUOW(p uow.UnitOfWorkProvider) (GraphReadSource, error)
+func ResolveGraphReadSource(s storage.Storage) (graphops.GraphReadSource, error)
+func ResolveGraphReadSourceFromUOW(p uow.UnitOfWorkProvider) (graphops.GraphReadSource, error)
 ```
 
 With regression tests mirroring `vc_recompute_test.go` for: hook+telemetry
