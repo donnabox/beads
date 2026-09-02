@@ -292,7 +292,9 @@ func ResolveGraphReadSourceFromUOW(p uow.UnitOfWorkProvider) (GraphReadSource, e
 With regression tests mirroring `vc_recompute_test.go` for: hook+telemetry
 chains (asserting telemetry RETAINED while exactly the hook layer peels),
 the notifying UOW provider, and `bd serve`'s narrow role source.
-(`ResolveGraphReadSource` is THE name — P2 uses it too.)
+(The resolver PAIR — `ResolveGraphReadSource` for the store arm,
+`ResolveGraphReadSourceFromUOW` for the provider arm — is the name; P1
+uses both.)
 P-legs are the real ones — with the transport distinction the tree
 enforces: **`bd serve` refuses embedded Dolt permanently** (its commit
 protocol cannot satisfy the server's per-request atomicity contract,
@@ -404,14 +406,21 @@ cmd/bd/serve role-source table                      ← one concrete hook peel,
    serve BDP snapshot semantics. `GraphReadSource` therefore exposes:
 
    ```go
+   package graphops // owns Store, GraphReadSource, ReadSnapshot, Scope
+
    type GraphReadSource interface {
        OpenSnapshot(ctx context.Context) (ReadSnapshot, error)
    }
    type ReadSnapshot interface {
-       graphops.Scope           // all reads answer from ONE transaction
-       Close(ctx context.Context) error
+       Scope                    // unqualified: same package; all reads
+       Close(ctx context.Context) error // answer from ONE transaction
    }
    ```
+
+   The RESOLVERS live in `internal/storage` (not `graphops`): they take
+   `storage.Storage` / `uow.UnitOfWorkProvider` and return
+   `graphops.GraphReadSource` — storage imports graphops, never the
+   reverse, so `storage.GraphCapable` creates no import cycle.
 
    A snapshot is request-scoped, and **`ScopeResolver` is its one owner**:
    it selects workspace, authorization view, and opens the snapshot; the
@@ -435,9 +444,9 @@ cmd/bd/serve role-source table                      ← one concrete hook peel,
    entry.** The existing role binding table is deliberately mandatory —
    it aborts on any binding error, and the HTTP layer rejects partial
    role sets — so BDP cannot join it as one more ordinary binding.
-   Instead: an optional graph source on the server config, populated via
-   `ResolveGraphReadSource` at assembly, with a conditional
-   route-registration seam. `ErrGraphUnsupported` leaves BDP routes
+   Instead: an optional graph source on the server config, populated at
+   assembly by the source-appropriate resolver (store arm or UOW provider
+   arm), with a conditional route-registration seam. `ErrGraphUnsupported` leaves BDP routes
    unregistered (existing serve behavior exactly as before); an
    operational error still aborts; and capability-present-but-graph-
    uninitialized is a THIRD state with its own explicit representation,
@@ -634,9 +643,10 @@ allocation/tombstone ledger. No legacy IDs are served in v0.
 - **P1 — Native read storage (S1):** tables + migrations (descriptor
   store included); typed snapshot-source resolution (`GraphReadSource`)
   with single-request snapshot consistency and the zero-legacy-writes
-  regression (defer-wake); `ResolveGraphReadSource` across the storage
-  legs (server Dolt, embedded Dolt as storage-contract leg, and the UOW
-  access path) with decorator regression tests; an internal, non-BDP
+  regression (defer-wake); the resolver pair across the storage legs —
+  `ResolveGraphReadSource` for server/embedded Dolt (embedded as
+  storage-contract leg), `ResolveGraphReadSourceFromUOW` for the UOW
+  access path — with decorator regression tests; an internal, non-BDP
   bootstrap/fixture write API (the only writer until P3) enforcing the
   allocation/tombstone ledger; replication-matrix gates. *Exit: a NEW
   graph-storage conformance suite — defined in this phase under
