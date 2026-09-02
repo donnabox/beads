@@ -1,6 +1,6 @@
 # BDP in beads: the bead-graph plan
 
-**Status:** Draft v12 — feat/bead-graph (thirteen adversarial review rounds:
+**Status:** Draft v13 — feat/bead-graph (thirteen adversarial review rounds:
 1–7 on the whole plan, SOUND at round 7; 8–13 on the storage-interfaces
 section, SOUND-ADDITION at round 13; v6 withdrew the Issue projection from
 v0 on review-round-5 counterexamples; v9–v11 record the P-1 ruling tranches — all
@@ -290,6 +290,17 @@ continuation are C-lane machinery, recorded in §5's historical record.)
 
 ## 4. Thrust 2 — storage: additive, capability-resolved, no breaking change
 
+> **Superseded mechanisms (2026-09-02, W-arch v2).** The mechanisms this
+> section proposes — `GraphCapable` as a separate optional interface, the
+> `graphsource` resolvers, the `ReadSnapshot` lease, `backend/` aliases,
+> and the `bd serve` optional graph field — are replaced by the house
+> idiom in `BDP_GRAPH_ARCHITECTURE.md` §2a (role accessors on
+> `storage.Storage`, `DBTX`-shaped shared bodies, per-call transactions
+> asserting an authority expectation, BDP rows mounted inside `httpapi`).
+> The *rulings* this section serves are unchanged except where §9's
+> "Amendments proposed by W-arch" block says otherwise. The text below is
+> kept as the record of what was proposed and why.
+
 Not a bare assertion (review Blocker 3). One resolution policy with a
 **typed** source — no `any` — and, per round 3, NO `UnwrapStore`:
 `UnwrapStore` peels every `Unwrapper` including telemetry, which is exactly
@@ -510,6 +521,13 @@ cmd/bd/serve role-source table                      ← one concrete hook peel,
    graph path calls them at all.
 
 ### Lifecycle commands (ruling 12)
+
+> **Spelling amended by W-arch v2 (pending ruling A2/A3/A6):** `bd
+> bdp-serve` → `bd bdp serve` (a thin command over the same `httpapi`
+> server; `bd serve` mounts the BDP rows when `bdp.scope_url` is
+> configured); graph verbs under `bd bdp …`; `bdp.*` lives in
+> `config.yaml` only (nothing in `metadata.json`). Detail:
+> `BDP_GRAPH_CLI_AND_STORAGE_SPEC.md` Part A.
 
 Three commands, three responsibilities — the store, the Scope, and the
 client:
@@ -882,3 +900,45 @@ of that.
    CLI's graph verbs speak BDP to the designated server. Tests prove Issues never leak into graph inventories;
    a provider without the capability keeps existing `bd serve` behavior —
    routes absent, never a startup failure.
+
+### Amendments proposed by W-arch v2 (2026-09-02) — PENDING RULING
+
+Raised by the three-reviewer council on the W-arch docs; each changes
+ratified text above, so none takes effect until ruled. Full rationale:
+`BDP_GRAPH_ARCHITECTURE.md` §2b.
+
+- **A1 (ruling 9).** Replace "the snapshot lease" in the obligation list
+  with "single-transaction reads under an asserted authority expectation":
+  every read role call carries the `{Scope URL, authority id, epoch}` the
+  server started with, and the body asserts it *inside the read's
+  transaction*. Cross-request continuation returns in P2's cursor ADR.
+- **A2 (rulings 7b, 12).** BDP routes are a conditional second table
+  inside `internal/httpapi` behind the same middleware; `bd bdp serve` is
+  a thin command over that server that refuses to start without a Scope;
+  `bd serve` mounts the rows when a Scope URL is configured. The
+  isolated-bootstrap intent survives as "a conditional table plus a config
+  field" — no second server, nothing to fold in later.
+- **A3 (ruling 12 / §4 lifecycle).** All graph verbs under `bd bdp …`;
+  `bd link`, `bd graph`, `bd restore`, `bd promote` already exist.
+- **A4 (§3 layering).** Values, laws, and roles live in public `graphops`;
+  no `backend/` aliases (the completeness guard covers `internal/` types
+  only, and public `issueops` sets the precedent).
+- **A5 (ruling 11).** "Restorable independently" is a mechanism, not a
+  migration: the clone-local authority half lives in a dolt-ignored table
+  (a clone or a restore arrives without authority); `bd bdp ledger
+  export|import` is the continuity lane; providers declare
+  `LedgerDurability`; `bd bdp restore` rotates unless continuity is shown.
+- **A6 (§4 lifecycle).** `config.yaml` (yaml-only, validated) is the single
+  local source for `bdp.*`; nothing in `metadata.json`; durable identity
+  only in the graph store.
+
+Two decisions the plan does not yet contain, surfaced for ruling:
+
+- **Out-of-role DML enforcement boundary** (`bd sql`, raw SQL, merges
+  bypass allocation/authority/revision/owned-Link laws). Proposed v0
+  posture: out of contract + a post-merge validator that rejects invalid
+  or foreign-authority graph deltas; DB-privilege/trigger enforcement is a
+  C-lane verification task. To be ruled before P3.
+- **Replication/merge ADR** as a P1 gate (funnel through every merge entry
+  point; prefer refusing foreign-authority deltas; federation unfiltered in
+  v0 by decision). Lands before the graph migrations.

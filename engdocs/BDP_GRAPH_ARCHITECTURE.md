@@ -1,200 +1,281 @@
 # BDP graph store — architecture and design
 
-**Status:** Draft v1 (W-arch) — feat/bead-graph
+**Status:** Draft v2 (W-arch, post-council) — feat/bead-graph
 **Date:** 2026-09-02
 **Companion:** `BDP_BEAD_GRAPH_PLAN.md` (the plan and its twelve rulings) and
 `BDP_GRAPH_CLI_AND_STORAGE_SPEC.md` (the detailed CLI and storage-interface
 changes). This document is the *shape*: what the pieces are, where they live,
-how a request flows, and — importantly — where this design corrects the plan
-after the tree's own conventions were read closely.
+how a request flows, and where this design corrects the plan after the
+tree's own conventions were read closely. v2 answers a three-reviewer
+council (Claude, Codex, Gemini) on v1; §2 records what changed and which
+changes amend a ruling rather than a mechanism.
 
 ## 1. The one-paragraph version
 
 The graph store is a new **plane** beside issues and memories: a public leaf
-contract package (`graphops`) declaring the value types and role interfaces,
-reached through **role accessors on `storage.Storage`** exactly as
-`issueops` and `memoryops` are — promoted through every decorator by
-interface embedding, wrapped by telemetry, recursed unwrapped by the hook
-layer — with one shared transaction-level body under `internal/storage`
-that both Dolt stores call and a unit-of-work leg beside it, proven by a
-`backend/conformance` role contract wired on all three legs and guarded by
-the existing coverage gates. `bd bdp-serve` takes those roles from beneath
-the hook layer and serves BDP over them; CLI graph verbs reach the same
-roles through the same accessors, or — when a workspace is `bd init
---bdp-server`'d — speak BDP to a designated server instead. Every ruling in
-the plan survives; three mechanisms in the plan's §4 are replaced by the
-house idiom that already solves their problem.
+contract package (`graphops`) declaring the value types, the laws, and six
+role interfaces, reached through **role accessors on `storage.Storage`**
+exactly as `issueops` and `memoryops` are — declared explicitly by every
+decorator (promotion is the failure mode the censuses catch), wrapped by
+telemetry, recursed unwrapped by the hook layer — with one shared
+transaction-level body under `internal/storage` taking a `DBTX`-shaped
+runner so that both Dolt stores *and* the unit-of-work leg call the same
+code, proven by `backend/conformance` role contracts wired on all three legs
+and guarded by the existing coverage gates. BDP is served by the existing
+`internal/httpapi` server as a **conditional second route table** behind the
+same `route()` middleware (deadline, bearer, project stamp, semaphore);
+`bd bdp serve` is a thin command over that server that *requires* a Scope,
+and `bd serve` mounts the same rows when a Scope URL is configured. Every
+read is **one role call, one transaction**, and that transaction asserts the
+authority expectation the server was started with — the Scope row that
+replicates plus the clone-local authority half that does not — so a clone,
+a restore, or a promotion elsewhere is refused by the store, not by a
+startup check. The CLI's graph verbs live under `bd bdp …` and reach the
+same roles through the same accessors, or — when a workspace is `bd init
+--bdp-server`'d — speak BDP to a designated server instead.
 
-## 2. Corrections to the plan (read this first)
+## 2. Corrections to the plan, and proposed ruling amendments (read this first)
 
-The plan's storage section was written before the repo's role machinery was
-read in depth. Three of its mechanisms are superseded — not because they
-were wrong in the abstract, but because the tree already has a stronger,
-enforced answer to each:
+Two kinds of change are recorded here and must not be confused. A
+**mechanism correction** replaces something the plan's §4 *proposed* with
+the house idiom that already solves the problem; the ruling it serves is
+unchanged. A **ruling amendment** changes text the operator ratified in §9;
+it is *proposed* here and takes effect only when ruled. v1 blurred the two
+(the council's first finding, unanimously); v2 keeps them apart.
+
+### 2a. Mechanism corrections (no ruling changes)
 
 | Plan §4 mechanism | Replaced by | Why |
 | --- | --- | --- |
-| `GraphCapable` as a *separate optional interface*, resolved by targeted decorator peels (`graphsource` package) | **Role accessors on `storage.Storage`** (`GraphReader()`, `GraphTypes()`), the house rule: "a new capability gets a new role interface and a new accessor" | Decorators embed the `DoltStorage` interface, so an accessor added to it is **promoted through every decorator automatically**; the reflection census in `role_accessor_decorator_test.go` puts it under test the moment it joins the interface. A separate interface is exactly the shape the census warns about — an accessor "in the same shape" that "every role simply stops being asked about." The `graphsource` package existed only to work around non-promotion; it is unnecessary. The cost is the documented one: a required accessor is a **breaking change for out-of-tree backends**, called out in `CHANGELOG.md` — which is also how `Memories()` landed. |
-| The **snapshot lease** (`OpenSnapshot` → request-scoped transaction object) | **One role call = one transaction**, the house transaction model ("a request and a transaction are the same span"); the BDP handler makes **one role call per HTTP request** | Reads that must see one snapshot are written as `…InTx` bodies under `internal/storage/<plane>` with each store's accessor wrapping `withReadTx`/`withConn` — the `Relations`/`EdgeReader`/`CycleDetector` pattern. Assembling a Bead record with its complete `ownedLinks` in one call is exactly that shape. No transaction object escapes a role. Cross-*request* cursor continuation remains P2's ADR (registry / materialized sets / `AS OF`), unchanged. |
-| A `ResolveGraphReadSource` policy that "re-applies telemetry" after peeling | Nothing — **the accessors carry the layers**: telemetry wraps in its own accessor (`internal/telemetry/graph_reader.go`), the hook layer declares the accessor and recurses unwrapped (a read role), and `bd bdp-serve` takes roles from beneath the hook layer with the same one-line peel `bd serve` already does | This is what accessors are *for* in this tree ("the accessor is where each storage decorator adds its layer"); a resolver that peels and re-wraps duplicates that machinery and is the shape the `cmd-bd-role-constructors` depguard rule exists to forbid. |
+| `GraphCapable` as a *separate optional interface*, resolved by targeted decorator peels (`graphsource` package) | **Role accessors on `storage.Storage`** — the house rule: "a new capability gets a new role interface and a new accessor" | Every accessor lives on `Storage` (28 today); `DoltStorage` embeds it; both decorators embed `DoltStorage`. An accessor added to `Storage` therefore *compiles* through every decorator by promotion — and promotion is exactly what the reflection census in `role_accessor_decorator_test.go` (and its telemetry twin) rejects: each decorator must **declare** the accessor and say what it does. A separate interface is the shape the census cannot see. The cost is the documented one: a required accessor is a **breaking change for out-of-tree backends**. `backend/backend.go`'s stability note promises a CHANGELOG call-out for such additions; no previous accessor actually wrote one (v1 cited a `Memories()` entry that does not exist), so this slice writes the first. |
+| A `ResolveGraphReadSource` policy that "re-applies telemetry" after peeling | Nothing — **the accessors carry the layers**: telemetry wraps in its own accessor file, the hook layer declares the accessor and recurses unwrapped, and the server takes roles from beneath the hook layer with the one-line peel `bd serve` already does | This is what accessors are *for* in this tree; a resolver that peels and re-wraps duplicates that machinery. |
+| `backend/types.go` aliases for every `graphops` type, enforced by `TestPublicSurfaceComplete` | **No aliases.** `graphops` is a public root package, like `issueops`; external backends import it directly | The completeness guard demands aliases only for types under `internal/` (`backend/completeness_test.go`); public `issueops` request/result types are deliberately *not* re-exported. Ruling 9's "public in `backend/` from P1" is satisfied by the package being public and by the conformance family living in `backend/conformance`. |
+| `internal/graphapi` as a separate meaning-function package | **The laws live in `graphops`** as pure functions beside the values they govern (plan §3: "laws in the package, tested once") | A `graphops` constructor that called `internal/graphapi` would break the leaf's import rule (stdlib + `beadserrors` only) and, if `graphapi` validated `graphops` values, cycle. `cmd/bd` and `httpapi` import the public leaf for the grammar and canonicalization. |
 
-What the corrections do **not** change: ruling 9's level — the authority is
-the graph store as reached through the normalized storage abstraction, on
-any provider; the graph contract is **public in `backend/` from P1**
-(aliases, completeness-guard roots, conformance family); Dolt is the
-reference realization. The house idiom is the *mechanism* by which that
-abstraction is realized; ruling 9 is the *policy* it serves.
+### 2b. Proposed ruling amendments (pending operator ruling)
+
+| # | Ruling | v1 said | v2 proposes | Why |
+| --- | --- | --- | --- | --- |
+| A1 | **9** (obligations list names "the snapshot lease") | dropped the lease as a mechanism swap | **The per-call transaction is the v0 lease**, and it carries the authority check: every read role call takes an `AuthorityExpectation` that the body asserts *inside the same transaction* as the read. Cross-request continuation is P2's cursor ADR and may reintroduce a request-scoped snapshot there. Ruling 9's obligation list reads "single-transaction reads under an asserted authority expectation" in place of "the snapshot lease". | A ruled obligation cannot be swapped silently; and a startup-only authority check split from the read serves a superseded authority the moment a promotion lands elsewhere (all three reviewers). |
+| A2 | **7b + 12** (listener; `bd bdp-serve` isolated bootstrap) | a sibling server (`internal/bdpapi`) reusing four exported validators | **BDP rows mount inside `internal/httpapi`** as a second, conditional route table behind the same `route()` wrapper; **`bd bdp serve`** is a thin command over the same server that refuses to start without a Scope; `bd serve` mounts the rows when a Scope URL is configured (ruling 12's literal text). Isolation is preserved as *a conditional table plus a config field*: a `bd serve` with no Scope configured is byte-identical. | The posture that matters — rebinding defense, bearer-before-semaphore ordering, project stamp behind the auth gate, deadline, never-log-the-token — is **private** to `httpapi`; a sibling reimplements exactly the pieces easiest to get wrong (Codex Critical, Claude High). |
+| A3 | **12** + plan §4 lifecycle (`bd bead`, `bd link`, `bd graph …`) | verbs "reserved now" | **Everything under `bd bdp …`**: `bd bdp bead`, `bd bdp link`, `bd bdp types`, `bd bdp status`, `bd bdp promote`, `bd bdp restore`, `bd bdp ledger`, `bd bdp serve`. | `bd link <id1> <id2>`, `bd graph [issue-id]` (with `graph check`), `bd restore <issue-id>`, `bd promote <wisp-id>` all exist; the plan's constraint #1 forbids changing them. |
+| A4 | plan §3 layering (values in `graph`, roles in `graphops`) | moved values into `graphops` without saying so | **Record it:** values, laws, and roles all live in public `graphops`; `internal/graphapi` is not created. | Package layout is public API (Codex M21). |
+| A5 | **11** (ledger "restorable independently … its own migration") | its own migration | **A migration is a table definition, not durability.** Ruling 11's mechanism is: (i) the clone-local authority half lives in a dolt-ignored table, so a restore or a clone *arrives without authority* and must be re-granted explicitly; (ii) a **ledger export/import lane** (`bd bdp ledger export|import`, sequence-watermarked) is how continuity is carried across a restore; (iii) the provider **declares** `LedgerDurability` on the identity reader, and `bd bdp restore` rotates unless continuity is shown. | Codex Critical 3, Claude 2.5/5.3, Gemini L7. |
+| A6 | plan §4 lifecycle (`metadata.json` `bdp_client`/`bdp_server`; "precedence identical to `dolt.mode`") | both metadata.json and config.yaml | **config.yaml is the single local source** for `bdp.*` client routing (yaml-only, validated); nothing is written to metadata.json; durable Scope identity lives only in the graph store. | metadata.json outranking a later `bd config set bdp.server` forever (Claude 1.3, Codex M16); the tree's `dolt.mode` resolution is not the four-step chain v1 claimed. |
+
+Two further council findings are **decisions the plan does not yet contain**
+and are surfaced for ruling rather than designed around:
+
+- **Enforcement boundary for out-of-role writes** (Codex Critical 4). `bd
+  sql`, the proxied `RawSQLUseCase`, and a Dolt merge can change graph tables
+  without allocation, authority, revision, or owned-Link coupling checks.
+  v2's position (§7): graph-table DML outside the roles is **out of
+  contract**; a **post-merge validator** rejects and rolls back graph deltas
+  that fail the invariants or arrive from a foreign authority; DB-privilege
+  or trigger enforcement is a C-lane verification task, not v0. To be ruled
+  before P3.
+- **Replication/merge ADR** (Codex High 13, Claude 5.5). Graph settlement is
+  not an "always-run pass that changes nothing": `MergeAndSettle`,
+  `MergeAndSettleWithStrategy`, `MergeWithStrategy`, and plain `Merge` are
+  the entry points, and a single-authority history wants *refusal* of
+  foreign-authority deltas rather than invented merge rules. The ADR lands
+  before the graph migrations do (P1 gate).
+
+What none of this changes: ruling 9's level — the authority is the graph
+store as reached through the normalized storage abstraction, on any
+provider; Dolt is the reference realization; the CLI verbs and the BDP
+handler are both clients of that abstraction.
 
 ## 3. Packages and their imports
 
 ```text
-graphops/                        PUBLIC LEAF CONTRACT (sibling of issueops/, memoryops/)
-  ├─ types.go                    Bead, Link, Ref (in-Scope|external sum), Properties,
-  │                              TypeDescriptor, Revision, Attribution — value types
-  ├─ reader.go                   type Reader interface { Bead, Link, Beads, Links,
-  │                              IncidentLinks } + request/result types
-  ├─ types_role.go               type Types interface { Descriptors } (+ install, P3)
+graphops/                        PUBLIC LEAF (sibling of issueops/, memoryops/)
+  ├─ types.go                    Bead, Link, Ref (in-Scope|external), Properties,
+  │                              Revision, Attribution, TypeDescriptor, OwnedLinkDecl,
+  │                              ScopeIdentity, AuthorityExpectation — value types with
+  │                              unexported fields and law-enforcing constructors
+  ├─ laws.go                     pure functions: canonical-ID grammar (reject, never
+  │                              trim), code-unit ordering, JSON object canonicalization,
+  │                              RFC 6902 §4.6 equality (the no-op gate), Scope-URL
+  │                              validation mirroring BDP's startup contract
+  ├─ reader.go                   Reader: Bead, Link, Beads, Links, IncidentLinks
+  ├─ types_role.go               DescriptorReader: Descriptors, Descriptor
+  │                              TypeInstaller: Install (idempotent, fingerprint-keyed)
+  ├─ identity.go                 IdentityReader: Read, LedgerDurability
+  │                              ScopeBootstrapper: Mint (once)
+  │                              AuthorityRotator: Promote, Rotate
+  ├─ writer.go                   (P3) Writer — born whole with the write-profile ADR
   └─ errors.go                   sentinels ALIASED from beadserrors (errors.Is across
-                                 the module boundary)
+                                 the module boundary): ErrNotFound, ErrValidation,
+                                 ErrGone{Path, State}, ErrNoScope, ErrScopeExists,
+                                 ErrNotAuthority, ErrURLReused, ErrRepresentationTooLarge
   imports: stdlib + beadserrors ONLY — no internal/types (nothing here is
   issue-shaped; the memoryops precedent, stated the same way)
 
-internal/graphapi/               MEANING FUNCTIONS (pure; importable by cmd/bd)
-  canonical-ID grammar (reject-don't-trim), canonical-URI ordering, JSON
-  object canonicalization + RFC 6902 §4.6 equality (the no-op gate),
-  Scope URL validation mirroring BDP's startup contract. No bodies, no
-  constructors — the memoryapi shape.
-
-internal/storage/graphops/       TX-LEVEL SHARED BODY (both Dolt stores call it)
+internal/storage/graphops/       TX-LEVEL SHARED BODY — all three legs call it
+  type DBTX interface { ExecContext; QueryContext; QueryRowContext }
+    (the issueops.DBTX shape; *sql.Tx and domain/db.Runner both satisfy it)
   ReadBeadInTx / ReadLinkInTx / SelectBeadsInTx / SelectLinksInTx /
-  IncidentLinksInTx / DescriptorsInTx — every function takes *sql.Tx; no
-  exported constructor, nothing for depguard to deny. ownedLinks is
-  assembled HERE, inside the caller's one transaction.
-  Inside the charter's Storage Boundary (only internal/storage/** may
-  touch the engine — .golangci.yml dolt-storage-boundary).
+  IncidentLinksInTx / DescriptorsInTx / DescriptorInTx / InstallDescriptorInTx /
+  ReadIdentityInTx / MintScopeInTx / PromoteInTx / RotateInTx /
+  assertAuthorityInTx (called first by every reader body)
+  SeedBeadInTx / SeedLinkInTx — the P1 fixture writer, ledger-enforcing,
+    reachable ONLY through the conformance fixture hook (no accessor)
+  No exported constructor. Inside the charter's Storage Boundary; cmd/bd
+  is DENIED this package by an explicit depguard entry (Part B6).
 
-internal/storage/dolt/graph_reader.go, internal/storage/embeddeddolt/graph_reader.go
-  five-line accessors wrapping the body in withReadTx / withConn (embedded
-  carries //go:build cgo); nil receiver → *storage.ErrUnsupported.
+internal/storage/dolt/graph_*.go, internal/storage/embeddeddolt/graph_*.go
+  accessors wrapping the bodies in withReadTx / withRetryTx (server) and
+  withConn (embedded, //go:build cgo); nil receiver → *storage.ErrUnsupported
 
-internal/storage/uow/graph_reader.go
-  GraphReaderSource { GraphReader() (graphops.Reader, error) } on the
-  provider; the UOW leg reaches the same InTx body through the domain
-  repository IF every function it calls takes an interface Runner
-  satisfies — decided per method at implementation time and STATED in the
-  contract header (vote count: two legs share the body → "two readings
-  plus an engine check", never "three backends agree").
+internal/storage/domain/graph.go + internal/storage/domain/db/graph_repository.go
+  GraphRepository over a db.Runner, delegating to the InTx bodies — the
+  MetadataCAS/TreeWalker precedent for reaching a shared body from the
+  unit-of-work leg
+internal/storage/uow/graph_*.go
+  uow.UnitOfWork gains Graph() domain.GraphRepository; the provider gains
+  GraphReader()/GraphTypes()/GraphIdentityReader()/GraphScopeBootstrapper()
+  accessors (RunTxRead for reads; RunTxResult with a commit message for
+  mint/promote — a no-op result commits nothing). The notifying provider
+  declares each explicitly.
 
-internal/storage/storage.go        + GraphReader(), GraphTypes() accessors (one line
-                                     each, with the spec-grade doc the file uses)
-internal/storage/hook_graph_reader.go   declares the accessor, recurses UNWRAPPED (read role)
-internal/telemetry/graph_reader.go      wraps every method with storage.op / storage.done
-backend/types.go                        public aliases for every graphops type the
-                                        accessors reach (completeness guard root)
-backend/conformance/graph_reader_contract.go   the role contract; RoleContractBundle
-                                        gains GraphReader/GraphTypes fields; wirings in
-                                        internal/storage/{dolt,embeddeddolt,uow}
+internal/storage/storage.go        + six accessors (one line each, spec-grade doc)
+internal/storage/hook_graph_*.go   declared; recurse UNWRAPPED (no graph hook vocabulary)
+internal/telemetry/graph_*.go      every method spanned storage.op / storage.done
+backend/conformance/graph_*_contract.go   role contracts; RoleContractBundle fields;
+                                   role_bundle_cases.go rows; wirings on all three legs
 
-internal/bdpapi/                 THE BDP HTTP SURFACE (sibling of internal/httpapi)
-  generated wire DTOs from the pinned bdp-v0 schema; handler = serializer
-  over graphops roles; typed graph errors → BDP Problem records mapped
-  here and only here; reuses httpapi's exported pieces (TokenFileAuth,
-  ValidateBindAddr, ValidateAuthPosture, ValidateAllowedHost) for identical
-  bearer/bind/host posture.
+internal/httpapi/bdp_routes.go     bdpRouteTable — conditional rows behind route()
+internal/httpapi/bdp_handlers.go   handler = serializer over graphops roles
+internal/httpapi/bdp_problem.go    typed graph errors → BDP Problem records, here only
+internal/httpapi/bdpwire/          GENERATED DTOs from the vendored, pinned bdp-v0 schema
+                                   (+ schema/ with provenance: upstream commit, sha256)
+internal/bdpclient/                graphops.Reader/DescriptorReader over the wire
+                                   (Problem → the same typed errors; errors.Is holds)
 
-cmd/bd/bdp_serve.go              `bd bdp-serve`: resolves the workspace, takes roles
-                                 from BENEATH the hook layer (serve's one-line peel),
-                                 mints the Scope on first serve under bdp.scope_url,
-                                 listens via internal/bdpapi
-cmd/bd/graph_*.go                graph verbs (P3): reach roles via openGraphReader()
-                                 — the direct/proxied/BDP-client fork lives there
+cmd/bd/bdp.go                      `bd bdp` root; subcommands in cmd/bd/bdp_*.go
+cmd/bd/bdp_serve.go                thin: serveDatabaseSource + serveIssueRoles +
+                                   graph roles + httpapi.Config{Graph: …}
 ```
 
-Dependency direction, enforced: `cmd/bd → graphops, graphapi, storage
-accessors`; `internal/bdpapi → graphops, graphapi`; `internal/storage/* →
-graphops`; `graphops → beadserrors, stdlib`. `.golangci.yml`'s
-`cmd-bd-role-constructors` deny list gains no entry for the tx-level body
-(no constructor exists to deny), exactly as for `memoryops`.
+Dependency direction, enforced: `cmd/bd → graphops, storage accessors,
+bdpclient`; `internal/httpapi → graphops, bdpwire`; `internal/storage/* →
+graphops`; `graphops → beadserrors, stdlib`. `.golangci.yml` gains an
+explicit `cmd-bd-role-constructors` deny entry for
+`internal/storage/graphops` — the rule matches by package import, not by
+constructor symbol, so "no constructor to deny" (v1) was not a guard.
 
 ## 4. Roles — how many, and why
 
 The house test: a role is a **different question**, born whole with the
-methods that are shapes of one question, never appended to later.
+methods that are shapes of one question; and *can one caller be entitled
+to the read and not the write?* — if yes, two roles. v1 stated the test and
+then put `Read`/`Mint`/`Rotate` on one interface (all three reviewers).
+v2's six, each behind its own accessor:
 
 - **`graphops.Reader`** — "what is in this Scope, as BDP sees it": one
-  record by canonical ID (Bead with its complete `ownedLinks`, or Link),
-  a collection selection (canonical-URI order, bounded page), and
-  incident Links for a Bead. These are shapes of one question (Read
-  projection of the graph) the way `Reader.Ready/List/Get` are; they share
-  the snapshot-per-call model and the same refusal vocabulary.
-- **`graphops.Types`** — "what Types does this Scope advertise": the
-  descriptor inventory, and (P3) installation with closure validation and
-  fingerprint retention. A different question with a different lifetime
-  (descriptors change by operator action, not by writes), and P3's
-  install is a write the Reader must not be able to reach — the
-  `Bootstrapper`/`InitVerifier` argument: *can one caller be entitled to
-  the read and not the write?* Yes.
-- **`graphops.Writer`** (P3, not now) — create/update/delete for graph
-  beads and links with the owned-Link version coupling and the
-  allocation/tombstone ledger inside the write transaction. Born whole in
-  P3 with the write-profile ADR; not declared before its semantics are.
+  record by path (a Bead with its complete, bounded `ownedLinks`, or a
+  Link), a keyset-paged selection in code-unit order, incident Links. Every
+  method takes the `AuthorityExpectation` and asserts it in-transaction.
+- **`graphops.DescriptorReader`** — "what Types does this Scope
+  advertise": the ordered catalog and a keyed lookup. Bounded (the
+  installer refuses a catalog past the bound).
+- **`graphops.TypeInstaller`** — install/converge descriptors, keyed by
+  fingerprint, with closure validation. **P1**, not P3: `bd init`'s
+  descriptor bootstrap needs a writer (v1 had none), and the conformance
+  fixture needs the same one. Refuses an *owning* declaration without a
+  `Max`.
+- **`graphops.IdentityReader`** — the Scope row, the clone-local authority
+  half, and the provider's `LedgerDurability` declaration. What every serve
+  and every `bd bdp status` consults.
+- **`graphops.ScopeBootstrapper`** — `Mint`, once: INSERT into the
+  singleton Scope row (loses the race, `ErrScopeExists`) and grant this
+  clone the authority half. The only write the server assembly may hold,
+  and only on the first-serve path.
+- **`graphops.AuthorityRotator`** — `Promote` (CAS on the epoch; writes
+  this clone's authority half) and `Rotate` (new URL; old URL recorded
+  refused-forever). Reached only by `bd bdp promote|restore` — an offline
+  administrative composition root; `httpapi.GraphConfig` has no field for
+  it, so the server *cannot* hold it (compile-time, tested).
+- **`graphops.Writer`** (P3, not now) — born whole with the write-profile
+  ADR (W1 upstream).
 
-Deliberately *not* a role: the authority marker and Scope identity. They
-are workspace identity written once (`bd bdp-serve`'s first-serve mint)
-and read on every serve — the `Bootstrapper`/`InitVerifier` split applies:
-`graphops.Types` does not carry them; a small `graphops.Identity` pair
-(read role + one-time write role) is the honest shape, decided in the CLI
-and storage spec.
+The fixture writer (`SeedBeadInTx`/`SeedLinkInTx`) is deliberately not a
+role: it is reachable only through the conformance fixture hook (the
+`MemoriesFixture.SetConfig` shape), so nothing outside a contract test can
+write beads before P3.
 
 ## 5. A read, end to end
 
 ```text
-client ──GET /acme/beads/x──▶ bd bdp-serve (internal/bdpapi)
-   │ bearer + Host + project stamp + deadline + semaphore   (httpapi's posture, reused)
-   │ ScopeResolver: workspace → Scope URL + authority marker check (ruling 9/12)
+client ──GET /acme/beads/x──▶ internal/httpapi (bd serve | bd bdp serve)
+   │ route(): deadline → bearer (before the semaphore) → Bd-Project-Id stamp
+   │          (absent = pass; BDP clients never send it) → database slot
    ▼
-graphops.Reader.Bead(ctx, {ID})            ← ONE role call per request
-   ▼ (telemetry span) → (hook layer absent: taken from beneath it)
-dolt.GraphReader → withReadTx ─▶ storage/graphops.ReadBeadInTx(tx, id)
-   │ one transaction: bead row + its owned Links + descriptor lookup
+bdp handler: path grammar (graphops laws) → ONE role call
    ▼
-graphops.BeadRecord {Bead, OwnedLinks}     ← the covered member, assembled in-snapshot
+graphops.Reader.Bead(ctx, BeadRequest{Path, Expect})     Expect = the identity the
+   ▼ telemetry span (hook layer absent: taken from beneath it)   server started with
+dolt.GraphReader → withReadTx ─▶ storage/graphops.ReadBeadInTx(ctx, tx, req)
+   │ assertAuthorityInTx: graph_scope(url, epoch) == Expect AND
+   │                      graph_authority_local(authority_id, epoch) == Expect
+   │                      → else ErrNotAuthority (a promote elsewhere + pull, a
+   │                        restore, or a clone all fail HERE, mid-process)
+   │ bead row + ONE batched owned-links query + descriptor lookup (fingerprint-
+   │ cached; re-read in-tx only when the catalog fingerprint changed)
    ▼
-internal/bdpapi: generated DTO ← record; typed error → BDP Problem; JSON out
+graphops.BeadRecord {Bead, OwnedLinks}     ← complete, ordered, bounded (page × ΣMax;
+   ▼                                          over the bound → ErrRepresentationTooLarge)
+bdp handler: bdpwire DTO ← record; typed error → BDP Problem (bdp_problem.go); JSON out
 ```
 
+The server obtains `Expect` once at startup through `IdentityReader` (and
+mints through `ScopeBootstrapper` on the first-serve path); it never caches
+the *answer* — every read re-asserts it in the store. That is the v0
+"lease" (amendment A1): one transaction per role call, authority and data
+from the same snapshot, nothing escaping a role.
+
+On Dolt-server workspaces `bd serve` answers from the **unit-of-work
+provider**, so the UOW leg is the *primary* production path for BDP, not a
+third vote; the `DBTX`-shaped bodies are what make it the same code.
+
 A write (P3) follows the same path through `graphops.Writer`, whose body
-runs the no-op gate (`graphapi` equality) before minting, records
-attribution per version, versions the source on owned-Link mutation, and
-consults the allocation/tombstone ledger — all inside the one write
-transaction, on whichever provider realizes the accessor.
+asserts the expectation, runs the no-op gate, records attribution per
+version, versions the source on owned-Link mutation, and consults the
+ledger — all inside the one write transaction, on whichever provider
+realizes the accessor.
 
 ## 6. Where the twelve rulings land
 
 | Ruling | Lands in |
 | --- | --- |
 | 1 charter (core; amendment after working bits) | `PROJECT_CHARTER.md` edit rides the first merged slice; nothing here depends on it |
-| 2 substrate S1 | `internal/storage/schema/migrations/NNNN_graph_*.up.sql` — beads, links, type descriptors, allocation ledger, scope identity |
-| 3 allocation ledger (keyed O(1)/O(log n)) | `internal/storage/graphops/ledger.go` (InTx), keyed by canonical URL |
-| 5 withdrawal | nothing projects Issues; `graphops` imports no `internal/types` — the boundary is structural |
-| 7a Scope URL | `internal/graphapi/scopeurl.go` (validator mirroring BDP's startup contract); `bdp.scope_url` config; identity row |
-| 7b listener | `internal/bdpapi` reuses httpapi's exported auth/bind/host posture; v0 view = whole Scope per bearer token |
+| 2 substrate S1 | `internal/storage/schema/migrations/NNNN_graph_*.up.sql` (replicated: scope, scope history, beads, links, descriptors, allocations) + `migrations/ignored/NNNN_graph_authority_local.up.sql` (clone-local) |
+| 3 allocation ledger (keyed O(1)/O(log n)) | `graph_allocations` PK on the Scope-relative path; `ledger.go` InTx |
+| 5 withdrawal | nothing projects Issues; `graphops` imports no `internal/types` — structural |
+| 7a Scope URL | `graphops` Scope-URL law; `bdp.scope_url` (yaml-only); singleton Scope row; dev mode never persists |
+| 7b listener | BDP rows behind `httpapi.route()` — same posture by construction again (A2) |
 | 8 changefeed | P3: a `graphops.Changefeed` role over the graph's own log; the frozen v0 journal untouched |
-| 9 authority | the accessors ARE the normalized abstraction; marker/serialization/refusal are contract cases in `backend/conformance` |
-| 11 restore vs identity | ledger table restorable independently (append-only, its own migration); `bd graph restore` rotation path in the CLI spec |
-| 12 store/Scope/client | `bd init` migrations; `bd bdp-serve` mint-on-first-serve; `bd init --bdp-server` reroute (CLI spec §) |
+| 9 authority | accessors = the normalized abstraction; replicated Scope row + clone-local authority half + in-transaction expectation (A1); promotion CAS; contract cases incl. a push/pull-produced clone refusing |
+| 11 restore vs identity | dolt-ignored authority half (arrives absent after restore/clone); ledger export/import lane; `LedgerDurability` declaration; `bd bdp restore` rotates unless continuity shown (A5) |
+| 12 store/Scope/client | `bd init` migrations + descriptor bootstrap via `TypeInstaller`; mint on first serve (`bd serve` when configured / `bd bdp serve` always); `bd init --bdp-server` → config.yaml (A6) |
 | 6 wisps | not served; C-lane visibility decision recorded in the plan |
 
 ## 7. What is deliberately not designed here
 
-- Cross-request cursor continuation (P2 ADR).
+- Cross-request cursor continuation (P2 ADR) — and therefore **no BDP
+  collection routes ship before it lands**; v0 P1 serves single-resource
+  reads and discovery only.
 - The write profiles' wire (W1 upstream), and therefore `graphops.Writer`'s
-  exact request shapes.
-- `bd serve` integration (W2): this document gives `bd bdp-serve` its own
-  command and its own `internal/bdpapi` server; folding BDP routes into
-  `httpapi`'s table is W2's design, gated on the OpenAPI-first rule that
-  table lives under (BDP's wire is defined by the pinned JSON Schema, not
-  by `openapi.v0.yaml`, so the two surfaces cannot share a generator
-  without a ruling).
+  exact request shapes; per-token authorization classes (read / write /
+  admin) are a W1 dependency and precede P3.
+- The replication/merge ADR (foreign-authority delta refusal; funnel through
+  every merge entry point; federation policy for graph tables — v0 default:
+  replicated tables travel unfiltered, by decision). Precedes the migrations.
+- The enforcement boundary for out-of-role DML (`bd sql`, raw SQL, merge)
+  beyond the post-merge validator — a ruling, then a C-lane verification task.
+- Whether `bd bdp serve` survives W2 as an alias of `bd serve` once every
+  workspace with a Scope URL serves BDP from `bd serve` (default: it does,
+  as the strict form).
 - Type generation from the bead-type inventory (W3) — it feeds
-  `graphops.Types` bootstrap; it does not change the role.
+  `TypeInstaller`'s bootstrap catalog; it does not change the role.
