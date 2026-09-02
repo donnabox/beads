@@ -1,6 +1,6 @@
 # BDP in beads: the bead-graph plan
 
-**Status:** Draft v11 — feat/bead-graph (thirteen adversarial review rounds:
+**Status:** Draft v12 — feat/bead-graph (thirteen adversarial review rounds:
 1–7 on the whole plan, SOUND at round 7; 8–13 on the storage-interfaces
 section, SOUND-ADDITION at round 13; v6 withdrew the Issue projection from
 v0 on review-round-5 counterexamples; v9–v11 record the P-1 ruling tranches — all
@@ -519,13 +519,19 @@ client:
    Type Descriptor bootstrap, all against the normalized storage interfaces
    (any provider). No separate `bd graph init`. A workspace therefore always
    has a graph store; it does not yet have a *Scope*.
-2. **`bd serve` creates the BDP Scope on top of the store**: on first serve
+2. **`bd bdp-serve` creates the BDP Scope on top of the store** — the
+   isolated bootstrap path (operator direction 2026-09-02): on first serve
    under a configured `bdp.scope_url` (ruling 7a) it mints the authority
    marker (URL + authority id) into the store and serves the Scope —
    honestly empty at birth, with `beads/`, `links/`, and `types/` all
    present. Subsequent serves and the CLI recognize the persisted marker.
-   Without a configured URL, `bd serve` registers no BDP routes (dev-mode
-   `local-test` derivation aside).
+   Without a configured URL it refuses to start (dev-mode `local-test`
+   derivation aside). **Ultimately `bd serve` serves BDP** (and possibly
+   the current HTTP surface — TBD); `bd bdp-serve` exists so the BDP path
+   can be built and proven in isolation first, then folded into
+   `bd serve` (workstream W2 below). Everything this plan says about
+   `bd serve`'s graph source, conditional routes, and middleware applies
+   to `bd bdp-serve` today and to `bd serve` after integration.
 3. **`bd init --bdp-server <url>` — one more `bd init` target** (ruled),
    beside `--server`, `--shared-server`, `--proxied-server`,
    `--team-server`, and `--backend`. The difference from every existing
@@ -770,7 +776,27 @@ allocation/tombstone ledger. No legacy IDs are served in v0.
   identity/non-reuse, deletion-result, installed-Type-contract
   validation, and replication tests at the public boundary.*
 
-## 8. Process
+## 8. Related workstreams (operator direction 2026-09-02)
+
+This plan covers the graph store and its Read serving. Sibling workstreams,
+each owning its own writeup:
+
+- **W-arch** — a separate architecture/design writeup for the graph work,
+  and a **detailed specification of the CLI and storage-interface changes**
+  (`bd init --bdp-server`, the `bdp.*` config, `bd bdp-serve`, the graph
+  verbs; `GraphCapable`, `graphops`, `GraphReadSource`/snapshot lease,
+  `graphsource` resolvers, ledger, descriptor store). Precedes P0 code.
+- **W1** — flesh out the **Update and Transactional profiles** of BDP and
+  the reference implementations (the protocol is Read-heavy today); this is
+  the upstream gate for P3 writes.
+- **W2** — design **`bd bdp-serve`** and its integration with `bd serve`:
+  bootstrap in isolation, then fold in; whether the current HTTP surface
+  moves too is TBD.
+- **W3** — **inventory of bead types and generation of Bead/Link Types** —
+  in the beads repo, not bdp; feeds the descriptor store's bootstrap
+  catalog (§4).
+
+## 8a. Process
 
 All work on `feat/bead-graph`; slices land by PR with adversarial
 convergence; the feature branch merges to main only at phase exits behind a
