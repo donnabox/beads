@@ -1,10 +1,10 @@
 # BDP in beads: the bead-graph plan
 
-**Status:** Draft v15 — feat/bead-graph — **P-1 REOPENED** for the W-arch amendments A1–A8 (§9); P0 code is BLOCKED until they are ruled. (Thirteen adversarial review rounds:
+**Status:** Draft v16 — feat/bead-graph — **P-1 REOPENED** for the W-arch amendments A1–A8 (§9); P0 code is BLOCKED until they are ruled. (Thirteen adversarial review rounds:
 1–7 on the whole plan, SOUND at round 7; 8–13 on the storage-interfaces
 section, SOUND-ADDITION at round 13; v6 withdrew the Issue projection from
 v0 on review-round-5 counterexamples; v9–v11 record the P-1 ruling tranches — all
-twelve decisions are ruled; v14/v15 reopen P-1 for the eight amendments)
+twelve decisions are ruled; v14–v16 reopen P-1 for the eight amendments)
 **Date:** 2026-09-02 (v1: 2026-08-31)
 **Owners:** Donna Box (ruling), janet (drafting/implementation)
 **References:** the BDP spec (gastownhall/bdp `docs/specs/bdp.md`), beads#6051,
@@ -296,7 +296,7 @@ continuation are C-lane machinery, recorded in §5's historical record.)
 > and the `bd serve` optional graph field — are replaced by the house
 > idiom in `BDP_GRAPH_ARCHITECTURE.md` §2a (role accessors on
 > `storage.Storage`, `DBTX`-shaped shared bodies, per-call transactions
-> asserting an authority expectation, BDP rows mounted inside `httpapi`).
+> asserting a store-owned authority witness, BDP rows mounted inside `httpapi`).
 > The *rulings* this section serves are unchanged except where §9's
 > "Amendments proposed by W-arch" block says otherwise. The text below is
 > kept as the record of what was proposed and why.
@@ -525,8 +525,9 @@ cmd/bd/serve role-source table                      ← one concrete hook peel,
 > **Spelling amended by W-arch v2 (pending ruling A2/A3/A6):** `bd
 > bdp-serve` → `bd bdp serve` (a thin command over the same `httpapi`
 > server; `bd serve` mounts the BDP rows when `bdp.scope_url` is
-> configured); graph verbs under `bd bdp …`; `bdp.*` lives in
-> `config.yaml` only (nothing in `metadata.json`). Detail:
+> configured); graph verbs under `bd bdp …`; `bdp.scope_url` lives in
+> tracked `config.yaml`, the per-workspace `bdp.client`/`bdp.server` in
+> untracked `config.local.yaml` (nothing in `metadata.json`). Detail:
 > `BDP_GRAPH_CLI_AND_STORAGE_SPEC.md` Part A.
 
 Three commands, three responsibilities — the store, the Scope, and the
@@ -537,20 +538,26 @@ client:
    Type Descriptor bootstrap, all against the normalized storage interfaces
    (any provider). No separate `bd graph init`. A workspace therefore always
    has a graph store; it does not yet have a *Scope*.
-2. **`bd serve` creates the BDP Scope on top of the store — and `bd bdp
-   serve` is its strict form** (as amended by A2/A7, pending): on first
-   serve under a configured `bdp.scope_url` (ruling 7a) it mints the Scope
-   row and the `mint` ledger event, **fenced per topology** (shared SQL
-   server: the dolt-ignored authority lease; remote-backed embedded: fetch
-   → compare → commit → push), writes this workspace's authority witness,
-   and serves the Scope — honestly empty at birth, with `beads/`, `links/`,
-   and `types/` all present. BDP routes are a conditional second table
-   inside `internal/httpapi` behind the same middleware. `bd serve` with no
-   configured URL is byte-identical to today; on a clone that does not hold
-   the authority it keeps the legacy surface up with the BDP rows absent
-   and a notice — never a startup refusal. `bd bdp serve` refuses (exit 2)
-   in those cases. No development-mode URL derivation exists in bd. (W2
-   decides whether `bd bdp serve` survives as the alias.)
+2. **`bd bdp serve` creates the BDP Scope on top of the store; `bd serve`
+   serves an already-minted Scope it holds** (as amended by A2/A7,
+   pending): on its first serve under a configured `bdp.scope_url` (ruling
+   7a) `bd bdp serve` mints the Scope row, the `mint` ledger event, and the
+   built-in Type catalog in one **two-phase, fenced** transaction (a shared
+   database: the dolt-ignored authority lease; a configured remote: fetch →
+   ancestor check → scoped commit → push), finalizes this workspace's
+   authority witness, and serves the Scope — honestly empty at birth, with
+   `beads/`, `links/`, and `types/` all present. Because the Scope URL is a
+   tracked project fact, **only `bd bdp serve` mints**: a plain `bd serve` on
+   an unminted store keeps the legacy surface up with a notice. BDP routes
+   are a conditional second table inside `internal/httpapi` behind the same
+   middleware, always served from the unit-of-work leg (`bd serve` refuses
+   embedded Dolt permanently). `bd serve` with no configured URL is
+   byte-identical to today; on a workspace that does not hold the authority
+   it keeps the legacy surface up with the BDP rows absent and a notice —
+   never a startup refusal on account of the graph. `bd bdp serve` refuses
+   (exit 2) in those cases. No development-mode URL derivation exists in
+   bd. (W2 decides whether `bd bdp serve` survives as the alias — default
+   yes; it is the minting path.)
 3. **Client wiring — `bd init --bdp-server <url>` and `bd bdp client`**
    (as amended by A6, pending): one more `bd init` target, beside
    `--server`, `--shared-server`, `--proxied-server`, `--team-server`, and
@@ -594,7 +601,7 @@ split by topology where the tree differs:
 | Federation type-filtering | **server-topology-specific**; deletes `issues` rows by type | graph tables get their own filter hook per topology; filtering one endpoint must also drop/deny the Link (never emit a dangling edge) |
 | Journal (frozen v0 vocabulary) | Issue/Dependency/Comment payloads only | **graph events are excluded**; a separate graph changefeed carries them; the frozen vocabulary is not extended |
 | Export/JSONL (contract class) | contractual shapes | graph gets its own export lane; legacy shapes untouched |
-| Backup / restore | whole-database state (a different contract class from export); a Dolt backup restore carries the working set, dolt-ignored tables included (probed) | ruling 11 as amended by A5 (pending): the clone-local authority witness (`.beads/graph-authority.local.json`, workspace-keyed) records the hash-chained ledger head; a restore keeps the file but the store no longer contains that head → refused until `bd bdp restore`, which shows continuity from a `bd bdp ledger snapshot` or rotates the Scope URL and epoch; providers DECLARE `LedgerDurability`; `bd backup restore` also marks the witness unverified |
+| Backup / restore | whole-database state (a different contract class from export); a Dolt backup restore carries the working set, dolt-ignored tables included (probed) | ruling 11 as amended by A5 (pending): the installation-keyed authority witness (`.beads/graph-authority.local.json`) records the hash-chained ledger head; a restore keeps the file but the store no longer contains that head → refused until `bd bdp restore`, which shows continuity from a `bd bdp ledger snapshot` (recovery predicate) or rotates the Scope URL and epoch; providers DECLARE `LedgerDurability`; `bd backup restore` also marks the witness unverified |
 | Wisps | private/transient; excluded from export/federation by default | **P-1 policy decision** — excluded from BDP serving in v0 (proposed) |
 
 ## 5. Thrust 3 — Issues/Dependencies beside the graph
@@ -899,8 +906,9 @@ of that.
    append-only and restorable independently of state (older state +
    current ledger preserves non-reuse); providers declare whether their
    ledger survives restore; when preservation cannot be guaranteed,
-   `bd graph restore` rotates the Scope URL and epoch and refuses the old
-   URL. An epoch change alone is never sufficient.
+   `bd bdp restore` (spelling per A3, pending) rotates the Scope URL and
+   epoch and refuses the old URL. An epoch change alone is never
+   sufficient.
 12. **Store, Scope, client — RULED (replaces "empty-at-birth"):** three
    commands, three responsibilities (§4 "Lifecycle commands"). `bd init`
    initializes the graph store with everything else, against the
@@ -914,80 +922,87 @@ of that.
    a provider without the capability keeps existing `bd serve` behavior —
    routes absent, never a startup failure.
 
-### Amendments proposed by W-arch v4 (2026-09-02) — PENDING RULING
+### Amendments proposed by W-arch v5 (2026-09-02) — PENDING RULING
 
-Raised by three three-reviewer councils on the W-arch docs; each changes
+Raised by four three-reviewer councils on the W-arch docs; each changes
 ratified text above, so none takes effect until ruled. Full rationale and
 evidence: `BDP_GRAPH_ARCHITECTURE.md` §2b.
 
 - **A1 (ruling 9).** Replace "the snapshot lease" with "single-transaction
   operations under a store-asserted authority witness": the accessor loads
-  this workspace's witness (clone-local file, under a shared advisory lock)
-  and the body asserts it *inside its transaction* — Scope row identity,
-  hash-chained ledger head (exact prefix), provider state version, and on
-  the shared-server topology the lease. **No request type carries
-  authority fields** (a caller-supplied expectation is forgeable from the
-  replicated rows). The cursor type is opaque from P1.
+  this workspace's witness (a clone-local file) and the body asserts it
+  *inside its transaction* — Scope row identity, hash-chained ledger head
+  (exact prefix), the fencing cell (a mutation must UPDATE it and see one
+  affected row), and the graph-state version (per-table hashes). **No
+  request type carries authority fields.** The cursor type is opaque from
+  P1.
 - **A2 (rulings 7b, 12).** BDP routes are a conditional second table inside
-  `internal/httpapi` behind the same middleware; `bd bdp serve` is a thin
-  strict command over that server (refuses without a held Scope; inherits
-  serve's whole-surface `--readonly` refusal); `bd serve` mounts the rows
-  when it holds the authority, keeps the legacy surface up with rows absent
-  otherwise, and never refuses on account of the graph.
+  `internal/httpapi` behind the same middleware, always served from the
+  unit-of-work leg. **Only `bd bdp serve` mints** (the Scope URL is a
+  tracked project fact); it inherits serve's whole-surface `--readonly`
+  refusal and refuses without a held Scope. `bd serve` mounts the rows when
+  it holds an already-minted Scope, converts every graph failure into "rows
+  absent + notice", and never refuses on account of the graph.
 - **A3 (ruling 12 / §4 lifecycle).** All graph verbs under `bd bdp …`; the
   root command's policy for that subtree is keyed by `CommandPath()` and
-  authoritative at every leaf-name call site.
+  authoritative at every leaf-name call site (paired Cobra-walk and
+  source-scan tests).
 - **A4 (§3 layering).** Values, laws, and roles in public `graphops`;
   accessors named `BeadGraph*`; no `backend/` aliases.
 - **A5 (ruling 11).** The clone-local half is `.beads/graph-authority.local.json`,
-  bound to a workspace key (hostname + real path — not the project id,
-  which every clone shares), written only under an exclusive lock with
-  monotone read-modify-write and directory fsync, and only once the
-  workspace's `.beads/.gitignore` carries the entry. The ledger is an
-  append-only, hash-chained event table (`mint`, `install`, `promote`,
-  `rotate`, `allocate`, `tombstone`, `refuse_url`); the witness records the
-  head `{seq, hash}`, so a restore to any earlier point or a different
-  history is refused (a dolt-ignored table does NOT work: `DOLT_BACKUP`
-  restore carries the working set — probed; a scalar high-water mark does
-  not prove prefix identity). `bd bdp ledger snapshot|apply` carries
-  manifest-bound contiguous ranges; providers declare `LedgerDurability`;
+  bound to an installation key (a per-installation id under the user config
+  dir plus the canonical path — never the hostname or the shared project
+  id), written under a bounded exclusive lock with monotone
+  read-modify-write and directory fsync, with **two-phase transitions**
+  (mint, promote, rotate, ledger apply) recovered on the next load; the
+  manager ensures the ignore entries and refuses a git-tracked path. The
+  ledger is an append-only, hash-chained event table with a single-row
+  sequence counter (Dolt's `FOR UPDATE` is a no-op); the witness records
+  the head `{seq, hash}`; **no event exists before mint** (the built-in
+  catalog is installed inside the Mint transaction). `bd bdp ledger
+  snapshot|apply` carries manifest-bound ranges under a recovery predicate
+  exempt from the head check; providers declare `LedgerDurability`;
   `bd bdp restore` rotates unless continuity is shown. Residuals (stated):
-  whole-directory filesystem snapshots; a witness copied to the same path
-  on the same host.
+  whole-directory filesystem snapshots; acknowledged-but-unwitnessed writes
+  before a crash (P3 obligation).
 - **A6 (§4 lifecycle, 7a env).** `bdp.scope_url` is a project fact in
-  tracked `config.yaml` (yaml-only; `BDP_SCOPE_URL` honored as 7a spells
-  it, plus `BD_BDP_SCOPE_URL`); the per-workspace keys `bdp.client`,
-  `bdp.server`, `bdp.insecure_http` live in the untracked
-  `config.local.yaml` (the tree's machine-specific override), written by
-  `bd init --bdp-server` and `bd bdp client` — generic `bd config set`
-  refuses them. No env-carried token and no token key in config;
-  `bdp.client` blocked from env like `backend`; nothing in `metadata.json`.
-- **A7 (ruling 9, promotion) — NEW.** Fencing is per topology and inside
-  every mutation's transaction: shared SQL server → a dolt-ignored
-  `graph_authority_lease` row (the `leases`/bd-lrgn1 precedent: ephemeral
-  heartbeats, no history; expiry fails closed; promotion takes an expired
-  lease or `--steal`); remote-backed embedded → `Mint`/`Promote` are fetch
-  → require local HEAD == remote-tracking HEAD → CAS + event → `DOLT_COMMIT`
-  → push, with a non-fast-forward push reset and refused ("pull first"),
-  a serving process fetching on `bdp.authority_heartbeat` comparing
-  `(authority_id, epoch)` and failing closed after
-  `bdp.authority_heartbeat_grace`, and **P3 writes push-on-commit** (no
-  acknowledged write is ever orphaned); no remote → the CAS alone.
-  Force-push routes bypass the fence as operator acts, like `bd sql`.
-  Reads inside the heartbeat window are the stale-authority reads ruling 9
-  already defers to BDP's replica-labeling note.
+  tracked `config.yaml` (yaml-only; `BDP_SCOPE_URL` read first, then
+  `BD_BDP_SCOPE_URL`; `bd config set` refuses it once minted — the URL then
+  changes only through `bd bdp promote --rotate-url` / `bd bdp restore`,
+  which update the Scope row and the file as one transition); the
+  per-workspace `bdp.client`, `bdp.server`, `bdp.insecure_http` live in
+  untracked `config.local.yaml`, written by `bd init --bdp-server` and
+  `bd bdp client` (generic `bd config set` refuses them); the three new
+  `.beads/` files join all three doctor ignore lists. No env-carried token
+  and no token key in config; `bdp.client` blocked from env; nothing in
+  `metadata.json`.
+- **A7 (ruling 9, promotion) — NEW.** Fences compose by hazard and every
+  graph mutation is fenced inside its transaction: **a shared database**
+  (every SQL-server topology — the only serving topology) → a dolt-ignored
+  `graph_authority_lease` row (the `leases`/bd-lrgn1 precedent) that a
+  mutation must UPDATE with one affected row, so a takeover is a
+  serialization loser; **a configured remote** → transitions are `DOLT_FETCH`
+  → remote-tracking HEAD must be an ancestor of local HEAD → the fenced
+  transaction → a scoped commit (`DOLT_ADD` graph tables, never `-Am`) →
+  `DOLT_PUSH` with a typed non-fast-forward classifier (changed remote
+  authority → reset to the recorded pre-operation HEAD and refuse;
+  issue-plane divergence only → retryable "sync required"; other failures →
+  keep the commit), a serving process fetching on `bdp.authority_heartbeat`
+  and failing closed after a grace, and **P3 writes push-on-commit**; both
+  hazards → both fences; **neither hazard** (embedded, no remote) → not
+  promotable in place (`--rotate-url` only). Force-push routes bypass the
+  fence as operator acts. Reads inside the heartbeat window are the
+  stale-authority reads ruling 9 already defers.
 - **A8 (§1 constraint #1; ruling 12) — NEW, two options.** **A
   (recommended):** constraint #1 is scoped to *behavior* (every in-tree
-  topology and existing workspace byte-identical; `bd init`'s skip notice
-  debug-level only); out-of-tree `backend/` implementers take the source
-  break `storage.go` already declares (six `ErrUnsupported` stubs; the
-  `ReadyClaimer` CHANGELOG entry is the precedent) and the compiler
-  enumerates every implementer. **B:** an optional `BeadGraphCapable`
-  interface — no source break, but embedding promotes it unwrapped, so
-  each decorator implements it explicitly, a capability census is written,
-  and every consumer needs a resolver. Ruling 12's "a provider without the
-  capability keeps existing `bd serve` behavior" reads "a provider
-  implementing the stubs …" under A.
+  topology and existing workspace byte-identical in gate output);
+  out-of-tree `backend/` implementers take the source break `storage.go`
+  already declares (six `ErrUnsupported` stubs; the joint
+  `ReadyClaimer`/`BatchCloser` CHANGELOG entry is the precedent) and the
+  compiler catches every type compiled as a `Storage`. **B:** an optional
+  `BeadGraphCapable` interface — no source break, but embedding promotes
+  it unwrapped, so each decorator implements it explicitly, a capability
+  census is written, and every consumer needs a resolver.
 
 Two decisions the plan does not yet contain, surfaced for ruling:
 
