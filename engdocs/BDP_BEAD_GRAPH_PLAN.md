@@ -383,7 +383,9 @@ cmd/bd/serve role-source table                      ← one concrete hook peel,
    what `bd serve` already does — targeted peels, telemetry retained:
 
    ```go
-   func ResolveGraphReadSource(s storage.Storage) (GraphReadSource, error)
+   package graphsource // internal/storage/graphsource — see placement below
+
+   func ResolveGraphReadSource(s storage.Storage) (graphops.GraphReadSource, error)
    // Peels the known hook layer, then — because telemetry's wrapper
    // embeds the statically typed DoltStorage, so an inner BeadGraph
    // method is NOT promoted through it — inspects THROUGH telemetry,
@@ -391,7 +393,7 @@ cmd/bd/serve role-source table                      ← one concrete hook peel,
    // the returned graph source in the telemetry layer it peeled. Never
    // storage.UnwrapStore. The result names every peeled/rewrapped
    // layer; ErrGraphUnsupported means absence, anything else is failure.
-   func ResolveGraphReadSourceFromUOW(p uow.UnitOfWorkProvider) (GraphReadSource, error)
+   func ResolveGraphReadSourceFromUOW(p uow.UnitOfWorkProvider) (graphops.GraphReadSource, error)
    // The UOW access path CANNOT ride RunTxRead — it closes its unit of
    // work before returning. OpenSnapshot instead takes ownership of a
    // direct NewUOW; ReadSnapshot.Close performs the rollback/close.
@@ -417,10 +419,15 @@ cmd/bd/serve role-source table                      ← one concrete hook peel,
    }
    ```
 
-   The RESOLVERS live in `internal/storage` (not `graphops`): they take
-   `storage.Storage` / `uow.UnitOfWorkProvider` and return
-   `graphops.GraphReadSource` — storage imports graphops, never the
-   reverse, so `storage.GraphCapable` creates no import cycle.
+   The RESOLVERS live in a neutral assembly package,
+   `internal/storage/graphsource` — a SEPARATE package (not package
+   `storage`): it imports `storage`, `uow`, and `graphops`, and nothing
+   imports it back except composition roots (`bd serve`, tests). This is
+   forced, not stylistic: `uow` already imports `storage`, so placing the
+   provider-arm resolver in package `storage` itself would create a
+   `storage → uow → storage` cycle. `GraphCapable` stays in `storage`
+   (returning `graphops.Store`; `storage → graphops` is a leafward
+   import); the resolvers qualify every foreign type.
 
    A snapshot is request-scoped, and **`ScopeResolver` is its one owner**:
    it selects workspace, authorization view, and opens the snapshot; the
