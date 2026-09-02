@@ -1,10 +1,10 @@
 # BDP in beads: the bead-graph plan
 
-**Status:** Draft v10 — feat/bead-graph (thirteen adversarial review rounds:
+**Status:** Draft v11 — feat/bead-graph (thirteen adversarial review rounds:
 1–7 on the whole plan, SOUND at round 7; 8–13 on the storage-interfaces
 section, SOUND-ADDITION at round 13; v6 withdrew the Issue projection from
-v0 on review-round-5 counterexamples; v9–v10 record the P-1 ruling tranches — all
-twelve decisions are now ruled, one spelling open)
+v0 on review-round-5 counterexamples; v9–v11 record the P-1 ruling tranches — all
+twelve decisions are ruled; P-1 is complete)
 **Date:** 2026-09-02 (v1: 2026-08-31)
 **Owners:** Donna Box (ruling), janet (drafting/implementation)
 **References:** the BDP spec (gastownhall/bdp `docs/specs/bdp.md`), beads#6051,
@@ -526,13 +526,30 @@ client:
    present. Subsequent serves and the CLI recognize the persisted marker.
    Without a configured URL, `bd serve` registers no BDP routes (dev-mode
    `local-test` derivation aside).
-3. **A client-wiring command (spelling TBD)** designates a BDP server for a
-   workspace, after which the CLI's graph verbs speak BDP to that server
-   instead of opening the store directly — the CLI becomes a BDP client of
-   the serve's authority (ruling 9: both are clients of one authority;
-   remotely, the wire is BDP). Issue verbs are untouched. Open: the
-   command's spelling and config placement; which verbs route remotely
-   (v0: graph verbs only).
+3. **`bd init --bdp-server <url>` — one more `bd init` target** (ruled),
+   beside `--server`, `--shared-server`, `--proxied-server`,
+   `--team-server`, and `--backend`. The difference from every existing
+   target is *where the reroute happens*: those select which provider or
+   topology realizes the storage interfaces — a choice BELOW the
+   normalized storage abstraction — whereas this one reroutes ABOVE it, at
+   the CLI: the graph verbs become a BDP client of the designated server
+   instead of opening a store. Shape, mirroring the `dolt.mode` idiom:
+
+   ```yaml
+   bdp:
+     scope_url: https://beads.example/acme/   # what bd serve mints/serves (7a)
+     client: store                            # store | server (default store)
+     server: https://beads.example/           # graph-verb target when client: server
+   ```
+
+   `bd init --bdp-server <url>` sets `bdp.client: server` + `bdp.server`;
+   `bd config set bdp.server <url>` does the same post-init; env
+   `BD_BDP_SERVER` overrides; the bearer token comes from `BD_BDP_TOKEN`
+   or a credentials-file section keyed by host (the existing `[host:port]`
+   password pattern). Precedence follows the tree's rule for `dolt.mode`:
+   flag > env > metadata > config. `client` is an explicit mode, never
+   inferred from the presence of a URL. Issue verbs are untouched — they
+   keep reaching storage directly. v0 routes graph verbs only.
 
 ### Replication participation matrix (review High 4, corrected round 2)
 
@@ -833,8 +850,9 @@ of that.
    interfaces — no separate graph init. `bd serve` creates the Scope on
    top of the store on first serve under a configured URL (minting the
    marker) and serves it honestly empty; no URL → no BDP routes. A
-   client-wiring command (**spelling TBD — the one open item**) designates
-   a BDP server for the workspace, after which the CLI's graph verbs
-   speak BDP to it. Tests prove Issues never leak into graph inventories;
+   client-wiring is `bd init --bdp-server <url>` — one more `bd init`
+   target, distinguished by rerouting ABOVE the storage abstraction (at
+   the CLI) rather than below it (§4 "Lifecycle commands"); after it, the
+   CLI's graph verbs speak BDP to the designated server. Tests prove Issues never leak into graph inventories;
    a provider without the capability keeps existing `bd serve` behavior —
    routes absent, never a startup failure.
