@@ -1,13 +1,29 @@
 # BDP in beads: the bead-graph plan
 
-**Status:** Draft v8 — feat/bead-graph (nine adversarial review rounds:
-1–7 on the whole plan, verdict SOUND at round 7; 8–9 focused on the
-storage-interfaces addition; v6 withdrew the Issue projection from v0 on
-review-round-5 counterexamples)
+**Status:** Draft v9 — feat/bead-graph (thirteen adversarial review rounds:
+1–7 on the whole plan, SOUND at round 7; 8–13 on the storage-interfaces
+section, SOUND-ADDITION at round 13; v6 withdrew the Issue projection from
+v0 on review-round-5 counterexamples; v9 records the first ruling tranche)
 **Date:** 2026-09-02 (v1: 2026-08-31)
 **Owners:** Donna Box (ruling), janet (drafting/implementation)
 **References:** the BDP spec (gastownhall/bdp `docs/specs/bdp.md`), beads#6051,
 this repo's `backend/` conformance surface, `engdocs/PROJECT_CHARTER.md`.
+
+## Terminology
+
+- **Graph beads / graph links** — Resources in the **graph store**: the
+  BDP-shaped tables (beads, links, Type Descriptors, allocation/tombstone
+  ledger, authority marker) reached through the normalized storage
+  abstraction and served over BDP. ("Native" was retired: inside this repo
+  it reads as the existing implementation, the opposite of what was meant.)
+- **The graph store** — the graph contract realized by any storage provider
+  (Dolt in tree is the reference realization; other providers plug in
+  through the same `backend/` contract).
+- **Issues / Dependencies / wisps** — the existing issue stack. Unchanged,
+  not served over BDP in v0.
+- **The bead graph** — the union concept from ruling 1: the graph beads will
+  eventually hold work AND non-work information (wisps being the existing
+  example of non-work information) once the C lane lands.
 
 ## 0. The BDP pin, and the spec-first dependency
 
@@ -48,7 +64,7 @@ Model laws this plan builds to (all normative at the pin):
 
 ## 1. Goal and constraints
 
-Implement BDP natively in this repo: a first-class bead/link graph the
+Implement BDP in this repo: a first-class graph store the
 protocol (and eventually the CLI) is implemented in terms of, beside — not
 instead of — the existing Issue/Dependency machinery.
 
@@ -69,9 +85,9 @@ Hard constraints, in priority order:
 3. **One seam per axis.** Two different seams exist and must not be
    conflated: an outer **authority seam** (which workspace/store, which
    authorization view, which read snapshot — `ScopeResolver`) selects
-   exactly one scope; the **representation seam** (native vs projected —
+   exactly one scope; the **representation seam** (graph store vs projected —
    `unionscope`) is C-lane future work now that the v0 projection is
-   withdrawn (§5) — in v0 the resolver fronts the native store directly.
+   withdrawn (§5) — in v0 the resolver fronts the graph store directly.
    Call sites see `graphops` interfaces; composites are the only
    switches.
 
@@ -139,7 +155,7 @@ Hard constraints, in priority order:
   it is future work outside this plan.
 - **Charter tension, named honestly:** `engdocs/PROJECT_CHARTER.md` frames
   beads as a focused issue tracker and prefers metadata over new schema for
-  extension concepts. A native generic graph is a product-scope expansion.
+  extension concepts. A general graph store is a product-scope expansion.
   **P-1 decision #1 is an explicit charter ADR** — this plan does not
   proceed on implication.
 - (Correction from v1: `internal/storage/domain` is UOW-specific machinery
@@ -165,7 +181,7 @@ and is the requirements list for any C-lane path.
 | Edge versioning | Every Link carries its own revision; owned-Link mutations version the source | Dependencies carry no revision; dependency edits never touch the source Issue's `row_lock`; `Metadata` is a `string`, surrogate `ID` populated only on some read paths | S2 killers #2 and #3; no owned-links concept exists |
 | Snapshot reads | Collection cursors continue ONE logical projected snapshot across requests, bound to an authorization view | Per-call read transactions (`withReadTx`); offset pagination finalized above storage; "read-only" paths write (defer-wake); `OpenForReadOnlyCommand` returns a writable store | BDP Read semantics need a new snapshot port; existing role readers cannot serve it |
 | Authorization | Per-request Authorization View — a closed projection, closed over owned Links; uniform 404 nondisclosure | Bearer token grants the whole surface; no identity, no scopes, no view concept | View mapping is a P-1 design, not a translation |
-| Deletion lifecycle (Read profile) | Logical identity non-reuse survives deletion; `resource-pruned`/`resource-erased` disclosure vocabulary on reads | Deletion frees the ID for reuse; no disclosure vocabulary | The gone-family Read contract must be built native |
+| Deletion lifecycle (Read profile) | Logical identity non-reuse survives deletion; `resource-pruned`/`resource-erased` disclosure vocabulary on reads | Deletion frees the ID for reuse; no disclosure vocabulary | The gone-family Read contract must be built in the graph store |
 | Deletion lifecycle (Transactional) | Deletion results report deleted identity; tombstones and erasure records propagate on the changefeed | No tombstones; no erasure machinery | Transactional-profile obligations; arrive with P3 writes |
 | Changefeed (Transactional profile) | Change Groups at Scope positions, projection advances, erasure records, no-Event erasures | The journal has a frozen vocabulary limited to Issue/Dependency/Comment payloads, emitted structurally inside issue mutations | Frozen journal stays untouched; the graph gets its own changefeed (§4 matrix) |
 | Content model | One authored JSON properties OBJECT per Resource, schema-validated per Type | Typed columns (status enums, priority int, timestamps) plus a `Metadata` blob | The column→properties mapping is a design artifact (the C lane inherits §5's table) |
@@ -257,13 +273,13 @@ bd serve (HTTP/BDP)              generated DTOs; error→Problem mapping
 ScopeResolver                    ← OUTER authority seam: picks workspace/store,
       │                            authorization view, and ONE ReadSnapshot
 graphops.Scope (per snapshot)    ← the "trait"
-      ├─ nativestore             ← v0: S1 tables, the only realization
-      ├─ (unionscope + issueproj)← C-lane future, when Issues move native
+      ├─ graphstore              ← v0: S1 tables, the only realization
+      ├─ (unionscope + issueproj)← C-lane future, when Issues move into the graph store
       └─ (tests, CLI later)
 ```
 
 **ReadSnapshot is a first-class port**: one SQL transaction (or UOW unit)
-backs all reads a request makes against the native store. BDP cursors must
+backs all reads a request makes against the graph store. BDP cursors must
 continue one logical projected snapshot; per-call `withReadTx` role reads
 cannot provide that, so graph reads run their own snapshot-scoped queries.
 Cursors bind (snapshot, view). Graph reads never call readiness roles and
@@ -297,21 +313,22 @@ the notifying UOW provider, and `bd serve`'s narrow role source.
 (The resolver PAIR — `ResolveGraphReadSource` for the store arm,
 `ResolveGraphReadSourceFromUOW` for the provider arm — is the name; P1
 uses both.)
-P-legs are the real ones — with the transport distinction the tree
+Realization legs in tree — with the transport distinction the tree
 enforces: **`bd serve` refuses embedded Dolt permanently** (its commit
 protocol cannot satisfy the server's per-request atomicity contract,
 `cmd/bd/serve.go:546`); it serves from server-Dolt/UOW **and registered
-backends' store sources** (`serve.go:563`) — transport claims scope to what
-serve actually accepts, not to a two-item list.
-**Embedded Dolt is a `graphops` storage-contract conformance leg, not a
-`bd serve` transport leg**; serving BDP from an embedded workspace would
-require a separately ruled read-only listener with its own snapshot
-contract, out of scope here. (SQLite removed from the plan.) If out-of-tree
-backends may implement the capability, `graphops` types get public aliases
-to satisfy `backend/`'s completeness guard; until then the capability is
-documented in-tree-only.
+backends' store sources** (`serve.go:563`). **Embedded Dolt is a
+storage-contract conformance leg, not a `bd serve` transport leg**; serving
+BDP from an embedded workspace would need a separately ruled read-only
+listener. (SQLite removed from the plan.) **And any registered provider
+implementing the graph contract is a first-class leg** — proven by the same
+conformance suite the Dolt realization must pass. Accordingly the graph
+capability is part of the PUBLIC `backend/` contract from P1: `graphops`
+types get public aliases, `GraphCapable` becomes a completeness-guard root,
+and the graph suite is a conformance family from the start (ruling 9 flips
+the earlier "in-tree-only until opened" hedge).
 
-Native persistence (substrate S1): new `beads`/`links` tables in the normal
+Graph-store persistence (substrate S1): new `beads`/`links` tables in the normal
 migration series, **plus the Type Descriptor store**: descriptors are
 persisted rows (not compiled-in Go values), because every Read Scope must
 advertise `types/` and mutation authorities must retain the pinned
@@ -322,13 +339,21 @@ in each phase (P1 persistence + serving, P2 the pinned Type scenarios,
 P3 write-time contract validation). Revision minting gated on semantic
 change (no-op preserves revision); owned-Link version coupling enforced in
 the write transaction.
-Where this plan says "ledger" it now means exactly one thing: the NATIVE
-allocation/tombstone table written inside native write transactions (the
+Where this plan says "ledger" it now means exactly one thing: the GRAPH-STORE
+allocation/tombstone table written inside graph write transactions (the
 journal-counter pattern the tree already demonstrates). The deleted
 read-time revision ledger does not return; no projection ledger exists
 because no projection exists.
 
 ### The storage interfaces, concretely
+
+**The level at which this is defined (ruling 9):** the graph contract lives
+at the **normalized storage abstraction** — the `backend/`-level contract —
+and any storage provider realizing it is the graph store for the Scopes it
+holds. Everything below that names Dolt, `withReadTx`, `NewUOW`, or
+`RunTxRead` is the **in-tree reference realization**, not the definition:
+other providers (bts-rs's stores, out-of-tree backends) implement the same
+contract and pass the same graph conformance suite.
 
 How the graph attaches to the existing storage architecture, member by
 member — and what changes where:
@@ -466,15 +491,14 @@ cmd/bd/serve role-source table                      ← one concrete hook peel,
    `ResolveGraphReadSourceFromUOW` for the provider arm — `serve.go`
    assembles from both).
 
-6. **`backend/` (out-of-tree implementers): additive, and precise about
-   the existing machinery.** Today `RunAll` never exercises the optional
+6. **`backend/` (all providers): public from P1, precise about the
+   existing machinery.** Today `RunAll` never exercises the optional
    capability families — `RunUnsupportedContract` proves their typed
-   refusals instead. The graph contract therefore arrives as its own
-   suite beside them (the P1 graph-storage conformance suite), with a
-   refusal contract for non-capable stores. If and when the capability
-   is opened out-of-tree, `GraphCapable` becomes a new ROOT of the
-   public completeness guard (not merely a set of aliases) — until then
-   it is in-tree-only, per claim 1.
+   refusals instead. The graph contract arrives as its own suite beside
+   them (the P1 graph-storage conformance suite) with a refusal contract
+   for non-capable stores; `GraphCapable` is a completeness-guard ROOT and
+   `graphops` types carry public aliases from P1, because providers other
+   than Dolt are first-class targets (ruling 9), not a later opening.
 
 7. **`issueops`, the journal, sync, and every legacy role: untouched.**
    The graph store is a sibling under the same DoltStore, not a layer
@@ -487,12 +511,12 @@ Each row is policy decided in P-1, not discovered in CI. "Byte-identical
 legacy behavior" scopes to **legacy-only data and operations**; rows are
 split by topology where the tree differs:
 
-| Surface | Legacy behavior (verified) | Native graph policy (proposed) |
+| Surface | Legacy behavior (verified) | Graph-store policy (proposed) |
 | --- | --- | --- |
 | Dolt push/pull (server + embedded) | rows travel; embedded pushes directly | graph rows travel identically |
-| Merge settlement | `versioncontrolops/mergesettle.go` already settles metadata, dependencies, migrations, config, issues, labels, comments, and events, with seven-table FK-cascade repair — conflict dispatch is a hard-coded switch, separate from an always-considered FK-repair pass; NOTE `MergeWithStrategy` returns early on clean merges and plain `Merge` bypasses settlement entirely | native graph settlement must be **centralized so every merge entry point runs it** (clean-merge early-returns and plain `Merge` included — enumerate or funnel the routes): identity/endpoint integrity, dangling-Link detection, owned-Link invariant validation. A pass can reject or quarantine invalid imported state; it CANNOT serialize two independently accepted `max`-violating writes after the fact — hence decision 9: BDP writes flow through one serving authority per Scope, and foreign-clone merges of graph tables are out-of-contract (quarantined on detection) |
+| Merge settlement | `versioncontrolops/mergesettle.go` already settles metadata, dependencies, migrations, config, issues, labels, comments, and events, with seven-table FK-cascade repair — conflict dispatch is a hard-coded switch, separate from an always-considered FK-repair pass; NOTE `MergeWithStrategy` returns early on clean merges and plain `Merge` bypasses settlement entirely | graph settlement must be **centralized so every merge entry point runs it** (clean-merge early-returns and plain `Merge` included — enumerate or funnel the routes): identity/endpoint integrity, dangling-Link detection, owned-Link invariant validation. A pass can reject or quarantine invalid imported state; it CANNOT serialize two independently accepted `max`-violating writes after the fact — hence decision 9: BDP writes flow through one serving authority per Scope, and foreign-clone merges of graph tables are out-of-contract (quarantined on detection) |
 | Federation type-filtering | **server-topology-specific**; deletes `issues` rows by type | graph tables get their own filter hook per topology; filtering one endpoint must also drop/deny the Link (never emit a dangling edge) |
-| Journal (frozen v0 vocabulary) | Issue/Dependency/Comment payloads only | **native graph events are excluded**; a separate graph changefeed carries them; the frozen vocabulary is not extended |
+| Journal (frozen v0 vocabulary) | Issue/Dependency/Comment payloads only | **graph events are excluded**; a separate graph changefeed carries them; the frozen vocabulary is not extended |
 | Export/JSONL (contract class) | contractual shapes | graph gets its own export lane; legacy shapes untouched |
 | Backup | whole-database state (a different contract class from export) | graph tables ride along by construction |
 | Wisps | private/transient; excluded from export/federation by default | **P-1 policy decision** — excluded from BDP serving in v0 (proposed) |
@@ -511,18 +535,18 @@ subordinate to the outer authority seam, snapshot-scoped, and:
 - **Duplicate full Resource ID across legs is an integrity error, never
   precedence.** The v1 "native first, then legacy" shadowing is withdrawn.
 - **Namespace AND ledger — they answer different laws (round-2
-  correction):** a reserved native namespace prevents *collisions*; it does
+  correction):** a reserved graph-store namespace prevents *collisions*; it does
   nothing for *lifetime identity non-reuse* (a deleted projected Issue ID
   must never be reassigned — BDP's no-URL-reassignment law survives
   deletion and epoch changes). So: namespace disjointness for allocation,
   PLUS a durable allocation/tombstone guarantee behind every exposed URL,
-  native and projected — covering legacy import's same-ID UPSERT and
+  graph-store and projected — covering legacy import's same-ID UPSERT and
   Dependency delete/recreate reuse. And an **eligibility policy for legacy
   IDs** (P-1): an issue ID that is not a canonical BDP path segment is
   omitted, mapped to a stable surrogate, or fails Scope projection — ruled,
   not improvised (current validation checks prefix shape, not BDP grammar).
 - **Cross-realization Links** (C-lane decision when projection returns):
-  if a native Link may target a projected Issue, every legacy deletion
+  if a graph Link may target a projected Issue, every legacy deletion
   needs a graph coordinator hook (else dangling edges); if forbidden, the
   Type constraints must say so. Moot in v0 — nothing legacy is served.
 - Multi-repo routing stays where it is — `ScopeResolver` wraps the existing
@@ -570,16 +594,16 @@ timestamp ties, stale restores, arbitrary SQL, and identity resurrection
 cannot be projected into BDP's revision and identity laws by any read-side
 mechanism.** So v0 withholds the projection:
 
-- The v0 BDP Scope serves **native beads and links only**.
+- The v0 BDP Scope serves **graph beads and links only**.
 - Issues keep their existing surfaces (CLI, REST v0, JSONL) untouched.
 - Issues join the graph when storage unification (Option C) moves them
-  into the native store — where operation-local revisions and durable
+  into the graph store — where operation-local revisions and durable
   identity are properties of the write path, not reconstructions. The
   union composite and this section's counterexample record are the design
   input for that future lane.
 - The `unionscope`/`issueproj` machinery drops out of v0 scope; the
   authority seam (`ScopeResolver`: workspace, view, one ReadSnapshot) and
-  `GraphReadSource` remain — they serve the native store.
+  `GraphReadSource` remain — they serve the graph store.
 
 ### The C lane: paths to Issues/Dependencies on the graph (informative)
 
@@ -591,10 +615,10 @@ storage layer.** Read-side reconstruction is proven impossible. That yields
 three paths:
 
 - **C1 — Funnel with a legacy compat shim** (the operator's sketch): Issues
-  and Dependencies become native beads/links; the legacy surfaces (CLI
+  and Dependencies become graph beads/links; the legacy surfaces (CLI
   verbs, REST v0, JSONL, journal, sync) are reimplemented as a compat
   adapter OVER the graph store, reproducing legacy behavior byte-for-byte.
-  Versioning is uniform because every mutation goes through the native
+  Versioning is uniform because every mutation goes through the graph store's
   write path. The crux is what "keep the current code path" means at the
   storage layer: if legacy code keeps writing legacy TABLES, the bypasses
   persist and uniformity fails; so C1 means legacy *behavior* preserved
@@ -633,15 +657,15 @@ changes v0.
 ## 6. Addressing
 
 One workspace = one Scope. Scope URL scheme is a P-1 decision (config key
-vs derived). Native IDs mint under BDP creation-time rules (supplied
-multi-segment or generated flat, reject-don't-trim) against the native
+vs derived). Graph-bead IDs mint under BDP creation-time rules (supplied
+multi-segment or generated flat, reject-don't-trim) against the graph-store
 allocation/tombstone ledger. No legacy IDs are served in v0.
 
 ## 7. Phasing (re-sequenced per review; each phase exits green)
 
 - **P-1 — Decisions and pins (no code):** charter ADR; ratify the
-  projection withdrawal (v0 Scope = native only); Scope URL/identity;
-  native allocation/tombstone design; serving authority; replication
+  projection withdrawal (v0 Scope = graph store only); Scope URL/identity;
+  graph-store allocation/tombstone design; serving authority; replication
   matrix rows; auth-view mapping for bearer-token reality;
   listener/authority-semantics choice. (The BDP pin is already written in
   §0.) *Exit: every row ruled by Donna, recorded in this doc.*
@@ -649,7 +673,7 @@ allocation/tombstone ledger. No legacy IDs are served in v0.
   domain values (`Properties`, `Ref` sum, records); pure validators; typed
   error vocabulary. *Exit: model laws 100% table-tested; DTO round-trip
   against pinned schema fixtures.*
-- **P1 — Native read storage (S1):** tables + migrations (descriptor
+- **P1 — Graph read storage (S1):** tables + migrations (descriptor
   store included); typed snapshot-source resolution (`GraphReadSource`)
   with single-request snapshot consistency and the zero-legacy-writes
   regression (defer-wake); the resolver pair across the storage legs —
@@ -664,7 +688,7 @@ allocation/tombstone ledger. No legacy IDs are served in v0.
   green on all legs (descriptor persistence AND inventory serving
   included); cross-request cursor stability is explicitly NOT a P1
   claim.*
-- **P2 — Protocol Read over the native store:** snapshot-bound cursors —
+- **P2 — Protocol Read over the graph store:** snapshot-bound cursors —
   including the **cross-request continuation mechanism** BDP requires
   (later requests continue the same selected set, projection, and
   revisions): a durable snapshot registry, materialized result sets, or
@@ -710,31 +734,53 @@ of that.
 
 ## 9. Decisions requested from Donna (the P-1 list)
 
-1. **Charter ADR:** does beads core own a general BDP graph (v0: native
-   beads/links beside untouched Issues), or is the work deferred entirely?
-2. **Substrate:** settled for v0 — S1 (§5); ratify.
-3. **Native allocation/tombstone design** (§4): the native write path owns
+1. **Charter — RULED (2026-09-02): core.** The charter amendment FOLLOWS
+   working bits (the maintainers' own precedent: the charter file changes
+   when implementation lands). Its scope: *the bead graph expands to
+   include non-work-tracking information* (wisps being the existing
+   example) — a generalization of what beads already is, not a second
+   product surface.
+2. **Substrate — RULED: S1** (graph tables: beads, links, Type
+   Descriptors, allocation/tombstone ledger, authority marker).
+3. **Graph-store allocation/tombstone design** (§4): the graph store's write path owns
    a durable allocation/tombstone table (journal-counter pattern);
    committed URLs are never reassigned. (Namespace-vs-issue-grammar and
    legacy-ID eligibility move to the C lane with the projection.)
 4. *(Moved to the C lane — cross-realization Links cannot arise in v0;
    see §5's historical record.)*
-5. **Ratify the projection withdrawal** (v0 Scope serves native beads and
-   links only; Issues and Dependencies join via the C lane) — §5's
-   round-5 counterexample record is the evidence base.
+5. **Projection withdrawal — RULED: ratified.** The v0 Scope serves graph
+   beads and links only; Issues, Dependencies, and wisps keep their
+   existing surfaces and join via the C lane (wisps inherit every Issue
+   counterexample — they are plane-routed Issues).
 6. **Wisps**: moot for v0 serving (nothing legacy is served); recorded as
    a C-lane visibility decision.
-7. **Scope URL scheme**; and the listener question restated properly: not
-   "same port or new," but which choice preserves today's bearer-auth and
-   project-identity semantics unchanged while carrying the P-1
-   authorization-view mapping (no view concept exists today — §2).
+7a. **Scope URL scheme — RULED:** mirror BDP's pinned startup contract.
+   An explicit `bdp.scope_url` (`BDP_SCOPE_URL`) is required to serve a
+   real Scope; a `local-test` URL derived from the listener is permitted
+   only under an explicit development mode and is never persisted as
+   identity; the URL is persisted in the graph store beside the authority
+   marker; never derived from a git remote or workspace path; one Scope
+   per workspace, path-distinguished under one host.
+7b. **Listener** (open): not "same port or new," but which choice preserves
+   today's bearer-auth and project-identity semantics unchanged while
+   carrying the P-1 authorization-view mapping (no view concept exists
+   today — §2).
 8. **Journal/changefeed:** ratify "frozen v0 journal untouched; separate
    graph changefeed."
-9. **Serving authority per Scope** (round-4): BDP excludes independently
-   writable replicas and multi-authority merge from one Scope history.
-   Rule one of: a single serialized serving authority per canonical Scope
-   URL (proposed), or distinct Scope URLs for independently writable
-   clones.
+9. **Serving authority — RULED (corrected model):** the authority is the
+   graph store *as reached through the normalized storage abstraction*,
+   whichever provider realizes it — not `bd serve`, and not Dolt. The
+   authority marker (Scope URL + authority id, minted at graph init),
+   single-serialized history, non-authority refusal (of graph writes AND
+   BDP serving for that URL), and the snapshot lease are graph-CONTRACT
+   obligations proven by the graph conformance suite; the CLI graph verbs
+   and the BDP handler are both clients of that abstraction, so they are
+   one authority on any provider. Dolt is the in-tree reference
+   realization. Promotion is explicit and epoch-rotating. Consequence: the
+   graph is single-authority while Issues stay multi-clone-mergeable —
+   graph writes on a non-authority instance refuse with a typed error.
+   Replica *reads* from a non-authority instance are deferred until BDP
+   defines replica labeling (candidate note for gastownhall/beads#6051).
 10. *(Absorbed into decision 5 — the round-5 review closed this fork:
    withholding is the only conformant option.)*
 11. **Restore vs identity** (round-6): a whole-database restore of an older
@@ -744,10 +790,10 @@ of that.
    state), or canonical Scope-URL rotation on any identity-losing restore.
    An epoch change alone is insufficient.
 12. **Empty-at-birth Scope policy** (round-6): for an existing legacy-only
-   workspace, either advertise an honest EMPTY native Scope (stable URL;
+   workspace, either advertise an honest EMPTY graph Scope (stable URL;
    required `beads/`, `links/`, `types/` all present and empty), or
    advertise no BDP Scope until explicit graph initialization
    (`bd graph init`, proposed). Either way: tests prove legacy Issues
-   never leak into native inventories, and a registered backend without
+   never leak into graph inventories, and a registered backend without
    `GraphReadSource` keeps its existing `bd serve` behavior — BDP routes
    absent, never a startup failure.
