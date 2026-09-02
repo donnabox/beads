@@ -1,7 +1,8 @@
 # BDP in beads: the bead-graph plan
 
-**Status:** Draft v7 — feat/bead-graph (seven adversarial review rounds;
-round 7 verdict SOUND; v6 withdrew the Issue projection from v0 on
+**Status:** Draft v8 — feat/bead-graph (nine adversarial review rounds:
+1–7 on the whole plan, verdict SOUND at round 7; 8–9 focused on the
+storage-interfaces addition; v6 withdrew the Issue projection from v0 on
 review-round-5 counterexamples)
 **Date:** 2026-09-02 (v1: 2026-08-31)
 **Owners:** Donna Box (ruling), janet (drafting/implementation)
@@ -282,8 +283,10 @@ follows that model — targeted single-layer peels, each named in the result:
 ```go
 // GraphReadSource is what a plumbing stack must yield to serve graph
 // reads: the snapshot opener plus the telemetry it must retain.
-func ResolveGraphReadSource(s storage.Storage) (GraphReadSource, bool)
-func ResolveGraphReadSourceFromUOW(p uow.UnitOfWorkProvider) (GraphReadSource, bool)
+// (Full contract in "The storage interfaces, concretely" below:
+// ErrGraphUnsupported = absence; any other error = operational failure.)
+func ResolveGraphReadSource(s storage.Storage) (GraphReadSource, error)
+func ResolveGraphReadSourceFromUOW(p uow.UnitOfWorkProvider) (GraphReadSource, error)
 ```
 
 With regression tests mirroring `vc_recompute_test.go` for: hook+telemetry
@@ -350,14 +353,20 @@ cmd/bd/serve role-source table                      ← one concrete hook peel,
    separate, optional interface:
 
    ```go
-   package storage
+   package graphops
+   type Store = GraphReadSource // v0 alias: the read surface IS the
+                                // store; write roles widen it in P3
 
-   // graphops.Store is, for v0, exactly the read surface: it IS a
-   // GraphReadSource (OpenSnapshot); write roles join it in P3.
+   package storage
    type GraphCapable interface {
        BeadGraph() (graphops.Store, error) // error = operational failure,
    }                                       // never "unsupported"
    ```
+
+   (`graphops` owns `Store`, `GraphReadSource`, `ReadSnapshot`, and
+   `Scope`; the UOW adapter satisfies them by constructing a
+   `ReadSnapshot` over the transaction a direct `NewUOW` owns, answering
+   `graphops.Scope` queries from that one transaction.)
 
    `*dolt.DoltStore` implements it concretely. Exposure policy, settled:
    **in-tree-only for v0** — out-of-tree implementation arrives only when
@@ -431,8 +440,13 @@ cmd/bd/serve role-source table                      ← one concrete hook peel,
    route-registration seam. `ErrGraphUnsupported` leaves BDP routes
    unregistered (existing serve behavior exactly as before); an
    operational error still aborts; and capability-present-but-graph-
-   uninitialized is a THIRD state served per decision 12's
-   empty-at-birth ruling, never conflated with absence.
+   uninitialized is a THIRD state with its own explicit representation,
+   surfaced per whichever branch of decision 12 is ruled (honest empty
+   Scope, or no routes until `bd graph init`) — never conflated with
+   absence. The optional field is populated via the source-appropriate
+   resolver (`ResolveGraphReadSource` for the store arm,
+   `ResolveGraphReadSourceFromUOW` for the provider arm — `serve.go`
+   assembles from both).
 
 6. **`backend/` (out-of-tree implementers): additive, and precise about
    the existing machinery.** Today `RunAll` never exercises the optional
