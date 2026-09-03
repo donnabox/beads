@@ -1,10 +1,10 @@
 # BDP in beads: the bead-graph plan
 
-**Status:** Draft v19 — feat/bead-graph — **P-1 REOPENED** for the W-arch amendments A1–A9 (§9); P0 code is BLOCKED until they are ruled. (Thirteen adversarial review rounds:
+**Status:** Draft v20 — feat/bead-graph — **P-1 REOPENED** for the W-arch amendments A1–A9 (§9); P0 code is BLOCKED until they are ruled. (Thirteen adversarial review rounds:
 1–7 on the whole plan, SOUND at round 7; 8–13 on the storage-interfaces
 section, SOUND-ADDITION at round 13; v6 withdrew the Issue projection from
 v0 on review-round-5 counterexamples; v9–v11 record the P-1 ruling tranches — all
-twelve decisions are ruled; v14–v19 reopen P-1 for the nine amendments)
+twelve decisions are ruled; v14–v20 reopen P-1 for the nine amendments)
 **Date:** 2026-09-02 (v1: 2026-08-31)
 **Owners:** Donna Box (ruling), janet (drafting/implementation)
 **References:** the BDP spec (gastownhall/bdp `docs/specs/bdp.md`), beads#6051,
@@ -756,7 +756,7 @@ allocation/tombstone ledger. No legacy IDs are served in v0.
 > *boundaries* stand: P0 contracts + pinned wire, P1 storage (roles,
 > bodies, migrations, conformance; the replication/merge ADR is a P1
 > gate), P2 serving (BDP rows inside `httpapi`; collection routes after the
-> cursor ADR), P3 writes. **P0 is blocked until A1–A8 are ruled.**
+> cursor ADR), P3 writes. **P0 is blocked until A1–A9 and the two decisions are ruled.**
 
 - **P-1 — Decisions and pins (no code):** charter ADR; ratify the
   projection withdrawal (v0 Scope = graph store only); Scope URL/identity;
@@ -826,7 +826,7 @@ each owning its own writeup:
 
 - **W-arch** — DONE to v3 (2026-09-02): `BDP_GRAPH_ARCHITECTURE.md` and
   `BDP_GRAPH_CLI_AND_STORAGE_SPEC.md`, two council rounds; eight ruling
-  amendments (A1–A8) and two new decisions pending in §9. Precedes P0 code.
+  amendments (A1–A9) and two new decisions pending in §9. Precedes P0 code.
 - **W1** — flesh out the **Update and Transactional profiles** of BDP and
   the reference implementations (the protocol is Read-heavy today); this is
   the upstream gate for P3 writes.
@@ -926,9 +926,9 @@ of that.
    a provider without the capability keeps existing `bd serve` behavior —
    routes absent, never a startup failure.
 
-### Amendments proposed by W-arch v8 (2026-09-02) — PENDING RULING
+### Amendments proposed by W-arch v9 (2026-09-02) — PENDING RULING
 
-Raised by six three-reviewer councils on the W-arch docs (the lease fence and
+Raised by seven three-reviewer councils on the W-arch docs (the lease fence and
 the ledger counter are probe-confirmed on Dolt 2.1.8); each changes
 ratified text above, so none takes effect until ruled. Full rationale and
 evidence: `BDP_GRAPH_ARCHITECTURE.md` §2b.
@@ -938,7 +938,9 @@ evidence: `BDP_GRAPH_ARCHITECTURE.md` §2b.
   this workspace's witness (a clone-local file) and the body asserts it
   *inside its transaction* — Scope row identity, hash-chained ledger head
   (exact prefix), the fencing cell (a mutation must UPDATE it and see one
-  affected row), and the graph-state version (per-table hashes). **No
+  affected row; a protected read first self-regrants ephemerally and then
+  requires an unexpired lease inside its transaction), and the graph-state
+  version (per-table hashes). **No
   request type carries authority fields.** The cursor type is opaque from
   P1.
 - **A2 (rulings 7b, 12).** BDP routes are a conditional second table inside
@@ -1011,13 +1013,17 @@ evidence: `BDP_GRAPH_ARCHITECTURE.md` §2b.
   unpublished and retry. Hazard-R reads require a fresh remote observation
   compared against the workspace's witness; the serving watcher is a
   `held → renewing → lost` state machine that disables the BDP rows
-  atomically. Both hazards → both fences; **in-place promotion requires the
-  lease row `Mint` created on this database** — its only creator — so a
-  clone that received the Scope row by replication, or a copied data
-  directory under a second `sql-server`, promotes only with `--rotate-url`.
-  `promote`, `rotate`, and `types install` take the shared workspace gate
-  and rely on the lease, so they run beside a live server; `restore` and
-  `ledger apply` take the exclusive gate. Force-push routes bypass the
+  atomically. Both hazards → both fences. **A lease row is not proof of "minted
+  here"** (`DOLT_BACKUP` restore and a directory copy carry the working set;
+  `@@server_uuid` is per machine — probed), so in-place promotion is either
+  a **self-regrant** by the workspace the lease names or an operator
+  **`--steal`** (an assertion of "same database", in the class of
+  force-push); a foreign holder's expiry alone never grants a takeover;
+  `--rotate-url` is the bootstrap for clones, copies, and restores; a
+  physical database copy is the stated operator-managed hazard. `promote`
+  and `rotate` take the shared workspace gate and rely on the lease, so they
+  run beside a live server; `types install`, `restore`, and `ledger apply`
+  take the exclusive gate. Force-push routes bypass the
   fence as operator acts.
 - **A8 (§1 constraint #1; ruling 12) — NEW, two options.** **A
   (recommended):** constraint #1 scoped to *behavior* (byte-identical gate
@@ -1039,13 +1045,15 @@ evidence: `BDP_GRAPH_ARCHITECTURE.md` §2b.
   via the ledger lane). The graph tables still replicate through push/pull;
   the validator refuses foreign deltas. What remains of A7 is the lease
   alone — one arbiter, one lease, one counter — and the only serving
-  topology already is the SQL-server workspace. Cut sheet if ruled: only a
-  shared database can mint, promote, rotate, install, write, read, or
-  serve; the embedded and registered-store arms refuse every authority
-  operation (the embedded leg exists only as the `bdp.client: server`
-  host); a remote neither grants nor removes authority; the lease row `Mint`
-  creates is the sole proof of "minted here"; every hazard-R passage is
-  excluded.
+  topology already is the SQL-server workspace. Cut sheet if ruled — the topology matrix: a shared database that minted
+  locally is authoritative regardless of any configured remote; one that
+  received the Scope row by replication, restore, or copy without a valid
+  local authority refuses (`--rotate-url` or `--steal`); the embedded and
+  registered-store arms refuse every local authority operation (the embedded
+  leg exists only as the `bdp.client: server` host; client-mode reads stay
+  allowed); a remote neither grants nor removes authority; every hazard-R
+  passage is excluded, while the default-branch rule for the ignored lease
+  table stays.
 
 Two decisions the plan does not yet contain, surfaced for ruling:
 
