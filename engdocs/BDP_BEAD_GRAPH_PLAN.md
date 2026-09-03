@@ -1,10 +1,10 @@
 # BDP in beads: the bead-graph plan
 
-**Status:** Draft v18 — feat/bead-graph — **P-1 REOPENED** for the W-arch amendments A1–A9 (§9); P0 code is BLOCKED until they are ruled. (Thirteen adversarial review rounds:
+**Status:** Draft v19 — feat/bead-graph — **P-1 REOPENED** for the W-arch amendments A1–A9 (§9); P0 code is BLOCKED until they are ruled. (Thirteen adversarial review rounds:
 1–7 on the whole plan, SOUND at round 7; 8–13 on the storage-interfaces
 section, SOUND-ADDITION at round 13; v6 withdrew the Issue projection from
 v0 on review-round-5 counterexamples; v9–v11 record the P-1 ruling tranches — all
-twelve decisions are ruled; v14–v18 reopen P-1 for the nine amendments)
+twelve decisions are ruled; v14–v19 reopen P-1 for the nine amendments)
 **Date:** 2026-09-02 (v1: 2026-08-31)
 **Owners:** Donna Box (ruling), janet (drafting/implementation)
 **References:** the BDP spec (gastownhall/bdp `docs/specs/bdp.md`), beads#6051,
@@ -522,10 +522,10 @@ cmd/bd/serve role-source table                      ← one concrete hook peel,
 
 ### Lifecycle commands (ruling 12)
 
-> **Spelling amended by W-arch v2 (pending ruling A2/A3/A6):** `bd
-> bdp-serve` → `bd bdp serve` (a thin command over the same `httpapi`
-> server; `bd serve` mounts the BDP rows when `bdp.scope_url` is
-> configured); graph verbs under `bd bdp …`; `bdp.scope_url` lives in
+> **Spelling amended by W-arch (pending ruling A2/A3/A6):** `bd
+> bdp-serve` → `bd bdp serve` (the strict, minting command over the same
+> `httpapi` server; `bd serve` mounts the BDP rows only when it holds an
+> already-minted Scope); graph verbs under `bd bdp …`; `bdp.scope_url` lives in
 > tracked `config.yaml`, the per-workspace `bdp.client`/`bdp.server` in
 > untracked `config.local.yaml` (nothing in `metadata.json`). Detail:
 > `BDP_GRAPH_CLI_AND_STORAGE_SPEC.md` Part A.
@@ -542,9 +542,10 @@ client:
    serves an already-minted Scope it holds** (as amended by A2/A7,
    pending): on its first serve under a configured `bdp.scope_url` (ruling
    7a) `bd bdp serve` mints the Scope row, the `mint` ledger event, and the
-   built-in Type catalog in one **two-phase, fenced** transaction (a shared
-   database: the dolt-ignored authority lease; a configured remote: fetch →
-   ancestor check → scoped commit → push), finalizes this workspace's
+   built-in Type catalog in one **multi-phase, fenced** transaction (a shared
+   database: the dolt-ignored authority lease with its fence cell; a
+   configured remote — *deferred under A9*: fetch → ancestor check → scoped
+   commit → push), finalizes this workspace's
    authority witness, and serves the Scope — honestly empty at birth, with
    `beads/`, `links/`, and `types/` all present. Because the Scope URL is a
    tracked project fact, **only `bd bdp serve` mints**: a plain `bd serve` on
@@ -925,9 +926,10 @@ of that.
    a provider without the capability keeps existing `bd serve` behavior —
    routes absent, never a startup failure.
 
-### Amendments proposed by W-arch v7 (2026-09-02) — PENDING RULING
+### Amendments proposed by W-arch v8 (2026-09-02) — PENDING RULING
 
-Raised by five three-reviewer councils on the W-arch docs; each changes
+Raised by six three-reviewer councils on the W-arch docs (the lease fence and
+the ledger counter are probe-confirmed on Dolt 2.1.8); each changes
 ratified text above, so none takes effect until ruled. Full rationale and
 evidence: `BDP_GRAPH_ARCHITECTURE.md` §2b.
 
@@ -956,8 +958,10 @@ evidence: `BDP_GRAPH_ARCHITECTURE.md` §2b.
   bound to an installation key (a per-installation id under the user config
   dir plus the canonical path — never the hostname or the shared project
   id), written under a bounded exclusive lock with monotone
-  read-modify-write and directory fsync, with **two-phase transitions**
-  (mint, promote, rotate, ledger apply) recovered on the next load; the
+  read-modify-write and directory fsync, with **multi-phase transitions**
+  (mint, promote, rotate, ledger apply) carrying a durable operation id and
+  recovered on the next load by evidence (the ledger, then the remote), with
+  a descendant-aware witness advance; the
   manager ensures the ignore entries and refuses a git-tracked path. The
   ledger is an append-only, hash-chained event table with a single-row
   sequence counter (Dolt's `FOR UPDATE` is a no-op); the witness records
@@ -988,26 +992,33 @@ evidence: `BDP_GRAPH_ARCHITECTURE.md` §2b.
   predicate — rewriting `fence` with a fresh random value, because Dolt
   merges transactions cell by cell (probed): only a same-cell-different-
   value write is a serialization loser, so every lease write collides on
-  that one cell; the ledger counter writes a random allocation nonce for
+  that one cell — probe-confirmed; a mutation extends `expires_at`, so an
+  expired lease still naming this workspace self-regrants (a restart needs
+  no promotion); the ledger counter writes a random allocation nonce for
   the same reason (a bare increment converges); **a configured remote** → every replicated mutation (mint,
   promote, rotate, install, ledger apply, P3 writes) runs through one
   provider primitive: `DOLT_FETCH` → remote-tracking HEAD must be an
   ancestor of local HEAD → the fenced transaction → a scoped commit
   (`DOLT_ADD` graph tables; a new `RunTxScopedResult`, since the UOW commit
   hardcodes `-Am`) → `DOLT_PUSH` with a typed lift of the tree's
-  `pushRacePattern`; on a race the remote-tracking ref's ledger head is
-  compared (never the `(authority_id, epoch)` tuple alone, which a
-  same-witness twin shares) — any difference fails closed and is undone (soft reset + per-table checkout
-  when HEAD is still the operation commit, `DOLT_REVERT` otherwise; never a
-  hard reset), issue-plane-only divergence keeps the commit as "sync
-  required"; other failures keep the commit as unpublished and retry.
-  Hazard-R reads require a fresh remote observation; the serving watcher is
-  a `held → renewing → lost` state machine that disables the BDP rows
-  atomically. Both hazards → both fences; **no configured remote ⇒ not promotable in
-  place on every topology** (`--rotate-url` only). Admin verbs other than
-  `restore`/`ledger apply` take the shared workspace gate and rely on the
-  lease, so they run beside a live server. Force-push routes
-  bypass the fence as operator acts.
+  the whole of `isPushRaceErr`; on a race the remote-tracking ref's ledger
+  head and the graph tables' diff are compared (never the `(authority_id,
+  epoch)` tuple alone, which a same-witness twin shares) — any graph delta
+  fails closed and is undone (soft reset, per-table unstage + checkout, and
+  a compensating lease restore when HEAD is still the operation commit;
+  `DOLT_REVERT` otherwise; never a hard reset), issue-plane-only divergence
+  keeps the commit as "sync required"; other failures keep the commit as
+  unpublished and retry. Hazard-R reads require a fresh remote observation
+  compared against the workspace's witness; the serving watcher is a
+  `held → renewing → lost` state machine that disables the BDP rows
+  atomically. Both hazards → both fences; **in-place promotion requires the
+  lease row `Mint` created on this database** — its only creator — so a
+  clone that received the Scope row by replication, or a copied data
+  directory under a second `sql-server`, promotes only with `--rotate-url`.
+  `promote`, `rotate`, and `types install` take the shared workspace gate
+  and rely on the lease, so they run beside a live server; `restore` and
+  `ledger apply` take the exclusive gate. Force-push routes bypass the
+  fence as operator acts.
 - **A8 (§1 constraint #1; ruling 12) — NEW, two options.** **A
   (recommended):** constraint #1 scoped to *behavior* (byte-identical gate
   output). Six required methods on `Storage` break **direct implementers**
@@ -1028,7 +1039,13 @@ evidence: `BDP_GRAPH_ARCHITECTURE.md` §2b.
   via the ledger lane). The graph tables still replicate through push/pull;
   the validator refuses foreign deltas. What remains of A7 is the lease
   alone — one arbiter, one lease, one counter — and the only serving
-  topology already is the SQL-server workspace.
+  topology already is the SQL-server workspace. Cut sheet if ruled: only a
+  shared database can mint, promote, rotate, install, write, read, or
+  serve; the embedded and registered-store arms refuse every authority
+  operation (the embedded leg exists only as the `bdp.client: server`
+  host); a remote neither grants nor removes authority; the lease row `Mint`
+  creates is the sole proof of "minted here"; every hazard-R passage is
+  excluded.
 
 Two decisions the plan does not yet contain, surfaced for ruling:
 

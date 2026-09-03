@@ -1,6 +1,6 @@
 # BDP graph store — CLI and storage-interface changes, in detail
 
-**Status:** Draft v7 (W-arch, after five council rounds; v7 folds the Claude reviewer's probe-backed round 5) — feat/bead-graph
+**Status:** Draft v8 (W-arch, after six council rounds; the fence cell and the counter nonce are probe-confirmed on Dolt 2.1.8) — feat/bead-graph
 **Date:** 2026-09-02
 **Companions:** `BDP_BEAD_GRAPH_PLAN.md` (rulings), `BDP_GRAPH_ARCHITECTURE.md`
 (shape; its §2b lists the proposed ruling amendments A1–A9 this spec
@@ -36,7 +36,7 @@ exhaustive Cobra-tree test **paired with a source scan** that fails on any
 | Verb | Local store | Gate | Maintenance |
 | --- | --- | --- | --- |
 | `bd bdp bead get\|list`, `link get\|list`, `types [get]`, `status` | read-only when `bdp.client: store`; **skipped entirely** when `bdp.client: server` | shared | no |
-| `bd bdp serve` | serve's classification (A3); **staged**: exclusive for the mint through a temporary source, then shared for serving | exclusive → shared (two acquisitions; the tree forbids an upgrade) | no |
+| `bd bdp serve` | serve's classification (A3); **staged**: bypasses the generic pre-run store gate (the skip-store seam), reads the Scope row under a temporary source and the shared gate, takes the exclusive gate **only when there is no Scope row** (re-checking under it), mints through a temporary source, closes it, then takes the shared gate to serve | shared → (exclusive, only for a mint) → shared; never an upgrade | no |
 | `bd bdp client` | none (writes `config.local.yaml`) | none | no |
 | `bd bdp types install`, `promote` | writable, always local | **shared** — they rely on the lease (the workspace is the holder), so they run beside a live `bd serve` | no (they commit — and publish on hazard R — explicitly) |
 | `bd bdp restore`, `ledger snapshot\|apply` | writable, always local | **exclusive** (`internal/workspacegate`, the `bd backup restore` precedent) — the server must be stopped; every store-opening command holds the gate shared for its lifetime and an exclusive acquisition names the holder after a bounded poll | no |
@@ -64,7 +64,7 @@ exhaustive Cobra-tree test **paired with a source scan** that fails on any
    `trackedRuntimePatterns` gain them, and the witness joins
    **`sensitiveFileNames`** so a tracked copy is an **error**, not a
    warning. Init paths that bypass that call (`--init-if-missing`, an
-   external `BEADS_DIR`, `--proxied-server`'s writer) are not relied on:
+   external `BEADS_DIR` — the gate is `useLocalBeads`) are not relied on:
    the witness manager ensures the entries before its first write (B3).
 
 **Registered backends:** `bd init` refuses to provision them today; their
@@ -77,14 +77,14 @@ One more `bd init` target, rerouting *above* the storage abstraction: the
 
 **Two files, by what the key is.** `config.yaml` is git-tracked by default;
 per-workspace keys go to **`config.local.yaml`** (merged by viper over
-`config.yaml` for machine-specific settings; merged only for the project
-`.beads` and only when a `config.yaml` exists; `projectConfigPathFromLoadedState`
-hard-requires the basename `config.yaml`, so the writer gets its own path
-plumbing).
+`config.yaml` for machine-specific settings; merged as the sibling of
+whichever `config.yaml` was found; the `.beads`/basename requirement is
+`yaml_config.go`'s `projectConfigPathFromLoadedState`, so the writer ensures
+a project `config.yaml` exists and gets its own path plumbing).
 
 | Key | File | Values | Notes |
 | --- | --- | --- | --- |
-| `bdp.scope_url` | `config.yaml` (tracked; yaml-only) | absolute URL | a **project** fact (ruling 7a). Settable while this workspace holds **no witness**; once it does, `bd config set` / `set-many` / `unset` refuse it (one guard in the shared `rejectProtectedConfigKey` path — a DB-free file check; a hand edit of the tracked file bypasses it, and the A3 "configured ≠ persisted" row is the real guard) and the URL changes only through `bd bdp promote --rotate-url` / `bd bdp restore`, which write it in their `config_written` phase and are refused while `BDP_SCOPE_URL` overrides it |
+| `bdp.scope_url` | `config.yaml` (tracked; yaml-only) | absolute URL | a **project** fact (ruling 7a). Settable while this workspace holds **no witness**; once it does, `bd config set` / `set-many` / `unset` refuse it (one guard in the shared `rejectProtectedConfigKey` path, which `set` and `set-many` call today and `unset` gains an explicit call to — a DB-free file check; a hand edit of the tracked file bypasses it, and the A3 "configured ≠ persisted" row is the real guard) and the URL changes only through `bd bdp promote --rotate-url` / `bd bdp restore`, which write it in their `config_written` phase and are refused while `BDP_SCOPE_URL` overrides it |
 | `bdp.authority_heartbeat` | `config.yaml` | duration (default `30s`) | hazard R *[deferred under A9]* |
 | `bdp.authority_heartbeat_grace` | `config.yaml` | count (default `3`) | hazard R *[deferred under A9]* |
 | `bdp.lease_ttl` | `config.yaml` | duration (default `30s`, renewed every third) | hazard S |
@@ -160,8 +160,10 @@ No `--dev-local-test`. Behavior, in order:
 
 1. **Classification:** `serveDatabaseSource`, verbatim; registered backend →
    rows absent (v0); embedded → refused; otherwise the UOW provider, which
-   gains a `beadsDir` field (`newSQLServerUOWProvider` receives it today and
-   drops it; `timedProvider` forwards it).
+   gains a `beadsDir` field (`cmd/bd/uow_factory.go`'s
+   `newSQLServerUOWProvider` receives it today and forwards it to the
+   journal and root resolution, but the provider struct itself keeps none;
+   `timedProvider` gains a getter).
 2. **Roles from the same source** (provider arm: the provider beneath
    `uow.UnwrapProvider`; `checkDatabaseSource`'s exactly-one-source rule
    extends to them).
@@ -176,9 +178,10 @@ No `--dev-local-test`. Behavior, in order:
    | none | none | — | exit 2 | no BDP rows, silent |
    | none | set | — | **staged mint** (A4) then serve honestly empty | no BDP rows; notice "unminted; run `bd bdp serve`" |
    | present | none / **different** | any | exit 2 / refuse | no BDP rows; notice |
-   | present, matches | matches | **absent** (clone; pull into a fresh dir; copy elsewhere — installation key mismatch) | refuse `ErrNotAuthority`; guidance `bd bdp promote` | no BDP rows; notice |
-   | present, matches | matches | **pending transition** | recovery first (B3), then re-evaluate | no BDP rows; notice (plain `bd serve` never runs recovery — it never mints, fetches, or publishes) |
-   | present, matches | matches | `(authority_id, epoch)` stale, or the lease held by another holder / expired | refuse; guidance `bd bdp promote` | no BDP rows; notice |
+   | present, matches | matches | **absent** (clone; pull into a fresh dir; copy elsewhere — installation key mismatch) | refuse `ErrNotAuthority`; guidance: `bd bdp promote` if this database holds the lease row `Mint` created (same database, moved or re-keyed workspace), otherwise `bd bdp promote --rotate-url` | no BDP rows; notice |
+   | present, matches | matches | **pending transition** | recovery first (B3, by evidence), then re-evaluate | no BDP rows; notice (plain `bd serve` never runs recovery — it never mints, fetches, or publishes; CLI reads answer `ErrNotAuthority` with the same notice) |
+   | present, matches | matches | `(authority_id, epoch)` stale, or the lease held by **another** holder | refuse; guidance `bd bdp promote` (takes an expired foreign lease, or `--steal`) | no BDP rows; notice |
+   | present, matches | matches | consistent but the lease **expired while still naming this workspace** (the server was down longer than the TTL) | **self-regrant** on the next lease write (same fence-cell predicate; no epoch change); serve | serve BDP rows |
    | present, matches | matches | ledger head not in the store (restore or different history) | refuse `ErrStateRewound`; guidance `bd bdp restore` | no BDP rows; notice |
    | present, matches | matches | `unverified` set | refuse until `bd bdp restore` | no BDP rows; notice |
    | present, matches | matches | consistent | take/renew the lease; serve | serve BDP rows |
@@ -187,13 +190,20 @@ No `--dev-local-test`. Behavior, in order:
    behind TLS termination.
 6. **Fencing while serving — the watcher state machine** (`FenceSource`):
    `held → renewing → lost`. Hazard S: the lease is renewed every third of
-   `bdp.lease_ttl` through `RunTxEphemeral` and asserted inside every
-   transaction with the full predicate (B3); a failed renewal past
-   `expires_at` is `lost`. Hazard R *[deferred under A9]*: the tracking ref
-   is fetched every `bdp.authority_heartbeat` and its **ledger head** is read
-   (`… AS OF 'origin/main'`); a head that is not this process's own, or
+   `bdp.lease_ttl` through `RunTxEphemeral` — the renewal rewrites `fence`
+   **and extends `expires_at = NOW(6) + ttl`** — and asserted inside every
+   transaction with the full predicate (B3); the watcher **rebuilds its claim
+   from the witness on every renewal** (an in-workspace `promote --rotate-url`
+   moves the epoch; a consistent witness makes that a re-arm, not a loss) and
+   skips a renewal when a recent mutation already extended `expires_at`; a
+   failed renewal past `expires_at` is `lost`. Hazard R *[deferred under A9]*: the tracking ref
+   `remotes/<remote>/<branch>` is fetched every `bdp.authority_heartbeat` and
+   its **ledger head** is read (`SELECT seq, hash FROM graph_ledger_events AS
+   OF '<ref>' ORDER BY seq DESC LIMIT 1`); a head not contained in the
+   **workspace's witness (reloaded on every check)**, or
    `bdp.authority_heartbeat_grace` missed fetches, is `lost` — the tuple
-   alone cannot distinguish a same-witness twin.
+   alone cannot distinguish a same-witness twin, and a process-local
+   expectation would mistake the workspace's own CLI publication for a loss.
    On `lost`: the BDP rows are **disabled atomically** (the legacy surface
    and its capability list untouched), `bd bdp serve` exits 3 after
    draining, `bd serve` logs and continues; the watcher **joins before the
@@ -204,15 +214,20 @@ No `--dev-local-test`. Behavior, in order:
 
 ### A4. `bd bdp promote` / `restore` / `ledger` / `types install` (rulings 9, 11; amendments A5, A7, A9)
 
-The only reachers of `BeadGraphAdmin()` and `BeadGraphTypeInstaller()`;
-under the **workspace exclusive gate**. Every replicated graph mutation
+The only reachers of `BeadGraphAdmin()` and `BeadGraphTypeInstaller()`.
+`promote`, `rotate`, and `types install` run under the **shared** gate and
+rely on the lease (the workspace is the holder, so they run beside a live
+server); `restore` and `ledger apply` run under the **exclusive** gate with
+the server stopped. Every replicated graph mutation
 (mint, promote, rotate, install, ledger apply, the P1 seeds, P3 writes)
 runs through **one primitive on the provider, `PublishGraphMutation`**, and
 transitions (mint, promote, rotate, apply) are **multi-phase** (B3).
 
 **The primitive, per hazard.** *Hazard S:* the fenced transaction (lease
-`UPDATE` rewriting the fence cell with one affected row, counter with its
-allocation nonce, rows, events), scoped commit
+`UPDATE` rewriting the fence cell and extending `expires_at` with one
+affected row — self-regranting an expired lease that still names this
+workspace — the counter with its allocation nonce, rows, events, each
+transition event carrying the transition's **operation id**), scoped commit
 (`DOLT_ADD` graph tables + `DOLT_COMMIT -m` via the new `RunTxScopedResult`;
 `doltServerTx.Commit` hardcodes `-Am` today), done. *Hazard R [deferred
 under A9]:* record local HEAD; `DOLT_FETCH`; require the remote-tracking
@@ -220,41 +235,60 @@ HEAD to be an **ancestor** of local HEAD (`DOLT_MERGE_BASE`; unpushed
 issue-plane commits do not block); record the remote's graph roots and
 ledger head; the fenced transaction; scoped commit (phase
 `local_committed`, op commit recorded); `DOLT_PUSH`, classified by a
-**typed lift of the tree's `pushRacePattern`** (`cmd/bd/sync.go`, which
-already matches all three race routes — the SQL "behind its remote
-counterpart", the CLI `! [rejected] … (non-fast-forward)`, and the
-`git+*` `(stale info)`/`(fetch first)` forms — into a lower-layer
-`IsPushRace`): **race** → refetch and compare the remote-tracking ref's **ledger head**
-(`SELECT MAX(seq), hash FROM graph_ledger_events AS OF 'origin/main'`)
-against the one recorded before the transaction — any difference → **fail
-closed and undo** (never the `(authority_id, epoch)` tuple alone: a VM-image
-twin or a same-authority fork shares it); unchanged (issue-plane divergence
+**typed lift of the whole of `isPushRaceErr`** (`cmd/bd/sync.go`: its
+`pushRacePattern` matches all three race routes — the SQL "behind its
+remote counterpart", the CLI `! [rejected] … (non-fast-forward)`, and the
+`git+*` `(stale info)`/`(fetch first)` forms — **and** its diverged-history
+and ancestor-PK-mismatch exclusions, which must travel with it): **race** →
+refetch and compare **both** the remote-tracking ref's **ledger head**
+(`SELECT seq, hash FROM graph_ledger_events AS OF '<ref>' ORDER BY seq DESC
+LIMIT 1` — `MAX(seq), hash` errors under Dolt's default
+`ONLY_FULL_GROUP_BY`, probed) **and the eight graph tables' diff** between
+the recorded remote pre-head and the new remote head (`DOLT_DIFF_STAT`
+restricted to those tables) against what was recorded before the
+transaction — any graph delta or ledger movement → **fail closed and
+undo** (never the `(authority_id, epoch)` tuple alone: a VM-image twin or a
+same-authority fork shares it); neither changed (issue-plane divergence
 only) → keep the commit, `ErrSyncRequired`, retryable after `bd dolt pull`; **any other failure** →
 keep the commit, phase stays `local_committed` with `unpublished` set,
 retry on the next attempt. **Undo:** if HEAD is still the op commit,
-`DOLT_RESET --soft <pre-op HEAD>` then `DOLT_CHECKOUT` of the graph tables
-(reverts only those tables; verified); if HEAD has moved, `DOLT_REVERT <op
-commit>` (later commits from other actors are preserved). Then `Abandon`.
+`DOLT_RESET --soft <pre-op HEAD>`, then per graph table `DOLT_RESET('<table>')`
+(unstage — a bare checkout after a soft reset restores from the *staged*
+root and reverts nothing, probed) and `DOLT_CHECKOUT('<table>')` (or
+`DOLT_CHECKOUT('HEAD', '--', '<table>')`), leaving unrelated dirty tables
+untouched; if HEAD has moved, `DOLT_REVERT <op commit>` (later commits from
+other actors are preserved). The versioned undo does not touch the
+dolt-ignored lease, so a compensating `RunTxEphemeral` write restores the
+recorded pre-operation lease row, predicated on the current fence. The undo
+runs before any other graph mutation. Then `Abandon`.
 `doltVersionControlSQLRepository` gains `MergeBase`, `ResetSoft`,
 `CheckoutTables`, `Revert`, `HashOfTables`. A missing remote-tracking ref is
-vacuously an ancestor (the push creates it; the re-read tolerates an absent
-table at the remote); the ref is spelled `origin/main`; the remote is the
-workspace's configured sync remote. Table-scoped staging still sweeps rows
+vacuously an ancestor (the push creates it; an empty remote ledger reads as
+no head); the ref is `remotes/<remote>/<branch>`, built by one provider API
+from the configured sync remote and the active branch — the tree's
+`verifyPullLanded` spelling, and the one `DOLT_MERGE_BASE` already receives. Table-scoped staging still sweeps rows
 other sessions left uncommitted in the *same* graph tables — consistent
 with `bd sql` being out of contract, and stated. *Both hazards → both.*
-**No configured remote ⇒ not promotable in place, on every topology** (a
-copied data directory served by a second `sql-server` is a different
-database nobody can observe): `--rotate-url` only.
+**In-place promotion requires the lease row `Mint` created on this
+database**: `Mint` is its only creator, so its presence is the proof of
+"minted here"; `Promote` without `--rotate-url` refuses `ErrNotAuthority`
+("not minted on this database; use `--rotate-url`") when it is absent — a
+clone that received the Scope row by replication, or a copied data
+directory served by a second `sql-server`, has none. Under A9 this is the
+only arbiter; without A9 hazard R adds the remote fence.
 
 - **`Mint`** (`bd bdp serve`'s staged startup): precondition *no Scope
   row*; INSERT the singleton row, seed `graph_ledger_seq`, `mint` event,
   install the built-in catalog with `install` events; hazard S: take the
   lease; publish; `config_written` when `--scope-url` supplied the URL;
   finalize.
-- **`bd bdp promote`**: precondition a consistent Scope row. Hazard S: take
-  the lease if expired (or `--steal`, operator-confirmed) and CAS the epoch
-  (a lost race is a serialization loser → typed refusal) with a `promote`
-  event; publish; finalize. `--rotate-url <new>` rotates in the same
+- **`bd bdp promote`**: preconditions a consistent Scope row **and the
+  lease row this database's `Mint` created** (else `--rotate-url`). Hazard S:
+  if the lease names this workspace, self-regrant (no epoch change is
+  needed; the verb reports "already the authority"); if it names another
+  holder, take it only when expired (or `--steal`, operator-confirmed) and
+  CAS the epoch (a lost race is a serialization loser → typed refusal) with a
+  `promote` event carrying the operation id; publish; finalize. `--rotate-url <new>` rotates in the same
   transition (refused while `BDP_SCOPE_URL` is exported).
 - **`bd bdp restore`**: runs after a database restore (`bd backup restore`
   — also reached by `bd bootstrap`'s restore action — calls
@@ -376,8 +410,8 @@ type Admin interface {
 
 // capabilities.go — declared by a provider, discovered by the accessor
 type StateVersioner interface {                       // graph-state version inside the caller's transaction
-    GraphStateVersion(ctx, tx DBTX) (StateVersion, error)   // Dolt: ordered DOLT_HASHOF_TABLE() of the eight
-}                                                     // replicated graph tables; absent → fail closed
+    GraphStateVersion(ctx, tx DBTX) (StateVersion, error)   // Dolt: DOLT_HASHOF_TABLE('<name>') × 8 in the fixed
+}                                                     // B4 order, sha256 of the concatenation; absent → fail closed
 type GraphPublication interface { /* a registered backend's own hazard-R fence; deferred */ }
 
 type LeaseClaim struct{ InstallationKey string; Epoch uint64 }   // the workspace's claim; the fence cell is read in-tx; never on the wire
@@ -438,21 +472,31 @@ func ReadBeadInTx(ctx, tx DBTX, w authority.Witness, claim graphops.LeaseClaim, 
   before any assertion (below).
 - **`Advance`** takes the exclusive lock with a bounded poll (`internal/lockfile`
   has no timeout API; the `workspacegate` poll is the precedent; both
-  `ErrLocked` and `ErrLockBusy` honored), never lets `LedgerSeq` decrease,
-  writes through `internal/atomicfile` (file fsync), fsyncs the directory.
-- **Transitions are multi-phase.** `Begin` (preflight: ensure the three
-  ignore entries, refuse a git-tracked witness, take the lock) writes
-  `{kind, phase: begun, pre_head, remote_pre_head, expected_roots,
-  config_intent}`; after the scoped commit `SetPhase(local_committed,
-  op_commit)`; after the push `published`; after `config.yaml`
-  `config_written`; then `Finalize` writes the new witness. **Recovery** on
-  `Load`: `begun` → nothing committed → `Abandon`; `local_committed` →
-  the op commit exists locally: if the remote is unchanged (hazard R:
-  refetch and compare roots) resume publication, else undo (soft reset +
-  checkout, or revert) and `Abandon`; `published` → write config if
-  intended, then `Finalize`; `config_written` → `Finalize`. Retrying a
-  transition never mints a second epoch: recovery resumes the recorded
-  one.
+  `ErrLocked` and `ErrLockBusy` honored) and applies a **descendant-aware
+  compare-and-advance**: a candidate whose ledger head and commit are
+  already contained in the current witness is a successful no-op, newer
+  fields are never replaced by older ones, and a forked candidate is
+  rejected — two writers can commit in one order and advance in the other;
+  then `internal/atomicfile` (file fsync) and a directory fsync.
+- **Transitions are multi-phase, recovered by evidence.** `Begin`
+  (preflight: ensure the three ignore entries, refuse a git-tracked witness,
+  take the lock) writes `{kind, op_id, phase: begun, pre_head,
+  pre_ledger_head, pre_lease, remote_pre_head, expected_roots,
+  config_intent}`; the transition's ledger event and commit message carry
+  `op_id`; after the scoped commit `SetPhase(local_committed, op_commit)`;
+  after the push `published`; after `config.yaml` `config_written`; then
+  `Finalize` writes the new witness and clears the record. **Recovery** on
+  `Load` never trusts the phase alone: it first asks the ledger whether
+  `op_id` is present (a crash between the commit and the phase write leaves
+  `begun` with the operation committed — then it is `local_committed`); with
+  no local operation → `Abandon`; with a local operation on a shared
+  database and no remote → **complete: `Finalize`**; with a remote (hazard
+  R) → classify the remote as {still at `remote_pre_head` → resume the
+  push; contains `op_id` → `published`; contains foreign work → undo and
+  `Abandon`}; `published` → write config if intended; `config_written` →
+  `Finalize`. Retrying a transition never mints a second epoch. Ordinary
+  published mutations (`Install`, P3 writes) carry an `op_id` in their event
+  and an `unpublished` marker until pushed, recovered the same way.
 - **Order of an ordinary mutation:** DB commit (and publish) before the
   witness advances; a crash between leaves the witness behind, which the
   next assertion tolerates. Residual (P3): an acknowledged write never
@@ -467,18 +511,35 @@ func ReadBeadInTx(ctx, tx DBTX, w authority.Witness, claim graphops.LeaseClaim, 
 Every protected body begins with `assertAuthorityInTx(ctx, tx, w, claim,
 mutating)`: Scope row identity; ledger head present (exact prefix) and
 `MAX(seq) >= w.LedgerSeq`; on hazard S the lease row — a read
-`SELECT`s it and checks holder key, epoch, `expires_at > NOW(6)`, and reads
-the `fence` cell; a mutation `UPDATE graph_authority_lease SET heartbeat_at
-= ?, fence = <fresh random> WHERE id = 1 AND holder_installation_key = ?
-AND epoch = ? AND expires_at > NOW(6) AND fence = <the value just read>`
-and requires **exactly one affected row**. **Dolt merges concurrent
+`SELECT`s it and checks holder key and epoch (a match already proves no
+takeover; reads carry no expiry term) and reads the `fence` cell; a
+mutation `UPDATE graph_authority_lease SET heartbeat_at = ?, expires_at =
+NOW(6) + ttl, fence = <fresh random, regenerated on every retry> WHERE id = 1
+AND holder_installation_key = ? AND epoch = ? AND fence = <the value just
+read>` and requires **exactly one affected row** — which also **self-regrants
+an expired lease that still names this workspace** (a server restart longer
+than the TTL needs no promotion); taking a lease held by *another* holder
+additionally requires `expires_at <= NOW(6)` or `--steal`. **Dolt merges concurrent
 transactions cell by cell** (probed on 2.1.8): a takeover that rewrites
 `holder`/`epoch` while a mutation rewrites `heartbeat_at` lets *both*
 commit; only a same-cell-different-value write is a `1213` serialization
 failure. Every lease write — grant, steal, expiry reclaim, renewal, and the
 per-mutation fence — therefore rewrites `fence` with a fresh random value,
-so any two of them conflict, `withRetryTx`/`RunTxResult` replay the loser,
-and its predicate then matches zero rows → refusal. The `leases` precedent's
+so any two of them conflict (probed on Dolt 2.1.8 for the versioned path,
+the ephemeral plain-`COMMIT` path, read-then-mutate, and disjoint-column
+takeovers; the tree's `TestRowLockForcesConflictOnDisjointCellWrites` is the
+same trick for `row_lock`). `withRetryTx`/`RunTxResult`/`RunTxEphemeral`
+replay the loser, which **re-evaluates its preconditions** with a new random
+fence: a still-authorized writer (two mutations, or a renewal and a
+mutation) succeeds serially; a superseded, stolen, or expired-and-retaken
+claim matches zero rows → refusal. On the scoped-commit path the `1213`
+surfaces from `CALL DOLT_COMMIT` (the trailing `COMMIT` then succeeds with
+nothing persisted), so `RunTxScopedResult` keeps that call inside the
+retried closure. Bound, stated: a fenced transaction must complete within
+the renewal interval or it always loses to a renewal; the watcher skips a
+renewal when a recent mutation already extended `expires_at`, and long
+mutations (a large `types install`) run under the exclusive gate or in
+chunks. The `leases` precedent's
 `INSERT … ON DUPLICATE KEY UPDATE … IF(...)` is a statement-time guard and
 does not fence at commit; this design does not rely on it. The ledger
 counter is the same shape: `UPDATE graph_ledger_seq SET next_seq = next_seq
@@ -486,9 +547,11 @@ counter is the same shape: `UPDATE graph_ledger_seq SET next_seq = next_seq
 value **converges** (both allocators commit, one increment lands; probed),
 the random cell makes it a conflict, and the events PK is the second guard
 (it too converges on byte-identical rows, which the nonce prevents); the **graph-state version** from the provider's `StateVersioner`
-(Dolt: the ordered `DOLT_HASHOF_TABLE()` of the eight replicated graph
-tables — verified in 2.1.8; `DOLT_HASHOF_DB()` is not used because every
-ephemeral write, including this lease's own renewal, moves it) equal to
+(Dolt: `DOLT_HASHOF_TABLE('<validated name>')` for each of the eight
+replicated graph tables in the fixed B4 order, the eight hashes hashed
+together with sha256 — the function exists in 2.1.8 and takes exactly one
+argument; `DOLT_HASHOF_DB()` is not used because every ephemeral write,
+including this lease's own renewal, moves it) equal to
 `w.StateVersion`, else `ErrStateChanged` **without validating in the held
 transaction**; the accessor then validates under **one singleflight
 coordinator per provider instance** (per-request `timedProvider` roles
@@ -538,9 +601,10 @@ integers past 2^53 rounded, `1e300` expanded in `metadata_cas.go`;
 **Provenance on every mutable row.** `last_authority_id` / `last_epoch` are
 stamped by every mutation on descriptors, beads, links, and allocations.
 
-**The graph-state version** is the ordered `DOLT_HASHOF_TABLE()` of the
-eight replicated tables below, in this order; the lease is ephemeral and
-excluded. The descriptors table's hash within it keys the descriptor cache.
+**The graph-state version** is `DOLT_HASHOF_TABLE('<name>')` for each of
+the eight replicated tables below, in this order, the eight hashes hashed
+together with sha256; the lease is ephemeral and excluded. The descriptors
+table's hash within it keys the descriptor cache.
 
 | Table | Columns (type; nullability) | Keys / constraints |
 | --- | --- | --- |
@@ -595,20 +659,33 @@ migrate-vs-adopt on every remote-backed workspace at upgrade.
 - `internal/storage/uow/notifying.go` (explicit accessors, parity test);
   `internal/httpapi/claim.go`'s `timedProvider` (which builds roles over the wrapper today and gains a `beadsDir` getter);
   `cmd/bd/serve.go`'s `serveRoleSource` and its stubs;
-  `internal/jira/tracker_test.go`'s `configStore` stub — every surface that
-  embeds the store or a provider, enumerated by
+  every surface that embeds the store or a provider, enumerated by
   `grep -l 'func (.*) Memories()'` at implementation. Because a required
   method is promoted silently through every interface-embedding wrapper,
-  the censuses are what catch an undeclared one; the compiler catches
-  direct implementers.
+  the censuses are what catch an undeclared one; the compiler catches direct
+  implementers — `internal/jira/tracker_test.go`'s `configStore` is one (a
+  flat implementer, not an embedder) and fails to compile until it gains the
+  stubs.
 
 ### B6. `backend/` public surface and depguard
 
-No aliases; the example backend gains six `ErrUnsupported` stubs (option
-A); the CHANGELOG entry follows the joint `ReadyClaimer`/`BatchCloser`
-wording; the new stricter depguard rule for `internal/storage/graphops`
-with a mutation test that **deletes the deny entry and asserts a violating
-fixture then passes lint** (proving the entry is what fails it).
+- **No aliases** (amendment A4): `graphops` is public and imported
+  directly, like `issueops`. `TestPublicSurfaceComplete` stays green
+  *because* no `internal/` type is reachable from the new accessors — a
+  test asserts that.
+- `backend/backend.go`'s doc-comment sketch of a minimal external backend
+  gains the six accessors as `ErrUnsupported` stubs (option A; there is no
+  example package under `backend/` — the stub contract is
+  `conformance.RunUnsupportedContract`). The **CHANGELOG entry** follows the
+  joint `ReadyClaimer`/`BatchCloser` entry's wording ("must add both methods
+  to compile").
+- `.golangci.yml` gains a **new, stricter** rule (cmd/bd imports the
+  `issueops` tx-body package directly today, so this is not the existing
+  convention): `internal/storage/graphops` is importable only by
+  `internal/storage/{dolt,embeddeddolt,domain/db}` and its own tests. A
+  mutation test **deletes the deny entry and asserts that a fixture
+  violating it then passes lint** — which proves the entry is what fails
+  the violation.
 
 ### B7. Conformance
 
@@ -760,6 +837,8 @@ A6 tracked `bdp.scope_url` (refused once held), per-workspace keys in
 `config.local.yaml`, `BDP_SCOPE_URL` first; A7 fences by hazard with one
 publication primitive for every replicated mutation; A8 two options with
 the corrected method-set reasoning; **A9 (recommended): v0 authority
-requires a shared database — hazard R deferred to the write-profile ADR.**
+requires a shared database — hazard R deferred to the write-profile ADR;
+the lease row `Mint` creates is the sole arbiter of in-place promotion; the
+embedded and registered-store arms refuse every authority operation.**
 Plus the enforcement boundary and the replication/merge ADR. Full text:
 architecture §2b.
