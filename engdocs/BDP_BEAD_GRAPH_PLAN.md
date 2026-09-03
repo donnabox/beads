@@ -1,10 +1,10 @@
 # BDP in beads: the bead-graph plan
 
-**Status:** Draft v17 — feat/bead-graph — **P-1 REOPENED** for the W-arch amendments A1–A9 (§9); P0 code is BLOCKED until they are ruled. (Thirteen adversarial review rounds:
+**Status:** Draft v18 — feat/bead-graph — **P-1 REOPENED** for the W-arch amendments A1–A9 (§9); P0 code is BLOCKED until they are ruled. (Thirteen adversarial review rounds:
 1–7 on the whole plan, SOUND at round 7; 8–13 on the storage-interfaces
 section, SOUND-ADDITION at round 13; v6 withdrew the Issue projection from
 v0 on review-round-5 counterexamples; v9–v11 record the P-1 ruling tranches — all
-twelve decisions are ruled; v14–v17 reopen P-1 for the nine amendments)
+twelve decisions are ruled; v14–v18 reopen P-1 for the nine amendments)
 **Date:** 2026-09-02 (v1: 2026-08-31)
 **Owners:** Donna Box (ruling), janet (drafting/implementation)
 **References:** the BDP spec (gastownhall/bdp `docs/specs/bdp.md`), beads#6051,
@@ -925,7 +925,7 @@ of that.
    a provider without the capability keeps existing `bd serve` behavior —
    routes absent, never a startup failure.
 
-### Amendments proposed by W-arch v6 (2026-09-02) — PENDING RULING
+### Amendments proposed by W-arch v7 (2026-09-02) — PENDING RULING
 
 Raised by five three-reviewer councils on the W-arch docs; each changes
 ratified text above, so none takes effect until ruled. Full rationale and
@@ -983,24 +983,30 @@ evidence: `BDP_GRAPH_ARCHITECTURE.md` §2b.
   replicated graph mutation is fenced inside its transaction: **a shared
   database** (every SQL-server topology — the only serving topology in v0)
   → a dolt-ignored `graph_authority_lease` row (the `leases`/bd-lrgn1
-  precedent) that a mutation must UPDATE — holder installation key,
-  process nonce, epoch, and an unexpired `expires_at` all in the predicate
-  — with one affected row, so a takeover or an expiry is a serialization
-  loser; **a configured remote** → every replicated mutation (mint,
+  precedent) that a mutation must UPDATE — holder installation key, epoch,
+  an unexpired `expires_at`, and the `fence` cell it read all in the
+  predicate — rewriting `fence` with a fresh random value, because Dolt
+  merges transactions cell by cell (probed): only a same-cell-different-
+  value write is a serialization loser, so every lease write collides on
+  that one cell; the ledger counter writes a random allocation nonce for
+  the same reason (a bare increment converges); **a configured remote** → every replicated mutation (mint,
   promote, rotate, install, ledger apply, P3 writes) runs through one
   provider primitive: `DOLT_FETCH` → remote-tracking HEAD must be an
   ancestor of local HEAD → the fenced transaction → a scoped commit
   (`DOLT_ADD` graph tables; a new `RunTxScopedResult`, since the UOW commit
   hardcodes `-Am`) → `DOLT_PUSH` with a typed lift of the tree's
-  `pushRacePattern`; on a race, every remote graph root is compared — any
-  graph delta fails closed and is undone (soft reset + per-table checkout
+  `pushRacePattern`; on a race the remote-tracking ref's ledger head is
+  compared (never the `(authority_id, epoch)` tuple alone, which a
+  same-witness twin shares) — any difference fails closed and is undone (soft reset + per-table checkout
   when HEAD is still the operation commit, `DOLT_REVERT` otherwise; never a
   hard reset), issue-plane-only divergence keeps the commit as "sync
   required"; other failures keep the commit as unpublished and retry.
   Hazard-R reads require a fresh remote observation; the serving watcher is
   a `held → renewing → lost` state machine that disables the BDP rows
-  atomically. Both hazards → both fences; neither → not an
-  authority-preserving topology (`--rotate-url` only). Force-push routes
+  atomically. Both hazards → both fences; **no configured remote ⇒ not promotable in
+  place on every topology** (`--rotate-url` only). Admin verbs other than
+  `restore`/`ledger apply` take the shared workspace gate and rely on the
+  lease, so they run beside a live server. Force-push routes
   bypass the fence as operator acts.
 - **A8 (§1 constraint #1; ruling 12) — NEW, two options.** **A
   (recommended):** constraint #1 scoped to *behavior* (byte-identical gate
