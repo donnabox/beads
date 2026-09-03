@@ -1,10 +1,10 @@
 # BDP in beads: the bead-graph plan
 
-**Status:** Draft v16 — feat/bead-graph — **P-1 REOPENED** for the W-arch amendments A1–A8 (§9); P0 code is BLOCKED until they are ruled. (Thirteen adversarial review rounds:
+**Status:** Draft v17 — feat/bead-graph — **P-1 REOPENED** for the W-arch amendments A1–A9 (§9); P0 code is BLOCKED until they are ruled. (Thirteen adversarial review rounds:
 1–7 on the whole plan, SOUND at round 7; 8–13 on the storage-interfaces
 section, SOUND-ADDITION at round 13; v6 withdrew the Issue projection from
 v0 on review-round-5 counterexamples; v9–v11 record the P-1 ruling tranches — all
-twelve decisions are ruled; v14–v16 reopen P-1 for the eight amendments)
+twelve decisions are ruled; v14–v17 reopen P-1 for the nine amendments)
 **Date:** 2026-09-02 (v1: 2026-08-31)
 **Owners:** Donna Box (ruling), janet (drafting/implementation)
 **References:** the BDP spec (gastownhall/bdp `docs/specs/bdp.md`), beads#6051,
@@ -550,8 +550,11 @@ client:
    tracked project fact, **only `bd bdp serve` mints**: a plain `bd serve` on
    an unminted store keeps the legacy surface up with a notice. BDP routes
    are a conditional second table inside `internal/httpapi` behind the same
-   middleware, always served from the unit-of-work leg (`bd serve` refuses
-   embedded Dolt permanently). `bd serve` with no configured URL is
+   middleware, in v0 served only from SQL-server workspaces — the
+   unit-of-work leg (`bd serve` refuses embedded Dolt permanently; a
+   registered backend's store arm has no fence to offer, so its rows are
+   absent until it declares one). The mint runs as a staged startup
+   (exclusive gates through a temporary source, then shared gates to serve). `bd serve` with no configured URL is
    byte-identical to today; on a workspace that does not hold the authority
    it keeps the legacy surface up with the BDP rows absent and a notice —
    never a startup refusal on account of the graph. `bd bdp serve` refuses
@@ -922,9 +925,9 @@ of that.
    a provider without the capability keeps existing `bd serve` behavior —
    routes absent, never a startup failure.
 
-### Amendments proposed by W-arch v5 (2026-09-02) — PENDING RULING
+### Amendments proposed by W-arch v6 (2026-09-02) — PENDING RULING
 
-Raised by four three-reviewer councils on the W-arch docs; each changes
+Raised by five three-reviewer councils on the W-arch docs; each changes
 ratified text above, so none takes effect until ruled. Full rationale and
 evidence: `BDP_GRAPH_ARCHITECTURE.md` §2b.
 
@@ -977,32 +980,49 @@ evidence: `BDP_GRAPH_ARCHITECTURE.md` §2b.
   and no token key in config; `bdp.client` blocked from env; nothing in
   `metadata.json`.
 - **A7 (ruling 9, promotion) — NEW.** Fences compose by hazard and every
-  graph mutation is fenced inside its transaction: **a shared database**
-  (every SQL-server topology — the only serving topology) → a dolt-ignored
-  `graph_authority_lease` row (the `leases`/bd-lrgn1 precedent) that a
-  mutation must UPDATE with one affected row, so a takeover is a
-  serialization loser; **a configured remote** → transitions are `DOLT_FETCH`
-  → remote-tracking HEAD must be an ancestor of local HEAD → the fenced
-  transaction → a scoped commit (`DOLT_ADD` graph tables, never `-Am`) →
-  `DOLT_PUSH` with a typed non-fast-forward classifier (changed remote
-  authority → reset to the recorded pre-operation HEAD and refuse;
-  issue-plane divergence only → retryable "sync required"; other failures →
-  keep the commit), a serving process fetching on `bdp.authority_heartbeat`
-  and failing closed after a grace, and **P3 writes push-on-commit**; both
-  hazards → both fences; **neither hazard** (embedded, no remote) → not
-  promotable in place (`--rotate-url` only). Force-push routes bypass the
-  fence as operator acts. Reads inside the heartbeat window are the
-  stale-authority reads ruling 9 already defers.
+  replicated graph mutation is fenced inside its transaction: **a shared
+  database** (every SQL-server topology — the only serving topology in v0)
+  → a dolt-ignored `graph_authority_lease` row (the `leases`/bd-lrgn1
+  precedent) that a mutation must UPDATE — holder installation key,
+  process nonce, epoch, and an unexpired `expires_at` all in the predicate
+  — with one affected row, so a takeover or an expiry is a serialization
+  loser; **a configured remote** → every replicated mutation (mint,
+  promote, rotate, install, ledger apply, P3 writes) runs through one
+  provider primitive: `DOLT_FETCH` → remote-tracking HEAD must be an
+  ancestor of local HEAD → the fenced transaction → a scoped commit
+  (`DOLT_ADD` graph tables; a new `RunTxScopedResult`, since the UOW commit
+  hardcodes `-Am`) → `DOLT_PUSH` with a typed lift of the tree's
+  `pushRacePattern`; on a race, every remote graph root is compared — any
+  graph delta fails closed and is undone (soft reset + per-table checkout
+  when HEAD is still the operation commit, `DOLT_REVERT` otherwise; never a
+  hard reset), issue-plane-only divergence keeps the commit as "sync
+  required"; other failures keep the commit as unpublished and retry.
+  Hazard-R reads require a fresh remote observation; the serving watcher is
+  a `held → renewing → lost` state machine that disables the BDP rows
+  atomically. Both hazards → both fences; neither → not an
+  authority-preserving topology (`--rotate-url` only). Force-push routes
+  bypass the fence as operator acts.
 - **A8 (§1 constraint #1; ruling 12) — NEW, two options.** **A
-  (recommended):** constraint #1 is scoped to *behavior* (every in-tree
-  topology and existing workspace byte-identical in gate output);
-  out-of-tree `backend/` implementers take the source break `storage.go`
-  already declares (six `ErrUnsupported` stubs; the joint
-  `ReadyClaimer`/`BatchCloser` CHANGELOG entry is the precedent) and the
-  compiler catches every type compiled as a `Storage`. **B:** an optional
-  `BeadGraphCapable` interface — no source break, but embedding promotes
-  it unwrapped, so each decorator implements it explicitly, a capability
-  census is written, and every consumer needs a resolver.
+  (recommended):** constraint #1 scoped to *behavior* (byte-identical gate
+  output). Six required methods on `Storage` break **direct implementers**
+  (the compiler; six `ErrUnsupported` stubs; the joint
+  `ReadyClaimer`/`BatchCloser` CHANGELOG entry is the precedent) and are
+  **silently promoted through every wrapper that embeds the interface** —
+  which is why the censuses are mandatory. **B:** an optional
+  `BeadGraphCapable` interface is **not** promoted through an
+  interface-embedding wrapper, so every wrapper implements it explicitly
+  and every consumer needs a resolver (the v1 `graphsource` shape).
+- **A9 (ruling 9) — NEW, optional simplification, RECOMMENDED for v0.**
+  **v0 authority requires a shared database.** Hazard R (the remote
+  publication primitive, remote-read freshness, multi-phase publication
+  recovery) is deferred to the write-profile ADR; a remote-backed workspace
+  is a non-authority for any Scope it did not mint on its own shared
+  database (its `bd serve` shows rows absent; its CLI reads refuse);
+  cross-database promotion is `--rotate-url` only (a new Scope; continuity
+  via the ledger lane). The graph tables still replicate through push/pull;
+  the validator refuses foreign deltas. What remains of A7 is the lease
+  alone — one arbiter, one lease, one counter — and the only serving
+  topology already is the SQL-server workspace.
 
 Two decisions the plan does not yet contain, surfaced for ruling:
 
