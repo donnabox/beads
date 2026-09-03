@@ -438,9 +438,9 @@ type AllocationState = string   // live | reserved | pruned | erased  ("reserved
 laws in `laws.go`. `Properties` is the immutable raw-JSON object value from
 the plan; its canonical bytes are what B4 stores. `Ref` is a sum: in-Scope
 (`Path`) or external (`URL`). `Revision` is 128 bits from `crypto/rand`,
-lower-hex. A `LedgerEvent` carries `{seq, kind, path|scope_url, revision?,
-fingerprint?, authority_id, epoch, at, prev_hash, hash}` with `hash =
-sha256(canonical(event without hash))`.
+lower-hex. A `LedgerEvent` carries `{seq, kind, op_id, path|scope_url,
+revision?, fingerprint?, authority_id, epoch, at, prev_hash, hash}` with
+`hash = sha256(canonical(event without hash))`.
 
 **Bounds:** `MaxExpandedRows` with `LIMIT (MaxExpandedRows − materialized) + 1`;
 `Max` required on owning Types. **Statement budgets, per role method**
