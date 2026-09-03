@@ -1,10 +1,10 @@
 # BDP in beads: the bead-graph plan
 
-**Status:** Draft v20 — feat/bead-graph — **P-1 REOPENED** for the W-arch amendments A1–A9 (§9); P0 code is BLOCKED until they are ruled. (Thirteen adversarial review rounds:
+**Status:** Draft v21 — feat/bead-graph — **P-1 REOPENED** for the W-arch amendments A1–A9 (§9); P0 code is BLOCKED until they are ruled. (Thirteen adversarial review rounds:
 1–7 on the whole plan, SOUND at round 7; 8–13 on the storage-interfaces
 section, SOUND-ADDITION at round 13; v6 withdrew the Issue projection from
 v0 on review-round-5 counterexamples; v9–v11 record the P-1 ruling tranches — all
-twelve decisions are ruled; v14–v20 reopen P-1 for the nine amendments)
+twelve decisions are ruled; v14–v21 reopen P-1 for the nine amendments)
 **Date:** 2026-09-02 (v1: 2026-08-31)
 **Owners:** Donna Box (ruling), janet (drafting/implementation)
 **References:** the BDP spec (gastownhall/bdp `docs/specs/bdp.md`), beads#6051,
@@ -554,8 +554,9 @@ client:
    middleware, in v0 served only from SQL-server workspaces — the
    unit-of-work leg (`bd serve` refuses embedded Dolt permanently; a
    registered backend's store arm has no fence to offer, so its rows are
-   absent until it declares one). The mint runs as a staged startup
-   (exclusive gates through a temporary source, then shared gates to serve). `bd serve` with no configured URL is
+   absent until it declares one). The mint runs as the spec's one staged startup sequence (shared read
+   → release → exclusive only when there is no Scope row → release →
+   shared serve). `bd serve` with no configured URL is
    byte-identical to today; on a workspace that does not hold the authority
    it keeps the legacy surface up with the BDP rows absent and a notice —
    never a startup refusal on account of the graph. `bd bdp serve` refuses
@@ -824,9 +825,10 @@ allocation/tombstone ledger. No legacy IDs are served in v0.
 This plan covers the graph store and its Read serving. Sibling workstreams,
 each owning its own writeup:
 
-- **W-arch** — DONE to v3 (2026-09-02): `BDP_GRAPH_ARCHITECTURE.md` and
-  `BDP_GRAPH_CLI_AND_STORAGE_SPEC.md`, two council rounds; eight ruling
-  amendments (A1–A9) and two new decisions pending in §9. Precedes P0 code.
+- **W-arch** — held at v10 (2026-09-03): `BDP_GRAPH_ARCHITECTURE.md` and
+  `BDP_GRAPH_CLI_AND_STORAGE_SPEC.md`, eight council rounds with live Dolt
+  probes; nine ruling amendments (A1–A9) and two new decisions pending in
+  §9. Precedes P0 code.
 - **W1** — flesh out the **Update and Transactional profiles** of BDP and
   the reference implementations (the protocol is Read-heavy today); this is
   the upstream gate for P3 writes.
@@ -926,9 +928,9 @@ of that.
    a provider without the capability keeps existing `bd serve` behavior —
    routes absent, never a startup failure.
 
-### Amendments proposed by W-arch v9 (2026-09-02) — PENDING RULING
+### Amendments proposed by W-arch v10 (2026-09-03) — PENDING RULING
 
-Raised by seven three-reviewer councils on the W-arch docs (the lease fence and
+Raised by eight three-reviewer councils on the W-arch docs (the lease fence and
 the ledger counter are probe-confirmed on Dolt 2.1.8); each changes
 ratified text above, so none takes effect until ruled. Full rationale and
 evidence: `BDP_GRAPH_ARCHITECTURE.md` §2b.
@@ -990,13 +992,15 @@ evidence: `BDP_GRAPH_ARCHITECTURE.md` §2b.
   database** (every SQL-server topology — the only serving topology in v0)
   → a dolt-ignored `graph_authority_lease` row (the `leases`/bd-lrgn1
   precedent) that a mutation must UPDATE — holder installation key, epoch,
-  an unexpired `expires_at`, and the `fence` cell it read all in the
-  predicate — rewriting `fence` with a fresh random value, because Dolt
+  and the `fence` cell it read in the predicate (no expiry term for the
+  holder's own writes, which is what lets an expired lease naming this
+  workspace self-regrant; a foreign holder is replaced only by `--steal`)
+  — rewriting `fence` with a fresh random value and extending `expires_at`, because Dolt
   merges transactions cell by cell (probed): only a same-cell-different-
   value write is a serialization loser, so every lease write collides on
-  that one cell — probe-confirmed; a mutation extends `expires_at`, so an
-  expired lease still naming this workspace self-regrants (a restart needs
-  no promotion); the ledger counter writes a random allocation nonce for
+  that one cell — probe-confirmed; a protected read requires an unexpired
+  lease inside its transaction and never writes it (a CLI read on its own
+  expired lease regrants once, ephemerally, first); the ledger counter writes a random allocation nonce for
   the same reason (a bare increment converges); **a configured remote** → every replicated mutation (mint,
   promote, rotate, install, ledger apply, P3 writes) runs through one
   provider primitive: `DOLT_FETCH` → remote-tracking HEAD must be an
