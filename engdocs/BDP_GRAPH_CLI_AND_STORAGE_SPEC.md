@@ -762,6 +762,16 @@ Every identifier column below still carries **`CHARACTER SET utf8mb4
 COLLATE utf8mb4_bin`** (written `BIN`) as the defense for providers whose
 default is case-insensitive, with a contract case.
 
+**Two epochs, two spellings (recorded 2026-09-07).** Every `epoch` in the
+graph tables — `graph_scope.epoch`, the lease's `epoch`, `last_epoch`,
+`birth_epoch` — is the **authority epoch** of ruling 9/A5, rotated by
+promote, rotate, and restore-without-continuity. It is not the History
+lane's `store_epoch` (versioned beads, migration 0067: bumped only by
+restore, destructive reinit, or a token-scheme change, and voiding only
+addresses of versions no longer served). To keep SQL unambiguous, P1 spells
+the graph columns `authority_epoch`, `last_authority_epoch`, and
+`birth_authority_epoch`; the docs keep the short names as the concept's name.
+
 **Identity is Scope-relative.** Rows store the canonical Scope-relative
 `path`; the absolute URL is `scope_url + path`, computed at the boundary,
 so a URL rotation rewrites no rows.
