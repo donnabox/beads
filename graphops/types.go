@@ -1,0 +1,1490 @@
+package graphops
+
+import (
+	"bytes"
+	"crypto/rand"
+	"encoding/hex"
+	"encoding/json"
+	"fmt"
+	"sort"
+	"strings"
+	"time"
+)
+
+// The domain values. Every one of them has unexported fields and a constructor
+// that enforces the laws in laws.go, so a caller holding a value holds a valid
+// one and an implementation never re-validates what it is handed. Values are
+// immutable: accessors return copies of anything a caller could otherwise
+// write through.
+
+// ResourceKind is the closed set of Resource categories: a Type Descriptor
+// describes exactly one, a ledger event names one, and a canonical path
+// belongs to one by its fixed root.
+type ResourceKind string
+
+// The two Resource kinds. There is no third, and no synthetic root Type.
+const (
+	KindBead ResourceKind = "bead"
+	KindLink ResourceKind = "link"
+)
+
+// Valid reports whether k is one of the two kinds.
+func (k ResourceKind) Valid() bool { return k == KindBead || k == KindLink }
+
+// AllocationState is the state of one committed canonical path in the
+// allocation ledger: live, reserved (ledger-applied with no row behind it),
+// pruned, or erased. It is a string alias, as the design spells it, so the
+// storage leg's ENUM column and the GoneError carry the same value.
+type AllocationState = string
+
+// The allocation states. A path leaves "live" and never returns; a path is
+// never reused whatever its state.
+const (
+	AllocationLive     AllocationState = "live"
+	AllocationReserved AllocationState = "reserved"
+	AllocationPruned   AllocationState = "pruned"
+	AllocationErased   AllocationState = "erased"
+)
+
+// Cursor is an OPAQUE continuation produced by a store and handed back to it
+// unchanged. It binds whatever the store needs — Scope URL, epoch, selection
+// hash, last path, and from P2 a snapshot identity — inside a value no caller
+// inspects. There is no law over its spelling here: a cursor a store did not
+// mint is a cursor that store refuses.
+type Cursor string
+
+// Direction selects which incident Links of a Bead a read returns. The zero
+// value is DirectionBoth, which is also BDP's default when the parameter is
+// omitted, so a zero IncidentRequest asks the protocol's default question.
+type Direction uint8
+
+// The three directions.
+const (
+	// DirectionBoth selects the union of inbound and outbound Links.
+	DirectionBoth Direction = iota
+	// DirectionIn selects Links whose target is the Bead.
+	DirectionIn
+	// DirectionOut selects Links whose source is the Bead.
+	DirectionOut
+)
+
+// Valid reports whether d is one of the three directions.
+func (d Direction) Valid() bool { return d <= DirectionOut }
+
+// String spells the direction for a human; the wire spelling belongs to the
+// handler.
+func (d Direction) String() string {
+	switch d {
+	case DirectionBoth:
+		return "both"
+	case DirectionIn:
+		return "in"
+	case DirectionOut:
+		return "out"
+	}
+	return fmt.Sprintf("Direction(%d)", uint8(d))
+}
+
+// MintOpaqueToken returns 128 bits from crypto/rand as 32 lowercase hex
+// digits: the shape of every revision this authority mints, of every operation
+// id, and of every authority id (the CHAR(32) columns of the schema). It never
+// fails — crypto/rand.Read in this Go release does not return an error.
+func MintOpaqueToken() string {
+	var b [16]byte
+	_, _ = rand.Read(b[:])
+	return hex.EncodeToString(b[:])
+}
+
+// Revision names one state of one Bead or Link. It is OPAQUE and EQUALITY-ONLY:
+// a client compares revisions and derives nothing from their spelling. This
+// authority mints them with MintRevision (128 random bits, lower-hex); a
+// revision read from another authority through the wire client is whatever
+// nonempty string that authority chose, carried byte-identically.
+//
+// DECISION: the value admits any nonempty string, not only the 32-hex form
+// this store mints. The design gives the minting rule; the pinned spec gives
+// the value rule (opaque, nonempty, equality-only), and a graphops.Reader over
+// the wire must represent a foreign authority's revisions faithfully.
+type Revision struct{ token string }
+
+// MintRevision returns a fresh revision in this authority's format.
+func MintRevision() Revision { return Revision{token: MintOpaqueToken()} }
+
+// NewRevision admits an opaque revision token. Only emptiness is refused: a
+// revision has no other law.
+func NewRevision(token string) (Revision, error) {
+	if token == "" {
+		return Revision{}, fmt.Errorf("%w: a revision must be a nonempty opaque string", ErrValidation)
+	}
+	return Revision{token: token}, nil
+}
+
+// String returns the token.
+func (r Revision) String() string { return r.token }
+
+// IsZero reports whether r carries no revision.
+func (r Revision) IsZero() bool { return r.token == "" }
+
+// Equal is the only comparison a revision supports.
+func (r Revision) Equal(o Revision) bool { return r.token == o.token }
+
+// AttributionStatus is the closed set of bases for a carried attribution.
+type AttributionStatus string
+
+// The two statuses. There is deliberately no status that asserts
+// authentication: the member is data, not evidence.
+const (
+	// AttributionClaimed: the principal was supplied by the writer of that
+	// version, as written.
+	AttributionClaimed AttributionStatus = "claimed"
+	// AttributionUnknown: the principal is carried from data whose relation to
+	// this version the realization cannot establish (an import; a creator
+	// recorded where the writer of the current version was not).
+	AttributionUnknown AttributionStatus = "unknown"
+)
+
+// Valid reports whether s is one of the two statuses.
+func (s AttributionStatus) Valid() bool {
+	return s == AttributionClaimed || s == AttributionUnknown
+}
+
+// Attribution is the carried, per-version attribution of a Bead or Link:
+// data the protocol transports and attests nothing about. The zero value means
+// ABSENT — no attribution was recorded for the version — which is why Bead and
+// Link accessors return it with a presence flag.
+type Attribution struct {
+	principal string
+	status    AttributionStatus
+}
+
+// NewAttribution builds a present attribution: a nonempty opaque principal and
+// one of the two statuses. Principals are compared for byte equality only;
+// BDP mandates no namespace.
+func NewAttribution(principal string, status AttributionStatus) (Attribution, error) {
+	if principal == "" {
+		return Attribution{}, fmt.Errorf("%w: attribution principal must be nonempty", ErrValidation)
+	}
+	if !status.Valid() {
+		return Attribution{}, fmt.Errorf("%w: attribution status %q is not claimed or unknown", ErrValidation, status)
+	}
+	return Attribution{principal: principal, status: status}, nil
+}
+
+// Principal names who the version is attributed to.
+func (a Attribution) Principal() string { return a.principal }
+
+// Status is the realization's basis for the value.
+func (a Attribution) Status() AttributionStatus { return a.status }
+
+// IsZero reports the absent attribution.
+func (a Attribution) IsZero() bool { return a.principal == "" }
+
+// Properties is the authored JSON OBJECT of a Bead or Link, held as ONE
+// canonical byte string: the RFC 8785 form of the document with numbers kept
+// exact (see CanonicalizeJSON). Two Properties are the same value exactly when
+// their bytes are equal, and that equality is the RFC 6902 §4.6 comparison the
+// no-op law is made of — so a write whose result Equal()s the value before it
+// mints no revision.
+//
+// The zero value is the empty object. Properties is never engine JSON: the
+// storage leg stores these bytes in a BLOB and serves them back unchanged, so
+// what a creator wrote — 9007199254740993, 1e300, a key order — survives
+// exactly as canonicalized, never as some engine's float64 reading of it.
+type Properties struct{ canonical []byte }
+
+var emptyObject = []byte("{}")
+
+// NewProperties admits a JSON document as a properties object. The document
+// must be a single JSON object; duplicate keys, invalid UTF-8, lone surrogate
+// escapes, and anything after the closing brace are refused (ErrValidation).
+// The bytes are canonicalized and copied; the caller's slice is not retained.
+func NewProperties(raw []byte) (Properties, error) {
+	canonical, err := CanonicalizeJSON(raw)
+	if err != nil {
+		return Properties{}, fmt.Errorf("%w: properties: %s", ErrValidation, reason(err))
+	}
+	if canonical[0] != '{' {
+		return Properties{}, fmt.Errorf("%w: properties must be a JSON object", ErrValidation)
+	}
+	if bytes.Equal(canonical, emptyObject) {
+		return Properties{}, nil
+	}
+	return Properties{canonical: canonical}, nil
+}
+
+// Bytes returns a copy of the canonical bytes; "{}" for the zero value.
+func (p Properties) Bytes() []byte {
+	if p.canonical == nil {
+		return append([]byte(nil), emptyObject...)
+	}
+	return append([]byte(nil), p.canonical...)
+}
+
+// String returns the canonical bytes as a string.
+func (p Properties) String() string {
+	if p.canonical == nil {
+		return "{}"
+	}
+	return string(p.canonical)
+}
+
+// Equal is RFC 6902 §4.6 value equality: numerically equal numbers, code-point
+// equal strings, member-set equal objects, element-wise equal arrays.
+func (p Properties) Equal(q Properties) bool {
+	return bytes.Equal(p.Bytes(), q.Bytes())
+}
+
+// IsEmpty reports the empty object.
+func (p Properties) IsEmpty() bool { return p.canonical == nil }
+
+// MarshalJSON emits the canonical bytes. NOTE: encoding/json's Marshal
+// post-processes a Marshaler's output and, by default, rewrites the literal
+// characters '<', '>' and '&' as <, > and &; an encoder with
+// SetEscapeHTML(false) — or a caller using Bytes() directly — gets the
+// canonical form.
+func (p Properties) MarshalJSON() ([]byte, error) { return p.Bytes(), nil }
+
+// UnmarshalJSON admits a document through NewProperties.
+func (p *Properties) UnmarshalJSON(raw []byte) error {
+	q, err := NewProperties(raw)
+	if err != nil {
+		return err
+	}
+	*p = q
+	return nil
+}
+
+// Ref is a Reference: how anything in BDP points at anything. It is a SUM, not
+// a naked pair — an in-Scope reference (a canonical Bead path, rendered against
+// the live Scope URL at the boundary) or an external one (an absolute URI
+// outside the Scope, preserved byte-identically and never dereferenced) — and
+// either may carry a pin: the revision the reference was made against, stored
+// and echoed byte-identically, compared only for equality, never validated.
+//
+// Reference identity is the URI alone. Equality of endpoints, incident
+// traversal and multiplicity ignore the pin; SameURI is that law, Equal is
+// whole-value equality including the pin.
+//
+// The zero value is not a reference; constructors are the only way in.
+type Ref struct {
+	inScope bool
+	path    string // in-Scope: canonical Bead path
+	uri     string // external: the absolute URI, byte-identical
+	pin     string // "" when unpinned
+}
+
+// NewInScopeRef builds a reference to a Bead of this Scope by its canonical
+// path. DECISION: an in-Scope endpoint names a Bead — the pinned spec's
+// endpoint rule ("MUST identify a live Bead in the Link's Scope") — so a Link
+// path is refused here; a reference to a Link has no in-Scope form in v0.
+func NewInScopeRef(path, pin string) (Ref, error) {
+	if err := ValidateBeadPath(path); err != nil {
+		return Ref{}, err
+	}
+	return Ref{inScope: true, path: path, pin: pin}, nil
+}
+
+// ParseRef admits a reference as written — a canonical local Bead ID
+// ("beads/…"), the Bead's absolute canonical URL under scopeURL, or an
+// absolute URI outside the Scope — and classifies it by the pinned law: a URI
+// that resolves to (an alias of) the canonical Scope URL claims an in-Scope
+// Bead and is refused unless it IS that Bead's canonical spelling; every
+// other absolute URI is an opaque external reference, kept byte-identically.
+//
+// What "resolves to an alias of the Scope URL" means here is RFC 3986 §6.2.2
+// syntax-based normalization plus the http(s) default-port rule: scheme and
+// host case, a default port, dot segments, and percent-encoding case and
+// unreserved-character escapes are equivalences; a different scheme, host or
+// port is a different origin and therefore external. A local spelling under
+// links/ or alias/ is refused — endpoints are Beads, and alias resolution is
+// not served in v0 (DECISION: no alias table exists; an alias URL cannot be
+// resolved at admission and is refused rather than stored).
+func ParseRef(scopeURL, reference, pin string) (Ref, error) {
+	if err := ValidateScopeURL(scopeURL); err != nil {
+		return Ref{}, err
+	}
+	if reference == "" {
+		return Ref{}, fmt.Errorf("%w: reference must be a canonical local Bead ID or an absolute URI", ErrValidation)
+	}
+	switch {
+	case strings.HasPrefix(reference, "beads/"):
+		return NewInScopeRef(reference, pin)
+	case strings.HasPrefix(reference, "links/"), strings.HasPrefix(reference, "alias/"):
+		return Ref{}, fmt.Errorf("%w: reference %q: an in-Scope endpoint must be a Bead's canonical ID", ErrValidation, reference)
+	}
+	if !isAbsoluteURI(reference) {
+		return Ref{}, fmt.Errorf("%w: reference %q must be a canonical local Bead ID or an absolute URI", ErrValidation, reference)
+	}
+	if claimsScope(scopeURL, reference) {
+		path, kind, ok := SplitCanonicalURL(scopeURL, reference)
+		if !ok || kind != KindBead {
+			return Ref{}, fmt.Errorf("%w: reference %q claims the Scope but is not a Bead's canonical URL", ErrValidation, reference)
+		}
+		return Ref{inScope: true, path: path, pin: pin}, nil
+	}
+	return Ref{uri: reference, pin: pin}, nil
+}
+
+// IsZero reports the absent reference.
+func (r Ref) IsZero() bool { return !r.inScope && r.uri == "" }
+
+// InScope reports whether r names a Bead of this Scope.
+func (r Ref) InScope() bool { return r.inScope }
+
+// Path is the canonical Bead path of an in-Scope reference; "" otherwise.
+func (r Ref) Path() string { return r.path }
+
+// URI is the absolute URI of an external reference; "" otherwise.
+func (r Ref) URI() string { return r.uri }
+
+// Pin is the revision the reference was made against; "" when unpinned.
+func (r Ref) Pin() string { return r.pin }
+
+// Pinned reports whether a pin is present.
+func (r Ref) Pinned() bool { return r.pin != "" }
+
+// URL renders the reference's identity as an absolute URI: the external URI
+// as written, or the in-Scope path resolved against scopeURL — which is why a
+// Scope URL rotation rewrites no stored reference.
+func (r Ref) URL(scopeURL string) string {
+	if r.inScope {
+		return CanonicalURL(scopeURL, r.path)
+	}
+	return r.uri
+}
+
+// SameURI is reference identity: the two point at the same thing, pins
+// ignored. It is the comparison endpoint equality, incident traversal and
+// multiplicity use.
+func (r Ref) SameURI(o Ref) bool {
+	return r.inScope == o.inScope && r.path == o.path && r.uri == o.uri
+}
+
+// Equal is whole-value equality, pin included.
+func (r Ref) Equal(o Ref) bool { return r == o }
+
+// Bead is one identified, typed node of the graph: an immutable canonical path
+// and Type, the revision naming its current state, its authored properties,
+// and its carried attribution when one was recorded. Its owned Links are
+// semantically covered Bead state but are not duplicated inside the value:
+// BeadRecord carries them, assembled from the Links themselves in the same
+// snapshot.
+//
+// DECISION: the value carries no provenance (last_authority_id, last_epoch)
+// and no timestamps. Those are storage bookkeeping the design keeps on the
+// row, not protocol data, and a public value that carried an authority field
+// would be one step from a request that did.
+type Bead struct {
+	path        string
+	typeURL     string
+	revision    Revision
+	attribution Attribution
+	properties  Properties
+}
+
+// BeadSpec is the input to NewBead.
+type BeadSpec struct {
+	// Path is the canonical Scope-relative Bead path ("beads/…").
+	Path string
+	// TypeURL is the declared Type's canonical descriptor URL.
+	TypeURL string
+	// Revision names the current state; required.
+	Revision Revision
+	// Attribution is the carried attribution; the zero value means absent.
+	Attribution Attribution
+	// Properties is the authored object; the zero value is the empty object.
+	Properties Properties
+}
+
+// NewBead builds a Bead, enforcing the path grammar, the Type URL law and a
+// present revision.
+func NewBead(spec BeadSpec) (Bead, error) {
+	if err := ValidateBeadPath(spec.Path); err != nil {
+		return Bead{}, err
+	}
+	if err := ValidateTypeURL(spec.TypeURL); err != nil {
+		return Bead{}, fmt.Errorf("bead %s type: %w", spec.Path, err)
+	}
+	if spec.Revision.IsZero() {
+		return Bead{}, fmt.Errorf("%w: bead %s has no revision", ErrValidation, spec.Path)
+	}
+	return Bead{
+		path:        spec.Path,
+		typeURL:     spec.TypeURL,
+		revision:    spec.Revision,
+		attribution: spec.Attribution,
+		properties:  spec.Properties,
+	}, nil
+}
+
+// Path is the canonical Scope-relative path.
+func (b Bead) Path() string { return b.path }
+
+// TypeURL is the declared Type's descriptor URL.
+func (b Bead) TypeURL() string { return b.typeURL }
+
+// Revision names the current state.
+func (b Bead) Revision() Revision { return b.revision }
+
+// Attribution returns the carried attribution and whether one is present.
+func (b Bead) Attribution() (Attribution, bool) { return b.attribution, !b.attribution.IsZero() }
+
+// Properties is the authored object.
+func (b Bead) Properties() Properties { return b.properties }
+
+// URL is the absolute canonical Bead URL under scopeURL.
+func (b Bead) URL(scopeURL string) string { return CanonicalURL(scopeURL, b.path) }
+
+// IsZero reports a Bead no constructor produced.
+func (b Bead) IsZero() bool { return b.path == "" }
+
+// Link is one first-class directed relationship: its own canonical path, Type
+// and revision, an immutable source and target, authored properties, and a
+// carried attribution when one was recorded. Its type, source and target
+// describe it but do not identify it; several Links may share all three.
+//
+// DECISION: the source is always in-Scope. The pinned spec lets either
+// endpoint be external as long as one is a Bead of this Scope, but the design
+// fixes the source as a stored path (B2's LinkSelectRequest.SourcePath, B4's
+// NOT NULL source_path with its foreign key) and the target as the Reference
+// that may be external. A Link whose source is external cannot be stored by
+// this design, so it is refused at the value rather than at the row. To be
+// raised as a design narrowing of the spec.
+type Link struct {
+	path        string
+	typeURL     string
+	revision    Revision
+	source      Ref
+	target      Ref
+	attribution Attribution
+	properties  Properties
+}
+
+// LinkSpec is the input to NewLink.
+type LinkSpec struct {
+	// Path is the canonical Scope-relative Link path ("links/…").
+	Path string
+	// TypeURL is the declared Link Type's canonical descriptor URL.
+	TypeURL string
+	// Revision names the current state; required.
+	Revision Revision
+	// Source is the in-Scope Bead the Link leaves from.
+	Source Ref
+	// Target is where the Link points: an in-Scope Bead or an external URI.
+	Target Ref
+	// Attribution is the carried attribution; the zero value means absent.
+	Attribution Attribution
+	// Properties is the authored object; the zero value is the empty object.
+	Properties Properties
+}
+
+// NewLink builds a Link, enforcing the path grammar, the Type URL law, a
+// present revision, an in-Scope source and a present target.
+func NewLink(spec LinkSpec) (Link, error) {
+	if err := ValidateLinkPath(spec.Path); err != nil {
+		return Link{}, err
+	}
+	if err := ValidateTypeURL(spec.TypeURL); err != nil {
+		return Link{}, fmt.Errorf("link %s type: %w", spec.Path, err)
+	}
+	if spec.Revision.IsZero() {
+		return Link{}, fmt.Errorf("%w: link %s has no revision", ErrValidation, spec.Path)
+	}
+	if !spec.Source.InScope() {
+		return Link{}, fmt.Errorf("%w: link %s source must be an in-Scope Bead", ErrValidation, spec.Path)
+	}
+	if spec.Target.IsZero() {
+		return Link{}, fmt.Errorf("%w: link %s has no target", ErrValidation, spec.Path)
+	}
+	return Link{
+		path:        spec.Path,
+		typeURL:     spec.TypeURL,
+		revision:    spec.Revision,
+		source:      spec.Source,
+		target:      spec.Target,
+		attribution: spec.Attribution,
+		properties:  spec.Properties,
+	}, nil
+}
+
+// Path is the canonical Scope-relative path.
+func (l Link) Path() string { return l.path }
+
+// TypeURL is the declared Type's descriptor URL.
+func (l Link) TypeURL() string { return l.typeURL }
+
+// Revision names the current state.
+func (l Link) Revision() Revision { return l.revision }
+
+// Source is the in-Scope source Bead reference.
+func (l Link) Source() Ref { return l.source }
+
+// Target is the target reference.
+func (l Link) Target() Ref { return l.target }
+
+// Attribution returns the carried attribution and whether one is present.
+func (l Link) Attribution() (Attribution, bool) { return l.attribution, !l.attribution.IsZero() }
+
+// Properties is the authored object.
+func (l Link) Properties() Properties { return l.properties }
+
+// URL is the absolute canonical Link URL under scopeURL.
+func (l Link) URL(scopeURL string) string { return CanonicalURL(scopeURL, l.path) }
+
+// IsZero reports a Link no constructor produced.
+func (l Link) IsZero() bool { return l.path == "" }
+
+// ExternalPolicy is a Link Type endpoint's external-endpoint policy: what an
+// out-of-Scope reference at that endpoint may be when the Link is created.
+type ExternalPolicy string
+
+// The three policies. An absent member means ExternalOpaque.
+const (
+	// ExternalNone rejects an out-of-Scope reference at the endpoint.
+	ExternalNone ExternalPolicy = "none"
+	// ExternalOpaque admits any external URI.
+	ExternalOpaque ExternalPolicy = "opaque"
+	// ExternalBead admits an external URI only when it is bead-shaped: a
+	// canonical HTTP(S) URL whose path contains a beads/{id} tail. Declared
+	// intent about creation time, never an ongoing guarantee.
+	ExternalBead ExternalPolicy = "bead"
+)
+
+// Valid reports whether p is one of the three policies.
+func (p ExternalPolicy) Valid() bool {
+	return p == ExternalNone || p == ExternalOpaque || p == ExternalBead
+}
+
+// EndpointConstraint is one endpoint's constraint on a Link Type Descriptor:
+// the Types an in-Scope Bead at that endpoint must conform to (every one
+// required; empty accepts any Bead) and the external-endpoint policy.
+type EndpointConstraint struct {
+	conformsTo []string
+	external   ExternalPolicy // "" when the member is absent
+}
+
+// NewEndpointConstraint builds a constraint. conformsTo holds canonical Type
+// URLs with no duplicates; external is a policy or "" for absent.
+func NewEndpointConstraint(conformsTo []string, external ExternalPolicy) (EndpointConstraint, error) {
+	urls, err := typeURLList(conformsTo, "endpoint conformsTo")
+	if err != nil {
+		return EndpointConstraint{}, err
+	}
+	if external != "" && !external.Valid() {
+		return EndpointConstraint{}, fmt.Errorf("%w: endpoint external policy %q is not none, opaque or bead", ErrValidation, external)
+	}
+	return EndpointConstraint{conformsTo: urls, external: external}, nil
+}
+
+// ConformsTo returns a copy of the required Type URLs, in authored order.
+func (c EndpointConstraint) ConformsTo() []string { return append([]string(nil), c.conformsTo...) }
+
+// External returns the declared policy and whether the member is present.
+func (c EndpointConstraint) External() (ExternalPolicy, bool) { return c.external, c.external != "" }
+
+// EffectiveExternal is the policy in force: the declared one, or
+// ExternalOpaque when absent.
+func (c EndpointConstraint) EffectiveExternal() ExternalPolicy {
+	if c.external == "" {
+		return ExternalOpaque
+	}
+	return c.external
+}
+
+// OwnedLinkDecl is one ownsOutgoing entry of a Bead Type Descriptor: the owned
+// Link Type, the required bound on the owned set, and an optional display
+// label that appears only in the descriptor, never in a Resource record.
+type OwnedLinkDecl struct {
+	typeURL string
+	label   string
+	max     int
+}
+
+// NewOwnedLinkDecl builds a declaration. Max is REQUIRED and positive — the
+// installer refuses an owning declaration without a bound, because the owned
+// plane must always be servable inline. label "" means absent.
+func NewOwnedLinkDecl(linkTypeURL, label string, max int) (OwnedLinkDecl, error) {
+	if err := ValidateTypeURL(linkTypeURL); err != nil {
+		return OwnedLinkDecl{}, fmt.Errorf("ownsOutgoing key: %w", err)
+	}
+	if max < 1 {
+		return OwnedLinkDecl{}, fmt.Errorf("%w: ownsOutgoing %s: max must be a positive integer", ErrValidation, linkTypeURL)
+	}
+	return OwnedLinkDecl{typeURL: linkTypeURL, label: label, max: max}, nil
+}
+
+// TypeURL is the owned Link Type.
+func (d OwnedLinkDecl) TypeURL() string { return d.typeURL }
+
+// Label returns the display label and whether one is present.
+func (d OwnedLinkDecl) Label() (string, bool) { return d.label, d.label != "" }
+
+// Max is the largest owned set the Type permits.
+func (d OwnedLinkDecl) Max() int { return d.max }
+
+// TypeDescriptor is one installed Type contract: the closed BDP v0 descriptor
+// shape, held with its canonical JSON and the fingerprint the installer keys
+// idempotence on. Its ID is immutable and names one immutable contract;
+// changing the category, the conformance graph, the properties constraints or
+// the endpoint constraints is a new Type ID.
+type TypeDescriptor struct {
+	id               string
+	name             string
+	description      string // "" when absent
+	describes        ResourceKind
+	conformsTo       []string
+	propertiesSchema string // "" when absent
+	source, target   EndpointConstraint
+	ownsOutgoing     []OwnedLinkDecl // sorted by TypeURL in code-unit order
+	canonical        []byte
+	fingerprint      string
+}
+
+// TypeDescriptorSpec is the input to NewTypeDescriptor. Optional string
+// members are absent when empty.
+type TypeDescriptorSpec struct {
+	// ID is the absolute canonical Type ID.
+	ID string
+	// Name is the required human-readable name; it does not establish identity.
+	Name string
+	// Description is optional documentation; "" means absent.
+	Description string
+	// Describes is the Resource category.
+	Describes ResourceKind
+	// ConformsTo lists direct parent Type IDs, unique, in no significant order
+	// — but the order is kept as authored and is part of the fingerprint.
+	ConformsTo []string
+	// PropertiesSchema is the absolute URL of the properties JSON Schema; ""
+	// means absent.
+	PropertiesSchema string
+	// Source and Target are required for a Link Type and must be nil for a
+	// Bead Type.
+	Source, Target *EndpointConstraint
+	// OwnsOutgoing declares the owned Link Types of a Bead Type; empty means
+	// the member is absent. Must be empty for a Link Type.
+	OwnsOutgoing []OwnedLinkDecl
+}
+
+// NewTypeDescriptor builds a descriptor under the closed-shape laws of the
+// pinned spec and schema bundle: a canonical Type ID, a nonempty name, a
+// category, unique canonical parent IDs that do not include the Type itself,
+// endpoint constraints exactly when the Type describes Links, ownsOutgoing
+// only when it describes Beads, and one declaration per owned Link Type.
+func NewTypeDescriptor(spec TypeDescriptorSpec) (TypeDescriptor, error) {
+	if err := ValidateTypeURL(spec.ID); err != nil {
+		return TypeDescriptor{}, fmt.Errorf("descriptor id: %w", err)
+	}
+	if spec.Name == "" {
+		return TypeDescriptor{}, fmt.Errorf("%w: descriptor %s: name must be nonempty", ErrValidation, spec.ID)
+	}
+	if !spec.Describes.Valid() {
+		return TypeDescriptor{}, fmt.Errorf("%w: descriptor %s: describes must be bead or link", ErrValidation, spec.ID)
+	}
+	conformsTo, err := typeURLList(spec.ConformsTo, "descriptor "+spec.ID+" conformsTo")
+	if err != nil {
+		return TypeDescriptor{}, err
+	}
+	for _, parent := range conformsTo {
+		if parent == spec.ID {
+			return TypeDescriptor{}, fmt.Errorf("%w: descriptor %s conforms to itself", ErrValidation, spec.ID)
+		}
+	}
+	if spec.PropertiesSchema != "" {
+		if err := ValidateTypeURL(spec.PropertiesSchema); err != nil {
+			return TypeDescriptor{}, fmt.Errorf("descriptor %s propertiesSchema: %w", spec.ID, err)
+		}
+	}
+	d := TypeDescriptor{
+		id:               spec.ID,
+		name:             spec.Name,
+		description:      spec.Description,
+		describes:        spec.Describes,
+		conformsTo:       conformsTo,
+		propertiesSchema: spec.PropertiesSchema,
+	}
+	switch spec.Describes {
+	case KindLink:
+		if spec.Source == nil || spec.Target == nil {
+			return TypeDescriptor{}, fmt.Errorf("%w: descriptor %s: a Link Type declares both source and target constraints", ErrValidation, spec.ID)
+		}
+		if len(spec.OwnsOutgoing) != 0 {
+			return TypeDescriptor{}, fmt.Errorf("%w: descriptor %s: a Link Type cannot own outgoing Links", ErrValidation, spec.ID)
+		}
+		d.source, d.target = *spec.Source, *spec.Target
+	case KindBead:
+		if spec.Source != nil || spec.Target != nil {
+			return TypeDescriptor{}, fmt.Errorf("%w: descriptor %s: a Bead Type has no endpoint constraints", ErrValidation, spec.ID)
+		}
+		owns := append([]OwnedLinkDecl(nil), spec.OwnsOutgoing...)
+		sort.SliceStable(owns, func(i, j int) bool {
+			return CompareCodeUnits(owns[i].typeURL, owns[j].typeURL) < 0
+		})
+		for i, decl := range owns {
+			if decl.typeURL == "" {
+				return TypeDescriptor{}, fmt.Errorf("%w: descriptor %s: ownsOutgoing entry %d is not a constructed declaration", ErrValidation, spec.ID, i)
+			}
+			if i > 0 && owns[i-1].typeURL == decl.typeURL {
+				return TypeDescriptor{}, fmt.Errorf("%w: descriptor %s owns %s twice", ErrValidation, spec.ID, decl.typeURL)
+			}
+		}
+		d.ownsOutgoing = owns
+	}
+	d.canonical = descriptorCanonicalJSON(d)
+	d.fingerprint = hashHex(d.canonical)
+	return d, nil
+}
+
+// descriptorWire is the closed JSON shape of a descriptor, members in the
+// code-unit order of their names so encoding/json already emits them sorted;
+// CanonicalizeJSON afterwards guarantees the RFC 8785 form regardless.
+type descriptorWire struct {
+	ConformsTo       []string                 `json:"conformsTo"`
+	Describes        ResourceKind             `json:"describes"`
+	Description      *string                  `json:"description,omitempty"`
+	ID               string                   `json:"id"`
+	Name             string                   `json:"name"`
+	OwnsOutgoing     map[string]ownedLinkWire `json:"ownsOutgoing,omitempty"`
+	PropertiesSchema *string                  `json:"propertiesSchema,omitempty"`
+	Source           *endpointConstraintWire  `json:"source,omitempty"`
+	Target           *endpointConstraintWire  `json:"target,omitempty"`
+}
+
+type ownedLinkWire struct {
+	Label *string `json:"label,omitempty"`
+	Max   int     `json:"max"`
+}
+
+type endpointConstraintWire struct {
+	ConformsTo []string        `json:"conformsTo"`
+	External   *ExternalPolicy `json:"external,omitempty"`
+}
+
+func optionalString(s string) *string {
+	if s == "" {
+		return nil
+	}
+	return &s
+}
+
+// endpointWire renders a constraint; typeURLList never returns a nil slice,
+// so an empty conformsTo encodes as [] rather than null.
+func endpointWire(c EndpointConstraint) *endpointConstraintWire {
+	w := &endpointConstraintWire{ConformsTo: c.conformsTo}
+	if c.external != "" {
+		ext := c.external
+		w.External = &ext
+	}
+	return w
+}
+
+// descriptorCanonicalJSON renders a validated descriptor's canonical bytes.
+// Every member is a validated string, an int or a non-nil slice, so neither
+// the encoder nor the canonicalizer can fail on it.
+func descriptorCanonicalJSON(d TypeDescriptor) []byte {
+	w := descriptorWire{
+		ConformsTo:       d.conformsTo,
+		Describes:        d.describes,
+		Description:      optionalString(d.description),
+		ID:               d.id,
+		Name:             d.name,
+		PropertiesSchema: optionalString(d.propertiesSchema),
+	}
+	if d.describes == KindLink {
+		w.Source, w.Target = endpointWire(d.source), endpointWire(d.target)
+	}
+	if len(d.ownsOutgoing) > 0 {
+		w.OwnsOutgoing = make(map[string]ownedLinkWire, len(d.ownsOutgoing))
+		for _, decl := range d.ownsOutgoing {
+			w.OwnsOutgoing[decl.typeURL] = ownedLinkWire{Label: optionalString(decl.label), Max: decl.max}
+		}
+	}
+	raw, _ := json.Marshal(w)
+	canonical, _ := CanonicalizeJSON(raw)
+	return canonical
+}
+
+// ParseTypeDescriptor admits a descriptor from its JSON representation — a
+// catalog file, the wire — under the closed shape: unknown members, duplicate
+// keys and every law NewTypeDescriptor enforces are refused.
+func ParseTypeDescriptor(raw []byte) (TypeDescriptor, error) {
+	canonical, err := CanonicalizeJSON(raw)
+	if err != nil {
+		return TypeDescriptor{}, fmt.Errorf("%w: descriptor: %s", ErrValidation, reason(err))
+	}
+	var w struct {
+		ID               *string          `json:"id"`
+		Name             *string          `json:"name"`
+		Description      *string          `json:"description"`
+		Describes        *ResourceKind    `json:"describes"`
+		ConformsTo       *[]string        `json:"conformsTo"`
+		PropertiesSchema *string          `json:"propertiesSchema"`
+		Source           *json.RawMessage `json:"source"`
+		Target           *json.RawMessage `json:"target"`
+		OwnsOutgoing     *map[string]struct {
+			Label *string `json:"label"`
+			Max   *int    `json:"max"`
+		} `json:"ownsOutgoing"`
+	}
+	dec := json.NewDecoder(bytes.NewReader(canonical))
+	dec.DisallowUnknownFields()
+	if err := dec.Decode(&w); err != nil {
+		return TypeDescriptor{}, fmt.Errorf("%w: descriptor: %v", ErrValidation, err)
+	}
+	if w.ID == nil || w.Name == nil || w.Describes == nil || w.ConformsTo == nil {
+		return TypeDescriptor{}, fmt.Errorf("%w: descriptor: id, name, describes and conformsTo are required", ErrValidation)
+	}
+	spec := TypeDescriptorSpec{ID: *w.ID, Name: *w.Name, Describes: *w.Describes, ConformsTo: *w.ConformsTo}
+	if w.Description != nil {
+		spec.Description = *w.Description
+	}
+	if w.PropertiesSchema != nil {
+		spec.PropertiesSchema = *w.PropertiesSchema
+	}
+	if w.Source != nil {
+		c, err := parseEndpointConstraint(*w.Source, "source")
+		if err != nil {
+			return TypeDescriptor{}, err
+		}
+		spec.Source = &c
+	}
+	if w.Target != nil {
+		c, err := parseEndpointConstraint(*w.Target, "target")
+		if err != nil {
+			return TypeDescriptor{}, err
+		}
+		spec.Target = &c
+	}
+	if w.OwnsOutgoing != nil {
+		if len(*w.OwnsOutgoing) == 0 {
+			return TypeDescriptor{}, fmt.Errorf("%w: descriptor: ownsOutgoing must declare at least one Link Type when present", ErrValidation)
+		}
+		for url, entry := range *w.OwnsOutgoing {
+			if entry.Max == nil {
+				return TypeDescriptor{}, fmt.Errorf("%w: descriptor: ownsOutgoing %s: max is required", ErrValidation, url)
+			}
+			label := ""
+			if entry.Label != nil {
+				if *entry.Label == "" {
+					return TypeDescriptor{}, fmt.Errorf("%w: descriptor: ownsOutgoing %s: label must be nonempty when present", ErrValidation, url)
+				}
+				label = *entry.Label
+			}
+			decl, err := NewOwnedLinkDecl(url, label, *entry.Max)
+			if err != nil {
+				return TypeDescriptor{}, err
+			}
+			spec.OwnsOutgoing = append(spec.OwnsOutgoing, decl)
+		}
+	}
+	return NewTypeDescriptor(spec)
+}
+
+func parseEndpointConstraint(raw json.RawMessage, member string) (EndpointConstraint, error) {
+	var w struct {
+		ConformsTo *[]string       `json:"conformsTo"`
+		External   *ExternalPolicy `json:"external"`
+	}
+	dec := json.NewDecoder(bytes.NewReader(raw))
+	dec.DisallowUnknownFields()
+	if err := dec.Decode(&w); err != nil {
+		return EndpointConstraint{}, fmt.Errorf("%w: descriptor %s: %v", ErrValidation, member, err)
+	}
+	if w.ConformsTo == nil {
+		return EndpointConstraint{}, fmt.Errorf("%w: descriptor %s: conformsTo is required", ErrValidation, member)
+	}
+	external := ExternalPolicy("")
+	if w.External != nil {
+		external = *w.External
+		if external == "" {
+			return EndpointConstraint{}, fmt.Errorf("%w: descriptor %s: external policy must be none, opaque or bead", ErrValidation, member)
+		}
+	}
+	return NewEndpointConstraint(*w.ConformsTo, external)
+}
+
+// typeURLList validates a Type-ID array: canonical URLs, no duplicates,
+// authored order preserved.
+func typeURLList(urls []string, what string) ([]string, error) {
+	out := make([]string, 0, len(urls))
+	seen := make(map[string]struct{}, len(urls))
+	for _, u := range urls {
+		if err := ValidateTypeURL(u); err != nil {
+			return nil, fmt.Errorf("%s: %w", what, err)
+		}
+		if _, dup := seen[u]; dup {
+			return nil, fmt.Errorf("%w: %s lists %s twice", ErrValidation, what, u)
+		}
+		seen[u] = struct{}{}
+		out = append(out, u)
+	}
+	return out, nil
+}
+
+// ID is the absolute canonical Type ID.
+func (t TypeDescriptor) ID() string { return t.id }
+
+// Name is the human-readable name.
+func (t TypeDescriptor) Name() string { return t.name }
+
+// Description returns the documentation and whether one is present.
+func (t TypeDescriptor) Description() (string, bool) { return t.description, t.description != "" }
+
+// Describes is the Resource category.
+func (t TypeDescriptor) Describes() ResourceKind { return t.describes }
+
+// ConformsTo returns a copy of the direct parent Type IDs, in authored order.
+func (t TypeDescriptor) ConformsTo() []string { return append([]string(nil), t.conformsTo...) }
+
+// PropertiesSchema returns the schema URL and whether one is present.
+func (t TypeDescriptor) PropertiesSchema() (string, bool) {
+	return t.propertiesSchema, t.propertiesSchema != ""
+}
+
+// Source returns the source constraint and whether the Type describes Links.
+func (t TypeDescriptor) Source() (EndpointConstraint, bool) { return t.source, t.describes == KindLink }
+
+// Target returns the target constraint and whether the Type describes Links.
+func (t TypeDescriptor) Target() (EndpointConstraint, bool) { return t.target, t.describes == KindLink }
+
+// OwnsOutgoing returns a copy of the owned-Link declarations, in code-unit
+// order of Link Type URL — the order ownedLinks groups are served in.
+func (t TypeDescriptor) OwnsOutgoing() []OwnedLinkDecl {
+	return append([]OwnedLinkDecl(nil), t.ownsOutgoing...)
+}
+
+// Owns returns the declaration for linkTypeURL and whether this Type owns it.
+// It is the owned-Link trigger law in predicate form: a mutation of a Link
+// whose Type the source's Bead Type owns versions the source.
+func (t TypeDescriptor) Owns(linkTypeURL string) (OwnedLinkDecl, bool) {
+	for _, decl := range t.ownsOutgoing {
+		if decl.typeURL == linkTypeURL {
+			return decl, true
+		}
+	}
+	return OwnedLinkDecl{}, false
+}
+
+// CanonicalJSON returns a copy of the descriptor's canonical bytes: the closed
+// shape, absent members omitted, in RFC 8785 form. It is what the storage leg
+// stores and what the fingerprint covers.
+func (t TypeDescriptor) CanonicalJSON() []byte { return append([]byte(nil), t.canonical...) }
+
+// Fingerprint is the lowercase hex SHA-256 of CanonicalJSON: the installer's
+// idempotence key and the descriptors table's UNIQUE column.
+//
+// DECISION: the fingerprint covers the descriptor alone, byte-level after
+// canonicalization. The pinned spec's "internal integrity fingerprint" covers
+// the whole contract closure (schemas included), which v0 does not fetch; a
+// closure-inclusive fingerprint is a P1/P3 extension of this definition, and
+// conformsTo order is significant to it because arrays are ordered in JSON.
+func (t TypeDescriptor) Fingerprint() string { return t.fingerprint }
+
+// IsZero reports a descriptor no constructor produced.
+func (t TypeDescriptor) IsZero() bool { return t.id == "" }
+
+// WitnessClaim is what this workspace's witness claims about the Scope, as
+// IdentityReader reports it. It is a REPORT, never an input: no request
+// carries one.
+type WitnessClaim struct {
+	// Held reports whether this workspace holds a witness for the Scope.
+	Held bool
+	// Epoch is the authority epoch the witness names.
+	Epoch uint64
+	// LedgerSeq and LedgerHash are the ledger head the witness recorded.
+	LedgerSeq  uint64
+	LedgerHash string
+	// Unverified is set by a restore (Admin.MarkUnverified) until a restore
+	// verb clears it; every protected operation refuses while it is set.
+	Unverified bool
+	// Pending names the kind of an unfinished multi-phase transition, or ""
+	// when none is recorded. Recovery runs before any assertion.
+	Pending string
+}
+
+// ScopeIdentity is the Scope row plus this workspace's witness claim: what
+// IdentityReader.Read answers and what every transition returns.
+type ScopeIdentity struct {
+	scopeURL    string
+	authorityID string
+	epoch       uint64
+	mintedAt    time.Time
+	claim       WitnessClaim
+}
+
+// ScopeIdentitySpec is the input to NewScopeIdentity.
+type ScopeIdentitySpec struct {
+	// ScopeURL is the canonical Scope URL the row holds.
+	ScopeURL string
+	// AuthorityID is the row's authority id (32 lowercase hex digits).
+	AuthorityID string
+	// Epoch is the row's authority epoch.
+	Epoch uint64
+	// MintedAt is when the Scope was minted.
+	MintedAt time.Time
+	// Claim is the witness's claim.
+	Claim WitnessClaim
+}
+
+// NewScopeIdentity builds the report, enforcing the Scope URL law, the id
+// shape, a minted-at instant and, when a ledger hash is claimed, its shape.
+func NewScopeIdentity(spec ScopeIdentitySpec) (ScopeIdentity, error) {
+	if err := ValidateScopeURL(spec.ScopeURL); err != nil {
+		return ScopeIdentity{}, err
+	}
+	if !isLowerHex(spec.AuthorityID, 32) {
+		return ScopeIdentity{}, fmt.Errorf("%w: authority id must be 32 lowercase hex digits", ErrValidation)
+	}
+	if spec.MintedAt.IsZero() {
+		return ScopeIdentity{}, fmt.Errorf("%w: Scope identity needs a minted-at instant", ErrValidation)
+	}
+	if spec.Claim.LedgerHash != "" && !isLowerHex(spec.Claim.LedgerHash, 64) {
+		return ScopeIdentity{}, fmt.Errorf("%w: witness ledger hash must be 64 lowercase hex digits", ErrValidation)
+	}
+	return ScopeIdentity{
+		scopeURL:    spec.ScopeURL,
+		authorityID: spec.AuthorityID,
+		epoch:       spec.Epoch,
+		mintedAt:    spec.MintedAt.UTC(),
+		claim:       spec.Claim,
+	}, nil
+}
+
+// ScopeURL is the canonical Scope URL.
+func (s ScopeIdentity) ScopeURL() string { return s.scopeURL }
+
+// AuthorityID is the Scope row's authority id.
+func (s ScopeIdentity) AuthorityID() string { return s.authorityID }
+
+// Epoch is the Scope row's authority epoch.
+func (s ScopeIdentity) Epoch() uint64 { return s.epoch }
+
+// MintedAt is when the Scope was minted, in UTC.
+func (s ScopeIdentity) MintedAt() time.Time { return s.mintedAt }
+
+// Claim is the witness's claim.
+func (s ScopeIdentity) Claim() WitnessClaim { return s.claim }
+
+// IsZero reports an identity no constructor produced.
+func (s ScopeIdentity) IsZero() bool { return s.scopeURL == "" }
+
+// LedgerDurability is what a provider declares about its ledger across a
+// database restore (ruling 11): whether the ledger is restored with the state
+// it fences, survives independently of it, or does not survive at all.
+type LedgerDurability string
+
+// The three declarations.
+const (
+	// LedgerInState: the ledger lives in the versioned state and is restored
+	// with it (Dolt, v0). A restore must show continuity through the ledger
+	// lane or rotate.
+	LedgerInState LedgerDurability = "in-state"
+	// LedgerIndependent: the ledger survives a state restore on its own; a
+	// restore re-validates ancestry and regrants.
+	LedgerIndependent LedgerDurability = "independent"
+	// LedgerNone: the ledger does not survive a restore; a restore always
+	// rotates.
+	LedgerNone LedgerDurability = "none"
+)
+
+// Valid reports whether d is one of the three declarations.
+func (d LedgerDurability) Valid() bool {
+	return d == LedgerInState || d == LedgerIndependent || d == LedgerNone
+}
+
+// LedgerEventKind is the closed set of ledger event kinds.
+type LedgerEventKind string
+
+// The eight kinds. Every mutation of the graph is one of them.
+const (
+	LedgerMint      LedgerEventKind = "mint"
+	LedgerInstall   LedgerEventKind = "install"
+	LedgerUpdate    LedgerEventKind = "update"
+	LedgerPromote   LedgerEventKind = "promote"
+	LedgerRotate    LedgerEventKind = "rotate"
+	LedgerAllocate  LedgerEventKind = "allocate"
+	LedgerTombstone LedgerEventKind = "tombstone"
+	LedgerRefuseURL LedgerEventKind = "refuse_url"
+)
+
+// Valid reports whether k is one of the eight kinds.
+func (k LedgerEventKind) Valid() bool {
+	_, ok := ledgerShapes[k]
+	return ok
+}
+
+// LedgerEventSpec is the input to NewLedgerEvent: every member of an event
+// except the hash, which is computed — or, when Hash is supplied, verified.
+type LedgerEventSpec struct {
+	// Seq is the event's position in the single-row sequence.
+	Seq uint64
+	// Kind is the event kind.
+	Kind LedgerEventKind
+	// OpID is the durable operation id (32 lowercase hex digits) the event
+	// belongs to; one operation may append several events.
+	OpID string
+	// Path is the canonical path of the Resource the event concerns; kinds
+	// update, allocate and tombstone.
+	Path string
+	// ScopeURL is the Scope URL the event names; kinds mint, rotate and
+	// refuse_url.
+	ScopeURL string
+	// ResourceKind accompanies Path.
+	ResourceKind ResourceKind
+	// Revision is the revision the event minted or records; required for
+	// update, optional for allocate and tombstone.
+	Revision Revision
+	// State is the tombstone's allocation state: pruned or erased.
+	State AllocationState
+	// Fingerprint is the installed descriptor's fingerprint (64 lowercase hex
+	// digits); kind install.
+	Fingerprint string
+	// AuthorityID and Epoch stamp the authority that appended the event.
+	AuthorityID string
+	Epoch       uint64
+	// At is when the event was appended; canonicalized to UTC microseconds.
+	At time.Time
+	// PrevHash is the previous event's hash, or GenesisHash for the first.
+	PrevHash string
+	// Hash, when nonempty, is the stored hash and must equal the computed one.
+	Hash string
+}
+
+// ledgerShape is the per-kind member table: which optional members a kind
+// requires and which it may carry. Members not listed are forbidden.
+//
+// DECISION: the schema says "CHECK per kind" without spelling the checks; this
+// table is the spelling, chosen so that every member an event carries is one
+// its kind has a meaning for. The hash layout does not depend on it — absent
+// members are omitted whatever the kind — so a later ruling that widens or
+// narrows a row changes validation, not any stored hash.
+type ledgerShape struct {
+	required, allowed ledgerMembers
+}
+
+type ledgerMembers struct{ path, scopeURL, resourceKind, revision, state, fingerprint bool }
+
+var ledgerShapes = map[LedgerEventKind]ledgerShape{
+	LedgerMint:      {required: ledgerMembers{scopeURL: true}, allowed: ledgerMembers{scopeURL: true}},
+	LedgerInstall:   {required: ledgerMembers{fingerprint: true}, allowed: ledgerMembers{fingerprint: true}},
+	LedgerUpdate:    {required: ledgerMembers{path: true, resourceKind: true, revision: true}, allowed: ledgerMembers{path: true, resourceKind: true, revision: true}},
+	LedgerPromote:   {},
+	LedgerRotate:    {required: ledgerMembers{scopeURL: true}, allowed: ledgerMembers{scopeURL: true}},
+	LedgerRefuseURL: {required: ledgerMembers{scopeURL: true}, allowed: ledgerMembers{scopeURL: true}},
+	LedgerAllocate:  {required: ledgerMembers{path: true, resourceKind: true}, allowed: ledgerMembers{path: true, resourceKind: true, revision: true}},
+	LedgerTombstone: {required: ledgerMembers{path: true, resourceKind: true, state: true}, allowed: ledgerMembers{path: true, resourceKind: true, state: true, revision: true}},
+}
+
+// LedgerEvent is one append-only, hash-chained ledger event. Its hash is
+// SHA-256 over the canonical bytes LedgerEventCanonicalBytes documents; the
+// value is built only by NewLedgerEvent, so an event that exists has a hash
+// that verifies.
+type LedgerEvent struct {
+	spec      LedgerEventSpec
+	canonical []byte
+}
+
+// NewLedgerEvent validates the spec against its kind's shape, computes the
+// canonical bytes and the hash, and — when spec.Hash was supplied — refuses
+// the event if the stored hash does not match the computed one, which is how
+// a tampered or corrupted stored event is detected on the way back in.
+func NewLedgerEvent(spec LedgerEventSpec) (LedgerEvent, error) {
+	shape, ok := ledgerShapes[spec.Kind]
+	if !ok {
+		return LedgerEvent{}, fmt.Errorf("%w: ledger event seq %d: unknown kind %q", ErrValidation, spec.Seq, spec.Kind)
+	}
+	fail := func(format string, args ...any) (LedgerEvent, error) {
+		return LedgerEvent{}, fmt.Errorf("%w: ledger event seq %d (%s): %s", ErrValidation, spec.Seq, spec.Kind, fmt.Sprintf(format, args...))
+	}
+	if !isLowerHex(spec.OpID, 32) {
+		return fail("op_id must be 32 lowercase hex digits")
+	}
+	if !isLowerHex(spec.AuthorityID, 32) {
+		return fail("authority_id must be 32 lowercase hex digits")
+	}
+	if spec.At.IsZero() {
+		return fail("at is required")
+	}
+	if !isLowerHex(spec.PrevHash, 64) {
+		return fail("prev_hash must be 64 lowercase hex digits")
+	}
+	present := ledgerMembers{
+		path:         spec.Path != "",
+		scopeURL:     spec.ScopeURL != "",
+		resourceKind: spec.ResourceKind != "",
+		revision:     !spec.Revision.IsZero(),
+		state:        spec.State != "",
+		fingerprint:  spec.Fingerprint != "",
+	}
+	for _, m := range []struct {
+		name                       string
+		present, required, allowed bool
+	}{
+		{"path", present.path, shape.required.path, shape.allowed.path},
+		{"scope_url", present.scopeURL, shape.required.scopeURL, shape.allowed.scopeURL},
+		{"resource_kind", present.resourceKind, shape.required.resourceKind, shape.allowed.resourceKind},
+		{"revision", present.revision, shape.required.revision, shape.allowed.revision},
+		{"state", present.state, shape.required.state, shape.allowed.state},
+		{"fingerprint", present.fingerprint, shape.required.fingerprint, shape.allowed.fingerprint},
+	} {
+		if m.required && !m.present {
+			return fail("%s is required", m.name)
+		}
+		if m.present && !m.allowed {
+			return fail("%s is not a member of this kind", m.name)
+		}
+	}
+	if present.scopeURL {
+		if err := ValidateScopeURL(spec.ScopeURL); err != nil {
+			return fail("scope_url: %s", reason(err))
+		}
+	}
+	if present.resourceKind && !spec.ResourceKind.Valid() {
+		return fail("resource_kind must be bead or link")
+	}
+	if present.path {
+		if err := ValidatePath(spec.Path, spec.ResourceKind); err != nil {
+			return fail("path: %s", reason(err))
+		}
+	}
+	if present.state && spec.State != AllocationPruned && spec.State != AllocationErased {
+		return fail("state must be pruned or erased")
+	}
+	if present.fingerprint && !isLowerHex(spec.Fingerprint, 64) {
+		return fail("fingerprint must be 64 lowercase hex digits")
+	}
+	spec.At = spec.At.UTC().Truncate(time.Microsecond)
+	canonical := ledgerEventCanonicalBytes(spec)
+	hash := hashHex(canonical)
+	if spec.Hash != "" && spec.Hash != hash {
+		return fail("stored hash %s does not verify (computed %s)", spec.Hash, hash)
+	}
+	spec.Hash = hash
+	return LedgerEvent{spec: spec, canonical: canonical}, nil
+}
+
+// Spec returns a copy of the event's members, hash included — what a
+// snapshot writes and a table row stores.
+func (e LedgerEvent) Spec() LedgerEventSpec { return e.spec }
+
+// Seq is the event's sequence number.
+func (e LedgerEvent) Seq() uint64 { return e.spec.Seq }
+
+// Kind is the event kind.
+func (e LedgerEvent) Kind() LedgerEventKind { return e.spec.Kind }
+
+// OpID is the operation id.
+func (e LedgerEvent) OpID() string { return e.spec.OpID }
+
+// Path is the Resource path, or "" for kinds that carry none.
+func (e LedgerEvent) Path() string { return e.spec.Path }
+
+// ScopeURL is the Scope URL, or "" for kinds that carry none.
+func (e LedgerEvent) ScopeURL() string { return e.spec.ScopeURL }
+
+// ResourceKind accompanies Path.
+func (e LedgerEvent) ResourceKind() ResourceKind { return e.spec.ResourceKind }
+
+// Revision is the revision carried, or the zero revision.
+func (e LedgerEvent) Revision() Revision { return e.spec.Revision }
+
+// State is the tombstone state, or "".
+func (e LedgerEvent) State() AllocationState { return e.spec.State }
+
+// Fingerprint is the installed fingerprint, or "".
+func (e LedgerEvent) Fingerprint() string { return e.spec.Fingerprint }
+
+// AuthorityID is the appending authority's id.
+func (e LedgerEvent) AuthorityID() string { return e.spec.AuthorityID }
+
+// Epoch is the appending authority's epoch.
+func (e LedgerEvent) Epoch() uint64 { return e.spec.Epoch }
+
+// At is when the event was appended, in UTC at microsecond precision.
+func (e LedgerEvent) At() time.Time { return e.spec.At }
+
+// PrevHash is the previous event's hash, or GenesisHash.
+func (e LedgerEvent) PrevHash() string { return e.spec.PrevHash }
+
+// Hash is the event's hash.
+func (e LedgerEvent) Hash() string { return e.spec.Hash }
+
+// CanonicalBytes returns a copy of the bytes the hash covers.
+func (e LedgerEvent) CanonicalBytes() []byte { return append([]byte(nil), e.canonical...) }
+
+// IsZero reports an event no constructor produced.
+func (e LedgerEvent) IsZero() bool { return e.spec.Hash == "" }
+
+// LedgerManifest describes one contiguous range of a Scope's ledger, as the
+// ledger lane snapshots and applies it: the Scope URL, the authority lineage,
+// the range, the hash the range continues from, and the range's head hash.
+//
+// DECISION: "authority lineage" is the hash of the Scope's mint event. The
+// design names the member without defining it; the mint event's hash covers
+// the Scope URL, the minting authority id and epoch, the operation id and the
+// instant, and is the value ruling 14's "earlier mint wins" compares — so it
+// is the lineage in the only sense the ledger can verify.
+type LedgerManifest struct {
+	scopeURL string
+	lineage  string
+	firstSeq uint64
+	lastSeq  uint64
+	prevHash string
+	headHash string
+}
+
+// LedgerManifestSpec is the input to NewLedgerManifest.
+type LedgerManifestSpec struct {
+	// ScopeURL is the Scope the ledger belongs to.
+	ScopeURL string
+	// Lineage is the mint event's hash.
+	Lineage string
+	// FirstSeq and LastSeq bound the range, inclusive.
+	FirstSeq, LastSeq uint64
+	// PrevHash is the hash the first event of the range links to: GenesisHash
+	// when the range starts at the mint event.
+	PrevHash string
+	// HeadHash is the last event's hash.
+	HeadHash string
+}
+
+// NewLedgerManifest validates the manifest's own shape; Covers checks it
+// against the events it claims to describe.
+func NewLedgerManifest(spec LedgerManifestSpec) (LedgerManifest, error) {
+	if err := ValidateScopeURL(spec.ScopeURL); err != nil {
+		return LedgerManifest{}, err
+	}
+	for _, h := range []struct{ name, value string }{
+		{"lineage", spec.Lineage}, {"prev_hash", spec.PrevHash}, {"head_hash", spec.HeadHash},
+	} {
+		if !isLowerHex(h.value, 64) {
+			return LedgerManifest{}, fmt.Errorf("%w: ledger manifest %s must be 64 lowercase hex digits", ErrValidation, h.name)
+		}
+	}
+	if spec.LastSeq < spec.FirstSeq {
+		return LedgerManifest{}, fmt.Errorf("%w: ledger manifest range %d..%d is empty", ErrValidation, spec.FirstSeq, spec.LastSeq)
+	}
+	return LedgerManifest{
+		scopeURL: spec.ScopeURL,
+		lineage:  spec.Lineage,
+		firstSeq: spec.FirstSeq,
+		lastSeq:  spec.LastSeq,
+		prevHash: spec.PrevHash,
+		headHash: spec.HeadHash,
+	}, nil
+}
+
+// ScopeURL is the Scope the ledger belongs to.
+func (m LedgerManifest) ScopeURL() string { return m.scopeURL }
+
+// Lineage is the mint event's hash.
+func (m LedgerManifest) Lineage() string { return m.lineage }
+
+// FirstSeq is the first sequence number of the range.
+func (m LedgerManifest) FirstSeq() uint64 { return m.firstSeq }
+
+// LastSeq is the last sequence number of the range.
+func (m LedgerManifest) LastSeq() uint64 { return m.lastSeq }
+
+// PrevHash is the hash the range continues from.
+func (m LedgerManifest) PrevHash() string { return m.prevHash }
+
+// HeadHash is the range's head hash.
+func (m LedgerManifest) HeadHash() string { return m.headHash }
+
+// IsZero reports a manifest no constructor produced.
+func (m LedgerManifest) IsZero() bool { return m.scopeURL == "" }
+
+// Covers is the pure half of LedgerApply's recovery predicate: the events are
+// exactly the range the manifest describes, contiguous, chained from PrevHash
+// to HeadHash, each hash verifying, and — when the range starts at the origin
+// — the first event is the mint event whose hash is the lineage. The store's
+// half (lineage matches the Scope row; the store's head equals PrevHash) is
+// the implementation's.
+func (m LedgerManifest) Covers(events []LedgerEvent) error {
+	want := m.lastSeq - m.firstSeq + 1
+	if uint64(len(events)) != want {
+		return fmt.Errorf("%w: ledger manifest covers %d events, %d supplied", ErrValidation, want, len(events))
+	}
+	if events[0].Seq() != m.firstSeq {
+		return fmt.Errorf("%w: ledger manifest starts at seq %d, events start at %d", ErrValidation, m.firstSeq, events[0].Seq())
+	}
+	if err := VerifyLedgerChain(m.prevHash, events); err != nil {
+		return err
+	}
+	if head := events[len(events)-1].Hash(); head != m.headHash {
+		return fmt.Errorf("%w: ledger manifest head %s, events end at %s", ErrValidation, m.headHash, head)
+	}
+	if m.prevHash == GenesisHash {
+		if events[0].Kind() != LedgerMint {
+			return fmt.Errorf("%w: a ledger range from genesis must begin with the mint event", ErrValidation)
+		}
+		if events[0].Hash() != m.lineage {
+			return fmt.Errorf("%w: ledger manifest lineage %s is not the mint event's hash %s", ErrValidation, m.lineage, events[0].Hash())
+		}
+	}
+	return nil
+}
+
+// OwnedLinkGroup is one ownedLinks entry: the owned Link Type and the owned
+// Links of one Bead under it, complete records in code-unit order of path. An
+// owned Type with no Links is an EMPTY group, never an absent one.
+type OwnedLinkGroup struct {
+	TypeURL string
+	Links   []Link
+}
+
+// BeadRecord is a Bead with its complete ownedLinks expansion, assembled in
+// the same snapshot: one group per owned Link Type the Bead's Type declares,
+// in code-unit order of TypeURL, empty groups included; nil when the Type owns
+// nothing. Every projection — singleton, collection item, selection item —
+// returns records, because the Bead's revision covers its owned Links.
+type BeadRecord struct {
+	Bead       Bead
+	OwnedLinks []OwnedLinkGroup
+}
+
+// CheckBeadRecord verifies a record against the owned-Link declarations of the
+// Bead's Type: exactly one group per declaration, in code-unit order, and in
+// every group each Link's Type equals the group key, its source is the Bead,
+// and the Links ascend in code-unit order of path with no repeats. It is the
+// acceptance law the plan states and the storage transactions run.
+func CheckBeadRecord(record BeadRecord, owns []OwnedLinkDecl) error {
+	if len(record.OwnedLinks) != len(owns) {
+		return fmt.Errorf("%w: bead %s: %d ownedLinks groups for %d owned Types", ErrValidation, record.Bead.Path(), len(record.OwnedLinks), len(owns))
+	}
+	sorted := append([]OwnedLinkDecl(nil), owns...)
+	sort.SliceStable(sorted, func(i, j int) bool {
+		return CompareCodeUnits(sorted[i].typeURL, sorted[j].typeURL) < 0
+	})
+	for i, group := range record.OwnedLinks {
+		if group.TypeURL != sorted[i].typeURL {
+			return fmt.Errorf("%w: bead %s: ownedLinks group %d is %s, want %s", ErrValidation, record.Bead.Path(), i, group.TypeURL, sorted[i].typeURL)
+		}
+		for j, link := range group.Links {
+			if link.TypeURL() != group.TypeURL {
+				return fmt.Errorf("%w: bead %s: owned Link %s has type %s under group %s", ErrValidation, record.Bead.Path(), link.Path(), link.TypeURL(), group.TypeURL)
+			}
+			if !link.Source().InScope() || link.Source().Path() != record.Bead.Path() {
+				return fmt.Errorf("%w: bead %s: owned Link %s has another source", ErrValidation, record.Bead.Path(), link.Path())
+			}
+			if j > 0 && CompareCodeUnits(group.Links[j-1].Path(), link.Path()) >= 0 {
+				return fmt.Errorf("%w: bead %s: owned Links under %s are not in ascending code-unit order", ErrValidation, record.Bead.Path(), group.TypeURL)
+			}
+		}
+	}
+	return nil
+}
+
+// BeadPage is one page of BeadRecords, in code-unit order of path, and the
+// cursor that continues it ("" after the last page).
+type BeadPage struct {
+	Items []BeadRecord
+	Next  Cursor
+}
+
+// LinkPage is one page of Links, in code-unit order of path, and the cursor
+// that continues it ("" after the last page).
+type LinkPage struct {
+	Items []Link
+	Next  Cursor
+}
