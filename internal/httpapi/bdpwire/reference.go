@@ -1,9 +1,7 @@
 package bdpwire
 
 import (
-	"bytes"
 	"encoding/json"
-	"errors"
 )
 
 // Reference is the bundle's `reference` sum: how anything in BDP points at
@@ -53,44 +51,11 @@ func (r Reference) MarshalJSON() ([]byte, error) {
 
 // UnmarshalJSON accepts the two arms of the sum and nothing else — not null,
 // not a number, not an object with members beyond uri and revision (the
-// bundle closes pinnedReference), and not an object arm whose revision is
-// absent or empty.
+// bundle closes pinnedReference; names are exact, so "URI" is a stranger
+// and a duplicate is refused), not an object arm whose uri is null or whose
+// revision is absent, null or empty. It is decodeReference (decode.go), so a
+// Reference decoded through encoding/json is held to the same rule as one
+// nested in a record decoded through Unmarshal.
 func (r *Reference) UnmarshalJSON(data []byte) error {
-	data = bytes.TrimSpace(data)
-	if len(data) == 0 {
-		return errors.New("bdpwire: empty reference")
-	}
-	switch data[0] {
-	case '"':
-		var uri string
-		if err := json.Unmarshal(data, &uri); err != nil {
-			return err
-		}
-		*r = Reference{URI: uri}
-		return nil
-	case '{':
-		var pinned pinnedReferenceJSON
-		if err := Unmarshal(data, &pinned); err != nil {
-			return err
-		}
-		// The strict decode above settles the member set and types; presence
-		// of the two required members is what it cannot see, so ask the
-		// object directly.
-		var present map[string]json.RawMessage
-		if err := json.Unmarshal(data, &present); err != nil {
-			return err
-		}
-		if _, ok := present["uri"]; !ok {
-			return errors.New("bdpwire: pinned reference is missing uri")
-		}
-		if _, ok := present["revision"]; !ok {
-			return errors.New("bdpwire: pinned reference is missing revision")
-		}
-		if pinned.Revision == "" {
-			return errors.New("bdpwire: pinned reference revision must be nonempty")
-		}
-		*r = Reference{URI: pinned.URI, Revision: pinned.Revision}
-		return nil
-	}
-	return errors.New("bdpwire: reference must be a URI string or a pinned-reference object")
+	return decodeReference(data, r, "reference")
 }

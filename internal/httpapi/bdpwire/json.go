@@ -1,10 +1,7 @@
 package bdpwire
 
 import (
-	"bytes"
 	"encoding/json"
-	"errors"
-	"io"
 )
 
 // Properties is a Resource's `properties` document: the one member of a
@@ -81,29 +78,3 @@ func (s TypeSummaries) MarshalJSON() ([]byte, error) {
 // code-unit order of their canonical ids. An entry is present, possibly
 // empty, for every Link Type the Bead's Type owns.
 type OwnedLinks map[string]LinkRecords
-
-// Unmarshal decodes one JSON document into v strictly: an unknown member in
-// any closed envelope — at the top or nested anywhere beneath — is an error,
-// and so is anything after the document. The open places (Properties,
-// ReadProblem.Extensions) decode themselves and are unaffected. This is the
-// decode a conformance check wants; a caller that wants a lenient read uses
-// encoding/json directly.
-func Unmarshal(data []byte, v any) error {
-	return Decode(bytes.NewReader(data), v)
-}
-
-// Decode is Unmarshal over a reader.
-func Decode(r io.Reader, v any) error {
-	dec := json.NewDecoder(r)
-	dec.DisallowUnknownFields()
-	if err := dec.Decode(v); err != nil {
-		return err
-	}
-	if _, err := dec.Token(); err != io.EOF {
-		if err == nil {
-			return errors.New("bdpwire: trailing data after JSON document")
-		}
-		return err
-	}
-	return nil
-}

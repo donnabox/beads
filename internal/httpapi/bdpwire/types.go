@@ -1,5 +1,7 @@
 package bdpwire
 
+import "fmt"
+
 // BDPVersion is the only value `bdpVersion` takes for a BDP v0 Scope (bundle
 // `bdpVersion`: const "0"). It names the complete protocol version, not a
 // feature level: a client that does not implement the advertised value stops
@@ -44,6 +46,26 @@ type ReadDiscovery struct {
 	// absent or empty means no such policy, which is why omitempty is
 	// lossless here.
 	MaximumEndpointMultiplicity []MaximumEndpointMultiplicityPolicy `json:"maximumEndpointMultiplicity,omitempty"`
+}
+
+// Validate checks the members the bundle pins to one value: bdpVersion is
+// BDPVersion ("0") — a client that does not implement the advertised
+// version stops rather than guessing — and profile is ProfileRead, the only
+// profile a Read discovery document may advertise; and, when order is
+// present, that it names a defined collection order. These are structural
+// constants the bundle states about the bytes, so they are checked here and
+// not left to a graph law (doc.go); decoding alone settles the shape.
+func (d ReadDiscovery) Validate() error {
+	if d.BDPVersion != BDPVersion {
+		return fmt.Errorf("bdpwire: discovery bdpVersion %q, want %q", d.BDPVersion, BDPVersion)
+	}
+	if d.Profile != ProfileRead {
+		return fmt.Errorf("bdpwire: discovery profile %q, want %q for a Read discovery document", d.Profile, ProfileRead)
+	}
+	if d.Order != "" && !d.Order.Valid() {
+		return fmt.Errorf("bdpwire: discovery order %q is not a defined collection order", d.Order)
+	}
+	return nil
 }
 
 // AdvertisedLimits is the `advertisedLimits` envelope: the optional `limits`

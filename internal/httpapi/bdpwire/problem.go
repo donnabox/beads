@@ -2,7 +2,6 @@ package bdpwire
 
 import (
 	"encoding/json"
-	"errors"
 	"fmt"
 	"reflect"
 	"strings"
@@ -197,39 +196,11 @@ func (p ReadProblem) MarshalJSON() ([]byte, error) {
 	return json.Marshal(members)
 }
 
-// UnmarshalJSON splits the object into the named members, decoded strictly
-// (a wrong type for a named member is an error, and an ArchivedAt object is
-// held to the closed pinned-reference shape), and the rest, kept verbatim in
-// Extensions.
+// UnmarshalJSON splits the object into the named members, decoded under the
+// closed rule (exact names, no null, a wrong type is an error, an ArchivedAt
+// object is held to the closed pinned-reference shape, type/code/retry
+// present), and the rest, kept verbatim in Extensions. It is decodeProblem
+// (decode.go).
 func (p *ReadProblem) UnmarshalJSON(data []byte) error {
-	var members map[string]json.RawMessage
-	if err := json.Unmarshal(data, &members); err != nil {
-		return err
-	}
-	if members == nil {
-		return errors.New("bdpwire: problem must be an object")
-	}
-	named := make(map[string]json.RawMessage, len(members))
-	var extensions map[string]json.RawMessage
-	for name, value := range members {
-		if readProblemMembers[name] {
-			named[name] = value
-			continue
-		}
-		if extensions == nil {
-			extensions = map[string]json.RawMessage{}
-		}
-		extensions[name] = value
-	}
-	namedBytes, err := json.Marshal(named)
-	if err != nil {
-		return err
-	}
-	var decoded readProblemMembersOnly
-	if err := Unmarshal(namedBytes, &decoded); err != nil {
-		return err
-	}
-	*p = ReadProblem(decoded)
-	p.Extensions = extensions
-	return nil
+	return decodeProblem(data, p, "problem")
 }

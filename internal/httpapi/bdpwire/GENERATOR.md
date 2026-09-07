@@ -79,7 +79,7 @@ loses precisely the parts that carry protocol meaning:
 | `bdpVersion` (`const "0"`), `readDiscovery.profile` (`const "read"`) | `interface{}` |
 | collection `next` — `oneOf` URL / null | `Next interface{}` |
 | `readProblem.allOf[*].if/then` — code → type/status/retry, `archivedAt` gating | dropped: no table, no `archivedAt` member |
-| `additionalProperties: false` on every closed envelope | not enforced: the generated `UnmarshalJSON` checks required members and `minLength`, then passes unknown members through `json.Unmarshal` silently |
+| `additionalProperties: false` on every closed envelope | not enforced: the generated `UnmarshalJSON` checks required members and `minLength`, then passes unknown members through `json.Unmarshal` silently — which also matches names case-insensitively and maps null onto the zero value (P0 council findings 3 and 4), so the closed shape needs a decoder of its own either way |
 | `ownsOutgoing` `propertyNames`, `uniqueItems` | dropped (harmless) |
 
 Every row above would need a hand-written wrapper anyway — a sum type for
@@ -115,6 +115,13 @@ generator's contract is turned into a gate instead:
   Transactional discovery examples refused by the Read type.
 - `decode_test.go` — the strict/open posture, the Reference sum, `next:
   null`, never-null arrays and properties, extension members, the table.
+- `strict_test.go` — the decoder's own contract (`decode.go`, P0 council):
+  exact, case-sensitive member names and no duplicates; null refused
+  wherever the bundle gives no null; required members present; each
+  member's JSON type; integers decoded exactly from any RFC 8259 spelling
+  (`1.0`, `1e0`, `100e-2`) within the documented int range; the two
+  discovery constants through `ReadDiscovery.Validate`; the encoding/json
+  entry points of `Reference` and `ReadProblem` held to the same rule.
 - `matrix_test.go` — the pinned Read matrix validates responses only against
   definitions bound here; its problem expectations agree with the table; its
   discovery pointers resolve through `ReadDiscovery`; it and its catalog name
