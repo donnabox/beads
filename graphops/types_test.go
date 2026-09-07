@@ -1,0 +1,651 @@
+package graphops_test
+
+import (
+	"encoding/json"
+	"errors"
+	"regexp"
+	"strings"
+	"testing"
+	"time"
+
+	"github.com/steveyegge/beads/beadserrors"
+	"github.com/steveyegge/beads/graphops"
+)
+
+var lowerHex32 = regexp.MustCompile(`^[0-9a-f]{32}$`)
+
+func TestRevision(t *testing.T) {
+	a, b := graphops.MintRevision(), graphops.MintRevision()
+	if !lowerHex32.MatchString(a.String()) || !lowerHex32.MatchString(b.String()) {
+		t.Fatalf("minted revisions must be 32 lowercase hex digits: %q %q", a, b)
+	}
+	if a.Equal(b) {
+		t.Fatal("two minted revisions collided")
+	}
+	if _, err := graphops.NewRevision(""); !errors.Is(err, graphops.ErrValidation) {
+		t.Fatalf("empty revision: %v", err)
+	}
+	foreign, err := graphops.NewRevision("opaque-task-revision")
+	if err != nil || foreign.String() != "opaque-task-revision" || foreign.IsZero() {
+		t.Fatalf("a foreign authority's revision must be carried as written: %v", err)
+	}
+	if !(graphops.Revision{}).IsZero() {
+		t.Fatal("zero revision must report IsZero")
+	}
+	if !foreign.Equal(foreign) {
+		t.Fatal("a revision equals itself")
+	}
+}
+
+func TestAttribution(t *testing.T) {
+	if _, err := graphops.NewAttribution("", graphops.AttributionClaimed); !errors.Is(err, graphops.ErrValidation) {
+		t.Fatalf("empty principal: %v", err)
+	}
+	if _, err := graphops.NewAttribution("agent:x", "verified"); !errors.Is(err, graphops.ErrValidation) {
+		t.Fatalf("a status asserting authentication must not exist: %v", err)
+	}
+	a, err := graphops.NewAttribution("agent:planner", graphops.AttributionUnknown)
+	if err != nil || a.Principal() != "agent:planner" || a.Status() != graphops.AttributionUnknown || a.IsZero() {
+		t.Fatalf("attribution: %+v %v", a, err)
+	}
+	if !(graphops.Attribution{}).IsZero() {
+		t.Fatal("zero attribution is absent")
+	}
+	for _, s := range []graphops.AttributionStatus{graphops.AttributionClaimed, graphops.AttributionUnknown} {
+		if !s.Valid() {
+			t.Errorf("%s should be valid", s)
+		}
+	}
+	if graphops.AttributionStatus("").Valid() {
+		t.Error("empty status should not be valid")
+	}
+}
+
+func TestProperties(t *testing.T) {
+	p, err := graphops.NewProperties([]byte(` {"b" : 1 , "a" : 1.0 } `))
+	if err != nil {
+		t.Fatal(err)
+	}
+	if p.String() != `{"a":1,"b":1}` || string(p.Bytes()) != `{"a":1,"b":1}` || p.IsEmpty() {
+		t.Fatalf("canonical properties: %s", p)
+	}
+	for _, in := range []string{`[1]`, `"x"`, `1`, `null`, `true`, `{"a":1,"a":2}`, `{`, ``, `{} x`} {
+		if _, err := graphops.NewProperties([]byte(in)); !errors.Is(err, graphops.ErrValidation) {
+			t.Errorf("properties %q: want ErrValidation, got %v", in, err)
+		}
+	}
+	empty, err := graphops.NewProperties([]byte(` { } `))
+	if err != nil || !empty.IsEmpty() || empty.String() != "{}" {
+		t.Fatalf("empty object: %v %s", err, empty)
+	}
+	var zero graphops.Properties
+	if string(zero.Bytes()) != "{}" || zero.String() != "{}" || !zero.IsEmpty() || !zero.Equal(empty) {
+		t.Fatal("zero Properties is the empty object")
+	}
+	// Equality is RFC 6902 §4.6.
+	q, _ := graphops.NewProperties([]byte(`{"a":1.0,"b":100e-2}`))
+	if !p.Equal(q) || !q.Equal(p) {
+		t.Fatal("numerically equal documents must be Equal")
+	}
+	r, _ := graphops.NewProperties([]byte(`{"a":1,"b":2}`))
+	if p.Equal(r) {
+		t.Fatal("different documents must not be Equal")
+	}
+	// Bytes() is a copy.
+	b := p.Bytes()
+	b[1] = 'x'
+	if p.String() != `{"a":1,"b":1}` {
+		t.Fatal("Bytes() must not alias the value")
+	}
+	// JSON round trip through a struct.
+	var holder struct {
+		P graphops.Properties `json:"p"`
+	}
+	if err := json.Unmarshal([]byte(`{"p":{"z":1,"y":2}}`), &holder); err != nil {
+		t.Fatal(err)
+	}
+	if holder.P.String() != `{"y":2,"z":1}` {
+		t.Fatalf("unmarshaled %s", holder.P)
+	}
+	out, err := json.Marshal(holder)
+	if err != nil || string(out) != `{"p":{"y":2,"z":1}}` {
+		t.Fatalf("marshaled %s %v", out, err)
+	}
+	if err := json.Unmarshal([]byte(`{"p":[1]}`), &holder); !errors.Is(err, graphops.ErrValidation) {
+		t.Fatalf("unmarshal of a non-object: %v", err)
+	}
+	raw, err := p.MarshalJSON()
+	if err != nil || string(raw) != p.String() {
+		t.Fatalf("MarshalJSON: %s %v", raw, err)
+	}
+}
+
+func TestRef(t *testing.T) {
+	const scope = "https://beads.example/acme/"
+	in, err := graphops.NewInScopeRef("beads/task-42", "")
+	if err != nil {
+		t.Fatal(err)
+	}
+	if !in.InScope() || in.Path() != "beads/task-42" || in.URI() != "" || in.Pinned() || in.Pin() != "" || in.IsZero() ||
+		in.URL(scope) != "https://beads.example/acme/beads/task-42" {
+		t.Fatalf("in-Scope ref: %+v", in)
+	}
+	if _, err := graphops.NewInScopeRef("links/x", ""); !errors.Is(err, graphops.ErrValidation) {
+		t.Fatalf("a Link path is not an endpoint: %v", err)
+	}
+	if _, err := graphops.NewInScopeRef("beads/caf%c3%a9", ""); !errors.Is(err, graphops.ErrValidation) {
+		t.Fatalf("a noncanonical path is refused, not trimmed: %v", err)
+	}
+	if !(graphops.Ref{}).IsZero() {
+		t.Fatal("zero Ref is absent")
+	}
+
+	for _, tc := range []struct {
+		ref     string
+		inScope bool
+		path    string
+		uri     string
+		reject  bool
+	}{
+		{"beads/task-42", true, "beads/task-42", "", false},
+		{"https://beads.example/acme/beads/task-42", true, "beads/task-42", "", false},
+		{"https://beads.example/acme/beads/Task-42", true, "beads/Task-42", "", false},
+		{"https://beads.example/acme/beads/a/b/c", true, "beads/a/b/c", "", false},
+		// Aliases of the Scope URL claim the Scope and must be canonical.
+		{"https://BEADS.example/acme/beads/task-42", false, "", "", true},
+		{"HTTPS://beads.example/acme/beads/task-42", false, "", "", true},
+		{"https://beads.example:443/acme/beads/task-42", false, "", "", true},
+		{"https://beads.example/acme/./beads/task-42", false, "", "", true},
+		{"https://beads.example/x/../acme/beads/task-42", false, "", "", true},
+		{"https://beads.example/acme/beads/task%2D42", false, "", "", true},
+		{"https://beads.example/acme/beads/caf%c3%a9", false, "", "", true},
+		{"https://beads.example/acme/beads/task-42?x=1", false, "", "", true},
+		{"https://beads.example/acme/beads/task-42#f", false, "", "", true},
+		// Under the Scope but not a Bead.
+		{"https://beads.example/acme/links/l1", false, "", "", true},
+		{"https://beads.example/acme/alias/x", false, "", "", true},
+		{"https://beads.example/acme/", false, "", "", true},
+		{"https://beads.example/acme/other/x", false, "", "", true},
+		{"https://beads.example/acme/beads/", false, "", "", true},
+		// Local spellings that are not Bead IDs.
+		{"links/l1", false, "", "", true},
+		{"alias/x", false, "", "", true},
+		{"beads/x?y", false, "", "", true},
+		{"beads/", false, "", "", true},
+		{"", false, "", "", true},
+		{"not a uri", false, "", "", true},
+		{"//beads.example/acme/beads/x", false, "", "", true},
+		{"../beads/x", false, "", "", true},
+		{"https://beads.example/acme/beads/a b", false, "", "", true},
+		{"urn:isbn:0451450523 x", false, "", "", true},
+		{"ht_tp://x", false, "", "", true},
+		{"1abc:xyz", false, "", "", true},
+		{"urn:x%2", false, "", "", true},
+		{"urn:x%zz", false, "", "", true},
+		// Aliases through an empty port and through dot segments at the end.
+		{"https://beads.example:/acme/beads/x", false, "", "", true},
+		{"https://beads.example/acme/beads/x/.", false, "", "", true},
+		{"https://beads.example/acme/beads/x/..", false, "", "", true},
+		{"https://beads.example/../acme/beads/x", false, "", "", true},
+		// External: preserved byte-identically.
+		{"https://github.example/issues/123", false, "", "https://github.example/issues/123", false},
+		{"https://beads.example/acmeX/beads/x", false, "", "https://beads.example/acmeX/beads/x", false},
+		{"https://beads.example/acme", false, "", "https://beads.example/acme", false},
+		{"https://beads.example:8443/acme/beads/x", false, "", "https://beads.example:8443/acme/beads/x", false},
+		{"http://beads.example/acme/beads/x", false, "", "http://beads.example/acme/beads/x", false},
+		{"https://other.example/acme/beads/x", false, "", "https://other.example/acme/beads/x", false},
+		{"urn:isbn:0451450523", false, "", "urn:isbn:0451450523", false},
+		{"mailto:a@b.example", false, "", "mailto:a@b.example", false},
+		{"HTTPS://Other.Example/X", false, "", "HTTPS://Other.Example/X", false},
+		{"https://[::1]/beads/x", false, "", "https://[::1]/beads/x", false},
+		{"https://beads.example", false, "", "https://beads.example", false},
+		{"https://[zzz]/x", false, "", "https://[zzz]/x", false},
+	} {
+		got, err := graphops.ParseRef(scope, tc.ref, "")
+		if tc.reject {
+			if !errors.Is(err, graphops.ErrValidation) {
+				t.Errorf("ParseRef(%q): want ErrValidation, got %v (%+v)", tc.ref, err, got)
+			}
+			continue
+		}
+		if err != nil {
+			t.Errorf("ParseRef(%q): %v", tc.ref, err)
+			continue
+		}
+		if got.InScope() != tc.inScope || got.Path() != tc.path || got.URI() != tc.uri {
+			t.Errorf("ParseRef(%q) = inScope %v path %q uri %q", tc.ref, got.InScope(), got.Path(), got.URI())
+		}
+		if got.URL(scope) != tc.uri && got.URL(scope) != scope+tc.path {
+			t.Errorf("ParseRef(%q).URL = %q", tc.ref, got.URL(scope))
+		}
+	}
+	// IPv6 alias of an IPv6 Scope.
+	v6, err := graphops.ParseRef("https://[::1]:8443/s/", "https://[0:0:0:0:0:0:0:1]:8443/s/beads/x", "")
+	if !errors.Is(err, graphops.ErrValidation) {
+		t.Fatalf("uncompressed IPv6 alias of the Scope must be refused: %v %+v", err, v6)
+	}
+	v6ok, err := graphops.ParseRef("https://[::1]:8443/s/", "https://[::1]:8443/s/beads/x", "")
+	if err != nil || !v6ok.InScope() {
+		t.Fatalf("canonical IPv6 in-Scope ref: %v", err)
+	}
+	// An invalid Scope is the caller's error.
+	if _, err := graphops.ParseRef("https://beads.example/acme", "beads/x", ""); !errors.Is(err, graphops.ErrValidation) {
+		t.Fatalf("invalid scope: %v", err)
+	}
+	// Pins are provenance, not identity.
+	pinned, _ := graphops.ParseRef(scope, "beads/x", "rev1")
+	unpinned, _ := graphops.ParseRef(scope, "https://beads.example/acme/beads/x", "")
+	if !pinned.Pinned() || pinned.Pin() != "rev1" || !pinned.SameURI(unpinned) || pinned.Equal(unpinned) || !pinned.Equal(pinned) {
+		t.Fatal("pins must be ignored by SameURI and honored by Equal")
+	}
+	ext, _ := graphops.ParseRef(scope, "https://github.example/issues/123", "8f0e2b")
+	if !ext.Pinned() || ext.Pin() != "8f0e2b" || ext.SameURI(pinned) || ext.URL(scope) != "https://github.example/issues/123" {
+		t.Fatal("external pin must be carried byte-identically")
+	}
+}
+
+func TestBeadAndLink(t *testing.T) {
+	const scope = "https://beads.example/acme/"
+	rev := graphops.MintRevision()
+	attr, _ := graphops.NewAttribution("agent:planner", graphops.AttributionClaimed)
+	props, _ := graphops.NewProperties([]byte(`{"title":"Specify BDP mutation","status":"open"}`))
+	bead, err := graphops.NewBead(graphops.BeadSpec{Path: "beads/task-42", TypeURL: "https://work.example/types/task", Revision: rev, Attribution: attr, Properties: props})
+	if err != nil {
+		t.Fatal(err)
+	}
+	gotAttr, present := bead.Attribution()
+	if bead.Path() != "beads/task-42" || bead.TypeURL() != "https://work.example/types/task" || !bead.Revision().Equal(rev) ||
+		!present || gotAttr != attr || !bead.Properties().Equal(props) || bead.URL(scope) != scope+"beads/task-42" || bead.IsZero() {
+		t.Fatalf("bead accessors: %+v", bead)
+	}
+	plain, _ := graphops.NewBead(graphops.BeadSpec{Path: "beads/x", TypeURL: "https://work.example/types/task", Revision: rev})
+	if _, present := plain.Attribution(); present || !plain.Properties().IsEmpty() {
+		t.Fatal("absent attribution and empty properties are the defaults")
+	}
+	if !(graphops.Bead{}).IsZero() {
+		t.Fatal("zero Bead")
+	}
+	for name, spec := range map[string]graphops.BeadSpec{
+		"bad path":      {Path: "beads/x/", TypeURL: "https://work.example/types/task", Revision: rev},
+		"link path":     {Path: "links/x", TypeURL: "https://work.example/types/task", Revision: rev},
+		"bad type":      {Path: "beads/x", TypeURL: "https://Work.example/types/task", Revision: rev},
+		"zero revision": {Path: "beads/x", TypeURL: "https://work.example/types/task"},
+	} {
+		if _, err := graphops.NewBead(spec); !errors.Is(err, graphops.ErrValidation) {
+			t.Errorf("bead %s: want ErrValidation, got %v", name, err)
+		}
+	}
+
+	source, _ := graphops.NewInScopeRef("beads/task-42", "")
+	target, _ := graphops.ParseRef(scope, "https://beads.example/acme/beads/person-7", "")
+	external, _ := graphops.ParseRef(scope, "https://github.example/issues/123", "8f0e2b")
+	link, err := graphops.NewLink(graphops.LinkSpec{Path: "links/assigned-to-81", TypeURL: "https://work.example/types/assigned-to", Revision: rev, Source: source, Target: target})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if link.Path() != "links/assigned-to-81" || link.TypeURL() != "https://work.example/types/assigned-to" || !link.Revision().Equal(rev) ||
+		!link.Source().SameURI(source) || !link.Target().SameURI(target) || link.URL(scope) != scope+"links/assigned-to-81" || link.IsZero() {
+		t.Fatalf("link accessors: %+v", link)
+	}
+	if _, present := link.Attribution(); present || !link.Properties().IsEmpty() {
+		t.Fatal("absent attribution and empty properties are the defaults")
+	}
+	ext, err := graphops.NewLink(graphops.LinkSpec{Path: "links/cites/1", TypeURL: "https://work.example/types/cites", Revision: rev, Source: source, Target: external, Attribution: attr, Properties: props})
+	if err != nil || !ext.Target().Pinned() || ext.Target().URI() != "https://github.example/issues/123" {
+		t.Fatalf("external target: %v", err)
+	}
+	if a, present := ext.Attribution(); !present || a != attr || !ext.Properties().Equal(props) {
+		t.Fatal("link attribution and properties")
+	}
+	if !(graphops.Link{}).IsZero() {
+		t.Fatal("zero Link")
+	}
+	for name, spec := range map[string]graphops.LinkSpec{
+		"bad path":        {Path: "beads/x", TypeURL: "https://work.example/types/cites", Revision: rev, Source: source, Target: target},
+		"bad type":        {Path: "links/x", TypeURL: "work.example/types/cites", Revision: rev, Source: source, Target: target},
+		"zero revision":   {Path: "links/x", TypeURL: "https://work.example/types/cites", Source: source, Target: target},
+		"external source": {Path: "links/x", TypeURL: "https://work.example/types/cites", Revision: rev, Source: external, Target: target},
+		"zero source":     {Path: "links/x", TypeURL: "https://work.example/types/cites", Revision: rev, Target: target},
+		"zero target":     {Path: "links/x", TypeURL: "https://work.example/types/cites", Revision: rev, Source: source},
+	} {
+		if _, err := graphops.NewLink(spec); !errors.Is(err, graphops.ErrValidation) {
+			t.Errorf("link %s: want ErrValidation, got %v", name, err)
+		}
+	}
+}
+
+const assignedToJSON = `{
+  "id": "https://work.example/types/assigned-to",
+  "name": "Assigned To",
+  "description": "Associates a work item with the person responsible for it.",
+  "describes": "link",
+  "conformsTo": [],
+  "propertiesSchema": "https://work.example/schemas/assigned-to-properties-v1",
+  "source": { "conformsTo": ["https://work.example/types/issue"] },
+  "target": { "conformsTo": ["https://people.example/types/person"], "external": "none" }
+}`
+
+const decisionJSON = `{
+  "id": "https://work.example/types/decision",
+  "name": "Decision",
+  "describes": "bead",
+  "conformsTo": [],
+  "ownsOutgoing": {
+    "https://work.example/types/cites": { "label": "cites", "max": 8 },
+    "https://work.example/types/blocks": { "max": 2 }
+  }
+}`
+
+func TestTypeDescriptorParseAndCanonicalForm(t *testing.T) {
+	link, err := graphops.ParseTypeDescriptor([]byte(assignedToJSON))
+	if err != nil {
+		t.Fatal(err)
+	}
+	desc, hasDesc := link.Description()
+	schema, hasSchema := link.PropertiesSchema()
+	src, hasSrc := link.Source()
+	tgt, hasTgt := link.Target()
+	tgtExternal, tgtHasExternal := tgt.External()
+	_, srcHasExternal := src.External()
+	if link.ID() != "https://work.example/types/assigned-to" || link.Name() != "Assigned To" || !hasDesc || desc == "" ||
+		link.Describes() != graphops.KindLink || len(link.ConformsTo()) != 0 || !hasSchema || schema != "https://work.example/schemas/assigned-to-properties-v1" ||
+		!hasSrc || !hasTgt || src.ConformsTo()[0] != "https://work.example/types/issue" || tgt.ConformsTo()[0] != "https://people.example/types/person" ||
+		!tgtHasExternal || tgtExternal != graphops.ExternalNone || tgt.EffectiveExternal() != graphops.ExternalNone ||
+		srcHasExternal || src.EffectiveExternal() != graphops.ExternalOpaque || len(link.OwnsOutgoing()) != 0 || link.IsZero() {
+		t.Fatalf("parsed link descriptor: %+v", link)
+	}
+	wantCanonical := `{"conformsTo":[],"describes":"link","description":"Associates a work item with the person responsible for it.","id":"https://work.example/types/assigned-to","name":"Assigned To","propertiesSchema":"https://work.example/schemas/assigned-to-properties-v1","source":{"conformsTo":["https://work.example/types/issue"]},"target":{"conformsTo":["https://people.example/types/person"],"external":"none"}}`
+	if got := string(link.CanonicalJSON()); got != wantCanonical {
+		t.Fatalf("canonical descriptor\n got %s\nwant %s", got, wantCanonical)
+	}
+	if link.Fingerprint() != sha256Hex([]byte(wantCanonical)) {
+		t.Fatal("fingerprint is sha256 of the canonical bytes")
+	}
+	again, err := graphops.ParseTypeDescriptor(link.CanonicalJSON())
+	if err != nil || again.Fingerprint() != link.Fingerprint() {
+		t.Fatalf("canonical form must round-trip to the same fingerprint: %v", err)
+	}
+
+	bead, err := graphops.ParseTypeDescriptor([]byte(decisionJSON))
+	if err != nil {
+		t.Fatal(err)
+	}
+	owns := bead.OwnsOutgoing()
+	if len(owns) != 2 || owns[0].TypeURL() != "https://work.example/types/blocks" || owns[1].TypeURL() != "https://work.example/types/cites" {
+		t.Fatalf("ownsOutgoing must be in code-unit order: %+v", owns)
+	}
+	cites, ok := bead.Owns("https://work.example/types/cites")
+	label, hasLabel := cites.Label()
+	if !ok || cites.Max() != 8 || !hasLabel || label != "cites" {
+		t.Fatalf("Owns(cites): %+v %v", cites, ok)
+	}
+	if _, hasLabel := owns[0].Label(); hasLabel || owns[0].Max() != 2 {
+		t.Fatal("blocks declaration has no label and max 2")
+	}
+	if _, ok := bead.Owns("https://work.example/types/relates"); ok {
+		t.Fatal("an undeclared Link Type is not owned")
+	}
+	if _, hasDesc := bead.Description(); hasDesc {
+		t.Fatal("absent description")
+	}
+	if _, hasSchema := bead.PropertiesSchema(); hasSchema {
+		t.Fatal("absent propertiesSchema")
+	}
+	if _, hasSrc := bead.Source(); hasSrc {
+		t.Fatal("a Bead Type has no source constraint")
+	}
+	wantBead := `{"conformsTo":[],"describes":"bead","id":"https://work.example/types/decision","name":"Decision","ownsOutgoing":{"https://work.example/types/blocks":{"max":2},"https://work.example/types/cites":{"label":"cites","max":8}}}`
+	if got := string(bead.CanonicalJSON()); got != wantBead {
+		t.Fatalf("canonical bead descriptor\n got %s\nwant %s", got, wantBead)
+	}
+	// ownsOutgoing input order does not matter; conformsTo order does.
+	cites8, _ := graphops.NewOwnedLinkDecl("https://work.example/types/cites", "cites", 8)
+	blocks2, _ := graphops.NewOwnedLinkDecl("https://work.example/types/blocks", "", 2)
+	reordered, err := graphops.NewTypeDescriptor(graphops.TypeDescriptorSpec{ID: "https://work.example/types/decision", Name: "Decision", Describes: graphops.KindBead, OwnsOutgoing: []graphops.OwnedLinkDecl{cites8, blocks2}})
+	if err != nil || reordered.Fingerprint() != bead.Fingerprint() {
+		t.Fatalf("ownsOutgoing order must not change the fingerprint: %v", err)
+	}
+	ab, _ := graphops.NewTypeDescriptor(graphops.TypeDescriptorSpec{ID: "https://work.example/types/t", Name: "T", Describes: graphops.KindBead, ConformsTo: []string{"https://work.example/types/a", "https://work.example/types/b"}})
+	ba, _ := graphops.NewTypeDescriptor(graphops.TypeDescriptorSpec{ID: "https://work.example/types/t", Name: "T", Describes: graphops.KindBead, ConformsTo: []string{"https://work.example/types/b", "https://work.example/types/a"}})
+	if ab.Fingerprint() == ba.Fingerprint() || ab.ConformsTo()[0] != "https://work.example/types/a" {
+		t.Fatal("conformsTo is kept in authored order and is part of the fingerprint")
+	}
+	// Accessors return copies.
+	ab.ConformsTo()[0] = "mutated"
+	ab.OwnsOutgoing()
+	if ab.ConformsTo()[0] != "https://work.example/types/a" {
+		t.Fatal("ConformsTo must not alias the value")
+	}
+	c := ab.CanonicalJSON()
+	c[0] = 'x'
+	if ab.CanonicalJSON()[0] != '{' {
+		t.Fatal("CanonicalJSON must not alias the value")
+	}
+	if !(graphops.TypeDescriptor{}).IsZero() {
+		t.Fatal("zero descriptor")
+	}
+}
+
+func TestTypeDescriptorRefusals(t *testing.T) {
+	for name, in := range map[string]string{
+		"unknown member":              `{"id":"https://work.example/types/x","name":"X","describes":"bead","conformsTo":[],"extra":1}`,
+		"missing name":                `{"id":"https://work.example/types/x","describes":"bead","conformsTo":[]}`,
+		"missing conformsTo":          `{"id":"https://work.example/types/x","name":"X","describes":"bead"}`,
+		"empty name":                  `{"id":"https://work.example/types/x","name":"","describes":"bead","conformsTo":[]}`,
+		"bad describes":               `{"id":"https://work.example/types/x","name":"X","describes":"type","conformsTo":[]}`,
+		"bad id":                      `{"id":"work.example/types/x","name":"X","describes":"bead","conformsTo":[]}`,
+		"self conformance":            `{"id":"https://work.example/types/x","name":"X","describes":"bead","conformsTo":["https://work.example/types/x"]}`,
+		"duplicate parent":            `{"id":"https://work.example/types/x","name":"X","describes":"bead","conformsTo":["https://work.example/types/a","https://work.example/types/a"]}`,
+		"noncanonical parent":         `{"id":"https://work.example/types/x","name":"X","describes":"bead","conformsTo":["https://Work.example/types/a"]}`,
+		"bad propertiesSchema":        `{"id":"https://work.example/types/x","name":"X","describes":"bead","conformsTo":[],"propertiesSchema":"schemas/x"}`,
+		"bead with source":            `{"id":"https://work.example/types/x","name":"X","describes":"bead","conformsTo":[],"source":{"conformsTo":[]}}`,
+		"link without target":         `{"id":"https://work.example/types/x","name":"X","describes":"link","conformsTo":[],"source":{"conformsTo":[]}}`,
+		"link with ownsOutgoing":      `{"id":"https://work.example/types/x","name":"X","describes":"link","conformsTo":[],"source":{"conformsTo":[]},"target":{"conformsTo":[]},"ownsOutgoing":{"https://work.example/types/c":{"max":1}}}`,
+		"empty ownsOutgoing":          `{"id":"https://work.example/types/x","name":"X","describes":"bead","conformsTo":[],"ownsOutgoing":{}}`,
+		"ownsOutgoing without max":    `{"id":"https://work.example/types/x","name":"X","describes":"bead","conformsTo":[],"ownsOutgoing":{"https://work.example/types/c":{"label":"c"}}}`,
+		"ownsOutgoing max zero":       `{"id":"https://work.example/types/x","name":"X","describes":"bead","conformsTo":[],"ownsOutgoing":{"https://work.example/types/c":{"max":0}}}`,
+		"ownsOutgoing empty label":    `{"id":"https://work.example/types/x","name":"X","describes":"bead","conformsTo":[],"ownsOutgoing":{"https://work.example/types/c":{"label":"","max":1}}}`,
+		"ownsOutgoing unknown member": `{"id":"https://work.example/types/x","name":"X","describes":"bead","conformsTo":[],"ownsOutgoing":{"https://work.example/types/c":{"max":1,"x":1}}}`,
+		"ownsOutgoing bad key":        `{"id":"https://work.example/types/x","name":"X","describes":"bead","conformsTo":[],"ownsOutgoing":{"c":{"max":1}}}`,
+		"source unknown member":       `{"id":"https://work.example/types/x","name":"X","describes":"link","conformsTo":[],"source":{"conformsTo":[],"x":1},"target":{"conformsTo":[]}}`,
+		"source without conformsTo":   `{"id":"https://work.example/types/x","name":"X","describes":"link","conformsTo":[],"source":{},"target":{"conformsTo":[]}}`,
+		"target empty external":       `{"id":"https://work.example/types/x","name":"X","describes":"link","conformsTo":[],"source":{"conformsTo":[]},"target":{"conformsTo":[],"external":""}}`,
+		"target bad external":         `{"id":"https://work.example/types/x","name":"X","describes":"link","conformsTo":[],"source":{"conformsTo":[]},"target":{"conformsTo":[],"external":"maybe"}}`,
+		"target bad parent":           `{"id":"https://work.example/types/x","name":"X","describes":"link","conformsTo":[],"source":{"conformsTo":[]},"target":{"conformsTo":["x"]}}`,
+		"not an object":               `[]`,
+		"malformed":                   `{"id":`,
+		"duplicate key":               `{"id":"https://work.example/types/x","id":"https://work.example/types/y","name":"X","describes":"bead","conformsTo":[]}`,
+		"wrong member type":           `{"id":"https://work.example/types/x","name":"X","describes":"bead","conformsTo":"https://work.example/types/a"}`,
+	} {
+		if _, err := graphops.ParseTypeDescriptor([]byte(in)); !errors.Is(err, graphops.ErrValidation) {
+			t.Errorf("descriptor %s: want ErrValidation, got %v", name, err)
+		}
+	}
+	// Constructor-level refusals not reachable through JSON.
+	c, _ := graphops.NewEndpointConstraint(nil, "")
+	if _, err := graphops.NewTypeDescriptor(graphops.TypeDescriptorSpec{ID: "https://work.example/types/x", Name: "X", Describes: graphops.KindLink, Source: &c, Target: &c, OwnsOutgoing: []graphops.OwnedLinkDecl{{}}}); !errors.Is(err, graphops.ErrValidation) {
+		t.Errorf("link with ownsOutgoing: %v", err)
+	}
+	if _, err := graphops.NewTypeDescriptor(graphops.TypeDescriptorSpec{ID: "https://work.example/types/x", Name: "X", Describes: graphops.KindBead, OwnsOutgoing: []graphops.OwnedLinkDecl{{}}}); !errors.Is(err, graphops.ErrValidation) {
+		t.Errorf("zero declaration: %v", err)
+	}
+	d, _ := graphops.NewOwnedLinkDecl("https://work.example/types/c", "", 1)
+	if _, err := graphops.NewTypeDescriptor(graphops.TypeDescriptorSpec{ID: "https://work.example/types/x", Name: "X", Describes: graphops.KindBead, OwnsOutgoing: []graphops.OwnedLinkDecl{d, d}}); !errors.Is(err, graphops.ErrValidation) {
+		t.Errorf("duplicate declaration: %v", err)
+	}
+	if _, err := graphops.NewTypeDescriptor(graphops.TypeDescriptorSpec{ID: "https://work.example/types/x", Name: "X", Describes: graphops.KindBead, Source: &c}); !errors.Is(err, graphops.ErrValidation) {
+		t.Errorf("bead with endpoint: %v", err)
+	}
+	if _, err := graphops.NewOwnedLinkDecl("https://work.example/types/c", "", 0); !errors.Is(err, graphops.ErrValidation) {
+		t.Errorf("max zero: %v", err)
+	}
+	if _, err := graphops.NewOwnedLinkDecl("c", "", 1); !errors.Is(err, graphops.ErrValidation) {
+		t.Errorf("bad url: %v", err)
+	}
+	if _, err := graphops.NewEndpointConstraint([]string{"https://work.example/types/a", "https://work.example/types/a"}, ""); !errors.Is(err, graphops.ErrValidation) {
+		t.Errorf("duplicate conformsTo: %v", err)
+	}
+	if _, err := graphops.NewEndpointConstraint(nil, "bogus"); !errors.Is(err, graphops.ErrValidation) {
+		t.Errorf("bad external: %v", err)
+	}
+	e, err := graphops.NewEndpointConstraint([]string{"https://work.example/types/a"}, graphops.ExternalBead)
+	if err != nil || e.EffectiveExternal() != graphops.ExternalBead {
+		t.Fatalf("endpoint constraint: %v", err)
+	}
+	e.ConformsTo()[0] = "mutated"
+	if e.ConformsTo()[0] != "https://work.example/types/a" {
+		t.Fatal("ConformsTo must not alias the value")
+	}
+	for _, p := range []graphops.ExternalPolicy{graphops.ExternalNone, graphops.ExternalOpaque, graphops.ExternalBead} {
+		if !p.Valid() {
+			t.Errorf("%s should be valid", p)
+		}
+	}
+	if graphops.ExternalPolicy("").Valid() {
+		t.Error("empty policy should not be valid")
+	}
+}
+
+func TestScopeIdentity(t *testing.T) {
+	minted := time.Date(2026, 9, 7, 10, 0, 0, 0, time.FixedZone("x", 3600))
+	claim := graphops.WitnessClaim{Held: true, Epoch: 3, LedgerSeq: 9, LedgerHash: strings.Repeat("a", 64), Unverified: true, Pending: "promote"}
+	id, err := graphops.NewScopeIdentity(graphops.ScopeIdentitySpec{ScopeURL: scopeURL, AuthorityID: authorityID, Epoch: 3, MintedAt: minted, Claim: claim})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if id.ScopeURL() != scopeURL || id.AuthorityID() != authorityID || id.Epoch() != 3 || id.MintedAt() != minted.UTC() ||
+		id.MintedAt().Location() != time.UTC || id.Claim() != claim || id.IsZero() {
+		t.Fatalf("identity accessors: %+v", id)
+	}
+	if !(graphops.ScopeIdentity{}).IsZero() {
+		t.Fatal("zero identity")
+	}
+	for name, spec := range map[string]graphops.ScopeIdentitySpec{
+		"bad url":         {ScopeURL: "https://beads.example/acme", AuthorityID: authorityID, MintedAt: minted},
+		"bad authority":   {ScopeURL: scopeURL, AuthorityID: "abc", MintedAt: minted},
+		"zero minted at":  {ScopeURL: scopeURL, AuthorityID: authorityID},
+		"bad ledger hash": {ScopeURL: scopeURL, AuthorityID: authorityID, MintedAt: minted, Claim: graphops.WitnessClaim{LedgerHash: "abc"}},
+	} {
+		if _, err := graphops.NewScopeIdentity(spec); !errors.Is(err, graphops.ErrValidation) {
+			t.Errorf("identity %s: want ErrValidation, got %v", name, err)
+		}
+	}
+	for _, d := range []graphops.LedgerDurability{graphops.LedgerInState, graphops.LedgerIndependent, graphops.LedgerNone} {
+		if !d.Valid() {
+			t.Errorf("%s should be valid", d)
+		}
+	}
+	if graphops.LedgerDurability("maybe").Valid() {
+		t.Error("unknown durability should not be valid")
+	}
+}
+
+func TestCheckBeadRecord(t *testing.T) {
+	rev := graphops.MintRevision()
+	bead, _ := graphops.NewBead(graphops.BeadSpec{Path: "beads/d", TypeURL: "https://work.example/types/decision", Revision: rev})
+	self, _ := graphops.NewInScopeRef("beads/d", "")
+	other, _ := graphops.NewInScopeRef("beads/e", "")
+	mk := func(path, typeURL string, source graphops.Ref) graphops.Link {
+		l, err := graphops.NewLink(graphops.LinkSpec{Path: path, TypeURL: typeURL, Revision: rev, Source: source, Target: other})
+		if err != nil {
+			t.Fatal(err)
+		}
+		return l
+	}
+	const cites, blocks = "https://work.example/types/cites", "https://work.example/types/blocks"
+	citesDecl, _ := graphops.NewOwnedLinkDecl(cites, "", 8)
+	blocksDecl, _ := graphops.NewOwnedLinkDecl(blocks, "", 2)
+	owns := []graphops.OwnedLinkDecl{citesDecl, blocksDecl} // unsorted on purpose
+	good := graphops.BeadRecord{Bead: bead, OwnedLinks: []graphops.OwnedLinkGroup{
+		{TypeURL: blocks}, // an owned Type with no Links is an EMPTY group
+		{TypeURL: cites, Links: []graphops.Link{mk("links/c/1", cites, self), mk("links/c/2", cites, self)}},
+	}}
+	if err := graphops.CheckBeadRecord(good, owns); err != nil {
+		t.Fatalf("complete record refused: %v", err)
+	}
+	if err := graphops.CheckBeadRecord(graphops.BeadRecord{Bead: bead}, nil); err != nil {
+		t.Fatalf("a Type owning nothing has no groups: %v", err)
+	}
+	for name, rec := range map[string]graphops.BeadRecord{
+		"missing group":   {Bead: bead, OwnedLinks: good.OwnedLinks[1:]},
+		"wrong order":     {Bead: bead, OwnedLinks: []graphops.OwnedLinkGroup{good.OwnedLinks[1], good.OwnedLinks[0]}},
+		"wrong type":      {Bead: bead, OwnedLinks: []graphops.OwnedLinkGroup{{TypeURL: blocks}, {TypeURL: cites, Links: []graphops.Link{mk("links/c/1", blocks, self)}}}},
+		"wrong source":    {Bead: bead, OwnedLinks: []graphops.OwnedLinkGroup{{TypeURL: blocks}, {TypeURL: cites, Links: []graphops.Link{mk("links/c/1", cites, other)}}}},
+		"unsorted links":  {Bead: bead, OwnedLinks: []graphops.OwnedLinkGroup{{TypeURL: blocks}, {TypeURL: cites, Links: []graphops.Link{mk("links/c/2", cites, self), mk("links/c/1", cites, self)}}}},
+		"duplicate links": {Bead: bead, OwnedLinks: []graphops.OwnedLinkGroup{{TypeURL: blocks}, {TypeURL: cites, Links: []graphops.Link{mk("links/c/1", cites, self), mk("links/c/1", cites, self)}}}},
+	} {
+		if err := graphops.CheckBeadRecord(rec, owns); !errors.Is(err, graphops.ErrValidation) {
+			t.Errorf("record %s: want ErrValidation, got %v", name, err)
+		}
+	}
+}
+
+func TestClosedSetsAndDirection(t *testing.T) {
+	if !graphops.KindBead.Valid() || !graphops.KindLink.Valid() || graphops.ResourceKind("type").Valid() {
+		t.Fatal("ResourceKind closed set")
+	}
+	for d, want := range map[graphops.Direction]string{graphops.DirectionBoth: "both", graphops.DirectionIn: "in", graphops.DirectionOut: "out"} {
+		if !d.Valid() || d.String() != want {
+			t.Errorf("direction %d: %s", d, d)
+		}
+	}
+	if graphops.Direction(9).Valid() || graphops.Direction(9).String() != "Direction(9)" {
+		t.Fatal("unknown direction")
+	}
+	var zero graphops.IncidentRequest
+	if zero.Direction != graphops.DirectionBoth {
+		t.Fatal("a zero IncidentRequest asks the protocol's default question")
+	}
+	if !lowerHex32.MatchString(graphops.MintOpaqueToken()) {
+		t.Fatal("opaque tokens are 32 lowercase hex digits")
+	}
+}
+
+func TestErrorsAreOneVocabulary(t *testing.T) {
+	// Aliases: the same value under two names, so one errors.Is arm matches.
+	for name, pair := range map[string][2]error{
+		"ErrValidation":             {graphops.ErrValidation, beadserrors.ErrValidation},
+		"ErrNotFound":               {graphops.ErrNotFound, beadserrors.ErrNotFound},
+		"ErrNotAuthority":           {graphops.ErrNotAuthority, beadserrors.ErrNotAuthority},
+		"ErrStateRewound":           {graphops.ErrStateRewound, beadserrors.ErrStateRewound},
+		"ErrStateChanged":           {graphops.ErrStateChanged, beadserrors.ErrStateChanged},
+		"ErrSyncRequired":           {graphops.ErrSyncRequired, beadserrors.ErrSyncRequired},
+		"ErrUnpublished":            {graphops.ErrUnpublished, beadserrors.ErrUnpublished},
+		"ErrRepresentationTooLarge": {graphops.ErrRepresentationTooLarge, beadserrors.ErrRepresentationTooLarge},
+		"ErrNotServedYet":           {graphops.ErrNotServedYet, beadserrors.ErrNotServedYet},
+	} {
+		if pair[0] != pair[1] {
+			t.Errorf("%s: graphops and beadserrors values differ", name)
+		}
+	}
+	var unsupported error = &graphops.ErrUnsupported{Op: "BeadGraphReader", Backend: "custom"}
+	var target *beadserrors.ErrUnsupported
+	if !errors.As(unsupported, &target) || target.Op != "BeadGraphReader" {
+		t.Fatal("ErrUnsupported is the beadserrors type")
+	}
+	// The domain-naming refusals are distinct sentinels.
+	all := []error{graphops.ErrNoScope, graphops.ErrScopeExists, graphops.ErrURLReused, graphops.ErrNotAuthority, graphops.ErrNotFound, graphops.ErrValidation}
+	for i, a := range all {
+		for j, b := range all {
+			if i != j && errors.Is(a, b) {
+				t.Errorf("%v matches %v", a, b)
+			}
+		}
+	}
+	// GoneError is a refinement of not-found.
+	var gone error = &graphops.GoneError{Path: "beads/x", State: graphops.AllocationPruned}
+	if !errors.Is(gone, graphops.ErrNotFound) || errors.Is(gone, graphops.ErrValidation) {
+		t.Fatal("a gone path is not found to a caller that does not ask")
+	}
+	var typed *graphops.GoneError
+	if !errors.As(gone, &typed) || typed.Path != "beads/x" || typed.State != graphops.AllocationPruned {
+		t.Fatal("a handler that asks gets the state")
+	}
+	if gone.Error() != "beads/x is gone (pruned)" {
+		t.Fatalf("GoneError message: %q", gone.Error())
+	}
+	wrapped := errors.Join(errors.New("context"), gone)
+	if !errors.Is(wrapped, graphops.ErrNotFound) {
+		t.Fatal("wrapping keeps the relation")
+	}
+}
