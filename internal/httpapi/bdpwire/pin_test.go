@@ -14,7 +14,7 @@ import (
 	"testing"
 )
 
-// schema/PIN is the vendoring record and this file is what makes it binding.
+// schema/PROVENANCE is the vendoring record and this file is what makes it binding.
 // Every vendored file is listed with its sha256 and, for a verbatim upstream
 // file, its git blob sha1 — the identity `git hash-object` and the GitHub
 // trees API report, so anyone can check the vendored bytes against the pinned
@@ -36,9 +36,9 @@ type pinFile struct {
 
 func loadPin(t *testing.T) pinFile {
 	t.Helper()
-	f, err := os.Open(filepath.Join(schemaDir, "PIN"))
+	f, err := os.Open(filepath.Join(schemaDir, "PROVENANCE"))
 	if err != nil {
-		t.Fatalf("open PIN: %v", err)
+		t.Fatalf("open PROVENANCE: %v", err)
 	}
 	defer f.Close()
 
@@ -55,12 +55,12 @@ func loadPin(t *testing.T) pinFile {
 			continue
 		}
 		if len(fields) != 4 {
-			t.Fatalf("PIN line %d: want `sha256 local upstream blob`, got %q", line, text)
+			t.Fatalf("PROVENANCE line %d: want `sha256 local upstream blob`, got %q", line, text)
 		}
 		pin.entries = append(pin.entries, pinEntry{fields[0], fields[1], fields[2], fields[3]})
 	}
 	if err := scanner.Err(); err != nil {
-		t.Fatalf("read PIN: %v", err)
+		t.Fatalf("read PROVENANCE: %v", err)
 	}
 	return pin
 }
@@ -75,13 +75,13 @@ func gitBlobSHA1(data []byte) string {
 func TestPinHeaderNamesThePinnedCommitAndBundle(t *testing.T) {
 	pin := loadPin(t)
 	if got := pin.header["commit"]; got != Pin {
-		t.Errorf("PIN commit = %q, Pin const = %q: the two must name the same upstream commit", got, Pin)
+		t.Errorf("PROVENANCE commit = %q, Pin const = %q: the two must name the same upstream commit", got, Pin)
 	}
 	if got := pin.header["schema-id"]; got != SchemaID {
-		t.Errorf("PIN schema-id = %q, SchemaID const = %q", got, SchemaID)
+		t.Errorf("PROVENANCE schema-id = %q, SchemaID const = %q", got, SchemaID)
 	}
 	if got := pin.header["upstream"]; got != "https://github.com/gastownhall/bdp" {
-		t.Errorf("PIN upstream = %q", got)
+		t.Errorf("PROVENANCE upstream = %q", got)
 	}
 }
 
@@ -91,7 +91,7 @@ func TestEveryVendoredFileIsPinnedAndUnchanged(t *testing.T) {
 	listed := map[string]pinEntry{}
 	for _, e := range pin.entries {
 		if _, dup := listed[e.local]; dup {
-			t.Errorf("PIN lists %s twice", e.local)
+			t.Errorf("PROVENANCE lists %s twice", e.local)
 		}
 		listed[e.local] = e
 	}
@@ -109,7 +109,7 @@ func TestEveryVendoredFileIsPinnedAndUnchanged(t *testing.T) {
 			return err
 		}
 		rel = filepath.ToSlash(rel)
-		if rel == "PIN" {
+		if rel == "PROVENANCE" {
 			return nil
 		}
 		onDisk[rel] = true
@@ -120,10 +120,10 @@ func TestEveryVendoredFileIsPinnedAndUnchanged(t *testing.T) {
 	}
 
 	if unlisted := diff(onDisk, listed); len(unlisted) > 0 {
-		t.Errorf("files under schema/ with no PIN entry: %v\nevery vendored file is pinned by sha256 — add a line to schema/PIN with its provenance", unlisted)
+		t.Errorf("files under schema/ with no PROVENANCE entry: %v\nevery vendored file is pinned by sha256 — add a line to schema/PROVENANCE with its provenance", unlisted)
 	}
 	if missing := diff(listed, onDisk); len(missing) > 0 {
-		t.Errorf("PIN entries with no file on disk: %v", missing)
+		t.Errorf("PROVENANCE entries with no file on disk: %v", missing)
 	}
 
 	for _, e := range pin.entries {
@@ -133,7 +133,7 @@ func TestEveryVendoredFileIsPinnedAndUnchanged(t *testing.T) {
 		data := readSchemaFile(t, e.local)
 		sum := sha256.Sum256(data)
 		if got := hex.EncodeToString(sum[:]); got != e.sha256 {
-			t.Errorf("%s: sha256 %s, PIN says %s\nthe vendored bytes changed; re-vendor from the pinned commit or re-pin deliberately (GENERATOR.md, Re-pinning)", e.local, got, e.sha256)
+			t.Errorf("%s: sha256 %s, PROVENANCE says %s\nthe vendored bytes changed; re-vendor from the pinned commit or re-pin deliberately (GENERATOR.md, Re-pinning)", e.local, got, e.sha256)
 		}
 		if e.blob == "-" {
 			if !strings.HasPrefix(e.upstream, "docs/specs/bdp.md#L") {
@@ -142,7 +142,7 @@ func TestEveryVendoredFileIsPinnedAndUnchanged(t *testing.T) {
 			continue
 		}
 		if got := gitBlobSHA1(data); got != e.blob {
-			t.Errorf("%s: git blob sha1 %s, PIN says %s (upstream %s)", e.local, got, e.blob, e.upstream)
+			t.Errorf("%s: git blob sha1 %s, PROVENANCE says %s (upstream %s)", e.local, got, e.blob, e.upstream)
 		}
 	}
 }
@@ -156,7 +156,7 @@ func TestBundleEntryIsTheNormativeArtifact(t *testing.T) {
 		}
 	}
 	if bundle == nil {
-		t.Fatal("PIN has no entry for bdp-v0.schema.json")
+		t.Fatal("PROVENANCE has no entry for bdp-v0.schema.json")
 	}
 	// The spec fixes the artifact's path in the upstream repository; the pin
 	// must say it came from there and not from some copy.

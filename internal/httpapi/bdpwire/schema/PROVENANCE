@@ -1,4 +1,4 @@
-# bdpwire vendoring pin. Every line below is checked by pin_test.go; edit it only
+# bdpwire vendoring provenance (spec B8: the PROVENANCE file). Every line below is checked by pin_test.go; edit it only
 # when re-pinning (see GENERATOR.md, "Re-pinning"). Fields on a file line are:
 #   sha256  local-path  upstream-path@commit  git-blob-sha1 (or "-" for a derived file)
 upstream: https://github.com/gastownhall/bdp

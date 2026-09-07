@@ -8,7 +8,7 @@ import (
 // Pin is the gastownhall/bdp commit every vendored file under schema/ was
 // taken from. It is the plan's §0 pin (BDP_BEAD_GRAPH_PLAN.md), repeated here
 // so code can name it; pin_test.go asserts it equals the `commit:` line of
-// schema/PIN, so the two cannot drift apart silently.
+// schema/PROVENANCE, so the two cannot drift apart silently.
 const Pin = "0b7d86e7cfec47f88cd1ec22314a73f39763bcf8"
 
 // SchemaID is the bundle's canonical `$id`. It is a protocol identity —

@@ -127,13 +127,13 @@ contract runs all of the above with no Makefile edit.
 
 ## Re-pinning
 
-1. Change the commit in `schema.go` (`Pin`) and in `schema/PIN` (`commit:`).
-2. Re-fetch every verbatim file `PIN` lists from that commit, byte-identical
+1. Change the commit in `schema.go` (`Pin`) and in `schema/PROVENANCE` (`commit:`).
+2. Re-fetch every verbatim file `PROVENANCE` lists from that commit, byte-identical
    (`gh api -H "Accept: application/vnd.github.raw"
    "repos/gastownhall/bdp/contents/<upstream path>?ref=<commit>"`), and
    re-extract the spec examples from `docs/specs/bdp.md` at that commit (the
-   PIN names each fence's opening line; renumber if the spec moved).
-3. Recompute the digests in `PIN` (`shasum -a 256`; `git hash-object`).
+   PROVENANCE names each fence's opening line; renumber if the spec moved).
+3. Recompute the digests in `PROVENANCE` (`shasum -a 256`; `git hash-object`).
 4. `go test ./internal/httpapi/bdpwire/...`. Every failure is a real change at
    the new pin: a new definition (bind it in `defsToGo`, write the type), a
    new or removed member, a changed vocabulary, a changed problem row, a

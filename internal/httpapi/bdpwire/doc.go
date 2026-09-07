@@ -3,12 +3,12 @@
 // client will decode — pinned to one upstream commit of the protocol's
 // normative schema bundle.
 //
-// THE PIN. The bundle is vendored verbatim at schema/bdp-v0.schema.json from
+// THE PROVENANCE FILE (spec B8). The bundle is vendored verbatim at schema/bdp-v0.schema.json from
 // gastownhall/bdp commit 0b7d86e7 (the plan's §0 pin), with the Read-profile
 // fixtures and the executable Read matrix from the same commit beside it.
-// schema/PIN names every vendored file with its sha256 and its upstream git
+// schema/PROVENANCE names every vendored file with its sha256 and its upstream git
 // blob sha1, and pin_test.go recomputes both from the bytes on disk, so a
-// re-pin is an edit to PIN that review can see and a drifted fixture is a
+// re-pin is an edit to PROVENANCE that review can see and a drifted fixture is a
 // failing test — never a network fetch. Nothing in this package touches the
 // network, at build time or in tests.
 //

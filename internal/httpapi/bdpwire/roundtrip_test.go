@@ -63,7 +63,7 @@ var roundTrips = []roundTrip{
 	{"fixtures/read-bdpbd-v1.json", "/oracles/attribution/*", newTarget[Attribution]()},
 	{"fixtures/read-bdpbd-v1.json", "/oracles/resources/*/properties", newTarget[Properties]()},
 
-	// docs/specs/bdp.md examples at the pin (schema/PIN names the lines).
+	// docs/specs/bdp.md examples at the pin (schema/PROVENANCE names the lines).
 	{"spec-examples/0532-scope-aggregate-constraints-1.json", "/maximumEndpointMultiplicity/*", newTarget[MaximumEndpointMultiplicityPolicy]()},
 	{"spec-examples/1580-scope-discovery-and-human-documentation-1.json", "", newTarget[ReadDiscovery]()},
 	{"spec-examples/1735-advertised-limits-1.json", "/limits", newTarget[AdvertisedLimits]()},
