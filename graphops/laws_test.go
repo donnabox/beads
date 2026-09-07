@@ -252,6 +252,79 @@ func TestCanonicalizeJSONNumbers(t *testing.T) {
 	}
 }
 
+// The exponent bound applies to the NORMALIZED value, so canonicalization is
+// closed: every admitted literal's canonical form re-parses to itself, and a
+// literal whose canonical exponent would exceed the bound is refused on the
+// way in — never admitted and then unreadable.
+func TestCanonicalizeJSONNumberFixedPointAtTheExponentBounds(t *testing.T) {
+	const bound = "1000000000000" // maxExponentMagnitude
+	accept := []struct{ in, want string }{
+		{"1e" + bound, "1e+" + bound},
+		{"10e999999999999", "1e+" + bound},     // trailing zero moves the exponent up to the bound
+		{"1.0e" + bound, "1e+" + bound},        // fractional zero normalizes away
+		{"0.1e1000000000001", "1e+" + bound},   // the spelled exponent exceeds the bound; the value does not
+		{"0.001e1000000000003", "1e+" + bound}, // further past the spelled bound, same value
+		{"1.50e" + bound, "1.5e+" + bound},     // significant digits are kept
+		{"-1e" + bound, "-1e+" + bound},        // sign is orthogonal
+		{"1e-" + bound, "1e-" + bound},         // the negative bound
+		{"0.01e-999999999998", "1e-" + bound},  // fraction moves the exponent down to the bound
+		{"100e-1000000000002", "1e-" + bound},  // trailing zeros move it back up to the bound
+		{"1.5e-" + bound, "1.5e-" + bound},     // digits kept at the negative bound
+		{"0e1000000000005", "0"},               // every zero is "0", whatever its exponent
+		{"0.000e-1000000000005", "0"},          // and so is every fractional zero
+		{"123456789e999999999992", "1.23456789e+" + bound},
+	}
+	for _, tc := range accept {
+		once, err := graphops.CanonicalizeJSON([]byte(tc.in))
+		if err != nil {
+			t.Errorf("number %q: refused: %v", tc.in, err)
+			continue
+		}
+		if string(once) != tc.want {
+			t.Errorf("number %q canonicalized to %q, want %q", tc.in, once, tc.want)
+		}
+		twice, err := graphops.CanonicalizeJSON(once)
+		if err != nil {
+			t.Errorf("canonical form %q does not re-parse: %v", once, err)
+			continue
+		}
+		if !bytes.Equal(once, twice) {
+			t.Errorf("canonical(canonical(%q)) = %q, canonical = %q: not a fixed point", tc.in, twice, once)
+		}
+	}
+	for _, in := range []string{
+		"10e" + bound,               // Codex's counterexample: canonically 1e+1000000000001
+		"1e1000000000001",           // one past the bound
+		"100e" + bound,              // two past
+		"1.5e1000000000001",         // digits do not rescue it
+		"0.1e-" + bound,             // canonically 1e-1000000000001
+		"1e-1000000000001",          // one past the negative bound
+		"0.001e-999999999999",       // canonically 1e-1000000000002
+		"-10e" + bound,              // sign is orthogonal
+		"1e99999999999999999999999", // absurd spelled exponent: refused before it can overflow
+		"1e-99999999999999999999999",
+	} {
+		_, err := graphops.CanonicalizeJSON([]byte(in))
+		wantValidation(t, err, "number "+in)
+	}
+	// The same law holds inside a document, where a properties write lands.
+	doc := `{"big":10e999999999999,"small":100e-1000000000002}`
+	once, err := graphops.CanonicalizeJSON([]byte(doc))
+	if err != nil {
+		t.Fatal(err)
+	}
+	if string(once) != `{"big":1e+`+bound+`,"small":1e-`+bound+`}` {
+		t.Fatalf("document canonicalized to %s", once)
+	}
+	twice, err := graphops.CanonicalizeJSON(once)
+	if err != nil || !bytes.Equal(once, twice) {
+		t.Fatalf("document canonical form is not a fixed point: %s %v", twice, err)
+	}
+	if _, err := graphops.NewProperties([]byte(`{"x":10e` + bound + `}`)); !errors.Is(err, graphops.ErrValidation) {
+		t.Fatalf("a properties document beyond the bound must be refused at admission: %v", err)
+	}
+}
+
 func TestCanonicalizeJSONStrings(t *testing.T) {
 	for _, tc := range []struct{ in, want string }{
 		{`"\u0041"`, `"A"`},

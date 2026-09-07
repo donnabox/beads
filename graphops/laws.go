@@ -694,9 +694,16 @@ func appendCanonicalString(out []byte, str string) []byte {
 	return append(out, '"')
 }
 
-// maxExponentMagnitude bounds the exponent a literal may carry. Beyond it the
-// exact value is still representable here, but no consumer could use it, and
-// unbounded accumulation would be an integer overflow waiting to happen.
+// maxExponentMagnitude bounds the exponent of a number's CANONICAL form —
+// the e that Number::toString would print — not the exponent the literal
+// happened to be spelled with. Beyond it the exact value is still
+// representable here, but no consumer could use it, and unbounded
+// accumulation would be an integer overflow waiting to happen. Bounding the
+// normalized value is what makes canonicalization a fixed point: a literal
+// is admitted exactly when its canonical form re-parses, so 10e1000000000000
+// (canonically 1e+1000000000001) is refused on the way in rather than stored
+// and then unreadable, and 0.1e1000000000001 (canonically 1e+1000000000000)
+// is admitted although its spelled exponent exceeds the bound.
 const maxExponentMagnitude = 1_000_000_000_000
 
 func (s *jsonScanner) digits() ([]byte, error) {
@@ -750,9 +757,15 @@ func (s *jsonScanner) number(out []byte) ([]byte, error) {
 		if err != nil {
 			return nil, err
 		}
+		// The canonical exponent differs from the spelled one by fewer
+		// places than the literal has digits, so a spelled exponent this far
+		// beyond the bound can never normalize back inside it; refusing it
+		// here keeps the accumulation from overflowing. The bound itself is
+		// applied to the normalized value below.
+		limit := maxExponentMagnitude + int64(len(s.in))
 		for _, d := range expDigits {
 			exp = exp*10 + int64(d-'0')
-			if exp > maxExponentMagnitude {
+			if exp > limit {
 				return nil, s.errorf("exponent out of range")
 			}
 		}
@@ -760,12 +773,18 @@ func (s *jsonScanner) number(out []byte) ([]byte, error) {
 			exp = -exp
 		}
 	}
-	return appendCanonicalNumber(out, neg, intPart, frac, exp), nil
+	out, ok := appendCanonicalNumber(out, neg, intPart, frac, exp)
+	if !ok {
+		return nil, s.errorf("exponent out of range")
+	}
+	return out, nil
 }
 
 // appendCanonicalNumber formats the exact decimal value ±(intPart.frac)×10^exp
-// with ECMAScript Number::toString digit placement.
-func appendCanonicalNumber(out []byte, neg bool, intPart, frac []byte, exp int64) []byte {
+// with ECMAScript Number::toString digit placement. It reports false when the
+// normalized value's exponent exceeds maxExponentMagnitude, which is the one
+// way a syntactically valid number is refused.
+func appendCanonicalNumber(out []byte, neg bool, intPart, frac []byte, exp int64) ([]byte, bool) {
 	digits := make([]byte, 0, len(intPart)+len(frac))
 	digits = append(digits, intPart...)
 	digits = append(digits, frac...)
@@ -776,7 +795,7 @@ func appendCanonicalNumber(out []byte, neg bool, intPart, frac []byte, exp int64
 	}
 	digits = digits[lead:]
 	if len(digits) == 0 {
-		return append(out, '0') // every zero, -0 included, is "0"
+		return append(out, '0'), true // every zero, -0 included, is "0"
 	}
 	trail := len(digits)
 	for digits[trail-1] == '0' {
@@ -786,6 +805,9 @@ func appendCanonicalNumber(out []byte, neg bool, intPart, frac []byte, exp int64
 	digits = digits[:trail]
 	k := int64(len(digits))
 	n := exp10 + k // value = 0.digits × 10^n
+	if e := n - 1; e > maxExponentMagnitude || e < -maxExponentMagnitude {
+		return out, false
+	}
 	if neg {
 		out = append(out, '-')
 	}
@@ -821,7 +843,7 @@ func appendCanonicalNumber(out []byte, neg bool, intPart, frac []byte, exp int64
 		}
 		out = strconv.AppendInt(out, e, 10)
 	}
-	return out
+	return out, true
 }
 
 // ---------------------------------------------------------------------------
