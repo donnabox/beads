@@ -671,10 +671,12 @@ check C forbids editing a shipped file (a git-diff check), and the runtime
 **no `NOW()`/`UUID()`/`RAND()`** in migration SQL (check B) — timestamps and
 ids come from Go; real-Dolt tests for anything a `sqlmock` echo cannot
 exercise; DDL is not transactional across statements, so each `CREATE` is
-guarded and resumable. **Eight replicated tables in five files**, numbered **0068 or later**: slot
+guarded and resumable. **Eight replicated tables in five files**, numbered **0069 or later**: slot
 0067 is claimed by the versioned-beads Phase 1 migration (`issue_versions`,
-the `store_epoch` singleton, `issues.current_revision`), and the claim is
-registered in the CLAIMED.md registry (#6149) when P0 opens —
+the `store_epoch` singleton, `issues.current_revision`), slot 0068 by its
+Phase 2 (`0068_add_attribution_status`, `issue_versions.attribution_status`),
+and our claim is registered in the CLAIMED.md registry (#6149, row added
+2026-09-07 at c53ef8810 as "0069 and later") —
 `NNNN_beadgraph_scope.up.sql` (scope, history), `NNNN_beadgraph_types.up.sql`,
 `NNNN_beadgraph_beads.up.sql`, `NNNN_beadgraph_links.up.sql`,
 `NNNN_beadgraph_ledger.up.sql` (events, counter, allocations) — plus the
