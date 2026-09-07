@@ -407,7 +407,7 @@ type Cursor string            // OPAQUE: store-produced; binds Scope URL, epoch,
 type BeadRequest        struct{ Path string }
 type LinkRequest        struct{ Path string }
 type BeadSelectRequest  struct{ TypeURL string; After Cursor; Limit int }
-type LinkSelectRequest  struct{ TypeURL string; SourcePath string; Target *Ref; After Cursor; Limit int }
+type LinkSelectRequest  struct{ TypeURL string; Source *Ref; Target *Ref; After Cursor; Limit int }  // endpoints symmetric (P0 council 2026-09-07)
 type IncidentRequest    struct{ Path string; Direction Direction /* In | Out | Both */; After Cursor; Limit int }
 type DescriptorRequest  struct{ URL string }
 type InstallRequest     struct{ Descriptors []TypeDescriptor }
@@ -507,7 +507,12 @@ conformance suite catches the omission by construction.
 **Errors:** `ErrNoScope`, `ErrScopeExists`, `ErrNotAuthority`,
 `ErrStateRewound`, `ErrStateChanged`, `ErrSyncRequired`, `ErrUnpublished`,
 `ErrURLReused`, `ErrRepresentationTooLarge`, `ErrNotServedYet`,
-`GoneError{Path, State}` — declared in `beadserrors`, aliased here.
+`GoneError{Path, State}`. Home (P0, recorded 2026-09-07): the plane-neutral
+sentinels are declared in `beadserrors` and aliased here; `ErrNoScope`,
+`ErrScopeExists`, `ErrURLReused`, and `GoneError` are `graphops`'s own,
+because `beadserrors`' charter keeps domain-naming refusals in the leaf.
+`GoneError` matches `ErrNotFound` under `errors.Is` (the spec's same-404
+default); a handler opts into the 410 by `errors.As`.
 
 ### B3. Bodies, the witness manager, and legs
 
@@ -741,7 +746,17 @@ so a URL rotation rewrites no rows.
 **JSON is bytes.** `properties` and `descriptor` are canonical JSON bytes in
 `LONGBLOB`, never the engine `JSON` type (the tree measured `1.0`→`1`,
 integers past 2^53 rounded, `1e300` expanded in `internal/storage/issueops/metadata_cas.go` and the public
-`issueops/metadatacas.go`; `-0.0`→`0` per the role guide). Size limit 1 MiB per value.
+`issueops/metadatacas.go`; `-0.0`→`0` per the role guide). The canonical
+form (P0 decision 3, recorded 2026-09-07) is RFC 8785 serialization applied
+to each number literal's **exact decimal value**, never its nearest binary64:
+`1.0`→`1`, `-0.0`→`0`, `1e300`→`1e+300`, and integers past 2^53 survive
+intact; the exponent bound applies to the normalized value so that
+canonicalization is a fixed point. Every string entering a canonicalized or
+hashed value must be **valid UTF-8** (P0 council: invalid bytes collapse to
+U+FFFD in JSON, so distinct values would hash identically). The frozen
+ledger hash layout is `graphops`' golden: JCS of the event's members with
+absent members omitted, `at` as RFC 3339 UTC with six fractional digits,
+sha256 hex, genesis = 64 zeros. The value limit is a P1 number (Part D.1).
 
 **Provenance on every mutable row.** `last_authority_id` / `last_epoch` are
 stamped by every mutation on descriptors, beads, links, and allocations.
@@ -757,7 +772,7 @@ table's hash within it keys the descriptor cache.
 | `graph_scope_history` | `scope_url VARCHAR(2048) BIN NOT NULL`, `refused_seq BIGINT UNSIGNED NOT NULL`, `refused_at DATETIME(6) NOT NULL`, `reason VARCHAR(64) NOT NULL` | `PRIMARY KEY (scope_url)`; derived from `refuse_url` events |
 | `graph_type_descriptors` | `url VARCHAR(2048) BIN NOT NULL`, `descriptor LONGBLOB NOT NULL`, `fingerprint CHAR(64) NOT NULL`, `installed_seq BIGINT UNSIGNED NOT NULL`, `installed_at DATETIME(6) NOT NULL`, `last_authority_id CHAR(32) NOT NULL`, `last_epoch BIGINT UNSIGNED NOT NULL` | `PRIMARY KEY (url)`; `UNIQUE (fingerprint)` |
 | `graph_beads` | `path VARCHAR(1024) BIN NOT NULL`, `type_url VARCHAR(2048) BIN NOT NULL`, `revision CHAR(32) NOT NULL`, `attribution_principal VARCHAR(512) NULL`, `attribution_status ENUM('claimed','unknown') NULL`, `properties LONGBLOB NOT NULL`, `last_authority_id CHAR(32) NOT NULL`, `last_epoch BIGINT UNSIGNED NOT NULL`, `created_at DATETIME(6) NOT NULL`, `updated_at DATETIME(6) NOT NULL` | `PRIMARY KEY (path)`; `INDEX (type_url, path)`; `FOREIGN KEY (type_url) REFERENCES graph_type_descriptors(url)`; attribution columns both NULL or both set |
-| `graph_links` | `path VARCHAR(1024) BIN NOT NULL`, `type_url … BIN NOT NULL`, `revision CHAR(32) NOT NULL`, `source_path VARCHAR(1024) BIN NOT NULL`, `source_pin CHAR(32) NULL`, `target_kind ENUM('in','ext') NOT NULL`, `target_path VARCHAR(1024) BIN NULL`, `target_url VARCHAR(2048) BIN NULL`, `target_pin CHAR(32) NULL`, `attribution_*`, `properties LONGBLOB NOT NULL`, `last_authority_id`, `last_epoch`, timestamps | `PRIMARY KEY (path)`; `INDEX (source_path, type_url, path)`, `INDEX (target_path, type_url, path)` (a typed incoming read is a keyed scan — accepted from sjarmak's review); `FOREIGN KEY (source_path) REFERENCES graph_beads(path)`; `CHECK` exactly one of `target_path`/`target_url` per `target_kind`; **no** uniqueness on (type, source, target) |
+| `graph_links` | `path VARCHAR(1024) BIN NOT NULL`, `type_url … BIN NOT NULL`, `revision CHAR(32) NOT NULL`, `source_kind ENUM('in','ext') NOT NULL`, `source_path VARCHAR(1024) BIN NULL`, `source_url VARCHAR(2048) BIN NULL`, `source_pin VARCHAR(512) BIN NULL`, `target_kind ENUM('in','ext') NOT NULL`, `target_path VARCHAR(1024) BIN NULL`, `target_url VARCHAR(2048) BIN NULL`, `target_pin VARCHAR(512) BIN NULL` (endpoints symmetric and pins variable-width — **changed 2026-09-07, P0 council:** the pinned fixtures carry external-source Links such as `urn:external:pin-witness → beads/demo-f`, and a pin is an opaque string echoed byte-identically, so `CHAR(32)` cannot hold it), `attribution_*`, `properties LONGBLOB NOT NULL`, `last_authority_id`, `last_epoch`, timestamps | `PRIMARY KEY (path)`; `INDEX (source_path, type_url, path)`, `INDEX (target_path, type_url, path)` (a typed incoming read is a keyed scan — accepted from sjarmak's review); `FOREIGN KEY (source_path) REFERENCES graph_beads(path)` (a NULL `source_path` — external source — skips the check); `CHECK` exactly one of `source_path`/`source_url` per `source_kind` and exactly one of `target_path`/`target_url` per `target_kind`, and at least one endpoint `in` (the pinned spec's endpoint law); **no** uniqueness on (type, source, target) |
 | `graph_ledger_seq` | `id TINYINT NOT NULL` (always 0), `next_seq BIGINT UNSIGNED NOT NULL` (`next` is reserved in Dolt's parser), `alloc_nonce CHAR(32) NOT NULL` | `PRIMARY KEY (id)` — **the single-row sequence counter**: `UPDATE … SET next_seq = next_seq + 1, alloc_nonce = <random> WHERE id = 0` inside the mutation's transaction; the random cell is what makes two allocators a `1213` conflict (a bare increment converges under Dolt's cell-wise merge — probed); a rolled-back transaction burns no seq; seeded by `Mint`; set by `LedgerApply` |
 | `graph_ledger_events` | `seq BIGINT UNSIGNED NOT NULL`, `op_id CHAR(32) NOT NULL` (indexed; covered by the hash), `kind ENUM('mint','install','update','promote','rotate','allocate','tombstone','refuse_url') NOT NULL`, `path VARCHAR(1024) BIN NULL`, `scope_url VARCHAR(2048) BIN NULL`, `resource_kind ENUM('bead','link') NULL`, `revision CHAR(32) NULL`, `state ENUM('pruned','erased') NULL`, `fingerprint CHAR(64) NULL`, `authority_id CHAR(32) NOT NULL`, `epoch BIGINT UNSIGNED NOT NULL`, `at DATETIME(6) NOT NULL`, `prev_hash CHAR(64) NOT NULL`, `hash CHAR(64) NOT NULL` | `PRIMARY KEY (seq)` — **append-only, hash-chained**; `UNIQUE (hash)`; `INDEX (path, seq)`; `INDEX (op_id)` (non-unique: one operation may append several events); `CHECK` per kind. Every mutation is an event |
 | `graph_allocations` | `path VARCHAR(1024) BIN NOT NULL`, `resource_kind ENUM('bead','link') NOT NULL`, `birth_seq BIGINT UNSIGNED NOT NULL`, `birth_authority_id CHAR(32) NOT NULL`, `birth_epoch BIGINT UNSIGNED NOT NULL`, `state ENUM('live','reserved','pruned','erased') NOT NULL`, `tombstone_seq BIGINT UNSIGNED NULL`, `last_authority_id CHAR(32) NOT NULL`, `last_epoch BIGINT UNSIGNED NOT NULL` | `PRIMARY KEY (path)` — the O(1)/O(log n) ID test (ruling 3); **derived state**; `reserved` = ledger-applied with no row (A4) |
