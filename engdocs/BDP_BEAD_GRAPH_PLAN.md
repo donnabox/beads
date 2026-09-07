@@ -1,10 +1,10 @@
 # BDP in beads: the bead-graph plan
 
-**Status:** Draft v22 — feat/bead-graph — W-arch amendments **A1–A7 and A9 RULED 2026-09-07**; A8 and the two decisions (§9) still pending; P0 code opens when they are ruled. (Thirteen adversarial review rounds:
+**Status:** Draft v23 — feat/bead-graph — W-arch amendments **A1–A9 RULED 2026-09-07**; the two decisions (§9) still pending; P0 code opens when they are ruled. (Thirteen adversarial review rounds:
 1–7 on the whole plan, SOUND at round 7; 8–13 on the storage-interfaces
 section, SOUND-ADDITION at round 13; v6 withdrew the Issue projection from
 v0 on review-round-5 counterexamples; v9–v11 record the P-1 ruling tranches — all
-twelve decisions are ruled; v14–v21 reopened P-1 for the nine amendments; v22 records eight of them ruled)
+twelve decisions are ruled; v14–v21 reopened P-1 for the nine amendments; v22–v23 record all nine ruled)
 **Date:** 2026-09-02 (v1: 2026-08-31)
 **Owners:** Donna Box (ruling), janet (drafting/implementation)
 **References:** the BDP spec (gastownhall/bdp `docs/specs/bdp.md`), beads#6051,
@@ -71,10 +71,15 @@ instead of — the existing Issue/Dependency machinery.
 
 Hard constraints, in priority order:
 
-1. **Zero compatibility degradation, defined precisely:** *same-version*
-   legacy behavior is byte-identical — every existing CLI verb, JSONL
-   interchange shape, journal record, sync path, and out-of-tree `backend/`
-   implementation behaves exactly as before on the same binary. Schema
+1. **Zero compatibility degradation, defined precisely (amended 2026-09-07,
+   A8 option A):** *same-version* legacy behavior is byte-identical — every
+   existing CLI verb, JSONL interchange shape, journal record, and sync path
+   behaves exactly as before on the same binary, with gate (non-TTY) output
+   byte-identical. Out-of-tree `backend/` implementations take the **source
+   break the storage interface already declares** (six one-line
+   `ErrUnsupported` stubs for the `BeadGraph*` accessors, called out in
+   CHANGELOG with the stub migration, the joint ReadyClaimer/BatchCloser
+   entry being the precedent); once stubbed they behave exactly as before. Schema
    migrations keep their existing version discipline (an upgraded database
    is "ahead" of an older binary, which refuses to open it — that is the
    *current* contract, and this plan does not promise more than the repo
@@ -765,7 +770,7 @@ allocation/tombstone ledger. No legacy IDs are served in v0.
 > *boundaries* stand: P0 contracts + pinned wire, P1 storage (roles,
 > bodies, migrations, conformance; the replication/merge ADR is a P1
 > gate), P2 serving (BDP rows inside `httpapi`; collection routes after the
-> cursor ADR), P3 writes. **P0 opens when A8 and the two decisions are ruled (A1–A7, A9 ruled 2026-09-07).**
+> cursor ADR), P3 writes. **P0 opens when the two decisions are ruled (A1–A9 ruled 2026-09-07).**
 
 - **P-1 — Decisions and pins (no code):** charter ADR; ratify the
   projection withdrawal (v0 Scope = graph store only); Scope URL/identity;
@@ -942,10 +947,11 @@ of that.
    target, distinguished by rerouting ABOVE the storage abstraction (at
    the CLI) rather than below it (§4 "Lifecycle commands"); after it, the
    CLI's graph verbs speak BDP to the designated server. Tests prove Issues never leak into graph inventories;
-   a provider without the capability keeps existing `bd serve` behavior —
-   routes absent, never a startup failure.
+   a provider implementing the six accessor stubs without the capability
+   keeps existing `bd serve` behavior — routes absent, never a startup
+   failure (A8, ruled 2026-09-07).
 
-### Amendments RULED 2026-09-07 (A1–A7, A9) — the interview record
+### Amendments RULED 2026-09-07 (A1–A9) — the interview record
 
 Raised by eight three-reviewer councils on the W-arch docs and ruled one
 decision at a time on 2026-09-07. The normative text above (rulings 7b, 9,
@@ -1013,18 +1019,18 @@ decision at a time on 2026-09-07. The normative text above (rulings 7b, 9,
   shared databases minting under one tracked URL are settled by the
   replication ADR (interim: the earlier mint wins).
 
-### Amendments PENDING RULING (A8 and two decisions)
+- **A8 (§1 constraint #1; ruling 12) — option A.** Constraint #1 is
+  scoped to *behavior*: every in-tree topology and existing workspace is
+  byte-identical in gate output; out-of-tree `backend/` implementers take
+  the source break the storage interface already declares (six one-line
+  `ErrUnsupported` stubs, CHANGELOG call-out with the stub migration). The
+  compiler catches direct implementers; a required method promotes silently
+  through every wrapper that embeds the interface, so the three reflection
+  censuses stay mandatory. Option B (an optional capability interface with
+  explicit wrapper implementations, a capability census, and resolvers)
+  rejected.
 
-- **A8 (§1 constraint #1; ruling 12) — NEW, two options.** **A
-  (recommended):** constraint #1 scoped to *behavior* (byte-identical gate
-  output). Six required methods on `Storage` break **direct implementers**
-  (the compiler; six `ErrUnsupported` stubs; the joint
-  `ReadyClaimer`/`BatchCloser` CHANGELOG entry is the precedent) and are
-  **silently promoted through every wrapper that embeds the interface** —
-  which is why the censuses are mandatory. **B:** an optional
-  `BeadGraphCapable` interface is **not** promoted through an
-  interface-embedding wrapper, so every wrapper implements it explicitly
-  and every consumer needs a resolver (the v1 `graphsource` shape).
+### Decisions PENDING RULING (two)
 
 Two decisions the plan does not yet contain, surfaced for ruling:
 

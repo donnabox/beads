@@ -1,6 +1,6 @@
 # BDP graph store — CLI and storage-interface changes, in detail
 
-**Status:** Draft v11 (W-arch) — amendments A1–A7 and A9 RULED 2026-09-07; A8 and the two decisions pending — feat/bead-graph
+**Status:** Draft v12 (W-arch) — amendments A1–A9 RULED 2026-09-07; the two decisions pending — feat/bead-graph
 **Date:** 2026-09-02
 **Companions:** `BDP_BEAD_GRAPH_PLAN.md` (rulings), `BDP_GRAPH_ARCHITECTURE.md`
 (shape; its §2b lists the proposed ruling amendments A1–A9 this spec
@@ -908,7 +908,7 @@ backends; a registered backend's serving behavior (rows absent).
    branch-qualified sessions do not see it, so every fenced transaction runs
    on the default branch.
 
-## Part E — Ruling amendments (A1–A7, A9 ruled 2026-09-07; A8 pending)
+## Part E — Ruling amendments (A1–A9 ruled 2026-09-07)
 
 Ruled: A1 store-owned witness asserted in every transaction is the v0 lease
 (ruling 9); A2 BDP rows inside `httpapi`, `bd --graph-mode link serve` the
@@ -921,6 +921,7 @@ transitions, hash-chained ledger, ledger lane restoring anti-reuse history,
 provider `LedgerDurability`; A6 tracked `bdp.scope_url`, per-workspace keys in
 `config.local.yaml`, tokens from files only; A7's shared-database half (the
 fence cell); A9 v0 authority requires a shared database, the remote half of
-A7 deferred to the write-profile ADR. **Pending:** A8 (two options for
-constraint #1), the out-of-role DML enforcement boundary, and the
-replication/merge ADR as a P1 gate. Full text: architecture §2b.
+A7 deferred to the write-profile ADR; A8 option A — constraint #1 scoped to
+behavior, out-of-tree implementers take the declared source break with six
+stubs and a CHANGELOG call-out. **Pending:** the out-of-role DML enforcement
+boundary, and the replication/merge ADR as a P1 gate. Full text: architecture §2b.
