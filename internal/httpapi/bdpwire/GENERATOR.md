@@ -137,9 +137,14 @@ contract runs all of the above with no Makefile edit.
 1. Change the commit in `schema.go` (`Pin`) and in `schema/PROVENANCE` (`commit:`).
 2. Re-fetch every verbatim file `PROVENANCE` lists from that commit, byte-identical
    (`gh api -H "Accept: application/vnd.github.raw"
-   "repos/gastownhall/bdp/contents/<upstream path>?ref=<commit>"`), and
-   re-extract the spec examples from `docs/specs/bdp.md` at that commit (the
-   PROVENANCE names each fence's opening line; renumber if the spec moved).
+   "repos/gastownhall/bdp/contents/<upstream path>?ref=<commit>"`), fetch
+   `docs/specs/bdp.md` at that commit the same way, record its
+   `git hash-object` as the `spec-blob:` header, and re-extract the spec
+   examples (each PROVENANCE entry names its fence's line range, opener
+   through closer; renumber the ranges and the file names if the spec moved).
+   Run `BDP_SPEC_AT_PIN=<path to the fetched spec> go test
+   ./internal/httpapi/bdpwire/ -run TestDerivedEntriesReproduceFromTheSpec`
+   to prove the derived entries against the file, offline.
 3. Recompute the digests in `PROVENANCE` (`shasum -a 256`; `git hash-object`).
 4. `go test ./internal/httpapi/bdpwire/...`. Every failure is a real change at
    the new pin: a new definition (bind it in `defsToGo`, write the type), a
