@@ -615,7 +615,7 @@ Each row is policy decided in P-1, not discovered in CI. "Byte-identical
 legacy behavior" scopes to **legacy-only data and operations**; rows are
 split by topology where the tree differs:
 
-| Surface | Legacy behavior (verified) | Graph-store policy (proposed) |
+| Surface | Legacy behavior (verified) | Graph-store policy (ruled; §9) |
 | --- | --- | --- |
 | Dolt push/pull (server + embedded) | rows travel; embedded pushes directly | graph rows travel identically |
 | Merge settlement | `versioncontrolops/mergesettle.go` already settles metadata, dependencies, migrations, config, issues, labels, comments, and events, with seven-table FK-cascade repair — conflict dispatch is a hard-coded switch, separate from an always-considered FK-repair pass; NOTE `MergeWithStrategy` returns early on clean merges and plain `Merge` bypasses settlement entirely | graph settlement must be **centralized so every merge entry point runs it** (clean-merge early-returns and plain `Merge` included — enumerate or funnel the routes): identity/endpoint integrity, dangling-Link detection, owned-Link invariant validation. A pass can reject or quarantine invalid imported state; it CANNOT serialize two independently accepted `max`-violating writes after the fact — hence decision 9: BDP writes flow through one serving authority per Scope, and foreign-clone merges of graph tables are out-of-contract (quarantined on detection); **ruling 14 (2026-09-07) settles this row:** every SQL pull route fetches, inspects the eight graph tables against the tracking ref, and refuses a foreign or unexplained delta before merging; routes that cannot inspect first fall to the validator's revert; no graph-table conflict is auto-resolved and `--strategy` never touches one |
@@ -623,7 +623,7 @@ split by topology where the tree differs:
 | Journal (frozen v0 vocabulary) | Issue/Dependency/Comment payloads only | **graph events are excluded**; a separate graph changefeed carries them; the frozen vocabulary is not extended |
 | Export/JSONL (contract class) | contractual shapes | graph gets its own export lane; legacy shapes untouched |
 | Backup / restore | whole-database state (a different contract class from export); a Dolt backup restore carries the working set, dolt-ignored tables included (probed) | ruling 11 as amended by A5 (ruled 2026-09-07): the installation-keyed authority witness (`.beads/graph-authority.local.json`) records the hash-chained ledger head; a restore keeps the file but the store no longer contains that head → refused until `bd --graph-mode link restore`, which shows continuity from a `bd --graph-mode link ledger snapshot` (recovery predicate) or rotates the Scope URL and epoch; providers DECLARE `LedgerDurability`; `bd backup restore` also marks the witness unverified |
-| Wisps | private/transient; excluded from export/federation by default | **P-1 policy decision** — excluded from BDP serving in v0 (proposed) |
+| Wisps | private/transient; excluded from export/federation by default | **ruling 6:** not served in v0 (C-lane note) |
 
 ## 5. Thrust 3 — Issues/Dependencies beside the graph
 
@@ -846,10 +846,11 @@ allocation/tombstone ledger. No legacy IDs are served in v0.
 This plan covers the graph store and its Read serving. Sibling workstreams,
 each owning its own writeup:
 
-- **W-arch** — held at v10 (2026-09-03): `BDP_GRAPH_ARCHITECTURE.md` and
-  `BDP_GRAPH_CLI_AND_STORAGE_SPEC.md`, eight council rounds with live Dolt
-  probes; nine ruling amendments (A1–A9) and two new decisions pending in
-  §9. Precedes P0 code.
+- **W-arch** — `BDP_GRAPH_ARCHITECTURE.md` and
+  `BDP_GRAPH_CLI_AND_STORAGE_SPEC.md` (v14, 2026-09-07), eight council
+  rounds with live Dolt probes; nine ruling amendments (A1–A9) and two
+  decisions (rulings 13–14), all ruled 2026-09-07 and recorded in §9.
+  Preceded P0 code; P0 is open.
 - **W1** — flesh out the **Update and Transactional profiles** of BDP and
   the reference implementations (the protocol is Read-heavy today); this is
   the upstream gate for P3 writes.
@@ -942,7 +943,7 @@ of that.
    append-only and restorable independently of state (older state +
    current ledger preserves non-reuse); providers declare whether their
    ledger survives restore; when preservation cannot be guaranteed,
-   `bd --graph-mode link restore` (spelling per A3, pending) rotates the Scope URL and
+   `bd --graph-mode link restore` (spelling per A3) rotates the Scope URL and
    epoch and refuses the old URL. An epoch change alone is never
    sufficient.
 12. **Store, Scope, client — RULED (replaces "empty-at-birth"):** three
