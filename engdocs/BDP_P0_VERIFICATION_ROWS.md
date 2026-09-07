@@ -1,7 +1,11 @@
 # BDP P0 verification rows — the row-level fence (ruling 13)
 
-Status: **spikes complete, 2026-09-07.** Tree: `c0d8da42d` (upstream main) on
-branch `janet-beadgraph-p0-spikes`. Dolt: **2.1.8** (`dolt version`), local
+Status: **spikes complete, 2026-09-07; council-11 fold applied the same day**
+(the mid-statement probes now establish their premise by observation, the
+real-Dolt spikes gate on the dolt binary alone, and rule 3 below names
+`CREATE TRIGGER` and `DROP TRIGGER` separately). Tree: `c0d8da42d` (upstream
+main), spiked on branch `janet-beadgraph-p0-spikes` and merged into
+`janet-beadgraph-p0`. Dolt: **2.1.8** (`dolt version`), local
 binary; no Docker on the machine, so every sql-server here is a scratch
 `dolt sql-server` started through the tree's own launcher
 (`internal/storage/dbproxy/server.NewDoltServer`) under `t.TempDir()` with an
@@ -12,9 +16,14 @@ isolated `DOLT_ROOT_PATH`. Go 1.26.5, `go-sql-driver/mysql v1.10.0`,
 This answers the three P0 verification rows that gate the session-gated
 trigger fence of `engdocs/BDP_GRAPH_CLI_AND_STORAGE_SPEC.md` Part B4 ("The
 row-level fence (ruling 13)"; B2 carries the connection-hygiene claim; the
-plan's §9 ruling 13 records the probes). Each row has a runnable, deterministic
-test; nothing was added to the migration series (P0 has no migrations, slots
-are claimed elsewhere); no production code changed.
+plan's §9 ruling 13 records the probes). Each row has a runnable test whose
+outcome does not depend on scheduling: the two mid-statement probes (c3, d2)
+cancel only after a second connection has *observed* the body's session
+executing its `SELECT SLEEP(10)` in `information_schema.processlist`, so the
+cancellation provably lands inside the statement and a probe whose premise
+never holds fails rather than quietly exercising the between-statement case.
+Nothing was added to the migration series (P0 has no migrations, slots are
+claimed elsewhere); no production code changed.
 
 | Row | Verdict | One line |
 | --- | --- | --- |
@@ -29,26 +38,28 @@ folded into B2/B3/B4 and the P1 migration PR.** Nothing here sends v0 back to
 ## Files
 
 - `internal/storage/embeddeddolt/beadgraph_fence_spike_test.go` — row (i). `//go:build cgo`, gate `BEADS_TEST_EMBEDDED_DOLT=1` (the package's convention).
-- `internal/storage/uow/beadgraph_fence_spike_test.go` — row (ii). Gate `BEADS_TEST_BEADGRAPH_SPIKES=1` plus a `dolt` binary (`testutil.RequireDoltBinary`, which honours `BEADS_TEST_SKIP=dolt`).
+- `internal/storage/uow/beadgraph_fence_spike_test.go` — row (ii). Gate: a `dolt` binary (`testutil.RequireDoltBinary`, which honours `BEADS_TEST_SKIP=dolt` and fails rather than skips under `GITHUB_ACTIONS`), so the tree's Dolt lane runs it like every other real-Dolt test; there is no separate opt-in.
 - `internal/storage/schema/beadgraph_fence_spike_test.go` — row (iii). Same gate for the four real-Dolt tests; the hygiene-script test needs only bash ≥ 4 and git and runs by default.
 - `internal/storage/schema/testdata/beadgraph_fence_spike/9001_beadgraph_fence_spike.up.sql` — the throwaway migration (B4 shape, one table, three trigger pairs), shared by all three packages. `…_variant/9001_beadgraph_fence_spike.up.sql` — same version, no trigger block (the divergent clone).
 - This report.
 
-Without the opt-ins every Dolt-bound spike skips and `go test ./...` stays
-green (verified with `BEADS_TEST_SKIP=dolt`, the `scripts/test.sh` default).
+Under `BEADS_TEST_SKIP=dolt` (the `scripts/test.sh` default) — or locally
+without a `dolt` binary — every Dolt-bound spike skips and `go test ./...`
+stays green; the embedded spike keeps its package's `BEADS_TEST_EMBEDDED_DOLT=1`
+opt-in.
 
 ## Rerun
 
 ```sh
-cd /Users/dbox/repos/beads-janet-beadgraph-p0-spikes   # any checkout of the branch
-# row (i) — embedded engine, in-process
+cd /Users/dbox/repos/beads-janet-beadgraph-p0   # or any checkout of branch janet-beadgraph-p0
+# row (i) — embedded engine, in-process (the package's own opt-in)
 BEADS_TEST_EMBEDDED_DOLT=1 GOFLAGS=-tags=gms_pure_go CGO_ENABLED=1 \
   go test ./internal/storage/embeddeddolt/ -run 'TestSpikeBeadGraphFence' -count=1 -v
-# row (ii) — scratch dolt sql-server, unit-of-work leg and *sql.Tx shape
-BEADS_TEST_BEADGRAPH_SPIKES=1 GOFLAGS=-tags=gms_pure_go CGO_ENABLED=1 \
+# row (ii) — scratch dolt sql-server, unit-of-work leg and *sql.Tx shape (needs `dolt` on PATH)
+GOFLAGS=-tags=gms_pure_go CGO_ENABLED=1 \
   go test ./internal/storage/uow/ -run 'TestSpikeBeadGraphFence' -count=1 -v
 # row (iii) — scratch dolt sql-server, runner, guards, skew, hygiene script, CLI bundle route
-BEADS_TEST_BEADGRAPH_SPIKES=1 GOFLAGS=-tags=gms_pure_go CGO_ENABLED=1 \
+GOFLAGS=-tags=gms_pure_go CGO_ENABLED=1 \
   go test ./internal/storage/schema/ -run 'TestSpikeBeadGraphFence' -count=1 -v
 # what the default runner sees: Dolt-bound spikes skip, the hygiene test runs
 BEADS_TEST_SKIP=dolt GOFLAGS=-tags=gms_pure_go CGO_ENABLED=1 \
@@ -158,9 +169,9 @@ so the follow-up is provably on the same server session.
 | b | UOW `RunTx`: `SET 1` → INSERT → commit, no clear | same session; raw INSERT **passed**; `@bd_graph_role` = 1. **The hazard.** |
 | c1 | UOW, caller's context cancelled between statements, deferred clear on the body's own ctx | the clear never reaches the server (`context.Canceled`: `go-sql-driver` `connection.go` `watchCancel` refuses to send on an already-cancelled ctx); `closeAttempt` (`tx.go`) rolls back on `context.WithoutCancel` (its stated purpose is to stop burning sessions) and `releaseConn` returns the session to the pool: `OpenConnections` = 1, same `CONNECTION_ID`, the in-role row was rolled back, raw INSERT **passed**, `@bd_graph_role` = 1 (ROLLBACK does not reset user variables). **The hazard, on the serving leg.** |
 | c2 | as c1, deferred clear on `context.WithTimeout(context.WithoutCancel(ctx), 5s)` | the clear reaches the server; same session pooled; raw INSERT **fenced**; variable NULL. **The remedy.** |
-| c3 | UOW, cancelled **mid-statement** (`SELECT SLEEP(10)`) | the driver's watcher closes the socket; `closeAttempt`'s ROLLBACK fails; `poisonConn` discards the session: `OpenConnections` = 0; the next statement is on a fresh session, **fenced** |
+| c3 | UOW, cancelled **mid-statement** (`SELECT SLEEP(10)`, cancelled once a second connection sees the session executing it in `information_schema.processlist`) | the driver's watcher closes the socket; `closeAttempt`'s ROLLBACK fails; `poisonConn` discards the session: `OpenConnections` = 0; the next statement is on a fresh session, **fenced** |
 | d1 | `*sql.Tx`, cancelled between statements | `Tx.awaitDone` (and an explicit `Rollback`) take `rollback(discardConn=false)` because `database/sql` `beginDC` sets `keepConnOnRollback = SessionResetter && Validator`, both implemented by `go-sql-driver/mysql v1.10.0` (`ResetSession` only checks liveness); same session pooled, `OpenConnections` = 1; raw INSERT **passed**; variable = 1. **The hazard, on the CLI/embedded shape** — but see row (i): the embedded driver discards sessions, so only the CLI server leg is exposed. |
-| d2 | `*sql.Tx`, cancelled mid-statement | socket closed, `OpenConnections` = 0, next statement **fenced** |
+| d2 | `*sql.Tx`, cancelled mid-statement (same observation-then-cancel) | socket closed, `OpenConnections` = 0, next statement **fenced** |
 | d3 | `*sql.Tx`, body error with a live context and a deferred clear before `Rollback` | **fenced** — the deferred clear works on every exit path except cancellation |
 
 **Verdict: PASS-WITH-RULE.** (a) and (b) are exactly as B2 states. (c)
@@ -307,10 +318,19 @@ detection behaves exactly as designed. The rules for the P1 migration PR:
    `doltIgnorePatterns` (version-gated, as `events` is) learn
    `graph_authority_lease` **before** the lease migration lands, or check D
    cannot enforce the ignored-series twin B4 requires.
-3. `migrationSQLTouchesTable` learns `CREATE|DROP TRIGGER … ON <table>` as a
-   touch of `dolt_schemas` (and of the named table), so a pre-existing dirty
-   `dolt_schemas` is refused up front as `DirtyTablesError`, like any other
-   table, instead of after the per-step commits.
+3. `migrationSQLTouchesTable` learns trigger DDL as a touch of `dolt_schemas`,
+   with the two statements handled separately because their grammars differ:
+   `CREATE TRIGGER <name> … ON <table> FOR EACH ROW …` names its subject
+   table in the statement and touches `dolt_schemas` **and** `<table>`;
+   `DROP TRIGGER [IF EXISTS] <name>` has **no** `ON <table>` clause and
+   touches `dolt_schemas` only — the subject table, if the guard wants it,
+   comes from a metadata lookup (the `dolt_schemas` row for `<name>`, or the
+   B4 naming convention `<table>_bi|_bu|_bd`), never from the statement. A
+   single `CREATE|DROP TRIGGER … ON <table>` pattern would miss every
+   standalone drop and keep the dirty-`dolt_schemas` gap open. With both
+   handled, a pre-existing dirty `dolt_schemas` is refused up front as
+   `DirtyTablesError`, like any other table, instead of after the per-step
+   commits.
 4. The fence's presence is not covered by `content_skew.go` and `dolt_schemas`
    is not one of the eight tables the state-change validator hashes or
    ruling 14's fetch-inspect reads: a foreign `DROP TRIGGER` replicates on

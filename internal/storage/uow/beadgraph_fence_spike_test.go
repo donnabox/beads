@@ -9,6 +9,7 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+	"strings"
 	"testing"
 	"time"
 
@@ -42,23 +43,27 @@ import (
 //
 // Every probe runs on a ONE-connection pool and checks CONNECTION_ID() so the
 // statement that follows the body is provably on the same server session.
+// The two mid-statement probes (c3, d2) do not guess at timing: a SECOND
+// connection watches information_schema.processlist until the body's
+// session is executing its SELECT SLEEP(10), and only then is the context
+// cancelled — so the cancellation provably lands inside the statement, which
+// is the case these probes exist to distinguish from cancellation between
+// statements (c1, d1). A probe whose premise never holds fails, loudly.
 //
-// Gate: BEADS_TEST_BEADGRAPH_SPIKES=1 plus a dolt binary on PATH
-// (testutil.RequireDoltBinary, which also honours BEADS_TEST_SKIP=dolt). The
+// Gate: a dolt binary on PATH (testutil.RequireDoltBinary, which honours
+// BEADS_TEST_SKIP=dolt and fails rather than skips under GITHUB_ACTIONS), so
+// the tree's Dolt lane runs these rows like every other real-Dolt test. The
 // server is the tree's own launcher, internal/storage/dbproxy/server, under
 // t.TempDir() with an isolated DOLT_ROOT_PATH.
 
 const (
-	beadGraphSpikeEnv      = "BEADS_TEST_BEADGRAPH_SPIKES"
 	beadGraphSpikeDatabase = "beadgraph_spike"
 	beadGraphSpikeInsert   = "INSERT INTO graph_beads_spike (path, revision, last_authority_id, last_epoch) VALUES (?, 'r1', 'a', 1)"
+	beadGraphSpikeSleep    = "SELECT SLEEP(10)"
 )
 
 func requireBeadGraphSpike(t *testing.T) {
 	t.Helper()
-	if os.Getenv(beadGraphSpikeEnv) != "1" {
-		t.Skipf("set %s=1 to run the BDP bead-graph fence spikes (they start a local dolt sql-server)", beadGraphSpikeEnv)
-	}
 	testutil.RequireDoltBinary(t)
 }
 
@@ -262,6 +267,40 @@ func uowRunner(uw UnitOfWork) spikeQuerier {
 	return uw.(*baseUOW).tx.Runner()
 }
 
+// cancelWhenExecuting watches, from a second connection, for the session
+// connID to be executing a statement whose text contains marker, then calls
+// cancel. The returned channel reports nil once the statement was observed
+// and cancelled, or an error if it was not observed within the deadline —
+// which is longer than the statement's own SLEEP, so a premise that never
+// holds is reported rather than silently exercising the between-statement
+// case. Observation is through information_schema.processlist (ID, INFO),
+// which Dolt serves for every live session.
+func cancelWhenExecuting(observer *sql.DB, connID int64, marker string, cancel context.CancelFunc) <-chan error {
+	done := make(chan error, 1)
+	go func() {
+		deadline := time.Now().Add(15 * time.Second)
+		var last error
+		for {
+			var info sql.NullString
+			err := observer.QueryRowContext(context.Background(), "SELECT INFO FROM information_schema.processlist WHERE ID = ?", connID).Scan(&info)
+			switch {
+			case err == nil && info.Valid && strings.Contains(info.String, marker):
+				cancel()
+				done <- nil
+				return
+			case err != nil && !errors.Is(err, sql.ErrNoRows):
+				last = err
+			}
+			if time.Now().After(deadline) {
+				done <- fmt.Errorf("session %d was never observed executing %q in information_schema.processlist (last error: %v)", connID, marker, last)
+				return
+			}
+			time.Sleep(5 * time.Millisecond)
+		}
+	}()
+	return done
+}
+
 func TestSpikeBeadGraphFencePooledConnectionHygiene(t *testing.T) {
 	requireBeadGraphSpike(t)
 	ep := startBeadGraphSpikeServer(t)
@@ -408,18 +447,26 @@ func TestSpikeBeadGraphFencePooledConnectionHygiene(t *testing.T) {
 
 	t.Run("c3: UOW body cancelled MID-statement — the driver closes the socket, closeAttempt poisons the session, the pool discards it", func(t *testing.T) {
 		db, p := openUOWPool(t, ep, beadGraphSpikeDatabase)
+		observer := openCLILegPool(t, ep, beadGraphSpikeDatabase)
 		cctx, cancel := context.WithCancel(ctx)
 		defer cancel()
+		var observed <-chan error
 		err := RunTx(cctx, p, func(ctx context.Context, uw UnitOfWork) (string, error) {
 			r := uowRunner(uw)
 			if _, err := r.ExecContext(ctx, "SET @bd_graph_role = 1"); err != nil {
 				return "", err
 			}
-			time.AfterFunc(300*time.Millisecond, cancel)
+			// Cancel only once the second connection SEES this session
+			// executing the SLEEP: the cancellation lands inside the
+			// statement by observation, not by a timer.
+			observed = cancelWhenExecuting(observer, spikeConnectionID(t, r), beadGraphSpikeSleep, cancel)
 			var x int
-			qerr := r.QueryRowContext(ctx, "SELECT SLEEP(10)").Scan(&x)
+			qerr := r.QueryRowContext(ctx, beadGraphSpikeSleep).Scan(&x)
 			return "", fmt.Errorf("body aborted mid-statement: %w", qerr)
 		})
+		if oerr := <-observed; oerr != nil {
+			t.Fatalf("premise not established: %v", oerr)
+		}
 		if !errors.Is(err, context.Canceled) {
 			t.Fatalf("RunTx err = %v, want context.Canceled from the interrupted statement", err)
 		}
@@ -470,6 +517,7 @@ func TestSpikeBeadGraphFencePooledConnectionHygiene(t *testing.T) {
 
 	t.Run("d2: *sql.Tx cancelled MID-statement — the driver closes the socket and the pool discards the connection", func(t *testing.T) {
 		db := openCLILegPool(t, ep, beadGraphSpikeDatabase)
+		observer := openCLILegPool(t, ep, beadGraphSpikeDatabase)
 		cctx, cancel := context.WithCancel(ctx)
 		defer cancel()
 		tx, err := db.BeginTx(cctx, nil)
@@ -479,9 +527,13 @@ func TestSpikeBeadGraphFencePooledConnectionHygiene(t *testing.T) {
 		if _, err := tx.ExecContext(cctx, "SET @bd_graph_role = 1"); err != nil {
 			t.Fatalf("SET role in tx: %v", err)
 		}
-		time.AfterFunc(300*time.Millisecond, cancel)
+		observed := cancelWhenExecuting(observer, spikeConnectionID(t, tx), beadGraphSpikeSleep, cancel)
 		var x int
-		if qerr := tx.QueryRowContext(cctx, "SELECT SLEEP(10)").Scan(&x); !errors.Is(qerr, context.Canceled) {
+		qerr := tx.QueryRowContext(cctx, beadGraphSpikeSleep).Scan(&x)
+		if oerr := <-observed; oerr != nil {
+			t.Fatalf("premise not established: %v", oerr)
+		}
+		if !errors.Is(qerr, context.Canceled) {
 			t.Fatalf("interrupted SLEEP: err = %v, want context.Canceled", qerr)
 		}
 		_ = tx.Rollback()

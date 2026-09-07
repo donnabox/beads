@@ -40,9 +40,11 @@ import (
 // migration series. A variant without the trigger block
 // (testdata/beadgraph_fence_spike_variant/) plays the divergent clone.
 //
-// Gates: the real-Dolt tests need BEADS_TEST_BEADGRAPH_SPIKES=1 plus a dolt
-// binary (testutil.RequireDoltBinary, which honours BEADS_TEST_SKIP=dolt); the
-// hygiene-script test needs only bash >= 4 and git and runs by default.
+// Gates: the real-Dolt tests need a dolt binary (testutil.RequireDoltBinary,
+// which honours BEADS_TEST_SKIP=dolt and fails rather than skips under
+// GITHUB_ACTIONS), so the tree's Dolt lane runs them like every other
+// real-Dolt test; the hygiene-script test needs only bash >= 4 and git and
+// runs by default.
 
 //go:embed testdata/beadgraph_fence_spike/*.up.sql
 var beadGraphFenceSpikeFS embed.FS
@@ -51,7 +53,6 @@ var beadGraphFenceSpikeFS embed.FS
 var beadGraphFenceSpikeVariantFS embed.FS
 
 const (
-	beadGraphSpikeEnv     = "BEADS_TEST_BEADGRAPH_SPIKES"
 	beadGraphSpikeFile    = "9001_beadgraph_fence_spike.up.sql"
 	beadGraphSpikeVersion = 9001
 	beadGraphSpikeInsert  = "INSERT INTO graph_beads_spike (path, revision, last_authority_id, last_epoch) VALUES (?, 'r1', 'a', 1)"
@@ -73,9 +74,6 @@ var (
 
 func requireBeadGraphSpike(t *testing.T) {
 	t.Helper()
-	if os.Getenv(beadGraphSpikeEnv) != "1" {
-		t.Skipf("set %s=1 to run the BDP bead-graph fence spikes (they start a local dolt sql-server)", beadGraphSpikeEnv)
-	}
 	testutil.RequireDoltBinary(t)
 }
 
