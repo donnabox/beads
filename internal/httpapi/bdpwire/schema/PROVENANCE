@@ -1,0 +1,32 @@
+# bdpwire vendoring provenance (spec B8: the PROVENANCE file). Every line below is checked by pin_test.go; edit it only
+# when re-pinning (see GENERATOR.md, "Re-pinning"). Fields on a file line are:
+#   sha256  local-path  upstream-path@commit  git-blob-sha1 (or "-" for a derived file)
+upstream: https://github.com/gastownhall/bdp
+commit: 0b7d86e7cfec47f88cd1ec22314a73f39763bcf8
+schema-id: https://github.com/gastownhall/bdp/schemas/bdp-v0.schema.json
+
+# Vendored verbatim from the commit above (byte-identical; the blob sha1 is what
+# `git hash-object` and the GitHub trees API report for the upstream file).
+552329e6b4a42adfc2643dc92e52403cfad5bd5e4474a25d4f0edbc12968417d  bdp-v0.schema.json  schemas/bdp-v0.schema.json  9f419c43fcb578beff2ead4c292a834f3dc6346a
+fa7245502f8396282ce85195643c9d3dbeb7ca0eed5f8ba08de5668bca91f6bd  fixtures/reference-domain.json  fixtures/reference-domain/reference-domain.json  7ac134120ab3a7a0c40ba3d58c62b379e9edb600
+282fc906bb8e09f710de03aa86dc6913493573d906a81b6708437890cca6354c  fixtures/read-reference-v1.json  packages/conformance/fixtures/read-reference-v1.json  1e8b7048bcde98a677ffb58c341f8e24790aa0f3
+70a748220da30aa4268d1f409624285e37e0bb6cf22559cc4893f9d695ecb617  fixtures/read-bdpbd-v1.json  packages/conformance/fixtures/read-bdpbd-v1.json  aa9a205a5bc427bcaa886f511977d5a741829375
+c887e64061e1575e7ca833fa9c4be211fe38c676e2106af32876379b50bd6983  conformance/read-v1.catalog.json  packages/conformance/catalog/read-v1.json  088a8ae8485cf0c724c289bf2392618a0cb865c8
+e957eb9ffdfdc599dc8604ac09bff48b7260c1209038b1214ec1c779d50d9106  conformance/read-v1.matrix.json  packages/conformance/matrices/read-v1.json  abec4810f18d34e3e96513580ec8d68ea5923631
+
+# Derived: the JSON example blocks of docs/specs/bdp.md at the commit above, each
+# the verbatim content of one ```json fence (plus a trailing newline); the line
+# number in the file name and in the upstream column is the fence opener.
+d3350e0b9a9360d5315cb64733429a35c376be117c57ad8436c0383e85ec67ad  spec-examples/0532-scope-aggregate-constraints-1.json  docs/specs/bdp.md#L532  -
+38ea86fb9fa6cf3056d77d5ff2f11a4bb168bd50af5036e827c0a0046779ddcf  spec-examples/1580-scope-discovery-and-human-documentation-1.json  docs/specs/bdp.md#L1580  -
+45ecab6de10fe3150f7e836c7a5feeda95fd5cb63d3913e2aff846f8d92fd1f9  spec-examples/1594-scope-discovery-and-human-documentation-2.json  docs/specs/bdp.md#L1594  -
+88bcdc17076504dbfe3ccf6aa42d305a402e8bdd1bc301dfe6aea791783efdd4  spec-examples/1609-scope-discovery-and-human-documentation-3.json  docs/specs/bdp.md#L1609  -
+b0c0447081a88d1345f4786edbf751c4f413ee50b125d76618a83b8088d07e52  spec-examples/1735-advertised-limits-1.json  docs/specs/bdp.md#L1735  -
+77309a73a26160ed54e727b298885219e9de33197ab6bee2e0b58bdeb10c1379  spec-examples/1912-resource-records-1.json  docs/specs/bdp.md#L1912  -
+8476638732420e3af34af8ef236ea717bcd00b6e00b0484a1eff521e9252c708  spec-examples/1927-resource-records-2.json  docs/specs/bdp.md#L1927  -
+32b40661b3f30e6410026904ec350d941b070952cd1b9b6f63414367c56057ae  spec-examples/1961-resource-records-3.json  docs/specs/bdp.md#L1961  -
+d72e834701a9dd9c43a2c41dab01ab02585eb9539a1b02153bd3af21faa695dd  spec-examples/1970-resource-records-4.json  docs/specs/bdp.md#L1970  -
+e6dfc5f5d1cffac8d9dbbe872c74c3aa08e7d559c751f06934edab0c7421d5a9  spec-examples/2029-resource-views-1.json  docs/specs/bdp.md#L2029  -
+7200e7698da791d5e63d7dfd83dabc75db362cf432c813ed6059edc1a0b333bb  spec-examples/2144-types-and-type-descriptors-1.json  docs/specs/bdp.md#L2144  -
+4e1b54eebc5dd19a39ea758e2438dc8036eb296000754e3b0c458b660bf1303a  spec-examples/2186-types-and-type-descriptors-2.json  docs/specs/bdp.md#L2186  -
+fb2dafdabe75945ad885a3a99bca714b5e0f63e0c65fd1027f228267d688493d  spec-examples/2203-types-and-type-descriptors-3.json  docs/specs/bdp.md#L2203  -
