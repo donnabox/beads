@@ -782,7 +782,7 @@ allocation/tombstone ledger. No legacy IDs are served in v0.
   matrix rows; auth-view mapping for bearer-token reality;
   listener/authority-semantics choice. (The BDP pin is already written in
   §0.) *Exit: every row ruled by Donna, recorded in this doc.*
-- **P0 — Contracts:** generated wire DTOs from the pinned schema; immutable
+- **P0 — Contracts:** wire DTOs held to the pinned schema by tests (hand-written, Part D.3); immutable
   domain values (`Properties`, `Ref` sum, records); pure validators; typed
   error vocabulary; the three ruling-13 verification rows — **answered
   2026-09-07: PASS / PASS-WITH-RULE / PASS-WITH-RULE**

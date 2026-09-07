@@ -757,6 +757,14 @@ U+FFFD in JSON, so distinct values would hash identically). The frozen
 ledger hash layout is `graphops`' golden: JCS of the event's members with
 absent members omitted, `at` as RFC 3339 UTC with six fractional digits,
 sha256 hex, genesis = 64 zeros. The value limit is a P1 number (Part D.1).
+Interop caveat (P0 council): a JCS peer that models numbers as binary64
+would equate `0.1` with its 55-digit expansion and could not reproduce
+ledger integers past 2^53; the ledger is internal, so no obligation follows,
+but stored `properties` may carry numbers such a peer cannot reproduce —
+raised upstream as a clarification of which numeric model §4.6 equality
+assumes. Descriptor canonical form sorts `conformsTo` (and endpoint
+`conformsTo`) by code unit — they are sets — so reordered parents fingerprint
+identically.
 
 **Provenance on every mutable row.** `last_authority_id` / `last_epoch` are
 stamped by every mutation on descriptors, beads, links, and allocations.
