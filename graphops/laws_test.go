@@ -408,6 +408,18 @@ func TestValidateScopeURL(t *testing.T) {
 		"https://beads.example/local-testing/", "https://beads.example/x/local-test/",
 		"https://beads.example/Acme/", "https://my_host/", "http://beads.example:8080/x/",
 		"https://beads.example:0/",
+		// A client may name a development server's reserved Scope; only a
+		// PERSISTED identity refuses it (TestValidatePersistedScopeURL).
+		"https://beads.example/local-test/",
+		// WHATWG leaves a trailing-dot registered name alone: it is canonical,
+		// and a different host from the undotted spelling.
+		"https://beads.example./", "https://beads.example./acme/",
+		// The WHATWG IPv6 serializer's spellings, IPv4-mapped included.
+		"https://[::ffff:102:304]/", "https://[::ffff:c0a8:1]/", "https://[::]/", "https://[1::]/",
+		"https://[2001:db8:0:1:1:1:1:1]/", "https://[1:0:0:2::]/",
+		// Every port that is not the default and has no leading zero.
+		"https://beads.example:80/", "http://beads.example:443/", "https://beads.example:65535/",
+		"https://0.0.0.0/", "https://255.255.255.255/",
 	}
 	for _, u := range accept {
 		if err := graphops.ValidateScopeURL(u); err != nil {
@@ -423,9 +435,9 @@ func TestValidateScopeURL(t *testing.T) {
 		"https://beads.example/%41/", "https://beads.example/./", "https://beads.example/../",
 		"https://beads.example/a/./b/", "https://beads.example//x/", "ftp://x/", "https:///acme/",
 		"https://[0:0:0:0:0:0:0:1]/", "https://[::ffff:1.2.3.4]/", "https://[::1", "https://[::1]x/",
-		"https://[fe80::1%25eth0]/", "https://beads.example/local-test/", "https://beads.example/a\\b/",
+		"https://[fe80::1%25eth0]/", "https://beads.example/a\\b/",
 		"https://beads.example:/", "https://beads.example:0080/", "https://beads.example:99999/",
-		"https://beads.example:abc/", "https://beads.example./", "https://.beads.example/",
+		"https://beads.example:abc/", "https://.beads.example/",
 		"https://127.1/", "https://01.2.3.4/", "https://1.2.3.4.5/", "https://beads.example/café/",
 		"beads.example/acme/", "//beads.example/acme/", "https://beads.example/a?b/",
 		"https://beads.example/%/", "https://beads.example/a%2/", "https://beads.example/a[b]/",
@@ -433,14 +445,72 @@ func TestValidateScopeURL(t *testing.T) {
 		"https://beads.example/a{b}/", "https://beads.example/\x7f/", "https:beads.example/",
 		"https:/beads.example/", "https://BEADS.example/", "https://beads.example/%E2%9C%93/x%2e/",
 		"https://beads.example/a%5Cb/", "https://beads.example/a%00b/",
+		// Numeric ports: leading zeros and zero-padded defaults are the
+		// parser's :443 and :0, spelled otherwise.
+		"https://beads.example:0443/", "https://beads.example:00/", "http://beads.example:00080/",
+		"https://beads.example:65536/", "https://beads.example:000000/",
+		// Percent-encoded host characters: the parser decodes them.
+		"https://beads%2Eexample/", "https://%62eads.example/", "https://beads%2fexample/",
+		"https://beads%25example/", "https://beads%40example/", "https://caf%C3%A9.example/",
+		"https://beads%2/", "https://beads%zz/", "https://beads%00example/", "https://beads%7Fexample/",
+		"https://beads%09example/", "https://beads%20example/",
+		// IPv4 in every spelling the parser rewrites: hex, decimal, octal,
+		// short forms, a trailing dot, and a last label that is a number.
+		"https://0x7f000001/", "https://0X7F000001/", "https://2130706433/", "https://0177.0.0.1/",
+		"https://127.0.1/", "https://0x7f.1/", "https://1.2.3.4./", "https://beads.123/",
+		"https://beads.0x1f/", "https://beads.0x/", "https://1.2.3.256/", "https://256.1.1.1/",
+		"https://1.2.65536/", "https://4294967296/", "https://0x/", "https://1.2.3.4../",
+		"https://99999999999999999999/", "https://0xffffffffffff.1/", "https://1.99999999999999999999/",
+		// Registered names the parser refuses or rewrites.
+		"https://a..b/", "https://beads.example../", "https://./", "https://a!b/", "https://a^b/",
+		"https://a%5Bb/",
+		// IPv6 that is not the serializer's spelling.
+		"https://[::FFFF:102:304]/", "https://[0::1]/", "https://[::0001]/", "https://[1.2.3.4]/",
+		"https://[::1.2.3.4]/", "https://[1:0:0:2:0:0:0:0]/",
 	}
 	for _, u := range reject {
 		wantValidation(t, graphops.ValidateScopeURL(u), "Scope URL "+u)
 	}
 	// Diagnostics never echo the value (a pasted token would land in a log).
-	err := graphops.ValidateScopeURL("https://secret-token-value@beads.example/")
-	if err == nil || strings.Contains(err.Error(), "secret-token-value") {
-		t.Fatalf("Scope URL diagnostic echoed the value: %v", err)
+	for _, u := range []string{
+		"https://secret-token-value@beads.example/",
+		"https://secret-token-value.example:0443/",
+		"https://secret-token-value..example/",
+		"https://secret-token-value.example:99999/",
+	} {
+		err := graphops.ValidateScopeURL(u)
+		if err == nil || strings.Contains(err.Error(), "secret-token-value") {
+			t.Fatalf("Scope URL diagnostic echoed the value: %v", err)
+		}
+	}
+}
+
+// ValidatePersistedScopeURL is ValidateScopeURL plus the reservation of the
+// first path segment "local-test": a client may reference such a Scope, an
+// authority may not persist one.
+func TestValidatePersistedScopeURL(t *testing.T) {
+	for _, u := range []string{
+		"https://beads.example/acme/", "https://beads.example/", "https://beads.example/x/local-test/",
+		"https://beads.example/local-testing/", "https://beads.example/local-test-2/", "https://beads.example./",
+	} {
+		if err := graphops.ValidatePersistedScopeURL(u); err != nil {
+			t.Errorf("persisted Scope URL %q refused: %v", u, err)
+		}
+	}
+	for _, u := range []string{
+		"https://beads.example/local-test/", "https://beads.example/local-test/acme/", "http://localhost:3000/local-test/",
+		"https://beads.example/acme", "https://Beads.example/acme/", "", "https://beads.example:0443/",
+	} {
+		wantValidation(t, graphops.ValidatePersistedScopeURL(u), "persisted Scope URL "+u)
+	}
+	// The general law admits the reserved segment: a client can point at a
+	// bdptest development server.
+	if err := graphops.ValidateScopeURL("https://beads.example/local-test/"); err != nil {
+		t.Fatalf("a client-side Scope URL under local-test must be admissible: %v", err)
+	}
+	ref, err := graphops.ParseRef("https://beads.example/local-test/", "https://beads.example/local-test/beads/x", "")
+	if err != nil || !ref.InScope() || ref.Path() != "beads/x" {
+		t.Fatalf("a reference into a local-test Scope must classify in-Scope: %v %+v", err, ref)
 	}
 }
 
@@ -455,6 +525,28 @@ func TestNormalizeScopeURL(t *testing.T) {
 		{"https://example.com:", "https://example.com/"},
 		{"https://example.com:8080", "https://example.com:8080/"},
 		{"https://example.com/caf%C3%A9", "https://example.com/caf%C3%A9/"},
+		// The whole origin normalizes: ports, IPv4 and IPv6 spellings,
+		// percent-encoded host characters, a trailing dot on an IPv4 host.
+		{"https://example.com:0443/x", "https://example.com/x/"},
+		{"http://example.com:00080/", "http://example.com/"},
+		{"https://example.com:08080/", "https://example.com:8080/"},
+		{"https://example.com:00/", "https://example.com:0/"},
+		{"https://0x7f000001/x", "https://127.0.0.1/x/"},
+		{"https://127.1/", "https://127.0.0.1/"},
+		{"https://0177.0.0.1/", "https://127.0.0.1/"},
+		{"https://2130706433/", "https://127.0.0.1/"},
+		{"https://1.2.3.4./", "https://1.2.3.4/"},
+		{"https://1.2.65535/", "https://1.2.255.255/"},
+		{"https://0x/", "https://0.0.0.0/"},
+		{"https://BEADS%2eEXAMPLE/", "https://beads.example/"},
+		{"https://%62eads.example/", "https://beads.example/"},
+		{"https://[::ffff:1.2.3.4]/", "https://[::ffff:102:304]/"},
+		{"https://[::FFFF:0:0]/", "https://[::ffff:0:0]/"},
+		{"https://[1:0:0:2:0:0:0:0]/", "https://[1:0:0:2::]/"},
+		{"https://[0:0:0:0:0:0:0:0]/", "https://[::]/"},
+		{"https://[1:0:1:1:1:1:1:1]/", "https://[1:0:1:1:1:1:1:1]/"},
+		{"https://[::1.2.3.4]/", "https://[::102:304]/"},
+		{"https://beads.example./x", "https://beads.example./x/"},
 	} {
 		got, err := graphops.NormalizeScopeURL(tc.in)
 		if err != nil {
@@ -464,8 +556,12 @@ func TestNormalizeScopeURL(t *testing.T) {
 		if got != tc.want {
 			t.Errorf("NormalizeScopeURL(%q) = %q, want %q", tc.in, got, tc.want)
 		}
-		if err := graphops.ValidateScopeURL(got); err != nil {
+		if err := graphops.ValidatePersistedScopeURL(got); err != nil {
 			t.Errorf("normalized %q does not validate: %v", got, err)
+		}
+		// Normalization is a fixed point.
+		if again, err := graphops.NormalizeScopeURL(got); err != nil || again != got {
+			t.Errorf("NormalizeScopeURL(%q) = %q, %v; not a fixed point", got, again, err)
 		}
 	}
 	for _, in := range []string{
@@ -474,6 +570,12 @@ func TestNormalizeScopeURL(t *testing.T) {
 		"https://example.com/local-test/", "https://example.com/a b/", "https://example.com/a%2fb/",
 		"https://example.com/a[b]", "https:example.com", "https://EXAMPLE.com/%41/",
 		"https://[::1", "https://[::1]:x/", "ht tp://example.com/",
+		// The parser fails on these hosts and ports; nothing to normalize to.
+		"https://beads%2fexample/", "https://beads%25example/", "https://caf%C3%A9.example/",
+		"https://beads.123/", "https://1.2.3.4.5/", "https://999.1.1.1/", "https://1.2.3.999/",
+		"https://example.com:65536/", "https://%25/", "https://beads%2/", "https://a..b/",
+		"https://./", "https://[fe80::1%25eth0]/", "https://[1.2.3.4]/", "https:///x/",
+		"https://[::1]:99999/", "https://a!b/",
 	} {
 		_, err := graphops.NormalizeScopeURL(in)
 		wantValidation(t, err, "NormalizeScopeURL "+in)
@@ -487,7 +589,8 @@ func TestValidateTypeURL(t *testing.T) {
 		"https://work.example/x//y", "https://work.example/schemas/task-properties-v1",
 		"https://work.example/t?a=b&c=d", "https://work.example/t?a=%20", "https://work.example/caf%C3%A9",
 		"https://[::1]:8443/t", "https://work.example/t?", "https://work.example/t?x=[1]",
-		"https://work.example/~user/T.Y_P-E",
+		"https://work.example/~user/T.Y_P-E", "https://work.example./types/task", "https://127.0.0.1/t",
+		"https://[::ffff:102:304]/t", "https://work.example/local-test/t",
 	}
 	for _, u := range accept {
 		if err := graphops.ValidateTypeURL(u); err != nil {
@@ -505,6 +608,7 @@ func TestValidateTypeURL(t *testing.T) {
 		"work.example/types/task", "beads/x", "https://work.example/\x7f", "https://work.example/a\"b",
 		"https://work.example/<x>", "mailto:a@b", "https://work.example:x/", "https://work.example:/",
 		"https://:8080/", "https://work.example/x\n", "1http://x/",
+		"https://work.example:0443/t", "https://0x7f000001/t", "https://work%2Eexample/t", "https://[::ffff:1.2.3.4]/t",
 	}
 	for _, u := range reject {
 		wantValidation(t, graphops.ValidateTypeURL(u), "Type URL "+u)
@@ -706,6 +810,8 @@ func TestLedgerEventShapePerKind(t *testing.T) {
 		{"mint without scope_url", base(graphops.LedgerMint), false, "scope_url is required"},
 		{"mint with path", with(graphops.LedgerMint, func(s *graphops.LedgerEventSpec) { s.ScopeURL = scopeURL; s.Path = "beads/x" }), false, "path is not a member"},
 		{"mint bad scope_url", with(graphops.LedgerMint, func(s *graphops.LedgerEventSpec) { s.ScopeURL = "https://beads.example/acme" }), false, "scope_url:"},
+		{"mint local-test scope_url", with(graphops.LedgerMint, func(s *graphops.LedgerEventSpec) { s.ScopeURL = "https://beads.example/local-test/" }), false, "local-test"},
+		{"rotate local-test scope_url", with(graphops.LedgerRotate, func(s *graphops.LedgerEventSpec) { s.ScopeURL = "https://beads.example/local-test/" }), false, "local-test"},
 		{"install ok", with(graphops.LedgerInstall, func(s *graphops.LedgerEventSpec) { s.Fingerprint = fp }), true, ""},
 		{"install without fingerprint", base(graphops.LedgerInstall), false, "fingerprint is required"},
 		{"install bad fingerprint", with(graphops.LedgerInstall, func(s *graphops.LedgerEventSpec) { s.Fingerprint = "xyz" }), false, "fingerprint must be"},
@@ -842,6 +948,7 @@ func TestLedgerManifestCovers(t *testing.T) {
 
 	for name, spec := range map[string]graphops.LedgerManifestSpec{
 		"bad scope url":  {ScopeURL: "https://beads.example/acme", Lineage: mint.Hash(), FirstSeq: 1, LastSeq: 1, PrevHash: graphops.GenesisHash, HeadHash: mint.Hash()},
+		"local-test url": {ScopeURL: "https://beads.example/local-test/", Lineage: mint.Hash(), FirstSeq: 1, LastSeq: 1, PrevHash: graphops.GenesisHash, HeadHash: mint.Hash()},
 		"bad lineage":    {ScopeURL: scopeURL, Lineage: "x", FirstSeq: 1, LastSeq: 1, PrevHash: graphops.GenesisHash, HeadHash: mint.Hash()},
 		"bad prev hash":  {ScopeURL: scopeURL, Lineage: mint.Hash(), FirstSeq: 1, LastSeq: 1, PrevHash: "", HeadHash: mint.Hash()},
 		"bad head hash":  {ScopeURL: scopeURL, Lineage: mint.Hash(), FirstSeq: 1, LastSeq: 1, PrevHash: graphops.GenesisHash, HeadHash: "ABC"},

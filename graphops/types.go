@@ -291,14 +291,17 @@ func NewInScopeRef(path, pin string) (Ref, error) {
 // Bead and is refused unless it IS that Bead's canonical spelling; every
 // other absolute URI is an opaque external reference, kept byte-identically.
 //
-// What "resolves to an alias of the Scope URL" means here is RFC 3986 §6.2.2
-// syntax-based normalization plus the http(s) default-port rule: scheme and
-// host case, a default port, dot segments, and percent-encoding case and
-// unreserved-character escapes are equivalences; a different scheme, host or
-// port is a different origin and therefore external. A local spelling under
-// links/ or alias/ is refused — endpoints are Beads, and alias resolution is
-// not served in v0 (DECISION: no alias table exists; an alias URL cannot be
-// resolved at admission and is refused rather than stored).
+// What "resolves to an alias of the Scope URL" means here is the WHATWG
+// origin the URL parser would serialize (laws.go, normalizeOrigin: scheme
+// and host case, every IPv4 and IPv6 spelling of the host, percent-encoded
+// host characters, a default or zero-padded port) plus RFC 3986 §6.2.2
+// path normalization (dot segments, percent-encoding case and
+// unreserved-character escapes); a different origin is external. A local
+// spelling under links/ or alias/ is refused — endpoints are Beads, and
+// alias resolution is not served in v0 (DECISION: no alias table exists; an
+// alias URL cannot be resolved at admission and is refused rather than
+// stored). scopeURL is held to ValidateScopeURL, the client rule: a
+// reference into a development server's local-test Scope is admissible.
 func ParseRef(scopeURL, reference, pin string) (Ref, error) {
 	if err := ValidateScopeURL(scopeURL); err != nil {
 		return Ref{}, err
@@ -1041,10 +1044,11 @@ type ScopeIdentitySpec struct {
 	Claim WitnessClaim
 }
 
-// NewScopeIdentity builds the report, enforcing the Scope URL law, the id
-// shape, a minted-at instant and, when a ledger hash is claimed, its shape.
+// NewScopeIdentity builds the report, enforcing the persisted Scope URL law
+// (this is the Scope row's own identity), the id shape, a minted-at instant
+// and, when a ledger hash is claimed, its shape.
 func NewScopeIdentity(spec ScopeIdentitySpec) (ScopeIdentity, error) {
-	if err := ValidateScopeURL(spec.ScopeURL); err != nil {
+	if err := ValidatePersistedScopeURL(spec.ScopeURL); err != nil {
 		return ScopeIdentity{}, err
 	}
 	if !isLowerHex(spec.AuthorityID, 32) {
@@ -1250,7 +1254,8 @@ func NewLedgerEvent(spec LedgerEventSpec) (LedgerEvent, error) {
 		}
 	}
 	if present.scopeURL {
-		if err := ValidateScopeURL(spec.ScopeURL); err != nil {
+		// A minted, rotated-to or refused URL is a persisted identity.
+		if err := ValidatePersistedScopeURL(spec.ScopeURL); err != nil {
 			return fail("scope_url: %s", reason(err))
 		}
 	}
@@ -1366,7 +1371,7 @@ type LedgerManifestSpec struct {
 // NewLedgerManifest validates the manifest's own shape; Covers checks it
 // against the events it claims to describe.
 func NewLedgerManifest(spec LedgerManifestSpec) (LedgerManifest, error) {
-	if err := ValidateScopeURL(spec.ScopeURL); err != nil {
+	if err := ValidatePersistedScopeURL(spec.ScopeURL); err != nil {
 		return LedgerManifest{}, err
 	}
 	for _, h := range []struct{ name, value string }{

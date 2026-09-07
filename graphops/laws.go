@@ -838,13 +838,29 @@ func appendCanonicalNumber(out []byte, neg bool, intPart, frac []byte, exp int64
 // an unreserved character; a Scope URL additionally has no query, ends in
 // "/", and every path segment obeys the ID-segment grammar.
 //
+// ONE MODEL, THREE USES. The WHATWG parser's host and port rules are stated
+// once, in normalizeOrigin (P0 council, 2026-09-07): a host is percent-
+// decoded and lowercased, a host that "ends in a number" is an IPv4 address
+// in any of the parser's spellings (0x7f000001, 127.1, 0177.0.0.1,
+// 2130706433) and serializes as dotted decimal, an IPv6 address serializes
+// compressed in lowercase hex with an IPv4-mapped tail in hex pieces, and a
+// port is a decimal number without leading zeros that is dropped when it is
+// the scheme's default (:0443 is :443 is nothing). validateCanonicalHTTPURL
+// accepts a URL exactly when its spelled authority already equals that
+// serialization; NormalizeScopeURL rewrites a configured URL's authority to
+// it; claimsScope classifies a reference by it, so no spelling of the Scope's
+// own origin can slip past the in-Scope endpoint law as "external". An
+// external reference — a different origin — is never rewritten: it is
+// preserved byte-for-byte, however it is spelled.
+//
 // The startup contract the design mirrors (docs/design/startup-configuration.md
-// at the pin, "Canonical Scope identity") NORMALIZES three spellings that mean
-// the same Scope — scheme and host case, a default port, a missing trailing
-// slash — and REFUSES the rest, and it reserves the first path segment
-// "local-test" for a derived development identity that is never persisted.
-// NormalizeScopeURL is that admission rule; ValidateScopeURL is what the
-// persisted form must satisfy.
+// at the pin, "Canonical Scope identity") NORMALIZES the spellings that mean
+// the same Scope — the origin's spelling and a missing trailing slash — and
+// REFUSES the rest, and it reserves the first path segment "local-test" for
+// a derived development identity that is never persisted. NormalizeScopeURL
+// is that admission rule; ValidateScopeURL is what any Scope URL a client may
+// name must satisfy, and ValidatePersistedScopeURL is what this store may
+// persist as its own identity.
 //
 // Scope URL diagnostics never echo the value: the startup contract's reason
 // is that a token pasted into the variable by mistake would otherwise be
@@ -933,40 +949,30 @@ func allDigits(s string) bool {
 	return true
 }
 
-// validateCanonicalHost accepts a lowercase registered name, a canonical
-// dotted-decimal IPv4 address, or a canonical bracketed IPv6 address — the
-// spellings the WHATWG serializer leaves unchanged.
-func validateCanonicalHost(host string) error {
-	if host == "" {
-		return errors.New("host must be nonempty")
+// origin is the normalized (scheme, host, port) of an http(s) URL: the three
+// components the WHATWG parser serializes canonically and the tuple RFC 6454
+// calls the origin. Two URLs with equal origins and one path prefix name the
+// same Scope whatever their spelling; a canonical URL is one whose spelled
+// authority already equals its origin.
+type origin struct{ scheme, host, port string }
+
+// normalizeOrigin applies the parser's rules to a split URL: the scheme is
+// lowercased and must be http or https, the host is normalizeHost's
+// serialization, and the port is normalizePort's.
+func normalizeOrigin(p urlParts) (origin, error) {
+	scheme := strings.ToLower(p.scheme)
+	if scheme != "http" && scheme != "https" {
+		return origin{}, errors.New("must use the http or https scheme")
 	}
-	if host[0] == '[' {
-		inner := host[1 : len(host)-1]
-		addr, err := netip.ParseAddr(inner)
-		if err != nil || !addr.Is6() || addr.Is4In6() || addr.Zone() != "" || addr.String() != inner {
-			return errors.New("IPv6 host must be a canonical bracketed address")
-		}
-		return nil
+	host, err := normalizeHost(p.host)
+	if err != nil {
+		return origin{}, err
 	}
-	labels := strings.Split(host, ".")
-	for _, label := range labels {
-		if label == "" {
-			return errors.New("host must not contain an empty label")
-		}
-		for i := 0; i < len(label); i++ {
-			c := label[i]
-			if !(c >= 'a' && c <= 'z' || c >= '0' && c <= '9' || c == '-' || c == '_') {
-				return errors.New("host must be a lowercase registered name or a canonical IP address")
-			}
-		}
+	port, err := normalizePort(p.port, scheme)
+	if err != nil {
+		return origin{}, err
 	}
-	if allDigits(labels[len(labels)-1]) {
-		addr, err := netip.ParseAddr(host)
-		if err != nil || !addr.Is4() || addr.String() != host {
-			return errors.New("a numeric host must be a canonical dotted-decimal IPv4 address")
-		}
-	}
-	return nil
+	return origin{scheme: scheme, host: host, port: port}, nil
 }
 
 func defaultPort(scheme string) string {
@@ -976,17 +982,261 @@ func defaultPort(scheme string) string {
 	return "80"
 }
 
-func validateCanonicalPort(port, scheme string) error {
-	if !allDigits(port) || len(port) > 5 || (len(port) > 1 && port[0] == '0') {
-		return errors.New("port must be a canonical decimal number")
+// normalizePort is the WHATWG port rule: an absent or empty port is no port,
+// a port is decimal digits whose leading zeros carry nothing (:0443 is :443),
+// it may not exceed 65535, and the scheme's default port is no port at all.
+func normalizePort(port, scheme string) (string, error) {
+	if port == "" {
+		return "", nil
 	}
-	if n, _ := strconv.Atoi(port); n > 65535 {
-		return errors.New("port must not exceed 65535")
+	if !allDigits(port) {
+		return "", errors.New("port must be a decimal number")
 	}
-	if port == defaultPort(scheme) {
-		return errors.New("a default port must be omitted")
+	trimmed := strings.TrimLeft(port, "0")
+	if trimmed == "" {
+		trimmed = "0"
 	}
-	return nil
+	if len(trimmed) > 5 || (len(trimmed) == 5 && trimmed > "65535") {
+		return "", errors.New("port must not exceed 65535")
+	}
+	if trimmed == defaultPort(scheme) {
+		return "", nil
+	}
+	return trimmed, nil
+}
+
+// isForbiddenDomainByte is the WHATWG "forbidden domain code point" set:
+// the forbidden host code points (NUL, tab, LF, CR, space, "#", "/", ":",
+// "<", ">", "?", "@", "[", "\", "]", "^", "|") plus every C0 control, "%"
+// and DEL. A host that contains one after percent-decoding is not a host.
+func isForbiddenDomainByte(c byte) bool {
+	if c <= 0x20 || c == 0x7F {
+		return true
+	}
+	switch c {
+	case '#', '%', '/', ':', '<', '>', '?', '@', '[', '\\', ']', '^', '|':
+		return true
+	}
+	return false
+}
+
+// normalizeHost is the WHATWG host parser, restricted to what a canonical
+// Scope or Type host may be, returning the host's serialization:
+//
+//   - a bracketed IPv6 address serializes as the WHATWG IPv6 serializer
+//     writes it — lowercase hex, the first longest run of two or more zero
+//     pieces compressed, an IPv4-mapped address in hex pieces
+//     ([::ffff:102:304], never [::ffff:1.2.3.4]); a zone is refused;
+//   - any other host is percent-decoded (a malformed escape is refused), must
+//     decode to ASCII with no forbidden domain code point, and is lowercased;
+//   - a host whose last label is all digits or a 0x-prefixed hex number "ends
+//     in a number" and is parsed as IPv4 — at most four parts, each decimal,
+//     octal (leading 0) or hexadecimal (0x), the last filling the remaining
+//     bytes — and serializes as dotted decimal: 0x7f000001, 127.1,
+//     0177.0.0.1, 2130706433 and 127.0.0.1. are all 127.0.0.1, and beads.123
+//     is not a host at all;
+//   - otherwise it is a registered name: labels of lowercase letters, digits,
+//     "-" and "_" (DNS LDH plus the underscore the tree already accepts), no
+//     label empty — except that ONE trailing dot is kept as written, because
+//     the parser leaves beads.example. unchanged and treats it as a host
+//     distinct from beads.example, and so does this law.
+//
+// DECISION: IDNA is not applied. A host that decodes to non-ASCII is refused
+// rather than mapped, so an internationalized Scope host is configured in its
+// A-label (xn--) form, and a U-label spelling of it is classified as an
+// external reference rather than resolved. The startup contract already
+// refuses non-ASCII input; this closes the percent-encoded route the same way.
+func normalizeHost(raw string) (string, error) {
+	if raw == "" {
+		return "", errors.New("host must be nonempty")
+	}
+	if raw[0] == '[' {
+		// splitHTTPURL only produces a bracketed host with its closing
+		// bracket, so the slice below is well-formed by construction.
+		return normalizeIPv6Host(raw[1 : len(raw)-1])
+	}
+	decoded, err := decodeSegment(raw)
+	if err != nil {
+		return "", fmt.Errorf("host has an %v", err)
+	}
+	host := make([]byte, 0, len(decoded))
+	for _, c := range decoded {
+		if c >= 0x80 {
+			return "", errors.New("host must be ASCII (IDNA mapping is not applied)")
+		}
+		if isForbiddenDomainByte(c) {
+			return "", errors.New("host contains a character the URL parser forbids")
+		}
+		if c >= 'A' && c <= 'Z' {
+			c += 'a' - 'A'
+		}
+		host = append(host, c)
+	}
+	s := string(host)
+	if hostEndsInANumber(s) {
+		return parseIPv4Host(s)
+	}
+	labels := strings.Split(s, ".")
+	if n := len(labels); n > 1 && labels[n-1] == "" {
+		labels = labels[:n-1] // the one trailing dot: kept in s, not a label
+	}
+	for _, label := range labels {
+		if label == "" {
+			return "", errors.New("host must not contain an empty label")
+		}
+		for i := 0; i < len(label); i++ {
+			if c := label[i]; !(c >= 'a' && c <= 'z' || c >= '0' && c <= '9' || c == '-' || c == '_') {
+				return "", errors.New("host must be a lowercase registered name or a canonical IP address")
+			}
+		}
+	}
+	return s, nil
+}
+
+// hostEndsInANumber is the WHATWG "ends in a number" checker over a decoded,
+// lowercased, nonempty host: a trailing empty label is dropped first, and
+// the last label is a number when it is all digits or parses as a
+// 0x-prefixed IPv4 number.
+func hostEndsInANumber(host string) bool {
+	parts := strings.Split(host, ".")
+	if n := len(parts); n > 1 && parts[n-1] == "" {
+		parts = parts[:n-1]
+	}
+	last := parts[len(parts)-1]
+	if allDigits(last) {
+		return true
+	}
+	_, ok := parseIPv4Number(last)
+	return ok
+}
+
+// parseIPv4Number is the WHATWG IPv4 number parser: decimal, octal with a
+// leading 0, or hexadecimal with 0x/0X, where an empty digit string after
+// the prefix is 0. The value is capped well above the largest meaningful
+// part so a long input cannot overflow.
+func parseIPv4Number(s string) (uint64, bool) {
+	if s == "" {
+		return 0, false
+	}
+	radix := uint64(10)
+	switch {
+	case len(s) >= 2 && s[0] == '0' && (s[1] == 'x' || s[1] == 'X'):
+		s, radix = s[2:], 16
+	case len(s) >= 2 && s[0] == '0':
+		s, radix = s[1:], 8
+	}
+	if s == "" {
+		return 0, true
+	}
+	var n uint64
+	for i := 0; i < len(s); i++ {
+		d, ok := hexValue(s[i])
+		if !ok || uint64(d) >= radix {
+			return 0, false
+		}
+		n = n*radix + uint64(d)
+		if n > 1<<40 {
+			return 0, false
+		}
+	}
+	return n, true
+}
+
+// ipv4LastPartLimit bounds the last part of an IPv4 host with 1, 2, 3 or 4
+// parts: it fills the remaining 4, 3, 2 or 1 bytes.
+var ipv4LastPartLimit = [...]uint64{1 << 32, 1 << 24, 1 << 16, 1 << 8}
+
+// parseIPv4Host is the WHATWG IPv4 parser over a host that ends in a number,
+// returning the dotted-decimal serialization.
+func parseIPv4Host(host string) (string, error) {
+	parts := strings.Split(host, ".")
+	if n := len(parts); n > 1 && parts[n-1] == "" {
+		parts = parts[:n-1]
+	}
+	if len(parts) > 4 {
+		return "", errors.New("a numeric host must be an IPv4 address of at most four parts")
+	}
+	numbers := make([]uint64, len(parts))
+	for i, part := range parts {
+		n, ok := parseIPv4Number(part)
+		if !ok {
+			return "", errors.New("a numeric host must be an IPv4 address")
+		}
+		numbers[i] = n
+	}
+	for _, n := range numbers[:len(numbers)-1] {
+		if n > 255 {
+			return "", errors.New("an IPv4 part must not exceed 255")
+		}
+	}
+	last := numbers[len(numbers)-1]
+	if last >= ipv4LastPartLimit[len(numbers)-1] {
+		return "", errors.New("the last IPv4 part is out of range")
+	}
+	ipv4 := last
+	for i, n := range numbers[:len(numbers)-1] {
+		ipv4 += n << (8 * (3 - i))
+	}
+	return fmt.Sprintf("%d.%d.%d.%d", ipv4>>24&0xFF, ipv4>>16&0xFF, ipv4>>8&0xFF, ipv4&0xFF), nil
+}
+
+// normalizeIPv6Host parses the text inside the brackets and returns the
+// bracketed WHATWG serialization.
+func normalizeIPv6Host(inner string) (string, error) {
+	addr, err := netip.ParseAddr(inner)
+	if err != nil || !addr.Is6() || addr.Zone() != "" {
+		return "", errors.New("IPv6 host must be a bracketed address without a zone")
+	}
+	return "[" + serializeIPv6(addr) + "]", nil
+}
+
+// serializeIPv6 is the WHATWG IPv6 serializer: eight 16-bit pieces in
+// lowercase hex without leading zeros, the first longest run of two or more
+// zero pieces written as "::", and no dotted-decimal tail for an IPv4-mapped
+// address (the parser accepts that spelling; the serializer never emits it).
+func serializeIPv6(addr netip.Addr) string {
+	b := addr.As16()
+	var pieces [8]uint16
+	for i := range pieces {
+		pieces[i] = uint16(b[2*i])<<8 | uint16(b[2*i+1])
+	}
+	compress, longest := -1, 1
+	for i := 0; i < len(pieces); {
+		if pieces[i] != 0 {
+			i++
+			continue
+		}
+		j := i
+		for j < len(pieces) && pieces[j] == 0 {
+			j++
+		}
+		if j-i > longest {
+			compress, longest = i, j-i
+		}
+		i = j
+	}
+	var out strings.Builder
+	ignoreZeros := false
+	for i, piece := range pieces {
+		if ignoreZeros && piece == 0 {
+			continue
+		}
+		ignoreZeros = false
+		if i == compress {
+			if i == 0 {
+				out.WriteString("::")
+			} else {
+				out.WriteByte(':')
+			}
+			ignoreZeros = true
+			continue
+		}
+		out.WriteString(strconv.FormatUint(uint64(piece), 16))
+		if i != len(pieces)-1 {
+			out.WriteByte(':')
+		}
+	}
+	return out.String()
 }
 
 // completeEscapes reports whether every '%' begins a two-hex-digit escape.
@@ -1029,8 +1279,10 @@ func canonicalPathEscapes(segment string) error {
 	return nil
 }
 
-// validateCanonicalHTTPURL is the shared half of the Scope and Type URL laws.
-// echo says whether diagnostics may quote the value.
+// validateCanonicalHTTPURL is the shared half of the Scope and Type URL laws:
+// the URL's spelled authority must already be its normalized origin, and its
+// path must be one the parser would leave alone. echo says whether
+// diagnostics may quote the value.
 func validateCanonicalHTTPURL(s, what string, echo bool) (urlParts, error) {
 	fail := func(msg string) (urlParts, error) {
 		if echo {
@@ -1056,12 +1308,21 @@ func validateCanonicalHTTPURL(s, what string, echo bool) (urlParts, error) {
 	if p.hasFragment {
 		return fail("must not carry a fragment")
 	}
-	if err := validateCanonicalHost(p.host); err != nil {
+	o, err := normalizeOrigin(p)
+	if err != nil {
 		return fail(err.Error())
 	}
+	if o.host != p.host {
+		return fail("host must be spelled as the URL parser serializes it (lowercase; IPv4 in dotted decimal; IPv6 compressed in lowercase hex)")
+	}
 	if p.hasPort {
-		if err := validateCanonicalPort(p.port, p.scheme); err != nil {
-			return fail(err.Error())
+		switch {
+		case p.port == "":
+			return fail("an empty port must be omitted")
+		case o.port == "":
+			return fail("a default port must be omitted")
+		case o.port != p.port:
+			return fail("port must be a decimal number without leading zeros")
 		}
 	}
 	if p.path == "" {
@@ -1095,13 +1356,13 @@ func ValidateTypeURL(s string) error {
 	return err
 }
 
-// ValidateScopeURL accepts exactly the persisted form of a Scope URL: a
-// canonical HTTP(S) URL with no query, ending in "/", every path segment under
-// the ID-segment grammar, and — DECISION — a first segment other than the
-// reserved "local-test": the startup contract permits that segment only for a
-// derived development identity that is never persisted, and this tree has no
-// development mode (engdocs/BDP_GRAPH_ARCHITECTURE.md §6, "no dev-mode
-// derivation"), so a persisted Scope URL never carries it.
+// ValidateScopeURL accepts exactly the canonical Scope URLs: a canonical
+// HTTP(S) URL with no query, ending in "/", every path segment under the
+// ID-segment grammar. It is the rule for any Scope URL a CLIENT may name —
+// ParseRef classifies references against it — and it admits a development
+// server's reserved "…/local-test/" Scope, because a client must be able to
+// reference one. What this store may persist as its own identity is the
+// narrower ValidatePersistedScopeURL.
 func ValidateScopeURL(s string) error {
 	p, err := validateCanonicalHTTPURL(s, "Scope URL", false)
 	if err != nil {
@@ -1119,36 +1380,62 @@ func ValidateScopeURL(s string) error {
 			return fmt.Errorf("%w: Scope URL path: %s", ErrValidation, reason(err))
 		}
 	}
-	if len(segments) > 2 && segments[1] == "local-test" {
-		return fmt.Errorf("%w: Scope URL path must not begin with the reserved local-test segment", ErrValidation)
+	return nil
+}
+
+// localTestSegment is the first path segment the startup contract reserves
+// for a derived development identity.
+const localTestSegment = "local-test"
+
+// ValidatePersistedScopeURL accepts exactly the Scope URLs this store may
+// PERSIST as its own identity — mint under, rotate to, record in the ledger:
+// ValidateScopeURL plus the startup contract's reservation of the first path
+// segment "local-test" for a derived development identity that is never
+// persisted. This tree has no development mode (engdocs/
+// BDP_GRAPH_ARCHITECTURE.md §6, "no dev-mode derivation"), so a persisted
+// Scope URL never carries the segment; a client referencing another server's
+// local-test Scope goes through ValidateScopeURL and is not affected.
+//
+// DECISION (P0 council): the refusal lives here, at persisted-identity
+// admission, and not in the general law, so that a bdptest development
+// server's "…/local-test/" Scope stays referenceable.
+func ValidatePersistedScopeURL(s string) error {
+	if err := ValidateScopeURL(s); err != nil {
+		return err
+	}
+	p, _ := splitHTTPURL(s)
+	if strings.HasPrefix(p.path, "/"+localTestSegment+"/") {
+		return fmt.Errorf("%w: a persisted Scope URL path must not begin with the reserved local-test segment", ErrValidation)
 	}
 	return nil
 }
 
 // NormalizeScopeURL is the startup contract's admission rule for a configured
-// Scope URL: the scheme and host are lowercased, a default port is dropped,
-// a missing trailing slash is added, and the result must then satisfy
-// ValidateScopeURL — so credentials, a query, a fragment, a spelling the URL
-// parser would rewrite, and the reserved local-test segment are refused
-// rather than repaired. The returned string is the persisted identity.
+// Scope URL: the authority is rewritten to its normalized origin — scheme
+// and host case, the host's IPv4/IPv6 spelling and percent-encoding, a
+// default port, a port's leading zeros — a missing trailing slash is added,
+// and the result must then satisfy ValidatePersistedScopeURL, so
+// credentials, a query, a fragment, a path spelling the URL parser would
+// rewrite, and the reserved local-test segment are refused rather than
+// repaired. The returned string is the persisted identity.
+//
+// DECISION: the origin is normalized in full rather than only in case. The
+// contract names case, the default port and the slash; the parser makes
+// :0443, 0x7f000001 and [::ffff:1.2.3.4] the same origin as :443,
+// 127.0.0.1 and [::ffff:102:304], and persisting the spelled form would
+// leave the persisted identity unequal to the origin every reference is
+// classified against.
 func NormalizeScopeURL(s string) (string, error) {
 	p, err := splitHTTPURL(s)
 	if err != nil {
 		return "", fmt.Errorf("%w: Scope URL %s", ErrValidation, err)
 	}
-	scheme := strings.ToLower(p.scheme)
-	if scheme != "http" && scheme != "https" {
-		return "", fmt.Errorf("%w: Scope URL must use the http or https scheme", ErrValidation)
+	if p.hasUserinfo {
+		return "", fmt.Errorf("%w: Scope URL must not carry credentials", ErrValidation)
 	}
-	host := strings.ToLower(p.host)
-	if strings.HasPrefix(host, "[") && strings.HasSuffix(host, "]") {
-		if addr, err := netip.ParseAddr(host[1 : len(host)-1]); err == nil {
-			host = "[" + addr.String() + "]"
-		}
-	}
-	port := ""
-	if p.hasPort && p.port != "" && p.port != defaultPort(scheme) {
-		port = ":" + p.port
+	o, err := normalizeOrigin(p)
+	if err != nil {
+		return "", fmt.Errorf("%w: Scope URL %s", ErrValidation, err)
 	}
 	path := p.path
 	if path == "" {
@@ -1158,10 +1445,13 @@ func NormalizeScopeURL(s string) (string, error) {
 		path += "/"
 	}
 	var rebuilt strings.Builder
-	rebuilt.WriteString(scheme)
+	rebuilt.WriteString(o.scheme)
 	rebuilt.WriteString("://")
-	rebuilt.WriteString(host)
-	rebuilt.WriteString(port)
+	rebuilt.WriteString(o.host)
+	if o.port != "" {
+		rebuilt.WriteString(":")
+		rebuilt.WriteString(o.port)
+	}
 	rebuilt.WriteString(path)
 	if p.hasQuery {
 		rebuilt.WriteString("?")
@@ -1171,11 +1461,8 @@ func NormalizeScopeURL(s string) (string, error) {
 		rebuilt.WriteString("#")
 		rebuilt.WriteString(p.fragment)
 	}
-	if p.hasUserinfo {
-		return "", fmt.Errorf("%w: Scope URL must not carry credentials", ErrValidation)
-	}
 	out := rebuilt.String()
-	if err := ValidateScopeURL(out); err != nil {
+	if err := ValidatePersistedScopeURL(out); err != nil {
 		return "", err
 	}
 	return out, nil
@@ -1223,18 +1510,6 @@ func isAbsoluteURI(s string) bool {
 		}
 	}
 	return true
-}
-
-// normalizeHostForAliasTest lowercases a host and compresses a bracketed IPv6
-// literal, the two host equivalences RFC 3986 §6.2.2 and §6.2.3 admit.
-func normalizeHostForAliasTest(host string) string {
-	host = strings.ToLower(host)
-	if strings.HasPrefix(host, "[") && strings.HasSuffix(host, "]") {
-		if addr, err := netip.ParseAddr(host[1 : len(host)-1]); err == nil {
-			return "[" + addr.String() + "]"
-		}
-	}
-	return host
 }
 
 // normalizeEscapes decodes escapes of unreserved characters and uppercases
@@ -1291,31 +1566,27 @@ func removeDotSegments(path string) string {
 	return strings.Join(out, "/")
 }
 
-// claimsScope reports whether reference, after syntax-based normalization,
-// resolves under the canonical Scope URL — the test that decides whether a
-// reference CLAIMS an in-Scope Bead (and must therefore be canonical) or is
-// external. scopeURL is assumed valid.
+// claimsScope reports whether reference resolves under the canonical Scope
+// URL — the test that decides whether a reference CLAIMS an in-Scope Bead
+// (and must therefore be that Bead's canonical spelling) or is external. The
+// origins are compared normalized (normalizeOrigin: scheme and host case,
+// every IPv4 and IPv6 spelling, percent-encoded host characters, a default
+// or zero-padded port), and the path after RFC 3986 §6.2.2 escape
+// normalization and dot-segment removal. A reference whose authority the
+// parser cannot make sense of claims nothing and is external. scopeURL is
+// assumed valid.
 func claimsScope(scopeURL, reference string) bool {
 	p, err := splitHTTPURL(reference)
 	if err != nil {
 		return false
 	}
+	ref, err := normalizeOrigin(p)
+	if err != nil {
+		return false
+	}
 	sp, _ := splitHTTPURL(scopeURL)
-	scheme := strings.ToLower(p.scheme)
-	if scheme != sp.scheme {
-		return false
-	}
-	if normalizeHostForAliasTest(p.host) != sp.host {
-		return false
-	}
-	port, scopePort := p.port, sp.port
-	if !p.hasPort || port == "" {
-		port = defaultPort(scheme)
-	}
-	if !sp.hasPort {
-		scopePort = defaultPort(scheme)
-	}
-	if port != scopePort {
+	scope, _ := normalizeOrigin(sp) // scopeURL is valid: its origin is its spelling
+	if ref != scope {
 		return false
 	}
 	path := p.path

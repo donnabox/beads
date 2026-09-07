@@ -19,8 +19,10 @@ import "context"
 // defers), so the request carries the one fact only the operator knows.
 type MintRequest struct {
 	// ScopeURL is the canonical Scope URL to mint under, already normalized
-	// (NormalizeScopeURL) — a non-canonical spelling is ErrValidation, and a
-	// URL this store has refused (rotated away) is ErrURLReused.
+	// (NormalizeScopeURL) and admissible as a persisted identity
+	// (ValidatePersistedScopeURL) — a non-canonical spelling or the reserved
+	// local-test segment is ErrValidation, and a URL this store has refused
+	// (rotated away) is ErrURLReused.
 	ScopeURL string
 }
 
@@ -35,17 +37,19 @@ type PromoteRequest struct {
 	// names the same database and may be taken. A foreign holder's expiry
 	// alone never grants a takeover.
 	Steal bool
-	// RotateURL, when set, rotates the Scope to this canonical URL in the
-	// same transition: the old URL is refused forever, the new lease row is
-	// created under the new one. "" leaves the URL alone.
+	// RotateURL, when set, rotates the Scope to this canonical URL
+	// (ValidatePersistedScopeURL) in the same transition: the old URL is
+	// refused forever, the new lease row is created under the new one. ""
+	// leaves the URL alone.
 	RotateURL string
 }
 
 // RotateRequest asks for the Scope URL to change.
 type RotateRequest struct {
-	// NewURL is the canonical Scope URL to serve under from now on. The
-	// current URL is refused forever (refuse_url), the new one recorded
-	// (rotate), in one transaction; no stored intra-Scope reference changes.
+	// NewURL is the canonical Scope URL (ValidatePersistedScopeURL) to serve
+	// under from now on. The current URL is refused forever (refuse_url), the
+	// new one recorded (rotate), in one transaction; no stored intra-Scope
+	// reference changes.
 	NewURL string
 }
 

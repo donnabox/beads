@@ -200,6 +200,25 @@ func TestRef(t *testing.T) {
 		{"https://[::1]/beads/x", false, "", "https://[::1]/beads/x", false},
 		{"https://beads.example", false, "", "https://beads.example", false},
 		{"https://[zzz]/x", false, "", "https://[zzz]/x", false},
+		// Aliases of the Scope's ORIGIN under the WHATWG parser: a zero-padded
+		// default port, a percent-encoded host character, mixed case in the
+		// escape and the host. Each claims the Scope and is not canonical.
+		{"https://beads.example:0443/acme/beads/x", false, "", "", true},
+		{"https://beads.example:00443/acme/beads/x", false, "", "", true},
+		{"https://beads%2Eexample/acme/beads/x", false, "", "", true},
+		{"https://beads%2eexample/acme/beads/x", false, "", "", true},
+		{"https://%42eads.example/acme/beads/x", false, "", "", true},
+		// Not aliases: a trailing-dot host is a different host to the parser
+		// (kept as written, so the external spelling survives byte for byte);
+		// a host or port the parser cannot parse claims nothing.
+		{"https://beads.example./acme/beads/x", false, "", "https://beads.example./acme/beads/x", false},
+		{"https://BEADS.example./acme/beads/x", false, "", "https://BEADS.example./acme/beads/x", false},
+		{"https://beads.example:99999/acme/beads/x", false, "", "https://beads.example:99999/acme/beads/x", false},
+		{"https://beads.example:4x3/acme/beads/x", false, "", "https://beads.example:4x3/acme/beads/x", false},
+		{"https://beads%2fexample/acme/beads/x", false, "", "https://beads%2fexample/acme/beads/x", false},
+		{"https://beads.example:8443/acme/beads/x", false, "", "https://beads.example:8443/acme/beads/x", false},
+		{"https://beads.123/acme/beads/x", false, "", "https://beads.123/acme/beads/x", false},
+		{"https://beads.example%3A443/acme/beads/x", false, "", "https://beads.example%3A443/acme/beads/x", false},
 	} {
 		got, err := graphops.ParseRef(scope, tc.ref, "")
 		if tc.reject {
@@ -219,14 +238,46 @@ func TestRef(t *testing.T) {
 			t.Errorf("ParseRef(%q).URL = %q", tc.ref, got.URL(scope))
 		}
 	}
-	// IPv6 alias of an IPv6 Scope.
-	v6, err := graphops.ParseRef("https://[::1]:8443/s/", "https://[0:0:0:0:0:0:0:1]:8443/s/beads/x", "")
-	if !errors.Is(err, graphops.ErrValidation) {
-		t.Fatalf("uncompressed IPv6 alias of the Scope must be refused: %v %+v", err, v6)
+	// Aliases of numeric Scope hosts: every IPv4 spelling the parser
+	// rewrites to dotted decimal, and every IPv6 spelling it compresses,
+	// claims the Scope; only the serializer's spelling is the Bead's.
+	for _, tc := range []struct{ scope, ref string }{
+		{"https://[::1]:8443/s/", "https://[0:0:0:0:0:0:0:1]:8443/s/beads/x"},
+		{"https://[::1]:8443/s/", "https://[::0001]:8443/s/beads/x"},
+		{"https://[::1]:8443/s/", "https://[::1]:08443/s/beads/x"},
+		{"https://[::ffff:102:304]/s/", "https://[::ffff:1.2.3.4]/s/beads/x"},
+		{"https://[::ffff:102:304]/s/", "https://[::FFFF:102:304]/s/beads/x"},
+		{"https://127.0.0.1/s/", "https://0x7f000001/s/beads/x"},
+		{"https://127.0.0.1/s/", "https://0X7F000001/s/beads/x"},
+		{"https://127.0.0.1/s/", "https://127.1/s/beads/x"},
+		{"https://127.0.0.1/s/", "https://2130706433/s/beads/x"},
+		{"https://127.0.0.1/s/", "https://0177.0.0.1/s/beads/x"},
+		{"https://127.0.0.1/s/", "https://0x7f.0.0.1/s/beads/x"},
+		{"https://127.0.0.1/s/", "https://127.0.0.1./s/beads/x"},
+		{"https://127.0.0.1/s/", "https://127.0.0.1:443/s/beads/x"},
+		{"https://127.0.0.1/s/", "https://127.0.0.1:0443/s/beads/x"},
+		{"https://beads.example./s/", "https://BEADS.EXAMPLE./s/beads/x"},
+		{"https://beads.example./s/", "https://beads%2Eexample./s/beads/x"},
+	} {
+		got, err := graphops.ParseRef(tc.scope, tc.ref, "")
+		if !errors.Is(err, graphops.ErrValidation) {
+			t.Errorf("ParseRef(%q, %q): an alias of the Scope origin must be refused as noncanonical, got %v %+v", tc.scope, tc.ref, err, got)
+		}
 	}
-	v6ok, err := graphops.ParseRef("https://[::1]:8443/s/", "https://[::1]:8443/s/beads/x", "")
-	if err != nil || !v6ok.InScope() {
-		t.Fatalf("canonical IPv6 in-Scope ref: %v", err)
+	for _, tc := range []struct{ scope, ref string }{
+		{"https://[::1]:8443/s/", "https://[::1]:8443/s/beads/x"},
+		{"https://[::ffff:102:304]/s/", "https://[::ffff:102:304]/s/beads/x"},
+		{"https://127.0.0.1/s/", "https://127.0.0.1/s/beads/x"},
+		{"https://beads.example./s/", "https://beads.example./s/beads/x"},
+	} {
+		got, err := graphops.ParseRef(tc.scope, tc.ref, "")
+		if err != nil || !got.InScope() || got.Path() != "beads/x" {
+			t.Errorf("ParseRef(%q, %q): canonical in-Scope reference refused: %v %+v", tc.scope, tc.ref, err, got)
+		}
+	}
+	// The undotted host is external to a trailing-dot Scope, and vice versa.
+	if got, err := graphops.ParseRef("https://beads.example./s/", "https://beads.example/s/beads/x", ""); err != nil || got.InScope() {
+		t.Errorf("undotted host against a trailing-dot Scope: %v %+v", err, got)
 	}
 	// An invalid Scope is the caller's error.
 	if _, err := graphops.ParseRef("https://beads.example/acme", "beads/x", ""); !errors.Is(err, graphops.ErrValidation) {
@@ -576,6 +627,7 @@ func TestScopeIdentity(t *testing.T) {
 	}
 	for name, spec := range map[string]graphops.ScopeIdentitySpec{
 		"bad url":         {ScopeURL: "https://beads.example/acme", AuthorityID: authorityID, MintedAt: minted},
+		"local-test url":  {ScopeURL: "https://beads.example/local-test/", AuthorityID: authorityID, MintedAt: minted},
 		"bad authority":   {ScopeURL: scopeURL, AuthorityID: "abc", MintedAt: minted},
 		"zero minted at":  {ScopeURL: scopeURL, AuthorityID: authorityID},
 		"bad ledger hash": {ScopeURL: scopeURL, AuthorityID: authorityID, MintedAt: minted, Claim: graphops.WitnessClaim{LedgerHash: "abc"}},
