@@ -1,10 +1,10 @@
 # BDP in beads: the bead-graph plan
 
-**Status:** Draft v24 — feat/bead-graph — W-arch amendments **A1–A9 and ruling 13 (out-of-role DML) RULED 2026-09-07**; ruling 14 (the replication/merge ADR) still pending; P0 code opens when it is ruled. (Thirteen adversarial review rounds:
+**Status:** Draft v25 — feat/bead-graph — W-arch amendments **A1–A9 and rulings 13–14 RULED 2026-09-07**; every P-1 decision is ruled; **P0 is open**. (Thirteen adversarial review rounds:
 1–7 on the whole plan, SOUND at round 7; 8–13 on the storage-interfaces
 section, SOUND-ADDITION at round 13; v6 withdrew the Issue projection from
 v0 on review-round-5 counterexamples; v9–v11 record the P-1 ruling tranches — all
-twelve decisions are ruled; v14–v21 reopened P-1 for the nine amendments; v22–v23 record all nine ruled; v24 records ruling 13)
+twelve decisions are ruled; v14–v21 reopened P-1 for the nine amendments; v22–v23 record all nine ruled; v24–v25 record rulings 13–14; P0 open)
 **Date:** 2026-09-02 (v1: 2026-08-31)
 **Owners:** Donna Box (ruling), janet (drafting/implementation)
 **References:** the BDP spec (gastownhall/bdp `docs/specs/bdp.md`), beads#6051,
@@ -618,8 +618,8 @@ split by topology where the tree differs:
 | Surface | Legacy behavior (verified) | Graph-store policy (proposed) |
 | --- | --- | --- |
 | Dolt push/pull (server + embedded) | rows travel; embedded pushes directly | graph rows travel identically |
-| Merge settlement | `versioncontrolops/mergesettle.go` already settles metadata, dependencies, migrations, config, issues, labels, comments, and events, with seven-table FK-cascade repair — conflict dispatch is a hard-coded switch, separate from an always-considered FK-repair pass; NOTE `MergeWithStrategy` returns early on clean merges and plain `Merge` bypasses settlement entirely | graph settlement must be **centralized so every merge entry point runs it** (clean-merge early-returns and plain `Merge` included — enumerate or funnel the routes): identity/endpoint integrity, dangling-Link detection, owned-Link invariant validation. A pass can reject or quarantine invalid imported state; it CANNOT serialize two independently accepted `max`-violating writes after the fact — hence decision 9: BDP writes flow through one serving authority per Scope, and foreign-clone merges of graph tables are out-of-contract (quarantined on detection) |
-| Federation type-filtering | **server-topology-specific**; deletes `issues` rows by type | graph tables get their own filter hook per topology; filtering one endpoint must also drop/deny the Link (never emit a dangling edge) |
+| Merge settlement | `versioncontrolops/mergesettle.go` already settles metadata, dependencies, migrations, config, issues, labels, comments, and events, with seven-table FK-cascade repair — conflict dispatch is a hard-coded switch, separate from an always-considered FK-repair pass; NOTE `MergeWithStrategy` returns early on clean merges and plain `Merge` bypasses settlement entirely | graph settlement must be **centralized so every merge entry point runs it** (clean-merge early-returns and plain `Merge` included — enumerate or funnel the routes): identity/endpoint integrity, dangling-Link detection, owned-Link invariant validation. A pass can reject or quarantine invalid imported state; it CANNOT serialize two independently accepted `max`-violating writes after the fact — hence decision 9: BDP writes flow through one serving authority per Scope, and foreign-clone merges of graph tables are out-of-contract (quarantined on detection); **ruling 14 (2026-09-07) settles this row:** every SQL pull route fetches, inspects the eight graph tables against the tracking ref, and refuses a foreign or unexplained delta before merging; routes that cannot inspect first fall to the validator's revert; no graph-table conflict is auto-resolved and `--strategy` never touches one |
+| Federation type-filtering | **server-topology-specific**; deletes `issues` rows by type | v0: graph tables ride federation **unfiltered, by decision** (rulings 9/14); a per-topology filter hook is post-v0, and filtering one endpoint must also drop/deny the Link (never emit a dangling edge) |
 | Journal (frozen v0 vocabulary) | Issue/Dependency/Comment payloads only | **graph events are excluded**; a separate graph changefeed carries them; the frozen vocabulary is not extended |
 | Export/JSONL (contract class) | contractual shapes | graph gets its own export lane; legacy shapes untouched |
 | Backup / restore | whole-database state (a different contract class from export); a Dolt backup restore carries the working set, dolt-ignored tables included (probed) | ruling 11 as amended by A5 (ruled 2026-09-07): the installation-keyed authority witness (`.beads/graph-authority.local.json`) records the hash-chained ledger head; a restore keeps the file but the store no longer contains that head → refused until `bd --graph-mode link restore`, which shows continuity from a `bd --graph-mode link ledger snapshot` (recovery predicate) or rotates the Scope URL and epoch; providers DECLARE `LedgerDurability`; `bd backup restore` also marks the witness unverified |
@@ -773,7 +773,7 @@ allocation/tombstone ledger. No legacy IDs are served in v0.
 > *boundaries* stand: P0 contracts + pinned wire, P1 storage (roles,
 > bodies, migrations, conformance; the replication/merge ADR is a P1
 > gate), P2 serving (BDP rows inside `httpapi`; collection routes after the
-> cursor ADR), P3 writes. **P0 opens when ruling 14 (the replication/merge ADR) is ruled (A1–A9 and ruling 13 ruled 2026-09-07).**
+> cursor ADR), P3 writes. **P0 is open (A1–A9 and rulings 13–14 ruled 2026-09-07).**
 
 - **P-1 — Decisions and pins (no code):** charter ADR; ratify the
   projection withdrawal (v0 Scope = graph store only); Scope URL/identity;
@@ -788,7 +788,9 @@ allocation/tombstone ledger. No legacy IDs are served in v0.
   `dolt_schemas`) — if one fails, v0 ships the validator alone and ruling
   13 records it. *Exit: model laws 100% table-tested; DTO round-trip
   against pinned schema fixtures; the three rows answered.*
-- **P1 — Graph read storage (S1):** tables + migrations (descriptor
+- **P1 — Graph read storage (S1):** the replication/merge ADR first
+  (ruling 14: `engdocs/BDP_GRAPH_REPLICATION_ADR.md`, council-reviewed; no
+  graph migration merges before it); then tables + migrations (descriptor
   store and the ruling-13 fence triggers included); typed snapshot-source resolution (`GraphReadSource`)
   with single-request snapshot consistency and the zero-legacy-writes
   regression (defer-wake); the resolver pair across the storage legs —
@@ -986,6 +988,49 @@ of that.
    (two SQL users in v0), and D (a `bd sql` statement guard) were the
    alternatives; C stays a C-lane task, D is redundant under B.
 
+14. **Replication/merge ADR — RULED (2026-09-07): option B, the gate plus
+   a four-law charter.** The ADR gates the graph migrations (P1) and is
+   council-reviewed before they merge; it writes mechanism and conformance
+   rows under these laws. (1) **Fetch, inspect, merge.** Every SQL pull
+   route fetches, inspects the eight replicated tables between HEAD and
+   the remote-tracking ref (`dolt_diff('HEAD', 'remotes/<remote>/<branch>',
+   '<table>')`), and refuses before merging when the delta is
+   foreign-authority or unexplained by ledger events; routes that cannot
+   inspect first — the CLI-subprocess pull, a merge that already landed,
+   restore, force-push — fall to the state-change validator, which reverts
+   the eight tables to their state at the recorded HEAD in a new commit
+   when that HEAD is an ancestor (the hazard-R undo shape: table-scoped,
+   later commits preserved) and marks the witness `unverified` otherwise.
+   (2) **No graph-table conflict is ever auto-resolved**, `--strategy
+   ours|theirs` never touches a graph table, and the pull is refused
+   naming the table; the remedies are the link-mode verbs (rotate, steal,
+   restore), not conflict resolution. (3) **A foreign graph delta is
+   refused whole**; graph tables are never merged cell by cell; the later
+   of two mints under one URL adopts the earlier by an explicit verb the
+   ADR names (the A9 interim "earlier mint wins" becomes that verb).
+   (4) **A workspace without a witness takes the remote's graph state
+   wholesale** — its graph tables are a replica — and refuses to mint
+   until rotated or stolen (A9). Federation carries the graph tables
+   unfiltered in v0. The entry points the ADR must cover are every
+   `DOLT_PULL`/`DOLT_MERGE` route: the SQL pull route
+   (`pullWithAutoResolveUnchecked`), the CLI-subprocess pull, federation
+   peer pulls on both routes, the UOW leg's `Pull`, `bd vc merge`
+   (`MergeWithStrategy`), the remote-migrate gate's `--ff-only` adopt, and
+   `ForcePush`. Probed on Dolt 2.1.8: `DOLT_PULL` inside a transaction
+   commits the merge immediately — fast-forward and no-conflict three-way
+   alike — and `ROLLBACK` does not undo it (only a conflicted merge stays
+   in the working set, which is what the tree's rollback-on-conflict
+   relies on); after `DOLT_FETCH`, `dolt_diff` against the tracking ref
+   enumerates the incoming rows before any merge. Tree facts the ADR
+   inherits: `TryAutoResolveMergeConflicts` resolves only `metadata`,
+   audit-only `dependencies`, `issues` (field-level three-way), `labels`,
+   `comments`, and `events` — a conflict on any other table already fails
+   the pull; the SQL pull route merges into the default branch (be-5ybd),
+   where the graph tables and the lease live. Options A (gate only,
+   content open), C (post-hoc validator only), and D (gate at P2/P3)
+   rejected. The ADR is P1's first deliverable:
+   `engdocs/BDP_GRAPH_REPLICATION_ADR.md`.
+
 ### Amendments RULED 2026-09-07 (A1–A9) — the interview record
 
 Raised by eight three-reviewer councils on the W-arch docs and ruled one
@@ -1065,10 +1110,3 @@ decision at a time on 2026-09-07. The normative text above (rulings 7b, 9,
   explicit wrapper implementations, a capability census, and resolvers)
   rejected.
 
-### Decision PENDING RULING (one — ruling 14)
-
-- **Replication/merge ADR** as a P1 gate: the merge entry points include
-  every `DOLT_PULL`/`DOLT_MERGE` route (pull, UOW remote use case, embedded
-  federation sync, the remote-migrate gate), not four Go functions; prefer
-  refusing foreign-authority deltas; federation unfiltered in v0 by
-  decision. Lands before the graph migrations.

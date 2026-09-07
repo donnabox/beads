@@ -1,10 +1,10 @@
 # BDP graph store — CLI and storage-interface changes, in detail
 
-**Status:** Draft v13 (W-arch) — amendments A1–A9 and plan ruling 13 (out-of-role DML) RULED 2026-09-07; ruling 14 (the replication/merge ADR) pending — feat/bead-graph
+**Status:** Draft v14 (W-arch) — amendments A1–A9 and plan rulings 13–14 RULED 2026-09-07; P0 open — feat/bead-graph
 **Date:** 2026-09-02
 **Companions:** `BDP_BEAD_GRAPH_PLAN.md` (rulings), `BDP_GRAPH_ARCHITECTURE.md`
 (shape; its §2b lists the ruling amendments A1–A9 this spec assumes —
-**all ruled 2026-09-07**, with plan ruling 13 ruled the same day; every
+**all ruled 2026-09-07**, with plan rulings 13–14 ruled the same day; every
 hazard-R paragraph is marked *[deferred under A9]*). This document is the
 *diff*: every command, flag, config key, interface member, package,
 migration, and gate the graph work adds or touches — and what it does not
@@ -639,7 +639,11 @@ share it) in its own transaction — ancestry `DOLT_MERGE_BASE(w.StateCommit,
 HEAD)`; for the ledger-covered tables — descriptors, allocations, the
 ledger — the delta must be explained by ledger events since the recorded
 head, and bead and link bodies are checked by row provenance (ruling 13) —
-advances the witness, and retries once. Descriptor caches are keyed by the descriptors table's hash.
+advances the witness, and retries once. A refused delta is **undone**
+when the recorded HEAD is an ancestor of HEAD: the eight tables are
+reverted to their state at `w.StateCommit` in a new commit (the hazard-R
+undo shape — table-scoped, later commits preserved) and the caller sees one
+`ErrStateChanged`; otherwise the witness is marked `unverified` (ruling 14). Descriptor caches are keyed by the descriptors table's hash.
 Providers without `StateVersioner` fail closed. Exempt from the head check,
 with their own preconditions: `Mint`, `Promote`, `Rotate`, `LedgerApply`,
 `IdentityReader`, the witness-file operations.
@@ -868,6 +872,20 @@ migrate-vs-adopt on every remote-backed workspace at upgrade.
   variable cannot write; a clone carries the triggers; the validator
   refuses a descriptors/allocations/ledger delta unexplained by ledger
   events and marks the witness `unverified`.
+- **Ruling 14 rows (per route):** an SQL pull whose fetched delta touches
+  a graph table with foreign provenance or ledger events of a foreign
+  lineage is refused before merging, naming the table, and HEAD does not
+  move; the same delta arriving by the CLI-subprocess route lands, and the
+  next in-role transaction reverts the eight tables to the recorded HEAD
+  in a new commit with later issue-plane commits preserved; `--strategy
+  theirs` on a pull with a graph-table conflict leaves the graph table
+  untouched and the pull failed; a clone without a witness takes the
+  remote's graph state wholesale; a federation peer pull carries graph
+  tables unfiltered and is refused on a foreign delta like any pull; the
+  remote-migrate gate's fast-forward onto a remote that carries graph rows
+  succeeds and the workspace refuses to mint (A9); a mirror round-trip
+  produces no graph delta and no refusal; `bd dolt pull` with no graph
+  delta is byte-identical.
 - **Rotation is never a remount:** a server started under a base URL that
   differs from the persisted Scope URL refuses, and no stored intra-Scope
   reference changes when the Scope URL rotates (paths are Scope-relative).
@@ -925,10 +943,18 @@ backends; a registered backend's serving behavior (rows absent).
   the UOW leg's `doltVersionControlSQLRepository`; embedded federation sync;
   the remote-migrate gate's fast-forward `DOLT_MERGE`) can change graph
   state outside the roles — the ruling-13 triggers are silent on merge and
-  pull (probed) — so the **state-change validator** runs on every
-  observed graph-state-version change (B3) and refuses a foreign-authority
-  or invalid delta; a superseded clone that pulls resets to the remote. The
-  replication/merge ADR specifies its rules before the migrations land.
+  pull (probed) — so, under ruling 14, every SQL pull route **fetches,
+  inspects the eight tables against the tracking ref, and refuses a
+  foreign or unexplained delta before merging** (`DOLT_PULL` commits a
+  clean merge immediately and `ROLLBACK` does not undo it — probed — so
+  inspection is the only pre-merge refusal point); routes that cannot
+  inspect first fall to the **state-change validator** (B3), which reverts
+  the eight tables to the recorded HEAD in a new commit or marks the
+  witness `unverified`; no graph-table conflict is auto-resolved and
+  `--strategy` never touches one; a workspace without a witness takes the
+  remote's graph state wholesale. The replication/merge ADR
+  (`engdocs/BDP_GRAPH_REPLICATION_ADR.md`) writes the mechanism under that
+  charter before the migrations land.
 - **Federation.** Graph tables ride filtered pushes **unfiltered, by
   decision, in v0**; the lease table never replicates.
 - **`bd sql`, raw SQL, and force-push.** Out of contract for graph tables
@@ -936,6 +962,11 @@ backends; a registered backend's serving behavior (rows absent).
   row-level fence unless the session set `@bd_graph_role`; force-push and
   merges are the validator's and ruling 14's. `bd sql` itself is unchanged —
   no flag; a legacy statement never names a graph table.
+- **`bd dolt pull`, `bd federation sync`, `bd vc merge`, `bd conflicts
+  resolve`** gain the fetch-inspect step (one `DOLT_FETCH`, eight `dolt_diff`
+  reads against the tracking ref) before merging and the graph-table
+  exclusion for `--strategy` (ruling 14); gate output is byte-identical
+  unless a graph delta is refused.
 - **`bd backup restore`** calls `Admin.MarkUnverified` after
   `RestoreDatabase`, before its commit (no-op without a witness).
 - **Root store policy** gains `commandPolicy` (Part A), and
@@ -966,8 +997,10 @@ backends; a registered backend's serving behavior (rows absent).
    the ephemeral lease table lives in the default branch's working set and
    branch-qualified sessions do not see it, so every fenced transaction runs
    on the default branch.
+6. The adoption verb for the later of two mints under one URL (ruling 14,
+   law 3) — name and shape fixed in the replication/merge ADR.
 
-## Part E — Ruling amendments (A1–A9 and ruling 13 ruled 2026-09-07)
+## Part E — Ruling amendments (A1–A9 and rulings 13–14 ruled 2026-09-07)
 
 Ruled: A1 store-owned witness asserted in every transaction is the v0 lease
 (ruling 9); A2 BDP rows inside `httpapi`, `bd --graph-mode link serve` the
@@ -985,4 +1018,8 @@ behavior, out-of-tree implementers take the declared source break with six
 stubs and a CHANGELOG call-out. Ruling 13 (out-of-role DML, "A+B"): out of
 contract, the state-change validator with ledger accounting, and
 session-gated triggers on the eight replicated tables (B3, B4, B7, C2).
-**Pending:** the replication/merge ADR as a P1 gate (ruling 14). Full text: architecture §2b.
+Ruling 14 (replication/merge ADR, option B): the gate plus the four-law
+charter — fetch-inspect-merge on the SQL pull routes, validator revert
+elsewhere, no auto-resolve or `--strategy` on graph tables, foreign deltas
+refused whole, clones take remote state wholesale (B3, B7, C2).
+**Nothing pending; P0 is open.** Full text: architecture §2b.

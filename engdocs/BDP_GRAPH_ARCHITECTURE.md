@@ -1,6 +1,6 @@
 # BDP graph store — architecture and design
 
-**Status:** Draft v13 (W-arch) — amendments A1–A9 and decision D1 (plan ruling 13) RULED 2026-09-07; decision D2 (ruling 14) pending — feat/bead-graph
+**Status:** Draft v14 (W-arch) — amendments A1–A9 and decisions D1–D2 (plan rulings 13–14) RULED 2026-09-07; P0 open — feat/bead-graph
 **Date:** 2026-09-02
 **Companion:** `BDP_BEAD_GRAPH_PLAN.md` (the plan and its rulings, 1–14) and
 `BDP_GRAPH_CLI_AND_STORAGE_SPEC.md` (the detailed CLI and storage-interface
@@ -101,7 +101,7 @@ than designed around:
   territory). A fence against accidents, not credentials; the two-SQL-user
   boundary is a C-lane task. Three P0 verification rows gate the fence
   (spec B4).
-- **Replication/merge ADR as a P1 gate (plan ruling 14 — PENDING).** The merge entry points are not
+- **Replication/merge ADR as a P1 gate — RULED 2026-09-07 (plan ruling 14, option B: the gate plus a four-law charter).** The merge entry points are not
   four Go functions: `mergesettle.go` exports seven, `fastforward.go` and
   `automerge.go` more; `CALL DOLT_PULL` merges inside Dolt on every pull
   route; the UOW leg's `doltVersionControlSQLRepository` calls
@@ -118,9 +118,25 @@ than designed around:
   coordinator per provider instance** in its own transaction (ancestry
   `DOLT_MERGE_BASE(recorded HEAD, HEAD)`; row provenance for foreign
   updates), advances the witness, and retries once. Descriptor caches are
-  keyed by the descriptors table's hash. Prefer refusal of
-  foreign-authority deltas over invented merge rules. Lands before the
-  graph migrations.
+  keyed by the descriptors table's hash. **The charter:** (1) every SQL
+  pull route fetches, inspects the eight tables between HEAD and the
+  remote-tracking ref, and refuses a foreign-authority or unexplained
+  delta *before* merging — `DOLT_PULL` commits a clean merge immediately
+  and `ROLLBACK` does not undo it (probed), so inspection is the only
+  pre-merge refusal point; routes that cannot inspect first (the
+  CLI-subprocess pull, a merge already landed, restore, force-push) fall to
+  the validator, which reverts the eight tables to their state at the
+  recorded HEAD in a new commit when that HEAD is an ancestor (the hazard-R
+  undo shape; later commits preserved) and marks the witness `unverified`
+  otherwise; (2) no graph-table conflict is auto-resolved and `--strategy`
+  never touches a graph table — the pull is refused naming the table, the
+  remedies are the link-mode verbs; (3) a foreign graph delta is refused
+  whole, never merged cell by cell, and the later of two mints under one
+  URL adopts the earlier by an explicit verb the ADR names; (4) a
+  workspace without a witness takes the remote's graph state wholesale and
+  refuses to mint until rotated or stolen. Federation unfiltered in v0.
+  The ADR (`engdocs/BDP_GRAPH_REPLICATION_ADR.md`) is P1's first
+  deliverable, council-reviewed; no graph migration merges before it.
 
 What none of this changes: ruling 9's level — the authority is the graph
 store as reached through the normalized storage abstraction, on any
@@ -312,7 +328,7 @@ mutation, takes the next `seq`, appends the event, stamps provenance; the
 accessor commits **scoped**, **publishes on hazard R**, and only then
 advances the witness — DB first, file second.
 
-## 6. Where the twelve rulings land
+## 6. Where the rulings land
 
 | Ruling | Lands in |
 | --- | --- |
@@ -326,6 +342,8 @@ advances the witness — DB first, file second.
 | 9 authority | store-owned witness in every transaction (A1); fences by hazard (A7) or hazard S only (A9); contract cases incl. clone, restore, copied witness, expired-lease mutation, nonce mismatch, graph delta under an unchanged tuple, revert when HEAD moved, each phase's recovery |
 | 11 restore vs identity | hash-chained head in the witness; multi-phase transitions; ledger lane = anti-reuse history; `LedgerDurability`; rotation (A5) |
 | 12 store/Scope/client | `bd init` migrations only; `bd --graph-mode link serve` mints (staged); `bd --graph-mode link client` (A6); A8 options; registered backends absent in v0 |
+| 13 out-of-role DML | session-gated triggers in the five table files (spec B4); the validator's ledger accounting (B3); three P0 verification rows; the two-SQL-user boundary is C-lane |
+| 14 replication/merge | `engdocs/BDP_GRAPH_REPLICATION_ADR.md` first in P1; fetch-inspect-merge on the SQL pull routes; validator revert on the rest; graph tables excluded from auto-resolve and `--strategy`; clones take remote state wholesale |
 | 6 wisps | not served |
 
 ## 7. What is deliberately not designed here
@@ -334,7 +352,7 @@ advances the witness — DB first, file second.
 - The write profiles' wire (W1), `graphops.Writer`, per-token authorization
   classes, the push-on-commit latency budget, and the
   acknowledged-but-unwitnessed-write window (P3).
-- The replication/merge ADR (§2b). Precedes the migrations.
+- The replication/merge ADR's mechanism (§2b; the charter is plan ruling 14) — P1's first deliverable, `engdocs/BDP_GRAPH_REPLICATION_ADR.md`; precedes the migrations.
 - A DB-privilege (two-SQL-user) boundary for the graph tables (C-lane, ruling 13).
 - The `GraphPublication` capability a registered backend would declare to
   serve BDP (deferred; v0 serves from SQL-server workspaces only).
