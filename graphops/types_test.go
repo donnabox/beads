@@ -300,17 +300,71 @@ func TestBeadAndLink(t *testing.T) {
 	if !(graphops.Link{}).IsZero() {
 		t.Fatal("zero Link")
 	}
+	// The endpoints are symmetric: an external source with an in-Scope target
+	// is a Link this Scope owns.
+	extSource, err := graphops.NewLink(graphops.LinkSpec{Path: "links/x", TypeURL: "https://work.example/types/cites", Revision: rev, Source: external, Target: target})
+	if err != nil || extSource.Source().InScope() || extSource.Source().URI() != "https://github.example/issues/123" || !extSource.Target().InScope() {
+		t.Fatalf("external source with an in-Scope target: %v %+v", err, extSource)
+	}
 	for name, spec := range map[string]graphops.LinkSpec{
-		"bad path":        {Path: "beads/x", TypeURL: "https://work.example/types/cites", Revision: rev, Source: source, Target: target},
-		"bad type":        {Path: "links/x", TypeURL: "work.example/types/cites", Revision: rev, Source: source, Target: target},
-		"zero revision":   {Path: "links/x", TypeURL: "https://work.example/types/cites", Source: source, Target: target},
-		"external source": {Path: "links/x", TypeURL: "https://work.example/types/cites", Revision: rev, Source: external, Target: target},
-		"zero source":     {Path: "links/x", TypeURL: "https://work.example/types/cites", Revision: rev, Target: target},
-		"zero target":     {Path: "links/x", TypeURL: "https://work.example/types/cites", Revision: rev, Source: source},
+		"bad path":      {Path: "beads/x", TypeURL: "https://work.example/types/cites", Revision: rev, Source: source, Target: target},
+		"bad type":      {Path: "links/x", TypeURL: "work.example/types/cites", Revision: rev, Source: source, Target: target},
+		"zero revision": {Path: "links/x", TypeURL: "https://work.example/types/cites", Source: source, Target: target},
+		"both external": {Path: "links/x", TypeURL: "https://work.example/types/cites", Revision: rev, Source: external, Target: external},
+		"zero source":   {Path: "links/x", TypeURL: "https://work.example/types/cites", Revision: rev, Target: target},
+		"zero target":   {Path: "links/x", TypeURL: "https://work.example/types/cites", Revision: rev, Source: source},
+		"both zero":     {Path: "links/x", TypeURL: "https://work.example/types/cites", Revision: rev},
 	} {
 		if _, err := graphops.NewLink(spec); !errors.Is(err, graphops.ErrValidation) {
 			t.Errorf("link %s: want ErrValidation, got %v", name, err)
 		}
+	}
+}
+
+// TestLinkEndpointsAreSymmetric admits every endpoint pair the pinned Read
+// fixtures carry (packages/conformance/fixtures/read-reference-v1.json at the
+// pin, `links` and `externalEndpointLinks`), spelled exactly as the fixture
+// spells them — local Bead IDs, opaque external URIs, and pins as written —
+// and refuses the one pair the spec forbids: two external endpoints.
+func TestLinkEndpointsAreSymmetric(t *testing.T) {
+	const scope = "https://scope.example/acme/"
+	rev := graphops.MintRevision()
+	ref := func(uri, pin string) graphops.Ref {
+		t.Helper()
+		r, err := graphops.ParseRef(scope, uri, pin)
+		if err != nil {
+			t.Fatalf("ParseRef(%q): %v", uri, err)
+		}
+		return r
+	}
+	for _, tc := range []struct {
+		name                  string
+		source, target        graphops.Ref
+		sourceIn, targetIn    bool
+		sourcePin, targetPin  string
+		sourceURI, targetPath string
+	}{
+		{"in-Scope → in-Scope", ref("beads/demo-b", ""), ref("beads/demo-a", ""), true, true, "", "", "", "beads/demo-a"},
+		{"in-Scope → pinned external", ref("beads/demo-f", ""), ref("external:beads:mol-run-assignee", "  Cited-9F2c \u2014 \u03b1/\u03b2 (draft) A\u030a\t"), true, false, "", "  Cited-9F2c \u2014 \u03b1/\u03b2 (draft) A\u030a\t", "", ""},
+		{"external → in-Scope", ref("external:beads:mol-run-assignee", ""), ref("beads/demo-f", ""), false, true, "", "", "external:beads:mol-run-assignee", "beads/demo-f"},
+		{"external → pinned in-Scope", ref("urn:external:pin-witness", ""), ref("beads/demo-f", "pin-a-r1 (as-written)"), false, true, "", "pin-a-r1 (as-written)", "urn:external:pin-witness", "beads/demo-f"},
+		{"collation witness → in-Scope", ref("urn:external:collation-witness", ""), ref("beads/demo-f", ""), false, true, "", "", "urn:external:collation-witness", "beads/demo-f"},
+	} {
+		link, err := graphops.NewLink(graphops.LinkSpec{Path: "links/external-source", TypeURL: "https://work.example/types/blocks", Revision: rev, Source: tc.source, Target: tc.target})
+		if err != nil {
+			t.Errorf("%s: refused: %v", tc.name, err)
+			continue
+		}
+		s, tg := link.Source(), link.Target()
+		if s.InScope() != tc.sourceIn || tg.InScope() != tc.targetIn || s.Pin() != tc.sourcePin || tg.Pin() != tc.targetPin ||
+			s.URI() != tc.sourceURI || tg.Path() != tc.targetPath || !s.Equal(tc.source) || !tg.Equal(tc.target) {
+			t.Errorf("%s: endpoints not carried as written: source %+v target %+v", tc.name, s, tg)
+		}
+	}
+	_, err := graphops.NewLink(graphops.LinkSpec{Path: "links/x", TypeURL: "https://work.example/types/blocks", Revision: rev,
+		Source: ref("urn:external:pin-witness", ""), Target: ref("external:beads:mol-run-assignee", "w-1")})
+	if !errors.Is(err, graphops.ErrValidation) {
+		t.Fatalf("a Link between two external URIs must be refused: %v", err)
 	}
 }
 

@@ -45,11 +45,13 @@ type LinkSelectRequest struct {
 	// TypeURL restricts to Links of exactly this declared Type; "" selects
 	// every Link.
 	TypeURL string
-	// SourcePath restricts to Links leaving the Bead at this canonical path;
-	// "" does not restrict.
-	SourcePath string
+	// Source restricts to Links leaving this reference — an in-Scope Bead or
+	// an external URI — compared by URI alone (a pin adds no identity); nil
+	// does not restrict. The endpoints are symmetric (B2, P0 council
+	// 2026-09-07): a Link's source may be external exactly as its target may.
+	Source *Ref
 	// Target restricts to Links pointing at this reference, compared by URI
-	// alone (a pin adds no identity); nil does not restrict.
+	// alone; nil does not restrict.
 	Target *Ref
 	// After continues a page; "" starts at the beginning.
 	After Cursor

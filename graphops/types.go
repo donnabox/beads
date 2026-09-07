@@ -443,13 +443,23 @@ func (b Bead) IsZero() bool { return b.path == "" }
 // carried attribution when one was recorded. Its type, source and target
 // describe it but do not identify it; several Links may share all three.
 //
-// DECISION: the source is always in-Scope. The pinned spec lets either
-// endpoint be external as long as one is a Bead of this Scope, but the design
-// fixes the source as a stored path (B2's LinkSelectRequest.SourcePath, B4's
-// NOT NULL source_path with its foreign key) and the target as the Reference
-// that may be external. A Link whose source is external cannot be stored by
-// this design, so it is refused at the value rather than at the row. To be
-// raised as a design narrowing of the spec.
+// The endpoints are SYMMETRIC: each is a Ref — an in-Scope Bead or an
+// external URI, pinned or not — under the pinned spec's one endpoint law,
+// "at least one endpoint of every BDP v0 Link MUST be an in-Scope Bead". An
+// external source with an in-Scope target is a valid Link; the pinned Read
+// fixtures carry three (external:beads:mol-run-assignee → beads/demo-f,
+// urn:external:pin-witness → beads/demo-f pinned, urn:external:
+// collation-witness → beads/demo-f), and a domain that could not admit them
+// could not serve the pinned matrix.
+//
+// DECISION (P0 council, 2026-09-07): symmetry. An earlier draft of B2/B4
+// fixed the source as a stored path (LinkSelectRequest.SourcePath; a NOT
+// NULL source_path with a foreign key), which narrowed the spec and refused
+// the fixtures above. B4 now mirrors the target's columns on the source
+// (source_kind / source_path / source_url / source_pin, the path nullable,
+// the foreign key skipped for an external source, a CHECK that at least one
+// endpoint is in-Scope); the P1 migration must follow that revised B4 and
+// never the earlier NOT NULL column.
 type Link struct {
 	path        string
 	typeURL     string
@@ -468,7 +478,8 @@ type LinkSpec struct {
 	TypeURL string
 	// Revision names the current state; required.
 	Revision Revision
-	// Source is the in-Scope Bead the Link leaves from.
+	// Source is where the Link leaves from: an in-Scope Bead or an external
+	// URI, exactly like Target.
 	Source Ref
 	// Target is where the Link points: an in-Scope Bead or an external URI.
 	Target Ref
@@ -479,7 +490,9 @@ type LinkSpec struct {
 }
 
 // NewLink builds a Link, enforcing the path grammar, the Type URL law, a
-// present revision, an in-Scope source and a present target.
+// present revision, two present endpoints, and the endpoint law: at least one
+// endpoint is a Bead of this Scope. A Link between two external URIs is
+// refused — a Scope cannot own one in v0.
 func NewLink(spec LinkSpec) (Link, error) {
 	if err := ValidateLinkPath(spec.Path); err != nil {
 		return Link{}, err
@@ -490,11 +503,14 @@ func NewLink(spec LinkSpec) (Link, error) {
 	if spec.Revision.IsZero() {
 		return Link{}, fmt.Errorf("%w: link %s has no revision", ErrValidation, spec.Path)
 	}
-	if !spec.Source.InScope() {
-		return Link{}, fmt.Errorf("%w: link %s source must be an in-Scope Bead", ErrValidation, spec.Path)
+	if spec.Source.IsZero() {
+		return Link{}, fmt.Errorf("%w: link %s has no source", ErrValidation, spec.Path)
 	}
 	if spec.Target.IsZero() {
 		return Link{}, fmt.Errorf("%w: link %s has no target", ErrValidation, spec.Path)
+	}
+	if !spec.Source.InScope() && !spec.Target.InScope() {
+		return Link{}, fmt.Errorf("%w: link %s must have at least one in-Scope endpoint", ErrValidation, spec.Path)
 	}
 	return Link{
 		path:        spec.Path,
@@ -516,10 +532,10 @@ func (l Link) TypeURL() string { return l.typeURL }
 // Revision names the current state.
 func (l Link) Revision() Revision { return l.revision }
 
-// Source is the in-Scope source Bead reference.
+// Source is the source reference: an in-Scope Bead or an external URI.
 func (l Link) Source() Ref { return l.source }
 
-// Target is the target reference.
+// Target is the target reference: an in-Scope Bead or an external URI.
 func (l Link) Target() Ref { return l.target }
 
 // Attribution returns the carried attribution and whether one is present.
