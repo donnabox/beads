@@ -1,8 +1,8 @@
 # BDP graph store — architecture and design
 
-**Status:** Draft v12 (W-arch) — amendments A1–A9 RULED 2026-09-07; the two decisions pending — feat/bead-graph
+**Status:** Draft v13 (W-arch) — amendments A1–A9 and decision D1 (plan ruling 13) RULED 2026-09-07; decision D2 (ruling 14) pending — feat/bead-graph
 **Date:** 2026-09-02
-**Companion:** `BDP_BEAD_GRAPH_PLAN.md` (the plan and its twelve rulings) and
+**Companion:** `BDP_BEAD_GRAPH_PLAN.md` (the plan and its rulings, 1–14) and
 `BDP_GRAPH_CLI_AND_STORAGE_SPEC.md` (the detailed CLI and storage-interface
 changes). This document is the *shape*: what the pieces are, where they live,
 how a request flows, and where this design corrects the plan after the
@@ -83,13 +83,25 @@ settled until ruled.
 Two decisions the plan does not yet contain, surfaced for ruling rather
 than designed around:
 
-- **Enforcement boundary for out-of-role writes.** `bd sql`, the proxied
-  `RawSQLUseCase`, force-push, and a merge can change graph tables without
-  allocation, authority, revision, or owned-Link coupling checks. v6's
-  position (§7): out of contract; the **state-change validator** rejects
-  invalid or foreign-authority graph state; DB-privilege or trigger
-  enforcement is a C-lane verification task. To be ruled before P3.
-- **Replication/merge ADR as a P1 gate.** The merge entry points are not
+- **Enforcement boundary for out-of-role writes — RULED 2026-09-07 (plan
+  ruling 13, "A+B").** `bd sql`, the proxied `RawSQLUseCase`, force-push,
+  and a merge can change graph tables without allocation, authority,
+  revision, or owned-Link coupling checks. Out of contract; the
+  **state-change validator** rejects invalid or foreign-authority graph
+  state (a delta on the ledger-covered tables must be explained by ledger
+  events since the recorded head; bead and link bodies by row provenance);
+  and the eight replicated tables carry session-gated `BEFORE
+  INSERT/UPDATE/DELETE` triggers that refuse a row unless `@bd_graph_role`
+  is set — every graphops mutation sets it inside its transaction and
+  clears it before `COMMIT`/`ROLLBACK` (the clear is load-bearing: a
+  pooled connection keeps the variable otherwise — probed). Probed on Dolt
+  2.1.8: the triggers fire (errno 1644), replicate through `dolt_schemas`,
+  are created by one multi-statement `Exec` of a migration file, and are
+  silent on `DOLT_MERGE`/`DOLT_PULL` (the validator's and ruling 14's
+  territory). A fence against accidents, not credentials; the two-SQL-user
+  boundary is a C-lane task. Three P0 verification rows gate the fence
+  (spec B4).
+- **Replication/merge ADR as a P1 gate (plan ruling 14 — PENDING).** The merge entry points are not
   four Go functions: `mergesettle.go` exports seven, `fastforward.go` and
   `automerge.go` more; `CALL DOLT_PULL` merges inside Dolt on every pull
   route; the UOW leg's `doltVersionControlSQLRepository` calls
@@ -323,7 +335,7 @@ advances the witness — DB first, file second.
   classes, the push-on-commit latency budget, and the
   acknowledged-but-unwitnessed-write window (P3).
 - The replication/merge ADR (§2b). Precedes the migrations.
-- The enforcement boundary for out-of-role DML beyond the validator.
+- A DB-privilege (two-SQL-user) boundary for the graph tables (C-lane, ruling 13).
 - The `GraphPublication` capability a registered backend would declare to
   serve BDP (deferred; v0 serves from SQL-server workspaces only).
 - Whether `bd --graph-mode link serve` remains after W2 (default: yes — the minting path).

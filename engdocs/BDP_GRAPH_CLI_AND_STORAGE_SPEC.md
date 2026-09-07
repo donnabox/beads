@@ -1,10 +1,10 @@
 # BDP graph store — CLI and storage-interface changes, in detail
 
-**Status:** Draft v12 (W-arch) — amendments A1–A9 RULED 2026-09-07; the two decisions pending — feat/bead-graph
+**Status:** Draft v13 (W-arch) — amendments A1–A9 and plan ruling 13 (out-of-role DML) RULED 2026-09-07; ruling 14 (the replication/merge ADR) pending — feat/bead-graph
 **Date:** 2026-09-02
 **Companions:** `BDP_BEAD_GRAPH_PLAN.md` (rulings), `BDP_GRAPH_ARCHITECTURE.md`
-(shape; its §2b lists the proposed ruling amendments A1–A9 this spec
-assumes — **none is ruled yet**; A8-dependent sentences say so, and every
+(shape; its §2b lists the ruling amendments A1–A9 this spec assumes —
+**all ruled 2026-09-07**, with plan ruling 13 ruled the same day; every
 hazard-R paragraph is marked *[deferred under A9]*). This document is the
 *diff*: every command, flag, config key, interface member, package,
 migration, and gate the graph work adds or touches — and what it does not
@@ -481,6 +481,19 @@ transaction outside the budget):
 | `Descriptors`, `Descriptor` | ≤ 5 | Scope row; ledger head; lease; state version; catalog |
 | `IdentityReader.Read` | 3 | Scope row; ledger head; lease |
 
+**The row-level fence (ruling 13).** Every mutating body issues `SET
+@bd_graph_role = 1` as its first statement inside the transaction and
+`SET @bd_graph_role = NULL` as its last statement before `COMMIT` or
+`ROLLBACK`, on every exit path (deferred); reads never set it. The clear
+is load-bearing: probed over the MySQL protocol with a one-connection
+pool, a transaction that commits without clearing leaves the next plain
+statement on that connection unfenced, and one that clears does not. A
+connection whose transaction is torn down by cancellation is closed by
+the driver, not pooled (verification row ii). Mutating budgets carry two
+statements more than their SQL alone. A body that omits the variable
+cannot write — the triggers refuse its own statements — so the
+conformance suite catches the omission by construction.
+
 **Errors:** `ErrNoScope`, `ErrScopeExists`, `ErrNotAuthority`,
 `ErrStateRewound`, `ErrStateChanged`, `ErrSyncRequired`, `ErrUnpublished`,
 `ErrURLReused`, `ErrRepresentationTooLarge`, `ErrNotServedYet`,
@@ -623,8 +636,10 @@ including this lease's own renewal, moves it) equal to
 transaction**; the accessor then validates under **one singleflight
 coordinator per provider instance** (per-request `timedProvider` roles
 share it) in its own transaction — ancestry `DOLT_MERGE_BASE(w.StateCommit,
-HEAD)`, provenance for foreign updates — advances the witness, and retries
-once. Descriptor caches are keyed by the descriptors table's hash.
+HEAD)`; for the ledger-covered tables — descriptors, allocations, the
+ledger — the delta must be explained by ledger events since the recorded
+head, and bead and link bodies are checked by row provenance (ruling 13) —
+advances the witness, and retries once. Descriptor caches are keyed by the descriptors table's hash.
 Providers without `StateVersioner` fail closed. Exempt from the head check,
 with their own preconditions: `Mint`, `Promote`, `Rotate`, `LedgerApply`,
 `IdentityReader`, the witness-file operations.
@@ -652,6 +667,36 @@ the lease joins `ignoredSource.sentinelTables`. It is reached exactly as
 `issueops/lease.go` reaches `leases`: on the default branch's working set
 (branch-qualified sessions do not see it — which is why publication stays
 on the default branch, Part D.5).
+
+**The row-level fence (ruling 13).** Each of the five table files also
+carries, for every replicated table it creates, three triggers —
+`<table>_bi`, `<table>_bu`, `<table>_bd` (`BEFORE INSERT/UPDATE/DELETE …
+FOR EACH ROW`), body `BEGIN IF @bd_graph_role IS NULL THEN SIGNAL SQLSTATE
+'45000' SET MESSAGE_TEXT = '<table>: out-of-role write refused'; END IF;
+END` — twenty-four in all, each a `DROP TRIGGER IF EXISTS` + `CREATE
+TRIGGER` pair (Dolt 2.1.8 has no `CREATE TRIGGER IF NOT EXISTS`; the pair
+is resumable), no `NOW()`/`RAND()`. The lease table carries none
+(dolt-ignored, fenced by its own law). Probed on Dolt 2.1.8: the body
+parses only in `BEGIN … END` form; it fires with errno 1644; a session
+variable gates it; the triggers replicate through the versioned
+`dolt_schemas` table by push, clone, and pull; they are silent on
+`DOLT_MERGE` and `DOLT_PULL` (ruling 14's territory); and one
+multi-statement `Exec` of such a file over the tree's
+`multiStatements=true` DSN (`doltutil/dsn.go`) creates them — the files
+ship through `execMigrationBody` unchanged (the `dolt sql` CLI, which
+splits on `;`, cannot load them; irrelevant to the runner). Three **P0
+verification rows** gate the fence — a failure ships v0 with the
+validator alone and ruling 13 records it: (i) the embedded leg's
+migration creates the triggers through go-mysql-server or skips them by
+rule (embedded workspaces refuse authority under A9 either way); (ii) a
+pooled connection never carries the variable out of a body (B3); (iii)
+hygiene checks B/C/D and `content_skew.go` tolerate the `dolt_schemas`
+rows the migration adds (the tree has no `dolt_schemas` handling today).
+Clones receive the triggers with the schema and refuse raw DML too —
+harmless: clones are not authorities, and their in-role paths set the
+variable. `bd sql` gains no flag; the deliberate override is a
+proxied-mode batch whose first statement sets the variable, or a raw
+client session.
 
 **Collation.** Dolt's default collation is already binary
 (`utf8mb4_0900_bin` — probed), and no migration in the tree declares one.
@@ -813,6 +858,16 @@ migrate-vs-adopt on every remote-backed workspace at upgrade.
   an owning declaration without `Max`; statement budgets per method;
   `ErrStateChanged` triggers one validation under concurrent reads and the
   reads retry once.
+- **Ruling 13 rows:** a raw `INSERT`, `UPDATE`, and `DELETE` on each of
+  the eight replicated tables without the variable is refused (errno
+  1644, the table named); the same statement with `@bd_graph_role = 1`
+  in the session succeeds; a three-way `DOLT_MERGE` and a `DOLT_PULL`
+  carrying graph rows land without the variable (the validator, not the
+  trigger, decides them); a mutation followed by a raw statement on the
+  same one-connection pool is refused (no leak); a body that omits the
+  variable cannot write; a clone carries the triggers; the validator
+  refuses a descriptors/allocations/ledger delta unexplained by ledger
+  events and marks the witness `unverified`.
 - **Rotation is never a remount:** a server started under a base URL that
   differs from the persisted Scope URL refuses, and no stored intra-Scope
   reference changes when the Scope URL rotates (paths are Scope-relative).
@@ -869,14 +924,18 @@ backends; a registered backend's serving behavior (rows absent).
   `pullTransport`/`pullWithAutoResolve` in `internal/storage/dolt/store.go`;
   the UOW leg's `doltVersionControlSQLRepository`; embedded federation sync;
   the remote-migrate gate's fast-forward `DOLT_MERGE`) can change graph
-  state outside the roles, so the **state-change validator** runs on every
+  state outside the roles — the ruling-13 triggers are silent on merge and
+  pull (probed) — so the **state-change validator** runs on every
   observed graph-state-version change (B3) and refuses a foreign-authority
   or invalid delta; a superseded clone that pulls resets to the remote. The
   replication/merge ADR specifies its rules before the migrations land.
 - **Federation.** Graph tables ride filtered pushes **unfiltered, by
   decision, in v0**; the lease table never replicates.
-- **`bd sql`, raw SQL, and force-push.** Out of contract for graph tables;
-  the enforcement-boundary ruling decides the rest before P3.
+- **`bd sql`, raw SQL, and force-push.** Out of contract for graph tables
+  (ruling 13): raw DML on the eight replicated tables is refused by the
+  row-level fence unless the session set `@bd_graph_role`; force-push and
+  merges are the validator's and ruling 14's. `bd sql` itself is unchanged —
+  no flag; a legacy statement never names a graph table.
 - **`bd backup restore`** calls `Admin.MarkUnverified` after
   `RestoreDatabase`, before its commit (no-op without a witness).
 - **Root store policy** gains `commandPolicy` (Part A), and
@@ -908,7 +967,7 @@ backends; a registered backend's serving behavior (rows absent).
    branch-qualified sessions do not see it, so every fenced transaction runs
    on the default branch.
 
-## Part E — Ruling amendments (A1–A9 ruled 2026-09-07)
+## Part E — Ruling amendments (A1–A9 and ruling 13 ruled 2026-09-07)
 
 Ruled: A1 store-owned witness asserted in every transaction is the v0 lease
 (ruling 9); A2 BDP rows inside `httpapi`, `bd --graph-mode link serve` the
@@ -923,5 +982,7 @@ provider `LedgerDurability`; A6 tracked `bdp.scope_url`, per-workspace keys in
 fence cell); A9 v0 authority requires a shared database, the remote half of
 A7 deferred to the write-profile ADR; A8 option A — constraint #1 scoped to
 behavior, out-of-tree implementers take the declared source break with six
-stubs and a CHANGELOG call-out. **Pending:** the out-of-role DML enforcement
-boundary, and the replication/merge ADR as a P1 gate. Full text: architecture §2b.
+stubs and a CHANGELOG call-out. Ruling 13 (out-of-role DML, "A+B"): out of
+contract, the state-change validator with ledger accounting, and
+session-gated triggers on the eight replicated tables (B3, B4, B7, C2).
+**Pending:** the replication/merge ADR as a P1 gate (ruling 14). Full text: architecture §2b.

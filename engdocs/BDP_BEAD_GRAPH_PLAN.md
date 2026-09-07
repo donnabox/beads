@@ -1,10 +1,10 @@
 # BDP in beads: the bead-graph plan
 
-**Status:** Draft v23 — feat/bead-graph — W-arch amendments **A1–A9 RULED 2026-09-07**; the two decisions (§9) still pending; P0 code opens when they are ruled. (Thirteen adversarial review rounds:
+**Status:** Draft v24 — feat/bead-graph — W-arch amendments **A1–A9 and ruling 13 (out-of-role DML) RULED 2026-09-07**; ruling 14 (the replication/merge ADR) still pending; P0 code opens when it is ruled. (Thirteen adversarial review rounds:
 1–7 on the whole plan, SOUND at round 7; 8–13 on the storage-interfaces
 section, SOUND-ADDITION at round 13; v6 withdrew the Issue projection from
 v0 on review-round-5 counterexamples; v9–v11 record the P-1 ruling tranches — all
-twelve decisions are ruled; v14–v21 reopened P-1 for the nine amendments; v22–v23 record all nine ruled)
+twelve decisions are ruled; v14–v21 reopened P-1 for the nine amendments; v22–v23 record all nine ruled; v24 records ruling 13)
 **Date:** 2026-09-02 (v1: 2026-08-31)
 **Owners:** Donna Box (ruling), janet (drafting/implementation)
 **References:** the BDP spec (gastownhall/bdp `docs/specs/bdp.md`), beads#6051,
@@ -185,7 +185,7 @@ and is the requirements list for any C-lane path.
 | --- | --- | --- | --- |
 | Revision coverage | Every record read serves an opaque, equality-only revision; every state-changing operation on a surviving Resource mints a fresh one; a semantic no-op mints none | `RowVersion` has documented partial coverage (direct-UPDATE text paths bypass it); label writes touch only the labels table; revision is served on the detail read and mutation responses only — list/JSONL forbid it | No existing token can stand in for a BDP revision |
 | Reverse transitions | A→B→A is three distinct revisions | `updated_at` is second-precision `DATETIME` with documented same-second ties; `bd import --allow-stale` restores old rows including timestamps | State-derived revisions are impossible (r5 blocker) |
-| Out-of-band writes | (Implementation constraint, not spec text: BDP's revision/identity laws presuppose the authority observes every mutation) | `bd sql` permits arbitrary direct SQL; compaction rewrites text in place; backup/restore resurrects historical state | No complete mutation feed exists; only funnel (C1/C3) or storage-level observation (C2) can close it |
+| Out-of-band writes | (Implementation constraint, not spec text: BDP's revision/identity laws presuppose the authority observes every mutation) | `bd sql` permits arbitrary direct SQL; compaction rewrites text in place; backup/restore resurrects historical state | No complete mutation feed exists; only funnel (C1/C3) or storage-level observation (C2) can close it; for the graph tables, ruling 13's row-level fence plus the state-change validator |
 | Identity non-reuse | Committed Resource URLs are never reassigned — surviving deletion and epoch changes | Same-ID delete/recreate is permitted; import UPSERTs over existing IDs and accepts caller-supplied historical `created_at`; rename (delete+create) can A→B→A-reactivate an ID | Legacy IDs cannot be BDP URLs without a durable allocation/tombstone mechanism the stack lacks |
 | Attribution (bdp#18, merged 2026-09-07) | A carried per-version `attribution {principal, status ∈ claimed\|unknown}` — data, not evidence; supplied by every version-minting operation; outside `properties`; excluded from the no-op comparison | Issues carry `created_by` and per-field audit rows; no per-version carrier; bd's later versions cannot name their author | The bd realization maps `created_by` to a claimed principal with status `unknown` for later versions; the graph store carries the member natively (spec B4 attribution columns) |
 | ID grammar | Creation-time canonical IDs, multi-segment supported, reject-don't-trim | Configurable prefix grammar + adaptive-length collision-probability IDs; validation checks prefix shape, not BDP path grammar | Eligibility/surrogate policy required before any legacy ID is served (C lane) |
@@ -499,7 +499,10 @@ cmd/bd/serve role-source table                      ← one concrete hook peel,
    (beads, links, type descriptors, allocation/tombstone ledger) are
    ordinary migrations in the existing series, subject to the existing
    version gate (older binary refuses newer DB — §1's contract). No
-   changes to the migration framework itself.
+   changes to the migration framework itself; the ruling-13 fence triggers
+   are DDL in the same files, shipped through the unchanged runner (probed:
+   one multi-statement `Exec` creates `BEGIN … END` trigger bodies over the
+   tree's `multiStatements=true` DSN).
 
 5. **`bd serve` gets a separate OPTIONAL graph field, not a role-table
    entry.** The existing role binding table is deliberately mandatory —
@@ -770,7 +773,7 @@ allocation/tombstone ledger. No legacy IDs are served in v0.
 > *boundaries* stand: P0 contracts + pinned wire, P1 storage (roles,
 > bodies, migrations, conformance; the replication/merge ADR is a P1
 > gate), P2 serving (BDP rows inside `httpapi`; collection routes after the
-> cursor ADR), P3 writes. **P0 opens when the two decisions are ruled (A1–A9 ruled 2026-09-07).**
+> cursor ADR), P3 writes. **P0 opens when ruling 14 (the replication/merge ADR) is ruled (A1–A9 and ruling 13 ruled 2026-09-07).**
 
 - **P-1 — Decisions and pins (no code):** charter ADR; ratify the
   projection withdrawal (v0 Scope = graph store only); Scope URL/identity;
@@ -780,10 +783,13 @@ allocation/tombstone ledger. No legacy IDs are served in v0.
   §0.) *Exit: every row ruled by Donna, recorded in this doc.*
 - **P0 — Contracts:** generated wire DTOs from the pinned schema; immutable
   domain values (`Properties`, `Ref` sum, records); pure validators; typed
-  error vocabulary. *Exit: model laws 100% table-tested; DTO round-trip
-  against pinned schema fixtures.*
+  error vocabulary; the three ruling-13 verification rows (embedded-leg
+  trigger creation, pooled-connection variable hygiene, hygiene checks vs
+  `dolt_schemas`) — if one fails, v0 ships the validator alone and ruling
+  13 records it. *Exit: model laws 100% table-tested; DTO round-trip
+  against pinned schema fixtures; the three rows answered.*
 - **P1 — Graph read storage (S1):** tables + migrations (descriptor
-  store included); typed snapshot-source resolution (`GraphReadSource`)
+  store and the ruling-13 fence triggers included); typed snapshot-source resolution (`GraphReadSource`)
   with single-request snapshot consistency and the zero-legacy-writes
   regression (defer-wake); the resolver pair across the storage legs —
   `ResolveGraphReadSource` for server/embedded Dolt (embedded as
@@ -951,6 +957,35 @@ of that.
    keeps existing `bd serve` behavior — routes absent, never a startup
    failure (A8, ruled 2026-09-07).
 
+13. **Out-of-role DML enforcement boundary — RULED (2026-09-07): "A+B".**
+   Out-of-role DML — `bd sql` in both modes, raw SQL clients, force-push,
+   and merges — is out of contract. The state-change validator refuses
+   invalid or foreign-authority graph state on every observed
+   state-version change; for the ledger-covered tables (descriptors,
+   allocations, the ledger itself) the delta must be explained by ledger
+   events since the recorded head, and bead and link bodies are checked
+   by row provenance (`last_authority_id`/`last_epoch`). The eight
+   replicated graph tables carry `BEFORE INSERT/UPDATE/DELETE` triggers,
+   installed by the graph migrations, that refuse a row unless the session
+   set the role variable `@bd_graph_role`; every graphops mutation sets it
+   inside its transaction and clears it before `COMMIT` or `ROLLBACK`.
+   The fence stops accidents, not holders of database credentials; a
+   DB-privilege boundary (two SQL users) is a C-lane task. Merges belong
+   to ruling 14. Probed on Dolt 2.1.8: the trigger shape parses (in
+   `BEGIN … END` form) and fires (errno 1644); a session variable gates
+   it; a transaction that commits without clearing leaves the pooled
+   connection unfenced, one that clears does not; the triggers replicate
+   through `dolt_schemas` by push, clone, and pull; they are silent on
+   `DOLT_MERGE` and `DOLT_PULL`; one multi-statement `Exec` of a migration
+   file creates them over the tree's DSN; privileges live in
+   `.doltcfg/privileges.db` per installation and never replicate. Three
+   P0 verification rows gate the fence (§7); if one fails, v0 ships the
+   validator alone and this ruling records it. No new `bd sql` flag: the
+   deliberate override is a proxied-mode batch that sets the variable
+   first, or a raw client session. Option A alone (validator only), C
+   (two SQL users in v0), and D (a `bd sql` statement guard) were the
+   alternatives; C stays a C-lane task, D is redundant under B.
+
 ### Amendments RULED 2026-09-07 (A1–A9) — the interview record
 
 Raised by eight three-reviewer councils on the W-arch docs and ruled one
@@ -1030,17 +1065,8 @@ decision at a time on 2026-09-07. The normative text above (rulings 7b, 9,
   explicit wrapper implementations, a capability census, and resolvers)
   rejected.
 
-### Decisions PENDING RULING (two)
+### Decision PENDING RULING (one — ruling 14)
 
-Two decisions the plan does not yet contain, surfaced for ruling:
-
-- **Out-of-role DML enforcement boundary** (`bd sql`, raw SQL, merges
-  bypass allocation/authority/revision/owned-Link laws). Proposed v0
-  posture: out of contract + a state-change validator that runs whenever
-  the store's state version changes and refuses invalid or
-  foreign-authority graph state (rows carry `last_authority_id`/`last_epoch`
-  provenance); DB-privilege/trigger enforcement is a C-lane verification
-  task. To be ruled before P3.
 - **Replication/merge ADR** as a P1 gate: the merge entry points include
   every `DOLT_PULL`/`DOLT_MERGE` route (pull, UOW remote use case, embedded
   federation sync, the remote-migrate gate), not four Go functions; prefer
