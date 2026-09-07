@@ -233,7 +233,7 @@ internal/storage/storage.go        + six BeadGraph* accessors
 internal/storage/hook_beadgraph_*.go, internal/telemetry/beadgraph_*.go, backend/conformance/…
 internal/httpapi/bdp_routes.go     bdpRouteTable — conditional rows behind route() (P2);
                                    FenceSource state machine (held → renewing → lost)
-internal/httpapi/bdpwire/          GENERATED DTOs from the vendored, pinned schema — P0
+internal/httpapi/bdpwire/          hand-written DTOs held to the vendored, pinned schema by tests (Part D.3, recorded 2026-09-07) — P0
 internal/bdpclient/                graphops.Reader/DescriptorReader over the wire
 cmd/bd/bdp*.go                     link mode root; bdpRootPolicy keyed by CommandPath();
                                    bdp_serve.go staged startup (exclusive mint, then shared serve)

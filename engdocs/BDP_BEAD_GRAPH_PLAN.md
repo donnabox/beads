@@ -32,7 +32,8 @@ This plan targets the BDP spec **as of the owned-Links rulings**:
 **BDP commit `0b7d86e7`** (the gastownhall/bdp PR #18 merge, 2026-09-07, carried attribution for #10; supersedes the `aee075f5` pin of PR #17),
 schema bundle `schemas/bdp-v0.schema.json` at that commit, Read conformance
 matrix `packages/conformance/matrices/read-v1.json` at that commit
-(38 scenarios).
+(40 scenarios: 35 normative + 5 diagnostic, all profile `read` — counted at the pin
+during P0 vendoring; earlier drafts said 38).
 **No implementation phase begins until the pin is written here.** BDP remains
 a draft; "matrix green" exits below mean green against the *pinned* matrix,
 re-pinned deliberately, never against a moving `main`.
@@ -783,11 +784,12 @@ allocation/tombstone ledger. No legacy IDs are served in v0.
   §0.) *Exit: every row ruled by Donna, recorded in this doc.*
 - **P0 — Contracts:** generated wire DTOs from the pinned schema; immutable
   domain values (`Properties`, `Ref` sum, records); pure validators; typed
-  error vocabulary; the three ruling-13 verification rows (embedded-leg
-  trigger creation, pooled-connection variable hygiene, hygiene checks vs
-  `dolt_schemas`) — if one fails, v0 ships the validator alone and ruling
-  13 records it. *Exit: model laws 100% table-tested; DTO round-trip
-  against pinned schema fixtures; the three rows answered.*
+  error vocabulary; the three ruling-13 verification rows — **answered
+  2026-09-07: PASS / PASS-WITH-RULE / PASS-WITH-RULE**
+  (`engdocs/BDP_P0_VERIFICATION_ROWS.md` on the P0 branch; the fence
+  ships, with the rules spec B3/B4 now record). *Exit: model laws 100%
+  table-tested; DTO round-trip against pinned schema fixtures; the three
+  rows answered.*
 - **P1 — Graph read storage (S1):** the replication/merge ADR first
   (ruling 14: `engdocs/BDP_GRAPH_REPLICATION_ADR.md`, council-reviewed; no
   graph migration merges before it); then tables + migrations (descriptor
@@ -983,7 +985,16 @@ of that.
    file creates them over the tree's DSN; privileges live in
    `.doltcfg/privileges.db` per installation and never replicate. Three
    P0 verification rows gate the fence (§7); if one fails, v0 ships the
-   validator alone and this ruling records it. No new `bd sql` flag: the
+   validator alone and this ruling records it. **Answered 2026-09-07:**
+   (i) PASS — the embedded leg creates and fires the triggers; (ii)
+   PASS-WITH-RULE — a transaction cancelled between statements is pooled
+   with the variable set on both server legs, so the deferred clear runs
+   on `context.WithoutCancel` and poisons the connection when it cannot be
+   confirmed; (iii) PASS-WITH-RULE — the CLI migration bundle needs a
+   `DELIMITER` rendition, check D and `doltIgnorePatterns` must learn the
+   lease table, and a dirty `dolt_schemas` is refused late. The fence
+   ships. One new item awaits ruling: a fence census over `dolt_schemas`
+   in the validator and ruling 14's inspection set (spec B4, Part D.7). No new `bd sql` flag: the
    deliberate override is a proxied-mode batch that sets the variable
    first, or a raw client session. Option A alone (validator only), C
    (two SQL users in v0), and D (a `bd sql` statement guard) were the

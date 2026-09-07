@@ -487,9 +487,19 @@ transaction outside the budget):
 `ROLLBACK`, on every exit path (deferred); reads never set it. The clear
 is load-bearing: probed over the MySQL protocol with a one-connection
 pool, a transaction that commits without clearing leaves the next plain
-statement on that connection unfenced, and one that clears does not. A
-connection whose transaction is torn down by cancellation is closed by
-the driver, not pooled (verification row ii). Mutating budgets carry two
+statement on that connection unfenced, and one that clears does not. Verification row (ii) corrected the cancellation claim (2026-09-07): a
+transaction cancelled *between* statements is rolled back and its
+connection **pooled with the variable still set** on both server legs
+(the UOW leg's `closeAttempt` rolls back on `context.WithoutCancel` and
+releases the connection; the `*sql.Tx` shape keeps it because the driver
+implements `SessionResetter` and `Validator`); only a mid-statement
+cancellation closes the socket. The rule: the deferred clear runs on
+`context.WithoutCancel(ctx)` with its own short timeout — proved to fence
+the pooled session — and a clear that cannot be confirmed poisons the
+connection (closed, never pooled); the CLI leg's wrapper begins its
+transaction on `context.WithoutCancel` or pins `db.Conn`. The embedded leg
+has no pool hazard: its driver's `ResetSession` returns `ErrBadConn`, so
+every checkout is a fresh session. Mutating budgets carry two
 statements more than their SQL alone. A body that omits the variable
 cannot write — the triggers refuse its own statements — so the
 conformance suite catches the omission by construction.
@@ -687,15 +697,31 @@ variable gates it; the triggers replicate through the versioned
 `DOLT_MERGE` and `DOLT_PULL` (ruling 14's territory); and one
 multi-statement `Exec` of such a file over the tree's
 `multiStatements=true` DSN (`doltutil/dsn.go`) creates them — the files
-ship through `execMigrationBody` unchanged (the `dolt sql` CLI, which
-splits on `;`, cannot load them; irrelevant to the runner). Three **P0
+ship through `execMigrationBody` unchanged (the `dolt sql` CLI splits on the body's
+inner `;`, so the `AllMigrationsSQL()` bundle the CLI-parity test loads with
+`dolt sql -f` needs a `DELIMITER`-wrapped `cliCompatibleMigrationSQL`
+rendition — which the protocol path in turn refuses — and the parity
+oracle, which excludes `dolt_` tables, gains a trigger count). Three **P0
 verification rows** gate the fence — a failure ships v0 with the
-validator alone and ruling 13 records it: (i) the embedded leg's
-migration creates the triggers through go-mysql-server or skips them by
-rule (embedded workspaces refuse authority under A9 either way); (ii) a
-pooled connection never carries the variable out of a body (B3); (iii)
-hygiene checks B/C/D and `content_skew.go` tolerate the `dolt_schemas`
-rows the migration adds (the tree has no `dolt_schemas` handling today).
+validator alone and ruling 13 records it: **answered 2026-09-07**
+(`engdocs/BDP_P0_VERIFICATION_ROWS.md`, spikes on the P0 branch): (i)
+**PASS** — `embeddeddolt.OpenSQL` with one pinned connection and one
+`ExecContext` of the migration text creates the triggers, they fire, the
+variable gates them, and `dolt_schemas` stages and commits; the
+skip-by-rule branch is not needed; (ii) **PASS-WITH-RULE** — B3's clear on
+`WithoutCancel` and poison on failure; (iii) **PASS-WITH-RULE** — hygiene
+checks A–E pass on a trigger-carrying file and the real runner commits
+`dolt_schemas` with the table and cursor; three P1 rules follow: the
+CLI-bundle rendition above; check D's clone-local list and
+`doltIgnorePatterns` must learn `graph_authority_lease` before the B4 twin
+is enforced; `migrationSQLTouchesTable` cannot see trigger DDL, so a
+pre-existing dirty `dolt_schemas` is refused by the post-pass signature
+check rather than up front. **One item awaits ruling (Part D.7):**
+`dolt_schemas` is outside the eight hashed and inspected tables, so an
+out-of-band `DROP TRIGGER` replicates silently and `content_skew.go`
+cannot see it (equal hashes) — proposed: the validator and ruling 14's
+inspection set gain a **fence census** over `dolt_schemas` (trigger
+presence per graph table).
 Clones receive the triggers with the schema and refuse raw DML too —
 harmless: clones are not authorities, and their in-role paths set the
 variable. `bd sql` gains no flag; the deliberate override is a
@@ -917,12 +943,22 @@ migrate-vs-adopt on every remote-backed workspace at upgrade.
   row and asserts identical status and log shape.
 - **Handler = serializer**; typed graph errors → BDP Problem records
   (`bdp_problem.go`), here and only here.
-- **Wire — P0, not yet in the tree:** `internal/httpapi/bdpwire/schema/bdp-v0.schema.json`
-  **will be vendored** with a `PROVENANCE` file (upstream repo, commit — the
-  plan's §0 pin — and sha256); `make bdp-gen` runs a **pinned** JSON-Schema→Go
-  generator (fallback recorded at P0: hand-written DTOs validated against
-  the schema); `make bdp-check` regenerates and diffs, and
-  `scripts/ci/pr-policy.sh` runs it beside `make api-check`.
+- **Wire — P0 (vendored 2026-09-07 on the P0 branch):**
+  `internal/httpapi/bdpwire/schema/bdp-v0.schema.json` is vendored verbatim
+  with a `PROVENANCE` file (upstream repo, the plan's §0 commit, and per
+  file the sha256 and git blob sha1) covering the bundle, the
+  reference-domain and Read fixtures, the Read catalog and matrix, and the
+  spec's JSON example fences; a test recomputes every digest and fails on
+  drift. **Generator decision (Part D.3):** hand-written DTOs held to the
+  bundle by parity, round-trip, and matrix tests — the recorded fallback;
+  both generator routes were run on the pinned bundle and rejected
+  (`oapi-codegen` cannot consume the bundle by external `$ref` and
+  `openapi.v0.yaml` is frozen; `go-jsonschema` collapses the reference sum,
+  the consts, and nullable `next` to `interface{}`), see
+  `internal/httpapi/bdpwire/GENERATOR.md`. There is no `make bdp-gen`;
+  `bdp-check` is the package's tests, which already run inside
+  `make api-check`'s `go test ./internal/httpapi/...` step, so
+  `scripts/ci/pr-policy.sh` gains no target.
 
 ## Part C — What does not change
 
@@ -990,7 +1026,8 @@ backends; a registered backend's serving behavior (rows absent).
 1. Proposed numbers (`MaxExpandedRows`, `MaxCatalog`, page bounds, value
    limit, lease TTL, heartbeat, grace) fixed at P1 with rationale.
 2. Whether the P1 fixture writer becomes the internal half of `Writer`.
-3. Generator choice for `bdpwire` — recorded at P0.
+3. Generator choice for `bdpwire` — recorded at P0 (2026-09-07): hand-written
+   DTOs held to the vendored bundle by tests (B8; `GENERATOR.md`).
 4. Whether `bd --graph-mode link serve` remains after W2 (default: yes).
 5. Whether hazard-R publication should use an isolated branch instead of
    soft-reset/checkout/revert. The constraint that decides it survives A9:
@@ -999,6 +1036,9 @@ backends; a registered backend's serving behavior (rows absent).
    on the default branch.
 6. The adoption verb for the later of two mints under one URL (ruling 14,
    law 3) — name and shape fixed in the replication/merge ADR.
+7. **Awaiting ruling:** a fence census over `dolt_schemas` in the
+   state-change validator and in ruling 14's fetch-inspect set (verification
+   row iii found an out-of-band `DROP TRIGGER` replicates silently).
 
 ## Part E — Ruling amendments (A1–A9 and rulings 13–14 ruled 2026-09-07)
 
