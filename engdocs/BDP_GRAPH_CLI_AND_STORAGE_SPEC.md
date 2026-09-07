@@ -514,6 +514,27 @@ because `beadserrors`' charter keeps domain-naming refusals in the leaf.
 `GoneError` matches `ErrNotFound` under `errors.Is` (the spec's same-404
 default); a handler opts into the 410 by `errors.As`.
 
+**P0 implementation notes (recorded 2026-09-07 after council 11's fold; the
+code on `janet-beadgraph-p0` is the reference).** Scope-URL laws split in two:
+`ValidateScopeURL` is the client-side law (a client may reference a bdptest
+dev server's `…/local-test/` Scope) and `ValidatePersistedScopeURL` the
+persisted-identity law used by `Mint`, `Rotate`, ledger events carrying
+`scope_url`, and manifests (`local-test` refused there). `NormalizeScopeURL`
+normalizes the **whole origin** under one WHATWG model — scheme and host case,
+percent-encoded host characters, the ends-in-a-number rule (all-digit or `0x`
+last label ⇒ IPv4, rendered dotted-decimal), IPv6 compression (`[::ffff:102:304]`),
+ports with leading zeros and default ports — and the same model classifies a
+reference as in-Scope or external; a noncanonical in-Scope spelling is refused,
+an external reference is preserved byte-for-byte; a trailing-dot registered name
+is canonical and a distinct host; no IDNA (configure IDN hosts as A-labels).
+`LinkSelectRequest` takes `Source *Ref` and `Target *Ref` (endpoints symmetric;
+the one-in-Scope-endpoint law). Ledger: `MaxLedgerSeq = MaxUint64-1`, seq ∈
+[1, MaxLedgerSeq]; the counter is exhausted at `MaxUint64` and the chain
+refuses wraparound. Descriptor canonical form: `description:""` ≡ absent,
+`propertiesSchema:""` refused, a zero endpoint constraint is the empty set,
+`conformsTo` sorted by code unit. Every string entering a JSON-backed value must
+be valid UTF-8.
+
 ### B3. Bodies, the witness manager, and legs
 
 Bodies take **`DBTX`**, the witness, and the process-local claim:
@@ -815,6 +836,14 @@ reads are what a bts-side parity test compares). The migration PR is
 sequenced with bts; the remote-migrate gate (#4259) forces
 migrate-vs-adopt on every remote-backed workspace at upgrade.
 
+**P1 must ship what P0 settled (recorded 2026-09-07).** `source_path` is
+nullable with the `CHECK` that at least one endpoint is `in` (the symmetric
+columns above); the ledger counter's exhaustion rule; the descriptor canonical
+form and UTF-8 rule stated under "JSON is bytes"; `migrationSQLTouchesTable`
+learns `CREATE TRIGGER … ON <table>` and `DROP TRIGGER [IF EXISTS] <name>`
+separately (a DROP names no table; metadata lookup); the Dolt lane runs the
+ruling-13 spikes (they gate on `testutil.RequireDoltBinary` alone).
+
 ### B5. Decorators, censuses, and every embedding surface
 
 - `internal/storage/hook_beadgraph_*.go` (six files): declared, recurse
@@ -983,7 +1012,13 @@ migrate-vs-adopt on every remote-backed workspace at upgrade.
   `internal/httpapi/bdpwire/GENERATOR.md`. There is no `make bdp-gen`;
   `bdp-check` is the package's tests, which already run inside
   `make api-check`'s `go test ./internal/httpapi/...` step, so
-  `scripts/ci/pr-policy.sh` gains no target.
+  `scripts/ci/pr-policy.sh` gains no target. Decoding posture (council 11 fold):
+  `bdpwire.Unmarshal`/`Decode` read member by member — exact case-sensitive
+  names, required ⇔ no `omitempty` (welded to the bundle by the parity test),
+  null refused except a collection's nullable `next`, each member held to its
+  JSON type, integers decoded exactly from any RFC 8259 spelling within the
+  documented Go `int` (64-bit) range; `ReadDiscovery.Validate()` enforces the
+  two consts.
 
 ## Part C — What does not change
 

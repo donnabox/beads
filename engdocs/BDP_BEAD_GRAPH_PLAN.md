@@ -789,7 +789,9 @@ allocation/tombstone ledger. No legacy IDs are served in v0.
   (`engdocs/BDP_P0_VERIFICATION_ROWS.md` on the P0 branch; the fence
   ships, with the rules spec B3/B4 now record). *Exit: model laws 100%
   table-tested; DTO round-trip against pinned schema fixtures; the three
-  rows answered.*
+  rows answered.* **Met 2026-09-07** on `janet-beadgraph-p0` (council 11:
+  three reviewers, all findings folded; graphops 100% statement coverage;
+  bdpwire 94%); PR to gastownhall/beads on the operator's go.
 - **P1 — Graph read storage (S1):** the replication/merge ADR first
   (ruling 14: `engdocs/BDP_GRAPH_REPLICATION_ADR.md`, council-reviewed; no
   graph migration merges before it); then tables + migrations (descriptor
