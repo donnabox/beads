@@ -49,9 +49,11 @@ type ReadDiscovery struct {
 // AdvertisedLimits is the `advertisedLimits` envelope: the optional `limits`
 // object of discovery, divided into capability groups. A group is relevant
 // only when the advertised profile exposes that capability, and every
-// advertised value is binding. Counts are positive integers and durations
-// are ISO 8601, so a zero count and an empty duration both mean "not
-// advertised" and omitempty loses nothing.
+// advertised value is binding. DECISION: counts are int and durations are
+// string, each with omitempty, rather than pointers — the bundle's
+// positiveInteger has minimum 1 and its duration pattern forbids the empty
+// string, so a zero count and an empty duration can only mean "not
+// advertised" and nothing is lost.
 type AdvertisedLimits struct {
 	Page        *PageLimits        `json:"page,omitempty"`
 	Request     *RequestLimits     `json:"request,omitempty"`
@@ -234,7 +236,10 @@ type TypeDescriptor struct {
 	ID string `json:"id"`
 	// Name is required, nonempty, human-readable, and establishes nothing.
 	Name string `json:"name"`
-	// Description is optional human-readable documentation.
+	// Description is optional human-readable documentation. DECISION: like
+	// every optional string here (Label, PropertiesSchema, a problem's Title),
+	// it is a plain string with omitempty — an explicit "" is served as
+	// absent, which the bundle gives no way to tell apart in meaning.
 	Description string `json:"description,omitempty"`
 	// Describes is the Resource category and must agree with every Resource
 	// declaring the Type.

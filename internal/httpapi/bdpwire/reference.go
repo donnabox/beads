@@ -17,11 +17,13 @@ import (
 // The Go value collapses the two arms into one struct because the bundle
 // makes them disjoint: a pinned reference's revision has minLength 1, so
 // Revision == "" is the string arm and anything else is the object arm, with
-// nothing lost either way. The decoder enforces exactly that disjointness —
-// an object arm with a missing or empty revision is rejected, because the Go
-// value would otherwise read as the string arm — and nothing more: URI
-// grammar is a model law, not a wire shape, and the realization fixtures
-// legitimately carry local-ID spellings that an authority canonicalizes.
+// nothing lost either way. DECISION: the decoder enforces exactly that
+// disjointness — an object arm with a missing or empty revision is rejected,
+// because the Go value would otherwise read as the string arm — and nothing
+// more: an empty URI decodes (either arm can carry it faithfully; a validator
+// rejects it), URI grammar is a model law rather than a wire shape, and the
+// realization fixtures legitimately carry local-ID spellings that an
+// authority canonicalizes.
 type Reference struct {
 	URI      string
 	Revision string

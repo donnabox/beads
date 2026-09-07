@@ -28,22 +28,24 @@
 //
 // SHAPE, NOT VALIDATION. A type here says what a conforming document looks
 // like on the wire: which members exist, which are required, which are
-// closed. It does not validate URL grammar, canonical-ID spelling, Type
-// contracts, or that a required member was present — those are model laws and
-// belong to the graph leaf (graphops laws.go, per BDP_GRAPH_ARCHITECTURE.md
-// §3), not to transport. The exceptions are the structural facts the bundle
-// states about the bytes themselves and that a Go value could not otherwise
-// carry faithfully: Reference's string-or-object sum (an object arm needs a
-// nonempty revision, or the Go value would read as the string arm), and the
-// closed problem table (ReadProblem.Validate).
+// closed. DECISION: it does not validate URL grammar, canonical-ID spelling,
+// Type contracts, or that a required member was present — those are model
+// laws and belong to the graph leaf (graphops laws.go, per
+// BDP_GRAPH_ARCHITECTURE.md §3), not to transport. The exceptions are the
+// structural facts the bundle states about the bytes themselves and that a Go
+// value could not otherwise carry faithfully: Reference's string-or-object
+// sum (an object arm needs a nonempty revision, or the Go value would read as
+// the string arm), and the closed problem table (ReadProblem.Validate).
 //
-// DECODING POSTURE. Unmarshal and Decode are strict: an unknown member in a
-// closed envelope is an error, because the spec says the normative schemas
-// alone decide where additional members are allowed ("no implicit
-// minor-version rule") and every public envelope closes its protocol-owned
-// members. The two open places — a Resource's `properties` document and RFC
-// 9457 extension members on a problem — are carried through byte for byte.
-// A caller that wants a lenient read uses encoding/json directly.
+// DECODING POSTURE. DECISION: Unmarshal and Decode are strict — an unknown
+// member in a closed envelope is an error — because the spec says the
+// normative schemas alone decide where additional members are allowed ("no
+// implicit minor-version rule") and every public envelope closes its
+// protocol-owned members; the spec does not say what a CLIENT should do with
+// a stranger, and rejecting is the reading a conformance check wants. The two
+// open places — a Resource's `properties` document and RFC 9457 extension
+// members on a problem — are carried through byte for byte. A caller that
+// wants a lenient read uses encoding/json directly.
 //
 // The package imports the standard library and nothing else, and
 // imports_test.go keeps it that way: it sits beneath internal/httpapi and,

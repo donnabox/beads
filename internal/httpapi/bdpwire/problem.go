@@ -89,9 +89,11 @@ func (c ReadProblemCode) Retry() RetryDisposition {
 type ReadProblem struct {
 	// Type is the problem family URL: ProblemTypePrefix + Code.Family().
 	Type string `json:"type"`
-	// Title, Detail and Instance are the ordinary RFC 9457 members. An empty
-	// one is omitted rather than sent as "", which is what the RFC intends
-	// for a member with nothing to say.
+	// Title, Detail and Instance are the ordinary RFC 9457 members.
+	// DECISION: an empty one is omitted rather than sent as "" (plain strings
+	// with omitempty, not pointers), which is what the RFC intends for a
+	// member with nothing to say; a document carrying an explicit "" does not
+	// round-trip that member, and the bundle gives no meaning to one.
 	Title string `json:"title,omitempty"`
 	// Status is optional on a direct problem but, when present, MUST equal
 	// the HTTP status — which Code fixes, so 0 here means "not sent".
@@ -116,7 +118,9 @@ type ReadProblem struct {
 
 // NewReadProblem returns a problem for code with Type, Status and Retry
 // filled in from the table. Title, Detail, Instance, ArchivedAt and
-// Extensions are the caller's.
+// Extensions are the caller's. DECISION: Status is filled in although the
+// spec makes it optional on a direct problem, so the body is self-describing
+// in a log; a caller that wants it off the wire clears it.
 func NewReadProblem(code ReadProblemCode) ReadProblem {
 	return ReadProblem{
 		Type:   code.Type(),
@@ -167,9 +171,11 @@ var readProblemMembers = func() map[string]bool {
 	return members
 }()
 
-// MarshalJSON writes the named members and then the extensions. Member order
-// on the wire is not significant to any consumer; with extensions present
-// the members come out in key order.
+// MarshalJSON writes the named members and then the extensions. DECISION:
+// member order on the wire is not significant to any consumer (RFC 8259
+// objects are unordered and the matrix compares by pointer), so with
+// extensions present the members come out in key order rather than in a
+// preserved order the type would have to carry.
 func (p ReadProblem) MarshalJSON() ([]byte, error) {
 	named, err := json.Marshal(readProblemMembersOnly(p))
 	if err != nil {
