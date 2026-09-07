@@ -452,6 +452,30 @@ type jsonMember struct {
 }
 
 func (s *jsonScanner) object(out []byte) ([]byte, error) {
+	members, err := s.objectMembers()
+	if err != nil {
+		return nil, err
+	}
+	sort.SliceStable(members, func(i, j int) bool {
+		return CompareCodeUnits(members[i].key, members[j].key) < 0
+	})
+	out = append(out, '{')
+	for i, m := range members {
+		if i > 0 {
+			out = append(out, ',')
+		}
+		out = appendCanonicalString(out, m.key)
+		out = append(out, ':')
+		out = append(out, m.value...)
+	}
+	return append(out, '}'), nil
+}
+
+// objectMembers parses an object at the opening brace and returns its
+// members in source order, each value already canonical; a duplicate key is
+// refused. object serializes them sorted; the descriptor parser walks them
+// as they are.
+func (s *jsonScanner) objectMembers() ([]jsonMember, error) {
 	if err := s.enter(); err != nil {
 		return nil, err
 	}
@@ -460,7 +484,7 @@ func (s *jsonScanner) object(out []byte) ([]byte, error) {
 	if s.pos < len(s.in) && s.in[s.pos] == '}' {
 		s.pos++
 		s.depth--
-		return append(out, '{', '}'), nil
+		return nil, nil
 	}
 	var members []jsonMember
 	seen := map[string]struct{}{}
@@ -502,20 +526,43 @@ func (s *jsonScanner) object(out []byte) ([]byte, error) {
 		}
 		return nil, s.errorf("expected ',' or '}' in object")
 	}
-	sort.SliceStable(members, func(i, j int) bool {
-		return CompareCodeUnits(members[i].key, members[j].key) < 0
-	})
-	out = append(out, '{')
-	for i, m := range members {
-		if i > 0 {
-			out = append(out, ',')
-		}
-		out = appendCanonicalString(out, m.key)
-		out = append(out, ':')
-		out = append(out, m.value...)
-	}
 	s.depth--
-	return append(out, '}'), nil
+	return members, nil
+}
+
+// The three helpers below walk CANONICAL bytes — the output of
+// CanonicalizeJSON, which is well-formed by construction — so none of them
+// can fail, and each trusts that. They are what ParseTypeDescriptor uses to
+// see a document member by member with the member names exact: encoding/json
+// matches field names case-insensitively, which is not a closed shape.
+
+// canonicalObjectMembers returns the members of a canonical object.
+func canonicalObjectMembers(canonical []byte) []jsonMember {
+	s := &jsonScanner{in: canonical}
+	members, _ := s.objectMembers() // canonical input: cannot fail
+	return members
+}
+
+// canonicalArrayValues returns the canonical bytes of a canonical array's
+// elements.
+func canonicalArrayValues(canonical []byte) [][]byte {
+	s := &jsonScanner{in: canonical, pos: 1} // past '['
+	var out [][]byte
+	for s.in[s.pos] != ']' {
+		v, _ := s.value(nil) // canonical input: cannot fail
+		out = append(out, v)
+		if s.in[s.pos] == ',' {
+			s.pos++
+		}
+	}
+	return out
+}
+
+// canonicalStringValue decodes a canonical JSON string.
+func canonicalStringValue(canonical []byte) string {
+	s := &jsonScanner{in: canonical}
+	str, _ := s.str() // canonical input: cannot fail
+	return str
 }
 
 func (s *jsonScanner) array(out []byte) ([]byte, error) {

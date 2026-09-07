@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"math"
 	"sort"
+	"strconv"
 	"strings"
 	"time"
 	"unicode/utf8"
@@ -616,7 +617,10 @@ type EndpointConstraint struct {
 }
 
 // NewEndpointConstraint builds a constraint. conformsTo holds canonical Type
-// URLs with no duplicates; external is a policy or "" for absent.
+// URLs with no duplicates — a set, kept in code-unit order — and external is
+// a policy or "" for absent. The zero EndpointConstraint is the constraint
+// that requires nothing (any in-Scope Bead; external opaque) and is admitted
+// by NewTypeDescriptor as exactly that.
 func NewEndpointConstraint(conformsTo []string, external ExternalPolicy) (EndpointConstraint, error) {
 	urls, err := typeURLList(conformsTo, "endpoint conformsTo")
 	if err != nil {
@@ -628,8 +632,17 @@ func NewEndpointConstraint(conformsTo []string, external ExternalPolicy) (Endpoi
 	return EndpointConstraint{conformsTo: urls, external: external}, nil
 }
 
-// ConformsTo returns a copy of the required Type URLs, in authored order.
+// ConformsTo returns a copy of the required Type URLs, in code-unit order.
 func (c EndpointConstraint) ConformsTo() []string { return append([]string(nil), c.conformsTo...) }
+
+// normalized returns the constraint with a nil (zero-value) conformsTo made
+// the empty set, so the canonical form always carries an array.
+func (c EndpointConstraint) normalized() EndpointConstraint {
+	if c.conformsTo == nil {
+		c.conformsTo = []string{}
+	}
+	return c
+}
 
 // External returns the declared policy and whether the member is present.
 func (c EndpointConstraint) External() (ExternalPolicy, bool) { return c.external, c.external != "" }
@@ -706,14 +719,16 @@ type TypeDescriptorSpec struct {
 	Description string
 	// Describes is the Resource category.
 	Describes ResourceKind
-	// ConformsTo lists direct parent Type IDs, unique, in no significant order
-	// — but the order is kept as authored and is part of the fingerprint.
+	// ConformsTo lists direct parent Type IDs, unique, in no significant
+	// order: it is a set (the bundle's uniqueItems), and the canonical form
+	// sorts it by code unit, so reordered parents fingerprint identically.
 	ConformsTo []string
 	// PropertiesSchema is the absolute URL of the properties JSON Schema; ""
 	// means absent.
 	PropertiesSchema string
 	// Source and Target are required for a Link Type and must be nil for a
-	// Bead Type.
+	// Bead Type. A pointer to the zero EndpointConstraint is the constraint
+	// that requires nothing.
 	Source, Target *EndpointConstraint
 	// OwnsOutgoing declares the owned Link Types of a Bead Type; empty means
 	// the member is absent. Must be empty for a Link Type.
@@ -771,7 +786,7 @@ func NewTypeDescriptor(spec TypeDescriptorSpec) (TypeDescriptor, error) {
 		if len(spec.OwnsOutgoing) != 0 {
 			return TypeDescriptor{}, fmt.Errorf("%w: descriptor %s: a Link Type cannot own outgoing Links", ErrValidation, spec.ID)
 		}
-		d.source, d.target = *spec.Source, *spec.Target
+		d.source, d.target = spec.Source.normalized(), spec.Target.normalized()
 	case KindBead:
 		if spec.Source != nil || spec.Target != nil {
 			return TypeDescriptor{}, fmt.Errorf("%w: descriptor %s: a Bead Type has no endpoint constraints", ErrValidation, spec.ID)
@@ -827,8 +842,9 @@ func optionalString(s string) *string {
 	return &s
 }
 
-// endpointWire renders a constraint; typeURLList never returns a nil slice,
-// so an empty conformsTo encodes as [] rather than null.
+// endpointWire renders a constraint; the descriptor holds normalized
+// constraints (never a nil conformsTo), so an empty set encodes as [] and
+// never as null.
 func endpointWire(c EndpointConstraint) *endpointConstraintWire {
 	w := &endpointConstraintWire{ConformsTo: c.conformsTo}
 	if c.external != "" {
@@ -864,73 +880,116 @@ func descriptorCanonicalJSON(d TypeDescriptor) []byte {
 	return canonical
 }
 
+// memberShape is the JSON type a descriptor member must have: the first byte
+// its canonical value begins with, and the type's name for diagnostics.
+type memberShape struct {
+	first byte
+	name  string
+}
+
+var (
+	jsonString = memberShape{'"', "string"}
+	jsonArray  = memberShape{'[', "array"}
+	jsonObject = memberShape{'{', "object"}
+)
+
+// descriptorMembers is the closed shape of a descriptor document: every
+// member the bundle's typeDescriptor definition declares, with the JSON type
+// it must have. Nothing here is nullable; presence and the conditional
+// members are decided by ParseTypeDescriptor and NewTypeDescriptor.
+var descriptorMembers = map[string]memberShape{
+	"id": jsonString, "name": jsonString, "description": jsonString, "describes": jsonString,
+	"conformsTo": jsonArray, "propertiesSchema": jsonString, "source": jsonObject, "target": jsonObject,
+	"ownsOutgoing": jsonObject,
+}
+
 // ParseTypeDescriptor admits a descriptor from its JSON representation — a
-// catalog file, the wire — under the closed shape: unknown members, duplicate
-// keys and every law NewTypeDescriptor enforces are refused.
+// catalog file, the wire — under the closed shape: member names are exact
+// and case-sensitive (a stranger, "ID" and "conformsto" included, is
+// refused), a duplicate key is refused, every present member has the type
+// the bundle gives it and is never null (absent and null are different
+// things, and the bundle admits only absence), the required members are
+// present, a Bead Type carries no endpoint constraint and a Link Type no
+// ownsOutgoing, propertiesSchema when present is an absolute URL, and every
+// law NewTypeDescriptor enforces holds.
+//
+// DECISION: description "" is read as absent. The bundle permits the empty
+// string, the canonical form has no way to carry it apart from absence, and
+// nothing in the protocol distinguishes the two; propertiesSchema "" is
+// refused instead, because an empty string is not the absolute URL the
+// member must be.
 func ParseTypeDescriptor(raw []byte) (TypeDescriptor, error) {
 	canonical, err := CanonicalizeJSON(raw)
 	if err != nil {
 		return TypeDescriptor{}, fmt.Errorf("%w: descriptor: %s", ErrValidation, reason(err))
 	}
-	var w struct {
-		ID               *string          `json:"id"`
-		Name             *string          `json:"name"`
-		Description      *string          `json:"description"`
-		Describes        *ResourceKind    `json:"describes"`
-		ConformsTo       *[]string        `json:"conformsTo"`
-		PropertiesSchema *string          `json:"propertiesSchema"`
-		Source           *json.RawMessage `json:"source"`
-		Target           *json.RawMessage `json:"target"`
-		OwnsOutgoing     *map[string]struct {
-			Label *string `json:"label"`
-			Max   *int    `json:"max"`
-		} `json:"ownsOutgoing"`
+	fail := func(format string, args ...any) (TypeDescriptor, error) {
+		return TypeDescriptor{}, fmt.Errorf("%w: descriptor: %s", ErrValidation, fmt.Sprintf(format, args...))
 	}
-	dec := json.NewDecoder(bytes.NewReader(canonical))
-	dec.DisallowUnknownFields()
-	if err := dec.Decode(&w); err != nil {
-		return TypeDescriptor{}, fmt.Errorf("%w: descriptor: %v", ErrValidation, err)
+	if canonical[0] != '{' {
+		return fail("must be a JSON object")
 	}
-	if w.ID == nil || w.Name == nil || w.Describes == nil || w.ConformsTo == nil {
-		return TypeDescriptor{}, fmt.Errorf("%w: descriptor: id, name, describes and conformsTo are required", ErrValidation)
+	members := map[string][]byte{}
+	for _, m := range canonicalObjectMembers(canonical) {
+		want, known := descriptorMembers[m.key]
+		if !known {
+			return fail("unknown member %q (member names are exact and case-sensitive)", m.key)
+		}
+		if m.value[0] == 'n' {
+			return fail("member %q must not be null (omit it instead)", m.key)
+		}
+		if m.value[0] != want.first {
+			return fail("member %q must be a JSON %s", m.key, want.name)
+		}
+		members[m.key] = m.value
 	}
-	spec := TypeDescriptorSpec{ID: *w.ID, Name: *w.Name, Describes: *w.Describes, ConformsTo: *w.ConformsTo}
-	if w.Description != nil {
-		spec.Description = *w.Description
+	for _, required := range []string{"id", "name", "describes", "conformsTo"} {
+		if _, ok := members[required]; !ok {
+			return fail("member %q is required", required)
+		}
 	}
-	if w.PropertiesSchema != nil {
-		spec.PropertiesSchema = *w.PropertiesSchema
+	spec := TypeDescriptorSpec{
+		ID:        canonicalStringValue(members["id"]),
+		Name:      canonicalStringValue(members["name"]),
+		Describes: ResourceKind(canonicalStringValue(members["describes"])),
 	}
-	if w.Source != nil {
-		c, err := parseEndpointConstraint(*w.Source, "source")
+	if v, ok := members["description"]; ok {
+		spec.Description = canonicalStringValue(v)
+	}
+	if v, ok := members["propertiesSchema"]; ok {
+		spec.PropertiesSchema = canonicalStringValue(v)
+		if spec.PropertiesSchema == "" {
+			return fail("propertiesSchema must be an absolute URL when present, not \"\"")
+		}
+	}
+	if spec.ConformsTo, err = parseTypeIDArray(members["conformsTo"], "conformsTo"); err != nil {
+		return TypeDescriptor{}, err
+	}
+	for _, end := range []string{"source", "target"} {
+		v, ok := members[end]
+		if !ok {
+			continue
+		}
+		if spec.Describes == KindBead {
+			return fail("a Bead Type has no %s member", end)
+		}
+		c, err := parseEndpointConstraint(v, end)
 		if err != nil {
 			return TypeDescriptor{}, err
 		}
-		spec.Source = &c
-	}
-	if w.Target != nil {
-		c, err := parseEndpointConstraint(*w.Target, "target")
-		if err != nil {
-			return TypeDescriptor{}, err
+		if end == "source" {
+			spec.Source = &c
+		} else {
+			spec.Target = &c
 		}
-		spec.Target = &c
 	}
-	if w.OwnsOutgoing != nil {
-		if len(*w.OwnsOutgoing) == 0 {
-			return TypeDescriptor{}, fmt.Errorf("%w: descriptor: ownsOutgoing must declare at least one Link Type when present", ErrValidation)
+	if v, ok := members["ownsOutgoing"]; ok {
+		entries := canonicalObjectMembers(v)
+		if len(entries) == 0 {
+			return fail("ownsOutgoing must declare at least one Link Type when present")
 		}
-		for url, entry := range *w.OwnsOutgoing {
-			if entry.Max == nil {
-				return TypeDescriptor{}, fmt.Errorf("%w: descriptor: ownsOutgoing %s: max is required", ErrValidation, url)
-			}
-			label := ""
-			if entry.Label != nil {
-				if *entry.Label == "" {
-					return TypeDescriptor{}, fmt.Errorf("%w: descriptor: ownsOutgoing %s: label must be nonempty when present", ErrValidation, url)
-				}
-				label = *entry.Label
-			}
-			decl, err := NewOwnedLinkDecl(url, label, *entry.Max)
+		for _, entry := range entries {
+			decl, err := parseOwnedLinkDecl(entry.key, entry.value)
 			if err != nil {
 				return TypeDescriptor{}, err
 			}
@@ -940,31 +999,96 @@ func ParseTypeDescriptor(raw []byte) (TypeDescriptor, error) {
 	return NewTypeDescriptor(spec)
 }
 
-func parseEndpointConstraint(raw json.RawMessage, member string) (EndpointConstraint, error) {
-	var w struct {
-		ConformsTo *[]string       `json:"conformsTo"`
-		External   *ExternalPolicy `json:"external"`
-	}
-	dec := json.NewDecoder(bytes.NewReader(raw))
-	dec.DisallowUnknownFields()
-	if err := dec.Decode(&w); err != nil {
-		return EndpointConstraint{}, fmt.Errorf("%w: descriptor %s: %v", ErrValidation, member, err)
-	}
-	if w.ConformsTo == nil {
-		return EndpointConstraint{}, fmt.Errorf("%w: descriptor %s: conformsTo is required", ErrValidation, member)
-	}
-	external := ExternalPolicy("")
-	if w.External != nil {
-		external = *w.External
-		if external == "" {
-			return EndpointConstraint{}, fmt.Errorf("%w: descriptor %s: external policy must be none, opaque or bead", ErrValidation, member)
+// parseTypeIDArray reads a canonical array whose elements must all be
+// strings; the URLs themselves are validated by typeURLList later.
+func parseTypeIDArray(canonical []byte, what string) ([]string, error) {
+	var out []string
+	for _, v := range canonicalArrayValues(canonical) {
+		if v[0] != '"' {
+			return nil, fmt.Errorf("%w: descriptor: %s must be an array of Type URL strings", ErrValidation, what)
 		}
+		out = append(out, canonicalStringValue(v))
 	}
-	return NewEndpointConstraint(*w.ConformsTo, external)
+	return out, nil
 }
 
-// typeURLList validates a Type-ID array: canonical URLs, no duplicates,
-// authored order preserved.
+func parseEndpointConstraint(canonical []byte, member string) (EndpointConstraint, error) {
+	fail := func(format string, args ...any) (EndpointConstraint, error) {
+		return EndpointConstraint{}, fmt.Errorf("%w: descriptor %s: %s", ErrValidation, member, fmt.Sprintf(format, args...))
+	}
+	var conformsTo []string
+	hasConformsTo, external := false, ExternalPolicy("")
+	for _, m := range canonicalObjectMembers(canonical) {
+		switch m.key {
+		case "conformsTo":
+			if m.value[0] != '[' {
+				return fail("conformsTo must be an array of Type URLs, never null")
+			}
+			list, err := parseTypeIDArray(m.value, member+".conformsTo")
+			if err != nil {
+				return EndpointConstraint{}, err
+			}
+			conformsTo, hasConformsTo = list, true
+		case "external":
+			if m.value[0] != '"' {
+				return fail("external must be a string policy, never null")
+			}
+			external = ExternalPolicy(canonicalStringValue(m.value))
+			if external == "" {
+				return fail("external policy must be none, opaque or bead")
+			}
+		default:
+			return fail("unknown member %q (member names are exact and case-sensitive)", m.key)
+		}
+	}
+	if !hasConformsTo {
+		return fail("conformsTo is required")
+	}
+	return NewEndpointConstraint(conformsTo, external)
+}
+
+func parseOwnedLinkDecl(url string, canonical []byte) (OwnedLinkDecl, error) {
+	fail := func(format string, args ...any) (OwnedLinkDecl, error) {
+		return OwnedLinkDecl{}, fmt.Errorf("%w: descriptor: ownsOutgoing %s: %s", ErrValidation, url, fmt.Sprintf(format, args...))
+	}
+	if canonical[0] != '{' {
+		return fail("declaration must be an object, never null")
+	}
+	var max int
+	hasMax, label := false, ""
+	for _, m := range canonicalObjectMembers(canonical) {
+		switch m.key {
+		case "max":
+			// The canonical form spells every integral number as a plain
+			// integer (1.0 and 1e0 are "1"), so a canonical value that
+			// ParseInt refuses is fractional, out of range, or not a number.
+			n, err := strconv.ParseInt(string(m.value), 10, 0)
+			if err != nil {
+				return fail("max must be an integer within the platform int range, got %s", m.value)
+			}
+			max, hasMax = int(n), true
+		case "label":
+			if m.value[0] != '"' {
+				return fail("label must be a string, never null")
+			}
+			label = canonicalStringValue(m.value)
+			if label == "" {
+				return fail("label must be nonempty when present")
+			}
+		default:
+			return fail("unknown member %q (member names are exact and case-sensitive)", m.key)
+		}
+	}
+	if !hasMax {
+		return fail("max is required")
+	}
+	return NewOwnedLinkDecl(url, label, max)
+}
+
+// typeURLList validates a Type-ID array — canonical URLs, no duplicates —
+// and returns it in code-unit order. The lists are sets (the bundle's
+// uniqueItems), so the canonical form, and with it the fingerprint, is
+// independent of the authored order (P0 council, 2026-09-07).
 func typeURLList(urls []string, what string) ([]string, error) {
 	out := make([]string, 0, len(urls))
 	seen := make(map[string]struct{}, len(urls))
@@ -978,6 +1102,7 @@ func typeURLList(urls []string, what string) ([]string, error) {
 		seen[u] = struct{}{}
 		out = append(out, u)
 	}
+	sort.SliceStable(out, func(i, j int) bool { return CompareCodeUnits(out[i], out[j]) < 0 })
 	return out, nil
 }
 
@@ -993,7 +1118,7 @@ func (t TypeDescriptor) Description() (string, bool) { return t.description, t.d
 // Describes is the Resource category.
 func (t TypeDescriptor) Describes() ResourceKind { return t.describes }
 
-// ConformsTo returns a copy of the direct parent Type IDs, in authored order.
+// ConformsTo returns a copy of the direct parent Type IDs, in code-unit order.
 func (t TypeDescriptor) ConformsTo() []string { return append([]string(nil), t.conformsTo...) }
 
 // PropertiesSchema returns the schema URL and whether one is present.
@@ -1036,8 +1161,10 @@ func (t TypeDescriptor) CanonicalJSON() []byte { return append([]byte(nil), t.ca
 // DECISION: the fingerprint covers the descriptor alone, byte-level after
 // canonicalization. The pinned spec's "internal integrity fingerprint" covers
 // the whole contract closure (schemas included), which v0 does not fetch; a
-// closure-inclusive fingerprint is a P1/P3 extension of this definition, and
-// conformsTo order is significant to it because arrays are ordered in JSON.
+// closure-inclusive fingerprint is a P1/P3 extension of this definition. The
+// conformsTo sets (the descriptor's and each endpoint's) are sorted by code
+// unit in the canonical form, so the authored order is NOT significant to
+// it: two descriptors that differ only in parent order are one contract.
 func (t TypeDescriptor) Fingerprint() string { return t.fingerprint }
 
 // IsZero reports a descriptor no constructor produced.

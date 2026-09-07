@@ -585,10 +585,40 @@ func TestTypeDescriptorParseAndCanonicalForm(t *testing.T) {
 	if err != nil || reordered.Fingerprint() != bead.Fingerprint() {
 		t.Fatalf("ownsOutgoing order must not change the fingerprint: %v", err)
 	}
+	// conformsTo is a SET: the canonical form sorts it by code unit, so the
+	// authored order does not reach the fingerprint.
 	ab, _ := graphops.NewTypeDescriptor(graphops.TypeDescriptorSpec{ID: "https://work.example/types/t", Name: "T", Describes: graphops.KindBead, ConformsTo: []string{"https://work.example/types/a", "https://work.example/types/b"}})
 	ba, _ := graphops.NewTypeDescriptor(graphops.TypeDescriptorSpec{ID: "https://work.example/types/t", Name: "T", Describes: graphops.KindBead, ConformsTo: []string{"https://work.example/types/b", "https://work.example/types/a"}})
-	if ab.Fingerprint() == ba.Fingerprint() || ab.ConformsTo()[0] != "https://work.example/types/a" {
-		t.Fatal("conformsTo is kept in authored order and is part of the fingerprint")
+	if ab.Fingerprint() != ba.Fingerprint() || ab.ConformsTo()[0] != "https://work.example/types/a" || ba.ConformsTo()[0] != "https://work.example/types/a" {
+		t.Fatal("conformsTo is a set: reordered parents must fingerprint identically and read back sorted")
+	}
+	wantSorted := `{"conformsTo":["https://work.example/types/a","https://work.example/types/b"],"describes":"bead","id":"https://work.example/types/t","name":"T"}`
+	if got := string(ba.CanonicalJSON()); got != wantSorted {
+		t.Fatalf("canonical conformsTo\n got %s\nwant %s", got, wantSorted)
+	}
+	// Code-unit order, not locale order: uppercase sorts before lowercase.
+	cased, _ := graphops.NewTypeDescriptor(graphops.TypeDescriptorSpec{ID: "https://work.example/types/t", Name: "T", Describes: graphops.KindBead, ConformsTo: []string{"https://work.example/types/b", "https://work.example/types/B"}})
+	if got := cased.ConformsTo(); got[0] != "https://work.example/types/B" || got[1] != "https://work.example/types/b" {
+		t.Fatalf("conformsTo must sort by code unit: %v", got)
+	}
+	// The same law for an endpoint's conformsTo, and through the parser.
+	const linkAB = `{"id":"https://work.example/types/l","name":"L","describes":"link","conformsTo":["https://work.example/types/y","https://work.example/types/x"],"source":{"conformsTo":["https://work.example/types/b","https://work.example/types/a"]},"target":{"conformsTo":[]}}`
+	const linkBA = `{"id":"https://work.example/types/l","name":"L","describes":"link","conformsTo":["https://work.example/types/x","https://work.example/types/y"],"source":{"conformsTo":["https://work.example/types/a","https://work.example/types/b"]},"target":{"conformsTo":[]}}`
+	lab, err := graphops.ParseTypeDescriptor([]byte(linkAB))
+	if err != nil {
+		t.Fatal(err)
+	}
+	lba, err := graphops.ParseTypeDescriptor([]byte(linkBA))
+	if err != nil {
+		t.Fatal(err)
+	}
+	wantLink := `{"conformsTo":["https://work.example/types/x","https://work.example/types/y"],"describes":"link","id":"https://work.example/types/l","name":"L","source":{"conformsTo":["https://work.example/types/a","https://work.example/types/b"]},"target":{"conformsTo":[]}}`
+	if lab.Fingerprint() != lba.Fingerprint() || string(lab.CanonicalJSON()) != wantLink {
+		t.Fatalf("endpoint conformsTo must be sorted in the canonical form:\n got %s\nwant %s", lab.CanonicalJSON(), wantLink)
+	}
+	labSrc, _ := lab.Source()
+	if got := labSrc.ConformsTo(); got[0] != "https://work.example/types/a" {
+		t.Fatalf("endpoint conformsTo must read back sorted: %v", got)
 	}
 	// Accessors return copies.
 	ab.ConformsTo()[0] = "mutated"
@@ -633,13 +663,68 @@ func TestTypeDescriptorRefusals(t *testing.T) {
 		"target bad external":         `{"id":"https://work.example/types/x","name":"X","describes":"link","conformsTo":[],"source":{"conformsTo":[]},"target":{"conformsTo":[],"external":"maybe"}}`,
 		"target bad parent":           `{"id":"https://work.example/types/x","name":"X","describes":"link","conformsTo":[],"source":{"conformsTo":[]},"target":{"conformsTo":["x"]}}`,
 		"not an object":               `[]`,
+		"a string":                    `"x"`,
 		"malformed":                   `{"id":`,
 		"duplicate key":               `{"id":"https://work.example/types/x","id":"https://work.example/types/y","name":"X","describes":"bead","conformsTo":[]}`,
 		"wrong member type":           `{"id":"https://work.example/types/x","name":"X","describes":"bead","conformsTo":"https://work.example/types/a"}`,
+		// Member names are exact and case-sensitive: encoding/json's
+		// case-insensitive matching is not a closed shape.
+		"case-variant id":              `{"ID":"https://work.example/types/x","name":"X","describes":"bead","conformsTo":[]}`,
+		"case-variant duplicate":       `{"id":"https://work.example/types/x","Id":"https://work.example/types/y","name":"X","describes":"bead","conformsTo":[]}`,
+		"case-variant conformsTo":      `{"id":"https://work.example/types/x","name":"X","describes":"bead","conformsto":[]}`,
+		"case-variant endpoint member": `{"id":"https://work.example/types/x","name":"X","describes":"link","conformsTo":[],"source":{"ConformsTo":[]},"target":{"conformsTo":[]}}`,
+		"case-variant owned member":    `{"id":"https://work.example/types/x","name":"X","describes":"bead","conformsTo":[],"ownsOutgoing":{"https://work.example/types/c":{"Max":1}}}`,
+		// Absent and null are different things; the bundle admits only absence.
+		"id null":                     `{"id":null,"name":"X","describes":"bead","conformsTo":[]}`,
+		"name null":                   `{"id":"https://work.example/types/x","name":null,"describes":"bead","conformsTo":[]}`,
+		"describes null":              `{"id":"https://work.example/types/x","name":"X","describes":null,"conformsTo":[]}`,
+		"conformsTo null":             `{"id":"https://work.example/types/x","name":"X","describes":"bead","conformsTo":null}`,
+		"conformsTo null element":     `{"id":"https://work.example/types/x","name":"X","describes":"bead","conformsTo":[null]}`,
+		"conformsTo number element":   `{"id":"https://work.example/types/x","name":"X","describes":"bead","conformsTo":[1]}`,
+		"description null":            `{"id":"https://work.example/types/x","name":"X","describes":"bead","conformsTo":[],"description":null}`,
+		"propertiesSchema null":       `{"id":"https://work.example/types/x","name":"X","describes":"bead","conformsTo":[],"propertiesSchema":null}`,
+		"propertiesSchema empty":      `{"id":"https://work.example/types/x","name":"X","describes":"bead","conformsTo":[],"propertiesSchema":""}`,
+		"source null on bead":         `{"id":"https://work.example/types/x","name":"X","describes":"bead","conformsTo":[],"source":null}`,
+		"target null on bead":         `{"id":"https://work.example/types/x","name":"X","describes":"bead","conformsTo":[],"target":null}`,
+		"target null on link":         `{"id":"https://work.example/types/x","name":"X","describes":"link","conformsTo":[],"source":{"conformsTo":[]},"target":null}`,
+		"source not an object":        `{"id":"https://work.example/types/x","name":"X","describes":"link","conformsTo":[],"source":[],"target":{"conformsTo":[]}}`,
+		"source conformsTo null":      `{"id":"https://work.example/types/x","name":"X","describes":"link","conformsTo":[],"source":{"conformsTo":null},"target":{"conformsTo":[]}}`,
+		"source conformsTo string":    `{"id":"https://work.example/types/x","name":"X","describes":"link","conformsTo":[],"source":{"conformsTo":"x"},"target":{"conformsTo":[]}}`,
+		"source conformsTo null elem": `{"id":"https://work.example/types/x","name":"X","describes":"link","conformsTo":[],"source":{"conformsTo":[null]},"target":{"conformsTo":[]}}`,
+		"target external null":        `{"id":"https://work.example/types/x","name":"X","describes":"link","conformsTo":[],"source":{"conformsTo":[]},"target":{"conformsTo":[],"external":null}}`,
+		"target external number":      `{"id":"https://work.example/types/x","name":"X","describes":"link","conformsTo":[],"source":{"conformsTo":[]},"target":{"conformsTo":[],"external":1}}`,
+		"ownsOutgoing null":           `{"id":"https://work.example/types/x","name":"X","describes":"bead","conformsTo":[],"ownsOutgoing":null}`,
+		"ownsOutgoing array":          `{"id":"https://work.example/types/x","name":"X","describes":"bead","conformsTo":[],"ownsOutgoing":[]}`,
+		"ownsOutgoing entry null":     `{"id":"https://work.example/types/x","name":"X","describes":"bead","conformsTo":[],"ownsOutgoing":{"https://work.example/types/c":null}}`,
+		"ownsOutgoing entry number":   `{"id":"https://work.example/types/x","name":"X","describes":"bead","conformsTo":[],"ownsOutgoing":{"https://work.example/types/c":1}}`,
+		"ownsOutgoing max null":       `{"id":"https://work.example/types/x","name":"X","describes":"bead","conformsTo":[],"ownsOutgoing":{"https://work.example/types/c":{"max":null}}}`,
+		"ownsOutgoing max string":     `{"id":"https://work.example/types/x","name":"X","describes":"bead","conformsTo":[],"ownsOutgoing":{"https://work.example/types/c":{"max":"1"}}}`,
+		"ownsOutgoing max fractional": `{"id":"https://work.example/types/x","name":"X","describes":"bead","conformsTo":[],"ownsOutgoing":{"https://work.example/types/c":{"max":1.5}}}`,
+		"ownsOutgoing max huge":       `{"id":"https://work.example/types/x","name":"X","describes":"bead","conformsTo":[],"ownsOutgoing":{"https://work.example/types/c":{"max":1e21}}}`,
+		"ownsOutgoing max overflow":   `{"id":"https://work.example/types/x","name":"X","describes":"bead","conformsTo":[],"ownsOutgoing":{"https://work.example/types/c":{"max":99999999999999999999}}}`,
+		"ownsOutgoing max negative":   `{"id":"https://work.example/types/x","name":"X","describes":"bead","conformsTo":[],"ownsOutgoing":{"https://work.example/types/c":{"max":-1}}}`,
+		"ownsOutgoing label null":     `{"id":"https://work.example/types/x","name":"X","describes":"bead","conformsTo":[],"ownsOutgoing":{"https://work.example/types/c":{"label":null,"max":1}}}`,
+		"ownsOutgoing label number":   `{"id":"https://work.example/types/x","name":"X","describes":"bead","conformsTo":[],"ownsOutgoing":{"https://work.example/types/c":{"label":1,"max":1}}}`,
+		"name number":                 `{"id":"https://work.example/types/x","name":1,"describes":"bead","conformsTo":[]}`,
+		"describes number":            `{"id":"https://work.example/types/x","name":"X","describes":1,"conformsTo":[]}`,
+		"conformsTo object":           `{"id":"https://work.example/types/x","name":"X","describes":"bead","conformsTo":{}}`,
+		"missing id":                  `{"name":"X","describes":"bead","conformsTo":[]}`,
+		"missing describes":           `{"id":"https://work.example/types/x","name":"X","conformsTo":[]}`,
 	} {
 		if _, err := graphops.ParseTypeDescriptor([]byte(in)); !errors.Is(err, graphops.ErrValidation) {
 			t.Errorf("descriptor %s: want ErrValidation, got %v", name, err)
 		}
+	}
+	// Schema-valid integer spellings decode exactly; description "" is absent.
+	spelled, err := graphops.ParseTypeDescriptor([]byte(`{"id":"https://work.example/types/x","name":"X","description":"","describes":"bead","conformsTo":[],"ownsOutgoing":{"https://work.example/types/c":{"max":1.0},"https://work.example/types/d":{"max":2e0},"https://work.example/types/e":{"max":300e-2}}}`))
+	if err != nil {
+		t.Fatalf("integral spellings must decode: %v", err)
+	}
+	if owns := spelled.OwnsOutgoing(); len(owns) != 3 || owns[0].Max() != 1 || owns[1].Max() != 2 || owns[2].Max() != 3 {
+		t.Fatalf("decoded max values: %+v", owns)
+	}
+	if _, has := spelled.Description(); has {
+		t.Fatal(`description "" reads as absent`)
 	}
 	// Constructor-level refusals not reachable through JSON.
 	c, _ := graphops.NewEndpointConstraint(nil, "")
@@ -683,6 +768,148 @@ func TestTypeDescriptorRefusals(t *testing.T) {
 	}
 	if graphops.ExternalPolicy("").Valid() {
 		t.Error("empty policy should not be valid")
+	}
+}
+
+// descriptorShape is the bundle's typeDescriptor definition in miniature —
+// closed, every member typed, the conditionals on describes — decoded from
+// canonical bytes with encoding/json's strict mode plus a null scan. It is
+// what stands in for a JSON Schema validator here (graphops imports nothing
+// that could run the bundle): the shape the constructor promises to emit.
+func assertClosedDescriptorShape(t *testing.T, canonical []byte) {
+	t.Helper()
+	var members map[string]json.RawMessage
+	if err := json.Unmarshal(canonical, &members); err != nil {
+		t.Fatalf("canonical bytes are not an object: %v", err)
+	}
+	var scanNull func(prefix string, raw json.RawMessage)
+	scanNull = func(prefix string, raw json.RawMessage) {
+		if string(raw) == "null" {
+			t.Errorf("%s: the canonical form must never carry null", prefix)
+		}
+		var nested map[string]json.RawMessage
+		if len(raw) > 0 && raw[0] == '{' && json.Unmarshal(raw, &nested) == nil {
+			for k, v := range nested {
+				scanNull(prefix+"."+k, v)
+			}
+		}
+	}
+	for k, v := range members {
+		scanNull(k, v)
+	}
+	type endpoint struct {
+		ConformsTo *[]string `json:"conformsTo"`
+		External   *string   `json:"external"`
+	}
+	var shape struct {
+		ID               *string   `json:"id"`
+		Name             *string   `json:"name"`
+		Description      *string   `json:"description"`
+		Describes        *string   `json:"describes"`
+		ConformsTo       *[]string `json:"conformsTo"`
+		PropertiesSchema *string   `json:"propertiesSchema"`
+		Source           *endpoint `json:"source"`
+		Target           *endpoint `json:"target"`
+		OwnsOutgoing     *map[string]struct {
+			Label *string `json:"label"`
+			Max   *int    `json:"max"`
+		} `json:"ownsOutgoing"`
+	}
+	dec := json.NewDecoder(strings.NewReader(string(canonical)))
+	dec.DisallowUnknownFields()
+	if err := dec.Decode(&shape); err != nil {
+		t.Fatalf("canonical bytes do not fit the closed shape: %v", err)
+	}
+	if shape.ID == nil || shape.Name == nil || *shape.Name == "" || shape.Describes == nil || shape.ConformsTo == nil {
+		t.Fatalf("a required member is missing or empty in %s", canonical)
+	}
+	if shape.PropertiesSchema != nil && *shape.PropertiesSchema == "" {
+		t.Errorf("propertiesSchema must not be empty when present")
+	}
+	if shape.Description != nil && *shape.Description == "" {
+		t.Errorf("description must be omitted rather than empty")
+	}
+	checkEndpoint := func(name string, e *endpoint) {
+		if e == nil || e.ConformsTo == nil {
+			t.Errorf("%s: a Link Type's endpoint constraint must be present with an array conformsTo", name)
+			return
+		}
+		if e.External != nil && !graphops.ExternalPolicy(*e.External).Valid() {
+			t.Errorf("%s: external %q is not a policy", name, *e.External)
+		}
+	}
+	switch *shape.Describes {
+	case "link":
+		checkEndpoint("source", shape.Source)
+		checkEndpoint("target", shape.Target)
+		if shape.OwnsOutgoing != nil {
+			t.Errorf("a Link Type must not carry ownsOutgoing")
+		}
+	case "bead":
+		if shape.Source != nil || shape.Target != nil {
+			t.Errorf("a Bead Type must not carry endpoint constraints")
+		}
+		if shape.OwnsOutgoing != nil {
+			if len(*shape.OwnsOutgoing) == 0 {
+				t.Errorf("ownsOutgoing must be omitted rather than empty")
+			}
+			for url, decl := range *shape.OwnsOutgoing {
+				if decl.Max == nil || *decl.Max < 1 || (decl.Label != nil && *decl.Label == "") {
+					t.Errorf("ownsOutgoing %s: max must be a positive integer and label nonempty when present", url)
+				}
+			}
+		}
+	default:
+		t.Errorf("describes %q is not bead or link", *shape.Describes)
+	}
+}
+
+// Constructor → canonical bytes → closed shape → parser: every descriptor
+// the constructor admits serializes to a document the bundle's shape accepts
+// and the parser reads back to the same fingerprint — the zero
+// EndpointConstraint included, which used to serialize conformsTo as null.
+func TestTypeDescriptorRoundTripsThroughItsCanonicalForm(t *testing.T) {
+	const a, b, c = "https://work.example/types/a", "https://work.example/types/b", "https://work.example/types/c"
+	anyBead, _ := graphops.NewEndpointConstraint(nil, "")
+	none, _ := graphops.NewEndpointConstraint([]string{b, a}, graphops.ExternalNone)
+	beadShaped, _ := graphops.NewEndpointConstraint([]string{a}, graphops.ExternalBead)
+	cites8, _ := graphops.NewOwnedLinkDecl(c, "cites — α", 8)
+	blocks2, _ := graphops.NewOwnedLinkDecl(b, "", 2)
+	for name, spec := range map[string]graphops.TypeDescriptorSpec{
+		"link with zero endpoints":       {ID: "https://work.example/types/l0", Name: "L0", Describes: graphops.KindLink, Source: &graphops.EndpointConstraint{}, Target: &graphops.EndpointConstraint{}},
+		"link with constructed anything": {ID: "https://work.example/types/l1", Name: "L1", Describes: graphops.KindLink, Source: &anyBead, Target: &anyBead},
+		"link with policies":             {ID: "https://work.example/types/l2", Name: "L2", Description: "d", Describes: graphops.KindLink, ConformsTo: []string{b, a}, PropertiesSchema: "https://work.example/schemas/l2", Source: &none, Target: &beadShaped},
+		"bead minimal":                   {ID: "https://work.example/types/b0", Name: "B0", Describes: graphops.KindBead},
+		"bead owning":                    {ID: "https://work.example/types/b1", Name: "B1 ✓", Description: "owns", Describes: graphops.KindBead, ConformsTo: []string{c, a, b}, OwnsOutgoing: []graphops.OwnedLinkDecl{cites8, blocks2}},
+	} {
+		built, err := graphops.NewTypeDescriptor(spec)
+		if err != nil {
+			t.Errorf("%s: constructor refused: %v", name, err)
+			continue
+		}
+		canonical := built.CanonicalJSON()
+		assertClosedDescriptorShape(t, canonical)
+		parsed, err := graphops.ParseTypeDescriptor(canonical)
+		if err != nil {
+			t.Errorf("%s: the parser refused the constructor's own canonical form %s: %v", name, canonical, err)
+			continue
+		}
+		if parsed.Fingerprint() != built.Fingerprint() || string(parsed.CanonicalJSON()) != string(canonical) {
+			t.Errorf("%s: round trip changed the descriptor\n built %s\nparsed %s", name, canonical, parsed.CanonicalJSON())
+		}
+		if strings.Contains(string(canonical), "null") {
+			t.Errorf("%s: canonical form carries null: %s", name, canonical)
+		}
+	}
+	// The zero constraint and the constructed empty constraint are one value.
+	zero, _ := graphops.NewTypeDescriptor(graphops.TypeDescriptorSpec{ID: "https://work.example/types/l", Name: "L", Describes: graphops.KindLink, Source: &graphops.EndpointConstraint{}, Target: &graphops.EndpointConstraint{}})
+	built, _ := graphops.NewTypeDescriptor(graphops.TypeDescriptorSpec{ID: "https://work.example/types/l", Name: "L", Describes: graphops.KindLink, Source: &anyBead, Target: &anyBead})
+	if zero.Fingerprint() != built.Fingerprint() || !strings.Contains(string(zero.CanonicalJSON()), `"source":{"conformsTo":[]}`) {
+		t.Fatalf("zero EndpointConstraint must canonicalize as the empty set: %s", zero.CanonicalJSON())
+	}
+	src, _ := zero.Source()
+	if got := src.ConformsTo(); len(got) != 0 {
+		t.Fatalf("zero constraint reads back as the empty set: %#v", got)
 	}
 }
 
