@@ -945,6 +945,11 @@ func TestLedgerEventShapePerKind(t *testing.T) {
 		{"zero at", with(graphops.LedgerPromote, func(s *graphops.LedgerEventSpec) { s.At = time.Time{} }), false, "at is required"},
 		{"bad prev_hash", with(graphops.LedgerPromote, func(s *graphops.LedgerEventSpec) { s.PrevHash = "abc" }), false, "prev_hash must be"},
 		{"bad stored hash", with(graphops.LedgerPromote, func(s *graphops.LedgerEventSpec) { s.Hash = strings.Repeat("0", 64) }), false, "does not verify"},
+		// Sequence numbers are [1, MaxLedgerSeq]: 0 is the range sentinel,
+		// and MaxUint64 is the exhausted counter, never an event.
+		{"seq zero", with(graphops.LedgerPromote, func(s *graphops.LedgerEventSpec) { s.Seq = 0 }), false, "seq must be in 1.."},
+		{"seq exhausted", with(graphops.LedgerPromote, func(s *graphops.LedgerEventSpec) { s.Seq = math.MaxUint64 }), false, "seq must be in 1.."},
+		{"seq at MaxLedgerSeq", with(graphops.LedgerPromote, func(s *graphops.LedgerEventSpec) { s.Seq = graphops.MaxLedgerSeq }), true, ""},
 	} {
 		_, err := graphops.NewLedgerEvent(tc.spec)
 		if tc.ok {
@@ -1026,11 +1031,31 @@ func TestLedgerManifestCovers(t *testing.T) {
 		"bad prev hash":  {ScopeURL: scopeURL, Lineage: mint.Hash(), FirstSeq: 1, LastSeq: 1, PrevHash: "", HeadHash: mint.Hash()},
 		"bad head hash":  {ScopeURL: scopeURL, Lineage: mint.Hash(), FirstSeq: 1, LastSeq: 1, PrevHash: graphops.GenesisHash, HeadHash: "ABC"},
 		"inverted range": {ScopeURL: scopeURL, Lineage: mint.Hash(), FirstSeq: 4, LastSeq: 1, PrevHash: graphops.GenesisHash, HeadHash: mint.Hash()},
+		// The range is [1, MaxLedgerSeq]: 0..MaxUint64 would make last-first+1
+		// wrap to zero, and MaxUint64 is the exhausted counter.
+		"zero first seq":  {ScopeURL: scopeURL, Lineage: mint.Hash(), FirstSeq: 0, LastSeq: 1, PrevHash: graphops.GenesisHash, HeadHash: mint.Hash()},
+		"exhausted range": {ScopeURL: scopeURL, Lineage: mint.Hash(), FirstSeq: 1, LastSeq: math.MaxUint64, PrevHash: graphops.GenesisHash, HeadHash: mint.Hash()},
+		"full wraparound": {ScopeURL: scopeURL, Lineage: mint.Hash(), FirstSeq: 0, LastSeq: math.MaxUint64, PrevHash: graphops.GenesisHash, HeadHash: mint.Hash()},
 	} {
 		_, err := graphops.NewLedgerManifest(spec)
 		wantValidation(t, err, "manifest "+name)
 	}
 	if !(graphops.LedgerManifest{}).IsZero() {
 		t.Fatal("zero manifest must report IsZero")
+	}
+	// The top of the range is a valid single-event manifest.
+	top, err := graphops.NewLedgerManifest(graphops.LedgerManifestSpec{
+		ScopeURL: scopeURL, Lineage: mint.Hash(), FirstSeq: graphops.MaxLedgerSeq, LastSeq: graphops.MaxLedgerSeq, PrevHash: mint.Hash(), HeadHash: mint.Hash(),
+	})
+	if err != nil || top.FirstSeq() != graphops.MaxLedgerSeq {
+		t.Fatalf("manifest at MaxLedgerSeq: %v", err)
+	}
+	// No events is a refusal, never an index panic — on a constructed
+	// manifest and on the zero value alike.
+	wantValidation(t, full.Covers(nil), "Covers(nil)")
+	wantValidation(t, full.Covers([]graphops.LedgerEvent{}), "Covers(empty)")
+	wantValidation(t, (graphops.LedgerManifest{}).Covers(nil), "zero manifest Covers(nil)")
+	if uint64(graphops.MaxLedgerSeq) != math.MaxUint64-1 {
+		t.Fatalf("MaxLedgerSeq = %d, want MaxUint64-1 so that last_seq + 1 is always representable", uint64(graphops.MaxLedgerSeq))
 	}
 }

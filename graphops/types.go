@@ -6,6 +6,7 @@ import (
 	"encoding/hex"
 	"encoding/json"
 	"fmt"
+	"math"
 	"sort"
 	"strings"
 	"time"
@@ -1132,10 +1133,24 @@ func (k LedgerEventKind) Valid() bool {
 	return ok
 }
 
+// MaxLedgerSeq is the largest sequence number a ledger event may carry.
+// Sequence numbers start at 1 (0 is LedgerRange's "unbounded" sentinel and
+// never an event's number), and the counter records last_seq + 1 — the B4
+// graph_ledger_seq row, LedgerApplyResult.NextSeq — so the number after the
+// last event must itself be a uint64: a ledger whose head reached this value
+// is EXHAUSTED and appends nothing more. Refusing the exhaustion at the value
+// is what keeps every seq arithmetic in this package free of wraparound.
+//
+// DECISION: the range [1, MaxUint64-1]. The design gives the counter's
+// formula without the bound it implies; this is that bound, stated so a
+// store's "next_seq" column and this package agree on where a ledger ends.
+const MaxLedgerSeq = math.MaxUint64 - 1
+
 // LedgerEventSpec is the input to NewLedgerEvent: every member of an event
 // except the hash, which is computed — or, when Hash is supplied, verified.
 type LedgerEventSpec struct {
-	// Seq is the event's position in the single-row sequence.
+	// Seq is the event's position in the single-row sequence, in
+	// [1, MaxLedgerSeq].
 	Seq uint64
 	// Kind is the event kind.
 	Kind LedgerEventKind
@@ -1214,6 +1229,9 @@ func NewLedgerEvent(spec LedgerEventSpec) (LedgerEvent, error) {
 	}
 	fail := func(format string, args ...any) (LedgerEvent, error) {
 		return LedgerEvent{}, fmt.Errorf("%w: ledger event seq %d (%s): %s", ErrValidation, spec.Seq, spec.Kind, fmt.Sprintf(format, args...))
+	}
+	if spec.Seq == 0 || spec.Seq > MaxLedgerSeq {
+		return fail("seq must be in 1..%d (the ledger is exhausted beyond MaxLedgerSeq)", uint64(MaxLedgerSeq))
 	}
 	if !isLowerHex(spec.OpID, 32) {
 		return fail("op_id must be 32 lowercase hex digits")
@@ -1359,7 +1377,8 @@ type LedgerManifestSpec struct {
 	ScopeURL string
 	// Lineage is the mint event's hash.
 	Lineage string
-	// FirstSeq and LastSeq bound the range, inclusive.
+	// FirstSeq and LastSeq bound the range, inclusive, within
+	// [1, MaxLedgerSeq].
 	FirstSeq, LastSeq uint64
 	// PrevHash is the hash the first event of the range links to: GenesisHash
 	// when the range starts at the mint event.
@@ -1380,6 +1399,12 @@ func NewLedgerManifest(spec LedgerManifestSpec) (LedgerManifest, error) {
 		if !isLowerHex(h.value, 64) {
 			return LedgerManifest{}, fmt.Errorf("%w: ledger manifest %s must be 64 lowercase hex digits", ErrValidation, h.name)
 		}
+	}
+	if spec.FirstSeq == 0 {
+		return LedgerManifest{}, fmt.Errorf("%w: ledger manifest range must start at seq 1 or later (0 is not an event)", ErrValidation)
+	}
+	if spec.LastSeq > MaxLedgerSeq {
+		return LedgerManifest{}, fmt.Errorf("%w: ledger manifest range ends at seq %d, beyond MaxLedgerSeq (the sequence is exhausted)", ErrValidation, spec.LastSeq)
 	}
 	if spec.LastSeq < spec.FirstSeq {
 		return LedgerManifest{}, fmt.Errorf("%w: ledger manifest range %d..%d is empty", ErrValidation, spec.FirstSeq, spec.LastSeq)
@@ -1422,8 +1447,12 @@ func (m LedgerManifest) IsZero() bool { return m.scopeURL == "" }
 // half (lineage matches the Scope row; the store's head equals PrevHash) is
 // the implementation's.
 func (m LedgerManifest) Covers(events []LedgerEvent) error {
-	want := m.lastSeq - m.firstSeq + 1
-	if uint64(len(events)) != want {
+	if len(events) == 0 {
+		return fmt.Errorf("%w: ledger manifest covers seq %d..%d, no events supplied", ErrValidation, m.firstSeq, m.lastSeq)
+	}
+	// firstSeq ≤ lastSeq ≤ MaxLedgerSeq (NewLedgerManifest), so the span
+	// and the span plus one both fit.
+	if want := m.lastSeq - m.firstSeq + 1; uint64(len(events)) != want {
 		return fmt.Errorf("%w: ledger manifest covers %d events, %d supplied", ErrValidation, want, len(events))
 	}
 	if events[0].Seq() != m.firstSeq {

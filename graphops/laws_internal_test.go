@@ -1,6 +1,38 @@
 package graphops
 
-import "testing"
+import (
+	"errors"
+	"math"
+	"strings"
+	"testing"
+)
+
+// VerifyLedgerChain refuses a sequence that wraps around. NewLedgerEvent
+// never mints a seq of 0 or MaxUint64, so the events that would exercise
+// the check are built by hand here, in-package: the law must hold for any
+// value a store could hand back, not only for the ones this package minted.
+func TestVerifyLedgerChainRefusesWraparoundAndOutOfRangeSeqs(t *testing.T) {
+	hashA, hashB := strings.Repeat("a", 64), strings.Repeat("b", 64)
+	event := func(seq uint64, prev, hash string) LedgerEvent {
+		return LedgerEvent{spec: LedgerEventSpec{Seq: seq, Kind: LedgerPromote, PrevHash: prev, Hash: hash}}
+	}
+	for name, events := range map[string][]LedgerEvent{
+		"MaxUint64 then 0 (the wraparound)": {event(math.MaxUint64, GenesisHash, hashA), event(0, hashA, hashB)},
+		"MaxLedgerSeq then 0":               {event(MaxLedgerSeq, GenesisHash, hashA), event(0, hashA, hashB)},
+		"seq 0 alone":                       {event(0, GenesisHash, hashA)},
+		"seq MaxUint64 alone":               {event(math.MaxUint64, GenesisHash, hashA)},
+		"MaxLedgerSeq then MaxUint64":       {event(MaxLedgerSeq, GenesisHash, hashA), event(math.MaxUint64, hashA, hashB)},
+	} {
+		err := VerifyLedgerChain(GenesisHash, events)
+		if !errors.Is(err, ErrValidation) {
+			t.Errorf("%s: want ErrValidation, got %v", name, err)
+		}
+	}
+	// The top of the range links normally.
+	if err := VerifyLedgerChain(GenesisHash, []LedgerEvent{event(MaxLedgerSeq-1, GenesisHash, hashA), event(MaxLedgerSeq, hashA, hashB)}); err != nil {
+		t.Fatalf("a chain ending at MaxLedgerSeq must verify: %v", err)
+	}
+}
 
 // The URL helpers behind ParseRef are defensive about inputs their one caller
 // has already screened (isAbsoluteURI guarantees complete escapes; the

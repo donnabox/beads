@@ -1706,9 +1706,11 @@ func ledgerEventCanonicalBytes(spec LedgerEventSpec) []byte {
 
 // VerifyLedgerChain checks that events is one contiguous, correctly linked run
 // of the ledger continuing from prevHash: each event's prev_hash is the
-// preceding hash, sequence numbers ascend by exactly one, and every hash was
-// computed by NewLedgerEvent (a zero event never links). A gap, a fork or a
-// reordering is ErrValidation naming the first offending sequence number.
+// preceding hash, sequence numbers lie in [1, MaxLedgerSeq] and ascend by
+// exactly one, and every hash was computed by NewLedgerEvent (a zero event
+// never links). A gap, a fork, a reordering, or a sequence that wraps around
+// (MaxUint64 followed by 0) is ErrValidation naming the first offending
+// sequence number.
 func VerifyLedgerChain(prevHash string, events []LedgerEvent) error {
 	if !isLowerHex(prevHash, 64) {
 		return fmt.Errorf("%w: ledger chain must continue from a 64-hex-digit hash", ErrValidation)
@@ -1718,7 +1720,11 @@ func VerifyLedgerChain(prevHash string, events []LedgerEvent) error {
 		if e.PrevHash() != prev {
 			return fmt.Errorf("%w: ledger event seq %d does not link to the preceding hash", ErrValidation, e.Seq())
 		}
-		if i > 0 && e.Seq() != events[i-1].Seq()+1 {
+		if e.Seq() == 0 || e.Seq() > MaxLedgerSeq {
+			return fmt.Errorf("%w: ledger event seq %d is outside 1..MaxLedgerSeq", ErrValidation, e.Seq())
+		}
+		// Compared without addition, so no sequence number can wrap.
+		if i > 0 && (e.Seq() <= events[i-1].Seq() || e.Seq()-events[i-1].Seq() != 1) {
 			return fmt.Errorf("%w: ledger gap: seq %d follows seq %d", ErrValidation, e.Seq(), events[i-1].Seq())
 		}
 		prev = e.Hash()
