@@ -10,6 +10,7 @@ import (
 	"sort"
 	"strings"
 	"time"
+	"unicode/utf8"
 )
 
 // The domain values. Every one of them has unexported fields and a constructor
@@ -17,6 +18,24 @@ import (
 // one and an implementation never re-validates what it is handed. Values are
 // immutable: accessors return copies of anything a caller could otherwise
 // write through.
+//
+// EVERY STRING IS VALID UTF-8. A revision, a pin, a principal, a descriptor's
+// name, description or label — every opaque string a value carries — ends up
+// in a JSON document: a wire record, a canonical descriptor, a hashed ledger
+// event. encoding/json rewrites an invalid byte to U+FFFD on the way out, so
+// two Go strings that differ only in invalid bytes ("\xff" and "\xfe") would
+// be two distinct domain values with one serialization — and, in the ledger,
+// one hash. The constructors therefore refuse invalid UTF-8 outright. This is
+// representation validation, not interpretation: an opaque token's meaning
+// is still nobody's business here (P0 council, 2026-09-07).
+
+// validUTF8 refuses a string that is not valid UTF-8, naming the member.
+func validUTF8(s, what string) error {
+	if !utf8.ValidString(s) {
+		return fmt.Errorf("%w: %s must be valid UTF-8", ErrValidation, what)
+	}
+	return nil
+}
 
 // ResourceKind is the closed set of Resource categories: a Type Descriptor
 // describes exactly one, a ledger event names one, and a canonical path
@@ -111,11 +130,15 @@ type Revision struct{ token string }
 // MintRevision returns a fresh revision in this authority's format.
 func MintRevision() Revision { return Revision{token: MintOpaqueToken()} }
 
-// NewRevision admits an opaque revision token. Only emptiness is refused: a
-// revision has no other law.
+// NewRevision admits an opaque revision token. Emptiness and invalid UTF-8
+// are refused (the token is carried in JSON and hashed in the ledger, see
+// the package's UTF-8 rule); a revision has no other law.
 func NewRevision(token string) (Revision, error) {
 	if token == "" {
 		return Revision{}, fmt.Errorf("%w: a revision must be a nonempty opaque string", ErrValidation)
+	}
+	if err := validUTF8(token, "a revision"); err != nil {
+		return Revision{}, err
 	}
 	return Revision{token: token}, nil
 }
@@ -164,6 +187,9 @@ type Attribution struct {
 func NewAttribution(principal string, status AttributionStatus) (Attribution, error) {
 	if principal == "" {
 		return Attribution{}, fmt.Errorf("%w: attribution principal must be nonempty", ErrValidation)
+	}
+	if err := validUTF8(principal, "attribution principal"); err != nil {
+		return Attribution{}, err
 	}
 	if !status.Valid() {
 		return Attribution{}, fmt.Errorf("%w: attribution status %q is not claimed or unknown", ErrValidation, status)
@@ -282,6 +308,9 @@ func NewInScopeRef(path, pin string) (Ref, error) {
 	if err := ValidateBeadPath(path); err != nil {
 		return Ref{}, err
 	}
+	if err := validUTF8(pin, "a reference pin"); err != nil {
+		return Ref{}, err
+	}
 	return Ref{inScope: true, path: path, pin: pin}, nil
 }
 
@@ -309,6 +338,9 @@ func ParseRef(scopeURL, reference, pin string) (Ref, error) {
 	}
 	if reference == "" {
 		return Ref{}, fmt.Errorf("%w: reference must be a canonical local Bead ID or an absolute URI", ErrValidation)
+	}
+	if err := validUTF8(pin, "a reference pin"); err != nil {
+		return Ref{}, err
 	}
 	switch {
 	case strings.HasPrefix(reference, "beads/"):
@@ -630,6 +662,9 @@ func NewOwnedLinkDecl(linkTypeURL, label string, max int) (OwnedLinkDecl, error)
 	if max < 1 {
 		return OwnedLinkDecl{}, fmt.Errorf("%w: ownsOutgoing %s: max must be a positive integer", ErrValidation, linkTypeURL)
 	}
+	if err := validUTF8(label, "ownsOutgoing "+linkTypeURL+": label"); err != nil {
+		return OwnedLinkDecl{}, err
+	}
 	return OwnedLinkDecl{typeURL: linkTypeURL, label: label, max: max}, nil
 }
 
@@ -696,6 +731,12 @@ func NewTypeDescriptor(spec TypeDescriptorSpec) (TypeDescriptor, error) {
 	}
 	if spec.Name == "" {
 		return TypeDescriptor{}, fmt.Errorf("%w: descriptor %s: name must be nonempty", ErrValidation, spec.ID)
+	}
+	if err := validUTF8(spec.Name, "descriptor "+spec.ID+": name"); err != nil {
+		return TypeDescriptor{}, err
+	}
+	if err := validUTF8(spec.Description, "descriptor "+spec.ID+": description"); err != nil {
+		return TypeDescriptor{}, err
 	}
 	if !spec.Describes.Valid() {
 		return TypeDescriptor{}, fmt.Errorf("%w: descriptor %s: describes must be bead or link", ErrValidation, spec.ID)

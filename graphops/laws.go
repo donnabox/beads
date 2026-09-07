@@ -1649,12 +1649,17 @@ func claimsScope(scopeURL, reference string) bool {
 //
 //	hash = lowercase hex SHA-256 of those bytes; the next event's prev_hash is
 //	this hash. Integers are exact (see the number rule above), so seq and
-//	epoch survive the full uint64 range.
+//	epoch survive the full uint64 range. Every string member is VALID UTF-8:
+//	the hex, path, URL and enum members by their own grammars, and the
+//	opaque revision by NewRevision's refusal of invalid bytes — encoding/json
+//	would otherwise launder an invalid byte to U+FFFD, and two events that
+//	differ only there would share one canonical form and one hash.
 //
 // DECISION: the layout above — member names as the B4 columns spell them,
-// JCS for the framing, microsecond UTC for the instant, all-zero genesis. B2
-// gives the formula and the member list; the framing and the formats are
-// this file's choice and are pinned by a golden test.
+// JCS for the framing, microsecond UTC for the instant, all-zero genesis,
+// and the UTF-8 requirement on every hashed string (P0 council). B2 gives
+// the formula and the member list; the framing and the formats are this
+// file's choice and are pinned by a golden test.
 // ---------------------------------------------------------------------------
 
 // GenesisHash is the prev_hash of the first event of a Scope's history: no

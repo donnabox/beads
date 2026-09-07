@@ -37,6 +37,81 @@ func TestRevision(t *testing.T) {
 	}
 }
 
+// Every opaque string a value carries must be valid UTF-8, because
+// encoding/json launders an invalid byte to U+FFFD: "\xff" and "\xfe" are two
+// Go strings with ONE serialization, and would be two revisions with one
+// ledger hash. The constructors refuse them; valid non-ASCII is carried and
+// hashed as written.
+func TestStringsMustBeValidUTF8(t *testing.T) {
+	const scope = "https://beads.example/acme/"
+	// The hazard, stated: encoding/json cannot tell the two apart.
+	ff, _ := json.Marshal("\xff")
+	fe, _ := json.Marshal("\xfe")
+	if string(ff) != string(fe) || string(ff) != `"\ufffd"` {
+		t.Fatalf("test premise: encoding/json serializes \\xff as %s and \\xfe as %s", ff, fe)
+	}
+	okDecl, _ := graphops.NewOwnedLinkDecl("https://work.example/types/c", "", 1)
+	for name, construct := range map[string]func(s string) error{
+		"revision":  func(s string) error { _, err := graphops.NewRevision(s); return err },
+		"principal": func(s string) error { _, err := graphops.NewAttribution(s, graphops.AttributionClaimed); return err },
+		"in-Scope pin": func(s string) error {
+			_, err := graphops.NewInScopeRef("beads/x", s)
+			return err
+		},
+		"parsed local pin": func(s string) error { _, err := graphops.ParseRef(scope, "beads/x", s); return err },
+		"parsed external pin": func(s string) error {
+			_, err := graphops.ParseRef(scope, "urn:external:pin-witness", s)
+			return err
+		},
+		"label": func(s string) error {
+			_, err := graphops.NewOwnedLinkDecl("https://work.example/types/c", s, 1)
+			return err
+		},
+		"descriptor name": func(s string) error {
+			_, err := graphops.NewTypeDescriptor(graphops.TypeDescriptorSpec{ID: "https://work.example/types/x", Name: s, Describes: graphops.KindBead})
+			return err
+		},
+		"descriptor description": func(s string) error {
+			_, err := graphops.NewTypeDescriptor(graphops.TypeDescriptorSpec{ID: "https://work.example/types/x", Name: "X", Description: s, Describes: graphops.KindBead, OwnsOutgoing: []graphops.OwnedLinkDecl{okDecl}})
+			return err
+		},
+	} {
+		for _, bad := range []string{"\xff", "\xfe", "a\xffb", "\xc3", "\xed\xa0\x80", "\xc0\x80"} {
+			if err := construct(bad); !errors.Is(err, graphops.ErrValidation) {
+				t.Errorf("%s %q: want ErrValidation, got %v", name, bad, err)
+			}
+		}
+		for _, good := range []string{"plain", "  Cited-9F2c — α/β (draft) Å\t", "é", "\U0001F600", "�"} {
+			if err := construct(good); err != nil {
+				t.Errorf("%s %q: valid UTF-8 refused: %v", name, good, err)
+			}
+		}
+	}
+	// Valid, distinct revisions hash distinctly and round-trip as written.
+	alpha, _ := graphops.NewRevision("rev-α")
+	beta, _ := graphops.NewRevision("rev-β")
+	spec := graphops.LedgerEventSpec{
+		Seq: 1, Kind: graphops.LedgerUpdate, OpID: opID, Path: "beads/x", ResourceKind: graphops.KindBead,
+		AuthorityID: authorityID, Epoch: 1, At: at, PrevHash: graphops.GenesisHash,
+	}
+	spec.Revision = alpha
+	a, err := graphops.NewLedgerEvent(spec)
+	if err != nil {
+		t.Fatal(err)
+	}
+	spec.Revision = beta
+	b, err := graphops.NewLedgerEvent(spec)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if a.Hash() == b.Hash() || !strings.Contains(string(a.CanonicalBytes()), `"revision":"rev-α"`) {
+		t.Fatalf("revisions must be hashed as written: %s / %s", a.CanonicalBytes(), b.CanonicalBytes())
+	}
+	if !a.Revision().Equal(alpha) || a.Revision().String() != "rev-α" {
+		t.Fatal("the revision must round-trip byte for byte")
+	}
+}
+
 func TestAttribution(t *testing.T) {
 	if _, err := graphops.NewAttribution("", graphops.AttributionClaimed); !errors.Is(err, graphops.ErrValidation) {
 		t.Fatalf("empty principal: %v", err)
