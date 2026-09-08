@@ -876,7 +876,10 @@ across every owned type, explicit entries included — and an explicit entry's
 ruled OW1 = A on 2026-09-08, the literal reading (P0's narrower first reading
 is being flipped). The P1 batched owned-Links read for a wildcard owner
 selects all owned Links grouped by type under `LIMIT wildcard.max + 1`,
-inside the ≤ 7-statement budget row.
+inside the ≤ 7-statement budget row; that single statement covers only the
+whole-set bound, so an explicit group over its own `max` is caught after
+grouping in the body or refused at acceptance — `graphops.CheckBeadRecord`
+enforces both bounds at acceptance (P0 commit ec692e146).
 
 ### B5. Decorators, censuses, and every embedding surface
 
