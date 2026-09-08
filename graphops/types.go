@@ -656,18 +656,50 @@ func (c EndpointConstraint) EffectiveExternal() ExternalPolicy {
 	return c.external
 }
 
-// OwnedLinkDecl is one ownsOutgoing entry of a Bead Type Descriptor: the owned
-// Link Type, the required bound on the owned set, and an optional display
-// label that appears only in the descriptor, never in a Resource record.
+// WildcardOwnedLinkKey is the reserved ownsOutgoing key "*" (bdp#1 item 5,
+// ruled 2026-09-08): a Bead Type MAY carry the entry "*": { max }, declaring
+// every outgoing Link Type it does not list explicitly as owned. It is a KEY,
+// never a Type: ValidateTypeURL refuses it, so no Link's type, no descriptor
+// or endpoint conformsTo entry, no descriptor id and no ownedLinks group key
+// can spell it.
+//
+// THE DOMAIN RUNS AHEAD OF THE PINNED WIRE HERE. The bundle vendored at
+// bdpwire.Pin (0b7d86e7) keys ownsOutgoing — and a record's ownedLinks — by
+// absoluteHttpUrl, so a descriptor carrying this key is schema-invalid on the
+// wire until the pin moves to the bdp change that lands the ruling. The
+// refusal is the bundle's: bdpwire's strict decoder holds member shape, not
+// key grammar, and decodes the key. internal/httpapi/bdpwire's
+// TestWildcardOwnedLinkKeyIsNotInThePinnedBundle asserts both facts and is
+// the tripwire that retires this note when the pin moves.
+const WildcardOwnedLinkKey = "*"
+
+// OwnedLinkDecl is one ownsOutgoing entry of a Bead Type Descriptor. It is a
+// SUM: an EXPLICIT declaration names one owned Link Type and may carry a
+// display label (descriptor-only, never in a Resource record); the WILDCARD
+// declaration, keyed WildcardOwnedLinkKey, owns every outgoing Link Type the
+// descriptor does not name explicitly and carries no label. Both carry the
+// required bound.
+//
+// DECISION: the wildcard is the reserved key INSIDE the declaration list, not
+// a separate descriptor member. The canonical form then falls out of the
+// existing map ("*" sorts first — 0x2A precedes every URL's "h" — so the
+// fingerprint is the wire form's once the pin moves), the duplicate law
+// covers "two wildcards" unchanged, and — the reason that matters most — a
+// consumer walking OwnsOutgoing() to assemble ownedLinks cannot overlook it:
+// it meets a declaration whose Wildcard() is true, and a record that keyed a
+// group by it fails CheckBeadRecord. A separate accessor would let that
+// consumer silently serve an incomplete record.
 type OwnedLinkDecl struct {
-	typeURL string
-	label   string
+	typeURL string // the owned Link Type, or WildcardOwnedLinkKey
+	label   string // "" when absent; always "" on the wildcard
 	max     int
 }
 
-// NewOwnedLinkDecl builds a declaration. Max is REQUIRED and positive — the
-// installer refuses an owning declaration without a bound, because the owned
-// plane must always be servable inline. label "" means absent.
+// NewOwnedLinkDecl builds an explicit declaration. Max is REQUIRED and
+// positive — the installer refuses an owning declaration without a bound,
+// because the owned plane must always be servable inline. label "" means
+// absent. The wildcard key is refused here (ValidateTypeURL): the wildcard
+// is built by NewWildcardOwnedLinkDecl, never by naming "*" as a Type.
 func NewOwnedLinkDecl(linkTypeURL, label string, max int) (OwnedLinkDecl, error) {
 	if err := ValidateTypeURL(linkTypeURL); err != nil {
 		return OwnedLinkDecl{}, fmt.Errorf("ownsOutgoing key: %w", err)
@@ -681,13 +713,49 @@ func NewOwnedLinkDecl(linkTypeURL, label string, max int) (OwnedLinkDecl, error)
 	return OwnedLinkDecl{typeURL: linkTypeURL, label: label, max: max}, nil
 }
 
-// TypeURL is the owned Link Type.
+// NewWildcardOwnedLinkDecl builds the wildcard declaration: every outgoing
+// Link Type the descriptor does not name explicitly is owned, and max bounds
+// the WHOLE wildcard-owned set — every such Link of one Bead together, not
+// each Type separately, since the Types are open-ended and a per-Type bound
+// would bound nothing inline. Max is required and positive exactly as on an
+// explicit declaration; the installer's "no owning declaration without a
+// bound" law covers both.
+//
+// DECISION: no label. The ruling spells the entry as "*": { max }, and a
+// label is display documentation for one named Type; the wildcard names
+// none, so a label on it is refused — conservative, because admitting one
+// later is a widening while refusing one later would break installed
+// descriptors.
+//
+// DECISION: "max bounding the whole owned set" is read as the set of Links
+// owned BY VIRTUE OF the wildcard. An explicitly declared Type is bounded by
+// its own max ("explicit entries take precedence for the types they name"),
+// so a Bead's inline owned plane is bounded by the explicit maxes plus the
+// wildcard max. The other reading — the wildcard max caps everything owned,
+// explicit Types included — is the one the bdp spec PR for item 5 would have
+// to state; this package takes the per-declaration reading until it does.
+func NewWildcardOwnedLinkDecl(max int) (OwnedLinkDecl, error) {
+	if max < 1 {
+		return OwnedLinkDecl{}, fmt.Errorf("%w: ownsOutgoing %s: max must be a positive integer", ErrValidation, WildcardOwnedLinkKey)
+	}
+	return OwnedLinkDecl{typeURL: WildcardOwnedLinkKey, max: max}, nil
+}
+
+// Wildcard reports whether d is the wildcard declaration.
+func (d OwnedLinkDecl) Wildcard() bool { return d.typeURL == WildcardOwnedLinkKey }
+
+// TypeURL is the owned Link Type — or WildcardOwnedLinkKey for the wildcard
+// declaration, which names no Type: check Wildcard() before using the value
+// as a URL.
 func (d OwnedLinkDecl) TypeURL() string { return d.typeURL }
 
-// Label returns the display label and whether one is present.
+// Label returns the display label and whether one is present; never present
+// on the wildcard.
 func (d OwnedLinkDecl) Label() (string, bool) { return d.label, d.label != "" }
 
-// Max is the largest owned set the Type permits.
+// Max is the largest owned set the declaration permits: the Links of the one
+// named Type for an explicit declaration, every wildcard-owned Link together
+// for the wildcard.
 func (d OwnedLinkDecl) Max() int { return d.max }
 
 // TypeDescriptor is one installed Type contract: the closed BDP v0 descriptor
@@ -703,7 +771,7 @@ type TypeDescriptor struct {
 	conformsTo       []string
 	propertiesSchema string // "" when absent
 	source, target   EndpointConstraint
-	ownsOutgoing     []OwnedLinkDecl // sorted by TypeURL in code-unit order
+	ownsOutgoing     []OwnedLinkDecl // sorted by key in code-unit order: the wildcard ("*") first when present, then Type URLs
 	canonical        []byte
 	fingerprint      string
 }
@@ -730,8 +798,10 @@ type TypeDescriptorSpec struct {
 	// Bead Type. A pointer to the zero EndpointConstraint is the constraint
 	// that requires nothing.
 	Source, Target *EndpointConstraint
-	// OwnsOutgoing declares the owned Link Types of a Bead Type; empty means
-	// the member is absent. Must be empty for a Link Type.
+	// OwnsOutgoing declares the owned Link Types of a Bead Type: explicit
+	// declarations and at most one wildcard (NewWildcardOwnedLinkDecl), in
+	// any order; empty means the member is absent. Must be empty for a Link
+	// Type.
 	OwnsOutgoing []OwnedLinkDecl
 }
 
@@ -739,7 +809,9 @@ type TypeDescriptorSpec struct {
 // pinned spec and schema bundle: a canonical Type ID, a nonempty name, a
 // category, unique canonical parent IDs that do not include the Type itself,
 // endpoint constraints exactly when the Type describes Links, ownsOutgoing
-// only when it describes Beads, and one declaration per owned Link Type.
+// only when it describes Beads, one declaration per owned Link Type and at
+// most one wildcard (bdp#1 item 5, ahead of the pinned bundle — see
+// WildcardOwnedLinkKey).
 func NewTypeDescriptor(spec TypeDescriptorSpec) (TypeDescriptor, error) {
 	if err := ValidateTypeURL(spec.ID); err != nil {
 		return TypeDescriptor{}, fmt.Errorf("descriptor id: %w", err)
@@ -800,7 +872,8 @@ func NewTypeDescriptor(spec TypeDescriptorSpec) (TypeDescriptor, error) {
 				return TypeDescriptor{}, fmt.Errorf("%w: descriptor %s: ownsOutgoing entry %d is not a constructed declaration", ErrValidation, spec.ID, i)
 			}
 			if i > 0 && owns[i-1].typeURL == decl.typeURL {
-				return TypeDescriptor{}, fmt.Errorf("%w: descriptor %s owns %s twice", ErrValidation, spec.ID, decl.typeURL)
+				// The same law refuses two wildcards: both are keyed "*".
+				return TypeDescriptor{}, fmt.Errorf("%w: descriptor %s: ownsOutgoing declares %s twice", ErrValidation, spec.ID, decl.typeURL)
 			}
 		}
 		d.ownsOutgoing = owns
@@ -871,6 +944,8 @@ func descriptorCanonicalJSON(d TypeDescriptor) []byte {
 	}
 	if len(d.ownsOutgoing) > 0 {
 		w.OwnsOutgoing = make(map[string]ownedLinkWire, len(d.ownsOutgoing))
+		// The wildcard's key is "*" (WildcardOwnedLinkKey), the wire spelling
+		// the ruling gives it; CanonicalizeJSON sorts it before every URL.
 		for _, decl := range d.ownsOutgoing {
 			w.OwnsOutgoing[decl.typeURL] = ownedLinkWire{Label: optionalString(decl.label), Max: decl.max}
 		}
@@ -910,8 +985,10 @@ var descriptorMembers = map[string]memberShape{
 // the bundle gives it and is never null (absent and null are different
 // things, and the bundle admits only absence), the required members are
 // present, a Bead Type carries no endpoint constraint and a Link Type no
-// ownsOutgoing, propertiesSchema when present is an absolute URL, and every
-// law NewTypeDescriptor enforces holds.
+// ownsOutgoing, propertiesSchema when present is an absolute URL, an
+// ownsOutgoing key is a canonical Link Type URL or the wildcard "*"
+// (WildcardOwnedLinkKey — read ahead of the pinned bundle, which admits
+// only URLs there), and every law NewTypeDescriptor enforces holds.
 //
 // DECISION: description "" is read as absent. The bundle permits the empty
 // string, the canonical form has no way to carry it apart from absence, and
@@ -1047,9 +1124,12 @@ func parseEndpointConstraint(canonical []byte, member string) (EndpointConstrain
 	return NewEndpointConstraint(conformsTo, external)
 }
 
-func parseOwnedLinkDecl(url string, canonical []byte) (OwnedLinkDecl, error) {
+// parseOwnedLinkDecl reads one ownsOutgoing entry. The key is the wildcard
+// (WildcardOwnedLinkKey) or a Link Type URL; the value's shape is the same
+// for both, except that the wildcard refuses a label.
+func parseOwnedLinkDecl(key string, canonical []byte) (OwnedLinkDecl, error) {
 	fail := func(format string, args ...any) (OwnedLinkDecl, error) {
-		return OwnedLinkDecl{}, fmt.Errorf("%w: descriptor: ownsOutgoing %s: %s", ErrValidation, url, fmt.Sprintf(format, args...))
+		return OwnedLinkDecl{}, fmt.Errorf("%w: descriptor: ownsOutgoing %s: %s", ErrValidation, key, fmt.Sprintf(format, args...))
 	}
 	if canonical[0] != '{' {
 		return fail("declaration must be an object, never null")
@@ -1082,7 +1162,13 @@ func parseOwnedLinkDecl(url string, canonical []byte) (OwnedLinkDecl, error) {
 	if !hasMax {
 		return fail("max is required")
 	}
-	return NewOwnedLinkDecl(url, label, max)
+	if key == WildcardOwnedLinkKey {
+		if label != "" {
+			return fail("the wildcard declaration carries no label")
+		}
+		return NewWildcardOwnedLinkDecl(max)
+	}
+	return NewOwnedLinkDecl(key, label, max)
 }
 
 // typeURLList validates a Type-ID array — canonical URLs, no duplicates —
@@ -1132,22 +1218,40 @@ func (t TypeDescriptor) Source() (EndpointConstraint, bool) { return t.source, t
 // Target returns the target constraint and whether the Type describes Links.
 func (t TypeDescriptor) Target() (EndpointConstraint, bool) { return t.target, t.describes == KindLink }
 
-// OwnsOutgoing returns a copy of the owned-Link declarations, in code-unit
-// order of Link Type URL — the order ownedLinks groups are served in.
+// OwnsOutgoing returns a copy of the owned-Link declarations in code-unit
+// order of key: the wildcard first when present ("*" sorts before every
+// URL), then the explicit declarations by Link Type URL — the order their
+// ownedLinks groups are served in, with the wildcard's own groups (one per
+// wildcard-owned Type actually present) interleaved among them by URL.
 func (t TypeDescriptor) OwnsOutgoing() []OwnedLinkDecl {
 	return append([]OwnedLinkDecl(nil), t.ownsOutgoing...)
 }
 
-// Owns returns the declaration for linkTypeURL and whether this Type owns it.
+// Owns returns the declaration under which this Type owns Links of Type
+// linkTypeURL and whether it owns them: the explicit declaration naming the
+// Type when there is one, else the wildcard declaration when there is one,
+// else none — "explicit entries take precedence for the types they name".
 // It is the owned-Link trigger law in predicate form: a mutation of a Link
 // whose Type the source's Bead Type owns versions the source.
+//
+// DECISION: Owns(WildcardOwnedLinkKey) is false. "*" is a key, not a Type;
+// no Link carries it, so nothing is owned under it BY NAME, and answering
+// the wildcard declaration there would hand a caller a "Type" it could key
+// a group by.
 func (t TypeDescriptor) Owns(linkTypeURL string) (OwnedLinkDecl, bool) {
+	if linkTypeURL == WildcardOwnedLinkKey {
+		return OwnedLinkDecl{}, false
+	}
+	var wildcard OwnedLinkDecl
 	for _, decl := range t.ownsOutgoing {
-		if decl.typeURL == linkTypeURL {
+		switch {
+		case decl.typeURL == linkTypeURL:
 			return decl, true
+		case decl.Wildcard():
+			wildcard = decl
 		}
 	}
-	return OwnedLinkDecl{}, false
+	return wildcard, wildcard.Wildcard()
 }
 
 // CanonicalJSON returns a copy of the descriptor's canonical bytes: the closed
@@ -1644,51 +1748,90 @@ func (m LedgerManifest) Covers(events []LedgerEvent) error {
 }
 
 // OwnedLinkGroup is one ownedLinks entry: the owned Link Type and the owned
-// Links of one Bead under it, complete records in code-unit order of path. An
-// owned Type with no Links is an EMPTY group, never an absent one.
+// Links of one Bead under it, complete records in code-unit order of path.
+// The key is always a Link Type URL, never WildcardOwnedLinkKey. An
+// explicitly declared Type with no Links is an EMPTY group, never an absent
+// one; a Type owned only through the wildcard has a group exactly when the
+// Bead has a Link of it (bdp#1 item 5: "one entry per owned type actually
+// present, plus an empty entry for each explicitly declared type").
 type OwnedLinkGroup struct {
 	TypeURL string
 	Links   []Link
 }
 
 // BeadRecord is a Bead with its complete ownedLinks expansion, assembled in
-// the same snapshot: one group per owned Link Type the Bead's Type declares,
-// in code-unit order of TypeURL, empty groups included; nil when the Type owns
-// nothing. Every projection — singleton, collection item, selection item —
-// returns records, because the Bead's revision covers its owned Links.
+// the same snapshot: one group per Link Type the Bead's Type declares
+// explicitly, empty groups included, plus — under a wildcard declaration —
+// one group per wildcard-owned Link Type the Bead actually has Links of, all
+// in code-unit order of TypeURL; nil when nothing is owned or present. Every
+// projection — singleton, collection item, selection item — returns records,
+// because the Bead's revision covers its owned Links.
 type BeadRecord struct {
 	Bead       Bead
 	OwnedLinks []OwnedLinkGroup
 }
 
 // CheckBeadRecord verifies a record against the owned-Link declarations of the
-// Bead's Type: exactly one group per declaration, in code-unit order, and in
-// every group each Link's Type equals the group key, its source is the Bead,
-// and the Links ascend in code-unit order of path with no repeats. It is the
-// acceptance law the plan states and the storage transactions run.
+// Bead's Type (its OwnsOutgoing, in any order): the groups ascend in code-unit
+// order of Link Type URL with no repeats and none keyed by the wildcard; there
+// is exactly one group, possibly empty, per explicit declaration; a group for
+// any other Type exists only under a wildcard declaration and only when it
+// holds a Link; and in every group each Link's Type equals the group key, its
+// source is the Bead, and the Links ascend in code-unit order of path with no
+// repeats. It is the acceptance law the plan states and the storage
+// transactions run. The bounds (Max) are not checked here: they are the
+// serving transaction's LIMIT law, not a fact about an assembled record.
 func CheckBeadRecord(record BeadRecord, owns []OwnedLinkDecl) error {
-	if len(record.OwnedLinks) != len(owns) {
-		return fmt.Errorf("%w: bead %s: %d ownedLinks groups for %d owned Types", ErrValidation, record.Bead.Path(), len(record.OwnedLinks), len(owns))
+	fail := func(format string, args ...any) error {
+		return fmt.Errorf("%w: bead %s: %s", ErrValidation, record.Bead.Path(), fmt.Sprintf(format, args...))
 	}
-	sorted := append([]OwnedLinkDecl(nil), owns...)
-	sort.SliceStable(sorted, func(i, j int) bool {
-		return CompareCodeUnits(sorted[i].typeURL, sorted[j].typeURL) < 0
+	var explicit []OwnedLinkDecl
+	wildcard := false
+	for _, decl := range owns {
+		if decl.Wildcard() {
+			wildcard = true
+			continue
+		}
+		explicit = append(explicit, decl)
+	}
+	sort.SliceStable(explicit, func(i, j int) bool {
+		return CompareCodeUnits(explicit[i].typeURL, explicit[j].typeURL) < 0
 	})
+	next := 0 // the first explicit declaration not yet matched by a group
 	for i, group := range record.OwnedLinks {
-		if group.TypeURL != sorted[i].typeURL {
-			return fmt.Errorf("%w: bead %s: ownedLinks group %d is %s, want %s", ErrValidation, record.Bead.Path(), i, group.TypeURL, sorted[i].typeURL)
+		if group.TypeURL == WildcardOwnedLinkKey {
+			return fail("ownedLinks group %d is keyed by the wildcard; groups are keyed by Link Type URL", i)
+		}
+		if i > 0 && CompareCodeUnits(record.OwnedLinks[i-1].TypeURL, group.TypeURL) >= 0 {
+			return fail("ownedLinks groups are not in ascending code-unit order at %s", group.TypeURL)
+		}
+		// Groups ascend, so an explicit declaration below this key that is
+		// still unmatched has no group at all.
+		if next < len(explicit) && CompareCodeUnits(explicit[next].typeURL, group.TypeURL) < 0 {
+			return fail("no ownedLinks group for explicitly owned %s", explicit[next].typeURL)
+		}
+		switch {
+		case next < len(explicit) && explicit[next].typeURL == group.TypeURL:
+			next++ // the explicit declaration's group, empty or not
+		case !wildcard:
+			return fail("ownedLinks group %s is not an owned Type", group.TypeURL)
+		case len(group.Links) == 0:
+			return fail("empty ownedLinks group %s: a wildcard-owned Type has a group only when a Link is present", group.TypeURL)
 		}
 		for j, link := range group.Links {
 			if link.TypeURL() != group.TypeURL {
-				return fmt.Errorf("%w: bead %s: owned Link %s has type %s under group %s", ErrValidation, record.Bead.Path(), link.Path(), link.TypeURL(), group.TypeURL)
+				return fail("owned Link %s has type %s under group %s", link.Path(), link.TypeURL(), group.TypeURL)
 			}
 			if !link.Source().InScope() || link.Source().Path() != record.Bead.Path() {
-				return fmt.Errorf("%w: bead %s: owned Link %s has another source", ErrValidation, record.Bead.Path(), link.Path())
+				return fail("owned Link %s has another source", link.Path())
 			}
 			if j > 0 && CompareCodeUnits(group.Links[j-1].Path(), link.Path()) >= 0 {
-				return fmt.Errorf("%w: bead %s: owned Links under %s are not in ascending code-unit order", ErrValidation, record.Bead.Path(), group.TypeURL)
+				return fail("owned Links under %s are not in ascending code-unit order", group.TypeURL)
 			}
 		}
+	}
+	if next < len(explicit) {
+		return fail("no ownedLinks group for explicitly owned %s", explicit[next].typeURL)
 	}
 	return nil
 }

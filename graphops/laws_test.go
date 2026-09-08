@@ -682,6 +682,7 @@ func TestValidateTypeURL(t *testing.T) {
 		"https://work.example/<x>", "mailto:a@b", "https://work.example:x/", "https://work.example:/",
 		"https://:8080/", "https://work.example/x\n", "1http://x/",
 		"https://work.example:0443/t", "https://0x7f000001/t", "https://work%2Eexample/t", "https://[::ffff:1.2.3.4]/t",
+		graphops.WildcardOwnedLinkKey, // the ownsOutgoing wildcard key is never a Type
 	}
 	for _, u := range reject {
 		wantValidation(t, graphops.ValidateTypeURL(u), "Type URL "+u)

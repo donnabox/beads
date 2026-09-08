@@ -853,9 +853,19 @@ func assertClosedDescriptorShape(t *testing.T, canonical []byte) {
 			if len(*shape.OwnsOutgoing) == 0 {
 				t.Errorf("ownsOutgoing must be omitted rather than empty")
 			}
-			for url, decl := range *shape.OwnsOutgoing {
+			for key, decl := range *shape.OwnsOutgoing {
+				// The bundle keys ownsOutgoing by absoluteHttpUrl; the domain
+				// runs ahead of it by exactly one key, the wildcard "*", which
+				// carries no label (graphops.WildcardOwnedLinkKey).
+				if key == graphops.WildcardOwnedLinkKey {
+					if decl.Label != nil {
+						t.Errorf("ownsOutgoing %s: the wildcard carries no label", key)
+					}
+				} else if err := graphops.ValidateTypeURL(key); err != nil {
+					t.Errorf("ownsOutgoing key %q is neither a Type URL nor the wildcard: %v", key, err)
+				}
 				if decl.Max == nil || *decl.Max < 1 || (decl.Label != nil && *decl.Label == "") {
-					t.Errorf("ownsOutgoing %s: max must be a positive integer and label nonempty when present", url)
+					t.Errorf("ownsOutgoing %s: max must be a positive integer and label nonempty when present", key)
 				}
 			}
 		}
@@ -875,12 +885,14 @@ func TestTypeDescriptorRoundTripsThroughItsCanonicalForm(t *testing.T) {
 	beadShaped, _ := graphops.NewEndpointConstraint([]string{a}, graphops.ExternalBead)
 	cites8, _ := graphops.NewOwnedLinkDecl(c, "cites — α", 8)
 	blocks2, _ := graphops.NewOwnedLinkDecl(b, "", 2)
+	wild5, _ := graphops.NewWildcardOwnedLinkDecl(5)
 	for name, spec := range map[string]graphops.TypeDescriptorSpec{
 		"link with zero endpoints":       {ID: "https://work.example/types/l0", Name: "L0", Describes: graphops.KindLink, Source: &graphops.EndpointConstraint{}, Target: &graphops.EndpointConstraint{}},
 		"link with constructed anything": {ID: "https://work.example/types/l1", Name: "L1", Describes: graphops.KindLink, Source: &anyBead, Target: &anyBead},
 		"link with policies":             {ID: "https://work.example/types/l2", Name: "L2", Description: "d", Describes: graphops.KindLink, ConformsTo: []string{b, a}, PropertiesSchema: "https://work.example/schemas/l2", Source: &none, Target: &beadShaped},
 		"bead minimal":                   {ID: "https://work.example/types/b0", Name: "B0", Describes: graphops.KindBead},
 		"bead owning":                    {ID: "https://work.example/types/b1", Name: "B1 ✓", Description: "owns", Describes: graphops.KindBead, ConformsTo: []string{c, a, b}, OwnsOutgoing: []graphops.OwnedLinkDecl{cites8, blocks2}},
+		"bead owning by wildcard":        {ID: "https://work.example/types/b2", Name: "B2", Describes: graphops.KindBead, OwnsOutgoing: []graphops.OwnedLinkDecl{blocks2, wild5}},
 	} {
 		built, err := graphops.NewTypeDescriptor(spec)
 		if err != nil {
@@ -1055,5 +1067,186 @@ func TestErrorsAreOneVocabulary(t *testing.T) {
 	wrapped := errors.Join(errors.New("context"), gone)
 	if !errors.Is(wrapped, graphops.ErrNotFound) {
 		t.Fatal("wrapping keeps the relation")
+	}
+}
+
+// The wildcard owned-Link declaration (bdp#1 item 5, ruled 2026-09-08):
+// "*": { max } owns every outgoing Link Type not named explicitly, max bounds
+// the whole wildcard-owned set, and explicit entries take precedence for the
+// Types they name. THE DOMAIN RUNS AHEAD OF THE PINNED WIRE HERE — the bundle
+// vendored in internal/httpapi/bdpwire keys ownsOutgoing by absoluteHttpUrl
+// until the pin moves (graphops.WildcardOwnedLinkKey; the tripwire is
+// bdpwire's TestWildcardOwnedLinkKeyIsNotInThePinnedBundle) — so the
+// canonical form below is what the wire WILL carry, pinned byte-exactly with
+// "*" sorted first: 0x2A precedes every URL's "h".
+func TestWildcardOwnedLinkDeclaration(t *testing.T) {
+	const memory, cites, relates = "https://work.example/types/memory", "https://work.example/types/cites", "https://work.example/types/relates"
+	any5, err := graphops.NewWildcardOwnedLinkDecl(5)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if _, hasLabel := any5.Label(); !any5.Wildcard() || any5.TypeURL() != graphops.WildcardOwnedLinkKey || any5.Max() != 5 || hasLabel {
+		t.Fatalf("wildcard declaration: %+v", any5)
+	}
+	if (graphops.OwnedLinkDecl{}).Wildcard() {
+		t.Fatal("the zero declaration is not the wildcard")
+	}
+	cites8, _ := graphops.NewOwnedLinkDecl(cites, "cites", 8)
+	built, err := graphops.NewTypeDescriptor(graphops.TypeDescriptorSpec{ID: memory, Name: "Memory", Describes: graphops.KindBead, OwnsOutgoing: []graphops.OwnedLinkDecl{cites8, any5}})
+	if err != nil {
+		t.Fatal(err)
+	}
+	const wantCanonical = `{"conformsTo":[],"describes":"bead","id":"https://work.example/types/memory","name":"Memory","ownsOutgoing":{"*":{"max":5},"https://work.example/types/cites":{"label":"cites","max":8}}}`
+	const wantFingerprint = "c0ead94e2681b74dac89b402465ca0fb2654cdb092fb400f00254b63c19d92f9"
+	if got := string(built.CanonicalJSON()); got != wantCanonical {
+		t.Fatalf("canonical wildcard descriptor\n got %s\nwant %s", got, wantCanonical)
+	}
+	if built.Fingerprint() != wantFingerprint || built.Fingerprint() != sha256Hex([]byte(wantCanonical)) {
+		t.Fatalf("fingerprint %s, want the golden %s", built.Fingerprint(), wantFingerprint)
+	}
+	assertClosedDescriptorShape(t, built.CanonicalJSON())
+	if owns := built.OwnsOutgoing(); len(owns) != 2 || !owns[0].Wildcard() || owns[1].TypeURL() != cites {
+		t.Fatalf("the wildcard sorts first, then Type URLs: %+v", owns)
+	}
+	// Explicit precedence, wildcard fallback, and "*" is never a Type.
+	if got, ok := built.Owns(cites); !ok || got.Wildcard() || got.Max() != 8 {
+		t.Fatalf("Owns(cites) must be the explicit declaration: %+v %v", got, ok)
+	}
+	if got, ok := built.Owns(relates); !ok || !got.Wildcard() || got.Max() != 5 {
+		t.Fatalf("Owns(relates) must fall back to the wildcard: %+v %v", got, ok)
+	}
+	if _, ok := built.Owns(graphops.WildcardOwnedLinkKey); ok {
+		t.Fatal(`Owns("*") must be false: the wildcard key is not a Type`)
+	}
+	// The wire form, in either key order, parses to the same fingerprint.
+	parsed, err := graphops.ParseTypeDescriptor([]byte(`{"id":"https://work.example/types/memory","name":"Memory","describes":"bead","conformsTo":[],"ownsOutgoing":{"https://work.example/types/cites":{"max":8,"label":"cites"},"*":{"max":5}}}`))
+	if err != nil {
+		t.Fatal(err)
+	}
+	if parsed.Fingerprint() != wantFingerprint || string(parsed.CanonicalJSON()) != wantCanonical {
+		t.Fatalf("parsed wildcard descriptor: %s", parsed.CanonicalJSON())
+	}
+	// A wildcard alone owns everything, at its bound.
+	alone, err := graphops.ParseTypeDescriptor([]byte(`{"id":"https://work.example/types/memory","name":"Memory","describes":"bead","conformsTo":[],"ownsOutgoing":{"*":{"max":1}}}`))
+	if err != nil {
+		t.Fatal(err)
+	}
+	const wantAlone = `{"conformsTo":[],"describes":"bead","id":"https://work.example/types/memory","name":"Memory","ownsOutgoing":{"*":{"max":1}}}`
+	if got := string(alone.CanonicalJSON()); got != wantAlone || alone.Fingerprint() != "44ac14cf761e1c41d7c7a2f0c927c0456ae37b0a81c3f777d8f9fe059ddc4321" {
+		t.Fatalf("canonical wildcard-only descriptor: %s %s", got, alone.Fingerprint())
+	}
+	if got, ok := alone.Owns(cites); !ok || !got.Wildcard() || got.Max() != 1 || len(alone.OwnsOutgoing()) != 1 {
+		t.Fatalf("a lone wildcard owns every Type: %+v %v", got, ok)
+	}
+	// Without a wildcard an unnamed Type is still unowned: the pre-ruling law.
+	plain, _ := graphops.NewTypeDescriptor(graphops.TypeDescriptorSpec{ID: memory, Name: "Memory", Describes: graphops.KindBead, OwnsOutgoing: []graphops.OwnedLinkDecl{cites8}})
+	if _, ok := plain.Owns(relates); ok {
+		t.Fatal("no wildcard: an unnamed Type is not owned")
+	}
+	// Refusals through the parser: max is required on the wildcard exactly
+	// as on an explicit entry, a label on it is refused, and "*" is not a
+	// Type anywhere a Type URL is read.
+	for name, in := range map[string]string{
+		"wildcard without max":         `{"id":"https://work.example/types/x","name":"X","describes":"bead","conformsTo":[],"ownsOutgoing":{"*":{}}}`,
+		"wildcard max zero":            `{"id":"https://work.example/types/x","name":"X","describes":"bead","conformsTo":[],"ownsOutgoing":{"*":{"max":0}}}`,
+		"wildcard max negative":        `{"id":"https://work.example/types/x","name":"X","describes":"bead","conformsTo":[],"ownsOutgoing":{"*":{"max":-1}}}`,
+		"wildcard max fractional":      `{"id":"https://work.example/types/x","name":"X","describes":"bead","conformsTo":[],"ownsOutgoing":{"*":{"max":1.5}}}`,
+		"wildcard with label":          `{"id":"https://work.example/types/x","name":"X","describes":"bead","conformsTo":[],"ownsOutgoing":{"*":{"label":"any","max":1}}}`,
+		"wildcard with empty label":    `{"id":"https://work.example/types/x","name":"X","describes":"bead","conformsTo":[],"ownsOutgoing":{"*":{"label":"","max":1}}}`,
+		"wildcard unknown member":      `{"id":"https://work.example/types/x","name":"X","describes":"bead","conformsTo":[],"ownsOutgoing":{"*":{"max":1,"min":0}}}`,
+		"wildcard entry null":          `{"id":"https://work.example/types/x","name":"X","describes":"bead","conformsTo":[],"ownsOutgoing":{"*":null}}`,
+		"wildcard on a Link Type":      `{"id":"https://work.example/types/x","name":"X","describes":"link","conformsTo":[],"source":{"conformsTo":[]},"target":{"conformsTo":[]},"ownsOutgoing":{"*":{"max":1}}}`,
+		"wildcard as id":               `{"id":"*","name":"X","describes":"bead","conformsTo":[]}`,
+		"wildcard as parent":           `{"id":"https://work.example/types/x","name":"X","describes":"bead","conformsTo":["*"]}`,
+		"wildcard as propertiesSchema": `{"id":"https://work.example/types/x","name":"X","describes":"bead","conformsTo":[],"propertiesSchema":"*"}`,
+		"wildcard as source parent":    `{"id":"https://work.example/types/x","name":"X","describes":"link","conformsTo":[],"source":{"conformsTo":["*"]},"target":{"conformsTo":[]}}`,
+		"wildcard as target parent":    `{"id":"https://work.example/types/x","name":"X","describes":"link","conformsTo":[],"source":{"conformsTo":[]},"target":{"conformsTo":["*"]}}`,
+	} {
+		if _, err := graphops.ParseTypeDescriptor([]byte(in)); !errors.Is(err, graphops.ErrValidation) {
+			t.Errorf("descriptor %s: want ErrValidation, got %v", name, err)
+		}
+	}
+	// Refusals at the constructors: the key is never a Type anywhere.
+	if _, err := graphops.NewWildcardOwnedLinkDecl(0); !errors.Is(err, graphops.ErrValidation) {
+		t.Errorf("wildcard max zero: %v", err)
+	}
+	if _, err := graphops.NewOwnedLinkDecl(graphops.WildcardOwnedLinkKey, "", 1); !errors.Is(err, graphops.ErrValidation) || !strings.Contains(err.Error(), "wildcard") {
+		t.Errorf(`NewOwnedLinkDecl("*") must refuse and name the wildcard: %v`, err)
+	}
+	if _, err := graphops.NewTypeDescriptor(graphops.TypeDescriptorSpec{ID: memory, Name: "Memory", Describes: graphops.KindBead, OwnsOutgoing: []graphops.OwnedLinkDecl{any5, cites8, any5}}); !errors.Is(err, graphops.ErrValidation) {
+		t.Errorf("two wildcards: %v", err)
+	}
+	if _, err := graphops.NewEndpointConstraint([]string{graphops.WildcardOwnedLinkKey}, ""); !errors.Is(err, graphops.ErrValidation) {
+		t.Errorf("wildcard in an endpoint constraint: %v", err)
+	}
+	rev := graphops.MintRevision()
+	if _, err := graphops.NewBead(graphops.BeadSpec{Path: "beads/m", TypeURL: graphops.WildcardOwnedLinkKey, Revision: rev}); !errors.Is(err, graphops.ErrValidation) {
+		t.Errorf("wildcard as a Bead's type: %v", err)
+	}
+	self, _ := graphops.NewInScopeRef("beads/m", "")
+	if _, err := graphops.NewLink(graphops.LinkSpec{Path: "links/m/1", TypeURL: graphops.WildcardOwnedLinkKey, Revision: rev, Source: self, Target: self}); !errors.Is(err, graphops.ErrValidation) {
+		t.Errorf("wildcard as a Link's type: %v", err)
+	}
+	if err := graphops.ValidateTypeURL(graphops.WildcardOwnedLinkKey); !errors.Is(err, graphops.ErrValidation) || !strings.Contains(err.Error(), "wildcard owned-Link key") {
+		t.Errorf(`ValidateTypeURL("*") must refuse by name: %v`, err)
+	}
+}
+
+// CheckBeadRecord under a wildcard declaration (bdp#1 item 5): a group per
+// wildcard-owned Type actually present, an empty group only for an explicit
+// declaration, and never a group keyed "*".
+func TestCheckBeadRecordUnderAWildcard(t *testing.T) {
+	rev := graphops.MintRevision()
+	bead, _ := graphops.NewBead(graphops.BeadSpec{Path: "beads/m", TypeURL: "https://work.example/types/memory", Revision: rev})
+	self, _ := graphops.NewInScopeRef("beads/m", "")
+	other, _ := graphops.NewInScopeRef("beads/e", "")
+	mk := func(path, typeURL string, source graphops.Ref) graphops.Link {
+		l, err := graphops.NewLink(graphops.LinkSpec{Path: path, TypeURL: typeURL, Revision: rev, Source: source, Target: other})
+		if err != nil {
+			t.Fatal(err)
+		}
+		return l
+	}
+	const blocks, cites, relates = "https://work.example/types/blocks", "https://work.example/types/cites", "https://work.example/types/relates"
+	citesDecl, _ := graphops.NewOwnedLinkDecl(cites, "", 8)
+	wildcard, _ := graphops.NewWildcardOwnedLinkDecl(5)
+	owns := []graphops.OwnedLinkDecl{wildcard, citesDecl} // unsorted on purpose
+	blocksGroup := graphops.OwnedLinkGroup{TypeURL: blocks, Links: []graphops.Link{mk("links/b/1", blocks, self)}}
+	relatesGroup := graphops.OwnedLinkGroup{TypeURL: relates, Links: []graphops.Link{mk("links/r/1", relates, self), mk("links/r/2", relates, self)}}
+	for name, groups := range map[string][]graphops.OwnedLinkGroup{
+		"present wildcard groups around the empty explicit group": {blocksGroup, {TypeURL: cites}, relatesGroup},
+		"the explicit group alone":                                {{TypeURL: cites}},
+		"the explicit group with Links":                           {{TypeURL: cites, Links: []graphops.Link{mk("links/c/1", cites, self)}}},
+		"a wildcard group before the explicit group":              {blocksGroup, {TypeURL: cites}},
+		"a wildcard group after the explicit group":               {{TypeURL: cites}, relatesGroup},
+	} {
+		if err := graphops.CheckBeadRecord(graphops.BeadRecord{Bead: bead, OwnedLinks: groups}, owns); err != nil {
+			t.Errorf("record %s refused: %v", name, err)
+		}
+	}
+	for name, groups := range map[string][]graphops.OwnedLinkGroup{
+		"a group keyed by the wildcard":                  {{TypeURL: graphops.WildcardOwnedLinkKey}, {TypeURL: cites}},
+		"an empty wildcard-owned group":                  {{TypeURL: blocks}, {TypeURL: cites}},
+		"no explicit group, a wildcard group before it":  {blocksGroup},
+		"no explicit group, a wildcard group after it":   {relatesGroup},
+		"groups out of order":                            {{TypeURL: cites}, blocksGroup},
+		"a repeated group":                               {{TypeURL: cites}, {TypeURL: cites}},
+		"a wildcard group holding another Type's Link":   {{TypeURL: blocks, Links: []graphops.Link{mk("links/r/1", relates, self)}}, {TypeURL: cites}},
+		"a wildcard group holding another source's Link": {{TypeURL: blocks, Links: []graphops.Link{mk("links/b/1", blocks, other)}}, {TypeURL: cites}},
+		"a wildcard group with unsorted Links":           {{TypeURL: cites}, {TypeURL: relates, Links: []graphops.Link{mk("links/r/2", relates, self), mk("links/r/1", relates, self)}}},
+	} {
+		if err := graphops.CheckBeadRecord(graphops.BeadRecord{Bead: bead, OwnedLinks: groups}, owns); !errors.Is(err, graphops.ErrValidation) {
+			t.Errorf("record %s: want ErrValidation, got %v", name, err)
+		}
+	}
+	// Without a wildcard nothing changed: an unnamed Type's group is refused
+	// even when it holds that Type's Links.
+	if err := graphops.CheckBeadRecord(graphops.BeadRecord{Bead: bead, OwnedLinks: []graphops.OwnedLinkGroup{blocksGroup, {TypeURL: cites}}}, []graphops.OwnedLinkDecl{citesDecl}); !errors.Is(err, graphops.ErrValidation) {
+		t.Errorf("unnamed Type without a wildcard: want ErrValidation, got %v", err)
+	}
+	// A Type owning only through the wildcard, with nothing present, has no
+	// groups at all.
+	if err := graphops.CheckBeadRecord(graphops.BeadRecord{Bead: bead}, []graphops.OwnedLinkDecl{wildcard}); err != nil {
+		t.Errorf("lone wildcard, nothing present: %v", err)
 	}
 }

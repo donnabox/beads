@@ -1421,6 +1421,14 @@ func validateCanonicalHTTPURL(s, what string, echo bool) (urlParts, error) {
 // a Type ID, a propertiesSchema or a discovery member may be. A query is
 // permitted; a fragment is not.
 func ValidateTypeURL(s string) error {
+	if s == WildcardOwnedLinkKey {
+		// DECISION: refused by name, not by accident of the URL grammar.
+		// "*" is an ownsOutgoing KEY (bdp#1 item 5), never a Type — not a
+		// Link's type, not a descriptor's or an endpoint's conformsTo
+		// entry, not an id or a propertiesSchema — and the diagnostic
+		// says which of the two the author reached for.
+		return fmt.Errorf("%w: %q is the wildcard owned-Link key, not a Type URL", ErrValidation, s)
+	}
 	_, err := validateCanonicalHTTPURL(s, "URL", true)
 	return err
 }

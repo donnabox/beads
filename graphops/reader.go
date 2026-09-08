@@ -76,9 +76,11 @@ type IncidentRequest struct {
 // per call from this workspace's authoritative state.
 type Reader interface {
 	// Bead returns one Bead with its complete ownedLinks expansion, assembled
-	// in the same snapshot: one group per owned Link Type the Bead's Type
-	// declares, in code-unit order of Type URL, empty groups included, each
-	// group's Links in code-unit order of path. A path that never existed or
+	// in the same snapshot — the groups BeadRecord documents: one per Link
+	// Type the Bead's Type declares explicitly, empty groups included, plus
+	// one per wildcard-owned Type actually present, in code-unit order of
+	// Type URL, each group's Links in code-unit order of path (the law is
+	// CheckBeadRecord). A path that never existed or
 	// is not visible is ErrNotFound; a path in a gone state is a *GoneError,
 	// which also matches ErrNotFound.
 	Bead(ctx context.Context, req BeadRequest) (BeadRecord, error)
