@@ -209,15 +209,18 @@ func (a Attribution) IsZero() bool { return a.principal == "" }
 
 // Properties is the authored JSON OBJECT of a Bead or Link, held as ONE
 // canonical byte string: the RFC 8785 form of the document with numbers kept
-// exact (see CanonicalizeJSON). Two Properties are the same value exactly when
+// exact and admitted only when they round-trip through binary64 (see
+// CanonicalizeJSON; bdp#21). Two Properties are the same value exactly when
 // their bytes are equal, and that equality is the RFC 6902 §4.6 comparison the
 // no-op law is made of — so a write whose result Equal()s the value before it
 // mints no revision.
 //
 // The zero value is the empty object. Properties is never engine JSON: the
 // storage leg stores these bytes in a BLOB and serves them back unchanged, so
-// what a creator wrote — 9007199254740993, 1e300, a key order — survives
-// exactly as canonicalized, never as some engine's float64 reading of it.
+// what a creator wrote — 9007199254740992, 1e300, 0.1 — survives exactly as
+// canonicalized, never as some engine's float64 reading of it; and a number
+// no binary64 reader could hand back unchanged (9007199254740993) is refused
+// at the door rather than stored and later rounded by a peer.
 type Properties struct{ canonical []byte }
 
 var emptyObject = []byte("{}")
@@ -704,8 +707,8 @@ func NewOwnedLinkDecl(linkTypeURL, label string, max int) (OwnedLinkDecl, error)
 	if err := ValidateTypeURL(linkTypeURL); err != nil {
 		return OwnedLinkDecl{}, fmt.Errorf("ownsOutgoing key: %w", err)
 	}
-	if max < 1 {
-		return OwnedLinkDecl{}, fmt.Errorf("%w: ownsOutgoing %s: max must be a positive integer", ErrValidation, linkTypeURL)
+	if err := validateOwnedMax(linkTypeURL, max); err != nil {
+		return OwnedLinkDecl{}, err
 	}
 	if err := validUTF8(label, "ownsOutgoing "+linkTypeURL+": label"); err != nil {
 		return OwnedLinkDecl{}, err
@@ -735,10 +738,31 @@ func NewOwnedLinkDecl(linkTypeURL, label string, max int) (OwnedLinkDecl, error)
 // explicit Types included — is the one the bdp spec PR for item 5 would have
 // to state; this package takes the per-declaration reading until it does.
 func NewWildcardOwnedLinkDecl(max int) (OwnedLinkDecl, error) {
-	if max < 1 {
-		return OwnedLinkDecl{}, fmt.Errorf("%w: ownsOutgoing %s: max must be a positive integer", ErrValidation, WildcardOwnedLinkKey)
+	if err := validateOwnedMax(WildcardOwnedLinkKey, max); err != nil {
+		return OwnedLinkDecl{}, err
 	}
 	return OwnedLinkDecl{typeURL: WildcardOwnedLinkKey, max: max}, nil
+}
+
+// validateOwnedMax is the max law both declarations share: positive, and —
+// because a descriptor's canonical form spells max as a JSON number — under
+// the binary64 admission law (bdp#21), so that every descriptor that exists
+// has a canonical form ParseTypeDescriptor re-admits.
+//
+// DECISION: the law is applied at this door with the SAME predicate the
+// canonicalizer uses, not with a simpler 2^53 cap. 9007199254740994 is then
+// admitted at both doors and 9007199254740993 refused at both, so the JSON
+// door and the Go constructor agree on exactly which descriptors exist; a
+// cap would have made the constructor stricter than the wire for no
+// consumer's benefit.
+func validateOwnedMax(key string, max int) error {
+	if max < 1 {
+		return fmt.Errorf("%w: ownsOutgoing %s: max must be a positive integer", ErrValidation, key)
+	}
+	if !admissibleInt(max) {
+		return fmt.Errorf("%w: ownsOutgoing %s: max %d does not round-trip through IEEE-754 binary64 (bdp#21)", ErrValidation, key, max)
+	}
+	return nil
 }
 
 // Wildcard reports whether d is the wildcard declaration.
@@ -1142,6 +1166,8 @@ func parseOwnedLinkDecl(key string, canonical []byte) (OwnedLinkDecl, error) {
 			// The canonical form spells every integral number as a plain
 			// integer (1.0 and 1e0 are "1"), so a canonical value that
 			// ParseInt refuses is fractional, out of range, or not a number.
+			// A value the binary64 admission law refuses never reaches here:
+			// CanonicalizeJSON refused the document, naming this member.
 			n, err := strconv.ParseInt(string(m.value), 10, 0)
 			if err != nil {
 				return fail("max must be an integer within the platform int range, got %s", m.value)

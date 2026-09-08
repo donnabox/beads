@@ -3,6 +3,8 @@ package graphops_test
 import (
 	"encoding/json"
 	"errors"
+	"fmt"
+	"math"
 	"regexp"
 	"strings"
 	"testing"
@@ -1248,5 +1250,58 @@ func TestCheckBeadRecordUnderAWildcard(t *testing.T) {
 	// groups at all.
 	if err := graphops.CheckBeadRecord(graphops.BeadRecord{Bead: bead}, []graphops.OwnedLinkDecl{wildcard}); err != nil {
 		t.Errorf("lone wildcard, nothing present: %v", err)
+	}
+}
+
+// ownsOutgoing max obeys the binary64 admission law at both of its doors
+// (bdp#21): the JSON door refuses it inside CanonicalizeJSON, naming the
+// member's pointer (the Type URL's slashes escaped per RFC 6901), and the Go
+// constructors refuse the same values with the same predicate, so every
+// descriptor that exists has a canonical form the JSON door re-admits,
+// fingerprint intact.
+func TestOwnedLinkDeclMaxObeysTheBinary64Law(t *testing.T) {
+	const c = "https://work.example/types/c"
+	for _, max := range []int{9007199254740993, 9007199254740995, 1<<60 + 1, 1 << 60, math.MaxInt64} {
+		for name, construct := range map[string]func() error{
+			"explicit": func() error { _, err := graphops.NewOwnedLinkDecl(c, "", max); return err },
+			"wildcard": func() error { _, err := graphops.NewWildcardOwnedLinkDecl(max); return err },
+		} {
+			err := construct()
+			if !errors.Is(err, graphops.ErrValidation) || !strings.Contains(err.Error(), fmt.Sprintf("max %d does not round-trip through IEEE-754 binary64 (bdp#21)", max)) {
+				t.Errorf("%s max %d: want the binary64 refusal, got %v", name, max, err)
+			}
+		}
+		doc := fmt.Sprintf(`{"id":"https://work.example/types/x","name":"X","describes":"bead","conformsTo":[],"ownsOutgoing":{"%s":{"max":%d}}}`, c, max)
+		_, err := graphops.ParseTypeDescriptor([]byte(doc))
+		if !errors.Is(err, graphops.ErrValidation) || !strings.Contains(err.Error(), `at JSON pointer "/ownsOutgoing/https:~1~1work.example~1types~1c/max"`) {
+			t.Errorf("descriptor max %d: want the binary64 refusal at the member's pointer, got %v", max, err)
+		}
+	}
+	explicit, err := graphops.NewOwnedLinkDecl(c, "", 9007199254740994)
+	if err != nil {
+		t.Fatal(err)
+	}
+	wildcard, err := graphops.NewWildcardOwnedLinkDecl(9007199254740992)
+	if err != nil {
+		t.Fatal(err)
+	}
+	built, err := graphops.NewTypeDescriptor(graphops.TypeDescriptorSpec{ID: "https://work.example/types/x", Name: "X", Describes: graphops.KindBead, OwnsOutgoing: []graphops.OwnedLinkDecl{explicit, wildcard}})
+	if err != nil {
+		t.Fatal(err)
+	}
+	want := `{"conformsTo":[],"describes":"bead","id":"https://work.example/types/x","name":"X","ownsOutgoing":{"*":{"max":9007199254740992},"https://work.example/types/c":{"max":9007199254740994}}}`
+	if got := string(built.CanonicalJSON()); got != want {
+		t.Fatalf("canonical form\n got %s\nwant %s", got, want)
+	}
+	parsed, err := graphops.ParseTypeDescriptor(built.CanonicalJSON())
+	if err != nil || parsed.Fingerprint() != built.Fingerprint() {
+		t.Fatalf("the canonical form must re-admit with the same fingerprint: %v", err)
+	}
+	maxes := map[string]int{}
+	for _, d := range parsed.OwnsOutgoing() {
+		maxes[d.TypeURL()] = d.Max()
+	}
+	if len(maxes) != 2 || maxes[c] != 9007199254740994 || maxes[graphops.WildcardOwnedLinkKey] != 9007199254740992 {
+		t.Fatalf("max values after the round trip: %v", maxes)
 	}
 }

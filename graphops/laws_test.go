@@ -5,7 +5,11 @@ import (
 	"crypto/sha256"
 	"encoding/hex"
 	"errors"
+	"fmt"
 	"math"
+	"math/big"
+	"math/rand/v2"
+	"strconv"
 	"strings"
 	"testing"
 	"time"
@@ -212,27 +216,101 @@ func TestCompareCodeUnits(t *testing.T) {
 
 // --- JSON canonicalization ------------------------------------------------
 
+// jcsNumber is RFC 8785 §3.2.2.3 — ECMAScript Number::toString — over a
+// binary64, written here independently of the package: Go's shortest
+// round-trip digits placed by the ECMAScript rule. The package never formats
+// a double into its output, so agreement between the two is the claim the
+// bdp#21 ruling makes: on every admitted value the exact-decimal model and
+// the binary64 model serialize identically.
+func jcsNumber(f float64) string {
+	if f == 0 {
+		return "0" // both zeros
+	}
+	es := strconv.FormatFloat(f, 'e', -1, 64) // [-]d[.ddd]e±dd
+	neg := strings.HasPrefix(es, "-")
+	if neg {
+		es = es[1:]
+	}
+	e := strings.IndexByte(es, 'e')
+	x, _ := strconv.Atoi(es[e+1:])
+	digits := strings.Replace(es[:e], ".", "", 1)
+	k, n := len(digits), x+1 // value = 0.digits × 10^n
+	var out string
+	switch {
+	case k <= n && n <= 21:
+		out = digits + strings.Repeat("0", n-k)
+	case 0 < n && n <= 21:
+		out = digits[:n] + "." + digits[n:]
+	case -6 < n && n <= 0:
+		out = "0." + strings.Repeat("0", -n) + digits
+	case n-1 >= 0:
+		out = digits[:1] + fractionOf(digits) + "e+" + strconv.Itoa(n-1)
+	default:
+		out = digits[:1] + fractionOf(digits) + "e-" + strconv.Itoa(1-n)
+	}
+	if neg {
+		return "-" + out
+	}
+	return out
+}
+
+func fractionOf(digits string) string {
+	if len(digits) == 1 {
+		return ""
+	}
+	return "." + digits[1:]
+}
+
+// checkAdmittedNumber pins what every admitted literal must satisfy: the
+// canonical form is a fixed point, and it is byte-identical to the RFC 8785
+// serialization of the literal's nearest binary64.
+func checkAdmittedNumber(t *testing.T, in string, canonical []byte) {
+	t.Helper()
+	again, err := graphops.CanonicalizeJSON(canonical)
+	if err != nil || !bytes.Equal(again, canonical) {
+		t.Errorf("number %q: canonical form %q is not a fixed point: %q %v", in, canonical, again, err)
+	}
+	f, err := strconv.ParseFloat(in, 64)
+	if err != nil {
+		t.Fatalf("number %q: admitted, but strconv cannot read it: %v", in, err)
+	}
+	if jcs := jcsNumber(f); jcs != string(canonical) {
+		t.Errorf("number %q: canonical %q, but RFC 8785 serializes its nearest binary64 as %q", in, canonical, jcs)
+	}
+}
+
+// The number rule in two halves. The canonical form is the literal's EXACT
+// decimal value in RFC 8785 digit placement; and a literal is admitted only
+// when that value round-trips through IEEE-754 binary64 (bdp#21, ruled
+// 2026-09-08): read to the nearest double, serialized shortest, equal to the
+// literal's own value. The refused half names, for each vector, what a
+// binary64 reader would have made of it.
 func TestCanonicalizeJSONNumbers(t *testing.T) {
 	for _, tc := range []struct{ in, want string }{
-		{"1.0", "1"}, {"-0.0", "0"}, {"-0", "0"}, {"0.0", "0"}, {"0e10", "0"}, {"0", "0"},
+		{"1.0", "1"}, {"1", "1"}, {"1e0", "1"}, {"-0.0", "0"}, {"-0", "0"}, {"0.0", "0"}, {"0e10", "0"}, {"0", "0"},
 		{"1e300", "1e+300"}, {"1E300", "1e+300"},
-		{"9007199254740993", "9007199254740993"}, // 2^53+1, exact
-		{"9007199254740992", "9007199254740992"},
-		{"18446744073709551616", "18446744073709551616"}, // 2^64, exact
-		{"1e21", "1e+21"}, {"1e20", "100000000000000000000"},
-		{"123456789012345678901", "123456789012345678901"},
-		{"1234567890123456789012", "1.234567890123456789012e+21"},
+		{"9007199254740992", "9007199254740992"}, // 2^53
+		{"-9007199254740992", "-9007199254740992"},
+		{"9007199254740994", "9007199254740994"},         // 2^53+2: a double whose shortest spelling is itself
+		{"18446744073709552000", "18446744073709552000"}, // what a binary64 reader makes of 2^64
+		{"1e21", "1e+21"}, {"1e20", "100000000000000000000"}, {"1000000000000000000000", "1e+21"},
+		{"123456789012345680000", "123456789012345680000"}, // 17 significant digits, then zeros
+		{"1e15", "1000000000000000"}, {"1000000000000000", "1000000000000000"},
 		{"0.000001", "0.000001"}, {"1e-6", "0.000001"},
-		{"0.0000001", "1e-7"}, {"1e-7", "1e-7"}, {"-1e-7", "-1e-7"},
+		{"0.0000001", "1e-7"}, {"1e-7", "1e-7"}, {"-1e-7", "-1e-7"}, {"1.5e-7", "1.5e-7"},
 		{"123.456e2", "12345.6"}, {"-1.5", "-1.5"}, {"1.50", "1.5"},
-		{"100", "100"}, {"1E+2", "100"}, {"1e-1", "0.1"}, {"0.1", "0.1"},
-		{"10.0e-1", "1"}, {"25e-1", "2.5"}, {"123e-2", "1.23"}, {"1e0", "1"},
+		{"100", "100"}, {"1E+2", "100"}, {"1e-1", "0.1"}, {"0.1", "0.1"}, {"0.10", "0.1"},
+		{"10.0e-1", "1"}, {"25e-1", "2.5"}, {"123e-2", "1.23"},
 		{"1.5e1", "15"}, {"9.99e2", "999"}, {"1.23e+3", "1230"}, {"0.5", "0.5"}, {"-0.5", "-0.5"},
-		{"1000000", "1000000"}, {"5e-324", "5e-324"},
-		{"1.7976931348623157e308", "1.7976931348623157e+308"},
-		{"-1e400", "-1e+400"}, // beyond double range: exact, where JCS could not serialize
-		{"0.1000000000000000055511151231257827021181583404541015625", "0.1000000000000000055511151231257827021181583404541015625"},
-		{"333333333.33333329", "333333333.33333329"}, // JCS's appendix rounds this to 333333333.3333333
+		{"1000000", "1000000"}, {"5e-324", "5e-324"}, {"-5e-324", "-5e-324"}, // the smallest subnormal
+		{"1e-323", "1e-323"}, {"1e308", "1e+308"},
+		{"1.7976931348623157e308", "1.7976931348623157e+308"}, // the largest double
+		{"0.30000000000000004", "0.30000000000000004"},        // 0.1+0.2, as a binary64 reader spells it
+		{"3.0000000000000004", "3.0000000000000004"},
+		{"333333333.3333333", "333333333.3333333"},   // RFC 8785 Appendix B's rounded value
+		{"1424953923781206.2", "1424953923781206.2"}, // RFC 8785 Appendix B, "round to even"
+		{"1.0000000000000001e+23", "1.0000000000000001e+23"}, {"9.999999999999997e+22", "9.999999999999997e+22"},
+		{"295147905179352830000", "295147905179352830000"}, // RFC 8785 Appendix B's spelling of 2^68
 	} {
 		got, err := graphops.CanonicalizeJSON([]byte(tc.in))
 		if err != nil {
@@ -242,58 +320,152 @@ func TestCanonicalizeJSONNumbers(t *testing.T) {
 		if string(got) != tc.want {
 			t.Errorf("number %q canonicalized to %q, want %q", tc.in, got, tc.want)
 		}
+		checkAdmittedNumber(t, tc.in, got)
 	}
+	// Refused: peer is what a binary64 reader serializes the literal as; ""
+	// marks a literal outside the binary64 range altogether.
+	for _, tc := range []struct{ in, peer string }{
+		{"9007199254740993", "9007199254740992"}, // 2^53+1: halfway between two doubles, rounds to even
+		{"-9007199254740993", "-9007199254740992"},
+		{"9007199254740995", "9007199254740996"},
+		{"18446744073709551616", "18446744073709552000"}, // 2^64: exactly a double, but not its shortest spelling
+		{"18446744073709551615", "18446744073709552000"}, // MaxUint64
+		{"12345678901234567891", "12345678901234567000"}, // 20 significant digits
+		{"12345678901234567890", "12345678901234567000"},
+		{"123456789012345678901", "123456789012345680000"},
+		{"1234567890123456789012", "1.2345678901234568e+21"},
+		{"295147905179352825856", "295147905179352830000"}, // 2^68 exactly; a binary64 reader spells it rounded
+		{"1.00000000000000001", "1"},
+		{"0.1000000000000000055511151231257827021181583404541015625", "0.1"}, // 0.1's exact binary expansion
+		{"333333333.33333329", "333333333.3333333"},                          // the RFC 8785 worked example's input
+		{"1424953923781206.25", "1424953923781206.2"},
+		{"1e-400", "0"}, {"1e-324", "0"}, {"1e-1000000000000", "0"}, // below the range: read as zero
+		{"2.4703282292062327e-324", "0"},                      // just under half the smallest subnormal
+		{"4.9e-324", "5e-324"},                                // rounds up to the smallest subnormal, which spells differently
+		{"1.7976931348623158e308", "1.7976931348623157e+308"}, // rounds down to the largest double
+		{"1e400", ""}, {"-1e400", ""}, {"1e309", ""}, {"1.7976931348623159e308", ""}, {"1e1000000000000", ""}, // beyond the range
+	} {
+		_, err := graphops.CanonicalizeJSON([]byte(tc.in))
+		wantValidation(t, err, "number "+tc.in)
+		want := `at JSON pointer "" is outside the IEEE-754 binary64 range (bdp#21`
+		if tc.peer != "" {
+			want = `at JSON pointer "" does not round-trip through IEEE-754 binary64: a binary64 reader serializes it as ` + tc.peer + ` (bdp#21)`
+		}
+		if !strings.Contains(err.Error(), want) {
+			t.Errorf("number %q: %v\n  want a diagnostic containing %q", tc.in, err, want)
+		}
+	}
+	// Malformed literals are syntax errors, refused before the law is reached.
 	for _, in := range []string{
 		"01", "1.", ".5", "+1", "1e", "1e+", "-", "0x10", "NaN", "Infinity", "1_000", "--1", "1.e5", "-a",
 		"1e1000000000000000", // exponent out of range
 	} {
 		_, err := graphops.CanonicalizeJSON([]byte(in))
 		wantValidation(t, err, "number "+in)
+		if strings.Contains(err.Error(), "binary64") {
+			t.Errorf("number %q: refused by the admission law instead of its syntax: %v", in, err)
+		}
 	}
 }
 
-// The exponent bound applies to the NORMALIZED value, so canonicalization is
-// closed: every admitted literal's canonical form re-parses to itself, and a
-// literal whose canonical exponent would exceed the bound is refused on the
-// way in — never admitted and then unreadable.
-func TestCanonicalizeJSONNumberFixedPointAtTheExponentBounds(t *testing.T) {
+// A refusal names where it bit: the RFC 6901 pointer of the member or
+// element ("" is the whole document), with "~" and "/" in member names
+// escaped, the byte offset of the literal, and the literal itself —
+// abbreviated when it is long. Every door user-supplied JSON enters through
+// reports the same way.
+func TestCanonicalizeJSONBinary64RefusalNamesThePointer(t *testing.T) {
+	for _, tc := range []struct{ in, pointer string }{
+		{`9007199254740993`, ``},
+		{`{"n":9007199254740993}`, `/n`},
+		{`{"":9007199254740993}`, `/`},
+		{`{"a":[1,{"b":9007199254740993}]}`, `/a/1/b`},
+		{`[[[1e400]]]`, `/0/0/0`},
+		{`[1,[2,[3,4,1e400]]]`, `/1/1/2`},
+		{`{"a/b":{"m~n":[0,1,1e400]}}`, `/a~1b/m~0n/2`},
+		{`{"x":[{"y":[1,2,3,4,5,6,7,8,9,10,11,1e-400]}]}`, `/x/0/y/11`},
+		{`{"ok":[1.0,-0.0,1e300],"bad":{"deep":[{"n":18446744073709551616}]}}`, `/bad/deep/0/n`},
+		{`{"first":9007199254740993,"second":9007199254740993}`, `/first`}, // the first offender, in source order
+	} {
+		_, err := graphops.CanonicalizeJSON([]byte(tc.in))
+		wantValidation(t, err, tc.in)
+		if want := fmt.Sprintf("at JSON pointer %q", tc.pointer); !strings.Contains(err.Error(), want) {
+			t.Errorf("%s: %v\n  want %s", tc.in, err, want)
+		}
+	}
+	// The byte offset is the literal's start.
+	_, err := graphops.CanonicalizeJSON([]byte(`{"n":  9007199254740993}`))
+	wantValidation(t, err, "offset")
+	if !strings.Contains(err.Error(), `JSON at byte 7: number 9007199254740993 at JSON pointer "/n"`) {
+		t.Errorf("byte offset: %v", err)
+	}
+	// A long literal is elided in the diagnostic; the pointer locates it.
+	long := strings.Repeat("9", 60)
+	_, err = graphops.CanonicalizeJSON([]byte(`{"n":` + long + `}`))
+	wantValidation(t, err, "long literal")
+	if !strings.Contains(err.Error(), `number `+long[:24]+`...`+long[:24]+` (60 bytes) at JSON pointer "/n"`) || strings.Contains(err.Error(), long) {
+		t.Errorf("long literal is not elided: %v", err)
+	}
+	// NewProperties and JSONEqual pass the diagnostic through.
+	_, err = graphops.NewProperties([]byte(`{"n":9007199254740993}`))
+	wantValidation(t, err, "properties")
+	if !strings.Contains(err.Error(), `properties: JSON at byte 5: number 9007199254740993 at JSON pointer "/n" does not round-trip`) {
+		t.Errorf("NewProperties: %v", err)
+	}
+	_, err = graphops.JSONEqual([]byte(`[1]`), []byte(`[9007199254740993]`))
+	wantValidation(t, err, "JSONEqual")
+	if !strings.Contains(err.Error(), `at JSON pointer "/0"`) {
+		t.Errorf("JSONEqual: %v", err)
+	}
+	// One refusal never poisons the next document: the scanner's location is
+	// per call.
+	if got, err := graphops.CanonicalizeJSON([]byte(`{"n":9007199254740992}`)); err != nil || string(got) != `{"n":9007199254740992}` {
+		t.Errorf("after a refusal: %q %v", got, err)
+	}
+}
+
+// The exponent bound (maxExponentMagnitude) is stated over the NORMALIZED
+// value and is checked before the binary64 law: a literal past it is refused
+// as "exponent out of range", one within it but past binary64 as outside the
+// range. Zero, which has no magnitude, passes both whatever its exponent —
+// short of the spelled-exponent guard — and canonicalization stays a fixed
+// point on every admitted literal. In exact mode (the ledger framing) the
+// bound is the only bound, which the frozen-layout test pins from its side.
+func TestCanonicalizeJSONNumberExponentBoundAndTheBinary64Range(t *testing.T) {
 	const bound = "1000000000000" // maxExponentMagnitude
-	accept := []struct{ in, want string }{
-		{"1e" + bound, "1e+" + bound},
-		{"10e999999999999", "1e+" + bound},     // trailing zero moves the exponent up to the bound
-		{"1.0e" + bound, "1e+" + bound},        // fractional zero normalizes away
-		{"0.1e1000000000001", "1e+" + bound},   // the spelled exponent exceeds the bound; the value does not
-		{"0.001e1000000000003", "1e+" + bound}, // further past the spelled bound, same value
-		{"1.50e" + bound, "1.5e+" + bound},     // significant digits are kept
-		{"-1e" + bound, "-1e+" + bound},        // sign is orthogonal
-		{"1e-" + bound, "1e-" + bound},         // the negative bound
-		{"0.01e-999999999998", "1e-" + bound},  // fraction moves the exponent down to the bound
-		{"100e-1000000000002", "1e-" + bound},  // trailing zeros move it back up to the bound
-		{"1.5e-" + bound, "1.5e-" + bound},     // digits kept at the negative bound
-		{"0e1000000000005", "0"},               // every zero is "0", whatever its exponent
-		{"0.000e-1000000000005", "0"},          // and so is every fractional zero
-		{"123456789e999999999992", "1.23456789e+" + bound},
-	}
-	for _, tc := range accept {
-		once, err := graphops.CanonicalizeJSON([]byte(tc.in))
-		if err != nil {
-			t.Errorf("number %q: refused: %v", tc.in, err)
+	for _, tc := range []struct{ in, want string }{
+		{"0e" + bound, "0"}, {"0e1000000000005", "0"}, {"0.000e-1000000000005", "0"}, {"-0.0e999999999999", "0"},
+		{"0e-" + bound, "0"}, {"0.0e0", "0"},
+	} {
+		got, err := graphops.CanonicalizeJSON([]byte(tc.in))
+		if err != nil || string(got) != tc.want {
+			t.Errorf("number %q: got %q, %v; want %q", tc.in, got, err, tc.want)
 			continue
 		}
-		if string(once) != tc.want {
-			t.Errorf("number %q canonicalized to %q, want %q", tc.in, once, tc.want)
-		}
-		twice, err := graphops.CanonicalizeJSON(once)
-		if err != nil {
-			t.Errorf("canonical form %q does not re-parse: %v", once, err)
-			continue
-		}
-		if !bytes.Equal(once, twice) {
-			t.Errorf("canonical(canonical(%q)) = %q, canonical = %q: not a fixed point", tc.in, twice, once)
+		checkAdmittedNumber(t, tc.in, got)
+	}
+	// Within the bound, beyond binary64: refused by the admission law.
+	for _, tc := range []struct{ in, reason string }{
+		{"1e" + bound, "is outside the IEEE-754 binary64 range"},
+		{"10e999999999999", "is outside the IEEE-754 binary64 range"},   // trailing zero moves the exponent up to the bound
+		{"0.1e1000000000001", "is outside the IEEE-754 binary64 range"}, // the spelled exponent exceeds the bound; the value does not
+		{"1.50e" + bound, "is outside the IEEE-754 binary64 range"},
+		{"-1e" + bound, "is outside the IEEE-754 binary64 range"},
+		{"123456789e999999999992", "is outside the IEEE-754 binary64 range"},
+		{"1e-" + bound, "a binary64 reader serializes it as 0"}, // below the range
+		{"0.01e-999999999998", "a binary64 reader serializes it as 0"},
+		{"100e-1000000000002", "a binary64 reader serializes it as 0"},
+		{"1.5e-" + bound, "a binary64 reader serializes it as 0"},
+		{"1e309", "is outside the IEEE-754 binary64 range"}, // the first power of ten past the largest double
+	} {
+		_, err := graphops.CanonicalizeJSON([]byte(tc.in))
+		wantValidation(t, err, "number "+tc.in)
+		if !strings.Contains(err.Error(), tc.reason) {
+			t.Errorf("number %q: %v\n  want %q", tc.in, err, tc.reason)
 		}
 	}
+	// Past the bound: refused as out of range, before the law is consulted.
 	for _, in := range []string{
-		"10e" + bound,               // Codex's counterexample: canonically 1e+1000000000001
+		"10e" + bound,               // canonically 1e+1000000000001
 		"1e1000000000001",           // one past the bound
 		"100e" + bound,              // two past
 		"1.5e1000000000001",         // digits do not rescue it
@@ -303,25 +475,125 @@ func TestCanonicalizeJSONNumberFixedPointAtTheExponentBounds(t *testing.T) {
 		"-10e" + bound,              // sign is orthogonal
 		"1e99999999999999999999999", // absurd spelled exponent: refused before it can overflow
 		"1e-99999999999999999999999",
+		"0e99999999999999999999999", // zero too: the guard is on the spelling
 	} {
 		_, err := graphops.CanonicalizeJSON([]byte(in))
 		wantValidation(t, err, "number "+in)
+		if !strings.Contains(err.Error(), "exponent out of range") || strings.Contains(err.Error(), "binary64") {
+			t.Errorf("number %q: want the exponent bound's refusal, got %v", in, err)
+		}
 	}
-	// The same law holds inside a document, where a properties write lands.
-	doc := `{"big":10e999999999999,"small":100e-1000000000002}`
+	// The same laws hold inside a document, where a properties write lands.
+	doc := `{"zero":0e1000000000005,"big":1e308,"small":5e-324}`
 	once, err := graphops.CanonicalizeJSON([]byte(doc))
 	if err != nil {
 		t.Fatal(err)
 	}
-	if string(once) != `{"big":1e+`+bound+`,"small":1e-`+bound+`}` {
+	if string(once) != `{"big":1e+308,"small":5e-324,"zero":0}` {
 		t.Fatalf("document canonicalized to %s", once)
 	}
 	twice, err := graphops.CanonicalizeJSON(once)
 	if err != nil || !bytes.Equal(once, twice) {
 		t.Fatalf("document canonical form is not a fixed point: %s %v", twice, err)
 	}
-	if _, err := graphops.NewProperties([]byte(`{"x":10e` + bound + `}`)); !errors.Is(err, graphops.ErrValidation) {
-		t.Fatalf("a properties document beyond the bound must be refused at admission: %v", err)
+	for _, in := range []string{`{"x":10e` + bound + `}`, `{"x":1e` + bound + `}`, `{"x":1e400}`} {
+		if _, err := graphops.NewProperties([]byte(in)); !errors.Is(err, graphops.ErrValidation) {
+			t.Fatalf("a properties document %s must be refused at admission: %v", in, err)
+		}
+	}
+}
+
+// RFC 8785's own vectors. Appendix B's table lists binary64 bit patterns
+// with the JSON each serializes to; under the admission law every such
+// serialization is admitted, is its own canonical form, and reads back to
+// the listed double. The RFC's worked example is refused as authored — its
+// input carries 333333333.33333329, which JCS rounds — while the RFC's
+// expected output is admitted as a fixed point, and the input with that one
+// value already rounded canonicalizes to the RFC's output byte for byte. Then
+// a seeded sweep of random doubles: each one's RFC 8785 serialization is
+// admitted and canonical, and its EXACT decimal expansion is admitted only
+// when it is that serialization's value (math/big is the oracle), in which
+// case the two canonicalize identically.
+func TestCanonicalizeJSONAgreesWithRFC8785(t *testing.T) {
+	for _, tc := range []struct {
+		bits uint64
+		json string
+	}{
+		{0x0000000000000000, "0"},
+		{0x8000000000000000, "0"}, // minus zero
+		{0x0000000000000001, "5e-324"},
+		{0x8000000000000001, "-5e-324"},
+		{0x7fefffffffffffff, "1.7976931348623157e+308"},
+		{0xffefffffffffffff, "-1.7976931348623157e+308"},
+		{0x4340000000000000, "9007199254740992"},
+		{0xc340000000000000, "-9007199254740992"},
+		{0x4430000000000000, "295147905179352830000"},
+		{0x44b52d02c7e14af5, "9.999999999999997e+22"},
+		{0x44b52d02c7e14af6, "1e+23"},
+		{0x44b52d02c7e14af7, "1.0000000000000001e+23"},
+		{0x444b1ae4d6e2ef4e, "999999999999999700000"},
+		{0x444b1ae4d6e2ef4f, "999999999999999900000"},
+		{0x444b1ae4d6e2ef50, "1e+21"},
+		{0x3eb0c6f7a0b5ed8c, "9.999999999999997e-7"},
+		{0x3eb0c6f7a0b5ed8d, "0.000001"},
+		{0x41b3de4355555553, "333333333.3333332"},
+		{0x41b3de4355555554, "333333333.33333325"},
+		{0x41b3de4355555555, "333333333.3333333"},
+		{0x41b3de4355555556, "333333333.3333334"},
+		{0x41b3de4355555557, "333333333.33333343"},
+		{0xbecbf647612f3696, "-0.0000033333333333333333"},
+		{0x43143ff3c1cb0959, "1424953923781206.2"}, // round to even
+	} {
+		f, err := strconv.ParseFloat(tc.json, 64)
+		if err != nil || f != math.Float64frombits(tc.bits) {
+			t.Errorf("premise: %q does not read back as %016x: %v", tc.json, tc.bits, err)
+		}
+		got, err := graphops.CanonicalizeJSON([]byte(tc.json))
+		if err != nil || string(got) != tc.json {
+			t.Errorf("RFC 8785 vector %q: got %q, %v", tc.json, got, err)
+		}
+	}
+
+	const rfcInput = `{"numbers": [333333333.33333329, 1E30, 4.50, 2e-3, 0.000000000000000000000000001], "string": "\u20ac$\u000F\u000aA'\u0042\u0022\u005c\\\"\/", "literals": [null, true, false]}`
+	const rfcOutput = "{\"literals\":[null,true,false],\"numbers\":[333333333.3333333,1e+30,4.5,0.002,1e-27],\"string\":\"\u20ac$\\u000f\\nA'B\\\"\\\\\\\\\\\"/\"}"
+	_, err := graphops.CanonicalizeJSON([]byte(rfcInput))
+	wantValidation(t, err, "the RFC's worked example as authored")
+	if !strings.Contains(err.Error(), `number 333333333.33333329 at JSON pointer "/numbers/0" does not round-trip through IEEE-754 binary64: a binary64 reader serializes it as 333333333.3333333`) {
+		t.Errorf("worked example: %v", err)
+	}
+	got, err := graphops.CanonicalizeJSON([]byte(rfcOutput))
+	if err != nil || string(got) != rfcOutput {
+		t.Errorf("the RFC's expected output must be a fixed point: %q %v", got, err)
+	}
+	got, err = graphops.CanonicalizeJSON([]byte(strings.Replace(rfcInput, "333333333.33333329", "333333333.3333333", 1)))
+	if err != nil || string(got) != rfcOutput {
+		t.Errorf("the worked example with its rounded value: %q %v\nwant %q", got, err, rfcOutput)
+	}
+
+	rng := rand.New(rand.NewPCG(0x8785, 0x21))
+	for i := 0; i < 2000; i++ {
+		f := math.Float64frombits(rng.Uint64())
+		if math.IsNaN(f) || math.IsInf(f, 0) {
+			continue
+		}
+		jcs := jcsNumber(f)
+		got, err := graphops.CanonicalizeJSON([]byte(jcs))
+		if err != nil || string(got) != jcs {
+			t.Fatalf("%016x: RFC 8785 form %q: got %q, %v", math.Float64bits(f), jcs, got, err)
+		}
+		exact := strconv.FormatFloat(f, 'e', 1100, 64) // every double's decimal expansion ends within 1100 digits
+		jcsValue, ok := new(big.Rat).SetString(jcs)
+		if !ok {
+			t.Fatalf("%016x: oracle cannot read %q", math.Float64bits(f), jcs)
+		}
+		got, err = graphops.CanonicalizeJSON([]byte(exact))
+		if new(big.Rat).SetFloat64(f).Cmp(jcsValue) == 0 {
+			if err != nil || string(got) != jcs {
+				t.Fatalf("%016x: exact expansion %q is the RFC 8785 value and must canonicalize to %q: got %q, %v", math.Float64bits(f), exact, jcs, got, err)
+			}
+		} else if !errors.Is(err, graphops.ErrValidation) || !strings.Contains(err.Error(), "a binary64 reader serializes it as "+jcs+" (bdp#21)") {
+			t.Fatalf("%016x: exact expansion must be refused naming %q: got %q, %v", math.Float64bits(f), jcs, got, err)
+		}
 	}
 }
 
@@ -383,12 +655,12 @@ func TestCanonicalizeJSONStructure(t *testing.T) {
 			`{"\u20ac":"Euro Sign","\r":"Carriage Return","\ufb33":"Hebrew Letter Dalet With Dagesh","1":"One","\ud83d\ude02":"Emoji: Face with Tears of Joy","\u0080":"Control","\u00f6":"Latin Small Letter O With Diaeresis"}`,
 			"{\"\\r\":\"Carriage Return\",\"1\":\"One\",\"\u0080\":\"Control\",\"\u00f6\":\"Latin Small Letter O With Diaeresis\",\"\u20ac\":\"Euro Sign\",\"\U0001F602\":\"Emoji: Face with Tears of Joy\",\"\uFB33\":\"Hebrew Letter Dalet With Dagesh\"}",
 		},
-		// RFC 8785 Appendix's example, under the exact-number rule: identical
-		// to the appendix's output except that 333333333.33333329 keeps its
-		// digits where JCS rounds it through a double.
+		// RFC 8785's worked example, with the one value JCS rounds already
+		// rounded: TestCanonicalizeJSONAgreesWithRFC8785 pins that the
+		// example as authored is refused at /numbers/0.
 		{
-			`{"numbers": [333333333.33333329, 1E30, 4.50, 2e-3, 0.000000000000000000000000001], "string": "\u20ac$\u000F\u000aA'\u0042\u0022\u005c\\\"\/", "literals": [null, true, false]}`,
-			"{\"literals\":[null,true,false],\"numbers\":[333333333.33333329,1e+30,4.5,0.002,1e-27],\"string\":\"\u20ac$\\u000f\\nA'B\\\"\\\\\\\\\\\"/\"}",
+			`{"numbers": [333333333.3333333, 1E30, 4.50, 2e-3, 0.000000000000000000000000001], "string": "\u20ac$\u000F\u000aA'\u0042\u0022\u005c\\\"\/", "literals": [null, true, false]}`,
+			"{\"literals\":[null,true,false],\"numbers\":[333333333.3333333,1e+30,4.5,0.002,1e-27],\"string\":\"\u20ac$\\u000f\\nA'B\\\"\\\\\\\\\\\"/\"}",
 		},
 	} {
 		got, err := graphops.CanonicalizeJSON([]byte(tc.in))
@@ -447,7 +719,8 @@ func TestJSONEqual(t *testing.T) {
 		want bool
 	}{
 		{"1", "1.0", true}, {"1", `"1"`, false}, {"1e2", "100", true}, {"0.1", "0.10", true}, {"-0", "0", true},
-		{"9007199254740993", "9007199254740992", false}, {"1", "1.00000000000000001", false},
+		{"9007199254740994", "9007199254740992", false}, {"1", "1.0000000000000002", false},
+		{"9007199254740992", "9.007199254740992e15", true}, {"0.1", "1e-1", true},
 		{`{"a":1,"b":2}`, `{"b":2,"a":1}`, true}, {`{"a":1}`, `{"a":1,"b":2}`, false},
 		{"[1,2]", "[2,1]", false}, {"[1,2]", "[1,2]", true}, {"[]", "{}", false},
 		{"null", "null", true}, {`{"a":null}`, `{}`, false}, {"true", "false", false},
@@ -468,6 +741,14 @@ func TestJSONEqual(t *testing.T) {
 	}
 	if _, err := graphops.JSONEqual([]byte("1"), []byte("}")); err == nil {
 		t.Error("JSONEqual accepted a malformed right operand")
+	}
+	// A number the admission law refuses is an error on either side, never a
+	// verdict: 9007199254740993 is not "unequal to" 9007199254740992, it is
+	// not a value the domain holds.
+	for _, tc := range [][2]string{{"9007199254740993", "9007199254740992"}, {"1", "1.00000000000000001"}, {`{"a":1e400}`, `{"a":1e400}`}} {
+		if _, err := graphops.JSONEqual([]byte(tc[0]), []byte(tc[1])); !errors.Is(err, graphops.ErrValidation) {
+			t.Errorf("JSONEqual(%s, %s): want ErrValidation, got %v", tc[0], tc[1], err)
+		}
 	}
 }
 
@@ -749,6 +1030,20 @@ func TestLedgerHashLayoutIsFrozen(t *testing.T) {
 	}
 	if tomb.Hash() != sha256Hex([]byte(wantTomb)) {
 		t.Fatal("tombstone hash is not sha256 of the canonical bytes")
+	}
+	// The framing is exact and EXEMPT from the binary64 admission law
+	// (bdp#21 DECISION in laws.go): epoch 2^64-1 has no binary64 spelling,
+	// so the public canonicalizer refuses these very bytes, and the ledger
+	// hashes them unchanged. The same holds for a seq past 2^53.
+	if _, err := graphops.CanonicalizeJSON([]byte(wantTomb)); !errors.Is(err, graphops.ErrValidation) || !strings.Contains(err.Error(), `number 18446744073709551615 at JSON pointer "/epoch"`) {
+		t.Fatalf("the ledger framing must be exempt from the admission law CanonicalizeJSON enforces: %v", err)
+	}
+	far := mustEvent(t, graphops.LedgerEventSpec{
+		Seq: 9007199254740993, Kind: graphops.LedgerPromote, OpID: opID,
+		AuthorityID: authorityID, Epoch: 9007199254740993, At: at, PrevHash: mint.Hash(),
+	})
+	if got := string(far.CanonicalBytes()); !strings.Contains(got, `"epoch":9007199254740993,`) || !strings.HasSuffix(got, `"seq":9007199254740993}`) {
+		t.Fatalf("seq and epoch past 2^53 must be hashed exactly: %s", got)
 	}
 
 	fp := strings.Repeat("ab", 32)

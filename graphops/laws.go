@@ -1,6 +1,7 @@
 package graphops
 
 import (
+	"bytes"
 	"crypto/sha256"
 	"encoding/hex"
 	"encoding/json"
@@ -317,12 +318,13 @@ func CompareCodeUnits(a, b string) int {
 }
 
 // ---------------------------------------------------------------------------
-// JSON canonicalization and equality
+// JSON canonicalization, the number admission law, and equality
 //
 // What is canonicalized: any JSON text (RFC 8259) into ONE byte string, such
 // that two texts canonicalize to the same bytes exactly when they are equal
 // under RFC 6902 §4.6 — the comparison that decides whether a properties write
-// is a no-op. The form is RFC 8785 (JCS) with one stated departure:
+// is a no-op. The form is RFC 8785 (JCS), bit-exact over every admitted
+// document, with an admission law on numbers where JCS would silently round:
 //
 //   - Whitespace outside strings is removed.
 //   - Object members are sorted by the UTF-16 code units of their keys
@@ -336,21 +338,58 @@ func CompareCodeUnits(a, b string) int {
 //   - Literals are true, false, null.
 //   - Numbers are serialized with ECMAScript's Number::toString digit
 //     placement (RFC 8785 §3.2.2.3): no exponent for 10^-6 ≤ |x| < 10^21,
-//     shortest digit string, "e+"/"e-" otherwise — APPLIED TO THE EXACT
-//     DECIMAL VALUE OF THE LITERAL, not to its nearest IEEE-754 double. This
-//     is the departure. For every literal a double represents exactly under
-//     shortest round-trip the output is byte-identical to JCS ("1.0" → "1",
-//     "-0.0" → "0", "1e300" → "1e+300", "0.1" → "0.1"); where JCS would round
-//     (an integer past 2^53, more than 17 significant digits, an exponent
-//     past the double range) the value is preserved exactly instead. The plan
-//     forbids float64 laundering of properties, RFC 6902 equality is numeric
-//     equality, and the two demands meet only here: 9007199254740993 and
-//     9007199254740992 are different values and canonicalize differently.
+//     shortest digit string, "e+"/"e-" otherwise — applied to the EXACT
+//     DECIMAL VALUE of the literal, never to a float64 reading of it — and a
+//     literal is ADMITTED only if that value round-trips through IEEE-754
+//     binary64 (bdp#21, ruled 2026-09-08; RFC 7493 I-JSON's interoperability
+//     rule made mandatory). Round-trip, precisely: parse the literal's exact
+//     decimal value to the nearest binary64 (round-to-nearest-even, which is
+//     what strconv.ParseFloat computes however the literal is spelled and
+//     however long it is); serialize that double as the shortest decimal
+//     that reads back to it (strconv.FormatFloat with precision -1, the
+//     digits Number::toString prints); the literal is admissible exactly
+//     when that decimal's value is the literal's own value. So 1, 1.0 and
+//     1e0 admit and canonicalize to "1"; -0.0 to "0"; 1e300 and 1E300 to
+//     "1e+300"; 9007199254740992 (2^53) and 9007199254740994 (a double whose
+//     shortest spelling is itself) admit as themselves. 9007199254740993
+//     (2^53+1, halfway between two doubles), a 20-significant-digit decimal,
+//     18446744073709551616 (2^64: a double, but one a binary64 reader
+//     spells 18446744073709552000), 1e400 (past the range) and 1e-400
+//     (below it, read as 0) are refused with ErrValidation naming the RFC
+//     6901 JSON pointer of the offending member or element and what a
+//     binary64 reader would have made of the value.
 //
-// DECISION: that departure. Alternatives were bit-exact JCS (rounds numbers
-// the storage design exists to keep) and source-literal preservation (the
-// metadata plane's rule, under which 1 and 1.0 are different values, which
-// contradicts the no-op law). Exact-value JCS satisfies both texts.
+//     The canonical bytes are the literal's own digits — no float64
+//     laundering — and on every admitted value they coincide, by
+//     construction, with what RFC 8785 emits for the nearest double: the
+//     exact-decimal model and the binary64 model agree wherever a value is
+//     admitted, and disagree only where the value is refused. RFC 6902
+//     equality is numeric equality over that admitted domain.
+//
+// DECISION 3 (P0, 2026-09-07; amended by the bdp#21 ruling, 2026-09-08). The
+// P0 form was exact-value JCS with one stated departure: a literal a double
+// could not carry (an integer past 2^53, 18 or more significant digits, an
+// exponent past the range) was preserved exactly where JCS rounds it. It was
+// chosen over bit-exact JCS (which rounds numbers the storage design existed
+// to keep) and source-literal preservation (the metadata plane's rule, under
+// which 1 and 1.0 are different values, contradicting the no-op law), and it
+// left B4's interop caveat: a JCS peer modeling numbers as binary64 could
+// not reproduce such a value. The ruling closes the caveat from the other
+// side — equality stays exact-decimal, and a value no binary64 peer could
+// reproduce is refused at admission instead of stored. Two consequences are
+// recorded where they bite: the ledger framing is NOT under the law (see
+// "Ledger hashing": its integers are Go-typed, hashed exactly, and the frozen
+// layout is unchanged), and a descriptor's ownsOutgoing max obeys the law at
+// both of its doors (ParseTypeDescriptor and NewOwnedLinkDecl), so every
+// descriptor that exists has a canonical form the law admits.
+//
+// DECISION: the order of the number refusals. Syntax first; then the spelled
+// exponent guard and the normalized exponent bound (maxExponentMagnitude,
+// "exponent out of range"); then the binary64 law. 1e1000000000001 is
+// therefore refused as out of range and 1e400 as outside binary64 — both
+// ErrValidation, each message naming the first law the literal breaks. The
+// exponent bound stays (see its comment) although, for every nonzero literal
+// in admission mode, the binary64 range is now the tighter one.
 //
 // Nesting is bounded at maxJSONDepth (the depth encoding/json accepts) as a
 // stack-safety measure, not a protocol limit; advertised limits are the
@@ -360,9 +399,28 @@ func CompareCodeUnits(a, b string) int {
 const maxJSONDepth = 10000
 
 // CanonicalizeJSON returns the canonical bytes of one JSON text, or
-// ErrValidation for anything that is not exactly one well-formed JSON value.
+// ErrValidation for anything that is not exactly one well-formed JSON value —
+// a number the binary64 admission law refuses included, reported with the
+// RFC 6901 JSON pointer of the offending member or element ("" is the whole
+// document). This is the one door through which user-supplied JSON enters
+// the domain: NewProperties, ParseTypeDescriptor and JSONEqual all pass
+// through it.
 func CanonicalizeJSON(raw []byte) ([]byte, error) {
-	s := &jsonScanner{in: raw}
+	return canonicalizeJSON(raw, false)
+}
+
+// canonicalizeJSONExact is CanonicalizeJSON without the binary64 admission
+// law: every number is kept at its exact decimal value whatever a binary64
+// reader would make of it. It exists for the ledger framing alone (see
+// "Ledger hashing"), whose integers are Go-typed and hashed exactly under a
+// frozen layout, and it is deliberately unexported: nothing user-supplied
+// reaches the domain through it.
+func canonicalizeJSONExact(raw []byte) ([]byte, error) {
+	return canonicalizeJSON(raw, true)
+}
+
+func canonicalizeJSON(raw []byte, exact bool) ([]byte, error) {
+	s := &jsonScanner{in: raw, exact: exact}
 	s.skipSpace()
 	out, err := s.value(make([]byte, 0, len(raw)))
 	if err != nil {
@@ -377,7 +435,8 @@ func CanonicalizeJSON(raw []byte) ([]byte, error) {
 
 // JSONEqual is RFC 6902 §4.6 equality of two JSON texts: numbers by numeric
 // value, strings by code points, arrays element-wise, objects as member sets,
-// literals as themselves. Either text failing to parse is an error.
+// literals as themselves. Either text failing to parse — or carrying a number
+// the admission law refuses — is an error.
 func JSONEqual(a, b []byte) (bool, error) {
 	ca, err := CanonicalizeJSON(a)
 	if err != nil {
@@ -394,10 +453,47 @@ type jsonScanner struct {
 	in    []byte
 	pos   int
 	depth int
+	// path is the RFC 6901 location of the value being scanned: one token per
+	// enclosing object member or array element, pushed before the value and
+	// popped after it, so a refusal can say where it bit.
+	path []jsonPathToken
+	// exact disables the binary64 admission law. Only canonicalizeJSONExact
+	// sets it.
+	exact bool
+}
+
+// jsonPathToken is one RFC 6901 reference token: a member name or an index.
+type jsonPathToken struct {
+	key   string
+	index int
+	isKey bool
+}
+
+// pointerEscaper is RFC 6901 §3: "~" becomes "~0" and "/" becomes "~1".
+var pointerEscaper = strings.NewReplacer("~", "~0", "/", "~1")
+
+// pointer renders the scanner's current location as an RFC 6901 JSON
+// pointer: "" for the whole document, "/a/0/b~1c" for member "b/c" of the
+// first element of member "a".
+func (s *jsonScanner) pointer() string {
+	var b strings.Builder
+	for _, t := range s.path {
+		b.WriteByte('/')
+		if t.isKey {
+			b.WriteString(pointerEscaper.Replace(t.key))
+		} else {
+			b.WriteString(strconv.Itoa(t.index))
+		}
+	}
+	return b.String()
 }
 
 func (s *jsonScanner) errorf(format string, args ...any) error {
-	return fmt.Errorf("%w: JSON at byte %d: %s", ErrValidation, s.pos, fmt.Sprintf(format, args...))
+	return s.errorAt(s.pos, format, args...)
+}
+
+func (s *jsonScanner) errorAt(pos int, format string, args ...any) error {
+	return fmt.Errorf("%w: JSON at byte %d: %s", ErrValidation, pos, fmt.Sprintf(format, args...))
 }
 
 func (s *jsonScanner) skipSpace() {
@@ -507,10 +603,12 @@ func (s *jsonScanner) objectMembers() ([]jsonMember, error) {
 		}
 		s.pos++
 		s.skipSpace()
+		s.path = append(s.path, jsonPathToken{key: key, isKey: true})
 		value, err := s.value(nil)
 		if err != nil {
 			return nil, err
 		}
+		s.path = s.path[:len(s.path)-1]
 		members = append(members, jsonMember{key: key, value: value})
 		s.skipSpace()
 		if s.pos >= len(s.in) {
@@ -582,10 +680,12 @@ func (s *jsonScanner) array(out []byte) ([]byte, error) {
 		if i > 0 {
 			out = append(out, ',')
 		}
+		s.path = append(s.path, jsonPathToken{index: i})
 		var err error
 		if out, err = s.value(out); err != nil {
 			return nil, err
 		}
+		s.path = s.path[:len(s.path)-1]
 		s.skipSpace()
 		if s.pos >= len(s.in) {
 			return nil, s.errorf("unterminated array")
@@ -747,10 +847,19 @@ func appendCanonicalString(out []byte, str string) []byte {
 // representable here, but no consumer could use it, and unbounded
 // accumulation would be an integer overflow waiting to happen. Bounding the
 // normalized value is what makes canonicalization a fixed point: a literal
-// is admitted exactly when its canonical form re-parses, so 10e1000000000000
+// passes this bound exactly when its canonical form does, so 10e1000000000000
 // (canonically 1e+1000000000001) is refused on the way in rather than stored
 // and then unreadable, and 0.1e1000000000001 (canonically 1e+1000000000000)
-// is admitted although its spelled exponent exceeds the bound.
+// is not refused HERE although its spelled exponent exceeds the bound.
+//
+// Since the bdp#21 ruling the binary64 range (about 5e-324 to 1.8e308) is the
+// tighter bound for every nonzero literal in admission mode — 1e+1000000000000
+// is refused by the admission law on its own account — so this bound decides
+// there only for zero, which has no magnitude (0e1000000000005 is still "0",
+// and 0e99999999999999999999999 is still refused by the spelled-exponent
+// guard), and in exact mode, where the ledger framing spells no exponent at
+// all. It stays because the overflow guard and the fixed-point argument rest
+// on it, not on the admission law.
 const maxExponentMagnitude = 1_000_000_000_000
 
 func (s *jsonScanner) digits() ([]byte, error) {
@@ -764,8 +873,10 @@ func (s *jsonScanner) digits() ([]byte, error) {
 	return s.in[start:s.pos], nil
 }
 
-// number parses one RFC 8259 number and appends its canonical form.
+// number parses one RFC 8259 number, appends its canonical form, and — unless
+// the scanner is exact — applies the binary64 admission law to it.
 func (s *jsonScanner) number(out []byte) ([]byte, error) {
+	start := s.pos
 	neg := false
 	if s.in[s.pos] == '-' {
 		neg = true
@@ -820,9 +931,21 @@ func (s *jsonScanner) number(out []byte) ([]byte, error) {
 			exp = -exp
 		}
 	}
+	mark := len(out)
 	out, ok := appendCanonicalNumber(out, neg, intPart, frac, exp)
 	if !ok {
 		return nil, s.errorf("exponent out of range")
+	}
+	if s.exact {
+		return out, nil
+	}
+	literal := s.in[start:s.pos]
+	peer, ok := binary64Peer(literal)
+	if !ok {
+		return nil, s.errorAt(start, "number %s at JSON pointer %q is outside the IEEE-754 binary64 range (bdp#21: a number must round-trip through binary64)", abbreviate(literal), s.pointer())
+	}
+	if !bytes.Equal(peer, out[mark:]) {
+		return nil, s.errorAt(start, "number %s at JSON pointer %q does not round-trip through IEEE-754 binary64: a binary64 reader serializes it as %s (bdp#21)", abbreviate(literal), s.pointer(), peer)
 	}
 	return out, nil
 }
@@ -891,6 +1014,62 @@ func appendCanonicalNumber(out []byte, neg bool, intPart, frac []byte, exp int64
 		out = strconv.AppendInt(out, e, 10)
 	}
 	return out, true
+}
+
+// binary64Peer is what RFC 8785's number model makes of a literal: the
+// canonical form of the shortest decimal that reads back to the literal's
+// nearest IEEE-754 binary64. The admission law (bdp#21) admits a literal
+// exactly when this equals the literal's own canonical form. ok is false
+// when the nearest binary64 is infinite — the literal is outside the range;
+// a literal below the range is not an error here, its peer is "0".
+//
+// strconv.ParseFloat is correctly rounded (round-to-nearest-even over the
+// exact decimal value, however the literal is spelled and however long it
+// is), and strconv.FormatFloat with precision -1 prints the shortest digits
+// that round-trip — the digits ECMAScript's Number::toString prints. The 'e'
+// form is asked for so that the digits and the exponent are read back
+// without guessing at Go's own placement rule; ECMAScript's placement is
+// then applied by appendCanonicalNumber, the function that placed the
+// literal's digits, so the two sides are compared in one normal form.
+func binary64Peer(literal []byte) (peer []byte, ok bool) {
+	f, err := strconv.ParseFloat(string(literal), 64)
+	if err != nil {
+		return nil, false // the scanner admitted the syntax, so only the range can fail
+	}
+	es := strconv.FormatFloat(f, 'e', -1, 64) // [-]d[.ddd]e±dd
+	neg := es[0] == '-'
+	if neg {
+		es = es[1:]
+	}
+	e := strings.IndexByte(es, 'e')
+	exp, _ := strconv.ParseInt(es[e+1:], 10, 64) // a sign and digits: cannot fail
+	intPart, frac := []byte(es[:1]), []byte(nil)
+	if e > 1 {
+		frac = []byte(es[2:e]) // past "d."
+	}
+	peer, _ = appendCanonicalNumber(nil, neg, intPart, frac, exp) // |exp| ≤ 324: within the bound
+	return peer, true
+}
+
+// admissibleInt reports whether n, spelled as a JSON integer, passes the
+// binary64 admission law. An int is below 10^21, so its spelling is its own
+// canonical form and the law holds exactly when its binary64 peer is that
+// same spelling.
+func admissibleInt(n int) bool {
+	literal := strconv.AppendInt(nil, int64(n), 10)
+	peer, ok := binary64Peer(literal)
+	return ok && bytes.Equal(peer, literal)
+}
+
+// abbreviate renders a number literal for a diagnostic. A properties document
+// may spell a number at any length, and the pointer and byte offset already
+// locate it, so a long one is elided in the middle.
+func abbreviate(literal []byte) string {
+	const keep = 24
+	if len(literal) <= 2*keep+3 {
+		return string(literal)
+	}
+	return fmt.Sprintf("%s...%s (%d bytes)", literal[:keep], literal[len(literal)-keep:], len(literal))
 }
 
 // ---------------------------------------------------------------------------
@@ -1703,8 +1882,12 @@ func claimsScope(scopeURL, reference string) bool {
 //	  "state"         string  "pruned" | "erased"              (optional)
 //
 //	hash = lowercase hex SHA-256 of those bytes; the next event's prev_hash is
-//	this hash. Integers are exact (see the number rule above), so seq and
-//	epoch survive the full uint64 range. Every string member is VALID UTF-8:
+//	this hash. The framing is canonicalized by canonicalizeJSONExact, NOT by
+//	CanonicalizeJSON: seq and epoch are Go uint64 values, spelled as exact
+//	JSON integers and hashed as such over the full uint64 range, and they
+//	are not subject to the binary64 admission law (bdp#21, 2026-09-08),
+//	which governs user-supplied JSON entering the domain. Every string
+//	member is VALID UTF-8:
 //	the hex, path, URL and enum members by their own grammars, and the
 //	opaque revision by NewRevision's refusal of invalid bytes — encoding/json
 //	would otherwise launder an invalid byte to U+FFFD, and two events that
@@ -1715,6 +1898,17 @@ func claimsScope(scopeURL, reference string) bool {
 // and the UTF-8 requirement on every hashed string (P0 council). B2 gives
 // the formula and the member list; the framing and the formats are this
 // file's choice and are pinned by a golden test.
+//
+// DECISION (bdp#21 fold, 2026-09-08): the layout is UNCHANGED by the
+// admission law; the exemption above is stated rather than the layout
+// re-cut. The framing does spell seq and epoch as JSON number literals, so a
+// JCS peer that models numbers as binary64 would read 18446744073709551615
+// as 18446744073709552000 and could not reproduce the hash of an event whose
+// seq or epoch is past 2^53 — the interop caveat B4 already records. The
+// ledger is internal (this package alone computes and verifies its hashes),
+// the layout is frozen by the P1 migration that stores it, and the ruling's
+// law is about values a peer is asked to hold. The golden test hashes epoch
+// 2^64-1 and pins that CanonicalizeJSON refuses those same bytes.
 // ---------------------------------------------------------------------------
 
 // GenesisHash is the prev_hash of the first event of a Scope's history: no
@@ -1759,8 +1953,8 @@ func ledgerEventCanonicalBytes(spec LedgerEventSpec) []byte {
 		Seq:          spec.Seq,
 		State:        spec.State,
 	}
-	raw, _ := json.Marshal(w)             // strings and integers: cannot fail
-	canonical, _ := CanonicalizeJSON(raw) // encoder output is one valid value
+	raw, _ := json.Marshal(w)                  // strings and integers: cannot fail
+	canonical, _ := canonicalizeJSONExact(raw) // one valid value, integers exact: see the DECISION above
 	return canonical
 }
 
