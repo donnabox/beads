@@ -718,11 +718,12 @@ func NewOwnedLinkDecl(linkTypeURL, label string, max int) (OwnedLinkDecl, error)
 
 // NewWildcardOwnedLinkDecl builds the wildcard declaration: every outgoing
 // Link Type the descriptor does not name explicitly is owned, and max bounds
-// the WHOLE wildcard-owned set — every such Link of one Bead together, not
-// each Type separately, since the Types are open-ended and a per-Type bound
-// would bound nothing inline. Max is required and positive exactly as on an
-// explicit declaration; the installer's "no owning declaration without a
-// bound" law covers both.
+// the Bead's WHOLE OWNED SET — every owned Link of one Bead across every
+// owned Link Type together, the explicitly declared Types' Links included —
+// not each Type separately, since the Types are open-ended and a per-Type
+// bound would bound nothing inline. Max is required and positive exactly as
+// on an explicit declaration; the installer's "no owning declaration without
+// a bound" law covers both.
 //
 // DECISION: no label. The ruling spells the entry as "*": { max }, and a
 // label is display documentation for one named Type; the wildcard names
@@ -730,13 +731,20 @@ func NewOwnedLinkDecl(linkTypeURL, label string, max int) (OwnedLinkDecl, error)
 // later is a widening while refusing one later would break installed
 // descriptors.
 //
-// DECISION: "max bounding the whole owned set" is read as the set of Links
-// owned BY VIRTUE OF the wildcard. An explicitly declared Type is bounded by
-// its own max ("explicit entries take precedence for the types they name"),
-// so a Bead's inline owned plane is bounded by the explicit maxes plus the
-// wildcard max. The other reading — the wildcard max caps everything owned,
-// explicit Types included — is the one the bdp spec PR for item 5 would have
-// to state; this package takes the per-declaration reading until it does.
+// DECISION (OW1 = A, operator ruling 2026-09-08, gastownhall/bdp#22): "max
+// bounds the whole owned set" is the LITERAL whole set. P0's first reading
+// took the narrower set — the Links owned by virtue of the wildcard alone,
+// each explicit Type bounded only by its own max — and was flipped: the
+// wildcard's max is the ONE number that bounds a Bead's inline owned plane,
+// and an explicit declaration's max is a tighter per-Type bound inside it
+// ("explicit entries take precedence for the types they name" says which
+// declaration owns a Type, not that the Type escapes the bound). It follows
+// that an explicit max above the wildcard's promises what the wildcard
+// forbids, so such a descriptor is invalid and is not installed:
+// NewTypeDescriptor, and ParseTypeDescriptor through it, refuse it naming
+// the Type and both numbers — a descriptor-validation rule beyond the
+// schema bundle, which cannot relate two entries' numbers. Equal is
+// admitted: the explicit Type may then fill the whole set by itself.
 func NewWildcardOwnedLinkDecl(max int) (OwnedLinkDecl, error) {
 	if err := validateOwnedMax(WildcardOwnedLinkKey, max); err != nil {
 		return OwnedLinkDecl{}, err
@@ -778,8 +786,11 @@ func (d OwnedLinkDecl) TypeURL() string { return d.typeURL }
 func (d OwnedLinkDecl) Label() (string, bool) { return d.label, d.label != "" }
 
 // Max is the largest owned set the declaration permits: the Links of the one
-// named Type for an explicit declaration, every wildcard-owned Link together
-// for the wildcard.
+// named Type for an explicit declaration; for the wildcard, the Bead's whole
+// owned set — every owned Link across every owned Type, the explicitly
+// declared Types' Links included (OW1 = A). In a descriptor that exists no
+// explicit Max exceeds the wildcard's, so the wildcard's Max alone sizes the
+// inline owned plane of a Bead whose Type carries one.
 func (d OwnedLinkDecl) Max() int { return d.max }
 
 // TypeDescriptor is one installed Type contract: the closed BDP v0 descriptor
@@ -824,8 +835,8 @@ type TypeDescriptorSpec struct {
 	Source, Target *EndpointConstraint
 	// OwnsOutgoing declares the owned Link Types of a Bead Type: explicit
 	// declarations and at most one wildcard (NewWildcardOwnedLinkDecl), in
-	// any order; empty means the member is absent. Must be empty for a Link
-	// Type.
+	// any order, no explicit max above the wildcard's (OW1 = A); empty means
+	// the member is absent. Must be empty for a Link Type.
 	OwnsOutgoing []OwnedLinkDecl
 }
 
@@ -833,9 +844,11 @@ type TypeDescriptorSpec struct {
 // pinned spec and schema bundle: a canonical Type ID, a nonempty name, a
 // category, unique canonical parent IDs that do not include the Type itself,
 // endpoint constraints exactly when the Type describes Links, ownsOutgoing
-// only when it describes Beads, one declaration per owned Link Type and at
+// only when it describes Beads, one declaration per owned Link Type, at
 // most one wildcard (bdp#1 item 5, ahead of the pinned bundle — see
-// WildcardOwnedLinkKey).
+// WildcardOwnedLinkKey), and — under a wildcard — no explicit declaration
+// whose max exceeds the wildcard's, since the wildcard's max bounds the
+// whole owned set (OW1 = A; see NewWildcardOwnedLinkDecl).
 func NewTypeDescriptor(spec TypeDescriptorSpec) (TypeDescriptor, error) {
 	if err := ValidateTypeURL(spec.ID); err != nil {
 		return TypeDescriptor{}, fmt.Errorf("descriptor id: %w", err)
@@ -898,6 +911,17 @@ func NewTypeDescriptor(spec TypeDescriptorSpec) (TypeDescriptor, error) {
 			if i > 0 && owns[i-1].typeURL == decl.typeURL {
 				// The same law refuses two wildcards: both are keyed "*".
 				return TypeDescriptor{}, fmt.Errorf("%w: descriptor %s: ownsOutgoing declares %s twice", ErrValidation, spec.ID, decl.typeURL)
+			}
+		}
+		// The whole-set rule (OW1 = A): the wildcard's max bounds every owned
+		// Link of a Bead, explicit Types' Links included, so an explicit max
+		// above it is refused. The wildcard sorts first ("*" precedes every
+		// URL), so it is owns[0] when present.
+		if len(owns) > 0 && owns[0].Wildcard() {
+			for _, decl := range owns[1:] {
+				if decl.max > owns[0].max {
+					return TypeDescriptor{}, fmt.Errorf("%w: descriptor %s: ownsOutgoing %s: max %d exceeds the wildcard's max %d, which bounds the whole owned set (OW1 = A)", ErrValidation, spec.ID, decl.typeURL, decl.max, owns[0].max)
+				}
 			}
 		}
 		d.ownsOutgoing = owns
@@ -1012,7 +1036,10 @@ var descriptorMembers = map[string]memberShape{
 // ownsOutgoing, propertiesSchema when present is an absolute URL, an
 // ownsOutgoing key is a canonical Link Type URL or the wildcard "*"
 // (WildcardOwnedLinkKey — read ahead of the pinned bundle, which admits
-// only URLs there), and every law NewTypeDescriptor enforces holds.
+// only URLs there), and every law NewTypeDescriptor enforces holds — the
+// whole-set max rule among them: an explicit entry's max above the
+// wildcard's is refused (OW1 = A), a rule the schema bundle cannot state
+// because it relates two entries' numbers.
 //
 // DECISION: description "" is read as absent. The bundle permits the empty
 // string, the canonical form has no way to carry it apart from absence, and
@@ -1258,7 +1285,12 @@ func (t TypeDescriptor) OwnsOutgoing() []OwnedLinkDecl {
 // Type when there is one, else the wildcard declaration when there is one,
 // else none — "explicit entries take precedence for the types they name".
 // It is the owned-Link trigger law in predicate form: a mutation of a Link
-// whose Type the source's Bead Type owns versions the source.
+// whose Type the source's Bead Type owns versions the source. Precedence
+// says WHICH declaration owns a Type, not what bounds it: the returned
+// explicit declaration's Max bounds that Type's Links, and when the
+// descriptor also carries a wildcard, the wildcard's Max bounds the Bead's
+// whole owned set, those Links included (OW1 = A) — a caller sizing the
+// owned plane reads the wildcard's Max from OwnsOutgoing, not a sum.
 //
 // DECISION: Owns(WildcardOwnedLinkKey) is false. "*" is a key, not a Type;
 // no Link carries it, so nothing is owned under it BY NAME, and answering
@@ -1295,6 +1327,11 @@ func (t TypeDescriptor) CanonicalJSON() []byte { return append([]byte(nil), t.ca
 // conformsTo sets (the descriptor's and each endpoint's) are sorted by code
 // unit in the canonical form, so the authored order is NOT significant to
 // it: two descriptors that differ only in parent order are one contract.
+// Validation rules beyond the schema do not reach it either: the whole-set
+// max rule (OW1 = A) decides which descriptors EXIST, not how one is spelled,
+// so a descriptor it admits fingerprints exactly as it did before the ruling
+// — the installer's idempotence key is stable across it — and a descriptor
+// it refuses is never built and has no fingerprint here at all.
 func (t TypeDescriptor) Fingerprint() string { return t.fingerprint }
 
 // IsZero reports a descriptor no constructor produced.
@@ -1779,7 +1816,10 @@ func (m LedgerManifest) Covers(events []LedgerEvent) error {
 // explicitly declared Type with no Links is an EMPTY group, never an absent
 // one; a Type owned only through the wildcard has a group exactly when the
 // Bead has a Link of it (bdp#1 item 5: "one entry per owned type actually
-// present, plus an empty entry for each explicitly declared type").
+// present, plus an empty entry for each explicitly declared type"). An
+// explicit group holds at most its declaration's Max Links; under a
+// wildcard declaration the Links of ALL of a Bead's groups together —
+// explicit groups included — number at most the wildcard's Max (OW1 = A).
 type OwnedLinkGroup struct {
 	TypeURL string
 	Links   []Link
@@ -1791,7 +1831,12 @@ type OwnedLinkGroup struct {
 // one group per wildcard-owned Link Type the Bead actually has Links of, all
 // in code-unit order of TypeURL; nil when nothing is owned or present. Every
 // projection — singleton, collection item, selection item — returns records,
-// because the Bead's revision covers its owned Links.
+// because the Bead's revision covers its owned Links. The expansion is
+// bounded, which is what makes it servable inline: each explicit group by
+// its declaration's Max, and — under a wildcard — the whole expansion, every
+// group together, by the wildcard's Max (OW1 = A), the one bound the store's
+// batched owned-Links read enforces with LIMIT max + 1 and the one
+// CheckBeadRecord refuses a record for exceeding.
 type BeadRecord struct {
 	Bead       Bead
 	OwnedLinks []OwnedLinkGroup
@@ -1802,20 +1847,41 @@ type BeadRecord struct {
 // order of Link Type URL with no repeats and none keyed by the wildcard; there
 // is exactly one group, possibly empty, per explicit declaration; a group for
 // any other Type exists only under a wildcard declaration and only when it
-// holds a Link; and in every group each Link's Type equals the group key, its
+// holds a Link; in every group each Link's Type equals the group key, its
 // source is the Bead, and the Links ascend in code-unit order of path with no
-// repeats. It is the acceptance law the plan states and the storage
-// transactions run. The bounds (Max) are not checked here: they are the
-// serving transaction's LIMIT law, not a fact about an assembled record.
+// repeats; and the record is within its bounds — an explicit group holds at
+// most its declaration's Max Links, and under a wildcard declaration the
+// Links of all groups together number at most the wildcard's Max, the whole
+// owned set (OW1 = A). It is the acceptance law the plan states and the
+// storage transactions run.
+//
+// DECISION: the bounds ARE checked here, both of them. Before OW1 = A this
+// law left Max to the serving transaction's LIMIT max + 1 — "not a fact
+// about an assembled record" — and the ruling made the wildcard's Max
+// exactly such a fact: the whole-set bound is what a Bead's inline owned
+// plane may hold, so a record over it is one the descriptor says cannot
+// exist, and serving it would serve a contract violation. The store's
+// batched owned-Links read for a wildcard owner selects every owned Link of
+// the Bead, all Types together, under LIMIT wildcard.max + 1 (B4) and
+// refuses to assemble when the extra row comes back; this law is the pure
+// restatement of that same bound over what was assembled, so the two never
+// disagree. The explicit per-Type bound is checked too, for consistency —
+// one acceptance law whether or not a wildcard is present, rather than a
+// Max that is a fact under a wildcard and a mere LIMIT hint without one —
+// and because it is the conservative choice: dropping a check later widens
+// what is accepted, adding one later would refuse records that once passed.
+// The declarations are a descriptor's own (no explicit Max exceeds the
+// wildcard's there), so the two checks are independent and either may be
+// the one that fires.
 func CheckBeadRecord(record BeadRecord, owns []OwnedLinkDecl) error {
 	fail := func(format string, args ...any) error {
 		return fmt.Errorf("%w: bead %s: %s", ErrValidation, record.Bead.Path(), fmt.Sprintf(format, args...))
 	}
 	var explicit []OwnedLinkDecl
-	wildcard := false
+	var wildcard OwnedLinkDecl // the zero declaration when there is none
 	for _, decl := range owns {
 		if decl.Wildcard() {
-			wildcard = true
+			wildcard = decl
 			continue
 		}
 		explicit = append(explicit, decl)
@@ -1823,7 +1889,8 @@ func CheckBeadRecord(record BeadRecord, owns []OwnedLinkDecl) error {
 	sort.SliceStable(explicit, func(i, j int) bool {
 		return CompareCodeUnits(explicit[i].typeURL, explicit[j].typeURL) < 0
 	})
-	next := 0 // the first explicit declaration not yet matched by a group
+	next := 0  // the first explicit declaration not yet matched by a group
+	total := 0 // owned Links across all groups: the whole owned set
 	for i, group := range record.OwnedLinks {
 		if group.TypeURL == WildcardOwnedLinkKey {
 			return fail("ownedLinks group %d is keyed by the wildcard; groups are keyed by Link Type URL", i)
@@ -1838,12 +1905,18 @@ func CheckBeadRecord(record BeadRecord, owns []OwnedLinkDecl) error {
 		}
 		switch {
 		case next < len(explicit) && explicit[next].typeURL == group.TypeURL:
-			next++ // the explicit declaration's group, empty or not
-		case !wildcard:
+			// The explicit declaration's group, empty or not, within its
+			// own per-Type bound.
+			if len(group.Links) > explicit[next].max {
+				return fail("ownedLinks group %s holds %d Links, over its declared max %d", group.TypeURL, len(group.Links), explicit[next].max)
+			}
+			next++
+		case !wildcard.Wildcard():
 			return fail("ownedLinks group %s is not an owned Type", group.TypeURL)
 		case len(group.Links) == 0:
 			return fail("empty ownedLinks group %s: a wildcard-owned Type has a group only when a Link is present", group.TypeURL)
 		}
+		total += len(group.Links)
 		for j, link := range group.Links {
 			if link.TypeURL() != group.TypeURL {
 				return fail("owned Link %s has type %s under group %s", link.Path(), link.TypeURL(), group.TypeURL)
@@ -1858,6 +1931,9 @@ func CheckBeadRecord(record BeadRecord, owns []OwnedLinkDecl) error {
 	}
 	if next < len(explicit) {
 		return fail("no ownedLinks group for explicitly owned %s", explicit[next].typeURL)
+	}
+	if wildcard.Wildcard() && total > wildcard.max {
+		return fail("%d owned Links across all groups, over the wildcard's whole-set max %d", total, wildcard.max)
 	}
 	return nil
 }

@@ -988,7 +988,17 @@ func TestCheckBeadRecord(t *testing.T) {
 	if err := graphops.CheckBeadRecord(graphops.BeadRecord{Bead: bead}, nil); err != nil {
 		t.Fatalf("a Type owning nothing has no groups: %v", err)
 	}
+	// Each explicit group is within its declaration's max: at the max is
+	// admitted, one over is refused (OW1 = A made Max an acceptance fact).
+	atMax := graphops.BeadRecord{Bead: bead, OwnedLinks: []graphops.OwnedLinkGroup{
+		{TypeURL: blocks, Links: []graphops.Link{mk("links/b/1", blocks, self), mk("links/b/2", blocks, self)}},
+		good.OwnedLinks[1],
+	}}
+	if err := graphops.CheckBeadRecord(atMax, owns); err != nil {
+		t.Fatalf("explicit groups at their max refused: %v", err)
+	}
 	for name, rec := range map[string]graphops.BeadRecord{
+		"over max":        {Bead: bead, OwnedLinks: []graphops.OwnedLinkGroup{{TypeURL: blocks, Links: []graphops.Link{mk("links/b/1", blocks, self), mk("links/b/2", blocks, self), mk("links/b/3", blocks, self)}}, good.OwnedLinks[1]}},
 		"missing group":   {Bead: bead, OwnedLinks: good.OwnedLinks[1:]},
 		"wrong order":     {Bead: bead, OwnedLinks: []graphops.OwnedLinkGroup{good.OwnedLinks[1], good.OwnedLinks[0]}},
 		"wrong type":      {Bead: bead, OwnedLinks: []graphops.OwnedLinkGroup{{TypeURL: blocks}, {TypeURL: cites, Links: []graphops.Link{mk("links/c/1", blocks, self)}}}},
@@ -1074,8 +1084,10 @@ func TestErrorsAreOneVocabulary(t *testing.T) {
 
 // The wildcard owned-Link declaration (bdp#1 item 5, ruled 2026-09-08):
 // "*": { max } owns every outgoing Link Type not named explicitly, max bounds
-// the whole wildcard-owned set, and explicit entries take precedence for the
-// Types they name. THE DOMAIN RUNS AHEAD OF THE PINNED WIRE HERE — the bundle
+// the Bead's WHOLE owned set — explicit Types' Links included, so no explicit
+// max may exceed it (OW1 = A; TestWildcardMaxBoundsTheWholeOwnedSet) — and
+// explicit entries take precedence for the Types they name. THE DOMAIN RUNS
+// AHEAD OF THE PINNED WIRE HERE — the bundle
 // vendored in internal/httpapi/bdpwire keys ownsOutgoing by absoluteHttpUrl
 // until the pin moves (graphops.WildcardOwnedLinkKey; the tripwire is
 // bdpwire's TestWildcardOwnedLinkKeyIsNotInThePinnedBundle) — so the
@@ -1083,23 +1095,25 @@ func TestErrorsAreOneVocabulary(t *testing.T) {
 // "*" sorted first: 0x2A precedes every URL's "h".
 func TestWildcardOwnedLinkDeclaration(t *testing.T) {
 	const memory, cites, relates = "https://work.example/types/memory", "https://work.example/types/cites", "https://work.example/types/relates"
-	any5, err := graphops.NewWildcardOwnedLinkDecl(5)
+	any8, err := graphops.NewWildcardOwnedLinkDecl(8)
 	if err != nil {
 		t.Fatal(err)
 	}
-	if _, hasLabel := any5.Label(); !any5.Wildcard() || any5.TypeURL() != graphops.WildcardOwnedLinkKey || any5.Max() != 5 || hasLabel {
-		t.Fatalf("wildcard declaration: %+v", any5)
+	if _, hasLabel := any8.Label(); !any8.Wildcard() || any8.TypeURL() != graphops.WildcardOwnedLinkKey || any8.Max() != 8 || hasLabel {
+		t.Fatalf("wildcard declaration: %+v", any8)
 	}
 	if (graphops.OwnedLinkDecl{}).Wildcard() {
 		t.Fatal("the zero declaration is not the wildcard")
 	}
-	cites8, _ := graphops.NewOwnedLinkDecl(cites, "cites", 8)
-	built, err := graphops.NewTypeDescriptor(graphops.TypeDescriptorSpec{ID: memory, Name: "Memory", Describes: graphops.KindBead, OwnsOutgoing: []graphops.OwnedLinkDecl{cites8, any5}})
+	// The explicit max sits under the wildcard's: the wildcard's 8 bounds the
+	// whole owned set, cites' 5 the cites Links inside it (OW1 = A).
+	cites5, _ := graphops.NewOwnedLinkDecl(cites, "cites", 5)
+	built, err := graphops.NewTypeDescriptor(graphops.TypeDescriptorSpec{ID: memory, Name: "Memory", Describes: graphops.KindBead, OwnsOutgoing: []graphops.OwnedLinkDecl{cites5, any8}})
 	if err != nil {
 		t.Fatal(err)
 	}
-	const wantCanonical = `{"conformsTo":[],"describes":"bead","id":"https://work.example/types/memory","name":"Memory","ownsOutgoing":{"*":{"max":5},"https://work.example/types/cites":{"label":"cites","max":8}}}`
-	const wantFingerprint = "c0ead94e2681b74dac89b402465ca0fb2654cdb092fb400f00254b63c19d92f9"
+	const wantCanonical = `{"conformsTo":[],"describes":"bead","id":"https://work.example/types/memory","name":"Memory","ownsOutgoing":{"*":{"max":8},"https://work.example/types/cites":{"label":"cites","max":5}}}`
+	const wantFingerprint = "9aba92834b71bd4153890415c243b3961058318602c478966ac5cde403862e26"
 	if got := string(built.CanonicalJSON()); got != wantCanonical {
 		t.Fatalf("canonical wildcard descriptor\n got %s\nwant %s", got, wantCanonical)
 	}
@@ -1111,17 +1125,17 @@ func TestWildcardOwnedLinkDeclaration(t *testing.T) {
 		t.Fatalf("the wildcard sorts first, then Type URLs: %+v", owns)
 	}
 	// Explicit precedence, wildcard fallback, and "*" is never a Type.
-	if got, ok := built.Owns(cites); !ok || got.Wildcard() || got.Max() != 8 {
+	if got, ok := built.Owns(cites); !ok || got.Wildcard() || got.Max() != 5 {
 		t.Fatalf("Owns(cites) must be the explicit declaration: %+v %v", got, ok)
 	}
-	if got, ok := built.Owns(relates); !ok || !got.Wildcard() || got.Max() != 5 {
+	if got, ok := built.Owns(relates); !ok || !got.Wildcard() || got.Max() != 8 {
 		t.Fatalf("Owns(relates) must fall back to the wildcard: %+v %v", got, ok)
 	}
 	if _, ok := built.Owns(graphops.WildcardOwnedLinkKey); ok {
 		t.Fatal(`Owns("*") must be false: the wildcard key is not a Type`)
 	}
 	// The wire form, in either key order, parses to the same fingerprint.
-	parsed, err := graphops.ParseTypeDescriptor([]byte(`{"id":"https://work.example/types/memory","name":"Memory","describes":"bead","conformsTo":[],"ownsOutgoing":{"https://work.example/types/cites":{"max":8,"label":"cites"},"*":{"max":5}}}`))
+	parsed, err := graphops.ParseTypeDescriptor([]byte(`{"id":"https://work.example/types/memory","name":"Memory","describes":"bead","conformsTo":[],"ownsOutgoing":{"https://work.example/types/cites":{"max":5,"label":"cites"},"*":{"max":8}}}`))
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -1141,7 +1155,7 @@ func TestWildcardOwnedLinkDeclaration(t *testing.T) {
 		t.Fatalf("a lone wildcard owns every Type: %+v %v", got, ok)
 	}
 	// Without a wildcard an unnamed Type is still unowned: the pre-ruling law.
-	plain, _ := graphops.NewTypeDescriptor(graphops.TypeDescriptorSpec{ID: memory, Name: "Memory", Describes: graphops.KindBead, OwnsOutgoing: []graphops.OwnedLinkDecl{cites8}})
+	plain, _ := graphops.NewTypeDescriptor(graphops.TypeDescriptorSpec{ID: memory, Name: "Memory", Describes: graphops.KindBead, OwnsOutgoing: []graphops.OwnedLinkDecl{cites5}})
 	if _, ok := plain.Owns(relates); ok {
 		t.Fatal("no wildcard: an unnamed Type is not owned")
 	}
@@ -1175,7 +1189,7 @@ func TestWildcardOwnedLinkDeclaration(t *testing.T) {
 	if _, err := graphops.NewOwnedLinkDecl(graphops.WildcardOwnedLinkKey, "", 1); !errors.Is(err, graphops.ErrValidation) || !strings.Contains(err.Error(), "wildcard") {
 		t.Errorf(`NewOwnedLinkDecl("*") must refuse and name the wildcard: %v`, err)
 	}
-	if _, err := graphops.NewTypeDescriptor(graphops.TypeDescriptorSpec{ID: memory, Name: "Memory", Describes: graphops.KindBead, OwnsOutgoing: []graphops.OwnedLinkDecl{any5, cites8, any5}}); !errors.Is(err, graphops.ErrValidation) {
+	if _, err := graphops.NewTypeDescriptor(graphops.TypeDescriptorSpec{ID: memory, Name: "Memory", Describes: graphops.KindBead, OwnsOutgoing: []graphops.OwnedLinkDecl{any8, cites5, any8}}); !errors.Is(err, graphops.ErrValidation) || !strings.Contains(err.Error(), "twice") {
 		t.Errorf("two wildcards: %v", err)
 	}
 	if _, err := graphops.NewEndpointConstraint([]string{graphops.WildcardOwnedLinkKey}, ""); !errors.Is(err, graphops.ErrValidation) {
@@ -1194,9 +1208,80 @@ func TestWildcardOwnedLinkDeclaration(t *testing.T) {
 	}
 }
 
+// The wildcard's max bounds the Bead's WHOLE owned set (OW1 = A, operator
+// ruling 2026-09-08, gastownhall/bdp#22): every owned Link across every owned
+// Type, the explicitly declared Types' Links included. So an explicit
+// declaration's max may not exceed the wildcard's — refused at both doors,
+// naming the Type and both numbers — while equal and lower are admitted, and
+// a descriptor without a wildcard is bounded per Type only, as before.
+func TestWildcardMaxBoundsTheWholeOwnedSet(t *testing.T) {
+	const x, blocks, cites, relates = "https://work.example/types/x", "https://work.example/types/blocks", "https://work.example/types/cites", "https://work.example/types/relates"
+	spec := func(owns ...graphops.OwnedLinkDecl) graphops.TypeDescriptorSpec {
+		return graphops.TypeDescriptorSpec{ID: x, Name: "X", Describes: graphops.KindBead, OwnsOutgoing: owns}
+	}
+	any5, _ := graphops.NewWildcardOwnedLinkDecl(5)
+	blocks2, _ := graphops.NewOwnedLinkDecl(blocks, "", 2)
+	cites5, _ := graphops.NewOwnedLinkDecl(cites, "", 5)
+	cites8, _ := graphops.NewOwnedLinkDecl(cites, "cites", 8)
+	const wantRefusal = "ownsOutgoing https://work.example/types/cites: max 8 exceeds the wildcard's max 5"
+	// Refused at the constructor, whatever the authored order and however
+	// many compliant entries precede the offending one.
+	for name, owns := range map[string][]graphops.OwnedLinkDecl{
+		"explicit above the wildcard":                {cites8, any5},
+		"wildcard first":                             {any5, cites8},
+		"a compliant entry before the offending one": {any5, blocks2, cites8},
+	} {
+		_, err := graphops.NewTypeDescriptor(spec(owns...))
+		if !errors.Is(err, graphops.ErrValidation) || !strings.Contains(err.Error(), wantRefusal) {
+			t.Errorf("%s: want ErrValidation naming the Type and both numbers, got %v", name, err)
+		}
+	}
+	// Refused at the JSON door with the same words, in either key order.
+	for name, in := range map[string]string{
+		"explicit above the wildcard": `{"id":"https://work.example/types/x","name":"X","describes":"bead","conformsTo":[],"ownsOutgoing":{"https://work.example/types/cites":{"label":"cites","max":8},"*":{"max":5}}}`,
+		"wildcard first":              `{"id":"https://work.example/types/x","name":"X","describes":"bead","conformsTo":[],"ownsOutgoing":{"*":{"max":5},"https://work.example/types/blocks":{"max":2},"https://work.example/types/cites":{"max":8}}}`,
+	} {
+		_, err := graphops.ParseTypeDescriptor([]byte(in))
+		if !errors.Is(err, graphops.ErrValidation) || !strings.Contains(err.Error(), wantRefusal) {
+			t.Errorf("descriptor %s: want ErrValidation naming the Type and both numbers, got %v", name, err)
+		}
+	}
+	// Equal is admitted — the explicit Type may then fill the whole set by
+	// itself — and so is lower; the wildcard's max is the whole-set bound
+	// either way, and the canonical form re-admits, fingerprint intact.
+	for name, owns := range map[string][]graphops.OwnedLinkDecl{
+		"equal": {cites5, any5},
+		"lower": {blocks2, any5},
+		"both":  {cites5, blocks2, any5},
+	} {
+		built, err := graphops.NewTypeDescriptor(spec(owns...))
+		if err != nil {
+			t.Errorf("%s: refused: %v", name, err)
+			continue
+		}
+		if got, ok := built.Owns(relates); !ok || !got.Wildcard() || got.Max() != 5 {
+			t.Errorf("%s: the wildcard's max is the whole-set bound: %+v %v", name, got, ok)
+		}
+		parsed, err := graphops.ParseTypeDescriptor(built.CanonicalJSON())
+		if err != nil || parsed.Fingerprint() != built.Fingerprint() {
+			t.Errorf("%s: the canonical form must re-admit with the same fingerprint: %v", name, err)
+		}
+	}
+	// Without a wildcard there is no whole-set bound to exceed: explicit
+	// maxes relate to nothing but their own Type.
+	if _, err := graphops.NewTypeDescriptor(spec(cites8, blocks2)); err != nil {
+		t.Errorf("no wildcard: explicit maxes are unrelated: %v", err)
+	}
+	if _, err := graphops.ParseTypeDescriptor([]byte(`{"id":"https://work.example/types/x","name":"X","describes":"bead","conformsTo":[],"ownsOutgoing":{"https://work.example/types/blocks":{"max":2},"https://work.example/types/cites":{"max":8}}}`)); err != nil {
+		t.Errorf("no wildcard, parsed: explicit maxes are unrelated: %v", err)
+	}
+}
+
 // CheckBeadRecord under a wildcard declaration (bdp#1 item 5): a group per
 // wildcard-owned Type actually present, an empty group only for an explicit
-// declaration, and never a group keyed "*".
+// declaration, never a group keyed "*", and — OW1 = A — the whole owned set,
+// every group together, within the wildcard's max, the explicit group also
+// within its own.
 func TestCheckBeadRecordUnderAWildcard(t *testing.T) {
 	rev := graphops.MintRevision()
 	bead, _ := graphops.NewBead(graphops.BeadSpec{Path: "beads/m", TypeURL: "https://work.example/types/memory", Revision: rev})
@@ -1210,36 +1295,60 @@ func TestCheckBeadRecordUnderAWildcard(t *testing.T) {
 		return l
 	}
 	const blocks, cites, relates = "https://work.example/types/blocks", "https://work.example/types/cites", "https://work.example/types/relates"
-	citesDecl, _ := graphops.NewOwnedLinkDecl(cites, "", 8)
+	// The wildcard's 5 bounds the whole owned set; cites' 3 bounds the cites
+	// Links inside it (a descriptor that exists never has it the other way).
+	citesDecl, _ := graphops.NewOwnedLinkDecl(cites, "", 3)
 	wildcard, _ := graphops.NewWildcardOwnedLinkDecl(5)
 	owns := []graphops.OwnedLinkDecl{wildcard, citesDecl} // unsorted on purpose
-	blocksGroup := graphops.OwnedLinkGroup{TypeURL: blocks, Links: []graphops.Link{mk("links/b/1", blocks, self)}}
-	relatesGroup := graphops.OwnedLinkGroup{TypeURL: relates, Links: []graphops.Link{mk("links/r/1", relates, self), mk("links/r/2", relates, self)}}
+	many := func(prefix, typeURL string, n int) []graphops.Link {
+		links := make([]graphops.Link, 0, n)
+		for i := 1; i <= n; i++ {
+			links = append(links, mk(fmt.Sprintf("%s/%d", prefix, i), typeURL, self))
+		}
+		return links
+	}
+	blocksGroup := graphops.OwnedLinkGroup{TypeURL: blocks, Links: many("links/b", blocks, 1)}
+	relatesGroup := graphops.OwnedLinkGroup{TypeURL: relates, Links: many("links/r", relates, 2)}
 	for name, groups := range map[string][]graphops.OwnedLinkGroup{
 		"present wildcard groups around the empty explicit group": {blocksGroup, {TypeURL: cites}, relatesGroup},
 		"the explicit group alone":                                {{TypeURL: cites}},
-		"the explicit group with Links":                           {{TypeURL: cites, Links: []graphops.Link{mk("links/c/1", cites, self)}}},
+		"the explicit group with Links":                           {{TypeURL: cites, Links: many("links/c", cites, 1)}},
 		"a wildcard group before the explicit group":              {blocksGroup, {TypeURL: cites}},
 		"a wildcard group after the explicit group":               {{TypeURL: cites}, relatesGroup},
+		"the whole owned set at the wildcard's max":               {blocksGroup, {TypeURL: cites, Links: many("links/c", cites, 2)}, relatesGroup},
+		"the explicit group at its own max":                       {{TypeURL: cites, Links: many("links/c", cites, 3)}, relatesGroup},
+		"wildcard-owned Links alone at the whole-set max":         {{TypeURL: cites}, {TypeURL: relates, Links: many("links/r", relates, 5)}},
 	} {
 		if err := graphops.CheckBeadRecord(graphops.BeadRecord{Bead: bead, OwnedLinks: groups}, owns); err != nil {
 			t.Errorf("record %s refused: %v", name, err)
 		}
 	}
 	for name, groups := range map[string][]graphops.OwnedLinkGroup{
-		"a group keyed by the wildcard":                  {{TypeURL: graphops.WildcardOwnedLinkKey}, {TypeURL: cites}},
-		"an empty wildcard-owned group":                  {{TypeURL: blocks}, {TypeURL: cites}},
-		"no explicit group, a wildcard group before it":  {blocksGroup},
-		"no explicit group, a wildcard group after it":   {relatesGroup},
-		"groups out of order":                            {{TypeURL: cites}, blocksGroup},
-		"a repeated group":                               {{TypeURL: cites}, {TypeURL: cites}},
-		"a wildcard group holding another Type's Link":   {{TypeURL: blocks, Links: []graphops.Link{mk("links/r/1", relates, self)}}, {TypeURL: cites}},
-		"a wildcard group holding another source's Link": {{TypeURL: blocks, Links: []graphops.Link{mk("links/b/1", blocks, other)}}, {TypeURL: cites}},
-		"a wildcard group with unsorted Links":           {{TypeURL: cites}, {TypeURL: relates, Links: []graphops.Link{mk("links/r/2", relates, self), mk("links/r/1", relates, self)}}},
+		"a group keyed by the wildcard":                                {{TypeURL: graphops.WildcardOwnedLinkKey}, {TypeURL: cites}},
+		"an empty wildcard-owned group":                                {{TypeURL: blocks}, {TypeURL: cites}},
+		"no explicit group, a wildcard group before it":                {blocksGroup},
+		"no explicit group, a wildcard group after it":                 {relatesGroup},
+		"groups out of order":                                          {{TypeURL: cites}, blocksGroup},
+		"a repeated group":                                             {{TypeURL: cites}, {TypeURL: cites}},
+		"a wildcard group holding another Type's Link":                 {{TypeURL: blocks, Links: []graphops.Link{mk("links/r/1", relates, self)}}, {TypeURL: cites}},
+		"a wildcard group holding another source's Link":               {{TypeURL: blocks, Links: []graphops.Link{mk("links/b/1", blocks, other)}}, {TypeURL: cites}},
+		"a wildcard group with unsorted Links":                         {{TypeURL: cites}, {TypeURL: relates, Links: []graphops.Link{mk("links/r/2", relates, self), mk("links/r/1", relates, self)}}},
+		"the whole owned set over the wildcard's max":                  {blocksGroup, {TypeURL: cites, Links: many("links/c", cites, 3)}, relatesGroup},
+		"wildcard-owned Links alone over the whole-set max":            {{TypeURL: cites}, {TypeURL: relates, Links: many("links/r", relates, 6)}},
+		"the explicit group over its own max, under the whole-set max": {{TypeURL: cites, Links: many("links/c", cites, 4)}},
 	} {
 		if err := graphops.CheckBeadRecord(graphops.BeadRecord{Bead: bead, OwnedLinks: groups}, owns); !errors.Is(err, graphops.ErrValidation) {
 			t.Errorf("record %s: want ErrValidation, got %v", name, err)
 		}
+	}
+	// The bound refusals name the set that overflowed, the count and the max.
+	over := graphops.BeadRecord{Bead: bead, OwnedLinks: []graphops.OwnedLinkGroup{blocksGroup, {TypeURL: cites, Links: many("links/c", cites, 3)}, relatesGroup}}
+	if err := graphops.CheckBeadRecord(over, owns); err == nil || !strings.Contains(err.Error(), "6 owned Links across all groups, over the wildcard's whole-set max 5") {
+		t.Errorf("whole-set refusal must name the count and the bound: %v", err)
+	}
+	overExplicit := graphops.BeadRecord{Bead: bead, OwnedLinks: []graphops.OwnedLinkGroup{{TypeURL: cites, Links: many("links/c", cites, 4)}}}
+	if err := graphops.CheckBeadRecord(overExplicit, owns); err == nil || !strings.Contains(err.Error(), "ownedLinks group https://work.example/types/cites holds 4 Links, over its declared max 3") {
+		t.Errorf("explicit refusal must name the group, the count and the bound: %v", err)
 	}
 	// Without a wildcard nothing changed: an unnamed Type's group is refused
 	// even when it holds that Type's Links.
@@ -1247,9 +1356,16 @@ func TestCheckBeadRecordUnderAWildcard(t *testing.T) {
 		t.Errorf("unnamed Type without a wildcard: want ErrValidation, got %v", err)
 	}
 	// A Type owning only through the wildcard, with nothing present, has no
-	// groups at all.
+	// groups at all; with Links present, the whole set is bounded exactly as
+	// when explicit declarations sit beside the wildcard.
 	if err := graphops.CheckBeadRecord(graphops.BeadRecord{Bead: bead}, []graphops.OwnedLinkDecl{wildcard}); err != nil {
 		t.Errorf("lone wildcard, nothing present: %v", err)
+	}
+	if err := graphops.CheckBeadRecord(graphops.BeadRecord{Bead: bead, OwnedLinks: []graphops.OwnedLinkGroup{blocksGroup, {TypeURL: relates, Links: many("links/r", relates, 4)}}}, []graphops.OwnedLinkDecl{wildcard}); err != nil {
+		t.Errorf("lone wildcard, whole set at its max: %v", err)
+	}
+	if err := graphops.CheckBeadRecord(graphops.BeadRecord{Bead: bead, OwnedLinks: []graphops.OwnedLinkGroup{blocksGroup, {TypeURL: relates, Links: many("links/r", relates, 5)}}}, []graphops.OwnedLinkDecl{wildcard}); !errors.Is(err, graphops.ErrValidation) {
+		t.Errorf("lone wildcard, whole set over its max: want ErrValidation, got %v", err)
 	}
 }
 
@@ -1277,11 +1393,12 @@ func TestOwnedLinkDeclMaxObeysTheBinary64Law(t *testing.T) {
 			t.Errorf("descriptor max %d: want the binary64 refusal at the member's pointer, got %v", max, err)
 		}
 	}
-	explicit, err := graphops.NewOwnedLinkDecl(c, "", 9007199254740994)
+	// Both admitted values, the explicit one under the wildcard's (OW1 = A).
+	explicit, err := graphops.NewOwnedLinkDecl(c, "", 9007199254740992)
 	if err != nil {
 		t.Fatal(err)
 	}
-	wildcard, err := graphops.NewWildcardOwnedLinkDecl(9007199254740992)
+	wildcard, err := graphops.NewWildcardOwnedLinkDecl(9007199254740994)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -1289,7 +1406,7 @@ func TestOwnedLinkDeclMaxObeysTheBinary64Law(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	want := `{"conformsTo":[],"describes":"bead","id":"https://work.example/types/x","name":"X","ownsOutgoing":{"*":{"max":9007199254740992},"https://work.example/types/c":{"max":9007199254740994}}}`
+	want := `{"conformsTo":[],"describes":"bead","id":"https://work.example/types/x","name":"X","ownsOutgoing":{"*":{"max":9007199254740994},"https://work.example/types/c":{"max":9007199254740992}}}`
 	if got := string(built.CanonicalJSON()); got != want {
 		t.Fatalf("canonical form\n got %s\nwant %s", got, want)
 	}
@@ -1301,7 +1418,7 @@ func TestOwnedLinkDeclMaxObeysTheBinary64Law(t *testing.T) {
 	for _, d := range parsed.OwnsOutgoing() {
 		maxes[d.TypeURL()] = d.Max()
 	}
-	if len(maxes) != 2 || maxes[c] != 9007199254740994 || maxes[graphops.WildcardOwnedLinkKey] != 9007199254740992 {
+	if len(maxes) != 2 || maxes[c] != 9007199254740992 || maxes[graphops.WildcardOwnedLinkKey] != 9007199254740994 {
 		t.Fatalf("max values after the round trip: %v", maxes)
 	}
 }
