@@ -533,7 +533,13 @@ the one-in-Scope-endpoint law). Ledger: `MaxLedgerSeq = MaxUint64-1`, seq ∈
 refuses wraparound. Descriptor canonical form: `description:""` ≡ absent,
 `propertiesSchema:""` refused, a zero endpoint constraint is the empty set,
 `conformsTo` sorted by code unit. Every string entering a JSON-backed value must
-be valid UTF-8.
+be valid UTF-8. **Ruled on bdp#1 (2026-09-08):** `ownsOutgoing` admits the
+wildcard entry `"*": { max }` — every outgoing Link Type not listed explicitly
+is owned, `max` bounds the whole owned set, explicit entries take precedence
+for the types they name; `OwnedLinkDecl` gains that variant and `Owns` resolves
+explicit-then-wildcard; the record's owned groups exist for types actually
+present plus empty groups only for explicitly declared types. The wire stays
+at the pin until the bdp change lands (bdpwire refuses `"*"` until then).
 
 ### B3. Bodies, the witness manager, and legs
 
@@ -852,7 +858,9 @@ columns above); the ledger counter's exhaustion rule; the descriptor canonical
 form and UTF-8 rule stated under "JSON is bytes"; `migrationSQLTouchesTable`
 learns `CREATE TRIGGER … ON <table>` and `DROP TRIGGER [IF EXISTS] <name>`
 separately (a DROP names no table; metadata lookup); the Dolt lane runs the
-ruling-13 spikes (they gate on `testutil.RequireDoltBinary` alone).
+ruling-13 spikes (they gate on `testutil.RequireDoltBinary` alone). The
+installer's `Max` law covers the wildcard declaration (bdp#1, 2026-09-08):
+an owning declaration — explicit or `"*"` — without `max` is refused.
 
 ### B5. Decorators, censuses, and every embedding surface
 

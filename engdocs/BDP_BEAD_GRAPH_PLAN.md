@@ -1085,7 +1085,12 @@ decision at a time on 2026-09-07. The normative text above (rulings 7b, 9,
   witness records the head; no event exists before mint; the ledger lane
   restores anti-reuse history only; providers declare `LedgerDurability`;
   restore rotates unless continuity is shown. Residuals stated. The
-  retained-versions shape Memory needs is the History lane's (bdp#1).
+  retained-versions shape Memory needs is the History lane's (bdp#1). The
+  History lane's first laws are now ruled there (2026-09-08): a
+  version-addressed read is complete or a typed refusal — Unretained is a
+  refusal naming the missing fields, never a member inside a record — and
+  ownership over an open vocabulary is the `"*"` entry in `ownsOutgoing`; the
+  graph plane's own history reads, when they come, follow both.
 - **A6 (§4 lifecycle, 7a env).** `bdp.scope_url` is a project fact in
   tracked `config.yaml` (`BDP_SCOPE_URL` first), refused by `config set`
   once a witness is held; `link-graph.route`, `bdp.server`, and
