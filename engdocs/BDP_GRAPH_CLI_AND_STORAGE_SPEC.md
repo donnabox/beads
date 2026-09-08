@@ -803,12 +803,14 @@ U+FFFD in JSON, so distinct values would hash identically). The frozen
 ledger hash layout is `graphops`' golden: JCS of the event's members with
 absent members omitted, `at` as RFC 3339 UTC with six fractional digits,
 sha256 hex, genesis = 64 zeros. The value limit is a P1 number (Part D.1).
-Interop caveat (P0 council): a JCS peer that models numbers as binary64
-would equate `0.1` with its 55-digit expansion and could not reproduce
-ledger integers past 2^53; the ledger is internal, so no obligation follows,
-but stored `properties` may carry numbers such a peer cannot reproduce —
-raised upstream as a clarification of which numeric model §4.6 equality
-assumes. Descriptor canonical form sorts `conformsTo` (and endpoint
+Admission law (bdp#21, ruled 2026-09-08): a number literal whose exact
+decimal value does not round-trip through IEEE-754 binary64 (nearest double,
+serialized shortest, equal to the literal's value) is refused at admission
+with the offending JSON pointer, so on every stored `properties`/`descriptor`
+value the exact-decimal form and a JCS peer's binary64 serialization agree
+byte-for-byte; the ledger framing is exempt (its `seq`/`epoch` are Go integers
+hashed exactly over the full uint64 range) and its frozen layout is unchanged
+(P0 commit 944b1fc9f). Descriptor canonical form sorts `conformsTo` (and endpoint
 `conformsTo`) by code unit — they are sets — so reordered parents fingerprint
 identically.
 
