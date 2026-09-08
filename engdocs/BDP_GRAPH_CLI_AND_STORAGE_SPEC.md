@@ -692,7 +692,10 @@ advances the witness, and retries once. A refused delta is **undone**
 when the recorded HEAD is an ancestor of HEAD: the eight tables are
 reverted to their state at `w.StateCommit` in a new commit (the hazard-R
 undo shape — table-scoped, later commits preserved) and the caller sees one
-`ErrStateChanged`; otherwise the witness is marked `unverified` (ruling 14). Descriptor caches are keyed by the descriptors table's hash.
+`ErrStateChanged`; otherwise the witness is marked `unverified` (ruling 14). The validation
+also runs the **fence census** (Part D.7 = A): each replicated table carries
+its three ruling-13 triggers; a missing one is repaired with the migration's
+idempotent pair before the delta is judged. Descriptor caches are keyed by the descriptors table's hash.
 Providers without `StateVersioner` fail closed. Exempt from the head check,
 with their own preconditions: `Mint`, `Promote`, `Rotate`, `LedgerApply`,
 `IdentityReader`, the witness-file operations.
@@ -757,7 +760,7 @@ CLI-bundle rendition above; check D's clone-local list and
 `doltIgnorePatterns` must learn `graph_authority_lease` before the B4 twin
 is enforced; `migrationSQLTouchesTable` cannot see trigger DDL, so a
 pre-existing dirty `dolt_schemas` is refused by the post-pass signature
-check rather than up front. **One item awaits ruling (Part D.7):**
+check rather than up front. **Ruled (Part D.7 = A, 2026-09-08):**
 `dolt_schemas` is outside the eight hashed and inspected tables, so an
 out-of-band `DROP TRIGGER` replicates silently and `content_skew.go`
 cannot see it (equal hashes) — proposed: the validator and ruling 14's
@@ -936,8 +939,8 @@ enforces both bounds at acceptance (P0 commit ec692e146).
   `Witness` hook (a temp workspace directory and installation id standing
   in for `.beads/` and the user config dir), and a `Remote` hook (a temp
   Dolt remote for hazard-R cases *[deferred under A9]*).
-- Wirings on all three legs (under A9 the embedded leg wires the refusal
-  contract only); the leg registry
+- Wirings on all three legs (under A9 as amended by A10 the embedded leg wires the full
+  read contract for the solo topology and the refusal contract for client hosts); the leg registry
   (`internal/storage/contract_leg_registry_test.go`) and
   `TestEveryLegWiresEveryRoleContract` see them; both coverage gates apply.
 - Non-capable stores answer `*storage.ErrUnsupported{Op: "<accessor
@@ -1005,6 +1008,13 @@ enforces both bounds at acceptance (P0 commit ec692e146).
   succeeds and the workspace refuses to mint (A9); a mirror round-trip
   produces no graph delta and no refusal; `bd dolt pull` with no graph
   delta is byte-identical.
+- **Fence census (Part D.7):** a clone that received a foreign `DROP TRIGGER`
+  through replication is repaired at its next validation, and the census never
+  changes the graph-state version.
+- **Solo topology (A10):** an embedded workspace with no remote and no server
+  mints, holds a gate-satisfied lease, answers every link-mode read locally,
+  serves nothing, and becomes a client host when a remote or shared database
+  appears.
 - **Rotation is never a remount:** a server started under a base URL that
   differs from the persisted Scope URL refuses, and no stored intra-Scope
   reference changes when the Scope URL rotates (paths are Scope-relative).
@@ -1135,9 +1145,10 @@ backends; a registered backend's serving behavior (rows absent).
    on the default branch.
 6. The adoption verb for the later of two mints under one URL (ruling 14,
    law 3) — name and shape fixed in the replication/merge ADR.
-7. **Awaiting ruling:** a fence census over `dolt_schemas` in the
-   state-change validator and in ruling 14's fetch-inspect set (verification
-   row iii found an out-of-band `DROP TRIGGER` replicates silently).
+7. **Ruled 2026-09-08 (A):** the state-change validator and ruling 14's
+   fetch-inspect set carry a fence census over `dolt_schemas` (three triggers
+   per replicated table; repaired with the migration's idempotent pair; never
+   part of the graph-state version).
 
 ## Part E — Ruling amendments (A1–A9 and rulings 13–14 ruled 2026-09-07)
 
@@ -1161,4 +1172,5 @@ Ruling 14 (replication/merge ADR, option B): the gate plus the four-law
 charter — fetch-inspect-merge on the SQL pull routes, validator revert
 elsewhere, no auto-resolve or `--strategy` on graph tables, foreign deltas
 refused whole, clones take remote state wholesale (B3, B7, C2).
-**Nothing pending; P0 is open.** Full text: architecture §2b.
+A10 (solo topology, B), Part D.7 (fence census, A), and the
+`authority_epoch` spelling ruled 2026-09-08. **Nothing pending; P0 is open.** Full text: architecture §2b.

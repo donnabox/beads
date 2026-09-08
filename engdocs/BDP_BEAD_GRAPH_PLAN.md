@@ -995,8 +995,12 @@ of that.
    confirmed; (iii) PASS-WITH-RULE — the CLI migration bundle needs a
    `DELIMITER` rendition, check D and `doltIgnorePatterns` must learn the
    lease table, and a dirty `dolt_schemas` is refused late. The fence
-   ships. One new item awaits ruling: a fence census over `dolt_schemas`
-   in the validator and ruling 14's inspection set (spec B4, Part D.7). No new `bd sql` flag: the
+   ships. **Ruled 2026-09-08 (Part D.7 = A):** the validator and ruling 14's
+   inspection set carry a fence census over `dolt_schemas` — each of the
+   eight replicated tables must carry its three triggers; a missing one is
+   repaired with the migration's idempotent `DROP TRIGGER IF EXISTS` +
+   `CREATE TRIGGER` pair before a delta is judged, and the census never
+   changes the graph-state version. No new `bd sql` flag: the
    deliberate override is a proxied-mode batch that sets the variable
    first, or a raw client session. Option A alone (validator only), C
    (two SQL users in v0), and D (a `bd sql` statement guard) were the
@@ -1116,7 +1120,9 @@ decision at a time on 2026-09-07. The normative text above (rulings 7b, 9,
   registered-backend workspaces refuse local authority operations and exist
   as client hosts; a remote neither grants nor removes authority; two
   shared databases minting under one tracked URL are settled by the
-  replication ADR (interim: the earlier mint wins).
+  replication ADR (interim: the earlier mint wins). **Amended 2026-09-08
+  (solo topology, ruled B — A10 below):** an embedded workspace with no
+  configured remote and no server is its own authority.
 
 - **A8 (§1 constraint #1; ruling 12) — option A.** Constraint #1 is
   scoped to *behavior*: every in-tree topology and existing workspace is
@@ -1129,3 +1135,19 @@ decision at a time on 2026-09-07. The normative text above (rulings 7b, 9,
   explicit wrapper implementations, a capability census, and resolvers)
   rejected.
 
+- **A10 (ruling 9; amends A9) — solo topology, RULED 2026-09-08: B.** An
+  embedded workspace with no configured remote and no server mints a local
+  Scope, holds a witness and a lease satisfied by the workspace gate (the
+  fence has nothing to fence: one process holds an embedded store), serves
+  nothing (`bd serve` still refuses embedded Dolt), and answers every
+  link-mode verb locally. It becomes a client host the moment a shared
+  database or remote appears, under the rotation and steal rules; a solo
+  store later pushed to a remote is "minted locally" for the replication
+  ADR — authoritative until a foreign delta appears. The embedded leg wires
+  the full read contract for the solo topology and the refusal contract for
+  client hosts. Raised by Steph's adoption harness (sjarmak/mem), which runs
+  bd embedded with one isolated store per trial; without this row the
+  post-P3 memory projection would have no local graph on any laptop.
+  Options A (defer to the P3 packet) and C (require a local server)
+  rejected. Epoch spelling confirmed the same day (`authority_epoch`,
+  `last_authority_epoch`, `birth_authority_epoch` at P1).
