@@ -868,10 +868,12 @@ separately (a DROP names no table; metadata lookup); the Dolt lane runs the
 ruling-13 spikes (they gate on `testutil.RequireDoltBinary` alone). The
 installer's `Max` law covers the wildcard declaration (bdp#1, 2026-09-08):
 an owning declaration — explicit or `"*"` — without `max` is refused; the
-wildcard's `max` bounds the set of Links owned by virtue of the wildcard, and
-explicit Types keep their own maxes (the reading P0 implemented; the bdp spec
-PR states it). The P1 batched owned-Links read for a wildcard owner selects
-`type_url NOT IN (explicit…)` grouped by type under `LIMIT wildcard.max + 1`,
+wildcard's `max` bounds the Bead's **whole owned set** — every owned Link
+across every owned type, explicit entries included — and an explicit entry's
+`max` MUST NOT exceed the wildcard's (refused at descriptor validation);
+ruled OW1 = A on 2026-09-08, the literal reading (P0's narrower first reading
+is being flipped). The P1 batched owned-Links read for a wildcard owner
+selects all owned Links grouped by type under `LIMIT wildcard.max + 1`,
 inside the ≤ 7-statement budget row.
 
 ### B5. Decorators, censuses, and every embedding surface
