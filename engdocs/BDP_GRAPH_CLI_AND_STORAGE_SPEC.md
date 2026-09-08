@@ -815,7 +815,12 @@ byte-for-byte; the ledger framing is exempt (its `seq`/`epoch` are Go integers
 hashed exactly over the full uint64 range) and its frozen layout is unchanged
 (P0 commit 944b1fc9f). Descriptor canonical form sorts `conformsTo` (and endpoint
 `conformsTo`) by code unit — they are sets — so reordered parents fingerprint
-identically.
+identically. Canonicalization is the only thing the store does to the
+content of `properties`: a URI or pinned reference inside it is neither
+validated, resolved, canonicalized as a URL, nor traversed, and it is not an
+edge — `graph_links` holds every edge there is, and a reference that needs
+graph semantics is a Link, owned under an explicit entry or the wildcard
+(bdp#1 item 5 as amended, ruled 2026-09-08).
 
 **Provenance on every mutable row.** `last_authority_id` / `last_epoch` are
 stamped by every mutation on descriptors, beads, links, and allocations.
@@ -1015,6 +1020,10 @@ enforces both bounds at acceptance (P0 commit ec692e146).
   mints, holds a gate-satisfied lease, answers every link-mode read locally,
   serves nothing, and becomes a client host when a remote or shared database
   appears.
+- **Properties are opaque (bdp#1 item 5 as amended, 2026-09-08):** a URI or
+  pinned reference inside `properties` is data, never an edge; the store
+  validates nothing inside `properties`, and `graph_links` holds every edge
+  there is.
 - **Rotation is never a remount:** a server started under a base URL that
   differs from the persisted Scope URL refuses, and no stored intra-Scope
   reference changes when the Scope URL rotates (paths are Scope-relative).
@@ -1172,5 +1181,6 @@ Ruling 14 (replication/merge ADR, option B): the gate plus the four-law
 charter — fetch-inspect-merge on the SQL pull routes, validator revert
 elsewhere, no auto-resolve or `--strategy` on graph tables, foreign deltas
 refused whole, clones take remote state wholesale (B3, B7, C2).
-A10 (solo topology, B), Part D.7 (fence census, A), and the
-`authority_epoch` spelling ruled 2026-09-08. **Nothing pending; P0 is open.** Full text: architecture §2b.
+A10 (solo topology, B), Part D.7 (fence census, A), the
+`authority_epoch` spelling, and the properties-are-opaque amendment (bdp#1
+item 5) ruled 2026-09-08. **Nothing pending; P0 is open.** Full text: architecture §2b.
