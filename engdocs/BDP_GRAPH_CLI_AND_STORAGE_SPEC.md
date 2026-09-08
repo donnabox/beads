@@ -538,8 +538,15 @@ wildcard entry `"*": { max }` — every outgoing Link Type not listed explicitly
 is owned, `max` bounds the whole owned set, explicit entries take precedence
 for the types they name; `OwnedLinkDecl` gains that variant and `Owns` resolves
 explicit-then-wildcard; the record's owned groups exist for types actually
-present plus empty groups only for explicitly declared types. The wire stays
-at the pin until the bdp change lands (bdpwire refuses `"*"` until then).
+present plus empty groups only for explicitly declared types; no group is
+ever keyed `"*"`, and `Owns("*")` is false (it is a key, not a Type). Landed
+on the P0 branch (1cbb5e6e3): `OwnedLinkDecl` is a sum —
+`NewWildcardOwnedLinkDecl(max)`, `Wildcard()`, `WildcardOwnedLinkKey` — and
+`ValidateTypeURL("*")` is refused by name everywhere a Type URL is expected.
+The wire stays at the pin: the pinned bundle's `propertyNames:
+absoluteHttpUrl` on `ownsOutgoing` and `ownedLinks` refuses `"*"` (bdpwire's
+decoder holds member shape, not key grammar; the test-only tripwire
+`TestWildcardOwnedLinkKeyIsNotInThePinnedBundle` retires with the pin bump).
 
 ### B3. Bodies, the witness manager, and legs
 
@@ -860,7 +867,12 @@ learns `CREATE TRIGGER … ON <table>` and `DROP TRIGGER [IF EXISTS] <name>`
 separately (a DROP names no table; metadata lookup); the Dolt lane runs the
 ruling-13 spikes (they gate on `testutil.RequireDoltBinary` alone). The
 installer's `Max` law covers the wildcard declaration (bdp#1, 2026-09-08):
-an owning declaration — explicit or `"*"` — without `max` is refused.
+an owning declaration — explicit or `"*"` — without `max` is refused; the
+wildcard's `max` bounds the set of Links owned by virtue of the wildcard, and
+explicit Types keep their own maxes (the reading P0 implemented; the bdp spec
+PR states it). The P1 batched owned-Links read for a wildcard owner selects
+`type_url NOT IN (explicit…)` grouped by type under `LIMIT wildcard.max + 1`,
+inside the ≤ 7-statement budget row.
 
 ### B5. Decorators, censuses, and every embedding surface
 
@@ -950,7 +962,9 @@ an owning declaration — explicit or `"*"` — without `max` is refused.
   watcher disables rows atomically and joins before shutdown; a heartbeat
   does **not** change the graph-state version; case-differing paths
   distinct and code-unit ordered; ownedLinks completeness incl. **empty
-  groups** and the bound under `LIMIT remaining+1`; keyset continuation
+  groups** — empty groups only for explicit declarations, wildcard-owned
+  groups only when a Link is present, none keyed `"*"` — and the bound under
+  `LIMIT remaining+1`; keyset continuation
   inside one transaction; gone-family incl. `reserved`; a promote in
   another process is honored by the next read; descriptor read on a
   non-authority clone refuses; `bd init` re-run on any clone succeeds and
