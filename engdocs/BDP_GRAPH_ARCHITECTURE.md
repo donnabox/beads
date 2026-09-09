@@ -14,6 +14,28 @@ invented primitive with one the tree already has. v6 added the
 operator's **simplification ruling (A9)**; v9 states its arbiter honestly:
 physical database copies are an operator-managed hazard, not a fenced one.
 
+## Current dependency alignment (2026-09-09)
+
+[Plan §0a](BDP_BEAD_GRAPH_PLAN.md#0a-current-bdp-and-versioned-beads-alignment-2026-09-09)
+is the dated current-source reconciliation for BDP #19/#20, Jim's merged
+Phase 1 and current Phase 0/2, and the approved History direction awaiting
+upstream normative materialization. The role split remains: graphops is the
+graph domain, Jim's writer owns Issue history, and BDP wire DTOs own protocol
+representations. No Issue projection or C-lane substrate change is selected.
+
+The graph authority lease is not TX's receipt execution/creator-attempt fence;
+the graph anti-reuse ledger is not the projected erasure ledger; an Issue
+ordinal is neither a graph revision nor a durable History address. P3 must
+compose its durable admission/effects/outcomes under the upstream profile
+contract. A future History provider must translate context, numeric values,
+retained identity and erasure provenance explicitly. These obligations do
+not add Writer or History methods to the existing P0 interface sketch.
+
+P0's old wire pin and historical tests must stay labelled as such until the
+reviewed re-pin, narrow erased-pointer port and applicable successor checks
+are complete. This alignment does not claim that all upstream drafts have
+merged or that graph/P0 implements their runtime behavior.
+
 ## 1. The one-paragraph version
 
 The graph store is a new **plane** beside issues and memories: a public leaf

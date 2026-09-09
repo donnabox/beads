@@ -38,7 +38,8 @@ during P0 vendoring; earlier drafts said 38).
 a draft; "matrix green" exits below mean green against the *pinned* matrix,
 re-pinned deliberately, never against a moving `main`.
 
-Model laws this plan builds to (all normative at the pin):
+Model laws this plan builds to (the baseline pin plus the dated X1 correction
+in §0a):
 
 - A Link is first-class; its `id`, `type`, `source`, `target`, and pin are
   immutable; repoint/re-pin is delete-and-create.
@@ -53,8 +54,9 @@ Model laws this plan builds to (all normative at the pin):
   (RFC 6902 §4.6 value comparison) changes none; and A→B→A is three
   distinct revisions — a reverse transition never reuses one.** Deletion
   mints nothing for the deleted Resource — its result reports the deleted
-  identity (the final live revision is Transactional `DeletedData` Event
-  material, not a deletion-result member); an owned-Link deletion result
+  identity **including its final live revision**, in the shared
+  `deletedIdentity { resourceKind, resource: { id, type, revision } }` shape
+  (X1, applied in BDP #19/#20); an owned-Link deletion result
   additionally reports the owning source's fresh revision.
 - References: the URI is identity; a pin is provenance, echoed byte-identical,
   equality-only, never validated in v0. In-Scope and external references have
@@ -63,6 +65,129 @@ Model laws this plan builds to (all normative at the pin):
 - Authorization views are closed projections, closed over owned Links.
 - The Read problem table is closed vocabulary (including `resource-pruned`
   and `resource-erased` — merged in gastownhall/bdp#16).
+
+## 0a. Current BDP and versioned-beads alignment (2026-09-09)
+
+This dated alignment updates the historical survey and P3 dependencies without
+changing the ruled v0 scope: **graph Beads/Links only; no Issue projection**.
+The §0 Read pin remains the historical P0 wire input, not a claim that it
+contains subsequent rulings. Donna's 2026-09-09 continuation authorizes
+materialization on the condition that this design and P0 track both evolving
+BDP and Jim's versioned-beads work, as recorded in the [operator continuation](https://github.com/donnabox/agent-coordination/blob/4fd57836ae052dec41b66493b88954bdabbb4d0f/context/janet/beads-workstream-state.md). The following are read/verified source
+pins; draft PRs are not silently treated as merged dependencies.
+
+| Source | Exact pin | State / graph consequence |
+| --- | --- | --- |
+| BDP #19 Read+Update | `06ebabdb391d8ea730295f4e01ed00bc1206fe38` | Draft; singleton/sequence envelopes, durable admission/outcomes, aliases and shared deleted identity now exist; P3 must implement these contracts. |
+| BDP #20 Transactional | `5c3f3b10a2edbb77d914b7260cdf035008fc34c7` | Draft; T1–T65 ruled, including unresolved admission, bounded direct comparison and same-epoch retraction retry; T57 implementation/evidence work remains. |
+| BDP #22 wildcard / #23 numeric | `c201cc28f74c6f71212aaf7f25966aabf55fb97e` / `2c537a6f8a4f42e4fef0fa5d47439bcb25d2efe7` | Draft sources for the domain rules already incorporated ahead of P0's old wire pin; reviewed wire integration remains required. |
+| BDP #24 named Read projection / #27 Read erasure correction | `87de37f673f83ec54989fdff4891bacc05730ea6` / `d68cc698f63cc114a41d7d965a8b6bebbfda8b3c` | Draft; preserve named-projection/coverage law and genuine successor evidence; port the narrow erased-pointer rejection to the Go wire boundary. |
+| Jim #6147 Phase 0 | `9c4e7a8f1959582f07db3b87641cb33863fda860` | Open; contract hooks remain nil/skipped, not a working CAS/History implementation. |
+| Jim #6304 Phase 1 | merge `2bb1e20de0f0072d7600656ea3cb7f606929dcc6` | Merged 2026-09-08; migration 0067 includes issue/wisp shape parity, ignored-series twin and replay/CLI safeguards. |
+| Jim #6358 Phase 2 | `5fdfb92fe544c9a83feb098e83f2ccdd87b896c8` | Open; current writer/inventory, superseding older incomplete call-site reports; 0068 reserves attribution and byte-preserving storage, not the deferred durable-address migration. |
+
+**BDP ownership and phase boundaries.** [#19 Mutation results](https://github.com/gastownhall/bdp/blob/06ebabdb391d8ea730295f4e01ed00bc1206fe38/docs/specs/bdp.md#L2814-L2843)
+requires the deleted Resource's final live revision in `deletedIdentity`; no
+version is minted by deletion. [#20 admission/comparison](https://github.com/gastownhall/bdp/blob/5c3f3b10a2edbb77d914b7260cdf035008fc34c7/docs/specs/bdp.md#L1225-L1308)
+requires a durable execution owner and creator-attempt binding separate from
+the graph authority lease. Direct unresolved comparisons wait outside the DB
+transaction under one finite budget; sequence precedence remains nonwaiting.
+The graph lease and allocation ledger do not implement receipts, exactly-once
+admission or the TX projected erasure ledger. P3 owns that realization, and
+Read+Update does not wait for TX-only implementation. [T65](https://github.com/gastownhall/bdp/blob/5c3f3b10a2edbb77d914b7260cdf035008fc34c7/docs/specs/bdp.md#L5532-L5542)
+scopes persistent Event-consumer erasure claims to the existing changefeed/
+snapshot-ledger integration; Event delivery alone is not that assurance.
+The same continuation also ACKed manifest-handle retrieval, same-epoch receipt-
+page URL restart survival, body-less 406 negotiation refusal and the initial
+receipt/finite-feed validator policy. These five HTTP choices are pending
+upstream materialization beyond the #20 pin; the graph wire/serving phases
+must adopt their reviewed result, including shared Read consequences.
+
+**Jim's current contribution and limits.** The [current writer](https://github.com/gastownhall/beads/blob/5fdfb92fe544c9a83feb098e83f2ccdd87b896c8/internal/storage/issueops/version_history.go#L24-L65)
+records dependency changes and final outgoing dependency state. The [current
+inventory](https://github.com/gastownhall/beads/blob/5fdfb92fe544c9a83feb098e83f2ccdd87b896c8/VERSIONED-BEADS-WRITE-PATHS.md#L9-L49)
+distinguishes 27 seam call sites, 46 must-mint entry points and 21 versioned
+paths out of 34 listed live paths; these counts are not interchangeable.
+Remaining limits include unchanged re-import minting, UOW's per-repository-write
+`1+N+M` versions versus the direct-leg composite operation, and stranded
+delete/rename/demote history. `current_revision` is a store-local ordinal;
+`version_id` and participation migration steps are not implemented at this pin.
+The allocator is single-writer **at a time**, even within one store. None of
+these facts licenses substituting the Issue writer for graph operation-local
+revision, identity, ownership or transaction guarantees. Future C-lane work
+should build on this contributor work while proving its translation, rather
+than citing the old uninstrumented-writer survey as current evidence.
+
+**Translation constraints.** Jim's JCS writer rounds numbers before preserving
+the resulting bytes in LONGBLOB. The [BDP numeric rule](https://github.com/gastownhall/bdp/blob/2c537a6f8a4f42e4fef0fa5d47439bcb25d2efe7/docs/specs/bdp.md#L644-L661)
+refuses inadmissible values before BDP mutation acceptance. An Issue-to-BDP
+mapping must be established before allocating its BDP revision; it cannot
+round or rewrite already-addressed BDP state. Random graph revisions, local
+Issue ordinals, future durable UUID addresses, content tokens and TX erasure
+digests remain distinct. Jim's empty actor plus `unknown` is not a valid
+present BDP attribution with an empty principal: preserve truthful absence
+or explicitly mapped nonempty attribution. Its current NULL agent/message
+columns and writer timestamp do not implement BDP's new context contract.
+Its [Phase 0 vocabulary](https://github.com/gastownhall/beads/blob/9c4e7a8f1959582f07db3b87641cb33863fda860/backend/conformance/expected_revision_contract.go#L26-L83)
+has nil hooks and treats Unretained/disclosure as a later axis; BDP separates
+incomplete reconstruction from authorization. Local Hold contracts are not
+BDP wire holds, and product test shapes are not BDP conformance observations.
+
+**History direction now selected; upstream materialization pending.** Donna
+ACKed the sixteen core choices and the remaining twenty-two initial-History
+choices on 2026-09-09; the [durable ACK and consolidated choices](https://github.com/donnabox/agent-coordination/blob/4fd57836ae052dec41b66493b88954bdabbb4d0f/context/janet/history-tx-complete-ballot-20260909.md)
+record the selected alternatives. This is a dependency record for the approved 38-unit
+direction, not a competing normative definition or a claim that these pins
+already contain the resulting schemas. The upstream History author owns the
+closed prose/schema/fixture materialization before this realization adopts it:
+
+- Complete optional History on all three profiles, canonical Bead/Link
+  revision resolution and stable `view=versions` enumeration; retained
+  addresses survive restore, while other token fences remain. Enumerate
+  all retained versions, newest authority-order first, distinguishing
+  replacement lineage and incomplete bodies; omit erased and unauthorized
+  metadata rows. Authorized deleted-subject enumeration remains available.
+- Subject-history-gated diagnoses, bounded missing-state diagnostics with
+  explicit completeness, no refusal windows, aggregate participation claims,
+  advance retention guarantees, sync hints or wire holds initially.
+  Participation requires positive knowledge; absence does not prove pruning.
+  Whole historical success requires current disclosure permission for its
+  owned state, with no partial record or invented navigation adjacency.
+- Immutable change context now: authority-observed **commit time**, one
+  instant per atomic transaction and separate instants for committed sequence
+  members; optional per-operation assisting agent/message copied to every
+  version that operation mints. Context accompanies version records, retained
+  rows and matching version-bearing Events under their authorization and
+  erasure rules. No-op comparison excludes context; legacy absence stays
+  truthful. This applies to versions minted under History capability, not a
+  retroactive requirement on unrelated non-History implementations.
+- Initial local-store erasure assurance does not advertise generic persistent
+  consumer replication. Imported retained copies require positively
+  established erasure status; unestablishable copies are rejected/discarded.
+  Required Gone evidence and applicable permanent erasure ledgers survive
+  recovery. Generic pre-removal administration and extra import metadata are
+  deferred, as are exact-byte witnesses, extra scheme mapping and the
+  alternative surviving-citation deletion lifecycle.
+- `revision-unrepresentable` is selected for positively established inability
+  to serve an existing bound BDP value faithfully, distinct from missing
+  pieces, unknown provenance and temporary I/O. `revision-allocation-unsafe`
+  is the selected write-only persistent repair-required conflict; transient
+  safety-inspection failure retains its existing temporary-failure behavior.
+  Their exact profile/schema fan-out remains upstream materialization.
+  Historical resolution never makes an old token a current write guard: the
+  existing `expectedRevision` equality/current-state law still applies.
+
+**P0 completion gate.** Preserve the historical pin/provenance and review
+records. Before claiming current wire behavior, deliberately adopt a reviewed
+Read successor, update vendored bundle/examples/fixtures/matrix/DTO parity
+together, retire the wildcard run-ahead tripwire, and port #27's narrow
+`resource-erased` pointer prohibition while preserving harmless RFC 9457
+extensions. Respect #24's named Read projection and actual successor
+observations; do not relabel old evidence or blindly vendor the whole TX
+bundle. A contracts-only P0 can precede full P3 and Jim Phase 3, but its
+remaining wire and runtime work must be assigned explicitly. No graph
+capability, readiness or merge grant follows from this alignment text or
+from Jim's versioning flag.
 
 ## 1. Goal and constraints
 
@@ -667,6 +792,13 @@ scorecard stands as C-lane input: S2 fails conformance on three laws
 Dependencies carry no revision; dependency edits don't version the
 source); S2-lite was the fallback only while a projection existed.
 
+**Current-source qualification (2026-09-09):** the dependency-writer statement
+above describes that historical substrate. Jim's Phase 2 now versions the
+referencing Issue when an outgoing dependency changes and captures its complete
+outgoing dependency set. Its current limits and the BDP translation boundary
+are recorded in §0a above; this progress does not turn Dependencies into
+first-class BDP Links or reverse the ruled v0 projection withdrawal.
+
 ### The Issue projection is withdrawn from v0 (round-5 conclusion)
 
 The conflict inventory in §2b is the full map; rounds 3–5 tested every
@@ -825,9 +957,10 @@ allocation/tombstone ledger. No legacy IDs are served in v0.
 - **P3 — Writes and CLI, gated on its own ADR AND on upstream spec
   artifacts:** the pinned write-profile envelope (an owned-Link mutation's
   result must also report the source Bead's resulting revision), the
-  owned-Link Event delta, AND the later-profile artifacts BDP itself marks
-  pending — the sequence/idempotency envelope schemas, problem rows, and
-  conformance artifacts for the write profiles. Profiles are **Scope-wide**
+  owned-Link Event delta, AND the sequence/idempotency envelope schemas,
+  problem rows and conformance artifacts now present on the exact #19/#20
+  draft heads in §0a. They require deliberate integration and executable
+  realization; their existence is not passing conformance. Profiles are **Scope-wide**
   (uniformity law), and the Event-delta gate binds exactly the profile
   that has Events: a Scope containing owning Types cannot advertise the
   **Transactional** profile until the owned-Link Event delta exists —
@@ -835,8 +968,8 @@ allocation/tombstone ledger. No legacy IDs are served in v0.
   Scope-level gate, not a per-Type advertisement. Write tests require: create/property-update
   mint fresh Link AND source revisions; **deletion mints nothing for the
   deleted Link** — its result reports the deleted identity plus the
-  source's fresh revision (the final live revision is Transactional
-  `DeletedData` Event material, not a result member); target revision
+  source's fresh revision; the deleted identity carries the Link's final
+  live revision, agreeing with `DeletedData` and changefeed tombstones; target revision
   unchanged throughout; both surviving revisions preserved on semantic
   no-op. Then tombstones,
   endpoint constraints, replication of writes; only then

@@ -12,6 +12,34 @@ touch (Part C) and what it changes that an earlier draft claimed it did not
 (Part C2). Phase markers follow the plan's §7: **P0** contracts and wire,
 **P1** storage, **P2** serving, **P3** writes.
 
+## Alignment addendum (2026-09-09)
+
+[Plan §0a](BDP_BEAD_GRAPH_PLAN.md#0a-current-bdp-and-versioned-beads-alignment-2026-09-09)
+records the current #19/#20 and Jim #6147/#6304/#6358 pins, approved History
+direction and completion gates. The historical P0 wire pin remains explicit;
+it is not a current-write or History capability claim. Three storage/adapter
+boundaries follow from that reconciliation:
+
+1. P3 delete results use the shared `deletedIdentity` including the removed
+   Resource's final live revision; owned-Link results also report `source`
+   and `sourceRevision`. Deletion never mints a deleted Resource version.
+2. The allocation/authority ledger below is neither Jim's retained
+   `issue_versions` store nor the TX projected erasure ledger. Preserve the
+   separate epochs and recovery duties. A future History store needs complete
+   retained records and applicable copy cleanup; adding History names to this
+   allocation ledger does not implement either requirement.
+3. The future approved context envelope is distinct from carried attribution
+   and properties. Its commit-time, operation fan-out, legacy absence,
+   postimage/Event/row placement and erasure constraints need the upstream
+   closed materialization and an explicit provider mapping. Jim's existing
+   columns, empty-actor status and local ordinal do not supply that mapping.
+
+P0 must deliberately re-pin reviewed wire inputs and port the narrow erased-
+pointer rejection before current-wire claims, preserving other RFC 9457
+extensions. P1 rechecks merged main and the migration advisory before claiming
+actual slots; 0067 is now merged and 0068 remains Jim's Phase 2 work. No
+migration, field spelling or implementation is introduced by this addendum.
+
 ## Part A — CLI
 
 Graph behavior is selected by the **root flag `--graph-mode link`**
@@ -709,9 +737,11 @@ check C forbids editing a shipped file (a git-diff check), and the runtime
 ids come from Go; real-Dolt tests for anything a `sqlmock` echo cannot
 exercise; DDL is not transactional across statements, so each `CREATE` is
 guarded and resumable. **Eight replicated tables in five files**, numbered **0069 or later**: slot
-0067 is claimed by the versioned-beads Phase 1 migration (`issue_versions`,
+0067 is occupied by the merged versioned-beads Phase 1 migration (`issue_versions`,
 the `store_epoch` singleton, `issues.current_revision`), slot 0068 by its
-Phase 2 (`0068_add_attribution_status`, `issue_versions.attribution_status`),
+Phase 2 (`0068_add_attribution_status`, `issue_versions.attribution_status`
+and the `durable_state` LONGBLOB retype; the `version_id` and participation
+steps remain deferred at the §0a pin),
 and our claim is registered in the CLAIMED.md registry (#6149, row added
 2026-09-07 at c53ef8810 as "0069 and later") —
 `NNNN_beadgraph_scope.up.sql` (scope, history), `NNNN_beadgraph_types.up.sql`,
