@@ -1,11 +1,11 @@
 # BDP in beads: the bead-graph plan
 
-**Status:** Draft v25 — feat/bead-graph — W-arch amendments **A1–A9 and rulings 13–14 RULED 2026-09-07**; every P-1 decision is ruled; **P0 is open**. (Thirteen adversarial review rounds:
+**Status:** Draft v26 — feat/bead-graph — W-arch amendments **A1–A9 and rulings 13–14 RULED 2026-09-07**; every P-1 decision is ruled; **P0 is open**. (Thirteen adversarial review rounds:
 1–7 on the whole plan, SOUND at round 7; 8–13 on the storage-interfaces
 section, SOUND-ADDITION at round 13; v6 withdrew the Issue projection from
 v0 on review-round-5 counterexamples; v9–v11 record the P-1 ruling tranches — all
-twelve decisions are ruled; v14–v21 reopened P-1 for the nine amendments; v22–v23 record all nine ruled; v24–v25 record rulings 13–14; P0 open)
-**Date:** 2026-09-02 (v1: 2026-08-31)
+twelve decisions are ruled; v14–v21 reopened P-1 for the nine amendments; v22–v23 record all nine ruled; v24–v25 record rulings 13–14; v26 records the 2026-09-09 source alignment and council gate/traceability corrections; P0 current-wire completion remains open)
+**Date:** 2026-09-09 (v1: 2026-08-31; v25: 2026-09-02)
 **Owners:** Donna Box (ruling), janet (drafting/implementation)
 **References:** the BDP spec (gastownhall/bdp `docs/specs/bdp.md`), beads#6051,
 this repo's `backend/` conformance surface, `engdocs/PROJECT_CHARTER.md`.
@@ -38,8 +38,8 @@ during P0 vendoring; earlier drafts said 38).
 a draft; "matrix green" exits below mean green against the *pinned* matrix,
 re-pinned deliberately, never against a moving `main`.
 
-Model laws this plan builds to (the baseline pin plus the dated X1 correction
-in §0a):
+Model laws this plan builds to (the baseline pin plus the dated #19/#20
+Mutation results correction, pinned in §0a):
 
 - A Link is first-class; its `id`, `type`, `source`, `target`, and pin are
   immutable; repoint/re-pin is delete-and-create.
@@ -55,8 +55,9 @@ in §0a):
   distinct revisions — a reverse transition never reuses one.** Deletion
   mints nothing for the deleted Resource — its result reports the deleted
   identity **including its final live revision**, in the shared
-  `deletedIdentity { resourceKind, resource: { id, type, revision } }` shape
-  (X1, applied in BDP #19/#20); an owned-Link deletion result
+  `deletedIdentity` schema, carried as the result's `deleted` member
+  (`{ resourceKind, resource: { id, type, revision } }`; #19 Mutation results
+  in §0a, shared with #20); an owned-Link deletion result
   additionally reports the owning source's fresh revision.
 - References: the URI is identity; a pin is provenance, echoed byte-identical,
   equality-only, never validated in v0. In-Scope and external references have
@@ -74,27 +75,42 @@ The §0 Read pin remains the historical P0 wire input, not a claim that it
 contains subsequent rulings. Donna's 2026-09-09 continuation authorizes
 materialization on the condition that this design and P0 track both evolving
 BDP and Jim's versioned-beads work, as recorded in the [operator continuation](https://github.com/donnabox/agent-coordination/blob/4fd57836ae052dec41b66493b88954bdabbb4d0f/context/janet/beads-workstream-state.md). The following are read/verified source
-pins; draft PRs are not silently treated as merged dependencies.
+pins; the continuation and History ACK below are operator records, not
+implementation pins. These dependency records do not authorize implementation
+against moving drafts or treat draft PRs as merged dependencies. Before P3
+begins, its owner records a reviewed pin for the selected write profile in §0:
+spec, bundle, problem rows, catalog, illustrative fixtures and executable matrix
+(or its explicit pending status). The claim-specific evidence exit remains
+required; a source pin alone cannot discharge it.
 
 | Source | Exact pin | State / graph consequence |
 | --- | --- | --- |
-| BDP #19 Read+Update | `06ebabdb391d8ea730295f4e01ed00bc1206fe38` | Draft; singleton/sequence envelopes, durable admission/outcomes, aliases and shared deleted identity now exist; P3 must implement these contracts. |
-| BDP #20 Transactional | `5c3f3b10a2edbb77d914b7260cdf035008fc34c7` | Draft; T1–T65 ruled, including unresolved admission, bounded direct comparison and same-epoch retraction retry; T57 implementation/evidence work remains. |
+| BDP #19 Read+Update | `06ebabdb391d8ea730295f4e01ed00bc1206fe38` | Draft; singleton/sequence envelopes, durable admission/outcomes, aliases and shared deleted identity now exist; P3 must adopt their reviewed selected-profile successor under the explicit write pin. |
+| BDP #20 Transactional | `5c3f3b10a2edbb77d914b7260cdf035008fc34c7` | Draft; T1–T65 ruled, including unresolved admission, bounded direct comparison and same-epoch retraction retry without deadline reset; T57 implementation/evidence work remains. |
 | BDP #22 wildcard / #23 numeric | `c201cc28f74c6f71212aaf7f25966aabf55fb97e` / `2c537a6f8a4f42e4fef0fa5d47439bcb25d2efe7` | Draft sources for the domain rules already incorporated ahead of P0's old wire pin; reviewed wire integration remains required. |
 | BDP #24 named Read projection / #27 Read erasure correction | `87de37f673f83ec54989fdff4891bacc05730ea6` / `d68cc698f63cc114a41d7d965a8b6bebbfda8b3c` | Draft; preserve named-projection/coverage law and genuine successor evidence; port the narrow erased-pointer rejection to the Go wire boundary. |
 | Jim #6147 Phase 0 | `9c4e7a8f1959582f07db3b87641cb33863fda860` | Open; contract hooks remain nil/skipped, not a working CAS/History implementation. |
-| Jim #6304 Phase 1 | merge `2bb1e20de0f0072d7600656ea3cb7f606929dcc6` | Merged 2026-09-08; migration 0067 includes issue/wisp shape parity, ignored-series twin and replay/CLI safeguards. |
+| Jim #6304 Phase 1 | merge `2bb1e20de0f0072d7600656ea3cb7f606929dcc6` | Merged 2026-09-08; migration 0067 includes issue/wisp shape parity, ignored-series twin and raw-SQL replay / CLI override. |
 | Jim #6358 Phase 2 | `5fdfb92fe544c9a83feb098e83f2ccdd87b896c8` | Open; current writer/inventory, superseding older incomplete call-site reports; 0068 reserves attribution and byte-preserving storage, not the deferred durable-address migration. |
 
 **BDP ownership and phase boundaries.** [#19 Mutation results](https://github.com/gastownhall/bdp/blob/06ebabdb391d8ea730295f4e01ed00bc1206fe38/docs/specs/bdp.md#L2814-L2843)
-requires the deleted Resource's final live revision in `deletedIdentity`; no
-version is minted by deletion. [#20 admission/comparison](https://github.com/gastownhall/bdp/blob/5c3f3b10a2edbb77d914b7260cdf035008fc34c7/docs/specs/bdp.md#L1225-L1308)
-requires a durable execution owner and creator-attempt binding separate from
+requires the deleted Resource's final live revision in the `deletedIdentity`
+schema carried as `result.deleted`; no version is minted by deletion. The
+owned-Link result's `source` is the source Bead's absolute canonical URL and
+`sourceRevision` is that Bead's resulting revision on create, update and delete. [#20 admission/comparison](https://github.com/gastownhall/bdp/blob/5c3f3b10a2edbb77d914b7260cdf035008fc34c7/docs/specs/bdp.md#L1225-L1308)
+requires a durable execution owner and immutable creator-attempt binding separate from
 the graph authority lease. Direct unresolved comparisons wait outside the DB
 transaction under one finite budget; sequence precedence remains nonwaiting.
 The graph lease and allocation ledger do not implement receipts, exactly-once
 admission or the TX projected erasure ledger. P3 owns that realization, and
-Read+Update does not wait for TX-only implementation. [T65](https://github.com/gastownhall/bdp/blob/5c3f3b10a2edbb77d914b7260cdf035008fc34c7/docs/specs/bdp.md#L5532-L5542)
+Read+Update does not wait for TX-only implementation. Before P3 implementation,
+its ADR audits the selected profile's storage and interface needs against P1:
+migration additions, state-version coverage, fence triggers, replication
+inspection and fence/decorator censuses, plus any declared source break and
+CHANGELOG migration under A8. The initial eight-table P1 scope is not a promise
+that every future profile fits it. This audit mandates neither new tables nor
+another interface widening; shipped migrations stay frozen and any necessary
+addition follows migration discipline. P1 need not wait for the full P3 design. [T65](https://github.com/gastownhall/bdp/blob/5c3f3b10a2edbb77d914b7260cdf035008fc34c7/docs/specs/bdp.md#L5532-L5542)
 scopes persistent Event-consumer erasure claims to the existing changefeed/
 snapshot-ledger integration; Event delivery alone is not that assurance.
 The same continuation also ACKed manifest-handle retrieval, same-epoch receipt-
@@ -134,7 +150,7 @@ incomplete reconstruction from authorization. Local Hold contracts are not
 BDP wire holds, and product test shapes are not BDP conformance observations.
 
 **History direction now selected; upstream materialization pending.** Donna
-ACKed the sixteen core choices and the remaining twenty-two initial-History
+ACKed the earlier sixteen core choices and the final twenty-two initial-History
 choices on 2026-09-09; the [durable ACK and consolidated choices](https://github.com/donnabox/agent-coordination/blob/4fd57836ae052dec41b66493b88954bdabbb4d0f/context/janet/history-tx-complete-ballot-20260909.md)
 record the selected alternatives. This is a dependency record for the approved 38-unit
 direction, not a competing normative definition or a claim that these pins
@@ -152,7 +168,11 @@ closed prose/schema/fixture materialization before this realization adopts it:
   advance retention guarantees, sync hints or wire holds initially.
   Participation requires positive knowledge; absence does not prove pruning.
   Whole historical success requires current disclosure permission for its
-  owned state, with no partial record or invented navigation adjacency.
+  owned state, with no partial record. Unauthorized subject-history callers
+  receive uniform `resource-not-found` / 404. Preserve known truthful direct
+  predecessor/successor relations on retained replaced records; an authorized
+  `latest-version` may name the current authority version. Do not invent
+  adjacency between replaced and current lineages.
 - Immutable change context now: authority-observed **commit time**, one
   instant per atomic transaction and separate instants for committed sequence
   members; optional per-operation assisting agent/message copied to every
@@ -185,7 +205,7 @@ together, retire the wildcard run-ahead tripwire, and port #27's narrow
 extensions. Respect #24's named Read projection and actual successor
 observations; do not relabel old evidence or blindly vendor the whole TX
 bundle. A contracts-only P0 can precede full P3 and Jim Phase 3, but its
-remaining wire and runtime work must be assigned explicitly. No graph
+remaining wire and runtime work is assigned by the phase/owner gates in §7. No graph
 capability, readiness or merge grant follows from this alignment text or
 from Jim's versioning flag.
 
@@ -303,7 +323,9 @@ Hard constraints, in priority order:
 ## 2b. Where BDP and the Issue/Dependency stack disagree
 
 The conflict inventory, consolidated. Each row is a law of the pinned BDP
-spec set against verified current behavior; the last column says what the
+spec set against behavior verified in the original survey; dated §0a
+qualifications identify later contributor progress, not a retraction of the
+historical observations; the last column says what the
 conflict costs. This section is why the v0 projection was withdrawn (§5)
 and is the requirements list for any C-lane path.
 
@@ -317,7 +339,7 @@ and is the requirements list for any C-lane path.
 | ID grammar | Creation-time canonical IDs, multi-segment supported, reject-don't-trim | Configurable prefix grammar + adaptive-length collision-probability IDs; validation checks prefix shape, not BDP path grammar | Eligibility/surrogate policy required before any legacy ID is served (C lane) |
 | Type system | One immutable nominal declared Type per Resource; descriptors with `conformsTo`; a Type describes beads or links, never both | `issue_type` is an ordinarily mutable column; open string vocabulary via `types.custom`; no descriptors, no hierarchy | Type immutability is violated by ordinary updates (r5); descriptor catalog must be built |
 | Edge multiplicity | Links are first-class; no uniqueness constraint on (type, source, target) | `depid.New(issueID, target)` — at most ONE edge per (source, target) pair, type excluded from the key | Dependencies structurally cannot represent BDP Links (S2 killer #1) |
-| Edge versioning | Every Link carries its own revision; owned-Link mutations version the source | Dependencies carry no revision; dependency edits never touch the source Issue's `row_lock`; `Metadata` is a `string`, surrogate `ID` populated only on some read paths | S2 killers #2 and #3; no owned-links concept exists |
+| Edge versioning | Every Link carries its own revision; owned-Link mutations version the source | Historical survey: Dependencies carry no revision; dependency edits never touch the source Issue's `row_lock`; `Metadata` is a `string`, surrogate `ID` populated only on some read paths. Current-source qualification (2026-09-09, §0a): Jim versions the source through `current_revision` / `issue_versions`, a different witness from `row_lock`, including its outgoing dependency state | Dependencies still lack independent BDP revisions and endpoint-key multiplicity; source witnessing has progressed, but does not establish the BDP owned-Link contract |
 | Snapshot reads | Collection cursors continue ONE logical projected snapshot across requests, bound to an authorization view | Per-call read transactions (`withReadTx`); offset pagination finalized above storage; "read-only" paths write (defer-wake); `OpenForReadOnlyCommand` returns a writable store | BDP Read semantics need a new snapshot port; existing role readers cannot serve it |
 | Authorization | Per-request Authorization View — a closed projection, closed over owned Links; uniform 404 nondisclosure | Bearer token grants the whole surface; no identity, no scopes, no view concept | View mapping is a P-1 design, not a translation |
 | Deletion lifecycle (Read profile) | Logical identity non-reuse survives deletion; `resource-pruned`/`resource-erased` disclosure vocabulary on reads | Deletion frees the ID for reuse; no disclosure vocabulary | The gone-family Read contract must be built in the graph store |
@@ -823,13 +845,20 @@ counterexamples:
 - **Type immutability** (r5): legacy `issue_type` is ordinarily mutable;
   BDP declared Types are immutable.
 
-Mutation-time witnessing — the only remaining mechanism — would require
-instrumenting every legacy write path including `bd sql`, which is
+The historical round-5 assessment was: mutation-time witnessing — the only
+remaining mechanism — would require instrumenting every legacy write path
+including `bd sql`, which is
 arbitrary SQL and cannot be completely instrumented even in principle.
 The conclusion is structural, not incremental: **a store that permits
 timestamp ties, stale restores, arbitrary SQL, and identity resurrection
 cannot be projected into BDP's revision and identity laws by any read-side
-mechanism.** So v0 withholds the projection:
+mechanism.** Current-source qualification (2026-09-09, §0a): Jim's writer
+now versions 21 of 34 listed live paths, including outgoing dependency edits;
+this is mutation witnessing, distinct from the old `row_lock` survey. Unchanged
+re-import currently mints, UOW can mint per repository write, and raw SQL,
+restore and merge-settle remain outside that witness contract. This progress
+does not prove complete BDP translation or change the historical conclusion
+about read-side reconstruction. So v0 withholds the projection:
 
 - The v0 BDP Scope serves **graph beads and links only**.
 - Issues keep their existing surfaces (CLI, REST v0, JSONL) untouched.
@@ -873,13 +902,17 @@ three paths:
   transaction — would give the graph per-operation revisions and
   tombstones without touching legacy code paths, and would be the only
   observation variant that survives round 5 IF the following verification
-  tasks all pass (none is established fact): (a) Dolt trigger availability
-  and transactional semantics; (b) whether direct `bd sql` DML actually
+  tasks all pass (the original C2 survey did not establish them): (a) Dolt
+  trigger availability and transactional semantics; (b) whether direct `bd sql` DML actually
   fires them (noting `bd sql` is unavailable in embedded mode and runs via
   direct SQL-server or proxied-server paths — and UOW is an access path,
   not a third storage engine); (c) trigger-row behavior under replication,
   merge, and restore; (d) Scope URL/epoch handling after restore
-  (decision 11).
+  (decision 11). Current-source qualification (2026-09-09, §0a): the graph
+  fence probes and Jim's application-level version writer are later evidence
+  with their own scopes; neither proves this complete legacy observer. Build
+  on the current writer/inventory rather than repeating a claim of no mutation
+  witnessing; raw SQL, restore and merge-settle coverage still needs proof.
 - **C3 — Cutover**: one-time migration, graph store becomes the only
   store, legacy tables dropped or frozen read-only. Maximum uniformity,
   no dual bookkeeping, maximum one-shot risk; `bd sql` compat ends or
@@ -921,9 +954,12 @@ allocation/tombstone ledger. No legacy IDs are served in v0.
   (`engdocs/BDP_P0_VERIFICATION_ROWS.md` on the P0 branch; the fence
   ships, with the rules spec B3/B4 now record). *Exit: model laws 100%
   table-tested; DTO round-trip against pinned schema fixtures; the three
-  rows answered.* **Met 2026-09-07** on `janet-beadgraph-p0` (council 11:
+  rows answered.* **Met against the historical §0 pin on 2026-09-07** on `janet-beadgraph-p0` (council 11:
   three reviewers, all findings folded; graphops 100% statement coverage;
-  bdpwire 94%); PR to gastownhall/beads on the operator's go.
+  bdpwire 94%). This is historical completion only; §0a and the owner gates
+  below govern current-wire completion and later serving claims. Contracts-only
+  P0 promotion must name that scope and its remaining gates; it is not a graph
+  capability/readiness or upstream merge grant.
 - **P1 — Graph read storage (S1):** the replication/merge ADR first
   (ruling 14: `engdocs/BDP_GRAPH_REPLICATION_ADR.md`, council-reviewed; no
   graph migration merges before it); then tables + migrations (descriptor
@@ -947,8 +983,9 @@ allocation/tombstone ledger. No legacy IDs are served in v0.
   revisions): a durable snapshot registry, materialized result sets, or
   Dolt `AS OF` identity surviving through cursor expiry — chosen by ADR in
   this phase; BDP handler through the existing middleware path
-  (auth/project/deadline semantics preserved); run the **pinned** external
-  BDP Read matrix as a target. *Exit: the pinned matrix green with its
+  (auth/project/deadline semantics preserved); run the external BDP Read
+  matrix **deliberately re-pinned under §0a** as a target. *Exit: that
+  successor matrix green, the applicable owner gates below complete, with its
   own provenance split honored — packaged rows proven at the packaged
   public boundary, self-certified in-process rows via the in-process lane
   and labeled as such (the pinned artifact is explicit that they are not
@@ -958,9 +995,16 @@ allocation/tombstone ledger. No legacy IDs are served in v0.
   artifacts:** the pinned write-profile envelope (an owned-Link mutation's
   result must also report the source Bead's resulting revision), the
   owned-Link Event delta, AND the sequence/idempotency envelope schemas,
-  problem rows and conformance artifacts now present on the exact #19/#20
-  draft heads in §0a. They require deliberate integration and executable
-  realization; their existence is not passing conformance. Profiles are **Scope-wide**
+  problem rows at the reviewed write-profile pin recorded in §0 before P3.
+  At the §0a dependency pins, #19 already has
+  [`packages/conformance/catalog/read-update-v1.json`](https://github.com/gastownhall/bdp/blob/06ebabdb391d8ea730295f4e01ed00bc1206fe38/packages/conformance/catalog/read-update-v1.json)
+  and illustrative [`fixtures/read-update/`](https://github.com/gastownhall/bdp/tree/06ebabdb391d8ea730295f4e01ed00bc1206fe38/fixtures/read-update);
+  #20 has [`packages/conformance/catalog/transactional-v1.json`](https://github.com/gastownhall/bdp/blob/5c3f3b10a2edbb77d914b7260cdf035008fc34c7/packages/conformance/catalog/transactional-v1.json)
+  and illustrative [`fixtures/transactional/`](https://github.com/gastownhall/bdp/tree/5c3f3b10a2edbb77d914b7260cdf035008fc34c7/fixtures/transactional).
+  These are catalog metadata and illustrations, not executable write matrices
+  or observed runtime evidence; those remain pending at these pins. The
+  shared HTTP ACKs also require their reviewed upstream materialization.
+  Profiles are **Scope-wide**
   (uniformity law), and the Event-delta gate binds exactly the profile
   that has Events: a Scope containing owning Types cannot advertise the
   **Transactional** profile until the owned-Link Event delta exists —
@@ -969,7 +1013,8 @@ allocation/tombstone ledger. No legacy IDs are served in v0.
   mint fresh Link AND source revisions; **deletion mints nothing for the
   deleted Link** — its result reports the deleted identity plus the
   source's fresh revision; the deleted identity carries the Link's final
-  live revision, agreeing with `DeletedData` and changefeed tombstones; target revision
+  live revision, agreeing with `DeletedData` and changefeed tombstones
+  ([#20 Mutation results](https://github.com/gastownhall/bdp/blob/5c3f3b10a2edbb77d914b7260cdf035008fc34c7/docs/specs/bdp.md#L3328-L3347)); target revision
   unchanged throughout; both surviving revisions preserved on semantic
   no-op. Then tombstones,
   endpoint constraints, replication of writes; only then
@@ -977,6 +1022,29 @@ allocation/tombstone ledger. No legacy IDs are served in v0.
   artifacts green when they exist upstream, plus beads-owned transaction,
   identity/non-reuse, deletion-result, installed-Type-contract
   validation, and replication tests at the public boundary.*
+
+### Current-wire and profile adoption gates (2026-09-09)
+
+Owners below are phase responsibilities within this plan (janet's graph work);
+BDP owns the upstream source/evidence products. A row is an exit condition,
+not evidence that work has run. Preserve the historical P0 result above.
+
+| Work / owner | Phase and prerequisite | Required exit before the corresponding claim |
+| --- | --- | --- |
+| Read successor pin — P0 wire owner | P0 current-wire completion; reviewed upstream Read cohort | Record the selected spec/bundle/projection and matrix pins in §0, honoring #24's named projection and actual successor provenance. Never relabel old observations or import the whole TX bundle as Read. |
+| Wire parity — P0 wire owner | Same P0 successor adoption | Update vendored provenance, bundle, examples, fixtures, matrix references and DTO parity together; replace the obsolete wildcard-rejection tripwire with the successor's applicable wildcard contract checks. |
+| Erased-problem boundary — P0 wire owner | Same P0 successor adoption | Port #27's narrow `resource-erased` pointer prohibition with focused Go boundary checks, preserving harmless RFC 9457 extensions. |
+| Response negotiation — P0 wire / P2 serving owners | Reviewed materialization of the shared HTTP ACK; P0 captures the contract, P2 serves it | Body-less 406 for unsupported response media and its normal failure/auth non-disclosure precedence are represented and tested at the Go HTTP boundary before current serving claims. |
+| Applicable conditionals — P0 wire / P2 serving owners | Same reviewed HTTP materialization; apply only to the endpoints/profiles that use it | Preserve the selected native body-less 304/412 behavior, validation precedence and normal response metadata; do not substitute a BDP revision conflict. Prove the Read endpoint behavior at the public boundary; receipt/feed validator policy belongs to its P3 profile. |
+| Read execution — P2 serving owner | Above applicable P0 contracts and the re-pinned Read matrix | Fresh applicable Go public-boundary observations, provenance-labelled in-process rows and the beads-owned cross-request cursor check; old P0 probes are not successor observations. |
+| Selected write profile — P3 owner | Reviewed §0 write pin and P3 delta ADR | Adopt applicable admission, results and recovery contracts and approved HTTP successors; prove the selected profile's executable conformance and beads-owned exits. RU does not wait for TX-only receipts, Events or erasure-feed implementation. |
+
+A contracts-only P0 may land with an explicitly historical wire pin and these
+later completion owners. Current-wire claims wait for the P0 rows; current
+Read serving claims also wait for P2. Neither requires all TX runtime or Jim's
+remaining phases. A future Issue/History integration still needs its §0a
+translation proofs; no new interface, table, capability or upstream merge
+permission is selected by assigning these gates.
 
 ## 8. Related workstreams (operator direction 2026-09-02)
 

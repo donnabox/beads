@@ -1,7 +1,7 @@
 # BDP graph store — CLI and storage-interface changes, in detail
 
-**Status:** Draft v14 (W-arch) — amendments A1–A9 and plan rulings 13–14 RULED 2026-09-07; P0 open — feat/bead-graph
-**Date:** 2026-09-02
+**Status:** Draft v15 (W-arch) — amendments A1–A9 and plan rulings 13–14 RULED 2026-09-07; P0 open — feat/bead-graph
+**Date:** 2026-09-09 (v14: 2026-09-02)
 **Companions:** `BDP_BEAD_GRAPH_PLAN.md` (rulings), `BDP_GRAPH_ARCHITECTURE.md`
 (shape; its §2b lists the ruling amendments A1–A9 this spec assumes —
 **all ruled 2026-09-07**, with plan rulings 13–14 ruled the same day; every
@@ -12,6 +12,9 @@ touch (Part C) and what it changes that an earlier draft claimed it did not
 (Part C2). Phase markers follow the plan's §7: **P0** contracts and wire,
 **P1** storage, **P2** serving, **P3** writes.
 
+Revision v15: 2026-09-09 current-source alignment and council corrections;
+phase/owner gates and pinned-source clarity added, historical rulings preserved.
+
 ## Alignment addendum (2026-09-09)
 
 [Plan §0a](BDP_BEAD_GRAPH_PLAN.md#0a-current-bdp-and-versioned-beads-alignment-2026-09-09)
@@ -20,14 +23,23 @@ direction and completion gates. The historical P0 wire pin remains explicit;
 it is not a current-write or History capability claim. Three storage/adapter
 boundaries follow from that reconciliation:
 
-1. P3 delete results use the shared `deletedIdentity` including the removed
-   Resource's final live revision; owned-Link results also report `source`
-   and `sourceRevision`. Deletion never mints a deleted Resource version.
+1. P3 delete results carry the shared `deletedIdentity` schema in the
+   `deleted` result member, including the removed Resource's final live
+   revision. Owned-Link results also report `source` (the source Bead's
+   absolute canonical URL) and `sourceRevision` (that Bead's resulting
+   revision), on creation, update and deletion alike. Deletion never mints a
+   deleted Resource version.
 2. The allocation/authority ledger below is neither Jim's retained
    `issue_versions` store nor the TX projected erasure ledger. Preserve the
    separate epochs and recovery duties. A future History store needs complete
    retained records and applicable copy cleanup; adding History names to this
-   allocation ledger does not implement either requirement.
+   allocation ledger does not implement either requirement. The P3 ADR
+   inventories selected-profile storage/interface deltas and affected migration,
+   state-version, fence, inspection and census gates under plan §0a. The eight
+   replicated tables below are the initial P1 scope; no new table or interface
+   widening is prescribed, and P1 need not wait for the full P3 design. Any
+   necessary later addition preserves frozen migrations and A8 source-break
+   disclosure.
 3. The future approved context envelope is distinct from carried attribution
    and properties. Its commit-time, operation fan-out, legacy absence,
    postimage/Event/row placement and erasure constraints need the upstream
@@ -37,8 +49,13 @@ boundaries follow from that reconciliation:
 P0 must deliberately re-pin reviewed wire inputs and port the narrow erased-
 pointer rejection before current-wire claims, preserving other RFC 9457
 extensions. P1 rechecks merged main and the migration advisory before claiming
-actual slots; 0067 is now merged and 0068 remains Jim's Phase 2 work. No
-migration, field spelling or implementation is introduced by this addendum.
+actual slots; 0067 is now merged and 0068 is reserved by Jim's still-open
+Phase 2. [Plan §7's owner gates](BDP_BEAD_GRAPH_PLAN.md#current-wire-and-profile-adoption-gates-2026-09-09)
+assign these exits, shared negotiation/conditional contracts and their P2
+public-boundary proof. Before P3, record the reviewed selected write-profile
+pin under plan §0. Field spellings above quote the §0a upstream pins and are
+re-verified at that write pin; this addendum introduces no new local wire
+field, migration or implementation.
 
 ## Part A — CLI
 
@@ -736,11 +753,12 @@ check C forbids editing a shipped file (a git-diff check), and the runtime
 **no `NOW()`/`UUID()`/`RAND()`** in migration SQL (check B) — timestamps and
 ids come from Go; real-Dolt tests for anything a `sqlmock` echo cannot
 exercise; DDL is not transactional across statements, so each `CREATE` is
-guarded and resumable. **Eight replicated tables in five files**, numbered **0069 or later**: slot
+guarded and resumable. **Initial P1 scope: eight replicated tables in five files**, numbered **0069 or later**: slot
 0067 is occupied by the merged versioned-beads Phase 1 migration (`issue_versions`,
-the `store_epoch` singleton, `issues.current_revision`), slot 0068 by its
-Phase 2 (`0068_add_attribution_status`, `issue_versions.attribution_status`
-and the `durable_state` LONGBLOB retype; the `version_id` and participation
+the `store_epoch` singleton, `issues.current_revision`); slot 0068 is reserved
+by its still-open Phase 2 (`0068_add_attribution_status`,
+`issue_versions.attribution_status` and byte-preserving `durable_state` LONGBLOB
+storage; the `version_id` and participation
 steps remain deferred at the §0a pin),
 and our claim is registered in the CLAIMED.md registry (#6149, row added
 2026-09-07 at c53ef8810 as "0069 and later") —

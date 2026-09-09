@@ -1,7 +1,7 @@
 # BDP graph store — architecture and design
 
-**Status:** Draft v14 (W-arch) — amendments A1–A9 and decisions D1–D2 (plan rulings 13–14) RULED 2026-09-07; P0 open — feat/bead-graph
-**Date:** 2026-09-02
+**Status:** Draft v15 (W-arch) — amendments A1–A9 and decisions D1–D2 (plan rulings 13–14) RULED 2026-09-07; P0 open — feat/bead-graph
+**Date:** 2026-09-09 (v14: 2026-09-02)
 **Companion:** `BDP_BEAD_GRAPH_PLAN.md` (the plan and its rulings, 1–14) and
 `BDP_GRAPH_CLI_AND_STORAGE_SPEC.md` (the detailed CLI and storage-interface
 changes). This document is the *shape*: what the pieces are, where they live,
@@ -13,6 +13,9 @@ area — the authority mechanism — and every round since v3 has replaced an
 invented primitive with one the tree already has. v6 added the
 operator's **simplification ruling (A9)**; v9 states its arbiter honestly:
 physical database copies are an operator-managed hazard, not a fenced one.
+
+Revision v15: 2026-09-09 current-source alignment and council corrections;
+phase/owner gates and pinned-source clarity added, historical rulings preserved.
 
 ## Current dependency alignment (2026-09-09)
 
@@ -30,10 +33,19 @@ compose its durable admission/effects/outcomes under the upstream profile
 contract. A future History provider must translate context, numeric values,
 retained identity and erasure provenance explicitly. These obligations do
 not add Writer or History methods to the existing P0 interface sketch.
+The P3 ADR audits storage/interface deltas and their migration, state-version,
+fence, replication-inspection and census implications under plan §0a. The
+initial eight-table P1 scope does not prescribe future tables or another
+accessor widening; any necessary addition honors frozen migrations and A8's
+source-break policy. P1 need not await the full P3 design.
 
 P0's old wire pin and historical tests must stay labelled as such until the
 reviewed re-pin, narrow erased-pointer port and applicable successor checks
-are complete. This alignment does not claim that all upstream drafts have
+are complete. [Plan §7's owner gates](BDP_BEAD_GRAPH_PLAN.md#current-wire-and-profile-adoption-gates-2026-09-09)
+assign P0 contract/parity work and P2 serving proof, including shared response
+negotiation and applicable conditionals. P3 separately records its reviewed
+write-profile pin and evidence exit; RU need not await TX-only runtime.
+This alignment does not claim that all upstream drafts have
 merged or that graph/P0 implements their runtime behavior.
 
 ## 1. The one-paragraph version
