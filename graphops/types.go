@@ -668,7 +668,8 @@ func (c EndpointConstraint) EffectiveExternal() ExternalPolicy {
 //
 // The Read foundation vendored by bdpwire at 19923f5b carries this declaration
 // as the distinct max-only ownedWildcardDeclaration. Record ownedLinks keys
-// remain actual Link Type URLs. bdpwire tests hold both sides of that boundary.
+// remain actual Link Type URLs. bdpwire checks both carriers against the
+// pinned key pattern; this domain layer also holds canonical Type identity.
 const WildcardOwnedLinkKey = "*"
 
 // OwnedLinkDecl is one ownsOutgoing entry of a Bead Type Descriptor. It is a
@@ -1030,9 +1031,10 @@ var descriptorMembers = map[string]memberShape{
 // present, a Bead Type carries no endpoint constraint and a Link Type no
 // ownsOutgoing, propertiesSchema when present is an absolute URL, an
 // ownsOutgoing key is a canonical Link Type URL or the wildcard "*"
-// (WildcardOwnedLinkKey, now carried by the pinned Read foundation), and every law NewTypeDescriptor enforces holds — the
-// whole-set max rule among them: an explicit entry's max above the
-// wildcard's is refused (OW1 = A), a rule the schema bundle cannot state
+// (WildcardOwnedLinkKey, now carried by the pinned Read foundation), and
+// every law NewTypeDescriptor enforces holds — the whole-set max rule among
+// them: an explicit entry's max above the wildcard's is refused (OW1 = A),
+// a rule the schema bundle cannot state
 // because it relates two entries' numbers.
 //
 // DECISION: description "" is read as absent. The bundle permits the empty

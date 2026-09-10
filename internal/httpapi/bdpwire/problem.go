@@ -215,6 +215,10 @@ func (p *ReadProblem) UnmarshalJSON(data []byte) error {
 
 // validateErasedPointer preserves ordinary RFC 9457 extensions but rejects the
 // condition-specific pointer on erased resources, even when its value is null.
+// The codecs also apply this narrow guard because pointer otherwise passes
+// through the open Extensions carrier. Named-field semantic conditions, such
+// as archivedAt being exclusive to resource-pruned, remain Validate checks;
+// these codecs do not claim complete conditional-schema validation.
 func (p ReadProblem) validateErasedPointer() error {
 	if p.Code == CodeResourceErased {
 		if _, present := p.Extensions["pointer"]; present {

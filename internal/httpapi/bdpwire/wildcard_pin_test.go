@@ -139,3 +139,28 @@ func TestDescriptorUsesStrictOwnedOutgoingSum(t *testing.T) {
 		}
 	}
 }
+
+// The source regexp assertion above is a provenance tripwire, not semantic
+// equivalence proof. These controls preserve characters ECMAScript dot admits
+// and the prefix match after an otherwise ordinary character.
+func TestOwnedTypePatternAdmitsWhitespaceAndSuffixes(t *testing.T) {
+	for _, key := range []string{"https:// ", "http://\t", "https://x\nmore", "http://x\rmore", "https://x\u2028more", "http://x\u2029more"} {
+		t.Run(key, func(t *testing.T) {
+			value := OwnedOutgoingDeclarations{Types: map[string]OwnedLinkDeclaration{key: {Max: 1}}}
+			if err := value.Validate(); err != nil {
+				t.Fatal(err)
+			}
+			raw, err := json.Marshal(value)
+			if err != nil {
+				t.Fatal(err)
+			}
+			var strict, standard OwnedOutgoingDeclarations
+			if err := Unmarshal(raw, &strict); err != nil {
+				t.Fatal(err)
+			}
+			if err := json.Unmarshal(raw, &standard); err != nil {
+				t.Fatal(err)
+			}
+		})
+	}
+}
