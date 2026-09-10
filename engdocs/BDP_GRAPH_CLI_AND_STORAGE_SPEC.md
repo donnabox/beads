@@ -187,7 +187,7 @@ verb — env (where permitted) > `config.local.yaml` > `config.yaml`;
 a BDP-client realization of the same `graphops` roles (A5); `bd --graph-mode link serve`
 there refuses unless `--serve-local-store`. Issue verbs are unaffected.
 
-### A3. `bd --graph-mode link serve` — serving a Scope (rulings 7b, 9, 12; amendments A1, A2, A7, A9 — ruled 2026-09-07)
+### A3. `bd --graph-mode link serve` — serving a Scope (rulings 7b, 9, 12; amendments A1, A2, A7, A9 — ruled 2026-09-07; A10 — ruled 2026-09-08)
 
 **v0 serves BDP only from SQL-server workspaces.** `bd serve` refuses
 embedded Dolt permanently; every Dolt-server topology serves from the
@@ -197,12 +197,14 @@ routes it there; the backend may itself be embedded) and has no fence to
 offer, so its BDP rows are **absent in v0** (`bd --graph-mode link serve` exit 2, typed);
 the seam it would declare later is the deferred ADR's to define (an
 out-of-tree module cannot import `internal/storage/graphcap`). Embedded
-workspaces are **client hosts only under A9** (their local graph accessors
-answer `ErrNotAuthority`); without A9 they are CLI-only.
+workspaces under A9 as amended by A10 are solo authorities when they have
+no remote and no server, with local graph reads and verbs. Embedded client
+hosts retain the local graph `ErrNotAuthority` refusal contract. Neither
+embedded topology serves BDP over HTTP in v0.
 
 `bd --graph-mode link serve` is a **thin command over the existing `internal/httpapi`
 server**; two policies differ from `bd serve`: it **requires a Scope this
-workspace holds** (exit 2 otherwise) and **it is the only command that
+workspace holds** (exit 2 otherwise) and **it is the only serving command that
 mints**, through a **staged startup** — the gate rules forbid a
 shared→exclusive upgrade, so the sequence in Part A's table is the only
 one: shared gate → temporary source reads the Scope row → close →
@@ -1221,7 +1223,7 @@ backends; a registered backend's serving behavior (rows absent).
 
 Ruled: A1 store-owned witness asserted in every transaction is the v0 lease
 (ruling 9); A2 BDP rows inside `httpapi`, `bd --graph-mode link serve` the
-only minting path among serving commands (A10 separately requires local solo
+only minting path among serving commands (A10 separately permits local solo
 minting), `bd serve` never refusing on account of the graph,
 intra-Scope references Scope-relative and a new base URL a rotation
 (rulings 7b/12); A3 the `--graph-mode link|dependency` root flag with a

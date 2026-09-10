@@ -782,7 +782,7 @@ client:
    commit → push), finalizes this workspace's
    authority witness, and serves the Scope — honestly empty at birth, with
    `beads/`, `links/`, and `types/` all present. Because the Scope URL is a
-   tracked project fact, **only `bd --graph-mode link serve` mints**: a plain `bd serve` on
+   tracked project fact, **among serving commands, only `bd --graph-mode link serve` mints**: a plain `bd serve` on
    an unminted store keeps the legacy surface up with a notice. BDP routes
    are a conditional second table inside `internal/httpapi` behind the same
    middleware, in v0 served only from SQL-server workspaces — the
@@ -796,7 +796,7 @@ client:
    never a startup refusal on account of the graph. `bd --graph-mode link serve` refuses
    (exit 2) in those cases. No development-mode URL derivation exists in
    bd. (W2 decides whether `bd --graph-mode link serve` survives as the alias — default
-   yes; it is the minting path.)
+   yes; it is the serving minting path.)
 3. **Client wiring — `bd init --bdp-server <url>` and `bd --graph-mode link client`**
    (as ruled 2026-09-07, A6): one more `bd init` target, beside
    `--server`, `--shared-server`, `--proxied-server`, `--team-server`, and
@@ -1032,7 +1032,9 @@ allocation/tombstone ledger. No legacy IDs are served in v0.
   capability/readiness or upstream merge grant.
 - **P1 — Graph read storage (S1):** the replication/merge ADR first
   (ruling 14: `engdocs/BDP_GRAPH_REPLICATION_ADR.md`, council-reviewed; no
-  graph migration merges before it); then tables + migrations (descriptor
+  graph migration merges before it); record the A10 solo mint trigger and
+  workspace-gate ↔ lease-predicate mapping (architecture §2b) before wiring
+  the embedded leg; then tables + migrations (descriptor
   store and the ruling-13 fence triggers included); typed snapshot-source resolution (`GraphReadSource`)
   with single-request snapshot consistency and the zero-legacy-writes
   regression (defer-wake); the resolver pair across the storage legs —
@@ -1183,7 +1185,7 @@ of that.
    table-driven middleware path; BDP routes are a conditional second route
    table inside `internal/httpapi` behind the same `route()` wrapper, so
    bearer-auth and project-identity semantics are preserved by construction;
-   only `bd --graph-mode link serve` mints, and `bd serve` never refuses on
+   among serving commands, only `bd --graph-mode link serve` mints, and `bd serve` never refuses on
    account of the graph. v0 authorization-view mapping: one view per bearer
    token = the whole Scope (no hidden Resources) — honest and conformant
    until real views exist; federation/multi-view later changes the
