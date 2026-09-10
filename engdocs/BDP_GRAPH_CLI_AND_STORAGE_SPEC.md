@@ -1,10 +1,10 @@
 # BDP graph store — CLI and storage-interface changes, in detail
 
-**Status:** Draft v15 (W-arch) — amendments A1–A9 and plan rulings 13–14 RULED 2026-09-07; P0 open — feat/bead-graph
-**Date:** 2026-09-09 (v14: 2026-09-02)
+**Status:** Draft v16 (W-arch) — A1–A9 and plan rulings 13–14 ruled 2026-09-07; A10 ruled 2026-09-08; P0 current-wire completion open — feat/bead-graph
+**Date:** 2026-09-10 (v15: 2026-09-09; v14: 2026-09-02)
 **Companions:** `BDP_BEAD_GRAPH_PLAN.md` (rulings), `BDP_GRAPH_ARCHITECTURE.md`
-(shape; its §2b lists the ruling amendments A1–A9 this spec assumes —
-**all ruled 2026-09-07**, with plan rulings 13–14 ruled the same day; every
+(shape; its §2b lists A1–A9 and plan rulings 13–14, **ruled 2026-09-07**,
+and the A10 solo-topology amendment **ruled 2026-09-08**; every
 hazard-R paragraph is marked *[deferred under A9]*). This document is the
 *diff*: every command, flag, config key, interface member, package,
 migration, and gate the graph work adds or touches — and what it does not
@@ -14,11 +14,15 @@ touch (Part C) and what it changes that an earlier draft claimed it did not
 
 Revision v15: 2026-09-09 current-source alignment and council corrections;
 phase/owner gates and pinned-source clarity added, historical rulings preserved.
+Revision v16: 2026-09-10 formal-review correction aligns all embedded-leg
+summaries with A10 and qualifies the registry claim; plan §0a carries the
+current dependency refresh and outstanding reviewer/owner gate.
 
 ## Alignment addendum (2026-09-09)
 
 [Plan §0a](BDP_BEAD_GRAPH_PLAN.md#0a-current-bdp-and-versioned-beads-alignment-2026-09-09)
-records the current #19/#20 and Jim #6147/#6304/#6358 pins, approved History
+records the historical pins and the 2026-09-10 refresh for both BDP #19/#20
+and Jim #6147/#6304/#6358, approved History
 direction and completion gates. The historical P0 wire pin remains explicit;
 it is not a current-write or History capability claim. Three storage/adapter
 boundaries follow from that reconciliation:
@@ -415,8 +419,10 @@ Each verb reaches its role through an accessor (the `cmd/bd/label.go`
 pattern plus the client route), with a route-fork test in the shape of the
 `*_proxied_integration_test.go` / `*_embedded_test.go` pairs. CLI reads on
 the authority workspace read its own state; on any other workspace they
-refuse (`ErrNotAuthority`) — there is no replica read in v0, and under A9
-(ruled) an embedded or registered-backend workspace is a client host only.
+refuse (`ErrNotAuthority`) — there is no replica read in v0. Under A9 as
+amended by A10, an embedded workspace with no remote and no server is a solo
+authority with local reads and verbs; embedded client hosts and registered-
+backend client hosts retain the refusal contract. Solo authority serves no HTTP.
 `internal/bdpclient` maps Problems back to the typed errors (round-trip
 test). No collection routes before the cursor ADR (`ErrNotServedYet` on
 the client route; `list` works on the local route from P1).
@@ -667,7 +673,7 @@ func ReadBeadInTx(ctx, tx DBTX, w authority.Witness, claim graphcap.LeaseClaim, 
 | Leg | Files | Body |
 | --- | --- | --- |
 | server Dolt (CLI) | `internal/storage/dolt/beadgraph_*.go` | witness + claim per call; `withReadTx` / `withRetryTx`; scoped commit; `PublishGraphMutation` |
-| embedded Dolt (CLI only without A9) | `internal/storage/embeddeddolt/beadgraph_*.go` | same body, `withConn` — *[under A9: the accessors answer `ErrNotAuthority`; the leg wires the refusal contract, not the role contracts]* |
+| embedded Dolt (CLI only, A9 as amended by A10) | `internal/storage/embeddeddolt/beadgraph_*.go` | same body, `withConn`; solo topology wires the full local read contract with its witness and workspace-gate lease; client hosts wire `ErrNotAuthority` refusal. No embedded HTTP serving. |
 | unit of work (**the serving leg**) | `internal/storage/domain/beadgraph.go`, `internal/storage/domain/db/beadgraph.go` (+ the version-control repository's new `MergeBase`/`ResetSoft`/`CheckoutTables`/`Revert`/`HashOfTables`), `internal/storage/uow/beadgraph_*.go` (`BeadGraphUseCase()`; `RunTxRead`; **`RunTxScopedResult(tables, msg)`** — new, since `doltServerTx.Commit` hardcodes `DOLT_COMMIT('-Am')`; `RunTxEphemeral` for renewal; `PublishGraphMutation` on the provider) | **same body** |
 
 Every protected body begins with `assertAuthorityInTx(ctx, tx, w, claim,
@@ -760,8 +766,9 @@ by its still-open Phase 2 (`0068_add_attribution_status`,
 `issue_versions.attribution_status` and byte-preserving `durable_state` LONGBLOB
 storage; the `version_id` and participation
 steps remain deferred at the §0a pin),
-and our claim is registered in the CLAIMED.md registry (#6149, row added
-2026-09-07 at c53ef8810 as "0069 and later") —
+and our claim is registered in the CLAIMED.md registry on the still-open
+#6149 branch (row added 2026-09-07 at c53ef8810 as "0069 and later"),
+not on main; the actual P1 migration slot must be rechecked —
 `NNNN_beadgraph_scope.up.sql` (scope, history), `NNNN_beadgraph_types.up.sql`,
 `NNNN_beadgraph_beads.up.sql`, `NNNN_beadgraph_links.up.sql`,
 `NNNN_beadgraph_ledger.up.sql` (events, counter, allocations) — plus the
@@ -1219,8 +1226,9 @@ mode-and-path-keyed policy; A4 public `graphops`, `BeadGraph*` accessors, no
 transitions, hash-chained ledger, ledger lane restoring anti-reuse history,
 provider `LedgerDurability`; A6 tracked `bdp.scope_url`, per-workspace keys in
 `config.local.yaml`, tokens from files only; A7's shared-database half (the
-fence cell); A9 v0 authority requires a shared database, the remote half of
-A7 deferred to the write-profile ADR; A8 option A — constraint #1 scoped to
+fence cell); A9 v0 authority requires a shared database outside A10's
+embedded solo exception; the remote half of A7 is deferred to the write-profile
+ADR; A8 option A — constraint #1 scoped to
 behavior, out-of-tree implementers take the declared source break with six
 stubs and a CHANGELOG call-out. Ruling 13 (out-of-role DML, "A+B"): out of
 contract, the state-change validator with ledger accounting, and
@@ -1231,4 +1239,8 @@ elsewhere, no auto-resolve or `--strategy` on graph tables, foreign deltas
 refused whole, clones take remote state wholesale (B3, B7, C2).
 A10 (solo topology, B), Part D.7 (fence census, A), the
 `authority_epoch` spelling, and the properties-are-opaque amendment (bdp#1
-item 5) ruled 2026-09-08. **Nothing pending; P0 is open.** Full text: architecture §2b.
+item 5) ruled 2026-09-08. **These rulings are settled; P0 current-wire
+completion and reviewer/owner clearance remain open.** Full A10 text is in
+architecture §2b; current BDP #19/#20 and Jim dependencies are in the plan
+§0a refresh of 2026-09-10. Local solo verbs do not authorize embedded HTTP
+serving or clear the formal #6154 change request.

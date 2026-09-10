@@ -1,11 +1,11 @@
 # BDP in beads: the bead-graph plan
 
-**Status:** Draft v26 — feat/bead-graph — W-arch amendments **A1–A9 and rulings 13–14 RULED 2026-09-07**; every P-1 decision is ruled; **P0 is open**. (Thirteen adversarial review rounds:
+**Status:** Draft v27 — feat/bead-graph — W-arch amendments **A1–A9 and rulings 13–14 RULED 2026-09-07; A10 RULED 2026-09-08**; every P-1 decision is ruled; **P0 is open**. (Thirteen adversarial review rounds:
 1–7 on the whole plan, SOUND at round 7; 8–13 on the storage-interfaces
 section, SOUND-ADDITION at round 13; v6 withdrew the Issue projection from
 v0 on review-round-5 counterexamples; v9–v11 record the P-1 ruling tranches — all
-twelve decisions are ruled; v14–v21 reopened P-1 for the nine amendments; v22–v23 record all nine ruled; v24–v25 record rulings 13–14; v26 records the 2026-09-09 source alignment and council gate/traceability corrections; P0 current-wire completion remains open)
-**Date:** 2026-09-09 (v1: 2026-08-31; v25: 2026-09-02)
+twelve decisions are ruled; v14–v21 reopened P-1 for the nine amendments; v22–v23 record all nine ruled; v24–v25 record rulings 13–14; v26 records the 2026-09-09 source alignment and council gate/traceability corrections; v27 carries the 2026-09-10 formal-review corrections and dependency refresh; P0 current-wire completion remains open)
+**Date:** 2026-09-10 (v26: 2026-09-09; v1: 2026-08-31; v25: 2026-09-02)
 **Owners:** Donna Box (ruling), janet (drafting/implementation)
 **References:** the BDP spec (gastownhall/bdp `docs/specs/bdp.md`), beads#6051,
 this repo's `backend/` conformance surface, `engdocs/PROJECT_CHARTER.md`.
@@ -28,7 +28,7 @@ this repo's `backend/` conformance surface, `engdocs/PROJECT_CHARTER.md`.
 
 ## 0. The BDP pin, and the spec-first dependency
 
-This plan targets the BDP spec **as of the owned-Links rulings**:
+The original P0 wire input targeted the BDP spec **as of the owned-Links rulings**:
 **BDP commit `0b7d86e7`** (the gastownhall/bdp PR #18 merge, 2026-09-07, carried attribution for #10; supersedes the `aee075f5` pin of PR #17),
 schema bundle `schemas/bdp-v0.schema.json` at that commit, Read conformance
 matrix `packages/conformance/matrices/read-v1.json` at that commit
@@ -83,6 +83,9 @@ spec, bundle, problem rows, catalog, illustrative fixtures and executable matrix
 (or its explicit pending status). The claim-specific evidence exit remains
 required; a source pin alone cannot discharge it.
 
+The following table preserves the **2026-09-09 source snapshot**; the current
+2026-09-10 refresh immediately below supersedes its dependency statuses.
+
 | Source | Exact pin | State / graph consequence |
 | --- | --- | --- |
 | BDP #19 Read+Update | `06ebabdb391d8ea730295f4e01ed00bc1206fe38` | Draft; singleton/sequence envelopes, durable admission/outcomes, aliases and shared deleted identity now exist; P3 must adopt their reviewed selected-profile successor under the explicit write pin. |
@@ -92,6 +95,40 @@ required; a source pin alone cannot discharge it.
 | Jim #6147 Phase 0 | `9c4e7a8f1959582f07db3b87641cb33863fda860` | Open; contract hooks remain nil/skipped, not a working CAS/History implementation. |
 | Jim #6304 Phase 1 | merge `2bb1e20de0f0072d7600656ea3cb7f606929dcc6` | Merged 2026-09-08; migration 0067 includes issue/wisp shape parity, ignored-series twin and raw-SQL replay / CLI override. |
 | Jim #6358 Phase 2 | `5fdfb92fe544c9a83feb098e83f2ccdd87b896c8` | Open; current writer/inventory, superseding older incomplete call-site reports; 0068 reserves attribution and byte-preserving storage, not the deferred durable-address migration. |
+
+### Current dependency refresh (2026-09-10)
+
+This docs-only successor incorporates Beads main
+`a690b0a8c4d1ddc4f0bd9bf767499625dd71bc96`. It preserves both dependencies:
+**BDP #19/#20 and Jim's versioned-beads work**. Current source/check observations
+below are dated, not ongoing readiness claims.
+
+| Source | Exact current source | State and phase consequence |
+| --- | --- | --- |
+| BDP Read foundation #29 | merge `19923f5bb6cc3f4ee4c508e36df3bd4c5c52344b`, source head `599361130bfaa07c2b5d157f3ecbe44f0691cb9e` | Merged 2026-09-10. Selected source for the bounded P0 Read re-pin: wildcard, numeric, named-projection and erased-pointer corrections from #22/#23/#24/#27 are incorporated ancestries. P0 adoption and current-base checks are separate work, not performed by this design correction. |
+| BDP #19 Read+Update | merge `6d88f857cb643fe4e5d77e1dc45038a7d2e5ebb5`, source head `a2531e43baa5c6b27f22149b214326d8736e6198` | Merged 2026-09-10 wire/spec, without RU runtime. A P3 RU realization adopts a reviewed selected-profile pin and its own evidence; it need not wait for TX-only runtime. |
+| BDP #20 Transactional | published PR head `5c3f3b10a2edbb77d914b7260cdf035008fc34c7`; reviewed local correction `0166ff8ef57c481f9ee8fb1223f728f12f9c75f4` | Open draft at the published head. The local correction contains the reviewed G1–G5 HTTP clarification; it is not the remote PR head or a merged dependency. Shared Read HTTP implementation and fresh observations remain a gate before #20 lands. |
+| Jim #6147 Phase 0 | `9c4e7a8f1959582f07db3b87641cb33863fda860` | Open; snapshot shows 117 successful, two skipped and two failed checks (PR Core and CI Gate / Required). Nil-hook contract scaffolding is not graph CAS or History realization; these failures are not automatically P0 blockers. |
+| Jim #6304 Phase 1 | source `162a47703bb702d43e3192c79b6b802cf650d31d`, merge `2bb1e20de0f0072d7600656ea3cb7f606929dcc6` | Merged 2026-09-08, including 0067. Its historical head had 119 successful and one skipped checks. |
+| Jim #6358 Phase 2 | `5fdfb92fe544c9a83feb098e83f2ccdd87b896c8` | Open; snapshot shows 121 successful and two skipped checks, with both CI Gate / Required checks successful. This is its own check evidence, not graph conformance. Migration 0068 remains reserved; graph P1 rechecks its actual slot. |
+
+The selected P0 Read source is the explicit #29 merge, not the later RU bundle
+or a moving BDP main. Preserve §0's original pin and historical results until
+the separate P0 successor records actual adoption, source/fixture provenance
+and current Go boundary checks. P0 proves contracts; P2 must prove live Go Read
+serving, current-view/owned closure, HTTP behavior and stable cross-request
+cursors. The preserved #29 cohort does not prove the later G1–G5 prose.
+P1 retains its storage/replication ADR gate; P3 retains its selected write-profile
+ADR and evidence gate. Neither full TX runtime nor Jim's remaining phases are
+blanket prerequisites for P0.
+
+[The formal #6154 review](https://github.com/gastownhall/beads/pull/6154#pullrequestreview-5163859630)
+requested the A10 correction now transcribed into architecture §2b. Its
+`CHANGES_REQUESTED` hold remains until the reviewer withdraws the objection or
+a project-owner override is recorded; an author correction does not clear it.
+Julian retains upstream merge ownership. Current main already corrects the
+old `docs/recovery/init-safety.md` freshness date; the earlier failed check was
+a historical branch-base result, not a standing current-main failure.
 
 **BDP ownership and phase boundaries.** [#19 Mutation results](https://github.com/gastownhall/bdp/blob/06ebabdb391d8ea730295f4e01ed00bc1206fe38/docs/specs/bdp.md#L2814-L2843)
 requires the deleted Resource's final live revision in the `deletedIdentity`
@@ -115,9 +152,11 @@ scopes persistent Event-consumer erasure claims to the existing changefeed/
 snapshot-ledger integration; Event delivery alone is not that assurance.
 The same continuation also ACKed manifest-handle retrieval, same-epoch receipt-
 page URL restart survival, body-less 406 negotiation refusal and the initial
-receipt/finite-feed validator policy. These five HTTP choices are pending
-upstream materialization beyond the #20 pin; the graph wire/serving phases
-must adopt their reviewed result, including shared Read consequences.
+receipt/finite-feed validator policy. At the historical #20 pin these five HTTP
+choices were pending materialization. The local reviewed correction in the refresh above contains
+their wire prose, while shared Read runtime and observations remain pending.
+The graph wire/serving phases must adopt their reviewed result, including
+shared Read consequences.
 
 **Jim's current contribution and limits.** The [current writer](https://github.com/gastownhall/beads/blob/5fdfb92fe544c9a83feb098e83f2ccdd87b896c8/internal/storage/issueops/version_history.go#L24-L65)
 records dependency changes and final outgoing dependency state. The [current
@@ -1052,9 +1091,10 @@ This plan covers the graph store and its Read serving. Sibling workstreams,
 each owning its own writeup:
 
 - **W-arch** — `BDP_GRAPH_ARCHITECTURE.md` and
-  `BDP_GRAPH_CLI_AND_STORAGE_SPEC.md` (v14, 2026-09-07), eight council
-  rounds with live Dolt probes; nine ruling amendments (A1–A9) and two
-  decisions (rulings 13–14), all ruled 2026-09-07 and recorded in §9.
+  `BDP_GRAPH_CLI_AND_STORAGE_SPEC.md` (v16, 2026-09-10; v15: 2026-09-09;
+  v14: 2026-09-02), eight council rounds with live Dolt probes; A1–A9 and
+  decisions 13–14 ruled 2026-09-07, with A10 ruled 2026-09-08 and recorded
+  in §9.
   Preceded P0 code; P0 is open.
 - **W1** — flesh out the **Update and Transactional profiles** of BDP and
   the reference implementations (the protocol is Read-heavy today); this is
@@ -1123,8 +1163,9 @@ of that.
 9. **Serving authority — RULED (corrected model):** the authority is the
    graph store *as reached through the normalized storage abstraction*,
    whichever provider realizes it — not `bd serve`, and not Dolt. The
-   authority marker (Scope URL + authority id, minted by `bd serve` on
-   first serve under a configured URL — ruling 12),
+   authority marker (Scope URL + authority id, minted on first serve by
+   `bd --graph-mode link serve` under a configured URL — ruling 12 as
+   amended by A2; A10 separately permits local solo minting),
    single-serialized history, non-authority refusal (of graph writes AND
    BDP serving for that URL), and **single-transaction operations under a
    store-asserted authority witness** (A1, ruled 2026-09-07; the snapshot
@@ -1134,7 +1175,8 @@ of that.
    and the BDP handler are both clients of that abstraction, so they are
    one authority on any provider. Dolt is the in-tree reference
    realization. Promotion is explicit and epoch-rotating; **in v0 a Scope's
-   authority is a shared database that minted it** (A9, ruled 2026-09-07):
+   authority is a shared database that minted it**, except A10's embedded
+   solo topology (A9 ruled 2026-09-07, amended by A10 on 2026-09-08):
    replication, restore, and copy confer nothing; promotion in place is a
    self-regrant or an operator's explicit steal; a new database takes a new
    Scope URL; the shared-database fence is the lease of A7. Consequence: the
@@ -1154,9 +1196,11 @@ of that.
 12. **Store, Scope, client — RULED (replaces "empty-at-birth"):** three
    commands, three responsibilities (§4 "Lifecycle commands"). `bd init`
    initializes the graph store with everything else, against the
-   interfaces — no separate graph init. `bd serve` creates the Scope on
-   top of the store on first serve under a configured URL (minting the
-   marker) and serves it honestly empty; no URL → no BDP routes. A
+   interfaces — no separate graph init. `bd --graph-mode link serve`
+   creates the Scope on first serve under a configured URL (A2), and
+   serves it honestly empty; `bd serve` only mounts an already-minted
+   held Scope and never mints. No URL → no BDP routes. A10 separately
+   permits local solo minting and verbs, with no embedded HTTP serving. A
    client-wiring is `bd init --bdp-server <url>` — one more `bd init`
    target, distinguished by rerouting ABOVE the storage abstraction (at
    the CLI) rather than below it (§4 "Lifecycle commands"); after it, the
