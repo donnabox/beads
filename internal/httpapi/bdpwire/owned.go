@@ -21,7 +21,10 @@ type OwnedOutgoingDeclarations struct {
 	Types    map[string]OwnedLinkDeclaration `json:"-"`
 }
 
-var ownedTypeURLPattern = regexp.MustCompile(`^https?://.+`)
+// JSON Schema uses ECMAScript regex semantics: its dot excludes all four
+// line terminators. Go's dot excludes only LF. Preserve the source pattern's
+// prefix match; this is not a stricter URL parser or an end-anchored grammar.
+var ownedTypeURLPattern = regexp.MustCompile(`^https?://[^\r\n\x{2028}\x{2029}]+`)
 
 // Validate checks declaration bounds, including the cross-entry whole-set
 // bound that JSON Schema cannot express. Record grouping remains graph law.

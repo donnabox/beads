@@ -70,7 +70,7 @@ func TestOwnedOutgoingSumAtReadFoundationPin(t *testing.T) {
 
 func TestWildcardSchemaKeyIsOnlyADeclaration(t *testing.T) {
 	defs := loadBundleDefs(t)
-	if asMap(t, defs["absoluteHttpUrl"], "absoluteHttpUrl")["pattern"] != ownedTypeURLPattern.String() {
+	if asMap(t, defs["absoluteHttpUrl"], "absoluteHttpUrl")["pattern"] != `^https?://.+` {
 		t.Fatal("owned key pattern drifted from pinned schema")
 	}
 	descriptor := asMap(t, defs["typeDescriptor"], "typeDescriptor")
@@ -83,6 +83,41 @@ func TestWildcardSchemaKeyIsOnlyADeclaration(t *testing.T) {
 	owned := asMap(t, asMap(t, bead["properties"], "properties")["ownedLinks"], "ownedLinks")
 	if asMap(t, owned["propertyNames"], "propertyNames")["$ref"] != "#/$defs/absoluteHttpUrl" {
 		t.Fatal("record grouping must remain keyed by actual Link Type URL")
+	}
+}
+
+func TestOwnedTypePatternECMAScriptLineTerminators(t *testing.T) {
+	for _, suffix := range []string{"\n", "\r", "\u2028", "\u2029"} {
+		for _, prefix := range []string{"http://", "https://"} {
+			for _, control := range []bool{false, true} {
+				key := prefix + suffix
+				if control {
+					// The schema pattern is not end anchored: an initial ordinary
+					// character can match even if a line terminator follows it.
+					key = prefix + "x" + suffix
+				}
+				t.Run(key, func(t *testing.T) {
+					value := OwnedOutgoingDeclarations{Types: map[string]OwnedLinkDeclaration{key: {Max: 1}}}
+					if (value.Validate() == nil) != control {
+						t.Fatalf("Validate acceptance differs from ECMAScript prefix pattern: %q", key)
+					}
+					if _, err := json.Marshal(value); (err == nil) != control {
+						t.Fatalf("Marshal acceptance differs from ECMAScript prefix pattern: %q", key)
+					}
+					raw, err := json.Marshal(map[string]any{key: map[string]int{"max": 1}})
+					if err != nil {
+						t.Fatal(err)
+					}
+					var strict, standard OwnedOutgoingDeclarations
+					if err := Unmarshal(raw, &strict); (err == nil) != control {
+						t.Fatalf("strict Unmarshal acceptance differs: %q", key)
+					}
+					if err := json.Unmarshal(raw, &standard); (err == nil) != control {
+						t.Fatalf("JSON Unmarshal acceptance differs: %q", key)
+					}
+				})
+			}
+		}
 	}
 }
 
