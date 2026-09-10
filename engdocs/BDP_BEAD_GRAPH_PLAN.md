@@ -122,11 +122,7 @@ P1 retains its storage/replication ADR gate; P3 retains its selected write-profi
 ADR and evidence gate. Neither full TX runtime nor Jim's remaining phases are
 blanket prerequisites for P0.
 
-[The formal #6154 review](https://github.com/gastownhall/beads/pull/6154#pullrequestreview-5163859630)
-requested the A10 correction now transcribed into architecture §2b. Its
-`CHANGES_REQUESTED` hold remains until the reviewer withdraws the objection or
-a project-owner override is recorded; an author correction does not clear it.
-Julian retains upstream merge ownership. Current main already corrects the
+Current main already corrects the
 old `docs/recovery/init-safety.md` freshness date; the earlier failed check was
 a historical branch-base result, not a standing current-main failure.
 
