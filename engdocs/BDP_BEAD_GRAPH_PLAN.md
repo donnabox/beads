@@ -38,6 +38,35 @@ during P0 vendoring; earlier drafts said 38).
 a draft; "matrix green" exits below mean green against the *pinned* matrix,
 re-pinned deliberately, never against a moving `main`.
 
+### P0 Read adoption record (2026-09-10)
+
+The current P0 contract input supersedes the original pin above with the exact
+BDP Read foundation merge `19923f5bb6cc3f4ee4c508e36df3bd4c5c52344b`.
+The spec blob is `79049a703ef957e3eed7cbe56c093356c47b0658`. The vendored
+27-definition schema SHA-256 is
+`e4c4b7bebd75fe06cd4f7a39c5731c774bf23437dd7d01114819b436b624e4d3`;
+Read catalog SHA-256 is
+`8867d1eed53f9f37047e11835c0a5a2021d9ff3140f64245cd38735f754d9924`;
+46-plan Read matrix SHA-256 is
+`4e087ff545b514e9cc0608ffebc8ccd7deeb0a9baa2cdd67c5450a9ea9e0900a`.
+The upstream ordered named Read projection is
+`b4c13b1d8e78bd556ace7db9c65729f86ea43428c069168bc3aba84bbe073d1a`.
+This is provenance of the adopted upstream Read input, not Go observation evidence.
+All six verbatim files and 13 extracted examples have complete byte/blob/range
+records in [PROVENANCE](../internal/httpapi/bdpwire/schema/PROVENANCE).
+
+Local source adoption is recorded by `4ab80d75f3a11a9c53c5404251899eb1d4d29170`;
+`fdfb2738d58e107b714013a4c5a6eb4b19461c52` corrects Go/ECMAScript line-terminator
+parity without changing those vendored bytes. The current-base tests and seven
+executed Dolt spikes are recorded in
+[P0 verification rows](BDP_P0_VERIFICATION_ROWS.md#current-main-read-contract-refresh--2026-09-10).
+The initial refresh passed 95 top-level / 192 including subtests, zero skips.
+The later pattern correction passed all affected package tests; the optional
+source-fence reconstruction was separately verified against the exact pin.
+These are contract and spike checks. Hosted review/readiness, P1 mechanisms,
+P2 HTTP serving and P3 write-profile adoption remain separate gates. The design
+PR's formal change-request hold is not discharged by this adoption record.
+
 Model laws this plan builds to (the baseline pin plus the dated #19/#20
 Mutation results correction, pinned in §0a):
 
@@ -71,7 +100,8 @@ Mutation results correction, pinned in §0a):
 
 This dated alignment updates the historical survey and P3 dependencies without
 changing the ruled v0 scope: **graph Beads/Links only; no Issue projection**.
-The §0 Read pin remains the historical P0 wire input, not a claim that it
+The original §0 Read pin above this historical alignment was superseded by
+the dated P0 adoption record above. Neither pin is a claim that it
 contains subsequent rulings. Donna's 2026-09-09 continuation authorizes
 materialization on the condition that this design and P0 track both evolving
 BDP and Jim's versioned-beads work, as recorded in the [operator continuation](https://github.com/donnabox/agent-coordination/blob/4fd57836ae052dec41b66493b88954bdabbb4d0f/context/janet/beads-workstream-state.md). The following are read/verified source
@@ -105,17 +135,16 @@ below are dated, not ongoing readiness claims.
 
 | Source | Exact current source | State and phase consequence |
 | --- | --- | --- |
-| BDP Read foundation #29 | merge `19923f5bb6cc3f4ee4c508e36df3bd4c5c52344b`, source head `599361130bfaa07c2b5d157f3ecbe44f0691cb9e` | Merged 2026-09-10. Candidate input for the P0 wire owner’s §0 re-pin record (bundle/projection/matrix pins still owed): wildcard, numeric, named-projection and erased-pointer corrections from #22/#23/#24/#27 are incorporated ancestries. P0 adoption and current-base checks are separate work, not performed by this design correction. |
+| BDP Read foundation #29 | merge `19923f5bb6cc3f4ee4c508e36df3bd4c5c52344b`, source head `599361130bfaa07c2b5d157f3ecbe44f0691cb9e` | Merged 2026-09-10. Adopted by the P0 successor in the dated §0 record above, including bundle/projection/matrix pins and current-base checks. Wildcard, numeric, named-projection and erased-pointer corrections from #22/#23/#24/#27 are incorporated ancestries. The earlier design-only refresh did not perform this adoption. |
 | BDP #19 Read+Update | merge `6d88f857cb643fe4e5d77e1dc45038a7d2e5ebb5`, source head `a2531e43baa5c6b27f22149b214326d8736e6198` | Merged 2026-09-10 wire/spec, without RU runtime. A P3 RU realization adopts a reviewed selected-profile pin and its own evidence; it need not wait for TX-only runtime. |
 | BDP #20 Transactional | published PR head `5c3f3b10a2edbb77d914b7260cdf035008fc34c7`; reviewed local correction `0166ff8ef57c481f9ee8fb1223f728f12f9c75f4` (unpushed; no fetchable source pin) | Open draft at the published head. The local correction contains the reviewed G1–G5 HTTP clarification; it is not the remote PR head or a merged dependency. Shared Read HTTP implementation and fresh observations remain a gate before #20 lands. |
 | Jim #6147 Phase 0 | `9c4e7a8f1959582f07db3b87641cb33863fda860` | Open; snapshot shows 117 successful, two skipped and two failed checks (PR Core and CI Gate / Required). Nil-hook contract scaffolding is not graph CAS or History realization; these failures are not automatically P0 blockers. |
 | Jim #6304 Phase 1 | source `162a47703bb702d43e3192c79b6b802cf650d31d`, merge `2bb1e20de0f0072d7600656ea3cb7f606929dcc6` | Merged 2026-09-08, including 0067. Its historical head had 119 successful and one skipped checks. |
 | Jim #6358 Phase 2 | `5fdfb92fe544c9a83feb098e83f2ccdd87b896c8` | Open; snapshot shows 121 successful and two skipped checks, with both CI Gate / Required checks successful. This is its own check evidence, not graph conformance. Migration 0068 remains reserved; graph P1 rechecks its actual slot. |
 
-The candidate P0 Read input is the explicit #29 merge, not the later RU bundle
-or a moving BDP main; the wire owner records the complete §0 adoption pins. Preserve §0's original pin and historical results until
-the separate P0 successor records actual adoption, source/fixture provenance
-and current Go boundary checks. P0 proves contracts; P2 must prove live Go Read
+The adopted P0 Read input is the explicit #29 merge, with the complete §0
+adoption pins, source/fixture provenance and current Go boundary checks recorded
+above. The original pin and results remain historical. P0 proves contracts; P2 must prove live Go Read
 serving, current-view/owned closure, HTTP behavior and stable cross-request
 cursors. The preserved #29 cohort does not prove the later G1–G5 prose.
 P1 retains its storage/replication ADR gate; P3 retains its selected write-profile
