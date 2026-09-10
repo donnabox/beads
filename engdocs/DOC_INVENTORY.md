@@ -1,5 +1,6 @@
 # Documentation Disposition Inventory
 
+Graph-plane design records added: 2026-09-10.
 Reviewed: 2026-07-07 (paths updated 2026-07-10 for the Mintlify port: user docs now live in the docs/ site tree; this ledger and other internal docs live in engdocs/)
 
 CI cleanup entry added: 2026-05-28

@@ -105,15 +105,15 @@ below are dated, not ongoing readiness claims.
 
 | Source | Exact current source | State and phase consequence |
 | --- | --- | --- |
-| BDP Read foundation #29 | merge `19923f5bb6cc3f4ee4c508e36df3bd4c5c52344b`, source head `599361130bfaa07c2b5d157f3ecbe44f0691cb9e` | Merged 2026-09-10. Selected source for the bounded P0 Read re-pin: wildcard, numeric, named-projection and erased-pointer corrections from #22/#23/#24/#27 are incorporated ancestries. P0 adoption and current-base checks are separate work, not performed by this design correction. |
+| BDP Read foundation #29 | merge `19923f5bb6cc3f4ee4c508e36df3bd4c5c52344b`, source head `599361130bfaa07c2b5d157f3ecbe44f0691cb9e` | Merged 2026-09-10. Candidate input for the P0 wire owner’s §0 re-pin record (bundle/projection/matrix pins still owed): wildcard, numeric, named-projection and erased-pointer corrections from #22/#23/#24/#27 are incorporated ancestries. P0 adoption and current-base checks are separate work, not performed by this design correction. |
 | BDP #19 Read+Update | merge `6d88f857cb643fe4e5d77e1dc45038a7d2e5ebb5`, source head `a2531e43baa5c6b27f22149b214326d8736e6198` | Merged 2026-09-10 wire/spec, without RU runtime. A P3 RU realization adopts a reviewed selected-profile pin and its own evidence; it need not wait for TX-only runtime. |
-| BDP #20 Transactional | published PR head `5c3f3b10a2edbb77d914b7260cdf035008fc34c7`; reviewed local correction `0166ff8ef57c481f9ee8fb1223f728f12f9c75f4` | Open draft at the published head. The local correction contains the reviewed G1–G5 HTTP clarification; it is not the remote PR head or a merged dependency. Shared Read HTTP implementation and fresh observations remain a gate before #20 lands. |
+| BDP #20 Transactional | published PR head `5c3f3b10a2edbb77d914b7260cdf035008fc34c7`; reviewed local correction `0166ff8ef57c481f9ee8fb1223f728f12f9c75f4` (unpushed; no fetchable source pin) | Open draft at the published head. The local correction contains the reviewed G1–G5 HTTP clarification; it is not the remote PR head or a merged dependency. Shared Read HTTP implementation and fresh observations remain a gate before #20 lands. |
 | Jim #6147 Phase 0 | `9c4e7a8f1959582f07db3b87641cb33863fda860` | Open; snapshot shows 117 successful, two skipped and two failed checks (PR Core and CI Gate / Required). Nil-hook contract scaffolding is not graph CAS or History realization; these failures are not automatically P0 blockers. |
 | Jim #6304 Phase 1 | source `162a47703bb702d43e3192c79b6b802cf650d31d`, merge `2bb1e20de0f0072d7600656ea3cb7f606929dcc6` | Merged 2026-09-08, including 0067. Its historical head had 119 successful and one skipped checks. |
 | Jim #6358 Phase 2 | `5fdfb92fe544c9a83feb098e83f2ccdd87b896c8` | Open; snapshot shows 121 successful and two skipped checks, with both CI Gate / Required checks successful. This is its own check evidence, not graph conformance. Migration 0068 remains reserved; graph P1 rechecks its actual slot. |
 
-The selected P0 Read source is the explicit #29 merge, not the later RU bundle
-or a moving BDP main. Preserve §0's original pin and historical results until
+The candidate P0 Read input is the explicit #29 merge, not the later RU bundle
+or a moving BDP main; the wire owner records the complete §0 adoption pins. Preserve §0's original pin and historical results until
 the separate P0 successor records actual adoption, source/fixture provenance
 and current Go boundary checks. P0 proves contracts; P2 must prove live Go Read
 serving, current-view/owned closure, HTTP behavior and stable cross-request
@@ -130,7 +130,8 @@ Julian retains upstream merge ownership. Current main already corrects the
 old `docs/recovery/init-safety.md` freshness date; the earlier failed check was
 a historical branch-base result, not a standing current-main failure.
 
-**BDP ownership and phase boundaries.** [#19 Mutation results](https://github.com/gastownhall/bdp/blob/06ebabdb391d8ea730295f4e01ed00bc1206fe38/docs/specs/bdp.md#L2814-L2843)
+**BDP ownership and phase boundaries** (citations below preserve the historical
+draft pins; the P3 adoption re-verifies owning text at its selected write pin). [#19 Mutation results](https://github.com/gastownhall/bdp/blob/06ebabdb391d8ea730295f4e01ed00bc1206fe38/docs/specs/bdp.md#L2814-L2843)
 requires the deleted Resource's final live revision in the `deletedIdentity`
 schema carried as `result.deleted`; no version is minted by deletion. The
 owned-Link result's `source` is the source Bead's absolute canonical URL and
@@ -701,8 +702,9 @@ cmd/bd/serve role-source table                      ← one concrete hook peel,
    unregistered (existing serve behavior exactly as before); an
    operational error still aborts; and capability-present-but-no-Scope-
    yet is a THIRD state with its own explicit representation — per
-   ruling 12, `bd serve` mints the Scope on first serve under a configured
-   URL and then serves it honestly empty; without a configured URL there
+   ruling 12 as amended by A2, `bd --graph-mode link serve` mints the Scope
+   on first serve under a configured URL and serves it honestly empty; plain
+   `bd serve` never mints and mounts only an already-minted held Scope; without a configured URL there
    are no BDP routes — never conflated with capability absence. The optional field is populated via the source-appropriate
    resolver (`ResolveGraphReadSource` for the store arm,
    `ResolveGraphReadSourceFromUOW` for the provider arm — `serve.go`
@@ -1294,7 +1296,7 @@ of that.
    rejected. The ADR is P1's first deliverable:
    `engdocs/BDP_GRAPH_REPLICATION_ADR.md`.
 
-### Amendments RULED 2026-09-07 (A1–A9) — the interview record
+### Amendments ruled (A1–A9: 2026-09-07; A10: 2026-09-08) — the interview record
 
 Raised by eight three-reviewer councils on the W-arch docs and ruled one
 decision at a time on 2026-09-07. The normative text above (rulings 7b, 9,

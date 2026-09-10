@@ -18,7 +18,9 @@ Revision v16: 2026-09-10 formal-review correction aligns all embedded-leg
 summaries with A10 and qualifies the registry claim; plan §0a carries the
 current dependency refresh and outstanding reviewer/owner gate.
 
-## Alignment addendum (2026-09-09)
+<a id="alignment-addendum-2026-09-09"></a>
+
+## Alignment addendum (2026-09-09, refreshed 2026-09-10)
 
 [Plan §0a](BDP_BEAD_GRAPH_PLAN.md#0a-current-bdp-and-versioned-beads-alignment-2026-09-09)
 records the historical pins and the 2026-09-10 refresh for both BDP #19/#20
@@ -360,11 +362,12 @@ assertion of "same database" in the class of force-push and `bd sql`; a
 foreign holder's expiry alone never grants a takeover. **`Promote
 --rotate-url` is the bootstrap** that creates a new lease row under a new
 URL and refuses the old one forever — the path for a clone, a copy, and a
-restore that cannot show continuity. Under A9 this is the whole arbiter;
+restore that cannot show continuity. On the shared-database leg under A9 this is the whole arbiter;
 without A9 hazard R adds the remote fence. Stated residual: a `--steal` on
 a copied database creates a second authority.
 
-- **`Mint`** (`bd --graph-mode link serve`'s staged startup): precondition *no Scope
+- **`Mint`** (serving path: `bd --graph-mode link serve`'s staged startup;
+  A10 local solo trigger and gate mapping are P1 mechanisms, architecture §2b): precondition *no Scope
   row*; INSERT the singleton row, seed `graph_ledger_seq`, `mint` event,
   install the built-in catalog with `install` events; hazard S: take the
   lease; publish; `config_written` when `--scope-url` supplied the URL;
@@ -1214,11 +1217,12 @@ backends; a registered backend's serving behavior (rows absent).
    per replicated table; repaired with the migration's idempotent pair; never
    part of the graph-state version).
 
-## Part E — Ruling amendments (A1–A9 and rulings 13–14 ruled 2026-09-07)
+## Part E — Ruled amendments (A1–A9 and 13–14: 2026-09-07; A10: 2026-09-08)
 
 Ruled: A1 store-owned witness asserted in every transaction is the v0 lease
 (ruling 9); A2 BDP rows inside `httpapi`, `bd --graph-mode link serve` the
-only minting path, `bd serve` never refusing on account of the graph,
+only minting path among serving commands (A10 separately requires local solo
+minting), `bd serve` never refusing on account of the graph,
 intra-Scope references Scope-relative and a new base URL a rotation
 (rulings 7b/12); A3 the `--graph-mode link|dependency` root flag with a
 mode-and-path-keyed policy; A4 public `graphops`, `BeadGraph*` accessors, no
