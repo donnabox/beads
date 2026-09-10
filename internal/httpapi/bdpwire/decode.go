@@ -174,6 +174,7 @@ var (
 	referenceType     = reflect.TypeOf(Reference{})
 	problemType       = reflect.TypeOf(ReadProblem{})
 	ownedOutgoingType = reflect.TypeOf(OwnedOutgoingDeclarations{})
+	ownedLinksType    = reflect.TypeOf(OwnedLinks{})
 )
 
 // decodeValue decodes raw into target, which is settable. path names the
@@ -250,6 +251,11 @@ func decodeValue(raw json.RawMessage, target reflect.Value, path string) error {
 		}
 		m := reflect.MakeMapWithSize(t, len(members))
 		for _, mem := range members {
+			if t == ownedLinksType {
+				if err := validateOwnedTypeKey(mem.name, path); err != nil {
+					return err
+				}
+			}
 			v := reflect.New(t.Elem()).Elem()
 			if err := decodeValue(mem.value, v, path+"."+mem.name); err != nil {
 				return err

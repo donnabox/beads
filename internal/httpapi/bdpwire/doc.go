@@ -45,7 +45,9 @@
 // checked by ReadDiscovery.Validate and ReadProblem.Validate. The owned
 // declaration sum additionally checks the pinned key pattern, positive bounds
 // and the explicit-max versus wildcard-max rule when decoding or marshaling;
-// resource-erased rejects pointer presence through both codecs and Validate.
+// OwnedLinks keys follow that same pinned pattern through both codecs and
+// Validate. resource-erased rejects pointer presence through both codecs and
+// Validate.
 //
 // DECODING POSTURE. DECISION: Unmarshal and Decode are strict — an unknown
 // member in a closed envelope is an error, and so are the shape violations
@@ -60,7 +62,8 @@
 // on a problem — are carried through byte for byte. A caller that wants a
 // lenient read of a record uses encoding/json directly; Reference and
 // ReadProblem and OwnedOutgoingDeclarations stay strict under it too, since
-// they decode themselves.
+// they decode themselves. OwnedLinks also checks its key pattern under
+// encoding/json, while leaving its records to ordinary decoding.
 //
 // The package imports the standard library and nothing else, and
 // imports_test.go keeps it that way: it sits beneath internal/httpapi and,

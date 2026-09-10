@@ -129,7 +129,7 @@ func TestFixturesRoundTripThroughTheWireTypes(t *testing.T) {
 // TestFixturesExerciseTheShapesThatMatter pins the properties of the vendored
 // corpus that make the round trip meaningful, so a re-pin that quietly loses
 // one of them is noticed: a pinned external target, a pinned in-Scope target,
-// an unpinned external source, a descriptor that owns outgoing Links, an
+// an unpinned external source, explicit and wildcard owning descriptors, an
 // owned-links member holding a pinned external target, and both attribution
 // statuses.
 func TestFixturesExerciseTheShapesThatMatter(t *testing.T) {
@@ -159,7 +159,7 @@ func TestFixturesExerciseTheShapesThatMatter(t *testing.T) {
 		t.Errorf("reference fixture endpoints: pinned external %d, pinned local %d, unpinned external %d; each must be exercised", pinnedExternal, pinnedLocal, unpinnedExternal)
 	}
 
-	owning := 0
+	owning, wildcardOwning := 0, 0
 	for _, doc := range selectAll(reference, "/typeDescriptors/*") {
 		raw, _ := json.Marshal(doc)
 		var td TypeDescriptor
@@ -168,6 +168,9 @@ func TestFixturesExerciseTheShapesThatMatter(t *testing.T) {
 		}
 		if td.Describes == DescribesBead && td.OwnsOutgoing != nil {
 			owning++
+			if td.OwnsOutgoing.Wildcard != nil {
+				wildcardOwning++
+			}
 			for url, decl := range td.OwnsOutgoing.Types {
 				if decl.Max < 1 {
 					t.Errorf("%s owns %s with max %d", td.ID, url, decl.Max)
@@ -180,6 +183,10 @@ func TestFixturesExerciseTheShapesThatMatter(t *testing.T) {
 	}
 	if owning == 0 {
 		t.Error("no descriptor in the reference fixture owns outgoing Links")
+	}
+
+	if wildcardOwning == 0 {
+		t.Error("no descriptor in the reference fixture owns outgoing Links through a wildcard")
 	}
 
 	ownedRaw, _ := json.Marshal(selectAll(reference, "/oracles/owned-links/ownedLinks")[0])
