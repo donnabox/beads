@@ -764,7 +764,7 @@ check C forbids editing a shipped file (a git-diff check), and the runtime
 **no `NOW()`/`UUID()`/`RAND()`** in migration SQL (check B) — timestamps and
 ids come from Go; real-Dolt tests for anything a `sqlmock` echo cannot
 exercise; DDL is not transactional across statements, so each `CREATE` is
-guarded and resumable. **Initial P1 scope: eight replicated tables in five files**, numbered **0069 or later**: slot
+guarded and resumable. **Initial P1 scope: eight replicated tables in five files**, proposed as **0069 or later**: slot
 0067 is occupied by the merged versioned-beads Phase 1 migration (`issue_versions`,
 the `store_epoch` singleton, `issues.current_revision`); slot 0068 is reserved
 by its still-open Phase 2 (`0068_add_attribution_status`,
@@ -1245,8 +1245,7 @@ elsewhere, no auto-resolve or `--strategy` on graph tables, foreign deltas
 refused whole, clones take remote state wholesale (B3, B7, C2).
 A10 (solo topology, B), Part D.7 (fence census, A), the
 `authority_epoch` spelling, and the properties-are-opaque amendment (bdp#1
-item 5) ruled 2026-09-08. **These rulings are settled; P0 current-wire
-completion and reviewer/owner clearance remain open.** Full A10 text is in
+item 5) ruled 2026-09-08. **These rulings are settled.** Full A10 text is in
 architecture §2b; current BDP #19/#20 and Jim dependencies are in the plan
 §0a refresh of 2026-09-10. Local solo verbs do not authorize embedded HTTP
-serving or clear the formal #6154 change request.
+serving.
