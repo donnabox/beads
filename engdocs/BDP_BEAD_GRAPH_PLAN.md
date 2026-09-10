@@ -64,8 +64,7 @@ The initial refresh passed 95 top-level / 192 including subtests, zero skips.
 The later pattern correction passed all affected package tests; the optional
 source-fence reconstruction was separately verified against the exact pin.
 These are contract and spike checks. Hosted review/readiness, P1 mechanisms,
-P2 HTTP serving and P3 write-profile adoption remain separate gates. The design
-PR's formal change-request hold is not discharged by this adoption record.
+P2 HTTP serving and P3 write-profile adoption remain separate gates. Upstream review and merge ownership remain separate from this adoption record.
 
 Model laws this plan builds to (the baseline pin plus the dated #19/#20
 Mutation results correction, pinned in §0a):
