@@ -412,6 +412,6 @@ advances the witness — DB first, file second.
 - A DB-privilege (two-SQL-user) boundary for the graph tables (C-lane, ruling 13).
 - The `GraphPublication` capability a registered backend would declare to
   serve BDP (deferred; v0 serves from SQL-server workspaces only).
-- Whether `bd --graph-mode link serve` remains after W2 (default: yes — the minting path).
+- Whether `bd --graph-mode link serve` remains after W2 (default: yes — the serving minting path).
 - Type generation from the bead-type inventory (W3) — it feeds the built-in
   catalog `Mint` installs.
