@@ -316,7 +316,7 @@ func TestReadDiscoveryValidateEnforcesTheBundleConstants(t *testing.T) {
 	}
 	// The spec's own Read discovery example validates.
 	var spec ReadDiscovery
-	if err := Unmarshal(readSchemaFile(t, "spec-examples/1580-scope-discovery-and-human-documentation-1.json"), &spec); err != nil {
+	if err := Unmarshal(readSchemaFile(t, "spec-examples/1662-scope-discovery-and-human-documentation-1.json"), &spec); err != nil {
 		t.Fatal(err)
 	}
 	if err := spec.Validate(); err != nil {

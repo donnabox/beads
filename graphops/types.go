@@ -666,14 +666,9 @@ func (c EndpointConstraint) EffectiveExternal() ExternalPolicy {
 // or endpoint conformsTo entry, no descriptor id and no ownedLinks group key
 // can spell it.
 //
-// THE DOMAIN RUNS AHEAD OF THE PINNED WIRE HERE. The bundle vendored at
-// bdpwire.Pin (0b7d86e7) keys ownsOutgoing — and a record's ownedLinks — by
-// absoluteHttpUrl, so a descriptor carrying this key is schema-invalid on the
-// wire until the pin moves to the bdp change that lands the ruling. The
-// refusal is the bundle's: bdpwire's strict decoder holds member shape, not
-// key grammar, and decodes the key. internal/httpapi/bdpwire's
-// TestWildcardOwnedLinkKeyIsNotInThePinnedBundle asserts both facts and is
-// the tripwire that retires this note when the pin moves.
+// The Read foundation vendored by bdpwire at 19923f5b carries this declaration
+// as the distinct max-only ownedWildcardDeclaration. Record ownedLinks keys
+// remain actual Link Type URLs. bdpwire tests hold both sides of that boundary.
 const WildcardOwnedLinkKey = "*"
 
 // OwnedLinkDecl is one ownsOutgoing entry of a Bead Type Descriptor. It is a
@@ -686,7 +681,7 @@ const WildcardOwnedLinkKey = "*"
 // DECISION: the wildcard is the reserved key INSIDE the declaration list, not
 // a separate descriptor member. The canonical form then falls out of the
 // existing map ("*" sorts first — 0x2A precedes every URL's "h" — so the
-// fingerprint is the wire form's once the pin moves), the duplicate law
+// fingerprint is the wire form's), the duplicate law
 // covers "two wildcards" unchanged, and — the reason that matters most — a
 // consumer walking OwnsOutgoing() to assemble ownedLinks cannot overlook it:
 // it meets a declaration whose Wildcard() is true, and a record that keyed a
@@ -845,7 +840,7 @@ type TypeDescriptorSpec struct {
 // category, unique canonical parent IDs that do not include the Type itself,
 // endpoint constraints exactly when the Type describes Links, ownsOutgoing
 // only when it describes Beads, one declaration per owned Link Type, at
-// most one wildcard (bdp#1 item 5, ahead of the pinned bundle — see
+// most one wildcard (bdp#1 item 5, carried by the Read foundation — see
 // WildcardOwnedLinkKey), and — under a wildcard — no explicit declaration
 // whose max exceeds the wildcard's, since the wildcard's max bounds the
 // whole owned set (OW1 = A; see NewWildcardOwnedLinkDecl).
@@ -1035,8 +1030,7 @@ var descriptorMembers = map[string]memberShape{
 // present, a Bead Type carries no endpoint constraint and a Link Type no
 // ownsOutgoing, propertiesSchema when present is an absolute URL, an
 // ownsOutgoing key is a canonical Link Type URL or the wildcard "*"
-// (WildcardOwnedLinkKey — read ahead of the pinned bundle, which admits
-// only URLs there), and every law NewTypeDescriptor enforces holds — the
+// (WildcardOwnedLinkKey, now carried by the pinned Read foundation), and every law NewTypeDescriptor enforces holds — the
 // whole-set max rule among them: an explicit entry's max above the
 // wildcard's is refused (OW1 = A), a rule the schema bundle cannot state
 // because it relates two entries' numbers.

@@ -856,9 +856,9 @@ func assertClosedDescriptorShape(t *testing.T, canonical []byte) {
 				t.Errorf("ownsOutgoing must be omitted rather than empty")
 			}
 			for key, decl := range *shape.OwnsOutgoing {
-				// The bundle keys ownsOutgoing by absoluteHttpUrl; the domain
-				// runs ahead of it by exactly one key, the wildcard "*", which
-				// carries no label (graphops.WildcardOwnedLinkKey).
+				// The Read foundation admits explicit Type URLs and the
+				// max-only wildcard "*", which carries no label
+				// (graphops.WildcardOwnedLinkKey).
 				if key == graphops.WildcardOwnedLinkKey {
 					if decl.Label != nil {
 						t.Errorf("ownsOutgoing %s: the wildcard carries no label", key)
@@ -1086,13 +1086,9 @@ func TestErrorsAreOneVocabulary(t *testing.T) {
 // "*": { max } owns every outgoing Link Type not named explicitly, max bounds
 // the Bead's WHOLE owned set — explicit Types' Links included, so no explicit
 // max may exceed it (OW1 = A; TestWildcardMaxBoundsTheWholeOwnedSet) — and
-// explicit entries take precedence for the Types they name. THE DOMAIN RUNS
-// AHEAD OF THE PINNED WIRE HERE — the bundle
-// vendored in internal/httpapi/bdpwire keys ownsOutgoing by absoluteHttpUrl
-// until the pin moves (graphops.WildcardOwnedLinkKey; the tripwire is
-// bdpwire's TestWildcardOwnedLinkKeyIsNotInThePinnedBundle) — so the
-// canonical form below is what the wire WILL carry, pinned byte-exactly with
-// "*" sorted first: 0x2A precedes every URL's "h".
+// explicit entries take precedence for the Types they name. The Read foundation
+// now carries this declaration on the wire. The independent canonical vector
+// remains byte-exact, with "*" sorted first: 0x2A precedes every URL's "h".
 func TestWildcardOwnedLinkDeclaration(t *testing.T) {
 	const memory, cites, relates = "https://work.example/types/memory", "https://work.example/types/cites", "https://work.example/types/relates"
 	any8, err := graphops.NewWildcardOwnedLinkDecl(8)

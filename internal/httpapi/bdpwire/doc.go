@@ -4,7 +4,7 @@
 // normative schema bundle.
 //
 // THE PROVENANCE FILE (spec B8). The bundle is vendored verbatim at schema/bdp-v0.schema.json from
-// gastownhall/bdp commit 0b7d86e7 (the plan's §0 pin), with the Read-profile
+// gastownhall/bdp commit 19923f5b (the merged Read foundation), with the Read-profile
 // fixtures and the executable Read matrix from the same commit beside it.
 // schema/PROVENANCE names every vendored file with its sha256 and its upstream git
 // blob sha1, and pin_test.go recomputes both from the bytes on disk, so a
@@ -26,10 +26,10 @@
 // `make api-check`, so the existing OpenAPI drift gate covers this contract
 // too and no Makefile change was needed.
 //
-// SHAPE, NOT VALIDATION. A type here says what a conforming document looks
+// WIRE SHAPE AND BOUNDED DECLARATION CHECKS. A type says what a document looks
 // like on the wire: which members exist, which are required, which are
-// closed, which JSON type each has. DECISION: it does not validate URL
-// grammar, canonical-ID spelling, Type contracts, or enum membership on the
+// closed, which JSON type each has. DECISION: it does not generally validate
+// URL grammar, canonical-ID spelling, Type contracts, or enum membership on the
 // way in — those are model laws and belong to the graph leaf (graphops
 // laws.go, per BDP_GRAPH_ARCHITECTURE.md §3), not to transport. What the
 // decoder DOES hold a document to is the structural facts the bundle states
@@ -42,7 +42,10 @@
 // (an object arm needs a nonempty revision, or the Go value would read as
 // the string arm). The two constants the bundle pins on a Read discovery
 // document (bdpVersion "0", profile "read") and the closed problem table are
-// checked by ReadDiscovery.Validate and ReadProblem.Validate.
+// checked by ReadDiscovery.Validate and ReadProblem.Validate. The owned
+// declaration sum additionally checks the pinned key pattern, positive bounds
+// and the explicit-max versus wildcard-max rule when decoding or marshaling;
+// resource-erased rejects pointer presence through both codecs and Validate.
 //
 // DECODING POSTURE. DECISION: Unmarshal and Decode are strict — an unknown
 // member in a closed envelope is an error, and so are the shape violations
@@ -53,10 +56,11 @@
 // a conformance check wants. The decoder is this package's own (decode.go):
 // encoding/json matches member names case-insensitively and maps null onto
 // the zero value, neither of which is a closed shape. The two open places —
-// a Resource's `properties` document and RFC 9457 extension members on a
-// problem — are carried through byte for byte. A caller that wants a
+// a Resource's `properties` document and permitted RFC 9457 extension members
+// on a problem — are carried through byte for byte. A caller that wants a
 // lenient read of a record uses encoding/json directly; Reference and
-// ReadProblem stay strict under it too, since they decode themselves.
+// ReadProblem and OwnedOutgoingDeclarations stay strict under it too, since
+// they decode themselves.
 //
 // The package imports the standard library and nothing else, and
 // imports_test.go keeps it that way: it sits beneath internal/httpapi and,

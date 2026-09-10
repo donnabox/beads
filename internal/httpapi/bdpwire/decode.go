@@ -170,9 +170,10 @@ func typeError(path, want string, raw json.RawMessage) error {
 }
 
 var (
-	rawMessageType = reflect.TypeOf(json.RawMessage{})
-	referenceType  = reflect.TypeOf(Reference{})
-	problemType    = reflect.TypeOf(ReadProblem{})
+	rawMessageType    = reflect.TypeOf(json.RawMessage{})
+	referenceType     = reflect.TypeOf(Reference{})
+	problemType       = reflect.TypeOf(ReadProblem{})
+	ownedOutgoingType = reflect.TypeOf(OwnedOutgoingDeclarations{})
 )
 
 // decodeValue decodes raw into target, which is settable. path names the
@@ -185,6 +186,8 @@ func decodeValue(raw json.RawMessage, target reflect.Value, path string) error {
 		return nil
 	case referenceType:
 		return decodeReference(raw, target.Addr().Interface().(*Reference), path)
+	case ownedOutgoingType:
+		return decodeOwnedOutgoing(raw, target.Addr().Interface().(*OwnedOutgoingDeclarations), path)
 	case problemType:
 		return decodeProblem(raw, target.Addr().Interface().(*ReadProblem), path)
 	}
@@ -402,8 +405,12 @@ func decodeProblem(raw json.RawMessage, p *ReadProblem, path string) error {
 	if err := decodeStructMembers(named, reflect.ValueOf(&decoded).Elem(), path); err != nil {
 		return err
 	}
-	*p = ReadProblem(decoded)
-	p.Extensions = extensions
+	result := ReadProblem(decoded)
+	result.Extensions = extensions
+	if err := result.validateErasedPointer(); err != nil {
+		return err
+	}
+	*p = result
 	return nil
 }
 

@@ -379,3 +379,65 @@ detection behaves exactly as designed. The rules for the P1 migration PR:
 - `internal/storage/schema/cli_migrations.go`: DELIMITER renditions for the
   five table files; a bundle trigger-count test.
 - The replication/merge ADR: the fence census over `dolt_schemas`.
+
+
+## Current-main Read contract refresh — 2026-09-10
+
+This follow-up preserves the dated spike report above. The P0 lineage at
+`ec692e146ad2a879d1c6819ecc8bf786597d617b` now includes current Beads main
+`a690b0a8c4d1ddc4f0bd9bf767499625dd71bc96` through merge commit
+`a12d44364263c34455ec8e7ef965ea7dfae0a93b`. No migration or Issue-plane
+behavior was added by this follow-up.
+
+The wire package is repinned to the merged BDP Read foundation
+`19923f5bb6cc3f4ee4c508e36df3bd4c5c52344b`: six verbatim upstream files and
+13 spec fences, with regenerated blob identities, SHA-256 digests and source
+line ranges in `internal/httpapi/bdpwire/schema/PROVENANCE`. This is the
+27-definition Read bundle, not the later Read+Update/Transactional bundle.
+The 46 catalog rows and 46 matrix plans are vendored contract inputs, **not
+46 Beads HTTP passes or a capability claim**. Later profile and shared HTTP
+runtime integration remain separate work.
+
+The DTO now separates the max-only wildcard from explicit declarations;
+strict decoding rejects missing bounds, wildcard labels (including an empty
+or null label), empty explicit labels and explicit bounds above the whole-set
+wildcard bound. Constructed declarations validate before marshaling. Ordinary
+RFC 9457 extensions still round-trip, while `resource-erased` rejects the
+presence of `pointer`, regardless of its JSON value, through strict decoding,
+`encoding/json`, validation and marshaling. Existing graphops numeric laws
+and independent canonical vectors are unchanged; the old wildcard wire
+tripwire is replaced by adoption checks.
+
+Current-base verification uses Go 1.26.5, Dolt 2.1.8 and the unchanged
+`.buildflags`. Focused DTO/schema parity/strict decoding/round-trip/provenance/
+matrix-contract and graphops tests pass. `BDP_SPEC_AT_PIN` names the exact
+pinned spec bytes when reconstructing all derived examples. `make api-check`
+regenerates an unchanged OpenAPI artifact and passes HTTP package tests.
+`make ci-pr-lint` checks native and Windows targets against current main.
+`make test` passes with 99 package results and 40.1% aggregate coverage; its
+hermetic wrapper intentionally skips real-Dolt tests by default, so this is
+not a whole-suite no-skip claim. The final affected-package run passes 95
+top-level tests (192 including subtests), with zero skips. The final bounded
+key-pattern and schema probes were checked by that focused run and the API
+gate after the broad run began. No unrelated full-suite rerun was needed.
+
+All seven existing fence spikes were rerun on the merged base: pooled UOW
+hygiene, the five schema/migration probes, and the embedded leg. The first
+server/schema invocation deliberately left the embedded opt-in disabled;
+that one skip was then executed successfully in its own opt-in invocation.
+No final spike remained unexecuted. Commands:
+
+```sh
+BEADS_TEST_ENV_RUN_DOLT=1 TEST_RUN=TestSpikeBeadGraphFence TEST_VERBOSE=1 \
+  ./scripts/test.sh ./internal/storage/uow ./internal/storage/schema ./internal/storage/embeddeddolt
+BEADS_TEST_ENV_RUN_DOLT=1 BEADS_TEST_EMBEDDED_DOLT=1 \
+  TEST_RUN=TestSpikeBeadGraphFenceEmbeddedLeg TEST_VERBOSE=1 \
+  ./scripts/test.sh ./internal/storage/embeddeddolt
+```
+
+The observed hazards and P1 rules above remain: cancellation between
+statements can return an uncleared server session to the pool; a confirmed
+clear on `WithoutCancel` restores the fence; CLI trigger text needs the
+DELIMITER rendition; and the migration/replication checks do not acquire a
+trigger census merely by passing these probes. These observations do not
+implement a graph writer, storage fence or HTTP server.

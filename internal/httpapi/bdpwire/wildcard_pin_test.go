@@ -1,42 +1,106 @@
 package bdpwire
 
 import (
-	"regexp"
+	"encoding/json"
 	"testing"
 )
 
-// THE DOMAIN RUNS AHEAD OF THE PINNED WIRE on the wildcard owned-Link
-// declaration (bdp#1 item 5, ruled 2026-09-08): graphops admits the
-// ownsOutgoing key "*" (graphops.WildcardOwnedLinkKey), while the bundle at
-// Pin keys ownsOutgoing — and a record's ownedLinks — by absoluteHttpUrl, so
-// a descriptor carrying "*" is schema-invalid on the wire until the pin moves
-// to the bdp change that lands the ruling. This is the tripwire: it asserts
-// the pinned facts, so the day the pin admits the key it fails and the
-// run-ahead note in graphops retires with it.
-//
-// The refusal is the BUNDLE's, not the decoder's. The strict decoder holds
-// member shape — names, types, nulls, integers — and not key grammar (it
-// checks no ownedLinks key either), so it decodes the key; that is asserted
-// too, so nobody moves the wire's key rule into the decoder, where the pin
-// bump would then have to undo it. Test-only: no production change here.
-func TestWildcardOwnedLinkKeyIsNotInThePinnedBundle(t *testing.T) {
-	defs := loadBundleDefs(t)
-	pattern := regexp.MustCompile(asString(t, asMap(t, defs["absoluteHttpUrl"], "absoluteHttpUrl")["pattern"], "absoluteHttpUrl.pattern"))
-	if pattern.MatchString("*") {
-		t.Fatalf("absoluteHttpUrl %s admits \"*\"", pattern)
+func TestOwnedOutgoingSumAtReadFoundationPin(t *testing.T) {
+	for _, raw := range []string{
+		`{"*":{"max":3}}`,
+		`{"https://example.org/types/l":{"max":2}}`,
+		`{"*":{"max":3},"https://example.org/types/l":{"max":3,"label":"Links"}}`,
+	} {
+		t.Run(raw, func(t *testing.T) {
+			var d OwnedOutgoingDeclarations
+			if err := Unmarshal([]byte(raw), &d); err != nil {
+				t.Fatal(err)
+			}
+			if err := d.Validate(); err != nil {
+				t.Fatal(err)
+			}
+			got, err := json.Marshal(d)
+			if err != nil {
+				t.Fatal(err)
+			}
+			var again OwnedOutgoingDeclarations
+			if err := json.Unmarshal(got, &again); err != nil {
+				t.Fatal(err)
+			}
+			if d.Wildcard != nil && (again.Wildcard == nil || again.Wildcard.Max != d.Wildcard.Max) {
+				t.Fatal("lost wildcard")
+			}
+			if len(again.Types) != len(d.Types) {
+				t.Fatal("lost explicit entries")
+			}
+		})
 	}
-	for _, m := range []struct{ def, member string }{{"typeDescriptor", "ownsOutgoing"}, {"beadRecord", "ownedLinks"}} {
-		props := asMap(t, asMap(t, defs[m.def], m.def)["properties"], m.def+".properties")
-		names := asMap(t, asMap(t, props[m.member], m.member)["propertyNames"], m.member+".propertyNames")
-		if ref := names["$ref"]; ref != "#/$defs/absoluteHttpUrl" {
-			t.Fatalf("%s.%s.propertyNames = %v at pin %s: the pinned wire now admits a non-URL key — retire graphops's run-ahead note (WildcardOwnedLinkKey) and this tripwire together", m.def, m.member, names, Pin)
+	for _, raw := range []string{
+		`{}`, `{"*":{}}`, `{"*":{"max":0}}`, `{"*":{"max":-1}}`,
+		`{"*":{"max":3,"label":""}}`, `{"*":{"max":3,"label":"all"}}`,
+		`{"*":{"max":3,"label":null}}`, `{"*":{"max":3,"extra":1}}`,
+		`{"*":{"max":2},"https://example.org/types/l":{"max":3}}`,
+		`{"https://example.org/types/l":{"max":2,"label":""}}`,
+		`{"https://example.org/types/l":{}}`, `{"https://example.org/types/l":{"max":0}}`,
+		`{"types/local":{"max":1}}`, `{"https://\n":{"max":1}}`, `{"*":{"max":2},"*":{"max":3}}`,
+	} {
+		t.Run("reject/"+raw, func(t *testing.T) {
+			var direct, standard OwnedOutgoingDeclarations
+			if err := Unmarshal([]byte(raw), &direct); err == nil {
+				t.Fatal("strict decode accepted invalid declaration")
+			}
+			if err := json.Unmarshal([]byte(raw), &standard); err == nil {
+				t.Fatal("JSON decode accepted invalid declaration")
+			}
+		})
+	}
+	for _, d := range []OwnedOutgoingDeclarations{
+		{}, {Wildcard: &OwnedWildcardDeclaration{Max: 0}},
+		{Types: map[string]OwnedLinkDeclaration{"*": {Max: 1}}},
+		{Wildcard: &OwnedWildcardDeclaration{Max: 1}, Types: map[string]OwnedLinkDeclaration{"https://example.org/types/l": {Max: 2}}},
+	} {
+		if d.Validate() == nil {
+			t.Fatal("Validate accepted invalid constructed sum")
+		}
+		if _, err := json.Marshal(d); err == nil {
+			t.Fatal("marshal accepted invalid constructed sum")
 		}
 	}
-	var d TypeDescriptor
-	if err := Unmarshal([]byte(`{"id":"`+typeURL+`","name":"X","describes":"bead","conformsTo":[],"ownsOutgoing":{"*":{"max":1}}}`), &d); err != nil {
-		t.Fatalf("the strict decoder holds shape, not key grammar; the wire's key rule lives in the bundle, not here: %v", err)
+}
+
+func TestWildcardSchemaKeyIsOnlyADeclaration(t *testing.T) {
+	defs := loadBundleDefs(t)
+	if asMap(t, defs["absoluteHttpUrl"], "absoluteHttpUrl")["pattern"] != ownedTypeURLPattern.String() {
+		t.Fatal("owned key pattern drifted from pinned schema")
 	}
-	if decl, ok := d.OwnsOutgoing["*"]; !ok || decl.Max != 1 {
-		t.Fatalf("decoded ownsOutgoing = %+v", d.OwnsOutgoing)
+	descriptor := asMap(t, defs["typeDescriptor"], "typeDescriptor")
+	owns := asMap(t, asMap(t, descriptor["properties"], "properties")["ownsOutgoing"], "ownsOutgoing")
+	wildcard := asMap(t, asMap(t, owns["properties"], "properties")["*"], "wildcard")
+	if wildcard["$ref"] != "#/$defs/ownedWildcardDeclaration" {
+		t.Fatal("wildcard lost its distinct max-only definition")
+	}
+	bead := asMap(t, defs["beadRecord"], "beadRecord")
+	owned := asMap(t, asMap(t, bead["properties"], "properties")["ownedLinks"], "ownedLinks")
+	if asMap(t, owned["propertyNames"], "propertyNames")["$ref"] != "#/$defs/absoluteHttpUrl" {
+		t.Fatal("record grouping must remain keyed by actual Link Type URL")
+	}
+}
+
+func TestDescriptorUsesStrictOwnedOutgoingSum(t *testing.T) {
+	prefix := `{"id":"https://example.org/types/b","name":"Owner","describes":"bead","conformsTo":[],"ownsOutgoing":`
+	for _, raw := range []string{`{"*":{"max":2}}`, `{"*":{"max":2},"https://example.org/types/l":{"max":1}}`} {
+		var d TypeDescriptor
+		if err := Unmarshal([]byte(prefix+raw+`}`), &d); err != nil {
+			t.Fatal(err)
+		}
+		if d.OwnsOutgoing == nil || d.OwnsOutgoing.Wildcard == nil || d.OwnsOutgoing.Wildcard.Max != 2 {
+			t.Fatal("descriptor omitted wildcard")
+		}
+	}
+	for _, raw := range []string{`{"*":{}}`, `{"*":{"max":2,"label":""}}`, `{"*":{"max":2},"https://example.org/types/l":{"max":3}}`} {
+		var d TypeDescriptor
+		if err := Unmarshal([]byte(prefix+raw+`}`), &d); err == nil {
+			t.Fatal("nested sum accepted invalid declaration")
+		}
 	}
 }

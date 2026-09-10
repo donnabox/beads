@@ -64,20 +64,20 @@ var roundTrips = []roundTrip{
 	{"fixtures/read-bdpbd-v1.json", "/oracles/resources/*/properties", newTarget[Properties]()},
 
 	// docs/specs/bdp.md examples at the pin (schema/PROVENANCE names the lines).
-	{"spec-examples/0532-scope-aggregate-constraints-1.json", "/maximumEndpointMultiplicity/*", newTarget[MaximumEndpointMultiplicityPolicy]()},
-	{"spec-examples/1580-scope-discovery-and-human-documentation-1.json", "", newTarget[ReadDiscovery]()},
-	{"spec-examples/1735-advertised-limits-1.json", "/limits", newTarget[AdvertisedLimits]()},
-	{"spec-examples/1912-resource-records-1.json", "", newTarget[BeadRecord]()},
-	{"spec-examples/1927-resource-records-2.json", "", newTarget[LinkRecord]()},
-	{"spec-examples/1961-resource-records-3.json", "", newTarget[Reference]()},
-	{"spec-examples/1970-resource-records-4.json", "", newTarget[Reference]()},
-	{"spec-examples/2029-resource-views-1.json", "", newTarget[BeadRecord]()},
-	{"spec-examples/2029-resource-views-1.json", "/links", newTarget[LinkCollection]()},
-	{"spec-examples/2029-resource-views-1.json", "/links/items/*", newTarget[LinkRecord]()},
-	{"spec-examples/2144-types-and-type-descriptors-1.json", "", newTarget[TypesInventory]()},
-	{"spec-examples/2144-types-and-type-descriptors-1.json", "/items/*", newTarget[TypeSummary]()},
-	{"spec-examples/2186-types-and-type-descriptors-2.json", "", newTarget[TypeDescriptor]()},
-	{"spec-examples/2203-types-and-type-descriptors-3.json", "", newTarget[TypeDescriptor]()},
+	{"spec-examples/0583-scope-aggregate-constraints-1.json", "/maximumEndpointMultiplicity/*", newTarget[MaximumEndpointMultiplicityPolicy]()},
+	{"spec-examples/1662-scope-discovery-and-human-documentation-1.json", "", newTarget[ReadDiscovery]()},
+	{"spec-examples/1817-advertised-limits-1.json", "/limits", newTarget[AdvertisedLimits]()},
+	{"spec-examples/1994-resource-records-1.json", "", newTarget[BeadRecord]()},
+	{"spec-examples/2009-resource-records-2.json", "", newTarget[LinkRecord]()},
+	{"spec-examples/2044-resource-records-3.json", "", newTarget[Reference]()},
+	{"spec-examples/2053-resource-records-4.json", "", newTarget[Reference]()},
+	{"spec-examples/2112-resource-views-1.json", "", newTarget[BeadRecord]()},
+	{"spec-examples/2112-resource-views-1.json", "/links", newTarget[LinkCollection]()},
+	{"spec-examples/2112-resource-views-1.json", "/links/items/*", newTarget[LinkRecord]()},
+	{"spec-examples/2227-types-and-type-descriptors-1.json", "", newTarget[TypesInventory]()},
+	{"spec-examples/2227-types-and-type-descriptors-1.json", "/items/*", newTarget[TypeSummary]()},
+	{"spec-examples/2269-types-and-type-descriptors-2.json", "", newTarget[TypeDescriptor]()},
+	{"spec-examples/2286-types-and-type-descriptors-3.json", "", newTarget[TypeDescriptor]()},
 }
 
 func TestFixturesRoundTripThroughTheWireTypes(t *testing.T) {
@@ -166,9 +166,9 @@ func TestFixturesExerciseTheShapesThatMatter(t *testing.T) {
 		if err := Unmarshal(raw, &td); err != nil {
 			t.Fatal(err)
 		}
-		if td.Describes == DescribesBead && len(td.OwnsOutgoing) > 0 {
+		if td.Describes == DescribesBead && td.OwnsOutgoing != nil {
 			owning++
-			for url, decl := range td.OwnsOutgoing {
+			for url, decl := range td.OwnsOutgoing.Types {
 				if decl.Max < 1 {
 					t.Errorf("%s owns %s with max %d", td.ID, url, decl.Max)
 				}
@@ -226,8 +226,8 @@ func TestFixturesExerciseTheShapesThatMatter(t *testing.T) {
 // forget.
 func TestHigherProfileDiscoveryIsRefusedByTheReadType(t *testing.T) {
 	for _, tc := range []struct{ file, prohibited string }{
-		{"spec-examples/1594-scope-discovery-and-human-documentation-2.json", "operations"},
-		{"spec-examples/1609-scope-discovery-and-human-documentation-3.json", "scopeEpoch"},
+		{"spec-examples/1676-scope-discovery-and-human-documentation-2.json", "operations"},
+		{"spec-examples/1691-scope-discovery-and-human-documentation-3.json", "scopeEpoch"},
 	} {
 		var d ReadDiscovery
 		err := Unmarshal(readSchemaFile(t, tc.file), &d)

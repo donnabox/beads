@@ -75,6 +75,7 @@ var defsToGo = map[string]defBinding{
 	"reference":                         sum(Reference{}),
 	"pinnedReference":                   object(pinnedReferenceJSON{}),
 	"ownedLinkDeclaration":              object(OwnedLinkDeclaration{}),
+	"ownedWildcardDeclaration":          object(OwnedWildcardDeclaration{}),
 	"attribution":                       object(Attribution{}),
 }
 
@@ -299,6 +300,14 @@ func checkObject(t *testing.T, defs map[string]any, path string, schema map[stri
 		t.Errorf("%s is closed (additionalProperties: false) but %s carries %v for unknown members", path, rt, carriers)
 	case !closed && len(carriers) != 1:
 		t.Errorf("%s is open but %s has %d unknown-member carriers, want exactly one", path, rt, len(carriers))
+	}
+
+	if additional, ok := schema["additionalProperties"].(map[string]any); ok && len(carriers) == 1 {
+		carrier, _ := rt.FieldByName(carriers[0])
+		if carrier.Type.Kind() != reflect.Map || carrier.Type.Key().Kind() != reflect.String {
+			t.Fatalf("%s: typed additional properties need a string-keyed map", path)
+		}
+		checkMember(t, defs, path+"/*", additional, carrier.Type.Elem())
 	}
 
 	for member, f := range fields {

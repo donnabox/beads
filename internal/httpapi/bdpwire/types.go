@@ -277,9 +277,9 @@ type TypeDescriptor struct {
 	Source *EndpointConstraint `json:"source,omitempty"`
 	Target *EndpointConstraint `json:"target,omitempty"`
 	// OwnsOutgoing declares the outgoing Link Types a Bead Type owns, keyed
-	// by owned Link Type URL, so each (Bead Type, Link Type) pair is declared
-	// at most once by construction.
-	OwnsOutgoing map[string]OwnedLinkDeclaration `json:"ownsOutgoing,omitempty"`
+	// by owned Link Type URL plus the optional max-only wildcard. Explicit
+	// pairs occur at most once; the wildcard bounds the whole owned set.
+	OwnsOutgoing *OwnedOutgoingDeclarations `json:"ownsOutgoing,omitempty"`
 }
 
 // EndpointConstraint is the `endpointConstraint` envelope: the Types an

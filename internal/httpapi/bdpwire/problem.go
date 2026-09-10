@@ -84,7 +84,8 @@ func (c ReadProblemCode) Retry() RetryDisposition {
 //
 // It is the one OPEN envelope in the Read profile: RFC 9457 extension members
 // are allowed, so unknown members are carried through in Extensions rather
-// than rejected. Every other envelope is closed.
+// than rejected, except the explicitly forbidden pointer on resource-erased.
+// Every other envelope is closed.
 type ReadProblem struct {
 	// Type is the problem family URL: ProblemTypePrefix + Code.Family().
 	Type string `json:"type"`
@@ -131,8 +132,12 @@ func NewReadProblem(code ReadProblemCode) ReadProblem {
 
 // Validate checks the problem against the closed table: Code is a member,
 // Type and Retry are the ones Code fixes, Status (when sent) is the one Code
-// fixes, and ArchivedAt appears only with CodeResourcePruned.
+// fixes, ArchivedAt appears only with CodeResourcePruned, and resource-erased
+// carries no pointer extension.
 func (p ReadProblem) Validate() error {
+	if err := p.validateErasedPointer(); err != nil {
+		return err
+	}
 	row, ok := readProblemTable[p.Code]
 	if !ok {
 		return fmt.Errorf("bdpwire: unknown read problem code %q", p.Code)
@@ -176,6 +181,9 @@ var readProblemMembers = func() map[string]bool {
 // extensions present the members come out in key order rather than in a
 // preserved order the type would have to carry.
 func (p ReadProblem) MarshalJSON() ([]byte, error) {
+	if err := p.validateErasedPointer(); err != nil {
+		return nil, err
+	}
 	named, err := json.Marshal(readProblemMembersOnly(p))
 	if err != nil {
 		return nil, err
@@ -203,4 +211,15 @@ func (p ReadProblem) MarshalJSON() ([]byte, error) {
 // (decode.go).
 func (p *ReadProblem) UnmarshalJSON(data []byte) error {
 	return decodeProblem(data, p, "problem")
+}
+
+// validateErasedPointer preserves ordinary RFC 9457 extensions but rejects the
+// condition-specific pointer on erased resources, even when its value is null.
+func (p ReadProblem) validateErasedPointer() error {
+	if p.Code == CodeResourceErased {
+		if _, present := p.Extensions["pointer"]; present {
+			return fmt.Errorf("bdpwire: pointer is forbidden with %q", p.Code)
+		}
+	}
+	return nil
 }

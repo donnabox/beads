@@ -9,7 +9,7 @@ import (
 // taken from. It is the plan's §0 pin (BDP_BEAD_GRAPH_PLAN.md), repeated here
 // so code can name it; pin_test.go asserts it equals the `commit:` line of
 // schema/PROVENANCE, so the two cannot drift apart silently.
-const Pin = "0b7d86e7cfec47f88cd1ec22314a73f39763bcf8"
+const Pin = "19923f5bb6cc3f4ee4c508e36df3bd4c5c52344b"
 
 // SchemaID is the bundle's canonical `$id`. It is a protocol identity —
 // compared exactly, never dereferenced — and the base the pinned matrix's
