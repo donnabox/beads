@@ -315,10 +315,14 @@ func TestNewReadProblemFillsTheTableAndValidateEnforcesIt(t *testing.T) {
 		t.Errorf("NewReadProblem(rate-limited) = %+v", p)
 	}
 	for code := range readProblemTable {
-		if err := NewReadProblem(code).Validate(); err != nil {
+		constructed := NewReadProblem(code)
+		if code == CodeRevisionUnretained {
+			constructed.Missing = explicitHistoryMissing()
+		}
+		if err := constructed.Validate(); err != nil {
 			t.Errorf("%s: %v", code, err)
 		}
-		withoutStatus := NewReadProblem(code)
+		withoutStatus := constructed
 		withoutStatus.Status = 0
 		if err := withoutStatus.Validate(); err != nil {
 			t.Errorf("%s without status: %v", code, err)

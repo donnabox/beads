@@ -172,13 +172,71 @@ inside the package by design.
 
 ## Read foundation refresh — 2026-09-10
 
-The current pin is `19923f5bb6cc3f4ee4c508e36df3bd4c5c52344b`, the merged
+The 2026-09-10 pin was `19923f5bb6cc3f4ee4c508e36df3bd4c5c52344b`, the merged
 Read foundation. The earlier generator experiment above is dated evidence;
-the current bundle has 27 definitions, including `ownedWildcardDeclaration`.
+that bundle had 27 definitions, including `ownedWildcardDeclaration`.
 `OwnedOutgoingDeclarations` separates its max-only wildcard from explicit
 `OwnedLinkDeclaration` values. Strict decoding and marshaling enforce the
 cross-entry explicit-max bound as well as the local shapes. The named
 `resource-erased` pointer exclusion applies by presence, while ordinary
-RFC 9457 extensions remain open. The catalog and matrix now have 46 rows.
+RFC 9457 extensions remain open. That catalog and matrix had 46 rows.
 These are vendored contracts and local DTO checks, not 46 served observations
 or a Read capability claim. No later-profile bundle or evidence seal is copied.
+
+
+## Current Read adoption — 2026-09-14
+
+The adopted input is BDP `53bdbd03136875f952af184fce7b3c7af8f74e96`.
+`SchemaBundle()` retains the complete upstream 153-definition file. The Go
+binding census is the upstream named 42-definition Read projection; all old
+27 names remain, with 15 History Read-side names appended. The 111 excluded
+definitions are explicitly derived and accounted for. This selects wire scope,
+not History or write capability. The previous whole-bundle parity wording above
+describes the earlier 27-definition adoption; it is preserved as history.
+
+`projection_test.go` derives the ordered seal from the exact vendored
+`schema/upstream/schema-read-projection.ts` declaration, and roots from the
+vendored Read/History parser declarations plus every current Read matrix schema
+assertion. It rejects unsupported declaration/ref syntax, missing/duplicate
+names and reachable unsealed definitions. The checked manifest is derived from
+these inputs; its lists never authorize themselves. `schema_parity_test.go`
+checks all selected names in both directions. `history_parity_test.go` shares a
+resolved object view for aliases/restrictions and verifies History sum branches
+and the per-code forbidden-property and conditionally required member sets. Existing gates and corpus floors
+remain, with nullable/bool/integer-constant checks extended for the adopted forms.
+
+The test-only canonical serializer handles this pinned ASCII schema corpus with
+exact int64 numbers, booleans, null, arrays and sorted objects. It rejects inputs
+outside that restricted domain. It is not a general JCS implementation. Its bytes
+must equal `schema/read-projection.jcs.json` and the expected projection digest
+`0feaa86a2ba5180d6396e1b52b0b2ee339b0a79a0650ecc0c0e6045b17d053e7`.
+
+PROVENANCE keeps four columns: SHA256, local path, upstream/source descriptor,
+and source token. A 40-hex token is a verbatim Git blob. `-` is reserved for
+existing spec-fence derivations. `recipe:read-projection` and
+`recipe:read-manifest` have fixed paths and a fixed dependency descriptor;
+the joint reproducer requires the complete schema, all three upstream source
+entries and `conformance/read-v1.matrix.json` to be verbatim-pinned. Projection
+pair bytes depend only on the ordered seal and selected definitions; the joint
+reproducer additionally verifies parser/matrix roots and their closure. Unknown
+tokens/recipes fail. Every current file still participates in the complete census. Re-pinning updates these witnesses,
+the full bundle, all 49 catalog/matrix rows, fixtures, 13 spec-fence ranges and
+DTO/parity together. Obtain bytes from the exact upstream Git objects, including
+when another worktree is concurrently edited. Set `BDP_SPEC_AT_PIN` to verified
+spec bytes when running reproduction; no test fetches them.
+
+The verbatim History illustration file has 42 cases. Twenty-two selected Read
+cases round-trip; twenty excluded cases remain classified as eight write inputs,
+two higher-profile discoveries, four allocation problems, three Event-data and
+three result/delta examples. Discovery refusals and unsupported-code Validate
+refusals remain distinct from decoding an open Problem shape. None is served
+History evidence. The positional current matrix problem oracle covers 18 codes.
+See [the dated adoption record](../../../engdocs/BDP_P0_WIRE_ADOPTION_20260914.md)
+for input hashes and the preserved previous provenance.
+
+The historical Link schema remains an exact reference to the ordinary Link
+schema. Its distinct Go `HistoricalLinkRecord` uses `LinkRecord` as its
+underlying type, with field/tag parity checked mechanically, and supplies strict
+decode/marshal methods at the History parser root. Ordinary `LinkRecord` retains
+its previous encoding/json behavior. No serving capability follows from this
+structural distinction.

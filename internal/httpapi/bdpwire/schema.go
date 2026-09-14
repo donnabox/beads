@@ -9,7 +9,7 @@ import (
 // taken from. It is the plan's §0 pin (BDP_BEAD_GRAPH_PLAN.md), repeated here
 // so code can name it; pin_test.go asserts it equals the `commit:` line of
 // schema/PROVENANCE, so the two cannot drift apart silently.
-const Pin = "19923f5bb6cc3f4ee4c508e36df3bd4c5c52344b"
+const Pin = "53bdbd03136875f952af184fce7b3c7af8f74e96"
 
 // SchemaID is the bundle's canonical `$id`. It is a protocol identity —
 // compared exactly, never dereferenced — and the base the pinned matrix's
@@ -33,7 +33,10 @@ const ServiceDescRel = "service-desc"
 //go:embed schema/bdp-v0.schema.json
 var schemaBundle []byte
 
-// SchemaBundle returns the vendored normative bundle. The returned slice is a
+// SchemaBundle returns the complete verbatim normative bundle (153 definitions).
+// The supported DTO scope is its separately pinned 42-definition Read projection;
+// returning the full artifact does not admit its excluded write definitions.
+// The returned slice is a
 // copy: callers may not mutate the embedded bytes. Tests in this package and,
 // at P2, the route-grammar parity test in internal/httpapi read it from here
 // so they check the artifact that actually ships, not a copy on disk.

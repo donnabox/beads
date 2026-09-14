@@ -1,5 +1,13 @@
 # BDP graph store — architecture and design
 
+Current wire-input addendum (2026-09-14): [plan §0](BDP_BEAD_GRAPH_PLAN.md#0-the-bdp-pin-and-the-spec-first-dependency)
+now adopts BDP `53bdbd03136875f952af184fce7b3c7af8f74e96` and its named
+42-definition Read projection with 49 catalog/matrix rows. The prior pin and
+dated records below remain historical. [Exact input provenance and limits](BDP_P0_WIRE_ADOPTION_20260914.md)
+are recorded separately. This updates DTO contracts only; graph mechanisms,
+installation ownership, provider mapping and runtime capability gates remain.
+
+
 **Status:** Draft v17 (W-arch) — A1–A9 and decisions D1–D2 (plan rulings 13–14) ruled 2026-09-07; A10 ruled 2026-09-08; P0 current-wire completion open — feat/bead-graph
 **Date:** 2026-09-12 (v16: 2026-09-10; v15: 2026-09-09; v14: 2026-09-02)
 **Companion:** `BDP_BEAD_GRAPH_PLAN.md` (the plan and its rulings, 1–14) and

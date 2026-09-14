@@ -233,6 +233,16 @@ func TestEveryVendoredFileIsPinnedAndUnchanged(t *testing.T) {
 			fenceRange(t, e)
 			continue
 		}
+		if strings.HasPrefix(e.blob, "recipe:") {
+			if !bytes.Equal(data, reproduceRecipe(t, e)) {
+				t.Errorf("%s: derived artifact differs", e.local)
+			}
+			continue
+		}
+		if !lowerHex40.MatchString(e.blob) {
+			t.Errorf("%s: invalid source token %q", e.local, e.blob)
+			continue
+		}
 		if got := gitBlobSHA1(data); got != e.blob {
 			t.Errorf("%s: git blob sha1 %s, PROVENANCE says %s (upstream %s)", e.local, got, e.blob, e.upstream)
 		}

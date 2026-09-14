@@ -2,6 +2,7 @@ package bdpwire
 
 import (
 	"encoding/json"
+	"reflect"
 	"testing"
 )
 
@@ -72,7 +73,12 @@ func TestErasedPointerGuardIsBoundToPinnedSchema(t *testing.T) {
 		condition := asMap(t, branch["if"], "if")
 		code := asMap(t, asMap(t, condition["properties"], "properties")["code"], "code")
 		if code["const"] != string(CodeResourceErased) {
-			t.Fatal("pointer guard applied to a different condition")
+			// Current History adds its own enum guard. Preserve the exact
+			// old erased guard and separately require the five-code extension.
+			if !reflect.DeepEqual(stringSet(t, asSlice(t, code["enum"], "History code guard")), sliceSet([]string{string(CodeRevisionUnknown), string(CodeRevisionUnretained), string(CodeRevisionReorganized), string(CodeRevisionNotTracked), string(CodeRevisionUnrepresentable)})) {
+				t.Fatal("unexpected additional pointer condition")
+			}
+			continue
 		}
 		required := stringSet(t, asSlice(t, condition["required"], "required"))
 		if !required["code"] {
