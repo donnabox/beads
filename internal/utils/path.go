@@ -28,6 +28,24 @@ func ResolveForWrite(path string) (string, error) {
 	return path, nil
 }
 
+// CanonicalizeExistingPath resolves an existing path without best-effort fallback.
+// On Darwin the existing kernel query also recovers the actual filesystem case;
+// a failed query is an error, never a case-insensitive directory walk.
+func CanonicalizeExistingPath(path string) (string, error) {
+	abs, err := filepath.Abs(path)
+	if err != nil {
+		return "", err
+	}
+	resolved, err := filepath.EvalSymlinks(abs)
+	if err != nil {
+		return "", err
+	}
+	if runtime.GOOS == "darwin" {
+		return canonicalCaseFast(resolved)
+	}
+	return resolved, nil
+}
+
 // CanonicalizePath converts a path to its canonical form by:
 // 1. Converting to absolute path
 // 2. Resolving symlinks
