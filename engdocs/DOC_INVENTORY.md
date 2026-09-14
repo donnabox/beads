@@ -61,6 +61,7 @@ Follow-up automation should replace marker-only checks with generated or
 | `BDP_BEAD_GRAPH_PLAN.md` | Keep | Graph-plane design record; ruled contracts and dated dependency sources, not runtime or merge clearance. |
 | `BDP_GRAPH_ARCHITECTURE.md` | Keep | Graph-plane design record; ruled contracts and dated dependency sources, not runtime or merge clearance. |
 | `BDP_GRAPH_CLI_AND_STORAGE_SPEC.md` | Keep | Graph-plane design record; ruled contracts and dated dependency sources, not runtime or merge clearance. |
+| `BDP_GRAPH_REPLICATION_ADR.md` | Keep | Replication implementation contract under ruling 14; explicit engine qualification gates remain open. Source baseline and last review date are recorded; no runtime or migration clearance. |
 | `CLAUDE_INTEGRATION.md` | Keep | Design/user guide for Claude setup; paired with `SETUP.md`. |
 | `CLAUDE.md` | Revise | Kept as architecture orientation only; command/workflow duplication was reduced in favour of root `AGENTS.md` and `AGENT_INSTRUCTIONS.md`. |
 | `CLI_REFERENCE.md` | Keep/generated | Generated command reference from live help output. |
