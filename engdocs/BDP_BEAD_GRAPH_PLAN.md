@@ -1063,8 +1063,11 @@ allocation/tombstone ledger. No legacy IDs are served in v0.
   P0 promotion must name that scope and its remaining gates; it is not a graph
   capability/readiness or upstream merge grant.
 - **P1 — Graph read storage (S1):** the replication/merge ADR first
-  (ruling 14: `engdocs/BDP_GRAPH_REPLICATION_ADR.md`, council-reviewed; no
-  graph migration merges before it); record the A10 solo mint trigger and
+  (ruling 14: [replication ADR](BDP_GRAPH_REPLICATION_ADR.md),
+  source-pinned proposal reviewed by council and corrected implementation
+  contract; its E1–E8 mechanisms and
+  qualification remain open, and the document alone does not permit graph
+  migration merges); record the A10 solo mint trigger and
   workspace-gate ↔ lease-predicate mapping (architecture §2b) before wiring
   the embedded leg; then tables + migrations (descriptor
   store and the ruling-13 fence triggers included); typed snapshot-source resolution (`GraphReadSource`)
@@ -1364,6 +1367,11 @@ of that.
    `engdocs/BDP_GRAPH_REPLICATION_ADR.md`.
 
 ### Amendments ruled (A1–A9: 2026-09-07; A10: 2026-09-08) — the interview record
+
+This is the dated interview record. Supersession recorded 2026-09-14: the
+A9 earlier-mint interim below is
+superseded by the explicit adoption contract in the [replication ADR](BDP_GRAPH_REPLICATION_ADR.md);
+its engine, recovery, and anti-reuse qualification gates remain open.
 
 Raised by eight three-reviewer councils on the W-arch docs and ruled one
 decision at a time on 2026-09-07. The normative text above (rulings 7b, 9,
