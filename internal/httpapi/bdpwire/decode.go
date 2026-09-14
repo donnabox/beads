@@ -27,7 +27,7 @@ import (
 //   - a REQUIRED member (a field without omitempty — the parity test welds
 //     that to the bundle's required lists) must be present;
 //   - NULL is refused wherever the bundle gives no null: every member but a
-//     collection's `next`, the one required pointer. Absent and null are
+//     collection next and History bounds/next (required pointers). Absent and null are
 //     different things, and the bundle admits only absence;
 //   - a member must have its JSON type — a string is not a number, an array
 //     is not null, an object is not an array;
@@ -74,6 +74,9 @@ func Decode(r io.Reader, v any) error {
 // The decoder validates the whole value's syntax as it scans it, so every
 // raw slice cut from it afterwards is well-formed JSON.
 func oneDocument(data []byte) (json.RawMessage, error) {
+	if err := validateUnicodeCarrier(data); err != nil {
+		return nil, err
+	}
 	dec := json.NewDecoder(bytes.NewReader(data))
 	var raw json.RawMessage
 	if err := dec.Decode(&raw); err != nil {
@@ -97,6 +100,9 @@ type member struct {
 // splitObject returns an object's members in document order; a duplicate
 // name is refused. The input is a well-formed object (oneDocument).
 func splitObject(raw json.RawMessage) ([]member, error) {
+	if err := validateUnicodeCarrier(raw); err != nil {
+		return nil, err
+	}
 	dec := json.NewDecoder(bytes.NewReader(raw))
 	if _, err := dec.Token(); err != nil { // '{'
 		return nil, err
@@ -181,8 +187,14 @@ var (
 // member for diagnostics.
 func decodeValue(raw json.RawMessage, target reflect.Value, path string) error {
 	t := target.Type()
+	if decode, ok := historyDecoder(target); ok {
+		return decode(raw)
+	}
 	switch t {
 	case rawMessageType:
+		if err := validateCarrier(raw); err != nil {
+			return fmt.Errorf("bdpwire: %s: %w", path, err)
+		}
 		target.SetBytes(append([]byte(nil), raw...))
 		return nil
 	case referenceType:
@@ -217,6 +229,12 @@ func decodeValue(raw json.RawMessage, target reflect.Value, path string) error {
 			return fmt.Errorf("bdpwire: %s: %w", path, err)
 		}
 		target.SetString(s)
+		return nil
+	case reflect.Bool:
+		if jsonTypeOf(raw) != "boolean" {
+			return typeError(path, "boolean", raw)
+		}
+		target.SetBool(string(bytes.TrimSpace(raw)) == "true")
 		return nil
 	case reflect.Int:
 		n, err := parseJSONInteger(raw)
@@ -270,7 +288,7 @@ func decodeValue(raw json.RawMessage, target reflect.Value, path string) error {
 
 // structField is one wire member of a struct: its field index, its exact
 // name, whether the bundle requires it (no omitempty), and whether it is the
-// one member that may be null (a required pointer: a collection's next).
+// nullable members (required pointers: collection next and History bounds/next).
 type structField struct {
 	index    int
 	name     string
@@ -342,7 +360,8 @@ func decodeStructMembers(members []member, target reflect.Value, path string) er
 		seen[m.name] = true
 		if isNull(m.value) {
 			if f.nullable {
-				continue // present and null: the pointer stays nil
+				target.Field(f.index).SetZero()
+				continue // explicit null clears a reused nullable destination
 			}
 			return fmt.Errorf("bdpwire: %s.%s: must not be null (the bundle admits absence, not null)", path, m.name)
 		}
@@ -362,6 +381,9 @@ func decodeStructMembers(members []member, target reflect.Value, path string) er
 // pinned-reference object held to the closed pinnedReference shape with a
 // nonempty revision (see Reference).
 func decodeReference(raw json.RawMessage, r *Reference, path string) error {
+	if err := validateCarrier(raw); err != nil {
+		return err
+	}
 	raw = bytes.TrimSpace(raw)
 	switch jsonTypeOf(raw) {
 	case "string":
@@ -405,6 +427,9 @@ func decodeProblem(raw json.RawMessage, p *ReadProblem, path string) error {
 		if extensions == nil {
 			extensions = map[string]json.RawMessage{}
 		}
+		if err := validateCarrier(m.value); err != nil {
+			return fmt.Errorf("bdpwire: %s.%s: %w", path, m.name, err)
+		}
 		extensions[m.name] = append(json.RawMessage(nil), m.value...)
 	}
 	var decoded readProblemMembersOnly
@@ -413,7 +438,7 @@ func decodeProblem(raw json.RawMessage, p *ReadProblem, path string) error {
 	}
 	result := ReadProblem(decoded)
 	result.Extensions = extensions
-	if err := result.validateErasedPointer(); err != nil {
+	if err := result.validateWireConditions(); err != nil {
 		return err
 	}
 	*p = result

@@ -4,17 +4,21 @@
 // normative schema bundle.
 //
 // THE PROVENANCE FILE (spec B8). The bundle is vendored verbatim at schema/bdp-v0.schema.json from
-// gastownhall/bdp commit 19923f5b (the merged Read foundation), with the Read-profile
+// gastownhall/bdp commit 53bdbd03, with the Read-profile
 // fixtures and the executable Read matrix from the same commit beside it.
 // schema/PROVENANCE names every vendored file with its sha256 and its upstream git
 // blob sha1, and pin_test.go recomputes both from the bytes on disk, so a
 // re-pin is an edit to PROVENANCE that review can see and a drifted fixture is a
 // failing test — never a network fetch. Nothing in this package touches the
 // network, at build time or in tests.
+// The complete bundle remains provenance; the checked derived manifest and
+// canonical projection witness declare the selected Read DTO scope. All 111
+// excluded definitions remain accounted for without write DTO admission.
 //
 // HAND-WRITTEN, VALIDATED AGAINST THE BUNDLE. The types here are written by
 // hand and welded to the bundle by schema_parity_test.go, which parses the
-// vendored bytes and asserts, for every `$defs` entry: two-way equality
+// vendored bytes and asserts, for every definition in the upstream named Read
+// projection (42 of the complete bundle's 153 definitions): two-way equality
 // between the schema's property list and the struct's JSON tags; that a
 // required member never carries omitempty and an optional one always does;
 // that a closed envelope carries no extension carrier and the one open
@@ -36,7 +40,7 @@
 // about the bytes themselves and that a Go value could not otherwise carry
 // faithfully (decode.go): exact, case-sensitive member names; a required
 // member present; null refused wherever the bundle gives no null (absent and
-// null are different things, and only a collection's `next` may be null);
+// null are different things; collection next and History bounds/next may be null);
 // each member's JSON type; integers decoded exactly from any RFC 8259
 // spelling within the documented int range; Reference's string-or-object sum
 // (an object arm needs a nonempty revision, or the Go value would read as
@@ -66,6 +70,29 @@
 // ReadProblem and OwnedOutgoingDeclarations stay strict under it too, since
 // they decode themselves. OwnedLinks also checks its key pattern under
 // encoding/json, while leaving its records to ordinary decoding.
+//
+// HISTORY STRUCTURAL BOUNDARY. Optional historicalResolution and changeContext
+// preserve received wire values without fabricating capability or legacy context.
+// New Context, HistoryCapability, MissingItem/Missing, Window, VersionsPage,
+// VersionRow, HistoricalBeadRecord and HistoricalLinkRecord codecs share strict custom entrypoints.
+// They enforce tagged arms, member presence, boolean/integer kind, required
+// nullable bounds, missing-item cardinality/uniqueness, paired bounds, page
+// participation and unique revisions. Multiple current lineage rows remain legal.
+// ReadDiscovery.Validate also validates a present capability version. New History
+// problem payload/exclusion guards apply on decode, marshal and Validate; the
+// inherited family/status/retry and ordinary archivedAt semantics remain explicit
+// Validate checks. Date-time, URL and graph/provider admission semantics are not
+// inferred from transport shapes. The historical Link schema is an exact alias
+// of the ordinary Link schema. Its distinct Go type retains the same fields and
+// tags while adding strict codecs; ordinary LinkRecord's encoding/json behavior
+// remains unchanged.
+//
+// Before strict decoding, raw UTF-8 and escaped surrogate pairs are checked,
+// including member names and nested raw properties/extensions. Duplicate decoded
+// names are rejected without replacing the inherited nested diagnostic paths.
+// New strict Marshal methods reject invalid Go strings before JSON encoding can
+// replace bytes. Explicit null clears reused nullable destinations. The legacy
+// ordinary-json envelope path remains lenient where documented above.
 //
 // The package imports the standard library and nothing else, and
 // imports_test.go keeps it that way: it sits beneath internal/httpapi and,

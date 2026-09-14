@@ -16,6 +16,7 @@ const BDPVersion = "0"
 // this type fails on them by construction (roundtrip_test.go proves it with
 // the spec's own Read+Update and Transactional examples).
 type ReadDiscovery struct {
+	HistoricalResolution *HistoryCapability `json:"historicalResolution,omitempty"`
 	// BDPVersion is BDPVersion ("0") for every v0 Scope.
 	BDPVersion string `json:"bdpVersion"`
 	// Profile is the Scope's highest supported cumulative profile; here it is
@@ -56,6 +57,11 @@ type ReadDiscovery struct {
 // constants the bundle states about the bytes, so they are checked here and
 // not left to a graph law (doc.go); decoding alone settles the shape.
 func (d ReadDiscovery) Validate() error {
+	if d.HistoricalResolution != nil {
+		if err := d.HistoricalResolution.Validate(); err != nil {
+			return err
+		}
+	}
 	if d.BDPVersion != BDPVersion {
 		return fmt.Errorf("bdpwire: discovery bdpVersion %q, want %q", d.BDPVersion, BDPVersion)
 	}
@@ -164,9 +170,10 @@ type MaximumEndpointMultiplicityPolicy struct {
 // protocol metadata, opaque and equality-only, and so is Attribution — both
 // sit beside Properties, never inside it.
 type BeadRecord struct {
-	ID       string `json:"id"`
-	Type     string `json:"type"`
-	Revision string `json:"revision"`
+	ChangeContext *ChangeContext `json:"changeContext,omitempty"`
+	ID            string         `json:"id"`
+	Type          string         `json:"type"`
+	Revision      string         `json:"revision"`
 	// Attribution is the per-version carried attribution — data, not
 	// evidence — and absent when none was recorded.
 	Attribution *Attribution `json:"attribution,omitempty"`
@@ -194,13 +201,14 @@ type BeadRecord struct {
 // URI, and either may be pinned. ID, Type, Source and Target are immutable:
 // repointing or re-pinning is a delete-and-create pair.
 type LinkRecord struct {
-	ID          string       `json:"id"`
-	Type        string       `json:"type"`
-	Revision    string       `json:"revision"`
-	Attribution *Attribution `json:"attribution,omitempty"`
-	Source      Reference    `json:"source"`
-	Target      Reference    `json:"target"`
-	Properties  Properties   `json:"properties"`
+	ChangeContext *ChangeContext `json:"changeContext,omitempty"`
+	ID            string         `json:"id"`
+	Type          string         `json:"type"`
+	Revision      string         `json:"revision"`
+	Attribution   *Attribution   `json:"attribution,omitempty"`
+	Source        Reference      `json:"source"`
+	Target        Reference      `json:"target"`
+	Properties    Properties     `json:"properties"`
 }
 
 // Attribution is the `attribution` envelope carried per version on a Bead or
