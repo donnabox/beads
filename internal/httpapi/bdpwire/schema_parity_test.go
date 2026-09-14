@@ -3,7 +3,6 @@ package bdpwire
 import (
 	"encoding/json"
 	"reflect"
-	"sort"
 	"strconv"
 	"strings"
 	"testing"
@@ -22,7 +21,8 @@ type defBinding struct {
 	goType reflect.Type
 	// object bindings are checked property by property; enum and constant
 	// bindings are checked value by value; primitive and sum bindings are
-	// checked only through the `$ref`s that reach them.
+	// checked through their references; new History sums also have explicit
+	// branch parity and strict codec tests.
 	kind string
 	// enumValues are the Go constants' values, for kind "enum".
 	enumValues []string
@@ -45,17 +45,24 @@ func enum[E ~string](values ...E) defBinding {
 	return b
 }
 
-// defsToGo binds EVERY definition in the bundle. TestEveryDefinitionIsBound
-// holds the key set equal to the bundle's `$defs` in both directions, so a
+// defsToGo binds every definition in the upstream named Read projection. TestEverySelectedDefinitionIsBound
+// holds the key set equal to the named projection in both directions, so a
 // definition added upstream must be bound here — and bound to something that
 // then has to pass the property checks — before the pin can move.
 var defsToGo = map[string]defBinding{
+	"changeContext": object(ChangeContext{}),
+	"contextTime":   sum(ContextTime{}), "contextString": sum(ContextString{}), "contextMessage": sum(ContextMessage{}),
+	"dateTime": primitive(""), "revision": primitive(""), "jsonPointer": primitive(""),
+	"historicalBeadRecord": object(HistoricalBeadRecord{}), "historicalLinkRecord": object(HistoricalLinkRecord{}),
+	"historyCapability": object(HistoryCapability{}), "historyMissing": object(HistoryMissing{}), "historyMissingItem": sum(HistoryMissingItem{}),
+	"historyWindow": object(HistoryWindow{}), "historyVersionsPage": object(HistoryVersionsPage{}), "historyVersionRow": object(HistoryVersionRow{}),
+
 	"absoluteHttpUrl":                   primitive(""),
 	"absoluteUri":                       primitive(""),
 	"bdpVersion":                        constant("", BDPVersion),
 	"protocolProfile":                   enum(ProfileRead, ProfileReadUpdate, ProfileTransactional),
 	"retryDisposition":                  enum(RetryNever, RetryAfterStateChange, RetryAfterDelay),
-	"readProblemCode":                   enum(CodeMalformedRequest, CodeInvalidParameter, CodeUnauthenticated, CodeForbidden, CodeResourceNotFound, CodeResourcePruned, CodeResourceErased, CodeForeignView, CodeCursorExpired, CodeRequestTooLarge, CodeLimitExceeded, CodeRateLimited, CodeTemporarilyUnavailable),
+	"readProblemCode":                   enum(CodeMalformedRequest, CodeInvalidParameter, CodeUnauthenticated, CodeForbidden, CodeResourceNotFound, CodeResourcePruned, CodeResourceErased, CodeForeignView, CodeCursorExpired, CodeRequestTooLarge, CodeLimitExceeded, CodeRateLimited, CodeTemporarilyUnavailable, CodeRevisionUnknown, CodeRevisionUnretained, CodeRevisionReorganized, CodeRevisionNotTracked, CodeRevisionUnrepresentable),
 	"readProblem":                       object(ReadProblem{}),
 	"typeIdArray":                       primitive(TypeIDs(nil)),
 	"endpointConstraint":                object(EndpointConstraint{}),
@@ -84,16 +91,21 @@ var defsToGo = map[string]defBinding{
 // A property with an inline string enum must be typed with one of these, and
 // the sets must match.
 var inlineEnums = map[reflect.Type][]string{
-	reflect.TypeOf(Describes("")):         {string(DescribesBead), string(DescribesLink)},
-	reflect.TypeOf(ExternalPolicy("")):    {string(ExternalNone), string(ExternalOpaque), string(ExternalBead)},
-	reflect.TypeOf(Endpoint("")):          {string(EndpointSource), string(EndpointTarget)},
-	reflect.TypeOf(AttributionStatus("")): {string(AttributionClaimed), string(AttributionUnknown)},
-	reflect.TypeOf(CollectionOrder("")):   {string(OrderCanonicalURI)},
+	reflect.TypeOf(HistoryLineage("")):       {string(HistoryCurrent), string(HistoryReplaced)},
+	reflect.TypeOf(HistoryBody("")):          {string(HistoryComplete), string(HistoryIncomplete)},
+	reflect.TypeOf(HistoryParticipation("")): {string(HistoryTracked), string(HistoryNotTracked), string(HistoryUndetermined)},
+	reflect.TypeOf(Describes("")):            {string(DescribesBead), string(DescribesLink)},
+	reflect.TypeOf(ExternalPolicy("")):       {string(ExternalNone), string(ExternalOpaque), string(ExternalBead)},
+	reflect.TypeOf(Endpoint("")):             {string(EndpointSource), string(EndpointTarget)},
+	reflect.TypeOf(AttributionStatus("")):    {string(AttributionClaimed), string(AttributionUnknown)},
+	reflect.TypeOf(CollectionOrder("")):      {string(OrderCanonicalURI)},
 }
 
 // propertyConsts are the members the bundle pins to one value inline.
-var propertyConsts = map[string]string{
-	"readDiscovery/profile": string(ProfileRead),
+var propertyConsts = map[string]any{
+	"historyCapability/version":      json.Number("1"),
+	"historyVersionsPage/population": HistoryPopulation,
+	"readDiscovery/profile":          string(ProfileRead),
 }
 
 type goField struct {
@@ -168,8 +180,8 @@ func sliceSet(values []string) map[string]bool {
 	return set
 }
 
-func TestEveryDefinitionIsBound(t *testing.T) {
-	defs := loadBundleDefs(t)
+func TestEverySelectedDefinitionIsBound(t *testing.T) {
+	defs := selectedBundleDefs(t)
 	if unbound := diff(defs, defsToGo); len(unbound) > 0 {
 		t.Errorf("bundle definitions with no Go binding: %v\nbind each in defsToGo (schema_parity_test.go) to the type that carries it", unbound)
 	}
@@ -257,7 +269,7 @@ func TestObjectDefinitionsMatchTheirStructs(t *testing.T) {
 			continue
 		}
 		t.Run(name, func(t *testing.T) {
-			checkObject(t, defs, name, asMap(t, defs[name], name), binding.goType)
+			checkObject(t, defs, name, resolvedObject(t, defs, name), binding.goType)
 		})
 	}
 }
@@ -333,20 +345,38 @@ func checkMember(t *testing.T, defs map[string]any, path string, schema map[stri
 		}
 		return
 	}
-	if alternatives, ok := schema["oneOf"]; ok {
-		// The only inline oneOf in the Read bundle is `next`: an absolute URL
-		// or null. Null must be representable and distinct from absent, so the
-		// field is a pointer.
-		nullable := false
-		for _, alt := range asSlice(t, alternatives, path+".oneOf") {
-			if asMap(t, alt, path+".oneOf")["type"] == "null" {
-				nullable = true
+	for _, keyword := range []string{"oneOf", "anyOf"} {
+		if alternatives, ok := schema[keyword]; ok {
+			alts := asSlice(t, alternatives, path+keyword)
+			if len(alts) != 2 || !schemaNullable(t, schema) {
+				t.Fatalf("%s: unsupported alternative form", path)
+			}
+			if ft.Kind() != reflect.Pointer {
+				t.Fatalf("%s nullable member is not a pointer", path)
+			}
+			count := 0
+			for _, alt := range alts {
+				m := asMap(t, alt, path)
+				if m["type"] != "null" {
+					count++
+					checkMember(t, defs, path, m, ft.Elem())
+				}
+			}
+			if count != 1 {
+				t.Fatalf("%s: not exactly one nonnull arm", path)
+			}
+			return
+		}
+	}
+	if all, ok := schema["allOf"]; ok {
+		for _, part := range asSlice(t, all, path) {
+			m := asMap(t, part, path)
+			if _, ok := m["$ref"]; ok {
+				checkMember(t, defs, path, m, ft)
+				return
 			}
 		}
-		if nullable && ft.Kind() != reflect.Pointer {
-			t.Errorf("%s: nullable member must be a pointer, got %s", path, ft)
-		}
-		return
+		t.Fatalf("%s unsupported member allOf", path)
 	}
 	if c, ok := schema["const"]; ok {
 		want, listed := propertyConsts[path]
@@ -355,8 +385,12 @@ func checkMember(t *testing.T, defs map[string]any, path string, schema map[stri
 		} else if c != want {
 			t.Errorf("%s: bundle const %v, Go const %q", path, c, want)
 		}
-		if derefPointer(ft).Kind() != reflect.String {
-			t.Errorf("%s: const member must be string-kinded, got %s", path, ft)
+		wantKind := reflect.String
+		if _, ok := c.(json.Number); ok {
+			wantKind = reflect.Int
+		}
+		if derefPointer(ft).Kind() != wantKind {
+			t.Errorf("%s: wrong const kind %s", path, ft)
 		}
 		return
 	}
@@ -413,6 +447,10 @@ func checkMember(t *testing.T, defs map[string]any, path string, schema map[stri
 		if derefPointer(ft).Kind() != reflect.String {
 			t.Errorf("%s: string member typed %s", path, ft)
 		}
+	case "boolean":
+		if derefPointer(ft).Kind() != reflect.Bool {
+			t.Errorf("%s: boolean typed %s", path, ft)
+		}
 	case "integer":
 		if derefPointer(ft).Kind() != reflect.Int {
 			t.Errorf("%s: integer member typed %s", path, ft)
@@ -427,32 +465,54 @@ func checkMember(t *testing.T, defs map[string]any, path string, schema map[stri
 func problemRows(t *testing.T, defs map[string]any) map[string]map[string]any {
 	t.Helper()
 	rows := map[string]map[string]any{}
+	for code := range readProblemTable {
+		rows[string(code)] = map[string]any{}
+	}
 	problem := asMap(t, defs["readProblem"], "readProblem")
-	for _, item := range asSlice(t, problem["allOf"], "readProblem.allOf") {
-		clause := asMap(t, item, "allOf item")
-		cond, ok := clause["if"]
-		if !ok {
-			continue
-		}
-		codeSchema, ok := asMapOrEmpty(t, asMap(t, cond, "if")["properties"])["code"]
-		if !ok {
-			continue
-		}
-		code, ok := asMap(t, codeSchema, "if.properties.code")["const"]
-		if !ok {
-			continue
-		}
-		then := asMapOrEmpty(t, asMap(t, clause["then"], "then")["properties"])
-		row := rows[asString(t, code, "code")]
-		if row == nil {
-			row = map[string]any{}
-			rows[asString(t, code, "code")] = row
-		}
-		for k, v := range then {
-			row[k] = v
+	for _, item := range asSlice(t, problem["allOf"], "allOf") {
+		clause := asMap(t, item, "clause")
+		condition := asMap(t, clause["if"], "if")
+		for code, row := range rows {
+			branch := "else"
+			if problemCodeCondition(t, condition, code) {
+				branch = "then"
+			}
+			if b, ok := clause[branch]; ok {
+				for k, v := range asMapOrEmpty(t, asMap(t, b, branch)["properties"]) {
+					row[k] = v
+				}
+			}
 		}
 	}
 	return rows
+}
+func problemCodeCondition(t *testing.T, condition map[string]any, code string) bool {
+	t.Helper()
+	if n, ok := condition["not"]; ok {
+		if len(condition) != 1 {
+			t.Fatal("unknown not guard")
+		}
+		return !problemCodeCondition(t, asMap(t, n, "not"), code)
+	}
+	if len(condition) != 2 || !reflect.DeepEqual(condition["required"], []any{"code"}) {
+		t.Fatal("unsupported code guard")
+	}
+	props := asMap(t, condition["properties"], "guard properties")
+	if len(props) != 1 {
+		t.Fatal("unknown guard properties")
+	}
+	c := asMap(t, props["code"], "code")
+	if len(c) != 1 {
+		t.Fatal("unknown code constraint")
+	}
+	if v, ok := c["const"]; ok {
+		return code == asString(t, v, "code const")
+	}
+	if values, ok := c["enum"]; ok {
+		return stringSet(t, asSlice(t, values, "enum"))[code]
+	}
+	t.Fatal("unsupported code guard")
+	return false
 }
 
 func TestProblemTableMatchesTheBundle(t *testing.T) {
@@ -481,7 +541,7 @@ func TestProblemTableMatchesTheBundle(t *testing.T) {
 		if got, want := string(code.Retry()), asMap(t, row["retry"], codeName+".retry")["const"]; got != want {
 			t.Errorf("%s: Retry() = %q, bundle says %v", codeName, got, want)
 		}
-		_, archivedAt := row["archivedAt"]
+		archivedAt := row["archivedAt"] != nil && row["archivedAt"] != false
 		if archivedAt != (code == CodeResourcePruned) {
 			t.Errorf("%s: bundle allows archivedAt = %v, Validate allows it only for %s", codeName, archivedAt, CodeResourcePruned)
 		}
@@ -520,11 +580,17 @@ func TestZeroValuesMarshalEveryRequiredMember(t *testing.T) {
 			continue
 		}
 		t.Run(name, func(t *testing.T) {
-			def := asMap(t, defs[name], name)
+			def := resolvedObject(t, defs, name)
 			zero := reflect.New(binding.goType).Interface()
 			data, err := json.Marshal(zero)
 			if err != nil {
+				if invalidHistoryZero[name] {
+					return
+				}
 				t.Fatalf("marshal zero %s: %v", binding.goType, err)
+			}
+			if invalidHistoryZero[name] {
+				t.Fatalf("invalid zero %s marshaled successfully", name)
 			}
 			var members map[string]json.RawMessage
 			if err := json.Unmarshal(data, &members); err != nil {
@@ -543,7 +609,7 @@ func TestZeroValuesMarshalEveryRequiredMember(t *testing.T) {
 				if !required[member] {
 					t.Errorf("zero %s serves optional member %q: %s", binding.goType, member, data)
 				}
-				if string(raw) == "null" && member != "next" {
+				if string(raw) == "null" && !schemaNullable(t, asMap(t, collectProperties(t, def)[member], member)) {
 					t.Errorf("zero %s serves %q as null, which no Read schema permits: %s", binding.goType, member, data)
 				}
 			}
@@ -551,21 +617,30 @@ func TestZeroValuesMarshalEveryRequiredMember(t *testing.T) {
 	}
 }
 
-// TestValidMethodsRejectStrangers is the negative half of the enum checks.
+// TestValidMethodsRejectStrangers checks both directions for every inline enum
+// and the closed sum vocabularies, as well as the inherited shared enums.
 func TestValidMethodsRejectStrangers(t *testing.T) {
-	for _, v := range []interface{ Valid() bool }{
-		ProtocolProfile("bogus"), RetryDisposition("bogus"), ReadProblemCode("bogus"),
-		Describes("bogus"), ExternalPolicy("bogus"), Endpoint("bogus"),
-		AttributionStatus("bogus"), CollectionOrder("bogus"),
-	} {
-		if v.Valid() {
-			t.Errorf("%T(%q).Valid() = true", v, v)
+	vocabularies := map[reflect.Type][]string{}
+	for rt, values := range inlineEnums {
+		vocabularies[rt] = values
+	}
+	vocabularies[reflect.TypeOf(HistoryMissingKind(""))] = []string{string(MissingRecord), string(MissingProperty), string(MissingOwnedLinks)}
+	vocabularies[reflect.TypeOf(ContextState(""))] = []string{string(ContextPresent), string(ContextAbsent), string(ContextUndetermined)}
+	vocabularies[reflect.TypeOf(ContextTimeState(""))] = []string{string(ContextTimePresent), string(ContextTimeUndetermined)}
+	for _, binding := range defsToGo {
+		if binding.kind == "enum" {
+			vocabularies[binding.goType] = binding.enumValues
 		}
 	}
-	names := make([]string, 0, len(inlineEnums))
-	for rt := range inlineEnums {
-		names = append(names, rt.Name())
+	for rt, values := range vocabularies {
+		for _, value := range append(append([]string{}, values...), "", "bogus") {
+			valid := reflect.ValueOf(value).Convert(rt).Interface().(interface{ Valid() bool }).Valid()
+			if valid != sliceSet(values)[value] {
+				t.Errorf("%s(%q).Valid() = %v", rt, value, valid)
+			}
+		}
 	}
-	sort.Strings(names)
-	t.Logf("inline enum types under test: %v", names)
+	if ContextTimeState(ContextAbsent).Valid() {
+		t.Error("time context admits absent")
+	}
 }

@@ -59,24 +59,29 @@ func (r RetryDisposition) Valid() bool {
 // back from the code (problem.go), never chosen per response.
 type ReadProblemCode string
 
-// The thirteen Read-profile problem codes. resource-pruned and resource-erased
+// The eighteen Read-profile problem codes. resource-pruned and resource-erased
 // are the authorization-gated disclosure conditions: served only to a caller
 // authorized for the subject's retained history, and otherwise the uniform
 // resource-not-found, so 410 is never an enumeration oracle.
 const (
-	CodeMalformedRequest       ReadProblemCode = "malformed-request"
-	CodeInvalidParameter       ReadProblemCode = "invalid-parameter"
-	CodeUnauthenticated        ReadProblemCode = "unauthenticated"
-	CodeForbidden              ReadProblemCode = "forbidden"
-	CodeResourceNotFound       ReadProblemCode = "resource-not-found"
-	CodeResourcePruned         ReadProblemCode = "resource-pruned"
-	CodeResourceErased         ReadProblemCode = "resource-erased"
-	CodeForeignView            ReadProblemCode = "foreign-view"
-	CodeCursorExpired          ReadProblemCode = "cursor-expired"
-	CodeRequestTooLarge        ReadProblemCode = "request-too-large"
-	CodeLimitExceeded          ReadProblemCode = "limit-exceeded"
-	CodeRateLimited            ReadProblemCode = "rate-limited"
-	CodeTemporarilyUnavailable ReadProblemCode = "temporarily-unavailable"
+	CodeMalformedRequest        ReadProblemCode = "malformed-request"
+	CodeInvalidParameter        ReadProblemCode = "invalid-parameter"
+	CodeUnauthenticated         ReadProblemCode = "unauthenticated"
+	CodeForbidden               ReadProblemCode = "forbidden"
+	CodeResourceNotFound        ReadProblemCode = "resource-not-found"
+	CodeResourcePruned          ReadProblemCode = "resource-pruned"
+	CodeResourceErased          ReadProblemCode = "resource-erased"
+	CodeForeignView             ReadProblemCode = "foreign-view"
+	CodeCursorExpired           ReadProblemCode = "cursor-expired"
+	CodeRequestTooLarge         ReadProblemCode = "request-too-large"
+	CodeLimitExceeded           ReadProblemCode = "limit-exceeded"
+	CodeRateLimited             ReadProblemCode = "rate-limited"
+	CodeTemporarilyUnavailable  ReadProblemCode = "temporarily-unavailable"
+	CodeRevisionUnknown         ReadProblemCode = "revision-unknown"
+	CodeRevisionUnretained      ReadProblemCode = "revision-unretained"
+	CodeRevisionReorganized     ReadProblemCode = "revision-reorganized"
+	CodeRevisionNotTracked      ReadProblemCode = "revision-not-tracked"
+	CodeRevisionUnrepresentable ReadProblemCode = "revision-unrepresentable"
 )
 
 // Valid reports whether c is a member of the Read problem table.

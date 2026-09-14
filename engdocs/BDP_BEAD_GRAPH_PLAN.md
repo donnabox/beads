@@ -28,6 +28,24 @@ this repo's `backend/` conformance surface, `engdocs/PROJECT_CHARTER.md`.
 
 ## 0. The BDP pin, and the spec-first dependency
 
+### Current P0 Read wire input (2026-09-14)
+
+Adopt BDP `53bdbd03136875f952af184fce7b3c7af8f74e96`: complete upstream
+schema 153 definitions, named Read projection 42 definitions, current Read
+catalog/matrix 49 rows. The projection digest is
+`0feaa86a2ba5180d6396e1b52b0b2ee339b0a79a0650ecc0c0e6045b17d053e7`;
+full schema SHA-256 is
+`e20cfd088e836155f1a0ff00d764f8ad2e0a45e8429227bd1a1e7dcecf279ef2`.
+[The dated adoption record](BDP_P0_WIRE_ADOPTION_20260914.md) binds exact
+spec/blob/parser-source/catalog/matrix/fixture identities and preserves the
+prior provenance. All 42 selected definitions have hand-written Go wire
+bindings; the remaining 111 definitions are explicitly outside this DTO scope.
+This is Read-only wire adoption, including optional History shapes. It grants
+no serving, History, Read+Update or Transactional capability and transfers no
+upstream observations into Beads evidence. P1/P2/P3 owner gates remain.
+
+The following original and 2026-09-10 records are preserved history.
+
 The original P0 wire input targeted the BDP spec **as of the owned-Links rulings**:
 **BDP commit `0b7d86e7`** (the gastownhall/bdp PR #18 merge, 2026-09-07, carried attribution for #10; supersedes the `aee075f5` pin of PR #17),
 schema bundle `schemas/bdp-v0.schema.json` at that commit, Read conformance
@@ -40,7 +58,7 @@ re-pinned deliberately, never against a moving `main`.
 
 ### P0 Read adoption record (2026-09-10)
 
-The current P0 contract input supersedes the original pin above with the exact
+The 2026-09-10 P0 contract input superseded the original pin above with the exact
 BDP Read foundation merge `19923f5bb6cc3f4ee4c508e36df3bd4c5c52344b`.
 The spec blob is `79049a703ef957e3eed7cbe56c093356c47b0658`. The vendored
 27-definition schema SHA-256 is
@@ -169,7 +187,7 @@ Read contract or its historical verification results:
 | Jim #6147 / #6358 | `9c4e7a8f1959582f07db3b87641cb33863fda860` / `5fdfb92fe544c9a83feb098e83f2ccdd87b896c8` | Both remain open. #6304 and migration 0067 are merged; Phase 2 claims 0068. Their checks do not establish graph conformance. |
 | Advisory registry #6149 | `71b82aa02abd1284ce3b7b6bffc5952b6d66a4f8` | Still open, not a slot allocator. Its [current rows](https://github.com/gastownhall/beads/blob/71b82aa02abd1284ce3b7b6bffc5952b6d66a4f8/CLAIMED.md) propose Phase 3 at 0069–0070 and graph at 0071 if Donna agrees, while the graph row still says 0069+. This overlap is unresolved; P1 must recheck the actual slot after its ADR and owner coordination. No number is selected here. |
 
-The adopted P0 Read input is the explicit #29 merge, with the complete §0
+At the 2026-09-12 refresh, the adopted P0 Read input was the explicit #29 merge, with the complete §0
 adoption pins, source/fixture provenance and current Go boundary checks recorded
 above. The original pin and results remain historical. P0 proves contracts; P2 must prove live Go Read
 serving, current-view/owned closure, HTTP behavior and stable cross-request
@@ -458,9 +476,9 @@ role-accessor style is already exactly this idiom; `graphops` speaks it.
 
 Two layers, strictly separated (review Blocker 1/High 6):
 
-- **Wire DTOs are generated from the pinned BDP schema bundle** — the
+- **Wire DTOs are hand-written and validated against the pinned Read projection** (the approved Part D.3 fallback) — the
   protocol layer serializes those, and only the BDP handler maps domain
-  errors to generated Problem records.
+  errors to the validated Problem records.
 - **Domain values are immutable and JSON-faithful:**
 
 ```go
@@ -530,7 +548,7 @@ type Scope interface {
 ### The layering, in one picture
 
 ```text
-bd serve (HTTP/BDP)              generated DTOs; error→Problem mapping
+bd serve (HTTP/BDP)              validated wire DTOs; error→Problem mapping
       │
 ScopeResolver                    ← OUTER authority seam: picks workspace/store,
       │                            authorization view, and ONE ReadSnapshot
@@ -1133,7 +1151,9 @@ allocation/tombstone ledger. No legacy IDs are served in v0.
 Owners below are phase responsibilities within this plan (janet's graph work);
 BDP owns the upstream source/evidence products. A row is an exit condition,
 not evidence that work has run unless a dated satisfaction record is stated.
-The first three exits are satisfied at the §0 `19923f5b` adoption; they remain
+The historical first three exits were satisfied at the §0 `19923f5b` adoption.
+The current selected input is the §0 2026-09-14 `53bdbd03` adoption; fresh source
+review/gates and P2 observations remain distinct. These exits remain
 prerequisites for a later repin. Preserve the historical P0 result above.
 
 | Work / owner | Phase and prerequisite | Required exit before the corresponding claim |

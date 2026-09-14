@@ -52,11 +52,18 @@ func TestMatrixAndCatalogAgreeOnTheReadScenarios(t *testing.T) {
 		out := map[string]string{}
 		for _, s := range asSlice(t, doc["scenarios"], what) {
 			scenario := asMap(t, s, what)
-			out[asString(t, scenario["id"], what+" id")] = asString(t, scenario["requiredProfile"], what+" profile")
+			id := asString(t, scenario["id"], what+" id")
+			if _, duplicate := out[id]; duplicate {
+				t.Fatalf("duplicate %s scenario %s", what, id)
+			}
+			out[id] = asString(t, scenario["requiredProfile"], what+" profile")
 		}
 		return out
 	}
 	catalogIDs, manifestIDs := ids(catalog, "catalog"), ids(manifest, "matrix")
+	if len(catalogIDs) != 49 || len(manifestIDs) != 49 {
+		t.Fatal("current Read catalog/matrix must contain49rows")
+	}
 	if missing := diff(catalogIDs, manifestIDs); len(missing) > 0 {
 		t.Errorf("catalog scenarios with no matrix plan: %v", missing)
 	}
@@ -241,4 +248,101 @@ func resolveThroughTags(t *testing.T, rt reflect.Type, pointer string) (resolves
 		}
 	}
 	return true, omittable
+}
+
+// The current problem oracle is positional, so the generic object walker
+// alone cannot bind it. Require exactly the current 18-code tuple set.
+func TestMatrixPositionalProblemTable(t *testing.T) {
+	manifest := asMap(t, loadJSON(t, "conformance/read-v1.matrix.json"), "matrix")
+	found := 0
+	for _, ms := range matrixSteps(t, manifest) {
+		if ms.scenario != "read.http.problem-table" {
+			continue
+		}
+		for _, raw := range asSlice(t, ms.step["assertions"], "assertions") {
+			a := asMap(t, raw, "assertion")
+			if a["pointer"] != "/rows" {
+				continue
+			}
+			found++
+			if a["kind"] != "json-pointer" || a["exists"] != true {
+				t.Fatal("unsupported problem rows assertion")
+			}
+			rows := asSlice(t, a["equals"], "problem rows")
+			if len(rows) != 18 {
+				t.Fatal("problem rows must contain18codes")
+			}
+			seen := map[ReadProblemCode]bool{}
+			for _, raw := range rows {
+				r := asSlice(t, raw, "row")
+				if len(r) != 9 {
+					t.Fatal("problem row arity")
+				}
+				code := ReadProblemCode(asString(t, r[0], "code"))
+				if seen[code] || !code.Valid() {
+					t.Fatal("duplicate/unsupported problem code")
+				}
+				seen[code] = true
+				var challenge any
+				if code == CodeUnauthenticated {
+					challenge = `Bearer realm="bdp-conformance"`
+				}
+				want := []any{string(code), string(code.Family()), json.Number(strconv.Itoa(code.Status())), string(code.Retry()), code.Type(), challenge, true, ProblemMediaType, true}
+				if !reflect.DeepEqual(r, want) {
+					t.Errorf("%s tuple got %v want %v", code, r, want)
+				}
+			}
+			if len(seen) != len(readProblemTable) {
+				t.Fatal("positional table does not cover runtime table")
+			}
+		}
+	}
+	if found != 1 {
+		t.Fatalf("expected exactly one /rows oracle, got%d", found)
+	}
+}
+
+func TestMatrixResponseReferencesResolve(t *testing.T) {
+	manifest := asMap(t, loadJSON(t, "conformance/read-v1.matrix.json"), "matrix")
+	for _, raw := range asSlice(t, manifest["scenarios"], "scenarios") {
+		scenario := asMap(t, raw, "scenario")
+		id := asString(t, scenario["id"], "id")
+		steps := []any{}
+		for _, key := range []string{"requests", "actions"} {
+			if x, ok := scenario[key]; ok {
+				steps = append(steps, asSlice(t, x, key)...)
+			}
+		}
+		seen := map[string]bool{}
+		for _, raw := range steps {
+			step := asMap(t, raw, "step")
+			stepID := asString(t, step["id"], "step id")
+			if seen[stepID] {
+				t.Fatalf("%s duplicate step %s", id, stepID)
+			}
+			check := func(v any) {
+				ref := asString(t, v, "response ref")
+				if !seen[ref] {
+					t.Errorf("%s/%s refers to unavailable response %s", id, stepID, ref)
+				}
+			}
+			for _, v := range asMapOrEmpty(t, step["headers"]) {
+				if h, ok := v.(map[string]any); ok {
+					if ref, ok := h["etagFrom"]; ok {
+						check(ref)
+					}
+				}
+			}
+			for _, raw := range asSlice(t, step["assertions"], "assertions") {
+				a := asMap(t, raw, "assertion")
+				if a["kind"] == "response-metadata-equals" {
+					check(a["request"])
+				}
+				if ref, ok := a["presentIfResponse"]; ok {
+					check(ref)
+				}
+			}
+			seen[stepID] = true
+		}
+	}
 }

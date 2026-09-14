@@ -269,7 +269,7 @@ func TestStrictDecodeHoldsEveryMemberToItsJSONType(t *testing.T) {
 		{"slice from object", `{}`, &TypeIDs{}, "expected a JSON array, got object"},
 		{"string from number", `1`, new(string), "expected a JSON string, got number"},
 		{"int from string", `"1"`, new(int), "expected a JSON integer, got string"},
-		{"unsupported kind", `true`, new(bool), "cannot decode a JSON boolean into bool"},
+		{"bool from number", `1`, new(bool), "expected a JSON boolean, got number"},
 		{"unsupported float", `1.5`, new(float64), "cannot decode a JSON number into float64"},
 	} {
 		wantDecodeError(t, Unmarshal([]byte(tc.doc), tc.target), tc.name, tc.mention)
@@ -316,7 +316,7 @@ func TestReadDiscoveryValidateEnforcesTheBundleConstants(t *testing.T) {
 	}
 	// The spec's own Read discovery example validates.
 	var spec ReadDiscovery
-	if err := Unmarshal(readSchemaFile(t, "spec-examples/1662-scope-discovery-and-human-documentation-1.json"), &spec); err != nil {
+	if err := Unmarshal(readSchemaFile(t, "spec-examples/2189-scope-discovery-and-human-documentation-1.json"), &spec); err != nil {
 		t.Fatal(err)
 	}
 	if err := spec.Validate(); err != nil {

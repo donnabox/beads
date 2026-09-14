@@ -469,3 +469,46 @@ decoder. This correction retains their validation and marshaling cases and
 does not claim independent decoder agreement. Its local validation receipts
 and current review status belong in the PR record, not in these historical
 engine results.
+
+## Current Read wire-input adoption — 2026-09-14
+
+The [dated wire adoption record](BDP_P0_WIRE_ADOPTION_20260914.md) records
+BDP `53bdbd03136875f952af184fce7b3c7af8f74e96` on Beads base
+`8af1e139770e3adbd81013558ce989a869ab99af`, including complete current input
+identities and preserved old provenance. This contract-only successor carries
+the full 153-definition upstream artifact, 42 named Read DTO bindings and
+49 current Read catalog/matrix rows. It grants no public HTTP, History or
+write capability. The earlier source and engine-probe records remain historical.
+
+Local affected-package validation used the repository runner with the exact
+pinned spec bytes supplied through `BDP_SPEC_AT_PIN`:
+
+```sh
+BDP_SPEC_AT_PIN=/path/to/verified/bdp-at-pin.md ./scripts/test.sh \
+  ./internal/httpapi ./internal/httpapi/apigen \
+  ./internal/httpapi/bdpwire ./internal/httpapi/spec -count=1 -json
+```
+
+The final run passed 65 top-level / 264 including-subtest `bdpwire` tests,
+zero skips (0.744s), and 495 top-level / 1,525 including-subtest `httpapi`
+tests, with one skip (3.904s). The skipped
+`TestAlternateLoopbackBindAnswersItsOwnClients` could not bind `127.0.0.2`
+on this host. `apigen` and `spec` have no test files. All 13 spec fences
+reproduced from blob `2532f6f7a1761ba3954894bcdb5070675f4c8d36`.
+The 42-case History illustration census, 22 selected wire round-trips and
+20 explicitly excluded cases are DTO checks, not observed History behavior.
+
+The first affected run had five failures: the carrier precheck changed
+inherited nested duplicate/truncation diagnostics; an obsolete unsupported-bool
+tripwire conflicted with the new required boolean shape; and the old erased
+pointer schema probe did not recognize the new five-code History guard.
+The diagnostics were restored, the boolean test now checks the wrong JSON kind
+while positive History boolean cases execute, and the pointer probe preserves
+its exact erased guard while checking the additional History enum guard.
+Subsequent affected runs passed. No legacy fixture selection or coverage floor
+was removed. Logs and file-hash/source receipts accompany the source handoff.
+
+Independent source review, full repository lint/baseline, API regeneration drift
+and publication/integration gates belong to the root's subsequent exact-source
+validation. They are not claimed by this affected-package result. No engine,
+SQL or graph-ownership probe was executed for this wire adoption.
