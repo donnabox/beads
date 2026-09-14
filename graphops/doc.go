@@ -6,8 +6,9 @@
 // the third plane over the workspace: Issues and Dependencies are one graph,
 // memories are a keyed namespace, and this is the BEAD GRAPH the Bead Protocol
 // (BDP) serves — Beads and Links under Type Descriptors inside one Scope,
-// pinned to the BDP draft at commit 0b7d86e7 (engdocs/BDP_BEAD_GRAPH_PLAN.md
-// §0). Nothing here projects an Issue; the two planes join later, elsewhere.
+// with P0 wire input pinned to the merged Read foundation at 19923f5b
+// (engdocs/BDP_BEAD_GRAPH_PLAN.md §0 preserves the original 0b7d86e7 input
+// as history). Nothing here projects an Issue; the two planes join later.
 //
 // THREE LAYERS, STRICTLY SEPARATED. Values (types.go) carry unexported fields
 // and are built only by constructors that enforce the laws, so a value that
@@ -19,8 +20,8 @@
 // contract, and the ledger's hash chain — stated once and table-tested once,
 // so no storage leg and no front door owns a private copy. Roles (reader.go,
 // types_role.go, identity.go) are the six questions a caller can ask of a
-// store, each behind its own BeadGraph* accessor on storage.Storage; a Writer
-// is P3 and deliberately absent.
+// store, designed to sit behind BeadGraph* accessors on storage.Storage in
+// P1; a Writer is P3 and deliberately absent.
 //
 // AUTHORITY IS NEVER A PARAMETER. No request type in this package carries an
 // authority id, an epoch, an installation key, a fence or a lease: the witness
@@ -33,12 +34,14 @@
 // WHAT THIS PACKAGE IMPORTS: the standard library and
 // github.com/steveyegge/beads/beadserrors, and nothing else — enforced by the
 // graphops-leaf depguard rule in .golangci.yml and by a test here. Every
-// storage leg, the BDP handler, the wire client and cmd/bd import this
-// package, so anything it imported would be imported by all of them; and the
-// backend/ completeness guard would have to alias any internal/ type reachable
-// from it. Wire DTOs are generated from the pinned schema bundle in a separate
-// package; this package never sees them. Errors are ordinary typed Go errors,
-// and the BDP handler — and only the handler — maps them to Problem records.
+// storage leg, the future BDP handler and wire client, and cmd/bd are designed
+// to consume this package; P0 does not install those consumers. Anything it
+// imports would be imported by all of them, and the backend/ completeness
+// guard would have to alias any internal/ type reachable from it. Wire DTOs
+// are hand-written and checked against the pinned schema bundle in a separate
+// package (bdpwire/GENERATOR.md); this package never sees them. Errors are
+// ordinary typed Go errors, and the BDP handler — and only the handler — maps
+// them to Problem records.
 //
 // Where the design documents or the pinned specification are silent or
 // disagree, the code takes the most conservative reading and says so in a

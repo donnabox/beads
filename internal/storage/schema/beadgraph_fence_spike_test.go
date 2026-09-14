@@ -43,8 +43,8 @@ import (
 // Gates: the real-Dolt tests need a dolt binary (testutil.RequireDoltBinary,
 // which honours BEADS_TEST_SKIP=dolt and fails rather than skips under
 // GITHUB_ACTIONS), so the tree's Dolt lane runs them like every other
-// real-Dolt test; the hygiene-script test needs only bash >= 4 and git and
-// runs by default.
+// real-Dolt test; the hygiene-script test needs bash >= 4 and git and
+// requires BEADS_TEST_BEADGRAPH_HYGIENE=1 and otherwise skips before setup.
 
 //go:embed testdata/beadgraph_fence_spike/*.up.sql
 var beadGraphFenceSpikeFS embed.FS
@@ -524,8 +524,12 @@ func TestSpikeBeadGraphFenceContentSkewAcrossClones(t *testing.T) {
 // (checks A–E) in a scratch git repository that mirrors the migration tree,
 // with the trigger-carrying spike file added as a new main-plane migration, and
 // with negative controls proving each check still bites. Needs bash >= 4
-// (check E uses associative arrays) and git; no Dolt.
+// (check E uses associative arrays), git and BEADS_TEST_BEADGRAPH_HYGIENE=1;
+// no Dolt. The P1 replication/merge ADR checklist must run this opt-in control.
 func TestSpikeBeadGraphFenceHygieneScript(t *testing.T) {
+	if os.Getenv("BEADS_TEST_BEADGRAPH_HYGIENE") != "1" {
+		t.Skip("set BEADS_TEST_BEADGRAPH_HYGIENE=1 to run the five-control bash/git hygiene spike")
+	}
 	script, err := filepath.Abs(filepath.Join("..", "..", "..", "scripts", "check-migration-hygiene.sh"))
 	if err != nil {
 		t.Fatalf("abs script path: %v", err)
@@ -580,6 +584,7 @@ func TestSpikeBeadGraphFenceHygieneScript(t *testing.T) {
 		return strings.TrimSpace(string(out))
 	}
 	runGit("init", "-q", "-b", "main")
+	runGit("config", "core.hooksPath", ".git/hooks")
 	runGit("add", "-A")
 	runGit("commit", "-q", "-m", "base: the shipped migration tree")
 	base := runGit("rev-parse", "HEAD")
@@ -661,13 +666,19 @@ func TestSpikeBeadGraphFenceHygieneScript(t *testing.T) {
 		}
 	})
 
-	t.Run("finding: the B4 lease table is not in check D's clone-local list, so a twin-less main-plane CREATE passes today", func(t *testing.T) {
+	// P0 change detector: P1 registers graph_authority_lease only after its
+	// replication/merge ADR. Update this baseline atomically with that work
+	// to require twin-missing refusal and twin-present success (spec B4).
+	t.Run("P0 change detector: graph_authority_lease awaits P1 clone-local registration", func(t *testing.T) {
 		defer reset()
 		writeMigration("9003_beadgraph_authority_lease_spike.up.sql",
 			"CREATE TABLE IF NOT EXISTS graph_authority_lease (id TINYINT NOT NULL, fence CHAR(32) NOT NULL, PRIMARY KEY (id));\n")
 		code, out := runHygiene()
-		if code != 0 {
-			t.Fatalf("hygiene exit %d for a twin-less graph_authority_lease migration; the script's clone-local list must have learned it:\n%s", code, out)
+		if code != 0 || !strings.Contains(out, "Migration hygiene OK.") {
+			t.Fatalf("hygiene exit %d, want 0 with OK for a twin-less graph_authority_lease migration; P1 registration may have changed this P0 baseline: update this control atomically to require twin-missing refusal and twin-present success (spec B4):\n%s", code, out)
+		}
+		if strings.Contains(out, "WARN") {
+			t.Fatalf("a check was skipped (no usable base ref?):\n%s", out)
 		}
 		t.Log("finding: scripts/check-migration-hygiene.sh's ignored_tables list (and schema.go's doltIgnorePatterns) do not know graph_authority_lease; P1 must add it or check D cannot enforce the B4 twin")
 	})

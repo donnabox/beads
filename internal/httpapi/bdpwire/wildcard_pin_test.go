@@ -45,12 +45,14 @@ func TestOwnedOutgoingSumAtReadFoundationPin(t *testing.T) {
 		`{"types/local":{"max":1}}`, `{"https://\n":{"max":1}}`, `{"*":{"max":2},"*":{"max":3}}`,
 	} {
 		t.Run("reject/"+raw, func(t *testing.T) {
+			// Both public entry points reach decodeOwnedOutgoing; this checks
+			// strict dispatch and encoding/json's custom-method wiring.
 			var direct, standard OwnedOutgoingDeclarations
 			if err := Unmarshal([]byte(raw), &direct); err == nil {
 				t.Fatal("strict decode accepted invalid declaration")
 			}
 			if err := json.Unmarshal([]byte(raw), &standard); err == nil {
-				t.Fatal("JSON decode accepted invalid declaration")
+				t.Fatal("encoding/json entry point accepted invalid declaration")
 			}
 		})
 	}

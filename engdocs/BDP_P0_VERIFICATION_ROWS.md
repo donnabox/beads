@@ -39,31 +39,36 @@ folded into B2/B3/B4 and the P1 migration PR.** Nothing here sends v0 back to
 
 - `internal/storage/embeddeddolt/beadgraph_fence_spike_test.go` — row (i). `//go:build cgo`, gate `BEADS_TEST_EMBEDDED_DOLT=1` (the package's convention).
 - `internal/storage/uow/beadgraph_fence_spike_test.go` — row (ii). Gate: a `dolt` binary (`testutil.RequireDoltBinary`, which honours `BEADS_TEST_SKIP=dolt` and fails rather than skips under `GITHUB_ACTIONS`), so the tree's Dolt lane runs it like every other real-Dolt test; there is no separate opt-in.
-- `internal/storage/schema/beadgraph_fence_spike_test.go` — row (iii). Same gate for the four real-Dolt tests; the hygiene-script test needs only bash ≥ 4 and git and runs by default.
+- `internal/storage/schema/beadgraph_fence_spike_test.go` — row (iii). Same gate for the four real-Dolt tests; the hygiene-script test needs bash ≥ 4 and git, plus explicit `BEADS_TEST_BEADGRAPH_HYGIENE=1`; otherwise it skips before setup.
 - `internal/storage/schema/testdata/beadgraph_fence_spike/9001_beadgraph_fence_spike.up.sql` — the throwaway migration (B4 shape, one table, three trigger pairs), shared by all three packages. `…_variant/9001_beadgraph_fence_spike.up.sql` — same version, no trigger block (the divergent clone).
 - This report.
 
 Under `BEADS_TEST_SKIP=dolt` (the `scripts/test.sh` default) — or locally
 without a `dolt` binary — every Dolt-bound spike skips and `go test ./...`
 stays green; the embedded spike keeps its package's `BEADS_TEST_EMBEDDED_DOLT=1`
-opt-in.
+opt-in. The hygiene-script spike separately requires
+`BEADS_TEST_BEADGRAPH_HYGIENE=1`; neither Dolt availability nor the absence of
+`BEADS_TEST_SKIP=dolt` enables it.
 
 ## Rerun
 
 ```sh
-cd /Users/dbox/repos/beads-janet-beadgraph-p0   # or any checkout of branch janet-beadgraph-p0
-# row (i) — embedded engine, in-process (the package's own opt-in)
-BEADS_TEST_EMBEDDED_DOLT=1 GOFLAGS=-tags=gms_pure_go CGO_ENABLED=1 \
-  go test ./internal/storage/embeddeddolt/ -run 'TestSpikeBeadGraphFence' -count=1 -v
-# row (ii) — scratch dolt sql-server, unit-of-work leg and *sql.Tx shape (needs `dolt` on PATH)
-GOFLAGS=-tags=gms_pure_go CGO_ENABLED=1 \
-  go test ./internal/storage/uow/ -run 'TestSpikeBeadGraphFence' -count=1 -v
-# row (iii) — scratch dolt sql-server, runner, guards, skew, hygiene script, CLI bundle route
-GOFLAGS=-tags=gms_pure_go CGO_ENABLED=1 \
-  go test ./internal/storage/schema/ -run 'TestSpikeBeadGraphFence' -count=1 -v
-# what the default runner sees: Dolt-bound spikes skip, the hygiene test runs
-BEADS_TEST_SKIP=dolt GOFLAGS=-tags=gms_pure_go CGO_ENABLED=1 \
-  go test ./internal/storage/schema/ ./internal/storage/uow/ ./internal/storage/embeddeddolt/ -run 'TestSpikeBeadGraphFence' -count=1 -v
+# From a checkout containing this correction; the runner isolates test state.
+# Row (i), embedded engine (only when that engine run is intended):
+BEADS_TEST_ENV_RUN_DOLT=1 BEADS_TEST_EMBEDDED_DOLT=1 \
+  ./scripts/test.sh -run '^TestSpikeBeadGraphFenceEmbeddedLeg$' ./internal/storage/embeddeddolt -count=1 -v
+# Row (ii), scratch SQL-server tests (requires dolt):
+BEADS_TEST_ENV_RUN_DOLT=1 \
+  ./scripts/test.sh -run 'TestSpikeBeadGraphFence' ./internal/storage/uow -count=1 -v
+# Row (iii), scratch SQL-server tests plus the explicit five-control script spike:
+BEADS_TEST_ENV_RUN_DOLT=1 BEADS_TEST_BEADGRAPH_HYGIENE=1 \
+  ./scripts/test.sh -run 'TestSpikeBeadGraphFence' ./internal/storage/schema -count=1 -v
+# Script-only row: bash >= 4 and git, no Dolt requirement.
+BEADS_TEST_BEADGRAPH_HYGIENE=1 \
+  ./scripts/test.sh -run '^TestSpikeBeadGraphFenceHygieneScript$' ./internal/storage/schema -count=1 -v
+# Default runner: Dolt-bound spikes and the hygiene-script spike skip.
+env -u BEADS_TEST_ENV_RUN_DOLT -u BEADS_TEST_BEADGRAPH_HYGIENE -u BEADS_TEST_EMBEDDED_DOLT \
+  ./scripts/test.sh -run 'TestSpikeBeadGraphFence' ./internal/storage/schema ./internal/storage/uow ./internal/storage/embeddeddolt -count=1 -v
 ```
 
 Set `TMPDIR` to keep the scratch servers and temp git repos out of the default
@@ -425,7 +430,8 @@ All seven existing fence spikes were rerun on the merged base: pooled UOW
 hygiene, the five schema/migration probes, and the embedded leg. The first
 server/schema invocation deliberately left the embedded opt-in disabled;
 that one skip was then executed successfully in its own opt-in invocation.
-No final spike remained unexecuted. Commands:
+No final spike remained unexecuted. Historical commands, before the
+2026-09-12 hygiene opt-in (use the current Rerun section above today):
 
 ```sh
 BEADS_TEST_ENV_RUN_DOLT=1 TEST_RUN=TestSpikeBeadGraphFence TEST_VERBOSE=1 \
@@ -441,3 +447,25 @@ clear on `WithoutCancel` restores the fence; CLI trigger text needs the
 DELIMITER rendition; and the migration/replication checks do not acquire a
 trigger census merely by passing these probes. These observations do not
 implement a graph writer, storage fence or HTTP server.
+
+## Hygiene selection and P1 change detector — 2026-09-12
+
+The historical spike results above are preserved. The five-control bash/Git
+hygiene test now requires `BEADS_TEST_BEADGRAPH_HYGIENE=1` before it probes
+tools or creates a scratch repository; ordinary test runs skip that row.
+The P1 replication/merge ADR owner must include an explicit run with
+`BEADS_TEST_BEADGRAPH_HYGIENE=1` in the ADR checklist; default lanes skip
+this control and cannot establish its result.
+Its temporary Git repository sets a local hooks path. The fifth control
+intentionally detects P0's missing `graph_authority_lease` registration.
+When P1 registers that clone-local table after the replication/merge ADR,
+update this control atomically to require twin-missing refusal and
+twin-present success. Do not remove the registration to preserve this
+historical baseline. No migration number or engine behavior changes here.
+
+The paired strict/encoding-json DTO exercises cover decoding entry points;
+OwnedOutgoingDeclarations and ReadProblem dispatch to the same respective
+decoder. This correction retains their validation and marshaling cases and
+does not claim independent decoder agreement. Its local validation receipts
+and current review status belong in the PR record, not in these historical
+engine results.

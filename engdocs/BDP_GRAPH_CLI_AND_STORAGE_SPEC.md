@@ -1,7 +1,7 @@
 # BDP graph store — CLI and storage-interface changes, in detail
 
-**Status:** Draft v16 (W-arch) — A1–A9 and plan rulings 13–14 ruled 2026-09-07; A10 ruled 2026-09-08; P0 current-wire completion open — feat/bead-graph
-**Date:** 2026-09-10 (v15: 2026-09-09; v14: 2026-09-02)
+**Status:** Draft v17 (W-arch) — A1–A9 and plan rulings 13–14 ruled 2026-09-07; A10 ruled 2026-09-08; P0 current-wire completion open — feat/bead-graph
+**Date:** 2026-09-12 (v16: 2026-09-10; v15: 2026-09-09; v14: 2026-09-02)
 **Companions:** `BDP_BEAD_GRAPH_PLAN.md` (rulings), `BDP_GRAPH_ARCHITECTURE.md`
 (shape; its §2b lists A1–A9 and plan rulings 13–14, **ruled 2026-09-07**,
 and the A10 solo-topology amendment **ruled 2026-09-08**; every
@@ -18,15 +18,20 @@ Revision v16: 2026-09-10 formal-review correction aligns all embedded-leg
 summaries with A10 and qualifies the registry claim; plan §0a carries the
 current dependency refresh and outstanding reviewer/owner gate.
 
+Revision v17: 2026-09-12 records the P0 Read adoption and merged BDP
+Transactional/History dependencies consistently with the owning plan; no new
+contract pin, migration slot or runtime capability is selected.
+
 <a id="alignment-addendum-2026-09-09"></a>
 
-## Alignment addendum (2026-09-09, refreshed 2026-09-10)
+## Alignment addendum (2026-09-09, refreshed 2026-09-12)
 
 [Plan §0a](BDP_BEAD_GRAPH_PLAN.md#0a-current-bdp-and-versioned-beads-alignment-2026-09-09)
-records the historical pins and the 2026-09-10 refresh for both BDP #19/#20
-and Jim #6147/#6304/#6358, approved History
-direction and completion gates. The historical P0 wire pin remains explicit;
-it is not a current-write or History capability claim. Three storage/adapter
+records the historical pins and the 2026-09-12 refresh: BDP #19/#20 and
+History #30 wire/spec are merged; Jim #6304 is merged and #6147/#6358 remain
+open. History realization and completion gates remain separate. The original
+P0 pin and the adopted Read foundation at `19923f5b` remain explicit;
+neither is a current-write or History capability claim. Three storage/adapter
 boundaries follow from that reconciliation:
 
 1. P3 delete results carry the shared `deletedIdentity` schema in the
@@ -46,15 +51,16 @@ boundaries follow from that reconciliation:
    widening is prescribed, and P1 need not wait for the full P3 design. Any
    necessary later addition preserves frozen migrations and A8 source-break
    disclosure.
-3. The future approved context envelope is distinct from carried attribution
+3. The approved History context envelope is distinct from carried attribution
    and properties. Its commit-time, operation fan-out, legacy absence,
-   postimage/Event/row placement and erasure constraints need the upstream
-   closed materialization and an explicit provider mapping. Jim's existing
+   postimage/Event/row placement and erasure constraints are materialized in
+   merged #30 (`1fe8cf32`, recorded in the dated plan §0a dependency table);
+   their local adoption needs an explicit provider mapping. Jim's existing
    columns, empty-actor status and local ordinal do not supply that mapping.
 
-P0 must deliberately re-pin reviewed wire inputs and port the narrow erased-
-pointer rejection before current-wire claims, preserving other RFC 9457
-extensions. P1 rechecks merged main and the migration advisory before claiming
+Plan §0 records P0's adoption of the Read foundation and narrow erased-pointer
+rejection, preserving other RFC 9457 extensions. Subsequent wire adoption
+remains deliberate; those dated checks do not establish current serving. P1 rechecks merged main and the migration advisory before claiming
 actual slots; 0067 is now merged and 0068 is reserved by Jim's still-open
 Phase 2. [Plan §7's owner gates](BDP_BEAD_GRAPH_PLAN.md#current-wire-and-profile-adoption-gates-2026-09-09)
 assign these exits, shared negotiation/conditional contracts and their P2
@@ -599,10 +605,11 @@ ever keyed `"*"`, and `Owns("*")` is false (it is a key, not a Type). Landed
 on the P0 branch (1cbb5e6e3): `OwnedLinkDecl` is a sum —
 `NewWildcardOwnedLinkDecl(max)`, `Wildcard()`, `WildcardOwnedLinkKey` — and
 `ValidateTypeURL("*")` is refused by name everywhere a Type URL is expected.
-The wire stays at the pin: the pinned bundle's `propertyNames:
+**Historical wire description, superseded by the §0 `19923f5b` adoption:**
+the original pinned bundle's `propertyNames:
 absoluteHttpUrl` on `ownsOutgoing` and `ownedLinks` refuses `"*"` (bdpwire's
 decoder holds member shape, not key grammar; the test-only tripwire
-`TestWildcardOwnedLinkKeyIsNotInThePinnedBundle` retires with the pin bump).
+`TestWildcardOwnedLinkKeyIsNotInThePinnedBundle` was retired by that adoption).
 
 ### B3. Bodies, the witness manager, and legs
 
@@ -764,16 +771,20 @@ check C forbids editing a shipped file (a git-diff check), and the runtime
 **no `NOW()`/`UUID()`/`RAND()`** in migration SQL (check B) — timestamps and
 ids come from Go; real-Dolt tests for anything a `sqlmock` echo cannot
 exercise; DDL is not transactional across statements, so each `CREATE` is
-guarded and resumable. **Initial P1 scope: eight replicated tables in five files**, proposed as **0069 or later**: slot
+guarded and resumable. **Initial P1 scope: eight replicated tables in five files**, with unresolved
+`NNNN` migration slots: slot
 0067 is occupied by the merged versioned-beads Phase 1 migration (`issue_versions`,
 the `store_epoch` singleton, `issues.current_revision`); slot 0068 is reserved
 by its still-open Phase 2 (`0068_add_attribution_status`,
 `issue_versions.attribution_status` and byte-preserving `durable_state` LONGBLOB
 storage; the `version_id` and participation
 steps remain deferred at the §0a pin),
-and our claim is registered in the CLAIMED.md registry on the still-open
-#6149 branch (row added 2026-09-07 at c53ef8810 as "0069 and later"),
-not on main; the actual P1 migration slot must be rechecked —
+and the historical graph claim is on the still-open #6149 branch, not on
+main (row added 2026-09-07 at c53ef8810 as "0069 and later"). Its current
+rows propose Phase 3 at 0069–0070 and graph at 0071 if Donna agrees, while
+the graph row still says 0069+ (exact source in plan §0a). The overlap is
+unresolved and this document selects no slot; P1 must recheck after its ADR
+and owner coordination —
 `NNNN_beadgraph_scope.up.sql` (scope, history), `NNNN_beadgraph_types.up.sql`,
 `NNNN_beadgraph_beads.up.sql`, `NNNN_beadgraph_links.up.sql`,
 `NNNN_beadgraph_ledger.up.sql` (events, counter, allocations) — plus the
@@ -1246,6 +1257,6 @@ refused whole, clones take remote state wholesale (B3, B7, C2).
 A10 (solo topology, B), Part D.7 (fence census, A), the
 `authority_epoch` spelling, and the properties-are-opaque amendment (bdp#1
 item 5) ruled 2026-09-08. **These rulings are settled.** Full A10 text is in
-architecture §2b; current BDP #19/#20 and Jim dependencies are in the plan
-§0a refresh of 2026-09-10. Local solo verbs do not authorize embedded HTTP
+architecture §2b; current BDP #19/#20, History #30 and Jim dependencies are in the plan
+§0a refresh of 2026-09-12. Local solo verbs do not authorize embedded HTTP
 serving.
