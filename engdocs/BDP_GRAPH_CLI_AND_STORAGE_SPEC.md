@@ -401,8 +401,10 @@ a copied database creates a second authority.
   transition (refused while `BDP_SCOPE_URL` is exported).
 - **`bd --graph-mode link restore`**: runs after a database restore (`bd backup restore`
   — also reached by `bd bootstrap`'s restore action — calls
-  `Admin.MarkUnverified` after `RestoreDatabase`, before its commit; a
-  no-op without a witness). Exempt from the head check; precondition
+  durable `Admin.MarkUnverified` before invoking `RestoreDatabase` for
+  this workspace; marker persistence failure prevents the restore, and
+  an absent witness is a no-op. See the [replication ADR](BDP_GRAPH_REPLICATION_ADR.md)
+  for target identity and ambiguity checks). Exempt from the head check; precondition
   lineage match under the exclusive gate; branches on `LedgerDurability`:
   `in-state` (Dolt, v0) → requires a ledger snapshot reaching the witness's
   `{seq, hash}` (`--ledger <file>`, applied through `LedgerApply`) to show
@@ -667,7 +669,11 @@ func ReadBeadInTx(ctx, tx DBTX, w authority.Witness, claim graphcap.LeaseClaim, 
   head an exact prefix?"); after the scoped commit `SetPhase(local_committed, op_commit)`;
   after the push `published`; after `config.yaml` `config_written`; then
   `Finalize` writes the new witness and clears the record. **Recovery** on
-  `Load` never trusts the phase alone: it first asks the ledger whether
+  `Load` never trusts the phase alone. An `adopt` transition uses the
+  kind-specific complete pre/source-state evidence in [ADR section 5](BDP_GRAPH_REPLICATION_ADR.md#5-replica-wholesale-selection-and-explicit-later-mint-adoption),
+  like `LedgerApply`; missing ledger `op_id` alone never permits abandoning
+  an adopt or rearming the old witness. For ordinary event-producing
+  transitions, it first asks the ledger whether
   `op_id` is present (a crash between the commit and the phase write leaves
   `begun` with the operation committed — then it is `local_committed`); with
   no local operation → `Abandon`; with a local operation on a shared
@@ -1013,6 +1019,16 @@ enforces both bounds at acceptance (P0 commit ec692e146).
   violating it then passes lint** — which proves the entry is what fails
   the violation.
 
+### Replication implementation gate
+
+[The replication ADR](BDP_GRAPH_REPLICATION_ADR.md) records obligations for the
+transport/routes known at the pinned baseline (complete call-site pairing
+remains E7), conflict prescreen, explicit later-mint adoption,
+and acceptance program under ruling 14. E1–E8 remain open, including actual
+shared-database exclusion, selected-state comparison, safe recovery and
+anti-reuse preservation. Its existence does not complete P1 or permit graph
+migration merges. No replication command is implemented by this documentation.
+
 ### B7. Conformance
 
 - Families: `beadgraph_reader_contract.go`, `beadgraph_types_contract.go`
@@ -1200,8 +1216,10 @@ backends; a registered backend's serving behavior (rows absent).
   reads against the tracking ref) before merging and the graph-table
   exclusion for `--strategy` (ruling 14); gate output is byte-identical
   unless a graph delta is refused.
-- **`bd backup restore`** calls `Admin.MarkUnverified` after
-  `RestoreDatabase`, before its commit (no-op without a witness).
+- **`bd backup restore`** durably calls `Admin.MarkUnverified` before
+  invoking `RestoreDatabase` for this workspace (no-op without a witness).
+  Persistence failure prevents invocation; the [replication ADR](BDP_GRAPH_REPLICATION_ADR.md)
+  defines target identity and ambiguity checks, including matching-head restores.
 - **Root store policy** gains `commandPolicy` (Part A), and
   `commandNeedsExclusiveGate` in `cmd/bd/workspace_gate.go` — today true only
   for `backup restore` — learns `bd --graph-mode link types install`, `restore`, and
