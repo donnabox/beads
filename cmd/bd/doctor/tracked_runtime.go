@@ -2,6 +2,9 @@ package doctor
 
 import (
 	"fmt"
+	"github.com/steveyegge/beads/internal/beadsignore"
+	"github.com/steveyegge/beads/internal/utils"
+	"os"
 	"os/exec"
 	"path/filepath"
 	"strings"
@@ -17,7 +20,7 @@ import (
 //
 // Note: interactions.jsonl is intentionally omitted — it may be versioned
 // per bd audit policy (see `bd audit` help text).
-var trackedRuntimePatterns = []string{
+var trackedRuntimePatterns = append([]string{
 	// Lock files
 	"*.lock",
 	"*.pid.lock",
@@ -53,7 +56,7 @@ var trackedRuntimePatterns = []string{
 	"ephemeral.sqlite3-journal",
 	"ephemeral.sqlite3-wal",
 	"ephemeral.sqlite3-shm",
-}
+}, beadsignore.GraphPatterns()...)
 
 // trackedRuntimeDirPrefixes are directory prefixes under .beads/ that should
 // never be tracked. Any file whose relative path starts with one of these
@@ -69,6 +72,7 @@ var trackedRuntimeDirPrefixes = []string{
 var sensitiveFileNames = []string{
 	".beads-credential-key",
 	"credential-key",
+	beadsignore.WitnessName,
 }
 
 // corruptBackupPattern matches corrupt backup directories created by
@@ -81,11 +85,14 @@ const corruptBackupDirFragment = ".corrupt.backup/"
 // current .beads/.gitignore patterns existed.
 // repoPath is the project root directory.
 func CheckTrackedRuntimeFiles(repoPath string) DoctorCheck {
-	beadsDir := ResolveBeadsDirForRepo(repoPath)
-	repoRoot := resolvedBeadsRepoRoot(repoPath)
+	beadsDir, locationErr := trackedRuntimeDirectory(repoPath)
+	if locationErr != nil {
+		return DoctorCheck{Name: "Tracked Runtime Files", Status: StatusError, Message: "Cannot resolve runtime directory", Category: CategoryGit}
+	}
+	repoRoot := filepath.Dir(beadsDir)
 
 	// Get all files tracked by git under .beads/
-	cmd := exec.Command("git", "ls-files", ".beads") // #nosec G204 - args are constructed from known parts
+	cmd := exec.Command("git", "--literal-pathspecs", "ls-files", "-z", "--", filepath.Base(beadsDir)) // #nosec G204 - args are constructed from known parts
 	cmd.Dir = repoRoot
 	output, err := cmd.Output()
 	if err != nil {
@@ -97,7 +104,7 @@ func CheckTrackedRuntimeFiles(repoPath string) DoctorCheck {
 		}
 	}
 
-	trackedFiles := strings.TrimSpace(string(output))
+	trackedFiles := string(output)
 	if trackedFiles == "" {
 		return DoctorCheck{
 			Name:     "Tracked Runtime Files",
@@ -110,8 +117,7 @@ func CheckTrackedRuntimeFiles(repoPath string) DoctorCheck {
 	var flagged []string
 	var hasSensitive bool
 
-	for _, line := range strings.Split(trackedFiles, "\n") {
-		line = strings.TrimSpace(line)
+	for _, line := range strings.Split(trackedFiles, "\x00") {
 		if line == "" {
 			continue
 		}
@@ -124,6 +130,10 @@ func CheckTrackedRuntimeFiles(repoPath string) DoctorCheck {
 
 		if shouldFlagTrackedFile(rel) {
 			flagged = append(flagged, line)
+
+			if beadsignore.Sensitive(rel) {
+				hasSensitive = true
+			}
 
 			// Check for sensitive files
 			base := filepath.Base(rel)
@@ -148,7 +158,7 @@ func CheckTrackedRuntimeFiles(repoPath string) DoctorCheck {
 	message := fmt.Sprintf("%d runtime/sensitive file(s) tracked by git", len(flagged))
 	if hasSensitive {
 		status = StatusError
-		message = fmt.Sprintf("%d tracked file(s) include sensitive data (credential key)", len(flagged))
+		message = fmt.Sprintf("%d tracked file(s) include sensitive data (credential key or authority witness)", len(flagged))
 	}
 
 	detail := strings.Join(flagged, ", ")
@@ -170,6 +180,9 @@ func CheckTrackedRuntimeFiles(repoPath string) DoctorCheck {
 // or sensitive file that should not be tracked by git.
 func shouldFlagTrackedFile(rel string) bool {
 	base := filepath.Base(rel)
+	if beadsignore.Sensitive(rel) {
+		return true
+	}
 
 	// Check sensitive filenames anywhere in the tree
 	for _, sensitive := range sensitiveFileNames {
@@ -208,25 +221,27 @@ func shouldFlagTrackedFile(rel string) bool {
 // FixTrackedRuntimeFiles untracks runtime/sensitive files from git.
 // repoPath is the project root directory.
 func FixTrackedRuntimeFiles(repoPath string) error {
-	beadsDir := ResolveBeadsDirForRepo(repoPath)
-	repoRoot := resolvedBeadsRepoRoot(repoPath)
+	beadsDir, locationErr := trackedRuntimeDirectory(repoPath)
+	if locationErr != nil {
+		return locationErr
+	}
+	repoRoot := filepath.Dir(beadsDir)
 
 	// Get all files tracked by git under .beads/
-	cmd := exec.Command("git", "ls-files", ".beads") // #nosec G204 - args are constructed from known parts
+	cmd := exec.Command("git", "--literal-pathspecs", "ls-files", "-z", "--", filepath.Base(beadsDir)) // #nosec G204 - args are constructed from known parts
 	cmd.Dir = repoRoot
 	output, err := cmd.Output()
 	if err != nil {
 		return nil // Not a git repo, nothing to do
 	}
 
-	trackedFiles := strings.TrimSpace(string(output))
+	trackedFiles := string(output)
 	if trackedFiles == "" {
 		return nil
 	}
 
 	var toUntrack []string
-	for _, line := range strings.Split(trackedFiles, "\n") {
-		line = strings.TrimSpace(line)
+	for _, line := range strings.Split(trackedFiles, "\x00") {
 		if line == "" {
 			continue
 		}
@@ -246,7 +261,7 @@ func FixTrackedRuntimeFiles(repoPath string) error {
 	}
 
 	// Untrack files (keeps local copies)
-	args := append([]string{"rm", "--cached", "--"}, toUntrack...)
+	args := append([]string{"--literal-pathspecs", "rm", "--cached", "--"}, toUntrack...)
 	cmd = exec.Command("git", args...) // #nosec G204 - args are constructed from known parts
 	cmd.Dir = repoRoot
 	if out, err := cmd.CombinedOutput(); err != nil {
@@ -254,4 +269,14 @@ func FixTrackedRuntimeFiles(repoPath string) error {
 	}
 
 	return nil
+}
+
+// Runtime hygiene follows the explicit storage location, including a directory
+// whose basename is not .beads. Other repository-relative doctor checks keep
+// their existing resolution policy.
+func trackedRuntimeDirectory(repoPath string) (string, error) {
+	if explicit := os.Getenv("BEADS_DIR"); explicit != "" {
+		return utils.CanonicalizeExistingPath(explicit)
+	}
+	return ResolveBeadsDirForRepo(repoPath), nil
 }

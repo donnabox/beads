@@ -931,6 +931,17 @@ table's hash within it keys the descriptor cache.
 `source_path`/`target_*` are immutable after insert.
 
 **The witness file: `.beads/graph-authority.local.json`.**
+
+The private implementation draft uses one bounded versioned envelope for the active
+witness and any pending operation, preserving prior installation provenance.
+Plain Load is a diagnostic read and does not perform recovery or grant authority;
+assertions refuse pending/unverified state. Explicit administrative recovery uses
+fresh provider evidence under the same held guard. The SQL-free manager and its
+recording filesystem tests do not qualify an engine, a production evidence/config
+adapter, restore dispatch, remote publication, or undo. Its temporary files
+(`.~graph-authority.local.json.*`) are sensitive ignored residue, never recovery
+candidates.
+
 `{installation_key, scope_url, authority_id, epoch, ledger_seq,
 ledger_hash, state_version, state_commit, unverified, granted_at,
 pending?}`. Written only by the manager (B3). What each operation does to
