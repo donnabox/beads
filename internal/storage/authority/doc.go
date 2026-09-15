@@ -1,6 +1,6 @@
-// Package authority provides the SQL-free installation identity primitive for
-// future graph authority. It has no production caller and creates no Scope,
-// witness, lease, or engine lock. Its permanent application sidecar serializes
+// Package authority provides private SQL-free installation identity and witness
+// file primitives for future graph authority. Neither has a production caller.
+// They create no Scope, lease, or engine lock. The identity sidecar serializes
 // cooperating ID creators/readers, including durability repair on existing IDs.
 //
 // The ID is 64 lowercase hex characters and LF. Its key hashes those characters,
@@ -39,4 +39,12 @@
 // returns no key; it does not derive a key from a best-effort fallback. Configuration
 // relocation can change the default ID location; following the existing resolver
 // does not guarantee identity continuity across that relocation.
+//
+// The witness manager stores a bounded, closed envelope under a permanent guard.
+// Plain Load is diagnostic; it never recovers, grants authority, or creates a lock.
+// Explicit administration uses fresh, request-bound provider facts and retained
+// pending records. Recording tests exercise this orchestration, not engine truth.
+// No production evidence/config adapter, restore hook, or remote publication is
+// installed. Unverified remains sticky until a separate authorized clear proof.
+// Temporary witness files are sensitive but inert, never recovery candidates.
 package authority
