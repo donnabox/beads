@@ -202,6 +202,7 @@ type processPipes struct {
 type generation struct {
 	mu                 sync.Mutex
 	cmd                *exec.Cmd
+	process            processOwner
 	pipes              processPipes
 	sequence           uint64
 	expected           frame
@@ -212,7 +213,6 @@ type generation struct {
 	stopOnce           sync.Once
 	done, waitDone     chan struct{}
 	waitResult         error
-	events             []string
 	stdout, stderr     logTail
 	workers            [4]chan struct{}
 	cancel             context.CancelFunc
@@ -225,12 +225,31 @@ type controller struct {
 	mu       sync.Mutex
 	current  *generation
 	sequence uint64
+	// A scoped test decorator observes the real owned process boundaries.
+	// Production leaves it nil; there is no package-global hook or alternate owner.
+	observe func(processOwner) processOwner
 }
 
-func (c *controller) start(ctx context.Context, a admitted, args []string) (*generation, error) {
-	return c.startWithTiming(ctx, a, args, productionTiming)
+type processOwner interface {
+	Signal(os.Signal) error
+	Kill() error
+	Wait() error
 }
-func (c *controller) startWithTiming(ctx context.Context, a admitted, args []string, t timing) (*generation, error) {
+type cmdOwner struct{ cmd *exec.Cmd }
+
+func (p cmdOwner) Signal(s os.Signal) error { return p.cmd.Process.Signal(s) }
+func (p cmdOwner) Kill() error              { return p.cmd.Process.Kill() }
+func (p cmdOwner) Wait() error              { return p.cmd.Wait() }
+
+func childArguments(a admitted, sequence uint64) []string {
+	args := append([]string(nil), a.argv...)
+	return append(args, "--managed-protocol=1", "--generation="+strconv.FormatUint(sequence, 10))
+}
+
+func (c *controller) start(ctx context.Context, a admitted) (*generation, error) {
+	return c.startWithTiming(ctx, a, productionTiming)
+}
+func (c *controller) startWithTiming(ctx context.Context, a admitted, t timing) (*generation, error) {
 	c.mu.Lock()
 	defer c.mu.Unlock()
 	if c.current != nil || c.sequence == ^uint64(0) {
@@ -246,15 +265,17 @@ func (c *controller) startWithTiming(ctx context.Context, a admitted, args []str
 		return nil, err
 	}
 	c.sequence++
-	childArgs := append([]string(nil), args...)
-	childArgs = append(childArgs, "--managed-protocol=1", "--generation="+strconv.FormatUint(c.sequence, 10))
 	g := &generation{sequence: c.sequence, time: t, stop: make(chan struct{}), done: make(chan struct{}), waitDone: make(chan struct{})}
 	g.expected = frame{Protocol: 1, Generation: g.sequence, Profile: a.profile, Config: a.config, Registration: a.registration}
-	cmd, pipes, err := spawn(a, childArgs)
+	cmd, pipes, err := spawn(a, c.sequence)
 	if err != nil {
 		return nil, err
 	}
 	g.cmd = cmd
+	g.process = cmdOwner{cmd}
+	if c.observe != nil {
+		g.process = c.observe(g.process)
+	}
 	g.pipes = pipes
 	g.expected.Socket = pipes.listener.Addr().String()
 	c.current = g
@@ -427,14 +448,11 @@ func (g *generation) cleanup(cause error) error {
 	}
 	// This coordinator is the ONLY signaller. Wait has not started, including
 	// when the report pipe already reached EOF. No goroutine uses CommandContext.
-	g.events = append(g.events, "term")
-	result = errors.Join(result, signalTerm(g.cmd.Process))
+	result = errors.Join(result, signalTerm(g.process))
 	timer := time.NewTimer(g.time.grace)
 	<-timer.C
-	g.events = append(g.events, "kill")
-	result = errors.Join(result, g.cmd.Process.Kill())
-	g.events = append(g.events, "signals-ended", "wait")
-	go func() { g.waitResult = g.cmd.Wait(); close(g.waitDone) }()
+	result = errors.Join(result, g.process.Kill())
+	go func() { g.waitResult = g.process.Wait(); close(g.waitDone) }()
 	// Nothing after this line may signal, even if waiting exceeds our envelope.
 	g.cancel()
 	for _, f := range []*os.File{g.pipes.report, g.pipes.out, g.pipes.stderr} {

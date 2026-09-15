@@ -40,10 +40,14 @@ const (
 	maxRetainedBytes    = 8 << 20
 	maxEnvironment      = 64
 	maxEnvironmentBytes = 16 << 10
+	maxSecurityRoots    = 64
+	maxInventoryAnchors = 256
+	maxArguments        = 64
+	maxArgumentBytes    = 16 << 10
 	admissionDuration   = 10 * time.Second
 )
 
-type budget struct{ candidates, entries, files, sources, nodes, strings, paths, retained, environment, environmentBytes int64 }
+type budget struct{ candidates, entries, files, sources, nodes, strings, paths, retained, environment, environmentBytes, securityRoots, inventoryAnchors, arguments, argumentBytes int64 }
 
 func charge(used *int64, n, limit int64, unit string) error {
 	if n < 0 || *used < 0 || n > limit || *used > limit-n {
@@ -68,8 +72,8 @@ type directoryInput struct {
 	Entries []string `json:"entries"`
 }
 type environmentInput struct {
-	Name  string `json:"name"`
-	Value string `json:"value"`
+	Name string `json:"name"`
+	Path string `json:"path"`
 }
 type description struct {
 	Version          int                `json:"version"`
@@ -82,6 +86,28 @@ type description struct {
 	Databases        []databaseInput    `json:"databases"`
 	Directories      []directoryInput   `json:"directories"`
 	Environment      []environmentInput `json:"environment"`
+	Argv             []string           `json:"argv"`
+}
+
+func admitArguments(args []string, b *budget) ([]string, error) {
+	var admitted []string
+	for _, arg := range args {
+		if err := charge(&b.arguments, 1, maxArguments, "argument occurrences"); err != nil {
+			return nil, err
+		}
+		if err := charge(&b.argumentBytes, int64(len(arg))+1, maxArgumentBytes, "argument bytes"); err != nil {
+			return nil, err
+		}
+		if err := charge(&b.retained, int64(len(arg))+1, maxRetainedBytes, "arguments"); err != nil {
+			return nil, err
+		}
+		key, _, _ := strings.Cut(arg, "=")
+		if strings.ContainsRune(arg, 0) || arg == "--" || key == "--managed-protocol" || key == "--generation" {
+			return nil, errInput
+		}
+		admitted = append(admitted, arg)
+	}
+	return admitted, nil
 }
 
 func decodeDescription(raw []byte, b *budget) (description, error) {
@@ -340,7 +366,7 @@ func exactObject(raw []byte, allowed ...string) (map[string]json.RawMessage, err
 	return fields, nil
 }
 func validateDescriptionFields(raw []byte) error {
-	fields, err := exactObject(raw, "version", "executable", "executable_sha256", "profile_sha256", "cwd", "security_roots", "sources", "databases", "directories", "environment")
+	fields, err := exactObject(raw, "version", "executable", "executable_sha256", "profile_sha256", "cwd", "security_roots", "sources", "databases", "directories", "environment", "argv")
 	if err != nil {
 		return err
 	}
@@ -351,7 +377,7 @@ func validateDescriptionFields(raw []byte) error {
 		{"sources", []string{"path", "sha256"}},
 		{"databases", []string{"name", "root", "default_branch"}},
 		{"directories", []string{"path", "entries"}},
-		{"environment", []string{"name", "value"}},
+		{"environment", []string{"name", "path"}},
 	} {
 		value, ok := fields[shape.name]
 		if !ok {

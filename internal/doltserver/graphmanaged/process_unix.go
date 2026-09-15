@@ -16,12 +16,25 @@ func ownedFile(info os.FileInfo) bool {
 	st, ok := info.Sys().(*syscall.Stat_t)
 	return ok && int(st.Uid) == os.Geteuid()
 }
+func trustedOwner(info os.FileInfo) bool {
+	st, ok := info.Sys().(*syscall.Stat_t)
+	return ok && (st.Uid == 0 || int(st.Uid) == os.Geteuid())
+}
+func protectedArtifact(info os.FileInfo) bool {
+	return info.Mode()&os.ModeSymlink == 0 && info.Mode().Perm()&0022 == 0 && trustedOwner(info)
+}
+func trustedAncestor(info os.FileInfo) bool {
+	return info.IsDir() && info.Mode()&os.ModeSymlink == 0 && trustedOwner(info) && (info.Mode().Perm()&0022 == 0 || info.Mode()&os.ModeSticky != 0)
+}
+func trustedMutableDirectory(info os.FileInfo) bool {
+	return info.IsDir() && info.Mode()&os.ModeSymlink == 0 && info.Mode().Perm()&0022 == 0 && ownedFile(info)
+}
 func trustedDirectory(path string) (os.FileInfo, error) {
 	info, err := os.Lstat(path)
 	if err != nil {
 		return nil, err
 	}
-	if !info.IsDir() || info.Mode()&os.ModeSymlink != 0 || info.Mode().Perm()&0022 != 0 || !ownedFile(info) {
+	if !trustedMutableDirectory(info) {
 		return nil, errInput
 	}
 	return info, nil
@@ -44,9 +57,9 @@ func openKind(path string, directory bool) (*os.File, error) {
 }
 func openRegular(path string) (*os.File, error)   { return openKind(path, false) }
 func openDirectory(path string) (*os.File, error) { return openKind(path, true) }
-func signalTerm(process *os.Process) error        { return process.Signal(syscall.SIGTERM) }
+func signalTerm(process processOwner) error       { return process.Signal(syscall.SIGTERM) }
 
-func spawn(a admitted, args []string) (cmd *exec.Cmd, p processPipes, result error) {
+func spawn(a admitted, sequence uint64) (cmd *exec.Cmd, p processPipes, result error) {
 	owned := []*os.File{}
 	defer func() {
 		for _, f := range owned {
@@ -97,7 +110,7 @@ func spawn(a admitted, args []string) (cmd *exec.Cmd, p processPipes, result err
 	if err = reportRead.SetReadDeadline(time.Now().Add(time.Second)); err != nil {
 		return nil, p, err
 	}
-	cmd = exec.Command(a.executable, args...)
+	cmd = exec.Command(a.executable, childArguments(a, sequence)...)
 	cmd.Dir = a.cwd
 	cmd.Env = append([]string{}, a.environment...)
 	cmd.Stdin = null

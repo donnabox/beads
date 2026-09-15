@@ -14,8 +14,10 @@ import (
 	"path/filepath"
 	"strconv"
 	"strings"
+	"syscall"
 	"testing"
 	"time"
+	"unicode/utf8"
 )
 
 func encoded(p string) string { return base64.StdEncoding.EncodeToString([]byte(p)) }
@@ -48,7 +50,7 @@ func descriptionFixture(t *testing.T) (description, []byte) {
 		s := sha256.Sum256(data)
 		return hex.EncodeToString(s[:])
 	}
-	d := description{Version: 1, Executable: encoded(exe), ExecutableSHA256: digest(exe), ProfileSHA256: strings.Repeat("a", 64), Cwd: encoded(root), SecurityRoots: []string{encoded(root)}, Sources: []sourceInput{{Path: encoded(source), SHA256: digest(source)}}, Databases: []databaseInput{{Name: "graph", Root: encoded(root), Branch: "main"}}, Directories: []directoryInput{{Path: encoded(root), Entries: []string{encoded("adapter"), encoded("config")}}}, Environment: []environmentInput{{Name: "TMPDIR", Value: root}}}
+	d := description{Version: 1, Executable: encoded(exe), ExecutableSHA256: digest(exe), ProfileSHA256: strings.Repeat("a", 64), Cwd: encoded(root), Argv: []string{"--config=explicit"}, SecurityRoots: []string{encoded(root)}, Sources: []sourceInput{{Path: encoded(source), SHA256: digest(source)}}, Databases: []databaseInput{{Name: "graph", Root: encoded(root), Branch: "main"}}, Directories: []directoryInput{{Path: encoded(root), Entries: []string{encoded("adapter"), encoded("config")}}}, Environment: []environmentInput{{Name: "TMPDIR", Path: encoded(root)}}}
 	raw, err := json.Marshal(d)
 	if err != nil {
 		t.Fatal(err)
@@ -67,7 +69,7 @@ func TestAdmissionOwnedSnapshot(t *testing.T) {
 	for i := range raw {
 		raw[i] = 'x'
 	}
-	d.Environment[0].Value = "changed"
+	d.Environment[0].Path = "changed"
 	if err = a.recheck(context.Background()); err != nil {
 		t.Fatal(err)
 	}
@@ -89,7 +91,7 @@ func TestAdmissionRefusals(t *testing.T) {
 		"missing-security":  func(d *description) { d.SecurityRoots = nil },
 		"missing-candidate": func(d *description) { d.Databases = nil },
 		"ambient-HOME": func(d *description) {
-			d.Environment = append(d.Environment, environmentInput{Name: "HOME", Value: "/tmp"})
+			d.Environment = append(d.Environment, environmentInput{Name: "HOME", Path: encoded("/tmp")})
 		},
 		"extra-entry":    func(d *description) { d.Directories[0].Entries = append(d.Directories[0].Entries, encoded("unknown")) },
 		"relative":       func(d *description) { d.Executable = encoded("adapter") },
@@ -137,7 +139,7 @@ func TestLexicalBoundaries(t *testing.T) {
 	}
 }
 func TestBudgetCheckedBoundaries(t *testing.T) {
-	for name, limit := range map[string]int64{"candidates": maxCandidates, "entries": maxEntries, "files": maxFiles, "source-bytes": maxSourceBytes, "nodes": maxNodes, "strings": maxStringsBytes, "paths": maxPathsBytes, "retained": maxRetainedBytes, "environment-count": maxEnvironment, "environment-bytes": maxEnvironmentBytes} {
+	for name, limit := range map[string]int64{"candidates": maxCandidates, "entries": maxEntries, "files": maxFiles, "source-bytes": maxSourceBytes, "nodes": maxNodes, "strings": maxStringsBytes, "paths": maxPathsBytes, "retained": maxRetainedBytes, "environment-count": maxEnvironment, "environment-bytes": maxEnvironmentBytes, "security-roots": maxSecurityRoots, "inventory-anchors": maxInventoryAnchors, "arguments": maxArguments, "argument-bytes": maxArgumentBytes} {
 		t.Run(name, func(t *testing.T) {
 			used := limit - 1
 			if err := charge(&used, 1, limit, name); err != nil {
@@ -358,7 +360,7 @@ func (r *countedZeroReader) Read(p []byte) (int, error) {
 
 func TestDescriptionRejectsCaseFoldedFields(t *testing.T) {
 	_, raw := descriptionFixture(t)
-	for _, key := range []string{"version", "executable", "executable_sha256", "profile_sha256", "cwd", "security_roots", "sources", "databases", "directories", "environment", "path", "sha256", "name", "root", "default_branch", "entries", "value"} {
+	for _, key := range []string{"version", "executable", "executable_sha256", "profile_sha256", "cwd", "security_roots", "sources", "databases", "directories", "environment", "path", "sha256", "name", "root", "default_branch", "entries", "argv"} {
 		t.Run(key, func(t *testing.T) {
 			variant := bytes.Replace(raw, []byte(`"`+key+`":`), []byte(`"`+strings.ToUpper(key)+`":`), 1)
 			if bytes.Equal(variant, raw) {
@@ -443,4 +445,317 @@ func (c *cancelAfterChecks) Err() error {
 	}
 	c.remaining--
 	return nil
+}
+
+func inspectDescription(t *testing.T, d description) (admitted, error) {
+	t.Helper()
+	raw, err := json.Marshal(d)
+	if err != nil {
+		t.Fatal(err)
+	}
+	return inspect(context.Background(), raw)
+}
+
+func TestCanonicalComponentLimit(t *testing.T) {
+	if !platformSupported() {
+		t.Skip("platform intentionally unsupported")
+	}
+	p := testRoot(t)
+	count := len(strings.Split(strings.TrimPrefix(p, string(filepath.Separator)), string(filepath.Separator)))
+	for count < 257 {
+		p = filepath.Join(p, "x")
+		if err := os.Mkdir(p, 0700); err != nil {
+			t.Fatal(err)
+		}
+		count++
+		if count == 256 || count == 257 {
+			got, err := decodeCanonical(context.Background(), time.Now().Add(time.Second), encoded(p), &budget{})
+			if count == 256 && (err != nil || got != p) || count == 257 && !errors.Is(err, errBudget) {
+				t.Fatal(count, err)
+			}
+		}
+	}
+}
+
+func TestInventoryOutsideCwd(t *testing.T) {
+	if !platformSupported() {
+		t.Skip("platform intentionally unsupported")
+	}
+	for _, kind := range []string{"security", "database", "unanchored"} {
+		t.Run(kind, func(t *testing.T) {
+			d, _ := descriptionFixture(t)
+			outside := testRoot(t)
+			if kind == "security" {
+				d.SecurityRoots = append(d.SecurityRoots, encoded(outside))
+			}
+			if kind == "database" {
+				d.Databases = append(d.Databases, databaseInput{Name: "outside", Root: encoded(outside), Branch: "main"})
+			}
+			p := outside
+			for i := 1; i <= 9; i++ {
+				p = filepath.Join(p, "x")
+				if err := os.Mkdir(p, 0700); err != nil {
+					t.Fatal(err)
+				}
+				if i != 8 && i != 9 {
+					continue
+				}
+				d.Directories = []directoryInput{{Path: encoded(p)}}
+				_, err := inspectDescription(t, d)
+				if kind == "unanchored" {
+					if !errors.Is(err, errInput) {
+						t.Fatal(err)
+					}
+				} else if i == 8 && err != nil || i == 9 && !errors.Is(err, errBudget) {
+					t.Fatal(i, err)
+				}
+			}
+		})
+	}
+}
+
+func TestRootAndInventoryOccurrenceLimits(t *testing.T) {
+	if !platformSupported() {
+		t.Skip("platform intentionally unsupported")
+	}
+	for _, kind := range []string{"security", "inventory"} {
+		t.Run(kind, func(t *testing.T) {
+			d, _ := descriptionFixture(t)
+			rootBytes, _ := base64.StdEncoding.DecodeString(d.Cwd)
+			root := string(rootBytes)
+			d.Directories = nil
+			limit := 64
+			if kind == "security" {
+				d.SecurityRoots = nil
+			} else {
+				limit = 256
+			}
+			for i := 0; i < limit; i++ {
+				p := filepath.Join(root, "anchor"+strconv.Itoa(i))
+				if err := os.Mkdir(p, 0700); err != nil {
+					t.Fatal(err)
+				}
+				if kind == "security" {
+					d.SecurityRoots = append(d.SecurityRoots, encoded(p))
+				} else {
+					d.Directories = append(d.Directories, directoryInput{Path: encoded(p)})
+				}
+			}
+			if _, err := inspectDescription(t, d); err != nil {
+				t.Fatal("at limit", err)
+			}
+			// The rejected duplicate occurrence must hit its budget before alias validation.
+			if kind == "security" {
+				d.SecurityRoots = append(d.SecurityRoots, d.SecurityRoots[0])
+			} else {
+				d.Directories = append(d.Directories, d.Directories[0])
+			}
+			if _, err := inspectDescription(t, d); !errors.Is(err, errBudget) {
+				t.Fatal("over limit duplicate", err)
+			}
+		})
+	}
+}
+
+func TestDescriptionArgumentEnvelope(t *testing.T) {
+	if !platformSupported() {
+		t.Skip("platform intentionally unsupported")
+	}
+	_, raw := descriptionFixture(t)
+	var object map[string]any
+	if err := json.Unmarshal(raw, &object); err != nil {
+		t.Fatal(err)
+	}
+	for _, tt := range []struct {
+		name string
+		args []string
+		want error
+	}{
+		{"healthy", []string{"--config=/explicit/path", "positional", "--generation-other=1"}, nil},
+		{"count-at", make([]string, 64), nil},
+		{"count-over", make([]string, 65), errBudget},
+		{"bytes-at", []string{strings.Repeat("x", (16<<10)-1)}, nil},
+		{"bytes-over", []string{strings.Repeat("x", 16<<10)}, errBudget},
+		{"generation-equals", []string{"--generation=99"}, errInput},
+		{"generation-bare", []string{"--generation", "99"}, errInput},
+		{"protocol-equals", []string{"--managed-protocol=2"}, errInput},
+		{"protocol-bare", []string{"--managed-protocol", "2"}, errInput},
+		{"separator", []string{"--"}, errInput},
+		{"nul", []string{"x\x00y"}, errInput},
+	} {
+		t.Run(tt.name, func(t *testing.T) {
+			object["argv"] = tt.args
+			data, err := json.Marshal(object)
+			if err != nil {
+				t.Fatal(err)
+			}
+			_, err = inspect(context.Background(), data)
+			if tt.want == nil && err != nil || tt.want != nil && !errors.Is(err, tt.want) {
+				t.Fatal(err)
+			}
+		})
+	}
+}
+
+func TestTemporaryPathAdmissionAndRecheck(t *testing.T) {
+	if !platformSupported() {
+		t.Skip("platform intentionally unsupported")
+	}
+	for _, native := range []string{"private", "native-\xff"} {
+		t.Run(encoded(native), func(t *testing.T) {
+			d, _ := descriptionFixture(t)
+			parent := testRoot(t)
+			p := filepath.Join(parent, native)
+			if err := os.Mkdir(p, 0700); err != nil {
+				if !utf8.ValidString(native) && errors.Is(err, syscall.EILSEQ) {
+					t.Skip("host filesystem rejects native-byte name; representation covered separately")
+				}
+				t.Fatal(err)
+			}
+			d.Environment = []environmentInput{{Name: "TMPDIR", Path: encoded(p)}}
+			a, err := inspectDescription(t, d)
+			if err != nil || len(a.environment) != 1 || a.environment[0] != "TMPDIR="+p {
+				t.Fatal(a.environment, err)
+			}
+			if err = a.recheck(context.Background()); err != nil {
+				t.Fatal(err)
+			}
+			if err = os.Rename(p, p+"-old"); err != nil {
+				t.Fatal(err)
+			}
+			if err = os.Mkdir(p, 0700); err != nil {
+				t.Fatal(err)
+			}
+			if err = a.recheck(context.Background()); !errors.Is(err, errInput) {
+				t.Fatal("replaced TMPDIR admitted", err)
+			}
+		})
+	}
+	t.Run("control-before-filesystem", func(t *testing.T) {
+		for _, bad := range []string{"/missing\ncontrol", "/missing\rcontrol", "/missing\x00control", "/missing/../unclean"} {
+			d, _ := descriptionFixture(t)
+			d.Cwd = encoded("/missing-must-not-be-inspected")
+			d.Environment = []environmentInput{{Name: "TMPDIR", Path: encoded(bad)}}
+			if _, err := inspectDescription(t, d); !errors.Is(err, errInput) {
+				t.Fatal("filesystem preceded path validation", err)
+			}
+		}
+	})
+	t.Run("symlink-and-not-an-inventory-anchor", func(t *testing.T) {
+		d, _ := descriptionFixture(t)
+		parent := filepath.Join(testRoot(t), "parent")
+		if err := os.Mkdir(parent, 0700); err != nil {
+			t.Fatal(err)
+		}
+		p := filepath.Join(parent, "private")
+		if err := os.Mkdir(p, 0700); err != nil {
+			t.Fatal(err)
+		}
+		alias := filepath.Join(parent, "alias")
+		if err := os.Symlink(parent, alias); err != nil {
+			t.Fatal(err)
+		}
+		d.Environment = []environmentInput{{Name: "TMPDIR", Path: encoded(filepath.Join(alias, "private"))}}
+		if _, err := inspectDescription(t, d); !errors.Is(err, errInput) {
+			t.Fatal("intermediate symlink admitted", err)
+		}
+		d.Environment[0].Path = encoded(p)
+		d.Directories = []directoryInput{{Path: encoded(p)}}
+		if _, err := inspectDescription(t, d); !errors.Is(err, errInput) {
+			t.Fatal("TMPDIR became an inventory anchor", err)
+		}
+		d.Directories = nil
+		a, err := inspectDescription(t, d)
+		if err != nil {
+			t.Fatal(err)
+		}
+		if err = os.Rename(parent, parent+"-old"); err != nil {
+			t.Fatal(err)
+		}
+		if err = os.Symlink(parent+"-old", parent); err != nil {
+			t.Fatal(err)
+		}
+		if err = a.recheck(context.Background()); !errors.Is(err, errInput) {
+			t.Fatal("ancestor alias passed TMPDIR recheck", err)
+		}
+	})
+}
+
+func TestInventoryUsesNearestAnchor(t *testing.T) {
+	if !platformSupported() {
+		t.Skip("platform intentionally unsupported")
+	}
+	d, _ := descriptionFixture(t)
+	pBytes, _ := base64.StdEncoding.DecodeString(d.Cwd)
+	p := string(pBytes)
+	for range 9 {
+		p = filepath.Join(p, "nested")
+		if err := os.Mkdir(p, 0700); err != nil {
+			t.Fatal(err)
+		}
+	}
+	d.SecurityRoots = append(d.SecurityRoots, encoded(p))
+	p = filepath.Join(p, "inventory")
+	if err := os.Mkdir(p, 0700); err != nil {
+		t.Fatal(err)
+	}
+	d.Directories = []directoryInput{{Path: encoded(p)}}
+	if _, err := inspectDescription(t, d); err != nil {
+		t.Fatal("nearer anchor ignored", err)
+	}
+	alias := filepath.Join(filepath.Dir(p), "alias")
+	if err := os.Symlink(p, alias); err != nil {
+		t.Fatal(err)
+	}
+	d.Directories = append(d.Directories, directoryInput{Path: encoded(alias)})
+	if _, err := inspectDescription(t, d); !errors.Is(err, errInput) {
+		t.Fatal("inventory alias admitted", err)
+	}
+}
+
+func TestArgumentRetentionAndRuntimeNamespace(t *testing.T) {
+	if !platformSupported() {
+		t.Skip("platform intentionally unsupported")
+	}
+	d, _ := descriptionFixture(t)
+	a, err := inspectDescription(t, d)
+	if err != nil {
+		t.Fatal(err)
+	}
+	original := a.argv[0]
+	d.Argv[0] = "changed"
+	if a.argv[0] != original {
+		t.Fatal("argument aliases caller slice")
+	}
+	next, err := inspectDescription(t, d)
+	if err != nil || next.config == a.config {
+		t.Fatal("argv missing from description digest", err)
+	}
+	args := childArguments(a, math.MaxUint64)
+	if args[len(args)-2] != "--managed-protocol=1" || args[len(args)-1] != "--generation=18446744073709551615" {
+		t.Fatal(args)
+	}
+	if len(args[len(args)-2])+len(args[len(args)-1])+2 > 64 {
+		t.Fatal("reserved argument envelope exceeded")
+	}
+	b := budget{retained: maxRetainedBytes}
+	if _, err = admitArguments([]string{"x"}, &b); !errors.Is(err, errBudget) {
+		t.Fatal("unaccounted retained argv", err)
+	}
+	b = budget{}
+	if _, err = admitArguments([]string{"--generation=1"}, &b); !errors.Is(err, errInput) || b.arguments != 1 || b.argumentBytes != 15 {
+		t.Fatal("rejected argument not charged", b, err)
+	}
+}
+
+func TestEnvironmentNativeByteRepresentation(t *testing.T) {
+	if !platformSupported() {
+		t.Skip("platform intentionally unsupported")
+	}
+	p := "/explicit/native-\xff"
+	b := budget{}
+	env, err := admitEnvironment([]environmentInput{{Name: "TMPDIR", Path: encoded(p)}}, &b)
+	if err != nil || len(env) != 1 || env[0] != "TMPDIR="+p || b.paths != int64(len(p)) || b.environmentBytes != int64(len(p)+7) {
+		t.Fatal("native environment bytes replaced or uncharged", env, b, err)
+	}
 }

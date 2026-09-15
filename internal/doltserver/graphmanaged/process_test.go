@@ -23,7 +23,7 @@ import (
 )
 
 // The fixture runs this test binary only, imports no engine, never launches
-// descendants, and accepts only its private test switches after --.
+// descendants, and accepts only its private test switches after a positional fixture marker.
 func TestManagedFixture(t *testing.T) {
 	mode := ""
 	options := map[string]string{}
@@ -62,6 +62,15 @@ func inheritedPipe(fd uintptr) (*os.File, error) {
 }
 func runFixture(mode string, options map[string]string) error {
 	if mode == "exit-error" {
+		ready, err := inheritedPipe(3)
+		if err != nil {
+			return err
+		}
+		_, err = ready.Write([]byte{1})
+		closeErr := ready.Close()
+		if err != nil || closeErr != nil {
+			return errors.Join(err, closeErr)
+		}
 		return errors.New("deliberate fixture exit failure")
 	}
 	if mode == "exit-before" {
@@ -93,7 +102,7 @@ func runFixture(mode string, options map[string]string) error {
 	if err != nil {
 		return err
 	}
-	if mode == "ignore-term" {
+	if mode == "ignore-term" || mode == "graceful-eof" || mode == "ignore-eof" {
 		signal.Ignore(syscall.SIGTERM)
 	}
 	if mode == "wait-prepared" || mode == "ignore-term" {
@@ -141,7 +150,7 @@ func runFixture(mode string, options map[string]string) error {
 			return err
 		}
 	}
-	if mode == "premature-ack" {
+	if mode == "premature-ack" || mode == "premature-eof" || mode == "premature-extra" {
 		ack := prepared
 		ack.Phase = "activated"
 		bytes, err := frameBytes(ack)
@@ -150,6 +159,17 @@ func runFixture(mode string, options map[string]string) error {
 		}
 		if err = writeFrame(report, bytes, time.Second); err != nil {
 			return err
+		}
+		if mode == "premature-eof" {
+			if err = report.Close(); err != nil {
+				return err
+			}
+		}
+		if mode == "premature-extra" {
+			_, err = report.Write([]byte{1})
+			if err != nil {
+				return err
+			}
 		}
 		time.Sleep(time.Hour)
 		return nil
@@ -222,6 +242,10 @@ func runFixture(mode string, options map[string]string) error {
 			}
 		}
 	}
+	if mode == "ignore-eof" {
+		time.Sleep(time.Hour)
+		return nil
+	}
 	var extra [1]byte
 	err = readExact(context.Background(), control, extra[:], time.Second)
 	if errors.Is(err, io.EOF) {
@@ -232,7 +256,7 @@ func runFixture(mode string, options map[string]string) error {
 
 var fixtureTiming = timing{startup: 3 * time.Second, cleanup: 5 * time.Second, grace: 50 * time.Millisecond, pipe: 100 * time.Millisecond}
 
-func fixtureAdmission(t *testing.T) (admitted, []string) {
+func fixtureAdmission(t *testing.T, mode string) admitted {
 	t.Helper()
 	exe, err := os.Executable()
 	if err != nil {
@@ -249,21 +273,26 @@ func fixtureAdmission(t *testing.T) (admitted, []string) {
 		t.Fatal(err)
 	}
 	a.pins = []filePin{pin}
-	return a, []string{"-test.run=^TestManagedFixture$", "--", "--profile=" + a.profile, "--config=" + a.config, "--registration=" + a.registration}
+	a.argv, err = admitArguments([]string{"-test.run=^TestManagedFixture$", "managed-fixture", "--profile=" + a.profile, "--config=" + a.config, "--registration=" + a.registration, "--managed-fixture=" + mode}, &budget{})
+	if err != nil {
+		t.Fatal(err)
+	}
+	return a
 }
 func filepathCanonical(p string) (string, error) { return filepath.EvalSymlinks(p) }
 func launchFixture(t *testing.T, ctx context.Context, mode string, tm timing) (*controller, *generation, error) {
 	t.Helper()
-	a, args := fixtureAdmission(t)
-	args = append(args, "--managed-fixture="+mode)
-	c := &controller{}
-	g, err := c.startWithTiming(ctx, a, args, tm)
+	a := fixtureAdmission(t, mode)
+	c := &controller{observe: recordOwner}
+	g, err := c.startWithTiming(ctx, a, tm)
 	if g != nil {
 		t.Logf("owned child pid=%d mode=%s", g.cmd.Process.Pid, mode)
 		t.Cleanup(func() {
 			cleanupCtx, cancel := context.WithTimeout(context.Background(), 6*time.Second)
 			defer cancel()
-			_ = g.close(cleanupCtx)
+			if err := g.close(cleanupCtx); errors.Is(err, errCleanup) {
+				t.Error("fixture cleanup incomplete", err)
+			}
 			select {
 			case <-g.waitDone:
 			default:
@@ -273,22 +302,78 @@ func launchFixture(t *testing.T, ctx context.Context, mode string, tm timing) (*
 	}
 	return c, g, err
 }
-func assertReaped(t *testing.T, g *generation) {
+
+// This decorator records entry and return of actual process methods. It is
+// private to each fixture and delegates every call to that fixture's sole Cmd.
+type recordedProcess struct {
+	inner  processOwner
+	mu     sync.Mutex
+	events []string
+}
+
+func recordOwner(inner processOwner) processOwner { return &recordedProcess{inner: inner} }
+func (r *recordedProcess) record(event string) {
+	r.mu.Lock()
+	defer r.mu.Unlock()
+	r.events = append(r.events, event)
+}
+func (r *recordedProcess) Signal(s os.Signal) error {
+	r.record("signal-start")
+	err := r.inner.Signal(s)
+	r.record("signal-end")
+	return err
+}
+func (r *recordedProcess) Kill() error {
+	r.record("kill-start")
+	err := r.inner.Kill()
+	r.record("kill-end")
+	return err
+}
+func (r *recordedProcess) Wait() error {
+	r.record("wait-start")
+	err := r.inner.Wait()
+	r.record("wait-end")
+	return err
+}
+func assertReaped(t *testing.T, g *generation) error {
 	t.Helper()
-	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	ctx, cancel := context.WithTimeout(context.Background(), 6*time.Second)
 	defer cancel()
-	_ = g.close(ctx)
+	err := g.close(ctx)
+	if errors.Is(err, errCleanup) {
+		t.Fatal("cleanup did not complete", err)
+	}
+	select {
+	case <-g.done:
+	default:
+		t.Fatal("close returned before coordinator completion", err)
+	}
 	select {
 	case <-g.waitDone:
 	default:
 		t.Fatal("not reaped")
 	}
-	if !slices.Equal(g.events, []string{"term", "kill", "signals-ended", "wait"}) {
-		t.Fatal(g.events)
+	for _, done := range g.workers {
+		select {
+		case <-done:
+		default:
+			t.Fatal("worker not joined")
+		}
+	}
+	recorder, ok := g.process.(*recordedProcess)
+	if !ok {
+		t.Fatal("missing actual process recorder")
+	}
+	recorder.mu.Lock()
+	events := slices.Clone(recorder.events)
+	recorder.mu.Unlock()
+	if !slices.Equal(events, []string{"signal-start", "signal-end", "kill-start", "kill-end", "wait-start", "wait-end"}) {
+		t.Fatal(events)
 	}
 	if g.valid() {
 		t.Fatal("still valid")
 	}
+	return err
 }
 func TestManagedProcessManifest(t *testing.T) {
 	cases := []struct {
@@ -310,7 +395,8 @@ func TestManagedProcessManifest(t *testing.T) {
 		{"16_duplicate_json", "duplicate-json", false},
 		{"16_truncated_payload", "truncated", false},
 		{"17_hung_startup", "wait-prepared", false},
-		{"18_control_eof", "healthy", true},
+		{"18_control_eof", "graceful-eof", true},
+		{"18_ignored_control_eof", "ignore-eof", true},
 		{"19_ignored_term", "ignore-term", false},
 		{"21_natural_exit_ordering", "exit-after", true},
 		{"25_noisy_logs", "noisy", true},
@@ -321,14 +407,33 @@ func TestManagedProcessManifest(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 			defer cancel()
-			_, g, err := launchFixture(t, ctx, tt.mode, fixtureTiming)
-			if (err == nil) != tt.healthy {
+			tm := fixtureTiming
+			if tt.mode == "graceful-eof" || tt.mode == "ignore-eof" {
+				tm.grace = 2 * time.Second
+			}
+			_, g, err := launchFixture(t, ctx, tt.mode, tm)
+			loss := tt.mode == "exit-after" || tt.mode == "extra-byte"
+			if !loss && (err == nil) != tt.healthy {
 				t.Fatalf("healthy=%v err=%v", tt.healthy, err)
 			}
 			if g == nil {
 				t.Fatal("no child")
 			}
-			if tt.mode == "healthy" {
+			if loss && err != nil {
+				want := io.EOF
+				if tt.mode == "extra-byte" {
+					want = errProtocol
+				}
+				if !errors.Is(err, want) || g.valid() {
+					t.Fatal("invalid prepublication refusal", err)
+				}
+				conn, dialErr := net.DialTimeout("tcp4", g.expected.Socket, 100*time.Millisecond)
+				if dialErr == nil {
+					_ = conn.Close()
+					t.Fatal("refused endpoint still accepting")
+				}
+			}
+			if tt.mode == "healthy" || tt.mode == "graceful-eof" || tt.mode == "ignore-eof" {
 				if !g.valid() {
 					t.Fatal("healthy start returned an invalid generation")
 				}
@@ -370,7 +475,18 @@ func TestManagedProcessManifest(t *testing.T) {
 					t.Fatal("loss did not promptly invalidate")
 				}
 			}
-			assertReaped(t, g)
+			closeErr := assertReaped(t, g)
+			if tt.mode == "graceful-eof" {
+				if !onlyProcessGone(closeErr) || !g.cmd.ProcessState.Success() {
+					t.Fatal("control EOF did not exit cleanly", closeErr, g.cmd.ProcessState)
+				}
+			}
+			if tt.mode == "ignore-eof" {
+				var exitError *exec.ExitError
+				if !errors.As(closeErr, &exitError) || g.cmd.ProcessState.Success() {
+					t.Fatal("ignored EOF escaped forced-exit discriminator", closeErr)
+				}
+			}
 			if tt.mode == "noisy" {
 				for _, tail := range []*logTail{&g.stdout, &g.stderr} {
 					tail.mu.Lock()
@@ -383,6 +499,23 @@ func TestManagedProcessManifest(t *testing.T) {
 			}
 		})
 	}
+}
+
+// Linux pidfd signalling may report an already-exited unreaped child. That
+// expected signal result is compatible with clean EOF; no other error is.
+func onlyProcessGone(err error) bool {
+	if err == nil {
+		return true
+	}
+	if joined, ok := err.(interface{ Unwrap() []error }); ok {
+		for _, part := range joined.Unwrap() {
+			if !onlyProcessGone(part) {
+				return false
+			}
+		}
+		return true
+	}
+	return errors.Is(err, os.ErrProcessDone)
 }
 func TestManagedCancellationAndClose(t *testing.T) {
 	for _, tt := range []struct {
@@ -424,17 +557,17 @@ func TestManagedCancellationAndClose(t *testing.T) {
 		ctx, cancel := context.WithCancel(context.Background())
 		cancel()
 		c := &controller{}
-		g, err := c.start(ctx, admitted{}, nil)
+		g, err := c.start(ctx, admitted{})
 		if g != nil || !errors.Is(err, context.Canceled) {
 			t.Fatal(g, err)
 		}
 	})
 	t.Run("02_spawn_failure", func(t *testing.T) {
-		a, _ := fixtureAdmission(t)
+		a := fixtureAdmission(t, "healthy")
 		a.executable = "/not/a/managed/executable"
 		a.pins = nil
 		c := &controller{}
-		g, err := c.startWithTiming(context.Background(), a, nil, fixtureTiming)
+		g, err := c.startWithTiming(context.Background(), a, fixtureTiming)
 		if g != nil || err == nil {
 			t.Fatal(g, err)
 		}
@@ -445,7 +578,7 @@ func TestManagedCancellationAndClose(t *testing.T) {
 			t.Fatal(err)
 		}
 		assertReaped(t, g)
-		if next, err := c.start(context.Background(), admitted{}, nil); err == nil || next != nil {
+		if next, err := c.start(context.Background(), admitted{}); err == nil || next != nil {
 			t.Fatal("owner restarted")
 		}
 		_, next, err := launchFixture(t, context.Background(), "healthy", fixtureTiming)
@@ -561,8 +694,8 @@ func TestManagedLogHolder(t *testing.T) {
 	}
 }
 func TestHeldLogWriterIndependentReap(t *testing.T) {
-	a, args := fixtureAdmission(t)
-	args = append(args, "--managed-fixture=exit-after", "--managed-protocol=1", "--generation=1")
+	a := fixtureAdmission(t, "exit-after")
+	args := childArguments(a, 1)
 	listener, err := net.ListenTCP("tcp4", &net.TCPAddr{IP: net.IPv4(127, 0, 0, 1)})
 	if err != nil {
 		t.Fatal(err)
@@ -616,14 +749,14 @@ func TestHeldLogWriterIndependentReap(t *testing.T) {
 			t.Fatal(err)
 		}
 	}
-	g := &generation{cmd: cmd, sequence: 1, time: fixtureTiming, stop: make(chan struct{}), done: make(chan struct{}), waitDone: make(chan struct{}), pipes: processPipes{listener: listener, control: cw, report: rr, out: outR, stderr: errR}}
+	g := &generation{cmd: cmd, process: recordOwner(cmdOwner{cmd}), sequence: 1, time: fixtureTiming, stop: make(chan struct{}), done: make(chan struct{}), waitDone: make(chan struct{}), pipes: processPipes{listener: listener, control: cw, report: rr, out: outR, stderr: errR}}
 	g.expected = frame{Protocol: 1, Generation: 1, Profile: a.profile, Config: a.config, Registration: a.registration, Socket: listener.Addr().String()}
 	ready := make(chan error, 1)
 	go g.run(context.Background(), ready)
 	t.Logf("case24 managed pid=%d separately owned holder pid=%d", cmd.Process.Pid, holder.Process.Pid)
 	select {
 	case err = <-ready:
-		if err != nil {
+		if err != nil && !errors.Is(err, io.EOF) {
 			t.Error(err)
 		}
 	case <-time.After(3 * time.Second):
@@ -647,19 +780,29 @@ func TestHeldLogWriterIndependentReap(t *testing.T) {
 	}
 }
 func TestCleanupIncompleteRetainsOwner(t *testing.T) {
-	a, args := fixtureAdmission(t)
-	args = append(args, "--managed-fixture=exit-error")
+	a := fixtureAdmission(t, "exit-error")
+	args := childArguments(a, 1)
 	cmd := exec.Command(a.executable, args...)
 	cmd.Dir = a.cwd
 	cmd.Env = []string{}
+	readyR, readyW, err := os.Pipe()
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer readyR.Close()
+	defer readyW.Close()
+	cmd.ExtraFiles = []*os.File{readyW}
 	if err := cmd.Start(); err != nil {
+		t.Fatal(err)
+	}
+	if err = readyW.Close(); err != nil {
 		t.Fatal(err)
 	}
 	t.Logf("case23 owned child pid=%d", cmd.Process.Pid)
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
 	_ = ctx
-	g := &generation{cmd: cmd, time: timing{cleanup: 100 * time.Millisecond, grace: 10 * time.Millisecond}, waitDone: make(chan struct{}), cancel: cancel}
+	g := &generation{cmd: cmd, process: recordOwner(cmdOwner{cmd}), time: timing{cleanup: 5 * time.Second, grace: 2 * time.Second}, waitDone: make(chan struct{}), cancel: cancel}
 	var keep []*os.File
 	pipe := func() *os.File {
 		r, w, err := os.Pipe()
@@ -681,9 +824,17 @@ func TestCleanupIncompleteRetainsOwner(t *testing.T) {
 	for i := range g.workers {
 		g.workers[i] = make(chan struct{})
 	}
+	if err = readyR.SetReadDeadline(time.Now().Add(3 * time.Second)); err != nil {
+		t.Fatal(err)
+	}
+	var ready [1]byte
+	_, readyErr := io.ReadFull(readyR, ready[:])
+	if readyErr != nil || ready[0] != 1 {
+		t.Error("fixture never reached explicit exit path", readyErr)
+	}
 	// This is a controlled worker-join failure, not a claim to induce an
 	// uninterruptible kernel Wait. The real child is still waited exactly once.
-	err := g.cleanup(errProtocol)
+	err = g.cleanup(errProtocol)
 	if !errors.Is(err, errCleanup) || !errors.Is(err, errProtocol) {
 		t.Fatal(err)
 	}
@@ -698,7 +849,7 @@ func TestCleanupIncompleteRetainsOwner(t *testing.T) {
 		t.Fatal("real child not reaped")
 	}
 	c := &controller{current: g}
-	if next, err := c.start(context.Background(), a, args); err == nil || next != nil {
+	if next, err := c.start(context.Background(), a); err == nil || next != nil {
 		t.Fatal("unresolved owner restarted")
 	}
 	for _, done := range g.workers {
@@ -739,9 +890,14 @@ func TestInheritedDescriptorKind(t *testing.T) {
 }
 
 func TestAcknowledgmentCannotBypassBlockedActivation(t *testing.T) {
-	a, args := fixtureAdmission(t)
-	args = append(args, "--managed-fixture=premature-ack", "--managed-protocol=1", "--generation=1")
-	cmd, pipes, err := spawn(a, args)
+	for _, mode := range []string{"premature-ack", "premature-eof", "premature-extra"} {
+		t.Run(mode, func(t *testing.T) { testBlockedActivation(t, mode) })
+	}
+}
+func testBlockedActivation(t *testing.T, mode string) {
+	t.Helper()
+	a := fixtureAdmission(t, mode)
+	cmd, pipes, err := spawn(a, 1)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -754,7 +910,13 @@ func TestAcknowledgmentCannotBypassBlockedActivation(t *testing.T) {
 	if n == 0 || !errors.Is(err, os.ErrDeadlineExceeded) {
 		t.Fatal(n, err)
 	}
-	g := &generation{cmd: cmd, pipes: pipes, sequence: 1, time: fixtureTiming, stop: make(chan struct{}), done: make(chan struct{}), waitDone: make(chan struct{})}
+	tm := fixtureTiming
+	// Keep the write blocked long enough for the explicit report loss to arrive.
+	// All variants still use the fixed 3s startup/5s cleanup fixture envelope.
+	if mode != "premature-ack" {
+		tm.pipe = time.Second
+	}
+	g := &generation{cmd: cmd, process: recordOwner(cmdOwner{cmd}), pipes: pipes, sequence: 1, time: tm, stop: make(chan struct{}), done: make(chan struct{}), waitDone: make(chan struct{})}
 	g.expected = frame{Protocol: 1, Generation: 1, Profile: a.profile, Config: a.config, Registration: a.registration, Socket: pipes.listener.Addr().String()}
 	ready := make(chan error, 1)
 	go g.run(context.Background(), ready)
@@ -764,8 +926,88 @@ func TestAcknowledgmentCannotBypassBlockedActivation(t *testing.T) {
 		if err == nil {
 			t.Error("ack published before activation write completed")
 		}
+		if mode == "premature-eof" && !errors.Is(err, io.EOF) {
+			t.Error("lost EOF cause", err)
+		}
+		if mode == "premature-extra" && !errors.Is(err, errProtocol) {
+			t.Error("lost extra-byte cause", err)
+		}
 	case <-time.After(3 * time.Second):
 		t.Error("start did not terminate")
 	}
 	assertReaped(t, g)
+	if g.valid() {
+		t.Fatal("blocked activation exposed serving")
+	}
+}
+
+type trustInfo struct {
+	os.FileInfo
+	mode os.FileMode
+	uid  uint32
+}
+
+func (i trustInfo) Mode() os.FileMode { return i.mode }
+func (i trustInfo) IsDir() bool       { return i.mode.IsDir() }
+func (i trustInfo) Sys() any          { return &syscall.Stat_t{Uid: i.uid} }
+func TestRoleAwarePathTrust(t *testing.T) {
+	info, err := os.Lstat(testRoot(t))
+	if err != nil {
+		t.Fatal(err)
+	}
+	uid := uint32(os.Geteuid())
+	for _, tt := range []struct {
+		name                        string
+		uid                         uint32
+		mode                        os.FileMode
+		ancestor, artifact, mutable bool
+	}{
+		{"private", uid, os.ModeDir | 0700, true, true, true},
+		{"system", 0, os.ModeDir | 0755, true, true, uid == 0},
+		{"root-sticky", 0, os.ModeDir | os.ModeSticky | 0777, true, false, false},
+		{"owner-sticky", uid, os.ModeDir | os.ModeSticky | 0777, true, false, false},
+		{"root-writable", 0, os.ModeDir | 0777, false, false, false},
+		{"owner-writable", uid, os.ModeDir | 0777, false, false, false},
+		{"foreign", ^uint32(0), os.ModeDir | 0700, false, false, false},
+		{"foreign-sticky", ^uint32(0), os.ModeDir | os.ModeSticky | 0777, false, false, false},
+	} {
+		t.Run(tt.name, func(t *testing.T) {
+			f := trustInfo{FileInfo: info, uid: tt.uid, mode: tt.mode}
+			if trustedAncestor(f) != tt.ancestor || protectedArtifact(f) != tt.artifact || trustedMutableDirectory(f) != tt.mutable {
+				t.Fatal("role trust mismatch")
+			}
+		})
+	}
+	// A real system artifact is read and hashed only; it is never executed.
+	path, err := filepath.EvalSymlinks("/usr/bin/true")
+	if err != nil {
+		t.Fatal(err)
+	}
+	if _, err = hashFile(context.Background(), time.Now().Add(time.Second), path, true, &budget{}); err != nil {
+		t.Fatal("protected system artifact refused", err)
+	}
+	root := testRoot(t)
+	writable := filepath.Join(root, "sticky")
+	if err = os.Mkdir(writable, 0700); err != nil {
+		t.Fatal(err)
+	}
+	if err = os.Chmod(writable, os.ModeSticky|0777); err != nil {
+		t.Fatal(err)
+	}
+	leaf := filepath.Join(writable, "private")
+	if err = os.Mkdir(leaf, 0700); err != nil {
+		t.Fatal(err)
+	}
+	if _, err = decodeCanonical(context.Background(), time.Now().Add(time.Second), encoded(leaf), &budget{}); err != nil {
+		t.Fatal("sticky ancestor refused", err)
+	}
+	if _, err = trustedDirectory(writable); !errors.Is(err, errInput) {
+		t.Fatal("sticky mutable leaf admitted", err)
+	}
+	if err = os.Chmod(writable, 0777); err != nil {
+		t.Fatal(err)
+	}
+	if _, err = decodeCanonical(context.Background(), time.Now().Add(time.Second), encoded(leaf), &budget{}); !errors.Is(err, errInput) {
+		t.Fatal("writable nonsticky ancestor admitted", err)
+	}
 }

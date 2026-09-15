@@ -21,13 +21,15 @@ type filePin struct {
 	executable   bool
 }
 type rootPin struct {
-	path     string
-	identity os.FileInfo
+	path            string
+	identity        os.FileInfo
+	inventoryAnchor bool
 }
 type admitted struct {
 	roots                                          []rootPin
 	executable, cwd, profile, config, registration string
 	environment                                    []string
+	argv                                           []string
 	pins                                           []filePin
 	directories                                    []directoryPin
 }
@@ -56,6 +58,15 @@ func inspect(ctx context.Context, raw []byte) (admitted, error) {
 	if err = charge(&b.retained, int64(len(raw)), maxRetainedBytes, "description"); err != nil {
 		return a, err
 	}
+	a.argv, err = admitArguments(d.Argv, &b)
+	if err != nil {
+		return a, err
+	}
+	// Validate environment names, native bytes and controls before filesystem work.
+	a.environment, err = admitEnvironment(d.Environment, &b)
+	if err != nil {
+		return a, err
+	}
 	a.profile = d.ProfileSHA256
 	h := sha256.Sum256(raw)
 	a.config = hex.EncodeToString(h[:])
@@ -67,13 +78,16 @@ func inspect(ctx context.Context, raw []byte) (admitted, error) {
 	if err != nil {
 		return a, err
 	}
-	a.roots = append(a.roots, rootPin{a.cwd, cwdInfo})
+	a.roots = append(a.roots, rootPin{a.cwd, cwdInfo, true})
 	a.executable, err = decodeCanonical(ctx, deadline, d.Executable, &b)
 	if err != nil {
 		return a, err
 	}
 	roots := map[string]struct{}{}
 	for _, encoded := range d.SecurityRoots {
+		if err = charge(&b.securityRoots, 1, maxSecurityRoots, "security root occurrences"); err != nil {
+			return a, err
+		}
 		p, e := decodeCanonical(ctx, deadline, encoded, &b)
 		if e != nil {
 			return a, e
@@ -86,7 +100,7 @@ func inspect(ctx context.Context, raw []byte) (admitted, error) {
 		if e != nil {
 			return a, e
 		}
-		a.roots = append(a.roots, rootPin{p, info})
+		a.roots = append(a.roots, rootPin{p, info, true})
 	}
 	if len(d.SecurityRoots) == 0 {
 		return a, errInput
@@ -119,7 +133,7 @@ func inspect(ctx context.Context, raw []byte) (admitted, error) {
 			}
 		}
 		physical = append(physical, info)
-		a.roots = append(a.roots, rootPin{p, info})
+		a.roots = append(a.roots, rootPin{p, info, true})
 	}
 	if len(d.Databases) == 0 {
 		return a, errInput
@@ -135,38 +149,16 @@ func inspect(ctx context.Context, raw []byte) (admitted, error) {
 	}
 	h = sha256.Sum256(registrations)
 	a.registration = hex.EncodeToString(h[:])
-	usedEnv := map[string]struct{}{}
-	for _, e := range d.Environment {
-		if err = charge(&b.environment, 1, maxEnvironment, "environment entries"); err != nil {
-			return a, err
+	for _, env := range a.environment {
+		p, e := canonicalPath(ctx, deadline, strings.TrimPrefix(env, "TMPDIR="))
+		if e != nil {
+			return a, e
 		}
-		if err = charge(&b.environmentBytes, int64(len(e.Name)+len(e.Value)+1), maxEnvironmentBytes, "environment bytes"); err != nil {
-			return a, err
+		info, e := checkedDirectory(ctx, deadline, p)
+		if e != nil {
+			return a, e
 		}
-		if _, ok := usedEnv[e.Name]; ok {
-			return a, errInput
-		}
-		usedEnv[e.Name] = struct{}{}
-		// A future source-qualified adapter may widen this closed manifest. Ambient
-		// HOME, DOLT_*, loader, credential and debugging settings never pass here.
-		switch e.Name {
-		case "TMPDIR":
-			if !filepath.IsAbs(e.Value) {
-				return a, errInput
-			}
-			if _, err = checkedDirectory(ctx, deadline, e.Value); err != nil {
-				return a, err
-			}
-		default:
-			return a, errInput
-		}
-		if strings.ContainsAny(e.Name+e.Value, "\x00\r\n") {
-			return a, errInput
-		}
-		if err = charge(&b.retained, int64(len(e.Name)+len(e.Value)+1), maxRetainedBytes, "environment"); err != nil {
-			return a, err
-		}
-		a.environment = append(a.environment, e.Name+"="+e.Value)
+		a.roots = append(a.roots, rootPin{p, info, false})
 	}
 	for _, source := range d.Sources {
 		if err = charge(&b.files, 1, maxFiles, "file occurrences"); err != nil {
@@ -200,16 +192,15 @@ func inspect(ctx context.Context, raw []byte) (admitted, error) {
 	a.pins = append(a.pins, pin)
 	seenDirs := map[string]struct{}{}
 	for _, dir := range d.Directories {
+		if err = charge(&b.inventoryAnchors, 1, maxInventoryAnchors, "inventory anchor occurrences"); err != nil {
+			return a, err
+		}
 		p, e := decodeCanonical(ctx, deadline, dir.Path, &b)
 		if e != nil {
 			return a, e
 		}
-		rel, e := filepath.Rel(a.cwd, p)
-		if e != nil || rel == ".." || strings.HasPrefix(rel, ".."+string(filepath.Separator)) {
-			return a, errInput
-		}
-		if rel != "." && len(strings.Split(rel, string(filepath.Separator))) > maxDirectoryDepth {
-			return a, fmt.Errorf("%w: directory depth", errBudget)
+		if e = inventoryDepth(p, a.roots); e != nil {
+			return a, e
 		}
 		if _, ok := seenDirs[p]; ok {
 			return a, errInput
@@ -218,6 +209,11 @@ func inspect(ctx context.Context, raw []byte) (admitted, error) {
 		observed, e := inventoryDirectory(ctx, deadline, p, &b)
 		if e != nil {
 			return a, e
+		}
+		for _, prior := range a.directories {
+			if os.SameFile(prior.identity, observed.identity) {
+				return a, errInput
+			}
 		}
 		expected := make([]string, 0, len(dir.Entries))
 		for _, encoded := range dir.Entries {
@@ -247,17 +243,30 @@ func decodeCanonical(ctx context.Context, deadline time.Time, encoded string, b 
 	if err != nil {
 		return "", err
 	}
+	return canonicalPath(ctx, deadline, p)
+}
+
+func canonicalComponents(p string) ([]string, error) {
 	if !filepath.IsAbs(p) || filepath.Clean(p) != p {
-		return "", errInput
+		return nil, errInput
 	}
-	if len(strings.Split(p, string(filepath.Separator))) > maxComponents {
-		return "", fmt.Errorf("%w: path components", errBudget)
+	parts := strings.Split(strings.TrimPrefix(p, string(filepath.Separator)), string(filepath.Separator))
+	if p == string(filepath.Separator) {
+		parts = nil
+	}
+	if len(parts) > maxComponents {
+		return nil, fmt.Errorf("%w: path components", errBudget)
+	}
+	return parts, nil
+}
+
+func canonicalPath(ctx context.Context, deadline time.Time, p string) (string, error) {
+	parts, err := canonicalComponents(p)
+	if err != nil {
+		return "", err
 	}
 	current := string(filepath.Separator)
-	for _, part := range strings.Split(strings.TrimPrefix(p, current), string(filepath.Separator)) {
-		if part == "" {
-			continue
-		}
+	for i, part := range parts {
 		current = filepath.Join(current, part)
 		if err := checkWork(ctx, deadline); err != nil {
 			return "", err
@@ -269,7 +278,7 @@ func decodeCanonical(ctx context.Context, deadline time.Time, encoded string, b 
 		if e != nil {
 			return "", e
 		}
-		if info.Mode()&os.ModeSymlink != 0 {
+		if info.Mode()&os.ModeSymlink != 0 || i < len(parts)-1 && !trustedAncestor(info) {
 			return "", errInput
 		}
 	}
@@ -311,8 +320,18 @@ func hashStream(ctx context.Context, deadline time.Time, r io.Reader, limit int6
 	}
 }
 func hashFile(ctx context.Context, deadline time.Time, path string, executable bool, b *budget) (pin filePin, result error) {
-	if _, err := checkedDirectory(ctx, deadline, filepath.Dir(path)); err != nil {
+	if _, err := canonicalPath(ctx, deadline, path); err != nil {
 		return pin, err
+	}
+	parent, err := os.Lstat(filepath.Dir(path))
+	if workErr := checkWork(ctx, deadline); workErr != nil {
+		return pin, errors.Join(err, workErr)
+	}
+	if err != nil {
+		return pin, err
+	}
+	if !protectedArtifact(parent) || !parent.IsDir() {
+		return pin, errInput
 	}
 	if err := checkWork(ctx, deadline); err != nil {
 		return pin, err
@@ -336,7 +355,7 @@ func hashFile(ctx context.Context, deadline time.Time, path string, executable b
 	if before.Size() < 0 || before.Size() > limit {
 		return pin, fmt.Errorf("%w: file bytes", errBudget)
 	}
-	if before.Mode().Perm()&0022 != 0 || !ownedFile(before) || executable && before.Mode().Perm()&0111 == 0 {
+	if !protectedArtifact(before) || executable && before.Mode().Perm()&0111 == 0 {
 		return pin, errInput
 	}
 	digest, n, err := hashStream(ctx, deadline, f, limit, b, executable)
@@ -450,6 +469,9 @@ func (a admitted) recheck(ctx context.Context) error {
 		return err
 	}
 	for _, pin := range a.roots {
+		if _, err := canonicalPath(ctx, deadline, pin.path); err != nil {
+			return err
+		}
 		got, err := checkedDirectory(ctx, deadline, pin.path)
 		if err != nil {
 			return err
@@ -468,6 +490,9 @@ func (a admitted) recheck(ctx context.Context) error {
 		}
 	}
 	for _, pin := range a.directories {
+		if _, err := canonicalPath(ctx, deadline, pin.path); err != nil {
+			return err
+		}
 		got, err := inventoryDirectory(ctx, deadline, pin.path, &b)
 		if err != nil {
 			return err
@@ -477,6 +502,61 @@ func (a admitted) recheck(ctx context.Context) error {
 		}
 	}
 	return checkWork(ctx, deadline)
+}
+
+func admitEnvironment(entries []environmentInput, b *budget) ([]string, error) {
+	var environment []string
+	seen := map[string]bool{}
+	for _, e := range entries {
+		if err := charge(&b.environment, 1, maxEnvironment, "environment entries"); err != nil {
+			return nil, err
+		}
+		p, err := nativePath(e.Path, b)
+		if err != nil {
+			return nil, err
+		}
+		n := int64(len(e.Name) + len(p) + 1)
+		if err := charge(&b.environmentBytes, n, maxEnvironmentBytes, "environment bytes"); err != nil {
+			return nil, err
+		}
+		if err := charge(&b.retained, n, maxRetainedBytes, "environment"); err != nil {
+			return nil, err
+		}
+		if e.Name != "TMPDIR" || seen[e.Name] || strings.ContainsAny(p, "\x00\r\n") {
+			return nil, errInput
+		}
+		seen[e.Name] = true
+		if _, err := canonicalComponents(p); err != nil {
+			return nil, err
+		}
+		environment = append(environment, e.Name+"="+p)
+	}
+	return environment, nil
+}
+
+func inventoryDepth(path string, roots []rootPin) error {
+	nearest := maxComponents + 1
+	for _, root := range roots {
+		if !root.inventoryAnchor {
+			continue
+		}
+		rel, err := filepath.Rel(root.path, path)
+		if err != nil || rel == ".." || strings.HasPrefix(rel, ".."+string(filepath.Separator)) {
+			continue
+		}
+		depth := 0
+		if rel != "." {
+			depth = len(strings.Split(rel, string(filepath.Separator)))
+		}
+		nearest = min(nearest, depth)
+	}
+	if nearest == maxComponents+1 {
+		return errInput
+	}
+	if nearest > maxDirectoryDepth {
+		return fmt.Errorf("%w: directory depth", errBudget)
+	}
+	return nil
 }
 
 func checkedDirectory(ctx context.Context, deadline time.Time, path string) (os.FileInfo, error) {
