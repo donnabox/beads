@@ -135,9 +135,10 @@ type Admin interface {
 	// is replayed; the counter is set to last_seq + 1; then the lease is
 	// regranted.
 	LedgerApply(ctx context.Context, manifest LedgerManifest, events []LedgerEvent) (LedgerApplyResult, error)
-	// MarkUnverified sets the witness's unverified marker after a database
-	// restore, so every protected operation refuses until a restore verb
-	// clears it. A no-op without a witness.
+	// MarkUnverified durably sets the witness's unverified marker before a
+	// managed restore dispatch. A marking failure prevents that dispatch;
+	// protected operations refuse until authorized continuity or rotation
+	// evidence clears it. A no-op without a witness.
 	MarkUnverified(ctx context.Context) error
 	// ClearUnverified clears the marker once continuity has been shown or
 	// the Scope rotated.
