@@ -334,7 +334,7 @@ func TestExecutableStreamingBound(t *testing.T) {
 	reader := &countedZeroReader{remaining: maxExecutableBytes}
 	_, n, err := hashStream(context.Background(), time.Now().Add(10*time.Second), reader, maxExecutableBytes, &budget{}, true)
 	if err != nil || n != maxExecutableBytes || reader.maxRead > 64<<10 {
-		t.Fatal(n, reader.maxRead, err)
+		t.Fatalf("host prerequisite: in-memory 2 GiB hashing throughput must allow completion within 10s; hashed=%d max_read=%d: %v", n, reader.maxRead, err)
 	}
 	reader = &countedZeroReader{remaining: 18}
 	if _, _, err = hashStream(context.Background(), time.Now().Add(time.Second), reader, 17, &budget{}, true); !errors.Is(err, errBudget) {
@@ -769,6 +769,9 @@ func TestDescriptionNestedCaseFoldedFields(t *testing.T) {
 	_, raw := descriptionFixture(t)
 	for _, target := range []struct{ shape, key string }{
 		{"environment", "name"}, {"environment", "path"}, {"directories", "path"},
+		{"sources", "path"}, {"sources", "sha256"},
+		{"databases", "name"}, {"databases", "root"}, {"databases", "default_branch"},
+		{"directories", "entries"},
 	} {
 		for _, alias := range []bool{false, true} {
 			t.Run(target.shape+"/"+target.key+"/alias="+strconv.FormatBool(alias), func(t *testing.T) {
@@ -829,5 +832,32 @@ func TestEnvironmentBudgetGuardsRejectedNames(t *testing.T) {
 	b := budget{}
 	if _, err := admitEnvironment(entries, &b); !errors.Is(err, errInput) || b.environment != 2 {
 		t.Fatal("single-key whitelist should dominate the entry ceiling", b, err)
+	}
+}
+
+// Exercise direct append boundaries that the 32KiB production drain cannot
+// reach in one read, including the discarded counter's saturation boundary.
+func TestLogTailAppendBoundaries(t *testing.T) {
+	const limit = 64 << 10
+	pattern := bytes.Repeat([]byte("0123456789abcdef"), limit/16)
+	full := bytes.Repeat([]byte("a"), limit)
+	for _, tt := range []struct {
+		name                     string
+		initial, payload, want   []byte
+		discarded, wantDiscarded uint64
+	}{
+		{"payload-at-limit", []byte("prior"), pattern, pattern, 7, 12},
+		{"payload-over-limit", []byte("prior"), append([]byte("drop"), pattern...), pattern, 7, 16},
+		{"discarded-below-max", full, []byte("x"), append(bytes.Clone(full[1:]), 'x'), math.MaxUint64 - 2, math.MaxUint64 - 1},
+		{"discarded-at-max", full, []byte("xy"), append(bytes.Clone(full[2:]), 'x', 'y'), math.MaxUint64 - 2, math.MaxUint64},
+		{"discarded-saturates", full, []byte("xyz"), append(bytes.Clone(full[3:]), 'x', 'y', 'z'), math.MaxUint64 - 2, math.MaxUint64},
+	} {
+		t.Run(tt.name, func(t *testing.T) {
+			tail := logTail{bytes: bytes.Clone(tt.initial), discarded: tt.discarded}
+			tail.append(tt.payload)
+			if len(tail.bytes) != limit || !bytes.Equal(tail.bytes, tt.want) || tail.discarded != tt.wantDiscarded {
+				t.Fatalf("retained=%d discarded=%d want_discarded=%d content_match=%v", len(tail.bytes), tail.discarded, tt.wantDiscarded, bytes.Equal(tail.bytes, tt.want))
+			}
+		})
 	}
 }

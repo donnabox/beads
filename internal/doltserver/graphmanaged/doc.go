@@ -21,9 +21,9 @@
 // bytes, never parsed as storage state. Resource limits are administrative
 // defaults, independent of BDP limits. Size and cooperative elapsed-work
 // limits are independent: the executable size ceiling promises no disk
-// throughput or completion within the time budget; preparation and activation
-// rechecks hash files again. The one-key environment
-// whitelist dominates its entry ceiling; its byte guard also covers rejected
+// throughput or completion within the time budget; the pre-spawn recheck hashes
+// every pinned file again. The one-key environment whitelist dominates its
+// entry ceiling; its byte guard also covers rejected
 // names before whitelist checks. The description owns bounded argv and
 // native-byte temp paths; only the lifecycle supplies protocol switches.
 // Protected root-owned artifacts and sticky trusted ancestors do not relax
