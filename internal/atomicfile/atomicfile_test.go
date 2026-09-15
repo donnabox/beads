@@ -1,6 +1,7 @@
 package atomicfile
 
 import (
+	"errors"
 	"os"
 	"path/filepath"
 	"strings"
@@ -277,5 +278,62 @@ func TestConcurrentWriters_NoCorruption(t *testing.T) {
 				t.Fatalf("line %d byte %d: got %c, expected %c (interleaved writers)", i, j, b, firstChar)
 			}
 		}
+	}
+}
+
+func TestAbortReportsEveryCleanupFailure(t *testing.T) {
+	w, err := Create(filepath.Join(t.TempDir(), "target"), 0600)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if err = w.f.Close(); err != nil {
+		t.Fatal(err)
+	}
+	if err = os.Remove(w.f.Name()); err != nil {
+		t.Fatal(err)
+	}
+	err = w.Abort()
+	if !errors.Is(err, os.ErrClosed) || !errors.Is(err, os.ErrNotExist) {
+		t.Fatalf("joined close/remove errors: %v", err)
+	}
+	if err = w.Abort(); err != nil {
+		t.Fatal("idempotent abort", err)
+	}
+}
+func TestCloseReportsPrimaryAndCleanupFailure(t *testing.T) {
+	w, err := Create(filepath.Join(t.TempDir(), "target"), 0600)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if err = w.f.Close(); err != nil {
+		t.Fatal(err)
+	}
+	if err = os.Remove(w.f.Name()); err != nil {
+		t.Fatal(err)
+	}
+	err = w.Close()
+	if !errors.Is(err, os.ErrClosed) || !errors.Is(err, os.ErrNotExist) {
+		t.Fatalf("primary and cleanup: %v", err)
+	}
+}
+func TestRenameFailureDoesNotManufactureCloseFailure(t *testing.T) {
+	dir := t.TempDir()
+	target := filepath.Join(dir, "target")
+	if err := os.Mkdir(target, 0700); err != nil {
+		t.Fatal(err)
+	}
+	w, err := Create(target, 0600)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if _, err = w.Write([]byte("fixture")); err != nil {
+		t.Fatal(err)
+	}
+	err = w.Close()
+	if err == nil || errors.Is(err, os.ErrClosed) {
+		t.Fatalf("rename error with spurious close: %v", err)
+	}
+	if _, err = os.Lstat(w.f.Name()); !errors.Is(err, os.ErrNotExist) {
+		t.Fatal("temp cleanup", err)
 	}
 }

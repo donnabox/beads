@@ -1348,7 +1348,8 @@ type WitnessClaim struct {
 	// verb clears it; every protected operation refuses while it is set.
 	Unverified bool
 	// Pending names the kind of an unfinished multi-phase transition, or ""
-	// when none is recorded. Recovery runs before any assertion.
+	// when none is recorded. Assertions refuse pending state; only explicit
+	// administration runs evidence-driven recovery before reevaluating it.
 	Pending string
 }
 
