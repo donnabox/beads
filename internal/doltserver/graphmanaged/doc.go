@@ -19,7 +19,12 @@
 // parents. Privileged replacement and blocked filesystem syscalls are outside
 // the cooperative deadline guarantee. Engine-owned files are hashed as opaque
 // bytes, never parsed as storage state. Resource limits are administrative
-// defaults, independent of BDP limits. The description owns bounded argv and
+// defaults, independent of BDP limits. Size and cooperative elapsed-work
+// limits are independent: the executable size ceiling promises no disk
+// throughput or completion within the time budget; preparation and activation
+// rechecks hash files again. The one-key environment
+// whitelist dominates its entry ceiling; its byte guard also covers rejected
+// names before whitelist checks. The description owns bounded argv and
 // native-byte temp paths; only the lifecycle supplies protocol switches.
 // Protected root-owned artifacts and sticky trusted ancestors do not relax
 // the euid-owned, protected mutable-leaf requirement. Windows and other unsupported platforms

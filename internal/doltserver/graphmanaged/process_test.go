@@ -364,6 +364,9 @@ func assertReaped(t *testing.T, g *generation) error {
 	if !ok {
 		t.Fatal("missing actual process recorder")
 	}
+	if !recordsCommand(recorder, g.cmd) || g.cmd.ProcessState == nil {
+		t.Fatal("recorder does not identify the waited child")
+	}
 	recorder.mu.Lock()
 	events := slices.Clone(recorder.events)
 	recorder.mu.Unlock()
@@ -418,6 +421,9 @@ func TestManagedProcessManifest(t *testing.T) {
 			}
 			if g == nil {
 				t.Fatal("no child")
+			}
+			if tt.mode == "blocked-report" && !errors.Is(err, errProtocol) {
+				t.Fatal("blocked report did not fail protocol admission", err)
 			}
 			if loss && err != nil {
 				want := io.EOF
@@ -984,7 +990,7 @@ func TestRoleAwarePathTrust(t *testing.T) {
 		t.Fatal(err)
 	}
 	if _, err = hashFile(context.Background(), time.Now().Add(time.Second), path, true, &budget{}); err != nil {
-		t.Fatal("protected system artifact refused", err)
+		t.Fatal("host prerequisite: /usr/bin/true must resolve to a protected artifact under trusted parents", err)
 	}
 	root := testRoot(t)
 	writable := filepath.Join(root, "sticky")
@@ -1009,5 +1015,39 @@ func TestRoleAwarePathTrust(t *testing.T) {
 	}
 	if _, err = decodeCanonical(context.Background(), time.Now().Add(time.Second), encoded(leaf), &budget{}); !errors.Is(err, errInput) {
 		t.Fatal("writable nonsticky ancestor admitted", err)
+	}
+}
+
+func recordsCommand(recorder *recordedProcess, cmd *exec.Cmd) bool {
+	if recorder == nil || cmd == nil {
+		return false
+	}
+	owner, ok := recorder.inner.(cmdOwner)
+	return ok && owner.cmd == cmd
+}
+
+// These are unstarted command values: no extra child or signal is needed to
+// discriminate a recorder that observes a different or nondelegating owner.
+func TestRecorderIdentifiesExactCommand(t *testing.T) {
+	cmd, other := &exec.Cmd{}, &exec.Cmd{}
+	for _, tt := range []struct {
+		name  string
+		inner processOwner
+		want  bool
+	}{
+		{"same", cmdOwner{cmd}, true},
+		{"different", cmdOwner{other}, false},
+		{"nil-command", cmdOwner{}, false},
+		{"nondelegating", &recordedProcess{}, false},
+		{"nil-owner", nil, false},
+	} {
+		t.Run(tt.name, func(t *testing.T) {
+			if recordsCommand(&recordedProcess{inner: tt.inner}, cmd) != tt.want {
+				t.Fatal("recorder identity mismatch")
+			}
+		})
+	}
+	if recordsCommand(nil, cmd) || recordsCommand(&recordedProcess{inner: cmdOwner{cmd}}, nil) {
+		t.Fatal("nil recorder or expected command accepted")
 	}
 }

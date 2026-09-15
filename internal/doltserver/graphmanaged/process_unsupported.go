@@ -8,7 +8,6 @@ import (
 )
 
 func platformSupported() bool                      { return false }
-func ownedFile(os.FileInfo) bool                   { return false }
 func protectedArtifact(os.FileInfo) bool           { return false }
 func trustedAncestor(os.FileInfo) bool             { return false }
 func trustedDirectory(string) (os.FileInfo, error) { return nil, errUnsupported }

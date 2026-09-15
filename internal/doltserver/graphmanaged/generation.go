@@ -226,7 +226,8 @@ type controller struct {
 	current  *generation
 	sequence uint64
 	// A scoped test decorator observes the real owned process boundaries.
-	// Production leaves it nil; there is no package-global hook or alternate owner.
+	// Production leaves it nil. The test harness verifies that the decorator
+	// delegates to this generation's exact cmdOwner; this type alone does not.
 	observe func(processOwner) processOwner
 }
 

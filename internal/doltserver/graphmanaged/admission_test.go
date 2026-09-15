@@ -571,7 +571,7 @@ func TestDescriptionArgumentEnvelope(t *testing.T) {
 		args []string
 		want error
 	}{
-		{"healthy", []string{"--config=/explicit/path", "positional", "--generation-other=1"}, nil},
+		{"healthy", []string{"--config=/explicit/path", "positional", "generation", "--generation-other=1", "-generation-other=1"}, nil},
 		{"count-at", make([]string, 64), nil},
 		{"count-over", make([]string, 65), errBudget},
 		{"bytes-at", []string{strings.Repeat("x", (16<<10)-1)}, nil},
@@ -580,6 +580,10 @@ func TestDescriptionArgumentEnvelope(t *testing.T) {
 		{"generation-bare", []string{"--generation", "99"}, errInput},
 		{"protocol-equals", []string{"--managed-protocol=2"}, errInput},
 		{"protocol-bare", []string{"--managed-protocol", "2"}, errInput},
+		{"single-generation-equals", []string{"-generation=99"}, errInput},
+		{"single-generation-bare", []string{"-generation", "99"}, errInput},
+		{"single-protocol-equals", []string{"-managed-protocol=2"}, errInput},
+		{"single-protocol-bare", []string{"-managed-protocol", "2"}, errInput},
 		{"separator", []string{"--"}, errInput},
 		{"nul", []string{"x\x00y"}, errInput},
 	} {
@@ -757,5 +761,73 @@ func TestEnvironmentNativeByteRepresentation(t *testing.T) {
 	env, err := admitEnvironment([]environmentInput{{Name: "TMPDIR", Path: encoded(p)}}, &b)
 	if err != nil || len(env) != 1 || env[0] != "TMPDIR="+p || b.paths != int64(len(p)) || b.environmentBytes != int64(len(p)+7) {
 		t.Fatal("native environment bytes replaced or uncharged", env, b, err)
+	}
+}
+
+// Target the object shape, not the first shared key spelling in the document.
+func TestDescriptionNestedCaseFoldedFields(t *testing.T) {
+	_, raw := descriptionFixture(t)
+	for _, target := range []struct{ shape, key string }{
+		{"environment", "name"}, {"environment", "path"}, {"directories", "path"},
+	} {
+		for _, alias := range []bool{false, true} {
+			t.Run(target.shape+"/"+target.key+"/alias="+strconv.FormatBool(alias), func(t *testing.T) {
+				var object map[string]any
+				if err := json.Unmarshal(raw, &object); err != nil {
+					t.Fatal(err)
+				}
+				entry := object[target.shape].([]any)[0].(map[string]any)
+				value, present := entry[target.key]
+				if !present {
+					t.Fatal("fixture key absent")
+				}
+				entry[strings.ToUpper(target.key)] = value
+				if !alias {
+					delete(entry, target.key)
+				}
+				variant, err := json.Marshal(object)
+				if err != nil {
+					t.Fatal(err)
+				}
+				if _, err = decodeDescription(variant, &budget{}); err == nil {
+					t.Fatal("nested case-folded field accepted")
+				}
+			})
+		}
+	}
+	if _, err := decodeDescription(raw, &budget{}); err != nil {
+		t.Fatal("exact field neighbor", err)
+	}
+}
+
+func TestEnvironmentBudgetGuardsRejectedNames(t *testing.T) {
+	for _, over := range []bool{false, true} {
+		t.Run("over="+strconv.FormatBool(over), func(t *testing.T) {
+			nameBytes := maxEnvironmentBytes - len("/x") - 1
+			want := errInput
+			if over {
+				nameBytes++
+				want = errBudget
+			}
+			b := budget{}
+			_, err := admitEnvironment([]environmentInput{{Name: strings.Repeat("n", nameBytes), Path: encoded("/x")}}, &b)
+			if !errors.Is(err, want) || b.environment != 1 {
+				t.Fatal("rejected name budget", b, err)
+			}
+			if over && !strings.Contains(err.Error(), "environment bytes") {
+				t.Fatal("wrong budget refused", err)
+			}
+			if !over && b.environmentBytes != maxEnvironmentBytes {
+				t.Fatal("exact byte charge", b)
+			}
+		})
+	}
+	entries := make([]environmentInput, maxEnvironment+1)
+	for i := range entries {
+		entries[i] = environmentInput{Name: "TMPDIR", Path: encoded("/x")}
+	}
+	b := budget{}
+	if _, err := admitEnvironment(entries, &b); !errors.Is(err, errInput) || b.environment != 2 {
+		t.Fatal("single-key whitelist should dominate the entry ceiling", b, err)
 	}
 }

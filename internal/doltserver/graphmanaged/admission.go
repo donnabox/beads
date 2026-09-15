@@ -102,7 +102,7 @@ func admitArguments(args []string, b *budget) ([]string, error) {
 			return nil, err
 		}
 		key, _, _ := strings.Cut(arg, "=")
-		if strings.ContainsRune(arg, 0) || arg == "--" || key == "--managed-protocol" || key == "--generation" {
+		if strings.ContainsRune(arg, 0) || arg == "--" || key == "--managed-protocol" || key == "--generation" || key == "-managed-protocol" || key == "-generation" {
 			return nil, errInput
 		}
 		admitted = append(admitted, arg)
