@@ -1,0 +1,1064 @@
+--- /dev/null
++++ b/server/close_existing_session_test.go
+@@ -0,0 +1,373 @@
++// Licensed under the Apache License, Version 2.0 (the "License");
++// you may not use this file except in compliance with the License.
++// You may obtain a copy of the License at
++//
++//     http://www.apache.org/licenses/LICENSE-2.0
++//
++// Unless required by applicable law or agreed to in writing, software
++// distributed under the License is distributed on an "AS IS" BASIS,
++// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
++// See the License for the specific language governing permissions and
++// limitations under the License.
++
++package server
++
++import (
++	"context"
++	"errors"
++	"net"
++	"strings"
++	"testing"
++
++	"github.com/dolthub/vitess/go/mysql"
++	"github.com/sirupsen/logrus"
++	"go.opentelemetry.io/otel/trace"
++
++	sqle "github.com/dolthub/go-mysql-server"
++	"github.com/dolthub/go-mysql-server/sql"
++	"github.com/dolthub/go-mysql-server/sql/analyzer"
++)
++
++// These controls exercise the actual terminal helper and bookkeeping separately.
++// They use only an Engine field literal, not its constructor or SQL execution.
++// They do not invoke ConnectionClosed: its deferred Engine.CloseSession requires
++// an initialized private pointer mutex.
++func TestCloseExistingSession(t *testing.T) {
++	t.Run("T1", func(t *testing.T) {
++		f := newCloseSessionFixture(t)
++		f.sm.connections[f.conn.ConnectionID] = f.conn
++		f.h.releaseExistingSessionLocks(f.conn)
++		f.assertNoCreation(0)
++		if f.sm.session(f.conn) != nil {
++			t.Fatal("terminal cleanup published a session")
++		}
++	})
++
++	t.Run("T2", func(t *testing.T) {
++		f := newCloseSessionFixture(t)
++		// Defensive synthetic state: NewSession normally publishes both fields
++		// under one mutex hold, so an observer cannot see this intermediate state.
++		ci := &connInfo{}
++		f.sm.sessions[f.conn.ConnectionID] = ci
++		f.h.releaseExistingSessionLocks(f.conn)
++		f.assertNoCreation(0)
++		if f.sm.sessions[f.conn.ConnectionID] != ci || ci.session != nil {
++			t.Fatal("terminal cleanup changed the synthetic empty entry")
++		}
++	})
++
++	t.Run("T3", func(t *testing.T) {
++		f := newCloseSessionFixture(t)
++		err := f.sm.NewSession(context.Background(), f.conn)
++		if err != f.builderErr {
++			t.Fatalf("builder error = %v, want original error", err)
++		}
++		f.h.releaseExistingSessionLocks(f.conn)
++		f.assertNoCreation(1)
++		if f.sm.session(f.conn) != nil || err != f.builderErr {
++			t.Fatal("failed builder was repaired or its original error was lost")
++		}
++	})
++
++	t.Run("T4", func(t *testing.T) {
++		f := newCloseSessionFixture(t)
++		original := f.session("original")
++		replacement := f.session("replacement")
++		ci := &connInfo{session: original}
++		f.sm.sessions[f.conn.ConnectionID] = ci
++		f.tracer.onStart = func() {
++			f.sm.mu.Lock()
++			ci.session = replacement
++			f.sm.mu.Unlock()
++		}
++
++		f.h.releaseExistingSessionLocks(f.conn)
++		f.assertContext(original, "")
++		if original.lockVisits != 1 || replacement.lockVisits != 0 {
++			t.Fatalf("lock visits original/replacement = %d/%d, want 1/0", original.lockVisits, replacement.lockVisits)
++		}
++		if got := strings.Join(f.events, ","); got != "trace,context,locks:original" {
++			t.Fatalf("cleanup events = %q", got)
++		}
++		// The tracer swap detects post-trace relookup. Exactly one lookup and
++		// the absence of check-then-create also require source review.
++	})
++
++	t.Run("T5", func(t *testing.T) {
++		f := newCloseSessionFixture(t)
++		sess := f.session("built")
++		f.built = sess
++		ctx, watch, err := f.sm.newContextAndWatch(context.Background(), f.conn, "fixture-query")
++		if err != nil || watch != nil || ctx == nil {
++			t.Fatalf("ordinary context = %v, watch = %v, error = %v", ctx, watch, err)
++		}
++		if f.builderCalls != 1 || f.sm.session(f.conn) != sess {
++			t.Fatal("ordinary path did not build and register its session")
++		}
++		if sess.setIDs != 1 || sess.id != f.conn.ConnectionID || sess.loggerGets != 1 || sess.loggerSets != 1 || sess.logger == nil {
++			t.Fatal("ordinary session ID/logger initialization was not preserved")
++		}
++		f.assertContext(sess, "fixture-query")
++
++		// Exercise the retained tracer and KillConnection service with test
++		// objects only. LoadInfile's bound method is checked in source review;
++		// this control must not send a protocol request or read a file.
++		f.tracer.onStart = nil
++		_, traced := ctx.Span("fixture-probe")
++		if traced == nil || len(f.tracer.names) != 2 || f.tracer.names[1] != "fixture-probe" {
++			t.Fatal("context did not retain its tracer")
++		}
++		f.sm.connections[f.conn.ConnectionID] = f.conn
++		if err := ctx.KillConnection(f.conn.ConnectionID); err != nil || f.transport.closes != 1 {
++			t.Fatalf("retained KillConnection service: error %v, closes %d", err, f.transport.closes)
++		}
++	})
++
++	t.Run("T6", func(t *testing.T) {
++		f := newCloseSessionFixture(t)
++		f.sm.AddConn(f.conn)
++		f.h.releaseExistingSessionLocks(f.conn)
++		f.sm.RemoveConn(f.conn)
++		f.sm.WaitForClosedConnections()
++		f.assertNoCreation(0)
++		if len(f.processes.added) != 1 || f.processes.added[0] != f.conn.ConnectionID || len(f.processes.removed) != 1 || f.processes.removed[0] != f.conn.ConnectionID {
++			t.Fatal("single-close process accounting was not paired")
++		}
++		if f.processes.addr != "component-test" || len(f.sm.connections) != 0 || len(f.sm.sessions) != 0 {
++			t.Fatal("single-close bookkeeping was not removed")
++		}
++		// No duplicate-close, query join, or SessionEnd completion is inferred.
++	})
++
++	t.Run("T7", func(t *testing.T) {
++		f := newCloseSessionFixture(t)
++		sess := f.session("existing")
++		f.sm.sessions[f.conn.ConnectionID] = &connInfo{session: sess}
++		f.h.releaseExistingSessionLocks(f.conn)
++		f.assertContext(sess, "")
++		if sess.lockVisits != 1 || sess.ends != 0 || f.builderCalls != 0 {
++			t.Fatal("existing cleanup did not visit locks once without creating or ending a session")
++		}
++		if got := strings.Join(f.events, ","); got != "trace,context,locks:existing" {
++			t.Fatalf("existing cleanup order = %q", got)
++		}
++		// Empty named/table maps exercise the real release bodies; they do not
++		// prove table identity, nonempty lock release, or cleanup-debt handling.
++	})
++
++	t.Run("T8", func(t *testing.T) {
++		f := newCloseSessionFixture(t)
++		before := f.session("before")
++		after := f.session("after")
++		ci := &connInfo{session: before}
++		f.sm.sessions[f.conn.ConnectionID] = ci
++		f.tracer.onStart = func() {
++			f.sm.mu.Lock()
++			ci.session = after
++			f.sm.mu.Unlock()
++		}
++		ctx, watch, err := f.sm.newContextAndWatch(context.Background(), f.conn, "ordered-query")
++		if err != nil || watch != nil || ctx == nil || ctx.Session != after {
++			t.Fatal("ordinary context must read its session after the tracer callback")
++		}
++		f.assertContext(after, "ordered-query")
++		if f.builderCalls != 0 {
++			t.Fatal("ordinary existing-session path invoked the builder")
++		}
++
++		// The same callback must not change terminal cleanup's earlier capture.
++		ci.session = before
++		closedCtx, found := f.sm.existingContextForClose(context.Background(), f.conn)
++		if !found || closedCtx == nil || closedCtx.Session != before || ci.session != after {
++			t.Fatal("terminal context did not retain its pre-trace session")
++		}
++		if f.builderCalls != 0 || len(f.contexts) != 2 || len(f.tracer.names) != 2 || f.sm.lastPid != 2 {
++			t.Fatal("trace/read ordering introduced extra construction")
++		}
++	})
++}
++
++type closeSessionFixture struct {
++	t            *testing.T
++	sm           *SessionManager
++	h            *Handler
++	conn         *mysql.Conn
++	transport    *closeSessionConn
++	tracer       *closeSessionTracer
++	processes    *closeSessionProcesses
++	memory       *sql.MemoryManager
++	built        *closeSessionFake
++	builderErr   error
++	builderCalls int
++	contexts     []*sql.Context
++	optionCounts []int
++	events       []string
++}
++
++func newCloseSessionFixture(t *testing.T) *closeSessionFixture {
++	t.Helper()
++	f := &closeSessionFixture{
++		t:          t,
++		transport:  &closeSessionConn{},
++		processes:  &closeSessionProcesses{},
++		memory:     &sql.MemoryManager{},
++		builderErr: errors.New("component builder failed"),
++	}
++	f.conn = &mysql.Conn{ConnectionID: 17, Conn: f.transport}
++	_, span := sql.NoopTracer.Start(context.Background(), "fixture")
++	f.tracer = &closeSessionTracer{span: span, events: &f.events}
++	f.sm = NewSessionManager(
++		func(ctx context.Context, opts ...sql.ContextOption) *sql.Context {
++			f.events = append(f.events, "context")
++			created := &sql.Context{Context: ctx}
++			created.ApplyOpts(opts...)
++			f.contexts = append(f.contexts, created)
++			f.optionCounts = append(f.optionCounts, len(opts))
++			return created
++		},
++		func(context.Context, *mysql.Conn, string) (sql.Session, error) {
++			f.builderCalls++
++			if f.built != nil {
++				return f.built, nil
++			}
++			return nil, f.builderErr
++		},
++		f.tracer, nil, f.memory, f.processes, "component-server",
++	)
++	f.h = &Handler{
++		sm: f.sm,
++		e: &sqle.Engine{
++			LS:       sql.NewLockSubsystem(),
++			Analyzer: &analyzer.Analyzer{Catalog: &analyzer.Catalog{}},
++		},
++	}
++	return f
++}
++
++func (f *closeSessionFixture) session(name string) *closeSessionFake {
++	return &closeSessionFake{t: f.t, id: f.conn.ConnectionID, name: name, events: &f.events}
++}
++
++func (f *closeSessionFixture) assertNoCreation(builderCalls int) {
++	f.t.Helper()
++	if f.builderCalls != builderCalls {
++		f.t.Errorf("builder calls = %d, want %d", f.builderCalls, builderCalls)
++	}
++	if len(f.contexts) != 0 || len(f.tracer.names) != 0 || f.sm.lastPid != 0 || len(f.events) != 0 {
++		f.t.Error("absent cleanup invoked context, tracer, PID, or lock work")
++	}
++}
++
++func (f *closeSessionFixture) assertContext(sess sql.Session, query string) {
++	f.t.Helper()
++	if len(f.contexts) != 1 || len(f.optionCounts) != 1 || f.optionCounts[0] != 8 {
++		f.t.Fatalf("context/option counts = %d/%v, want one context with eight options", len(f.contexts), f.optionCounts)
++	}
++	ctx := f.contexts[0]
++	if ctx.Session != sess || ctx.Pid() != 1 || ctx.Query() != query || ctx.Memory != f.memory || ctx.ProcessList != f.processes || ctx.RootSpan() != f.tracer.span {
++		f.t.Fatal("context lost its captured session or ordinary options")
++	}
++	if ctx.Value(closeSessionTraceKey{}) != "traced" || len(f.tracer.names) != 1 || f.tracer.names[0] != "query" || f.sm.lastPid != 1 {
++		f.t.Fatal("context did not preserve tracing or PID allocation")
++	}
++}
++
++type closeSessionFake struct {
++	sql.Session // Unexpected methods fail; all expected methods are explicit below.
++	t           *testing.T
++	id          uint32
++	name        string
++	logger      *logrus.Entry
++	loggerGets  int
++	loggerSets  int
++	setIDs      int
++	lockVisits  int
++	ends        int
++	events      *[]string
++}
++
++func (s *closeSessionFake) ID() uint32 { return s.id }
++
++func (s *closeSessionFake) SetConnectionId(id uint32) {
++	s.setIDs++
++	s.id = id
++}
++
++func (s *closeSessionFake) GetLogger() *logrus.Entry {
++	s.loggerGets++
++	return s.logger
++}
++
++func (s *closeSessionFake) SetLogger(logger *logrus.Entry) {
++	s.loggerSets++
++	s.logger = logger
++}
++
++func (s *closeSessionFake) IterLocks(func(string) error) error {
++	s.lockVisits++
++	*s.events = append(*s.events, "locks:"+s.name)
++	return nil
++}
++
++func (s *closeSessionFake) CommandBegin() error {
++	s.t.Fatal("unexpected command begin in cleanup fixture")
++	return nil
++}
++
++func (s *closeSessionFake) CommandEnd() {
++	s.t.Fatal("unexpected command end in cleanup fixture")
++}
++
++func (s *closeSessionFake) SessionEnd() { s.ends++ }
++
++type closeSessionTraceKey struct{}
++
++type closeSessionTracer struct {
++	trace.Tracer
++	span    trace.Span
++	names   []string
++	onStart func()
++	events  *[]string
++}
++
++func (tr *closeSessionTracer) Start(ctx context.Context, name string, _ ...trace.SpanStartOption) (context.Context, trace.Span) {
++	tr.names = append(tr.names, name)
++	*tr.events = append(*tr.events, "trace")
++	if tr.onStart != nil {
++		tr.onStart()
++	}
++	return context.WithValue(ctx, closeSessionTraceKey{}, "traced"), tr.span
++}
++
++type closeSessionProcesses struct {
++	sql.ProcessList
++	added   []uint32
++	removed []uint32
++	addr    string
++}
++
++func (p *closeSessionProcesses) AddConnection(id uint32, addr string) {
++	p.added = append(p.added, id)
++	p.addr = addr
++}
++
++func (p *closeSessionProcesses) RemoveConnection(id uint32) {
++	p.removed = append(p.removed, id)
++}
++
++type closeSessionConn struct {
++	net.Conn
++	closes int
++}
++
++func (c *closeSessionConn) Close() error {
++	c.closes++
++	return nil
++}
++
++func (c *closeSessionConn) RemoteAddr() net.Addr { return closeSessionAddr{} }
++
++type closeSessionAddr struct{}
++
++func (closeSessionAddr) Network() string { return "component-test" }
++func (closeSessionAddr) String() string  { return "component-test" }
+--- a/server/context.go
++++ b/server/context.go
+@@ -11,6 +11,8 @@
+ // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ // See the License for the specific language governing permissions and
+ // limitations under the License.
++
++// Modified 2026-09-16: avoid creating sessions during terminal connection cleanup.
+ 
+ package server
+ 
+@@ -329,10 +331,31 @@
+ 	}
+ 
+ 	ctx, span := s.tracer.Start(ctx, "query")
+-
+-	createdCtx := s.ctxFactory(
++	// Keep the session read after Start: a custom tracer can replace it.
++	createdCtx := s.newContextForSession(ctx, conn, query, ci.session, span)
++	return createdCtx, ci.watch, nil
++}
++
++// existingContextForClose captures a session without creating one. It is not a
++// concurrent close claim; the caller retains the connection lifecycle ownership.
++func (s *SessionManager) existingContextForClose(ctx context.Context, conn *mysql.Conn) (*sql.Context, bool) {
++	// session owns s.mu internally. Do not hold it across tracing or the context
++	// factory: nextPid reacquires the same mutex.
++	sess := s.session(conn)
++	if sess == nil {
++		return nil, false
++	}
++
++	ctx, span := s.tracer.Start(ctx, "query")
++	return s.newContextForSession(ctx, conn, "", sess, span), true
++}
++
++// newContextForSession preserves the ordinary context options for an already
++// captured session. Its callers own tracing and the order of the session read.
++func (s *SessionManager) newContextForSession(ctx context.Context, conn *mysql.Conn, query string, sess sql.Session, span trace.Span) *sql.Context {
++	return s.ctxFactory(
+ 		ctx,
+-		sql.WithSession(ci.session),
++		sql.WithSession(sess),
+ 		sql.WithTracer(s.tracer),
+ 		sql.WithPid(s.nextPid()),
+ 		sql.WithQuery(query),
+@@ -344,8 +367,6 @@
+ 			LoadInfile:     conn.LoadInfile,
+ 		}),
+ 	)
+-
+-	return createdCtx, ci.watch, nil
+ }
+ 
+ // Exposed through (*sql.Context).Services.KillConnection. Calls Close on the
+--- a/server/handler.go
++++ b/server/handler.go
+@@ -12,6 +12,8 @@
+ // See the License for the specific language governing permissions and
+ // limitations under the License.
+ 
++// Modified 2026-09-16: avoid creating sessions during terminal connection cleanup.
++
+ package server
+ 
+ import (
+@@ -312,7 +314,7 @@
+ 	defer h.sm.RemoveConn(c)
+ 	defer h.e.CloseSession(c.ConnectionID)
+ 
+-	h.maybeReleaseAllLocks(c)
++	h.releaseExistingSessionLocks(c)
+ 
+ 	logrus.WithField(sql.ConnectionIdLogField, c.ConnectionID).Infof("ConnectionClosed")
+ }
+@@ -324,13 +326,28 @@
+ 		logrus.Errorf("unable to release all locks on session close: %s", err)
+ 		logrus.Errorf("unable to unlock tables on session close: %s", err)
+ 	} else {
+-		_, err = h.e.LS.ReleaseAll(ctx)
+-		if err != nil {
+-			logrus.Errorf("unable to release all locks on session close: %s", err)
+-		}
+-		if err = h.e.Analyzer.Catalog.UnlockTables(ctx, c.ConnectionID); err != nil {
+-			logrus.Errorf("unable to unlock tables on session close: %s", err)
+-		}
++		h.releaseAllLocks(ctx, c.ConnectionID)
++	}
++}
++
++// releaseExistingSessionLocks never creates a session during terminal cleanup.
++// An absent session skips the connID table sweep; this does not settle stale
++// table-lock debt or resources acquired by a failed custom builder.
++func (h *Handler) releaseExistingSessionLocks(c *mysql.Conn) {
++	ctx, ok := h.sm.existingContextForClose(context.Background(), c)
++	if !ok {
++		return
++	}
++	h.releaseAllLocks(ctx, c.ConnectionID)
++}
++
++func (h *Handler) releaseAllLocks(ctx *sql.Context, connID uint32) {
++	_, err := h.e.LS.ReleaseAll(ctx)
++	if err != nil {
++		logrus.Errorf("unable to release all locks on session close: %s", err)
++	}
++	if err = h.e.Analyzer.Catalog.UnlockTables(ctx, connID); err != nil {
++		logrus.Errorf("unable to unlock tables on session close: %s", err)
+ 	}
+ }
+ 
+--- /dev/null
++++ b/server/terminal_connection_integration_test.go
+@@ -0,0 +1,574 @@
++// Licensed under the Apache License, Version 2.0 (the "License");
++// you may not use this file except in compliance with the License.
++// You may obtain a copy of the License at
++//
++//     http://www.apache.org/licenses/LICENSE-2.0
++//
++// Unless required by applicable law or agreed to in writing, software
++// distributed under the License is distributed on an "AS IS" BASIS,
++// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
++// See the License for the specific language governing permissions and
++// limitations under the License.
++
++package server
++
++import (
++	"context"
++	"database/sql/driver"
++	"errors"
++	"fmt"
++	"io"
++	"net"
++	"strings"
++	"sync"
++	"testing"
++	"time"
++
++	"github.com/dolthub/vitess/go/mysql"
++	mysqlclient "github.com/go-sql-driver/mysql"
++	"google.golang.org/grpc/test/bufconn"
++
++	sqle "github.com/dolthub/go-mysql-server"
++	"github.com/dolthub/go-mysql-server/memory"
++	"github.com/dolthub/go-mysql-server/sql"
++)
++
++const terminalIOBound = 2 * time.Second
++
++// Each control owns a separate engine/server/manager, but the stock constructors
++// and handlers still mutate process-global system/status registries. Engine
++// construction resets status values; handlers then update counters including
++// Connections, Aborted_connects and Max_used_connections. This test adds no
++// explicit counter reset or assertion. The stock status updater and client
++// cancellation watcher expose no join; this is not all-worker terminality.
++func TestTerminalConnectionIntegration(t *testing.T) {
++	for _, mode := range []string{"preauth-eof", "malformed-handshake", "builder-error", "session-close"} {
++		cleanupFailed := false
++		t.Run(mode, func(t *testing.T) {
++			f := newTerminalFixture(t, mode == "builder-error", &cleanupFailed)
++			if mode == "preauth-eof" || mode == "malformed-handshake" {
++				f.rawGreeting(t)
++				if mode == "malformed-handshake" {
++					// A complete four-byte flags word, with protocol41 absent.
++					// Header length=4, sequence=1; this reaches the parser rather
++					// than failing the transport's packet framing/read first.
++					packet := []byte{4, 0, 0, 1, 0, 0, 0, 0}
++					if n, err := f.raw.Write(packet); err != nil || n != len(packet) {
++						t.Fatalf("write malformed handshake: n=%d err=%v", n, err)
++					}
++					terminalAwait(t, f.observer.closed, "parser terminal callback")
++				}
++				if err := f.closeClient(); err != nil {
++					t.Fatalf("close raw client: %v", err)
++				}
++			} else {
++				err := f.connect(t)
++				if mode == "builder-error" {
++					if err == nil || !strings.Contains(err.Error(), "terminal fixture builder refused") {
++						t.Fatalf("expected builder error over real protocol, got %v", err)
++					}
++				} else {
++					if err != nil {
++						t.Fatalf("client connect: %v", err)
++					}
++					if f.client == nil {
++						t.Fatal("successful Connect returned no driver connection")
++					}
++					f.capturePublishedWatch(t)
++					if err := f.closeClient(); err != nil {
++						t.Fatalf("client COM_QUIT/close: %v", err)
++					}
++				}
++			}
++			if err := f.finish(); err != nil {
++				t.Fatalf("incomplete fixture cleanup (not an expected red): %v", err)
++			}
++			f.assertTerminal(t, mode)
++		})
++		if cleanupFailed {
++			// Keep ordinary assertion failures independent (including the
++			// deliberate unsafe controls), but never continue after a cleanup
++			// failure that may retain this fixture's unfinished ownership.
++			return
++		}
++	}
++}
++
++type terminalObserved struct {
++	mu                                                           sync.Mutex
++	conn                                                         *mysql.Conn
++	connections, authenticated, closedCalls, builders, factories int
++	connectedEvents, disconnectedEvents, queryEvents             int
++	aborts                                                       []string
++	authErr                                                      error
++	created                                                      *terminalMemorySession
++	contextSessions                                              []sql.Session
++	newDone, closed                                              chan struct{}
++	newOnce, closedOnce                                          sync.Once
++}
++
++// This wrapper forwards mysql.Handler only. It must not be reused for query or
++// replica tests without also forwarding ExtendedHandler/BinlogReplicaHandler.
++type terminalHandler struct {
++	mysql.Handler
++	o *terminalObserved
++}
++
++func (h *terminalHandler) NewConnection(c *mysql.Conn) {
++	h.Handler.NewConnection(c)
++	h.o.mu.Lock()
++	h.o.conn = c
++	h.o.connections++
++	h.o.mu.Unlock()
++	h.o.newOnce.Do(func() { close(h.o.newDone) })
++}
++func (h *terminalHandler) ConnectionAuthenticated(c *mysql.Conn) error {
++	h.o.mu.Lock()
++	h.o.authenticated++
++	h.o.mu.Unlock()
++	err := h.Handler.ConnectionAuthenticated(c)
++	h.o.mu.Lock()
++	h.o.authErr = err
++	h.o.mu.Unlock()
++	return err
++}
++func (h *terminalHandler) ConnectionAborted(c *mysql.Conn, reason string) error {
++	err := h.Handler.ConnectionAborted(c, reason)
++	h.o.mu.Lock()
++	h.o.aborts = append(h.o.aborts, reason)
++	h.o.mu.Unlock()
++	return err
++}
++func (h *terminalHandler) ConnectionClosed(c *mysql.Conn) {
++	h.Handler.ConnectionClosed(c)
++	h.o.mu.Lock()
++	h.o.closedCalls++
++	h.o.mu.Unlock()
++	// Signal only after the real delegate and all its defers returned normally.
++	h.o.closedOnce.Do(func() { close(h.o.closed) })
++}
++func (o *terminalObserved) ClientConnected() {
++	o.mu.Lock()
++	defer o.mu.Unlock()
++	o.connectedEvents++
++}
++func (o *terminalObserved) ClientDisconnected() {
++	o.mu.Lock()
++	defer o.mu.Unlock()
++	o.disconnectedEvents++
++}
++func (o *terminalObserved) QueryStarted() {
++	o.mu.Lock()
++	defer o.mu.Unlock()
++	o.queryEvents++
++}
++func (*terminalObserved) QueryCompleted(bool, time.Duration) {}
++
++type terminalMemorySession struct {
++	*memory.Session
++	mu       sync.Mutex
++	events   []string
++	commands int
++}
++
++func (s *terminalMemorySession) IterLocks(fn func(string) error) error {
++	s.mu.Lock()
++	s.events = append(s.events, "locks")
++	s.mu.Unlock()
++	return s.Session.IterLocks(fn)
++}
++func (s *terminalMemorySession) CommandBegin() error {
++	s.mu.Lock()
++	s.commands++
++	s.mu.Unlock()
++	return sql.SessionCommandBegin(s.Session)
++}
++func (s *terminalMemorySession) CommandEnd() { sql.SessionCommandEnd(s.Session) }
++func (s *terminalMemorySession) SessionEnd() {
++	s.mu.Lock()
++	s.events = append(s.events, "end")
++	s.mu.Unlock()
++	sql.SessionEnd(s.Session)
++}
++
++var _ sql.LifecycleAwareSession = (*terminalMemorySession)(nil)
++
++type terminalTransport struct {
++	net.Conn
++	once   sync.Once
++	closed chan struct{}
++	err    error
++}
++
++func (c *terminalTransport) Close() error {
++	c.once.Do(func() { c.err = c.Conn.Close(); close(c.closed) })
++	return c.err
++}
++
++type terminalListener struct {
++	*bufconn.Listener
++	mu       sync.Mutex
++	accepted []*terminalTransport
++}
++
++func (l *terminalListener) Accept() (net.Conn, error) {
++	c, err := l.Listener.Accept()
++	if err != nil {
++		return nil, err
++	}
++	owned := &terminalTransport{Conn: c, closed: make(chan struct{})}
++	l.mu.Lock()
++	l.accepted = append(l.accepted, owned)
++	l.mu.Unlock()
++	return owned, nil
++}
++func (l *terminalListener) transports() []*terminalTransport {
++	l.mu.Lock()
++	defer l.mu.Unlock()
++	return append([]*terminalTransport(nil), l.accepted...)
++}
++
++type terminalFixture struct {
++	listener                                        *terminalListener
++	observer                                        *terminalObserved
++	engine                                          *sqle.Engine
++	server                                          *Server
++	handler                                         *Handler
++	raw                                             *terminalTransport
++	client                                          driver.Conn
++	watch                                           *connState
++	started                                         bool
++	dialOnce                                        sync.Once
++	acceptDone                                      chan struct{}
++	acceptErr                                       error
++	clientOnce, serverOnce, cleanupOnce, finishOnce sync.Once
++	clientErr, serverErr, cleanupErr, finishErr     error
++	cleanupDone                                     chan struct{}
++}
++
++func newTerminalFixture(t *testing.T, failBuilder bool, cleanupFailed *bool) *terminalFixture {
++	t.Helper()
++	f := &terminalFixture{
++		listener:   &terminalListener{Listener: bufconn.Listen(64 << 10)},
++		observer:   &terminalObserved{newDone: make(chan struct{}), closed: make(chan struct{})},
++		acceptDone: make(chan struct{}), cleanupDone: make(chan struct{}),
++	}
++	// Installed before the factory starts the connection-watch sweeper.
++	t.Cleanup(func() {
++		if err := f.finish(); err != nil {
++			*cleanupFailed = true
++			t.Errorf("fixture cleanup incomplete: %v", err)
++		}
++	})
++	provider := memory.NewDBProvider(memory.NewDatabase("terminal_fixture"))
++	f.engine = sqle.NewDefault(provider)
++	if f.engine.Analyzer.Catalog.MySQLDb.Enabled() {
++		t.Fatal("fixture requires disabled MySQLDb")
++	}
++	builder := func(ctx context.Context, c *mysql.Conn, addr string) (sql.Session, error) {
++		f.observer.mu.Lock()
++		f.observer.builders++
++		f.observer.mu.Unlock()
++		if failBuilder {
++			return nil, errors.New("terminal fixture builder refused")
++		}
++		base := sql.NewBaseSessionWithClientServer(addr, sql.Client{User: c.User, Capabilities: c.Capabilities}, c.ConnectionID)
++		s := &terminalMemorySession{Session: memory.NewSession(base, provider)}
++		f.observer.mu.Lock()
++		f.observer.created = s
++		f.observer.mu.Unlock()
++		return s, nil
++	}
++	factory := func(ctx context.Context, opts ...sql.ContextOption) *sql.Context {
++		created := sql.NewContext(ctx, opts...)
++		f.observer.mu.Lock()
++		f.observer.factories++
++		f.observer.contextSessions = append(f.observer.contextSessions, created.Session)
++		f.observer.mu.Unlock()
++		return created
++	}
++	var err error
++	f.server, err = NewServerWithHandler(Config{Listener: f.listener}, f.engine, factory, builder, f.observer,
++		func(h mysql.Handler) (mysql.Handler, error) {
++			f.handler = h.(*Handler)
++			return &terminalHandler{Handler: h, o: f.observer}, nil
++		})
++	if err != nil {
++		t.Fatalf("construct real server: %v", err)
++	}
++	f.started = true
++	go func() { f.acceptErr = f.server.Start(); close(f.acceptDone) }()
++	return f
++}
++
++func (f *terminalFixture) dial(ctx context.Context) (net.Conn, error) {
++	first := false
++	f.dialOnce.Do(func() { first = true })
++	if !first {
++		return nil, errors.New("fixture permits exactly one dial attempt")
++	}
++	c, err := f.listener.DialContext(ctx)
++	if err != nil {
++		return nil, err
++	}
++	f.raw = &terminalTransport{Conn: c, closed: make(chan struct{})}
++	return f.raw, nil
++}
++
++func (f *terminalFixture) rawGreeting(t *testing.T) {
++	t.Helper()
++	ctx, cancel := context.WithTimeout(context.Background(), terminalIOBound)
++	defer cancel()
++	if _, err := f.dial(ctx); err != nil {
++		t.Fatalf("raw dial: %v", err)
++	}
++	if err := f.raw.SetDeadline(time.Now().Add(terminalIOBound)); err != nil {
++		t.Fatal(err)
++	}
++	terminalAwait(t, f.observer.newDone, "NewConnection/AddConn")
++	var header [4]byte
++	if _, err := io.ReadFull(f.raw, header[:]); err != nil {
++		t.Fatalf("greeting header: %v", err)
++	}
++	n := int(header[0]) | int(header[1])<<8 | int(header[2])<<16
++	if header[3] != 0 || n == 0 || n > 65536 {
++		t.Fatalf("greeting frame: %v", header)
++	}
++	body := make([]byte, n)
++	if _, err := io.ReadFull(f.raw, body); err != nil {
++		t.Fatalf("greeting body: %v", err)
++	}
++	if body[0] != 10 {
++		t.Fatalf("expected protocol10 greeting, got %d", body[0])
++	}
++}
++
++// Direct Connector.Connect, never sql.OpenDB: no pool/reset/reconnect. The
++// positive packet limit avoids SELECT @@max_allowed_packet. NewConfig has no
++// Params, Charset or BeforeConnect hook; no option installs one. Close sends
++// COM_QUIT, not SQL. MySQLDb is disabled: this is not password verification.
++func (f *terminalFixture) connect(t *testing.T) error {
++	t.Helper()
++	cfg := mysqlclient.NewConfig()
++	cfg.User, cfg.Net, cfg.Addr = "root", "tcp", "bufconn"
++	cfg.MaxAllowedPacket = 64 << 10
++	cfg.Timeout, cfg.ReadTimeout, cfg.WriteTimeout = terminalIOBound, terminalIOBound, terminalIOBound
++	cfg.DialFunc = func(ctx context.Context, _, _ string) (net.Conn, error) { return f.dial(ctx) }
++	connector, err := mysqlclient.NewConnector(cfg)
++	if err != nil {
++		return err
++	}
++	ctx, cancel := context.WithTimeout(context.Background(), terminalIOBound)
++	defer cancel()
++	f.client, err = connector.Connect(ctx)
++	if err != nil {
++		return err
++	}
++	terminalAwait(t, f.observer.newDone, "client NewConnection/AddConn")
++	return err
++}
++
++func (f *terminalFixture) capturePublishedWatch(t *testing.T) {
++	t.Helper()
++	f.observer.mu.Lock()
++	c, expected := f.observer.conn, f.observer.created
++	f.observer.mu.Unlock()
++	if c == nil || expected == nil {
++		t.Fatal("no observed session")
++	}
++	sm := f.server.SessionManager()
++	sm.mu.Lock()
++	ci := sm.sessions[c.ConnectionID]
++	ok := ci != nil && ci.session == expected && ci.watch != nil
++	if ok {
++		f.watch = ci.watch
++	}
++	sm.mu.Unlock()
++	if !ok {
++		t.Fatal("published session/watch association missing")
++	}
++	w := sm.connWatcher
++	w.mu.RLock()
++	same := w.conns[c.ConnectionID] == f.watch && f.watch.conn == c
++	w.mu.RUnlock()
++	if !same {
++		t.Fatal("registered watch/connection identity mismatch")
++	}
++}
++
++func (f *terminalFixture) closeClient() error {
++	f.clientOnce.Do(func() {
++		if f.client != nil {
++			f.clientErr = f.client.Close()
++		}
++		if f.raw != nil {
++			f.clientErr = errors.Join(f.clientErr, f.raw.Close())
++		}
++	})
++	return f.clientErr
++}
++func (f *terminalFixture) closeServer() error {
++	f.serverOnce.Do(func() {
++		if f.server != nil {
++			f.serverErr = f.server.Close()
++		} else if f.handler != nil {
++			// The factory created a sweeper but returned no Server. This is
++			// the same single close owner, not an additional shutdown path.
++			f.handler.sm.connWatcher.Close()
++		}
++	})
++	return f.serverErr
++}
++func terminalWait(done <-chan struct{}, label string) error {
++	timer := time.NewTimer(terminalIOBound)
++	defer timer.Stop()
++	select {
++	case <-done:
++		return nil
++	case <-timer.C:
++		return fmt.Errorf("%s completion deadline", label)
++	}
++}
++func terminalAwait(t *testing.T, done <-chan struct{}, label string) {
++	t.Helper()
++	if err := terminalWait(done, label); err != nil {
++		t.Fatalf("invalid control (not an expected red): %v", err)
++	}
++}
++
++func (f *terminalFixture) finish() error {
++	f.cleanupOnce.Do(func() {
++		// The continuation owns f and every still-unfinished wait even if the
++		// caller's deadline expires. It never uses t from a background worker.
++		go func() { f.cleanupErr = f.cleanup(); close(f.cleanupDone) }()
++	})
++	f.finishOnce.Do(func() {
++		timer := time.NewTimer(12 * time.Second)
++		defer timer.Stop()
++		select {
++		case <-f.cleanupDone:
++			f.finishErr = f.cleanupErr
++		case <-timer.C:
++			f.finishErr = errors.New("cleanup ownership retained; completion not observed")
++		}
++	})
++	// Cleanup does not restart the caller's deadline or erase an earlier
++	// incomplete result if the continuation happens to finish afterward.
++	return f.finishErr
++}
++func (f *terminalFixture) cleanup() error {
++	result := f.listener.Close() // bufconn listener Close is guarded/idempotent.
++	result = errors.Join(result, f.closeClient())
++	interruptOwned := func() {
++		for _, c := range f.listener.transports() {
++			result = errors.Join(result, c.Close())
++		}
++		result = errors.Join(result, f.closeServer())
++	}
++	awaitOwned := func(done <-chan struct{}, label string) {
++		if err := terminalWait(done, label); err != nil {
++			result = errors.Join(result, err)
++			interruptOwned()
++			// An expired diagnostic deadline does not release ownership. This
++			// continuation retains all resources until the actual completion;
++			// finish reports its separate bounded wait as incomplete meanwhile.
++			<-done
++		}
++	}
++	if f.started {
++		awaitOwned(f.acceptDone, "accept loop")
++		result = errors.Join(result, f.acceptErr)
++	}
++	// The private listener has one permitted dial; after Accept exits this is
++	// the complete, stable set of accepted transports, including a handler
++	// that was launched but has not yet called NewConnection/AddConn.
++	accepted := f.listener.transports()
++	if len(accepted) > 0 {
++		awaitOwned(f.observer.newDone, "accepted AddConn")
++		awaitOwned(f.observer.closed, "terminal callback")
++		for _, c := range accepted {
++			awaitOwned(c.closed, "server transport close")
++		}
++		// No new accept/AddConn can race this point; delegate completion
++		// additionally covers SessionEnd and the map deletes after wg.Done.
++		f.server.SessionManager().WaitForClosedConnections()
++	}
++	result = errors.Join(result, f.closeServer())
++	if f.engine != nil {
++		result = errors.Join(result, f.engine.Close())
++	}
++	return result
++}
++
++// assertTerminal runs only after finish succeeds: acceptance has stopped and
++// AddConn, terminal delegate and transport-close completion are observed before
++// Wait. No live builder remains to acquire these observer/manager locks in reverse.
++func (f *terminalFixture) assertTerminal(t *testing.T, mode string) {
++	t.Helper()
++	o := f.observer
++	o.mu.Lock()
++	defer o.mu.Unlock()
++	transports := len(f.listener.transports())
++	if o.connections != 1 || o.closedCalls != 1 || o.connectedEvents != 1 || o.disconnectedEvents != 1 || transports != 1 {
++		t.Fatalf("callback counts new=%d closed=%d connected=%d disconnected=%d transports=%d", o.connections, o.closedCalls, o.connectedEvents, o.disconnectedEvents, transports)
++	}
++	if o.queryEvents != 0 {
++		t.Fatalf("unexpected SQL query events: %d", o.queryEvents)
++	}
++	wantBuilders, wantAuth := 0, 0
++	if mode == "builder-error" || mode == "session-close" {
++		wantBuilders, wantAuth = 1, 1
++	}
++	if o.builders != wantBuilders {
++		t.Errorf("terminal builder count: got %d want %d", o.builders, wantBuilders)
++	}
++	if o.authenticated != wantAuth {
++		t.Errorf("authenticated callbacks: got %d want %d", o.authenticated, wantAuth)
++	}
++	if mode == "malformed-handshake" {
++		if len(o.aborts) != 1 || !strings.Contains(o.aborts[0], "Cannot parse client handshake response") || !strings.Contains(o.aborts[0], "only support protocol 4.1") {
++			t.Errorf("parser abort oracle: %v", o.aborts)
++		}
++	} else if mode == "builder-error" || mode == "session-close" {
++		if len(o.aborts) != 0 {
++			t.Errorf("unexpected ConnectionAborted: %v", o.aborts)
++		}
++	}
++	if mode == "builder-error" && (o.authErr == nil || !strings.Contains(o.authErr.Error(), "terminal fixture builder refused")) {
++		t.Errorf("authenticated builder error: %v", o.authErr)
++	}
++	if mode == "session-close" {
++		if o.authErr != nil {
++			t.Errorf("successful authentication callback returned: %v", o.authErr)
++		}
++		if o.created == nil || o.factories != 1 || len(o.contextSessions) != 1 || o.contextSessions[0] != o.created {
++			t.Fatal("cleanup did not use the exact existing session once")
++		}
++		o.created.mu.Lock()
++		events := strings.Join(o.created.events, ",")
++		commands := o.created.commands
++		o.created.mu.Unlock()
++		if events != "locks,end" || commands != 0 {
++			t.Errorf("session lifecycle events=%q commands=%d", events, commands)
++		}
++		f.watch.mu.Lock()
++		dead := f.watch.dead
++		f.watch.mu.Unlock()
++		if !dead {
++			t.Error("registered idle watcher was not retired")
++		}
++	} else if o.created != nil || o.factories != 0 {
++		t.Errorf("absent-session close created session/context: session=%v contexts=%d", o.created != nil, o.factories)
++	}
++	sm := f.server.SessionManager()
++	sm.mu.Lock()
++	sessions, connections := len(sm.sessions), len(sm.connections)
++	sm.mu.Unlock()
++	w := sm.connWatcher
++	w.mu.RLock()
++	watches := len(w.conns)
++	w.mu.RUnlock()
++	if sessions != 0 || connections != 0 || watches != 0 || len(sm.processlist.Processes()) != 0 {
++		t.Errorf("terminal maps sessions=%d connections=%d watches=%d", sessions, connections, watches)
++	}
++}

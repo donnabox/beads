@@ -8,6 +8,7 @@ package atomicfile
 
 import (
 	"bytes"
+	"errors"
 	"fmt"
 	"io"
 	"os"
@@ -23,8 +24,7 @@ func WriteFile(path string, data []byte, perm os.FileMode) error {
 		return err
 	}
 	if _, err := io.Copy(w, bytes.NewReader(data)); err != nil {
-		_ = w.Abort()
-		return err
+		return errors.Join(err, w.Abort())
 	}
 	return w.Close()
 }
@@ -65,7 +65,8 @@ func (w *Writer) Write(p []byte) (int, error) {
 
 // Close fsyncs the temp file and atomically renames it to the target path.
 // After Close returns successfully, the target contains exactly the data
-// written. On error the temp file is removed and the target is untouched.
+// written. On error the target is untouched; temp cleanup is attempted and
+// cleanup failures are joined with the primary error.
 func (w *Writer) Close() error {
 	if w.done {
 		return nil
@@ -74,25 +75,19 @@ func (w *Writer) Close() error {
 
 	// Ensure permissions before rename — CreateTemp uses 0600 by default.
 	if err := w.f.Chmod(w.perm); err != nil {
-		_ = w.f.Close()
-		_ = os.Remove(w.f.Name())
-		return fmt.Errorf("atomicfile: chmod: %w", err)
+		return errors.Join(fmt.Errorf("atomicfile: chmod: %w", err), w.f.Close(), os.Remove(w.f.Name()))
 	}
 
 	if err := w.f.Sync(); err != nil {
-		_ = w.f.Close()
-		_ = os.Remove(w.f.Name())
-		return fmt.Errorf("atomicfile: sync: %w", err)
+		return errors.Join(fmt.Errorf("atomicfile: sync: %w", err), w.f.Close(), os.Remove(w.f.Name()))
 	}
 
 	if err := w.f.Close(); err != nil {
-		_ = os.Remove(w.f.Name())
-		return fmt.Errorf("atomicfile: close: %w", err)
+		return errors.Join(fmt.Errorf("atomicfile: close: %w", err), os.Remove(w.f.Name()))
 	}
 
 	if err := os.Rename(w.f.Name(), w.target); err != nil {
-		_ = os.Remove(w.f.Name())
-		return fmt.Errorf("atomicfile: rename: %w", err)
+		return errors.Join(fmt.Errorf("atomicfile: rename: %w", err), os.Remove(w.f.Name()))
 	}
 
 	return nil
@@ -105,6 +100,5 @@ func (w *Writer) Abort() error {
 		return nil
 	}
 	w.done = true
-	_ = w.f.Close()
-	return os.Remove(w.f.Name())
+	return errors.Join(w.f.Close(), os.Remove(w.f.Name()))
 }

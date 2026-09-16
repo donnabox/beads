@@ -2,6 +2,7 @@ package doctor
 
 import (
 	"fmt"
+	"github.com/steveyegge/beads/internal/beadsignore"
 	"os"
 	"os/exec"
 	"path/filepath"
@@ -65,6 +66,7 @@ dolt-server.log
 dolt-server.lock
 dolt-server.port
 dolt-server.activity
+dolt-server-config.yaml
 
 # Debug-mode pprof artifacts (written when dolt.debug: true in config.yaml)
 dolt-pprof/
@@ -90,7 +92,7 @@ bd.db
 # They would override fork protection in .git/info/exclude.
 # Config files (metadata.json, config.yaml) are tracked by git by default
 # since no pattern above ignores them.
-`
+` + beadsignore.GraphTemplate
 
 // ProjectGitignorePatterns are patterns that should be in the project-root .gitignore
 // to prevent accidentally committing Dolt database files and credential keys.
@@ -109,7 +111,7 @@ var ProjectGitignorePatterns = []string{
 const ProjectGitignoreHeader = "# Beads / Dolt files (added by bd init)"
 
 // requiredPatterns are patterns that MUST be in .beads/.gitignore
-var requiredPatterns = []string{
+var requiredPatterns = append([]string{
 	"*.db?*",
 	".env",
 	"redirect",
@@ -129,6 +131,7 @@ var requiredPatterns = []string{
 	"dolt-server.lock",
 	"dolt-server.port",
 	"dolt-server.activity",
+	"dolt-server-config.yaml",
 	"daemon.*",
 	"*.lock",
 	"*.corrupt.backup/",
@@ -136,7 +139,7 @@ var requiredPatterns = []string{
 	"proxied_server_client_info.json",
 	".local_version",
 	"backup/",
-}
+}, beadsignore.GraphPatterns()...)
 
 // CheckGitignore checks if .beads/.gitignore is up to date.
 // repoPath is the project root directory.
