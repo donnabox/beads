@@ -1446,7 +1446,7 @@ func serializeIPv6(addr netip.Addr) string {
 	b := addr.As16()
 	var pieces [8]uint16
 	for i := range pieces {
-		pieces[i] = uint16(b[2*i])<<8 | uint16(b[2*i+1])
+		pieces[i] = uint16(b[2*i])<<8 | uint16(b[2*i+1]) // #nosec G602 -- i is 0..7; b is [16]byte, so source indexes are 0..15.
 	}
 	compress, longest := -1, 1
 	for i := 0; i < len(pieces); {
