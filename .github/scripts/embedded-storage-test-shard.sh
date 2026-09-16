@@ -141,6 +141,12 @@ if [ "${BEADS_TEST_SHARD_LIST_ONLY:-}" = "1" ]; then
 fi
 
 if [ -x "$STORAGE_BINARY" ]; then
+  # Match go test's package cwd while preserving an explicit relative binary.
+  if [[ "$STORAGE_BINARY" != /* ]]; then
+    STORAGE_BINARY="$PWD/$STORAGE_BINARY"
+    export BEADS_TEST_EMBEDDED_TEST_BINARY="$STORAGE_BINARY"
+  fi
+  cd internal/storage/embeddeddolt
   exec "$STORAGE_BINARY" -test.v -test.count=1 -test.timeout=15m \
     -test.run "$RUN_REGEX" \
     "$@"
