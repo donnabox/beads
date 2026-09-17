@@ -264,8 +264,8 @@ linters:
         #
         # strict, for the reason the beadserrors rule gives. The negation
         # keeps the P1 transaction-body package, internal/storage/graphops,
-        # out of a rule written for the public leaf; that package gets its
-        # own, stricter, consumer-side rule when it lands (spec B6).
+        # out of a rule written for the public leaf; its own, stricter,
+        # consumer-side rule below implements spec B6.
         graphops-leaf:
           list-mode: strict
           files:
@@ -274,6 +274,22 @@ linters:
           allow:
             - "$gostd"
             - "github.com/steveyegge/beads/beadserrors"
+        # B6: only normalized storage legs can import the transaction body.
+        # The body is not a public Reader or an HTTP/CLI authority shortcut.
+        graphops-body-consumers:
+          list-mode: lax
+          files:
+            - "$all"
+            - "!**/internal/storage/dolt/**"
+            - "!**/internal/storage/embeddeddolt/**"
+            - "!**/internal/storage/domain/db/**"
+            - "!**/internal/storage/uow/**"
+            - "!**/internal/storage/graphcap/**"
+            - "!**/internal/storage/graphops/**"
+          deny:
+            - pkg: github.com/steveyegge/beads/internal/storage/graphops
+              desc: Graph transaction bodies are private to storage legs; use graphops roles.
+        # end graphops-body-consumers
     # The CONSTRUCTION half of that same boundary, and the half that actually
     # matches the failure. The depguard rule above denies a handler IMPORTING
     # the builders; it does not deny a handler naming the filter types, which
