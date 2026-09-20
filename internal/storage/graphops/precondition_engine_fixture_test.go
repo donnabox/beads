@@ -98,6 +98,7 @@ func TestGraphPreconditionEngineObservations(t *testing.T) {
 	preconditionUTCBinding(t, ctx, reader)
 	preconditionExplain(t, ctx, reader)
 	preconditionSnapshot(t, ctx, reader, writer)
+	readPreconditionComposition(t, ctx, reader, data)
 	preconditionCorruptionAndMissing(t, ctx, reader)
 	// Release pinned connections before checking engine closure.
 	if err := errors.Join(reader.Close(), writer.Close()); err != nil {
