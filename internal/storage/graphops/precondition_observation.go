@@ -80,7 +80,7 @@ LEFT JOIN (
 var errObservationOperand = errors.New("invalid graph observation operand")
 
 // This cap bounds retained scalar data under the qualified B4 schema, not a
-// driver's pre-Scan allocation for an arbitrarily altered schema.
+// driver or database/sql allocation before or during Scan for an altered schema.
 const observationRowBytes = 16 * 1024
 
 func observationContext(ctx context.Context) error {
@@ -120,8 +120,10 @@ func observeRow[T any](ctx context.Context, tx queryer, query string, args []any
 	return items[0], nil
 }
 
-// Scan only copies/retains bounded scalar values after database/sql has obtained
-// the row. It never coerces floats, booleans or time.Time into protocol text.
+// Scan checks retained scalar sizes after database/sql has obtained and copied
+// the row; transient allocations before or during Scan are not bounded here.
+// Native integer widths are normalized losslessly. Floats, booleans and
+// time.Time are never coerced into protocol text.
 func observationCells(rows *sql.Rows, count int) ([13]any, error) {
 	var values [13]any
 	if count < 1 || count > len(values) {
@@ -135,8 +137,12 @@ func observationCells(rows *sql.Rows, count int) ([13]any, error) {
 		return [13]any{}, err
 	}
 	bytes := 0
-	for _, value := range values {
-		switch v := value.(type) {
+	// Every target was constructed above as a pointer to its own value cell.
+	for _, target := range targets {
+		cell := target.(*any)
+		normalized := normalizeObservationInteger(*cell)
+		*cell = normalized
+		switch v := normalized.(type) {
 		case nil:
 		case string:
 			bytes += len(v)
@@ -152,6 +158,31 @@ func observationCells(rows *sql.Rows, count int) ([13]any, error) {
 		}
 	}
 	return values, nil
+}
+
+// Embedded rows preserve native integer widths in *any; the MySQL driver
+// generally supplies int64/uint64. Widen without signing or rounding changes.
+func normalizeObservationInteger(value any) any {
+	switch v := value.(type) {
+	case int:
+		return int64(v)
+	case int8:
+		return int64(v)
+	case int16:
+		return int64(v)
+	case int32:
+		return int64(v)
+	case uint:
+		return uint64(v)
+	case uint8:
+		return uint64(v)
+	case uint16:
+		return uint64(v)
+	case uint32:
+		return uint64(v)
+	default:
+		return value
+	}
 }
 
 func observationText(value any, maxBytes int) (string, error) {

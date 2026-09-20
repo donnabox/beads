@@ -320,7 +320,7 @@ func TestPreconditionDeadlineBeforeAndAfterQuery(t *testing.T) {
 			defer cancel()
 			q := &preconditionQueryHook{tx: tx, afterQuery: cancel}
 			got, err := f.observe(ctx, q)
-			if err == nil || !reflect.DeepEqual(got, f.zero) || q.calls != 1 {
+			if !errors.Is(err, context.Canceled) || !reflect.DeepEqual(got, f.zero) || q.calls != 1 {
 				t.Fatalf("late cancel: %+v %v", got, err)
 			}
 		})
@@ -399,6 +399,10 @@ func TestPreconditionBoundsAndLeaseAbsenceRefusals(t *testing.T) {
 		{"wrong marker", 0, int64(2), false},
 		{"invalid scope", 2, "https://example.com/scope", false},
 		{"wrong holder width", 4, strings.Repeat("b", 32), false},
+		{"upper authority", 3, strings.Repeat("A", 32), false},
+		{"nonhex authority", 3, strings.Repeat("g", 32), false},
+		{"upper holder", 4, strings.Repeat("B", 64), false},
+		{"nonhex holder", 4, strings.Repeat("g", 64), false},
 		{"nonhex renewer", 5, strings.Repeat("g", 32), false},
 		{"zero epoch", 6, "0", false},
 		{"invalid grant", 7, "0000-00-00 00:00:00.000000", false},
