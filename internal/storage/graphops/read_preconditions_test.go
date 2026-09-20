@@ -55,7 +55,10 @@ func replaceReadWitness(t *testing.T, want *expectedReadFacts, change func(*auth
 
 func TestReadFactsMatchingValuesDoNotRequireUnchangedHeadOrRenewal(t *testing.T) {
 	ctx, want, got := readFactFixture(t)
-	// A later ledger tip and HEAD are raw facts, not a failed ancestry check.
+	// These independently supplied pure facts deliberately permit a later tip
+	// with unchanged state.version. Real observers hash the ledger, so that
+	// combination cannot occur in an actual unchanged database. A later HEAD
+	// alone is a raw fact, not a failed ancestry check.
 	// A renewal may change these informational/CAS cells without stealing.
 	got.lease.renewer = strings.Repeat("1", 32)
 	got.lease.fence = strings.Repeat("2", 32)
@@ -158,8 +161,6 @@ func TestReadFactsLeaseBindingAndTimeDomain(t *testing.T) {
 		{"UTC alias not exact pin", func(l *leaseObservation) { l.zone = "UTC" }, graph.ErrNotAuthority},
 		{"expired", func(l *leaseObservation) { l.expiresAt = "2026-09-20 12:00:01.999999" }, graph.ErrNotAuthority},
 		{"equal clock", func(l *leaseObservation) { l.expiresAt = l.clock }, graph.ErrNotAuthority},
-		{"heartbeat before grant", func(l *leaseObservation) { l.heartbeatAt = "2026-09-20 12:00:00.123455" }, graph.ErrNotAuthority},
-		{"heartbeat after clock", func(l *leaseObservation) { l.heartbeatAt = "2026-09-20 12:00:02.000001" }, graph.ErrNotAuthority},
 		{"pre-epoch clock", func(l *leaseObservation) { l.clock = "1960-01-01 00:00:00.000000" }, errCorrupt},
 		{"epoch expiry", func(l *leaseObservation) { l.expiresAt = "1970-01-01 00:00:00.000000" }, errCorrupt},
 		{"invalid heartbeat", func(l *leaseObservation) { l.heartbeatAt = "invalid" }, errCorrupt},
@@ -182,10 +183,6 @@ func TestReadLeaseBudgetAccountsForQueryAndPostQueryElapsed(t *testing.T) {
 	l := got.lease
 	l.queryStarted = start
 	l.queryFinished = start.Add(2 * time.Second)
-	grant, err := readLeaseInstant(l.grantedAt)
-	if err != nil {
-		t.Fatal(err)
-	}
 	// DB expiry-clock is 18s; quantization leaves 17.999999s. Elapsed query
 	// and later work must be charged, even when less time remains at check.
 	for _, tc := range []struct {
@@ -199,10 +196,10 @@ func TestReadLeaseBudgetAccountsForQueryAndPostQueryElapsed(t *testing.T) {
 		{"equal raw expiry", 18 * time.Second, 3 * time.Second, true},
 		{"query elapsed cannot be refunded", 19 * time.Second, 2 * time.Second, true},
 		{"post-query elapsed cannot be refunded", 20 * time.Second, 10 * time.Second, true},
-		{"deadline already reached", 3 * time.Second, 3 * time.Second, true},
+		{"deadline already reached before arithmetic", 3 * time.Second, 3 * time.Second, true},
 	} {
 		t.Run(tc.name, func(t *testing.T) {
-			err := checkReadLeaseBudget(l, grant, start.Add(tc.deadline), start.Add(tc.now))
+			err := checkReadLeaseBudget(l, start.Add(tc.deadline), start.Add(tc.now))
 			if tc.wantRefusal && !errors.Is(err, graph.ErrNotAuthority) || !tc.wantRefusal && err != nil {
 				t.Fatalf("err=%v refusal=%t", err, tc.wantRefusal)
 			}
@@ -232,11 +229,7 @@ func TestReadLeaseBudgetRequiresOrderedMonotonicOperands(t *testing.T) {
 			case "future finish":
 				l.queryFinished = now.Add(time.Second)
 			}
-			grant, err := readLeaseInstant(l.grantedAt)
-			if err != nil {
-				t.Fatal(err)
-			}
-			if err := checkReadLeaseBudget(l, grant, deadline, now); !errors.Is(err, graph.ErrNotAuthority) {
+			if err := checkReadLeaseBudget(l, deadline, now); !errors.Is(err, graph.ErrNotAuthority) {
 				t.Fatalf("accepted %s: %v", mode, err)
 			}
 		})
@@ -268,5 +261,171 @@ func TestReadFactsDeadlineAndStateChange(t *testing.T) {
 	got.lease.clock, got.lease.expiresAt = "1999-01-01 00:00:02.000000", "1999-01-01 00:00:20.000000"
 	if err := checkReadFacts(ctx, want, got); err != nil {
 		t.Fatalf("application wall clock leaked into lease comparison: %v", err)
+	}
+}
+
+func TestReadFactsBindingPrecedesNoScope(t *testing.T) {
+	for _, mode := range []string{"active", "pending", "absent"} {
+		t.Run(mode, func(t *testing.T) {
+			ctx, want, got := readFactFixture(t)
+			got.scope = scopeObservation{presence: observationAbsent}
+			if mode == "pending" {
+				want.pending = true
+			}
+			if mode == "absent" {
+				want.witness = nil
+				want.witnessInstallationKey = ""
+				got.ledger.requested = nil
+			}
+			if err := checkReadFacts(ctx, want, got); !errors.Is(err, graph.ErrNoScope) {
+				t.Fatalf("bound absent Scope: %v", err)
+			}
+			for _, field := range []string{"database", "branch"} {
+				wrong := got
+				if field == "database" {
+					wrong.state.database = "other"
+				} else {
+					wrong.state.branch = "feature"
+				}
+				if err := checkReadFacts(ctx, want, wrong); !errors.Is(err, graph.ErrNotAuthority) || errors.Is(err, graph.ErrNoScope) {
+					t.Fatalf("absent on wrong %s: %v", field, err)
+				}
+			}
+		})
+	}
+}
+
+func TestReadFactsDistinguishesRestoredAndSupersedingEpochs(t *testing.T) {
+	for _, tc := range []struct {
+		name    string
+		epoch   uint64
+		missing bool
+		want    error
+	}{
+		{"restore lost prefix", 8, true, graph.ErrStateRewound},
+		{"older epoch retained prefix is inconsistent", 8, false, graph.ErrNotAuthority},
+		{"superseding epoch lost prefix", 10, true, graph.ErrNotAuthority},
+		{"superseding epoch retained prefix", 10, false, graph.ErrNotAuthority},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			ctx, want, got := readFactFixture(t)
+			got.scope.epoch = tc.epoch
+			if tc.missing {
+				got.ledger.recorded = ledgerPoint{presence: observationAbsent}
+				got.ledger.tip = ledgerPoint{observationPresent, 2, strings.Repeat("e", 64)}
+			}
+			if err := checkReadFacts(ctx, want, got); !errors.Is(err, tc.want) {
+				t.Fatalf("got %v want %v", err, tc.want)
+			}
+		})
+	}
+}
+
+func TestReadFactsForeignInstallationPrecedesWitnessState(t *testing.T) {
+	for _, mode := range []string{"pending", "pending without active", "unverified"} {
+		t.Run(mode, func(t *testing.T) {
+			ctx, want, got := readFactFixture(t)
+			want.witnessInstallationKey = strings.Repeat("e", 64)
+			if mode == "unverified" {
+				replaceReadWitness(t, &want, func(w *authority.WitnessFields) { w.Unverified = true })
+			} else {
+				want.pending = true
+				if mode == "pending without active" {
+					want.witness = nil
+					got.ledger.requested = nil
+				}
+			}
+			if err := checkReadFacts(ctx, want, got); !errors.Is(err, authority.ErrWrongInstallation) {
+				t.Fatalf("foreign %s: %v", mode, err)
+			}
+		})
+	}
+}
+
+func TestReadFactsCompositionOperandsAndZeroObservations(t *testing.T) {
+	for _, tc := range []struct {
+		name   string
+		change func(*expectedReadFacts, *preconditionObservations)
+		want   error
+	}{
+		{"missing database before absent Scope", func(w *expectedReadFacts, o *preconditionObservations) {
+			w.database = ""
+			o.scope = scopeObservation{presence: observationAbsent}
+		}, errObservationOperand},
+		{"invalid local key before pending", func(w *expectedReadFacts, _ *preconditionObservations) { w.installationKey = "bad"; w.pending = true }, errObservationOperand},
+		{"invalid witness key before pending", func(w *expectedReadFacts, _ *preconditionObservations) {
+			w.witnessInstallationKey = ""
+			w.pending = true
+		}, errObservationOperand},
+		{"zero requested sequence", func(_ *expectedReadFacts, o *preconditionObservations) { o.ledger.requested = new(uint64) }, errObservationOperand},
+		{"zero recorded presence", func(_ *expectedReadFacts, o *preconditionObservations) { o.ledger.recorded = ledgerPoint{} }, errCorrupt},
+		{"zero tip presence", func(_ *expectedReadFacts, o *preconditionObservations) { o.ledger.tip = ledgerPoint{} }, errCorrupt},
+		{"zero lease presence", func(_ *expectedReadFacts, o *preconditionObservations) { o.lease = leaseObservation{} }, errCorrupt},
+		{"zero state version", func(_ *expectedReadFacts, o *preconditionObservations) { o.state.version = "" }, errCorrupt},
+		{"zero observed database", func(_ *expectedReadFacts, o *preconditionObservations) { o.state.database = "" }, errCorrupt},
+		{"zero HEAD", func(_ *expectedReadFacts, o *preconditionObservations) { o.ledger.head = "" }, errCorrupt},
+		{"absent ledger payload", func(_ *expectedReadFacts, o *preconditionObservations) {
+			o.ledger.recorded.presence = observationAbsent
+		}, errCorrupt},
+		{"zero present ledger seq", func(_ *expectedReadFacts, o *preconditionObservations) { o.ledger.recorded.seq = 0 }, errCorrupt},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			ctx, want, got := readFactFixture(t)
+			tc.change(&want, &got)
+			if err := checkReadFacts(ctx, want, got); !errors.Is(err, tc.want) {
+				t.Fatalf("got %v want %v", err, tc.want)
+			}
+		})
+	}
+	for _, pending := range []bool{false, true} {
+		ctx, want, got := readFactFixture(t)
+		want.witness = nil
+		want.pending = pending
+		got.ledger.requested = nil // diagnostic observation, not a missing active-witness lookup
+		wantErr := graph.ErrNotAuthority
+		if pending {
+			wantErr = authority.ErrWitnessPending
+		}
+		if err := checkReadFacts(ctx, want, got); !errors.Is(err, wantErr) || errors.Is(err, errObservationOperand) {
+			t.Fatalf("legitimate nil diagnostic operand: %v", err)
+		}
+	}
+}
+
+func TestReadFactsGrantPrecisionAndInformationalHeartbeat(t *testing.T) {
+	ctx, want, got := readFactFixture(t)
+	replaceReadWitness(t, &want, func(w *authority.WitnessFields) { w.GrantedAt = "2026-09-20T12:00:00.123456789Z" })
+	if err := checkReadFacts(ctx, want, got); !errors.Is(err, authority.ErrInvalidRecord) {
+		t.Fatalf("submicrosecond expectation: %v", err)
+	}
+	for _, heartbeat := range []civilTimestamp{"2026-09-20 11:59:50.000000", "2026-09-20 12:00:30.000000"} {
+		ctx, want, got := readFactFixture(t)
+		// Simulate renewal with independent application-clock heartbeat. The
+		// DB owns expiry/clock; the unchanged witness still names this grant.
+		got.lease.heartbeatAt = heartbeat
+		got.lease.expiresAt = "2026-09-20 12:01:00.000000"
+		got.lease.fence = strings.Repeat("1", 32)
+		got.lease.renewer = strings.Repeat("2", 32)
+		if err := checkReadFacts(ctx, want, got); err != nil {
+			t.Fatalf("informational heartbeat %s blocked renewal: %v", heartbeat, err)
+		}
+	}
+}
+
+func TestReadFactsPrivateLeaseRefusalsAndDeadlinePlumbing(t *testing.T) {
+	ctx, want, got := readFactFixture(t)
+	got.lease.expiresAt = got.lease.clock
+	if err := checkReadFacts(ctx, want, got); !errors.Is(err, errReadLeaseExpired) || !errors.Is(err, graph.ErrNotAuthority) {
+		t.Fatalf("own expired classification: %v", err)
+	}
+	got.lease.holder = strings.Repeat("e", 64)
+	if err := checkReadFacts(ctx, want, got); !errors.Is(err, graph.ErrNotAuthority) || errors.Is(err, errReadLeaseExpired) {
+		t.Fatalf("foreign expired must not suggest self-regrant: %v", err)
+	}
+	_, want, got = readFactFixture(t)
+	ctx, cancel := context.WithDeadline(t.Context(), got.lease.queryStarted.Add(30*time.Second))
+	defer cancel()
+	if err := checkReadFacts(ctx, want, got); !errors.Is(err, errReadLeaseBudget) || !errors.Is(err, graph.ErrNotAuthority) || errors.Is(err, errReadLeaseExpired) {
+		t.Fatalf("actual context deadline exceeds live lease: %v", err)
 	}
 }
