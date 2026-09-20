@@ -285,7 +285,7 @@ func expectIncidentPage(m sqlmock.Sqlmock, direction graph.Direction, after stri
 		branch = "SELECT path FROM (" + branch + ") candidates"
 		args = append(args, "beads/plan", after)
 	}
-	query := "SELECT b.path, i.path IS NOT NULL, l.path IS NOT NULL, " + joinedLinkColumns + " FROM graph_beads b LEFT JOIN (" + branch + " ORDER BY path LIMIT ?) i ON TRUE LEFT JOIN graph_links l ON l.path = i.path WHERE b.path = ? ORDER BY i.path"
+	query := "SELECT b.path, l.candidate_path IS NOT NULL, l.path IS NOT NULL, " + joinedLinkColumns + " FROM graph_beads b LEFT JOIN (SELECT /*+ LEFT_OUTER_LOOKUP_JOIN(i,src) */ i.path AS candidate_path, src.path, src.type_url, src.revision, src.attribution_principal, src.attribution_status, src.properties, src.source_kind, src.source_path, src.source_url, src.source_pin, src.target_kind, src.target_path, src.target_url, src.target_pin FROM (" + branch + " ORDER BY path LIMIT ?) i LEFT JOIN graph_links src ON src.path = i.path) l ON TRUE WHERE b.path = ? ORDER BY l.candidate_path"
 	args = append(args, limit+1, "beads/plan")
 	m.ExpectQuery(regexp.QuoteMeta(query)).WithArgs(args...).WillReturnRows(rows).RowsWillBeClosed()
 }
@@ -650,6 +650,13 @@ func TestIncidentPagePreparedParameterEnumeration(t *testing.T) {
 			}
 			if got := enumerate(t, query); !slices.Equal(got, want) || len(args) != len(want) || args[len(args)-2] != 3 || args[len(args)-1] != "beads/plan" {
 				t.Fatalf("parameters=%v want=%v args=%v", got, want, args)
+			}
+			missing := strings.Replace(query, "src.path = i.path", "src.path = i.path AND FALSE", 1)
+			if missing == query || !slices.Equal(enumerate(t, missing), want) {
+				t.Fatal("diagnostic must preserve independently counted parameters")
+			}
+			if strings.Count(query, " LIMIT ?") != 1 || strings.Count(query, "LEFT_OUTER_LOOKUP_JOIN(i,src)") != 1 || !strings.Contains(query, "i.path AS candidate_path, src.path") {
+				t.Fatal("candidate cap or independent projection shape changed")
 			}
 			if direction == graph.DirectionBoth {
 				original := strings.Replace(query, "SELECT path FROM (SELECT path FROM graph_links", "SELECT path FROM graph_links", 1)

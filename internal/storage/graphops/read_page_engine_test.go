@@ -22,6 +22,7 @@ type pageFixtureLink struct{ path, typeURL, source, target, revision string }
 // positive read transaction has closed. This is not a schema/authority install.
 func verifyEnginePageControls(t *testing.T, ctx context.Context, db fixtureDB) {
 	t.Helper()
+	before := fixtureTablesDigest(t, ctx, db)
 	tx, err := db.BeginTx(ctx, nil)
 	if err != nil {
 		t.Fatal(err)
@@ -42,6 +43,16 @@ func verifyEnginePageControls(t *testing.T, ctx context.Context, db fixtureDB) {
 	capturePlan := func(name, after, query string, args []any) {
 		if embedded {
 			capturePageExplain(t, ctx, tx, name, after, query, args)
+		}
+	}
+	hydrationPlans := 0
+	captureIncident := func(name, path string, direction graph.Direction, window pageWindow, query string, args []any) {
+		if embedded {
+			lines := capturePageExplain(t, ctx, tx, name, window.afterPath, query, args)
+			if err := checkIncidentHydrationPlan(lines, path, direction, window); err != nil {
+				t.Fatalf("incident hydration plan %s: %v", name, err)
+			}
+			hydrationPlans++
 		}
 	}
 	scope := scopeFromFixtureTx(t, ctx, tx)
@@ -95,9 +106,22 @@ func verifyEnginePageControls(t *testing.T, ctx context.Context, db fixtureDB) {
 		if err != nil {
 			t.Fatal(err)
 		}
+		var attribution graph.Attribution
+		var principal, status any
+		if i == 0 || i == 4 {
+			kind := graph.AttributionClaimed
+			if i == 4 {
+				kind = graph.AttributionUnknown
+			}
+			attribution, err = graph.NewAttribution("page writer opaque", kind)
+			if err != nil {
+				t.Fatal(err)
+			}
+			principal, status = attribution.Principal(), string(attribution.Status())
+		}
 		sk, sp, su := pageFixtureEndpoint(source)
 		tk, tp, tu := pageFixtureEndpoint(target)
-		if _, err := tx.ExecContext(ctx, "INSERT INTO graph_links (path,type_url,revision,properties,source_kind,source_path,source_url,source_pin,target_kind,target_path,target_url,target_pin,last_authority_id,last_epoch,created_at,updated_at) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,1,'2026-09-17 00:00:00','2026-09-17 00:00:00')", f.path, f.typeURL, f.revision, []byte("{}"), sk, sp, su, source.Pin(), tk, tp, tu, target.Pin(), strings.Repeat("a", 32)); err != nil {
+		if _, err := tx.ExecContext(ctx, "INSERT INTO graph_links (path,type_url,revision,properties,attribution_principal,attribution_status,source_kind,source_path,source_url,source_pin,target_kind,target_path,target_url,target_pin,last_authority_id,last_epoch,created_at,updated_at) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,1,'2026-09-17 00:00:00','2026-09-17 00:00:00')", f.path, f.typeURL, f.revision, []byte("{}"), principal, status, sk, sp, su, source.Pin(), tk, tp, tu, target.Pin(), strings.Repeat("a", 32)); err != nil {
 			t.Fatalf("seed page Link %s: %v", f.path, err)
 		}
 		revision, err := graph.NewRevision(f.revision)
@@ -108,7 +132,7 @@ func verifyEnginePageControls(t *testing.T, ctx context.Context, db fixtureDB) {
 		if err != nil {
 			t.Fatal(err)
 		}
-		link, err := graph.NewLink(graph.LinkSpec{Path: f.path, TypeURL: f.typeURL, Revision: revision, Properties: properties, Source: source, Target: target})
+		link, err := graph.NewLink(graph.LinkSpec{Path: f.path, TypeURL: f.typeURL, Revision: revision, Properties: properties, Source: source, Target: target, Attribution: attribution})
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -170,7 +194,7 @@ func verifyEnginePageControls(t *testing.T, ctx context.Context, db fixtureDB) {
 		capturePlan("unfiltered", after, query, args)
 		return readLinkPageInTx(ctx, tx, scope, linkPageSelection{}, window, fixtureLimits)
 	})
-	for _, tc := range []struct {
+	incidentCases := []struct {
 		name      string
 		direction graph.Direction
 		want      []string
@@ -178,11 +202,18 @@ func verifyEnginePageControls(t *testing.T, ctx context.Context, db fixtureDB) {
 		{"incident out", graph.DirectionOut, paths(0, 1, 2, 3, 5, 6, 9, 10, 12)},
 		{"incident in", graph.DirectionIn, paths(4, 5, 7, 8, 11, 13)},
 		{"incident both", graph.DirectionBoth, paths(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13)},
-	} {
+	}
+	// Independent from captureIncident: declared membership sizes yield nonempty
+	// pages plus one terminal probe each, then 3 directions × 2 anchors × 2 boundaries.
+	expectedPlans := 3 * 2 * 2
+	for _, tc := range incidentCases {
+		expectedPlans += (len(tc.want)+1)/2 + 1
+	}
+	for _, tc := range incidentCases {
 		verifyFixturePageTraversal(t, tc.name, tc.want, expected, func(after string) (linkRowsPage, error) {
 			window := pageWindow{afterPath: after, limit: 2}
 			query, args := incidentPageQuery(anchor, tc.direction, window, fixtureLimits.valueBytes)
-			capturePlan(tc.name, after, query, args)
+			captureIncident(tc.name, anchor, tc.direction, window, query, args)
 			return readIncidentPageInTx(ctx, tx, scope, anchor, tc.direction, window, fixtureLimits)
 		})
 	}
@@ -199,7 +230,7 @@ func verifyEnginePageControls(t *testing.T, ctx context.Context, db fixtureDB) {
 			for _, after := range []string{"", "links/zzzz"} {
 				window := pageWindow{afterPath: after, limit: 2}
 				query, args := incidentPageQuery(anchorPath, direction, window, fixtureLimits.valueBytes)
-				capturePlan(fmt.Sprintf("incident anchor=%s direction=%v", anchorPath, direction), after, query, args)
+				captureIncident(fmt.Sprintf("incident anchor=%s direction=%v", anchorPath, direction), anchorPath, direction, window, query, args)
 				page, err := readIncidentPageInTx(ctx, tx, scope, anchorPath, direction, window, fixtureLimits)
 				if (anchorPath == empty && err != nil) || (anchorPath != empty && !errors.Is(err, errAbsent)) {
 					t.Fatalf("anchor=%s direction=%v error=%v", anchorPath, direction, err)
@@ -208,8 +239,18 @@ func verifyEnginePageControls(t *testing.T, ctx context.Context, db fixtureDB) {
 			}
 		}
 	}
+	verifyIncidentMissingHydration(t, ctx, tx, anchor)
 	if err := tx.Rollback(); err != nil {
 		t.Fatal(err)
+	}
+	if after := fixtureTablesDigest(t, ctx, db); after != before {
+		t.Fatal("page controls changed persisted table digest")
+	}
+	if embedded && hydrationPlans != expectedPlans {
+		t.Fatalf("hydration plans=%d want=%d", hydrationPlans, expectedPlans)
+	}
+	if embedded && !t.Failed() {
+		fmt.Println("GRAPH_PAGE_HYDRATION_PLAN_OK embedded keyed hydration with global candidate cap; candidate scan cost unqualified")
 	}
 	fmt.Println("GRAPH_PAGE_CONTROLS_RECORDED rollback-only single-transaction traversal; plans require independent index qualification")
 }
@@ -237,6 +278,11 @@ func verifyFixturePageTraversal(t *testing.T, name string, want []string, expect
 		for i, link := range page.items {
 			path := want[offset+i]
 			w := expected[path]
+			attribution, present := link.Attribution()
+			wantAttribution, wantPresent := w.Attribution()
+			if attribution != wantAttribution || present != wantPresent {
+				t.Fatalf("page %s changed attribution for %s", name, path)
+			}
 			if link.Path() != path || link.TypeURL() != w.TypeURL() || link.Revision() != w.Revision() || link.Properties().String() != w.Properties().String() || !link.Source().Equal(w.Source()) || !link.Target().Equal(w.Target()) {
 				t.Fatalf("page %s returned altered/wrong Link %s wanted %s", name, link.Path(), path)
 			}
@@ -267,7 +313,7 @@ func verifyFixturePageTraversal(t *testing.T, name string, want []string, expect
 	t.Fatalf("page %s failed finite traversal", name)
 }
 
-func capturePageExplain(t *testing.T, ctx context.Context, tx *sql.Tx, name, after, query string, args []any) {
+func capturePageExplain(t *testing.T, ctx context.Context, tx *sql.Tx, name, after, query string, args []any) []string {
 	t.Helper()
 	rows, err := tx.QueryContext(ctx, "EXPLAIN FORMAT=tree "+query, args...)
 	if err != nil {
@@ -327,4 +373,44 @@ func capturePageExplain(t *testing.T, ctx context.Context, tx *sql.Tx, name, aft
 		t.Fatal(err)
 	}
 	fmt.Printf("GRAPH_PAGE_EXPLAIN %s\n", raw)
+	lines := make([]string, len(plan))
+	for i := range plan {
+		lines[i] = plan[i][0]
+	}
+	return lines
+}
+
+// The false-join variant only observes projection shape; it never qualifies a
+// production plan. Preserve a real candidate while deliberately removing src.
+func verifyIncidentMissingHydration(t *testing.T, ctx context.Context, tx *sql.Tx, path string) {
+	t.Helper()
+	for _, direction := range []graph.Direction{graph.DirectionIn, graph.DirectionOut, graph.DirectionBoth} {
+		query, args := incidentPageQuery(path, direction, pageWindow{limit: 1}, fixtureLimits.valueBytes)
+		altered := strings.Replace(query, "src.path = i.path", "src.path = i.path AND FALSE", 1)
+		if altered == query || strings.Count(altered, "?") != len(args) || strings.Count(altered, "LEFT_OUTER_LOOKUP_JOIN(i,src)") != 1 {
+			t.Fatal("missing-hydration diagnostic did not preserve bound shape")
+		}
+		rows, err := tx.QueryContext(ctx, altered, args...)
+		if err != nil {
+			t.Fatal(err)
+		}
+		count := 0
+		for rows.Next() {
+			count++
+			var anchor string
+			var candidate, present bool
+			var r linkRow
+			err = rows.Scan(append([]any{&anchor, &candidate, &present}, linkScanTargets(&r)...)...)
+			if err != nil || anchor != path || !candidate || present || !emptyPageLinkProjection(r) || count > 2 {
+				_ = rows.Close()
+				t.Fatalf("missing hydration projection: anchor=%q candidate=%t present=%t count=%d err=%v row=%+v", anchor, candidate, present, count, err, r)
+			}
+		}
+		if err := errors.Join(rows.Err(), rows.Close(), ctx.Err()); err != nil {
+			t.Fatal(err)
+		}
+		if count != 2 {
+			t.Fatalf("missing hydration diagnostic rows=%d want2", count)
+		}
+	}
 }
