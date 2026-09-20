@@ -55,8 +55,11 @@ func readPreconditionComposition(t *testing.T, parent context.Context, conn *sql
 			if err != nil {
 				t.Fatal(err)
 			}
+			if q.calls != 4 {
+				t.Fatalf("%s observation SELECT count = %d, want 4", method, q.calls)
+			}
 			if err := checkReadFacts(ctx, want, got); err != nil {
-				t.Fatal(err)
+				t.Fatalf("seeded facts refused: %v; observed=%+v", err, got)
 			}
 			calls := compositionBody(t, ctx, q, method, receipt)
 			if q.calls != calls {
@@ -86,6 +89,10 @@ func readPreconditionComposition(t *testing.T, parent context.Context, conn *sql
 				// Leave scheduling headroom between the distinct expired and
 				// insufficient-budget diagnoses, within the parent fixture bound.
 				limit = time.Minute
+				deadline, ok := parent.Deadline()
+				if !ok || time.Until(deadline) < limit {
+					t.Fatalf("fixture budget exhausted before short-budget control: deadline=%v, remaining=%v", deadline, time.Until(deadline))
+				}
 			}
 			ctx, cancel := context.WithTimeout(parent, limit)
 			defer cancel()
@@ -103,6 +110,11 @@ func readPreconditionComposition(t *testing.T, parent context.Context, conn *sql
 			if err == nil {
 				bodyCalled = true
 				row, err = readBeadInTx(ctx, q, fixtureScope, "beads/plan", fixtureLimits)
+			}
+			// Other administrative/lease refusals also join ErrNotAuthority;
+			// this control must exercise the plain foreign-holder diagnosis.
+			if tc.want == graph.ErrNotAuthority && err != graph.ErrNotAuthority {
+				t.Fatalf("foreign-holder refusal = %v, want exact ErrNotAuthority", err)
 			}
 			if !errors.Is(err, tc.want) || bodyCalled || q.calls != 4 || !reflect.DeepEqual(row, graph.BeadRecord{}) {
 				t.Fatalf("refusal: err=%v want=%v body=%v SELECTs=%d row=%+v", err, tc.want, bodyCalled, q.calls, row)
