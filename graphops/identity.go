@@ -8,8 +8,9 @@ import "context"
 // the authority" — and reads three rows. ScopeBootstrapper mints, once.
 // Admin is the local administrative composition root: promotion, rotation,
 // the ledger lane, and the restore marker. Transitions are multi-phase and
-// recovered by evidence on the next load; each one produces the witness and
-// carries its own preconditions in place of the head check. None of these
+// recovered by explicit administration under the held guard using fresh evidence;
+// each produces the witness and carries its own preconditions in place of the
+// head check. Load remains diagnostic. None of these
 // roles is ever reachable from a server: httpapi has no field for them.
 
 // MintRequest asks for a Scope to be minted under a URL.

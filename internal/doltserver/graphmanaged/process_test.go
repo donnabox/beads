@@ -282,8 +282,12 @@ func fixtureAdmission(t *testing.T, mode string) admitted {
 func filepathCanonical(p string) (string, error) { return filepath.EvalSymlinks(p) }
 func launchFixture(t *testing.T, ctx context.Context, mode string, tm timing) (*controller, *generation, error) {
 	t.Helper()
+	return launchObservedFixture(t, ctx, mode, tm, recordOwner)
+}
+func launchObservedFixture(t *testing.T, ctx context.Context, mode string, tm timing, observe func(processOwner) processOwner) (*controller, *generation, error) {
+	t.Helper()
 	a := fixtureAdmission(t, mode)
-	c := &controller{observe: recordOwner}
+	c := &controller{observe: observe}
 	g, err := c.startWithTiming(ctx, a, tm)
 	if g != nil {
 		t.Logf("owned child pid=%d mode=%s", g.cmd.Process.Pid, mode)
@@ -530,10 +534,19 @@ func TestManagedCancellationAndClose(t *testing.T) {
 	}{{"06_awaiting_prepared", "wait-prepared", 100 * time.Millisecond}, {"08_between_write_and_ack", "no-ack", 200 * time.Millisecond}, {"22_exit_races_cancel", "exit-after", 100 * time.Millisecond}} {
 		t.Run(tt.name, func(t *testing.T) {
 			ctx, cancel := context.WithCancel(context.Background())
-			timer := time.AfterFunc(tt.delay, cancel)
-			defer timer.Stop()
 			defer cancel()
-			_, g, _ := launchFixture(t, ctx, tt.mode, fixtureTiming)
+			var timer *time.Timer
+			defer func() {
+				if timer != nil {
+					timer.Stop()
+				}
+			}()
+			_, g, _ := launchObservedFixture(t, ctx, tt.mode, fixtureTiming, func(p processOwner) processOwner {
+				// Cancel a spawned process, not the binary admission/hash work.
+				// The opt-in engine test makes this executable much larger.
+				timer = time.AfterFunc(tt.delay, cancel)
+				return recordOwner(p)
+			})
 			if g == nil {
 				t.Fatal("not started")
 			}

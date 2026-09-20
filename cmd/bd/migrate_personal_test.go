@@ -203,10 +203,10 @@ func TestMigratePersonal_preservesComments(t *testing.T) {
 	}
 
 	// The comment must survive in the planning repo as a structured comment that
-	// `bd comments list` returns.
+	// `bd comments <issue-id>` returns.
 	got := bdCommentList(t, bd, planningDir, issue.ID)
 	if !strings.Contains(got, commentText) {
-		t.Errorf("migrated issue %s lost its comment in the planning repo %s.\ncomments list output:\n%s",
+		t.Errorf("migrated issue %s lost its comment in the planning repo %s.\ncomments output:\n%s",
 			issue.ID, planningDir, got)
 	}
 }
