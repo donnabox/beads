@@ -31,4 +31,11 @@
 // the entire page. SQL row limits bound transfer, not engine scans or allocation.
 // These bodies make no BDP serving, migration or History claim. Only tests call
 // them. Fixture schemas and writes remain test-only; there is no production seed.
+//
+// Beads pages batch raw rows (including charged lookahead), distinct descriptors,
+// and complete owned expansions in at most three statements. They require a
+// finite context and share conservative private row/byte/group caps. A legal
+// singleton may exceed page capacity: installer/effective-capacity reconciliation
+// is mandatory before any public traversal guarantee. The decoded afterPath is
+// not a public cursor; lookahead descriptor validity is not continuation validity.
 package graphops
