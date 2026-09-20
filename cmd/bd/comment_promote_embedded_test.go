@@ -23,17 +23,32 @@ func bdComment(t *testing.T, bd, dir string, args ...string) string {
 	return stdout.String()
 }
 
-// bdCommentList runs "bd comments list" and returns stdout.
+// bdCommentList runs "bd comments <issue-id>" and returns stdout.
 func bdCommentList(t *testing.T, bd, dir, issueID string) string {
 	t.Helper()
-	cmd := exec.Command(bd, "comments", "list", issueID)
+	cmd := exec.Command(bd, "comments", issueID)
 	cmd.Dir = dir
 	cmd.Env = bdEnv(dir)
 	stdout, stderr, err := runCommandBuffers(t, cmd)
 	if err != nil {
-		t.Fatalf("bd comments list %s failed: %v\nstdout:\n%s\nstderr:\n%s", issueID, err, stdout.String(), stderr.String())
+		t.Fatalf("bd comments %s failed: %v\nstdout:\n%s\nstderr:\n%s", issueID, err, stdout.String(), stderr.String())
 	}
 	return stdout.String()
+}
+
+func TestEmbeddedCommentListHelper(t *testing.T) {
+	if os.Getenv("BEADS_TEST_EMBEDDED_DOLT") != "1" {
+		t.Skip("set BEADS_TEST_EMBEDDED_DOLT=1 to run embedded dolt integration tests")
+	}
+	t.Parallel()
+	bd := buildEmbeddedBD(t)
+	dir, _, _ := bdInit(t, bd, "--prefix", "cml")
+	issue := bdCreate(t, bd, dir, "Comment listing target", "--type", "task")
+	const body = "comment-list-helper-preserves-the-body"
+	bdComment(t, bd, dir, issue.ID, body)
+	if got := bdCommentList(t, bd, dir, issue.ID); !strings.Contains(got, body) {
+		t.Fatalf("listed comments lost the body: %s", got)
+	}
 }
 
 func TestEmbeddedComments(t *testing.T) {
