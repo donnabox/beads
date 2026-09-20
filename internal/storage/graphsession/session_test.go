@@ -261,7 +261,10 @@ func TestQuitWriteBoundAndOwnedCleanup(t *testing.T) {
 			dispatchedBeforeWrite := false
 			observed.onCommit = func() { dispatchedBeforeWrite = s.state == dispatched }
 
-			cfg := s.config(s.target)
+			cfg, err := s.config(s.target)
+			if err != nil {
+				t.Fatal(err)
+			}
 			// Test-only transport substitution; no injectable factory exists in open.
 			cfg.DialFunc = func(context.Context, string, string) (net.Conn, error) {
 				s.transport = &transport{Conn: observed}
@@ -361,8 +364,11 @@ func TestIdentityAndClosedConfiguration(t *testing.T) {
 		}
 	}
 	s := &session{}
-	cfg := s.config(e)
-	if cfg.WriteTimeout != writeBound || cfg.WriteTimeout <= 0 || cfg.Params != nil || cfg.MultiStatements || cfg.AllowAllFiles || cfg.MaxAllowedPacket <= 0 || cfg.DialFunc == nil {
+	cfg, err := s.config(e)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if cfg.WriteTimeout != writeBound || cfg.WriteTimeout <= 0 || cfg.Params != nil || cfg.MultiStatements || !cfg.InterpolateParams || cfg.AllowAllFiles || cfg.MaxAllowedPacket <= 0 || cfg.DialFunc == nil {
 		t.Fatal("unclosed config")
 	}
 }
@@ -428,7 +434,10 @@ func TestNoReconnectOrGlobalDialer(t *testing.T) {
 	t.Cleanup(func() { mysql.DeregisterDialContext("tcp") })
 	e, _ := startPeer(t, nil)
 	s := &session{}
-	cfg := s.config(e)
+	cfg, err := s.config(e)
+	if err != nil {
+		t.Fatal(err)
+	}
 	mc, err := mysql.NewConnector(cfg)
 	if err != nil {
 		t.Fatal(err)

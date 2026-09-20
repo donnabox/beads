@@ -15,6 +15,7 @@ import (
 // A protocol fixture, not a database: predefined replies test ownership of real
 // mysql driver I/O. It implements no locks, transactions or engine semantics.
 type reply struct {
+	infile        *infileProbe
 	nextSets      []reply
 	columnNames   []string
 	integer       bool
@@ -29,9 +30,11 @@ type reply struct {
 	null          bool
 }
 type peer struct {
-	mu      sync.Mutex
-	queries []string
-	fn      func(string) reply
+	mu           sync.Mutex
+	queries      []string
+	capabilities []uint32
+	connections  int
+	fn           func(string) reply
 }
 
 func defaultReply(q string) reply {
@@ -66,20 +69,24 @@ func packet(c net.Conn, seq byte, b []byte) error {
 	return err
 }
 func readPacket(c net.Conn) ([]byte, error) {
+	b, _, err := readPacketAt(c)
+	return b, err
+}
+func readPacketAt(c net.Conn) ([]byte, byte, error) {
 	var h [4]byte
 	if _, err := io.ReadFull(c, h[:]); err != nil {
-		return nil, err
+		return nil, 0, err
 	}
 	n := int(h[0]) | int(h[1])<<8 | int(h[2])<<16
 	if n > 1<<20 {
-		return nil, errors.New("fixture packet too large")
+		return nil, 0, errors.New("fixture packet too large")
 	}
 	b := make([]byte, n)
 	_, err := io.ReadFull(c, b)
-	return b, err
+	return b, h[3], err
 }
-func handshake(c net.Conn) error {
-	caps := uint32(1 | 4 | 8 | 512 | 8192 | 32768 | 131072 | 524288)
+func handshake(c net.Conn) (uint32, error) {
+	caps := uint32(1 | 4 | 8 | 128 | 512 | 8192 | 32768 | 131072 | 524288)
 	b := append([]byte{10}, []byte("8.0.0-fixture\x00")...)
 	b = binary.LittleEndian.AppendUint32(b, 41)
 	b = append(b, []byte("12345678\x00")...)
@@ -91,12 +98,17 @@ func handshake(c net.Conn) error {
 	b = append(b, make([]byte, 10)...)
 	b = append(b, []byte("abcdefghijkl\x00mysql_native_password\x00")...)
 	if err := packet(c, 0, b); err != nil {
-		return err
+		return 0, err
 	}
-	if _, err := readPacket(c); err != nil {
-		return err
+	response, seq, err := readPacketAt(c)
+	if err != nil {
+		return 0, err
 	}
-	return packet(c, 2, []byte{0, 0, 0, 2, 0, 0, 0})
+	if seq != 1 || len(response) < 4 {
+		return 0, errors.New("fixture invalid handshake response")
+	}
+	flags := binary.LittleEndian.Uint32(response[:4])
+	return flags, packet(c, 2, []byte{0, 0, 0, 2, 0, 0, 0})
 }
 func lenString(b []byte, s string) []byte {
 	if len(s) < 251 {
@@ -113,6 +125,9 @@ func lenString(b []byte, s string) []byte {
 }
 func sendReply(c net.Conn, r reply) error { return sendReplyAt(c, r, 1) }
 func sendReplyAt(c net.Conn, r reply, seq byte) error {
+	if r.infile != nil {
+		return r.infile.observe(c, seq)
+	}
 	if r.drop {
 		return c.Close()
 	}
@@ -227,9 +242,16 @@ func sendReplyAt(c net.Conn, r reply, seq byte) error {
 	return packet(c, seq, eof)
 }
 func (p *peer) serve(c net.Conn, stopAfterCommit <-chan struct{}) error {
-	if err := handshake(c); err != nil {
+	p.mu.Lock()
+	p.connections++
+	p.mu.Unlock()
+	flags, err := handshake(c)
+	if err != nil {
 		return err
 	}
+	p.mu.Lock()
+	p.capabilities = append(p.capabilities, flags)
+	p.mu.Unlock()
 	for {
 		b, err := readPacket(c)
 		if err != nil {
