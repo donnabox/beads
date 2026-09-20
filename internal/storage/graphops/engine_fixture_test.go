@@ -182,6 +182,9 @@ func TestGraphReadEnginePhase(t *testing.T) {
 	verifyEngineNegativeControls(t, ctx, db)
 	verifyEngineByteControls(t, ctx, db)
 	verifyEngineOwnedOverflow(t, ctx, db)
+	verifyEngineAllocationControls(t, ctx, db)
+	verifyAllocationSnapshot(t, ctx, db)
+	logAllocationPlans(t, ctx, db)
 	after := fixtureTablesDigest(t, ctx, db)
 	if before != after {
 		t.Fatal("read/rolled-back controls changed persisted tables")
@@ -191,8 +194,10 @@ func TestGraphReadEnginePhase(t *testing.T) {
 	if err := cleanup(); err != nil {
 		t.Fatal(err)
 	}
-	// No engine remains at success emission.
-	fmt.Println("GRAPH_READ_FIXTURE_OK", phase)
+	// No engine remains at success emission; diagnostic failures stay failures.
+	if !t.Failed() {
+		fmt.Println("GRAPH_READ_FIXTURE_OK", phase)
+	}
 }
 
 type fixtureRecord struct{ Path, Revision, Properties, TypeURL, Source, Target, SourceURI, SourcePin, TargetPin string }
@@ -211,7 +216,7 @@ type fixtureDB interface {
 
 func TestFixtureSchemaStatementParity(t *testing.T) {
 	parts, err := sqlparser.SplitStatementToPieces(engineFixtureSQL)
-	if err != nil || len(parts) != 4 {
+	if err != nil || len(parts) != 5 {
 		t.Fatalf("fixture statements: %d, %v", len(parts), err)
 	}
 	// The tokenizer only removes delimiters; all original DDL/comment bytes
@@ -270,6 +275,7 @@ func seedEngineFixture(t *testing.T, ctx context.Context, db fixtureDB, data str
 		if _, err := tx.ExecContext(ctx, "INSERT INTO graph_beads (path, type_url, revision, properties, last_authority_id, last_epoch, created_at, updated_at) VALUES (?, ?, ?, ?, ?, 1, '2026-09-17 00:00:00', '2026-09-17 00:00:00')", input.path, memoryType, revision, properties.Bytes(), strings.Repeat("a", 32)); err != nil {
 			t.Fatalf("insert fixture Bead %s: %v", input.path, err)
 		}
+		seedFixtureAllocation(t, ctx, tx, input.path, graph.KindBead)
 		receipt.Beads = append(receipt.Beads, fixtureRecord{Path: input.path, Revision: revision, Properties: properties.String(), TypeURL: memoryType})
 	}
 	for _, edge := range []struct{ path, source, target string }{{"links/plan-decision", "beads/plan", "beads/decision"}, {"links/decision-finding", "beads/decision", "beads/finding"}} {
@@ -277,6 +283,7 @@ func seedEngineFixture(t *testing.T, ctx context.Context, db fixtureDB, data str
 		if _, err := tx.ExecContext(ctx, "INSERT INTO graph_links (path, type_url, revision, properties, source_kind, source_path, target_kind, target_path, last_authority_id, last_epoch, created_at, updated_at) VALUES (?, ?, ?, ?, 'in', ?, 'in', ?, ?, 1, '2026-09-17 00:00:00', '2026-09-17 00:00:00')", edge.path, relationType, revision, []byte("{}"), edge.source, edge.target, strings.Repeat("a", 32)); err != nil {
 			t.Fatalf("insert fixture Link %s: %v", edge.path, err)
 		}
+		seedFixtureAllocation(t, ctx, tx, edge.path, graph.KindLink)
 		receipt.Links = append(receipt.Links, fixtureRecord{Path: edge.path, Revision: revision, Properties: "{}", TypeURL: relationType, Source: edge.source, Target: edge.target})
 	}
 	// Exercise the external endpoint columns and opaque pins against actual rows.
@@ -284,6 +291,7 @@ func seedEngineFixture(t *testing.T, ctx context.Context, db fixtureDB, data str
 	if _, err := tx.ExecContext(ctx, "INSERT INTO graph_links (path, type_url, revision, properties, source_kind, source_url, source_pin, target_kind, target_path, target_pin, last_authority_id, last_epoch, created_at, updated_at) VALUES (?, ?, ?, ?, 'ext', ?, ?, 'in', ?, ?, ?, 1, '2026-09-17 00:00:00', '2026-09-17 00:00:00')", ext.Path, ext.TypeURL, ext.Revision, []byte(ext.Properties), ext.SourceURI, ext.SourcePin, ext.Target, ext.TargetPin, strings.Repeat("a", 32)); err != nil {
 		t.Fatalf("insert external fixture Link: %v", err)
 	}
+	seedFixtureAllocation(t, ctx, tx, ext.Path, graph.KindLink)
 	receipt.Links = append(receipt.Links, ext)
 	if err := tx.Commit(); err != nil {
 		t.Fatal(err)
@@ -391,7 +399,8 @@ func verifyEngineFixture(t *testing.T, ctx context.Context, db fixtureDB, data s
 		t.Fatalf("external inbound row: %v", err)
 	}
 	checkExternal(incoming[0])
-	if _, err := readBeadInTx(ctx, tx, scope, "beads/absent", fixtureLimits); !errors.Is(err, errAbsent) {
+	var absence *exactAbsence
+	if _, err := readBeadInTx(ctx, tx, scope, "beads/absent", fixtureLimits); !errors.As(err, &absence) || absence.state != "" {
 		t.Fatalf("absence=%v", err)
 	}
 	if err := tx.Rollback(); err != nil {
@@ -478,10 +487,11 @@ func verifyEngineNegativeControls(t *testing.T, ctx context.Context, db fixtureD
 		t.Fatalf("actual incident row bound: %v", err)
 	}
 	limits = fixtureLimits
-	limits.valueBytes = 2
-	limits.bytes = 2
-	if _, err := readLinkInTx(ctx, read, scope, "links/plan-decision", limits); !errors.Is(err, errBudget) {
-		t.Fatalf("actual byte bound: %v", err)
+	limits.valueBytes = 64
+	limits.bytes = 64
+	q := &preconditionQueryHook{tx: read}
+	if _, err := readLinkInTx(ctx, q, scope, "links/plan-decision", limits); !errors.Is(err, errBudget) || q.calls != 1 {
+		t.Fatalf("actual aggregate byte bound: calls=%d err=%v", q.calls, err)
 	}
 	if err := read.Rollback(); err != nil {
 		t.Fatal(err)
@@ -493,6 +503,7 @@ func fixtureTablesDigest(t *testing.T, ctx context.Context, db fixtureDB) string
 	hash := sha256.New()
 	for _, entry := range []struct{ table, columns string }{
 		{"graph_scope", "id, scope_url, authority_id, epoch, minted_at"},
+		{"graph_allocations", "path, CAST(resource_kind AS CHAR), birth_seq, birth_authority_id, birth_authority_epoch, CAST(state AS CHAR), tombstone_seq, last_authority_id, last_authority_epoch"},
 		{"graph_type_descriptors", "url, descriptor, fingerprint, installed_seq, installed_at, last_authority_id, last_epoch"},
 		{"graph_beads", "path, type_url, revision, attribution_principal, CAST(attribution_status AS CHAR), properties, last_authority_id, last_epoch, created_at, updated_at"},
 		{"graph_links", "path, type_url, revision, attribution_principal, CAST(attribution_status AS CHAR), properties, source_kind, source_path, source_url, source_pin, target_kind, target_path, target_url, target_pin, last_authority_id, last_epoch, created_at, updated_at"},
@@ -712,5 +723,13 @@ func verifyFixtureBlobProjection(t *testing.T, ctx context.Context, tx *sql.Tx, 
 		}
 	} else if !bytes.Equal(raw, persisted) {
 		t.Fatalf("%s %s projection changed raw bytes", table, id)
+	}
+}
+
+// These are test projection rows, not evidence of applied allocation events.
+func seedFixtureAllocation(t *testing.T, ctx context.Context, tx *sql.Tx, path string, kind graph.ResourceKind) {
+	t.Helper()
+	if _, err := tx.ExecContext(ctx, "INSERT INTO graph_allocations (path, resource_kind, birth_seq, birth_authority_id, birth_authority_epoch, state, tombstone_seq, last_authority_id, last_authority_epoch) VALUES (?, ?, 1, REPEAT('a',32), 1, 'live', NULL, REPEAT('a',32), 1)", path, string(kind)); err != nil {
+		t.Fatal(err)
 	}
 }

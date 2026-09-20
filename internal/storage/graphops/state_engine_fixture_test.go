@@ -123,7 +123,7 @@ func stateTableMutationControls(t *testing.T, ctx context.Context, db *sql.DB, b
 		"UPDATE graph_links SET updated_at = '2026-09-17 00:00:01' WHERE path = 'links/plan-decision'",
 		"UPDATE graph_ledger_seq SET next_seq = 2 WHERE id = 0",
 		"INSERT INTO graph_ledger_events (seq, op_id, kind, scope_url, authority_id, epoch, at, prev_hash, hash) VALUES (1, REPEAT('a', 32), 'mint', 'https://graph.example/fixture/', REPEAT('b', 32), 1, '2026-09-17 00:00:00', REPEAT('0', 64), REPEAT('1', 64))",
-		"INSERT INTO graph_allocations VALUES ('beads/plan', 'bead', 1, REPEAT('a', 32), 1, 'live', NULL, REPEAT('a', 32), 1)",
+		"UPDATE graph_allocations SET last_authority_epoch = 2 WHERE path = 'beads/plan'",
 	}
 	for slot, query := range changes {
 		t.Run("table-"+stateColumns[slot+2], func(t *testing.T) {
