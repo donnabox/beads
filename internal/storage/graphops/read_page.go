@@ -160,7 +160,10 @@ func readLinkPageInTx(ctx context.Context, tx queryer, scope string, selection l
 // Candidate ordering and global lookahead LIMIT happen BEFORE the sentinel
 // join. Branches are deliberately not separately limited: such limits require
 // their own path ordering and at least limit+1 candidates. UNION deduplicates a
-// self-loop before the global limit. Actual plan cost remains to be qualified.
+// self-loop before the global limit. Hydration has its own two-input lookup
+// hint; the pinned plan oracle must prove it is honored, including the global
+// candidate cap before hydration. Raw src values reach the existing guarded
+// outer projection unchanged. Candidate work itself is not cost-bounded.
 // This SQL is provisional: a future protected incident call must compose the
 // allocation-anchor diagnosis into this same statement, never a sixth query.
 func incidentPageQuery(path string, direction graph.Direction, window pageWindow, valueBytes int) (string, []any) {
@@ -181,7 +184,7 @@ func incidentPageQuery(path string, direction graph.Direction, window pageWindow
 		args = append(args, path, window.afterPath)
 	}
 	args = append(args, window.limit+1, path)
-	query := "SELECT b.path, i.path IS NOT NULL, l.path IS NOT NULL, " + joinedLinkColumns + " FROM graph_beads b LEFT JOIN (" + selection + " ORDER BY path LIMIT ?) i ON TRUE LEFT JOIN graph_links l ON l.path = i.path WHERE b.path = ? ORDER BY i.path"
+	query := "SELECT b.path, l.candidate_path IS NOT NULL, l.path IS NOT NULL, " + joinedLinkColumns + " FROM graph_beads b LEFT JOIN (SELECT /*+ LEFT_OUTER_LOOKUP_JOIN(i,src) */ i.path AS candidate_path, src.path, src.type_url, src.revision, src.attribution_principal, src.attribution_status, src.properties, src.source_kind, src.source_path, src.source_url, src.source_pin, src.target_kind, src.target_path, src.target_url, src.target_pin FROM (" + selection + " ORDER BY path LIMIT ?) i LEFT JOIN graph_links src ON src.path = i.path) l ON TRUE WHERE b.path = ? ORDER BY l.candidate_path"
 	return query, args
 }
 
