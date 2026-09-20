@@ -12,6 +12,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"io"
 	"os"
 	"os/exec"
 	"path/filepath"
@@ -19,6 +20,8 @@ import (
 	"strings"
 	"testing"
 	"time"
+
+	"github.com/dolthub/vitess/go/vt/sqlparser"
 
 	graph "github.com/steveyegge/beads/graphops"
 	"github.com/steveyegge/beads/internal/storage/embeddeddolt"
@@ -103,20 +106,33 @@ func TestGraphReadEnginePersistenceAcrossProcesses(t *testing.T) {
 }
 
 type boundedFixtureOutput struct {
-	bytes.Buffer
+	buffer   bytes.Buffer
 	overflow bool
 }
 
 func (b *boundedFixtureOutput) Write(p []byte) (int, error) {
 	const limit = 1 << 20
 	n := len(p)
-	remaining := limit - b.Len()
+	remaining := limit - b.buffer.Len()
 	if len(p) > remaining {
 		p = p[:remaining]
 		b.overflow = true
 	}
-	_, err := b.Buffer.Write(p)
+	_, err := b.buffer.Write(p)
 	return n, err
+}
+
+func (b *boundedFixtureOutput) String() string { return b.buffer.String() }
+
+func TestFixtureOutputCopyBound(t *testing.T) {
+	var output boundedFixtureOutput
+	// Hide strings.Reader.WriteTo: os/exec's pipe copy may select a promoted
+	// Buffer.ReadFrom instead of Write if Buffer is anonymously embedded.
+	source := io.LimitReader(strings.NewReader(strings.Repeat("x", (1<<20)+1)), (1<<20)+1)
+	n, err := io.Copy(&output, source)
+	if err != nil || n != (1<<20)+1 || !output.overflow || output.buffer.Len() != 1<<20 {
+		t.Fatalf("copy bound: read=%d kept=%d overflow=%t error=%v", n, output.buffer.Len(), output.overflow, err)
+	}
 }
 
 func TestGraphReadEnginePhase(t *testing.T) {
@@ -185,11 +201,43 @@ type fixtureReceipt struct {
 	SchemaSHA256 string
 }
 
-func seedEngineFixture(t *testing.T, ctx context.Context, db *sql.DB, data string) {
+// Both *sql.DB and an explicitly bound *sql.Conn implement this fixture seam.
+// It grants no public graph role and changes no production storage interface.
+type fixtureDB interface {
+	ExecContext(context.Context, string, ...any) (sql.Result, error)
+	QueryContext(context.Context, string, ...any) (*sql.Rows, error)
+	BeginTx(context.Context, *sql.TxOptions) (*sql.Tx, error)
+}
+
+func TestFixtureSchemaStatementParity(t *testing.T) {
+	parts, err := sqlparser.SplitStatementToPieces(engineFixtureSQL)
+	if err != nil || len(parts) != 4 {
+		t.Fatalf("fixture statements: %d, %v", len(parts), err)
+	}
+	// The tokenizer only removes delimiters; all original DDL/comment bytes
+	// and statement order must survive. This is the embedded seeder's schema.
+	if strings.TrimSpace(strings.Join(parts, ";"))+";" != strings.TrimSpace(engineFixtureSQL) {
+		t.Fatal("schema splitting changed source bytes")
+	}
+	const quoted = "SELECT ';'; SELECT 'second;value' /* ; */;"
+	pieces, err := sqlparser.SplitStatementToPieces(quoted)
+	if err != nil || len(pieces) != 2 || strings.Join(pieces, ";")+";" != quoted {
+		t.Fatalf("quoted/comment semicolon split: %q %v", pieces, err)
+	}
+}
+
+func seedEngineFixture(t *testing.T, ctx context.Context, db fixtureDB, data string) {
 	t.Helper()
-	// Match the existing embedded fence spike's multi-statement schema execution.
-	if _, err := db.ExecContext(ctx, engineFixtureSQL); err != nil {
-		t.Fatalf("create fixture projection schema: %v", err)
+	// The same source-defined schema runs over embedded and managed MySQL;
+	// the managed server deliberately refuses multi-statement requests.
+	statements, err := sqlparser.SplitStatementToPieces(engineFixtureSQL)
+	if err != nil {
+		t.Fatal(err)
+	}
+	for _, statement := range statements {
+		if _, err := db.ExecContext(ctx, statement); err != nil {
+			t.Fatalf("create fixture projection schema: %v", err)
+		}
 	}
 	tx, err := db.BeginTx(ctx, nil)
 	if err != nil {
@@ -251,7 +299,7 @@ func seedEngineFixture(t *testing.T, ctx context.Context, db *sql.DB, data strin
 	}
 }
 
-func verifyEngineFixture(t *testing.T, ctx context.Context, db *sql.DB, data string) {
+func verifyEngineFixture(t *testing.T, ctx context.Context, db fixtureDB, data string) {
 	t.Helper()
 	raw, err := os.ReadFile(filepath.Join(data, "fixture-receipt.json"))
 	if err != nil {
@@ -268,7 +316,8 @@ func verifyEngineFixture(t *testing.T, ctx context.Context, db *sql.DB, data str
 	if len(receipt.Beads) != 3 || len(receipt.Links) != 3 {
 		t.Fatal("incomplete seed receipt")
 	}
-	// ReadOnly is advisory: driver/v2 ignores it; table digests prove no mutation.
+	// Embedded driver/v2 ignores ReadOnly; managed MySQL sends READ ONLY.
+	// Before/after table digests check the no-mutation invariant on both legs.
 	tx, err := db.BeginTx(ctx, &sql.TxOptions{ReadOnly: true})
 	if err != nil {
 		t.Fatal(err)
@@ -351,7 +400,7 @@ func verifyEngineFixture(t *testing.T, ctx context.Context, db *sql.DB, data str
 	fmt.Printf("GRAPH_READ_RECORDS %s\n", raw)
 }
 
-func verifyEngineNegativeControls(t *testing.T, ctx context.Context, db *sql.DB) {
+func verifyEngineNegativeControls(t *testing.T, ctx context.Context, db fixtureDB) {
 	t.Helper()
 	tx, err := db.BeginTx(ctx, nil)
 	if err != nil {
@@ -415,7 +464,8 @@ func verifyEngineNegativeControls(t *testing.T, ctx context.Context, db *sql.DB)
 	if err := tx.Rollback(); err != nil {
 		t.Fatal(err)
 	}
-	// ReadOnly is advisory; the before/after table digest is the mutation oracle.
+	// Embedded driver/v2 ignores ReadOnly; managed MySQL sends READ ONLY.
+	// The before/after table digest is the mutation oracle on both legs.
 	read, err := db.BeginTx(ctx, &sql.TxOptions{ReadOnly: true})
 	if err != nil {
 		t.Fatal(err)
@@ -438,7 +488,7 @@ func verifyEngineNegativeControls(t *testing.T, ctx context.Context, db *sql.DB)
 	}
 }
 
-func fixtureTablesDigest(t *testing.T, ctx context.Context, db *sql.DB) string {
+func fixtureTablesDigest(t *testing.T, ctx context.Context, db fixtureDB) string {
 	t.Helper()
 	hash := sha256.New()
 	for _, entry := range []struct{ table, columns string }{
@@ -502,7 +552,7 @@ func scopeFromFixtureTx(t *testing.T, ctx context.Context, tx *sql.Tx) string {
 	return scope
 }
 
-func verifyEngineOwnedOverflow(t *testing.T, ctx context.Context, db *sql.DB) {
+func verifyEngineOwnedOverflow(t *testing.T, ctx context.Context, db fixtureDB) {
 	t.Helper()
 	tx, err := db.BeginTx(ctx, nil)
 	if err != nil {
@@ -524,7 +574,7 @@ func verifyEngineOwnedOverflow(t *testing.T, ctx context.Context, db *sql.DB) {
 	}
 }
 
-func verifyEngineByteControls(t *testing.T, ctx context.Context, db *sql.DB) {
+func verifyEngineByteControls(t *testing.T, ctx context.Context, db fixtureDB) {
 	t.Helper()
 	tx, err := db.BeginTx(ctx, nil)
 	if err != nil {
