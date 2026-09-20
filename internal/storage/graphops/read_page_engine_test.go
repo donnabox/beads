@@ -75,6 +75,7 @@ func verifyEnginePageControls(t *testing.T, ctx context.Context, db fixtureDB) {
 		if _, err := tx.ExecContext(ctx, "INSERT INTO graph_beads (path,type_url,revision,properties,last_authority_id,last_epoch,created_at,updated_at) VALUES (?,?,?,?,?,1,'2026-09-17 00:00:00','2026-09-17 00:00:00')", path, memoryType, graph.MintRevision().String(), []byte("{}"), strings.Repeat("a", 32)); err != nil {
 			t.Fatal(err)
 		}
+		seedFixtureAllocation(t, ctx, tx, path, graph.KindBead)
 	}
 	// More than pageLimit+1 outgoing paths precede the first incoming path;
 	// subsequent directions interleave. The self-loop must appear only once.
@@ -205,7 +206,7 @@ func verifyEnginePageControls(t *testing.T, ctx context.Context, db fixtureDB) {
 	}
 	// Independent from captureIncident: declared membership sizes yield nonempty
 	// pages plus one terminal probe each, then 3 directions × 2 anchors × 2 boundaries.
-	expectedPlans := 3 * 2 * 2
+	expectedPlans := 3*2*2 + 5*2*3 + 5*2 // original anchors + allocation matrix + case neighbors
 	for _, tc := range incidentCases {
 		expectedPlans += (len(tc.want)+1)/2 + 1
 	}
@@ -232,7 +233,8 @@ func verifyEnginePageControls(t *testing.T, ctx context.Context, db fixtureDB) {
 				query, args := incidentPageQuery(anchorPath, direction, window, fixtureLimits.valueBytes)
 				captureIncident(fmt.Sprintf("incident anchor=%s direction=%v", anchorPath, direction), anchorPath, direction, window, query, args)
 				page, err := readIncidentPageInTx(ctx, tx, scope, anchorPath, direction, window, fixtureLimits)
-				if (anchorPath == empty && err != nil) || (anchorPath != empty && !errors.Is(err, errAbsent)) {
+				var absence *exactAbsence
+				if (anchorPath == empty && err != nil) || (anchorPath != empty && (!errors.As(err, &absence) || absence.state != "")) {
 					t.Fatalf("anchor=%s direction=%v error=%v", anchorPath, direction, err)
 				}
 				requireEmptyPage(t, page)
@@ -240,6 +242,7 @@ func verifyEnginePageControls(t *testing.T, ctx context.Context, db fixtureDB) {
 		}
 	}
 	verifyIncidentMissingHydration(t, ctx, tx, anchor)
+	verifyIncidentAllocationControls(t, ctx, tx, scope, captureIncident)
 	if err := tx.Rollback(); err != nil {
 		t.Fatal(err)
 	}
@@ -397,13 +400,15 @@ func verifyIncidentMissingHydration(t *testing.T, ctx context.Context, tx *sql.T
 		count := 0
 		for rows.Next() {
 			count++
-			var anchor string
+			var anchor exactPathRow
+			var beadPath string
 			var candidate, present bool
 			var r linkRow
-			err = rows.Scan(append([]any{&anchor, &candidate, &present}, linkScanTargets(&r)...)...)
-			if err != nil || anchor != path || !candidate || present || !emptyPageLinkProjection(r) || count > 2 {
+			targets := append(anchor.targets(), &beadPath, &candidate, &present)
+			err = rows.Scan(append(targets, linkScanTargets(&r)...)...)
+			if err != nil || anchor.requested != path || anchor.path != (sql.NullString{String: path, Valid: true}) || anchor.kind.String != "bead" || anchor.state.String != "live" || !anchor.present || beadPath != path || !candidate || present || !emptyPageLinkProjection(r) || count > 2 {
 				_ = rows.Close()
-				t.Fatalf("missing hydration projection: anchor=%q candidate=%t present=%t count=%d err=%v row=%+v", anchor, candidate, present, count, err, r)
+				t.Fatalf("missing hydration projection: anchor=%+v candidate=%t present=%t count=%d err=%v row=%+v", anchor, candidate, present, count, err, r)
 			}
 		}
 		if err := errors.Join(rows.Err(), rows.Close(), ctx.Err()); err != nil {
@@ -411,6 +416,72 @@ func verifyIncidentMissingHydration(t *testing.T, ctx context.Context, tx *sql.T
 		}
 		if count != 2 {
 			t.Fatalf("missing hydration diagnostic rows=%d want2", count)
+		}
+	}
+}
+
+// Projection-only classification controls. Source FK remains enabled: the
+// retained candidate uses an external source and the (possibly absent) target.
+func verifyIncidentAllocationControls(t *testing.T, ctx context.Context, tx *sql.Tx, scope string, capture func(string, string, graph.Direction, pageWindow, string, []any)) {
+	t.Helper()
+	index := 0
+	for _, state := range []string{"", "live", "reserved", "pruned", "erased"} {
+		for _, physical := range []bool{false, true} {
+			path := fmt.Sprintf("beads/incident-allocation/%d", index)
+			if physical {
+				allocationResource(t, ctx, tx, path, graph.KindBead)
+			}
+			if state != "" {
+				seedFixtureAllocation(t, ctx, tx, path, graph.KindBead)
+				if _, err := tx.ExecContext(ctx, "UPDATE graph_allocations SET state=? WHERE path=?", state, path); err != nil {
+					t.Fatal(err)
+				}
+			}
+			expected := seedIncidentTargetLink(t, ctx, tx, fmt.Sprintf("links/incident-allocation/%d", index), path)
+			for _, direction := range []graph.Direction{graph.DirectionIn, graph.DirectionOut, graph.DirectionBoth} {
+				window := pageWindow{limit: 1}
+				query, args := incidentPageQuery(path, direction, window, fixtureLimits.valueBytes)
+				capture(fmt.Sprintf("incident allocation state=%s physical=%t direction=%d", state, physical, direction), path, direction, window, query, args)
+				q := &preconditionQueryHook{tx: tx}
+				page, err := readIncidentPageInTx(ctx, q, scope, path, direction, window, fixtureLimits)
+				if q.calls != 1 {
+					t.Fatal("incident classification added statement")
+				}
+				var absence *exactAbsence
+				switch {
+				case state == "live" && physical:
+					if err != nil {
+						t.Fatal(err)
+					}
+					if direction == graph.DirectionOut {
+						requireEmptyPage(t, page)
+					} else {
+						requireIncidentTargetPage(t, page, expected)
+					}
+				case !physical && state != "live":
+					requireEmptyPage(t, page)
+					if !errors.As(err, &absence) || absence.state != state || errors.Is(err, errAbsent) || errors.Is(err, errCorrupt) || errors.Is(err, graph.ErrNotFound) {
+						t.Fatalf("allocation state=%s physical=%t err=%v", state, physical, err)
+					}
+				default:
+					requireEmptyPage(t, page)
+					if !errors.Is(err, errCorrupt) || errors.As(err, &absence) {
+						t.Fatalf("inconsistent allocation state=%s physical=%t err=%v", state, physical, err)
+					}
+				}
+			}
+			// Exact byte identity: neighboring case does not inherit this allocation.
+			other := strings.Replace(path, "beads/incident-", "beads/Incident-", 1)
+			window := pageWindow{limit: 1}
+			query, args := incidentPageQuery(other, graph.DirectionBoth, window, fixtureLimits.valueBytes)
+			capture(fmt.Sprintf("incident case neighbor %d", index), other, graph.DirectionBoth, window, query, args)
+			page, err := readIncidentPageInTx(ctx, tx, scope, other, graph.DirectionBoth, window, fixtureLimits)
+			requireEmptyPage(t, page)
+			var absence *exactAbsence
+			if !errors.As(err, &absence) || absence.state != "" {
+				t.Fatalf("case-differing anchor: %v", err)
+			}
+			index++
 		}
 	}
 }

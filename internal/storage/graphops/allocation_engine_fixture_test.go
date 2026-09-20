@@ -189,6 +189,8 @@ func allocationRead(t *testing.T, ctx context.Context, tx *sql.Tx, path string, 
 
 // This is the embedded two-session leg. The managed worker deliberately owns
 // one connection; shared classification controls above also run over MySQL.
+const allocationSnapshotIncidentPath = "links/incident-allocation-snapshot"
+
 func verifyAllocationSnapshot(t *testing.T, ctx context.Context, db *sql.DB) {
 	t.Helper()
 	before := fixtureTablesDigest(t, ctx, db)
@@ -200,6 +202,7 @@ func verifyAllocationSnapshot(t *testing.T, ctx context.Context, db *sql.DB) {
 	defer func() { _ = setup.Rollback() }()
 	allocationResource(t, ctx, setup, path, graph.KindBead)
 	seedFixtureAllocation(t, ctx, setup, path, graph.KindBead)
+	expectedIncident := seedIncidentTargetLink(t, ctx, setup, allocationSnapshotIncidentPath, path)
 	if err := setup.Commit(); err != nil {
 		t.Fatal(err)
 	}
@@ -212,7 +215,7 @@ func verifyAllocationSnapshot(t *testing.T, ctx context.Context, db *sql.DB) {
 		}
 		cleanupCtx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 		defer cancel()
-		if err := cleanupAllocationSnapshot(cleanupCtx, db, path); err != nil {
+		if err := cleanupAllocationSnapshot(cleanupCtx, db, path, false); err != nil {
 			t.Errorf("allocation snapshot failure-path cleanup: %v", err)
 		} else {
 			t.Log("allocation snapshot failure-path projection cleanup completed")
@@ -237,6 +240,16 @@ func verifyAllocationSnapshot(t *testing.T, ctx context.Context, db *sql.DB) {
 	if err != nil {
 		t.Fatal(err)
 	}
+	checkHeldIncident := func() {
+		for _, direction := range []graph.Direction{graph.DirectionIn, graph.DirectionBoth} {
+			page, err := readIncidentPageInTx(ctx, held, fixtureScope, path, direction, pageWindow{limit: 1}, fixtureLimits)
+			if err != nil {
+				t.Fatal(err)
+			}
+			requireIncidentTargetPage(t, page, expectedIncident)
+		}
+	}
+	checkHeldIncident()
 	write, err := writer.BeginTx(ctx, nil)
 	if err != nil {
 		t.Fatal(err)
@@ -258,6 +271,7 @@ func verifyAllocationSnapshot(t *testing.T, ctx context.Context, db *sql.DB) {
 	if err != nil || still.Bead.Revision() != original.Bead.Revision() || still.Bead.Properties().String() != original.Bead.Properties().String() {
 		t.Fatalf("held allocation/resource pair changed: %v", err)
 	}
+	checkHeldIncident()
 	if err := held.Rollback(); err != nil {
 		t.Fatal(err)
 	}
@@ -270,17 +284,20 @@ func verifyAllocationSnapshot(t *testing.T, ctx context.Context, db *sql.DB) {
 	if err := allocationRead(t, ctx, fresh, path, graph.KindBead); !errors.As(err, &absence) || absence.state != graph.AllocationPruned {
 		t.Fatalf("fresh allocation/resource pair: %v", err)
 	}
+	for _, direction := range []graph.Direction{graph.DirectionIn, graph.DirectionOut, graph.DirectionBoth} {
+		page, err := readIncidentPageInTx(ctx, fresh, fixtureScope, path, direction, pageWindow{limit: 1}, fixtureLimits)
+		requireEmptyPage(t, page)
+		if !errors.As(err, &absence) || absence.state != graph.AllocationPruned {
+			t.Fatalf("fresh incident snapshot: %v", err)
+		}
+	}
 	if err := fresh.Rollback(); err != nil {
 		t.Fatal(err)
 	}
 	// Restore only this test's newly created projection, not a production path.
 	// This is explicit cleanup after committed controls, not claimed rollback.
-	result, err := writer.ExecContext(ctx, "DELETE FROM graph_allocations WHERE path = ?", path)
-	if err != nil {
+	if err := cleanupAllocationSnapshot(ctx, writer, path, true); err != nil {
 		t.Fatal(err)
-	}
-	if n, err := result.RowsAffected(); err != nil || n != 1 {
-		t.Fatalf("cleanup affected%d: %v", n, err)
 	}
 	cleaned = true
 	if err := errors.Join(reader.Close(), writer.Close()); err != nil {
@@ -292,16 +309,24 @@ func verifyAllocationSnapshot(t *testing.T, ctx context.Context, db *sql.DB) {
 	fmt.Println("GRAPH_ALLOCATION_SNAPSHOT_OK")
 }
 
-// The sole caller supplies its newly inserted test path. Both deletes occur in
-// one cleanup transaction and remain bounded even if the test context expired.
-func cleanupAllocationSnapshot(ctx context.Context, db *sql.DB, path string) error {
+// Delete only rows at the two test-owned paths. Normal cleanup proves the exact
+// post-transition population; failure cleanup tolerates partially finished setup.
+func cleanupAllocationSnapshot(ctx context.Context, db fixtureDB, path string, completed bool) error {
 	tx, err := db.BeginTx(ctx, nil)
 	if err != nil {
 		return err
 	}
 	defer func() { _ = tx.Rollback() }()
-	for _, query := range []string{"DELETE FROM graph_allocations WHERE path = ?", "DELETE FROM graph_beads WHERE path = ?"} {
-		result, err := tx.ExecContext(ctx, query, path)
+	for _, deletion := range []struct {
+		query, path string
+		want        int64
+	}{
+		{"DELETE FROM graph_links WHERE path = ?", allocationSnapshotIncidentPath, 1},
+		{"DELETE FROM graph_allocations WHERE path = ?", allocationSnapshotIncidentPath, 1},
+		{"DELETE FROM graph_allocations WHERE path = ?", path, 1},
+		{"DELETE FROM graph_beads WHERE path = ?", path, 0},
+	} {
+		result, err := tx.ExecContext(ctx, deletion.query, deletion.path)
 		if err != nil {
 			return err
 		}
@@ -309,7 +334,7 @@ func cleanupAllocationSnapshot(ctx context.Context, db *sql.DB, path string) err
 		if err != nil {
 			return err
 		}
-		if count < 0 || count > 1 {
+		if count < 0 || count > 1 || (completed && count != deletion.want) {
 			return fmt.Errorf("snapshot cleanup affected unexpected row count: %d", count)
 		}
 	}
@@ -359,5 +384,47 @@ func verifyAllocationMissingDescriptor(t *testing.T, ctx context.Context, db fix
 	}
 	if got := fixtureTablesDigest(t, ctx, db); got != before {
 		t.Fatal("missing descriptor control retained changes")
+	}
+}
+
+// A dedicated external-source edge makes absent-target suppression reachable
+// without disabling the source FK. It is never a production seeder.
+func seedIncidentTargetLink(t *testing.T, ctx context.Context, tx *sql.Tx, path, targetPath string) graph.Link {
+	t.Helper()
+	source, err := graph.ParseRef(fixtureScope, "urn:incident-allocation:external", "source opaque")
+	if err != nil {
+		t.Fatal(err)
+	}
+	target, err := graph.NewInScopeRef(targetPath, "target opaque")
+	if err != nil {
+		t.Fatal(err)
+	}
+	properties, err := graph.NewProperties([]byte(`{"incident":true}`))
+	if err != nil {
+		t.Fatal(err)
+	}
+	link, err := graph.NewLink(graph.LinkSpec{Path: path, TypeURL: relationType, Revision: graph.MintRevision(), Properties: properties, Source: source, Target: target})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if _, err := tx.ExecContext(ctx, "INSERT INTO graph_links (path,type_url,revision,properties,source_kind,source_url,source_pin,target_kind,target_path,target_pin,last_authority_id,last_epoch,created_at,updated_at) VALUES (?,?,?,?,'ext',?,?,'in',?,?,REPEAT('a',32),1,'2026-09-20 00:00:00','2026-09-20 00:00:00')", path, relationType, link.Revision().String(), properties.Bytes(), source.URI(), source.Pin(), target.Path(), target.Pin()); err != nil {
+		t.Fatal(err)
+	}
+	seedFixtureAllocation(t, ctx, tx, path, graph.KindLink)
+	return link
+}
+func requireIncidentTargetPage(t *testing.T, page linkRowsPage, want graph.Link) {
+	t.Helper()
+	if len(page.items) != 1 || page.hasMore || page.lastPath != want.Path() {
+		t.Fatalf("incident page=%+v", page)
+	}
+	got := page.items[0]
+	attribution, present := got.Attribution()
+	wantAttribution, wantPresent := want.Attribution()
+	if attribution != wantAttribution || present != wantPresent {
+		t.Fatal("incident snapshot attribution changed")
+	}
+	if got.Path() != want.Path() || got.TypeURL() != want.TypeURL() || got.Revision() != want.Revision() || got.Properties().String() != want.Properties().String() || !got.Source().Equal(want.Source()) || !got.Target().Equal(want.Target()) {
+		t.Fatal("incident snapshot Link changed")
 	}
 }
