@@ -511,9 +511,9 @@ func TestPreconditionAndBodyStatementBudgets(t *testing.T) {
 			case "link":
 				r := validLinkRow()
 				d := relationDescriptor(t)
-				columns := append(append([]string{}, allLinkColumns...), "url", "descriptor", "descriptor_length", "fingerprint")
-				values := append(linkValues(r), d.ID(), d.CanonicalJSON(), blobLength(d.CanonicalJSON()), d.Fingerprint())
-				m.ExpectQuery(regexp.QuoteMeta(exactLinkQuery)).WithArgs(fixtureLimits.valueBytes, fixtureLimits.valueBytes, r.path).WillReturnRows(sqlmock.NewRows(columns).AddRow(values...)).RowsWillBeClosed()
+				columns := exactLinkColumns
+				values := exactValues(r.path, graph.KindLink, append(linkValues(r), d.ID(), d.CanonicalJSON(), blobLength(d.CanonicalJSON()), d.Fingerprint()))
+				m.ExpectQuery(regexp.QuoteMeta(exactLinkQuery)).WithArgs(fixtureLimits.valueBytes, fixtureLimits.valueBytes, r.path, r.path, r.path).WillReturnRows(sqlmock.NewRows(columns).AddRow(values...)).RowsWillBeClosed()
 				_, err = readLinkInTx(ctx, q, fixtureScope, r.path, fixtureLimits)
 			case "incident":
 				expectIncident(m, graph.DirectionBoth, fixtureLimits, incidentRows(validLinkRow()))

@@ -16,6 +16,28 @@ import (
 var resourceColumns = []string{"path", "type_url", "revision", "attribution_principal", "attribution_status", "properties", "properties_length"}
 var allLinkColumns = append(append([]string{}, resourceColumns...), "source_kind", "source_path", "source_url", "source_pin", "target_kind", "target_path", "target_url", "target_pin")
 
+var exactMetadataColumns = []string{"requested_path", "allocation_path", "resource_kind", "state", "resource_present"}
+var exactBeadColumns = append(append([]string{}, exactMetadataColumns...), resourceColumns...)
+var exactLinkColumns = append(append([]string{}, exactMetadataColumns...), append(append([]string{}, allLinkColumns...), "url", "descriptor", "descriptor_length", "fingerprint")...)
+
+func exactValues(path string, kind graph.ResourceKind, values []driver.Value) []driver.Value {
+	return append([]driver.Value{path, path, string(kind), graph.AllocationLive, true}, values...)
+}
+func exactBeadValues(r resourceRow) []driver.Value {
+	return exactValues(r.path, graph.KindBead, resourceValues(r))
+}
+func exactMissingValues(path string, kind graph.ResourceKind, state string) []driver.Value {
+	metadata := []driver.Value{path, nil, nil, nil, false}
+	if state != "" {
+		metadata = []driver.Value{path, path, string(kind), state, false}
+	}
+	body := resourceValues(resourceRow{})
+	if kind == graph.KindLink {
+		body = append(linkValues(linkRow{}), nil, nil, nil, nil)
+	}
+	return append(metadata, body...)
+}
+
 func asDriver(v sql.NullString) driver.Value {
 	if v.Valid {
 		return v.String
@@ -56,7 +78,7 @@ func mockTx(t *testing.T) (*sql.Tx, sqlmock.Sqlmock) {
 	return tx, m
 }
 func expectBead(m sqlmock.Sqlmock, r resourceRow) {
-	m.ExpectQuery(regexp.QuoteMeta("SELECT "+beadColumns+" FROM graph_beads WHERE path = ? LIMIT 2")).WithArgs(fixtureLimits.valueBytes, r.path).WillReturnRows(sqlmock.NewRows(resourceColumns).AddRow(resourceValues(r)...)).RowsWillBeClosed()
+	m.ExpectQuery(regexp.QuoteMeta(exactBeadQuery)).WithArgs(fixtureLimits.valueBytes, r.path, r.path, r.path).WillReturnRows(sqlmock.NewRows(exactBeadColumns).AddRow(exactBeadValues(r)...)).RowsWillBeClosed()
 }
 func expectDescriptor(m sqlmock.Sqlmock, d graph.TypeDescriptor) {
 	m.ExpectQuery(regexp.QuoteMeta("SELECT url, CASE WHEN LENGTH(descriptor) < 0 OR LENGTH(descriptor) > ? THEN NULL ELSE descriptor END, LENGTH(descriptor), fingerprint FROM graph_type_descriptors WHERE url = ? LIMIT 2")).WithArgs(fixtureLimits.valueBytes, d.ID()).WillReturnRows(sqlmock.NewRows([]string{"url", "descriptor", "descriptor_length", "fingerprint"}).AddRow(d.ID(), d.CanonicalJSON(), blobLength(d.CanonicalJSON()), d.Fingerprint())).RowsWillBeClosed()
@@ -121,9 +143,9 @@ func TestReadLinkUsesPersistedDescriptorAndExactEndpoint(t *testing.T) {
 	tx, m := mockTx(t)
 	r := validLinkRow()
 	d := relationDescriptor(t)
-	columns := append(append([]string{}, allLinkColumns...), "url", "descriptor", "descriptor_length", "fingerprint")
-	values := append(linkValues(r), d.ID(), d.CanonicalJSON(), blobLength(d.CanonicalJSON()), d.Fingerprint())
-	m.ExpectQuery(regexp.QuoteMeta(exactLinkQuery)).WithArgs(fixtureLimits.valueBytes, fixtureLimits.valueBytes, r.path).WillReturnRows(sqlmock.NewRows(columns).AddRow(values...)).RowsWillBeClosed()
+	columns := exactLinkColumns
+	values := exactValues(r.path, graph.KindLink, append(linkValues(r), d.ID(), d.CanonicalJSON(), blobLength(d.CanonicalJSON()), d.Fingerprint()))
+	m.ExpectQuery(regexp.QuoteMeta(exactLinkQuery)).WithArgs(fixtureLimits.valueBytes, fixtureLimits.valueBytes, r.path, r.path, r.path).WillReturnRows(sqlmock.NewRows(columns).AddRow(values...)).RowsWillBeClosed()
 	link, err := readLinkInTx(t.Context(), tx, fixtureScope, r.path, fixtureLimits)
 	if err != nil {
 		t.Fatal(err)
@@ -252,9 +274,10 @@ func TestExplicitOwnedLinksCountTowardWildcardWholeSet(t *testing.T) {
 
 func TestPhysicalAbsenceDoesNotInventPublicGoneMeaning(t *testing.T) {
 	tx, m := mockTx(t)
-	m.ExpectQuery("FROM graph_beads WHERE").WillReturnRows(sqlmock.NewRows(resourceColumns)).RowsWillBeClosed()
+	m.ExpectQuery(regexp.QuoteMeta(exactBeadQuery)).WillReturnRows(sqlmock.NewRows(exactBeadColumns).AddRow(exactMissingValues("beads/plan", graph.KindBead, "")...)).RowsWillBeClosed()
 	_, err := readBeadInTx(t.Context(), tx, fixtureScope, "beads/plan", fixtureLimits)
-	if !errors.Is(err, errAbsent) || errors.Is(err, graph.ErrNotFound) {
+	var absence *exactAbsence
+	if !errors.As(err, &absence) || absence.state != "" || errors.Is(err, graph.ErrNotFound) || errors.Is(err, errAbsent) {
 		t.Fatalf("private absence=%v", err)
 	}
 }
@@ -263,22 +286,22 @@ func TestReadFailuresRetainNoPartialResult(t *testing.T) {
 	for _, kind := range []string{"query", "scan", "iteration", "close", "bytes", "duplicate"} {
 		t.Run(kind, func(t *testing.T) {
 			tx, m := mockTx(t)
-			q := m.ExpectQuery("FROM graph_beads WHERE")
+			q := m.ExpectQuery(regexp.QuoteMeta(exactBeadQuery))
 			switch kind {
 			case "query":
 				q.WillReturnError(boom)
 			case "scan":
 				q.WillReturnRows(sqlmock.NewRows([]string{"one"}).AddRow("bad")).RowsWillBeClosed()
 			case "iteration":
-				q.WillReturnRows(sqlmock.NewRows(resourceColumns).AddRow(resourceValues(validRow())...).RowError(0, boom)).RowsWillBeClosed()
+				q.WillReturnRows(sqlmock.NewRows(exactBeadColumns).AddRow(exactBeadValues(validRow())...).RowError(0, boom)).RowsWillBeClosed()
 			case "close":
-				q.WillReturnRows(sqlmock.NewRows(resourceColumns).CloseError(boom)).RowsWillBeClosed()
+				q.WillReturnRows(sqlmock.NewRows(exactBeadColumns).CloseError(boom)).RowsWillBeClosed()
 			case "bytes":
 				r := validRow()
 				r.properties = []byte(strings.Repeat(" ", fixtureLimits.valueBytes+1))
-				q.WillReturnRows(sqlmock.NewRows(resourceColumns).AddRow(resourceValues(r)...)).RowsWillBeClosed()
+				q.WillReturnRows(sqlmock.NewRows(exactBeadColumns).AddRow(exactBeadValues(r)...)).RowsWillBeClosed()
 			case "duplicate":
-				q.WillReturnRows(sqlmock.NewRows(resourceColumns).AddRow(resourceValues(validRow())...).AddRow(resourceValues(validRow())...)).RowsWillBeClosed()
+				q.WillReturnRows(sqlmock.NewRows(exactBeadColumns).AddRow(exactBeadValues(validRow())...).AddRow(exactBeadValues(validRow())...)).RowsWillBeClosed()
 			}
 			result, err := readBeadInTx(t.Context(), tx, fixtureScope, "beads/plan", fixtureLimits)
 			if err == nil || !result.Bead.IsZero() {
@@ -314,8 +337,8 @@ func TestPresentLinkNullPropertiesNeverBecomesEmptyObject(t *testing.T) {
 	r := validLinkRow()
 	r.properties = nil
 	d := relationDescriptor(t)
-	columns := append(append([]string{}, allLinkColumns...), "url", "descriptor", "descriptor_length", "fingerprint")
-	values := append(linkValues(r), d.ID(), d.CanonicalJSON(), blobLength(d.CanonicalJSON()), d.Fingerprint())
+	columns := exactLinkColumns
+	values := exactValues(r.path, graph.KindLink, append(linkValues(r), d.ID(), d.CanonicalJSON(), blobLength(d.CanonicalJSON()), d.Fingerprint()))
 	m.ExpectQuery(regexp.QuoteMeta(exactLinkQuery)).WillReturnRows(sqlmock.NewRows(columns).AddRow(values...)).RowsWillBeClosed()
 	if _, err := readLinkInTx(t.Context(), tx, fixtureScope, r.path, fixtureLimits); !errors.Is(err, errCorrupt) {
 		t.Fatalf("NULL properties repaired: %v", err)
@@ -345,8 +368,8 @@ func TestSingletonLinkAndDescriptorOverflowClassification(t *testing.T) {
 				var err error
 				if target == "link" {
 					row := validLinkRow()
-					columns := append(append([]string{}, allLinkColumns...), "url", "descriptor", "descriptor_length", "fingerprint")
-					values := append(linkValues(row), d.ID(), raw, blobLength(raw), d.Fingerprint())
+					columns := exactLinkColumns
+					values := exactValues(row.path, graph.KindLink, append(linkValues(row), d.ID(), raw, blobLength(raw), d.Fingerprint()))
 					rows := sqlmock.NewRows(columns).AddRow(values...)
 					if mode == "duplicate" {
 						rows.AddRow(values...)

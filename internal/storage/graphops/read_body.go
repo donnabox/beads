@@ -54,8 +54,10 @@ const beadColumns = "path, type_url, revision, attribution_principal, CAST(attri
 const linkColumns = beadColumns + ", source_kind, source_path, source_url, source_pin, target_kind, target_path, target_url, target_pin"
 
 func scanResource(rows *sql.Rows, row *resourceRow, tail ...any) error {
-	args := []any{&row.path, &row.typeURL, &row.revision, &row.principal, &row.attribution, &row.properties, &row.propertiesLength}
-	return rows.Scan(append(args, tail...)...)
+	return rows.Scan(append(resourceScanTargets(row), tail...)...)
+}
+func resourceScanTargets(row *resourceRow) []any {
+	return []any{&row.path, &row.typeURL, &row.revision, &row.principal, &row.attribution, &row.properties, &row.propertiesLength}
 }
 func chargeResource(b *readBudget, row resourceRow) error {
 	if err := b.charge([]byte(row.path), []byte(row.typeURL), []byte(row.revision), []byte(row.principal.String), []byte(row.attribution.String)); err != nil {
@@ -111,29 +113,27 @@ func readRows[T any](ctx context.Context, tx queryer, query string, args []any, 
 }
 
 func beadRowInTx(ctx context.Context, tx queryer, path string, b *readBudget) (graph.Bead, error) {
-	items, err := readRows(ctx, tx, "SELECT "+beadColumns+" FROM graph_beads WHERE path = ? LIMIT 2", []any{b.limits.valueBytes, path}, 1, func(rows *sql.Rows) (graph.Bead, error) {
+	return readExact(ctx, tx, exactBeadQuery, []any{b.limits.valueBytes, path, path, path}, func(rows *sql.Rows) (exactResult[graph.Bead], error) {
+		var result exactResult[graph.Bead]
 		var row resourceRow
-		if err := scanResource(rows, &row); err != nil {
-			return graph.Bead{}, err
+		var allocation exactPathRow
+		if err := rows.Scan(append(allocation.targets(), resourceScanTargets(&row)...)...); err != nil {
+			return result, err
+		}
+		absence, err := allocation.classify(path, graph.KindBead, row.path, b)
+		if err != nil {
+			return result, err
+		}
+		if absence != nil {
+			result.absence = absence
+			return result, nil
 		}
 		if err := chargeResource(b, row); err != nil {
-			return graph.Bead{}, err
+			return result, err
 		}
-		if row.path != path {
-			return graph.Bead{}, corrupt(errors.New("bead lookup returned another path"))
-		}
-		return decodeBead(row)
+		result.value, err = decodeBead(row)
+		return result, err
 	})
-	if errors.Is(err, errRowOverflow) {
-		err = errors.Join(err, corrupt(errors.New("duplicate singleton row")))
-	}
-	if err != nil {
-		return graph.Bead{}, err
-	}
-	if len(items) == 0 {
-		return graph.Bead{}, errAbsent
-	}
-	return items[0], nil
 }
 
 func descriptorInTx(ctx context.Context, tx queryer, id string, kind graph.ResourceKind, b *readBudget) (graph.TypeDescriptor, error) {
@@ -189,7 +189,6 @@ func linksInTx(ctx context.Context, tx queryer, scope, where string, args []any,
 // them scannable, never converts an absent Link into a domain value. CAST before
 // COALESCE retains ENUM labels: this engine otherwise returns their numeric index.
 const joinedLinkColumns = "COALESCE(l.path, ''), COALESCE(l.type_url, ''), COALESCE(l.revision, ''), l.attribution_principal, CAST(l.attribution_status AS CHAR), CASE WHEN LENGTH(l.properties) < 0 OR LENGTH(l.properties) > ? THEN NULL ELSE l.properties END, LENGTH(l.properties), COALESCE(CAST(l.source_kind AS CHAR), ''), l.source_path, l.source_url, l.source_pin, COALESCE(CAST(l.target_kind AS CHAR), ''), l.target_path, l.target_url, l.target_pin"
-const exactLinkQuery = "SELECT " + joinedLinkColumns + ", d.url, CASE WHEN LENGTH(d.descriptor) < 0 OR LENGTH(d.descriptor) > ? THEN NULL ELSE d.descriptor END, LENGTH(d.descriptor), d.fingerprint FROM graph_links l LEFT JOIN graph_type_descriptors d ON d.url = l.type_url WHERE l.path = ? LIMIT 2"
 
 func linkScanTargets(row *linkRow) []any {
 	return []any{&row.path, &row.typeURL, &row.revision, &row.principal, &row.attribution, &row.properties, &row.propertiesLength, &row.source.kind, &row.source.path, &row.source.url, &row.source.pin, &row.target.kind, &row.target.path, &row.target.url, &row.target.pin}
@@ -221,43 +220,48 @@ func readLinkInTx(ctx context.Context, tx queryer, scope, path string, limits re
 	if err := graph.ValidateLinkPath(path); err != nil {
 		return graph.Link{}, err
 	}
-	links, err := readRows(ctx, tx, exactLinkQuery, []any{limits.valueBytes, limits.valueBytes, path}, 1, func(rows *sql.Rows) (graph.Link, error) {
+	if len(path) > limits.valueBytes {
+		return graph.Link{}, errBudget
+	}
+	return readExact(ctx, tx, exactLinkQuery, []any{limits.valueBytes, limits.valueBytes, path, path, path}, func(rows *sql.Rows) (exactResult[graph.Link], error) {
+		var allocation exactPathRow
+		var result exactResult[graph.Link]
 		var row linkRow
 		var id, fingerprint sql.NullString
 		var raw []byte
 		var length sql.NullInt64
-		targets := append(linkScanTargets(&row), &id, &raw, &length, &fingerprint)
+		targets := append(append(allocation.targets(), linkScanTargets(&row)...), &id, &raw, &length, &fingerprint)
 		if err := rows.Scan(targets...); err != nil {
-			return graph.Link{}, err
+			return result, err
 		}
+		absence, err := allocation.classify(path, graph.KindLink, row.path, b)
+		if err != nil {
+			return result, err
+		}
+		if absence != nil {
+			result.absence = absence
+			return result, nil
+		}
+
 		if row.path != path || !id.Valid || !fingerprint.Valid || id.String != row.typeURL {
-			return graph.Link{}, corrupt(errors.New("exact Link or declared descriptor mismatch"))
+			return result, corrupt(errors.New("exact Link or declared descriptor mismatch"))
 		}
 		link, err := chargedLink(scope, row, b)
 		if err != nil {
-			return graph.Link{}, err
+			return result, err
 		}
 		if err := b.charge([]byte(id.String), []byte(fingerprint.String)); err != nil {
-			return graph.Link{}, err
+			return result, err
 		}
 		if err := chargeBlob(b, raw, length); err != nil {
-			return graph.Link{}, err
+			return result, err
 		}
 		if _, err := decodeDescriptor(id.String, raw, fingerprint.String, graph.KindLink); err != nil {
-			return graph.Link{}, err
+			return result, err
 		}
-		return link, nil
+		result.value = link
+		return result, nil
 	})
-	if errors.Is(err, errRowOverflow) {
-		err = errors.Join(err, corrupt(errors.New("duplicate singleton row")))
-	}
-	if err != nil {
-		return graph.Link{}, err
-	}
-	if len(links) == 0 {
-		return graph.Link{}, errAbsent
-	}
-	return links[0], nil
 }
 
 func incidentQuery(direction graph.Direction) (string, int) {
@@ -349,6 +353,9 @@ func readBeadInTx(ctx context.Context, tx queryer, scope, path string, limits re
 	}
 	if err := graph.ValidateBeadPath(path); err != nil {
 		return graph.BeadRecord{}, err
+	}
+	if len(path) > limits.valueBytes {
+		return graph.BeadRecord{}, errBudget
 	}
 	bead, err := beadRowInTx(ctx, tx, path, b)
 	if err != nil {

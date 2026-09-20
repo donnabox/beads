@@ -180,6 +180,7 @@ func TestManagedGraphWorker(t *testing.T) {
 	verifyEngineNegativeControls(t, ctx, conn)
 	verifyEngineByteControls(t, ctx, conn)
 	verifyEngineOwnedOverflow(t, ctx, conn)
+	verifyEngineAllocationControls(t, ctx, conn)
 	after := fixtureTablesDigest(t, ctx, conn)
 	if before != after {
 		t.Fatal("managed reads/rolled-back controls changed fixture tables")

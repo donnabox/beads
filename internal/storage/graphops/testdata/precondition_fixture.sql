@@ -36,17 +36,6 @@ CREATE TABLE graph_ledger_events (
  INDEX (path, seq),
  INDEX (op_id)
 );
-CREATE TABLE graph_allocations (
- path VARCHAR(1024) COLLATE utf8mb4_bin NOT NULL PRIMARY KEY,
- resource_kind ENUM('bead','link') NOT NULL,
- birth_seq BIGINT UNSIGNED NOT NULL,
- birth_authority_id CHAR(32) NOT NULL,
- birth_authority_epoch BIGINT UNSIGNED NOT NULL,
- state ENUM('live','reserved','pruned','erased') NOT NULL,
- tombstone_seq BIGINT UNSIGNED NULL,
- last_authority_id CHAR(32) NOT NULL,
- last_authority_epoch BIGINT UNSIGNED NOT NULL
-);
 CREATE TABLE graph_authority_lease (
  id TINYINT NOT NULL PRIMARY KEY,
  scope_url VARCHAR(2048) COLLATE utf8mb4_bin NOT NULL,
