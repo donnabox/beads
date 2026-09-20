@@ -83,12 +83,16 @@ func chargeBlob(b *readBudget, raw []byte, length sql.NullInt64) error {
 }
 
 func readRows[T any](ctx context.Context, tx queryer, query string, args []any, max int, scan func(*sql.Rows) (T, error)) (result []T, err error) {
+	if err := ctx.Err(); err != nil {
+		return nil, err
+	}
 	rows, err := tx.QueryContext(ctx, query, args...)
 	if err != nil {
 		return nil, err
 	}
 	defer func() {
-		err = errors.Join(err, rows.Close())
+		closeErr := rows.Close()
+		err = errors.Join(err, closeErr, ctx.Err())
 		if err != nil {
 			result = nil
 		}
