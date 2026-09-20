@@ -3,6 +3,7 @@
 package main
 
 import (
+	"bytes"
 	"context"
 	"os"
 	"os/exec"
@@ -65,53 +66,94 @@ func TestLoadServerModeFromBeadsDirCorruptMetadataReturnsError(t *testing.T) {
 }
 
 // End-to-end contract for a corrupt metadata.json, exercised through the
-// real binary: diagnostic and repair commands still run (warn-and-continue),
-// data commands fail loud instead of answering false-empty from the embedded
-// fallback, and bd init can rewrite the file — after which data commands work
-// again. Guards the scoping of the fail-loud behavior: fatal only where a
-// store is actually selected, never on the repair path itself.
-func TestCorruptMetadataDiagnosticsRunAndDataFailsLoud(t *testing.T) {
+// real binary: store-free information remains available, but commands that
+// inspect or initialize storage refuse an unknown storage mode. In particular,
+// doctor has direct store paths, and init must not infer a storage mode from
+// unparseable metadata. Neither is an automatic corrupt-metadata repair.
+func TestCorruptMetadataRefusesUnsafeCommandsWithoutMutation(t *testing.T) {
 	if os.Getenv("BEADS_TEST_EMBEDDED_DOLT") != "1" {
 		t.Skip("set BEADS_TEST_EMBEDDED_DOLT=1 to run embedded dolt tests")
 	}
 	t.Parallel()
 
 	bd := buildEmbeddedBD(t)
-	dir, beadsDir, _ := bdInit(t, bd, "--prefix", "cm")
-
-	if err := os.WriteFile(filepath.Join(beadsDir, "metadata.json"), []byte(`{"dolt_mode":"serv`), 0o600); err != nil {
-		t.Fatalf("corrupt metadata.json: %v", err)
+	beadsDir := writeCorruptMetadata(t)
+	dir := filepath.Dir(beadsDir)
+	metadataPath := filepath.Join(beadsDir, "metadata.json")
+	metadata, err := os.ReadFile(metadataPath)
+	if err != nil {
+		t.Fatal(err)
 	}
 
-	run := func(args ...string) (string, error) {
-		cmd := exec.Command(bd, args...)
+	run := func(args ...string) (string, string, error) {
+		cmd := exec.CommandContext(t.Context(), bd, args...)
 		cmd.Dir = dir
 		cmd.Env = bdEnv(dir)
-		out, err := cmd.CombinedOutput()
-		return string(out), err
+		stdout, stderr, err := runCommandBuffers(t, cmd)
+		return stdout.String(), stderr.String(), err
 	}
-
-	// Diagnostic / repair-path commands must keep working.
-	for _, args := range [][]string{{"version"}, {"doctor"}} {
-		if out, err := run(args...); err != nil {
-			t.Errorf("bd %s with corrupt metadata.json: want success, got %v\n%s", strings.Join(args, " "), err, out)
+	assertPreserved := func() {
+		t.Helper()
+		after, err := os.ReadFile(metadataPath)
+		if err != nil || !bytes.Equal(after, metadata) {
+			t.Fatalf("corrupt metadata changed: %q, %v", after, err)
+		}
+		entries, err := os.ReadDir(beadsDir)
+		if err != nil || len(entries) != 1 || entries[0].Name() != "metadata.json" || !entries[0].Type().IsRegular() {
+			t.Fatalf("unexpected entries while storage mode was unknown: %v, %v", entries, err)
 		}
 	}
 
-	// Data commands must fail loud, naming the file — not answer false-empty.
-	out, err := run("list", "--json")
-	if err == nil {
-		t.Fatalf("bd list with corrupt metadata.json: want loud failure, got success:\n%s", out)
-	}
-	if !strings.Contains(out, "metadata.json") {
-		t.Fatalf("bd list error should name metadata.json:\n%s", out)
+	// These commands can report useful information without selecting a store.
+	for _, args := range [][]string{{"version"}, {"help"}} {
+		stdout, stderr, err := run(args...)
+		if err != nil {
+			t.Errorf("bd %s with corrupt metadata.json: want success, got %v\nstdout: %s\nstderr: %s", strings.Join(args, " "), err, stdout, stderr)
+		}
+		for _, line := range strings.Split(stderr, "\n") {
+			if strings.HasPrefix(line, "Error:") {
+				t.Errorf("successful bd %s emitted an error: %s", strings.Join(args, " "), line)
+			}
+		}
+		assertPreserved()
 	}
 
-	// bd init is the documented repair path: it must run, rewrite the file,
-	// and restore data commands.
-	runBDInit(t, bd, dir, "--prefix", "cm")
-	if out, err := run("list", "--json"); err != nil {
-		t.Fatalf("bd list after bd init repair: %v\n%s", err, out)
+	// Refuse diagnostics with direct store paths, initialization and data reads.
+	// A successful empty result or inferred embedded initialization is unsafe.
+	for _, args := range [][]string{{"doctor"}, {"init", "--prefix", "cm"}, {"init", "--reinit-local", "--prefix", "cm"}, {"list", "--json"}} {
+		stdout, stderr, err := run(args...)
+		if err == nil {
+			t.Errorf("bd %s with corrupt metadata: want refusal, got success:\n%s", strings.Join(args, " "), stdout)
+		}
+		// The pre-run warning also appears on successful commands. Require
+		// the command's actual parse refusal, not an unrelated no-DB exit.
+		parseRefusal := false
+		for _, line := range strings.Split(stderr, "\n") {
+			if strings.HasPrefix(line, "Error:") && strings.Contains(line, "parsing config") {
+				parseRefusal = true
+			}
+		}
+		if !parseRefusal || stdout != "" || strings.Contains(stderr, "no beads database found") {
+			t.Errorf("bd %s did not refuse metadata parsing specifically:\nstdout: %s\nstderr: %s", strings.Join(args, " "), stdout, stderr)
+		}
+		// Preserve the warning's file identification and no-storage guarantee
+		// separately from the command error above.
+		for _, want := range []string{"metadata.json", "parsing config", "no storage database was opened or modified"} {
+			if !strings.Contains(stderr, want) {
+				t.Errorf("bd %s warning missing %q:\n%s", strings.Join(args, " "), want, stderr)
+			}
+		}
+		assertPreserved()
+	}
+
+	// Environment sanity control: healthy initialization and reads work in a
+	// separate clean workspace, without repairing the negative input above.
+	healthyDir, _, _ := bdInit(t, bd, "--prefix", "cm")
+	cmd := exec.CommandContext(t.Context(), bd, "list", "--json")
+	cmd.Dir = healthyDir
+	cmd.Env = bdEnv(healthyDir)
+	if out, err := cmd.CombinedOutput(); err != nil {
+		t.Fatalf("bd list in separately initialized workspace: %v\n%s", err, out)
 	}
 }
 
