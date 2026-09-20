@@ -67,7 +67,7 @@ func TestGraphPreconditionEngineObservations(t *testing.T) {
 	if !ok {
 		t.Fatal("build info unavailable")
 	}
-	t.Logf("effective build info:\n%s", info.String())
+	t.Logf("runtime build metadata (module provenance is in the pinned recipe and binary receipt):\n%s", info.String())
 	t.Logf("base schema SHA256=%x precondition schema SHA256=%x", sha256.Sum256([]byte(engineFixtureSQL)), sha256.Sum256([]byte(preconditionFixtureSQL)))
 	seedEngineFixture(t, ctx, db, data)
 	stateExec(t, ctx, db, preconditionFixtureSQL)
@@ -96,7 +96,6 @@ func TestGraphPreconditionEngineObservations(t *testing.T) {
 	}
 	preconditionAbsenceAndUnsigned(t, ctx, reader, baseline)
 	preconditionUTCBinding(t, ctx, reader)
-	preconditionExplain(t, ctx, reader)
 	preconditionSnapshot(t, ctx, reader, writer)
 	readPreconditionComposition(t, ctx, reader, data)
 	preconditionCorruptionAndMissing(t, ctx, reader)
@@ -107,6 +106,9 @@ func TestGraphPreconditionEngineObservations(t *testing.T) {
 	closed = true
 	if err := closeEngine(); err != nil {
 		t.Fatal(err)
+	}
+	if t.Failed() {
+		t.Fatal("precondition controls failed")
 	}
 	t.Log("GRAPH_PRECONDITION_FIXTURE_OK: observations, UTC binding and two-session snapshot; connections and engine closed")
 }
@@ -153,6 +155,14 @@ func preconditionStableFacts(value preconditionObservations) preconditionObserva
 	return value
 }
 
+func preconditionRestored(t *testing.T, ctx context.Context, conn *sql.Conn, baseline preconditionObservations) {
+	t.Helper()
+	restored := readPreconditionFixture(t, ctx, conn, baseline.ledger.requested)
+	if !reflect.DeepEqual(preconditionStableFacts(restored), preconditionStableFacts(baseline)) {
+		t.Fatalf("rollback changed stable facts: before=%+v after=%+v", baseline, restored)
+	}
+}
+
 func preconditionAbsenceAndUnsigned(t *testing.T, ctx context.Context, conn *sql.Conn, baseline preconditionObservations) {
 	t.Helper()
 	tx := preconditionTx(t, ctx, conn)
@@ -166,9 +176,7 @@ func preconditionAbsenceAndUnsigned(t *testing.T, ctx context.Context, conn *sql
 	if err := tx.Rollback(); err != nil {
 		t.Fatal(err)
 	}
-	if restored := readPreconditionFixture(t, ctx, conn, nil); !reflect.DeepEqual(preconditionStableFacts(restored), preconditionStableFacts(baseline)) {
-		t.Fatal("absence rollback changed retained facts")
-	}
+	preconditionRestored(t, ctx, conn, baseline)
 	tx = preconditionTx(t, ctx, conn)
 	for i, seq := range []uint64{1 << 63, graph.MaxLedgerSeq - 1, graph.MaxLedgerSeq} {
 		preconditionInsertLedger(t, ctx, tx, seq, strings.Repeat(strconv.Itoa(i+1), 64))
@@ -182,7 +190,11 @@ func preconditionAbsenceAndUnsigned(t *testing.T, ctx context.Context, conn *sql
 	if err := tx.Rollback(); err != nil {
 		t.Fatal(err)
 	}
-	t.Log("Scope/lease absence retains clock/zone/HEAD; exact high-bit and adjacent MaxLedgerSeq lookups pass")
+	preconditionRestored(t, ctx, conn, baseline)
+	// Text-bound equality can round through float64 under a scan fallback;
+	// duplicate rows would refuse, not yield a false fact. The later diagnostic
+	// captures both ordinary and near-Max plans for this qualified engine only.
+	t.Log("Scope/lease absence retains clock/zone/HEAD; high-bit and adjacent MaxLedgerSeq return exact rows on the pinned engine, with plan-dependent equality")
 }
 func preconditionInsertLedger(t *testing.T, ctx context.Context, tx stateExecer, seq uint64, hash string) {
 	t.Helper()
@@ -193,6 +205,7 @@ func preconditionInsertLedger(t *testing.T, ctx context.Context, tx stateExecer,
 
 func preconditionUTCBinding(t *testing.T, ctx context.Context, conn *sql.Conn) {
 	t.Helper()
+	baseline := readPreconditionFixture(t, ctx, conn, nil)
 	tx := preconditionTx(t, ctx, conn)
 	input := time.Date(2026, 9, 20, 12, 34, 56, 123456000, time.FixedZone("fixture +05", 5*60*60))
 	// The storage leg normalizes parameters: this driver formats civil fields
@@ -206,6 +219,7 @@ func preconditionUTCBinding(t *testing.T, ctx context.Context, conn *sql.Conn) {
 	if err := tx.Rollback(); err != nil {
 		t.Fatal(err)
 	}
+	preconditionRestored(t, ctx, conn, baseline)
 	// Characterize an unnormalized caller separately: even with a UTC session,
 	// the driver binds the original civil fields. This is not a compliant write.
 	tx = preconditionTx(t, ctx, conn)
@@ -217,6 +231,7 @@ func preconditionUTCBinding(t *testing.T, ctx context.Context, conn *sql.Conn) {
 	if err := tx.Rollback(); err != nil {
 		t.Fatal(err)
 	}
+	preconditionRestored(t, ctx, conn, baseline)
 	// A non-UTC reader exposes its own zone, not the zone of a historical writer.
 	stateExec(t, ctx, conn, "SET time_zone = '+05:00'")
 	tx = preconditionTx(t, ctx, conn)
@@ -228,6 +243,7 @@ func preconditionUTCBinding(t *testing.T, ctx context.Context, conn *sql.Conn) {
 		t.Fatal(err)
 	}
 	stateExec(t, ctx, conn, "SET time_zone = '+00:00'")
+	preconditionRestored(t, ctx, conn, baseline)
 	t.Log("explicit UTC-normalized Go binding renders UTC; raw non-UTC binding retains civil fields despite UTC session; non-UTC reader retains zone without rewriting stored civil timestamp")
 }
 
@@ -235,11 +251,15 @@ func preconditionSnapshot(t *testing.T, ctx context.Context, reader, writer *sql
 	t.Helper()
 	stateExec(t, ctx, writer, "CALL DOLT_ADD('graph_scope', 'graph_scope_history', 'graph_type_descriptors', 'graph_beads', 'graph_links', 'graph_ledger_seq', 'graph_ledger_events', 'graph_allocations')")
 	stateExec(t, ctx, writer, "CALL DOLT_COMMIT('-m', 'precondition baseline', '--author', 'Fixture <fixture@example.invalid>')")
+	baselineHead := preconditionWriterHead(t, ctx, writer)
 	read := preconditionTx(t, ctx, reader)
 	seq := uint64(1)
 	before, err := observePreconditionsInTx(ctx, read, &seq)
 	if err != nil {
 		t.Fatal(err)
+	}
+	if before.ledger.head != baselineHead {
+		t.Fatalf("reader HEAD %q differs from writer baseline commit %q", before.ledger.head, baselineHead)
 	}
 	bead, err := readBeadInTx(ctx, read, fixtureScope, "beads/plan", fixtureLimits)
 	if err != nil {
@@ -256,6 +276,10 @@ func preconditionSnapshot(t *testing.T, ctx context.Context, reader, writer *sql
 	// A real Dolt commit advances HEAD while A still holds its read transaction.
 	stateExec(t, ctx, writer, "CALL DOLT_ADD('graph_scope', 'graph_ledger_events', 'graph_beads')")
 	stateExec(t, ctx, writer, "CALL DOLT_COMMIT('-m', 'precondition successor', '--author', 'Fixture <fixture@example.invalid>')")
+	successorHead := preconditionWriterHead(t, ctx, writer)
+	if successorHead == baselineHead {
+		t.Fatal("writer successor commit did not change HEAD")
+	}
 	during, err := observePreconditionsInTx(ctx, read, &seq)
 	if err != nil || !reflect.DeepEqual(preconditionStableFacts(before), preconditionStableFacts(during)) {
 		t.Fatalf("snapshot facts changed after B commit: before=%+v after=%+v err=%v", before, during, err)
@@ -272,7 +296,7 @@ func preconditionSnapshot(t *testing.T, ctx context.Context, reader, writer *sql
 	}
 	fresh := preconditionTx(t, ctx, reader)
 	after, err := observePreconditionsInTx(ctx, fresh, &seq)
-	if err != nil || after.scope.epoch != 2 || after.ledger.recorded.seq != 1 || after.ledger.tip.seq != 1 || after.lease.epoch != 2 || after.lease.fence != strings.Repeat("e", 32) || after.ledger.head == before.ledger.head || after.state.version == before.state.version {
+	if err != nil || after.scope.epoch != 2 || after.ledger.recorded.seq != 1 || after.ledger.tip.seq != 1 || after.lease.epoch != 2 || after.lease.fence != strings.Repeat("e", 32) || after.ledger.head != successorHead || after.state.version == before.state.version {
 		t.Fatalf("fresh facts did not advance: %+v %v", after, err)
 	}
 	updated, err := readBeadInTx(ctx, fresh, fixtureScope, "beads/plan", fixtureLimits)
@@ -286,12 +310,24 @@ func preconditionSnapshot(t *testing.T, ctx context.Context, reader, writer *sql
 	if err := fresh.Rollback(); err != nil {
 		t.Fatal(err)
 	}
-	t.Log("two-session Scope/ledger/ignored-lease/HEAD/hash/body snapshot; live NOW6 advances; fresh transaction observes B commits")
+	t.Logf("two-session Scope/ledger/ignored-lease/HEAD/hash/body snapshot; live NOW6 advances; reader HEAD equals exact writer commits baseline=%s successor=%s", baselineHead, successorHead)
 }
 
-func preconditionExplain(t *testing.T, ctx context.Context, conn *sql.Conn) {
+func preconditionWriterHead(t *testing.T, ctx context.Context, conn *sql.Conn) string {
 	t.Helper()
-	rows, err := conn.QueryContext(ctx, "EXPLAIN FORMAT=tree "+ledgerObservationQuery, "3")
+	var head string
+	if err := conn.QueryRowContext(ctx, "SELECT DOLT_HASHOF('HEAD')").Scan(&head); err != nil {
+		t.Fatal(err)
+	}
+	if _, err := observationLabel(head, 32, 'v'); err != nil {
+		t.Fatal(err)
+	}
+	return head
+}
+
+func preconditionExplain(t *testing.T, ctx context.Context, conn *sql.Conn, operand string) {
+	t.Helper()
+	rows, err := conn.QueryContext(ctx, "EXPLAIN FORMAT=tree "+ledgerObservationQuery, operand)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -326,7 +362,7 @@ func preconditionExplain(t *testing.T, ctx context.Context, conn *sql.Conn) {
 			if err != nil {
 				t.Fatal(err)
 			}
-			t.Logf("ledger EXPLAIN %s: %s", columns[i], text)
+			t.Logf("ledger EXPLAIN operand=%s %s: %s", operand, columns[i], text)
 		}
 	}
 	if err := rows.Err(); err != nil {
@@ -340,9 +376,10 @@ func preconditionExplain(t *testing.T, ctx context.Context, conn *sql.Conn) {
 
 func preconditionCorruptionAndMissing(t *testing.T, ctx context.Context, conn *sql.Conn) {
 	t.Helper()
+	seq := uint64(1)
+	baseline := readPreconditionFixture(t, ctx, conn, &seq)
 	tx := preconditionTx(t, ctx, conn)
 	stateExec(t, ctx, tx, "UPDATE graph_ledger_events SET hash = REPEAT('z',64) WHERE seq = 1")
-	seq := uint64(1)
 	got, err := observePreconditionsInTx(ctx, tx, &seq)
 	if !errors.Is(err, errCorrupt) || !reflect.DeepEqual(got, preconditionObservations{}) {
 		t.Fatalf("malformed actual ledger produced facts: %+v %v", got, err)
@@ -350,6 +387,12 @@ func preconditionCorruptionAndMissing(t *testing.T, ctx context.Context, conn *s
 	if err := tx.Rollback(); err != nil {
 		t.Fatal(err)
 	}
+	preconditionRestored(t, ctx, conn, baseline)
+	t.Log("malformed ledger refused without partial facts; rollback restored exact stable facts")
+	// Diagnostics follow the primary snapshot, composition and corrupt-row
+	// controls, and precede only the destructive missing-table control.
+	preconditionExplain(t, ctx, conn, "3")
+	preconditionExplain(t, ctx, conn, strconv.FormatUint(graph.MaxLedgerSeq-1, 10))
 	// Disposable schema negative control, after all successful snapshot checks.
 	stateExec(t, ctx, conn, "DROP TABLE graph_authority_lease")
 	tx = preconditionTx(t, ctx, conn)
