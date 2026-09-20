@@ -19,10 +19,13 @@
 // and a 250 ms write timeout, including contextless COM_QUIT. Cleanup owns the
 // actual transport and always closes the one-operation pool; no pooled reuse,
 // SQL session repair, reconnect, caller-injected SQL/callback or engine recovery
-// exists. The pinned MySQL driver still supports process-global local-infile
-// file/reader registrations even with AllowAllFiles=false. It has no per-config
-// disable option: a 0xfb reply can reach those handlers. This is an additional
-// driver seam to close before production admission, not a closed capability
-// proved by this package. Do not add a Beads packet filter or global-registry
-// reset to disguise it.
+// exists. Construction explicitly applies a Config-only LOCAL INFILE refusal
+// from the privately paired driver. The paired protocol fixtures qualify first
+// and later text COM_QUERY result headers, not engine exclusion or server
+// terminality. Prepared-query initial-OK traversal remains an unchanged driver
+// limitation; this package's closed commands use text queries with interpolation.
+// Until dependency promotion is admitted, this source requires the private
+// module replacement and must not be merged into a shared default-module head.
+// Do not add a packet filter, global-registry reset or fallback to disguise that
+// dependency or to manufacture production admission.
 package graphsession
