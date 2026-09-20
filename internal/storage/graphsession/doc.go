@@ -20,12 +20,13 @@
 // actual transport and always closes the one-operation pool; no pooled reuse,
 // SQL session repair, reconnect, caller-injected SQL/callback or engine recovery
 // exists. Construction explicitly applies a Config-only LOCAL INFILE refusal
-// from the privately paired driver. The paired protocol fixtures qualify first
+// from the remotely pinned driver fork. The protocol fixtures cover first
 // and later text COM_QUERY result headers, not engine exclusion or server
 // terminality. Prepared-query initial-OK traversal remains an unchanged driver
 // limitation; this package's closed commands use text queries with interpolation.
-// Until dependency promotion is admitted, this source requires the private
-// module replacement and must not be merged into a shared default-module head.
+// This development line uses an immutable remote module replacement documented
+// in engdocs/MYSQL_DRIVER_FORK.md. Main/release installation compatibility and
+// production admission remain separate gates.
 // Do not add a packet filter, global-registry reset or fallback to disguise that
 // dependency or to manufacture production admission.
 package graphsession

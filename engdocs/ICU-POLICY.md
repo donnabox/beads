@@ -140,7 +140,11 @@ Two supported modes, documented in [INSTALLING.md](../docs/getting-started/insta
 
 2. **`CGO_ENABLED=1 GOFLAGS=-tags=gms_pure_go go install ...`** produces an embedded-capable binary. Requires a C compiler but NOT libicu.
 
-No fork, no replace directive, no upstream patch required. The tradeoff is that `go install` users who want embedded mode have to pass an explicit `GOFLAGS`; those who don't care can use the shorter nocgo form.
+The supported upstream ICU solution requires no fork, replace directive or
+upstream patch. A separate development-only MySQL transport dependency is
+documented in [MYSQL_DRIVER_FORK.md](MYSQL_DRIVER_FORK.md); it does not change
+this ICU policy or authorize a canonical release containing that replacement.
+The tradeoff for the supported upstream ICU solution is that `go install` users who want embedded mode have to pass an explicit `GOFLAGS`; those who don't care can use the shorter nocgo form.
 
 ## Common Mistakes to Avoid
 
