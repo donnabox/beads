@@ -544,7 +544,8 @@ revision?, fingerprint?, authority_id, epoch, at, prev_hash, hash}` with
 (pinned by the contract; a validation run has its own budget outside the
 read's transaction; the lease `UPDATE` of a mutation counts as one; a CLI
 read's one-time ephemeral regrant on its own expired lease is a separate
-transaction outside the budget):
+transaction outside the budget; connection-setup session pins are also outside
+the body budget):
 
 | Method | Statements | Composition |
 | --- | --- | --- |
@@ -644,8 +645,9 @@ func ReadBeadInTx(ctx, tx DBTX, w authority.Witness, claim graphcap.LeaseClaim, 
   unsupported, as the workspace gate already declares); an **ephemeral home**
   regenerates it on every start (`ErrNotAuthority` until `bd --graph-mode link promote`);
   a moved workspace needs a `bd --graph-mode link promote` (guidance: "moved or copied").
-- **`Load`** is a plain read; a pending transition triggers **recovery**
-  before any assertion (below).
+- **`Load`** is a diagnostic read; pending or unverified state refuses positive
+  assertions. Recovery is explicit administration under the held guard (below;
+  B4), never a side effect of `Load`.
 - **`Advance`** takes the exclusive lock with a bounded poll (`internal/lockfile`
   has no timeout API; the `workspacegate` poll is the precedent; both
   `ErrLocked` and `ErrLockBusy` honored) and, **while holding it, asks the
@@ -668,8 +670,8 @@ func ReadBeadInTx(ctx, tx DBTX, w authority.Witness, claim graphcap.LeaseClaim, 
   ledger?", "does the current commit descend from this one?", "is this
   head an exact prefix?"); after the scoped commit `SetPhase(local_committed, op_commit)`;
   after the push `published`; after `config.yaml` `config_written`; then
-  `Finalize` writes the new witness and clears the record. **Recovery** on
-  `Load` never trusts the phase alone. An `adopt` transition uses the
+  `Finalize` writes the new witness and clears the record. **Recovery** (explicit,
+  under the held guard) never trusts the phase alone. An `adopt` transition uses the
   kind-specific complete pre/source-state evidence in [ADR section 5](BDP_GRAPH_REPLICATION_ADR.md#5-replica-wholesale-selection-and-explicit-later-mint-adoption),
   like `LedgerApply`; missing ledger `op_id` alone never permits abandoning
   an adopt or rearming the old witness. For ordinary event-producing
@@ -701,6 +703,20 @@ func ReadBeadInTx(ctx, tx DBTX, w authority.Witness, claim graphcap.LeaseClaim, 
 | server Dolt (CLI) | `internal/storage/dolt/beadgraph_*.go` | witness + claim per call; `withReadTx` / `withRetryTx`; scoped commit; `PublishGraphMutation` |
 | embedded Dolt (CLI only, A9 as amended by A10) | `internal/storage/embeddeddolt/beadgraph_*.go` | same body, `withConn`; solo topology wires the full local read contract with its witness and workspace-gate lease; client hosts wire `ErrNotAuthority` refusal. No embedded HTTP serving. |
 | unit of work (**the serving leg**) | `internal/storage/domain/beadgraph.go`, `internal/storage/domain/db/beadgraph.go` (+ the version-control repository's new `MergeBase`/`ResetSoft`/`CheckoutTables`/`Revert`/`HashOfTables`), `internal/storage/uow/beadgraph_*.go` (`BeadGraphUseCase()`; `RunTxRead`; **`RunTxScopedResult(tables, msg)`** — new, since `doltServerTx.Commit` hardcodes `DOLT_COMMIT('-Am')`; `RunTxEphemeral` for renewal; `PublishGraphMutation` on the provider) | **same body** |
+
+Graph connections pin `time_zone = '+00:00'` during connection setup, before
+any graph SQL. Server-evaluated `NOW(6)` values and the database clock therefore
+share UTC. Each storage leg must also render Go-bound lease `DATETIME(6)`
+parameters in UTC; that driver obligation does not follow from the session pin.
+Connection setup is outside the per-method statement budget. The lease
+observation also projects `@@session.time_zone`, and a protected assertion
+refuses any other value. This records the current session's zone; a naive
+stored timestamp cannot establish the zone used by a historical writer.
+Every protected read and mutation uses the provider-bound workspace database
+on its configured default branch. Database and active-branch facts are
+observed within the existing precondition statements and checked against that
+binding; an absent lease on an alternate branch is not evidence about the
+default branch's authority.
 
 Every protected body begins with `assertAuthorityInTx(ctx, tx, w, claim,
 mutating)`: Scope row identity; ledger head present (exact prefix) and
@@ -911,9 +927,16 @@ graph semantics is a Link, owned under an explicit entry or the wildcard
 stamped by every mutation on descriptors, beads, links, and allocations.
 
 **The graph-state version** is `DOLT_HASHOF_TABLE('<name>')` for each of
-the eight replicated tables below, in this order, the eight hashes hashed
-together with sha256; the lease is ephemeral and excluded. The descriptors
-table's hash within it keys the descriptor cache.
+the eight replicated tables below, projected as eight expressions in one
+`SELECT` in this order. Validate each returned hash as a 32-character lowercase
+base32 label (`[0-9a-v]{32}`); concatenate those eight ASCII labels without a
+separator or domain tag, then SHA-256 those exact 256 bytes and render the
+result as lowercase hexadecimal. Do not decode the labels to binary before
+hashing. The lease is ephemeral and excluded. The descriptors table's hash
+within the ordered vector keys the descriptor cache. The same statement also
+observes `DATABASE()` and `ACTIVE_BRANCH()` for the required provider binding;
+those facts are not part of the digest preimage. These table hashes do not
+replace separate foreign-key, trigger/fence, or complete-schema evidence.
 
 | Table | Columns (type; nullability) | Keys / constraints |
 | --- | --- | --- |
@@ -1072,7 +1095,7 @@ migration merges. No replication command is implemented by this documentation.
   **issue-plane-only divergence** keeps the commit and answers
   `ErrSyncRequired`; a **network failure on push** keeps the commit as
   unpublished and retries; **undo when HEAD moved** reverts and preserves
-  later commits; **each transition phase** recovers on the next load
+  later commits; **each transition phase** recovers through explicit administration under the held guard
   (resume and undo, both outcomes); an `Install` is published on hazard R;
   a hazard-R CLI read with a stale observation fetches and fails closed
   past the grace; heartbeat detects a changed `(authority_id, epoch)`;
@@ -1258,8 +1281,8 @@ backends; a registered backend's serving behavior (rows absent).
 5. Whether hazard-R publication should use an isolated branch instead of
    soft-reset/checkout/revert. The constraint that decides it survives A9:
    the ephemeral lease table lives in the default branch's working set and
-   branch-qualified sessions do not see it, so every fenced transaction runs
-   on the default branch.
+   branch-qualified sessions do not see it, so every protected read and fenced mutation runs
+   on the configured default branch.
 6. The adoption verb for the later of two mints under one URL (ruling 14,
    law 3) — name and shape fixed in the replication/merge ADR.
 7. **Ruled 2026-09-08 (A):** the state-change validator and ruling 14's
