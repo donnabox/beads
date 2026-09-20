@@ -1,6 +1,6 @@
 -- Test-only projection of BDP_GRAPH_CLI_AND_STORAGE_SPEC.md B4 row shapes.
--- Not a migration or a minted graph Scope: no authority, ledger or allocations.
--- These four tables support row decoder/query qualification only.
+-- Not a migration or a minted graph Scope: no authority or lawful ledger.
+-- These five tables support row decoder/query qualification only.
 CREATE TABLE graph_scope (
  id TINYINT NOT NULL PRIMARY KEY,
  scope_url VARCHAR(2048) COLLATE utf8mb4_bin NOT NULL,
@@ -60,4 +60,15 @@ CREATE TABLE graph_links (
  CHECK ((target_kind = 'in' AND target_path IS NOT NULL AND target_url IS NULL) OR (target_kind = 'ext' AND target_path IS NULL AND target_url IS NOT NULL)),
  CHECK (source_kind = 'in' OR target_kind = 'in'),
  CHECK ((attribution_principal IS NULL AND attribution_status IS NULL) OR (attribution_principal IS NOT NULL AND attribution_status IS NOT NULL))
+);
+CREATE TABLE graph_allocations (
+ path VARCHAR(1024) COLLATE utf8mb4_bin NOT NULL PRIMARY KEY,
+ resource_kind ENUM('bead','link') NOT NULL,
+ birth_seq BIGINT UNSIGNED NOT NULL,
+ birth_authority_id CHAR(32) NOT NULL,
+ birth_authority_epoch BIGINT UNSIGNED NOT NULL,
+ state ENUM('live','reserved','pruned','erased') NOT NULL,
+ tombstone_seq BIGINT UNSIGNED NULL,
+ last_authority_id CHAR(32) NOT NULL,
+ last_authority_epoch BIGINT UNSIGNED NOT NULL
 );

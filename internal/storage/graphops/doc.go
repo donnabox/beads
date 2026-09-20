@@ -14,8 +14,9 @@
 // Embedded fixture qualification uses an explicitly recorded module graph; its
 // actual build info is emitted. Managed-server qualification is a separate leg.
 //
-// Physical absence is private errAbsent, not a public not-found/gone decision:
-// the future facade must consult allocation/visibility state. These bodies do
+// Exact reads preserve private never-seen/reserved/pruned/erased absence from
+// the allocation projection. Incident absence remains private errAbsent. Neither
+// is a public Reader error or permission to disclose history. These bodies do
 // not certify endpoint liveness, installed-type closure, ledger, lease or graph
 // validity. Exact Bead/Link reads verify their own installed descriptor.
 // Owned and incident collections assume installation was validated for the
