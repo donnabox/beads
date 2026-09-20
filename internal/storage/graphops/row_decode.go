@@ -19,6 +19,7 @@ type resourceRow struct {
 	path, typeURL, revision string
 	principal, attribution  sql.NullString
 	properties              []byte
+	propertiesLength        sql.NullInt64
 }
 
 type endpointRow struct {

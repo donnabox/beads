@@ -164,6 +164,8 @@ func TestGraphReadEnginePhase(t *testing.T) {
 	before := fixtureTablesDigest(t, ctx, db)
 	verifyEngineFixture(t, ctx, db, data)
 	verifyEngineNegativeControls(t, ctx, db)
+	verifyEngineByteControls(t, ctx, db)
+	verifyEngineOwnedOverflow(t, ctx, db)
 	after := fixtureTablesDigest(t, ctx, db)
 	if before != after {
 		t.Fatal("read/rolled-back controls changed persisted tables")
@@ -498,4 +500,167 @@ func scopeFromFixtureTx(t *testing.T, ctx context.Context, tx *sql.Tx) string {
 		t.Fatal("fixture Scope changed")
 	}
 	return scope
+}
+
+func verifyEngineOwnedOverflow(t *testing.T, ctx context.Context, db *sql.DB) {
+	t.Helper()
+	tx, err := db.BeginTx(ctx, nil)
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer func() { _ = tx.Rollback() }()
+	scope := scopeFromFixtureTx(t, ctx, tx)
+	for _, path := range []string{"links/overflow-a", "links/overflow-b"} {
+		_, err := tx.ExecContext(ctx, "INSERT INTO graph_links (path, type_url, revision, properties, source_kind, source_path, target_kind, target_path, last_authority_id, last_epoch, created_at, updated_at) VALUES (?, ?, ?, ?, 'in', 'beads/plan', 'in', 'beads/finding', ?, 1, '2026-09-17 00:00:00', '2026-09-17 00:00:00')", path, relationType, graph.MintRevision().String(), []byte("{}"), strings.Repeat("a", 32))
+		if err != nil {
+			t.Fatal(err)
+		}
+	}
+	if _, err := readBeadInTx(ctx, tx, scope, "beads/plan", fixtureLimits); !errors.Is(err, errCorrupt) || errors.Is(err, errBudget) {
+		t.Fatalf("actual owned descriptor overflow: %v", err)
+	}
+	if err := tx.Rollback(); err != nil {
+		t.Fatal(err)
+	}
+}
+
+func verifyEngineByteControls(t *testing.T, ctx context.Context, db *sql.DB) {
+	t.Helper()
+	tx, err := db.BeginTx(ctx, nil)
+	if err != nil {
+		t.Fatal(err)
+	}
+	var originalMode string
+	if err := tx.QueryRowContext(ctx, "SELECT @@session.sql_mode").Scan(&originalMode); err != nil {
+		_ = tx.Rollback()
+		t.Fatal(err)
+	}
+	restored := false
+	defer func() {
+		if !restored {
+			if err := setFixtureSQLMode(ctx, tx, originalMode); err != nil {
+				t.Errorf("restore SQL mode: %v", err)
+			}
+		}
+		_ = tx.Rollback()
+	}()
+	scope := scopeFromFixtureTx(t, ctx, tx)
+	for _, mode := range []string{"STRICT_ALL_TABLES", ""} {
+		if err := setFixtureSQLMode(ctx, tx, mode); err != nil {
+			t.Fatal(err)
+		}
+		t.Logf("raw BLOB controls verified session sql_mode=%q", mode)
+		for _, resource := range []struct {
+			table, path string
+			read        func() error
+		}{
+			{"graph_beads", "beads/plan", func() error { _, e := readBeadInTx(ctx, tx, scope, "beads/plan", fixtureLimits); return e }},
+			{"graph_links", "links/plan-decision", func() error { _, e := readLinkInTx(ctx, tx, scope, "links/plan-decision", fixtureLimits); return e }},
+		} {
+			var original []byte
+			if err := tx.QueryRowContext(ctx, "SELECT properties FROM "+resource.table+" WHERE path = ?", resource.path).Scan(&original); err != nil {
+				t.Fatal(err)
+			}
+			invalid := append(append([]byte(nil), original...), 0xff)
+			oversized := []byte(`{"text":"` + strings.Repeat("☃", fixtureLimits.valueBytes/3+1) + `"}`)
+			for _, control := range []struct {
+				name string
+				raw  []byte
+				want error
+			}{{"invalid UTF8", invalid, errCorrupt}, {"oversized multibyte", oversized, errBudget}} {
+				if _, err := tx.ExecContext(ctx, "UPDATE "+resource.table+" SET properties = ? WHERE path = ?", control.raw, resource.path); err != nil {
+					t.Fatal(err)
+				}
+				verifyFixtureBlobProjection(t, ctx, tx, resource.table, "properties", "path", resource.path, control.raw)
+				other := errBudget
+				if control.want == errBudget {
+					other = errCorrupt
+				}
+				if err := resource.read(); !errors.Is(err, control.want) || errors.Is(err, other) {
+					t.Fatalf("%s %s mode=%q: %v", resource.path, control.name, mode, err)
+				}
+				if resource.table == "graph_links" {
+					if _, err := readIncidentLinksInTx(ctx, tx, scope, "beads/plan", graph.DirectionOut, fixtureLimits); !errors.Is(err, control.want) || errors.Is(err, other) {
+						t.Fatalf("incident %s mode=%q: %v", control.name, mode, err)
+					}
+				}
+			}
+			if _, err := tx.ExecContext(ctx, "UPDATE "+resource.table+" SET properties = ? WHERE path = ?", original, resource.path); err != nil {
+				t.Fatal(err)
+			}
+		}
+		for _, descriptor := range []struct {
+			id   string
+			read func() error
+		}{
+			{memoryType, func() error { _, e := readBeadInTx(ctx, tx, scope, "beads/plan", fixtureLimits); return e }},
+			{relationType, func() error { _, e := readLinkInTx(ctx, tx, scope, "links/plan-decision", fixtureLimits); return e }},
+		} {
+			var original []byte
+			if err := tx.QueryRowContext(ctx, "SELECT descriptor FROM graph_type_descriptors WHERE url = ?", descriptor.id).Scan(&original); err != nil {
+				t.Fatal(err)
+			}
+			// Keep the original fingerprint: repairing the invalid suffix would falsely pass.
+			invalid := append(append([]byte(nil), original...), 0xff)
+			if _, err := tx.ExecContext(ctx, "UPDATE graph_type_descriptors SET descriptor = ? WHERE url = ?", invalid, descriptor.id); err != nil {
+				t.Fatal(err)
+			}
+			verifyFixtureBlobProjection(t, ctx, tx, "graph_type_descriptors", "descriptor", "url", descriptor.id, invalid)
+			if err := descriptor.read(); !errors.Is(err, errCorrupt) || errors.Is(err, errBudget) {
+				t.Fatalf("descriptor raw-byte preservation mode=%q: %v", mode, err)
+			}
+			if _, err := tx.ExecContext(ctx, "UPDATE graph_type_descriptors SET descriptor = ? WHERE url = ?", original, descriptor.id); err != nil {
+				t.Fatal(err)
+			}
+		}
+	}
+	if err := setFixtureSQLMode(ctx, tx, originalMode); err != nil {
+		t.Fatal(err)
+	}
+	restored = true
+	if err := tx.Rollback(); err != nil {
+		t.Fatal(err)
+	}
+}
+
+// Session SET success alone does not establish that the requested mode took effect.
+func setFixtureSQLMode(ctx context.Context, tx *sql.Tx, mode string) error {
+	if _, err := tx.ExecContext(ctx, "SET SESSION sql_mode = ?", mode); err != nil {
+		return err
+	}
+	var observed string
+	if err := tx.QueryRowContext(ctx, "SELECT @@session.sql_mode").Scan(&observed); err != nil {
+		return err
+	}
+	if observed != mode {
+		return fmt.Errorf("session sql_mode = %q, want %q", observed, mode)
+	}
+	return nil
+}
+
+// Use the production projection expression, independently of the decoder's
+// refusal: a Go-side budget/length check could otherwise hide SQL repair or
+// transfer of an oversized value. Identifiers are fixed fixture call sites.
+func verifyFixtureBlobProjection(t *testing.T, ctx context.Context, tx *sql.Tx, table, column, key, id string, persisted []byte) {
+	t.Helper()
+	_, projection, ok := strings.Cut(beadColumns, "CASE WHEN ")
+	if !ok {
+		t.Fatal("production raw BLOB projection missing")
+	}
+	projection = strings.ReplaceAll("CASE WHEN "+projection, "properties", column)
+	var raw []byte
+	var length sql.NullInt64
+	if err := tx.QueryRowContext(ctx, "SELECT "+projection+" FROM "+table+" WHERE "+key+" = ?", fixtureLimits.valueBytes, id).Scan(&raw, &length); err != nil {
+		t.Fatal(err)
+	}
+	if !length.Valid || length.Int64 != int64(len(persisted)) {
+		t.Fatalf("%s %s projected length=%v, want %d bytes", table, id, length, len(persisted))
+	}
+	if len(persisted) > fixtureLimits.valueBytes {
+		if raw != nil {
+			t.Fatalf("%s %s transferred %d oversized bytes, want SQL NULL", table, id, len(raw))
+		}
+	} else if !bytes.Equal(raw, persisted) {
+		t.Fatalf("%s %s projection changed raw bytes", table, id)
+	}
 }

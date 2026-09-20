@@ -17,6 +17,10 @@
 // Physical absence is private errAbsent, not a public not-found/gone decision:
 // the future facade must consult allocation/visibility state. These bodies do
 // not certify endpoint liveness, installed-type closure, ledger, lease or graph
-// validity. They make no BDP serving, migration or History claim. Only tests call
+// validity. Exact Bead/Link reads verify their own installed descriptor.
+// Owned and incident collections assume installation was validated for the
+// selected state; they do not certify each returned Link descriptor. A future
+// facade must establish that prerequisite before interpreting the results.
+// These bodies make no BDP serving, migration or History claim. Only tests call
 // them. Fixture schemas and writes remain test-only; there is no production seed.
 package graphops

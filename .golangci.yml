@@ -276,6 +276,8 @@ linters:
             - "github.com/steveyegge/beads/beadserrors"
         # B6: only normalized storage legs can import the transaction body.
         # The body is not a public Reader or an HTTP/CLI authority shortcut.
+        # Repository run.tests:false excludes _test.go: this rule does not
+        # enforce the B6 consumer restriction against foreign test imports.
         graphops-body-consumers:
           list-mode: lax
           files:

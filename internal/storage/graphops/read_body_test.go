@@ -13,7 +13,7 @@ import (
 	graph "github.com/steveyegge/beads/graphops"
 )
 
-var resourceColumns = []string{"path", "type_url", "revision", "attribution_principal", "attribution_status", "properties"}
+var resourceColumns = []string{"path", "type_url", "revision", "attribution_principal", "attribution_status", "properties", "properties_length"}
 var allLinkColumns = append(append([]string{}, resourceColumns...), "source_kind", "source_path", "source_url", "source_pin", "target_kind", "target_path", "target_url", "target_pin")
 
 func asDriver(v sql.NullString) driver.Value {
@@ -22,8 +22,14 @@ func asDriver(v sql.NullString) driver.Value {
 	}
 	return nil
 }
+func blobLength(raw []byte) driver.Value {
+	if raw == nil {
+		return nil
+	}
+	return int64(len(raw))
+}
 func resourceValues(r resourceRow) []driver.Value {
-	return []driver.Value{r.path, r.typeURL, r.revision, asDriver(r.principal), asDriver(r.attribution), r.properties}
+	return []driver.Value{r.path, r.typeURL, r.revision, asDriver(r.principal), asDriver(r.attribution), r.properties, blobLength(r.properties)}
 }
 func linkValues(r linkRow) []driver.Value {
 	return append(resourceValues(r.resourceRow), r.source.kind, asDriver(r.source.path), asDriver(r.source.url), asDriver(r.source.pin), r.target.kind, asDriver(r.target.path), asDriver(r.target.url), asDriver(r.target.pin))
@@ -50,13 +56,13 @@ func mockTx(t *testing.T) (*sql.Tx, sqlmock.Sqlmock) {
 	return tx, m
 }
 func expectBead(m sqlmock.Sqlmock, r resourceRow) {
-	m.ExpectQuery(regexp.QuoteMeta("SELECT "+beadColumns+" FROM graph_beads WHERE path = ? LIMIT 2")).WithArgs(fixtureLimits.valueBytes+1, r.path).WillReturnRows(sqlmock.NewRows(resourceColumns).AddRow(resourceValues(r)...)).RowsWillBeClosed()
+	m.ExpectQuery(regexp.QuoteMeta("SELECT "+beadColumns+" FROM graph_beads WHERE path = ? LIMIT 2")).WithArgs(fixtureLimits.valueBytes, r.path).WillReturnRows(sqlmock.NewRows(resourceColumns).AddRow(resourceValues(r)...)).RowsWillBeClosed()
 }
 func expectDescriptor(m sqlmock.Sqlmock, d graph.TypeDescriptor) {
-	m.ExpectQuery(regexp.QuoteMeta("SELECT url, SUBSTRING(descriptor, 1, ?), fingerprint FROM graph_type_descriptors WHERE url = ? LIMIT 2")).WithArgs(fixtureLimits.valueBytes+1, d.ID()).WillReturnRows(sqlmock.NewRows([]string{"url", "descriptor", "fingerprint"}).AddRow(d.ID(), d.CanonicalJSON(), d.Fingerprint())).RowsWillBeClosed()
+	m.ExpectQuery(regexp.QuoteMeta("SELECT url, CASE WHEN LENGTH(descriptor) < 0 OR LENGTH(descriptor) > ? THEN NULL ELSE descriptor END, LENGTH(descriptor), fingerprint FROM graph_type_descriptors WHERE url = ? LIMIT 2")).WithArgs(fixtureLimits.valueBytes, d.ID()).WillReturnRows(sqlmock.NewRows([]string{"url", "descriptor", "descriptor_length", "fingerprint"}).AddRow(d.ID(), d.CanonicalJSON(), blobLength(d.CanonicalJSON()), d.Fingerprint())).RowsWillBeClosed()
 }
 func expectLinks(m sqlmock.Sqlmock, where string, args []driver.Value, rows *sqlmock.Rows, capOverride ...int) {
-	params := append([]driver.Value{fixtureLimits.valueBytes + 1}, args...)
+	params := append([]driver.Value{fixtureLimits.valueBytes}, args...)
 	limit := fixtureLimits.rows
 	if len(capOverride) > 0 {
 		limit = capOverride[0]
@@ -115,9 +121,9 @@ func TestReadLinkUsesPersistedDescriptorAndExactEndpoint(t *testing.T) {
 	tx, m := mockTx(t)
 	r := validLinkRow()
 	d := relationDescriptor(t)
-	columns := append(append([]string{}, allLinkColumns...), "url", "descriptor", "fingerprint")
-	values := append(linkValues(r), d.ID(), d.CanonicalJSON(), d.Fingerprint())
-	m.ExpectQuery(regexp.QuoteMeta(exactLinkQuery)).WithArgs(fixtureLimits.valueBytes+1, fixtureLimits.valueBytes+1, r.path).WillReturnRows(sqlmock.NewRows(columns).AddRow(values...)).RowsWillBeClosed()
+	columns := append(append([]string{}, allLinkColumns...), "url", "descriptor", "descriptor_length", "fingerprint")
+	values := append(linkValues(r), d.ID(), d.CanonicalJSON(), blobLength(d.CanonicalJSON()), d.Fingerprint())
+	m.ExpectQuery(regexp.QuoteMeta(exactLinkQuery)).WithArgs(fixtureLimits.valueBytes, fixtureLimits.valueBytes, r.path).WillReturnRows(sqlmock.NewRows(columns).AddRow(values...)).RowsWillBeClosed()
 	link, err := readLinkInTx(t.Context(), tx, fixtureScope, r.path, fixtureLimits)
 	if err != nil {
 		t.Fatal(err)
@@ -136,7 +142,7 @@ func incidentRows(rows ...linkRow) *sqlmock.Rows {
 }
 func expectIncident(m sqlmock.Sqlmock, direction graph.Direction, limits readLimits, rows *sqlmock.Rows) {
 	query, count := incidentQuery(direction)
-	args := []driver.Value{limits.valueBytes + 1}
+	args := []driver.Value{limits.valueBytes}
 	for i := 0; i < count; i++ {
 		args = append(args, "beads/plan")
 	}
@@ -151,7 +157,7 @@ func TestReadIncidentUnionHasOneSelfLoopAndDomainOrdering(t *testing.T) {
 	second := validLinkRow()
 	second.path = "links/a"
 	query, _ := incidentQuery(graph.DirectionBoth)
-	if !strings.Contains(query, " UNION SELECT path FROM graph_links WHERE target_kind") || strings.Contains(query, " OR ") {
+	if !strings.Contains(query, " UNION SELECT path FROM graph_links WHERE target_kind") || strings.Contains(query, "source_path = ? OR") {
 		t.Fatal("incident query lost indexed union shape")
 	}
 	expectIncident(m, graph.DirectionBoth, fixtureLimits, incidentRows(first, second))
@@ -308,8 +314,8 @@ func TestPresentLinkNullPropertiesNeverBecomesEmptyObject(t *testing.T) {
 	r := validLinkRow()
 	r.properties = nil
 	d := relationDescriptor(t)
-	columns := append(append([]string{}, allLinkColumns...), "url", "descriptor", "fingerprint")
-	values := append(linkValues(r), d.ID(), d.CanonicalJSON(), d.Fingerprint())
+	columns := append(append([]string{}, allLinkColumns...), "url", "descriptor", "descriptor_length", "fingerprint")
+	values := append(linkValues(r), d.ID(), d.CanonicalJSON(), blobLength(d.CanonicalJSON()), d.Fingerprint())
 	m.ExpectQuery(regexp.QuoteMeta(exactLinkQuery)).WillReturnRows(sqlmock.NewRows(columns).AddRow(values...)).RowsWillBeClosed()
 	if _, err := readLinkInTx(t.Context(), tx, fixtureScope, r.path, fixtureLimits); !errors.Is(err, errCorrupt) {
 		t.Fatalf("NULL properties repaired: %v", err)
@@ -339,8 +345,8 @@ func TestSingletonLinkAndDescriptorOverflowClassification(t *testing.T) {
 				var err error
 				if target == "link" {
 					row := validLinkRow()
-					columns := append(append([]string{}, allLinkColumns...), "url", "descriptor", "fingerprint")
-					values := append(linkValues(row), d.ID(), raw, d.Fingerprint())
+					columns := append(append([]string{}, allLinkColumns...), "url", "descriptor", "descriptor_length", "fingerprint")
+					values := append(linkValues(row), d.ID(), raw, blobLength(raw), d.Fingerprint())
 					rows := sqlmock.NewRows(columns).AddRow(values...)
 					if mode == "duplicate" {
 						rows.AddRow(values...)
@@ -348,9 +354,9 @@ func TestSingletonLinkAndDescriptorOverflowClassification(t *testing.T) {
 					m.ExpectQuery(regexp.QuoteMeta(exactLinkQuery)).WillReturnRows(rows).RowsWillBeClosed()
 					_, err = readLinkInTx(t.Context(), tx, fixtureScope, row.path, fixtureLimits)
 				} else {
-					rows := sqlmock.NewRows([]string{"url", "descriptor", "fingerprint"}).AddRow(d.ID(), raw, d.Fingerprint())
+					rows := sqlmock.NewRows([]string{"url", "descriptor", "descriptor_length", "fingerprint"}).AddRow(d.ID(), raw, blobLength(raw), d.Fingerprint())
 					if mode == "duplicate" {
-						rows.AddRow(d.ID(), raw, d.Fingerprint())
+						rows.AddRow(d.ID(), raw, blobLength(raw), d.Fingerprint())
 					}
 					m.ExpectQuery("FROM graph_type_descriptors WHERE").WillReturnRows(rows).RowsWillBeClosed()
 					budget, e := budgetFor(fixtureScope, fixtureLimits)
@@ -399,5 +405,50 @@ func TestOwnedBudgetExhaustionIsNotPersistedCorruption(t *testing.T) {
 				t.Fatalf("budget classification: %v", err)
 			}
 		})
+	}
+}
+
+func TestBlobProjectionLengthGuards(t *testing.T) {
+	for _, test := range []struct {
+		name   string
+		raw    []byte
+		length sql.NullInt64
+		want   error
+	}{
+		{"negative engine length", nil, sql.NullInt64{Int64: -1, Valid: true}, errBudget},
+		{"oversized suppressed payload", nil, sql.NullInt64{Int64: int64(fixtureLimits.valueBytes) + 1, Valid: true}, errBudget},
+		{"mismatched payload", []byte("{}"), sql.NullInt64{Int64: 3, Valid: true}, errCorrupt},
+		{"missing length", []byte("{}"), sql.NullInt64{}, errCorrupt},
+		{"exact raw bytes", []byte("{}"), sql.NullInt64{Int64: 2, Valid: true}, nil},
+	} {
+		t.Run(test.name, func(t *testing.T) {
+			b, err := budgetFor(fixtureScope, fixtureLimits)
+			if err != nil {
+				t.Fatal(err)
+			}
+			err = chargeBlob(b, test.raw, test.length)
+			if !errors.Is(err, test.want) {
+				t.Fatalf("classification: %v", err)
+			}
+		})
+	}
+}
+func TestOwnedDescriptorMaximumEqualsPrivateCap(t *testing.T) {
+	tx, m := mockTx(t)
+	expectBead(m, validRow())
+	decl, err := graph.NewOwnedLinkDecl(relationType, "Explains", 1)
+	if err != nil {
+		t.Fatal(err)
+	}
+	expectDescriptor(m, memoryDescriptor(t, decl))
+	row := validLinkRow()
+	other := row
+	other.path = "links/extra"
+	expectLinks(m, "source_kind = 'in' AND source_path = ? AND type_url IN (?)", []driver.Value{"beads/plan", relationType}, sqlmock.NewRows(allLinkColumns).AddRow(linkValues(row)...).AddRow(linkValues(other)...), 1)
+	limits := fixtureLimits
+	limits.rows = 1
+	_, err = readBeadInTx(t.Context(), tx, fixtureScope, "beads/plan", limits)
+	if !errors.Is(err, errCorrupt) || errors.Is(err, errBudget) {
+		t.Fatalf("equal-bound classification: %v", err)
 	}
 }

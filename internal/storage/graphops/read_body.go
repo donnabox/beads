@@ -46,17 +46,40 @@ func (b *readBudget) charge(values ...[]byte) error {
 }
 
 // CAST preserves NULL while avoiding the embedded driver nullable-ENUM scan panic.
-// BLOB prefixes cap materialization before JSON parsing. LIMIT + 1 detects
-// incomplete expansions. Scalar columns have the finite widths in spec B4.
-const beadColumns = "path, type_url, revision, attribution_principal, CAST(attribution_status AS CHAR), SUBSTRING(properties, 1, ?)"
+// CASE keeps oversized raw BLOBs out of driver results; LENGTH is byte-oriented.
+// The engine may still materialize values to compute LENGTH: this bounds transfer
+// and decoding, not engine allocation. GMS LENGTH uses int32, so negative overflow
+// is refused in SQL as well as Go. LIMIT + 1 detects incomplete row expansions.
+const beadColumns = "path, type_url, revision, attribution_principal, CAST(attribution_status AS CHAR), CASE WHEN LENGTH(properties) < 0 OR LENGTH(properties) > ? THEN NULL ELSE properties END, LENGTH(properties)"
 const linkColumns = beadColumns + ", source_kind, source_path, source_url, source_pin, target_kind, target_path, target_url, target_pin"
 
 func scanResource(rows *sql.Rows, row *resourceRow, tail ...any) error {
-	args := []any{&row.path, &row.typeURL, &row.revision, &row.principal, &row.attribution, &row.properties}
+	args := []any{&row.path, &row.typeURL, &row.revision, &row.principal, &row.attribution, &row.properties, &row.propertiesLength}
 	return rows.Scan(append(args, tail...)...)
 }
 func chargeResource(b *readBudget, row resourceRow) error {
-	return b.charge([]byte(row.path), []byte(row.typeURL), []byte(row.revision), []byte(row.principal.String), []byte(row.attribution.String), row.properties)
+	if err := b.charge([]byte(row.path), []byte(row.typeURL), []byte(row.revision), []byte(row.principal.String), []byte(row.attribution.String)); err != nil {
+		return err
+	}
+	return chargeBlob(b, row.properties, row.propertiesLength)
+}
+
+// A NULL payload with an oversized (or wrapped-negative) length is deliberate
+// SQL refusal. SQL NULL with NULL length remains NULL for the domain decoder.
+func chargeBlob(b *readBudget, raw []byte, length sql.NullInt64) error {
+	if length.Valid && (length.Int64 < 0 || length.Int64 > int64(b.limits.valueBytes) || length.Int64 > int64(b.remaining)) {
+		return errBudget
+	}
+	if !length.Valid {
+		if raw != nil {
+			return corrupt(errors.New("BLOB has no length"))
+		}
+		return nil
+	}
+	if int64(len(raw)) != length.Int64 {
+		return corrupt(errors.New("BLOB length mismatch"))
+	}
+	return b.charge(raw)
 }
 
 func readRows[T any](ctx context.Context, tx queryer, query string, args []any, max int, scan func(*sql.Rows) (T, error)) (result []T, err error) {
@@ -84,7 +107,7 @@ func readRows[T any](ctx context.Context, tx queryer, query string, args []any, 
 }
 
 func beadRowInTx(ctx context.Context, tx queryer, path string, b *readBudget) (graph.Bead, error) {
-	items, err := readRows(ctx, tx, "SELECT "+beadColumns+" FROM graph_beads WHERE path = ? LIMIT 2", []any{b.limits.valueBytes + 1, path}, 1, func(rows *sql.Rows) (graph.Bead, error) {
+	items, err := readRows(ctx, tx, "SELECT "+beadColumns+" FROM graph_beads WHERE path = ? LIMIT 2", []any{b.limits.valueBytes, path}, 1, func(rows *sql.Rows) (graph.Bead, error) {
 		var row resourceRow
 		if err := scanResource(rows, &row); err != nil {
 			return graph.Bead{}, err
@@ -110,13 +133,17 @@ func beadRowInTx(ctx context.Context, tx queryer, path string, b *readBudget) (g
 }
 
 func descriptorInTx(ctx context.Context, tx queryer, id string, kind graph.ResourceKind, b *readBudget) (graph.TypeDescriptor, error) {
-	items, err := readRows(ctx, tx, "SELECT url, SUBSTRING(descriptor, 1, ?), fingerprint FROM graph_type_descriptors WHERE url = ? LIMIT 2", []any{b.limits.valueBytes + 1, id}, 1, func(rows *sql.Rows) (graph.TypeDescriptor, error) {
+	items, err := readRows(ctx, tx, "SELECT url, CASE WHEN LENGTH(descriptor) < 0 OR LENGTH(descriptor) > ? THEN NULL ELSE descriptor END, LENGTH(descriptor), fingerprint FROM graph_type_descriptors WHERE url = ? LIMIT 2", []any{b.limits.valueBytes, id}, 1, func(rows *sql.Rows) (graph.TypeDescriptor, error) {
 		var found, fingerprint string
 		var raw []byte
-		if err := rows.Scan(&found, &raw, &fingerprint); err != nil {
+		var length sql.NullInt64
+		if err := rows.Scan(&found, &raw, &length, &fingerprint); err != nil {
 			return graph.TypeDescriptor{}, err
 		}
-		if err := b.charge([]byte(found), raw, []byte(fingerprint)); err != nil {
+		if err := b.charge([]byte(found), []byte(fingerprint)); err != nil {
+			return graph.TypeDescriptor{}, err
+		}
+		if err := chargeBlob(b, raw, length); err != nil {
 			return graph.TypeDescriptor{}, err
 		}
 		if found != id {
@@ -138,7 +165,7 @@ func descriptorInTx(ctx context.Context, tx queryer, id string, kind graph.Resou
 
 func linksInTx(ctx context.Context, tx queryer, scope, where string, args []any, b *readBudget) ([]graph.Link, error) {
 	query := "SELECT " + linkColumns + " FROM graph_links WHERE " + where + " ORDER BY path LIMIT ?"
-	parameters := append([]any{b.limits.valueBytes + 1}, args...)
+	parameters := append([]any{b.limits.valueBytes}, args...)
 	parameters = append(parameters, b.limits.rows+1)
 	links, err := readRows(ctx, tx, query, parameters, b.limits.rows, func(rows *sql.Rows) (graph.Link, error) {
 		var row linkRow
@@ -157,11 +184,11 @@ func linksInTx(ctx context.Context, tx queryer, scope, where string, args []any,
 // Nullable outer-join rows have a separate presence flag; coalescing only makes
 // them scannable, never converts an absent Link into a domain value. CAST before
 // COALESCE retains ENUM labels: this engine otherwise returns their numeric index.
-const joinedLinkColumns = "COALESCE(l.path, ''), COALESCE(l.type_url, ''), COALESCE(l.revision, ''), l.attribution_principal, CAST(l.attribution_status AS CHAR), SUBSTRING(l.properties, 1, ?), COALESCE(CAST(l.source_kind AS CHAR), ''), l.source_path, l.source_url, l.source_pin, COALESCE(CAST(l.target_kind AS CHAR), ''), l.target_path, l.target_url, l.target_pin"
-const exactLinkQuery = "SELECT " + joinedLinkColumns + ", d.url, SUBSTRING(d.descriptor, 1, ?), d.fingerprint FROM graph_links l LEFT JOIN graph_type_descriptors d ON d.url = l.type_url WHERE l.path = ? LIMIT 2"
+const joinedLinkColumns = "COALESCE(l.path, ''), COALESCE(l.type_url, ''), COALESCE(l.revision, ''), l.attribution_principal, CAST(l.attribution_status AS CHAR), CASE WHEN LENGTH(l.properties) < 0 OR LENGTH(l.properties) > ? THEN NULL ELSE l.properties END, LENGTH(l.properties), COALESCE(CAST(l.source_kind AS CHAR), ''), l.source_path, l.source_url, l.source_pin, COALESCE(CAST(l.target_kind AS CHAR), ''), l.target_path, l.target_url, l.target_pin"
+const exactLinkQuery = "SELECT " + joinedLinkColumns + ", d.url, CASE WHEN LENGTH(d.descriptor) < 0 OR LENGTH(d.descriptor) > ? THEN NULL ELSE d.descriptor END, LENGTH(d.descriptor), d.fingerprint FROM graph_links l LEFT JOIN graph_type_descriptors d ON d.url = l.type_url WHERE l.path = ? LIMIT 2"
 
 func linkScanTargets(row *linkRow) []any {
-	return []any{&row.path, &row.typeURL, &row.revision, &row.principal, &row.attribution, &row.properties, &row.source.kind, &row.source.path, &row.source.url, &row.source.pin, &row.target.kind, &row.target.path, &row.target.url, &row.target.pin}
+	return []any{&row.path, &row.typeURL, &row.revision, &row.principal, &row.attribution, &row.properties, &row.propertiesLength, &row.source.kind, &row.source.path, &row.source.url, &row.source.pin, &row.target.kind, &row.target.path, &row.target.url, &row.target.pin}
 }
 func chargedLink(scope string, row linkRow, b *readBudget) (graph.Link, error) {
 	if err := chargeResource(b, row.resourceRow); err != nil {
@@ -190,11 +217,12 @@ func readLinkInTx(ctx context.Context, tx queryer, scope, path string, limits re
 	if err := graph.ValidateLinkPath(path); err != nil {
 		return graph.Link{}, err
 	}
-	links, err := readRows(ctx, tx, exactLinkQuery, []any{limits.valueBytes + 1, limits.valueBytes + 1, path}, 1, func(rows *sql.Rows) (graph.Link, error) {
+	links, err := readRows(ctx, tx, exactLinkQuery, []any{limits.valueBytes, limits.valueBytes, path}, 1, func(rows *sql.Rows) (graph.Link, error) {
 		var row linkRow
 		var id, fingerprint sql.NullString
 		var raw []byte
-		targets := append(linkScanTargets(&row), &id, &raw, &fingerprint)
+		var length sql.NullInt64
+		targets := append(linkScanTargets(&row), &id, &raw, &length, &fingerprint)
 		if err := rows.Scan(targets...); err != nil {
 			return graph.Link{}, err
 		}
@@ -205,7 +233,10 @@ func readLinkInTx(ctx context.Context, tx queryer, scope, path string, limits re
 		if err != nil {
 			return graph.Link{}, err
 		}
-		if err := b.charge([]byte(id.String), raw, []byte(fingerprint.String)); err != nil {
+		if err := b.charge([]byte(id.String), []byte(fingerprint.String)); err != nil {
+			return graph.Link{}, err
+		}
+		if err := chargeBlob(b, raw, length); err != nil {
 			return graph.Link{}, err
 		}
 		if _, err := decodeDescriptor(id.String, raw, fingerprint.String, graph.KindLink); err != nil {
@@ -250,7 +281,7 @@ func readIncidentLinksInTx(ctx context.Context, tx queryer, scope, path string, 
 		return nil, fmt.Errorf("%w: invalid direction", graph.ErrValidation)
 	}
 	query, count := incidentQuery(direction)
-	args := []any{limits.valueBytes + 1}
+	args := []any{limits.valueBytes}
 	for i := 0; i < count; i++ {
 		args = append(args, path)
 	}
@@ -352,18 +383,19 @@ func readBeadInTx(ctx context.Context, tx queryer, scope, path string, limits re
 	}
 	// Bound the materialized owned set by both descriptor declarations and the
 	// private expansion budget. Saturating addition avoids overflow from large Max.
-	ownedCap := 0
+	descriptorCap := 0
 	for _, decl := range owns {
 		if decl.Wildcard() {
-			ownedCap = min(limits.rows, decl.Max())
+			descriptorCap = min(limits.rows+1, decl.Max())
 			break
 		}
-		ownedCap += min(limits.rows-ownedCap, decl.Max())
+		descriptorCap += min(limits.rows+1-descriptorCap, decl.Max())
 	}
+	ownedCap := min(limits.rows, descriptorCap)
 	b.limits.rows = ownedCap
 	links, err := linksInTx(ctx, tx, scope, where, args, b)
 	if errors.Is(err, errRowOverflow) {
-		if ownedCap < limits.rows {
+		if descriptorCap <= limits.rows {
 			err = errors.Join(err, corrupt(errors.New("owned set exceeds descriptor maximum")))
 		} else {
 			err = errors.Join(err, errBudget)
