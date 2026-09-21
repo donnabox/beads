@@ -269,14 +269,14 @@ func TestLinkPagePropagatesQueryRowScanAndCloseErrors(t *testing.T) {
 }
 
 func incidentPageRows() *sqlmock.Rows {
-	return sqlmock.NewRows(append([]string{"anchor", "candidate", "present"}, allLinkColumns...))
+	return sqlmock.NewRows(incidentAllocationColumns())
 }
 func addIncidentPageRow(rows *sqlmock.Rows, anchor string, candidate, present bool, r linkRow) *sqlmock.Rows {
-	return rows.AddRow(append([]driver.Value{anchor, candidate, present}, linkValues(r)...)...)
+	return rows.AddRow(incidentLiveValues(anchor, candidate, present, r)...)
 }
 func expectIncidentPage(m sqlmock.Sqlmock, direction graph.Direction, after string, limit int, rows *sqlmock.Rows) {
 	branch := "SELECT path FROM graph_links WHERE source_kind = 'in' AND source_path = ? AND path > ?"
-	args := []driver.Value{fixtureLimits.valueBytes, "beads/plan", after}
+	args := []driver.Value{fixtureLimits.valueBytes, "beads/plan", "beads/plan", "beads/plan", "beads/plan", after}
 	if direction == graph.DirectionIn {
 		branch = "SELECT path FROM graph_links WHERE target_kind = 'in' AND target_path = ? AND path > ?"
 	}
@@ -285,8 +285,8 @@ func expectIncidentPage(m sqlmock.Sqlmock, direction graph.Direction, after stri
 		branch = "SELECT path FROM (" + branch + ") candidates"
 		args = append(args, "beads/plan", after)
 	}
-	query := "SELECT b.path, l.candidate_path IS NOT NULL, l.path IS NOT NULL, " + joinedLinkColumns + " FROM graph_beads b LEFT JOIN (SELECT /*+ LEFT_OUTER_LOOKUP_JOIN(i,src) */ i.path AS candidate_path, src.path, src.type_url, src.revision, src.attribution_principal, src.attribution_status, src.properties, src.source_kind, src.source_path, src.source_url, src.source_pin, src.target_kind, src.target_path, src.target_url, src.target_pin FROM (" + branch + " ORDER BY path LIMIT ?) i LEFT JOIN graph_links src ON src.path = i.path) l ON TRUE WHERE b.path = ? ORDER BY l.candidate_path"
-	args = append(args, limit+1, "beads/plan")
+	query := "SELECT req.requested_path, a.path, CAST(a.resource_kind AS CHAR), CAST(a.state AS CHAR), b.path IS NOT NULL, COALESCE(b.path, ''), l.candidate_path IS NOT NULL, l.path IS NOT NULL, " + joinedLinkColumns + " FROM (SELECT ? AS requested_path) req LEFT JOIN (SELECT path, resource_kind, state FROM graph_allocations WHERE path = ? LIMIT 2) a ON TRUE LEFT JOIN (SELECT path FROM graph_beads WHERE path = ? LIMIT 2) b ON TRUE LEFT JOIN (SELECT /*+ LEFT_OUTER_LOOKUP_JOIN(i,src) */ i.path AS candidate_path, src.path, src.type_url, src.revision, src.attribution_principal, src.attribution_status, src.properties, src.source_kind, src.source_path, src.source_url, src.source_pin, src.target_kind, src.target_path, src.target_url, src.target_pin FROM (" + branch + " ORDER BY path LIMIT ?) i LEFT JOIN graph_links src ON src.path = i.path) l ON b.path IS NOT NULL ORDER BY l.candidate_path"
+	args = append(args, limit+1)
 	m.ExpectQuery(regexp.QuoteMeta(query)).WithArgs(args...).WillReturnRows(rows).RowsWillBeClosed()
 }
 func TestIncidentPageDirectionsAndSelfLoop(t *testing.T) {
@@ -303,7 +303,7 @@ func TestIncidentPageDirectionsAndSelfLoop(t *testing.T) {
 			addIncidentPageRow(rows, "beads/plan", true, true, self)
 			tx, m := mockTx(t)
 			expectIncidentPage(m, direction, "links/0", 1, rows)
-			page, err := readIncidentPageInTx(t.Context(), tx, fixtureScope, "beads/plan", direction, pageWindow{afterPath: "links/0", limit: 1}, fixtureLimits)
+			page, err := readIncidentPageInTx(preconditionContext(t), tx, fixtureScope, "beads/plan", direction, pageWindow{afterPath: "links/0", limit: 1}, fixtureLimits)
 			if err != nil || len(page.items) != 1 || !page.hasMore || page.lastPath != "links/a" {
 				t.Fatalf("page=%+v error=%v", page, err)
 			}
@@ -318,7 +318,7 @@ func TestIncidentPageAbsentEmptyAndCorruption(t *testing.T) {
 			want := errCorrupt
 			switch kind {
 			case "absent":
-				want = errAbsent
+				want = errCorrupt // no request singleton is an impossible projection
 			case "empty":
 				addIncidentPageRow(rows, "beads/plan", false, false, linkRow{})
 				want = nil
@@ -349,7 +349,7 @@ func TestIncidentPageAbsentEmptyAndCorruption(t *testing.T) {
 			}
 			tx, m := mockTx(t)
 			expectIncidentPage(m, graph.DirectionOut, "links/a", 1, rows)
-			page, err := readIncidentPageInTx(t.Context(), tx, fixtureScope, "beads/plan", graph.DirectionOut, pageWindow{afterPath: "links/a", limit: 1}, fixtureLimits)
+			page, err := readIncidentPageInTx(preconditionContext(t), tx, fixtureScope, "beads/plan", graph.DirectionOut, pageWindow{afterPath: "links/a", limit: 1}, fixtureLimits)
 			if (want == nil && err != nil) || (want != nil && !errors.Is(err, want)) {
 				t.Fatalf("error=%v want=%v", err, want)
 			}
@@ -396,7 +396,7 @@ func TestIncidentPageInvalidOperandsIssueNoQuery(t *testing.T) {
 	} {
 		t.Run(tc.name, func(t *testing.T) {
 			tx, _ := mockTx(t)
-			page, err := readIncidentPageInTx(t.Context(), tx, fixtureScope, tc.path, tc.direction, tc.window, fixtureLimits)
+			page, err := readIncidentPageInTx(preconditionContext(t), tx, fixtureScope, tc.path, tc.direction, tc.window, fixtureLimits)
 			if !errors.Is(err, graph.ErrValidation) {
 				t.Fatalf("error=%v", err)
 			}
@@ -427,13 +427,13 @@ func TestIncidentPageLookaheadAndDuplicateFailures(t *testing.T) {
 				values := linkValues(second)
 				values[5] = nil
 				values[6] = int64(-1)
-				rows.AddRow(append([]driver.Value{"beads/plan", true, true}, values...)...)
+				rows.AddRow(append([]driver.Value{"beads/plan", "beads/plan", "bead", "live", true, "beads/plan", true, true}, values...)...)
 			} else {
 				addIncidentPageRow(rows, "beads/plan", true, true, second)
 			}
 			tx, m := mockTx(t)
 			expectIncidentPage(m, graph.DirectionBoth, "", 1, rows)
-			page, err := readIncidentPageInTx(t.Context(), tx, fixtureScope, "beads/plan", graph.DirectionBoth, pageWindow{limit: 1}, fixtureLimits)
+			page, err := readIncidentPageInTx(preconditionContext(t), tx, fixtureScope, "beads/plan", graph.DirectionBoth, pageWindow{limit: 1}, fixtureLimits)
 			if !errors.Is(err, want) {
 				t.Fatalf("error=%v", err)
 			}
@@ -441,11 +441,11 @@ func TestIncidentPageLookaheadAndDuplicateFailures(t *testing.T) {
 		})
 	}
 }
-func TestIncidentPageCloseFailurePrecedesAbsence(t *testing.T) {
+func TestIncidentPageEmptyResultCloseFailurePropagates(t *testing.T) {
 	boom := errors.New("incident close")
 	tx, m := mockTx(t)
 	expectIncidentPage(m, graph.DirectionIn, "", 1, incidentPageRows().CloseError(boom))
-	page, err := readIncidentPageInTx(t.Context(), tx, fixtureScope, "beads/plan", graph.DirectionIn, pageWindow{limit: 1}, fixtureLimits)
+	page, err := readIncidentPageInTx(preconditionContext(t), tx, fixtureScope, "beads/plan", graph.DirectionIn, pageWindow{limit: 1}, fixtureLimits)
 	if !errors.Is(err, boom) || errors.Is(err, errAbsent) {
 		t.Fatalf("error=%v", err)
 	}
@@ -464,15 +464,15 @@ func TestPageCancellationAtRowsCompletion(t *testing.T) {
 				columns := allLinkColumns
 				var values []driver.Value
 				if strings.HasPrefix(kind, "incident") {
-					columns = append([]string{"anchor", "candidate", "present"}, allLinkColumns...)
+					columns = incidentAllocationColumns()
 				}
 				switch kind {
 				case "links row":
 					values = linkValues(pageRow("links/a"))
 				case "incident empty":
-					values = append([]driver.Value{"beads/plan", false, false}, linkValues(linkRow{})...)
+					values = incidentLiveValues("beads/plan", false, false, linkRow{})
 				case "incident row":
-					values = append([]driver.Value{"beads/plan", true, true}, linkValues(pageRow("links/a"))...)
+					values = incidentLiveValues("beads/plan", true, true, pageRow("links/a"))
 				}
 				var closeErr error
 				if failClose {
@@ -534,7 +534,7 @@ func TestIncidentPageExactLimitTerminal(t *testing.T) {
 			r.target.path = present("beads/plan")
 			tx, m := mockTx(t)
 			expectIncidentPage(m, direction, "", 1, addIncidentPageRow(incidentPageRows(), "beads/plan", true, true, r))
-			page, err := readIncidentPageInTx(t.Context(), tx, fixtureScope, "beads/plan", direction, pageWindow{limit: 1}, fixtureLimits)
+			page, err := readIncidentPageInTx(preconditionContext(t), tx, fixtureScope, "beads/plan", direction, pageWindow{limit: 1}, fixtureLimits)
 			if err != nil || len(page.items) != 1 || page.hasMore || page.lastPath != "links/a" {
 				t.Fatalf("page=%+v error=%v", page, err)
 			}
@@ -590,12 +590,12 @@ func TestPageOverflowPreservesCloseAndCancellation(t *testing.T) {
 			for _, path := range []string{"links/a", "links/b", "links/c"} {
 				row := linkValues(pageRow(path))
 				if incident {
-					row = append([]driver.Value{"beads/plan", true, true}, row...)
+					row = append([]driver.Value{"beads/plan", "beads/plan", "bead", "live", true, "beads/plan", true, true}, row...)
 				}
 				values = append(values, row)
 			}
 			if incident {
-				columns = append([]string{"anchor", "candidate", "present"}, allLinkColumns...)
+				columns = incidentAllocationColumns()
 			}
 			calls := 0
 			db := sql.OpenDB(pageOverflowDriver{completionCloseDriver{columns: columns, cancel: cancel, closeError: boom, calls: &calls}, values})
@@ -644,11 +644,11 @@ func TestIncidentPagePreparedParameterEnumeration(t *testing.T) {
 	for _, direction := range []graph.Direction{graph.DirectionIn, graph.DirectionOut, graph.DirectionBoth} {
 		t.Run(fmt.Sprint(direction), func(t *testing.T) {
 			query, args := incidentPageQuery("beads/plan", direction, pageWindow{afterPath: "links/a", limit: 2}, fixtureLimits.valueBytes)
-			want := []string{":v1", ":v2", ":v3", ":v4", ":v5"}
+			want := []string{":v1", ":v2", ":v3", ":v4", ":v5", ":v6", ":v7"}
 			if direction == graph.DirectionBoth {
-				want = append(want, ":v6", ":v7")
+				want = append(want, ":v8", ":v9")
 			}
-			if got := enumerate(t, query); !slices.Equal(got, want) || len(args) != len(want) || args[len(args)-2] != 3 || args[len(args)-1] != "beads/plan" {
+			if got := enumerate(t, query); !slices.Equal(got, want) || len(args) != len(want) || args[len(args)-1] != 3 {
 				t.Fatalf("parameters=%v want=%v args=%v", got, want, args)
 			}
 			missing := strings.Replace(query, "src.path = i.path", "src.path = i.path AND FALSE", 1)
@@ -668,11 +668,11 @@ func TestIncidentPagePreparedParameterEnumeration(t *testing.T) {
 				if original == beforeLimit {
 					t.Fatal("predecessor LIMIT reconstruction did not apply")
 				}
-				// Keep the actual failing predecessor visible: only v6, the global
+				// Keep the actual failing predecessor visible: only v9, the global
 				// UNION LIMIT, disappears. This does not endorse that query for dispatch.
 				// A future parser pin may repair its walk: update this pin tripwire,
 				// not the still-valid production wrapper.
-				if got := enumerate(t, original); !slices.Equal(got, []string{":v1", ":v2", ":v3", ":v4", ":v5", ":v7"}) {
+				if got := enumerate(t, original); !slices.Equal(got, []string{":v1", ":v2", ":v3", ":v4", ":v5", ":v6", ":v7", ":v8"}) {
 					t.Fatalf("pinned predecessor behavior changed: %v", got)
 				}
 			} else if strings.Contains(query, " candidates") || strings.Contains(query, " UNION ") {
