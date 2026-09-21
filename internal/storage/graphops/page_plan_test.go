@@ -149,13 +149,49 @@ func (p pagePlanTree) exactAccessFields(n int, field, value string) error {
 	}
 	return nil
 }
+
+// Anchor probes use the qualified exact-read LIMIT2 -> PK shape. Unknown
+// equivalent rewrites require actual plan review, not a broader oracle.
+func (p pagePlanTree) incidentAnchorAccess(alias int, table, path string) (int, int, error) {
+	access, err := p.accessUnder(alias, table, "["+table+".path]")
+	if err != nil {
+		return 0, 0, err
+	}
+	limit := -1
+	for _, child := range p.children(alias) {
+		label := p[child].label
+		if label == "Limit(2)" && limit == -1 {
+			limit = child
+			continue
+		}
+		metadata := false
+		for _, prefix := range []string{"name: ", "outerVisibility: ", "isLateral: ", "cacheable: ", "colSet: ", "tableId: "} {
+			metadata = metadata || strings.HasPrefix(label, prefix)
+		}
+		if !metadata {
+			return 0, 0, fmt.Errorf("unexpected anchor wrapper")
+		}
+	}
+	if limit < 0 {
+		return 0, 0, fmt.Errorf("missing anchor LIMIT2")
+	}
+	children := p.children(limit)
+	if len(children) != 1 || children[0] != access {
+		return 0, 0, fmt.Errorf("unexpected anchor wrapper")
+	}
+	if err := p.exactAccessFields(access, "filters: ", "[{["+path+", "+path+"]}]"); err != nil {
+		return 0, 0, err
+	}
+	return access, limit, nil
+}
+
 func checkIncidentHydrationPlan(lines []string, path string, direction graph.Direction, window pageWindow) error {
 	p, err := parsePagePlan(lines)
 	if err != nil {
 		return err
 	}
 	for _, node := range p {
-		if node.label == "name: graph_links" || node.label == "name: graph_beads" {
+		if node.label == "name: graph_links" || node.label == "name: graph_beads" || node.label == "name: graph_allocations" {
 			return fmt.Errorf("graph table scan")
 		}
 	}
@@ -171,9 +207,20 @@ func checkIncidentHydrationPlan(lines []string, path string, direction graph.Dir
 	if err != nil {
 		return err
 	}
-	b, err := p.one("TableAlias(b)")
+	b, err := p.alias("b")
 	if err != nil {
 		return err
+	}
+	a, err := p.alias("a")
+	if err != nil {
+		return err
+	}
+	req, err := p.alias("req")
+	if err != nil {
+		return err
+	}
+	if p.below(a, l) || p.below(b, l) || p.below(req, l) || p.below(a, b) || p.below(b, a) || p.below(req, a) || p.below(req, b) || p.below(a, req) || p.below(b, req) {
+		return fmt.Errorf("wrong anchor roles")
 	}
 	join, err := p.one("LeftOuterLookupJoin")
 	if err != nil {
@@ -197,24 +244,25 @@ func checkIncidentHydrationPlan(lines []string, path string, direction graph.Dir
 	if children := p.children(src); len(children) != 1 || children[0] != hydration || branches[1] != src {
 		return fmt.Errorf("unexpected hydration wrapper")
 	}
-	anchor, err := p.accessUnder(b, "graph_beads", "[graph_beads.path]")
+	anchor, anchorLimit, err := p.incidentAnchorAccess(b, "graph_beads", path)
 	if err != nil {
 		return err
 	}
-	if children := p.children(b); len(children) != 1 || children[0] != anchor {
-		return fmt.Errorf("unexpected anchor wrapper")
-	}
-	if err := p.exactAccessFields(anchor, "filters: ", "[{["+path+", "+path+"]}]"); err != nil {
+	allocation, allocationLimit, err := p.incidentAnchorAccess(a, "graph_allocations", path)
+	if err != nil {
 		return err
 	}
 	var caps []int
 	unions := []int{}
 	accesses := []int{}
 	for n, node := range p {
-		if node.label == "name: graph_links" || node.label == "name: graph_beads" {
+		if node.label == "name: graph_links" || node.label == "name: graph_beads" || node.label == "name: graph_allocations" {
 			return fmt.Errorf("graph table scan")
 		}
 		if strings.HasPrefix(node.label, "Limit(") || strings.HasPrefix(node.label, "TopN(") {
+			if n == anchorLimit || n == allocationLimit {
+				continue
+			}
 			if !p.below(n, i) {
 				return fmt.Errorf("candidate cap outside i")
 			}
@@ -225,6 +273,9 @@ func checkIncidentHydrationPlan(lines []string, path string, direction graph.Dir
 		}
 		if node.label == "IndexedTableAccess(graph_links)" {
 			accesses = append(accesses, n)
+		}
+		if node.label == "IndexedTableAccess(graph_allocations)" && n != allocation {
+			return fmt.Errorf("extra allocation access")
 		}
 		if node.label == "IndexedTableAccess(graph_beads)" && n != anchor {
 			return fmt.Errorf("extra anchor access")
@@ -326,13 +377,27 @@ func pageHydrationPlanFixture(direction graph.Direction) []string {
 	var lines []string
 	add := func(depth int, s string) { lines = append(lines, strings.Repeat("    ", depth)+s) }
 	add(0, "Project")
-	add(1, "columns: [b.path, l.candidate_path, l.path]")
+	add(1, "columns: [req.requested_path, a.path, convert(a.resource_kind, char), convert(a.state, char), (NOT(b.path IS NULL)), coalesce(b.path,''), (NOT(l.candidate_path IS NULL)), (NOT(l.path IS NULL)), l.path]")
 	add(1, "Sort(l.candidate_path ASC)")
 	add(2, "LeftOuterJoin")
-	add(3, "TableAlias(b)")
-	add(4, "IndexedTableAccess(graph_beads)")
-	add(5, "index: [graph_beads.path]")
-	add(5, "filters: [{[beads/plan, beads/plan]}]")
+	add(3, "LeftOuterJoin")
+	add(4, "LeftOuterJoin")
+	add(5, "SubqueryAlias")
+	add(6, "name: req")
+	add(6, "Project")
+	add(7, "columns: ['beads/plan' as requested_path]")
+	add(7, "Table")
+	add(8, "name: ")
+	addAnchor := func(depth int, alias, table string) {
+		add(depth, "SubqueryAlias")
+		add(depth+1, "name: "+alias)
+		add(depth+1, "Limit(2)")
+		add(depth+2, "IndexedTableAccess("+table+")")
+		add(depth+3, "index: ["+table+".path]")
+		add(depth+3, "filters: [{[beads/plan, beads/plan]}]")
+	}
+	addAnchor(5, "a", "graph_allocations")
+	addAnchor(4, "b", "graph_beads")
 	add(3, "SubqueryAlias")
 	add(4, "name: l")
 	add(4, "Project")
@@ -759,4 +824,39 @@ func TestIncidentHydrationMeasuredCapDialect(t *testing.T) {
 		t.Fatal(err)
 	}
 	requirePagePlanReason(t, checkIncidentHydrationPlan(lines, "beads/plan", graph.DirectionBoth, pageWindow{afterPath: "links/a", limit: 2}), "graph table scan")
+}
+
+// Mutations isolate the newly introduced allocation/request probes while leaving
+// the already qualified candidate and dynamic hydration subtrees unchanged.
+func TestIncidentAllocationAnchorPlanOracle(t *testing.T) {
+	for _, direction := range []graph.Direction{graph.DirectionIn, graph.DirectionOut, graph.DirectionBoth} {
+		good := strings.Join(pageHydrationPlanFixture(direction), "\n")
+		check := func(raw string) error {
+			return checkIncidentHydrationPlan(strings.Split(raw, "\n"), "beads/plan", direction, pageWindow{afterPath: "links/a", limit: 2})
+		}
+		if err := check(good); err != nil {
+			t.Fatal(err)
+		}
+		for _, tc := range []struct{ name, old, replacement, reason string }{
+			{"allocation-index", "index: [graph_allocations.path]", "index: [graph_allocations.state]", "wrong graph_allocations index:"},
+			{"allocation-point", "index: [graph_allocations.path]\n                                filters: [{[beads/plan, beads/plan]}]", "index: [graph_allocations.path]\n                                filters: [{[beads/other, beads/other]}]", "wrong filters:"},
+			{"allocation-limit", "                        Limit(2)", "                        Limit(1)", "unexpected anchor wrapper"},
+			{"bead-limit", "\n                    Limit(2)", "\n                    Limit(1)", "unexpected anchor wrapper"},
+			{"allocation-project", "                            IndexedTableAccess(graph_allocations)\n                                index: [graph_allocations.path]\n                                filters: [{[beads/plan, beads/plan]}]", "                            Project\n                                columns: [graph_allocations.path]\n                                IndexedTableAccess(graph_allocations)\n                                    index: [graph_allocations.path]\n                                    filters: [{[beads/plan, beads/plan]}]", "unexpected anchor wrapper"},
+			{"allocation-alias", "name: a", "name: other", "missing alias a"},
+			{"request-alias", "name: req", "name: other", "missing alias req"},
+		} {
+			t.Run(fmt.Sprintf("%d/%s", direction, tc.name), func(t *testing.T) {
+				bad := strings.Replace(good, tc.old, tc.replacement, 1)
+				if bad == good {
+					t.Fatal("mutation did not apply")
+				}
+				if _, err := parsePagePlan(strings.Split(bad, "\n")); err != nil {
+					t.Fatal(err)
+				}
+				requirePagePlanReason(t, check(bad), tc.reason)
+			})
+		}
+		requirePagePlanReason(t, check(good+"\n    IndexedTableAccess(graph_allocations)\n        index: [graph_allocations.path]\n        filters: [{[beads/plan, beads/plan]}]"), "extra allocation access")
+	}
 }

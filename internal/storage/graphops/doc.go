@@ -15,7 +15,8 @@
 // actual build info is emitted. Managed-server qualification is a separate leg.
 //
 // Exact reads preserve private never-seen/reserved/pruned/erased absence from
-// the allocation projection. Incident absence remains private errAbsent. Neither
+// the allocation projection. Paged incident anchors share these private facts;
+// old unpaged incident absence remains errAbsent. Neither
 // is a public Reader error or permission to disclose history. These bodies do
 // not certify endpoint liveness, installed-type closure, ledger, lease or graph
 // validity. Exact Bead/Link reads verify their own installed descriptor.
@@ -25,8 +26,10 @@
 // Private page bodies require separately validated selected-state physical rows
 // to equal the live set; the fixture does not establish that allocation law or
 // per-item visibility. Their decoded after-paths are not public cursors. Incident
-// page SQL remains provisional until allocation-anchor classification composes
-// into that same statement: the protected five-statement budget has no exception.
+// pages compose allocation-anchor classification in that same statement. Their
+// private entry requires a finite context and refuses oversized canonical path
+// operands with errBudget before SQL; Link collection entry is unchanged. The
+// protected five-statement budget has no exception.
 // Lookahead is validated and charged, so malformed or oversized lookahead refuses
 // the entire page. SQL row limits bound transfer, not engine scans or allocation.
 // These bodies make no BDP serving, migration or History claim. Only tests call

@@ -164,8 +164,8 @@ func readLinkPageInTx(ctx context.Context, tx queryer, scope string, selection l
 // hint; the pinned plan oracle must prove it is honored, including the global
 // candidate cap before hydration. Raw src values reach the existing guarded
 // outer projection unchanged. Candidate work itself is not cost-bounded.
-// This SQL is provisional: a future protected incident call must compose the
-// allocation-anchor diagnosis into this same statement, never a sixth query.
+// Independent allocation/Bead probes retain absent anchors in the same body
+// statement. A missing Bead suppresses incident output, not dangling references.
 func incidentPageQuery(path string, direction graph.Direction, window pageWindow, valueBytes int) (string, []any) {
 	branch := func(endpoint string) string {
 		return "SELECT path FROM graph_links WHERE " + endpoint + "_kind = 'in' AND " + endpoint + "_path = ? AND path > ?"
@@ -174,7 +174,7 @@ func incidentPageQuery(path string, direction graph.Direction, window pageWindow
 	if direction == graph.DirectionIn {
 		selection = branch("target")
 	}
-	args := []any{valueBytes, path, window.afterPath}
+	args := []any{valueBytes, path, path, path, path, window.afterPath}
 	if direction == graph.DirectionBoth {
 		selection += " UNION " + branch("target")
 		// The pinned server's SetOp walker omits UNION's own LIMIT from
@@ -183,8 +183,8 @@ func incidentPageQuery(path string, direction graph.Direction, window pageWindow
 		selection = "SELECT path FROM (" + selection + ") candidates"
 		args = append(args, path, window.afterPath)
 	}
-	args = append(args, window.limit+1, path)
-	query := "SELECT b.path, l.candidate_path IS NOT NULL, l.path IS NOT NULL, " + joinedLinkColumns + " FROM graph_beads b LEFT JOIN (SELECT /*+ LEFT_OUTER_LOOKUP_JOIN(i,src) */ i.path AS candidate_path, src.path, src.type_url, src.revision, src.attribution_principal, src.attribution_status, src.properties, src.source_kind, src.source_path, src.source_url, src.source_pin, src.target_kind, src.target_path, src.target_url, src.target_pin FROM (" + selection + " ORDER BY path LIMIT ?) i LEFT JOIN graph_links src ON src.path = i.path) l ON TRUE WHERE b.path = ? ORDER BY l.candidate_path"
+	args = append(args, window.limit+1)
+	query := "SELECT " + allocationColumns + "b.path IS NOT NULL, COALESCE(b.path, ''), l.candidate_path IS NOT NULL, l.path IS NOT NULL, " + joinedLinkColumns + " FROM (SELECT ? AS requested_path) req LEFT JOIN (SELECT path, resource_kind, state FROM graph_allocations WHERE path = ? LIMIT 2) a ON TRUE LEFT JOIN (SELECT path FROM graph_beads WHERE path = ? LIMIT 2) b ON TRUE LEFT JOIN (SELECT /*+ LEFT_OUTER_LOOKUP_JOIN(i,src) */ i.path AS candidate_path, src.path, src.type_url, src.revision, src.attribution_principal, src.attribution_status, src.properties, src.source_kind, src.source_path, src.source_url, src.source_pin, src.target_kind, src.target_path, src.target_url, src.target_pin FROM (" + selection + " ORDER BY path LIMIT ?) i LEFT JOIN graph_links src ON src.path = i.path) l ON b.path IS NOT NULL ORDER BY l.candidate_path"
 	return query, args
 }
 
@@ -199,6 +199,9 @@ func emptyPageLinkProjection(row linkRow) bool {
 }
 
 func readIncidentPageInTx(ctx context.Context, tx queryer, scope, path string, direction graph.Direction, window pageWindow, limits readLimits) (linkRowsPage, error) {
+	if err := observationContext(ctx); err != nil {
+		return linkRowsPage{}, err
+	}
 	b, err := pageBudget(scope, window, limits)
 	if err != nil {
 		return linkRowsPage{}, err
@@ -209,33 +212,49 @@ func readIncidentPageInTx(ctx context.Context, tx queryer, scope, path string, d
 	if !direction.Valid() {
 		return linkRowsPage{}, fmt.Errorf("%w: invalid direction", graph.ErrValidation)
 	}
+	if len(path) > limits.valueBytes || len(window.afterPath) > limits.valueBytes {
+		return linkRowsPage{}, errBudget
+	}
 	query, args := incidentPageQuery(path, direction, window, limits.valueBytes)
 	previous := ""
+	var firstAnchor exactPathRow
+	anchorSeen := false
 	type incidentRow struct {
 		link    graph.Link
 		present bool
+		absence *exactAbsence
 	}
 	rows, err := readRows(ctx, tx, query, args, window.limit+1, func(rows *sql.Rows) (incidentRow, error) {
-		var anchor string
+		var anchor exactPathRow
+		var beadPath string
 		var candidate, present bool
 		var row linkRow
-		targets := append([]any{&anchor, &candidate, &present}, linkScanTargets(&row)...)
+		targets := append(anchor.targets(), &beadPath, &candidate, &present)
+		targets = append(targets, linkScanTargets(&row)...)
 		if err := rows.Scan(targets...); err != nil {
 			return incidentRow{}, err
 		}
-		if anchor != path || candidate != present {
-			return incidentRow{}, corrupt(errors.New("incident page anchor or candidate mismatch"))
-		}
-		// Charge each projected copy: this budget bounds transferred/decoded
-		// bytes, including the repeated anchor and the lookahead row.
-		if err := b.charge([]byte(anchor)); err != nil {
+		absence, err := anchor.classify(path, graph.KindBead, beadPath, b)
+		if err != nil {
 			return incidentRow{}, err
+		}
+		// Charge every projected copy, including the physical Bead path and
+		// lookahead. The classifier charged request/allocation metadata.
+		if err := b.charge([]byte(beadPath)); err != nil {
+			return incidentRow{}, err
+		}
+		if anchorSeen && anchor != firstAnchor {
+			return incidentRow{}, corrupt(errors.New("incident anchor changed within result"))
+		}
+		firstAnchor, anchorSeen = anchor, true
+		if candidate != present || (absence != nil && candidate) {
+			return incidentRow{}, corrupt(errors.New("incident candidate presence mismatch"))
 		}
 		if !present {
 			if !emptyPageLinkProjection(row) {
 				return incidentRow{}, corrupt(errors.New("payload on empty incident page sentinel"))
 			}
-			return incidentRow{}, nil
+			return incidentRow{absence: absence}, nil
 		}
 		link, err := chargedLink(scope, row, b)
 		if err != nil {
@@ -256,13 +275,16 @@ func readIncidentPageInTx(ctx context.Context, tx queryer, scope, path string, d
 		return linkRowsPage{}, pageRowsError(err)
 	}
 	if len(rows) == 0 {
-		return linkRowsPage{}, errAbsent
+		return linkRowsPage{}, corrupt(errors.New("missing incident request anchor"))
 	}
 	var links []graph.Link
 	for _, row := range rows {
 		if !row.present {
 			if len(rows) != 1 {
 				return linkRowsPage{}, corrupt(errors.New("mixed empty incident page"))
+			}
+			if row.absence != nil {
+				return linkRowsPage{}, row.absence
 			}
 		} else {
 			links = append(links, row.link)
