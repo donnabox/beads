@@ -41,4 +41,16 @@
 // singleton may exceed page capacity: installer/effective-capacity reconciliation
 // is mandatory before any public traversal guarantee. The decoded afterPath is
 // not a public cursor; lookahead descriptor validity is not continuation validity.
+//
+// The private read-attempt mechanism passively reloads witness facts and owns
+// four observations, comparison, body dispatch and cooperative checked cleanup.
+// It has no issuer, production resource adapter, Evidence provider or public role.
+// Load errors precede SQL; successfully loaded absent/pending facts retain the
+// comparator's binding/Scope/witness ordering. No diagnostic admission is implied.
+// Work preserves its exact context; cleanup uses a separate finite context.
+// Cleanup/cancellation failures withhold results and result-bearing error chains.
+// A cooperative deadline and sql.ErrTxDone do not prove physical terminality;
+// qualified rollback/connection drain and full claim-era matching remain gates.
+// Body Goexit still cleans; Goexit within a cleanup method is outside its
+// cooperative contract. Panic(nil) controls qualify the default Go1.26 behavior.
 package graphops
