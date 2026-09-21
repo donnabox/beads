@@ -22,6 +22,20 @@
 // Owned and incident collections assume installation was validated for the
 // selected state; they do not certify each returned Link descriptor. A future
 // facade must establish that prerequisite before interpreting the results.
+// Private page bodies require separately validated selected-state physical rows
+// to equal the live set; the fixture does not establish that allocation law or
+// per-item visibility. Their decoded after-paths are not public cursors. Incident
+// page SQL remains provisional until allocation-anchor classification composes
+// into that same statement: the protected five-statement budget has no exception.
+// Lookahead is validated and charged, so malformed or oversized lookahead refuses
+// the entire page. SQL row limits bound transfer, not engine scans or allocation.
 // These bodies make no BDP serving, migration or History claim. Only tests call
 // them. Fixture schemas and writes remain test-only; there is no production seed.
+//
+// Beads pages batch raw rows (including charged lookahead), distinct descriptors,
+// and complete owned expansions in at most three statements. They require a
+// finite context and share conservative private row/byte/group caps. A legal
+// singleton may exceed page capacity: installer/effective-capacity reconciliation
+// is mandatory before any public traversal guarantee. The decoded afterPath is
+// not a public cursor; lookahead descriptor validity is not continuation validity.
 package graphops

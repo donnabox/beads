@@ -19,10 +19,14 @@
 // and a 250 ms write timeout, including contextless COM_QUIT. Cleanup owns the
 // actual transport and always closes the one-operation pool; no pooled reuse,
 // SQL session repair, reconnect, caller-injected SQL/callback or engine recovery
-// exists. The pinned MySQL driver still supports process-global local-infile
-// file/reader registrations even with AllowAllFiles=false. It has no per-config
-// disable option: a 0xfb reply can reach those handlers. This is an additional
-// driver seam to close before production admission, not a closed capability
-// proved by this package. Do not add a Beads packet filter or global-registry
-// reset to disguise it.
+// exists. Construction explicitly applies a Config-only LOCAL INFILE refusal
+// from the remotely pinned driver fork. The protocol fixtures cover first
+// and later text COM_QUERY result headers, not engine exclusion or server
+// terminality. Prepared-query initial-OK traversal remains an unchanged driver
+// limitation; this package's closed commands use text queries with interpolation.
+// This development line uses an immutable remote module replacement documented
+// in engdocs/MYSQL_DRIVER_FORK.md. Main/release installation compatibility and
+// production admission remain separate gates.
+// Do not add a packet filter, global-registry reset or fallback to disguise that
+// dependency or to manufacture production admission.
 package graphsession

@@ -28,7 +28,10 @@ func pipeSession(t *testing.T, response reply) (*session, *peer, <-chan struct{}
 	done := make(chan struct{})
 	go func() { defer close(done); defer server.Close(); _ = p.serve(server, nil) }()
 	s := &session{target: endpoint{base: "sales", branch: "main"}, name: lockName("sales")}
-	cfg := s.config(s.target)
+	cfg, err := s.config(s.target)
+	if err != nil {
+		t.Fatal(err)
+	}
 	cfg.DialFunc = func(context.Context, string, string) (net.Conn, error) {
 		s.transport = &transport{Conn: client}
 		return s.transport, nil

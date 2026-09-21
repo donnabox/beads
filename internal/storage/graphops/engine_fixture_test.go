@@ -406,6 +406,8 @@ func verifyEngineFixture(t *testing.T, ctx context.Context, db fixtureDB, data s
 	if err := tx.Rollback(); err != nil {
 		t.Fatal(err)
 	}
+	verifyEnginePageControls(t, ctx, db)
+	verifyEngineBeadPageControls(t, ctx, db)
 	fmt.Printf("GRAPH_READ_RECORDS %s\n", raw)
 }
 

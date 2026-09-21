@@ -293,3 +293,6 @@ retract (
 	v1.2.0 // burned tag for the accidental 1.2 release, never published
 	v1.1.1 // burned tag, never published; superseded by v1.1.2
 )
+
+// Development-only immutable fork pin; see engdocs/MYSQL_DRIVER_FORK.md.
+replace github.com/go-sql-driver/mysql v1.10.0 => github.com/donnabox/mysql v1.10.1-0.20260920194038-ca53f9bcb727
