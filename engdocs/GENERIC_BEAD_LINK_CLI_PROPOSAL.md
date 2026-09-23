@@ -677,4 +677,3 @@ These are still decisions, not approvals inferred from the comments:
 5. **Guard ergonomics:** required guards/explicit unconditional writes for new generic and Memory mutation, including owned-source guards and existing-key `remember`; these change some Memory command behavior and are labeled in §4.1.
 6. **Integration, not missing BDP design:** implement the existing public pin/ownership/History contracts, choose Memory ownership limits, and map metadata updates and additional CLI guards. Resolve owned-set restoration and Issue ownership against Jim’s actual writer. Do not re-open wildcard ownership or invent a mandatory remote-summary protocol.
 7. **Remaining compatibility/defaults:** mixed-endpoint `related` bridge, exact legacy-key mapping under alias namespace constraints, Dependency multiedges, immutable identity versus prefix rename/moves, output/error formats and bounded search defaults.
-
