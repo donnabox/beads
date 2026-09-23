@@ -20,6 +20,11 @@ type Config struct {
 	Database string `json:"database"`
 	Backend  string `json:"backend,omitempty"` // Storage backend: "dolt" (default), a registered extension, or a legacy rejection tombstone. Read via GetBackend().
 
+	// GraphMode identifies the workspace's data model, independently of its
+	// storage backend. An absent marker preserves existing Issue workspaces.
+	// This preview marker does not authorize migration or graph initialization.
+	GraphMode string `json:"graph_mode,omitempty"`
+
 	// Deletions configuration
 	DeletionsRetentionDays int `json:"deletions_retention_days,omitempty"` // 0 means use default (3 days)
 
