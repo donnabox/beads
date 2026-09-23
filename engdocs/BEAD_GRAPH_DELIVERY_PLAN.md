@@ -236,3 +236,27 @@ Publish the CLI contract alone first, with no implementation schedule or cost ra
 Ask plan reviewers to identify missing mandatory work, overgeneralization, unsafe ordering, underpriced compatibility/History, insufficient acceptance evidence, and conflicts with existing contributor work. Request severity, affected package/section, reason and smallest correction. Keep dissenting model choices visible; agreement is not runtime evidence.
 
 Fold accepted feedback into the exact affected document, increment its review revision and summarize substantive changes in its own discussion. Do not close #6154/#6422, merge plans, request team members by guessed handle, or launch a council automatically. The implementation start remains bounded and reversible while feedback is collected.
+
+## 13. CLI-to-delivery coverage
+
+This mapping prevents small but essential parts of the CLI contract from disappearing between the vertical demonstrations. A listed package owns the acceptance evidence, not just a parser. Open semantics retain the decision gates above.
+
+| CLI proposal surface | Delivery package and required evidence |
+|---|---|
+| §3 selection, canonical selectors, explicit mode assertions; §15.1 init | W1: persisted format, unambiguous selection and fail-before-effects mismatches; normal initialization/reopen. Namespace rules must precede allocation. |
+| §§4–5 create/show/update/edit, JSON/file/stdin input, previews | W2–W4: the editor uses the same guarded update path; reject immutable members and double stdin consumption; preview does not allocate or reserve. Existing Issue parser/output meanings remain intact. |
+| §6 link/unlink, property update, multiedges and ownership | W3–W4: complete create/update/unlink by identity, source/target guard behavior, owned-source History and retry-versus-new-intent evidence. |
+| §7 local integrity, external references and version pins | W2–W4 for live mixed graph and pinned references; adoption gate/W6 for external Dependencies; W7 for retained historical behavior. No implied external liveness or implicit pin rewriting. |
+| §8 uncertainty; §4 request IDs and `request show` | W4: atomically associate supported mutation receipts with effects, replay without duplication, distinguish conflicting token reuse and unknown outcomes, and expose honest request-status capability. This is part of retry safety, not a second workflow engine. |
+| §9 delete and optional incident cleanup | W6–W7 after policy ruling: guards, complete authorized commit set, surviving owned-source effects and retained/deleted/erased distinctions. Optional atomic cleanup stays deferred if not accepted; no silent loop fallback. |
+| §10 Memory authoring/recall/discovery | W2 starts canonical live content; W5 adds bounded generic discovery; W7 closes keys, search, citations and History-dependent behavior. Preserve empty bodies and complete explicit recall. |
+| §11 versions/compare/restore/changes | Recording begins W2; W7 completes required Memory History and guarded restoration. Keep Issue local ordinals distinct from revisions and portable version addresses. Broader generic History outside Memory remains separately scoped. |
+| §12.1 lists, incident collections, bounded generic graph view | W3 supplies initial CLI reads; W5 completes paging/filters/traversal before exposing them through BDP. Test cycles, parallel Links, labeled frontier and invalidated continuations. Historical completeness requires W7 capability; no present-day incoming set relabeled as historical. |
+| §12.2 built-ins, custom descriptor installation and aliases | W1 installs built-ins. W5 adds conditional, live in-Scope Bead alias operations without chains or content-version changes; W7 verifies legacy-key conversion. W9 closes custom Type installation and atomic pinned descriptor closure. |
+| §12.3 export/import/backup | W6–W7: exposure defaults, retained manual Memory entries, connected-reference omissions/refusals and complete backup. Connected interchange stays explicitly capability-gated until its shared contract is implemented; parsing JSONL is insufficient. |
+| §13 text/JSON/error/limits and `status --graph` | W1 starts truthful capability reporting; W2–W5 test each admitted command's stdout/stderr, error/exit contract, completeness and measured size limits. W6/W10 close compatibility census. Do not defer automation-facing contracts until the final polish pass. |
+| §14 all existing command families | W6 command/writer census, with incremental coverage in W2–W5; W10 final qualification. An unhandled existing writer is an adoption blocker, not a documented escape hatch. |
+| §15.2 client routes, serving, credentials and administration | W5 Read and W8 Update share domain paths, preserve binding/auth rules and never fall back to stale local writes. W6 recovery proves backup continuity. Promotion/steal and ledger administration beyond the qualified initial topology remain later, explicitly unavailable work; a proposed grammar is not a capability claim. |
+| §16 acceptance matrix | W10 consolidates receipts already produced by the owning packages and the independent installer. Missing evidence remains a gap, not a pass inferred from another backend or related operation. |
+
+These items are included in the provisional package estimates where required by complete A; the table does not provide free additional scope. If the counted census or accepted CLI feedback expands them beyond the estimates, revise the cost range at the daily checkpoint and C0 reassessment.
