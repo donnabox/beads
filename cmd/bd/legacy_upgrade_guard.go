@@ -30,6 +30,16 @@ func guardLegacyUpgradeWorkspace(beadsDir string) error {
 	if err != nil {
 		return fmt.Errorf("loading config: %w", err)
 	}
+	// This route constructs the existing Issue store. A graph marker must be
+	// checked before legacy classification, metadata migration or store setup.
+	// Graph bootstrap/routing is not available in this build yet.
+	graphMode, err := cfg.GetGraphMode()
+	if err != nil {
+		return err
+	}
+	if graphMode != configfile.GraphModeDependency {
+		return fmt.Errorf("workspace graph_mode %q requires graph storage, which this bd build does not support; the workspace was not opened", graphMode)
+	}
 	if isHistoricalSQLiteWorkspace(beadsDir, cfg) {
 		return legacyUpgradeRefusal("historical SQLite workspace")
 	}

@@ -213,3 +213,12 @@ This is useful for:
 
 * [Documentation site](https://beads.gascity.com/) | [Installing](docs/getting-started/installation.md) | [Sync Concepts](docs/core-concepts/sync-concepts.md) | [Agent Workflow](AGENT_INSTRUCTIONS.md) | [Copilot CLI Setup](docs/integrations/copilot-cli.md) | [Copilot VS Code MCP](docs/integrations/github-copilot.md) | [Articles](ARTICLES.md) | [Sync Branch Mode](docs/reference/protected-branches.md) | [Troubleshooting](docs/reference/troubleshooting.md) | [FAQ](docs/reference/faq.md)
 * [![Ask DeepWiki](https://deepwiki.com/badge.svg)](https://deepwiki.com/gastownhall/beads)
+
+### Experimental graph workspace preview
+
+A disposable opt-in preview adds `bd init --graph-mode link --scope-url URL`,
+`bd remember BODY --id beads/PATH --title TITLE`, and `bd show beads/PATH`.
+It uses the ordinary embedded or shared-server Dolt database. Existing Issue
+workspaces keep their current behavior. This is not complete Memory/History
+support, graph Issue integration, or a production migration path. See the
+[preview guide](engdocs/GRAPH_C0_PREVIEW.md) for commands and qualification gaps.

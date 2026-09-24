@@ -3,10 +3,51 @@ package main
 import (
 	"os"
 	"path/filepath"
+	"strings"
 	"testing"
 
 	"github.com/steveyegge/beads/internal/config"
 )
+
+func TestLegacyUpgradeGuardRefusesGraphWorkspaceWithoutEffects(t *testing.T) {
+	for _, filename := range []string{"metadata.json", "config.json"} {
+		for _, mode := range []string{"link", "future-format", "LINK", " link "} {
+			t.Run(filename+"/"+mode, func(t *testing.T) {
+				dir := t.TempDir()
+				path := filepath.Join(dir, filename)
+				input := `{"backend":"dolt","dolt_mode":"server","graph_mode":"` + mode + `"}`
+				if err := os.WriteFile(path, []byte(input), 0o600); err != nil {
+					t.Fatal(err)
+				}
+				if err := guardLegacyUpgradeWorkspace(dir); err == nil || !strings.Contains(err.Error(), "graph_mode") {
+					t.Fatalf("graph workspace reached legacy admission: %v", err)
+				}
+				entries, err := os.ReadDir(dir)
+				if err != nil || len(entries) != 1 || entries[0].Name() != filename {
+					t.Fatalf("refusal changed workspace entries: %v, %v", entries, err)
+				}
+				after, err := os.ReadFile(path)
+				if err != nil || string(after) != input {
+					t.Fatalf("refusal changed metadata: %q, %v", after, err)
+				}
+			})
+		}
+	}
+}
+
+func TestLegacyUpgradeGuardPreservesDependencyWorkspaceAdmission(t *testing.T) {
+	for _, metadata := range []string{`{"backend":"dolt"}`, `{"backend":"dolt","graph_mode":"dependency"}`} {
+		t.Run(metadata, func(t *testing.T) {
+			dir := t.TempDir()
+			if err := os.WriteFile(filepath.Join(dir, "metadata.json"), []byte(metadata), 0o600); err != nil {
+				t.Fatal(err)
+			}
+			if err := guardLegacyUpgradeWorkspace(dir); err != nil {
+				t.Fatalf("existing workspace refused: %v", err)
+			}
+		})
+	}
+}
 
 func TestLegacyUpgradeGuardRefusesHistoricalLayoutsWithoutMutatingMetadata(t *testing.T) {
 	tests := []struct {
