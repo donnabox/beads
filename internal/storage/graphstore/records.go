@@ -65,28 +65,11 @@ func (s *Store) Create(ctx context.Context, req CreateRequest) (Record, error) {
 }
 
 func (s *Store) createInTx(ctx context.Context, tx *sql.Tx, req CreateRequest, r Record, properties, snapshot []byte) error {
-	// Each controlled writer changes this same cell to a fresh random value.
-	// Concurrent snapshots cannot silently merge disjoint successful mutations.
-	token, err := freshToken()
-	if err != nil {
-		return err
-	}
-	result, err := tx.ExecContext(ctx, `UPDATE graph_preview_scope SET writer_token = ? WHERE singleton = 1`, token)
-	if err != nil {
-		return err
-	}
-	n, err := result.RowsAffected()
-	if err != nil {
-		return err
-	}
-	if n != 1 {
-		return fmt.Errorf("%w: missing writer coordination row", ErrInvalidStore)
-	}
-	if err := s.afterStage("coordination"); err != nil {
+	if err := s.touchCoordination(ctx, tx); err != nil {
 		return err
 	}
 	var exists int
-	err = tx.QueryRowContext(ctx, `SELECT 1 FROM graph_preview_catalog WHERE path = ?`, req.Path).Scan(&exists)
+	err := tx.QueryRowContext(ctx, `SELECT 1 FROM graph_preview_catalog WHERE path = ?`, req.Path).Scan(&exists)
 	if err == nil {
 		return ErrAlreadyExists
 	}
@@ -114,6 +97,30 @@ func (s *Store) createInTx(ctx context.Context, tx *sql.Tx, req CreateRequest, r
 	return s.afterStage("retained")
 }
 
+func (s *Store) touchCoordination(ctx context.Context, tx *sql.Tx) error {
+	// Each controlled writer changes this same cell to a fresh random value.
+	// Concurrent snapshots cannot silently merge disjoint successful mutations.
+	token, err := freshToken()
+	if err != nil {
+		return err
+	}
+	result, err := tx.ExecContext(ctx, `UPDATE graph_preview_scope SET writer_token = ? WHERE singleton = 1`, token)
+	if err != nil {
+		return err
+	}
+	n, err := result.RowsAffected()
+	if err != nil {
+		return err
+	}
+	if n != 1 {
+		return fmt.Errorf("%w: missing writer coordination row", ErrInvalidStore)
+	}
+	if err := s.afterStage("coordination"); err != nil {
+		return err
+	}
+	return nil
+}
+
 func (s *Store) afterStage(stage string) error {
 	if s.afterWrite != nil {
 		return s.afterWrite(stage)
@@ -129,60 +136,67 @@ func (s *Store) Show(ctx context.Context, path string) (Record, error) {
 	}
 	var record Record
 	err := s.withTx(ctx, false, func(tx *sql.Tx) error {
-		if err := checkBinding(ctx, tx, s.options); err != nil {
-			return err
-		}
-		var kind, typ, revision, state, backing string
-		err := tx.QueryRowContext(ctx, `SELECT resource_kind, type_url, revision, allocation_state, backing
-            FROM graph_preview_catalog WHERE path = ?`, path).Scan(&kind, &typ, &revision, &state, &backing)
-		if errors.Is(err, sql.ErrNoRows) {
-			return ErrNotFound
-		}
-		if err != nil {
-			return err
-		}
-		if kind != "bead" || typ != MemoryTypeURL(s.options.Binding.ScopeURL) || !authorityID.MatchString(revision) || state != "live" || backing != "generic" {
-			return fmt.Errorf("%w: unsupported or corrupt allocation", ErrInvalidStore)
-		}
-		var payload, snapshot []byte
-		var actor string
-		if err := tx.QueryRowContext(ctx, `SELECT properties FROM graph_preview_payloads WHERE path = ?`, path).Scan(&payload); err != nil {
-			return fmt.Errorf("%w: missing current payload: %v", ErrInvalidStore, err)
-		}
-		if err := tx.QueryRowContext(ctx, `SELECT snapshot, actor FROM graph_preview_versions WHERE path = ? AND version = ?`, path, revision).Scan(&snapshot, &actor); err != nil {
-			return fmt.Errorf("%w: missing retained state: %v", ErrInvalidStore, err)
-		}
-		record = Record{ID: graph.CanonicalURL(s.options.Binding.ScopeURL, path), Type: typ,
-			Revision: revision, Version: revision, Owned: []json.RawMessage{}}
-		var retained Record
-		if err := json.Unmarshal(snapshot, &retained); err != nil {
-			return fmt.Errorf("%w: malformed retained state", ErrInvalidStore)
-		}
-		record.Attribution = retained.Attribution
-		at, err := time.Parse(time.RFC3339Nano, record.Attribution.RecordedAt)
-		if err != nil || at.UTC().Format(time.RFC3339Nano) != record.Attribution.RecordedAt || actor != record.Attribution.Actor ||
-			(record.Attribution.Actor == "" && record.Attribution.Status != "unknown") ||
-			(record.Attribution.Actor != "" && record.Attribution.Status != "claimed") {
-			return fmt.Errorf("%w: invalid retained attribution", ErrInvalidStore)
-		}
-		if err := json.Unmarshal(payload, &record.Properties); err != nil {
-			return fmt.Errorf("%w: malformed payload", ErrInvalidStore)
-		}
-		canonicalPayload, err := canonicalJSON(record.Properties)
-		if err != nil {
-			return err
-		}
-		canonicalSnapshot, err := canonicalJSON(record)
-		if err != nil {
-			return err
-		}
-		if !bytes.Equal(payload, canonicalPayload) || !bytes.Equal(snapshot, canonicalSnapshot) {
-			return fmt.Errorf("%w: current and retained state differ", ErrInvalidStore)
-		}
-		return nil
+		var err error
+		record, err = s.showMemoryInTx(ctx, tx, path)
+		return err
 	})
 	if err != nil {
 		return Record{}, err
+	}
+	return record, nil
+}
+
+func (s *Store) showMemoryInTx(ctx context.Context, tx *sql.Tx, path string) (Record, error) {
+	var record Record
+	if err := checkBinding(ctx, tx, s.options); err != nil {
+		return Record{}, err
+	}
+	var kind, typ, revision, state, backing string
+	err := tx.QueryRowContext(ctx, `SELECT resource_kind, type_url, revision, allocation_state, backing
+            FROM graph_preview_catalog WHERE path = ?`, path).Scan(&kind, &typ, &revision, &state, &backing)
+	if errors.Is(err, sql.ErrNoRows) {
+		return Record{}, ErrNotFound
+	}
+	if err != nil {
+		return Record{}, err
+	}
+	if kind != "bead" || typ != MemoryTypeURL(s.options.Binding.ScopeURL) || !authorityID.MatchString(revision) || state != "live" || backing != "generic" {
+		return Record{}, fmt.Errorf("%w: unsupported or corrupt allocation", ErrInvalidStore)
+	}
+	var payload, snapshot []byte
+	var actor string
+	if err := tx.QueryRowContext(ctx, `SELECT properties FROM graph_preview_payloads WHERE path = ?`, path).Scan(&payload); err != nil {
+		return Record{}, fmt.Errorf("%w: missing current payload: %v", ErrInvalidStore, err)
+	}
+	if err := tx.QueryRowContext(ctx, `SELECT snapshot, actor FROM graph_preview_versions WHERE path = ? AND version = ?`, path, revision).Scan(&snapshot, &actor); err != nil {
+		return Record{}, fmt.Errorf("%w: missing retained state: %v", ErrInvalidStore, err)
+	}
+	record = Record{ID: graph.CanonicalURL(s.options.Binding.ScopeURL, path), Type: typ,
+		Revision: revision, Version: revision, Owned: []json.RawMessage{}}
+	var retained Record
+	if err := json.Unmarshal(snapshot, &retained); err != nil {
+		return Record{}, fmt.Errorf("%w: malformed retained state", ErrInvalidStore)
+	}
+	record.Attribution = retained.Attribution
+	at, err := time.Parse(time.RFC3339Nano, record.Attribution.RecordedAt)
+	if err != nil || at.UTC().Format(time.RFC3339Nano) != record.Attribution.RecordedAt || actor != record.Attribution.Actor ||
+		(record.Attribution.Actor == "" && record.Attribution.Status != "unknown") ||
+		(record.Attribution.Actor != "" && record.Attribution.Status != "claimed") {
+		return Record{}, fmt.Errorf("%w: invalid retained attribution", ErrInvalidStore)
+	}
+	if err := json.Unmarshal(payload, &record.Properties); err != nil {
+		return Record{}, fmt.Errorf("%w: malformed payload", ErrInvalidStore)
+	}
+	canonicalPayload, err := canonicalJSON(record.Properties)
+	if err != nil {
+		return Record{}, err
+	}
+	canonicalSnapshot, err := canonicalJSON(record)
+	if err != nil {
+		return Record{}, err
+	}
+	if !bytes.Equal(payload, canonicalPayload) || !bytes.Equal(snapshot, canonicalSnapshot) {
+		return Record{}, fmt.Errorf("%w: current and retained state differ", ErrInvalidStore)
 	}
 	return record, nil
 }

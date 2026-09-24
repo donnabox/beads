@@ -139,6 +139,12 @@ var funcNameExemptions = map[string]string{
 	// Reminting here would be pointless content-wise and would let a stale
 	// ExpectedVersion CAS reject a row it should still recognize.
 	"resolveOneConflictRow": "whole-row `theirs` adoption: the adopted row_lock already vouches for the (identical) adopted content",
+
+	// Reused from Jim's 64becbc writer integration. This preview activates
+	// history only after ExecuteCreate's primary INSERT has stamped row_lock
+	// in the same transaction. The retained pointer is bookkeeping; stamping
+	// again would invalidate the RowVersion already captured by that mutation.
+	"recordVersionAtInTx": "advances only current_revision after the primary mutation stamps row_lock; a second stamp would invalidate the mutation's captured RowVersion",
 }
 
 // TestAllIssueRowWritesStampRowLock is the load-bearing completeness guard for

@@ -1,6 +1,6 @@
 # Disposable graph CLI preview
 
-This is the first installed vertical slice for [delivery plan review #18](https://github.com/donnabox/beads/pull/18). It is not complete C0 qualification or complete Memory support. The original three-working-day attempt began September 23, 2026 at 07:01 PDT. September 23's command demonstration commitment was missed during a capacity interruption; installed command evidence began September 24.
+This branch extends the first installed vertical slice for [delivery plan review #18](https://github.com/donnabox/beads/pull/18). It adds an experimental Issue create/read adapter described in [the Issue preview notes](GRAPH_ISSUE_ADAPTER_PREVIEW.md). It is not complete Memory or Issue workflow support. The original three-working-day attempt began September 23, 2026 at 07:01 PDT. September 23's command demonstration commitment was missed during a capacity interruption; installed command evidence began September 24.
 
 ## Run it
 
@@ -14,6 +14,8 @@ bd remember 'First durable graph record.' --id beads/plan --title Plan
 bd show beads/plan --json
 # Every invocation is a new process; repeat after exiting the shell if desired.
 bd show beads/plan --json
+bd create "Fix deployment" --id beads/work --description "A real Issue" --type bug --labels demo
+bd show beads/work --json
 bd status --graph --json
 ```
 
@@ -21,17 +23,17 @@ Use an operator-selected Scope URL; the placeholder above is for a disposable de
 
 For an ordinary, externally managed Dolt SQL server, add `--server --external --server-host 127.0.0.1 --server-port PORT` to init. The server must be a disposable instance owned by the test operator. Normal initialization creates the requested database, installs the standard Beads schema and preview graph tables, and publishes readiness. No SQL seed script or separate bootstrap command is used.
 
-`remember` in this preview requires an explicit canonical `--id` and a nonempty `--title`. Its one argument is always the body, including an empty body. Reusing an allocated ID refuses. `show` returns the complete current record and verifies that its retained snapshot exists and matches. Other graph-workspace commands refuse before opening the legacy Issue store. Existing dependency-mode workspaces retain their original routing.
+`remember` in this preview requires an explicit canonical `--id` and a nonempty `--title`. Its one argument is always the body, including an empty body. Reusing an allocated ID refuses. `show` returns the complete current record and verifies that its retained snapshot exists and matches. The experimental `create` route accepts a canonical `--id` and creates a durable Issue through the existing Issue writer. Other graph-workspace commands refuse before opening the legacy Issue store. Existing dependency-mode workspaces retain their original routing.
 
 The preview uses the exact persisted storage route. Select the workspace with the working directory, `--directory`, or `BEADS_DIR`. Its `.beads/.env` supplies policy and static credentials with shell values taking precedence. Unsupported backend values, database selectors, redirects and conflicting endpoint/data-directory assertions refuse before opening storage; the preview does not silently ignore them or start another server. Server passwords may come from `BEADS_DOLT_PASSWORD` or the existing endpoint-keyed credentials file. Credential commands are explicitly unsupported. An explicit init `--server-user` wins over environment defaults; later opens honor the static environment user. Quiet init suppresses human output while retaining explicit JSON output.
 
 ## Current boundaries
 
-- Specialized Issue and Dependency integration is planned, not implemented. This preview creates non-Issue Memory records only. No Issue record is copied into a second editable graph representation.
-- The catalog contains one experimental Scope-local Memory descriptor, as permitted for the minimal checkpoint in plan §5. Complete built-in catalog installation belongs to W1/M1; it is not an additional prerequisite invented for the one-Memory C0 transcript. The descriptor and schema are provisional; these disposable workspaces carry no migration, movement, backup or recovery compatibility promise.
+- Specialized Issue create/read is experimental on this branch. Dependency integration, Issue updates and readiness are not implemented. Issue payloads remain authoritative in the existing normalized Issue tables; no second editable graph representation is created.
+- The C0 catalog contained one experimental Scope-local Memory descriptor, as permitted for the minimal checkpoint in plan §5. Complete built-in catalog installation belongs to W1/M1; it is not an additional prerequisite invented for the one-Memory C0 transcript. This branch also installs an experimental Issue descriptor. Both descriptors and the schema are provisional; these disposable workspaces carry no migration, movement, backup or recovery compatibility promise.
 - Each create atomically changes the shared coordination cell, allocates the canonical path, writes current payload and retains complete accepted preview state. A typed server serialization rejection is a conflict; transport/commit uncertainty is not a confirmed rollback and is never replayed automatically.
 - Retained version tokens are preview tokens scoped to the canonical record. This is recording groundwork, not public BDP/Jim History interoperability. Historical reads, comparison, restoration, removals and change feeds remain unavailable.
-- Links, Issue workflows in graph mode, aliases, updates, migration and BDP serving are not yet available. Open deletion, repinning, nominal-Type and metadata decisions are not settled by this implementation.
+- Links, Issue workflows beyond create/read in graph mode, aliases, updates, migration and BDP serving are not yet available. Open deletion, repinning, nominal-Type and metadata decisions are not settled by this implementation.
 - An interrupted init leaves a marked, incomplete disposable workspace. It refuses ordinary writes or reinitialization. The failed workspace/database must be inspected and explicitly discarded; there is no automatic adoption or repair of an existing database. This fence is not delivery of W1's recoverable-bootstrap exit.
 - Local metadata and database identity must agree. Copying or moving the workspace does not transfer authority. Arbitrary SQL writers and hostile metadata modifications are outside this preview's controlled-writer contract.
 
