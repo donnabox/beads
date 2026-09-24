@@ -254,8 +254,15 @@ def exercise(capture):
             "--non-interactive", "--skip-hooks", "--skip-agents", "--json"]
     if capture.args.server_port:
         args += ["--server", "--external", "--server-host", "127.0.0.1", "--server-port",
-                 str(capture.args.server_port), "--database", "c0_" + capture.root.name.replace("-", "_")]
-    initialized = envelope(capture.success("init", args))
+                 str(capture.args.server_port), "--database", "c0_" + capture.root.name.replace("-", "_"),
+                 "--server-user", "root"]
+        capture.env["BEADS_DOLT_SERVER_USER"] = "c0_unselected_user"
+        write_json(capture.output / "init-user-precedence.json",
+                   {"environment_user": "c0_unselected_user", "explicit_user": "root"})
+    try:
+        initialized = envelope(capture.success("init", args))
+    finally:
+        capture.env.pop("BEADS_DOLT_SERVER_USER", None)
     require(initialized.get("scope") == SCOPE, "initialized Scope mismatch")
     require(initialized.get("backend") == ("server" if capture.args.server_port else "embedded"),
             "initialized backend mismatch")
@@ -342,6 +349,9 @@ def exercise(capture):
         ("not-ready", lambda value: dict(value, graph_ready=False), {"graph_not_initialized"}),
         ("wrong-database", lambda value: dict(value, dolt_database="missing_c0_" + capture.root.name.replace("-", "_")), {"graph_not_initialized"}),
     ]
+    for backend in ["postgres", "mysql", "sqlite", "unsupported-c0"]:
+        controls.append(("wrong-backend-" + backend, lambda value, backend=backend: dict(value, backend=backend),
+                         {"graph_not_initialized"}))
     for field in ["graph_scope_url", "graph_authority_id", "graph_workspace", "graph_schema_version", "graph_ready", "dolt_database"]:
         controls.append(("missing-" + field, lambda value, field=field: {k: v for k, v in value.items() if k != field},
                          {"graph_not_initialized"}))
@@ -363,6 +373,26 @@ def exercise(capture):
         refusal(capture.run(name + "-absent", ["show", path, "--json"]), {"not_found"}, name + " post-refusal read")
         capture.passed(name + " typed refusal, unchanged workspace and absent canonical ID")
     capture.passed("metadata restored after refusal controls")
+
+    env_controls = [
+        ("BEADS_DB", str(capture.root / "unselected" / ".beads" / "dolt"), {"capability_unavailable"}),
+        ("BEADS_DOLT_SERVER_HOST", "unselected.invalid", {"not_authority"}),
+        ("BEADS_DOLT_SERVER_PORT", "invalid", {"not_authority"}),
+        ("BEADS_DOLT_SERVER_TLS", "true", {"not_authority"}),
+    ]
+    if capture.args.server_port:
+        env_controls.append(("BEADS_DOLT_CREDENTIAL_COMMAND", "false", {"capability_unavailable"}))
+    for key, value, codes in env_controls:
+        path = "beads/refused-env-" + key.lower()
+        capture.env[key] = value
+        try:
+            before = tree_digest(capture.work)
+            refusal(capture.run(key, remember(path, "refuse", "Refuse")), codes, key)
+            require(tree_digest(capture.work) == before, f"{key} changed workspace bytes")
+        finally:
+            capture.env.pop(key, None)
+        refusal(capture.run(key + "-absent", ["show", path, "--json"]), {"not_found"}, key + " absent")
+        capture.passed(key + " conflicting route refused without effects")
 
 
 def main():

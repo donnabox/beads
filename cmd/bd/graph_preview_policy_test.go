@@ -131,7 +131,72 @@ func TestGraphPreviewCorruptMetadataRefusesBeforeLegacyOpening(t *testing.T) {
 	}
 }
 
-func graphPolicyCLI(t *testing.T, bd, work, home string, extraEnv []string, code string, args ...string) {
+func TestGraphPreviewInitQuiet(t *testing.T) {
+	bd := buildBDUnderTest(t)
+	for _, jsonMode := range []bool{false, true} {
+		name := "human"
+		if jsonMode {
+			name = "json"
+		}
+		t.Run(name, func(t *testing.T) {
+			work, home := t.TempDir(), t.TempDir()
+			args := []string{"init", "--graph-mode", "link", "--scope-url", "https://example.invalid/quiet/", "--skip-hooks", "--skip-agents", "--non-interactive", "--quiet"}
+			if jsonMode {
+				args = append(args, "--json")
+			}
+			out := graphPolicyCLI(t, bd, work, home, nil, "", args...)
+			if jsonMode {
+				if !json.Valid([]byte(out)) {
+					t.Fatalf("--quiet suppressed structured output: %q", out)
+				}
+			} else if out != "" {
+				t.Fatalf("--quiet emitted human output: %q", out)
+			}
+			graphPolicyCLI(t, bd, work, home, nil, "", "remember", "Persisted after quiet init", "--id", "beads/quiet", "--title", "Quiet", "--json")
+			graphPolicyCLI(t, bd, work, home, nil, "", "show", "beads/quiet", "--json")
+		})
+	}
+}
+
+func TestGraphPreviewRejectsUnsupportedBackend(t *testing.T) {
+	bd := buildBDUnderTest(t)
+	work, home := t.TempDir(), t.TempDir()
+	graphPolicyCLI(t, bd, work, home, nil, "", "init", "--graph-mode", "link", "--scope-url", "https://example.invalid/backend/", "--skip-hooks", "--skip-agents", "--non-interactive", "--json")
+	metadataPath := filepath.Join(work, ".beads", "metadata.json")
+	original, err := os.ReadFile(metadataPath)
+	if err != nil {
+		t.Fatal(err)
+	}
+	for _, backend := range []string{"postgres", "mysql", "sqlite", "unsupported-preview"} {
+		t.Run(backend, func(t *testing.T) {
+			var metadata map[string]any
+			if err := json.Unmarshal(original, &metadata); err != nil {
+				t.Fatal(err)
+			}
+			metadata["backend"] = backend
+			modified, err := json.Marshal(metadata)
+			if err != nil {
+				t.Fatal(err)
+			}
+			writeFile(t, metadataPath, modified)
+			before := legacyUpgradeTreeDigest(t, work)
+			path := "beads/refused-" + backend
+			for _, args := range [][]string{
+				{"remember", "must not persist", "--id", path, "--title", "Refused", "--json"},
+				{"show", path, "--json"}, {"status", "--graph", "--json"},
+			} {
+				graphPolicyCLI(t, bd, work, home, nil, "graph_not_initialized", args...)
+			}
+			if after := legacyUpgradeTreeDigest(t, work); after != before {
+				t.Fatal("unsupported backend refusal changed workspace")
+			}
+			writeFile(t, metadataPath, original)
+			graphPolicyCLI(t, bd, work, home, nil, "not_found", "show", path, "--json")
+		})
+	}
+}
+
+func graphPolicyCLI(t *testing.T, bd, work, home string, extraEnv []string, code string, args ...string) string {
 	t.Helper()
 	ctx, cancel := context.WithTimeout(context.Background(), 90*time.Second)
 	defer cancel()
@@ -162,7 +227,7 @@ func graphPolicyCLI(t *testing.T, bd, work, home string, extraEnv []string, code
 		if err != nil {
 			t.Fatalf("normal graph init failed: %v\n%s", err, stderr.String())
 		}
-		return
+		return out.String()
 	}
 	if err == nil {
 		t.Fatalf("expected %s refusal; stdout=%s", code, out.String())
@@ -180,4 +245,5 @@ func graphPolicyCLI(t *testing.T, bd, work, home string, extraEnv []string, code
 	if diagnostic.Code != code || diagnostic.Retryable {
 		t.Fatalf("expected non-retryable %s; stderr=%s", code, stderr.String())
 	}
+	return out.String()
 }

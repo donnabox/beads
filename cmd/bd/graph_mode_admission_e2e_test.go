@@ -26,7 +26,7 @@ func TestGraphModeCLIRefusesLegacyStoreWithoutWorkspaceEffects(t *testing.T) {
 			} {
 				t.Run(filename+"/"+mode+"/"+args[0], func(t *testing.T) {
 					repoDir := t.TempDir()
-					initGitRepo(t, repoDir)
+					initGitRepoAt(t, repoDir)
 					beadsDir := filepath.Join(repoDir, ".beads")
 					writeFile(t, filepath.Join(beadsDir, filename), []byte(`{"backend":"dolt","dolt_mode":"server","graph_mode":"`+mode+`"}`))
 					before := legacyUpgradeTreeDigest(t, beadsDir)

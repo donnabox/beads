@@ -23,6 +23,8 @@ For an ordinary, externally managed Dolt SQL server, add `--server --external --
 
 `remember` in this preview requires an explicit canonical `--id` and a nonempty `--title`. Its one argument is always the body, including an empty body. Reusing an allocated ID refuses. `show` returns the complete current record and verifies that its retained snapshot exists and matches. Other graph-workspace commands refuse before opening the legacy Issue store. Existing dependency-mode workspaces retain their original routing.
 
+The preview uses the exact persisted storage route. Select the workspace with the working directory, `--directory`, or `BEADS_DIR`. Its `.beads/.env` supplies policy and static credentials with shell values taking precedence. Unsupported backend values, database selectors, redirects and conflicting endpoint/data-directory assertions refuse before opening storage; the preview does not silently ignore them or start another server. Server passwords may come from `BEADS_DOLT_PASSWORD` or the existing endpoint-keyed credentials file. Credential commands are explicitly unsupported. An explicit init `--server-user` wins over environment defaults; later opens honor the static environment user. Quiet init suppresses human output while retaining explicit JSON output.
+
 ## Current boundaries
 
 - Specialized Issue and Dependency integration is planned, not implemented. This preview creates non-Issue Memory records only. No Issue record is copied into a second editable graph representation.

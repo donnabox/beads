@@ -18,7 +18,6 @@ import (
 	"github.com/spf13/cobra"
 	"github.com/spf13/pflag"
 	graph "github.com/steveyegge/beads/graphops"
-	"github.com/steveyegge/beads/internal/config"
 	"github.com/steveyegge/beads/internal/configfile"
 	"github.com/steveyegge/beads/internal/migration"
 	"github.com/steveyegge/beads/internal/storage/graphstore"
@@ -135,7 +134,7 @@ func admitGraphPreview(cmd *cobra.Command) (bool, error) {
 			return true, graphFailure("graph_not_initialized", "graph_mode link initialization requires a fresh .beads directory; existing or incomplete stores are never replaced", 5)
 		}
 		graphPreviewActive, graphPreviewDir = true, dir
-		return true, nil
+		return true, configureGraphPreview(cmd)
 	}
 	if requested != "" && requested != mode {
 		return true, graphFailure("not_authority", "graph_mode assertion does not match persisted workspace format", 5)
@@ -145,6 +144,9 @@ func admitGraphPreview(cmd *cobra.Command) (bool, error) {
 			return true, graphFailure("capability_unavailable", "these graph options require a workspace initialized with graph_mode link", 5)
 		}
 		return false, nil
+	}
+	if err := requireDoltBackend(cfg); err != nil {
+		return true, graphFailure("graph_not_initialized", "graph_mode link: "+err.Error(), 5)
 	}
 	if cfg == nil || string(marker) != graphPreviewGeneration || !cfg.GraphReady || cfg.GraphSchemaVersion != 1 || cfg.GraphScopeURL == "" || cfg.GraphAuthorityID == "" || cfg.GraphWorkspace == "" || cfg.DoltDatabase == "" {
 		return true, graphFailure("graph_not_initialized", "graph_mode link metadata is missing, incomplete, or unsupported; no database was opened", 5)
@@ -163,7 +165,13 @@ func admitGraphPreview(cmd *cobra.Command) (bool, error) {
 		}
 	}
 	graphPreviewActive, graphPreviewConfig, graphPreviewDir = true, cfg, dir
-	return true, nil
+	if err := configureGraphPreview(cmd); err != nil {
+		return true, err
+	}
+	if cfg.DoltMode == configfile.DoltModeServer {
+		cfg.DoltServerUser = cfg.GetDoltServerUser()
+	}
+	return true, validateGraphPreviewRoute(cfg)
 }
 
 // Refuse flags whose semantics this slice does not implement, rather than
@@ -185,24 +193,8 @@ func graphPreviewFlags(cmd *cobra.Command, allowed ...string) error {
 	return nil
 }
 
-// Apply the selected workspace's read-only policy without opening storage or
-// invoking legacy routing/repair. Restore the environment after configuration.
-func graphPreviewWritePolicy(cmd *cobra.Command) error {
-	old, present := os.LookupEnv("BEADS_DIR")
-	if err := os.Setenv("BEADS_DIR", graphPreviewDir); err != nil {
-		return err
-	}
-	loadErr := config.Initialize()
-	var restoreErr error
-	if present {
-		restoreErr = os.Setenv("BEADS_DIR", old)
-	} else {
-		restoreErr = os.Unsetenv("BEADS_DIR")
-	}
-	if err := errors.Join(loadErr, restoreErr); err != nil {
-		return graphFailure("permission_denied", err.Error(), 5)
-	}
-	refreshBoundCommandConfig(cmd)
+// Configuration is bound during admission, before any graph route opens storage.
+func graphPreviewWritePolicy() error {
 	if readonlyMode {
 		return graphFailure("permission_denied", "read-only invocation cannot mutate graph state", 5)
 	}
@@ -213,7 +205,7 @@ func graphPreviewWritePolicy(cmd *cobra.Command) error {
 }
 
 func runGraphPreviewInit(cmd *cobra.Command) error {
-	if err := graphPreviewWritePolicy(cmd); err != nil {
+	if err := graphPreviewWritePolicy(); err != nil {
 		return err
 	}
 	if err := graphPreviewFlags(cmd, "scope-url", "server", "external", "server-host", "server-port", "server-user", "server-socket", "server-tls", "database", "skip-hooks", "skip-agents", "non-interactive"); err != nil {
@@ -261,6 +253,9 @@ func runGraphPreviewInit(cmd *cobra.Command) error {
 			cfg.DoltServerPort = 3307
 		}
 		cfg.DoltServerUser, _ = cmd.Flags().GetString("server-user")
+		if !cmd.Flags().Changed("server-user") {
+			cfg.DoltServerUser = cfg.GetDoltServerUser()
+		}
 		if cfg.DoltServerUser == "" {
 			cfg.DoltServerUser = "root"
 		}
@@ -269,6 +264,9 @@ func runGraphPreviewInit(cmd *cobra.Command) error {
 	}
 	if cmd.Flags().Changed("database") {
 		cfg.DoltDatabase, _ = cmd.Flags().GetString("database")
+	}
+	if err := validateGraphPreviewRoute(cfg); err != nil {
+		return err
 	}
 	if err := os.Mkdir(graphPreviewDir, 0o700); err != nil {
 		return graphFailure("graph_not_initialized", err.Error(), 5)
@@ -297,13 +295,18 @@ func runGraphPreviewInit(cmd *cobra.Command) error {
 		return graphFailure("graph_not_initialized", "database initialized but local readiness publication failed: "+err.Error(), 5)
 	}
 	graphPreviewConfig = cfg
-	return graphPrint(map[string]any{"scope": scope, "backend": cfg.DoltMode, "preview": true, "memoryComplete": false}, "Initialized disposable graph preview; Memory create/show only. No migration or recovery compatibility is promised.")
+	quiet, _ := cmd.Flags().GetBool("quiet")
+	return graphPrint(map[string]any{"scope": scope, "backend": cfg.DoltMode, "preview": true, "memoryComplete": false}, "Initialized disposable graph preview; Memory create/show only. No migration or recovery compatibility is promised.", quiet)
 }
 
 func graphOptions(cfg *configfile.Config) graphstore.Options {
+	password := os.Getenv("BEADS_DOLT_PASSWORD")
+	if cfg.DoltMode == configfile.DoltModeServer && password == "" {
+		password = configfile.LookupCredentialsPassword(cfg.DoltServerHost, cfg.DoltServerPort)
+	}
 	return graphstore.Options{Backend: cfg.DoltMode, DataDir: filepath.Join(graphPreviewDir, "embeddeddolt"), Database: cfg.DoltDatabase, Branch: "main",
 		Binding:    graphstore.Binding{WorkspaceID: cfg.GraphWorkspace, ScopeURL: cfg.GraphScopeURL, AuthorityID: cfg.GraphAuthorityID, SchemaVersion: cfg.GraphSchemaVersion},
-		ServerHost: cfg.DoltServerHost, ServerPort: cfg.DoltServerPort, ServerUser: cfg.DoltServerUser, ServerPassword: os.Getenv("BEADS_DOLT_PASSWORD"), ServerSocket: cfg.DoltServerSocket, ServerTLS: cfg.DoltServerTLS}
+		ServerHost: cfg.DoltServerHost, ServerPort: cfg.DoltServerPort, ServerUser: cfg.DoltServerUser, ServerPassword: password, ServerSocket: cfg.DoltServerSocket, ServerTLS: cfg.DoltServerTLS}
 }
 
 func withGraphStore(fn func(context.Context, *graphstore.Store) (any, string, error)) error {
@@ -322,11 +325,11 @@ func withGraphStore(fn func(context.Context, *graphstore.Store) (any, string, er
 	if closeErr != nil {
 		return graphFailure("route_unavailable", "operation completed but store cleanup failed: "+closeErr.Error(), 5)
 	}
-	return graphPrint(result, human)
+	return graphPrint(result, human, quietFlag)
 }
 
 func runGraphPreviewRemember(cmd *cobra.Command, args []string) error {
-	if err := graphPreviewWritePolicy(cmd); err != nil {
+	if err := graphPreviewWritePolicy(); err != nil {
 		return err
 	}
 	if err := graphPreviewFlags(cmd, "id", "title"); err != nil {
@@ -388,11 +391,11 @@ func runGraphPreviewStatus(cmd *cobra.Command) error {
 	})
 }
 
-func graphPrint(result any, human string) error {
+func graphPrint(result any, human string, quiet bool) error {
 	if jsonOutput {
 		return json.NewEncoder(os.Stdout).Encode(map[string]any{"schemaVersion": 1, "preview": true, "result": result})
 	}
-	if !quietFlag {
+	if !quiet {
 		fmt.Fprintln(os.Stdout, human)
 	}
 	return nil
