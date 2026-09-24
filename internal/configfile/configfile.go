@@ -25,6 +25,14 @@ type Config struct {
 	// This preview marker does not authorize migration or graph initialization.
 	GraphMode string `json:"graph_mode,omitempty"`
 
+	// Experimental graph workspace binding. Only normal graph init writes these;
+	// missing or mismatched values never authorize implicit bootstrap or migration.
+	GraphScopeURL      string `json:"graph_scope_url,omitempty"`
+	GraphAuthorityID   string `json:"graph_authority_id,omitempty"`
+	GraphWorkspace     string `json:"graph_workspace,omitempty"`
+	GraphSchemaVersion int    `json:"graph_schema_version,omitempty"`
+	GraphReady         bool   `json:"graph_ready,omitempty"`
+
 	// Deletions configuration
 	DeletionsRetentionDays int `json:"deletions_retention_days,omitempty"` // 0 means use default (3 days)
 
