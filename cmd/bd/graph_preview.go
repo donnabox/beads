@@ -104,13 +104,19 @@ func admitGraphPreview(cmd *cobra.Command) (bool, error) {
 	var marker []byte
 	markerPresent := false
 	if dir != "" {
-		cfg, err = configfile.LoadForDiscovery(dir)
-		if err != nil {
-			return true, graphFailure("graph_not_initialized", err.Error(), 5)
-		}
 		marker, err = os.ReadFile(filepath.Join(dir, graphPreviewMarker)) // #nosec G304 -- fixed format sentinel in the explicitly selected workspace
 		markerPresent = err == nil
 		if err != nil && !os.IsNotExist(err) {
+			return true, graphFailure("graph_not_initialized", err.Error(), 5)
+		}
+		cfg, err = configfile.LoadForDiscovery(dir)
+		if err != nil {
+			// Without a graph sentinel or assertion, preserve the legacy
+			// command's corrupt-metadata refusal and its diagnostic context.
+			// A damaged graph workspace must still fail before legacy opening.
+			if !markerPresent && requested != "link" {
+				return false, nil
+			}
 			return true, graphFailure("graph_not_initialized", err.Error(), 5)
 		}
 	}

@@ -105,6 +105,32 @@ func TestGraphPreviewCLIWritePolicy(t *testing.T) {
 	})
 }
 
+func TestGraphPreviewCorruptMetadataRefusesBeforeLegacyOpening(t *testing.T) {
+	bd := buildBDUnderTest(t)
+	for _, marker := range []bool{false, true} {
+		name := "explicit-assertion"
+		if marker {
+			name = "persisted-marker"
+		}
+		t.Run(name, func(t *testing.T) {
+			work, home := t.TempDir(), t.TempDir()
+			beadsDir := filepath.Join(work, ".beads")
+			writeFile(t, filepath.Join(beadsDir, "metadata.json"), []byte("{\n"))
+			args := []string{"show", "beads/plan", "--json"}
+			if marker {
+				writeFile(t, filepath.Join(beadsDir, graphPreviewMarker), []byte(graphPreviewGeneration))
+			} else {
+				args = append(args, "--graph-mode", "link")
+			}
+			before := legacyUpgradeTreeDigest(t, work)
+			graphPolicyCLI(t, bd, work, home, nil, "graph_not_initialized", args...)
+			if after := legacyUpgradeTreeDigest(t, work); after != before {
+				t.Fatal("corrupt graph metadata refusal changed workspace")
+			}
+		})
+	}
+}
+
 func graphPolicyCLI(t *testing.T, bd, work, home string, extraEnv []string, code string, args ...string) {
 	t.Helper()
 	ctx, cancel := context.WithTimeout(context.Background(), 90*time.Second)

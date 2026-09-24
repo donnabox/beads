@@ -34,6 +34,11 @@ jobs:
         run: |
           python3 scripts/graph-c0-smoke.py --bd "$RUNNER_TEMP/c0-bin/bd" \
             --output-dir "$RUNNER_TEMP/c0-evidence/embedded"
+      - name: Check CLI admission and write policy
+        run: |
+          BEADS_TEST_BD_BINARY="$RUNNER_TEMP/c0-bin/bd" TEST_VERBOSE=1 TEST_TIMEOUT=5m \
+            TEST_RUN='Test(GraphMode|GraphPreview|BootstrapRejectsCorruptMetadataBeforeWorkspaceWrites|DoctorRejectsCorruptMetadataBeforeSharedServerChecks|DoltKillallRejectsCorruptMetadataBeforeServerCleanup)' \
+            ./scripts/test.sh ./cmd/bd > "$RUNNER_TEMP/c0-evidence/cli-policy-tests.log" 2>&1
       - name: Install pinned ordinary Dolt release
         run: |
           cd "$RUNNER_TEMP"
