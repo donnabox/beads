@@ -6,10 +6,12 @@ package graphstore
 import (
 	"encoding/json"
 	"errors"
+
+	publicops "github.com/steveyegge/beads/issueops"
 )
 
 // SchemaVersion identifies this explicitly experimental storage layout.
-const SchemaVersion = 1
+const SchemaVersion = 2
 
 // Binding is the exact identity expected by the local workspace metadata.
 // WorkspaceID is its canonical filesystem path; C0 does not support moving it.
@@ -34,6 +36,9 @@ type Options struct {
 	ServerPassword string
 	ServerSocket   string
 	ServerTLS      bool
+	// IssuePrefix is resolved by normal CLI initialization. It is used only
+	// for fresh bootstrap; existing opens read the persisted config value.
+	IssuePrefix string
 }
 
 // CreateRequest creates a new canonical Memory path; it is not a keyed upsert.
@@ -69,6 +74,19 @@ type Attribution struct {
 	Actor      string `json:"actor"`
 	Status     string `json:"status"`
 	RecordedAt string `json:"recordedAt"`
+}
+
+// IssueRecord projects the authoritative specialized Issue aggregate. It is a
+// disposable preview, with mutable issue_type classification under one local
+// experimental Type. No public nominal Task/Bug contract is established.
+type IssueRecord struct {
+	ID          string            `json:"id"`
+	Type        string            `json:"type"`
+	Revision    string            `json:"revision"`
+	Version     string            `json:"version"`
+	Properties  *publicops.Issue  `json:"properties"`
+	Owned       []json.RawMessage `json:"owned"`
+	Attribution Attribution       `json:"attribution"`
 }
 
 var (

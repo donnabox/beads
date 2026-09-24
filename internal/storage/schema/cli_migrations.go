@@ -138,10 +138,17 @@ func cliCompatibleMigrationSQL(name, sqlText string) string {
 		// Replays over a database that never synced the wisp tables must use
 		// the frozen source text instead -- see cliSubstituteAssumesWispTables.
 		return cliMigration0067AddVersionedBeadsSchema
+	case "0068_add_attribution_status.up.sql":
+		// Reused from Jim Wordelman, #6661 at 64becbc: fresh CLI bundles
+		// need direct ALTERs because older released Dolt skips prepared DDL.
+		return cliMigration0068AddAttributionStatus
 	default:
 		return sqlText
 	}
 }
+
+const cliMigration0068AddAttributionStatus = `ALTER TABLE issue_versions ADD COLUMN attribution_status VARCHAR(20) NOT NULL;
+ALTER TABLE issue_versions MODIFY COLUMN durable_state LONGBLOB;`
 
 // cliSubstituteAssumesWispTables reports whether cliCompatibleMigrationSQL's
 // substitute for name presumes the clone-local wisp_* tables already exist.

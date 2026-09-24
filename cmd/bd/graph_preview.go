@@ -18,13 +18,15 @@ import (
 	"github.com/spf13/cobra"
 	"github.com/spf13/pflag"
 	graph "github.com/steveyegge/beads/graphops"
+	"github.com/steveyegge/beads/internal/config"
 	"github.com/steveyegge/beads/internal/configfile"
 	"github.com/steveyegge/beads/internal/migration"
+	"github.com/steveyegge/beads/internal/storage"
 	"github.com/steveyegge/beads/internal/storage/graphstore"
 )
 
 const graphPreviewMarker = "graph-preview-format"
-const graphPreviewGeneration = "link-preview-v1\n"
+const graphPreviewGeneration = "link-preview-v2\n"
 
 var graphPreviewActive bool
 var graphPreviewDir string
@@ -148,15 +150,15 @@ func admitGraphPreview(cmd *cobra.Command) (bool, error) {
 	if err := requireDoltBackend(cfg); err != nil {
 		return true, graphFailure("graph_not_initialized", "graph_mode link: "+err.Error(), 5)
 	}
-	if cfg == nil || string(marker) != graphPreviewGeneration || !cfg.GraphReady || cfg.GraphSchemaVersion != 1 || cfg.GraphScopeURL == "" || cfg.GraphAuthorityID == "" || cfg.GraphWorkspace == "" || cfg.DoltDatabase == "" {
+	if cfg == nil || string(marker) != graphPreviewGeneration || !cfg.GraphReady || cfg.GraphSchemaVersion != graphstore.SchemaVersion || cfg.GraphScopeURL == "" || cfg.GraphAuthorityID == "" || cfg.GraphWorkspace == "" || cfg.DoltDatabase == "" {
 		return true, graphFailure("graph_not_initialized", "graph_mode link metadata is missing, incomplete, or unsupported; no database was opened", 5)
 	}
 	real, err := filepath.EvalSymlinks(dir)
 	if err != nil || real != cfg.GraphWorkspace {
 		return true, graphFailure("not_authority", "graph_mode workspace binding differs; copied/moved workspaces cannot claim this authority", 5)
 	}
-	if cmd != rememberCmd && cmd != showCmd && cmd != statusCmd {
-		return true, graphFailure("capability_unavailable", "graph_mode link preview supports only remember, show, and status --graph; this command has not opened the legacy store", 5)
+	if cmd != rememberCmd && cmd != createCmd && cmd != showCmd && cmd != statusCmd {
+		return true, graphFailure("capability_unavailable", "graph_mode link preview supports only create, remember, show, and status --graph; this command has not opened the legacy store", 5)
 	}
 	if cmd == statusCmd {
 		enabled, _ := cmd.Flags().GetBool("graph")
@@ -208,7 +210,7 @@ func runGraphPreviewInit(cmd *cobra.Command) error {
 	if err := graphPreviewWritePolicy(); err != nil {
 		return err
 	}
-	if err := graphPreviewFlags(cmd, "scope-url", "server", "external", "server-host", "server-port", "server-user", "server-socket", "server-tls", "database", "skip-hooks", "skip-agents", "non-interactive"); err != nil {
+	if err := graphPreviewFlags(cmd, "scope-url", "prefix", "server", "external", "server-host", "server-port", "server-user", "server-socket", "server-tls", "database", "skip-hooks", "skip-agents", "non-interactive"); err != nil {
 		return err
 	}
 	scope, _ := cmd.Flags().GetString("scope-url")
@@ -241,7 +243,7 @@ func runGraphPreviewInit(cmd *cobra.Command) error {
 		return err
 	}
 	id := hex.EncodeToString(token)
-	cfg := &configfile.Config{Backend: "dolt", GraphMode: "link", GraphScopeURL: scope, GraphAuthorityID: id, GraphSchemaVersion: 1, DoltMode: "embedded", DoltDatabase: "beads_graph_" + id, ProjectID: id}
+	cfg := &configfile.Config{Backend: "dolt", GraphMode: "link", GraphScopeURL: scope, GraphAuthorityID: id, GraphSchemaVersion: graphstore.SchemaVersion, DoltMode: "embedded", DoltDatabase: "beads_graph_" + id, ProjectID: id}
 	if server {
 		cfg.DoltMode = "server"
 		cfg.DoltServerHost, _ = cmd.Flags().GetString("server-host")
@@ -287,7 +289,16 @@ func runGraphPreviewInit(cmd *cobra.Command) error {
 	}
 	ctx, cancel := context.WithTimeout(getRootContext(), 2*time.Minute)
 	defer cancel()
-	if err := graphstore.Init(ctx, graphOptions(cfg)); err != nil {
+	options := graphOptions(cfg)
+	prefix, _ := cmd.Flags().GetString("prefix")
+	if prefix == "" {
+		prefix = config.GetString("issue-prefix")
+	}
+	if prefix == "" {
+		prefix = filepath.Base(filepath.Dir(real))
+	}
+	options.IssuePrefix = normalizeIssuePrefix(prefix)
+	if err := graphstore.Init(ctx, options); err != nil {
 		return graphStorageError(err)
 	}
 	cfg.GraphReady = true
@@ -296,7 +307,7 @@ func runGraphPreviewInit(cmd *cobra.Command) error {
 	}
 	graphPreviewConfig = cfg
 	quiet, _ := cmd.Flags().GetBool("quiet")
-	return graphPrint(map[string]any{"scope": scope, "backend": cfg.DoltMode, "preview": true, "memoryComplete": false}, "Initialized disposable graph preview; Memory create/show only. No migration or recovery compatibility is promised.", quiet)
+	return graphPrint(map[string]any{"scope": scope, "backend": cfg.DoltMode, "preview": true, "memoryComplete": false}, "Initialized disposable graph preview; Memory and Issue create/show only. No migration or recovery compatibility is promised.", quiet)
 }
 
 func graphOptions(cfg *configfile.Config) graphstore.Options {
@@ -369,7 +380,7 @@ func runGraphPreviewShow(cmd *cobra.Command, args []string) error {
 		return graphFailure("invalid_selector", "graph show requires one canonical beads/PATH", 2)
 	}
 	return withGraphStore(func(ctx context.Context, s *graphstore.Store) (any, string, error) {
-		r, err := s.Show(ctx, args[0])
+		r, err := s.Read(ctx, args[0])
 		if err != nil {
 			return nil, "", err
 		}
@@ -387,7 +398,7 @@ func runGraphPreviewStatus(cmd *cobra.Command) error {
 		return err
 	}
 	return withGraphStore(func(_ context.Context, _ *graphstore.Store) (any, string, error) {
-		return map[string]any{"scope": graphPreviewConfig.GraphScopeURL, "backend": graphPreviewConfig.DoltMode, "preview": true, "capabilities": map[string]bool{"memoryCreate": true, "genericRead": true, "memory": false, "historyExact": false, "ownedLinks": false, "requestStatus": false, "backupContinuity": false}}, "Graph preview: Memory create and exact current read. Full Memory, History, Links, Issues, BDP and recovery remain unavailable.", nil
+		return map[string]any{"scope": graphPreviewConfig.GraphScopeURL, "backend": graphPreviewConfig.DoltMode, "preview": true, "capabilities": map[string]bool{"memoryCreate": true, "issueCreate": true, "issueWorkflows": false, "genericRead": true, "memory": false, "historyExact": false, "ownedLinks": false, "requestStatus": false, "backupContinuity": false}}, "Graph preview: Memory and Issue create and exact current read. Full Memory, History, Links, Issue workflows, BDP and recovery remain unavailable.", nil
 	})
 }
 
@@ -406,6 +417,8 @@ func graphStorageError(err error) error {
 	case errors.Is(err, graphstore.ErrOutcomeUnknown):
 		return graphFailure("outcome_unknown", err.Error()+"; do not automatically replay; inspect the canonical ID before deciding the next action", 6)
 	case errors.Is(err, graph.ErrValidation):
+		return graphFailure("invalid_properties", err.Error(), 2)
+	case errors.Is(err, storage.ErrValidation):
 		return graphFailure("invalid_properties", err.Error(), 2)
 	case errors.Is(err, graphstore.ErrAlreadyExists):
 		return graphFailure("identity_reserved", err.Error(), 4)

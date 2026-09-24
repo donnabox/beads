@@ -225,7 +225,7 @@ func graphPolicyCLI(t *testing.T, bd, work, home string, extraEnv []string, code
 	}
 	if code == "" {
 		if err != nil {
-			t.Fatalf("normal graph init failed: %v\n%s", err, stderr.String())
+			t.Fatalf("graph command %v failed: %v\n%s", args, err, stderr.String())
 		}
 		return out.String()
 	}

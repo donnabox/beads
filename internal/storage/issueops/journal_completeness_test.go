@@ -144,6 +144,12 @@ var mutationEntryPoints = []string{
 // create/update/close/delete/dep/label op vocabulary. The staleness check fails
 // if any stops being flagged, so an exemption cannot rot.
 var beadDMLExemptions = map[string]string{
+	// Jim Wordelman #6661 at 64becbc: these helpers advance only the
+	// current_revision pointer for an existing retained snapshot. The preview
+	// imports create-path recording, whose domain create already journals its
+	// mutation; it does not claim the upstream all-writer integration.
+	"RecordVersionInTx":   "retained-history bookkeeping advances current_revision after the mutation's own journal seam; no separate Issue payload mutation",
+	"RecordVersionAtInTx": "imported history fixture helper advances the retained-row pointer and has no production caller",
 	// (1) Child counters are derived CLI acceleration state. In contrast,
 	// is_blocked is part of the exported bead snapshot and its recompute helpers
 	// structurally journal every value that actually changes.

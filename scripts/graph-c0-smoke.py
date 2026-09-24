@@ -250,7 +250,7 @@ def remember(path, body, title):
 
 
 def exercise(capture):
-    args = ["init", "--graph-mode", "link", "--scope-url", SCOPE_INPUT,
+    args = ["init", "--graph-mode", "link", "--scope-url", SCOPE_INPUT, "--prefix", "demo",
             "--non-interactive", "--skip-hooks", "--skip-agents", "--json"]
     if capture.args.server_port:
         args += ["--server", "--external", "--server-host", "127.0.0.1", "--server-port",
@@ -274,7 +274,7 @@ def exercise(capture):
     require(config.get("graph_mode") == "link", "missing graph mode marker")
     require(config.get("graph_scope_url") == SCOPE, "missing Scope binding")
     require(config.get("graph_workspace") == str(metadata.parent.resolve()), "missing workspace binding")
-    require(config.get("graph_schema_version") == 1 and config.get("graph_ready") is True,
+    require(config.get("graph_schema_version") == 2 and config.get("graph_ready") is True,
             "graph schema/readiness was not published")
     require(bool(config.get("graph_authority_id")), "missing authority binding")
     for name, body, title in [("plan", "Remember the deployment plan", "Plan"),
@@ -286,6 +286,35 @@ def exercise(capture):
         reopened = record(capture.success(name + "-reopen", ["show", path, "--json"]), path, body, title)
         require(shown == created == reopened, f"fresh-process record changed: {name}")
         capture.passed(name + " create, read and second fresh-process exact read")
+
+    issue_args = ["create", "Fix deployment", "--id", "beads/work", "--description",
+                  "Issue body — 雪", "--type", "enhancement", "--priority", "1",
+                  "--labels", " demo , ,demo", "--label", "demo", "--json"]
+    issue = envelope(capture.success("issue-create", issue_args))
+    require(issue.get("id") == SCOPE + "beads/work", "Issue canonical identity mismatch")
+    require(issue.get("type") != SCOPE + "types/preview-memory-v1", "Issue was represented as Memory")
+    require(all(issue.get(key) for key in ["type", "revision", "version"]), "missing Issue graph identity/version")
+    require(issue.get("owned") == [], "Issue unexpectedly has owned Links")
+    properties = issue.get("properties", {})
+    require(properties.get("title") == "Fix deployment" and properties.get("description") == "Issue body — 雪",
+            "Issue content changed")
+    require(properties.get("issue_type") == "feature" and properties.get("priority") == 1 and
+            properties.get("labels") == ["demo"] and properties.get("id", "").startswith("demo-"),
+            "Issue classification, labels or configured backing prefix changed")
+    for name in ["issue-read", "issue-reopen"]:
+        require(envelope(capture.success(name, ["show", "beads/work", "--json"])) == issue,
+                "fresh process changed Issue graph record")
+    refusal(capture.run("memory-collides-with-issue", remember("beads/work", "collision", "Collision")),
+            {"identity_reserved"}, "shared Issue/Memory allocation")
+    refusal(capture.run("issue-collides-with-memory", ["create", "collision", "--id", "beads/plan", "--json"]),
+            {"identity_reserved"}, "shared Memory/Issue allocation")
+    for flag in ["--ephemeral", "--no-history", "--deps=blocks:beads/plan"]:
+        refusal(capture.run("issue-unsupported-" + flag.split("=")[0].lstrip("-"),
+                            ["create", "Unsupported", "--id", "beads/refused-issue", flag, "--json"]),
+                {"capability_unavailable"}, "unsupported Issue effects")
+        refusal(capture.run("issue-unsupported-absent", ["show", "beads/refused-issue", "--json"]),
+                {"not_found"}, "refused Issue absent")
+    capture.passed("Issue create, read and reopen with shared allocation and explicit unsupported-effect refusal")
 
     # A barrier aligns launches. Actual process intervals are retained; this
     # is competing independent CLI processes, not a proof of internal overlap.
@@ -422,6 +451,18 @@ def exercise(capture):
             yaml_path.write_text("dolt.port: 1\n")
             capture.success("embedded-ambient-yaml-port", ["show", "beads/plan", "--json"])
             capture.passed("ambient YAML port does not change embedded route")
+        for storage_class in ["ephemeral", "unversioned", "invalid"]:
+            yaml_path.write_text("storage-class.task: " + storage_class + "\n")
+            before = tree_digest(capture.work)
+            code = "invalid_properties" if storage_class == "invalid" else "capability_unavailable"
+            refusal(capture.run("issue-configured-" + storage_class,
+                                ["create", "Unsupported class", "--id", "beads/refused-class", "--json"]),
+                    {code}, "configured Issue storage class")
+            require(tree_digest(capture.work) == before, "configured class refusal changed workspace")
+            yaml_path.unlink()
+            refusal(capture.run("issue-class-absent", ["show", "beads/refused-class", "--json"]),
+                    {"not_found"}, "configured class refusal absent")
+        capture.passed("configured unsupported Issue retention classes refuse without publication")
     finally:
         if original_yaml is None:
             yaml_path.unlink(missing_ok=True)
