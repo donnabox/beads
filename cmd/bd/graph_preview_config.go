@@ -65,6 +65,9 @@ func validateGraphPreviewRoute(cfg *configfile.Config) error {
 	if cfg.DoltDataDir != "" || os.Getenv("BEADS_DOLT_DATA_DIR") != "" {
 		return refuse("dolt_data_dir / BEADS_DOLT_DATA_DIR")
 	}
+	if os.Getenv("BEADS_DOLT_PROXIED_SERVER") == "1" {
+		return refuse("BEADS_DOLT_PROXIED_SERVER")
+	}
 	if cfg.IsDoltServerMode() != (cfg.DoltMode == configfile.DoltModeServer) || config.GetBool("dolt.shared-server") {
 		return refuse("Dolt server mode configuration")
 	}
@@ -85,6 +88,16 @@ func validateGraphPreviewRoute(cfg *configfile.Config) error {
 			port, err := strconv.Atoi(value)
 			if err != nil || cfg.DoltMode != configfile.DoltModeServer || port != cfg.DoltServerPort {
 				return refuse(name)
+			}
+		}
+	}
+	// A YAML port is ambient in embedded mode. For a server it asserts a
+	// route unless the higher-priority environment port overrides it.
+	if cfg.DoltMode == configfile.DoltModeServer && os.Getenv("BEADS_DOLT_SERVER_PORT") == "" {
+		if value := config.GetYamlConfig("dolt.port"); value != "" {
+			port, err := strconv.Atoi(value)
+			if err != nil || port != cfg.DoltServerPort {
+				return refuse("dolt.port")
 			}
 		}
 	}

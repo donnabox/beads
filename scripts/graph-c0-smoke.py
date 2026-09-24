@@ -379,6 +379,7 @@ def exercise(capture):
         ("BEADS_DOLT_SERVER_HOST", "unselected.invalid", {"not_authority"}),
         ("BEADS_DOLT_SERVER_PORT", "invalid", {"not_authority"}),
         ("BEADS_DOLT_SERVER_TLS", "true", {"not_authority"}),
+        ("BEADS_DOLT_PROXIED_SERVER", "1", {"not_authority"}),
     ]
     if capture.args.server_port:
         env_controls.append(("BEADS_DOLT_CREDENTIAL_COMMAND", "false", {"capability_unavailable"}))
@@ -393,6 +394,39 @@ def exercise(capture):
             capture.env.pop(key, None)
         refusal(capture.run(key + "-absent", ["show", path, "--json"]), {"not_found"}, key + " absent")
         capture.passed(key + " conflicting route refused without effects")
+
+    yaml_path = capture.work / ".beads" / "config.yaml"
+    original_yaml = yaml_path.read_bytes() if yaml_path.exists() else None
+    try:
+        if capture.args.server_port:
+            for value in ["1", "invalid"]:
+                yaml_path.write_text("dolt.port: " + value + "\n")
+                path = "beads/refused-yaml-port-" + value
+                before = tree_digest(capture.work)
+                refusal(capture.run("yaml-port-" + value, remember(path, "refuse", "Refuse")),
+                        {"not_authority"}, "YAML port assertion")
+                require(tree_digest(capture.work) == before, "YAML port refusal changed workspace")
+                yaml_path.unlink()
+                refusal(capture.run("yaml-port-absent-" + value, ["show", path, "--json"]),
+                        {"not_found"}, "YAML port absent")
+            yaml_path.write_text("dolt.port: " + str(capture.args.server_port) + "\n")
+            capture.success("yaml-port-matching", ["show", "beads/plan", "--json"])
+            yaml_path.write_text("dolt.port: 1\n")
+            capture.env["BEADS_DOLT_SERVER_PORT"] = str(capture.args.server_port)
+            try:
+                capture.success("yaml-port-environment-override", ["show", "beads/plan", "--json"])
+            finally:
+                capture.env.pop("BEADS_DOLT_SERVER_PORT", None)
+            capture.passed("YAML port assertion refuses conflicts and honors environment precedence")
+        else:
+            yaml_path.write_text("dolt.port: 1\n")
+            capture.success("embedded-ambient-yaml-port", ["show", "beads/plan", "--json"])
+            capture.passed("ambient YAML port does not change embedded route")
+    finally:
+        if original_yaml is None:
+            yaml_path.unlink(missing_ok=True)
+        else:
+            yaml_path.write_bytes(original_yaml)
 
 
 def main():

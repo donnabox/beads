@@ -23,6 +23,7 @@ func TestGraphPreviewSelectedEnvironment(t *testing.T) {
 		{"backend", "BD_BACKEND=sqlite", "invalid_selector"},
 		{"graph-mode", "BD_GRAPH_MODE=dependency", "not_authority"},
 		{"server-host", "BEADS_DOLT_SERVER_HOST=other.invalid", "not_authority"},
+		{"proxied-server", "BEADS_DOLT_PROXIED_SERVER=1", "not_authority"},
 		{"server-port", "BEADS_DOLT_SERVER_PORT=invalid", "not_authority"},
 		{"server-database", "BEADS_DOLT_SERVER_DATABASE=other", "not_authority"},
 		{"data-dir", "BEADS_DOLT_DATA_DIR=" + t.TempDir(), "not_authority"},
@@ -48,6 +49,16 @@ func TestGraphPreviewSelectedEnvironment(t *testing.T) {
 	env := []string{"BD_READONLY=false", "BEADS_DIR=.beads"}
 	graphPolicyCLI(t, bd, work, home, env, "", "remember", "shell policy", "--id", "beads/allowed", "--title", "Allowed", "--json")
 	graphPolicyCLI(t, bd, work, home, env, "", "show", "beads/allowed", "--json")
+}
+
+func TestGraphPreviewInitRejectsProxiedRoute(t *testing.T) {
+	bd := buildBDUnderTest(t)
+	work, home := t.TempDir(), t.TempDir()
+	before := legacyUpgradeTreeDigest(t, work)
+	graphPolicyCLI(t, bd, work, home, []string{"BEADS_DOLT_PROXIED_SERVER=1"}, "not_authority", "init", "--graph-mode", "link", "--scope-url", "https://example.invalid/proxy/", "--skip-hooks", "--skip-agents", "--non-interactive", "--json")
+	if after := legacyUpgradeTreeDigest(t, work); after != before {
+		t.Fatal("refused proxied initialization changed workspace")
+	}
 }
 
 func TestGraphPreviewStaticCredentials(t *testing.T) {
