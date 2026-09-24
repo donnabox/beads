@@ -224,3 +224,57 @@ func TestEmbeddedCancelBeforeCommit(t *testing.T) {
 		t.Fatal(err)
 	}
 }
+
+// The CLI uses its operation context for both opening the connector and the
+// write. Unlike the child-context control, this cancels the embedded driver's
+// inherited connection context as well as database/sql's transaction context.
+func TestEmbeddedCancelSharedCLIContext(t *testing.T) {
+	baseCtx, stop := context.WithTimeout(context.Background(), 90*time.Second)
+	defer stop()
+	o := testOptions(t)
+	if err := Init(baseCtx, o); err != nil {
+		t.Fatal(err)
+	}
+	ctx, abort := context.WithCancel(baseCtx)
+	defer abort()
+	s, err := OpenExisting(ctx, o)
+	if err != nil {
+		t.Fatal(err)
+	}
+	t.Cleanup(func() {
+		if err := s.Close(); err != nil {
+			t.Error(err)
+		}
+	})
+	s.afterWrite = func(stage string) error {
+		if stage == "retained" {
+			abort()
+			return ctx.Err()
+		}
+		return nil
+	}
+	_, err = s.Create(ctx, CreateRequest{Path: "beads/cancelled"})
+	if !errors.Is(err, context.Canceled) {
+		t.Fatalf("shared-context cancellation: %v", err)
+	}
+	t.Logf("cancelled operation outcome: %v", err)
+	if err := s.Close(); err != nil {
+		t.Fatal(err)
+	}
+	s, err = OpenExisting(baseCtx, o)
+	if err != nil {
+		t.Fatal(err)
+	}
+	for _, table := range []string{"graph_preview_catalog", "graph_preview_payloads", "graph_preview_versions"} {
+		var count int
+		if err := s.db.QueryRowContext(baseCtx, "SELECT COUNT(*) FROM "+table).Scan(&count); err != nil {
+			t.Fatal(err)
+		}
+		if count != 0 {
+			t.Fatalf("cancelled CLI-context transaction persisted %d rows in %s", count, table)
+		}
+	}
+	if _, err := s.Create(baseCtx, CreateRequest{Path: "beads/successor"}); err != nil {
+		t.Fatal(err)
+	}
+}
