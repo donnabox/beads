@@ -11,7 +11,7 @@ import (
 )
 
 // SchemaVersion identifies this explicitly experimental storage layout.
-const SchemaVersion = 3
+const SchemaVersion = 4
 
 // Binding is the exact identity expected by the local workspace metadata.
 // WorkspaceID is its canonical filesystem path; C0 does not support moving it.
@@ -55,8 +55,7 @@ type Properties struct {
 	Body  string `json:"body"`
 }
 
-// Record is a complete preview record. Owned is always a present empty array:
-// this descriptor admits no owned Links and the preview has no Link writer.
+// Record is a complete preview Memory record, including its outgoing owned Links.
 // Version identifies retained state; it is not a local ordinal or timestamp.
 type Record struct {
 	ID          string            `json:"id"`
@@ -108,8 +107,8 @@ type DependencyRequest struct {
 	Actor                  string
 }
 
-// LinkRecord projects the sole authoritative Dependency row. The preview admits
-// only unpinned local Issue endpoints and empty Link properties.
+// LinkRecord projects an authoritative specialized Dependency or generic Link.
+// All preview endpoints are unpinned live local Beads.
 type LinkRecord struct {
 	ID          string         `json:"id"`
 	Type        string         `json:"type"`
@@ -134,3 +133,29 @@ type IssueMutationResult struct {
 
 // PreviewOwnedLinkLimit is a disposable descriptor budget, not a production limit.
 const PreviewOwnedLinkLimit = 1000
+
+// LinkCreateRequest allocates an independent informational Link. Equal endpoints
+// do not deduplicate intent; an explicit allocated Path cannot be reused.
+type LinkCreateRequest struct {
+	Path, SourcePath, TargetPath, Actor string
+	Properties                          map[string]any
+	ExpectedSourceRevision              string
+	UnconditionalSource                 bool
+}
+
+// LinkUpdateRequest replaces properties without changing Type or endpoints.
+// A guard is mandatory for the Link and, when owned, its source Memory.
+type LinkUpdateRequest struct {
+	Path, Actor            string
+	Properties             map[string]any
+	ExpectedRevision       string
+	Unconditional          bool
+	ExpectedSourceRevision string
+	UnconditionalSource    bool
+}
+
+type LinkMutationResult struct {
+	Link    LinkRecord `json:"link"`
+	Source  any        `json:"source"`
+	Changed bool       `json:"changed"`
+}

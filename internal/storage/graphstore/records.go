@@ -177,6 +177,10 @@ func (s *Store) showMemoryInTx(ctx context.Context, tx *sql.Tx, path string) (Re
 	if err := json.Unmarshal(snapshot, &retained); err != nil {
 		return Record{}, fmt.Errorf("%w: malformed retained state", ErrInvalidStore)
 	}
+	record.Owned, err = s.memoryOwnedLinksInTx(ctx, tx, path)
+	if err != nil {
+		return Record{}, err
+	}
 	record.Attribution = retained.Attribution
 	at, err := time.Parse(time.RFC3339Nano, record.Attribution.RecordedAt)
 	if err != nil || at.UTC().Format(time.RFC3339Nano) != record.Attribution.RecordedAt || actor != record.Attribution.Actor ||

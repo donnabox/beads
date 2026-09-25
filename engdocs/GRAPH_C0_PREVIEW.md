@@ -1,5 +1,8 @@
 # Disposable graph CLI preview
 
+These notes describe the earlier bounded slice. For the current successor
+(schema 4), see [mixed-Link operations and limits](GRAPH_MIXED_LINK_PREVIEW.md).
+
 This branch extends the first installed vertical slice for [delivery plan review #18](https://github.com/donnabox/beads/pull/18). It adds experimental Issue create/read and blocking-Dependency workflow adapters described in [the Issue preview notes](GRAPH_ISSUE_ADAPTER_PREVIEW.md) and [workflow notes](GRAPH_DEPENDENCY_WORKFLOW_PREVIEW.md). It is not complete Memory or Issue workflow support. The original three-working-day attempt began September 23, 2026 at 07:01 PDT. September 23's command demonstration commitment was missed during a capacity interruption; installed command evidence began September 24.
 
 ## Run it

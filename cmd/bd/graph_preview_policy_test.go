@@ -105,6 +105,24 @@ func TestGraphPreviewCLIWritePolicy(t *testing.T) {
 	})
 }
 
+func TestGraphPreviewGenericFlagsRefuseLegacyOpening(t *testing.T) {
+	bd := buildBDUnderTest(t)
+	for _, args := range [][]string{
+		{"link", "demo-one", "demo-two", "--properties", `{}`},
+		{"link", "demo-one", "demo-two", "--id", "links/context"},
+		{"update", "demo-one", "--properties", `{}`, "--unconditional"},
+		{"update", "demo-one", "--if-revision", "observed"},
+		{"update", "demo-one", "--if-source-revision", "observed"},
+	} {
+		work, home := t.TempDir(), t.TempDir()
+		before := legacyUpgradeTreeDigest(t, work)
+		graphPolicyCLI(t, bd, work, home, nil, "capability_unavailable", append(args, "--json")...)
+		if after := legacyUpgradeTreeDigest(t, work); after != before {
+			t.Fatalf("generic flags changed a legacy workspace: %v", args)
+		}
+	}
+}
+
 func TestGraphPreviewCorruptMetadataRefusesBeforeLegacyOpening(t *testing.T) {
 	bd := buildBDUnderTest(t)
 	for _, marker := range []bool{false, true} {

@@ -238,7 +238,7 @@ func assertReadyIDs(t *testing.T, ctx context.Context, s *Store, want ...string)
 func workflowState(t *testing.T, ctx context.Context, s *Store) map[string]string {
 	t.Helper()
 	state := map[string]string{}
-	for _, table := range []string{"issues", "dependencies", "events", "issue_versions", "store_epoch", "local_metadata", "graph_preview_scope", "graph_preview_catalog", "graph_preview_versions", "graph_preview_issue_versions"} {
+	for _, table := range []string{"issues", "dependencies", "events", "issue_versions", "store_epoch", "local_metadata", "graph_preview_scope", "graph_preview_catalog", "graph_preview_versions", "graph_preview_issue_versions", "graph_preview_links", "graph_preview_payloads"} {
 		rows, err := s.db.QueryContext(ctx, "SELECT * FROM "+table)
 		if err != nil {
 			t.Fatal(err)

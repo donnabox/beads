@@ -1,5 +1,8 @@
 # Experimental blocking Dependency workflow
 
+These notes describe the earlier bounded slice. For the current successor
+(schema 4), see [mixed-Link operations and limits](GRAPH_MIXED_LINK_PREVIEW.md).
+
 This extends [PR #20](https://github.com/donnabox/beads/pull/20) at
 `0cabfa252fa136ac036e0d4e04036b88f10f9fbd`, within W2 of the
 [fork delivery plan](https://github.com/donnabox/beads/pull/18).
