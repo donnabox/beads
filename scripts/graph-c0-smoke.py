@@ -128,7 +128,7 @@ class Capture:
         except ProcessLookupError:
             pass
 
-    def run(self, label, arguments):
+    def run(self, label, arguments, input_text=None):
         require(not self.stopped.is_set(), "capture was cancelled")
         require(time.monotonic() < self.deadline, "total capture deadline expired")
         require(sha256(self.args.bd) == self.binary_hash, "installed binary changed")
@@ -141,12 +141,18 @@ class Capture:
         argv = [str(self.args.bd), *arguments]
         receipt = {"argv": argv, "cwd": str(self.work), "started_unix": time.time()}
         print(f"START {stem}: {arguments[0]}", flush=True)
+        stdin_file = None
+        if input_text is not None:
+            stdin_path = directory / "stdin.txt"
+            stdin_path.write_bytes(input_text.encode("utf-8"))
+            receipt["stdin_sha256"] = sha256(stdin_path)
+            stdin_file = stdin_path.open("rb")
         child = None
         failure = None
         try:
             with (directory / "stdout.log").open("wb") as out, (directory / "stderr.log").open("wb") as err:
                 child = subprocess.Popen(argv, cwd=self.work, env=self.env,
-                                         stdin=subprocess.DEVNULL, stdout=subprocess.PIPE,
+                                         stdin=stdin_file if stdin_file is not None else subprocess.DEVNULL, stdout=subprocess.PIPE,
                                          stderr=subprocess.PIPE, start_new_session=True)
                 receipt["pid"] = child.pid
                 with self.lock:
@@ -177,6 +183,8 @@ class Capture:
             failure = f"{type(exc).__name__}: {exc}"
             raise
         finally:
+            if stdin_file is not None:
+                stdin_file.close()
             if child is not None:
                 # A command owns its process group; kill leftovers even after
                 # its leader exits, and reap that leader before returning.
@@ -199,8 +207,8 @@ class Capture:
             print(f"END {stem}: exit={receipt.get('exit_code')} failure={failure}", flush=True)
         return receipt, (directory / "stdout.log").read_text(), (directory / "stderr.log").read_text()
 
-    def success(self, label, arguments):
-        receipt, out, err = self.run(label, arguments)
+    def success(self, label, arguments, input_text=None):
+        receipt, out, err = self.run(label, arguments, input_text=input_text)
         require(receipt["exit_code"] == 0, f"{label} failed: {err}")
         return json.loads(out)
 
@@ -222,7 +230,7 @@ def record(value, path, body, title):
     require(value.get("id") == SCOPE + path, "canonical full ID mismatch")
     for field in ["type", "revision", "version"]:
         require(isinstance(value.get(field), str) and value[field], f"missing {field}")
-    require(value["type"] == SCOPE + "types/preview-memory-v1", "expected installed non-Issue Memory descriptor")
+    require(value["type"] == SCOPE + "types/preview-memory-v2", "expected installed non-Issue Memory descriptor")
     require(value.get("properties") == {"body": body, "title": title}, "Memory properties changed")
     require(value.get("owned") == [], "expected explicit empty owned-Link state")
     return value
@@ -274,7 +282,7 @@ def exercise(capture):
     require(config.get("graph_mode") == "link", "missing graph mode marker")
     require(config.get("graph_scope_url") == SCOPE, "missing Scope binding")
     require(config.get("graph_workspace") == str(metadata.parent.resolve()), "missing workspace binding")
-    require(config.get("graph_schema_version") == 3 and config.get("graph_ready") is True,
+    require(config.get("graph_schema_version") == 4 and config.get("graph_ready") is True,
             "graph schema/readiness was not published")
     require(bool(config.get("graph_authority_id")), "missing authority binding")
     for name, body, title in [("plan", "Remember the deployment plan", "Plan"),
@@ -292,7 +300,7 @@ def exercise(capture):
                   "--labels", " demo , ,demo", "--label", "demo", "--json"]
     issue = envelope(capture.success("issue-create", issue_args))
     require(issue.get("id") == SCOPE + "beads/work", "Issue canonical identity mismatch")
-    require(issue.get("type") != SCOPE + "types/preview-memory-v1", "Issue was represented as Memory")
+    require(issue.get("type") != SCOPE + "types/preview-memory-v2", "Issue was represented as Memory")
     require(all(issue.get(key) for key in ["type", "revision", "version"]), "missing Issue graph identity/version")
     require(issue.get("owned") == [], "Issue unexpectedly has owned Links")
     properties = issue.get("properties", {})
@@ -658,6 +666,240 @@ def exercise_dependency_workflow(capture):
     })
 
 
+def exercise_mixed_links(capture):
+    """Prove CLI JSON/guard wiring and fresh-process current reads of mixed Links."""
+    related_type = SCOPE + "types/preview-related-v1"
+    issue_path, source_path, target_path = "beads/release", "beads/workflow-plan", "beads/workflow-decision"
+
+    def show(label, path):
+        return envelope(capture.success(label, ["show", path, "--json"]))
+
+    def ready(label):
+        value = capture.success(label, ["ready", "--json"])
+        require(value.get("preview") is True and value.get("schemaVersion") == 1,
+                "mixed-Link ready lacks preview envelope")
+        require(isinstance(value.get("result"), list), "mixed-Link ready result is not an array")
+        return value["result"]
+
+    def mutation(label, argv, path, source, target, properties, changed=True, input_text=None):
+        result = envelope(capture.success(label, [*argv, "--json"], input_text=input_text))
+        require(result.get("changed") is changed, f"{label}: wrong changed indication")
+        link = result.get("link", {})
+        require(link.get("id") == SCOPE + path and link.get("type") == related_type,
+                f"{label}: Link identity or registered Type changed")
+        require(link.get("source") == SCOPE + source and link.get("target") == SCOPE + target,
+                f"{label}: Link endpoints changed")
+        require(link.get("properties") == properties, f"{label}: Link properties changed")
+        require(link.get("revision") and link.get("version"), f"{label}: missing Link revision/version")
+        require(result.get("source", {}).get("id") == SCOPE + source, f"{label}: missing affected source")
+        require(show(label + "-link-reopen", path) == link, f"{label}: Link changed in fresh process")
+        require(show(label + "-source-reopen", source) == result["source"],
+                f"{label}: source changed in fresh process")
+        return result
+
+    issue = show("mixed-issue-before", issue_path)
+    source = show("mixed-source-before", source_path)
+    target = show("mixed-target-before", target_path)
+    ready_before = ready("mixed-ready-before")
+    require(source.get("type") == SCOPE + "types/preview-memory-v2" and source.get("owned") == [],
+            "mixed source must start as an unlinked ownership-aware Memory")
+
+    # Issue ownership currently admits blocking Dependencies only. This
+    # informational edge must not silently broaden that provisional contract.
+    issue_link = mutation("mixed-issue-memory-create", ["link", issue_path, target_path,
+                          "--resource-type", related_type, "--id", "links/issue-context",
+                          "--properties", '{"note":"Issue context"}'],
+                          "links/issue-context", issue_path, target_path, {"note": "Issue context"})
+    require(issue_link["source"] == issue, "unowned informational Link changed Issue revision/history state")
+    issue_updated = mutation("mixed-issue-link-update", ["update", "links/issue-context", "--properties",
+                             '{"note":"Updated Issue context"}', "--if-revision", issue_link["link"]["revision"]],
+                             "links/issue-context", issue_path, target_path, {"note": "Updated Issue context"})
+    require(issue_updated["source"] == issue, "unowned Link property update changed Issue")
+    issue_noop = mutation("mixed-unowned-optional-source-guard", ["update", "links/issue-context", "--properties",
+                          '{"note":"Updated Issue context"}', "--if-revision", issue_updated["link"]["revision"],
+                          "--if-source-revision", issue["revision"]],
+                          "links/issue-context", issue_path, target_path, {"note": "Updated Issue context"}, changed=False)
+    require(issue_noop["source"] == issue and issue_noop["link"] == issue_updated["link"],
+            "unowned guarded semantic no-op changed Issue or Link")
+    require(issue_updated["link"]["revision"] != issue_link["link"]["revision"] and
+            issue_updated["link"]["version"] != issue_link["link"]["version"],
+            "real unowned Link property change did not advance its revision/version")
+    require(show("mixed-target-after-issue-link", target_path) == target, "incoming Issue Link changed target")
+    require(ready("mixed-ready-after-issue-link") == ready_before, "informational Issue Link affected ready")
+    capture.passed("Issue→Memory informational Link create/read/update preserves Issue and target; ready unaffected")
+
+    memory_link = mutation("mixed-memory-memory-create", ["link", SCOPE + source_path, SCOPE + target_path,
+                           "--resource-type", related_type, "--id", "links/memory-context",
+                           "--properties", '{"note":"Memory context"}', "--if-source-revision", source["revision"]],
+                           "links/memory-context", source_path, target_path, {"note": "Memory context"})
+    owner = memory_link["source"]
+    require(owner.get("owned") == [memory_link["link"]], "Memory does not own full created Link state")
+    require(owner["revision"] != source["revision"] and owner["version"] != source["version"],
+            "owned Link creation did not advance source revision/version")
+    require(owner["properties"] == source["properties"], "owned Link creation changed source properties")
+    require(show("mixed-target-after-memory-link", target_path) == target, "incoming Memory Link changed target")
+    capture.passed("Memory→Memory Link owns complete Link state and advances source only; canonical URL selectors work")
+
+    properties_file = capture.output / "mixed-properties.json"
+    write_json(properties_file, {"note": "Updated context — 雪"})
+    updated = mutation("mixed-owned-property-file", ["update", SCOPE + "links/memory-context",
+                       "--properties", "@" + str(properties_file), "--if-revision", memory_link["link"]["revision"],
+                       "--if-source-revision", owner["revision"]],
+                       "links/memory-context", source_path, target_path, {"note": "Updated context — 雪"})
+    current = updated["source"]
+    require(updated["link"]["revision"] != memory_link["link"]["revision"] and
+            updated["link"]["version"] != memory_link["link"]["version"], "property update did not version Link")
+    require(current["revision"] != owner["revision"] and current["version"] != owner["version"],
+            "owned Link property update did not version source")
+    require(current["properties"] == source["properties"] and current.get("owned") == [updated["link"]],
+            "source did not retain exact new owned-Link content with unchanged properties")
+    repeated = mutation("mixed-owned-noop-stdin", ["update", "links/memory-context", "--properties", "@-",
+                        "--if-revision", updated["link"]["revision"], "--if-source-revision", current["revision"]],
+                        "links/memory-context", source_path, target_path, {"note": "Updated context — 雪"},
+                        changed=False, input_text=' { "note" : "Updated context — 雪" }\n')
+    require(repeated["link"] == updated["link"] and repeated["source"] == current,
+            "semantic no-op changed Link or owning Memory")
+    require(show("mixed-target-after-property", target_path) == target, "property update changed target")
+    capture.passed("descriptor-admitted property replacement via @file versions Link and owner; @- semantic no-op preserves both")
+
+    link_base = ["link", source_path, target_path, "--resource-type", related_type,
+                 "--id", "links/refused-mixed", "--properties", '{"note":"Refused"}']
+    update_base = ["update", "links/memory-context", "--properties", '{"note":"Refused"}']
+    link_guard = ["--if-revision", updated["link"]["revision"]]
+    source_guard = ["--if-source-revision", current["revision"]]
+    bad_guard = {"invalid_selector", "invalid_properties"}
+    refusals = [
+        ("mixed-create-missing-source-guard", link_base, bad_guard),
+        ("mixed-create-stale-source-guard", [*link_base, "--if-source-revision", source["revision"]], {"revision_conflict"}),
+        ("mixed-update-missing-link-guard", [*update_base, *source_guard], bad_guard),
+        ("mixed-update-missing-source-guard", [*update_base, *link_guard], bad_guard),
+        ("mixed-update-stale-link-guard", [*update_base, "--if-revision", memory_link["link"]["revision"], *source_guard],
+         {"revision_conflict"}),
+        ("mixed-update-stale-source-guard", [*update_base, *link_guard, "--if-source-revision", owner["revision"]],
+         {"revision_conflict"}),
+        ("mixed-noop-stale-link-guard", ["update", "links/memory-context", "--properties",
+                                        json.dumps(updated["link"]["properties"]), "--if-revision",
+                                        memory_link["link"]["revision"], *source_guard], {"revision_conflict"}),
+        ("mixed-noop-stale-source-guard", ["update", "links/memory-context", "--properties",
+                                          json.dumps(updated["link"]["properties"]), *link_guard,
+                                          "--if-source-revision", owner["revision"]], {"revision_conflict"}),
+        ("mixed-unowned-stale-optional-source-guard", ["update", "links/issue-context", "--properties",
+                                                     json.dumps(issue_updated["link"]["properties"]),
+                                                     "--if-revision", issue_updated["link"]["revision"],
+                                                     "--if-source-revision", source["revision"]], {"revision_conflict"}),
+        ("mixed-update-conflicting-link-guards", [*update_base, *link_guard, "--unconditional", *source_guard], bad_guard),
+        ("mixed-update-conflicting-source-guards", [*update_base, *link_guard, *source_guard, "--unconditional-source"], bad_guard),
+        ("mixed-explicit-ID-reuse", ["link", source_path, target_path, "--resource-type", related_type,
+                                    "--id", "links/memory-context", "--properties", '{"note":"Duplicate"}', *source_guard],
+         {"identity_reserved"}),
+    ]
+    for name, payload in [("malformed", '{"note":'), ("duplicate", '{"note":"a","note":"b"}'),
+                          ("non-object", '["note"]'), ("unknown-property", '{"unexpected":"x"}'),
+                          ("wrong-property-type", '{"note":7}')]:
+        refusals.append(("mixed-json-" + name,
+                         ["update", "links/memory-context", "--properties", payload, *link_guard, *source_guard],
+                         {"invalid_properties"}))
+    protected = {source_path: current, target_path: target, issue_path: issue,
+                 "links/memory-context": updated["link"], "links/issue-context": issue_updated["link"]}
+    for label, argv, codes in refusals:
+        refusal(capture.run(label, [*argv, "--json"]), codes, label)
+        # Check the touched current records through new CLI processes. The
+        # storage suite separately proves no partial retained-history effects.
+        for path in [source_path, "links/memory-context"]:
+            require(show(label + "-unchanged", path) == protected[path], f"{label}: changed {path}")
+    refusal(capture.run("mixed-refused-ID-absent", ["show", "links/refused-mixed", "--json"]),
+            {"not_found"}, "refused mixed Link absent")
+    for path, expected in protected.items():
+        require(show("mixed-refusal-final-unchanged", path) == expected, f"refused operations changed {path}")
+    capture.passed("mixed-Link missing/stale/conflicting guards, duplicate ID and invalid JSON refuse without observable record changes")
+
+    # These are actual mutation routes, admitted by the installed CLI before
+    # storage opens. Local byte equality supplements post-refusal reads; it
+    # does not stand in for server-side retained-history atomicity evidence.
+    yaml_path = capture.work / ".beads" / "config.yaml"
+    original_yaml = yaml_path.read_bytes() if yaml_path.exists() else None
+    mayor = capture.work / "mayor"
+    freeze_path = capture.work / "MIGRATION-FREEZE"
+    require(not mayor.exists() and not freeze_path.exists(), "unexpected existing town markers")
+    for policy in ["readonly-flag", "readonly-env", "readonly-config", "migration-freeze"]:
+        flags = ["--readonly"] if policy == "readonly-flag" else []
+        try:
+            if policy == "readonly-env":
+                capture.env["BD_READONLY"] = "true"
+            elif policy == "readonly-config":
+                yaml_path.write_text("readonly: true\n")
+            elif policy == "migration-freeze":
+                mayor.mkdir()
+                (mayor / "town.json").write_text("{}\n")
+                freeze_path.write_text("mixed-smoke\t2026-09-25T00:00:00Z\tgraph write control\n")
+            for operation, argv in [("link", [*link_base, *source_guard]),
+                                    ("update", [*update_base, *link_guard, *source_guard])]:
+                label = "mixed-policy-" + policy + "-" + operation
+                before = tree_digest(capture.work)
+                refusal(capture.run(label, [*argv, *flags, "--json"]), {"permission_denied"}, label)
+                require(tree_digest(capture.work) == before, f"{label}: changed workspace bytes")
+        finally:
+            capture.env.pop("BD_READONLY", None)
+            if original_yaml is None:
+                yaml_path.unlink(missing_ok=True)
+            else:
+                yaml_path.write_bytes(original_yaml)
+            if policy == "migration-freeze":
+                freeze_path.unlink(missing_ok=True)
+                (mayor / "town.json").unlink(missing_ok=True)
+                mayor.rmdir()
+    for path in [source_path, "links/memory-context"]:
+        require(show("mixed-policy-unchanged", path) == protected[path], f"write policy changed {path}")
+    refusal(capture.run("mixed-policy-ID-absent", ["show", "links/refused-mixed", "--json"]),
+            {"not_found"}, "policy-refused mixed Link absent")
+    capture.passed("readonly flag/environment/config and migration freeze block mixed Link creation/update before workspace changes")
+
+    # Same endpoints/Type are deliberately another Link, unlike the legacy
+    # blocking Dependency assertion. Explicit IDs are identity, not replay keys.
+    parallel = mutation("mixed-same-endpoint-multiedge", ["link", source_path, target_path,
+                        "--resource-type", related_type, "--id", "links/memory-context-second",
+                        "--properties", '{"note":"Second intentional context"}', "--unconditional-source"],
+                        "links/memory-context-second", source_path, target_path,
+                        {"note": "Second intentional context"})
+    require(parallel["link"]["id"] != updated["link"]["id"], "equal-endpoint Links were deduplicated")
+    expected_owned = sorted([updated["link"], parallel["link"]], key=lambda item: item["id"])
+    require(parallel["source"].get("owned") == expected_owned, "Memory lost an independently identified Link")
+    require(parallel["source"]["revision"] != current["revision"] and
+            parallel["source"]["version"] != current["version"], "second Link did not version owning Memory")
+    unconditional = mutation("mixed-unconditional-noop", ["update", "links/memory-context-second",
+                             "--properties", '{"note":"Second intentional context"}', "--unconditional", "--unconditional-source"],
+                             "links/memory-context-second", source_path, target_path,
+                             {"note": "Second intentional context"}, changed=False)
+    require(unconditional["link"] == parallel["link"] and unconditional["source"] == parallel["source"],
+            "unconditional no-op changed Link/source")
+    require(show("mixed-first-Link-still-independent", "links/memory-context") == updated["link"],
+            "second Link changed first Link")
+    require(show("mixed-final-target", target_path) == target and show("mixed-final-issue", issue_path) == issue,
+            "informational Memory changes affected target or Issue")
+    require(ready("mixed-ready-final") == ready_before, "informational Links affected readiness")
+    capture.passed("equal-endpoint informational Links remain independent; complete owned set and unconditional no-op survive fresh processes")
+    cleared = mutation("mixed-whole-properties-empty", ["update", "links/memory-context-second", "--properties", "{}",
+                       "--if-revision", parallel["link"]["revision"],
+                       "--if-source-revision", parallel["source"]["revision"]],
+                       "links/memory-context-second", source_path, target_path, {})
+    require(cleared["link"]["revision"] != parallel["link"]["revision"] and
+            cleared["link"]["version"] != parallel["link"]["version"], "whole replacement did not version changed Link")
+    require(cleared["source"]["revision"] != parallel["source"]["revision"] and
+            cleared["source"]["version"] != parallel["source"]["version"], "whole replacement did not version owning Memory")
+    require(cleared["source"].get("owned") == sorted([updated["link"], cleared["link"]], key=lambda item: item["id"]),
+            "whole properties replacement merged old properties or changed another owned Link")
+    require(show("mixed-replacement-target-unchanged", target_path) == target,
+            "whole properties replacement changed target")
+    capture.passed("whole properties replacement with empty object removes previous note and versions only Link and owning Memory")
+    write_json(capture.output / "mixed-link-versions.json", {
+        "issue_before": issue, "issue_informational_link": issue_updated["link"],
+        "memory_before": source, "memory_after_create": owner, "memory_after_property_update": current,
+        "memory_after_second_link": parallel["source"], "memory_after_empty_properties": cleared["source"],
+        "target_unchanged": target,
+        "limitation": "current reads and opaque version transitions; exact retained-state atomicity requires storage evidence; unlink and public History reads remain unavailable",
+    })
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--bd", required=True, type=Path, help="absolute installed bd executable")
@@ -668,7 +910,10 @@ def main():
     parser.add_argument("--total-timeout", type=float, default=900)
     parser.add_argument("--dependency-workflow", action="store_true",
                         help="also exercise installed blocking Dependency ownership, close and ready workflow")
+    parser.add_argument("--mixed-links", action="store_true",
+                        help="also exercise installed informational Links and property updates; implies --dependency-workflow")
     args = parser.parse_args()
+    args.dependency_workflow = args.dependency_workflow or args.mixed_links
     require(os.name == "posix", "POSIX process-group capture is required")
     require(args.bd.is_absolute() and args.bd.is_file() and os.access(args.bd, os.X_OK), "--bd must be an absolute executable")
     args.bd = args.bd.resolve()
@@ -687,6 +932,8 @@ def main():
         exercise(capture)
         if args.dependency_workflow:
             exercise_dependency_workflow(capture)
+        if args.mixed_links:
+            exercise_mixed_links(capture)
         require(sha256(args.bd) == capture.binary_hash, "binary changed during capture")
     except BaseException as exc:
         failure = f"{type(exc).__name__}: {exc}"
@@ -697,6 +944,7 @@ def main():
             "qualification_gaps": capture.qualification_gaps,
             "commands": capture.records, "private_root": str(capture.root),
             "dependency_workflow_requested": args.dependency_workflow,
+            "mixed_links_requested": args.mixed_links,
             "active_child_count": len(capture.active),
             "limits": ["this smoke harness alone cannot qualify C0",
                        "workspace digest and absent-ID reads do not prove unchanged remote database or atomic retained history/effects",
@@ -704,7 +952,8 @@ def main():
                        "no cancellation, crash, network-loss or uncertain-commit injection",
                        "no Linux/macOS platform-matrix qualification",
                        "no historical-read, migration, or performance claim",
-                       "Dependency workflow current-read checks do not establish complete retained-history or rollback atomicity"],
+                       "Dependency and mixed-Link current-read checks do not establish complete retained-history or rollback atomicity",
+                       "mixed Links cover create/show/property replacement; no unlink, incident listing, target pin, metadata or request replay claim"],
         })
     print(f"{'PASS' if failure is None else 'FAIL'} capture: {capture.output}", flush=True)
     if failure:

@@ -221,12 +221,16 @@ A disposable opt-in preview adds `bd init --graph-mode link --scope-url URL`,
 and current `bd show` for Beads and Links. Local blocking Dependencies use
 `bd dep add SOURCE TARGET` or `bd link SOURCE TARGET`; `bd close ISSUE` and
 `bd ready` exercise their Issue workflow. The source Issue owns its outgoing
-Dependencies and records them with its version.
+Dependencies and records them with its version. Informational Issue/Memory
+Links use an installed `--resource-type`; `bd update links/PATH --properties JSON`
+performs guarded property replacement. Memory owns its outgoing Links, so a
+Link change also advances that Memory version.
 
 The preview uses the ordinary embedded or shared-server Dolt database and
 existing Issue/Dependency tables. Existing Issue workspaces keep their current
-behavior. General Issue updates, informational Links, complete Memory/History
-support and production migration remain unavailable. See the
+behavior. General Issue updates, Link unlink, complete Memory/History support,
+BDP serving and production migration remain unavailable. See the
 [preview guide](engdocs/GRAPH_C0_PREVIEW.md),
 [Issue adapter notes](engdocs/GRAPH_ISSUE_ADAPTER_PREVIEW.md), and
-[Dependency workflow notes](engdocs/GRAPH_DEPENDENCY_WORKFLOW_PREVIEW.md) for exact limits.
+[Dependency workflow notes](engdocs/GRAPH_DEPENDENCY_WORKFLOW_PREVIEW.md), and
+[mixed-Link notes](engdocs/GRAPH_MIXED_LINK_PREVIEW.md) for exact limits.

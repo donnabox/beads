@@ -133,7 +133,7 @@ func (s *Store) Read(ctx context.Context, path string) (any, error) {
 			result, err = s.showMemoryInTx(ctx, tx, path)
 		case "issue":
 			result, err = s.showIssueInTx(ctx, tx, path)
-		case "dependency":
+		case "dependency", "informational":
 			result, err = s.showLinkInTx(ctx, tx, path)
 		default:
 			err = fmt.Errorf("%w: unsupported backing", ErrInvalidStore)

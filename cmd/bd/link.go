@@ -22,13 +22,17 @@ dependency (id2 blocks id1). Use --type to specify a different relationship.
 Examples:
   bd link bd-123 bd-456                    # bd-456 blocks bd-123
   bd link bd-123 bd-456 --type related     # bd-123 related to bd-456
-  bd link bd-123 bd-456 --type parent-child`,
+  bd link bd-123 bd-456 --type parent-child
+
+In an experimental graph workspace, --resource-type accepts an installed Link
+Type URL. Informational Links use source → target and admit --id and --properties.
+Blocking Dependencies keep the meaning above: the source depends on the target.`,
 	Args:          cobra.ExactArgs(2),
 	SilenceUsage:  true,
 	SilenceErrors: true,
 	RunE: func(cmd *cobra.Command, args []string) error {
 		if graphPreviewActive {
-			return runGraphPreviewAddDependency(cmd, args)
+			return runGraphPreviewLink(cmd, args)
 		}
 		CheckReadonly("link")
 

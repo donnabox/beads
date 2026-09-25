@@ -178,9 +178,20 @@ func (s *Store) requireIssueInTx(ctx context.Context, tx *sql.Tx, path string) (
 	return s.showIssueInTx(ctx, tx, path)
 }
 
-// currentLinkInTx reads current state exclusively from the catalog and the
-// ordinary Dependency row. A retained snapshot never substitutes for authority.
+// currentLinkInTx selects the authoritative specialized or generic Link row.
+// A retained snapshot never substitutes for current authority.
 func (s *Store) currentLinkInTx(ctx context.Context, tx *sql.Tx, path string) (LinkRecord, error) {
+	var selectedBacking string
+	if err := tx.QueryRowContext(ctx, `SELECT backing FROM graph_preview_catalog WHERE path=?`, path).Scan(&selectedBacking); err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return LinkRecord{}, ErrNotFound
+		}
+		return LinkRecord{}, err
+	}
+	if selectedBacking == "informational" {
+		return s.currentInformationalLinkInTx(ctx, tx, path)
+	}
+
 	var kind, typ, revision, state, backing, key string
 	err := tx.QueryRowContext(ctx, `SELECT resource_kind,type_url,revision,allocation_state,backing,backing_key FROM graph_preview_catalog WHERE path=?`, path).Scan(&kind, &typ, &revision, &state, &backing, &key)
 	if errors.Is(err, sql.ErrNoRows) {
