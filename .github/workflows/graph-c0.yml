@@ -2,7 +2,7 @@ name: Graph C0 preview
 
 on:
   push:
-    branches: [codex/janet-c0-delivery-20260923, codex/janet-issue-adapter-20260924]
+    branches: [codex/janet-c0-delivery-20260923, codex/janet-issue-adapter-20260924, codex/janet-dependency-workflow-20260925]
   workflow_dispatch:
 
 permissions:
@@ -33,7 +33,7 @@ jobs:
       - name: Qualify embedded command sequence
         run: |
           python3 scripts/graph-c0-smoke.py --bd "$RUNNER_TEMP/c0-bin/bd" \
-            --output-dir "$RUNNER_TEMP/c0-evidence/embedded"
+            --output-dir "$RUNNER_TEMP/c0-evidence/embedded" --dependency-workflow
       - name: Check CLI admission and write policy
         run: |
           BEADS_TEST_BD_BINARY="$RUNNER_TEMP/c0-bin/bd" TEST_VERBOSE=1 TEST_TIMEOUT=5m \
@@ -70,7 +70,7 @@ jobs:
           PY
           python3 scripts/graph-c0-smoke.py --bd "$RUNNER_TEMP/c0-bin/bd" \
             --output-dir "$RUNNER_TEMP/c0-evidence/server" \
-            --server-port 15440 --server-root "$RUNNER_TEMP/c0-server"
+            --server-port 15440 --server-root "$RUNNER_TEMP/c0-server" --dependency-workflow
           BEADS_GRAPH_TEST_SERVER_PORT=15440 TEST_VERBOSE=1 TEST_TIMEOUT=5m \
             ./scripts/test.sh ./internal/storage/graphstore ./internal/configfile \
               ./internal/storage/issueops ./internal/storage/schema \

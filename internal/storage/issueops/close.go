@@ -388,5 +388,11 @@ func closeIssueInTx(ctx context.Context, tx DBTX, id string, reason, actor, sess
 		return nil, err
 	}
 
+	// Jim Wordelman's retained-history hook (64becbc): close mints once,
+	// after derived blocked-state maintenance; already-closed returns above.
+	if err := RecordVersionInTx(ctx, tx, id, actor); err != nil {
+		return nil, err
+	}
+
 	return &CloseResult{IsWisp: isWisp, IssueRowsChanged: !isWisp || recompute.IssueRowsChanged}, nil
 }

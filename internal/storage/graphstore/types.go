@@ -11,7 +11,7 @@ import (
 )
 
 // SchemaVersion identifies this explicitly experimental storage layout.
-const SchemaVersion = 2
+const SchemaVersion = 3
 
 // Binding is the exact identity expected by the local workspace metadata.
 // WorkspaceID is its canonical filesystem path; C0 does not support moving it.
@@ -96,3 +96,41 @@ var (
 	ErrConflict       = errors.New("graph transaction conflicted")
 	ErrOutcomeUnknown = errors.New("graph transaction outcome is unknown; do not replay automatically")
 )
+
+// DependencyRequest asserts one blocking Dependency between live local Issues.
+// Path is an optional never-reused Link allocation; empty allocates a fresh path.
+type DependencyRequest struct {
+	// ExpectedSourceRevision guards generic authoring; empty retains the legacy command contract.
+	ExpectedSourceRevision string
+	SourcePath             string
+	TargetPath             string
+	Path                   string
+	Actor                  string
+}
+
+// LinkRecord projects the sole authoritative Dependency row. The preview admits
+// only unpinned local Issue endpoints and empty Link properties.
+type LinkRecord struct {
+	ID          string         `json:"id"`
+	Type        string         `json:"type"`
+	Revision    string         `json:"revision"`
+	Version     string         `json:"version"`
+	Source      string         `json:"source"`
+	Target      string         `json:"target"`
+	Properties  map[string]any `json:"properties"`
+	Attribution Attribution    `json:"attribution"`
+}
+
+type DependencyResult struct {
+	Link    LinkRecord  `json:"link"`
+	Source  IssueRecord `json:"source"`
+	Changed bool        `json:"changed"`
+}
+
+type IssueMutationResult struct {
+	Issue   IssueRecord `json:"issue"`
+	Changed bool        `json:"changed"`
+}
+
+// PreviewOwnedLinkLimit is a disposable descriptor budget, not a production limit.
+const PreviewOwnedLinkLimit = 1000

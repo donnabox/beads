@@ -41,7 +41,7 @@ var previewDDL = []string{
         PRIMARY KEY (path, version))`,
 	`CREATE TABLE graph_preview_issue_versions (
         path VARBINARY(1024) NOT NULL, version VARBINARY(32) NOT NULL,
-        issue_id VARBINARY(255) NOT NULL, issue_revision BIGINT NOT NULL,
+        issue_id VARBINARY(255) NOT NULL, issue_revision BIGINT NOT NULL, owned LONGBLOB NOT NULL,
         PRIMARY KEY (path, version), UNIQUE KEY one_issue_version (issue_id, issue_revision))`,
 }
 
@@ -57,12 +57,32 @@ func memoryDescriptor(scope string) (graph.TypeDescriptor, error) {
 }
 
 // IssueTypeURL deliberately avoids settling the nominal Task/Bug discussion.
-func IssueTypeURL(scope string) string { return scope + "types/preview-issue-v1" }
+func IssueTypeURL(scope string) string { return scope + "types/preview-issue-v2" }
 
 func issueDescriptor(scope string) (graph.TypeDescriptor, error) {
+	owns, err := graph.NewOwnedLinkDecl(DependencyTypeURL(scope), "", PreviewOwnedLinkLimit)
+	if err != nil {
+		return graph.TypeDescriptor{}, err
+	}
 	return graph.NewTypeDescriptor(graph.TypeDescriptorSpec{
-		ID: IssueTypeURL(scope), Name: "Experimental Issue v1", Describes: graph.KindBead,
-		Description: "Disposable specialized Issue adapter. Issue classification remains a property. This preview admits only durable Issue creation with title, description, status, priority, classification and labels, without relationships or owned Links. It does not settle production Issue Types or complete History.",
+		ID: IssueTypeURL(scope), Name: "Experimental Issue v2", Describes: graph.KindBead,
+		Description:  "Disposable specialized Issue adapter. Issue classification remains a property. Admits durable create, checked close, ready work and up to 1000 outgoing blocking Dependencies owned by their source. Complete canonical owned-Link state is retained with each Issue version. No production Type or complete History contract is established.",
+		OwnsOutgoing: []graph.OwnedLinkDecl{owns},
+	})
+}
+
+// DependencyTypeURL is a registered private blocking-Dependency Type.
+func DependencyTypeURL(scope string) string { return scope + "types/preview-blocks-v1" }
+
+func dependencyDescriptor(scope string) (graph.TypeDescriptor, error) {
+	endpoint, err := graph.NewEndpointConstraint([]string{IssueTypeURL(scope)}, graph.ExternalNone)
+	if err != nil {
+		return graph.TypeDescriptor{}, err
+	}
+	return graph.NewTypeDescriptor(graph.TypeDescriptorSpec{
+		ID: DependencyTypeURL(scope), Name: "Experimental blocking Dependency v1", Describes: graph.KindLink,
+		Description: "Disposable Dependency adapter. Unpinned live local durable Issue endpoints; empty properties. The source depends on the target and owns this Link. Issue-domain pair uniqueness applies. No generic multiedge or production Dependency contract is established.",
+		Source:      &endpoint, Target: &endpoint,
 	})
 }
 
@@ -103,6 +123,10 @@ func installPreview(ctx context.Context, conn *sql.Conn, o Options) (err error) 
 	if err != nil {
 		return err
 	}
+	dependencyType, err := dependencyDescriptor(o.Binding.ScopeURL)
+	if err != nil {
+		return err
+	}
 	token, err := freshToken()
 	if err != nil {
 		return err
@@ -127,6 +151,9 @@ func installPreview(ctx context.Context, conn *sql.Conn, o Options) (err error) 
 		return err
 	}
 	if _, err = tx.ExecContext(ctx, `INSERT INTO graph_preview_types (name, descriptor, fingerprint) VALUES ('issue', ?, ?)`, issueType.CanonicalJSON(), issueType.Fingerprint()); err != nil {
+		return err
+	}
+	if _, err = tx.ExecContext(ctx, `INSERT INTO graph_preview_types (name, descriptor, fingerprint) VALUES ('dependency', ?, ?)`, dependencyType.CanonicalJSON(), dependencyType.Fingerprint()); err != nil {
 		return err
 	}
 	if _, err = tx.ExecContext(ctx, "INSERT INTO config (`key`,value) VALUES ('issue_prefix', ?)", prefix); err != nil {
@@ -161,7 +188,7 @@ func checkBinding(ctx context.Context, tx *sql.Tx, o Options) error {
 	for _, definition := range []struct {
 		name  string
 		build func(string) (graph.TypeDescriptor, error)
-	}{{"memory", memoryDescriptor}, {"issue", issueDescriptor}} {
+	}{{"memory", memoryDescriptor}, {"issue", issueDescriptor}, {"dependency", dependencyDescriptor}} {
 		var descriptor []byte
 		var fingerprint string
 		if err := tx.QueryRowContext(ctx, `SELECT descriptor, fingerprint FROM graph_preview_types WHERE name = ?`, definition.name).Scan(&descriptor, &fingerprint); err != nil {
@@ -187,7 +214,7 @@ func checkBinding(ctx context.Context, tx *sql.Tx, o Options) error {
 		`SELECT path, resource_kind, type_url, revision, allocation_state, backing, backing_key FROM graph_preview_catalog LIMIT 0`,
 		`SELECT path, properties FROM graph_preview_payloads LIMIT 0`,
 		`SELECT path, version, snapshot, actor FROM graph_preview_versions LIMIT 0`,
-		`SELECT path, version, issue_id, issue_revision FROM graph_preview_issue_versions LIMIT 0`,
+		`SELECT path, version, issue_id, issue_revision, owned FROM graph_preview_issue_versions LIMIT 0`,
 		`SELECT issue_id, revision, durable_state, attribution_status FROM issue_versions LIMIT 0`,
 	} {
 		rows, err := tx.QueryContext(ctx, query)

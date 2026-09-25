@@ -1,5 +1,7 @@
 # Experimental Issue create/read adapter
 
+The original create/read slice is described below. The [Dependency workflow extension](GRAPH_DEPENDENCY_WORKFLOW_PREVIEW.md) advances the disposable schema to version 3 and the Issue descriptor to v2, adding owned blocking Dependencies, close and ready. Statements about v1/empty ownership below describe the original PR #20 boundary.
+
 This is a reversible extension of [C0 PR #19](https://github.com/donnabox/beads/pull/19), within the original September 23–25 attempt. It begins W2 of [the fork delivery plan](https://github.com/donnabox/beads/pull/18); it does not complete W1, W2 or M1. No production contract or migration is accepted by this branch.
 
 ## Observable slice
