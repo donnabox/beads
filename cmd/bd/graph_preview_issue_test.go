@@ -67,7 +67,7 @@ func TestGraphPreviewIssueCreateReopen(t *testing.T) {
 		}
 		graphPolicyCLI(t, bd, work, home, nil, "not_found", "show", "beads/refused", "--json")
 	}
-	// Version 1 is explicitly disposable; this binary must not silently
+	// Version 2 is explicitly disposable; this binary must not silently
 	// adopt its marker or run a migration during an ordinary read.
 	metadataPath := filepath.Join(work, ".beads", "metadata.json")
 	metadata, err := os.ReadFile(metadataPath)
@@ -78,13 +78,13 @@ func TestGraphPreviewIssueCreateReopen(t *testing.T) {
 	if err := json.Unmarshal(metadata, &oldFormat); err != nil {
 		t.Fatal(err)
 	}
-	oldFormat["graph_schema_version"] = 1
+	oldFormat["graph_schema_version"] = 2
 	metadata, err = json.Marshal(oldFormat)
 	if err != nil {
 		t.Fatal(err)
 	}
 	writeFile(t, metadataPath, metadata)
-	writeFile(t, filepath.Join(work, ".beads", graphPreviewMarker), []byte("link-preview-v1\n"))
+	writeFile(t, filepath.Join(work, ".beads", graphPreviewMarker), []byte("link-preview-v2\n"))
 	before := legacyUpgradeTreeDigest(t, work)
 	graphPolicyCLI(t, bd, work, home, nil, "graph_not_initialized", "show", "beads/work", "--json")
 	if after := legacyUpgradeTreeDigest(t, work); after != before {

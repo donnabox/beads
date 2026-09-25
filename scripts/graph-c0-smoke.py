@@ -274,7 +274,7 @@ def exercise(capture):
     require(config.get("graph_mode") == "link", "missing graph mode marker")
     require(config.get("graph_scope_url") == SCOPE, "missing Scope binding")
     require(config.get("graph_workspace") == str(metadata.parent.resolve()), "missing workspace binding")
-    require(config.get("graph_schema_version") == 2 and config.get("graph_ready") is True,
+    require(config.get("graph_schema_version") == 3 and config.get("graph_ready") is True,
             "graph schema/readiness was not published")
     require(bool(config.get("graph_authority_id")), "missing authority binding")
     for name, body, title in [("plan", "Remember the deployment plan", "Plan"),
@@ -470,6 +470,194 @@ def exercise(capture):
             yaml_path.write_bytes(original_yaml)
 
 
+def exercise_dependency_workflow(capture):
+    """Installed-process wiring, ownership and workflow evidence, not History qualification."""
+    release_id = "beads/release"
+    prerequisite_id = "beads/prerequisite"
+    dependency_type = SCOPE + "types/preview-blocks-v1"
+
+    def show(label, path):
+        return envelope(capture.success(label, ["show", path, "--json"]))
+
+    def issue(label, path, title):
+        value = envelope(capture.success(label, ["create", title, "--id", path, "--json"]))
+        require(value.get("id") == SCOPE + path, "Issue canonical identity mismatch")
+        require(value.get("type") == SCOPE + "types/preview-issue-v2", "wrong ownership-aware Issue descriptor")
+        require(value.get("properties", {}).get("status") == "open", "new Issue not open")
+        require(value.get("owned") == [], "new Issue already owns Links")
+        require(value.get("revision") and value.get("version"), "Issue lacks revision/version")
+        return value
+
+    def ready(label, expected):
+        value = capture.success(label, ["ready", "--json"])
+        require(isinstance(value, dict) and value.get("schemaVersion") == 1 and value.get("preview") is True,
+                "ready lacks preview envelope")
+        items = value.get("result")
+        require(isinstance(items, list), "ready result is not an array")
+        ids = [item.get("id") for item in items]
+        require(len(ids) == len(set(ids)), "ready returned duplicate Issues")
+        require(set(ids) == {SCOPE + path for path in expected}, f"wrong ready set: {ids}")
+        require(all(item.get("type") == SCOPE + "types/preview-issue-v2" for item in items),
+                "ready returned non-Issue records")
+        return items
+
+    def dependency(label, argv, source, target, changed):
+        result = envelope(capture.success(label, [*argv, "--json"]))
+        require(result.get("changed") is changed, f"{label}: wrong changed indication")
+        link = result.get("link", {})
+        require(isinstance(link.get("id"), str) and link["id"].startswith(SCOPE + "links/") and
+                len(link["id"]) > len(SCOPE + "links/"), "Dependency lacks canonical Link identity")
+        require(link.get("type") == dependency_type, "Dependency has wrong registered Type")
+        require(link.get("source") == SCOPE + source and link.get("target") == SCOPE + target,
+                "Dependency endpoints changed")
+        require(link.get("revision") and link.get("version"), "Link lacks revision/version")
+        require(link.get("properties") == {}, "unexpected Dependency properties")
+        owner = result.get("source", {})
+        require(owner.get("id") == SCOPE + source and owner.get("owned") == [link],
+                "source does not own exact canonical Link state")
+        require(show(label + "-link-reopen", link["id"]) == link, "fresh process changed Link")
+        require(show(label + "-source-reopen", source) == owner, "fresh process changed source")
+        return result
+
+    release = issue("workflow-release-create", release_id, "Release the deployment")
+    prerequisite = issue("workflow-prerequisite-create", prerequisite_id, "Verify deployment")
+    for path, body, title in [("beads/workflow-plan", "Deployment context", "Deployment plan"),
+                              ("beads/workflow-decision", "Deploy after verification", "Decision")]:
+        created = record(capture.success("workflow-memory-create", remember(path, body, title)), path, body, title)
+        require(show("workflow-memory-reopen", path) == created, "workflow Memory changed after reopen")
+    ready("workflow-ready-before", ["beads/work", release_id, prerequisite_id])
+    capture.passed("normal creation of two workflow Issues and two Memories; ready includes Issues only")
+
+    added = dependency("workflow-dep-add", ["dep", "add", release_id, prerequisite_id],
+                       release_id, prerequisite_id, True)
+    owner = added["source"]
+    require(owner["revision"] != release["revision"] and owner["version"] != release["version"],
+            "adding owned Dependency did not advance source revision and version")
+    require(owner["properties"] == release["properties"], "adding Dependency changed Issue properties")
+    require(show("workflow-target-unchanged", prerequisite_id) == prerequisite,
+            "adding incoming Dependency changed target")
+    ready("workflow-ready-blocked", ["beads/work", prerequisite_id])
+    capture.passed("blocking Link creation advances owning source, leaves target unchanged and removes source from ready")
+
+    for label, argv in [
+        ("workflow-dep-repeat", ["dep", "add", release_id, prerequisite_id]),
+        ("workflow-dep-alias-repeat", ["dep", "add", release_id, prerequisite_id, "--type", "blocked-by"]),
+        ("workflow-generic-repeat", ["link", release_id, prerequisite_id, "--resource-type", dependency_type,
+                                      "--if-source-revision", owner["revision"]]),
+        ("workflow-generic-unconditional-repeat", ["link", release_id, prerequisite_id,
+                                                    "--resource-type", dependency_type, "--unconditional-source"]),
+    ]:
+        repeated = dependency(label, argv, release_id, prerequisite_id, False)
+        require(repeated["link"] == added["link"] and repeated["source"] == owner,
+                "repeated relationship assertion minted or changed graph state")
+    capture.passed("familiar, alias and generic repeated assertions preserve Link identity and source version")
+
+    protected = {release_id: owner, prerequisite_id: prerequisite,
+                 "beads/workflow-plan": show("workflow-memory-before-refusals", "beads/workflow-plan")}
+    refusals = [
+        ("workflow-required-source-guard", ["link", release_id, prerequisite_id,
+                                            "--resource-type", dependency_type], {"invalid_selector"}),
+        ("workflow-stale-source-guard", ["link", release_id, prerequisite_id,
+                                         "--resource-type", dependency_type, "--if-source-revision", release["revision"]],
+         {"revision_conflict"}),
+        ("workflow-conflicting-source-guards", ["link", release_id, prerequisite_id,
+                                               "--resource-type", dependency_type, "--if-source-revision", owner["revision"],
+                                               "--unconditional-source"], {"invalid_selector"}),
+        ("workflow-blocked-close", ["close", release_id], {"constraint_violation"}),
+        ("workflow-cycle", ["dep", "add", prerequisite_id, release_id], {"invalid_properties"}),
+        ("workflow-memory-source", ["dep", "add", "beads/workflow-plan", prerequisite_id], {"invalid_properties"}),
+        ("workflow-memory-target", ["dep", "add", release_id, "beads/workflow-plan"], {"invalid_properties"}),
+        ("workflow-memory-close", ["close", "beads/workflow-plan"], {"invalid_properties"}),
+        ("workflow-unsupported-deptype", ["dep", "add", release_id, prerequisite_id, "--type", "related"],
+         {"capability_unavailable"}),
+        ("workflow-unregistered-type", ["link", release_id, prerequisite_id, "--resource-type", SCOPE + "types/unknown",
+                                         "--unconditional-source"],
+         {"capability_unavailable"}),
+        ("workflow-force-close", ["close", release_id, "--force"], {"capability_unavailable"}),
+    ]
+    for label, argv, codes in refusals:
+        refusal(capture.run(label, [*argv, "--json"]), codes, label)
+        for path, expected in protected.items():
+            require(show(label + "-unchanged", path) == expected, f"{label} changed {path}")
+        require(show(label + "-link-unchanged", added["link"]["id"]) == added["link"],
+                f"{label} changed existing Link")
+    require(show("workflow-link-after-refusals", added["link"]["id"]) == added["link"],
+            "refused operations changed existing Link")
+    ready("workflow-ready-after-refusals", ["beads/work", prerequisite_id])
+    capture.passed("missing/stale/conflicting source guards, blocked close, cycle, Memory endpoints and unsupported mutations refuse without observable record changes")
+
+    for value, code in [("1", "capability_unavailable"), ("malformed", "invalid_properties")]:
+        previous = capture.env.get("BEADS_MAX_ROWS")
+        capture.env["BEADS_MAX_ROWS"] = value
+        try:
+            before = tree_digest(capture.work)
+            refusal(capture.run("workflow-ready-env-limit-" + value, ["ready", "--json"]),
+                    {code}, "ready environment row limit")
+            require(tree_digest(capture.work) == before, "ready limit refusal changed workspace bytes")
+        finally:
+            if previous is None:
+                capture.env.pop("BEADS_MAX_ROWS", None)
+            else:
+                capture.env["BEADS_MAX_ROWS"] = previous
+        for path, expected in protected.items():
+            require(show("workflow-ready-limit-unchanged", path) == expected,
+                    f"ready environment limit {value} changed {path}")
+        require(show("workflow-ready-limit-link-unchanged", added["link"]["id"]) == added["link"],
+                "ready environment limit changed existing Link")
+    ready("workflow-ready-after-env-limit", ["beads/work", prerequisite_id])
+    capture.passed("configured nonzero and malformed ready row limits refuse without observable changes")
+
+    closed = envelope(capture.success("workflow-prerequisite-close", ["close", prerequisite_id, "--json"]))
+    require(closed.get("changed") is True, "first close was not a change")
+    closed_issue = closed.get("issue", {})
+    require(closed_issue.get("id") == prerequisite["id"] and closed_issue.get("owned") == [],
+            "close changed target identity or ownership")
+    require(closed_issue.get("properties", {}).get("status") == "closed", "close did not close Issue")
+    require(closed_issue.get("revision") != prerequisite["revision"] and
+            closed_issue.get("version") != prerequisite["version"], "close did not advance target revision/version")
+    require(show("workflow-closed-reopen", prerequisite_id) == closed_issue, "closed Issue changed on reopen")
+    require(show("workflow-owner-after-target-close", release_id) == owner,
+            "derived readiness unexpectedly changed source version or owned Link")
+    ready("workflow-ready-unblocked", ["beads/work", release_id])
+    repeated_close = envelope(capture.success("workflow-close-repeat", ["close", prerequisite_id, "--json"]))
+    require(repeated_close.get("changed") is False and repeated_close.get("issue") == closed_issue,
+            "repeated close minted a new version")
+    capture.passed("closing prerequisite restores source readiness; repeated close is a version-preserving no-op")
+
+    # The baseline Issue proves the generic spelling can create a new edge,
+    # rather than only recognizing the familiar spelling's existing edge.
+    generic_source = show("workflow-generic-source-before", "beads/work")
+    generic = dependency("workflow-generic-create", ["link", "beads/work", prerequisite_id,
+                         "--resource-type", dependency_type, "--if-source-revision", generic_source["revision"]],
+                         "beads/work", prerequisite_id, True)
+    require(generic["link"]["id"] != added["link"]["id"], "independent relationship reused Link identity")
+    require(show("workflow-closed-target-still-unchanged", prerequisite_id) == closed_issue,
+            "generic creation changed its target")
+    ready("workflow-ready-final", ["beads/work", release_id])
+    capture.passed("generic spelling creates a distinct canonical Link through the same workflow adapter")
+
+    metadata = capture.work / ".beads" / "metadata.json"
+    original = metadata.read_bytes()
+    try:
+        config = json.loads(original)
+        config["graph_schema_version"] = 2
+        write_json(metadata, config)
+        before = tree_digest(capture.work)
+        refusal(capture.run("workflow-old-preview-refused", ["close", release_id, "--json"]),
+                {"graph_not_initialized"}, "old preview schema")
+        require(tree_digest(capture.work) == before, "old preview refusal changed workspace bytes")
+    finally:
+        metadata.write_bytes(original)
+    require(show("workflow-current-preview-reopen", release_id) == owner, "schema refusal changed owner")
+    capture.passed("previous preview metadata refuses without migration or current-state effects")
+    write_json(capture.output / "workflow-versions.json", {
+        "release_before_dependency": release, "release_after_dependency": owner,
+        "prerequisite_before_close": prerequisite, "prerequisite_after_close": closed_issue,
+        "blocking_link": added["link"], "generic_created_link": generic["link"],
+        "limitation": "observed current records and opaque version transitions; historical retrieval and retained-state atomicity require separate evidence",
+    })
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--bd", required=True, type=Path, help="absolute installed bd executable")
@@ -478,6 +666,8 @@ def main():
     parser.add_argument("--server-root", type=Path, help="existing disposable server data root (provenance only)")
     parser.add_argument("--command-timeout", type=float, default=120)
     parser.add_argument("--total-timeout", type=float, default=900)
+    parser.add_argument("--dependency-workflow", action="store_true",
+                        help="also exercise installed blocking Dependency ownership, close and ready workflow")
     args = parser.parse_args()
     require(os.name == "posix", "POSIX process-group capture is required")
     require(args.bd.is_absolute() and args.bd.is_file() and os.access(args.bd, os.X_OK), "--bd must be an absolute executable")
@@ -495,6 +685,8 @@ def main():
     failure = None
     try:
         exercise(capture)
+        if args.dependency_workflow:
+            exercise_dependency_workflow(capture)
         require(sha256(args.bd) == capture.binary_hash, "binary changed during capture")
     except BaseException as exc:
         failure = f"{type(exc).__name__}: {exc}"
@@ -504,13 +696,15 @@ def main():
             "passed": failure is None, "c0_qualified": False, "failure": failure, "checks": capture.passes,
             "qualification_gaps": capture.qualification_gaps,
             "commands": capture.records, "private_root": str(capture.root),
+            "dependency_workflow_requested": args.dependency_workflow,
             "active_child_count": len(capture.active),
             "limits": ["this smoke harness alone cannot qualify C0",
                        "workspace digest and absent-ID reads do not prove unchanged remote database or atomic retained history/effects",
                        "process launch barrier does not prove internal transaction overlap",
                        "no cancellation, crash, network-loss or uncertain-commit injection",
                        "no Linux/macOS platform-matrix qualification",
-                       "no historical-read, graph-Link, migration, or performance claim"],
+                       "no historical-read, migration, or performance claim",
+                       "Dependency workflow current-read checks do not establish complete retained-history or rollback atomicity"],
         })
     print(f"{'PASS' if failure is None else 'FAIL'} capture: {capture.output}", flush=True)
     if failure:

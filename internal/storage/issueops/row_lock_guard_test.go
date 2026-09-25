@@ -141,10 +141,11 @@ var funcNameExemptions = map[string]string{
 	"resolveOneConflictRow": "whole-row `theirs` adoption: the adopted row_lock already vouches for the (identical) adopted content",
 
 	// Reused from Jim's 64becbc writer integration. This preview activates
-	// history only after ExecuteCreate's primary INSERT has stamped row_lock
-	// in the same transaction. The retained pointer is bookkeeping; stamping
-	// again would invalidate the RowVersion already captured by that mutation.
-	"recordVersionAtInTx": "advances only current_revision after the primary mutation stamps row_lock; a second stamp would invalidate the mutation's captured RowVersion",
+	// history within the transaction after its primary create/Dependency/close
+	// operation. The retained pointer is bookkeeping, with updated_at explicitly
+	// preserved; stamping again would change RowVersion without another primary
+	// mutation (or invalidate the version already captured by that mutation).
+	"recordVersionAtInTx": "advances only current_revision and preserves updated_at; this bookkeeping must not stamp another row_lock",
 }
 
 // TestAllIssueRowWritesStampRowLock is the load-bearing completeness guard for

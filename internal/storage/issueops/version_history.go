@@ -413,7 +413,10 @@ func recordVersionAtInTx(ctx context.Context, tx DBTX, issueID, actor string, at
 	}
 
 	if _, err := tx.ExecContext(ctx,
-		"UPDATE issues SET current_revision = ? WHERE id = ?", newRevision, issueID,
+		// Updating this bookkeeping column must not fire updated_at's ON UPDATE
+		// timestamp after durableState was captured. Otherwise the retained
+		// snapshot differs from its current Issue immediately after minting.
+		"UPDATE issues SET current_revision = ?, updated_at = updated_at WHERE id = ?", newRevision, issueID,
 	); err != nil {
 		return fmt.Errorf("versioned history: advance current_revision for %s: %w", issueID, err)
 	}

@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"context"
 	"database/sql"
-	"encoding/json"
 	"errors"
 	"fmt"
 	"reflect"
@@ -95,7 +94,7 @@ func (s *Store) CreateIssue(ctx context.Context, path string, request publicops.
 		}
 		// This is an identity mapping, not a second snapshot. The local ordinal
 		// never escapes as the graph Version or as a portable History address.
-		if _, err := tx.ExecContext(ctx, `INSERT INTO graph_preview_issue_versions (path,version,issue_id,issue_revision) VALUES (?,?,?,?)`, path, revision, created.Issue.ID, ordinal); err != nil {
+		if _, err := tx.ExecContext(ctx, `INSERT INTO graph_preview_issue_versions (path,version,issue_id,issue_revision,owned) VALUES (?,?,?,?,'[]')`, path, revision, created.Issue.ID, ordinal); err != nil {
 			return err
 		}
 		if err := s.afterStage("retained"); err != nil {
@@ -113,7 +112,7 @@ func (s *Store) CreateIssue(ctx context.Context, path string, request publicops.
 // Read dispatches the immutable backing selection and reads its authoritative
 // state in one snapshot. Unsupported resource families remain explicit errors.
 func (s *Store) Read(ctx context.Context, path string) (any, error) {
-	if err := validatePath(path); err != nil {
+	if err := validateResourcePath(path); err != nil {
 		return nil, err
 	}
 	var result any
@@ -134,6 +133,8 @@ func (s *Store) Read(ctx context.Context, path string) (any, error) {
 			result, err = s.showMemoryInTx(ctx, tx, path)
 		case "issue":
 			result, err = s.showIssueInTx(ctx, tx, path)
+		case "dependency":
+			result, err = s.showLinkInTx(ctx, tx, path)
 		default:
 			err = fmt.Errorf("%w: unsupported backing", ErrInvalidStore)
 		}
@@ -181,13 +182,13 @@ func (s *Store) showIssueInTx(ctx context.Context, tx *sql.Tx, path string) (Iss
 	if err != nil {
 		return IssueRecord{}, fmt.Errorf("%w: Issue backing: %v", ErrInvalidStore, err)
 	}
-	var snapshot []byte
+	var snapshot, retainedOwned []byte
 	var actor, status string
 	var at time.Time
 	var ordinal, current int64
-	err = tx.QueryRowContext(ctx, `SELECT m.issue_revision,v.durable_state,v.change_actor,v.attribution_status,v.change_at,i.current_revision
+	err = tx.QueryRowContext(ctx, `SELECT m.issue_revision,v.durable_state,v.change_actor,v.attribution_status,v.change_at,i.current_revision,m.owned
         FROM graph_preview_issue_versions m JOIN issue_versions v ON v.issue_id=m.issue_id AND v.revision=m.issue_revision
-        JOIN issues i ON i.id=m.issue_id WHERE m.path=? AND m.version=? AND m.issue_id=?`, path, revision, issueID).Scan(&ordinal, &snapshot, &actor, &status, &at, &current)
+        JOIN issues i ON i.id=m.issue_id WHERE m.path=? AND m.version=? AND m.issue_id=?`, path, revision, issueID).Scan(&ordinal, &snapshot, &actor, &status, &at, &current, &retainedOwned)
 	if err != nil {
 		return IssueRecord{}, fmt.Errorf("%w: Issue retained mapping: %v", ErrInvalidStore, err)
 	}
@@ -195,10 +196,24 @@ func (s *Store) showIssueInTx(ctx context.Context, tx *sql.Tx, path string) (Iss
 	if err != nil {
 		return IssueRecord{}, err
 	}
-	if current != ordinal || ordinal < 1 || !bytes.Equal(snapshot, canonical) || issueops.IsWisp(issue) || len(issue.Dependencies) > 0 || len(issue.Comments) > 0 || issue.ID != issueID ||
+	if current != ordinal || ordinal < 1 || !bytes.Equal(snapshot, canonical) || issueops.IsWisp(issue) || len(issue.Comments) > 0 || issue.ID != issueID ||
 		(actor == "" && status != "unknown") || (actor != "" && status != "claimed") {
 		return IssueRecord{}, fmt.Errorf("%w: Issue current/retained state differs or exceeds preview", ErrInvalidStore)
 	}
+	owned, err := s.ownedLinksInTx(ctx, tx, issueID)
+	if err != nil {
+		return IssueRecord{}, err
+	}
+	canonicalOwned, err := canonicalJSON(owned)
+	if err != nil {
+		return IssueRecord{}, err
+	}
+	if !bytes.Equal(retainedOwned, canonicalOwned) {
+		return IssueRecord{}, fmt.Errorf("%w: Issue owned state differs from retained version", ErrInvalidStore)
+	}
+	// The private v2 graph projection expresses dependencies once, canonically.
+	// Jim's authoritative Issue snapshot still retains its original domain shape.
+	issue.Dependencies = nil
 	return IssueRecord{ID: graph.CanonicalURL(s.options.Binding.ScopeURL, path), Type: typ, Revision: revision, Version: revision,
-		Properties: issue, Owned: []json.RawMessage{}, Attribution: Attribution{Actor: actor, Status: status, RecordedAt: at.UTC().Format(time.RFC3339Nano)}}, nil
+		Properties: issue, Owned: owned, Attribution: Attribution{Actor: actor, Status: status, RecordedAt: at.UTC().Format(time.RFC3339Nano)}}, nil
 }

@@ -217,11 +217,16 @@ This is useful for:
 ### Experimental graph workspace preview
 
 A disposable opt-in preview adds `bd init --graph-mode link --scope-url URL`,
-`bd remember BODY --id beads/PATH --title TITLE`,
-`bd create TITLE --id beads/PATH`, and `bd show beads/PATH`.
-It uses the ordinary embedded or shared-server Dolt database. Existing Issue
-workspaces keep their current behavior. The experimental Issue create/read
-adapter reuses their storage and retained-history machinery. Issue updates,
-Dependencies, Links, complete Memory/History support and production migration
-remain unavailable. See the [preview guide](engdocs/GRAPH_C0_PREVIEW.md) and
-[Issue adapter notes](engdocs/GRAPH_ISSUE_ADAPTER_PREVIEW.md) for exact limits.
+`bd remember BODY --id beads/PATH --title TITLE`, `bd create TITLE --id beads/PATH`,
+and current `bd show` for Beads and Links. Local blocking Dependencies use
+`bd dep add SOURCE TARGET` or `bd link SOURCE TARGET`; `bd close ISSUE` and
+`bd ready` exercise their Issue workflow. The source Issue owns its outgoing
+Dependencies and records them with its version.
+
+The preview uses the ordinary embedded or shared-server Dolt database and
+existing Issue/Dependency tables. Existing Issue workspaces keep their current
+behavior. General Issue updates, informational Links, complete Memory/History
+support and production migration remain unavailable. See the
+[preview guide](engdocs/GRAPH_C0_PREVIEW.md),
+[Issue adapter notes](engdocs/GRAPH_ISSUE_ADAPTER_PREVIEW.md), and
+[Dependency workflow notes](engdocs/GRAPH_DEPENDENCY_WORKFLOW_PREVIEW.md) for exact limits.
