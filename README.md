@@ -231,15 +231,16 @@ its identity and owning Memory history.
 The preview uses the ordinary embedded or shared-server Dolt database and
 existing Issue/Dependency tables. Existing Issue workspaces keep their current
 behavior. General Issue updates, blocking Dependency unlink, complete Memory/History support,
-BDP serving and production migration remain unavailable. See the
+HTTP writes and production migration remain unavailable. See the
 [preview guide](engdocs/GRAPH_C0_PREVIEW.md),
 [Issue adapter notes](engdocs/GRAPH_ISSUE_ADAPTER_PREVIEW.md), and
 [Dependency workflow notes](engdocs/GRAPH_DEPENDENCY_WORKFLOW_PREVIEW.md), and
 [mixed-Link notes](engdocs/GRAPH_MIXED_LINK_PREVIEW.md), and
 [Link lifecycle notes](engdocs/GRAPH_LINK_LIFECYCLE_PREVIEW.md) for exact limits.
-The [BDP record projection](engdocs/GRAPH_BDP_READ_PROJECTION.md) prepares the
-same stored records for public wire reads; it does not yet enable graph HTTP serving.
-Its internal inventory reads current Beads, Links, installed Types and a writer
-state token in one transaction, refusing oversized results rather than truncating.
-Internal collection filters, bounded Selectors and retained snapshot pages now
-compose with that inventory; HTTP authorization and serving remain the next step.
+The [BDP Read HTTP preview](engdocs/GRAPH_BDP_READ_HTTP.md) adds installed
+`bd serve` for ordinary shared-server graph workspaces: discovery, Resource and
+Type reads, properties, filtered inventories, incident Links and retained pages.
+An independent public BDP client exercises the real HTTP service after normal
+CLI initialization. Embedded HTTP serving, History and aliases remain unavailable.
+The [record projection notes](engdocs/GRAPH_BDP_READ_PROJECTION.md) describe the
+transactional inventory, selection and paging underneath that surface.

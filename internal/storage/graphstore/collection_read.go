@@ -40,6 +40,9 @@ func (s *Store) CurrentSnapshot(ctx context.Context) (Snapshot, error) {
 }
 
 func (s *Store) currentSnapshotInTx(ctx context.Context, tx *sql.Tx) (Snapshot, error) {
+	if err := checkCurrentReadBytes(ctx, tx); err != nil {
+		return Snapshot{}, err
+	}
 	if err := checkBinding(ctx, tx, s.options); err != nil {
 		return Snapshot{}, err
 	}

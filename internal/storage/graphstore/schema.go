@@ -211,7 +211,8 @@ func checkBinding(ctx context.Context, tx *sql.Tx, o Options) error {
 	var b Binding
 	var token string
 	err := tx.QueryRowContext(ctx, `SELECT workspace, scope_url, authority_id,
-        schema_version, writer_token FROM graph_preview_scope WHERE singleton = 1`).Scan(
+        schema_version, writer_token FROM graph_preview_scope WHERE singleton = 1
+ AND OCTET_LENGTH(workspace)=? AND OCTET_LENGTH(scope_url)=?`, len(o.Binding.WorkspaceID), len(o.Binding.ScopeURL)).Scan(
 		&b.WorkspaceID, &b.ScopeURL, &b.AuthorityID, &b.SchemaVersion, &token)
 	if err != nil {
 		return fmt.Errorf("%w: read binding: %v", ErrInvalidStore, err)
@@ -223,14 +224,16 @@ func checkBinding(ctx context.Context, tx *sql.Tx, o Options) error {
 		name  string
 		build func(string) (graph.TypeDescriptor, error)
 	}{{"memory", memoryDescriptor}, {"issue", issueDescriptor}, {"dependency", dependencyDescriptor}, {"related", relatedDescriptor}} {
-		var descriptor []byte
-		var fingerprint string
-		if err := tx.QueryRowContext(ctx, `SELECT descriptor, fingerprint FROM graph_preview_types WHERE name = ?`, definition.name).Scan(&descriptor, &fingerprint); err != nil {
-			return fmt.Errorf("%w: read %s descriptor: %v", ErrInvalidStore, definition.name, err)
-		}
 		expected, err := definition.build(b.ScopeURL)
 		if err != nil {
 			return err
+		}
+		// Immutable metadata must match these exact bytes. Check its expected
+		// length in SQL before acquiring a corrupted, arbitrarily large blob.
+		var descriptor []byte
+		var fingerprint string
+		if err := tx.QueryRowContext(ctx, `SELECT descriptor, fingerprint FROM graph_preview_types WHERE name = ? AND OCTET_LENGTH(descriptor)=?`, definition.name, len(expected.CanonicalJSON())).Scan(&descriptor, &fingerprint); err != nil {
+			return fmt.Errorf("%w: read %s descriptor: %v", ErrInvalidStore, definition.name, err)
 		}
 		installed, err := graph.ParseTypeDescriptor(descriptor)
 		if err != nil {

@@ -1,10 +1,11 @@
-# BDP current-record projection — preparation for serving
+# BDP current-record projection
 
 This increment follows qualified [PR #23](https://github.com/donnabox/beads/pull/23)
 at `9129dfd08690099a0fe2b8d8182322b6912d1587` and the
 [fork delivery plan](https://github.com/donnabox/beads/pull/18).
-It adds a storage-to-wire reader, not a new CLI command or an HTTP service.
-`bd serve` remains unavailable for graph workspaces. The September 23, 2026
+It introduced the storage-to-wire reader. The subsequent
+[HTTP preview](GRAPH_BDP_READ_HTTP.md) now composes it into installed shared-server
+`bd serve`; this document describes the underlying projection modules. The September 23, 2026
 07:01 PDT attempt clock is unchanged.
 
 ## What the reader does
@@ -33,7 +34,7 @@ that invariant. The caller owns the store lifetime and must check close errors.
 
 The underlying `graphstore.ReadType` distinguishes an unknown valid Type path
 from a corrupt or missing required installation. Resource absence, deletion and
-corruption also remain distinct internal errors. The eventual HTTP adapter must
+corruption also remain distinct internal errors. The HTTP adapter must
 apply the public problem table: ordinary reads of deleted Resources use
 `resource-not-found`; they must not publish the private CLI `gone` envelope or
 pretend deletion is erasure.
@@ -61,7 +62,10 @@ connections. The embedded test admits two SQL sessions on one connector solely
 for that test; normal embedded stores retain their one-connection configuration.
 It does not claim concurrent independent embedded processes are supported.
 
-This preview refuses inventories above 1,000 live Resources with an explicit
+The subsequent HTTP slice adds a conservative 16 MiB current-workspace read
+acquisition budget before payload decoding, including exact Resource reads; see
+[HTTP limits](GRAPH_BDP_READ_HTTP.md#implemented-surface-and-limits).
+This preview also refuses inventories above 1,000 live Resources with an explicit
 limit error and no partial result. The bound applies before filtering and is
 not a page size. It does not truncate or silently skip malformed entries.
 
@@ -110,10 +114,10 @@ Resources before filtering.
 These APIs require an authority-derived authorization projection and epoch.
 They do not implement either one, and the writer token is not an epoch. The
 real-engine tests supply explicit test identities and demonstrate paging across
-a committed Link update on both backends. A future HTTP composition root must
-capture authorization before selection, check it again on continuation and own
-restore/epoch transitions. No discovery, HTTP serving, Read profile or public
-History capability is delivered by these internal modules.
+a committed Link update on both backends. The [HTTP composition root](GRAPH_BDP_READ_HTTP.md) authenticates before selection,
+checks authority on continuation, and uses a process generation for its one
+full-workspace view. Restore requires stopping and restarting serving. These
+internal modules alone deliver neither HTTP nor public History.
 
 ## Verification boundary
 
@@ -141,12 +145,10 @@ parsers. Focused Selector differential tests compare the Go implementation with
 the pinned TypeScript evaluator; pagination tests also cover concurrent replay,
 caller mutation, expiry, capacity refusal and view/epoch/projection fences.
 
-Those are persistence and wire-format checks, not an installed CLI/HTTP demo.
-The minimum Read profile still requires Scope discovery, Resource and property
-views, wiring the inventory/selection/incident/pagination path to authorization
-and HTTP, method/media and conditional behavior, and a real independent-client
-round trip. No Read profile
-or History capability is advertised by this package. Private preview Memory is
+Those checks establish persistence and wire format. The separate
+[installed HTTP capture](GRAPH_BDP_READ_HTTP.md#reproducible-independent-client-proof)
+now covers discovery, selection, authorization, HTTP behavior and a real public
+client. This internal package itself advertises no profile or History capability. Private preview Memory is
 still incomplete relative to the canonical Memory proposal.
 
 Read-only adoption preflight is a separate gate before M2 breadth; this reader
