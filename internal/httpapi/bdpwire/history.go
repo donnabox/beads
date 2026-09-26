@@ -92,7 +92,7 @@ type HistoricalBeadRecord struct {
 	Revision      string         `json:"revision"`
 	Attribution   *Attribution   `json:"attribution,omitempty"`
 	Properties    Properties     `json:"properties"`
-	OwnedLinks    OwnedLinks     `json:"ownedLinks,omitempty"`
+	OwnedLinks    OwnedLinks     `json:"ownedLinks,omitzero"`
 	ChangeContext *ChangeContext `json:"changeContext,omitempty"`
 }
 

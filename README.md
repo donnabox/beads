@@ -237,3 +237,5 @@ BDP serving and production migration remain unavailable. See the
 [Dependency workflow notes](engdocs/GRAPH_DEPENDENCY_WORKFLOW_PREVIEW.md), and
 [mixed-Link notes](engdocs/GRAPH_MIXED_LINK_PREVIEW.md), and
 [Link lifecycle notes](engdocs/GRAPH_LINK_LIFECYCLE_PREVIEW.md) for exact limits.
+The [BDP record projection](engdocs/GRAPH_BDP_READ_PROJECTION.md) prepares the
+same stored records for public wire reads; it does not yet enable graph HTTP serving.
