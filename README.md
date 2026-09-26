@@ -228,6 +228,9 @@ Links use an installed `--resource-type`; `bd update links/PATH --properties JSO
 performs guarded property replacement. [Memory editing](engdocs/GRAPH_MEMORY_UPDATE_PREVIEW.md)
 uses `bd update beads/PATH --properties JSON` with a revision guard to replace
 its title/body and preserve earlier complete versions.
+[Issue text editing](engdocs/GRAPH_ISSUE_EDIT_PREVIEW.md) uses familiar inline
+`update` text flags with a graph revision guard, retaining the earlier complete
+Issue and its owned Dependencies.
 [Body recall](engdocs/GRAPH_MEMORY_RECALL_PREVIEW.md) uses `bd recall beads/PATH`
 or `bd recall beads/PATH --version TOKEN` to return exact current or saved content.
 [Exact comparison](engdocs/GRAPH_HISTORY_COMPARE_PREVIEW.md) uses
@@ -239,7 +242,7 @@ its identity and owning Memory history.
 
 The preview uses the ordinary embedded or shared-server Dolt database and
 existing Issue/Dependency tables. Existing Issue workspaces keep their current
-behavior. General Issue updates, blocking Dependency unlink, complete Memory/History support,
+behavior. Other Issue updates, blocking Dependency unlink, complete Memory/History support,
 HTTP writes and production migration remain unavailable. See the
 [preview guide](engdocs/GRAPH_C0_PREVIEW.md),
 [Issue adapter notes](engdocs/GRAPH_ISSUE_ADAPTER_PREVIEW.md), and

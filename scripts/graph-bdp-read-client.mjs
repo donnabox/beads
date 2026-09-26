@@ -92,6 +92,88 @@ try {
   assert.deepEqual(properties, plan.properties);
   pass('public client reads Memory, Issue, Link, installed Type and properties');
 
+  // The installed CLI is the writer; the independent public client observes
+  // the resulting Issue state through the read-only HTTP surface.
+  const workID = id('beads/work');
+  const targetID = id('beads/prereq');
+  const dependencyID = process.env.BDP_DEPENDENCY_ID;
+  assert.ok(dependencyID);
+  const workBefore = artifacts['bead:' + workID];
+  const targetBefore = await perform({ kind: 'resource', resource: 'bead', id: targetID });
+  const dependencyBefore = await perform({ kind: 'resource', resource: 'link', id: dependencyID });
+  assert.equal(dependencyBefore.source, workID);
+  assert.equal(dependencyBefore.target, targetID);
+  assert.deepEqual(Object.values(workBefore.ownedLinks).flat(), [dependencyBefore]);
+  const incidentBefore = await perform({ kind: 'bead-links', bead: workID, direction: 'both', limit: 100 });
+  assert.equal(incidentBefore.next, null);
+  assert.deepEqual(incidentBefore.items.map(link => link.id).sort(),
+    [contextID, id('links/back'), dependencyID].sort());
+  const workHTTPBefore = await http(workID);
+  assert.equal(workHTTPBefore.response.status, 200);
+  const workETagBefore = workHTTPBefore.response.headers.get('etag');
+  assert.ok(workETagBefore);
+  assert.deepEqual(parseBeadRecord(JSON.parse(workHTTPBefore.text)), workBefore);
+
+  const issueFields = { title: 'Edited work — 雪', description: 'CLI Issue description.\n',
+    design: '# Design\nPreserve Dependencies and contextual Links.\n',
+    acceptance_criteria: 'The public BDP client sees all four edited fields.\n' };
+  const issueArgs = ['update', workID, '--title', issueFields.title,
+    '--description', issueFields.description, '--design', issueFields.design,
+    '--acceptance', issueFields.acceptance_criteria, '--if-revision', workBefore.revision, '--json'];
+  const issueBinary = digest(await readFile(process.env.BDP_BD));
+  let issueExecution;
+  let issueExitCode = null;
+  try {
+    issueExecution = await promisify(execFile)(process.env.BDP_BD, issueArgs,
+      { timeout: 60_000, maxBuffer: 2 * 1024 * 1024, encoding: 'utf8' });
+    issueExitCode = 0;
+  } catch (error) {
+    issueExecution = error;
+    issueExitCode = typeof error.code === 'number' ? error.code : null;
+    throw error;
+  } finally {
+    await writeFile(join(output, 'client-cli-issue-update.stdout.log'), issueExecution?.stdout ?? '');
+    await writeFile(join(output, 'client-cli-issue-update.stderr.log'), issueExecution?.stderr ?? '');
+    await writeFile(join(output, 'client-cli-issue-update.json'), JSON.stringify({
+      argv: [process.env.BDP_BD, ...issueArgs], cwd: process.cwd(), binarySha256: issueBinary,
+      exitCode: issueExitCode, signal: issueExecution?.signal ?? null,
+      stdoutSha256: digest(issueExecution?.stdout ?? ''), stderrSha256: digest(issueExecution?.stderr ?? ''),
+    }, null, 2));
+  }
+  assert.equal(digest(await readFile(process.env.BDP_BD)), issueBinary, 'installed binary changed');
+  const issueMutation = JSON.parse(issueExecution.stdout);
+  assert.equal(issueMutation.preview, true);
+  assert.equal(issueMutation.result.changed, true);
+  const workAfter = await perform({ kind: 'resource', resource: 'bead', id: workID });
+  assert.equal(workAfter.revision, issueMutation.result.issue.revision);
+  assert.notEqual(workAfter.revision, workBefore.revision);
+  assert.equal(workAfter.type, workBefore.type);
+  assert.deepEqual(workAfter.properties, {
+    ...workBefore.properties, ...issueFields, updated_at: workAfter.properties.updated_at,
+  });
+  assert.deepEqual(workAfter.ownedLinks, workBefore.ownedLinks);
+  assert.deepEqual(await perform({ kind: 'properties', resource: 'bead', id: workID }), workAfter.properties);
+  const targetAfter = await perform({ kind: 'resource', resource: 'bead', id: targetID });
+  assert.deepEqual(targetAfter, targetBefore);
+  const dependencyAfter = await perform({ kind: 'resource', resource: 'link', id: dependencyID });
+  assert.deepEqual(dependencyAfter, dependencyBefore);
+  const incidentAfter = await perform({ kind: 'bead-links', bead: workID, direction: 'both', limit: 100 });
+  assert.deepEqual(incidentAfter, incidentBefore);
+  const issueInventory = await perform({ kind: 'collection', collection: 'beads', limit: 100 });
+  assert.equal(issueInventory.next, null);
+  assert.equal(issueInventory.items.length, 4);
+  assert.deepEqual(issueInventory.items.find(bead => bead.id === workID), workAfter);
+  const workHTTPAfter = await http(workID, { headers: { 'if-none-match': workETagBefore } });
+  assert.equal(workHTTPAfter.response.status, 200);
+  assert.ok(workHTTPAfter.response.headers.get('etag'));
+  assert.notEqual(workHTTPAfter.response.headers.get('etag'), workETagBefore);
+  assert.deepEqual(parseBeadRecord(JSON.parse(workHTTPAfter.text)), workAfter);
+  artifacts.issueEdit = { before: workBefore, after: workAfter, mutation: issueMutation,
+    targetBefore, targetAfter, dependencyBefore, dependencyAfter, incidentBefore, incidentAfter,
+    inventory: issueInventory, etagBefore: workETagBefore, etagAfter: workHTTPAfter.response.headers.get('etag'),
+    writer: 'installed CLI; HTTP surface remains read-only' };
+  pass('public client sees guarded CLI Issue text edit in resource, properties and inventory; owned Dependencies, incident Links and target remain unchanged; old ETag yields fresh 200');
+
   for (const collection of ['beads', 'links', 'types']) {
     const result = await collect(collection);
     artifacts[collection] = result;
