@@ -110,7 +110,8 @@ func (s *Store) incidentLinksInTx(ctx context.Context, tx *sql.Tx, request Links
 }
 
 // Unlink selects, checks both guards, tombstones identity and records its owning
-// Memory in one transaction. It neither replays deletion nor reuses identities.
+// Bead in one transaction. It neither replays deletion nor reuses identities.
+// Blocking Dependencies currently require canonical Link ID selection.
 func (s *Store) Unlink(ctx context.Context, request LinkDeleteRequest) (LinkDeleteResult, error) {
 	if !utf8.ValidString(request.Actor) {
 		return LinkDeleteResult{}, fmt.Errorf("%w: actor must be UTF-8", storage.ErrValidation)
@@ -131,6 +132,9 @@ func (s *Store) Unlink(ctx context.Context, request LinkDeleteRequest) (LinkDele
 		if err := s.validateLinkType(request.TypeURL, false); err != nil {
 			return LinkDeleteResult{}, err
 		}
+		if request.TypeURL == DependencyTypeURL(s.options.Binding.ScopeURL) {
+			return LinkDeleteResult{}, fmt.Errorf("%w: blocking Dependency unlink requires its canonical Link ID", ErrCapabilityUnavailable)
+		}
 	}
 	var result LinkDeleteResult
 	err := s.withTx(ctx, true, func(tx *sql.Tx) error {
@@ -145,8 +149,9 @@ func (s *Store) Unlink(ctx context.Context, request LinkDeleteRequest) (LinkDele
 		if err != nil {
 			return err
 		}
-		if link.Type != RelatedTypeURL(s.options.Binding.ScopeURL) {
-			return fmt.Errorf("%w: blocking Dependency unlink requires the Issue-domain adapter", ErrCapabilityUnavailable)
+		if link.Type == DependencyTypeURL(s.options.Binding.ScopeURL) {
+			result, err = s.unlinkDependencyInTx(ctx, tx, path, link, request)
+			return err
 		}
 		if err := checkRevisionGuard(request.ExpectedRevision, request.Unconditional, link.Revision, true, "Link"); err != nil {
 			return err
@@ -238,7 +243,7 @@ func (s *Store) deletedLinkErrorInTx(ctx context.Context, tx *sql.Tx, path strin
 	if err := tx.QueryRowContext(ctx, `SELECT resource_kind,type_url,revision,backing,backing_key FROM graph_preview_catalog WHERE path=?`, path).Scan(&kind, &typ, &revision, &backing, &key); err != nil {
 		return err
 	}
-	if kind != "link" || typ != RelatedTypeURL(s.options.Binding.ScopeURL) || backing != "informational" || key.Valid || !authorityID.MatchString(revision) {
+	if !s.validDeletedLinkAllocation(kind, typ, backing, key) || !authorityID.MatchString(revision) {
 		return fmt.Errorf("%w: invalid deleted allocation", ErrInvalidStore)
 	}
 	var snapshot []byte
@@ -264,11 +269,11 @@ func (s *Store) deletedLinkErrorInTx(ctx context.Context, tx *sql.Tx, path strin
 	if json.Unmarshal(previous, &link) != nil || link.ID != tombstone.ID || link.Type != typ || link.Revision != tombstone.PreviousVersion || link.Version != tombstone.PreviousVersion {
 		return fmt.Errorf("%w: invalid previous Link state", ErrInvalidStore)
 	}
-	if err := s.validateRetainedInformational(link, previous, previousActor); err != nil {
+	if err := s.validateVersionLink(link, previous, previousActor); err != nil {
 		return err
 	}
 	var count int
-	if err := tx.QueryRowContext(ctx, `SELECT COUNT(*) FROM graph_preview_links WHERE path=?`, path).Scan(&count); err != nil {
+	if err := tx.QueryRowContext(ctx, `SELECT (SELECT COUNT(*) FROM graph_preview_links WHERE path=?) + (SELECT COUNT(*) FROM graph_preview_payloads WHERE path=?)`, path, path).Scan(&count); err != nil {
 		return err
 	}
 	if count != 0 {

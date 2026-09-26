@@ -85,7 +85,7 @@ func (s *Store) readVersionInTx(ctx context.Context, tx *sql.Tx, path, version s
 		(kind == "bead") != strings.HasPrefix(path, "beads/") || (kind != "bead" && kind != "link") {
 		return nil, fmt.Errorf("%w: invalid retained subject allocation", ErrInvalidStore)
 	}
-	if state == "deleted" && backing != "informational" {
+	if state == "deleted" && !s.validDeletedLinkAllocation(kind, typ.String, backing, key) {
 		return nil, fmt.Errorf("%w: unsupported deleted subject", ErrInvalidStore)
 	}
 	if backing == "issue" {

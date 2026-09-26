@@ -223,7 +223,10 @@ also accepts `remember --body-file FILE` or `remember --stdin`, preserving body
 bytes within the preview’s 1 MiB acquisition limit. Local blocking Dependencies use
 `bd dep add SOURCE TARGET` or `bd link SOURCE TARGET`; `bd close ISSUE` and
 `bd ready` exercise their Issue workflow. The source Issue owns its outgoing
-Dependencies and records them with its version. Informational Issue/Memory
+Dependencies and records them with its version.
+[Guarded blocking unlink](engdocs/GRAPH_DEPENDENCY_UNLINK_PREVIEW.md) removes a
+Dependency by canonical Link ID, updates readiness, and preserves earlier
+source and Link versions. Informational Issue/Memory
 Links use an installed `--resource-type`; `bd update links/PATH --properties JSON`
 performs guarded property replacement. [Memory editing](engdocs/GRAPH_MEMORY_UPDATE_PREVIEW.md)
 uses `bd update beads/PATH --properties JSON` with a revision guard to replace
@@ -242,7 +245,7 @@ its identity and owning Memory history.
 
 The preview uses the ordinary embedded or shared-server Dolt database and
 existing Issue/Dependency tables. Existing Issue workspaces keep their current
-behavior. Other Issue updates, blocking Dependency unlink, complete Memory/History support,
+behavior. Other Issue updates, typed-pair blocking unlink, complete Memory/History support,
 HTTP writes and production migration remain unavailable. See the
 [preview guide](engdocs/GRAPH_C0_PREVIEW.md),
 [Issue adapter notes](engdocs/GRAPH_ISSUE_ADAPTER_PREVIEW.md), and
