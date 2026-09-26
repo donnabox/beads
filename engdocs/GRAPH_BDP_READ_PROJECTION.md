@@ -68,3 +68,23 @@ still incomplete relative to the canonical Memory proposal.
 
 Read-only adoption preflight is a separate gate before M2 breadth; this reader
 does not prove migration, external-blocker compatibility or backup continuity.
+
+## Shared-server provisioning limitation
+
+The first Linux qualification exposed a Dolt 2.1.8 catalog race when separate
+test packages initialized different databases concurrently. A transaction that
+predates another connection's `CREATE DATABASE` can fail an
+`INFORMATION_SCHEMA.COLUMNS` query with `could not resolve initial root for
+database ...`, even when its query filters for its own database. A direct
+two-connection reproduction failed three out of three times; creating the
+databases before starting the transaction succeeded three out of three times.
+No database deletion or graph record operation is required to reproduce it.
+
+The qualification workflow runs test packages serially on the shared server
+(`GO_TEST_PKG_PARALLEL=1`) so unrelated fixture provisioning does not overlap.
+The existing explicit transaction concurrency, stale-writer, cancellation and
+uncertain-commit tests remain enabled. This is test isolation, not an engine
+fix or proof that concurrent provisioning of different databases is safe.
+Deployments on this release must serialize such provisioning; lifting that
+limitation needs a qualified engine release. No application lock, retry or
+storage-engine workaround is introduced here.
