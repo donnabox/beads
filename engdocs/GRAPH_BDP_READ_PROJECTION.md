@@ -63,9 +63,57 @@ It does not claim concurrent independent embedded processes are supported.
 
 This preview refuses inventories above 1,000 live Resources with an explicit
 limit error and no partial result. The bound applies before filtering and is
-not a page size. It does not truncate, silently skip malformed entries, or
-claim that bounded Selectors, filtered pages, continuation, authorization views
-or HTTP collection access are implemented. Those remain the next Read work.
+not a page size. It does not truncate or silently skip malformed entries.
+
+## Selection and retained pages
+
+The internal reader now composes collection selection with bounded, process-local
+pagination. `CompileCollection` validates the entire query before a store read:
+unknown parameters, repeated parameters, malformed limits, noncanonical local
+identities and unsupported collection predicates fail. `CompileIncident` covers
+the separate Bead Link view, including its inbound/outbound/both directions.
+Selection applies all predicates before paging and orders complete records by
+canonical URI code units. Type inventory entries are summaries; exact Type reads
+still return descriptors. Effective conformance includes the declared Type itself
+and captured ancestors, never a remote fetch. The current four installed preview
+Types have no parent contracts.
+
+Structural endpoint predicates normalize canonical local Bead IDs and compare
+reference URIs without pins. Selectors compare stored JSON values exactly:
+`@.source == "https://example.test/beads/a"` does not match a pinned object,
+while the structural `source` predicate matches its URI. Selector parsing and
+evaluation are iterative, with explicit source-byte, AST-depth and AST-node
+bounds. They implement the subset and classified errors of the pinned public
+BDP implementation, including existence, scalar comparisons and Boolean
+composition. Response-only revision, attribution and owned-state members are
+excluded from the candidate root. Diagnostic offsets are UTF-8 byte offsets.
+
+`Pagination` copies the selected JSON bytes and reserves every future cursor
+position before returning the first page. A later write cannot change that
+snapshot's membership, revisions or owned Link properties. Replaying a cursor
+returns the same page and next URL; it remains valid through the original expiry,
+including after the final page. Capacity pressure refuses a new snapshot instead
+of evicting an active one. Expired/unknown cursors, changed authority epochs,
+foreign authorization views and changed collection projections fail explicitly.
+Concurrent calls are synchronized. Cleanup is lazy and bounded; `Close` releases
+all retained state. Process restart loses cursors and requires a fresh first read.
+
+Provisional internal defaults are 100 items per page, maximum 1,000; a five-minute
+cursor lifetime; 32 retained snapshots; 4,096 total continuation positions and
+999 per snapshot; 8 MiB serialized JSON per snapshot and 32 MiB total; and 32 KiB
+per continuation URL or authority context. A caller supplies Selector limits
+explicitly; current integration tests use 16 KiB, depth 256 and 2,048 nodes.
+These settings are reversible implementation bounds, not an adopted public
+configuration contract. The storage inventory still refuses over 1,000 live
+Resources before filtering.
+
+These APIs require an authority-derived authorization projection and epoch.
+They do not implement either one, and the writer token is not an epoch. The
+real-engine tests supply explicit test identities and demonstrate paging across
+a committed Link update on both backends. A future HTTP composition root must
+capture authorization before selection, check it again on continuation and own
+restore/epoch transitions. No discovery, HTTP serving, Read profile or public
+History capability is delivered by these internal modules.
 
 ## Verification boundary
 
@@ -85,13 +133,19 @@ and unlink, and reopens the store. No SQL payload or mock store is seeded. The
 test log emits `WIRE_RECEIPT` JSON for independent protocol validation.
 The public TypeScript parsers at the exact Beads wire pin
 `53bdbd03136875f952af184fce7b3c7af8f74e96` accept these receipts through
-`parseBeadRecord`, `parseLinkRecord` and `parseTypeDescriptor`.
+`parseBeadRecord`, `parseLinkRecord` and `parseTypeDescriptor`. The extended
+sequence selects Memory Beads, pages them across a real Link-property update,
+replays the continuation, and emits Bead/Link/Type collection receipts for the
+public `parseBeadCollection`, `parseLinkCollection` and `parseTypeInventory`
+parsers. Focused Selector differential tests compare the Go implementation with
+the pinned TypeScript evaluator; pagination tests also cover concurrent replay,
+caller mutation, expiry, capacity refusal and view/epoch/projection fences.
 
 Those are persistence and wire-format checks, not an installed CLI/HTTP demo.
 The minimum Read profile still requires Scope discovery, Resource and property
-views, installed Type inventory, filtered collections with bounded Selectors,
-incident views, pagination and continuation semantics, HTTP method/media and
-conditional behavior, and a real independent-client round trip. No Read profile
+views, wiring the inventory/selection/incident/pagination path to authorization
+and HTTP, method/media and conditional behavior, and a real independent-client
+round trip. No Read profile
 or History capability is advertised by this package. Private preview Memory is
 still incomplete relative to the canonical Memory proposal.
 
