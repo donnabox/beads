@@ -108,6 +108,7 @@ func TestGraphPreviewCLIWritePolicy(t *testing.T) {
 func TestGraphPreviewGenericFlagsRefuseLegacyOpening(t *testing.T) {
 	bd := buildBDUnderTest(t)
 	for _, args := range [][]string{
+		{"show", "demo-one", "--version", "opaque-version"},
 		{"link", "demo-one", "demo-two", "--properties", `{}`},
 		{"link", "demo-one", "demo-two", "--id", "links/context"},
 		{"update", "demo-one", "--properties", `{}`, "--unconditional"},

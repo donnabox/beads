@@ -242,5 +242,9 @@ The [BDP Read HTTP preview](engdocs/GRAPH_BDP_READ_HTTP.md) adds installed
 Type reads, properties, filtered inventories, incident Links and retained pages.
 An independent public BDP client exercises the real HTTP service after normal
 CLI initialization. Embedded HTTP serving, History and aliases remain unavailable.
+The [exact retained-version preview](engdocs/GRAPH_HISTORY_EXACT_PREVIEW.md) adds
+local `bd show RESOURCE --version TOKEN` over saved Memory, Link and Issue states,
+including their original owned Links. Ordered browsing and public BDP History
+remain unavailable.
 The [record projection notes](engdocs/GRAPH_BDP_READ_PROJECTION.md) describe the
 transactional inventory, selection and paging underneath that surface.
