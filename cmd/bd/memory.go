@@ -447,9 +447,11 @@ Examples:
 
 // recallCmd retrieves a specific memory by key.
 var recallCmd = &cobra.Command{
-	Use:   "recall <key>",
+	Use:   "recall <key|beads/PATH>",
 	Short: "Retrieve a specific memory",
-	Long: `Retrieve the full content of a memory by its key.
+	Long: `Retrieve the full content of a memory by its key. In a graph preview, select a
+canonical Memory path or local URL, optionally with --version TOKEN. Graph recall
+returns exact body bytes; its complete JSON form is not yet available.
 
 Examples:
   bd recall dolt-phantoms
@@ -459,6 +461,9 @@ Examples:
 	SilenceUsage:  true,
 	SilenceErrors: true,
 	RunE: func(cmd *cobra.Command, args []string) error {
+		if graphPreviewActive {
+			return runGraphPreviewRecall(cmd, args)
+		}
 		evt := metrics.NewCommandEvent("recall")
 		defer func() {
 			if c := metrics.Global(); c != nil {

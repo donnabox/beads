@@ -225,7 +225,9 @@ Dependencies and records them with its version. Informational Issue/Memory
 Links use an installed `--resource-type`; `bd update links/PATH --properties JSON`
 performs guarded property replacement. [Memory editing](engdocs/GRAPH_MEMORY_UPDATE_PREVIEW.md)
 uses `bd update beads/PATH --properties JSON` with a revision guard to replace
-its title/body and preserve earlier complete versions. Memory owns its outgoing Links, so a
+its title/body and preserve earlier complete versions.
+[Body recall](engdocs/GRAPH_MEMORY_RECALL_PREVIEW.md) uses `bd recall beads/PATH`
+or `bd recall beads/PATH --version TOKEN` to return exact current or saved content. Memory owns its outgoing Links, so a
 Link change also advances that Memory version. `bd links BEAD` lists incident
 Links; guarded `bd unlink links/PATH` removes one informational Link and retains
 its identity and owning Memory history.
