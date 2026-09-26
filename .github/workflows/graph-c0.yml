@@ -2,7 +2,7 @@ name: Graph C0 preview
 
 on:
   push:
-    branches: [codex/janet-c0-delivery-20260923, codex/janet-issue-adapter-20260924, codex/janet-dependency-workflow-20260925, codex/janet-mixed-links-20260925, codex/janet-link-lifecycle-20260925, codex/janet-bdp-read-20260925, codex/janet-read-http-20260926, codex/janet-history-exact-20260926, codex/janet-memory-update-20260926, codex/janet-memory-recall-20260926]
+    branches: [codex/janet-c0-delivery-20260923, codex/janet-issue-adapter-20260924, codex/janet-dependency-workflow-20260925, codex/janet-mixed-links-20260925, codex/janet-link-lifecycle-20260925, codex/janet-bdp-read-20260925, codex/janet-read-http-20260926, codex/janet-history-exact-20260926, codex/janet-memory-update-20260926, codex/janet-memory-recall-20260926, codex/janet-history-compare-20260926]
   workflow_dispatch:
 
 permissions:
@@ -147,6 +147,10 @@ jobs:
             --backend both --server-port 15440 \
             --output-dir "$RUNNER_TEMP/c0-evidence/memory-recall" \
             > "$RUNNER_TEMP/c0-evidence/memory-recall-smoke.log" 2>&1
+          python3 scripts/graph-history-compare-smoke.py --bd "$RUNNER_TEMP/c0-bin/bd" \
+            --backend both --server-port 15440 \
+            --output-dir "$RUNNER_TEMP/c0-evidence/history-compare" \
+            > "$RUNNER_TEMP/c0-evidence/history-compare-smoke.log" 2>&1
       - name: Preserve receipts (including failures)
         if: always()
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
