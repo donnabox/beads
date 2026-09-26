@@ -247,39 +247,48 @@ func (s *Store) finishInformationalWriteInTx(ctx context.Context, tx *sql.Tx, pa
 	if err := s.afterStage("link-retained"); err != nil {
 		return LinkMutationResult{}, err
 	}
+	source, err = s.recordOwnedMemoryInTx(ctx, tx, sourcePath, actor, source)
+	if err != nil {
+		return LinkMutationResult{}, err
+	}
+	return LinkMutationResult{Link: link, Source: source, Changed: true}, nil
+}
+
+func (s *Store) recordOwnedMemoryInTx(ctx context.Context, tx *sql.Tx, sourcePath, actor string, source any) (any, error) {
+	var err error
 	if memory, ok := source.(Record); ok {
 		memory.Owned, err = s.memoryOwnedLinksInTx(ctx, tx, sourcePath)
 		if err != nil {
-			return LinkMutationResult{}, err
+			return nil, err
 		}
 		memory.Revision, err = freshToken()
 		if err != nil {
-			return LinkMutationResult{}, err
+			return nil, err
 		}
 		memory.Version = memory.Revision
 		memory.Attribution = writeAttribution(actor)
 		if _, err := tx.ExecContext(ctx, `UPDATE graph_preview_catalog SET revision=? WHERE path=?`, memory.Revision, sourcePath); err != nil {
-			return LinkMutationResult{}, err
+			return nil, err
 		}
 		if err := s.afterStage("source-catalog"); err != nil {
-			return LinkMutationResult{}, err
+			return nil, err
 		}
 		snapshot, err := canonicalJSON(memory)
 		if err != nil {
-			return LinkMutationResult{}, err
+			return nil, err
 		}
 		if _, err := tx.ExecContext(ctx, `INSERT INTO graph_preview_versions (path,version,snapshot,actor) VALUES (?,?,?,?)`, sourcePath, memory.Version, snapshot, actor); err != nil {
-			return LinkMutationResult{}, err
+			return nil, err
 		}
 		if err := s.afterStage("source-retained"); err != nil {
-			return LinkMutationResult{}, err
+			return nil, err
 		}
 		source, err = s.showMemoryInTx(ctx, tx, sourcePath)
 		if err != nil {
-			return LinkMutationResult{}, err
+			return nil, err
 		}
 	}
-	return LinkMutationResult{Link: link, Source: source, Changed: true}, nil
+	return source, nil
 }
 
 func (s *Store) currentInformationalLinkInTx(ctx context.Context, tx *sql.Tx, path string) (LinkRecord, error) {

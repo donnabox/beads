@@ -224,13 +224,16 @@ and current `bd show` for Beads and Links. Local blocking Dependencies use
 Dependencies and records them with its version. Informational Issue/Memory
 Links use an installed `--resource-type`; `bd update links/PATH --properties JSON`
 performs guarded property replacement. Memory owns its outgoing Links, so a
-Link change also advances that Memory version.
+Link change also advances that Memory version. `bd links BEAD` lists incident
+Links; guarded `bd unlink links/PATH` removes one informational Link and retains
+its identity and owning Memory history.
 
 The preview uses the ordinary embedded or shared-server Dolt database and
 existing Issue/Dependency tables. Existing Issue workspaces keep their current
-behavior. General Issue updates, Link unlink, complete Memory/History support,
+behavior. General Issue updates, blocking Dependency unlink, complete Memory/History support,
 BDP serving and production migration remain unavailable. See the
 [preview guide](engdocs/GRAPH_C0_PREVIEW.md),
 [Issue adapter notes](engdocs/GRAPH_ISSUE_ADAPTER_PREVIEW.md), and
 [Dependency workflow notes](engdocs/GRAPH_DEPENDENCY_WORKFLOW_PREVIEW.md), and
-[mixed-Link notes](engdocs/GRAPH_MIXED_LINK_PREVIEW.md) for exact limits.
+[mixed-Link notes](engdocs/GRAPH_MIXED_LINK_PREVIEW.md), and
+[Link lifecycle notes](engdocs/GRAPH_LINK_LIFECYCLE_PREVIEW.md) for exact limits.

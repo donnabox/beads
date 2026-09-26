@@ -96,15 +96,18 @@ func dependencyDescriptor(scope string) (graph.TypeDescriptor, error) {
 }
 
 // RelatedTypeURL names the private experimental informational Link descriptor.
-func RelatedTypeURL(scope string) string { return scope + "types/preview-related-v1" }
+func RelatedTypeURL(scope string) string { return scope + "types/preview-related-v2" }
 
 func relatedDescriptor(scope string) (graph.TypeDescriptor, error) {
-	endpoint, err := graph.NewEndpointConstraint([]string{IssueTypeURL(scope), MemoryTypeURL(scope)}, graph.ExternalNone)
+	// Endpoint conformsTo is a conjunction, not an alternative-Type list.
+	// The preview admits only Issue and Memory Beads; an empty requirement set
+	// truthfully accepts either without claiming it conforms to both Types.
+	endpoint, err := graph.NewEndpointConstraint(nil, graph.ExternalNone)
 	if err != nil {
 		return graph.TypeDescriptor{}, err
 	}
 	return graph.NewTypeDescriptor(graph.TypeDescriptorSpec{
-		ID: RelatedTypeURL(scope), Name: "Experimental informational Link v1", Describes: graph.KindLink,
+		ID: RelatedTypeURL(scope), Name: "Experimental informational Link v2", Describes: graph.KindLink,
 		Description: "Disposable informational Link with live unpinned local Issue or Memory endpoints and independent multiedge identity. Closed properties record admits only optional UTF-8 string note. Memory sources own outgoing Links; Issue sources do not own this Type. No scheduling effect or production Type contract.",
 		Source:      &endpoint, Target: &endpoint,
 	})

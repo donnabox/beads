@@ -282,7 +282,7 @@ def exercise(capture):
     require(config.get("graph_mode") == "link", "missing graph mode marker")
     require(config.get("graph_scope_url") == SCOPE, "missing Scope binding")
     require(config.get("graph_workspace") == str(metadata.parent.resolve()), "missing workspace binding")
-    require(config.get("graph_schema_version") == 4 and config.get("graph_ready") is True,
+    require(config.get("graph_schema_version") == 5 and config.get("graph_ready") is True,
             "graph schema/readiness was not published")
     require(bool(config.get("graph_authority_id")), "missing authority binding")
     for name, body, title in [("plan", "Remember the deployment plan", "Plan"),
@@ -668,7 +668,7 @@ def exercise_dependency_workflow(capture):
 
 def exercise_mixed_links(capture):
     """Prove CLI JSON/guard wiring and fresh-process current reads of mixed Links."""
-    related_type = SCOPE + "types/preview-related-v1"
+    related_type = SCOPE + "types/preview-related-v2"
     issue_path, source_path, target_path = "beads/release", "beads/workflow-plan", "beads/workflow-decision"
 
     def show(label, path):
@@ -896,7 +896,181 @@ def exercise_mixed_links(capture):
         "memory_before": source, "memory_after_create": owner, "memory_after_property_update": current,
         "memory_after_second_link": parallel["source"], "memory_after_empty_properties": cleared["source"],
         "target_unchanged": target,
-        "limitation": "current reads and opaque version transitions; exact retained-state atomicity requires storage evidence; unlink and public History reads remain unavailable",
+        "limitation": "current reads and opaque version transitions; exact retained-state atomicity requires storage evidence; public History reads remain unavailable",
+    })
+
+
+def exercise_link_lifecycle(capture):
+    """Prove installed listing, guards, multiedge selection and durable deletion wiring."""
+    related_type = SCOPE + "types/preview-related-v2"
+    blocks_type = SCOPE + "types/preview-blocks-v1"
+    source_path, target_path, issue_path = "beads/workflow-plan", "beads/workflow-decision", "beads/release"
+    first_path, second_path = "links/memory-context", "links/memory-context-second"
+
+    def show(label, path):
+        return envelope(capture.success(label, ["show", path, "--json"]))
+
+    def links(label, path, direction="both", resource_type=None):
+        argv = ["links", path, "--direction", direction, "--json"]
+        if resource_type is not None:
+            argv += ["--resource-type", resource_type]
+        result = capture.success(label, argv)
+        require(result.get("schemaVersion") == 1 and result.get("preview") is True,
+                f"{label}: missing preview envelope")
+        items = result.get("result")
+        require(isinstance(items, list), f"{label}: missing Link array")
+        ids = [item.get("id") for item in items]
+        require(ids == sorted(set(ids)), f"{label}: Links not unique and canonically sorted")
+        return items
+
+    def unlink(label, argv, old_link, before, owned):
+        result = envelope(capture.success(label, ["unlink", *argv, "--json"]))
+        tombstone = result.get("link", {})
+        require(result.get("changed") is True and tombstone.get("state") == "deleted",
+                f"{label}: no durable deletion result")
+        require(tombstone.get("id") == old_link["id"] and tombstone.get("type") == old_link["type"],
+                f"{label}: tombstone identity or Type changed")
+        require(tombstone.get("previousVersion") == old_link["version"], f"{label}: lost previous Version")
+        require(tombstone.get("revision") and tombstone["revision"] != old_link["revision"] and
+                tombstone.get("version") and tombstone["version"] != old_link["version"],
+                f"{label}: deletion failed to advance Link revision/version")
+        after = result.get("source", {})
+        if owned:
+            require(after.get("revision") != before["revision"] and after.get("version") != before["version"],
+                    f"{label}: unlink failed to version owning source")
+            require(after.get("properties") == before["properties"] and
+                    after.get("owned") == [item for item in before["owned"] if item["id"] != old_link["id"]],
+                    f"{label}: source did not remove exactly the selected owned Link")
+        else:
+            require(after == before, f"{label}: unowned unlink changed source")
+        require(show(label + "-source-reopen", after["id"]) == after,
+                f"{label}: source changed across fresh processes")
+        refusal(capture.run(label + "-deleted-read", ["show", old_link["id"], "--json"]), {"gone"}, label)
+        return result
+
+    source = show("lifecycle-source-before", source_path)
+    target = show("lifecycle-target-before", target_path)
+    issue = show("lifecycle-issue-before", issue_path)
+    first = show("lifecycle-first-before", first_path)
+    second = show("lifecycle-second-before", second_path)
+    issue_link = show("lifecycle-issue-link-before", "links/issue-context")
+    require(links("lifecycle-source-out", SCOPE + source_path, "out") == [first, second],
+            "source outgoing listing lost multiedges")
+    require(links("lifecycle-source-in", source_path, "in") == [], "source has unexpected incoming Links")
+    require(links("lifecycle-source-both", source_path) == [first, second], "source both listing differs")
+    expected_incoming = sorted([first, second, issue_link], key=lambda item: item["id"])
+    require(links("lifecycle-target-in", target_path, "in", related_type) == expected_incoming,
+            "incoming listing lost mixed Issue/Memory sources")
+    require(links("lifecycle-target-out", target_path, "out") == [], "target outgoing listing is not empty")
+    blocking = links("lifecycle-issue-blocks", issue_path, "out", blocks_type)
+    require(len(blocking) == 1 and blocking[0]["type"] == blocks_type,
+            "specialized blocking Dependency missing from generic listing")
+    require(links("lifecycle-issue-all", issue_path) == sorted([blocking[0], issue_link], key=lambda item: item["id"]),
+            "generic listing did not combine specialized and informational Links")
+    require(links("lifecycle-issue-related", issue_path, "out", related_type) == [issue_link],
+            "registered Type filter returned wrong Links")
+    capture.passed("fresh-process incident listing combines generic and specialized Links; exact Type, in/out/both and canonical URL selectors preserve multiedges")
+
+    guarded = [first_path, "--if-revision", first["revision"], "--if-source-revision", source["revision"]]
+    bad_guard = {"invalid_selector", "invalid_properties"}
+    refusals = [
+        ("missing-link-guard", [first_path, "--if-source-revision", source["revision"]], bad_guard),
+        ("missing-source-guard", [first_path, "--if-revision", first["revision"]], bad_guard),
+        ("stale-link-guard", [first_path, "--if-revision", "stale", "--if-source-revision", source["revision"]], {"revision_conflict"}),
+        ("stale-source-guard", [first_path, "--if-revision", first["revision"], "--if-source-revision", "stale"], {"revision_conflict"}),
+        ("conflicting-link-guards", [*guarded, "--unconditional"], bad_guard),
+        ("conflicting-source-guards", [*guarded, "--unconditional-source"], bad_guard),
+        ("blocking-adapter-required", [blocking[0]["id"], "--if-revision", blocking[0]["revision"],
+                                       "--if-source-revision", issue["revision"]], {"capability_unavailable"}),
+        ("missing-pair", [target_path, source_path, "--resource-type", related_type,
+                          "--unconditional", "--unconditional-source"], {"not_found"}),
+    ]
+    for name, argv, codes in refusals:
+        label = "lifecycle-refuse-" + name
+        refusal(capture.run(label, ["unlink", *argv, "--json"]), codes, label)
+    ambiguity = refusal(capture.run("lifecycle-pair-ambiguous", ["unlink", source_path, target_path,
+                         "--resource-type", related_type, "--unconditional", "--unconditional-source", "--json"]),
+                         {"ambiguous_link"}, "ambiguous pair")
+    require(ambiguity.get("candidateIDs") == [first["id"], second["id"]],
+            "ambiguity did not return sorted exact candidate IDs")
+    for path, before in [(source_path, source), (target_path, target), (issue_path, issue),
+                         (first_path, first), (second_path, second), (blocking[0]["id"], blocking[0])]:
+        require(show("lifecycle-refusals-unchanged", path) == before, f"unlink refusals changed {path}")
+    capture.passed("unlink requires separate Link/source guards; stale/conflicting guards, blocking adapter and absent/ambiguous pair refuse without current-state changes")
+
+    yaml_path = capture.work / ".beads" / "config.yaml"
+    original_yaml = yaml_path.read_bytes() if yaml_path.exists() else None
+    mayor, freeze_path = capture.work / "mayor", capture.work / "MIGRATION-FREEZE"
+    require(not mayor.exists() and not freeze_path.exists(), "unexpected existing town markers")
+    for policy in ["readonly-flag", "readonly-env", "readonly-config", "migration-freeze"]:
+        flags = ["--readonly"] if policy == "readonly-flag" else []
+        try:
+            if policy == "readonly-env":
+                capture.env["BD_READONLY"] = "true"
+            elif policy == "readonly-config":
+                yaml_path.write_text("readonly: true\n")
+            elif policy == "migration-freeze":
+                mayor.mkdir()
+                (mayor / "town.json").write_text("{}\n")
+                freeze_path.write_text("lifecycle-smoke\t2026-09-25T00:00:00Z\tgraph write control\n")
+            before = tree_digest(capture.work)
+            label = "lifecycle-policy-" + policy
+            refusal(capture.run(label, ["unlink", *guarded, *flags, "--json"]), {"permission_denied"}, label)
+            require(tree_digest(capture.work) == before, f"{label}: changed workspace bytes")
+        finally:
+            capture.env.pop("BD_READONLY", None)
+            if original_yaml is None:
+                yaml_path.unlink(missing_ok=True)
+            else:
+                yaml_path.write_bytes(original_yaml)
+            if policy == "migration-freeze":
+                freeze_path.unlink(missing_ok=True)
+                (mayor / "town.json").unlink(missing_ok=True)
+                mayor.rmdir()
+    require(show("lifecycle-policy-source-unchanged", source_path) == source and
+            show("lifecycle-policy-Link-unchanged", first_path) == first, "policy-refused unlink changed records")
+    capture.passed("readonly flag/environment/config and migration freeze block unlink before workspace changes")
+
+    deleted = unlink("lifecycle-ID-unlink", [SCOPE + first_path, *guarded[1:]], first, source, True)
+    owner = deleted["source"]
+    require(show("lifecycle-surviving-multiedge", second_path) == second, "ID unlink changed another same-endpoint Link")
+    require(links("lifecycle-live-only-after-ID", source_path) == [second], "deleted Link remained in incident listing")
+    require(show("lifecycle-unlink-target-unchanged", target_path) == target, "owned unlink changed distinct target")
+    refusal(capture.run("lifecycle-repeat-unlink", ["unlink", first_path, "--unconditional", "--unconditional-source", "--json"]),
+            {"gone"}, "repeated unlink")
+    refusal(capture.run("lifecycle-deleted-ID-reserved", ["link", source_path, target_path,
+                       "--resource-type", related_type, "--id", first_path, "--properties", "{}",
+                       "--if-source-revision", owner["revision"], "--json"]), {"identity_reserved"}, "deleted identity reuse")
+    require(show("lifecycle-repeat-source-unchanged", source_path) == owner,
+            "repeated unlink or identity reuse advanced owning source again")
+    capture.passed("ID unlink retains a versioned tombstone, advances owning Memory once, preserves target/other multiedge; repeat is gone and identity stays reserved")
+
+    pair_deleted = unlink("lifecycle-single-pair-unlink", [SCOPE + source_path, target_path, "--resource-type", related_type,
+                          "--if-revision", second["revision"], "--if-source-revision", owner["revision"]], second, owner, True)
+    require(links("lifecycle-source-empty", source_path) == [], "single-pair unlink left a live Link")
+    unowned_deleted = unlink("lifecycle-unowned-unlink", ["links/issue-context", "--unconditional"], issue_link, issue, False)
+    require(links("lifecycle-issue-blocking-survives", issue_path) == blocking, "unowned unlink changed blocking Dependency")
+    require(show("lifecycle-final-distinct-target", target_path) == target, "unlink sequence changed target")
+    capture.passed("single exact pair unlinks after ambiguity is resolved; unowned Issue Link deletion preserves Issue and specialized Dependency")
+
+    self_created = envelope(capture.success("lifecycle-self-create", ["link", target_path, target_path,
+                            "--resource-type", related_type, "--id", "links/self-context", "--properties", "{}",
+                            "--if-source-revision", target["revision"], "--json"]))
+    self_link, self_owner = self_created["link"], self_created["source"]
+    require(self_owner.get("owned") == [self_link] and self_owner["version"] != target["version"],
+            "self-Link creation did not version its single owning Memory")
+    for direction in ["in", "out", "both"]:
+        require(links("lifecycle-self-" + direction, target_path, direction) == [self_link],
+                f"self-Link was missing or duplicated in {direction} listing")
+    self_deleted = unlink("lifecycle-self-unlink", ["links/self-context", "--unconditional", "--unconditional-source"],
+                          self_link, self_owner, True)
+    require(links("lifecycle-self-gone", target_path) == [], "deleted self-Link remained live")
+    capture.passed("self-Link appears once in in/out/both listing and unlink removes it from its owning Memory")
+    write_json(capture.output / "link-lifecycle-versions.json", {
+        "memory_before": source, "first_unlink": deleted, "second_unlink": pair_deleted,
+        "unowned_unlink": unowned_deleted, "self_unlink": self_deleted,
+        "distinct_target_unchanged_during_unlink": target,
+        "limitation": "current reads, tombstone receipts and opaque versions only; storage tests separately establish retained-state rollback/concurrency; no public History or restore claim",
     })
 
 
@@ -912,7 +1086,10 @@ def main():
                         help="also exercise installed blocking Dependency ownership, close and ready workflow")
     parser.add_argument("--mixed-links", action="store_true",
                         help="also exercise installed informational Links and property updates; implies --dependency-workflow")
+    parser.add_argument("--link-lifecycle", action="store_true",
+                        help="also exercise incident listing and guarded informational unlink; implies --mixed-links")
     args = parser.parse_args()
+    args.mixed_links = args.mixed_links or args.link_lifecycle
     args.dependency_workflow = args.dependency_workflow or args.mixed_links
     require(os.name == "posix", "POSIX process-group capture is required")
     require(args.bd.is_absolute() and args.bd.is_file() and os.access(args.bd, os.X_OK), "--bd must be an absolute executable")
@@ -934,6 +1111,8 @@ def main():
             exercise_dependency_workflow(capture)
         if args.mixed_links:
             exercise_mixed_links(capture)
+        if args.link_lifecycle:
+            exercise_link_lifecycle(capture)
         require(sha256(args.bd) == capture.binary_hash, "binary changed during capture")
     except BaseException as exc:
         failure = f"{type(exc).__name__}: {exc}"
@@ -945,6 +1124,7 @@ def main():
             "commands": capture.records, "private_root": str(capture.root),
             "dependency_workflow_requested": args.dependency_workflow,
             "mixed_links_requested": args.mixed_links,
+            "link_lifecycle_requested": args.link_lifecycle,
             "active_child_count": len(capture.active),
             "limits": ["this smoke harness alone cannot qualify C0",
                        "workspace digest and absent-ID reads do not prove unchanged remote database or atomic retained history/effects",
@@ -953,7 +1133,7 @@ def main():
                        "no Linux/macOS platform-matrix qualification",
                        "no historical-read, migration, or performance claim",
                        "Dependency and mixed-Link current-read checks do not establish complete retained-history or rollback atomicity",
-                       "mixed Links cover create/show/property replacement; no unlink, incident listing, target pin, metadata or request replay claim"],
+                       "optional Link lifecycle covers bounded incident listing and informational unlink; no blocking unlink, pagination, target pin, metadata, restore or request replay claim"],
         })
     print(f"{'PASS' if failure is None else 'FAIL'} capture: {capture.output}", flush=True)
     if failure:

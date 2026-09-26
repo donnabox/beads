@@ -188,6 +188,13 @@ func (s *Store) currentLinkInTx(ctx context.Context, tx *sql.Tx, path string) (L
 		}
 		return LinkRecord{}, err
 	}
+	var selectedState string
+	if err := tx.QueryRowContext(ctx, `SELECT allocation_state FROM graph_preview_catalog WHERE path=?`, path).Scan(&selectedState); err != nil {
+		return LinkRecord{}, err
+	}
+	if selectedState == "deleted" {
+		return LinkRecord{}, s.deletedLinkErrorInTx(ctx, tx, path)
+	}
 	if selectedBacking == "informational" {
 		return s.currentInformationalLinkInTx(ctx, tx, path)
 	}
