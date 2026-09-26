@@ -223,7 +223,9 @@ and current `bd show` for Beads and Links. Local blocking Dependencies use
 `bd ready` exercise their Issue workflow. The source Issue owns its outgoing
 Dependencies and records them with its version. Informational Issue/Memory
 Links use an installed `--resource-type`; `bd update links/PATH --properties JSON`
-performs guarded property replacement. Memory owns its outgoing Links, so a
+performs guarded property replacement. [Memory editing](engdocs/GRAPH_MEMORY_UPDATE_PREVIEW.md)
+uses `bd update beads/PATH --properties JSON` with a revision guard to replace
+its title/body and preserve earlier complete versions. Memory owns its outgoing Links, so a
 Link change also advances that Memory version. `bd links BEAD` lists incident
 Links; guarded `bd unlink links/PATH` removes one informational Link and retains
 its identity and owning Memory history.

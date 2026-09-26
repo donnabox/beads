@@ -43,9 +43,9 @@ func init() {
 	linkCmd.Flags().String("resource-type", "", "Installed experimental Link Type URL (graph preview only)")
 	linkCmd.Flags().String("id", "", "New canonical links/PATH for an informational graph Link")
 	linkCmd.Flags().String("properties", "", "Informational Link properties as JSON, @file, or @- (graph preview only)")
-	updateCmd.Flags().String("properties", "", "Replace informational Link properties from JSON, @file, or @- (graph preview only)")
-	updateCmd.Flags().String("if-revision", "", "Require this observed experimental Link revision")
-	updateCmd.Flags().Bool("unconditional", false, "Explicitly accept the current experimental Link state")
+	updateCmd.Flags().String("properties", "", "Replace Memory or informational Link properties from JSON, @file, or @- (graph preview only)")
+	updateCmd.Flags().String("if-revision", "", "Require this observed experimental Resource revision")
+	updateCmd.Flags().Bool("unconditional", false, "Explicitly accept the current experimental Resource state")
 	updateCmd.Flags().String("if-source-revision", "", "Require this observed source revision for an experimental owned Link")
 	updateCmd.Flags().Bool("unconditional-source", false, "Explicitly accept the current source state for an experimental owned Link")
 	linkCmd.Flags().String("if-source-revision", "", "Require this observed source revision for an experimental owned Link")
@@ -182,7 +182,7 @@ func admitGraphPreview(cmd *cobra.Command) (bool, error) {
 		return true, graphFailure("not_authority", "graph_mode workspace binding differs; copied/moved workspaces cannot claim this authority", 5)
 	}
 	if cmd != rememberCmd && cmd != createCmd && cmd != showCmd && cmd != statusCmd && cmd != depAddCmd && cmd != linkCmd && cmd != closeCmd && cmd != readyCmd && cmd != updateCmd && cmd != graphUnlinkCmd && cmd != graphLinksCmd && cmd != serveCmd {
-		return true, graphFailure("capability_unavailable", "graph_mode link preview supports create, remember, show, dep add, link, update links/PATH, unlink, links, close, ready, status --graph, and shared-server serve; this command has not opened the legacy store", 5)
+		return true, graphFailure("capability_unavailable", "graph_mode link preview supports create, remember, show, dep add, link, update beads/PATH or links/PATH, unlink, links, close, ready, status --graph, and shared-server serve; this command has not opened the legacy store", 5)
 	}
 	if cmd == statusCmd {
 		enabled, _ := cmd.Flags().GetBool("graph")
@@ -437,7 +437,7 @@ func runGraphPreviewStatus(cmd *cobra.Command) error {
 		return err
 	}
 	return withGraphStore(func(_ context.Context, _ *graphstore.Store) (any, string, error) {
-		return map[string]any{"scope": graphPreviewConfig.GraphScopeURL, "backend": graphPreviewConfig.DoltMode, "preview": true, "limits": map[string]int{"issueOwnedLinks": graphstore.PreviewOwnedLinkLimit, "memoryOwnedLinks": graphstore.PreviewOwnedLinkLimit, "linkPropertiesInputBytes": graphPreviewPropertiesLimit, "incidentLinks": graphstore.PreviewIncidentLinkLimit, "currentReadBytes": graphstore.PreviewCurrentReadByteLimit, "versionTokenBytes": graphstore.PreviewVersionTokenLimit}, "capabilities": map[string]bool{"memoryCreate": true, "issueCreate": true, "issueWorkflows": false, "blockingDependency": true, "informationalLink": true, "linkPropertiesUpdate": true, "linkUnlink": true, "blockingDependencyUnlink": false, "incidentLinks": true, "issueClose": true, "issueReady": true, "genericRead": true, "bdpRead": graphPreviewConfig.DoltMode == configfile.DoltModeServer, "memory": false, "historyExact": false, "exactVersionRead": true, "ownedLinks": true, "requestStatus": false, "backupContinuity": false}}, "Graph preview: Memory and Issue create/read, exact retained Bead/Link reads via show --version TOKEN, local blocking Dependencies, informational Links and guarded Link-property replacement/unlink, incident Link listing, Issue close and ready. Full Memory, public History, blocking Dependency unlink, remaining Issue workflows and recovery remain unavailable. BDP Read serving is available only on ordinary shared-server Dolt; embedded serving, HTTP writes and aliases remain unavailable.", nil
+		return map[string]any{"scope": graphPreviewConfig.GraphScopeURL, "backend": graphPreviewConfig.DoltMode, "preview": true, "limits": map[string]int{"issueOwnedLinks": graphstore.PreviewOwnedLinkLimit, "memoryOwnedLinks": graphstore.PreviewOwnedLinkLimit, "linkPropertiesInputBytes": graphPreviewPropertiesLimit, "memoryPropertiesInputBytes": graphPreviewPropertiesLimit, "incidentLinks": graphstore.PreviewIncidentLinkLimit, "currentReadBytes": graphstore.PreviewCurrentReadByteLimit, "versionTokenBytes": graphstore.PreviewVersionTokenLimit}, "capabilities": map[string]bool{"memoryCreate": true, "memoryPropertiesUpdate": true, "issueCreate": true, "issueWorkflows": false, "blockingDependency": true, "informationalLink": true, "linkPropertiesUpdate": true, "linkUnlink": true, "blockingDependencyUnlink": false, "incidentLinks": true, "issueClose": true, "issueReady": true, "genericRead": true, "bdpRead": graphPreviewConfig.DoltMode == configfile.DoltModeServer, "memory": false, "historyExact": false, "exactVersionRead": true, "ownedLinks": true, "requestStatus": false, "backupContinuity": false}}, "Graph preview: Memory and Issue create/read, guarded Memory title/body replacement, exact retained Bead/Link reads via show --version TOKEN, local blocking Dependencies, informational Links and guarded Link-property replacement/unlink, incident Link listing, Issue close and ready. Full Memory, public History, blocking Dependency unlink, remaining Issue workflows and recovery remain unavailable. BDP Read serving is available only on ordinary shared-server Dolt; embedded serving, HTTP writes and aliases remain unavailable.", nil
 	})
 }
 

@@ -230,6 +230,40 @@ try {
     assert.equal(invalid.response.status, 400, query);
   }
   pass('real HTTP Unicode HEAD, conditional precedence, bodyless 304/412/405/406, missing Resource and invalid query/cursor handling');
+
+  const memoryProperties = { title: 'Edited plan — 雪', body: 'Updated through the installed CLI.\n' };
+  const memoryArgs = ['update', planID, '--properties', JSON.stringify(memoryProperties),
+    '--if-revision', record.revision, '--json'];
+  const memoryBinary = digest(await readFile(process.env.BDP_BD));
+  let memoryExecution;
+  try {
+    memoryExecution = await promisify(execFile)(process.env.BDP_BD, memoryArgs,
+      { timeout: 60_000, maxBuffer: 2 * 1024 * 1024, encoding: 'utf8' });
+  } catch (error) {
+    memoryExecution = error;
+    throw error;
+  } finally {
+    await writeFile(join(output, 'client-cli-memory-update.stdout.log'), memoryExecution?.stdout ?? '');
+    await writeFile(join(output, 'client-cli-memory-update.stderr.log'), memoryExecution?.stderr ?? '');
+    await writeFile(join(output, 'client-cli-memory-update.json'), JSON.stringify({
+      argv: [process.env.BDP_BD, ...memoryArgs], cwd: process.cwd(), binarySha256: memoryBinary,
+    }, null, 2));
+  }
+  assert.equal(digest(await readFile(process.env.BDP_BD)), memoryBinary);
+  const memoryMutation = JSON.parse(memoryExecution.stdout);
+  assert.equal(memoryMutation.result.changed, true);
+  assert.deepEqual(memoryMutation.result.memory.properties, memoryProperties);
+  const edited = await perform({ kind: 'resource', resource: 'bead', id: planID });
+  assert.deepEqual(edited.properties, memoryProperties);
+  assert.equal(edited.revision, memoryMutation.result.memory.revision);
+  assert.notEqual(edited.revision, record.revision);
+  assert.deepEqual(edited.ownedLinks, record.ownedLinks);
+  const unchangedLink = await perform({ kind: 'resource', resource: 'link', id: contextID });
+  assert.deepEqual(unchangedLink, record.ownedLinks[relatedType][0]);
+  assert.deepEqual(await perform({ kind: 'properties', resource: 'bead', id: planID }), memoryProperties);
+  artifacts.memoryEdit = { record: edited, mutation: memoryMutation, unchangedLink };
+  pass('public client sees CLI Memory content edit with unchanged owned Link and consistent properties');
+
 } catch (error) {
   failure = { name: error.name, message: error.message, stack: error.stack };
   process.exitCode = 1;

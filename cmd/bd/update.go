@@ -100,7 +100,7 @@ pointless).`,
 	SilenceErrors: true,
 	RunE: func(cmd *cobra.Command, args []string) error {
 		if graphPreviewActive {
-			return runGraphPreviewUpdateLink(cmd, args)
+			return runGraphPreviewUpdate(cmd, args)
 		}
 		CheckReadonly("update") // also covers CheckMigrationFreeze (dc-6jaq)
 

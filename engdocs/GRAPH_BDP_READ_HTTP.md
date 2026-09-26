@@ -128,3 +128,7 @@ runs the installed capture alongside the existing embedded/server CLI sequence.
 Dolt 2.1.8 fixture provisioning remains serialized as described in the
 [projection notes](GRAPH_BDP_READ_PROJECTION.md#shared-server-provisioning-limitation);
 this does not claim concurrent unrelated database provisioning is safe.
+
+The independent public-client demonstration also reads a Memory after a guarded
+CLI title/body edit, verifying that its owned Link remains unchanged. The write
+uses the local CLI; HTTP remains Read-only. See [Memory editing](GRAPH_MEMORY_UPDATE_PREVIEW.md).
