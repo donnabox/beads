@@ -218,7 +218,9 @@ This is useful for:
 
 A disposable opt-in preview adds `bd init --graph-mode link --scope-url URL`,
 `bd remember BODY --id beads/PATH --title TITLE`, `bd create TITLE --id beads/PATH`,
-and current `bd show` for Beads and Links. Local blocking Dependencies use
+and current `bd show` for Beads and Links. [Explicit Memory input](engdocs/GRAPH_MEMORY_INPUT_PREVIEW.md)
+also accepts `remember --body-file FILE` or `remember --stdin`, preserving body
+bytes within the preview’s 1 MiB acquisition limit. Local blocking Dependencies use
 `bd dep add SOURCE TARGET` or `bd link SOURCE TARGET`; `bd close ISSUE` and
 `bd ready` exercise their Issue workflow. The source Issue owns its outgoing
 Dependencies and records them with its version. Informational Issue/Memory

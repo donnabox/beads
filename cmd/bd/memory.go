@@ -253,7 +253,7 @@ Examples:
   bd remember "auth module uses JWT not sessions" --key auth-jwt
   bd remember dolt-phantoms        # bare existing key: reads it (= bd recall)`,
 	GroupID:       "setup",
-	Args:          cobra.ExactArgs(1),
+	Args:          rememberArgs,
 	SilenceUsage:  true,
 	SilenceErrors: true,
 	RunE: func(cmd *cobra.Command, args []string) error {
