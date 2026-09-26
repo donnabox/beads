@@ -293,6 +293,8 @@ func RunDependencyEditorSameTypeReAddIsIdempotent(t *testing.T, ctx context.Cont
 	t.Helper()
 	fixture.SetJournalEnabled(true)
 	t.Cleanup(func() { fixture.SetJournalEnabled(false) })
+	fixture.SetVersionedHistoryEnabled(true)
+	t.Cleanup(func() { fixture.SetVersionedHistoryEnabled(false) })
 	source := fixture.IssuePrefix + "-idem-source"
 	target := fixture.IssuePrefix + "-idem-target"
 	seedDependencyEditorIssue(t, ctx, fixture, source)
@@ -309,6 +311,7 @@ func RunDependencyEditorSameTypeReAddIsIdempotent(t *testing.T, ctx context.Cont
 	assertDependencyEditorJournalCountIsOne(t, ctx, fixture, source, string(storeops.EventDepAdd))
 
 	assertHistoryDelta := dependencyEditorHistoryProbe(t, ctx, fixture)
+	versionsBefore := countDependencyEditorIssueVersions(t, ctx, fixture, source)
 	result, err := fixture.Editor.AddDependencies(ctx, request)
 	if err != nil {
 		t.Fatalf("re-adding the same edge with the same type refused: %v", err)
@@ -321,6 +324,9 @@ func RunDependencyEditorSameTypeReAddIsIdempotent(t *testing.T, ctx context.Cont
 	assertDependencyEditorEventCount(t, ctx, fixture, "events", source, types.EventDependencyAdded, 1)
 	assertDependencyEditorJournalCountIsOne(t, ctx, fixture, source, string(storeops.EventDepAdd))
 	assertHistoryDelta(0, "every edge of the request already existed with the requested type, so nothing was written and nothing is versioned")
+	if delta := countDependencyEditorIssueVersions(t, ctx, fixture, source) - versionsBefore; delta != 0 {
+		t.Errorf("issue_versions rows for %s went %d -> %d (delta %d), want a delta of 0: every edge of the request already existed with the requested type, so nothing was written and nothing is versioned", source, versionsBefore, versionsBefore+delta, delta)
+	}
 }
 
 // RunDependencyEditorSameTypeReAddWithChangedMetadataMintsOneVersion pins the
@@ -714,6 +720,8 @@ func RunDependencyEditorRemoveIsIdempotent(t *testing.T, ctx context.Context, fi
 	t.Helper()
 	fixture.SetJournalEnabled(true)
 	t.Cleanup(func() { fixture.SetJournalEnabled(false) })
+	fixture.SetVersionedHistoryEnabled(true)
+	t.Cleanup(func() { fixture.SetVersionedHistoryEnabled(false) })
 	source := fixture.IssuePrefix + "-rm-source"
 	target := fixture.IssuePrefix + "-rm-target"
 	seedDependencyEditorIssue(t, ctx, fixture, source)
@@ -738,6 +746,7 @@ func RunDependencyEditorRemoveIsIdempotent(t *testing.T, ctx context.Context, fi
 	assertDependencyEditorEventCount(t, ctx, fixture, "events", source, types.EventDependencyRemoved, 1)
 	assertDependencyEditorJournalCountIsOne(t, ctx, fixture, source, string(storeops.EventDepRemove))
 
+	versionsBefore := countDependencyEditorIssueVersions(t, ctx, fixture, source)
 	removed, err = fixture.Editor.RemoveDependency(ctx, request)
 	if err != nil {
 		t.Fatalf("replayed RemoveDependency error = %v, want nil: a missing edge is a success", err)
@@ -747,6 +756,9 @@ func RunDependencyEditorRemoveIsIdempotent(t *testing.T, ctx context.Context, fi
 	}
 	assertDependencyEditorEventCount(t, ctx, fixture, "events", source, types.EventDependencyRemoved, 1)
 	assertDependencyEditorJournalCountIsOne(t, ctx, fixture, source, string(storeops.EventDepRemove))
+	if delta := countDependencyEditorIssueVersions(t, ctx, fixture, source) - versionsBefore; delta != 0 {
+		t.Errorf("issue_versions rows for %s went %d -> %d (delta %d), want a delta of 0: replaying a removal that already landed found nothing to remove, so nothing should be versioned", source, versionsBefore, versionsBefore+delta, delta)
+	}
 }
 
 // RunDependencyEditorAppliesParentChildBeforeBlockingEdges pins
