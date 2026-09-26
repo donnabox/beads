@@ -55,7 +55,7 @@ func TestLinkUnlinkAndIncidentLifecycle(t *testing.T) {
 			assertIncident(t, ctx, s, LinksRequest{BeadPath: "beads/work"}, dep.Link, info.Link)
 			assertIncident(t, ctx, s, LinksRequest{BeadPath: "beads/work", Direction: "in"})
 			assertIncident(t, ctx, s, LinksRequest{BeadPath: "beads/work", TypeURL: RelatedTypeURL(o.Binding.ScopeURL)}, info.Link)
-			if _, err := s.Unlink(ctx, LinkDeleteRequest{Path: "links/block", Unconditional: true, UnconditionalSource: true}); !errors.Is(err, ErrCapabilityUnavailable) {
+			if _, err := s.Unlink(ctx, LinkDeleteRequest{SourcePath: "beads/work", TargetPath: "beads/prereq", TypeURL: DependencyTypeURL(o.Binding.ScopeURL), Actor: "author", Unconditional: true, UnconditionalSource: true}); !errors.Is(err, ErrCapabilityUnavailable) {
 				t.Fatalf("blocking removal: %v", err)
 			}
 			if _, err := s.ListLinks(ctx, LinksRequest{BeadPath: "beads/work", Direction: "other"}); !errors.Is(err, storage.ErrValidation) {
@@ -440,8 +440,19 @@ func TestIncidentMappingCorruptionRefuses(t *testing.T) {
 					t.Fatalf("incomplete listing: %v", err)
 				}
 
-				if _, err := s.Unlink(ctx, LinkDeleteRequest{SourcePath: "beads/source", TargetPath: "beads/target", TypeURL: typ, Unconditional: true, UnconditionalSource: true}); !errors.Is(err, ErrInvalidStore) {
+				// Blocking pair selection is outside the preview capability and
+				// refuses before reading storage, even when that storage is corrupt.
+				wantPairError := ErrInvalidStore
+				if typ == DependencyTypeURL(o.Binding.ScopeURL) {
+					wantPairError = ErrCapabilityUnavailable
+				}
+				if _, err := s.Unlink(ctx, LinkDeleteRequest{SourcePath: "beads/source", TargetPath: "beads/target", TypeURL: typ, Unconditional: true, UnconditionalSource: true}); !errors.Is(err, wantPairError) {
 					t.Fatalf("corrupt pair selection: %v", err)
+				}
+				if corruption == "dependency-payload" {
+					if _, err := s.Unlink(ctx, LinkDeleteRequest{Path: "links/test", Unconditional: true, UnconditionalSource: true, Actor: "author"}); !errors.Is(err, ErrInvalidStore) {
+						t.Fatalf("corrupt canonical selection: %v", err)
+					}
 				}
 			})
 		}

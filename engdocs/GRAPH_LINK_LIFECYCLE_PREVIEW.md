@@ -1,5 +1,10 @@
 # Experimental incident Links and guarded unlink
 
+These are historical notes for the original slice and its evidence. For current
+capabilities, see the [README preview overview](../README.md#experimental-graph-workspace-preview),
+[Issue text editing](GRAPH_ISSUE_EDIT_PREVIEW.md), and
+[canonical blocking Dependency unlink](GRAPH_DEPENDENCY_UNLINK_PREVIEW.md).
+
 This slice starts from qualified [PR #22](https://github.com/donnabox/beads/pull/22)
 at `8b742c511bffff8813732d2fde56c5a487f5d115`, continuing the
 [fork delivery plan](https://github.com/donnabox/beads/pull/18) and

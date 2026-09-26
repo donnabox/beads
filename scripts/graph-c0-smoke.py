@@ -980,8 +980,8 @@ def exercise_link_lifecycle(capture):
         ("stale-source-guard", [first_path, "--if-revision", first["revision"], "--if-source-revision", "stale"], {"revision_conflict"}),
         ("conflicting-link-guards", [*guarded, "--unconditional"], bad_guard),
         ("conflicting-source-guards", [*guarded, "--unconditional-source"], bad_guard),
-        ("blocking-adapter-required", [blocking[0]["id"], "--if-revision", blocking[0]["revision"],
-                                       "--if-source-revision", issue["revision"]], {"capability_unavailable"}),
+        ("blocking-pair-unavailable", [blocking[0]["source"], blocking[0]["target"], "--resource-type", blocks_type,
+                                     "--unconditional", "--unconditional-source"], {"capability_unavailable"}),
         ("missing-pair", [target_path, source_path, "--resource-type", related_type,
                           "--unconditional", "--unconditional-source"], {"not_found"}),
     ]
@@ -996,7 +996,7 @@ def exercise_link_lifecycle(capture):
     for path, before in [(source_path, source), (target_path, target), (issue_path, issue),
                          (first_path, first), (second_path, second), (blocking[0]["id"], blocking[0])]:
         require(show("lifecycle-refusals-unchanged", path) == before, f"unlink refusals changed {path}")
-    capture.passed("unlink requires separate Link/source guards; stale/conflicting guards, blocking adapter and absent/ambiguous pair refuse without current-state changes")
+    capture.passed("unlink requires separate Link/source guards; stale/conflicting guards, blocking pair and absent/ambiguous pair refuse without current-state changes")
 
     yaml_path = capture.work / ".beads" / "config.yaml"
     original_yaml = yaml_path.read_bytes() if yaml_path.exists() else None

@@ -1,7 +1,12 @@
 # Disposable graph CLI preview
 
-These notes describe the earlier bounded slice. For the current successor
-(schema 4), see [mixed-Link operations and limits](GRAPH_MIXED_LINK_PREVIEW.md).
+These are historical notes for the original slice and its evidence. For current
+capabilities, see the [README preview overview](../README.md#experimental-graph-workspace-preview),
+[Issue text editing](GRAPH_ISSUE_EDIT_PREVIEW.md), and
+[canonical blocking Dependency unlink](GRAPH_DEPENDENCY_UNLINK_PREVIEW.md).
+
+The earlier schema-4 successor is documented in
+[mixed-Link operations and limits](GRAPH_MIXED_LINK_PREVIEW.md).
 
 This branch extends the first installed vertical slice for [delivery plan review #18](https://github.com/donnabox/beads/pull/18). It adds experimental Issue create/read and blocking-Dependency workflow adapters described in [the Issue preview notes](GRAPH_ISSUE_ADAPTER_PREVIEW.md) and [workflow notes](GRAPH_DEPENDENCY_WORKFLOW_PREVIEW.md). It is not complete Memory or Issue workflow support. The original three-working-day attempt began September 23, 2026 at 07:01 PDT. September 23's command demonstration commitment was missed during a capacity interruption; installed command evidence began September 24.
 
@@ -30,7 +35,7 @@ For an ordinary, externally managed Dolt SQL server, add `--server --external --
 
 The preview uses the exact persisted storage route. Select the workspace with the working directory, `--directory`, or `BEADS_DIR`. Its `.beads/.env` supplies policy and static credentials with shell values taking precedence. Unsupported backend values, database selectors, redirects and conflicting endpoint/data-directory assertions refuse before opening storage; the preview does not silently ignore them or start another server. Server passwords may come from `BEADS_DOLT_PASSWORD` or the existing endpoint-keyed credentials file. Credential commands are explicitly unsupported. An explicit init `--server-user` wins over environment defaults; later opens honor the static environment user. Quiet init suppresses human output while retaining explicit JSON output.
 
-## Current boundaries
+## Boundaries of the original slice
 
 - Specialized Issue create/read, local blocking Dependencies, close and ready are experimental on this branch. General Issue updates and the remaining workflows are not implemented. Issue payloads remain authoritative in the existing normalized Issue tables; no second editable graph representation is created.
 - The C0 catalog contained one experimental Scope-local Memory descriptor, as permitted for the minimal checkpoint in plan §5. Complete built-in catalog installation belongs to W1/M1; it is not an additional prerequisite invented for the one-Memory C0 transcript. This branch also installs experimental Issue and blocking-Dependency descriptors. All descriptors and the schema are provisional; these disposable workspaces carry no migration, movement, backup or recovery compatibility promise.

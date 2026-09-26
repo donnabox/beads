@@ -346,6 +346,98 @@ try {
   artifacts.memoryEdit = { record: edited, mutation: memoryMutation, unchangedLink };
   pass('public client sees CLI Memory content edit with unchanged owned Link and consistent properties');
 
+  // A retained current-read cursor is a snapshot capability, not public History.
+  // Delete only after all earlier fixtures/checks have completed.
+  const deletionOwner = client.createContinuationScope();
+  try {
+    const deletionSourceBefore = await perform({ kind: 'resource', resource: 'bead', id: workID });
+    const deletionLinkBefore = await perform({ kind: 'resource', resource: 'link', id: dependencyID });
+    assert.deepEqual(deletionSourceBefore, workAfter);
+    assert.deepEqual(deletionLinkBefore, dependencyBefore);
+    const deletionLinksBefore = await perform({ kind: 'collection', collection: 'links', limit: 100 });
+    assert.equal(deletionLinksBefore.next, null);
+    assert.equal(deletionLinksBefore.items.length, 3);
+    const retainedFirst = await perform({ kind: 'collection', collection: 'beads', limit: 1 },
+      { continuationScope: deletionOwner });
+    assert.equal(retainedFirst.items[0].id, id('beads/alpha'));
+    assert.ok(retainedFirst.next);
+
+    const deletionArgs = ['unlink', dependencyID, '--if-revision', deletionLinkBefore.revision,
+      '--if-source-revision', deletionSourceBefore.revision, '--actor', 'bdp-read-dependency-remover', '--json'];
+    const deletionBinary = digest(await readFile(process.env.BDP_BD));
+    let deletionExecution;
+    let deletionExitCode = null;
+    try {
+      deletionExecution = await promisify(execFile)(process.env.BDP_BD, deletionArgs,
+        { timeout: 60_000, maxBuffer: 2 * 1024 * 1024, encoding: 'utf8' });
+      deletionExitCode = 0;
+    } catch (error) {
+      deletionExecution = error;
+      deletionExitCode = typeof error.code === 'number' ? error.code : null;
+      throw error;
+    } finally {
+      await writeFile(join(output, 'client-cli-dependency-unlink.stdout.log'), deletionExecution?.stdout ?? '');
+      await writeFile(join(output, 'client-cli-dependency-unlink.stderr.log'), deletionExecution?.stderr ?? '');
+      await writeFile(join(output, 'client-cli-dependency-unlink.json'), JSON.stringify({
+        argv: [process.env.BDP_BD, ...deletionArgs], cwd: process.cwd(), binarySha256: deletionBinary,
+        exitCode: deletionExitCode, signal: deletionExecution?.signal ?? null,
+        stdoutSha256: digest(deletionExecution?.stdout ?? ''), stderrSha256: digest(deletionExecution?.stderr ?? ''),
+      }, null, 2));
+    }
+    assert.equal(digest(await readFile(process.env.BDP_BD)), deletionBinary, 'installed binary changed');
+    const deletionMutation = JSON.parse(deletionExecution.stdout);
+    assert.equal(deletionMutation.preview, true);
+    assert.equal(deletionMutation.result.changed, true);
+    assert.equal(deletionMutation.result.link.id, dependencyID);
+    assert.equal(deletionMutation.result.link.state, 'deleted');
+    assert.equal(deletionMutation.result.link.previousVersion, deletionLinkBefore.revision);
+
+    const retainedPages = [retainedFirst];
+    while (retainedPages.at(-1).next !== null) {
+      assert.ok(retainedPages.length < 10, 'retained deletion page cap');
+      retainedPages.push(await perform({ kind: 'collection', collection: 'beads',
+        continuation: retainedPages.at(-1).next }, { continuationScope: deletionOwner }));
+    }
+    const retainedItems = retainedPages.flatMap(page => page.items);
+    assert.equal(retainedItems.length, 4);
+    assert.equal(new Set(retainedItems.map(item => item.id)).size, 4);
+    const retainedSource = retainedItems.find(bead => bead.id === workID);
+    assert.deepEqual(retainedSource, deletionSourceBefore);
+    assert.deepEqual(Object.values(retainedSource.ownedLinks).flat(), [deletionLinkBefore]);
+
+    const deletionSourceAfter = await perform({ kind: 'resource', resource: 'bead', id: workID });
+    assert.equal(deletionSourceAfter.revision, deletionMutation.result.source.revision);
+    assert.notEqual(deletionSourceAfter.revision, deletionSourceBefore.revision);
+    assert.deepEqual(Object.values(deletionSourceAfter.ownedLinks).flat(), []);
+    assert.deepEqual(deletionSourceAfter.properties, {
+      ...deletionSourceBefore.properties, updated_at: deletionSourceAfter.properties.updated_at,
+    });
+    const deletionLinksAfter = await perform({ kind: 'collection', collection: 'links', limit: 100 });
+    assert.equal(deletionLinksAfter.next, null);
+    const survivingLinks = deletionLinksBefore.items.filter(link => link.id !== dependencyID);
+    assert.equal(survivingLinks.length, 2);
+    assert.deepEqual(deletionLinksAfter.items, survivingLinks);
+    const deletionIncident = await perform({ kind: 'bead-links', bead: workID, direction: 'both', limit: 100 });
+    assert.equal(deletionIncident.next, null);
+    assert.deepEqual(deletionIncident.items, survivingLinks);
+    const deletionTargetAfter = await perform({ kind: 'resource', resource: 'bead', id: targetID });
+    assert.deepEqual(deletionTargetAfter, targetBefore);
+    const gone = await client.perform({ kind: 'resource', resource: 'link', id: dependencyID });
+    assert.equal(isBdpClientProblem(gone), true);
+    assert.equal(gone.code, 'resource-not-found');
+    assert.equal(gone.status, 404);
+    const goneHTTP = await http(dependencyID);
+    assert.equal(goneHTTP.response.status, 404);
+    assert.equal(JSON.parse(goneHTTP.text).code, 'resource-not-found');
+    artifacts.dependencyUnlink = { mutation: deletionMutation, sourceBefore: deletionSourceBefore,
+      sourceAfter: deletionSourceAfter, linkBefore: deletionLinkBefore, retainedPages,
+      linksBefore: deletionLinksBefore, linksAfter: deletionLinksAfter, incidentAfter: deletionIncident,
+      targetAfter: deletionTargetAfter, gone, mechanism: 'CLI deletion; current BDP Read and retained collection snapshot, not public History' };
+    pass('guarded CLI Dependency unlink updates fresh public-client ownership/inventory, preserves target/context, returns current 404 resource-not-found, and retains old source/Link through an existing cursor');
+  } finally {
+    client.forgetContinuations(deletionOwner);
+  }
+
 } catch (error) {
   failure = { name: error.name, message: error.message, stack: error.stack };
   process.exitCode = 1;

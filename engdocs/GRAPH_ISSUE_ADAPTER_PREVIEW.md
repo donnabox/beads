@@ -1,5 +1,10 @@
 # Experimental Issue create/read adapter
 
+These are historical notes for the original slice and its evidence. For current
+capabilities, see the [README preview overview](../README.md#experimental-graph-workspace-preview),
+[Issue text editing](GRAPH_ISSUE_EDIT_PREVIEW.md), and
+[canonical blocking Dependency unlink](GRAPH_DEPENDENCY_UNLINK_PREVIEW.md).
+
 These notes describe the earlier bounded slice. For the current successor
 (schema 4), see [mixed-Link operations and limits](GRAPH_MIXED_LINK_PREVIEW.md).
 

@@ -12,11 +12,12 @@ import (
 
 var graphUnlinkCmd = &cobra.Command{
 	Use: "unlink LINK | SOURCE TARGET", GroupID: "issues",
-	Short: "Remove an informational Link in an experimental graph workspace",
-	Long: `Remove one informational Link by its canonical identity, or select one
-unambiguous source/target pair using --resource-type. Requires a Link revision
-guard and, when Memory owns it, a source guard. The ID stays reserved and prior
-snapshots remain retained. Blocking Dependency removal is not yet supported.`,
+	Short: "Remove a Link in an experimental graph workspace",
+	Long: `Remove one informational Link or blocking Dependency by canonical Link ID.
+Informational Links also accept an unambiguous source/target pair selected with
+--resource-type. Requires a Link revision guard and a source guard when the Link
+is owned (Memory Links and blocking Dependencies). The ID stays reserved and
+prior snapshots remain retained. Blocking pair selection is not supported.`,
 	SilenceUsage: true, SilenceErrors: true,
 	RunE: runGraphPreviewUnlink,
 }

@@ -132,10 +132,17 @@ func (s *Store) checkCollectionMappingsInTx(ctx context.Context, tx *sql.Tx) err
 	if err := s.checkLinkMappingsInTx(ctx, tx); err != nil {
 		return err
 	}
+	var deletedInvalid int
+	if err := tx.QueryRowContext(ctx, `SELECT COUNT(*) FROM graph_preview_catalog WHERE allocation_state='deleted' AND ((backing='informational' AND type_url<>?) OR (backing='dependency' AND type_url<>?) OR type_url IS NULL)`, RelatedTypeURL(s.ScopeURL()), DependencyTypeURL(s.ScopeURL())).Scan(&deletedInvalid); err != nil {
+		return err
+	}
+	if deletedInvalid != 0 {
+		return fmt.Errorf("%w: deleted Link Type differs from its authority", ErrInvalidStore)
+	}
 	for _, query := range []string{
 		`SELECT COUNT(*) FROM graph_preview_payloads p LEFT JOIN graph_preview_catalog c ON c.path=p.path WHERE c.path IS NULL OR c.resource_kind<>'bead' OR c.backing<>'generic' OR c.allocation_state<>'live'`,
 		`SELECT COUNT(*) FROM issues i LEFT JOIN graph_preview_catalog c ON c.backing='issue' AND c.backing_key=i.id WHERE c.path IS NULL OR c.resource_kind<>'bead' OR c.allocation_state<>'live'`,
-		`SELECT COUNT(*) FROM graph_preview_catalog WHERE allocation_state='deleted' AND (resource_kind<>'link' OR backing<>'informational')`,
+		`SELECT COUNT(*) FROM graph_preview_catalog WHERE allocation_state='deleted' AND (resource_kind<>'link' OR backing NOT IN ('informational','dependency') OR backing_key IS NOT NULL)`,
 	} {
 		var invalid int
 		if err := tx.QueryRowContext(ctx, query).Scan(&invalid); err != nil {
