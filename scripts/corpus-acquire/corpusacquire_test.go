@@ -56,13 +56,18 @@ import (
 var realDolt string
 
 func TestMain(m *testing.M) {
-	p, err := exec.LookPath("dolt")
-	if err != nil {
-		fmt.Fprintln(os.Stderr, "scripts/corpus-acquire tests require a real `dolt` CLI on PATH:", err)
-		os.Exit(1)
-	}
-	realDolt = p
+	// A missing dolt leaves realDolt empty: the tests that need it skip via
+	// requireDolt, like the other scripts/ packages, and the rest still run.
+	realDolt, _ = exec.LookPath("dolt")
 	os.Exit(m.Run())
+}
+
+// requireDolt skips a test that needs the real dolt CLI when none is on PATH.
+func requireDolt(t *testing.T) {
+	t.Helper()
+	if realDolt == "" {
+		t.Skip("dolt not installed, skipping corpus-acquire fixture test")
+	}
 }
 
 // ---- fixture helpers ----------------------------------------------------
@@ -71,6 +76,7 @@ func TestMain(m *testing.M) {
 // fails the test on error.
 func runDolt(t *testing.T, dir string, args ...string) string {
 	t.Helper()
+	requireDolt(t)
 	cmd := exec.Command(realDolt, args...)
 	cmd.Dir = dir
 	out, err := cmd.CombinedOutput()
@@ -103,6 +109,7 @@ func firstCommitHashFromLog(t *testing.T, log string) string {
 // the HEAD commit hash.
 func newFixtureDB(t *testing.T, dataDir, db string, issueCount int) string {
 	t.Helper()
+	requireDolt(t)
 	dir := filepath.Join(dataDir, db)
 	if err := os.MkdirAll(dir, 0o755); err != nil {
 		t.Fatalf("MkdirAll(%s): %v", dir, err)
