@@ -195,6 +195,7 @@ func TestAuthoritativeRecordsProjectToPublicWire(t *testing.T) {
 			if !reflect.DeepEqual(remainingInventory, checkInventory(t, ctx, r, 4, 2)) {
 				t.Fatal("inventory changed after reopen without a write")
 			}
+			checkStoredSelectionAndPages(t, ctx, r)
 		})
 	}
 }

@@ -241,3 +241,5 @@ The [BDP record projection](engdocs/GRAPH_BDP_READ_PROJECTION.md) prepares the
 same stored records for public wire reads; it does not yet enable graph HTTP serving.
 Its internal inventory reads current Beads, Links, installed Types and a writer
 state token in one transaction, refusing oversized results rather than truncating.
+Internal collection filters, bounded Selectors and retained snapshot pages now
+compose with that inventory; HTTP authorization and serving remain the next step.
