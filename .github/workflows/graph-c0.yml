@@ -2,7 +2,7 @@ name: Graph C0 preview
 
 on:
   push:
-    branches: [codex/janet-c0-delivery-20260923, codex/janet-issue-adapter-20260924, codex/janet-dependency-workflow-20260925, codex/janet-mixed-links-20260925, codex/janet-link-lifecycle-20260925, codex/janet-bdp-read-20260925]
+    branches: [codex/janet-c0-delivery-20260923, codex/janet-issue-adapter-20260924, codex/janet-dependency-workflow-20260925, codex/janet-mixed-links-20260925, codex/janet-link-lifecycle-20260925, codex/janet-bdp-read-20260925, codex/janet-read-http-20260926]
   workflow_dispatch:
 
 permissions:
@@ -30,6 +30,56 @@ jobs:
           git rev-parse HEAD > "$RUNNER_TEMP/c0-evidence/source.txt"
           go version > "$RUNNER_TEMP/c0-evidence/go-version.txt"
           sha256sum "$RUNNER_TEMP/c0-bin/bd" > "$RUNNER_TEMP/c0-evidence/binary.sha256"
+      - name: Install pinned independent-client Node runtime
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020
+        with:
+          node-version: '24.16.0'
+      - name: Build exact public BDP client revision independently
+        run: |
+          set -euo pipefail
+          # Public repository: no token, secret, or inherited checkout credential.
+          # This sibling tree never changes the Beads source under qualification.
+          mkdir "$RUNNER_TEMP/bdp-client-53bdbd0"
+          cd "$RUNNER_TEMP/bdp-client-53bdbd0"
+          export GIT_CONFIG_NOSYSTEM=1 GIT_CONFIG_GLOBAL=/dev/null GIT_TERMINAL_PROMPT=0
+          {
+            git init
+            git -c credential.helper= fetch --depth=1 https://github.com/gastownhall/bdp.git \
+              53bdbd03136875f952af184fce7b3c7af8f74e96
+            git checkout --detach FETCH_HEAD
+            test "$(git rev-parse HEAD)" = 53bdbd03136875f952af184fce7b3c7af8f74e96
+            git rev-parse HEAD > "$RUNNER_TEMP/c0-evidence/client-source.txt"
+            node --version
+            npm install --global --ignore-scripts pnpm@11.20.0
+            test "$(node --version)" = v24.16.0
+            test "$(pnpm --version)" = 11.20.0
+            pnpm install --frozen-lockfile --ignore-scripts
+            pnpm exec tsc -b packages/client
+            git diff --exit-code HEAD
+            git status --porcelain > "$RUNNER_TEMP/c0-evidence/client-working-tree.txt"
+            test ! -s "$RUNNER_TEMP/c0-evidence/client-working-tree.txt"
+            python3 - <<'PY'
+          import hashlib, json, os, pathlib, subprocess
+          root = pathlib.Path.cwd()
+          files = ['pnpm-lock.yaml', 'packages/client/src/index.ts',
+                   'packages/client/dist/index.js', 'packages/protocol/src/index.ts',
+                   'packages/protocol/dist/index.js', 'schemas/bdp-v0.schema.json']
+          receipt = {
+              'source': 'gastownhall/bdp',
+              'commit': subprocess.check_output(['git', 'rev-parse', 'HEAD'], text=True).strip(),
+              'source_method': 'unauthenticated exact-commit public git fetch into separate checkout',
+              'node': subprocess.check_output(['node', '--version'], text=True).strip(),
+              'pnpm': subprocess.check_output(['pnpm', '--version'], text=True).strip(),
+              'install': 'pnpm install --frozen-lockfile --ignore-scripts',
+              'build': 'pnpm exec tsc -b packages/client',
+              'passed': True,
+              'http_interop': False,
+              'files': {name: hashlib.sha256((root / name).read_bytes()).hexdigest() for name in files},
+          }
+          (pathlib.Path(os.environ['RUNNER_TEMP']) / 'c0-evidence/client-build.json').write_text(
+              json.dumps(receipt, indent=2) + '\n')
+          PY
+          } 2>&1 | tee "$RUNNER_TEMP/c0-evidence/client-build.log"
       - name: Qualify embedded command sequence
         run: |
           python3 scripts/graph-c0-smoke.py --bd "$RUNNER_TEMP/c0-bin/bd" \
@@ -77,8 +127,14 @@ jobs:
           BEADS_GRAPH_TEST_SERVER_PORT=15440 GO_TEST_PKG_PARALLEL=1 TEST_VERBOSE=1 TEST_TIMEOUT=10m \
             ./scripts/test.sh ./internal/storage/graphstore ./internal/configfile \
               ./internal/storage/issueops ./internal/storage/schema \
-              ./internal/httpapi/graphread ./internal/httpapi/bdpwire \
+              ./internal/httpapi/graphread ./internal/httpapi/bdpwire ./internal/httpapi \
             > "$RUNNER_TEMP/c0-evidence/storage-tests.log" 2>&1
+          # Provision the fresh CLI-authored HTTP workspace only after all other
+          # package setup finishes on this Dolt 2.1.8 server.
+          python3 scripts/graph-bdp-read-smoke.py --bd "$RUNNER_TEMP/c0-bin/bd" \
+            --server-port 15440 --bdp-checkout "$RUNNER_TEMP/bdp-client-53bdbd0" \
+            --node "$(command -v node)" --output-dir "$RUNNER_TEMP/c0-evidence/http" \
+            > "$RUNNER_TEMP/c0-evidence/http-smoke.log" 2>&1
       - name: Preserve receipts (including failures)
         if: always()
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a

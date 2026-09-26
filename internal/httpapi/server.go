@@ -25,6 +25,7 @@ import (
 	"golang.org/x/net/netutil"
 
 	"github.com/steveyegge/beads/internal/httpapi/apigen"
+	"github.com/steveyegge/beads/internal/httpapi/bdpwire"
 	"github.com/steveyegge/beads/internal/storage"
 	"github.com/steveyegge/beads/internal/storage/domain"
 	"github.com/steveyegge/beads/internal/storage/uow"
@@ -112,6 +113,9 @@ const (
 // Config is everything the server needs to answer. It is assembled by the
 // caller — the package resolves no workspace state of its own.
 type Config struct {
+	// GraphRead selects the BDP Read surface exclusively. It cannot be mixed
+	// with legacy Issue roles or a provider, and never publishes their routes.
+	GraphRead *GraphRead
 	// Addr is the host:port to bind. The host must be a numeric IP literal;
 	// see ValidateBindAddr.
 	Addr string
@@ -647,6 +651,12 @@ func anyRoleFiresHooks(cfg Config) bool {
 }
 
 func checkDatabaseSource(cfg Config) error {
+	if cfg.GraphRead != nil {
+		if cfg.Provider != nil || anyRoleSet(cfg) || cfg.EventsJournal != nil || cfg.EventsJournalEnabled {
+			return errors.New("httpapi: graph Read cannot be combined with legacy database sources")
+		}
+		return cfg.GraphRead.validate()
+	}
 	switch {
 	case cfg.Provider != nil && (anyRoleSet(cfg) || cfg.EventsJournal != nil):
 		return errors.New("httpapi: both a unit-of-work provider and issue roles were set; pass exactly one database source")
@@ -1302,6 +1312,9 @@ func orDefault(v, fallback time.Duration) time.Duration {
 // catch-all that keeps unrouted paths on the same error shape, and the
 // middleware in front of both.
 func (s *Server) handler() http.Handler {
+	if s.cfg.GraphRead != nil {
+		return s.withRequestContext(s.checkHost(s.graphReadRoute()))
+	}
 	mux := http.NewServeMux()
 	// Rows carrying a customMethod SHARE a pattern, so they get one
 	// registration between them and a dispatcher in front. Collected in table
@@ -1384,6 +1397,9 @@ func (s *Server) withRequestContext(next http.Handler) http.Handler {
 
 		// No client or intermediary may cache an answer about live work.
 		w.Header().Set("Cache-Control", "no-store")
+		if s.cfg.GraphRead != nil {
+			w.Header().Set("Cache-Control", "private, no-store")
+		}
 
 		sw := &statusWriter{
 			ResponseWriter: w,
@@ -1481,6 +1497,10 @@ func (s *Server) panicked(sw *statusWriter, r *http.Request, rec *reqInfo, p any
 		// superfluous-WriteHeader line to the log.
 		return
 	}
+	if s.cfg.GraphRead != nil {
+		graphReadResponse(sw, r, http.StatusInternalServerError, nil, "", "", nil)
+		return
+	}
 	s.fail(sw, r, newResult(CodeInternal, ""))
 }
 
@@ -1493,6 +1513,10 @@ func (s *Server) checkHost(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		if !s.hosts.allows(r.Host) {
 			requestInfo(r.Context()).refuse(r.Host)
+			if s.cfg.GraphRead != nil {
+				graphReadProblem(w, r, bdpwire.CodeMalformedRequest)
+				return
+			}
 			s.fail(w, r, InvalidArgument("Host", ReasonInvalidValue,
 				"Host header is not one this server answers to"))
 			return
@@ -1620,6 +1644,10 @@ func (s *Server) authorize(w http.ResponseWriter, r *http.Request, rec *reqInfo)
 
 	s.event("auth_refused", "request_id", rec.id, "op", rec.op,
 		"reason", reason, "remote_addr", r.RemoteAddr)
+	if s.cfg.GraphRead != nil {
+		graphReadProblem(w, r, bdpwire.CodeUnauthenticated)
+		return false
+	}
 	s.fail(w, r, newResult(CodeUnauthenticated, ""))
 	return false
 }
@@ -1933,6 +1961,10 @@ func (s *Server) nextID() string {
 }
 
 func (s *Server) logStartup() {
+	capabilities := strings.Join(s.ctxBody.Capabilities, ",")
+	if s.cfg.GraphRead != nil {
+		capabilities = "bdp-read"
+	}
 	s.event("startup",
 		"addr", s.Addr(),
 		"mode", s.cfg.Mode,
@@ -1941,7 +1973,7 @@ func (s *Server) logStartup() {
 		"beads_dir", s.cfg.Workspace.BeadsDir,
 		"database", s.cfg.Workspace.Database,
 		"host_allowlist", s.hosts.label(),
-		"capabilities", strings.Join(s.ctxBody.Capabilities, ","),
+		"capabilities", capabilities,
 		// Whether this server requires a credential is the first thing an
 		// operator checks after a deploy, and the last thing they should have
 		// to infer from the absence of a flag in a process listing.
@@ -1977,6 +2009,9 @@ func (s *Server) logStartup() {
 // true value and is indistinguishable, on its own, from instrumentation that
 // broke. This is the line that tells them apart.
 func (s *Server) dbSource() string {
+	if s.cfg.GraphRead != nil {
+		return "graph-read"
+	}
 	if s.provider != nil {
 		return "provider"
 	}

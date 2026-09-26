@@ -60,8 +60,25 @@ var serveCmd = &cobra.Command{
 	Long: `Serve the beads HTTP API — the same work surface the CLI answers, for
 automation clients that would otherwise fork a bd subprocess per call.
 
-The wire contract is described by an OpenAPI document (/v0); GET
-/v0/beads/context reports which operations this build actually implements.
+GRAPH WORKSPACE PREVIEW
+
+  In an initialized graph workspace backed by ordinary shared-server Dolt,
+  this command serves BDP Read at the persisted Scope URL path: discovery,
+  Resources, Types, properties, filtered inventories, incident Links and retained
+  pages. It accepts --readonly and publishes no HTTP write operations, History,
+  aliases, /healthz or legacy /v0 routes. Embedded graph serving is refused.
+  Use the authenticated Scope or bdp.json read for readiness. Every accepted
+  token can read the complete workspace; cursors expire after five minutes
+  and do not survive process restart. Stop serving before restoring storage.
+  Bind a stable address reachable through the initialized Scope URL. Host
+  aliases do not change canonical identities. See engdocs/GRAPH_BDP_READ_HTTP.md.
+
+LEGACY ISSUE WORKSPACES
+
+  The following operation and probe descriptions apply to legacy Issue mode.
+  Its wire contract is described by an OpenAPI document (/v0); GET
+  /v0/beads/context reports which operations this build actually implements.
+  Deployment, token rotation and Host controls also apply to graph mode.
 
 DEPLOYMENT
 
@@ -149,6 +166,14 @@ DESTRUCTIVE OPERATIONS
   address can erase closed work; bind it accordingly.`,
 	Args: cobra.NoArgs,
 	RunE: func(cmd *cobra.Command, args []string) error {
+		if graphPreviewActive {
+			cmd.SilenceErrors, cmd.SilenceUsage = true, true
+			opts, err := resolveServeConfig()
+			if err != nil {
+				return HandleError("%v", err)
+			}
+			return runGraphServe(cmd, opts)
+		}
 		return runServe()
 	},
 }

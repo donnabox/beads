@@ -254,7 +254,7 @@ func useStorageModeGlobals(t *testing.T) {
 // So this pins what is left, and it is narrow and checkable:
 //
 //   - every httpapi.Config bd builds names exactly ONE COMPLETE database
-//     source — Provider alone, or Reader and Claimer together. A half-set pair
+//     source — Provider alone, GraphRead alone, or Reader and Claimer together. A half-set pair
 //     binds, answers every read, and nil-dereferences on the first claim;
 //     Listen refuses it, and so does this, one layer earlier;
 //   - both arms exist, so the test cannot pass because one was deleted;
@@ -270,7 +270,7 @@ func TestServeNamesOneDatabaseSourcePerServerItBuilds(t *testing.T) {
 	}
 
 	fset := token.NewFileSet()
-	var providerBacked, rolesBacked int
+	var providerBacked, rolesBacked, graphBacked int
 	for _, entry := range entries {
 		name := entry.Name()
 		if entry.IsDir() || !strings.HasSuffix(name, ".go") || strings.HasSuffix(name, "_test.go") {
@@ -300,17 +300,22 @@ func TestServeNamesOneDatabaseSourcePerServerItBuilds(t *testing.T) {
 			for _, lit := range httpapiConfigLiterals(fn) {
 				attributed++
 				keys := configLiteralKeys(lit)
-				provider := keys["Provider"]
+				provider, graph := keys["Provider"], keys["GraphRead"]
 				reader, claimer := keys["Reader"], keys["Claimer"]
 
 				switch {
-				case provider && (reader || claimer):
+				case provider && (reader || claimer || graph), graph && (reader || claimer):
 					t.Errorf("%s: this httpapi.Config names two database sources; pass exactly one",
 						fset.Position(lit.Pos()))
 				case reader != claimer:
 					t.Errorf("%s: this httpapi.Config sets one issue role without the other; a reader without a "+
 						"claimer binds, answers every read, and fails the first claim on a live server",
 						fset.Position(lit.Pos()))
+				case graph:
+					graphBacked++
+					if !functionMentions(fn, "DoltModeServer") || !functionMentions(fn, "OpenExisting") {
+						t.Errorf("%s: graph source must explicitly gate ordinary-server mode and open existing storage", fset.Position(lit.Pos()))
+					}
 				case provider:
 					providerBacked++
 				case reader && claimer:
@@ -332,7 +337,10 @@ func TestServeNamesOneDatabaseSourcePerServerItBuilds(t *testing.T) {
 		}
 	}
 
-	// Both arms, so the test cannot pass because one was deleted, renamed, or
+	if graphBacked == 0 {
+		t.Error("no graph Read source in cmd/bd")
+	}
+	// Both legacy arms, so the test cannot pass because one was deleted, renamed, or
 	// stopped naming a source at all.
 	if providerBacked == 0 {
 		t.Error("no provider-backed httpapi.Config in cmd/bd: the dolt SQL-server workspaces are no longer served")
