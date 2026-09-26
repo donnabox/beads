@@ -26,7 +26,7 @@ import (
 )
 
 const graphPreviewMarker = "graph-preview-format"
-const graphPreviewGeneration = "link-preview-v4\n"
+const graphPreviewGeneration = "link-preview-v5\n"
 
 var graphPreviewActive bool
 var graphPreviewDir string
@@ -152,6 +152,9 @@ func admitGraphPreview(cmd *cobra.Command) (bool, error) {
 		return true, graphFailure("not_authority", "graph_mode assertion does not match persisted workspace format", 5)
 	}
 	if mode != "link" {
+		if cmd == graphUnlinkCmd || cmd == graphLinksCmd {
+			return true, graphFailure("capability_unavailable", "this command requires an experimental graph workspace", 5)
+		}
 		if cmd == linkCmd && (cmd.Flags().Changed("resource-type") || cmd.Flags().Changed("id") || cmd.Flags().Changed("properties") || cmd.Flags().Changed("if-source-revision") || cmd.Flags().Changed("unconditional-source")) {
 			return true, graphFailure("capability_unavailable", "generic Link options require a workspace initialized with graph_mode link", 5)
 		}
@@ -173,8 +176,8 @@ func admitGraphPreview(cmd *cobra.Command) (bool, error) {
 	if err != nil || real != cfg.GraphWorkspace {
 		return true, graphFailure("not_authority", "graph_mode workspace binding differs; copied/moved workspaces cannot claim this authority", 5)
 	}
-	if cmd != rememberCmd && cmd != createCmd && cmd != showCmd && cmd != statusCmd && cmd != depAddCmd && cmd != linkCmd && cmd != closeCmd && cmd != readyCmd && cmd != updateCmd {
-		return true, graphFailure("capability_unavailable", "graph_mode link preview supports create, remember, show, dep add, link, update links/PATH, close, ready, and status --graph; this command has not opened the legacy store", 5)
+	if cmd != rememberCmd && cmd != createCmd && cmd != showCmd && cmd != statusCmd && cmd != depAddCmd && cmd != linkCmd && cmd != closeCmd && cmd != readyCmd && cmd != updateCmd && cmd != graphUnlinkCmd && cmd != graphLinksCmd {
+		return true, graphFailure("capability_unavailable", "graph_mode link preview supports create, remember, show, dep add, link, update links/PATH, unlink, links, close, ready, and status --graph; this command has not opened the legacy store", 5)
 	}
 	if cmd == statusCmd {
 		enabled, _ := cmd.Flags().GetBool("graph")
@@ -418,7 +421,7 @@ func runGraphPreviewStatus(cmd *cobra.Command) error {
 		return err
 	}
 	return withGraphStore(func(_ context.Context, _ *graphstore.Store) (any, string, error) {
-		return map[string]any{"scope": graphPreviewConfig.GraphScopeURL, "backend": graphPreviewConfig.DoltMode, "preview": true, "limits": map[string]int{"issueOwnedLinks": graphstore.PreviewOwnedLinkLimit, "memoryOwnedLinks": graphstore.PreviewOwnedLinkLimit, "linkPropertiesInputBytes": graphPreviewPropertiesLimit}, "capabilities": map[string]bool{"memoryCreate": true, "issueCreate": true, "issueWorkflows": false, "blockingDependency": true, "informationalLink": true, "linkPropertiesUpdate": true, "linkUnlink": false, "issueClose": true, "issueReady": true, "genericRead": true, "memory": false, "historyExact": false, "ownedLinks": true, "requestStatus": false, "backupContinuity": false}}, "Graph preview: Memory and Issue create/read, local blocking Dependencies, informational Links and guarded Link-property replacement, Issue close and ready. Full Memory, public History, unlink, remaining Issue workflows, BDP and recovery remain unavailable.", nil
+		return map[string]any{"scope": graphPreviewConfig.GraphScopeURL, "backend": graphPreviewConfig.DoltMode, "preview": true, "limits": map[string]int{"issueOwnedLinks": graphstore.PreviewOwnedLinkLimit, "memoryOwnedLinks": graphstore.PreviewOwnedLinkLimit, "linkPropertiesInputBytes": graphPreviewPropertiesLimit, "incidentLinks": graphstore.PreviewIncidentLinkLimit}, "capabilities": map[string]bool{"memoryCreate": true, "issueCreate": true, "issueWorkflows": false, "blockingDependency": true, "informationalLink": true, "linkPropertiesUpdate": true, "linkUnlink": true, "blockingDependencyUnlink": false, "incidentLinks": true, "issueClose": true, "issueReady": true, "genericRead": true, "memory": false, "historyExact": false, "ownedLinks": true, "requestStatus": false, "backupContinuity": false}}, "Graph preview: Memory and Issue create/read, local blocking Dependencies, informational Links and guarded Link-property replacement/unlink, incident Link listing, Issue close and ready. Full Memory, public History, blocking Dependency unlink, remaining Issue workflows, BDP and recovery remain unavailable.", nil
 	})
 }
 
@@ -433,7 +436,19 @@ func graphPrint(result any, human string, quiet bool) error {
 }
 
 func graphStorageError(err error) error {
+	var ambiguous *graphstore.ErrAmbiguousLink
+	if errors.As(err, &ambiguous) {
+		if jsonOutput {
+			_ = json.NewEncoder(os.Stderr).Encode(map[string]any{"code": "ambiguous_link", "message": err.Error(), "retryable": false, "candidateIDs": ambiguous.CandidateIDs})
+			return &exitError{Code: 4}
+		}
+		return graphFailure("ambiguous_link", err.Error()+": "+strings.Join(ambiguous.CandidateIDs, ", "), 4)
+	}
 	switch {
+	case errors.Is(err, graphstore.ErrGone):
+		return graphFailure("gone", err.Error(), 3)
+	case errors.Is(err, graphstore.ErrCapabilityUnavailable), errors.Is(err, graphstore.ErrLimitExceeded):
+		return graphFailure("capability_unavailable", err.Error(), 5)
 	case errors.Is(err, graphstore.ErrOutcomeUnknown):
 		return graphFailure("outcome_unknown", err.Error()+"; do not automatically replay; inspect the canonical ID before deciding the next action", 6)
 	case errors.Is(err, graph.ErrValidation):

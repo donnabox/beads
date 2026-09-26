@@ -11,7 +11,7 @@ import (
 )
 
 // SchemaVersion identifies this explicitly experimental storage layout.
-const SchemaVersion = 4
+const SchemaVersion = 5
 
 // Binding is the exact identity expected by the local workspace metadata.
 // WorkspaceID is its canonical filesystem path; C0 does not support moving it.
@@ -92,6 +92,7 @@ var (
 	ErrInvalidStore   = errors.New("graph preview store identity or schema is invalid")
 	ErrAlreadyExists  = errors.New("canonical graph path has already been allocated")
 	ErrNotFound       = errors.New("graph resource not found")
+	ErrGone           = errors.New("graph resource was deleted")
 	ErrConflict       = errors.New("graph transaction conflicted")
 	ErrOutcomeUnknown = errors.New("graph transaction outcome is unknown; do not replay automatically")
 )
@@ -158,4 +159,44 @@ type LinkMutationResult struct {
 	Link    LinkRecord `json:"link"`
 	Source  any        `json:"source"`
 	Changed bool       `json:"changed"`
+}
+
+// LinksRequest selects complete current incident state in one read transaction.
+// Empty direction means both. Empty TypeURL admits all installed Link Types.
+type LinksRequest struct{ BeadPath, Direction, TypeURL string }
+
+// PreviewIncidentLinkLimit bounds this disposable non-paginated reader.
+const PreviewIncidentLinkLimit = 1000
+
+// ErrAmbiguousLink identifies all candidates without deleting any of them.
+type ErrAmbiguousLink struct{ CandidateIDs []string }
+
+func (e *ErrAmbiguousLink) Error() string {
+	return "multiple live Links match the endpoint pair; select a canonical Link ID"
+}
+
+// LinkDeleteRequest selects an ID or an exact typed endpoint pair, never both.
+type LinkDeleteRequest struct {
+	Path, SourcePath, TargetPath, TypeURL, Actor string
+	ExpectedRevision                             string
+	Unconditional                                bool
+	ExpectedSourceRevision                       string
+	UnconditionalSource                          bool
+}
+
+// LinkTombstone retains deletion state in this experimental local format.
+// It does not define restoration, erasure, or the public History wire contract.
+type LinkTombstone struct {
+	ID              string      `json:"id"`
+	Type            string      `json:"type"`
+	Revision        string      `json:"revision"`
+	Version         string      `json:"version"`
+	State           string      `json:"state"`
+	PreviousVersion string      `json:"previousVersion"`
+	Attribution     Attribution `json:"attribution"`
+}
+type LinkDeleteResult struct {
+	Link    LinkTombstone `json:"link"`
+	Source  any           `json:"source"`
+	Changed bool          `json:"changed"`
 }

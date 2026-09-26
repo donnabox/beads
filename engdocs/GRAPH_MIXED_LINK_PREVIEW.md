@@ -1,5 +1,7 @@
 # Experimental mixed Links and property updates
 
+For the schema 5 successor, see [incident listing and guarded unlink](GRAPH_LINK_LIFECYCLE_PREVIEW.md).
+
 This bounded W3 slice builds on the qualified Dependency workflow at
 `cd22fcbf4060f5f7c941d826bd570a738f748042` ([PR #21](https://github.com/donnabox/beads/pull/21)).
 The [delivery plan](https://github.com/donnabox/beads/pull/18) and
@@ -17,11 +19,11 @@ bd create 'Release deployment' --id beads/release
 bd remember 'Deploy after verification.' --id beads/plan --title Plan
 bd remember 'Verification catches regressions.' --id beads/rationale --title Rationale
 bd link beads/release beads/plan \
-  --resource-type https://example.invalid/mixed/types/preview-related-v1 \
+  --resource-type https://example.invalid/mixed/types/preview-related-v2 \
   --id links/release-plan --properties '{"note":"Implementation context"}' --json
 bd show links/release-plan --json
 bd link beads/plan beads/rationale \
-  --resource-type https://example.invalid/mixed/types/preview-related-v1 \
+  --resource-type https://example.invalid/mixed/types/preview-related-v2 \
   --id links/plan-rationale --properties '{"note":"Original rationale"}' \
   --unconditional-source --json
 bd update links/plan-rationale --properties '{"note":"Revised rationale"}' \
@@ -75,7 +77,7 @@ advances that one Bead as its owning source, with no second target write.
 
 Issue v2 continues to own only blocking Dependencies. Whether Issues should
 own other informational Types remains open. The private
-`types/preview-related-v1` name and its `note` property are deliberately
+`types/preview-related-v2` name and its `note` property are deliberately
 experimental; neither is a settled production Type contract. Metadata
 placement, nominal Issue Types, aliases and deletion/restore policy remain
 open review questions.
