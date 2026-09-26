@@ -188,10 +188,10 @@ type BeadRecord struct {
 	// Types: one entry per declared owned Link Type, keyed by the Link Type
 	// URL, valued by the owned Links' complete records in ascending code-unit
 	// order of their canonical ids — derived data covered by Revision, never
-	// writable directly. An entry is present, possibly empty, for every
-	// declared owned Type, so an owning Type never yields an empty map and
-	// omitempty is lossless.
-	OwnedLinks OwnedLinks `json:"ownedLinks,omitempty"`
+	// writable directly. Explicit declarations carry an entry even when empty;
+	// a wildcard owner with no outgoing Links carries an empty object. A nil
+	// map means absent, so omitzero preserves the required empty object.
+	OwnedLinks OwnedLinks `json:"ownedLinks,omitzero"`
 }
 
 // LinkRecord is the `linkRecord` envelope: a first-class directed

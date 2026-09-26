@@ -323,7 +323,7 @@ func structFields(t reflect.Type) *structInfo {
 		}
 		omitempty := false
 		for _, opt := range strings.Split(opts, ",") {
-			if opt == "omitempty" {
+			if opt == "omitempty" || opt == "omitzero" {
 				omitempty = true
 			}
 		}
