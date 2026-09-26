@@ -49,8 +49,11 @@ not a retention policy or evidence that a version was removed.
 - `status --graph` distinguishes `exactVersionRead: true` from `historyExact: false`.
   The latter remains false because the full public capability is not implemented.
 - No HTTP History advertisement, ordered `versions`, as-of reads, comparisons,
-  restoration, generic Memory update/delete, aliases, erasure or import admission
+  restoration, generic Memory deletion, aliases, erasure or import admission
   is delivered here. Existing BDP Read remains unchanged.
+
+[Guarded Memory editing](GRAPH_MEMORY_UPDATE_PREVIEW.md) can create new content
+versions using this exact reader without advertising public History.
 
 Current v5 snapshots lack lawful generic authority order. A future ordering and
 context recorder needs explicit format/admission review; token spelling and

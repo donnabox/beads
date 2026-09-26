@@ -36,7 +36,7 @@ func graphPreviewProperties(input string, stdin io.Reader) (map[string]any, erro
 		return nil, err
 	}
 	if len(raw) > graphPreviewPropertiesLimit {
-		return nil, fmt.Errorf("Link properties input exceeds the preview limit of %d bytes", graphPreviewPropertiesLimit)
+		return nil, fmt.Errorf("Resource properties input exceeds the preview limit of %d bytes", graphPreviewPropertiesLimit)
 	}
 	// Validate before decoding: encoding/json by itself silently accepts duplicate
 	// members and repairs invalid Unicode. The existing graph admission rejects both.
@@ -46,7 +46,7 @@ func graphPreviewProperties(input string, stdin io.Reader) (map[string]any, erro
 	}
 	var properties map[string]any
 	if err := json.Unmarshal(canonical, &properties); err != nil || properties == nil {
-		return nil, fmt.Errorf("Link properties must be a JSON object")
+		return nil, fmt.Errorf("Resource properties must be a JSON object")
 	}
 	return properties, nil
 }
