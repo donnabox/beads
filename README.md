@@ -239,3 +239,5 @@ BDP serving and production migration remain unavailable. See the
 [Link lifecycle notes](engdocs/GRAPH_LINK_LIFECYCLE_PREVIEW.md) for exact limits.
 The [BDP record projection](engdocs/GRAPH_BDP_READ_PROJECTION.md) prepares the
 same stored records for public wire reads; it does not yet enable graph HTTP serving.
+Its internal inventory reads current Beads, Links, installed Types and a writer
+state token in one transaction, refusing oversized results rather than truncating.

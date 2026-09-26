@@ -38,6 +38,35 @@ apply the public problem table: ordinary reads of deleted Resources use
 `resource-not-found`; they must not publish the private CLI `gone` envelope or
 pretend deletion is erasure.
 
+## Current inventory for collection reads
+
+`graphstore.CurrentSnapshot` captures current live Resources, the four installed
+Type descriptors and the controlled-writer token in one read transaction.
+`graphread.Reader.Inventory` projects only that captured state; unlike separate
+exact reads it needs no later descriptor lookups. Beads, Links and Types are
+ordered by canonical URL code units. Owned Links remain complete parts of their
+source Bead, with the same contents as the corresponding current Link record.
+Removed Links are excluded from the current inventory.
+
+The inventory is an internal input for selection and pagination. It is not a
+BDP response, retained snapshot handle, Scope epoch or public cursor. Its token
+supports equality-only invalidation across controlled writes. Reads and reopen
+leave the token unchanged; successful creates, property updates and unlink
+change it. It cannot prove safety against out-of-band SQL changes or restoration.
+
+The isolation test commits a writer after establishing the reader transaction,
+then verifies that the reader still sees its original records and token while
+a new transaction sees the write. The shared-server test uses separate store
+connections. The embedded test admits two SQL sessions on one connector solely
+for that test; normal embedded stores retain their one-connection configuration.
+It does not claim concurrent independent embedded processes are supported.
+
+This preview refuses inventories above 1,000 live Resources with an explicit
+limit error and no partial result. The bound applies before filtering and is
+not a page size. It does not truncate, silently skip malformed entries, or
+claim that bounded Selectors, filtered pages, continuation, authorization views
+or HTTP collection access are implemented. Those remain the next Read work.
+
 ## Verification boundary
 
 Run the real storage-to-wire sequence with:

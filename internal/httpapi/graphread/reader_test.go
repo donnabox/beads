@@ -15,6 +15,7 @@ import (
 	"testing"
 	"time"
 
+	graph "github.com/steveyegge/beads/graphops"
 	"github.com/steveyegge/beads/internal/httpapi/bdpwire"
 	"github.com/steveyegge/beads/internal/storage/graphstore"
 	"github.com/steveyegge/beads/issueops"
@@ -56,6 +57,10 @@ func TestAuthoritativeRecordsProjectToPublicWire(t *testing.T) {
 				}
 			})
 			r := New(s)
+			empty, err := r.Inventory(ctx)
+			if err != nil || len(empty.Beads) != 0 || len(empty.Links) != 0 || len(empty.Types) != 4 || empty.WriterToken == "" {
+				t.Fatalf("empty installed inventory: %+v, %v", empty, err)
+			}
 			memory, err := s.Create(ctx, graphstore.CreateRequest{Path: "beads/plan", Title: "Memory — 記憶", Body: "", Actor: "human:Donna <unchanged>"})
 			if err != nil {
 				t.Fatal(err)
@@ -123,6 +128,10 @@ func TestAuthoritativeRecordsProjectToPublicWire(t *testing.T) {
 				checkWire(t, "linkRecord", v)
 			}
 			linked := readBead("beads/plan")
+			inventory := checkInventory(t, ctx, r, 4, 3)
+			if inventory.WriterToken == empty.WriterToken {
+				t.Fatal("inventory token did not change after writes")
+			}
 			group := linked.OwnedLinks[created.Type]
 			if len(group) != 2 || !strings.HasSuffix(group[0].ID, "/links/a") || group[1].Source.URI != memory.ID || linked.Revision == first.Revision {
 				t.Fatal("owned projection ordering or membership differs")
@@ -148,6 +157,10 @@ func TestAuthoritativeRecordsProjectToPublicWire(t *testing.T) {
 				t.Fatal(err)
 			}
 			updated := readBead("beads/plan")
+			updatedInventory := checkInventory(t, ctx, r, 4, 3)
+			if updatedInventory.WriterToken == inventory.WriterToken {
+				t.Fatal("Link property update did not invalidate inventory token")
+			}
 			if updated.Revision == linked.Revision || string(updated.OwnedLinks[created.Type][0].Properties["note"]) != `"revised"` {
 				t.Fatal("current owned update missing")
 			}
@@ -161,6 +174,10 @@ func TestAuthoritativeRecordsProjectToPublicWire(t *testing.T) {
 				t.Fatalf("absence changed: %v", err)
 			}
 			remaining := readBead("beads/plan")
+			remainingInventory := checkInventory(t, ctx, r, 4, 2)
+			if remainingInventory.WriterToken == updatedInventory.WriterToken {
+				t.Fatal("unlink did not invalidate inventory token")
+			}
 			if len(remaining.OwnedLinks[created.Type]) != 1 || remaining.Revision == updated.Revision {
 				t.Fatal("deleted Link retained in current owned projection")
 			}
@@ -175,8 +192,51 @@ func TestAuthoritativeRecordsProjectToPublicWire(t *testing.T) {
 			if !reflect.DeepEqual(remaining, readBead("beads/plan")) {
 				t.Fatal("projection changed after reopen")
 			}
+			if !reflect.DeepEqual(remainingInventory, checkInventory(t, ctx, r, 4, 2)) {
+				t.Fatal("inventory changed after reopen without a write")
+			}
 		})
 	}
+}
+
+func checkInventory(t *testing.T, ctx context.Context, reader *Reader, beads, links int) Inventory {
+	t.Helper()
+	value, err := reader.Inventory(ctx)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if len(value.Beads) != beads || len(value.Links) != links || len(value.Types) != 4 {
+		t.Fatalf("incomplete inventory: %d Beads, %d Links, %d Types", len(value.Beads), len(value.Links), len(value.Types))
+	}
+	verify := func(id string, record any) {
+		t.Helper()
+		one, err := reader.Resource(ctx, strings.TrimPrefix(id, reader.store.ScopeURL()))
+		if err != nil || !reflect.DeepEqual(one, record) {
+			t.Fatalf("inventory differs from exact read of %s: %v", id, err)
+		}
+	}
+	for i, record := range value.Beads {
+		if i > 0 && graph.CompareCodeUnits(value.Beads[i-1].ID, record.ID) >= 0 {
+			t.Fatal("Bead inventory order")
+		}
+		verify(record.ID, record)
+	}
+	for i, record := range value.Links {
+		if i > 0 && graph.CompareCodeUnits(value.Links[i-1].ID, record.ID) >= 0 {
+			t.Fatal("Link inventory order")
+		}
+		verify(record.ID, record)
+	}
+	for i, record := range value.Types {
+		if i > 0 && graph.CompareCodeUnits(value.Types[i-1].ID, record.ID) >= 0 {
+			t.Fatal("Type inventory order")
+		}
+		one, err := reader.Type(ctx, strings.TrimPrefix(record.ID, reader.store.ScopeURL()))
+		if err != nil || !reflect.DeepEqual(one, record) {
+			t.Fatalf("inventory differs from exact Type read: %v", err)
+		}
+	}
+	return value
 }
 
 func checkWire(t *testing.T, kind string, value any) {

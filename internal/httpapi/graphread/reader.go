@@ -58,14 +58,22 @@ func (r *Reader) Type(ctx context.Context, path string) (bdpwire.TypeDescriptor,
 }
 
 func (r *Reader) bead(ctx context.Context, id, typ, revision string, properties any, owned []json.RawMessage, attribution graphstore.Attribution) (bdpwire.BeadRecord, error) {
-	result := bdpwire.BeadRecord{ID: id, Type: typ, Revision: revision}
 	if !strings.HasPrefix(typ, r.store.ScopeURL()) {
-		return result, fmt.Errorf("%w: Resource Type is outside installed Scope", graphstore.ErrInvalidStore)
+		return bdpwire.BeadRecord{}, fmt.Errorf("%w: Resource Type is outside installed Scope", graphstore.ErrInvalidStore)
 	}
 	descriptor, err := r.store.ReadType(ctx, strings.TrimPrefix(typ, r.store.ScopeURL()))
 	if err != nil {
-		return result, err
+		return bdpwire.BeadRecord{}, err
 	}
+	return bead(descriptor, id, typ, revision, properties, owned, attribution)
+}
+
+func bead(descriptor graph.TypeDescriptor, id, typ, revision string, properties any, owned []json.RawMessage, attribution graphstore.Attribution) (bdpwire.BeadRecord, error) {
+	result := bdpwire.BeadRecord{ID: id, Type: typ, Revision: revision}
+	if descriptor.ID() != typ || descriptor.Describes() != graph.KindBead {
+		return result, fmt.Errorf("%w: Bead descriptor does not match its Type", graphstore.ErrInvalidStore)
+	}
+	var err error
 	result.Properties, err = projectProperties(properties)
 	if err != nil {
 		return result, err

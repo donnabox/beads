@@ -30,38 +30,44 @@ func (s *Store) ReadType(ctx context.Context, path string) (graph.TypeDescriptor
 		if err := checkBinding(ctx, tx, s.options); err != nil {
 			return err
 		}
-		var name string
-		switch id {
-		case MemoryTypeURL(s.options.Binding.ScopeURL):
-			name = "memory"
-		case IssueTypeURL(s.options.Binding.ScopeURL):
-			name = "issue"
-		case DependencyTypeURL(s.options.Binding.ScopeURL):
-			name = "dependency"
-		case RelatedTypeURL(s.options.Binding.ScopeURL):
-			name = "related"
-		default:
-			return ErrNotFound
-		}
-		var raw []byte
-		var fingerprint string
-		if err := tx.QueryRowContext(ctx, `SELECT descriptor,fingerprint FROM graph_preview_types WHERE name=?`, name).Scan(&raw, &fingerprint); err != nil {
-			return fmt.Errorf("%w: read installed %s descriptor: %v", ErrInvalidStore, name, err)
-		}
-		parsed, err := graph.ParseTypeDescriptor(raw)
-		if err != nil {
-			return fmt.Errorf("%w: invalid installed %s descriptor: %v", ErrInvalidStore, name, err)
-		}
-		if parsed.ID() != id || !bytes.Equal(parsed.CanonicalJSON(), raw) || parsed.Fingerprint() != fingerprint {
-			return fmt.Errorf("%w: installed %s descriptor identity or fingerprint differs", ErrInvalidStore, name)
-		}
-		descriptor = parsed
-		return nil
+		var err error
+		descriptor, err = s.readTypeInTx(ctx, tx, id)
+		return err
 	})
 	if err != nil {
 		return graph.TypeDescriptor{}, err
 	}
 	return descriptor, nil
+}
+
+// readTypeInTx requires the caller to validate the binding in this transaction.
+func (s *Store) readTypeInTx(ctx context.Context, tx *sql.Tx, id string) (graph.TypeDescriptor, error) {
+	var name string
+	switch id {
+	case MemoryTypeURL(s.options.Binding.ScopeURL):
+		name = "memory"
+	case IssueTypeURL(s.options.Binding.ScopeURL):
+		name = "issue"
+	case DependencyTypeURL(s.options.Binding.ScopeURL):
+		name = "dependency"
+	case RelatedTypeURL(s.options.Binding.ScopeURL):
+		name = "related"
+	default:
+		return graph.TypeDescriptor{}, ErrNotFound
+	}
+	var raw []byte
+	var fingerprint string
+	if err := tx.QueryRowContext(ctx, `SELECT descriptor,fingerprint FROM graph_preview_types WHERE name=?`, name).Scan(&raw, &fingerprint); err != nil {
+		return graph.TypeDescriptor{}, fmt.Errorf("%w: read installed %s descriptor: %v", ErrInvalidStore, name, err)
+	}
+	parsed, err := graph.ParseTypeDescriptor(raw)
+	if err != nil {
+		return graph.TypeDescriptor{}, fmt.Errorf("%w: invalid installed %s descriptor: %v", ErrInvalidStore, name, err)
+	}
+	if parsed.ID() != id || !bytes.Equal(parsed.CanonicalJSON(), raw) || parsed.Fingerprint() != fingerprint {
+		return graph.TypeDescriptor{}, fmt.Errorf("%w: installed %s descriptor identity or fingerprint differs", ErrInvalidStore, name)
+	}
+	return parsed, nil
 }
 
 // ScopeURL returns the workspace-bound canonical identity, not a transport or
