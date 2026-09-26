@@ -33,97 +33,109 @@ func (s *Store) ReadVersion(ctx context.Context, path, version string) (any, err
 	if err := validateResourcePath(path); err != nil {
 		return nil, err
 	}
-	if version == "" || !utf8.ValidString(version) || len(version) > PreviewVersionTokenLimit {
-		return nil, fmt.Errorf("%w: revision must be nonempty UTF-8 within %d bytes", graph.ErrValidation, PreviewVersionTokenLimit)
+	if err := validateVersionToken(version); err != nil {
+		return nil, err
 	}
 	var result any
 	err := s.withTx(ctx, false, func(tx *sql.Tx) error {
 		if err := checkBinding(ctx, tx, s.options); err != nil {
 			return err
 		}
-		var backing, kind, state, head string
-		var typ, key sql.NullString
-		err := tx.QueryRowContext(ctx, `SELECT backing,resource_kind,allocation_state,revision,
- CASE WHEN OCTET_LENGTH(type_url)<=? THEN type_url ELSE NULL END,backing_key
- FROM graph_preview_catalog WHERE path=?`, len(s.ScopeURL())+256, path).Scan(&backing, &kind, &state, &head, &typ, &key)
-		if errors.Is(err, sql.ErrNoRows) {
-			var retained int
-			if err := tx.QueryRowContext(ctx, `SELECT
- (SELECT COUNT(*) FROM graph_preview_versions WHERE path=?) +
- (SELECT COUNT(*) FROM graph_preview_issue_versions WHERE path=?)`, path, path).Scan(&retained); err != nil {
-				return err
-			}
-			if retained != 0 {
-				return fmt.Errorf("%w: retained subject lacks allocation", ErrInvalidStore)
-			}
-			return ErrNotFound
-		}
-		if err != nil {
-			return err
-		}
-		if !typ.Valid || !authorityID.MatchString(head) || (state != "live" && state != "deleted") ||
-			(kind == "bead") != strings.HasPrefix(path, "beads/") || (kind != "bead" && kind != "link") {
-			return fmt.Errorf("%w: invalid retained subject allocation", ErrInvalidStore)
-		}
-		if state == "deleted" && backing != "informational" {
-			return fmt.Errorf("%w: unsupported deleted subject", ErrInvalidStore)
-		}
-		if backing == "issue" {
-			if kind != "bead" || typ.String != IssueTypeURL(s.ScopeURL()) || !key.Valid || key.String == "" {
-				return fmt.Errorf("%w: invalid Issue allocation", ErrInvalidStore)
-			}
-			result, err = s.readIssueVersionInTx(ctx, tx, path, version, head, key.String)
-			return err
-		}
-		if !((backing == "generic" && kind == "bead" && typ.String == MemoryTypeURL(s.ScopeURL())) ||
-			(backing == "informational" && kind == "link" && typ.String == RelatedTypeURL(s.ScopeURL())) ||
-			(backing == "dependency" && kind == "link" && typ.String == DependencyTypeURL(s.ScopeURL()))) {
-			return fmt.Errorf("%w: unsupported retained allocation", ErrInvalidStore)
-		}
-		raw, actor, err := readVersionBytes(ctx, tx, path, version, head)
-		if err != nil {
-			return err
-		}
-		if state == "deleted" && version == head {
-			var tombstone LinkTombstone
-			if json.Unmarshal(raw, &tombstone) != nil || !sameVersionJSON(raw, tombstone) ||
-				tombstone.ID != s.ScopeURL()+path || tombstone.Type != typ.String || tombstone.Revision != version ||
-				tombstone.Version != version || tombstone.State != "deleted" ||
-				!authorityID.MatchString(tombstone.PreviousVersion) || tombstone.PreviousVersion == version ||
-				!validVersionAttribution(tombstone.Attribution, actor) {
-				return fmt.Errorf("%w: invalid retained deletion marker", ErrInvalidStore)
-			}
-			return ErrGone
-		}
-		if kind == "link" {
-			var link LinkRecord
-			if json.Unmarshal(raw, &link) != nil || link.ID != s.ScopeURL()+path || link.Type != typ.String ||
-				link.Revision != version || link.Version != version {
-				return fmt.Errorf("%w: retained Link identity differs", ErrInvalidStore)
-			}
-			if err := s.validateVersionLink(link, raw, actor); err != nil {
-				return err
-			}
-			result = link
-			return nil
-		}
-		var memory Record
-		if json.Unmarshal(raw, &memory) != nil || !sameVersionJSON(raw, memory) || memory.ID != s.ScopeURL()+path ||
-			memory.Type != typ.String || memory.Revision != version || memory.Version != version ||
-			!utf8.ValidString(memory.Properties.Title) || !utf8.ValidString(memory.Properties.Body) ||
-			!validVersionAttribution(memory.Attribution, actor) {
-			return fmt.Errorf("%w: invalid retained Memory", ErrInvalidStore)
-		}
-		if err := s.validateVersionOwned(memory.ID, RelatedTypeURL(s.ScopeURL()), memory.Owned); err != nil {
-			return err
-		}
-		result = memory
-		return nil
+		var err error
+		result, err = s.readVersionInTx(ctx, tx, path, version)
+		return err
 	})
 	if err != nil {
 		return nil, err
 	}
 	return result, nil
+}
+
+func validateVersionToken(version string) error {
+	if version == "" || !utf8.ValidString(version) || len(version) > PreviewVersionTokenLimit {
+		return fmt.Errorf("%w: revision must be nonempty UTF-8 within %d bytes", graph.ErrValidation, PreviewVersionTokenLimit)
+	}
+	return nil
+}
+
+// readVersionInTx uses the caller's authority-checked transaction and validated
+// path/token. It never joins current payloads into retained state.
+func (s *Store) readVersionInTx(ctx context.Context, tx *sql.Tx, path, version string) (any, error) {
+	var backing, kind, state, head string
+	var typ, key sql.NullString
+	err := tx.QueryRowContext(ctx, `SELECT backing,resource_kind,allocation_state,revision,
+ CASE WHEN OCTET_LENGTH(type_url)<=? THEN type_url ELSE NULL END,backing_key
+ FROM graph_preview_catalog WHERE path=?`, len(s.ScopeURL())+256, path).Scan(&backing, &kind, &state, &head, &typ, &key)
+	if errors.Is(err, sql.ErrNoRows) {
+		var retained int
+		if err := tx.QueryRowContext(ctx, `SELECT
+ (SELECT COUNT(*) FROM graph_preview_versions WHERE path=?) +
+ (SELECT COUNT(*) FROM graph_preview_issue_versions WHERE path=?)`, path, path).Scan(&retained); err != nil {
+			return nil, err
+		}
+		if retained != 0 {
+			return nil, fmt.Errorf("%w: retained subject lacks allocation", ErrInvalidStore)
+		}
+		return nil, ErrNotFound
+	}
+	if err != nil {
+		return nil, err
+	}
+	if !typ.Valid || !authorityID.MatchString(head) || (state != "live" && state != "deleted") ||
+		(kind == "bead") != strings.HasPrefix(path, "beads/") || (kind != "bead" && kind != "link") {
+		return nil, fmt.Errorf("%w: invalid retained subject allocation", ErrInvalidStore)
+	}
+	if state == "deleted" && backing != "informational" {
+		return nil, fmt.Errorf("%w: unsupported deleted subject", ErrInvalidStore)
+	}
+	if backing == "issue" {
+		if kind != "bead" || typ.String != IssueTypeURL(s.ScopeURL()) || !key.Valid || key.String == "" {
+			return nil, fmt.Errorf("%w: invalid Issue allocation", ErrInvalidStore)
+		}
+		return s.readIssueVersionInTx(ctx, tx, path, version, head, key.String)
+	}
+	if !((backing == "generic" && kind == "bead" && typ.String == MemoryTypeURL(s.ScopeURL())) ||
+		(backing == "informational" && kind == "link" && typ.String == RelatedTypeURL(s.ScopeURL())) ||
+		(backing == "dependency" && kind == "link" && typ.String == DependencyTypeURL(s.ScopeURL()))) {
+		return nil, fmt.Errorf("%w: unsupported retained allocation", ErrInvalidStore)
+	}
+	raw, actor, err := readVersionBytes(ctx, tx, path, version, head)
+	if err != nil {
+		return nil, err
+	}
+	if state == "deleted" && version == head {
+		var tombstone LinkTombstone
+		if json.Unmarshal(raw, &tombstone) != nil || !sameVersionJSON(raw, tombstone) ||
+			tombstone.ID != s.ScopeURL()+path || tombstone.Type != typ.String || tombstone.Revision != version ||
+			tombstone.Version != version || tombstone.State != "deleted" ||
+			!authorityID.MatchString(tombstone.PreviousVersion) || tombstone.PreviousVersion == version ||
+			!validVersionAttribution(tombstone.Attribution, actor) {
+			return nil, fmt.Errorf("%w: invalid retained deletion marker", ErrInvalidStore)
+		}
+		return nil, ErrGone
+	}
+	if kind == "link" {
+		var link LinkRecord
+		if json.Unmarshal(raw, &link) != nil || link.ID != s.ScopeURL()+path || link.Type != typ.String ||
+			link.Revision != version || link.Version != version {
+			return nil, fmt.Errorf("%w: retained Link identity differs", ErrInvalidStore)
+		}
+		if err := s.validateVersionLink(link, raw, actor); err != nil {
+			return nil, err
+		}
+		return link, nil
+	}
+	var memory Record
+	if json.Unmarshal(raw, &memory) != nil || !sameVersionJSON(raw, memory) || memory.ID != s.ScopeURL()+path ||
+		memory.Type != typ.String || memory.Revision != version || memory.Version != version ||
+		!utf8.ValidString(memory.Properties.Title) || !utf8.ValidString(memory.Properties.Body) ||
+		!validVersionAttribution(memory.Attribution, actor) {
+		return nil, fmt.Errorf("%w: invalid retained Memory", ErrInvalidStore)
+	}
+	if err := s.validateVersionOwned(memory.ID, RelatedTypeURL(s.ScopeURL()), memory.Owned); err != nil {
+		return nil, err
+	}
+	return memory, nil
 }
 
 func readVersionBytes(ctx context.Context, tx *sql.Tx, path, version, head string) ([]byte, string, error) {

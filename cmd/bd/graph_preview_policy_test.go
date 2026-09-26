@@ -109,6 +109,7 @@ func TestGraphPreviewGenericFlagsRefuseLegacyOpening(t *testing.T) {
 	bd := buildBDUnderTest(t)
 	for _, args := range [][]string{
 		{"show", "demo-one", "--version", "opaque-version"},
+		{"compare", "beads/plan", "--from", "old", "--to", "new"},
 		{"recall", "legacy-key", "--version", "opaque-version"},
 		{"recall", "legacy-key", "--version="},
 		{"link", "demo-one", "demo-two", "--properties", `{}`},

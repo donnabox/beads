@@ -227,7 +227,10 @@ performs guarded property replacement. [Memory editing](engdocs/GRAPH_MEMORY_UPD
 uses `bd update beads/PATH --properties JSON` with a revision guard to replace
 its title/body and preserve earlier complete versions.
 [Body recall](engdocs/GRAPH_MEMORY_RECALL_PREVIEW.md) uses `bd recall beads/PATH`
-or `bd recall beads/PATH --version TOKEN` to return exact current or saved content. Memory owns its outgoing Links, so a
+or `bd recall beads/PATH --version TOKEN` to return exact current or saved content.
+[Exact comparison](engdocs/GRAPH_HISTORY_COMPARE_PREVIEW.md) uses
+`bd compare RESOURCE --from TOKEN --to TOKEN` for complete retained preview
+properties and owned-Link differences; its output format remains experimental. Memory owns its outgoing Links, so a
 Link change also advances that Memory version. `bd links BEAD` lists incident
 Links; guarded `bd unlink links/PATH` removes one informational Link and retains
 its identity and owning Memory history.

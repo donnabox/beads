@@ -10,6 +10,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"io"
 	"os"
 	"path/filepath"
 	"strings"
@@ -158,7 +159,7 @@ func admitGraphPreview(cmd *cobra.Command) (bool, error) {
 		if (cmd == showCmd || cmd == recallCmd) && cmd.Flags().Changed("version") {
 			return true, graphFailure("capability_unavailable", "--version requires an experimental graph workspace", 5)
 		}
-		if cmd == graphUnlinkCmd || cmd == graphLinksCmd {
+		if cmd == graphCompareCmd || cmd == graphUnlinkCmd || cmd == graphLinksCmd {
 			return true, graphFailure("capability_unavailable", "this command requires an experimental graph workspace", 5)
 		}
 		if cmd == linkCmd && (cmd.Flags().Changed("resource-type") || cmd.Flags().Changed("id") || cmd.Flags().Changed("properties") || cmd.Flags().Changed("if-source-revision") || cmd.Flags().Changed("unconditional-source")) {
@@ -182,8 +183,8 @@ func admitGraphPreview(cmd *cobra.Command) (bool, error) {
 	if err != nil || real != cfg.GraphWorkspace {
 		return true, graphFailure("not_authority", "graph_mode workspace binding differs; copied/moved workspaces cannot claim this authority", 5)
 	}
-	if cmd != recallCmd && cmd != rememberCmd && cmd != createCmd && cmd != showCmd && cmd != statusCmd && cmd != depAddCmd && cmd != linkCmd && cmd != closeCmd && cmd != readyCmd && cmd != updateCmd && cmd != graphUnlinkCmd && cmd != graphLinksCmd && cmd != serveCmd {
-		return true, graphFailure("capability_unavailable", "graph_mode link preview supports create, remember, recall, show, dep add, link, update beads/PATH or links/PATH, unlink, links, close, ready, status --graph, and shared-server serve; this command has not opened the legacy store", 5)
+	if cmd != graphCompareCmd && cmd != recallCmd && cmd != rememberCmd && cmd != createCmd && cmd != showCmd && cmd != statusCmd && cmd != depAddCmd && cmd != linkCmd && cmd != closeCmd && cmd != readyCmd && cmd != updateCmd && cmd != graphUnlinkCmd && cmd != graphLinksCmd && cmd != serveCmd {
+		return true, graphFailure("capability_unavailable", "graph_mode link preview supports create, remember, recall, compare, show, dep add, link, update beads/PATH or links/PATH, unlink, links, close, ready, status --graph, and shared-server serve; this command has not opened the legacy store", 5)
 	}
 	if cmd == statusCmd {
 		enabled, _ := cmd.Flags().GetBool("graph")
@@ -445,16 +446,21 @@ func runGraphPreviewStatus(cmd *cobra.Command) error {
 		return err
 	}
 	return withGraphStore(func(_ context.Context, _ *graphstore.Store) (any, string, error) {
-		return map[string]any{"scope": graphPreviewConfig.GraphScopeURL, "backend": graphPreviewConfig.DoltMode, "preview": true, "limits": map[string]int{"issueOwnedLinks": graphstore.PreviewOwnedLinkLimit, "memoryOwnedLinks": graphstore.PreviewOwnedLinkLimit, "linkPropertiesInputBytes": graphPreviewPropertiesLimit, "memoryPropertiesInputBytes": graphPreviewPropertiesLimit, "incidentLinks": graphstore.PreviewIncidentLinkLimit, "currentReadBytes": graphstore.PreviewCurrentReadByteLimit, "versionTokenBytes": graphstore.PreviewVersionTokenLimit}, "capabilities": map[string]bool{"memoryCreate": true, "memoryBodyRecall": true, "memoryJSONRecall": false, "memoryPropertiesUpdate": true, "issueCreate": true, "issueWorkflows": false, "blockingDependency": true, "informationalLink": true, "linkPropertiesUpdate": true, "linkUnlink": true, "blockingDependencyUnlink": false, "incidentLinks": true, "issueClose": true, "issueReady": true, "genericRead": true, "bdpRead": graphPreviewConfig.DoltMode == configfile.DoltModeServer, "memory": false, "historyExact": false, "exactVersionRead": true, "ownedLinks": true, "requestStatus": false, "backupContinuity": false}}, "Graph preview: Memory and Issue create/read, guarded Memory title/body replacement, current/exact body-only recall, exact retained Bead/Link reads via show --version TOKEN, local blocking Dependencies, informational Links and guarded Link-property replacement/unlink, incident Link listing, Issue close and ready. Full Memory, public History, blocking Dependency unlink, remaining Issue workflows and recovery remain unavailable. BDP Read serving is available only on ordinary shared-server Dolt; embedded serving, HTTP writes and aliases remain unavailable.", nil
+		return map[string]any{"scope": graphPreviewConfig.GraphScopeURL, "backend": graphPreviewConfig.DoltMode, "preview": true, "limits": map[string]int{"issueOwnedLinks": graphstore.PreviewOwnedLinkLimit, "memoryOwnedLinks": graphstore.PreviewOwnedLinkLimit, "linkPropertiesInputBytes": graphPreviewPropertiesLimit, "memoryPropertiesInputBytes": graphPreviewPropertiesLimit, "incidentLinks": graphstore.PreviewIncidentLinkLimit, "currentReadBytes": graphstore.PreviewCurrentReadByteLimit, "versionTokenBytes": graphstore.PreviewVersionTokenLimit}, "capabilities": map[string]bool{"memoryCreate": true, "memoryBodyRecall": true, "memoryJSONRecall": false, "memoryPropertiesUpdate": true, "issueCreate": true, "issueWorkflows": false, "blockingDependency": true, "informationalLink": true, "linkPropertiesUpdate": true, "linkUnlink": true, "blockingDependencyUnlink": false, "incidentLinks": true, "issueClose": true, "issueReady": true, "genericRead": true, "bdpRead": graphPreviewConfig.DoltMode == configfile.DoltModeServer, "memory": false, "historyExact": false, "exactVersionRead": true, "exactVersionCompare": true, "ownedLinks": true, "requestStatus": false, "backupContinuity": false}}, "Graph preview: Memory and Issue create/read, guarded Memory title/body replacement, current/exact body-only recall, experimental exact-version comparison, exact retained Bead/Link reads via show --version TOKEN, local blocking Dependencies, informational Links and guarded Link-property replacement/unlink, incident Link listing, Issue close and ready. Full Memory, public History, blocking Dependency unlink, remaining Issue workflows and recovery remain unavailable. BDP Read serving is available only on ordinary shared-server Dolt; embedded serving, HTTP writes and aliases remain unavailable.", nil
 	})
 }
 
 func graphPrint(result any, human string, quiet bool) error {
-	if jsonOutput {
-		return json.NewEncoder(os.Stdout).Encode(map[string]any{"schemaVersion": 1, "preview": true, "result": result})
+	return graphPrintTo(os.Stdout, result, human, quiet, jsonOutput)
+}
+
+func graphPrintTo(out io.Writer, result any, human string, quiet, structured bool) error {
+	if structured {
+		return json.NewEncoder(out).Encode(map[string]any{"schemaVersion": 1, "preview": true, "result": result})
 	}
 	if !quiet {
-		fmt.Fprintln(os.Stdout, human)
+		_, err := fmt.Fprintln(out, human)
+		return err
 	}
 	return nil
 }
