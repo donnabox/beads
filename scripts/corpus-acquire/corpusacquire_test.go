@@ -4,10 +4,12 @@
 // the downstream replay-with-oracle harness (be-hs42e.5.2) to consume.
 //
 // Test-to-acceptance-criterion map (see be-hs42e.5.1's exit_contract):
-//   - dolt-native, filesystem-only clone, never git, never a live MySQL
-//     connection for the clone itself:
+//   - filesystem-level copy, never git, never a MySQL-protocol connection to
+//     the server, including while a dolt sql-server is serving the source:
 //     TestAcquireCorpus_ProducesWorkingClone, TestAcquireCorpus_NeverInvokesGit,
-//     TestAcquireCorpus_OnlyFileSchemeNeverNetworkOrServer
+//     TestAcquireCorpus_OnlyFileSchemeNeverNetworkOrServer,
+//     TestAcquireCorpus_ServedSourceNeverConnects,
+//     TestAcquireCorpus_RefusesDestinationInsideServedDataDir
 //   - never a write-capable connection to the shared server; measurement is
 //     local-clone-only: TestMeasureCorpus_NeverTouchesNetworkOrServer
 //   - never creates a scratch/test DB on the production server:
@@ -36,6 +38,7 @@ import (
 	"encoding/csv"
 	"fmt"
 	"io/fs"
+	"net"
 	"os"
 	"os/exec"
 	"path/filepath"
@@ -353,6 +356,122 @@ func TestAcquireCorpus_MissingSourceDB_ErrorsWithoutCreating(t *testing.T) {
 	}
 	if _, err := os.Stat(filepath.Join(dataDir, "my_test_db")); err == nil {
 		t.Fatalf("AcquireCorpus created a database at the missing source path — it must only ever read, never create")
+	}
+}
+
+// startDoltSQLServer serves dataDir with a real `dolt sql-server` on a free
+// loopback port, logging at debug level to the returned path, and stops it at
+// test cleanup. It returns once the server has written
+// <dataDir>/.dolt/sql-server.info, the record the dolt CLI uses to route
+// commands for any database under dataDir through it, and has accepted a
+// readiness probe. The returned offset is the log length after the probe's
+// own NewConnection line, so callers inspect only what came later.
+func startDoltSQLServer(t *testing.T, dataDir string) (string, int) {
+	t.Helper()
+	ln, err := net.Listen("tcp", "127.0.0.1:0")
+	if err != nil {
+		t.Fatalf("finding a free port: %v", err)
+	}
+	port := ln.Addr().(*net.TCPAddr).Port
+	_ = ln.Close()
+
+	logPath := filepath.Join(t.TempDir(), "sql-server.log")
+	logFile, err := os.Create(logPath)
+	if err != nil {
+		t.Fatalf("creating server log: %v", err)
+	}
+	cmd := exec.Command(realDolt, "sql-server", "--host", "127.0.0.1", "--port", fmt.Sprint(port), "--data-dir", dataDir, "-l", "debug")
+	cmd.Stdout = logFile
+	cmd.Stderr = logFile
+	cmd.Env = sanitizedEnv(os.Environ())
+	if err := cmd.Start(); err != nil {
+		t.Fatalf("starting dolt sql-server: %v", err)
+	}
+	t.Cleanup(func() {
+		_ = cmd.Process.Kill()
+		_ = cmd.Wait()
+		_ = logFile.Close()
+	})
+
+	infoPath := filepath.Join(dataDir, ".dolt", "sql-server.info")
+	deadline := time.Now().Add(30 * time.Second)
+	probed := false
+	for {
+		if !probed {
+			if _, err := os.Stat(infoPath); err == nil {
+				if conn, err := net.DialTimeout("tcp", fmt.Sprintf("127.0.0.1:%d", port), time.Second); err == nil {
+					_ = conn.Close()
+					probed = true
+				}
+			}
+		}
+		if probed {
+			if log, err := os.ReadFile(logPath); err == nil && strings.Contains(string(log), "NewConnection") {
+				return logPath, len(log)
+			}
+		}
+		if time.Now().After(deadline) {
+			log, _ := os.ReadFile(logPath)
+			t.Fatalf("dolt sql-server did not come up on port %d within 30s:\n%s", port, log)
+		}
+		time.Sleep(100 * time.Millisecond)
+	}
+}
+
+// TestAcquireCorpus_ServedSourceNeverConnects covers the deployment this tool
+// exists for: a dolt sql-server is serving the source's data dir. The dolt CLI
+// routes any command for a database under a served data dir through the
+// server instead of opening the files, with no trace in its argv, so this
+// asserts on the server's own connection log. The positive control at the end
+// proves that log does record a connection when one is made.
+func TestAcquireCorpus_ServedSourceNeverConnects(t *testing.T) {
+	dataDir := t.TempDir()
+	wantHead := newFixtureDB(t, dataDir, "my_test_db", 2)
+	serverLog, offset := startDoltSQLServer(t, dataDir)
+	logSinceStart := func() string {
+		t.Helper()
+		b, err := os.ReadFile(serverLog)
+		if err != nil {
+			t.Fatalf("reading server log: %v", err)
+		}
+		return string(b[offset:])
+	}
+
+	destDir := filepath.Join(t.TempDir(), "clone1")
+	if err := AcquireCorpus(context.Background(), dataDir, "my_test_db", destDir); err != nil {
+		t.Fatalf("AcquireCorpus: %v", err)
+	}
+	got, err := MeasureCorpus(context.Background(), destDir, "my_test_db", "127.0.0.1:28231", 0)
+	if err != nil {
+		t.Fatalf("MeasureCorpus: %v", err)
+	}
+	if got.SnapshotCommitHash != wantHead || got.IssueCount != 2 {
+		t.Fatalf("clone of a served source = head %s, %d issues; want head %s, 2 issues", got.SnapshotCommitHash, got.IssueCount, wantHead)
+	}
+	if log := logSinceStart(); strings.Contains(log, "NewConnection") {
+		t.Fatalf("acquiring and measuring a served source opened a connection to its dolt sql-server:\n%s", log)
+	}
+
+	// Positive control: the same query run against the served source itself
+	// is routed through the server and shows up in its log.
+	runDolt(t, filepath.Join(dataDir, "my_test_db"), "sql", "-q", "SELECT 1")
+	if log := logSinceStart(); !strings.Contains(log, "NewConnection") {
+		t.Fatalf("positive control failed: a query against the served source left no NewConnection in the server log, so this test cannot detect a connection:\n%s", log)
+	}
+}
+
+func TestAcquireCorpus_RefusesDestinationInsideServedDataDir(t *testing.T) {
+	dataDir := t.TempDir()
+	newFixtureDB(t, dataDir, "my_test_db", 1)
+	startDoltSQLServer(t, dataDir)
+
+	destDir := filepath.Join(dataDir, "corpus-copy")
+	err := AcquireCorpus(context.Background(), dataDir, "my_test_db", destDir)
+	if err == nil || !strings.Contains(err.Error(), dataDir) {
+		t.Fatalf("AcquireCorpus into a served data dir = %v, want a refusal naming the served data dir %s", err, dataDir)
+	}
+	if _, statErr := os.Stat(destDir); !os.IsNotExist(statErr) {
+		t.Fatalf("AcquireCorpus created %s before refusing (stat: %v)", destDir, statErr)
 	}
 }
 

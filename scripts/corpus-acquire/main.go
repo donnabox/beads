@@ -1,12 +1,13 @@
-// corpus-acquire performs a Dolt-native, filesystem-level acquisition of a
-// point-in-time clone of a named production corpus (my_db | gascity) from
-// the shared multi-database Dolt data_dir, plus depth measurement, for the
-// downstream replay-with-oracle harness (be-hs42e.5.2) to consume.
+// corpus-acquire takes a filesystem-level, point-in-time copy of a named
+// production corpus (my_db | gascity) out of the shared multi-database Dolt
+// data_dir, plus depth measurement, for the downstream replay-with-oracle
+// harness (be-hs42e.5.2) to consume.
 //
 // It never invokes git, never opens a write-capable (or any) MySQL-protocol
-// connection to the shared Dolt server, and never creates a scratch
-// database on that server — see be-hs42e.5.1's exit_contract and
-// corpusacquire_test.go for the full acceptance criteria this satisfies.
+// connection to the shared Dolt server, even while that server is serving
+// the source, and never creates a scratch database on that server — see
+// be-hs42e.5.1's exit_contract and corpusacquire_test.go for the full
+// acceptance criteria this satisfies.
 //
 // Usage:
 //
@@ -20,10 +21,13 @@ import (
 	"encoding/json"
 	"flag"
 	"fmt"
+	"io"
+	"io/fs"
 	"os"
 	"os/exec"
 	"path/filepath"
 	"regexp"
+	"sort"
 	"strconv"
 	"strings"
 	"time"
@@ -90,56 +94,169 @@ func main() {
 	}
 }
 
-// AcquireCorpus performs a Dolt-native, filesystem-level acquisition of
-// dataDir/dbName into the isolated destDir, via a two-hop dolt-native
-// backup (never `dolt clone`, which fails against chunk-journal-format
-// repos — see be-hs42e.5.1's design-finding notes):
+// AcquireCorpus copies the database dataDir/dbName into destDir at the
+// filesystem level, then verifies the copy opens with a read-only query
+// against the copy itself.
 //
-//  1. `dolt --data-dir=<sourceDir> backup sync-url file://<staging>`, run
-//     from a neutral cwd so this process never chdir's into the live
-//     source dir and never contends for its lock while a dolt sql-server
-//     may still be serving it.
-//  2. `dolt backup restore file://<staging> <name>`, cwd = destDir's
-//     parent, materializing the actual usable working clone at destDir.
+// It never runs dolt against the source. A dolt sql-server serving dataDir
+// records itself in <dataDir>/.dolt/sql-server.info, and the dolt CLI then
+// routes every command for a database under that data dir, --data-dir=<source>
+// included, through the server over MySQL protocol instead of opening the
+// files. That is the shared-server deployment this tool is for, so the only
+// way to take a clone without touching the server is to read the files. The
+// copy lives outside the served data dir and carries no sql-server.info, so
+// the verification query opens it in-process; a destination under a served
+// data dir is refused for the same reason.
 //
-// Both hops shell out to the local dolt CLI only, with a sanitized child
-// environment (sanitizedEnv) — never git, never a network or MySQL-protocol
-// address, never the shared server.
+// The server may be writing while the copy runs. The manifest is copied
+// first and the chunk journal last (see doltCopyRank), so the journal copied
+// covers everything the manifest and journal index copied before it refer
+// to. A source garbage-collected mid-copy can still leave an unusable copy;
+// the verification query reports that, and a re-run takes a fresh copy.
 func AcquireCorpus(ctx context.Context, dataDir, dbName, destDir string) error {
 	sourceDir := filepath.Join(dataDir, dbName)
 	if !isDoltRepo(sourceDir) {
 		return fmt.Errorf("corpus-acquire: no dolt database %q found under %s", dbName, dataDir)
 	}
-
-	stagingParent, err := os.MkdirTemp("", "corpus-acquire-staging-*")
-	if err != nil {
-		return fmt.Errorf("corpus-acquire: creating staging parent dir: %w", err)
+	if _, err := os.Lstat(destDir); err == nil {
+		return fmt.Errorf("corpus-acquire: destination %s already exists", destDir)
+	} else if !os.IsNotExist(err) {
+		return fmt.Errorf("corpus-acquire: checking destination %s: %w", destDir, err)
 	}
-	defer func() { _ = os.RemoveAll(stagingParent) }()
-	// dolt creates the staging dir itself; it must not already exist.
-	stagingDir := filepath.Join(stagingParent, "backup")
-
-	neutralDir, err := os.MkdirTemp("", "corpus-acquire-cwd-*")
-	if err != nil {
-		return fmt.Errorf("corpus-acquire: creating neutral cwd: %w", err)
-	}
-	defer func() { _ = os.RemoveAll(neutralDir) }()
-
-	if _, err := doltRun(ctx, neutralDir, "--data-dir="+sourceDir, "backup", "sync-url", "file://"+stagingDir); err != nil {
-		return fmt.Errorf("corpus-acquire: backup sync-url: %w", err)
-	}
-
 	destParent := filepath.Dir(destDir)
+	if served := servedDataDir(destParent); served != "" {
+		return fmt.Errorf("corpus-acquire: destination %s is under %s, which a dolt sql-server is serving; dolt would route every query on the copy through that server, so choose a destination outside it", destDir, served)
+	}
 	if err := os.MkdirAll(destParent, 0o755); err != nil {
 		return fmt.Errorf("corpus-acquire: creating destination parent: %w", err)
 	}
-	destName := filepath.Base(destDir)
 
-	if _, err := doltRun(ctx, destParent, "backup", "restore", "file://"+stagingDir, destName); err != nil {
-		return fmt.Errorf("corpus-acquire: backup restore: %w", err)
+	stagingDir, err := os.MkdirTemp(destParent, "."+filepath.Base(destDir)+".partial-")
+	if err != nil {
+		return fmt.Errorf("corpus-acquire: creating staging dir: %w", err)
 	}
+	renamed := false
+	defer func() {
+		if !renamed {
+			_ = os.RemoveAll(stagingDir)
+		}
+	}()
 
+	if err := copyDoltTree(filepath.Join(sourceDir, ".dolt"), filepath.Join(stagingDir, ".dolt")); err != nil {
+		return fmt.Errorf("corpus-acquire: copying %s: %w", sourceDir, err)
+	}
+	if _, err := doltSQLRow(ctx, stagingDir, "SELECT COUNT(*) FROM dolt_log"); err != nil {
+		return fmt.Errorf("corpus-acquire: the copy of %s does not open (if the source was garbage-collected mid-copy, re-run): %w", sourceDir, err)
+	}
+	if err := os.Rename(stagingDir, destDir); err != nil {
+		return fmt.Errorf("corpus-acquire: moving the copy into place: %w", err)
+	}
+	renamed = true
 	return nil
+}
+
+// servedDataDir returns dir or its nearest ancestor that a dolt sql-server is
+// serving, identified by the <dir>/.dolt/sql-server.info record the server
+// writes at startup, or "" when there is none. The dolt CLI routes commands
+// for any database under such a directory through that server.
+func servedDataDir(dir string) string {
+	dir = filepath.Clean(dir)
+	for {
+		if _, err := os.Stat(filepath.Join(dir, ".dolt", "sql-server.info")); err == nil {
+			return dir
+		}
+		parent := filepath.Dir(dir)
+		if parent == dir {
+			return ""
+		}
+		dir = parent
+	}
+}
+
+// chunkJournalName is the fixed file name of Dolt's chunk journal under
+// .dolt/noms.
+const chunkJournalName = "vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv"
+
+// doltCopyRank orders the files of a live copy: the manifest first, the
+// journal index next to last, and the append-only chunk journal last, so the
+// journal copied is at least as long as anything copied before it refers to.
+func doltCopyRank(name string) int {
+	switch name {
+	case "manifest":
+		return 0
+	case "journal.idx":
+		return 2
+	case chunkJournalName:
+		return 3
+	default:
+		return 1
+	}
+}
+
+// skipDoltFile reports whether a file under .dolt stays behind in a copy:
+// lock files belong to whichever process holds the source open, and a
+// sql-server.info record in the copy would make dolt route queries on the
+// copy to the server that wrote it.
+func skipDoltFile(name string) bool {
+	return name == "LOCK" || name == "sql-server.info" || name == "sql-server.lock"
+}
+
+// copyDoltTree copies the regular files under src, a database's .dolt
+// directory, to dst in doltCopyRank order, recreating the directory layout
+// and leaving out the files skipDoltFile names. It only reads src.
+func copyDoltTree(src, dst string) error {
+	type file struct {
+		rel  string
+		rank int
+	}
+	var files []file
+	err := filepath.WalkDir(src, func(path string, d fs.DirEntry, err error) error {
+		if err != nil {
+			return err
+		}
+		rel, err := filepath.Rel(src, path)
+		if err != nil {
+			return err
+		}
+		if d.IsDir() {
+			return os.MkdirAll(filepath.Join(dst, rel), 0o755)
+		}
+		if skipDoltFile(d.Name()) {
+			return nil
+		}
+		if !d.Type().IsRegular() {
+			return fmt.Errorf("unexpected non-regular file %s", path)
+		}
+		files = append(files, file{rel: rel, rank: doltCopyRank(d.Name())})
+		return nil
+	})
+	if err != nil {
+		return err
+	}
+	sort.SliceStable(files, func(i, j int) bool { return files[i].rank < files[j].rank })
+	for _, f := range files {
+		if err := copyFile(filepath.Join(src, f.rel), filepath.Join(dst, f.rel)); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+func copyFile(src, dst string) error {
+	in, err := os.Open(src) // #nosec G304 -- a file found walking the operator-named source .dolt tree
+	if err != nil {
+		return err
+	}
+	defer func() { _ = in.Close() }()
+	out, err := os.OpenFile(dst, os.O_WRONLY|os.O_CREATE|os.O_EXCL, 0o600) // #nosec G304 -- inside the staging dir this tool created
+	if err != nil {
+		return err
+	}
+	if _, err := io.Copy(out, in); err != nil {
+		_ = out.Close()
+		return fmt.Errorf("copying %s: %w", src, err)
+	}
+	return out.Close()
 }
 
 // MeasureCorpus re-measures the local clone at cloneDir on every call (never
@@ -148,11 +265,16 @@ func AcquireCorpus(ctx context.Context, dataDir, dbName, destDir string) error {
 // the sourceServer, which is recorded on the result purely for provenance
 // and is never connected to. If priorBaselineDepth is positive and the
 // clone's actual depth falls below it, the result is flagged Partial rather
-// than silently reporting narrower coverage as if it were complete.
+// than silently reporting narrower coverage as if it were complete. A clone
+// under a data dir a dolt sql-server is serving is refused: dolt would route
+// these queries through that server.
 func MeasureCorpus(ctx context.Context, cloneDir, sourceDB, sourceServer string, priorBaselineDepth int) (CorpusClone, error) {
 	cc := CorpusClone{
 		SourceDB:     sourceDB,
 		SourceServer: sourceServer,
+	}
+	if served := servedDataDir(cloneDir); served != "" {
+		return cc, fmt.Errorf("corpus-acquire: clone %s is under %s, which a dolt sql-server is serving; measuring it would query that server", cloneDir, served)
 	}
 
 	headRow, err := doltSQLRow(ctx, cloneDir, "SELECT commit_hash FROM dolt_log LIMIT 1")
