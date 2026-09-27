@@ -1967,7 +1967,11 @@ func TestAllMigrationsSQLUsesDirectDDLForKnownCLIIncompatibilities(t *testing.T)
 		// MODIFY COLUMN (durable_state JSON -> LONGBLOB), same shape as 0065.
 		"ALTER TABLE issue_versions ADD COLUMN attribution_status VARCHAR(20) NOT NULL;",
 		"ALTER TABLE issue_versions MODIFY COLUMN durable_state LONGBLOB;",
-		// 0069: single-plane prepared ADD COLUMN, same shape as 0068's
+		// 0069: two prepared MODIFY COLUMNs on issue_versions (change_at and
+		// removed_at to DATETIME(6)), same shape as 0068's step 7.
+		"ALTER TABLE issue_versions MODIFY COLUMN change_at DATETIME(6) NOT NULL;",
+		"ALTER TABLE issue_versions MODIFY COLUMN removed_at DATETIME(6);",
+		// 0070: single-plane prepared ADD COLUMN, same shape as 0068's
 		// attribution_status (no wisps twin -- issue_versions has none).
 		"ALTER TABLE issue_versions ADD COLUMN removed_restriction VARCHAR(30);",
 	} {
@@ -2000,7 +2004,10 @@ func TestAllMigrationsSQLUsesDirectDDLForKnownCLIIncompatibilities(t *testing.T)
 		// carries these probes.
 		"@issue_versions_as_needs_add",
 		"@issue_versions_ds_needs_retype",
-		// 0069 guards its ALTER the same way; only its source text carries
+		// 0069 guards both of its MODIFYs the same way.
+		"@issue_versions_change_at_needs_widen",
+		"@issue_versions_removed_at_needs_widen",
+		// 0070 guards its ALTER the same way; only its source text carries
 		// this probe.
 		"@issue_versions_rr_needs_add",
 	} {
