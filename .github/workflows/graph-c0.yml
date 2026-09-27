@@ -2,7 +2,7 @@ name: Graph C0 preview
 
 on:
   push:
-    branches: [codex/janet-c0-delivery-20260923, codex/janet-issue-adapter-20260924, codex/janet-dependency-workflow-20260925, codex/janet-mixed-links-20260925, codex/janet-link-lifecycle-20260925, codex/janet-bdp-read-20260925, codex/janet-read-http-20260926, codex/janet-history-exact-20260926, codex/janet-memory-update-20260926, codex/janet-memory-recall-20260926, codex/janet-history-compare-20260926, codex/janet-memory-input-20260926, codex/janet-issue-edit-20260926, codex/janet-dependency-unlink-20260926, janet-overwrite-disclosure-20260927, janet-embedded-runner-reuse-20260927, janet-memory-discovery-20260927, janet-issue-reopen-20260927, janet-memory-selected-update-20260927, janet-memory-atomic-patch-20260927, janet-issue-list-20260927]
+    branches: [codex/janet-c0-delivery-20260923, codex/janet-issue-adapter-20260924, codex/janet-dependency-workflow-20260925, codex/janet-mixed-links-20260925, codex/janet-link-lifecycle-20260925, codex/janet-bdp-read-20260925, codex/janet-read-http-20260926, codex/janet-history-exact-20260926, codex/janet-memory-update-20260926, codex/janet-memory-recall-20260926, codex/janet-history-compare-20260926, codex/janet-memory-input-20260926, codex/janet-issue-edit-20260926, codex/janet-dependency-unlink-20260926, janet-overwrite-disclosure-20260927, janet-embedded-runner-reuse-20260927, janet-memory-discovery-20260927, janet-issue-reopen-20260927, janet-memory-selected-update-20260927, janet-memory-atomic-patch-20260927, janet-issue-list-20260927, janet-issue-priority-20260927]
   workflow_dispatch:
 
 permissions:
@@ -95,6 +95,7 @@ jobs:
           git rev-parse HEAD > "$RUNNER_TEMP/c0-evidence/source.txt"
           go version > "$RUNNER_TEMP/c0-evidence/go-version.txt"
           sha256sum "$RUNNER_TEMP/c0-bin/bd" > "$RUNNER_TEMP/c0-evidence/binary.sha256"
+          sha256sum scripts/graph-issue-priority-smoke.py > "$RUNNER_TEMP/c0-evidence/issue-priority-harness.sha256"
       - name: Install pinned independent-client Node runtime
         uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020
         with:
@@ -189,7 +190,10 @@ jobs:
           # Dolt 2.1.8 cannot inspect a database created after another session's
           # transaction began. Isolate package setup; explicit same-store
           # concurrency/failure tests still run. See GRAPH_BDP_READ_PROJECTION.md.
-          BEADS_GRAPH_TEST_SERVER_PORT=15440 GO_TEST_PKG_PARALLEL=1 TEST_VERBOSE=1 TEST_TIMEOUT=10m \
+          # PR42's both-engine graphstore package measured 570.764s. Priority
+          # adds about 31s of real-store controls; keep a bounded margin above
+          # the former 10m deadline without dropping any existing gates.
+          BEADS_GRAPH_TEST_SERVER_PORT=15440 GO_TEST_PKG_PARALLEL=1 TEST_VERBOSE=1 TEST_TIMEOUT=12m \
             ./scripts/test.sh ./internal/storage/graphstore ./internal/configfile \
               ./internal/storage/issueops ./internal/storage/schema \
               ./internal/httpapi/graphread ./internal/httpapi/bdpwire ./internal/httpapi \
@@ -252,6 +256,10 @@ jobs:
             --backend both --server-port 15440 \
             --output-dir "$RUNNER_TEMP/c0-evidence/issue-list" \
             > "$RUNNER_TEMP/c0-evidence/issue-list-smoke.log" 2>&1
+          python3 scripts/graph-issue-priority-smoke.py --bd "$RUNNER_TEMP/c0-bin/bd" \
+            --backend both --server-port 15440 \
+            --output-dir "$RUNNER_TEMP/c0-evidence/issue-priority" \
+            > "$RUNNER_TEMP/c0-evidence/issue-priority-smoke.log" 2>&1
       - name: Preserve receipts (including failures)
         if: always()
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a

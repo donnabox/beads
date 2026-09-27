@@ -22,7 +22,7 @@ SCOPE = "https://example.invalid/disposable-issue-edit/"
 FIELDS = {"title": "title", "description": "description",
           "design": "design", "acceptance_criteria": "acceptance"}
 LIMITATIONS = [
-    "four inline Issue text fields only; notes edits are explicitly unavailable; no file/stdin or complete Issue workflows",
+    "this suite exercises four inline Issue text fields only; notes edits are explicitly unavailable; no file/stdin or complete Issue workflows",
     "existing attribution is not native History commit-time context",
     "no concurrency, corruption, cancellation, crash or uncertain-commit qualification",
     "visible equality does not prove unchanged database bytes, event counts or coordination",
@@ -202,7 +202,7 @@ def exercise(capture):
         ("legacy-selector", ["update", "issueedit-legacy", "--title", "Denied", "--unconditional"], "invalid_selector"),
         ("mixed-properties", ["update", source["id"], *guard, "--properties", '{}'], "capability_unavailable"),
     ]
-    for flag, value in [("status", "closed"), ("priority", "1"), ("type", "bug"), ("assignee", "worker"),
+    for flag, value in [("status", "closed"), ("add-label", "new-label"), ("type", "bug"), ("assignee", "worker"),
                         ("notes", "replace"), ("append-notes", "append"), ("metadata", '{}'), ("if-source-revision", source["revision"]),
                         ("body-file", str(capture.root / "does-not-exist.md"))]:
         failures.append(("unsupported-" + flag, ["update", source["id"], *guard, "--" + flag, value],

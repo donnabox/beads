@@ -9,12 +9,13 @@ import (
 	"github.com/spf13/cobra"
 	"github.com/steveyegge/beads/internal/storage/graphstore"
 	"github.com/steveyegge/beads/internal/types"
+	"github.com/steveyegge/beads/internal/validation"
 )
 
-var graphPreviewIssueTextFlags = []string{"title", "description", "body", "message", "design", "acceptance"}
+var graphPreviewIssueEditFlags = []string{"title", "description", "body", "message", "design", "acceptance", "priority"}
 
-func graphPreviewIssueTextFlagsChanged(cmd *cobra.Command) bool {
-	for _, name := range graphPreviewIssueTextFlags {
+func graphPreviewIssueEditFlagsChanged(cmd *cobra.Command) bool {
+	for _, name := range graphPreviewIssueEditFlags {
 		if cmd.Flags().Changed(name) {
 			return true
 		}
@@ -25,20 +26,28 @@ func graphPreviewIssueTextFlagsChanged(cmd *cobra.Command) bool {
 // This narrow preview keeps familiar Issue field meanings while requiring the
 // existing opaque graph guard for a canonical Resource selector. File/stdin and
 // broader workflow flags remain explicit refusals; legacy routing is unchanged.
-func graphPreviewIssueTextRequest(cmd *cobra.Command, path string) (graphstore.UpdateIssueRequest, error) {
+func graphPreviewIssueEditRequest(cmd *cobra.Command, path string) (graphstore.UpdateIssueRequest, error) {
 	request := graphstore.UpdateIssueRequest{Path: path}
-	allowed := append([]string{"if-revision", "unconditional"}, graphPreviewIssueTextFlags...)
+	allowed := append([]string{"if-revision", "unconditional"}, graphPreviewIssueEditFlags...)
 	if err := graphPreviewFlags(cmd, allowed...); err != nil {
 		return request, err
 	}
-	if !graphPreviewIssueTextFlagsChanged(cmd) {
-		return request, graphFailure("invalid_properties", "Issue update requires at least one supported text field", 2)
+	if !graphPreviewIssueEditFlagsChanged(cmd) {
+		return request, graphFailure("invalid_properties", "Issue update requires at least one supported field", 2)
 	}
 	revision, unconditional, err := graphPreviewRevisionGuard(cmd, false, true)
 	if err != nil {
 		return request, err
 	}
 	request.ExpectedRevision, request.Unconditional = revision, unconditional
+	if cmd.Flags().Changed("priority") {
+		value, _ := cmd.Flags().GetString("priority")
+		priority, err := validation.ValidatePriority(value)
+		if err != nil {
+			return request, graphFailure("invalid_properties", err.Error(), 2)
+		}
+		request.Priority = &priority
+	}
 	fields := []struct {
 		name string
 		out  **string
@@ -74,7 +83,7 @@ func graphPreviewIssueTextRequest(cmd *cobra.Command, path string) (graphstore.U
 }
 
 func runGraphPreviewUpdateIssue(cmd *cobra.Command, path string) error {
-	request, err := graphPreviewIssueTextRequest(cmd, path)
+	request, err := graphPreviewIssueEditRequest(cmd, path)
 	if err != nil {
 		return err
 	}
