@@ -34,6 +34,9 @@ It does not version or recreate those Links, their targets, or incoming sources.
 Changing an owned Link still advances its owner independently; subsequent body
 edits preserve that newly observed owned set. The JSON result is the normal
 preview envelope containing `memory` and `changed`.
+A changed unconditional edit also includes `replaced`, identifying the actual
+previous Memory version and its recorded attribution. See the provisional
+[overwrite-disclosure result](GRAPH_OVERWRITE_DISCLOSURE_PREVIEW.md).
 
 This uses schema v5 in the same ordinary embedded/shared-server Dolt database.
 It reuses the existing owned-Memory snapshot writer, with no Type/schema rewrite,

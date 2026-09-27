@@ -231,6 +231,9 @@ Links use an installed `--resource-type`; `bd update links/PATH --properties JSO
 performs guarded property replacement. [Memory editing](engdocs/GRAPH_MEMORY_UPDATE_PREVIEW.md)
 uses `bd update beads/PATH --properties JSON` with a revision guard to replace
 its title/body and preserve earlier complete versions.
+[Unconditional Memory disclosure](engdocs/GRAPH_OVERWRITE_DISCLOSURE_PREVIEW.md)
+identifies the replaced version and its recorded attribution, including source
+Memory changes through owned Links. This result shape is provisional.
 [Issue text editing](engdocs/GRAPH_ISSUE_EDIT_PREVIEW.md) uses familiar inline
 `update` text flags with a graph revision guard, retaining the earlier complete
 Issue and its owned Dependencies.

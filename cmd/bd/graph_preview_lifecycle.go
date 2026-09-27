@@ -139,6 +139,6 @@ func runGraphPreviewUnlink(cmd *cobra.Command, args []string) error {
 	}
 	return withGraphStore(func(ctx context.Context, store *graphstore.Store) (any, string, error) {
 		result, err := store.Unlink(ctx, request)
-		return result, fmt.Sprintf("Unlinked %s; identity remains reserved", result.Link.ID), err
+		return result, graphPreviewReplacementSummary(fmt.Sprintf("Unlinked %s; identity remains reserved", result.Link.ID), result.ReplacedSource), err
 	})
 }

@@ -194,11 +194,12 @@ func (s *Store) Unlink(ctx context.Context, request LinkDeleteRequest) (LinkDele
 		if err := s.afterStage("link-retained"); err != nil {
 			return err
 		}
+		replacedSource := replacedMemory(source, request.UnconditionalSource)
 		source, err = s.recordOwnedMemoryInTx(ctx, tx, sourcePath, request.Actor, source)
 		if err != nil {
 			return err
 		}
-		result = LinkDeleteResult{Link: tombstone, Source: source, Changed: true}
+		result = LinkDeleteResult{Link: tombstone, Source: source, Changed: true, ReplacedSource: replacedSource}
 		return nil
 	})
 	if err != nil {

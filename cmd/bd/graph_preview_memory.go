@@ -65,6 +65,6 @@ func runGraphPreviewUpdateMemory(cmd *cobra.Command, path string) error {
 		if !result.Changed {
 			verb = "Unchanged"
 		}
-		return result, fmt.Sprintf("%s %s", verb, result.Memory.ID), err
+		return result, graphPreviewReplacementSummary(fmt.Sprintf("%s %s", verb, result.Memory.ID), result.Replaced), err
 	})
 }

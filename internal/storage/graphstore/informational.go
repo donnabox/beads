@@ -140,6 +140,9 @@ func (s *Store) AddInformationalLink(ctx context.Context, request LinkCreateRequ
 			return err
 		}
 		result, err = s.finishInformationalWriteInTx(ctx, tx, path, request.SourcePath, request.Actor, source)
+		if err == nil {
+			result.ReplacedSource = replacedMemory(source, request.UnconditionalSource)
+		}
 		return err
 	})
 	if err != nil {
@@ -216,6 +219,9 @@ func (s *Store) UpdateLink(ctx context.Context, request LinkUpdateRequest) (Link
 			return err
 		}
 		result, err = s.finishInformationalWriteInTx(ctx, tx, request.Path, sourcePath, request.Actor, source)
+		if err == nil {
+			result.ReplacedSource = replacedMemory(source, request.UnconditionalSource)
+		}
 		return err
 	})
 	if err != nil {
