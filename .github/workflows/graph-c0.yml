@@ -2,13 +2,76 @@ name: Graph C0 preview
 
 on:
   push:
-    branches: [codex/janet-c0-delivery-20260923, codex/janet-issue-adapter-20260924, codex/janet-dependency-workflow-20260925, codex/janet-mixed-links-20260925, codex/janet-link-lifecycle-20260925, codex/janet-bdp-read-20260925, codex/janet-read-http-20260926, codex/janet-history-exact-20260926, codex/janet-memory-update-20260926, codex/janet-memory-recall-20260926, codex/janet-history-compare-20260926, codex/janet-memory-input-20260926, codex/janet-issue-edit-20260926, codex/janet-dependency-unlink-20260926, janet-overwrite-disclosure-20260927]
+    branches: [codex/janet-c0-delivery-20260923, codex/janet-issue-adapter-20260924, codex/janet-dependency-workflow-20260925, codex/janet-mixed-links-20260925, codex/janet-link-lifecycle-20260925, codex/janet-bdp-read-20260925, codex/janet-read-http-20260926, codex/janet-history-exact-20260926, codex/janet-memory-update-20260926, codex/janet-memory-recall-20260926, codex/janet-history-compare-20260926, codex/janet-memory-input-20260926, codex/janet-issue-edit-20260926, codex/janet-dependency-unlink-20260926, janet-overwrite-disclosure-20260927, janet-embedded-runner-reuse-20260927]
   workflow_dispatch:
 
 permissions:
   contents: read
 
 jobs:
+  embedded-runner-reuse:
+    if: github.ref == 'refs/heads/janet-embedded-runner-reuse-20260927'
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    env:
+      BD_DISABLE_METRICS: "1"
+      BD_DISABLE_EVENT_FLUSH: "1"
+      DO_NOT_TRACK: "1"
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+      - uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e
+        with:
+          go-version-file: go.mod
+      - name: Build actual embedded storage test binary
+        timeout-minutes: 20
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/runner-evidence"
+          git rev-parse HEAD > "$RUNNER_TEMP/runner-evidence/source.txt"
+          go version > "$RUNNER_TEMP/runner-evidence/go-version.txt"
+          cp .github/scripts/embedded-storage-test-shard.sh "$RUNNER_TEMP/runner-evidence/runner.sh"
+          go test -tags gms_pure_go -race -c -o "$RUNNER_TEMP/embedded.test" ./internal/storage/embeddeddolt/ \
+            > "$RUNNER_TEMP/runner-evidence/build.log" 2>&1
+          sha256sum "$RUNNER_TEMP/embedded.test" > "$RUNNER_TEMP/runner-evidence/binary.sha256"
+          go version -m "$RUNNER_TEMP/embedded.test" > "$RUNNER_TEMP/runner-evidence/binary-build.txt"
+          "$RUNNER_TEMP/embedded.test" -test.list '^Test' > "$RUNNER_TEMP/runner-evidence/binary-tests.txt"
+      - name: Exercise the complete affected embedded shard
+        timeout-minutes: 16
+        env:
+          BEADS_TEST_EMBEDDED_DOLT: "1"
+          BEADS_TEST_EMBEDDED_TEST_BINARY: ${{ runner.temp }}/embedded.test
+        run: |
+          set -euo pipefail
+          git config --global user.name "CI Bot"
+          git config --global user.email "ci@beads.test"
+          test -x "$BEADS_TEST_EMBEDDED_TEST_BINARY"
+          BEADS_TEST_SHARD_LIST_ONLY=1 bash .github/scripts/embedded-storage-test-shard.sh 3 5 \
+            > "$RUNNER_TEMP/runner-evidence/selected-tests.txt"
+          bash .github/scripts/embedded-storage-test-shard.sh 3 5 \
+            > "$RUNNER_TEMP/runner-evidence/shard3.log" 2>&1
+          # A skipped or accidentally unselected fixture must not qualify the fix.
+          grep -q '^--- PASS: TestSpikeBeadGraphFenceEmbeddedLeg (' "$RUNNER_TEMP/runner-evidence/shard3.log"
+      - name: Exercise the explicit relative binary path
+        timeout-minutes: 2
+        env:
+          BEADS_TEST_EMBEDDED_DOLT: "1"
+        run: |
+          set -euo pipefail
+          ln -s "$RUNNER_TEMP/embedded.test" .pr10-embedded-test-bin
+          trap 'rm -f .pr10-embedded-test-bin' EXIT
+          test -x .pr10-embedded-test-bin
+          BEADS_TEST_EMBEDDED_TEST_BINARY=./.pr10-embedded-test-bin \
+            bash .github/scripts/embedded-storage-test-shard.sh 3 5 \
+            -test.run '^TestSpikeBeadGraphFenceEmbeddedLeg$' -test.timeout=90s \
+            > "$RUNNER_TEMP/runner-evidence/relative-fixture.log" 2>&1
+          grep -q '^--- PASS: TestSpikeBeadGraphFenceEmbeddedLeg (' "$RUNNER_TEMP/runner-evidence/relative-fixture.log"
+      - name: Preserve runner evidence including failures
+        if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        with:
+          name: pr10-embedded-runner-qualification
+          path: ${{ runner.temp }}/runner-evidence
+          retention-days: 14
   installed-linux:
     runs-on: ubuntu-latest
     timeout-minutes: 35
