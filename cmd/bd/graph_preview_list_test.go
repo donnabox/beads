@@ -2,6 +2,7 @@ package main
 
 import (
 	"encoding/json"
+	"errors"
 	"strings"
 	"testing"
 
@@ -45,48 +46,55 @@ func TestGraphPreviewIssueListInput(t *testing.T) {
 		name       string
 		args       []string
 		ambient    bool
-		bad        bool
+		exit       int
 		structured bool
 		limit      int
 	}{
-		{"flat", []string{"--flat", "--limit=2"}, false, false, false, 2},
-		{"records", []string{"--format=records-json", "--all"}, false, false, true, 0},
-		{"records-ambient", []string{"--format=records-json", "--limit=3"}, true, false, true, 3},
-		{"explicit-limit-wins-all", []string{"--flat", "--all", "--limit=1"}, false, false, false, 1},
-		{"bare", nil, false, true, false, 0},
-		{"legacy-json", []string{"--json"}, false, true, false, 0},
-		{"false-json", []string{"--flat", "--json=false"}, false, true, false, 0},
-		{"format-json", []string{"--format=JSON"}, false, true, false, 0},
-		{"ambient-flat", []string{"--flat"}, true, true, false, 0},
-		{"false-flat", []string{"--flat=false"}, false, true, false, 0},
-		{"false-ready", []string{"--flat", "--ready=false"}, false, true, false, 0},
-		{"false-tree", []string{"--flat", "--tree=false"}, false, true, false, 0},
-		{"negative-limit", []string{"--flat", "--limit=-1"}, false, true, false, 0},
-		{"bad-priority", []string{"--flat", "--priority=bad"}, false, true, false, 0},
-		{"sort-id", []string{"--flat", "--sort=id"}, false, true, false, 0},
-		{"both-pin", []string{"--flat", "--pinned", "--no-pinned"}, false, true, false, 0},
-		{"both-status-aliases", []string{"--flat", "--status=open", "--state=closed"}, false, true, false, 0},
-		{"repeat-status", []string{"--flat", "--status=open", "-sclosed"}, false, true, false, 0},
-		{"repeat-type", []string{"--flat", "--type=task", "-tbug"}, false, true, false, 0},
-		{"oversize-label", []string{"--flat", "--label=" + strings.Repeat("x", 4097)}, false, true, false, 0},
-		{"invalid-label-utf8", []string{"--flat", "--label=" + string([]byte{255})}, false, true, false, 0},
-		{"explicit-empty-exclude-type", []string{"--flat", "--exclude-type="}, false, true, false, 0},
-		{"empty-label", []string{"--flat", "--label="}, false, true, false, 0},
-		{"blank-labels", []string{"--flat", "--label= , "}, false, true, false, 0},
-		{"mixed-labels", []string{"--flat", "--label= ,a", "--limit=2"}, false, false, false, 2},
-		{"title-not-flag", []string{"--flat", "--title", "--status=closed", "--status=open", "--limit=2"}, false, false, false, 2},
+		{"flat", []string{"--flat", "--limit=2"}, false, 0, false, 2},
+		{"records", []string{"--format=records-json", "--all"}, false, 0, true, 0},
+		{"records-with-flat", []string{"--format=records-json", "--flat", "--limit=2"}, false, 0, true, 2},
+		{"records-ambient", []string{"--format=records-json", "--limit=3"}, true, 0, true, 3},
+		{"explicit-limit-wins-all", []string{"--flat", "--all", "--limit=1"}, false, 0, false, 1},
+		{"bare", nil, false, 5, false, 0},
+		{"legacy-json", []string{"--json"}, false, 5, false, 0},
+		{"false-json", []string{"--flat", "--json=false"}, false, 5, false, 0},
+		{"format-json", []string{"--format=JSON"}, false, 5, false, 0},
+		{"ambient-flat", []string{"--flat"}, true, 5, false, 0},
+		{"false-flat", []string{"--flat=false"}, false, 5, false, 0},
+		{"false-ready", []string{"--flat", "--ready=false"}, false, 5, false, 0},
+		{"false-tree", []string{"--flat", "--tree=false"}, false, 5, false, 0},
+		{"negative-limit", []string{"--flat", "--limit=-1"}, false, 2, false, 0},
+		{"bad-priority", []string{"--flat", "--priority=bad"}, false, 2, false, 0},
+		{"sort-id", []string{"--flat", "--sort=id"}, false, 5, false, 0},
+		{"both-pin", []string{"--flat", "--pinned", "--no-pinned"}, false, 2, false, 0},
+		{"both-status-aliases", []string{"--flat", "--status=open", "--state=closed"}, false, 2, false, 0},
+		{"repeat-status", []string{"--flat", "--status=open", "-sclosed"}, false, 5, false, 0},
+		{"repeat-type", []string{"--flat", "--type=task", "-tbug"}, false, 5, false, 0},
+		{"oversize-label", []string{"--flat", "--label=" + strings.Repeat("x", 4097)}, false, 2, false, 0},
+		{"invalid-label-utf8", []string{"--flat", "--label=" + string([]byte{255})}, false, 2, false, 0},
+		{"explicit-empty-exclude-type", []string{"--flat", "--exclude-type="}, false, 5, false, 0},
+		{"empty-label", []string{"--flat", "--label="}, false, 2, false, 0},
+		{"blank-labels", []string{"--flat", "--label= , "}, false, 2, false, 0},
+		{"mixed-labels", []string{"--flat", "--label= ,a", "--limit=2"}, false, 0, false, 2},
+		{"title-not-flag", []string{"--flat", "--title", "--status=closed", "--status=open", "--limit=2"}, false, 0, false, 2},
 	} {
 		t.Run(tc.name, func(t *testing.T) {
 			jsonOutput = tc.ambient
 			cmd := graphListTestCommand(t, tc.args)
 			in, structured, err := graphIssueListInput(cmd, append([]string{"list"}, tc.args...))
-			if (err != nil) != tc.bad {
+			if (err != nil) != (tc.exit != 0) {
 				t.Fatalf("in=%+v structured=%v error=%v", in, structured, err)
 			}
-			if !tc.bad && in.ExcludeTypes != nil {
+			if tc.exit != 0 {
+				var got *exitError
+				if !errors.As(err, &got) || got.Code != tc.exit {
+					t.Fatalf("expected exit %d, got %v", tc.exit, err)
+				}
+			}
+			if tc.exit == 0 && in.ExcludeTypes != nil {
 				t.Fatalf("absent unsupported slice must be canonical zero: %#v", in.ExcludeTypes)
 			}
-			if !tc.bad && (structured != tc.structured || in.Limit == nil || *in.Limit != tc.limit) {
+			if tc.exit == 0 && (structured != tc.structured || in.Limit == nil || *in.Limit != tc.limit) {
 				t.Fatalf("wrong effective policy: %+v structured=%v", in, structured)
 			}
 		})

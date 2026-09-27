@@ -251,11 +251,22 @@ func issueListConfigInTx(ctx context.Context, tx *sql.Tx) (workapi.ListConfig, e
 		}
 		totalRows, totalBytes = totalRows+rows, totalBytes+size
 	}
-	statuses, customTypes, err := issueops.ResolveCustomConfigInTx(ctx, tx)
+	statuses, customTypes, err := issueops.ResolveCustomConfigStrictInTx(ctx, tx)
 	if err != nil {
 		return workapi.ListConfig{}, err
 	}
-	return workapi.LoadListConfig(ctx, issueListConfigSource{workapi.ListConfig{CustomStatuses: statuses, CustomTypes: customTypes, InfraSet: issueops.ResolveInfraTypesInTx(ctx, tx)}})
+	infra, err := issueops.ResolveInfraTypesStrictInTx(ctx, tx)
+	if err != nil {
+		return workapi.ListConfig{}, err
+	}
+	cfg, err := workapi.LoadListConfig(ctx, issueListConfigSource{workapi.ListConfig{CustomStatuses: statuses, CustomTypes: customTypes, InfraSet: infra}})
+	if err != nil {
+		return workapi.ListConfig{}, err
+	}
+	if err := checkResolvedIssueListConfig(cfg); err != nil {
+		return workapi.ListConfig{}, err
+	}
+	return cfg, nil
 }
 
 // Catalog admission covers every live allocation, including filtered-out Issues
@@ -308,4 +319,40 @@ func (s *Store) checkIssueListCatalogInTx(ctx context.Context, tx *sql.Tx) error
 		}
 	}
 	return errors.Join(readErr, rows.Err(), rows.Close())
+}
+
+// checkResolvedIssueListConfig also charges frontend YAML fallbacks. This is a
+// resolved-policy bound, not a limit on the frontend's earlier YAML acquisition.
+// Each stored entry is charged, including duplicates retained in slices.
+func checkResolvedIssueListConfig(cfg workapi.ListConfig) error {
+	entries, bytes := 0, 0
+	charge := func(parts ...string) error {
+		if entries == PreviewIssueListConfigRowLimit {
+			return fmt.Errorf("%w: resolved Issue list configuration exceeds %d entries", ErrLimitExceeded, PreviewIssueListConfigRowLimit)
+		}
+		entries++
+		for _, part := range parts {
+			if len(part) > PreviewIssueListConfigByteLimit-bytes {
+				return fmt.Errorf("%w: resolved Issue list configuration exceeds %d bytes", ErrLimitExceeded, PreviewIssueListConfigByteLimit)
+			}
+			bytes += len(part)
+		}
+		return nil
+	}
+	for _, status := range cfg.CustomStatuses {
+		if err := charge(status.Name, string(status.Category)); err != nil {
+			return err
+		}
+	}
+	for _, name := range cfg.CustomTypes {
+		if err := charge(name); err != nil {
+			return err
+		}
+	}
+	for name := range cfg.InfraSet {
+		if err := charge(name); err != nil {
+			return err
+		}
+	}
+	return nil
 }

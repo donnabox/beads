@@ -501,6 +501,8 @@ func graphStorageError(err error) error {
 		return graphFailure("ambiguous_link", err.Error()+": "+strings.Join(ambiguous.CandidateIDs, ", "), 4)
 	}
 	switch {
+	case errors.Is(err, errGraphListSelector):
+		return graphFailure("invalid_selector", err.Error(), 2)
 	case errors.Is(err, graphstore.ErrVersionUnknown):
 		return graphFailure("revision_unknown", err.Error(), 3)
 	case errors.Is(err, graphstore.ErrGone):

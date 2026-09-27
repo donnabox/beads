@@ -8,6 +8,7 @@ import (
 	"encoding/json"
 	"errors"
 	"reflect"
+	"slices"
 	"sort"
 	"strings"
 	"testing"
@@ -228,7 +229,7 @@ func assertReadyIDs(t *testing.T, ctx context.Context, s *Store, want ...string)
 	}
 	sort.Strings(got)
 	sort.Strings(want)
-	if !reflect.DeepEqual(got, want) {
+	if !slices.Equal(got, want) {
 		t.Fatalf("ready got %v want %v", got, want)
 	}
 }

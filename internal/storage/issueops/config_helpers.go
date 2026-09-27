@@ -46,12 +46,24 @@ func ParseCommaSeparatedList(value string) []string {
 	return result
 }
 
-func ResolveCustomConfigInTx(ctx context.Context, tx DBTX) (statuses []types.CustomStatus, customTypes []string, err error) {
-	statuses, statusesFromTable, err := resolveCustomStatusesFromTableInTx(ctx, tx)
+func ResolveCustomConfigInTx(ctx context.Context, tx DBTX) ([]types.CustomStatus, []string, error) {
+	return resolveCustomConfigInTx(ctx, tx, false)
+}
+
+// ResolveCustomConfigStrictInTx preserves the table/config/YAML precedence of
+// ResolveCustomConfigInTx, but refuses every database query or decoding failure.
+// It is for checked reads of initialized workspaces, not legacy degraded mode.
+// YAML remains the frontend's already-initialized process configuration.
+func ResolveCustomConfigStrictInTx(ctx context.Context, tx DBTX) ([]types.CustomStatus, []string, error) {
+	return resolveCustomConfigInTx(ctx, tx, true)
+}
+
+func resolveCustomConfigInTx(ctx context.Context, tx DBTX, strict bool) (statuses []types.CustomStatus, customTypes []string, err error) {
+	statuses, statusesFromTable, err := resolveCustomStatusesFromTableInTx(ctx, tx, strict)
 	if err != nil {
 		return nil, nil, err
 	}
-	customTypes, typesFromTable, err := resolveCustomTypesFromTableInTx(ctx, tx)
+	customTypes, typesFromTable, err := resolveCustomTypesFromTableInTx(ctx, tx, strict)
 	if err != nil {
 		return nil, nil, err
 	}
@@ -61,6 +73,9 @@ func ResolveCustomConfigInTx(ctx context.Context, tx DBTX) (statuses []types.Cus
 
 	cfg, err := getConfigKeysInTx(ctx, tx, "status.custom", "types.custom")
 	if err != nil {
+		if strict {
+			return nil, nil, err
+		}
 		if !statusesFromTable {
 			if yamlStatuses := config.GetCustomStatusesFromYAML(); len(yamlStatuses) > 0 {
 				statuses = ParseStatusFallback(yamlStatuses)
@@ -93,9 +108,12 @@ func ResolveCustomConfigInTx(ctx context.Context, tx DBTX) (statuses []types.Cus
 	return statuses, customTypes, nil
 }
 
-func resolveCustomStatusesFromTableInTx(ctx context.Context, tx DBTX) ([]types.CustomStatus, bool, error) {
+func resolveCustomStatusesFromTableInTx(ctx context.Context, tx DBTX, strict bool) ([]types.CustomStatus, bool, error) {
 	rows, err := tx.QueryContext(ctx, "SELECT name, category FROM custom_statuses ORDER BY name")
 	if err != nil {
+		if strict {
+			return nil, false, fmt.Errorf("query custom_statuses: %w", err)
+		}
 		return nil, false, nil
 	}
 	defer rows.Close()
@@ -103,6 +121,9 @@ func resolveCustomStatusesFromTableInTx(ctx context.Context, tx DBTX) ([]types.C
 	for rows.Next() {
 		var name, category string
 		if err := rows.Scan(&name, &category); err != nil {
+			if strict {
+				return nil, false, fmt.Errorf("scan custom_statuses: %w", err)
+			}
 			continue
 		}
 		result = append(result, types.CustomStatus{
@@ -116,9 +137,12 @@ func resolveCustomStatusesFromTableInTx(ctx context.Context, tx DBTX) ([]types.C
 	return result, len(result) > 0, nil
 }
 
-func resolveCustomTypesFromTableInTx(ctx context.Context, tx DBTX) ([]string, bool, error) {
+func resolveCustomTypesFromTableInTx(ctx context.Context, tx DBTX, strict bool) ([]string, bool, error) {
 	rows, err := tx.QueryContext(ctx, "SELECT name FROM custom_types ORDER BY name")
 	if err != nil {
+		if strict {
+			return nil, false, fmt.Errorf("query custom_types: %w", err)
+		}
 		return nil, false, nil
 	}
 	defer rows.Close()
@@ -126,6 +150,9 @@ func resolveCustomTypesFromTableInTx(ctx context.Context, tx DBTX) ([]string, bo
 	for rows.Next() {
 		var name string
 		if err := rows.Scan(&name); err != nil {
+			if strict {
+				return nil, false, fmt.Errorf("scan custom_types: %w", err)
+			}
 			continue
 		}
 		result = append(result, name)
@@ -470,9 +497,23 @@ func SyncConfigTables(ctx context.Context, tx DBTX, key, value string) (string, 
 // Returns a map[string]bool for O(1) lookups.
 // Does not cache — callers layer caching on top.
 func ResolveInfraTypesInTx(ctx context.Context, tx DBTX) map[string]bool {
+	result, _ := resolveInfraTypesInTx(ctx, tx, false)
+	return result
+}
+
+// ResolveInfraTypesStrictInTx preserves database/YAML/default precedence while
+// refusing database failures rather than treating them as missing configuration.
+func ResolveInfraTypesStrictInTx(ctx context.Context, tx DBTX) (map[string]bool, error) {
+	return resolveInfraTypesInTx(ctx, tx, true)
+}
+
+func resolveInfraTypesInTx(ctx context.Context, tx DBTX, strict bool) (map[string]bool, error) {
 	var typeList []string
 
 	value, err := GetConfigInTx(ctx, tx, "types.infra")
+	if strict && err != nil {
+		return nil, err
+	}
 	if err == nil && value != "" {
 		typeList = ParseCommaSeparatedList(value)
 	}
@@ -491,5 +532,5 @@ func ResolveInfraTypesInTx(ctx context.Context, tx DBTX) map[string]bool {
 	for _, t := range typeList {
 		result[t] = true
 	}
-	return result
+	return result, nil
 }

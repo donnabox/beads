@@ -3,6 +3,7 @@ package main
 import (
 	"bytes"
 	"context"
+	"errors"
 	"fmt"
 	"io"
 	"os"
@@ -11,12 +12,15 @@ import (
 
 	"github.com/spf13/cobra"
 	"github.com/spf13/pflag"
+	"github.com/steveyegge/beads/internal/storage"
 	"github.com/steveyegge/beads/internal/storage/graphstore"
 	"github.com/steveyegge/beads/internal/utils"
 	"github.com/steveyegge/beads/internal/validation"
 )
 
 const graphIssueListOutputLimit = 16 << 20
+
+var errGraphListSelector = errors.New("invalid Issue list selector")
 
 func runGraphPreviewList(cmd *cobra.Command) error {
 	in, structured, err := graphIssueListInput(cmd, os.Args[1:])
@@ -25,6 +29,9 @@ func runGraphPreviewList(cmd *cobra.Command) error {
 	}
 	return withGraphStoreOutput(func(ctx context.Context, s *graphstore.Store) (any, string, error) {
 		page, err := s.ListIssues(ctx, in.ListRequest)
+		if errors.Is(err, storage.ErrValidation) {
+			return nil, "", fmt.Errorf("%w: %w", errGraphListSelector, err)
+		}
 		if err != nil {
 			return nil, "", err
 		}

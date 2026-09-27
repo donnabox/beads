@@ -63,7 +63,8 @@ The item placeholder represents a complete object, including canonical identity,
 Type, version/revision, Issue properties and owned blocking Links. The backing
 Issue ID remains a property; it is not rewritten to imitate a legacy JSON row.
 `items` is an empty array when nothing matches. `--format records-json` selects
-structured output even under ambient JSON configuration; explicit `--json` still
+structured output even under ambient JSON configuration or alongside `--flat`;
+the explicit format takes precedence over the human flat rendering. Explicit `--json` still
 refuses. Flat under ambient JSON also refuses until legacy JSON compatibility is
 implemented. The provisional page shape and eventual default rendering require
 review before promotion to durable contracts.
@@ -78,7 +79,13 @@ probe cannot be concealed by `hasMore`. Output begins after successful operation
 and store cleanup. Failures return no partial page.
 
 This preview retains the whole-workspace 16 MiB current-read acquisition and 1000
-live-Resource bounds, plus DB configuration acquisition bounded at 64 KiB and 256 rows. These are
+live-Resource bounds, plus DB configuration acquisition bounded at 64 KiB and 256 rows.
+The resolved configuration, including YAML fallbacks, is bounded at 64 KiB and
+256 entries. Database read/decoding errors refuse instead of selecting fallback
+policy. YAML comes from the already-initialized CLI workspace configuration; it
+is not part of the database transaction or historical configuration. The resolved
+bound does not cap the frontend's earlier YAML file parsing and allocation.
+Direct multi-workspace server configuration is not supplied by this adapter. These are
 operational admission limits: unrelated Memory/Link growth can refuse a small
 Issue query. Lightweight catalog/Type checks do not hydrate every unreturned
 Memory body; complete retained-record checking applies to selected/probe Issues.

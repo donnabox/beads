@@ -570,3 +570,69 @@ func TestGraphIssueListTransactionConsistency(t *testing.T) {
 		t.Fatalf("writer state: %+v %v", current, err)
 	}
 }
+
+// Custom classifications preserve mixed-case and non-ASCII text. With only two
+// Issues, a limit-one query's extra probe fetches the whole set and can conceal
+// a SQL-collation/Go-sort mismatch. Three real authored Issues expose that seam.
+// This test specifies page-prefix consistency, not a new shared sort contract.
+func TestGraphIssueListCustomTypeCollation(t *testing.T) {
+	for _, backend := range []string{"embedded", "server"} {
+		t.Run(backend, func(t *testing.T) {
+			ctx, _, s := issueListFixture(t, backend)
+			setIssueListConfig(t, ctx, s, "types.custom", "Zulu,alpha,éclair")
+			created := map[types.IssueType]IssueRecord{}
+			for i, classification := range []types.IssueType{"Zulu", "alpha", "éclair"} {
+				request := plainIssue("Custom type " + string(classification))
+				request.Issue.IssueType = classification
+				got, err := s.CreateIssue(ctx, fmt.Sprintf("beads/collation-%d", i), request)
+				if err != nil {
+					t.Fatalf("author custom type %q: %v", classification, err)
+				}
+				if got.Properties.IssueType != classification {
+					t.Fatalf("custom type spelling changed: got %q want %q", got.Properties.IssueType, classification)
+				}
+				created[classification] = got
+			}
+			var collation string
+			if err := s.withTx(ctx, false, func(tx *sql.Tx) error {
+				return tx.QueryRowContext(ctx, `SELECT COLLATION_NAME FROM information_schema.COLUMNS
+                    WHERE TABLE_SCHEMA=DATABASE() AND TABLE_NAME='issues' AND COLUMN_NAME='issue_type'`).Scan(&collation)
+			}); err != nil {
+				t.Fatalf("read actual Issue type collation: %v", err)
+			}
+			t.Logf("Issue type column collation: %s", collation)
+			before := reopenState(t, ctx, s)
+			for _, direction := range []struct {
+				name    string
+				reverse bool
+				types   []types.IssueType
+			}{
+				{"ascending", false, []types.IssueType{"Zulu", "alpha", "éclair"}},
+				{"descending", true, []types.IssueType{"éclair", "alpha", "Zulu"}},
+			} {
+				t.Run(direction.name, func(t *testing.T) {
+					full, err := s.ListIssues(ctx, publicops.ListRequest{SortBy: "type", Reverse: direction.reverse, Limit: issueListInt(0)})
+					if err != nil || full.HasMore || len(full.Items) != len(created) {
+						t.Fatalf("full custom-type page: %+v %v", full, err)
+					}
+					for i, classification := range direction.types {
+						if !reflect.DeepEqual(full.Items[i], created[classification]) {
+							t.Fatalf("unlimited shared type sort changed complete record at %d: got=%+v want=%+v", i, full.Items[i], created[classification])
+						}
+					}
+					for limit := 1; limit <= len(full.Items); limit++ {
+						t.Run(fmt.Sprintf("limit-%d", limit), func(t *testing.T) {
+							page, err := s.ListIssues(ctx, publicops.ListRequest{SortBy: "type", Reverse: direction.reverse, Limit: issueListInt(limit)})
+							if err != nil || page.HasMore != (limit < len(full.Items)) || !reflect.DeepEqual(page.Items, full.Items[:limit]) {
+								t.Fatalf("limited type page is not full-result prefix (collation=%s, reverse=%t, limit=%d): got=%+v want=%+v error=%v", collation, direction.reverse, limit, page, full.Items[:limit], err)
+							}
+						})
+					}
+				})
+			}
+			if !reflect.DeepEqual(before, reopenState(t, ctx, s)) {
+				t.Fatal("custom-type sort or pagination mutated state")
+			}
+		})
+	}
+}

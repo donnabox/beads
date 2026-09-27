@@ -56,7 +56,9 @@ def exercise(capture):
 
     def refuse(label, flags, code):
         receipt, out, err = raw(label, ["list", *flags])
-        c0.require(receipt["exit_code"] != 0 and out == b"", label + ": refusal succeeded or emitted partial records")
+        expected_exit = 2 if code == "invalid_selector" else 5
+        c0.require(receipt["exit_code"] == expected_exit and out == b"",
+                   label + ": wrong refusal exit or partial records")
         structured = "records-json" in flags or "--json" in flags
         if structured:
             problem = json.loads(err)
@@ -148,6 +150,7 @@ def exercise(capture):
     listing("mixed-resources-issues-only", all_open)
     listing("stable-repeat", all_open)
     listing("records-json-quiet", all_open, ["--quiet"])
+    listing("records-json-over-flat", all_open, ["--flat"])
     ready = command("ready-is-not-list", ["ready", "--readonly"])
     c0.require({row["id"] for row in ready} == {a["id"], g["id"], d["id"]}, "blocked open Issue was treated as ready")
     listing("blocked-open-is-still-listed", [b], ["--title", "Beta"])
@@ -257,6 +260,7 @@ def exercise(capture):
         refuse(label, flags, "capability_unavailable")
     for label, flags in [
         ("negative-limit", ["--limit", "-1"]), ("invalid-priority", ["--priority", "P99"]),
+        ("unknown-status", ["--status", "unknown-status"]), ("unknown-type", ["--type", "unknown-type"]),
         ("empty-label", ["--label", ""]), ("conflicting-pinned", ["--pinned", "--no-pinned"]),
         ("status-and-state", ["--status", "open", "--state", "closed"]),
     ]:
