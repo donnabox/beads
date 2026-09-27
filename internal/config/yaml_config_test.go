@@ -51,6 +51,7 @@ func TestIsYamlOnlyKey(t *testing.T) {
 		// Secret keys (stored in yaml to avoid leaking via Dolt push)
 		{"github.token", true},
 		{"linear.api_key", true},
+		{"notion.token", true}, // GH#6676
 
 		// Non-yaml keys (should return false)
 		{"jira.url", false},
@@ -417,6 +418,110 @@ func TestWorkspaceYamlValueStrictReadsNestedScalar(t *testing.T) {
 	if err != nil || !present || value != "false" {
 		t.Fatalf("nested scalar = (%q, %v, %v), want false/true/nil", value, present, err)
 	}
+}
+
+// TestWorkspaceYamlValueStrictWithLocalMirrorsInitializeMergeOrder pins the one
+// thing the layered reader exists for: it must answer the way the merged
+// singleton does, and Initialize merges config.local.yaml LAST, so the
+// local file wins. A workspace-scoped reader that saw only config.yaml would
+// diverge from every config.GetBool consumer for the ordinary shape of a tracked
+// config.yaml plus a machine-local override.
+func TestWorkspaceYamlValueStrictWithLocalMirrorsInitializeMergeOrder(t *testing.T) {
+	write := func(t *testing.T, beadsDir, name, body string) {
+		t.Helper()
+		if err := os.MkdirAll(beadsDir, 0o755); err != nil {
+			t.Fatal(err)
+		}
+		if err := os.WriteFile(filepath.Join(beadsDir, name), []byte(body), 0o600); err != nil {
+			t.Fatal(err)
+		}
+	}
+
+	t.Run("local overrides tracked", func(t *testing.T) {
+		beadsDir := filepath.Join(t.TempDir(), ".beads")
+		write(t, beadsDir, ProjectConfigFileName, "dolt:\n  shared-server: true\n")
+		write(t, beadsDir, LocalConfigFileName, "dolt:\n  shared-server: false\n")
+		value, present, err := WorkspaceYamlValueStrictWithLocal(beadsDir, "dolt.shared-server")
+		if err != nil || !present || value != "false" {
+			t.Fatalf("= (%q, %v, %v), want the config.local.yaml answer \"false\"/true/nil", value, present, err)
+		}
+	})
+
+	t.Run("local overrides tracked in the enabling direction", func(t *testing.T) {
+		beadsDir := filepath.Join(t.TempDir(), ".beads")
+		write(t, beadsDir, ProjectConfigFileName, "dolt:\n  shared-server: false\n")
+		write(t, beadsDir, LocalConfigFileName, "dolt:\n  shared-server: true\n")
+		value, present, err := WorkspaceYamlValueStrictWithLocal(beadsDir, "dolt.shared-server")
+		if err != nil || !present || value != "true" {
+			t.Fatalf("= (%q, %v, %v), want the config.local.yaml answer \"true\"/true/nil", value, present, err)
+		}
+	})
+
+	// MergeInConfig only overrides the keys the local file actually states, so a
+	// local file that is silent about this key must fall through rather than
+	// mask the tracked answer.
+	t.Run("local silent on the key falls through", func(t *testing.T) {
+		beadsDir := filepath.Join(t.TempDir(), ".beads")
+		write(t, beadsDir, ProjectConfigFileName, "dolt:\n  shared-server: true\n")
+		write(t, beadsDir, LocalConfigFileName, "dolt:\n  auto-start: false\n")
+		value, present, err := WorkspaceYamlValueStrictWithLocal(beadsDir, "dolt.shared-server")
+		if err != nil || !present || value != "true" {
+			t.Fatalf("= (%q, %v, %v), want the config.yaml answer \"true\"/true/nil", value, present, err)
+		}
+	})
+
+	t.Run("no local file at all", func(t *testing.T) {
+		beadsDir := filepath.Join(t.TempDir(), ".beads")
+		write(t, beadsDir, ProjectConfigFileName, "dolt:\n  shared-server: true\n")
+		value, present, err := WorkspaceYamlValueStrictWithLocal(beadsDir, "dolt.shared-server")
+		if err != nil || !present || value != "true" {
+			t.Fatalf("= (%q, %v, %v), want the config.yaml answer \"true\"/true/nil", value, present, err)
+		}
+	})
+
+	// The mirror of the case above, and the corner where being MORE permissive
+	// than Initialize would reopen the divergence: Initialize hangs its local
+	// merge off a project config.yaml it found, so a .beads holding only
+	// config.local.yaml is never merged and config.GetBool answers from
+	// defaults. This reader has to say "absent" too, or it becomes the one
+	// resolver in the tree that honors that file.
+	t.Run("local only, no tracked config.yaml", func(t *testing.T) {
+		beadsDir := filepath.Join(t.TempDir(), ".beads")
+		write(t, beadsDir, LocalConfigFileName, "dolt:\n  shared-server: true\n")
+		value, present, err := WorkspaceYamlValueStrictWithLocal(beadsDir, "dolt.shared-server")
+		if err != nil || present || value != "" {
+			t.Fatalf("= (%q, %v, %v), want empty/false/nil: Initialize does not merge a config.local.yaml with no config.yaml beside it", value, present, err)
+		}
+	})
+
+	t.Run("neither file states the key", func(t *testing.T) {
+		beadsDir := filepath.Join(t.TempDir(), ".beads")
+		write(t, beadsDir, ProjectConfigFileName, "dolt:\n  auto-start: false\n")
+		value, present, err := WorkspaceYamlValueStrictWithLocal(beadsDir, "dolt.shared-server")
+		if err != nil || present || value != "" {
+			t.Fatalf("= (%q, %v, %v), want empty/false/nil", value, present, err)
+		}
+	})
+
+	// Initialize fails outright on a config.local.yaml it cannot merge, so the
+	// strict contract has to apply to the local layer too rather than skipping
+	// it and quietly answering from the tracked file.
+	t.Run("malformed local is an error, not a fallthrough", func(t *testing.T) {
+		beadsDir := filepath.Join(t.TempDir(), ".beads")
+		write(t, beadsDir, ProjectConfigFileName, "dolt:\n  shared-server: true\n")
+		write(t, beadsDir, LocalConfigFileName, "dolt: [")
+		if _, _, err := WorkspaceYamlValueStrictWithLocal(beadsDir, "dolt.shared-server"); err == nil {
+			t.Fatal("malformed config.local.yaml should return an error")
+		} else if !strings.Contains(err.Error(), LocalConfigFileName) {
+			t.Fatalf("error should name the file that failed, got: %v", err)
+		}
+	})
+
+	t.Run("empty beadsDir", func(t *testing.T) {
+		if value, present, err := WorkspaceYamlValueStrictWithLocal("", "dolt.shared-server"); err != nil || present || value != "" {
+			t.Fatalf("= (%q, %v, %v), want empty/false/nil", value, present, err)
+		}
+	})
 }
 
 func TestWorkspaceYamlValueStrictRejectsNullAndWrongParent(t *testing.T) {
@@ -859,6 +964,7 @@ func TestSecretKeyEnvVarHint(t *testing.T) {
 	}{
 		{"linear.api_key", "LINEAR_API_KEY"},
 		{"github.token", "GITHUB_TOKEN"},
+		{"notion.token", "NOTION_TOKEN"},
 		{"ai.api_key", "ANTHROPIC_API_KEY"},
 		{"custom.secret-token", "BD_CUSTOM_SECRET_TOKEN"},
 	}
@@ -899,18 +1005,23 @@ func TestCheckSecretKeyGitSafety_RefusesGitTrackedSecret(t *testing.T) {
 	}
 
 	// checkSecretGitTracked should refuse a secret key
-	err := checkSecretGitTracked(configPath, "linear.api_key")
-	if err == nil {
-		t.Fatal("expected error for secret key on git-tracked config, got nil")
-	}
-	if !strings.Contains(err.Error(), "refusing to write secret key") {
-		t.Fatalf("expected 'refusing to write' error, got: %v", err)
-	}
-	if !strings.Contains(err.Error(), "LINEAR_API_KEY") {
-		t.Fatalf("expected env var hint in error, got: %v", err)
-	}
-	if !strings.Contains(err.Error(), "--force-git-tracked") {
-		t.Fatalf("expected --force-git-tracked hint in error, got: %v", err)
+	for key, envVar := range map[string]string{
+		"linear.api_key": "LINEAR_API_KEY",
+		"notion.token":   "NOTION_TOKEN", // GH#6676
+	} {
+		err := checkSecretGitTracked(configPath, key)
+		if err == nil {
+			t.Fatalf("expected error for secret key %q on git-tracked config, got nil", key)
+		}
+		if !strings.Contains(err.Error(), "refusing to write secret key") {
+			t.Fatalf("expected 'refusing to write' error for %q, got: %v", key, err)
+		}
+		if !strings.Contains(err.Error(), envVar) {
+			t.Fatalf("expected env var hint %s in error, got: %v", envVar, err)
+		}
+		if !strings.Contains(err.Error(), "--force-git-tracked") {
+			t.Fatalf("expected --force-git-tracked hint in error, got: %v", err)
+		}
 	}
 }
 
@@ -938,7 +1049,7 @@ func TestCheckSecretKeyGitSafety_AllowsDatabaseBackedSecretKey(t *testing.T) {
 	}
 
 	// Secret-looking keys that are not YAML-backed do not write to config.yaml.
-	err := checkSecretGitTracked(configPath, "notion.token")
+	err := checkSecretGitTracked(configPath, "custom.api_token")
 	if err != nil {
 		t.Fatalf("expected no error for database-backed secret key, got: %v", err)
 	}
