@@ -84,11 +84,12 @@ type Issue struct {
 	// consumers read RowVersion directly.
 	//
 	// Coverage is deliberately partial: it changes on claim/close/unclaim and the
-	// generic update path, but NOT on direct-UPDATE paths that rewrite text
+	// generic update path, and on label mutations that actually change the set.
+	// Label no-ops preserve the token. It does NOT change on direct-UPDATE paths that rewrite text
 	// without touching row_lock (RestoreFromSnapshotInTx, the compaction
 	// text-truncation path). For a complete change-detection key, combine it with
 	// updated_at (which those paths DO bump), status, and the label set
-	// (label-only and reopen writes change those, not row_lock).
+	// (some direct writes change those without changing row_lock).
 	//
 	// 0 appears only on legacy rows backfilled by migration 0054 (DEFAULT 0) that
 	// have not been mutated since; any issue created by the current code path is

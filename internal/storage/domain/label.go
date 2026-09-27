@@ -10,6 +10,8 @@ type LabelOpts struct {
 	// SkipUpdatedAtTouch is reserved for labels persisted as constituents of
 	// an issue create. The inserted issue already carries the accepted snapshot
 	// timestamp; only a later standalone label mutation may advance it.
+	// Only Insert honors this option. Delete has no create-constituent path and
+	// always touches the Issue snapshot when it removes a row.
 	SkipUpdatedAtTouch bool
 }
 

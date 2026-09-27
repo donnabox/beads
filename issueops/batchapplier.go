@@ -299,7 +299,8 @@ type ItemResult struct {
 	//
 	// ITS COVERAGE IS PARTIAL and the partiality is inherited rather than
 	// introduced: the token is rewritten by claim, close, unclaim and the
-	// generic update path, and NOT by the direct-update paths that rewrite text
+	// generic update path, and actual label mutations (not label no-ops). It is
+	// NOT rewritten by the direct-update paths that rewrite text
 	// without touching it. A caller needing complete change detection combines
 	// it with updated_at, status and the label set. See types.Issue.RowVersion.
 	RowVersion int64
