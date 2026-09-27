@@ -156,9 +156,10 @@ type LinkUpdateRequest struct {
 }
 
 type LinkMutationResult struct {
-	Link    LinkRecord `json:"link"`
-	Source  any        `json:"source"`
-	Changed bool       `json:"changed"`
+	Link           LinkRecord      `json:"link"`
+	Source         any             `json:"source"`
+	Changed        bool            `json:"changed"`
+	ReplacedSource *ReplacedMemory `json:"replacedSource,omitempty"`
 }
 
 // LinksRequest selects complete current incident state in one read transaction.
@@ -196,7 +197,8 @@ type LinkTombstone struct {
 	Attribution     Attribution `json:"attribution"`
 }
 type LinkDeleteResult struct {
-	Link    LinkTombstone `json:"link"`
-	Source  any           `json:"source"`
-	Changed bool          `json:"changed"`
+	Link           LinkTombstone   `json:"link"`
+	Source         any             `json:"source"`
+	Changed        bool            `json:"changed"`
+	ReplacedSource *ReplacedMemory `json:"replacedSource,omitempty"`
 }

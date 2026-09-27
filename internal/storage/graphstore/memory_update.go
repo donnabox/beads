@@ -20,8 +20,9 @@ type MemoryUpdateRequest struct {
 }
 
 type MemoryMutationResult struct {
-	Memory  Record `json:"memory"`
-	Changed bool   `json:"changed"`
+	Memory   Record          `json:"memory"`
+	Changed  bool            `json:"changed"`
+	Replaced *ReplacedMemory `json:"replaced,omitempty"`
 }
 
 // UpdateMemory retains the complete accepted Memory, including unchanged owned
@@ -67,12 +68,13 @@ func (s *Store) UpdateMemory(ctx context.Context, request MemoryUpdateRequest) (
 		if err := s.afterStage("memory-payload"); err != nil {
 			return err
 		}
+		replaced := replacedMemory(memory, request.Unconditional)
 		memory.Properties = request.Properties
 		accepted, err := s.recordOwnedMemoryInTx(ctx, tx, request.Path, request.Actor, memory)
 		if err != nil {
 			return err
 		}
-		result = MemoryMutationResult{Memory: accepted.(Record), Changed: true}
+		result = MemoryMutationResult{Memory: accepted.(Record), Changed: true, Replaced: replaced}
 		return nil
 	})
 	if err != nil {
