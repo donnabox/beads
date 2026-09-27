@@ -247,9 +247,9 @@ title/body summaries and supplies exact saved-state recall selectors. Pagination
 and complete Memory remain unavailable.
 [Issue reopen](engdocs/GRAPH_ISSUE_REOPEN_PREVIEW.md) reuses the Issue writer to
 reopen one canonical Issue while retaining its old versions and owned Links.
-[Issue text editing](engdocs/GRAPH_ISSUE_EDIT_PREVIEW.md) uses familiar inline
-`update` text flags with a graph revision guard, retaining the earlier complete
-Issue and its owned Dependencies.
+[Issue text and priority editing](engdocs/GRAPH_ISSUE_EDIT_PREVIEW.md) uses familiar
+inline `update` flags with a graph revision guard. Priority and text can change
+atomically while retaining the earlier complete Issue and its owned Dependencies.
 [Body recall](engdocs/GRAPH_MEMORY_RECALL_PREVIEW.md) uses `bd recall beads/PATH`
 or `bd recall beads/PATH --version TOKEN` to return exact current or saved content.
 [Exact comparison](engdocs/GRAPH_HISTORY_COMPARE_PREVIEW.md) uses

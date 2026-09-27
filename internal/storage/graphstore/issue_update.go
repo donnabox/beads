@@ -11,19 +11,20 @@ import (
 	publicops "github.com/steveyegge/beads/issueops"
 )
 
-// UpdateIssueRequest admits title, description, design and acceptance criteria.
+// UpdateIssueRequest admits priority, title, description, design and acceptance criteria.
 // Notes editing is reserved for integration of the existing contributor
 // safeguards. A nil field leaves that property unchanged; an explicit empty
-// string clears it where the Issue
-// domain permits. The guard addresses the complete graph revision, including
+// string clears it where the Issue domain permits. An explicit priority of zero
+// sets P0; a nil priority leaves it unchanged. The guard addresses the complete graph revision, including
 // the Issue's owned blocking Dependencies, not its private storage ordinal.
 type UpdateIssueRequest struct {
 	Path, Actor, ExpectedRevision                  string
 	Unconditional                                  bool
 	Title, Description, Design, AcceptanceCriteria *string
+	Priority                                       *int
 }
 
-// UpdateIssue delegates textual edits to the existing Issue domain writer and
+// UpdateIssue delegates admitted scalar edits to the existing Issue domain writer and
 // retained-version recorder. Payload, opaque graph revision and complete owned
 // state commit together; this adds no public History ordering or change context.
 func (s *Store) UpdateIssue(ctx context.Context, request UpdateIssueRequest) (IssueMutationResult, error) {
@@ -54,8 +55,12 @@ func (s *Store) UpdateIssue(ctx context.Context, request UpdateIssueRequest) (Is
 		*field.dest = publicops.Field[string]{Set: true, Value: *field.value}
 		count++
 	}
+	if request.Priority != nil {
+		patch.Priority = publicops.Field[int]{Set: true, Value: *request.Priority}
+		count++
+	}
 	if count == 0 {
-		return IssueMutationResult{}, fmt.Errorf("%w: Issue update requires a textual field", storage.ErrValidation)
+		return IssueMutationResult{}, fmt.Errorf("%w: Issue update requires an admitted field", storage.ErrValidation)
 	}
 	attempt := publicops.UpdateRequest{Actor: request.Actor, Patch: patch, IssuePlaneOnly: true}
 	if err := issueops.ValidateUpdateRequest(attempt); err != nil {
@@ -72,7 +77,7 @@ func (s *Store) UpdateIssue(ctx context.Context, request UpdateIssueRequest) (Is
 		}
 		before, ok := current.(IssueRecord)
 		if !ok {
-			return fmt.Errorf("%w: textual Issue update requires the experimental Issue Type", ErrCapabilityUnavailable)
+			return fmt.Errorf("%w: Issue update requires the experimental Issue Type", ErrCapabilityUnavailable)
 		}
 		if err := checkRevisionGuard(request.ExpectedRevision, request.Unconditional, revision, true, "Issue"); err != nil {
 			return err

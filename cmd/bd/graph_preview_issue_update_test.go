@@ -2,6 +2,7 @@ package main
 
 import (
 	"errors"
+	"fmt"
 	"strings"
 	"testing"
 
@@ -11,7 +12,7 @@ import (
 func issueTextCommand(t *testing.T, args ...string) *cobra.Command {
 	t.Helper()
 	cmd := &cobra.Command{}
-	for _, name := range append(append([]string{}, graphPreviewIssueTextFlags...), "properties", "notes", "body-file", "design-file", "append-notes", "status", "if-revision", "if-source-revision") {
+	for _, name := range append(append([]string{}, graphPreviewIssueEditFlags...), "properties", "notes", "body-file", "design-file", "append-notes", "status", "if-revision", "if-source-revision") {
 		cmd.Flags().String(name, "", "")
 	}
 	cmd.Flags().Bool("unconditional", false, "")
@@ -22,16 +23,76 @@ func issueTextCommand(t *testing.T, args ...string) *cobra.Command {
 	return cmd
 }
 
+func TestGraphPreviewIssuePriorityInput(t *testing.T) {
+	for _, tc := range []struct {
+		input string
+		want  int
+	}{
+		{"0", 0}, {"1", 1}, {"2", 2}, {"3", 3}, {"4", 4},
+		{"P0", 0}, {"p2", 2}, {" P3 ", 3},
+		// Reuse ordinary update's existing permissive parser; no new grammar.
+		{"2suffix", 2},
+	} {
+		t.Run(tc.input, func(t *testing.T) {
+			cmd := issueTextCommand(t, "--priority="+tc.input, "--if-revision=observed")
+			if !graphPreviewIssueEditFlagsChanged(cmd) {
+				t.Fatal("priority-only update did not select Issue route")
+			}
+			request, err := graphPreviewIssueEditRequest(cmd, "beads/work")
+			if err != nil || request.Priority == nil || *request.Priority != tc.want || request.Title != nil || request.ExpectedRevision != "observed" {
+				t.Fatalf("priority/presence/guard lost: %+v %v", request, err)
+			}
+		})
+	}
+	request, err := graphPreviewIssueEditRequest(issueTextCommand(t, "--priority=P0", "--title=  Urgent  ", "--description=", "--unconditional"), "beads/work")
+	if err != nil || request.Priority == nil || *request.Priority != 0 || request.Title == nil || *request.Title != "Urgent" || request.Description == nil || *request.Description != "" || !request.Unconditional {
+		t.Fatalf("combined edit lost: %+v %v", request, err)
+	}
+	request, err = graphPreviewIssueEditRequest(issueTextCommand(t, "--title=Text only", "--unconditional"), "beads/work")
+	if err != nil || request.Priority != nil {
+		t.Fatalf("omitted priority became explicit: %+v %v", request, err)
+	}
+}
+
+func TestGraphPreviewIssuePriorityRefusals(t *testing.T) {
+	for _, value := range []string{"", "-1", "5", "P5", "high", "P", "\xff"} {
+		t.Run(fmt.Sprintf("value-%q", value), func(t *testing.T) {
+			_, err := graphPreviewIssueEditRequest(issueTextCommand(t, "--priority="+value, "--unconditional"), "beads/work")
+			var failure *exitError
+			if !errors.As(err, &failure) || failure.Code != 2 {
+				t.Fatalf("invalid priority must refuse with exit2: %v", err)
+			}
+		})
+	}
+	for _, args := range [][]string{
+		{"--priority=0", "--unconditional", "--properties={}"},
+		{"--priority=0", "--unconditional", "--notes="},
+		{"--priority=0", "--unconditional", "--status=open"},
+		{"--priority=0", "--unconditional", "--body-file=missing"},
+		{"--priority=0", "--unconditional", "--stdin=false"},
+	} {
+		t.Run(strings.Join(args, " "), func(t *testing.T) {
+			cmd := issueTextCommand(t, args...)
+			cmd.SetIn(failingMemoryBodyReader{})
+			_, err := graphPreviewIssueEditRequest(cmd, "beads/work")
+			var failure *exitError
+			if !errors.As(err, &failure) || failure.Code != 5 {
+				t.Fatalf("unsupported explicit option must refuse with exit5 before input: %v", err)
+			}
+		})
+	}
+}
+
 func TestGraphPreviewIssueTextPresenceAndAliases(t *testing.T) {
 	cmd := issueTextCommand(t, "--title=  Revised 雪  ", "--description=", "--body=", "--message=", "--design=-", "--acceptance=Done", "--if-revision=observed")
-	request, err := graphPreviewIssueTextRequest(cmd, "beads/task")
+	request, err := graphPreviewIssueEditRequest(cmd, "beads/task")
 	if err != nil {
 		t.Fatal(err)
 	}
 	if *request.Title != "Revised 雪" || *request.Description != "" || *request.Design != "-" || *request.AcceptanceCriteria != "Done" || request.ExpectedRevision != "observed" || request.Unconditional {
 		t.Fatalf("text or presence changed: %+v", request)
 	}
-	request, err = graphPreviewIssueTextRequest(issueTextCommand(t, "--design=", "--unconditional"), "beads/task")
+	request, err = graphPreviewIssueEditRequest(issueTextCommand(t, "--design=", "--unconditional"), "beads/task")
 	if err != nil || request.Design == nil || *request.Design != "" || request.Title != nil || request.Description != nil || request.AcceptanceCriteria != nil {
 		t.Fatalf("omitted fields did not remain absent: %+v %v", request, err)
 	}
@@ -64,7 +125,7 @@ func TestGraphPreviewIssueTextRefusals(t *testing.T) {
 		t.Run(tc.name, func(t *testing.T) {
 			cmd := issueTextCommand(t, tc.args...)
 			cmd.SetIn(failingMemoryBodyReader{})
-			_, err := graphPreviewIssueTextRequest(cmd, "beads/task")
+			_, err := graphPreviewIssueEditRequest(cmd, "beads/task")
 			var failure *exitError
 			if !errors.As(err, &failure) || failure.Code != tc.code {
 				t.Fatalf("expected refusal %d, got %v", tc.code, err)
