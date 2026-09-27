@@ -39,7 +39,9 @@ func init() {
 	rootCmd.PersistentFlags().String("graph-mode", "", "Assert workspace format: dependency or link (init selects format)")
 	initCmd.Flags().String("scope-url", "", "Permanent operator-selected Scope URL for a fresh disposable graph preview")
 	rememberCmd.Flags().String("id", "", "New canonical beads/PATH in a graph preview")
-	rememberCmd.Flags().String("title", "", "Title of a new graph Memory")
+	rememberCmd.Flags().String("title", "", "Memory title (required on create; omitted update preserves the current title; graph preview only)")
+	rememberCmd.Flags().String("update", "", "Existing canonical Memory selector to update (graph preview only)")
+	rememberCmd.Flags().String("if-revision", "", "Require this observed Memory revision for --update (graph preview only)")
 	rememberCmd.Flags().String("body-file", "", "Read graph Memory body from this UTF-8 file (preview: at most 1 MiB)")
 	rememberCmd.Flags().Bool("stdin", false, "Read graph Memory body from stdin (preview: at most 1 MiB)")
 	statusCmd.Flags().Bool("graph", false, "Report graph preview capabilities")
@@ -181,7 +183,7 @@ func admitGraphPreview(cmd *cobra.Command) (bool, error) {
 		if cmd == updateCmd && (cmd.Flags().Changed("properties") || cmd.Flags().Changed("if-revision") || cmd.Flags().Changed("unconditional") || cmd.Flags().Changed("if-source-revision") || cmd.Flags().Changed("unconditional-source")) {
 			return true, graphFailure("capability_unavailable", "generic update options require a workspace initialized with graph_mode link", 5)
 		}
-		if (cmd == rememberCmd && (cmd.Flags().Changed("id") || cmd.Flags().Changed("title") || cmd.Flags().Changed("body-file") || cmd.Flags().Changed("stdin"))) || (cmd == initCmd && cmd.Flags().Changed("scope-url")) {
+		if (cmd == rememberCmd && rememberGraphFlagsChanged(cmd)) || (cmd == initCmd && cmd.Flags().Changed("scope-url")) {
 			return true, graphFailure("capability_unavailable", "these graph options require a workspace initialized with graph_mode link", 5)
 		}
 		return false, nil
@@ -389,11 +391,17 @@ func runGraphPreviewRemember(cmd *cobra.Command, args []string) error {
 	if err := graphPreviewWritePolicy(); err != nil {
 		return err
 	}
-	if err := graphPreviewFlags(cmd, "id", "title", "body-file", "stdin"); err != nil {
+	if err := graphPreviewFlags(cmd, "id", "title", "body-file", "stdin", "update", "if-revision"); err != nil {
 		return err
 	}
-	if readonlyMode {
-		return graphFailure("permission_denied", "read-only invocation cannot remember", 5)
+	if cmd.Flags().Changed("update") {
+		if cmd.Flags().Changed("id") {
+			return graphFailure("invalid_selector", "remember requires either --id for creation or --update for an existing Memory, not both", 2)
+		}
+		return runGraphPreviewRememberUpdate(cmd, args)
+	}
+	if cmd.Flags().Changed("if-revision") {
+		return graphFailure("capability_unavailable", "remember --if-revision requires --update; creation does not accept a revision guard", 5)
 	}
 	path, _ := cmd.Flags().GetString("id")
 	title, _ := cmd.Flags().GetString("title")
@@ -460,7 +468,7 @@ func runGraphPreviewStatus(cmd *cobra.Command) error {
 		return err
 	}
 	return withGraphStore(func(_ context.Context, _ *graphstore.Store) (any, string, error) {
-		return map[string]any{"scope": graphPreviewConfig.GraphScopeURL, "backend": graphPreviewConfig.DoltMode, "preview": true, "limits": map[string]int{"issueOwnedLinks": graphstore.PreviewOwnedLinkLimit, "memoryOwnedLinks": graphstore.PreviewOwnedLinkLimit, "linkPropertiesInputBytes": graphPreviewPropertiesLimit, "memoryPropertiesInputBytes": graphPreviewPropertiesLimit, "memoryBodyInputBytes": graphPreviewMemoryBodyLimit, "incidentLinks": graphstore.PreviewIncidentLinkLimit, "currentReadBytes": graphstore.PreviewCurrentReadByteLimit, "versionTokenBytes": graphstore.PreviewVersionTokenLimit, "memoryDiscoveryDefaultMatches": graphMemoryDiscoveryDefaultLimit, "memoryDiscoveryOutputBytes": graphMemoryDiscoveryOutputLimit, "memoryDiscoveryQueryBytes": graphMemoryDiscoveryQueryLimit, "memoryDiscoveryExcerptCodePoints": graphMemoryDiscoveryExcerptLimit}, "capabilities": map[string]bool{"memoryCreate": true, "memoryBodyFileInput": true, "memoryBodyStdinInput": true, "memoryBodyRecall": true, "memoryJSONRecall": false, "memoryPropertiesUpdate": true, "memoryOverwriteDisclosure": true, "memoryDiscovery": true, "memoryDiscoveryPagination": false, "issueCreate": true, "issueTextUpdate": true, "issueTextFileInput": false, "issueTextStdinInput": false, "issueWorkflows": false, "blockingDependency": true, "informationalLink": true, "linkPropertiesUpdate": true, "linkUnlink": true, "blockingDependencyUnlink": true, "blockingDependencyPairUnlink": false, "incidentLinks": true, "issueClose": true, "issueReopen": true, "issueReady": true, "genericRead": true, "bdpRead": graphPreviewConfig.DoltMode == configfile.DoltModeServer, "memory": false, "historyExact": false, "exactVersionRead": true, "exactVersionCompare": true, "ownedLinks": true, "requestStatus": false, "backupContinuity": false}}, "Graph preview: Memory and Issue create/read, guarded Memory title/body replacement, unconditional Memory predecessor disclosure and inline Issue text edits, compact Memory title/body discovery with complete bounded results (no continuation), current/exact body-only recall, experimental exact-version comparison, exact retained Bead/Link reads via show --version TOKEN, local blocking Dependencies with guarded canonical-ID unlink, informational Links and guarded Link-property replacement/unlink, incident Link listing, Issue close, reopen and ready. Full Memory, public History, typed-pair blocking unlink, remaining Issue workflows and recovery remain unavailable. BDP Read serving is available only on ordinary shared-server Dolt; embedded serving, HTTP writes and aliases remain unavailable.", nil
+		return map[string]any{"scope": graphPreviewConfig.GraphScopeURL, "backend": graphPreviewConfig.DoltMode, "preview": true, "limits": map[string]int{"issueOwnedLinks": graphstore.PreviewOwnedLinkLimit, "memoryOwnedLinks": graphstore.PreviewOwnedLinkLimit, "linkPropertiesInputBytes": graphPreviewPropertiesLimit, "memoryPropertiesInputBytes": graphPreviewPropertiesLimit, "memoryBodyInputBytes": graphPreviewMemoryBodyLimit, "incidentLinks": graphstore.PreviewIncidentLinkLimit, "currentReadBytes": graphstore.PreviewCurrentReadByteLimit, "versionTokenBytes": graphstore.PreviewVersionTokenLimit, "memoryDiscoveryDefaultMatches": graphMemoryDiscoveryDefaultLimit, "memoryDiscoveryOutputBytes": graphMemoryDiscoveryOutputLimit, "memoryDiscoveryQueryBytes": graphMemoryDiscoveryQueryLimit, "memoryDiscoveryExcerptCodePoints": graphMemoryDiscoveryExcerptLimit}, "capabilities": map[string]bool{"memoryCreate": true, "memoryBodyFileInput": true, "memoryBodyStdinInput": true, "memoryBodyRecall": true, "memoryJSONRecall": false, "memoryPropertiesUpdate": true, "memorySelectedUpdate": true, "memorySelectedUpdateUnconditional": false, "memoryOverwriteDisclosure": true, "memoryDiscovery": true, "memoryDiscoveryPagination": false, "issueCreate": true, "issueTextUpdate": true, "issueTextFileInput": false, "issueTextStdinInput": false, "issueWorkflows": false, "blockingDependency": true, "informationalLink": true, "linkPropertiesUpdate": true, "linkUnlink": true, "blockingDependencyUnlink": true, "blockingDependencyPairUnlink": false, "incidentLinks": true, "issueClose": true, "issueReopen": true, "issueReady": true, "genericRead": true, "bdpRead": graphPreviewConfig.DoltMode == configfile.DoltModeServer, "memory": false, "historyExact": false, "exactVersionRead": true, "exactVersionCompare": true, "ownedLinks": true, "requestStatus": false, "backupContinuity": false}}, "Graph preview: Memory and Issue create/read, guarded Memory title/body replacement and selected remember updates preserving omitted title, unconditional Memory predecessor disclosure and inline Issue text edits, compact Memory title/body discovery with complete bounded results (no continuation), current/exact body-only recall, experimental exact-version comparison, exact retained Bead/Link reads via show --version TOKEN, local blocking Dependencies with guarded canonical-ID unlink, informational Links and guarded Link-property replacement/unlink, incident Link listing, Issue close, reopen and ready. Full Memory, public History, typed-pair blocking unlink, remaining Issue workflows and recovery remain unavailable. BDP Read serving is available only on ordinary shared-server Dolt; embedded serving, HTTP writes and aliases remain unavailable.", nil
 	})
 }
 
