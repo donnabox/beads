@@ -237,6 +237,8 @@ Memory changes through owned Links. This result shape is provisional.
 [Compact Memory discovery](engdocs/GRAPH_MEMORY_DISCOVERY_PREVIEW.md) searches
 title/body summaries and supplies exact saved-state recall selectors. Pagination
 and complete Memory remain unavailable.
+[Issue reopen](engdocs/GRAPH_ISSUE_REOPEN_PREVIEW.md) reuses the Issue writer to
+reopen one canonical Issue while retaining its old versions and owned Links.
 [Issue text editing](engdocs/GRAPH_ISSUE_EDIT_PREVIEW.md) uses familiar inline
 `update` text flags with a graph revision guard, retaining the earlier complete
 Issue and its owned Dependencies.
