@@ -13,7 +13,9 @@ implicit last-touched IDs or batches. Ordinary legacy workspaces retain their
 existing reopen route.
 
 Reopening moves a done-category Issue to open, clears its closure fields and
-recomputes dependency readiness through the existing Issue writer. The JSON
+recomputes dependency readiness through the existing Issue writer. That writer
+also clears `defer_until`; this preview cannot set that field, so its nonempty
+clearing behavior is inherited and not exercised by the installed story. The JSON
 preview result is `{issue, changed}` inside the existing experimental wrapper.
 The returned Issue includes its complete owned blocking Dependencies. An Issue
 outside the done category is unchanged: no new saved version, event or graph
@@ -42,6 +44,13 @@ remain under review. Readonly invocations, migration freezes, mismatched
 workspace authority, unsupported options and wrong Resource kinds refuse.
 No success is emitted before commit. A lost commit response reports the existing
 unknown-outcome error with no success record; the adapter does not retry it.
+As with graph close, a no-op still completes the existing transaction, so a
+lost COMMIT reply can report unknown outcome even when no state was written.
+Integrity failures currently share the `graph_not_initialized` diagnostic code
+with initialization failures; inspect the accompanying message before deciding
+how to recover. Reopen reasons have no additional preview byte budget and
+inherit the existing domain storage limits and atomic failure behavior.
+These are shared workflow limitations, not new final error/input contracts.
 
 This route reuses `issueops.ExecuteReopen`. At this pinned base that writer
 journals changes but does not call the retained Issue recorder, so the adapter
@@ -73,3 +82,9 @@ categories, real server transaction overlap and a dropped COMMIT response.
 Different-database provisioning remains serialized on Dolt 2.1.8. The existence
 of these tests or this harness is not itself a qualification receipt; current
 results and limits belong in the fork's delivery plan.
+
+The ordinary preview leaves the optional journal mode disabled. Tests fingerprint
+journal/lease tables for rollback and no-op preservation, but do not claim a
+positive journal-feed or lease workflow. Custom done/non-done categories are
+covered through storage configuration tests; the installed CLI has no new
+status-configuration route.

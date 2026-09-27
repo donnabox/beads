@@ -125,6 +125,16 @@ func TestIssueReopenLifecycle(t *testing.T) {
 			if err != nil {
 				t.Fatal(err)
 			}
+			// Recomputing this dependent's derived readiness must not mint
+			// its retained version or change any projected graph bytes.
+			assertIssueEditCounts(t, ctx, s, source.Properties.ID, 2)
+			var sourceOrdinal int
+			if err := s.db.QueryRowContext(ctx, "SELECT current_revision FROM issues WHERE id=?", source.Properties.ID).Scan(&sourceOrdinal); err != nil || sourceOrdinal != 2 {
+				t.Fatalf("dependent ordinal=%d want2: %v", sourceOrdinal, err)
+			}
+			if dependent, err := s.ShowIssue(ctx, "beads/work"); err != nil || !reflect.DeepEqual(dependent, source) {
+				t.Fatalf("readiness recompute changed dependent graph record: got=%+v want=%+v err=%v", dependent, source, err)
+			}
 			p := opened.Issue.Properties
 			if !opened.Changed || opened.Issue.ID != target.ID || opened.Issue.Type != target.Type || opened.Issue.Version == closed.Issue.Version || p.Status != types.StatusOpen || p.ClosedAt != nil || p.CloseReason != "" || p.ClosedBySession != "" || p.DeferUntil != nil || opened.Issue.Attribution.Actor != "reopener" || !reflect.DeepEqual(opened.Issue.Owned, target.Owned) {
 				t.Fatalf("incomplete reopened Issue: %+v properties=%+v", opened, p)

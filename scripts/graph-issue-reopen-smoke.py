@@ -261,6 +261,48 @@ def exercise(capture):
     finally:
         capture.work = graph_work
     capture.passed("ordinary legacy reopen keeps its changed-array and already-open no-op behavior")
+    # Isolate output-mode coverage after all earlier readiness assertions.
+    # This Issue has no blockers and cannot change the story's dependency state.
+    output_versions_start = len(saved)
+    standalone = save("output-control-created", command("create-output-control",
+        ["create", "Human and quiet reopen control", "--id", "beads/output-control", "--actor", "output-author"]))
+    for mode in ["human", "quiet"]:
+        previous = standalone
+        closed_result = command(mode + "-control-close", ["close", standalone["id"],
+            "--reason", mode + " output preparation", "--actor", "output-closer"])
+        closed = save(mode + "-control-closed", closed_result["issue"])
+        c0.require(closed_result["changed"] is True and closed["id"] == previous["id"] and
+                   closed["type"] == previous["type"] and closed["owned"] == previous["owned"] == [] and
+                   closed["version"] != previous["version"] and closed["properties"]["status"] == "closed" and
+                   closed["properties"].get("closed_at") and
+                   closed["properties"].get("close_reason") == mode + " output preparation",
+                   mode + ": standalone close failed")
+        args = ["reopen", closed["id"], "--reason", mode + " output check", "--actor", mode + "-reopener"]
+        if mode == "quiet":
+            args.append("--quiet")
+        receipt, _, _ = capture.run(mode + "-changed-reopen", args)
+        artifact = capture.output / capture.records[-1]["artifact"]
+        stdout, stderr = (artifact / "stdout.log").read_bytes(), (artifact / "stderr.log").read_bytes()
+        expected_stdout = ("Reopened " + closed["id"] + "\n\n").encode() if mode == "human" else b""
+        c0.require(receipt["exit_code"] == 0 and stdout == expected_stdout and stderr == b"",
+                   mode + ": changed reopen output is not exact")
+        standalone = save(mode + "-control-reopened", command(mode + "-reopened-current",
+                           ["show", closed["id"], "--readonly"]))
+        c0.require(standalone["id"] == closed["id"] and standalone["type"] == closed["type"] and
+                   standalone["owned"] == closed["owned"] and standalone["version"] != closed["version"] and
+                   standalone["revision"] == standalone["version"] and standalone["properties"]["status"] == "open" and
+                   standalone["attribution"]["actor"] == mode + "-reopener",
+                   mode + ": output succeeded without the expected versioned reopen")
+        for field in ["closed_at", "close_reason", "closed_by_session", "defer_until"]:
+            c0.require(not standalone["properties"].get(field), mode + ": reopen retained closure state")
+        ignored = {"status", "updated_at", "closed_at", "close_reason", "closed_by_session", "defer_until"}
+        c0.require({key: value for key, value in closed["properties"].items() if key not in ignored} ==
+                   {key: value for key, value in standalone["properties"].items() if key not in ignored},
+                   mode + ": reopen changed unrelated content")
+    for entry in saved[output_versions_start:]:
+        exact(entry["label"] + "-output-retained", entry["record"])
+    capture.passed("changed human reopen preserves canonical result and existing renderer blank line; quiet prints nothing; both commit readable versioned state")
+
     return {"saved_versions": len(saved), "refusal_cases": len(failures) + len(unsupported) + 4,
             "http_exercised": False, "saved_records_sha256": c0.sha256(capture.output / "expected-records.json")}
 
