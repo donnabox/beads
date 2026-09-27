@@ -16,10 +16,21 @@ func rememberArgs(cmd *cobra.Command, args []string) error {
 	// Cobra validates arguments before workspace admission. Explicit graph-only
 	// flags must reach admission even with no positional body; legacy calls keep
 	// their original arity. The graph handler validates source exclusivity.
-	if cmd.Flags().Changed("id") || cmd.Flags().Changed("title") || cmd.Flags().Changed("body-file") || cmd.Flags().Changed("stdin") {
+	if rememberGraphFlagsChanged(cmd) {
 		return nil
 	}
 	return cobra.ExactArgs(1)(cmd, args)
+}
+
+// Shared by argument and workspace admission: a graph-only flag must never
+// fall into the legacy remember path or read input there, even without a body.
+func rememberGraphFlagsChanged(cmd *cobra.Command) bool {
+	for _, name := range []string{"id", "title", "body-file", "stdin", "update", "if-revision"} {
+		if cmd.Flags().Changed(name) {
+			return true
+		}
+	}
+	return false
 }
 
 func graphPreviewRememberBody(cmd *cobra.Command, args []string) (string, error) {
