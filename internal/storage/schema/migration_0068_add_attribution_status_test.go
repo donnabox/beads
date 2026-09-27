@@ -27,12 +27,6 @@ import (
 const migration0068Up = "0068_add_attribution_status.up.sql"
 const migration0068Down = "0068_add_attribution_status.down.sql"
 
-// TestLatestVersionIncludesMigration0068 (pinning LatestVersion() == 68) is
-// superseded by TestLatestVersionIncludesMigration0069
-// (migration_0069_add_removed_restriction_test.go) now that 0069 claims the
-// next free slot — only one such pin lives at a time, matching how this
-// test itself already superseded 0067's own version.
-
 // TestMigration0068AddsAttributionStatus is a pure-Go, DB-independent check
 // of the frozen migration bytes themselves — it runs even where no `dolt`
 // binary is available.
