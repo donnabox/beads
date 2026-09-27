@@ -137,13 +137,13 @@ func TestMemoryPatchLifecycle(t *testing.T) {
 func TestMemoryPatchFailureAtomicity(t *testing.T) {
 	for _, backend := range []string{"embedded", "server"} {
 		t.Run(backend, func(t *testing.T) {
-			ctx, _, s, _, _, _ := disclosureFixture(t, backend)
+			ctx, _, s, original, _, _ := disclosureFixture(t, backend)
 			if _, err := s.CreateIssue(ctx, "beads/work", plainIssue("Work")); err != nil {
 				t.Fatal(err)
 			}
 			request := MemoryPatchRequest{Path: "beads/plan", Title: patchText("changed"), Unconditional: true}
 			before := workflowState(t, ctx, s)
-			assertFailure := func(got MemoryMutationResult, err, want error) {
+			assertFailure := func(t *testing.T, got MemoryMutationResult, err, want error) {
 				t.Helper()
 				if !errors.Is(err, want) || !reflect.ValueOf(got).IsZero() {
 					t.Fatalf("failure: %+v %v want %v", got, err, want)
@@ -156,10 +156,26 @@ func TestMemoryPatchFailureAtomicity(t *testing.T) {
 				path string
 				want error
 			}{{"beads/work", ErrCapabilityUnavailable}, {"beads/missing", ErrNotFound}} {
-				copy := request
-				copy.Path = bad.path
-				got, err := s.PatchMemory(ctx, copy)
-				assertFailure(got, err, bad.want)
+				attempt := request
+				attempt.Path = bad.path
+				got, err := s.PatchMemory(ctx, attempt)
+				assertFailure(t, got, err, bad.want)
+			}
+			for _, guards := range []struct {
+				name             string
+				expectedRevision string
+				unconditional    bool
+			}{
+				{"both-guards", original.Revision, true},
+				{"neither-guard", "", false},
+			} {
+				t.Run(guards.name, func(t *testing.T) {
+					attempt := request
+					attempt.ExpectedRevision = guards.expectedRevision
+					attempt.Unconditional = guards.unconditional
+					got, err := s.PatchMemory(ctx, attempt)
+					assertFailure(t, got, err, storage.ErrValidation)
+				})
 			}
 			for _, stage := range []string{"coordination", "memory-payload", "source-catalog", "source-retained"} {
 				injected := errors.New("patch rollback " + stage)
@@ -171,7 +187,7 @@ func TestMemoryPatchFailureAtomicity(t *testing.T) {
 				}
 				got, err := s.PatchMemory(ctx, request)
 				s.afterWrite = nil
-				assertFailure(got, err, injected)
+				assertFailure(t, got, err, injected)
 			}
 			canceled, cancel := context.WithCancel(ctx)
 			s.afterWrite = func(stage string) error {
@@ -184,18 +200,18 @@ func TestMemoryPatchFailureAtomicity(t *testing.T) {
 			got, err := s.PatchMemory(canceled, request)
 			cancel()
 			s.afterWrite = nil
-			assertFailure(got, err, context.Canceled)
+			assertFailure(t, got, err, context.Canceled)
 			options := s.options
 			s.options.Binding.AuthorityID = "ffffffffffffffffffffffffffffffff"
 			got, err = s.PatchMemory(ctx, request)
 			s.options = options
-			assertFailure(got, err, ErrInvalidStore)
+			assertFailure(t, got, err, ErrInvalidStore)
 			if _, err := s.db.ExecContext(ctx, "UPDATE graph_preview_versions SET snapshot='{}' WHERE path='beads/plan'"); err != nil {
 				t.Fatal(err)
 			}
 			before = workflowState(t, ctx, s)
 			got, err = s.PatchMemory(ctx, request)
-			assertFailure(got, err, ErrInvalidStore)
+			assertFailure(t, got, err, ErrInvalidStore)
 		})
 	}
 }

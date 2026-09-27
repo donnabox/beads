@@ -177,7 +177,9 @@ def exercise(capture):
 
     memory = patched("guarded-title-only", memory, ["--title", "Guarded title 雪"], props(title="Guarded title 雪"),
                      stdin=b"must not become implicit body\xff")
-    memory = patched("unconditional-title-only", memory, ["--title", "Unconditional title"], props(title="Unconditional title"),
+    # Both following body-only edits must preserve padding and Unicode exactly.
+    padded_title = "  Unconditional 雪 😀 e\u0301\t  "
+    memory = patched("unconditional-title-only", memory, ["--title", padded_title], props(title=padded_title),
                      unconditional=True, stdin=b"ignored unrequested input\xff")
     memory = patched("guarded-body-only", memory, ["--body-file", body_file], props(body=body_bytes.decode()))
     stdin_bytes = b"  stdin\r\nkeeps spaces  \n"

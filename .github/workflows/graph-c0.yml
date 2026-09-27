@@ -74,7 +74,9 @@ jobs:
           retention-days: 14
   installed-linux:
     runs-on: ubuntu-latest
-    timeout-minutes: 35
+    # PR40's complete run took about 30 minutes. Keep bounded headroom for the
+    # added atomic-patch suite and transaction controls; per-test limits remain.
+    timeout-minutes: 45
     env:
       BD_DISABLE_METRICS: "1"
       BD_DISABLE_EVENT_FLUSH: "1"

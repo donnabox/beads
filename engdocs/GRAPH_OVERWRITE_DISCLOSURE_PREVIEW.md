@@ -11,6 +11,11 @@ Link create, update or unlink using `--unconditional-source` returns the same
 projection as `replacedSource`. The Link guard and source guard are independent:
 `--unconditional` on a Link does not make its source unconditional.
 
+Selected `remember --update --unconditional` edits also return `replaced` when
+they change the Memory. Omitted title/body fields come from that same checked
+predecessor inside the write transaction; the disclosure identifies its complete
+retained version, including owned Links.
+
 ```json
 {
   "changed": true,

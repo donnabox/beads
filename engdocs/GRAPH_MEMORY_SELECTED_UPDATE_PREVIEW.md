@@ -85,6 +85,33 @@ native commit timestamp. Human output names the identity and quoted title, and
 includes predecessor disclosure when applicable. `--quiet` is silent; JSON retains
 the existing experimental `memory`, `changed` and optional `replaced` envelope.
 
+A changed guarded edit has this result inside the normal CLI envelope (complete
+records are abbreviated for readability):
+
+```json
+{
+  "memory": "<complete accepted Memory record>",
+  "changed": true
+}
+```
+
+A changed unconditional edit adds the actual predecessor's context:
+
+```json
+{
+  "memory": "<complete accepted Memory record>",
+  "changed": true,
+  "replaced": {
+    "id": "https://example.invalid/notes/beads/plan",
+    "version": "<actual previous opaque version>",
+    "attribution": "<exact recorded attribution from that predecessor>"
+  }
+}
+```
+
+The `memory` and `attribution` placeholders represent objects in real output. No-op results
+have `changed: false` and omit `replaced` under either write policy.
+
 Unconditional editing can still conflict with an overlapping transaction. It is
 an explicit choice to replace supplied fields, not permission to ignore authority
 or concurrency failures. No successful result is emitted before commit and store
@@ -108,6 +135,11 @@ are never automatically replayed.
   History remain open. No schema, BDP wire or durable contract is added.
 - `memorySelectedUpdate` and `memorySelectedUpdateUnconditional` are true. Full
   `memory` and `historyExact` remain false. Exact saved states are not native History.
+  This preview deliberately widens `memorySelectedUpdate` to accept omitted body
+  and title-only edits without adding another capability key. In this increment,
+  `memorySelectedUpdateUnconditional: true` accompanies that wider behavior;
+  clients must not infer title-only support from `memorySelectedUpdate` alone on
+  older builds. Capability naming remains part of the CLI review gate.
 
 ## Qualification
 
