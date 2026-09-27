@@ -1,16 +1,13 @@
 package main
 
 import (
-	"encoding/json"
 	"errors"
 	"io"
-	"reflect"
 	"strings"
 	"testing"
 
 	"github.com/spf13/cobra"
 	"github.com/steveyegge/beads/internal/configfile"
-	"github.com/steveyegge/beads/internal/storage"
 	"github.com/steveyegge/beads/internal/storage/graphstore"
 )
 
@@ -21,61 +18,46 @@ func selectedRememberCommand(t *testing.T, flags []string) *cobra.Command {
 		cmd.Flags().String(name, "", "")
 	}
 	cmd.Flags().Bool("stdin", false, "")
+	cmd.Flags().Bool("unconditional", false, "")
 	if err := cmd.ParseFlags(flags); err != nil {
 		t.Fatal(err)
 	}
 	return cmd
 }
 
-func TestGraphPreviewRememberSelectedProperties(t *testing.T) {
-	original := graphstore.Record{ID: "https://example.invalid/beads/plan", Revision: "observed",
-		Properties: graphstore.Properties{Title: "  Preserve 雪\n", Body: "old"},
-		Owned:      []json.RawMessage{json.RawMessage(`{"id":"https://example.invalid/links/context","version":"link-version"}`)}}
-	before := original
-	before.Owned = []json.RawMessage{append(json.RawMessage(nil), original.Owned[0]...)}
+func TestGraphPreviewRememberSelectedPatchInput(t *testing.T) {
 	for _, tc := range []struct {
-		name, title, body string
-		explicitTitle     bool
+		name                string
+		flags, args         []string
+		wantTitle, wantBody *string
+		bad                 bool
 	}{
-		{"preserved-title", original.Properties.Title, "---\r\n雪\r\n---\n  new body\t", false},
-		{"clear-body", original.Properties.Title, "", false},
-		{"explicit-title", "New title", "new", true},
-		{"explicit-empty-title", "", "new", true},
-		{"both-empty", "", "", true},
+		{"body-only", nil, []string{"  body 雪\r\n"}, nil, memoryPatchInputString("  body 雪\r\n"), false},
+		{"clear-body", nil, []string{""}, nil, memoryPatchInputString(""), false},
+		{"title-only", []string{"--title=  title 雪  "}, nil, memoryPatchInputString("  title 雪  "), nil, false},
+		{"clear-title", []string{"--title="}, nil, memoryPatchInputString(""), nil, false},
+		{"both", []string{"--title=new"}, []string{"body"}, memoryPatchInputString("new"), memoryPatchInputString("body"), false},
+		{"both-empty", []string{"--title="}, []string{""}, memoryPatchInputString(""), memoryPatchInputString(""), false},
+		{"neither", nil, nil, nil, nil, true},
+		{"invalid-title", []string{"--title=\xff"}, nil, nil, nil, true},
+		{"false-stdin-with-title", []string{"--title=new", "--stdin=false"}, nil, nil, nil, true},
+		{"multiple-bodies-with-title", []string{"--title=new"}, []string{"one", "two"}, nil, nil, true},
 	} {
 		t.Run(tc.name, func(t *testing.T) {
-			var title *string
-			if tc.explicitTitle {
-				title = &tc.title
-			}
-			got, err := graphPreviewRememberUpdateProperties(original, tc.body, title, "observed")
-			if err != nil || got != (graphstore.Properties{Title: tc.title, Body: tc.body}) {
-				t.Fatalf("properties=%+v err=%v", got, err)
-			}
-			if !reflect.DeepEqual(original, before) {
-				t.Fatal("composition changed the observed record")
+			cmd := selectedRememberCommand(t, tc.flags)
+			probe := &selectedRememberInputProbe{}
+			cmd.SetIn(probe)
+			title, body, err := graphPreviewRememberPatchInput(cmd, tc.args)
+			if (err != nil) != tc.bad || !sameMemoryPatchInput(title, tc.wantTitle) || !sameMemoryPatchInput(body, tc.wantBody) || probe.reads != 0 {
+				t.Fatalf("title=%v body=%v error=%v stdin reads=%d", title, body, err, probe.reads)
 			}
 		})
 	}
-	for _, tc := range []struct {
-		name     string
-		current  any
-		revision string
-		want     error
-	}{
-		{"stale-even-same-body", original, "stale", graphstore.ErrConflict},
-		{"missing-guard", original, "", storage.ErrValidation},
-		{"issue", graphstore.IssueRecord{}, "observed", graphstore.ErrCapabilityUnavailable},
-		{"link", graphstore.LinkRecord{}, "observed", graphstore.ErrCapabilityUnavailable},
-		{"missing-record", nil, "observed", graphstore.ErrCapabilityUnavailable},
-	} {
-		t.Run(tc.name, func(t *testing.T) {
-			got, err := graphPreviewRememberUpdateProperties(tc.current, original.Properties.Body, nil, tc.revision)
-			if !errors.Is(err, tc.want) || got != (graphstore.Properties{}) {
-				t.Fatalf("properties=%+v err=%v", got, err)
-			}
-		})
-	}
+}
+
+func memoryPatchInputString(value string) *string { return &value }
+func sameMemoryPatchInput(a, b *string) bool {
+	return a == nil && b == nil || a != nil && b != nil && *a == *b
 }
 
 // Changed graph flags must reach workspace admission even with no positional
@@ -89,6 +71,8 @@ func TestGraphPreviewRememberSelectedArgumentAdmission(t *testing.T) {
 		{"selected", []string{"--update=beads/plan"}, true},
 		{"empty-selected", []string{"--update="}, true},
 		{"guard-only", []string{"--if-revision=observed"}, true},
+		{"unconditional", []string{"--unconditional"}, true},
+		{"false-unconditional", []string{"--unconditional=false"}, true},
 		{"empty-guard", []string{"--if-revision="}, true},
 		{"existing-file", []string{"--body-file=body.md"}, true},
 		{"legacy-key", []string{"--key=plan"}, false},
@@ -136,6 +120,9 @@ func TestGraphPreviewRememberSelectedRefusesBeforeInput(t *testing.T) {
 	}{
 		{"missing-guard", []string{"--update=beads/plan"}, false, 2},
 		{"empty-guard", []string{"--update=beads/plan", "--if-revision="}, false, 2},
+		{"both-guards", []string{"--update=beads/plan", "--if-revision=observed", "--unconditional"}, false, 2},
+		{"false-unconditional", []string{"--update=beads/plan", "--unconditional=false"}, false, 2},
+		{"create-unconditional", []string{"--id=beads/new", "--title=New", "--unconditional"}, false, 5},
 		{"invalid-guard", []string{"--update=beads/plan", "--if-revision=\xff"}, false, 2},
 		{"oversized-guard", []string{"--update=beads/plan", "--if-revision=" + strings.Repeat("x", graphstore.PreviewVersionTokenLimit+1)}, false, 2},
 		{"empty-selector", []string{"--update=", "--if-revision=observed"}, false, 2},

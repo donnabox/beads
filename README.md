@@ -231,10 +231,11 @@ Links use an installed `--resource-type`; `bd update links/PATH --properties JSO
 performs guarded property replacement. [Memory editing](engdocs/GRAPH_MEMORY_UPDATE_PREVIEW.md)
 uses `bd update beads/PATH --properties JSON` with a revision guard to replace
 its title/body and preserve earlier complete versions.
-[Selected Memory body editing](engdocs/GRAPH_MEMORY_SELECTED_UPDATE_PREVIEW.md)
+[Selected Memory editing](engdocs/GRAPH_MEMORY_SELECTED_UPDATE_PREVIEW.md)
 uses `bd remember --update beads/PATH --if-revision REV --body-file FILE`,
-preserving an omitted title and the complete owned Links. This guarded preview
-requires an explicit body source; partial unconditional editing remains unavailable.
+preserving omitted title/body and the complete owned Links inside one write
+transaction. Title-only edits and explicit `--unconditional` edits use the same
+writer; changed unconditional results disclose their actual predecessor.
 [Unconditional Memory disclosure](engdocs/GRAPH_OVERWRITE_DISCLOSURE_PREVIEW.md)
 identifies the replaced version and its recorded attribution, including source
 Memory changes through owned Links. This result shape is provisional.

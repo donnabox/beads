@@ -21,7 +21,7 @@ SPEC.loader.exec_module(c0)
 SCOPE = "https://example.invalid/disposable-memory-selected-update/"
 LIMIT = 1 << 20
 LIMITATIONS = [
-    "selected remember update requires an observed revision and explicit body; no unconditional partial update or title derivation",
+    "this suite exercises selected guarded body editing; the separate atomic-patch suite qualifies partial unconditional and title-only edits; title derivation is unavailable",
     "provisional CLI convenience, not complete Memory R4, aliases/upsert or full portable Memory fields",
     "recorded attribution and exact saved versions are not native/public History",
     "sequential stale guards are exercised; no forced composition/write interleave, rollback or uncertain-commit injection here",
@@ -109,7 +109,7 @@ def exercise(capture):
     c0.require(initialized.get("scope") == SCOPE and initialized.get("backend") == backend, "wrong authority/backend")
     status = command("status", ["status", "--graph"])
     c0.require(status["capabilities"].get("memorySelectedUpdate") is True and
-               status["capabilities"].get("memorySelectedUpdateUnconditional") is False and
+               status["capabilities"].get("memorySelectedUpdateUnconditional") is True and
                status["capabilities"].get("memory") is False and status["capabilities"].get("historyExact") is False and
                status["limits"].get("memoryBodyInputBytes") == LIMIT, "authoring overstates selected update/Memory/History or input limit")
 
@@ -293,7 +293,7 @@ def exercise(capture):
         ("oversized-guard-before-input", ["--body-file", missing, "--update", memory["id"], "--if-revision", "x" * 4097], None, "invalid_selector"),
         ("guard-without-selection", ["--body-file", missing, "--id", "beads/other", "--title", "Denied",
                                     "--if-revision", memory["revision"]], None, "capability_unavailable"),
-        ("unsupported-unconditional", ["--body-file", missing, "--update", memory["id"], "--unconditional"], None, None),
+        ("conflicting-unconditional", ["--body-file", missing, *good_guard, "--unconditional"], None, "invalid_selector"),
         ("unsupported-key", ["--body-file", missing, *good_guard, "--key", "legacy"], None, "capability_unavailable"),
     ]
     for label, flags, stdin, code in invalid:

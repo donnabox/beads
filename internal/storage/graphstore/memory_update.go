@@ -29,10 +29,56 @@ type MemoryMutationResult struct {
 // Links, in the same transaction as its properties and revision. This preview
 // operation establishes no public History ordering or change-context contract.
 func (s *Store) UpdateMemory(ctx context.Context, request MemoryUpdateRequest) (MemoryMutationResult, error) {
-	if err := validatePath(request.Path); err != nil {
+	return s.writeMemory(ctx, memoryWriteRequest{
+		path: request.Path, actor: request.Actor, expectedRevision: request.ExpectedRevision,
+		unconditional: request.Unconditional, title: request.Properties.Title, body: request.Properties.Body,
+		hasTitle: true, hasBody: true,
+	})
+}
+
+// MemoryPatchRequest changes only supplied fields. A nil pointer preserves the
+// checked predecessor's field; a pointer to an empty string clears that field.
+// At least one field must be supplied. This is an internal preview API.
+type MemoryPatchRequest struct {
+	Path             string
+	Title            *string
+	Body             *string
+	Actor            string
+	ExpectedRevision string
+	Unconditional    bool
+}
+
+// PatchMemory resolves omitted fields from the actual predecessor inside the
+// mutation transaction, under the same guard and retention rules as UpdateMemory.
+func (s *Store) PatchMemory(ctx context.Context, request MemoryPatchRequest) (MemoryMutationResult, error) {
+	patch := memoryWriteRequest{path: request.Path, actor: request.Actor,
+		expectedRevision: request.ExpectedRevision, unconditional: request.Unconditional}
+	// Capture caller-owned pointers before entering the transaction. No pointer is
+	// retained or read by the transaction callback.
+	if request.Title != nil {
+		patch.title, patch.hasTitle = *request.Title, true
+	}
+	if request.Body != nil {
+		patch.body, patch.hasBody = *request.Body, true
+	}
+	return s.writeMemory(ctx, patch)
+}
+
+type memoryWriteRequest struct {
+	path, actor, expectedRevision string
+	unconditional                 bool
+	title, body                   string
+	hasTitle, hasBody             bool
+}
+
+func (s *Store) writeMemory(ctx context.Context, request memoryWriteRequest) (MemoryMutationResult, error) {
+	if err := validatePath(request.path); err != nil {
 		return MemoryMutationResult{}, fmt.Errorf("%w: %v", storage.ErrValidation, err)
 	}
-	if !utf8.ValidString(request.Properties.Title) || !utf8.ValidString(request.Properties.Body) || !utf8.ValidString(request.Actor) {
+	if !request.hasTitle && !request.hasBody {
+		return MemoryMutationResult{}, fmt.Errorf("%w: at least one Memory field must be supplied", storage.ErrValidation)
+	}
+	if !utf8.ValidString(request.title) || !utf8.ValidString(request.body) || !utf8.ValidString(request.actor) {
 		return MemoryMutationResult{}, fmt.Errorf("%w: Memory title, body and actor must be UTF-8", storage.ErrValidation)
 	}
 	var result MemoryMutationResult
@@ -40,7 +86,7 @@ func (s *Store) UpdateMemory(ctx context.Context, request MemoryUpdateRequest) (
 		if err := checkBinding(ctx, tx, s.options); err != nil {
 			return err
 		}
-		current, revision, _, err := s.beadEndpointInTx(ctx, tx, request.Path)
+		current, revision, _, err := s.beadEndpointInTx(ctx, tx, request.path)
 		if err != nil {
 			return err
 		}
@@ -48,29 +94,36 @@ func (s *Store) UpdateMemory(ctx context.Context, request MemoryUpdateRequest) (
 		if !ok {
 			return fmt.Errorf("%w: property replacement supports the experimental Memory Type only", ErrCapabilityUnavailable)
 		}
-		if err := checkRevisionGuard(request.ExpectedRevision, request.Unconditional, revision, true, "Memory"); err != nil {
+		if err := checkRevisionGuard(request.expectedRevision, request.unconditional, revision, true, "Memory"); err != nil {
 			return err
 		}
-		if memory.Properties == request.Properties {
+		next := memory.Properties
+		if request.hasTitle {
+			next.Title = request.title
+		}
+		if request.hasBody {
+			next.Body = request.body
+		}
+		if memory.Properties == next {
 			result = MemoryMutationResult{Memory: memory}
 			return nil
 		}
-		properties, err := canonicalJSON(request.Properties)
+		properties, err := canonicalJSON(next)
 		if err != nil {
 			return err
 		}
 		if err := s.touchCoordination(ctx, tx); err != nil {
 			return err
 		}
-		if _, err := tx.ExecContext(ctx, `UPDATE graph_preview_payloads SET properties=? WHERE path=?`, properties, request.Path); err != nil {
+		if _, err := tx.ExecContext(ctx, `UPDATE graph_preview_payloads SET properties=? WHERE path=?`, properties, request.path); err != nil {
 			return err
 		}
 		if err := s.afterStage("memory-payload"); err != nil {
 			return err
 		}
-		replaced := replacedMemory(memory, request.Unconditional)
-		memory.Properties = request.Properties
-		accepted, err := s.recordOwnedMemoryInTx(ctx, tx, request.Path, request.Actor, memory)
+		replaced := replacedMemory(memory, request.unconditional)
+		memory.Properties = next
+		accepted, err := s.recordOwnedMemoryInTx(ctx, tx, request.path, request.actor, memory)
 		if err != nil {
 			return err
 		}
