@@ -239,6 +239,9 @@ writer; changed unconditional results disclose their actual predecessor.
 [Unconditional Memory disclosure](engdocs/GRAPH_OVERWRITE_DISCLOSURE_PREVIEW.md)
 identifies the replaced version and its recorded attribution, including source
 Memory changes through owned Links. This result shape is provisional.
+[Explicit Issue listing](engdocs/GRAPH_ISSUE_LIST_PREVIEW.md) uses `bd list --flat`
+or `--format records-json` with existing Issue filters and truthful limited-page
+reporting. Default tree and legacy JSON compatibility remain unavailable.
 [Compact Memory discovery](engdocs/GRAPH_MEMORY_DISCOVERY_PREVIEW.md) searches
 title/body summaries and supplies exact saved-state recall selectors. Pagination
 and complete Memory remain unavailable.
