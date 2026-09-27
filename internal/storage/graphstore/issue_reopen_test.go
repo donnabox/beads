@@ -346,6 +346,8 @@ func TestIssueReopenConcurrentWriters(t *testing.T) {
 				if err != nil {
 					t.Fatal(err)
 				}
+				// Exercise empty readiness deterministically before either writer wins.
+				assertReadyIDs(t, baseCtx, first)
 				ctx, cancel := context.WithCancel(baseCtx)
 				defer cancel()
 				second := &Store{db: first.db, options: o}
