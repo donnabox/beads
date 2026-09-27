@@ -17,7 +17,7 @@ func runGraphPreviewMemories(cmd *cobra.Command, args []string) error {
 	if err := graphPreviewFlags(cmd, "all", "details", "format"); err != nil {
 		return err
 	}
-	if cmd.Flags().Changed("json") || jsonOutput {
+	if cmd.Flags().Changed("json") || (jsonOutput && !cmd.Flags().Changed("format")) {
 		return graphFailure("capability_unavailable", "graph memories --json has no settled compatibility mapping; use --format records-json for experimental summaries", 5)
 	}
 	format, _ := cmd.Flags().GetString("format")
@@ -32,7 +32,7 @@ func runGraphPreviewMemories(cmd *cobra.Command, args []string) error {
 		search = args[0]
 	}
 	if !utf8.ValidString(search) || len(search) > graphMemoryDiscoveryQueryLimit {
-		return graphFailure("invalid_selector", "Memory search must be UTF-8 and at most 4096 bytes", 2)
+		return graphFailure("invalid_selector", fmt.Sprintf("Memory search must be UTF-8 and at most %d bytes", graphMemoryDiscoveryQueryLimit), 2)
 	}
 	all, _ := cmd.Flags().GetBool("all")
 	details, _ := cmd.Flags().GetBool("details")

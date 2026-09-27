@@ -129,13 +129,14 @@ def exercise(capture):
         c0.write_json(capture.output / "searches.json", searches)
         return items
 
-    def refuse(label, args, code="capability_unavailable", typed=True):
+    def refuse(label, args, code="capability_unavailable", typed=True, structured=None):
         result = capture.run(label, args)
         receipt, out, err = result
         c0.require(receipt["exit_code"] != 0 and out == "", label + ": refusal emitted successful stdout")
         if typed:
-            structured = "--json" in args or "--format=records-json" in args or (
-                "--format" in args and args[args.index("--format") + 1] == "records-json")
+            if structured is None:
+                structured = "--json" in args or "--format=records-json" in args or (
+                    "--format" in args and args[args.index("--format") + 1] == "records-json")
             if structured:
                 problem = json.loads(err)
                 c0.require(problem.get("code") == code and problem.get("retryable") is False and
@@ -248,6 +249,31 @@ def exercise(capture):
             yaml.unlink(missing_ok=True)
         else:
             yaml.write_bytes(prior_yaml)
+    try:
+        yaml.write_text("json: true\n")
+        summary("configured-json-explicit-records", None, all_memories)
+        receipt, out, err = capture.run("configured-json-explicit-table", ["memories", "--format", "table"])
+        c0.require(receipt["exit_code"] == 0 and not err and out.startswith("Memories ("),
+                   "configured JSON overrode explicit table")
+        for item in all_memories:
+            c0.require(item["id"] in out and item["version"] in out,
+                       "configured-json table omitted usable id/version")
+        c0.require("bd recall" in out and "PRIVATE_TAIL_" not in out and
+                   "TITLE_PRIVATE_BODY_SENTINEL" not in out, "configured-json table leaked a body")
+        for label, args in [
+            ("configured-json-unspecified-format", ["memories"]),
+            ("configured-json-explicit-json", ["memories", "--json"]),
+            ("configured-json-records-plus-json", ["memories", "--format", "records-json", "--json"]),
+            ("configured-json-table-plus-json", ["memories", "--format", "table", "--json"]),
+        ]:
+            refuse(label, args, structured=True)
+    finally:
+        if prior_yaml is None:
+            yaml.unlink(missing_ok=True)
+        else:
+            yaml.write_bytes(prior_yaml)
+    capture.passed("explicit summary/table formats override configured JSON; unspecified format and explicit JSON still refuse")
+
     for label, args, code, typed in [
         ("bare-json", ["memories", "--json"], "capability_unavailable", True),
         ("false-json", ["memories", "--json=false"], "capability_unavailable", True),
@@ -354,6 +380,11 @@ def exercise(capture):
         # BD_JSON_ENVELOPE is unset, as in Capture's isolated environment.
         c0.require(legacy_map == {"legacy-plan": legacy_body, "schema_version": 1},
                    "legacy JSON no longer carries the original map and schema marker")
+        for spelling in ["json", "JSON"]:
+            aliased = capture.success("legacy-format-alias-" + spelling, ["memories", "--format", spelling])
+            c0.require(aliased == {"legacy-plan": legacy_body, "schema_version": 1},
+                       "case-insensitive legacy format alias changed the exact map/schema marker")
+        capture.passed("legacy memories --format json and --format JSON preserve the exact shipped JSON map")
         for label, flags in [("legacy-all", ["--all"]), ("legacy-details", ["--details"]),
                              ("legacy-format-table", ["--format", "table"]),
                              ("legacy-format-records", ["--format", "records-json"])]:

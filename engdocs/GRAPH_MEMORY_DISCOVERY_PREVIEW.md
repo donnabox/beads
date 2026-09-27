@@ -22,7 +22,8 @@ Memories. Keys are not installed in this workspace generation and are not search
 Ordinary output and `--details` are summaries. They include canonical ID, title,
 saved version and exactly recorded attribution. A body match adds an excerpt
 around the first match, limited to 160 Unicode code points including any ellipsis,
-with its field and shortening status. Title-only and queryless results omit body
+with its field and shortening status. A matching body of at most 160 code points
+appears verbatim in `excerpt.text`. Title-only and queryless results omit body
 excerpts. Details add the outgoing owned-Link count, never target bodies or Link
 payloads. The human result gives a shell-quoted exact recall command. Recorded
 attribution time remains an observed wall-clock value, not native commit order.
@@ -33,7 +34,7 @@ body. Discovery itself does not create a version or perform recall automatically
 
 ## Complete bounded results
 
-The default accepts at most 50 matching Memories. More matches cause an error
+The default accepts at most 50 matching Memories. More matches cause a `capability_unavailable` error (exit 5)
 before any stdout, with guidance to narrow the search or use `--all`. Explicit
 `--all` returns all matching summaries within the preview bounds; it does not
 expand bodies. A successful empty result means no matching Memory was found in
@@ -49,7 +50,10 @@ bounds acquisition to 16 MiB for the entire workspace, before filtering Memories
 Unrelated Issues or Links can therefore cause even a narrow query to refuse.
 Authority and corruption checks are unchanged. Search input is bounded to 4096
 UTF-8 bytes. The complete rendered response is bounded to 1 MiB; excess refuses
-atomically instead of cutting a record, title, identity or JSON document.
+atomically instead of cutting a record, title, identity or JSON document. A very
+large title can exceed that output bound even with `--all`. Narrow the search to
+exclude it, or read that Memory directly with `show` or `recall`. Acquisition and
+output limit refusals use `capability_unavailable` (exit 5).
 
 ## Structured summaries and compatibility
 
@@ -81,9 +85,15 @@ including admission failures; refusals produce no partial stdout.
 
 Bare `--json` and `--format legacy-json` are refused in graph workspaces while
 Memory's complete-record requirement and the CLI's legacy map compatibility are
-reconciled. Existing legacy `memories --json` keeps its key-to-body map. The new
-`--all`, `--details` and `--format` options refuse on legacy workspaces before
-opening storage. There is no stored option that silently enables body expansion.
+reconciled. The existing `--format json` alias (case insensitive) has the same
+restriction in graph workspaces. An explicit `--format table` or
+`--format records-json` overrides a configured `json: true`; an explicit `--json`
+still refuses, including when combined with either format. With no explicit
+format, configured JSON output also refuses.
+
+Existing legacy `memories --json` and `memories --format json` keep their
+key-to-body map. The new `--all`, `--details` and summary-format options refuse on
+legacy workspaces before opening storage. There is no stored option that silently enables body expansion.
 
 `status --graph --json` reports `memoryDiscovery: true` and
 `memoryDiscoveryPagination: false`, plus the limits above. Full Memory, structured
