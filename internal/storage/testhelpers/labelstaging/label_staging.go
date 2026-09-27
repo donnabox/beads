@@ -7,6 +7,7 @@ import (
 	"errors"
 	"fmt"
 	"reflect"
+	"strings"
 	"testing"
 	"time"
 
@@ -94,6 +95,9 @@ func runLabelStagingChange(ctx context.Context, f LabelStagingFixture, route, id
 			return tx.AddLabel(ctx, id, "added", "label-writer")
 		})
 	case "direct":
+		if f.DirectAdd == nil || f.DirectRemove == nil {
+			return fmt.Errorf("direct staging route requires both direct methods; embedded direct methods do not create version commits")
+		}
 		if remove {
 			return f.DirectRemove(ctx, id, "remove", "label-writer")
 		}
@@ -207,6 +211,9 @@ func RunLabelStagingNoops(t *testing.T, ctx context.Context, f LabelStagingFixtu
 				return tx.AddLabel(ctx, before.ID, "keep", "noop")
 			})
 		case "direct":
+			if f.DirectAdd == nil || f.DirectRemove == nil {
+				t.Fatal("direct staging route requires both direct methods; embedded direct methods do not create version commits")
+			}
 			if remove {
 				err = f.DirectRemove(ctx, before.ID, "missing", "noop")
 			} else {
@@ -230,6 +237,9 @@ func RunLabelStagingNoops(t *testing.T, ctx context.Context, f LabelStagingFixtu
 	}
 }
 
+// RunLabelStagingTransactionKeepsPriorDirty proves trailing no-ops preserve
+// dirty marks from an earlier real mutation in this same transaction. It does
+// not test ApplyLabelPatch with a stale in-memory label set.
 func RunLabelStagingTransactionKeepsPriorDirty(t *testing.T, ctx context.Context, f LabelStagingFixture) {
 	t.Helper()
 	before, _ := seedLabelStaging(t, ctx, f, "transaction-keeps-prior", false)
@@ -343,5 +353,87 @@ func assertScalar[T comparable](t *testing.T, ctx context.Context, fixture Label
 	}
 	if got != want {
 		t.Fatalf("%s = %v, want %v", name, got, want)
+	}
+}
+
+// RunLabelStagingFailureIsolation proves neither a validation failure nor a
+// caller failure after a real write publishes dirty tables or leaks SQL changes.
+func RunLabelStagingFailureIsolation(t *testing.T, ctx context.Context, f LabelStagingFixture) {
+	t.Helper()
+	for _, mode := range []string{"overlength", "caller-rollback"} {
+		t.Run(mode, func(t *testing.T) {
+			before, dirty := seedLabelStaging(t, ctx, f, "failure-"+mode, false)
+			if err := f.Exec(ctx, "UPDATE issues SET title = ? WHERE id = ?", "uncommitted title", dirty.ID); err != nil {
+				t.Fatal(err)
+			}
+			head, commits := labelStagingHead(t, ctx, f)
+			var events, statuses, staged int
+			if err := f.QueryScalar(ctx, "SELECT COUNT(*) FROM events WHERE issue_id = ?", []any{before.ID}, &events); err != nil {
+				t.Fatal(err)
+			}
+			if err := f.QueryScalar(ctx, "SELECT COUNT(*) FROM dolt_status", nil, &statuses); err != nil {
+				t.Fatal(err)
+			}
+			if err := f.QueryScalar(ctx, "SELECT COUNT(*) FROM dolt_status WHERE staged = 1", nil, &staged); err != nil {
+				t.Fatal(err)
+			}
+			callerFailure := errors.New("caller refused after successful label mutation")
+			err := f.Transaction(ctx, "failed label write must not publish", func(tx storage.Transaction) error {
+				if mode == "overlength" {
+					return tx.AddLabel(ctx, before.ID, strings.Repeat("x", types.MaxFieldLen+1), "writer")
+				}
+				if err := tx.AddLabel(ctx, before.ID, "added", "writer"); err != nil {
+					return err
+				}
+				changed, err := tx.GetIssue(ctx, before.ID)
+				if err != nil {
+					return err
+				}
+				if changed.RowVersion == before.RowVersion || !changed.UpdatedAt.After(before.UpdatedAt) {
+					return errors.New("rollback probe did not perform actual Issue touch")
+				}
+				labels, err := tx.GetLabels(ctx, before.ID)
+				if err != nil {
+					return err
+				}
+				found := false
+				for _, label := range labels {
+					if label == "added" {
+						found = true
+					}
+				}
+				if !found {
+					return errors.New("rollback probe did not perform actual label insertion")
+				}
+				return callerFailure
+			})
+			wantErr := callerFailure
+			if mode == "overlength" {
+				wantErr = types.ErrFieldTooLong
+			}
+			if !errors.Is(err, wantErr) {
+				t.Fatalf("failure = %v, want %v", err, wantErr)
+			}
+			after, count := labelStagingHead(t, ctx, f)
+			if after != head || count != commits {
+				t.Fatal("failed mutation changed HEAD or commit count")
+			}
+			got, err := f.GetIssue(ctx, before.ID)
+			if err != nil || !reflect.DeepEqual(got, before) {
+				t.Fatalf("failed mutation changed Issue timestamp/token/content: %+v %v", got, err)
+			}
+			assertScalar(t, ctx, f, "failed mutation audit unchanged", events, "SELECT COUNT(*) FROM events WHERE issue_id = ?", []any{before.ID})
+			assertScalar(t, ctx, f, "failed mutation labels cardinality", 2, "SELECT COUNT(*) FROM labels WHERE issue_id = ?", []any{before.ID})
+			for _, label := range []string{"keep", "remove"} {
+				assertScalar(t, ctx, f, "failed mutation retained label "+label, 1, "SELECT COUNT(*) FROM labels WHERE issue_id = ? AND label = ?", []any{before.ID, label})
+			}
+			assertScalar(t, ctx, f, "failed mutation new label absent", 0, "SELECT COUNT(*) FROM labels WHERE issue_id = ? AND label = 'added'", []any{before.ID})
+			assertScalar(t, ctx, f, "failed mutation status count unchanged", statuses, "SELECT COUNT(*) FROM dolt_status", nil)
+			assertScalar(t, ctx, f, "failed mutation staged count unchanged", staged, "SELECT COUNT(*) FROM dolt_status WHERE staged = 1", nil)
+			assertScalar(t, ctx, f, "failed mutation labels not dirty", 0, "SELECT COUNT(*) FROM dolt_status WHERE table_name = 'labels'", nil)
+			assertScalar(t, ctx, f, "unrelated dirty Issue remains unstaged", 1, "SELECT COUNT(*) FROM dolt_status WHERE table_name = 'issues' AND staged = 0", nil)
+			assertScalar(t, ctx, f, "unrelated working edit preserved", "uncommitted title", "SELECT title FROM issues WHERE id = ?", []any{dirty.ID})
+			assertScalar(t, ctx, f, "unrelated HEAD unchanged", "committed title", "SELECT title FROM issues AS OF 'HEAD' WHERE id = ?", []any{dirty.ID})
+		})
 	}
 }

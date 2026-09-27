@@ -73,3 +73,8 @@ func TestLabelOrdinaryCloseGuard(t *testing.T) {
 	skipUnlessEmbeddedDolt(t)
 	labelstaging.RunLabelOrdinaryCloseGuard(t, t.Context(), embeddedLabelStagingFixture(t))
 }
+
+func TestLabelStagingFailureIsolation(t *testing.T) {
+	skipUnlessEmbeddedDolt(t)
+	labelstaging.RunLabelStagingFailureIsolation(t, t.Context(), embeddedLabelStagingFixture(t))
+}

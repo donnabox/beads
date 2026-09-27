@@ -15,8 +15,9 @@ import (
 )
 
 // An explicit graph test port opts into a caller-owned disposable server.
-// These tests never parallelize provisioning and never fall back to production.
-// Without that opt-in, retain the package's existing test-container fixture.
+// With this opt-in, fresh database provisioning is serialized and never falls
+// back to production. Without it, the existing test-container fixture may run
+// tests in parallel on isolated branches of its already-provisioned database.
 func doltLabelStagingFixture(t *testing.T) labelstaging.LabelStagingFixture {
 	t.Helper()
 	var store *DoltStore
@@ -106,4 +107,8 @@ func TestLabelStagingWispIsolation(t *testing.T) {
 }
 func TestLabelOrdinaryCloseGuard(t *testing.T) {
 	labelstaging.RunLabelOrdinaryCloseGuard(t, t.Context(), doltLabelStagingFixture(t))
+}
+
+func TestLabelStagingFailureIsolation(t *testing.T) {
+	labelstaging.RunLabelStagingFailureIsolation(t, t.Context(), doltLabelStagingFixture(t))
 }

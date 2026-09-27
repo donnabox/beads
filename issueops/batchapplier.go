@@ -297,12 +297,10 @@ type ItemResult struct {
 	// it is EQUALITY-ONLY: compare it, never order or interpret it. It is 0 for
 	// ItemDepAdd, which acts on no single row's version.
 	//
-	// ITS COVERAGE IS PARTIAL and the partiality is inherited rather than
-	// introduced: the token is rewritten by claim, close, unclaim and the
-	// generic update path, and actual label mutations (not label no-ops). It is
-	// NOT rewritten by the direct-update paths that rewrite text
-	// without touching it. A caller needing complete change detection combines
-	// it with updated_at, status and the label set. See types.Issue.RowVersion.
+	// Coverage is partial and inherited from the writer: claim, close, reopen,
+	// unclaim, generic updates and actual label mutations rewrite the token;
+	// label no-ops preserve it. See types.Issue.RowVersion for limitations and
+	// the write-coverage guard. This is not a complete record revision.
 	RowVersion int64
 	// Issue is a detached post-item snapshot with labels and dependency
 	// records, hydrated inside the transaction that applied the item — the

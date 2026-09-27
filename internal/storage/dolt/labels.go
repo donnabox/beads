@@ -32,7 +32,7 @@ func (s *DoltStore) AddLabel(ctx context.Context, issueID, label, actor string) 
 }
 
 // RemoveLabel removes a label from an issue.
-// Delegates SQL work to issueops.RemoveLabelInTx which handles wisp routing.
+// Delegates SQL work to issueops.RemoveLabelInTxWithResult, including wisp routing.
 func (s *DoltStore) RemoveLabel(ctx context.Context, issueID, label, actor string) error {
 	return s.withCircuitWrite(ctx, func(ctx context.Context) error {
 		isWisp := s.isActiveWisp(ctx, issueID)

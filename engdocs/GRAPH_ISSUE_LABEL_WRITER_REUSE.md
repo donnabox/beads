@@ -18,7 +18,19 @@ shared writer to its callers. A real label mutation stages the routed Issue,
 label and event tables together. A no-op stages nothing and preserves dirty marks
 from earlier real operations in the same transaction. This uses the existing
 **table-level** staging model: a real label mutation can include other pending
-Issue-table edits. It does not provide row-level commit isolation.
+Issue-table edits. It does not provide row-level commit isolation. For example,
+a real `bd label add` on the same branch as a deferred import can publish that
+import's pending Issue rows under the label command's commit. This newly widened
+Issue-table staging needs explicit acceptance before promotion; passing tests
+does not settle it. Conversely, the direct no-op path no longer stages unrelated
+pending label rows either. Audit events remain Dolt-ignored and unversioned.
+
+Hook behavior is a separate, unresolved limitation. The legacy store and
+transaction hook decorators still fire or queue `on_update` after a successful
+label no-op because their error-only interfaces carry no changed-result signal.
+Thus no-op preservation here covers stored state, audit rows and commits; it
+does not promise hook suppression. Fixing that interface is deferred for review,
+not folded into this staging correction.
 
 No graph label-editing command is enabled by this prerequisite. The next proposed slice is guarded complete-set replacement through the existing `IssuePatch.Labels` writer, with exact prior-record recall and filtering. Add/remove shorthand and label vocabulary retain their existing contributor ownership. The CLI shape and capability spelling remain provisional.
 
