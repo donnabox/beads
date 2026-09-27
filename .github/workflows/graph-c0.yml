@@ -198,6 +198,9 @@ jobs:
               ./internal/storage/issueops ./internal/storage/domain ./internal/storage/domain/db ./internal/storage/schema \
               ./internal/httpapi/graphread ./internal/httpapi/bdpwire ./internal/httpapi \
             > "$RUNNER_TEMP/c0-evidence/storage-tests.log" 2>&1
+          # The domain suite must use this owned server, not silently follow the
+          # wrapper's Docker skip policy. Its independent writers use the same port.
+          grep -q '^--- PASS: TestDomainDB (' "$RUNNER_TEMP/c0-evidence/storage-tests.log"
           # Preserve the contributor's real embedded label timestamp regression.
           BEADS_TEST_EMBEDDED_DOLT=1 TEST_VERBOSE=1 TEST_TIMEOUT=5m TEST_RUN='^TestAddLabel$' \
             ./scripts/test.sh ./internal/storage/embeddeddolt \

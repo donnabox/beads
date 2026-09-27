@@ -37,3 +37,12 @@ No graph label-editing command is enabled by this prerequisite. The next propose
 Tests cover the reused helpers, real native mutation behavior on embedded and ordinary shared-server Dolt, and the existing installed graph workflows. Committed-state regressions separately check the affected public update, transaction and direct-server paths through `AS OF HEAD`, including no-ops with unrelated dirty Issue rows. Direct native label tests do not demonstrate graph revision synchronization or graph label commands. Native History atomic commit-stamp binding remains unresolved: ordinary Issue timestamps are not such a guarantee.
 
 Future integration with upstream PR6650 must reconcile version recording ownership. The current pinned graph adapter records its retained Issue once explicitly; the newer upstream `ExecuteUpdate` records internally. Calling both would duplicate recording. This prerequisite changes neither recorder.
+
+The Linux qualification job explicitly enables the existing domain repository
+suite on its owned disposable server using `BEADS_GRAPH_TEST_SERVER_PORT`.
+Setup, cleanup and independent journal writer connections all use that port.
+Without this opt-in the normal Docker fixture and local skip policy remain
+unchanged. The job requires the domain suite to pass; a green run that silently
+skips it does not qualify this contribution. Database provisioning remains
+serialized across packages. This is test-fixture coverage, not a replacement for
+installed CLI evidence or permission to change the ordinary Issue contracts.

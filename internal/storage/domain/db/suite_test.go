@@ -4,6 +4,8 @@ import (
 	"context"
 	"database/sql"
 	"math/rand"
+	"os"
+	"strconv"
 	"testing"
 
 	_ "github.com/go-sql-driver/mysql"
@@ -19,16 +21,29 @@ type testSuite struct {
 	suite.Suite
 	db             *sql.DB
 	dbName         string
+	serverPort     int
 	baselineCommit string
 	eventsDDL      string
 	journalEnabled bool
 }
 
 func (s *testSuite) SetupSuite() {
-	testutil.RequireDoltContainer(s.T())
-
-	port := testutil.DoltContainerPortInt()
-	s.Require().NotZero(port, "test container port must be set")
+	// The explicit opt-in uses a caller-owned disposable localhost server.
+	// This suite provisions one database and runs its cases serially; callers
+	// must also serialize database provisioning across packages on Dolt 2.1.8.
+	// Without the opt-in, preserve the existing Docker fixture and skip policy.
+	if text := os.Getenv("BEADS_GRAPH_TEST_SERVER_PORT"); text != "" {
+		port, err := strconv.Atoi(text)
+		if err != nil || port < 1024 || port > 65535 || port == 3306 || port == 3307 {
+			s.T().Fatalf("invalid dedicated test port %q", text)
+		}
+		s.serverPort = port
+	} else {
+		testutil.RequireDoltContainer(s.T())
+		s.serverPort = testutil.DoltContainerPortInt()
+		s.Require().NotZero(s.serverPort, "test container port must be set")
+	}
+	port := s.serverPort
 
 	ctx := context.Background()
 
@@ -81,7 +96,7 @@ func (s *testSuite) TearDownSuite() {
 	if s.dbName == "" {
 		return
 	}
-	port := testutil.DoltContainerPortInt()
+	port := s.serverPort
 	if port == 0 {
 		return
 	}
