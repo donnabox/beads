@@ -83,12 +83,13 @@ type Issue struct {
 	// NewIssueDetails, and on the wire at GET /v0/beads/issues/{id}); Go
 	// consumers read RowVersion directly.
 	//
-	// Coverage is deliberately partial: it changes on claim/close/unclaim and the
-	// generic update path, but NOT on direct-UPDATE paths that rewrite text
-	// without touching row_lock (RestoreFromSnapshotInTx, the compaction
-	// text-truncation path). For a complete change-detection key, combine it with
-	// updated_at (which those paths DO bump), status, and the label set
-	// (label-only and reopen writes change those, not row_lock).
+	// Coverage is deliberately partial: it changes on claim/close/reopen/unclaim,
+	// the generic update path, and label mutations that actually change the set.
+	// Label no-ops preserve it. Direct text writes such as RestoreFromSnapshotInTx
+	// and compaction do not rewrite row_lock. The storage issueops test
+	// TestAllIssueRowWritesStampRowLock tracks writes and explicit exemptions.
+	// Callers needing change detection outside this coverage must compare the
+	// relevant fields; RowVersion is not a complete record revision.
 	//
 	// 0 appears only on legacy rows backfilled by migration 0054 (DEFAULT 0) that
 	// have not been mutated since; any issue created by the current code path is

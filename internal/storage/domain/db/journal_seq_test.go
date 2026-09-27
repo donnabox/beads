@@ -9,7 +9,6 @@ import (
 
 	"github.com/steveyegge/beads/internal/storage/doltutil"
 	"github.com/steveyegge/beads/internal/storage/domain"
-	"github.com/steveyegge/beads/internal/testutil"
 )
 
 // isSerializationFailure reports whether err is a Dolt/MySQL serialization
@@ -44,7 +43,7 @@ func (s *testSuite) TestEventsJournal_CommitOrderedGaplessSeq() {
 	_, err := s.Runner().ExecContext(ctx, "DELETE FROM bd_events_journal")
 	s.Require().NoError(err)
 
-	port := testutil.DoltContainerPortInt()
+	port := s.serverPort
 	s.Require().NotZero(port)
 	dsn := doltutil.ServerDSN{Host: "127.0.0.1", Port: port, User: "root", Database: s.dbName}.String()
 	dbB, err := sql.Open("mysql", dsn)
@@ -107,7 +106,7 @@ func (s *testSuite) TestEventsJournal_ConcurrentWritersGaplessNoDup() {
 	_, err := s.Runner().ExecContext(ctx, "DELETE FROM bd_events_journal")
 	s.Require().NoError(err)
 
-	port := testutil.DoltContainerPortInt()
+	port := s.serverPort
 	s.Require().NotZero(port)
 	dsn := doltutil.ServerDSN{Host: "127.0.0.1", Port: port, User: "root", Database: s.dbName}.String()
 
