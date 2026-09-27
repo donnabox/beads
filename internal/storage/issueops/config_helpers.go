@@ -51,7 +51,8 @@ func ResolveCustomConfigInTx(ctx context.Context, tx DBTX) ([]types.CustomStatus
 }
 
 // ResolveCustomConfigStrictInTx preserves the table/config/YAML precedence of
-// ResolveCustomConfigInTx, but refuses every database query or decoding failure.
+// ResolveCustomConfigInTx, but refuses database query, scan and iteration failures.
+// Malformed stored status strings retain the shared parser's existing behavior.
 // It is for checked reads of initialized workspaces, not legacy degraded mode.
 // YAML remains the frontend's already-initialized process configuration.
 func ResolveCustomConfigStrictInTx(ctx context.Context, tx DBTX) ([]types.CustomStatus, []string, error) {

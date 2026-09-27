@@ -81,9 +81,11 @@ and store cleanup. Failures return no partial page.
 This preview retains the whole-workspace 16 MiB current-read acquisition and 1000
 live-Resource bounds, plus DB configuration acquisition bounded at 64 KiB and 256 rows.
 The resolved configuration, including YAML fallbacks, is bounded at 64 KiB and
-256 entries. Database read/decoding errors refuse instead of selecting fallback
-policy. YAML comes from the already-initialized CLI workspace configuration; it
-is not part of the database transaction or historical configuration. The resolved
+256 entries. Database query, scan and iteration failures refuse instead of
+selecting fallback policy. A malformed nonempty stored `status.custom` value
+retains the existing shared parse behavior: no custom statuses, rather than
+refusal or YAML fallback. YAML comes from the already-initialized CLI workspace
+configuration; it is not part of the database transaction or historical configuration. The resolved
 bound does not cap the frontend's earlier YAML file parsing and allocation.
 Direct multi-workspace server configuration is not supplied by this adapter. These are
 operational admission limits: unrelated Memory/Link growth can refuse a small
