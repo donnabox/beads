@@ -234,6 +234,9 @@ its title/body and preserve earlier complete versions.
 [Unconditional Memory disclosure](engdocs/GRAPH_OVERWRITE_DISCLOSURE_PREVIEW.md)
 identifies the replaced version and its recorded attribution, including source
 Memory changes through owned Links. This result shape is provisional.
+[Compact Memory discovery](engdocs/GRAPH_MEMORY_DISCOVERY_PREVIEW.md) searches
+title/body summaries and supplies exact saved-state recall selectors. Pagination
+and complete Memory remain unavailable.
 [Issue text editing](engdocs/GRAPH_ISSUE_EDIT_PREVIEW.md) uses familiar inline
 `update` text flags with a graph revision guard, retaining the earlier complete
 Issue and its owned Dependencies.
