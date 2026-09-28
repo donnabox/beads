@@ -1013,6 +1013,79 @@ try {
   pass('public BDP observes guarded ordered Memory patch, complete unchanged owned Links and inventory, then stable no-op record and304 ETag');
 
 
+  // Complete the same ordered operation on informational Link properties.
+  // Owned Memory sources version atomically; Issue sources remain unchanged.
+  const linkPatchEvidence = artifacts.linkPropertiesPatch = { stages: [],
+    mechanism: 'Installed CLI Link patch with independent public BDP Read; no HTTP mutation or native History.' };
+  let linkPatchInventory = patchInventory;
+  for (const [stage, linkID, sourceID, owned] of [
+    ['owned', contextID, planID, true], ['unowned', id('links/back'), workID, false],
+  ]) {
+    const firstRequest = network.length;
+    const before = await perform({ kind: 'resource', resource: 'link', id: linkID });
+    const sourceBefore = linkPatchInventory.items.find(bead => bead.id === sourceID);
+    assert.ok(sourceBefore);
+    const linkHTTPBefore = await http(linkID);
+    const sourceHTTPBefore = await http(sourceID);
+    assert.equal(linkHTTPBefore.response.status, 200);
+    assert.equal(sourceHTTPBefore.response.status, 200);
+    assert.deepEqual(JSON.parse(linkHTTPBefore.text), before);
+    assert.deepEqual(parseBeadRecord(JSON.parse(sourceHTTPBefore.text)), sourceBefore);
+    const operations = [{ op: 'replace', path: '/note', value: stage + ' relationship patch — 雪' }];
+    const args = ['update', linkID, '--patch', JSON.stringify(operations),
+      '--if-revision', before.revision, '--actor', 'link-patch-author', '--json'];
+    if (owned) args.push('--if-source-revision', sourceBefore.revision);
+    const mutation = await dueWrite(stage + '-changed', args, 'client-cli-link-properties-patch-');
+    assert.deepEqual(Object.keys(mutation).sort(), ['changed', 'link', 'source']);
+    assert.equal(mutation.changed, true);
+    const after = await perform({ kind: 'resource', resource: 'link', id: linkID });
+    const sourceAfter = await perform({ kind: 'resource', resource: 'bead', id: sourceID });
+    const properties = await perform({ kind: 'properties', resource: 'link', id: linkID });
+    assert.equal(after.revision, mutation.link.revision);
+    assert.notEqual(after.revision, before.revision);
+    assert.deepEqual(after, { ...before, revision: after.revision, attribution: after.attribution,
+      properties: { note: operations[0].value } });
+    assert.deepEqual(properties, after.properties);
+    assert.equal(sourceAfter.revision, mutation.source.revision);
+    if (owned) {
+      assert.notEqual(sourceAfter.revision, sourceBefore.revision);
+      const ownedLinks = Object.fromEntries(Object.entries(sourceBefore.ownedLinks)
+        .map(([type, links]) => [type, links.map(link => link.id === linkID ? after : link)]));
+      assert.deepEqual(sourceAfter, { ...sourceBefore, revision: sourceAfter.revision,
+        attribution: sourceAfter.attribution, ownedLinks });
+    } else assert.deepEqual(sourceAfter, sourceBefore);
+    const linkHTTPAfter = await http(linkID, { headers: { 'if-none-match': linkHTTPBefore.response.headers.get('etag') } });
+    const sourceHTTPAfter = await http(sourceID, { headers: { 'if-none-match': sourceHTTPBefore.response.headers.get('etag') } });
+    assert.equal(linkHTTPAfter.response.status, 200);
+    assert.equal(sourceHTTPAfter.response.status, owned ? 200 : 304);
+    const noOpArgs = ['update', linkID, '--patch', JSON.stringify(operations),
+      '--if-revision', after.revision, '--actor', 'no-op-author', '--json'];
+    if (owned) noOpArgs.push('--if-source-revision', sourceAfter.revision);
+    const noOp = await dueWrite(stage + '-noop', noOpArgs, 'client-cli-link-properties-patch-');
+    assert.deepEqual(noOp, { link: mutation.link, source: mutation.source, changed: false });
+    assert.deepEqual(await perform({ kind: 'resource', resource: 'link', id: linkID }), after);
+    assert.deepEqual(await perform({ kind: 'resource', resource: 'bead', id: sourceID }), sourceAfter);
+    const linkHTTPNoOp = await http(linkID, { headers: { 'if-none-match': linkHTTPAfter.response.headers.get('etag') } });
+    const sourceHTTPNoOp = await http(sourceID, { headers: { 'if-none-match': sourceHTTPAfter.response.headers.get('etag') } });
+    for (const response of [linkHTTPNoOp, sourceHTTPNoOp]) {
+      assert.equal(response.response.status, 304);
+      assert.equal(response.text, '');
+    }
+    const inventory = await perform({ kind: 'collection', collection: 'beads', limit: 100 });
+    assert.equal(inventory.next, null);
+    assert.deepEqual(inventory.items, linkPatchInventory.items.map(bead => bead.id === sourceID ? sourceAfter : bead));
+    linkPatchInventory = inventory;
+    const snapshotHTTP = response => ({ status: response.response.status,
+      etag: response.response.headers.get('etag'), body: response.text });
+    linkPatchEvidence.stages.push({ stage, owned, before, after, sourceBefore, sourceAfter, properties,
+      mutation, noOp, operations, inventory, firstRequest, requestCount: network.length - firstRequest,
+      http: { linkBefore: snapshotHTTP(linkHTTPBefore), sourceBefore: snapshotHTTP(sourceHTTPBefore),
+        linkAfter: snapshotHTTP(linkHTTPAfter), sourceAfter: snapshotHTTP(sourceHTTPAfter),
+        linkNoOp: snapshotHTTP(linkHTTPNoOp), sourceNoOp: snapshotHTTP(sourceHTTPNoOp) } });
+  }
+  pass('public BDP observes ordered Link patches with atomically versioned owned Memory, unchanged Issue source, complete inventory and stable no-op ETags');
+
+
 } catch (error) {
   failure = { name: error.name, message: error.message, stack: error.stack };
   process.exitCode = 1;

@@ -101,6 +101,8 @@ jobs:
           sha256sum scripts/graph-issue-initial-notes-smoke.py > "$RUNNER_TEMP/c0-evidence/issue-initial-notes-harness.sha256"
           sha256sum scripts/graph-issue-due-smoke.py > "$RUNNER_TEMP/c0-evidence/issue-due-harness.sha256"
           sha256sum scripts/graph-memory-properties-patch-smoke.py > "$RUNNER_TEMP/c0-evidence/memory-properties-patch-harness.sha256"
+          sha256sum scripts/graph-link-properties-patch-smoke.py > "$RUNNER_TEMP/c0-evidence/link-properties-patch-harness.sha256"
+          sha256sum scripts/graph-c0-storage-tests.sh > "$RUNNER_TEMP/c0-evidence/storage-test-runner.sha256"
           sha256sum scripts/graph-issue-create-fields-smoke.py > "$RUNNER_TEMP/c0-evidence/issue-create-fields-harness.sha256"
           sha256sum scripts/graph-issue-references-smoke.py > "$RUNNER_TEMP/c0-evidence/issue-references-harness.sha256"
           sha256sum scripts/graph-issue-priority-smoke.py > "$RUNNER_TEMP/c0-evidence/issue-priority-harness.sha256"
@@ -196,6 +198,18 @@ jobs:
           if grep -Eq '^ *--- (SKIP|FAIL): TestGraphPreviewIssue(InitialNotes|CreateAuthorship)' "$RUNNER_TEMP/c0-evidence/cli-policy-tests.log"; then
             exit 1
           fi
+          for resource in Memory Link; do
+            for suite in Request RefusesBeforeInput SyntaxBeforeStore; do
+              grep -q "^--- PASS: TestGraphPreview${resource}PropertiesPatch${suite} (" "$RUNNER_TEMP/c0-evidence/cli-policy-tests.log"
+            done
+            if grep -Eq "^ *--- (SKIP|FAIL): TestGraphPreview${resource}PropertiesPatch" "$RUNNER_TEMP/c0-evidence/cli-policy-tests.log"; then
+              echo "${resource} patch CLI proof did not execute completely" >&2
+              exit 1
+            fi
+          done
+          for suite in Sources InputBound LegacyAdmission; do
+            grep -q "^--- PASS: TestGraphPreviewMemoryPropertiesPatch${suite} (" "$RUNNER_TEMP/c0-evidence/cli-policy-tests.log"
+          done
       - name: Install pinned ordinary Dolt release
         run: |
           cd "$RUNNER_TEMP"
@@ -231,14 +245,11 @@ jobs:
           # Dolt 2.1.8 cannot inspect a database created after another session's
           # transaction began. Isolate package setup; explicit same-store
           # concurrency/failure tests still run. See GRAPH_BDP_READ_PROJECTION.md.
-          # PR52 graphstore passed in 879.667s on Linux, near the old 15m
-          # package bound. Allow the additional notes/identity matrix within
-          # 20m; require every named gate and exact-source completion as before.
-          BEADS_GRAPH_TEST_SERVER_PORT=15440 GO_TEST_PKG_PARALLEL=1 TEST_VERBOSE=1 TEST_TIMEOUT=20m \
-            ./scripts/test.sh ./internal/storage/graphstore ./internal/configfile \
-              ./internal/storage/issueops ./internal/storage/schema \
-              ./internal/httpapi/graphread ./internal/httpapi/bdpwire ./internal/httpapi \
-            > "$RUNNER_TEMP/c0-evidence/storage-tests.log" 2>&1
+          # PR54 reached the 20m package deadline while still progressing.
+          # Execute every compiled graphstore root in three disjoint sequential
+          # groups, preserving 20m per invocation and the existing 65m job bound.
+          # Raw logs/exits and the complete inventory bind the unchanged gates.
+          BEADS_GRAPH_TEST_SERVER_PORT=15440 ./scripts/graph-c0-storage-tests.sh "$RUNNER_TEMP/c0-evidence"
           # Preserve contributor #5771's two normalization regressions; the
           # second package is outside the seven-package graph matrix.
           GO_TEST_PKG_PARALLEL=1 TEST_VERBOSE=1 ./scripts/test.sh \
@@ -262,6 +273,21 @@ jobs:
           done
           if grep -Eq '^ *--- (SKIP|FAIL): TestMemoryPropertiesPatch' "$RUNNER_TEMP/c0-evidence/storage-tests.log"; then
             echo "Memory property patch storage proof did not execute completely" >&2
+            exit 1
+          fi
+          for suite in Lifecycle RefusalAndRollback ReadBudget; do
+            for backend in embedded server; do
+              grep -q "^ *--- PASS: TestLinkPropertiesPatch${suite}/${backend} (" "$RUNNER_TEMP/c0-evidence/storage-tests.log"
+            done
+          done
+          for backend in embedded server; do
+            for unconditional in false true; do
+              grep -q "^ *--- PASS: TestLinkPropertiesPatchConcurrentOwnedWriter/${backend}/unconditional-${unconditional} (" "$RUNNER_TEMP/c0-evidence/storage-tests.log"
+            done
+          done
+          grep -q '^--- PASS: TestLinkPropertiesPatchLostCommitResponse (' "$RUNNER_TEMP/c0-evidence/storage-tests.log"
+          if grep -Eq '^ *--- (SKIP|FAIL): TestLinkPropertiesPatch' "$RUNNER_TEMP/c0-evidence/storage-tests.log"; then
+            echo "Link property patch storage proof did not execute completely" >&2
             exit 1
           fi
           # Every admitted assignment suite must execute on both real engines.
@@ -430,6 +456,11 @@ jobs:
             --output-dir "$RUNNER_TEMP/c0-evidence/memory-properties-patch" \
             --backend both --server-port 15440 --server-root "$RUNNER_TEMP/c0-server" --total-timeout 300 \
             > "$RUNNER_TEMP/c0-evidence/memory-properties-patch-smoke.log" 2>&1
+
+          python3 scripts/graph-link-properties-patch-smoke.py --bd "$RUNNER_TEMP/c0-bin/bd" \
+            --output-dir "$RUNNER_TEMP/c0-evidence/link-properties-patch" \
+            --backend both --server-port 15440 --server-root "$RUNNER_TEMP/c0-server" --total-timeout 300 \
+            > "$RUNNER_TEMP/c0-evidence/link-properties-patch-smoke.log" 2>&1
 
       - name: Preserve receipts (including failures)
         if: always()
