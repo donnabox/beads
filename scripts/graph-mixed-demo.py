@@ -9,6 +9,7 @@ import argparse
 import importlib.util
 import json
 import os
+import re
 import shlex
 from pathlib import Path
 import signal
@@ -30,7 +31,10 @@ def main():
     parser.add_argument("--bdp-checkout", type=Path)
     parser.add_argument("--node", type=Path)
     parser.add_argument("--output-dir", type=Path, required=True)
+    parser.add_argument("--command-timeout", type=float, default=60)
+    parser.add_argument("--total-timeout", type=float, default=300)
     args = parser.parse_args()
+    c0.require(args.command_timeout > 0 and args.total_timeout > 0, "timeouts must be positive")
     for path in [args.bd, args.output_dir]:
         c0.require(path.is_absolute(), "binary and output paths must be absolute")
     c0.require(args.bd.is_file() and os.access(args.bd, os.X_OK), "installed binary required")
@@ -42,14 +46,18 @@ def main():
         # Reuse the existing independently built archive and verify its source
         # manifest, never silently accept a different client revision/build.
         manifest = args.bdp_checkout.parent / "client-build.json"
+        c0.require(manifest.is_file(), "missing sibling client-build.json; use the presenter guide build recipe")
         provenance = json.loads(manifest.read_text())
         c0.require(provenance.get("commit") == http.PIN and provenance.get("passed") is True,
                    "client build provenance must match the qualified public pin")
+        required = {"pnpm-lock.yaml", "packages/client/src/index.ts", "packages/client/dist/index.js",
+                    "packages/protocol/src/index.ts", "packages/protocol/dist/index.js", "schemas/bdp-v0.schema.json"}
+        c0.require(required <= provenance.get("files", {}).keys(), "client manifest is missing required source/build files")
         for name, digest in provenance["files"].items():
             path = (args.bdp_checkout / name).resolve()
             c0.require(path.is_relative_to(args.bdp_checkout.resolve()), "unsafe manifest path")
             c0.require(c0.sha256(path) == digest, "public client build changed: " + name)
-    args.server_root, args.command_timeout, args.total_timeout = None, 60, 300
+    args.server_root = None
     capture = c0.Capture(args)
     processes, chapters = [], []
     if args.backend == "server":
@@ -74,7 +82,11 @@ def main():
 
     try:
         version = capture.success("binary-version", ["version", "--json"])
-        c0.require(version.get("build") == "b7bf5040b", "this recorded demo requires the pinned b7bf5040 binary")
+        build = version.get("build", "")
+        c0.require(re.fullmatch(r"[0-9a-f]{7,40}", build) and summary["required_runtime_base"].startswith(build),
+                   "this demo requires a build label from the pinned b7bf5040 source")
+        if "commit" in version:
+            c0.require(version["commit"] == summary["required_runtime_base"], "binary VCS commit differs from pin")
         summary["binary"] = version
         summary["binary_sha256"] = capture.binary_hash
         with socket.socket() as reservation:
@@ -87,7 +99,13 @@ def main():
         if args.backend == "server":
             init += ["--server", "--external", "--server-host", "127.0.0.1", "--server-user", "root",
                      "--server-port", str(args.server_port), "--database", "demo_" + capture.root.name.replace("-", "_")]
-        run("init", init)
+        initialized = run("init", init)
+        c0.require(initialized["scope"] == scope and initialized["backend"] == args.backend and
+                   initialized["memoryComplete"] is False, "wrong initialized identity/backend/capability")
+        capabilities = run("graph-capabilities", ["status", "--graph"])
+        c0.require(all(capabilities["capabilities"][name] is False for name in
+                   ["memory", "historyExact", "issueWorkflows", "requestStatus", "backupContinuity"]),
+                   "demo capability boundary changed")
         plan = run("remember-plan", ["remember", "Deploy after verification.\n", "--id", "beads/plan", "--title", "Deployment plan"])
         rationale = run("remember-rationale", ["remember", "Verification catches regressions.\n", "--id", "beads/rationale", "--title", "Why verify?"])
         run("create-release", ["create", "Release deployment", "--id", "beads/release"])
@@ -115,6 +133,9 @@ def main():
         after = show("show-current-plan", "beads/plan")
         c0.require(changed["changed"] and after == changed["memory"], "fresh read differs from write")
         c0.require(after["properties"] == properties and after["owned"] == before["owned"], "body edit damaged owned state")
+        c0.refusal(capture.run("stale-memory-edit", ["update", "beads/plan", "--properties", json.dumps(properties),
+                   "--if-revision", before["revision"], "--json"]), {"revision_conflict"}, "stale edit")
+        c0.require(show("show-after-stale-refusal", "beads/plan") == after, "stale writer changed current state")
         old = show("show-saved-plan", "beads/plan", before["version"])
         c0.require(old == before, "saved complete record changed")
         receipt, body, _ = capture.run("recall-saved-body", ["recall", "beads/plan", "--version", before["version"]])
@@ -149,6 +170,7 @@ def main():
             client = http.Process(capture, "public-client", [str(args.node), str(HERE / "graph-mixed-demo-client.mjs")])
             processes.append(client)
             client.wait(90)
+            c0.require(serve.child.poll() is None, "serve exited during the client chapter")
             summary["http"] = json.loads((capture.output / "client-results.json").read_text())
             c0.require(summary["http"]["passed"], "public client failed")
         summary["passed"] = True
@@ -161,11 +183,25 @@ def main():
                 c0.require(not process.failure and process.child.returncode == 0, "process cleanup failed")
             except BaseException as exc:
                 capture.stop()
-                summary.update(passed=False, failure=str(exc))
+                summary["passed"] = False
+                summary["failure"] = summary.get("failure") or f"{type(exc).__name__}: {exc}"
+        capture.stop()
+        for child in list(capture.active):
+            try:
+                child.wait(timeout=10)
+                capture.active.discard(child)
+            except BaseException as exc:
+                summary["passed"] = False
+                summary["failure"] = summary.get("failure") or f"unreaped child {child.pid}: {exc}"
         summary.update(active_children=len(capture.active), cli_commands=len(capture.records), workspace=str(capture.work), chapters=chapters)
         c0.write_json(capture.output / "summary.json", summary)
         c0.write_json(capture.output / "commands.json", capture.records)
-        lines = ["# Recorded mixed graph demo", "", "Actual fresh-process command results. Absolute binary paths and hashes are in the adjacent receipts.", ""]
+        lines = ["# Recorded mixed graph demo", "", "Disposable preview; this recording supplements qualification and does not qualify a new runtime.", "",
+                 f"Backend: {args.backend}. Required runtime source: `{summary['required_runtime_base']}`.",
+                 f"Binary SHA-256: `{capture.binary_hash}`. Build label is checked; source/install evidence remains separate.",
+                 f"Recording passed: {summary['passed']}. Qualification: false.", "",
+                 *["- " + value for value in summary["limitations"]], "",
+                 "Actual fresh-process results follow. Absolute paths and hashes are in the adjacent receipts.", ""]
         headings = {x["firstCommand"]: x["title"] for x in chapters}
         for index, command in enumerate(capture.records, 1):
             if index in headings:
@@ -177,11 +213,13 @@ def main():
                       "````", "", "</details>", ""]
         if args.backend == "server" and (capture.output / "public-client/stdout.log").exists():
             lines += ["## 5. Another client reads the same graph through BDP", "", "```text",
-                      (capture.output / "public-client/stdout.log").read_text(), "```", "",
+                      (capture.output / "public-client/stdout.log").read_text(),
+                      (capture.output / "public-client/stderr.log").read_text(), "```", "",
                       "Request URLs, statuses and body hashes: [client-results.json](client-results.json).", ""]
         (capture.output / "recording.md").write_text("\n".join(lines))
-        c0.write_json(capture.output / "demo-source.json", {p.name: c0.sha256(p) for p in [Path(__file__), HERE / "graph-mixed-demo-client.mjs"]})
-    c0.require(summary["passed"] and not capture.active, summary.get("failure", "demo failed"))
+        c0.write_json(capture.output / "demo-source.json", {p.name: c0.sha256(p) for p in [Path(__file__), HERE / "graph-mixed-demo-client.mjs", HERE / "graph-bdp-read-smoke.py", HERE / "graph-c0-smoke.py"]})
+    c0.require(not capture.active, "demo leaked an unreaped child; see summary.json")
+    c0.require(summary["passed"], summary.get("failure", "demo failed"))
     print(json.dumps(summary, indent=2))
 
 
