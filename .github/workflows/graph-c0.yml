@@ -238,15 +238,70 @@ jobs:
       - name: Qualify ordinary shared-server sequence and failure controls
         run: |
           set -euo pipefail
-          mkdir -p "$RUNNER_TEMP/c0-server"
-          "$RUNNER_TEMP/c0-bin/dolt" sql-server --host 127.0.0.1 --port 15440 \
-            --data-dir "$RUNNER_TEMP/c0-server" > "$RUNNER_TEMP/c0-evidence/server.log" 2>&1 &
-          server_pid=$!
-          trap 'kill "$server_pid" 2>/dev/null || true; wait "$server_pid" || true' EXIT
-          python3 - <<'PY'
-          import socket, time
+          # Every complete capture retains its own databases. Isolate unrelated
+          # captures so later initialization does not scan all earlier stores.
+          # Never replace a server while a suite or its shutdown is still active.
+          server_pid=
+          server_phase=
+          server_root=
+          mkdir -p "$RUNNER_TEMP/c0-evidence/server-phases"
+          stop_server() {
+            test -n "$server_pid" || return 0
+            if ! kill -TERM "$server_pid"; then
+              wait "$server_pid" || true
+              server_pid=
+              return 1
+            fi
+            for attempt in {1..100}; do
+              kill -0 "$server_pid" 2>/dev/null || break
+              sleep .1
+            done
+            if kill -0 "$server_pid" 2>/dev/null; then
+              echo "Dolt phase $server_phase did not stop within 10s" >&2
+              kill -KILL "$server_pid" 2>/dev/null || true
+              wait "$server_pid" || true
+              server_pid=
+              return 1
+            fi
+            if ! wait "$server_pid"; then
+              server_pid=
+              return 1
+            fi
+            if ! printf '%s\tstop\t%s\t%s\t%s\n' "$(date -u +%FT%TZ)" "$server_phase" "$server_pid" "$server_root" \
+              >> "$RUNNER_TEMP/c0-evidence/server-phases/lifecycle.tsv"; then
+              server_pid=
+              return 1
+            fi
+            server_pid=
+          }
+          trap 'status=$?; stop_server || status=1; exit "$status"' EXIT
+          start_server() {
+            stop_server
+            server_phase=$1
+            server_root="$RUNNER_TEMP/c0-server-$server_phase"
+            mkdir "$server_root"
+            # Refuse an occupied port; never mistake another listener for ours.
+            python3 - <<'PY_PORT'
+          import socket
+          with socket.socket() as listener:
+              listener.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+              listener.bind(('127.0.0.1', 15440))
+          PY_PORT
+            local log="$RUNNER_TEMP/c0-evidence/server-phases/$server_phase.log"
+            if test "$server_phase" = storage; then
+              log="$RUNNER_TEMP/c0-evidence/server.log"
+            fi
+            "$RUNNER_TEMP/c0-bin/dolt" sql-server --host 127.0.0.1 --port 15440 \
+              --data-dir "$server_root" > "$log" 2>&1 &
+            server_pid=$!
+            printf '%s\tstart\t%s\t%s\t%s\n' "$(date -u +%FT%TZ)" "$server_phase" "$server_pid" "$server_root" \
+              >> "$RUNNER_TEMP/c0-evidence/server-phases/lifecycle.tsv"
+            python3 - "$server_pid" <<'PY_READY'
+          import os, socket, sys, time
+          pid = int(sys.argv[1])
           end = time.monotonic() + 20
           while True:
+              os.kill(pid, 0)
               try:
                   with socket.create_connection(('127.0.0.1', 15440), timeout=1):
                       break
@@ -254,10 +309,12 @@ jobs:
                   if time.monotonic() >= end:
                       raise
                   time.sleep(.2)
-          PY
+          PY_READY
+          }
+          start_server storage
           python3 scripts/graph-c0-smoke.py --bd "$RUNNER_TEMP/c0-bin/bd" \
             --output-dir "$RUNNER_TEMP/c0-evidence/server" \
-            --server-port 15440 --server-root "$RUNNER_TEMP/c0-server" --link-lifecycle
+            --server-port 15440 --server-root "$server_root" --link-lifecycle
           # Dolt 2.1.8 cannot inspect a database created after another session's
           # transaction began. Isolate package setup; explicit same-store
           # concurrency/failure tests still run. See GRAPH_BDP_READ_PROJECTION.md.
@@ -348,6 +405,7 @@ jobs:
           fi
           # Provision the fresh CLI-authored HTTP workspace only after all other
           # package setup finishes on this Dolt 2.1.8 server.
+          start_server bdp-read
           python3 scripts/graph-bdp-read-smoke.py --bd "$RUNNER_TEMP/c0-bin/bd" \
             --server-port 15440 --bdp-checkout "$RUNNER_TEMP/bdp-client-53bdbd0" \
             --node "$(command -v node)" --output-dir "$RUNNER_TEMP/c0-evidence/http" \
@@ -384,117 +442,143 @@ jobs:
           if grep -Eq '^ *--- (SKIP|FAIL): TestIssueInitialNotes' "$RUNNER_TEMP/c0-evidence/storage-tests.log"; then
             exit 1
           fi
+          start_server history-exact
           python3 scripts/graph-history-exact-smoke.py --bd "$RUNNER_TEMP/c0-bin/bd" \
             --backend both --server-port 15440 \
             --output-dir "$RUNNER_TEMP/c0-evidence/history-exact" \
             > "$RUNNER_TEMP/c0-evidence/history-exact-smoke.log" 2>&1
+          start_server memory-update
           python3 scripts/graph-memory-update-smoke.py --bd "$RUNNER_TEMP/c0-bin/bd" \
             --backend both --server-port 15440 \
             --output-dir "$RUNNER_TEMP/c0-evidence/memory-update" \
             > "$RUNNER_TEMP/c0-evidence/memory-update-smoke.log" 2>&1
+          start_server memory-recall
           python3 scripts/graph-memory-recall-smoke.py --bd "$RUNNER_TEMP/c0-bin/bd" \
             --backend both --server-port 15440 \
             --output-dir "$RUNNER_TEMP/c0-evidence/memory-recall" \
             > "$RUNNER_TEMP/c0-evidence/memory-recall-smoke.log" 2>&1
+          start_server history-compare
           python3 scripts/graph-history-compare-smoke.py --bd "$RUNNER_TEMP/c0-bin/bd" \
             --backend both --server-port 15440 \
             --output-dir "$RUNNER_TEMP/c0-evidence/history-compare" \
             > "$RUNNER_TEMP/c0-evidence/history-compare-smoke.log" 2>&1
+          start_server memory-input
           python3 scripts/graph-memory-input-smoke.py --bd "$RUNNER_TEMP/c0-bin/bd" \
             --backend both --server-port 15440 \
             --output-dir "$RUNNER_TEMP/c0-evidence/memory-input" \
             > "$RUNNER_TEMP/c0-evidence/memory-input-smoke.log" 2>&1
+          start_server issue-edit
           python3 scripts/graph-issue-edit-smoke.py --bd "$RUNNER_TEMP/c0-bin/bd" \
             --backend both --server-port 15440 \
             --output-dir "$RUNNER_TEMP/c0-evidence/issue-edit" \
             > "$RUNNER_TEMP/c0-evidence/issue-edit-smoke.log" 2>&1
+          start_server dependency-unlink
           python3 scripts/graph-dependency-unlink-smoke.py --bd "$RUNNER_TEMP/c0-bin/bd" \
             --backend both --server-port 15440 \
             --output-dir "$RUNNER_TEMP/c0-evidence/dependency-unlink" \
             > "$RUNNER_TEMP/c0-evidence/dependency-unlink-smoke.log" 2>&1
+          start_server overwrite-disclosure
           python3 scripts/graph-overwrite-disclosure-smoke.py --bd "$RUNNER_TEMP/c0-bin/bd" \
             --backend both --server-port 15440 \
             --output-dir "$RUNNER_TEMP/c0-evidence/overwrite-disclosure" \
             > "$RUNNER_TEMP/c0-evidence/overwrite-disclosure-smoke.log" 2>&1
+          start_server memory-discovery
           python3 scripts/graph-memory-discovery-smoke.py --bd "$RUNNER_TEMP/c0-bin/bd" \
             --backend both --server-port 15440 \
             --output-dir "$RUNNER_TEMP/c0-evidence/memory-discovery" \
             > "$RUNNER_TEMP/c0-evidence/memory-discovery-smoke.log" 2>&1
+          start_server issue-reopen
           python3 scripts/graph-issue-reopen-smoke.py --bd "$RUNNER_TEMP/c0-bin/bd" \
             --backend both --server-port 15440 \
             --output-dir "$RUNNER_TEMP/c0-evidence/issue-reopen" \
             > "$RUNNER_TEMP/c0-evidence/issue-reopen-smoke.log" 2>&1
+          start_server memory-selected-update
           python3 scripts/graph-memory-selected-update-smoke.py --bd "$RUNNER_TEMP/c0-bin/bd" \
             --backend both --server-port 15440 \
             --output-dir "$RUNNER_TEMP/c0-evidence/memory-selected-update" \
             > "$RUNNER_TEMP/c0-evidence/memory-selected-update-smoke.log" 2>&1
+          start_server memory-atomic-patch
           python3 scripts/graph-memory-atomic-patch-smoke.py --bd "$RUNNER_TEMP/c0-bin/bd" \
             --backend both --server-port 15440 \
             --output-dir "$RUNNER_TEMP/c0-evidence/memory-atomic-patch" \
             > "$RUNNER_TEMP/c0-evidence/memory-atomic-patch-smoke.log" 2>&1
+          start_server issue-list
           python3 scripts/graph-issue-list-smoke.py --bd "$RUNNER_TEMP/c0-bin/bd" \
             --backend both --server-port 15440 \
             --output-dir "$RUNNER_TEMP/c0-evidence/issue-list" \
             > "$RUNNER_TEMP/c0-evidence/issue-list-smoke.log" 2>&1
+          start_server issue-priority
           python3 scripts/graph-issue-priority-smoke.py --bd "$RUNNER_TEMP/c0-bin/bd" \
             --backend both --server-port 15440 \
             --output-dir "$RUNNER_TEMP/c0-evidence/issue-priority" \
             > "$RUNNER_TEMP/c0-evidence/issue-priority-smoke.log" 2>&1
+          start_server issue-assignee
           python3 scripts/graph-issue-assignee-smoke.py --bd "$RUNNER_TEMP/c0-bin/bd" \
             --output-dir "$RUNNER_TEMP/c0-evidence/issue-assignee" \
-            --backend both --server-port 15440 --server-root "$RUNNER_TEMP/c0-server" \
+            --backend both --server-port 15440 --server-root "$server_root" \
             --total-timeout 900 > "$RUNNER_TEMP/c0-evidence/issue-assignee-smoke.log" 2>&1
+          start_server issue-claim
           python3 scripts/graph-issue-claim-smoke.py --bd "$RUNNER_TEMP/c0-bin/bd" \
             --output-dir "$RUNNER_TEMP/c0-evidence/issue-claim" \
-            --backend both --server-port 15440 --server-root "$RUNNER_TEMP/c0-server" \
+            --backend both --server-port 15440 --server-root "$server_root" \
             --total-timeout 300 > "$RUNNER_TEMP/c0-evidence/issue-claim-smoke.log" 2>&1
 
+          start_server issue-append-notes
           python3 scripts/graph-issue-append-notes-smoke.py --bd "$RUNNER_TEMP/c0-bin/bd" \
             --output-dir "$RUNNER_TEMP/c0-evidence/issue-append-notes" \
-            --backend both --server-port 15440 --server-root "$RUNNER_TEMP/c0-server" \
+            --backend both --server-port 15440 --server-root "$server_root" \
             --total-timeout 300 > "$RUNNER_TEMP/c0-evidence/issue-append-notes-smoke.log" 2>&1
+          start_server issue-estimate
           python3 scripts/graph-issue-estimate-smoke.py --bd "$RUNNER_TEMP/c0-bin/bd" \
             --output-dir "$RUNNER_TEMP/c0-evidence/issue-estimate" \
-            --backend both --server-port 15440 --server-root "$RUNNER_TEMP/c0-server" --total-timeout 300 \
+            --backend both --server-port 15440 --server-root "$server_root" --total-timeout 300 \
             > "$RUNNER_TEMP/c0-evidence/issue-estimate-smoke.log" 2>&1
+          start_server issue-references
           python3 scripts/graph-issue-references-smoke.py --bd "$RUNNER_TEMP/c0-bin/bd" \
             --output-dir "$RUNNER_TEMP/c0-evidence/issue-references" \
-            --backend both --server-port 15440 --server-root "$RUNNER_TEMP/c0-server" --total-timeout 300 \
+            --backend both --server-port 15440 --server-root "$server_root" --total-timeout 300 \
             > "$RUNNER_TEMP/c0-evidence/issue-references-smoke.log" 2>&1
 
+          start_server issue-create-fields
           python3 scripts/graph-issue-create-fields-smoke.py --bd "$RUNNER_TEMP/c0-bin/bd" \
             --output-dir "$RUNNER_TEMP/c0-evidence/issue-create-fields" \
-            --backend both --server-port 15440 --server-root "$RUNNER_TEMP/c0-server" --total-timeout 300 \
+            --backend both --server-port 15440 --server-root "$server_root" --total-timeout 300 \
             > "$RUNNER_TEMP/c0-evidence/issue-create-fields-smoke.log" 2>&1
 
+          start_server issue-initial-notes
           python3 scripts/graph-issue-initial-notes-smoke.py --bd "$RUNNER_TEMP/c0-bin/bd" \
             --output-dir "$RUNNER_TEMP/c0-evidence/issue-initial-notes" \
-            --backend both --server-port 15440 --server-root "$RUNNER_TEMP/c0-server" --total-timeout 300 \
+            --backend both --server-port 15440 --server-root "$server_root" --total-timeout 300 \
             > "$RUNNER_TEMP/c0-evidence/issue-initial-notes-smoke.log" 2>&1
 
+          start_server issue-due
           python3 scripts/graph-issue-due-smoke.py --bd "$RUNNER_TEMP/c0-bin/bd" \
             --output-dir "$RUNNER_TEMP/c0-evidence/issue-due" \
-            --backend both --server-port 15440 --server-root "$RUNNER_TEMP/c0-server" --total-timeout 300 \
+            --backend both --server-port 15440 --server-root "$server_root" --total-timeout 300 \
             > "$RUNNER_TEMP/c0-evidence/issue-due-smoke.log" 2>&1
 
+          start_server memory-properties-patch
           python3 scripts/graph-memory-properties-patch-smoke.py --bd "$RUNNER_TEMP/c0-bin/bd" \
             --output-dir "$RUNNER_TEMP/c0-evidence/memory-properties-patch" \
-            --backend both --server-port 15440 --server-root "$RUNNER_TEMP/c0-server" --total-timeout 300 \
+            --backend both --server-port 15440 --server-root "$server_root" --total-timeout 300 \
             > "$RUNNER_TEMP/c0-evidence/memory-properties-patch-smoke.log" 2>&1
 
+          start_server link-properties-patch
           python3 scripts/graph-link-properties-patch-smoke.py --bd "$RUNNER_TEMP/c0-bin/bd" \
             --output-dir "$RUNNER_TEMP/c0-evidence/link-properties-patch" \
-            --backend both --server-port 15440 --server-root "$RUNNER_TEMP/c0-server" --total-timeout 300 \
+            --backend both --server-port 15440 --server-root "$server_root" --total-timeout 300 \
             > "$RUNNER_TEMP/c0-evidence/link-properties-patch-smoke.log" 2>&1
 
+          start_server issue-blocked
           python3 scripts/graph-issue-blocked-smoke.py --bd "$RUNNER_TEMP/c0-bin/bd" \
             --output-dir "$RUNNER_TEMP/c0-evidence/issue-blocked" \
-            --backend both --server-port 15440 --server-root "$RUNNER_TEMP/c0-server" --total-timeout 300 \
+            --backend both --server-port 15440 --server-root "$server_root" --total-timeout 300 \
             > "$RUNNER_TEMP/c0-evidence/issue-blocked-smoke.log" 2>&1
 
+          start_server generic-traversal
           python3 scripts/graph-generic-traversal-smoke.py --bd "$RUNNER_TEMP/c0-bin/bd" \
             --output-dir "$RUNNER_TEMP/c0-evidence/generic-traversal" \
-            --backend both --server-port 15440 --server-root "$RUNNER_TEMP/c0-server" --total-timeout 300 \
+            --backend both --server-port 15440 --server-root "$server_root" --total-timeout 300 \
             > "$RUNNER_TEMP/c0-evidence/generic-traversal-smoke.log" 2>&1
 
       - name: Preserve receipts (including failures)
