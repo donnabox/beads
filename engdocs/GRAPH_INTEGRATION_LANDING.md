@@ -21,7 +21,12 @@ Initial observed target: `44b8c0b9a8dc369ac6a9ea008ca07d36663923d3`. Normal `PR`
 
 | Increment | Source / target | Destination PR | Landed commit | State |
 |---|---|---|---|---|
-| Pure graphops leaf, additive typed errors and architecture boundary | Extract existing candidate implementation onto current target; no storage/schema/CLI | Pending creation | — | Preparing `janet-integration-graphops-20260928`; build/test and CI required |
+| Pure graphops leaf, additive typed errors and architecture boundary | Existing graphops from qualified9c86 / upstream6422; target44b8; no storage/schema/CLI | [versioned-beads#33](https://github.com/versioned-beads/beads/pull/33), `b020b60981900dd6a95b680ea0706625b8a39431` | — | Pushed; focused Go/Bazel, native+Windows lint and independent review pass. Normal baseline and destination CI pending. |
+| Standalone BDP wire codec and pinned schema corpus | Wire portion of upstream6422, source PR2 and codec subset of PR25; target44b8 | Pending creation | — | Isolated `janet-integration-bdpwire-20260928` prepared; focused tests and source review pass. No HTTP runtime activation. |
+
+## Earlier upstream source
+
+[Upstream PR6422](https://github.com/gastownhall/beads/pull/6422) contains the original graph leaf and wire implementation before the granular fork PR series. Destination33 extracts only its graphops portion, preserving the final corrected bytes from qualified9c86 and original attribution. The original remains open; this is not a claim that the larger graph source has landed. Subsequent wire extraction will map the separate codec portion. Neither package alone completes the runtime milestones.
 
 ## Original PR disposition
 
