@@ -1,4 +1,4 @@
-# Issue text and priority editing in the graph preview
+# Issue scalar editing in the graph preview
 
 A normally initialized graph workspace accepts four familiar Issue text flags:
 `--title`, `--description`, `--design` and `--acceptance`, plus `--priority`. Use the
@@ -60,7 +60,7 @@ Issue recorder in one checked transaction with the graph mapping. It does not
 add an Issue payload table, schema, recorder or separate database. An actual
 edit records exactly one new Issue snapshot and opaque graph version containing
 the complete owned blocking Dependencies. Dependencies, their targets and
-informational Links remain unchanged. Editing a closed Issue's text, priority or estimate does not
+informational Links remain unchanged. Editing a closed Issue's admitted scalar fields does not
 reopen it or clear its close time. Readonly and migration-freeze policy still
 refuse writes before storage is opened.
 
@@ -72,7 +72,7 @@ native History commit timestamps. The outstanding storage-owner binding gate
 remains open.
 
 `status --graph --json` advertises `issueTextUpdate: true`,
-`issuePriorityUpdate: true`, `issueEstimateUpdate: true`,
+`issuePriorityUpdate: true`, `issueEstimateUpdate: true`, `issueReferenceUpdate: true`,
 `issueTextFileInput: false`, `issueTextStdinInput: false`, and retains
 `issueWorkflows: false`.
 
@@ -164,3 +164,54 @@ python3 scripts/graph-issue-estimate-smoke.py \
 
 The real-store `TestIssueEstimateLifecycle` also checks the signed INT maximum;
 both engine cases are required by the exact-source Linux workflow and verifier.
+
+## External and spec references
+
+The existing `update --external-ref` and `--spec-id` flags accept literal values
+on canonical graph Issues, under the same observed revision or explicit
+unconditional policy:
+
+```bash
+bd update beads/task --external-ref 'tracker/42' --spec-id 'docs/design' --if-revision "$revision" --json
+bd update beads/task --external-ref '' --spec-id '' --unconditional --json
+```
+
+Omission preserves the field. An empty external reference becomes SQL NULL;
+an empty spec ID becomes an empty string. Both cleared properties are omitted
+from the existing Issue JSON representation. Values are not trimmed, normalized,
+interpreted as file input, fetched, or converted into graph identity. Multiple
+Issues may have the same reference. The existing VARCHAR columns permit up to
+255 Unicode code points for the external reference and 1,024 for the spec ID.
+Invalid UTF-8 and values outside those storage bounds refuse before SQL; an
+exact writeback check prevents accepted values from being silently changed.
+
+Reference pairs and other admitted scalar edits share one transaction and
+retained revision. Same-value and repeated-clear requests are no-ops after guard
+validation; a stale guard still refuses. Closed state, assignment, claim lease,
+canonical identity and owned Links are preserved. Reference editing does not
+renew claims, synchronize trackers or enable mixed claim edits. Graph create
+still refuses these flags. `status --graph` reports provisional
+`issueReferenceUpdate`; full `issueWorkflows` remains false.
+
+The existing current-read budget is unchanged. References can be shortened or
+cleared through the checked writer if the workspace exceeds that budget; a
+caller still needs its saved accepted revision or the existing explicit
+unconditional option. Mixing references with notes append retains append's
+existing post-write read-budget check. This adds no general repair interface.
+
+Reproduce the installed sequence against a disposable ordinary server:
+
+```sh
+python3 scripts/graph-issue-references-smoke.py \
+  --bd /absolute/disposable/bin/bd --backend both --server-port PORT \
+  --server-root /absolute/disposable/dolt-data \
+  --output-dir /absolute/new/reference-evidence --total-timeout 300
+```
+
+It records normal initialization, separate and combined set/replace/clear,
+complete current and exact saved records, and refusals. Storage tests additionally
+check SQL NULL and the exact ASCII/multibyte column boundaries on both engines.
+The independent public BDP client observes CLI-authored assignment and clearing,
+preserving complete properties and ownership with changed ETags. HTTP writes
+and public Memory History remain unavailable. Execution receipts and qualification
+status belong to the fork delivery plan; this recipe is not a qualification claim.

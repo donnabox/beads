@@ -13,6 +13,9 @@ import (
 	publicops "github.com/steveyegge/beads/issueops"
 )
 
+// maxIssueSpecIDRunes matches spec_id VARCHAR(1024) in migration 0001_create_issues.
+const maxIssueSpecIDRunes = 1024
+
 // UpdateIssueRequest admits existing Issue scalar edits and notes append.
 // Nil fields preserve their properties. Empty scalar strings clear fields where
 // the Issue domain permits; AppendNotes instead preserves native append semantics:
@@ -21,6 +24,8 @@ import (
 // EstimatedMinutes nil preserves the nullable estimate; zero sets a present zero.
 // Clearing to null is not admitted. The existing Issue validator and SQL column
 // retain their ordinary bounds; no scheduler or duration interpretation is added.
+// ExternalRef and SpecID preserve literal values; empty clears the external
+// reference to NULL and the spec ID to an empty string, as in ordinary update.
 // Priority zero sets P0; nil preserves priority. The guard addresses the complete
 // graph revision, including owned blocking Dependencies, not the storage ordinal.
 // Assignee nil preserves its value; empty clears it. Neither the graph guard nor
@@ -33,6 +38,7 @@ type UpdateIssueRequest struct {
 	EstimatedMinutes                               *int
 	Assignee                                       *string
 	AppendNotes                                    *string
+	ExternalRef, SpecID                            *string
 }
 
 // UpdateIssue delegates admitted scalar edits to the existing Issue domain writer and
@@ -85,6 +91,39 @@ func (s *Store) UpdateIssue(ctx context.Context, request UpdateIssueRequest) (Is
 			return IssueMutationResult{}, fmt.Errorf("%w: Issue estimated_minutes exceeds the storage maximum of %d", storage.ErrValidation, math.MaxInt32)
 		}
 		patch.EstimatedMinutes = publicops.Field[*int]{Set: true, Value: &value}
+		count++
+	}
+	// These limits describe the existing VARCHAR columns, not reference syntax.
+	// Validate before SQL so strict and coercing engines both refuse data loss.
+	for _, field := range []struct {
+		name  string
+		value *string
+	}{
+		{"external_ref", request.ExternalRef},
+		{"spec_id", request.SpecID},
+	} {
+		if field.value == nil {
+			continue
+		}
+		value := *field.value
+		if !utf8.ValidString(value) {
+			return IssueMutationResult{}, fmt.Errorf("%w: Issue %s must be UTF-8", storage.ErrValidation, field.name)
+		}
+		if field.name == "external_ref" {
+			if err := types.CheckFieldLen(field.name, value); err != nil {
+				return IssueMutationResult{}, fmt.Errorf("%w: Issue external_ref: %w", storage.ErrValidation, err)
+			}
+		} else if utf8.RuneCountInString(value) > maxIssueSpecIDRunes {
+			return IssueMutationResult{}, fmt.Errorf("%w: Issue spec_id exceeds the existing %d-character column", storage.ErrValidation, maxIssueSpecIDRunes)
+		}
+		if field.name == "external_ref" {
+			patch.ExternalRef = publicops.Field[*string]{Set: true}
+			if value != "" {
+				patch.ExternalRef.Value = &value
+			}
+		} else {
+			patch.SpecID = publicops.Field[string]{Set: true, Value: value}
+		}
 		count++
 	}
 	if count == 0 {
@@ -145,6 +184,15 @@ func (s *Store) UpdateIssue(ctx context.Context, request UpdateIssueRequest) (Is
 		if patch.EstimatedMinutes.Set && (updated.Issue == nil || updated.Issue.EstimatedMinutes == nil ||
 			*updated.Issue.EstimatedMinutes != *patch.EstimatedMinutes.Value) {
 			return fmt.Errorf("%w: Issue estimate cannot be represented exactly by storage", storage.ErrValidation)
+		}
+		if patch.ExternalRef.Set {
+			if updated.Issue == nil || (patch.ExternalRef.Value == nil) != (updated.Issue.ExternalRef == nil) ||
+				(patch.ExternalRef.Value != nil && *patch.ExternalRef.Value != *updated.Issue.ExternalRef) {
+				return fmt.Errorf("%w: Issue external reference cannot be represented exactly by storage", storage.ErrValidation)
+			}
+		}
+		if patch.SpecID.Set && (updated.Issue == nil || updated.Issue.SpecID != patch.SpecID.Value) {
+			return fmt.Errorf("%w: Issue spec ID cannot be represented exactly by storage", storage.ErrValidation)
 		}
 		if err := s.afterStage("issue-update"); err != nil {
 			return err

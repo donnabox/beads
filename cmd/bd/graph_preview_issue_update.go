@@ -12,7 +12,7 @@ import (
 	"github.com/steveyegge/beads/internal/validation"
 )
 
-var graphPreviewIssueEditFlags = []string{"title", "description", "body", "message", "design", "acceptance", "priority", "assignee", "append-notes", "estimate"}
+var graphPreviewIssueEditFlags = []string{"title", "description", "body", "message", "design", "acceptance", "priority", "assignee", "append-notes", "estimate", "external-ref", "spec-id"}
 
 func graphPreviewIssueEditFlagsChanged(cmd *cobra.Command) bool {
 	for _, name := range graphPreviewIssueEditFlags {
@@ -80,6 +80,7 @@ func graphPreviewIssueEditRequest(cmd *cobra.Command, path string) (graphstore.U
 		{"design", &request.Design},
 		{"acceptance", &request.AcceptanceCriteria},
 		{"append-notes", &request.AppendNotes},
+		{"external-ref", &request.ExternalRef}, {"spec-id", &request.SpecID},
 	}
 	for _, field := range fields {
 		if !cmd.Flags().Changed(field.name) {
@@ -87,7 +88,7 @@ func graphPreviewIssueEditRequest(cmd *cobra.Command, path string) (graphstore.U
 		}
 		value, _ := cmd.Flags().GetString(field.name)
 		if !utf8.ValidString(value) {
-			return request, graphFailure("invalid_properties", "Issue text must be valid UTF-8", 2)
+			return request, graphFailure("invalid_properties", "Issue "+field.name+" must be valid UTF-8", 2)
 		}
 		if value == "-" && field.out == &request.Description {
 			return request, graphFailure("capability_unavailable", "graph Issue update currently accepts inline text only; stdin and file sources are unavailable", 5)

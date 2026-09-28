@@ -247,8 +247,8 @@ title/body summaries and supplies exact saved-state recall selectors. Pagination
 and complete Memory remain unavailable.
 [Issue reopen](engdocs/GRAPH_ISSUE_REOPEN_PREVIEW.md) reuses the Issue writer to
 reopen one canonical Issue while retaining its old versions and owned Links.
-[Issue text, priority and estimate editing](engdocs/GRAPH_ISSUE_EDIT_PREVIEW.md) uses familiar
-inline `update` flags with a graph revision guard. Priority, estimate and text can change
+[Issue text, priority, estimate and reference editing](engdocs/GRAPH_ISSUE_EDIT_PREVIEW.md) uses familiar
+inline `update` flags with a graph revision guard. Priority, estimates, references and text can change
 atomically while retaining the earlier complete Issue and its owned Dependencies.
 [Append-only Issue notes](engdocs/GRAPH_ISSUE_NOTES_PREVIEW.md) uses the existing
 `--append-notes` operation inside that same transaction; notes replacement remains held.
