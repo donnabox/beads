@@ -369,6 +369,13 @@
           "scope": "BDP wire codec and pinned corpus subset only; original remaining work preserved",
           "state": "partial transfer landed after119 successful checks and one expected skip",
           "landed_commit": "4a276b6183f9dba5cdfe5ae504d0687adbe29484"
+        },
+        {
+          "destination_pr": "https://github.com/versioned-beads/beads/pull/39",
+          "head": "de37bb34917e24aefd403d61778eb22c7341847a",
+          "scope": "Authoritative current Memory/Issue/Link and installed-Type projection into pinned BDP wire records; no public historical-version selectors. The codec correction remains separately accounted for by destination34.",
+          "state": "draft; committed and pushed; clean exact-source local qualification running and destination CI pending; not qualified or landed",
+          "landed_commit": null
         }
       ]
     },
@@ -393,6 +400,13 @@
           "previous_heads": [
             "335c813ea80a7d15bb983818f319a044d0032779"
           ]
+        },
+        {
+          "destination_pr": "https://github.com/versioned-beads/beads/pull/39",
+          "head": "de37bb34917e24aefd403d61778eb22c7341847a",
+          "scope": "Public Bead/Link/Type inventories projected from the complete transactional current snapshot inherited through destination37, retaining acquisition bounds and mapping validation; no second writer or storage schema.",
+          "state": "draft; committed and pushed; clean exact-source local qualification running and destination CI pending; not qualified or landed",
+          "landed_commit": null
         }
       ]
     },
@@ -406,7 +420,16 @@
       "url": "https://github.com/donnabox/beads/pull/27",
       "in_qualified_candidate": true,
       "destination_pr": null,
-      "landed_commit": null
+      "landed_commit": null,
+      "transfers": [
+        {
+          "destination_pr": "https://github.com/versioned-beads/beads/pull/39",
+          "head": "de37bb34917e24aefd403d61778eb22c7341847a",
+          "scope": "Bounded Selector and structural filters, incident selection and process-local immutable pagination with explicit expiry/capacity/restart limits; no public History, aliases or durable cursor contract.",
+          "state": "draft; committed and pushed; clean exact-source local qualification running and destination CI pending; not qualified or landed",
+          "landed_commit": null
+        }
+      ]
     },
     {
       "baseRefName": "codex/janet-read-selection-20260926",
@@ -418,7 +441,16 @@
       "url": "https://github.com/donnabox/beads/pull/28",
       "in_qualified_candidate": true,
       "destination_pr": null,
-      "landed_commit": null
+      "landed_commit": null,
+      "transfers": [
+        {
+          "destination_pr": "https://github.com/versioned-beads/beads/pull/39",
+          "head": "de37bb34917e24aefd403d61778eb22c7341847a",
+          "scope": "Current-only authenticated ordinary-server BDP Read activation through existing listener/Host/auth seams, CLI serve admission, adapted c921 independent-client capture and required HTTP CI; embedded serving refuses, and later writer/History surfaces are excluded.",
+          "state": "draft; committed and pushed; clean exact-source local qualification running and destination CI pending; not qualified or landed",
+          "landed_commit": null
+        }
+      ]
     },
     {
       "baseRefName": "codex/janet-read-http-20260926",
