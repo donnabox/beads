@@ -285,13 +285,25 @@ func metadataChanged(current, next json.RawMessage) (bool, error) {
 	return left != right, nil
 }
 
-// ApplyLabelPatch applies ordered label edits and reports whether rows changed.
-func ApplyLabelPatch(ctx context.Context, tx DBTX, current *types.Issue, patch publicops.LabelPatch, actor string) (bool, error) {
+// LabelPatchChanges reports whether the ordered patch changes the supplied
+// snapshot's label set. It performs no writes; ApplyLabelPatch still reports
+// actual row changes, which can differ if the supplied snapshot is stale.
+func LabelPatchChanges(current *types.Issue, patch publicops.LabelPatch) bool {
+	existing, target := planLabelPatch(current, patch)
+	return !sameStringSet(existing, target)
+}
+
+// planLabelPatch is shared by pre-write no-op admission and the actual writer.
+// Replacement, additions, removals, duplicates and empty labels therefore have
+// one set of semantics in both paths. A (nil, nil) pair is the no-patch sentinel;
+// it does not reconstruct the current or desired label set. Callers use that
+// sentinel only to recognize a no-op, not as an instruction to clear labels.
+func planLabelPatch(current *types.Issue, patch publicops.LabelPatch) (existing, target map[string]struct{}) {
 	if !patch.Replace.Set && len(patch.Add) == 0 && len(patch.Remove) == 0 {
-		return false, nil
+		return nil, nil
 	}
-	existing := stringSet(current.Labels)
-	target := make(map[string]struct{}, len(existing)+len(patch.Add))
+	existing = stringSet(current.Labels)
+	target = make(map[string]struct{}, len(existing)+len(patch.Add))
 	if !patch.Replace.Set {
 		for label := range existing {
 			target[label] = struct{}{}
@@ -326,6 +338,12 @@ func ApplyLabelPatch(ctx context.Context, tx DBTX, current *types.Issue, patch p
 	for _, label := range patch.Remove {
 		delete(target, label)
 	}
+	return existing, target
+}
+
+// ApplyLabelPatch applies ordered label edits and reports whether rows changed.
+func ApplyLabelPatch(ctx context.Context, tx DBTX, current *types.Issue, patch publicops.LabelPatch, actor string) (bool, error) {
+	existing, target := planLabelPatch(current, patch)
 	if sameStringSet(existing, target) {
 		return false, nil
 	}

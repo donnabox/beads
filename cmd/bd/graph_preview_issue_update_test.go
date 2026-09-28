@@ -3,16 +3,22 @@ package main
 import (
 	"errors"
 	"fmt"
+	"reflect"
 	"strings"
 	"testing"
 
 	"github.com/spf13/cobra"
+	"github.com/steveyegge/beads/internal/types"
 )
 
 func issueTextCommand(t *testing.T, args ...string) *cobra.Command {
 	t.Helper()
 	cmd := &cobra.Command{}
 	for _, name := range append(append([]string{}, graphPreviewIssueEditFlags...), "properties", "notes", "body-file", "design-file", "append-notes", "status", "if-revision", "if-source-revision") {
+		if name == "set-labels" {
+			cmd.Flags().StringSlice(name, nil, "")
+			continue
+		}
 		cmd.Flags().String(name, "", "")
 	}
 	cmd.Flags().Bool("unconditional", false, "")
@@ -129,6 +135,64 @@ func TestGraphPreviewIssueTextRefusals(t *testing.T) {
 			var failure *exitError
 			if !errors.As(err, &failure) || failure.Code != tc.code {
 				t.Fatalf("expected refusal %d, got %v", tc.code, err)
+			}
+		})
+	}
+}
+
+func TestGraphPreviewIssueLabelReplacement(t *testing.T) {
+	for _, tc := range []struct {
+		name string
+		args []string
+		want []string
+	}{
+		{"normalized", []string{"--set-labels= alpha,alpha,Alpha,café,cafe,雪 ", "--set-labels=beta"}, []string{"alpha", "Alpha", "café", "cafe", "雪", "beta"}},
+		{"clear", []string{"--set-labels="}, []string{}},
+		{"empty-entries", []string{"--set-labels= , ,"}, []string{}},
+		{"comma-label", []string{`--set-labels="one,two",three`}, []string{"one,two", "three"}},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			cmd := issueTextCommand(t, append(tc.args, "--if-revision=observed")...)
+			if !graphPreviewIssueEditFlagsChanged(cmd) {
+				t.Fatal("labels-only update missed Issue route")
+			}
+			r, err := graphPreviewIssueEditRequest(cmd, "beads/work")
+			if err != nil || r.Labels == nil || !reflect.DeepEqual(*r.Labels, tc.want) || r.ExpectedRevision != "observed" {
+				t.Fatalf("label request: %+v %v", r, err)
+			}
+		})
+	}
+	r, err := graphPreviewIssueEditRequest(issueTextCommand(t, "--title=Text only", "--unconditional"), "beads/work")
+	if err != nil || r.Labels != nil {
+		t.Fatalf("omitted labels became a clear: %+v %v", r, err)
+	}
+	r, err = graphPreviewIssueEditRequest(issueTextCommand(t, "--title=Together", "--priority=P0", "--set-labels=ready", "--unconditional"), "beads/work")
+	if err != nil || r.Labels == nil || !reflect.DeepEqual(*r.Labels, []string{"ready"}) || r.Priority == nil || *r.Priority != 0 || r.Title == nil || *r.Title != "Together" {
+		t.Fatalf("mixed patch: %+v %v", r, err)
+	}
+}
+
+func TestGraphPreviewIssueLabelRefusals(t *testing.T) {
+	for _, tc := range []struct {
+		name string
+		args []string
+		code int
+	}{
+		{"guard", []string{"--set-labels=a"}, 2},
+		{"false-unconditional", []string{"--set-labels=a", "--unconditional=false"}, 2},
+		{"both-guards", []string{"--set-labels=a", "--unconditional", "--if-revision=old"}, 2},
+		{"utf8", []string{"--set-labels=\xff", "--unconditional"}, 2},
+		{"overlength", []string{"--set-labels=" + strings.Repeat("x", types.MaxFieldLen+1), "--unconditional"}, 2},
+		{"file", []string{"--set-labels=a", "--body-file=missing", "--unconditional"}, 5},
+		{"properties", []string{"--set-labels=a", "--properties={}", "--unconditional"}, 5},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			cmd := issueTextCommand(t, tc.args...)
+			cmd.SetIn(failingMemoryBodyReader{})
+			_, err := graphPreviewIssueEditRequest(cmd, "beads/work")
+			var failure *exitError
+			if !errors.As(err, &failure) || failure.Code != tc.code {
+				t.Fatalf("wanted %d: %v", tc.code, err)
 			}
 		})
 	}
