@@ -3,7 +3,6 @@
 package embeddeddolt_test
 
 import (
-	"context"
 	"testing"
 
 	"github.com/steveyegge/beads/backend/conformance"
@@ -26,8 +25,12 @@ import (
 // reverts to nil hooks (gastownhall/beads#6664, bee-ghosttrack review
 // 5268699223).
 func TestExpectedRevisionContract(t *testing.T) {
-	ctx := context.Background()
-	fixture := conformance.ExpectedRevisionFixture{IssuePrefix: "erev"}
+	skipUnlessEmbeddedDolt(t)
+	_ = newTestEnv(t, "erev")
+	ctx := t.Context()
+	fixture := conformance.ExpectedRevisionFixture{
+		IssuePrefix: "erev",
+	}
 
 	t.Run("AcceptsAWriteNamingTheCurrentVersion", func(t *testing.T) {
 		conformance.RunExpectedRevisionAcceptsAWriteNamingTheCurrentVersion(t, ctx, fixture)
@@ -58,5 +61,16 @@ func TestExpectedRevisionContract(t *testing.T) {
 	})
 	t.Run("RefusalNeverSilentlyPicksAWinner", func(t *testing.T) {
 		conformance.RunRefusalNeverSilentlyPicksAWinner(t, ctx, fixture)
+	})
+	t.Run("FixtureIsAnHonestSkipPendingPartB", func(t *testing.T) {
+		if fixture.CompareAndSetVersion != nil {
+			t.Error("CompareAndSetVersion is wired, want nil: be-80f4a.1 removes R16's per-record CAS backing (architect-ruled design departure from gastownhall/beads#5898) and this leg's fixture must honestly skip pending Part B, not fake green")
+		}
+		if fixture.CurrentVersion != nil {
+			t.Error("CurrentVersion is wired, want nil: see CompareAndSetVersion above")
+		}
+		if fixture.MutateOutsideExpectedRevision != nil {
+			t.Error("MutateOutsideExpectedRevision is wired, want nil: see CompareAndSetVersion above")
+		}
 	})
 }

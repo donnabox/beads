@@ -20,6 +20,17 @@ exports_files(
     visibility = ["//scripts/gitattributespolicy:__pkg__"],
 )
 
+# //cmd/bd:bd_test: tracked git hooks (generator parity) and the formula
+# primitive fixtures.
+filegroup(
+    name = "bd_test_files",
+    srcs = glob([
+        ".githooks/*",
+        "examples/formulas/primitives/**",
+    ]),
+    visibility = ["//cmd/bd:__pkg__"],
+)
+
 exports_files(
     [".claude-plugin/marketplace.json"],
     visibility = ["//cmd/bd/setup:__pkg__"],
@@ -43,6 +54,26 @@ filegroup(
         "//scripts:README.md",
     ],
     visibility = ["//test/docsync:__pkg__"],
+)
+
+# //scripts:scripts_test workflow-policy and CI-script tests: the whole
+# .github tree (workflows, composite actions, CI helper scripts) they parse
+# and run. The one whole-tree input the plan allows (it is small).
+filegroup(
+    name = "workflow_files",
+    srcs = glob([".github/**"]),
+    visibility = ["//scripts:__pkg__"],
+)
+
+# //scripts:scripts_test runs scripts/test.sh, which sources the canonical
+# build flags and reads the known-broken-test skip list.
+filegroup(
+    name = "test_sh_files",
+    srcs = [
+        ".buildflags",
+        ".test-skip",
+    ],
+    visibility = ["//scripts:__pkg__"],
 )
 
 # Inputs of the Bazel policy tests in //scripts (bazel_policy_test.go), so they
