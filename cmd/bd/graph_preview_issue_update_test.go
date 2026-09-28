@@ -7,16 +7,19 @@ import (
 	"testing"
 
 	"github.com/spf13/cobra"
+	"github.com/steveyegge/beads/internal/types"
 )
 
 func issueTextCommand(t *testing.T, args ...string) *cobra.Command {
 	t.Helper()
 	cmd := &cobra.Command{}
-	for _, name := range append(append([]string{}, graphPreviewIssueEditFlags...), "properties", "notes", "body-file", "design-file", "append-notes", "status", "if-revision", "if-source-revision") {
+	for _, name := range append(append([]string{}, graphPreviewIssueEditFlags...), "properties", "notes", "body-file", "design-file", "append-notes", "status", "if-assignee", "if-status", "if-revision", "if-source-revision") {
 		cmd.Flags().String(name, "", "")
 	}
 	cmd.Flags().Bool("unconditional", false, "")
 	cmd.Flags().Bool("stdin", false, "")
+	cmd.Flags().Bool("claim", false, "")
+	cmd.Flags().Bool("force", false, "")
 	if err := cmd.ParseFlags(args); err != nil {
 		t.Fatal(err)
 	}
@@ -129,6 +132,54 @@ func TestGraphPreviewIssueTextRefusals(t *testing.T) {
 			var failure *exitError
 			if !errors.As(err, &failure) || failure.Code != tc.code {
 				t.Fatalf("expected refusal %d, got %v", tc.code, err)
+			}
+		})
+	}
+}
+
+func TestGraphPreviewIssueAssigneePresence(t *testing.T) {
+	for _, value := range []string{"", "alice", "  雪 / agent  ", strings.Repeat("雪", types.MaxFieldLen)} {
+		t.Run(fmt.Sprintf("value-%q", value), func(t *testing.T) {
+			cmd := issueTextCommand(t, "--assignee="+value, "--if-revision=observed")
+			request, err := graphPreviewIssueEditRequest(cmd, "beads/work")
+			if err != nil || !graphPreviewIssueEditFlagsChanged(cmd) || request.Assignee == nil || *request.Assignee != value || request.ExpectedRevision != "observed" || request.Unconditional {
+				t.Fatalf("assignment/presence/guard lost: %+v %v", request, err)
+			}
+		})
+	}
+	request, err := graphPreviewIssueEditRequest(issueTextCommand(t, "--title=Assigned", "--priority=P0", "--assignee=alice", "--unconditional"), "beads/work")
+	if err != nil || request.Assignee == nil || *request.Assignee != "alice" || request.Title == nil || *request.Title != "Assigned" || request.Priority == nil || *request.Priority != 0 || !request.Unconditional {
+		t.Fatalf("mixed fields lost: %+v %v", request, err)
+	}
+	request, err = graphPreviewIssueEditRequest(issueTextCommand(t, "--priority=2", "--unconditional"), "beads/work")
+	if err != nil || request.Assignee != nil {
+		t.Fatalf("omission became assignment: %+v %v", request, err)
+	}
+}
+
+func TestGraphPreviewIssueAssigneeRefusals(t *testing.T) {
+	for _, tc := range []struct {
+		name string
+		args []string
+		code int
+	}{
+		{"utf8", []string{"--assignee=\xff", "--unconditional"}, 2},
+		{"length", []string{"--assignee=" + strings.Repeat("雪", types.MaxFieldLen+1), "--unconditional"}, 2},
+		{"missing-guard", []string{"--assignee=alice"}, 2},
+		{"both-guards", []string{"--assignee=alice", "--if-revision=observed", "--unconditional"}, 2},
+		{"false-guard", []string{"--assignee=alice", "--unconditional=false"}, 2},
+		{"claim", []string{"--assignee=alice", "--unconditional", "--claim"}, 5},
+		{"false-claim", []string{"--assignee=alice", "--unconditional", "--claim=false"}, 5},
+		{"force", []string{"--assignee=alice", "--unconditional", "--force"}, 5},
+		{"assignee-precondition", []string{"--assignee=alice", "--unconditional", "--if-assignee="}, 5},
+		{"status-precondition", []string{"--assignee=alice", "--unconditional", "--if-status=open"}, 5},
+		{"status", []string{"--assignee=alice", "--unconditional", "--status=in_progress"}, 5},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			_, err := graphPreviewIssueEditRequest(issueTextCommand(t, tc.args...), "beads/work")
+			var failure *exitError
+			if !errors.As(err, &failure) || failure.Code != tc.code {
+				t.Fatalf("expected exit%d, got %v", tc.code, err)
 			}
 		})
 	}

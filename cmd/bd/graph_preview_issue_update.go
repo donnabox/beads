@@ -12,7 +12,7 @@ import (
 	"github.com/steveyegge/beads/internal/validation"
 )
 
-var graphPreviewIssueEditFlags = []string{"title", "description", "body", "message", "design", "acceptance", "priority"}
+var graphPreviewIssueEditFlags = []string{"title", "description", "body", "message", "design", "acceptance", "priority", "assignee"}
 
 func graphPreviewIssueEditFlagsChanged(cmd *cobra.Command) bool {
 	for _, name := range graphPreviewIssueEditFlags {
@@ -48,6 +48,19 @@ func graphPreviewIssueEditRequest(cmd *cobra.Command, path string) (graphstore.U
 		}
 		request.Priority = &priority
 	}
+	if cmd.Flags().Changed("assignee") {
+		value, _ := cmd.Flags().GetString("assignee")
+		if !utf8.ValidString(value) {
+			return request, graphFailure("invalid_properties", "Issue assignee must be valid UTF-8", 2)
+		}
+		if err := types.CheckFieldLen("assignee", value); err != nil {
+			return request, graphFailure("invalid_properties", err.Error(), 2)
+		}
+		// Preserve the existing update's literal value. A graph revision guard
+		// does not grant permission to take another actor's active assignment.
+		request.Assignee = &value
+	}
+
 	fields := []struct {
 		name string
 		out  **string
