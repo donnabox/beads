@@ -1,7 +1,9 @@
 #!/usr/bin/env python3
 """Negative controls for the required Go-test receipt gate; no engine needed."""
 import importlib.util
+import subprocess
 import sys
+import threading
 from pathlib import Path
 import unittest
 
@@ -63,6 +65,29 @@ class RequiredReceipts(unittest.TestCase):
     def test_cached_without_execution(self):
         with self.assertRaises(RuntimeError):
             module.verify_tests([event("pass", "TestRequired"), event("pass")], {"TestRequired"})
+
+
+class ProcessCleanup(unittest.TestCase):
+    def test_live_group_is_not_clean(self):
+        child = subprocess.Popen([sys.executable, "-c", "import time; time.sleep(30)"], start_new_session=True)
+        try:
+            self.assertFalse(module.group_exited(child.pid, timeout=0.01))
+        finally:
+            child.kill()
+            child.wait(timeout=5)
+        self.assertTrue(module.group_exited(child.pid, timeout=0.01))
+
+    def test_exiting_group_gets_bounded_grace(self):
+        child = subprocess.Popen([sys.executable, "-c", "import time; time.sleep(0.15)"], start_new_session=True)
+        reaper = threading.Thread(target=child.wait)
+        reaper.start()
+        try:
+            self.assertTrue(module.group_exited(child.pid, timeout=5))
+        finally:
+            if child.poll() is None:
+                child.kill()
+            reaper.join(timeout=5)
+        self.assertFalse(reaper.is_alive())
 
 
 if __name__ == "__main__":
