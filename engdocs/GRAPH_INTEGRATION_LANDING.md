@@ -21,12 +21,20 @@ Initial observed target: `44b8c0b9a8dc369ac6a9ea008ca07d36663923d3`. Normal `PR`
 
 | Increment | Source / target | Destination PR | Landed commit | State |
 |---|---|---|---|---|
-| Pure graphops leaf, additive typed errors and architecture boundary | Existing graphops from qualified9c86 / upstream6422; target44b8; no storage/schema/CLI | [versioned-beads#33](https://github.com/versioned-beads/beads/pull/33), `b020b60981900dd6a95b680ea0706625b8a39431` | — | Pushed; focused Go/Bazel, native+Windows lint and independent review pass. Normal baseline and destination CI pending. |
-| Standalone BDP wire codec and pinned schema corpus | Wire portion of upstream6422, source PR2 and codec subset of PR25; target44b8 | Pending creation | — | Isolated `janet-integration-bdpwire-20260928` prepared; focused tests and source review pass. No HTTP runtime activation. |
+| Pure graphops leaf, additive typed errors and architecture boundary | Existing graphops from qualified9c86 / upstream6422; target44b8; no storage/schema/CLI | [versioned-beads#33](https://github.com/versioned-beads/beads/pull/33), `b020b60981900dd6a95b680ea0706625b8a39431` | — | Pushed; focused Go/Bazel, lint and review pass. Normal baseline had one unchanged translator-package failure using ambient Homebrew CLI; complete package passes with exact source CLI. Destination CI pending; no skip added. |
+| Standalone BDP wire codec and pinned schema corpus | Wire portion of upstream6422, source PR2 and codec subset of PR25; target44b8 | [versioned-beads#34](https://github.com/versioned-beads/beads/pull/34), `46d6dae52f1601d22bc77fe92f790b58edd19754` | — | Pushed; 71 focused tests, exact-spec derivation, lint, Bazel and review pass. Full baseline with exact-built CLI and destination CI pending. No HTTP activation. |
+
+## Current integration risks
+
+The installed Memory C0 path is the next runtime milestone. Its seven fresh-only preview tables can follow the target's complete migration chain without replacing numbered migrations. Preserve target0069–0071, ordinary command behavior and fresh/pending/ready admission.
+
+The mixed Issue adapter needs explicit reconciliation: Jim's current update, claim, reopen and dependency-removal writers already record versions where old graph wrappers recorded them again. Each mutation must produce exactly one native version and each no-op zero. A separate regression control is being prepared for retained/current timestamp equality when the recorder advances current_revision. None of this permits fabricated BDP commit stamps or resolves the held native History contract.
+
+Local test provenance matters: the inherited mutation-translator harness selects `bd` from PATH, bypassing the runner's prebuilt CLI. The first normal baseline used Homebrew1.0.5 and failed nine cases; the complete package passed with exactb020 CLI without code/skip changes. Preserve the original failure, and explicitly select the source-built CLI for subsequent local baselines.
 
 ## Earlier upstream source
 
-[Upstream PR6422](https://github.com/gastownhall/beads/pull/6422) contains the original graph leaf and wire implementation before the granular fork PR series. Destination33 extracts only its graphops portion, preserving the final corrected bytes from qualified9c86 and original attribution. The original remains open; this is not a claim that the larger graph source has landed. Subsequent wire extraction will map the separate codec portion. Neither package alone completes the runtime milestones.
+[Upstream PR6422](https://github.com/gastownhall/beads/pull/6422) contains the original graph leaf and wire implementation before the granular fork PR series. Destination33 extracts only its graphops portion, preserving the final corrected bytes from qualified9c86 and original attribution. The original remains open; this is not a claim that the larger graph source has landed. Destination34 maps the separate codec portion, including the current PR2 pin and PR25 codec correction. Neither package alone completes the runtime milestones.
 
 ## Original PR disposition
 
@@ -35,11 +43,11 @@ A pending destination means the source is preserved and has not yet landed throu
 | Original PR | Preserved head | In qualified checkpoint | Disposition / destination | Landed commit |
 |---|---|---|---|---|
 | [#1](https://github.com/donnabox/beads/pull/1) Persist a stable private installation identity for graph authority | `3195f5806cff` | Yes | Preserved; destination mapping pending dependency census | — |
-| [#2](https://github.com/donnabox/beads/pull/2) Pin graph wire contracts to BDP 53bdbd03 | `c792a6ddb5b1` | Yes | Preserved; destination mapping pending dependency census | — |
+| [#2](https://github.com/donnabox/beads/pull/2) Pin graph wire contracts to BDP 53bdbd03 | `c792a6ddb5b1` | Yes | Wire runtime mapped to destination34; historical plan documents remain in fork | — |
 | [#3](https://github.com/donnabox/beads/pull/3) Define graph replication exclusion and recovery contract | `e90e2d7d110e` | Yes | Preserved; destination mapping pending dependency census | — |
-| [#4](https://github.com/donnabox/beads/pull/4) Add private graph session with bounded cancellation and immutable merge operands | `0a7714a36464` | Yes | Preserved; destination mapping pending dependency census | — |
+| [#4](https://github.com/donnabox/beads/pull/4) Add private graph session with bounded cancellation and immutable merge operands | `0a7714a36464` | Yes | Unwired private prototype preserved separately; not a prerequisite for demonstrated graphstore runtime | — |
 | [#5](https://github.com/donnabox/beads/pull/5) Add private graph witness authority manager | `9f20c9d2cefa` | Yes | Preserved; destination mapping pending dependency census | — |
-| [#6](https://github.com/donnabox/beads/pull/6) Add private managed graph process controller | `29526f528efa` | Yes | Preserved; destination mapping pending dependency census | — |
+| [#6](https://github.com/donnabox/beads/pull/6) Add private managed graph process controller | `29526f528efa` | Yes | Unwired private prototype preserved separately; not a prerequisite for demonstrated graphstore runtime | — |
 | [#7](https://github.com/donnabox/beads/pull/7) Package pinned GMS terminal-session correction for offline source delivery | `9a9536df8f8f` | Yes | Shared head with #8; account for changes once | — |
 | [#8](https://github.com/donnabox/beads/pull/8) Promote graph foundations and inherited schema updates to fork main | `9a9536df8f8f` | Yes | Shared head with #7; account for changes once | — |
 | [#10](https://github.com/donnabox/beads/pull/10) fix(ci): run embedded storage binary from package directory | `90eb0afbb708` | No | Runner change reused through #37; verify target equivalence before disposition | — |
@@ -57,7 +65,7 @@ A pending destination means the source is preserved and has not yet landed throu
 | [#22](https://github.com/donnabox/beads/pull/22) feat(graph): add mixed Links and guarded property updates | `8b742c511bff` | Yes | Preserved; destination mapping pending dependency census | — |
 | [#23](https://github.com/donnabox/beads/pull/23) Add guarded graph Link deletion and incident listing | `9129dfd08690` | Yes | Preserved; destination mapping pending dependency census | — |
 | [#24](https://github.com/donnabox/beads/pull/24) Add read-only graph adoption exception report | `006a05605def` | Yes | Preserved; destination mapping pending dependency census | — |
-| [#25](https://github.com/donnabox/beads/pull/25) Project authoritative graph records into BDP wire values | `b0134b40c994` | Yes | Preserved; destination mapping pending dependency census | — |
+| [#25](https://github.com/donnabox/beads/pull/25) Project authoritative graph records into BDP wire values | `b0134b40c994` | Yes | Empty-owned-Link codec correction mapped to destination34; graphstore projection pending | — |
 | [#26](https://github.com/donnabox/beads/pull/26) Read complete graph inventories in one transaction | `8f115e541ee1` | Yes | Preserved; destination mapping pending dependency census | — |
 | [#27](https://github.com/donnabox/beads/pull/27) Select and page immutable BDP graph snapshots | `96aa7354743f` | Yes | Preserved; destination mapping pending dependency census | — |
 | [#28](https://github.com/donnabox/beads/pull/28) Serve BDP Read from installed graph workspaces | `b3a9f2a00655` | Yes | Preserved; destination mapping pending dependency census | — |
