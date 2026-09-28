@@ -25,6 +25,7 @@ go_test(
     name = "graphread_test",
     srcs = [
         "inventory_test.go",
+        "memory_delete_test.go",
         "pagination_test.go",
         "reader_test.go",
         "selection_integration_test.go",

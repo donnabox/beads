@@ -45,6 +45,8 @@ database. Different-database provisioning on Dolt 2.1.8 must be serialized.
 | `remember BODY --id beads/PATH --title TITLE` | Memory creation. An explicit `--body-file PATH` or `--stdin` replaces the positional body source. These sources are mutually exclusive; empty text is present content. |
 | `remember --update BEAD` | Change only supplied `--title` and/or one explicit body source, preserving omitted fields inside the transaction. Requires `--if-revision TOKEN` or `--unconditional`. |
 | `update BEAD --properties JSON` | Replace a Memory's complete properties with exactly the `title` and `body` strings. Requires `--if-revision TOKEN` or `--unconditional`. |
+| `delete BEAD` | Read-only preview of deleting one unreferenced Memory. `--force` applies and requires `--if-revision TOKEN` or `--unconditional`. A preview needs no guard but checks any supplied guard. |
+| `forget BEAD` | Apply the same unreferenced Memory deletion immediately, with `--if-revision TOKEN` or `--unconditional`. |
 | `create TITLE --id beads/PATH` | Create an Issue. Allows `--title`, inline `--description`/`--body`/`--message`, `--type`, `--priority`, `--labels`/`--label`. Existing classification rules apply. Initial status is open. Ordinary creator identity and git-email Owner defaults are included in the Issue data. |
 | `update BEAD` with Issue text flags | Inline `--title`, `--description`/`--body`/`--message`, `--design`, `--acceptance` only. Requires `--if-revision TOKEN` or `--unconditional`. Description aliases must agree. Files/stdin and other Issue fields are unavailable. |
 | `show RESOURCE` | Current Memory, Issue or Link. No exact-version or chronological History option. |
@@ -100,10 +102,48 @@ Unlink removes current Link state while reserving its identity and retaining
 private prior snapshots. It does not erase a Memory or promise irreversible
 erasure, restoration or identifier reuse.
 
+## Unreferenced Memory deletion
+
+`delete` previews one current Memory without changing it, including under
+`--readonly`. Apply with `delete --force` or `forget`; both require the existing
+revision guard or an explicit unconditional choice. The `result.memory` in
+both preview and apply is the checked final live Memory, including its existing
+revision and attribution. `result.preview` distinguishes the read-only preview;
+`result.deleted` is true only after successful apply. The outer `preview: true`
+continues to identify the experimental graph format, including applied writes.
+
+```sh
+bd remember '' --id beads/scratch --title Scratch --json
+bd delete beads/scratch --readonly --json
+# Supply the revision observed in result.memory.revision from the preview.
+bd delete beads/scratch --force --if-revision OBSERVED_REVISION --json
+# Or apply to another unreferenced Memory with explicit unconditional intent:
+bd remember 'Temporary note' --id beads/another-scratch --title Scratch
+bd forget beads/another-scratch --unconditional --json
+```
+
+An empty body is present content and can be deleted. Successful deletion removes
+current Memory state while preserving the canonical ID reservation and immutable
+prior snapshots. A new `show` reports `gone`; recreating the same ID reports
+`identity_reserved`. Repeated deletion refuses. Deletion does not create a new
+live revision or a deletion version, and the result does not claim a deletion
+timestamp or actor event. Internal snapshot retention does not expose public
+History or restoration.
+
+Every live incident Link causes both preview and apply to refuse with
+`deletion_policy_unresolved`, including incoming, outgoing and self-Links.
+Explicitly unlinking each Link with its normal guards allows a later deletion;
+these are separate transactions, and a concurrently added Link can still cause
+deletion to refuse. `--force` does not cascade. Batch selectors, `--from-file`,
+`--cascade`, `--dry-run`, erasure and Issue deletion are unavailable in this
+graph slice. Ordinary Issue deletion and key/value `forget` remain unchanged.
+`status --graph` advertises `memoryUnreferencedDelete`; general `memoryDelete`
+remains false because linked Memory deletion policy is unresolved.
+
 ## Limits and remaining work
 
-Memory deletion, `list`, `blocked`, claims, assignment edits, estimate/reference/
-date edits, notes changes, label mutation, ordered property patches, generic
+Linked Memory deletion, Issue deletion, `list`, `blocked`, claims, assignment
+edits, estimate/reference/date edits, notes changes, label mutation, ordered property patches, generic
 traversal and full Memory remain unavailable. Issue creation can set initial
 labels; that does not adopt a label-editing contract. These restrictions apply
 to graph workspaces; ordinary Issue workspaces keep their existing behavior.
@@ -237,3 +277,9 @@ checks use real fetch plus the pinned public parsers where the public client
 has no corresponding API. Combined-source qualification must include these
 roots and captures without required skips; internal projection tests alone
 are not installed HTTP proof.
+
+The unreferenced deletion workflow adds normal installed CLI initialization on
+both engines, empty-body preview/apply, stale and missing guard refusals,
+read-only admission, fresh-process absence, ID nonreuse, incident-Link refusal
+and explicit unlink before deletion. These tests do not implement or qualify
+the unresolved linked-deletion policy.

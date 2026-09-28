@@ -314,7 +314,33 @@ def main():
         client.wait(150)
         c0.require(serve.child.poll() is None, "server exited during client demonstration")
         summary["client"] = json.loads((capture.output / "client-results.json").read_text())
-        summary["passed"] = summary["client"]["passed"] is True
+        c0.require(summary["client"]["passed"] is True, "public client checks failed before deletion")
+        # Alpha remains unreferenced and unchanged throughout the public-client
+        # checks. Use its original observed revision, not a fresh pre-read.
+        alpha = records["beads/alpha"]
+        deleted = c0.envelope(capture.success("memory-delete", ["delete", "beads/alpha", "--force",
+            "--if-revision", alpha["revision"], "--json"]))
+        c0.require(deleted == {"memory": alpha, "preview": False, "deleted": True},
+                   "deletion did not disclose the exact final live predecessor")
+        name = "python-after-delete"
+        consumer = Process(capture, name, [sys.executable, str(Path(__file__)), "--observe-python",
+                           str(example), str(capture.output / (name + "-network.json")), "--scope", scope, "--limit", "1"])
+        processes.append(consumer)
+        consumer.wait(60)
+        remaining = {scope + path for path in records if path != "beads/alpha"}
+        after_delete = json.loads((capture.output / name / "stdout.log").read_text())
+        observations = json.loads((capture.output / (name + "-network.json")).read_text())
+        verify_python_pages(observations, scope, remaining)
+        observed_records = [item for observation in observations[1:] for item in observation["document"]["items"]]
+        c0.require(isinstance(after_delete, list) and len(after_delete) == 3
+                   and {item["id"] for item in after_delete} == remaining and after_delete == observed_records,
+                   "Python post-delete inventory differs from actual complete BDP pages")
+        c0.require(serve.child.poll() is None, "server exited during post-delete Python enumeration")
+        summary["memory_delete"] = {"passed": True, "id": alpha["id"], "final_live_revision": alpha["revision"]}
+        summary["python_after_delete"] = {"passed": True, "beads": 3, "limit": 1, "authenticated": True,
+                                           "mechanism": "unchanged standard-library example over BDP HTTP"}
+        summary["python_after_delete_pages"] = len(observations) - 1
+        summary["passed"] = True
     except BaseException as exc:
         failure = f"{type(exc).__name__}: {exc}"
         summary["passed"] = False
@@ -340,7 +366,9 @@ def main():
         summary.update(failure=failure, active_children=len(capture.active), cli_commands=len(capture.records),
                        workspace=str(capture.work), server_ownership="caller-owned; not stopped")
         c0.write_json(capture.output / "summary.json", summary)
-    c0.require(summary["passed"] and summary.get("python", {}).get("passed") is True and summary["active_children"] == 0, failure or "smoke failed")
+    c0.require(summary["passed"] and summary.get("python", {}).get("passed") is True
+               and summary.get("python_after_delete", {}).get("passed") is True
+               and summary["active_children"] == 0, failure or "smoke failed")
     print(json.dumps(summary, indent=2))
 
 
