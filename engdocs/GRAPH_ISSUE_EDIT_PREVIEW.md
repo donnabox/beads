@@ -49,7 +49,8 @@ notes replacement, status, classification, labels, parent changes and metadata
 flags refuse explicitly. Mixing these Issue flags with generic `--properties`
 or source guards refuses. Legacy IDs and fuzzy or alias selectors are unavailable.
 [Assignee editing](GRAPH_ISSUE_ASSIGNEE_PREVIEW.md) and
-[append-only notes](GRAPH_ISSUE_NOTES_PREVIEW.md) extend this same guarded writer.
+[append-only notes](GRAPH_ISSUE_NOTES_PREVIEW.md) and
+[due dates](GRAPH_ISSUE_DUE_PREVIEW.md) extend this same guarded writer.
 Notes replacement/clear remain held for the existing contributor safeguards in
 [PR #5946](https://github.com/gastownhall/beads/pull/5946) and
 [PR #6583](https://github.com/gastownhall/beads/pull/6583).

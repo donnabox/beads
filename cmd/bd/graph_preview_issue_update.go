@@ -4,15 +4,17 @@ import (
 	"context"
 	"fmt"
 	"strings"
+	"time"
 	"unicode/utf8"
 
 	"github.com/spf13/cobra"
 	"github.com/steveyegge/beads/internal/storage/graphstore"
 	"github.com/steveyegge/beads/internal/types"
 	"github.com/steveyegge/beads/internal/validation"
+	publicops "github.com/steveyegge/beads/issueops"
 )
 
-var graphPreviewIssueEditFlags = []string{"title", "description", "body", "message", "design", "acceptance", "priority", "assignee", "append-notes", "estimate", "external-ref", "spec-id"}
+var graphPreviewIssueEditFlags = []string{"title", "description", "body", "message", "design", "acceptance", "priority", "assignee", "append-notes", "estimate", "external-ref", "spec-id", "due"}
 
 func graphPreviewIssueEditFlagsChanged(cmd *cobra.Command) bool {
 	for _, name := range graphPreviewIssueEditFlags {
@@ -40,6 +42,13 @@ func graphPreviewIssueEditRequest(cmd *cobra.Command, path string) (graphstore.U
 		return request, err
 	}
 	request.ExpectedRevision, request.Unconditional = revision, unconditional
+	if cmd.Flags().Changed("due") {
+		value, err := graphPreviewIssueDueInput(cmd)
+		if err != nil {
+			return request, err
+		}
+		request.DueAt = publicops.Field[*time.Time]{Set: true, Value: value}
+	}
 	if cmd.Flags().Changed("priority") {
 		value, _ := cmd.Flags().GetString("priority")
 		priority, err := validation.ValidatePriority(value)
