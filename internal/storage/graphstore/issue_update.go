@@ -4,7 +4,6 @@ import (
 	"context"
 	"database/sql"
 	"fmt"
-	"math"
 	"unicode/utf8"
 
 	"github.com/steveyegge/beads/internal/storage"
@@ -12,9 +11,6 @@ import (
 	"github.com/steveyegge/beads/internal/types"
 	publicops "github.com/steveyegge/beads/issueops"
 )
-
-// maxIssueSpecIDRunes matches spec_id VARCHAR(1024) in migration 0001_create_issues.
-const maxIssueSpecIDRunes = 1024
 
 // UpdateIssueRequest admits existing Issue scalar edits and notes append.
 // Nil fields preserve their properties. Empty scalar strings clear fields where
@@ -87,8 +83,8 @@ func (s *Store) UpdateIssue(ctx context.Context, request UpdateIssueRequest) (Is
 		value := *request.EstimatedMinutes
 		// The existing Issue column is a signed SQL INT on both backends. Reject
 		// unrepresentable input before SQL so strict and coercing engines agree.
-		if value > math.MaxInt32 {
-			return IssueMutationResult{}, fmt.Errorf("%w: Issue estimated_minutes exceeds the storage maximum of %d", storage.ErrValidation, math.MaxInt32)
+		if err := validateIssueEstimateStorage(&value); err != nil {
+			return IssueMutationResult{}, err
 		}
 		patch.EstimatedMinutes = publicops.Field[*int]{Set: true, Value: &value}
 		count++
@@ -106,15 +102,8 @@ func (s *Store) UpdateIssue(ctx context.Context, request UpdateIssueRequest) (Is
 			continue
 		}
 		value := *field.value
-		if !utf8.ValidString(value) {
-			return IssueMutationResult{}, fmt.Errorf("%w: Issue %s must be UTF-8", storage.ErrValidation, field.name)
-		}
-		if field.name == "external_ref" {
-			if err := types.CheckFieldLen(field.name, value); err != nil {
-				return IssueMutationResult{}, fmt.Errorf("%w: Issue external_ref: %w", storage.ErrValidation, err)
-			}
-		} else if utf8.RuneCountInString(value) > maxIssueSpecIDRunes {
-			return IssueMutationResult{}, fmt.Errorf("%w: Issue spec_id exceeds the existing %d-character column", storage.ErrValidation, maxIssueSpecIDRunes)
+		if err := validateIssueReferenceStorage(field.name, value); err != nil {
+			return IssueMutationResult{}, err
 		}
 		if field.name == "external_ref" {
 			patch.ExternalRef = publicops.Field[*string]{Set: true}

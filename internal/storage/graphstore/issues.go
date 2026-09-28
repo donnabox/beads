@@ -27,11 +27,11 @@ func validateIssueCreate(request publicops.CreateRequest) error {
 	// CloneCreateRequest materializes empty relation slices. Their lengths
 	// were checked above; preserve that empty representation without admitting
 	// any dependency or comment values into this bounded adapter.
-	allowed := &types.Issue{ID: i.ID, Title: i.Title, Description: i.Description, IssueType: i.IssueType, Status: i.Status, Priority: i.Priority, Labels: i.Labels, Dependencies: i.Dependencies, Comments: i.Comments}
+	allowed := &types.Issue{ID: i.ID, Title: i.Title, Description: i.Description, Design: i.Design, AcceptanceCriteria: i.AcceptanceCriteria, Assignee: i.Assignee, EstimatedMinutes: i.EstimatedMinutes, ExternalRef: i.ExternalRef, SpecID: i.SpecID, IssueType: i.IssueType, Status: i.Status, Priority: i.Priority, Labels: i.Labels, Dependencies: i.Dependencies, Comments: i.Comments}
 	if !reflect.DeepEqual(i, allowed) {
-		return fmt.Errorf("%w: Issue preview accepts only ID, title, description, classification, status, priority and labels; no relationships, metadata, ephemeral or no-history records", storage.ErrValidation)
+		return fmt.Errorf("%w: Issue preview accepts only ID, title, description, design, acceptance, assignee, estimate, external/spec references, classification, status, priority and labels; no relationships, metadata, ephemeral or no-history records", storage.ErrValidation)
 	}
-	return nil
+	return validateIssueCreateFields(i)
 }
 
 // CreateIssue applies the existing Issue domain create and Jim Wordelman's
@@ -73,6 +73,12 @@ func (s *Store) CreateIssue(ctx context.Context, path string, request publicops.
 		created, _, err := issueops.ExecuteCreate(ctx, tx, request)
 		if err != nil {
 			return err
+		}
+		// ExecuteCreate already owns the initial retained snapshot. Verify its
+		// hydrated values before publishing the graph mapping; a coercion rolls
+		// back that snapshot and all ordinary create effects in this transaction.
+		if !sameIssueCreateFields(request.Issue, created.Issue) {
+			return fmt.Errorf("%w: Issue initial fields cannot be represented exactly by storage", storage.ErrValidation)
 		}
 		if issueops.IsWisp(created.Issue) {
 			return fmt.Errorf("%w: Issue preview requires a durable history-bearing Issue", storage.ErrValidation)

@@ -739,6 +739,83 @@ try {
     client.forgetContinuations(deletionOwner);
   }
 
+
+  // Author all admitted initial fields in one CLI transaction, after earlier
+  // inventory/cursor scenarios so their frozen fixture populations stay exact.
+  const authoredID = id('beads/authored');
+  const authoredFields = { design: '  Design — 雪\r\nSecond line  ',
+    acceptance_criteria: 'Literal acceptance — 🧠', assignee: '  initial-owner — 雪  ',
+    estimated_minutes: 0, external_ref: '  tracker/literal — 雪  ', spec_id: '  spec/literal — 🧠  ' };
+  const authoredArgs = ['create', 'Complete initial Issue', '--id', 'beads/authored',
+    '--design', authoredFields.design, '--acceptance', authoredFields.acceptance_criteria,
+    '-a', authoredFields.assignee, '-e', '0', '--external-ref', authoredFields.external_ref,
+    '--spec-id', authoredFields.spec_id, '--actor', 'initial-author', '--json'];
+  const authoredBinary = digest(await readFile(process.env.BDP_BD));
+  let authoredExecution;
+  let authoredExitCode = null;
+  let authoredRawErrorCode = null;
+  try {
+    authoredExecution = await promisify(execFile)(process.env.BDP_BD, authoredArgs,
+      { timeout: 60_000, maxBuffer: 2 * 1024 * 1024, encoding: 'utf8' });
+    authoredExitCode = 0;
+  } catch (error) {
+    authoredExecution = error;
+    authoredExitCode = typeof error.code === 'number' ? error.code : null;
+    authoredRawErrorCode = typeof error.code === 'string' ? error.code : null;
+    throw error;
+  } finally {
+    await writeFile(join(output, 'client-cli-issue-create-fields.stdout.log'), authoredExecution?.stdout ?? '');
+    await writeFile(join(output, 'client-cli-issue-create-fields.stderr.log'), authoredExecution?.stderr ?? '');
+    await writeFile(join(output, 'client-cli-issue-create-fields.json'), JSON.stringify({
+      argv: [process.env.BDP_BD, ...authoredArgs], cwd: process.cwd(), binarySha256: authoredBinary,
+      exitCode: authoredExitCode, signal: authoredExecution?.signal ?? null, rawErrorCode: authoredRawErrorCode,
+      stdoutSha256: digest(authoredExecution?.stdout ?? ''), stderrSha256: digest(authoredExecution?.stderr ?? ''),
+    }, null, 2));
+  }
+  assert.equal(digest(await readFile(process.env.BDP_BD)), authoredBinary);
+  assert.equal(authoredExecution.stderr, '');
+  const authored = JSON.parse(authoredExecution.stdout);
+  assert.equal(authored.schemaVersion, 1);
+  assert.equal(authored.preview, true);
+  assert.equal(authored.result.id, authoredID);
+  assert.equal(authored.result.attribution.actor, 'initial-author');
+  assert.deepEqual(authored.result.owned, []);
+  for (const [field, value] of Object.entries(authoredFields)) assert.equal(authored.result.properties[field], value);
+  assert.equal(authored.result.properties.status, 'open');
+  for (const field of ['lease_holder', 'lease_expires_at', 'owner', 'created_by']) {
+    assert.equal(Object.hasOwn(authored.result.properties, field), false);
+  }
+  const authoredResourceIndex = network.length;
+  const authoredResource = await perform({ kind: 'resource', resource: 'bead', id: authoredID });
+  assert.equal(network.length, authoredResourceIndex + 1);
+  assert.equal(authoredResource.id, authoredID);
+  assert.equal(authoredResource.type, authored.result.type);
+  assert.equal(authoredResource.revision, authored.result.revision);
+  assert.deepEqual(authoredResource.properties, authored.result.properties);
+  assert.deepEqual(Object.values(authoredResource.ownedLinks).flat(), []);
+  const authoredPropertiesIndex = network.length;
+  const authoredProperties = await perform({ kind: 'properties', resource: 'bead', id: authoredID });
+  assert.equal(network.length, authoredPropertiesIndex + 1);
+  assert.deepEqual(authoredProperties, authoredResource.properties);
+  const authoredInventoryIndex = network.length;
+  const authoredInventory = await perform({ kind: 'collection', collection: 'beads', limit: 100 });
+  assert.equal(network.length, authoredInventoryIndex + 1);
+  assert.equal(authoredInventory.next, null);
+  assert.equal(authoredInventory.items.length, 5);
+  assert.deepEqual(authoredInventory.items.find(bead => bead.id === authoredID), authoredResource);
+  const authoredHTTPIndex = network.length;
+  const authoredHTTP = await http(authoredID);
+  assert.equal(network.length, authoredHTTPIndex + 1);
+  assert.equal(authoredHTTP.response.status, 200);
+  assert.ok(authoredHTTP.response.headers.get('etag'));
+  assert.deepEqual(parseBeadRecord(JSON.parse(authoredHTTP.text)), authoredResource);
+  artifacts.issueCreateFields = { creation: authored, resource: authoredResource,
+    properties: authoredProperties, inventory: authoredInventory, expectedFields: authoredFields,
+    http: { resourceRequestIndex: authoredResourceIndex, propertiesRequestIndex: authoredPropertiesIndex,
+      inventoryRequestIndex: authoredInventoryIndex, requestIndex: authoredHTTPIndex, body: authoredHTTP.text },
+    mechanism: 'Single CLI create; public BDP Read observes initial fields. No HTTP write or public History claim.' };
+  pass('public BDP reads all six initial Issue fields from one CLI create, complete properties and inventory, without a claim or follow-up edit');
+
 } catch (error) {
   failure = { name: error.name, message: error.message, stack: error.stack };
   process.exitCode = 1;

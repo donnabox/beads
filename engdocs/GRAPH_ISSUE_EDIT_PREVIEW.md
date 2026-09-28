@@ -127,7 +127,7 @@ recorder ownership or import an upstream stack speculatively.
 ## Estimate minutes
 
 The existing `--estimate` (`-e`) flag works with `update` on canonical graph
-Issues. Graph `create` still refuses it, so new Issues start without an estimate:
+Issues. Graph `create` also accepts it for the initial Issue version:
 
 ```bash
 bd update beads/task -e 0 --if-revision "$revision" --json
@@ -190,7 +190,7 @@ retained revision. Same-value and repeated-clear requests are no-ops after guard
 validation; a stale guard still refuses. Closed state, assignment, claim lease,
 canonical identity and owned Links are preserved. Reference editing does not
 renew claims, synchronize trackers or enable mixed claim edits. Graph create
-still refuses these flags. `status --graph` reports provisional
+also accepts these fields in the initial version. `status --graph` reports provisional
 `issueReferenceUpdate`; full `issueWorkflows` remains false.
 
 The existing current-read budget is unchanged. References can be shortened or
@@ -215,3 +215,50 @@ The independent public BDP client observes CLI-authored assignment and clearing,
 preserving complete properties and ownership with changed ETags. HTTP writes
 and public Memory History remain unavailable. Execution receipts and qualification
 status belong to the fork delivery plan; this recipe is not a qualification claim.
+
+
+## Complete initial fields
+
+A single graph `create` can set the existing inline design, acceptance,
+assignee, estimate and external/spec reference fields in its first retained
+version. For example, in a normally initialized disposable graph workspace:
+
+```sh
+bd create 'Deliver the plan' --id beads/task \
+  --design 'Reuse the current storage writer' \
+  --acceptance 'Fresh-process reads agree' \
+  --assignee donna --estimate 45 \
+  --external-ref tracker/task --spec-id specs/plan --json
+bd show beads/task --json
+```
+
+This reuses one ordinary Issue create transaction and its initial recorder.
+There is no follow-up update. Assignment leaves the Issue open and grants no
+claim lease. Design and acceptance text preserve whitespace, Unicode and the
+literal `-`; file sources remain unavailable. Omitting the estimate leaves it
+absent; an explicit zero is present. Empty CLI external references become SQL
+NULL, while an empty spec ID remains an empty string. The internal Go
+CreateRequest preserves its existing nil versus nonnil-empty external-reference
+pointer distinction. References remain literal properties, without tracker I/O.
+
+All six fields obey their existing representation limits. The adapter checks
+exact hydrated values before publishing the graph mapping, rolling back all
+create effects if storage changes an accepted value. Later guarded edits retain
+the complete first version. Creation labels still use their existing events;
+one retained version does not mean one total event for a labeled Issue.
+
+`status --graph` reports provisional `issueCreateFields: true`;
+`issueWorkflows` remains false. Status defaults, initial notes, due/defer,
+composite relationships, metadata, aliases and file inputs are outside this
+slice. Native Owner and CreatedBy properties remain unset as in the earlier graph
+creator; the create actor still supplies retained attribution. This is partial
+ordinary-create compatibility. Global preview read limits are unchanged; very
+large text may exceed them even when its existing LONGTEXT column accepts it.
+
+Reproduce both installed backends with
+`scripts/graph-issue-create-fields-smoke.py`, using the same `--bd`, `--backend`,
+`--server-port`, `--server-root` and fresh `--output-dir` options as the reference
+recipe above. Storage tests separately verify a single initial retained snapshot,
+SQL presence, native bounds, failure rollback and linked-state preservation.
+The independent public BDP client observes all six fields after one CLI create;
+HTTP writes and public Memory History remain unavailable.
