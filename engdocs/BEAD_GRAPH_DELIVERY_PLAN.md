@@ -1,5 +1,6 @@
 # Beads graph delivery plan — revised proposal v3
 
+Thursday, October 1 release acceptance is tracked in [the team-call release checkpoint](GRAPH_THURSDAY_RELEASE.md). The complete destination below remains in force.
 **September 28 integration execution:** [Landing ledger and preserved source heads](GRAPH_INTEGRATION_LANDING.md). Shared target is `versioned-beads/beads:integration`; our mirror is `donnabox/beads:jim-integration`. Older unknown-target statements below are historical.
 
 **2026-09-23. Status: implementation plan for review; bounded implementation start authorized.** This replaces v2 as the active plan proposal. It incorporates the revised CLI proposal and Donna’s ten inline comments. It does not convert open CLI questions into approvals, claim a new council review, or certify previously completed code.
