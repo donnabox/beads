@@ -59,6 +59,9 @@ database. Different-database provisioning on Dolt 2.1.8 must be serialized.
 | `close BEAD` | Close one Issue through the existing Issue policy, optionally with ordinary reason aliases. No force or batch operations. |
 | `reopen BEAD` | Reopen one Issue, optionally with `--reason`. |
 | `ready` | Unfiltered current ready Issues through ordinary readiness rules. No list filters, output limit or configured positive `BEADS_MAX_ROWS`. |
+| `list --flat` or `list --format records-json` | Current complete Issue records with status/type/title/priority/label/pinned filters and explicit limited-page `hasMore`. Tree and legacy JSON remain unavailable. |
+| `blocked` | Complete native dependency-blocked Issue view with canonical blocker IDs. No filters or positive `BEADS_MAX_ROWS`. |
+| `graph BEAD --view generic` | Current local summary traversal with `--direction in\|out\|both`, `--depth`, `--max-nodes` and `--max-links`. |
 | `status --graph` | Report only the capabilities and bounds admitted by this checkpoint. |
 | `serve --readonly --addr HOST:PORT` | BDP Read over HTTP for an ordinary shared-server graph workspace. Existing token-file authentication, Host controls and non-loopback opt-in apply. Embedded serving is refused. |
 
@@ -140,11 +143,75 @@ graph slice. Ordinary Issue deletion and key/value `forget` remain unchanged.
 `status --graph` advertises `memoryUnreferencedDelete`; general `memoryDelete`
 remains false because linked Memory deletion policy is unresolved.
 
+## Read-only Issue queries and traversal
+
+```sh
+bd list --format records-json --limit 1
+bd list --flat --all --sort title
+bd blocked --readonly --json
+bd graph beads/plan --view generic --direction out --depth 2 --json
+```
+
+Issue listing reuses the existing native query, configuration and limit policy.
+It accepts status (or state), type, title/title-contains, priority and priority
+range, label/label-any/exclude-label and pinned/no-pinned filters. Sorting accepts
+priority, created, updated, title, status or type; reverse is supported. Explicit
+limit wins over `--all` and configured limits. The result contains complete
+canonical Issue records in `items` and a truthful `hasMore` boolean. It is a new
+read each time, not a snapshot cursor or BDP continuation. Returned records and
+the extra probe record are validated before trimming the page.
+
+Use explicit `--flat` for quoted human summaries or `--format records-json` for
+the experimental graph envelope. Bare tree, `--json`, `--format json`, watch,
+readiness, parent/ID/routing/offset selectors, repeated status/state/type filters
+and supplied-empty labels refuse. Assignee/unassigned and due/overdue filters
+also remain unavailable: positive graph fixtures depend on later writer slices.
+This does not change ordinary list parsing or implement contributor-owned filter
+unions. Records-json selects structured errors and overrides ambient human
+format selection; explicit `--json` still refuses. BDP Read remains the documented
+script interface below; these CLI result shapes are experimental.
+
+`blocked` follows the existing native dependency-blocked query. It is not the
+complement of ready, nor a query for every manually blocked or deferred Issue.
+The result is an array of objects with complete `issue` records and canonical
+`blockedBy` IDs, sorted by canonical ID. Empty is `[]`. It accepts no positional
+selectors or filter flags, even explicit empty values. A positive
+`BEADS_MAX_ROWS` refuses; zero or unset permits the complete bounded view.
+No query wakes deferred work, repairs blocked state, creates versions or opens
+the ordinary store. Readonly and migration freeze permit these reads.
+
+Generic traversal reads one checked current snapshot. Nodes expose only ID,
+Type, title, version and attribution; Links expose ID, Type, source, target,
+version and attribution. Memory bodies, Issue long text and Link properties
+are omitted. Directions are in/out/both; depth defaults to 1 and accepts 0..1000.
+The root counts as one node. Default node/Link caps are 100/200, each accepting
+1..1000. Distinct Link identities survive repeated-node visits, including diamonds
+and self-Links. `frontier` identifies reached nodes with eligible unexpanded
+Links; `complete` says whether that frontier is empty. Exceeding a node/Link cap
+refuses rather than silently truncating. Foreign roots, external endpoints,
+custom Types, legacy graph options and positive `BEADS_MAX_ROWS` refuse.
+
+All three views retain the shared whole-workspace 1000-live-Resource and 16 MiB
+acquisition bounds, including unrelated content and retained final heads of
+deleted Memories. List config acquisition/resolved policy is additionally bounded
+to 64 KiB and 256 rows/entries; database failures refuse instead of silently
+choosing YAML fallback. List and blocked output have a 16 MiB bound; traversal
+summary output has a 1 MiB bound. These are operational bounds, not heap guarantees.
+Output is prepared before emission; physical output failures can still occur
+after some bytes have been written.
+
+A valid unreferenced Memory deletion does not invalidate an Issue query. Fresh
+views exclude it, while its identity and final live retained state remain reserved.
+Traversal cannot emit a deleted endpoint; a removed root is absent from its live
+snapshot. Corrupt deleted allocations still refuse, including an invalid retained
+head or an inconsistent current payload/Link. No new tombstone representation,
+public History surface or external traversal contract is introduced.
+
 ## Limits and remaining work
 
-Linked Memory deletion, Issue deletion, `list`, `blocked`, claims, assignment
-edits, estimate/reference/date edits, notes changes, label mutation, ordered property patches, generic
-traversal and full Memory remain unavailable. Issue creation can set initial
+Linked Memory deletion, Issue deletion, claims, assignment edits and filters,
+estimate/reference/date edits and due filters, notes changes, label mutation,
+ordered property patches and full Memory remain unavailable. Issue creation can set initial
 labels; that does not adopt a label-editing contract. These restrictions apply
 to graph workspaces; ordinary Issue workspaces keep their existing behavior.
 

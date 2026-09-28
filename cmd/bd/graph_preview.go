@@ -113,9 +113,10 @@ func admitGraphPreview(cmd *cobra.Command) (handled bool, admissionErr error) {
 			cmd.SilenceUsage = true
 		}
 	}()
-	// Reset graph admission state before every command. C0 uses ordinary --json
-	// output selection; later collection formats are not activated.
-	graphPreviewStructuredErrors = false
+	// The explicit graph list format also selects structured admission errors.
+	// Reset this state for every command; ordinary output policy is unchanged.
+	format, _ := cmd.Flags().GetString("format")
+	graphPreviewStructuredErrors = cmd == listCmd && (format == "records-json" || strings.EqualFold(format, "json"))
 	graphPreviewActive, graphPreviewConfig, graphPreviewDir = false, nil, ""
 	flag, _ := cmd.Flags().GetString("graph-mode")
 	env := os.Getenv("BD_GRAPH_MODE")
@@ -148,6 +149,9 @@ func admitGraphPreview(cmd *cobra.Command) (handled bool, admissionErr error) {
 			// command's corrupt-metadata refusal and its diagnostic context.
 			// A damaged graph workspace must still fail before legacy opening.
 			if !markerPresent && requested != "link" {
+				if cmd == graphCmd && graphGenericFlagsChanged(cmd) {
+					return true, graphFailure("graph_not_initialized", err.Error(), 5)
+				}
 				return false, nil
 			}
 			return true, graphFailure("graph_not_initialized", err.Error(), 5)
@@ -174,6 +178,12 @@ func admitGraphPreview(cmd *cobra.Command) (handled bool, admissionErr error) {
 		return true, graphFailure("not_authority", "graph_mode assertion does not match persisted workspace format", 5)
 	}
 	if mode != "link" {
+		if cmd == graphCmd && graphGenericFlagsChanged(cmd) {
+			return true, graphFailure("capability_unavailable", "generic traversal options require an experimental graph workspace", 5)
+		}
+		if cmd == listCmd && format == "records-json" {
+			return true, graphFailure("capability_unavailable", "records-json listing requires an experimental graph workspace", 5)
+		}
 		if (cmd == deleteCmd || cmd == forgetCmd) && (cmd.Flags().Changed("if-revision") || cmd.Flags().Changed("unconditional")) {
 			return true, graphFailure("capability_unavailable", "Memory deletion guards require a workspace initialized with graph_mode link", 5)
 		}
@@ -201,8 +211,8 @@ func admitGraphPreview(cmd *cobra.Command) (handled bool, admissionErr error) {
 	if err != nil || real != cfg.GraphWorkspace {
 		return true, graphFailure("not_authority", "graph_mode workspace binding differs; copied/moved workspaces cannot claim this authority", 5)
 	}
-	if cmd != rememberCmd && cmd != createCmd && cmd != showCmd && cmd != statusCmd && cmd != depAddCmd && cmd != linkCmd && cmd != closeCmd && cmd != reopenCmd && cmd != readyCmd && cmd != updateCmd && cmd != graphUnlinkCmd && cmd != graphLinksCmd && cmd != serveCmd && cmd != deleteCmd && cmd != forgetCmd {
-		return true, graphFailure("capability_unavailable", "this graph preview supports remember, create, show, update, delete, forget, dep add, link, links, unlink, close, reopen, ready, status --graph and shared-server serve; this command has not opened the legacy store", 5)
+	if cmd != listCmd && cmd != blockedCmd && cmd != graphCmd && cmd != rememberCmd && cmd != createCmd && cmd != showCmd && cmd != statusCmd && cmd != depAddCmd && cmd != linkCmd && cmd != closeCmd && cmd != reopenCmd && cmd != readyCmd && cmd != updateCmd && cmd != graphUnlinkCmd && cmd != graphLinksCmd && cmd != serveCmd && cmd != deleteCmd && cmd != forgetCmd {
+		return true, graphFailure("capability_unavailable", "this graph preview supports remember, create, show, update, delete, forget, dep add, link, links, unlink, close, reopen, ready, list --flat/--format records-json, blocked, graph --view generic, status --graph and shared-server serve; this command has not opened the legacy store", 5)
 	}
 	if cmd == statusCmd {
 		enabled, _ := cmd.Flags().GetBool("graph")
@@ -466,7 +476,11 @@ func runGraphPreviewStatus(cmd *cobra.Command) error {
 	}
 	return withGraphStore(func(_ context.Context, _ *graphstore.Store) (any, string, error) {
 		return map[string]any{"scope": graphPreviewConfig.GraphScopeURL, "backend": graphPreviewConfig.DoltMode, "preview": true,
-				"limits": map[string]int{"memoryBodyInputBytes": graphPreviewMemoryBodyLimit, "memoryOwnedLinks": graphstore.PreviewOwnedLinkLimit,
+				"limits": map[string]int{"issueListOutputBytes": graphIssueListOutputLimit,
+					"issueBlockedOutputBytes": graphIssueBlockedOutputLimit, "issueBlockedInventoryResources": graphstore.PreviewSnapshotLimit,
+					"genericTraversalOutputBytes": graphGenericOutputLimit, "genericTraversalDepth": graphGenericBound,
+					"genericTraversalNodes": graphGenericBound, "genericTraversalLinks": graphGenericBound, "genericTraversalInventoryResources": graphstore.PreviewSnapshotLimit,
+					"memoryBodyInputBytes": graphPreviewMemoryBodyLimit, "memoryOwnedLinks": graphstore.PreviewOwnedLinkLimit,
 					"issueOwnedLinks": graphstore.PreviewOwnedLinkLimit, "currentReadBytes": graphstore.PreviewCurrentReadByteLimit,
 					"linkPropertiesInputBytes": graphPreviewPropertiesLimit, "memoryPropertiesInputBytes": graphPreviewPropertiesLimit,
 					"incidentLinks": graphstore.PreviewIncidentLinkLimit, "versionTokenBytes": graphstore.PreviewVersionTokenLimit},
@@ -479,10 +493,11 @@ func runGraphPreviewStatus(cmd *cobra.Command) error {
 					"linkUnlink": true, "blockingDependencyUnlink": true, "incidentLinks": true, "ownedLinks": true,
 					"issueClose": true, "issueReopen": true, "issueReady": true, "genericRead": true,
 					"memory": false, "memoryDelete": false, "memoryPropertiesPatch": false, "linkPropertiesPatch": false,
-					"issueList": false, "issueBlocked": false, "issueClaim": false, "issueWorkflows": false,
+					"issueList": true, "issueBlocked": true, "genericTraversal": true,
+					"issueListTree": false, "issueListLegacyJSON": false, "issueAssigneeFilter": false, "issueDueFilter": false, "issueClaim": false, "issueWorkflows": false,
 					"blockingDependencyPairUnlink": false, "bdpRead": graphPreviewConfig.DoltMode == configfile.DoltModeServer, "historyExact": false, "exactVersionRead": false,
 					"requestStatus": false, "backupContinuity": false}},
-			"Mixed graph preview: Memory create/read, guarded complete title/body replacement and selected remember updates, actual predecessor disclosure for unconditional Memory writes, unreferenced Memory deletion with read-only preview and retained identity/snapshots, basic Issue create/read with ordinary creator/owner defaults, guarded inline Issue title/description/design/acceptance edits, informational Links with property replacement and guarded unlink, blocking Dependencies with canonical-ID unlink, incident Links, and Issue close/reopen/ready. Full Memory, linked Memory deletion, Issue deletion/list/blocked and later fields, ordered patches, public History, adoption and recovery remain unavailable. BDP Read serving is available only on ordinary shared-server Dolt; embedded serving, HTTP writes and aliases remain unavailable.", nil
+			"Mixed graph preview: Memory create/read, guarded complete title/body replacement and selected remember updates, actual predecessor disclosure for unconditional Memory writes, unreferenced Memory deletion with read-only preview and retained identity/snapshots, basic Issue create/read with ordinary creator/owner defaults, guarded inline Issue title/description/design/acceptance edits, informational Links with property replacement and guarded unlink, blocking Dependencies with canonical-ID unlink, incident Links, and Issue close/reopen/ready. Explicit flat/records-json Issue listing, complete dependency-blocked inspection and bounded current generic summary traversal are available. Full Memory, linked Memory deletion, Issue deletion, later Issue fields, assignee/due filters, ordered patches, public History, adoption and recovery remain unavailable. BDP Read serving is available only on ordinary shared-server Dolt; embedded serving, HTTP writes and aliases remain unavailable.", nil
 	})
 }
 
@@ -511,6 +526,8 @@ func graphStorageError(err error) error {
 		return graphFailure("ambiguous_link", err.Error()+": "+strings.Join(ambiguous.CandidateIDs, ", "), 4)
 	}
 	switch {
+	case errors.Is(err, errGraphListSelector):
+		return graphFailure("invalid_selector", err.Error(), 2)
 	case errors.Is(err, graphstore.ErrDeletionPolicyUnresolved):
 		return graphFailure("deletion_policy_unresolved", err.Error(), 5)
 	case errors.Is(err, graphstore.ErrGone):
