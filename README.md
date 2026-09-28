@@ -216,6 +216,10 @@ This is useful for:
 
 ### Experimental graph workspace preview
 
+Start with the [mixed-workflow demonstration](engdocs/GRAPH_MIXED_DEMO.md) and
+[pinned implementation map](engdocs/GRAPH_IMPLEMENTATION_MAP.md) for a clear view
+of what the qualified candidate can do and what remains unfinished.
+
 A disposable opt-in preview adds `bd init --graph-mode link --scope-url URL`,
 `bd remember BODY --id beads/PATH --title TITLE`, `bd create TITLE --id beads/PATH`,
 and current `bd show` for Beads and Links. [Explicit Memory input](engdocs/GRAPH_MEMORY_INPUT_PREVIEW.md)
