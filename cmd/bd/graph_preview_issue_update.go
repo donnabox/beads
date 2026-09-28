@@ -9,10 +9,11 @@ import (
 	"github.com/spf13/cobra"
 	"github.com/steveyegge/beads/internal/storage/graphstore"
 	"github.com/steveyegge/beads/internal/types"
+	"github.com/steveyegge/beads/internal/utils"
 	"github.com/steveyegge/beads/internal/validation"
 )
 
-var graphPreviewIssueEditFlags = []string{"title", "description", "body", "message", "design", "acceptance", "priority"}
+var graphPreviewIssueEditFlags = []string{"title", "description", "body", "message", "design", "acceptance", "priority", "set-labels"}
 
 func graphPreviewIssueEditFlagsChanged(cmd *cobra.Command) bool {
 	for _, name := range graphPreviewIssueEditFlags {
@@ -47,6 +48,24 @@ func graphPreviewIssueEditRequest(cmd *cobra.Command, path string) (graphstore.U
 			return request, graphFailure("invalid_properties", err.Error(), 2)
 		}
 		request.Priority = &priority
+	}
+	if cmd.Flags().Changed("set-labels") {
+		labels, err := cmd.Flags().GetStringSlice("set-labels")
+		if err != nil {
+			return request, graphFailure("invalid_properties", err.Error(), 2)
+		}
+		for _, label := range labels {
+			if !utf8.ValidString(label) {
+				return request, graphFailure("invalid_properties", "Issue labels must be valid UTF-8", 2)
+			}
+		}
+		labels = utils.NormalizeLabels(labels)
+		for _, label := range labels {
+			if err := types.CheckFieldLen("label", label); err != nil {
+				return request, graphFailure("invalid_properties", err.Error(), 2)
+			}
+		}
+		request.Labels = &labels
 	}
 	fields := []struct {
 		name string

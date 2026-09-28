@@ -4,27 +4,32 @@ import (
 	"context"
 	"database/sql"
 	"fmt"
+	"slices"
 	"unicode/utf8"
 
 	"github.com/steveyegge/beads/internal/storage"
 	"github.com/steveyegge/beads/internal/storage/issueops"
+	"github.com/steveyegge/beads/internal/types"
 	publicops "github.com/steveyegge/beads/issueops"
 )
 
-// UpdateIssueRequest admits priority, title, description, design and acceptance criteria.
+// UpdateIssueRequest admits priority, labels, title, description, design and acceptance criteria.
 // Notes editing is reserved for integration of the existing contributor
 // safeguards. A nil field leaves that property unchanged; an explicit empty
 // string clears it where the Issue domain permits. An explicit priority of zero
-// sets P0; a nil priority leaves it unchanged. The guard addresses the complete graph revision, including
+// sets P0; a nil priority leaves it unchanged. Nil Labels preserves the set; a
+// supplied empty slice clears it. Label replacement uses existing Issue semantics.
+// The guard addresses the complete graph revision, including
 // the Issue's owned blocking Dependencies, not its private storage ordinal.
 type UpdateIssueRequest struct {
 	Path, Actor, ExpectedRevision                  string
 	Unconditional                                  bool
 	Title, Description, Design, AcceptanceCriteria *string
 	Priority                                       *int
+	Labels                                         *[]string
 }
 
-// UpdateIssue delegates admitted scalar edits to the existing Issue domain writer and
+// UpdateIssue delegates admitted edits to the existing Issue domain writer and
 // retained-version recorder. Payload, opaque graph revision and complete owned
 // state commit together; this adds no public History ordering or change context.
 func (s *Store) UpdateIssue(ctx context.Context, request UpdateIssueRequest) (IssueMutationResult, error) {
@@ -59,6 +64,19 @@ func (s *Store) UpdateIssue(ctx context.Context, request UpdateIssueRequest) (Is
 		patch.Priority = publicops.Field[int]{Set: true, Value: *request.Priority}
 		count++
 	}
+	if request.Labels != nil {
+		labels := slices.Clone(*request.Labels)
+		for _, label := range labels {
+			if !utf8.ValidString(label) {
+				return IssueMutationResult{}, fmt.Errorf("%w: Issue labels must be UTF-8", storage.ErrValidation)
+			}
+			if err := types.CheckFieldLen("label", label); err != nil {
+				return IssueMutationResult{}, fmt.Errorf("%w: Issue label: %w", storage.ErrValidation, err)
+			}
+		}
+		patch.Labels.Replace = publicops.Field[[]string]{Set: true, Value: labels}
+		count++
+	}
 	if count == 0 {
 		return IssueMutationResult{}, fmt.Errorf("%w: Issue update requires an admitted field", storage.ErrValidation)
 	}
@@ -86,7 +104,7 @@ func (s *Store) UpdateIssue(ctx context.Context, request UpdateIssueRequest) (Is
 		if err != nil {
 			return err
 		}
-		if len(updates) == 0 {
+		if len(updates) == 0 && !issueops.LabelPatchChanges(before.Properties, patch.Labels) {
 			result = IssueMutationResult{Issue: before}
 			return nil
 		}
