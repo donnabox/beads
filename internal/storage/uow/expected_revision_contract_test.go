@@ -7,27 +7,22 @@ import (
 	"github.com/steveyegge/beads/backend/conformance"
 )
 
-// TestExpectedRevisionContract runs the R16/R17 expected-revision contract
-// against the unit-of-work provider, which reaches the same
-// internal/storage/issueops.CompareAndSetVersionInTx the two store backends
-// wrap — through the domain issue repository (IssueSQLRepository.
-// CompareAndSetVersion / CurrentVersion, internal/storage/domain/db/issue.go)
-// rather than through a store accessor. UNLIKE MetadataCAS, this role has no
-// public issueops interface for the provider to advertise through a Source
-// accessor — the conformance contract's own CompareAndSetVersion hook is a
-// bare function type (conformance.PerRecordCASWrite) — so the hooks below
-// call RunTxResult/RunTxRead directly instead of going through a
-// provider.ExpectedRevisionCAS()-style constructor.
+// TestExpectedRevisionContract wires this leg into the R16/R17
+// expected-revision contract. Every hook is nil (architecture §12's Phase 0
+// default), so each case below skips by name; this file exists so
+// TestEveryLegWiresEveryRoleContract counts this leg, and so the cases
+// start running for real the moment this leg grows a real
+// CompareAndSetVersion (be-80f4a.2 / gastownhall/beads#6358).
 //
-// So this is the third wrapper over ONE body, not a third vote. What it can
-// still catch is this leg's own wrapper: a request field dropped between this
-// file and the use case, a commit message composed for a write that was
-// refused, a refusal that stops matching errors.Is on the way back up.
-//
-// One provider for the whole suite (each newUOWRoleFixtureProvider boots a
-// real Dolt sql-server) and NO t.Parallel: this backend has no per-test
-// copy-on-write branch, so expected_revision_records is database-global and a
-// parallel subtest would corrupt another subtest's row.
+// This leg previously wired every hook to an honest "not implemented" stub
+// (be-x5jqd.1) instead of leaving them nil, so each case ran for real and
+// failed for that documented reason rather than skipping. That premise —
+// that be-x5jqd.3 would give this leg its CompareAndSetVersion — went
+// stale once review moved the real implementation to be-80f4a.2 /
+// gastownhall/beads#6358 instead; a stub whose failure message blames a
+// bead that will never land it is worse than an honest skip, so this file
+// reverts to nil hooks (gastownhall/beads#6664, bee-ghosttrack review
+// 5268699223).
 func TestExpectedRevisionContract(t *testing.T) {
 	ctx := context.Background()
 	fixture := newUOWExpectedRevisionFixture(t, ctx, "erev")
