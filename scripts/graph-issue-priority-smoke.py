@@ -248,7 +248,8 @@ def exercise(capture):
                         ("body-file", str(capture.root / "missing.md"))]:
         refuse("unsupported-" + flag, [*common, "--unconditional", "--" + flag, value], "capability_unavailable")
     for flag in ["--claim=false", "--force=false"]:
-        refuse("unsupported-" + flag[2:], [*common, "--unconditional", flag], "capability_unavailable")
+        refuse("unsupported-" + flag[2:], [*common, "--unconditional", flag],
+               "invalid_properties" if flag == "--claim=false" else "capability_unavailable")
     current("refusals-preserve-state", [source, *unrelated])
     capture.passed("invalid ranges/guards, wrong kinds/selectors and unsupported mixed/false flags refuse with exact typed codes and no partial success")
 
