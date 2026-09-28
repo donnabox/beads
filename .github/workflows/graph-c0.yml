@@ -103,6 +103,7 @@ jobs:
           sha256sum scripts/graph-memory-properties-patch-smoke.py > "$RUNNER_TEMP/c0-evidence/memory-properties-patch-harness.sha256"
           sha256sum scripts/graph-link-properties-patch-smoke.py > "$RUNNER_TEMP/c0-evidence/link-properties-patch-harness.sha256"
           sha256sum scripts/graph-issue-blocked-smoke.py > "$RUNNER_TEMP/c0-evidence/issue-blocked-harness.sha256"
+          sha256sum scripts/graph-generic-traversal-smoke.py > "$RUNNER_TEMP/c0-evidence/generic-traversal-harness.sha256"
           sha256sum scripts/graph-c0-storage-tests.sh > "$RUNNER_TEMP/c0-evidence/storage-test-runner.sha256"
           sha256sum scripts/graph-issue-create-fields-smoke.py > "$RUNNER_TEMP/c0-evidence/issue-create-fields-harness.sha256"
           sha256sum scripts/graph-issue-references-smoke.py > "$RUNNER_TEMP/c0-evidence/issue-references-harness.sha256"
@@ -216,6 +217,13 @@ jobs:
           done
           if grep -Eq '^ *--- (SKIP|FAIL): TestGraphPreviewBlocked' "$RUNNER_TEMP/c0-evidence/cli-policy-tests.log"; then
             echo "Blocked CLI proof did not execute completely" >&2
+            exit 1
+          fi
+          for suite in Input LegacyFlagConflicts LegacyAdmission DispatchBeforeStore Output DirectionsAndDepth LinkIdentityFrontier BoundsAndInvalidSnapshot SummaryAllowlist CanonicalSpelling FlagsRefuseLegacyOpening; do
+            grep -q "^--- PASS: TestGraphPreviewGeneric${suite} (" "$RUNNER_TEMP/c0-evidence/cli-policy-tests.log"
+          done
+          if grep -Eq '^ *--- (SKIP|FAIL): TestGraphPreviewGeneric' "$RUNNER_TEMP/c0-evidence/cli-policy-tests.log"; then
+            echo "Generic traversal proof did not execute completely" >&2
             exit 1
           fi
       - name: Install pinned ordinary Dolt release
@@ -483,6 +491,11 @@ jobs:
             --output-dir "$RUNNER_TEMP/c0-evidence/issue-blocked" \
             --backend both --server-port 15440 --server-root "$RUNNER_TEMP/c0-server" --total-timeout 300 \
             > "$RUNNER_TEMP/c0-evidence/issue-blocked-smoke.log" 2>&1
+
+          python3 scripts/graph-generic-traversal-smoke.py --bd "$RUNNER_TEMP/c0-bin/bd" \
+            --output-dir "$RUNNER_TEMP/c0-evidence/generic-traversal" \
+            --backend both --server-port 15440 --server-root "$RUNNER_TEMP/c0-server" --total-timeout 300 \
+            > "$RUNNER_TEMP/c0-evidence/generic-traversal-smoke.log" 2>&1
 
       - name: Preserve receipts (including failures)
         if: always()
