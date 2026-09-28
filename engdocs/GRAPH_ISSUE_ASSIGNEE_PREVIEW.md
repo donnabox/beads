@@ -25,8 +25,9 @@ Clearing an active assignment leaves its status `in_progress`, with no assignee
 or lease. This preview does not expose status editing or unclaim; do not assume
 that clearing the assignee returns the Issue to `open`.
 
-`--claim`, `--force`, `--if-assignee`, `--if-status` and graph status editing remain
-unavailable. Graph listing accepts the existing `--assignee` (`-a`) and `--no-assignee`
+Mixed `--claim` plus assignment, `--force`, `--if-assignee`, `--if-status` and graph
+status editing remain unavailable. The separate [claim preview](GRAPH_ISSUE_CLAIM_PREVIEW.md)
+admits standalone `--claim`. Graph listing accepts the existing `--assignee` (`-a`) and `--no-assignee`
 filters with explicit `--flat` or `--format records-json` output.
 Complete current/exact record reads retain assignment along with other Issue
 properties and owned Dependencies. It does not advertise public ordered History.
@@ -62,8 +63,9 @@ contributions. The existing ordinary revision-guard work (PR6030) and recorder
 integration (PR6650) remain separate.
 
 The installed harness uses normal CLI initialization and authoring on embedded
-and ordinary shared-server Dolt. Active-holder, pool and lease controls require
-real-store tests because graph CLI claim/status authoring is not exposed. Neither
+and ordinary shared-server Dolt. Pool policy and forced concurrency require real-store tests. The separate
+claim harness now authors an active holder through the installed CLI; arbitrary
+status editing remains unavailable. Neither
 component tests nor a CLI recording qualifies this draft without complete
 exact-source Linux evidence. Dolt 2.1.8 different-database provisioning remains
 serialized.

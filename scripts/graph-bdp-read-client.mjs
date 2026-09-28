@@ -146,7 +146,7 @@ try {
   assert.equal(issueMutation.preview, true);
   assert.equal(issueMutation.result.changed, true);
   assert.equal(issueMutation.result.issue.properties.assignee, issueFields.assignee);
-  const workAfter = await perform({ kind: 'resource', resource: 'bead', id: workID });
+  let workAfter = await perform({ kind: 'resource', resource: 'bead', id: workID });
   assert.equal(workAfter.revision, issueMutation.result.issue.revision);
   assert.notEqual(workAfter.revision, workBefore.revision);
   assert.equal(workAfter.type, workBefore.type);
@@ -348,6 +348,66 @@ try {
   assert.deepEqual(await perform({ kind: 'properties', resource: 'bead', id: planID }), memoryProperties);
   artifacts.memoryEdit = { record: edited, mutation: memoryMutation, unchangedLink };
   pass('public client sees CLI Memory content edit with unchanged owned Link and consistent properties');
+
+  const claimBefore = workAfter;
+  const claimArgs = ['update', workID, '--claim', '--actor', 'crew-reviewer', '--json'];
+  const claimBinary = digest(await readFile(process.env.BDP_BD));
+  let claimExecution;
+  let claimExitCode = null;
+  let claimSignal = null;
+  try {
+    claimExecution = await promisify(execFile)(process.env.BDP_BD, claimArgs,
+      { timeout: 60_000, maxBuffer: 2 * 1024 * 1024, encoding: 'utf8' });
+    claimExitCode = 0;
+  } catch (error) {
+    claimExecution = error;
+    claimExitCode = error.code;
+    claimSignal = error.signal ?? null;
+    throw error;
+  } finally {
+    await writeFile(join(output, 'client-cli-issue-claim.stdout.log'), claimExecution?.stdout ?? '');
+    await writeFile(join(output, 'client-cli-issue-claim.stderr.log'), claimExecution?.stderr ?? '');
+    await writeFile(join(output, 'client-cli-issue-claim.json'), JSON.stringify({
+      argv: [process.env.BDP_BD, ...claimArgs], cwd: process.cwd(), binarySha256: claimBinary,
+      exitCode: claimExitCode, signal: claimSignal,
+      stdoutSha256: digest(claimExecution?.stdout ?? ''), stderrSha256: digest(claimExecution?.stderr ?? ''),
+    }, null, 2));
+  }
+  assert.equal(digest(await readFile(process.env.BDP_BD)), claimBinary);
+  assert.equal(claimExecution.stderr, '');
+  const claimMutation = JSON.parse(claimExecution.stdout);
+  assert.equal(claimMutation.result.changed, true);
+  workAfter = await perform({ kind: 'resource', resource: 'bead', id: workID });
+  assert.equal(workAfter.revision, claimMutation.result.issue.revision);
+  assert.notEqual(workAfter.revision, claimBefore.revision);
+  assert.equal(workAfter.properties.status, 'in_progress');
+  assert.equal(workAfter.properties.assignee, 'crew-reviewer');
+  assert.ok(workAfter.properties.started_at);
+  assert.ok(workAfter.properties.lease_expires_at);
+  assert.ok(workAfter.properties.heartbeat_at);
+  assert.deepEqual(workAfter.properties, claimMutation.result.issue.properties);
+  const beforeClaimProperties = { ...workAfter.properties };
+  for (const field of ['status', 'assignee', 'updated_at', 'started_at', 'lease_expires_at', 'heartbeat_at', 'lease_granted_node']) {
+    delete beforeClaimProperties[field];
+    if (Object.hasOwn(claimBefore.properties, field)) beforeClaimProperties[field] = claimBefore.properties[field];
+  }
+  assert.deepEqual(beforeClaimProperties, claimBefore.properties);
+  assert.deepEqual(workAfter.ownedLinks, claimBefore.ownedLinks);
+  const claimProperties = await perform({ kind: 'properties', resource: 'bead', id: workID });
+  assert.deepEqual(claimProperties, workAfter.properties);
+  const claimInventory = await perform({ kind: 'collection', collection: 'beads', limit: 100 });
+  assert.equal(claimInventory.next, null);
+  assert.deepEqual(claimInventory.items.find(bead => bead.id === workID), workAfter);
+  const claimHTTP = await http(workID, { headers: { 'if-none-match': artifacts.issueEdit.etagAfter } });
+  assert.equal(claimHTTP.response.status, 200);
+  const claimETag = claimHTTP.response.headers.get('etag');
+  assert.ok(claimETag);
+  assert.notEqual(claimETag, artifacts.issueEdit.etagAfter);
+  assert.deepEqual(parseBeadRecord(JSON.parse(claimHTTP.text)), workAfter);
+  artifacts.issueClaim = { before: claimBefore, after: workAfter, mutation: claimMutation,
+    properties: claimProperties, inventory: claimInventory, etagBefore: artifacts.issueEdit.etagAfter,
+    etagAfter: claimETag, writer: 'installed CLI; HTTP remains read-only; no lease renewal demonstrated' };
+  pass('public BDP reads the CLI-claimed Issue with complete owned Dependencies, current properties, inventory and changed ETag');
 
   // A retained current-read cursor is a snapshot capability, not public History.
   // Delete only after all earlier fixtures/checks have completed.
