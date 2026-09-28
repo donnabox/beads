@@ -216,7 +216,16 @@
       "url": "https://github.com/donnabox/beads/pull/19",
       "in_qualified_candidate": true,
       "destination_pr": null,
-      "landed_commit": null
+      "landed_commit": null,
+      "transfers": [
+        {
+          "destination_pr": "https://github.com/versioned-beads/beads/pull/36",
+          "head": "75868bee82b61ca02bc69f9ed7b5b7411554cfd8",
+          "scope": "C0 create/read/authority/failure",
+          "state": "draft; qualification pending",
+          "landed_commit": null
+        }
+      ]
     },
     {
       "baseRefName": "codex/janet-c0-delivery-20260923",
@@ -384,7 +393,16 @@
       "url": "https://github.com/donnabox/beads/pull/33",
       "in_qualified_candidate": true,
       "destination_pr": null,
-      "landed_commit": null
+      "landed_commit": null,
+      "transfers": [
+        {
+          "destination_pr": "https://github.com/versioned-beads/beads/pull/36",
+          "head": "75868bee82b61ca02bc69f9ed7b5b7411554cfd8",
+          "scope": "Explicit file/stdin Memory creation",
+          "state": "draft; qualification pending",
+          "landed_commit": null
+        }
+      ]
     },
     {
       "baseRefName": "codex/janet-memory-input-20260926",
