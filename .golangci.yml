@@ -252,6 +252,15 @@ linters:
             - "**/beadserrors/**"
           allow:
             - "$gostd"
+        # The experimental graph leaf stays transport- and storage-independent.
+        graphops-leaf:
+          list-mode: strict
+          files:
+            - "**/graphops/**"
+            - "!**/internal/storage/graphops/**"
+          allow:
+            - "$gostd"
+            - "github.com/steveyegge/beads/beadserrors"
     # The CONSTRUCTION half of that same boundary, and the half that actually
     # matches the failure. The depguard rule above denies a handler IMPORTING
     # the builders; it does not deny a handler naming the filter types, which
