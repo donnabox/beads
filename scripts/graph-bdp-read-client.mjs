@@ -563,6 +563,90 @@ try {
   }
   pass('public BDP observes absent-to-zero-to-positive CLI estimates with explicit zero presence, complete unchanged lease/ownership and changed ETags');
 
+  // Reference writes preserve ordinary nullable clear semantics and graph identity.
+  const referenceBeforeHTTP = estimateEvidence.http.positive;
+  const referenceBefore = workAfter;
+  assert.equal(Object.hasOwn(referenceBefore.properties, 'external_ref'), false,
+    'external reference must initially be absent');
+  assert.equal(Object.hasOwn(referenceBefore.properties, 'spec_id'), false,
+    'spec ID must initially be absent');
+  const referenceEvidence = artifacts.issueReference = {
+    before: referenceBefore, mutations: {}, properties: {},
+    http: { before: referenceBeforeHTTP },
+    etags: { before: estimateETag },
+    writer: 'installed CLI; HTTP remains read-only; references are literal values, not identity or tracker synchronization; claim lease preserved without renewal',
+  };
+  let referenceETag = estimateETag;
+  for (const [stage, external, spec] of [['set', '  tracker/雪#42  ', '  docs/design#雪  '], ['clear', '', '']]) {
+    const previous = workAfter;
+    const referenceArgs = ['update', workID, '--external-ref', external, '--spec-id', spec,
+      '--if-revision', previous.revision, '--actor', 'reference-reviewer', '--json'];
+    const referenceBinary = digest(await readFile(process.env.BDP_BD));
+    let referenceExecution;
+    let referenceExitCode = null;
+    let referenceRawErrorCode = null;
+    try {
+      referenceExecution = await promisify(execFile)(process.env.BDP_BD, referenceArgs,
+        { timeout: 60_000, maxBuffer: 2 * 1024 * 1024, encoding: 'utf8' });
+      referenceExitCode = 0;
+    } catch (error) {
+      referenceExecution = error;
+      referenceExitCode = typeof error.code === 'number' ? error.code : null;
+      referenceRawErrorCode = error.code ?? null;
+      throw error;
+    } finally {
+      const receiptName = 'client-cli-issue-reference-' + stage;
+      await writeFile(join(output, receiptName + '.stdout.log'), referenceExecution?.stdout ?? '');
+      await writeFile(join(output, receiptName + '.stderr.log'), referenceExecution?.stderr ?? '');
+      await writeFile(join(output, receiptName + '.json'), JSON.stringify({
+        argv: [process.env.BDP_BD, ...referenceArgs], cwd: process.cwd(), binarySha256: referenceBinary,
+        exitCode: referenceExitCode, signal: referenceExecution?.signal ?? null,
+        rawErrorCode: referenceRawErrorCode,
+        stdoutSha256: digest(referenceExecution?.stdout ?? ''),
+        stderrSha256: digest(referenceExecution?.stderr ?? ''),
+      }, null, 2));
+    }
+    assert.equal(digest(await readFile(process.env.BDP_BD)), referenceBinary);
+    assert.equal(referenceExecution.stderr, '');
+    const mutation = JSON.parse(referenceExecution.stdout);
+    assert.equal(mutation.schemaVersion, 1);
+    assert.equal(mutation.preview, true);
+    assert.equal(mutation.result.changed, true);
+    const resourceRequestIndex = network.length;
+    workAfter = await perform({ kind: 'resource', resource: 'bead', id: workID });
+    assert.equal(network.length, resourceRequestIndex + 1);
+    assert.equal(workAfter.id, previous.id);
+    assert.equal(workAfter.type, previous.type);
+    assert.equal(workAfter.revision, mutation.result.issue.revision);
+    assert.notEqual(workAfter.revision, previous.revision);
+    assert.deepEqual(workAfter.properties, mutation.result.issue.properties);
+    const expected = { ...previous.properties, updated_at: workAfter.properties.updated_at };
+    if (stage === 'set') { expected.external_ref = external; expected.spec_id = spec; }
+    else { delete expected.external_ref; delete expected.spec_id; }
+    assert.deepEqual(workAfter.properties, expected);
+    assert.deepEqual(workAfter.ownedLinks, previous.ownedLinks);
+    const propertiesRequestIndex = network.length;
+    const properties = await perform({ kind: 'properties', resource: 'bead', id: workID });
+    assert.equal(network.length, propertiesRequestIndex + 1);
+    assert.deepEqual(properties, workAfter.properties);
+    const requestIndex = network.length;
+    const referenceHTTP = await http(workID, { headers: { 'if-none-match': referenceETag } });
+    assert.equal(network.length, requestIndex + 1);
+    assert.equal(referenceHTTP.response.status, 200);
+    const nextETag = referenceHTTP.response.headers.get('etag');
+    assert.ok(nextETag);
+    assert.notEqual(nextETag, referenceETag);
+    assert.deepEqual(parseBeadRecord(JSON.parse(referenceHTTP.text)), workAfter);
+    referenceEvidence[stage === 'set' ? 'set' : 'after'] = workAfter;
+    referenceEvidence.mutations[stage] = mutation;
+    referenceEvidence.properties[stage] = properties;
+    referenceEvidence.http[stage] = { resourceRequestIndex, propertiesRequestIndex,
+      requestIndex, body: referenceHTTP.text };
+    referenceEvidence.etags[stage] = nextETag;
+    referenceETag = nextETag;
+  }
+  pass('public BDP observes literal CLI reference assignment and clearing, preserved identity/lease/ownership and changed ETags');
+
   // A retained current-read cursor is a snapshot capability, not public History.
   // Delete only after all earlier fixtures/checks have completed.
   const deletionOwner = client.createContinuationScope();
