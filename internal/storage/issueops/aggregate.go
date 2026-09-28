@@ -295,7 +295,9 @@ func LabelPatchChanges(current *types.Issue, patch publicops.LabelPatch) bool {
 
 // planLabelPatch is shared by pre-write no-op admission and the actual writer.
 // Replacement, additions, removals, duplicates and empty labels therefore have
-// one set of semantics in both paths.
+// one set of semantics in both paths. A (nil, nil) pair is the no-patch sentinel;
+// it does not reconstruct the current or desired label set. Callers use that
+// sentinel only to recognize a no-op, not as an instruction to clear labels.
 func planLabelPatch(current *types.Issue, patch publicops.LabelPatch) (existing, target map[string]struct{}) {
 	if !patch.Replace.Set && len(patch.Add) == 0 && len(patch.Remove) == 0 {
 		return nil, nil

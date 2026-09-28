@@ -236,3 +236,112 @@ func TestIssueLabelsRefusalAndRollback(t *testing.T) {
 		})
 	}
 }
+
+func TestIssueLabelsClosedIssue(t *testing.T) {
+	for _, backend := range []string{"embedded", "server"} {
+		t.Run(backend, func(t *testing.T) {
+			ctx, _, s, _, _, dependency := reopenFixture(t, backend)
+			target, err := s.CloseIssue(ctx, "beads/prereq", "prerequisite complete", "closer")
+			if err != nil {
+				t.Fatal(err)
+			}
+			closed, err := s.CloseIssue(ctx, "beads/work", "work complete", "closer")
+			if err != nil {
+				t.Fatal(err)
+			}
+			spectator, err := s.CreateIssue(ctx, "beads/unrelated", plainIssue("Unrelated ready work"))
+			if err != nil {
+				t.Fatal(err)
+			}
+			readyBefore, err := s.ReadyIssues(ctx)
+			if err != nil {
+				t.Fatal(err)
+			}
+			if len(readyBefore) != 1 || readyBefore[0].ID != spectator.ID {
+				t.Fatalf("closed fixture readiness: %+v", readyBefore)
+			}
+			before := closed.Issue
+			if before.Properties.Status != types.StatusClosed || before.Properties.ClosedAt == nil || before.Properties.CloseReason != "work complete" || len(before.Owned) != 1 {
+				t.Fatal("fixture must be a closed Issue with owned Dependency")
+			}
+			counts := make(map[string]int)
+			for _, table := range []string{"issue_versions", "graph_preview_issue_versions"} {
+				var count int
+				if err := s.db.QueryRowContext(ctx, "SELECT COUNT(*) FROM "+table+" WHERE issue_id=?", before.Properties.ID).Scan(&count); err != nil {
+					t.Fatal(err)
+				}
+				counts[table] = count
+			}
+			eventCounts := func() map[string]int {
+				t.Helper()
+				counts := make(map[string]int)
+				for _, kind := range []string{"label_added", "label_removed", "updated", "reopened", "closed", "all"} {
+					query := "SELECT COUNT(*) FROM events WHERE issue_id=?"
+					args := []any{before.Properties.ID}
+					if kind != "all" {
+						query += " AND event_type=?"
+						args = append(args, kind)
+					}
+					var count int
+					if err := s.db.QueryRowContext(ctx, query, args...).Scan(&count); err != nil {
+						t.Fatal(err)
+					}
+					counts[kind] = count
+				}
+				return counts
+			}
+			beforeEvents := eventCounts()
+			edited, err := s.UpdateIssue(ctx, UpdateIssueRequest{Path: "beads/work", Actor: "closed-label-editor", ExpectedRevision: before.Revision, Labels: issueLabels("graph", "closed-label")})
+			if err != nil || !edited.Changed || edited.Issue.Revision == before.Revision || edited.Issue.Attribution.Actor != "closed-label-editor" {
+				t.Fatalf("closed label edit: %+v %v", edited, err)
+			}
+			assertIssueLabels(t, edited.Issue.Properties.Labels, []string{"graph", "closed-label"})
+			properties := *edited.Issue.Properties
+			properties.Labels = before.Properties.Labels
+			properties.UpdatedAt = before.Properties.UpdatedAt
+			properties.RowVersion = before.Properties.RowVersion
+			properties.ContentHash = before.Properties.ContentHash
+			if !reflect.DeepEqual(properties, *before.Properties) || !reflect.DeepEqual(edited.Issue.Owned, before.Owned) {
+				t.Fatal("label edit changed closure, unrelated properties, or owned Dependency")
+			}
+			current, err := s.ShowIssue(ctx, "beads/work")
+			if err != nil || !reflect.DeepEqual(current, edited.Issue) {
+				t.Fatalf("closed current read: %+v %v", current, err)
+			}
+			for table, count := range counts {
+				var got int
+				if err := s.db.QueryRowContext(ctx, "SELECT COUNT(*) FROM "+table+" WHERE issue_id=?", before.Properties.ID).Scan(&got); err != nil || got != count+1 {
+					t.Fatalf("%s count%d want%d err%v", table, got, count+1, err)
+				}
+			}
+			afterEvents := eventCounts()
+			for kind, count := range beforeEvents {
+				delta := 0
+				if kind == "label_added" || kind == "label_removed" {
+					delta = 1
+				}
+				if kind == "all" {
+					delta = 2
+				}
+				if afterEvents[kind] != count+delta {
+					t.Fatalf("closed edit %s events%d want%d", kind, afterEvents[kind], count+delta)
+				}
+			}
+			var authorEvents int
+			if err := s.db.QueryRowContext(ctx, "SELECT COUNT(*) FROM events WHERE issue_id=? AND actor='closed-label-editor' AND event_type IN ('label_added','label_removed')", before.Properties.ID).Scan(&authorEvents); err != nil || authorEvents != 2 {
+				t.Fatalf("label event authorship%d err%v", authorEvents, err)
+			}
+			if readyAfter, err := s.ReadyIssues(ctx); err != nil || !reflect.DeepEqual(readyAfter, readyBefore) {
+				t.Fatalf("labels reopened/changed readiness: %+v %v", readyAfter, err)
+			}
+			if got, err := s.ShowLink(ctx, "links/block"); err != nil || !reflect.DeepEqual(got, dependency) {
+				t.Fatalf("Dependency changed: %+v %v", got, err)
+			}
+			if got, err := s.ShowIssue(ctx, "beads/prereq"); err != nil || !reflect.DeepEqual(got, target.Issue) {
+				t.Fatalf("closed target changed: %+v %v", got, err)
+			}
+			assertIssueListRetained(t, ctx, s, "beads/work", before)
+			assertIssueListRetained(t, ctx, s, "beads/work", edited.Issue)
+		})
+	}
+}

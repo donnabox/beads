@@ -21,7 +21,7 @@ SPEC.loader.exec_module(c0)
 SCOPE = "https://example.invalid/disposable-issue-labels/"
 LIMITATIONS = [
     "experimental whole-label replacement through existing update; add/remove operations remain unavailable in graph mode",
-    "normal CLI label trimming/deduplication preserves case/accent; returned label ordering is inherited, not newly specified",
+    "CLI trims/deduplicates labels without the legacy whitespace warning; storage preserves literal whitespace; case/accent distinctions are verified only on pinned Dolt 2.1.8 binary collation utf8mb4_0900_bin; returned label ordering is inherited, not newly specified",
     "one accepted graph revision per command is visible; internal version/event counts, forced overlap and rollback need separate real-store tests",
     "ordinary RowVersion coverage and whole-table Dolt staging retain their existing review gates; this CLI capture does not settle them",
     "exact retained reads/comparisons are not public ordered History, full Memory, or HTTP writes",

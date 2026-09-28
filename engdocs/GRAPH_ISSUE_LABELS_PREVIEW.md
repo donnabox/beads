@@ -18,8 +18,17 @@ bd show beads/work --version '<previous version>' --json
 Use the actual revision/version returned by a read. `--set-labels=` explicitly
 clears the set; omitting the flag preserves it. The existing repeated/CSV flag
 parser and label normalization trim surrounding whitespace, drop empty entries
-and remove duplicates. Case and accent distinctions are preserved. A quoted CSV
-field can contain a comma. Labels retain the existing 255-character bound.
+and remove duplicates. Case and accent distinctions were verified on the pinned
+Dolt 2.1.8 binary collation (`utf8mb4_0900_bin`); this is not a guarantee for a
+different database collation. A quoted CSV field can contain a comma. Labels
+retain the existing 255-code-point bound. Unlike ordinary update, this graph
+preview does not emit the legacy warning for labels containing whitespace.
+
+Trimming belongs to the CLI. The storage adapter validates UTF-8 and length but
+preserves literal surrounding whitespace; the shared set planner drops empty
+entries and collapses duplicates. A future non-CLI writer must not assume that
+storage applies CLI trimming.
+
 Complete replacement can accompany inline text and priority edits in one checked
 transaction and one retained graph version. Explicit `--unconditional` is also
 supported by the existing Issue update policy; it does not promise the Memory
