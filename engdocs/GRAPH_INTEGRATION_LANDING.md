@@ -1,0 +1,90 @@
+# Graph integration landing ledger
+
+This ledger belongs to [fork plan PR18](https://github.com/donnabox/beads/pull/18). It accounts for source work while we land small, dependency-complete increments in [versioned-beads/beads:integration](https://github.com/versioned-beads/beads/tree/integration). Donna authorized merges there when CI is green. Existing semantic holds remain separate; upstream main is not a destination.
+
+## Branch roles and preservation
+
+- Shared trunk: `versioned-beads/beads:integration`.
+- Our mirror: `donnabox/beads:jim-integration`. The preferred name `integration` collides with existing `integration/facade-wave-4` at `67d38d26206f9a945f92b1c161eb9feeff0b1133`; preserve that branch. The mirror advances only to actual shared-trunk commits, without a second independent merge.
+- Preserved qualified checkpoint: annotated tag `janet-qualified-graph-20260928`, peeled commit `9c86d6d1559ffcfcd9770b64e17a7f1f654690b3`. Existing `codex/janet-graph-integration` stays at that checkpoint during transfer.
+- New work: `janet-integration-*` branches in our fork, based on the latest fetched shared trunk or an explicitly identified unmerged predecessor. PRs target Jim's `integration`.
+- Keep existing branches/PRs until their disposition is linked below. No automatic branch deletion, blanket PR closure or force-pushing old source branches. Original PR discussion stays in place. Close a transferred original only after linked destination work lands, with a retained/replaced/deferred explanation. Merge commits are preferred to preserve ancestry and attribution.
+- The [source manifest](graph-integration-source-manifest.json) records all59 open source PRs, exact original heads/bases and candidate ancestry at transition. Fifty-two heads are ancestors of the qualified candidate. Ancestry is not equivalence to Jim's current code or a merge approval.
+
+## Landing sequence
+
+First reconcile only missing prerequisites, then mixed graph core, BDP Read/saved-version access, and later workflows/traversal/demo. These are dependency milestones, not four giant PRs. Each PR must carry one coherent change and runnable verification; merge when combined-source CI and applicable graph proof pass, then update the mirror. Account for Jim's upstream-sync PR26 before choosing each next base. Never copy an older recorder or migration over his current version merely to resolve text conflicts. Qualify exactly-one-version/no-op behavior at the combined writer boundary.
+
+Initial observed target: `44b8c0b9a8dc369ac6a9ea008ca07d36663923d3`. Normal `PR` and `PR Risk` workflows explicitly run on integration. Old candidate receipts do not qualify new combined source. Graph-specific installed/engine proof must be deliberately retained in addition to normal CI.
+
+## Destination increments
+
+| Increment | Source / target | Destination PR | Landed commit | State |
+|---|---|---|---|---|
+| Pure graphops leaf, additive typed errors and architecture boundary | Extract existing candidate implementation onto current target; no storage/schema/CLI | Pending creation | — | Preparing `janet-integration-graphops-20260928`; build/test and CI required |
+
+## Original PR disposition
+
+A pending destination means the source is preserved and has not yet landed through this transfer. Some PRs are cumulative or overlapping; a single destination may account for several originals, and an original may need several destination PRs. Resolve mappings by actual changes and tests, not PR count.
+
+| Original PR | Preserved head | In qualified checkpoint | Disposition / destination | Landed commit |
+|---|---|---|---|---|
+| [#1](https://github.com/donnabox/beads/pull/1) Persist a stable private installation identity for graph authority | `3195f5806cff` | Yes | Preserved; destination mapping pending dependency census | — |
+| [#2](https://github.com/donnabox/beads/pull/2) Pin graph wire contracts to BDP 53bdbd03 | `c792a6ddb5b1` | Yes | Preserved; destination mapping pending dependency census | — |
+| [#3](https://github.com/donnabox/beads/pull/3) Define graph replication exclusion and recovery contract | `e90e2d7d110e` | Yes | Preserved; destination mapping pending dependency census | — |
+| [#4](https://github.com/donnabox/beads/pull/4) Add private graph session with bounded cancellation and immutable merge operands | `0a7714a36464` | Yes | Preserved; destination mapping pending dependency census | — |
+| [#5](https://github.com/donnabox/beads/pull/5) Add private graph witness authority manager | `9f20c9d2cefa` | Yes | Preserved; destination mapping pending dependency census | — |
+| [#6](https://github.com/donnabox/beads/pull/6) Add private managed graph process controller | `29526f528efa` | Yes | Preserved; destination mapping pending dependency census | — |
+| [#7](https://github.com/donnabox/beads/pull/7) Package pinned GMS terminal-session correction for offline source delivery | `9a9536df8f8f` | Yes | Shared head with #8; account for changes once | — |
+| [#8](https://github.com/donnabox/beads/pull/8) Promote graph foundations and inherited schema updates to fork main | `9a9536df8f8f` | Yes | Shared head with #7; account for changes once | — |
+| [#10](https://github.com/donnabox/beads/pull/10) fix(ci): run embedded storage binary from package directory | `90eb0afbb708` | No | Runner change reused through #37; verify target equivalence before disposition | — |
+| [#11](https://github.com/donnabox/beads/pull/11) Implement private graph reads and qualify engine persistence | `c2b93f6fbd3d` | Yes | Preserved; destination mapping pending dependency census | — |
+| [#12](https://github.com/donnabox/beads/pull/12) Validate graph reads across managed engine restarts | `c0b7898bc69a` | Yes | Preserved; destination mapping pending dependency census | — |
+| [#13](https://github.com/donnabox/beads/pull/13) Observe graph read preconditions within one transaction | `52baded928b1` | Yes | Preserved; destination mapping pending dependency census | — |
+| [#14](https://github.com/donnabox/beads/pull/14) Integrate managed graph reads and transaction precondition checks | `dd2e7d1f58aa` | Yes | Preserved; destination mapping pending dependency census | — |
+| [#15](https://github.com/donnabox/beads/pull/15) Add private graph claim lifetimes and allocation-aware exact reads | `5bf26f4f2e6f` | Yes | Preserved; destination mapping pending dependency census | — |
+| [#16](https://github.com/donnabox/beads/pull/16) Integrate private graph paging and hardened MySQL session driver | `8549c01b4658` | Yes | Preserved; destination mapping pending dependency census | — |
+| [#17](https://github.com/donnabox/beads/pull/17) Preserve incident-anchor allocation outcomes in graph reads | `99f7f7d6f81f` | Yes | Preserved; destination mapping pending dependency census | — |
+| [#18](https://github.com/donnabox/beads/pull/18) Bead graph delivery plan: fork review | `d9f150fa1244` | No | Plan and ledger stay in this fork | — |
+| [#19](https://github.com/donnabox/beads/pull/19) Graph C0: installed Memory create/read and transaction evidence | `2bfa5e4ab1cd` | Yes | Preserved; destination mapping pending dependency census | — |
+| [#20](https://github.com/donnabox/beads/pull/20) Experimental graph Issue create/read using existing Issue storage and history | `0cabfa252fa1` | Yes | Preserved; destination mapping pending dependency census | — |
+| [#21](https://github.com/donnabox/beads/pull/21) Connect graph blocking Dependencies to Issue close and ready | `cd22fcbf4060` | Yes | Preserved; destination mapping pending dependency census | — |
+| [#22](https://github.com/donnabox/beads/pull/22) feat(graph): add mixed Links and guarded property updates | `8b742c511bff` | Yes | Preserved; destination mapping pending dependency census | — |
+| [#23](https://github.com/donnabox/beads/pull/23) Add guarded graph Link deletion and incident listing | `9129dfd08690` | Yes | Preserved; destination mapping pending dependency census | — |
+| [#24](https://github.com/donnabox/beads/pull/24) Add read-only graph adoption exception report | `006a05605def` | Yes | Preserved; destination mapping pending dependency census | — |
+| [#25](https://github.com/donnabox/beads/pull/25) Project authoritative graph records into BDP wire values | `b0134b40c994` | Yes | Preserved; destination mapping pending dependency census | — |
+| [#26](https://github.com/donnabox/beads/pull/26) Read complete graph inventories in one transaction | `8f115e541ee1` | Yes | Preserved; destination mapping pending dependency census | — |
+| [#27](https://github.com/donnabox/beads/pull/27) Select and page immutable BDP graph snapshots | `96aa7354743f` | Yes | Preserved; destination mapping pending dependency census | — |
+| [#28](https://github.com/donnabox/beads/pull/28) Serve BDP Read from installed graph workspaces | `b3a9f2a00655` | Yes | Preserved; destination mapping pending dependency census | — |
+| [#29](https://github.com/donnabox/beads/pull/29) Read exact retained graph versions through the CLI | `ea15935f3f14` | Yes | Preserved; destination mapping pending dependency census | — |
+| [#30](https://github.com/donnabox/beads/pull/30) Edit Memory properties with guarded retained versions | `a8095591d6d4` | Yes | Preserved; destination mapping pending dependency census | — |
+| [#31](https://github.com/donnabox/beads/pull/31) Recall exact current and retained Memory bodies | `9a7a76a173e4` | Yes | Preserved; destination mapping pending dependency census | — |
+| [#32](https://github.com/donnabox/beads/pull/32) Compare complete retained graph versions through the CLI | `31b4a24cc8da` | Yes | Preserved; destination mapping pending dependency census | — |
+| [#33](https://github.com/donnabox/beads/pull/33) Accept explicit file and stdin bodies for graph Memories | `9f785ac4e388` | Yes | Preserved; destination mapping pending dependency census | — |
+| [#34](https://github.com/donnabox/beads/pull/34) Connect guarded graph Issue text edits to retained versions | `376c75d05992` | Yes | Preserved; destination mapping pending dependency census | — |
+| [#35](https://github.com/donnabox/beads/pull/35) Graph preview: guarded blocking Dependency removal | `c92114ec68f9` | Yes | Preserved; destination mapping pending dependency census | — |
+| [#36](https://github.com/donnabox/beads/pull/36) Disclose replaced versions on unconditional Memory changes | `67538330b470` | Yes | Preserved; destination mapping pending dependency census | — |
+| [#37](https://github.com/donnabox/beads/pull/37) Qualify PR10 embedded runner reuse on the graph stack | `c52c15b03ae5` | Yes | Preserved; destination mapping pending dependency census | — |
+| [#38](https://github.com/donnabox/beads/pull/38) Add compact graph Memory discovery and exact-state recall | `6a446d9eaf4a` | Yes | Preserved; destination mapping pending dependency census | — |
+| [#39](https://github.com/donnabox/beads/pull/39) Graph preview: reopen Issues with retained versions and readiness | `9cd7faed4989` | Yes | Preserved; destination mapping pending dependency census | — |
+| [#40](https://github.com/donnabox/beads/pull/40) Graph preview: revise selected Memory bodies with observed revisions | `a08b03198134` | Yes | Preserved; destination mapping pending dependency census | — |
+| [#41](https://github.com/donnabox/beads/pull/41) Apply selected Memory edits atomically | `7e57c628b3c0` | Yes | Preserved; destination mapping pending dependency census | — |
+| [#42](https://github.com/donnabox/beads/pull/42) Add explicit Issue listing to graph workspaces | `d31eda2d620f` | Yes | Preserved; destination mapping pending dependency census | — |
+| [#43](https://github.com/donnabox/beads/pull/43) Support guarded graph Issue priority edits | `deff78f6bb1e` | Yes | Preserved; destination mapping pending dependency census | — |
+| [#44](https://github.com/donnabox/beads/pull/44) Reuse contributor label timestamp and no-op fixes before graph editing | `4d0010217103` | No | Held: ordinary token / whole-table staging decisions | — |
+| [#45](https://github.com/donnabox/beads/pull/45) Graph preview: guarded Issue label replacement | `cba567a9a466` | No | Held with #44; no implicit inclusion | — |
+| [#46](https://github.com/donnabox/beads/pull/46) Graph preview: guarded Issue assignment and assignee filters | `b7bf5040beae` | Yes | Preserved; destination mapping pending dependency census | — |
+| [#47](https://github.com/donnabox/beads/pull/47) Graph Issue standalone atomic claim and retained lifecycle | `3a827e91ed63` | Yes | Preserved; destination mapping pending dependency census | — |
+| [#48](https://github.com/donnabox/beads/pull/48) Graph Issue notes: transactional append with retained state | `562d62be840d` | Yes | Preserved; destination mapping pending dependency census | — |
+| [#49](https://github.com/donnabox/beads/pull/49) Record a mixed graph demo and pin the implementation map | `b9a97da711bc` | No | Historical demo; preserve original pin | — |
+| [#50](https://github.com/donnabox/beads/pull/50) Graph Issue estimate edits with exact storage validation | `46bd848e5f58` | Yes | Preserved; destination mapping pending dependency census | — |
+| [#51](https://github.com/donnabox/beads/pull/51) Graph preview: edit Issue external and spec references atomically | `c3ea11883fc1` | Yes | Preserved; destination mapping pending dependency census | — |
+| [#52](https://github.com/donnabox/beads/pull/52) Graph preview: create Issues with initial content, assignment and references | `b92805048d3b` | Yes | Preserved; destination mapping pending dependency census | — |
+| [#53](https://github.com/donnabox/beads/pull/53) Graph preview: create Issues with initial notes and native authorship | `174f3cbd6545` | Yes | Preserved; destination mapping pending dependency census | — |
+| [#54](https://github.com/donnabox/beads/pull/54) Graph preview: create, reschedule and select Issues by due date | `685ef6c92e0d` | Yes | Preserved; destination mapping pending dependency census | — |
+| [#55](https://github.com/donnabox/beads/pull/55) Graph preview: apply ordered Memory property patches atomically | `53160b4db777` | Yes | Preserved; destination mapping pending dependency census | — |
+| [#56](https://github.com/donnabox/beads/pull/56) feat(graph): apply guarded ordered patches to informational Links | `a424d1a09b44` | Yes | Preserved; destination mapping pending dependency census | — |
+| [#57](https://github.com/donnabox/beads/pull/57) Graph preview: explain blocked Issues with canonical blockers | `7efb8e7bd5ea` | Yes | Preserved; destination mapping pending dependency census | — |
+| [#58](https://github.com/donnabox/beads/pull/58) Add current generic graph traversal preview | `9c86d6d1559f` | Yes | Preserved; destination mapping pending dependency census | — |
+| [#59](https://github.com/donnabox/beads/pull/59) Demonstrate the current mixed graph workflow | `5eaf5689689a` | No | Current demo; transfer with matching runtime and recapture | — |
+| [#60](https://github.com/donnabox/beads/pull/60) Isolate disposable server phases in graph qualification | `f656ac271dc3` | No | Separate CI improvement; not required for existing qualified source | — |

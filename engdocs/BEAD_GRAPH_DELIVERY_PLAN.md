@@ -1,5 +1,7 @@
 # Beads graph delivery plan — revised proposal v3
 
+**September 28 integration execution:** [Landing ledger and preserved source heads](GRAPH_INTEGRATION_LANDING.md). Shared target is `versioned-beads/beads:integration`; our mirror is `donnabox/beads:jim-integration`. Older unknown-target statements below are historical.
+
 **2026-09-23. Status: implementation plan for review; bounded implementation start authorized.** This replaces v2 as the active plan proposal. It incorporates the revised CLI proposal and Donna’s ten inline comments. It does not convert open CLI questions into approvals, claim a new council review, or certify previously completed code.
 
 The [CLI proposal has a separate upstream Proposal issue, #6703](https://github.com/gastownhall/beads/issues/6703). Its initial review source is commit `310bc2d6d071ae4574efb5c1d5d9ebbec7b099bd`. Review CLI shapes and compatibility there; review feasibility, sequencing, reuse, estimates and acceptance here. Implementation does not decide a disputed public contract by getting code there first.
