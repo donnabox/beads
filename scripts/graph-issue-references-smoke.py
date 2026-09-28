@@ -210,8 +210,8 @@ def exercise(capture):
         ("false-claim-with-spec", ["update", source["id"], "--claim=false", "--spec-id=ignored"], "invalid_properties", 2),
         ("missing-guard", same_clear, "invalid_selector", 2),
         ("readonly", [*same_clear, "--unconditional", "--readonly"], "permission_denied", 5),
-        ("create-with-external", ["create", "Extra", "--id=beads/extra", "--external-ref=x"], "capability_unavailable", 5),
-        ("create-with-spec", ["create", "Extra", "--id=beads/extra", "--spec-id=x"], "capability_unavailable", 5),
+        ("create-with-external", ["create", "Extra", "--id=beads/extra", "--external-ref=x", "--notes=still-unsupported"], "capability_unavailable", 5),
+        ("create-with-spec", ["create", "Extra", "--id=beads/extra", "--spec-id=x", "--notes=still-unsupported"], "capability_unavailable", 5),
         ("memory-kind", ["update", memory["id"], "--external-ref=invalid", "--unconditional"], "capability_unavailable", 5),
     ]:
         refuse(label, argv, code, status)
