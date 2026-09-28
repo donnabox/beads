@@ -896,6 +896,85 @@ try {
     mechanism: 'Single CLI create with literal initial notes and ordinary creator/git-email owner defaults; public BDP Read only. No HTTP write, authenticated identity or public History claim.' };
   pass('public BDP reads literal initial notes and ordinary creator/git-email owner from the first CLI-created record, complete properties and unchanged prior inventory');
 
+
+  // Exercise due authoring with the installed writer and an independent public
+  // Read client. HTTP never receives a mutation; exact History remains gated.
+  async function dueWrite(stage, args) {
+    const binarySha256 = digest(await readFile(process.env.BDP_BD));
+    let result, exitCode = null;
+    try {
+      result = await promisify(execFile)(process.env.BDP_BD, args,
+        { cwd: process.cwd(), env: process.env, timeout: 30000, maxBuffer: 2 * 1024 * 1024 });
+      exitCode = 0;
+    } catch (error) {
+      result = error;
+      exitCode = typeof error.code === 'number' ? error.code : null;
+      throw error;
+    } finally {
+      const name = 'client-cli-issue-due-' + stage;
+      await writeFile(join(output, name + '.stdout.log'), result?.stdout ?? '');
+      await writeFile(join(output, name + '.stderr.log'), result?.stderr ?? '');
+      await writeFile(join(output, name + '.json'), JSON.stringify({
+        argv: [process.env.BDP_BD, ...args], cwd: process.cwd(), binarySha256,
+        exitCode, signal: result?.signal ?? null,
+        stdoutSha256: digest(result?.stdout ?? ''), stderrSha256: digest(result?.stderr ?? ''),
+      }, null, 2));
+    }
+    assert.equal(digest(await readFile(process.env.BDP_BD)), binarySha256);
+    assert.equal(result.stderr, '');
+    const envelope = JSON.parse(result.stdout);
+    assert.equal(envelope.schemaVersion, 1);
+    assert.equal(envelope.preview, true);
+    return envelope.result;
+  }
+  const dueID = scope + 'beads/due';
+  let dueRecord = await dueWrite('create', ['create', 'Deadline context', '--id', 'beads/due',
+    '--due', '2027-01-01T20:04:05.500000-07:00', '--actor', 'due-author', '--json']);
+  assert.equal(dueRecord.id, dueID);
+  assert.equal(dueRecord.properties.due_at, '2027-01-02T03:04:06Z');
+  const dueEvidence = artifacts.issueDue = { creation: dueRecord, stages: [],
+    mechanism: 'Installed CLI create/update/clear; independent public BDP Read, no HTTP Write or ordered History.' };
+  let dueETag;
+  for (const stage of ['create', 'noop', 'replace', 'clear']) {
+    const previous = dueRecord;
+    if (stage !== 'create') {
+      const input = stage === 'noop' ? '2027-01-02T03:04:05.9Z' :
+        stage === 'replace' ? '2028-02-03T04:05:06Z' : '';
+      const mutation = await dueWrite(stage, ['update', dueID, '--due', input,
+        '--if-revision', previous.revision, '--actor', 'due-author', '--json']);
+      assert.equal(mutation.changed, stage !== 'noop');
+      dueRecord = mutation.issue;
+      if (stage === 'noop') assert.deepEqual(dueRecord, previous);
+      else {
+        const expected = { ...previous.properties, updated_at: dueRecord.properties.updated_at };
+        if (stage === 'clear') delete expected.due_at;
+        else expected.due_at = '2028-02-03T04:05:06Z';
+        assert.deepEqual(dueRecord.properties, expected);
+        assert.deepEqual(dueRecord.owned, previous.owned);
+        assert.notEqual(dueRecord.revision, previous.revision);
+      }
+    }
+    const resource = await perform({ kind: 'resource', resource: 'bead', id: dueID });
+    const properties = await perform({ kind: 'properties', resource: 'bead', id: dueID });
+    assert.equal(resource.revision, dueRecord.revision);
+    assert.deepEqual(resource.properties, dueRecord.properties);
+    assert.deepEqual(properties, dueRecord.properties);
+    assert.deepEqual(Object.values(resource.ownedLinks).flat(), []);
+    const response = await http(dueID, dueETag ? { headers: { 'if-none-match': dueETag } } : undefined);
+    assert.equal(response.response.status, stage === 'noop' ? 304 : 200);
+    dueETag = response.response.headers.get('etag');
+    assert.ok(dueETag);
+    dueEvidence.stages.push({ stage, record: dueRecord, resource, properties,
+      http: { status: response.response.status, etag: dueETag, body: response.text } });
+  }
+  const dueInventory = await perform({ kind: 'collection', collection: 'beads', limit: 100 });
+  assert.equal(dueInventory.next, null);
+  assert.equal(dueInventory.items.length, 7);
+  assert.deepEqual(dueInventory.items.filter(bead => bead.id !== dueID), initialNotesInventory.items);
+  assert.deepEqual(dueInventory.items.find(bead => bead.id === dueID).properties, dueRecord.properties);
+  dueEvidence.inventory = dueInventory;
+  pass('public BDP reads normalized initial due, stable no-op revision/ETag, replacement and nullable clear while existing graph records remain unchanged');
+
 } catch (error) {
   failure = { name: error.name, message: error.message, stack: error.stack };
   process.exitCode = 1;

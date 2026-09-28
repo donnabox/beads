@@ -4,6 +4,7 @@ import (
 	"context"
 	"database/sql"
 	"fmt"
+	"time"
 	"unicode/utf8"
 
 	"github.com/steveyegge/beads/internal/storage"
@@ -22,6 +23,8 @@ import (
 // retain their ordinary bounds; no scheduler or duration interpretation is added.
 // ExternalRef and SpecID preserve literal values; empty clears the external
 // reference to NULL and the spec ID to an empty string, as in ordinary update.
+// DueAt distinguishes omission from nullable clear. Present dates use the existing
+// whole-second storage representation before guarded no-op comparison.
 // Priority zero sets P0; nil preserves priority. The guard addresses the complete
 // graph revision, including owned blocking Dependencies, not the storage ordinal.
 // Assignee nil preserves its value; empty clears it. Neither the graph guard nor
@@ -35,6 +38,7 @@ type UpdateIssueRequest struct {
 	Assignee                                       *string
 	AppendNotes                                    *string
 	ExternalRef, SpecID                            *string
+	DueAt                                          publicops.Field[*time.Time]
 }
 
 // UpdateIssue delegates admitted scalar edits to the existing Issue domain writer and
@@ -115,6 +119,14 @@ func (s *Store) UpdateIssue(ctx context.Context, request UpdateIssueRequest) (Is
 		}
 		count++
 	}
+	if request.DueAt.Set {
+		value, err := normalizeIssueDue(request.DueAt.Value)
+		if err != nil {
+			return IssueMutationResult{}, err
+		}
+		patch.DueAt = publicops.Field[*time.Time]{Set: true, Value: value}
+		count++
+	}
 	if count == 0 {
 		return IssueMutationResult{}, fmt.Errorf("%w: Issue update requires an admitted field", storage.ErrValidation)
 	}
@@ -182,6 +194,9 @@ func (s *Store) UpdateIssue(ctx context.Context, request UpdateIssueRequest) (Is
 		}
 		if patch.SpecID.Set && (updated.Issue == nil || updated.Issue.SpecID != patch.SpecID.Value) {
 			return fmt.Errorf("%w: Issue spec ID cannot be represented exactly by storage", storage.ErrValidation)
+		}
+		if patch.DueAt.Set && (updated.Issue == nil || !sameIssueDue(patch.DueAt.Value, updated.Issue.DueAt)) {
+			return fmt.Errorf("%w: Issue due date cannot be represented exactly by storage", storage.ErrValidation)
 		}
 		if err := s.afterStage("issue-update"); err != nil {
 			return err

@@ -44,7 +44,7 @@ func graphIssueListInput(cmd *cobra.Command, argv []string) (listInput, bool, er
 	fail := func(code, message string, exit int) (listInput, bool, error) {
 		return listInput{}, false, graphFailure(code, message, exit)
 	}
-	if err := graphPreviewFlags(cmd, "flat", "format", "status", "state", "type", "all", "limit", "title", "title-contains", "priority", "priority-min", "priority-max", "label", "label-any", "exclude-label", "assignee", "no-assignee", "pinned", "no-pinned", "sort", "reverse"); err != nil {
+	if err := graphPreviewFlags(cmd, "flat", "format", "status", "state", "type", "all", "limit", "title", "title-contains", "priority", "priority-min", "priority-max", "label", "label-any", "exclude-label", "assignee", "no-assignee", "pinned", "no-pinned", "sort", "reverse", "due-before", "due-after", "overdue"); err != nil {
 		return listInput{}, false, err
 	}
 	format, _ := cmd.Flags().GetString("format")
@@ -62,7 +62,7 @@ func graphIssueListInput(cmd *cobra.Command, argv []string) (listInput, bool, er
 	if cmd.Flags().Changed("status") && cmd.Flags().Changed("state") {
 		return fail("invalid_selector", "graph list accepts --status or --state, not both", 2)
 	}
-	for _, name := range []string{"status", "state", "type", "title", "title-contains", "sort", "assignee"} {
+	for _, name := range []string{"status", "state", "type", "title", "title-contains", "sort", "assignee", "due-before", "due-after"} {
 		value, _ := cmd.Flags().GetString(name)
 		if !utf8.ValidString(value) || len(value) > 4096 {
 			return fail("invalid_selector", "--"+name+" must be UTF-8 and at most 4096 bytes", 2)
