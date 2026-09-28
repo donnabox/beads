@@ -60,7 +60,7 @@ Issue recorder in one checked transaction with the graph mapping. It does not
 add an Issue payload table, schema, recorder or separate database. An actual
 edit records exactly one new Issue snapshot and opaque graph version containing
 the complete owned blocking Dependencies. Dependencies, their targets and
-informational Links remain unchanged. Editing a closed Issue's text or priority does not
+informational Links remain unchanged. Editing a closed Issue's text, priority or estimate does not
 reopen it or clear its close time. Readonly and migration-freeze policy still
 refuse writes before storage is opened.
 
@@ -72,7 +72,7 @@ native History commit timestamps. The outstanding storage-owner binding gate
 remains open.
 
 `status --graph --json` advertises `issueTextUpdate: true`,
-`issuePriorityUpdate: true`,
+`issuePriorityUpdate: true`, `issueEstimateUpdate: true`,
 `issueTextFileInput: false`, `issueTextStdinInput: false`, and retains
 `issueWorkflows: false`.
 
@@ -123,3 +123,44 @@ Upstream PR6650 moved that responsibility into `ExecuteUpdate`. Integrating a
 base that contains it requires reconciling these calls and requalifying exactly
 one complete version per accepted edit. The priority adapter does not change
 recorder ownership or import an upstream stack speculatively.
+
+## Estimate minutes
+
+The existing `--estimate` (`-e`) flag works with `update` on canonical graph
+Issues. Graph `create` still refuses it, so new Issues start without an estimate:
+
+```bash
+bd update beads/task -e 0 --if-revision "$revision" --json
+bd update beads/task --estimate 45 --title 'Sized task' --unconditional --json
+```
+
+Omitting the flag preserves the estimate, including an absent estimate. An
+explicit zero is stored and read back as zero; it does not clear the field to
+null. Negative values are rejected. Parsing and SQL integer storage reuse the existing
+Issue machinery. The adapter also rejects values above the current signed SQL INT
+maximum of 2,147,483,647 before opening a transaction, so strict and coercing
+engines produce the same validation refusal. If storage coerces the estimate to another
+value, the graph transaction refuses and rolls back all accompanying edits. The
+check does not alter ordinary Issue commands or widen the schema. This is an
+estimate in minutes, with no scheduling effect. The preview does not add a null-clear option.
+
+Estimates can share one transaction and retained version with the other admitted
+scalar edits and notes append. The graph revision guard covers owned Dependencies
+and runs before no-op detection. A same-value estimate is unchanged, while a
+stale same-value request refuses. Estimate-only edits preserve status, assignment,
+claim lease and owned Links. They do not renew a claim or repair external drift.
+`status --graph` reports the provisional `issueEstimateUpdate` capability;
+`issueWorkflows` remains false.
+
+
+Reproduce the estimate-specific installed sequence against a disposable server:
+
+```sh
+python3 scripts/graph-issue-estimate-smoke.py \
+  --bd /absolute/disposable/bin/bd --backend both --server-port PORT \
+  --server-root /absolute/disposable/dolt-data \
+  --output-dir /absolute/new/estimate-evidence --total-timeout 300
+```
+
+The real-store `TestIssueEstimateLifecycle` also checks the signed INT maximum;
+both engine cases are required by the exact-source Linux workflow and verifier.

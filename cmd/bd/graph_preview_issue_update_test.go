@@ -13,6 +13,7 @@ import (
 func issueTextCommand(t *testing.T, args ...string) *cobra.Command {
 	t.Helper()
 	cmd := &cobra.Command{}
+	cmd.Flags().IntP("estimate", "e", 0, "")
 	for _, name := range append(append([]string{}, graphPreviewIssueEditFlags...), "properties", "notes", "body-file", "design-file", "append-notes", "status", "if-assignee", "if-status", "if-revision", "if-source-revision") {
 		if cmd.Flags().Lookup(name) == nil {
 			cmd.Flags().String(name, "", "")

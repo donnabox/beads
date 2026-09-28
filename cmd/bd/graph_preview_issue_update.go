@@ -12,7 +12,7 @@ import (
 	"github.com/steveyegge/beads/internal/validation"
 )
 
-var graphPreviewIssueEditFlags = []string{"title", "description", "body", "message", "design", "acceptance", "priority", "assignee", "append-notes"}
+var graphPreviewIssueEditFlags = []string{"title", "description", "body", "message", "design", "acceptance", "priority", "assignee", "append-notes", "estimate"}
 
 func graphPreviewIssueEditFlagsChanged(cmd *cobra.Command) bool {
 	for _, name := range graphPreviewIssueEditFlags {
@@ -47,6 +47,16 @@ func graphPreviewIssueEditRequest(cmd *cobra.Command, path string) (graphstore.U
 			return request, graphFailure("invalid_properties", err.Error(), 2)
 		}
 		request.Priority = &priority
+	}
+	if cmd.Flags().Changed("estimate") {
+		value, err := cmd.Flags().GetInt("estimate")
+		if err != nil {
+			return request, graphFailure("invalid_properties", err.Error(), 2)
+		}
+		if err := types.ValidateIssueEstimatedMinutes(&value); err != nil {
+			return request, graphFailure("invalid_properties", err.Error(), 2)
+		}
+		request.EstimatedMinutes = &value
 	}
 	if cmd.Flags().Changed("assignee") {
 		value, _ := cmd.Flags().GetString("assignee")

@@ -4,6 +4,7 @@ import (
 	"context"
 	"database/sql"
 	"fmt"
+	"math"
 	"unicode/utf8"
 
 	"github.com/steveyegge/beads/internal/storage"
@@ -17,6 +18,9 @@ import (
 // the Issue domain permits; AppendNotes instead preserves native append semantics:
 // empty on empty is a no-op, while empty on nonempty appends one newline.
 // Notes replacement/clear remain reserved for contributor safeguard reconciliation.
+// EstimatedMinutes nil preserves the nullable estimate; zero sets a present zero.
+// Clearing to null is not admitted. The existing Issue validator and SQL column
+// retain their ordinary bounds; no scheduler or duration interpretation is added.
 // Priority zero sets P0; nil preserves priority. The guard addresses the complete
 // graph revision, including owned blocking Dependencies, not the storage ordinal.
 // Assignee nil preserves its value; empty clears it. Neither the graph guard nor
@@ -26,6 +30,7 @@ type UpdateIssueRequest struct {
 	Unconditional                                  bool
 	Title, Description, Design, AcceptanceCriteria *string
 	Priority                                       *int
+	EstimatedMinutes                               *int
 	Assignee                                       *string
 	AppendNotes                                    *string
 }
@@ -70,6 +75,16 @@ func (s *Store) UpdateIssue(ctx context.Context, request UpdateIssueRequest) (Is
 	}
 	if request.Priority != nil {
 		patch.Priority = publicops.Field[int]{Set: true, Value: *request.Priority}
+		count++
+	}
+	if request.EstimatedMinutes != nil {
+		value := *request.EstimatedMinutes
+		// The existing Issue column is a signed SQL INT on both backends. Reject
+		// unrepresentable input before SQL so strict and coercing engines agree.
+		if value > math.MaxInt32 {
+			return IssueMutationResult{}, fmt.Errorf("%w: Issue estimated_minutes exceeds the storage maximum of %d", storage.ErrValidation, math.MaxInt32)
+		}
+		patch.EstimatedMinutes = publicops.Field[*int]{Set: true, Value: &value}
 		count++
 	}
 	if count == 0 {
@@ -122,6 +137,14 @@ func (s *Store) UpdateIssue(ctx context.Context, request UpdateIssueRequest) (Is
 		}
 		if !updated.Changed {
 			return fmt.Errorf("%w: Issue update unexpectedly became a no-op", ErrInvalidStore)
+		}
+		// Non-strict SQL may coerce an oversized Go integer into the column's
+		// range without returning an error. The shared writer hydrates the actual
+		// stored result; never publish or retain an estimate different from the
+		// accepted intent. Refusal rolls back sibling edits and audit effects too.
+		if patch.EstimatedMinutes.Set && (updated.Issue == nil || updated.Issue.EstimatedMinutes == nil ||
+			*updated.Issue.EstimatedMinutes != *patch.EstimatedMinutes.Value) {
+			return fmt.Errorf("%w: Issue estimate cannot be represented exactly by storage", storage.ErrValidation)
 		}
 		if err := s.afterStage("issue-update"); err != nil {
 			return err

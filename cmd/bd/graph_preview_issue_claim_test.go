@@ -16,8 +16,11 @@ import (
 func issueClaimCommand(t *testing.T, args ...string) *cobra.Command {
 	t.Helper()
 	cmd := &cobra.Command{}
+	cmd.Flags().IntP("estimate", "e", 0, "")
 	for _, name := range append(append([]string{}, graphPreviewIssueEditFlags...), "properties", "notes", "body-file", "design-file", "status", "if-assignee", "if-status", "if-revision", "if-source-revision", "set-labels", "add-label", "remove-label", "parent", "metadata", "actor") {
-		cmd.Flags().String(name, "", "")
+		if cmd.Flags().Lookup(name) == nil {
+			cmd.Flags().String(name, "", "")
+		}
 	}
 	for _, name := range []string{"claim", "force", "unconditional", "unconditional-source", "stdin", "json", "quiet", "readonly", "graph-mode", "no-color"} {
 		cmd.Flags().Bool(name, false, "")
