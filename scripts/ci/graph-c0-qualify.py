@@ -26,6 +26,20 @@ def digest(path):
     return hashlib.sha256(path.read_bytes()).hexdigest()
 
 
+def group_exited(pid, timeout=5):
+    # A command may exit just before its already-exiting child is reaped.
+    # Allow a bounded grace period, but never count forced cleanup as success.
+    deadline = time.monotonic() + timeout
+    while True:
+        try:
+            os.killpg(pid, 0)
+        except ProcessLookupError:
+            return True
+        if time.monotonic() >= deadline:
+            return False
+        time.sleep(0.05)
+
+
 def verify_tests(events, expected):
     runs, passes = set(), set()
     for event in events:
@@ -68,7 +82,8 @@ class Qualification:
         self.env.update(HOME=str(home), XDG_CONFIG_HOME=str(home / ".config"),
                         GIT_CONFIG_NOSYSTEM="1", GIT_CONFIG_GLOBAL=str(home / "empty-gitconfig"),
                         CGO_ENABLED="1", BD_DISABLE_METRICS="1", BD_DISABLE_EVENT_FLUSH="1",
-                        DOLT_METRICS_DISABLED="1", BEADS_DOLT_AUTO_START="0", NO_COLOR="1",
+                        DOLT_METRICS_DISABLED="1", DOLT_DISABLE_EVENT_FLUSH="1",
+                        BEADS_DOLT_AUTO_START="0", NO_COLOR="1",
                         BEADS_TEST_BD_BINARY=str(self.bd), BEADS_TEST_IGNORE_REPO_CONFIG="1")
 
     def run(self, args, label, cwd=None, timeout=120, stdin=None, expected=0):
@@ -89,11 +104,7 @@ class Qualification:
             self.children.discard(process.pid)
         (self.output / f"{label}.stdout").write_bytes(out)
         (self.output / f"{label}.stderr").write_bytes(err)
-        try:
-            os.killpg(process.pid, 0)
-        except ProcessLookupError:
-            pass
-        else:
+        if not group_exited(process.pid):
             os.killpg(process.pid, signal.SIGKILL)
             raise RuntimeError(f"{label} left a live process group after exit")
         self.receipts.append(dict(label=label, argv=[str(a) for a in args], pid=process.pid,
@@ -152,7 +163,8 @@ class Qualification:
         require(manifest["commit"] == head and manifest["build_tags"] == "gms_pure_go", "CLI artifact source/build flags mismatch")
         expected_hash = (self.artifacts / "SHA256SUMS").read_text().split()[0]
         require(digest(self.bd) == expected_hash, "installed CLI hash differs from build artifact")
-        require(self.run([self.dolt, "version"], "dolt-version").decode().strip().split()[-1] == "2.1.8", "C0 requires released Dolt2.1.8")
+        version = self.run([self.dolt, "version"], "dolt-version").decode().splitlines()
+        require(version and version[0].strip() == "dolt version 2.1.8", "C0 requires released Dolt2.1.8")
         (self.output / "source.json").write_text(json.dumps(dict(commit=head, binarySHA256=digest(self.bd),
             doltSHA256=digest(self.dolt), runnerSHA256=digest(Path(__file__))), indent=2) + "\n")
         with socket.socket() as reservation:
@@ -194,12 +206,8 @@ class Qualification:
             finally:
                 self.children.discard(server.pid)
                 log.close()
-            group_gone = False
-            try:
-                os.killpg(server.pid, 0)
-            except ProcessLookupError:
-                group_gone = True
-            else:
+            group_gone = group_exited(server.pid)
+            if not group_gone:
                 os.killpg(server.pid, signal.SIGKILL)
             port_closed = False
             try:
