@@ -39,9 +39,6 @@ func graphPreviewMemoryPropertiesPatchRequest(cmd *cobra.Command, path string) (
 	if err := graphPreviewFlags(cmd, "patch", "if-revision", "unconditional"); err != nil {
 		return request, err
 	}
-	if strings.HasPrefix(path, "links/") {
-		return request, graphFailure("capability_unavailable", "--patch is available only for experimental Memory properties", 5)
-	}
 	if err := graph.ValidateBeadPath(path); err != nil {
 		return request, graphFailure("invalid_selector", err.Error(), 2)
 	}
@@ -76,7 +73,7 @@ func graphPreviewMemoryPropertiesPatchInput(input string, stdin io.Reader) ([]by
 			var err error
 			file, err = os.Open(strings.TrimPrefix(input, "@")) // #nosec G304 -- explicit operator-selected patch file
 			if err != nil {
-				return nil, fmt.Errorf("cannot open Memory patch file: %w", err)
+				return nil, fmt.Errorf("cannot open Resource patch file: %w", err)
 			}
 			reader = file
 		}
@@ -87,13 +84,13 @@ func graphPreviewMemoryPropertiesPatchInput(input string, stdin io.Reader) ([]by
 		closeErr = file.Close()
 	}
 	if readErr != nil {
-		return nil, fmt.Errorf("cannot read Memory patch: %w", readErr)
+		return nil, fmt.Errorf("cannot read Resource patch: %w", readErr)
 	}
 	if closeErr != nil {
-		return nil, fmt.Errorf("cannot close Memory patch file: %w", closeErr)
+		return nil, fmt.Errorf("cannot close Resource patch file: %w", closeErr)
 	}
 	if len(raw) > graphpatch.MaxInputBytes {
-		return nil, fmt.Errorf("Memory patch input exceeds the preview limit of %d bytes", graphpatch.MaxInputBytes)
+		return nil, fmt.Errorf("Resource patch input exceeds the preview limit of %d bytes", graphpatch.MaxInputBytes)
 	}
 	// Deliberate validation at both boundaries: syntax must refuse before the
 	// CLI opens storage, while the raw-byte storage API independently validates

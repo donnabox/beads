@@ -51,12 +51,14 @@ actual accepted predecessor within its transaction, preserving untouched fields
 and the complete owned Link set. The CLI does not pre-read a Memory and replace
 it from a stale local copy.
 
-`--patch` is mutually exclusive with `--properties` and Issue/Link update flags,
+On the Memory route, `--patch` is mutually exclusive with `--properties` and Issue/Link update flags,
 including explicitly false claim or source-guard flags. Read-only and migration
 freeze checks, selector admission, unsupported flags and guard validation happen
 before patch files/stdin are consumed or the graph store is opened. Ordinary
 workspaces refuse this graph-only flag before legacy storage opening. Canonical
-Link selectors refuse before input. A canonical `beads/PATH` does not reveal its
+Link selectors select the separate [informational Link patch route](GRAPH_LINK_PROPERTIES_PATCH_PREVIEW.md),
+which admits independent Link and source guards. Mixing `--patch` with
+`--properties` still refuses before input on either route. A canonical `beads/PATH` does not reveal its
 Type: a healthy Issue at that path is refused by the checked writer after input
 syntax admission, without mutation.
 

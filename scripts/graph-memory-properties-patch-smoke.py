@@ -156,7 +156,7 @@ def exercise(capture):
     ]:
         refuse(label, ["update", memory["id"], "--patch", text, "--unconditional"], "invalid_properties")
     refuse("issue-kind", ["update", target["id"], "--patch", '[{"op":"replace","path":"/title","value":"Issue target"}]', "--unconditional"], "capability_unavailable")
-    refuse("link-before-input", ["update", link["id"], "--patch", "@"+missing, "--unconditional"], "capability_unavailable")
+    refuse("link-before-input", ["update", link["id"], "--patch", "@"+missing, "--unconditional", "--properties", "{}"], "capability_unavailable")
     for label, flags in [("no-guard-before-input", []),("both-guards-before-input", ["--unconditional","--if-revision",memory["revision"]])]:
         refuse(label, ["update", memory["id"], "--patch", "@"+missing, *flags], "invalid_selector")
     for label, flags in [("mixed-properties", ["--properties", "{}"]), ("mixed-issue-field", ["--priority", "1"])]:

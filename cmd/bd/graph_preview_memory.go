@@ -20,9 +20,12 @@ func runGraphPreviewUpdate(cmd *cobra.Command, args []string) error {
 	if err != nil {
 		return graphFailure("invalid_selector", err.Error(), 2)
 	}
-	// Explicit properties-patch intent must refuse mixed Issue/Link flags before
-	// they can select a different writer or consume patch input.
+	// Explicit patch intent selects Resource-specific admission before any
+	// alternate writer or input acquisition.
 	if cmd.Flags().Changed("patch") {
+		if strings.HasPrefix(path, "links/") {
+			return runGraphPreviewLinkPropertiesPatch(cmd, path)
+		}
 		return runGraphPreviewMemoryPropertiesPatch(cmd, path)
 	}
 	// Presence selects claim admission even for --claim=false; never let an
