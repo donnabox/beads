@@ -102,6 +102,7 @@ jobs:
           sha256sum scripts/graph-issue-due-smoke.py > "$RUNNER_TEMP/c0-evidence/issue-due-harness.sha256"
           sha256sum scripts/graph-memory-properties-patch-smoke.py > "$RUNNER_TEMP/c0-evidence/memory-properties-patch-harness.sha256"
           sha256sum scripts/graph-link-properties-patch-smoke.py > "$RUNNER_TEMP/c0-evidence/link-properties-patch-harness.sha256"
+          sha256sum scripts/graph-issue-blocked-smoke.py > "$RUNNER_TEMP/c0-evidence/issue-blocked-harness.sha256"
           sha256sum scripts/graph-c0-storage-tests.sh > "$RUNNER_TEMP/c0-evidence/storage-test-runner.sha256"
           sha256sum scripts/graph-issue-create-fields-smoke.py > "$RUNNER_TEMP/c0-evidence/issue-create-fields-harness.sha256"
           sha256sum scripts/graph-issue-references-smoke.py > "$RUNNER_TEMP/c0-evidence/issue-references-harness.sha256"
@@ -210,6 +211,13 @@ jobs:
           for suite in Sources InputBound LegacyAdmission; do
             grep -q "^--- PASS: TestGraphPreviewMemoryPropertiesPatch${suite} (" "$RUNNER_TEMP/c0-evidence/cli-policy-tests.log"
           done
+          for suite in Admission Output DispatchBeforeStore; do
+            grep -q "^--- PASS: TestGraphPreviewBlocked${suite} (" "$RUNNER_TEMP/c0-evidence/cli-policy-tests.log"
+          done
+          if grep -Eq '^ *--- (SKIP|FAIL): TestGraphPreviewBlocked' "$RUNNER_TEMP/c0-evidence/cli-policy-tests.log"; then
+            echo "Blocked CLI proof did not execute completely" >&2
+            exit 1
+          fi
       - name: Install pinned ordinary Dolt release
         run: |
           cd "$RUNNER_TEMP"
@@ -288,6 +296,15 @@ jobs:
           grep -q '^--- PASS: TestLinkPropertiesPatchLostCommitResponse (' "$RUNNER_TEMP/c0-evidence/storage-tests.log"
           if grep -Eq '^ *--- (SKIP|FAIL): TestLinkPropertiesPatch' "$RUNNER_TEMP/c0-evidence/storage-tests.log"; then
             echo "Link property patch storage proof did not execute completely" >&2
+            exit 1
+          fi
+          for suite in Lifecycle IsNotNotReady Admission ReadBudget ConcurrentClose CanonicalOrder DependencySubjectStatuses; do
+            for backend in embedded server; do
+              grep -q "^ *--- PASS: TestIssueBlocked${suite}/${backend} (" "$RUNNER_TEMP/c0-evidence/storage-tests.log"
+            done
+          done
+          if grep -Eq '^ *--- (SKIP|FAIL): TestIssueBlocked' "$RUNNER_TEMP/c0-evidence/storage-tests.log"; then
+            echo "Blocked storage proof did not execute completely" >&2
             exit 1
           fi
           # Every admitted assignment suite must execute on both real engines.
@@ -461,6 +478,11 @@ jobs:
             --output-dir "$RUNNER_TEMP/c0-evidence/link-properties-patch" \
             --backend both --server-port 15440 --server-root "$RUNNER_TEMP/c0-server" --total-timeout 300 \
             > "$RUNNER_TEMP/c0-evidence/link-properties-patch-smoke.log" 2>&1
+
+          python3 scripts/graph-issue-blocked-smoke.py --bd "$RUNNER_TEMP/c0-bin/bd" \
+            --output-dir "$RUNNER_TEMP/c0-evidence/issue-blocked" \
+            --backend both --server-port 15440 --server-root "$RUNNER_TEMP/c0-server" --total-timeout 300 \
+            > "$RUNNER_TEMP/c0-evidence/issue-blocked-smoke.log" 2>&1
 
       - name: Preserve receipts (including failures)
         if: always()
