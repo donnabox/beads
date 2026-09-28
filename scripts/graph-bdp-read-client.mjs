@@ -899,7 +899,7 @@ try {
 
   // Exercise due authoring with the installed writer and an independent public
   // Read client. HTTP never receives a mutation; exact History remains gated.
-  async function dueWrite(stage, args) {
+  async function dueWrite(stage, args, prefix = 'client-cli-issue-due-') {
     const binarySha256 = digest(await readFile(process.env.BDP_BD));
     let result, exitCode = null;
     try {
@@ -911,7 +911,7 @@ try {
       exitCode = typeof error.code === 'number' ? error.code : null;
       throw error;
     } finally {
-      const name = 'client-cli-issue-due-' + stage;
+      const name = prefix + stage;
       await writeFile(join(output, name + '.stdout.log'), result?.stdout ?? '');
       await writeFile(join(output, name + '.stderr.log'), result?.stderr ?? '');
       await writeFile(join(output, name + '.json'), JSON.stringify({
@@ -974,6 +974,44 @@ try {
   assert.deepEqual(dueInventory.items.find(bead => bead.id === dueID).properties, dueRecord.properties);
   dueEvidence.inventory = dueInventory;
   pass('public BDP reads normalized initial due, stable no-op revision/ETag, replacement and nullable clear while existing graph records remain unchanged');
+
+  const patchBefore = dueInventory.items.find(bead => bead.id === planID);
+  assert.ok(patchBefore);
+  const patchBeforeHTTP = await http(planID);
+  assert.equal(patchBeforeHTTP.response.status, 200);
+  const patchProperties = { ...patchBefore.properties, body: 'Ordered patch visible through public Read — 雪\r\n' };
+  const patchOperations = [{ op: 'replace', path: '/body', value: patchProperties.body }];
+  const patchMutation = await dueWrite('changed', ['update', planID, '--patch', JSON.stringify(patchOperations),
+    '--if-revision', patchBefore.revision, '--actor', 'property-patch-author', '--json'], 'client-cli-memory-properties-patch-');
+  assert.deepEqual(Object.keys(patchMutation).sort(), ['changed', 'memory']);
+  assert.equal(patchMutation.changed, true);
+  const patchAfter = await perform({ kind: 'resource', resource: 'bead', id: planID });
+  assert.equal(patchAfter.revision, patchMutation.memory.revision);
+  assert.notEqual(patchAfter.revision, patchBefore.revision);
+  assert.deepEqual(patchAfter.properties, patchProperties);
+  assert.deepEqual(patchAfter.ownedLinks, patchBefore.ownedLinks);
+  assert.deepEqual(patchAfter, { ...patchBefore, properties: patchProperties,
+    revision: patchAfter.revision, attribution: patchAfter.attribution });
+  const patchAfterHTTP = await http(planID, { headers: { 'if-none-match': patchBeforeHTTP.response.headers.get('etag') } });
+  assert.equal(patchAfterHTTP.response.status, 200);
+  const patchNoop = await dueWrite('noop', ['update', planID, '--patch', JSON.stringify(patchOperations),
+    '--if-revision', patchAfter.revision, '--actor', 'different-noop-actor', '--json'], 'client-cli-memory-properties-patch-');
+  assert.deepEqual(patchNoop, { memory: patchMutation.memory, changed: false });
+  assert.deepEqual(await perform({ kind: 'resource', resource: 'bead', id: planID }), patchAfter);
+  const patchNoopHTTP = await http(planID, { headers: { 'if-none-match': patchAfterHTTP.response.headers.get('etag') } });
+  assert.equal(patchNoopHTTP.response.status, 304);
+  assert.equal(patchNoopHTTP.text, '');
+  const patchInventory = await perform({ kind: 'collection', collection: 'beads', limit: 100 });
+  assert.equal(patchInventory.next, null);
+  assert.deepEqual(patchInventory.items, dueInventory.items.map(bead => bead.id === planID ? patchAfter : bead));
+  artifacts.memoryPropertiesPatch = { before: patchBefore, after: patchAfter, mutation: patchMutation,
+    noOp: patchNoop, operations: patchOperations, inventory: patchInventory,
+    http: { beforeBody: patchBeforeHTTP.text, afterBody: patchAfterHTTP.text, noOpBody: patchNoopHTTP.text,
+      beforeETag: patchBeforeHTTP.response.headers.get('etag'), afterETag: patchAfterHTTP.response.headers.get('etag'),
+      changedStatus: patchAfterHTTP.response.status, noOpStatus: patchNoopHTTP.response.status },
+    mechanism: 'Installed CLI ordered Memory patch; unchanged independent public BDP Read client; HTTP remains read-only.' };
+  pass('public BDP observes guarded ordered Memory patch, complete unchanged owned Links and inventory, then stable no-op record and304 ETag');
+
 
 } catch (error) {
   failure = { name: error.name, message: error.message, stack: error.stack };

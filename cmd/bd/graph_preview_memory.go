@@ -20,6 +20,11 @@ func runGraphPreviewUpdate(cmd *cobra.Command, args []string) error {
 	if err != nil {
 		return graphFailure("invalid_selector", err.Error(), 2)
 	}
+	// Explicit properties-patch intent must refuse mixed Issue/Link flags before
+	// they can select a different writer or consume patch input.
+	if cmd.Flags().Changed("patch") {
+		return runGraphPreviewMemoryPropertiesPatch(cmd, path)
+	}
 	// Presence selects claim admission even for --claim=false; never let an
 	// unsupported claim combination fall through to another writer.
 	if cmd.Flags().Changed("claim") {

@@ -100,6 +100,7 @@ jobs:
           sha256sum scripts/graph-issue-estimate-smoke.py > "$RUNNER_TEMP/c0-evidence/issue-estimate-harness.sha256"
           sha256sum scripts/graph-issue-initial-notes-smoke.py > "$RUNNER_TEMP/c0-evidence/issue-initial-notes-harness.sha256"
           sha256sum scripts/graph-issue-due-smoke.py > "$RUNNER_TEMP/c0-evidence/issue-due-harness.sha256"
+          sha256sum scripts/graph-memory-properties-patch-smoke.py > "$RUNNER_TEMP/c0-evidence/memory-properties-patch-harness.sha256"
           sha256sum scripts/graph-issue-create-fields-smoke.py > "$RUNNER_TEMP/c0-evidence/issue-create-fields-harness.sha256"
           sha256sum scripts/graph-issue-references-smoke.py > "$RUNNER_TEMP/c0-evidence/issue-references-harness.sha256"
           sha256sum scripts/graph-issue-priority-smoke.py > "$RUNNER_TEMP/c0-evidence/issue-priority-harness.sha256"
@@ -244,6 +245,25 @@ jobs:
             -run 'TestPrepareIssueForInsertNormalizesOptionalTimestampsToUTC|TestNormalizeIssueTimestampsConvertsOptionalTimestampsToUTC' \
             ./internal/storage/issueops ./internal/storage/domain/db \
             > "$RUNNER_TEMP/c0-evidence/due-contributor-tests.log" 2>&1
+          GO_TEST_PKG_PARALLEL=1 TEST_VERBOSE=1 ./scripts/test.sh ./internal/graphpatch \
+            > "$RUNNER_TEMP/c0-evidence/property-change-tests.log" 2>&1
+          for suite in Lifecycle RefusalAndRollback ReadBudget; do
+            for backend in embedded server; do
+              grep -q "^ *--- PASS: TestMemoryPropertiesPatch${suite}/${backend} (" "$RUNNER_TEMP/c0-evidence/storage-tests.log"
+            done
+          done
+          for backend in embedded server; do
+            for unconditional in false true; do
+              grep -q "^ *--- PASS: TestMemoryPropertiesPatchConcurrentOwnedWriter/${backend}/unconditional-${unconditional} (" "$RUNNER_TEMP/c0-evidence/storage-tests.log"
+            done
+          done
+          for suite in LostCommitResponse ModeExclusivity; do
+            grep -q "^--- PASS: TestMemoryPropertiesPatch${suite} (" "$RUNNER_TEMP/c0-evidence/storage-tests.log"
+          done
+          if grep -Eq '^ *--- (SKIP|FAIL): TestMemoryPropertiesPatch' "$RUNNER_TEMP/c0-evidence/storage-tests.log"; then
+            echo "Memory property patch storage proof did not execute completely" >&2
+            exit 1
+          fi
           # Every admitted assignment suite must execute on both real engines.
           for suite in Lifecycle RefusalAndRollback ActiveHolderFenceAndLease ConcurrentPriorityWriter; do
             for backend in embedded server; do
@@ -405,6 +425,11 @@ jobs:
             --output-dir "$RUNNER_TEMP/c0-evidence/issue-due" \
             --backend both --server-port 15440 --server-root "$RUNNER_TEMP/c0-server" --total-timeout 300 \
             > "$RUNNER_TEMP/c0-evidence/issue-due-smoke.log" 2>&1
+
+          python3 scripts/graph-memory-properties-patch-smoke.py --bd "$RUNNER_TEMP/c0-bin/bd" \
+            --output-dir "$RUNNER_TEMP/c0-evidence/memory-properties-patch" \
+            --backend both --server-port 15440 --server-root "$RUNNER_TEMP/c0-server" --total-timeout 300 \
+            > "$RUNNER_TEMP/c0-evidence/memory-properties-patch-smoke.log" 2>&1
 
       - name: Preserve receipts (including failures)
         if: always()
