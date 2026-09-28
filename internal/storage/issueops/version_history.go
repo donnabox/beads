@@ -461,8 +461,10 @@ func recordVersionAtInTx(ctx context.Context, tx DBTX, issueID, actor string, at
 		return fmt.Errorf("versioned history: insert version row for %s: %w", issueID, err)
 	}
 
+	// Advancing recorder bookkeeping must not fire updated_at's ON UPDATE
+	// clause after durableState has captured the accepted Issue state.
 	if _, err := tx.ExecContext(ctx,
-		"UPDATE issues SET current_revision = ? WHERE id = ?", newRevision, issueID,
+		"UPDATE issues SET current_revision = ?, updated_at = updated_at WHERE id = ?", newRevision, issueID,
 	); err != nil {
 		return fmt.Errorf("versioned history: advance current_revision for %s: %w", issueID, err)
 	}
