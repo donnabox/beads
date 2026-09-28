@@ -481,6 +481,88 @@ try {
     writer: 'installed CLI; HTTP remains read-only; claim lease preserved without renewal' };
   pass('public BDP reads CLI-appended literal notes, unchanged claim/ownership and a changed ETag');
 
+  // Estimate is an existing nullable Issue scalar, not a deadline or scheduler.
+  // Exercise explicit zero presence before a positive value, preserving the lease.
+  const estimateBefore = workAfter;
+  assert.equal(Object.hasOwn(estimateBefore.properties, 'estimated_minutes'), false,
+    'estimate must initially be absent, not a synthesized zero');
+  const estimateEvidence = artifacts.issueEstimate = {
+    before: estimateBefore, mutations: {}, properties: {},
+    http: { before: { requestIndex: notesHTTPAfterRequestIndex, body: notesHTTP.text } },
+    etags: { before: notesETag },
+    writer: 'installed CLI; HTTP remains read-only; estimate is minutes, not a timer; claim lease preserved without renewal',
+  };
+  let estimateETag = notesETag;
+  for (const [stage, flag, minutes] of [['zero', '--estimate', 0], ['positive', '-e', 45]]) {
+    const previous = workAfter;
+    const estimateArgs = ['update', workID, flag, String(minutes),
+      '--if-revision', previous.revision, '--actor', 'estimate-reviewer', '--json'];
+    const estimateBinary = digest(await readFile(process.env.BDP_BD));
+    let estimateExecution;
+    let estimateExitCode = null;
+    let estimateRawErrorCode = null;
+    try {
+      estimateExecution = await promisify(execFile)(process.env.BDP_BD, estimateArgs,
+        { timeout: 60_000, maxBuffer: 2 * 1024 * 1024, encoding: 'utf8' });
+      estimateExitCode = 0;
+    } catch (error) {
+      estimateExecution = error;
+      estimateExitCode = typeof error.code === 'number' ? error.code : null;
+      estimateRawErrorCode = error.code ?? null;
+      throw error;
+    } finally {
+      const receiptName = 'client-cli-issue-estimate-' + stage;
+      await writeFile(join(output, receiptName + '.stdout.log'), estimateExecution?.stdout ?? '');
+      await writeFile(join(output, receiptName + '.stderr.log'), estimateExecution?.stderr ?? '');
+      await writeFile(join(output, receiptName + '.json'), JSON.stringify({
+        argv: [process.env.BDP_BD, ...estimateArgs], cwd: process.cwd(), binarySha256: estimateBinary,
+        exitCode: estimateExitCode, signal: estimateExecution?.signal ?? null,
+        rawErrorCode: estimateRawErrorCode,
+        stdoutSha256: digest(estimateExecution?.stdout ?? ''),
+        stderrSha256: digest(estimateExecution?.stderr ?? ''),
+      }, null, 2));
+    }
+    assert.equal(digest(await readFile(process.env.BDP_BD)), estimateBinary);
+    assert.equal(estimateExecution.stderr, '');
+    const mutation = JSON.parse(estimateExecution.stdout);
+    assert.equal(mutation.schemaVersion, 1);
+    assert.equal(mutation.preview, true);
+    assert.equal(mutation.result.changed, true);
+    const resourceRequestIndex = network.length;
+    workAfter = await perform({ kind: 'resource', resource: 'bead', id: workID });
+    assert.equal(network.length, resourceRequestIndex + 1);
+    assert.equal(workAfter.id, previous.id);
+    assert.equal(workAfter.type, previous.type);
+    assert.equal(workAfter.revision, mutation.result.issue.revision);
+    assert.notEqual(workAfter.revision, previous.revision);
+    assert.deepEqual(workAfter.properties, mutation.result.issue.properties);
+    assert.equal(Object.hasOwn(workAfter.properties, 'estimated_minutes'), true);
+    assert.equal(workAfter.properties.estimated_minutes, minutes);
+    assert.deepEqual(workAfter.properties, { ...previous.properties,
+      estimated_minutes: minutes, updated_at: workAfter.properties.updated_at });
+    assert.deepEqual(workAfter.ownedLinks, previous.ownedLinks);
+    const propertiesRequestIndex = network.length;
+    const properties = await perform({ kind: 'properties', resource: 'bead', id: workID });
+    assert.equal(network.length, propertiesRequestIndex + 1);
+    assert.deepEqual(properties, workAfter.properties);
+    const requestIndex = network.length;
+    const estimateHTTP = await http(workID, { headers: { 'if-none-match': estimateETag } });
+    assert.equal(network.length, requestIndex + 1);
+    assert.equal(estimateHTTP.response.status, 200);
+    const nextETag = estimateHTTP.response.headers.get('etag');
+    assert.ok(nextETag);
+    assert.notEqual(nextETag, estimateETag);
+    assert.deepEqual(parseBeadRecord(JSON.parse(estimateHTTP.text)), workAfter);
+    estimateEvidence[stage === 'zero' ? 'zero' : 'after'] = workAfter;
+    estimateEvidence.mutations[stage] = mutation;
+    estimateEvidence.properties[stage] = properties;
+    estimateEvidence.http[stage] = { resourceRequestIndex, propertiesRequestIndex,
+      requestIndex, body: estimateHTTP.text };
+    estimateEvidence.etags[stage] = nextETag;
+    estimateETag = nextETag;
+  }
+  pass('public BDP observes absent-to-zero-to-positive CLI estimates with explicit zero presence, complete unchanged lease/ownership and changed ETags');
+
   // A retained current-read cursor is a snapshot capability, not public History.
   // Delete only after all earlier fixtures/checks have completed.
   const deletionOwner = client.createContinuationScope();
