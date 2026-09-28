@@ -39,10 +39,16 @@ func validateIssueReferenceStorage(name, value string) error {
 func validateIssueCreateFields(issue *types.Issue) error {
 	for _, field := range []struct{ name, value string }{
 		{"design", issue.Design}, {"acceptance_criteria", issue.AcceptanceCriteria}, {"assignee", issue.Assignee},
+		{"notes", issue.Notes}, {"owner", issue.Owner}, {"created_by", issue.CreatedBy},
 	} {
 		if !utf8.ValidString(field.value) {
 			return fmt.Errorf("%w: Issue %s must be UTF-8", storage.ErrValidation, field.name)
 		}
+	}
+	// Owner is checked by ValidatePublicCreateRequest. CreatedBy may differ
+	// from request.Actor, whose separate length check cannot cover this value.
+	if err := types.CheckFieldLen("created_by", issue.CreatedBy); err != nil {
+		return fmt.Errorf("%w: Issue creator: %w", storage.ErrValidation, err)
 	}
 	if err := types.ValidateIssueEstimatedMinutes(issue.EstimatedMinutes); err != nil {
 		return fmt.Errorf("%w: %w", storage.ErrValidation, err)
@@ -61,5 +67,6 @@ func validateIssueCreateFields(issue *types.Issue) error {
 func sameIssueCreateFields(want, got *types.Issue) bool {
 	return got != nil && want.Design == got.Design && want.AcceptanceCriteria == got.AcceptanceCriteria &&
 		want.Assignee == got.Assignee && want.SpecID == got.SpecID &&
+		want.Notes == got.Notes && want.Owner == got.Owner && want.CreatedBy == got.CreatedBy &&
 		reflect.DeepEqual(want.EstimatedMinutes, got.EstimatedMinutes) && reflect.DeepEqual(want.ExternalRef, got.ExternalRef)
 }

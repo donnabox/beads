@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"reflect"
 	"time"
+	"unicode/utf8"
 
 	graph "github.com/steveyegge/beads/graphops"
 	"github.com/steveyegge/beads/internal/storage"
@@ -17,6 +18,9 @@ import (
 )
 
 func validateIssueCreate(request publicops.CreateRequest) error {
+	if !utf8.ValidString(request.Actor) {
+		return fmt.Errorf("%w: Issue actor must be UTF-8", storage.ErrValidation)
+	}
 	if err := issueops.ValidatePublicCreateRequest(request); err != nil {
 		return err
 	}
@@ -27,9 +31,9 @@ func validateIssueCreate(request publicops.CreateRequest) error {
 	// CloneCreateRequest materializes empty relation slices. Their lengths
 	// were checked above; preserve that empty representation without admitting
 	// any dependency or comment values into this bounded adapter.
-	allowed := &types.Issue{ID: i.ID, Title: i.Title, Description: i.Description, Design: i.Design, AcceptanceCriteria: i.AcceptanceCriteria, Assignee: i.Assignee, EstimatedMinutes: i.EstimatedMinutes, ExternalRef: i.ExternalRef, SpecID: i.SpecID, IssueType: i.IssueType, Status: i.Status, Priority: i.Priority, Labels: i.Labels, Dependencies: i.Dependencies, Comments: i.Comments}
+	allowed := &types.Issue{ID: i.ID, Title: i.Title, Description: i.Description, Notes: i.Notes, Owner: i.Owner, CreatedBy: i.CreatedBy, Design: i.Design, AcceptanceCriteria: i.AcceptanceCriteria, Assignee: i.Assignee, EstimatedMinutes: i.EstimatedMinutes, ExternalRef: i.ExternalRef, SpecID: i.SpecID, IssueType: i.IssueType, Status: i.Status, Priority: i.Priority, Labels: i.Labels, Dependencies: i.Dependencies, Comments: i.Comments}
 	if !reflect.DeepEqual(i, allowed) {
-		return fmt.Errorf("%w: Issue preview accepts only ID, title, description, design, acceptance, assignee, estimate, external/spec references, classification, status, priority and labels; no relationships, metadata, ephemeral or no-history records", storage.ErrValidation)
+		return fmt.Errorf("%w: Issue preview accepts only ID, title, description, design, acceptance, initial notes, owner, creator, assignee, estimate, external/spec references, classification, status, priority and labels; no relationships, metadata, ephemeral or no-history records", storage.ErrValidation)
 	}
 	return validateIssueCreateFields(i)
 }
@@ -105,6 +109,14 @@ func (s *Store) CreateIssue(ctx context.Context, path string, request publicops.
 		}
 		if err := s.afterStage("retained"); err != nil {
 			return err
+		}
+		// Initial notes have no replacement/clear operation in this preview.
+		// Reuse append's workspace admission bound after the retained mapping
+		// exists, so a new non-clearable value cannot publish unreadable state.
+		if request.Issue.Notes != "" {
+			if err := checkCurrentReadBytes(ctx, tx); err != nil {
+				return err
+			}
 		}
 		result, err = s.showIssueInTx(ctx, tx, path)
 		return err

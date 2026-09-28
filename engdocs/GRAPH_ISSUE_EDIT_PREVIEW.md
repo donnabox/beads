@@ -219,14 +219,15 @@ status belong to the fork delivery plan; this recipe is not a qualification clai
 
 ## Complete initial fields
 
-A single graph `create` can set the existing inline design, acceptance,
-assignee, estimate and external/spec reference fields in its first retained
+A single graph `create` can set the existing inline design, acceptance, initial
+notes, assignee, estimate and external/spec reference fields in its first retained
 version. For example, in a normally initialized disposable graph workspace:
 
 ```sh
 bd create 'Deliver the plan' --id beads/task \
   --design 'Reuse the current storage writer' \
   --acceptance 'Fresh-process reads agree' \
+  --notes 'Initial context for the work' \
   --assignee donna --estimate 45 \
   --external-ref tracker/task --spec-id specs/plan --json
 bd show beads/task --json
@@ -247,13 +248,41 @@ create effects if storage changes an accepted value. Later guarded edits retain
 the complete first version. Creation labels still use their existing events;
 one retained version does not mean one total event for a labeled Issue.
 
-`status --graph` reports provisional `issueCreateFields: true`;
-`issueWorkflows` remains false. Status defaults, initial notes, due/defer,
-composite relationships, metadata, aliases and file inputs are outside this
-slice. Native Owner and CreatedBy properties remain unset as in the earlier graph
-creator; the create actor still supplies retained attribution. This is partial
-ordinary-create compatibility. Global preview read limits are unchanged; very
-large text may exceed them even when its existing LONGTEXT column accepts it.
+`status --graph` reports provisional `issueCreateFields`, `issueInitialNotes`
+and `issueCreateAuthorship` capabilities; `issueWorkflows` remains false.
+Status defaults, due/defer, composite relationships, metadata, aliases and file
+inputs remain outside this slice. This is partial ordinary-create compatibility.
+
+Initial notes preserve literal UTF-8, CRLF, whitespace and `-`; omitted or empty
+notes start empty. They are present in the one initial retained version, without
+an append/update repair step. Notes replacement and clear on existing Issues
+remain held; `--notes` on graph `update` still refuses. The existing guarded
+`--append-notes` is the subsequent progress-writing path.
+
+Nonempty initial notes must leave the complete workspace within the existing
+16 MiB current-read acquisition budget. The check includes the new retained
+snapshot and mapping and precedes commit; failure rolls back all creation
+effects. This matters because the preview does not offer notes replacement or
+clear. It is a workspace bound, not a notes-column limit or a new ordinary
+Issue contract. Other large text can still exceed preview read limits even when
+its existing LONGTEXT column accepts it.
+
+Graph CLI create now uses the same creator/owner defaults as ordinary create.
+The resolved actor supplies both recorded attribution and `properties.created_by`.
+`properties.owner` comes from nonempty `GIT_AUTHOR_EMAIL`, then git `user.email`,
+or remains empty when neither exists. The environment email is preserved;
+git-config email is trimmed by the existing helper. Owner is independent of
+assignee and grants no lease. **Complete Issue and BDP reads publish that native
+owner email.** These are ordinary caller-supplied properties, not authenticated
+identity or BDP immutable change context. A later claim/edit retains the initial
+creator and owner while recording its own mutation actor.
+
+The internal Go CreateRequest keeps its existing independent CreatedBy, Owner
+and request Actor values; storage does not resolve environment defaults or
+require creator to equal actor. Existing 255-code-point representation limits
+and UTF-8 admission apply, with exact hydrated checks before graph publication.
+Older records with empty creator/owner remain readable; no backfill, schema or
+persisted Type descriptor change is involved.
 
 Reproduce both installed backends with
 `scripts/graph-issue-create-fields-smoke.py`, using the same `--bd`, `--backend`,
@@ -262,3 +291,14 @@ recipe above. Storage tests separately verify a single initial retained snapshot
 SQL presence, native bounds, failure rollback and linked-state preservation.
 The independent public BDP client observes all six fields after one CLI create;
 HTTP writes and public Memory History remain unavailable.
+
+
+The focused `scripts/graph-issue-initial-notes-smoke.py` uses the same installed
+binary/backend/output options. It records each command's isolated environment
+and git-config text/hash in `input-environments.json`, exercises actor/owner
+precedence, and verifies initial notes through linking, claim, append and exact
+reads. Storage tests separately prove recorder counts, lease absence and atomic
+read-budget refusal. The independent public-client proof adds resource,
+properties, inventory and raw HTTP reads after one notes-bearing CLI create;
+this is read observation of a CLI writer, not HTTP mutation or public History.
+Capture results and qualification status belong to the fork delivery plan.

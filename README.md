@@ -250,8 +250,13 @@ reopen one canonical Issue while retaining its old versions and owned Links.
 [Issue text, priority, estimate and reference editing](engdocs/GRAPH_ISSUE_EDIT_PREVIEW.md) uses familiar
 inline `update` flags with a graph revision guard. Priority, estimates, references and text can change
 atomically while retaining the earlier complete Issue and its owned Dependencies.
-Graph `create` can also author design, acceptance, assignee, estimate and both
-references in one initial version; assignment grants no claim lease.
+Graph `create` can author design, acceptance, initial notes, assignee, estimate
+and both references in one initial version; assignment grants no claim lease.
+It also uses ordinary CLI creator and owner defaults: the actor becomes
+`created_by`, and the resolved git email becomes `owner` when available. Complete
+Issue and BDP reads include that owner email; these properties are not verified
+identity. Nonempty initial notes must fit the preview's whole-workspace read
+budget or the entire create rolls back.
 [Append-only Issue notes](engdocs/GRAPH_ISSUE_NOTES_PREVIEW.md) uses the existing
 `--append-notes` operation inside that same transaction; notes replacement remains held.
 [Body recall](engdocs/GRAPH_MEMORY_RECALL_PREVIEW.md) uses `bd recall beads/PATH`

@@ -782,7 +782,9 @@ try {
   assert.deepEqual(authored.result.owned, []);
   for (const [field, value] of Object.entries(authoredFields)) assert.equal(authored.result.properties[field], value);
   assert.equal(authored.result.properties.status, 'open');
-  for (const field of ['lease_holder', 'lease_expires_at', 'owner', 'created_by']) {
+  assert.equal(authored.result.properties.created_by, 'initial-author');
+  assert.equal(authored.result.properties.owner, 'c0@example.invalid');
+  for (const field of ['lease_holder', 'lease_expires_at']) {
     assert.equal(Object.hasOwn(authored.result.properties, field), false);
   }
   const authoredResourceIndex = network.length;
@@ -815,6 +817,84 @@ try {
       inventoryRequestIndex: authoredInventoryIndex, requestIndex: authoredHTTPIndex, body: authoredHTTP.text },
     mechanism: 'Single CLI create; public BDP Read observes initial fields. No HTTP write or public History claim.' };
   pass('public BDP reads all six initial Issue fields from one CLI create, complete properties and inventory, without a claim or follow-up edit');
+
+  // Initial notes and ordinary creator defaults are already part of the first
+  // CLI-created version. The independent client only observes the committed data.
+  const initialNotesID = id('beads/authored-notes');
+  const initialNotesText = '  Initial notes — 雪\r\nSecond line  ';
+  const initialNotesArgs = ['create', 'Issue with initial notes', '--id', 'beads/authored-notes',
+    '--notes', initialNotesText, '--actor', 'notes-initial-author', '--json'];
+  const initialNotesBinary = digest(await readFile(process.env.BDP_BD));
+  let initialNotesExecution;
+  let initialNotesExitCode = null;
+  let initialNotesRawErrorCode = null;
+  try {
+    initialNotesExecution = await promisify(execFile)(process.env.BDP_BD, initialNotesArgs,
+      { timeout: 60_000, maxBuffer: 2 * 1024 * 1024, encoding: 'utf8' });
+    initialNotesExitCode = 0;
+  } catch (error) {
+    initialNotesExecution = error;
+    initialNotesExitCode = typeof error.code === 'number' ? error.code : null;
+    initialNotesRawErrorCode = typeof error.code === 'string' ? error.code : null;
+    throw error;
+  } finally {
+    await writeFile(join(output, 'client-cli-issue-initial-notes.stdout.log'), initialNotesExecution?.stdout ?? '');
+    await writeFile(join(output, 'client-cli-issue-initial-notes.stderr.log'), initialNotesExecution?.stderr ?? '');
+    await writeFile(join(output, 'client-cli-issue-initial-notes.json'), JSON.stringify({
+      argv: [process.env.BDP_BD, ...initialNotesArgs], cwd: process.cwd(), binarySha256: initialNotesBinary,
+      exitCode: initialNotesExitCode, signal: initialNotesExecution?.signal ?? null, rawErrorCode: initialNotesRawErrorCode,
+      stdoutSha256: digest(initialNotesExecution?.stdout ?? ''), stderrSha256: digest(initialNotesExecution?.stderr ?? ''),
+    }, null, 2));
+  }
+  assert.equal(digest(await readFile(process.env.BDP_BD)), initialNotesBinary);
+  assert.equal(initialNotesExecution.stderr, '');
+  const initialNotesCreated = JSON.parse(initialNotesExecution.stdout);
+  assert.equal(initialNotesCreated.schemaVersion, 1);
+  assert.equal(initialNotesCreated.preview, true);
+  assert.equal(initialNotesCreated.result.id, initialNotesID);
+  assert.equal(initialNotesCreated.result.version, initialNotesCreated.result.revision);
+  assert.equal(initialNotesCreated.result.attribution.actor, 'notes-initial-author');
+  assert.deepEqual(initialNotesCreated.result.owned, []);
+  const expectedInitialNotes = { notes: initialNotesText, created_by: 'notes-initial-author',
+    owner: 'c0@example.invalid', status: 'open' };
+  for (const [field, value] of Object.entries(expectedInitialNotes)) {
+    assert.equal(initialNotesCreated.result.properties[field], value);
+  }
+  for (const field of ['lease_holder', 'lease_expires_at', 'heartbeat_at']) {
+    assert.equal(Object.hasOwn(initialNotesCreated.result.properties, field), false);
+  }
+  const initialNotesResourceIndex = network.length;
+  const initialNotesResource = await perform({ kind: 'resource', resource: 'bead', id: initialNotesID });
+  assert.equal(network.length, initialNotesResourceIndex + 1);
+  assert.equal(initialNotesResource.id, initialNotesID);
+  assert.equal(initialNotesResource.type, initialNotesCreated.result.type);
+  assert.equal(initialNotesResource.revision, initialNotesCreated.result.revision);
+  assert.deepEqual(initialNotesResource.properties, initialNotesCreated.result.properties);
+  assert.deepEqual(Object.values(initialNotesResource.ownedLinks).flat(), []);
+  const initialNotesPropertiesIndex = network.length;
+  const initialNotesProperties = await perform({ kind: 'properties', resource: 'bead', id: initialNotesID });
+  assert.equal(network.length, initialNotesPropertiesIndex + 1);
+  assert.deepEqual(initialNotesProperties, initialNotesResource.properties);
+  const initialNotesInventoryIndex = network.length;
+  const initialNotesInventory = await perform({ kind: 'collection', collection: 'beads', limit: 100 });
+  assert.equal(network.length, initialNotesInventoryIndex + 1);
+  assert.equal(initialNotesInventory.next, null);
+  assert.equal(initialNotesInventory.items.length, 6);
+  assert.deepEqual(initialNotesInventory.items.find(bead => bead.id === initialNotesID), initialNotesResource);
+  assert.deepEqual(initialNotesInventory.items.filter(bead => bead.id !== initialNotesID), authoredInventory.items);
+  const initialNotesHTTPIndex = network.length;
+  const initialNotesHTTP = await http(initialNotesID);
+  assert.equal(network.length, initialNotesHTTPIndex + 1);
+  assert.equal(initialNotesHTTP.response.status, 200);
+  assert.ok(initialNotesHTTP.response.headers.get('etag'));
+  assert.deepEqual(parseBeadRecord(JSON.parse(initialNotesHTTP.text)), initialNotesResource);
+  artifacts.issueInitialNotes = { creation: initialNotesCreated, resource: initialNotesResource,
+    properties: initialNotesProperties, inventory: initialNotesInventory, expectedFields: expectedInitialNotes,
+    http: { resourceRequestIndex: initialNotesResourceIndex, propertiesRequestIndex: initialNotesPropertiesIndex,
+      inventoryRequestIndex: initialNotesInventoryIndex, requestIndex: initialNotesHTTPIndex, body: initialNotesHTTP.text,
+      etag: initialNotesHTTP.response.headers.get('etag') },
+    mechanism: 'Single CLI create with literal initial notes and ordinary creator/git-email owner defaults; public BDP Read only. No HTTP write, authenticated identity or public History claim.' };
+  pass('public BDP reads literal initial notes and ordinary creator/git-email owner from the first CLI-created record, complete properties and unchanged prior inventory');
 
 } catch (error) {
   failure = { name: error.name, message: error.message, stack: error.stack };
