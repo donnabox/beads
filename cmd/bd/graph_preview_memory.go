@@ -20,6 +20,11 @@ func runGraphPreviewUpdate(cmd *cobra.Command, args []string) error {
 	if err != nil {
 		return graphFailure("invalid_selector", err.Error(), 2)
 	}
+	// Presence selects claim admission even for --claim=false; never let an
+	// unsupported claim combination fall through to another writer.
+	if cmd.Flags().Changed("claim") {
+		return runGraphPreviewClaimIssue(cmd, path)
+	}
 	if strings.HasPrefix(path, "links/") {
 		return runGraphPreviewUpdateLink(cmd, args)
 	}

@@ -263,7 +263,7 @@ def exercise(capture):
         ("overlength-assignee", ["update", source["id"], "--assignee", "雪" * 256, "--unconditional"], "invalid_properties"),
         ("memory-kind", ["update", memory["id"], "--assignee", "x", "--unconditional"], "capability_unavailable"),
         ("link-kind", ["update", context["id"], "--assignee", "x", "--unconditional"], "capability_unavailable"),
-        ("claim-refused", [*common, "--unconditional", "--claim=false"], "capability_unavailable"),
+        ("claim-refused", [*common, "--unconditional", "--claim=false"], "invalid_properties"),
         ("force-refused", [*common, "--unconditional", "--force=false"], "capability_unavailable"),
         ("status-refused", [*common, "--unconditional", "--status", "in_progress"], "capability_unavailable"),
         ("assignee-guard-refused", [*common, "--unconditional", "--if-assignee", "human-owner"], "capability_unavailable"),
