@@ -229,10 +229,13 @@
       "transfers": [
         {
           "destination_pr": "https://github.com/versioned-beads/beads/pull/36",
-          "head": "3ce9c4e3b8cbf70e3f39b93ee2ffc31b0b15c5d5",
+          "head": "bd8154a045808b04f83206ffaf8c18f7e52a2030",
           "scope": "C0 create/read/authority/failure",
           "state": "runtime local proof at886; docs correction passed; new-head Linux CI pending",
-          "landed_commit": null
+          "landed_commit": null,
+          "previous_heads": [
+            "3ce9c4e3b8cbf70e3f39b93ee2ffc31b0b15c5d5"
+          ]
         }
       ]
     },
@@ -250,12 +253,13 @@
       "transfers": [
         {
           "destination_pr": "https://github.com/versioned-beads/beads/pull/37",
-          "head": "c1aee02f1a0486d9b2c9c27237a3719abc9af970",
+          "head": "effa11ea5c6dc1cf00fbb9c5b4ddf818d37676e5",
           "scope": "Basic Issue create/current read through target native writer",
           "state": "ready; strict local proof at335 passes; updated landed-codec ancestry; exact destination CI pending",
           "landed_commit": null,
           "previous_heads": [
-            "335c813ea80a7d15bb983818f319a044d0032779"
+            "335c813ea80a7d15bb983818f319a044d0032779",
+            "c1aee02f1a0486d9b2c9c27237a3719abc9af970"
           ]
         }
       ]
@@ -274,20 +278,24 @@
       "transfers": [
         {
           "destination_pr": "https://github.com/versioned-beads/beads/pull/37",
-          "head": "c1aee02f1a0486d9b2c9c27237a3719abc9af970",
+          "head": "effa11ea5c6dc1cf00fbb9c5b4ddf818d37676e5",
           "scope": "Blocking Dependencies, close and ready through target writers",
           "state": "ready; strict local proof at335 passes; updated landed-codec ancestry; exact destination CI pending",
           "landed_commit": null,
           "previous_heads": [
-            "335c813ea80a7d15bb983818f319a044d0032779"
+            "335c813ea80a7d15bb983818f319a044d0032779",
+            "c1aee02f1a0486d9b2c9c27237a3719abc9af970"
           ]
         },
         {
           "destination_pr": "https://github.com/versioned-beads/beads/pull/35",
-          "head": "a1e1c3d610951301080189ba18bf7067c97ebef7",
+          "head": "4ed326b45deb584c0f7222e5bb8a805a96f082a4",
           "scope": "Preserve updated_at when advancing native revision bookkeeping",
           "state": "current landed-codec base; exact destination CI pending; old download failure preserved",
-          "landed_commit": null
+          "landed_commit": null,
+          "previous_heads": [
+            "a1e1c3d610951301080189ba18bf7067c97ebef7"
+          ]
         }
       ]
     },
@@ -305,12 +313,13 @@
       "transfers": [
         {
           "destination_pr": "https://github.com/versioned-beads/beads/pull/37",
-          "head": "c1aee02f1a0486d9b2c9c27237a3719abc9af970",
+          "head": "effa11ea5c6dc1cf00fbb9c5b4ddf818d37676e5",
           "scope": "Mixed informational Links and guarded property replacement",
           "state": "ready; strict local proof at335 passes; updated landed-codec ancestry; exact destination CI pending",
           "landed_commit": null,
           "previous_heads": [
-            "335c813ea80a7d15bb983818f319a044d0032779"
+            "335c813ea80a7d15bb983818f319a044d0032779",
+            "c1aee02f1a0486d9b2c9c27237a3719abc9af970"
           ]
         }
       ]
@@ -329,12 +338,13 @@
       "transfers": [
         {
           "destination_pr": "https://github.com/versioned-beads/beads/pull/37",
-          "head": "c1aee02f1a0486d9b2c9c27237a3719abc9af970",
+          "head": "effa11ea5c6dc1cf00fbb9c5b4ddf818d37676e5",
           "scope": "Incident Links and guarded informational unlink",
           "state": "ready; strict local proof at335 passes; updated landed-codec ancestry; exact destination CI pending",
           "landed_commit": null,
           "previous_heads": [
-            "335c813ea80a7d15bb983818f319a044d0032779"
+            "335c813ea80a7d15bb983818f319a044d0032779",
+            "c1aee02f1a0486d9b2c9c27237a3719abc9af970"
           ]
         }
       ]
@@ -372,10 +382,13 @@
         },
         {
           "destination_pr": "https://github.com/versioned-beads/beads/pull/39",
-          "head": "de37bb34917e24aefd403d61778eb22c7341847a",
+          "head": "a9f89e8da8b6c8910b93860e9308b4f2b42fce5e",
           "scope": "Authoritative current Memory/Issue/Link and installed-Type projection into pinned BDP wire records; no public historical-version selectors. The codec correction remains separately accounted for by destination34.",
           "state": "draft; committed and pushed; clean exact-source local qualification running and destination CI pending; not qualified or landed",
-          "landed_commit": null
+          "landed_commit": null,
+          "previous_heads": [
+            "de37bb34917e24aefd403d61778eb22c7341847a"
+          ]
         }
       ]
     },
@@ -393,20 +406,24 @@
       "transfers": [
         {
           "destination_pr": "https://github.com/versioned-beads/beads/pull/37",
-          "head": "c1aee02f1a0486d9b2c9c27237a3719abc9af970",
+          "head": "effa11ea5c6dc1cf00fbb9c5b4ddf818d37676e5",
           "scope": "Private current snapshot needed for retained-state proof; no public BDP yet",
           "state": "ready; strict local proof at335 passes; updated landed-codec ancestry; exact destination CI pending",
           "landed_commit": null,
           "previous_heads": [
-            "335c813ea80a7d15bb983818f319a044d0032779"
+            "335c813ea80a7d15bb983818f319a044d0032779",
+            "c1aee02f1a0486d9b2c9c27237a3719abc9af970"
           ]
         },
         {
           "destination_pr": "https://github.com/versioned-beads/beads/pull/39",
-          "head": "de37bb34917e24aefd403d61778eb22c7341847a",
+          "head": "a9f89e8da8b6c8910b93860e9308b4f2b42fce5e",
           "scope": "Public Bead/Link/Type inventories projected from the complete transactional current snapshot inherited through destination37, retaining acquisition bounds and mapping validation; no second writer or storage schema.",
           "state": "draft; committed and pushed; clean exact-source local qualification running and destination CI pending; not qualified or landed",
-          "landed_commit": null
+          "landed_commit": null,
+          "previous_heads": [
+            "de37bb34917e24aefd403d61778eb22c7341847a"
+          ]
         }
       ]
     },
@@ -424,10 +441,13 @@
       "transfers": [
         {
           "destination_pr": "https://github.com/versioned-beads/beads/pull/39",
-          "head": "de37bb34917e24aefd403d61778eb22c7341847a",
+          "head": "a9f89e8da8b6c8910b93860e9308b4f2b42fce5e",
           "scope": "Bounded Selector and structural filters, incident selection and process-local immutable pagination with explicit expiry/capacity/restart limits; no public History, aliases or durable cursor contract.",
           "state": "draft; committed and pushed; clean exact-source local qualification running and destination CI pending; not qualified or landed",
-          "landed_commit": null
+          "landed_commit": null,
+          "previous_heads": [
+            "de37bb34917e24aefd403d61778eb22c7341847a"
+          ]
         }
       ]
     },
@@ -445,10 +465,13 @@
       "transfers": [
         {
           "destination_pr": "https://github.com/versioned-beads/beads/pull/39",
-          "head": "de37bb34917e24aefd403d61778eb22c7341847a",
+          "head": "a9f89e8da8b6c8910b93860e9308b4f2b42fce5e",
           "scope": "Current-only authenticated ordinary-server BDP Read activation through existing listener/Host/auth seams, CLI serve admission, adapted c921 independent-client capture and required HTTP CI; embedded serving refuses, and later writer/History surfaces are excluded.",
           "state": "draft; committed and pushed; clean exact-source local qualification running and destination CI pending; not qualified or landed",
-          "landed_commit": null
+          "landed_commit": null,
+          "previous_heads": [
+            "de37bb34917e24aefd403d61778eb22c7341847a"
+          ]
         }
       ]
     },
@@ -466,12 +489,13 @@
       "transfers": [
         {
           "destination_pr": "https://github.com/versioned-beads/beads/pull/37",
-          "head": "c1aee02f1a0486d9b2c9c27237a3719abc9af970",
+          "head": "effa11ea5c6dc1cf00fbb9c5b4ddf818d37676e5",
           "scope": "Internal exact retained reader only; no public version CLI",
           "state": "ready; strict local proof at335 passes; updated landed-codec ancestry; exact destination CI pending",
           "landed_commit": null,
           "previous_heads": [
-            "335c813ea80a7d15bb983818f319a044d0032779"
+            "335c813ea80a7d15bb983818f319a044d0032779",
+            "c1aee02f1a0486d9b2c9c27237a3719abc9af970"
           ]
         }
       ]
@@ -490,12 +514,13 @@
       "transfers": [
         {
           "destination_pr": "https://github.com/versioned-beads/beads/pull/37",
-          "head": "c1aee02f1a0486d9b2c9c27237a3719abc9af970",
+          "head": "effa11ea5c6dc1cf00fbb9c5b4ddf818d37676e5",
           "scope": "Guarded complete Memory property replacement",
           "state": "ready; strict local proof at335 passes; updated landed-codec ancestry; exact destination CI pending",
           "landed_commit": null,
           "previous_heads": [
-            "335c813ea80a7d15bb983818f319a044d0032779"
+            "335c813ea80a7d15bb983818f319a044d0032779",
+            "c1aee02f1a0486d9b2c9c27237a3719abc9af970"
           ]
         }
       ]
@@ -538,10 +563,13 @@
       "transfers": [
         {
           "destination_pr": "https://github.com/versioned-beads/beads/pull/36",
-          "head": "3ce9c4e3b8cbf70e3f39b93ee2ffc31b0b15c5d5",
+          "head": "bd8154a045808b04f83206ffaf8c18f7e52a2030",
           "scope": "Explicit file/stdin Memory creation",
           "state": "runtime local proof at886; docs correction passed; new-head Linux CI pending",
-          "landed_commit": null
+          "landed_commit": null,
+          "previous_heads": [
+            "3ce9c4e3b8cbf70e3f39b93ee2ffc31b0b15c5d5"
+          ]
         }
       ]
     },
@@ -559,12 +587,13 @@
       "transfers": [
         {
           "destination_pr": "https://github.com/versioned-beads/beads/pull/37",
-          "head": "c1aee02f1a0486d9b2c9c27237a3719abc9af970",
+          "head": "effa11ea5c6dc1cf00fbb9c5b4ddf818d37676e5",
           "scope": "Guarded Issue text editing with target recorder ownership",
           "state": "ready; strict local proof at335 passes; updated landed-codec ancestry; exact destination CI pending",
           "landed_commit": null,
           "previous_heads": [
-            "335c813ea80a7d15bb983818f319a044d0032779"
+            "335c813ea80a7d15bb983818f319a044d0032779",
+            "c1aee02f1a0486d9b2c9c27237a3719abc9af970"
           ]
         }
       ]
@@ -583,12 +612,13 @@
       "transfers": [
         {
           "destination_pr": "https://github.com/versioned-beads/beads/pull/37",
-          "head": "c1aee02f1a0486d9b2c9c27237a3719abc9af970",
+          "head": "effa11ea5c6dc1cf00fbb9c5b4ddf818d37676e5",
           "scope": "Guarded canonical Dependency unlink",
           "state": "ready; strict local proof at335 passes; updated landed-codec ancestry; exact destination CI pending",
           "landed_commit": null,
           "previous_heads": [
-            "335c813ea80a7d15bb983818f319a044d0032779"
+            "335c813ea80a7d15bb983818f319a044d0032779",
+            "c1aee02f1a0486d9b2c9c27237a3719abc9af970"
           ]
         }
       ]
@@ -607,12 +637,13 @@
       "transfers": [
         {
           "destination_pr": "https://github.com/versioned-beads/beads/pull/37",
-          "head": "c1aee02f1a0486d9b2c9c27237a3719abc9af970",
+          "head": "effa11ea5c6dc1cf00fbb9c5b4ddf818d37676e5",
           "scope": "Actual predecessor disclosure for unconditional Memory changes",
           "state": "ready; strict local proof at335 passes; updated landed-codec ancestry; exact destination CI pending",
           "landed_commit": null,
           "previous_heads": [
-            "335c813ea80a7d15bb983818f319a044d0032779"
+            "335c813ea80a7d15bb983818f319a044d0032779",
+            "c1aee02f1a0486d9b2c9c27237a3719abc9af970"
           ]
         }
       ]
@@ -655,12 +686,13 @@
       "transfers": [
         {
           "destination_pr": "https://github.com/versioned-beads/beads/pull/37",
-          "head": "c1aee02f1a0486d9b2c9c27237a3719abc9af970",
+          "head": "effa11ea5c6dc1cf00fbb9c5b4ddf818d37676e5",
           "scope": "Issue reopen with target exactly-once recorder",
           "state": "ready; strict local proof at335 passes; updated landed-codec ancestry; exact destination CI pending",
           "landed_commit": null,
           "previous_heads": [
-            "335c813ea80a7d15bb983818f319a044d0032779"
+            "335c813ea80a7d15bb983818f319a044d0032779",
+            "c1aee02f1a0486d9b2c9c27237a3719abc9af970"
           ]
         }
       ]
@@ -679,12 +711,13 @@
       "transfers": [
         {
           "destination_pr": "https://github.com/versioned-beads/beads/pull/37",
-          "head": "c1aee02f1a0486d9b2c9c27237a3719abc9af970",
+          "head": "effa11ea5c6dc1cf00fbb9c5b4ddf818d37676e5",
           "scope": "Selected Memory body update",
           "state": "ready; strict local proof at335 passes; updated landed-codec ancestry; exact destination CI pending",
           "landed_commit": null,
           "previous_heads": [
-            "335c813ea80a7d15bb983818f319a044d0032779"
+            "335c813ea80a7d15bb983818f319a044d0032779",
+            "c1aee02f1a0486d9b2c9c27237a3719abc9af970"
           ]
         }
       ]
@@ -703,12 +736,13 @@
       "transfers": [
         {
           "destination_pr": "https://github.com/versioned-beads/beads/pull/37",
-          "head": "c1aee02f1a0486d9b2c9c27237a3719abc9af970",
+          "head": "effa11ea5c6dc1cf00fbb9c5b4ddf818d37676e5",
           "scope": "Atomic selected Memory title/body update",
           "state": "ready; strict local proof at335 passes; updated landed-codec ancestry; exact destination CI pending",
           "landed_commit": null,
           "previous_heads": [
-            "335c813ea80a7d15bb983818f319a044d0032779"
+            "335c813ea80a7d15bb983818f319a044d0032779",
+            "c1aee02f1a0486d9b2c9c27237a3719abc9af970"
           ]
         }
       ]
