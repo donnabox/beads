@@ -26,6 +26,11 @@ Initial observed target: `44b8c0b9a8dc369ac6a9ea008ca07d36663923d3`. Normal `PR`
 | Shared recorder preserves current/retained timestamp equality | Source PR21 correction cd22fcbf4 adapted to current Jim recorder; target44b8 | [versioned-beads#35](https://github.com/versioned-beads/beads/pull/35), `3a9967fd2303212caa41ecada10a1882ece29b17` | — | Real embedded RED/GREEN, unchanged precision and ownership/no-op controls, lint and review pass. Full baseline passed at 41.5% coverage; destination CI pending. |
 | Installed Memory C0 and required real-engine CI | Qualified final Memory subset, target917e1e4a | [versioned-beads#36](https://github.com/versioned-beads/beads/pull/36), `886875320b3e5ec7b4a3a9c3cb721811a884934e` | — | Clean/pushed, ready for review. Full local baseline passes: 110 packages/42.1%. Corrected exact-source runner and independent evidence check pass 23 roots/all subtests, no skips, ten installed calls on both engines and strict cleanup. Initial runner failure is preserved. Destination Linux qualification pending; not merged. |
 
+Local mixed-core preparation now passes the complete installed Issue/Memory/Link workflow on embedded and ordinary shared-server Dolt (25 focused CLI roots, no skips). The native recorder regression proves exactly one Issue version per accepted mutation and zero on no-op, while preserving optional native journal events, leases and complete rollback state. This is uncommitted successor preparation; the normal baseline and exact-source Linux qualification remain outstanding.
+
+Lint provenance correction for destination36: the earlier global tool was 2.9.0. The repository PR-scoped native/Windows wrapper was rerun with CI-pinned 2.10.1 and passes. Unscoped macOS scanning reports two unchanged target findings in `permissions_open_nonlinux.go` and `path_case_darwin.go`; failed logs are preserved. No unrelated source or lint policy was changed.
+
+
 ## Current integration risks
 
 The installed Memory C0 path is the next runtime milestone. Its seven fresh-only preview tables can follow the target's complete migration chain without replacing numbered migrations. Preserve target0069–0071, ordinary command behavior and fresh/pending/ready admission.
