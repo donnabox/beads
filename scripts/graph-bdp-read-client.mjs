@@ -424,6 +424,63 @@ try {
     etagAfter: claimETag, writer: 'installed CLI; HTTP remains read-only; no lease renewal demonstrated' };
   pass('public BDP reads the CLI-claimed Issue with complete owned Dependencies, current properties, inventory and changed ETag');
 
+  // Append through the installed CLI, then read with the independent public client.
+  // The claimed lease and complete ownership must survive the notes mutation.
+  const notesBefore = workAfter;
+  const notesText = 'Progress — 雪\r\n  confirmed both engines  ';
+  const notesArgs = ['update', workID, '--append-notes', notesText,
+    '--if-revision', notesBefore.revision, '--actor', 'notes-reviewer', '--json'];
+  const notesBinary = digest(await readFile(process.env.BDP_BD));
+  let notesExecution;
+  let notesExitCode = null;
+  try {
+    notesExecution = await promisify(execFile)(process.env.BDP_BD, notesArgs,
+      { timeout: 60_000, maxBuffer: 2 * 1024 * 1024, encoding: 'utf8' });
+    notesExitCode = 0;
+  } catch (error) {
+    notesExecution = error;
+    notesExitCode = typeof error.code === 'number' ? error.code : null;
+    throw error;
+  } finally {
+    await writeFile(join(output, 'client-cli-issue-append-notes.stdout.log'), notesExecution?.stdout ?? '');
+    await writeFile(join(output, 'client-cli-issue-append-notes.stderr.log'), notesExecution?.stderr ?? '');
+    await writeFile(join(output, 'client-cli-issue-append-notes.json'), JSON.stringify({
+      argv: [process.env.BDP_BD, ...notesArgs], cwd: process.cwd(), binarySha256: notesBinary,
+      exitCode: notesExitCode, signal: notesExecution?.signal ?? null,
+      stdoutSha256: digest(notesExecution?.stdout ?? ''), stderrSha256: digest(notesExecution?.stderr ?? ''),
+    }, null, 2));
+  }
+  assert.equal(digest(await readFile(process.env.BDP_BD)), notesBinary);
+  assert.equal(notesExecution.stderr, '');
+  const notesMutation = JSON.parse(notesExecution.stdout);
+  assert.equal(notesMutation.preview, true);
+  assert.equal(notesMutation.result.changed, true);
+  workAfter = await perform({ kind: 'resource', resource: 'bead', id: workID });
+  assert.equal(workAfter.revision, notesMutation.result.issue.revision);
+  assert.notEqual(workAfter.revision, notesBefore.revision);
+  assert.deepEqual(workAfter.properties, notesMutation.result.issue.properties);
+  const wantedNotes = notesBefore.properties.notes ? notesBefore.properties.notes + '\n' + notesText : notesText;
+  assert.deepEqual(workAfter.properties, { ...notesBefore.properties,
+    notes: wantedNotes, updated_at: workAfter.properties.updated_at });
+  assert.deepEqual(workAfter.ownedLinks, notesBefore.ownedLinks);
+  const notesProperties = await perform({ kind: 'properties', resource: 'bead', id: workID });
+  assert.deepEqual(notesProperties, workAfter.properties);
+  const notesInventory = await perform({ kind: 'collection', collection: 'beads', limit: 100 });
+  assert.equal(notesInventory.next, null);
+  assert.deepEqual(notesInventory.items.find(bead => bead.id === workID), workAfter);
+  const notesHTTPAfterRequestIndex = network.length;
+  const notesHTTP = await http(workID, { headers: { 'if-none-match': claimETag } });
+  assert.equal(notesHTTP.response.status, 200);
+  const notesETag = notesHTTP.response.headers.get('etag');
+  assert.ok(notesETag);
+  assert.notEqual(notesETag, claimETag);
+  assert.deepEqual(parseBeadRecord(JSON.parse(notesHTTP.text)), workAfter);
+  artifacts.issueAppendNotes = { before: notesBefore, after: workAfter, mutation: notesMutation,
+    properties: notesProperties, inventory: notesInventory, etagBefore: claimETag,
+    afterRequestIndex: notesHTTPAfterRequestIndex, afterHTTPBody: notesHTTP.text, etagAfter: notesETag,
+    writer: 'installed CLI; HTTP remains read-only; claim lease preserved without renewal' };
+  pass('public BDP reads CLI-appended literal notes, unchanged claim/ownership and a changed ETag');
+
   // A retained current-read cursor is a snapshot capability, not public History.
   // Delete only after all earlier fixtures/checks have completed.
   const deletionOwner = client.createContinuationScope();

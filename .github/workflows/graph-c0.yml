@@ -2,7 +2,7 @@ name: Graph C0 preview
 
 on:
   push:
-    branches: [codex/janet-c0-delivery-20260923, codex/janet-issue-adapter-20260924, codex/janet-dependency-workflow-20260925, codex/janet-mixed-links-20260925, codex/janet-link-lifecycle-20260925, codex/janet-bdp-read-20260925, codex/janet-read-http-20260926, codex/janet-history-exact-20260926, codex/janet-memory-update-20260926, codex/janet-memory-recall-20260926, codex/janet-history-compare-20260926, codex/janet-memory-input-20260926, codex/janet-issue-edit-20260926, codex/janet-dependency-unlink-20260926, janet-overwrite-disclosure-20260927, janet-embedded-runner-reuse-20260927, janet-memory-discovery-20260927, janet-issue-reopen-20260927, janet-memory-selected-update-20260927, janet-memory-atomic-patch-20260927, janet-issue-list-20260927, janet-issue-priority-20260927, janet-graph-issue-assignee-20260927, janet-graph-issue-claim-20260927]
+    branches: [codex/janet-c0-delivery-20260923, codex/janet-issue-adapter-20260924, codex/janet-dependency-workflow-20260925, codex/janet-mixed-links-20260925, codex/janet-link-lifecycle-20260925, codex/janet-bdp-read-20260925, codex/janet-read-http-20260926, codex/janet-history-exact-20260926, codex/janet-memory-update-20260926, codex/janet-memory-recall-20260926, codex/janet-history-compare-20260926, codex/janet-memory-input-20260926, codex/janet-issue-edit-20260926, codex/janet-dependency-unlink-20260926, janet-overwrite-disclosure-20260927, janet-embedded-runner-reuse-20260927, janet-memory-discovery-20260927, janet-issue-reopen-20260927, janet-memory-selected-update-20260927, janet-memory-atomic-patch-20260927, janet-issue-list-20260927, janet-issue-priority-20260927, janet-graph-issue-assignee-20260927, janet-graph-issue-claim-20260927, janet-graph-issue-append-notes-20260927]
   workflow_dispatch:
 
 permissions:
@@ -164,6 +164,12 @@ jobs:
           if grep -Eq '^ *--- (SKIP|FAIL): TestGraphPreviewIssueClaim' "$RUNNER_TEMP/c0-evidence/cli-policy-tests.log"; then
             exit 1
           fi
+          for suite in Input MixedAndOmitted Refusals DispatchRefusals ReadonlyBeforeDispatch; do
+            grep -q "^--- PASS: TestGraphPreviewIssueAppendNotes${suite} (" "$RUNNER_TEMP/c0-evidence/cli-policy-tests.log"
+          done
+          if grep -Eq '^ *--- (SKIP|FAIL): TestGraphPreviewIssueAppendNotes' "$RUNNER_TEMP/c0-evidence/cli-policy-tests.log"; then
+            exit 1
+          fi
       - name: Install pinned ordinary Dolt release
         run: |
           cd "$RUNNER_TEMP"
@@ -228,6 +234,15 @@ jobs:
           done
           grep -q '^--- PASS: TestIssueClaimLostCommitResponse (' "$RUNNER_TEMP/c0-evidence/storage-tests.log"
           if grep -Eq '^ *--- (SKIP|FAIL): TestIssueClaim' "$RUNNER_TEMP/c0-evidence/storage-tests.log"; then
+            exit 1
+          fi
+          for suite in Lifecycle ClaimedAndClosed RefusalAndRollback ConcurrentWriters; do
+            for backend in embedded server; do
+              grep -q "^ *--- PASS: TestIssueAppendNotes${suite}/${backend} (" "$RUNNER_TEMP/c0-evidence/storage-tests.log"
+            done
+          done
+          grep -q '^--- PASS: TestIssueAppendNotesLostCommitResponse (' "$RUNNER_TEMP/c0-evidence/storage-tests.log"
+          if grep -Eq '^ *--- (SKIP|FAIL): TestIssueAppendNotes' "$RUNNER_TEMP/c0-evidence/storage-tests.log"; then
             exit 1
           fi
           # Provision the fresh CLI-authored HTTP workspace only after all other
@@ -300,6 +315,11 @@ jobs:
             --output-dir "$RUNNER_TEMP/c0-evidence/issue-claim" \
             --backend both --server-port 15440 --server-root "$RUNNER_TEMP/c0-server" \
             --total-timeout 300 > "$RUNNER_TEMP/c0-evidence/issue-claim-smoke.log" 2>&1
+
+          python3 scripts/graph-issue-append-notes-smoke.py --bd "$RUNNER_TEMP/c0-bin/bd" \
+            --output-dir "$RUNNER_TEMP/c0-evidence/issue-append-notes" \
+            --backend both --server-port 15440 --server-root "$RUNNER_TEMP/c0-server" \
+            --total-timeout 300 > "$RUNNER_TEMP/c0-evidence/issue-append-notes-smoke.log" 2>&1
 
       - name: Preserve receipts (including failures)
         if: always()
