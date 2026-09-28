@@ -1,6 +1,14 @@
-# Current mixed workflow: implementation and evidence boundaries
+# Verified evidence checkpoint — September 28, 2026
 
-**Prepared and unexecuted. No runtime qualification or capture pass is asserted by this document.** The source inspected is the generic-traversal worktree based on reuse-only `7efb8e7bd`. Root must pin a qualified exact successor commit and installed binary before execution. PR49's older `b7bf5040…` map and recording remain unchanged.
+The current packet is recorded against qualified runtime **9c86d6d1559ffcfcd9770b64e17a7f1f654690b3**. Both engines passed 32 CLI calls, including one exact exit-4/empty-stdout stale refusal each; server mode passed 10 real HTTP requests through the independent pinned client and conditional GET. Offline verification checked 64 CLI receipts, two process receipts, complete predecessor-derived state, 13 saved complete records per engine, exact saved reads, current graph results, raw HTTP bytes and zero children.
+
+The recorder scripts are unchanged from reviewed PR59 commit `ec11dbe7d5d17d5748cca71e951141fa199ea64b`. The four-file source snapshot used by the verifier is retained separately from these updated presenter documents. The runtime's [complete Linux qualification](https://github.com/donnabox/beads/actions/runs/36419928551) passed 6,017 command receipts, 1,062 graphstore gates, 144 compiled roots, nine invocations across seven packages, 145 HTTP observations and exactly 22 inherited non-graph exclusions. The candidate advanced to that exact runtime; the failed standalone PR57 run remains failed. PR60's later workflow-only isolation change is outside this runtime and remains unqualified.
+
+The packet's `recording-verification.json` and `runtime-linux-verification.json` keep presentation evidence separate from runtime qualification. Full Memory, native/public History, complete authenticated HTTP Write, adoption and human review gates remain open.
+
+---
+
+PR49's older `b7bf5040…` map and recording remain unchanged. This packet is a separate verified recording of the later runtime, with the boundaries below.
 
 [Human guide](GRAPH_CURRENT_WORKFLOW_DEMO.md) · [Recorder](../scripts/graph-current-workflow-demo.py) · [Independent client](../scripts/graph-current-workflow-demo-client.mjs)
 
@@ -22,7 +30,7 @@ Patch final shapes remain the existing preview contracts: Memory title/body and 
 
 ## Evidence organization and final acceptance
 
-Expected source count is 32 CLI calls per engine: 31 successes plus one stale guard refusal. Server mode adds its long-lived `bd serve` and Node processes, with an exact final ten-HTTP-request gate and a separate in-flight safety cap of 16. These source counts require actual successful captures; available receipts are retained if a count differs. The recording must provide complete expected records and visible source pin/binary hash, not merely pretty terminal output.
+Verified capture count is 32 CLI calls per engine: 31 successes plus one stale guard refusal. Server mode adds its long-lived `bd serve` and Node processes, with an exact final ten-HTTP-request gate and a separate in-flight safety cap of 16. These counts are established by the successful saved captures and independent verification; future failed attempts must retain their available receipts. The recording must provide complete expected records and visible source pin/binary hash, not merely pretty terminal output.
 
 Each backend packet contains `recording.md`, `commands.json`, raw per-command stdout/stderr and receipts, `expected-records.json`, public-client expected state, `demo-source.json`, `artifact-hashes.json`, runtime-evidence copies and `summary.json`. Server mode adds `client-provenance.json`, `client-results.json`, raw HTTP body artifacts and listener/client process receipts. The recorder uses relative artifact links; retain whole directories when sharing. Absolute runtime/workspace paths are honest provenance, not a requirement for following those relative receipt links.
 
@@ -32,7 +40,7 @@ A successful recording remains `qualification:false`. Final-source baseline/lint
 
 ## Bounded source review and corrective disposition
 
-The original four-file target is preserved under the local `demo-reviewed-original` evidence directory. Actual Claude review and root's source review were read before these corrections. This section records implemented dispositions, not an independent approval of the corrected files or an executed recording.
+The original four-file target is preserved under the local `demo-reviewed-original` evidence directory. Actual Claude review and root's source review were read before these corrections. This section preserves the source-review dispositions from before capture; the verified execution is reported above. Automated review does not replace substantive human approval.
 
 The earlier native findings are closed in source: operator interruption stops the backend sequence; predecessor-derived whole-record transition checks cover Memory body, Link note, owning Memory and the explicit close reason/native closure fields; all domain writes specify `--actor demo`; and the stale attempt independently requires `revision_conflict`, exit 4 and exactly zero stdout bytes. The previous map's statement that the stale assertion remained pending was stale itself and is removed.
 

@@ -1,6 +1,8 @@
 # A release plan you can follow, change and revisit
 
-**Prepared, unexecuted successor recording.** Root must choose and qualify the exact runtime commit, supply its clean-source/install evidence and verify the resulting captures before this packet is presented as working evidence. Neither this guide nor the recorder qualifies the product.
+**Verified recording, September 28, 2026.** Both embedded and ordinary shared-server captures passed on qualified runtime `9c86d6d1559ffcfcd9770b64e17a7f1f654690b3`. The unchanged independent verifier accepted all 64 CLI receipts and 10 HTTP requests. Runtime qualification came separately from [Linux run 36419928551](https://github.com/donnabox/beads/actions/runs/36419928551), whose complete artifact passed all 6,017 installed-command receipts and inherited gates.
+
+Start with `recordings/embedded/recording.md` in the separately delivered **current-graph-demo.zip**, then open `recordings/server/recording.md` for the BDP chapter. Keep the adjacent raw receipts when sharing. The packet also includes the guides and independent verification reports; it is not checked into the repository. If you only have this checkout, use the capture recipe below. Recording demonstrates composition and remains `qualification:false`; it does not replace product qualification.
 
 This is separate from PR49's verified older `b7bf5040…` recording. Keep that packet unchanged. The new story adds due-date selection, blocked inspection, ordered Memory/Link editing and current generic navigation to one small workspace.
 
@@ -12,7 +14,7 @@ A release Issue waits on a verification Issue. A Memory explains the release pla
 
 We follow that chain without automatically printing the Memory bodies. Then we deliberately read the plan, edit its body and its rationale Link, and retrieve the previous exact state. Completing verification makes the release ready. In the server recording an independent BDP client sees the same current records.
 
-The intended presentation is five to eight minutes. The source currently schedules **32 fresh-process CLI calls per backend: 31 successes and one expected stale-revision refusal**. Server mode also owns a `bd serve` process and a Node client; ten HTTP requests are expected. Counts remain source estimates until successful receipts establish them.
+The intended presentation is five to eight minutes. The verified recording contains **32 fresh-process CLI calls per backend: 31 successes and one expected stale-revision refusal**. Server mode also records a `bd serve` process and an independent Node client, with ten real HTTP requests. Both captures finish with zero owned child processes.
 
 All command blocks below are representative, not a complete replay script. The recorder's receipt index is authoritative. The abbreviated blocks omit `version --json`, `status --graph`, the deliberate stale patch and unchanged reread, and the final `show` calls for the release, current rationale Link, context Link and rationale Memory. Every domain write in the recorder explicitly supplies `--actor demo`; the displayed examples use that same actor. All recorded body bytes and revision tokens come from the recorder and actual preceding results.
 
@@ -78,7 +80,7 @@ Now no Issue is dependency-blocked and the release is ready. The Dependency rema
 
 Server mode starts `bd serve --readonly --addr 127.0.0.1:PORT` against the same workspace. The persisted Scope uses that listener's selected loopback port. The unchanged independently built public BDP client at `53bdbd03136875f952af184fce7b3c7af8f74e96` discovers Read, retrieves all four Beads, reads Bead and Link collections and plan incident Links, and checks an unchanged plan ETag yields 304.
 
-The client compares complete public properties, revisions, attribution and owned Links with the saved CLI records. The expected ten-request shape is two discovery requests, four Bead reads, two collections, incident Links and one conditional GET. The final conditional probe uses real HTTP directly; the other nine requests run through the public client's discovery/Read API. The client has an in-flight safety cap of 16 requests and requires exactly 10 at completion; a changed request shape fails qualification of the recording while preserving available evidence. There are no HTTP writes or generic HTTP traversal endpoint in this story.
+The client compares complete public properties, revisions, attribution and owned Links with the saved CLI records. The recorded ten-request shape is two discovery requests, four Bead reads, two collections, incident Links and one conditional GET. The final conditional probe uses real HTTP directly; the other nine requests run through the public client's discovery/Read API. The client has an in-flight safety cap of 16 requests and requires exactly 10 at completion; a changed request shape fails qualification of the recording while preserving available evidence. There are no HTTP writes or generic HTTP traversal endpoint in this story.
 
 ## Capturing and sharing
 
@@ -94,7 +96,7 @@ python3 scripts/graph-current-workflow-demo.py \
   --output-dir /absolute/new/recording
 ```
 
-This command is a preparation recipe, not a reported run. The caller-supplied runtime manifest requires `commit` (the full selected SHA), `source_clean:true`, `install_passed:true`, `binary_sha256`, and an `artifacts` map of relative paths to SHA-256 values. That map must include `git-head.txt` (the same full SHA), `git-status.txt` (exactly empty from the clean source check at build), and nonempty `install.log`. The recorder copies and verifies these artifacts; it does not independently attest the original build or certify the manifest's asserted success.
+This parameterized recipe reproduces the recording; replace the paths and runtime pin with an independently qualified build. The supplied packet records the exact paths, pin and bytes actually used. The caller-supplied runtime manifest requires `commit` (the full selected SHA), `source_clean:true`, `install_passed:true`, `binary_sha256`, and an `artifacts` map of relative paths to SHA-256 values. That map must include `git-head.txt` (the same full SHA), `git-status.txt` (exactly empty from the clean source check at build), and nonempty `install.log`. The recorder copies and verifies these artifacts; it does not independently attest the original build or certify the manifest's asserted success.
 
 The default wall budget remains 300 seconds **per backend**, with a 60-second individual CLI bound and a public-client wait capped at 90 seconds or the remaining backend budget. Use explicit `--total-timeout`/`--command-timeout` overrides only when the measured environment warrants them. The recorder reports exhausted remaining time distinctly; it does not restart work or hide a missing client result. Keep the chosen loopback Scope port free between initialization and serving. The recorder rechecks that exact port before launching the listener and refuses a collision; the unavoidable final bind race can still fail, and it never rewrites the persisted Scope to retry another port.
 
