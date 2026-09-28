@@ -20,8 +20,9 @@ func graphListTestCommand(t *testing.T, args []string) *cobra.Command {
 	}
 	cmd.Flags().StringP("status", "s", "", "")
 	cmd.Flags().StringP("type", "t", "", "")
+	cmd.Flags().StringP("assignee", "a", "", "")
 	cmd.Flags().StringSlice("exclude-type", nil, "")
-	for _, name := range []string{"flat", "json", "quiet", "pinned", "no-pinned", "reverse", "ready", "tree"} {
+	for _, name := range []string{"flat", "json", "quiet", "pinned", "no-pinned", "reverse", "ready", "tree", "no-assignee"} {
 		cmd.Flags().Bool(name, false, "")
 	}
 	for _, name := range []string{"label", "label-any", "exclude-label"} {
@@ -146,5 +147,60 @@ func TestGraphPreviewIssueListOutput(t *testing.T) {
 	page.Items[0].Properties.Title = strings.Repeat("x", graphIssueListOutputLimit)
 	if output, err := renderGraphIssueList(page, true, false); err == nil || output != "" {
 		t.Fatal("oversized page emitted partial output")
+	}
+}
+
+func TestGraphPreviewIssueAssigneeListInput(t *testing.T) {
+	t.Chdir(t.TempDir())
+	config.ResetForTesting()
+	t.Cleanup(config.ResetForTesting)
+	if err := config.Initialize(); err != nil {
+		t.Fatal(err)
+	}
+	old := jsonOutput
+	jsonOutput = false
+	t.Cleanup(func() { jsonOutput = old })
+	for _, tc := range []struct {
+		name       string
+		args       []string
+		assignee   string
+		unassigned bool
+		exit       int
+	}{
+		{"literal", []string{"--assignee=  雪 / agent  "}, "  雪 / agent  ", false, 0},
+		{"short", []string{"-aalice"}, "alice", false, 0},
+		{"empty", []string{"--assignee="}, "", false, 0},
+		{"unassigned", []string{"--no-assignee"}, "", true, 0},
+		{"false-unassigned", []string{"--no-assignee=false"}, "", false, 0},
+		{"intersection", []string{"--assignee=alice", "--no-assignee"}, "alice", true, 0},
+		{"empty-intersection", []string{"--assignee=", "--no-assignee"}, "", true, 0},
+		{"value-not-flag", []string{"--title", "--assignee=bob", "--assignee=alice"}, "alice", false, 0},
+		{"lookup-beyond-field-bound", []string{"--assignee=" + strings.Repeat("a", 256)}, strings.Repeat("a", 256), false, 0},
+		{"repeated-long", []string{"--assignee=alice", "--assignee=alice"}, "", false, 5},
+		{"repeated-short", []string{"-aalice", "-a", "bob"}, "", false, 5},
+		{"repeated-mixed-empty", []string{"--assignee=", "-abob"}, "", false, 5},
+		{"repeated-empty", []string{"--assignee=", "--assignee="}, "", false, 5},
+		{"utf8", []string{"--assignee=\xff"}, "", false, 2},
+		{"request-limit", []string{"--assignee=" + strings.Repeat("a", 4097)}, "", false, 2},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			args := append([]string{"--format=records-json", "--all"}, tc.args...)
+			cmd := graphListTestCommand(t, args)
+			in, structured, err := graphIssueListInput(cmd, append([]string{"list"}, args...))
+			if tc.exit != 0 {
+				var failure *exitError
+				if !errors.As(err, &failure) || failure.Code != tc.exit {
+					t.Fatalf("wantexit%d got %v", tc.exit, err)
+				}
+				return
+			}
+			if err != nil || !structured || in.Assignee != tc.assignee || in.NoAssignee != tc.unassigned {
+				t.Fatalf("filter changed: %+v %v", in, err)
+			}
+			value, _ := cmd.Flags().GetString("assignee")
+			if value != tc.assignee {
+				t.Fatal("occurrence replay changed original assignee flag")
+			}
+		})
 	}
 }

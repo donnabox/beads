@@ -202,7 +202,7 @@ def exercise(capture):
         ("legacy-selector", ["update", "issueedit-legacy", "--title", "Denied", "--unconditional"], "invalid_selector"),
         ("mixed-properties", ["update", source["id"], *guard, "--properties", '{}'], "capability_unavailable"),
     ]
-    for flag, value in [("status", "closed"), ("add-label", "new-label"), ("type", "bug"), ("assignee", "worker"),
+    for flag, value in [("status", "closed"), ("add-label", "new-label"), ("type", "bug"), ("if-assignee", "worker"),
                         ("notes", "replace"), ("append-notes", "append"), ("metadata", '{}'), ("if-source-revision", source["revision"]),
                         ("body-file", str(capture.root / "does-not-exist.md"))]:
         failures.append(("unsupported-" + flag, ["update", source["id"], *guard, "--" + flag, value],

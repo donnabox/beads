@@ -8,20 +8,24 @@ import (
 
 	"github.com/steveyegge/beads/internal/storage"
 	"github.com/steveyegge/beads/internal/storage/issueops"
+	"github.com/steveyegge/beads/internal/types"
 	publicops "github.com/steveyegge/beads/issueops"
 )
 
-// UpdateIssueRequest admits priority, title, description, design and acceptance criteria.
+// UpdateIssueRequest admits assignee, priority, title, description, design and acceptance criteria.
 // Notes editing is reserved for integration of the existing contributor
 // safeguards. A nil field leaves that property unchanged; an explicit empty
 // string clears it where the Issue domain permits. An explicit priority of zero
 // sets P0; a nil priority leaves it unchanged. The guard addresses the complete graph revision, including
 // the Issue's owned blocking Dependencies, not its private storage ordinal.
+// Assignee nil preserves the current value; empty clears it. Neither the graph
+// guard nor Unconditional bypasses the ordinary active-assignment transfer fence.
 type UpdateIssueRequest struct {
 	Path, Actor, ExpectedRevision                  string
 	Unconditional                                  bool
 	Title, Description, Design, AcceptanceCriteria *string
 	Priority                                       *int
+	Assignee                                       *string
 }
 
 // UpdateIssue delegates admitted scalar edits to the existing Issue domain writer and
@@ -42,6 +46,7 @@ func (s *Store) UpdateIssue(ctx context.Context, request UpdateIssueRequest) (Is
 		dest  *publicops.Field[string]
 	}{
 		{"title", request.Title, &patch.Title},
+		{"assignee", request.Assignee, &patch.Assignee},
 		{"description", request.Description, &patch.Description},
 		{"design", request.Design, &patch.Design},
 		{"acceptance_criteria", request.AcceptanceCriteria, &patch.AcceptanceCriteria},
@@ -54,6 +59,11 @@ func (s *Store) UpdateIssue(ctx context.Context, request UpdateIssueRequest) (Is
 		}
 		*field.dest = publicops.Field[string]{Set: true, Value: *field.value}
 		count++
+	}
+	if patch.Assignee.Set {
+		if err := types.CheckFieldLen("assignee", patch.Assignee.Value); err != nil {
+			return IssueMutationResult{}, fmt.Errorf("%w: Issue assignee: %w", storage.ErrValidation, err)
+		}
 	}
 	if request.Priority != nil {
 		patch.Priority = publicops.Field[int]{Set: true, Value: *request.Priority}

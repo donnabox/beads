@@ -99,6 +99,7 @@ try {
   const dependencyID = process.env.BDP_DEPENDENCY_ID;
   assert.ok(dependencyID);
   const workBefore = artifacts['bead:' + workID];
+  assert.equal(Object.hasOwn(workBefore.properties, 'assignee'), false, 'Issue starts unassigned');
   const targetBefore = await perform({ kind: 'resource', resource: 'bead', id: targetID });
   const dependencyBefore = await perform({ kind: 'resource', resource: 'link', id: dependencyID });
   assert.equal(dependencyBefore.source, workID);
@@ -116,10 +117,10 @@ try {
 
   const issueFields = { title: 'Edited work — 雪', description: 'CLI Issue description.\n',
     design: '# Design\nPreserve Dependencies and contextual Links.\n',
-    acceptance_criteria: 'The public BDP client sees all four edited fields.\n' };
+    acceptance_criteria: 'The public BDP client sees all five edited fields.\n', assignee: 'crew-reviewer' };
   const issueArgs = ['update', workID, '--title', issueFields.title,
     '--description', issueFields.description, '--design', issueFields.design,
-    '--acceptance', issueFields.acceptance_criteria, '--if-revision', workBefore.revision, '--json'];
+    '--acceptance', issueFields.acceptance_criteria, '--assignee', issueFields.assignee, '--if-revision', workBefore.revision, '--json'];
   const issueBinary = digest(await readFile(process.env.BDP_BD));
   let issueExecution;
   let issueExitCode = null;
@@ -144,6 +145,7 @@ try {
   const issueMutation = JSON.parse(issueExecution.stdout);
   assert.equal(issueMutation.preview, true);
   assert.equal(issueMutation.result.changed, true);
+  assert.equal(issueMutation.result.issue.properties.assignee, issueFields.assignee);
   const workAfter = await perform({ kind: 'resource', resource: 'bead', id: workID });
   assert.equal(workAfter.revision, issueMutation.result.issue.revision);
   assert.notEqual(workAfter.revision, workBefore.revision);
@@ -152,7 +154,8 @@ try {
     ...workBefore.properties, ...issueFields, updated_at: workAfter.properties.updated_at,
   });
   assert.deepEqual(workAfter.ownedLinks, workBefore.ownedLinks);
-  assert.deepEqual(await perform({ kind: 'properties', resource: 'bead', id: workID }), workAfter.properties);
+  const workPropertiesAfter = await perform({ kind: 'properties', resource: 'bead', id: workID });
+  assert.deepEqual(workPropertiesAfter, workAfter.properties);
   const targetAfter = await perform({ kind: 'resource', resource: 'bead', id: targetID });
   assert.deepEqual(targetAfter, targetBefore);
   const dependencyAfter = await perform({ kind: 'resource', resource: 'link', id: dependencyID });
@@ -168,11 +171,11 @@ try {
   assert.ok(workHTTPAfter.response.headers.get('etag'));
   assert.notEqual(workHTTPAfter.response.headers.get('etag'), workETagBefore);
   assert.deepEqual(parseBeadRecord(JSON.parse(workHTTPAfter.text)), workAfter);
-  artifacts.issueEdit = { before: workBefore, after: workAfter, mutation: issueMutation,
+  artifacts.issueEdit = { before: workBefore, after: workAfter, mutation: issueMutation, properties: workPropertiesAfter,
     targetBefore, targetAfter, dependencyBefore, dependencyAfter, incidentBefore, incidentAfter,
     inventory: issueInventory, etagBefore: workETagBefore, etagAfter: workHTTPAfter.response.headers.get('etag'),
     writer: 'installed CLI; HTTP surface remains read-only' };
-  pass('public client sees guarded CLI Issue text edit in resource, properties and inventory; owned Dependencies, incident Links and target remain unchanged; old ETag yields fresh 200');
+  pass('public client sees guarded CLI Issue five-field text and assignee edit in resource, properties and inventory; owned Dependencies, incident Links and target remain unchanged; old ETag yields fresh 200');
 
   for (const collection of ['beads', 'links', 'types']) {
     const result = await collect(collection);
