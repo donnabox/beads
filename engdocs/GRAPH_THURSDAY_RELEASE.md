@@ -2,7 +2,7 @@
 
 Donna's September 28 team-call decision sets the release target for Thursday, October 1, 2026: the blog points readers to `versioned-beads/beads:integration`, where the following workflow must actually run. This is a release checkpoint within the [full graph delivery plan](BEAD_GRAPH_DELIVERY_PLAN.md), not cancellation of its remaining destination. Source transfers and landed hashes remain in the [landing ledger](GRAPH_INTEGRATION_LANDING.md).
 
-Status reviewed September 28 at 16:27 PDT. Foundations are landed; runtime PRs remain pending combined-source CI. Local proof below is preparation, not a Thursday release claim.
+Status reviewed September 28 at 16:24 PDT. Foundations are landed; runtime PRs remain pending combined-source CI. Local proof below is preparation, not a Thursday release claim.
 
 ## Acceptance on the actual integration commit
 
