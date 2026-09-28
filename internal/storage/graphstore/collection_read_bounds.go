@@ -13,8 +13,10 @@ import (
 // entire live workspace and allocation metadata, before filtering, pagination
 // or exact Resource reads. All catalog allocations (including tombstones) and
 // informational rows (including corrupt orphans) are charged. It counts persisted bytes with repeated owner/Link acquisition and 256 bytes
-// per acquired row. This is an operational read refusal, not a write/schema
-// restriction or an exact Go heap/SQL-engine memory bound. Historical revisions
+// per acquired row. This measures read acquisition, not a schema limit or an
+// exact Go heap/SQL-engine memory bound. Append-only preview
+// operations also reuse it as a transaction postcondition to prevent unreadable
+// growth when no inverse operation is admitted. Historical revisions
 // which are not current are neither acquired nor charged.
 const PreviewCurrentReadByteLimit = 16 << 20
 

@@ -14,7 +14,9 @@ func issueTextCommand(t *testing.T, args ...string) *cobra.Command {
 	t.Helper()
 	cmd := &cobra.Command{}
 	for _, name := range append(append([]string{}, graphPreviewIssueEditFlags...), "properties", "notes", "body-file", "design-file", "append-notes", "status", "if-assignee", "if-status", "if-revision", "if-source-revision") {
-		cmd.Flags().String(name, "", "")
+		if cmd.Flags().Lookup(name) == nil {
+			cmd.Flags().String(name, "", "")
+		}
 	}
 	cmd.Flags().Bool("unconditional", false, "")
 	cmd.Flags().Bool("stdin", false, "")
@@ -122,7 +124,8 @@ func TestGraphPreviewIssueTextRefusals(t *testing.T) {
 		{"stdin-description", []string{"--description=-", "--unconditional"}, 5},
 		{"stdin-alias", []string{"--body=-", "--unconditional"}, 5},
 		{"notes", []string{"--notes=Notes", "--unconditional"}, 5},
-		{"append", []string{"--design=Design", "--append-notes=More", "--unconditional"}, 5},
+		// Append is supported; combining it with replacement remains refused.
+		{"append", []string{"--design=Design", "--append-notes=More", "--notes=Replace", "--unconditional"}, 5},
 		{"source-guard", []string{"--design=Design", "--if-source-revision=other", "--unconditional"}, 5},
 	} {
 		t.Run(tc.name, func(t *testing.T) {

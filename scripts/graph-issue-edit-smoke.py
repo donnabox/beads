@@ -205,7 +205,10 @@ def exercise(capture):
     for flag, value in [("status", "closed"), ("add-label", "new-label"), ("type", "bug"), ("if-assignee", "worker"),
                         ("notes", "replace"), ("append-notes", "append"), ("metadata", '{}'), ("if-source-revision", source["revision"]),
                         ("body-file", str(capture.root / "does-not-exist.md"))]:
-        failures.append(("unsupported-" + flag, ["update", source["id"], *guard, "--" + flag, value],
+        # Append is now admitted. Preserve this negative receipt as the still
+        # unsupported append-plus-replacement combination, not an obsolete refusal.
+        extra = ["--notes", "replacement"] if flag == "append-notes" else []
+        failures.append(("unsupported-" + flag, ["update", source["id"], *guard, "--" + flag, value, *extra],
                          "capability_unavailable"))
     for label, argv, code in failures:
         refuse(label, argv, code)

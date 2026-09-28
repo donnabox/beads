@@ -44,13 +44,16 @@ bd list --format records-json --priority 0 --all --limit 0
 bd show beads/task --version OBSERVED_VERSION --json
 ```
 
-Only inline text is admitted here. File input, stdin (including description `-`), notes, append-notes, status, classification, labels, assignment,
-parent changes and metadata flags refuse explicitly. Mixing these Issue flags
-with generic `--properties` or source guards refuses. Legacy IDs and fuzzy or
-alias selectors are unavailable in this graph route. Notes editing is intentionally deferred to avoid a competing contract with
-[the existing contributor safeguard PR #5946](https://github.com/gastownhall/beads/pull/5946).
-Existing legacy Issue
-workspaces and their update behavior remain unchanged.
+Only inline text is admitted here. File input, stdin (including description `-`),
+notes replacement, status, classification, labels, parent changes and metadata
+flags refuse explicitly. Mixing these Issue flags with generic `--properties`
+or source guards refuses. Legacy IDs and fuzzy or alias selectors are unavailable.
+[Assignee editing](GRAPH_ISSUE_ASSIGNEE_PREVIEW.md) and
+[append-only notes](GRAPH_ISSUE_NOTES_PREVIEW.md) extend this same guarded writer.
+Notes replacement/clear remain held for the existing contributor safeguards in
+[PR #5946](https://github.com/gastownhall/beads/pull/5946) and
+[PR #6583](https://github.com/gastownhall/beads/pull/6583).
+Existing legacy Issue workspaces and their update behavior remain unchanged.
 
 The adapter uses the existing authoritative Issue writer and Jim's retained
 Issue recorder in one checked transaction with the graph mapping. It does not

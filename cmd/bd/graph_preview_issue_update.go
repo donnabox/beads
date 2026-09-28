@@ -12,7 +12,7 @@ import (
 	"github.com/steveyegge/beads/internal/validation"
 )
 
-var graphPreviewIssueEditFlags = []string{"title", "description", "body", "message", "design", "acceptance", "priority", "assignee"}
+var graphPreviewIssueEditFlags = []string{"title", "description", "body", "message", "design", "acceptance", "priority", "assignee", "append-notes"}
 
 func graphPreviewIssueEditFlagsChanged(cmd *cobra.Command) bool {
 	for _, name := range graphPreviewIssueEditFlags {
@@ -69,6 +69,7 @@ func graphPreviewIssueEditRequest(cmd *cobra.Command, path string) (graphstore.U
 		{"body", &request.Description}, {"message", &request.Description},
 		{"design", &request.Design},
 		{"acceptance", &request.AcceptanceCriteria},
+		{"append-notes", &request.AppendNotes},
 	}
 	for _, field := range fields {
 		if !cmd.Flags().Changed(field.name) {
