@@ -3,11 +3,111 @@
 package embeddeddolt
 
 import (
+	"bytes"
 	"context"
 	"database/sql"
+	"encoding/json"
 	"testing"
 	"time"
+
+	"github.com/gowebpki/jcs"
+	"github.com/steveyegge/beads/internal/storage/issueops"
+	"github.com/steveyegge/beads/internal/types"
 )
+
+// Advancing the recorder's bookkeeping must not trigger issues.updated_at's
+// ON UPDATE clause after durable_state has already captured the Issue. An
+// explicitly supplied old timestamp makes this deterministic without sleeping.
+// This tests stored Issue state, not the instant a BDP mutation commits.
+func TestRecordVersionPreservesCurrentIssueState(t *testing.T) {
+	skipUnlessEmbeddedDolt(t)
+	ctx := t.Context()
+	store, cleanup, err := buildAsOfReadStore(ctx)
+	if err != nil {
+		t.Fatalf("build store: %v", err)
+	}
+	t.Cleanup(cleanup)
+	store.SetVersionedHistoryEnabled(true)
+
+	const id = "asof-recorder-state"
+	old := time.Date(2001, 2, 3, 4, 5, 6, 0, time.UTC)
+	if err := store.CreateIssue(ctx, &types.Issue{
+		ID: id, Title: "Recorder preserves <complete> state 雪", Status: types.StatusOpen,
+		IssueType: types.TypeTask, Priority: 2, Description: "Literal description\r\n",
+		CreatedAt: old, UpdatedAt: old,
+	}, "recorder-state"); err != nil {
+		t.Fatalf("create Issue: %v", err)
+	}
+
+	readState := func(tx *sql.Tx) ([]byte, time.Time, error) {
+		issue, err := issueops.GetIssueInTx(ctx, tx, id)
+		if err != nil {
+			return nil, time.Time{}, err
+		}
+		deps, err := issueops.GetDependencyRecordsForIssuesInTx(ctx, tx, []string{id})
+		if err != nil {
+			return nil, time.Time{}, err
+		}
+		issue.Dependencies = deps[id]
+		raw, err := json.Marshal(issue)
+		if err != nil {
+			return nil, time.Time{}, err
+		}
+		canonical, err := jcs.Transform(raw)
+		return canonical, issue.UpdatedAt, err
+	}
+	var before, retainedBefore, after, retainedAfter []byte
+	var beforeAt, afterAt time.Time
+	var beforeCount, afterCount, beforeRevision, afterRevision int64
+	if err := store.withConn(ctx, false, func(tx *sql.Tx) error {
+		before, beforeAt, err = readState(tx)
+		if err != nil {
+			return err
+		}
+		return tx.QueryRowContext(ctx, `SELECT i.current_revision, v.durable_state,
+			(SELECT COUNT(*) FROM issue_versions WHERE issue_id = i.id)
+			FROM issues i JOIN issue_versions v ON v.issue_id=i.id AND v.revision=i.current_revision
+			WHERE i.id=?`, id).Scan(&beforeRevision, &retainedBefore, &beforeCount)
+	}); err != nil {
+		t.Fatalf("read baseline: %v", err)
+	}
+	if beforeCount != 1 || beforeRevision != 1 || !beforeAt.Equal(old) || !bytes.Equal(before, retainedBefore) {
+		t.Fatalf("baseline differs: versions=%d revision=%d updated_at=%s retainedEqual=%t",
+			beforeCount, beforeRevision, beforeAt, bytes.Equal(before, retainedBefore))
+	}
+	if err := store.withConn(ctx, true, func(tx *sql.Tx) error {
+		return issueops.RecordVersionInTx(ctx, tx, id, "recorder-state")
+	}); err != nil {
+		t.Fatalf("record one version: %v", err)
+	}
+	// Reopen the transaction so the assertions cover persisted state, not only
+	// the recorder's transaction-local view. No repair write occurs between them.
+	if err := store.withConn(ctx, false, func(tx *sql.Tx) error {
+		after, afterAt, err = readState(tx)
+		if err != nil {
+			return err
+		}
+		return tx.QueryRowContext(ctx, `SELECT i.current_revision, v.durable_state,
+			(SELECT COUNT(*) FROM issue_versions WHERE issue_id = i.id)
+			FROM issues i JOIN issue_versions v ON v.issue_id=i.id AND v.revision=i.current_revision
+			WHERE i.id=?`, id).Scan(&afterRevision, &retainedAfter, &afterCount)
+	}); err != nil {
+		t.Fatalf("read recorded state: %v", err)
+	}
+	if afterCount != beforeCount+1 || afterRevision != beforeRevision+1 {
+		t.Errorf("recorder must mint exactly once: count %d -> %d, revision %d -> %d",
+			beforeCount, afterCount, beforeRevision, afterRevision)
+	}
+	if !afterAt.Equal(old) {
+		t.Errorf("recording changed updated_at: got %s, want %s", afterAt, old)
+	}
+	if !bytes.Equal(retainedAfter, before) {
+		t.Error("new retained version differs from the complete pre-recording Issue state")
+	}
+	if !bytes.Equal(after, retainedAfter) {
+		t.Error("persisted current Issue differs from its complete canonical retained state")
+	}
+}
 
 // TestRecordVersionKeepsSubSecondChangeAt pins the WRITER half of migration
 // 0069's contract: a sub-second change_at must survive through
