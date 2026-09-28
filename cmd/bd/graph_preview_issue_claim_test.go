@@ -54,6 +54,8 @@ func TestGraphPreviewIssueClaimRefusals(t *testing.T) {
 	}{
 		{"missing-flag", "beads/work", "alice", nil},
 		{"false-claim", "beads/work", "alice", []string{"--claim=false"}},
+		{"false-with-priority", "beads/work", "alice", []string{"--claim=false", "--priority=1"}},
+		{"false-with-assignee", "beads/work", "alice", []string{"--claim=false", "--assignee=alice"}},
 		{"link", "links/context", "alice", []string{"--claim"}},
 		{"empty-path", "", "alice", []string{"--claim"}},
 		{"legacy-id", "bd-work", "alice", []string{"--claim"}},

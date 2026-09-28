@@ -31,7 +31,10 @@ applies its usual rules. This command does not claim the prerequisites.
 Repeating a claim as the same actor while already `in_progress` returns
 `changed:false`. It preserves the stored actor spelling, timestamps, version,
 owned state, attribution and lease. It does not create another retained version
-or claim event. Concurrent changes still use the existing transaction conflict
+or claim event. The adapter checks the native row token and complete projection before accepting
+a reported no-op, and rolls back inconsistent writer behavior. It is not a
+general audit of arbitrary future writer side effects: adopting a new writer
+still requires proving its no-write behavior. Concurrent changes still use the existing transaction conflict
 behavior; a no-op is not a guarantee that another process cannot subsequently
 change the Issue.
 
@@ -39,7 +42,9 @@ change the Issue.
 
 Only the standalone `--claim` or `--claim=true` form is admitted. Exactly one
 canonical `beads/PATH` or canonical Scope URL is required. `--claim=false` refuses.
-The ordinary actor, JSON, quiet and workspace controls retain their meanings.
+Even with field edits, `--claim=false` returns `invalid_properties`; omit the
+flag to request a field edit. The ordinary actor, JSON, quiet and workspace
+controls retain their meanings.
 Read-only and migration-freeze checks run before storage is opened.
 
 Every mixed edit is unavailable, including assignee, status, text, priority,
@@ -63,8 +68,14 @@ renew it. This preview does not expose graph heartbeat, reclaim, unclaim or TTL
 controls and does not provide a complete long-running lease lifecycle. Ordinary
 writer commands are refused in a graph workspace. Bypassing that controlled
 writer boundary can invalidate current graph reads: hydrated lease fields are
-checked against the retained Issue snapshot. This slice does not redefine which
-lease fields belong in public current or historical representations.
+checked against the retained Issue snapshot. If an external heartbeat changes or
+removes that lease row, current reads and mutations refuse. There is no supported
+repair path for that Issue in this preview; it offers no recovery command. Saved exact versions remain
+readable as the observations recorded at that time. Passive time expiry alone
+does not change the stored lease. Node provenance can be empty under the existing
+unnamed-node policy. Clone/adoption, replication recovery and the choice of live
+lease fields versus retained properties require separate review; this slice does
+not redefine those public representations.
 
 `issueClaim` is a provisional capability; `issueWorkflows` and public History
 remain unavailable. Existing exact retained reads and comparisons are available,

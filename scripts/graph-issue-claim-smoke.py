@@ -214,6 +214,8 @@ def exercise(capture):
     common = ["update", source["id"], "--claim", "--actor", actor]
     refuse("foreign-holder", ["update", source["id"], "--claim", "--actor", "crew.bob"], "constraint_violation")
     refuse("claim-false", ["update", source["id"], "--claim=false", "--actor", actor], "invalid_properties")
+    refuse("claim-false-priority", ["update", source["id"], "--claim=false", "--priority", "1", "--actor", actor], "invalid_properties")
+    refuse("claim-false-assignee", ["update", source["id"], "--claim=false", "--assignee", actor, "--actor", actor], "invalid_properties")
     refuse("claim-memory", ["update", memory["id"], "--claim", "--actor", actor], "invalid_properties")
     refuse("claim-link", ["update", context["id"], "--claim", "--actor", actor], "invalid_selector")
     refuse("claim-missing", ["update", "beads/missing", "--claim", "--actor", actor], "not_found")

@@ -349,19 +349,31 @@ try {
   artifacts.memoryEdit = { record: edited, mutation: memoryMutation, unchangedLink };
   pass('public client sees CLI Memory content edit with unchanged owned Link and consistent properties');
 
-  const claimBefore = workAfter;
+  const claimResourceRequestIndex = network.length;
+  const claimBefore = await perform({ kind: 'resource', resource: 'bead', id: workID });
+  assert.equal(network.length, claimResourceRequestIndex + 1);
+  assert.deepEqual(claimBefore, workAfter, 'intervening Memory/Link edits must leave the Issue unchanged');
+  const claimHTTPBeforeRequestIndex = network.length;
+  const claimHTTPBefore = await http(workID);
+  assert.equal(claimHTTPBefore.response.status, 200);
+  assert.deepEqual(parseBeadRecord(JSON.parse(claimHTTPBefore.text)), claimBefore);
+  const claimETagBefore = claimHTTPBefore.response.headers.get('etag');
+  assert.ok(claimETagBefore);
+  assert.equal(claimETagBefore, artifacts.issueEdit.etagAfter, 'unchanged Issue retains its ETag');
   const claimArgs = ['update', workID, '--claim', '--actor', 'crew-reviewer', '--json'];
   const claimBinary = digest(await readFile(process.env.BDP_BD));
   let claimExecution;
   let claimExitCode = null;
   let claimSignal = null;
+  let claimRawErrorCode = null;
   try {
     claimExecution = await promisify(execFile)(process.env.BDP_BD, claimArgs,
       { timeout: 60_000, maxBuffer: 2 * 1024 * 1024, encoding: 'utf8' });
     claimExitCode = 0;
   } catch (error) {
     claimExecution = error;
-    claimExitCode = error.code;
+    claimExitCode = typeof error.code === 'number' ? error.code : null;
+    claimRawErrorCode = error.code ?? null;
     claimSignal = error.signal ?? null;
     throw error;
   } finally {
@@ -369,7 +381,7 @@ try {
     await writeFile(join(output, 'client-cli-issue-claim.stderr.log'), claimExecution?.stderr ?? '');
     await writeFile(join(output, 'client-cli-issue-claim.json'), JSON.stringify({
       argv: [process.env.BDP_BD, ...claimArgs], cwd: process.cwd(), binarySha256: claimBinary,
-      exitCode: claimExitCode, signal: claimSignal,
+      exitCode: claimExitCode, signal: claimSignal, rawErrorCode: claimRawErrorCode,
       stdoutSha256: digest(claimExecution?.stdout ?? ''), stderrSha256: digest(claimExecution?.stderr ?? ''),
     }, null, 2));
   }
@@ -398,14 +410,17 @@ try {
   const claimInventory = await perform({ kind: 'collection', collection: 'beads', limit: 100 });
   assert.equal(claimInventory.next, null);
   assert.deepEqual(claimInventory.items.find(bead => bead.id === workID), workAfter);
-  const claimHTTP = await http(workID, { headers: { 'if-none-match': artifacts.issueEdit.etagAfter } });
+  const claimHTTPAfterRequestIndex = network.length;
+  const claimHTTP = await http(workID, { headers: { 'if-none-match': claimETagBefore } });
   assert.equal(claimHTTP.response.status, 200);
   const claimETag = claimHTTP.response.headers.get('etag');
   assert.ok(claimETag);
-  assert.notEqual(claimETag, artifacts.issueEdit.etagAfter);
+  assert.notEqual(claimETag, claimETagBefore);
   assert.deepEqual(parseBeadRecord(JSON.parse(claimHTTP.text)), workAfter);
   artifacts.issueClaim = { before: claimBefore, after: workAfter, mutation: claimMutation,
-    properties: claimProperties, inventory: claimInventory, etagBefore: artifacts.issueEdit.etagAfter,
+    properties: claimProperties, inventory: claimInventory, etagBefore: claimETagBefore,
+    baseline: { resourceRequestIndex: claimResourceRequestIndex, httpRequestIndex: claimHTTPBeforeRequestIndex,
+      httpBody: claimHTTPBefore.text }, afterRequestIndex: claimHTTPAfterRequestIndex,
     etagAfter: claimETag, writer: 'installed CLI; HTTP remains read-only; no lease renewal demonstrated' };
   pass('public BDP reads the CLI-claimed Issue with complete owned Dependencies, current properties, inventory and changed ETag');
 

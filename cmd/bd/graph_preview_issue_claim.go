@@ -14,12 +14,12 @@ import (
 // Claim is its existing atomic ownership transition, not a scalar edit or a
 // graph revision guard. This preview admits the standalone form only.
 func graphPreviewIssueClaimInput(cmd *cobra.Command, path, actor string) error {
-	if err := graphPreviewFlags(cmd, "claim"); err != nil {
-		return err
-	}
 	claim, err := cmd.Flags().GetBool("claim")
 	if err != nil || !cmd.Flags().Changed("claim") || !claim {
 		return graphFailure("invalid_properties", "graph Issue claim requires --claim=true", 2)
+	}
+	if err := graphPreviewFlags(cmd, "claim"); err != nil {
+		return err
 	}
 	if err := graph.ValidateBeadPath(path); err != nil {
 		return graphFailure("invalid_selector", err.Error(), 2)

@@ -42,10 +42,17 @@ func (s *Store) ClaimIssue(ctx context.Context, path, actor string) (IssueMutati
 			if err != nil {
 				return err
 			}
-			if claimed.Changed {
+			if claimed.Changed || claimed.Issue == nil || claimed.Issue.RowVersion != before.Properties.RowVersion {
 				return fmt.Errorf("%w: idempotent Issue claim unexpectedly changed", ErrInvalidStore)
 			}
-			result = IssueMutationResult{Issue: before}
+			// The pinned writer stages nothing here. Check its row token as well
+			// as the complete retained projection: malformed configuration or a
+			// future writer must not commit hidden writes while reporting no-op.
+			checked, err := s.showIssueInTx(ctx, tx, path)
+			if err != nil {
+				return err
+			}
+			result = IssueMutationResult{Issue: checked}
 			return nil
 		}
 		if err := s.touchCoordination(ctx, tx); err != nil {
