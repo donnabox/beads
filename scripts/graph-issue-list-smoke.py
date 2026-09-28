@@ -254,7 +254,7 @@ def exercise(capture):
         ("false-ready", ["--format", "records-json", "--ready=false"]),
         ("unsupported-id", ["--format", "records-json", "--sort", "id"]),
         ("unsupported-offset", ["--format", "records-json", "--offset", "0"]),
-        ("unsupported-assignee", ["--format", "records-json", "--assignee", "nobody"]),
+        ("unsupported-assignee-sort", ["--format", "records-json", "--sort", "assignee"]),
         ("unsupported-parent", ["--format", "records-json", "--parent", a["id"]]),
     ]:
         refuse(label, flags, "capability_unavailable")

@@ -44,7 +44,7 @@ func graphIssueListInput(cmd *cobra.Command, argv []string) (listInput, bool, er
 	fail := func(code, message string, exit int) (listInput, bool, error) {
 		return listInput{}, false, graphFailure(code, message, exit)
 	}
-	if err := graphPreviewFlags(cmd, "flat", "format", "status", "state", "type", "all", "limit", "title", "title-contains", "priority", "priority-min", "priority-max", "label", "label-any", "exclude-label", "pinned", "no-pinned", "sort", "reverse"); err != nil {
+	if err := graphPreviewFlags(cmd, "flat", "format", "status", "state", "type", "all", "limit", "title", "title-contains", "priority", "priority-min", "priority-max", "label", "label-any", "exclude-label", "assignee", "no-assignee", "pinned", "no-pinned", "sort", "reverse"); err != nil {
 		return listInput{}, false, err
 	}
 	format, _ := cmd.Flags().GetString("format")
@@ -62,7 +62,7 @@ func graphIssueListInput(cmd *cobra.Command, argv []string) (listInput, bool, er
 	if cmd.Flags().Changed("status") && cmd.Flags().Changed("state") {
 		return fail("invalid_selector", "graph list accepts --status or --state, not both", 2)
 	}
-	for _, name := range []string{"status", "state", "type", "title", "title-contains", "sort"} {
+	for _, name := range []string{"status", "state", "type", "title", "title-contains", "sort", "assignee"} {
 		value, _ := cmd.Flags().GetString(name)
 		if !utf8.ValidString(value) || len(value) > 4096 {
 			return fail("invalid_selector", "--"+name+" must be UTF-8 and at most 4096 bytes", 2)
@@ -141,7 +141,7 @@ func graphIssueListRepeatedFilters(cmd *cobra.Command, argv []string) error {
 	if err := probe.Parse(argv); err != nil {
 		return fmt.Errorf("cannot validate graph list filter occurrences: %w", err)
 	}
-	for _, name := range []string{"status", "state", "type"} {
+	for _, name := range []string{"status", "state", "type", "assignee"} {
 		if count := counts[name]; count != nil && count.n > 1 {
 			return fmt.Errorf("graph list does not yet support repeated --%s; supply one filter", name)
 		}

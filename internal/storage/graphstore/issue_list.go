@@ -59,6 +59,7 @@ func prepareIssueListRequest(in publicops.ListRequest) (publicops.ListRequest, e
 	allowed := publicops.ListRequest{
 		Status: in.Status, IssueType: in.IssueType, TitleSearch: in.TitleSearch, TitleContains: in.TitleContains,
 		Labels: in.Labels, LabelsAny: in.LabelsAny, ExcludeLabels: in.ExcludeLabels,
+		Assignee: in.Assignee, NoAssignee: in.NoAssignee,
 		Priority: in.Priority, PriorityMin: in.PriorityMin, PriorityMax: in.PriorityMax,
 		PinnedFlag: in.PinnedFlag, NoPinnedFlag: in.NoPinnedFlag, AllFlag: in.AllFlag,
 		SortBy: in.SortBy, Reverse: in.Reverse, Limit: in.Limit, MaxRows: in.MaxRows, MaxRowsSource: in.MaxRowsSource,
@@ -83,7 +84,7 @@ func prepareIssueListRequest(in publicops.ListRequest) (publicops.ListRequest, e
 		}
 	}
 	requestBytes := 0
-	for _, value := range []string{in.Status, in.IssueType, in.TitleSearch, in.TitleContains, in.MaxRowsSource} {
+	for _, value := range []string{in.Status, in.IssueType, in.TitleSearch, in.TitleContains, in.MaxRowsSource, in.Assignee} {
 		if len(value) > PreviewIssueListRequestByteLimit-requestBytes {
 			return publicops.ListRequest{}, fmt.Errorf("%w: Issue list request text exceeds %d bytes", storage.ErrValidation, PreviewIssueListRequestByteLimit)
 		}

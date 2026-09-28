@@ -22,7 +22,7 @@ SCOPE = "https://example.invalid/disposable-issue-assignee/"
 LIMITATIONS = [
     "experimental ordinary assignee edits on canonical graph Issues; no claim, force, status edit or assignee-compare-and-set surface",
     "literal valid UTF-8 assignee values retain whitespace; this does not resolve actor identity/canonicalization contracts",
-    "assignee-specific list filters remain unavailable; existing title/priority/full-list reads verify complete assigned records",
+    "assignee filters inherit ordinary SQL equality/collation; controlled literal fixtures do not define actor identity normalization",
     "graph create only authors open Issues; active foreign-owner and lease preservation/refusal require separate real-store tests",
     "visible complete-record no-ops and one accepted version do not count internal events or prove concurrent/unknown-COMMIT outcomes",
     "exact saved reads/comparisons are not full Memory or public ordered History; no HTTP write demonstration",
@@ -80,16 +80,23 @@ def exercise(capture):
         c0.require(len(rows) == len(records) and {r["id"] for r in rows} == set(wanted) and
                    all(row == wanted[row["id"]] for row in rows), label + ": assignee edit changed readiness or complete ready records")
 
-    def listing(label, records, flags=None):
+    def listing(label, records, flags=None, has_more=False):
         args = ["list", "--format", "records-json", "--all", "--limit", "0", "--sort", "priority", *(flags or [])]
         response = capture.success(label, args)
         c0.require(set(response) == {"schemaVersion", "preview", "result"} and response["schemaVersion"] == 1 and
                    response["preview"] is True, label + ": invalid list envelope")
         result = response["result"]
-        c0.require(result == {"items": records, "hasMore": False}, label + ": list order/filter/complete-record mismatch")
+        c0.require(result == {"items": records, "hasMore": has_more}, label + ": list order/filter/complete-record mismatch")
         pages.append({"label": label, "argv": args, "result": result, "semantic_sha256": semantic_digest(result)})
         c0.write_json(capture.output / "list-results.json", pages)
         return result["items"]
+
+    def list_refuse(label, flags):
+        receipt, out, err = raw(label, ["list", "--format", "records-json", *flags])
+        c0.require(receipt["exit_code"] == 5 and out == b"", label + ": wrong repeated-filter refusal")
+        problem = json.loads(err)
+        c0.require(problem.get("code") == "capability_unavailable" and problem.get("retryable") is False and
+                   "result" not in problem, label + ": wrong repeated-filter error")
 
     def compare(label, before, after):
         result = command(label, ["compare", before["id"], "--from", before["version"], "--to", after["version"], "--readonly"])
@@ -118,7 +125,7 @@ def exercise(capture):
     initialized = c0.envelope(capture.success("normal-init", args))
     c0.require(initialized.get("scope") == SCOPE and initialized.get("backend") == backend, "wrong authority/backend")
     caps = command("assignee-capabilities", ["status", "--graph"])["capabilities"]
-    c0.require(caps.get("issueAssigneeUpdate") is True and caps.get("issueTextUpdate") is True and
+    c0.require(caps.get("issueAssigneeUpdate") is True and caps.get("issueAssigneeFilter") is True and caps.get("issueTextUpdate") is True and
                caps.get("issuePriorityUpdate") is True and caps.get("issueList") is True and
                caps.get("issueWorkflows") is False and caps.get("memory") is False and caps.get("historyExact") is False,
                "assignee capability overstates destination")
@@ -136,6 +143,7 @@ def exercise(capture):
     current("authored-baseline", [source, *unrelated])
     ready("blocked-before-assignment", [target])
     listing("initial-complete-list", [target, source])
+    listing("initial-no-assignee", [target, source], ["--no-assignee"])
     capture.passed("normal initialization and CLI-authored graph yield an open unassigned blocked Issue with a complete owned Dependency")
 
     def checked(label, before, after, fields, actor, changed):
@@ -177,6 +185,19 @@ def exercise(capture):
     source = update("set-assignee-short-alias", source, ["-a", "alice"], {"assignee": "alice"})
     listing("assigned-alice-record", [source], ["--title", "Assignment work"])
     listing("unassigned-target-unchanged", [target], ["--title", "Prerequisite"])
+    listing("alice-filter-long", [source], ["--assignee", "alice"])
+    listing("alice-filter-short", [source], ["-a", "alice"])
+    listing("alice-no-assignee", [target], ["--no-assignee"])
+    listing("alice-empty-filter", [target, source], ["--assignee", ""])
+    listing("alice-false-unassigned", [target, source], ["--no-assignee=false"])
+    listing("alice-filter-intersection-empty", [], ["--assignee", "alice", "--no-assignee"])
+    listing("alice-filter-false-unassigned", [source], ["--assignee", "alice", "--no-assignee=false"])
+    listing("alice-title-priority-intersection", [source], ["--assignee", "alice", "--title", "Assignment work", "--priority", "3"])
+    listing("alice-filter-limited", [source], ["--assignee", "alice", "--limit", "1"])
+    listing("alice-empty-filter-limited", [target], ["--assignee", "", "--limit", "1"], has_more=True)
+    list_refuse("repeated-assignee-long", ["--assignee", "alice", "--assignee", "bob"])
+    list_refuse("repeated-assignee-mixed-empty", ["--assignee", "alice", "-a", ""])
+    list_refuse("repeated-assignee-short-empty", ["-a", "", "--assignee", "alice"])
     source = update("different-actor-assignee-noop", source, ["--assignee", "alice"], {"assignee": "alice"}, changed=False)
     refuse("stale-equal-assignee", ["update", source["id"], "--assignee", "alice", "--if-revision", before_assignment["revision"]], "revision_conflict")
     refuse("stale-other-assignee", ["update", source["id"], "--assignee", "bob", "--if-revision", before_assignment["revision"]], "revision_conflict")
@@ -187,6 +208,9 @@ def exercise(capture):
     literal = "  Zoë 雪  "
     source = update("literal-unicode-assignee", source, ["--assignee", literal], {"assignee": literal})
     listing("literal-assignee-record", [source], ["--title", "Assignment work"])
+    listing("literal-filter-long", [source], ["--assignee", literal])
+    listing("literal-filter-short", [source], ["-a", literal])
+    listing("literal-no-assignee", [target], ["--no-assignee"])
     source = update("omit-assignee-text-edit", source, ["--description", "Omission retains literal assignee"],
                     {"description": "Omission retains literal assignee"})
     c0.require(source["properties"]["assignee"] == literal, "omitted assignee was replaced or trimmed")
@@ -198,6 +222,9 @@ def exercise(capture):
     source = update("clear-assignee", source, ["--assignee="], {"assignee": ""})
     c0.require("assignee" not in source["properties"], "clear should omit empty optional assignee property")
     listing("cleared-assignee-complete-list", [source, target])
+    listing("cleared-no-assignee", [source, target], ["--no-assignee"])
+    listing("cleared-empty-filter", [source, target], ["--assignee="])
+    listing("cleared-false-unassigned", [source, target], ["--no-assignee=false"])
     source = update("already-clear-noop", source, ["--assignee="], {"assignee": ""}, changed=False, unconditional=True)
     capture.passed("literal Unicode/whitespace values survive omitted-field edits; mixed title/priority/assignee returns one accepted revision and clear removes the optional property")
 
@@ -222,6 +249,9 @@ def exercise(capture):
         compare(label + "-compare", before, source)
     source = update("quiet-json-assignee-noop", source, ["--assignee", "human-owner"],
                     {"assignee": "human-owner"}, changed=False, quiet=True)
+    listing("human-owner-filter-long", [source], ["--assignee", "human-owner"])
+    listing("human-owner-filter-short", [source], ["-a", "human-owner"])
+    listing("human-owner-no-assignee", [target], ["--no-assignee"])
     capture.passed("human, quiet and JSON edits use the same complete current/exact Issue state")
 
     common = ["update", source["id"], "--assignee", "refused"]

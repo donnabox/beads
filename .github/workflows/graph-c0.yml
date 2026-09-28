@@ -74,8 +74,8 @@ jobs:
           retention-days: 14
   installed-linux:
     runs-on: ubuntu-latest
-    # PR40's complete run took about 30 minutes. Keep bounded headroom for the
-    # added atomic-patch suite and transaction controls; per-test limits remain.
+    # Qualified PR43 finished in 38m05s. Keep the existing bounded headroom;
+    # expanded assignment/filter evidence must complete within this limit.
     timeout-minutes: 45
     env:
       BD_DISABLE_METRICS: "1"
@@ -191,10 +191,10 @@ jobs:
           # Dolt 2.1.8 cannot inspect a database created after another session's
           # transaction began. Isolate package setup; explicit same-store
           # concurrency/failure tests still run. See GRAPH_BDP_READ_PROJECTION.md.
-          # Qualified PR43 graphstore measured 613.041s on Linux. The new
-          # both-engine assignee matrix measured 31.835s locally, with a final
-          # rollback/lease rerun at16.727s. Retain the bounded12m package limit;
-          # exact-source CI must finish within it before qualification.
+          # PR46 at 23d22a9 completed graphstore in 649.374s on Linux (its later
+          # demo failed on an obsolete assignee-refusal assertion). The new
+          # both-engine filter matrix measured 10.853s locally. Keep the 12m
+          # package bound; exact-source CI must finish it before qualification.
           BEADS_GRAPH_TEST_SERVER_PORT=15440 GO_TEST_PKG_PARALLEL=1 TEST_VERBOSE=1 TEST_TIMEOUT=12m \
             ./scripts/test.sh ./internal/storage/graphstore ./internal/configfile \
               ./internal/storage/issueops ./internal/storage/schema \
@@ -205,6 +205,10 @@ jobs:
             for backend in embedded server; do
               grep -q "^ *--- PASS: TestIssueAssignee${suite}/${backend} (" "$RUNNER_TEMP/c0-evidence/storage-tests.log"
             done
+          done
+          grep -q '^--- PASS: TestGraphIssueListAssigneeAdmission (' "$RUNNER_TEMP/c0-evidence/storage-tests.log"
+          for backend in embedded server; do
+            grep -q "^ *--- PASS: TestGraphIssueListAssigneeFilters/${backend} (" "$RUNNER_TEMP/c0-evidence/storage-tests.log"
           done
           # Provision the fresh CLI-authored HTTP workspace only after all other
           # package setup finishes on this Dolt 2.1.8 server.
@@ -270,8 +274,8 @@ jobs:
             > "$RUNNER_TEMP/c0-evidence/issue-priority-smoke.log" 2>&1
           python3 scripts/graph-issue-assignee-smoke.py --bd "$RUNNER_TEMP/c0-bin/bd" \
             --output-dir "$RUNNER_TEMP/c0-evidence/issue-assignee" \
-            --server-port 15440 --server-root "$RUNNER_TEMP/c0-server" \
-            > "$RUNNER_TEMP/c0-evidence/issue-assignee-smoke.log" 2>&1
+            --backend both --server-port 15440 --server-root "$RUNNER_TEMP/c0-server" \
+            --total-timeout 900 > "$RUNNER_TEMP/c0-evidence/issue-assignee-smoke.log" 2>&1
 
       - name: Preserve receipts (including failures)
         if: always()

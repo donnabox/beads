@@ -55,7 +55,7 @@ func assertIssueListRetained(t *testing.T, ctx context.Context, s *Store, path s
 func TestGraphIssueListRequestAdmission(t *testing.T) {
 	// Every nonzero unsupported request field must refuse before touching a DB.
 	admitted := map[string]bool{}
-	for _, name := range []string{"Status", "IssueType", "TitleSearch", "TitleContains", "Labels", "LabelsAny", "ExcludeLabels", "Priority", "PriorityMin", "PriorityMax", "PinnedFlag", "NoPinnedFlag", "AllFlag", "SortBy", "Reverse", "Limit", "MaxRows", "MaxRowsSource"} {
+	for _, name := range []string{"Status", "IssueType", "TitleSearch", "TitleContains", "Assignee", "NoAssignee", "Labels", "LabelsAny", "ExcludeLabels", "Priority", "PriorityMin", "PriorityMax", "PinnedFlag", "NoPinnedFlag", "AllFlag", "SortBy", "Reverse", "Limit", "MaxRows", "MaxRowsSource"} {
 		admitted[name] = true
 	}
 	typ := reflect.TypeFor[publicops.ListRequest]()

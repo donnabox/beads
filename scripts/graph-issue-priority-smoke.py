@@ -243,7 +243,7 @@ def exercise(capture):
         ("legacy-selector", ["update", "ipriority-legacy", "--priority", "0", "--unconditional"], "invalid_selector"),
     ]:
         refuse(label, argv, code)
-    for flag, value in [("status", "closed"), ("type", "task"), ("assignee", "worker"), ("notes", ""),
+    for flag, value in [("status", "closed"), ("type", "task"), ("if-assignee", "worker"), ("notes", ""),
                         ("add-label", "new"), ("if-source-revision", source["revision"]),
                         ("body-file", str(capture.root / "missing.md"))]:
         refuse("unsupported-" + flag, [*common, "--unconditional", "--" + flag, value], "capability_unavailable")
