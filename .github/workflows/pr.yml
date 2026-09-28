@@ -1375,7 +1375,7 @@ jobs:
   # Required graph-core checkpoint, including the installed mixed workflow and
   # optional-by-default real-engine tests. Never infer this capability from a normal suite with service skips.
   graph-c0:
-    name: Graph core / real engines and installed CLI
+    name: Graph core / real engines, installed CLI and BDP
     needs: build-artifacts
     runs-on: ubuntu-latest
     timeout-minutes: 50
@@ -1402,15 +1402,62 @@ jobs:
           echo 'f66318f08ed66e409fc39363ae0fff8ce6fbf6dba9f5bac632b91527b9632a74  dolt.tar.gz' | sha256sum --check
           tar -xzf dolt.tar.gz
           install -m 0755 dolt-linux-amd64/bin/dolt "$RUNNER_TEMP/graph-c0-bin/dolt"
+      - name: Install pinned independent-client runtime
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020
+        with:
+          node-version: '24.16.0'
+      - name: Build separately pinned public BDP client
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/bdp-client-build"
+          mkdir "$RUNNER_TEMP/bdp-client-53bdbd0"
+          cd "$RUNNER_TEMP/bdp-client-53bdbd0"
+          export GIT_CONFIG_NOSYSTEM=1 GIT_CONFIG_GLOBAL=/dev/null GIT_TERMINAL_PROMPT=0
+          {
+            git init
+            git -c credential.helper= fetch --depth=1 https://github.com/gastownhall/bdp.git \
+              53bdbd03136875f952af184fce7b3c7af8f74e96
+            git checkout --detach FETCH_HEAD
+            test "$(git rev-parse HEAD)" = 53bdbd03136875f952af184fce7b3c7af8f74e96
+            npm install --global --ignore-scripts pnpm@11.20.0
+            test "$(node --version)" = v24.16.0
+            test "$(pnpm --version)" = 11.20.0
+            pnpm install --frozen-lockfile --ignore-scripts
+            pnpm exec tsc -b packages/client
+            test -z "$(git status --porcelain --untracked-files=all)"
+            python3 - <<'PYCLIENT'
+          import hashlib, json, os, pathlib, subprocess
+          root = pathlib.Path.cwd()
+          files = {p for p in subprocess.check_output(['git', 'ls-files', '-z']).decode().split('\0') if p}
+          for package in ['client', 'protocol']:
+              files.update(str(p.relative_to(root)) for p in (root / 'packages' / package / 'dist').rglob('*') if p.is_file())
+          manifest = {
+              'source': 'gastownhall/bdp',
+              'commit': subprocess.check_output(['git', 'rev-parse', 'HEAD'], text=True).strip(),
+              'source_method': 'unauthenticated exact-commit fetch into separate checkout',
+              'node': subprocess.check_output(['node', '--version'], text=True).strip(),
+              'pnpm': subprocess.check_output(['pnpm', '--version'], text=True).strip(),
+              'install': 'pnpm install --frozen-lockfile --ignore-scripts',
+              'build': 'pnpm exec tsc -b packages/client',
+              'passed': True,
+              'http_interop': False,
+              'files': {name: hashlib.sha256((root / name).read_bytes()).hexdigest() for name in sorted(files)},
+          }
+          (pathlib.Path(os.environ['RUNNER_TEMP']) / 'bdp-client-build/client-build.json').write_text(json.dumps(manifest, indent=2) + '\n')
+          PYCLIENT
+          } 2>&1 | tee "$RUNNER_TEMP/bdp-client-build/build.log"
       - name: Check required-test verifier negative controls
         run: python3 scripts/ci/graph-c0-verifier-test.py
-      - name: Run complete C0 qualification without skips
+      - name: Run complete graph and BDP qualification without skips
         run: |
           export PATH="$RUNNER_TEMP/graph-c0-bin:$PATH"
           python3 scripts/ci/graph-c0-qualify.py \
             --bd "$RUNNER_TEMP/graph-c0-bin/bd" \
             --dolt "$RUNNER_TEMP/graph-c0-bin/dolt" \
             --artifacts "$RUNNER_TEMP/graph-c0-build" \
+            --bdp-checkout "$RUNNER_TEMP/bdp-client-53bdbd0" \
+            --client-manifest "$RUNNER_TEMP/bdp-client-build/client-build.json" \
+            --node "$(command -v node)" \
             --output "$RUNNER_TEMP/graph-c0-evidence"
       - name: Preserve complete and failed qualification evidence
         if: ${{ always() }}
@@ -1421,6 +1468,7 @@ jobs:
             ${{ runner.temp }}/graph-c0-evidence/
             ${{ runner.temp }}/graph-c0-build/build-manifest.txt
             ${{ runner.temp }}/graph-c0-build/SHA256SUMS
+            ${{ runner.temp }}/bdp-client-build/
           retention-days: 14
           if-no-files-found: error
 

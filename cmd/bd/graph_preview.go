@@ -194,8 +194,8 @@ func admitGraphPreview(cmd *cobra.Command) (handled bool, admissionErr error) {
 	if err != nil || real != cfg.GraphWorkspace {
 		return true, graphFailure("not_authority", "graph_mode workspace binding differs; copied/moved workspaces cannot claim this authority", 5)
 	}
-	if cmd != rememberCmd && cmd != createCmd && cmd != showCmd && cmd != statusCmd && cmd != depAddCmd && cmd != linkCmd && cmd != closeCmd && cmd != reopenCmd && cmd != readyCmd && cmd != updateCmd && cmd != graphUnlinkCmd && cmd != graphLinksCmd {
-		return true, graphFailure("capability_unavailable", "this graph preview supports remember, create, show, update, dep add, link, links, unlink, close, reopen, ready and status --graph; this command has not opened the legacy store", 5)
+	if cmd != rememberCmd && cmd != createCmd && cmd != showCmd && cmd != statusCmd && cmd != depAddCmd && cmd != linkCmd && cmd != closeCmd && cmd != reopenCmd && cmd != readyCmd && cmd != updateCmd && cmd != graphUnlinkCmd && cmd != graphLinksCmd && cmd != serveCmd {
+		return true, graphFailure("capability_unavailable", "this graph preview supports remember, create, show, update, dep add, link, links, unlink, close, reopen, ready, status --graph and shared-server serve; this command has not opened the legacy store", 5)
 	}
 	if cmd == statusCmd {
 		enabled, _ := cmd.Flags().GetBool("graph")
@@ -472,9 +472,9 @@ func runGraphPreviewStatus(cmd *cobra.Command) error {
 					"issueClose": true, "issueReopen": true, "issueReady": true, "genericRead": true,
 					"memory": false, "memoryDelete": false, "memoryPropertiesPatch": false, "linkPropertiesPatch": false,
 					"issueList": false, "issueBlocked": false, "issueClaim": false, "issueWorkflows": false,
-					"blockingDependencyPairUnlink": false, "bdpRead": false, "historyExact": false, "exactVersionRead": false,
+					"blockingDependencyPairUnlink": false, "bdpRead": graphPreviewConfig.DoltMode == configfile.DoltModeServer, "historyExact": false, "exactVersionRead": false,
 					"requestStatus": false, "backupContinuity": false}},
-			"Mixed graph preview: Memory create/read, guarded complete title/body replacement and selected remember updates, actual predecessor disclosure for unconditional Memory writes, basic Issue create/read with ordinary creator/owner defaults, guarded inline Issue title/description/design/acceptance edits, informational Links with property replacement and guarded unlink, blocking Dependencies with canonical-ID unlink, incident Links, and Issue close/reopen/ready. Full Memory, deletion, Issue list/blocked and later fields, ordered patches, public History, BDP serving, adoption and recovery remain unavailable.", nil
+			"Mixed graph preview: Memory create/read, guarded complete title/body replacement and selected remember updates, actual predecessor disclosure for unconditional Memory writes, basic Issue create/read with ordinary creator/owner defaults, guarded inline Issue title/description/design/acceptance edits, informational Links with property replacement and guarded unlink, blocking Dependencies with canonical-ID unlink, incident Links, and Issue close/reopen/ready. Full Memory, deletion, Issue list/blocked and later fields, ordered patches, public History, adoption and recovery remain unavailable. BDP Read serving is available only on ordinary shared-server Dolt; embedded serving, HTTP writes and aliases remain unavailable.", nil
 	})
 }
 

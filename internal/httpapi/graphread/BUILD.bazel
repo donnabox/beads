@@ -1,0 +1,41 @@
+load("@rules_go//go:def.bzl", "go_library", "go_test")
+
+go_library(
+    name = "graphread",
+    srcs = [
+        "http_support.go",
+        "inventory.go",
+        "pagination.go",
+        "reader.go",
+        "selection.go",
+        "selector.go",
+        "selector_lexer.go",
+        "selector_parser.go",
+    ],
+    importpath = "github.com/steveyegge/beads/internal/httpapi/graphread",
+    visibility = ["//:__subpackages__"],
+    deps = [
+        "//graphops",
+        "//internal/httpapi/bdpwire",
+        "//internal/storage/graphstore",
+    ],
+)
+
+go_test(
+    name = "graphread_test",
+    srcs = [
+        "inventory_test.go",
+        "pagination_test.go",
+        "reader_test.go",
+        "selection_integration_test.go",
+        "selection_test.go",
+        "selector_test.go",
+    ],
+    embed = [":graphread"],
+    deps = [
+        "//graphops",
+        "//internal/httpapi/bdpwire",
+        "//internal/storage/graphstore",
+        "//issueops",
+    ],
+)
