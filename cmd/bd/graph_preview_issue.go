@@ -22,7 +22,7 @@ func runGraphPreviewCreateIssue(cmd *cobra.Command, args []string) error {
 	if err := graphPreviewWritePolicy(); err != nil {
 		return err
 	}
-	if err := graphPreviewFlags(cmd, "id", "title", "description", "body", "message", "type", "priority", "labels", "label", "design", "acceptance", "assignee", "estimate", "external-ref", "spec-id"); err != nil {
+	if err := graphPreviewFlags(cmd, "id", "title", "description", "body", "message", "type", "priority", "labels", "label", "design", "acceptance", "assignee", "estimate", "external-ref", "spec-id", "notes"); err != nil {
 		return err
 	}
 	path, _ := cmd.Flags().GetString("id")
@@ -57,7 +57,9 @@ func runGraphPreviewCreateIssue(cmd *cobra.Command, args []string) error {
 	}
 	labels, _ := cmd.Flags().GetStringSlice("labels")
 	aliasLabels, _ := cmd.Flags().GetStringSlice("label")
-	request := publicops.CreateRequest{Actor: getActorWithGit(), Issue: &types.Issue{
+	creator := getActorWithGit()
+	request := publicops.CreateRequest{Actor: creator, Issue: &types.Issue{
+		CreatedBy: creator, Owner: getOwner(),
 		Title: title, Description: description, Status: types.StatusOpen,
 		Priority: priority, IssueType: issueType, Labels: utils.NormalizeLabels(append(labels, aliasLabels...)),
 	}}
@@ -80,7 +82,7 @@ func graphPreviewIssueCreateFields(cmd *cobra.Command, issue *types.Issue) error
 		name string
 		dest *string
 	}{
-		{"design", &issue.Design}, {"acceptance", &issue.AcceptanceCriteria},
+		{"design", &issue.Design}, {"acceptance", &issue.AcceptanceCriteria}, {"notes", &issue.Notes},
 		{"assignee", &issue.Assignee}, {"spec-id", &issue.SpecID},
 	} {
 		value, _ := cmd.Flags().GetString(field.name)

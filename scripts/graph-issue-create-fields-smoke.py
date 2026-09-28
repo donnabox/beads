@@ -23,7 +23,7 @@ LIMITATIONS = [
     "one CLI create publishes all six initial fields; SQL NULL representation, exact recorder/audit counts and no-lease proof belong to separate storage tests",
     "complete current/exact saved records and owned Links are not public ordered History or BDP Write proof",
     "no concurrent writer or uncertain-COMMIT proof in this harness; those are separate storage qualification gates",
-    "Owner/CreatedBy defaults, notes, status/defer, metadata and composite create remain outside this preview",
+    "initial notes and ordinary creator/owner have a separate proof; status/defer, metadata and composite create remain outside this preview",
     "ordinary Dolt database provisioning is sequential, through normal init only",
 ]
 
@@ -167,14 +167,14 @@ def exercise(capture):
                          ("assignee-long", ["--assignee", "雪" * 256]), ("external-long", ["--external-ref", "雪" * 256]),
                          ("spec-long", ["--spec-id", "雪" * 1025])]:
         refuse(label, [*common, *flags])
-    for label, flags in [("notes", ["--notes="]), ("status", ["--status=open"]), ("defer", ["--defer=tomorrow"]),
+    for label, flags in [("status-with-notes", ["--notes=", "--status=open"]), ("status", ["--status=open"]), ("defer", ["--defer=tomorrow"]),
                          ("metadata", ["--metadata={}"]), ("design-file", ["--design-file", str(capture.root / "missing-design")])]:
         # Do not combine mutually exclusive design/design-file: test graph admission itself.
         argv = common[:-2] if label == "design-file" else common
         refuse(label, [*argv, *flags], "capability_unavailable", 5)
     refuse("claim-unknown", [*common, "--claim"], structured=False)
     refuse("refused-path-absent", ["show", "beads/refused"], "not_found", 3)
-    capture.passed("invalid estimates/lengths and unsupported notes/status/defer/metadata/file/claim refuse without allocating the canonical path")
+    capture.passed("invalid estimates/lengths and unsupported status/defer/metadata/file/claim (including status with admitted notes) refuse without allocating the canonical path")
 
     mayor, freeze = capture.work / "mayor", capture.work / "MIGRATION-FREEZE"
     c0.require(not mayor.exists() and not freeze.exists(), "unexpected policy files")
