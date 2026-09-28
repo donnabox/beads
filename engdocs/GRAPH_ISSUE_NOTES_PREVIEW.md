@@ -22,8 +22,17 @@ is a reversible preview of the existing Issue operation.
 The shared Issue writer appends the supplied text inside the checked transaction.
 When notes already contain text, it inserts one newline before the new text.
 Unicode, whitespace, CRLF and literal `-` are preserved. There is no file or
-stdin interpretation and no new notes-specific byte cap. Existing bounded read
-and output limits still apply; this does not promise unlimited readable records.
+stdin interpretation or new per-fragment byte cap. A changed request that
+supplies `--append-notes` must leave its entire workspace within the existing `currentReadBytes` acquisition budget
+(currently 16 MiB). The check runs after the mutation and retained mapping inside
+the same transaction; exceeding the budget rolls back notes, sibling edits,
+events and retention. It counts more than notes alone, including current saved
+state and other Resources. This reversible preview restriction prevents append
+from making the workspace unreadable while notes replacement/clear is unavailable.
+It does not change the other writers' existing admission policies or promise an
+unlimited record size. An empty append supplied alongside a changing scalar
+field still applies this postcondition; omit the append flag for a purely scalar
+repair. A complete no-op returns before this check and changes nothing.
 
 An empty append to empty notes is a no-op. An empty append to nonempty notes
 **adds a newline**, matching the current native writer. Repeating an append
@@ -39,8 +48,9 @@ complete Issue, revision and attribution. A stale guard refuses before no-op
 planning. `--unconditional` chooses the current transactional predecessor; it
 does not bypass ordinary assignment ownership policy.
 
-Appending to a claimed Issue preserves its lease, holder and start time.
-Appending to a closed Issue preserves its status, close time and reason.
+Appending notes alone to a claimed Issue preserves its lease, holder and start
+time. A mixed assignee edit still follows the existing transfer fence and lease
+rules. Appending to a closed Issue preserves its status, close time and reason.
 Dependencies, unrelated Memory Beads and informational Links are unchanged.
 Existing authority, readonly and migration-freeze checks still apply.
 

@@ -12,14 +12,15 @@ import (
 	publicops "github.com/steveyegge/beads/issueops"
 )
 
-// UpdateIssueRequest admits assignee, priority, title, description, design and acceptance criteria.
-// AppendNotes reuses the native transactional append operation. Notes replacement
-// and clearing remain reserved for contributor safeguard reconciliation. A nil field leaves that property unchanged; an explicit empty
-// string clears it where the Issue domain permits. An explicit priority of zero
-// sets P0; a nil priority leaves it unchanged. The guard addresses the complete graph revision, including
-// the Issue's owned blocking Dependencies, not its private storage ordinal.
-// Assignee nil preserves the current value; empty clears it. Neither the graph
-// guard nor Unconditional bypasses the ordinary active-assignment transfer fence.
+// UpdateIssueRequest admits existing Issue scalar edits and notes append.
+// Nil fields preserve their properties. Empty scalar strings clear fields where
+// the Issue domain permits; AppendNotes instead preserves native append semantics:
+// empty on empty is a no-op, while empty on nonempty appends one newline.
+// Notes replacement/clear remain reserved for contributor safeguard reconciliation.
+// Priority zero sets P0; nil preserves priority. The guard addresses the complete
+// graph revision, including owned blocking Dependencies, not the storage ordinal.
+// Assignee nil preserves its value; empty clears it. Neither the graph guard nor
+// Unconditional bypasses the ordinary active-assignment transfer fence.
 type UpdateIssueRequest struct {
 	Path, Actor, ExpectedRevision                  string
 	Unconditional                                  bool
@@ -135,6 +136,13 @@ func (s *Store) UpdateIssue(ctx context.Context, request UpdateIssueRequest) (Is
 		}
 		if err := s.recordIssueMappingInTx(ctx, tx, request.Path, before.Properties.ID); err != nil {
 			return err
+		}
+		// Append has no inverse in this preview. Keep its resulting workspace
+		// readable, including the new retained snapshot, or roll back every effect.
+		if patch.AppendNotes.Set {
+			if err := checkCurrentReadBytes(ctx, tx); err != nil {
+				return err
+			}
 		}
 		after, err := s.showIssueInTx(ctx, tx, request.Path)
 		if err != nil {
