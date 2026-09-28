@@ -1,7 +1,8 @@
 #!/usr/bin/env python3
-"""Required C0 proof: real engines, source-matched CLI, no optional test skips.
+"""Required graph proof: real engines, source-matched CLI, no optional test skips.
 
-This is deliberately the create/read checkpoint, not full Memory or BDP proof.
+Includes the C0 captures and every discovered graph test, including the mixed
+Issue/Memory/Link installed workflow. This is not full Memory or BDP proof.
 The caller supplies the ordinary released Dolt binary and CI Build Artifacts.
 All databases and process groups belong to this run; no existing server is used.
 """

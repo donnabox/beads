@@ -1372,10 +1372,10 @@ jobs:
             throw 'Cygwin Make shell smoke failed'
           }
 
-  # Required create/read checkpoint, including optional-by-default real-engine
-  # tests. Never infer this capability from a normal suite with service skips.
+  # Required graph-core checkpoint, including the installed mixed workflow and
+  # optional-by-default real-engine tests. Never infer this capability from a normal suite with service skips.
   graph-c0:
-    name: Graph C0 / real engines and installed CLI
+    name: Graph core / real engines and installed CLI
     needs: build-artifacts
     runs-on: ubuntu-latest
     timeout-minutes: 50

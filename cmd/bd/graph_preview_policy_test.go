@@ -246,16 +246,16 @@ func graphPolicyCLI(t *testing.T, bd, work, home string, extraEnv []string, code
 	return out.String()
 }
 
-// A C0 workspace must refuse deferred commands before legacy storage opens.
+// The original C0 admission guarantee also covers deferred mixed-core flags.
 func TestGraphPreviewC0DeferredCommandsRefuseBeforeLegacyOpen(t *testing.T) {
 	bd := buildBDUnderTest(t)
 	work, home := t.TempDir(), t.TempDir()
 	graphPolicyCLI(t, bd, work, home, nil, "", "init", "--graph-mode", "link", "--scope-url", "https://example.invalid/c0/", "--skip-hooks", "--skip-agents", "--non-interactive", "--json")
 	created := graphPolicyCLI(t, bd, work, home, nil, "", "remember", "C0 body", "--id", "beads/plan", "--title", "Plan", "--json")
 	for _, args := range [][]string{
-		{"create", "Must refuse", "--json"}, {"update", "beads/plan", "--title", "Must refuse", "--json"},
-		{"list", "--json"}, {"ready", "--json"}, {"close", "beads/plan", "--json"},
-		{"link", "beads/plan", "beads/other", "--json"}, {"serve", "--json"},
+		{"create", "Must refuse", "--estimate=3", "--json"}, {"update", "beads/plan", "--title", "Must refuse", "--priority=1", "--unconditional", "--json"},
+		{"list", "--json"}, {"ready", "--limit=1", "--json"}, {"close", "beads/plan", "--force", "--json"},
+		{"link", "beads/plan", "beads/other", "--type=related", "--json"}, {"serve", "--json"},
 		{"db-proxy-child", "--root", filepath.Join(work, ".beads"), "--port", "1", "--backend", "external", "--json"},
 	} {
 		before := legacyUpgradeTreeDigest(t, work)
@@ -278,14 +278,40 @@ func TestGraphPreviewC0DeferredCommandsRefuseBeforeLegacyOpen(t *testing.T) {
 	if err := json.Unmarshal([]byte(status), &result); err != nil {
 		t.Fatal(err)
 	}
-	for _, capability := range []string{"memoryCreate", "memoryRead", "memoryBodyFileInput", "memoryBodyStdinInput"} {
+	wantEnabled := map[string]bool{}
+	for _, capability := range []string{
+		"memoryCreate", "memoryRead", "memoryBodyFileInput", "memoryBodyStdinInput", "memoryPropertiesUpdate",
+		"memorySelectedUpdate", "memorySelectedUpdateUnconditional", "memoryOverwriteDisclosure", "issueCreate", "issueCreateAuthorship",
+		"issueTextUpdate", "informationalLink", "blockingDependency", "linkPropertiesUpdate", "linkUnlink", "blockingDependencyUnlink",
+		"incidentLinks", "ownedLinks", "issueClose", "issueReopen", "issueReady", "genericRead",
+	} {
+		wantEnabled[capability] = true
 		if !result.Result.Capabilities[capability] {
 			t.Fatalf("implemented capability missing: %s", capability)
 		}
 	}
 	for capability, enabled := range result.Result.Capabilities {
-		if enabled && capability != "memoryCreate" && capability != "memoryRead" && capability != "memoryBodyFileInput" && capability != "memoryBodyStdinInput" {
+		if enabled && !wantEnabled[capability] {
 			t.Fatalf("unimplemented capability advertised: %s", capability)
+		}
+	}
+}
+
+func TestGraphPreviewGenericFlagsRefuseLegacyOpening(t *testing.T) {
+	bd := buildBDUnderTest(t)
+	for _, args := range [][]string{
+		{"remember", "--update", "beads/plan", "--title", "Refused", "--unconditional"},
+		{"link", "demo-one", "demo-two", "--properties", `{}`},
+		{"link", "demo-one", "demo-two", "--id", "links/context"},
+		{"update", "demo-one", "--properties", `{}`, "--unconditional"},
+		{"update", "demo-one", "--if-revision", "observed"},
+		{"update", "demo-one", "--if-source-revision", "observed"},
+	} {
+		work, home := t.TempDir(), t.TempDir()
+		before := legacyUpgradeTreeDigest(t, work)
+		graphPolicyCLI(t, bd, work, home, nil, "capability_unavailable", append(args, "--json")...)
+		if after := legacyUpgradeTreeDigest(t, work); after != before {
+			t.Fatalf("generic flags changed a legacy workspace: %v", args)
 		}
 	}
 }

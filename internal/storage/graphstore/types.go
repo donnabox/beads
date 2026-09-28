@@ -6,6 +6,8 @@ package graphstore
 import (
 	"encoding/json"
 	"errors"
+
+	publicops "github.com/steveyegge/beads/issueops"
 )
 
 // SchemaVersion identifies this explicitly experimental storage layout.
@@ -73,6 +75,19 @@ type Attribution struct {
 	RecordedAt string `json:"recordedAt"`
 }
 
+// IssueRecord projects the authoritative specialized Issue aggregate. It is a
+// disposable preview, with mutable issue_type classification under one local
+// experimental Type. No public nominal Task/Bug contract is established.
+type IssueRecord struct {
+	ID          string            `json:"id"`
+	Type        string            `json:"type"`
+	Revision    string            `json:"revision"`
+	Version     string            `json:"version"`
+	Properties  *publicops.Issue  `json:"properties"`
+	Owned       []json.RawMessage `json:"owned"`
+	Attribution Attribution       `json:"attribution"`
+}
+
 var (
 	ErrInvalidStore   = errors.New("graph preview store identity or schema is invalid")
 	ErrAlreadyExists  = errors.New("canonical graph path has already been allocated")
@@ -82,6 +97,19 @@ var (
 	ErrOutcomeUnknown = errors.New("graph transaction outcome is unknown; do not replay automatically")
 )
 
+// DependencyRequest asserts one blocking Dependency between live local Issues.
+// Path is an optional never-reused Link allocation; empty allocates a fresh path.
+type DependencyRequest struct {
+	// ExpectedSourceRevision guards generic authoring; empty retains the legacy command contract.
+	ExpectedSourceRevision string
+	SourcePath             string
+	TargetPath             string
+	Path                   string
+	Actor                  string
+}
+
+// LinkRecord projects an authoritative specialized Dependency or generic Link.
+// All preview endpoints are unpinned live local Beads.
 type LinkRecord struct {
 	ID          string         `json:"id"`
 	Type        string         `json:"type"`
@@ -93,6 +121,72 @@ type LinkRecord struct {
 	Attribution Attribution    `json:"attribution"`
 }
 
+type DependencyResult struct {
+	Link    LinkRecord  `json:"link"`
+	Source  IssueRecord `json:"source"`
+	Changed bool        `json:"changed"`
+}
+
+type IssueMutationResult struct {
+	Issue   IssueRecord `json:"issue"`
+	Changed bool        `json:"changed"`
+}
+
+// PreviewOwnedLinkLimit is a disposable descriptor budget, not a production limit.
+const PreviewOwnedLinkLimit = 1000
+
+// LinkCreateRequest allocates an independent informational Link. Equal endpoints
+// do not deduplicate intent; an explicit allocated Path cannot be reused.
+type LinkCreateRequest struct {
+	Path, SourcePath, TargetPath, Actor string
+	Properties                          map[string]any
+	ExpectedSourceRevision              string
+	UnconditionalSource                 bool
+}
+
+// LinkUpdateRequest replaces properties without changing Type or endpoints.
+// A guard is mandatory for the Link and, when owned, its source Memory.
+type LinkUpdateRequest struct {
+	Path, Actor            string
+	Properties             map[string]any
+	ExpectedRevision       string
+	Unconditional          bool
+	ExpectedSourceRevision string
+	UnconditionalSource    bool
+}
+
+type LinkMutationResult struct {
+	Link           LinkRecord      `json:"link"`
+	Source         any             `json:"source"`
+	Changed        bool            `json:"changed"`
+	ReplacedSource *ReplacedMemory `json:"replacedSource,omitempty"`
+}
+
+// LinksRequest selects complete current incident state in one read transaction.
+// Empty direction means both. Empty TypeURL admits all installed Link Types.
+type LinksRequest struct{ BeadPath, Direction, TypeURL string }
+
+// PreviewIncidentLinkLimit bounds this disposable non-paginated reader.
+const PreviewIncidentLinkLimit = 1000
+
+// ErrAmbiguousLink identifies all candidates without deleting any of them.
+type ErrAmbiguousLink struct{ CandidateIDs []string }
+
+func (e *ErrAmbiguousLink) Error() string {
+	return "multiple live Links match the endpoint pair; select a canonical Link ID"
+}
+
+// LinkDeleteRequest selects an ID or an exact typed endpoint pair, never both.
+type LinkDeleteRequest struct {
+	Path, SourcePath, TargetPath, TypeURL, Actor string
+	ExpectedRevision                             string
+	Unconditional                                bool
+	ExpectedSourceRevision                       string
+	UnconditionalSource                          bool
+}
+
+// LinkTombstone retains deletion state in this experimental local format.
+// It does not define restoration, erasure, or the public History wire contract.
 type LinkTombstone struct {
 	ID              string      `json:"id"`
 	Type            string      `json:"type"`
@@ -102,11 +196,9 @@ type LinkTombstone struct {
 	PreviousVersion string      `json:"previousVersion"`
 	Attribution     Attribution `json:"attribution"`
 }
-
-// PreviewOwnedLinkLimit bounds required owned-state acquisition.
-const PreviewOwnedLinkLimit = 1000
-
-var (
-	ErrCapabilityUnavailable = errors.New("graph preview capability is unavailable")
-	ErrLimitExceeded         = errors.New("graph preview result limit exceeded")
-)
+type LinkDeleteResult struct {
+	Link           LinkTombstone   `json:"link"`
+	Source         any             `json:"source"`
+	Changed        bool            `json:"changed"`
+	ReplacedSource *ReplacedMemory `json:"replacedSource,omitempty"`
+}
