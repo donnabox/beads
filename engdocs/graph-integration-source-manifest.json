@@ -956,7 +956,19 @@
       "url": "https://github.com/donnabox/beads/pull/55",
       "in_qualified_candidate": true,
       "destination_pr": null,
-      "landed_commit": null
+      "landed_commit": null,
+      "transfers": [
+        {
+          "destination_pr": "https://github.com/versioned-beads/beads/pull/45",
+          "head": "824876edceb9f8960a89bd8db0668a444548fa4e",
+          "scope": "Ordered guarded Memory property patches; current native writer/recorder and deletion-aware read-budget behavior preserved",
+          "state": "draft, pushed; focused two-engine proof and patch feature baseline113 packages/43.9% pass; combined PR44 CI prerequisite and complete exact-source qualification pending",
+          "landed_commit": null,
+          "previous_heads": [
+            "55a005fcd57d81a358c7b22446783bc4ffb143f6"
+          ]
+        }
+      ]
     },
     {
       "baseRefName": "janet-memory-properties-patch-20260928",
@@ -968,7 +980,19 @@
       "url": "https://github.com/donnabox/beads/pull/56",
       "in_qualified_candidate": true,
       "destination_pr": null,
-      "landed_commit": null
+      "landed_commit": null,
+      "transfers": [
+        {
+          "destination_pr": "https://github.com/versioned-beads/beads/pull/45",
+          "head": "824876edceb9f8960a89bd8db0668a444548fa4e",
+          "scope": "Ordered guarded informational Link property patches with independent Memory-source authorization; current native writer/recorder and deletion-aware read-budget behavior preserved",
+          "state": "draft, pushed; focused two-engine proof and patch feature baseline113 packages/43.9% pass; combined PR44 CI prerequisite and complete exact-source qualification pending",
+          "landed_commit": null,
+          "previous_heads": [
+            "55a005fcd57d81a358c7b22446783bc4ffb143f6"
+          ]
+        }
+      ]
     },
     {
       "baseRefName": "janet-link-properties-patch-20260928",
