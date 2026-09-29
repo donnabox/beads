@@ -265,6 +265,91 @@ func TestGraphReadHTTPAuthorityAndSecurity(t *testing.T) {
 			t.Fatalf("cleared assignee still exposed: %s", assignee)
 		}
 	})
+	t.Run("issue-append-notes", func(t *testing.T) {
+		claimed, err := store.ClaimIssue(ctx, "beads/work", "notes-holder")
+		if err != nil || !claimed.Changed {
+			t.Fatalf("claim for notes: %+v %v", claimed, err)
+		}
+		read := func(headers http.Header) (*http.Response, bdpwire.BeadRecord) {
+			t.Helper()
+			resp, raw := request("GET", "/read/beads/work", "second-token-longer", "", headers)
+			var value bdpwire.BeadRecord
+			if resp.StatusCode != 200 || bdpwire.Unmarshal(raw, &value) != nil {
+				t.Fatalf("notes canonical read: %d %s", resp.StatusCode, raw)
+			}
+			return resp, value
+		}
+		beforeHTTP, before := read(nil)
+		etag := beforeHTTP.Header.Get("ETag")
+		if etag == "" || before.Revision != claimed.Issue.Revision {
+			t.Fatal("missing claim revision/ETag")
+		}
+		state, err := store.CurrentSnapshot(ctx)
+		if err != nil {
+			t.Fatal(err)
+		}
+		empty := ""
+		noop, err := store.UpdateIssue(ctx, graphstore.UpdateIssueRequest{Path: "beads/work", Actor: "notes-holder", ExpectedRevision: claimed.Issue.Revision, AppendNotes: &empty})
+		if err != nil || noop.Changed || !reflect.DeepEqual(noop.Issue, claimed.Issue) {
+			t.Fatalf("empty append noop: %+v %v", noop, err)
+		}
+		resp, raw := request("GET", "/read/beads/work", "second-token-longer", "", http.Header{"If-None-Match": {etag}})
+		if resp.StatusCode != 304 || len(raw) != 0 || resp.Header.Get("ETag") != etag {
+			t.Fatalf("noop changed ETag: %d %s", resp.StatusCode, raw)
+		}
+		if after, err := store.CurrentSnapshot(ctx); err != nil || !reflect.DeepEqual(after, state) {
+			t.Fatalf("noop/HTTP read changed state: %v", err)
+		}
+		text := "Progress — 雪\r\nsecond line\t"
+		appended, err := store.UpdateIssue(ctx, graphstore.UpdateIssueRequest{Path: "beads/work", Actor: "notes-holder", ExpectedRevision: noop.Issue.Revision, AppendNotes: &text})
+		if err != nil || !appended.Changed {
+			t.Fatalf("append: %+v %v", appended, err)
+		}
+		state, err = store.CurrentSnapshot(ctx)
+		if err != nil {
+			t.Fatal(err)
+		}
+		afterHTTP, after := read(http.Header{"If-None-Match": {etag}})
+		if afterHTTP.Header.Get("ETag") == "" || afterHTTP.Header.Get("ETag") == etag || after.Revision != appended.Issue.Revision || after.Revision == before.Revision {
+			t.Fatal("append did not expose fresh revision/ETag")
+		}
+		want := before
+		want.Revision, want.Attribution = after.Revision, after.Attribution
+		want.Properties = bdpwire.Properties{}
+		for key, value := range before.Properties {
+			want.Properties[key] = value
+		}
+		want.Properties["notes"], _ = json.Marshal(text)
+		want.Properties["updated_at"] = after.Properties["updated_at"]
+		if after.Attribution == nil || after.Attribution.Principal != "notes-holder" || !reflect.DeepEqual(after, want) {
+			t.Fatal("append changed other HTTP properties, lease or ownership")
+		}
+		resp, raw = request("GET", "/read/beads/work?view=properties", "second-token-longer", "", nil)
+		var properties bdpwire.Properties
+		if resp.StatusCode != 200 || bdpwire.Unmarshal(raw, &properties) != nil || !reflect.DeepEqual(properties, after.Properties) {
+			t.Fatalf("appended properties: %d %s", resp.StatusCode, raw)
+		}
+		resp, raw = request("GET", "/read/beads/?limit=100", "second-token-longer", "", nil)
+		var page bdpwire.BeadCollection
+		if resp.StatusCode != 200 || bdpwire.Unmarshal(raw, &page) != nil || page.Next != nil {
+			t.Fatalf("appended inventory: %d %s", resp.StatusCode, raw)
+		}
+		found := 0
+		for _, item := range page.Items {
+			if item.ID == after.ID {
+				found++
+				if !reflect.DeepEqual(item, after) {
+					t.Fatal("appended inventory/current differ")
+				}
+			}
+		}
+		if found != 1 {
+			t.Fatalf("appended Issue occurrences=%d", found)
+		}
+		if current, err := store.CurrentSnapshot(ctx); err != nil || !reflect.DeepEqual(current, state) {
+			t.Fatalf("HTTP reads changed appended state: %v", err)
+		}
+	})
 	// Retained bytes never substitute for a currently usable authority. Even a
 	// condition that would otherwise return 304 must fail after storage closes.
 	if err := store.Close(); err != nil {

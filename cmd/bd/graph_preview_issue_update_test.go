@@ -65,7 +65,7 @@ func TestGraphPreviewIssueTextRefusals(t *testing.T) {
 		{"stdin-description", []string{"--description=-", "--unconditional"}, 5},
 		{"stdin-alias", []string{"--body=-", "--unconditional"}, 5},
 		{"notes", []string{"--notes=Notes", "--unconditional"}, 5},
-		// Append remains unsupported in this text-only transfer.
+		// Append still cannot be combined with replacement notes.
 		{"append", []string{"--design=Design", "--append-notes=More", "--notes=Replace", "--unconditional"}, 5},
 		{"source-guard", []string{"--design=Design", "--if-source-revision=other", "--unconditional"}, 5},
 	} {

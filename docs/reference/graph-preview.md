@@ -51,7 +51,7 @@ database. Different-database provisioning on Dolt 2.1.8 must be serialized.
 | `delete BEAD` | Read-only preview of deleting one unreferenced Memory. `--force` applies and requires `--if-revision TOKEN` or `--unconditional`. A preview needs no guard but checks any supplied guard. |
 | `forget BEAD` | Apply the same unreferenced Memory deletion immediately, with `--if-revision TOKEN` or `--unconditional`. |
 | `create TITLE --id beads/PATH` | Create an Issue. Allows `--title`, inline `--description`/`--body`/`--message`, `--type`, `--priority`, `--labels`/`--label`. Existing classification rules apply. Initial status is open. Ordinary creator identity and git-email Owner defaults are included in the Issue data. |
-| `update BEAD` with Issue scalar flags | Inline `--title`, `--description`/`--body`/`--message`, `--design`, `--acceptance`, `--priority` and non-claim `--assignee`. Requires `--if-revision TOKEN` or `--unconditional`. Description aliases must agree. Files/stdin and other Issue fields are unavailable. |
+| `update BEAD` with Issue scalar flags | Inline `--title`, `--description`/`--body`/`--message`, `--design`, `--acceptance`, `--priority` non-claim `--assignee` and literal `--append-notes`. Requires `--if-revision TOKEN` or `--unconditional`. Description aliases must agree. Files/stdin and other Issue fields are unavailable. |
 | `update BEAD --claim` | Atomically claim one Issue for the current actor using the native writer. Standalone `--claim=true` only; no other edits or revision/force guard. Repeating the same actor is a no-op and does not renew its five-minute lease. |
 | `show RESOURCE` | Current Memory, Issue or Link; optional `--version TOKEN` selects an exact retained record. No chronological History option. |
 | `compare RESOURCE --from TOKEN --to TOKEN` | Compare two complete retained preview versions of one Memory, Issue or Link. Explicit tokens determine direction, not chronology. |
@@ -370,6 +370,34 @@ with `--no-assignee` intersects the filters and returns no matches. Listing does
 not modify state or claim work. Its output remains the experimental CLI envelope;
 BDP HTTP Read is the script interface and exposes the current Issue properties.
 
+## Append-only Issue progress
+
+```sh
+bd show beads/work --json
+bd update beads/work --append-notes 'Finished the first pass.' --if-revision OBSERVED_REVISION --json
+```
+
+The native transaction appends to the current notes. Omission preserves notes;
+empty on empty is a no-op, while empty on nonempty appends one newline. Text is
+literal, including whitespace, Unicode, CRLF, `-` and `@file` markers; this flag
+does not read files or stdin. Repeating nonempty text appends it again. A stale
+revision refuses even when the append would otherwise be a no-op. An unknown
+commit outcome must be inspected; never automatically replay an append.
+
+Append can accompany supported scalar edits in one guarded update and one
+retained version. Notes-only edits preserve owned Dependencies, claim lease
+fields and closed state. Assignment mixed with append retains the native holder
+fence and lease rules. A changed request supplying append intent must leave the
+workspace within its existing read acquisition budget, including its new retained
+snapshot, or every effect rolls back. This conservative postcondition also applies
+to an empty append combined with a changing scalar. Scalar-only repair paths and
+true no-ops keep their existing behavior. No new per-input notes limit is added.
+
+Replacement/clear, force overwrite, and combined claim-plus-append remain
+unavailable. Contributor notes replacement safeguards are a separate review gate.
+CLI current/exact reads and BDP Read expose the accepted notes; no HTTP write or
+public History contract is added.
+
 ## Standalone Issue claim
 
 ```sh
@@ -397,7 +425,7 @@ unknown outcome; callers must inspect rather than automatically retry the write.
 ## Limits and remaining work
 
 Linked Memory deletion and Issue deletion,
-estimate/reference/date edits and due filters, notes changes, label mutation,
+estimate/reference/date edits and due filters, notes replacement/clear, label mutation,
 and full Memory remain unavailable. Issue creation can set initial
 labels; that does not adopt a label-editing contract. These restrictions apply
 to graph workspaces; ordinary Issue workspaces keep their existing behavior.
