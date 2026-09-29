@@ -8,10 +8,13 @@ import (
 
 	"github.com/steveyegge/beads/internal/storage"
 	"github.com/steveyegge/beads/internal/storage/issueops"
+	"github.com/steveyegge/beads/internal/types"
 	publicops "github.com/steveyegge/beads/issueops"
 )
 
-// UpdateIssueRequest admits title, description, design and acceptance criteria.
+// UpdateIssueRequest admits inline text, priority and non-claim assignment edits.
+// Priority zero sets P0; nil preserves it. Empty assignee clears it, without
+// claiming work or bypassing the native active-holder transfer fence.
 // Notes editing is reserved for integration of the existing contributor
 // safeguards. A nil field leaves that property unchanged; an explicit empty
 // string clears it where the Issue domain permits. The guard addresses the complete graph revision, including
@@ -20,9 +23,11 @@ type UpdateIssueRequest struct {
 	Path, Actor, ExpectedRevision                  string
 	Unconditional                                  bool
 	Title, Description, Design, AcceptanceCriteria *string
+	Priority                                       *int
+	Assignee                                       *string
 }
 
-// UpdateIssue delegates textual edits to the existing Issue domain writer and
+// UpdateIssue delegates admitted scalar edits to the existing Issue domain writer and
 // retained-version recorder. Payload, opaque graph revision and complete owned
 // state commit together; this adds no public History ordering or change context.
 func (s *Store) UpdateIssue(ctx context.Context, request UpdateIssueRequest) (IssueMutationResult, error) {
@@ -40,6 +45,7 @@ func (s *Store) UpdateIssue(ctx context.Context, request UpdateIssueRequest) (Is
 		dest  *publicops.Field[string]
 	}{
 		{"title", request.Title, &patch.Title},
+		{"assignee", request.Assignee, &patch.Assignee},
 		{"description", request.Description, &patch.Description},
 		{"design", request.Design, &patch.Design},
 		{"acceptance_criteria", request.AcceptanceCriteria, &patch.AcceptanceCriteria},
@@ -53,8 +59,17 @@ func (s *Store) UpdateIssue(ctx context.Context, request UpdateIssueRequest) (Is
 		*field.dest = publicops.Field[string]{Set: true, Value: *field.value}
 		count++
 	}
+	if patch.Assignee.Set {
+		if err := types.CheckFieldLen("assignee", patch.Assignee.Value); err != nil {
+			return IssueMutationResult{}, fmt.Errorf("%w: Issue assignee: %w", storage.ErrValidation, err)
+		}
+	}
+	if request.Priority != nil {
+		patch.Priority = publicops.Field[int]{Set: true, Value: *request.Priority}
+		count++
+	}
 	if count == 0 {
-		return IssueMutationResult{}, fmt.Errorf("%w: Issue update requires a textual field", storage.ErrValidation)
+		return IssueMutationResult{}, fmt.Errorf("%w: Issue update requires an admitted field", storage.ErrValidation)
 	}
 	attempt := publicops.UpdateRequest{Actor: request.Actor, Patch: patch, IssuePlaneOnly: true}
 	if err := issueops.ValidateUpdateRequest(attempt); err != nil {
@@ -71,7 +86,7 @@ func (s *Store) UpdateIssue(ctx context.Context, request UpdateIssueRequest) (Is
 		}
 		before, ok := current.(IssueRecord)
 		if !ok {
-			return fmt.Errorf("%w: textual Issue update requires the experimental Issue Type", ErrCapabilityUnavailable)
+			return fmt.Errorf("%w: Issue update requires the experimental Issue Type", ErrCapabilityUnavailable)
 		}
 		if err := checkRevisionGuard(request.ExpectedRevision, request.Unconditional, revision, true, "Issue"); err != nil {
 			return err

@@ -11,6 +11,7 @@ import (
 	"net/url"
 	"os"
 	"path/filepath"
+	"reflect"
 	"strconv"
 	"strings"
 	"sync"
@@ -20,6 +21,7 @@ import (
 	"github.com/steveyegge/beads/internal/httpapi/bdpwire"
 	"github.com/steveyegge/beads/internal/httpapi/graphread"
 	"github.com/steveyegge/beads/internal/storage/graphstore"
+	"github.com/steveyegge/beads/issueops"
 )
 
 // This exercises the actual listener, security gates and graph store. The CLI
@@ -208,6 +210,61 @@ func TestGraphReadHTTPAuthorityAndSecurity(t *testing.T) {
 		}
 	}
 	stopAndWait()
+	// The same canonical HTTP reader exposes native Issue edits. This exercises
+	// real storage and listener calls, without inventing an HTTP Write endpoint.
+	t.Run("issue-priority-assignment", func(t *testing.T) {
+		issue, err := store.CreateIssue(ctx, "beads/work", issueops.CreateRequest{Issue: &issueops.Issue{Title: "HTTP work", Status: "open", IssueType: "task", Priority: 2}, Actor: "creator"})
+		if err != nil {
+			t.Fatal(err)
+		}
+		priority, assignee := 0, "agent.雪"
+		edited, err := store.UpdateIssue(ctx, graphstore.UpdateIssueRequest{Path: "beads/work", Actor: "editor", ExpectedRevision: issue.Revision, Priority: &priority, Assignee: &assignee})
+		if err != nil || !edited.Changed {
+			t.Fatalf("Issue edit: %+v %v", edited, err)
+		}
+		before, err := store.CurrentSnapshot(ctx)
+		if err != nil {
+			t.Fatal(err)
+		}
+		resp, raw := request("GET", "/read/beads/work", "second-token-longer", "", nil)
+		var record bdpwire.BeadRecord
+		if resp.StatusCode != 200 || bdpwire.Unmarshal(raw, &record) != nil || record.ID != edited.Issue.ID || record.Revision != edited.Issue.Revision || string(record.Properties["priority"]) != "0" || string(record.Properties["assignee"]) != `"agent.雪"` || record.Attribution == nil || record.Attribution.Principal != "editor" {
+			t.Fatalf("canonical Issue edit not exposed: %d %s", resp.StatusCode, raw)
+		}
+		resp, raw = request("GET", "/read/beads/?limit=100", "second-token-longer", "", nil)
+		var collection bdpwire.BeadCollection
+		if resp.StatusCode != 200 || bdpwire.Unmarshal(raw, &collection) != nil || collection.Next != nil {
+			t.Fatalf("current collection: %d %s", resp.StatusCode, raw)
+		}
+		found := 0
+		for _, item := range collection.Items {
+			if item.ID == record.ID {
+				found++
+				if !reflect.DeepEqual(item, record) {
+					t.Fatal("collection and canonical Issue records differ")
+				}
+			}
+		}
+		if found != 1 {
+			t.Fatalf("current Issue occurrences=%d", found)
+		}
+		if after, err := store.CurrentSnapshot(ctx); err != nil || !reflect.DeepEqual(after, before) {
+			t.Fatalf("HTTP read changed graph state: %v", err)
+		}
+		assignee = ""
+		cleared, err := store.UpdateIssue(ctx, graphstore.UpdateIssueRequest{Path: "beads/work", Actor: "editor", ExpectedRevision: edited.Issue.Revision, Assignee: &assignee})
+		if err != nil || !cleared.Changed {
+			t.Fatalf("clear: %+v %v", cleared, err)
+		}
+		resp, raw = request("GET", "/read/beads/work", "second-token-longer", "", nil)
+		record = bdpwire.BeadRecord{}
+		if resp.StatusCode != 200 || bdpwire.Unmarshal(raw, &record) != nil || record.Revision != cleared.Issue.Revision || string(record.Properties["priority"]) != "0" {
+			t.Fatalf("cleared canonical Issue: %d %s", resp.StatusCode, raw)
+		}
+		if assignee, exists := record.Properties["assignee"]; exists && string(assignee) != `""` {
+			t.Fatalf("cleared assignee still exposed: %s", assignee)
+		}
+	})
 	// Retained bytes never substitute for a currently usable authority. Even a
 	// condition that would otherwise return 304 must fail after storage closes.
 	if err := store.Close(); err != nil {

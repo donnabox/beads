@@ -58,6 +58,7 @@ func (s *Store) ListIssues(ctx context.Context, request publicops.ListRequest) (
 func prepareIssueListRequest(in publicops.ListRequest) (publicops.ListRequest, error) {
 	allowed := publicops.ListRequest{
 		Status: in.Status, IssueType: in.IssueType, TitleSearch: in.TitleSearch, TitleContains: in.TitleContains,
+		Assignee: in.Assignee, NoAssignee: in.NoAssignee,
 		Labels: in.Labels, LabelsAny: in.LabelsAny, ExcludeLabels: in.ExcludeLabels,
 		Priority: in.Priority, PriorityMin: in.PriorityMin, PriorityMax: in.PriorityMax,
 		PinnedFlag: in.PinnedFlag, NoPinnedFlag: in.NoPinnedFlag, AllFlag: in.AllFlag,
