@@ -74,6 +74,37 @@ class RequiredReceipts(unittest.TestCase):
             module.verify_tests([event("pass", "TestRequired"), event("pass")], {"TestRequired"})
 
 
+class RequiredEngineControls(unittest.TestCase):
+    def exercise(self, engines):
+        # Drive the complete discovery/execution gate with a source root and
+        # valid complete package receipts. A missing engine never emits a skip,
+        # so ordinary run/pass equality alone cannot catch the omission.
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            source = root / "workflow_test.go"
+            source.write_text("func TestWorkflow(t *testing.T) {}\n")
+            events = [event("run", "TestWorkflow")]
+            for engine in engines:
+                events += [event("run", "TestWorkflow/" + engine), event("pass", "TestWorkflow/" + engine)]
+            events += [event("pass", "TestWorkflow"), event("pass")]
+            q = module.Qualification.__new__(module.Qualification)
+            q.counts = {}
+            listing = b"TestWorkflow\n"
+            execution = "\n".join(json.dumps(item) for item in events).encode()
+            with mock.patch.object(q, "run", side_effect=[listing, execution]):
+                q.tests("./fixture", "^TestWorkflow", [source], "cli",
+                        ("TestWorkflow/embedded", "TestWorkflow/server"))
+            self.assertEqual(q.counts, {"cli": 1})
+
+    def test_both_installed_engines_complete(self):
+        self.exercise(("embedded", "server"))
+
+    def test_missing_installed_engine_refused(self):
+        for engines in [("embedded",), ("server",), ()]:
+            with self.subTest(engines=engines), self.assertRaisesRegex(RuntimeError, "required engine proof absent"):
+                self.exercise(engines)
+
+
 class RequiredDiscovery(unittest.TestCase):
     # Exercise the actual source/compiled/execution boundary with temporary Go
     # source. Only subprocess output is supplied; no engine or Go build is needed.
