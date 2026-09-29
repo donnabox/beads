@@ -456,6 +456,7 @@ var proxyCapabilityRegistry = []capabilityRow{
 
 	// Generic graph commands have no proxied-provider route. Graph workspace
 	// admission handles their supported direct embedded/server path first.
+	refusedPath("compare", "proxy.compare.unsupported", ProxyReasonUnimplemented, "generic graph CLI: gastownhall/beads#6703"),
 	refusedPath("links", "proxy.links.unsupported", ProxyReasonUnimplemented, "generic graph CLI: gastownhall/beads#6703"),
 	refusedPath("unlink", "proxy.unlink.unsupported", ProxyReasonUnimplemented, "generic graph CLI: gastownhall/beads#6703"),
 

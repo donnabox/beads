@@ -44,12 +44,15 @@ database. Different-database provisioning on Dolt 2.1.8 must be serialized.
 |---|---|
 | `remember BODY --id beads/PATH --title TITLE` | Memory creation. An explicit `--body-file PATH` or `--stdin` replaces the positional body source. These sources are mutually exclusive; empty text is present content. |
 | `remember --update BEAD` | Change only supplied `--title` and/or one explicit body source, preserving omitted fields inside the transaction. Requires `--if-revision TOKEN` or `--unconditional`. |
+| `memories [SEARCH]` | Complete bounded Memory title/body search summaries. Supports `--all`, `--details` and `--format table\|records-json`; legacy `--json` refuses. |
+| `recall BEAD` | Stream one Memory's exact body bytes. Optional `--version TOKEN` selects a retained body. `--quiet` does not suppress content; `--json` refuses. |
 | `update BEAD --properties JSON` | Replace a Memory's complete properties with exactly the `title` and `body` strings. Requires `--if-revision TOKEN` or `--unconditional`. |
 | `delete BEAD` | Read-only preview of deleting one unreferenced Memory. `--force` applies and requires `--if-revision TOKEN` or `--unconditional`. A preview needs no guard but checks any supplied guard. |
 | `forget BEAD` | Apply the same unreferenced Memory deletion immediately, with `--if-revision TOKEN` or `--unconditional`. |
 | `create TITLE --id beads/PATH` | Create an Issue. Allows `--title`, inline `--description`/`--body`/`--message`, `--type`, `--priority`, `--labels`/`--label`. Existing classification rules apply. Initial status is open. Ordinary creator identity and git-email Owner defaults are included in the Issue data. |
 | `update BEAD` with Issue text flags | Inline `--title`, `--description`/`--body`/`--message`, `--design`, `--acceptance` only. Requires `--if-revision TOKEN` or `--unconditional`. Description aliases must agree. Files/stdin and other Issue fields are unavailable. |
-| `show RESOURCE` | Current Memory, Issue or Link. No exact-version or chronological History option. |
+| `show RESOURCE` | Current Memory, Issue or Link; optional `--version TOKEN` selects an exact retained record. No chronological History option. |
+| `compare RESOURCE --from TOKEN --to TOKEN` | Compare two complete retained preview versions of one Memory, Issue or Link. Explicit tokens determine direction, not chronology. |
 | `link SOURCE TARGET --resource-type TYPE` | Use an exact installed Link Type URL. Informational Links permit `--id links/PATH`, `--properties JSON` and source guards. Memory sources own informational Links; Issue sources do not. |
 | `dep add SOURCE TARGET` or `link SOURCE TARGET` | A local blocking Dependency between Issues, using the ordinary default `blocks` type. No bulk, remote, routing or bypass flags. |
 | `update LINK --properties JSON` | Replace all informational Link properties. Requires a Link guard and, for a Memory-owned Link, a source guard. Blocking Dependency properties are not editable here. |
@@ -104,6 +107,73 @@ new versions merely because another Bead links to them.
 Unlink removes current Link state while reserving its identity and retaining
 private prior snapshots. It does not erase a Memory or promise irreversible
 erasure, restoration or identifier reuse.
+
+## Find and inspect retained Memory
+
+`memories` searches current Memory titles and bodies using literal Unicode case
+folding. It reads one checked current snapshot before filtering. The default
+must match at most 50 Memories; a larger result refuses instead of returning a
+partial page. Narrow the search or use `--all` for all matching summaries within
+the same acquisition and output bounds. `--details` adds owned-Link counts.
+
+```sh
+bd memories release
+bd memories release --details --format records-json
+# Copy a selected item's canonical id and version from the summary.
+bd recall beads/plan --version SAVED_TOKEN
+bd show beads/plan --version SAVED_TOKEN --json
+bd compare beads/plan --from EARLIER_SELECTED_TOKEN --to OTHER_SELECTED_TOKEN --json
+```
+
+Summaries include identity, title, saved version, attribution, matched fields
+and a body excerpt when the body matches. Search input is limited to 4,096 UTF-8
+bytes, excerpts to 160 code points and final output to 1 MiB. A short matching
+body can appear in full as its excerpt. Results are sorted by canonical ID,
+marked complete and have no continuation. The existing 1,000 live Resource and
+16 MiB acquisition bounds apply before filtering, including retained deleted
+Memory heads counted by the current reader.
+
+Use `--format records-json` for experimental summaries; `--json` has no settled
+graph Memory-list mapping and refuses. Explicit `--format table` or
+`--format records-json` takes precedence over ambient JSON configuration.
+Ordinary KV-memory workspaces retain their existing output and `--format json`
+alias. BDP Read remains the protocol interface for scripts.
+
+`recall` writes the selected body's exact bytes with no envelope, added newline
+or quiet suppression. Empty content succeeds with zero output bytes. Without
+`--version`, it reads current Memory; with a token from a saved result it reads
+that retained body even after edits or deletion. Graph JSON recall remains
+unavailable because the complete Memory representation is unresolved.
+
+`show --version` also supports retained Issue and Link records, including their
+saved owned Links. Tokens are opaque nonempty UTF-8 strings of at most 4,096
+bytes. Local ordinals, timestamps, full version URLs and as-of selection are
+not interpreted. An unknown or other-resource token returns `revision_unknown`;
+a missing subject returns `not_found`. A removed Link's prior live versions
+remain readable; its private removal token returns `gone`. A deleted Memory
+retains its final live head without inventing a deletion version.
+
+`compare` reads both operands in one authority-checked transaction. Equal tokens
+still require a valid retained record. Either unavailable or corrupt operand
+fails the whole operation. Differences include complete property values and
+owned Links matched by canonical identity, with explicit presence so absence,
+null and empty content remain distinct. Arrays retain order; object member
+order is ignored; JSON numbers are compared without float rounding. Reversing
+the tokens reverses the comparison. The selected versions and attribution are
+context rather than property differences. Immutable identity or endpoint
+mismatches refuse.
+
+Comparison output is provisional JSON, indented for human output. Its
+`compared` and `unsupported` fields describe the projection: common metadata and
+Memory inception/derivation are unavailable. Issue comparison uses the native
+retained durable projection; current row-lock and content-hash fields are not
+reconstructed. Each retained snapshot acquisition has a 16 MiB input budget. A deleted
+Memory also validates its final live snapshot before reading an older selected
+snapshot, so a distinct pair can acquire up to 64 MiB in total (up to 32 MiB
+for equal older tokens, which are resolved once). This excludes decoding/output
+overhead and is not a total-heap or rendered-output cap. These read commands work under `--readonly` and migration freeze. They
+do not enable HTTP History, authoritative ordering, restoration or a stable
+public comparison contract; `historyExact` remains false.
 
 ## Unreferenced Memory deletion
 
@@ -217,7 +287,7 @@ to graph workspaces; ordinary Issue workspaces keep their existing behavior.
 
 BDP HTTP Read is available on ordinary shared-server Dolt as described below.
 CLI JSON is a separate command output format. No public History route is
-enabled by the internal retained-state readers used in tests.
+enabled by the exact retained CLI reads or experimental comparison.
 
 Writes retain their complete accepted state within the existing transaction.
 Those snapshots are not a claim of complete native History, Dolt HEAD/sync
