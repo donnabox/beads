@@ -497,6 +497,13 @@
             "335c813ea80a7d15bb983818f319a044d0032779",
             "c1aee02f1a0486d9b2c9c27237a3719abc9af970"
           ]
+        },
+        {
+          "destination_pr": "https://github.com/versioned-beads/beads/pull/42",
+          "head": "202f349e7daca1aa85b62d719da142fe73f46a50",
+          "scope": "CLI exact retained show, retaining newer deleted-Memory reader",
+          "state": "partial transfer prepared; focused proof passed, full qualification pending",
+          "landed_commit": null
         }
       ]
     },
@@ -535,7 +542,16 @@
       "url": "https://github.com/donnabox/beads/pull/31",
       "in_qualified_candidate": true,
       "destination_pr": null,
-      "landed_commit": null
+      "landed_commit": null,
+      "transfers": [
+        {
+          "destination_pr": "https://github.com/versioned-beads/beads/pull/42",
+          "head": "202f349e7daca1aa85b62d719da142fe73f46a50",
+          "scope": "Current and exact raw Memory body recall",
+          "state": "partial transfer prepared; focused proof passed, full qualification pending",
+          "landed_commit": null
+        }
+      ]
     },
     {
       "baseRefName": "codex/janet-memory-recall-20260926",
@@ -547,7 +563,16 @@
       "url": "https://github.com/donnabox/beads/pull/32",
       "in_qualified_candidate": true,
       "destination_pr": null,
-      "landed_commit": null
+      "landed_commit": null,
+      "transfers": [
+        {
+          "destination_pr": "https://github.com/versioned-beads/beads/pull/42",
+          "head": "202f349e7daca1aa85b62d719da142fe73f46a50",
+          "scope": "Exact retained pair acquisition and local explicit-version comparison",
+          "state": "partial transfer prepared; focused proof passed, full qualification pending",
+          "landed_commit": null
+        }
+      ]
     },
     {
       "baseRefName": "codex/janet-history-compare-20260926",
@@ -670,7 +695,16 @@
       "url": "https://github.com/donnabox/beads/pull/38",
       "in_qualified_candidate": true,
       "destination_pr": null,
-      "landed_commit": null
+      "landed_commit": null,
+      "transfers": [
+        {
+          "destination_pr": "https://github.com/versioned-beads/beads/pull/42",
+          "head": "202f349e7daca1aa85b62d719da142fe73f46a50",
+          "scope": "Complete bounded Memory summary discovery",
+          "state": "partial transfer prepared; focused proof passed, full qualification pending",
+          "landed_commit": null
+        }
+      ]
     },
     {
       "baseRefName": "janet-memory-discovery-20260927",
