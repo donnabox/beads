@@ -20,6 +20,9 @@ import time
 
 GRAPHSTORE = "github.com/steveyegge/beads/internal/storage/graphstore"
 FLAGS = ["-tags", "gms_pure_go", "-v", "-race", "-short", "-timeout=30m", "-skip", "^TestEmbedded"]
+# -json supplies framed verbose output. Explicit -v would override its
+# test2json framing and let unterminated application output hide RUN/PASS.
+JSON_FLAGS = [flag for flag in FLAGS if flag != "-v"]
 GROUPS = 4
 DISCOVERY_SECONDS = 900
 GROUP_SECONDS = 2100
@@ -230,7 +233,7 @@ def execute(root, output, go="go"):
         names = discovered_names(names_file)
         groups = partition(names)
         write_json(output / "plan.json", dict(packages=sorted(packages), otherPackages=other, discovered=sorted(names),
-                   excluded=sorted(set(names) - set(sum(groups, []))), groups=groups, flags=FLAGS))
+                   excluded=sorted(set(names) - set(sum(groups, []))), groups=groups, flags=FLAGS, jsonFlags=JSON_FLAGS))
         # Separate Go processes reset only the package alarm, not any test body.
         for index, group in enumerate(groups, 1):
             label = f"graphstore-{index}"
@@ -239,11 +242,11 @@ def execute(root, output, go="go"):
                 summary["groups"].append(dict(label=label, roots=[], empty=True))
                 continue
             selected = "^(" + "|".join(group) + ")$"
-            events = runner.run(label, [go, "test", *FLAGS, "-json", "-count=1", "-run", selected, GRAPHSTORE], GROUP_SECONDS)
+            events = runner.run(label, [go, "test", *JSON_FLAGS, "-json", "-count=1", "-run", selected, GRAPHSTORE], GROUP_SECONDS)
             census = verify_events(events, [GRAPHSTORE], group)
             write_json(output / (label + "-census.json"), census)
             summary["groups"].append(dict(label=label, **census))
-        events = runner.run("other-packages", [go, "test", *FLAGS, "-json", *other], OTHER_SECONDS)
+        events = runner.run("other-packages", [go, "test", *JSON_FLAGS, "-json", *other], OTHER_SECONDS)
         summary["other"] = verify_events(events, other)
         summary["passed"] = True
     except BaseException as error:

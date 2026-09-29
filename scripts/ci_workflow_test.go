@@ -2625,7 +2625,8 @@ class DispatchControls(unittest.TestCase):
             executions = [call for call in calls if call[0] == "test" and "-list" not in call]
             self.assertEqual(len(executions), 5)
             for call in executions:
-                for flag in ["-race", "-short", "-v", "-timeout=30m", "-json"]: self.assertIn(flag, call)
+                for flag in ["-race", "-short", "-timeout=30m", "-json"]: self.assertIn(flag, call)
+                self.assertNotIn("-v", call)
                 self.assertEqual(call[call.index("-tags")+1], "gms_pure_go")
                 self.assertEqual(call[call.index("-skip")+1], "^TestEmbedded")
             self.assertEqual(executions[-1][-1], "github.com/steveyegge/beads/scripts")
@@ -2633,6 +2634,19 @@ class DispatchControls(unittest.TestCase):
             for index, group in enumerate(plan["groups"], 1):
                 census = json.loads((output / ("graphstore-%d-census.json" % index)).read_text())
                 self.assertEqual(census["roots"], group)
+
+    def test_real_go_json_preserves_unterminated_output(self):
+        # Go's -json supplies framed verbose output unless explicit -v overrides
+        # it. Without framing an application fragment can swallow RUN/PASS lines.
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            (root / "go.mod").write_text("module example.invalid/dispatch-framing\ngo 1.26\n")
+            (root / "framing_test.go").write_text('package framing\nimport ("fmt"; "os"; "testing")\nfunc TestFragment(t *testing.T) { fmt.Fprint(os.Stderr, "before-child"); t.Run("child", func(t *testing.T) { fmt.Print("child-tail") }); fmt.Fprint(os.Stderr, "parent-tail") }\n')
+            runner = m.Runner(root, root)
+            events = runner.run("framing", ["go", "test", *m.JSON_FLAGS, "-json", "-count=1", "."], 30)
+            census = m.verify_events(events, ["example.invalid/dispatch-framing"], ["TestFragment"])
+            self.assertEqual(census["tests"], 2)
+            self.assertEqual(census["skipped"], [])
 
     def test_complete_partition_and_existing_skip(self): self.exercise("good")
     def test_negative_receipts(self):
