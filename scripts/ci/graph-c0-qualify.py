@@ -66,6 +66,16 @@ def verify_tests(events, expected):
     return len(roots)
 
 
+def partition_required_tests(names, groups):
+    require(names and len(names) == len(set(names)), "empty or duplicate required test roots")
+    require(type(groups) is int and 1 < groups <= len(names), "required groups must be nonempty")
+    ordered = sorted(names)
+    selections = [ordered[index::groups] for index in range(groups)]
+    union = [name for group in selections for name in group]
+    require(len(union) == len(set(union)) and set(union) == set(names), "incomplete required test partition")
+    return selections
+
+
 def cleanup_registered_groups(path):
     """Fallback for an interrupted/failed owner, including dead group leaders."""
     active = set()
@@ -282,18 +292,61 @@ class Qualification:
                 f"{label} exited {process.returncode}, expected {expected}; see saved stdout/stderr")
         return out
 
-    def tests(self, package, selector, files, label, required_subtests=()):
+    def tests(self, package, selector, files, label, required_subtests=(), groups=1):
         # Source discovery also sees accidentally build-excluded added tests.
-        expected = set()
+        source_names = []
         for path in files:
             names = re.findall(r"^func (Test\w+)\(t \*testing.T\)", path.read_text(), re.MULTILINE)
-            expected.update(name for name in names if re.search(selector, name))
+            source_names.extend(name for name in names if re.search(selector, name))
+        expected = set(source_names)
+        require(len(source_names) == len(expected), f"{label}: duplicate source test roots")
         listing = self.run(["go", "test", "-tags", "gms_pure_go", "-list", selector, package],
                            label + "-discovery", timeout=600).decode()
-        listed = set(re.findall(r"^Test\w+$", listing, re.MULTILINE))
+        compiled_names = re.findall(r"^Test\w+$", listing, re.MULTILINE)
+        listed = set(compiled_names)
+        require(len(compiled_names) == len(listed), f"{label}: duplicate compiled test roots")
         require(listed == expected and expected, f"{label}: source and compiled test discovery disagree")
-        out = self.run(["go", "test", "-tags", "gms_pure_go", "-json", "-count=1", "-p=1",
-                        "-parallel=1", "-timeout=15m", "-run", selector, package], label, timeout=960)
+        flags = ["go", "test", "-tags", "gms_pure_go", "-json", "-count=1", "-p=1",
+                 "-parallel=1", "-timeout=15m", "-run"]
+        if groups == 1:
+            out = self.run([*flags, selector, package], label, timeout=960)
+        else:
+            selections = partition_required_tests(source_names, groups)
+            plan = dict(package=package, selector=selector, sourceRoots=sorted(expected),
+                        compiledRoots=sorted(listed), complete=False, groups=[
+                            dict(label=f"{label}-group-{index}", roots=names,
+                                 selector="^(" + "|".join(names) + ")$", passed=False)
+                            for index, names in enumerate(selections, 1)])
+            aggregate = self.output / (label + ".stdout")
+            aggregate.write_bytes(b"")
+            aggregate_error = self.output / (label + ".stderr")
+            aggregate_error.write_bytes(b"")
+            try:
+                for group in plan["groups"]:
+                    group_label, names, selected = group["label"], group["roots"], group["selector"]
+                    (self.output / (label + "-groups.json")).write_text(json.dumps(plan, indent=2) + "\n")
+                    try:
+                        result = self.run([*flags, selected, package], group_label, timeout=960)
+                        verify_tests([json.loads(line) for line in result.splitlines()], set(names))
+                        group["passed"] = True
+                    finally:
+                        # Keep actual partial output even if the group fails or times out.
+                        for suffix, combined in (("stdout", aggregate), ("stderr", aggregate_error)):
+                            part = self.output / (group_label + "." + suffix)
+                            if part.exists():
+                                with combined.open("ab") as target:
+                                    target.write(part.read_bytes())
+                                group[suffix + "SHA256"] = digest(part)
+                executed = [name for group in plan["groups"] for name in group["roots"]]
+                require(len(executed) == len(set(executed)) and set(executed) == expected,
+                        f"{label}: grouped test union differs from complete discovery")
+                out = aggregate.read_bytes()
+                verify_tests([json.loads(line) for line in out.splitlines()], expected)
+                plan["complete"] = True
+            finally:
+                plan["stdoutSHA256"] = digest(aggregate)
+                plan["stderrSHA256"] = digest(aggregate_error)
+                (self.output / (label + "-groups.json")).write_text(json.dumps(plan, indent=2) + "\n")
         events = [json.loads(line) for line in out.splitlines()]
         self.counts[label] = verify_tests(events, expected)
         completed = {e.get("Test") for e in events if e.get("Action") == "pass"}
@@ -361,7 +414,7 @@ class Qualification:
             self.env["BEADS_GRAPH_TEST_SERVER_PORT"] = str(port)
             # Sequential package runs/provisioning; concurrency inside same-store tests remains exercised.
             self.tests("./internal/graphpatch", "^Test", (self.root / "internal/graphpatch").glob("*_test.go"), "graphpatch")
-            self.tests("./internal/storage/graphstore", "^Test", (self.root / "internal/storage/graphstore").glob("*_test.go"), "storage")
+            self.tests("./internal/storage/graphstore", "^Test", (self.root / "internal/storage/graphstore").glob("*_test.go"), "storage", groups=4)
             self.tests("./internal/configfile", "^TestGraphMode", (self.root / "internal/configfile").glob("graph_mode_test.go"), "config")
             self.tests("./internal/storage/issueops", "^TestResolve(CustomConfigStrict|InfraTypesStrict|ConfigLegacy)",
                        (self.root / "internal/storage/issueops").glob("config_strict_test.go"), "query-config")
