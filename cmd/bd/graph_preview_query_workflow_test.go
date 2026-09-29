@@ -60,6 +60,68 @@ func TestGraphPreviewQueryWorkflow(t *testing.T) {
 				call("link", "beads/"+edge[0], "beads/"+edge[1], "--id", "links/"+edge[2], "--resource-type", related, "--unconditional-source")
 			}
 			dep := graphMixedResult[graphstore.DependencyResult](t, call("dep", "add", "beads/work", "beads/gate"))
+			// Complete the release journey in this same linked workspace before
+			// the existing query, close/reopen, explicit unlink and delete phases.
+			planBefore := graphMixedResult[graphstore.Record](t, call("show", "beads/plan"))
+			workBefore := graphMixedResult[graphstore.IssueRecord](t, call("show", "beads/work"))
+			unrelated := map[string]string{}
+			for _, path := range []string{"beads/context", "beads/gate", "links/context", "links/work", "links/gate", dep.Link.ID} {
+				unrelated[path] = call("show", path)
+			}
+			const replacement = `{"title":"Revised plan","body":"private-memory-body — revised"}`
+			memoryEdit := graphMixedResult[graphstore.MemoryMutationResult](t, call("update", "beads/plan", "--properties", replacement, "--if-revision", planBefore.Revision))
+			if !memoryEdit.Changed || memoryEdit.Replaced != nil || memoryEdit.Memory.ID != planBefore.ID || memoryEdit.Memory.Revision == planBefore.Revision || memoryEdit.Memory.Properties.Title != "Revised plan" || memoryEdit.Memory.Properties.Body != "private-memory-body — revised" || !reflect.DeepEqual(memoryEdit.Memory.Owned, planBefore.Owned) {
+				t.Fatalf("linked Memory edit lost payload or owned Links: %+v", memoryEdit)
+			}
+			const description = "Revised Issue in the same Memory/Link journey."
+			issueEdit := graphMixedResult[graphstore.IssueMutationResult](t, call("update", "beads/work", "--description", description, "--if-revision", workBefore.Revision))
+			if !issueEdit.Changed || issueEdit.Issue.ID != workBefore.ID || issueEdit.Issue.Revision == workBefore.Revision || issueEdit.Issue.Properties.Description != description || !reflect.DeepEqual(issueEdit.Issue.Owned, workBefore.Owned) {
+				t.Fatalf("Issue text edit lost payload or owned Dependencies: %+v", issueEdit)
+			}
+			if got := graphMixedResult[graphstore.Record](t, call("show", "beads/plan")); !reflect.DeepEqual(got, memoryEdit.Memory) {
+				t.Fatal("fresh-process Memory differs from accepted edit")
+			}
+			if got := graphMixedResult[graphstore.IssueRecord](t, call("show", "beads/work")); !reflect.DeepEqual(got, issueEdit.Issue) {
+				t.Fatal("fresh-process Issue differs from accepted edit")
+			}
+			for path, want := range unrelated {
+				if got := call("show", path); got != want {
+					t.Fatalf("scalar edits changed unrelated endpoint/Link %s", path)
+				}
+			}
+			// Exact reads normalize only the documented current-only Issue fields.
+			// Save the actual bytes to recheck after later unlink and deletion.
+			type retainedRead struct{ id, version, output string }
+			var retained []retainedRead
+			for _, record := range []graphstore.Record{planBefore, memoryEdit.Memory} {
+				output := call("show", record.ID, "--version", record.Version)
+				if got := graphMixedResult[graphstore.Record](t, output); !reflect.DeepEqual(got, record) {
+					t.Fatalf("Memory predecessor/current retention: %+v want=%+v", got, record)
+				}
+				retained = append(retained, retainedRead{record.ID, record.Version, output})
+			}
+			for _, record := range []graphstore.IssueRecord{workBefore, issueEdit.Issue} {
+				properties := *record.Properties
+				properties.ContentHash, properties.RowVersion = "", 0
+				record.Properties = &properties
+				output := call("show", record.ID, "--version", record.Version)
+				if got := graphMixedResult[graphstore.IssueRecord](t, output); !reflect.DeepEqual(got, record) {
+					t.Fatalf("Issue predecessor/current retention: %+v want=%+v", got, record)
+				}
+				retained = append(retained, retainedRead{record.ID, record.Version, output})
+			}
+			stable := graphMemoryReadSnapshot(t, work)
+			memoryNoop := graphMixedResult[graphstore.MemoryMutationResult](t, call("update", "beads/plan", "--properties", replacement, "--if-revision", memoryEdit.Memory.Revision))
+			issueNoop := graphMixedResult[graphstore.IssueMutationResult](t, call("update", "beads/work", "--description", description, "--if-revision", issueEdit.Issue.Revision))
+			if memoryNoop.Changed || memoryNoop.Replaced != nil || !reflect.DeepEqual(memoryNoop.Memory, memoryEdit.Memory) || issueNoop.Changed || !reflect.DeepEqual(issueNoop.Issue, issueEdit.Issue) {
+				t.Fatal("same-value release edits were not no-ops")
+			}
+			graphPolicyCLI(t, bd, work, home, nil, "revision_conflict", "update", "beads/plan", "--properties", replacement, "--if-revision", planBefore.Revision, "--json")
+			graphPolicyCLI(t, bd, work, home, nil, "revision_conflict", "update", "beads/work", "--description", description, "--if-revision", workBefore.Revision, "--json")
+			if !reflect.DeepEqual(stable, graphMemoryReadSnapshot(t, work)) {
+				t.Fatal("no-op or stale edit changed the whole current snapshot")
+			}
+
 			page := list("--limit", "1", "--sort", "priority")
 			if len(page.Items) != 1 || page.Items[0].ID != scope+"beads/work" || !page.HasMore {
 				t.Fatalf("bounded list lost native order/over-fetch indication: %+v", page)
@@ -195,7 +257,15 @@ func TestGraphPreviewQueryWorkflow(t *testing.T) {
 				call("unlink", path, "--if-revision", link.Revision, "--if-source-revision", memory.Revision)
 			}
 			memory := graphMixedResult[graphstore.Record](t, call("show", "beads/plan"))
-			call("delete", "beads/plan", "--force", "--if-revision", memory.Revision)
+			deleted := graphMixedResult[graphstore.MemoryDeleteResult](t, call("delete", "beads/plan", "--force", "--if-revision", memory.Revision))
+			if !deleted.Deleted || deleted.Preview || !reflect.DeepEqual(deleted.Memory, memory) || memory.Properties != memoryEdit.Memory.Properties || len(memory.Owned) != 0 {
+				t.Fatal("explicit unlink/delete lost the edited final Memory predecessor")
+			}
+			for _, saved := range retained {
+				if got := call("show", saved.id, "--version", saved.version); got != saved.output {
+					t.Fatalf("release lifecycle changed retained record %s@%s", saved.id, saved.version)
+				}
+			}
 			if got := list("--all"); len(got.Items) != 2 || got.HasMore {
 				t.Fatalf("valid deleted Memory invalidated surviving Issue view: %+v", got)
 			}
