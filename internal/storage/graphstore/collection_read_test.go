@@ -123,18 +123,18 @@ func TestCurrentSnapshotRefusesCorruption(t *testing.T) {
 				t.Fatal(err)
 			}
 			cases := map[string]string{
-				"unknown-backing":           `UPDATE graph_preview_catalog SET backing='other'`,
-				"unknown-state":             `UPDATE graph_preview_catalog SET allocation_state='pending'`,
-				"kind-path-mismatch":        `UPDATE graph_preview_catalog SET resource_kind='link'`,
-				"malformed-path":            `UPDATE graph_preview_catalog SET path='beads/../plan' WHERE path='beads/plan'`,
-				"orphan-payload":            `INSERT INTO graph_preview_payloads(path,properties) VALUES('beads/orphan','{}')`,
-				"orphan-issue":              `DELETE FROM graph_preview_catalog WHERE backing='issue'`,
-				"orphan-informational-link": `INSERT INTO graph_preview_links(path,source_path,target_path,properties,attribution) VALUES('links/orphan','beads/plan','beads/plan','{}','{}')`,
-				"unsupported-deleted-bead":  `UPDATE graph_preview_catalog SET allocation_state='deleted'`,
-				"missing-payload":           `DELETE FROM graph_preview_payloads`,
-				"malformed-retained":        `UPDATE graph_preview_versions SET snapshot='{}'`,
-				"changed-descriptor":        `UPDATE graph_preview_types SET fingerprint='wrong' WHERE name='memory'`,
-				"unknown-installed-type":    `INSERT INTO graph_preview_types(name,descriptor,fingerprint) SELECT 'unknown',descriptor,fingerprint FROM graph_preview_types WHERE name='memory'`,
+				"unknown-backing":                   `UPDATE graph_preview_catalog SET backing='other'`,
+				"unknown-state":                     `UPDATE graph_preview_catalog SET allocation_state='pending'`,
+				"kind-path-mismatch":                `UPDATE graph_preview_catalog SET resource_kind='link'`,
+				"malformed-path":                    `UPDATE graph_preview_catalog SET path='beads/../plan' WHERE path='beads/plan'`,
+				"orphan-payload":                    `INSERT INTO graph_preview_payloads(path,properties) VALUES('beads/orphan','{}')`,
+				"orphan-issue":                      `DELETE FROM graph_preview_catalog WHERE backing='issue'`,
+				"orphan-informational-link":         `INSERT INTO graph_preview_links(path,source_path,target_path,properties,attribution) VALUES('links/orphan','beads/plan','beads/plan','{}','{}')`,
+				"deleted-bead-with-current-payload": `UPDATE graph_preview_catalog SET allocation_state='deleted'`,
+				"missing-payload":                   `DELETE FROM graph_preview_payloads`,
+				"malformed-retained":                `UPDATE graph_preview_versions SET snapshot='{}'`,
+				"changed-descriptor":                `UPDATE graph_preview_types SET fingerprint='wrong' WHERE name='memory'`,
+				"unknown-installed-type":            `INSERT INTO graph_preview_types(name,descriptor,fingerprint) SELECT 'unknown',descriptor,fingerprint FROM graph_preview_types WHERE name='memory'`,
 			}
 			for name, statement := range cases {
 				t.Run(name, func(t *testing.T) {

@@ -281,7 +281,7 @@ func TestGraphPreviewC0DeferredCommandsRefuseBeforeLegacyOpen(t *testing.T) {
 	wantEnabled := map[string]bool{}
 	for _, capability := range []string{
 		"memoryCreate", "memoryRead", "memoryBodyFileInput", "memoryBodyStdinInput", "memoryPropertiesUpdate",
-		"memorySelectedUpdate", "memorySelectedUpdateUnconditional", "memoryOverwriteDisclosure", "issueCreate", "issueCreateAuthorship",
+		"memorySelectedUpdate", "memorySelectedUpdateUnconditional", "memoryOverwriteDisclosure", "memoryUnreferencedDelete", "issueCreate", "issueCreateAuthorship",
 		"issueTextUpdate", "informationalLink", "blockingDependency", "linkPropertiesUpdate", "linkUnlink", "blockingDependencyUnlink",
 		"incidentLinks", "ownedLinks", "issueClose", "issueReopen", "issueReady", "genericRead",
 	} {
@@ -306,6 +306,10 @@ func TestGraphPreviewGenericFlagsRefuseLegacyOpening(t *testing.T) {
 		{"update", "demo-one", "--properties", `{}`, "--unconditional"},
 		{"update", "demo-one", "--if-revision", "observed"},
 		{"update", "demo-one", "--if-source-revision", "observed"},
+		{"delete", "beads/plan", "--if-revision", "observed"},
+		{"delete", "beads/plan", "--unconditional=false"},
+		{"forget", "beads/plan", "--if-revision="},
+		{"forget", "beads/plan", "--unconditional"},
 	} {
 		work, home := t.TempDir(), t.TempDir()
 		before := legacyUpgradeTreeDigest(t, work)

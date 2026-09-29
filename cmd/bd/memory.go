@@ -410,12 +410,20 @@ Use 'bd memories' to see available keys.
 
 Examples:
   bd forget dolt-phantoms
-  bd forget auth-jwt`,
+  bd forget auth-jwt
+
+In a graph-mode link workspace, forget immediately deletes one unreferenced
+Memory selected by canonical Bead ID, with --if-revision TOKEN or --unconditional.
+Its identity and prior snapshots remain retained; live incident Links refuse.
+Use delete without --force for a read-only graph deletion preview.`,
 	GroupID:       "setup",
 	Args:          cobra.ExactArgs(1),
 	SilenceUsage:  true,
 	SilenceErrors: true,
 	RunE: func(cmd *cobra.Command, args []string) error {
+		if graphPreviewActive {
+			return runGraphPreviewDeleteMemory(cmd, args, true)
+		}
 		CheckReadonly("forget")
 
 		evt := metrics.NewCommandEvent("forget")

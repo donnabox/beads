@@ -34,7 +34,7 @@ func currentReadSizeQueries() []currentReadSizeQuery {
 		{"graph_preview_types", "name,descriptor,fingerprint", 1},
 		{"config WHERE `key`='issue_prefix'", "value", 1},
 		// Exact reads inspect allocation metadata before refusing deleted/invalid
-		// states. Include tombstones, but not their old snapshot bodies.
+		// states. Include tombstones; deleted Memory final heads are charged below.
 		{"graph_preview_catalog c", "c.path,c.type_url,c.revision,c.resource_kind,c.backing,c.backing_key", 1},
 		{"graph_preview_payloads p JOIN graph_preview_catalog c ON c.path=p.path WHERE " + live, "p.properties", 1},
 		// A live Link is read as a top-level Resource and at most once as source-owned
@@ -45,6 +45,9 @@ func currentReadSizeQueries() []currentReadSizeQuery {
 		{"graph_preview_links l", "l.path,l.source_path,l.target_path,l.properties,l.attribution", 2},
 		{"graph_preview_versions v JOIN graph_preview_catalog c ON c.path=v.path AND c.revision=v.version WHERE " + live + " AND c.resource_kind='bead'", "v.snapshot,v.actor", 1},
 		{"graph_preview_versions v JOIN graph_preview_catalog c ON c.path=v.path AND c.revision=v.version WHERE " + live + " AND c.resource_kind='link'", "v.snapshot,v.actor", 2},
+		// Deleted Memory current-state validation inspects the preserved final
+		// live head; charge those bytes too, while older snapshots stay excluded.
+		{"graph_preview_versions v JOIN graph_preview_catalog c ON c.path=v.path AND c.revision=v.version WHERE c.allocation_state='deleted' AND c.backing='generic'", "v.snapshot,v.actor", 1},
 		{"issues i JOIN graph_preview_catalog c ON c.backing='issue' AND c.backing_key=i.id " + sqlbuild.LeaseJoin("i") + " WHERE " + live, sqlbuild.QualifyColumns(sqlbuild.IssueBaseColumns, "i.") + ", " + sqlbuild.LeaseSelectColumns, 1},
 		{"graph_preview_issue_versions m JOIN graph_preview_catalog c ON c.path=m.path AND c.revision=m.version JOIN issue_versions v ON v.issue_id=m.issue_id AND v.revision=m.issue_revision WHERE " + live, "m.owned,v.durable_state,v.change_actor,v.attribution_status", 1},
 		// Full hydration reads labels twice. Comments are acquired before the existing

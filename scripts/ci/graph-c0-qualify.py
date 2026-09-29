@@ -1,8 +1,9 @@
 #!/usr/bin/env python3
-"""Required graph proof: real engines, source-matched CLI, no optional test skips.
+"""Required graph/BDP Read proof: real engines, exact CLI and public clients.
 
 Includes the C0 captures and every discovered graph test, including the mixed
-Issue/Memory/Link installed workflow. This is not full Memory or BDP proof.
+Issue/Memory/Link installed workflow, HTTP security and authenticated independent
+Node/Python BDP reads. This is not full Memory, History or HTTP Write proof.
 The caller supplies the ordinary released Dolt binary and CI Build Artifacts.
 All databases and process groups belong to this run; no existing server is used.
 """
@@ -15,7 +16,10 @@ import re
 import signal
 import socket
 import subprocess
+import sys
 import time
+
+OWNER_CLEANUP_GRACE = 30
 
 
 def require(condition, message):
@@ -62,6 +66,113 @@ def verify_tests(events, expected):
     return len(roots)
 
 
+def cleanup_registered_groups(path):
+    """Fallback for an interrupted/failed owner, including dead group leaders."""
+    active = set()
+    if path is not None and path.exists():
+        for line in path.read_text().splitlines():
+            event = json.loads(line)
+            require(type(event.get("pid")) is int and event["pid"] > 1, "invalid owned process identity")
+            require(event.get("action") in ("start", "end"), "invalid process registry event")
+            if event["action"] == "start":
+                active.add(event["pid"])
+            else:
+                active.discard(event["pid"])
+    forced = []
+    for pid in active:
+        try:
+            os.killpg(pid, signal.SIGTERM)
+        except ProcessLookupError:
+            pass
+    for pid in active:
+        if not group_exited(pid, timeout=5):
+            forced.append(pid)
+            try:
+                os.killpg(pid, signal.SIGKILL)
+            except ProcessLookupError:
+                pass
+        require(group_exited(pid, timeout=5), f"owned process group survived cleanup: {pid}")
+    return dict(registeredGroups=len(active), forcedGroups=forced, groupsGone=True)
+
+
+def verify_clean_receipt(receipt, listener=False):
+    require(receipt.get("exit_code") == 0 and receipt.get("failure") is None
+            and receipt.get("forced") is False and receipt.get("group_gone") is True,
+            "HTTP capture process did not finish cleanly")
+    if listener:
+        require(receipt.get("port_closed") is True, "HTTP listener remained open")
+
+
+def verify_http_capture(root, binary_hash):
+    summary = json.loads((root / "summary.json").read_text())
+    require(summary.get("passed") is True and summary.get("failure") is None
+            and summary.get("active_children") == 0 and summary.get("cli_commands") == 16,
+            "incomplete installed HTTP capture")
+    require(summary.get("client_pin") == "53bdbd03136875f952af184fce7b3c7af8f74e96"
+            and summary.get("installed_binary_sha256") == binary_hash, "HTTP source/binary provenance mismatch")
+    require(summary.get("python") == {"passed": True, "beads": 4, "limit": 1,
+            "authenticated": True, "mechanism": "unchanged standard-library example over BDP HTTP"},
+            "Python BDP consumer proof missing")
+    require(summary.get("python_pages") == 4, "Python continuation observations missing")
+    processes = list(root.glob("*/receipt.json"))
+    require(len(processes) == 21, "missing seed/delete/serve/client/Python process receipt")
+    for path in processes:
+        receipt = json.loads(path.read_text())
+        verify_clean_receipt(receipt, listener=path.parent.name == "serve")
+        for stream in ("stdout", "stderr"):
+            require(digest(path.parent / (stream + ".log")) == receipt[stream + "_sha256"],
+                    "HTTP process output hash differs")
+    client = json.loads((root / "client-results.json").read_text())
+    require(client.get("passed") is True and client.get("failure") is None
+            and len(client.get("checks", [])) == 10, "incomplete public-client checks")
+    network = json.loads((root / "client-network.json").read_text())
+    require(network and client["requests"] == len(network), "HTTP network receipts incomplete")
+    for observation in network:
+        require(observation["url"].startswith(summary["scope"])
+                and re.fullmatch(r"[0-9a-f]{64}", observation["bodySha256"]), "invalid HTTP observation")
+    verify_memory_deletion_capture(root, summary)
+
+
+def verify_memory_deletion_capture(root, summary):
+    """Check the new proof without overwriting any pre-deletion evidence."""
+    def data(relative):
+        return json.loads((root / relative).read_text())
+    alpha = data("02-memory-create/stdout.log")["result"]
+    scope = summary["scope"]
+    require(alpha["id"] == scope + "beads/alpha", "wrong deletion fixture identity")
+    deletion = data("16-memory-delete/stdout.log")
+    require(deletion.get("preview") is True and deletion.get("schemaVersion") == 1
+            and deletion.get("result") == {"memory": alpha, "preview": False, "deleted": True},
+            "deletion did not retain/disclose exact final live state")
+    argv = data("16-memory-delete/receipt.json")["argv"]
+    require(argv == [data("02-memory-create/receipt.json")["argv"][0], "delete", "beads/alpha", "--force",
+                     "--if-revision", alpha["revision"], "--json"], "deletion did not use original observed guard")
+    require(summary.get("memory_delete") == {"passed": True, "id": alpha["id"], "final_live_revision": alpha["revision"]},
+            "Memory deletion summary missing")
+    require(summary.get("python_after_delete") == {"passed": True, "beads": 3, "limit": 1,
+            "authenticated": True, "mechanism": "unchanged standard-library example over BDP HTTP"}
+            and summary.get("python_after_delete_pages") == 3, "post-delete Python summary missing")
+    observations = data("python-after-delete-network.json")
+    require(len(observations) == 4 and observations[0]["url"] == scope + "bdp.json"
+            and observations[0]["document"]["scope"] == scope
+            and observations[0]["document"]["profile"] == "read", "post-delete discovery missing")
+    next_url, records = scope + "beads/?limit=1", []
+    for observation in observations:
+        require(observation["method"] == "GET" and observation["status"] == 200
+                and observation["url"].startswith(scope) and observation["body_bytes"] > 0
+                and re.fullmatch(r"[0-9a-f]{64}", observation["body_sha256"]), "invalid post-delete HTTP observation")
+    for observation in observations[1:]:
+        page = observation["document"]
+        require(observation["url"] == next_url and len(page["items"]) == 1,
+                "post-delete Python did not follow actual one-record next page")
+        records.extend(page["items"])
+        next_url = page["next"]
+    require(next_url is None and len(records) == 3 and {item["id"] for item in records} ==
+            {scope + "beads/" + name for name in ["plan", "work", "prereq"]}
+            and data("python-after-delete/stdout.log") == records,
+            "post-delete Python enumeration retained deleted state or omitted survivors")
+
+
 class Qualification:
     def __init__(self, args):
         self.root = Path(__file__).resolve().parents[2]
@@ -73,6 +184,9 @@ class Qualification:
         self.children = set()
         self.receipts = []
         self.counts = {}
+        self.client_checkout = Path(args.bdp_checkout).resolve()
+        self.client_manifest = Path(args.client_manifest).resolve()
+        self.node = Path(args.node).resolve()
         self.env = {k: os.environ[k] for k in (
             "PATH", "GOCACHE", "GOMODCACHE", "GOROOT", "DEVELOPER_DIR", "TMPDIR") if k in os.environ}
         home = self.output / "home"
@@ -82,12 +196,12 @@ class Qualification:
                 self.env[key] = subprocess.check_output(["go", "env", key], cwd=self.root, text=True).strip()
         self.env.update(HOME=str(home), XDG_CONFIG_HOME=str(home / ".config"),
                         GIT_CONFIG_NOSYSTEM="1", GIT_CONFIG_GLOBAL=str(home / "empty-gitconfig"),
-                        CGO_ENABLED="1", BD_DISABLE_METRICS="1", BD_DISABLE_EVENT_FLUSH="1",
+                        CGO_ENABLED="1", PYTHONDONTWRITEBYTECODE="1", BD_DISABLE_METRICS="1", BD_DISABLE_EVENT_FLUSH="1",
                         DOLT_METRICS_DISABLED="1", DOLT_DISABLE_EVENT_FLUSH="1",
                         BEADS_DOLT_AUTO_START="0", NO_COLOR="1",
                         BEADS_TEST_BD_BINARY=str(self.bd), BEADS_TEST_IGNORE_REPO_CONFIG="1")
 
-    def run(self, args, label, cwd=None, timeout=120, stdin=None, expected=0):
+    def run(self, args, label, cwd=None, timeout=120, stdin=None, expected=0, owned_groups=None):
         print(f"C0 {label}: {args}", flush=True)
         process = subprocess.Popen([str(a) for a in args], cwd=cwd or self.root,
                                    env=self.env, stdin=subprocess.PIPE, stdout=subprocess.PIPE,
@@ -95,11 +209,62 @@ class Qualification:
         self.children.add(process.pid)
         try:
             out, err = process.communicate(stdin, timeout=timeout)
-        except BaseException:
-            os.killpg(process.pid, signal.SIGKILL)
-            out, err = process.communicate()
+        except BaseException as original:
+            # The smoke process owns independent groups. Give its signal
+            # handler a bounded chance to drain them before killing the owner.
+            try:
+                process.send_signal(signal.SIGTERM)
+            except ProcessLookupError:
+                pass
+            forced_owner = False
+            cleanup_errors = []
+            out, err = b"", b""
+            nested = None
+            try:
+                out, err = process.communicate(timeout=OWNER_CLEANUP_GRACE)
+            except BaseException as drain_error:
+                forced_owner = True
+                if not isinstance(drain_error, subprocess.TimeoutExpired):
+                    cleanup_errors.append(f"owner drain: {drain_error!r}")
+                # Keep the owner alive while its children stop, so it can reap
+                # them. A registry failure must never leave the owner alive.
+                try:
+                    cleanup_registered_groups(owned_groups)
+                except BaseException as cleanup_error:
+                    cleanup_errors.append(f"nested before owner kill: {cleanup_error!r}")
+                finally:
+                    try:
+                        os.killpg(process.pid, signal.SIGKILL)
+                    except ProcessLookupError:
+                        pass
+                try:
+                    out, err = process.communicate(timeout=10)
+                except BaseException as reap_error:
+                    cleanup_errors.append(f"owner reap: {reap_error!r}")
+                    if isinstance(reap_error, subprocess.TimeoutExpired):
+                        out, err = reap_error.output or b"", reap_error.stderr or b""
+            if not group_exited(process.pid):
+                forced_owner = True
+                try:
+                    os.killpg(process.pid, signal.SIGKILL)
+                except ProcessLookupError:
+                    pass
+                if not group_exited(process.pid):
+                    cleanup_errors.append("owner process group survived forced cleanup")
+            # Retry after the owner has retired, even if the first registry
+            # pass failed. Preserve the triggering failure and every cleanup
+            # failure in the receipt instead of replacing the original error.
+            try:
+                nested = cleanup_registered_groups(owned_groups)
+            except BaseException as cleanup_error:
+                cleanup_errors.append(f"nested after owner retirement: {cleanup_error!r}")
             (self.output / f"{label}.stdout").write_bytes(out)
             (self.output / f"{label}.stderr").write_bytes(err)
+            self.receipts.append(dict(label=label, argv=[str(a) for a in args], pid=process.pid,
+                                      exit=process.returncode, failure=type(original).__name__,
+                                      forcedOwner=forced_owner, nestedCleanup=nested,
+                                      cleanupErrors=cleanup_errors,
+                                      stdoutSHA256=hashlib.sha256(out).hexdigest()))
             raise
         finally:
             self.children.discard(process.pid)
@@ -110,11 +275,14 @@ class Qualification:
             raise RuntimeError(f"{label} left a live process group after exit")
         self.receipts.append(dict(label=label, argv=[str(a) for a in args], pid=process.pid,
                                   exit=process.returncode, stdoutSHA256=hashlib.sha256(out).hexdigest()))
+        if owned_groups is not None:
+            nested = cleanup_registered_groups(owned_groups)
+            require(nested["registeredGroups"] == 0, "completed owner left nested groups registered")
         require(process.returncode == expected,
                 f"{label} exited {process.returncode}, expected {expected}; see saved stdout/stderr")
         return out
 
-    def tests(self, package, selector, files, label):
+    def tests(self, package, selector, files, label, required_subtests=()):
         # Source discovery also sees accidentally build-excluded added tests.
         expected = set()
         for path in files:
@@ -126,7 +294,10 @@ class Qualification:
         require(listed == expected and expected, f"{label}: source and compiled test discovery disagree")
         out = self.run(["go", "test", "-tags", "gms_pure_go", "-json", "-count=1", "-p=1",
                         "-parallel=1", "-timeout=15m", "-run", selector, package], label, timeout=960)
-        self.counts[label] = verify_tests([json.loads(line) for line in out.splitlines()], expected)
+        events = [json.loads(line) for line in out.splitlines()]
+        self.counts[label] = verify_tests(events, expected)
+        completed = {e.get("Test") for e in events if e.get("Action") == "pass"}
+        require(set(required_subtests) <= completed, f"{label}: required engine proof absent")
 
     def cli(self, work, label, *args):
         return json.loads(self.run([self.bd, *args, "--json"], label, cwd=work))
@@ -192,8 +363,31 @@ class Qualification:
             self.tests("./internal/storage/graphstore", "^Test", (self.root / "internal/storage/graphstore").glob("*_test.go"), "storage")
             self.tests("./internal/configfile", "^TestGraphMode", (self.root / "internal/configfile").glob("graph_mode_test.go"), "config")
             self.tests("./cmd/bd", "^Test(GraphModeCLI|GraphPreview)", (self.root / "cmd/bd").glob("graph*test.go"), "cli")
+            self.env["BDP_SPEC_AT_PIN"] = str(self.client_checkout / "docs/specs/bdp.md")
+            self.tests("./internal/httpapi/bdpwire", "^Test", (self.root / "internal/httpapi/bdpwire").glob("*_test.go"), "bdpwire")
+            self.tests("./internal/httpapi/graphread", "^Test", (self.root / "internal/httpapi/graphread").glob("*_test.go"), "graphread",
+                       ("TestAuthoritativeRecordsProjectToPublicWire/embedded", "TestAuthoritativeRecordsProjectToPublicWire/server"))
+            self.tests("./internal/httpapi", "^TestGraphRead", (self.root / "internal/httpapi").glob("graph_read*test.go"), "graph-http")
+            self.run([sys.executable, "-m", "unittest", "discover", "-s", "examples/bdp-read", "-p", "test_*.py"], "python-example-tests")
+            python_roots = sum(len(re.findall(r"^    def test_\w+\(", path.read_text(), re.MULTILINE))
+                               for path in (self.root / "examples/bdp-read").glob("test_*.py"))
+            python_result = (self.output / "python-example-tests.stderr").read_text()
+            require(python_roots > 0 and re.search(rf"Ran {python_roots} tests? in", python_result)
+                    and "skipped=" not in python_result, "Python example tests missing or skipped")
             self.capture("embedded", port)
             self.capture("server", port)
+            self.run([sys.executable, str(self.root / "scripts/graph-bdp-read-smoke.py"),
+                      "--bd", str(self.bd), "--server-port", str(port),
+                      "--bdp-checkout", str(self.client_checkout), "--client-manifest", str(self.client_manifest),
+                      "--node", str(self.node), "--output-dir", str(self.output / "http"),
+                      "--owned-groups", str(self.output / "http-owned-groups.jsonl")], "bdp-http-capture", timeout=360,
+                     owned_groups=self.output / "http-owned-groups.jsonl")
+            verify_http_capture(self.output / "http", digest(self.bd))
+            http_summary = json.loads((self.output / "http/summary.json").read_text())
+            for field, relative in [("harness_sha256", "scripts/graph-bdp-read-smoke.py"),
+                                    ("client_harness_sha256", "scripts/graph-bdp-read-client.mjs"),
+                                    ("python_example_sha256", "examples/bdp-read/read_beads.py")]:
+                require(http_summary[field] == digest(self.root / relative), "HTTP capture source changed")
             require(server.poll() is None, "server exited during qualification")
         finally:
             server.terminate()
@@ -223,12 +417,12 @@ class Qualification:
                     f"server cleanup failed: exit={code}, forced={forced}, groupGone={group_gone}, portClosed={port_closed}")
         require(not self.children, "owned child process remains")
         (self.output / "summary.json").write_text(json.dumps(dict(commit=head, passed=self.counts,
-            installedCLICommands=10, engines=["embedded", "server"], childrenRemaining=0), indent=2) + "\n")
+            installedCLICommands=10, engines=["embedded", "server"], childrenRemaining=0, bdpHTTP=True, pythonBDP=True), indent=2) + "\n")
 
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    for name in ("bd", "dolt", "artifacts", "output"):
+    for name in ("bd", "dolt", "artifacts", "output", "bdp-checkout", "client-manifest", "node"):
         parser.add_argument("--" + name, required=True)
     def interrupted(signum, _frame):
         raise RuntimeError(f"qualification interrupted by signal {signum}")

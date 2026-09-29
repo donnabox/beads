@@ -85,8 +85,18 @@ func (s *Store) readVersionInTx(ctx context.Context, tx *sql.Tx, path, version s
 		(kind == "bead") != strings.HasPrefix(path, "beads/") || (kind != "bead" && kind != "link") {
 		return nil, fmt.Errorf("%w: invalid retained subject allocation", ErrInvalidStore)
 	}
-	if state == "deleted" && !s.validDeletedLinkAllocation(kind, typ.String, backing, key) {
-		return nil, fmt.Errorf("%w: unsupported deleted subject", ErrInvalidStore)
+	if state == "deleted" {
+		if backing == "generic" {
+			memory, err := s.deletedMemoryInTx(ctx, tx, path)
+			if err != nil {
+				return nil, err
+			}
+			if version == head {
+				return memory, nil
+			}
+		} else if !s.validDeletedLinkAllocation(kind, typ.String, backing, key) {
+			return nil, fmt.Errorf("%w: unsupported deleted subject", ErrInvalidStore)
+		}
 	}
 	if backing == "issue" {
 		if kind != "bead" || typ.String != IssueTypeURL(s.ScopeURL()) || !key.Valid || key.String == "" {
@@ -103,7 +113,7 @@ func (s *Store) readVersionInTx(ctx context.Context, tx *sql.Tx, path, version s
 	if err != nil {
 		return nil, err
 	}
-	if state == "deleted" && version == head {
+	if state == "deleted" && kind == "link" && version == head {
 		var tombstone LinkTombstone
 		if json.Unmarshal(raw, &tombstone) != nil || !sameVersionJSON(raw, tombstone) ||
 			tombstone.ID != s.ScopeURL()+path || tombstone.Type != typ.String || tombstone.Revision != version ||
@@ -125,15 +135,19 @@ func (s *Store) readVersionInTx(ctx context.Context, tx *sql.Tx, path, version s
 		}
 		return link, nil
 	}
+	return s.decodeMemoryVersion(path, typ.String, version, raw, actor)
+}
+
+func (s *Store) decodeMemoryVersion(path, typ, version string, raw []byte, actor string) (Record, error) {
 	var memory Record
 	if json.Unmarshal(raw, &memory) != nil || !sameVersionJSON(raw, memory) || memory.ID != s.ScopeURL()+path ||
-		memory.Type != typ.String || memory.Revision != version || memory.Version != version ||
+		memory.Type != typ || memory.Revision != version || memory.Version != version ||
 		!utf8.ValidString(memory.Properties.Title) || !utf8.ValidString(memory.Properties.Body) ||
 		!validVersionAttribution(memory.Attribution, actor) {
-		return nil, fmt.Errorf("%w: invalid retained Memory", ErrInvalidStore)
+		return Record{}, fmt.Errorf("%w: invalid retained Memory", ErrInvalidStore)
 	}
 	if err := s.validateVersionOwned(memory.ID, RelatedTypeURL(s.ScopeURL()), memory.Owned); err != nil {
-		return nil, err
+		return Record{}, err
 	}
 	return memory, nil
 }
