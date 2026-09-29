@@ -20,6 +20,12 @@ func runGraphPreviewUpdate(cmd *cobra.Command, args []string) error {
 	if err != nil {
 		return graphFailure("invalid_selector", err.Error(), 2)
 	}
+	if cmd.Flags().Changed("patch") {
+		if strings.HasPrefix(path, "links/") {
+			return runGraphPreviewLinkPropertiesPatch(cmd, path)
+		}
+		return runGraphPreviewMemoryPropertiesPatch(cmd, path)
+	}
 	if strings.HasPrefix(path, "links/") {
 		return runGraphPreviewUpdateLink(cmd, args)
 	}
