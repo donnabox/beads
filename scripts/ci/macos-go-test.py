@@ -14,6 +14,7 @@ import os
 from pathlib import Path
 import re
 import signal
+import shutil
 import subprocess
 import sys
 import time
@@ -105,8 +106,9 @@ def retire(process):
 
 
 class Runner:
-    def __init__(self, root, output):
+    def __init__(self, root, output, json_output=None):
         self.root, self.output = root, output
+        self.json_output = json_output
         self.deadline = time.monotonic() + TOTAL_SECONDS
         self.receipts = []
 
@@ -154,6 +156,11 @@ class Runner:
                     failure = pending
                     receipt["failure"] = str(pending)
                     write_json(self.output / "processes.json", self.receipts)
+        if self.json_output is not None and "-json" in argv and argv[1] == "test":
+            # Preserve actual Go JSON, including failed/truncated runs. Discovery
+            # and dispatcher diagnostics never enter the equivalence input.
+            with (self.output / (label + ".stdout")).open("rb") as source, self.json_output.open("ab") as target:
+                shutil.copyfileobj(source, target)
         print(f"{label}: exit={receipt['exitCode']} elapsed={receipt['elapsedSeconds']:.2f}s", flush=True)
         if failure is not None:
             for suffix in ("stdout", "stderr"):
@@ -218,9 +225,19 @@ def verify_events(path, packages, expected_roots=None):
                 packages=sorted(packages))
 
 
-def execute(root, output, go="go"):
+def execute(root, output, go="go", package_parallel=None, test_parallel=None, json_output=None):
+    flags = list(FLAGS)
+    for flag, value in (("-p", package_parallel), ("-parallel", test_parallel)):
+        if value is not None:
+            require(type(value) is int and value > 0, f"{flag} must be a positive integer")
+            flags.extend([flag, str(value)])
+    json_flags = [flag for flag in flags if flag != "-v"]
     output.mkdir(parents=True, exist_ok=False)
-    runner = Runner(root, output)
+    if json_output is not None:
+        json_output = Path(json_output).resolve()
+        require(not json_output.is_relative_to(output.resolve()), "combined Go JSON must be outside individual evidence")
+        json_output.write_bytes(b"")
+    runner = Runner(root, output, json_output)
     summary = dict(passed=False, failure=None, groups=[])
     try:
         packages_file = runner.run("package-discovery", [go, "list", "-race", "-tags", "gms_pure_go", "./..."], DISCOVERY_SECONDS)
@@ -229,11 +246,11 @@ def execute(root, output, go="go"):
         require(all(re.fullmatch(r"[A-Za-z0-9_./-]+", package) for package in packages), "malformed package discovery")
         other = sorted(set(packages) - {GRAPHSTORE})
         require(other, "missing non-graphstore package coverage")
-        names_file = runner.run("graphstore-discovery", [go, "test", *FLAGS, "-list", ".", GRAPHSTORE], DISCOVERY_SECONDS)
+        names_file = runner.run("graphstore-discovery", [go, "test", *flags, "-list", ".", GRAPHSTORE], DISCOVERY_SECONDS)
         names = discovered_names(names_file)
         groups = partition(names)
         write_json(output / "plan.json", dict(packages=sorted(packages), otherPackages=other, discovered=sorted(names),
-                   excluded=sorted(set(names) - set(sum(groups, []))), groups=groups, flags=FLAGS, jsonFlags=JSON_FLAGS))
+                   excluded=sorted(set(names) - set(sum(groups, []))), groups=groups, flags=flags, jsonFlags=json_flags))
         # Separate Go processes reset only the package alarm, not any test body.
         for index, group in enumerate(groups, 1):
             label = f"graphstore-{index}"
@@ -242,11 +259,11 @@ def execute(root, output, go="go"):
                 summary["groups"].append(dict(label=label, roots=[], empty=True))
                 continue
             selected = "^(" + "|".join(group) + ")$"
-            events = runner.run(label, [go, "test", *JSON_FLAGS, "-json", "-count=1", "-run", selected, GRAPHSTORE], GROUP_SECONDS)
+            events = runner.run(label, [go, "test", *json_flags, "-json", "-count=1", "-run", selected, GRAPHSTORE], GROUP_SECONDS)
             census = verify_events(events, [GRAPHSTORE], group)
             write_json(output / (label + "-census.json"), census)
             summary["groups"].append(dict(label=label, **census))
-        events = runner.run("other-packages", [go, "test", *JSON_FLAGS, "-json", *other], OTHER_SECONDS)
+        events = runner.run("other-packages", [go, "test", *json_flags, "-json", *other], OTHER_SECONDS)
         summary["other"] = verify_events(events, other)
         summary["passed"] = True
     except BaseException as error:
@@ -260,11 +277,15 @@ def execute(root, output, go="go"):
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--output", type=Path, default=Path("artifacts/macos-go-test"))
+    parser.add_argument("--package-parallel", type=int)
+    parser.add_argument("--test-parallel", type=int)
+    parser.add_argument("--json-output", type=Path, help="concatenate raw execution JSON for PR-core/Bazel equivalence")
     args = parser.parse_args()
     signal.signal(signal.SIGTERM, interrupted)
     signal.signal(signal.SIGINT, interrupted)
     try:
-        execute(Path(__file__).resolve().parents[2], args.output.resolve())
+        execute(Path(__file__).resolve().parents[2], args.output.resolve(),
+                package_parallel=args.package_parallel, test_parallel=args.test_parallel, json_output=args.json_output)
     except Exception as error:
         print(f"macOS test dispatch failed: {error}", file=sys.stderr)
         return 1

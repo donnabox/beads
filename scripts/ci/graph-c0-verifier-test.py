@@ -105,6 +105,79 @@ class RequiredEngineControls(unittest.TestCase):
                 self.exercise(engines)
 
 
+class RequiredGroupedExecution(unittest.TestCase):
+    def exercise(self, mode):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            names = ["Test" + letter for letter in "ABCDEFGH"]
+            source = root / "storage_test.go"
+            source.write_text("\n".join("func " + name + "(t *testing.T) {}" for name in names))
+            q = module.Qualification.__new__(module.Qualification)
+            q.output, q.counts = root, {}
+            calls = []
+            def run(args, label, **kwargs):
+                calls.append((args, label, kwargs))
+                if "-list" in args:
+                    listed = names + ([names[0]] if mode == "duplicate-discovery" else [])
+                    return ("\n".join(listed) + "\n").encode()
+                selected = args[args.index("-run") + 1][2:-2].split("|")
+                if mode == "missing": selected = selected[1:]
+                if mode == "duplicate": selected += selected[:1]
+                events = []
+                for name in selected:
+                    events += [event("run", name), event("run", name + "/embedded"), event("pass", name + "/embedded"), event("pass", name)]
+                events += [event("fail" if mode == "failure" else "pass")]
+                raw = ("\n".join(json.dumps(item) for item in events) + "\n").encode()
+                (root / (label + ".stdout")).write_bytes(raw)
+                (root / (label + ".stderr")).write_bytes(b"")
+                if mode == "timeout": raise subprocess.TimeoutExpired(args, 960)
+                return raw
+            with mock.patch.object(q, "run", run):
+                if mode == "good":
+                    q.tests("./fixture", "^Test", [source], "storage", groups=4)
+                else:
+                    with self.assertRaises((RuntimeError, subprocess.TimeoutExpired)):
+                        q.tests("./fixture", "^Test", [source], "storage", groups=4)
+            if mode == "duplicate-discovery":
+                self.assertEqual(len(calls), 1)
+                return
+            plan = json.loads((root / "storage-groups.json").read_text())
+            self.assertEqual(plan["complete"], mode == "good")
+            self.assertEqual(plan["sourceRoots"], sorted(names))
+            self.assertEqual(plan["compiledRoots"], sorted(names))
+            self.assertEqual(len(plan["groups"]), 4)
+            parts = [root / (group["label"] + ".stdout") for group in plan["groups"]]
+            self.assertEqual((root / "storage.stdout").read_bytes(), b"".join(path.read_bytes() for path in parts if path.exists()))
+            for args, label, kwargs in calls[1:]:
+                self.assertIn("-count=1", args)
+                self.assertIn("-timeout=15m", args)
+                self.assertIn("-p=1", args)
+                self.assertIn("-parallel=1", args)
+                self.assertEqual(kwargs["timeout"], 960)
+            if mode == "good":
+                self.assertEqual(q.counts, {"storage": 8})
+                self.assertTrue(all(group["passed"] for group in plan["groups"]))
+                self.assertEqual(len(calls), 5)
+                self.assertEqual(module.verify_tests([json.loads(line) for line in (root / "storage.stdout").read_bytes().splitlines()], set(names)), 8)
+                self.assertEqual(plan["stdoutSHA256"], module.digest(root / "storage.stdout"))
+            else:
+                self.assertEqual(q.counts, {})
+                self.assertFalse(any(group["passed"] for group in plan["groups"]))
+
+    def test_exhaustive_groups_and_actual_concatenation(self): self.exercise("good")
+
+    def test_missing_duplicate_failed_or_timed_out_group_refused(self):
+        for mode in ["missing", "duplicate", "failure", "timeout", "duplicate-discovery"]:
+            with self.subTest(mode=mode): self.exercise(mode)
+
+    def test_zero_duplicate_and_empty_group_selection_refused(self):
+        for names, groups in [([], 4), (["TestA", "TestA"], 2), (["TestA"], 4)]:
+            with self.subTest(names=names), self.assertRaises(RuntimeError):
+                module.partition_required_tests(names, groups)
+        names = ["Test" + letter for letter in "ABCDEFGH"]
+        self.assertEqual(module.partition_required_tests(names, 4), module.partition_required_tests(list(reversed(names)), 4))
+
+
 class RequiredDiscovery(unittest.TestCase):
     # Exercise the actual source/compiled/execution boundary with temporary Go
     # source. Only subprocess output is supplied; no engine or Go build is needed.

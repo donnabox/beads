@@ -83,6 +83,10 @@ func TestPRCoreRequiresExcludeReadPermissionCoverage(t *testing.T) {
 	if step.Env["BEADS_TEST_REQUIRE_EXCLUDE_PERMISSION"] != "1" {
 		t.Error("PR Core must require actual exclude read-permission coverage")
 	}
+	upload := job.step(t, "Upload PR core grouped test evidence")
+	if upload.If != "always()" || upload.TimeoutMinutes != 5 || upload.With["name"] != "pr-core-go-test-${{ github.sha }}" || upload.With["path"] != "artifacts/pr-core-go-test" || upload.With["retention-days"] != "7" || upload.With["if-no-files-found"] != "warn" || actionFamily(upload.Uses) != "actions/upload-artifact" {
+		t.Error("PR Core grouped evidence must survive failure with a bounded commit-specific upload")
+	}
 	gate := workflow.job(t, "ci-gate")
 	evaluate := gate.step(t, "Evaluate CI gate")
 	if gate.If != "${{ always() }}" || gate.ContinueOnError || evaluate.If != "" || (evaluate.ContinueOnError != nil && evaluate.ContinueOnError != false) {
@@ -2854,6 +2858,73 @@ class DispatchControls(unittest.TestCase):
             for index, group in enumerate(plan["groups"], 1):
                 census = json.loads((output / ("graphstore-%d-census.json" % index)).read_text())
                 self.assertEqual(census["roots"], group)
+
+    def test_pr_core_options_and_raw_json_compatibility(self):
+        for case in ("good", "json-fail", "other-failure"):
+            with self.subTest(case=case), tempfile.TemporaryDirectory() as directory:
+                root = Path(directory); fake = root / "go"; fake.write_text(FAKE); fake.chmod(0o700)
+                output, combined = root / "evidence", root / "go-test.json"
+                combined.write_text("stale output must be replaced")
+                with mock.patch.dict(os.environ, {"DISPATCH_CASE": case}):
+                    if case == "good":
+                        m.execute(root, output, str(fake), package_parallel=3, test_parallel=2, json_output=combined)
+                    else:
+                        with self.assertRaises(RuntimeError):
+                            m.execute(root, output, str(fake), package_parallel=3, test_parallel=2, json_output=combined)
+                receipts = json.loads((output / "processes.json").read_text())
+                executions = [r for r in receipts if "-json" in r["argv"]]
+                actual = b"".join((output / (r["label"] + ".stdout")).read_bytes() for r in executions)
+                self.assertEqual(combined.read_bytes(), actual)
+                for r in executions:
+                    args = r["argv"]
+                    self.assertEqual(args[args.index("-p") + 1], "3")
+                    self.assertEqual(args[args.index("-parallel") + 1], "2")
+                    self.assertIn("-race", args); self.assertIn("-short", args)
+                    self.assertIn("-timeout=30m", args); self.assertIn("^TestEmbedded", args)
+                if case != "good":
+                    self.assertFalse(json.loads((output / "summary.json").read_text())["passed"])
+                    continue
+                # Exercise the actual nightly consumer against the concatenated
+                # named terminal events, including the permitted server skip.
+                eq_path = Path(m.__file__).resolve().parents[2] / "tools/bazel/equivalence.py"
+                eq_spec = importlib.util.spec_from_file_location("equivalence", eq_path)
+                eq = importlib.util.module_from_spec(eq_spec); eq_spec.loader.exec_module(eq)
+                statuses = eq.go_test_statuses(combined, {m.GRAPHSTORE: "internal/storage/graphstore", "github.com/steveyegge/beads/scripts": "scripts"})
+                self.assertEqual(set(statuses["internal/storage/graphstore"]), {"TestZulu", "TestAlpha", "TestServer", "TestBeta", "TestNew", "ExampleValue", "FuzzSeeds"})
+                self.assertEqual(statuses["internal/storage/graphstore"]["TestServer"], "skipped")
+                self.assertEqual(statuses["internal/storage/graphstore"]["TestNew"], "passed")
+                self.assertTrue(all(r["groupGone"] for r in receipts))
+
+    def test_pr_core_shell_forwards_environment_and_failure(self):
+        # Run the real wrapper, replacing only its Python dispatcher process.
+        # This proves shell quoting, defaults, opt-in JSON and failure propagation.
+        import shutil
+        repo = Path(m.__file__).resolve().parents[2]
+        for json_enabled, exit_code in ((False, 0), (True, 0), (True, 7)):
+            with self.subTest(json=json_enabled, exit=exit_code), tempfile.TemporaryDirectory() as directory:
+                root = Path(directory)
+                for rel in (".buildflags", "scripts/ci/pr-core.sh", "scripts/ci/lib/timing.sh", "scripts/ci/lib/test-env.sh"):
+                    target = root / rel; target.parent.mkdir(parents=True, exist_ok=True); shutil.copyfile(repo / rel, target)
+                binary = root / "bin"; binary.mkdir()
+                python = binary / "python3"
+                python.write_text("#!" + sys.executable + "\nimport json,os,sys\nfrom pathlib import Path\nPath('invocation.json').write_text(json.dumps({'args':sys.argv[1:], 'tags':os.environ.get('GOFLAGS'), 'cgo':os.environ.get('CGO_ENABLED')}))\nsys.exit(int(os.environ['FAKE_EXIT']))\n")
+                python.chmod(0o700)
+                env = dict(os.environ, PATH=str(binary) + os.pathsep + os.environ["PATH"], BEADS_TEST_ENV_DISABLE="1", FAKE_EXIT=str(exit_code))
+                for key in ("GO_TEST_PKG_PARALLEL", "GO_TEST_PARALLEL", "BEADS_PR_CORE_GO_TEST_JSON", "BEADS_CI_TEST_ENV_SH_LOADED", "BEADS_CI_TIMING_SH_LOADED", "GITHUB_STEP_SUMMARY"):
+                    env.pop(key, None)
+                if json_enabled:
+                    env.update(GO_TEST_PKG_PARALLEL="3", GO_TEST_PARALLEL="2", BEADS_PR_CORE_GO_TEST_JSON=str(root / "combined events.json"))
+                process = m.subprocess.run(["bash", str(root / "scripts/ci/pr-core.sh")], cwd=root, env=env, capture_output=True, timeout=10)
+                self.assertEqual(process.returncode, exit_code, process.stderr.decode())
+                invocation = json.loads((root / "invocation.json").read_text()); args = invocation["args"]
+                self.assertEqual(args[0], str(root / "scripts/ci/macos-go-test.py"))
+                self.assertEqual(args[args.index("--package-parallel") + 1], "3" if json_enabled else "4")
+                self.assertEqual(args[args.index("--test-parallel") + 1], "2" if json_enabled else "4")
+                self.assertIn("gms_pure_go", invocation["tags"])
+                evidence = Path(args[args.index("--output") + 1])
+                self.assertTrue(evidence.parent.is_dir()); self.assertFalse(evidence.exists())
+                if json_enabled: self.assertEqual(args[args.index("--json-output") + 1], str(root / "combined events.json"))
+                else: self.assertNotIn("--json-output", args)
 
     def test_real_go_json_preserves_unterminated_output(self):
         # Go's -json supplies framed verbose output unless explicit -v overrides
