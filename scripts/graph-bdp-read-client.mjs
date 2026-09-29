@@ -554,6 +554,76 @@ try {
     client.forgetContinuations(deletionOwner);
   }
 
+  // The prerequisite was authored in the initial installed create. Run this
+  // phase last so every preceding relationship/append/cursor oracle stays intact.
+  const authoringID = id('beads/prereq');
+  const authored = await perform({ kind: 'resource', resource: 'bead', id: authoringID });
+  const initialFields = { design: 'Initial design — 雪', acceptance_criteria: 'Ready\r\n',
+    assignee: 'author', estimated_minutes: 0, external_ref: ' tracker #1 ', spec_id: ' spec ', notes: ' Initial\r\n雪 ' };
+  for (const [key, value] of Object.entries(initialFields)) assert.deepEqual(authored.properties[key], value);
+  assert.equal(authored.properties.lease_expires_at, undefined);
+  const authoringBeforeIndex = network.length;
+  const authoringHTTP = await http(authoringID);
+  assert.equal(authoringHTTP.response.status, 200);
+  assert.deepEqual(parseBeadRecord(JSON.parse(authoringHTTP.text)), authored);
+  await writeFile(join(output, 'client-issue-authoring-before.body'), authoringHTTP.bytes);
+  const authoringETag = authoringHTTP.response.headers.get('etag');
+  assert.ok(authoringETag);
+  const authoringActor = 'bdp-read-author';
+  const authoredMutation = await notesCLI('client-cli-issue-authoring-edit',
+    ['update', authoringID, '--estimate=45', '--external-ref=revised', '--spec-id=revised spec',
+      '--design=Revised', '--acceptance=Accepted', '--append-notes=Progress',
+      '--if-revision', authored.revision, '--actor', authoringActor, '--json']);
+  assert.equal(authoredMutation.result.changed, true);
+  const editedAuthoring = await perform({ kind: 'resource', resource: 'bead', id: authoringID });
+  assert.equal(editedAuthoring.revision, authoredMutation.result.issue.revision);
+  assert.notEqual(editedAuthoring.revision, authored.revision);
+  assert.deepEqual(editedAuthoring.properties, { ...authored.properties, design: 'Revised',
+    acceptance_criteria: 'Accepted', estimated_minutes: 45, external_ref: 'revised', spec_id: 'revised spec',
+    notes: initialFields.notes + '\nProgress', updated_at: editedAuthoring.properties.updated_at });
+  assert.deepEqual(editedAuthoring.ownedLinks, authored.ownedLinks);
+  const authoringEditedIndex = network.length;
+  const editedHTTP = await http(authoringID, { headers: { 'If-None-Match': authoringETag } });
+  assert.equal(editedHTTP.response.status, 200);
+  assert.deepEqual(parseBeadRecord(JSON.parse(editedHTTP.text)), editedAuthoring);
+  const editedETag = editedHTTP.response.headers.get('etag');
+  assert.ok(editedETag && editedETag !== authoringETag);
+  await writeFile(join(output, 'client-issue-authoring-edited.body'), editedHTTP.bytes);
+  const authoringNoop = await notesCLI('client-cli-issue-authoring-noop',
+    ['update', authoringID, '--estimate=45', '--external-ref=revised', '--spec-id=revised spec',
+      '--if-revision', editedAuthoring.revision, '--actor', authoringActor, '--json']);
+  assert.equal(authoringNoop.result.changed, false);
+  assert.deepEqual(authoringNoop.result.issue, authoredMutation.result.issue);
+  const authoringNoopIndex = network.length;
+  const noopAuthoringHTTP = await http(authoringID, { headers: { 'If-None-Match': editedETag } });
+  assert.equal(noopAuthoringHTTP.response.status, 304);
+  assert.equal(noopAuthoringHTTP.bytes.length, 0);
+  assert.equal(noopAuthoringHTTP.response.headers.get('etag'), editedETag);
+  await writeFile(join(output, 'client-issue-authoring-noop.body'), noopAuthoringHTTP.bytes);
+  const clearAuthoring = await notesCLI('client-cli-issue-authoring-clear',
+    ['update', authoringID, '--estimate=0', '--external-ref=', '--spec-id=',
+      '--if-revision', editedAuthoring.revision, '--actor', authoringActor, '--json']);
+  assert.equal(clearAuthoring.result.changed, true);
+  const clearedAuthoring = await perform({ kind: 'resource', resource: 'bead', id: authoringID });
+  assert.equal(clearedAuthoring.revision, clearAuthoring.result.issue.revision);
+  assert.notEqual(clearedAuthoring.revision, editedAuthoring.revision);
+  const expectedClear = { ...editedAuthoring.properties, estimated_minutes: 0, updated_at: clearedAuthoring.properties.updated_at };
+  delete expectedClear.external_ref;
+  delete expectedClear.spec_id;
+  assert.deepEqual(clearedAuthoring.properties, expectedClear);
+  assert.deepEqual(clearedAuthoring.ownedLinks, authored.ownedLinks);
+  const authoringProperties = await perform({ kind: 'properties', resource: 'bead', id: authoringID });
+  assert.deepEqual(authoringProperties, clearedAuthoring.properties);
+  const authoringInventory = await perform({ kind: 'collection', collection: 'beads', limit: 100 });
+  assert.equal(authoringInventory.next, null);
+  assert.equal(authoringInventory.items.length, 4);
+  assert.deepEqual(authoringInventory.items.find(item => item.id === authoringID), clearedAuthoring);
+  artifacts.issueAuthoring = { initialFields, before: authored, edit: authoredMutation, edited: editedAuthoring,
+    noop: authoringNoop, clear: clearAuthoring, after: clearedAuthoring, properties: authoringProperties,
+    inventory: authoringInventory, beforeIndex: authoringBeforeIndex, editedIndex: authoringEditedIndex,
+    noopIndex: authoringNoopIndex, beforeETag: authoringETag, editedETag };
+  pass('initial Issue fields and notes survive BDP; combined guarded edit, scalar no-op and nullable clear preserve complete records and HTTP ETags');
+
 } catch (error) {
   failure = { name: error.name, message: error.message, stack: error.stack };
   process.exitCode = 1;

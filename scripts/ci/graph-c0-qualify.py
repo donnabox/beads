@@ -124,13 +124,14 @@ def verify_http_capture(root, binary_hash):
                     "HTTP process output hash differs")
     client = json.loads((root / "client-results.json").read_text())
     require(client.get("passed") is True and client.get("failure") is None
-            and len(client.get("checks", [])) == 12, "incomplete public-client checks")
+            and len(client.get("checks", [])) == 13, "incomplete public-client checks")
     network = json.loads((root / "client-network.json").read_text())
     require(network and client["requests"] == len(network), "HTTP network receipts incomplete")
     for observation in network:
         require(observation["url"].startswith(summary["scope"])
                 and re.fullmatch(r"[0-9a-f]{64}", observation["bodySha256"]), "invalid HTTP observation")
     verify_issue_append_capture(root, summary, binary_hash, network)
+    verify_issue_authoring_capture(root, summary, binary_hash, network)
     verify_memory_deletion_capture(root, summary)
 
 
@@ -201,6 +202,78 @@ def verify_issue_append_capture(root, summary, binary_hash, network):
                 "append raw HTTP body differs from public record")
     require(notes["claimNetworkIndex"] < notes["noopNetworkIndex"] < notes["appendNetworkIndex"],
             "append HTTP observations are not ordered")
+
+
+
+def verify_issue_authoring_capture(root, summary, binary_hash, network):
+    """Independently connect initial CLI fields, guarded edits and BDP observations."""
+    def data(name):
+        return json.loads((root / name).read_text())
+    proof = data("client-artifacts.json")["issueAuthoring"]
+    before, edited, after = (proof[key] for key in ("before", "edited", "after"))
+    resource = summary["scope"] + "beads/prereq"
+    initial = {"design": "Initial design — 雪", "acceptance_criteria": "Ready\r\n",
+               "assignee": "author", "estimated_minutes": 0, "external_ref": " tracker #1 ",
+               "spec_id": " spec ", "notes": " Initial\r\n雪 "}
+    require(proof["initialFields"] == initial and all(before["properties"].get(k) == v for k, v in initial.items()),
+            "initial authoring fields/nullable zero/literal notes missing")
+    require(not before["properties"].get("lease_expires_at"), "initial assignment unexpectedly claimed")
+    seed = [path for path in root.glob("*-issue-create/stdout.log") if data(str(path.relative_to(root)))["result"]["id"] == resource]
+    require(len(seed) == 1, "missing unique initial authoring CLI seed")
+    seeded = json.loads(seed[0].read_text())["result"]
+    require(seeded["properties"] == before["properties"] and seeded["revision"] == before["revision"],
+            "initial CLI/BDP authoring records differ")
+    expected = dict(before["properties"], design="Revised", acceptance_criteria="Accepted", estimated_minutes=45,
+                    external_ref="revised", spec_id="revised spec", notes=initial["notes"] + "\nProgress",
+                    updated_at=edited["properties"]["updated_at"])
+    require(edited["properties"] == expected and edited["revision"] != before["revision"], "combined edit changed unrelated authoring properties")
+    expected = dict(edited["properties"], estimated_minutes=0, updated_at=after["properties"]["updated_at"])
+    expected.pop("external_ref")
+    expected.pop("spec_id")
+    require(after["properties"] == expected and after["revision"] != edited["revision"], "nullable clear lost notes or unrelated fields")
+    require(all(item["id"] == resource and item["type"] == before["type"] and item["ownedLinks"] == before["ownedLinks"] for item in (edited, after)),
+            "authoring changed identity/type/ownership")
+    actor = "bdp-read-author"
+    require(all(item["attribution"]["principal"] == actor for item in (edited, after)), "authoring attribution missing")
+    require(proof["properties"] == after["properties"] and proof["inventory"]["next"] is None
+            and len(proof["inventory"]["items"]) == 4
+            and [item for item in proof["inventory"]["items"] if item["id"] == resource] == [after], "authoring BDP current/properties/inventory disagree")
+    require([item for item in data("python-after-delete/stdout.log") if item["id"] == resource] == [after],
+            "unchanged Python consumer lost final authored Issue")
+    require(proof["noop"]["result"]["issue"] == proof["edit"]["result"]["issue"], "scalar noop changed Issue")
+    binary = data("02-memory-create/receipt.json")["argv"][0]
+    edits = ["--estimate=45", "--external-ref=revised", "--spec-id=revised spec"]
+    for name, key, flags, predecessor, changed, record in (
+        ("edit", "edit", edits + ["--design=Revised", "--acceptance=Accepted", "--append-notes=Progress"], before, True, edited),
+        ("noop", "noop", edits, edited, False, edited),
+        ("clear", "clear", ["--estimate=0", "--external-ref=", "--spec-id="], edited, True, after),
+    ):
+        prefix = "client-cli-issue-authoring-" + name
+        receipt, mutation = data(prefix + ".json"), data(prefix + ".stdout.log")
+        require(receipt["argv"] == [binary, "update", resource, *flags, "--if-revision", predecessor["revision"], "--actor", actor, "--json"]
+                and receipt["binarySha256"] == binary_hash and receipt["exitCode"] == 0 and receipt["signal"] is None,
+                "authoring installed command provenance/guard/exit differs")
+        for stream in ("stdout", "stderr"):
+            require(digest(root / (prefix + "." + stream + ".log")) == receipt[stream + "Sha256"], "authoring output hash differs")
+        require(mutation == proof[key] and mutation["schemaVersion"] == 1 and mutation["preview"] is True
+                and mutation["result"]["changed"] is changed and mutation["result"]["issue"]["id"] == resource
+                and mutation["result"]["issue"]["revision"] == record["revision"]
+                and mutation["result"]["issue"]["properties"] == record["properties"], "authoring CLI/BDP mismatch")
+    require(proof["beforeETag"] and proof["editedETag"] and proof["beforeETag"] != proof["editedETag"], "authoring edit ETag unchanged")
+    for label, index_key, status, etag, record in (
+        ("before", "beforeIndex", 200, proof["beforeETag"], before),
+        ("edited", "editedIndex", 200, proof["editedETag"], edited),
+        ("noop", "noopIndex", 304, proof["editedETag"], None),
+    ):
+        index = proof[index_key]
+        require(type(index) is int and 0 <= index < len(network), "authoring HTTP index missing")
+        observation = network[index]
+        body = root / ("client-issue-authoring-" + label + ".body")
+        require(observation["url"] == resource and observation["method"] == "GET" and observation["status"] == status
+                and observation["headers"].get("etag") == etag and observation["bodyBytes"] == body.stat().st_size
+                and observation["bodySha256"] == digest(body), "authoring HTTP status/ETag/body receipt differs")
+        require(body.read_bytes() == b"" if record is None else json.loads(body.read_bytes()) == record, "authoring raw body differs")
+    require(proof["beforeIndex"] < proof["editedIndex"] < proof["noopIndex"], "authoring HTTP observations unordered")
 
 
 def verify_memory_deletion_capture(root, summary):
@@ -436,7 +509,8 @@ class Qualification:
             self.tests("./internal/storage/issueops", "^TestResolve(CustomConfigStrict|InfraTypesStrict|ConfigLegacy)",
                        (self.root / "internal/storage/issueops").glob("config_strict_test.go"), "query-config")
             self.tests("./cmd/bd", "^Test(GraphModeCLI|GraphPreview)", (self.root / "cmd/bd").glob("graph*test.go"), "cli",
-                       ("TestGraphPreviewIssueAppendWorkflow/embedded", "TestGraphPreviewIssueAppendWorkflow/server",
+                       ("TestGraphPreviewIssueAuthoringWorkflow/embedded", "TestGraphPreviewIssueAuthoringWorkflow/server",
+                        "TestGraphPreviewIssueAppendWorkflow/embedded", "TestGraphPreviewIssueAppendWorkflow/server",
                         "TestGraphPreviewIssueClaimWorkflow/embedded", "TestGraphPreviewIssueClaimWorkflow/server",
                         "TestGraphPreviewIssueAssignmentWorkflow/embedded", "TestGraphPreviewIssueAssignmentWorkflow/server",
                         "TestGraphPreviewMixedCoreWorkflow/embedded", "TestGraphPreviewMixedCoreWorkflow/server",

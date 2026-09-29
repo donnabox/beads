@@ -50,8 +50,8 @@ database. Different-database provisioning on Dolt 2.1.8 must be serialized.
 | `update RESOURCE --patch JSON` | Apply ordered `add`, `replace`, and `remove` property operations to one Memory or informational Link. Accepts literal JSON, `@file`, or explicit `@-` stdin. Requires a Resource guard and a separate source guard for a Memory-owned Link. |
 | `delete BEAD` | Read-only preview of deleting one unreferenced Memory. `--force` applies and requires `--if-revision TOKEN` or `--unconditional`. A preview needs no guard but checks any supplied guard. |
 | `forget BEAD` | Apply the same unreferenced Memory deletion immediately, with `--if-revision TOKEN` or `--unconditional`. |
-| `create TITLE --id beads/PATH` | Create an Issue. Allows `--title`, inline `--description`/`--body`/`--message`, `--type`, `--priority`, `--labels`/`--label`. Existing classification rules apply. Initial status is open. Ordinary creator identity and git-email Owner defaults are included in the Issue data. |
-| `update BEAD` with Issue scalar flags | Inline `--title`, `--description`/`--body`/`--message`, `--design`, `--acceptance`, `--priority` non-claim `--assignee` and literal `--append-notes`. Requires `--if-revision TOKEN` or `--unconditional`. Description aliases must agree. Files/stdin and other Issue fields are unavailable. |
+| `create TITLE --id beads/PATH` | Create an Issue. Allows `--title`, inline `--description`/`--body`/`--message`, `--type`, `--priority`, `--labels`/`--label`, inline `--design`, `--acceptance`, `--assignee`, `--estimate`, `--external-ref`, `--spec-id` and initial `--notes`. Existing classification rules apply. Initial status is open. Ordinary creator identity and git-email Owner defaults are included in the Issue data. |
+| `update BEAD` with Issue scalar flags | Inline `--title`, `--description`/`--body`/`--message`, `--design`, `--acceptance`, `--priority`, non-claim `--assignee`, `--estimate`, `--external-ref`, `--spec-id` and literal `--append-notes`. Requires `--if-revision TOKEN` or `--unconditional`. Description aliases must agree. Files/stdin and other Issue fields are unavailable. |
 | `update BEAD --claim` | Atomically claim one Issue for the current actor using the native writer. Standalone `--claim=true` only; no other edits or revision/force guard. Repeating the same actor is a no-op and does not renew its five-minute lease. |
 | `show RESOURCE` | Current Memory, Issue or Link; optional `--version TOKEN` selects an exact retained record. No chronological History option. |
 | `compare RESOURCE --from TOKEN --to TOKEN` | Compare two complete retained preview versions of one Memory, Issue or Link. Explicit tokens determine direction, not chronology. |
@@ -425,7 +425,7 @@ unknown outcome; callers must inspect rather than automatically retry the write.
 ## Limits and remaining work
 
 Linked Memory deletion and Issue deletion,
-estimate/reference/date edits and due filters, notes replacement/clear, label mutation,
+date edits and due filters, notes replacement/clear, label mutation,
 and full Memory remain unavailable. Issue creation can set initial
 labels; that does not adopt a label-editing contract. These restrictions apply
 to graph workspaces; ordinary Issue workspaces keep their existing behavior.
@@ -565,3 +565,31 @@ both engines, empty-body preview/apply, stale and missing guard refusals,
 read-only admission, fresh-process absence, ID nonreuse, incident-Link refusal
 and explicit unlink before deletion. These tests do not implement or qualify
 the unresolved linked-deletion policy.
+
+## Issue authoring fields
+
+```sh
+bd create 'Implement the plan' --id beads/work --design 'Approach' --acceptance 'Done when verified' --assignee alice --estimate 45 --external-ref 'tracker #42' --spec-id 'spec/section' --notes 'Initial context' --json
+bd update beads/work --estimate 0 --external-ref= --spec-id= --if-revision OBSERVED_REVISION --json
+bd update beads/work --append-notes 'First pass complete.' --if-revision NEW_REVISION --json
+```
+
+Initial fields are part of one native create and retained record. Initial assignment
+is not a claim and does not create a lease. Existing Owner and CreatedBy defaults
+still apply, including the ordinary git-email Owner data already disclosed above.
+Omitted estimates remain absent; explicit zero is present. Estimates use the
+existing nonnegative signed SQL INT range; clearing an estimate to NULL is not
+admitted. External and spec references are literal strings, not fetched URLs or
+alternate Bead identities. The existing columns allow 255 and 1024 Unicode
+codepoints respectively. Empty external reference on update clears it to NULL;
+empty spec ID clears it to an empty string. CLI create omits an empty external
+reference; the Go API preserves an explicitly supplied empty pointer.
+
+Design, acceptance and initial notes are literal UTF-8, including whitespace and
+line endings. Changed initial fields must survive storage hydration exactly.
+Nonempty initial notes also require the completed current and retained state to
+fit the existing workspace read budget before commit. Later notes changes use
+append only; replacement and clear remain unavailable. Guarded scalar edits keep
+owned Links and unrelated fields unchanged; an identical scalar edit records no
+new version. Current CLI records, exact retained records and BDP Read carry these
+fields without a new wire representation or HTTP write operation.
