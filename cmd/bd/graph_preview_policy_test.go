@@ -97,6 +97,13 @@ func TestGraphPreviewCLIWritePolicy(t *testing.T) {
 				if after := legacyUpgradeTreeDigest(t, work); after != before {
 					t.Fatal("refused remember changed workspace")
 				}
+				for _, subject := range []string{"beads/plan", "links/context"} {
+					patchArgs := []string{"update", subject, "--patch=@" + filepath.Join(work, "missing-patch.json"), "--unconditional", "--json"}
+					graphPolicyCLI(t, bd, work, home, tc.env, tc.code, append(patchArgs, tc.flags...)...)
+					if after := legacyUpgradeTreeDigest(t, work); after != before {
+						t.Fatal("refused patch changed workspace")
+					}
+				}
 				graphPolicyCLI(t, bd, work, home, nil, "not_found", "show", path, "--json")
 			})
 		}
@@ -295,6 +302,7 @@ func TestGraphPreviewC0DeferredCommandsRefuseBeforeLegacyOpen(t *testing.T) {
 		"incidentLinks", "ownedLinks", "issueClose", "issueReopen", "issueReady", "genericRead",
 		"issueList", "issueBlocked", "genericTraversal",
 		"memoryDiscovery", "memoryBodyRecall", "exactVersionRead", "exactVersionCompare",
+		"memoryPropertiesPatch", "linkPropertiesPatch",
 	} {
 		wantEnabled[capability] = true
 		if !result.Result.Capabilities[capability] {
@@ -315,6 +323,7 @@ func TestGraphPreviewGenericFlagsRefuseLegacyOpening(t *testing.T) {
 		{"link", "demo-one", "demo-two", "--properties", `{}`},
 		{"link", "demo-one", "demo-two", "--id", "links/context"},
 		{"update", "demo-one", "--properties", `{}`, "--unconditional"},
+		{"update", "beads/plan", "--patch=@/missing/patch.json", "--unconditional"},
 		{"update", "demo-one", "--if-revision", "observed"},
 		{"update", "demo-one", "--if-source-revision", "observed"},
 		{"delete", "beads/plan", "--if-revision", "observed"},

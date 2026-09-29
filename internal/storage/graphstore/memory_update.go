@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"unicode/utf8"
 
+	"github.com/steveyegge/beads/internal/graphpatch"
 	"github.com/steveyegge/beads/internal/storage"
 )
 
@@ -69,14 +70,18 @@ type memoryWriteRequest struct {
 	unconditional                 bool
 	title, body                   string
 	hasTitle, hasBody             bool
+	propertiesPatch               *graphpatch.Patch
 }
 
 func (s *Store) writeMemory(ctx context.Context, request memoryWriteRequest) (MemoryMutationResult, error) {
 	if err := validatePath(request.path); err != nil {
 		return MemoryMutationResult{}, fmt.Errorf("%w: %v", storage.ErrValidation, err)
 	}
-	if !request.hasTitle && !request.hasBody {
+	if !request.hasTitle && !request.hasBody && request.propertiesPatch == nil {
 		return MemoryMutationResult{}, fmt.Errorf("%w: at least one Memory field must be supplied", storage.ErrValidation)
+	}
+	if request.propertiesPatch != nil && (request.hasTitle || request.hasBody) {
+		return MemoryMutationResult{}, fmt.Errorf("%w: ordered Memory properties patch cannot be combined with field replacement", storage.ErrValidation)
 	}
 	if !utf8.ValidString(request.title) || !utf8.ValidString(request.body) || !utf8.ValidString(request.actor) {
 		return MemoryMutationResult{}, fmt.Errorf("%w: Memory title, body and actor must be UTF-8", storage.ErrValidation)
@@ -104,6 +109,12 @@ func (s *Store) writeMemory(ctx context.Context, request memoryWriteRequest) (Me
 		if request.hasBody {
 			next.Body = request.body
 		}
+		if request.propertiesPatch != nil {
+			next, err = applyMemoryPropertiesPatch(request.propertiesPatch, memory.Properties)
+			if err != nil {
+				return err
+			}
+		}
 		if memory.Properties == next {
 			result = MemoryMutationResult{Memory: memory}
 			return nil
@@ -126,6 +137,14 @@ func (s *Store) writeMemory(ctx context.Context, request memoryWriteRequest) (Me
 		accepted, err := s.recordOwnedMemoryInTx(ctx, tx, request.path, request.actor, memory)
 		if err != nil {
 			return err
+		}
+		// New ordered patches must not publish a state that exceeds the existing
+		// current-read acquisition budget. Existing replacement/field routes retain
+		// their prior admission behavior. A no-op above writes nothing.
+		if request.propertiesPatch != nil {
+			if err := checkCurrentReadBytes(ctx, tx); err != nil {
+				return err
+			}
 		}
 		result = MemoryMutationResult{Memory: accepted.(Record), Changed: true, Replaced: replaced}
 		return nil

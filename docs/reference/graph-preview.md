@@ -47,6 +47,7 @@ database. Different-database provisioning on Dolt 2.1.8 must be serialized.
 | `memories [SEARCH]` | Complete bounded Memory title/body search summaries. Supports `--all`, `--details` and `--format table\|records-json`; legacy `--json` refuses. |
 | `recall BEAD` | Stream one Memory's exact body bytes. Optional `--version TOKEN` selects a retained body. `--quiet` does not suppress content; `--json` refuses. |
 | `update BEAD --properties JSON` | Replace a Memory's complete properties with exactly the `title` and `body` strings. Requires `--if-revision TOKEN` or `--unconditional`. |
+| `update RESOURCE --patch JSON` | Apply ordered `add`, `replace`, and `remove` property operations to one Memory or informational Link. Accepts literal JSON, `@file`, or explicit `@-` stdin. Requires a Resource guard and a separate source guard for a Memory-owned Link. |
 | `delete BEAD` | Read-only preview of deleting one unreferenced Memory. `--force` applies and requires `--if-revision TOKEN` or `--unconditional`. A preview needs no guard but checks any supplied guard. |
 | `forget BEAD` | Apply the same unreferenced Memory deletion immediately, with `--if-revision TOKEN` or `--unconditional`. |
 | `create TITLE --id beads/PATH` | Create an Issue. Allows `--title`, inline `--description`/`--body`/`--message`, `--type`, `--priority`, `--labels`/`--label`. Existing classification rules apply. Initial status is open. Ordinary creator identity and git-email Owner defaults are included in the Issue data. |
@@ -107,6 +108,65 @@ new versions merely because another Bead links to them.
 Unlink removes current Link state while reserving its identity and retaining
 private prior snapshots. It does not erase a Memory or promise irreversible
 erasure, restoration or identifier reuse.
+
+## Ordered property changes
+
+`--patch` applies a nonempty ordered array to the actual guarded predecessor
+inside the existing write transaction. It cannot be combined with
+`--properties`, selected Memory fields or Issue update flags. For example:
+
+```sh
+bd update beads/plan --if-revision OBSERVED_MEMORY_REVISION --patch \
+  '[{"op":"replace","path":"/title","value":"Release plan"},{"op":"replace","path":"/body","value":"Updated context."}]' --json
+bd update links/context --if-revision OBSERVED_LINK_REVISION \
+  --if-source-revision OBSERVED_MEMORY_REVISION \
+  --patch '[{"op":"add","path":"/note","value":"Updated background"}]' --json
+bd update beads/plan --if-revision OBSERVED_MEMORY_REVISION --patch @changes.json
+```
+
+Use fresh observed tokens for each changed write. `--unconditional` accepts
+the current Resource; for a Memory-owned Link, `--unconditional-source` is a
+separate decision. An Issue-source informational Link does not require a
+source guard, but any supplied source guard is checked. Patching that Link
+does not change its Issue source. Issue properties and blocking Dependency
+properties cannot be patched through this route.
+
+Operation objects contain only `op`, `path`, and, for add/replace, `value`.
+Pointers use JSON Pointer escapes (`~0` for `~`, `~1` for `/`); an empty
+pointer selects the root. Add inserts array items or replaces an object
+member, and `-` appends to an array. Replace/remove require an existing
+target; missing parents are never synthesized. Operations run in order and
+may temporarily introduce arrays or other JSON values. The final Memory
+properties must contain exactly the `title` and `body` strings; final Link
+properties permit only an optional string `note`. Empty strings are present
+values, distinct from absent members or null.
+
+All operations succeed together or leave the stored state unchanged. A
+same-value or reversing patch is a semantic no-op: the existing version,
+revision and attribution remain unchanged, with no replacement disclosure.
+Stale guards still refuse before no-op evaluation. A changed unconditional
+write discloses the actual replaced Memory state, including when the change
+is to a Memory-owned Link. Prior complete states remain available through
+the exact retained reads described below. Deleted Memories and removed Links
+cannot be revived by patching.
+
+Input and each working properties document are limited to 1 MiB, with at
+most 256 operations, 4,096 pointer bytes, and 64 pointer segments/nesting
+levels. A cumulative 16 MiB evaluation-byte limit bounds repeated document
+work; it is not an exact heap or timing bound. Duplicate members, invalid
+Unicode, inexact unsupported numbers, extra operation members and unsupported
+operations refuse. Files/stdin are read only when explicitly selected and
+after readonly/freeze, selector and local guard admission. Input/parse errors
+report `invalid_properties`; stale guards report `revision_conflict`.
+
+Changed patches must also fit the complete current-read acquisition budget,
+including retained final heads of deleted Memories. Failure rolls back the
+mutation and retained records. Existing replacement/selected-field writers
+keep their established admission policy. A no-op writes nothing and does not
+repair an oversized workspace; a properties document already above the
+patch limit cannot use this route to shrink itself. Runtime bound refusals
+report `capability_unavailable`. These bounded CLI changes do not enable a
+public BDP Write profile, History ordering or durable request outcomes.
 
 ## Find and inspect retained Memory
 
@@ -313,7 +373,7 @@ BDP HTTP Read is the script interface and exposes the current Issue properties.
 
 Linked Memory deletion, Issue deletion and claims,
 estimate/reference/date edits and due filters, notes changes, label mutation,
-ordered property patches and full Memory remain unavailable. Issue creation can set initial
+and full Memory remain unavailable. Issue creation can set initial
 labels; that does not adopt a label-editing contract. These restrictions apply
 to graph workspaces; ordinary Issue workspaces keep their existing behavior.
 

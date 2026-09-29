@@ -22,6 +22,7 @@ import (
 	graph "github.com/steveyegge/beads/graphops"
 	"github.com/steveyegge/beads/internal/config"
 	"github.com/steveyegge/beads/internal/configfile"
+	"github.com/steveyegge/beads/internal/graphpatch"
 	"github.com/steveyegge/beads/internal/migration"
 	"github.com/steveyegge/beads/internal/storage"
 	"github.com/steveyegge/beads/internal/storage/graphstore"
@@ -58,6 +59,7 @@ func init() {
 	linkCmd.Flags().String("resource-type", "", "Installed experimental Link Type URL (graph preview only)")
 	linkCmd.Flags().String("id", "", "New canonical links/PATH for an informational graph Link")
 	linkCmd.Flags().String("properties", "", "Informational Link properties as JSON, @file, or @- (graph preview only)")
+	updateCmd.Flags().String("patch", "", "Apply ordered Memory or informational Link property operations from JSON, @file, or @- (graph preview only)")
 	updateCmd.Flags().String("properties", "", "Replace Memory or informational Link properties from JSON, @file, or @- (graph preview only)")
 	updateCmd.Flags().String("if-revision", "", "Require this observed experimental Resource revision")
 	updateCmd.Flags().Bool("unconditional", false, "Explicitly accept the current experimental Resource state")
@@ -205,7 +207,7 @@ func admitGraphPreview(cmd *cobra.Command) (handled bool, admissionErr error) {
 		if cmd == linkCmd && (cmd.Flags().Changed("resource-type") || cmd.Flags().Changed("id") || cmd.Flags().Changed("properties") || cmd.Flags().Changed("if-source-revision") || cmd.Flags().Changed("unconditional-source")) {
 			return true, graphFailure("capability_unavailable", "generic Link options require a workspace initialized with graph_mode link", 5)
 		}
-		if cmd == updateCmd && (cmd.Flags().Changed("properties") || cmd.Flags().Changed("if-revision") || cmd.Flags().Changed("unconditional") || cmd.Flags().Changed("if-source-revision") || cmd.Flags().Changed("unconditional-source")) {
+		if cmd == updateCmd && (cmd.Flags().Changed("patch") || cmd.Flags().Changed("properties") || cmd.Flags().Changed("if-revision") || cmd.Flags().Changed("unconditional") || cmd.Flags().Changed("if-source-revision") || cmd.Flags().Changed("unconditional-source")) {
 			return true, graphFailure("capability_unavailable", "generic update options require a workspace initialized with graph_mode link", 5)
 		}
 		if (cmd == rememberCmd && rememberGraphFlagsChanged(cmd)) || (cmd == initCmd && cmd.Flags().Changed("scope-url")) || (cmd == statusCmd && cmd.Flags().Changed("graph")) {
@@ -506,7 +508,21 @@ func runGraphPreviewStatus(cmd *cobra.Command) error {
 					"memoryBodyInputBytes": graphPreviewMemoryBodyLimit, "memoryOwnedLinks": graphstore.PreviewOwnedLinkLimit,
 					"issueOwnedLinks": graphstore.PreviewOwnedLinkLimit, "currentReadBytes": graphstore.PreviewCurrentReadByteLimit,
 					"linkPropertiesInputBytes": graphPreviewPropertiesLimit, "memoryPropertiesInputBytes": graphPreviewPropertiesLimit,
-					"incidentLinks": graphstore.PreviewIncidentLinkLimit, "versionTokenBytes": graphstore.PreviewVersionTokenLimit,
+					"memoryPatchInputBytes":      graphpatch.MaxInputBytes,
+					"memoryPatchOperations":      graphpatch.MaxOperations,
+					"memoryPatchPointerBytes":    graphpatch.MaxPointerBytes,
+					"memoryPatchDepth":           graphpatch.MaxDepth,
+					"memoryPatchDocumentBytes":   graphpatch.MaxDocumentBytes,
+					"memoryPatchEvaluationBytes": graphpatch.MaxEvaluationBytes,
+					"memoryPatchPointerSegments": graphpatch.MaxPointerSegments,
+					"linkPatchInputBytes":        graphpatch.MaxInputBytes,
+					"linkPatchOperations":        graphpatch.MaxOperations,
+					"linkPatchPointerBytes":      graphpatch.MaxPointerBytes,
+					"linkPatchDepth":             graphpatch.MaxDepth,
+					"linkPatchDocumentBytes":     graphpatch.MaxDocumentBytes,
+					"linkPatchEvaluationBytes":   graphpatch.MaxEvaluationBytes,
+					"linkPatchPointerSegments":   graphpatch.MaxPointerSegments,
+					"incidentLinks":              graphstore.PreviewIncidentLinkLimit, "versionTokenBytes": graphstore.PreviewVersionTokenLimit,
 					"memoryDiscoveryDefaultMatches": graphMemoryDiscoveryDefaultLimit, "memoryDiscoveryOutputBytes": graphMemoryDiscoveryOutputLimit,
 					"memoryDiscoveryQueryBytes": graphMemoryDiscoveryQueryLimit, "memoryDiscoveryExcerptCodePoints": graphMemoryDiscoveryExcerptLimit},
 				"capabilities": map[string]bool{
@@ -518,12 +534,12 @@ func runGraphPreviewStatus(cmd *cobra.Command) error {
 					"informationalLink":        true, "blockingDependency": true, "linkPropertiesUpdate": true,
 					"linkUnlink": true, "blockingDependencyUnlink": true, "incidentLinks": true, "ownedLinks": true,
 					"issueClose": true, "issueReopen": true, "issueReady": true, "genericRead": true,
-					"memory": false, "memoryDelete": false, "memoryPropertiesPatch": false, "linkPropertiesPatch": false,
+					"memory": false, "memoryDelete": false, "memoryPropertiesPatch": true, "linkPropertiesPatch": true,
 					"issueList": true, "issueBlocked": true, "genericTraversal": true,
 					"issueListTree": false, "issueListLegacyJSON": false, "issueAssigneeFilter": true, "issueDueFilter": false, "issueClaim": false, "issueWorkflows": false,
 					"blockingDependencyPairUnlink": false, "bdpRead": graphPreviewConfig.DoltMode == configfile.DoltModeServer, "historyExact": false, "exactVersionRead": true, "exactVersionCompare": true,
 					"requestStatus": false, "backupContinuity": false}},
-			"Mixed graph preview: Memory create/read, guarded complete title/body replacement and selected remember updates, actual predecessor disclosure for unconditional Memory writes, unreferenced Memory deletion with read-only preview and retained identity/snapshots, basic Issue create/read with ordinary creator/owner defaults, guarded inline Issue title/description/design/acceptance, priority and non-claim assignee edits, informational Links with property replacement and guarded unlink, blocking Dependencies with canonical-ID unlink, incident Links, and Issue close/reopen/ready. Explicit flat/records-json Issue listing with assignee/unassigned filters, complete dependency-blocked inspection and bounded current generic summary traversal are available. Memory discovery returns complete bounded title/body search summaries; current and exact retained body-only recall, show --version and explicit-version compare are available as local experimental reads without History ordering or common metadata. Full Memory, linked Memory deletion, Issue deletion, later Issue fields, due filters, ordered patches, public History, adoption and recovery remain unavailable. BDP Read serving is available only on ordinary shared-server Dolt; embedded serving, HTTP writes and aliases remain unavailable.", nil
+			"Mixed graph preview: Memory create/read, guarded complete title/body replacement and selected remember updates, actual predecessor disclosure for unconditional Memory writes, unreferenced Memory deletion with read-only preview and retained identity/snapshots, basic Issue create/read with ordinary creator/owner defaults, guarded inline Issue title/description/design/acceptance, priority and non-claim assignee edits, informational Links with property replacement and guarded unlink, blocking Dependencies with canonical-ID unlink, incident Links, and Issue close/reopen/ready. Explicit flat/records-json Issue listing with assignee/unassigned filters, complete dependency-blocked inspection and bounded current generic summary traversal are available. Memory discovery returns complete bounded title/body search summaries; current and exact retained body-only recall, show --version and explicit-version compare are available as local experimental reads without History ordering or common metadata. Ordered Memory and informational Link property patches are available with existing resource/source guards. Full Memory, linked Memory deletion, Issue deletion, later Issue fields, due filters, public History, adoption and recovery remain unavailable. BDP Read serving is available only on ordinary shared-server Dolt; embedded serving, HTTP writes and aliases remain unavailable.", nil
 	})
 }
 

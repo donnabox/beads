@@ -13,6 +13,7 @@ import (
 	"unicode/utf8"
 
 	graph "github.com/steveyegge/beads/graphops"
+	"github.com/steveyegge/beads/internal/graphpatch"
 	"github.com/steveyegge/beads/internal/storage"
 )
 
@@ -164,8 +165,18 @@ func (s *Store) UpdateLink(ctx context.Context, request LinkUpdateRequest) (Link
 	if err != nil {
 		return LinkMutationResult{}, err
 	}
+	return s.writeLinkProperties(ctx, request, properties, nil)
+}
+
+// writeLinkProperties is the single checked writer for replacement and ordered
+// patch intents. Parsed patches own their input; replacement bytes are captured
+// before entering the transaction. Both guards precede evaluation and no-op.
+func (s *Store) writeLinkProperties(ctx context.Context, request LinkUpdateRequest, properties []byte, patch *graphpatch.Patch) (LinkMutationResult, error) {
+	if patch != nil && properties != nil {
+		return LinkMutationResult{}, fmt.Errorf("%w: Link replacement and ordered patch are mutually exclusive", storage.ErrValidation)
+	}
 	var result LinkMutationResult
-	err = s.withTx(ctx, true, func(tx *sql.Tx) error {
+	err := s.withTx(ctx, true, func(tx *sql.Tx) error {
 		if err := checkBinding(ctx, tx, s.options); err != nil {
 			return err
 		}
@@ -187,9 +198,20 @@ func (s *Store) UpdateLink(ctx context.Context, request LinkUpdateRequest) (Link
 		if err := checkRevisionGuard(request.ExpectedSourceRevision, request.UnconditionalSource, revision, owned, "source"); err != nil {
 			return err
 		}
+		if patch != nil {
+			if note, ok := link.Properties["note"].(string); ok && len(note) > graphpatch.MaxDocumentBytes {
+				return fmt.Errorf("%w: Link properties exceed the patch working-document limit", ErrLimitExceeded)
+			}
+		}
 		before, err := canonicalJSON(link.Properties)
 		if err != nil {
 			return err
+		}
+		if patch != nil {
+			properties, err = applyLinkPropertiesPatch(patch, before)
+			if err != nil {
+				return err
+			}
 		}
 		if bytes.Equal(before, properties) {
 			result = LinkMutationResult{Link: link, Source: source}
@@ -221,6 +243,11 @@ func (s *Store) UpdateLink(ctx context.Context, request LinkUpdateRequest) (Link
 		result, err = s.finishInformationalWriteInTx(ctx, tx, request.Path, sourcePath, request.Actor, source)
 		if err == nil {
 			result.ReplacedSource = replacedMemory(source, request.UnconditionalSource)
+			if patch != nil {
+				// The new patch route must not commit a graph that current reads
+				// cannot acquire. Replacement retains its existing policy.
+				return checkCurrentReadBytes(ctx, tx)
+			}
 		}
 		return err
 	})

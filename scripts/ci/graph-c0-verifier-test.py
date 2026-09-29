@@ -74,6 +74,51 @@ class RequiredReceipts(unittest.TestCase):
             module.verify_tests([event("pass", "TestRequired"), event("pass")], {"TestRequired"})
 
 
+class RequiredDiscovery(unittest.TestCase):
+    # Exercise the actual source/compiled/execution boundary with temporary Go
+    # source. Only subprocess output is supplied; no engine or Go build is needed.
+    def exercise(self, source, compiled, events):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            (root / "patch_test.go").write_text(source)
+            q = module.Qualification.__new__(module.Qualification)
+            q.counts = {}
+            calls = []
+
+            def run(argv, label, **kwargs):
+                calls.append((argv, label))
+                if label == "graphpatch-discovery":
+                    return compiled.encode()
+                self.assertEqual(label, "graphpatch")
+                return "\n".join(json.dumps(e) for e in events).encode()
+
+            q.run = run
+            q.tests("./internal/graphpatch", "^Test", root.glob("*_test.go"), "graphpatch")
+            self.assertEqual(q.counts, {"graphpatch": 1})
+            self.assertEqual([label for _, label in calls], ["graphpatch-discovery", "graphpatch"])
+            self.assertTrue(all(argv[-1] == "./internal/graphpatch" for argv, _ in calls))
+            self.assertIn("-count=1", calls[1][0])
+
+    def test_required_package_discovery_and_execution(self):
+        self.exercise("package graphpatch\nfunc TestPatch(t *testing.T) {}\n", "TestPatch\n",
+                      [event("run", "TestPatch"), event("run", "TestPatch/child"),
+                       event("pass", "TestPatch/child"), event("pass", "TestPatch"), event("pass")])
+
+    def test_omitted_or_unexecuted_required_source_refuses(self):
+        source = "package graphpatch\nfunc TestPatch(t *testing.T) {}\n"
+        good = [event("run", "TestPatch"), event("pass", "TestPatch"), event("pass")]
+        for name, text, compiled, events in [
+            ("empty-source", "package graphpatch\n", "", [event("pass")]),
+            ("compiled-excludes-source", source, "", good),
+            ("source-glob-omits-compiled-root", "package graphpatch\n", "TestPatch\n", good),
+            ("compiled-adds-unregistered-root", source, "TestPatch\nTestOther\n", good),
+            ("discovered-but-not-executed", source, "TestPatch\n", [event("pass")]),
+            ("discovered-but-skipped", source, "TestPatch\n", [event("skip", "TestPatch"), event("pass")]),
+        ]:
+            with self.subTest(name=name), self.assertRaises(RuntimeError):
+                self.exercise(text, compiled, events)
+
+
 class HTTPReceiptControls(unittest.TestCase):
     def test_clean_listener(self):
         module.verify_clean_receipt(dict(exit_code=0, failure=None, forced=False,
