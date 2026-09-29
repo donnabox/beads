@@ -26,6 +26,9 @@ func runGraphPreviewUpdate(cmd *cobra.Command, args []string) error {
 		}
 		return runGraphPreviewMemoryPropertiesPatch(cmd, path)
 	}
+	if cmd.Flags().Changed("claim") {
+		return runGraphPreviewClaimIssue(cmd, path)
+	}
 	if strings.HasPrefix(path, "links/") {
 		return runGraphPreviewUpdateLink(cmd, args)
 	}
