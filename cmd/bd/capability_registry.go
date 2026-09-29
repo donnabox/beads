@@ -454,6 +454,11 @@ var proxyCapabilityRegistry = []capabilityRow{
 	// at the front door would leave those modes with no way to flush.
 	permitted("dolt commit").withHistory(HistoryProxySupported),
 
+	// Generic graph commands have no proxied-provider route. Graph workspace
+	// admission handles their supported direct embedded/server path first.
+	refusedPath("links", "proxy.links.unsupported", ProxyReasonUnimplemented, "generic graph CLI: gastownhall/beads#6703"),
+	refusedPath("unlink", "proxy.unlink.unsupported", ProxyReasonUnimplemented, "generic graph CLI: gastownhall/beads#6703"),
+
 	// --- versioned history ----------------------------------------------------
 	// `bd versions` is a pure read (issueops.ListVersionsInTx in one read
 	// transaction), so nothing about it is unsafe on a shared backend. It is

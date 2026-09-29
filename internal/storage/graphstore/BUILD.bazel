@@ -1,0 +1,86 @@
+load("@rules_go//go:def.bzl", "go_library", "go_test")
+
+go_library(
+    name = "graphstore",
+    srcs = [
+        "backend.go",
+        "collection_read.go",
+        "collection_read_bounds.go",
+        "dependencies.go",
+        "dependency_unlink.go",
+        "history_exact.go",
+        "informational.go",
+        "issue_reopen.go",
+        "issue_update.go",
+        "issues.go",
+        "link_lifecycle.go",
+        "memory_update.go",
+        "overwrite_disclosure.go",
+        "records.go",
+        "schema.go",
+        "types.go",
+        "types_read.go",
+        "workflow.go",
+    ],
+    importpath = "github.com/steveyegge/beads/internal/storage/graphstore",
+    visibility = ["//:__subpackages__"],
+    deps = [
+        "//graphops",
+        "//internal/storage",
+        "//internal/storage/doltutil",
+        "//internal/storage/embeddeddolt",
+        "//internal/storage/issueops",
+        "//internal/storage/schema",
+        "//internal/storage/sqlbuild",
+        "//internal/types",
+        "//issueops",
+        "@com_github_go_sql_driver_mysql//:mysql",
+    ],
+)
+
+go_test(
+    name = "graphstore_test",
+    srcs = [
+        "collection_read_bounds_test.go",
+        "collection_read_test.go",
+        "commit_loss_test.go",
+        "dependency_unlink_test.go",
+        "history_exact_test.go",
+        "informational_test.go",
+        "issue_reopen_test.go",
+        "issue_update_test.go",
+        "issues_test.go",
+        "link_lifecycle_test.go",
+        "memory_patch_test.go",
+        "memory_update_test.go",
+        "native_recorder_integration_test.go",
+        "overwrite_disclosure_test.go",
+        "schema_test.go",
+        "server_test.go",
+        "store_test.go",
+        "types_read_test.go",
+        "workflow_test.go",
+    ],
+    embed = [":graphstore"],
+    deps = [
+        "//graphops",
+        "//internal/storage",
+        "//internal/storage/issueops",
+        "//internal/types",
+        "//issueops",
+        "@com_github_go_sql_driver_mysql//:mysql",
+    ],
+)
+
+# --- begin go_srcs (managed by tools/bazel/go_srcs.py; run `make bazel-sync`) ---
+
+filegroup(
+    name = "go_srcs",
+    srcs = glob(
+        ["**/*.go"],
+        allow_empty = True,
+    ),
+    visibility = ["//:__subpackages__"],
+)
+
+# --- end go_srcs ---

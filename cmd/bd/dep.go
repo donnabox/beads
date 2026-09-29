@@ -428,6 +428,9 @@ Examples:
 	SilenceUsage:  true,
 	SilenceErrors: true,
 	RunE: func(cmd *cobra.Command, args []string) error {
+		if graphPreviewActive {
+			return runGraphPreviewAddDependency(cmd, args)
+		}
 		CheckReadonly("dep add")
 
 		evt := metrics.NewCommandEvent("dep-add")

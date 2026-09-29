@@ -31,6 +31,15 @@ func guardLegacyUpgradeWorkspace(beadsDir string) error {
 	if err != nil {
 		return fmt.Errorf("loading config: %w", err)
 	}
+	// This helper admits only the ordinary Issue store. Graph CLI admission
+	// owns the separate preview route, including its readiness checks.
+	graphMode, err := cfg.GetGraphMode()
+	if err != nil {
+		return err
+	}
+	if graphMode != configfile.GraphModeDependency {
+		return fmt.Errorf("workspace graph_mode %q requires the graph preview route; the legacy workspace was not opened", graphMode)
+	}
 	if isHistoricalSQLiteWorkspace(beadsDir, cfg) {
 		return legacyUpgradeRefusal("historical SQLite workspace")
 	}
