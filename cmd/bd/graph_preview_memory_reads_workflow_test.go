@@ -152,6 +152,111 @@ func graphMemoryReadComparison(t *testing.T, output string, want graphstore.Vers
 	}
 }
 
+// Exercise instructions delivered by init, not a test-written approximation of
+// an agent template. Each recipe command runs in a new installed CLI process.
+func TestGraphPreviewAgentInstructionsWorkflow(t *testing.T) {
+	bd := buildBDUnderTest(t)
+	const durable = "You have your own memory. It lives in beads: `bd remember` stores a fact and `bd recall` or `bd memories` reads it back, and its contents are available to you in later sessions in this project."
+	const remember = `bd remember "Use UTC for timestamps" --id beads/time-policy --title "Timestamp policy"`
+	const sentinel = "# Project instructions\n\nKeep this user-owned paragraph exactly.\n"
+	const stub = "@AGENTS.md\n"
+	const fullGuidance = sentinel + "<!-- BEGIN BEADS INTEGRATION v:1 profile:full hash:12345678 -->\nPreserve existing full guidance.\n<!-- END BEADS INTEGRATION -->\n"
+	for _, engine := range []string{"embedded", "server"} {
+		t.Run(engine, func(t *testing.T) {
+			port := os.Getenv("BEADS_GRAPH_TEST_SERVER_PORT")
+			if engine == "server" && port == "" {
+				t.Skip("set BEADS_GRAPH_TEST_SERVER_PORT for ordinary shared-server instruction qualification")
+			}
+			for _, scenario := range []string{"fresh", "shared-file", "skip-agents", "full-profile-refusal"} {
+				t.Run(scenario, func(t *testing.T) {
+					work, home := t.TempDir(), t.TempDir()
+					agentsPath := filepath.Join(work, "AGENTS.md")
+					claudePath := filepath.Join(work, "CLAUDE.md")
+					if scenario != "fresh" {
+						writeFile(t, agentsPath, []byte(sentinel))
+						writeFile(t, claudePath, []byte(stub))
+					}
+					if scenario == "full-profile-refusal" || scenario == "skip-agents" {
+						writeFile(t, agentsPath, []byte(fullGuidance))
+					}
+					args := []string{"init", "--graph-mode", "link", "--scope-url", "https://example.invalid/agent-guidance/", "--skip-hooks", "--non-interactive", "--json"}
+					if scenario == "skip-agents" {
+						args = append(args, "--skip-agents")
+					}
+					if engine == "server" {
+						args = append(args, "--server", "--external", "--server-host", "127.0.0.1", "--server-port", port, "--server-user", "root")
+					}
+					if scenario == "full-profile-refusal" {
+						before := legacyUpgradeTreeDigest(t, work)
+						graphPolicyCLI(t, bd, work, home, nil, "graph_not_initialized", args...)
+						if legacyUpgradeTreeDigest(t, work) != before {
+							t.Fatal("refused full-profile init changed workspace")
+						}
+						if _, err := os.Lstat(filepath.Join(work, ".beads")); !os.IsNotExist(err) {
+							t.Fatalf("instruction refusal initialized .beads: %v", err)
+						}
+						return
+					}
+					initialized := graphMixedResult[map[string]any](t, graphPolicyCLI(t, bd, work, home, nil, "", args...))
+					if initialized["backend"] != engine {
+						t.Fatalf("unexpected initialized engine: %+v", initialized)
+					}
+					guidance, err := os.ReadFile(agentsPath)
+					if err != nil {
+						t.Fatal(err)
+					}
+					if scenario != "fresh" {
+						if !bytes.HasPrefix(guidance, []byte(sentinel)) {
+							t.Fatal("init changed user-authored instructions")
+						}
+						if got, err := os.ReadFile(claudePath); err != nil || string(got) != stub {
+							t.Fatalf("shared-file import was altered: %q / %v", got, err)
+						}
+					} else if _, err := os.Lstat(claudePath); !os.IsNotExist(err) {
+						t.Fatalf("graph init unexpectedly installed Claude-specific instructions: %v", err)
+					}
+					if _, err := os.Lstat(filepath.Join(work, ".claude")); !os.IsNotExist(err) {
+						t.Fatalf("graph init installed hook configuration: %v", err)
+					}
+					if scenario == "skip-agents" {
+						if string(guidance) != fullGuidance {
+							t.Fatal("--skip-agents changed existing full-profile instructions")
+						}
+						return
+					}
+					status := graphMixedResult[struct {
+						Preview      bool            `json:"preview"`
+						Backend      string          `json:"backend"`
+						Scope        string          `json:"scope"`
+						Capabilities map[string]bool `json:"capabilities"`
+					}](t, graphPolicyCLI(t, bd, work, home, nil, "", "status", "--graph", "--json"))
+					if !status.Preview || status.Backend != engine || status.Scope != "https://example.invalid/agent-guidance/" || !status.Capabilities["memoryCreate"] || !status.Capabilities["memoryBodyRecall"] || !status.Capabilities["memoryDiscovery"] {
+						t.Fatalf("documented status command did not identify this graph workspace: %+v", status)
+					}
+					text := string(guidance)
+					for _, want := range []string{durable, remember, "bd recall beads/time-policy", "bd memories timestamps --format records-json", "bd status --graph", "profile:graph-preview"} {
+						if !strings.Contains(text, want) {
+							t.Fatalf("generated guidance omitted %q: %s", want, text)
+						}
+					}
+					if strings.Count(text, "<!-- BEGIN BEADS INTEGRATION") != 1 || strings.Contains(text, "Run `bd prime`") {
+						t.Fatal("generated duplicate or unsupported prime guidance")
+					}
+					record := graphMixedResult[graphstore.Record](t, graphPolicyCLI(t, bd, work, home, nil, "", "remember", "Use UTC for timestamps", "--id", "beads/time-policy", "--title", "Timestamp policy", "--json"))
+					if record.Properties.Title != "Timestamp policy" || record.Properties.Body != "Use UTC for timestamps" {
+						t.Fatalf("documented recipe stored different properties: %+v", record)
+					}
+					graphMemoryReadRaw(t, bd, work, home, "Use UTC for timestamps", "", "recall", "beads/time-policy")
+					found := graphMixedResult[graphMemoryDiscoveryResult](t, graphPolicyCLI(t, bd, work, home, nil, "", "memories", "timestamps", "--format", "records-json"))
+					if !found.Complete || found.Next != nil || len(found.Items) != 1 || found.Items[0].ID != record.ID || found.Items[0].Version != record.Version {
+						t.Fatalf("new process did not discover documented Memory: %+v", found)
+					}
+				})
+			}
+		})
+	}
+}
+
 func TestGraphPreviewMemoryReadsWorkflow(t *testing.T) {
 	bd := buildBDUnderTest(t)
 	for _, engine := range []string{"embedded", "server"} {
