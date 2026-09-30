@@ -150,18 +150,24 @@ func TestGraphPreviewIssueListOutput(t *testing.T) {
 	}
 }
 
-// Positive due fixtures require later graph writers. Refuse even
-// explicit empty/false flags until that adapter coverage can be carried.
+// Defer filters remain outside this graph adapter even when supplied empty
+// or false. Admitted due filters must not bypass that refusal.
 func TestGraphPreviewIssueDeferredFilters(t *testing.T) {
 	old := jsonOutput
 	jsonOutput = false
 	t.Cleanup(func() { jsonOutput = old })
 	for _, flags := range [][]string{
-		{"--due-before=2030-01-01"}, {"--due-before="},
-		{"--due-after=2030-01-01"}, {"--overdue"}, {"--overdue=false"},
+		{"--defer-before=2030-01-01"}, {"--defer-before="},
+		{"--defer-after=2030-01-01"}, {"--deferred"}, {"--deferred=false", "--overdue"},
 	} {
 		args := append([]string{"--format=records-json"}, flags...)
-		cmd := graphListTestCommand(t, args)
+		cmd := graphListTestCommand(t, nil)
+		cmd.Flags().String("defer-before", "", "")
+		cmd.Flags().String("defer-after", "", "")
+		cmd.Flags().Bool("deferred", false, "")
+		if err := cmd.ParseFlags(args); err != nil {
+			t.Fatal(err)
+		}
 		_, _, err := graphIssueListInput(cmd, append([]string{"list"}, args...))
 		var failure *exitError
 		if !errors.As(err, &failure) || failure.Code != 5 {

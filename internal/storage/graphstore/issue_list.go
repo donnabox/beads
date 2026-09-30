@@ -8,6 +8,7 @@ import (
 	"reflect"
 	"slices"
 	"strings"
+	"time"
 	"unicode/utf8"
 
 	"github.com/steveyegge/beads/internal/storage"
@@ -59,6 +60,7 @@ func prepareIssueListRequest(in publicops.ListRequest) (publicops.ListRequest, e
 	allowed := publicops.ListRequest{
 		Status: in.Status, IssueType: in.IssueType, TitleSearch: in.TitleSearch, TitleContains: in.TitleContains,
 		Assignee: in.Assignee, NoAssignee: in.NoAssignee,
+		DueBefore: in.DueBefore, DueAfter: in.DueAfter, OverdueFlag: in.OverdueFlag,
 		Labels: in.Labels, LabelsAny: in.LabelsAny, ExcludeLabels: in.ExcludeLabels,
 		Priority: in.Priority, PriorityMin: in.PriorityMin, PriorityMax: in.PriorityMax,
 		PinnedFlag: in.PinnedFlag, NoPinnedFlag: in.NoPinnedFlag, AllFlag: in.AllFlag,
@@ -119,6 +121,18 @@ func prepareIssueListRequest(in publicops.ListRequest) (publicops.ListRequest, e
 	allowed.Priority, allowed.PriorityMin, allowed.PriorityMax = copyInt(in.Priority), copyInt(in.PriorityMin), copyInt(in.PriorityMax)
 	allowed.Limit = copyInt(in.Limit)
 	allowed.Labels, allowed.LabelsAny, allowed.ExcludeLabels = slices.Clone(in.Labels), slices.Clone(in.LabelsAny), slices.Clone(in.ExcludeLabels)
+	// Native query binds strict bounds as whole-second RFC3339 strings. Preserve
+	// that truncation (rather than write rounding), but normalize API offsets
+	// before formatting so comparisons use the same UTC instant as stored dates.
+	for _, field := range []**time.Time{&allowed.DueBefore, &allowed.DueAfter} {
+		if *field != nil {
+			value := (*field).UTC().Truncate(time.Second)
+			if value.Year() < 1 || value.Year() > 9999 {
+				return publicops.ListRequest{}, fmt.Errorf("%w: Issue due filter year must be between 1 and 9999", storage.ErrValidation)
+			}
+			*field = &value
+		}
+	}
 	return allowed, nil
 }
 

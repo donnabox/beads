@@ -22,7 +22,7 @@ func runGraphPreviewCreateIssue(cmd *cobra.Command, args []string) error {
 	if err := graphPreviewWritePolicy(); err != nil {
 		return err
 	}
-	if err := graphPreviewFlags(cmd, "id", "title", "description", "body", "message", "type", "priority", "labels", "label", "design", "acceptance", "assignee", "estimate", "external-ref", "spec-id", "notes"); err != nil {
+	if err := graphPreviewFlags(cmd, "id", "title", "description", "body", "message", "type", "priority", "labels", "label", "design", "acceptance", "assignee", "estimate", "external-ref", "spec-id", "notes", "due"); err != nil {
 		return err
 	}
 	path, _ := cmd.Flags().GetString("id")
@@ -118,6 +118,13 @@ func graphPreviewIssueCreateFields(cmd *cobra.Command, issue *types.Issue) error
 			return graphFailure("invalid_properties", err.Error(), 2)
 		}
 		issue.EstimatedMinutes = &value
+	}
+	if cmd.Flags().Changed("due") {
+		due, err := graphPreviewIssueDueInput(cmd)
+		if err != nil {
+			return err
+		}
+		issue.DueAt = due
 	}
 	return nil
 }

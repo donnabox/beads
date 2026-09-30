@@ -285,7 +285,8 @@ bd graph beads/plan --view generic --direction out --depth 2 --json
 
 Issue listing reuses the existing native query, configuration and limit policy.
 It accepts status (or state), type, title/title-contains, priority and priority
-range, assignee/no-assignee, label/label-any/exclude-label and pinned/no-pinned filters. Sorting accepts
+range, assignee/no-assignee, label/label-any/exclude-label, pinned/no-pinned and
+due-before/due-after/overdue filters. Sorting accepts
 priority, created, updated, title, status or type; reverse is supported. Explicit
 limit wins over `--all` and configured limits. The result contains complete
 canonical Issue records in `items` and a truthful `hasMore` boolean. It is a new
@@ -295,8 +296,8 @@ the extra probe record are validated before trimming the page.
 Use explicit `--flat` for quoted human summaries or `--format records-json` for
 the experimental graph envelope. Bare tree, `--json`, `--format json`, watch,
 readiness, parent/ID/routing/offset selectors, repeated status/state/type/assignee filters
-and supplied-empty labels refuse. Due/overdue filters remain unavailable: positive
-graph fixtures depend on a later writer slice.
+and supplied-empty labels refuse. Defer filters remain unavailable; due selection
+does not schedule or wake work.
 This does not change ordinary list parsing or implement contributor-owned filter
 unions. Records-json selects structured errors and overrides ambient human
 format selection; explicit `--json` still refuses. BDP Read remains the documented
@@ -422,10 +423,45 @@ Issues expecting the graph to repair them.
 unconditional/force claim flags are refused. A lost commit reply reports an
 unknown outcome; callers must inspect rather than automatically retry the write.
 
+## Issue due dates
+
+```sh
+bd create 'Prepare the review' --id beads/review --due '2030-01-02T10:00:00Z' --json
+bd update beads/review --due '+30min' --if-revision OBSERVED_REVISION --json
+bd list --format records-json --due-after '2030-01-01' --due-before '2030-01-03'
+bd list --format records-json --overdue --all
+bd update beads/review --due= --if-revision OBSERVED_REVISION --json
+```
+
+Create and guarded update reuse the ordinary date parser, including `+30min`,
+`+6h`, date-only and offset-bearing timestamps. `m` means calendar months;
+`min` means minutes. Timezone-less input uses the invoking process's local zone.
+Omission preserves the existing due date; explicit empty update clears it.
+An empty create value leaves the date absent. Due edits may accompany other
+admitted scalar edits or notes append in the same native transaction/version;
+standalone claim still cannot be combined with an edit.
+
+This private preview retains the existing whole-second SQL representation:
+writes normalize to UTC and round to the nearest second, with half-second ties
+forward. Filter cutoffs normalize to UTC and truncate fractions before native
+strict `<` / `>` comparisons. A due time of `12:00:00Z` therefore does not match
+a before-cutoff of `12:00:00.900Z`. Dates must remain within years 1..9999 after
+normalization. These are provisional compatibility rules, not a durable BDP
+precision contract. The CLI's 4096-byte UTF-8 date-input bound is likewise a
+private preview admission limit.
+
+The ordinary filters intersect, including existing status/type/limit policy.
+Overdue means a non-null due date before the native UTC query clock, excluding
+closed Issues even with `--all`; it neither changes status nor schedules work.
+After normalization, an unchanged due value or repeated clear is a no-op, while
+a stale revision still refuses. Current and exact retained reads preserve the
+accepted instant; due writes retain existing links, lease and lifecycle state.
+No defer, recurrence, mandatory deadline or scheduler behavior is added.
+
 ## Limits and remaining work
 
 Linked Memory deletion and Issue deletion,
-date edits and due filters, notes replacement/clear, label mutation,
+defer/scheduling, notes replacement/clear, label mutation,
 and full Memory remain unavailable. Issue creation can set initial
 labels; that does not adopt a label-editing contract. These restrictions apply
 to graph workspaces; ordinary Issue workspaces keep their existing behavior.
