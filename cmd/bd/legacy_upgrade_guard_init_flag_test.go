@@ -7,13 +7,6 @@ import (
 	"testing"
 )
 
-// guardLegacyUpgradeWorkspaceForInit is a placeholder for the function the fix
-// adds to legacy_upgrade_guard.go. It ignores its flag, so the tests below fail
-// against the unfixed behaviour instead of failing to compile. The fix deletes it.
-func guardLegacyUpgradeWorkspaceForInit(beadsDir string, _ bool) error {
-	return guardLegacyUpgradeWorkspace(beadsDir)
-}
-
 // TestLegacyUpgradeGuardForInitAdmitsEmptyDoltRoot pins the one thing init's own
 // intent unlocks. `bd init --server` resolves server mode from the flag, a source
 // the workspace does not record until init has written it. A retry over the empty
