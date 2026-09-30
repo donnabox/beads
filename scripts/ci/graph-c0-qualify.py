@@ -224,7 +224,7 @@ def verify_issue_authoring_capture(root, summary, binary_hash, network):
     resource = summary["scope"] + "beads/prereq"
     initial = {"design": "Initial design — 雪", "acceptance_criteria": "Ready\r\n",
                "assignee": "author", "estimated_minutes": 0, "external_ref": " tracker #1 ",
-               "spec_id": " spec ", "notes": " Initial\r\n雪 "}
+               "spec_id": " spec ", "notes": " Initial\r\n雪 ", "due_at": "2000-01-01T00:00:00Z"}
     require(proof["initialFields"] == initial and all(before["properties"].get(k) == v for k, v in initial.items()),
             "initial authoring fields/nullable zero/literal notes missing")
     require(not before["properties"].get("lease_expires_at"), "initial assignment unexpectedly claimed")
@@ -234,12 +234,13 @@ def verify_issue_authoring_capture(root, summary, binary_hash, network):
     require(seeded["properties"] == before["properties"] and seeded["revision"] == before["revision"],
             "initial CLI/BDP authoring records differ")
     expected = dict(before["properties"], design="Revised", acceptance_criteria="Accepted", estimated_minutes=45,
-                    external_ref="revised", spec_id="revised spec", notes=initial["notes"] + "\nProgress",
+                    external_ref="revised", spec_id="revised spec", due_at="2100-01-01T00:00:00Z", notes=initial["notes"] + "\nProgress",
                     updated_at=edited["properties"]["updated_at"])
     require(edited["properties"] == expected and edited["revision"] != before["revision"], "combined edit changed unrelated authoring properties")
     expected = dict(edited["properties"], estimated_minutes=0, updated_at=after["properties"]["updated_at"])
     expected.pop("external_ref")
     expected.pop("spec_id")
+    expected.pop("due_at")
     require(after["properties"] == expected and after["revision"] != edited["revision"], "nullable clear lost notes or unrelated fields")
     require(all(item["id"] == resource and item["type"] == before["type"] and item["ownedLinks"] == before["ownedLinks"] for item in (edited, after)),
             "authoring changed identity/type/ownership")
@@ -252,11 +253,11 @@ def verify_issue_authoring_capture(root, summary, binary_hash, network):
             "unchanged Python consumer lost final authored Issue")
     require(proof["noop"]["result"]["issue"] == proof["edit"]["result"]["issue"], "scalar noop changed Issue")
     binary = data("02-memory-create/receipt.json")["argv"][0]
-    edits = ["--estimate=45", "--external-ref=revised", "--spec-id=revised spec"]
+    edits = ["--estimate=45", "--external-ref=revised", "--spec-id=revised spec", "--due=2100-01-01T00:00:00Z"]
     for name, key, flags, predecessor, changed, record in (
         ("edit", "edit", edits + ["--design=Revised", "--acceptance=Accepted", "--append-notes=Progress"], before, True, edited),
         ("noop", "noop", edits, edited, False, edited),
-        ("clear", "clear", ["--estimate=0", "--external-ref=", "--spec-id="], edited, True, after),
+        ("clear", "clear", ["--estimate=0", "--external-ref=", "--spec-id=", "--due="], edited, True, after),
     ):
         prefix = "client-cli-issue-authoring-" + name
         receipt, mutation = data(prefix + ".json"), data(prefix + ".stdout.log")
@@ -561,6 +562,12 @@ class Qualification:
             self.tests("./internal/configfile", "^TestGraphMode", (self.root / "internal/configfile").glob("graph_mode_test.go"), "config")
             self.tests("./internal/storage/issueops", "^TestResolve(CustomConfigStrict|InfraTypesStrict|ConfigLegacy)",
                        (self.root / "internal/storage/issueops").glob("config_strict_test.go"), "query-config")
+            self.tests("./internal/storage/issueops", "^TestPrepareIssueForInsertNormalizesOptionalTimestampsToUTC$",
+                       (self.root / "internal/storage/issueops").glob("prepare_timestamps_utc_test.go"), "utc-issueops")
+            self.tests("./internal/storage/domain/db", "^TestNormalizeIssueTimestampsConvertsOptionalTimestampsToUTC$",
+                       (self.root / "internal/storage/domain/db").glob("normalize_timestamps_utc_test.go"), "utc-db")
+            self.tests("./internal/types", "^TestNormalizeOptionalTimestampsToUTCCoversEveryPointerTimestamp$",
+                       (self.root / "internal/types").glob("types_test.go"), "utc-types")
             self.tests("./cmd/bd", "^Test(GraphModeCLI|GraphPreview)", (self.root / "cmd/bd").glob("graph*test.go"), "cli",
                        ("TestGraphPreviewIssueAuthoringWorkflow/embedded", "TestGraphPreviewIssueAuthoringWorkflow/server",
                         "TestGraphPreviewIssueAppendWorkflow/embedded", "TestGraphPreviewIssueAppendWorkflow/server",

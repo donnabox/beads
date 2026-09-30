@@ -261,7 +261,7 @@ def main():
             fields = [] if path == "beads/work" else [
                 "--design", "Initial design — 雪", "--acceptance", "Ready\r\n",
                 "--assignee", "author", "--estimate=0", "--external-ref", " tracker #1 ",
-                "--spec-id", " spec ", "--notes", " Initial\r\n雪 "]
+                "--spec-id", " spec ", "--notes", " Initial\r\n雪 ", "--due=2000-01-01T00:00:00Z"]
             records[path] = c0.envelope(capture.success("issue-create", ["create", "Deployment task", "--id", path, *fields, "--json"]))
         related = scope + "types/preview-related-v2"
         capture.success("memory-issue-link", ["link", "beads/plan", "beads/work", "--resource-type", related,
