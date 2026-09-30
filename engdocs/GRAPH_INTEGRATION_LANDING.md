@@ -1,3 +1,11 @@
+## September29,20:08PDT landed checkpoint
+
+Original sourcePR54 due-date work (685ef6c92e0d894a95e1f8e7c868b09d75c54355) is reconciled and landed through [destinationPR55](https://github.com/versioned-beads/beads/pull/55), actual merge **6169292749209074fb7fc8597469de84548c1c9a**. Jim integration and Donna jim-integration mirror agree after ordinary fast-forward. The complete current upstream5771 contribution at6ed9cd7de003 retains Ben Younes/Claude attribution; original contributor and source PRs/branches remain intact.
+
+All current checks and complete required403/macOS158/PRCore158/nativeBazel eight-shard evidence passed before merge. Ready documentation jobs at exact22053 passed, superseding historical draft skips. Actual merge parents9ac+22053 and complete tree48d733 match original tested synthetic6bdd9856. Evidence retains tested-versus-landed identities. No additional post-merge push-CI result is claimed.
+
+Capability destinationPR57/35f74 remains pending its own complete current-source qualification. Source59-head preservation JSON unchanged. Steph templatePR43 and Jim scenarioPR56 are available for a bounded read-only integration assessment, not implicitly merged or declared tested. Existing source44/45 decisions and later full Memory/History/Write remain held/open.
+
 ## September29,19:42PDT qualification checkpoint
 
 Due destinationPR55 remains22053baac015b89097f695ad28c9c091e28b8826. Complete local403 and hosted Linux403, PR Core158 eligible graph roots/137 other packages and native Bazel eight-shard evidence independently pass. Hosted tested6bdd985607b9a6198c880401a87439eaeda6253b has actual9ac/22053 parents and identical22053 tree. macOS was the sole running gate at19:36; no due merge is claimed. A root invocation initially selected the graph archive outer directory and correctly refused missing summary; unchanged verifier passed with the actual complete graph-c0-evidence directory. Both logs remain preserved.
