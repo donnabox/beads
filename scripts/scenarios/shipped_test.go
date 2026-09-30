@@ -3,6 +3,7 @@ package main
 import (
 	"os"
 	"path/filepath"
+	"regexp"
 	"strings"
 	"testing"
 )
@@ -167,13 +168,19 @@ func TestShippedR2NoSilentOverwrite(t *testing.T) {
 
 func TestPackageDoesNotEmbedOrListScenarios(t *testing.T) {
 	skipUnderBazel(t)
+	// Only the package's own sources matter, and only the real directive: this
+	// test file and the docs legitimately mention go:embed in prose.
+	directive := regexp.MustCompile(`(?m)^\s*//go:embed\b`)
 	sources, _ := filepath.Glob("*.go")
 	for _, f := range sources {
+		if strings.HasSuffix(f, "_test.go") {
+			continue
+		}
 		data, err := os.ReadFile(f)
 		if err != nil {
 			t.Fatal(err)
 		}
-		if strings.Contains(string(data), "go:"+"embed") {
+		if directive.Match(data) {
 			t.Errorf("%s uses go:embed: gazelle would then list every scenario in BUILD.bazel", f)
 		}
 	}
