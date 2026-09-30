@@ -47,11 +47,12 @@ type claudeTranscriptEntry struct {
 }
 
 var claudeHookCmd = &cobra.Command{
-	Use:         "claude-hook <event>",
-	Hidden:      true,
-	Short:       "Run an internal Claude Code lifecycle hook",
-	Args:        cobra.ExactArgs(1),
-	Annotations: map[string]string{skipStoreAnnotation: "1"},
+	Use:          "claude-hook <event>",
+	Hidden:       true,
+	Short:        "Run an internal Claude Code lifecycle hook",
+	Args:         cobra.ExactArgs(1),
+	SilenceUsage: true,
+	Annotations:  map[string]string{skipStoreAnnotation: "1"},
 	RunE: func(cmd *cobra.Command, args []string) error {
 		return runClaudeHook(cmd.Context(), args[0], os.Stdin, os.Stdout)
 	},
@@ -114,6 +115,15 @@ func claudeTranscriptToolUseSince(path string, offset int64) (int64, bool, error
 	}
 	if offset > info.Size() {
 		offset = 0
+	}
+	if offset > 0 {
+		prev := make([]byte, 1)
+		if _, err := file.ReadAt(prev, offset-1); err != nil {
+			return 0, false, fmt.Errorf("%w: %w", errClaudeTranscriptUnreadable, err)
+		}
+		if prev[0] != '\n' {
+			offset = 0
+		}
 	}
 	if _, err := file.Seek(offset, io.SeekStart); err != nil {
 		return 0, false, fmt.Errorf("%w: %w", errClaudeTranscriptUnreadable, err)

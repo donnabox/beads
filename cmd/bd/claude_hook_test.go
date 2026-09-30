@@ -200,6 +200,24 @@ func TestClaudeHookStopRescansAfterTranscriptShrinks(t *testing.T) {
 	assertBlocksWithReminder(t, f.mustStop(false))
 }
 
+func TestClaudeHookStopRescansWhenTranscriptReplacedByLargerFile(t *testing.T) {
+	f := newClaudeStopFixture(t)
+	f.append(userLine("hi"), assistantTextLine("hello"))
+	assertAllowsStop(t, f.mustStop(false))
+
+	if err := os.WriteFile(f.transcript, nil, 0o600); err != nil {
+		t.Fatalf("truncate: %v", err)
+	}
+	f.append(userLine(strings.Repeat("y", 7)), assistantToolLine("Edit"), assistantTextLine(strings.Repeat("z", 4096)))
+	assertBlocksWithReminder(t, f.mustStop(false))
+}
+
+func TestClaudeHookCommandSilencesUsageOnError(t *testing.T) {
+	if !claudeHookCmd.SilenceUsage {
+		t.Fatal("claude-hook errors reach Claude Code as hook output; a usage dump buries the error")
+	}
+}
+
 func TestClaudeHookStopSessionsDoNotShareState(t *testing.T) {
 	f := newClaudeStopFixture(t)
 	f.append(userLine("fix it"), assistantToolLine("Edit"))
