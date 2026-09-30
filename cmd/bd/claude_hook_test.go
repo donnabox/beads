@@ -16,6 +16,7 @@ const claudeHookMeasuredReminder = "Before you finish: if this session produced 
 type claudeStopFixture struct {
 	t          *testing.T
 	transcript string
+	workspace  string
 }
 
 func newClaudeStopFixture(t *testing.T) *claudeStopFixture {
@@ -24,11 +25,25 @@ func newClaudeStopFixture(t *testing.T) *claudeStopFixture {
 	orig := claudeHookMarkerDirOverride
 	claudeHookMarkerDirOverride = filepath.Join(dir, "markers")
 	t.Cleanup(func() { claudeHookMarkerDirOverride = orig })
+	workspace := filepath.Join(dir, "repo")
+	if err := os.MkdirAll(filepath.Join(workspace, ".beads"), 0o700); err != nil {
+		t.Fatalf("create workspace: %v", err)
+	}
+	if err := os.WriteFile(filepath.Join(workspace, ".beads", "metadata.json"), []byte("{}\n"), 0o600); err != nil {
+		t.Fatalf("create workspace metadata: %v", err)
+	}
+	if err := os.MkdirAll(filepath.Join(workspace, "subdir"), 0o700); err != nil {
+		t.Fatalf("create workspace subdir: %v", err)
+	}
 	transcript := filepath.Join(dir, "session.jsonl")
 	if err := os.WriteFile(transcript, nil, 0o600); err != nil {
 		t.Fatalf("create transcript: %v", err)
 	}
-	return &claudeStopFixture{t: t, transcript: transcript}
+	return &claudeStopFixture{t: t, transcript: transcript, workspace: workspace}
+}
+
+func (f *claudeStopFixture) markerPath() string {
+	return agentHookMarkerPath(claudeHookMarkerBaseDir(), "s1", f.transcript)
 }
 
 func (f *claudeStopFixture) append(lines ...string) {
@@ -47,7 +62,7 @@ func (f *claudeStopFixture) append(lines ...string) {
 
 func (f *claudeStopFixture) stop(active bool) (string, error) {
 	f.t.Helper()
-	return f.stopIn("/repo", active)
+	return f.stopIn(f.workspace, active)
 }
 
 func (f *claudeStopFixture) stopIn(cwd string, active bool) (string, error) {
@@ -246,7 +261,7 @@ func TestClaudeHookStopSessionsDoNotShareState(t *testing.T) {
 	f.append(userLine("fix it"), assistantToolLine("Edit"))
 	assertBlocksWithReminder(t, f.mustStop(false))
 
-	input := fmt.Sprintf(`{"session_id":"s2","transcript_path":%q,"cwd":"/repo","hook_event_name":"Stop"}`, f.transcript)
+	input := fmt.Sprintf(`{"session_id":"s2","transcript_path":%q,"cwd":%q,"hook_event_name":"Stop"}`, f.transcript, f.workspace)
 	var out bytes.Buffer
 	if err := runClaudeHook(context.Background(), "stop", strings.NewReader(input), &out); err != nil {
 		t.Fatalf("runClaudeHook: %v", err)
@@ -305,7 +320,7 @@ func TestClaudeHookStopSurvivesDirectoryChange(t *testing.T) {
 	assertBlocksWithReminder(t, f.mustStop(false))
 
 	f.append(userLine("thanks"), assistantTextLine("welcome"))
-	out, err := f.stopIn("/repo/subdir", false)
+	out, err := f.stopIn(filepath.Join(f.workspace, "subdir"), false)
 	if err != nil {
 		t.Fatalf("runClaudeHook: %v", err)
 	}
@@ -356,4 +371,59 @@ func TestClaudeHookStopScansBlankAndCRLFLines(t *testing.T) {
 	f := newClaudeStopFixture(t)
 	f.append(userLine("hi"), "", assistantTextLine("hello")+"\r", assistantToolLine("Bash")+"\r", assistantToolLine("Edit"))
 	assertBlocksWithReminder(t, f.mustStop(false))
+}
+
+func TestClaudeHookStopSilentOutsideBeadsWorkspace(t *testing.T) {
+	f := newClaudeStopFixture(t)
+	f.append(userLine("fix it"), assistantToolLine("Edit"))
+	out, err := f.stopIn(t.TempDir(), false)
+	if err != nil {
+		t.Fatalf("runClaudeHook: %v", err)
+	}
+	assertAllowsStop(t, out)
+	if _, err := os.Stat(f.markerPath()); !os.IsNotExist(err) {
+		t.Fatalf("expected no marker outside a beads workspace, stat err = %v", err)
+	}
+}
+
+func TestClaudeHookStopRescansWhenTranscriptRewrittenInPlace(t *testing.T) {
+	f := newClaudeStopFixture(t)
+	f.append(userLine("hi"), assistantTextLine("hello"))
+	assertBlocksWithReminder(t, f.mustStop(false))
+	assertAllowsStop(t, f.mustStop(true))
+
+	info, err := os.Stat(f.transcript)
+	if err != nil {
+		t.Fatalf("stat transcript: %v", err)
+	}
+	oldSize := int(info.Size())
+	tool := assistantToolLine("Edit") + "\n"
+	pad := oldSize - len(tool) - 1
+	if pad < len(userLine("")) {
+		pad = len(userLine(""))
+	}
+	filler := userLine(strings.Repeat("p", pad-len(userLine(""))))
+	rewritten := tool + filler + "\n"
+	if len(rewritten) < oldSize || rewritten[oldSize-1] != '\n' {
+		t.Fatalf("fixture must keep a newline at the old offset %d (len %d)", oldSize, len(rewritten))
+	}
+	if err := os.WriteFile(f.transcript, []byte(rewritten), 0o600); err != nil {
+		t.Fatalf("rewrite transcript: %v", err)
+	}
+	assertBlocksWithReminder(t, f.mustStop(false))
+}
+
+func TestClaudeHookStopAcceptsLegacyOffsetOnlyMarker(t *testing.T) {
+	f := newClaudeStopFixture(t)
+	f.append(userLine("hi"), assistantTextLine("hello"))
+	marker := f.markerPath()
+	if err := os.MkdirAll(filepath.Dir(marker), 0o700); err != nil {
+		t.Fatalf("mkdir: %v", err)
+	}
+	if err := os.WriteFile(marker, []byte("123\n"), 0o600); err != nil {
+		t.Fatalf("write marker: %v", err)
+	}
+	if _, err := f.stop(false); err != nil {
+		t.Fatalf("legacy offset-only marker must not be reported as corrupt: %v", err)
+	}
 }
