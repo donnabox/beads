@@ -751,6 +751,16 @@ jobs:
           GOCACHE: ${{ runner.temp }}/go-cache/race
         run: make ci-pr-core
 
+      - name: Upload PR core grouped test evidence
+        if: always()
+        timeout-minutes: 5
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
+        with:
+          name: pr-core-go-test-${{ github.sha }}
+          path: artifacts/pr-core-go-test
+          retention-days: 7
+          if-no-files-found: warn
+
   pr-lint-wrapper:
     name: PR Lint (wrapper timing)
     runs-on: ubuntu-latest

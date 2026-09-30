@@ -51,7 +51,8 @@ database. Different-database provisioning on Dolt 2.1.8 must be serialized.
 | `delete BEAD` | Read-only preview of deleting one unreferenced Memory. `--force` applies and requires `--if-revision TOKEN` or `--unconditional`. A preview needs no guard but checks any supplied guard. |
 | `forget BEAD` | Apply the same unreferenced Memory deletion immediately, with `--if-revision TOKEN` or `--unconditional`. |
 | `create TITLE --id beads/PATH` | Create an Issue. Allows `--title`, inline `--description`/`--body`/`--message`, `--type`, `--priority`, `--labels`/`--label`. Existing classification rules apply. Initial status is open. Ordinary creator identity and git-email Owner defaults are included in the Issue data. |
-| `update BEAD` with Issue text flags | Inline `--title`, `--description`/`--body`/`--message`, `--design`, `--acceptance` only. Requires `--if-revision TOKEN` or `--unconditional`. Description aliases must agree. Files/stdin and other Issue fields are unavailable. |
+| `update BEAD` with Issue scalar flags | Inline `--title`, `--description`/`--body`/`--message`, `--design`, `--acceptance`, `--priority` and non-claim `--assignee`. Requires `--if-revision TOKEN` or `--unconditional`. Description aliases must agree. Files/stdin and other Issue fields are unavailable. |
+| `update BEAD --claim` | Atomically claim one Issue for the current actor using the native writer. Standalone `--claim=true` only; no other edits or revision/force guard. Repeating the same actor is a no-op and does not renew its five-minute lease. |
 | `show RESOURCE` | Current Memory, Issue or Link; optional `--version TOKEN` selects an exact retained record. No chronological History option. |
 | `compare RESOURCE --from TOKEN --to TOKEN` | Compare two complete retained preview versions of one Memory, Issue or Link. Explicit tokens determine direction, not chronology. |
 | `link SOURCE TARGET --resource-type TYPE` | Use an exact installed Link Type URL. Informational Links permit `--id links/PATH`, `--properties JSON` and source guards. Memory sources own informational Links; Issue sources do not. |
@@ -63,7 +64,7 @@ database. Different-database provisioning on Dolt 2.1.8 must be serialized.
 | `close BEAD` | Close one Issue through the existing Issue policy, optionally with ordinary reason aliases. No force or batch operations. |
 | `reopen BEAD` | Reopen one Issue, optionally with `--reason`. |
 | `ready` | Unfiltered current ready Issues through ordinary readiness rules. No list filters, output limit or configured positive `BEADS_MAX_ROWS`. |
-| `list --flat` or `list --format records-json` | Current complete Issue records with status/type/title/priority/label/pinned filters and explicit limited-page `hasMore`. Tree and legacy JSON remain unavailable. |
+| `list --flat` or `list --format records-json` | Current complete Issue records with status/type/title/priority/assignee/label/pinned filters and explicit limited-page `hasMore`. Tree and legacy JSON remain unavailable. |
 | `blocked` | Complete native dependency-blocked Issue view with canonical blocker IDs. No filters or positive `BEADS_MAX_ROWS`. |
 | `graph BEAD --view generic` | Current local summary traversal with `--direction in\|out\|both`, `--depth`, `--max-nodes` and `--max-links`. |
 | `status --graph` | Report only the capabilities and bounds admitted by this checkpoint. |
@@ -284,7 +285,7 @@ bd graph beads/plan --view generic --direction out --depth 2 --json
 
 Issue listing reuses the existing native query, configuration and limit policy.
 It accepts status (or state), type, title/title-contains, priority and priority
-range, label/label-any/exclude-label and pinned/no-pinned filters. Sorting accepts
+range, assignee/no-assignee, label/label-any/exclude-label and pinned/no-pinned filters. Sorting accepts
 priority, created, updated, title, status or type; reverse is supported. Explicit
 limit wins over `--all` and configured limits. The result contains complete
 canonical Issue records in `items` and a truthful `hasMore` boolean. It is a new
@@ -293,9 +294,9 @@ the extra probe record are validated before trimming the page.
 
 Use explicit `--flat` for quoted human summaries or `--format records-json` for
 the experimental graph envelope. Bare tree, `--json`, `--format json`, watch,
-readiness, parent/ID/routing/offset selectors, repeated status/state/type filters
-and supplied-empty labels refuse. Assignee/unassigned and due/overdue filters
-also remain unavailable: positive graph fixtures depend on later writer slices.
+readiness, parent/ID/routing/offset selectors, repeated status/state/type/assignee filters
+and supplied-empty labels refuse. Due/overdue filters remain unavailable: positive
+graph fixtures depend on a later writer slice.
 This does not change ordinary list parsing or implement contributor-owned filter
 unions. Records-json selects structured errors and overrides ambient human
 format selection; explicit `--json` still refuses. BDP Read remains the documented
@@ -337,9 +338,65 @@ snapshot. Corrupt deleted allocations still refuse, including an invalid retaine
 head or an inconsistent current payload/Link. No new tombstone representation,
 public History surface or external traversal contract is introduced.
 
+## Priority and assignment
+
+```sh
+bd show beads/work --json
+bd update beads/work --priority P0 --assignee alice --if-revision OBSERVED_REVISION --json
+bd list --assignee alice --format records-json --all
+bd update beads/work --assignee= --if-revision NEW_REVISION --json
+bd list --no-assignee --format records-json --all
+```
+
+Use the opaque revision from the preceding `show` or accepted mutation. The
+revision covers the Issue and its owned blocking Dependencies. Priority uses
+ordinary P0–P4 meanings; omission preserves it, and zero explicitly sets P0.
+Assignment preserves the literal value, including whitespace; an explicit empty
+value clears it. Text, priority and assignment can be combined in one guarded
+operation and one retained version. A matching same-value edit is a no-op;
+a stale revision still refuses, even if every requested value is already current.
+
+Assignment does not claim work, start a lease or change status. The ordinary
+active-holder fence still applies to guarded and unconditional transfers. An
+authorized transfer or clear removes the prior lease; unrelated edits preserve
+it. Clearing an in-progress assignment does not reopen the Issue. Graph claim is
+available only in the standalone form below; heartbeat and reclaim remain unavailable. Changes made through an external lease
+writer have no supported graph-preview repair path.
+
+Assignee listing reuses native SQL comparison/collation, not actor identity
+normalization. `--no-assignee` includes native empty/NULL assignments. An empty
+`--assignee=` supplies no assignee restriction; combining a nonempty assignee
+with `--no-assignee` intersects the filters and returns no matches. Listing does
+not modify state or claim work. Its output remains the experimental CLI envelope;
+BDP HTTP Read is the script interface and exposes the current Issue properties.
+
+## Standalone Issue claim
+
+```sh
+bd update beads/work --claim --actor alice --json
+```
+
+The native claim writer decides eligibility, including configured active statuses
+and literal claim-pool aliases. A successful claim sets the assignee and
+`in_progress` status, preserves an existing start time, and records one native
+version and one complete graph version. It does not require the Issue to be ready.
+A foreign holder or non-claimable status is refused without mutation.
+
+The native lease lasts five minutes. Repeating the claim as the same actor
+(including equivalent actor spelling) is a no-op, including the lease timestamps.
+This preview does not provide heartbeat, renewal, reclaim, unclaim or lease repair.
+An external writer that changes the lease bypasses the saved graph projection;
+current graph reads and writes then refuse that mismatch. Previously retained
+snapshots remain readable. Do not use external lease commands on these preview
+Issues expecting the graph to repair them.
+
+`--claim=false`, combined claim plus scalar/property edits, revision guards and
+unconditional/force claim flags are refused. A lost commit reply reports an
+unknown outcome; callers must inspect rather than automatically retry the write.
+
 ## Limits and remaining work
 
-Linked Memory deletion, Issue deletion, claims, assignment edits and filters,
+Linked Memory deletion and Issue deletion,
 estimate/reference/date edits and due filters, notes changes, label mutation,
 and full Memory remain unavailable. Issue creation can set initial
 labels; that does not adopt a label-editing contract. These restrictions apply

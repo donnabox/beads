@@ -29,6 +29,13 @@ type graphDeleteRaceReceipt struct {
 // Do not accept infrastructure failures as a losing mutation.
 func graphDeleteRacePair(t *testing.T, bd, work, home string, args [2][]string) [2]graphDeleteRaceReceipt {
 	t.Helper()
+	return graphMutationRacePair(t, bd, work, home, args, map[string]int{"revision_conflict": 4, "gone": 3, "deletion_policy_unresolved": 5})
+}
+
+// Each caller supplies only its admitted domain refusals. Keep deletion's
+// established outcomes unchanged when exercising another installed mutation.
+func graphMutationRacePair(t *testing.T, bd, work, home string, args [2][]string, allowedRefusals map[string]int) [2]graphDeleteRaceReceipt {
+	t.Helper()
 	ctx, cancel := context.WithTimeout(t.Context(), 90*time.Second)
 	defer cancel()
 	var commands [2]*exec.Cmd
@@ -106,7 +113,7 @@ func graphDeleteRacePair(t *testing.T, bd, work, home string, args [2][]string) 
 		if decodeErr := json.Unmarshal(stderr[i].Bytes(), &diagnostic); decodeErr != nil || diagnostic.Retryable == nil || *diagnostic.Retryable || diagnostic.Message == "" {
 			t.Fatalf("race did not return a complete non-retryable refusal: %v stderr=%s", decodeErr, stderr[i].String())
 		}
-		expectedExit := map[string]int{"revision_conflict": 4, "gone": 3, "deletion_policy_unresolved": 5}[diagnostic.Code]
+		expectedExit := allowedRefusals[diagnostic.Code]
 		if expectedExit == 0 || exit.ExitCode() != expectedExit {
 			t.Fatalf("race failed outside admitted mutation outcomes: exit=%d stderr=%s", exit.ExitCode(), stderr[i].String())
 		}
