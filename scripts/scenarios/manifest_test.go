@@ -148,7 +148,31 @@ func TestLoadScenariosDuplicateIDs(t *testing.T) {
 	writeFile(t, dir, "S1.json", baseScenario)
 	writeFile(t, dir, "s1.json", strings.Replace(baseScenario, `"id": "S1"`, `"id": "s1"`, 1))
 	_, err := loadScenarios(dir)
+	entries, rerr := os.ReadDir(dir)
+	if rerr != nil {
+		t.Fatal(rerr)
+	}
+	if len(entries) == 1 {
+		// A case-insensitive filesystem (macOS APFS, Windows) folded the second
+		// write into the first: there is one file, S1.json, and its body now says
+		// "s1". No pair of files exists to collide, so the duplicate cannot be built
+		// here (the next test builds it another way); the loader must still fail
+		// closed on what is left.
+		wantManifestError(t, err, "must equal the file stem")
+		return
+	}
 	wantManifestError(t, err, "duplicate")
+}
+
+// The duplicate check compares ids, not file names, so it needs no two files whose
+// names differ only by case. This is the same check on a fixture every filesystem
+// can hold: the second id is a case-variant of the first, in a file of another name.
+func TestLoadScenariosDuplicateIDsDifferingOnlyByCase(t *testing.T) {
+	dir := t.TempDir()
+	writeFile(t, dir, "S1.json", baseScenario)
+	writeFile(t, dir, "other.json", strings.Replace(baseScenario, `"id": "S1"`, `"id": "s1"`, 1))
+	_, err := loadScenarios(dir)
+	wantManifestError(t, err, "duplicate scenario id")
 }
 
 func TestLoadScenariosManifestErrors(t *testing.T) {

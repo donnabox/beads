@@ -483,6 +483,38 @@ func TestRunStepsRunInTheWorkspaceAndRootIsMasked(t *testing.T) {
 	}
 }
 
+// A temp dir that is itself a symlink (macOS: /var -> /private/var) gives the
+// workspace root two spellings. The driver hands the child paths in the spelling
+// it was given (HOME and the XDG dirs); a child that asks the kernel where it is
+// gets the resolved one (cwd). Both must become <WS>, or two workspaces stop being
+// byte-comparable on any host whose temp dir is a symlink.
+func TestRunMasksBothSpellingsOfTheRootWhenTheTempDirIsASymlink(t *testing.T) {
+	link, real := symlinkedDir(t)
+	t.Setenv("TMPDIR", link)
+	bd := installFakeBD(t, fakeConfig{})
+	body := scenarioJSON("W2", "pass", "",
+		`{"name":"where","argv":["cwd"],"expect":[{"op":"exit","equals":0}]}`,
+		`{"name":"env","argv":["echo-env"],"expect":[{"op":"exit","equals":0}]}`)
+	r := runDriver(t, bd, scenarioDir(t, map[string]string{"W2.json": body}))
+	if r.code != 0 {
+		t.Fatalf("exit = %d\n%s", r.code, r.stderr)
+	}
+	for _, ws := range []string{"A", "B"} {
+		if got := readFileString(t, r.out, "transcripts", "W2", ws, "01-where", "stdout"); got != "<WS>/work\n" {
+			t.Errorf("workspace %s: cwd (the resolved spelling) normalized to %q, want <WS>/work", ws, got)
+		}
+		env := readFileString(t, r.out, "transcripts", "W2", ws, "02-env", "stdout")
+		if !strings.Contains(env, "HOME=<WS>/home\n") {
+			t.Errorf("workspace %s: HOME (the spelling the driver was given) not masked:\n%s", ws, env)
+		}
+		for _, spelling := range []string{link, real} {
+			if strings.Contains(env, spelling) {
+				t.Errorf("workspace %s: %s survived normalization:\n%s", ws, spelling, env)
+			}
+		}
+	}
+}
+
 func TestRunKeepWorkspaces(t *testing.T) {
 	bd := installFakeBD(t, fakeConfig{})
 	dir := scenarioDir(t, map[string]string{"P1.json": passScenario("P1")})

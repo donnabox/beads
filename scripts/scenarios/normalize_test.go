@@ -122,12 +122,30 @@ func TestNormalizeDropsCommit(t *testing.T) {
 	}
 }
 
-func TestNormalizeWorkspaceRoot(t *testing.T) {
-	real := t.TempDir()
-	link := filepath.Join(t.TempDir(), "link")
+// symlinkedDir makes a directory reachable by two spellings, the way macOS's temp
+// dir is (/var is a symlink to /private/var): link is a symlink to real, and real
+// is fully resolved. The base is resolved first because t.TempDir() is not resolved
+// on every host, and a path built from an unresolved base has a third, half-resolved
+// spelling. Nothing prints one, so the normalizer is not asked to mask it.
+func symlinkedDir(t *testing.T) (link, real string) {
+	t.Helper()
+	base, err := filepath.EvalSymlinks(t.TempDir())
+	if err != nil {
+		t.Fatal(err)
+	}
+	real = filepath.Join(base, "real")
+	link = filepath.Join(base, "link")
+	if err := os.Mkdir(real, 0o700); err != nil {
+		t.Fatal(err)
+	}
 	if err := os.Symlink(real, link); err != nil {
 		t.Skipf("symlinks unavailable: %v", err)
 	}
+	return link, real
+}
+
+func TestNormalizeWorkspaceRoot(t *testing.T) {
+	link, real := symlinkedDir(t)
 	n := newNormalizer(link)
 	out := n.normalize(stepOf("s", []string{"cwd", link + "/work/x"}, 0,
 		`{"path":"`+real+`/work/y"}`, real+"/home is not writable\n"), nil)
