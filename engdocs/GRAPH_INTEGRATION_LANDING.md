@@ -1,3 +1,7 @@
+## September 29, 22:27 PDT dependent guidance publication
+
+Destination [PR59](https://github.com/versioned-beads/beads/pull/59) is a draft at51625242e404b7c8911ed48a2ed1ca8e305ab21a. It preserves the separately attributed exact Steph PR43 contribution and depends on pending capability26dee. Current build/lint/eight real-engine installed scenarios pass; baseline and complete hosted qualification remain pending. No contributor PR or new integration increment was merged. Capability26dee now passes115-package44.1% local baseline. The original59-head manifest and all prior source dispositions are unchanged.
+
 ## September29,21:56PDT target reconciliation
 
 Jim integration and our ordinary fast-forward mirror now contain actual upstream-sync58 commitabe9c4f67. Capability57 is reconciled at26dee0c90 and requires fresh combined-source qualification; its old35f74 gates/artifacts all passed but have a different complete tree. Guidance adapter51625242 explicitly depends on26dee and the contributor-owned openPR43; it is preserved, reviewed, and not yet qualified or landed. All59 original source dispositions remain intact. No source branch deletion, forced update, protected/main merge or held graph-label adoption occurred.
