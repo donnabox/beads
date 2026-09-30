@@ -269,6 +269,9 @@ func TestGraphPreviewC0DeferredCommandsRefuseBeforeLegacyOpen(t *testing.T) {
 	created := graphPolicyCLI(t, bd, work, home, nil, "", "remember", "C0 body", "--id", "beads/plan", "--title", "Plan", "--json")
 	for _, args := range [][]string{
 		{"create", "Must refuse", "--estimate=3", "--due=tomorrow", "--defer=tomorrow", "--json"}, {"update", "beads/plan", "--title", "Must refuse", "--priority=1", "--unconditional", "--json"},
+		// Native upstream label operations must not enter the graph writer.
+		{"label", "rename", "old", "new", "--json"}, {"label", "rename", "old", "new", "--dry-run", "--json"},
+		{"update", "beads/plan", "-l", "new", "--unconditional", "--json"},
 		{"memories", "--json"}, {"recall", "beads/plan", "--json"},
 		{"list", "--json"}, {"ready", "--limit=1", "--json"}, {"close", "beads/plan", "--force", "--json"},
 		{"link", "beads/plan", "beads/other", "--type=related", "--json"}, {"serve", "--json"},
@@ -298,6 +301,7 @@ func TestGraphPreviewC0DeferredCommandsRefuseBeforeLegacyOpen(t *testing.T) {
 	for _, capability := range []string{
 		"memoryCreate", "memoryRead", "memoryBodyFileInput", "memoryBodyStdinInput", "memoryPropertiesUpdate",
 		"memorySelectedUpdate", "memorySelectedUpdateUnconditional", "memoryOverwriteDisclosure", "memoryUnreferencedDelete", "issueCreate", "issueCreateAuthorship",
+		"issueCreateFields", "issueInitialNotes", "issueNotesAppend", "issueEstimateUpdate", "issueReferenceUpdate",
 		"issueClaim", "issueTextUpdate", "issuePriorityUpdate", "issueAssigneeUpdate", "issueAssigneeFilter", "issueDueDate", "issueDueFilter", "informationalLink", "blockingDependency", "linkPropertiesUpdate", "linkUnlink", "blockingDependencyUnlink",
 		"incidentLinks", "ownedLinks", "issueClose", "issueReopen", "issueReady", "genericRead",
 		"issueList", "issueBlocked", "genericTraversal",
