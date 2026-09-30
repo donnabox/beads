@@ -4,14 +4,17 @@ import (
 	"context"
 	"fmt"
 	"strings"
+	"time"
 	"unicode/utf8"
 
 	"github.com/spf13/cobra"
 	"github.com/steveyegge/beads/internal/storage/graphstore"
 	"github.com/steveyegge/beads/internal/types"
+	"github.com/steveyegge/beads/internal/validation"
+	publicops "github.com/steveyegge/beads/issueops"
 )
 
-var graphPreviewIssueEditFlags = []string{"title", "description", "body", "message", "design", "acceptance"}
+var graphPreviewIssueEditFlags = []string{"title", "description", "body", "message", "design", "acceptance", "priority", "assignee", "append-notes", "estimate", "external-ref", "spec-id", "due"}
 
 func graphPreviewIssueEditFlagsChanged(cmd *cobra.Command) bool {
 	for _, name := range graphPreviewIssueEditFlags {
@@ -39,6 +42,44 @@ func graphPreviewIssueEditRequest(cmd *cobra.Command, path string) (graphstore.U
 		return request, err
 	}
 	request.ExpectedRevision, request.Unconditional = revision, unconditional
+	if cmd.Flags().Changed("due") {
+		value, err := graphPreviewIssueDueInput(cmd)
+		if err != nil {
+			return request, err
+		}
+		request.DueAt = publicops.Field[*time.Time]{Set: true, Value: value}
+	}
+
+	if cmd.Flags().Changed("priority") {
+		value, _ := cmd.Flags().GetString("priority")
+		priority, err := validation.ValidatePriority(value)
+		if err != nil {
+			return request, graphFailure("invalid_properties", err.Error(), 2)
+		}
+		request.Priority = &priority
+	}
+	if cmd.Flags().Changed("estimate") {
+		value, err := cmd.Flags().GetInt("estimate")
+		if err != nil {
+			return request, graphFailure("invalid_properties", err.Error(), 2)
+		}
+		if err := types.ValidateIssueEstimatedMinutes(&value); err != nil {
+			return request, graphFailure("invalid_properties", err.Error(), 2)
+		}
+		request.EstimatedMinutes = &value
+	}
+	if cmd.Flags().Changed("assignee") {
+		value, _ := cmd.Flags().GetString("assignee")
+		if !utf8.ValidString(value) {
+			return request, graphFailure("invalid_properties", "Issue assignee must be valid UTF-8", 2)
+		}
+		if err := types.CheckFieldLen("assignee", value); err != nil {
+			return request, graphFailure("invalid_properties", err.Error(), 2)
+		}
+		// Preserve the existing update's literal value. A graph revision guard
+		// does not grant permission to take another actor's active assignment.
+		request.Assignee = &value
+	}
 
 	fields := []struct {
 		name string
@@ -48,6 +89,8 @@ func graphPreviewIssueEditRequest(cmd *cobra.Command, path string) (graphstore.U
 		{"body", &request.Description}, {"message", &request.Description},
 		{"design", &request.Design},
 		{"acceptance", &request.AcceptanceCriteria},
+		{"append-notes", &request.AppendNotes},
+		{"external-ref", &request.ExternalRef}, {"spec-id", &request.SpecID},
 	}
 	for _, field := range fields {
 		if !cmd.Flags().Changed(field.name) {

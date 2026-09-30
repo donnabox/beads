@@ -160,6 +160,12 @@ func (s *Store) showMemoryInTx(ctx context.Context, tx *sql.Tx, path string) (Re
 	if err != nil {
 		return Record{}, err
 	}
+	if state == "deleted" {
+		if _, err := s.deletedMemoryInTx(ctx, tx, path); err != nil {
+			return Record{}, err
+		}
+		return Record{}, ErrGone
+	}
 	if kind != "bead" || typ != MemoryTypeURL(s.options.Binding.ScopeURL) || !authorityID.MatchString(revision) || state != "live" || backing != "generic" {
 		return Record{}, fmt.Errorf("%w: unsupported or corrupt allocation", ErrInvalidStore)
 	}

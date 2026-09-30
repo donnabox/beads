@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"fmt"
+	"unicode/utf8"
 
 	"github.com/spf13/cobra"
 	graph "github.com/steveyegge/beads/graphops"
@@ -21,7 +22,7 @@ func runGraphPreviewCreateIssue(cmd *cobra.Command, args []string) error {
 	if err := graphPreviewWritePolicy(); err != nil {
 		return err
 	}
-	if err := graphPreviewFlags(cmd, "id", "title", "description", "body", "message", "type", "priority", "labels", "label"); err != nil {
+	if err := graphPreviewFlags(cmd, "id", "title", "description", "body", "message", "type", "priority", "labels", "label", "design", "acceptance", "assignee", "estimate", "external-ref", "spec-id", "notes", "due"); err != nil {
 		return err
 	}
 	path, _ := cmd.Flags().GetString("id")
@@ -70,6 +71,9 @@ func runGraphPreviewCreateIssue(cmd *cobra.Command, args []string) error {
 		Title: title, Description: description, Status: types.StatusOpen,
 		Priority: priority, IssueType: issueType, Labels: utils.NormalizeLabels(append(labels, aliasLabels...)),
 	}}
+	if err := graphPreviewIssueCreateFields(cmd, request.Issue); err != nil {
+		return err
+	}
 	return withGraphStore(func(ctx context.Context, store *graphstore.Store) (any, string, error) {
 		record, err := store.CreateIssue(ctx, path, request)
 		if err != nil {
@@ -77,4 +81,50 @@ func runGraphPreviewCreateIssue(cmd *cobra.Command, args []string) error {
 		}
 		return record, fmt.Sprintf("Created %s\n", path), nil
 	})
+}
+
+// Initial assignment is an open Issue property, not a claim. Keep optional
+// estimate presence and the ordinary CLI's empty-external-reference convention.
+func graphPreviewIssueCreateFields(cmd *cobra.Command, issue *types.Issue) error {
+	for _, field := range []struct {
+		name string
+		dest *string
+	}{
+		{"design", &issue.Design}, {"acceptance", &issue.AcceptanceCriteria}, {"notes", &issue.Notes},
+		{"assignee", &issue.Assignee}, {"spec-id", &issue.SpecID},
+	} {
+		value, _ := cmd.Flags().GetString(field.name)
+		if !utf8.ValidString(value) {
+			return graphFailure("invalid_properties", "Issue "+field.name+" must be valid UTF-8", 2)
+		}
+		*field.dest = value
+	}
+	if err := types.CheckFieldLen("assignee", issue.Assignee); err != nil {
+		return graphFailure("invalid_properties", err.Error(), 2)
+	}
+	external, _ := cmd.Flags().GetString("external-ref")
+	if !utf8.ValidString(external) {
+		return graphFailure("invalid_properties", "Issue external-ref must be valid UTF-8", 2)
+	}
+	if external != "" {
+		issue.ExternalRef = &external
+	}
+	if cmd.Flags().Changed("estimate") {
+		value, err := cmd.Flags().GetInt("estimate")
+		if err != nil {
+			return graphFailure("invalid_properties", err.Error(), 2)
+		}
+		if err := types.ValidateIssueEstimatedMinutes(&value); err != nil {
+			return graphFailure("invalid_properties", err.Error(), 2)
+		}
+		issue.EstimatedMinutes = &value
+	}
+	if cmd.Flags().Changed("due") {
+		due, err := graphPreviewIssueDueInput(cmd)
+		if err != nil {
+			return err
+		}
+		issue.DueAt = due
+	}
+	return nil
 }

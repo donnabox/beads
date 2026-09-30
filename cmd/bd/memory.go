@@ -361,12 +361,30 @@ var memoriesCmd = &cobra.Command{
 Examples:
   bd memories              # list all memories
   bd memories dolt         # search for memories about dolt
-  bd memories "race flag"  # search for a phrase`,
+  bd memories "race flag"  # search for a phrase
+
+Graph preview workspaces search title/body and show compact summaries.
+Default queries must match at most 50 Memories; narrow the query or use --all
+for complete bounded summaries. --details adds owned-Link counts, never neighboring bodies.
+Use --format records-json for experimental summaries, then recall a selected
+canonical ID with --version TOKEN. Keys, pagination and full Memory JSON are
+unavailable. Reads admit at most 1000 live Resources and 16 MiB per workspace;
+output is capped at 1 MiB, search at 4096 UTF-8 bytes, excerpts at 160 code points.
+A matching body of at most 160 code points appears verbatim in its excerpt.`,
 	GroupID:       "setup",
 	Args:          cobra.MaximumNArgs(1),
 	SilenceUsage:  true,
 	SilenceErrors: true,
 	RunE: func(cmd *cobra.Command, args []string) error {
+		if graphPreviewActive {
+			return runGraphPreviewMemories(cmd, args)
+		}
+		// The local summary format shadows the root JSON alias. Preserve the
+		// ordinary alias after workspace configuration has been applied.
+		format, _ := cmd.Flags().GetString("format")
+		if strings.EqualFold(format, "json") {
+			jsonOutput = true
+		}
 		evt := metrics.NewCommandEvent("memories")
 		defer func() {
 			if c := metrics.Global(); c != nil {
@@ -410,12 +428,20 @@ Use 'bd memories' to see available keys.
 
 Examples:
   bd forget dolt-phantoms
-  bd forget auth-jwt`,
+  bd forget auth-jwt
+
+In a graph-mode link workspace, forget immediately deletes one unreferenced
+Memory selected by canonical Bead ID, with --if-revision TOKEN or --unconditional.
+Its identity and prior snapshots remain retained; live incident Links refuse.
+Use delete without --force for a read-only graph deletion preview.`,
 	GroupID:       "setup",
 	Args:          cobra.ExactArgs(1),
 	SilenceUsage:  true,
 	SilenceErrors: true,
 	RunE: func(cmd *cobra.Command, args []string) error {
+		if graphPreviewActive {
+			return runGraphPreviewDeleteMemory(cmd, args, true)
+		}
 		CheckReadonly("forget")
 
 		evt := metrics.NewCommandEvent("forget")
@@ -453,12 +479,20 @@ var recallCmd = &cobra.Command{
 
 Examples:
   bd recall dolt-phantoms
-  bd recall auth-jwt`,
+  bd recall auth-jwt
+
+In graph preview workspaces, select one canonical Memory ID or Scope URL.
+Recall streams the exact body with no framing or added newline, including empty
+content. --version TOKEN selects a retained body; --quiet does not suppress it.
+Graph recall --json is unavailable; show --json returns the experimental record.`,
 	GroupID:       "setup",
 	Args:          cobra.ExactArgs(1),
 	SilenceUsage:  true,
 	SilenceErrors: true,
 	RunE: func(cmd *cobra.Command, args []string) error {
+		if graphPreviewActive {
+			return runGraphPreviewRecall(cmd, args)
+		}
 		evt := metrics.NewCommandEvent("recall")
 		defer func() {
 			if c := metrics.Global(); c != nil {

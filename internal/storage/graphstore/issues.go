@@ -31,18 +31,11 @@ func validateIssueCreate(request publicops.CreateRequest) error {
 	// CloneCreateRequest materializes empty relation slices. Their lengths
 	// were checked above; preserve that empty representation without admitting
 	// any dependency or comment values into this bounded adapter.
-	allowed := &types.Issue{ID: i.ID, Title: i.Title, Description: i.Description, Owner: i.Owner, CreatedBy: i.CreatedBy, IssueType: i.IssueType, Status: i.Status, Priority: i.Priority, Labels: i.Labels, Dependencies: i.Dependencies, Comments: i.Comments}
+	allowed := &types.Issue{ID: i.ID, Title: i.Title, Description: i.Description, Notes: i.Notes, Owner: i.Owner, CreatedBy: i.CreatedBy, Design: i.Design, AcceptanceCriteria: i.AcceptanceCriteria, Assignee: i.Assignee, EstimatedMinutes: i.EstimatedMinutes, ExternalRef: i.ExternalRef, SpecID: i.SpecID, IssueType: i.IssueType, Status: i.Status, Priority: i.Priority, DueAt: i.DueAt, Labels: i.Labels, Dependencies: i.Dependencies, Comments: i.Comments}
 	if !reflect.DeepEqual(i, allowed) {
-		return fmt.Errorf("%w: Issue preview accepts only ID, title, description, owner, creator, classification, status, priority and initial labels; no relationships, metadata, ephemeral or no-history records", storage.ErrValidation)
+		return fmt.Errorf("%w: Issue preview accepts only ID, title, description, design, acceptance, initial notes, owner, creator, assignee, estimate, external/spec references, classification, status, priority, due date and labels; no relationships, metadata, ephemeral or no-history records", storage.ErrValidation)
 	}
-	if !utf8.ValidString(i.Owner) || !utf8.ValidString(i.CreatedBy) {
-		return fmt.Errorf("%w: Issue owner and creator must be UTF-8", storage.ErrValidation)
-	}
-	// Creator may differ from the separately validated operation actor.
-	if err := types.CheckFieldLen("created_by", i.CreatedBy); err != nil {
-		return fmt.Errorf("%w: Issue creator: %w", storage.ErrValidation, err)
-	}
-	return nil
+	return validateIssueCreateFields(i)
 }
 
 // CreateIssue applies the existing Issue domain create and Jim Wordelman's
@@ -56,6 +49,11 @@ func (s *Store) CreateIssue(ctx context.Context, path string, request publicops.
 	if err := validateIssueCreate(request); err != nil {
 		return IssueRecord{}, err
 	}
+	due, err := normalizeIssueDue(request.Issue.DueAt)
+	if err != nil {
+		return IssueRecord{}, err
+	}
+	request.Issue.DueAt = due
 	revision, err := freshToken()
 	if err != nil {
 		return IssueRecord{}, err
@@ -88,7 +86,7 @@ func (s *Store) CreateIssue(ctx context.Context, path string, request publicops.
 		// ExecuteCreate already owns the initial retained snapshot. Verify its
 		// hydrated values before publishing the graph mapping; a coercion rolls
 		// back that snapshot and all ordinary create effects in this transaction.
-		if request.Issue.Owner != created.Issue.Owner || request.Issue.CreatedBy != created.Issue.CreatedBy {
+		if !sameIssueCreateFields(request.Issue, created.Issue) {
 			return fmt.Errorf("%w: Issue initial fields cannot be represented exactly by storage", storage.ErrValidation)
 		}
 		if issueops.IsWisp(created.Issue) {
@@ -116,6 +114,13 @@ func (s *Store) CreateIssue(ctx context.Context, path string, request publicops.
 		}
 		if err := s.afterStage("retained"); err != nil {
 			return err
+		}
+		// Initial notes have no admitted replacement/clear inverse. Charge the
+		// completed mapping and native retained head before committing.
+		if request.Issue.Notes != "" {
+			if err := checkCurrentReadBytes(ctx, tx); err != nil {
+				return err
+			}
 		}
 		result, err = s.showIssueInTx(ctx, tx, path)
 		return err

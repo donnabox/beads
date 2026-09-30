@@ -1,8 +1,9 @@
 #!/usr/bin/env python3
-"""Required graph proof: real engines, source-matched CLI, no optional test skips.
+"""Required graph/BDP Read proof: real engines, exact CLI and public clients.
 
 Includes the C0 captures and every discovered graph test, including the mixed
-Issue/Memory/Link installed workflow. This is not full Memory or BDP proof.
+Issue/Memory/Link installed workflow, HTTP security and authenticated independent
+Node/Python BDP reads. This is not full Memory, History or HTTP Write proof.
 The caller supplies the ordinary released Dolt binary and CI Build Artifacts.
 All databases and process groups belong to this run; no existing server is used.
 """
@@ -15,7 +16,10 @@ import re
 import signal
 import socket
 import subprocess
+import sys
 import time
+
+OWNER_CLEANUP_GRACE = 30
 
 
 def require(condition, message):
@@ -62,6 +66,267 @@ def verify_tests(events, expected):
     return len(roots)
 
 
+def partition_required_tests(names, groups):
+    require(names and len(names) == len(set(names)), "empty or duplicate required test roots")
+    require(type(groups) is int and 1 < groups <= len(names), "required groups must be nonempty")
+    ordered = sorted(names)
+    selections = [ordered[index::groups] for index in range(groups)]
+    union = [name for group in selections for name in group]
+    require(len(union) == len(set(union)) and set(union) == set(names), "incomplete required test partition")
+    return selections
+
+
+def cleanup_registered_groups(path):
+    """Fallback for an interrupted/failed owner, including dead group leaders."""
+    active = set()
+    if path is not None and path.exists():
+        for line in path.read_text().splitlines():
+            event = json.loads(line)
+            require(type(event.get("pid")) is int and event["pid"] > 1, "invalid owned process identity")
+            require(event.get("action") in ("start", "end"), "invalid process registry event")
+            if event["action"] == "start":
+                active.add(event["pid"])
+            else:
+                active.discard(event["pid"])
+    forced = []
+    for pid in active:
+        try:
+            os.killpg(pid, signal.SIGTERM)
+        except ProcessLookupError:
+            pass
+    for pid in active:
+        if not group_exited(pid, timeout=5):
+            forced.append(pid)
+            try:
+                os.killpg(pid, signal.SIGKILL)
+            except ProcessLookupError:
+                pass
+        require(group_exited(pid, timeout=5), f"owned process group survived cleanup: {pid}")
+    return dict(registeredGroups=len(active), forcedGroups=forced, groupsGone=True)
+
+
+def verify_clean_receipt(receipt, listener=False):
+    require(receipt.get("exit_code") == 0 and receipt.get("failure") is None
+            and receipt.get("forced") is False and receipt.get("group_gone") is True,
+            "HTTP capture process did not finish cleanly")
+    if listener:
+        require(receipt.get("port_closed") is True, "HTTP listener remained open")
+
+
+def verify_http_capture(root, binary_hash):
+    summary = json.loads((root / "summary.json").read_text())
+    require(summary.get("passed") is True and summary.get("failure") is None
+            and summary.get("active_children") == 0 and summary.get("cli_commands") == 16,
+            "incomplete installed HTTP capture")
+    require(summary.get("client_pin") == "53bdbd03136875f952af184fce7b3c7af8f74e96"
+            and summary.get("installed_binary_sha256") == binary_hash, "HTTP source/binary provenance mismatch")
+    require(summary.get("python") == {"passed": True, "beads": 4, "limit": 1,
+            "authenticated": True, "mechanism": "unchanged standard-library example over BDP HTTP"},
+            "Python BDP consumer proof missing")
+    require(summary.get("python_pages") == 4, "Python continuation observations missing")
+    processes = list(root.glob("*/receipt.json"))
+    require(len(processes) == 21, "missing seed/delete/serve/client/Python process receipt")
+    for path in processes:
+        receipt = json.loads(path.read_text())
+        verify_clean_receipt(receipt, listener=path.parent.name == "serve")
+        for stream in ("stdout", "stderr"):
+            require(digest(path.parent / (stream + ".log")) == receipt[stream + "_sha256"],
+                    "HTTP process output hash differs")
+    client = json.loads((root / "client-results.json").read_text())
+    require(client.get("passed") is True and client.get("failure") is None
+            and len(client.get("checks", [])) == 13, "incomplete public-client checks")
+    network = json.loads((root / "client-network.json").read_text())
+    require(network and client["requests"] == len(network), "HTTP network receipts incomplete")
+    for observation in network:
+        require(observation["url"].startswith(summary["scope"])
+                and re.fullmatch(r"[0-9a-f]{64}", observation["bodySha256"]), "invalid HTTP observation")
+    verify_issue_append_capture(root, summary, binary_hash, network)
+    verify_issue_authoring_capture(root, summary, binary_hash, network)
+    verify_memory_deletion_capture(root, summary)
+
+
+def verify_issue_append_capture(root, summary, binary_hash, network):
+    """Keep the real writer receipts, public records and raw HTTP observations linked."""
+    def data(relative):
+        return json.loads((root / relative).read_text())
+    artifacts = data("client-artifacts.json")
+    notes = artifacts["issueNotes"]
+    scope, actor = summary["scope"], "bdp-read-note-holder"
+    work_id = scope + "beads/work"
+    before, claimed, after = notes["before"], notes["claimed"], notes["after"]
+    require(before == artifacts["issueEdit"]["after"], "append preimage lost preceding Issue-edit proof")
+    require(all(item["id"] == work_id and item["type"] == before["type"] for item in (claimed, after)),
+            "append changed canonical Issue identity/Type")
+    expected_claim = dict(before["properties"])
+    for key in ("status", "assignee", "started_at", "updated_at", "lease_expires_at", "heartbeat_at", "lease_granted_node"):
+        if key in claimed["properties"]:
+            expected_claim[key] = claimed["properties"][key]
+        else:
+            expected_claim.pop(key, None)
+    require(claimed["properties"] == expected_claim and claimed["properties"]["status"] == "in_progress"
+            and claimed["properties"]["assignee"] == actor and claimed["properties"].get("notes", "") == ""
+            and claimed["revision"] != before["revision"], "incomplete installed claim precondition")
+    require(notes["noopRecord"] == claimed and notes["noopMutation"]["result"]["changed"] is False
+            and notes["noopMutation"]["result"]["issue"] == notes["claimMutation"]["result"]["issue"],
+            "empty append was not a complete semantic no-op")
+    text = "  Progress — 雪\r\nsecond line\t  "
+    require(notes["appendText"] == text and after["properties"] == dict(claimed["properties"],
+            notes=text, updated_at=after["properties"]["updated_at"]), "appended properties/lease changed or bytes lost")
+    require(after["revision"] != claimed["revision"] and after["attribution"]["principal"] == actor
+            and after["ownedLinks"] == claimed["ownedLinks"] == before["ownedLinks"], "append ownership/revision proof missing")
+    require(notes["properties"] == after["properties"] and notes["inventory"]["next"] is None
+            and len(notes["inventory"]["items"]) == 4
+            and [item for item in notes["inventory"]["items"] if item["id"] == work_id] == [after]
+            and notes["incident"] == artifacts["issueEdit"]["incidentAfter"], "append BDP views disagree")
+    require(notes["etagBefore"] and notes["etagAfter"] and notes["etagBefore"] != notes["etagAfter"],
+            "append did not change ETag")
+    binary = data("02-memory-create/receipt.json")["argv"][0]
+    commands = (
+        ("client-cli-issue-claim", "claimMutation", ["update", work_id, "--claim", "--actor", actor, "--json"], True, claimed),
+        ("client-cli-issue-append-noop", "noopMutation", ["update", work_id, "--append-notes=", "--if-revision", claimed["revision"], "--actor", actor, "--json"], False, claimed),
+        ("client-cli-issue-append", "appendMutation", ["update", work_id, "--append-notes", text, "--if-revision", claimed["revision"], "--actor", actor, "--json"], True, after),
+    )
+    for name, key, args, changed, record in commands:
+        receipt, mutation = data(name + ".json"), data(name + ".stdout.log")
+        require(receipt["argv"] == [binary, *args] and receipt["binarySha256"] == binary_hash
+                and receipt["exitCode"] == 0 and receipt["signal"] is None, "append CLI source/exit/guard differs")
+        for stream in ("stdout", "stderr"):
+            require(digest(root / (name + "." + stream + ".log")) == receipt[stream + "Sha256"],
+                    "append CLI output hash differs")
+        require(mutation == notes[key] and mutation["schemaVersion"] == 1 and mutation["preview"] is True
+                and mutation["result"]["changed"] is changed and mutation["result"]["issue"]["id"] == work_id
+                and mutation["result"]["issue"]["revision"] == record["revision"], "append CLI/public record mismatch")
+    for label, index_key, status, etag, record in (
+        ("before", "claimNetworkIndex", 200, notes["etagBefore"], claimed),
+        ("noop", "noopNetworkIndex", 304, notes["etagBefore"], None),
+        ("after", "appendNetworkIndex", 200, notes["etagAfter"], after),
+    ):
+        index = notes[index_key]
+        require(type(index) is int and 0 <= index < len(network), "append HTTP observation index missing")
+        observation = network[index]
+        body = root / ("client-issue-notes-" + label + ".body")
+        require(observation["url"] == work_id and observation["method"] == "GET" and observation["status"] == status
+                and observation["headers"].get("etag") == etag and observation["bodyBytes"] == body.stat().st_size
+                and observation["bodySha256"] == digest(body), "append HTTP status/ETag/raw bytes disagree")
+        require((body.read_bytes() == b"") if record is None else json.loads(body.read_bytes()) == record,
+                "append raw HTTP body differs from public record")
+    require(notes["claimNetworkIndex"] < notes["noopNetworkIndex"] < notes["appendNetworkIndex"],
+            "append HTTP observations are not ordered")
+
+
+
+def verify_issue_authoring_capture(root, summary, binary_hash, network):
+    """Independently connect initial CLI fields, guarded edits and BDP observations."""
+    def data(name):
+        return json.loads((root / name).read_text())
+    proof = data("client-artifacts.json")["issueAuthoring"]
+    before, edited, after = (proof[key] for key in ("before", "edited", "after"))
+    resource = summary["scope"] + "beads/prereq"
+    initial = {"design": "Initial design — 雪", "acceptance_criteria": "Ready\r\n",
+               "assignee": "author", "estimated_minutes": 0, "external_ref": " tracker #1 ",
+               "spec_id": " spec ", "notes": " Initial\r\n雪 ", "due_at": "2000-01-01T00:00:00Z"}
+    require(proof["initialFields"] == initial and all(before["properties"].get(k) == v for k, v in initial.items()),
+            "initial authoring fields/nullable zero/literal notes missing")
+    require(not before["properties"].get("lease_expires_at"), "initial assignment unexpectedly claimed")
+    seed = [path for path in root.glob("*-issue-create/stdout.log") if data(str(path.relative_to(root)))["result"]["id"] == resource]
+    require(len(seed) == 1, "missing unique initial authoring CLI seed")
+    seeded = json.loads(seed[0].read_text())["result"]
+    require(seeded["properties"] == before["properties"] and seeded["revision"] == before["revision"],
+            "initial CLI/BDP authoring records differ")
+    expected = dict(before["properties"], design="Revised", acceptance_criteria="Accepted", estimated_minutes=45,
+                    external_ref="revised", spec_id="revised spec", due_at="2100-01-01T00:00:00Z", notes=initial["notes"] + "\nProgress",
+                    updated_at=edited["properties"]["updated_at"])
+    require(edited["properties"] == expected and edited["revision"] != before["revision"], "combined edit changed unrelated authoring properties")
+    expected = dict(edited["properties"], estimated_minutes=0, updated_at=after["properties"]["updated_at"])
+    expected.pop("external_ref")
+    expected.pop("spec_id")
+    expected.pop("due_at")
+    require(after["properties"] == expected and after["revision"] != edited["revision"], "nullable clear lost notes or unrelated fields")
+    require(all(item["id"] == resource and item["type"] == before["type"] and item["ownedLinks"] == before["ownedLinks"] for item in (edited, after)),
+            "authoring changed identity/type/ownership")
+    actor = "bdp-read-author"
+    require(all(item["attribution"]["principal"] == actor for item in (edited, after)), "authoring attribution missing")
+    require(proof["properties"] == after["properties"] and proof["inventory"]["next"] is None
+            and len(proof["inventory"]["items"]) == 4
+            and [item for item in proof["inventory"]["items"] if item["id"] == resource] == [after], "authoring BDP current/properties/inventory disagree")
+    require([item for item in data("python-after-delete/stdout.log") if item["id"] == resource] == [after],
+            "unchanged Python consumer lost final authored Issue")
+    require(proof["noop"]["result"]["issue"] == proof["edit"]["result"]["issue"], "scalar noop changed Issue")
+    binary = data("02-memory-create/receipt.json")["argv"][0]
+    edits = ["--estimate=45", "--external-ref=revised", "--spec-id=revised spec", "--due=2100-01-01T00:00:00Z"]
+    for name, key, flags, predecessor, changed, record in (
+        ("edit", "edit", edits + ["--design=Revised", "--acceptance=Accepted", "--append-notes=Progress"], before, True, edited),
+        ("noop", "noop", edits, edited, False, edited),
+        ("clear", "clear", ["--estimate=0", "--external-ref=", "--spec-id=", "--due="], edited, True, after),
+    ):
+        prefix = "client-cli-issue-authoring-" + name
+        receipt, mutation = data(prefix + ".json"), data(prefix + ".stdout.log")
+        require(receipt["argv"] == [binary, "update", resource, *flags, "--if-revision", predecessor["revision"], "--actor", actor, "--json"]
+                and receipt["binarySha256"] == binary_hash and receipt["exitCode"] == 0 and receipt["signal"] is None,
+                "authoring installed command provenance/guard/exit differs")
+        for stream in ("stdout", "stderr"):
+            require(digest(root / (prefix + "." + stream + ".log")) == receipt[stream + "Sha256"], "authoring output hash differs")
+        require(mutation == proof[key] and mutation["schemaVersion"] == 1 and mutation["preview"] is True
+                and mutation["result"]["changed"] is changed and mutation["result"]["issue"]["id"] == resource
+                and mutation["result"]["issue"]["revision"] == record["revision"]
+                and mutation["result"]["issue"]["properties"] == record["properties"], "authoring CLI/BDP mismatch")
+    require(proof["beforeETag"] and proof["editedETag"] and proof["beforeETag"] != proof["editedETag"], "authoring edit ETag unchanged")
+    for label, index_key, status, etag, record in (
+        ("before", "beforeIndex", 200, proof["beforeETag"], before),
+        ("edited", "editedIndex", 200, proof["editedETag"], edited),
+        ("noop", "noopIndex", 304, proof["editedETag"], None),
+    ):
+        index = proof[index_key]
+        require(type(index) is int and 0 <= index < len(network), "authoring HTTP index missing")
+        observation = network[index]
+        body = root / ("client-issue-authoring-" + label + ".body")
+        require(observation["url"] == resource and observation["method"] == "GET" and observation["status"] == status
+                and observation["headers"].get("etag") == etag and observation["bodyBytes"] == body.stat().st_size
+                and observation["bodySha256"] == digest(body), "authoring HTTP status/ETag/body receipt differs")
+        require(body.read_bytes() == b"" if record is None else json.loads(body.read_bytes()) == record, "authoring raw body differs")
+    require(proof["beforeIndex"] < proof["editedIndex"] < proof["noopIndex"], "authoring HTTP observations unordered")
+
+
+def verify_memory_deletion_capture(root, summary):
+    """Check the new proof without overwriting any pre-deletion evidence."""
+    def data(relative):
+        return json.loads((root / relative).read_text())
+    alpha = data("02-memory-create/stdout.log")["result"]
+    scope = summary["scope"]
+    require(alpha["id"] == scope + "beads/alpha", "wrong deletion fixture identity")
+    deletion = data("16-memory-delete/stdout.log")
+    require(deletion.get("preview") is True and deletion.get("schemaVersion") == 1
+            and deletion.get("result") == {"memory": alpha, "preview": False, "deleted": True},
+            "deletion did not retain/disclose exact final live state")
+    argv = data("16-memory-delete/receipt.json")["argv"]
+    require(argv == [data("02-memory-create/receipt.json")["argv"][0], "delete", "beads/alpha", "--force",
+                     "--if-revision", alpha["revision"], "--json"], "deletion did not use original observed guard")
+    require(summary.get("memory_delete") == {"passed": True, "id": alpha["id"], "final_live_revision": alpha["revision"]},
+            "Memory deletion summary missing")
+    require(summary.get("python_after_delete") == {"passed": True, "beads": 3, "limit": 1,
+            "authenticated": True, "mechanism": "unchanged standard-library example over BDP HTTP"}
+            and summary.get("python_after_delete_pages") == 3, "post-delete Python summary missing")
+    observations = data("python-after-delete-network.json")
+    require(len(observations) == 4 and observations[0]["url"] == scope + "bdp.json"
+            and observations[0]["document"]["scope"] == scope
+            and observations[0]["document"]["profile"] == "read", "post-delete discovery missing")
+    next_url, records = scope + "beads/?limit=1", []
+    for observation in observations:
+        require(observation["method"] == "GET" and observation["status"] == 200
+                and observation["url"].startswith(scope) and observation["body_bytes"] > 0
+                and re.fullmatch(r"[0-9a-f]{64}", observation["body_sha256"]), "invalid post-delete HTTP observation")
+    for observation in observations[1:]:
+        page = observation["document"]
+        require(observation["url"] == next_url and len(page["items"]) == 1,
+                "post-delete Python did not follow actual one-record next page")
+        records.extend(page["items"])
+        next_url = page["next"]
+    require(next_url is None and len(records) == 3 and {item["id"] for item in records} ==
+            {scope + "beads/" + name for name in ["plan", "work", "prereq"]}
+            and data("python-after-delete/stdout.log") == records,
+            "post-delete Python enumeration retained deleted state or omitted survivors")
+
+
 class Qualification:
     def __init__(self, args):
         self.root = Path(__file__).resolve().parents[2]
@@ -73,6 +338,9 @@ class Qualification:
         self.children = set()
         self.receipts = []
         self.counts = {}
+        self.client_checkout = Path(args.bdp_checkout).resolve()
+        self.client_manifest = Path(args.client_manifest).resolve()
+        self.node = Path(args.node).resolve()
         self.env = {k: os.environ[k] for k in (
             "PATH", "GOCACHE", "GOMODCACHE", "GOROOT", "DEVELOPER_DIR", "TMPDIR") if k in os.environ}
         home = self.output / "home"
@@ -82,12 +350,12 @@ class Qualification:
                 self.env[key] = subprocess.check_output(["go", "env", key], cwd=self.root, text=True).strip()
         self.env.update(HOME=str(home), XDG_CONFIG_HOME=str(home / ".config"),
                         GIT_CONFIG_NOSYSTEM="1", GIT_CONFIG_GLOBAL=str(home / "empty-gitconfig"),
-                        CGO_ENABLED="1", BD_DISABLE_METRICS="1", BD_DISABLE_EVENT_FLUSH="1",
+                        CGO_ENABLED="1", PYTHONDONTWRITEBYTECODE="1", BD_DISABLE_METRICS="1", BD_DISABLE_EVENT_FLUSH="1",
                         DOLT_METRICS_DISABLED="1", DOLT_DISABLE_EVENT_FLUSH="1",
                         BEADS_DOLT_AUTO_START="0", NO_COLOR="1",
                         BEADS_TEST_BD_BINARY=str(self.bd), BEADS_TEST_IGNORE_REPO_CONFIG="1")
 
-    def run(self, args, label, cwd=None, timeout=120, stdin=None, expected=0):
+    def run(self, args, label, cwd=None, timeout=120, stdin=None, expected=0, owned_groups=None):
         print(f"C0 {label}: {args}", flush=True)
         process = subprocess.Popen([str(a) for a in args], cwd=cwd or self.root,
                                    env=self.env, stdin=subprocess.PIPE, stdout=subprocess.PIPE,
@@ -95,11 +363,62 @@ class Qualification:
         self.children.add(process.pid)
         try:
             out, err = process.communicate(stdin, timeout=timeout)
-        except BaseException:
-            os.killpg(process.pid, signal.SIGKILL)
-            out, err = process.communicate()
+        except BaseException as original:
+            # The smoke process owns independent groups. Give its signal
+            # handler a bounded chance to drain them before killing the owner.
+            try:
+                process.send_signal(signal.SIGTERM)
+            except ProcessLookupError:
+                pass
+            forced_owner = False
+            cleanup_errors = []
+            out, err = b"", b""
+            nested = None
+            try:
+                out, err = process.communicate(timeout=OWNER_CLEANUP_GRACE)
+            except BaseException as drain_error:
+                forced_owner = True
+                if not isinstance(drain_error, subprocess.TimeoutExpired):
+                    cleanup_errors.append(f"owner drain: {drain_error!r}")
+                # Keep the owner alive while its children stop, so it can reap
+                # them. A registry failure must never leave the owner alive.
+                try:
+                    cleanup_registered_groups(owned_groups)
+                except BaseException as cleanup_error:
+                    cleanup_errors.append(f"nested before owner kill: {cleanup_error!r}")
+                finally:
+                    try:
+                        os.killpg(process.pid, signal.SIGKILL)
+                    except ProcessLookupError:
+                        pass
+                try:
+                    out, err = process.communicate(timeout=10)
+                except BaseException as reap_error:
+                    cleanup_errors.append(f"owner reap: {reap_error!r}")
+                    if isinstance(reap_error, subprocess.TimeoutExpired):
+                        out, err = reap_error.output or b"", reap_error.stderr or b""
+            if not group_exited(process.pid):
+                forced_owner = True
+                try:
+                    os.killpg(process.pid, signal.SIGKILL)
+                except ProcessLookupError:
+                    pass
+                if not group_exited(process.pid):
+                    cleanup_errors.append("owner process group survived forced cleanup")
+            # Retry after the owner has retired, even if the first registry
+            # pass failed. Preserve the triggering failure and every cleanup
+            # failure in the receipt instead of replacing the original error.
+            try:
+                nested = cleanup_registered_groups(owned_groups)
+            except BaseException as cleanup_error:
+                cleanup_errors.append(f"nested after owner retirement: {cleanup_error!r}")
             (self.output / f"{label}.stdout").write_bytes(out)
             (self.output / f"{label}.stderr").write_bytes(err)
+            self.receipts.append(dict(label=label, argv=[str(a) for a in args], pid=process.pid,
+                                      exit=process.returncode, failure=type(original).__name__,
+                                      forcedOwner=forced_owner, nestedCleanup=nested,
+                                      cleanupErrors=cleanup_errors,
+                                      stdoutSHA256=hashlib.sha256(out).hexdigest()))
             raise
         finally:
             self.children.discard(process.pid)
@@ -110,23 +429,72 @@ class Qualification:
             raise RuntimeError(f"{label} left a live process group after exit")
         self.receipts.append(dict(label=label, argv=[str(a) for a in args], pid=process.pid,
                                   exit=process.returncode, stdoutSHA256=hashlib.sha256(out).hexdigest()))
+        if owned_groups is not None:
+            nested = cleanup_registered_groups(owned_groups)
+            require(nested["registeredGroups"] == 0, "completed owner left nested groups registered")
         require(process.returncode == expected,
                 f"{label} exited {process.returncode}, expected {expected}; see saved stdout/stderr")
         return out
 
-    def tests(self, package, selector, files, label):
+    def tests(self, package, selector, files, label, required_subtests=(), groups=1):
         # Source discovery also sees accidentally build-excluded added tests.
-        expected = set()
+        source_names = []
         for path in files:
             names = re.findall(r"^func (Test\w+)\(t \*testing.T\)", path.read_text(), re.MULTILINE)
-            expected.update(name for name in names if re.search(selector, name))
+            source_names.extend(name for name in names if re.search(selector, name))
+        expected = set(source_names)
+        require(len(source_names) == len(expected), f"{label}: duplicate source test roots")
         listing = self.run(["go", "test", "-tags", "gms_pure_go", "-list", selector, package],
                            label + "-discovery", timeout=600).decode()
-        listed = set(re.findall(r"^Test\w+$", listing, re.MULTILINE))
+        compiled_names = re.findall(r"^Test\w+$", listing, re.MULTILINE)
+        listed = set(compiled_names)
+        require(len(compiled_names) == len(listed), f"{label}: duplicate compiled test roots")
         require(listed == expected and expected, f"{label}: source and compiled test discovery disagree")
-        out = self.run(["go", "test", "-tags", "gms_pure_go", "-json", "-count=1", "-p=1",
-                        "-parallel=1", "-timeout=15m", "-run", selector, package], label, timeout=960)
-        self.counts[label] = verify_tests([json.loads(line) for line in out.splitlines()], expected)
+        flags = ["go", "test", "-tags", "gms_pure_go", "-json", "-count=1", "-p=1",
+                 "-parallel=1", "-timeout=15m", "-run"]
+        if groups == 1:
+            out = self.run([*flags, selector, package], label, timeout=960)
+        else:
+            selections = partition_required_tests(source_names, groups)
+            plan = dict(package=package, selector=selector, sourceRoots=sorted(expected),
+                        compiledRoots=sorted(listed), complete=False, groups=[
+                            dict(label=f"{label}-group-{index}", roots=names,
+                                 selector="^(" + "|".join(names) + ")$", passed=False)
+                            for index, names in enumerate(selections, 1)])
+            aggregate = self.output / (label + ".stdout")
+            aggregate.write_bytes(b"")
+            aggregate_error = self.output / (label + ".stderr")
+            aggregate_error.write_bytes(b"")
+            try:
+                for group in plan["groups"]:
+                    group_label, names, selected = group["label"], group["roots"], group["selector"]
+                    (self.output / (label + "-groups.json")).write_text(json.dumps(plan, indent=2) + "\n")
+                    try:
+                        result = self.run([*flags, selected, package], group_label, timeout=960)
+                        verify_tests([json.loads(line) for line in result.splitlines()], set(names))
+                        group["passed"] = True
+                    finally:
+                        # Keep actual partial output even if the group fails or times out.
+                        for suffix, combined in (("stdout", aggregate), ("stderr", aggregate_error)):
+                            part = self.output / (group_label + "." + suffix)
+                            if part.exists():
+                                with combined.open("ab") as target:
+                                    target.write(part.read_bytes())
+                                group[suffix + "SHA256"] = digest(part)
+                executed = [name for group in plan["groups"] for name in group["roots"]]
+                require(len(executed) == len(set(executed)) and set(executed) == expected,
+                        f"{label}: grouped test union differs from complete discovery")
+                out = aggregate.read_bytes()
+                verify_tests([json.loads(line) for line in out.splitlines()], expected)
+                plan["complete"] = True
+            finally:
+                plan["stdoutSHA256"] = digest(aggregate)
+                plan["stderrSHA256"] = digest(aggregate_error)
+                (self.output / (label + "-groups.json")).write_text(json.dumps(plan, indent=2) + "\n")
+        events = [json.loads(line) for line in out.splitlines()]
+        self.counts[label] = verify_tests(events, expected)
+        completed = {e.get("Test") for e in events if e.get("Action") == "pass"}
+        require(set(required_subtests) <= completed, f"{label}: required engine proof absent")
 
     def cli(self, work, label, *args):
         return json.loads(self.run([self.bd, *args, "--json"], label, cwd=work))
@@ -189,11 +557,64 @@ class Qualification:
                     time.sleep(0.2)
             self.env["BEADS_GRAPH_TEST_SERVER_PORT"] = str(port)
             # Sequential package runs/provisioning; concurrency inside same-store tests remains exercised.
-            self.tests("./internal/storage/graphstore", "^Test", (self.root / "internal/storage/graphstore").glob("*_test.go"), "storage")
+            self.tests("./internal/graphpatch", "^Test", (self.root / "internal/graphpatch").glob("*_test.go"), "graphpatch")
+            self.tests("./internal/storage/graphstore", "^Test", (self.root / "internal/storage/graphstore").glob("*_test.go"), "storage", groups=4)
             self.tests("./internal/configfile", "^TestGraphMode", (self.root / "internal/configfile").glob("graph_mode_test.go"), "config")
-            self.tests("./cmd/bd", "^Test(GraphModeCLI|GraphPreview)", (self.root / "cmd/bd").glob("graph*test.go"), "cli")
+            self.tests("./internal/storage/issueops", "^TestResolve(CustomConfigStrict|InfraTypesStrict|ConfigLegacy)",
+                       (self.root / "internal/storage/issueops").glob("config_strict_test.go"), "query-config")
+            self.tests("./internal/storage/issueops", "^TestPrepareIssueForInsertNormalizesOptionalTimestampsToUTC$",
+                       (self.root / "internal/storage/issueops").glob("prepare_timestamps_utc_test.go"), "utc-issueops")
+            self.tests("./internal/storage/domain/db", "^TestNormalizeIssueTimestampsConvertsOptionalTimestampsToUTC$",
+                       (self.root / "internal/storage/domain/db").glob("normalize_timestamps_utc_test.go"), "utc-db")
+            self.tests("./internal/types", "^TestNormalizeOptionalTimestampsToUTCCoversEveryPointerTimestamp$",
+                       (self.root / "internal/types").glob("types_test.go"), "utc-types")
+            self.tests("./internal/templates/agents", "^TestGraphPreview",
+                       (self.root / "internal/templates/agents").glob("*_test.go"), "agent-template")
+            self.tests("./cmd/bd", "^Test(GraphModeCLI|GraphPreview)", (self.root / "cmd/bd").glob("graph*test.go"), "cli",
+                       ("TestGraphPreviewAgentInstructionsWorkflow/embedded/fresh",
+                        "TestGraphPreviewAgentInstructionsWorkflow/embedded/shared-file",
+                        "TestGraphPreviewAgentInstructionsWorkflow/embedded/skip-agents",
+                        "TestGraphPreviewAgentInstructionsWorkflow/embedded/full-profile-refusal",
+                        "TestGraphPreviewAgentInstructionsWorkflow/server/fresh",
+                        "TestGraphPreviewAgentInstructionsWorkflow/server/shared-file",
+                        "TestGraphPreviewAgentInstructionsWorkflow/server/skip-agents",
+                        "TestGraphPreviewAgentInstructionsWorkflow/server/full-profile-refusal",
+                        "TestGraphPreviewIssueAuthoringWorkflow/embedded", "TestGraphPreviewIssueAuthoringWorkflow/server",
+                        "TestGraphPreviewIssueAppendWorkflow/embedded", "TestGraphPreviewIssueAppendWorkflow/server",
+                        "TestGraphPreviewIssueClaimWorkflow/embedded", "TestGraphPreviewIssueClaimWorkflow/server",
+                        "TestGraphPreviewIssueAssignmentWorkflow/embedded", "TestGraphPreviewIssueAssignmentWorkflow/server",
+                        "TestGraphPreviewMixedCoreWorkflow/embedded", "TestGraphPreviewMixedCoreWorkflow/server",
+                        "TestGraphPreviewMemoryDeleteWorkflow/embedded", "TestGraphPreviewMemoryDeleteWorkflow/server",
+                        "TestGraphPreviewQueryWorkflow/embedded", "TestGraphPreviewQueryWorkflow/server",
+                        "TestGraphPreviewMemoryReadsWorkflow/embedded", "TestGraphPreviewMemoryReadsWorkflow/server",
+                        "TestGraphPreviewPropertiesPatchWorkflow/embedded", "TestGraphPreviewPropertiesPatchWorkflow/server"))
+            self.env["BDP_SPEC_AT_PIN"] = str(self.client_checkout / "docs/specs/bdp.md")
+            self.tests("./internal/httpapi/bdpwire", "^Test", (self.root / "internal/httpapi/bdpwire").glob("*_test.go"), "bdpwire")
+            self.tests("./internal/httpapi/graphread", "^Test", (self.root / "internal/httpapi/graphread").glob("*_test.go"), "graphread",
+                       ("TestAuthoritativeRecordsProjectToPublicWire/embedded", "TestAuthoritativeRecordsProjectToPublicWire/server"))
+            self.tests("./internal/httpapi", "^TestGraphRead", (self.root / "internal/httpapi").glob("graph_read*test.go"), "graph-http",
+                       ("TestGraphReadHTTPAuthorityAndSecurity/issue-priority-assignment",
+                        "TestGraphReadHTTPAuthorityAndSecurity/issue-append-notes",))
+            self.run([sys.executable, "-m", "unittest", "discover", "-s", "examples/bdp-read", "-p", "test_*.py"], "python-example-tests")
+            python_roots = sum(len(re.findall(r"^    def test_\w+\(", path.read_text(), re.MULTILINE))
+                               for path in (self.root / "examples/bdp-read").glob("test_*.py"))
+            python_result = (self.output / "python-example-tests.stderr").read_text()
+            require(python_roots > 0 and re.search(rf"Ran {python_roots} tests? in", python_result)
+                    and "skipped=" not in python_result, "Python example tests missing or skipped")
             self.capture("embedded", port)
             self.capture("server", port)
+            self.run([sys.executable, str(self.root / "scripts/graph-bdp-read-smoke.py"),
+                      "--bd", str(self.bd), "--server-port", str(port),
+                      "--bdp-checkout", str(self.client_checkout), "--client-manifest", str(self.client_manifest),
+                      "--node", str(self.node), "--output-dir", str(self.output / "http"),
+                      "--owned-groups", str(self.output / "http-owned-groups.jsonl")], "bdp-http-capture", timeout=360,
+                     owned_groups=self.output / "http-owned-groups.jsonl")
+            verify_http_capture(self.output / "http", digest(self.bd))
+            http_summary = json.loads((self.output / "http/summary.json").read_text())
+            for field, relative in [("harness_sha256", "scripts/graph-bdp-read-smoke.py"),
+                                    ("client_harness_sha256", "scripts/graph-bdp-read-client.mjs"),
+                                    ("python_example_sha256", "examples/bdp-read/read_beads.py")]:
+                require(http_summary[field] == digest(self.root / relative), "HTTP capture source changed")
             require(server.poll() is None, "server exited during qualification")
         finally:
             server.terminate()
@@ -223,12 +644,12 @@ class Qualification:
                     f"server cleanup failed: exit={code}, forced={forced}, groupGone={group_gone}, portClosed={port_closed}")
         require(not self.children, "owned child process remains")
         (self.output / "summary.json").write_text(json.dumps(dict(commit=head, passed=self.counts,
-            installedCLICommands=10, engines=["embedded", "server"], childrenRemaining=0), indent=2) + "\n")
+            installedCLICommands=10, engines=["embedded", "server"], childrenRemaining=0, bdpHTTP=True, pythonBDP=True), indent=2) + "\n")
 
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    for name in ("bd", "dolt", "artifacts", "output"):
+    for name in ("bd", "dolt", "artifacts", "output", "bdp-checkout", "client-manifest", "node"):
         parser.add_argument("--" + name, required=True)
     def interrupted(signum, _frame):
         raise RuntimeError(f"qualification interrupted by signal {signum}")

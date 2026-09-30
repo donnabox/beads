@@ -44,7 +44,7 @@ func TestGraphPreviewIssueCreateReopen(t *testing.T) {
 	graphPolicyCLI(t, bd, work, home, nil, "identity_reserved", "remember", "collision", "--id", "beads/work", "--title", "Memory", "--json")
 	graphPolicyCLI(t, bd, work, home, nil, "", "remember", "Coexisting Memory", "--id", "beads/plan", "--title", "Plan", "--json")
 	graphPolicyCLI(t, bd, work, home, nil, "identity_reserved", "create", "collision", "--id", "beads/plan", "--json")
-	for _, flag := range []string{"--ephemeral", "--no-history", "--deps=blocks:beads/plan", "--description=-", "--body-file=missing", "--stdin", "--design=Deferred", "--assignee=Deferred", "--notes=Deferred"} {
+	for _, flag := range []string{"--ephemeral", "--no-history", "--deps=blocks:beads/plan", "--description=-", "--body-file=missing", "--stdin", "--defer=tomorrow", "--status=closed"} {
 		graphPolicyCLI(t, bd, work, home, nil, "capability_unavailable", "create", "Unsupported", "--id", "beads/refused", flag, "--json")
 		graphPolicyCLI(t, bd, work, home, nil, "not_found", "show", "beads/refused", "--json")
 	}

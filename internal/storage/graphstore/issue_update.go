@@ -4,25 +4,44 @@ import (
 	"context"
 	"database/sql"
 	"fmt"
+	"time"
 	"unicode/utf8"
 
 	"github.com/steveyegge/beads/internal/storage"
 	"github.com/steveyegge/beads/internal/storage/issueops"
+	"github.com/steveyegge/beads/internal/types"
 	publicops "github.com/steveyegge/beads/issueops"
 )
 
-// UpdateIssueRequest admits title, description, design and acceptance criteria.
-// Notes editing is reserved for integration of the existing contributor
-// safeguards. A nil field leaves that property unchanged; an explicit empty
-// string clears it where the Issue domain permits. The guard addresses the complete graph revision, including
-// the Issue's owned blocking Dependencies, not its private storage ordinal.
+// UpdateIssueRequest admits existing Issue scalar edits and notes append.
+// Nil fields preserve their properties. Empty scalar strings clear fields where
+// the Issue domain permits; AppendNotes instead preserves native append semantics:
+// empty on empty is a no-op, while empty on nonempty appends one newline.
+// Notes replacement/clear remain reserved for contributor safeguard reconciliation.
+// EstimatedMinutes nil preserves the nullable estimate; zero sets a present zero.
+// Clearing to null is not admitted. The existing Issue validator and SQL column
+// retain their ordinary bounds; no scheduler or duration interpretation is added.
+// ExternalRef and SpecID preserve literal values; empty clears the external
+// reference to NULL and the spec ID to an empty string, as in ordinary update.
+// DueAt distinguishes omission from nullable clear. Present dates use the existing
+// whole-second storage representation before guarded no-op comparison.
+// Priority zero sets P0; nil preserves priority. The guard addresses the complete
+// graph revision, including owned blocking Dependencies, not the storage ordinal.
+// Assignee nil preserves its value; empty clears it. Neither the graph guard nor
+// Unconditional bypasses the ordinary active-assignment transfer fence.
 type UpdateIssueRequest struct {
 	Path, Actor, ExpectedRevision                  string
 	Unconditional                                  bool
 	Title, Description, Design, AcceptanceCriteria *string
+	Priority                                       *int
+	EstimatedMinutes                               *int
+	Assignee                                       *string
+	AppendNotes                                    *string
+	ExternalRef, SpecID                            *string
+	DueAt                                          publicops.Field[*time.Time]
 }
 
-// UpdateIssue delegates textual edits to the existing Issue domain writer and
+// UpdateIssue delegates admitted scalar edits to the existing Issue domain writer and
 // retained-version recorder. Payload, opaque graph revision and complete owned
 // state commit together; this adds no public History ordering or change context.
 func (s *Store) UpdateIssue(ctx context.Context, request UpdateIssueRequest) (IssueMutationResult, error) {
@@ -40,9 +59,11 @@ func (s *Store) UpdateIssue(ctx context.Context, request UpdateIssueRequest) (Is
 		dest  *publicops.Field[string]
 	}{
 		{"title", request.Title, &patch.Title},
+		{"assignee", request.Assignee, &patch.Assignee},
 		{"description", request.Description, &patch.Description},
 		{"design", request.Design, &patch.Design},
 		{"acceptance_criteria", request.AcceptanceCriteria, &patch.AcceptanceCriteria},
+		{"append_notes", request.AppendNotes, &patch.AppendNotes},
 	} {
 		if field.value == nil {
 			continue
@@ -53,8 +74,61 @@ func (s *Store) UpdateIssue(ctx context.Context, request UpdateIssueRequest) (Is
 		*field.dest = publicops.Field[string]{Set: true, Value: *field.value}
 		count++
 	}
+	if patch.Assignee.Set {
+		if err := types.CheckFieldLen("assignee", patch.Assignee.Value); err != nil {
+			return IssueMutationResult{}, fmt.Errorf("%w: Issue assignee: %w", storage.ErrValidation, err)
+		}
+	}
+	if request.Priority != nil {
+		patch.Priority = publicops.Field[int]{Set: true, Value: *request.Priority}
+		count++
+	}
+	if request.EstimatedMinutes != nil {
+		value := *request.EstimatedMinutes
+		// The existing Issue column is a signed SQL INT on both backends. Reject
+		// unrepresentable input before SQL so strict and coercing engines agree.
+		if err := validateIssueEstimateStorage(&value); err != nil {
+			return IssueMutationResult{}, err
+		}
+		patch.EstimatedMinutes = publicops.Field[*int]{Set: true, Value: &value}
+		count++
+	}
+	// These limits describe the existing VARCHAR columns, not reference syntax.
+	// Validate before SQL so strict and coercing engines both refuse data loss.
+	for _, field := range []struct {
+		name  string
+		value *string
+	}{
+		{"external_ref", request.ExternalRef},
+		{"spec_id", request.SpecID},
+	} {
+		if field.value == nil {
+			continue
+		}
+		value := *field.value
+		if err := validateIssueReferenceStorage(field.name, value); err != nil {
+			return IssueMutationResult{}, err
+		}
+		if field.name == "external_ref" {
+			patch.ExternalRef = publicops.Field[*string]{Set: true}
+			if value != "" {
+				patch.ExternalRef.Value = &value
+			}
+		} else {
+			patch.SpecID = publicops.Field[string]{Set: true, Value: value}
+		}
+		count++
+	}
+	if request.DueAt.Set {
+		value, err := normalizeIssueDue(request.DueAt.Value)
+		if err != nil {
+			return IssueMutationResult{}, err
+		}
+		patch.DueAt = publicops.Field[*time.Time]{Set: true, Value: value}
+		count++
+	}
 	if count == 0 {
-		return IssueMutationResult{}, fmt.Errorf("%w: Issue update requires a textual field", storage.ErrValidation)
+		return IssueMutationResult{}, fmt.Errorf("%w: Issue update requires an admitted field", storage.ErrValidation)
 	}
 	attempt := publicops.UpdateRequest{Actor: request.Actor, Patch: patch, IssuePlaneOnly: true}
 	if err := issueops.ValidateUpdateRequest(attempt); err != nil {
@@ -71,12 +145,18 @@ func (s *Store) UpdateIssue(ctx context.Context, request UpdateIssueRequest) (Is
 		}
 		before, ok := current.(IssueRecord)
 		if !ok {
-			return fmt.Errorf("%w: textual Issue update requires the experimental Issue Type", ErrCapabilityUnavailable)
+			return fmt.Errorf("%w: Issue update requires the experimental Issue Type", ErrCapabilityUnavailable)
 		}
 		if err := checkRevisionGuard(request.ExpectedRevision, request.Unconditional, revision, true, "Issue"); err != nil {
 			return err
 		}
-		updates, err := issueops.DiscardNoopIssueUpdates(before.Properties, issueops.UpdateFields(patch))
+		// Resolve against the checked snapshot only for no-op planning. The native
+		// writer receives the original append intent and owns atomic composition.
+		updates, err := issueops.ResolveMergeOps(before.Properties, issueops.UpdateFields(patch))
+		if err != nil {
+			return err
+		}
+		updates, err = issueops.DiscardNoopIssueUpdates(before.Properties, updates)
 		if err != nil {
 			return err
 		}
@@ -97,6 +177,26 @@ func (s *Store) UpdateIssue(ctx context.Context, request UpdateIssueRequest) (Is
 		if !updated.Changed {
 			return fmt.Errorf("%w: Issue update unexpectedly became a no-op", ErrInvalidStore)
 		}
+		// Non-strict SQL may coerce an oversized Go integer into the column's
+		// range without returning an error. The shared writer hydrates the actual
+		// stored result; never publish or retain an estimate different from the
+		// accepted intent. Refusal rolls back sibling edits and audit effects too.
+		if patch.EstimatedMinutes.Set && (updated.Issue == nil || updated.Issue.EstimatedMinutes == nil ||
+			*updated.Issue.EstimatedMinutes != *patch.EstimatedMinutes.Value) {
+			return fmt.Errorf("%w: Issue estimate cannot be represented exactly by storage", storage.ErrValidation)
+		}
+		if patch.ExternalRef.Set {
+			if updated.Issue == nil || (patch.ExternalRef.Value == nil) != (updated.Issue.ExternalRef == nil) ||
+				(patch.ExternalRef.Value != nil && *patch.ExternalRef.Value != *updated.Issue.ExternalRef) {
+				return fmt.Errorf("%w: Issue external reference cannot be represented exactly by storage", storage.ErrValidation)
+			}
+		}
+		if patch.SpecID.Set && (updated.Issue == nil || updated.Issue.SpecID != patch.SpecID.Value) {
+			return fmt.Errorf("%w: Issue spec ID cannot be represented exactly by storage", storage.ErrValidation)
+		}
+		if patch.DueAt.Set && (updated.Issue == nil || !sameIssueDue(patch.DueAt.Value, updated.Issue.DueAt)) {
+			return fmt.Errorf("%w: Issue due date cannot be represented exactly by storage", storage.ErrValidation)
+		}
 		if err := s.afterStage("issue-update"); err != nil {
 			return err
 		}
@@ -106,6 +206,13 @@ func (s *Store) UpdateIssue(ctx context.Context, request UpdateIssueRequest) (Is
 		}
 		if err := s.recordIssueMappingInTx(ctx, tx, request.Path, before.Properties.ID); err != nil {
 			return err
+		}
+		// Append has no inverse in this preview. Charge the new retained head as
+		// well as current data; an unreadable result rolls back every write effect.
+		if patch.AppendNotes.Set {
+			if err := checkCurrentReadBytes(ctx, tx); err != nil {
+				return err
+			}
 		}
 		after, err := s.showIssueInTx(ctx, tx, request.Path)
 		if err != nil {
