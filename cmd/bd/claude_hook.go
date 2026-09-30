@@ -81,7 +81,7 @@ func claudeHookStopReminder(input claudeHookInput, stdout io.Writer) error {
 		return errors.New("claude Stop hook input has no transcript_path")
 	}
 	markerPath := agentHookMarkerPath(claudeHookMarkerBaseDir(), input.SessionID, input.TranscriptPath)
-	offset, markerErr := readClaudeStopMarker(markerPath)
+	offset, seenBefore, markerErr := readClaudeStopMarker(markerPath)
 	end, usedTools, scanErr := claudeTranscriptToolUseSince(input.TranscriptPath, offset)
 	if errors.Is(scanErr, errClaudeTranscriptUnreadable) {
 		return errors.Join(markerErr, scanErr)
@@ -92,7 +92,7 @@ func claudeHookStopReminder(input claudeHookInput, stdout io.Writer) error {
 	if err := errors.Join(markerErr, scanErr); err != nil {
 		return err
 	}
-	if input.StopHookActive || !usedTools {
+	if input.StopHookActive || (seenBefore && !usedTools) {
 		return nil
 	}
 	encoder := json.NewEncoder(stdout)
@@ -177,19 +177,19 @@ func claudeTranscriptLineUsesTool(line []byte) (bool, error) {
 	return false, nil
 }
 
-func readClaudeStopMarker(path string) (int64, error) {
+func readClaudeStopMarker(path string) (int64, bool, error) {
 	data, err := os.ReadFile(path) // #nosec G304 -- path is derived by agentHookMarkerPath under the bd cache dir
 	if errors.Is(err, os.ErrNotExist) {
-		return 0, nil
+		return 0, false, nil
 	}
 	if err != nil {
-		return 0, fmt.Errorf("read Claude Stop hook marker: %w", err)
+		return 0, true, fmt.Errorf("read Claude Stop hook marker: %w", err)
 	}
 	offset, err := strconv.ParseInt(strings.TrimSpace(string(data)), 10, 64)
 	if err != nil || offset < 0 {
-		return 0, fmt.Errorf("corrupt Claude Stop hook marker %s: %q", path, strings.TrimSpace(string(data)))
+		return 0, true, fmt.Errorf("corrupt Claude Stop hook marker %s: %q", path, strings.TrimSpace(string(data)))
 	}
-	return offset, nil
+	return offset, true, nil
 }
 
 func writeClaudeStopMarker(path string, offset int64) error {

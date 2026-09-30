@@ -125,9 +125,29 @@ func TestClaudeHookStopRemindsAfterToolUse(t *testing.T) {
 	assertBlocksWithReminder(t, f.mustStop(false))
 }
 
-func TestClaudeHookStopSilentWithoutToolUse(t *testing.T) {
+func TestClaudeHookStopRemindsAtFirstStopWithoutToolUse(t *testing.T) {
 	f := newClaudeStopFixture(t)
 	f.append(userLine("what is beads?"), assistantTextLine("an issue tracker"))
+	assertBlocksWithReminder(t, f.mustStop(false))
+}
+
+func TestClaudeHookStopSilentOnLaterStopWithoutToolUse(t *testing.T) {
+	f := newClaudeStopFixture(t)
+	f.append(userLine("what is beads?"), assistantTextLine("an issue tracker"))
+	assertBlocksWithReminder(t, f.mustStop(false))
+	f.append(userLine("Stop hook feedback"), assistantTextLine("nothing to save"))
+	assertAllowsStop(t, f.mustStop(true))
+
+	f.append(userLine("and dolt?"), assistantTextLine("a versioned database"))
+	assertAllowsStop(t, f.mustStop(false))
+}
+
+func TestClaudeHookStopFirstStopWhileHookActiveUsesTheFirstReminder(t *testing.T) {
+	f := newClaudeStopFixture(t)
+	f.append(userLine("hi"), assistantTextLine("hello"))
+	assertAllowsStop(t, f.mustStop(true))
+
+	f.append(userLine("thanks"), assistantTextLine("welcome"))
 	assertAllowsStop(t, f.mustStop(false))
 }
 
@@ -162,6 +182,9 @@ func TestClaudeHookStopRemindsAgainAfterNewWork(t *testing.T) {
 func TestClaudeHookStopQuietTurnDoesNotResetPendingWork(t *testing.T) {
 	f := newClaudeStopFixture(t)
 	f.append(userLine("hi"), assistantTextLine("hello"))
+	assertBlocksWithReminder(t, f.mustStop(false))
+	assertAllowsStop(t, f.mustStop(true))
+	f.append(userLine("how are you?"), assistantTextLine("fine"))
 	assertAllowsStop(t, f.mustStop(false))
 
 	f.append(userLine("fix it"), assistantToolLine("Write"), toolResultLine())
@@ -182,7 +205,7 @@ func TestClaudeHookStopIgnoresPartialTrailingLine(t *testing.T) {
 	if err := file.Close(); err != nil {
 		t.Fatalf("close: %v", err)
 	}
-	assertAllowsStop(t, f.mustStop(false))
+	assertBlocksWithReminder(t, f.mustStop(false))
 
 	f.append(partial[len(partial)/2:])
 	assertBlocksWithReminder(t, f.mustStop(false))
@@ -191,7 +214,7 @@ func TestClaudeHookStopIgnoresPartialTrailingLine(t *testing.T) {
 func TestClaudeHookStopRescansAfterTranscriptShrinks(t *testing.T) {
 	f := newClaudeStopFixture(t)
 	f.append(userLine("a long quiet chat"), assistantTextLine(strings.Repeat("x", 4096)))
-	assertAllowsStop(t, f.mustStop(false))
+	assertBlocksWithReminder(t, f.mustStop(false))
 
 	if err := os.WriteFile(f.transcript, nil, 0o600); err != nil {
 		t.Fatalf("truncate: %v", err)
@@ -203,7 +226,7 @@ func TestClaudeHookStopRescansAfterTranscriptShrinks(t *testing.T) {
 func TestClaudeHookStopRescansWhenTranscriptReplacedByLargerFile(t *testing.T) {
 	f := newClaudeStopFixture(t)
 	f.append(userLine("hi"), assistantTextLine("hello"))
-	assertAllowsStop(t, f.mustStop(false))
+	assertBlocksWithReminder(t, f.mustStop(false))
 
 	if err := os.WriteFile(f.transcript, nil, 0o600); err != nil {
 		t.Fatalf("truncate: %v", err)
