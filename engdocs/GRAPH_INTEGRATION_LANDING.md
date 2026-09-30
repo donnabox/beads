@@ -1,3 +1,7 @@
+## September 29, 23:18 PDT capability landed
+
+Destination [PR57](https://github.com/versioned-beads/beads/pull/57) landed and was mirrored at **727828a29dab2956a05accd892b947b89e2c6edf** after all127 current gates and complete403/macOS/Core/Bazel evidence. Actual parentsabe9/26dee and whole treec09c8f match tested syntheticd7cb824; original tested identity is preserved. Five existing capability bits and command disclosure are now integrated. Guidance59/5162 remains pending full hosted qualification and explicit Steph43 dependency disposition. Original59-head manifest and all source branches remain unchanged.
+
 ## September 29, 22:27 PDT dependent guidance publication
 
 Destination [PR59](https://github.com/versioned-beads/beads/pull/59) is a draft at51625242e404b7c8911ed48a2ed1ca8e305ab21a. It preserves the separately attributed exact Steph PR43 contribution and depends on pending capability26dee. Current build/lint/eight real-engine installed scenarios pass; baseline and complete hosted qualification remain pending. No contributor PR or new integration increment was merged. Capability26dee now passes115-package44.1% local baseline. The original59-head manifest and all prior source dispositions are unchanged.
