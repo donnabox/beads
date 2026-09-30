@@ -13,6 +13,10 @@ import (
 )
 
 func TestCheckRepoFingerprint_UsesTargetRepoOutsideCWD(t *testing.T) {
+	if doctorTestServerPort() == 0 {
+		t.Skip("Dolt test server not available")
+	}
+
 	outerRepo := t.TempDir()
 	targetRepo := t.TempDir()
 
@@ -39,7 +43,7 @@ func TestCheckRepoFingerprint_UsesTargetRepoOutsideCWD(t *testing.T) {
 		Database: "beads",
 	})
 	if err != nil {
-		t.Skipf("skipping: Dolt server not available: %v", err)
+		t.Fatalf("failed to open Dolt store: %v", err)
 	}
 	defer func() { _ = store.Close() }()
 
