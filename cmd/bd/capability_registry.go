@@ -560,7 +560,7 @@ var proxyPermittedPaths = []string{
 	"hooks install", "hooks list", "hooks run", "hooks uninstall",
 	"metrics", "metrics example", "metrics off", "metrics on",
 	"serve", "sql",
-	"codex-hook", "cursor-hook", "db-proxy-child", "send-metrics",
+	"claude-hook", "codex-hook", "cursor-hook", "db-proxy-child", "send-metrics",
 }
 
 func init() {

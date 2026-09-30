@@ -1859,3 +1859,143 @@ func TestClaudeLegacySettingsWritesEndWithNewline(t *testing.T) {
 		}
 	})
 }
+
+func stopHookCommands(t *testing.T, path string) []string {
+	t.Helper()
+	data, err := os.ReadFile(path)
+	if err != nil {
+		t.Fatalf("read settings: %v", err)
+	}
+	var settings map[string]interface{}
+	if err := json.Unmarshal(data, &settings); err != nil {
+		t.Fatalf("parse settings: %v", err)
+	}
+	hooks, _ := settings["hooks"].(map[string]interface{})
+	entries, _ := hooks["Stop"].([]interface{})
+	var commands []string
+	for _, entry := range entries {
+		entryMap, _ := entry.(map[string]interface{})
+		cmds, _ := entryMap["hooks"].([]interface{})
+		for _, cmd := range cmds {
+			cmdMap, _ := cmd.(map[string]interface{})
+			if command, ok := cmdMap["command"].(string); ok {
+				commands = append(commands, command)
+			}
+		}
+	}
+	return commands
+}
+
+func TestInstallClaudeRegistersMemoryStopHookByDefault(t *testing.T) {
+	for _, stealth := range []bool{false, true} {
+		env, stdout, _ := newClaudeTestEnv(t)
+		if err := installClaude(env, false, stealth); err != nil {
+			t.Fatalf("installClaude(stealth=%v): %v", stealth, err)
+		}
+		got := stopHookCommands(t, projectSettingsPath(env.projectDir))
+		if len(got) != 1 || got[0] != claudeStopHookCommand {
+			t.Fatalf("stealth=%v: Stop hooks = %v, want [%s]", stealth, got, claudeStopHookCommand)
+		}
+		if !strings.Contains(stdout.String(), "Registered Stop hook") {
+			t.Errorf("stealth=%v: expected Stop registration message, got:\n%s", stealth, stdout.String())
+		}
+	}
+}
+
+func TestInstallClaudeStopHookIsIdempotentAndKeepsUserStopHooks(t *testing.T) {
+	env, _, _ := newClaudeTestEnv(t)
+	path := projectSettingsPath(env.projectDir)
+	writeSettings(t, path, map[string]interface{}{
+		"hooks": map[string]interface{}{
+			"Stop": []interface{}{
+				map[string]interface{}{
+					"matcher": "",
+					"hooks":   []interface{}{map[string]interface{}{"type": "command", "command": "notify-send done"}},
+				},
+			},
+		},
+	})
+	for i := 0; i < 2; i++ {
+		if err := installClaude(env, false, false); err != nil {
+			t.Fatalf("installClaude run %d: %v", i, err)
+		}
+	}
+	got := stopHookCommands(t, path)
+	if len(got) != 2 || got[0] != "notify-send done" || got[1] != claudeStopHookCommand {
+		t.Fatalf("Stop hooks = %v, want [notify-send done %s]", got, claudeStopHookCommand)
+	}
+}
+
+func TestInstallClaudeLeavesStopHookToPlugin(t *testing.T) {
+	env, _, _ := newClaudeTestEnv(t)
+	path := projectSettingsPath(env.projectDir)
+	writeSettings(t, path, settingsWithPlugin())
+	if err := installClaude(env, false, false); err != nil {
+		t.Fatalf("installClaude: %v", err)
+	}
+	if got := stopHookCommands(t, path); len(got) != 0 {
+		t.Fatalf("Stop hooks = %v, want none when the plugin provides them", got)
+	}
+}
+
+func TestRemoveClaudeRemovesMemoryStopHook(t *testing.T) {
+	for _, global := range []bool{false, true} {
+		env, _, _ := newClaudeTestEnv(t)
+		if err := installClaude(env, global, false); err != nil {
+			t.Fatalf("installClaude(global=%v): %v", global, err)
+		}
+		path := projectSettingsPath(env.projectDir)
+		if global {
+			path = globalSettingsPath(env.homeDir)
+		}
+		if got := stopHookCommands(t, path); len(got) != 1 {
+			t.Fatalf("global=%v: Stop hooks before removal = %v", global, got)
+		}
+		if err := removeClaude(env, global); err != nil {
+			t.Fatalf("removeClaude(global=%v): %v", global, err)
+		}
+		if got := stopHookCommands(t, path); len(got) != 0 {
+			t.Fatalf("global=%v: Stop hooks after removal = %v, want none", global, got)
+		}
+	}
+}
+
+func TestRemoveClaudeRemovesLegacyMemoryStopHook(t *testing.T) {
+	env, _, _ := newClaudeTestEnv(t)
+	legacy := legacyProjectSettingsPath(env.projectDir)
+	writeSettings(t, legacy, map[string]interface{}{
+		"hooks": map[string]interface{}{
+			"Stop": []interface{}{
+				map[string]interface{}{
+					"matcher": "",
+					"hooks":   []interface{}{map[string]interface{}{"type": "command", "command": claudeStopHookCommand}},
+				},
+			},
+		},
+	})
+	if err := removeClaude(env, false); err != nil {
+		t.Fatalf("removeClaude: %v", err)
+	}
+	if got := stopHookCommands(t, legacy); len(got) != 0 {
+		t.Fatalf("legacy Stop hooks after removal = %v, want none", got)
+	}
+}
+
+func TestClaudePluginDeclaresMemoryStopHook(t *testing.T) {
+	var manifest struct {
+		Hooks map[string][]struct {
+			Hooks []struct {
+				Command string `json:"command"`
+			} `json:"hooks"`
+		} `json:"hooks"`
+	}
+	readJSONFile(t, filepath.Join("..", "..", "..", "plugins", "beads", ".claude-plugin", "plugin.json"), &manifest)
+	for _, entry := range manifest.Hooks["Stop"] {
+		for _, hook := range entry.Hooks {
+			if hook.Command == claudeStopHookCommand {
+				return
+			}
+		}
+	}
+	t.Fatalf("Claude plugin manifest has no Stop hook running %q", claudeStopHookCommand)
+}
