@@ -56,6 +56,7 @@ func usesProxiedServer() bool {
 // registered backend decides for itself what read-only means, and refusing to
 // offer it the setting would be this factory guessing on its behalf.
 func newRegisteredBackendStore(ctx context.Context, name, beadsDir string, readOnly bool) (s storage.DoltStorage, err error) {
+	defer func() { s, err = activateVersionedHistoryStore(ctx, s, err) }()
 	defer func() { s, err = activateEventsJournalStore(beadsDir, s, err) }()
 	backend, ok := backends.Lookup(name)
 	if !ok {
@@ -68,6 +69,7 @@ func newRegisteredBackendStore(ctx context.Context, name, beadsDir string, readO
 }
 
 func newDoltStore(ctx context.Context, cfg *dolt.Config) (s storage.DoltStorage, err error) {
+	defer func() { s, err = activateVersionedHistoryStore(ctx, s, err) }()
 	defer func() { s, err = activateEventsJournalStore(cfg.BeadsDir, s, err) }()
 	if cfg.ProxiedServer {
 		return nil, errProxiedStoreUnrouted()
@@ -152,6 +154,7 @@ func acquireEmbeddedLock(beadsDir string, serverMode bool) (util.Unlocker, error
 // remote-cache hydration — so activation is resolved from beadsDir's own
 // config, not the launching workspace's.
 func newDoltStoreFromConfig(ctx context.Context, beadsDir string) (s storage.DoltStorage, err error) {
+	defer func() { s, err = activateVersionedHistoryStore(ctx, s, err) }()
 	defer func() { s, err = activateEventsJournalStore(beadsDir, s, err) }()
 	cfg, err := configfile.Load(beadsDir)
 	if err != nil {
