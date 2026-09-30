@@ -344,6 +344,11 @@ func runGraphPreviewInit(cmd *cobra.Command) error {
 	if err := validateGraphPreviewRoute(cfg); err != nil {
 		return err
 	}
+	skipAgents, _ := cmd.Flags().GetBool("skip-agents")
+	guidance, err := prepareGraphPreviewAgentInstructions(filepath.Dir(graphPreviewDir), config.SafeAgentsFile(), skipAgents)
+	if err != nil {
+		return graphFailure("graph_not_initialized", "agent guidance was not installed; no graph database was initialized: "+err.Error(), 5)
+	}
 	if err := os.Mkdir(graphPreviewDir, 0o700); err != nil {
 		return graphFailure("graph_not_initialized", err.Error(), 5)
 	}
@@ -374,6 +379,9 @@ func runGraphPreviewInit(cmd *cobra.Command) error {
 	options.IssuePrefix = normalizeIssuePrefix(prefix)
 	if err := graphstore.Init(ctx, options); err != nil {
 		return graphStorageError(err)
+	}
+	if err := guidance.install(); err != nil {
+		return graphFailure("graph_not_initialized", "database initialized but agent guidance installation failed; workspace remains incomplete: "+err.Error(), 5)
 	}
 	cfg.GraphReady = true
 	if err := cfg.Save(real); err != nil {

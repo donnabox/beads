@@ -38,6 +38,42 @@ workspace identity and refuses existing workspaces, mismatched bindings and
 incomplete initialization. This preview does not adopt an existing Issue
 database. Different-database provisioning on Dolt 2.1.8 must be serialized.
 
+## Instructions for agents
+
+Omit `--skip-agents` when initializing a graph workspace to install a managed
+graph instruction block in `AGENTS.md` (or the configured agents filename).
+The block incorporates Stephanie Jarmak's durable-memory guidance from
+[integration PR43](https://github.com/versioned-beads/beads/pull/43), with
+commands supported by this graph preview:
+
+```sh
+bd remember "Use UTC for timestamps" --id beads/time-policy --title "Timestamp policy"
+bd recall beads/time-policy
+bd memories timestamps --format records-json
+bd status --graph
+```
+
+Choose a distinct canonical ID for each new fact. These commands demonstrate
+storage and retrieval across invocations; installing instructions does not
+guarantee that an agent will decide to save a fact.
+
+Graph initialization preserves surrounding user-authored text and an existing
+`CLAUDE.md` import of `@AGENTS.md`. An existing minimal managed block is replaced
+with graph instructions; pass `--skip-agents` to preserve that block unchanged.
+It installs no agent hooks or separate Claude instructions. Use your agent's existing support for the configured instruction
+file. The ordinary `bd prime` and `bd setup` commands remain unavailable in
+graph mode.
+
+Existing full or unknown managed profiles, malformed or duplicate managed
+blocks, and symlink or nonregular targets refuse before database initialization.
+Keep those files and pass `--skip-agents` to initialize without changing them.
+If instruction publication fails after database initialization, the workspace
+remains incomplete and fenced; this preview provides no repair command.
+
+The ordinary minimal profile also includes Stephanie's exact durable-memory
+contribution, which changes its managed content hash. Existing refresh policy
+is unchanged; this addition does not independently rewrite instruction files.
+
 ## Supported graph commands
 
 | Command | Admitted scope and flags |

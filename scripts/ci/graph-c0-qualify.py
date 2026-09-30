@@ -568,8 +568,18 @@ class Qualification:
                        (self.root / "internal/storage/domain/db").glob("normalize_timestamps_utc_test.go"), "utc-db")
             self.tests("./internal/types", "^TestNormalizeOptionalTimestampsToUTCCoversEveryPointerTimestamp$",
                        (self.root / "internal/types").glob("types_test.go"), "utc-types")
+            self.tests("./internal/templates/agents", "^TestGraphPreview",
+                       (self.root / "internal/templates/agents").glob("*_test.go"), "agent-template")
             self.tests("./cmd/bd", "^Test(GraphModeCLI|GraphPreview)", (self.root / "cmd/bd").glob("graph*test.go"), "cli",
-                       ("TestGraphPreviewIssueAuthoringWorkflow/embedded", "TestGraphPreviewIssueAuthoringWorkflow/server",
+                       ("TestGraphPreviewAgentInstructionsWorkflow/embedded/fresh",
+                        "TestGraphPreviewAgentInstructionsWorkflow/embedded/shared-file",
+                        "TestGraphPreviewAgentInstructionsWorkflow/embedded/skip-agents",
+                        "TestGraphPreviewAgentInstructionsWorkflow/embedded/full-profile-refusal",
+                        "TestGraphPreviewAgentInstructionsWorkflow/server/fresh",
+                        "TestGraphPreviewAgentInstructionsWorkflow/server/shared-file",
+                        "TestGraphPreviewAgentInstructionsWorkflow/server/skip-agents",
+                        "TestGraphPreviewAgentInstructionsWorkflow/server/full-profile-refusal",
+                        "TestGraphPreviewIssueAuthoringWorkflow/embedded", "TestGraphPreviewIssueAuthoringWorkflow/server",
                         "TestGraphPreviewIssueAppendWorkflow/embedded", "TestGraphPreviewIssueAppendWorkflow/server",
                         "TestGraphPreviewIssueClaimWorkflow/embedded", "TestGraphPreviewIssueClaimWorkflow/server",
                         "TestGraphPreviewIssueAssignmentWorkflow/embedded", "TestGraphPreviewIssueAssignmentWorkflow/server",
