@@ -46,10 +46,14 @@ PACKAGES = (
     "issueops",  # //backend/conformance (role facade census)
     "journalops",  # //backend/conformance (role facade census)
     "memoryops",  # //backend/conformance (role facade census)
+    "scripts/driver-core",  # //internal/replay:replay_test (harness layout guards)
+    "scripts/mutation-translator",  # //internal/replay:replay_test (harness layout guards)
+    "scripts/oracle-query",  # //internal/replay:replay_test (harness layout guards)
 )
 
 # Roots whose whole Go tree a test scans.
 TREES = (
+    "internal/replay",  # //internal/replay:replay_test scans the whole harness library tree
     "internal/storage",  # //internal/storage walks every *_test.go below it
 )
 

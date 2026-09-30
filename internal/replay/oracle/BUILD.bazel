@@ -1,0 +1,32 @@
+load("@rules_go//go:def.bzl", "go_library", "go_test")
+
+go_library(
+    name = "oracle",
+    srcs = ["oracle.go"],
+    importpath = "github.com/steveyegge/beads/internal/replay/oracle",
+    visibility = ["//:__subpackages__"],
+    deps = [
+        "//internal/replay/doltcli",
+        "//internal/storage/issueops",
+    ],
+)
+
+go_test(
+    name = "oracle_test",
+    srcs = ["oracle_test.go"],
+    embed = [":oracle"],
+    deps = ["//internal/replay/replaytest"],
+)
+
+# --- begin go_srcs (managed by tools/bazel/go_srcs.py; run `make bazel-sync`) ---
+
+filegroup(
+    name = "go_srcs",
+    srcs = glob(
+        ["**/*.go"],
+        allow_empty = True,
+    ),
+    visibility = ["//:__subpackages__"],
+)
+
+# --- end go_srcs ---
