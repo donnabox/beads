@@ -1,3 +1,9 @@
+## September29,19:42PDT qualification checkpoint
+
+Due destinationPR55 remains22053baac015b89097f695ad28c9c091e28b8826. Complete local403 and hosted Linux403, PR Core158 eligible graph roots/137 other packages and native Bazel eight-shard evidence independently pass. Hosted tested6bdd985607b9a6198c880401a87439eaeda6253b has actual9ac/22053 parents and identical22053 tree. macOS was the sole running gate at19:36; no due merge is claimed. A root invocation initially selected the graph archive outer directory and correctly refused missing summary; unchanged verifier passed with the actual complete graph-c0-evidence directory. Both logs remain preserved.
+
+Capability discovery/documentation correction is destination[PR57](https://github.com/versioned-beads/beads/pull/57) at35f74d01398df7e0e28480c39245245c84958c5a with explicit due22053 parent. It restores five implemented capability bits and aligns due flags in the existing command matrix. Focused installed-process allowlist,115-package44.1% normal baseline, native/Windows/Darwin lint, build, independent review and normal hooks pass. Current-source CI36660835794 and independent artifact acceptance remain pending. This destinationPR57 is unrelated to the preserved BDP blogPR57 and original source blocked-listPR57. No branch or original source PR was deleted/closed; the59-head manifest is unchanged. Jim integration/mirror remain9ac6a37d.
+
 # Graph integration landing ledger
 
 This ledger belongs to [fork plan PR18](https://github.com/donnabox/beads/pull/18). It accounts for source work while we land small, dependency-complete increments in [versioned-beads/beads:integration](https://github.com/versioned-beads/beads/tree/integration). Donna authorized merges there when CI is green. Existing semantic holds remain separate; upstream main is not a destination.
