@@ -12,7 +12,7 @@ import (
 	"github.com/steveyegge/beads/internal/validation"
 )
 
-var graphPreviewIssueEditFlags = []string{"title", "description", "body", "message", "design", "acceptance", "priority", "assignee", "append-notes"}
+var graphPreviewIssueEditFlags = []string{"title", "description", "body", "message", "design", "acceptance", "priority", "assignee", "append-notes", "estimate", "external-ref", "spec-id"}
 
 func graphPreviewIssueEditFlagsChanged(cmd *cobra.Command) bool {
 	for _, name := range graphPreviewIssueEditFlags {
@@ -49,6 +49,16 @@ func graphPreviewIssueEditRequest(cmd *cobra.Command, path string) (graphstore.U
 		}
 		request.Priority = &priority
 	}
+	if cmd.Flags().Changed("estimate") {
+		value, err := cmd.Flags().GetInt("estimate")
+		if err != nil {
+			return request, graphFailure("invalid_properties", err.Error(), 2)
+		}
+		if err := types.ValidateIssueEstimatedMinutes(&value); err != nil {
+			return request, graphFailure("invalid_properties", err.Error(), 2)
+		}
+		request.EstimatedMinutes = &value
+	}
 	if cmd.Flags().Changed("assignee") {
 		value, _ := cmd.Flags().GetString("assignee")
 		if !utf8.ValidString(value) {
@@ -71,6 +81,7 @@ func graphPreviewIssueEditRequest(cmd *cobra.Command, path string) (graphstore.U
 		{"design", &request.Design},
 		{"acceptance", &request.AcceptanceCriteria},
 		{"append-notes", &request.AppendNotes},
+		{"external-ref", &request.ExternalRef}, {"spec-id", &request.SpecID},
 	}
 	for _, field := range fields {
 		if !cmd.Flags().Changed(field.name) {

@@ -258,7 +258,11 @@ def main():
         for path, title in [("beads/alpha", "First memory"), ("beads/plan", "Plan — 雪")]:
             records[path] = c0.envelope(capture.success("memory-create", c0.remember(path, "Deployment context — 雪", title)))
         for path in ["beads/work", "beads/prereq"]:
-            records[path] = c0.envelope(capture.success("issue-create", ["create", "Deployment task", "--id", path, "--json"]))
+            fields = [] if path == "beads/work" else [
+                "--design", "Initial design — 雪", "--acceptance", "Ready\r\n",
+                "--assignee", "author", "--estimate=0", "--external-ref", " tracker #1 ",
+                "--spec-id", " spec ", "--notes", " Initial\r\n雪 "]
+            records[path] = c0.envelope(capture.success("issue-create", ["create", "Deployment task", "--id", path, *fields, "--json"]))
         related = scope + "types/preview-related-v2"
         capture.success("memory-issue-link", ["link", "beads/plan", "beads/work", "--resource-type", related,
             "--id", "links/context", "--properties", '{"note":"before page"}',
@@ -335,6 +339,9 @@ def main():
         c0.require(isinstance(after_delete, list) and len(after_delete) == 3
                    and {item["id"] for item in after_delete} == remaining and after_delete == observed_records,
                    "Python post-delete inventory differs from actual complete BDP pages")
+        authoring = json.loads((capture.output / "client-artifacts.json").read_text())["issueAuthoring"]["after"]
+        c0.require([item for item in after_delete if item["id"] == scope + "beads/prereq"] == [authoring],
+                   "unchanged Python consumer lost final Issue authoring fields")
         c0.require(serve.child.poll() is None, "server exited during post-delete Python enumeration")
         summary["memory_delete"] = {"passed": True, "id": alpha["id"], "final_live_revision": alpha["revision"]}
         summary["python_after_delete"] = {"passed": True, "beads": 3, "limit": 1, "authenticated": True,
