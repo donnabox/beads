@@ -134,13 +134,83 @@ def verify_http_capture(root, binary_hash):
                     "HTTP process output hash differs")
     client = json.loads((root / "client-results.json").read_text())
     require(client.get("passed") is True and client.get("failure") is None
-            and len(client.get("checks", [])) == 10, "incomplete public-client checks")
+            and len(client.get("checks", [])) == 12, "incomplete public-client checks")
     network = json.loads((root / "client-network.json").read_text())
     require(network and client["requests"] == len(network), "HTTP network receipts incomplete")
     for observation in network:
         require(observation["url"].startswith(summary["scope"])
                 and re.fullmatch(r"[0-9a-f]{64}", observation["bodySha256"]), "invalid HTTP observation")
+    verify_issue_append_capture(root, summary, binary_hash, network)
     verify_memory_deletion_capture(root, summary)
+
+
+def verify_issue_append_capture(root, summary, binary_hash, network):
+    """Keep the real writer receipts, public records and raw HTTP observations linked."""
+    def data(relative):
+        return json.loads((root / relative).read_text())
+    artifacts = data("client-artifacts.json")
+    notes = artifacts["issueNotes"]
+    scope, actor = summary["scope"], "bdp-read-note-holder"
+    work_id = scope + "beads/work"
+    before, claimed, after = notes["before"], notes["claimed"], notes["after"]
+    require(before == artifacts["issueEdit"]["after"], "append preimage lost preceding Issue-edit proof")
+    require(all(item["id"] == work_id and item["type"] == before["type"] for item in (claimed, after)),
+            "append changed canonical Issue identity/Type")
+    expected_claim = dict(before["properties"])
+    for key in ("status", "assignee", "started_at", "updated_at", "lease_expires_at", "heartbeat_at", "lease_granted_node"):
+        if key in claimed["properties"]:
+            expected_claim[key] = claimed["properties"][key]
+        else:
+            expected_claim.pop(key, None)
+    require(claimed["properties"] == expected_claim and claimed["properties"]["status"] == "in_progress"
+            and claimed["properties"]["assignee"] == actor and claimed["properties"].get("notes", "") == ""
+            and claimed["revision"] != before["revision"], "incomplete installed claim precondition")
+    require(notes["noopRecord"] == claimed and notes["noopMutation"]["result"]["changed"] is False
+            and notes["noopMutation"]["result"]["issue"] == notes["claimMutation"]["result"]["issue"],
+            "empty append was not a complete semantic no-op")
+    text = "  Progress — 雪\r\nsecond line\t  "
+    require(notes["appendText"] == text and after["properties"] == dict(claimed["properties"],
+            notes=text, updated_at=after["properties"]["updated_at"]), "appended properties/lease changed or bytes lost")
+    require(after["revision"] != claimed["revision"] and after["attribution"]["principal"] == actor
+            and after["ownedLinks"] == claimed["ownedLinks"] == before["ownedLinks"], "append ownership/revision proof missing")
+    require(notes["properties"] == after["properties"] and notes["inventory"]["next"] is None
+            and len(notes["inventory"]["items"]) == 4
+            and [item for item in notes["inventory"]["items"] if item["id"] == work_id] == [after]
+            and notes["incident"] == artifacts["issueEdit"]["incidentAfter"], "append BDP views disagree")
+    require(notes["etagBefore"] and notes["etagAfter"] and notes["etagBefore"] != notes["etagAfter"],
+            "append did not change ETag")
+    binary = data("02-memory-create/receipt.json")["argv"][0]
+    commands = (
+        ("client-cli-issue-claim", "claimMutation", ["update", work_id, "--claim", "--actor", actor, "--json"], True, claimed),
+        ("client-cli-issue-append-noop", "noopMutation", ["update", work_id, "--append-notes=", "--if-revision", claimed["revision"], "--actor", actor, "--json"], False, claimed),
+        ("client-cli-issue-append", "appendMutation", ["update", work_id, "--append-notes", text, "--if-revision", claimed["revision"], "--actor", actor, "--json"], True, after),
+    )
+    for name, key, args, changed, record in commands:
+        receipt, mutation = data(name + ".json"), data(name + ".stdout.log")
+        require(receipt["argv"] == [binary, *args] and receipt["binarySha256"] == binary_hash
+                and receipt["exitCode"] == 0 and receipt["signal"] is None, "append CLI source/exit/guard differs")
+        for stream in ("stdout", "stderr"):
+            require(digest(root / (name + "." + stream + ".log")) == receipt[stream + "Sha256"],
+                    "append CLI output hash differs")
+        require(mutation == notes[key] and mutation["schemaVersion"] == 1 and mutation["preview"] is True
+                and mutation["result"]["changed"] is changed and mutation["result"]["issue"]["id"] == work_id
+                and mutation["result"]["issue"]["revision"] == record["revision"], "append CLI/public record mismatch")
+    for label, index_key, status, etag, record in (
+        ("before", "claimNetworkIndex", 200, notes["etagBefore"], claimed),
+        ("noop", "noopNetworkIndex", 304, notes["etagBefore"], None),
+        ("after", "appendNetworkIndex", 200, notes["etagAfter"], after),
+    ):
+        index = notes[index_key]
+        require(type(index) is int and 0 <= index < len(network), "append HTTP observation index missing")
+        observation = network[index]
+        body = root / ("client-issue-notes-" + label + ".body")
+        require(observation["url"] == work_id and observation["method"] == "GET" and observation["status"] == status
+                and observation["headers"].get("etag") == etag and observation["bodyBytes"] == body.stat().st_size
+                and observation["bodySha256"] == digest(body), "append HTTP status/ETag/raw bytes disagree")
+        require((body.read_bytes() == b"") if record is None else json.loads(body.read_bytes()) == record,
+                "append raw HTTP body differs from public record")
+    require(notes["claimNetworkIndex"] < notes["noopNetworkIndex"] < notes["appendNetworkIndex"],
+            "append HTTP observations are not ordered")
 
 
 def verify_memory_deletion_capture(root, summary):
@@ -419,7 +489,8 @@ class Qualification:
             self.tests("./internal/storage/issueops", "^TestResolve(CustomConfigStrict|InfraTypesStrict|ConfigLegacy)",
                        (self.root / "internal/storage/issueops").glob("config_strict_test.go"), "query-config")
             self.tests("./cmd/bd", "^Test(GraphModeCLI|GraphPreview)", (self.root / "cmd/bd").glob("graph*test.go"), "cli",
-                       ("TestGraphPreviewIssueClaimWorkflow/embedded", "TestGraphPreviewIssueClaimWorkflow/server",
+                       ("TestGraphPreviewIssueAppendWorkflow/embedded", "TestGraphPreviewIssueAppendWorkflow/server",
+                        "TestGraphPreviewIssueClaimWorkflow/embedded", "TestGraphPreviewIssueClaimWorkflow/server",
                         "TestGraphPreviewIssueAssignmentWorkflow/embedded", "TestGraphPreviewIssueAssignmentWorkflow/server",
                         "TestGraphPreviewMixedCoreWorkflow/embedded", "TestGraphPreviewMixedCoreWorkflow/server",
                         "TestGraphPreviewMemoryDeleteWorkflow/embedded", "TestGraphPreviewMemoryDeleteWorkflow/server",
@@ -431,7 +502,8 @@ class Qualification:
             self.tests("./internal/httpapi/graphread", "^Test", (self.root / "internal/httpapi/graphread").glob("*_test.go"), "graphread",
                        ("TestAuthoritativeRecordsProjectToPublicWire/embedded", "TestAuthoritativeRecordsProjectToPublicWire/server"))
             self.tests("./internal/httpapi", "^TestGraphRead", (self.root / "internal/httpapi").glob("graph_read*test.go"), "graph-http",
-                       ("TestGraphReadHTTPAuthorityAndSecurity/issue-priority-assignment",))
+                       ("TestGraphReadHTTPAuthorityAndSecurity/issue-priority-assignment",
+                        "TestGraphReadHTTPAuthorityAndSecurity/issue-append-notes",))
             self.run([sys.executable, "-m", "unittest", "discover", "-s", "examples/bdp-read", "-p", "test_*.py"], "python-example-tests")
             python_roots = sum(len(re.findall(r"^    def test_\w+\(", path.read_text(), re.MULTILINE))
                                for path in (self.root / "examples/bdp-read").glob("test_*.py"))

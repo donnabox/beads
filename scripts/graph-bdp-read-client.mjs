@@ -186,6 +186,110 @@ try {
     writer: 'installed CLI; HTTP surface remains read-only' };
   pass('public client sees guarded CLI Issue text edit in resource, properties and inventory; owned Dependencies, incident Links and target remain unchanged; old ETag yields fresh 200');
 
+  // Extend the same real workspace with claim -> append. The helper records
+  // bounded installed writes; every observed record still comes from public BDP.
+  async function notesCLI(name, args) {
+    const binarySha256 = digest(await readFile(process.env.BDP_BD));
+    let execution;
+    let exitCode = null;
+    try {
+      execution = await promisify(execFile)(process.env.BDP_BD, args,
+        { timeout: 60_000, maxBuffer: 2 * 1024 * 1024, encoding: 'utf8' });
+      exitCode = 0;
+    } catch (error) {
+      execution = error;
+      exitCode = typeof error.code === 'number' ? error.code : null;
+      throw error;
+    } finally {
+      await writeFile(join(output, name + '.stdout.log'), execution?.stdout ?? '');
+      await writeFile(join(output, name + '.stderr.log'), execution?.stderr ?? '');
+      await writeFile(join(output, name + '.json'), JSON.stringify({
+        argv: [process.env.BDP_BD, ...args], cwd: process.cwd(), binarySha256,
+        exitCode, signal: execution?.signal ?? null,
+        stdoutSha256: digest(execution?.stdout ?? ''), stderrSha256: digest(execution?.stderr ?? ''),
+      }, null, 2));
+    }
+    assert.equal(digest(await readFile(process.env.BDP_BD)), binarySha256, 'installed binary changed');
+    const mutation = JSON.parse(execution.stdout);
+    assert.equal(mutation.schemaVersion, 1);
+    assert.equal(mutation.preview, true);
+    return mutation;
+  }
+  const notesActor = 'bdp-read-note-holder';
+  const claimMutation = await notesCLI('client-cli-issue-claim',
+    ['update', workID, '--claim', '--actor', notesActor, '--json']);
+  assert.equal(claimMutation.result.changed, true);
+  const claimed = await perform({ kind: 'resource', resource: 'bead', id: workID });
+  assert.equal(claimed.revision, claimMutation.result.issue.revision);
+  assert.notEqual(claimed.revision, workAfter.revision);
+  assert.equal(claimed.properties.status, 'in_progress');
+  assert.equal(claimed.properties.assignee, notesActor);
+  assert.equal(claimed.properties.notes ?? '', '');
+  assert.equal(Date.parse(claimed.properties.lease_expires_at) - Date.parse(claimed.properties.heartbeat_at), 300_000);
+  assert.ok(claimed.properties.started_at);
+  const claimFields = ['status', 'assignee', 'started_at', 'updated_at', 'lease_expires_at', 'heartbeat_at', 'lease_granted_node'];
+  const expectedClaimProperties = { ...workAfter.properties };
+  for (const field of claimFields) {
+    if (Object.hasOwn(claimed.properties, field)) expectedClaimProperties[field] = claimed.properties[field];
+    else delete expectedClaimProperties[field];
+  }
+  assert.deepEqual(claimed.properties, expectedClaimProperties);
+  assert.deepEqual(claimed.ownedLinks, workAfter.ownedLinks);
+  const claimedHTTP = await http(workID);
+  assert.equal(claimedHTTP.response.status, 200);
+  const notesETagBefore = claimedHTTP.response.headers.get('etag');
+  assert.ok(notesETagBefore);
+  assert.deepEqual(parseBeadRecord(JSON.parse(claimedHTTP.text)), claimed);
+  const claimNetworkIndex = network.length - 1;
+  await writeFile(join(output, "client-issue-notes-before.body"), claimedHTTP.bytes);
+  const noopMutation = await notesCLI('client-cli-issue-append-noop',
+    ['update', workID, '--append-notes=', '--if-revision', claimed.revision, '--actor', notesActor, '--json']);
+  assert.equal(noopMutation.result.changed, false);
+  assert.deepEqual(noopMutation.result.issue, claimMutation.result.issue);
+  const noopRecord = await perform({ kind: 'resource', resource: 'bead', id: workID });
+  assert.deepEqual(noopRecord, claimed);
+  const noopHTTP = await http(workID, { headers: { 'if-none-match': notesETagBefore } });
+  assert.equal(noopHTTP.response.status, 304);
+  assert.equal(noopHTTP.bytes.length, 0);
+  assert.equal(noopHTTP.response.headers.get('etag'), notesETagBefore);
+  const noopNetworkIndex = network.length - 1;
+  await writeFile(join(output, "client-issue-notes-noop.body"), noopHTTP.bytes);
+  pass('public client sees installed claim and empty append no-op without changing notes, lease, revision or ETag');
+
+  const appendText = '  Progress — 雪\r\nsecond line\t  ';
+  const appendMutation = await notesCLI('client-cli-issue-append',
+    ['update', workID, '--append-notes', appendText, '--if-revision', claimed.revision, '--actor', notesActor, '--json']);
+  assert.equal(appendMutation.result.changed, true);
+  const appended = await perform({ kind: 'resource', resource: 'bead', id: workID });
+  assert.equal(appended.revision, appendMutation.result.issue.revision);
+  assert.notEqual(appended.revision, claimed.revision);
+  assert.equal(appended.type, claimed.type);
+  assert.deepEqual(appended.properties, { ...claimed.properties, notes: appendText, updated_at: appended.properties.updated_at });
+  assert.deepEqual(appended.ownedLinks, claimed.ownedLinks);
+  const appendedProperties = await perform({ kind: 'properties', resource: 'bead', id: workID });
+  assert.deepEqual(appendedProperties, appended.properties);
+  const appendedInventory = await perform({ kind: 'collection', collection: 'beads', limit: 100 });
+  assert.equal(appendedInventory.next, null);
+  assert.equal(appendedInventory.items.length, 4);
+  assert.deepEqual(appendedInventory.items.find(bead => bead.id === workID), appended);
+  assert.deepEqual(await perform({ kind: 'resource', resource: 'bead', id: targetID }), targetBefore);
+  assert.deepEqual(await perform({ kind: 'resource', resource: 'link', id: dependencyID }), dependencyBefore);
+  const appendedIncident = await perform({ kind: 'bead-links', bead: workID, direction: 'both', limit: 100 });
+  assert.deepEqual(appendedIncident, incidentBefore);
+  const appendedHTTP = await http(workID, { headers: { 'if-none-match': notesETagBefore } });
+  assert.equal(appendedHTTP.response.status, 200);
+  assert.ok(appendedHTTP.response.headers.get('etag'));
+  assert.notEqual(appendedHTTP.response.headers.get('etag'), notesETagBefore);
+  assert.deepEqual(parseBeadRecord(JSON.parse(appendedHTTP.text)), appended);
+  await writeFile(join(output, "client-issue-notes-after.body"), appendedHTTP.bytes);
+  artifacts.issueNotes = { before: workAfter, claimed, claimMutation, noopMutation, noopRecord,
+    appendText, appendMutation, after: appended, properties: appendedProperties,
+    inventory: appendedInventory, incident: appendedIncident,
+    etagBefore: notesETagBefore, etagAfter: appendedHTTP.response.headers.get('etag'),
+    claimNetworkIndex, noopNetworkIndex, appendNetworkIndex: network.length - 1,
+    writer: 'installed CLI; unchanged independent public client over authenticated BDP Read' };
+  pass('public client sees exact appended notes through resource, properties and inventory with preserved lease/owned Links; predecessor ETag yields fresh 200');
+
   for (const collection of ['beads', 'links', 'types']) {
     const result = await collect(collection);
     artifacts[collection] = result;
@@ -364,7 +468,7 @@ try {
   try {
     const deletionSourceBefore = await perform({ kind: 'resource', resource: 'bead', id: workID });
     const deletionLinkBefore = await perform({ kind: 'resource', resource: 'link', id: dependencyID });
-    assert.deepEqual(deletionSourceBefore, workAfter);
+    assert.deepEqual(deletionSourceBefore, artifacts.issueNotes.after);
     assert.deepEqual(deletionLinkBefore, dependencyBefore);
     const deletionLinksBefore = await perform({ kind: 'collection', collection: 'links', limit: 100 });
     assert.equal(deletionLinksBefore.next, null);

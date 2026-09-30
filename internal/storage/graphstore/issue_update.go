@@ -15,8 +15,9 @@ import (
 // UpdateIssueRequest admits inline text, priority and non-claim assignment edits.
 // Priority zero sets P0; nil preserves it. Empty assignee clears it, without
 // claiming work or bypassing the native active-holder transfer fence.
-// Notes editing is reserved for integration of the existing contributor
-// safeguards. A nil field leaves that property unchanged; an explicit empty
+// AppendNotes uses the native append operation: empty-on-empty is a no-op,
+// empty-on-nonempty adds a newline. Replacement and clear remain unavailable.
+// A nil field leaves that property unchanged; an explicit empty
 // string clears it where the Issue domain permits. The guard addresses the complete graph revision, including
 // the Issue's owned blocking Dependencies, not its private storage ordinal.
 type UpdateIssueRequest struct {
@@ -25,6 +26,7 @@ type UpdateIssueRequest struct {
 	Title, Description, Design, AcceptanceCriteria *string
 	Priority                                       *int
 	Assignee                                       *string
+	AppendNotes                                    *string
 }
 
 // UpdateIssue delegates admitted scalar edits to the existing Issue domain writer and
@@ -49,6 +51,7 @@ func (s *Store) UpdateIssue(ctx context.Context, request UpdateIssueRequest) (Is
 		{"description", request.Description, &patch.Description},
 		{"design", request.Design, &patch.Design},
 		{"acceptance_criteria", request.AcceptanceCriteria, &patch.AcceptanceCriteria},
+		{"append_notes", request.AppendNotes, &patch.AppendNotes},
 	} {
 		if field.value == nil {
 			continue
@@ -91,7 +94,13 @@ func (s *Store) UpdateIssue(ctx context.Context, request UpdateIssueRequest) (Is
 		if err := checkRevisionGuard(request.ExpectedRevision, request.Unconditional, revision, true, "Issue"); err != nil {
 			return err
 		}
-		updates, err := issueops.DiscardNoopIssueUpdates(before.Properties, issueops.UpdateFields(patch))
+		// Resolve against the checked snapshot only for no-op planning. The native
+		// writer receives the original append intent and owns atomic composition.
+		updates, err := issueops.ResolveMergeOps(before.Properties, issueops.UpdateFields(patch))
+		if err != nil {
+			return err
+		}
+		updates, err = issueops.DiscardNoopIssueUpdates(before.Properties, updates)
 		if err != nil {
 			return err
 		}
@@ -121,6 +130,13 @@ func (s *Store) UpdateIssue(ctx context.Context, request UpdateIssueRequest) (Is
 		}
 		if err := s.recordIssueMappingInTx(ctx, tx, request.Path, before.Properties.ID); err != nil {
 			return err
+		}
+		// Append has no inverse in this preview. Charge the new retained head as
+		// well as current data; an unreadable result rolls back every write effect.
+		if patch.AppendNotes.Set {
+			if err := checkCurrentReadBytes(ctx, tx); err != nil {
+				return err
+			}
 		}
 		after, err := s.showIssueInTx(ctx, tx, request.Path)
 		if err != nil {
