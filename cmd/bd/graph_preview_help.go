@@ -79,9 +79,14 @@ remote-routing forms are unavailable in this graph preview.`},
 with --reason. Batch and remote-routing forms are unavailable.`},
 		{readyCmd, `Show current ready Issues with no graph-specific filters.
 This graph preview refuses positive BEADS_MAX_ROWS instead of truncating.`},
-		{listCmd, `List current Issues with --flat or --format records-json.
-Supported graph filters include status, type, title, priority, assignee,
-labels, pinned and due dates. Tree output and legacy --json are unavailable.`},
+		{listCmd, `List current Beads of all installed Bead Types. Human output
+is flat by default; --format records-json returns complete records. Use
+--bead-type types/NAME to narrow by Bead Type.
+Issue-specific filters such as status, --type, priority, assignee, labels,
+pinned and due dates select Issues through the existing Issue query; they
+cannot be combined with a non-Issue --bead-type. The unfiltered mixed list
+uses a bounded complete current snapshot, not a continuation cursor. Tree
+output and legacy --json are unavailable.`},
 		{blockedCmd, `Show current dependency-blocked Issues with canonical
 blocker IDs. Filters and positive BEADS_MAX_ROWS are unavailable.`},
 		{graphCmd, `Use bd graph ID --view generic to traverse the current

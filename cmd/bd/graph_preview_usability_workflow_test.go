@@ -120,6 +120,7 @@ func TestGraphPreviewUsabilityWorkflow(t *testing.T) {
 			call("compare", "policy", "--from", memory.Version, "--to", current.Version)
 			ordinaryWork, ordinaryHome := t.TempDir(), t.TempDir()
 			graphPolicyCLI(t, bd, ordinaryWork, ordinaryHome, nil, "capability_unavailable", "create", "--bead-type", "types/preview-memory-v2", "--body", "No store", "--json")
+			graphPolicyCLI(t, bd, ordinaryWork, ordinaryHome, nil, "capability_unavailable", "list", "--bead-type", "types/preview-memory-v2", "--format", "records-json")
 		})
 	}
 }

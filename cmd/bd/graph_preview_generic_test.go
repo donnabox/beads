@@ -72,6 +72,7 @@ func TestGraphPreviewGenericInput(t *testing.T) {
 		code        int
 	}{
 		{name: "defaults", flags: []string{"--view=generic"}, args: []string{"beads/a"}},
+		{name: "bare-bead-id", flags: []string{"--view=generic"}, args: []string{"a"}},
 		{name: "exact-url", flags: []string{"--view=generic", "--readonly", "--quiet", "--json"}, args: []string{genericTestScope + "beads/a"}},
 		{name: "zero-depth", flags: []string{"--view=generic", "--depth=0", "--max-nodes=1", "--max-links=1"}, args: []string{"beads/a"}},
 		{name: "hard-max", flags: []string{"--view=generic", "--depth=1000", "--max-nodes=1000", "--max-links=1000"}, args: []string{"beads/a"}},
@@ -83,7 +84,7 @@ func TestGraphPreviewGenericInput(t *testing.T) {
 		{name: "type-root", flags: []string{"--view=generic"}, args: []string{genericTestScope + "types/preview-memory-v1"}, code: 2},
 		{name: "foreign-root", flags: []string{"--view=generic"}, args: []string{"https://foreign.test/beads/a"}, code: 2},
 		{name: "version-root", flags: []string{"--view=generic"}, args: []string{genericTestScope + "beads/a?version=old"}, code: 2},
-		{name: "alias-root", flags: []string{"--view=generic"}, args: []string{"alias"}, code: 2},
+		{name: "unsupported-root", flags: []string{"--view=generic"}, args: []string{"alias/a"}, code: 2},
 		{name: "direction", flags: []string{"--view=generic", "--direction=sideways"}, args: []string{"beads/a"}, code: 2},
 		{name: "negative-depth", flags: []string{"--view=generic", "--depth=-1"}, args: []string{"beads/a"}, code: 2},
 		{name: "excess-depth", flags: []string{"--view=generic", "--depth=1001"}, args: []string{"beads/a"}, code: 2},

@@ -304,7 +304,7 @@ func TestGraphPreviewC0DeferredCommandsRefuseBeforeLegacyOpen(t *testing.T) {
 		"issueCreateFields", "issueInitialNotes", "issueNotesAppend", "issueEstimateUpdate", "issueReferenceUpdate",
 		"issueClaim", "issueTextUpdate", "issuePriorityUpdate", "issueAssigneeUpdate", "issueAssigneeFilter", "issueDueDate", "issueDueFilter", "informationalLink", "blockingDependency", "linkPropertiesUpdate", "linkUnlink", "blockingDependencyUnlink",
 		"incidentLinks", "ownedLinks", "issueClose", "issueReopen", "issueReady", "genericRead",
-		"issueList", "issueBlocked", "genericTraversal",
+		"issueList", "beadList", "beadTypeFilter", "issueBlocked", "genericTraversal",
 		"memoryDiscovery", "memoryBodyRecall", "exactVersionRead", "exactVersionCompare",
 		"memoryPropertiesPatch", "linkPropertiesPatch",
 	} {

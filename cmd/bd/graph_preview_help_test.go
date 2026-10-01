@@ -32,6 +32,7 @@ func TestGraphPreviewHelpDocumentsPlaytestCommands(t *testing.T) {
 		{"create", createCmd, []string{"Graph preview workspaces:", "--bead-type types/preview-memory-v2", "--id policy"}},
 		{"link", linkCmd, []string{"Graph preview workspaces:", "--link-type types/example-cites", "Memory or Issue"}},
 		{"update", updateCmd, []string{"Graph preview workspaces:", "--properties", "--if-revision TOKEN"}},
+		{"list", listCmd, []string{"Graph preview workspaces:", "all installed Bead Types", "--bead-type types/NAME", "Issue-specific filters"}},
 		{"types", typesCmd, []string{"Graph preview workspaces:", "types/NAME", "--details", "--bead-type", "--link-type"}},
 	} {
 		t.Run(tc.name, func(t *testing.T) {

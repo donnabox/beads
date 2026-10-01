@@ -58,6 +58,7 @@ func init() {
 	showCmd.Flags().String("version", "", "Read an exact retained version token (graph preview only)")
 	registerGraphLinkTypeFlag(linkCmd)
 	createCmd.Flags().String("bead-type", "", "Installed Bead Type: types/NAME or full local URL (graph preview only)")
+	listCmd.Flags().String("bead-type", "", "List only this installed Bead Type: types/NAME or full local URL (graph preview only)")
 	linkCmd.Flags().String("id", "", "New canonical links/PATH for an informational graph Link")
 	linkCmd.Flags().String("properties", "", "Informational Link properties as JSON, @file, or @- (graph preview only)")
 	updateCmd.Flags().String("patch", "", "Apply ordered Memory or informational Link property operations from JSON, @file, or @- (graph preview only)")
@@ -192,6 +193,9 @@ func admitGraphPreview(cmd *cobra.Command) (handled bool, admissionErr error) {
 		}
 		if cmd == listCmd && format == "records-json" {
 			return true, graphFailure("capability_unavailable", "records-json listing requires an experimental graph workspace", 5)
+		}
+		if cmd == listCmd && cmd.Flags().Changed("bead-type") {
+			return true, graphFailure("capability_unavailable", "--bead-type requires a workspace initialized with graph_mode link", 5)
 		}
 		if (cmd == deleteCmd || cmd == forgetCmd) && (cmd.Flags().Changed("if-revision") || cmd.Flags().Changed("unconditional")) {
 			return true, graphFailure("capability_unavailable", "Memory deletion guards require a workspace initialized with graph_mode link", 5)
@@ -513,8 +517,9 @@ func runGraphPreviewStatus(cmd *cobra.Command) error {
 	}
 	return withGraphStore(func(_ context.Context, _ *graphstore.Store) (any, string, error) {
 		return map[string]any{"scope": graphPreviewConfig.GraphScopeURL, "backend": graphPreviewConfig.DoltMode, "preview": true,
-				"limits": map[string]int{"issueListOutputBytes": graphIssueListOutputLimit,
-					"issueBlockedOutputBytes": graphIssueBlockedOutputLimit, "issueBlockedInventoryResources": graphstore.PreviewSnapshotLimit,
+				"limits": map[string]int{"issueListOutputBytes": graphIssueListOutputLimit, "beadListOutputBytes": graphIssueListOutputLimit,
+					"beadListInventoryResources": graphstore.PreviewSnapshotLimit,
+					"issueBlockedOutputBytes":    graphIssueBlockedOutputLimit, "issueBlockedInventoryResources": graphstore.PreviewSnapshotLimit,
 					"genericTraversalOutputBytes": graphGenericOutputLimit, "genericTraversalDepth": graphGenericBound,
 					"genericTraversalNodes": graphGenericBound, "genericTraversalLinks": graphGenericBound, "genericTraversalInventoryResources": graphstore.PreviewSnapshotLimit,
 					"memoryBodyInputBytes": graphPreviewMemoryBodyLimit, "memoryOwnedLinks": graphstore.PreviewOwnedLinkLimit,
@@ -549,11 +554,11 @@ func runGraphPreviewStatus(cmd *cobra.Command) error {
 					"linkUnlink": true, "blockingDependencyUnlink": true, "incidentLinks": true, "ownedLinks": true,
 					"issueClose": true, "issueReopen": true, "issueReady": true, "genericRead": true,
 					"memory": false, "memoryDelete": false, "memoryPropertiesPatch": true, "linkPropertiesPatch": true,
-					"issueList": true, "issueBlocked": true, "genericTraversal": true,
+					"issueList": true, "beadList": true, "beadTypeFilter": true, "issueBlocked": true, "genericTraversal": true,
 					"issueListTree": false, "issueListLegacyJSON": false, "issueAssigneeFilter": true, "issueDueDate": true, "issueDueFilter": true, "issueClaim": true, "issueWorkflows": false,
 					"blockingDependencyPairUnlink": false, "bdpRead": graphPreviewConfig.DoltMode == configfile.DoltModeServer, "historyExact": false, "exactVersionRead": true, "exactVersionCompare": true,
 					"requestStatus": false, "backupContinuity": false}},
-			"Mixed graph preview: Memory create/read, guarded complete title/body replacement and selected remember updates, actual predecessor disclosure for unconditional Memory writes, unreferenced Memory deletion with read-only preview and retained identity/snapshots, Issue create/read including initial fields, notes, due date and ordinary creator/owner defaults, guarded inline Issue title/description/design/acceptance, priority, estimate, external/spec references, due date and non-claim assignee edits, standalone atomic Issue claims with five-minute nonrenewing leases, transactional append-only Issue progress notes, informational Links with property replacement and guarded unlink, blocking Dependencies with canonical-ID unlink, incident Links, and Issue close/reopen/ready. Explicit flat/records-json Issue listing with assignee/unassigned and due-before/due-after/overdue filters, complete dependency-blocked inspection and bounded current generic summary traversal are available. Memory discovery returns complete bounded title/body search summaries; current and exact retained body-only recall, show --version and explicit-version compare are available as local experimental reads without History ordering or common metadata. Ordered Memory and informational Link property patches are available with existing resource/source guards. Full Memory, linked Memory deletion, Issue deletion, later Issue workflows, public History, adoption and recovery remain unavailable. BDP Read serving is available only on ordinary shared-server Dolt; embedded serving, HTTP writes and aliases remain unavailable.", nil
+			"Mixed graph preview: Memory create/read, guarded complete title/body replacement and selected remember updates, actual predecessor disclosure for unconditional Memory writes, unreferenced Memory deletion with read-only preview and retained identity/snapshots, Issue create/read including initial fields, notes, due date and ordinary creator/owner defaults, guarded inline Issue title/description/design/acceptance, priority, estimate, external/spec references, due date and non-claim assignee edits, standalone atomic Issue claims with five-minute nonrenewing leases, transactional append-only Issue progress notes, informational Links with property replacement and guarded unlink, blocking Dependencies with canonical-ID unlink, incident Links, and Issue close/reopen/ready. Bounded current all-Bead listing with nominal Bead Type filtering is available; Issue-specific filters retain the native Issue query and due/assignee filters. Complete dependency-blocked inspection and bounded current generic summary traversal are available. Memory discovery returns complete bounded title/body search summaries; current and exact retained body-only recall, show --version and explicit-version compare are available as local experimental reads without History ordering or common metadata. Ordered Memory and informational Link property patches are available with existing resource/source guards. Full Memory, linked Memory deletion, Issue deletion, later Issue workflows, public History, adoption and recovery remain unavailable. BDP Read serving is available only on ordinary shared-server Dolt; embedded serving, HTTP writes and aliases remain unavailable.", nil
 	})
 }
 
