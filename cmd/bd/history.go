@@ -33,6 +33,16 @@ Examples:
 	SilenceUsage:  true,
 	SilenceErrors: true,
 	RunE: func(cmd *cobra.Command, args []string) error {
+		// `bd history` means Dolt COMMITS on the native plane and that meaning
+		// is unchanged in ordinary workspaces. A graph workspace exposes no
+		// Dolt-commit view at all, so there is no collision: aliasing it to
+		// the per-Resource version list is the answer a reader asking for "the
+		// history of this bead" wants, and it keeps the operator ruling that
+		// `bd versions` is the verb (2026-09-21) intact rather than renaming it.
+		if graphPreviewActive {
+			return runGraphPreviewVersions(cmd, args)
+		}
+
 		evt := metrics.NewCommandEvent("history")
 		defer func() {
 			if c := metrics.Global(); c != nil {

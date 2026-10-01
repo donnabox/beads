@@ -90,7 +90,7 @@ func (s *Store) createInTx(ctx context.Context, tx *sql.Tx, req CreateRequest, r
 	if err := s.afterStage("payload"); err != nil {
 		return err
 	}
-	_, err = tx.ExecContext(ctx, `INSERT INTO graph_preview_versions (path, version, snapshot, actor) VALUES (?, ?, ?, ?)`, req.Path, r.Version, snapshot, req.Actor)
+	err = insertPreviewVersionInTx(ctx, tx, req.Path, r.Version, snapshot, req.Actor)
 	if err != nil {
 		return err
 	}
@@ -209,4 +209,29 @@ func (s *Store) showMemoryInTx(ctx context.Context, tx *sql.Tx, path string) (Re
 		return Record{}, fmt.Errorf("%w: current and retained state differ", ErrInvalidStore)
 	}
 	return record, nil
+}
+
+// insertPreviewVersionInTx retains one version of a Memory or Link with the
+// ordinal that orders its history and the instant it was written. It must run
+// inside the caller's write transaction so the ordinal read and the insert see
+// the same rows.
+func insertPreviewVersionInTx(ctx context.Context, tx *sql.Tx, path, version string, snapshot []byte, actor string) error {
+	// MAX+1 is not a safe allocator for concurrent writers in one store: two
+	// transactions can read the same MAX and the one_path_ordinal unique key
+	// rejects the second. The preview is single-writer-at-a-time, so this holds
+	// today. It is the same hazard as the native plane, tracked as
+	// gastownhall/beads#6379.
+	var ordinal int64
+	if err := tx.QueryRowContext(ctx, `SELECT COALESCE(MAX(ordinal),0)+1 FROM graph_preview_versions WHERE path=?`, path).Scan(&ordinal); err != nil {
+		return err
+	}
+	// change_at is DATETIME(6) and must stay untruncated. Dolt's precision-0
+	// datetime rounds half-up rather than truncating, which broke same-second
+	// ordering on the native plane until migration 0069 widened the column and
+	// #6661 removed a Truncate(time.Second) (pinned by
+	// TestRecordVersionKeepsSubSecondChangeAt). Ordinal is the ordering key;
+	// change_at is for display and --at selection, so do not floor it here.
+	changeAt := time.Now().UTC()
+	_, err := tx.ExecContext(ctx, `INSERT INTO graph_preview_versions (path, version, snapshot, actor, ordinal, change_at) VALUES (?, ?, ?, ?, ?, ?)`, path, version, snapshot, actor, ordinal, changeAt)
+	return err
 }
