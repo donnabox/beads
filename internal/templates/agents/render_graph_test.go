@@ -28,8 +28,10 @@ func TestGraphPreviewGuidanceReusesDurableStorage(t *testing.T) {
 			t.Errorf("missing supported graph guidance %q", command)
 		}
 	}
-	if !strings.Contains(section, "Only when the operator explicitly asks") {
-		t.Fatal("Claude configuration must remain operator opt-in")
+	if !strings.Contains(section, "registers the project-local Claude Stop reminder by default") ||
+		!strings.Contains(section, "unless --skip-hooks or --skip-agents is used") ||
+		!strings.Contains(section, "In an existing graph workspace without that hook") {
+		t.Fatal("graph guidance must describe automatic registration and the existing-workspace setup path")
 	}
 	for _, line := range strings.Split(section, "`") {
 		if strings.HasPrefix(line, "bd setup") && line != "bd setup claude" && line != "bd setup claude --check" && line != "bd setup claude --remove" {

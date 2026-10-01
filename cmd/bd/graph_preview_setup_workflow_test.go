@@ -42,6 +42,10 @@ func TestGraphPreviewClaudeStopAutoInit(t *testing.T) {
 			if err != nil || string(claude) != "@AGENTS.md\n" {
 				t.Fatalf("init did not import graph guidance: %v %q", err, claude)
 			}
+			guidance, err := os.ReadFile(filepath.Join(work, "AGENTS.md"))
+			if err != nil || !bytes.Contains(guidance, []byte("registers the project-local Claude Stop reminder by default")) {
+				t.Fatalf("init guidance did not describe automatic Stop registration: %v %s", err, guidance)
+			}
 		})
 	}
 }
