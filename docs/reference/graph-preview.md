@@ -324,9 +324,14 @@ return (more than 1,000 versions, or over the 16 MiB read budget) still
 refuses with `capability_unavailable`, because limit refusals use that code;
 there is no pagination.
 
-Ordinals are not a safe allocator for concurrent writers in one store. The
-preview admits one writer at a time, which keeps them unique; the same
-limitation applies to native Issue versions. This is a CLI listing only: no
+Memory and Link ordinals are allocated as `MAX(ordinal)+1` per Resource inside
+the writing transaction. Every graph write also updates one store-wide writer
+fence, so two concurrent writers in one store always contend: the loser fails
+at commit with `revision_conflict` (exit 4) and nothing is retained for it. A
+unique `(path, ordinal)` key backs this up. Issue ordinals are native revisions
+and are allocated by the native Issue writer.
+
+This is a CLI listing only: no
 HTTP History route or public History contract is added, `serve` publishes no
 History, and the list does not support as-of selection or restoration.
 `status --graph` reports `versionList: true` for this command;
