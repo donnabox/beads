@@ -15,7 +15,7 @@ var graphUnlinkCmd = &cobra.Command{
 	Short: "Remove a Link in an experimental graph workspace",
 	Long: `Remove one informational Link or blocking Dependency by canonical Link ID.
 Informational Links also accept an unambiguous source/target pair selected with
---resource-type. Requires a Link revision guard. Source revision protection is
+--link-type. Requires a Link revision guard. Source revision protection is
 optional for Memory-owned Links and required for blocking Dependencies. The ID
 stays reserved and prior snapshots remain retained. Blocking pair selection is
 not supported.`,
@@ -36,13 +36,13 @@ not paginate, read historical state, or resolve remote targets.`,
 
 func init() {
 	rootCmd.AddCommand(graphUnlinkCmd, graphLinksCmd)
-	graphUnlinkCmd.Flags().String("resource-type", "", "Installed Link Type URL for pair selection")
+	registerGraphLinkTypeFlag(graphUnlinkCmd)
 	graphUnlinkCmd.Flags().String("if-revision", "", "Require this observed Link revision")
 	graphUnlinkCmd.Flags().Bool("unconditional", false, "Explicitly accept the current Link revision")
 	graphUnlinkCmd.Flags().String("if-source-revision", "", "Require this observed owning-source revision")
 	graphUnlinkCmd.Flags().Bool("unconditional-source", false, "Accept the current owning-source revision (default without --if-source-revision)")
 	graphLinksCmd.Flags().String("direction", "both", "Incident direction: in, out, or both")
-	graphLinksCmd.Flags().String("resource-type", "", "Filter by exact installed Link Type URL")
+	registerGraphLinkTypeFlag(graphLinksCmd)
 }
 
 func graphPreviewBeadSelector(selector string) (string, error) {
@@ -57,7 +57,7 @@ func graphPreviewBeadSelector(selector string) (string, error) {
 }
 
 func runGraphPreviewLinks(cmd *cobra.Command, args []string) error {
-	if err := graphPreviewFlags(cmd, "direction", "resource-type"); err != nil {
+	if err := graphPreviewFlags(cmd, "direction", "link-type", "resource-type"); err != nil {
 		return err
 	}
 	if len(args) != 1 {
@@ -71,9 +71,9 @@ func runGraphPreviewLinks(cmd *cobra.Command, args []string) error {
 	if direction != "in" && direction != "out" && direction != "both" {
 		return graphFailure("invalid_selector", "direction must be in, out, or both", 2)
 	}
-	typ, _ := cmd.Flags().GetString("resource-type")
-	if cmd.Flags().Changed("resource-type") && typ == "" {
-		return graphFailure("invalid_selector", "resource-type must be an installed Link Type URL", 2)
+	typ, err := graphPreviewLinkType(cmd)
+	if err != nil {
+		return err
 	}
 	return withGraphStore(func(ctx context.Context, store *graphstore.Store) (any, string, error) {
 		result, err := store.ListLinks(ctx, graphstore.LinksRequest{BeadPath: path, Direction: direction, TypeURL: typ})
@@ -95,7 +95,7 @@ func runGraphPreviewUnlink(cmd *cobra.Command, args []string) error {
 	if err := graphPreviewWritePolicy(); err != nil {
 		return err
 	}
-	if err := graphPreviewFlags(cmd, "resource-type", "if-revision", "unconditional", "if-source-revision", "unconditional-source"); err != nil {
+	if err := graphPreviewFlags(cmd, "link-type", "resource-type", "if-revision", "unconditional", "if-source-revision", "unconditional-source"); err != nil {
 		return err
 	}
 	if len(args) != 1 && len(args) != 2 {
@@ -103,8 +103,8 @@ func runGraphPreviewUnlink(cmd *cobra.Command, args []string) error {
 	}
 	request := graphstore.LinkDeleteRequest{Actor: getActorWithGit()}
 	if len(args) == 1 {
-		if cmd.Flags().Changed("resource-type") {
-			return graphFailure("invalid_selector", "resource-type is only used for pair selection", 2)
+		if graphPreviewLinkTypeChanged(cmd) {
+			return graphFailure("invalid_selector", "--link-type is only used for pair selection", 2)
 		}
 		path, err := graphPreviewResourcePath(graphPreviewConfig.GraphScopeURL, args[0])
 		if err != nil {
@@ -124,9 +124,12 @@ func runGraphPreviewUnlink(cmd *cobra.Command, args []string) error {
 		if err != nil {
 			return err
 		}
-		request.TypeURL, _ = cmd.Flags().GetString("resource-type")
+		request.TypeURL, err = graphPreviewLinkType(cmd)
+		if err != nil {
+			return err
+		}
 		if request.TypeURL == "" {
-			return graphFailure("invalid_selector", "pair unlink requires --resource-type", 2)
+			return graphFailure("invalid_selector", "pair unlink requires --link-type", 2)
 		}
 	}
 	var err error

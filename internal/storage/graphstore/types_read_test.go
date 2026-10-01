@@ -31,7 +31,7 @@ func TestReadInstalledTypes(t *testing.T) {
 			if err := s.db.QueryRowContext(ctx, `SELECT writer_token FROM graph_preview_scope WHERE singleton=1`).Scan(&writerBefore); err != nil {
 				t.Fatal(err)
 			}
-			for name, id := range map[string]string{"memory": MemoryTypeURL(o.Binding.ScopeURL), "issue": IssueTypeURL(o.Binding.ScopeURL), "dependency": DependencyTypeURL(o.Binding.ScopeURL), "related": RelatedTypeURL(o.Binding.ScopeURL)} {
+			for name, id := range map[string]string{"memory": MemoryTypeURL(o.Binding.ScopeURL), "issue": IssueTypeURL(o.Binding.ScopeURL), "dependency": DependencyTypeURL(o.Binding.ScopeURL), "related": RelatedTypeURL(o.Binding.ScopeURL), "example-follows": ExampleFollowsTypeURL(o.Binding.ScopeURL), "example-cites": ExampleCitesTypeURL(o.Binding.ScopeURL)} {
 				got, err := s.ReadType(ctx, strings.TrimPrefix(id, o.Binding.ScopeURL))
 				if err != nil {
 					t.Fatal(err)

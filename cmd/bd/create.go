@@ -35,6 +35,10 @@ import (
 // rejected identically for both backends, and before any invocation that is
 // guaranteed to fail wastes a store open/migration.
 func validateCreateArgs(cmd *cobra.Command, args []string) error {
+	// Typed graph creation validates its own title/body after fail-closed admission.
+	if cmd.Flags().Changed("bead-type") {
+		return nil
+	}
 	markdownFile, _ := cmd.Flags().GetString("file")
 	graphFile, _ := cmd.Flags().GetString("graph")
 	titleFlag, _ := cmd.Flags().GetString("title")

@@ -28,7 +28,7 @@ func TestCurrentSnapshotLifecycle(t *testing.T) {
 				}
 			})
 			empty, err := s.CurrentSnapshot(ctx)
-			if err != nil || len(empty.Records) != 0 || len(empty.Types) != 4 || !authorityID.MatchString(empty.WriterToken) {
+			if err != nil || len(empty.Records) != 0 || len(empty.Types) != 6 || !authorityID.MatchString(empty.WriterToken) {
 				t.Fatalf("empty inventory: %+v %v", empty, err)
 			}
 			memory, err := s.Create(ctx, CreateRequest{Path: "beads/plan", Body: "Plan"})

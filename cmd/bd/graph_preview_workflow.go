@@ -31,7 +31,7 @@ func runGraphPreviewAddDependency(cmd *cobra.Command, args []string) error {
 	if err := graphPreviewWritePolicy(); err != nil {
 		return err
 	}
-	if err := graphPreviewFlags(cmd, "type", "resource-type", "if-source-revision", "unconditional-source"); err != nil {
+	if err := graphPreviewFlags(cmd, "type", "link-type", "resource-type", "if-source-revision", "unconditional-source"); err != nil {
 		return err
 	}
 	if len(args) != 2 {
@@ -49,22 +49,25 @@ func runGraphPreviewAddDependency(cmd *cobra.Command, args []string) error {
 		paths[i] = path
 	}
 	var sourceRevision string
-	if cmd.Flags().Changed("resource-type") {
+	if graphPreviewLinkTypeChanged(cmd) {
 		if cmd.Flags().Changed("type") {
-			return graphFailure("invalid_selector", "select either --type or --resource-type", 2)
+			return graphFailure("invalid_selector", "select either --type or --link-type", 2)
 		}
 		sourceRevision, _ = cmd.Flags().GetString("if-source-revision")
 		unconditional, _ := cmd.Flags().GetBool("unconditional-source")
 		if cmd.Flags().Changed("if-source-revision") == cmd.Flags().Changed("unconditional-source") || (sourceRevision == "" && !unconditional) {
 			return graphFailure("invalid_selector", "generic owned Link creation requires either --if-source-revision REVISION or --unconditional-source", 2)
 		}
-		resourceType, _ := cmd.Flags().GetString("resource-type")
+		resourceType, err := graphPreviewLinkType(cmd)
+		if err != nil {
+			return err
+		}
 		if resourceType != graphstore.DependencyTypeURL(graphPreviewConfig.GraphScopeURL) {
 			return graphFailure("capability_unavailable", "this preview accepts only the installed Type "+graphstore.DependencyTypeURL(graphPreviewConfig.GraphScopeURL), 5)
 		}
 	} else {
 		if cmd.Flags().Changed("if-source-revision") || cmd.Flags().Changed("unconditional-source") {
-			return graphFailure("invalid_selector", "source guard options require --resource-type", 2)
+			return graphFailure("invalid_selector", "source guard options require --link-type", 2)
 		}
 		raw, _ := cmd.Flags().GetString("type")
 		typ := canonicalDependencyType(types.DependencyType(raw))
@@ -78,6 +81,9 @@ func runGraphPreviewAddDependency(cmd *cobra.Command, args []string) error {
 	return withGraphStore(func(ctx context.Context, store *graphstore.Store) (any, string, error) {
 		result, err := store.AddDependency(ctx, graphstore.DependencyRequest{SourcePath: paths[0], TargetPath: paths[1], Actor: getActorWithGit(), ExpectedSourceRevision: sourceRevision})
 		if err != nil {
+			if strings.Contains(err.Error(), "operation requires a live durable Issue, not generic") {
+				return nil, "", fmt.Errorf("blocking Link Type requires two live Issues; use an informational Type such as types/preview-related-v2 for Memory endpoints: %w", err)
+			}
 			return nil, "", err
 		}
 		verb := "Created"

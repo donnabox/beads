@@ -15,7 +15,7 @@ import (
 // allocation's backing key permits a later pair assertion under a NEW Link ID.
 func (s *Store) validDeletedLinkAllocation(kind, typ, backing string, key sql.NullString) bool {
 	return kind == "link" && !key.Valid &&
-		((backing == "informational" && typ == RelatedTypeURL(s.ScopeURL())) ||
+		((backing == "informational" && IsInformationalTypeURL(s.ScopeURL(), typ)) ||
 			(backing == "dependency" && typ == DependencyTypeURL(s.ScopeURL())))
 }
 
