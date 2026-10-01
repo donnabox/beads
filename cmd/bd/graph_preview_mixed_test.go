@@ -6,6 +6,7 @@ import (
 	"encoding/json"
 	"os"
 	"reflect"
+	"strings"
 	"testing"
 
 	"github.com/steveyegge/beads/internal/storage/graphstore"
@@ -89,6 +90,28 @@ func TestGraphPreviewMixedCoreWorkflow(t *testing.T) {
 			refuse("revision_conflict", "update", "links/context", "--properties", `{"note":"stale"}`, "--if-revision", first.Link.Revision, "--unconditional-source")
 			if call("show", "beads/plan") != before || call("show", "links/context") != linkBefore {
 				t.Fatal("stale Link update changed Link or owning Memory")
+			}
+
+			// The blocking Type is Issue-only. Selecting it explicitly for a
+			// Memory endpoint, as source or target, keeps the invalid_properties
+			// code and the store's cause, adds the hint naming an informational
+			// Type to use instead, and changes neither endpoint.
+			const memoryEndpointHint = "blocking Link Type requires two live Issues; use an informational Type such as types/preview-related-v2 for Memory endpoints: "
+			planBefore, workBefore := call("show", "beads/plan"), call("show", "beads/work")
+			for _, endpoints := range [][2]string{{"beads/plan", "beads/work"}, {"beads/work", "beads/plan"}} {
+				stdout, stderr, exit := graphVersionsProcess(t, bd, work, home, "link", endpoints[0], endpoints[1], "--link-type", "types/preview-blocks-v1", "--unconditional-source", "--json")
+				var diagnostic struct {
+					Code      string `json:"code"`
+					Message   string `json:"message"`
+					Retryable bool   `json:"retryable"`
+				}
+				if exit != 2 || stdout != "" || json.Unmarshal([]byte(stderr), &diagnostic) != nil || diagnostic.Code != "invalid_properties" || diagnostic.Retryable ||
+					!strings.HasPrefix(diagnostic.Message, memoryEndpointHint) || !strings.Contains(diagnostic.Message, "operation requires a live durable Issue, not generic") {
+					t.Fatalf("blocking Type with Memory endpoint %v: exit=%d stdout=%q stderr=%q", endpoints, exit, stdout, stderr)
+				}
+			}
+			if call("show", "beads/plan") != planBefore || call("show", "beads/work") != workBefore {
+				t.Fatal("refused blocking Link changed an endpoint")
 			}
 
 			dependency := graphMixedResult[graphstore.DependencyResult](t, call("dep", "add", "beads/work", "beads/gate"))
