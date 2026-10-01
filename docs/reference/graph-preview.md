@@ -95,7 +95,8 @@ explicit creation title must remain nonempty; updates preserve omitted fields.
 | `create TITLE [--id beads/PATH]` | Create an Issue. Allows `--title`, inline `--description`/`--body`/`--message`, `--type`, `--priority`, `--labels`/`--label`, inline `--design`, `--acceptance`, `--assignee`, `--estimate`, `--external-ref`, `--spec-id`, `--due` and initial `--notes`. Existing classification rules apply. Initial status is open. Ordinary creator identity and git-email Owner defaults are included in the Issue data. |
 | `update BEAD` with Issue scalar flags | Inline `--title`, `--description`/`--body`/`--message`, `--design`, `--acceptance`, `--priority`, non-claim `--assignee`, `--estimate`, `--external-ref`, `--spec-id`, `--due` and literal `--append-notes`. Requires `--if-revision TOKEN` or `--unconditional`. Description aliases must agree. Files/stdin and other Issue fields are unavailable. |
 | `update BEAD --claim` | Atomically claim one Issue for the current actor using the native writer. Standalone `--claim=true` only; no other edits or revision/force guard. Repeating the same actor is a no-op and does not renew its five-minute lease. |
-| `show RESOURCE` | Current Memory, Issue or Link; optional `--version TOKEN` selects an exact retained record. No chronological History option. |
+| `show RESOURCE` | Current Memory, Issue or Link; optional `--version TOKEN` selects an exact retained record. Use `versions` to list a Resource's versions in order. |
+| `versions RESOURCE` | List one Memory, Issue or Link's retained versions newest first, each with its ordinal, version token, change time, actor and a `removed` marker. In a graph workspace `history RESOURCE` is an alias with the same output; ordinary workspaces keep the Dolt-commit `history`. |
 | `compare RESOURCE --from TOKEN --to TOKEN` | Compare two complete retained preview versions of one Memory, Issue or Link. Explicit tokens determine direction, not chronology. |
 | `link SOURCE TARGET --resource-type TYPE` | Use an exact installed Link Type URL. Informational Links permit `--id links/PATH`, `--properties JSON` and source guards. Memory sources own informational Links; Issue sources do not. |
 | `dep add SOURCE TARGET` or `link SOURCE TARGET` | A local blocking Dependency between Issues, using the ordinary default `blocks` type. No bulk, remote, routing or bypass flags. |
@@ -215,7 +216,7 @@ keep their established admission policy. A no-op writes nothing and does not
 repair an oversized workspace; a properties document already above the
 patch limit cannot use this route to shrink itself. Runtime bound refusals
 report `capability_unavailable`. These bounded CLI changes do not enable a
-public BDP Write profile, History ordering or durable request outcomes.
+public BDP Write profile, a public History contract or durable request outcomes.
 
 ## Find and inspect retained Memory
 
@@ -256,8 +257,8 @@ unavailable because the complete Memory representation is unresolved.
 
 `show --version` also supports retained Issue and Link records, including their
 saved owned Links. Tokens are opaque nonempty UTF-8 strings of at most 4,096
-bytes. Local ordinals, timestamps, full version URLs and as-of selection are
-not interpreted. An unknown or other-resource token returns `revision_unknown`;
+bytes. `--version` does not interpret local ordinals, timestamps, full version
+URLs or as-of selection; it takes only a token. An unknown or other-resource token returns `revision_unknown`;
 a missing subject returns `not_found`. A removed Link's prior live versions
 remain readable; its private removal token returns `gone`. A deleted Memory
 retains its final live head without inventing a deletion version.
@@ -281,8 +282,73 @@ Memory also validates its final live snapshot before reading an older selected
 snapshot, so a distinct pair can acquire up to 64 MiB in total (up to 32 MiB
 for equal older tokens, which are resolved once). This excludes decoding/output
 overhead and is not a total-heap or rendered-output cap. These read commands work under `--readonly` and migration freeze. They
-do not enable HTTP History, authoritative ordering, restoration or a stable
-public comparison contract; `historyExact` remains false.
+do not order versions themselves (see `versions` below), and they do not enable
+HTTP History, restoration or a stable public comparison contract;
+`historyExact` remains false.
+
+## List a Resource's versions
+
+`versions` lists the retained versions of one Memory, Issue or Link, newest
+first. In a graph workspace, `history` is an alias that produces the same
+output. In an ordinary workspace `history` is unchanged and still reports
+Dolt commits.
+
+```sh
+bd versions beads/plan
+bd history beads/plan     # same output, graph workspaces only
+# Feed a listed token to an exact read or a comparison.
+bd show beads/plan --version LISTED_TOKEN
+```
+
+Each row carries `ordinal`, `version`, `change_at`, `actor`, `attribution`
+and `removed`; `--json` reports them under those names, inside a result that
+also names the `resource` and its `kind`. `version` is the
+opaque token and the only citable address for a version. `ordinal` is an
+ordering key, not an address: it is local to one Resource in one store and
+cannot be passed to `show --version` or `compare`. The field is deliberately
+not named `revision`, which already means the opaque token in graph records
+and the row-lock token on native Issues. `change_at` is for display and is
+never used to order rows, so two versions written within the same second
+still list in write order. Memory and Link ordinals are allocated per
+Resource when each version is written. Issue rows come from the native Issue
+version record, use its revision as the ordinal and populate `attribution`
+with its attribution status; Memory and Link rows leave `attribution` empty.
+A deleted Memory's list ends at its final live head; deletion adds no version
+to it.
+
+`removed` is false on every row except one: a removed Link's deletion marker.
+That row is listed, as the Link's newest version, because the removal is part
+of its history. It is not citable: `show --version` refuses its token with
+`gone`, as it always has. `removed: true` means "listed but not citable".
+Every other listed token is one `show --version` and `compare` accept.
+
+The command has two answers:
+
+- An ordered list, newest first. A Resource's creation is its version 1,
+  written in the same transaction that allocates it, so the list always has at
+  least one row. Deleted Memories and removed Links still list their history.
+- `not_found` when nothing was ever allocated at that path.
+
+An allocated Resource with no versions is corruption, not an empty history,
+and the command refuses rather than printing an empty list. Every plane in a
+schema version 6 workspace can order its versions. A history too large to
+return (more than 1,000 versions, or over the 16 MiB read budget) still
+refuses with `capability_unavailable`, because limit refusals use that code;
+there is no pagination.
+
+Memory and Link ordinals are allocated as `MAX(ordinal)+1` per Resource inside
+the writing transaction. Every graph write also updates one store-wide writer
+fence, so two concurrent writers in one store always contend: the loser fails
+at commit with `revision_conflict` (exit 4) and nothing is retained for it. A
+unique `(path, ordinal)` key backs this up. Issue ordinals are native revisions
+and are allocated by the native Issue writer.
+
+This is a CLI listing only: no
+HTTP History route or public History contract is added, `serve` publishes no
+History, and the list does not support as-of selection or restoration.
+`status --graph` reports `versionList: true` for this command;
+`historyExact: false` continues to describe the HTTP profile, where exact
+History remains unavailable.
 
 ## Unreferenced Memory deletion
 
