@@ -1,8 +1,10 @@
 # Mixed Memory and Issue graph preview
 
-For a command-oriented introduction that tracks the current graph CLI, see
-the [standalone graph CLI guide](/reference/graph-cli). This page records the more
-detailed preview contracts, bounds and unsupported operations.
+For setup and task-oriented commands, start with the
+[graph CLI guide](/reference/graph-cli). This page is the living technical
+reference for the preview's exact command matrix, contracts, bounds and
+unsupported operations. The blog post is the publication narrative; this
+reference and the CLI guide continue to change with the implementation.
 
 This integration checkpoint supports a bounded Memory/Issue workflow in a
 **fresh, explicitly selected graph workspace**. Existing ordinary Issue
@@ -116,7 +118,7 @@ explicit creation title must remain nonempty; updates preserve omitted fields.
 | `close BEAD` | Close one Issue through the existing Issue policy, optionally with ordinary reason aliases. No force or batch operations. |
 | `reopen BEAD` | Reopen one Issue, optionally with `--reason`. |
 | `ready` | Unfiltered current ready Issues through ordinary readiness rules. No list filters, output limit or configured positive `BEADS_MAX_ROWS`. |
-| `list --flat` or `list --format records-json` | Current complete Issue records with status/type/title/priority/assignee/label/pinned and `--due-before`/`--due-after`/`--overdue` filters and explicit limited-page `hasMore`. Tree and legacy JSON remain unavailable. |
+| `list` or `list --format records-json` | Current Beads of all installed Bead Types by default; `--bead-type types/NAME` narrows by nominal Bead Type. Issue-specific status/classification/title/priority/assignee/label/pinned and due-date filters retain the native Issue-only query. Explicit limited results report `hasMore`; tree and legacy JSON remain unavailable. |
 | `blocked` | Complete native dependency-blocked Issue view with canonical blocker IDs. No filters or positive `BEADS_MAX_ROWS`. |
 | `graph BEAD --view generic` | Current local summary traversal with `--direction in\|out\|both`, `--depth`, `--max-nodes` and `--max-links`. |
 | `status --graph` | Report the capabilities and bounds admitted by this checkpoint, including initial Issue fields/notes, append-only notes, estimate/reference edits and due-date authoring/filtering. |
@@ -160,15 +162,14 @@ bd remember 'Context for the plan.' --id beads/context --title Context
 bd create 'Ship the release' --id beads/work --priority 1
 bd link beads/plan beads/context \
   --link-type types/preview-related-v2 \
-  --id links/context --properties '{"note":"background"}' \
-  --unconditional-source
+  --id links/context --properties '{"note":"background"}'
 bd link beads/plan beads/work \
   --link-type types/preview-related-v2 \
-  --id links/work --unconditional-source
+  --id links/work
 bd links beads/plan --json
 bd update links/context --properties '{"note":"revised background"}' \
-  --unconditional --unconditional-source
-bd unlink links/context --unconditional --unconditional-source
+  --unconditional
+bd unlink links/context --unconditional
 ```
 
 `--unconditional` explicitly accepts the current record; use an observed
@@ -358,6 +359,19 @@ graph slice. Ordinary Issue deletion and key/value `forget` remain unchanged.
 `status --graph` advertises `memoryUnreferencedDelete`; general `memoryDelete`
 remains false because linked Memory deletion policy is unresolved.
 
+## All-Bead listing
+
+Unfiltered `bd list` and `bd list --format records-json` enumerate
+current Issues and Memories together. An optional `--bead-type types/NAME`
+filters to one installed Bead Type; Link Types and uninstalled Types refuse.
+The mixed list reads one checked snapshot, sorted by canonical Bead ID, and
+inherits its 1,000-live-Resource/16 MiB acquisition bounds, including Links
+that are not printed. `--limit` returns a prefix and truthful `hasMore` but
+does not return a continuation cursor. `--all` requests all matches within
+the same bounds. Issue-specific list filters continue to use the existing
+native Issue query and cannot be combined with a non-Issue `--bead-type`.
+For paginated all-Bead enumeration, use the BDP HTTP `beads/` collection.
+
 ## Read-only Issue queries and traversal
 
 ```sh
@@ -367,7 +381,8 @@ bd blocked --readonly --json
 bd graph beads/plan --view generic --direction out --depth 2 --json
 ```
 
-Issue listing reuses the existing native query, configuration and limit policy.
+When an Issue-specific list filter is supplied, listing reuses the existing
+native Issue query, configuration and limit policy.
 It accepts status (or state), type, title/title-contains, priority and priority
 range, assignee/no-assignee, label/label-any/exclude-label, pinned/no-pinned and
 due-before/due-after/overdue filters. Sorting accepts

@@ -1,10 +1,34 @@
 # Graph CLI guide
 
-This page describes the experimental CLI in a workspace initialized with
-`bd init --graph-mode link`. It is a standalone command guide; the
-[graph preview reference](/reference/graph-preview) has the complete capability bounds
-and storage rules. Ordinary Beads workspaces keep their existing Issue and
-key/value-memory commands.
+> **New workspaces only.** The graph preview cannot be enabled on an existing
+> `.beads` project or used to migrate its Issue database. Start in a new
+> directory without `.beads`; `bd init --graph-mode link` refuses an existing
+> or incomplete workspace rather than replacing its data. Keep ordinary
+> projects on their existing format. Do not copy a `.beads` directory into a
+> graph workspace as an upgrade path.
+
+Build `bd` from the [integration branch](https://github.com/versioned-beads/beads/tree/integration),
+not a released binary, and initialize a new project explicitly:
+
+```sh
+mkdir graph-demo && cd graph-demo
+git init
+bd init --graph-mode link --scope-url https://example.org/team/ \
+  --skip-hooks --skip-agents --non-interactive
+bd status --graph
+```
+
+The Scope URL establishes canonical identity; this command does not start an
+HTTP server at that address. The example skips agent-file and hook setup to
+keep the CLI exercise isolated. See the
+[graph preview technical reference](/reference/graph-preview) for supported
+embedded and external Dolt modes, agent setup, limits, and refusals.
+
+This page is the evolving **task-oriented CLI guide**. The graph preview
+technical reference is the evolving, detailed command matrix and contract;
+neither page is a frozen release note. The blog post explains the model and
+links to these pages for commands that may change after publication. Ordinary
+Beads workspaces keep their existing Issue and key/value-memory commands.
 
 In a graph workspace, a Bead is an Issue or a Memory. Its canonical identity
 is under `beads/`. In CLI arguments, `policy` means `beads/policy`; a Link
@@ -52,23 +76,24 @@ in this one.
 | `bd memories [SEARCH]` | List current Memory title/body summaries. Use `--all` for all matches within the preview's bounds, `--details` for saved version and attribution, or `--format records-json` for structured summaries. |
 | `bd recall ID` | Print **one** Memory's exact body bytes. It does not enumerate Memories or add a newline. |
 | `bd show ID --json` | Read one current Issue or Memory record; use `links/ID` for a Link. |
-| `bd list --flat` or `bd list --format records-json` | List **Issues only** today. Existing status, Issue classification, assignee and due-date filters apply. This is not yet an all-Bead inventory. |
+| `bd list` or `bd list --format records-json` | List current Beads of all installed Bead Types. Use `--bead-type types/NAME` to narrow by nominal Type. Issue-specific filters select Issues through the existing Issue query. |
 
 ```sh
 bd memories --all
 bd memories 'code flow' --details
 bd recall policy
 bd show work --json
-bd list --flat --all
+bd list --all
+bd list --format records-json --bead-type types/preview-memory-v2 --all
 ```
 
-There is not yet one CLI command that enumerates every Bead regardless of
-Type. The BDP HTTP `beads/` collection already does so in an ordinary
-shared-server graph workspace, with pagination. Follow every response's
-`next` URL until it is `null`, or use the
+The CLI's all-Bead inventory uses one bounded current snapshot; `--limit`
+sets a visible prefix and `hasMore` indicates that the prefix omitted matches.
+It is not a continuation cursor. The BDP HTTP `beads/` collection provides
+pagination in an ordinary shared-server graph workspace. Follow every
+response's `next` URL until it is `null`, or use the
 [public Python read example](https://github.com/versioned-beads/beads/blob/integration/examples/bdp-read/read_beads.py), which
-follows those pages. Graph `bd list` becoming an all-Bead inventory is a
-proposed CLI change, not current behavior.
+follows those pages.
 
 ## Update and delete Beads
 
@@ -102,21 +127,62 @@ outgoing or self-Link makes deletion refuse; `--force` does not cascade.
 Issue deletion is not available in this graph preview.
 
 ```sh
-bd delete policy
-bd delete policy --force --unconditional
+bd remember 'Temporary note' --id scratch
+bd delete scratch
+bd delete scratch --force --unconditional
 # Or, for another unreferenced Memory:
-bd forget scratch --unconditional
+bd remember 'Another temporary note' --id other-scratch
+bd forget other-scratch --unconditional
 ```
 
 Deletion removes current Memory state but reserves its ID and retains prior
 snapshots. It does not create a deletion version or promise erasure or restore.
 
+## Create, inspect, edit and remove Links
+
+Use `bd types` to find installed Link Types. An informational Type such as
+`types/preview-related-v2` can connect a Memory to a Memory or Issue. An
+explicit `links/ID` makes subsequent edits easy; omit it to allocate an ID.
+The Link's Type and endpoints do not change during a properties edit. For the
+installed preview informational Types, the optional property is a string
+`note`. A Memory owns its outgoing informational Links, so changing one also
+changes the source Memory's version. A target does not change merely because
+it is linked.
+
+```sh
+bd link policy work --link-type types/preview-related-v2 \
+  --id links/policy-work --properties '{"note":"work follows this policy"}'
+bd links policy
+bd show links/policy-work --json
+bd update links/policy-work --properties '{"note":"reviewed policy"}' --unconditional
+bd unlink links/policy-work --unconditional
+```
+
+`bd links ID` lists current incident Links. A Memory-owned informational Link
+defaults to accepting the current source state; add `--if-source-revision
+TOKEN` to reject a stale source. Link updates and unlink still require their
+own `--if-revision TOKEN` or `--unconditional` choice. Unlink removes the
+current Link but retains its identity and prior snapshots. The blocking
+`types/preview-blocks-v1` Type is only for live Issues; it refuses a Memory
+endpoint. See the [technical reference](/reference/graph-preview) for the
+separate blocking Dependency unlink rules and Link Type bounds.
+
 ## Versioning and History
 
-Current graph records carry opaque revision/version tokens. Save a token from
-a record or `bd memories --details` to read that exact retained state later.
-Version reads do not depend on the record still being current. `bd compare`
-compares two **chosen** retained versions; the token order you give it sets
+**Revision** names the current state of one Bead or Link. Use its `revision`
+value with `--if-revision` when a write must apply only to the state you read.
+A different current revision means the state changed and the guarded write
+refuses. **Version** means a retained state of that Resource: use the token
+with `--version`, or as an operand to `bd compare`, to retrieve or compare
+that exact state later. In this preview, the `revision` and `version` fields
+on a live record contain the **same opaque token**. They have different roles,
+not separate counters: revision is the current-state equality check, while a
+Resource ID plus version token is a retained-state address. Neither token
+encodes time or order, and a version is not a Dolt commit ID.
+
+Save a token from a record or `bd memories --details` to read that exact
+retained state later. Version reads do not depend on the record still being
+current. `bd compare` compares two **chosen** retained versions; the token order you give it sets
 the comparison direction. It does not establish chronological order.
 
 ```sh
@@ -128,9 +194,9 @@ bd compare policy --from FIRST_TOKEN --to SECOND_TOKEN --json
 
 | Flag | Current use |
 | --- | --- |
-| `--version TOKEN` | Select one exact retained state for `bd show`, or one retained Memory body for `bd recall`. |
+| `--version TOKEN` | Select one exact retained state for `bd show`, or one retained Memory body for `bd recall`; use a saved `version` token. |
 | `--from TOKEN --to TOKEN` | Select the two complete states for `bd compare`. |
-| `--if-revision TOKEN` | On a supported write, refuse if the current record no longer has that revision. |
+| `--if-revision TOKEN` | On a supported write, refuse if the current record no longer has the saved `revision`. |
 | `--unconditional` | Where a write requires an explicit choice, accept the current record without an expected revision. |
 | `--if-source-revision TOKEN` | On a Memory-owned Link write, optionally require the source Memory's observed revision; otherwise that source defaults to unconditional acceptance. |
 
