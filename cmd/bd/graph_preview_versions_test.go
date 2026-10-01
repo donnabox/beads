@@ -217,30 +217,33 @@ func TestGraphPreviewVersionsCLI(t *testing.T) {
 		// actor is "claimed", an empty one would be "unknown".
 		author = "versions-author"
 	)
-	run := func(args ...string) string {
+	// run takes its own *testing.T rather than closing over the outer one: a
+	// subtest runs on its own goroutine, and calling the parent's Fatalf from
+	// there aborts the wrong test and loses the message.
+	run := func(t *testing.T, args ...string) string {
 		t.Helper()
 		return graphVersionsOK(t, bd, work, home, args...)
 	}
-	run("init", "--graph-mode", "link", "--scope-url", scope, "--skip-hooks", "--skip-agents", "--non-interactive", "--json")
+	run(t, "init", "--graph-mode", "link", "--scope-url", scope, "--skip-hooks", "--skip-agents", "--non-interactive", "--json")
 
 	// Issue plane: created, then renamed, so there are two versions to order
 	// and a second row to carry native attribution.
-	run("create", "Issue subject", "--id", "beads/issue", "--actor", author, "--json")
-	run("create", "Link target", "--id", "beads/target", "--actor", author, "--json")
-	run("update", "beads/issue", "--title", "Issue subject renamed", "--unconditional", "--actor", author, "--json")
+	run(t, "create", "Issue subject", "--id", "beads/issue", "--actor", author, "--json")
+	run(t, "create", "Link target", "--id", "beads/target", "--actor", author, "--json")
+	run(t, "update", "beads/issue", "--title", "Issue subject renamed", "--unconditional", "--actor", author, "--json")
 	// Memory plane: created, then replaced. Memory records no attribution
 	// status at all, which is a different thing from recording an empty one.
-	run("remember", "Memory body", "--id", "beads/memory", "--title", "Memory subject", "--actor", author, "--json")
-	run("update", "beads/memory", "--properties", `{"title":"Memory subject renamed","body":"Memory body again"}`,
+	run(t, "remember", "Memory body", "--id", "beads/memory", "--title", "Memory subject", "--actor", author, "--json")
+	run(t, "update", "beads/memory", "--properties", `{"title":"Memory subject renamed","body":"Memory body again"}`,
 		"--unconditional", "--actor", author, "--json")
 	// Link plane: created, changed, then unlinked. The unlink is the only way
 	// to produce a deletion marker, which is the one listed row whose token
 	// `show --version` refuses. Source is an Issue rather than a Memory so the
 	// Link is unowned and these writes do not advance a second subject's
 	// history behind the assertions below.
-	run("link", "beads/issue", "beads/target", "--id", "links/related", "--resource-type", relatedType, "--actor", author, "--json")
-	run("update", "links/related", "--properties", `{"note":"changed"}`, "--unconditional", "--actor", author, "--json")
-	run("unlink", "links/related", "--unconditional", "--actor", author, "--json")
+	run(t, "link", "beads/issue", "beads/target", "--id", "links/related", "--resource-type", relatedType, "--actor", author, "--json")
+	run(t, "update", "links/related", "--properties", `{"note":"changed"}`, "--unconditional", "--actor", author, "--json")
+	run(t, "unlink", "links/related", "--unconditional", "--actor", author, "--json")
 
 	t.Run("json-member-set", func(t *testing.T) {
 		// One plane getting the contract right says nothing about the others:
@@ -252,7 +255,7 @@ func TestGraphPreviewVersionsCLI(t *testing.T) {
 			{"beads/memory", "memory"},
 			{"links/related", "link"},
 		} {
-			resource, kind, rows, members := graphVersionsListed(t, run("versions", subject.selector, "--json"))
+			resource, kind, rows, members := graphVersionsListed(t, run(t, "versions", subject.selector, "--json"))
 			if resource != subject.selector || kind != subject.kind {
 				t.Fatalf("listing misidentified its subject: resource=%q kind=%q want %q/%q", resource, kind, subject.selector, subject.kind)
 			}
@@ -276,7 +279,7 @@ func TestGraphPreviewVersionsCLI(t *testing.T) {
 	})
 
 	t.Run("removed-marks-only-the-deletion-marker", func(t *testing.T) {
-		_, kind, rows, _ := graphVersionsListed(t, run("versions", "links/related", "--json"))
+		_, kind, rows, _ := graphVersionsListed(t, run(t, "versions", "links/related", "--json"))
 		if kind != "link" {
 			t.Fatalf("unlinked Link listed as %q", kind)
 		}
@@ -300,7 +303,7 @@ func TestGraphPreviewVersionsCLI(t *testing.T) {
 		// Memory's final head is a real retained Resource, and the Issue plane
 		// keeps no marker at all, so nothing here is ever removed.
 		for _, selector := range []string{"beads/issue", "beads/memory"} {
-			_, _, other, _ := graphVersionsListed(t, run("versions", selector, "--json"))
+			_, _, other, _ := graphVersionsListed(t, run(t, "versions", selector, "--json"))
 			for i, row := range other {
 				if row.Removed {
 					t.Fatalf("%s row %d flagged removed; only a Link deletion marker may be: %+v", selector, i, row)
@@ -310,7 +313,7 @@ func TestGraphPreviewVersionsCLI(t *testing.T) {
 
 		const marker = "(removed; not citable)"
 		const footer = "The row marked removed is this Link's deletion marker."
-		human := run("versions", "links/related")
+		human := run(t, "versions", "links/related")
 		if strings.Count(human, marker) != 1 {
 			t.Fatalf("expected exactly one %q mark:\n%s", marker, human)
 		}
@@ -331,7 +334,7 @@ func TestGraphPreviewVersionsCLI(t *testing.T) {
 		// explain, and printing it anyway would describe a row that is not
 		// there.
 		for _, selector := range []string{"beads/issue", "beads/memory"} {
-			clean := run("versions", selector)
+			clean := run(t, "versions", selector)
 			if strings.Contains(clean, marker) || strings.Contains(clean, footer) {
 				t.Fatalf("%s rendered removal guidance with no removed row:\n%s", selector, clean)
 			}
@@ -345,8 +348,8 @@ func TestGraphPreviewVersionsCLI(t *testing.T) {
 		// output, not merely similar, or the alias is a second implementation.
 		for _, selector := range []string{"beads/issue", "beads/memory", "links/related"} {
 			for _, mode := range [][]string{{"--json"}, nil} {
-				versions := run(append([]string{"versions", selector}, mode...)...)
-				history := run(append([]string{"history", selector}, mode...)...)
+				versions := run(t, append([]string{"versions", selector}, mode...)...)
+				history := run(t, append([]string{"history", selector}, mode...)...)
 				if versions != history {
 					t.Fatalf("history is not an alias for versions on %s (%v):\nversions=%q\nhistory=%q", selector, mode, versions, history)
 				}
@@ -415,13 +418,13 @@ func TestGraphPreviewVersionsCLI(t *testing.T) {
 			{"beads/memory", "", "-"},
 			{"links/related", "", "-"},
 		} {
-			_, _, rows, _ := graphVersionsListed(t, run("versions", subject.selector, "--json"))
+			_, _, rows, _ := graphVersionsListed(t, run(t, "versions", subject.selector, "--json"))
 			for i, row := range rows {
 				if row.Attribution != subject.wantJSON {
 					t.Fatalf("%s row %d attribution=%q want %q", subject.selector, i, row.Attribution, subject.wantJSON)
 				}
 			}
-			human := run("versions", subject.selector)
+			human := run(t, "versions", subject.selector)
 			parsed := graphVersionsHumanRows(t, subject.selector, human)
 			if len(parsed) != len(rows) {
 				t.Fatalf("%s rendered %d rows for %d versions:\n%s", subject.selector, len(parsed), len(rows), human)
@@ -436,7 +439,7 @@ func TestGraphPreviewVersionsCLI(t *testing.T) {
 
 	t.Run("ordering-is-newest-first", func(t *testing.T) {
 		for _, selector := range []string{"beads/issue", "beads/memory", "links/related"} {
-			_, _, rows, _ := graphVersionsListed(t, run("versions", selector, "--json"))
+			_, _, rows, _ := graphVersionsListed(t, run(t, "versions", selector, "--json"))
 			if len(rows) < 2 {
 				t.Fatalf("%s has %d versions; ordering needs at least two to be observable", selector, len(rows))
 			}
@@ -444,7 +447,7 @@ func TestGraphPreviewVersionsCLI(t *testing.T) {
 			// The human rendering must agree. It is a separate code path from
 			// the projection, and a listing whose two renderings disagree about
 			// order is worse than either being wrong alone.
-			human := run("versions", selector)
+			human := run(t, "versions", selector)
 			parsed := graphVersionsHumanRows(t, selector, human)
 			if len(parsed) != len(rows) {
 				t.Fatalf("%s rendered %d rows for %d versions:\n%s", selector, len(parsed), len(rows), human)

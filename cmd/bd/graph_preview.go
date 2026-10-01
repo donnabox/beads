@@ -226,6 +226,11 @@ func admitGraphPreview(cmd *cobra.Command) (handled bool, admissionErr error) {
 		return true, graphFailure("not_authority", "graph_mode workspace binding differs; copied/moved workspaces cannot claim this authority", 5)
 	}
 	if cmd != memoriesCmd && cmd != recallCmd && cmd != graphCompareCmd && cmd != listCmd && cmd != blockedCmd && cmd != graphCmd && cmd != rememberCmd && cmd != createCmd && cmd != showCmd && cmd != statusCmd && cmd != depAddCmd && cmd != linkCmd && cmd != closeCmd && cmd != reopenCmd && cmd != readyCmd && cmd != updateCmd && cmd != graphUnlinkCmd && cmd != graphLinksCmd && cmd != serveCmd && cmd != deleteCmd && cmd != forgetCmd && cmd != versionsCmd && cmd != historyCmd {
+		// COUPLING: admitting versionsCmd and historyCmd here is only safe
+		// because each has an early `if graphPreviewActive` dispatch to
+		// runGraphPreviewVersions. Admission suppresses legacy store opening,
+		// so admitting a command WITHOUT its dispatch makes it panic on a nil
+		// store rather than refuse. See the note in history.go.
 		return true, graphFailure("capability_unavailable", "this graph preview supports remember, memories, recall, versions (and history as its alias here), compare, create, show, update, delete, forget, dep add, link, links, unlink, close, reopen, ready, list --flat/--format records-json, blocked, graph --view generic, status --graph and shared-server serve; this command has not opened the legacy store", 5)
 	}
 	if cmd == statusCmd {

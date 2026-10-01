@@ -681,26 +681,37 @@ func TestVersionsOfDeletedSubjects(t *testing.T) {
 
 // TestVersionsIsAReadOnlyOperation pins that listing history changes no writer
 // coordination state, the same guarantee the exact retained reader gives.
+//
+// It loops BOTH backends rather than pinning embedded, because writer_token is
+// the cell the store-wide write fence contends on (see insertPreviewVersionInTx):
+// a reader that disturbed it would be stealing the fence from a concurrent
+// writer, which is a server-plane concern first and an embedded one second.
+// Verifying this only on embedded would leave the claim untested exactly where
+// it matters most.
 func TestVersionsIsAReadOnlyOperation(t *testing.T) {
-	ctx, o := issueExperimentOptions(t, "embedded")
-	s := openVersionsStore(t, ctx, o)
-	if _, err := s.Create(ctx, CreateRequest{Path: "beads/plan", Title: "Plan", Actor: "author"}); err != nil {
-		t.Fatal(err)
-	}
-	var before, after string
-	if err := s.db.QueryRowContext(ctx, `SELECT writer_token FROM graph_preview_scope WHERE singleton=1`).Scan(&before); err != nil {
-		t.Fatal(err)
-	}
-	if _, _, err := s.Versions(ctx, "beads/plan"); err != nil {
-		t.Fatal(err)
-	}
-	if _, _, err := s.Versions(ctx, "beads/absent"); !errors.Is(err, ErrNotFound) {
-		t.Fatal(err)
-	}
-	if err := s.db.QueryRowContext(ctx, `SELECT writer_token FROM graph_preview_scope WHERE singleton=1`).Scan(&after); err != nil {
-		t.Fatal(err)
-	}
-	if before != after {
-		t.Fatal("listing versions changed writer coordination state")
+	for _, backend := range []string{"embedded", "server"} {
+		t.Run(backend, func(t *testing.T) {
+			ctx, o := issueExperimentOptions(t, backend)
+			s := openVersionsStore(t, ctx, o)
+			if _, err := s.Create(ctx, CreateRequest{Path: "beads/plan", Title: "Plan", Actor: "author"}); err != nil {
+				t.Fatal(err)
+			}
+			var before, after string
+			if err := s.db.QueryRowContext(ctx, `SELECT writer_token FROM graph_preview_scope WHERE singleton=1`).Scan(&before); err != nil {
+				t.Fatal(err)
+			}
+			if _, _, err := s.Versions(ctx, "beads/plan"); err != nil {
+				t.Fatal(err)
+			}
+			if _, _, err := s.Versions(ctx, "beads/absent"); !errors.Is(err, ErrNotFound) {
+				t.Fatal(err)
+			}
+			if err := s.db.QueryRowContext(ctx, `SELECT writer_token FROM graph_preview_scope WHERE singleton=1`).Scan(&after); err != nil {
+				t.Fatal(err)
+			}
+			if before != after {
+				t.Fatal("listing versions changed writer coordination state")
+			}
+		})
 	}
 }
