@@ -36,7 +36,8 @@ recall does not accept legacy keys or --json.`},
 		{createCmd, `Create an Issue by default, with an optional --id beads/PATH.
 Use --bead-type types/preview-memory-v2 to create a Memory instead:
   bd create --bead-type types/preview-memory-v2 --body 'Code flow policy'
-Both Type names and full local Type URLs work. --type remains the Issue
+Use bd types to see Bead Types installed in this workspace. Both types/NAME
+and full local Type URLs work. --type remains the Issue
 classification (for example task or bug), not the Bead Type. Memory creation
 accepts body/description/message and an optional title; unsupported Issue-only
 fields refuse.`},
@@ -64,7 +65,8 @@ dependency flags are unavailable in this preview.`},
 blocking Dependency between two live Issues. For a Memory or Issue endpoint,
 choose an installed informational Type, for example on a fresh workspace:
   bd link beads/policy beads/work --link-type types/example-cites
---link-type accepts types/NAME or a full local Type URL. An optional --id
+Use bd types to see Link Types installed in this workspace. --link-type
+accepts types/NAME or a full local Type URL. An optional --id
 selects links/PATH; --properties supplies informational Link properties.
 Memory-owned Links accept the current source by default, or use
 --if-source-revision TOKEN to reject a stale source. --unconditional-source
@@ -85,6 +87,12 @@ local graph. Control direction, depth, node and Link bounds with --direction,
 --depth, --max-nodes and --max-links. Legacy visualization modes are unavailable.`},
 		{statusCmd, `Use bd status --graph to inspect this workspace's supported
 graph capabilities and limits. Ordinary issue-statistics mode is unavailable.`},
+		{typesCmd, `Use bd types to list the Bead and Link Types actually installed
+in this workspace, grouped by category. The displayed types/NAME IDs are
+accepted by --bead-type and --link-type. Add --details to show each complete
+persisted Type descriptor. --json returns the full descriptors as structured
+data. Legacy Issue classifications such as task and bug belong to --type;
+--sections is unavailable in graph preview workspaces.`},
 	} {
 		entry.cmd.Long += "\n\nGraph preview workspaces:\n" + entry.text
 	}

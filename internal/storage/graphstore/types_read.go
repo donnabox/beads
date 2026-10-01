@@ -6,10 +6,33 @@ import (
 	"database/sql"
 	"errors"
 	"fmt"
+	"sort"
 	"strings"
 
 	graph "github.com/steveyegge/beads/graphops"
 )
+
+// ListInstalledTypes returns the persisted, validated descriptor set in stable
+// ID order. In particular, an older four-Type installation remains four Types;
+// this read never installs the newer examples or enumerates binary-only Types.
+func (s *Store) ListInstalledTypes(ctx context.Context) ([]graph.TypeDescriptor, error) {
+	var descriptors []graph.TypeDescriptor
+	err := s.withTx(ctx, false, func(tx *sql.Tx) error {
+		if err := checkBinding(ctx, tx, s.options); err != nil {
+			return err
+		}
+		var err error
+		descriptors, err = installedPreviewTypes(ctx, tx, s.ScopeURL())
+		return err
+	})
+	if err != nil {
+		return nil, err
+	}
+	sort.Slice(descriptors, func(i, j int) bool {
+		return graph.CompareCodeUnits(descriptors[i].ID(), descriptors[j].ID()) < 0
+	})
+	return descriptors, nil
+}
 
 // ReadType reads an admitted installed descriptor, never a reconstructed stand-in.
 // The preview fixes its installed descriptors at initialization; every record read

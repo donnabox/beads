@@ -84,6 +84,7 @@ explicit creation title must remain nonempty; updates preserve omitted fields.
 
 | Command | Admitted scope and flags |
 |---|---|
+| `types [--details]` | List the Bead and Link Type IDs installed in this workspace. `--details` prints each complete persisted descriptor; `--json` returns the descriptors as structured data. An older four-Type workspace does not claim the two example Types. Legacy `--sections` is unavailable. |
 | `remember BODY [--id beads/PATH] [--title TITLE]` | Memory creation. An explicit `--body-file PATH` or `--stdin` replaces the positional body source. These sources are mutually exclusive; empty text is present content. |
 | `remember --update BEAD` | Change only supplied `--title` and/or one explicit body source, preserving omitted fields inside the transaction. Defaults to unconditional; optional `--if-revision TOKEN` rejects stale edits. Explicit `--unconditional` remains accepted. |
 | `memories [SEARCH]` | Complete bounded Memory title/body search summaries. Supports `--all`, `--details` and `--format table\|records-json`; legacy `--json` refuses. |
@@ -127,6 +128,11 @@ Issue-only fields are refused on Memory creation. For example:
 ```sh
 bd create --bead-type types/preview-memory-v2 --body 'Code flow policy: target integration.'
 ```
+
+Run `bd types` in the selected graph workspace to see the Type IDs usable with
+`--bead-type` and `--link-type`; `bd types --details` displays the full stored
+descriptors. This graph Type catalog is distinct from the ordinary Issue
+classifications selected by `bd create --type`.
 
 New workspaces install three informational Link Types: `types/preview-related-v2`,
 `types/example-follows` (the source follows a policy described by the target),

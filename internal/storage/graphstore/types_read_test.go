@@ -73,6 +73,69 @@ func TestReadInstalledTypes(t *testing.T) {
 	}
 }
 
+func TestListInstalledTypesReflectsPersistedInstallation(t *testing.T) {
+	ctx, options := issueExperimentOptions(t, "embedded")
+	store, err := OpenExisting(ctx, options)
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer func() {
+		if err := store.Close(); err != nil {
+			t.Error(err)
+		}
+	}()
+	var tokenBefore, tokenAfter string
+	if err := store.db.QueryRowContext(ctx, `SELECT writer_token FROM graph_preview_scope WHERE singleton=1`).Scan(&tokenBefore); err != nil {
+		t.Fatal(err)
+	}
+	installed, err := store.ListInstalledTypes(ctx)
+	if err != nil || len(installed) != 6 {
+		t.Fatalf("fresh installed Types: %d %v", len(installed), err)
+	}
+	rows, err := store.db.QueryContext(ctx, `SELECT descriptor FROM graph_preview_types`)
+	if err != nil {
+		t.Fatal(err)
+	}
+	persistedByID := map[string][]byte{}
+	for rows.Next() {
+		var raw []byte
+		if err := rows.Scan(&raw); err != nil {
+			t.Fatal(err)
+		}
+		descriptor, err := graph.ParseTypeDescriptor(raw)
+		if err != nil {
+			t.Fatal(err)
+		}
+		persistedByID[descriptor.ID()] = raw
+	}
+	if err := errors.Join(rows.Err(), rows.Close()); err != nil {
+		t.Fatal(err)
+	}
+	for i, descriptor := range installed {
+		if i > 0 && graph.CompareCodeUnits(installed[i-1].ID(), descriptor.ID()) >= 0 {
+			t.Fatalf("Type inventory is not in stable ID order: %s", descriptor.ID())
+		}
+		if !bytes.Equal(descriptor.CanonicalJSON(), persistedByID[descriptor.ID()]) {
+			t.Fatalf("%s did not return its persisted descriptor", descriptor.ID())
+		}
+	}
+	if _, err := store.db.ExecContext(ctx, `DELETE FROM graph_preview_types WHERE name IN ('example-follows','example-cites')`); err != nil {
+		t.Fatal(err)
+	}
+	installed, err = store.ListInstalledTypes(ctx)
+	if err != nil || len(installed) != 4 {
+		t.Fatalf("older four-Type installation: %d %v", len(installed), err)
+	}
+	for _, descriptor := range installed {
+		if strings.Contains(descriptor.ID(), "example-") {
+			t.Fatalf("uninstalled example advertised: %s", descriptor.ID())
+		}
+	}
+	if err := store.db.QueryRowContext(ctx, `SELECT writer_token FROM graph_preview_scope WHERE singleton=1`).Scan(&tokenAfter); err != nil || tokenAfter != tokenBefore {
+		t.Fatalf("Type listing changed writer state: %q → %q, %v", tokenBefore, tokenAfter, err)
+	}
+}
+
 func TestReadTypeRefusesInvalidInstallation(t *testing.T) {
 	for _, backend := range []string{"embedded", "server"} {
 		t.Run(backend, func(t *testing.T) {

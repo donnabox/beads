@@ -35,6 +35,30 @@ func TestGraphPreviewUsabilityWorkflow(t *testing.T) {
 				graphPolicyCLI(t, bd, work, home, nil, code, append(args, "--json")...)
 			}
 			call(args...)
+			var installed struct {
+				Result struct {
+					BeadTypes []json.RawMessage `json:"beadTypes"`
+					LinkTypes []json.RawMessage `json:"linkTypes"`
+				} `json:"result"`
+			}
+			if err := json.Unmarshal([]byte(call("types")), &installed); err != nil || len(installed.Result.BeadTypes) != 2 || len(installed.Result.LinkTypes) != 4 {
+				t.Fatalf("installed graph Types unavailable: %+v %v", installed, err)
+			}
+			for _, item := range append(installed.Result.BeadTypes, installed.Result.LinkTypes...) {
+				var descriptor struct{ ID, Describes string }
+				if err := json.Unmarshal(item, &descriptor); err != nil || !strings.HasPrefix(descriptor.ID, scope+"types/") {
+					t.Fatalf("invalid installed descriptor: %s %v", item, err)
+				}
+			}
+			visible := graphPolicyCLI(t, bd, work, home, nil, "", "types")
+			if !strings.Contains(visible, "Bead Types") || !strings.Contains(visible, "Link Types") || !strings.Contains(visible, "types/example-cites") {
+				t.Fatalf("Type selection help missing: %s", visible)
+			}
+			detailsText := graphPolicyCLI(t, bd, work, home, nil, "", "types", "--details")
+			if !strings.Contains(detailsText, `"describes": "link"`) || !strings.Contains(detailsText, `"source":`) || !strings.Contains(detailsText, `"target":`) {
+				t.Fatalf("full Link descriptor unavailable: %s", detailsText)
+			}
+			refuse("capability_unavailable", "types", "--sections")
 			memory := graphMixedResult[graphstore.Record](t, call("create", "--bead-type", "types/preview-memory-v2", "--id", "beads/policy", "--body", "Code flow policy\nTarget integration."))
 			other := graphMixedResult[graphstore.Record](t, call("create", "Old code flow policy", "--bead-type", graphstore.MemoryTypeURL(scope)))
 			issue := graphMixedResult[graphstore.IssueRecord](t, call("create", "Move the branch", "--bead-type", "types/preview-issue-v2", "--type", "task"))

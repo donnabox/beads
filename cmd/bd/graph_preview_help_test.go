@@ -14,6 +14,7 @@ func TestGraphPreviewHelpDocumentsPlaytestCommands(t *testing.T) {
 		initCmd, rememberCmd, memoriesCmd, recallCmd, createCmd, showCmd,
 		updateCmd, deleteCmd, forgetCmd, depAddCmd, linkCmd, closeCmd,
 		reopenCmd, readyCmd, listCmd, blockedCmd, graphCmd, statusCmd,
+		typesCmd,
 	} {
 		t.Run(cmd.Name()+"-scope", func(t *testing.T) {
 			if out := captureStdout(t, cmd.Help); !strings.Contains(out, "Graph preview workspaces:") {
@@ -31,6 +32,7 @@ func TestGraphPreviewHelpDocumentsPlaytestCommands(t *testing.T) {
 		{"create", createCmd, []string{"Graph preview workspaces:", "--bead-type types/preview-memory-v2", "--id beads/"}},
 		{"link", linkCmd, []string{"Graph preview workspaces:", "--link-type types/example-cites", "Memory or Issue"}},
 		{"update", updateCmd, []string{"Graph preview workspaces:", "--properties", "--if-revision TOKEN"}},
+		{"types", typesCmd, []string{"Graph preview workspaces:", "types/NAME", "--details", "--bead-type", "--link-type"}},
 	} {
 		t.Run(tc.name, func(t *testing.T) {
 			out := captureStdout(t, tc.cmd.Help)
