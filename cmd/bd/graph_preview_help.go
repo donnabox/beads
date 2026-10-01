@@ -6,6 +6,31 @@ import "github.com/spf13/cobra"
 // intact and add an explicitly scoped section for commands reused by the graph
 // preview, so their legacy descriptions do not mislead graph operators.
 func init() {
+	// These commands have long ordinary-mode descriptions. Put the graph
+	// distinction first so help does not lead graph users to turn on legacy
+	// recording or expect Dolt commits and unsupported flags.
+	versionsCmd.Short = "List retained graph Resource versions or recorded ordinary Bead versions"
+	versionsCmd.Long = `Graph preview workspaces:
+Use bd versions ID to list one Memory, Issue or Link's retained versions newest
+first. Bare ID means beads/ID; use links/PATH for a Link. Every new graph
+Resource has a creation version; do not enable ordinary versioned-history
+recording for this command. Cite the opaque version token with bd show ID
+--version TOKEN or bd compare ID --from TOKEN --to TOKEN. The store-local
+ordinal only orders versions. --json returns the version rows. BDP HTTP History
+is not available.
+
+Ordinary Issue workspaces:
+` + versionsCmd.Long
+	historyCmd.Short = "Show graph Resource versions or ordinary Issue commit history"
+	historyCmd.Long = `Graph preview workspaces:
+bd history ID is an alias for bd versions ID. It lists retained Memory, Issue
+or Link versions newest first; bare ID means beads/ID and Link IDs use
+links/PATH. Use the opaque token for exact reads, not the store-local ordinal.
+--limit and --events are not supported by the graph alias. BDP HTTP History
+is not available.
+
+Ordinary Issue workspaces:
+` + historyCmd.Long
 	for _, entry := range []struct {
 		cmd  *cobra.Command
 		text string
