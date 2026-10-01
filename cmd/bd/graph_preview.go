@@ -4,6 +4,7 @@ package main
 // admission runs before legacy opening: unsupported commands cannot accidentally
 // mutate Issue tables outside canonical graph transactions.
 import (
+	"bytes"
 	"context"
 	"crypto/rand"
 	"encoding/hex"
@@ -106,17 +107,36 @@ func graphCandidateDir(cmd *cobra.Command) (string, error) {
 	return "", nil
 }
 
+// graphFailureOutput, when set, receives graphFailure diagnostics instead of
+// stderr. Only Claude hook admission sets it, to reword its refusals.
+var graphFailureOutput io.Writer
+
 func graphFailure(code, message string, exit int) error {
+	out := io.Writer(os.Stderr)
+	if graphFailureOutput != nil {
+		out = graphFailureOutput
+	}
 	if jsonOutput || graphPreviewStructuredErrors {
-		_ = json.NewEncoder(os.Stderr).Encode(map[string]any{"code": code, "message": message, "retryable": false})
+		_ = json.NewEncoder(out).Encode(map[string]any{"code": code, "message": message, "retryable": false})
 	} else {
-		fmt.Fprintf(os.Stderr, "%s: %s\n", code, message) //nolint:gosec // G705: stderr, not a browser context
+		fmt.Fprintf(out, "%s: %s\n", code, message) //nolint:gosec // G705: stderr, not a browser context
 	}
 	return &exitError{Code: exit}
 }
 
 func admitGraphPreview(cmd *cobra.Command) (handled bool, admissionErr error) {
+	var hookDiagnostic *bytes.Buffer
+	if cmd == claudeHookCmd {
+		hookDiagnostic = new(bytes.Buffer)
+		graphFailureOutput = hookDiagnostic
+	}
 	defer func() {
+		if hookDiagnostic != nil {
+			graphFailureOutput = nil
+			if admissionErr != nil {
+				handled, admissionErr = true, graphClaudeHookAdmissionWarning(hookDiagnostic.String(), admissionErr)
+			}
+		}
 		if handled {
 			// Graph refusals already emit a complete diagnostic. Suppress Cobra's
 			// duplicate error and usage output, including for deferred commands.
@@ -406,7 +426,10 @@ func runGraphPreviewInit(cmd *cobra.Command) error {
 	}
 	if !skipAgents && !skipHooks {
 		if err := setup.InstallGraphClaudeStopOnInit(workspace); err != nil {
-			return graphFailure("graph_not_initialized", "database initialized but Claude Stop hook installation failed; workspace remains incomplete: "+err.Error(), 5)
+			// Storage and guidance already exist. Refusing here would leave a
+			// fenced workspace that neither init nor setup can repair, so treat
+			// the hook as ordinary init treats Claude setup: warn and publish.
+			fmt.Fprintf(os.Stderr, "Warning: graph workspace initialized without the Claude Stop hook: %v. Run `bd setup claude` after fixing this to add the Stop hook.\n", err) //nolint:gosec // G705: stderr, not a browser context
 		}
 	}
 	cfg.GraphReady = true

@@ -1,6 +1,8 @@
 package main
 
 import (
+	"fmt"
+	"os"
 	"path/filepath"
 	"strings"
 
@@ -58,6 +60,20 @@ func runGraphPreviewSetup(cmd *cobra.Command, args []string) error {
 		return graphFailure("capability_unavailable", err.Error(), 5)
 	}
 	return nil
+}
+
+// Claude Code reads exit 2 from a hook as "block stopping" and feeds stderr
+// back to the agent, and admission runs before Steph's stop_hook_active guard,
+// so an invalid_selector refusal (such as BD_BACKEND) could loop. Replace any
+// admission refusal with one warning line and exit 1, as an ordinary
+// workspace exits on BD_BACKEND; Claude Code treats exit 1 as non-blocking.
+func graphClaudeHookAdmissionWarning(diagnostic string, err error) error {
+	reason := strings.Join(strings.Fields(diagnostic), " ")
+	if reason == "" {
+		reason = strings.Join(strings.Fields(err.Error()), " ")
+	}
+	fmt.Fprintf(os.Stderr, "Warning: bd claude-hook skipped; graph admission refused it: %s\n", reason) //nolint:gosec // G705: stderr, not a browser context
+	return &exitError{Code: 1}
 }
 
 func admitGraphPreviewClaudeStop(cmd *cobra.Command, args []string) error {
