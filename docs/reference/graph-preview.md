@@ -16,7 +16,7 @@ Start in a new directory with no `.beads` directory:
 ```sh
 git init
 bd init --graph-mode link --scope-url https://example.org/team/ \
-  --skip-hooks --skip-agents --non-interactive
+  --non-interactive
 bd remember 'The release uses the integration branch.' \
   --id plan --title 'Release plan' --json
 bd show plan --json
@@ -74,15 +74,61 @@ guarantee that an agent will decide to save a fact.
 Graph initialization preserves surrounding user-authored text and an existing
 `CLAUDE.md` import of `@AGENTS.md`. An existing minimal managed block is replaced
 with graph instructions; pass `--skip-agents` to preserve that block unchanged.
-It installs no agent hooks or separate Claude instructions. Use your agent's existing support for the configured instruction
-file. The ordinary `bd prime` and `bd setup` commands remain unavailable in
-graph mode.
+By default, initialization also registers Stephanie's existing Claude Stop
+reminder in project-local `.claude/settings.json` and adds an active import in
+`CLAUDE.md` when needed. `--skip-hooks` omits the Stop registration and the
+`CLAUDE.md` import; `--skip-agents` omits guidance, the import and the Stop
+registration. Existing Claude settings, plugins and instructions are checked
+for conflicts before a graph database is created; init refuses without
+rewriting conflicting files, names the file to change, and suggests
+`--skip-hooks`. If the Stop hook cannot be written after the database is
+created (for example, an unwritable `.claude` directory), init prints a
+warning and completes the workspace without it. Use `bd setup claude` to
+install the Stop hook later in a workspace initialized with `--skip-hooks` or
+after such a warning:
+
+```sh
+bd setup claude
+bd setup claude --check
+# Remove only the project Stop registration when no longer wanted:
+bd setup claude --remove
+```
+
+This graph adapter adds only `bd claude-hook stop` to project-local
+`.claude/settings.json`, preserving user settings values (including large integer
+values), hook siblings, existing file permissions, and all
+instructions (including `ProfileGraphPreview`). A changed settings file is
+reformatted as sorted, two-space-indented JSON; original key order/whitespace
+is not retained. A stale graph-profile hash refuses unchanged and requires
+operator reconciliation of that managed block before setup. It creates or appends an active
+`@AGENTS.md` import in `CLAUDE.md` (using the configured agents filename); an
+existing active import and user text remain unchanged. Unsafe paths, unclosed
+fences or stale managed Beads blocks refuse before settings/instructions are
+changed. Removal retains the import and all instructions. `--project` is optional;
+`--check` and `--remove` are mutually exclusive. It never installs `bd prime`
+SessionStart/PreCompact hooks. Existing Beads plugins or prime hooks in project,
+legacy-local or global settings cause installation/check to refuse unchanged;
+reconcile those configurations deliberately first. Removal touches only the
+managed Stop command in project `settings.json`; it does not remove legacy-local,
+global or plugin registrations.
+
+Global/stealth setup, other recipes, custom output/template flags and setup
+`--json` are unsupported. The ordinary `bd prime` remains unavailable. The
+Stop command accepts its native JSON stdin/stdout protocol without `--json`,
+runs without opening storage, and follows Steph's transcript and reentrancy
+rules: it reminds at a session's first Stop and again at a later Stop when
+tools were used since the previous one, never while Claude Code reports
+`stop_hook_active`. It does not write a Memory itself. After the reminder,
+`bd remember "a fact"` stores the agent's chosen content and `bd recall ID`
+reads it. Integration tests prove this delivery/execution sequence, not that
+agents reliably choose what to remember.
 
 Existing full or unknown managed profiles, malformed or duplicate managed
 blocks, and symlink or nonregular targets refuse before database initialization.
 Keep those files and pass `--skip-agents` to initialize without changing them.
-If instruction publication fails after database initialization, the workspace
-remains incomplete and fenced; this preview provides no repair command.
+If guidance publication to the agents file fails after database
+initialization, the workspace remains incomplete and fenced; this preview
+provides no repair command.
 
 The ordinary minimal profile also includes Stephanie's exact durable-memory
 contribution, which changes its managed content hash. Existing refresh policy
@@ -126,6 +172,8 @@ explicit creation title must remain nonempty; updates preserve omitted fields.
 | `graph BEAD --view generic` | Current local summary traversal with `--direction in\|out\|both`, `--depth`, `--max-nodes` and `--max-links`. |
 | `status --graph` | Report the capabilities and bounds admitted by this checkpoint, including initial Issue fields/notes, append-only notes, estimate/reference edits and due-date authoring/filtering. |
 | `serve --readonly --addr HOST:PORT` | BDP Read over HTTP for an ordinary shared-server graph workspace. Existing token-file authentication, Host controls and non-loopback opt-in apply. Embedded serving is refused. |
+| `setup claude [--project] [--check\|--remove]` | Add, check or remove only the project-local Claude Stop hook (`bd claude-hook stop`); adding also ensures `CLAUDE.md` imports the graph guidance. Adding and `--check` require current graph-preview guidance. Global/stealth setup, other recipes and `--json` are unavailable. |
+| `claude-hook stop` | Steph's Stop reminder, which Claude Code runs with its JSON hook input on stdin; it does not open storage. If graph admission refuses it (for example, `BD_BACKEND` is set or the workspace was moved), it prints one warning line and exits 1, which Claude Code does not treat as blocking. |
 
 Commands accept the common graph controls `--json`, `--graph-mode`, `--actor`,
 `--quiet`, `--no-color`, `--directory` and `--readonly` where applicable. A

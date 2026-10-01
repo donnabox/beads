@@ -4,6 +4,7 @@ package main
 // admission runs before legacy opening: unsupported commands cannot accidentally
 // mutate Issue tables outside canonical graph transactions.
 import (
+	"bytes"
 	"context"
 	"crypto/rand"
 	"encoding/hex"
@@ -19,6 +20,7 @@ import (
 
 	"github.com/spf13/cobra"
 	"github.com/spf13/pflag"
+	"github.com/steveyegge/beads/cmd/bd/setup"
 	graph "github.com/steveyegge/beads/graphops"
 	"github.com/steveyegge/beads/internal/config"
 	"github.com/steveyegge/beads/internal/configfile"
@@ -105,17 +107,36 @@ func graphCandidateDir(cmd *cobra.Command) (string, error) {
 	return "", nil
 }
 
+// graphFailureOutput, when set, receives graphFailure diagnostics instead of
+// stderr. Only Claude hook admission sets it, to reword its refusals.
+var graphFailureOutput io.Writer
+
 func graphFailure(code, message string, exit int) error {
+	out := io.Writer(os.Stderr)
+	if graphFailureOutput != nil {
+		out = graphFailureOutput
+	}
 	if jsonOutput || graphPreviewStructuredErrors {
-		_ = json.NewEncoder(os.Stderr).Encode(map[string]any{"code": code, "message": message, "retryable": false})
+		_ = json.NewEncoder(out).Encode(map[string]any{"code": code, "message": message, "retryable": false})
 	} else {
-		fmt.Fprintf(os.Stderr, "%s: %s\n", code, message) //nolint:gosec // G705: stderr, not a browser context
+		fmt.Fprintf(out, "%s: %s\n", code, message) //nolint:gosec // G705: stderr, not a browser context
 	}
 	return &exitError{Code: exit}
 }
 
 func admitGraphPreview(cmd *cobra.Command) (handled bool, admissionErr error) {
+	var hookDiagnostic *bytes.Buffer
+	if cmd == claudeHookCmd {
+		hookDiagnostic = new(bytes.Buffer)
+		graphFailureOutput = hookDiagnostic
+	}
 	defer func() {
+		if hookDiagnostic != nil {
+			graphFailureOutput = nil
+			if admissionErr != nil {
+				handled, admissionErr = true, graphClaudeHookAdmissionWarning(hookDiagnostic.String(), admissionErr)
+			}
+		}
 		if handled {
 			// Graph refusals already emit a complete diagnostic. Suppress Cobra's
 			// duplicate error and usage output, including for deferred commands.
@@ -233,13 +254,13 @@ func admitGraphPreview(cmd *cobra.Command) (handled bool, admissionErr error) {
 	if err != nil || real != cfg.GraphWorkspace {
 		return true, graphFailure("not_authority", "graph_mode workspace binding differs; copied/moved workspaces cannot claim this authority", 5)
 	}
-	if cmd != memoriesCmd && cmd != recallCmd && cmd != graphCompareCmd && cmd != listCmd && cmd != blockedCmd && cmd != graphCmd && cmd != rememberCmd && cmd != createCmd && cmd != showCmd && cmd != statusCmd && cmd != depAddCmd && cmd != linkCmd && cmd != closeCmd && cmd != reopenCmd && cmd != readyCmd && cmd != updateCmd && cmd != graphUnlinkCmd && cmd != graphLinksCmd && cmd != serveCmd && cmd != deleteCmd && cmd != forgetCmd && cmd != typesCmd && cmd != versionsCmd && cmd != historyCmd {
+	if cmd != setupCmd && cmd != claudeHookCmd && cmd != memoriesCmd && cmd != recallCmd && cmd != graphCompareCmd && cmd != listCmd && cmd != blockedCmd && cmd != graphCmd && cmd != rememberCmd && cmd != createCmd && cmd != showCmd && cmd != statusCmd && cmd != depAddCmd && cmd != linkCmd && cmd != closeCmd && cmd != reopenCmd && cmd != readyCmd && cmd != updateCmd && cmd != graphUnlinkCmd && cmd != graphLinksCmd && cmd != serveCmd && cmd != deleteCmd && cmd != forgetCmd && cmd != typesCmd && cmd != versionsCmd && cmd != historyCmd {
 		// COUPLING: admitting versionsCmd and historyCmd here is only safe
 		// because each has an early `if graphPreviewActive` dispatch to
 		// runGraphPreviewVersions. Admission suppresses legacy store opening,
 		// so admitting a command WITHOUT its dispatch makes it panic on a nil
 		// store rather than refuse. See the note in history.go.
-		return true, graphFailure("capability_unavailable", "this graph preview supports remember, memories, recall, versions (and history as its alias here), compare, create, show, update, delete, forget, dep add, link, links, unlink, close, reopen, ready, list/--format records-json, blocked, graph --view generic, types, status --graph and shared-server serve; this command has not opened the legacy store", 5)
+		return true, graphFailure("capability_unavailable", "this graph preview supports remember, memories, recall, versions (and history as its alias here), compare, create, show, update, delete, forget, dep add, link, links, unlink, close, reopen, ready, list/--format records-json, blocked, graph --view generic, types, status --graph, project-local setup claude, claude-hook stop and shared-server serve; this command has not opened the legacy store", 5)
 	}
 	if cmd == statusCmd {
 		enabled, _ := cmd.Flags().GetBool("graph")
@@ -358,9 +379,16 @@ func runGraphPreviewInit(cmd *cobra.Command) error {
 		return err
 	}
 	skipAgents, _ := cmd.Flags().GetBool("skip-agents")
-	guidance, err := prepareGraphPreviewAgentInstructions(filepath.Dir(graphPreviewDir), config.SafeAgentsFile(), skipAgents)
+	skipHooks, _ := cmd.Flags().GetBool("skip-hooks")
+	workspace := filepath.Dir(graphPreviewDir)
+	guidance, err := prepareGraphPreviewAgentInstructions(workspace, config.SafeAgentsFile(), skipAgents)
 	if err != nil {
 		return graphFailure("graph_not_initialized", "agent guidance was not installed; no graph database was initialized: "+err.Error(), 5)
+	}
+	if !skipAgents && !skipHooks {
+		if err := setup.PreflightGraphClaudeStop(workspace); err != nil {
+			return graphFailure("graph_not_initialized", "Claude Stop hook preflight failed; no graph database was initialized: "+err.Error(), 5)
+		}
 	}
 	if err := os.Mkdir(graphPreviewDir, 0o700); err != nil {
 		return graphFailure("graph_not_initialized", err.Error(), 5)
@@ -395,6 +423,14 @@ func runGraphPreviewInit(cmd *cobra.Command) error {
 	}
 	if err := guidance.install(); err != nil {
 		return graphFailure("graph_not_initialized", "database initialized but agent guidance installation failed; workspace remains incomplete: "+err.Error(), 5)
+	}
+	if !skipAgents && !skipHooks {
+		if err := setup.InstallGraphClaudeStopOnInit(workspace); err != nil {
+			// Storage and guidance already exist. Refusing here would leave a
+			// fenced workspace that neither init nor setup can repair, so treat
+			// the hook as ordinary init treats Claude setup: warn and publish.
+			fmt.Fprintf(os.Stderr, "Warning: graph workspace initialized without the Claude Stop hook: %v. Run `bd setup claude` after fixing this to add the Stop hook.\n", err) //nolint:gosec // G705: stderr, not a browser context
+		}
 	}
 	cfg.GraphReady = true
 	if err := cfg.Save(real); err != nil {

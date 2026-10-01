@@ -17,7 +17,7 @@ const (
 	ProfileFull Profile = "full"
 	// ProfileMinimal is the pointer-only profile for hook-enabled agents (Claude, Gemini).
 	ProfileMinimal Profile = "minimal"
-	// ProfileGraphPreview is hookless guidance for an explicitly initialized graph workspace.
+	// ProfileGraphPreview is guidance for an explicitly initialized graph workspace.
 	ProfileGraphPreview Profile = "graph-preview"
 )
 
@@ -273,6 +273,6 @@ bd memories timestamps --format records-json
 
 Use the returned Memory ID to read the same fact in later sessions. The recall command returns the saved body; memories returns matching summaries. Edit existing facts with --update MEMORY_ID; omitted fields are preserved. Updates accept the current state by default; add --if-revision TOKEN to reject a stale edit.
 
-This guidance is hookless. No session hooks, automatic context injection, or sync are configured. User, repository and orchestrator instructions take precedence; this block grants no authority to commit or push.
+Fresh graph initialization registers the project-local Claude Stop reminder by default unless --skip-hooks or --skip-agents is used. In an existing graph workspace without that hook, first reconcile a stale managed guidance block if present, then enable it with ` + "`bd setup claude`" + `; inspect it with ` + "`bd setup claude --check`" + ` or remove it with ` + "`bd setup claude --remove`" + `. The reminder does not automatically recall Memories or sync data. User, repository and orchestrator instructions take precedence; this block grants no authority to commit or push.
 `
 }

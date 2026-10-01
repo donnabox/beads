@@ -573,6 +573,7 @@ class Qualification:
                        (self.root / "internal/types").glob("types_test.go"), "utc-types")
             self.tests("./internal/templates/agents", "^TestGraphPreview",
                        (self.root / "internal/templates/agents").glob("*_test.go"), "agent-template")
+            self.tests("./cmd/bd/setup", "^TestGraphPreview", (self.root / "cmd/bd/setup").glob("graph_claude_test.go"), "graph-claude-setup")
             self.tests("./cmd/bd", "^Test(GraphModeCLI|GraphPreview)", (self.root / "cmd/bd").glob("graph*test.go"), "cli",
                        ("TestGraphPreviewAgentInstructionsWorkflow/embedded/fresh",
                         "TestGraphPreviewAgentInstructionsWorkflow/embedded/shared-file",
@@ -583,6 +584,15 @@ class Qualification:
                         "TestGraphPreviewAgentInstructionsWorkflow/server/skip-agents",
                         "TestGraphPreviewAgentInstructionsWorkflow/server/full-profile-refusal",
                         "TestGraphPreviewUsabilityWorkflow/embedded", "TestGraphPreviewUsabilityWorkflow/server",
+                        "TestGraphPreviewClaudeStopWorkflow/embedded", "TestGraphPreviewClaudeStopWorkflow/server",
+                        "TestGraphPreviewClaudeStopAutoInit/embedded", "TestGraphPreviewClaudeStopAutoInit/server",
+                        "TestGraphPreviewClaudeStopAutoInitPreflight",
+                        "TestGraphPreviewClaudeStopAutoInitRefusalMessages/global-plugin", "TestGraphPreviewClaudeStopAutoInitRefusalMessages/claude-symlink",
+                        "TestGraphPreviewClaudeStopInstallFailure/embedded", "TestGraphPreviewClaudeStopInstallFailure/server",
+                        "TestGraphPreviewClaudeStopSkipAgentsAlone/embedded", "TestGraphPreviewClaudeStopSkipAgentsAlone/server",
+                        "TestGraphPreviewClaudeStopHookAdmissionNonBlocking/embedded", "TestGraphPreviewClaudeStopHookAdmissionNonBlocking/server",
+                        "TestGraphPreviewClaudeStopProfileRefusal/embedded/missing", "TestGraphPreviewClaudeStopProfileRefusal/embedded/minimal", "TestGraphPreviewClaudeStopProfileRefusal/embedded/stale",
+                        "TestGraphPreviewClaudeStopProfileRefusal/server/missing", "TestGraphPreviewClaudeStopProfileRefusal/server/minimal", "TestGraphPreviewClaudeStopProfileRefusal/server/stale",
                         "TestGraphPreviewCompatibilityDefaultsWorkflow/embedded", "TestGraphPreviewCompatibilityDefaultsWorkflow/server",
                         "TestGraphPreviewIssueAuthoringWorkflow/embedded", "TestGraphPreviewIssueAuthoringWorkflow/server",
                         "TestGraphPreviewIssueAppendWorkflow/embedded", "TestGraphPreviewIssueAppendWorkflow/server",
