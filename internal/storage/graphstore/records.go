@@ -216,11 +216,44 @@ func (s *Store) showMemoryInTx(ctx context.Context, tx *sql.Tx, path string) (Re
 // inside the caller's write transaction so the ordinal read and the insert see
 // the same rows.
 func insertPreviewVersionInTx(ctx context.Context, tx *sql.Tx, path, version string, snapshot []byte, actor string) error {
-	// MAX+1 is not a safe allocator for concurrent writers in one store: two
-	// transactions can read the same MAX and the one_path_ordinal unique key
-	// rejects the second. The preview is single-writer-at-a-time, so this holds
-	// today. It is the same hazard as the native plane, tracked as
-	// gastownhall/beads#6379.
+	// MAX+1 is safe here because of a FENCE, not because of luck, and naming the
+	// mechanism matters more than naming the effect. Every one of the six
+	// callers has already called touchCoordination in this same transaction
+	// (records.go:68, dependencies.go:89, dependency_unlink.go:56,
+	// informational.go:120 and :220, link_lifecycle.go:167, memory_update.go:126),
+	// which UPDATEs graph_preview_scope.writer_token WHERE singleton=1. That is
+	// a STORE-WIDE cell, not a per-path one, so two concurrent version writers
+	// in one store always contend on it and the loser fails at COMMIT with
+	// MySQL 1213 / SQLSTATE 40001, which classifyCommitError maps to ErrConflict
+	// and the CLI renders as revision_conflict (exit 4).
+	//
+	// one_path_ordinal is the BACKSTOP, and it is load-bearing rather than
+	// decorative: measured on a real Dolt server, two interleaved MAX+1
+	// transactions WITHOUT that unique key both commit and leave two rows
+	// sharing one ordinal. With it, the loser fails at commit with ERROR 1105.
+	//
+	// The fence is measured on the real path, not only in a probe. All three
+	// /server concurrency tests collide on ONE path by construction:
+	// TestMemoryUpdateConcurrentWriters on beads/plan, and
+	// TestInformationalOwnedConcurrentMutations and
+	// TestLinkUnlinkConcurrentMutations on beads/source, because an owned-Link
+	// write bumps its source's retained version. Each pauses both writers after
+	// their insert, so both computed MAX+1 against a snapshot lacking the
+	// other's row and hold the SAME ordinal at commit -- exactly the precondition
+	// that produced 1105 without the fence. All three pass with the loser
+	// required to be ErrConflict and NOT ErrOutcomeUnknown, so the fence wins
+	// the race and the backstop does not fire.
+	//
+	// If the backstop ever does fire, the user-facing answer is poor:
+	// classifyCommitError treats anything other than 1213/40001 as
+	// ErrOutcomeUnknown, so a 1105 renders as outcome_unknown (exit 6, "do not
+	// automatically replay") even though Dolt has stated it rolled the
+	// transaction back, which makes the outcome known. Pre-existing, and shared
+	// with every graph command.
+	//
+	// So the real hazard is no longer concurrency. It is a FUTURE WRITER that
+	// inserts a version without calling touchCoordination first and so never
+	// joins the fence. Related native-plane hazard: gastownhall/beads#6379.
 	var ordinal int64
 	if err := tx.QueryRowContext(ctx, `SELECT COALESCE(MAX(ordinal),0)+1 FROM graph_preview_versions WHERE path=?`, path).Scan(&ordinal); err != nil {
 		return err
@@ -231,6 +264,16 @@ func insertPreviewVersionInTx(ctx context.Context, tx *sql.Tx, path, version str
 	// #6661 removed a Truncate(time.Second) (pinned by
 	// TestRecordVersionKeepsSubSecondChangeAt). Ordinal is the ordering key;
 	// change_at is for display and --at selection, so do not floor it here.
+	//
+	// KNOWN: this is a SECOND CLOCK for one write. The record's own
+	// attribution.recordedAt is stamped elsewhere, so the two disagree by a few
+	// milliseconds -- measured 01:13:20.60181555Z against change_at
+	// 01:13:20.606254 for the same version. Harmless while the ordinal rules
+	// ordering, but it is a trap laid for `--at` selection (be-hs42e.6.1.1),
+	// which will have to pick one of the two and will disagree with `show` at
+	// boundaries. The fix is to pass the attributed instant in rather than
+	// reading the clock again here; deliberately not done in the change that
+	// found it, because it alters all six writers.
 	changeAt := time.Now().UTC()
 	_, err := tx.ExecContext(ctx, `INSERT INTO graph_preview_versions (path, version, snapshot, actor, ordinal, change_at) VALUES (?, ?, ?, ?, ?, ?)`, path, version, snapshot, actor, ordinal, changeAt)
 	return err

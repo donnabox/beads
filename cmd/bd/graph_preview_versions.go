@@ -5,7 +5,6 @@ import (
 	"errors"
 	"fmt"
 	"strings"
-	"time"
 
 	"github.com/spf13/cobra"
 
@@ -43,9 +42,12 @@ func graphVersionRowsJSON(rows []graphstore.VersionRow) []map[string]any {
 		out = append(out, map[string]any{
 			"ordinal": r.Ordinal,
 			"version": r.Version,
-			// RFC3339Nano rather than the human column's microseconds: the
-			// column is for reading, this is for parsing.
-			"change_at":   r.ChangeAt.UTC().Format(time.RFC3339Nano),
+			// Fixed-width microseconds rather than RFC3339Nano, which strips
+			// trailing zeros and so varies in width between rows
+			// ("…51.65588Z" beside "…51.879092Z"). Parsers do not care, but
+			// fixed-width columns and human comparison do, and this matches
+			// the microsecond precision the human column shows.
+			"change_at":   r.ChangeAt.UTC().Format("2006-01-02T15:04:05.000000Z07:00"),
 			"actor":       r.Actor,
 			"attribution": r.Attribution,
 			// `removed` marks the one listed row that is NOT citable: a

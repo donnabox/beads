@@ -284,6 +284,20 @@ func issueVersionsInTx(ctx context.Context, tx *sql.Tx, path, backingKey, head s
 	// then reads, so any native write that advances an Issue's revision without
 	// a graph mapping leaves a legitimate gap. Requiring dense 1..N would refuse
 	// healthy Issues, which is worse than the gap it would catch.
+	//
+	// SO THIS PLANE HAS ONE UNDETECTED CORRUPTION, stated plainly rather than
+	// left for a reader to infer from the absence of a check: deleting a MIDDLE
+	// mapping row keeps the head present and lowers the mapping count and the
+	// join count together, so neither guard fires and the list comes back
+	// complete-looking with a version missing. The head check closes the
+	// newest-row case only. Density is the wrong instrument, not a forgotten
+	// one. A correct guard would have to compare the native revisions for this
+	// issue_id against the mapped set, which means deciding whether a graph
+	// writer may ever advance a revision without minting a mapping -- a
+	// question about the write paths, not about this reader. Measured on the
+	// four paths the suite exercises, native revisions are in fact dense
+	// (logged by the Issue-plane test), but four call sites are evidence, not
+	// an invariant graphstore enforces.
 	if !listsVersion(result, head) {
 		return nil, fmt.Errorf("%w: current Issue retained mapping is missing", ErrInvalidStore)
 	}
