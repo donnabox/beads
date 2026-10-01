@@ -6,6 +6,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"strings"
 	"testing"
 	"time"
 )
@@ -675,6 +676,77 @@ func TestVersionsOfDeletedSubjects(t *testing.T) {
 				t.Errorf("a deleted Memory's resolvable head is flagged Removed: %+v", rows[0])
 			}
 			checkVersionList(t, ctx, s, "beads/notes", rows, "")
+		})
+	}
+}
+
+// TestVersionsRefusesAMismatchedTypeURL pins that a LIST validates the catalog's
+// type_url the same way a single-version READ does.
+//
+// This fails on the code before it: versionsInTx did not select type_url at all,
+// so it established only that the backing and kind were a recognised pair. A
+// subject with backing "generic" and some other Type's URL -- or a type_url long
+// enough to be a storage problem in its own right -- listed happily while
+// ReadVersion on the very tokens it returned refused as corrupt. Two readers over
+// one catalog disagreeing about what a valid allocation is was the defect; the
+// assertion here is that they now agree, which is why each case checks BOTH.
+func TestVersionsRefusesAMismatchedTypeURL(t *testing.T) {
+	for _, backend := range []string{"embedded", "server"} {
+		t.Run(backend, func(t *testing.T) {
+			ctx, o := issueExperimentOptions(t, backend)
+			s := openVersionsStore(t, ctx, o)
+			if _, err := s.Create(ctx, CreateRequest{Path: "beads/plan", Title: "Plan", Actor: "author"}); err != nil {
+				t.Fatal(err)
+			}
+			if _, err := s.CreateIssue(ctx, "beads/work", plainIssue("Work")); err != nil {
+				t.Fatal(err)
+			}
+			// Both subjects list before the corruption, so a later refusal is the
+			// type_url check firing rather than the fixture never having worked.
+			for _, path := range []string{"beads/plan", "beads/work"} {
+				if _, rows, err := s.Versions(ctx, path); err != nil || len(rows) == 0 {
+					t.Fatalf("%s should list before corruption: rows=%d err=%v", path, len(rows), err)
+				}
+			}
+
+			// Oversized is its own case, not a louder version of "wrong". It
+			// selects as NULL through the OCTET_LENGTH bound rather than
+			// comparing unequal, so it exercises the !typ.Valid branch.
+			oversized := s.ScopeURL() + strings.Repeat("x", 300)
+			for _, tc := range []struct {
+				name, path, typ string
+			}{
+				{"memory-wrong-type", "beads/plan", s.ScopeURL() + "types/not-a-memory"},
+				{"memory-oversized-type", "beads/plan", oversized},
+				{"issue-wrong-type", "beads/work", s.ScopeURL() + "types/not-an-issue"},
+				{"issue-oversized-type", "beads/work", oversized},
+			} {
+				t.Run(tc.name, func(t *testing.T) {
+					var original string
+					if err := s.db.QueryRowContext(ctx, `SELECT type_url FROM graph_preview_catalog WHERE path=?`, tc.path).Scan(&original); err != nil {
+						t.Fatal(err)
+					}
+					if _, err := s.db.ExecContext(ctx, `UPDATE graph_preview_catalog SET type_url=? WHERE path=?`, tc.typ, tc.path); err != nil {
+						t.Fatal(err)
+					}
+					// Restore before the next case so each one starts from a
+					// healthy subject and a failure cannot cascade.
+					t.Cleanup(func() {
+						if _, err := s.db.ExecContext(ctx, `UPDATE graph_preview_catalog SET type_url=? WHERE path=?`, original, tc.path); err != nil {
+							t.Fatal(err)
+						}
+					})
+					kind, rows, err := s.Versions(ctx, tc.path)
+					if !errors.Is(err, ErrInvalidStore) || kind != "" || rows != nil {
+						t.Fatalf("list: kind=%q rows=%+v err=%v; want ErrInvalidStore", kind, rows, err)
+					}
+					// Parity is the actual contract: the single read already
+					// refused this, and the list must not be the lenient one.
+					if _, err := s.ReadVersion(ctx, tc.path, "any-token"); !errors.Is(err, ErrInvalidStore) {
+						t.Fatalf("single read: %v; want ErrInvalidStore so both readers agree", err)
+					}
+				})
+			}
 		})
 	}
 }

@@ -147,9 +147,14 @@ func (s *Store) versionsWithin(ctx context.Context, path string, bounds versionB
 // kind resolution and the list.
 func (s *Store) versionsInTx(ctx context.Context, tx *sql.Tx, path string, bounds versionBounds) (ResourceKind, []VersionRow, error) {
 	var kind, backing, state, head string
-	var key sql.NullString
-	err := tx.QueryRowContext(ctx, `SELECT resource_kind,backing,allocation_state,revision,backing_key
- FROM graph_preview_catalog WHERE path=?`, path).Scan(&kind, &backing, &state, &head, &key)
+	var typ, key sql.NullString
+	// The type_url bound and the NullString are readVersionInTx's, not an
+	// invention: an oversized type_url selects as NULL and then fails the
+	// !typ.Valid check below, so a listing cannot be tricked into trusting a
+	// type it never actually compared.
+	err := tx.QueryRowContext(ctx, `SELECT resource_kind,backing,allocation_state,revision,
+ CASE WHEN OCTET_LENGTH(type_url)<=? THEN type_url ELSE NULL END,backing_key
+ FROM graph_preview_catalog WHERE path=?`, len(s.ScopeURL())+256, path).Scan(&kind, &backing, &state, &head, &typ, &key)
 	if errors.Is(err, sql.ErrNoRows) {
 		// Retained rows without an allocation are corruption, not an absence.
 		// Same refusal readVersionInTx makes: a History reader must not report
@@ -168,26 +173,45 @@ func (s *Store) versionsInTx(ctx context.Context, tx *sql.Tx, path string, bound
 	if err != nil {
 		return "", nil, err
 	}
-	if !authorityID.MatchString(head) || (state != "live" && state != "deleted") ||
+	if !typ.Valid || !authorityID.MatchString(head) || (state != "live" && state != "deleted") ||
 		(kind != "bead" && kind != "link") || (kind == "bead") != strings.HasPrefix(path, "beads/") {
 		return "", nil, fmt.Errorf("%w: invalid retained subject allocation", ErrInvalidStore)
+	}
+	// A deleted subject is validated the way readVersionInTx validates it, so one
+	// catalog does not get two different answers about whether an allocation is
+	// well formed depending on which reader asked. The VALIDATION is shared; the
+	// record construction deliberately is not -- a listing has no use for the
+	// Record deletedMemoryInTx builds, and calling it here would pay for decoding
+	// a record only to discard it and would import refusals that are specific to
+	// reading one version.
+	if state == "deleted" {
+		if backing == "generic" {
+			if err := s.validDeletedMemoryAllocationInTx(ctx, tx, path, kind, typ.String, head, state, backing, key); err != nil {
+				return "", nil, err
+			}
+		} else if !s.validDeletedLinkAllocation(kind, typ.String, backing, key) {
+			return "", nil, fmt.Errorf("%w: unsupported deleted subject", ErrInvalidStore)
+		}
 	}
 	switch {
 	case backing == "issue" && kind == "bead":
 		// The Issue plane's ordinal is the native revision, so the mapping must
-		// name the same Issue the catalog is bound to before it is trusted.
-		if !key.Valid || key.String == "" {
+		// name the same Issue the catalog is bound to before it is trusted. The
+		// type URL is compared too: backing alone was never enough to establish
+		// that this allocation is the kind of thing it claims to be.
+		if typ.String != IssueTypeURL(s.ScopeURL()) || !key.Valid || key.String == "" {
 			return "", nil, fmt.Errorf("%w: invalid Issue allocation", ErrInvalidStore)
 		}
 		rows, err := issueVersionsInTx(ctx, tx, path, key.String, head, bounds)
 		return KindIssue, rows, err
-	case backing == "generic" && kind == "bead":
+	case backing == "generic" && kind == "bead" && typ.String == MemoryTypeURL(s.ScopeURL()):
 		// A deleted Memory mints no successor version, so its head stays a real
 		// retained Resource: there is no deletion marker on this backing and no
 		// row to flag (deletedMemoryInTx reads that same head).
 		rows, err := previewVersionsInTx(ctx, tx, path, head, "", bounds)
 		return KindMemory, rows, err
-	case (backing == "informational" || backing == "dependency") && kind == "link":
+	case backing == "informational" && kind == "link" && typ.String == RelatedTypeURL(s.ScopeURL()),
+		backing == "dependency" && kind == "link" && typ.String == DependencyTypeURL(s.ScopeURL()):
 		// A deleted Link's head IS its deletion marker: link_lifecycle.go and
 		// dependency_unlink.go set the catalog revision to the marker's token in
 		// the same transaction that retains the marker row, and readVersionInTx
