@@ -7,8 +7,12 @@
 > projects on their existing format. Do not copy a `.beads` directory into a
 > graph workspace as an upgrade path.
 
-Older graph preview workspaces also do not auto-migrate to this build's graph
-schema. Preserve their data and create a fresh workspace for this preview.
+Graph workspaces are not migrated between graph schema versions. If a
+workspace's `graph_schema_version` in `.beads/metadata.json` is not this
+build's `6`, `bd` refuses it with `graph_not_initialized` and does not open
+its database. Preserve its data and create a fresh workspace. A schema-6
+workspace created before the two example Link Types existed opens and works
+normally without them; see [Discover installed Types](#discover-installed-types).
 
 Build `bd` from the [integration branch](https://github.com/versioned-beads/beads/tree/integration),
 not a released binary, and initialize a new project explicitly:
@@ -79,7 +83,7 @@ in this one.
 | `bd memories [SEARCH]` | List current Memory title/body summaries. Use `--all` for all matches within the preview's bounds, `--details` for saved version and attribution, or `--format records-json` for structured summaries. |
 | `bd recall ID` | Print **one** Memory's exact body bytes. It does not enumerate Memories or add a newline. |
 | `bd show ID --json` | Read one current Issue or Memory record; use `links/ID` for a Link. |
-| `bd list` or `bd list --format records-json` | List current Beads of all installed Bead Types. Use `--bead-type types/NAME` to narrow by nominal Type. Issue-specific filters select Issues through the existing Issue query. |
+| `bd list` or `bd list --format records-json` | Without an Issue filter, list every current Memory and Issue, closed Issues included, ordered by ID. Use `--bead-type types/NAME` to narrow by nominal Type. An Issue filter switches to the Issue-only query described below. |
 
 ```sh
 bd memories --all
@@ -90,13 +94,30 @@ bd list --all
 bd list --format records-json --bead-type types/preview-memory-v2 --all
 ```
 
-The CLI's all-Bead inventory uses one bounded current snapshot; `--limit`
-sets a visible prefix and `hasMore` indicates that the prefix omitted matches.
+Without an Issue filter, `bd list` reads one bounded snapshot of every
+current Bead. Each human row shows only the Bead's local ID (such as
+`beads/work`), its kind (`Memory` or `Issue`) and its title; there is no
+status or priority column. `--all` only removes the row limit, because closed
+Issues are already listed. `--limit` sets a visible prefix and `hasMore`
+indicates that the prefix omitted matches.
 It is not a continuation cursor. The BDP HTTP `beads/` collection provides
 pagination in an ordinary shared-server graph workspace. Follow every
 response's `next` URL until it is `null`, or use the
 [public Python read example](https://github.com/versioned-beads/beads/blob/integration/examples/bdp-read/read_beads.py), which
 follows those pages.
+
+The Issue filters are `--status` (or `--state`), `--type`, `--title`,
+`--title-contains`, `--priority`, `--priority-min`, `--priority-max`,
+`--assignee`, `--no-assignee`, `--label`, `--label-any`, `--exclude-label`,
+`--pinned`, `--no-pinned`, `--due-before`, `--due-after`, `--overdue`,
+`--sort` and `--reverse`. Supplying any of them switches `bd list` to the
+existing Issue query, even when an empty value such as `--assignee=` adds no
+restriction. A configured `directory.labels` entry that matches the current
+directory switches it too. That query lists Issues only, never Memories. It
+omits closed and pinned Issues unless `--all` or a filter selects them. Its
+human rows add status and priority, for example
+`"https://example.org/team/beads/work" "open" P2 "Move the release branch"`.
+An Issue filter cannot be combined with a non-Issue `--bead-type`.
 
 ## Update and delete Beads
 
@@ -231,8 +252,15 @@ details ordering and refusal behavior.
 Bead Types separately from Link Types. Use the printed `types/NAME` ID with
 `--bead-type` or `--link-type`; a full local Type URL also works.
 `--details` shows each complete stored descriptor, and `--json` returns the
-descriptors as structured data. An older workspace may have fewer Types than
-a new one; reading it does not install new example Types.
+descriptors as structured data.
+
+`bd init` installs six Types: the Issue and Memory Bead Types and four Link
+Types (`types/preview-blocks-v1`, `types/preview-related-v2`,
+`types/example-follows` and `types/example-cites`). A schema-6 workspace
+created before the two example Link Types existed has only the other four.
+It opens and works normally, and `bd types` lists those four. No command
+installs the examples into it; selecting one there refuses with
+`capability_unavailable`.
 
 ```sh
 bd types
