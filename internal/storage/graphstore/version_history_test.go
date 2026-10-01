@@ -680,6 +680,128 @@ func TestVersionsOfDeletedSubjects(t *testing.T) {
 	}
 }
 
+// TestVersionsOfExampleInformationalLinks pins that a listing accepts every
+// informational Link Type the store has installed, not only the original
+// Related one, and refuses an informational Type the store has not installed.
+//
+// This fails on the code before it: versionsInTx compared the informational
+// backing's type_url against RelatedTypeURL alone, so every Link of the
+// example-follows and example-cites Types, live or deleted, was refused as an
+// unsupported retained allocation (ErrInvalidStore) while ReadVersion resolved
+// the very tokens the list should have returned. The legacy half pins the other
+// direction: accepting the example Types must not let a four-Type installation
+// list an allocation of a Type it never installed, which ReadVersion refuses.
+func TestVersionsOfExampleInformationalLinks(t *testing.T) {
+	for _, backend := range []string{"embedded", "server"} {
+		t.Run(backend, func(t *testing.T) {
+			ctx, o := issueExperimentOptions(t, backend)
+			s := openVersionsStore(t, ctx, o)
+			policy, err := s.Create(ctx, CreateRequest{Path: "beads/policy", Title: "Policy", Body: "Code flow policy", Actor: "author"})
+			if err != nil {
+				t.Fatal(err)
+			}
+			if _, err := s.CreateIssue(ctx, "beads/work", plainIssue("Work")); err != nil {
+				t.Fatal(err)
+			}
+			// The Memory owns each Link it is the source of, so every write to
+			// such a Link also mints a Memory version that the next write guards.
+			source := policy.Revision
+			// Every example allocation and one of its tokens, for the legacy half.
+			type allocation struct{ path, token string }
+			var allocated []allocation
+			for _, typ := range []string{ExampleCitesTypeURL(s.ScopeURL()), ExampleFollowsTypeURL(s.ScopeURL())} {
+				name := strings.TrimPrefix(typ, s.ScopeURL()+"types/")
+				path := "links/" + name
+				added, err := s.AddInformationalLink(ctx, LinkCreateRequest{Path: path, TypeURL: typ,
+					SourcePath: "beads/policy", TargetPath: "beads/work", ExpectedSourceRevision: source,
+					Properties: map[string]any{"note": "before"}, Actor: "linker"})
+				if err != nil || added.Link.Type != typ {
+					t.Fatalf("%s: add: %+v %v", name, added, err)
+				}
+				edited, err := s.UpdateLink(ctx, LinkUpdateRequest{Path: path,
+					ExpectedRevision: added.Link.Revision, ExpectedSourceRevision: added.Source.(Record).Revision,
+					Properties: map[string]any{"note": "after"}, Actor: "editor"})
+				if err != nil || !edited.Changed || edited.Link.Type != typ {
+					t.Fatalf("%s: update: %+v %v", name, edited, err)
+				}
+				kind, rows, err := s.Versions(ctx, path)
+				if err != nil {
+					t.Fatalf("%s: live Link versions: %v", name, err)
+				}
+				if kind != KindLink || len(rows) != 2 || rows[0].Version != edited.Link.Revision || rows[1].Version != added.Link.Revision {
+					t.Fatalf("%s: live Link history: kind=%q rows=%+v", name, kind, rows)
+				}
+				checkVersionList(t, ctx, s, path, rows, "")
+				removed, err := s.Unlink(ctx, LinkDeleteRequest{Path: path,
+					ExpectedRevision: edited.Link.Revision, ExpectedSourceRevision: edited.Source.(Record).Revision,
+					Actor: "remover"})
+				if err != nil || removed.Link.Type != typ {
+					t.Fatalf("%s: unlink: %+v %v", name, removed, err)
+				}
+				source = removed.Source.(Record).Revision
+				kind, rows, err = s.Versions(ctx, path)
+				if err != nil {
+					t.Fatalf("%s: deleted Link versions: %v", name, err)
+				}
+				// create, update, unlink: the deletion marker is a retained version
+				// of its own, listed newest and the only row flagged Removed.
+				if kind != KindLink || len(rows) != 3 || rows[0].Version != removed.Link.Revision ||
+					rows[1].Version != edited.Link.Revision || rows[2].Version != added.Link.Revision {
+					t.Fatalf("%s: deleted Link history: kind=%q rows=%+v", name, kind, rows)
+				}
+				if rows[0].Ordinal != 3 || rows[1].Ordinal != 2 || rows[2].Ordinal != 1 {
+					t.Errorf("%s: deleted Link ordinals %d,%d,%d, want 3,2,1", name, rows[0].Ordinal, rows[1].Ordinal, rows[2].Ordinal)
+				}
+				if !rows[0].Removed || rows[1].Removed || rows[2].Removed {
+					t.Errorf("%s: only the deletion marker may be flagged Removed: %+v", name, rows)
+				}
+				checkVersionList(t, ctx, s, path, rows, removed.Link.Revision)
+				// An Issue source does not own its Links, so this one stays live
+				// without advancing the Memory's history.
+				kept, err := s.AddInformationalLink(ctx, LinkCreateRequest{Path: path + "-live", TypeURL: typ,
+					SourcePath: "beads/work", TargetPath: "beads/policy", Actor: "linker"})
+				if err != nil {
+					t.Fatalf("%s: add live: %v", name, err)
+				}
+				// It lists before the store is altered below, so its refusal there
+				// is the installation check firing, not a fixture that never worked.
+				if kind, rows, err := s.Versions(ctx, path+"-live"); err != nil || kind != KindLink || len(rows) != 1 || rows[0].Version != kept.Link.Revision {
+					t.Fatalf("%s: kept Link history: kind=%q rows=%+v err=%v", name, kind, rows, err)
+				}
+				allocated = append(allocated, allocation{path, added.Link.Version}, allocation{path + "-live", kept.Link.Version})
+			}
+			related, err := s.AddInformationalLink(ctx, LinkCreateRequest{Path: "links/related",
+				SourcePath: "beads/policy", TargetPath: "beads/work", ExpectedSourceRevision: source, Actor: "linker"})
+			if err != nil || related.Link.Type != RelatedTypeURL(s.ScopeURL()) {
+				t.Fatalf("Related Link: %+v %v", related, err)
+			}
+			// Removing both example rows leaves exactly the original four-Type
+			// installation, as in TestExampleTypesLegacyInstallation. Such a store
+			// can hold an example allocation only if it is corrupt.
+			if _, err := s.db.ExecContext(ctx, `DELETE FROM graph_preview_types WHERE name IN ('example-follows','example-cites')`); err != nil {
+				t.Fatal(err)
+			}
+			for _, subject := range allocated {
+				kind, rows, err := s.Versions(ctx, subject.path)
+				if !errors.Is(err, ErrInvalidStore) || kind != "" || rows != nil {
+					t.Fatalf("%s on a four-Type installation: kind=%q rows=%+v err=%v; want ErrInvalidStore", subject.path, kind, rows, err)
+				}
+				// Parity is the contract: the single read refuses this allocation
+				// too, and the list must not be the lenient one.
+				if _, err := s.ReadVersion(ctx, subject.path, subject.token); !errors.Is(err, ErrInvalidStore) {
+					t.Fatalf("%s single read on a four-Type installation: %v; want ErrInvalidStore", subject.path, err)
+				}
+			}
+			// The refusal belongs to the uninstalled Types, not to the informational
+			// backing: the installed Related Type still lists on the same store.
+			kind, rows, err := s.Versions(ctx, "links/related")
+			if err != nil || kind != KindLink || len(rows) != 1 || rows[0].Version != related.Link.Revision {
+				t.Fatalf("Related Link on a four-Type installation: kind=%q rows=%+v err=%v", kind, rows, err)
+			}
+		})
+	}
+}
+
 // TestVersionsRefusesAMismatchedTypeURL pins that a LIST validates the catalog's
 // type_url the same way a single-version READ does.
 //

@@ -226,8 +226,18 @@ func (s *Store) versionsInTx(ctx context.Context, tx *sql.Tx, path string, bound
 		// row to flag (deletedMemoryInTx reads that same head).
 		rows, err := previewVersionsInTx(ctx, tx, path, head, "", bounds)
 		return KindMemory, rows, err
-	case backing == "informational" && kind == "link" && typ.String == RelatedTypeURL(s.ScopeURL()),
+	case backing == "informational" && kind == "link" && IsInformationalTypeURL(s.ScopeURL(), typ.String),
 		backing == "dependency" && kind == "link" && typ.String == DependencyTypeURL(s.ScopeURL()):
+		// Every informational Type the binary knows is accepted here, but only
+		// one this store has INSTALLED is valid: a legacy four-Type installation
+		// never holds the example Types, so an allocation naming one is corrupt
+		// state. readVersionInTx makes the same check, so the list and the
+		// single read agree about which allocations are well formed.
+		if backing == "informational" {
+			if err := s.informationalTypeInTx(ctx, tx, typ.String); err != nil {
+				return "", nil, err
+			}
+		}
 		// A deleted Link's head IS its deletion marker: link_lifecycle.go and
 		// dependency_unlink.go set the catalog revision to the marker's token in
 		// the same transaction that retains the marker row, and readVersionInTx
