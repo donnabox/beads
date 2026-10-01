@@ -724,3 +724,44 @@ func TestPresenceCandidates(t *testing.T) {
 		t.Errorf("presenceCandidates = %v, want %v", got, want)
 	}
 }
+
+// A row diff type the translator does not know, in either replayed table, withholds
+// the issue instead of being passed over.
+func TestAssembleUnrecognizedDiffTypes(t *testing.T) {
+	p := assemble(stepInput{
+		From: "f", To: "t", Tables: issuesAndDeps(),
+		Issues: []diffRow{row("diff_type", "renamed", "to_id", "a-1", "from_id", "a-1")},
+		Deps:   []diffRow{row("diff_type", "renamed", "to_issue_id", "b-2", "from_issue_id", "b-2")},
+	})
+	if len(p.Actions) != 0 {
+		t.Errorf("nothing runs for a diff type nobody knows, got %v", argvLines(p.Actions))
+	}
+	var withheld []string
+	for _, u := range p.Untranslatable {
+		withheld = append(withheld, u.Issue)
+		if !strings.Contains(u.Error(), "diff_type") {
+			t.Errorf("%s: the reason does not name the diff type: %q", u.Issue, u.Error())
+		}
+	}
+	if !reflect.DeepEqual(withheld, []string{"a-1", "b-2"}) {
+		t.Errorf("withheld = %v, want [a-1 b-2]", withheld)
+	}
+}
+
+// Plan checks its refs before it reads anything, so a value that could carry SQL
+// never reaches a query, and Classify does the same for the issue id.
+func TestPlanRejectsUnsafeRefs(t *testing.T) {
+	ctx := context.Background()
+	const good = "0123456789abcdefghijklmnopqrstuv"
+	for _, bad := range []string{"", "x'; DROP TABLE issues; --", "has space", strings.Repeat("a", 129)} {
+		if _, err := Plan(ctx, t.TempDir(), bad, good); err == nil {
+			t.Errorf("Plan accepted %q as the from ref", bad)
+		}
+		if _, err := Plan(ctx, t.TempDir(), good, bad); err == nil {
+			t.Errorf("Plan accepted %q as the to ref", bad)
+		}
+		if _, err := Classify(ctx, t.TempDir(), good, good, bad); err == nil {
+			t.Errorf("Classify accepted %q as the issue id", bad)
+		}
+	}
+}
