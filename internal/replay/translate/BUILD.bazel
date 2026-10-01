@@ -2,7 +2,11 @@ load("@rules_go//go:def.bzl", "go_library", "go_test")
 
 go_library(
     name = "translate",
-    srcs = ["translate.go"],
+    srcs = [
+        "plan.go",
+        "policy.go",
+        "translate.go",
+    ],
     importpath = "github.com/steveyegge/beads/internal/replay/translate",
     visibility = ["//:__subpackages__"],
     deps = [
@@ -13,7 +17,10 @@ go_library(
 
 go_test(
     name = "translate_test",
-    srcs = ["translate_test.go"],
+    srcs = [
+        "plan_test.go",
+        "translate_test.go",
+    ],
     embed = [":translate"],
     deps = [
         "//internal/replay/doltcli",
