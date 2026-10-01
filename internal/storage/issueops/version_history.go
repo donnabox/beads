@@ -25,13 +25,15 @@ import (
 // BeginTx, so enabling history on one store instance cannot turn it on for
 // any other sharing the process.
 //
-// RecordVersionInTx is the single seam both direct-SQL legs (dolt,
-// embeddeddolt) and the domain/db package (used by uow) call through, from
-// inside the same already-short-circuited functions that call
-// RecordEventInTx — every accepted mutation of an issue's durable state
-// (create, update, close, reopen, claim, release, lease reclaim, defer wake,
-// label add/remove, dependency add/remove, promote, persistence move) mints
-// exactly one row, as its LAST durable-state write; a no-op mints none. A
+// RecordVersionInTx (and its create-shaped sibling, RecordVersionForCreateInTx
+// — design §16.2b's write fence, see that function's own doc) is the single
+// seam both direct-SQL legs (dolt, embeddeddolt) and the domain/db package
+// (used by uow) call through, from inside the same already-short-circuited
+// functions that call RecordEventInTx — every accepted mutation of an
+// issue's durable state (create, update, close, reopen, claim, release,
+// lease reclaim, defer wake, label add/remove, dependency add/remove,
+// promote, persistence move) mints exactly one row, as its LAST
+// durable-state write; a no-op mints none. A
 // mutation DiscardNoopIssueUpdates has already discarded never reaches either
 // seam; the label and dependency helpers, which that filter does not cover,
 // gate on their own inserted/deleted row instead (an idempotent re-add or an
@@ -386,11 +388,39 @@ func CheckMetadataVersionable(metadata json.RawMessage) error {
 // version row's attribution — "" when the mutation path genuinely has none,
 // matching RecordEventInTx's own convention. It also drives
 // attribution_status via attributionStatusForActor.
+//
+// This is the UPDATE-shaped entry point: design §16.2b's write fence. A
+// record whose participation_generation is NULL is legacy — never
+// positively promoted — and an update-shaped mutation against it mints
+// nothing, neither half of this seam's write (no issue_versions row, no
+// current_revision bump). A record that already carries a non-NULL
+// participation_generation proceeds normally. Use RecordVersionForCreateInTx
+// for a create-shaped mutation instead: a brand-new row has no legacy state
+// to preserve, so that entry point stamps the column rather than checking
+// it.
 func RecordVersionInTx(ctx context.Context, tx DBTX, issueID, actor string) error {
 	if !versionedHistoryEnabled(tx) {
 		return nil
 	}
-	return recordVersionAtInTx(ctx, tx, issueID, actor, time.Now().UTC())
+	return recordVersionAtInTx(ctx, tx, issueID, actor, time.Now().UTC(), mintUpdate)
+}
+
+// RecordVersionForCreateInTx is RecordVersionInTx's create-shaped sibling
+// (design §16.2b). The write fence does not apply to a brand-new row, so
+// instead of checking participation_generation, this stamps it — sourced
+// from store_epoch.epoch, the same source the fence reads — as part of the
+// row's first mint, whenever versioned history is enabled. A create with the
+// flag off never reaches the stamp (this whole seam no-ops while the flag is
+// off, same as RecordVersionInTx), leaving the column NULL — indistinguishable
+// from a true legacy row (FR-7). A wisp arriving on the issues plane, by
+// promotion or a persistence move out of the wisps table, mints through here
+// too: its issues row is just as new, and a wisp never declares
+// participation (FR-8).
+func RecordVersionForCreateInTx(ctx context.Context, tx DBTX, issueID, actor string) error {
+	if !versionedHistoryEnabled(tx) {
+		return nil
+	}
+	return recordVersionAtInTx(ctx, tx, issueID, actor, time.Now().UTC(), mintCreate)
 }
 
 // RecordVersionAtInTx is RecordVersionInTx's test-support twin: it mints a
@@ -402,16 +432,43 @@ func RecordVersionInTx(ctx context.Context, tx DBTX, issueID, actor string) erro
 // this; only per-leg as-of-read fixtures do, so their bare issue-create step
 // can stay history-off (no unwanted real-time row) while still minting the
 // exact versions a test needs at the instants it needs them.
+//
+// It bypasses design §16.2b's write fence exactly as it bypasses the gate:
+// it neither reads participation_generation nor stamps it, so it mints for
+// a legacy row and a participating row alike and leaves the column as it
+// found it. The fence and the stamp belong to the production entry points
+// above, never to a fixture's controlled-timestamp mint.
 func RecordVersionAtInTx(ctx context.Context, tx DBTX, issueID, actor string, at time.Time) error {
-	return recordVersionAtInTx(ctx, tx, issueID, actor, at)
+	return recordVersionAtInTx(ctx, tx, issueID, actor, at, mintUnfenced)
 }
 
-// recordVersionAtInTx is RecordVersionInTx and RecordVersionAtInTx's shared
-// body, taking at where the two callers differ: time.Now().UTC() for the
-// production gate-checked path, a caller-chosen instant for test minting.
-// The no-op rules documented on RecordVersionInTx above (wisps) apply here
-// too, since this is that function's entire mechanism minus the gate.
-func recordVersionAtInTx(ctx context.Context, tx DBTX, issueID, actor string, at time.Time) error {
+// versionMintKind says how recordVersionAtInTx treats design §16.2b's write
+// fence, the one thing RecordVersionInTx, RecordVersionForCreateInTx and
+// RecordVersionAtInTx do not share.
+type versionMintKind int
+
+const (
+	// mintUpdate is an update-shaped mutation (RecordVersionInTx): the fence
+	// applies, and a record whose participation_generation is NULL mints nothing.
+	mintUpdate versionMintKind = iota
+	// mintCreate is a create-shaped mutation (RecordVersionForCreateInTx): a
+	// brand-new row has no legacy state to preserve, so the fence does not
+	// apply and the mint stamps participation_generation instead.
+	mintCreate
+	// mintUnfenced is RecordVersionAtInTx's test-support mint: no fence and no
+	// stamp, exactly as it behaved before the fence existed.
+	mintUnfenced
+)
+
+// recordVersionAtInTx is RecordVersionInTx, RecordVersionForCreateInTx and
+// RecordVersionAtInTx's shared body, taking at where the callers differ:
+// time.Now().UTC() for the production gate-checked paths, a caller-chosen
+// instant for test minting; and kind, which says whether design §16.2b's
+// write fence applies (mintUpdate), the mint stamps participation_generation
+// (mintCreate) or neither (mintUnfenced). The no-op rules documented on
+// RecordVersionInTx above (wisps) apply here too, since this is that
+// function's entire mechanism minus the gate.
+func recordVersionAtInTx(ctx context.Context, tx DBTX, issueID, actor string, at time.Time, kind versionMintKind) error {
 	// change_at is DATETIME(6) as of migration 0069, and this function
 	// deliberately does NOT floor `at` to the second.
 	//
@@ -452,6 +509,31 @@ func recordVersionAtInTx(ctx context.Context, tx DBTX, issueID, actor string, at
 	}
 	if IsWisp(issue) {
 		return nil
+	}
+
+	// design §16.2b write fence. Read straight off the row rather than
+	// through types.Issue: participation_generation is dual-write
+	// bookkeeping, not part of the issue's own content model, so it stays
+	// out of the durable_state snapshot canonicalDurableState marshals
+	// below. Only mintUpdate runs the check: a brand-new row (mintCreate) has
+	// no legacy state to preserve, and this same function stamps the column
+	// itself further down; the test-support mint (mintUnfenced) never reads it
+	// at all. An update-shaped call against a NULL (legacy) value returns
+	// here, before either half of this seam's write runs.
+	// BD_IGNORE_SCHEMA_SKEW (internal/storage/schema/schema.go) has no
+	// bearing on this check: it downgrades CheckForwardDrift's
+	// migration-cursor refusal, a different plane than this column's real
+	// per-row data.
+	if kind == mintUpdate {
+		var participationGeneration sql.NullInt64
+		if err := tx.QueryRowContext(ctx,
+			"SELECT participation_generation FROM issues WHERE id = ?", issueID,
+		).Scan(&participationGeneration); err != nil {
+			return fmt.Errorf("versioned history: read participation_generation for %s: %w", issueID, err)
+		}
+		if !participationGeneration.Valid {
+			return nil
+		}
 	}
 
 	// durable_state is the RFC 8785 (JCS) canonical form of the marshaled
@@ -521,6 +603,19 @@ func recordVersionAtInTx(ctx context.Context, tx DBTX, issueID, actor string, at
 
 	// Advancing recorder bookkeeping must not fire updated_at's ON UPDATE
 	// clause after durableState has captured the accepted Issue state.
+	if kind == mintCreate {
+		// Stamps participation_generation in the same statement that advances
+		// current_revision — design §16.2b's "positive declaration sourced
+		// from store_epoch.epoch," minted here from the epoch already read
+		// above for this same transaction's version row.
+		if _, err := tx.ExecContext(ctx,
+			"UPDATE issues SET current_revision = ?, participation_generation = ?, updated_at = updated_at WHERE id = ?",
+			newRevision, epoch, issueID,
+		); err != nil {
+			return fmt.Errorf("versioned history: advance current_revision for %s: %w", issueID, err)
+		}
+		return nil
+	}
 	if _, err := tx.ExecContext(ctx,
 		"UPDATE issues SET current_revision = ?, updated_at = updated_at WHERE id = ?", newRevision, issueID,
 	); err != nil {
