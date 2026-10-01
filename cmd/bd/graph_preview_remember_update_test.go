@@ -118,7 +118,6 @@ func TestGraphPreviewRememberSelectedRefusesBeforeInput(t *testing.T) {
 		readonly bool
 		code     int
 	}{
-		{"missing-guard", []string{"--update=beads/plan"}, false, 2},
 		{"empty-guard", []string{"--update=beads/plan", "--if-revision="}, false, 2},
 		{"both-guards", []string{"--update=beads/plan", "--if-revision=observed", "--unconditional"}, false, 2},
 		{"false-unconditional", []string{"--update=beads/plan", "--unconditional=false"}, false, 2},

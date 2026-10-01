@@ -19,7 +19,7 @@ func TestGraphPreviewGuidanceReusesDurableStorage(t *testing.T) {
 		`bd recall beads/time-policy`,
 		`bd memories timestamps --format records-json`,
 		`bd status --graph`,
-		"Choose a new canonical ID for each distinct fact",
+		"IDs and titles are generated when omitted",
 	} {
 		if !strings.Contains(section, command) {
 			t.Errorf("missing supported graph guidance %q", command)

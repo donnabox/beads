@@ -15,9 +15,10 @@ var graphUnlinkCmd = &cobra.Command{
 	Short: "Remove a Link in an experimental graph workspace",
 	Long: `Remove one informational Link or blocking Dependency by canonical Link ID.
 Informational Links also accept an unambiguous source/target pair selected with
---resource-type. Requires a Link revision guard and a source guard when the Link
-is owned (Memory Links and blocking Dependencies). The ID stays reserved and
-prior snapshots remain retained. Blocking pair selection is not supported.`,
+--resource-type. Requires a Link revision guard. Source revision protection is
+optional for Memory-owned Links and required for blocking Dependencies. The ID
+stays reserved and prior snapshots remain retained. Blocking pair selection is
+not supported.`,
 	SilenceUsage: true, SilenceErrors: true,
 	RunE: runGraphPreviewUnlink,
 }
@@ -39,7 +40,7 @@ func init() {
 	graphUnlinkCmd.Flags().String("if-revision", "", "Require this observed Link revision")
 	graphUnlinkCmd.Flags().Bool("unconditional", false, "Explicitly accept the current Link revision")
 	graphUnlinkCmd.Flags().String("if-source-revision", "", "Require this observed owning-source revision")
-	graphUnlinkCmd.Flags().Bool("unconditional-source", false, "Explicitly accept the current owning-source revision")
+	graphUnlinkCmd.Flags().Bool("unconditional-source", false, "Accept the current owning-source revision (default without --if-source-revision)")
 	graphLinksCmd.Flags().String("direction", "both", "Incident direction: in, out, or both")
 	graphLinksCmd.Flags().String("resource-type", "", "Filter by exact installed Link Type URL")
 }
@@ -136,6 +137,10 @@ func runGraphPreviewUnlink(cmd *cobra.Command, args []string) error {
 	request.ExpectedSourceRevision, request.UnconditionalSource, err = graphPreviewRevisionGuard(cmd, true, false)
 	if err != nil {
 		return err
+	}
+	if !cmd.Flags().Changed("if-source-revision") && !cmd.Flags().Changed("unconditional-source") {
+		request.UnconditionalSource = false
+		request.DefaultInformationalSource = true
 	}
 	return withGraphStore(func(ctx context.Context, store *graphstore.Store) (any, string, error) {
 		result, err := store.Unlink(ctx, request)

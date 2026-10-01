@@ -39,11 +39,11 @@ var graphPreviewConfig *configfile.Config
 func init() {
 	rootCmd.PersistentFlags().String("graph-mode", "", "Assert workspace format: dependency or link (init selects format)")
 	initCmd.Flags().String("scope-url", "", "Permanent operator-selected Scope URL for a fresh disposable graph preview")
-	rememberCmd.Flags().String("id", "", "New canonical beads/PATH in a graph preview")
-	rememberCmd.Flags().String("title", "", "Memory title (required on create; --update preserves omitted title/body; graph preview only)")
+	rememberCmd.Flags().String("id", "", "New canonical beads/PATH (generated when omitted; graph preview only)")
+	rememberCmd.Flags().String("title", "", "Memory title (defaults to a short body summary on create; --update preserves omitted fields; graph preview only)")
 	rememberCmd.Flags().String("update", "", "Existing canonical Memory selector to update (graph preview only)")
 	rememberCmd.Flags().String("if-revision", "", "Require this observed Memory revision for --update (graph preview only)")
-	rememberCmd.Flags().Bool("unconditional", false, "Replace only supplied Memory fields without a revision guard; requires --update (graph preview only)")
+	rememberCmd.Flags().Bool("unconditional", false, "Accept the current Memory revision (default for --update without --if-revision; graph preview only)")
 	rememberCmd.Flags().String("body-file", "", "Read graph Memory body from this UTF-8 file (preview: at most 1 MiB)")
 	rememberCmd.Flags().Bool("stdin", false, "Read graph Memory body from stdin (preview: at most 1 MiB)")
 	for _, cmd := range []*cobra.Command{deleteCmd, forgetCmd} {
@@ -64,9 +64,9 @@ func init() {
 	updateCmd.Flags().String("if-revision", "", "Require this observed experimental Resource revision")
 	updateCmd.Flags().Bool("unconditional", false, "Explicitly accept the current experimental Resource state")
 	updateCmd.Flags().String("if-source-revision", "", "Require this observed source revision for an experimental owned Link")
-	updateCmd.Flags().Bool("unconditional-source", false, "Explicitly accept the current source state for an experimental owned Link")
+	updateCmd.Flags().Bool("unconditional-source", false, "Accept the current source state (default without --if-source-revision)")
 	linkCmd.Flags().String("if-source-revision", "", "Require this observed source revision for an experimental owned Link")
-	linkCmd.Flags().Bool("unconditional-source", false, "Explicitly accept the current source state for an experimental owned Link")
+	linkCmd.Flags().Bool("unconditional-source", false, "Accept the current source state (default without --if-source-revision)")
 }
 
 // No home-directory or other repository fallback: an incomplete local graph
@@ -444,20 +444,20 @@ func runGraphPreviewRemember(cmd *cobra.Command, args []string) error {
 	if cmd.Flags().Changed("if-revision") || cmd.Flags().Changed("unconditional") {
 		return graphFailure("capability_unavailable", "remember write guards require --update; creation does not accept them", 5)
 	}
-	path, _ := cmd.Flags().GetString("id")
+	path, err := graphPreviewCreateBeadPath(cmd)
+	if err != nil {
+		return err
+	}
 	title, _ := cmd.Flags().GetString("title")
-	if path == "" {
-		return graphFailure("invalid_selector", "this preview requires an explicit --id beads/PATH", 2)
-	}
-	if err := graph.ValidateBeadPath(path); err != nil {
-		return graphFailure("invalid_selector", err.Error(), 2)
-	}
-	if strings.TrimSpace(title) == "" {
-		return graphFailure("invalid_properties", "this preview requires an explicit nonempty --title", 2)
+	if cmd.Flags().Changed("title") && strings.TrimSpace(title) == "" {
+		return graphFailure("invalid_properties", "an explicit --title must be nonempty", 2)
 	}
 	body, err := graphPreviewRememberBody(cmd, args)
 	if err != nil {
 		return err
+	}
+	if !cmd.Flags().Changed("title") {
+		title = graphPreviewMemoryTitle(body)
 	}
 	return withGraphStore(func(ctx context.Context, s *graphstore.Store) (any, string, error) {
 		r, err := s.Create(ctx, graphstore.CreateRequest{Path: path, Title: title, Body: body, Actor: getActorWithGit()})
