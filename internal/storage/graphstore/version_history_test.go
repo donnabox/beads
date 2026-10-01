@@ -5,6 +5,7 @@ package graphstore
 import (
 	"context"
 	"errors"
+	"fmt"
 	"testing"
 	"time"
 )
@@ -28,6 +29,10 @@ func openVersionsStore(t *testing.T, ctx context.Context, o Options) *Store {
 // a resolvable token on every row, and a populated change instant. marker names
 // the one token allowed to refuse with ErrGone instead of resolving, which is a
 // deleted Link's deletion marker; "" means every row must resolve.
+//
+// Removed is checked against marker on every row rather than only on the marker:
+// the flag's whole contract is "listed, but this token is not citable", so a row
+// that resolves and claims Removed is as wrong as a marker that does not claim it.
 func checkVersionList(t *testing.T, ctx context.Context, s *Store, path string, rows []VersionRow, marker string) {
 	t.Helper()
 	if len(rows) == 0 {
@@ -42,6 +47,9 @@ func checkVersionList(t *testing.T, ctx context.Context, s *Store, path string, 
 		}
 		if row.ChangeAt.IsZero() || row.ChangeAt.Location() != time.UTC {
 			t.Errorf("%s row %d: change instant %v is not a populated UTC time", path, i, row.ChangeAt)
+		}
+		if want := marker != "" && row.Version == marker; row.Removed != want {
+			t.Errorf("%s row %d: Removed=%v, want %v (marker %q)", path, i, row.Removed, want, marker)
 		}
 		// Every token this reader hands out must address retained state; that is
 		// the whole point of returning Version alongside the local ordinal.
@@ -135,6 +143,13 @@ func TestVersionsIssuePlaneRecordsWithoutTheConfigFlag(t *testing.T) {
 				if len(rows) != subject.mutations {
 					t.Fatalf("%s: %d versions, want %d: %+v", subject.path, len(rows), subject.mutations, rows)
 				}
+				// Evidence for why the Issue plane gets no dense-ordinal guard:
+				// these ordinals are native revisions, and a native write that
+				// advances one without minting a graph mapping leaves a
+				// legitimate gap. Measured rather than asserted — the point is
+				// that this reader does not own the number.
+				t.Logf("%s: native issue_versions=%d mapped graph versions=%d oldest ordinal=%d newest ordinal=%d",
+					subject.path, native, len(rows), rows[len(rows)-1].Ordinal, rows[0].Ordinal)
 				checkVersionList(t, ctx, s, subject.path, rows, "")
 				// The newest listed version is the current head, and the oldest
 				// is the creating mutation's native ordinal 1.
@@ -323,12 +338,13 @@ func TestVersionsOrderByOrdinalNotChangeAt(t *testing.T) {
 	}
 }
 
-// TestVersionsMissingSubjectIsNotAnEmptyList keeps the outcomes distinct: a path
-// that was never allocated refuses with the package's existing ErrNotFound, and
-// a real subject with nothing retained returns its kind with an empty list and
-// no error. The Issue plane's "nothing retained" case is its mappings being
-// gone; a mapping whose ordering authority is missing is a refusal instead, and
-// TestVersionsRefusesUnorderableAndCorruptState covers it.
+// TestVersionsMissingSubjectIsNotAnEmptyList keeps the two reachable shapes
+// distinct and pins that neither of them is an empty list: a path that was never
+// allocated refuses with the package's existing ErrNotFound, and an allocated
+// subject with nothing retained is corruption rather than a third, emptier
+// answer. Creation IS version 1 on both planes — every allocation retains its
+// first version in the same transaction as its catalog row — so zero retained
+// rows for an allocated subject means that version was lost.
 func TestVersionsMissingSubjectIsNotAnEmptyList(t *testing.T) {
 	for _, backend := range []string{"embedded", "server"} {
 		t.Run(backend, func(t *testing.T) {
@@ -351,34 +367,36 @@ func TestVersionsMissingSubjectIsNotAnEmptyList(t *testing.T) {
 			if _, err := s.CreateIssue(ctx, "beads/work", plainIssue("Work")); err != nil {
 				t.Fatal(err)
 			}
-			// Drop the retained rows out of band. Neither plane can reach this
-			// state through the writer, which always retains its head, but the
-			// contract distinguishes "allocated, nothing to show" from both a
-			// refusal and corruption, so the distinction has to be exercised.
+			// Drop the retained rows out of band. No writer can reach this state:
+			// records.go createInTx and issues.go CreateIssue each insert the
+			// first retained version in the same transaction as the catalog row,
+			// so an allocated subject always has at least one version. That makes
+			// this corruption to refuse, not an absence to report, and the
+			// distinction is only observable if it is exercised.
 			if _, err := s.db.ExecContext(ctx, `DELETE FROM graph_preview_versions WHERE path='beads/plan'`); err != nil {
 				t.Fatal(err)
 			}
 			if _, err := s.db.ExecContext(ctx, `DELETE FROM graph_preview_issue_versions WHERE path='beads/work'`); err != nil {
 				t.Fatal(err)
 			}
-			for _, subject := range []struct {
-				path string
-				kind ResourceKind
-			}{{"beads/plan", KindMemory}, {"beads/work", KindIssue}} {
-				kind, rows, err := s.Versions(ctx, subject.path)
-				if err != nil || kind != subject.kind || rows != nil {
-					t.Fatalf("%s with nothing retained: kind=%q rows=%+v err=%v", subject.path, kind, rows, err)
+			for _, path := range []string{"beads/plan", "beads/work"} {
+				kind, rows, err := s.Versions(ctx, path)
+				if !errors.Is(err, ErrInvalidStore) || kind != "" || rows != nil {
+					t.Fatalf("%s with nothing retained: kind=%q rows=%+v err=%v; want ErrInvalidStore", path, kind, rows, err)
 				}
 			}
 		})
 	}
 }
 
-// TestVersionsRefusesUnorderableAndCorruptState covers the two ways this reader
-// could otherwise shorten a history without saying so. The two refusals are
-// deliberately different: a plane with no ordering authority left is a missing
-// capability, while retained rows with no allocation are corruption.
-func TestVersionsRefusesUnorderableAndCorruptState(t *testing.T) {
+// TestVersionsRefusesCorruptRetainedState covers the ways this reader could
+// otherwise shorten a history without saying so. Every one of them is
+// ErrInvalidStore: a lost dual write is corruption whether all of it or part of
+// it is gone, so the amount lost must not change the kind of answer. There is no
+// "this plane cannot order" outcome left to test — both planes carry their
+// ordering authority in the same transaction as the rows it orders, so a plane
+// that cannot order has lost rows.
+func TestVersionsRefusesCorruptRetainedState(t *testing.T) {
 	for _, backend := range []string{"embedded", "server"} {
 		t.Run(backend, func(t *testing.T) {
 			ctx, o := issueExperimentOptions(t, backend)
@@ -387,18 +405,35 @@ func TestVersionsRefusesUnorderableAndCorruptState(t *testing.T) {
 			if err != nil {
 				t.Fatal(err)
 			}
+			partial, err := s.CreateIssue(ctx, "beads/partial", plainIssue("Partial"))
+			if err != nil {
+				t.Fatal(err)
+			}
 			if _, err := s.Create(ctx, CreateRequest{Path: "beads/plan", Title: "Plan", Actor: "author"}); err != nil {
 				t.Fatal(err)
 			}
+			title := "Partial, retitled"
+			if _, err := s.UpdateIssue(ctx, UpdateIssueRequest{Path: "beads/partial", Actor: "editor",
+				ExpectedRevision: partial.Revision, Title: &title}); err != nil {
+				t.Fatal(err)
+			}
 			// Mappings whose native rows are all gone leave the Issue plane with
-			// nothing to order by. Reporting an empty list would let that pass
-			// as "no history yet", which is a different and answerable fact.
+			// nothing to order by, and mappings only some of which join leave it
+			// able to order a shortened list. Same root cause — each mapping is
+			// written in the same transaction as the native row it names — so
+			// both answer the same way. Reporting either as an empty or short
+			// list would let a lost history pass as a complete one.
 			if _, err := s.db.ExecContext(ctx, `DELETE FROM issue_versions WHERE issue_id=?`, issue.Properties.ID); err != nil {
 				t.Fatal(err)
 			}
-			_, rows, err := s.Versions(ctx, "beads/work")
-			if !errors.Is(err, ErrCapabilityUnavailable) || rows != nil {
-				t.Fatalf("mappings without native versions: rows=%+v err=%v", rows, err)
+			if _, err := s.db.ExecContext(ctx, `DELETE FROM issue_versions WHERE issue_id=? AND revision=1`, partial.Properties.ID); err != nil {
+				t.Fatal(err)
+			}
+			for _, path := range []string{"beads/work", "beads/partial"} {
+				kind, rows, err := s.Versions(ctx, path)
+				if !errors.Is(err, ErrInvalidStore) || kind != "" || rows != nil {
+					t.Fatalf("%s lost its native rows: kind=%q rows=%+v err=%v; want ErrInvalidStore", path, kind, rows, err)
+				}
 			}
 			// Retained rows with no allocation are corruption, never an absence.
 			if _, err := s.db.ExecContext(ctx, `DELETE FROM graph_preview_catalog WHERE path='beads/plan'`); err != nil {
@@ -406,6 +441,166 @@ func TestVersionsRefusesUnorderableAndCorruptState(t *testing.T) {
 			}
 			if _, _, err := s.Versions(ctx, "beads/plan"); !errors.Is(err, ErrInvalidStore) {
 				t.Fatalf("orphan retained rows: %v", err)
+			}
+		})
+	}
+}
+
+// TestVersionsRefusesAShortHistory covers the one failure mode this command must
+// not have: a history truncated at the newest end, or with a hole punched in the
+// middle, that comes back complete-looking — ordered, strictly descending, and
+// simply shorter than the truth. Nothing in a list's own shape reveals it, so
+// each case here is checked to confirm the guard it targets is the only one that
+// can fire, rather than passing because some unrelated invariant tripped first.
+func TestVersionsRefusesAShortHistory(t *testing.T) {
+	for _, backend := range []string{"embedded", "server"} {
+		t.Run(backend, func(t *testing.T) {
+			ctx, o := issueExperimentOptions(t, backend)
+			s := openVersionsStore(t, ctx, o)
+			// beads/head loses its newest preview version; beads/gap loses one
+			// from the middle. Separate subjects, because the out-of-band damage
+			// cannot be undone.
+			for _, subject := range []struct {
+				path    string
+				updates int
+				drop    int64
+				// dense says whether what remains is still 1..N. beads/head is,
+				// so only the head check can refuse it; beads/gap is not, and its
+				// head is still listed, so only the dense check can refuse it.
+				dense bool
+			}{{"beads/head", 1, 2, true}, {"beads/gap", 2, 2, false}} {
+				record, err := s.Create(ctx, CreateRequest{Path: subject.path, Title: "Plan", Actor: "author"})
+				if err != nil {
+					t.Fatal(err)
+				}
+				revision := record.Revision
+				for i := 0; i < subject.updates; i++ {
+					// Distinct bodies: an identical rewrite is not guaranteed to
+					// mint a version, and this case needs one per update.
+					revised, err := s.UpdateMemory(ctx, MemoryUpdateRequest{Path: subject.path,
+						Properties: Properties{Title: "Plan", Body: fmt.Sprintf("Revised %d", i)},
+						Actor:      "editor", ExpectedRevision: revision})
+					if err != nil {
+						t.Fatal(err)
+					}
+					revision = revised.Memory.Revision
+				}
+				var retained, highest int64
+				if err := s.db.QueryRowContext(ctx, `SELECT COUNT(*),COALESCE(MAX(ordinal),0) FROM graph_preview_versions WHERE path=?`, subject.path).Scan(&retained, &highest); err != nil {
+					t.Fatal(err)
+				}
+				if retained != int64(subject.updates)+1 {
+					t.Fatalf("%s: %d retained versions before the damage, want %d", subject.path, retained, subject.updates+1)
+				}
+				if _, err := s.db.ExecContext(ctx, `DELETE FROM graph_preview_versions WHERE path=? AND ordinal=?`, subject.path, subject.drop); err != nil {
+					t.Fatal(err)
+				}
+				// Confirm the damage is the shape this case means to test, so the
+				// refusal below cannot be some other guard tripping first.
+				if err := s.db.QueryRowContext(ctx, `SELECT COUNT(*),COALESCE(MAX(ordinal),0) FROM graph_preview_versions WHERE path=?`, subject.path).Scan(&retained, &highest); err != nil {
+					t.Fatal(err)
+				}
+				if (retained == highest) != subject.dense {
+					t.Fatalf("%s: %d rows with highest ordinal %d, want dense=%v", subject.path, retained, highest, subject.dense)
+				}
+				kind, rows, err := s.Versions(ctx, subject.path)
+				if !errors.Is(err, ErrInvalidStore) || kind != "" || rows != nil {
+					t.Fatalf("%s short history: kind=%q rows=%+v err=%v; want ErrInvalidStore", subject.path, kind, rows, err)
+				}
+			}
+			// The Issue plane needs the same head check, and the existing
+			// mapped-count check cannot stand in for it: deleting one mapping row
+			// lowers the mapping count and the join count together, so the list
+			// stays self-consistent and only the catalog's head reveals the loss.
+			work, err := s.CreateIssue(ctx, "beads/work", plainIssue("Work"))
+			if err != nil {
+				t.Fatal(err)
+			}
+			title := "Work, retitled"
+			updated, err := s.UpdateIssue(ctx, UpdateIssueRequest{Path: "beads/work", Actor: "editor",
+				ExpectedRevision: work.Revision, Title: &title})
+			if err != nil {
+				t.Fatal(err)
+			}
+			head := updated.Issue.Revision
+			if _, err := s.db.ExecContext(ctx, `DELETE FROM graph_preview_issue_versions WHERE path='beads/work' AND version=?`, head); err != nil {
+				t.Fatal(err)
+			}
+			var mapped, joined int
+			if err := s.db.QueryRowContext(ctx, `SELECT COUNT(*) FROM graph_preview_issue_versions WHERE path='beads/work'`).Scan(&mapped); err != nil {
+				t.Fatal(err)
+			}
+			if err := s.db.QueryRowContext(ctx, `SELECT COUNT(*) FROM graph_preview_issue_versions m
+ JOIN issue_versions v ON v.issue_id=m.issue_id AND v.revision=m.issue_revision WHERE m.path='beads/work'`).Scan(&joined); err != nil {
+				t.Fatal(err)
+			}
+			if mapped != joined || mapped == 0 {
+				t.Fatalf("Issue plane: %d mappings and %d joining rows; this case needs them equal and non-zero so only the head check can refuse", mapped, joined)
+			}
+			kind, rows, err := s.Versions(ctx, "beads/work")
+			if !errors.Is(err, ErrInvalidStore) || kind != "" || rows != nil {
+				t.Fatalf("Issue plane lost its head mapping: kind=%q rows=%+v err=%v; want ErrInvalidStore", kind, rows, err)
+			}
+		})
+	}
+}
+
+// TestVersionsRefusesAnOversizedHistory pins that both acquisition bounds refuse
+// rather than truncate. A truncating LIMIT would look helpful and would make an
+// incomplete history indistinguishable from a complete one, which is the failure
+// this whole reader is built to avoid — so the bounds are exercised rather than
+// trusted. They are injected instead of writing a thousand real versions, and
+// injected as a parameter rather than through a package-level var, which a
+// parallel test in this package would race.
+func TestVersionsRefusesAnOversizedHistory(t *testing.T) {
+	if got := shippedVersionBounds(); got.rows != PreviewVersionListLimit || got.bytes != PreviewCurrentReadByteLimit {
+		t.Fatalf("shipped bounds %+v no longer match the exported limits (%d rows, %d bytes)", got, PreviewVersionListLimit, PreviewCurrentReadByteLimit)
+	}
+	for _, backend := range []string{"embedded", "server"} {
+		t.Run(backend, func(t *testing.T) {
+			ctx, o := issueExperimentOptions(t, backend)
+			s := openVersionsStore(t, ctx, o)
+			plan, err := s.Create(ctx, CreateRequest{Path: "beads/plan", Title: "Plan", Actor: "author"})
+			if err != nil {
+				t.Fatal(err)
+			}
+			if _, err := s.UpdateMemory(ctx, MemoryUpdateRequest{Path: "beads/plan",
+				Properties: Properties{Title: "Plan", Body: "Revised"}, Actor: "editor", ExpectedRevision: plan.Revision}); err != nil {
+				t.Fatal(err)
+			}
+			work, err := s.CreateIssue(ctx, "beads/work", plainIssue("Work"))
+			if err != nil {
+				t.Fatal(err)
+			}
+			title := "Work, retitled"
+			if _, err := s.UpdateIssue(ctx, UpdateIssueRequest{Path: "beads/work", Actor: "editor",
+				ExpectedRevision: work.Revision, Title: &title}); err != nil {
+				t.Fatal(err)
+			}
+			// Both subjects have two versions, so both are within the shipped
+			// bounds: the refusals below are the bound's doing, not the subject's.
+			for _, path := range []string{"beads/plan", "beads/work"} {
+				if _, rows, err := s.Versions(ctx, path); err != nil || len(rows) != 2 {
+					t.Fatalf("%s under the shipped bounds: %d rows, err=%v", path, len(rows), err)
+				}
+			}
+			for _, refusal := range []struct {
+				name   string
+				path   string
+				bounds versionBounds
+			}{
+				// The row bound is charged on both planes; the actor-byte budget
+				// is the preview plane's alone, since only it stores actor as a
+				// blob that has to be charged before acquisition.
+				{"row bound, preview plane", "beads/plan", versionBounds{rows: 1, bytes: PreviewCurrentReadByteLimit}},
+				{"row bound, Issue plane", "beads/work", versionBounds{rows: 1, bytes: PreviewCurrentReadByteLimit}},
+				{"actor-byte budget", "beads/plan", versionBounds{rows: PreviewVersionListLimit, bytes: 64}},
+			} {
+				kind, rows, err := s.versionsWithin(ctx, refusal.path, refusal.bounds)
+				if !errors.Is(err, ErrLimitExceeded) || rows != nil || kind != "" {
+					t.Fatalf("%s (%s): kind=%q rows=%+v err=%v; want ErrLimitExceeded and no rows",
+						refusal.name, refusal.path, kind, rows, err)
+				}
 			}
 		})
 	}
@@ -446,13 +641,19 @@ func TestVersionsOfDeletedSubjects(t *testing.T) {
 				t.Fatalf("deleted Link kind=%q", kind)
 			}
 			// The reader reports what the table holds, so the deletion marker is
-			// listed. It is the one listed token ReadVersion refuses, with
-			// ErrGone: whether to withhold it is a presentation decision for the
-			// caller, and this test pins today's behaviour so that decision is
-			// made against a measured list rather than a guessed one.
+			// listed rather than filtered out: a removal is part of the history.
+			// It is the one listed token ReadVersion refuses, with ErrGone, and
+			// Removed is how the caller is told that — it renders the row and
+			// leaves it out of any "cite this token" guidance.
 			checkVersionList(t, ctx, s, "links/context", links, removed.Link.Revision)
 			if len(links) != 2 || links[0].Version != removed.Link.Revision || links[1].Version != added.Link.Revision {
 				t.Fatalf("deleted Link history: %+v", links)
+			}
+			if !links[0].Removed {
+				t.Errorf("deletion marker %q is not flagged Removed: %+v", removed.Link.Revision, links[0])
+			}
+			if links[1].Removed {
+				t.Errorf("a resolvable Link version is flagged Removed: %+v", links[1])
 			}
 			// A deleted Memory mints no successor version, so its final live head
 			// stays its newest retained version and stays readable.
@@ -467,6 +668,11 @@ func TestVersionsOfDeletedSubjects(t *testing.T) {
 			}
 			if kind != KindMemory || len(rows) != 1 || rows[0].Version != notes.Revision {
 				t.Fatalf("deleted Memory history: kind=%q rows=%+v", kind, rows)
+			}
+			// Deletion alone does not make a row uncitable: this head still
+			// resolves, so it is not flagged.
+			if rows[0].Removed {
+				t.Errorf("a deleted Memory's resolvable head is flagged Removed: %+v", rows[0])
 			}
 			checkVersionList(t, ctx, s, "beads/notes", rows, "")
 		})

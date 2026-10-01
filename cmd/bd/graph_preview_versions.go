@@ -48,6 +48,12 @@ func graphVersionRowsJSON(rows []graphstore.VersionRow) []map[string]any {
 			"change_at":   r.ChangeAt.UTC().Format(time.RFC3339Nano),
 			"actor":       r.Actor,
 			"attribution": r.Attribution,
+			// `removed` marks the one listed row that is NOT citable: a
+			// deleted Link's private deletion marker, which ReadVersion
+			// refuses with ErrGone. It is listed because removal is
+			// information, and flagged because handing a script an address
+			// that cannot be resolved is worse than omitting the row.
+			"removed": r.Removed,
 		})
 	}
 	return out
@@ -55,19 +61,26 @@ func graphVersionRowsJSON(rows []graphstore.VersionRow) []map[string]any {
 
 // runGraphPreviewVersions lists one graph Resource's versions, newest first.
 //
-// #5898's third goal is that a history answer has THREE shapes rather than
-// two: here it is, there is no such thing, and something prevented a complete
-// answer. Two of those three are refusals and belong to graphStorageError,
-// which already turns graphstore.ErrNotFound into not_found and
-// ErrCapabilityUnavailable into capability_unavailable. The only shape this
-// function renders itself is the honest empty: a Resource that exists, on a
-// plane that can order, which has recorded nothing yet.
+// #5898 asks that a history answer never collapse distinct situations into one.
+// On THIS plane only two of its three shapes are reachable, and saying so is
+// part of the contract rather than a shortcut:
 //
-// An empty list must never stand in for either refusal. "No versions" is a
-// claim about the Resource; "this store cannot answer" is a claim about the
-// store, and printing the first when the second is true is a wrong answer
-// rather than an empty one. Same principle as cmd/bd/versions.go on the
-// native plane.
+//   - here it is: an ordered list, newest first;
+//   - there is no such thing: nothing is allocated at that path.
+//
+// The third shape, "something prevented a complete answer", is NOT reachable as
+// a normal answer here. Every plane in a SchemaVersion-6 workspace can order,
+// so a store that cannot answer is a corrupt store, and corruption is a refusal
+// rather than an outcome. There is deliberately no "exists but empty" success
+// case either: a subject's creation IS version 1, written in the same
+// transaction as its catalog row, so an allocated subject with no versions
+// means its creation version was lost. The store returns ErrInvalidStore for
+// that and this command does not dress it up as an empty history.
+//
+// An empty list must never stand in for a refusal. "No versions" is a claim
+// about the Resource; "this store cannot answer" is a claim about the store,
+// and printing the first when the second is true is a wrong answer rather than
+// an empty one.
 func runGraphPreviewVersions(cmd *cobra.Command, args []string) error {
 	if err := graphPreviewFlags(cmd); err != nil {
 		return err
@@ -116,17 +129,22 @@ func runGraphPreviewVersions(cmd *cobra.Command, args []string) error {
 // gets its own line rather than being truncated into uselessness.
 func renderGraphVersions(selector string, kind graphstore.ResourceKind, rows []graphstore.VersionRow) string {
 	if len(rows) == 0 {
-		// Reachable only when the Resource exists and its plane can order:
-		// both refusals returned an error above. Say which of the three
-		// answers this is, so it cannot be mistaken for either refusal.
+		// Defensive, and deliberately NOT reassuring. An allocated subject
+		// always has at least version 1, because its creation version is
+		// written in the same transaction as its catalog row, so the store
+		// refuses zero rows as corruption before reaching here. If this ever
+		// prints, something returned a shape that should not exist, and
+		// claiming "nothing has changed since it was created" would be a
+		// comforting lie about a broken store.
 		return fmt.Sprintf(
-			"No versions recorded for %s yet.\n\n"+
-				"This %s exists and this store can order its versions. Nothing has\n"+
-				"changed it since it was created, so there is nothing to list.",
+			"No versions returned for %s, which should not be possible.\n\n"+
+				"An allocated %s always has at least one version, because creation\n"+
+				"records version 1. Treat this as a bug rather than an empty history.",
 			selector, kind)
 	}
 
 	var b strings.Builder
+	removed := false
 	fmt.Fprintf(&b, "Versions of %s (%d)\n\n", selector, len(rows))
 	fmt.Fprintf(&b, "  ORD  WHEN                        WHO                  ATTRIB\n")
 	for _, r := range rows {
@@ -146,6 +164,15 @@ func renderGraphVersions(selector string, kind graphstore.ResourceKind, rows []g
 			r.ChangeAt.UTC().Format("2006-01-02 15:04:05.000000"),
 			r.Actor,
 			attrib)
+		if r.Removed {
+			// Listed, because removal is information a reader wants. Marked,
+			// because this is the one token `show --version` refuses (gone),
+			// and printing it under a "cite the token" footer without comment
+			// would send the reader to a command that cannot work.
+			fmt.Fprintf(&b, "       %s  (removed; not citable)\n", r.Version)
+			removed = true
+			continue
+		}
 		fmt.Fprintf(&b, "       %s\n", r.Version)
 	}
 
@@ -154,5 +181,10 @@ func renderGraphVersions(selector string, kind graphstore.ResourceKind, rows []g
 	b.WriteString("under each row instead:\n\n")
 	fmt.Fprintf(&b, "  bd show %s --version <token>\n", selector)
 	fmt.Fprintf(&b, "  bd compare %s --from <token> --to <token>\n", selector)
+	if removed {
+		b.WriteString("\nThe row marked removed is this Link's deletion marker. It is shown because\n")
+		b.WriteString("the removal is part of the history, but it is not a Link version: reading it\n")
+		b.WriteString("answers gone rather than returning a record.\n")
+	}
 	return b.String()
 }
