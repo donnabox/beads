@@ -3,6 +3,7 @@
 package main
 
 import (
+	"encoding/json"
 	"os"
 	"path/filepath"
 	"reflect"
@@ -35,8 +36,24 @@ func TestGraphPreviewQueryWorkflow(t *testing.T) {
 			}
 			list := func(extra ...string) graphstore.IssueListPage {
 				t.Helper()
-				args := append([]string{"list", "--format", "records-json"}, extra...)
+				args := append([]string{"list", "--format", "records-json", "--bead-type", "types/preview-issue-v2"}, extra...)
 				return graphMixedResult[graphstore.IssueListPage](t, graphPolicyCLI(t, bd, work, home, nil, "", args...))
+			}
+			beads := func(extra ...string) (items []struct{ ID, Type string }, more bool) {
+				t.Helper()
+				args := append([]string{"list", "--format", "records-json"}, extra...)
+				page := graphMixedResult[struct {
+					Items   []json.RawMessage `json:"items"`
+					HasMore bool              `json:"hasMore"`
+				}](t, graphPolicyCLI(t, bd, work, home, nil, "", args...))
+				for _, raw := range page.Items {
+					var item struct{ ID, Type string }
+					if err := json.Unmarshal(raw, &item); err != nil {
+						t.Fatal(err)
+					}
+					items = append(items, item)
+				}
+				return items, page.HasMore
 			}
 			blocked := func() []graphstore.BlockedIssue {
 				t.Helper()
@@ -121,6 +138,24 @@ func TestGraphPreviewQueryWorkflow(t *testing.T) {
 			if !reflect.DeepEqual(stable, graphMemoryReadSnapshot(t, work)) {
 				t.Fatal("no-op or stale edit changed the whole current snapshot")
 			}
+			allBeads, more := beads("--all")
+			if more || len(allBeads) != 4 || allBeads[0].ID != scope+"beads/context" || allBeads[1].ID != scope+"beads/gate" || allBeads[2].ID != scope+"beads/plan" || allBeads[3].ID != scope+"beads/work" {
+				t.Fatalf("complete mixed Bead inventory: %+v more=%t", allBeads, more)
+			}
+			firstPage, more := beads("--limit", "2")
+			if !more || !reflect.DeepEqual(firstPage, allBeads[:2]) {
+				t.Fatalf("bounded mixed Bead inventory: %+v more=%t", firstPage, more)
+			}
+			memories, more := beads("--bead-type", "types/preview-memory-v2", "--all")
+			if more || len(memories) != 2 || memories[0].ID != scope+"beads/context" || memories[1].ID != scope+"beads/plan" {
+				t.Fatalf("Memory Type filter: %+v more=%t", memories, more)
+			}
+			if got := graphPolicyCLI(t, bd, work, home, nil, "", "list", "--all"); !strings.Contains(got, "Beads (4;") || !strings.Contains(got, "Memory") || !strings.Contains(got, "Issue") || strings.Contains(got, "private-memory-body") {
+				t.Fatalf("mixed human inventory omitted kind or leaked Memory body: %s", got)
+			}
+			graphPolicyCLI(t, bd, work, home, nil, "capability_unavailable", "list", "--bead-type", "types/preview-related-v2", "--format", "records-json")
+			graphPolicyCLI(t, bd, work, home, nil, "capability_unavailable", "list", "--bead-type", "types/uninstalled", "--format", "records-json")
+			graphPolicyCLI(t, bd, work, home, nil, "capability_unavailable", "list", "--bead-type", "types/preview-memory-v2", "--status", "open", "--format", "records-json")
 
 			page := list("--limit", "1", "--sort", "priority")
 			if len(page.Items) != 1 || page.Items[0].ID != scope+"beads/work" || !page.HasMore {

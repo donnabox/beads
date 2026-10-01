@@ -43,7 +43,7 @@ func graphPreviewGenericInput(cmd *cobra.Command, args []string, scope string) (
 		return zero, graphFailure("capability_unavailable", "graph preview requires explicit --view generic; native graph rendering is unavailable in a graph workspace", 5)
 	}
 	if len(args) != 1 {
-		return zero, graphFailure("invalid_selector", "generic traversal requires one canonical local Bead root", 2)
+		return zero, graphFailure("invalid_selector", "generic traversal requires one local Bead ID or beads/PATH", 2)
 	}
 	path, err := graphPreviewResourcePath(scope, args[0])
 	if err != nil {

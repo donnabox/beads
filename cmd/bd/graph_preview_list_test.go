@@ -56,7 +56,7 @@ func TestGraphPreviewIssueListInput(t *testing.T) {
 		{"records-with-flat", []string{"--format=records-json", "--flat", "--limit=2"}, false, 0, true, 2},
 		{"records-ambient", []string{"--format=records-json", "--limit=3"}, true, 0, true, 3},
 		{"explicit-limit-wins-all", []string{"--flat", "--all", "--limit=1"}, false, 0, false, 1},
-		{"bare", nil, false, 5, false, 0},
+		{"bare", nil, false, 0, false, 0},
 		{"legacy-json", []string{"--json"}, false, 5, false, 0},
 		{"false-json", []string{"--flat", "--json=false"}, false, 5, false, 0},
 		{"format-json", []string{"--format=JSON"}, false, 5, false, 0},
