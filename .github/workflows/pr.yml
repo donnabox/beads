@@ -810,6 +810,11 @@ jobs:
           BEADS_TEST_REQUIRE_EXCLUDE_PERMISSION: '1'
           BEADS_TEST_BD_BINARY: ${{ github.workspace }}/ci-build-artifacts/bd-linux-gms-pure
           GOCACHE: ${{ runner.temp }}/go-cache/race
+          # The replay harness's tests need the dolt CLI and the Go toolchain,
+          # both installed above. With REPLAY_REQUIRE=1 a missing tool fails
+          # them instead of skipping them, so this required check cannot pass
+          # without the harness having run.
+          REPLAY_REQUIRE: '1'
         run: make ci-pr-core
 
       - name: Upload PR core grouped test evidence
