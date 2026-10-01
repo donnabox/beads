@@ -119,3 +119,34 @@ func TestFilterComparable_NilInput(t *testing.T) {
 		t.Errorf("filterComparable(nil) = %+v, want nil", got)
 	}
 }
+
+// An issue with no row at a commit reaches compare.Compare as the empty object,
+// never as a JSON null, which Compare rejects: a deleted issue, absent on both
+// sides, is a faithful replay and must still compare.
+func TestReplayAndCompare_MissingRowsCompareAsEmptyObjects(t *testing.T) {
+	missing := func(ctx context.Context) (map[string]string, error) { return nil, nil }
+	present := func(ctx context.Context) (map[string]string, error) {
+		return map[string]string{"id": "X-1"}, nil
+	}
+
+	result, err := ReplayAndCompare(context.Background(), missing, missing)
+	if err != nil {
+		t.Fatalf("ReplayAndCompare with no row on either side: %v", err)
+	}
+	if !result.Matched {
+		t.Errorf("no row on either side: Matched = false, want true")
+	}
+
+	for name, sides := range map[string][2]OracleReadFunc{
+		"oracle only":    {present, missing},
+		"candidate only": {missing, present},
+	} {
+		result, err := ReplayAndCompare(context.Background(), sides[0], ReplayFunc(sides[1]))
+		if err != nil {
+			t.Fatalf("%s: ReplayAndCompare: %v", name, err)
+		}
+		if result.Matched {
+			t.Errorf("%s: a row on one side only matched", name)
+		}
+	}
+}
