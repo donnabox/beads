@@ -177,6 +177,22 @@ func (s *Store) versionsInTx(ctx context.Context, tx *sql.Tx, path string, bound
 		(kind != "bead" && kind != "link") || (kind == "bead") != strings.HasPrefix(path, "beads/") {
 		return "", nil, fmt.Errorf("%w: invalid retained subject allocation", ErrInvalidStore)
 	}
+	// WHERE THE LINE IS DRAWN, stated here because it is the thing a caller is most
+	// likely to assume wrongly: a listing validates the CATALOG, the ORDERING (dense
+	// ordinals on the preview plane, catalog head present) and each row's token and
+	// actor SHAPE. It does not validate retained CONTENT, because it never decodes a
+	// snapshot. So content corruption surfaces when a listed token is READ, not when
+	// it is listed -- a malformed Link tombstone is listed with Removed set and then
+	// refuses ErrInvalidStore instead of ErrGone on the read; a snapshot whose
+	// identity disagrees with the catalog is listed and refuses on the read; a Memory
+	// version that fails to decode is listed and refuses on the read.
+	//
+	// This does NOT weaken #5898's three shapes. The promise was never "every listed
+	// token resolves"; it was that a refusal is never dressed up as an empty list. A
+	// listed token that refuses on read is still a refusal, just a later one.
+	// Content-validated listings would mean decoding every row against the
+	// acquisition budget, which is a design change rather than a missing check.
+	//
 	// A deleted subject is validated the way readVersionInTx validates it, so one
 	// catalog does not get two different answers about whether an allocation is
 	// well formed depending on which reader asked. The VALIDATION is shared; the

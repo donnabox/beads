@@ -114,8 +114,6 @@ func (s *Store) DeleteMemory(ctx context.Context, request MemoryDeleteRequest) (
 	return result, nil
 }
 
-// deletedMemoryInTx validates a reserved absent Memory against its unchanged
-// final live snapshot. It never joins live endpoints into historical owned state.
 // validDeletedMemoryAllocationInTx is the VALIDATION half of deletedMemoryInTx,
 // factored out so a LIST can check a deleted Memory's allocation without building
 // the Record deletedMemoryInTx returns.
@@ -125,11 +123,11 @@ func (s *Store) DeleteMemory(ctx context.Context, request MemoryDeleteRequest) (
 // accepted allocations the single-version reader refused. Sharing the predicate is
 // the point -- a second copy would re-create exactly that divergence.
 //
-// What it deliberately does NOT cover: deletedMemoryInTx also refuses when the
-// decoded final state still owns Links. That check needs the record, so it stays
-// with the record construction and a LIST does not pay for it. The consequence is
-// stated rather than hidden: a deleted Memory whose final retained state still owns
-// Links is refused by a single-version read and listed by a version listing.
+// What it does NOT cover is a CATEGORY rather than one predicate, and an earlier
+// version of this comment got that wrong by naming only the owned-Links check.
+// deletedMemoryInTx goes on to decode the retained snapshot, and NONE of the
+// content-level checks that follow live here. See versionsInTx for where that line
+// is drawn and what it means for a caller.
 func (s *Store) validDeletedMemoryAllocationInTx(ctx context.Context, tx *sql.Tx, path, kind, typ, head, state, backing string, key sql.NullString) error {
 	if validatePath(path) != nil || kind != "bead" || typ != MemoryTypeURL(s.ScopeURL()) ||
 		!authorityID.MatchString(head) || state != "deleted" || backing != "generic" || key.Valid {
@@ -145,6 +143,8 @@ func (s *Store) validDeletedMemoryAllocationInTx(ctx context.Context, tx *sql.Tx
 	return nil
 }
 
+// deletedMemoryInTx validates a reserved absent Memory against its unchanged
+// final live snapshot. It never joins live endpoints into historical owned state.
 func (s *Store) deletedMemoryInTx(ctx context.Context, tx *sql.Tx, path string) (Record, error) {
 	var kind, typ, revision, state, backing string
 	var key sql.NullString
