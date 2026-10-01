@@ -2,16 +2,35 @@ load("@rules_go//go:def.bzl", "go_library", "go_test")
 
 go_library(
     name = "compare",
-    srcs = ["compare.go"],
+    srcs = [
+        "columns.go",
+        "compare.go",
+        "view.go",
+    ],
     importpath = "github.com/steveyegge/beads/internal/replay/compare",
     visibility = ["//:__subpackages__"],
-    deps = ["@com_github_gowebpki_jcs//:jcs"],
+    deps = [
+        "//internal/replay/oracle",
+        "//internal/storage/issueops",
+        "@com_github_gowebpki_jcs//:jcs",
+    ],
 )
 
 go_test(
     name = "compare_test",
-    srcs = ["compare_test.go"],
+    srcs = [
+        "compare_test.go",
+        "drift_test.go",
+        "fidelity_test.go",
+    ],
+    data = glob(["testdata/**"]),
     embed = [":compare"],
+    deps = [
+        "//internal/replay/doltcli",
+        "//internal/replay/oracle",
+        "//internal/replay/replaytest",
+        "//internal/storage/issueops",
+    ],
 )
 
 # --- begin go_srcs (managed by tools/bazel/go_srcs.py; run `make bazel-sync`) ---

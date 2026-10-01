@@ -168,7 +168,7 @@ func HeadCommit(t testing.TB, dir string) string {
 	if len(rows) == 0 || len(rows[0]) == 0 {
 		t.Fatalf("dolt_log returned no rows in %s", dir)
 	}
-	return rows[0][0]
+	return rows[0][0].Text
 }
 
 var bdBuild struct {
