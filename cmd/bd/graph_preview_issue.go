@@ -6,7 +6,6 @@ import (
 	"unicode/utf8"
 
 	"github.com/spf13/cobra"
-	graph "github.com/steveyegge/beads/graphops"
 	"github.com/steveyegge/beads/internal/config"
 	"github.com/steveyegge/beads/internal/storage/graphstore"
 	"github.com/steveyegge/beads/internal/types"
@@ -25,9 +24,9 @@ func runGraphPreviewCreateIssue(cmd *cobra.Command, args []string) error {
 	if err := graphPreviewFlags(cmd, "id", "title", "description", "body", "message", "type", "priority", "labels", "label", "design", "acceptance", "assignee", "estimate", "external-ref", "spec-id", "notes", "due"); err != nil {
 		return err
 	}
-	path, _ := cmd.Flags().GetString("id")
-	if err := graph.ValidateBeadPath(path); err != nil {
-		return graphFailure("invalid_selector", "graph create requires --id beads/PATH: "+err.Error(), 2)
+	path, err := graphPreviewCreateBeadPath(cmd)
+	if err != nil {
+		return err
 	}
 	titleFlag, _ := cmd.Flags().GetString("title")
 	title, err := resolveTitle(args, titleFlag, "", "")

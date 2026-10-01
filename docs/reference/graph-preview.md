@@ -22,8 +22,9 @@ bd status --graph --json
 The Scope URL establishes local identity; initialization does not publish a
 web server at that address. Local `beads/PATH`, `links/PATH` and their exact
 Scope URLs identify records. Aliases and foreign Scope URLs are unavailable.
-Creation uses an explicit canonical Bead path; an allocated identity cannot
-be reused for a different record.
+Creation accepts an optional canonical `--id beads/PATH`; omitting it generates
+a random canonical ID. An explicit ID is used unchanged and duplicates fail;
+an allocated identity cannot be reused for a different record.
 
 For an ordinary external Dolt SQL server, add these options to `bd init`:
 
@@ -53,8 +54,8 @@ bd memories timestamps --format records-json
 bd status --graph
 ```
 
-Choose a distinct canonical ID for each new fact. These commands demonstrate
-storage and retrieval across invocations; installing instructions does not
+Omit `--id` to allocate a distinct canonical ID for each new fact, or choose an
+explicit ID as above. These commands demonstrate storage and retrieval across invocations; installing instructions does not
 guarantee that an agent will decide to save a fact.
 
 Graph initialization preserves surrounding user-authored text and an existing
@@ -74,28 +75,33 @@ The ordinary minimal profile also includes Stephanie's exact durable-memory
 contribution, which changes its managed content hash. Existing refresh policy
 is unchanged; this addition does not independently rewrite instruction files.
 
+On Memory creation, omitted `--title` uses the first nonempty body line with
+whitespace collapsed, capped at 80 Unicode characters including an ellipsis.
+The full body is preserved. A whitespace-only body yields an empty title. An
+explicit creation title must remain nonempty; updates preserve omitted fields.
+
 ## Supported graph commands
 
 | Command | Admitted scope and flags |
 |---|---|
-| `remember BODY --id beads/PATH --title TITLE` | Memory creation. An explicit `--body-file PATH` or `--stdin` replaces the positional body source. These sources are mutually exclusive; empty text is present content. |
-| `remember --update BEAD` | Change only supplied `--title` and/or one explicit body source, preserving omitted fields inside the transaction. Requires `--if-revision TOKEN` or `--unconditional`. |
+| `remember BODY [--id beads/PATH] [--title TITLE]` | Memory creation. An explicit `--body-file PATH` or `--stdin` replaces the positional body source. These sources are mutually exclusive; empty text is present content. |
+| `remember --update BEAD` | Change only supplied `--title` and/or one explicit body source, preserving omitted fields inside the transaction. Defaults to unconditional; optional `--if-revision TOKEN` rejects stale edits. Explicit `--unconditional` remains accepted. |
 | `memories [SEARCH]` | Complete bounded Memory title/body search summaries. Supports `--all`, `--details` and `--format table\|records-json`; legacy `--json` refuses. |
 | `recall BEAD` | Stream one Memory's exact body bytes. Optional `--version TOKEN` selects a retained body. `--quiet` does not suppress content; `--json` refuses. |
 | `update BEAD --properties JSON` | Replace a Memory's complete properties with exactly the `title` and `body` strings. Requires `--if-revision TOKEN` or `--unconditional`. |
-| `update RESOURCE --patch JSON` | Apply ordered `add`, `replace`, and `remove` property operations to one Memory or informational Link. Accepts literal JSON, `@file`, or explicit `@-` stdin. Requires a Resource guard and a separate source guard for a Memory-owned Link. |
+| `update RESOURCE --patch JSON` | Apply ordered `add`, `replace`, and `remove` property operations to one Memory or informational Link. Accepts literal JSON, `@file`, or explicit `@-` stdin. Requires a Resource guard; the Memory source guard is optional. |
 | `delete BEAD` | Read-only preview of deleting one unreferenced Memory. `--force` applies and requires `--if-revision TOKEN` or `--unconditional`. A preview needs no guard but checks any supplied guard. |
 | `forget BEAD` | Apply the same unreferenced Memory deletion immediately, with `--if-revision TOKEN` or `--unconditional`. |
-| `create TITLE --id beads/PATH` | Create an Issue. Allows `--title`, inline `--description`/`--body`/`--message`, `--type`, `--priority`, `--labels`/`--label`, inline `--design`, `--acceptance`, `--assignee`, `--estimate`, `--external-ref`, `--spec-id`, `--due` and initial `--notes`. Existing classification rules apply. Initial status is open. Ordinary creator identity and git-email Owner defaults are included in the Issue data. |
+| `create TITLE [--id beads/PATH]` | Create an Issue. Allows `--title`, inline `--description`/`--body`/`--message`, `--type`, `--priority`, `--labels`/`--label`, inline `--design`, `--acceptance`, `--assignee`, `--estimate`, `--external-ref`, `--spec-id`, `--due` and initial `--notes`. Existing classification rules apply. Initial status is open. Ordinary creator identity and git-email Owner defaults are included in the Issue data. |
 | `update BEAD` with Issue scalar flags | Inline `--title`, `--description`/`--body`/`--message`, `--design`, `--acceptance`, `--priority`, non-claim `--assignee`, `--estimate`, `--external-ref`, `--spec-id`, `--due` and literal `--append-notes`. Requires `--if-revision TOKEN` or `--unconditional`. Description aliases must agree. Files/stdin and other Issue fields are unavailable. |
 | `update BEAD --claim` | Atomically claim one Issue for the current actor using the native writer. Standalone `--claim=true` only; no other edits or revision/force guard. Repeating the same actor is a no-op and does not renew its five-minute lease. |
 | `show RESOURCE` | Current Memory, Issue or Link; optional `--version TOKEN` selects an exact retained record. No chronological History option. |
 | `compare RESOURCE --from TOKEN --to TOKEN` | Compare two complete retained preview versions of one Memory, Issue or Link. Explicit tokens determine direction, not chronology. |
 | `link SOURCE TARGET --resource-type TYPE` | Use an exact installed Link Type URL. Informational Links permit `--id links/PATH`, `--properties JSON` and source guards. Memory sources own informational Links; Issue sources do not. |
 | `dep add SOURCE TARGET` or `link SOURCE TARGET` | A local blocking Dependency between Issues, using the ordinary default `blocks` type. No bulk, remote, routing or bypass flags. |
-| `update LINK --properties JSON` | Replace all informational Link properties. Requires a Link guard and, for a Memory-owned Link, a source guard. Blocking Dependency properties are not editable here. |
+| `update LINK --properties JSON` | Replace all informational Link properties. Requires a Link guard; the Memory source guard is optional. Blocking Dependency properties are not editable here. |
 | `links BEAD` | Complete bounded current incident Links, with optional `--direction in\|out\|both` and exact `--resource-type TYPE` filter. No pagination. |
-| `unlink LINK` | Remove one informational Link or blocking Dependency by canonical ID. Requires a Link guard and, for an owned Link, a source guard. |
+| `unlink LINK` | Remove one informational Link or blocking Dependency by canonical ID. Requires a Link guard; the source guard is optional for Memory-owned Links, required for blocking Dependencies. |
 | `unlink SOURCE TARGET --resource-type TYPE` | Remove an unambiguous informational Link with the same guards. Multiple matches refuse and report candidate IDs. Blocking Dependency pair removal is unavailable. |
 | `close BEAD` | Close one Issue through the existing Issue policy, optionally with ordinary reason aliases. No force or batch operations. |
 | `reopen BEAD` | Reopen one Issue, optionally with `--reason`. |
@@ -134,9 +140,15 @@ bd unlink links/context --unconditional --unconditional-source
 ```
 
 `--unconditional` explicitly accepts the current record; use an observed
-`--if-revision TOKEN` to reject a stale write. Source guards are
+`--if-revision TOKEN` to reject a stale write. `remember --update` defaults to
+unconditional acceptance when neither flag is supplied. Property replacement,
+property patches, Memory deletion and Issue edits still require an explicit
+revision or unconditional choice. Source guards are
 `--if-source-revision TOKEN` or `--unconditional-source`. Memory-owned Link
-writes require a source guard as well as the Link guard where applicable.
+writes default to unconditional source acceptance; `--if-source-revision` opts
+into stale-source refusal. Explicit `--unconditional-source` remains accepted.
+The Link guard itself is still required for edits/removal, and blocking
+Dependency removal still requires its Issue-source guard.
 An unconditional changed Memory write, including an owned-Link change,
 discloses the actual replaced version and attribution. Guarded writes and
 semantic no-ops do not claim an unconditional overwrite. Targets do not acquire
@@ -162,7 +174,7 @@ bd update beads/plan --if-revision OBSERVED_MEMORY_REVISION --patch @changes.jso
 ```
 
 Use fresh observed tokens for each changed write. `--unconditional` accepts
-the current Resource; for a Memory-owned Link, `--unconditional-source` is a
+the current Resource; for a Memory-owned Link, the default `--unconditional-source` is a
 separate decision. An Issue-source informational Link does not require a
 source guard, but any supplied source guard is checked. Patching that Link
 does not change its Issue source. Issue properties and blocking Dependency

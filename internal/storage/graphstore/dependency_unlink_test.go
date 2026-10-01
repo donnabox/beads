@@ -249,6 +249,10 @@ func TestDependencyUnlinkRefusalRollback(t *testing.T) {
 			}{
 				{"missing-link-guard", func(r *LinkDeleteRequest) { r.ExpectedRevision = "" }, storage.ErrValidation},
 				{"missing-source-guard", func(r *LinkDeleteRequest) { r.ExpectedSourceRevision = "" }, storage.ErrValidation},
+				{"informational-default-is-not-dependency-guard", func(r *LinkDeleteRequest) {
+					r.ExpectedSourceRevision = ""
+					r.DefaultInformationalSource = true
+				}, storage.ErrValidation},
 				{"both-link-guards", func(r *LinkDeleteRequest) { r.Unconditional = true }, storage.ErrValidation},
 				{"both-source-guards", func(r *LinkDeleteRequest) { r.UnconditionalSource = true }, storage.ErrValidation},
 				{"stale-link", func(r *LinkDeleteRequest) { r.ExpectedRevision = "stale" }, ErrConflict},

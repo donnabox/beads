@@ -58,7 +58,9 @@ func graphPreviewRevisionGuard(cmd *cobra.Command, source, required bool) (strin
 	}
 	hasRevision, hasUnconditional := cmd.Flags().Changed(revisionFlag), cmd.Flags().Changed(unconditionalFlag)
 	if !hasRevision && !hasUnconditional && !required {
-		return "", false, nil
+		// Source guards are opt-in at the CLI; the writer still validates
+		// every supplied token and atomically accepts the actual predecessor.
+		return "", source, nil
 	}
 	revision, _ := cmd.Flags().GetString(revisionFlag)
 	unconditional, _ := cmd.Flags().GetBool(unconditionalFlag)

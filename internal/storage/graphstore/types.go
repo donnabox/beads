@@ -183,6 +183,10 @@ type LinkDeleteRequest struct {
 	Unconditional                                bool
 	ExpectedSourceRevision                       string
 	UnconditionalSource                          bool
+	// DefaultInformationalSource accepts the current source only after the
+	// selected Link is classified in the write transaction. It cannot accompany
+	// an explicit source guard and never relaxes a blocking Dependency guard.
+	DefaultInformationalSource bool
 }
 
 // LinkTombstone retains deletion state in this experimental local format.

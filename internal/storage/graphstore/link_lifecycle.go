@@ -113,6 +113,9 @@ func (s *Store) incidentLinksInTx(ctx context.Context, tx *sql.Tx, request Links
 // Bead in one transaction. It neither replays deletion nor reuses identities.
 // Blocking Dependencies currently require canonical Link ID selection.
 func (s *Store) Unlink(ctx context.Context, request LinkDeleteRequest) (LinkDeleteResult, error) {
+	if request.DefaultInformationalSource && (request.ExpectedSourceRevision != "" || request.UnconditionalSource) {
+		return LinkDeleteResult{}, fmt.Errorf("%w: default informational source acceptance cannot accompany an explicit source guard", storage.ErrValidation)
+	}
 	if !utf8.ValidString(request.Actor) {
 		return LinkDeleteResult{}, fmt.Errorf("%w: actor must be UTF-8", storage.ErrValidation)
 	}
@@ -152,6 +155,11 @@ func (s *Store) Unlink(ctx context.Context, request LinkDeleteRequest) (LinkDele
 		if link.Type == DependencyTypeURL(s.options.Binding.ScopeURL) {
 			result, err = s.unlinkDependencyInTx(ctx, tx, path, link, request)
 			return err
+		}
+		// Only informational Links reach this point. Resolve the CLI default
+		// here, after transactional selection, without a whole-workspace read.
+		if request.DefaultInformationalSource {
+			request.UnconditionalSource = true
 		}
 		if err := checkRevisionGuard(request.ExpectedRevision, request.Unconditional, link.Revision, true, "Link"); err != nil {
 			return err
