@@ -140,7 +140,7 @@ func runGraphPreviewLink(cmd *cobra.Command, args []string) error {
 		return graphFailure("capability_unavailable", "Link Type is not supported by this preview", 5)
 	}
 	if len(args) != 2 {
-		return graphFailure("invalid_selector", "graph Link creation requires two canonical Bead selectors", 2)
+		return graphFailure("invalid_selector", "graph Link creation requires two Bead IDs or beads/PATH selectors", 2)
 	}
 	paths := make([]string, 2)
 	for i, selector := range args {

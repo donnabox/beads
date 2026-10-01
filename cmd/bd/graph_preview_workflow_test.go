@@ -5,6 +5,8 @@ import "testing"
 func TestGraphPreviewSelectorCannotChangeAuthority(t *testing.T) {
 	const scope = "https://example.invalid/demo/"
 	for _, tc := range []struct{ selector, path string }{
+		{"work", "beads/work"},
+		{"team/work", "beads/team/work"},
 		{"beads/work", "beads/work"},
 		{"links/edge", "links/edge"},
 		{scope + "beads/work", "beads/work"},
@@ -14,7 +16,11 @@ func TestGraphPreviewSelectorCannotChangeAuthority(t *testing.T) {
 		{scope + "../beads/work", ""},
 		{scope + "beads/work?version=1", ""},
 		{scope + "alias/work", ""},
-		{"demo-abc", ""},
+		{"demo-abc", "beads/demo-abc"},
+		{"alias/work", ""},
+		{"types/work", ""},
+		{"beads/", ""},
+		{"links/", ""},
 		{"", ""},
 	} {
 		t.Run(tc.selector, func(t *testing.T) {

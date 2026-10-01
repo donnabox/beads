@@ -15,7 +15,7 @@ var graphUnlinkCmd = &cobra.Command{
 	Short: "Remove a Link in an experimental graph workspace",
 	Long: `Remove one informational Link or blocking Dependency by canonical Link ID.
 Informational Links also accept an unambiguous source/target pair selected with
---link-type. Requires a Link revision guard. Source revision protection is
+--link-type; bare endpoint IDs mean beads/ID. Requires a Link revision guard. Source revision protection is
 optional for Memory-owned Links and required for blocking Dependencies. The ID
 stays reserved and prior snapshots remain retained. Blocking pair selection is
 not supported.`,
@@ -27,7 +27,7 @@ var graphLinksCmd = &cobra.Command{
 	Use: "links BEAD", GroupID: "issues",
 	Short: "Inspect incident Links in an experimental graph workspace",
 	Long: `List current informational Links and blocking Dependencies incident to a
-canonical Bead. Direction is relative to that Bead; default is both. This bounded
+Bead ID (bare ID or beads/PATH). Direction is relative to that Bead; default is both. This bounded
 preview returns a complete result or refuses above its advertised limit. It does
 not paginate, read historical state, or resolve remote targets.`,
 	SilenceUsage: true, SilenceErrors: true,
@@ -61,7 +61,7 @@ func runGraphPreviewLinks(cmd *cobra.Command, args []string) error {
 		return err
 	}
 	if len(args) != 1 {
-		return graphFailure("invalid_selector", "links requires exactly one canonical Bead selector", 2)
+		return graphFailure("invalid_selector", "links requires exactly one Bead ID or beads/PATH", 2)
 	}
 	path, err := graphPreviewBeadSelector(args[0])
 	if err != nil {
@@ -99,7 +99,7 @@ func runGraphPreviewUnlink(cmd *cobra.Command, args []string) error {
 		return err
 	}
 	if len(args) != 1 && len(args) != 2 {
-		return graphFailure("invalid_selector", "unlink requires one canonical Link or two canonical Bead selectors", 2)
+		return graphFailure("invalid_selector", "unlink requires one explicit links/PATH or two Bead IDs", 2)
 	}
 	request := graphstore.LinkDeleteRequest{Actor: getActorWithGit()}
 	if len(args) == 1 {

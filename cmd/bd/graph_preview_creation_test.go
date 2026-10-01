@@ -17,10 +17,14 @@ func TestGraphPreviewCreationDefaults(t *testing.T) {
 		}
 		seen[path] = true
 	}
-	for _, id := range []string{"beads/explicit", "", "links/wrong", "../wrong"} {
+	for _, id := range []string{"beads/explicit", "explicit", "team/explicit", "", "links/wrong", "../wrong"} {
 		path, err := graphPreviewCreateBeadPath(selectedRememberCommand(t, []string{"--id=" + id}))
-		if id == "beads/explicit" {
-			if err != nil || path != id {
+		if id == "beads/explicit" || id == "explicit" || id == "team/explicit" {
+			want := id
+			if id != "beads/explicit" {
+				want = "beads/" + id
+			}
+			if err != nil || path != want {
 				t.Fatalf("explicit ID changed: %q %v", path, err)
 			}
 		} else if err == nil {

@@ -39,7 +39,7 @@ var graphPreviewConfig *configfile.Config
 func init() {
 	rootCmd.PersistentFlags().String("graph-mode", "", "Assert workspace format: dependency or link (init selects format)")
 	initCmd.Flags().String("scope-url", "", "Permanent operator-selected Scope URL for a fresh disposable graph preview")
-	rememberCmd.Flags().String("id", "", "New canonical beads/PATH (generated when omitted; graph preview only)")
+	rememberCmd.Flags().String("id", "", "New Bead ID or beads/PATH (generated when omitted; graph preview only)")
 	rememberCmd.Flags().String("title", "", "Memory title (defaults to a short body summary on create; --update preserves omitted fields; graph preview only)")
 	rememberCmd.Flags().String("update", "", "Existing canonical Memory selector to update (graph preview only)")
 	rememberCmd.Flags().String("if-revision", "", "Require this observed Memory revision for --update (graph preview only)")
@@ -477,7 +477,7 @@ func runGraphPreviewShow(cmd *cobra.Command, args []string) error {
 		return err
 	}
 	if len(args) != 1 {
-		return graphFailure("invalid_selector", "graph show requires one canonical beads/PATH or links/PATH", 2)
+		return graphFailure("invalid_selector", "graph show requires one Bead ID (or beads/PATH) or explicit links/PATH", 2)
 	}
 	path, err := graphPreviewResourcePath(graphPreviewConfig.GraphScopeURL, args[0])
 	if err != nil {

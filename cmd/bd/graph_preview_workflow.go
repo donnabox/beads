@@ -13,8 +13,9 @@ import (
 	"github.com/steveyegge/beads/internal/types"
 )
 
-// Returned canonical IDs can be fed back to the CLI. Only the exact local
-// spelling is accepted; this preview never resolves aliases or remote stores.
+// Returned canonical IDs can be fed back to the CLI. A bare local Bead path
+// is CLI shorthand for beads/PATH; mixed commands keep links/PATH explicit.
+// No store lookup, alias resolution or remote routing chooses the kind.
 func graphPreviewResourcePath(scope, selector string) (string, error) {
 	if graph.ValidateBeadPath(selector) == nil || graph.ValidateLinkPath(selector) == nil {
 		return selector, nil
@@ -22,7 +23,23 @@ func graphPreviewResourcePath(scope, selector string) (string, error) {
 	if path, kind, ok := graph.SplitCanonicalURL(scope, selector); ok && (kind == graph.KindBead || kind == graph.KindLink) {
 		return path, nil
 	}
-	return "", fmt.Errorf("expected a canonical local beads/PATH or links/PATH, or its exact Scope URL")
+	return graphPreviewBareBeadPath(selector)
+}
+
+func graphPreviewBareBeadPath(selector string) (string, error) {
+	for _, root := range []string{"beads/", "links/", "alias/", "types/"} {
+		if strings.HasPrefix(selector, root) {
+			return "", fmt.Errorf("invalid local selector %q; use a valid beads/PATH or links/PATH", selector)
+		}
+	}
+	if strings.Contains(selector, "://") {
+		return "", fmt.Errorf("invalid local selector %q; only this workspace's exact Scope URL is accepted", selector)
+	}
+	path := "beads/" + selector
+	if err := graph.ValidateBeadPath(path); err != nil {
+		return "", fmt.Errorf("invalid Bead ID %q: %w", selector, err)
+	}
+	return path, nil
 }
 
 // Both familiar spellings and the experimental generic Type selector reach
@@ -35,7 +52,7 @@ func runGraphPreviewAddDependency(cmd *cobra.Command, args []string) error {
 		return err
 	}
 	if len(args) != 2 {
-		return graphFailure("invalid_selector", "graph Dependency creation requires two canonical beads/PATH arguments", 2)
+		return graphFailure("invalid_selector", "graph Dependency creation requires two Bead IDs or beads/PATH arguments", 2)
 	}
 	paths := make([]string, len(args))
 	for i, selector := range args {
@@ -102,7 +119,7 @@ func runGraphPreviewClose(cmd *cobra.Command, args []string) error {
 		return err
 	}
 	if len(args) != 1 {
-		return graphFailure("invalid_selector", "graph close requires one canonical beads/PATH", 2)
+		return graphFailure("invalid_selector", "graph close requires one Bead ID or beads/PATH", 2)
 	}
 	path, err := graphPreviewResourcePath(graphPreviewConfig.GraphScopeURL, args[0])
 	if err != nil {

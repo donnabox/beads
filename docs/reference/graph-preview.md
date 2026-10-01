@@ -12,18 +12,23 @@ git init
 bd init --graph-mode link --scope-url https://example.org/team/ \
   --skip-hooks --skip-agents --non-interactive
 bd remember 'The release uses the integration branch.' \
-  --id beads/plan --title 'Release plan' --json
-bd show beads/plan --json
+  --id plan --title 'Release plan' --json
+bd show plan --json
 # A separate invocation reopens the same stored Memory.
 bd show https://example.org/team/beads/plan --json
 bd status --graph --json
 ```
 
 The Scope URL establishes local identity; initialization does not publish a
-web server at that address. Local `beads/PATH`, `links/PATH` and their exact
-Scope URLs identify records. Aliases and foreign Scope URLs are unavailable.
-Creation accepts an optional canonical `--id beads/PATH`; omitting it generates
-a random canonical ID. An explicit ID is used unchanged and duplicates fail;
+web server at that address. Every Bead is canonically under `beads/`; every
+Link is under `links/`. CLI `plan` is shorthand for `beads/plan`, including in
+commands that also accept Links (`show`, `compare`, and `update`). Select a Link
+there with explicit `links/PATH`. Local canonical paths and their exact Scope
+URLs remain accepted; aliases and foreign Scope URLs are unavailable. This
+shorthand only changes CLI input, never stored identity or output.
+Creation accepts an optional bare `--id ID` or canonical `--id beads/PATH`;
+omitting it generates a random canonical ID. An explicit ID is used at its
+canonical Bead path and duplicates fail;
 an allocated identity cannot be reused for a different record.
 
 For an ordinary external Dolt SQL server, add these options to `bd init`:
@@ -48,8 +53,8 @@ The block incorporates Stephanie Jarmak's durable-memory guidance from
 commands supported by this graph preview:
 
 ```sh
-bd remember "Use UTC for timestamps" --id beads/time-policy --title "Timestamp policy"
-bd recall beads/time-policy
+bd remember "Use UTC for timestamps" --id time-policy --title "Timestamp policy"
+bd recall time-policy
 bd memories timestamps --format records-json
 bd status --graph
 ```
@@ -85,15 +90,15 @@ explicit creation title must remain nonempty; updates preserve omitted fields.
 | Command | Admitted scope and flags |
 |---|---|
 | `types [--details]` | List the Bead and Link Type IDs installed in this workspace. `--details` prints each complete persisted descriptor; `--json` returns the descriptors as structured data. An older four-Type workspace does not claim the two example Types. Legacy `--sections` is unavailable. |
-| `remember BODY [--id beads/PATH] [--title TITLE]` | Memory creation. An explicit `--body-file PATH` or `--stdin` replaces the positional body source. These sources are mutually exclusive; empty text is present content. |
-| `remember --update BEAD` | Change only supplied `--title` and/or one explicit body source, preserving omitted fields inside the transaction. Defaults to unconditional; optional `--if-revision TOKEN` rejects stale edits. Explicit `--unconditional` remains accepted. |
+| `remember BODY [--id ID] [--title TITLE]` | Memory creation. Bare IDs resolve under `beads/`; an explicit `--body-file PATH` or `--stdin` replaces the positional body source. These sources are mutually exclusive; empty text is present content. |
+| `remember --update ID` | Change only supplied `--title` and/or one explicit body source, preserving omitted fields inside the transaction. Defaults to unconditional; optional `--if-revision TOKEN` rejects stale edits. Explicit `--unconditional` remains accepted. |
 | `memories [SEARCH]` | Complete bounded Memory title/body search summaries. Supports `--all`, `--details` and `--format table\|records-json`; legacy `--json` refuses. |
 | `recall BEAD` | Stream one Memory's exact body bytes. Optional `--version TOKEN` selects a retained body. `--quiet` does not suppress content; `--json` refuses. |
 | `update BEAD --properties JSON` | Replace a Memory's complete properties with exactly the `title` and `body` strings. Requires `--if-revision TOKEN` or `--unconditional`. |
 | `update RESOURCE --patch JSON` | Apply ordered `add`, `replace`, and `remove` property operations to one Memory or informational Link. Accepts literal JSON, `@file`, or explicit `@-` stdin. Requires a Resource guard; the Memory source guard is optional. |
 | `delete BEAD` | Read-only preview of deleting one unreferenced Memory. `--force` applies and requires `--if-revision TOKEN` or `--unconditional`. A preview needs no guard but checks any supplied guard. |
 | `forget BEAD` | Apply the same unreferenced Memory deletion immediately, with `--if-revision TOKEN` or `--unconditional`. |
-| `create TITLE [--id beads/PATH]` | Create an Issue. Allows `--title`, inline `--description`/`--body`/`--message`, `--type`, `--priority`, `--labels`/`--label`, inline `--design`, `--acceptance`, `--assignee`, `--estimate`, `--external-ref`, `--spec-id`, `--due` and initial `--notes`. Existing classification rules apply. Initial status is open. Ordinary creator identity and git-email Owner defaults are included in the Issue data. |
+| `create TITLE [--id ID]` | Create an Issue. Bare IDs resolve under `beads/`. Allows `--title`, inline `--description`/`--body`/`--message`, `--type`, `--priority`, `--labels`/`--label`, inline `--design`, `--acceptance`, `--assignee`, `--estimate`, `--external-ref`, `--spec-id`, `--due` and initial `--notes`. Existing classification rules apply. Initial status is open. Ordinary creator identity and git-email Owner defaults are included in the Issue data. |
 | `update BEAD` with Issue scalar flags | Inline `--title`, `--description`/`--body`/`--message`, `--design`, `--acceptance`, `--priority`, non-claim `--assignee`, `--estimate`, `--external-ref`, `--spec-id`, `--due` and literal `--append-notes`. Requires `--if-revision TOKEN` or `--unconditional`. Description aliases must agree. Files/stdin and other Issue fields are unavailable. |
 | `update BEAD --claim` | Atomically claim one Issue for the current actor using the native writer. Standalone `--claim=true` only; no other edits or revision/force guard. Repeating the same actor is a no-op and does not renew its five-minute lease. |
 | `show RESOURCE` | Current Memory, Issue or Link; optional `--version TOKEN` selects an exact retained record. No chronological History option. |

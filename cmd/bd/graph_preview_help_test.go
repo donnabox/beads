@@ -28,8 +28,8 @@ func TestGraphPreviewHelpDocumentsPlaytestCommands(t *testing.T) {
 		cmd  *cobra.Command
 		want []string
 	}{
-		{"remember", rememberCmd, []string{"Graph preview workspaces:", "bd remember 'Revised policy' --update beads/policy", "--if-revision TOKEN", "Omitted fields remain unchanged"}},
-		{"create", createCmd, []string{"Graph preview workspaces:", "--bead-type types/preview-memory-v2", "--id beads/"}},
+		{"remember", rememberCmd, []string{"Graph preview workspaces:", "bd remember 'Revised policy' --update policy", "--if-revision TOKEN", "Omitted fields remain unchanged"}},
+		{"create", createCmd, []string{"Graph preview workspaces:", "--bead-type types/preview-memory-v2", "--id policy"}},
 		{"link", linkCmd, []string{"Graph preview workspaces:", "--link-type types/example-cites", "Memory or Issue"}},
 		{"update", updateCmd, []string{"Graph preview workspaces:", "--properties", "--if-revision TOKEN"}},
 		{"types", typesCmd, []string{"Graph preview workspaces:", "types/NAME", "--details", "--bead-type", "--link-type"}},

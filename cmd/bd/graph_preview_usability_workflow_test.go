@@ -59,11 +59,14 @@ func TestGraphPreviewUsabilityWorkflow(t *testing.T) {
 				t.Fatalf("full Link descriptor unavailable: %s", detailsText)
 			}
 			refuse("capability_unavailable", "types", "--sections")
-			memory := graphMixedResult[graphstore.Record](t, call("create", "--bead-type", "types/preview-memory-v2", "--id", "beads/policy", "--body", "Code flow policy\nTarget integration."))
+			memory := graphMixedResult[graphstore.Record](t, call("create", "--bead-type", "types/preview-memory-v2", "--id", "policy", "--body", "Code flow policy\nTarget integration."))
 			other := graphMixedResult[graphstore.Record](t, call("create", "Old code flow policy", "--bead-type", graphstore.MemoryTypeURL(scope)))
-			issue := graphMixedResult[graphstore.IssueRecord](t, call("create", "Move the branch", "--bead-type", "types/preview-issue-v2", "--type", "task"))
-			if memory.ID != scope+"beads/policy" || memory.Properties.Title != "Code flow policy" || other.ID == memory.ID || other.Properties.Body != "" || issue.Type != graphstore.IssueTypeURL(scope) {
+			issue := graphMixedResult[graphstore.IssueRecord](t, call("create", "Move the branch", "--id", "work", "--bead-type", "types/preview-issue-v2", "--type", "task"))
+			if memory.ID != scope+"beads/policy" || memory.Properties.Title != "Code flow policy" || other.ID == memory.ID || other.Properties.Body != "" || issue.ID != scope+"beads/work" || issue.Type != graphstore.IssueTypeURL(scope) {
 				t.Fatal("typed creation lost identity, body or Type")
+			}
+			if shown := graphMixedResult[graphstore.Record](t, call("show", "policy")); shown.ID != memory.ID {
+				t.Fatal("short Bead selector did not resolve to its canonical identity")
 			}
 			refuse("identity_reserved", "create", "No overwrite", "--bead-type", "types/preview-memory-v2", "--id", "beads/policy")
 			refuse("capability_unavailable", "create", "Bad", "--bead-type", "types/preview-memory-v2", "--priority", "2")
@@ -80,7 +83,7 @@ func TestGraphPreviewUsabilityWorkflow(t *testing.T) {
 				t.Fatal("details omitted exact version")
 			}
 			for _, spec := range []struct{ typ, target string }{{"types/example-follows", other.ID}, {"types/example-cites", issue.ID}} {
-				link := graphMixedResult[graphstore.LinkMutationResult](t, call("link", memory.ID, spec.target, "--link-type", spec.typ, "--properties", `{"note":"code flow"}`))
+				link := graphMixedResult[graphstore.LinkMutationResult](t, call("link", "policy", strings.TrimPrefix(spec.target, scope+"beads/"), "--link-type", spec.typ, "--properties", `{"note":"code flow"}`))
 				if link.Link.Type != scope+spec.typ || link.Link.Source != memory.ID || link.Link.Target != spec.target || link.ReplacedSource == nil {
 					t.Fatal("informational Link lost Type/endpoints/ownership")
 				}
@@ -89,7 +92,7 @@ func TestGraphPreviewUsabilityWorkflow(t *testing.T) {
 				if len(owner.Owned) != 1 || json.Unmarshal(owner.Owned[0], &owned) != nil || owned.Type != scope+spec.typ {
 					t.Fatal("selected Type not retained as owned")
 				}
-				incident := graphMixedResult[[]graphstore.LinkRecord](t, call("links", memory.ID, "--link-type", spec.typ))
+				incident := graphMixedResult[[]graphstore.LinkRecord](t, call("links", "policy", "--link-type", spec.typ))
 				if len(incident) != 1 || incident[0].Type != scope+spec.typ {
 					t.Fatal("local Type filter failed")
 				}
@@ -109,6 +112,12 @@ func TestGraphPreviewUsabilityWorkflow(t *testing.T) {
 			}
 			// Legacy spelling remains accepted for existing scripts.
 			call("link", memory.ID, other.ID, "--resource-type", "types/preview-related-v2")
+			call("remember", "Updated code flow policy", "--update", "policy")
+			current := graphMixedResult[graphstore.Record](t, call("show", "policy"))
+			if current.ID != memory.ID || current.Properties.Body != "Updated code flow policy" {
+				t.Fatal("short Memory update changed identity or lost its body")
+			}
+			call("compare", "policy", "--from", memory.Version, "--to", current.Version)
 			ordinaryWork, ordinaryHome := t.TempDir(), t.TempDir()
 			graphPolicyCLI(t, bd, ordinaryWork, ordinaryHome, nil, "capability_unavailable", "create", "--bead-type", "types/preview-memory-v2", "--body", "No store", "--json")
 		})
