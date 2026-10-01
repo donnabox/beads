@@ -82,22 +82,36 @@ import (
 // the version_id UUID swap, since that swap is what makes the ordinal stop
 // being the key. Tracked as gastownhall/beads#6379 alongside item 4.
 
-// THE MINT'S REFUSAL IS AN INTEGRITY BACKSTOP, NOT AN ADMISSION POLICY.
+// THE MINT'S REFUSAL IS AN INTEGRITY BACKSTOP, NOT AN ADMISSION POLICY, AND IT
+// BINDS THE ROWS THAT PARTICIPATE IN HISTORY.
 // canonicalDurableState refuses what it cannot record faithfully -- a number
 // outside the I-JSON exact-integer range, duplicate keys -- and it does so inside
 // the mutating transaction, so with history on a write that introduces such a
-// value fails atomically and commits nothing: refusing at the mint IS refusing the
-// write, for every store-mediated write. That is what keeps a version's content
-// token meaning what it says. It is not a rule about what metadata a store may
-// hold, which stays open while history is off, and that is the case to plan for:
-// a row written while history was off (or by a path that does not mint, such as
-// bd sql or an import) that already holds such a value would fail every later
-// write to it once history is on. `bd config set versioned-history.enabled true`
-// therefore checks the store first, with the very function the mint runs
-// (CheckMetadataVersionable), and refuses, writing nothing, while any issue the
-// mint would version holds a value it would refuse. Turning history on through the
-// environment or config.yaml does not pass through that command; for those planes
-// this refusal is the control, and finding the rows ahead of time is a bd doctor
+// value to a row that participates fails atomically and commits nothing: refusing
+// at the mint IS refusing the write. That is what keeps a version's content token
+// meaning what it says. It is not a rule about what metadata a store may hold,
+// which stays open while history is off, and that is the case to plan for: a row
+// that participates in history (participation_generation is set), written while
+// history was off or by a path that does not mint (such as bd sql or an import),
+// that already holds such a value would fail every later write to it once
+// history is on.
+//
+// A row that does not participate is outside all of this. Design §16.2b makes an
+// update-shaped write to a legacy record (participation_generation NULL) a skip,
+// not a refusal: the fence returns before the snapshot is canonicalized, so no
+// version is minted and the gate never runs. Such a write succeeds whatever the
+// row's metadata holds, exactly as it would with history off, because no version
+// row, and so no content token, comes of it. A create-shaped mint never meets a
+// legacy row (its call site has just inserted the row), so it always runs the
+// gate.
+//
+// `bd config set versioned-history.enabled true` checks the store first, with the
+// very function the mint runs (CheckMetadataVersionable), and refuses, writing
+// nothing, while any issue holds a value it would refuse. It cannot see
+// participation, so it checks legacy rows too: an over-approximation that can only
+// refuse more. Turning history on through the environment or config.yaml does not
+// pass through that command; for those planes the mint's refusal is the control
+// on the rows that participate, and finding the rows ahead of time is a bd doctor
 // check (gastownhall/beads#6379 item 3).
 
 var versionedHistoryTransactions sync.Map // map[DBTX]bool; entries live for one transaction
@@ -206,7 +220,9 @@ func attributionStatusForActor(actor string) string {
 // returns the error to its caller, which aborts the transaction. An issue
 // whose metadata column already holds duplicate keys (reachable through bd
 // sql or a hand-written JSONL import) therefore mutates fine with the flag
-// off and becomes unmutatable with it on. Fail-closed is the policy for now
+// off and becomes unmutatable with it on if it participates in history; a
+// legacy row stays writable, because the fence skips it before this function
+// runs. Fail-closed is the policy for now
 // -- bytes that could canonicalize two ways would not be a content token --
 // and whether to normalize such metadata first, or to find such rows with
 // bd doctor, is gastownhall/beads#6379 (item 3).
@@ -398,6 +414,10 @@ func CheckMetadataVersionable(metadata json.RawMessage) error {
 // for a create-shaped mutation instead: a brand-new row has no legacy state
 // to preserve, so that entry point stamps the column rather than checking
 // it.
+//
+// The skip is whole: nothing about a legacy record is read, canonicalized or
+// admitted, so such a write is neither versioned nor refused (design §16.2b: a
+// skip, not a refusal).
 func RecordVersionInTx(ctx context.Context, tx DBTX, issueID, actor string) error {
 	if !versionedHistoryEnabled(tx) {
 		return nil
@@ -519,7 +539,9 @@ func recordVersionAtInTx(ctx context.Context, tx DBTX, issueID, actor string, at
 	// no legacy state to preserve, and this same function stamps the column
 	// itself further down; the test-support mint (mintUnfenced) never reads it
 	// at all. An update-shaped call against a NULL (legacy) value returns
-	// here, before either half of this seam's write runs.
+	// here, before either half of this seam's write runs. The fence runs before
+	// the admission gate (canonicalDurableState) on purpose, so a legacy record
+	// is skipped whole: nothing about it is canonicalized, admitted or refused.
 	// BD_IGNORE_SCHEMA_SKEW (internal/storage/schema/schema.go) has no
 	// bearing on this check: it downgrades CheckForwardDrift's
 	// migration-cursor refusal, a different plane than this column's real
