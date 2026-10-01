@@ -1,5 +1,9 @@
 # Mixed Memory and Issue graph preview
 
+For a command-oriented introduction that tracks the current graph CLI, see
+the [standalone graph CLI guide](/reference/graph-cli). This page records the more
+detailed preview contracts, bounds and unsupported operations.
+
 This integration checkpoint supports a bounded Memory/Issue workflow in a
 **fresh, explicitly selected graph workspace**. Existing ordinary Issue
 workspaces continue using their existing commands and storage. The generic
