@@ -4462,3 +4462,87 @@ func TestReleaseWorkflowRestoresNoCache(t *testing.T) {
 		t.Fatal("release.yml has no setup-go step; update this test")
 	}
 }
+
+// workflowFileNames lists the workflow files under .github/workflows.
+func workflowFileNames(t *testing.T) []string {
+	t.Helper()
+	entries, err := os.ReadDir(filepath.Join(sourceRepoRoot(t), ".github", "workflows"))
+	if err != nil {
+		t.Fatal(err)
+	}
+	var names []string
+	for _, entry := range entries {
+		name := entry.Name()
+		if !entry.IsDir() && (strings.HasSuffix(name, ".yml") || strings.HasSuffix(name, ".yaml")) {
+			names = append(names, name)
+		}
+	}
+	return names
+}
+
+// C1.PRCoreSetsReplayRequire: the required Linux PR Core job runs the replay
+// harness's packages with REPLAY_REQUIRE=1. The harness's tests need the dolt
+// CLI and the Go toolchain, and replaytest.Require fails a test whose tool is
+// missing instead of skipping it only when the variable is exactly "1". Without
+// it a runner that lost either tool would skip those tests and the required
+// check would still pass.
+func TestC1PRCoreSetsReplayRequire(t *testing.T) {
+	const stepName = "Run PR core wrapper"
+	job := readCIWorkflow(t, "pr.yml").job(t, "pr-core-wrapper")
+	if job.RunsOn != "ubuntu-latest" || job.If != "" || job.ContinueOnError {
+		t.Error("the replay harness must run in the required Linux PR Core job")
+	}
+	step := job.Steps[job.stepIndex(t, stepName)]
+	if step.If != "" || (step.ContinueOnError != nil && step.ContinueOnError != false) || strings.TrimSpace(step.Run) != "make ci-pr-core" {
+		t.Error("the replay harness must run through the nonoptional PR Core wrapper")
+	}
+	assertStepEnvValue(t, job, stepName, "REPLAY_REQUIRE", "1")
+}
+
+// C1.ReplayRequireIsStepScoped: REPLAY_REQUIRE appears in exactly one place
+// across the workflows, the env of the PR Core wrapper step: never in a
+// workflow-level or job-level env, never on another step, never as an input to
+// a called workflow. replaytest.Require reports bd as unavailable inside a
+// Bazel sandbox, so a wider scope would fail every test that needs bd there.
+func TestC1ReplayRequireIsStepScoped(t *testing.T) {
+	const key = "REPLAY_REQUIRE"
+	job := readCIWorkflow(t, "pr.yml").job(t, "pr-core-wrapper")
+	want := fmt.Sprintf("pr.yml:.jobs.pr-core-wrapper.steps[%d].env.%s", job.stepIndex(t, "Run PR core wrapper"), key)
+
+	var got []string
+	for _, name := range workflowFileNames(t) {
+		walkYAML(readYAMLNode(t, filepath.Join(".github", "workflows", name)), "", func(path string, _ bool, value string) {
+			if strings.Contains(value, key) {
+				got = append(got, name+":"+path)
+			}
+		})
+	}
+	if !slices.Equal(got, []string{want}) {
+		t.Errorf("%s appears at %q, want only at %q", key, got, want)
+	}
+}
+
+// C1.NoNewWorkflowFile: the replay harness's fail-loud lane extends the
+// existing PR workflow, so no other workflow file mentions REPLAY_REQUIRE. A
+// test sees a tree, not a diff, so this pins what a lane in a workflow file of
+// its own would have to do.
+func TestC1NoNewWorkflowFile(t *testing.T) {
+	root := sourceRepoRoot(t)
+	sawPR := false
+	for _, name := range workflowFileNames(t) {
+		if name == "pr.yml" {
+			sawPR = true
+			continue
+		}
+		data, err := os.ReadFile(filepath.Join(root, ".github", "workflows", name))
+		if err != nil {
+			t.Fatal(err)
+		}
+		if strings.Contains(string(data), "REPLAY_REQUIRE") {
+			t.Errorf("%s mentions REPLAY_REQUIRE; the replay harness's fail-loud lane lives in pr.yml, so extend that file instead of adding the lane to another workflow", name)
+		}
+	}
+	if !sawPR {
+		t.Fatal("no pr.yml among the workflow files; the scan found nothing to compare against")
+	}
+}
