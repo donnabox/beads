@@ -2237,7 +2237,7 @@ func init() {
 	initCmd.Flags().Bool("team", false, "Run team workflow setup wizard")
 	initCmd.Flags().Bool("stealth", false, "Enable stealth mode: keep beads files out of git via .git/info/exclude (sets no-git-ops)")
 	initCmd.Flags().Bool("setup-exclude", false, "Configure .git/info/exclude to keep beads files local (for forks)")
-	initCmd.Flags().Bool("skip-hooks", false, "Skip git hooks installation")
+	initCmd.Flags().Bool("skip-hooks", false, "Skip git hooks installation (and graph-preview Claude Stop hook)")
 	initCmd.Flags().Bool("skip-agents", false, "Skip AGENTS.md and Claude/Codex/Cursor setup generation")
 	initCmd.Flags().Bool("force", false, "Deprecated alias for --reinit-local. Bypasses only the LOCAL data-safety guard; does NOT authorize remote divergence (see 'bd help init-safety').")
 	initCmd.Flags().Bool("reinit-local", false, "Re-initialize local .beads/ over existing local data. Does NOT authorize remote divergence; see --discard-remote.")
