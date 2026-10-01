@@ -20,12 +20,26 @@ func TestGraphPreviewGuidanceReusesDurableStorage(t *testing.T) {
 		`bd memories timestamps --format records-json`,
 		`bd status --graph`,
 		"IDs and titles are generated when omitted",
+		`bd setup claude`,
+		`bd setup claude --check`,
+		`bd setup claude --remove`,
 	} {
 		if !strings.Contains(section, command) {
 			t.Errorf("missing supported graph guidance %q", command)
 		}
 	}
-	for _, unsupported := range []string{"bd prime", "bd dolt", "git push", "git pull", "bd setup", "bd hooks"} {
+	if !strings.Contains(section, "Only when the operator explicitly asks") {
+		t.Fatal("Claude configuration must remain operator opt-in")
+	}
+	for _, line := range strings.Split(section, "`") {
+		if strings.HasPrefix(line, "bd setup") && line != "bd setup claude" && line != "bd setup claude --check" && line != "bd setup claude --remove" {
+			t.Fatalf("unsupported setup guidance %q", line)
+		}
+	}
+	if strings.Count(section, "bd setup") != 3 {
+		t.Fatal("graph guidance must contain exactly the three supported Claude setup commands")
+	}
+	for _, unsupported := range []string{"bd prime", "bd dolt", "git push", "git pull", "bd hooks"} {
 		if strings.Contains(section, unsupported) {
 			t.Errorf("graph guidance contains unsupported instruction %q", unsupported)
 		}

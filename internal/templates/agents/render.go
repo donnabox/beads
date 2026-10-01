@@ -273,6 +273,6 @@ bd memories timestamps --format records-json
 
 Use the returned Memory ID to read the same fact in later sessions. The recall command returns the saved body; memories returns matching summaries. Edit existing facts with --update MEMORY_ID; omitted fields are preserved. Updates accept the current state by default; add --if-revision TOKEN to reject a stale edit.
 
-This guidance is hookless. No session hooks, automatic context injection, or sync are configured. User, repository and orchestrator instructions take precedence; this block grants no authority to commit or push.
+Graph initialization installs no hooks. Only when the operator explicitly asks, enable the project-local Claude Stop reminder with ` + "`bd setup claude`" + `; inspect it with ` + "`bd setup claude --check`" + ` or remove it with ` + "`bd setup claude --remove`" + `. No automatic context injection or sync is configured. User, repository and orchestrator instructions take precedence; this block grants no authority to commit or push.
 `
 }
