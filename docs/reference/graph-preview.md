@@ -59,11 +59,13 @@ The block incorporates Stephanie Jarmak's durable-memory guidance from
 commands supported by this graph preview:
 
 ```sh
-bd remember "Use UTC for timestamps" --id time-policy --title "Timestamp policy"
-bd recall time-policy
+bd remember "Use UTC for timestamps" --id beads/time-policy --title "Timestamp policy"
+bd recall beads/time-policy
 bd memories timestamps --format records-json
-bd status --graph
 ```
+
+The block also points to `bd status --graph` for the workspace's supported
+capabilities.
 
 Omit `--id` to allocate a distinct canonical ID for each new fact, or choose an
 explicit ID as above. These commands demonstrate storage and retrieval across invocations; installing instructions does not
@@ -165,7 +167,7 @@ explicit creation title must remain nonempty; updates preserve omitted fields.
 | `close BEAD` | Close one Issue through the existing Issue policy, optionally with ordinary reason aliases. No force or batch operations. |
 | `reopen BEAD` | Reopen one Issue, optionally with `--reason`. |
 | `ready` | Unfiltered current ready Issues through ordinary readiness rules. No list filters, output limit or configured positive `BEADS_MAX_ROWS`. |
-| `list` or `list --format records-json` | Current Beads of all installed Bead Types by default; `--bead-type types/NAME` narrows by nominal Bead Type. Issue-specific status/classification/title/priority/assignee/label/pinned and due-date filters retain the native Issue-only query. Explicit limited results report `hasMore`; tree and legacy JSON remain unavailable. |
+| `list` or `list --format records-json` | Without an Issue filter, one bounded current snapshot of every Memory and every Issue whatever its status, ordered by canonical Bead ID; human rows show only local ID, kind and title. `--bead-type types/NAME` narrows by nominal Bead Type, and `--all` only lifts the row limit. Any Issue filter (status/state, type, title/title-contains, priority and range, assignee/no-assignee, label/label-any/exclude-label, pinned/no-pinned, due-before/due-after/overdue, sort or reverse, or a matching configured directory label) selects the native Issue-only query, which omits closed and pinned Issues unless `--all` or a filter selects them. See [All-Bead listing](#all-bead-listing). `hasMore` reports whether a row limit omitted matches; tree and legacy JSON remain unavailable. |
 | `blocked` | Complete native dependency-blocked Issue view with canonical blocker IDs. No filters or positive `BEADS_MAX_ROWS`. |
 | `graph BEAD --view generic` | Current local summary traversal with `--direction in\|out\|both`, `--depth`, `--max-nodes` and `--max-links`. |
 | `status --graph` | Report the capabilities and bounds admitted by this checkpoint, including initial Issue fields/notes, append-only notes, estimate/reference edits and due-date authoring/filtering. |
@@ -475,28 +477,65 @@ remains false because linked Memory deletion policy is unresolved.
 
 ## All-Bead listing
 
-Unfiltered `bd list` and `bd list --format records-json` enumerate
-current Issues and Memories together. An optional `--bead-type types/NAME`
-filters to one installed Bead Type; Link Types and uninstalled Types refuse.
-The mixed list reads one checked snapshot, sorted by canonical Bead ID, and
-inherits its 1,000-live-Resource/16 MiB acquisition bounds, including Links
-that are not printed. `--limit` returns a prefix and truthful `hasMore` but
-does not return a continuation cursor. `--all` requests all matches within
-the same bounds. Issue-specific list filters continue to use the existing
-native Issue query and cannot be combined with a non-Issue `--bead-type`.
-For paginated all-Bead enumeration, use the BDP HTTP `beads/` collection.
+`bd list` has two modes, selected by its flags.
+
+Without an Issue filter (bare `bd list`, or only `--flat`,
+`--format records-json`, `--bead-type`, `--limit` and `--all`), the command
+reads one checked current snapshot. It lists every current Memory and every
+current Issue whatever its status, closed Issues included, ordered by
+canonical Bead ID rather than by status or priority. Human output prints one
+unquoted row per Bead with only its local ID, kind and title. For a workspace
+holding the Memory `beads/plan` and the Issue `beads/work`:
+
+```text
+Beads (2; more: false; graph preview)
+  beads/plan  Memory  Release plan
+  beads/work  Issue   Ship the release
+```
+
+`--format records-json` returns the same Beads as complete Memory and Issue
+records in `result.items`, with `result.hasMore`. An optional
+`--bead-type types/NAME` keeps one installed Bead Type; Link Types and
+uninstalled Types refuse with `capability_unavailable`, and a selector that
+is neither `types/NAME` nor a full local Type URL refuses with
+`invalid_selector`. `--bead-type types/preview-issue-v2` on its own stays in
+this mode, so it lists closed Issues too. `--all` only removes the row limit;
+it adds no Beads. The snapshot inherits the 1,000-live-Resource/16 MiB
+acquisition bounds, including Links that are not printed. `--limit` returns a
+prefix and truthful `hasMore` but does not return a continuation cursor. For
+paginated all-Bead enumeration, use the BDP HTTP `beads/` collection.
+
+Any Issue filter selects the existing native Issue query instead. The Issue
+filters are `--status` (or `--state`), `--type`, `--title`,
+`--title-contains`, `--priority`, `--priority-min`, `--priority-max`,
+`--assignee`, `--no-assignee`, `--label`, `--label-any`, `--exclude-label`,
+`--pinned`, `--no-pinned`, `--due-before`, `--due-after`, `--overdue`,
+`--sort` and `--reverse`. A supplied flag counts even when an empty value
+such as `--assignee=` or `--sort=` adds no restriction. A configured
+`directory.labels` entry that matches the current directory supplies an
+implicit label filter, so it also selects this query. The query returns
+Issues only, never Memories, and omits closed and pinned Issues unless
+`--all` or a filter selects them. Its human rows are described under the next
+section. An Issue filter cannot be combined with a non-Issue `--bead-type`;
+that refuses with `capability_unavailable`.
+
+Both modes apply the ordinary `bd list` row limit. An explicit `--limit N`
+wins, with `0` meaning no limit; otherwise `--all` means no limit; otherwise a
+configured `list.limit` applies; otherwise there is no limit when output is
+piped, 20 rows in agent mode at a terminal and 50 rows at other terminals.
 
 ## Read-only Issue queries and traversal
 
 ```sh
-bd list --format records-json --limit 1
+bd list --format records-json --status open --limit 1
 bd list --flat --all --sort title
 bd blocked --readonly --json
 bd graph beads/plan --view generic --direction out --depth 2 --json
 ```
 
-When an Issue-specific list filter is supplied, listing reuses the existing
-native Issue query, configuration and limit policy.
+When an Issue filter (listed under [All-Bead listing](#all-bead-listing)) is
+supplied, listing reuses the existing native Issue query, configuration and
+limit policy.
 It accepts status (or state), type, title/title-contains, priority and priority
 range, assignee/no-assignee, label/label-any/exclude-label, pinned/no-pinned and
 due-before/due-after/overdue filters. Sorting accepts
@@ -506,10 +545,15 @@ canonical Issue records in `items` and a truthful `hasMore` boolean. It is a new
 read each time, not a snapshot cursor or BDP continuation. Returned records and
 the extra probe record are validated before trimming the page.
 
-Use explicit `--flat` for quoted human summaries or `--format records-json` for
-the experimental graph envelope. Bare tree, `--json`, `--format json`, watch,
-readiness, parent/ID/routing/offset selectors, repeated status/state/type/assignee filters
-and supplied-empty labels refuse. Defer filters remain unavailable; due selection
+Human output is flat by default; `--flat` is accepted and changes nothing.
+The Issue query prints one row per Issue: its quoted canonical ID and status,
+its priority and its quoted title, for example
+`"https://example.org/team/beads/work" "open" P1 "Ship the release"`.
+`--format records-json` returns the experimental graph envelope. Tree output
+(`--tree`, `--pretty` or `--flat=false`), `--json`, `--format json`, watch,
+readiness, parent/ID/routing/offset selectors, repeated
+status/state/type/assignee/bead-type filters and supplied-empty labels
+refuse. Defer filters remain unavailable; due selection
 does not schedule or wake work.
 This does not change ordinary list parsing or implement contributor-owned filter
 unions. Records-json selects structured errors and overrides ambient human
@@ -579,7 +623,8 @@ writer have no supported graph-preview repair path.
 
 Assignee listing reuses native SQL comparison/collation, not actor identity
 normalization. `--no-assignee` includes native empty/NULL assignments. An empty
-`--assignee=` supplies no assignee restriction; combining a nonempty assignee
+`--assignee=` supplies no assignee restriction but still selects the Issue
+query; combining a nonempty assignee
 with `--no-assignee` intersects the filters and returns no matches. Listing does
 not modify state or claim work. Its output remains the experimental CLI envelope;
 BDP HTTP Read is the script interface and exposes the current Issue properties.
