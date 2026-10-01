@@ -166,17 +166,17 @@ func cliCompatibleMigrationSQL(name, sqlText string) string {
 		// series -- and never carries removed_restriction yet, so the column
 		// always needs adding on a fresh bundle.
 		return cliMigration0070AddRemovedRestriction
-	case "0070_add_participation_generation.up.sql":
+	case "0072_add_participation_generation.up.sql":
 		// Direct DDL for the same reason as 0067: the source migration's
 		// PREPARE guards (INFORMATION_SCHEMA probes) are what make the raw
 		// .up.sql idempotent when replayed onto an already-migrated store,
 		// and the 2.2.x CLI no-ops a prepared ADD COLUMN. issues and wisps
 		// both exist by this point in the series (0067 creates the versioned
 		// columns on both) and neither carries participation_generation yet,
-		// so both of 0070's ALTERs always fire on a fresh bundle -- this
+		// so both of 0072's ALTERs always fire on a fresh bundle -- this
 		// substitute ALTERs wisps directly, the same as 0067's, so it
 		// belongs on cliSubstituteAssumesWispTables too.
-		return cliMigration0070AddParticipationGeneration
+		return cliMigration0072AddParticipationGeneration
 	default:
 		return sqlText
 	}
@@ -213,8 +213,8 @@ func cliSubstituteAssumesWispTables(name string) bool {
 		// cliMigration0067AddVersionedBeadsSchema drops the source's
 		// @wisps_cr_needs_add table-exists guard and ALTERs wisps directly.
 		return true
-	case "0070_add_participation_generation.up.sql":
-		// cliMigration0070AddParticipationGeneration drops the source's
+	case "0072_add_participation_generation.up.sql":
+		// cliMigration0072AddParticipationGeneration drops the source's
 		// @wisps_pg_needs_add table-exists guard and ALTERs wisps directly,
 		// the same shape 0067's override already uses for current_revision.
 		return true
@@ -321,7 +321,7 @@ ALTER TABLE issue_versions MODIFY COLUMN removed_at DATETIME(6);`
 // carries removed_restriction yet, so the column always needs adding here.
 const cliMigration0070AddRemovedRestriction = `ALTER TABLE issue_versions ADD COLUMN removed_restriction VARCHAR(30);`
 
-// cliMigration0070AddParticipationGeneration is 0070 with its two guarded
+// cliMigration0072AddParticipationGeneration is 0072 with its two guarded
 // PREPARE blocks replaced by the direct ALTERs they would run on a fresh
 // database: participation_generation BIGINT NULL on issues, mirrored
 // inertly on wisps (design §16.3 steps 4-5, be-dt74u amendment, be-h89oq).
@@ -330,7 +330,7 @@ const cliMigration0070AddRemovedRestriction = `ALTER TABLE issue_versions ADD CO
 // yet, so both ALTERs always fire on a fresh bundle -- this substitute
 // ALTERs wisps directly, the same as 0067's, so it belongs on
 // cliSubstituteAssumesWispTables too.
-const cliMigration0070AddParticipationGeneration = `ALTER TABLE issues ADD COLUMN participation_generation BIGINT NULL;
+const cliMigration0072AddParticipationGeneration = `ALTER TABLE issues ADD COLUMN participation_generation BIGINT NULL;
 ALTER TABLE wisps ADD COLUMN participation_generation BIGINT NULL;`
 
 const cliMigration0041SplitDependenciesTarget = `DELETE FROM dolt_nonlocal_tables;
