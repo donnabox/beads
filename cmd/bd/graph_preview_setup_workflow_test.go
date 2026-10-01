@@ -342,3 +342,270 @@ func TestGraphPreviewClaudeStopProfileRefusal(t *testing.T) {
 		})
 	}
 }
+
+// graphSetupRun runs one isolated bd process and returns its exit code,
+// stdout and stderr, so a test can assert warnings on a successful exit.
+func graphSetupRun(t *testing.T, bd, work, home string, extraEnv []string, stdin []byte, args ...string) (int, string, string) {
+	t.Helper()
+	ctx, cancel := context.WithTimeout(t.Context(), 90*time.Second)
+	defer cancel()
+	cmd := graphMemoryReadCommand(ctx, bd, work, home, args...)
+	cmd.Env = append(cmd.Env, extraEnv...)
+	if stdin != nil {
+		cmd.Stdin = bytes.NewReader(stdin)
+	}
+	var stdout, stderr bytes.Buffer
+	cmd.Stdout, cmd.Stderr = &stdout, &stderr
+	err := cmd.Run()
+	if ctx.Err() != nil {
+		t.Fatalf("bd %v exceeded its deadline: %v stderr=%s", args, ctx.Err(), stderr.String())
+	}
+	var exit *exec.ExitError
+	if errors.As(err, &exit) {
+		return exit.ExitCode(), stdout.String(), stderr.String()
+	}
+	if err != nil {
+		t.Fatalf("bd %v did not run: %v", args, err)
+	}
+	return 0, stdout.String(), stderr.String()
+}
+
+func graphSetupInitArgs(t *testing.T, engine, scope string, flags ...string) []string {
+	t.Helper()
+	args := append([]string{"init", "--graph-mode", "link", "--scope-url", scope, "--non-interactive", "--json"}, flags...)
+	if engine == "server" {
+		port := os.Getenv("BEADS_GRAPH_TEST_SERVER_PORT")
+		if port == "" {
+			t.Skip("set BEADS_GRAPH_TEST_SERVER_PORT for ordinary shared-server CLI qualification")
+		}
+		args = append(args, "--server", "--external", "--server-host", "127.0.0.1", "--server-port", port, "--server-user", "root")
+	}
+	return args
+}
+
+// Once graph storage exists, a Stop hook that cannot be written must not leave
+// a fenced workspace that neither init nor setup can repair: init warns,
+// publishes the workspace as ready, and bd setup claude adds the hook after the
+// cause is fixed.
+func TestGraphPreviewClaudeStopInstallFailure(t *testing.T) {
+	if os.Geteuid() == 0 {
+		t.Skip("root ignores the read-only .claude directory mode this test uses to make the hook write fail")
+	}
+	bd := buildBDUnderTest(t)
+	for _, engine := range []string{"embedded", "server"} {
+		t.Run(engine, func(t *testing.T) {
+			work, home := t.TempDir(), t.TempDir()
+			args := graphSetupInitArgs(t, engine, "https://example.invalid/stop-install-failure/")
+			claudeDir := filepath.Join(work, ".claude")
+			if err := os.Mkdir(claudeDir, 0o755); err != nil {
+				t.Fatal(err)
+			}
+			// Preflight only reads this directory; the later settings write fails.
+			if err := os.Chmod(claudeDir, 0o555); err != nil {
+				t.Fatal(err)
+			}
+			t.Cleanup(func() { _ = os.Chmod(claudeDir, 0o755) })
+			code, stdout, stderr := graphSetupRun(t, bd, work, home, nil, nil, args...)
+			if code != 0 {
+				t.Fatalf("hook write failure aborted init: exit=%d stderr=%s", code, stderr)
+			}
+			if initialized := graphMixedResult[map[string]any](t, stdout); initialized["backend"] != engine {
+				t.Fatalf("unexpected initialized engine: %+v", initialized)
+			}
+			if !strings.HasPrefix(stderr, "Warning: ") || !strings.Contains(stderr, filepath.Join(claudeDir, "settings.json")) || !strings.Contains(stderr, "Run `bd setup claude` after fixing this to add the Stop hook") {
+				t.Fatalf("init did not warn about the missing Stop hook: %q", stderr)
+			}
+			// Admission requires a published, ready workspace.
+			graphPolicyCLI(t, bd, work, home, nil, "", "status", "--graph", "--json")
+			if _, err := os.Lstat(filepath.Join(claudeDir, "settings.json")); !os.IsNotExist(err) {
+				t.Fatalf("failed write left settings behind: %v", err)
+			}
+			graphSetupRefusal(t, bd, work, home, "bd setup claude", "setup", "claude", "--check")
+			if err := os.Chmod(claudeDir, 0o755); err != nil {
+				t.Fatal(err)
+			}
+			graphPolicyCLI(t, bd, work, home, nil, "", "setup", "claude")
+			graphPolicyCLI(t, bd, work, home, nil, "", "setup", "claude", "--check")
+			settings, err := os.ReadFile(filepath.Join(claudeDir, "settings.json"))
+			if err != nil || bytes.Count(settings, []byte("bd claude-hook stop")) != 1 {
+				t.Fatalf("setup did not register one Stop hook: %v %s", err, settings)
+			}
+			if claude, err := os.ReadFile(filepath.Join(work, "CLAUDE.md")); err != nil || string(claude) != "@AGENTS.md\n" {
+				t.Fatalf("setup did not import graph guidance: %v %q", err, claude)
+			}
+		})
+	}
+}
+
+// --skip-agents alone (without --skip-hooks) omits guidance, the CLAUDE.md
+// import and the Stop hook, so it also skips the hook preflight: a globally
+// enabled Beads plugin, which refuses a default init, does not refuse this one,
+// and no hook installation is attempted (it would warn on stderr).
+func TestGraphPreviewClaudeStopSkipAgentsAlone(t *testing.T) {
+	bd := buildBDUnderTest(t)
+	for _, engine := range []string{"embedded", "server"} {
+		t.Run(engine, func(t *testing.T) {
+			work, home := t.TempDir(), t.TempDir()
+			args := graphSetupInitArgs(t, engine, "https://example.invalid/skip-agents-alone/", "--skip-agents")
+			global := filepath.Join(home, ".claude", "settings.json")
+			const plugin = `{"enabledPlugins":{"beads@example":true}}`
+			if err := os.MkdirAll(filepath.Dir(global), 0o755); err != nil {
+				t.Fatal(err)
+			}
+			if err := os.WriteFile(global, []byte(plugin), 0o600); err != nil {
+				t.Fatal(err)
+			}
+			code, stdout, stderr := graphSetupRun(t, bd, work, home, nil, nil, args...)
+			if code != 0 || stderr != "" {
+				t.Fatalf("--skip-agents init: exit=%d stderr=%q", code, stderr)
+			}
+			if initialized := graphMixedResult[map[string]any](t, stdout); initialized["backend"] != engine {
+				t.Fatalf("unexpected initialized engine: %+v", initialized)
+			}
+			for _, name := range []string{"AGENTS.md", "CLAUDE.md", ".claude"} {
+				if _, err := os.Lstat(filepath.Join(work, name)); !os.IsNotExist(err) {
+					t.Fatalf("--skip-agents alone created %s: %v", name, err)
+				}
+			}
+			if raw, err := os.ReadFile(global); err != nil || string(raw) != plugin {
+				t.Fatalf("--skip-agents changed global settings: %v %q", err, raw)
+			}
+			graphPolicyCLI(t, bd, work, home, nil, "", "status", "--graph", "--json")
+		})
+	}
+}
+
+// Default init still refuses known Claude conflicts before creating storage,
+// but each refusal names the file to change and the --skip-hooks alternative,
+// which then initializes without touching that file.
+func TestGraphPreviewClaudeStopAutoInitRefusalMessages(t *testing.T) {
+	bd := buildBDUnderTest(t)
+	write := func(t *testing.T, path, content string) {
+		t.Helper()
+		if err := os.MkdirAll(filepath.Dir(path), 0o755); err != nil {
+			t.Fatal(err)
+		}
+		if err := os.WriteFile(path, []byte(content), 0o600); err != nil {
+			t.Fatal(err)
+		}
+	}
+	for _, tc := range []struct {
+		name string
+		// arrange returns the file the refusal must name and one it must not.
+		arrange func(t *testing.T, work, home string) (culprit, innocent string)
+	}{
+		{"global-plugin", func(t *testing.T, work, home string) (string, string) {
+			// The project disables the plugin, but the global file still enables it.
+			global, project := filepath.Join(home, ".claude", "settings.json"), filepath.Join(work, ".claude", "settings.json")
+			write(t, global, `{"enabledPlugins":{"beads@example":true}}`)
+			write(t, project, `{"enabledPlugins":{"beads@example":false}}`)
+			return global, project
+		}},
+		{"claude-symlink", func(t *testing.T, work, home string) (string, string) {
+			claude := filepath.Join(work, "CLAUDE.md")
+			if err := os.Symlink("AGENTS.md", claude); err != nil {
+				t.Fatal(err)
+			}
+			return claude, ""
+		}},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			work, home := t.TempDir(), t.TempDir()
+			culprit, innocent := tc.arrange(t, work, home)
+			snapshot := func() string {
+				t.Helper()
+				if target, err := os.Readlink(culprit); err == nil {
+					return "symlink to " + target
+				}
+				raw, err := os.ReadFile(culprit)
+				if err != nil {
+					t.Fatal(err)
+				}
+				return string(raw)
+			}
+			before := snapshot()
+			args := []string{"init", "--graph-mode", "link", "--scope-url", "https://example.invalid/auto-stop-refusal/", "--non-interactive", "--json"}
+			code, stdout, stderr := graphSetupRun(t, bd, work, home, nil, nil, args...)
+			var refusal struct{ Code, Message string }
+			if err := json.Unmarshal([]byte(stderr), &refusal); err != nil || code != 5 || stdout != "" || refusal.Code != "graph_not_initialized" {
+				t.Fatalf("expected a typed preflight refusal: exit=%d stdout=%q stderr=%q err=%v", code, stdout, stderr, err)
+			}
+			for _, want := range []string{culprit, "`bd init --graph-mode link --skip-hooks`", "`bd setup claude` can add the hook"} {
+				if !strings.Contains(refusal.Message, want) {
+					t.Fatalf("refusal omits %q: %s", want, refusal.Message)
+				}
+			}
+			if innocent != "" && strings.Contains(refusal.Message, innocent) {
+				t.Fatalf("refusal blames %s, which disables the plugin: %s", innocent, refusal.Message)
+			}
+			if _, err := os.Lstat(filepath.Join(work, ".beads")); !os.IsNotExist(err) {
+				t.Fatalf("preflight refusal created graph storage: %v", err)
+			}
+			graphPolicyCLI(t, bd, work, home, nil, "", append(args, "--skip-hooks")...)
+			if after := snapshot(); after != before {
+				t.Fatalf("--skip-hooks init changed %s: %q -> %q", culprit, before, after)
+			}
+		})
+	}
+}
+
+// Claude Code reads exit 2 from a Stop hook as "block stopping", and graph
+// admission runs before the reminder's stop_hook_active guard. Admission
+// refusals in the hook (BD_BACKEND selectors, a moved workspace) must warn on
+// one line and exit 1, as an ordinary workspace does for BD_BACKEND, while the
+// reminder itself keeps its JSON block decision once admission succeeds.
+func TestGraphPreviewClaudeStopHookAdmissionNonBlocking(t *testing.T) {
+	bd := buildBDUnderTest(t)
+	for _, engine := range []string{"embedded", "server"} {
+		t.Run(engine, func(t *testing.T) {
+			root, home := t.TempDir(), t.TempDir()
+			work := filepath.Join(root, "work")
+			if err := os.Mkdir(work, 0o755); err != nil {
+				t.Fatal(err)
+			}
+			graphPolicyCLI(t, bd, work, home, nil, "", graphSetupInitArgs(t, engine, "https://example.invalid/stop-admission/")...)
+			transcript := filepath.Join(root, "session.jsonl")
+			if err := os.WriteFile(transcript, []byte("{\"type\":\"assistant\",\"message\":{\"content\":[{\"type\":\"tool_use\",\"id\":\"tool-1\",\"name\":\"Read\",\"input\":{}}]}}\n"), 0o600); err != nil {
+				t.Fatal(err)
+			}
+			stop := func(dir string, env []string) (int, string, string) {
+				t.Helper()
+				input, _ := json.Marshal(claudeHookInput{SessionID: "session", TranscriptPath: transcript, CWD: dir, HookEventName: "Stop"})
+				return graphSetupRun(t, bd, dir, home, env, input, "claude-hook", "stop")
+			}
+			refused := func(name, want string, code int, stdout, stderr string) {
+				t.Helper()
+				if code != 1 || stdout != "" || !strings.HasPrefix(stderr, "Warning: ") || strings.Count(stderr, "\n") != 1 || !strings.HasSuffix(stderr, "\n") || !strings.Contains(stderr, want) {
+					t.Fatalf("%s: want one warning line naming %q and exit 1: exit=%d stdout=%q stderr=%q", name, want, code, stdout, stderr)
+				}
+			}
+			code, stdout, stderr := stop(work, []string{"BD_BACKEND=sqlite"})
+			refused("environment", "BD_BACKEND", code, stdout, stderr)
+			envFile := filepath.Join(work, ".beads", ".env")
+			if err := os.WriteFile(envFile, []byte("BD_DATABASE_BACKEND=sqlite\n"), 0o600); err != nil {
+				t.Fatal(err)
+			}
+			code, stdout, stderr = stop(work, nil)
+			refused("workspace .env", "BD_DATABASE_BACKEND", code, stdout, stderr)
+			if err := os.Remove(envFile); err != nil {
+				t.Fatal(err)
+			}
+			moved := filepath.Join(root, "moved")
+			if err := os.Rename(work, moved); err != nil {
+				t.Fatal(err)
+			}
+			code, stdout, stderr = stop(moved, nil)
+			refused("moved workspace", "moved", code, stdout, stderr)
+			if err := os.Rename(moved, work); err != nil {
+				t.Fatal(err)
+			}
+			// Refusals ran no reminder, so this session's first admitted Stop
+			// still gets Steph's block decision on stdout with exit 0.
+			code, stdout, stderr = stop(work, nil)
+			var decision claudeStopDecision
+			if err := json.Unmarshal([]byte(stdout), &decision); err != nil || code != 0 || stderr != "" || decision.Decision != "block" || decision.Reason != claudeStopMemoryReminder {
+				t.Fatalf("admitted Stop lost its reminder: exit=%d stdout=%q stderr=%q err=%v", code, stdout, stderr, err)
+			}
+		})
+	}
+}
