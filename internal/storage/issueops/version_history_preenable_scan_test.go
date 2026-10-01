@@ -43,6 +43,12 @@ func TestRecordVersionInTxRefusesANumberOutsideTheRangeAndWritesNothing(t *testi
 	mock.ExpectQuery(regexp.QuoteMeta("SELECT label FROM labels WHERE issue_id = ? ORDER BY label")).
 		WithArgs(id).
 		WillReturnRows(sqlmock.NewRows([]string{"label"}))
+	// design §16.2b's write fence reads participation_generation right after the
+	// snapshot. A non-NULL value is a participating row, so the mint goes on to the
+	// refusal this test pins; a NULL one would be a legacy row and mint nothing.
+	mock.ExpectQuery(regexp.QuoteMeta("SELECT participation_generation FROM issues WHERE id = ?")).
+		WithArgs(id).
+		WillReturnRows(sqlmock.NewRows([]string{"participation_generation"}).AddRow(1))
 	mock.ExpectQuery(regexp.QuoteMeta("SELECT 1 FROM wisps LIMIT 1")).
 		WillReturnRows(sqlmock.NewRows([]string{"1"}))
 	mock.ExpectQuery(`FROM dependencies WHERE issue_id IN`).
