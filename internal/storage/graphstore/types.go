@@ -138,6 +138,8 @@ const PreviewOwnedLinkLimit = 1000
 // LinkCreateRequest allocates an independent informational Link. Equal endpoints
 // do not deduplicate intent; an explicit allocated Path cannot be reused.
 type LinkCreateRequest struct {
+	// TypeURL selects an installed informational Type; empty preserves the original Related Type.
+	TypeURL                             string
 	Path, SourcePath, TargetPath, Actor string
 	Properties                          map[string]any
 	ExpectedSourceRevision              string

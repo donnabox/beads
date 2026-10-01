@@ -53,25 +53,14 @@ func (s *Store) currentSnapshotInTx(ctx context.Context, tx *sql.Tx) (Snapshot, 
 	if err := tx.QueryRowContext(ctx, `SELECT writer_token FROM graph_preview_scope WHERE singleton=1`).Scan(&result.WriterToken); err != nil {
 		return Snapshot{}, err
 	}
-	// The preview admits exactly four immutable descriptors. Do not silently
-	// advertise only a subset if an unsupported installation appears.
-	var typeCount int
-	if err := tx.QueryRowContext(ctx, `SELECT COUNT(*) FROM graph_preview_types`).Scan(&typeCount); err != nil {
+	var err error
+	result.Types, err = installedPreviewTypes(ctx, tx, s.ScopeURL())
+	if err != nil {
 		return Snapshot{}, err
-	}
-	if typeCount != 4 {
-		return Snapshot{}, fmt.Errorf("%w: unsupported Type installation", ErrInvalidStore)
-	}
-	for _, id := range []string{MemoryTypeURL(s.ScopeURL()), IssueTypeURL(s.ScopeURL()), DependencyTypeURL(s.ScopeURL()), RelatedTypeURL(s.ScopeURL())} {
-		descriptor, err := s.readTypeInTx(ctx, tx, id)
-		if err != nil {
-			return Snapshot{}, err
-		}
-		result.Types = append(result.Types, descriptor)
 	}
 	sort.Slice(result.Types, func(i, j int) bool { return graph.CompareCodeUnits(result.Types[i].ID(), result.Types[j].ID()) < 0 })
 	var invalid int
-	err := tx.QueryRowContext(ctx, `SELECT 1 FROM graph_preview_catalog WHERE allocation_state NOT IN ('live','deleted') LIMIT 1`).Scan(&invalid)
+	err = tx.QueryRowContext(ctx, `SELECT 1 FROM graph_preview_catalog WHERE allocation_state NOT IN ('live','deleted') LIMIT 1`).Scan(&invalid)
 	if err == nil {
 		return Snapshot{}, fmt.Errorf("%w: unknown allocation state", ErrInvalidStore)
 	}
@@ -133,7 +122,13 @@ func (s *Store) checkCollectionMappingsInTx(ctx context.Context, tx *sql.Tx) err
 		return err
 	}
 	var deletedInvalid int
-	if err := tx.QueryRowContext(ctx, `SELECT COUNT(*) FROM graph_preview_catalog WHERE allocation_state='deleted' AND ((backing='informational' AND type_url<>?) OR (backing='dependency' AND type_url<>?) OR type_url IS NULL)`, RelatedTypeURL(s.ScopeURL()), DependencyTypeURL(s.ScopeURL())).Scan(&deletedInvalid); err != nil {
+	ids, err := s.installedInformationalTypes(ctx, tx)
+	if err != nil {
+		return err
+	}
+	placeholders, args := informationalTypeSQL(ids)
+	args = append(args, DependencyTypeURL(s.ScopeURL()))
+	if err := tx.QueryRowContext(ctx, `SELECT COUNT(*) FROM graph_preview_catalog WHERE allocation_state='deleted' AND ((backing='informational' AND type_url NOT IN (`+placeholders+`)) OR (backing='dependency' AND type_url<>?) OR type_url IS NULL)`, args...).Scan(&deletedInvalid); err != nil {
 		return err
 	}
 	if deletedInvalid != 0 {

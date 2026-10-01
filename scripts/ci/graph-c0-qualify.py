@@ -582,6 +582,7 @@ class Qualification:
                         "TestGraphPreviewAgentInstructionsWorkflow/server/shared-file",
                         "TestGraphPreviewAgentInstructionsWorkflow/server/skip-agents",
                         "TestGraphPreviewAgentInstructionsWorkflow/server/full-profile-refusal",
+                        "TestGraphPreviewUsabilityWorkflow/embedded", "TestGraphPreviewUsabilityWorkflow/server",
                         "TestGraphPreviewCompatibilityDefaultsWorkflow/embedded", "TestGraphPreviewCompatibilityDefaultsWorkflow/server",
                         "TestGraphPreviewIssueAuthoringWorkflow/embedded", "TestGraphPreviewIssueAuthoringWorkflow/server",
                         "TestGraphPreviewIssueAppendWorkflow/embedded", "TestGraphPreviewIssueAppendWorkflow/server",

@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"context"
 	"database/sql"
+	"errors"
 	"fmt"
 	"strings"
 
@@ -11,7 +12,7 @@ import (
 )
 
 // ReadType reads an admitted installed descriptor, never a reconstructed stand-in.
-// The preview fixes its four descriptors at initialization; every record read
+// The preview fixes its installed descriptors at initialization; every record read
 // and write checks that immutable binding. Separate Type and record reads thus
 // cannot silently adopt a changed Type contract. Custom Type installation is not
 // supported by this accessor or by the preview writer.
@@ -52,12 +53,19 @@ func (s *Store) readTypeInTx(ctx context.Context, tx *sql.Tx, id string) (graph.
 		name = "dependency"
 	case RelatedTypeURL(s.options.Binding.ScopeURL):
 		name = "related"
+	case ExampleFollowsTypeURL(s.ScopeURL()):
+		name = "example-follows"
+	case ExampleCitesTypeURL(s.ScopeURL()):
+		name = "example-cites"
 	default:
 		return graph.TypeDescriptor{}, ErrNotFound
 	}
 	var raw []byte
 	var fingerprint string
 	if err := tx.QueryRowContext(ctx, `SELECT descriptor,fingerprint FROM graph_preview_types WHERE name=?`, name).Scan(&raw, &fingerprint); err != nil {
+		if errors.Is(err, sql.ErrNoRows) && (name == "example-follows" || name == "example-cites") {
+			return graph.TypeDescriptor{}, ErrNotFound
+		}
 		return graph.TypeDescriptor{}, fmt.Errorf("%w: read installed %s descriptor: %v", ErrInvalidStore, name, err)
 	}
 	parsed, err := graph.ParseTypeDescriptor(raw)

@@ -97,12 +97,12 @@ explicit creation title must remain nonempty; updates preserve omitted fields.
 | `update BEAD --claim` | Atomically claim one Issue for the current actor using the native writer. Standalone `--claim=true` only; no other edits or revision/force guard. Repeating the same actor is a no-op and does not renew its five-minute lease. |
 | `show RESOURCE` | Current Memory, Issue or Link; optional `--version TOKEN` selects an exact retained record. No chronological History option. |
 | `compare RESOURCE --from TOKEN --to TOKEN` | Compare two complete retained preview versions of one Memory, Issue or Link. Explicit tokens determine direction, not chronology. |
-| `link SOURCE TARGET --resource-type TYPE` | Use an exact installed Link Type URL. Informational Links permit `--id links/PATH`, `--properties JSON` and source guards. Memory sources own informational Links; Issue sources do not. |
+| `link SOURCE TARGET --link-type TYPE` | Use an installed Link Type as `types/NAME` or its full local URL. Informational Links permit `--id links/PATH`, `--properties JSON` and source guards. Memory sources own informational Links; Issue sources do not. |
 | `dep add SOURCE TARGET` or `link SOURCE TARGET` | A local blocking Dependency between Issues, using the ordinary default `blocks` type. No bulk, remote, routing or bypass flags. |
 | `update LINK --properties JSON` | Replace all informational Link properties. Requires a Link guard; the Memory source guard is optional. Blocking Dependency properties are not editable here. |
-| `links BEAD` | Complete bounded current incident Links, with optional `--direction in\|out\|both` and exact `--resource-type TYPE` filter. No pagination. |
+| `links BEAD` | Complete bounded current incident Links, with optional `--direction in\|out\|both` and `--link-type TYPE` filter. No pagination. |
 | `unlink LINK` | Remove one informational Link or blocking Dependency by canonical ID. Requires a Link guard; the source guard is optional for Memory-owned Links, required for blocking Dependencies. |
-| `unlink SOURCE TARGET --resource-type TYPE` | Remove an unambiguous informational Link with the same guards. Multiple matches refuse and report candidate IDs. Blocking Dependency pair removal is unavailable. |
+| `unlink SOURCE TARGET --link-type TYPE` | Remove an unambiguous informational Link with the same guards. Multiple matches refuse and report candidate IDs. Blocking Dependency pair removal is unavailable. |
 | `close BEAD` | Close one Issue through the existing Issue policy, optionally with ordinary reason aliases. No force or batch operations. |
 | `reopen BEAD` | Reopen one Issue, optionally with `--reason`. |
 | `ready` | Unfiltered current ready Issues through ordinary readiness rules. No list filters, output limit or configured positive `BEADS_MAX_ROWS`. |
@@ -117,21 +117,38 @@ Commands accept the common graph controls `--json`, `--graph-mode`, `--actor`,
 read-only invocation cannot write. Unsupported command options refuse rather
 than falling through to ordinary storage operations.
 
-The installed informational Type is
-`https://example.org/team/types/preview-related-v2` for the example Scope;
-the blocking Type is `https://example.org/team/types/preview-blocks-v1`.
-Arbitrary Type installation and friendly generic Type names are not available.
+`create` defaults to an Issue. `--bead-type types/preview-memory-v2` selects a
+Memory; `types/preview-issue-v2` explicitly selects an Issue. Full local Type URLs
+also work. `--type` remains Issue classification (such as `task` or `bug`). Memory
+creation accepts an optional ID, positional title or `--title`, and inline
+`--description`/`--body`/`--message`. Without a title, body text supplies the summary.
+Issue-only fields are refused on Memory creation. For example:
+
+```sh
+bd create --bead-type types/preview-memory-v2 --body 'Code flow policy: target integration.'
+```
+
+New workspaces install three informational Link Types: `types/preview-related-v2`,
+`types/example-follows` (the source follows a policy described by the target),
+and `types/example-cites` (the source cites the target as context). All accept
+Memory or Issue endpoints and optional `note` properties; none affects scheduling.
+The blocking Type is `types/preview-blocks-v1` and requires Issue endpoints.
+Use scope-relative `types/NAME` or the full local Type URL. Existing four-Type
+workspaces remain readable and writable with their original Types; reads do not
+install the two examples. Arbitrary Type installation is unavailable.
+`--resource-type` remains a hidden compatibility alias for `--link-type`; do not
+supply both.
 For example:
 
 ```sh
 bd remember 'Context for the plan.' --id beads/context --title Context
 bd create 'Ship the release' --id beads/work --priority 1
 bd link beads/plan beads/context \
-  --resource-type https://example.org/team/types/preview-related-v2 \
+  --link-type types/preview-related-v2 \
   --id links/context --properties '{"note":"background"}' \
   --unconditional-source
 bd link beads/plan beads/work \
-  --resource-type https://example.org/team/types/preview-related-v2 \
+  --link-type types/preview-related-v2 \
   --id links/work --unconditional-source
 bd links beads/plan --json
 bd update links/context --properties '{"note":"revised background"}' \
@@ -223,18 +240,22 @@ public BDP Write profile, History ordering or durable request outcomes.
 folding. It reads one checked current snapshot before filtering. The default
 must match at most 50 Memories; a larger result refuses instead of returning a
 partial page. Narrow the search or use `--all` for all matching summaries within
-the same acquisition and output bounds. `--details` adds owned-Link counts.
+the same acquisition and output bounds. Default human output shows local IDs and
+titles, plus labeled excerpts for body matches. `--details` adds exact versions,
+attribution, owned-Link counts and recall commands. Structured `records-json`
+output retains its full existing summary fields.
 
 ```sh
 bd memories release
 bd memories release --details --format records-json
-# Copy a selected item's canonical id and version from the summary.
+# Use --details to copy an exact version for a retained read.
+bd memories release --details
 bd recall beads/plan --version SAVED_TOKEN
 bd show beads/plan --version SAVED_TOKEN --json
 bd compare beads/plan --from EARLIER_SELECTED_TOKEN --to OTHER_SELECTED_TOKEN --json
 ```
 
-Summaries include identity, title, saved version, attribution, matched fields
+Structured summaries include identity, title, saved version, attribution, matched fields
 and a body excerpt when the body matches. Search input is limited to 4,096 UTF-8
 bytes, excerpts to 160 code points and final output to 1 MiB. A short matching
 body can appear in full as its excerpt. Results are sorted by canonical ID,

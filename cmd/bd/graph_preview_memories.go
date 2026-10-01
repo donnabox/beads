@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"context"
 	"fmt"
+	"strconv"
 	"strings"
 	"unicode/utf8"
 
@@ -56,22 +57,24 @@ func runGraphPreviewMemories(cmd *cobra.Command, args []string) error {
 func renderGraphMemoryDiscovery(result graphMemoryDiscoveryResult, structured, quiet bool) (string, error) {
 	var human strings.Builder
 	if !structured && !quiet {
-		fmt.Fprintf(&human, "Memories (%d; complete summaries)\n", len(result.Items))
+		fmt.Fprintf(&human, "Memories (%d):\n\n", len(result.Items))
 		for _, item := range result.Items {
-			fmt.Fprintf(&human, "\n%q  %q\n", item.ID, item.Title)
-			if len(item.MatchedFields) > 0 {
-				fmt.Fprintf(&human, "  Matched: %s\n", strings.Join(item.MatchedFields, ", "))
-			}
+			id := strings.TrimPrefix(item.ID, result.Scope)
+			fmt.Fprintf(&human, "  %s  %s\n", graphMemoryDisplayText(id), graphMemoryDisplayText(item.Title))
 			if item.Excerpt != nil {
-				fmt.Fprintf(&human, "  %s excerpt: %q (shortened: %t)\n", item.Excerpt.Field, item.Excerpt.Text, item.Excerpt.Truncated)
+				label := "excerpt"
+				if item.Excerpt.Truncated {
+					label += ", shortened"
+				}
+				fmt.Fprintf(&human, "    %s (%s)\n", graphMemoryDisplayText(item.Excerpt.Text), label)
 			}
-			fmt.Fprintf(&human, "  Attribution: actor=%q status=%q recordedAt=%q\n", item.Attribution.Actor, item.Attribution.Status, item.Attribution.RecordedAt)
 			if item.Details != nil {
-				fmt.Fprintf(&human, "  Owned Links: %d\n", item.Details.OwnedLinkCount)
+				fmt.Fprintf(&human, "    Attribution: actor=%q status=%q recordedAt=%q\n", item.Attribution.Actor, item.Attribution.Status, item.Attribution.RecordedAt)
+				fmt.Fprintf(&human, "    Owned Links: %d\n", item.Details.OwnedLinkCount)
+				fmt.Fprintf(&human, "    Recall: bd recall %s --version %s\n", graphMemoryDisplayText(graphMemoryShellArg(id)), graphMemoryDisplayText(graphMemoryShellArg(item.Version)))
 			}
-			fmt.Fprintf(&human, "  Recall: bd recall %s --version %s\n", graphMemoryShellArg(item.ID), graphMemoryShellArg(item.Version))
 		}
-		human.WriteString("\nExperimental title/body search; keys and complete Memory fields are unavailable.\n")
+		human.WriteString("\nTitle/body summaries. Use bd recall <id> for full text; --details for versions, attribution and Links.\n")
 	}
 	var output bytes.Buffer
 	if err := graphPrintTo(&output, result, strings.TrimSuffix(human.String(), "\n"), quiet, structured); err != nil {
@@ -86,4 +89,12 @@ func renderGraphMemoryDiscovery(result graphMemoryDiscoveryResult, structured, q
 // Values are data, even when displayed as an explicit follow-up shell command.
 func graphMemoryShellArg(value string) string {
 	return "'" + strings.ReplaceAll(value, "'", "'\"'\"'") + "'"
+}
+
+// Keep each value on one terminal-safe line without adding quotation marks
+// around ordinary titles and local IDs. Preserve printable shell quoting in
+// the optional recall command; only control/non-printing characters are escaped.
+func graphMemoryDisplayText(value string) string {
+	quoted := strconv.Quote(value)
+	return strings.NewReplacer(`\\`, `\`, `\"`, `"`).Replace(quoted[1 : len(quoted)-1])
 }

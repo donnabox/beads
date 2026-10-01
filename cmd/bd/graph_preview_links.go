@@ -70,16 +70,74 @@ func graphPreviewRevisionGuard(cmd *cobra.Command, source, required bool) (strin
 	return revision, unconditional, nil
 }
 
+// The old name remains a hidden compatibility alias for existing scripts.
+func registerGraphLinkTypeFlag(cmd *cobra.Command) {
+	cmd.Flags().String("link-type", "", "Installed Link Type: types/NAME or full local URL")
+	cmd.Flags().String("resource-type", "", "Compatibility alias for --link-type")
+	_ = cmd.Flags().MarkHidden("resource-type")
+}
+
+func graphPreviewLinkTypeChanged(cmd *cobra.Command) bool {
+	return cmd.Flags().Changed("link-type") || cmd.Flags().Changed("resource-type")
+}
+
+func graphPreviewTypeURL(scope, selector string) (string, error) {
+	if strings.HasPrefix(selector, "types/") {
+		selector = scope + selector
+	}
+	prefix := scope + "types/"
+	if !strings.HasPrefix(selector, prefix) {
+		return "", fmt.Errorf("Type must be types/NAME or a canonical Type URL in this Scope")
+	}
+	for _, segment := range strings.Split(strings.TrimPrefix(selector, prefix), "/") {
+		if err := graph.ValidateCanonicalSegment(segment); err != nil {
+			return "", fmt.Errorf("invalid local Type path: %w", err)
+		}
+	}
+	if err := graph.ValidateTypeURL(selector); err != nil {
+		return "", err
+	}
+	return selector, nil
+}
+
+func graphPreviewLinkType(cmd *cobra.Command) (string, error) {
+	if cmd.Flags().Changed("link-type") && cmd.Flags().Changed("resource-type") {
+		return "", graphFailure("invalid_selector", "choose --link-type once; do not combine it with --resource-type", 2)
+	}
+	if !graphPreviewLinkTypeChanged(cmd) {
+		return "", nil
+	}
+	flag := "link-type"
+	if cmd.Flags().Changed("resource-type") {
+		flag = "resource-type"
+	}
+	selector, _ := cmd.Flags().GetString(flag)
+	typ, err := graphPreviewTypeURL(graphPreviewConfig.GraphScopeURL, selector)
+	if err != nil {
+		return "", graphFailure("invalid_selector", err.Error(), 2)
+	}
+	return typ, nil
+}
+
 func runGraphPreviewLink(cmd *cobra.Command, args []string) error {
-	typ, _ := cmd.Flags().GetString("resource-type")
-	if typ != graphstore.RelatedTypeURL(graphPreviewConfig.GraphScopeURL) {
+	typ, err := graphPreviewLinkType(cmd)
+	if err != nil {
+		return err
+	}
+	if typ == "" || typ == graphstore.DependencyTypeURL(graphPreviewConfig.GraphScopeURL) {
 		return runGraphPreviewAddDependency(cmd, args)
 	}
 	if err := graphPreviewWritePolicy(); err != nil {
 		return err
 	}
-	if err := graphPreviewFlags(cmd, "resource-type", "id", "properties", "if-source-revision", "unconditional-source"); err != nil {
+	if err := graphPreviewFlags(cmd, "link-type", "resource-type", "id", "properties", "if-source-revision", "unconditional-source"); err != nil {
 		return err
+	}
+	if cmd.Flags().Changed("type") {
+		return graphFailure("invalid_selector", "select either --type or --link-type", 2)
+	}
+	if !graphstore.IsInformationalTypeURL(graphPreviewConfig.GraphScopeURL, typ) {
+		return graphFailure("capability_unavailable", "Link Type is not supported by this preview", 5)
 	}
 	if len(args) != 2 {
 		return graphFailure("invalid_selector", "graph Link creation requires two canonical Bead selectors", 2)
@@ -115,7 +173,7 @@ func runGraphPreviewLink(cmd *cobra.Command, args []string) error {
 	}
 	return withGraphStore(func(ctx context.Context, store *graphstore.Store) (any, string, error) {
 		result, err := store.AddInformationalLink(ctx, graphstore.LinkCreateRequest{
-			Path: path, SourcePath: paths[0], TargetPath: paths[1], Properties: properties,
+			Path: path, TypeURL: typ, SourcePath: paths[0], TargetPath: paths[1], Properties: properties,
 			Actor: getActorWithGit(), ExpectedSourceRevision: revision, UnconditionalSource: unconditional,
 		})
 		return result, graphPreviewReplacementSummary(fmt.Sprintf("Created %s: %s → %s", result.Link.ID, args[0], args[1]), result.ReplacedSource), err

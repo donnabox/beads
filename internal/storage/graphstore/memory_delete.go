@@ -136,7 +136,7 @@ func (s *Store) deletedMemoryInTx(ctx context.Context, tx *sql.Tx, path string) 
 	if err != nil {
 		return Record{}, err
 	}
-	memory, err := s.decodeMemoryVersion(path, typ, revision, raw, actor)
+	memory, err := s.decodeMemoryVersion(ctx, tx, path, typ, revision, raw, actor)
 	if err != nil {
 		return Record{}, err
 	}

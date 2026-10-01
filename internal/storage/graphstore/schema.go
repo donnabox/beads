@@ -1,7 +1,6 @@
 package graphstore
 
 import (
-	"bytes"
 	"context"
 	"crypto/rand"
 	"database/sql"
@@ -142,22 +141,6 @@ func installPreview(ctx context.Context, conn *sql.Conn, o Options) (err error) 
 			return err
 		}
 	}
-	descriptor, err := memoryDescriptor(o.Binding.ScopeURL)
-	if err != nil {
-		return err
-	}
-	issueType, err := issueDescriptor(o.Binding.ScopeURL)
-	if err != nil {
-		return err
-	}
-	dependencyType, err := dependencyDescriptor(o.Binding.ScopeURL)
-	if err != nil {
-		return err
-	}
-	relatedType, err := relatedDescriptor(o.Binding.ScopeURL)
-	if err != nil {
-		return err
-	}
 	token, err := freshToken()
 	if err != nil {
 		return err
@@ -178,17 +161,14 @@ func installPreview(ctx context.Context, conn *sql.Conn, o Options) (err error) 
         VALUES (1, ?, ?, ?, ?, ?)`, b.WorkspaceID, b.ScopeURL, b.AuthorityID, b.SchemaVersion, token); err != nil {
 		return err
 	}
-	if _, err = tx.ExecContext(ctx, `INSERT INTO graph_preview_types (name, descriptor, fingerprint) VALUES ('memory', ?, ?)`, descriptor.CanonicalJSON(), descriptor.Fingerprint()); err != nil {
-		return err
-	}
-	if _, err = tx.ExecContext(ctx, `INSERT INTO graph_preview_types (name, descriptor, fingerprint) VALUES ('issue', ?, ?)`, issueType.CanonicalJSON(), issueType.Fingerprint()); err != nil {
-		return err
-	}
-	if _, err = tx.ExecContext(ctx, `INSERT INTO graph_preview_types (name, descriptor, fingerprint) VALUES ('dependency', ?, ?)`, dependencyType.CanonicalJSON(), dependencyType.Fingerprint()); err != nil {
-		return err
-	}
-	if _, err = tx.ExecContext(ctx, `INSERT INTO graph_preview_types (name, descriptor, fingerprint) VALUES ('related', ?, ?)`, relatedType.CanonicalJSON(), relatedType.Fingerprint()); err != nil {
-		return err
+	for _, definition := range previewTypeDefinitions() {
+		descriptor, buildErr := definition.build(b.ScopeURL)
+		if buildErr != nil {
+			return buildErr
+		}
+		if _, err = tx.ExecContext(ctx, `INSERT INTO graph_preview_types (name, descriptor, fingerprint) VALUES (?, ?, ?)`, definition.name, descriptor.CanonicalJSON(), descriptor.Fingerprint()); err != nil {
+			return err
+		}
 	}
 	if _, err = tx.ExecContext(ctx, "INSERT INTO config (`key`,value) VALUES ('issue_prefix', ?)", prefix); err != nil {
 		return err
@@ -220,28 +200,8 @@ func checkBinding(ctx context.Context, tx *sql.Tx, o Options) error {
 	if b != o.Binding || !authorityID.MatchString(token) {
 		return fmt.Errorf("%w: persisted binding differs from workspace", ErrInvalidStore)
 	}
-	for _, definition := range []struct {
-		name  string
-		build func(string) (graph.TypeDescriptor, error)
-	}{{"memory", memoryDescriptor}, {"issue", issueDescriptor}, {"dependency", dependencyDescriptor}, {"related", relatedDescriptor}} {
-		expected, err := definition.build(b.ScopeURL)
-		if err != nil {
-			return err
-		}
-		// Immutable metadata must match these exact bytes. Check its expected
-		// length in SQL before acquiring a corrupted, arbitrarily large blob.
-		var descriptor []byte
-		var fingerprint string
-		if err := tx.QueryRowContext(ctx, `SELECT descriptor, fingerprint FROM graph_preview_types WHERE name = ? AND OCTET_LENGTH(descriptor)=?`, definition.name, len(expected.CanonicalJSON())).Scan(&descriptor, &fingerprint); err != nil {
-			return fmt.Errorf("%w: read %s descriptor: %v", ErrInvalidStore, definition.name, err)
-		}
-		installed, err := graph.ParseTypeDescriptor(descriptor)
-		if err != nil {
-			return fmt.Errorf("%w: invalid %s descriptor: %v", ErrInvalidStore, definition.name, err)
-		}
-		if !bytes.Equal(descriptor, expected.CanonicalJSON()) || fingerprint != expected.Fingerprint() || fingerprint != installed.Fingerprint() {
-			return fmt.Errorf("%w: %s descriptor differs", ErrInvalidStore, definition.name)
-		}
+	if _, err := installedPreviewTypes(ctx, tx, b.ScopeURL); err != nil {
+		return err
 	}
 	if _, err := issueops.ReadConfigPrefix(ctx, tx); err != nil {
 		return fmt.Errorf("%w: Issue configuration: %v", ErrInvalidStore, err)
