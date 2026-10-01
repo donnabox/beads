@@ -11,8 +11,10 @@
 //     with no bd flag is a hard error, never a silently dropped mutation:
 //     TestClassify_DepAddAutoCommitIsNoop, TestClassify_DepRemoveAutoCommitIsNoop,
 //     TestClassify_UnsupportedFieldChangeSurfacesError;
-//   - Execute resolves bd on PATH and ExecuteWith uses exactly the binary it is
-//     given: TestExecute_* and TestExecuteWith_*.
+//   - ExecuteWith uses exactly the binary it is given and there is no form that
+//     looks bd up on PATH: TestExecuteWith_*, and TestB3PinnedBd in plan_test.go;
+//   - the commit-step plan, the table policy, ordering and atomicity live in
+//     plan_test.go.
 //
 // Every fixture is a throwaway bd project in a temporary directory, built with
 // a bd binary compiled from this tree; ambient store routing is stripped from
@@ -597,32 +599,9 @@ func readCalls(t *testing.T, log string) string {
 	return string(b)
 }
 
-func TestExecute_ResolvesBdOnPath(t *testing.T) {
+func TestExecuteWith_NoopSpawnsNothing(t *testing.T) {
 	dir, log := putBdFirst(t)
 	t.Setenv("PATH", dir+":/usr/bin:/bin")
-	action := Action{Kind: KindUpdate, Argv: []string{"update", "x-1", "--title", "New"}}
-	if err := Execute(context.Background(), t.TempDir(), action); err != nil {
-		t.Fatalf("Execute: %v", err)
-	}
-	if got, want := strings.TrimSpace(readCalls(t, log)), "update x-1 --title New"; got != want {
-		t.Errorf("stand-in bd was run with %q, want %q", got, want)
-	}
-}
-
-func TestExecute_FailsWithoutBdOnPath(t *testing.T) {
-	t.Setenv("PATH", t.TempDir())
-	action := Action{Kind: KindClose, Argv: []string{"close", "x-1"}}
-	if err := Execute(context.Background(), t.TempDir(), action); err == nil {
-		t.Fatal("Execute with no bd on PATH: want an error")
-	}
-}
-
-func TestExecute_NoopSpawnsNothing(t *testing.T) {
-	dir, log := putBdFirst(t)
-	t.Setenv("PATH", dir+":/usr/bin:/bin")
-	if err := Execute(context.Background(), t.TempDir(), Action{Kind: KindNoop}); err != nil {
-		t.Fatalf("Execute(noop): %v", err)
-	}
 	if err := ExecuteWith(context.Background(), filepath.Join(dir, "bd"), t.TempDir(), Action{Kind: KindNoop}); err != nil {
 		t.Fatalf("ExecuteWith(noop): %v", err)
 	}

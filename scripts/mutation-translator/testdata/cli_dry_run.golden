@@ -1,96 +1,101 @@
 == issue added
 exit: 0
 stdout:
-create Widget, deluxe --id x-1 --force --description Does things --priority 2 --type task --status open
+create --id x-1 --force --title Widget, deluxe --description Does things --priority 2 --type task --status open
 dolt argv:
 sql
 -q
-SELECT * FROM dolt_commit_diff_issues WHERE to_commit='vutsrqponmlkjihgfedcba9876543210' AND from_commit='0123456789abcdefghijklmnopqrstuv' AND (to_id='x-1' OR from_id='x-1')
+SELECT from_table_name, to_table_name, diff_type FROM dolt_diff_summary('0123456789abcdefghijklmnopqrstuv', 'vutsrqponmlkjihgfedcba9876543210')
 -r
 csv
 sql
 -q
-SELECT * FROM dolt_commit_diff_dependencies WHERE to_commit='vutsrqponmlkjihgfedcba9876543210' AND from_commit='0123456789abcdefghijklmnopqrstuv' AND (to_issue_id='x-1' OR from_issue_id='x-1')
+SELECT * FROM dolt_commit_diff_issues WHERE to_commit='vutsrqponmlkjihgfedcba9876543210' AND from_commit='0123456789abcdefghijklmnopqrstuv'
 -r
 csv
 
 == issue modified
 exit: 0
 stdout:
-update x-1 --title New title --description New desc
+update --title New title --description New desc -- x-1
 dolt argv:
 sql
 -q
-SELECT * FROM dolt_commit_diff_issues WHERE to_commit='vutsrqponmlkjihgfedcba9876543210' AND from_commit='0123456789abcdefghijklmnopqrstuv' AND (to_id='x-1' OR from_id='x-1')
+SELECT from_table_name, to_table_name, diff_type FROM dolt_diff_summary('0123456789abcdefghijklmnopqrstuv', 'vutsrqponmlkjihgfedcba9876543210')
 -r
 csv
 sql
 -q
-SELECT * FROM dolt_commit_diff_dependencies WHERE to_commit='vutsrqponmlkjihgfedcba9876543210' AND from_commit='0123456789abcdefghijklmnopqrstuv' AND (to_issue_id='x-1' OR from_issue_id='x-1')
+SELECT * FROM dolt_commit_diff_issues WHERE to_commit='vutsrqponmlkjihgfedcba9876543210' AND from_commit='0123456789abcdefghijklmnopqrstuv'
 -r
 csv
 
 == issue closed
 exit: 0
 stdout:
-close x-1 --reason done
+close --reason done -- x-1
 dolt argv:
 sql
 -q
-SELECT * FROM dolt_commit_diff_issues WHERE to_commit='vutsrqponmlkjihgfedcba9876543210' AND from_commit='0123456789abcdefghijklmnopqrstuv' AND (to_id='x-1' OR from_id='x-1')
+SELECT from_table_name, to_table_name, diff_type FROM dolt_diff_summary('0123456789abcdefghijklmnopqrstuv', 'vutsrqponmlkjihgfedcba9876543210')
 -r
 csv
 sql
 -q
-SELECT * FROM dolt_commit_diff_dependencies WHERE to_commit='vutsrqponmlkjihgfedcba9876543210' AND from_commit='0123456789abcdefghijklmnopqrstuv' AND (to_issue_id='x-1' OR from_issue_id='x-1')
+SELECT * FROM dolt_commit_diff_issues WHERE to_commit='vutsrqponmlkjihgfedcba9876543210' AND from_commit='0123456789abcdefghijklmnopqrstuv'
 -r
 csv
 
 == issue removed
 exit: 0
 stdout:
-delete x-1 --force
+delete --force -- x-1
 dolt argv:
 sql
 -q
-SELECT * FROM dolt_commit_diff_issues WHERE to_commit='vutsrqponmlkjihgfedcba9876543210' AND from_commit='0123456789abcdefghijklmnopqrstuv' AND (to_id='x-1' OR from_id='x-1')
+SELECT from_table_name, to_table_name, diff_type FROM dolt_diff_summary('0123456789abcdefghijklmnopqrstuv', 'vutsrqponmlkjihgfedcba9876543210')
 -r
 csv
 sql
 -q
-SELECT * FROM dolt_commit_diff_dependencies WHERE to_commit='vutsrqponmlkjihgfedcba9876543210' AND from_commit='0123456789abcdefghijklmnopqrstuv' AND (to_issue_id='x-1' OR from_issue_id='x-1')
+SELECT * FROM dolt_commit_diff_issues WHERE to_commit='vutsrqponmlkjihgfedcba9876543210' AND from_commit='0123456789abcdefghijklmnopqrstuv'
 -r
 csv
 
 == dependency added
 exit: 0
 stdout:
-dep add x-1 x-2 --type blocks
+dep add --type blocks -- x-1 x-2
 dolt argv:
 sql
 -q
-SELECT * FROM dolt_commit_diff_issues WHERE to_commit='vutsrqponmlkjihgfedcba9876543210' AND from_commit='0123456789abcdefghijklmnopqrstuv' AND (to_id='x-1' OR from_id='x-1')
+SELECT from_table_name, to_table_name, diff_type FROM dolt_diff_summary('0123456789abcdefghijklmnopqrstuv', 'vutsrqponmlkjihgfedcba9876543210')
 -r
 csv
 sql
 -q
-SELECT * FROM dolt_commit_diff_dependencies WHERE to_commit='vutsrqponmlkjihgfedcba9876543210' AND from_commit='0123456789abcdefghijklmnopqrstuv' AND (to_issue_id='x-1' OR from_issue_id='x-1')
+SELECT * FROM dolt_commit_diff_dependencies WHERE to_commit='vutsrqponmlkjihgfedcba9876543210' AND from_commit='0123456789abcdefghijklmnopqrstuv'
+-r
+csv
+sql
+-q
+SELECT id FROM issues AS OF '0123456789abcdefghijklmnopqrstuv' WHERE id IN ('x-2')
 -r
 csv
 
 == dependency removed
 exit: 0
 stdout:
-dep remove x-1 x-2
+dep remove -- x-1 x-2
 dolt argv:
 sql
 -q
-SELECT * FROM dolt_commit_diff_issues WHERE to_commit='vutsrqponmlkjihgfedcba9876543210' AND from_commit='0123456789abcdefghijklmnopqrstuv' AND (to_id='x-1' OR from_id='x-1')
+SELECT from_table_name, to_table_name, diff_type FROM dolt_diff_summary('0123456789abcdefghijklmnopqrstuv', 'vutsrqponmlkjihgfedcba9876543210')
 -r
 csv
 sql
 -q
-SELECT * FROM dolt_commit_diff_dependencies WHERE to_commit='vutsrqponmlkjihgfedcba9876543210' AND from_commit='0123456789abcdefghijklmnopqrstuv' AND (to_issue_id='x-1' OR from_issue_id='x-1')
+SELECT * FROM dolt_commit_diff_dependencies WHERE to_commit='vutsrqponmlkjihgfedcba9876543210' AND from_commit='0123456789abcdefghijklmnopqrstuv'
 -r
 csv
 
@@ -101,12 +106,7 @@ stdout:
 dolt argv:
 sql
 -q
-SELECT * FROM dolt_commit_diff_issues WHERE to_commit='vutsrqponmlkjihgfedcba9876543210' AND from_commit='0123456789abcdefghijklmnopqrstuv' AND (to_id='x-1' OR from_id='x-1')
--r
-csv
-sql
--q
-SELECT * FROM dolt_commit_diff_dependencies WHERE to_commit='vutsrqponmlkjihgfedcba9876543210' AND from_commit='0123456789abcdefghijklmnopqrstuv' AND (to_issue_id='x-1' OR from_issue_id='x-1')
+SELECT from_table_name, to_table_name, diff_type FROM dolt_diff_summary('0123456789abcdefghijklmnopqrstuv', 'vutsrqponmlkjihgfedcba9876543210')
 -r
 csv
 
@@ -114,6 +114,6 @@ csv
 exit: 2
 stdout:
 stderr:
-usage: mutation-translator --data-dir DIR --work-dir DIR --from SHA --to SHA --issue ID [--dry-run]
+usage: mutation-translator --data-dir DIR --work-dir DIR --from SHA --to SHA --issue ID (--dry-run | --bd PATH)
 dolt argv:
 
