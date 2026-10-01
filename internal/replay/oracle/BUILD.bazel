@@ -13,9 +13,15 @@ go_library(
 
 go_test(
     name = "oracle_test",
-    srcs = ["oracle_test.go"],
+    srcs = [
+        "oracle_test.go",
+        "view_test.go",
+    ],
     embed = [":oracle"],
-    deps = ["//internal/replay/replaytest"],
+    deps = [
+        "//internal/replay/doltcli",
+        "//internal/replay/replaytest",
+    ],
 )
 
 # --- begin go_srcs (managed by tools/bazel/go_srcs.py; run `make bazel-sync`) ---

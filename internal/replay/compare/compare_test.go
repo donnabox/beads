@@ -9,12 +9,18 @@
 //   - the mismatch record: both payloads are carried verbatim, and every
 //     classification rule, including the priority order between them, is
 //     exercised by TestCompare_ClassifiesMismatchCategory.
-//   - the package has no database, clone or network dependency; its only
-//     non-standard-library import is the JCS library.
+//   - comparing needs no database, clone or network: its imports are the JCS
+//     library, the oracle's plain view types, and the number gate the
+//     version-history mint exports through issueops. The tests that read real
+//     dolt databases, or a store's schema, are in fidelity_test.go and
+//     drift_test.go.
 package compare
 
 import (
+	"bytes"
 	"encoding/hex"
+	"os"
+	"path/filepath"
 	"strings"
 	"testing"
 )
@@ -31,20 +37,65 @@ func TestCanonicalize_SortsObjectKeysRecursively(t *testing.T) {
 	}
 }
 
-func TestCanonicalize_NumbersUseECMA262Formatting(t *testing.T) {
-	// RFC 8785 mandates ECMA-262 number formatting (no trailing ".0" for a
-	// whole-valued float). A hand-rolled canonicalizer built on
-	// json.Marshal would not give this for free -- this is the behavioral
-	// proof that Canonicalize really delegates to jcs.Transform
-	// rather than reimplementing RFC 8785 by hand.
-	in := []byte(`{"n":1.0}`)
-	got, err := Canonicalize(in)
+// jcsVectors loads the RFC 8785 input/expected pairs under testdata/jcs
+// (provenance in its README.md; the upstream "output" directory is named
+// "expected" here because the repository's .gitignore drops any output/ tree).
+// The count is pinned so an emptied or half-copied directory cannot pass as a
+// vacuous table.
+func jcsVectors(t *testing.T) map[string][2][]byte {
+	t.Helper()
+	const shipped = 10 // the vectors in gowebpki/jcs v1.0.1's testdata
+	dir := filepath.Join("testdata", "jcs")
+	entries, err := os.ReadDir(filepath.Join(dir, "input"))
 	if err != nil {
-		t.Fatalf("Canonicalize(%s): unexpected error: %v", in, err)
+		t.Fatalf("list RFC 8785 vectors: %v", err)
 	}
-	want := `{"n":1}`
-	if string(got) != want {
-		t.Fatalf("Canonicalize(%s) = %s, want %s", in, got, want)
+	vectors := map[string][2][]byte{}
+	for _, entry := range entries {
+		input, err := os.ReadFile(filepath.Join(dir, "input", entry.Name()))
+		if err != nil {
+			t.Fatalf("read RFC 8785 vector input: %v", err)
+		}
+		want, err := os.ReadFile(filepath.Join(dir, "expected", entry.Name()))
+		if err != nil {
+			t.Fatalf("read RFC 8785 vector output: %v", err)
+		}
+		vectors[entry.Name()] = [2][]byte{input, want}
+	}
+	if len(vectors) != shipped {
+		t.Fatalf("found %d RFC 8785 vectors under %s, want the %d that ship with the library", len(vectors), dir, shipped)
+	}
+	return vectors
+}
+
+func TestCanonicalize_NumbersUseECMA262Formatting(t *testing.T) {
+	// RFC 8785 mandates ECMA-262 number formatting: 4.50 is 4.5, 2e-3 is 0.002,
+	// 1E30 is 1e+30. A hand-rolled canonicalizer built on json.Marshal would not
+	// give this for free, so the published number vectors are the behavioral proof
+	// that Canonicalize really delegates to jcs.Transform rather than reimplementing
+	// RFC 8785 by hand. They come from the library's own test suite, not from a case
+	// written here.
+	pair := jcsVectors(t)["values.json"]
+	got, err := Canonicalize(pair[0])
+	if err != nil {
+		t.Fatalf("Canonicalize(values.json): unexpected error: %v", err)
+	}
+	if !bytes.Equal(got, pair[1]) {
+		t.Fatalf("Canonicalize(values.json) =\n  %s\nwant\n  %s", got, pair[1])
+	}
+}
+
+func TestCanonicalize_RFC8785Vectors(t *testing.T) {
+	for name, pair := range jcsVectors(t) {
+		t.Run(name, func(t *testing.T) {
+			got, err := Canonicalize(pair[0])
+			if err != nil {
+				t.Fatalf("Canonicalize(%s): unexpected error: %v", name, err)
+			}
+			if !bytes.Equal(got, pair[1]) {
+				t.Fatalf("Canonicalize(%s) =\n  %s\nwant\n  %s", name, got, pair[1])
+			}
+		})
 	}
 }
 
