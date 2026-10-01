@@ -19,6 +19,7 @@ import (
 
 	"github.com/spf13/cobra"
 	"github.com/spf13/pflag"
+	"github.com/steveyegge/beads/cmd/bd/setup"
 	graph "github.com/steveyegge/beads/graphops"
 	"github.com/steveyegge/beads/internal/config"
 	"github.com/steveyegge/beads/internal/configfile"
@@ -345,9 +346,16 @@ func runGraphPreviewInit(cmd *cobra.Command) error {
 		return err
 	}
 	skipAgents, _ := cmd.Flags().GetBool("skip-agents")
-	guidance, err := prepareGraphPreviewAgentInstructions(filepath.Dir(graphPreviewDir), config.SafeAgentsFile(), skipAgents)
+	skipHooks, _ := cmd.Flags().GetBool("skip-hooks")
+	workspace := filepath.Dir(graphPreviewDir)
+	guidance, err := prepareGraphPreviewAgentInstructions(workspace, config.SafeAgentsFile(), skipAgents)
 	if err != nil {
 		return graphFailure("graph_not_initialized", "agent guidance was not installed; no graph database was initialized: "+err.Error(), 5)
+	}
+	if !skipAgents && !skipHooks {
+		if err := setup.PreflightGraphClaudeStop(workspace); err != nil {
+			return graphFailure("graph_not_initialized", "Claude Stop hook preflight failed; no graph database was initialized: "+err.Error(), 5)
+		}
 	}
 	if err := os.Mkdir(graphPreviewDir, 0o700); err != nil {
 		return graphFailure("graph_not_initialized", err.Error(), 5)
@@ -382,6 +390,11 @@ func runGraphPreviewInit(cmd *cobra.Command) error {
 	}
 	if err := guidance.install(); err != nil {
 		return graphFailure("graph_not_initialized", "database initialized but agent guidance installation failed; workspace remains incomplete: "+err.Error(), 5)
+	}
+	if !skipAgents && !skipHooks {
+		if err := setup.InstallGraphClaudeStopOnInit(workspace); err != nil {
+			return graphFailure("graph_not_initialized", "database initialized but Claude Stop hook installation failed; workspace remains incomplete: "+err.Error(), 5)
+		}
 	}
 	cfg.GraphReady = true
 	if err := cfg.Save(real); err != nil {

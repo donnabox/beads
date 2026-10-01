@@ -19,6 +19,54 @@ import (
 	"github.com/steveyegge/beads/internal/templates/agents"
 )
 
+func TestGraphPreviewClaudeStopAutoInit(t *testing.T) {
+	bd := buildBDUnderTest(t)
+	for _, engine := range []string{"embedded", "server"} {
+		t.Run(engine, func(t *testing.T) {
+			work, home := t.TempDir(), t.TempDir()
+			args := []string{"init", "--graph-mode", "link", "--scope-url", "https://example.invalid/auto-stop/", "--non-interactive", "--json"}
+			if engine == "server" {
+				port := os.Getenv("BEADS_GRAPH_TEST_SERVER_PORT")
+				if port == "" {
+					t.Skip("set BEADS_GRAPH_TEST_SERVER_PORT for ordinary shared-server CLI qualification")
+				}
+				args = append(args, "--server", "--external", "--server-host", "127.0.0.1", "--server-port", port, "--server-user", "root")
+			}
+			graphPolicyCLI(t, bd, work, home, nil, "", args...)
+			graphPolicyCLI(t, bd, work, home, nil, "", "setup", "claude", "--check")
+			settings, err := os.ReadFile(filepath.Join(work, ".claude", "settings.json"))
+			if err != nil || bytes.Count(settings, []byte("bd claude-hook stop")) != 1 {
+				t.Fatalf("init did not register one Stop hook: %v %s", err, settings)
+			}
+			claude, err := os.ReadFile(filepath.Join(work, "CLAUDE.md"))
+			if err != nil || string(claude) != "@AGENTS.md\n" {
+				t.Fatalf("init did not import graph guidance: %v %q", err, claude)
+			}
+		})
+	}
+}
+
+func TestGraphPreviewClaudeStopAutoInitPreflight(t *testing.T) {
+	bd := buildBDUnderTest(t)
+	work, home := t.TempDir(), t.TempDir()
+	settings := filepath.Join(work, ".claude", "settings.json")
+	if err := os.MkdirAll(filepath.Dir(settings), 0755); err != nil {
+		t.Fatal(err)
+	}
+	if err := os.WriteFile(settings, []byte(`{"hooks":{"Stop":"not an array"}}`), 0600); err != nil {
+		t.Fatal(err)
+	}
+	graphPolicyCLI(t, bd, work, home, nil, "graph_not_initialized", "init", "--graph-mode", "link", "--scope-url", "https://example.invalid/auto-stop/", "--non-interactive", "--json")
+	if _, err := os.Stat(filepath.Join(work, ".beads")); !os.IsNotExist(err) {
+		t.Fatalf("preflight created graph storage: %v", err)
+	}
+	graphPolicyCLI(t, bd, work, home, nil, "", "init", "--graph-mode", "link", "--scope-url", "https://example.invalid/auto-stop/", "--skip-hooks", "--non-interactive", "--json")
+	raw, err := os.ReadFile(settings)
+	if err != nil || string(raw) != `{"hooks":{"Stop":"not an array"}}` {
+		t.Fatalf("skip-hooks changed existing settings: %v %q", err, raw)
+	}
+}
+
 // This invokes the actual installed Stop registration and Steph's handler; it
 // proves delivery and execution, not that an agent chooses useful facts to save.
 func TestGraphPreviewClaudeStopWorkflow(t *testing.T) {

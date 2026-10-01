@@ -24,7 +24,35 @@ func GraphClaudeStop(projectDir string, check, remove bool) error {
 	return graphClaudeStop(env, check, remove)
 }
 
+// PreflightGraphClaudeStop checks an init-time installation without writing
+// files, so known Claude conflicts refuse before graph storage is created.
+func PreflightGraphClaudeStop(projectDir string) error {
+	env, err := claudeEnvProvider()
+	if err != nil {
+		return err
+	}
+	env.projectDir = projectDir
+	env.stdout = io.Discard
+	return graphClaudeStopMode(env, false, false, true)
+}
+
+// InstallGraphClaudeStopOnInit uses the same guarded installer as explicit
+// setup, but leaves init's structured output to its caller.
+func InstallGraphClaudeStopOnInit(projectDir string) error {
+	env, err := claudeEnvProvider()
+	if err != nil {
+		return err
+	}
+	env.projectDir = projectDir
+	env.stdout = io.Discard
+	return graphClaudeStop(env, false, false)
+}
+
 func graphClaudeStop(env claudeEnv, check, remove bool) error {
+	return graphClaudeStopMode(env, check, remove, false)
+}
+
+func graphClaudeStopMode(env claudeEnv, check, remove, preflight bool) error {
 	if check && remove {
 		return fmt.Errorf("choose --check or --remove, not both")
 	}
@@ -79,6 +107,9 @@ func graphClaudeStop(env claudeEnv, check, remove bool) error {
 		if err != nil {
 			return err
 		}
+	}
+	if preflight {
+		return nil
 	}
 	if check {
 		if !bytes.Equal(importBefore, importAfter) {

@@ -10,7 +10,7 @@ Start in a new directory with no `.beads` directory:
 ```sh
 git init
 bd init --graph-mode link --scope-url https://example.org/team/ \
-  --skip-hooks --skip-agents --non-interactive
+  --non-interactive
 bd remember 'The release uses the integration branch.' \
   --id beads/plan --title 'Release plan' --json
 bd show beads/plan --json
@@ -61,9 +61,14 @@ guarantee that an agent will decide to save a fact.
 Graph initialization preserves surrounding user-authored text and an existing
 `CLAUDE.md` import of `@AGENTS.md`. An existing minimal managed block is replaced
 with graph instructions; pass `--skip-agents` to preserve that block unchanged.
-Initialization installs no agent hooks or separate Claude instructions. Use your
-agent's existing support for the configured instruction file. To opt in to
-Stephanie's existing Claude Stop reminder, run:
+By default, initialization also registers Stephanie's existing Claude Stop
+reminder in project-local `.claude/settings.json` and adds an active import in
+`CLAUDE.md` when needed. `--skip-hooks` omits the Stop registration and
+`--skip-agents` omits both guidance and the Stop registration. Existing Claude
+settings, plugins and instructions are checked for conflicts before a graph
+database is created; init refuses without rewriting conflicting files. Use
+`bd setup claude` to install the Stop hook later in a workspace initialized
+with `--skip-hooks`:
 
 ```sh
 bd setup claude
