@@ -114,6 +114,35 @@ func (s *Store) DeleteMemory(ctx context.Context, request MemoryDeleteRequest) (
 	return result, nil
 }
 
+// validDeletedMemoryAllocationInTx is the VALIDATION half of deletedMemoryInTx,
+// factored out so a LIST can check a deleted Memory's allocation without building
+// the Record deletedMemoryInTx returns.
+//
+// It exists because two readers over one catalog had drifted apart: readVersionInTx
+// validated a deleted subject and versionsInTx did not, so the listing reader
+// accepted allocations the single-version reader refused. Sharing the predicate is
+// the point -- a second copy would re-create exactly that divergence.
+//
+// What it does NOT cover is a CATEGORY rather than one predicate, and an earlier
+// version of this comment got that wrong by naming only the owned-Links check.
+// deletedMemoryInTx goes on to decode the retained snapshot, and NONE of the
+// content-level checks that follow live here. See versionsInTx for where that line
+// is drawn and what it means for a caller.
+func (s *Store) validDeletedMemoryAllocationInTx(ctx context.Context, tx *sql.Tx, path, kind, typ, head, state, backing string, key sql.NullString) error {
+	if validatePath(path) != nil || kind != "bead" || typ != MemoryTypeURL(s.ScopeURL()) ||
+		!authorityID.MatchString(head) || state != "deleted" || backing != "generic" || key.Valid {
+		return fmt.Errorf("%w: invalid deleted Memory allocation", ErrInvalidStore)
+	}
+	var current int
+	if err := tx.QueryRowContext(ctx, `SELECT (SELECT COUNT(*) FROM graph_preview_payloads WHERE path=?) + (SELECT COUNT(*) FROM graph_preview_links WHERE path=? OR source_path=? OR target_path=?) + (SELECT COUNT(*) FROM graph_preview_issue_versions WHERE path=?)`, path, path, path, path, path).Scan(&current); err != nil {
+		return err
+	}
+	if current != 0 {
+		return fmt.Errorf("%w: deleted Memory has current payload, incident Links or Issue mapping", ErrInvalidStore)
+	}
+	return nil
+}
+
 // deletedMemoryInTx validates a reserved absent Memory against its unchanged
 // final live snapshot. It never joins live endpoints into historical owned state.
 func (s *Store) deletedMemoryInTx(ctx context.Context, tx *sql.Tx, path string) (Record, error) {
@@ -122,15 +151,8 @@ func (s *Store) deletedMemoryInTx(ctx context.Context, tx *sql.Tx, path string) 
 	if err := tx.QueryRowContext(ctx, `SELECT resource_kind,type_url,revision,allocation_state,backing,backing_key FROM graph_preview_catalog WHERE path=?`, path).Scan(&kind, &typ, &revision, &state, &backing, &key); err != nil {
 		return Record{}, fmt.Errorf("%w: missing deleted Memory allocation: %v", ErrInvalidStore, err)
 	}
-	if validatePath(path) != nil || kind != "bead" || typ != MemoryTypeURL(s.ScopeURL()) || !authorityID.MatchString(revision) || state != "deleted" || backing != "generic" || key.Valid {
-		return Record{}, fmt.Errorf("%w: invalid deleted Memory allocation", ErrInvalidStore)
-	}
-	var current int
-	if err := tx.QueryRowContext(ctx, `SELECT (SELECT COUNT(*) FROM graph_preview_payloads WHERE path=?) + (SELECT COUNT(*) FROM graph_preview_links WHERE path=? OR source_path=? OR target_path=?) + (SELECT COUNT(*) FROM graph_preview_issue_versions WHERE path=?)`, path, path, path, path, path).Scan(&current); err != nil {
+	if err := s.validDeletedMemoryAllocationInTx(ctx, tx, path, kind, typ, revision, state, backing, key); err != nil {
 		return Record{}, err
-	}
-	if current != 0 {
-		return Record{}, fmt.Errorf("%w: deleted Memory has current payload, incident Links or Issue mapping", ErrInvalidStore)
 	}
 	raw, actor, err := readVersionBytes(ctx, tx, path, revision, revision)
 	if err != nil {

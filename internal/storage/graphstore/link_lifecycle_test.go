@@ -10,6 +10,7 @@ import (
 	"reflect"
 	"strings"
 	"testing"
+	"time"
 
 	"github.com/steveyegge/beads/internal/storage"
 )
@@ -510,7 +511,8 @@ func TestIncidentLinkBudgetAndExactPair(t *testing.T) {
 				if _, err := tx.ExecContext(ctx, `INSERT INTO graph_preview_links(path,source_path,target_path,properties,attribution) SELECT ?,'beads/source','beads/common',properties,attribution FROM graph_preview_links WHERE path='links/common-0'`, path); err != nil {
 					t.Fatal(err)
 				}
-				if _, err := tx.ExecContext(ctx, `INSERT INTO graph_preview_versions(path,version,snapshot,actor) VALUES(?,?,?,'')`, path, link.Version, snapshot); err != nil {
+				// Each path is fresh, so this is its first version: ordinal 1.
+				if _, err := tx.ExecContext(ctx, `INSERT INTO graph_preview_versions(path,version,snapshot,actor,ordinal,change_at) VALUES(?,?,?,'',1,?)`, path, link.Version, snapshot, time.Now().UTC()); err != nil {
 					t.Fatal(err)
 				}
 			}

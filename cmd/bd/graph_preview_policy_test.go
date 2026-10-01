@@ -306,6 +306,11 @@ func TestGraphPreviewC0DeferredCommandsRefuseBeforeLegacyOpen(t *testing.T) {
 		"incidentLinks", "ownedLinks", "issueClose", "issueReopen", "issueReady", "genericRead",
 		"issueList", "beadList", "beadTypeFilter", "issueBlocked", "genericTraversal",
 		"memoryDiscovery", "memoryBodyRecall", "exactVersionRead", "exactVersionCompare",
+		// versionList is `bd versions` (and `bd history` as its graph-mode
+		// alias). It sits beside the exactVersion* pair deliberately: those
+		// read ONE token, this one enumerates them in order. It is distinct
+		// from historyExact, which stays false and describes the HTTP profile.
+		"versionList",
 		"memoryPropertiesPatch", "linkPropertiesPatch",
 	} {
 		wantEnabled[capability] = true

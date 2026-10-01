@@ -83,7 +83,7 @@ func (s *Store) unlinkDependencyInTx(ctx context.Context, tx *sql.Tx, path strin
 	if err != nil {
 		return LinkDeleteResult{}, err
 	}
-	if _, err := tx.ExecContext(ctx, `INSERT INTO graph_preview_versions(path,version,snapshot,actor) VALUES(?,?,?,?)`, path, revision, snapshot, request.Actor); err != nil {
+	if err := insertPreviewVersionInTx(ctx, tx, path, revision, snapshot, request.Actor); err != nil {
 		return LinkDeleteResult{}, err
 	}
 	if err := s.afterStage("link-retained"); err != nil {

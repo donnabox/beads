@@ -7,6 +7,9 @@
 > projects on their existing format. Do not copy a `.beads` directory into a
 > graph workspace as an upgrade path.
 
+Older graph preview workspaces also do not auto-migrate to this build's graph
+schema. Preserve their data and create a fresh workspace for this preview.
+
 Build `bd` from the [integration branch](https://github.com/versioned-beads/beads/tree/integration),
 not a released binary, and initialize a new project explicitly:
 
@@ -182,14 +185,17 @@ encodes time or order, and a version is not a Dolt commit ID.
 
 Save a token from a record or `bd memories --details` to read that exact
 retained state later. Version reads do not depend on the record still being
-current. `bd compare` compares two **chosen** retained versions; the token order you give it sets
-the comparison direction. It does not establish chronological order.
+current. `bd compare` compares two **chosen** retained versions; the token
+order you give it sets the comparison direction. Compare does not discover
+their chronological order.
 
 ```sh
 bd memories 'code flow' --details
 bd recall policy --version SAVED_TOKEN
 bd show policy --version SAVED_TOKEN --json
 bd compare policy --from FIRST_TOKEN --to SECOND_TOKEN --json
+bd versions policy
+bd history policy  # same listing in a graph workspace
 ```
 
 | Flag | Current use |
@@ -205,14 +211,19 @@ bd compare policy --from FIRST_TOKEN --to SECOND_TOKEN --json
 requirements; consult the [graph preview reference](/reference/graph-preview) before
 automating them. A semantic no-op retains the existing revision.
 
-**An ordered graph History command is not available in this checkpoint.**
-The ordinary Issue `bd history` and `bd versions` commands must not be taken
-as a graph Memory/Link History API. Exact retained reads and comparisons are
-available locally, but they do not provide a complete timeline, timestamps,
-deletion events, restoration, or BDP HTTP History. `bd status --graph`
-advertises the current capability set; `historyExact` is false here. This
-section should change only after a History implementation is proved and
-landed in the integration branch.
+`bd versions ID` lists a Memory, Issue or Link's versions newest first in a
+graph workspace. `bd history ID` is an alias there; in an ordinary workspace,
+`bd history` retains its Dolt-commit meaning. Each graph row includes an
+opaque `version` token, a store-local `ordinal`, a display `change_at` time,
+and attribution. Use the **token** for `show --version` or `compare`, never
+the ordinal. The ordinal orders versions within this store; it is not a stable
+cross-clone address. `change_at` is not the ordering authority. A removed
+Link's deletion marker is listed with `removed: true` but is not a readable
+Link version. Memory deletion adds no deletion version. There is still no
+BDP HTTP History, as-of selection or restoration. `bd status --graph` reports
+`versionList: true`; `historyExact: false` refers to the unavailable HTTP
+History profile. The [technical reference](/reference/graph-preview#list-a-resources-versions)
+details ordering and refusal behavior.
 
 ## Discover installed Types
 

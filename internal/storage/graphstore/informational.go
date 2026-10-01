@@ -283,7 +283,7 @@ func (s *Store) finishInformationalWriteInTx(ctx context.Context, tx *sql.Tx, pa
 	if err != nil {
 		return LinkMutationResult{}, err
 	}
-	if _, err := tx.ExecContext(ctx, `INSERT INTO graph_preview_versions (path,version,snapshot,actor) VALUES (?,?,?,?)`, path, link.Version, snapshot, actor); err != nil {
+	if err := insertPreviewVersionInTx(ctx, tx, path, link.Version, snapshot, actor); err != nil {
 		return LinkMutationResult{}, err
 	}
 	if err := s.afterStage("link-retained"); err != nil {
@@ -319,7 +319,7 @@ func (s *Store) recordOwnedMemoryInTx(ctx context.Context, tx *sql.Tx, sourcePat
 		if err != nil {
 			return nil, err
 		}
-		if _, err := tx.ExecContext(ctx, `INSERT INTO graph_preview_versions (path,version,snapshot,actor) VALUES (?,?,?,?)`, sourcePath, memory.Version, snapshot, actor); err != nil {
+		if err := insertPreviewVersionInTx(ctx, tx, sourcePath, memory.Version, snapshot, actor); err != nil {
 			return nil, err
 		}
 		if err := s.afterStage("source-retained"); err != nil {

@@ -206,7 +206,7 @@ func (s *Store) Unlink(ctx context.Context, request LinkDeleteRequest) (LinkDele
 		if err != nil {
 			return err
 		}
-		if _, err := tx.ExecContext(ctx, `INSERT INTO graph_preview_versions(path,version,snapshot,actor) VALUES(?,?,?,?)`, path, deletionRevision, snapshot, request.Actor); err != nil {
+		if err := insertPreviewVersionInTx(ctx, tx, path, deletionRevision, snapshot, request.Actor); err != nil {
 			return err
 		}
 		if err := s.afterStage("link-retained"); err != nil {

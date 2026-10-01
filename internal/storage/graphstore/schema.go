@@ -41,7 +41,8 @@ var previewDDL = []string{
 	`CREATE TABLE graph_preview_versions (
         path VARBINARY(1024) NOT NULL, version VARBINARY(32) NOT NULL,
         snapshot LONGBLOB NOT NULL, actor LONGBLOB NOT NULL,
-        PRIMARY KEY (path, version))`,
+        ordinal BIGINT NOT NULL, change_at DATETIME(6) NOT NULL,
+        PRIMARY KEY (path, version), UNIQUE KEY one_path_ordinal (path, ordinal))`,
 	`CREATE TABLE graph_preview_issue_versions (
         path VARBINARY(1024) NOT NULL, version VARBINARY(32) NOT NULL,
         issue_id VARBINARY(255) NOT NULL, issue_revision BIGINT NOT NULL, owned LONGBLOB NOT NULL,
@@ -211,7 +212,7 @@ func checkBinding(ctx context.Context, tx *sql.Tx, o Options) error {
 		`SELECT path, resource_kind, type_url, revision, allocation_state, backing, backing_key FROM graph_preview_catalog LIMIT 0`,
 		`SELECT path, properties FROM graph_preview_payloads LIMIT 0`,
 		`SELECT path, source_path, target_path, properties, attribution FROM graph_preview_links LIMIT 0`,
-		`SELECT path, version, snapshot, actor FROM graph_preview_versions LIMIT 0`,
+		`SELECT path, version, snapshot, actor, ordinal, change_at FROM graph_preview_versions LIMIT 0`,
 		`SELECT path, version, issue_id, issue_revision, owned FROM graph_preview_issue_versions LIMIT 0`,
 		`SELECT issue_id, revision, durable_state, attribution_status FROM issue_versions LIMIT 0`,
 	} {

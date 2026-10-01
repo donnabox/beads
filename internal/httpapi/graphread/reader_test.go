@@ -27,7 +27,11 @@ import (
 func TestAuthoritativeRecordsProjectToPublicWire(t *testing.T) {
 	for _, backend := range []string{"embedded", "server"} {
 		t.Run(backend, func(t *testing.T) {
-			ctx, cancel := context.WithTimeout(context.Background(), 90*time.Second)
+			// 180s, not 90s: in the -race CI lane (-p 4 -parallel 4) this subtest
+			// measured 82s on a passing run and hit a 90s deadline on two
+			// consecutive runs, while it takes about 40s on a fast local machine.
+			// The deadline exists to catch hangs, not to measure speed.
+			ctx, cancel := context.WithTimeout(context.Background(), 180*time.Second)
 			defer cancel()
 			workspace, err := filepath.EvalSymlinks(t.TempDir())
 			if err != nil {
