@@ -48,7 +48,32 @@ and server modes use the existing driver and standard schema initialization;
 there is no manual schema seeding step. Graph initialization records and checks
 workspace identity and refuses existing workspaces, mismatched bindings and
 incomplete initialization. This preview does not adopt an existing Issue
-database. Different-database provisioning on Dolt 2.1.8 must be serialized.
+database. Different-database provisioning on Dolt 2.1.8 must be serialized. A
+workspace also records the format generation it was created with; see
+[One bd version per workspace](#one-bd-version-per-workspace) for how that
+decides which bd versions can open it.
+
+### One bd version per workspace
+
+A graph workspace records its format generation in
+`.beads/graph-preview-format`. `link-preview-v5` is the original generation:
+four installed Types, or six in a workspace created by a bd that already had the
+two example Link Types, before `link-preview-v6` existed. `link-preview-v6` is
+what this bd writes: the Memory, Issue, Dependency and Related Types plus the
+two example Link Types. This bd opens both.
+
+An older bd refuses a `link-preview-v6` workspace at its first command, before
+it opens the database, with
+`graph_mode marker and metadata disagree; automatic recovery is not supported`
+(exit 5). An older bd that predates the example Types and opens a six-Type
+`link-preview-v5` workspace gets as far as `bd list` or an inventory read and
+stops with `unsupported Type installation`. Both messages mean the bd is older
+than the workspace. Neither means the workspace is damaged, and nothing was
+changed or lost. Upgrade bd. This preview does not support running an older bd
+against a newer workspace, and it never rewrites a workspace's format.
+
+A bd newer than this one that writes a later generation is refused here with
+`graph_mode workspace format link-preview-vN is newer than this bd supports (link-preview-v6); upgrade bd; no database was opened`.
 
 ## Instructions for agents
 

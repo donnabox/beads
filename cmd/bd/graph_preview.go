@@ -14,6 +14,7 @@ import (
 	"io"
 	"os"
 	"path/filepath"
+	"slices"
 	"strings"
 	"time"
 	"unicode/utf8"
@@ -31,7 +32,20 @@ import (
 )
 
 const graphPreviewMarker = "graph-preview-format"
-const graphPreviewGeneration = "link-preview-v5\n"
+
+// The marker records the format generation a workspace was created with.
+// graphPreviewGeneration is the only one this bd writes; admission accepts every
+// entry of graphPreviewSupportedGenerations. link-preview-v5 is the legacy
+// generation: four installed Types, or six in a workspace made after the example
+// Link Types were added and before link-preview-v6 existed. Changing which Types a
+// fresh init installs is a new generation, which
+// TestGraphPreviewGenerationPinsFreshInstallTypes enforces.
+const (
+	graphPreviewGenerationPrefix = "link-preview-v"
+	graphPreviewGeneration       = "link-preview-v6\n"
+)
+
+var graphPreviewSupportedGenerations = []string{"link-preview-v5\n", graphPreviewGeneration}
 
 var graphPreviewActive bool
 var graphPreviewStructuredErrors bool
@@ -124,6 +138,46 @@ func graphFailure(code, message string, exit int) error {
 	return &exitError{Code: exit}
 }
 
+// graphPreviewGenerationSupported is the one admission predicate. Both gates in
+// admitGraphPreview use it, so a marker is never accepted at one and refused at
+// the other.
+func graphPreviewGenerationSupported(marker []byte) bool {
+	return slices.Contains(graphPreviewSupportedGenerations, string(marker))
+}
+
+// graphPreviewGenerationDigits returns the generation number of a marker whose
+// exact bytes are the generation prefix, a decimal number with no leading zero
+// and one newline.
+func graphPreviewGenerationDigits(marker []byte) (string, bool) {
+	digits, ok := bytes.CutPrefix(marker, []byte(graphPreviewGenerationPrefix))
+	if !ok {
+		return "", false
+	}
+	digits, ok = bytes.CutSuffix(digits, []byte("\n"))
+	if !ok || len(digits) == 0 || (digits[0] == '0' && len(digits) > 1) {
+		return "", false
+	}
+	for _, c := range digits {
+		if c < '0' || c > '9' {
+			return "", false
+		}
+	}
+	return string(digits), true
+}
+
+// graphPreviewGenerationNewer reports whether marker is a well-formed generation
+// above the one this bd writes. A malformed marker is not newer: it keeps the
+// generic refusal instead of earning a claim about a future format.
+func graphPreviewGenerationNewer(marker []byte) bool {
+	digits, ok := graphPreviewGenerationDigits(marker)
+	if !ok {
+		return false
+	}
+	current, _ := graphPreviewGenerationDigits([]byte(graphPreviewGeneration))
+	// Without leading zeros a longer number is larger, and equal lengths order as text.
+	return len(digits) > len(current) || (len(digits) == len(current) && digits > current)
+}
+
 func admitGraphPreview(cmd *cobra.Command) (handled bool, admissionErr error) {
 	var hookDiagnostic *bytes.Buffer
 	if cmd == claudeHookCmd {
@@ -192,7 +246,11 @@ func admitGraphPreview(cmd *cobra.Command) (handled bool, admissionErr error) {
 	if err != nil {
 		return true, graphFailure("capability_unavailable", err.Error(), 5)
 	}
-	if markerPresent && (mode != "link" || string(marker) != graphPreviewGeneration) {
+	if markerPresent && graphPreviewGenerationNewer(marker) {
+		return true, graphFailure("graph_not_initialized", fmt.Sprintf("graph_mode workspace format %s is newer than this bd supports (%s); upgrade bd; no database was opened",
+			strings.TrimSuffix(string(marker), "\n"), strings.TrimSuffix(graphPreviewGeneration, "\n")), 5)
+	}
+	if markerPresent && (mode != "link" || !graphPreviewGenerationSupported(marker)) {
 		return true, graphFailure("graph_not_initialized", "graph_mode marker and metadata disagree; automatic recovery is not supported", 5)
 	}
 	if cmd == initCmd && requested == "link" {
@@ -247,7 +305,7 @@ func admitGraphPreview(cmd *cobra.Command) (handled bool, admissionErr error) {
 	if err := requireDoltBackend(cfg, dir); err != nil {
 		return true, graphFailure("graph_not_initialized", "graph_mode link: "+err.Error(), 5)
 	}
-	if cfg == nil || string(marker) != graphPreviewGeneration || !cfg.GraphReady || cfg.GraphSchemaVersion != graphstore.SchemaVersion || cfg.GraphScopeURL == "" || cfg.GraphAuthorityID == "" || cfg.GraphWorkspace == "" || cfg.DoltDatabase == "" {
+	if cfg == nil || !graphPreviewGenerationSupported(marker) || !cfg.GraphReady || cfg.GraphSchemaVersion != graphstore.SchemaVersion || cfg.GraphScopeURL == "" || cfg.GraphAuthorityID == "" || cfg.GraphWorkspace == "" || cfg.DoltDatabase == "" {
 		return true, graphFailure("graph_not_initialized", "graph_mode link metadata is missing, incomplete, or unsupported; no database was opened", 5)
 	}
 	real, err := filepath.EvalSymlinks(dir)
