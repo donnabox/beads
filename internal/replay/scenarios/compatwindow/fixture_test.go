@@ -371,6 +371,11 @@ func (c *compat) run(bin string, extra []string, args ...string) (string, int) {
 	cmd.Dir = c.proj
 	cmd.Env = cleanEnv(extra...)
 	out, err := cmd.CombinedOutput()
+	// A process killed at the deadline reports an exit error too, and a refusal
+	// is exactly a non-zero exit, so a hang must not be allowed to pass as one.
+	if ctx.Err() != nil {
+		c.t.Fatalf("%s %s did not finish in time:\n%s", filepath.Base(bin), strings.Join(args, " "), out)
+	}
 	if err == nil {
 		return string(out), 0
 	}
