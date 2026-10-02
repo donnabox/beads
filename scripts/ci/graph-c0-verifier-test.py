@@ -1,6 +1,9 @@
 #!/usr/bin/env python3
 """Negative controls for the required Go-test receipt gate; no engine needed."""
+import ast
+import contextlib
 import importlib.util
+import io
 import json
 import os
 import signal
@@ -23,6 +26,37 @@ spec.loader.exec_module(module)
 
 def event(action, test=None):
     return dict(Action=action, **({"Test": test} if test else {}))
+
+
+def go_events(names):
+    events = []
+    for name in names:
+        events += [event("run", name), event("pass", name)]
+    return ("\n".join(json.dumps(item) for item in events + [event("pass")]) + "\n").encode()
+
+
+def receipt(label, seconds, roots=None):
+    return dict(label=label, elapsedSeconds=seconds, **({} if roots is None else dict(roots=roots)))
+
+
+def runner(directory):
+    # Qualification.run needs only these attributes: no Go, Dolt or network.
+    root = Path(directory)
+    q = module.Qualification.__new__(module.Qualification)
+    q.root, q.output, q.env = root, root, dict(os.environ, PYTHONDONTWRITEBYTECODE="1")
+    q.children, q.receipts = set(), []
+    return q
+
+
+SOURCE = Path(__file__).with_name("graph-c0-qualify.py").read_text()
+
+
+def self_calls(function, method):
+    """Every self.<method>(...) call inside the named lane function, in source order."""
+    node = next(n for n in ast.walk(ast.parse(SOURCE)) if isinstance(n, ast.FunctionDef) and n.name == function)
+    return sorted((c for c in ast.walk(node) if isinstance(c, ast.Call) and isinstance(c.func, ast.Attribute)
+                   and isinstance(c.func.value, ast.Name) and c.func.value.id == "self" and c.func.attr == method),
+                  key=lambda c: c.lineno)
 
 
 class RequiredReceipts(unittest.TestCase):
@@ -408,6 +442,141 @@ finally:
                 self.assertEqual(q.children, set())
             finally:
                 actual_cleanup(registry)
+
+
+class LaneShape(unittest.TestCase):
+    def test_cmd_bd_graph_tests_run_as_three_groups(self):
+        [call] = [c for c in self_calls("execute", "tests") if ast.literal_eval(c.args[0]) == "./cmd/bd"]
+        self.assertEqual(ast.literal_eval(call.args[1]), "^Test(GraphModeCLI|GraphPreview)")
+        self.assertEqual(ast.literal_eval(call.args[3]), "cli")
+        self.assertEqual({k.arg: ast.literal_eval(k.value) for k in call.keywords}, {"groups": 3})
+
+
+class ReceiptTiming(unittest.TestCase):
+    def test_every_path_records_elapsed_seconds(self):
+        for name, code, timeout, failure in [
+                ("success", "pass", 30, None),
+                ("failed-exit", "raise SystemExit(3)", 30, RuntimeError),
+                ("timed-out", "import time; time.sleep(60)", 0.5, subprocess.TimeoutExpired)]:
+            with self.subTest(path=name), tempfile.TemporaryDirectory() as directory:
+                q = runner(directory)
+                argv = [sys.executable, "-c", code]
+                if failure:
+                    with self.assertRaises(failure):
+                        q.run(argv, name, timeout=timeout)
+                else:
+                    q.run(argv, name, timeout=timeout)
+                self.assertEqual(q.receipts[-1]["label"], name)
+                self.assertIn("elapsedSeconds", q.receipts[-1])
+                self.assertGreaterEqual(q.receipts[-1]["elapsedSeconds"], 0.5 if name == "timed-out" else 0)
+
+
+class PhaseReport(unittest.TestCase):
+    def test_go_test_runs_carry_their_root_count_but_discovery_does_not(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            names = ["Test" + letter for letter in "ABCDEFGH"]
+            source = root / "storage_test.go"
+            source.write_text("\n".join("func " + name + "(t *testing.T) {}" for name in names))
+            for groups, expected in [(4, [("storage-group-%d" % n, 2) for n in range(1, 5)]), (1, [("storage", 8)])]:
+                with self.subTest(groups=groups):
+                    q = module.Qualification.__new__(module.Qualification)
+                    q.output, q.counts = root, {}
+                    seen = []
+
+                    def run(args, label, **kwargs):
+                        seen.append((label, kwargs.get("roots")))
+                        if "-list" in args:
+                            return ("\n".join(names) + "\n").encode()
+                        selected = args[args.index("-run") + 1][2:-2].split("|") if groups > 1 else names
+                        raw = go_events(selected)
+                        (root / (label + ".stdout")).write_bytes(raw)
+                        (root / (label + ".stderr")).write_bytes(b"")
+                        return raw
+
+                    with mock.patch.object(q, "run", run):
+                        q.tests("./fixture", "^Test", [source], "storage", groups=groups)
+                    self.assertEqual(seen, [("storage-discovery", None)] + expected)
+
+    def test_table_has_a_row_per_receipt_with_roots_seconds_and_share_of_timeout(self):
+        table = module.phase_table([receipt("cli-discovery", 21.4), receipt("cli-group-1", 181.3, roots=44),
+                                    receipt("server-init", 12.0)])
+        rows = [[cell.strip() for cell in line.strip("|").split("|")] for line in table.splitlines() if line.startswith("| ")]
+        self.assertEqual(rows, [["Phase", "Roots", "Seconds", "% of go test timeout"],
+                                ["cli-discovery", "", "21.4", ""],
+                                ["cli-group-1", "44", "181.3", "20%"],
+                                ["server-init", "", "12.0", ""]])
+
+    def test_group_at_sixty_percent_of_its_timeout_warns_and_nothing_else_does(self):
+        self.assertEqual(module.slow_group_warnings([receipt("cli-group-1", 539.9, roots=44),
+                                                     receipt("server-init", 600.0)]), [])
+        [warning] = module.slow_group_warnings([receipt("cli-discovery", 30.0), receipt("cli-group-2", 540.0, roots=44)])
+        self.assertTrue(warning.startswith("::warning"))
+        self.assertIn("cli-group-2", warning)
+        self.assertIn("60%", warning)
+
+    def test_failed_run_still_publishes_the_table_and_the_warning(self):
+        class Failing:
+            def __init__(self, args):
+                self.output = Path(args.output)
+                self.output.mkdir()
+                self.receipts = [receipt("cli-group-1", 600.0, roots=44)]
+
+            def execute(self):
+                raise RuntimeError("group failed")
+
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            flags = ("bd", "dolt", "artifacts", "output", "bdp-checkout", "client-manifest", "node")
+            argv = ["graph-c0-qualify.py"] + [part for flag in flags for part in ("--" + flag, str(root / flag))]
+            summary = root / "step-summary.md"
+            handlers = {number: signal.getsignal(number) for number in (signal.SIGTERM, signal.SIGINT)}
+            try:
+                with mock.patch.object(module, "Qualification", Failing), mock.patch.object(sys, "argv", argv), \
+                     mock.patch.dict(os.environ, {"GITHUB_STEP_SUMMARY": str(summary)}), \
+                     contextlib.redirect_stdout(io.StringIO()) as log, self.assertRaisesRegex(RuntimeError, "group failed"):
+                    module.main()
+            finally:
+                for number, handler in handlers.items():
+                    signal.signal(number, handler)
+            self.assertTrue((root / "output" / "receipts.json").exists())
+            self.assertTrue(summary.exists(), "no step summary was written for the failed run")
+            self.assertIn("cli-group-1", summary.read_text())
+            self.assertIn("::warning", log.getvalue())
+
+
+class FailureTail(unittest.TestCase):
+    def test_tail_is_the_last_forty_lines_of_test_output_and_of_stderr(self):
+        stdout = b"".join(json.dumps(dict(Action="output", Test="TestA", Output=f"out {n}\n")).encode() + b"\n"
+                          for n in range(100)) + json.dumps(event("fail")).encode() + b"\n"
+        stderr = "".join(f"err {n}\n" for n in range(100)).encode()
+        self.assertEqual(module.output_tail(stdout, stderr),
+                         ([f"out {n}" for n in range(60, 100)], [f"err {n}" for n in range(60, 100)]))
+
+    def test_output_that_is_not_a_go_test_event_is_kept_as_it_is(self):
+        stdout = (b'{"error": "init failed"}\n'
+                  + json.dumps(dict(Action="output", Test="TestA", Output="boom\n")).encode() + b"\n"
+                  + json.dumps(event("run", "TestA")).encode() + b"\n")
+        self.assertEqual(module.output_tail(stdout, b""), (['{"error": "init failed"}', "boom"], []))
+
+    def test_failed_or_timed_out_command_prints_its_tail_into_the_log(self):
+        code = ("import sys, time\n"
+                "for n in range(100):\n"
+                "    print('out', n, flush=True)\n"
+                "    print('err', n, file=sys.stderr, flush=True)\n"
+                "if sys.argv[1] == 'hang':\n"
+                "    time.sleep(60)\n"
+                "sys.exit(1)\n")
+        for mode, failure, timeout in [("exit", RuntimeError, 30), ("hang", subprocess.TimeoutExpired, 3)]:
+            with self.subTest(mode=mode), tempfile.TemporaryDirectory() as directory, \
+                 contextlib.redirect_stdout(io.StringIO()) as log:
+                with self.assertRaises(failure):
+                    runner(directory).run([sys.executable, "-c", code, mode], "failing", timeout=timeout)
+            text = log.getvalue()
+            for line in ("out 99\n", "err 99\n", "out 60\n", "err 60\n"):
+                self.assertIn(line, text)
+            for line in ("out 59\n", "err 59\n"):
+                self.assertNotIn(line, text)
 
 
 if __name__ == "__main__":

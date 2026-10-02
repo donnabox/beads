@@ -20,6 +20,9 @@ import sys
 import time
 
 OWNER_CLEANUP_GRACE = 30
+GO_TEST_TIMEOUT = 900  # seconds; the -timeout=15m every go test group is given
+SLOW_GROUP_SECONDS = GO_TEST_TIMEOUT * 6 // 10
+TAIL_LINES = 40
 
 
 def require(condition, message):
@@ -327,6 +330,60 @@ def verify_memory_deletion_capture(root, summary):
             "post-delete Python enumeration retained deleted state or omitted survivors")
 
 
+def output_tail(stdout, stderr, limit=TAIL_LINES):
+    """Last lines of a failed command's test output and of its stderr.
+
+    go test -json carries the test text in each event's Output field; any
+    other stdout line is kept as it is.
+    """
+    text = []
+    for line in stdout.decode(errors="replace").splitlines():
+        try:
+            item = json.loads(line)
+        except ValueError:
+            text.append(line)
+            continue
+        text.extend(item.get("Output", "").splitlines() if isinstance(item, dict) and "Action" in item else [line])
+    return text[-limit:], stderr.decode(errors="replace").splitlines()[-limit:]
+
+
+def report_failure_tail(label, stdout, stderr):
+    output, errors = output_tail(stdout, stderr)
+    for title, lines in (("test output", output), ("stderr", errors)):
+        if lines:
+            print(f"--- {label}: last {len(lines)} lines of {title} ---\n" + "\n".join(lines), flush=True)
+
+
+def phase_table(receipts):
+    """One row per receipt; go test groups also show their share of the timeout."""
+    rows = ["### Graph core C0 phases", "", "| Phase | Roots | Seconds | % of go test timeout |", "|---|---:|---:|---:|"]
+    for item in receipts:
+        seconds, roots = item.get("elapsedSeconds"), item.get("roots")
+        rows.append("| {} | {} | {} | {} |".format(
+            item["label"], "" if roots is None else roots, "" if seconds is None else f"{seconds:.1f}",
+            "" if roots is None or seconds is None else f"{seconds / GO_TEST_TIMEOUT:.0%}"))
+    return "\n".join(rows) + "\n"
+
+
+def slow_group_warnings(receipts):
+    """Advisory annotations for go test groups that used 60% or more of their timeout."""
+    return [f"::warning title=Slow go test group::{item['label']} took {item['elapsedSeconds']:.0f} s, "
+            f"{item['elapsedSeconds'] / GO_TEST_TIMEOUT:.0%} of its {GO_TEST_TIMEOUT} s go test timeout"
+            for item in receipts
+            if item.get("roots") is not None and item.get("elapsedSeconds", 0) >= SLOW_GROUP_SECONDS]
+
+
+def publish_phase_report(receipts, summary_path):
+    for warning in slow_group_warnings(receipts):
+        print(warning, flush=True)
+    if summary_path:
+        try:
+            with open(summary_path, "a") as summary:
+                summary.write(phase_table(receipts))
+        except OSError as error:
+            print(f"::warning title=Phase table not written::{error}", flush=True)
+
+
 class Qualification:
     def __init__(self, args):
         self.root = Path(__file__).resolve().parents[2]
@@ -355,8 +412,13 @@ class Qualification:
                         BEADS_DOLT_AUTO_START="0", NO_COLOR="1",
                         BEADS_TEST_BD_BINARY=str(self.bd), BEADS_TEST_IGNORE_REPO_CONFIG="1")
 
-    def run(self, args, label, cwd=None, timeout=120, stdin=None, expected=0, owned_groups=None):
+    def run(self, args, label, cwd=None, timeout=120, stdin=None, expected=0, owned_groups=None, roots=None):
         print(f"C0 {label}: {args}", flush=True)
+        started = time.monotonic()
+
+        def timing():
+            return dict(elapsedSeconds=round(time.monotonic() - started, 3), **({} if roots is None else dict(roots=roots)))
+
         process = subprocess.Popen([str(a) for a in args], cwd=cwd or self.root,
                                    env=self.env, stdin=subprocess.PIPE, stdout=subprocess.PIPE,
                                    stderr=subprocess.PIPE, start_new_session=True)
@@ -418,7 +480,8 @@ class Qualification:
                                       exit=process.returncode, failure=type(original).__name__,
                                       forcedOwner=forced_owner, nestedCleanup=nested,
                                       cleanupErrors=cleanup_errors,
-                                      stdoutSHA256=hashlib.sha256(out).hexdigest()))
+                                      stdoutSHA256=hashlib.sha256(out).hexdigest(), **timing()))
+            report_failure_tail(label, out, err)
             raise
         finally:
             self.children.discard(process.pid)
@@ -428,10 +491,12 @@ class Qualification:
             os.killpg(process.pid, signal.SIGKILL)
             raise RuntimeError(f"{label} left a live process group after exit")
         self.receipts.append(dict(label=label, argv=[str(a) for a in args], pid=process.pid,
-                                  exit=process.returncode, stdoutSHA256=hashlib.sha256(out).hexdigest()))
+                                  exit=process.returncode, stdoutSHA256=hashlib.sha256(out).hexdigest(), **timing()))
         if owned_groups is not None:
             nested = cleanup_registered_groups(owned_groups)
             require(nested["registeredGroups"] == 0, "completed owner left nested groups registered")
+        if process.returncode != expected:
+            report_failure_tail(label, out, err)
         require(process.returncode == expected,
                 f"{label} exited {process.returncode}, expected {expected}; see saved stdout/stderr")
         return out
@@ -453,7 +518,7 @@ class Qualification:
         flags = ["go", "test", "-tags", "gms_pure_go", "-json", "-count=1", "-p=1",
                  "-parallel=1", "-timeout=15m", "-run"]
         if groups == 1:
-            out = self.run([*flags, selector, package], label, timeout=960)
+            out = self.run([*flags, selector, package], label, timeout=960, roots=len(expected))
         else:
             selections = partition_required_tests(source_names, groups)
             plan = dict(package=package, selector=selector, sourceRoots=sorted(expected),
@@ -470,7 +535,7 @@ class Qualification:
                     group_label, names, selected = group["label"], group["roots"], group["selector"]
                     (self.output / (label + "-groups.json")).write_text(json.dumps(plan, indent=2) + "\n")
                     try:
-                        result = self.run([*flags, selected, package], group_label, timeout=960)
+                        result = self.run([*flags, selected, package], group_label, timeout=960, roots=len(names))
                         verify_tests([json.loads(line) for line in result.splitlines()], set(names))
                         group["passed"] = True
                     finally:
@@ -602,7 +667,8 @@ class Qualification:
                         "TestGraphPreviewMemoryDeleteWorkflow/embedded", "TestGraphPreviewMemoryDeleteWorkflow/server",
                         "TestGraphPreviewQueryWorkflow/embedded", "TestGraphPreviewQueryWorkflow/server",
                         "TestGraphPreviewMemoryReadsWorkflow/embedded", "TestGraphPreviewMemoryReadsWorkflow/server",
-                        "TestGraphPreviewPropertiesPatchWorkflow/embedded", "TestGraphPreviewPropertiesPatchWorkflow/server"))
+                        "TestGraphPreviewPropertiesPatchWorkflow/embedded", "TestGraphPreviewPropertiesPatchWorkflow/server"),
+                       groups=3)
             self.env["BDP_SPEC_AT_PIN"] = str(self.client_checkout / "docs/specs/bdp.md")
             self.tests("./internal/httpapi/bdpwire", "^Test", (self.root / "internal/httpapi/bdpwire").glob("*_test.go"), "bdpwire")
             self.tests("./internal/httpapi/graphread", "^Test", (self.root / "internal/httpapi/graphread").glob("*_test.go"), "graphread",
@@ -676,6 +742,7 @@ def main():
         qualification.execute()
     finally:
         (qualification.output / "receipts.json").write_text(json.dumps(qualification.receipts, indent=2) + "\n")
+        publish_phase_report(qualification.receipts, os.environ.get("GITHUB_STEP_SUMMARY"))
 
 
 if __name__ == "__main__":
