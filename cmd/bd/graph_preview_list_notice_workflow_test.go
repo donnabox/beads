@@ -91,3 +91,28 @@ func TestGraphPreviewListNoticeWorkflow(t *testing.T) {
 		})
 	}
 }
+
+// A typed Issue option selects the Issue query whatever its value, and with a
+// Memory Type it is refused. The list command lowers the Changed state of its
+// --status, --state, --type and --assignee filters once it has read them, so
+// each must be seen before that, an empty value included.
+func TestGraphPreviewListTypedOptionsSelectIssueQuery(t *testing.T) {
+	bd := buildBDUnderTest(t)
+	work, home := graphListWorkspace(t, bd, "embedded", "https://example.invalid/typed/")
+	for _, args := range [][]string{{"remember", "plan body", "--id", "beads/plan", "--title", "Plan"}, {"create", "Frontend work", "--id", "beads/work"}} {
+		graphPolicyCLI(t, bd, work, home, nil, "", append(args, "--json")...)
+	}
+	for _, tc := range []struct{ option, value string }{
+		{"status", ""}, {"state", "open"}, {"state", ""}, {"type", "task"}, {"type", ""}, {"assignee", ""},
+	} {
+		arg := "--" + tc.option + "=" + tc.value
+		out := graphPolicyCLI(t, bd, work, home, nil, "", "list", arg)
+		lines := strings.Split(strings.TrimSuffix(out, "\n"), "\n")
+		if len(lines) < 2 || !strings.HasPrefix(lines[0], "Issues (") || lines[1] != "Memories are not listed (Issue query selected by: --"+tc.option+")." {
+			t.Errorf("%s did not select the Issue query: %q", arg, lines)
+		}
+	}
+	for _, option := range []string{"status", "state", "type", "assignee"} {
+		graphPolicyCLI(t, bd, work, home, nil, "capability_unavailable", "list", "--bead-type", "types/preview-memory-v2", "--"+option+"=", "--format", "records-json")
+	}
+}

@@ -23,6 +23,9 @@ const graphIssueListOutputLimit = 16 << 20
 var errGraphListSelector = errors.New("invalid Issue list selector")
 
 func runGraphPreviewList(cmd *cobra.Command) error {
+	// gatherListInput lowers the Changed state of the Issue filters once it has read
+	// them, so what the caller typed is read here, before anything gathers.
+	typed := graphIssueListTypedOptions(cmd)
 	in, structured, err := graphIssueListInput(cmd, os.Args[1:])
 	if err != nil {
 		return err
@@ -35,7 +38,7 @@ func runGraphPreviewList(cmd *cobra.Command) error {
 			return graphFailure("invalid_selector", err.Error(), 2)
 		}
 	}
-	plan := planGraphList(graphIssueListTypedOptions(cmd), graphIssueListConfigLabel(cmd, in), selectedType, graphstore.IssueTypeURL(graphPreviewConfig.GraphScopeURL))
+	plan := planGraphList(typed, graphIssueListConfigLabel(cmd, in), selectedType, graphstore.IssueTypeURL(graphPreviewConfig.GraphScopeURL))
 	if plan.refuse {
 		return graphFailure("capability_unavailable", "Issue list filters cannot be combined with a non-Issue --bead-type", 5)
 	}
