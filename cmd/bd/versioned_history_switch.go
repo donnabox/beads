@@ -54,7 +54,8 @@ const versionedHistoryRefusalListLimit = 20
 // so a write that introduces a number outside the I-JSON exact-integer range, or
 // a duplicate key, already fails atomically. A row that holds one BEFORE the
 // switch is turned on -- written while history was off, or by a path that does not
-// record -- would fail every later write to it. So the switch reads every issue
+// record -- would, if it participates in history, fail every later write to it.
+// So the switch reads every issue
 // the store would version, runs the very function recording runs over each one's
 // metadata (issueops.FindUnversionableMetadata), and refuses, writing nothing,
 // while any is refused.
