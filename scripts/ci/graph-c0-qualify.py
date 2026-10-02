@@ -20,6 +20,16 @@ import sys
 import time
 
 OWNER_CLEANUP_GRACE = 30
+# Deadlines for the HTTP/BDP smoke, in seconds. Each outlasts the one before it: one
+# command < the smoke's whole run < the wrapper that kills it from outside, so a slow runner
+# ends in the smoke's own labelled failure and never in an unlabelled outer kill. The
+# smoke's first command is a server-backed bd init: 35 s of a 45 s smoke on a fast runner,
+# and 34 s, 58 s and 65 s for the qualification's own init on fast and slow runners. One
+# command gets 180 s, about 2.8x the slowest of those. The total covers a full-length init
+# plus the rest of the smoke at the same slowdown (about 230 s) with room to spare.
+SMOKE_COMMAND_TIMEOUT = 180
+SMOKE_TOTAL_TIMEOUT = 600
+SMOKE_WRAPPER_TIMEOUT = 660  # total + 60 s for the smoke to reap its children and report
 
 
 def require(condition, message):
@@ -499,6 +509,15 @@ class Qualification:
     def cli(self, work, label, *args):
         return json.loads(self.run([self.bd, *args, "--json"], label, cwd=work))
 
+    def smoke_command(self, port):
+        argv = [sys.executable, str(self.root / "scripts/graph-bdp-read-smoke.py"),
+                "--bd", str(self.bd), "--server-port", str(port),
+                "--bdp-checkout", str(self.client_checkout), "--client-manifest", str(self.client_manifest),
+                "--node", str(self.node), "--output-dir", str(self.output / "http"),
+                "--owned-groups", str(self.output / "http-owned-groups.jsonl"),
+                "--command-timeout", str(SMOKE_COMMAND_TIMEOUT), "--total-timeout", str(SMOKE_TOTAL_TIMEOUT)]
+        return argv, SMOKE_WRAPPER_TIMEOUT
+
     def capture(self, engine, port):
         work = self.output / (engine + "-workspace")
         work.mkdir()
@@ -618,11 +637,10 @@ class Qualification:
                     and "skipped=" not in python_result, "Python example tests missing or skipped")
             self.capture("embedded", port)
             self.capture("server", port)
-            self.run([sys.executable, str(self.root / "scripts/graph-bdp-read-smoke.py"),
-                      "--bd", str(self.bd), "--server-port", str(port),
-                      "--bdp-checkout", str(self.client_checkout), "--client-manifest", str(self.client_manifest),
-                      "--node", str(self.node), "--output-dir", str(self.output / "http"),
-                      "--owned-groups", str(self.output / "http-owned-groups.jsonl")], "bdp-http-capture", timeout=360,
+            # Per command < smoke total < this wrapper (SMOKE_*): the wrapper outlasts the smoke,
+            # so a command that outruns its deadline surfaces as the smoke's labelled failure.
+            argv, timeout = self.smoke_command(port)
+            self.run(argv, "bdp-http-capture", timeout=timeout,
                      owned_groups=self.output / "http-owned-groups.jsonl")
             verify_http_capture(self.output / "http", digest(self.bd))
             http_summary = json.loads((self.output / "http/summary.json").read_text())
