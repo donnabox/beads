@@ -22,6 +22,26 @@ import (
 // from build-artifacts' ci-build-artifacts, and upstream stands build-artifacts
 // down wherever pr_lanes is true. If upstream changes the decision, these
 // tests fail in the sync pull request instead of the fork losing its lanes.
+//
+// It also holds the two places where the fork's own CI deliberately differs
+// from what upstream's pr_lanes tests expect; upstream's tests consult them.
+
+// forkBuildArtifactConsumers: the fork's own pr.yml jobs that need
+// build-artifacts and install from its ci-build-artifacts. Upstream's
+// TestPRLegacyLanesDeferToBazelLanes reserves both for the retired jobs and
+// the package gates, because build-artifacts stands down where pr_lanes is
+// true; on this fork's pull requests it never is, so these jobs always get
+// their input.
+var forkBuildArtifactConsumers = map[string]bool{"graph-c0": true}
+
+// forkPRCoreGoTest: how the fork's scripts/ci/pr-core.sh runs PR Core's go
+// test, through the sequential graph-storage dispatcher rather than one go
+// test command. Upstream's TestPRRunsGoTestsBazelSkips looks for its own
+// command there to keep scripts-go-test.sh's flags equal to PR Core's. The
+// dispatcher passes the same ones (-p and -parallel from pr-core.sh's
+// defaults, -race -short -timeout=30m -skip ^TestEmbedded), which
+// TestMacOSGoTestDispatcherControls checks on the arguments it really runs.
+const forkPRCoreGoTest = `python3 "$REPO_ROOT/scripts/ci/macos-go-test.py" "${pr_core_args[@]}"`
 
 // A pull request inside the fork with every retirement flag on: the decision
 // step, run as GitHub runs it, retires no tier in either workflow.
@@ -79,6 +99,11 @@ func TestForkKeepsLegacyJobsAndGraphCore(t *testing.T) {
 	}
 	if graph, ok := pr.Jobs["graph-c0"]; ok && !contains(graph.Needs, "build-artifacts") {
 		t.Errorf("graph-c0 needs %v, want build-artifacts (it installs bd from ci-build-artifacts)", graph.Needs)
+	}
+	for _, name := range sortedKeys(forkBuildArtifactConsumers) {
+		if job, ok := pr.Jobs[name]; !ok || !contains(job.Needs, "build-artifacts") {
+			t.Errorf("forkBuildArtifactConsumers lists %s, which is not a pr.yml job that needs build-artifacts; drop the exception", name)
+		}
 	}
 	gate := pr.job(t, "ci-gate")
 	step := gate.step(t, "Evaluate CI gate")

@@ -5059,7 +5059,10 @@ func workflowFileNames(t *testing.T) []string {
 func TestC1PRCoreSetsReplayRequire(t *testing.T) {
 	const stepName = "Run PR core wrapper"
 	job := readCIWorkflow(t, "pr.yml").job(t, "pr-core-wrapper")
-	if job.RunsOn != "ubuntu-latest" || job.If != "" || job.ContinueOnError {
+	// Upstream stands the job down where bazel-coverage retires pr.yml's
+	// legacy jobs (pr_lanes); on this fork's pull requests it never does
+	// (TestForkPullRequestsKeepLegacyLanes), so that gate and no other.
+	if job.RunsOn != "ubuntu-latest" || (job.If != "" && job.If != prLaneLegacyIf) || job.ContinueOnError {
 		t.Error("the replay harness must run in the required Linux PR Core job")
 	}
 	step := job.Steps[job.stepIndex(t, stepName)]
