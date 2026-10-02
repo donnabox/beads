@@ -6,6 +6,7 @@ import importlib.util
 import io
 import json
 import os
+import re
 import signal
 import socket
 import tempfile
@@ -749,6 +750,69 @@ class ServerLifecycle(unittest.TestCase):
             self.assertIn("owned server exited before readiness", str(refused.exception.__context__))
             self.assertEqual(q.children, set())
             self.assertEqual(q.receipts[-1]["exit"], 3)
+class SmokeDeadlines(unittest.TestCase):
+    # The HTTP/BDP smoke starts with a server-backed `bd init`. Hosted runners differ by
+    # about 2x: that init took 34 s on a fast runner and 58 s and 65 s on slow ones, and the
+    # smoke's 60 s per-command default killed it on both slow attempts. Pin the deadlines the
+    # qualification really hands the smoke, parsed the way the smoke parses them (so a dropped
+    # flag falls back to the smoke's own default and is judged as such), and the job budget
+    # around them, so none can slide back under a slow runner's measured times.
+    SLOWEST_INIT_SECONDS = 65
+    INIT_HEADROOM = 2.5
+    # The wrapper must outlast the smoke's whole run by the time the smoke needs to reap its
+    # children and report its own labelled failure; the original margin was this much.
+    WRAPPER_MARGIN_SECONDS = 60
+    JOB_NAME = "Graph core / real engines, installed CLI and BDP"
+    # Whole-job durations on hosted runners: 27 min on a fast one, 43 to 44 min on five slow
+    # ones (each stopped at the smoke's first command), and one slow runner whose job was cut
+    # off by the 50 min cap 11 s into the smoke. That last one is a floor for what a complete
+    # slow run needs; the headroom covers the smoke and upload it never reached and a runner
+    # slower still.
+    SLOWEST_JOB_MINUTES = 51
+    JOB_HEADROOM = 1.75
+
+    @staticmethod
+    def job_timeout_minutes(name):
+        # Plain text on purpose: the lane that runs this file has no YAML dependency.
+        lines = (Path(__file__).resolve().parents[2] / ".github/workflows/pr.yml").read_text().splitlines()
+        headers = [i for i, line in enumerate(lines) if re.fullmatch(r"  [\w-]+:\s*", line)]
+        named = [i for i, line in enumerate(lines) if line == "    name: " + name]
+        if len(named) != 1:
+            raise AssertionError(f"expected exactly one job named {name!r}, found {len(named)}")
+        start = max(i for i in headers if i < named[0])
+        end = min([i for i in headers if i > named[0]] + [len(lines)])
+        found = [m for m in (re.fullmatch(r"    timeout-minutes:\s*(\d+)\s*", line) for line in lines[start:end]) if m]
+        if len(found) != 1:
+            raise AssertionError(f"expected exactly one timeout-minutes on job {name!r}, found {len(found)}")
+        return int(found[0].group(1))
+
+    def test_slow_runner_deadlines_nest_inside_the_job_budget(self):
+        smoke_path = Path(__file__).resolve().parents[1] / "graph-bdp-read-smoke.py"
+        spec = importlib.util.spec_from_file_location("graph_bdp_read_smoke", smoke_path)
+        smoke = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(smoke)
+        q = module.Qualification.__new__(module.Qualification)
+        q.root, q.output = Path("/repo"), Path("/out")
+        q.bd, q.node = Path("/bin/bd"), Path("/bin/node")
+        q.client_checkout, q.client_manifest = Path("/client"), Path("/client.json")
+        argv, wrapper = q.smoke_command(0)
+        self.assertEqual(Path(argv[1]), Path("/repo/scripts/graph-bdp-read-smoke.py"))
+        args = smoke.build_parser().parse_args(argv[2:])
+        command, total = args.command_timeout, args.total_timeout
+        with self.subTest("one command outlasts a slow runner's server-backed init"):
+            floor = self.INIT_HEADROOM * self.SLOWEST_INIT_SECONDS
+            self.assertGreaterEqual(command, floor,
+                                    f"per-command deadline {command}s is under {self.INIT_HEADROOM}x the slowest measured init ({self.SLOWEST_INIT_SECONDS}s)")
+        with self.subTest("per-command < total < wrapper, with the wrapper's cleanup margin"):
+            self.assertLess(command, total, "a single command may not outlast the smoke's whole run")
+            self.assertGreaterEqual(wrapper - total, self.WRAPPER_MARGIN_SECONDS,
+                                    f"wrapper {wrapper}s must outlast the smoke total {total}s by {self.WRAPPER_MARGIN_SECONDS}s so the smoke reports its own failure")
+        with self.subTest("the job's own cap outlasts a slow runner's whole job"):
+            minutes = self.job_timeout_minutes(self.JOB_NAME)
+            floor = self.SLOWEST_JOB_MINUTES * self.JOB_HEADROOM
+            self.assertGreaterEqual(minutes, floor,
+                                    f"job cap {minutes} min is under {self.JOB_HEADROOM}x the slowest measured whole job ({self.SLOWEST_JOB_MINUTES} min)")
+            self.assertGreater(minutes * 60, wrapper, "the job cap must outlast the smoke wrapper")
 
 
 if __name__ == "__main__":
