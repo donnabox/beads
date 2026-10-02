@@ -8,6 +8,7 @@ The caller supplies the ordinary released Dolt binary and CI Build Artifacts.
 All databases and process groups belong to this run; no existing server is used.
 """
 import argparse
+import contextlib
 import hashlib
 import json
 import os
@@ -23,6 +24,8 @@ OWNER_CLEANUP_GRACE = 30
 GO_TEST_TIMEOUT = 900  # seconds; the -timeout=15m every go test group is given
 SLOW_GROUP_SECONDS = GO_TEST_TIMEOUT * 6 // 10
 TAIL_LINES = 40
+SERVER_READY_TIMEOUT = 30
+SERVER_STOP_TIMEOUT = 15
 
 
 def require(condition, message):
@@ -501,6 +504,64 @@ class Qualification:
                 f"{label} exited {process.returncode}, expected {expected}; see saved stdout/stderr")
         return out
 
+    @contextlib.contextmanager
+    def server(self, label):
+        """One owned Dolt server for one command: fresh data directory and port, own log and shutdown receipt.
+
+        The port is exported as BEADS_GRAPH_TEST_SERVER_PORT while the server is up and only then. Every
+        server must stop cleanly (exit 0, not forced, group gone, port closed) or the step fails.
+        """
+        with socket.socket() as reservation:
+            reservation.bind(("127.0.0.1", 0))
+            port = reservation.getsockname()[1]
+        server_root = self.output / (label + "-server-data")
+        server_root.mkdir()
+        log = (self.output / (label + "-server.log")).open("wb")
+        started = time.monotonic()
+        server = subprocess.Popen([str(self.dolt), "sql-server", "--host", "127.0.0.1", "--port", str(port), "--data-dir", str(server_root)],
+                                  cwd=server_root, env=self.env, stdout=log, stderr=subprocess.STDOUT, start_new_session=True)
+        self.children.add(server.pid)
+        try:
+            deadline = time.monotonic() + SERVER_READY_TIMEOUT
+            while True:
+                require(server.poll() is None, "owned server exited before readiness")
+                try:
+                    with socket.create_connection(("127.0.0.1", port), timeout=1):
+                        break
+                except OSError:
+                    require(time.monotonic() < deadline, "server readiness timed out")
+                    time.sleep(0.2)
+            self.env["BEADS_GRAPH_TEST_SERVER_PORT"] = str(port)
+            yield port
+            require(server.poll() is None, "server exited during qualification")
+        finally:
+            self.env.pop("BEADS_GRAPH_TEST_SERVER_PORT", None)
+            server.terminate()
+            forced = False
+            try:
+                code = server.wait(timeout=SERVER_STOP_TIMEOUT)
+            except subprocess.TimeoutExpired:
+                forced = True
+                os.killpg(server.pid, signal.SIGKILL)
+                code = server.wait()
+            finally:
+                self.children.discard(server.pid)
+                log.close()
+            group_gone = group_exited(server.pid)
+            if not group_gone:
+                os.killpg(server.pid, signal.SIGKILL)
+            port_closed = False
+            try:
+                with socket.create_connection(("127.0.0.1", port), timeout=1):
+                    pass
+            except ConnectionRefusedError:
+                port_closed = True
+            self.receipts.append(dict(label=label + "-server-shutdown", pid=server.pid, port=port,
+                                      exit=code, forced=forced, groupGone=group_gone,
+                                      portClosed=port_closed, elapsedSeconds=round(time.monotonic() - started, 3)))
+            require(code == 0 and not forced and group_gone and port_closed,
+                    f"server cleanup failed: exit={code}, forced={forced}, groupGone={group_gone}, portClosed={port_closed}")
+
     def tests(self, package, selector, files, label, required_subtests=(), groups=1):
         # Source discovery also sees accidentally build-excluded added tests.
         source_names = []
@@ -518,7 +579,8 @@ class Qualification:
         flags = ["go", "test", "-tags", "gms_pure_go", "-json", "-count=1", "-p=1",
                  "-parallel=1", "-timeout=15m", "-run"]
         if groups == 1:
-            out = self.run([*flags, selector, package], label, timeout=960, roots=len(expected))
+            with self.server(label):
+                out = self.run([*flags, selector, package], label, timeout=960, roots=len(expected))
         else:
             selections = partition_required_tests(source_names, groups)
             plan = dict(package=package, selector=selector, sourceRoots=sorted(expected),
@@ -535,7 +597,8 @@ class Qualification:
                     group_label, names, selected = group["label"], group["roots"], group["selector"]
                     (self.output / (label + "-groups.json")).write_text(json.dumps(plan, indent=2) + "\n")
                     try:
-                        result = self.run([*flags, selected, package], group_label, timeout=960, roots=len(names))
+                        with self.server(group_label):
+                            result = self.run([*flags, selected, package], group_label, timeout=960, roots=len(names))
                         verify_tests([json.loads(line) for line in result.splitlines()], set(names))
                         group["passed"] = True
                     finally:
@@ -601,26 +664,7 @@ class Qualification:
         require(version and version[0].strip() == "dolt version 2.1.8", "C0 requires released Dolt2.1.8")
         (self.output / "source.json").write_text(json.dumps(dict(commit=head, binarySHA256=digest(self.bd),
             doltSHA256=digest(self.dolt), runnerSHA256=digest(Path(__file__))), indent=2) + "\n")
-        with socket.socket() as reservation:
-            reservation.bind(("127.0.0.1", 0))
-            port = reservation.getsockname()[1]
-        server_root = self.output / "server-data"
-        server_root.mkdir()
-        log = (self.output / "server.log").open("wb")
-        server = subprocess.Popen([str(self.dolt), "sql-server", "--host", "127.0.0.1", "--port", str(port), "--data-dir", str(server_root)],
-                                  cwd=server_root, env=self.env, stdout=log, stderr=subprocess.STDOUT, start_new_session=True)
-        self.children.add(server.pid)
-        try:
-            deadline = time.monotonic() + 30
-            while True:
-                require(server.poll() is None, "owned server exited before readiness")
-                try:
-                    with socket.create_connection(("127.0.0.1", port), timeout=1):
-                        break
-                except OSError:
-                    require(time.monotonic() < deadline, "server readiness timed out")
-                    time.sleep(0.2)
-            self.env["BEADS_GRAPH_TEST_SERVER_PORT"] = str(port)
+        with contextlib.ExitStack() as servers:
             # Sequential package runs/provisioning; concurrency inside same-store tests remains exercised.
             self.tests("./internal/graphpatch", "^Test", (self.root / "internal/graphpatch").glob("*_test.go"), "graphpatch")
             self.tests("./internal/storage/graphstore", "^Test", (self.root / "internal/storage/graphstore").glob("*_test.go"), "storage",
@@ -682,6 +726,7 @@ class Qualification:
             python_result = (self.output / "python-example-tests.stderr").read_text()
             require(python_roots > 0 and re.search(rf"Ran {python_roots} tests? in", python_result)
                     and "skipped=" not in python_result, "Python example tests missing or skipped")
+            port = servers.enter_context(self.server("capture"))
             self.capture("embedded", port)
             self.capture("server", port)
             self.run([sys.executable, str(self.root / "scripts/graph-bdp-read-smoke.py"),
@@ -696,33 +741,6 @@ class Qualification:
                                     ("client_harness_sha256", "scripts/graph-bdp-read-client.mjs"),
                                     ("python_example_sha256", "examples/bdp-read/read_beads.py")]:
                 require(http_summary[field] == digest(self.root / relative), "HTTP capture source changed")
-            require(server.poll() is None, "server exited during qualification")
-        finally:
-            server.terminate()
-            forced = False
-            try:
-                code = server.wait(timeout=15)
-            except subprocess.TimeoutExpired:
-                forced = True
-                os.killpg(server.pid, signal.SIGKILL)
-                code = server.wait()
-            finally:
-                self.children.discard(server.pid)
-                log.close()
-            group_gone = group_exited(server.pid)
-            if not group_gone:
-                os.killpg(server.pid, signal.SIGKILL)
-            port_closed = False
-            try:
-                with socket.create_connection(("127.0.0.1", port), timeout=1):
-                    pass
-            except ConnectionRefusedError:
-                port_closed = True
-            self.receipts.append(dict(label="server-shutdown", pid=server.pid, port=port,
-                                      exit=code, forced=forced, groupGone=group_gone,
-                                      portClosed=port_closed))
-            require(code == 0 and not forced and group_gone and port_closed,
-                    f"server cleanup failed: exit={code}, forced={forced}, groupGone={group_gone}, portClosed={port_closed}")
         require(not self.children, "owned child process remains")
         (self.output / "summary.json").write_text(json.dumps(dict(commit=head, passed=self.counts,
             installedCLICommands=10, engines=["embedded", "server"], childrenRemaining=0, bdpHTTP=True, pythonBDP=True), indent=2) + "\n")

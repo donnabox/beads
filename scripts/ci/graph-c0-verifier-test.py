@@ -48,14 +48,23 @@ def runner(directory):
     return q
 
 
+def without_server(label):
+    # Stands in for Qualification.server wherever a test drives tests() without Dolt.
+    return contextlib.nullcontext()
+
+
 SOURCE = Path(__file__).with_name("graph-c0-qualify.py").read_text()
+
+
+def lane_function(name):
+    return next(n for n in ast.walk(ast.parse(SOURCE)) if isinstance(n, ast.FunctionDef) and n.name == name)
 
 
 def self_calls(function, method):
     """Every self.<method>(...) call inside the named lane function, in source order."""
-    node = next(n for n in ast.walk(ast.parse(SOURCE)) if isinstance(n, ast.FunctionDef) and n.name == function)
-    return sorted((c for c in ast.walk(node) if isinstance(c, ast.Call) and isinstance(c.func, ast.Attribute)
-                   and isinstance(c.func.value, ast.Name) and c.func.value.id == "self" and c.func.attr == method),
+    return sorted((c for c in ast.walk(lane_function(function)) if isinstance(c, ast.Call)
+                   and isinstance(c.func, ast.Attribute) and isinstance(c.func.value, ast.Name)
+                   and c.func.value.id == "self" and c.func.attr == method),
                   key=lambda c: c.lineno)
 
 
@@ -123,6 +132,7 @@ class RequiredEngineControls(unittest.TestCase):
             events += [event("pass", "TestWorkflow"), event("pass")]
             q = module.Qualification.__new__(module.Qualification)
             q.counts = {}
+            q.server = without_server
             listing = b"TestWorkflow\n"
             execution = "\n".join(json.dumps(item) for item in events).encode()
             with mock.patch.object(q, "run", side_effect=[listing, execution]):
@@ -148,6 +158,7 @@ class RequiredGroupedExecution(unittest.TestCase):
             source.write_text("\n".join("func " + name + "(t *testing.T) {}" for name in names))
             q = module.Qualification.__new__(module.Qualification)
             q.output, q.counts = root, {}
+            q.server = without_server
             calls = []
             def run(args, label, **kwargs):
                 calls.append((args, label, kwargs))
@@ -221,6 +232,7 @@ class RequiredDiscovery(unittest.TestCase):
             (root / "patch_test.go").write_text(source)
             q = module.Qualification.__new__(module.Qualification)
             q.counts = {}
+            q.server = without_server
             calls = []
 
             def run(argv, label, **kwargs):
@@ -482,6 +494,7 @@ class PhaseReport(unittest.TestCase):
                 with self.subTest(groups=groups):
                     q = module.Qualification.__new__(module.Qualification)
                     q.output, q.counts = root, {}
+                    q.server = without_server
                     seen = []
 
                     def run(args, label, **kwargs):
@@ -577,6 +590,165 @@ class FailureTail(unittest.TestCase):
                 self.assertIn(line, text)
             for line in ("out 59\n", "err 59\n"):
                 self.assertNotIn(line, text)
+
+
+class ServerPerGroup(unittest.TestCase):
+    NAMES = ["Test" + letter for letter in "ABCDEFGH"]
+
+    def trace(self, groups, label, failing_run=None):
+        # Records where each server context opens and closes relative to every
+        # command tests() runs; no Dolt and no Go.
+        steps = []
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            source = root / "storage_test.go"
+            source.write_text("\n".join("func " + name + "(t *testing.T) {}" for name in self.NAMES))
+            q = module.Qualification.__new__(module.Qualification)
+            q.output, q.counts = root, {}
+
+            @contextlib.contextmanager
+            def server(server_label):
+                steps.append(("open", server_label))
+                try:
+                    yield 0
+                finally:
+                    steps.append(("close", server_label))
+
+            def run(args, run_label, **kwargs):
+                steps.append(("run", run_label))
+                if "-list" in args:
+                    return ("\n".join(self.NAMES) + "\n").encode()
+                if run_label == failing_run:
+                    raise subprocess.TimeoutExpired(args, 960)
+                selected = args[args.index("-run") + 1][2:-2].split("|") if groups > 1 else self.NAMES
+                raw = go_events(selected)
+                (root / (run_label + ".stdout")).write_bytes(raw)
+                (root / (run_label + ".stderr")).write_bytes(b"")
+                return raw
+
+            q.server = server
+            with mock.patch.object(q, "run", run):
+                if failing_run:
+                    with self.assertRaises(subprocess.TimeoutExpired):
+                        q.tests("./fixture", "^Test", [source], label, groups=groups)
+                else:
+                    q.tests("./fixture", "^Test", [source], label, groups=groups)
+        return steps
+
+    def test_every_group_runs_in_its_own_server_and_discovery_in_none(self):
+        self.assertEqual(self.trace(4, "storage"), [("run", "storage-discovery")] + [
+            step for n in range(1, 5)
+            for step in (("open", f"storage-group-{n}"), ("run", f"storage-group-{n}"), ("close", f"storage-group-{n}"))])
+
+    def test_single_group_package_runs_in_its_own_server_too(self):
+        self.assertEqual(self.trace(1, "graphread"), [("run", "graphread-discovery"), ("open", "graphread"),
+                                                      ("run", "graphread"), ("close", "graphread")])
+
+    def test_failed_or_timed_out_group_still_closes_its_server_and_stops_the_lane(self):
+        self.assertEqual(self.trace(4, "storage", failing_run="storage-group-2"), [
+            ("run", "storage-discovery"),
+            ("open", "storage-group-1"), ("run", "storage-group-1"), ("close", "storage-group-1"),
+            ("open", "storage-group-2"), ("run", "storage-group-2"), ("close", "storage-group-2")])
+
+    def test_capture_and_smoke_share_one_server_opened_after_the_python_tests(self):
+        servers = self_calls("execute", "server")
+        self.assertEqual(len(servers), 1)
+        self.assertEqual(ast.literal_eval(servers[0].args[0]), "capture")
+        runs = {ast.literal_eval(c.args[1]): c.lineno for c in self_calls("execute", "run")
+                if len(c.args) > 1 and isinstance(c.args[1], ast.Constant)}
+        captures = [c.lineno for c in self_calls("execute", "capture")]
+        self.assertEqual(len(captures), 2)
+        self.assertLess(runs["python-example-tests"], servers[0].lineno)
+        self.assertTrue(all(servers[0].lineno < line for line in captures + [runs["bdp-http-capture"]]))
+        self.assertFalse([n for n in ast.walk(lane_function("execute")) if isinstance(n, ast.Attribute) and n.attr == "Popen"],
+                         "execute must not start a lane-wide server")
+
+
+FAKE_DOLT = '''#!{python}
+import json, os, signal, socket, sys, time
+args = sys.argv[1:]
+print(json.dumps(args), flush=True)
+mode = os.environ.get("FAKE_DOLT_MODE", "")
+if mode == "exit-early":
+    sys.exit(3)
+signal.signal(signal.SIGTERM, signal.SIG_IGN if mode == "ignore-term" else (lambda *_: sys.exit(0)))
+sock = socket.socket()
+sock.bind(("127.0.0.1", int(args[args.index("--port") + 1])))
+sock.listen()
+while True:
+    time.sleep(0.05)
+'''
+
+
+class ServerLifecycle(unittest.TestCase):
+    # A stand-in dolt binds the port it is given on loopback, the way the
+    # nested-ownership controls bind a real listener; no database is involved.
+    def lane(self, directory, mode=""):
+        fake = Path(directory) / "dolt"
+        fake.write_text(FAKE_DOLT.format(python=sys.executable))
+        fake.chmod(0o755)
+        q = runner(directory)
+        q.output = Path(directory) / "output"
+        q.output.mkdir()
+        q.dolt = fake
+        q.env["FAKE_DOLT_MODE"] = mode
+        return q
+
+    def test_server_is_fresh_owned_exported_for_the_run_and_shut_down_cleanly(self):
+        with tempfile.TemporaryDirectory() as directory:
+            q = self.lane(directory)
+            ports = []
+            for label in ("first", "second"):
+                with q.server(label) as port:
+                    ports.append(port)
+                    socket.create_connection(("127.0.0.1", port), timeout=5).close()
+                    self.assertEqual(q.env["BEADS_GRAPH_TEST_SERVER_PORT"], str(port))
+                    self.assertEqual(len(q.children), 1)
+                with self.assertRaises(ConnectionRefusedError):
+                    socket.create_connection(("127.0.0.1", port), timeout=1)
+                self.assertNotIn("BEADS_GRAPH_TEST_SERVER_PORT", q.env)
+                self.assertEqual(q.children, set())
+                started = json.loads((q.output / (label + "-server.log")).read_text().splitlines()[0])
+                self.assertEqual(started[started.index("--data-dir") + 1], str(q.output / (label + "-server-data")))
+                self.assertEqual(started[started.index("--host") + 1], "127.0.0.1")
+                self.assertTrue((q.output / (label + "-server-data")).is_dir())
+            self.assertEqual([(r["label"], r["port"], r["exit"], r["forced"], r["groupGone"], r["portClosed"])
+                              for r in q.receipts],
+                             [("first-server-shutdown", ports[0], 0, False, True, True),
+                              ("second-server-shutdown", ports[1], 0, False, True, True)])
+            self.assertTrue(all(r["elapsedSeconds"] >= 0 for r in q.receipts))
+
+    def test_unclean_shutdown_fails_with_the_existing_message(self):
+        with tempfile.TemporaryDirectory() as directory:
+            q = self.lane(directory, mode="ignore-term")
+            with mock.patch.object(module, "SERVER_STOP_TIMEOUT", 0.3), \
+                 self.assertRaisesRegex(RuntimeError, r"server cleanup failed: exit=-9, forced=True, groupGone=True, portClosed=True"):
+                with q.server("stubborn"):
+                    pass
+            self.assertEqual(q.children, set())
+            self.assertTrue(q.receipts[-1]["forced"])
+
+    def test_failed_run_still_reaps_its_server(self):
+        with tempfile.TemporaryDirectory() as directory:
+            q = self.lane(directory)
+            with self.assertRaisesRegex(RuntimeError, "group failed"):
+                with q.server("failing") as port:
+                    raise RuntimeError("group failed")
+            with self.assertRaises(ConnectionRefusedError):
+                socket.create_connection(("127.0.0.1", port), timeout=1)
+            self.assertEqual(q.children, set())
+            self.assertEqual(q.receipts[-1]["exit"], 0)
+            self.assertNotIn("BEADS_GRAPH_TEST_SERVER_PORT", q.env)
+
+    def test_server_that_exits_before_readiness_is_refused(self):
+        with tempfile.TemporaryDirectory() as directory:
+            q = self.lane(directory, mode="exit-early")
+            with self.assertRaisesRegex(RuntimeError, "server cleanup failed: exit=3") as refused:
+                with q.server("early"):
+                    self.fail("the run must not start against a dead server")
+            self.assertIn("owned server exited before readiness", str(refused.exception.__context__))
+            self.assertEqual(q.children, set())
+            self.assertEqual(q.receipts[-1]["exit"], 3)
 
 
 if __name__ == "__main__":
