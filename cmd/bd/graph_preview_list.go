@@ -12,7 +12,6 @@ import (
 
 	"github.com/spf13/cobra"
 	"github.com/spf13/pflag"
-	graph "github.com/steveyegge/beads/graphops"
 	"github.com/steveyegge/beads/internal/storage"
 	"github.com/steveyegge/beads/internal/storage/graphstore"
 	"github.com/steveyegge/beads/internal/utils"
@@ -42,15 +41,11 @@ func runGraphPreviewList(cmd *cobra.Command) error {
 	}
 	if !issueFilters {
 		return withGraphStoreOutput(func(ctx context.Context, s *graphstore.Store) (any, string, error) {
-			snapshot, err := s.CurrentSnapshot(ctx)
+			page, err := s.ListBeads(ctx, graphstore.BeadListRequest{TypeURL: selectedType, All: in.AllFlag, Limit: *in.Limit, MaxRows: in.MaxRows})
 			if err != nil {
 				return nil, "", err
 			}
-			page, err := graphBeadListFromSnapshot(snapshot, selectedType, *in.Limit, in.MaxRows)
-			if err != nil {
-				return nil, "", err
-			}
-			output, err := renderGraphBeadList(page, s.ScopeURL(), structured, quietFlag)
+			output, err := renderGraphBeadList(page, s.ScopeURL(), in.AllFlag, structured, quietFlag)
 			return nil, output, err
 		}, func(_ any, output string) error { _, err := fmt.Fprint(cmd.OutOrStdout(), output); return err })
 	}
@@ -198,52 +193,7 @@ func graphIssueListFiltersSelected(cmd *cobra.Command, in listInput) bool {
 	return in.Status != "" || in.IssueType != "" || in.TitleSearch != "" || in.TitleContains != "" || in.Assignee != "" || in.NoAssignee || len(in.Labels) != 0 || len(in.LabelsAny) != 0 || len(in.ExcludeLabels) != 0 || in.Priority != nil || in.PriorityMin != nil || in.PriorityMax != nil || in.PinnedFlag || in.NoPinnedFlag || in.SortBy != "" || in.Reverse || in.DueBefore != nil || in.DueAfter != nil || in.OverdueFlag
 }
 
-type graphBeadListPage struct {
-	Items   []any `json:"items"`
-	HasMore bool  `json:"hasMore"`
-}
-
-func graphBeadListFromSnapshot(snapshot graphstore.Snapshot, selectedType string, limit, maxRows int) (graphBeadListPage, error) {
-	if selectedType != "" {
-		installed := false
-		for _, descriptor := range snapshot.Types {
-			if descriptor.ID() == selectedType && descriptor.Describes() == graph.KindBead {
-				installed = true
-				break
-			}
-		}
-		if !installed {
-			return graphBeadListPage{}, fmt.Errorf("%w: --bead-type must name an installed Bead Type", graphstore.ErrCapabilityUnavailable)
-		}
-	}
-	page := graphBeadListPage{Items: []any{}}
-	for _, value := range snapshot.Records {
-		switch record := value.(type) {
-		case graphstore.Record:
-			if selectedType == "" || record.Type == selectedType {
-				page.Items = append(page.Items, record)
-			}
-		case graphstore.IssueRecord:
-			if selectedType == "" || record.Type == selectedType {
-				page.Items = append(page.Items, record)
-			}
-		case graphstore.LinkRecord:
-			// A Link is a Resource, but never a Bead.
-		default:
-			return graphBeadListPage{}, fmt.Errorf("%w: unsupported current Resource projection", graphstore.ErrInvalidStore)
-		}
-	}
-	if maxRows > 0 && len(page.Items) > maxRows {
-		return graphBeadListPage{}, fmt.Errorf("%w: Bead list exceeds configured maximum of %d rows", graphstore.ErrLimitExceeded, maxRows)
-	}
-	if limit > 0 && len(page.Items) > limit {
-		page.Items = page.Items[:limit]
-		page.HasMore = true
-	}
-	return page, nil
-}
-
-func renderGraphBeadList(page graphBeadListPage, scope string, structured, quiet bool) (string, error) {
+func renderGraphBeadList(page graphstore.BeadListPage, scope string, all, structured, quiet bool) (string, error) {
 	var human strings.Builder
 	if !structured && !quiet {
 		fmt.Fprintf(&human, "Beads (%d; more: %t; graph preview)\n", len(page.Items), page.HasMore)
@@ -252,11 +202,15 @@ func renderGraphBeadList(page graphBeadListPage, scope string, structured, quiet
 			case graphstore.Record:
 				fmt.Fprintf(&human, "  %s  Memory  %s\n", graphMemoryDisplayText(strings.TrimPrefix(record.ID, scope)), graphMemoryDisplayText(record.Properties.Title))
 			case graphstore.IssueRecord:
-				fmt.Fprintf(&human, "  %s  Issue   %s\n", graphMemoryDisplayText(strings.TrimPrefix(record.ID, scope)), graphMemoryDisplayText(record.Properties.Title))
+				fmt.Fprintf(&human, "  %s  Issue   %s  P%d  %s\n", graphMemoryDisplayText(strings.TrimPrefix(record.ID, scope)), graphMemoryDisplayText(string(record.Properties.Status)), record.Properties.Priority, graphMemoryDisplayText(record.Properties.Title))
 			}
 		}
 		if page.HasMore {
-			human.WriteString("More Beads exist; increase --limit or use --all within preview bounds.\n")
+			if all {
+				human.WriteString("More Beads exist; increase --limit within preview bounds.\n")
+			} else {
+				human.WriteString("More Beads exist; increase --limit or use --all within preview bounds.\n")
+			}
 		}
 	}
 	var output bytes.Buffer

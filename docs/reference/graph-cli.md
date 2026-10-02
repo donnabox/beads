@@ -83,7 +83,7 @@ in this one.
 | `bd memories [SEARCH]` | List current Memory title/body summaries. Use `--all` for all matches within the preview's bounds, `--details` for saved version and attribution, or `--format records-json` for structured summaries. |
 | `bd recall ID` | Print **one** Memory's exact body bytes. It does not enumerate Memories or add a newline. |
 | `bd show ID --json` | Read one current Issue or Memory record; use `links/ID` for a Link. |
-| `bd list` or `bd list --format records-json` | Without an Issue filter, list every current Memory and Issue, closed Issues included, ordered by ID. Use `--bead-type types/NAME` to narrow by nominal Type. An Issue filter switches to the Issue-only query described below. |
+| `bd list` or `bd list --format records-json` | Without an Issue filter, list every current Memory and Issue the ordinary `bd list` would show, ordered by ID; closed and pinned Issues need `--all`. Use `--bead-type types/NAME` to narrow by nominal Type. An Issue filter switches to the Issue-only query described below. |
 
 ```sh
 bd memories --all
@@ -95,11 +95,11 @@ bd list --format records-json --bead-type types/preview-memory-v2 --all
 ```
 
 Without an Issue filter, `bd list` reads one bounded snapshot of every
-current Bead. Each human row shows only the Bead's local ID (such as
-`beads/work`), its kind (`Memory` or `Issue`) and its title; there is no
-status or priority column. `--all` only removes the row limit, because closed
-Issues are already listed. `--limit` sets a visible prefix and `hasMore`
-indicates that the prefix omitted matches.
+current Bead. Each human row shows the Bead's local ID (such as
+`beads/work`) and its kind (`Memory` or `Issue`); an Issue row also shows its
+status and priority, then the title. Closed and pinned Issues are hidden
+unless you pass `--all`, which also removes the row limit. `--limit` sets a
+visible prefix and `hasMore` indicates that the prefix omitted matches.
 It is not a continuation cursor. The BDP HTTP `beads/` collection provides
 pagination in an ordinary shared-server graph workspace. Follow every
 response's `next` URL until it is `null`, or use the

@@ -1,6 +1,7 @@
 package main
 
 import (
+	"bytes"
 	"encoding/json"
 	"errors"
 	"strings"
@@ -147,6 +148,67 @@ func TestGraphPreviewIssueListOutput(t *testing.T) {
 	page.Items[0].Properties.Title = strings.Repeat("x", graphIssueListOutputLimit)
 	if output, err := renderGraphIssueList(page, true, false); err == nil || output != "" {
 		t.Fatal("oversized page emitted partial output")
+	}
+}
+
+func TestGraphPreviewBeadListOutput(t *testing.T) {
+	const scope = "https://example.invalid/a/"
+	page := graphstore.BeadListPage{Items: []any{
+		graphstore.IssueRecord{ID: scope + "beads/work", Properties: &types.Issue{Title: "Ship the release", Status: types.StatusOpen, Priority: 1}},
+		graphstore.Record{ID: scope + "beads/plan", Properties: graphstore.Properties{Title: "Release plan"}},
+		graphstore.IssueRecord{ID: scope + "beads/odd", Properties: &types.Issue{Title: "quote\"\n雪", Status: "on-ice", Priority: 4}},
+	}}
+
+	// An Issue row adds its status and priority between the kind and the title;
+	// the Memory row and the header keep their layout.
+	human, err := renderGraphBeadList(page, scope, false, false, false)
+	want := "Beads (3; more: false; graph preview)\n" +
+		"  beads/work  Issue   open  P1  Ship the release\n" +
+		"  beads/plan  Memory  Release plan\n" +
+		"  beads/odd  Issue   on-ice  P4  quote\"\\n雪\n"
+	if err != nil || human != want {
+		t.Fatalf("human=%q err=%v\nwant=%q", human, err, want)
+	}
+
+	// The hint offers --all only while it would still help.
+	page.HasMore = true
+	for _, tc := range []struct {
+		all  bool
+		hint string
+	}{
+		{false, "More Beads exist; increase --limit or use --all within preview bounds.\n"},
+		{true, "More Beads exist; increase --limit within preview bounds.\n"},
+	} {
+		got, err := renderGraphBeadList(page, scope, tc.all, false, false)
+		if err != nil || !strings.HasPrefix(got, "Beads (3; more: true; graph preview)\n") || !strings.HasSuffix(got, "P4  quote\"\\n雪\n"+tc.hint) {
+			t.Fatalf("all=%t: %q %v", tc.all, got, err)
+		}
+	}
+
+	quiet, err := renderGraphBeadList(page, scope, false, false, true)
+	if err != nil || quiet != "" {
+		t.Fatalf("quiet=%q %v", quiet, err)
+	}
+
+	// Structured output is the page itself, unchanged: same members, same order.
+	structured, err := renderGraphBeadList(page, scope, false, true, false)
+	if err != nil {
+		t.Fatal(err)
+	}
+	var previous bytes.Buffer
+	if err := graphPrintTo(&previous, struct {
+		Items   []any `json:"items"`
+		HasMore bool  `json:"hasMore"`
+	}{page.Items, page.HasMore}, "", false, true); err != nil {
+		t.Fatal(err)
+	}
+	if structured != previous.String() {
+		t.Fatalf("structured output changed:\n got=%s\nwant=%s", structured, previous.String())
+	}
+
+	empty, err := renderGraphBeadList(graphstore.BeadListPage{Items: []any{}}, scope, false, false, false)
+	if err != nil || empty != "Beads (0; more: false; graph preview)\n" {
+		t.Fatalf("empty=%q %v", empty, err)
 	}
 }
 

@@ -167,7 +167,7 @@ explicit creation title must remain nonempty; updates preserve omitted fields.
 | `close BEAD` | Close one Issue through the existing Issue policy, optionally with ordinary reason aliases. No force or batch operations. |
 | `reopen BEAD` | Reopen one Issue, optionally with `--reason`. |
 | `ready` | Unfiltered current ready Issues through ordinary readiness rules. No list filters, output limit or configured positive `BEADS_MAX_ROWS`. |
-| `list` or `list --format records-json` | Without an Issue filter, one bounded current snapshot of every Memory and every Issue whatever its status, ordered by canonical Bead ID; human rows show only local ID, kind and title. `--bead-type types/NAME` narrows by nominal Bead Type, and `--all` only lifts the row limit. Any Issue filter (status/state, type, title/title-contains, priority and range, assignee/no-assignee, label/label-any/exclude-label, pinned/no-pinned, due-before/due-after/overdue, sort or reverse, or a matching configured directory label) selects the native Issue-only query, which omits closed and pinned Issues unless `--all` or a filter selects them. See [All-Bead listing](#all-bead-listing). `hasMore` reports whether a row limit omitted matches; tree and legacy JSON remain unavailable. |
+| `list` or `list --format records-json` | Without an Issue filter, one bounded current snapshot of every Memory and every Issue the ordinary `bd list` would show: closed and pinned Issues are hidden unless `--all`, which also lifts the row limit. Ordered by canonical Bead ID; human rows show local ID and kind, and for an Issue its status and priority, then the title. `--bead-type types/NAME` narrows by nominal Bead Type. Any Issue filter (status/state, type, title/title-contains, priority and range, assignee/no-assignee, label/label-any/exclude-label, pinned/no-pinned, due-before/due-after/overdue, sort or reverse, or a matching configured directory label) selects the native Issue-only query, which omits closed and pinned Issues unless `--all` or a filter selects them. See [All-Bead listing](#all-bead-listing). `hasMore` reports whether a row limit omitted matches; tree and legacy JSON remain unavailable. |
 | `blocked` | Complete native dependency-blocked Issue view with canonical blocker IDs. No filters or positive `BEADS_MAX_ROWS`. |
 | `graph BEAD --view generic` | Current local summary traversal with `--direction in\|out\|both`, `--depth`, `--max-nodes` and `--max-links`. |
 | `status --graph` | Report the capabilities and bounds admitted by this checkpoint, including initial Issue fields/notes, append-only notes, estimate/reference edits and due-date authoring/filtering. |
@@ -481,16 +481,22 @@ remains false because linked Memory deletion policy is unresolved.
 
 Without an Issue filter (bare `bd list`, or only `--flat`,
 `--format records-json`, `--bead-type`, `--limit` and `--all`), the command
-reads one checked current snapshot. It lists every current Memory and every
-current Issue whatever its status, closed Issues included, ordered by
-canonical Bead ID rather than by status or priority. Human output prints one
-unquoted row per Bead with only its local ID, kind and title. For a workspace
-holding the Memory `beads/plan` and the Issue `beads/work`:
+reads one checked current snapshot and lists its Beads: every current Memory
+and every current Issue that the ordinary `bd list` would show. Closed and
+pinned Issues are hidden, exactly as there: an Issue with status `closed` or
+`pinned`, a set pinned flag, or a custom status in the done or frozen
+category. `--all` shows them and also removes the row limit. A Memory has no
+status and is never hidden.
+
+Beads are ordered by canonical Bead ID rather than by status or priority.
+Human output prints one unquoted row per Bead: the local ID and kind, then for
+an Issue its status and priority, then the title. For a workspace holding the
+Memory `beads/plan` and the Issue `beads/work`:
 
 ```text
 Beads (2; more: false; graph preview)
   beads/plan  Memory  Release plan
-  beads/work  Issue   Ship the release
+  beads/work  Issue   open  P1  Ship the release
 ```
 
 `--format records-json` returns the same Beads as complete Memory and Issue
@@ -499,11 +505,11 @@ records in `result.items`, with `result.hasMore`. An optional
 uninstalled Types refuse with `capability_unavailable`, and a selector that
 is neither `types/NAME` nor a full local Type URL refuses with
 `invalid_selector`. `--bead-type types/preview-issue-v2` on its own stays in
-this mode, so it lists closed Issues too. `--all` only removes the row limit;
-it adds no Beads. The snapshot inherits the 1,000-live-Resource/16 MiB
-acquisition bounds, including Links that are not printed. `--limit` returns a
-prefix and truthful `hasMore` but does not return a continuation cursor. For
-paginated all-Bead enumeration, use the BDP HTTP `beads/` collection.
+this mode, so it hides closed and pinned Issues too unless `--all` is given.
+The snapshot inherits the 1,000-live-Resource/16 MiB acquisition bounds,
+including Links that are not printed. `--limit` returns a prefix and truthful
+`hasMore` but does not return a continuation cursor. For paginated all-Bead
+enumeration, use the BDP HTTP `beads/` collection.
 
 Any Issue filter selects the existing native Issue query instead. The Issue
 filters are `--status` (or `--state`), `--type`, `--title`,
