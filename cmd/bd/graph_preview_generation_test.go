@@ -5,16 +5,6 @@ import (
 	"testing"
 )
 
-// RED placeholders: the production predicate is not written yet. They delegate
-// to the old exact-match behavior so the assertions below fail instead of the
-// package failing to compile. The GREEN commit deletes this block and adds the
-// real functions beside graphPreviewGeneration in graph_preview.go.
-func graphPreviewGenerationSupported(marker []byte) bool {
-	return string(marker) == graphPreviewGeneration
-}
-
-func graphPreviewGenerationNewer(marker []byte) bool { return false }
-
 // The workspace marker is the first thing admission reads, so its
 // classification is exact: only the two supported generations are accepted,
 // only a well-formed higher generation is called newer, and every other byte

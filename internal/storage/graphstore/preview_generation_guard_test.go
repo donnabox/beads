@@ -8,12 +8,6 @@ import (
 	"testing"
 )
 
-// RED placeholder: the exported accessor is not written yet. It returns nothing
-// so the assertions below fail instead of the package failing to compile. The
-// GREEN commit deletes this and adds the real FreshTypeNames beside
-// previewTypeDefinitions.
-func FreshTypeNames() []string { return nil }
-
 // The workspace format generation is checked against the Types a fresh init
 // installs, so the list it is checked against must be the installer's own list
 // and not a second copy that can drift from it.

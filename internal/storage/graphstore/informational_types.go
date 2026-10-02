@@ -35,6 +35,18 @@ func previewTypeDefinitions() []previewTypeDefinition {
 	}
 }
 
+// FreshTypeNames lists, in installation order, the Types a fresh init installs.
+// The workspace format generation recorded by the CLI must change whenever this
+// list does, so the CLI checks the generation against it.
+func FreshTypeNames() []string {
+	definitions := previewTypeDefinitions()
+	names := make([]string, len(definitions))
+	for i, definition := range definitions {
+		names[i] = definition.name
+	}
+	return names
+}
+
 func exampleFollowsDescriptor(scope string) (graph.TypeDescriptor, error) {
 	return exampleInformationalDescriptor(ExampleFollowsTypeURL(scope), "Example follows", "The source follows a policy or model described by the target.")
 }
