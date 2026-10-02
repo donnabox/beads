@@ -5120,6 +5120,29 @@ func TestC1NoNewWorkflowFile(t *testing.T) {
 	}
 }
 
+// C1.PRCoreCheckoutCarriesHistory: the required Linux PR Core job checks out
+// the full history. A replay scenario can build an older bd from a pinned
+// commit, and with REPLAY_REQUIRE=1 (TestC1PRCoreSetsReplayRequire) a commit
+// missing from the checkout fails the scenario instead of skipping it, so
+// GitHub's default depth-1 checkout would fail such a scenario on every run.
+// The job has exactly one actions/checkout step, so no second checkout can
+// take the history away again.
+func TestC1PRCoreCheckoutCarriesHistory(t *testing.T) {
+	job := readCIWorkflow(t, "pr.yml").job(t, "pr-core-wrapper")
+	var checkouts []ciWorkflowStep
+	for _, step := range job.Steps {
+		if actionFamily(step.Uses) == "actions/checkout" {
+			checkouts = append(checkouts, step)
+		}
+	}
+	if len(checkouts) != 1 {
+		t.Fatalf("pr.yml job pr-core-wrapper has %d actions/checkout steps, want exactly 1; a replay scenario that builds an older bd from a pinned commit needs that one checkout to carry the full history, and a second checkout could take it away again", len(checkouts))
+	}
+	if got := checkouts[0].With["fetch-depth"]; got != "0" {
+		t.Errorf("pr.yml job pr-core-wrapper checks out with fetch-depth %q, want \"0\" (an unset depth is GitHub's default of 1); a replay scenario that builds an older bd from a pinned commit needs that commit in the checkout, and REPLAY_REQUIRE=1 makes it a failure when it is missing", got)
+	}
+}
+
 // Every artifact bazel.yml uploads has a fixed name within its run, and a
 // job re-run ("Re-run failed jobs", the documented recovery for a Bazel lane
 // that hit a remote cache eviction or a flake) is the same workflow run:
