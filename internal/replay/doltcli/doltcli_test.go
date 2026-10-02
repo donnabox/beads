@@ -118,7 +118,7 @@ func TestQuery_ParsesStdoutOnly(t *testing.T) {
 	if want := []string{"id", "title"}; !reflect.DeepEqual(header, want) {
 		t.Errorf("header = %v, want %v", header, want)
 	}
-	if want := [][]string{{"x-1", "Widget, deluxe"}}; !reflect.DeepEqual(rows, want) {
+	if want := [][]Cell{{{Text: "x-1"}, {Text: "Widget, deluxe"}}}; !reflect.DeepEqual(rows, want) {
 		t.Errorf("rows = %v, want %v", rows, want)
 	}
 }
@@ -147,7 +147,7 @@ func TestQuery_MissingDolt(t *testing.T) {
 }
 
 func TestRowMap(t *testing.T) {
-	got := RowMap([]string{"id", "title", "status"}, []string{"x-1", "Widget"})
+	got := RowMap([]string{"id", "title", "status"}, []Cell{{Text: "x-1"}, {Text: "Widget"}})
 	want := map[string]string{"id": "x-1", "title": "Widget"}
 	if !reflect.DeepEqual(got, want) {
 		t.Errorf("RowMap with a short row = %v, want %v", got, want)

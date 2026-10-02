@@ -12,6 +12,7 @@ import (
 
 	"github.com/spf13/cobra"
 	"github.com/spf13/pflag"
+	graph "github.com/steveyegge/beads/graphops"
 	"github.com/steveyegge/beads/internal/storage"
 	"github.com/steveyegge/beads/internal/storage/graphstore"
 	"github.com/steveyegge/beads/internal/utils"
@@ -26,6 +27,32 @@ func runGraphPreviewList(cmd *cobra.Command) error {
 	in, structured, err := graphIssueListInput(cmd, os.Args[1:])
 	if err != nil {
 		return err
+	}
+	selectedType := ""
+	if cmd.Flags().Changed("bead-type") {
+		selector, _ := cmd.Flags().GetString("bead-type")
+		selectedType, err = graphPreviewTypeURL(graphPreviewConfig.GraphScopeURL, selector)
+		if err != nil {
+			return graphFailure("invalid_selector", err.Error(), 2)
+		}
+	}
+	issueFilters := graphIssueListFiltersSelected(cmd, in)
+	if issueFilters && selectedType != "" && selectedType != graphstore.IssueTypeURL(graphPreviewConfig.GraphScopeURL) {
+		return graphFailure("capability_unavailable", "Issue list filters cannot be combined with a non-Issue --bead-type", 5)
+	}
+	if !issueFilters {
+		return withGraphStoreOutput(func(ctx context.Context, s *graphstore.Store) (any, string, error) {
+			snapshot, err := s.CurrentSnapshot(ctx)
+			if err != nil {
+				return nil, "", err
+			}
+			page, err := graphBeadListFromSnapshot(snapshot, selectedType, *in.Limit, in.MaxRows)
+			if err != nil {
+				return nil, "", err
+			}
+			output, err := renderGraphBeadList(page, s.ScopeURL(), structured, quietFlag)
+			return nil, output, err
+		}, func(_ any, output string) error { _, err := fmt.Fprint(cmd.OutOrStdout(), output); return err })
 	}
 	return withGraphStoreOutput(func(ctx context.Context, s *graphstore.Store) (any, string, error) {
 		page, err := s.ListIssues(ctx, in.ListRequest)
@@ -44,7 +71,7 @@ func graphIssueListInput(cmd *cobra.Command, argv []string) (listInput, bool, er
 	fail := func(code, message string, exit int) (listInput, bool, error) {
 		return listInput{}, false, graphFailure(code, message, exit)
 	}
-	if err := graphPreviewFlags(cmd, "flat", "format", "status", "state", "type", "all", "limit", "title", "title-contains", "priority", "priority-min", "priority-max", "label", "label-any", "exclude-label", "pinned", "no-pinned", "sort", "reverse", "assignee", "no-assignee", "due-before", "due-after", "overdue"); err != nil {
+	if err := graphPreviewFlags(cmd, "flat", "format", "bead-type", "status", "state", "type", "all", "limit", "title", "title-contains", "priority", "priority-min", "priority-max", "label", "label-any", "exclude-label", "pinned", "no-pinned", "sort", "reverse", "assignee", "no-assignee", "due-before", "due-after", "overdue"); err != nil {
 		return listInput{}, false, err
 	}
 	format, _ := cmd.Flags().GetString("format")
@@ -53,8 +80,8 @@ func graphIssueListInput(cmd *cobra.Command, argv []string) (listInput, bool, er
 		return fail("capability_unavailable", "graph list preserves the Issue JSON compatibility gate; use --format records-json for experimental graph records", 5)
 	}
 	flat, _ := cmd.Flags().GetBool("flat")
-	if (cmd.Flags().Changed("format") && !structured) || (!structured && !flat) || (cmd.Flags().Changed("flat") && !flat) {
-		return fail("capability_unavailable", "graph list requires --flat or --format records-json; tree and legacy JSON are unavailable", 5)
+	if (cmd.Flags().Changed("format") && !structured) || (cmd.Flags().Changed("flat") && !flat) {
+		return fail("capability_unavailable", "graph list supports flat output or --format records-json; tree and legacy JSON are unavailable", 5)
 	}
 	if err := graphIssueListRepeatedFilters(cmd, argv); err != nil {
 		return fail("capability_unavailable", err.Error(), 5)
@@ -141,7 +168,7 @@ func graphIssueListRepeatedFilters(cmd *cobra.Command, argv []string) error {
 	if err := probe.Parse(argv); err != nil {
 		return fmt.Errorf("cannot validate graph list filter occurrences: %w", err)
 	}
-	for _, name := range []string{"status", "state", "type", "assignee"} {
+	for _, name := range []string{"status", "state", "type", "assignee", "bead-type"} {
 		if count := counts[name]; count != nil && count.n > 1 {
 			return fmt.Errorf("graph list does not yet support repeated --%s; supply one filter", name)
 		}
@@ -157,6 +184,90 @@ type graphIssueListFlagCount struct {
 func (v *graphIssueListFlagCount) Set(string) error { v.n++; return nil }
 func (v *graphIssueListFlagCount) String() string   { return "" }
 func (v *graphIssueListFlagCount) Type() string     { return v.kind }
+
+// The existing Issue filters keep their native query and result contract.
+// An unfiltered graph list, or one narrowed only by nominal Bead Type, reads
+// the complete checked current inventory and projects its Beads. In
+// particular, implicit directory labels must not be silently ignored.
+func graphIssueListFiltersSelected(cmd *cobra.Command, in listInput) bool {
+	for _, name := range []string{"status", "state", "type", "title", "title-contains", "priority", "priority-min", "priority-max", "label", "label-any", "exclude-label", "pinned", "no-pinned", "sort", "reverse", "assignee", "no-assignee", "due-before", "due-after", "overdue"} {
+		if cmd.Flags().Changed(name) {
+			return true
+		}
+	}
+	return in.Status != "" || in.IssueType != "" || in.TitleSearch != "" || in.TitleContains != "" || in.Assignee != "" || in.NoAssignee || len(in.Labels) != 0 || len(in.LabelsAny) != 0 || len(in.ExcludeLabels) != 0 || in.Priority != nil || in.PriorityMin != nil || in.PriorityMax != nil || in.PinnedFlag || in.NoPinnedFlag || in.SortBy != "" || in.Reverse || in.DueBefore != nil || in.DueAfter != nil || in.OverdueFlag
+}
+
+type graphBeadListPage struct {
+	Items   []any `json:"items"`
+	HasMore bool  `json:"hasMore"`
+}
+
+func graphBeadListFromSnapshot(snapshot graphstore.Snapshot, selectedType string, limit, maxRows int) (graphBeadListPage, error) {
+	if selectedType != "" {
+		installed := false
+		for _, descriptor := range snapshot.Types {
+			if descriptor.ID() == selectedType && descriptor.Describes() == graph.KindBead {
+				installed = true
+				break
+			}
+		}
+		if !installed {
+			return graphBeadListPage{}, fmt.Errorf("%w: --bead-type must name an installed Bead Type", graphstore.ErrCapabilityUnavailable)
+		}
+	}
+	page := graphBeadListPage{Items: []any{}}
+	for _, value := range snapshot.Records {
+		switch record := value.(type) {
+		case graphstore.Record:
+			if selectedType == "" || record.Type == selectedType {
+				page.Items = append(page.Items, record)
+			}
+		case graphstore.IssueRecord:
+			if selectedType == "" || record.Type == selectedType {
+				page.Items = append(page.Items, record)
+			}
+		case graphstore.LinkRecord:
+			// A Link is a Resource, but never a Bead.
+		default:
+			return graphBeadListPage{}, fmt.Errorf("%w: unsupported current Resource projection", graphstore.ErrInvalidStore)
+		}
+	}
+	if maxRows > 0 && len(page.Items) > maxRows {
+		return graphBeadListPage{}, fmt.Errorf("%w: Bead list exceeds configured maximum of %d rows", graphstore.ErrLimitExceeded, maxRows)
+	}
+	if limit > 0 && len(page.Items) > limit {
+		page.Items = page.Items[:limit]
+		page.HasMore = true
+	}
+	return page, nil
+}
+
+func renderGraphBeadList(page graphBeadListPage, scope string, structured, quiet bool) (string, error) {
+	var human strings.Builder
+	if !structured && !quiet {
+		fmt.Fprintf(&human, "Beads (%d; more: %t; graph preview)\n", len(page.Items), page.HasMore)
+		for _, value := range page.Items {
+			switch record := value.(type) {
+			case graphstore.Record:
+				fmt.Fprintf(&human, "  %s  Memory  %s\n", graphMemoryDisplayText(strings.TrimPrefix(record.ID, scope)), graphMemoryDisplayText(record.Properties.Title))
+			case graphstore.IssueRecord:
+				fmt.Fprintf(&human, "  %s  Issue   %s\n", graphMemoryDisplayText(strings.TrimPrefix(record.ID, scope)), graphMemoryDisplayText(record.Properties.Title))
+			}
+		}
+		if page.HasMore {
+			human.WriteString("More Beads exist; increase --limit or use --all within preview bounds.\n")
+		}
+	}
+	var output bytes.Buffer
+	if err := graphPrintTo(&output, page, strings.TrimSuffix(human.String(), "\n"), quiet, structured); err != nil {
+		return "", err
+	}
+	if output.Len() > graphIssueListOutputLimit {
+		return "", fmt.Errorf("%w: Bead list output exceeds %d bytes; narrow the query", graphstore.ErrLimitExceeded, graphIssueListOutputLimit)
+	}
+	return output.String(), nil
+}
 
 func renderGraphIssueList(page graphstore.IssueListPage, structured, quiet bool) (string, error) {
 	var human strings.Builder

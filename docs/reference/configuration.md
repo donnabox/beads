@@ -5,7 +5,7 @@ description: Complete reference for bd configuration across config.yaml and data
 
 Complete configuration reference for beads.
 
-Last reviewed: 2026-08-28
+Last reviewed: 2026-09-10
 
 Freshness source: `cmd/bd/main.go`, `cmd/bd/config.go`, and `internal/configfile/`.
 
@@ -125,7 +125,9 @@ Any key whose name contains `api_key`, `api-key`, `secret`, `token`, or `passwor
 | `backup.enabled` | — | `BD_BACKUP_ENABLED` | `false` | Enable periodic Dolt-native backup to `.beads/backup/` (see [below](#auto-backup)) |
 | `backup.interval` | — | `BD_BACKUP_INTERVAL` | `15m` | Minimum time between auto-backups |
 | `backup.git-push` | — | — | `false` | Auto-push backup repo |
-| `backup.git-repo` | — | `BD_BACKUP_GIT_REPO` | (none) | Backup git repo URL; when set, backups go to a `backup/` directory inside that repo |
+| `backup.git-repo` | — | `BD_BACKUP_GIT_REPO` | (none) | Path to a local git repository (`~/` expands); when set, auto-backup syncs to a `backup/` directory inside it. A path without `.git` falls back to `.beads/backup/` with a warning |
+| `backup.size-cap-mb` | — | `BD_BACKUP_SIZE_CAP_MB` | `2048` | Pause auto-backup once the destination directory reaches this size; `0` disables the cap (see [below](#auto-backup)) |
+| `backup.size-warn-interval` | — | `BD_BACKUP_SIZE_WARN_INTERVAL` | `24h` | Minimum time between repeated "auto-backup paused" warnings |
 | `audit.enabled` | — | `BD_AUDIT_ENABLED` | `false` | Enable the optional JSONL interaction sidecar at `.beads/interactions.jsonl`, written by `bd audit record` / `bd audit label`. While disabled, `bd init` does not create the file and `bd audit record` / `bd audit label` refuse to write. Issue history is always recorded in the database either way — see `bd history <id> --events` |
 | `export.auto` | — | — | `false` | Refresh `.beads/issues.jsonl` export after every write; not cross-machine sync |
 | `export.path` | — | — | `issues.jsonl` | Output filename relative to `.beads/` |
@@ -224,15 +226,19 @@ Periodic Dolt-native backup to `.beads/backup/` provides a recovery path indepen
 
 ```yaml
 backup:
-  enabled: true    # Enable auto-backup after write commands
-  interval: 15m    # Minimum time between auto-backups
+  enabled: true              # Enable auto-backup after write commands
+  interval: 15m              # Minimum time between auto-backups
+  size-cap-mb: 2048          # Pause auto-backup once the destination reaches this size; 0 disables the cap
+  size-warn-interval: 24h    # Minimum time between repeated "paused" warnings
 ```
 
 How it works:
 
 - After each write command, `bd` compares the Dolt HEAD commit hash against the last backup state.
-- If data changed and the throttle interval has passed, a Dolt-native backup is synced to `.beads/backup/` (or to a `backup/` directory inside `backup.git-repo` when configured).
-- State is tracked in `backup_state.json` inside the backup directory.
+- If data changed and the throttle interval has passed, `bd` checks the destination directory's on-disk size against `backup.size-cap-mb`. `CALL DOLT_BACKUP('sync', ...)` only ever adds new chunks to the destination — it never prunes ones that became unreachable on the source (history rewrites, superseded data), and Dolt exposes no supported way to GC a backup destination in place. Left uncapped, the destination can only grow until disk fills; this was the root cause of a 2026-06-19 outage where a 1.7GB store produced a 43GB backup directory. Once the cap is reached, auto-backup pauses — nothing is deleted, but no further syncs run until you raise `backup.size-cap-mb` or point `backup.git-repo` at a different git repository, whose `backup/` directory then becomes the destination. `bd backup init` does not end the pause: it configures the separate destination that manual `bd backup sync` pushes to. Set `size-cap-mb: 0` to disable the cap entirely.
+- If the destination is under its cap, a Dolt-native backup is synced to `.beads/backup/` (or to a `backup/` directory inside `backup.git-repo` when configured).
+- State is tracked in `backup_state.json` inside the backup directory. `bd backup status` prints `PAUSED (cap exceeded)` when the destination is over its cap, and its `--json` output reports the same state as `size_cap.exceeded: true` — so an agent/CI caller relying on `--json` or `--quiet` can see that auto-backup has stopped instead of reading a reassuring "Last backup" line while nothing further syncs.
+- The cap applies only to auto-backup; manual `bd backup` / `bd backup sync` are not capped.
 
 Manual commands (see [bd backup](/cli-reference/backup)):
 
@@ -284,7 +290,7 @@ export BEADS_ACTOR="my-github-handle"
 
 ## Project-Level Settings (Database)
 
-These are written to the Dolt database by `bd config set` and have no env var override. Common namespaces:
+These are written to the Dolt database by `bd config set` and have no env var override, with one exception: `versioned-history.enabled` also honors `BD_VERSIONED_HISTORY_ENABLED` (see [Versioned Issue History](#versioned-issue-history)). Common namespaces:
 
 | Namespace | Purpose |
 |---|---|
@@ -304,6 +310,7 @@ These are written to the Dolt database by `bd config set` and have no env var ov
 | `min_hash_length`, `max_hash_length` | Adaptive ID bounds (defaults `3` and `8`) |
 | `max_collision_prob` | Hash ID collision tolerance (default `0.25`) |
 | `claim.pools` | Comma-separated pool aliases: placeholder assignees that any actor can take with `bd update <id> --claim` (see [below](#claim-pools)). Unset by default, which turns pool claiming off |
+| `versioned-history.enabled` | `true` records a version row for every issue write to this store; off by default. Unlike the rest of this table it also honors an environment variable, which can only turn it on (see [below](#versioned-issue-history)) |
 | `doctor.suppress.*` | Suppress specific `bd doctor` warnings by check slug (warnings only; errors always show) |
 
 Issue prefix (`issue_prefix`) is **not** settable via `bd config set` — use `bd init --prefix`, `bd bootstrap`, or `bd rename-prefix`.
@@ -393,6 +400,23 @@ Claiming reads this key from the database only. A `claim.pools` value in `config
 - **Reassigning.** `bd assign` and `bd update <id> --assignee` can move an `in_progress` issue that a pool alias holds without `--force`.
 - **`bd ready --claim`** takes only unassigned issues, so it skips pool-assigned ones even though `bd ready` lists them. Claim those by ID.
 - **Lease expiry.** If the claimer's lease expires, `bd reclaim` sets the issue back to `open` with no assignee. It does not return the issue to the pool alias, so a dispatcher that wants it back in the pool has to reassign it.
+
+### Versioned Issue History
+
+While `versioned-history.enabled` is on, every write to an issue also stores a snapshot of it as a row of `issue_versions`, in the same transaction, and `bd versions <id>` lists them. It is off by default, and it does not backfill: versions are recorded from the moment it is turned on.
+
+```bash
+bd config set versioned-history.enabled true    # turn it on
+bd config set versioned-history.enabled false   # turn it off
+```
+
+- **The switch belongs to the store.** It is a row of the database `config` table, so `bd config set` writes it there and not to `config.yaml`. Every store answers for itself: a write routed into another workspace (a prefix-routed `bd update` or `bd close`, or `bd create --repo`) reads the *target* store's row, never the row of the workspace you launched `bd` from.
+- **It replicates.** The config table travels with `bd dolt push` and `bd dolt pull`, so enabling it on one clone turns it on for every clone that pulls.
+- **Single writer only.** Keep one writer at a time per store, and never two disconnected clones recording. Two writers that each mint the same revision for an issue collide on merge, and the pull fails (`VersionedHistoryConfigurer` in `internal/storage/storage.go`, and [#6379](https://github.com/gastownhall/beads/issues/6379) item 4). Because the setting replicates, turning it on is a decision for the whole store, not for one clone.
+- **Turning it on checks the store first.** `bd config set versioned-history.enabled true` reads every issue the store would version and refuses, writing nothing, while any holds metadata a version could not record: a number outside the I-JSON exact-integer range (magnitude above 2^53-1, whatever its spelling, fractions and exponent forms included) or duplicate keys. It prints how many issues, which ones (the first 20) and what is wrong with each. Rows like that come from writes made while history was off, or through a path that does not record (`bd sql`, an import); with history on, a write that introduces one already fails at once and commits nothing, and so does a later write to a row that already holds one. Fix each issue while history is off, one command per issue: `bd update <id> --metadata '{"<key>": "<value as a string>"}'` to replace the value, or `bd update <id> --unset-metadata <key>` to remove the key, then run the command again. **There is no override**: the check has no flag, and `bd config set versioned-history.enabled false` never runs it. Turning recording on through `BD_VERSIONED_HISTORY_ENABLED` or `config.yaml` does not go through this command, so nothing is checked ahead of time there; a write to such a row is refused when it happens.
+- **The environment can turn it on, never off.** `BD_VERSIONED_HISTORY_ENABLED=1`, or a hand-written `enabled: true` under `versioned-history:` in `config.yaml`, applies to every store the process opens, routed targets included. The environment and the row are OR'd, not ranked, so `BD_VERSIONED_HISTORY_ENABLED=0` does not turn off a store whose row says `true`. Turn it off where it was turned on: `bd config set versioned-history.enabled false`.
+- **Server-backed modes read the same row.** Proxied-server mode, and `bd serve` against a server-mode workspace, write through a unit-of-work provider rather than a store. The provider reads the row from its own database when it is constructed, through a short read-only transaction that is rolled back, so `bd config set versioned-history.enabled true` covers those modes too. It does not fall back to the environment alone.
+- **The value is read when a store is opened.** A long-lived process such as `bd serve` keeps the value it read at start until it is restarted, so after changing the setting, restart it.
 
 ## Sync and Federation
 
@@ -490,6 +514,7 @@ Selected commonly-used variables:
 | `BD_DOLT_AUTO_COMMIT` | Override `dolt.auto-commit` (`on`/`off`) |
 | `BD_DOLT_AUTO_PUSH`, `BD_DOLT_AUTO_PUSH_INTERVAL`, `BD_DOLT_AUTO_PUSH_TIMEOUT` | Override auto-push settings |
 | `BD_BACKUP_ENABLED`, `BD_BACKUP_INTERVAL`, `BD_BACKUP_GIT_REPO` | Override backup settings |
+| `BD_VERSIONED_HISTORY_ENABLED` | Turn on `versioned-history.enabled` for every store the process opens. `1` turns recording on; `0` does not turn it off for a store whose row says `true` (see [Versioned Issue History](#versioned-issue-history)) |
 | `BD_AGENT_PROFILE` | Override `agent.profile` |
 | `BD_AI_MODEL` | Override AI model |
 | `BD_FEDERATION_REMOTE`, `BD_FEDERATION_SOVEREIGNTY` | Override federation settings |
@@ -503,6 +528,7 @@ Selected commonly-used variables:
 | `BEADS_ACTOR` | Actor identity (preferred over `BD_ACTOR`, which is a deprecated alias) |
 | `BEADS_IDENTITY` | Sender identity for `bd mail` |
 | `BEADS_FSCK_TIMEOUT` | Runtime-only timeout for the pre-push `dolt fsck --quiet` integrity check (default `30s`) |
+| `BEADS_MIGRATION_WATCHDOG_INTERVAL` | Interval between soft WARN lines while a schema migration's SQL keeps running (default `5m`; accepts durations like `10m` or bare seconds like `90`). Observability only — it never aborts a migration |
 | `BEADS_DOLT_SERVER_MODE`, `BEADS_DOLT_SHARED_SERVER`, `BEADS_DOLT_DATA_DIR`, `BEADS_DOLT_PORT`, ... | Embedded/server Dolt overrides |
 | `BEADS_DOLT_BIN` | Pin the exact external `dolt` CLI binary managed proxied-server mode spawns, overriding PATH lookup (highest precedence; an explicit path that fails validation is an error, not a silent fallback to PATH). On Windows the executable extension may be omitted — `C:\tools\dolt` finds `C:\tools\dolt.exe` via PATHEXT, though a file at the exact spelled path wins if both exist |
 

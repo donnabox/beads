@@ -140,19 +140,22 @@ var funcNameExemptions = map[string]string{
 	// ExpectedVersion CAS reject a row it should still recognize.
 	"resolveOneConflictRow": "whole-row `theirs` adoption: the adopted row_lock already vouches for the (identical) adopted content",
 
-	// recordVersionAtInTx (version_history.go) is the shared body behind both
-	// RecordVersionInTx and its R7.1 test-support twin RecordVersionAtInTx
-	// (gastownhall/beads#5898 rev 9, gastownhall/beads#6136, be-x5jqd.5).
-	// RecordVersionInTx's production callers run it immediately after the
+	// recordVersionAtInTx (version_history.go) is the shared body behind all
+	// three public entry points: RecordVersionInTx (update-shaped),
+	// RecordVersionForCreateInTx (create-shaped, design §16.2b's write fence,
+	// be-h89oq) and the R7.1 test-support twin RecordVersionAtInTx
+	// (gastownhall/beads#5898 rev 9, gastownhall/beads#6136).
+	// The two production entry points' callers run it immediately after the
 	// mutation it is snapshotting — create.go/update.go's own writes, or
 	// domain/db's Insert/Update — and those callers have already minted a
 	// fresh row_lock in that same INSERT/UPDATE, in the same transaction.
 	// RecordVersionAtInTx's fixture-only callers likewise run it only after a
 	// bare-create has already minted the row's row_lock, never as a row's
 	// first write. Either way, this function's own
-	// `UPDATE issues SET current_revision = ?` only advances a denormalized
-	// pointer to the issue_versions row it just inserted; it deliberately
-	// does not touch row_lock at all (not even to carry the existing value
+	// `UPDATE issues SET current_revision = ?` statements (the create-shaped
+	// one also stamps participation_generation in the same statement) only
+	// advance denormalized pointers/columns to match the issue_versions row
+	// it just inserted; neither touches row_lock at all (not even to carry the existing value
 	// forward) because reminting here would bump the token a second time
 	// within one transaction, invalidating the RowVersion/CAS value the
 	// primary mutation's own caller already captured and could cause a

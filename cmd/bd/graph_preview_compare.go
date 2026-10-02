@@ -13,6 +13,7 @@ var graphCompareCmd = &cobra.Command{
 	Use:   "compare RESOURCE --from TOKEN --to TOKEN",
 	Short: "Compare two exact retained graph versions (experimental)",
 	Long: `Compare complete retained preview properties and owned Links for one Resource.
+An unprefixed selector means a Bead under beads/; use links/PATH for a Link.
 The explicit from/to tokens select direction, not a chronology. Both versions must
 be available. Output is experimental JSON (indented for humans); common metadata,
 full Memory fields and public History are not implemented. Use bd diff for Dolt refs.`,

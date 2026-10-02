@@ -33,7 +33,8 @@ import (
 // named helper (mintDependencyVersion, addLabelInTx, updateIssueInTx, ...)
 // whose mint it did not switch off — see versionMintGate.
 var versionMintHelpers = map[string]bool{
-	"RecordVersionInTx": true,
+	"RecordVersionInTx":          true,
+	"RecordVersionForCreateInTx": true,
 }
 
 // versionMintGate names the boolean parameter the constituent helpers
@@ -215,10 +216,11 @@ var versionExemptions = map[string]string{
 
 	// the seam itself: its UPDATE issues SET current_revision is the
 	// bookkeeping half of the mint, not a mutation that needs its own.
-	"RecordVersionInTx": "the seam itself; advances current_revision to match the row it just inserted",
+	"RecordVersionInTx":          "the seam itself; advances current_revision to match the row it just inserted",
+	"RecordVersionForCreateInTx": "the seam's create-shaped sibling; stamps participation_generation and advances current_revision to match the row it just inserted",
 
 	// RecordVersionAtInTx (R7.1 as-of read, gastownhall/beads#5898 rev 9,
-	// gastownhall/beads#6136, be-x5jqd.5) shares RecordVersionInTx's body
+	// gastownhall/beads#6136) shares RecordVersionInTx's body
 	// (recordVersionAtInTx) but deliberately does not call RecordVersionInTx
 	// itself — it exists precisely to bypass RecordVersionInTx's
 	// versionedHistoryEnabled gate, so an as-of-read conformance fixture can

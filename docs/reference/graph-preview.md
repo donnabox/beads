@@ -1,5 +1,11 @@
 # Mixed Memory and Issue graph preview
 
+For setup and task-oriented commands, start with the
+[graph CLI guide](/reference/graph-cli). This page is the living technical
+reference for the preview's exact command matrix, contracts, bounds and
+unsupported operations. The blog post is the publication narrative; this
+reference and the CLI guide continue to change with the implementation.
+
 This integration checkpoint supports a bounded Memory/Issue workflow in a
 **fresh, explicitly selected graph workspace**. Existing ordinary Issue
 workspaces continue using their existing commands and storage. The generic
@@ -10,20 +16,26 @@ Start in a new directory with no `.beads` directory:
 ```sh
 git init
 bd init --graph-mode link --scope-url https://example.org/team/ \
-  --skip-hooks --skip-agents --non-interactive
+  --non-interactive
 bd remember 'The release uses the integration branch.' \
-  --id beads/plan --title 'Release plan' --json
-bd show beads/plan --json
+  --id plan --title 'Release plan' --json
+bd show plan --json
 # A separate invocation reopens the same stored Memory.
 bd show https://example.org/team/beads/plan --json
 bd status --graph --json
 ```
 
 The Scope URL establishes local identity; initialization does not publish a
-web server at that address. Local `beads/PATH`, `links/PATH` and their exact
-Scope URLs identify records. Aliases and foreign Scope URLs are unavailable.
-Creation uses an explicit canonical Bead path; an allocated identity cannot
-be reused for a different record.
+web server at that address. Every Bead is canonically under `beads/`; every
+Link is under `links/`. CLI `plan` is shorthand for `beads/plan`, including in
+commands that also accept Links (`show`, `compare`, and `update`). Select a Link
+there with explicit `links/PATH`. Local canonical paths and their exact Scope
+URLs remain accepted; aliases and foreign Scope URLs are unavailable. This
+shorthand only changes CLI input, never stored identity or output.
+Creation accepts an optional bare `--id ID` or canonical `--id beads/PATH`;
+omitting it generates a random canonical ID. An explicit ID is used at its
+canonical Bead path and duplicates fail;
+an allocated identity cannot be reused for a different record.
 
 For an ordinary external Dolt SQL server, add these options to `bd init`:
 
@@ -50,93 +62,177 @@ commands supported by this graph preview:
 bd remember "Use UTC for timestamps" --id beads/time-policy --title "Timestamp policy"
 bd recall beads/time-policy
 bd memories timestamps --format records-json
-bd status --graph
 ```
 
-Choose a distinct canonical ID for each new fact. These commands demonstrate
-storage and retrieval across invocations; installing instructions does not
+The block also points to `bd status --graph` for the workspace's supported
+capabilities.
+
+Omit `--id` to allocate a distinct canonical ID for each new fact, or choose an
+explicit ID as above. These commands demonstrate storage and retrieval across invocations; installing instructions does not
 guarantee that an agent will decide to save a fact.
 
 Graph initialization preserves surrounding user-authored text and an existing
 `CLAUDE.md` import of `@AGENTS.md`. An existing minimal managed block is replaced
 with graph instructions; pass `--skip-agents` to preserve that block unchanged.
-It installs no agent hooks or separate Claude instructions. Use your agent's existing support for the configured instruction
-file. The ordinary `bd prime` and `bd setup` commands remain unavailable in
-graph mode.
+By default, initialization also registers Stephanie's existing Claude Stop
+reminder in project-local `.claude/settings.json` and adds an active import in
+`CLAUDE.md` when needed. `--skip-hooks` omits the Stop registration and the
+`CLAUDE.md` import; `--skip-agents` omits guidance, the import and the Stop
+registration. Existing Claude settings, plugins and instructions are checked
+for conflicts before a graph database is created; init refuses without
+rewriting conflicting files, names the file to change, and suggests
+`--skip-hooks`. If the Stop hook cannot be written after the database is
+created (for example, an unwritable `.claude` directory), init prints a
+warning and completes the workspace without it. Use `bd setup claude` to
+install the Stop hook later in a workspace initialized with `--skip-hooks` or
+after such a warning:
+
+```sh
+bd setup claude
+bd setup claude --check
+# Remove only the project Stop registration when no longer wanted:
+bd setup claude --remove
+```
+
+This graph adapter adds only `bd claude-hook stop` to project-local
+`.claude/settings.json`, preserving user settings values (including large integer
+values), hook siblings, existing file permissions, and all
+instructions (including `ProfileGraphPreview`). A changed settings file is
+reformatted as sorted, two-space-indented JSON; original key order/whitespace
+is not retained. A stale graph-profile hash refuses unchanged and requires
+operator reconciliation of that managed block before setup. It creates or appends an active
+`@AGENTS.md` import in `CLAUDE.md` (using the configured agents filename); an
+existing active import and user text remain unchanged. Unsafe paths, unclosed
+fences or stale managed Beads blocks refuse before settings/instructions are
+changed. Removal retains the import and all instructions. `--project` is optional;
+`--check` and `--remove` are mutually exclusive. It never installs `bd prime`
+SessionStart/PreCompact hooks. Existing Beads plugins or prime hooks in project,
+legacy-local or global settings cause installation/check to refuse unchanged;
+reconcile those configurations deliberately first. Removal touches only the
+managed Stop command in project `settings.json`; it does not remove legacy-local,
+global or plugin registrations.
+
+Global/stealth setup, other recipes, custom output/template flags and setup
+`--json` are unsupported. The ordinary `bd prime` remains unavailable. The
+Stop command accepts its native JSON stdin/stdout protocol without `--json`,
+runs without opening storage, and follows Steph's transcript and reentrancy
+rules: it reminds at a session's first Stop and again at a later Stop when
+tools were used since the previous one, never while Claude Code reports
+`stop_hook_active`. It does not write a Memory itself. After the reminder,
+`bd remember "a fact"` stores the agent's chosen content and `bd recall ID`
+reads it. Integration tests prove this delivery/execution sequence, not that
+agents reliably choose what to remember.
 
 Existing full or unknown managed profiles, malformed or duplicate managed
 blocks, and symlink or nonregular targets refuse before database initialization.
 Keep those files and pass `--skip-agents` to initialize without changing them.
-If instruction publication fails after database initialization, the workspace
-remains incomplete and fenced; this preview provides no repair command.
+If guidance publication to the agents file fails after database
+initialization, the workspace remains incomplete and fenced; this preview
+provides no repair command.
 
 The ordinary minimal profile also includes Stephanie's exact durable-memory
 contribution, which changes its managed content hash. Existing refresh policy
 is unchanged; this addition does not independently rewrite instruction files.
 
+On Memory creation, omitted `--title` uses the first nonempty body line with
+whitespace collapsed, capped at 80 Unicode characters including an ellipsis.
+The full body is preserved. A whitespace-only body yields an empty title. An
+explicit creation title must remain nonempty; updates preserve omitted fields.
+
 ## Supported graph commands
 
 | Command | Admitted scope and flags |
 |---|---|
-| `remember BODY --id beads/PATH --title TITLE` | Memory creation. An explicit `--body-file PATH` or `--stdin` replaces the positional body source. These sources are mutually exclusive; empty text is present content. |
-| `remember --update BEAD` | Change only supplied `--title` and/or one explicit body source, preserving omitted fields inside the transaction. Requires `--if-revision TOKEN` or `--unconditional`. |
+| `types [--details]` | List the Bead and Link Type IDs installed in this workspace. `--details` prints each complete persisted descriptor; `--json` returns the descriptors as structured data. An older four-Type workspace does not claim the two example Types. Legacy `--sections` is unavailable. |
+| `remember BODY [--id ID] [--title TITLE]` | Memory creation. Bare IDs resolve under `beads/`; an explicit `--body-file PATH` or `--stdin` replaces the positional body source. These sources are mutually exclusive; empty text is present content. |
+| `remember --update ID` | Change only supplied `--title` and/or one explicit body source, preserving omitted fields inside the transaction. Defaults to unconditional; optional `--if-revision TOKEN` rejects stale edits. Explicit `--unconditional` remains accepted. |
 | `memories [SEARCH]` | Complete bounded Memory title/body search summaries. Supports `--all`, `--details` and `--format table\|records-json`; legacy `--json` refuses. |
 | `recall BEAD` | Stream one Memory's exact body bytes. Optional `--version TOKEN` selects a retained body. `--quiet` does not suppress content; `--json` refuses. |
 | `update BEAD --properties JSON` | Replace a Memory's complete properties with exactly the `title` and `body` strings. Requires `--if-revision TOKEN` or `--unconditional`. |
-| `update RESOURCE --patch JSON` | Apply ordered `add`, `replace`, and `remove` property operations to one Memory or informational Link. Accepts literal JSON, `@file`, or explicit `@-` stdin. Requires a Resource guard and a separate source guard for a Memory-owned Link. |
+| `update RESOURCE --patch JSON` | Apply ordered `add`, `replace`, and `remove` property operations to one Memory or informational Link. Accepts literal JSON, `@file`, or explicit `@-` stdin. Requires a Resource guard; the Memory source guard is optional. |
 | `delete BEAD` | Read-only preview of deleting one unreferenced Memory. `--force` applies and requires `--if-revision TOKEN` or `--unconditional`. A preview needs no guard but checks any supplied guard. |
 | `forget BEAD` | Apply the same unreferenced Memory deletion immediately, with `--if-revision TOKEN` or `--unconditional`. |
-| `create TITLE --id beads/PATH` | Create an Issue. Allows `--title`, inline `--description`/`--body`/`--message`, `--type`, `--priority`, `--labels`/`--label`, inline `--design`, `--acceptance`, `--assignee`, `--estimate`, `--external-ref`, `--spec-id`, `--due` and initial `--notes`. Existing classification rules apply. Initial status is open. Ordinary creator identity and git-email Owner defaults are included in the Issue data. |
+| `create TITLE [--id ID]` | Create an Issue. Bare IDs resolve under `beads/`. Allows `--title`, inline `--description`/`--body`/`--message`, `--type`, `--priority`, `--labels`/`--label`, inline `--design`, `--acceptance`, `--assignee`, `--estimate`, `--external-ref`, `--spec-id`, `--due` and initial `--notes`. Existing classification rules apply. Initial status is open. Ordinary creator identity and git-email Owner defaults are included in the Issue data. |
 | `update BEAD` with Issue scalar flags | Inline `--title`, `--description`/`--body`/`--message`, `--design`, `--acceptance`, `--priority`, non-claim `--assignee`, `--estimate`, `--external-ref`, `--spec-id`, `--due` and literal `--append-notes`. Requires `--if-revision TOKEN` or `--unconditional`. Description aliases must agree. Files/stdin and other Issue fields are unavailable. |
 | `update BEAD --claim` | Atomically claim one Issue for the current actor using the native writer. Standalone `--claim=true` only; no other edits or revision/force guard. Repeating the same actor is a no-op and does not renew its five-minute lease. |
-| `show RESOURCE` | Current Memory, Issue or Link; optional `--version TOKEN` selects an exact retained record. No chronological History option. |
+| `show RESOURCE` | Current Memory, Issue or Link; optional `--version TOKEN` selects an exact retained record. Use `versions` to list a Resource's versions in order. |
+| `versions RESOURCE` | List one Memory, Issue or Link's retained versions newest first, each with its ordinal, version token, change time, actor and a `removed` marker. In a graph workspace `history RESOURCE` is an alias with the same output; ordinary workspaces keep the Dolt-commit `history`. |
 | `compare RESOURCE --from TOKEN --to TOKEN` | Compare two complete retained preview versions of one Memory, Issue or Link. Explicit tokens determine direction, not chronology. |
-| `link SOURCE TARGET --resource-type TYPE` | Use an exact installed Link Type URL. Informational Links permit `--id links/PATH`, `--properties JSON` and source guards. Memory sources own informational Links; Issue sources do not. |
+| `link SOURCE TARGET --link-type TYPE` | Use an installed Link Type as `types/NAME` or its full local URL. Informational Links permit `--id links/PATH`, `--properties JSON` and source guards. Memory sources own informational Links; Issue sources do not. |
 | `dep add SOURCE TARGET` or `link SOURCE TARGET` | A local blocking Dependency between Issues, using the ordinary default `blocks` type. No bulk, remote, routing or bypass flags. |
-| `update LINK --properties JSON` | Replace all informational Link properties. Requires a Link guard and, for a Memory-owned Link, a source guard. Blocking Dependency properties are not editable here. |
-| `links BEAD` | Complete bounded current incident Links, with optional `--direction in\|out\|both` and exact `--resource-type TYPE` filter. No pagination. |
-| `unlink LINK` | Remove one informational Link or blocking Dependency by canonical ID. Requires a Link guard and, for an owned Link, a source guard. |
-| `unlink SOURCE TARGET --resource-type TYPE` | Remove an unambiguous informational Link with the same guards. Multiple matches refuse and report candidate IDs. Blocking Dependency pair removal is unavailable. |
+| `update LINK --properties JSON` | Replace all informational Link properties. Requires a Link guard; the Memory source guard is optional. Blocking Dependency properties are not editable here. |
+| `links BEAD` | Complete bounded current incident Links, with optional `--direction in\|out\|both` and `--link-type TYPE` filter. No pagination. |
+| `unlink LINK` | Remove one informational Link or blocking Dependency by canonical ID. Requires a Link guard; the source guard is optional for Memory-owned Links, required for blocking Dependencies. |
+| `unlink SOURCE TARGET --link-type TYPE` | Remove an unambiguous informational Link with the same guards. Multiple matches refuse and report candidate IDs. Blocking Dependency pair removal is unavailable. |
 | `close BEAD` | Close one Issue through the existing Issue policy, optionally with ordinary reason aliases. No force or batch operations. |
 | `reopen BEAD` | Reopen one Issue, optionally with `--reason`. |
 | `ready` | Unfiltered current ready Issues through ordinary readiness rules. No list filters, output limit or configured positive `BEADS_MAX_ROWS`. |
-| `list --flat` or `list --format records-json` | Current complete Issue records with status/type/title/priority/assignee/label/pinned and `--due-before`/`--due-after`/`--overdue` filters and explicit limited-page `hasMore`. Tree and legacy JSON remain unavailable. |
+| `list` or `list --format records-json` | Without an Issue filter, one bounded current snapshot of every Memory and every Issue whatever its status, ordered by canonical Bead ID; human rows show only local ID, kind and title. `--bead-type types/NAME` narrows by nominal Bead Type, and `--all` only lifts the row limit. Any Issue filter (status/state, type, title/title-contains, priority and range, assignee/no-assignee, label/label-any/exclude-label, pinned/no-pinned, due-before/due-after/overdue, sort or reverse, or a matching configured directory label) selects the native Issue-only query, which omits closed and pinned Issues unless `--all` or a filter selects them. See [All-Bead listing](#all-bead-listing). `hasMore` reports whether a row limit omitted matches; tree and legacy JSON remain unavailable. |
 | `blocked` | Complete native dependency-blocked Issue view with canonical blocker IDs. No filters or positive `BEADS_MAX_ROWS`. |
 | `graph BEAD --view generic` | Current local summary traversal with `--direction in\|out\|both`, `--depth`, `--max-nodes` and `--max-links`. |
 | `status --graph` | Report the capabilities and bounds admitted by this checkpoint, including initial Issue fields/notes, append-only notes, estimate/reference edits and due-date authoring/filtering. |
 | `serve --readonly --addr HOST:PORT` | BDP Read over HTTP for an ordinary shared-server graph workspace. Existing token-file authentication, Host controls and non-loopback opt-in apply. Embedded serving is refused. |
+| `setup claude [--project] [--check\|--remove]` | Add, check or remove only the project-local Claude Stop hook (`bd claude-hook stop`); adding also ensures `CLAUDE.md` imports the graph guidance. Adding and `--check` require current graph-preview guidance. Global/stealth setup, other recipes and `--json` are unavailable. |
+| `claude-hook stop` | Steph's Stop reminder, which Claude Code runs with its JSON hook input on stdin; it does not open storage. If graph admission refuses it (for example, `BD_BACKEND` is set or the workspace was moved), it prints one warning line and exits 1, which Claude Code does not treat as blocking. |
 
 Commands accept the common graph controls `--json`, `--graph-mode`, `--actor`,
 `--quiet`, `--no-color`, `--directory` and `--readonly` where applicable. A
 read-only invocation cannot write. Unsupported command options refuse rather
 than falling through to ordinary storage operations.
 
-The installed informational Type is
-`https://example.org/team/types/preview-related-v2` for the example Scope;
-the blocking Type is `https://example.org/team/types/preview-blocks-v1`.
-Arbitrary Type installation and friendly generic Type names are not available.
+`create` defaults to an Issue. `--bead-type types/preview-memory-v2` selects a
+Memory; `types/preview-issue-v2` explicitly selects an Issue. Full local Type URLs
+also work. `--type` remains Issue classification (such as `task` or `bug`). Memory
+creation accepts an optional ID, positional title or `--title`, and inline
+`--description`/`--body`/`--message`. Without a title, body text supplies the summary.
+Issue-only fields are refused on Memory creation. For example:
+
+```sh
+bd create --bead-type types/preview-memory-v2 --body 'Code flow policy: target integration.'
+```
+
+Run `bd types` in the selected graph workspace to see the Type IDs usable with
+`--bead-type` and `--link-type`; `bd types --details` displays the full stored
+descriptors. This graph Type catalog is distinct from the ordinary Issue
+classifications selected by `bd create --type`.
+
+New workspaces install three informational Link Types: `types/preview-related-v2`,
+`types/example-follows` (the source follows a policy described by the target),
+and `types/example-cites` (the source cites the target as context). All accept
+Memory or Issue endpoints and optional `note` properties; none affects scheduling.
+The blocking Type is `types/preview-blocks-v1` and requires Issue endpoints.
+Use scope-relative `types/NAME` or the full local Type URL. Existing four-Type
+workspaces remain readable and writable with their original Types; reads do not
+install the two examples. Arbitrary Type installation is unavailable.
+`--resource-type` remains a hidden compatibility alias for `--link-type`; do not
+supply both.
 For example:
 
 ```sh
 bd remember 'Context for the plan.' --id beads/context --title Context
 bd create 'Ship the release' --id beads/work --priority 1
 bd link beads/plan beads/context \
-  --resource-type https://example.org/team/types/preview-related-v2 \
-  --id links/context --properties '{"note":"background"}' \
-  --unconditional-source
+  --link-type types/preview-related-v2 \
+  --id links/context --properties '{"note":"background"}'
 bd link beads/plan beads/work \
-  --resource-type https://example.org/team/types/preview-related-v2 \
-  --id links/work --unconditional-source
+  --link-type types/preview-related-v2 \
+  --id links/work
 bd links beads/plan --json
 bd update links/context --properties '{"note":"revised background"}' \
-  --unconditional --unconditional-source
-bd unlink links/context --unconditional --unconditional-source
+  --unconditional
+bd unlink links/context --unconditional
 ```
 
 `--unconditional` explicitly accepts the current record; use an observed
-`--if-revision TOKEN` to reject a stale write. Source guards are
+`--if-revision TOKEN` to reject a stale write. `remember --update` defaults to
+unconditional acceptance when neither flag is supplied. Property replacement,
+property patches, Memory deletion and Issue edits still require an explicit
+revision or unconditional choice. Source guards are
 `--if-source-revision TOKEN` or `--unconditional-source`. Memory-owned Link
-writes require a source guard as well as the Link guard where applicable.
+writes default to unconditional source acceptance; `--if-source-revision` opts
+into stale-source refusal. Explicit `--unconditional-source` remains accepted.
+The Link guard itself is still required for edits/removal, and blocking
+Dependency removal still requires its Issue-source guard.
 An unconditional changed Memory write, including an owned-Link change,
 discloses the actual replaced version and attribution. Guarded writes and
 semantic no-ops do not claim an unconditional overwrite. Targets do not acquire
@@ -162,7 +258,7 @@ bd update beads/plan --if-revision OBSERVED_MEMORY_REVISION --patch @changes.jso
 ```
 
 Use fresh observed tokens for each changed write. `--unconditional` accepts
-the current Resource; for a Memory-owned Link, `--unconditional-source` is a
+the current Resource; for a Memory-owned Link, the default `--unconditional-source` is a
 separate decision. An Issue-source informational Link does not require a
 source guard, but any supplied source guard is checked. Patching that Link
 does not change its Issue source. Issue properties and blocking Dependency
@@ -203,7 +299,7 @@ keep their established admission policy. A no-op writes nothing and does not
 repair an oversized workspace; a properties document already above the
 patch limit cannot use this route to shrink itself. Runtime bound refusals
 report `capability_unavailable`. These bounded CLI changes do not enable a
-public BDP Write profile, History ordering or durable request outcomes.
+public BDP Write profile, a public History contract or durable request outcomes.
 
 ## Find and inspect retained Memory
 
@@ -211,18 +307,22 @@ public BDP Write profile, History ordering or durable request outcomes.
 folding. It reads one checked current snapshot before filtering. The default
 must match at most 50 Memories; a larger result refuses instead of returning a
 partial page. Narrow the search or use `--all` for all matching summaries within
-the same acquisition and output bounds. `--details` adds owned-Link counts.
+the same acquisition and output bounds. Default human output shows local IDs and
+titles, plus labeled excerpts for body matches. `--details` adds exact versions,
+attribution, owned-Link counts and recall commands. Structured `records-json`
+output retains its full existing summary fields.
 
 ```sh
 bd memories release
 bd memories release --details --format records-json
-# Copy a selected item's canonical id and version from the summary.
+# Use --details to copy an exact version for a retained read.
+bd memories release --details
 bd recall beads/plan --version SAVED_TOKEN
 bd show beads/plan --version SAVED_TOKEN --json
 bd compare beads/plan --from EARLIER_SELECTED_TOKEN --to OTHER_SELECTED_TOKEN --json
 ```
 
-Summaries include identity, title, saved version, attribution, matched fields
+Structured summaries include identity, title, saved version, attribution, matched fields
 and a body excerpt when the body matches. Search input is limited to 4,096 UTF-8
 bytes, excerpts to 160 code points and final output to 1 MiB. A short matching
 body can appear in full as its excerpt. Results are sorted by canonical ID,
@@ -244,8 +344,8 @@ unavailable because the complete Memory representation is unresolved.
 
 `show --version` also supports retained Issue and Link records, including their
 saved owned Links. Tokens are opaque nonempty UTF-8 strings of at most 4,096
-bytes. Local ordinals, timestamps, full version URLs and as-of selection are
-not interpreted. An unknown or other-resource token returns `revision_unknown`;
+bytes. `--version` does not interpret local ordinals, timestamps, full version
+URLs or as-of selection; it takes only a token. An unknown or other-resource token returns `revision_unknown`;
 a missing subject returns `not_found`. A removed Link's prior live versions
 remain readable; its private removal token returns `gone`. A deleted Memory
 retains its final live head without inventing a deletion version.
@@ -269,8 +369,73 @@ Memory also validates its final live snapshot before reading an older selected
 snapshot, so a distinct pair can acquire up to 64 MiB in total (up to 32 MiB
 for equal older tokens, which are resolved once). This excludes decoding/output
 overhead and is not a total-heap or rendered-output cap. These read commands work under `--readonly` and migration freeze. They
-do not enable HTTP History, authoritative ordering, restoration or a stable
-public comparison contract; `historyExact` remains false.
+do not order versions themselves (see `versions` below), and they do not enable
+HTTP History, restoration or a stable public comparison contract;
+`historyExact` remains false.
+
+## List a Resource's versions
+
+`versions` lists the retained versions of one Memory, Issue or Link, newest
+first. In a graph workspace, `history` is an alias that produces the same
+output. In an ordinary workspace `history` is unchanged and still reports
+Dolt commits.
+
+```sh
+bd versions beads/plan
+bd history beads/plan     # same output, graph workspaces only
+# Feed a listed token to an exact read or a comparison.
+bd show beads/plan --version LISTED_TOKEN
+```
+
+Each row carries `ordinal`, `version`, `change_at`, `actor`, `attribution`
+and `removed`; `--json` reports them under those names, inside a result that
+also names the `resource` and its `kind`. `version` is the
+opaque token and the only citable address for a version. `ordinal` is an
+ordering key, not an address: it is local to one Resource in one store and
+cannot be passed to `show --version` or `compare`. The field is deliberately
+not named `revision`, which already means the opaque token in graph records
+and the row-lock token on native Issues. `change_at` is for display and is
+never used to order rows, so two versions written within the same second
+still list in write order. Memory and Link ordinals are allocated per
+Resource when each version is written. Issue rows come from the native Issue
+version record, use its revision as the ordinal and populate `attribution`
+with its attribution status; Memory and Link rows leave `attribution` empty.
+A deleted Memory's list ends at its final live head; deletion adds no version
+to it.
+
+`removed` is false on every row except one: a removed Link's deletion marker.
+That row is listed, as the Link's newest version, because the removal is part
+of its history. It is not citable: `show --version` refuses its token with
+`gone`, as it always has. `removed: true` means "listed but not citable".
+Every other listed token is one `show --version` and `compare` accept.
+
+The command has two answers:
+
+- An ordered list, newest first. A Resource's creation is its version 1,
+  written in the same transaction that allocates it, so the list always has at
+  least one row. Deleted Memories and removed Links still list their history.
+- `not_found` when nothing was ever allocated at that path.
+
+An allocated Resource with no versions is corruption, not an empty history,
+and the command refuses rather than printing an empty list. Every plane in a
+schema version 6 workspace can order its versions. A history too large to
+return (more than 1,000 versions, or over the 16 MiB read budget) still
+refuses with `capability_unavailable`, because limit refusals use that code;
+there is no pagination.
+
+Memory and Link ordinals are allocated as `MAX(ordinal)+1` per Resource inside
+the writing transaction. Every graph write also updates one store-wide writer
+fence, so two concurrent writers in one store always contend: the loser fails
+at commit with `revision_conflict` (exit 4) and nothing is retained for it. A
+unique `(path, ordinal)` key backs this up. Issue ordinals are native revisions
+and are allocated by the native Issue writer.
+
+This is a CLI listing only: no
+HTTP History route or public History contract is added, `serve` publishes no
+History, and the list does not support as-of selection or restoration.
+`status --graph` reports `versionList: true` for this command;
+`historyExact: false` continues to describe the HTTP profile, where exact
+History remains unavailable.
 
 ## Unreferenced Memory deletion
 
@@ -310,16 +475,67 @@ graph slice. Ordinary Issue deletion and key/value `forget` remain unchanged.
 `status --graph` advertises `memoryUnreferencedDelete`; general `memoryDelete`
 remains false because linked Memory deletion policy is unresolved.
 
+## All-Bead listing
+
+`bd list` has two modes, selected by its flags.
+
+Without an Issue filter (bare `bd list`, or only `--flat`,
+`--format records-json`, `--bead-type`, `--limit` and `--all`), the command
+reads one checked current snapshot. It lists every current Memory and every
+current Issue whatever its status, closed Issues included, ordered by
+canonical Bead ID rather than by status or priority. Human output prints one
+unquoted row per Bead with only its local ID, kind and title. For a workspace
+holding the Memory `beads/plan` and the Issue `beads/work`:
+
+```text
+Beads (2; more: false; graph preview)
+  beads/plan  Memory  Release plan
+  beads/work  Issue   Ship the release
+```
+
+`--format records-json` returns the same Beads as complete Memory and Issue
+records in `result.items`, with `result.hasMore`. An optional
+`--bead-type types/NAME` keeps one installed Bead Type; Link Types and
+uninstalled Types refuse with `capability_unavailable`, and a selector that
+is neither `types/NAME` nor a full local Type URL refuses with
+`invalid_selector`. `--bead-type types/preview-issue-v2` on its own stays in
+this mode, so it lists closed Issues too. `--all` only removes the row limit;
+it adds no Beads. The snapshot inherits the 1,000-live-Resource/16 MiB
+acquisition bounds, including Links that are not printed. `--limit` returns a
+prefix and truthful `hasMore` but does not return a continuation cursor. For
+paginated all-Bead enumeration, use the BDP HTTP `beads/` collection.
+
+Any Issue filter selects the existing native Issue query instead. The Issue
+filters are `--status` (or `--state`), `--type`, `--title`,
+`--title-contains`, `--priority`, `--priority-min`, `--priority-max`,
+`--assignee`, `--no-assignee`, `--label`, `--label-any`, `--exclude-label`,
+`--pinned`, `--no-pinned`, `--due-before`, `--due-after`, `--overdue`,
+`--sort` and `--reverse`. A supplied flag counts even when an empty value
+such as `--assignee=` or `--sort=` adds no restriction. A configured
+`directory.labels` entry that matches the current directory supplies an
+implicit label filter, so it also selects this query. The query returns
+Issues only, never Memories, and omits closed and pinned Issues unless
+`--all` or a filter selects them. Its human rows are described under the next
+section. An Issue filter cannot be combined with a non-Issue `--bead-type`;
+that refuses with `capability_unavailable`.
+
+Both modes apply the ordinary `bd list` row limit. An explicit `--limit N`
+wins, with `0` meaning no limit; otherwise `--all` means no limit; otherwise a
+configured `list.limit` applies; otherwise there is no limit when output is
+piped, 20 rows in agent mode at a terminal and 50 rows at other terminals.
+
 ## Read-only Issue queries and traversal
 
 ```sh
-bd list --format records-json --limit 1
+bd list --format records-json --status open --limit 1
 bd list --flat --all --sort title
 bd blocked --readonly --json
 bd graph beads/plan --view generic --direction out --depth 2 --json
 ```
 
-Issue listing reuses the existing native query, configuration and limit policy.
+When an Issue filter (listed under [All-Bead listing](#all-bead-listing)) is
+supplied, listing reuses the existing native Issue query, configuration and
+limit policy.
 It accepts status (or state), type, title/title-contains, priority and priority
 range, assignee/no-assignee, label/label-any/exclude-label, pinned/no-pinned and
 due-before/due-after/overdue filters. Sorting accepts
@@ -329,10 +545,15 @@ canonical Issue records in `items` and a truthful `hasMore` boolean. It is a new
 read each time, not a snapshot cursor or BDP continuation. Returned records and
 the extra probe record are validated before trimming the page.
 
-Use explicit `--flat` for quoted human summaries or `--format records-json` for
-the experimental graph envelope. Bare tree, `--json`, `--format json`, watch,
-readiness, parent/ID/routing/offset selectors, repeated status/state/type/assignee filters
-and supplied-empty labels refuse. Defer filters remain unavailable; due selection
+Human output is flat by default; `--flat` is accepted and changes nothing.
+The Issue query prints one row per Issue: its quoted canonical ID and status,
+its priority and its quoted title, for example
+`"https://example.org/team/beads/work" "open" P1 "Ship the release"`.
+`--format records-json` returns the experimental graph envelope. Tree output
+(`--tree`, `--pretty` or `--flat=false`), `--json`, `--format json`, watch,
+readiness, parent/ID/routing/offset selectors, repeated
+status/state/type/assignee/bead-type filters and supplied-empty labels
+refuse. Defer filters remain unavailable; due selection
 does not schedule or wake work.
 This does not change ordinary list parsing or implement contributor-owned filter
 unions. Records-json selects structured errors and overrides ambient human
@@ -402,7 +623,8 @@ writer have no supported graph-preview repair path.
 
 Assignee listing reuses native SQL comparison/collation, not actor identity
 normalization. `--no-assignee` includes native empty/NULL assignments. An empty
-`--assignee=` supplies no assignee restriction; combining a nonempty assignee
+`--assignee=` supplies no assignee restriction but still selects the Issue
+query; combining a nonempty assignee
 with `--no-assignee` intersects the filters and returns no matches. Listing does
 not modify state or claim work. Its output remains the experimental CLI envelope;
 BDP HTTP Read is the script interface and exposes the current Issue properties.

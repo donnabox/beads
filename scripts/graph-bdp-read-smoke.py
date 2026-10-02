@@ -267,7 +267,7 @@ def main():
         capture.success("memory-issue-link", ["link", "beads/plan", "beads/work", "--resource-type", related,
             "--id", "links/context", "--properties", '{"note":"before page"}',
             "--if-source-revision", records["beads/plan"]["revision"], "--json"])
-        capture.success("issue-memory-link", ["link", "beads/work", "beads/plan", "--resource-type", related,
+        capture.success("issue-memory-link", ["link", "beads/work", "beads/plan", "--link-type", "types/example-cites",
             "--id", "links/back", "--properties", '{"note":"Issue context"}', "--json"])
         dependency = c0.envelope(capture.success("blocking-dependency", ["dep", "add", "beads/work", "beads/prereq", "--json"]))
         for path in [*records, "links/context", "links/back", dependency["link"]["id"]]:

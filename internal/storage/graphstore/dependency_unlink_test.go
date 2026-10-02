@@ -249,6 +249,10 @@ func TestDependencyUnlinkRefusalRollback(t *testing.T) {
 			}{
 				{"missing-link-guard", func(r *LinkDeleteRequest) { r.ExpectedRevision = "" }, storage.ErrValidation},
 				{"missing-source-guard", func(r *LinkDeleteRequest) { r.ExpectedSourceRevision = "" }, storage.ErrValidation},
+				{"informational-default-is-not-dependency-guard", func(r *LinkDeleteRequest) {
+					r.ExpectedSourceRevision = ""
+					r.DefaultInformationalSource = true
+				}, storage.ErrValidation},
 				{"both-link-guards", func(r *LinkDeleteRequest) { r.Unconditional = true }, storage.ErrValidation},
 				{"both-source-guards", func(r *LinkDeleteRequest) { r.UnconditionalSource = true }, storage.ErrValidation},
 				{"stale-link", func(r *LinkDeleteRequest) { r.ExpectedRevision = "stale" }, ErrConflict},
@@ -364,6 +368,14 @@ func TestDependencyUnlinkDeletedIntegrity(t *testing.T) {
 			if err != nil {
 				t.Fatal(err)
 			}
+			// The missing-prior restore must put back the prior's own ordinal and
+			// change_at. A fresh ordinal would sort the prior after the tombstone, and
+			// workflowState is captured after each corruption, so nothing would notice.
+			var priorOrdinal int64
+			var priorChangeAt any
+			if err := s.db.QueryRowContext(ctx, "SELECT ordinal, change_at FROM graph_preview_versions WHERE path='links/first' AND version=?", f.links[0].Version).Scan(&priorOrdinal, &priorChangeAt); err != nil {
+				t.Fatal(err)
+			}
 			// These SQL mutations are corruption controls, never demonstration data.
 			for _, bad := range []string{"retained-key", "missing-prior", "bad-prior", "bad-tombstone", "generic-payload"} {
 				switch bad {
@@ -397,7 +409,7 @@ func TestDependencyUnlinkDeletedIntegrity(t *testing.T) {
 				case "retained-key":
 					_, err = s.db.ExecContext(ctx, "UPDATE graph_preview_catalog SET backing_key=NULL WHERE path='links/first'")
 				case "missing-prior":
-					_, err = s.db.ExecContext(ctx, "INSERT INTO graph_preview_versions(path,version,snapshot,actor) VALUES('links/first',?,?,?)", f.links[0].Version, priorRaw, f.links[0].Attribution.Actor)
+					_, err = s.db.ExecContext(ctx, "INSERT INTO graph_preview_versions(path,version,snapshot,actor,ordinal,change_at) VALUES('links/first',?,?,?,?,?)", f.links[0].Version, priorRaw, f.links[0].Attribution.Actor, priorOrdinal, priorChangeAt)
 				case "bad-prior":
 					_, err = s.db.ExecContext(ctx, "UPDATE graph_preview_versions SET snapshot=? WHERE path='links/first' AND version=?", priorRaw, f.links[0].Version)
 				case "bad-tombstone":

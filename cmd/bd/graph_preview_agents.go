@@ -19,9 +19,9 @@ import (
 var graphPreviewAgentMarker = regexp.MustCompile(fmt.Sprintf(
 	`^<!-- BEGIN BEADS INTEGRATION v:%d profile:[a-z][a-z-]* hash:[0-9a-f]{8} -->$`, agents.MarkerVersion))
 
-// Graph init installs hookless guidance in the existing configured agents file.
-// A CLAUDE.md @-import of that file keeps working without modifying CLAUDE.md or
-// invoking the ordinary setup installers, whose hooks require unsupported prime.
+// Graph init installs guidance in the existing configured agents file. The
+// separate graph Claude adapter can then import it and install only Steph's
+// supported Stop handler; ordinary setup also installs unsupported prime hooks.
 type graphPreviewAgentInstructions struct {
 	path    string
 	before  []byte

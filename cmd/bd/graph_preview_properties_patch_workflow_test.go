@@ -370,7 +370,12 @@ func TestGraphPreviewPropertiesPatchWorkflow(t *testing.T) {
 			// exceed the evaluation-work proxy before final removal can hide it.
 			expensive := `[{"op":"add","path":"/work","value":[` + strings.TrimSuffix(strings.Repeat("0,", 50000), ",") + `]},` + strings.Repeat(`{"op":"replace","path":"/work/0","value":0},`, 220) + `{"op":"remove","path":"/work"}]`
 			refuse("capability_unavailable", "update", memory.ID, "--patch", "@"+file("evaluation-bound.json", expensive), "--unconditional")
-			refuse("invalid_properties", "update", link.ID, "--patch", patch("replace", "/note", "root"), "--unconditional")
+			defaultSourceNoop := graphMixedResult[graphstore.LinkMutationResult](t, call("update", link.ID, "--patch", patch("replace", "/note", "root"), "--unconditional"))
+			if defaultSourceNoop.Changed || defaultSourceNoop.ReplacedSource != nil {
+				t.Fatal("default source acceptance must preserve a semantic no-op")
+			}
+			graphPatchEqual(t, defaultSourceNoop.Link, link)
+			graphPatchEqual(t, defaultSourceNoop.Source, memory)
 			refuse("revision_conflict", "update", link.ID, "--patch", patch("replace", "/note", "root"), "--if-revision", beforeIntervening.Revision, "--if-source-revision", memory.Revision)
 			refuse("revision_conflict", "update", link.ID, "--patch", patch("replace", "/note", "root"), "--if-revision", link.Revision, "--if-source-revision", beforeIntervening.Revision)
 			refuse("revision_conflict", "update", unowned.ID, "--patch", patch("replace", "/note", "unowned"), "--unconditional", "--if-source-revision", initial.Revision)

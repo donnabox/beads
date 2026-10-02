@@ -32,11 +32,11 @@ func ReplayAndCompare(ctx context.Context, readOracle OracleReadFunc, replay Rep
 		return compare.Result{}, fmt.Errorf("replay and compare: replay: %w", err)
 	}
 
-	oracleJSON, err := json.Marshal(filterComparable(oracleRow))
+	oracleJSON, err := payloadOf(oracleRow)
 	if err != nil {
 		return compare.Result{}, fmt.Errorf("replay and compare: marshal oracle row: %w", err)
 	}
-	candidateJSON, err := json.Marshal(filterComparable(candidateRow))
+	candidateJSON, err := payloadOf(candidateRow)
 	if err != nil {
 		return compare.Result{}, fmt.Errorf("replay and compare: marshal candidate row: %w", err)
 	}
@@ -68,6 +68,17 @@ var comparableColumnsExclude = map[string]bool{
 	"content_hash": true,
 	"row_lock":     true,
 	"is_blocked":   true,
+}
+
+// payloadOf renders a row as the JSON object compare.Compare takes. An issue
+// with no row at that commit is the empty object: a payload is always an object,
+// so a missing row must not reach Compare as a JSON null.
+func payloadOf(row map[string]string) ([]byte, error) {
+	filtered := filterComparable(row)
+	if filtered == nil {
+		filtered = map[string]string{}
+	}
+	return json.Marshal(filtered)
 }
 
 // filterComparable returns a copy of row with incidental columns removed, or

@@ -33,6 +33,26 @@ Examples:
 	SilenceUsage:  true,
 	SilenceErrors: true,
 	RunE: func(cmd *cobra.Command, args []string) error {
+		// `bd history` means Dolt COMMITS on the native plane and that meaning
+		// is unchanged in ordinary workspaces. A graph workspace exposes no
+		// Dolt-commit view at all, so there is no collision: aliasing it to
+		// the per-Resource version list is the answer a reader asking for "the
+		// history of this bead" wants, and it keeps the operator ruling that
+		// `bd versions` is the verb (2026-09-21) intact rather than renaming it.
+		//
+		// DO NOT REMOVE THIS DISPATCH WITHOUT ALSO REMOVING historyCmd FROM THE
+		// ADMISSION LIST in graph_preview.go. The two are COUPLED. Admission
+		// stops a command from opening the legacy store, so a graph-mode
+		// history with no dispatch does not degrade to a refusal -- it reaches
+		// the code below and PANICS with a nil pointer dereference into a store
+		// that was never opened. Verified by deleting this block: the failure is
+		// a panic, not capability_unavailable.
+		// TestGraphPreviewVersionsCLI/history-aliases-versions is the only thing
+		// guarding that coupling.
+		if graphPreviewActive {
+			return runGraphPreviewVersions(cmd, args)
+		}
+
 		evt := metrics.NewCommandEvent("history")
 		defer func() {
 			if c := metrics.Global(); c != nil {

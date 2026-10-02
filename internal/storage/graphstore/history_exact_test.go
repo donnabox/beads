@@ -170,8 +170,12 @@ func TestReadVersionRefusals(t *testing.T) {
 				"actor":            `UPDATE graph_preview_versions SET actor='different'`,
 			} {
 				t.Run(name, func(t *testing.T) {
-					var saved []byte
-					if err := s.db.QueryRowContext(ctx, `SELECT snapshot FROM graph_preview_versions WHERE path='beads/plan'`).Scan(&saved); err != nil {
+					// Restore the exact retained row, including its ordinal and change_at,
+					// so later cases probe the history the store actually wrote.
+					var saved, savedActor []byte
+					var savedOrdinal int64
+					var savedChangeAt any
+					if err := s.db.QueryRowContext(ctx, `SELECT snapshot, actor, ordinal, change_at FROM graph_preview_versions WHERE path='beads/plan' AND version=?`, memory.Version).Scan(&saved, &savedActor, &savedOrdinal, &savedChangeAt); err != nil {
 						t.Fatal(err)
 					}
 					if _, err := s.db.ExecContext(ctx, statement); err != nil {
@@ -181,7 +185,9 @@ func TestReadVersionRefusals(t *testing.T) {
 					if _, err := s.db.ExecContext(ctx, `UPDATE graph_preview_scope SET authority_id=?`, o.Binding.AuthorityID); err != nil {
 						t.Fatal(err)
 					}
-					if _, err := s.db.ExecContext(ctx, `REPLACE INTO graph_preview_versions(path,version,snapshot,actor) VALUES(?,?,?,'')`, "beads/plan", memory.Version, saved); err != nil {
+					// Pre-existing latent bug fixed in passing: this restore used to write
+					// actor='' instead of the saved actor, which was correct only by accident.
+					if _, err := s.db.ExecContext(ctx, `REPLACE INTO graph_preview_versions(path,version,snapshot,actor,ordinal,change_at) VALUES(?,?,?,?,?,?)`, "beads/plan", memory.Version, saved, savedActor, savedOrdinal, savedChangeAt); err != nil {
 						t.Fatal(err)
 					}
 					if !errors.Is(readErr, ErrInvalidStore) || got != nil {

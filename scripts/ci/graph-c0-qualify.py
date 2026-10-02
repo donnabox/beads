@@ -558,7 +558,10 @@ class Qualification:
             self.env["BEADS_GRAPH_TEST_SERVER_PORT"] = str(port)
             # Sequential package runs/provisioning; concurrency inside same-store tests remains exercised.
             self.tests("./internal/graphpatch", "^Test", (self.root / "internal/graphpatch").glob("*_test.go"), "graphpatch")
-            self.tests("./internal/storage/graphstore", "^Test", (self.root / "internal/storage/graphstore").glob("*_test.go"), "storage", groups=4)
+            self.tests("./internal/storage/graphstore", "^Test", (self.root / "internal/storage/graphstore").glob("*_test.go"), "storage",
+                       tuple("TestLinkUnlinkDefaultSourceReadBudget/" + engine + "/" + case
+                             for engine in ("embedded", "server")
+                             for case in ("id-default", "pair-default", "id-explicit")), groups=4)
             self.tests("./internal/configfile", "^TestGraphMode", (self.root / "internal/configfile").glob("graph_mode_test.go"), "config")
             self.tests("./internal/storage/issueops", "^TestResolve(CustomConfigStrict|InfraTypesStrict|ConfigLegacy)",
                        (self.root / "internal/storage/issueops").glob("config_strict_test.go"), "query-config")
@@ -570,6 +573,7 @@ class Qualification:
                        (self.root / "internal/types").glob("types_test.go"), "utc-types")
             self.tests("./internal/templates/agents", "^TestGraphPreview",
                        (self.root / "internal/templates/agents").glob("*_test.go"), "agent-template")
+            self.tests("./cmd/bd/setup", "^TestGraphPreview", (self.root / "cmd/bd/setup").glob("graph_claude_test.go"), "graph-claude-setup")
             self.tests("./cmd/bd", "^Test(GraphModeCLI|GraphPreview)", (self.root / "cmd/bd").glob("graph*test.go"), "cli",
                        ("TestGraphPreviewAgentInstructionsWorkflow/embedded/fresh",
                         "TestGraphPreviewAgentInstructionsWorkflow/embedded/shared-file",
@@ -579,6 +583,17 @@ class Qualification:
                         "TestGraphPreviewAgentInstructionsWorkflow/server/shared-file",
                         "TestGraphPreviewAgentInstructionsWorkflow/server/skip-agents",
                         "TestGraphPreviewAgentInstructionsWorkflow/server/full-profile-refusal",
+                        "TestGraphPreviewUsabilityWorkflow/embedded", "TestGraphPreviewUsabilityWorkflow/server",
+                        "TestGraphPreviewClaudeStopWorkflow/embedded", "TestGraphPreviewClaudeStopWorkflow/server",
+                        "TestGraphPreviewClaudeStopAutoInit/embedded", "TestGraphPreviewClaudeStopAutoInit/server",
+                        "TestGraphPreviewClaudeStopAutoInitPreflight",
+                        "TestGraphPreviewClaudeStopAutoInitRefusalMessages/global-plugin", "TestGraphPreviewClaudeStopAutoInitRefusalMessages/claude-symlink",
+                        "TestGraphPreviewClaudeStopInstallFailure/embedded", "TestGraphPreviewClaudeStopInstallFailure/server",
+                        "TestGraphPreviewClaudeStopSkipAgentsAlone/embedded", "TestGraphPreviewClaudeStopSkipAgentsAlone/server",
+                        "TestGraphPreviewClaudeStopHookAdmissionNonBlocking/embedded", "TestGraphPreviewClaudeStopHookAdmissionNonBlocking/server",
+                        "TestGraphPreviewClaudeStopProfileRefusal/embedded/missing", "TestGraphPreviewClaudeStopProfileRefusal/embedded/minimal", "TestGraphPreviewClaudeStopProfileRefusal/embedded/stale",
+                        "TestGraphPreviewClaudeStopProfileRefusal/server/missing", "TestGraphPreviewClaudeStopProfileRefusal/server/minimal", "TestGraphPreviewClaudeStopProfileRefusal/server/stale",
+                        "TestGraphPreviewCompatibilityDefaultsWorkflow/embedded", "TestGraphPreviewCompatibilityDefaultsWorkflow/server",
                         "TestGraphPreviewIssueAuthoringWorkflow/embedded", "TestGraphPreviewIssueAuthoringWorkflow/server",
                         "TestGraphPreviewIssueAppendWorkflow/embedded", "TestGraphPreviewIssueAppendWorkflow/server",
                         "TestGraphPreviewIssueClaimWorkflow/embedded", "TestGraphPreviewIssueClaimWorkflow/server",

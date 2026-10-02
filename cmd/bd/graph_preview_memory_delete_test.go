@@ -57,7 +57,7 @@ func TestGraphPreviewMemoryDeleteAdmission(t *testing.T) {
 		{"oversized-guard", "beads/plan", []string{"--if-revision=" + strings.Repeat("x", graphstore.PreviewVersionTokenLimit+1)}, false, false, 2},
 		{"foreign", "https://foreign.invalid/beads/plan", nil, false, false, 2},
 		{"link", "links/context", nil, false, false, 2},
-		{"legacy-key", "plan", nil, false, false, 2},
+		{"bare-bead-id", "plan", nil, false, true, 0},
 		{"cascade", "beads/plan", []string{"--cascade"}, false, false, 5},
 		{"false-cascade", "beads/plan", []string{"--cascade=false"}, false, false, 5},
 		{"file", "beads/plan", []string{"--from-file=/unread/deletions"}, false, false, 5},

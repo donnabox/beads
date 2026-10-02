@@ -13,8 +13,9 @@ import (
 	"github.com/steveyegge/beads/internal/types"
 )
 
-// Returned canonical IDs can be fed back to the CLI. Only the exact local
-// spelling is accepted; this preview never resolves aliases or remote stores.
+// Returned canonical IDs can be fed back to the CLI. A bare local Bead path
+// is CLI shorthand for beads/PATH; mixed commands keep links/PATH explicit.
+// No store lookup, alias resolution or remote routing chooses the kind.
 func graphPreviewResourcePath(scope, selector string) (string, error) {
 	if graph.ValidateBeadPath(selector) == nil || graph.ValidateLinkPath(selector) == nil {
 		return selector, nil
@@ -22,7 +23,23 @@ func graphPreviewResourcePath(scope, selector string) (string, error) {
 	if path, kind, ok := graph.SplitCanonicalURL(scope, selector); ok && (kind == graph.KindBead || kind == graph.KindLink) {
 		return path, nil
 	}
-	return "", fmt.Errorf("expected a canonical local beads/PATH or links/PATH, or its exact Scope URL")
+	return graphPreviewBareBeadPath(selector)
+}
+
+func graphPreviewBareBeadPath(selector string) (string, error) {
+	for _, root := range []string{"beads/", "links/", "alias/", "types/"} {
+		if strings.HasPrefix(selector, root) {
+			return "", fmt.Errorf("invalid local selector %q; use a valid beads/PATH or links/PATH", selector)
+		}
+	}
+	if strings.Contains(selector, "://") {
+		return "", fmt.Errorf("invalid local selector %q; only this workspace's exact Scope URL is accepted", selector)
+	}
+	path := "beads/" + selector
+	if err := graph.ValidateBeadPath(path); err != nil {
+		return "", fmt.Errorf("invalid Bead ID %q: %w", selector, err)
+	}
+	return path, nil
 }
 
 // Both familiar spellings and the experimental generic Type selector reach
@@ -31,11 +48,11 @@ func runGraphPreviewAddDependency(cmd *cobra.Command, args []string) error {
 	if err := graphPreviewWritePolicy(); err != nil {
 		return err
 	}
-	if err := graphPreviewFlags(cmd, "type", "resource-type", "if-source-revision", "unconditional-source"); err != nil {
+	if err := graphPreviewFlags(cmd, "type", "link-type", "resource-type", "if-source-revision", "unconditional-source"); err != nil {
 		return err
 	}
 	if len(args) != 2 {
-		return graphFailure("invalid_selector", "graph Dependency creation requires two canonical beads/PATH arguments", 2)
+		return graphFailure("invalid_selector", "graph Dependency creation requires two Bead IDs or beads/PATH arguments", 2)
 	}
 	paths := make([]string, len(args))
 	for i, selector := range args {
@@ -49,22 +66,25 @@ func runGraphPreviewAddDependency(cmd *cobra.Command, args []string) error {
 		paths[i] = path
 	}
 	var sourceRevision string
-	if cmd.Flags().Changed("resource-type") {
+	if graphPreviewLinkTypeChanged(cmd) {
 		if cmd.Flags().Changed("type") {
-			return graphFailure("invalid_selector", "select either --type or --resource-type", 2)
+			return graphFailure("invalid_selector", "select either --type or --link-type", 2)
 		}
 		sourceRevision, _ = cmd.Flags().GetString("if-source-revision")
 		unconditional, _ := cmd.Flags().GetBool("unconditional-source")
 		if cmd.Flags().Changed("if-source-revision") == cmd.Flags().Changed("unconditional-source") || (sourceRevision == "" && !unconditional) {
 			return graphFailure("invalid_selector", "generic owned Link creation requires either --if-source-revision REVISION or --unconditional-source", 2)
 		}
-		resourceType, _ := cmd.Flags().GetString("resource-type")
+		resourceType, err := graphPreviewLinkType(cmd)
+		if err != nil {
+			return err
+		}
 		if resourceType != graphstore.DependencyTypeURL(graphPreviewConfig.GraphScopeURL) {
 			return graphFailure("capability_unavailable", "this preview accepts only the installed Type "+graphstore.DependencyTypeURL(graphPreviewConfig.GraphScopeURL), 5)
 		}
 	} else {
 		if cmd.Flags().Changed("if-source-revision") || cmd.Flags().Changed("unconditional-source") {
-			return graphFailure("invalid_selector", "source guard options require --resource-type", 2)
+			return graphFailure("invalid_selector", "source guard options require --link-type", 2)
 		}
 		raw, _ := cmd.Flags().GetString("type")
 		typ := canonicalDependencyType(types.DependencyType(raw))
@@ -78,6 +98,9 @@ func runGraphPreviewAddDependency(cmd *cobra.Command, args []string) error {
 	return withGraphStore(func(ctx context.Context, store *graphstore.Store) (any, string, error) {
 		result, err := store.AddDependency(ctx, graphstore.DependencyRequest{SourcePath: paths[0], TargetPath: paths[1], Actor: getActorWithGit(), ExpectedSourceRevision: sourceRevision})
 		if err != nil {
+			if strings.Contains(err.Error(), "operation requires a live durable Issue, not generic") {
+				return nil, "", fmt.Errorf("blocking Link Type requires two live Issues; use an informational Type such as types/preview-related-v2 for Memory endpoints: %w", err)
+			}
 			return nil, "", err
 		}
 		verb := "Created"
@@ -96,7 +119,7 @@ func runGraphPreviewClose(cmd *cobra.Command, args []string) error {
 		return err
 	}
 	if len(args) != 1 {
-		return graphFailure("invalid_selector", "graph close requires one canonical beads/PATH", 2)
+		return graphFailure("invalid_selector", "graph close requires one Bead ID or beads/PATH", 2)
 	}
 	path, err := graphPreviewResourcePath(graphPreviewConfig.GraphScopeURL, args[0])
 	if err != nil {

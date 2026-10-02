@@ -92,7 +92,7 @@ func projectGraphGeneric(snapshot graphstore.Snapshot, scope string, in graphGen
 			}
 			node = graphGenericNode{record.ID, record.Type, record.Properties.Title, record.Version, record.Attribution}
 		case graphstore.LinkRecord:
-			if record.Type != graphstore.RelatedTypeURL(scope) && record.Type != graphstore.DependencyTypeURL(scope) {
+			if !graphstore.IsInformationalTypeURL(scope, record.Type) && record.Type != graphstore.DependencyTypeURL(scope) {
 				return invalid("unsupported Link Type")
 			}
 			if _, kind, ok := graph.SplitCanonicalURL(scope, record.ID); !ok || kind != graph.KindLink || record.Version == "" {

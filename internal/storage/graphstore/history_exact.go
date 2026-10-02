@@ -105,9 +105,14 @@ func (s *Store) readVersionInTx(ctx context.Context, tx *sql.Tx, path, version s
 		return s.readIssueVersionInTx(ctx, tx, path, version, head, key.String)
 	}
 	if !((backing == "generic" && kind == "bead" && typ.String == MemoryTypeURL(s.ScopeURL())) ||
-		(backing == "informational" && kind == "link" && typ.String == RelatedTypeURL(s.ScopeURL())) ||
+		(backing == "informational" && kind == "link" && IsInformationalTypeURL(s.ScopeURL(), typ.String)) ||
 		(backing == "dependency" && kind == "link" && typ.String == DependencyTypeURL(s.ScopeURL()))) {
 		return nil, fmt.Errorf("%w: unsupported retained allocation", ErrInvalidStore)
+	}
+	if backing == "informational" {
+		if err := s.informationalTypeInTx(ctx, tx, typ.String); err != nil {
+			return nil, err
+		}
 	}
 	raw, actor, err := readVersionBytes(ctx, tx, path, version, head)
 	if err != nil {
@@ -130,15 +135,15 @@ func (s *Store) readVersionInTx(ctx context.Context, tx *sql.Tx, path, version s
 			link.Revision != version || link.Version != version {
 			return nil, fmt.Errorf("%w: retained Link identity differs", ErrInvalidStore)
 		}
-		if err := s.validateVersionLink(link, raw, actor); err != nil {
+		if err := s.validateVersionLink(ctx, tx, link, raw, actor); err != nil {
 			return nil, err
 		}
 		return link, nil
 	}
-	return s.decodeMemoryVersion(path, typ.String, version, raw, actor)
+	return s.decodeMemoryVersion(ctx, tx, path, typ.String, version, raw, actor)
 }
 
-func (s *Store) decodeMemoryVersion(path, typ, version string, raw []byte, actor string) (Record, error) {
+func (s *Store) decodeMemoryVersion(ctx context.Context, tx *sql.Tx, path, typ, version string, raw []byte, actor string) (Record, error) {
 	var memory Record
 	if json.Unmarshal(raw, &memory) != nil || !sameVersionJSON(raw, memory) || memory.ID != s.ScopeURL()+path ||
 		memory.Type != typ || memory.Revision != version || memory.Version != version ||
@@ -146,7 +151,7 @@ func (s *Store) decodeMemoryVersion(path, typ, version string, raw []byte, actor
 		!validVersionAttribution(memory.Attribution, actor) {
 		return Record{}, fmt.Errorf("%w: invalid retained Memory", ErrInvalidStore)
 	}
-	if err := s.validateVersionOwned(memory.ID, RelatedTypeURL(s.ScopeURL()), memory.Owned); err != nil {
+	if err := s.validateVersionOwned(ctx, tx, memory.ID, MemoryTypeURL(s.ScopeURL()), memory.Owned); err != nil {
 		return Record{}, err
 	}
 	return memory, nil
@@ -185,13 +190,16 @@ func validVersionAttribution(value Attribution, actor string) bool {
 		value.Actor == actor && ((actor == "" && value.Status == "unknown") || (actor != "" && value.Status == "claimed"))
 }
 
-func (s *Store) validateVersionLink(link LinkRecord, raw []byte, actor string) error {
+func (s *Store) validateVersionLink(ctx context.Context, tx *sql.Tx, link LinkRecord, raw []byte, actor string) error {
 	path := strings.TrimPrefix(link.ID, s.ScopeURL())
 	if validateLinkPath(path) != nil || s.ScopeURL()+path != link.ID || !authorityID.MatchString(link.Revision) ||
 		link.Version != link.Revision || !sameVersionJSON(raw, link) || !validVersionAttribution(link.Attribution, actor) {
 		return fmt.Errorf("%w: invalid retained Link", ErrInvalidStore)
 	}
-	if link.Type == RelatedTypeURL(s.ScopeURL()) {
+	if IsInformationalTypeURL(s.ScopeURL(), link.Type) {
+		if err := s.informationalTypeInTx(ctx, tx, link.Type); err != nil {
+			return err
+		}
 		return s.validateRetainedInformational(link, raw, actor)
 	}
 	if link.Type != DependencyTypeURL(s.ScopeURL()) || link.Properties == nil || len(link.Properties) != 0 {
@@ -206,18 +214,18 @@ func (s *Store) validateVersionLink(link LinkRecord, raw []byte, actor string) e
 	return nil
 }
 
-func (s *Store) validateVersionOwned(source, typ string, owned []json.RawMessage) error {
+func (s *Store) validateVersionOwned(ctx context.Context, tx *sql.Tx, source, typ string, owned []json.RawMessage) error {
 	if owned == nil || len(owned) > PreviewOwnedLinkLimit {
 		return fmt.Errorf("%w: invalid retained owned set", ErrInvalidStore)
 	}
 	previous := ""
 	for _, raw := range owned {
 		var link LinkRecord
-		if json.Unmarshal(raw, &link) != nil || link.Source != source || link.Type != typ ||
+		if json.Unmarshal(raw, &link) != nil || link.Source != source || !(link.Type == typ || (typ == MemoryTypeURL(s.ScopeURL()) && IsInformationalTypeURL(s.ScopeURL(), link.Type))) ||
 			(previous != "" && graph.CompareCodeUnits(previous, link.ID) >= 0) {
 			return fmt.Errorf("%w: invalid retained owned membership", ErrInvalidStore)
 		}
-		if err := s.validateVersionLink(link, raw, link.Attribution.Actor); err != nil {
+		if err := s.validateVersionLink(ctx, tx, link, raw, link.Attribution.Actor); err != nil {
 			return err
 		}
 		previous = link.ID
@@ -272,7 +280,7 @@ func (s *Store) readIssueVersionInTx(ctx context.Context, tx *sql.Tx, path, vers
 		!validVersionAttribution(result.Attribution, actor) {
 		return IssueRecord{}, fmt.Errorf("%w: invalid retained Issue state", ErrInvalidStore)
 	}
-	if err := s.validateVersionOwned(result.ID, DependencyTypeURL(s.ScopeURL()), result.Owned); err != nil {
+	if err := s.validateVersionOwned(ctx, tx, result.ID, DependencyTypeURL(s.ScopeURL()), result.Owned); err != nil {
 		return IssueRecord{}, err
 	}
 	// Match the current graph projection without duplicating Jim's domain body.

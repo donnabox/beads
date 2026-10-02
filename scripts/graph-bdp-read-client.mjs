@@ -28,6 +28,10 @@ const planID = id('beads/plan');
 const contextID = id('links/context');
 const memoryType = id('types/preview-memory-v2');
 const relatedType = id('types/preview-related-v2');
+const exampleFollowsType = id('types/example-follows');
+const exampleCitesType = id('types/example-cites');
+const installedTypeIDs = [memoryType, id('types/preview-issue-v2'),
+  relatedType, id('types/preview-blocks-v1'), exampleFollowsType, exampleCitesType].sort();
 
 // Observational decoration only: delegates to native fetch without synthesizing
 // any status, body, routing, or discovery. It does not log credentials.
@@ -100,6 +104,29 @@ try {
     assert.equal(value.id, resourceID);
     artifacts[resource + ':' + resourceID] = value;
   }
+  // Types are distinct installed descriptors, not aliases inferred from a
+  // Link label. Read each through the unchanged public client's Type operation.
+  artifacts.exampleTypes = {};
+  for (const [typeID, name] of [[exampleFollowsType, 'Example follows'], [exampleCitesType, 'Example cites']]) {
+    const descriptor = await perform({ kind: 'resource', resource: 'type', id: typeID });
+    assert.equal(descriptor.id, typeID);
+    assert.equal(descriptor.name, name);
+    assert.equal(descriptor.describes, 'link');
+    assert.deepEqual(descriptor.conformsTo, []);
+    assert.deepEqual(descriptor.source, { conformsTo: [], external: 'none' });
+    assert.deepEqual(descriptor.target, { conformsTo: [], external: 'none' });
+    assert.equal(descriptor.ownsOutgoing, undefined);
+    artifacts.exampleTypes[typeID] = descriptor;
+  }
+  // The existing Issue-to-Memory fixture uses the new cites Type; no extra
+  // writer process is needed, and all retained Memory-owned Link checks remain.
+  const exampleLink = await perform({ kind: 'resource', resource: 'link', id: id('links/back') });
+  assert.equal(exampleLink.id, id('links/back'));
+  assert.equal(exampleLink.type, exampleCitesType);
+  assert.equal(exampleLink.source, id('beads/work'));
+  assert.equal(exampleLink.target, planID);
+  assert.deepEqual(exampleLink.properties, { note: 'Issue context' });
+  artifacts.exampleLink = exampleLink;
   const properties = await perform({ kind: 'properties', resource: 'bead', id: planID });
   assert.deepEqual(properties, plan.properties);
   pass('public client reads Memory, Issue, Link, installed Type and properties');
@@ -294,9 +321,18 @@ try {
     const result = await collect(collection);
     artifacts[collection] = result;
     const expected = collection === 'beads' ? ['beads/alpha', 'beads/plan', 'beads/prereq', 'beads/work'].map(id)
-      : collection === 'links' ? [id('links/back'), contextID, process.env.BDP_DEPENDENCY_ID] : null;
-    if (expected) assert.deepEqual(result.items.map(item => item.id).sort(), expected.sort());
-    else assert.equal(result.items.length, 4);
+      : collection === 'links' ? [id('links/back'), contextID, process.env.BDP_DEPENDENCY_ID] : installedTypeIDs;
+    assert.deepEqual(result.items.map(item => item.id).sort(), [...expected].sort());
+    if (collection === 'types') {
+      for (const descriptor of Object.values(artifacts.exampleTypes)) {
+        const summary = result.items.find(item => item.id === descriptor.id);
+        assert.equal(summary.name, descriptor.name);
+        assert.equal(summary.describes, descriptor.describes);
+      }
+    }
+    if (collection === 'links') {
+      assert.deepEqual(result.items.find(item => item.id === exampleLink.id), exampleLink);
+    }
   }
   pass('public client traverses complete Bead, Link and Type inventories without omissions or duplicates');
 
