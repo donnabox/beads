@@ -117,9 +117,11 @@ Issue-specific filters (--status, --type, --title, --title-contains,
 --label, --label-any, --exclude-label, --pinned, --no-pinned, --due-before,
 --due-after, --overdue, --sort, --reverse) or a matching configured
 directory label switch to the existing Issue query: Issues only, closed and
-pinned Issues omitted unless --all or a filter selects them, and quoted rows
-with status and priority. They cannot be combined with a non-Issue
---bead-type. Tree output and legacy --json are unavailable.`},
+pinned Issues omitted unless --all or a filter selects them, quoted rows
+with status and priority, and a line under the header saying Memories are
+not listed. A typed filter cannot be combined with a non-Issue --bead-type;
+a configured directory label alone does not refuse one, it is simply not
+applied to Memories. Tree output and legacy --json are unavailable.`},
 		{blockedCmd, `Show current dependency-blocked Issues with canonical
 blocker IDs. Filters and positive BEADS_MAX_ROWS are unavailable.`},
 		{graphCmd, `Use bd graph ID --view generic to traverse the current

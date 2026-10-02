@@ -167,7 +167,7 @@ explicit creation title must remain nonempty; updates preserve omitted fields.
 | `close BEAD` | Close one Issue through the existing Issue policy, optionally with ordinary reason aliases. No force or batch operations. |
 | `reopen BEAD` | Reopen one Issue, optionally with `--reason`. |
 | `ready` | Unfiltered current ready Issues through ordinary readiness rules. No list filters, output limit or configured positive `BEADS_MAX_ROWS`. |
-| `list` or `list --format records-json` | Without an Issue filter, one bounded current snapshot of every Memory and every Issue the ordinary `bd list` would show: closed and pinned Issues are hidden unless `--all`, which also lifts the row limit. Newest recorded change first, ties by canonical Bead ID; human rows show local ID and kind, and for an Issue its status and priority, then the title. `--bead-type types/NAME` narrows by nominal Bead Type. A positive `BEADS_MAX_ROWS` refuses a page of more Beads than the cap. Any Issue filter (status/state, type, title/title-contains, priority and range, assignee/no-assignee, label/label-any/exclude-label, pinned/no-pinned, due-before/due-after/overdue, sort or reverse, or a matching configured directory label) selects the native Issue-only query, which omits closed and pinned Issues unless `--all` or a filter selects them. See [All-Bead listing](#all-bead-listing). `hasMore` reports whether a row limit omitted matches; tree and legacy JSON remain unavailable. |
+| `list` or `list --format records-json` | Without an Issue filter, one bounded current snapshot of every Memory and every Issue the ordinary `bd list` would show: closed and pinned Issues are hidden unless `--all`, which also lifts the row limit. Newest recorded change first, ties by canonical Bead ID; human rows show local ID and kind, and for an Issue its status and priority, then the title. `--bead-type types/NAME` narrows by nominal Bead Type. A positive `BEADS_MAX_ROWS` refuses a page of more Beads than the cap. Any Issue filter (status/state, type, title/title-contains, priority and range, assignee/no-assignee, label/label-any/exclude-label, pinned/no-pinned, due-before/due-after/overdue, sort or reverse, or a matching configured directory label) selects the native Issue-only query, which lists Issues only, says so under the header in human output, and omits closed and pinned Issues unless `--all` or a filter selects them. See [All-Bead listing](#all-bead-listing). `hasMore` reports whether a row limit omitted matches; tree and legacy JSON remain unavailable. |
 | `blocked` | Complete native dependency-blocked Issue view with canonical blocker IDs. No filters or positive `BEADS_MAX_ROWS`. |
 | `graph BEAD --view generic` | Current local summary traversal with `--direction in\|out\|both`, `--depth`, `--max-nodes` and `--max-links`. |
 | `status --graph` | Report the capabilities and bounds admitted by this checkpoint, including initial Issue fields/notes, append-only notes, estimate/reference edits and due-date authoring/filtering. |
@@ -525,11 +525,23 @@ filters are `--status` (or `--state`), `--type`, `--title`,
 `--sort` and `--reverse`. A supplied flag counts even when an empty value
 such as `--assignee=` or `--sort=` adds no restriction. A configured
 `directory.labels` entry that matches the current directory supplies an
-implicit label filter, so it also selects this query. The query returns
-Issues only, never Memories, and omits closed and pinned Issues unless
-`--all` or a filter selects them. Its human rows are described under the next
-section. An Issue filter cannot be combined with a non-Issue `--bead-type`;
-that refuses with `capability_unavailable`.
+implicit label filter, so it also selects this query, unless `--bead-type`
+names a non-Issue Type: a label does not apply to a Memory, so the entry is
+not applied there and nothing is refused. The query returns Issues only,
+never Memories, and omits closed and pinned Issues unless `--all` or a filter
+selects them. Human output says so on the line under the header:
+
+```text
+Issues (1; more: false; graph preview)
+Memories are not listed (Issue query selected by: --status).
+"https://example.org/team/beads/work" "open" P1 "Ship the release"
+```
+
+With a configured label the line reads
+`Memories are not listed (Issue query selected by: directory.labels "frontend").`
+Structured output carries no such line. A typed Issue filter cannot be
+combined with a non-Issue `--bead-type`; that refuses with
+`capability_unavailable`.
 
 Both modes apply the ordinary `bd list` row limit. An explicit `--limit N`
 wins, with `0` meaning no limit; otherwise `--all` means no limit; otherwise a
@@ -561,6 +573,8 @@ Human output is flat by default; `--flat` is accepted and changes nothing.
 The Issue query prints one row per Issue: its quoted canonical ID and status,
 its priority and its quoted title, for example
 `"https://example.org/team/beads/work" "open" P1 "Ship the release"`.
+A line under the header says that Memories are not listed and names the
+option that selected the query; structured output carries no such line.
 `--format records-json` returns the experimental graph envelope. Tree output
 (`--tree`, `--pretty` or `--flat=false`), `--json`, `--format json`, watch,
 readiness, parent/ID/routing/offset selectors, repeated

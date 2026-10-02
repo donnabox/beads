@@ -83,7 +83,7 @@ in this one.
 | `bd memories [SEARCH]` | List current Memory title/body summaries. Use `--all` for all matches within the preview's bounds, `--details` for saved version and attribution, or `--format records-json` for structured summaries. |
 | `bd recall ID` | Print **one** Memory's exact body bytes. It does not enumerate Memories or add a newline. |
 | `bd show ID --json` | Read one current Issue or Memory record; use `links/ID` for a Link. |
-| `bd list` or `bd list --format records-json` | Without an Issue filter, list every current Memory and Issue the ordinary `bd list` would show, newest recorded change first; closed and pinned Issues need `--all`. Use `--bead-type types/NAME` to narrow by nominal Type. An Issue filter switches to the Issue-only query described below. |
+| `bd list` or `bd list --format records-json` | Without an Issue filter, list every current Memory and Issue the ordinary `bd list` would show, newest recorded change first; closed and pinned Issues need `--all`. Use `--bead-type types/NAME` to narrow by nominal Type. An Issue filter, or a matching directory label, switches to the Issue-only query described below and says so. |
 
 ```sh
 bd memories --all
@@ -115,8 +115,10 @@ The Issue filters are `--status` (or `--state`), `--type`, `--title`,
 existing Issue query, even when an empty value such as `--assignee=` adds no
 restriction. A configured `directory.labels` entry that matches the current
 directory switches it too. That query lists Issues only, never Memories. It
-omits closed and pinned Issues unless `--all` or a filter selects them. Its
-human rows add status and priority, for example
+omits closed and pinned Issues unless `--all` or a filter selects them. A line
+under the header says Memories are not listed and names the option that
+selected the query. A directory label alone never refuses a `--bead-type`; it
+is not applied to a Memory. Its human rows add status and priority, for example
 `"https://example.org/team/beads/work" "open" P2 "Move the release branch"`.
 An Issue filter cannot be combined with a non-Issue `--bead-type`.
 

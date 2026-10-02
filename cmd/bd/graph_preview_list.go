@@ -35,17 +35,17 @@ func runGraphPreviewList(cmd *cobra.Command) error {
 			return graphFailure("invalid_selector", err.Error(), 2)
 		}
 	}
-	issueFilters := graphIssueListFiltersSelected(cmd, in)
-	if issueFilters && selectedType != "" && selectedType != graphstore.IssueTypeURL(graphPreviewConfig.GraphScopeURL) {
+	plan := planGraphList(graphIssueListTypedOptions(cmd), graphIssueListConfigLabel(cmd, in), selectedType, graphstore.IssueTypeURL(graphPreviewConfig.GraphScopeURL))
+	if plan.refuse {
 		return graphFailure("capability_unavailable", "Issue list filters cannot be combined with a non-Issue --bead-type", 5)
 	}
-	if !issueFilters {
+	if !plan.issueQuery {
 		return withGraphStoreOutput(func(ctx context.Context, s *graphstore.Store) (any, string, error) {
 			page, err := s.ListBeads(ctx, graphstore.BeadListRequest{TypeURL: selectedType, All: in.AllFlag, Limit: *in.Limit, MaxRows: in.MaxRows})
 			if err != nil {
 				return nil, "", err
 			}
-			output, err := renderGraphBeadList(page, s.ScopeURL(), in.AllFlag, structured, quietFlag)
+			output, err := renderGraphBeadList(page, s.ScopeURL(), in.AllFlag, plan.notice, structured, quietFlag)
 			return nil, output, err
 		}, func(_ any, output string) error { _, err := fmt.Fprint(cmd.OutOrStdout(), output); return err })
 	}
@@ -57,7 +57,7 @@ func runGraphPreviewList(cmd *cobra.Command) error {
 		if err != nil {
 			return nil, "", err
 		}
-		output, err := renderGraphIssueList(page, structured, quietFlag)
+		output, err := renderGraphIssueList(page, plan.notice, structured, quietFlag)
 		return nil, output, err
 	}, func(_ any, output string) error { _, err := fmt.Fprint(cmd.OutOrStdout(), output); return err })
 }
@@ -182,21 +182,81 @@ func (v *graphIssueListFlagCount) Type() string     { return v.kind }
 
 // The existing Issue filters keep their native query and result contract.
 // An unfiltered graph list, or one narrowed only by nominal Bead Type, reads
-// the complete checked current inventory and projects its Beads. In
-// particular, implicit directory labels must not be silently ignored.
-func graphIssueListFiltersSelected(cmd *cobra.Command, in listInput) bool {
-	for _, name := range []string{"status", "state", "type", "title", "title-contains", "priority", "priority-min", "priority-max", "label", "label-any", "exclude-label", "pinned", "no-pinned", "sort", "reverse", "assignee", "no-assignee", "due-before", "due-after", "overdue"} {
+// the complete checked current inventory and projects its Beads. The options
+// below select the Issue query instead, and the notice names them in this order.
+var graphIssueListOptions = []string{"status", "state", "type", "title", "title-contains", "priority", "priority-min", "priority-max", "label", "label-any", "exclude-label", "pinned", "no-pinned", "sort", "reverse", "assignee", "no-assignee", "due-before", "due-after", "overdue"}
+
+// graphIssueListTypedOptions names the Issue options the caller supplied, in
+// canonical order. A supplied flag counts even when its value, such as an empty
+// --assignee=, adds no restriction.
+func graphIssueListTypedOptions(cmd *cobra.Command) []string {
+	typed := []string{}
+	for _, name := range graphIssueListOptions {
 		if cmd.Flags().Changed(name) {
-			return true
+			typed = append(typed, name)
 		}
 	}
-	return in.Status != "" || in.IssueType != "" || in.TitleSearch != "" || in.TitleContains != "" || in.Assignee != "" || in.NoAssignee || len(in.Labels) != 0 || len(in.LabelsAny) != 0 || len(in.ExcludeLabels) != 0 || in.Priority != nil || in.PriorityMin != nil || in.PriorityMax != nil || in.PinnedFlag || in.NoPinnedFlag || in.SortBy != "" || in.Reverse || in.DueBefore != nil || in.DueAfter != nil || in.OverdueFlag
+	return typed
 }
 
-func renderGraphBeadList(page graphstore.BeadListPage, scope string, all, structured, quiet bool) (string, error) {
+// graphIssueListConfigLabel is the directory label the ordinary list parser
+// applied from configuration, which it does only while neither --label nor
+// --label-any was typed. Implicit directory labels must not be silently ignored,
+// so it selects the Issue query like a typed option does.
+func graphIssueListConfigLabel(cmd *cobra.Command, in listInput) string {
+	if len(in.LabelsAny) == 0 || cmd.Flags().Changed("label") || cmd.Flags().Changed("label-any") {
+		return ""
+	}
+	return in.LabelsAny[0]
+}
+
+// graphListPlan says which query a list runs and what its human output tells
+// the caller about that choice.
+type graphListPlan struct {
+	issueQuery bool   // read through the native Issue query rather than the Bead inventory
+	refuse     bool   // typed Issue options cannot be combined with a non-Issue Bead Type
+	notice     string // line directly under the human header, empty for none
+}
+
+// planGraphList routes a list. Typed Issue options select the Issue query and a
+// non-Issue Bead Type refuses them. A configured directory label also selects
+// it, but a Memory carries no labels, so the label never refuses a Bead Type: it
+// is simply not applied to one, and the notice says so. Naming the Issue Type
+// already narrowed the list to Issues, so that route needs no notice.
+func planGraphList(typed []string, label, selectedType, issueType string) graphListPlan {
+	switch {
+	case len(typed) > 0 && selectedType != "" && selectedType != issueType:
+		return graphListPlan{refuse: true}
+	case len(typed) > 0 || (label != "" && (selectedType == "" || selectedType == issueType)):
+		plan := graphListPlan{issueQuery: true}
+		if selectedType == "" {
+			plan.notice = graphIssueQueryNotice(typed, label)
+		}
+		return plan
+	case label != "":
+		return graphListPlan{notice: fmt.Sprintf("directory.labels %q is not applied to this Bead Type.", label)}
+	}
+	return graphListPlan{}
+}
+
+func graphIssueQueryNotice(typed []string, label string) string {
+	selectedBy := make([]string, 0, len(typed)+1)
+	for _, name := range typed {
+		selectedBy = append(selectedBy, "--"+name)
+	}
+	if label != "" {
+		selectedBy = append(selectedBy, fmt.Sprintf("directory.labels %q", label))
+	}
+	return "Memories are not listed (Issue query selected by: " + strings.Join(selectedBy, ", ") + ")."
+}
+
+func renderGraphBeadList(page graphstore.BeadListPage, scope string, all bool, notice string, structured, quiet bool) (string, error) {
 	var human strings.Builder
 	if !structured && !quiet {
 		fmt.Fprintf(&human, "Beads (%d; more: %t; graph preview)\n", len(page.Items), page.HasMore)
+		if notice != "" {
+			human.WriteString(notice + "\n")
+		}
 		for _, value := range page.Items {
 			switch record := value.(type) {
 			case graphstore.Record:
@@ -223,10 +283,13 @@ func renderGraphBeadList(page graphstore.BeadListPage, scope string, all, struct
 	return output.String(), nil
 }
 
-func renderGraphIssueList(page graphstore.IssueListPage, structured, quiet bool) (string, error) {
+func renderGraphIssueList(page graphstore.IssueListPage, notice string, structured, quiet bool) (string, error) {
 	var human strings.Builder
 	if !structured && !quiet {
 		fmt.Fprintf(&human, "Issues (%d; more: %t; graph preview)\n", len(page.Items), page.HasMore)
+		if notice != "" {
+			human.WriteString(notice + "\n")
+		}
 		for _, item := range page.Items {
 			fmt.Fprintf(&human, "%q %q P%d %q\n", item.ID, item.Properties.Status, item.Properties.Priority, item.Properties.Title)
 		}
