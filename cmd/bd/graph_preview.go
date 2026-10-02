@@ -381,7 +381,7 @@ func runGraphPreviewInit(cmd *cobra.Command) error {
 	skipAgents, _ := cmd.Flags().GetBool("skip-agents")
 	skipHooks, _ := cmd.Flags().GetBool("skip-hooks")
 	workspace := filepath.Dir(graphPreviewDir)
-	guidance, err := prepareGraphPreviewAgentInstructions(workspace, config.SafeAgentsFile(), skipAgents)
+	guidance, err := prepareGraphPreviewAgentInstructions(workspace, config.SafeAgentsFile(), skipAgents, graphPreviewInitAgentsRemedy)
 	if err != nil {
 		return graphFailure("graph_not_initialized", "agent guidance was not installed; no graph database was initialized: "+err.Error(), 5)
 	}

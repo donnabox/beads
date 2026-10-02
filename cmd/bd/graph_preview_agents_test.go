@@ -27,7 +27,7 @@ func TestGraphPreviewAgentInstructionsFileRouting(t *testing.T) {
 			if err := os.WriteFile(filepath.Join(work, "CLAUDE.md"), []byte(claude), 0600); err != nil {
 				t.Fatal(err)
 			}
-			plan, err := prepareGraphPreviewAgentInstructions(work, filename, false)
+			plan, err := prepareGraphPreviewAgentInstructions(work, filename, false, "")
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -46,7 +46,7 @@ func TestGraphPreviewAgentInstructionsFileRouting(t *testing.T) {
 			if err != nil || string(importFile) != claude {
 				t.Fatalf("CLAUDE import changed: %q err=%v", importFile, err)
 			}
-			plan, err = prepareGraphPreviewAgentInstructions(work, filename, false)
+			plan, err = prepareGraphPreviewAgentInstructions(work, filename, false, "")
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -90,14 +90,14 @@ func TestGraphPreviewAgentInstructionsRefuseUnsafeFiles(t *testing.T) {
 			if err := os.WriteFile(path, []byte(content), 0600); err != nil {
 				t.Fatal(err)
 			}
-			if plan, err := prepareGraphPreviewAgentInstructions(work, "AGENTS.md", false); err == nil || plan != nil || !strings.Contains(err.Error(), "--skip-agents") {
+			if plan, err := prepareGraphPreviewAgentInstructions(work, "AGENTS.md", false, graphPreviewInitAgentsRemedy); err == nil || plan != nil || !strings.Contains(err.Error(), "--skip-agents") {
 				t.Fatalf("unsafe managed section accepted: plan=%+v err=%v", plan, err)
 			}
 			got, err := os.ReadFile(path)
 			if err != nil || string(got) != content {
 				t.Fatalf("refusal changed user file: %q err=%v", got, err)
 			}
-			plan, err := prepareGraphPreviewAgentInstructions(work, "AGENTS.md", true)
+			plan, err := prepareGraphPreviewAgentInstructions(work, "AGENTS.md", true, "")
 			if err != nil || plan != nil {
 				t.Fatalf("explicit skip must bypass inspection: %+v %v", plan, err)
 			}
@@ -123,7 +123,7 @@ func TestGraphPreviewAgentInstructionsRefuseUnsafeFiles(t *testing.T) {
 			if err != nil {
 				t.Fatal(err)
 			}
-			if _, err := prepareGraphPreviewAgentInstructions(work, "AGENTS.md", false); err == nil {
+			if _, err := prepareGraphPreviewAgentInstructions(work, "AGENTS.md", false, ""); err == nil {
 				t.Fatal("nonregular agent target accepted")
 			}
 			got, err := os.ReadFile(outside)
@@ -143,7 +143,7 @@ func TestGraphPreviewAgentInstructionsFreshAndMinimal(t *testing.T) {
 				t.Fatal(err)
 			}
 		}
-		plan, err := prepareGraphPreviewAgentInstructions(work, "AGENTS.md", false)
+		plan, err := prepareGraphPreviewAgentInstructions(work, "AGENTS.md", false, "")
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -163,7 +163,7 @@ func TestGraphPreviewAgentInstructionsFreshAndMinimal(t *testing.T) {
 func TestGraphPreviewAgentInstructionsDetectChangedTarget(t *testing.T) {
 	work := t.TempDir()
 	path := filepath.Join(work, "AGENTS.md")
-	plan, err := prepareGraphPreviewAgentInstructions(work, "AGENTS.md", false)
+	plan, err := prepareGraphPreviewAgentInstructions(work, "AGENTS.md", false, "")
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -177,7 +177,7 @@ func TestGraphPreviewAgentInstructionsDetectChangedTarget(t *testing.T) {
 	if err != nil || string(got) != "concurrent user edit" {
 		t.Fatalf("intervening edit lost: %q %v", got, err)
 	}
-	if _, err := prepareGraphPreviewAgentInstructions(work, "../outside.md", false); err == nil {
+	if _, err := prepareGraphPreviewAgentInstructions(work, "../outside.md", false, ""); err == nil {
 		t.Fatal("unsafe routing filename accepted")
 	}
 }
@@ -187,7 +187,7 @@ func TestGraphPreviewAgentInstructionsWriteFailure(t *testing.T) {
 	if err := os.Mkdir(work, 0700); err != nil {
 		t.Fatal(err)
 	}
-	plan, err := prepareGraphPreviewAgentInstructions(work, "AGENTS.md", false)
+	plan, err := prepareGraphPreviewAgentInstructions(work, "AGENTS.md", false, "")
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -304,7 +304,7 @@ func TestGraphPreviewAgentInstructionsInstallRecheckOffersNoInitFlag(t *testing.
 	for _, tc := range graphPreviewAgentRefusals {
 		t.Run(tc.name, func(t *testing.T) {
 			work := t.TempDir()
-			plan, err := prepareGraphPreviewAgentInstructions(work, "AGENTS.md", false)
+			plan, err := prepareGraphPreviewAgentInstructions(work, "AGENTS.md", false, "")
 			if err != nil {
 				t.Fatal(err)
 			}
