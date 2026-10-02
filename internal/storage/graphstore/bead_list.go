@@ -4,6 +4,8 @@ import (
 	"context"
 	"database/sql"
 	"fmt"
+	"slices"
+	"time"
 
 	graph "github.com/steveyegge/beads/graphops"
 	"github.com/steveyegge/beads/internal/types"
@@ -32,8 +34,8 @@ type BeadListPage struct {
 }
 
 // ListBeads reads the current inventory and, when hiding applies, the Issue
-// list configuration in one read transaction, then hides, pages and caps the
-// Beads with pageBeads. It retains no transaction between requests.
+// list configuration in one read transaction, then hides, orders, pages and
+// caps the Beads with pageBeads. It retains no transaction between requests.
 func (s *Store) ListBeads(ctx context.Context, request BeadListRequest) (BeadListPage, error) {
 	var page BeadListPage
 	err := s.withTx(ctx, false, func(tx *sql.Tx) error {
@@ -73,16 +75,23 @@ func checkBeadListType(installed []graph.TypeDescriptor, typeURL string) error {
 
 // pageBeads is the whole listing policy over already validated records, so it
 // needs no database: it keeps the Beads of the requested Type, hides what the
-// ordinary list hides unless request.All is set, applies the row cap and trims
-// to the limit.
+// ordinary list hides unless request.All is set, orders them newest recorded
+// change first, trims to the limit and then refuses a page larger than the cap.
 func pageBeads(records []any, cfg workapi.ListConfig, request BeadListRequest) (BeadListPage, error) {
-	page := BeadListPage{Items: []any{}}
+	type listed struct {
+		bead any
+		id   string
+		at   time.Time
+	}
+	shown := []listed{}
 	for _, value := range records {
+		var id, recorded string
 		switch record := value.(type) {
 		case Record:
-			if request.TypeURL == "" || record.Type == request.TypeURL {
-				page.Items = append(page.Items, record)
+			if request.TypeURL != "" && record.Type != request.TypeURL {
+				continue
 			}
+			id, recorded = record.ID, record.Attribution.RecordedAt
 		case IssueRecord:
 			if record.Properties == nil {
 				return BeadListPage{}, fmt.Errorf("%w: Issue record without properties", ErrInvalidStore)
@@ -90,21 +99,45 @@ func pageBeads(records []any, cfg workapi.ListConfig, request BeadListRequest) (
 			if request.TypeURL != "" && record.Type != request.TypeURL {
 				continue
 			}
-			if request.All || !issueHiddenByDefault(record.Properties.Status, record.Properties.Pinned, cfg) {
-				page.Items = append(page.Items, record)
+			if !request.All && issueHiddenByDefault(record.Properties.Status, record.Properties.Pinned, cfg) {
+				continue
 			}
+			id, recorded = record.ID, record.Attribution.RecordedAt
 		case LinkRecord:
 			// A Link is a Resource, but never a Bead.
+			continue
 		default:
 			return BeadListPage{}, fmt.Errorf("%w: unsupported current Resource projection", ErrInvalidStore)
 		}
+		// The loaders accept only canonical RFC 3339 times, so one that does not
+		// parse here is a corrupt store, not an old Bead.
+		at, err := time.Parse(time.RFC3339Nano, recorded)
+		if err != nil {
+			return BeadListPage{}, fmt.Errorf("%w: Bead %s has no readable recorded time: %v", ErrInvalidStore, id, err)
+		}
+		shown = append(shown, listed{value, id, at})
 	}
-	if request.MaxRows > 0 && len(page.Items) > request.MaxRows {
-		return BeadListPage{}, fmt.Errorf("%w: Bead list exceeds configured maximum of %d rows", ErrLimitExceeded, request.MaxRows)
+	// Instants, not their text: RFC 3339 drops trailing zeros, so the text of an
+	// earlier time can sort after a later one. Equal instants fall back to the
+	// canonical ID, the comparator the snapshot itself uses, so the order is total.
+	slices.SortFunc(shown, func(a, b listed) int {
+		if c := b.at.Compare(a.at); c != 0 {
+			return c
+		}
+		return graph.CompareCodeUnits(a.id, b.id)
+	})
+	page := BeadListPage{Items: make([]any, 0, len(shown))}
+	for _, bead := range shown {
+		page.Items = append(page.Items, bead.bead)
 	}
 	if request.Limit > 0 && len(page.Items) > request.Limit {
 		page.Items = page.Items[:request.Limit]
 		page.HasMore = true
+	}
+	// The cap bounds the page that would be returned, so it is checked after
+	// hiding and after the limit: a limit at or under the cap never trips it.
+	if request.MaxRows > 0 && len(page.Items) > request.MaxRows {
+		return BeadListPage{}, fmt.Errorf("%w: Bead list page of %d Beads exceeds BEADS_MAX_ROWS=%d; use a smaller --limit or raise BEADS_MAX_ROWS", ErrLimitExceeded, len(page.Items), request.MaxRows)
 	}
 	return page, nil
 }

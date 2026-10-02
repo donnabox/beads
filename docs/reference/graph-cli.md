@@ -83,7 +83,7 @@ in this one.
 | `bd memories [SEARCH]` | List current Memory title/body summaries. Use `--all` for all matches within the preview's bounds, `--details` for saved version and attribution, or `--format records-json` for structured summaries. |
 | `bd recall ID` | Print **one** Memory's exact body bytes. It does not enumerate Memories or add a newline. |
 | `bd show ID --json` | Read one current Issue or Memory record; use `links/ID` for a Link. |
-| `bd list` or `bd list --format records-json` | Without an Issue filter, list every current Memory and Issue the ordinary `bd list` would show, ordered by ID; closed and pinned Issues need `--all`. Use `--bead-type types/NAME` to narrow by nominal Type. An Issue filter switches to the Issue-only query described below. |
+| `bd list` or `bd list --format records-json` | Without an Issue filter, list every current Memory and Issue the ordinary `bd list` would show, newest recorded change first; closed and pinned Issues need `--all`. Use `--bead-type types/NAME` to narrow by nominal Type. An Issue filter switches to the Issue-only query described below. |
 
 ```sh
 bd memories --all
@@ -100,7 +100,8 @@ current Bead. Each human row shows the Bead's local ID (such as
 status and priority, then the title. Closed and pinned Issues are hidden
 unless you pass `--all`, which also removes the row limit. `--limit` sets a
 visible prefix and `hasMore` indicates that the prefix omitted matches.
-It is not a continuation cursor. The BDP HTTP `beads/` collection provides
+It is not a continuation cursor. A positive `BEADS_MAX_ROWS` refuses a page of
+more Beads than the cap. The BDP HTTP `beads/` collection provides
 pagination in an ordinary shared-server graph workspace. Follow every
 response's `next` URL until it is `null`, or use the
 [public Python read example](https://github.com/versioned-beads/beads/blob/integration/examples/bdp-read/read_beads.py), which

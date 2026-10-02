@@ -85,16 +85,11 @@ func graphListSeedIssue(t *testing.T, work, path string, request publicops.Creat
 // canonical Bead paths, without the scope, in the order listed.
 func graphListBeads(t *testing.T, bd, work, home, scope string, extra ...string) (paths []string, more bool) {
 	t.Helper()
-	page := graphMixedResult[struct {
-		Items []struct {
-			ID string `json:"id"`
-		} `json:"items"`
-		HasMore bool `json:"hasMore"`
-	}](t, graphPolicyCLI(t, bd, work, home, nil, "", append([]string{"list", "--format", "records-json"}, extra...)...))
-	for _, item := range page.Items {
-		paths = append(paths, strings.TrimPrefix(item.ID, scope))
+	beads, more := graphListDecode(t, graphPolicyCLI(t, bd, work, home, nil, "", append([]string{"list", "--format", "records-json"}, extra...)...))
+	for _, bead := range beads {
+		paths = append(paths, strings.TrimPrefix(bead.ID, scope))
 	}
-	return paths, page.HasMore
+	return paths, more
 }
 
 func graphListSorted(paths []string) []string {

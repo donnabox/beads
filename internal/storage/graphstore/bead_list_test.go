@@ -197,3 +197,136 @@ func TestPageBeadsRefusesRecordsItCannotProject(t *testing.T) {
 		}
 	}
 }
+
+func beadListMemoryAt(path, recorded string) Record {
+	record := beadListMemory(path)
+	record.Attribution.RecordedAt = recorded
+	return record
+}
+
+func beadListIssueAt(path, recorded string) IssueRecord {
+	record := beadListIssue(path, types.StatusOpen, false)
+	record.Attribution.RecordedAt = recorded
+	return record
+}
+
+// Every rotation and the reverse of the input, so the order cannot be the
+// snapshot's own.
+func beadListInputOrders(records []any) [][]any {
+	orders := [][]any{slices.Clone(records)}
+	for shift := 1; shift < len(records); shift++ {
+		orders = append(orders, append(slices.Clone(records[shift:]), records[:shift]...))
+	}
+	reversed := slices.Clone(records)
+	slices.Reverse(reversed)
+	return append(orders, reversed)
+}
+
+// Recorded times are compared as instants, not as text: RFC 3339 drops trailing
+// zeros, so ".5Z" sorts after ".50001Z" as text though it is the earlier
+// instant. A Memory and an Issue share one order.
+func TestPageBeadsOrdersNewestRecordedFirst(t *testing.T) {
+	records := []any{
+		beadListIssueAt("beads/oldest", "2026-09-26T11:59:59Z"),
+		beadListMemoryAt("beads/half", "2026-09-26T12:00:00.5Z"),
+		beadListIssueAt("beads/later", "2026-09-26T12:00:00.50001Z"),
+		beadListMemoryAt("beads/newest", "2026-09-26T12:00:01Z"),
+	}
+	want := []string{"beads/newest", "beads/later", "beads/half", "beads/oldest"}
+	for _, input := range beadListInputOrders(records) {
+		page, err := pageBeads(input, workapi.ListConfig{}, BeadListRequest{})
+		if got := beadListPaths(t, page, beadListScope); err != nil || !slices.Equal(got, want) {
+			t.Fatalf("listed %v err=%v, want %v", got, err, want)
+		}
+	}
+}
+
+// Equal instants fall back to the canonical ID in code-unit order, so an
+// uppercase letter sorts before a lowercase one and the order is total.
+func TestPageBeadsBreaksTiesByCanonicalID(t *testing.T) {
+	const same = "2026-09-26T12:00:00.123456Z"
+	records := []any{
+		beadListMemoryAt("beads/b", same),
+		beadListIssueAt("beads/a", same),
+		beadListMemoryAt("beads/B", same),
+		beadListIssueAt("beads/newer", "2026-09-26T12:00:01Z"),
+	}
+	want := []string{"beads/newer", "beads/B", "beads/a", "beads/b"}
+	for _, input := range beadListInputOrders(records) {
+		page, err := pageBeads(input, workapi.ListConfig{}, BeadListRequest{})
+		if got := beadListPaths(t, page, beadListScope); err != nil || !slices.Equal(got, want) {
+			t.Fatalf("listed %v err=%v, want %v", got, err, want)
+		}
+	}
+}
+
+func TestPageBeadsLimitKeepsTheNewestBeads(t *testing.T) {
+	records := []any{
+		beadListIssueAt("beads/oldest", "2026-09-26T11:59:59Z"),
+		beadListMemoryAt("beads/middle", "2026-09-26T12:00:00Z"),
+		beadListIssueAt("beads/newest", "2026-09-26T12:00:01Z"),
+	}
+	page, err := pageBeads(records, workapi.ListConfig{}, BeadListRequest{Limit: 2})
+	if got := beadListPaths(t, page, beadListScope); err != nil || !page.HasMore || !slices.Equal(got, []string{"beads/newest", "beads/middle"}) {
+		t.Fatalf("limit 2 listed %v more=%t err=%v", got, page.HasMore, err)
+	}
+}
+
+// Both kinds of record carry a canonical recorded time, so one that cannot be
+// read is a corrupt store and is never ordered as if it were old.
+func TestPageBeadsRefusesAnUnreadableRecordedTime(t *testing.T) {
+	for _, recorded := range []string{"", "yesterday", "2026-09-26T25:00:00Z"} {
+		for name, record := range map[string]any{
+			"Memory": beadListMemoryAt("beads/bad", recorded),
+			"Issue":  beadListIssueAt("beads/bad", recorded),
+		} {
+			records := []any{beadListMemoryAt("beads/good", beadListRecorded), record}
+			if _, err := pageBeads(records, workapi.ListConfig{}, BeadListRequest{}); !errors.Is(err, ErrInvalidStore) {
+				t.Fatalf("%s recorded %q must be an invalid store, got %v", name, recorded, err)
+			}
+		}
+	}
+}
+
+// The cap bounds the page that would be returned: after hiding and after the
+// limit, never the Beads that merely match. The rows are the ones R3 names.
+func TestPageBeadsCapBoundsThePageThatWouldBeReturned(t *testing.T) {
+	for _, tc := range []struct {
+		name                      string
+		shown, hidden, limit, max int
+		page                      int
+		more, refused             bool
+	}{
+		{"no cap", 5, 0, 0, 0, 5, false, false},
+		{"no cap, the limit trims", 5, 0, 2, 0, 2, true, false},
+		{"unlimited page within the cap", 3, 0, 0, 3, 3, false, false},
+		{"unlimited page over the cap", 4, 0, 0, 3, 4, false, true},
+		{"limit under the cap never trips it", 4, 0, 2, 3, 2, true, false},
+		{"limit at the cap never trips it", 5, 0, 3, 3, 3, true, false},
+		{"limit over the cap, matches within it", 3, 0, 5, 3, 3, false, false},
+		{"limit over the cap, matches beyond it", 4, 0, 5, 3, 4, false, true},
+		{"hiding brings the matches within the cap", 2, 3, 0, 2, 2, false, false},
+		{"hidden Beads do not trip a limit over the cap", 2, 5, 9, 2, 2, false, false},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			records := []any{}
+			for i := 0; i < tc.shown; i++ {
+				records = append(records, beadListIssueAt(fmt.Sprintf("beads/shown-%02d", i), beadListRecorded))
+			}
+			for i := 0; i < tc.hidden; i++ {
+				records = append(records, beadListIssue(fmt.Sprintf("beads/hidden-%02d", i), types.StatusClosed, false))
+			}
+			page, err := pageBeads(records, workapi.ListConfig{}, BeadListRequest{Limit: tc.limit, MaxRows: tc.max})
+			if tc.refused {
+				want := fmt.Sprintf("Bead list page of %d Beads exceeds BEADS_MAX_ROWS=%d; use a smaller --limit or raise BEADS_MAX_ROWS", tc.page, tc.max)
+				if !errors.Is(err, ErrLimitExceeded) || !strings.HasSuffix(err.Error(), ": "+want) {
+					t.Fatalf("want a refusal ending %q, got %v", want, err)
+				}
+				return
+			}
+			if err != nil || len(page.Items) != tc.page || page.HasMore != tc.more {
+				t.Fatalf("page of %d more=%t err=%v, want %d more=%t", len(page.Items), page.HasMore, err, tc.page, tc.more)
+			}
+		})
+	}
+}

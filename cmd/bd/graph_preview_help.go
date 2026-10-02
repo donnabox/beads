@@ -106,11 +106,12 @@ with --reason. Batch and remote-routing forms are unavailable.`},
 This graph preview refuses positive BEADS_MAX_ROWS instead of truncating.`},
 		{listCmd, `Without Issue filters, bd list reads one bounded snapshot of current Beads
 of all installed Bead Types and lists every Memory and every Issue the
-ordinary bd list would show, ordered by ID. Closed and pinned Issues are
-hidden unless --all is given; --all also removes the row limit. Each human
-row shows the local ID and kind; an Issue row also shows its status and
-priority. Use --bead-type types/NAME to narrow by Bead Type. --limit
-returns a prefix with hasMore, not a continuation cursor.
+ordinary bd list would show, newest recorded change first. Closed and pinned
+Issues are hidden unless --all is given; --all also removes the row limit.
+Each human row shows the local ID and kind; an Issue row also shows its
+status and priority. Use --bead-type types/NAME to narrow by Bead Type.
+--limit returns a prefix with hasMore, not a continuation cursor. A positive
+BEADS_MAX_ROWS refuses a page of more Beads than that.
 Issue-specific filters (--status, --type, --title, --title-contains,
 --priority, --priority-min, --priority-max, --assignee, --no-assignee,
 --label, --label-any, --exclude-label, --pinned, --no-pinned, --due-before,
