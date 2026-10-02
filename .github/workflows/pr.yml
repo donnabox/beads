@@ -946,6 +946,11 @@ jobs:
     if: needs.bazel-coverage.outputs.pr_lanes != 'true'
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v6
+        with:
+          # Replay scenarios build older bd binaries from pinned commits, and
+          # REPLAY_REQUIRE=1 below makes a missing commit a failure, so this
+          # required job carries the history.
+          fetch-depth: 0
 
       - name: Set up Go
         id: setup-go
@@ -996,10 +1001,10 @@ jobs:
           BEADS_TEST_REQUIRE_EXCLUDE_PERMISSION: '1'
           BEADS_TEST_BD_BINARY: ${{ github.workspace }}/ci-build-artifacts/bd-linux-gms-pure
           GOCACHE: ${{ runner.temp }}/go-cache/race
-          # The replay harness's tests need the dolt CLI and the Go toolchain,
-          # both installed above. With REPLAY_REQUIRE=1 a missing tool fails
-          # them instead of skipping them, so this required check cannot pass
-          # without the harness having run.
+          # The replay harness's tests need the dolt CLI, the Go toolchain and
+          # the full git history, all provided above. With REPLAY_REQUIRE=1 a
+          # missing tool or commit fails them instead of skipping them, so this
+          # required check cannot pass without the harness having run.
           REPLAY_REQUIRE: '1'
         run: make ci-pr-core
 
