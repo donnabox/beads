@@ -1,7 +1,5 @@
 package schema
 
-import "testing"
-
 // R20's epoch-transition enforcement (gastownhall/beads#5898 revision 9,
 // this slice: be-x5jqd.4 / #6136) adds one brand-new table,
 // epoch_minted_addresses -- see
@@ -12,9 +10,11 @@ import "testing"
 // migration including this one, by TestBundleMigrationsWithPreparedALTERAreOverriddenOrJustified
 // and TestAllMigrationsSQLUsesDirectDDLForKnownCLIIncompatibilities).
 
-// TestLatestVersionIncludesMigration0071 pins the real next free slot this
-// phase claims, superseding 0070's own version of this test (only one such
-// pin lives at a time, the same way 0070's superseded 0069's).
+// TestLatestVersionIncludesMigration0071 (pinning LatestVersion() == 71) is
+// superseded by TestLatestVersionIncludesMigration0072
+// (migration_0072_add_participation_generation_test.go) now that 0072 claims
+// the next free slot -- only one such pin lives at a time, matching how this
+// test itself already superseded 0070's own version.
 //
 // This slice originally claimed 0069 too. It was renumbered because
 // R7.1's removed_restriction migration -- a PARALLEL SIBLING of this branch,
@@ -27,14 +27,3 @@ import "testing"
 // version number panic checkNoDuplicateVersions at store open, before any
 // command's RunE, which bricks every bd invocation rather than merely
 // reddening a package -- see the same hazard on #6358 vs #6008.
-//
-// Deliberately a hardcoded literal for the same reason 0069's and 0070's
-// were: LatestVersion() drifting to 71 for the wrong reason (an unrelated
-// migration landing first) should still be caught by this test failing to
-// explain why 71 is epoch-minted-addresses-shaped.
-func TestLatestVersionIncludesMigration0071(t *testing.T) {
-	const want = 71
-	if got := LatestVersion(); got != want {
-		t.Fatalf("LatestVersion() = %d, want %d (epoch_minted_addresses migration slot claimed by be-x5jqd.4)", got, want)
-	}
-}

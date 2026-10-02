@@ -549,6 +549,36 @@ func TestGraphPreviewClaudeStopAutoInitRefusalMessages(t *testing.T) {
 	}
 }
 
+// Init is the one command that accepts --skip-agents, and with it the refused
+// file is left untouched, so init keeps offering it. The refusal comes from
+// preflight, before any graph storage exists.
+func TestGraphPreviewInitAgentFileRefusalsOfferSkipAgents(t *testing.T) {
+	bd := buildBDUnderTest(t)
+	for _, tc := range graphPreviewAgentRefusals {
+		t.Run(tc.name, func(t *testing.T) {
+			work, home := t.TempDir(), t.TempDir()
+			tc.arrange(t, filepath.Join(work, "AGENTS.md"))
+			args := []string{"init", "--graph-mode", "link", "--scope-url", "https://example.invalid/agent-refusal/", "--skip-hooks", "--non-interactive", "--json"}
+			code, stdout, stderr := graphSetupRun(t, bd, work, home, nil, nil, args...)
+			var refusal struct{ Code, Message string }
+			if err := json.Unmarshal([]byte(stderr), &refusal); err != nil || code != 5 || stdout != "" || refusal.Code != "graph_not_initialized" {
+				t.Fatalf("expected a typed preflight refusal: exit=%d stdout=%q stderr=%q err=%v", code, stdout, stderr, err)
+			}
+			for _, want := range []string{"agent guidance was not installed; no graph database was initialized: agent file AGENTS.md", tc.problem} {
+				if !strings.Contains(refusal.Message, want) {
+					t.Errorf("refusal omits %q: %s", want, refusal.Message)
+				}
+			}
+			if !strings.HasSuffix(refusal.Message, "; preserve it with --skip-agents") {
+				t.Errorf("init refusal does not end with its --skip-agents step: %s", refusal.Message)
+			}
+			if _, err := os.Lstat(filepath.Join(work, ".beads")); !os.IsNotExist(err) {
+				t.Fatalf("preflight refusal created graph storage: %v", err)
+			}
+		})
+	}
+}
+
 // Claude Code reads exit 2 from a Stop hook as "block stopping", and graph
 // admission runs before the reminder's stop_hook_active guard. Admission
 // refusals in the hook (BD_BACKEND selectors, a moved workspace) must warn on
