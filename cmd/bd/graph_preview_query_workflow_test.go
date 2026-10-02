@@ -3,10 +3,10 @@
 package main
 
 import (
-	"encoding/json"
 	"os"
 	"path/filepath"
 	"reflect"
+	"slices"
 	"strings"
 	"testing"
 
@@ -39,21 +39,9 @@ func TestGraphPreviewQueryWorkflow(t *testing.T) {
 				args := append([]string{"list", "--format", "records-json", "--bead-type", "types/preview-issue-v2"}, extra...)
 				return graphMixedResult[graphstore.IssueListPage](t, graphPolicyCLI(t, bd, work, home, nil, "", args...))
 			}
-			beads := func(extra ...string) (items []struct{ ID, Type string }, more bool) {
+			beads := func(extra ...string) ([]graphListedBead, bool) {
 				t.Helper()
-				args := append([]string{"list", "--format", "records-json"}, extra...)
-				page := graphMixedResult[struct {
-					Items   []json.RawMessage `json:"items"`
-					HasMore bool              `json:"hasMore"`
-				}](t, graphPolicyCLI(t, bd, work, home, nil, "", args...))
-				for _, raw := range page.Items {
-					var item struct{ ID, Type string }
-					if err := json.Unmarshal(raw, &item); err != nil {
-						t.Fatal(err)
-					}
-					items = append(items, item)
-				}
-				return items, page.HasMore
+				return graphListDecode(t, graphPolicyCLI(t, bd, work, home, nil, "", append([]string{"list", "--format", "records-json"}, extra...)...))
 			}
 			blocked := func() []graphstore.BlockedIssue {
 				t.Helper()
@@ -138,8 +126,18 @@ func TestGraphPreviewQueryWorkflow(t *testing.T) {
 			if !reflect.DeepEqual(stable, graphMemoryReadSnapshot(t, work)) {
 				t.Fatal("no-op or stale edit changed the whole current snapshot")
 			}
+			// The inventory lists the newest recorded change first, so its order is
+			// checked against the records' own recorded times, not their IDs.
+			sortedIDs := func(items []graphListedBead) []string {
+				ids := []string{}
+				for _, item := range items {
+					ids = append(ids, item.ID)
+				}
+				slices.Sort(ids)
+				return ids
+			}
 			allBeads, more := beads("--all")
-			if more || len(allBeads) != 4 || allBeads[0].ID != scope+"beads/context" || allBeads[1].ID != scope+"beads/gate" || allBeads[2].ID != scope+"beads/plan" || allBeads[3].ID != scope+"beads/work" {
+			if more || len(allBeads) != 4 || !graphListNewestFirst(t, allBeads) || !slices.Equal(sortedIDs(allBeads), []string{scope + "beads/context", scope + "beads/gate", scope + "beads/plan", scope + "beads/work"}) {
 				t.Fatalf("complete mixed Bead inventory: %+v more=%t", allBeads, more)
 			}
 			firstPage, more := beads("--limit", "2")
@@ -147,7 +145,7 @@ func TestGraphPreviewQueryWorkflow(t *testing.T) {
 				t.Fatalf("bounded mixed Bead inventory: %+v more=%t", firstPage, more)
 			}
 			memories, more := beads("--bead-type", "types/preview-memory-v2", "--all")
-			if more || len(memories) != 2 || memories[0].ID != scope+"beads/context" || memories[1].ID != scope+"beads/plan" {
+			if more || len(memories) != 2 || !graphListNewestFirst(t, memories) || !slices.Equal(sortedIDs(memories), []string{scope + "beads/context", scope + "beads/plan"}) {
 				t.Fatalf("Memory Type filter: %+v more=%t", memories, more)
 			}
 			if got := graphPolicyCLI(t, bd, work, home, nil, "", "list", "--all"); !strings.Contains(got, "Beads (4;") || !strings.Contains(got, "Memory") || !strings.Contains(got, "Issue") || strings.Contains(got, "private-memory-body") {
