@@ -1,11 +1,16 @@
 package main
 
 import (
+	"bytes"
+	"errors"
+	"fmt"
 	"os"
 	"path/filepath"
 	"strings"
 	"testing"
 
+	"github.com/spf13/cobra"
+	"github.com/steveyegge/beads/internal/config"
 	"github.com/steveyegge/beads/internal/templates/agents"
 )
 
@@ -22,7 +27,7 @@ func TestGraphPreviewAgentInstructionsFileRouting(t *testing.T) {
 			if err := os.WriteFile(filepath.Join(work, "CLAUDE.md"), []byte(claude), 0600); err != nil {
 				t.Fatal(err)
 			}
-			plan, err := prepareGraphPreviewAgentInstructions(work, filename, false)
+			plan, err := prepareGraphPreviewAgentInstructions(work, filename, false, "")
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -41,7 +46,7 @@ func TestGraphPreviewAgentInstructionsFileRouting(t *testing.T) {
 			if err != nil || string(importFile) != claude {
 				t.Fatalf("CLAUDE import changed: %q err=%v", importFile, err)
 			}
-			plan, err = prepareGraphPreviewAgentInstructions(work, filename, false)
+			plan, err = prepareGraphPreviewAgentInstructions(work, filename, false, "")
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -85,14 +90,14 @@ func TestGraphPreviewAgentInstructionsRefuseUnsafeFiles(t *testing.T) {
 			if err := os.WriteFile(path, []byte(content), 0600); err != nil {
 				t.Fatal(err)
 			}
-			if plan, err := prepareGraphPreviewAgentInstructions(work, "AGENTS.md", false); err == nil || plan != nil || !strings.Contains(err.Error(), "--skip-agents") {
+			if plan, err := prepareGraphPreviewAgentInstructions(work, "AGENTS.md", false, graphPreviewInitAgentsRemedy); err == nil || plan != nil || !strings.Contains(err.Error(), "--skip-agents") {
 				t.Fatalf("unsafe managed section accepted: plan=%+v err=%v", plan, err)
 			}
 			got, err := os.ReadFile(path)
 			if err != nil || string(got) != content {
 				t.Fatalf("refusal changed user file: %q err=%v", got, err)
 			}
-			plan, err := prepareGraphPreviewAgentInstructions(work, "AGENTS.md", true)
+			plan, err := prepareGraphPreviewAgentInstructions(work, "AGENTS.md", true, "")
 			if err != nil || plan != nil {
 				t.Fatalf("explicit skip must bypass inspection: %+v %v", plan, err)
 			}
@@ -118,7 +123,7 @@ func TestGraphPreviewAgentInstructionsRefuseUnsafeFiles(t *testing.T) {
 			if err != nil {
 				t.Fatal(err)
 			}
-			if _, err := prepareGraphPreviewAgentInstructions(work, "AGENTS.md", false); err == nil {
+			if _, err := prepareGraphPreviewAgentInstructions(work, "AGENTS.md", false, ""); err == nil {
 				t.Fatal("nonregular agent target accepted")
 			}
 			got, err := os.ReadFile(outside)
@@ -138,7 +143,7 @@ func TestGraphPreviewAgentInstructionsFreshAndMinimal(t *testing.T) {
 				t.Fatal(err)
 			}
 		}
-		plan, err := prepareGraphPreviewAgentInstructions(work, "AGENTS.md", false)
+		plan, err := prepareGraphPreviewAgentInstructions(work, "AGENTS.md", false, "")
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -158,7 +163,7 @@ func TestGraphPreviewAgentInstructionsFreshAndMinimal(t *testing.T) {
 func TestGraphPreviewAgentInstructionsDetectChangedTarget(t *testing.T) {
 	work := t.TempDir()
 	path := filepath.Join(work, "AGENTS.md")
-	plan, err := prepareGraphPreviewAgentInstructions(work, "AGENTS.md", false)
+	plan, err := prepareGraphPreviewAgentInstructions(work, "AGENTS.md", false, "")
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -172,7 +177,7 @@ func TestGraphPreviewAgentInstructionsDetectChangedTarget(t *testing.T) {
 	if err != nil || string(got) != "concurrent user edit" {
 		t.Fatalf("intervening edit lost: %q %v", got, err)
 	}
-	if _, err := prepareGraphPreviewAgentInstructions(work, "../outside.md", false); err == nil {
+	if _, err := prepareGraphPreviewAgentInstructions(work, "../outside.md", false, ""); err == nil {
 		t.Fatal("unsafe routing filename accepted")
 	}
 }
@@ -182,7 +187,7 @@ func TestGraphPreviewAgentInstructionsWriteFailure(t *testing.T) {
 	if err := os.Mkdir(work, 0700); err != nil {
 		t.Fatal(err)
 	}
-	plan, err := prepareGraphPreviewAgentInstructions(work, "AGENTS.md", false)
+	plan, err := prepareGraphPreviewAgentInstructions(work, "AGENTS.md", false, "")
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -194,5 +199,132 @@ func TestGraphPreviewAgentInstructionsWriteFailure(t *testing.T) {
 	}
 	if _, err := os.Lstat(work); !os.IsNotExist(err) {
 		t.Fatalf("failed installation created unexpected files: %v", err)
+	}
+}
+
+// One input for each message prepareGraphPreviewAgentInstructions builds when it
+// refuses an agents file. problem is the part of the message that names the cause.
+var graphPreviewAgentRefusals = []struct {
+	name, problem string
+	arrange       func(t *testing.T, path string)
+}{
+	{"not-regular", "is not a regular file", func(t *testing.T, path string) {
+		outside := filepath.Join(t.TempDir(), "outside.md")
+		if err := os.WriteFile(outside, []byte("outside sentinel"), 0o600); err != nil {
+			t.Fatal(err)
+		}
+		if err := os.Symlink(outside, path); err != nil {
+			t.Fatal(err)
+		}
+	}},
+	{"duplicate-sections", "has malformed or duplicate managed sections", func(t *testing.T, path string) {
+		minimal := agents.RenderSection(agents.ProfileMinimal)
+		writeAgentRefusalFile(t, path, minimal+minimal)
+	}},
+	{"unknown-marker-field", "has an unsupported or malformed managed marker", func(t *testing.T, path string) {
+		minimal := agents.RenderSection(agents.ProfileMinimal)
+		writeAgentRefusalFile(t, path, strings.Replace(minimal, " -->", " extra:value -->", 1))
+	}},
+	{"full-profile", "has a full or unknown managed profile", func(t *testing.T, path string) {
+		writeAgentRefusalFile(t, path, agents.RenderSection(agents.ProfileFull))
+	}},
+	{"reversed-markers", "before BEGIN at", func(t *testing.T, path string) {
+		writeAgentRefusalFile(t, path, "<!-- END BEADS INTEGRATION -->\n<!-- BEGIN BEADS INTEGRATION v:1 profile:minimal hash:12345678 -->\n")
+	}},
+}
+
+func writeAgentRefusalFile(t *testing.T, path, content string) {
+	t.Helper()
+	if err := os.WriteFile(path, []byte(content), 0o600); err != nil {
+		t.Fatal(err)
+	}
+}
+
+// captureGraphFailures routes graphFailure diagnostics into a buffer, as plain
+// text, for the length of one test.
+func captureGraphFailures(t *testing.T) *bytes.Buffer {
+	t.Helper()
+	oldOutput, oldJSON, oldStructured := graphFailureOutput, jsonOutput, graphPreviewStructuredErrors
+	var diagnostic bytes.Buffer
+	graphFailureOutput, jsonOutput, graphPreviewStructuredErrors = &diagnostic, false, false
+	t.Cleanup(func() {
+		graphFailureOutput, jsonOutput, graphPreviewStructuredErrors = oldOutput, oldJSON, oldStructured
+	})
+	return &diagnostic
+}
+
+// bd setup claude reads the agents file but has no way to skip it, so a refusal
+// it prints must not send the user to --skip-agents, which only init accepts.
+func TestGraphPreviewSetupAgentFileRefusalsOfferNoInitFlag(t *testing.T) {
+	file := config.SafeAgentsFile()
+	for _, tc := range graphPreviewAgentRefusals {
+		for _, check := range []bool{false, true} {
+			t.Run(fmt.Sprintf("%s/check=%t", tc.name, check), func(t *testing.T) {
+				work := t.TempDir()
+				tc.arrange(t, filepath.Join(work, file))
+				oldDir := graphPreviewDir
+				graphPreviewDir = filepath.Join(work, ".beads")
+				t.Cleanup(func() { graphPreviewDir = oldDir })
+				diagnostic := captureGraphFailures(t)
+
+				cmd := &cobra.Command{}
+				for _, name := range []string{"project", "check", "remove"} {
+					cmd.Flags().Bool(name, false, "")
+				}
+				if check {
+					if err := cmd.ParseFlags([]string{"--check"}); err != nil {
+						t.Fatal(err)
+					}
+				}
+				err := runGraphPreviewSetup(cmd, []string{"claude"})
+				var exit *exitError
+				if !errors.As(err, &exit) || exit.Code != 5 {
+					t.Fatalf("setup did not refuse with exit 5: %v", err)
+				}
+				got := diagnostic.String()
+				for _, want := range []string{"capability_unavailable: agent file " + file, tc.problem} {
+					if !strings.Contains(got, want) {
+						t.Errorf("refusal omits %q: %q", want, got)
+					}
+				}
+				if strings.Contains(got, "--skip-agents") {
+					t.Errorf("setup offered an init-only flag: %q", got)
+				}
+				if want := "; repair that file by hand and run bd setup claude again\n"; !strings.HasSuffix(got, want) {
+					t.Errorf("refusal does not end with the step setup can offer %q: %q", want, got)
+				}
+			})
+		}
+	}
+}
+
+// install() rechecks the file after the store exists. Init cannot be run again
+// from there, so a refusal it returns must not offer --skip-agents either.
+func TestGraphPreviewAgentInstructionsInstallRecheckOffersNoInitFlag(t *testing.T) {
+	for _, tc := range graphPreviewAgentRefusals {
+		t.Run(tc.name, func(t *testing.T) {
+			work := t.TempDir()
+			plan, err := prepareGraphPreviewAgentInstructions(work, "AGENTS.md", false, "")
+			if err != nil {
+				t.Fatal(err)
+			}
+			tc.arrange(t, filepath.Join(work, "AGENTS.md"))
+			err = plan.install()
+			if err == nil {
+				t.Fatal("install accepted a file that became unsafe after preflight")
+			}
+			got := err.Error()
+			for _, want := range []string{"agent file AGENTS.md", tc.problem} {
+				if !strings.Contains(got, want) {
+					t.Errorf("refusal omits %q: %q", want, got)
+				}
+			}
+			if strings.Contains(got, "--skip-agents") {
+				t.Errorf("install offered an init-only flag: %q", got)
+			}
+			if strings.HasSuffix(got, ";") || strings.HasSuffix(got, "; ") {
+				t.Errorf("refusal ends in a dangling separator: %q", got)
+			}
+		})
 	}
 }

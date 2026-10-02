@@ -182,7 +182,7 @@ def verify_python_pages(observations, scope, expected_ids):
                "Python pagination did not exhaust complete inventory")
 
 
-def main():
+def build_parser():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--bd", type=Path, required=True)
     parser.add_argument("--server-port", type=int, required=True)
@@ -193,7 +193,11 @@ def main():
     parser.add_argument("--output-dir", type=Path, required=True)
     parser.add_argument("--command-timeout", type=float, default=60)
     parser.add_argument("--total-timeout", type=float, default=300)
-    args = parser.parse_args()
+    return parser
+
+
+def main():
+    args = build_parser().parse_args()
     for name in ["bd", "bdp_checkout", "node", "output_dir", "client_manifest"]:
         value = getattr(args, name)
         c0.require(value.is_absolute(), f"--{name.replace('_', '-')} must be absolute")

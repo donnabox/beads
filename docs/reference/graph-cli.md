@@ -83,7 +83,7 @@ in this one.
 | `bd memories [SEARCH]` | List current Memory title/body summaries. Use `--all` for all matches within the preview's bounds, `--details` for saved version and attribution, or `--format records-json` for structured summaries. |
 | `bd recall ID` | Print **one** Memory's exact body bytes. It does not enumerate Memories or add a newline. |
 | `bd show ID --json` | Read one current Issue or Memory record; use `links/ID` for a Link. |
-| `bd list` or `bd list --format records-json` | Without an Issue filter, list every current Memory and Issue, closed Issues included, ordered by ID. Use `--bead-type types/NAME` to narrow by nominal Type. An Issue filter switches to the Issue-only query described below. |
+| `bd list` or `bd list --format records-json` | Without an Issue filter, list every current Memory and Issue the ordinary `bd list` would show, newest recorded change first; closed and pinned Issues need `--all`. Use `--bead-type types/NAME` to narrow by nominal Type. An Issue filter, or a matching directory label, switches to the Issue-only query described below and says so. |
 
 ```sh
 bd memories --all
@@ -95,12 +95,13 @@ bd list --format records-json --bead-type types/preview-memory-v2 --all
 ```
 
 Without an Issue filter, `bd list` reads one bounded snapshot of every
-current Bead. Each human row shows only the Bead's local ID (such as
-`beads/work`), its kind (`Memory` or `Issue`) and its title; there is no
-status or priority column. `--all` only removes the row limit, because closed
-Issues are already listed. `--limit` sets a visible prefix and `hasMore`
-indicates that the prefix omitted matches.
-It is not a continuation cursor. The BDP HTTP `beads/` collection provides
+current Bead. Each human row shows the Bead's local ID (such as
+`beads/work`) and its kind (`Memory` or `Issue`); an Issue row also shows its
+status and priority, then the title. Closed and pinned Issues are hidden
+unless you pass `--all`, which also removes the row limit. `--limit` sets a
+visible prefix and `hasMore` indicates that the prefix omitted matches.
+It is not a continuation cursor. A positive `BEADS_MAX_ROWS` refuses a page of
+more Beads than the cap. The BDP HTTP `beads/` collection provides
 pagination in an ordinary shared-server graph workspace. Follow every
 response's `next` URL until it is `null`, or use the
 [public Python read example](https://github.com/versioned-beads/beads/blob/integration/examples/bdp-read/read_beads.py), which
@@ -114,8 +115,10 @@ The Issue filters are `--status` (or `--state`), `--type`, `--title`,
 existing Issue query, even when an empty value such as `--assignee=` adds no
 restriction. A configured `directory.labels` entry that matches the current
 directory switches it too. That query lists Issues only, never Memories. It
-omits closed and pinned Issues unless `--all` or a filter selects them. Its
-human rows add status and priority, for example
+omits closed and pinned Issues unless `--all` or a filter selects them. A line
+under the header says Memories are not listed and names the option that
+selected the query. A directory label alone never refuses a `--bead-type`; it
+is not applied to a Memory. Its human rows add status and priority, for example
 `"https://example.org/team/beads/work" "open" P2 "Move the release branch"`.
 An Issue filter cannot be combined with a non-Issue `--bead-type`.
 

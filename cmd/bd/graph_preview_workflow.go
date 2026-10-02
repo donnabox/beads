@@ -33,7 +33,7 @@ func graphPreviewBareBeadPath(selector string) (string, error) {
 		}
 	}
 	if strings.Contains(selector, "://") {
-		return "", fmt.Errorf("invalid local selector %q; only this workspace's exact Scope URL is accepted", selector)
+		return "", fmt.Errorf("invalid local selector %q; a URL must be this workspace's Scope URL followed by beads/PATH or links/PATH, and --id accepts only a bare ID or beads/PATH", selector)
 	}
 	path := "beads/" + selector
 	if err := graph.ValidateBeadPath(path); err != nil {

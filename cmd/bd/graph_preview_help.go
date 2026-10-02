@@ -97,27 +97,33 @@ accepts types/NAME or a full local Type URL. An optional --id
 selects links/PATH; --properties supplies informational Link properties.
 Memory-owned Links accept the current source by default, or use
 --if-source-revision TOKEN to reject a stale source. --unconditional-source
-explicitly selects the default. Blocking Types require Issue endpoints.`},
+explicitly selects the default. The blocking Type types/preview-blocks-v1
+requires Issue endpoints and, unlike informational Types, one of
+--if-source-revision TOKEN or --unconditional-source.`},
 		{closeCmd, `Close one live Issue by ID or beads/ID. Batch, force and
 remote-routing forms are unavailable in this graph preview.`},
 		{reopenCmd, `Reopen one closed Issue by ID or beads/ID, optionally
 with --reason. Batch and remote-routing forms are unavailable.`},
 		{readyCmd, `Show current ready Issues with no graph-specific filters.
 This graph preview refuses positive BEADS_MAX_ROWS instead of truncating.`},
-		{listCmd, `Without Issue filters, bd list reads one bounded snapshot of
-current Beads of all installed Bead Types: every Memory and every Issue,
-closed Issues included, ordered by ID. Each human row shows only the local
-ID, kind and title; --format records-json returns complete records. Use
---bead-type types/NAME to narrow by Bead Type. --all only removes the row
-limit; --limit returns a prefix with hasMore, not a continuation cursor.
+		{listCmd, `Without Issue filters, bd list reads one bounded snapshot of current Beads
+of all installed Bead Types and lists every Memory and every Issue the
+ordinary bd list would show, newest recorded change first. Closed and pinned
+Issues are hidden unless --all is given; --all also removes the row limit.
+Each human row shows the local ID and kind; an Issue row also shows its
+status and priority. Use --bead-type types/NAME to narrow by Bead Type.
+--limit returns a prefix with hasMore, not a continuation cursor. A positive
+BEADS_MAX_ROWS refuses a page of more Beads than that.
 Issue-specific filters (--status, --type, --title, --title-contains,
 --priority, --priority-min, --priority-max, --assignee, --no-assignee,
 --label, --label-any, --exclude-label, --pinned, --no-pinned, --due-before,
 --due-after, --overdue, --sort, --reverse) or a matching configured
 directory label switch to the existing Issue query: Issues only, closed and
-pinned Issues omitted unless --all or a filter selects them, and quoted rows
-with status and priority. They cannot be combined with a non-Issue
---bead-type. Tree output and legacy --json are unavailable.`},
+pinned Issues omitted unless --all or a filter selects them, quoted rows
+with status and priority, and a line under the header saying Memories are
+not listed. A typed filter cannot be combined with a non-Issue --bead-type;
+a configured directory label alone does not refuse one, it is simply not
+applied to Memories. Tree output and legacy --json are unavailable.`},
 		{blockedCmd, `Show current dependency-blocked Issues with canonical
 blocker IDs. Filters and positive BEADS_MAX_ROWS are unavailable.`},
 		{graphCmd, `Use bd graph ID --view generic to traverse the current

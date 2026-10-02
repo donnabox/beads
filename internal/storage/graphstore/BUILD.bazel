@@ -4,6 +4,7 @@ go_library(
     name = "graphstore",
     srcs = [
         "backend.go",
+        "bead_list.go",
         "collection_read.go",
         "collection_read_bounds.go",
         "dependencies.go",
@@ -58,6 +59,8 @@ go_test(
     size = "large",
     timeout = "long",
     srcs = [
+        "bead_list_store_test.go",
+        "bead_list_test.go",
         "collection_read_bounds_test.go",
         "collection_read_test.go",
         "commit_loss_test.go",
@@ -102,6 +105,7 @@ go_test(
         "memory_update_test.go",
         "native_recorder_integration_test.go",
         "overwrite_disclosure_test.go",
+        "preview_generation_guard_test.go",
         "schema_test.go",
         "server_test.go",
         "store_test.go",
