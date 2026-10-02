@@ -72,7 +72,7 @@ func graphPreviewRevisionGuard(cmd *cobra.Command, source, required bool) (strin
 
 // The old name remains a hidden compatibility alias for existing scripts.
 func registerGraphLinkTypeFlag(cmd *cobra.Command) {
-	cmd.Flags().String("link-type", "", "Installed Link Type: types/NAME or full local URL")
+	cmd.Flags().String("link-type", "", "Installed Link Type: types/NAME or full local URL (graph preview only)")
 	cmd.Flags().String("resource-type", "", "Compatibility alias for --link-type")
 	_ = cmd.Flags().MarkHidden("resource-type")
 }
@@ -130,11 +130,10 @@ func runGraphPreviewLink(cmd *cobra.Command, args []string) error {
 	if err := graphPreviewWritePolicy(); err != nil {
 		return err
 	}
+	// --type is deliberately absent: it belongs to the blocking Dependency route
+	// above, so this list refuses it before anything below could.
 	if err := graphPreviewFlags(cmd, "link-type", "resource-type", "id", "properties", "if-source-revision", "unconditional-source"); err != nil {
 		return err
-	}
-	if cmd.Flags().Changed("type") {
-		return graphFailure("invalid_selector", "select either --type or --link-type", 2)
 	}
 	if !graphstore.IsInformationalTypeURL(graphPreviewConfig.GraphScopeURL, typ) {
 		return graphFailure("capability_unavailable", "Link Type is not supported by this preview", 5)

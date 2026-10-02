@@ -30,12 +30,26 @@ type graphPreviewAgentInstructions struct {
 	existed bool
 }
 
-func prepareGraphPreviewAgentInstructions(workspace, filename string, skip bool) (*graphPreviewAgentInstructions, error) {
+// The step each command offers when it refuses the agents file. --skip-agents
+// belongs to init alone: setup reads the same file but cannot skip it, so the
+// file is the user's to repair there.
+const (
+	graphPreviewInitAgentsRemedy  = "preserve it with --skip-agents"
+	graphPreviewSetupAgentsRemedy = "repair that file by hand and run bd setup claude again"
+)
+
+// remedy is the caller's step for a refused file and ends each refusal that
+// names the file's own state. A caller with no step to offer passes "".
+func prepareGraphPreviewAgentInstructions(workspace, filename string, skip bool, remedy string) (*graphPreviewAgentInstructions, error) {
 	if skip {
 		return nil, nil
 	}
 	if err := config.ValidateAgentsFile(filename); err != nil {
 		return nil, err
+	}
+	step := ""
+	if remedy != "" {
+		step = "; " + remedy
 	}
 	plan := &graphPreviewAgentInstructions{path: filepath.Join(workspace, filename), mode: 0644}
 	info, err := os.Lstat(plan.path)
@@ -44,7 +58,7 @@ func prepareGraphPreviewAgentInstructions(workspace, filename string, skip bool)
 	}
 	if err == nil {
 		if !info.Mode().IsRegular() {
-			return nil, fmt.Errorf("agent file %s is not a regular file; preserve it with --skip-agents", filename)
+			return nil, fmt.Errorf("agent file %s is not a regular file%s", filename, step)
 		}
 		plan.existed, plan.mode = true, info.Mode().Perm()
 		plan.before, err = os.ReadFile(plan.path) // #nosec G304 -- validated simple filename in selected workspace
@@ -67,19 +81,19 @@ func prepareGraphPreviewAgentInstructions(workspace, filename string, skip bool)
 		return plan, nil
 	}
 	if begins != 1 || ends != 1 {
-		return nil, fmt.Errorf("agent file %s has malformed or duplicate managed sections; preserve it with --skip-agents", filename)
+		return nil, fmt.Errorf("agent file %s has malformed or duplicate managed sections%s", filename, step)
 	}
 	marker := strings.TrimSuffix(strings.SplitN(content[strings.Index(content, begin):], "\n", 2)[0], "\r")
 	if !graphPreviewAgentMarker.MatchString(marker) {
-		return nil, fmt.Errorf("agent file %s has an unsupported or malformed managed marker; preserve it with --skip-agents", filename)
+		return nil, fmt.Errorf("agent file %s has an unsupported or malformed managed marker%s", filename, step)
 	}
 	meta := agents.ParseMarker(marker)
 	if meta == nil || (meta.Profile != agents.ProfileMinimal && meta.Profile != agents.ProfileGraphPreview) {
-		return nil, fmt.Errorf("agent file %s has a full or unknown managed profile; preserve it with --skip-agents", filename)
+		return nil, fmt.Errorf("agent file %s has a full or unknown managed profile%s", filename, step)
 	}
 	replaced, _, err := agents.ReplaceSection(content, agents.ProfileGraphPreview)
 	if err != nil {
-		return nil, fmt.Errorf("agent file %s: %w; preserve it with --skip-agents", filename, err)
+		return nil, fmt.Errorf("agent file %s: %w%s", filename, err, step)
 	}
 	plan.after = []byte(replaced)
 	return plan, nil
@@ -92,7 +106,8 @@ func (p *graphPreviewAgentInstructions) install() error {
 	// Recheck after DB initialization: do not overwrite an edit or symlink that
 	// appeared since preflight. Atomic replacement avoids truncating user text
 	// on an I/O failure; this is not a lock or a concurrent file-editor protocol.
-	current, err := prepareGraphPreviewAgentInstructions(filepath.Dir(p.path), filepath.Base(p.path), false)
+	// The store exists by now and init cannot be run over it, so no step is offered.
+	current, err := prepareGraphPreviewAgentInstructions(filepath.Dir(p.path), filepath.Base(p.path), false, "")
 	if err != nil {
 		return err
 	}

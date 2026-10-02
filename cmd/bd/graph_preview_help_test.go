@@ -30,7 +30,14 @@ func TestGraphPreviewHelpDocumentsPlaytestCommands(t *testing.T) {
 	}{
 		{"remember", rememberCmd, []string{"Graph preview workspaces:", "bd remember 'Revised policy' --update policy", "--if-revision TOKEN", "Omitted fields remain unchanged"}},
 		{"create", createCmd, []string{"Graph preview workspaces:", "--bead-type types/preview-memory-v2", "--id policy"}},
-		{"link", linkCmd, []string{"Graph preview workspaces:", "--link-type types/example-cites", "Memory or Issue"}},
+		{"link", linkCmd, []string{
+			"Graph preview workspaces:", "--link-type types/example-cites", "Memory or Issue",
+			// --link-type sits beside the ordinary -t/--type, so its own usage says it is graph-only.
+			"Installed Link Type: types/NAME or full local URL (graph preview only)",
+			// Informational Links default to the current source; the blocking Type does not.
+			"The blocking Type types/preview-blocks-v1", "unlike informational Types, one of",
+			"--if-source-revision TOKEN or --unconditional-source.",
+		}},
 		{"update", updateCmd, []string{"Graph preview workspaces:", "--properties", "--if-revision TOKEN"}},
 		{"list", listCmd, []string{"Graph preview workspaces:", "all installed Bead Types", "--bead-type types/NAME", "Issue-specific filters", "newest recorded change first", "hidden unless --all is given", "--all also removes the row limit", "BEADS_MAX_ROWS refuses a page of more Beads", "--sort, --reverse", "Issues only", "a line under the header saying Memories are", "it is simply not"}},
 		{"types", typesCmd, []string{"Graph preview workspaces:", "types/NAME", "--details", "--bead-type", "--link-type"}},

@@ -218,10 +218,15 @@ func (s *Store) validateVersionOwned(ctx context.Context, tx *sql.Tx, source, ty
 	if owned == nil || len(owned) > PreviewOwnedLinkLimit {
 		return fmt.Errorf("%w: invalid retained owned set", ErrInvalidStore)
 	}
+	// typ is the owner's Bead Type for a Memory, which owns only informational
+	// Links, and the one owned Link Type for an Issue. The Memory Type is never an
+	// owned Link Type, so it must not pass the Link Type equality.
+	memoryOwner := typ == MemoryTypeURL(s.ScopeURL())
 	previous := ""
 	for _, raw := range owned {
 		var link LinkRecord
-		if json.Unmarshal(raw, &link) != nil || link.Source != source || !(link.Type == typ || (typ == MemoryTypeURL(s.ScopeURL()) && IsInformationalTypeURL(s.ScopeURL(), link.Type))) ||
+		if json.Unmarshal(raw, &link) != nil || link.Source != source ||
+			(memoryOwner && !IsInformationalTypeURL(s.ScopeURL(), link.Type)) || (!memoryOwner && link.Type != typ) ||
 			(previous != "" && graph.CompareCodeUnits(previous, link.ID) >= 0) {
 			return fmt.Errorf("%w: invalid retained owned membership", ErrInvalidStore)
 		}

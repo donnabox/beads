@@ -17,10 +17,14 @@ type UnversionableIssue struct {
 // while history was off, or by a path that does not mint -- would fail every
 // later write to it.
 //
-// It skips exactly the rows the mint skips, by the mint's own rule (IsWisp):
-// ephemeral and no-history rows are never versioned, so a value they hold can
-// never abort a write. It does no I/O; the caller loads the rows, which is what
-// lets one function serve the direct store and the proxied route.
+// It skips the rows the mint never versions by IsWisp: ephemeral and no-history
+// rows are never versioned, so a value they hold can never abort a write. It
+// cannot skip legacy rows, because participation is not on types.Issue, so on a
+// store with the write fence (design §16.2b) it is a deliberate
+// over-approximation: the mint skips a legacy row whatever it holds, and this
+// still refuses over it, which is the safe direction because it can only refuse
+// more. It does no I/O; the caller loads the rows, which is what lets one
+// function serve the direct store and the proxied route.
 func FindUnversionableMetadata(issues []*types.Issue) []UnversionableIssue {
 	var found []UnversionableIssue
 	for _, issue := range issues {

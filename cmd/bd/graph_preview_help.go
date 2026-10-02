@@ -97,7 +97,9 @@ accepts types/NAME or a full local Type URL. An optional --id
 selects links/PATH; --properties supplies informational Link properties.
 Memory-owned Links accept the current source by default, or use
 --if-source-revision TOKEN to reject a stale source. --unconditional-source
-explicitly selects the default. Blocking Types require Issue endpoints.`},
+explicitly selects the default. The blocking Type types/preview-blocks-v1
+requires Issue endpoints and, unlike informational Types, one of
+--if-source-revision TOKEN or --unconditional-source.`},
 		{closeCmd, `Close one live Issue by ID or beads/ID. Batch, force and
 remote-routing forms are unavailable in this graph preview.`},
 		{reopenCmd, `Reopen one closed Issue by ID or beads/ID, optionally
