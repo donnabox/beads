@@ -634,6 +634,23 @@ linters:
         linters:
           - unparam
         text: 'getLinearConfig'
+      # unparam (versioned-beads fork): two upstream findings that upstream's own
+      # PR lint never reports, because it lints only new issues. Our upstream-sync
+      # PRs exceed GitHub's 300-file diff limit, so golangci-lint-action falls
+      # back to a full-tree run and reports them. Drop each entry once upstream
+      # fixes the function.
+      # primeGitCmd keeps its error result for future callers (see the GH#4927
+      # note on the function).
+      - path: 'cmd/bd/prime\.go'
+        linters:
+          - unparam
+        text: 'primeGitCmd - result 1 \(error\) is always nil'
+      # expandStep: every caller passes depth 0, because upstream moved the
+      # recursive depth+1 call into expandStepWith.
+      - path: 'internal/formula/expand\.go'
+        linters:
+          - unparam
+        text: 'expandStep - depth always receives 0'
       # misspell: "cancelled" is intentional - matching GitHub API response values
       - path: 'cmd/bd/gate\.go'
         linters:
