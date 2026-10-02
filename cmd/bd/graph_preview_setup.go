@@ -41,7 +41,7 @@ func runGraphPreviewSetup(cmd *cobra.Command, args []string) error {
 	workspace := filepath.Dir(graphPreviewDir)
 	if !remove {
 		// Read and validate, but do not install/refresh or replace any profile.
-		plan, err := prepareGraphPreviewAgentInstructions(workspace, config.SafeAgentsFile(), false)
+		plan, err := prepareGraphPreviewAgentInstructions(workspace, config.SafeAgentsFile(), false, graphPreviewSetupAgentsRemedy)
 		if err != nil {
 			return graphFailure("capability_unavailable", err.Error(), 5)
 		}
