@@ -638,7 +638,8 @@ func TestCheckTestPollution_NoTestIssues_NoServer(t *testing.T) {
 // Dolt server is running but the target database has no issues table (the
 // "query failed" code path). Only runs when TestMain started a Dolt container.
 func TestCheckTestPollution_NoTestIssues_EmptyDB(t *testing.T) {
-	if doctorTestServerPort() == 0 {
+	port := doctorTestServerPort()
+	if port == 0 {
 		t.Skip("Dolt test server not available")
 	}
 
@@ -647,6 +648,8 @@ func TestCheckTestPollution_NoTestIssues_EmptyDB(t *testing.T) {
 	if err := os.MkdirAll(beadsDir, 0o755); err != nil {
 		t.Fatal(err)
 	}
+	// A database of its own, created empty so it has no issues table.
+	newDoctorTestDatabase(t, beadsDir, port)
 
 	check := CheckTestPollution(tmpDir)
 

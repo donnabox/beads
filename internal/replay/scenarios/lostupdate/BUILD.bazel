@@ -1,0 +1,28 @@
+load("@rules_go//go:def.bzl", "go_test")
+
+go_test(
+    name = "lostupdate_test",
+    srcs = ["lostupdate_test.go"],
+    deps = [
+        "//internal/replay/doltcli",
+        "//internal/replay/oracle",
+        "//internal/replay/replaytest",
+        "//internal/storage",
+        "//internal/storage/embeddeddolt",
+        "//internal/testutil/bazeltest",
+        "//internal/types",
+    ],
+)
+
+# --- begin go_srcs (managed by tools/bazel/go_srcs.py; run `make bazel-sync`) ---
+
+filegroup(
+    name = "go_srcs",
+    srcs = glob(
+        ["**/*.go"],
+        allow_empty = True,
+    ),
+    visibility = ["//:__subpackages__"],
+)
+
+# --- end go_srcs ---
