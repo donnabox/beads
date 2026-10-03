@@ -505,8 +505,10 @@ jobs:
           if-no-files-found: ignore
           retention-days: 7
 
+      # Retain successful shard evidence too: a green target alone does not
+      # establish that every graph test ran in exactly one native shard.
       - name: Upload test logs
-        if: ${{ failure() && steps.test.outcome == 'failure' }}
+        if: ${{ always() && steps.test.outcome != '' && steps.test.outcome != 'skipped' }}
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
         with:
           overwrite: true # a job re-run is the same run: replace, not 409
@@ -514,7 +516,8 @@ jobs:
           path: |
             bazel-testlogs/**/test.log
             bazel-testlogs/**/test.xml
-          if-no-files-found: ignore
+            ${{ runner.temp }}/bazel-bep.json
+          if-no-files-found: error
           retention-days: 7
 
       # Only a push to main that missed the exact key writes the runner cache.

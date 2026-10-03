@@ -222,7 +222,7 @@ func TestPRLegacyLanesDeferToBazelLanes(t *testing.T) {
 		if strings.Contains(job.If, prRiskCoverageJobName) || contains(job.Needs, prRiskCoverageJobName) {
 			t.Errorf("%s depends on %s; only the retired jobs and the package gates may", name, prRiskCoverageJobName)
 		}
-		if contains(job.Needs, "build-artifacts") {
+		if contains(job.Needs, "build-artifacts") && !forkBuildArtifactConsumers[name] {
 			t.Errorf("%s needs build-artifacts, which stands down on covered PRs; take the artifact like the package gates do", name)
 		}
 	}
@@ -241,6 +241,9 @@ func TestPRLegacyLanesDeferToBazelLanes(t *testing.T) {
 				continue
 			}
 			if !strings.Contains(art, "ci-build-artifacts") {
+				continue
+			}
+			if forkBuildArtifactConsumers[name] && art == "ci-build-artifacts" {
 				continue
 			}
 			_, retired := tier.jobs[name]
@@ -542,7 +545,7 @@ func TestPRRunsGoTestsBazelSkips(t *testing.T) {
 	}
 	// PR Core's own test command: the scripts step must keep its flags.
 	if core := readPolicyFile(t, root, "scripts/ci/pr-core.sh"); !strings.Contains(core,
-		`go_test -p "$GO_TEST_PKG_PARALLEL" -parallel "$GO_TEST_PARALLEL" -race -short -timeout=30m -skip '^TestEmbedded' ./...`) {
+		`go_test -p "$GO_TEST_PKG_PARALLEL" -parallel "$GO_TEST_PARALLEL" -race -short -timeout=30m -skip '^TestEmbedded' ./...`) && !strings.Contains(core, forkPRCoreGoTest) {
 		t.Errorf("scripts/ci/pr-core.sh's go test changed; keep scripts/ci/scripts-go-test.sh's flags equal to it")
 	}
 

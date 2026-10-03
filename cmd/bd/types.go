@@ -59,7 +59,7 @@ func systemWorkTypes() []typeInfo {
 var typesCmd = &cobra.Command{
 	Use:     "types",
 	GroupID: "views",
-	Short:   "List valid issue types",
+	Short:   "List available types",
 	Long: `List all valid issue types that can be used with bd create --type.
 
 Core work types (bug, task, feature, chore, epic, decision, spike, story, milestone)
@@ -82,6 +82,12 @@ Examples:
 				c.CloseEventAndAdd(evt)
 			}
 		}()
+		if graphPreviewActive {
+			return runGraphPreviewTypes(cmd, args)
+		}
+		if cmd.Flags().Changed("details") {
+			return HandleError("--details requires a graph preview workspace")
+		}
 
 		showSections, _ := cmd.Flags().GetBool("sections")
 		if showSections {
@@ -227,4 +233,5 @@ func printSections(jsonOut bool) error {
 func init() {
 	rootCmd.AddCommand(typesCmd)
 	typesCmd.Flags().Bool("sections", false, "Show required sections for each issue type")
+	typesCmd.Flags().Bool("details", false, "Show full installed graph Type descriptors (graph preview only)")
 }

@@ -12,6 +12,15 @@
 # is a test the Bazel lane does not exercise. The checker reports entries that
 # no longer match anything.
 
+# Fork-only packages (upstream has none of them). Their command tests build the
+# CLI from source and the scenario tests read the files shipped next to the
+# sources; neither is in the Bazel sandbox, so they skip there.
+scripts/mutation-translator TestB1MainsCharacterised_TranslatorDryRun skip  # builds the CLI from source; runs under go test
+scripts/oracle-query TestB1MainsCharacterised_OracleCLI skip  # builds the CLI from source; runs under go test
+scripts/oracle-query TestB1OneDenyList skip  # builds the CLI from source; runs under go test
+scripts/scenarios TestPackageDoesNotEmbedOrListScenarios skip  # reads the scenario files shipped next to the sources; runs under go test
+scripts/scenarios TestREADMEDocumentsTheContract skip  # reads the scenario files shipped next to the sources; runs under go test
+
 # The in-test `go build` of bd that this test guards does not happen under
 # Bazel (bd comes in through BEADS_TEST_BD_BINARY); go test still runs it.
 cmd/bd TestGOMODCACHENotUnderTestHome skip  # no in-test go build under Bazel; guarded by go test

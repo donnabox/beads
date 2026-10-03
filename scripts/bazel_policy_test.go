@@ -620,7 +620,7 @@ func diffStringSets(want, got []string) (missing, extra []string) {
 // goSrcsTrees are the tools/bazel/go_srcs.py TREES roots. A test that walks
 // one of these trees under Bazel sees only the packages its tree_go_srcs
 // lists, so an unlisted package makes the walk pass vacuously.
-var goSrcsTrees = []string{"internal/storage"}
+var goSrcsTrees = []string{"internal/replay", "internal/storage"}
 
 func TestBazelTreeGoSrcsListsEveryPackage(t *testing.T) {
 	build := "filegroup(\n    name = \"tree_go_srcs\",\n    srcs = [\n        \":go_srcs\",\n        \"//a/b:go_srcs\",\n        # \"//a/c:go_srcs\",\n    ],\n)\n"

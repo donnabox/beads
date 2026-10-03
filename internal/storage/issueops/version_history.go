@@ -1,11 +1,15 @@
 package issueops
 
 import (
+	"bytes"
 	"context"
 	"database/sql"
 	"encoding/json"
 	"errors"
 	"fmt"
+	"io"
+	"math"
+	"strconv"
 	"sync"
 	"time"
 
@@ -21,13 +25,15 @@ import (
 // BeginTx, so enabling history on one store instance cannot turn it on for
 // any other sharing the process.
 //
-// RecordVersionInTx is the single seam both direct-SQL legs (dolt,
-// embeddeddolt) and the domain/db package (used by uow) call through, from
-// inside the same already-short-circuited functions that call
-// RecordEventInTx — every accepted mutation of an issue's durable state
-// (create, update, close, reopen, claim, release, lease reclaim, defer wake,
-// label add/remove, dependency add/remove, promote, persistence move) mints
-// exactly one row, as its LAST durable-state write; a no-op mints none. A
+// RecordVersionInTx (and its create-shaped sibling, RecordVersionForCreateInTx
+// — design §16.2b's write fence, see that function's own doc) is the single
+// seam both direct-SQL legs (dolt, embeddeddolt) and the domain/db package
+// (used by uow) call through, from inside the same already-short-circuited
+// functions that call RecordEventInTx — every accepted mutation of an
+// issue's durable state (create, update, close, reopen, claim, release,
+// lease reclaim, defer wake, label add/remove, dependency add/remove,
+// promote, persistence move) mints exactly one row, as its LAST
+// durable-state write; a no-op mints none. A
 // mutation DiscardNoopIssueUpdates has already discarded never reaches either
 // seam; the label and dependency helpers, which that filter does not cover,
 // gate on their own inserted/deleted row instead (an idempotent re-add or an
@@ -75,6 +81,38 @@ import (
 // in this transaction and retire the aggregate scan -- a natural pairing with
 // the version_id UUID swap, since that swap is what makes the ordinal stop
 // being the key. Tracked as gastownhall/beads#6379 alongside item 4.
+
+// THE MINT'S REFUSAL IS AN INTEGRITY BACKSTOP, NOT AN ADMISSION POLICY, AND IT
+// BINDS THE ROWS THAT PARTICIPATE IN HISTORY.
+// canonicalDurableState refuses what it cannot record faithfully -- a number
+// outside the I-JSON exact-integer range, duplicate keys -- and it does so inside
+// the mutating transaction, so with history on a write that introduces such a
+// value to a row that participates fails atomically and commits nothing: refusing
+// at the mint IS refusing the write. That is what keeps a version's content token
+// meaning what it says. It is not a rule about what metadata a store may hold,
+// which stays open while history is off, and that is the case to plan for: a row
+// that participates in history (participation_generation is set), written while
+// history was off or by a path that does not mint (such as bd sql or an import),
+// that already holds such a value would fail every later write to it once
+// history is on.
+//
+// A row that does not participate is outside all of this. Design §16.2b makes an
+// update-shaped write to a legacy record (participation_generation NULL) a skip,
+// not a refusal: the fence returns before the snapshot is canonicalized, so no
+// version is minted and the gate never runs. Such a write succeeds whatever the
+// row's metadata holds, exactly as it would with history off, because no version
+// row, and so no content token, comes of it. A create-shaped mint never meets a
+// legacy row (its call site has just inserted the row), so it always runs the
+// gate.
+//
+// `bd config set versioned-history.enabled true` checks the store first, with the
+// very function the mint runs (CheckMetadataVersionable), and refuses, writing
+// nothing, while any issue holds a value it would refuse. It cannot see
+// participation, so it checks legacy rows too: an over-approximation that can only
+// refuse more. Turning history on through the environment or config.yaml does not
+// pass through that command; for those planes the mint's refusal is the control
+// on the rows that participate, and finding the rows ahead of time is a bd doctor
+// check (gastownhall/beads#6379 item 3).
 
 var versionedHistoryTransactions sync.Map // map[DBTX]bool; entries live for one transaction
 
@@ -166,11 +204,12 @@ func attributionStatusForActor(actor string) string {
 // (1.0 is 1, 1e300 is 1e+300), only the escapes RFC 8785 requires -- so the
 // same issue state always yields the same bytes, whatever encoding/json's
 // formatting happens to be. Numbers are canonicalized as IEEE-754 doubles
-// (RFC 8785 section 3.2.2.3), so an integer past 2^53 is rounded here, once,
-// by the writer, before anything hashes it: the stored bytes and the hashed
-// bytes are the same bytes. types.Issue carries no such magnitudes (its
-// integers are ordinals and priorities), but the rule is stated so nobody
-// expects int64 fidelity from the token.
+// (RFC 8785 section 3.2.2.3), so canonicalization alone would round a number
+// past 2^53 here, once, by the writer, before anything hashes it; the admission
+// gate (refuseUnrepresentableIntegers) refuses such a number instead, so the
+// stored bytes and the hashed bytes are the same bytes and nothing is rounded
+// silently. types.Issue carries no such magnitudes (its integers are ordinals
+// and priorities); the reachable path is Metadata.
 //
 // Two properties worth stating because a hand-rolled canonicalizer would get
 // them wrong. First, jcs.Transform normalizes away encoding/json's HTML
@@ -181,7 +220,9 @@ func attributionStatusForActor(actor string) string {
 // returns the error to its caller, which aborts the transaction. An issue
 // whose metadata column already holds duplicate keys (reachable through bd
 // sql or a hand-written JSONL import) therefore mutates fine with the flag
-// off and becomes unmutatable with it on. Fail-closed is the policy for now
+// off and becomes unmutatable with it on if it participates in history; a
+// legacy row stays writable, because the fence skips it before this function
+// runs. Fail-closed is the policy for now
 // -- bytes that could canonicalize two ways would not be a content token --
 // and whether to normalize such metadata first, or to find such rows with
 // bd doctor, is gastownhall/beads#6379 (item 3).
@@ -190,11 +231,159 @@ func canonicalDurableState(issue any) ([]byte, error) {
 	if err != nil {
 		return nil, err
 	}
+	if err := refuseUnrepresentableIntegers(marshaled); err != nil {
+		return nil, err
+	}
+	return jcsCanonicalize(marshaled)
+}
+
+// jcsCanonicalize is canonicalDurableState's RFC 8785 (JCS) step alone, below
+// the admission gate rather than behind it.
+//
+// IT MUST EXIST SEPARATELY because refuseUnrepresentableIntegers and RFC 8785
+// disagree on purpose, not by oversight: RFC 8785 section 3.2.2.3 canonicalizes
+// ANY number as a double, whatever its magnitude, while the admission gate
+// refuses any number whose nearest double is past 2^53-1 outright (see
+// refuseUnrepresentableIntegers's doc comment on why that rule has no
+// notation carve-out). One of the RFC 8785 vectors this store pins conformance
+// against, testdata/jcs/input/values.json, both ships from the spec's own
+// reference suite AND contains 1E30 -- a value the gate refuses and RFC 8785
+// requires canonicalizing to 1e+30. Routing that vector through
+// canonicalDurableState would force a choice between weakening spec-conformance
+// coverage and putting a magnitude exception in the gate, and neither is
+// right: the gate's refusal is a policy decision about what this store admits,
+// not a claim about what JCS can canonicalize. jcsCanonicalize lets a caller
+// ask the second question without the first, so TestCanonicalDurableStateIsJCS
+// can hold the RFC 8785 vectors to the spec's own bytes -- including
+// values.json -- while refuseUnrepresentableIntegers's refusal of the same
+// magnitude is pinned separately, in the admission tests
+// (version_history_integer_admission_test.go), where it belongs.
+func jcsCanonicalize(marshaled []byte) ([]byte, error) {
 	canonical, err := jcs.Transform(marshaled)
 	if err != nil {
 		return nil, fmt.Errorf("canonicalize (RFC 8785): %w", err)
 	}
 	return canonical, nil
+}
+
+// ErrIntegerNotRepresentable is the refusal for a JSON number outside the I-JSON
+// exact-integer range: one whose nearest binary64 has magnitude above 2^53-1, or
+// that overflows binary64.
+//
+// The name is historical. It began as the refusal for an integer literal binary64
+// cannot hold exactly, and it now also covers a literal spelled as a fraction whose
+// nearest double lies at or beyond 2^53, which RFC 8785 would round to an integer
+// just the same. It is kept rather than renamed so that nothing matching it with
+// errors.Is has to change.
+var ErrIntegerNotRepresentable = errors.New("number is outside the I-JSON exact-integer range (magnitude above 2^53-1)")
+
+// maxExactJSONInteger is 2^53-1, the largest magnitude in the I-JSON
+// interoperable integer range (RFC 7493 section 2.2), and BDP's admission law
+// (gastownhall/bdp#21) makes a literal past it invalid rather than merely lossy.
+// binary64 does represent 2^53 exactly, but 2^53 and 2^53+1 round to the same
+// double, so from 2^53 up a literal can no longer be told from its neighbor.
+const maxExactJSONInteger = 1<<53 - 1
+
+// refuseUnrepresentableIntegers rejects marshaled if any JSON number literal in
+// it is outside the I-JSON exact-integer range: the binary64 nearest to the
+// literal has magnitude above 2^53-1, or the literal overflows binary64. Which of
+// JSON's number forms spells the value -- bare integer, decimal or exponential --
+// does not matter.
+//
+// WHY REFUSE RATHER THAN ROUND. jcs.Transform canonicalizes numbers as
+// IEEE-754 doubles (RFC 8785 section 3.2.2.3), so 9007199254740993 becomes
+// 9007199254740992 on the way in. That is not a formatting difference, it is
+// a DIFFERENT VALUE, and it collapses two distinct issue states onto one
+// durable_state and therefore one content token -- the token can no longer
+// tell them apart, and a reader comparing tokens concludes the second write
+// was a no-op. Rounding is silent; refusing is not.
+//
+// This seam is the admission gate, one layer above RecordVersionInTx, which
+// is where BDP puts it: an authority adapting an existing store "MUST map or
+// refuse values outside this contract before it serves them as BDP
+// Resources" (gastownhall/bdp#20 section 5.1).
+//
+// THE NEAREST DOUBLE, NOT THE LITERAL'S SPELLING. Each literal is classified
+// with strconv.ParseFloat, which returns the correctly rounded binary64 in time
+// linear in the length of the literal, and that is exactly the value RFC 8785
+// canonicalizes the literal to. So "the nearest double is past the range" and
+// "canonicalization would move this literal past the range" are one question,
+// and the gate is closed under its own canonicalization: whatever it admits
+// canonicalizes to a form it also admits. A rule keyed to integer VALUES was
+// not: 9007199254740991.5 is not an integer, so it was admitted, yet it rounds
+// to 2^53 and its canonical bytes were then refused. Here 9007199254740993,
+// 9007199254740993.0 and 9.007199254740993e15 are refused alike, and so is
+// 9007199254740993.5, whose nearest double is 2^53+2. An overflow
+// (strconv.ErrRange) is a refusal, not a syntax error; a magnitude too small for
+// binary64 rounds to zero and is admitted.
+//
+// NOTHING IS BUILT PER EXPONENT. ParseFloat never constructs the number, so a
+// literal such as 1e1000000 is an overflow refused in the time it takes to read
+// it, not a million-digit integer built first and then compared. The gate runs
+// inside the writer's transaction, so a classifier whose cost grew with an
+// exponent would be a way to hold that transaction open with a few
+// exponent-heavy metadata values.
+//
+// SCOPE. Ordinary fractions are admitted: 0.1 is canonicalized to its nearest
+// double, which is how the store holds it. Whether two literals that share a
+// nearest double can be told apart inside the store is a property of the store,
+// not of this gate, and it is the one thing a Dolt upgrade could change: the
+// store-level tests on each leg assert that no two literals the store reads back
+// as different numbers are both admitted with one canonical form, and log what
+// each Dolt does to a number, rather than assuming it. An integer past 2^53 is
+// refused whatever the store does to it: a store may keep it exactly, where RFC
+// 8785 would round it, and a store that already rounds it hands the gate an
+// integer-valued double, which the rule refuses just the same. A JSON null is a
+// token, not a number: only json.Number tokens are classified. types.Issue's own
+// integer fields are ordinals and priorities and cannot reach this bound -- the
+// reachable path is Metadata, a json.RawMessage passed through verbatim.
+func refuseUnrepresentableIntegers(marshaled []byte) error {
+	dec := json.NewDecoder(bytes.NewReader(marshaled))
+	dec.UseNumber()
+	for {
+		tok, err := dec.Token()
+		if err == io.EOF {
+			return nil
+		}
+		if err != nil {
+			return fmt.Errorf("scan for unrepresentable integers: %w", err)
+		}
+		num, ok := tok.(json.Number)
+		if !ok {
+			continue
+		}
+		lit := num.String()
+		f, err := strconv.ParseFloat(lit, 64)
+		if err != nil && !errors.Is(err, strconv.ErrRange) {
+			return fmt.Errorf("scan for unrepresentable integers: invalid JSON number literal %q: %w", lit, err)
+		}
+		if math.IsInf(f, 0) || math.Abs(f) > maxExactJSONInteger {
+			return fmt.Errorf("%w: %s", ErrIntegerNotRepresentable, lit)
+		}
+	}
+}
+
+// CheckMetadataVersionable reports whether an issue's metadata could be minted
+// into a version's durable_state. It is exactly the two steps
+// canonicalDurableState runs -- the admission gate, then RFC 8785
+// canonicalization -- applied to the metadata alone, so it refuses a number
+// outside the I-JSON exact-integer range (ErrIntegerNotRepresentable) and it
+// also refuses duplicate keys, which RFC 8785 cannot canonicalize. Empty
+// metadata is nothing to check.
+//
+// It exists so that the check made when versioned history is switched on and
+// the check the mint makes cannot disagree: FindUnversionableMetadata runs this
+// over every issue the mint would version, and a store that passes it cannot
+// then refuse the first write to a row it cleared.
+func CheckMetadataVersionable(metadata json.RawMessage) error {
+	if len(metadata) == 0 {
+		return nil
+	}
+	if err := refuseUnrepresentableIntegers(metadata); err != nil {
+		return err
+	}
+	_, err := jcsCanonicalize(metadata)
+	return err
 }
 
 // RecordVersionInTx mints one issue_versions row for issueID and advances
@@ -215,10 +404,124 @@ func canonicalDurableState(issue any) ([]byte, error) {
 // version row's attribution — "" when the mutation path genuinely has none,
 // matching RecordEventInTx's own convention. It also drives
 // attribution_status via attributionStatusForActor.
+//
+// This is the UPDATE-shaped entry point: design §16.2b's write fence. A
+// record whose participation_generation is NULL is legacy — never
+// positively promoted — and an update-shaped mutation against it mints
+// nothing, neither half of this seam's write (no issue_versions row, no
+// current_revision bump). A record that already carries a non-NULL
+// participation_generation proceeds normally. Use RecordVersionForCreateInTx
+// for a create-shaped mutation instead: a brand-new row has no legacy state
+// to preserve, so that entry point stamps the column rather than checking
+// it.
+//
+// The skip is whole: nothing about a legacy record is read, canonicalized or
+// admitted, so such a write is neither versioned nor refused (design §16.2b: a
+// skip, not a refusal).
 func RecordVersionInTx(ctx context.Context, tx DBTX, issueID, actor string) error {
 	if !versionedHistoryEnabled(tx) {
 		return nil
 	}
+	return recordVersionAtInTx(ctx, tx, issueID, actor, time.Now().UTC(), mintUpdate)
+}
+
+// RecordVersionForCreateInTx is RecordVersionInTx's create-shaped sibling
+// (design §16.2b). The write fence does not apply to a brand-new row, so
+// instead of checking participation_generation, this stamps it — sourced
+// from store_epoch.epoch, the same source the fence reads — as part of the
+// row's first mint, whenever versioned history is enabled. A create with the
+// flag off never reaches the stamp (this whole seam no-ops while the flag is
+// off, same as RecordVersionInTx), leaving the column NULL — indistinguishable
+// from a true legacy row (FR-7). A wisp arriving on the issues plane, by
+// promotion or a persistence move out of the wisps table, mints through here
+// too: its issues row is just as new, and a wisp never declares
+// participation (FR-8).
+func RecordVersionForCreateInTx(ctx context.Context, tx DBTX, issueID, actor string) error {
+	if !versionedHistoryEnabled(tx) {
+		return nil
+	}
+	return recordVersionAtInTx(ctx, tx, issueID, actor, time.Now().UTC(), mintCreate)
+}
+
+// RecordVersionAtInTx is RecordVersionInTx's test-support twin: it mints a
+// version row at a caller-chosen change_at instead of time.Now(), and --
+// deliberately -- does not gate on versionedHistoryEnabled at all, since its
+// whole purpose is controlled-timestamp minting for conformance fixtures
+// (R7.1's AsOfReadFixture.MintAt, backend/conformance/versioned_read_contract.go)
+// regardless of a store's activation state. Production code never calls
+// this; only per-leg as-of-read fixtures do, so their bare issue-create step
+// can stay history-off (no unwanted real-time row) while still minting the
+// exact versions a test needs at the instants it needs them.
+//
+// It bypasses design §16.2b's write fence exactly as it bypasses the gate:
+// it neither reads participation_generation nor stamps it, so it mints for
+// a legacy row and a participating row alike and leaves the column as it
+// found it. The fence and the stamp belong to the production entry points
+// above, never to a fixture's controlled-timestamp mint.
+func RecordVersionAtInTx(ctx context.Context, tx DBTX, issueID, actor string, at time.Time) error {
+	return recordVersionAtInTx(ctx, tx, issueID, actor, at, mintUnfenced)
+}
+
+// versionMintKind says how recordVersionAtInTx treats design §16.2b's write
+// fence, the one thing RecordVersionInTx, RecordVersionForCreateInTx and
+// RecordVersionAtInTx do not share.
+type versionMintKind int
+
+const (
+	// mintUpdate is an update-shaped mutation (RecordVersionInTx): the fence
+	// applies, and a record whose participation_generation is NULL mints nothing.
+	mintUpdate versionMintKind = iota
+	// mintCreate is a create-shaped mutation (RecordVersionForCreateInTx): a
+	// brand-new row has no legacy state to preserve, so the fence does not
+	// apply and the mint stamps participation_generation instead.
+	mintCreate
+	// mintUnfenced is RecordVersionAtInTx's test-support mint: no fence and no
+	// stamp, exactly as it behaved before the fence existed.
+	mintUnfenced
+)
+
+// recordVersionAtInTx is RecordVersionInTx, RecordVersionForCreateInTx and
+// RecordVersionAtInTx's shared body, taking at where the callers differ:
+// time.Now().UTC() for the production gate-checked paths, a caller-chosen
+// instant for test minting; and kind, which says whether design §16.2b's
+// write fence applies (mintUpdate), the mint stamps participation_generation
+// (mintCreate) or neither (mintUnfenced). The no-op rules documented on
+// RecordVersionInTx above (wisps) apply here too, since this is that
+// function's entire mechanism minus the gate.
+func recordVersionAtInTx(ctx context.Context, tx DBTX, issueID, actor string, at time.Time, kind versionMintKind) error {
+	// change_at is DATETIME(6) as of migration 0069, and this function
+	// deliberately does NOT floor `at` to the second.
+	//
+	// It used to. While 0067's plain DATETIME (precision 0) was in force that
+	// floor was load-bearing: Dolt's datetime(0) does not truncate sub-second
+	// input, it ROUNDS half-up, so a change_at of 13:32:04.77 stored as
+	// 13:32:05 -- strictly LATER than the instant it recorded. That breaks
+	// AsOfReadInTx's "latest version accepted at or before T"
+	// (resolveAsOfRevisionInTx, asof_read.go) for any T between the true
+	// instant and the rounded-up one. Flooring first left nothing to round.
+	//
+	// 0069 widened change_at and removed_at to DATETIME(6). That moves the
+	// rounding below the microsecond rather than removing it: GMS still rounds
+	// DATETIME(6) input to the microsecond (.1234567 is stored as .123457).
+	// The remainder is harmless to that lookup (resolveAsOfRevisionInTx),
+	// because the instant it compares against is rounded the same way, so a
+	// stored value still compares equal to the instant it was minted at. What the widening does
+	// make is the floor actively harmful: it threw away the microseconds the
+	// widening exists to keep. Two versions minted in the same second
+	// collapsed onto one stored value and became indistinguishable
+	// by change_at -- which defeats --at, the only PORTABLE selector the read
+	// surface offers while revision stays a local ordinal and no durable
+	// version address has shipped. Measured before this change on a store
+	// carrying both: four versions minted in one second all read back
+	// 15:40:38.000000.
+	//
+	// So the column's precision is now relied on rather than worked around.
+	// Pinned by TestRecordVersionKeepsSubSecondChangeAt below; the column's
+	// own half of the contract is pinned by
+	// TestMigration0069ChangeAtSurvivesSubSecondPrecisionThroughDoltCLI in
+	// internal/storage/schema. MarkLatestVersionRemovedInTx (asof_read.go)
+	// needs no matching change -- it already passes time.Now().UTC() straight
+	// through, so removed_at was never floored.
 
 	issue, err := GetIssueInTx(ctx, tx, issueID)
 	if err != nil {
@@ -226,6 +529,33 @@ func RecordVersionInTx(ctx context.Context, tx DBTX, issueID, actor string) erro
 	}
 	if IsWisp(issue) {
 		return nil
+	}
+
+	// design §16.2b write fence. Read straight off the row rather than
+	// through types.Issue: participation_generation is dual-write
+	// bookkeeping, not part of the issue's own content model, so it stays
+	// out of the durable_state snapshot canonicalDurableState marshals
+	// below. Only mintUpdate runs the check: a brand-new row (mintCreate) has
+	// no legacy state to preserve, and this same function stamps the column
+	// itself further down; the test-support mint (mintUnfenced) never reads it
+	// at all. An update-shaped call against a NULL (legacy) value returns
+	// here, before either half of this seam's write runs. The fence runs before
+	// the admission gate (canonicalDurableState) on purpose, so a legacy record
+	// is skipped whole: nothing about it is canonicalized, admitted or refused.
+	// BD_IGNORE_SCHEMA_SKEW (internal/storage/schema/schema.go) has no
+	// bearing on this check: it downgrades CheckForwardDrift's
+	// migration-cursor refusal, a different plane than this column's real
+	// per-row data.
+	if kind == mintUpdate {
+		var participationGeneration sql.NullInt64
+		if err := tx.QueryRowContext(ctx,
+			"SELECT participation_generation FROM issues WHERE id = ?", issueID,
+		).Scan(&participationGeneration); err != nil {
+			return fmt.Errorf("versioned history: read participation_generation for %s: %w", issueID, err)
+		}
+		if !participationGeneration.Valid {
+			return nil
+		}
 	}
 
 	// durable_state is the RFC 8785 (JCS) canonical form of the marshaled
@@ -288,13 +618,28 @@ func RecordVersionInTx(ctx context.Context, tx DBTX, issueID, actor string) erro
 		`INSERT INTO issue_versions
 			(issue_id, revision, epoch, durable_state, change_actor, change_agent, change_message, change_at, attribution_status)
 		VALUES (?, ?, ?, ?, ?, NULL, NULL, ?, ?)`,
-		issueID, newRevision, epoch, durableState, actor, time.Now().UTC(), attributionStatusForActor(actor),
+		issueID, newRevision, epoch, durableState, actor, at, attributionStatusForActor(actor),
 	); err != nil {
 		return fmt.Errorf("versioned history: insert version row for %s: %w", issueID, err)
 	}
 
+	// Advancing recorder bookkeeping must not fire updated_at's ON UPDATE
+	// clause after durableState has captured the accepted Issue state.
+	if kind == mintCreate {
+		// Stamps participation_generation in the same statement that advances
+		// current_revision — design §16.2b's "positive declaration sourced
+		// from store_epoch.epoch," minted here from the epoch already read
+		// above for this same transaction's version row.
+		if _, err := tx.ExecContext(ctx,
+			"UPDATE issues SET current_revision = ?, participation_generation = ?, updated_at = updated_at WHERE id = ?",
+			newRevision, epoch, issueID,
+		); err != nil {
+			return fmt.Errorf("versioned history: advance current_revision for %s: %w", issueID, err)
+		}
+		return nil
+	}
 	if _, err := tx.ExecContext(ctx,
-		"UPDATE issues SET current_revision = ? WHERE id = ?", newRevision, issueID,
+		"UPDATE issues SET current_revision = ?, updated_at = updated_at WHERE id = ?", newRevision, issueID,
 	); err != nil {
 		return fmt.Errorf("versioned history: advance current_revision for %s: %w", issueID, err)
 	}

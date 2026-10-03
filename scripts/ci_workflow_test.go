@@ -1,6 +1,7 @@
 package scripts_test
 
 import (
+	"context"
 	"encoding/base64"
 	"errors"
 	"fmt"
@@ -9,11 +10,13 @@ import (
 	"path/filepath"
 	"reflect"
 	"regexp"
+	"runtime"
 	"slices"
 	"sort"
 	"strconv"
 	"strings"
 	"testing"
+	"time"
 
 	"gopkg.in/yaml.v3"
 )
@@ -184,6 +187,10 @@ func TestPRCoreRequiresExcludeReadPermissionCoverage(t *testing.T) {
 	}
 	if step.Env["BEADS_TEST_REQUIRE_EXCLUDE_PERMISSION"] != "1" {
 		t.Error("PR Core must require actual exclude read-permission coverage")
+	}
+	upload := job.step(t, "Upload PR core grouped test evidence")
+	if upload.If != "always()" || upload.TimeoutMinutes != 5 || upload.With["name"] != "pr-core-go-test-${{ github.sha }}" || upload.With["path"] != "artifacts/pr-core-go-test" || upload.With["retention-days"] != "7" || upload.With["if-no-files-found"] != "warn" || actionFamily(upload.Uses) != "actions/upload-artifact" {
+		t.Error("PR Core grouped evidence must survive failure with a bounded commit-specific upload")
 	}
 	gate := workflow.job(t, "ci-gate")
 	evaluate := gate.step(t, "Evaluate CI gate")
@@ -605,13 +612,9 @@ func TestMacOSTestJobsReuseWorkspaceBDBinary(t *testing.T) {
 	const (
 		workspaceBDBinary = "${{ github.workspace }}/bd"
 		buildCommand      = "go build -v -tags gms_pure_go ./cmd/bd"
-		// -timeout=30m is pinned on both lanes because ./cmd/bd has outgrown
-		// `go test`'s 10m per-package default (#6091, and wy-5b5fbl before it —
-		// that default is what made these legs flaky). In main.yml it sits on
-		// the invocation rather than in matrix.test-flags, so editing the
-		// matrix cannot silently drop it, and so the macOS leg cannot drift
-		// away from the ubuntu -race lanes' deadline.
-		prTestCommand   = "go test -tags gms_pure_go -v -race -short -timeout=30m -skip '^TestEmbedded' ./..."
+		// PR graphstore is exhaustively grouped, preserving each process's 30m
+		// alarm. The main lane still uses the established broad invocation.
+		prTestCommand   = "python3 scripts/ci/macos-go-test.py"
 		mainTestCommand = "go test -tags gms_pure_go ${{ matrix.test-flags }} -timeout=30m -skip '^TestEmbedded' ./..."
 		// The macOS leg is the only consumer of main.yml's matrix test-flags
 		// (the ubuntu leg's coverage step hardcodes its own). The deadline is
@@ -632,6 +635,13 @@ func TestMacOSTestJobsReuseWorkspaceBDBinary(t *testing.T) {
 	assertStepRunsExactly(t, prMacOS, "Test", prTestCommand)
 	assertStepsBefore(t, prMacOS, []string{"Build"}, []string{"Test"})
 	assertStepEnvValue(t, prMacOS, "Test", "BEADS_TEST_BD_BINARY", workspaceBDBinary)
+	if step := prMacOS.step(t, "Test"); step.TimeoutMinutes != 120 || step.ContinueOnError != nil || step.If != "" {
+		t.Error("macOS dispatch must remain bounded, unconditional and failure-propagating")
+	}
+	upload := prMacOS.step(t, "Upload macOS test evidence")
+	if upload.If != "always()" || upload.TimeoutMinutes != 5 || upload.With["name"] != "macos-go-test-${{ github.sha }}" || upload.With["path"] != "artifacts/macos-go-test" || upload.With["retention-days"] != "7" || upload.With["if-no-files-found"] != "warn" || actionFamily(upload.Uses) != "actions/upload-artifact" {
+		t.Error("macOS evidence must survive failure with a bounded commit-specific upload")
+	}
 
 	mainTest := workflows["main.yml"].job(t, "test")
 	assertStepRunsExactly(t, mainTest, "Build", buildCommand)
@@ -4302,6 +4312,250 @@ func TestSetupBazelRCWriter(t *testing.T) {
 	})
 }
 
+// The same offline program can be run directly during CI-runner development.
+// Its fake Go executable exercises dispatch and receipt handling, not storage.
+const macOSDispatcherControls = `
+import importlib.util, json, os, signal, socket, sys, tempfile, time, unittest
+from pathlib import Path
+from unittest import mock
+sys.dont_write_bytecode = True
+spec = importlib.util.spec_from_file_location("macos_go", sys.argv.pop(1))
+m = importlib.util.module_from_spec(spec); spec.loader.exec_module(m)
+
+FAKE = r'''#!/usr/bin/env python3
+import json, os, sys
+from pathlib import Path
+mode = os.environ.get("DISPATCH_CASE", "good")
+graph = "github.com/steveyegge/beads/internal/storage/graphstore"
+other = "github.com/steveyegge/beads/scripts"
+args = sys.argv[1:]
+with Path("calls.jsonl").open("a") as log: log.write(json.dumps(args) + "\n")
+if args[0] == "list":
+    print(other)
+    if mode != "missing-package": print(graph)
+    if mode == "duplicate-package": print(graph)
+    sys.exit(0)
+if "-list" in args:
+    if mode == "discovery-failure": sys.exit(7)
+    if mode == "empty": sys.exit(0)
+    print("TestEmbeddedOld")
+    if mode == "excluded-only": sys.exit(0)
+    for name in ["TestZulu", "TestAlpha", "TestServer", "TestBeta", "TestNew", "ExampleValue", "FuzzSeeds"]: print(name)
+    print("BenchmarkIgnored")
+    if mode == "duplicate-name": print("TestNew")
+    print("ok  " + graph + " 0.01s")
+    sys.exit(0)
+pkg = args[-1]
+if (mode == "test-failure" and pkg == graph) or (mode == "other-failure" and pkg == other): sys.exit(9)
+def event(action, name=None):
+    print(json.dumps(dict(Action=action, Package=pkg, **({"Test":name} if name else {}))))
+event("start")
+if mode == "json-fail": event("fail")
+if mode == "build-fail": event("build-fail")
+if pkg == graph:
+    names = args[args.index("-run")+1][2:-2].split("|")
+    if mode == "missing-root": names = names[1:]
+    if mode == "extra-root": names += ["TestUnexpected"]
+    for name in names:
+        event("run", name)
+        event("run", name + "/child")
+        if mode != "unfinished-child": event("pass", name + "/child")
+        event("skip" if name == "TestServer" else "pass", name)
+        if mode == "duplicate-terminal": event("pass", name)
+    if mode == "bad-json": print("not json")
+if mode != "missing-package-terminal" and not (mode == "other-missing-terminal" and pkg == other): event("pass")
+'''
+
+class DispatchControls(unittest.TestCase):
+    def exercise(self, case):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory); fake = root / "go"; fake.write_text(FAKE); fake.chmod(0o700)
+            output = root / "evidence"
+            with mock.patch.dict(os.environ, {"DISPATCH_CASE":case}):
+                if case == "good": m.execute(root, output, str(fake))
+                else:
+                    with self.assertRaises((RuntimeError, ValueError)): m.execute(root, output, str(fake))
+            summary = json.loads((output / "summary.json").read_text())
+            self.assertEqual(summary["passed"], case == "good")
+            receipts = json.loads((output / "processes.json").read_text())
+            self.assertTrue(all(r["groupGone"] for r in receipts))
+            if case != "good": return
+            plan = json.loads((output / "plan.json").read_text())
+            self.assertEqual(plan["excluded"], ["TestEmbeddedOld"])
+            expected = sorted(["TestZulu", "TestAlpha", "TestServer", "TestBeta", "TestNew", "ExampleValue", "FuzzSeeds"])
+            self.assertEqual(sorted(sum(plan["groups"], [])), expected)
+            self.assertEqual(len(sum(plan["groups"], [])), len(expected))
+            self.assertEqual(plan["groups"], m.partition(list(reversed(plan["discovered"]))))
+            self.assertEqual(len(summary["groups"]), 4)
+            self.assertTrue(any(g["skipped"] for g in summary["groups"]))
+            calls = [json.loads(line) for line in (root / "calls.jsonl").read_text().splitlines()]
+            self.assertEqual(calls[0], ["list", "-race", "-tags", "gms_pure_go", "./..."])
+            executions = [call for call in calls if call[0] == "test" and "-list" not in call]
+            self.assertEqual(len(executions), 5)
+            for call in executions:
+                for flag in ["-race", "-short", "-timeout=30m", "-json"]: self.assertIn(flag, call)
+                self.assertNotIn("-v", call)
+                self.assertEqual(call[call.index("-tags")+1], "gms_pure_go")
+                self.assertEqual(call[call.index("-skip")+1], "^TestEmbedded")
+            self.assertEqual(executions[-1][-1], "github.com/steveyegge/beads/scripts")
+            self.assertNotIn(m.GRAPHSTORE, executions[-1])
+            for index, group in enumerate(plan["groups"], 1):
+                census = json.loads((output / ("graphstore-%d-census.json" % index)).read_text())
+                self.assertEqual(census["roots"], group)
+
+    def test_pr_core_options_and_raw_json_compatibility(self):
+        for case in ("good", "json-fail", "other-failure"):
+            with self.subTest(case=case), tempfile.TemporaryDirectory() as directory:
+                root = Path(directory); fake = root / "go"; fake.write_text(FAKE); fake.chmod(0o700)
+                output, combined = root / "evidence", root / "go-test.json"
+                combined.write_text("stale output must be replaced")
+                with mock.patch.dict(os.environ, {"DISPATCH_CASE": case}):
+                    if case == "good":
+                        m.execute(root, output, str(fake), package_parallel=3, test_parallel=2, json_output=combined)
+                    else:
+                        with self.assertRaises(RuntimeError):
+                            m.execute(root, output, str(fake), package_parallel=3, test_parallel=2, json_output=combined)
+                receipts = json.loads((output / "processes.json").read_text())
+                executions = [r for r in receipts if "-json" in r["argv"]]
+                actual = b"".join((output / (r["label"] + ".stdout")).read_bytes() for r in executions)
+                self.assertEqual(combined.read_bytes(), actual)
+                for r in executions:
+                    args = r["argv"]
+                    self.assertEqual(args[args.index("-p") + 1], "3")
+                    self.assertEqual(args[args.index("-parallel") + 1], "2")
+                    self.assertIn("-race", args); self.assertIn("-short", args)
+                    self.assertIn("-timeout=30m", args); self.assertIn("^TestEmbedded", args)
+                if case != "good":
+                    self.assertFalse(json.loads((output / "summary.json").read_text())["passed"])
+                    continue
+                # Exercise the actual nightly consumer against the concatenated
+                # named terminal events, including the permitted server skip.
+                eq_path = Path(m.__file__).resolve().parents[2] / "tools/bazel/equivalence.py"
+                eq_spec = importlib.util.spec_from_file_location("equivalence", eq_path)
+                eq = importlib.util.module_from_spec(eq_spec); eq_spec.loader.exec_module(eq)
+                statuses = eq.go_test_statuses(combined, {m.GRAPHSTORE: "internal/storage/graphstore", "github.com/steveyegge/beads/scripts": "scripts"})
+                self.assertEqual(set(statuses["internal/storage/graphstore"]), {"TestZulu", "TestAlpha", "TestServer", "TestBeta", "TestNew", "ExampleValue", "FuzzSeeds"})
+                self.assertEqual(statuses["internal/storage/graphstore"]["TestServer"], "skipped")
+                self.assertEqual(statuses["internal/storage/graphstore"]["TestNew"], "passed")
+                self.assertTrue(all(r["groupGone"] for r in receipts))
+
+    def test_pr_core_shell_forwards_environment_and_failure(self):
+        # Run the real wrapper, replacing only its Python dispatcher process.
+        # This proves shell quoting, defaults, opt-in JSON and failure propagation.
+        import shutil
+        repo = Path(m.__file__).resolve().parents[2]
+        for json_enabled, exit_code in ((False, 0), (True, 0), (True, 7)):
+            with self.subTest(json=json_enabled, exit=exit_code), tempfile.TemporaryDirectory() as directory:
+                root = Path(directory)
+                for rel in (".buildflags", "scripts/ci/pr-core.sh", "scripts/ci/lib/timing.sh", "scripts/ci/lib/test-env.sh"):
+                    target = root / rel; target.parent.mkdir(parents=True, exist_ok=True); shutil.copyfile(repo / rel, target)
+                binary = root / "bin"; binary.mkdir()
+                python = binary / "python3"
+                python.write_text("#!" + sys.executable + "\nimport json,os,sys\nfrom pathlib import Path\nPath('invocation.json').write_text(json.dumps({'args':sys.argv[1:], 'tags':os.environ.get('GOFLAGS'), 'cgo':os.environ.get('CGO_ENABLED')}))\nsys.exit(int(os.environ['FAKE_EXIT']))\n")
+                python.chmod(0o700)
+                env = dict(os.environ, PATH=str(binary) + os.pathsep + os.environ["PATH"], BEADS_TEST_ENV_DISABLE="1", FAKE_EXIT=str(exit_code))
+                for key in ("GO_TEST_PKG_PARALLEL", "GO_TEST_PARALLEL", "BEADS_PR_CORE_GO_TEST_JSON", "BEADS_CI_TEST_ENV_SH_LOADED", "BEADS_CI_TIMING_SH_LOADED", "GITHUB_STEP_SUMMARY"):
+                    env.pop(key, None)
+                if json_enabled:
+                    env.update(GO_TEST_PKG_PARALLEL="3", GO_TEST_PARALLEL="2", BEADS_PR_CORE_GO_TEST_JSON=str(root / "combined events.json"))
+                process = m.subprocess.run(["bash", str(root / "scripts/ci/pr-core.sh")], cwd=root, env=env, capture_output=True, timeout=10)
+                self.assertEqual(process.returncode, exit_code, process.stderr.decode())
+                invocation = json.loads((root / "invocation.json").read_text()); args = invocation["args"]
+                self.assertEqual(args[0], str(root / "scripts/ci/macos-go-test.py"))
+                self.assertEqual(args[args.index("--package-parallel") + 1], "3" if json_enabled else "4")
+                self.assertEqual(args[args.index("--test-parallel") + 1], "2" if json_enabled else "4")
+                self.assertIn("gms_pure_go", invocation["tags"])
+                evidence = Path(args[args.index("--output") + 1])
+                self.assertTrue(evidence.parent.is_dir()); self.assertFalse(evidence.exists())
+                if json_enabled: self.assertEqual(args[args.index("--json-output") + 1], str(root / "combined events.json"))
+                else: self.assertNotIn("--json-output", args)
+
+    def test_real_go_json_preserves_unterminated_output(self):
+        # Go's -json supplies framed verbose output unless explicit -v overrides
+        # it. Without framing an application fragment can swallow RUN/PASS lines.
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            (root / "go.mod").write_text("module example.invalid/dispatch-framing\ngo 1.26\n")
+            (root / "framing_test.go").write_text('package framing\nimport ("fmt"; "os"; "testing")\nfunc TestFragment(t *testing.T) { fmt.Fprint(os.Stderr, "before-child"); t.Run("child", func(t *testing.T) { fmt.Print("child-tail") }); fmt.Fprint(os.Stderr, "parent-tail") }\n')
+            runner = m.Runner(root, root)
+            events = runner.run("framing", ["go", "test", *m.JSON_FLAGS, "-json", "-count=1", "."], 30)
+            census = m.verify_events(events, ["example.invalid/dispatch-framing"], ["TestFragment"])
+            self.assertEqual(census["tests"], 2)
+            self.assertEqual(census["skipped"], [])
+
+    def test_complete_partition_and_existing_skip(self): self.exercise("good")
+    def test_negative_receipts(self):
+        for case in ["missing-package", "duplicate-package", "discovery-failure", "empty", "excluded-only",
+                     "duplicate-name", "test-failure", "other-failure", "missing-root", "extra-root",
+                     "unfinished-child", "duplicate-terminal", "bad-json", "json-fail", "build-fail", "missing-package-terminal", "other-missing-terminal"]:
+            with self.subTest(case=case): self.exercise(case)
+    def test_partition_refuses_empty_or_duplicate(self):
+        for names in [[], ["TestA", "TestA"], ["TestEmbeddedOnly"]]:
+            with self.assertRaises(RuntimeError): m.partition(names)
+    def test_unexpected_package_refused(self):
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory) / "events"
+            path.write_text(json.dumps(dict(Action="pass", Package="wrong")) + "\n")
+            with self.assertRaises(RuntimeError): m.verify_events(path, [m.GRAPHSTORE])
+    def test_total_deadline_refuses_spawn(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory); runner = m.Runner(root, root); runner.deadline = 0
+            with self.assertRaises(RuntimeError): runner.run("expired", [sys.executable, "-c", "raise SystemExit(0)"], 1)
+            self.assertEqual(runner.receipts, [])
+    def test_interrupt_during_spawn_retains_ownership(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory); runner = m.Runner(root, root)
+            original_popen = m.subprocess.Popen
+            def interrupted_spawn(*args, **kwargs):
+                child = original_popen(*args, **kwargs)
+                deadline = time.monotonic() + 3
+                while not (root / "ready").exists() and time.monotonic() < deadline:
+                    time.sleep(0.01)
+                os.kill(os.getpid(), signal.SIGTERM)
+                return child
+            previous = signal.signal(signal.SIGTERM, m.interrupted)
+            try:
+                with mock.patch.object(m.subprocess, "Popen", interrupted_spawn):
+                    with self.assertRaisesRegex(RuntimeError, "interrupted by signal"):
+                        runner.run("interrupt", [sys.executable, "-c", "import time; from pathlib import Path; Path('ready').touch(); time.sleep(60)"], 5)
+            finally:
+                signal.signal(signal.SIGTERM, previous)
+            receipt = json.loads((root / "processes.json").read_text())[0]
+            self.assertTrue(receipt["groupGone"]); self.assertIsNotNone(receipt["exitCode"])
+            self.assertFalse(m.group_alive(receipt["pid"]))
+
+    def test_real_timeout_reaps_owner_and_closes_listener(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory); ready = root / "ready"
+            code = "import json,os,signal,socket,time; from pathlib import Path; s=socket.socket(); s.bind(('127.0.0.1',0)); s.listen(); signal.signal(signal.SIGTERM,signal.SIG_IGN); Path('ready').write_text(json.dumps({'pid':os.getpid(),'port':s.getsockname()[1]})); time.sleep(60)"
+            runner = m.Runner(root, root)
+            with mock.patch.object(m, "CLEANUP_SECONDS", 0.1):
+                with self.assertRaises(m.subprocess.TimeoutExpired): runner.run("timeout", [sys.executable, "-c", code], 0.5)
+            child = json.loads(ready.read_text())
+            self.assertFalse(m.group_alive(child["pid"]))
+            with socket.socket() as probe: self.assertNotEqual(probe.connect_ex(("127.0.0.1", child["port"])), 0)
+            receipt = json.loads((root / "processes.json").read_text())[0]
+            self.assertTrue(receipt["groupGone"]); self.assertIsNotNone(receipt["exitCode"])
+            self.assertIn("timed out", receipt["failure"])
+
+unittest.main()
+`
+
+func TestMacOSGoTestDispatcherControls(t *testing.T) {
+	if runtime.GOOS == "windows" {
+		t.Skip("macOS dispatcher owns POSIX process groups")
+	}
+	python := requireHostTool(t, "python3")
+	ctx, cancel := context.WithTimeout(context.Background(), 45*time.Second)
+	defer cancel()
+	cmd := exec.CommandContext(ctx, python, "-c", macOSDispatcherControls,
+		filepath.Join(sourceRepoRoot(t), "scripts", "ci", "macos-go-test.py"))
+	cmd.Env = append(os.Environ(), "PYTHONDONTWRITEBYTECODE=1")
+	if output, err := cmd.CombinedOutput(); err != nil {
+		t.Fatalf("offline macOS dispatch controls: %v\n%s", err, output)
+	}
+}
+
 const (
 	bazelAutofixWorkflowName = "bazel-autofix.yml"
 	bazelAutofixPushScript   = "scripts/bazel-autofix-push.sh"
@@ -4776,6 +5030,116 @@ func TestBazelGatedLanesNeverRetryFlakyTests(t *testing.T) {
 	}
 	if checked < 10 {
 		t.Fatalf("checked only %d files; is the repository root right?", checked)
+	}
+}
+
+// workflowFileNames lists the workflow files under .github/workflows.
+func workflowFileNames(t *testing.T) []string {
+	t.Helper()
+	entries, err := os.ReadDir(filepath.Join(sourceRepoRoot(t), ".github", "workflows"))
+	if err != nil {
+		t.Fatal(err)
+	}
+	var names []string
+	for _, entry := range entries {
+		name := entry.Name()
+		if !entry.IsDir() && (strings.HasSuffix(name, ".yml") || strings.HasSuffix(name, ".yaml")) {
+			names = append(names, name)
+		}
+	}
+	return names
+}
+
+// C1.PRCoreSetsReplayRequire: the required Linux PR Core job runs the replay
+// harness's packages with REPLAY_REQUIRE=1. The harness's tests need the dolt
+// CLI and the Go toolchain, and replaytest.Require fails a test whose tool is
+// missing instead of skipping it only when the variable is exactly "1". Without
+// it a runner that lost either tool would skip those tests and the required
+// check would still pass.
+func TestC1PRCoreSetsReplayRequire(t *testing.T) {
+	const stepName = "Run PR core wrapper"
+	job := readCIWorkflow(t, "pr.yml").job(t, "pr-core-wrapper")
+	// Upstream stands the job down where bazel-coverage retires pr.yml's
+	// legacy jobs (pr_lanes); on this fork's pull requests it never does
+	// (TestForkPullRequestsKeepLegacyLanes), so that gate and no other.
+	if job.RunsOn != "ubuntu-latest" || (job.If != "" && job.If != prLaneLegacyIf) || job.ContinueOnError {
+		t.Error("the replay harness must run in the required Linux PR Core job")
+	}
+	step := job.Steps[job.stepIndex(t, stepName)]
+	if step.If != "" || (step.ContinueOnError != nil && step.ContinueOnError != false) || strings.TrimSpace(step.Run) != "make ci-pr-core" {
+		t.Error("the replay harness must run through the nonoptional PR Core wrapper")
+	}
+	assertStepEnvValue(t, job, stepName, "REPLAY_REQUIRE", "1")
+}
+
+// C1.ReplayRequireIsStepScoped: REPLAY_REQUIRE appears in exactly one place
+// across the workflows, the env of the PR Core wrapper step: never in a
+// workflow-level or job-level env, never on another step, never as an input to
+// a called workflow. replaytest.Require reports bd as unavailable inside a
+// Bazel sandbox, so a wider scope would fail every test that needs bd there.
+func TestC1ReplayRequireIsStepScoped(t *testing.T) {
+	const key = "REPLAY_REQUIRE"
+	job := readCIWorkflow(t, "pr.yml").job(t, "pr-core-wrapper")
+	want := fmt.Sprintf("pr.yml:.jobs.pr-core-wrapper.steps[%d].env.%s", job.stepIndex(t, "Run PR core wrapper"), key)
+
+	var got []string
+	for _, name := range workflowFileNames(t) {
+		walkYAML(readYAMLNode(t, filepath.Join(".github", "workflows", name)), "", func(path string, _ bool, value string) {
+			if strings.Contains(value, key) {
+				got = append(got, name+":"+path)
+			}
+		})
+	}
+	if !slices.Equal(got, []string{want}) {
+		t.Errorf("%s appears at %q, want only at %q", key, got, want)
+	}
+}
+
+// C1.NoNewWorkflowFile: the replay harness's fail-loud lane extends the
+// existing PR workflow, so no other workflow file mentions REPLAY_REQUIRE. A
+// test sees a tree, not a diff, so this pins what a lane in a workflow file of
+// its own would have to do.
+func TestC1NoNewWorkflowFile(t *testing.T) {
+	root := sourceRepoRoot(t)
+	sawPR := false
+	for _, name := range workflowFileNames(t) {
+		if name == "pr.yml" {
+			sawPR = true
+			continue
+		}
+		data, err := os.ReadFile(filepath.Join(root, ".github", "workflows", name))
+		if err != nil {
+			t.Fatal(err)
+		}
+		if strings.Contains(string(data), "REPLAY_REQUIRE") {
+			t.Errorf("%s mentions REPLAY_REQUIRE; the replay harness's fail-loud lane lives in pr.yml, so extend that file instead of adding the lane to another workflow", name)
+		}
+	}
+	if !sawPR {
+		t.Fatal("no pr.yml among the workflow files; the scan found nothing to compare against")
+	}
+}
+
+// C1.PRCoreCheckoutCarriesHistory: the required Linux PR Core job checks out
+// the full history. A replay scenario can build an older bd from a pinned
+// commit, and with REPLAY_REQUIRE=1 (TestC1PRCoreSetsReplayRequire) a commit
+// missing from the checkout fails the scenario instead of skipping it, so
+// GitHub's default depth-1 checkout would fail such a scenario on every run.
+// The job has exactly one actions/checkout step, so no second checkout can
+// take the history away again.
+func TestC1PRCoreCheckoutCarriesHistory(t *testing.T) {
+	job := readCIWorkflow(t, "pr.yml").job(t, "pr-core-wrapper")
+	var checkouts []ciWorkflowStep
+	for _, step := range job.Steps {
+		if actionFamily(step.Uses) == "actions/checkout" {
+			checkouts = append(checkouts, step)
+		}
+	}
+	if len(checkouts) != 1 {
+		t.Fatalf("pr.yml job pr-core-wrapper has %d actions/checkout steps, want exactly 1; a replay scenario that builds an older bd from a pinned commit needs that one checkout to carry the full history, and a second checkout could take it away again", len(checkouts))
+	}
+	if got := checkouts[0].With["fetch-depth"]; got != "0" {
+		t.Errorf("pr.yml job pr-core-wrapper checks out with fetch-depth %q, want \"0\" (an unset depth is GitHub's default of 1); a replay scenario that builds an older bd from a pinned commit needs that commit in the checkout, and REPLAY_REQUIRE=1 makes it a failure when it is missing", got)
 	}
 }
 
