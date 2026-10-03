@@ -87,6 +87,9 @@ type stepInput struct {
 	// Present holds the edge targets, among presenceCandidates(Issues, Deps), that
 	// exist in the oracle before the step: the work project holds them too.
 	Present map[string]bool
+	// Unsafe holds the candidates idsPresent refused to look up. Present says
+	// nothing about them either way, so the issues that point at them are withheld.
+	Unsafe map[string]bool
 }
 
 // Plan reads the commit step from `from` (exclusive) to `to` (inclusive) in the
@@ -129,8 +132,13 @@ func Plan(ctx context.Context, dataDir, from, to string) (*StepPlan, error) {
 	// The issues table did not exist before a step that adds it, so nothing is
 	// present and there is nothing to ask.
 	if candidates := presenceCandidates(in.Issues, in.Deps); len(candidates) > 0 && !issuesAdded {
-		if in.Present, err = idsPresent(ctx, dataDir, from, candidates); err != nil {
+		var refused []string
+		if in.Present, refused, err = idsPresent(ctx, dataDir, from, candidates); err != nil {
 			return nil, err
+		}
+		in.Unsafe = make(map[string]bool, len(refused))
+		for _, id := range refused {
+			in.Unsafe[id] = true
 		}
 	}
 	return assemble(in), nil
@@ -194,25 +202,39 @@ func readDiffRows(ctx context.Context, dataDir, query string) ([]diffRow, error)
 // idsPresentBatch bounds the length of one presence query.
 const idsPresentBatch = 400
 
-// idsPresent returns which of ids exist in the oracle's issues table as of ref.
-func idsPresent(ctx context.Context, dataDir, ref string, ids []string) (map[string]bool, error) {
+// idsPresent returns which of ids exist in the oracle's issues table as of ref, and
+// the ids it refused to look up. The ids come out of the oracle's own rows, so each
+// is data, not a value the harness chose: it is checked here, where it is put into
+// a query, with issueops.ValidateRef as every other id and ref the harness queries
+// by is, and one that fails is never sent to dolt. A refused id is not present; the
+// caller says why.
+func idsPresent(ctx context.Context, dataDir, ref string, ids []string) (map[string]bool, []string, error) {
 	present := make(map[string]bool, len(ids))
-	for start := 0; start < len(ids); start += idsPresentBatch {
-		end := min(start+idsPresentBatch, len(ids))
+	var refused []string
+	lookable := make([]string, 0, len(ids))
+	for _, id := range ids {
+		if issueops.ValidateRef(id) != nil {
+			refused = append(refused, id)
+			continue
+		}
+		lookable = append(lookable, id)
+	}
+	for start := 0; start < len(lookable); start += idsPresentBatch {
+		end := min(start+idsPresentBatch, len(lookable))
 		quoted := make([]string, 0, end-start)
-		for _, id := range ids[start:end] {
+		for _, id := range lookable[start:end] {
 			quoted = append(quoted, doltcli.SQLQuote(id))
 		}
 		query := fmt.Sprintf("SELECT id FROM issues AS OF %s WHERE id IN (%s)", doltcli.SQLQuote(ref), strings.Join(quoted, ", "))
 		_, rows, err := doltcli.Query(ctx, dataDir, query)
 		if err != nil {
-			return nil, fmt.Errorf("plan: checking which edge targets exist as of %s: %w", ref, err)
+			return nil, nil, fmt.Errorf("plan: checking which edge targets exist as of %s: %w", ref, err)
 		}
 		for _, r := range rows {
 			present[r[0].Text] = true
 		}
 	}
-	return present, nil
+	return present, refused, nil
 }
 
 // edgeTarget names the target of a dependency row, reading the columns under
@@ -397,7 +419,11 @@ func assemble(in stepInput) *StepPlan {
 			if e.external || exists(e.target) {
 				continue
 			}
-			work(e.owner).block(fmt.Sprintf("dependency %s -> %s: the target is neither in the work project nor created earlier in this plan", e.owner, e.target))
+			reason := fmt.Sprintf("dependency %s -> %s: the target is neither in the work project nor created earlier in this plan", e.owner, e.target)
+			if in.Unsafe[e.target] {
+				reason = fmt.Sprintf("dependency %s -> %q: the target id cannot be looked up (an id holds only letters, digits and _ . / -, up to 128 of them), so the plan cannot tell whether the work project has it", e.owner, e.target)
+			}
+			work(e.owner).block(reason)
 			changed = true
 		}
 	}
