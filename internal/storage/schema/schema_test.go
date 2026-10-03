@@ -85,7 +85,7 @@ func TestMigrateUpReturnsDirtyTablesErrorForPreExistingDirtyTable(t *testing.T) 
 	// pre-existing tables are unstaged, before the dirty-table guards run.
 	mock.ExpectQuery(regexp.QuoteMeta("CALL DOLT_ADD('dolt_ignore')")).
 		WillReturnRows(sqlmock.NewRows([]string{"status"}))
-	mock.ExpectQuery(regexp.QuoteMeta("CALL DOLT_COMMIT('-m', 'schema: seed dolt_ignore patterns')")).
+	mock.ExpectQuery(regexp.QuoteMeta("CALL DOLT_COMMIT('-m', 'schema: seed dolt_ignore patterns', '--skip-empty')")).
 		WillReturnRows(sqlmock.NewRows([]string{"hash"}))
 	// committableDirtyTables -> dirtyTables(ctx, db, true): same dirty state.
 	expectDirtyDoltStatusRow(mock, "dependencies", false)
@@ -1974,6 +1974,9 @@ func TestAllMigrationsSQLUsesDirectDDLForKnownCLIIncompatibilities(t *testing.T)
 		// 0070: single-plane prepared ADD COLUMN, same shape as 0068's
 		// attribution_status (no wisps twin -- issue_versions has none).
 		"ALTER TABLE issue_versions ADD COLUMN removed_restriction VARCHAR(30);",
+		// 0072: two-plane prepared ADD COLUMN, same shape as 0067.
+		"ALTER TABLE issues ADD COLUMN participation_generation BIGINT NULL;",
+		"ALTER TABLE wisps ADD COLUMN participation_generation BIGINT NULL;",
 	} {
 		if !strings.Contains(got, want) {
 			t.Fatalf("AllMigrationsSQL missing direct CLI DDL %q", want)
@@ -2010,6 +2013,9 @@ func TestAllMigrationsSQLUsesDirectDDLForKnownCLIIncompatibilities(t *testing.T)
 		// 0070 guards its ALTER the same way; only its source text carries
 		// this probe.
 		"@issue_versions_rr_needs_add",
+		// 0072 guards both planes' ALTERs the same way, mirroring 0067's pair.
+		"@issues_pg_needs_add",
+		"@wisps_pg_needs_add",
 	} {
 		if strings.Contains(got, forbidden) {
 			t.Fatalf("AllMigrationsSQL contains source prepared-DDL guard %q", forbidden)

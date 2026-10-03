@@ -8,6 +8,7 @@ The caller supplies the ordinary released Dolt binary and CI Build Artifacts.
 All databases and process groups belong to this run; no existing server is used.
 """
 import argparse
+import contextlib
 import hashlib
 import json
 import os
@@ -20,6 +21,21 @@ import sys
 import time
 
 OWNER_CLEANUP_GRACE = 30
+GO_TEST_TIMEOUT = 900  # seconds; the -timeout=15m every go test group is given
+SLOW_GROUP_SECONDS = GO_TEST_TIMEOUT * 6 // 10
+TAIL_LINES = 40
+SERVER_READY_TIMEOUT = 30
+SERVER_STOP_TIMEOUT = 15
+# Deadlines for the HTTP/BDP smoke, in seconds. Each outlasts the one before it: one
+# command < the smoke's whole run < the wrapper that kills it from outside, so a slow runner
+# ends in the smoke's own labelled failure and never in an unlabelled outer kill. The
+# smoke's first command is a server-backed bd init: 35 s of a 45 s smoke on a fast runner,
+# and 34 s, 58 s and 65 s for the qualification's own init on fast and slow runners. One
+# command gets 180 s, about 2.8x the slowest of those. The total covers a full-length init
+# plus the rest of the smoke at the same slowdown (about 230 s) with room to spare.
+SMOKE_COMMAND_TIMEOUT = 180
+SMOKE_TOTAL_TIMEOUT = 600
+SMOKE_WRAPPER_TIMEOUT = 660  # total + 60 s for the smoke to reap its children and report
 
 
 def require(condition, message):
@@ -327,6 +343,60 @@ def verify_memory_deletion_capture(root, summary):
             "post-delete Python enumeration retained deleted state or omitted survivors")
 
 
+def output_tail(stdout, stderr, limit=TAIL_LINES):
+    """Last lines of a failed command's test output and of its stderr.
+
+    go test -json carries the test text in each event's Output field; any
+    other stdout line is kept as it is.
+    """
+    text = []
+    for line in stdout.decode(errors="replace").splitlines():
+        try:
+            item = json.loads(line)
+        except ValueError:
+            text.append(line)
+            continue
+        text.extend(item.get("Output", "").splitlines() if isinstance(item, dict) and "Action" in item else [line])
+    return text[-limit:], stderr.decode(errors="replace").splitlines()[-limit:]
+
+
+def report_failure_tail(label, stdout, stderr):
+    output, errors = output_tail(stdout, stderr)
+    for title, lines in (("test output", output), ("stderr", errors)):
+        if lines:
+            print(f"--- {label}: last {len(lines)} lines of {title} ---\n" + "\n".join(lines), flush=True)
+
+
+def phase_table(receipts):
+    """One row per receipt; go test groups also show their share of the timeout."""
+    rows = ["### Graph core C0 phases", "", "| Phase | Roots | Seconds | % of go test timeout |", "|---|---:|---:|---:|"]
+    for item in receipts:
+        seconds, roots = item.get("elapsedSeconds"), item.get("roots")
+        rows.append("| {} | {} | {} | {} |".format(
+            item["label"], "" if roots is None else roots, "" if seconds is None else f"{seconds:.1f}",
+            "" if roots is None or seconds is None else f"{seconds / GO_TEST_TIMEOUT:.0%}"))
+    return "\n".join(rows) + "\n"
+
+
+def slow_group_warnings(receipts):
+    """Advisory annotations for go test groups that used 60% or more of their timeout."""
+    return [f"::warning title=Slow go test group::{item['label']} took {item['elapsedSeconds']:.0f} s, "
+            f"{item['elapsedSeconds'] / GO_TEST_TIMEOUT:.0%} of its {GO_TEST_TIMEOUT} s go test timeout"
+            for item in receipts
+            if item.get("roots") is not None and item.get("elapsedSeconds", 0) >= SLOW_GROUP_SECONDS]
+
+
+def publish_phase_report(receipts, summary_path):
+    for warning in slow_group_warnings(receipts):
+        print(warning, flush=True)
+    if summary_path:
+        try:
+            with open(summary_path, "a") as summary:
+                summary.write(phase_table(receipts))
+        except OSError as error:
+            print(f"::warning title=Phase table not written::{error}", flush=True)
+
+
 class Qualification:
     def __init__(self, args):
         self.root = Path(__file__).resolve().parents[2]
@@ -355,8 +425,13 @@ class Qualification:
                         BEADS_DOLT_AUTO_START="0", NO_COLOR="1",
                         BEADS_TEST_BD_BINARY=str(self.bd), BEADS_TEST_IGNORE_REPO_CONFIG="1")
 
-    def run(self, args, label, cwd=None, timeout=120, stdin=None, expected=0, owned_groups=None):
+    def run(self, args, label, cwd=None, timeout=120, stdin=None, expected=0, owned_groups=None, roots=None):
         print(f"C0 {label}: {args}", flush=True)
+        started = time.monotonic()
+
+        def timing():
+            return dict(elapsedSeconds=round(time.monotonic() - started, 3), **({} if roots is None else dict(roots=roots)))
+
         process = subprocess.Popen([str(a) for a in args], cwd=cwd or self.root,
                                    env=self.env, stdin=subprocess.PIPE, stdout=subprocess.PIPE,
                                    stderr=subprocess.PIPE, start_new_session=True)
@@ -418,7 +493,8 @@ class Qualification:
                                       exit=process.returncode, failure=type(original).__name__,
                                       forcedOwner=forced_owner, nestedCleanup=nested,
                                       cleanupErrors=cleanup_errors,
-                                      stdoutSHA256=hashlib.sha256(out).hexdigest()))
+                                      stdoutSHA256=hashlib.sha256(out).hexdigest(), **timing()))
+            report_failure_tail(label, out, err)
             raise
         finally:
             self.children.discard(process.pid)
@@ -428,13 +504,73 @@ class Qualification:
             os.killpg(process.pid, signal.SIGKILL)
             raise RuntimeError(f"{label} left a live process group after exit")
         self.receipts.append(dict(label=label, argv=[str(a) for a in args], pid=process.pid,
-                                  exit=process.returncode, stdoutSHA256=hashlib.sha256(out).hexdigest()))
+                                  exit=process.returncode, stdoutSHA256=hashlib.sha256(out).hexdigest(), **timing()))
         if owned_groups is not None:
             nested = cleanup_registered_groups(owned_groups)
             require(nested["registeredGroups"] == 0, "completed owner left nested groups registered")
+        if process.returncode != expected:
+            report_failure_tail(label, out, err)
         require(process.returncode == expected,
                 f"{label} exited {process.returncode}, expected {expected}; see saved stdout/stderr")
         return out
+
+    @contextlib.contextmanager
+    def server(self, label):
+        """One owned Dolt server for one command: fresh data directory and port, own log and shutdown receipt.
+
+        The port is exported as BEADS_GRAPH_TEST_SERVER_PORT while the server is up and only then. Every
+        server must stop cleanly (exit 0, not forced, group gone, port closed) or the step fails.
+        """
+        with socket.socket() as reservation:
+            reservation.bind(("127.0.0.1", 0))
+            port = reservation.getsockname()[1]
+        server_root = self.output / (label + "-server-data")
+        server_root.mkdir()
+        log = (self.output / (label + "-server.log")).open("wb")
+        started = time.monotonic()
+        server = subprocess.Popen([str(self.dolt), "sql-server", "--host", "127.0.0.1", "--port", str(port), "--data-dir", str(server_root)],
+                                  cwd=server_root, env=self.env, stdout=log, stderr=subprocess.STDOUT, start_new_session=True)
+        self.children.add(server.pid)
+        try:
+            deadline = time.monotonic() + SERVER_READY_TIMEOUT
+            while True:
+                require(server.poll() is None, "owned server exited before readiness")
+                try:
+                    with socket.create_connection(("127.0.0.1", port), timeout=1):
+                        break
+                except OSError:
+                    require(time.monotonic() < deadline, "server readiness timed out")
+                    time.sleep(0.2)
+            self.env["BEADS_GRAPH_TEST_SERVER_PORT"] = str(port)
+            yield port
+            require(server.poll() is None, "server exited during qualification")
+        finally:
+            self.env.pop("BEADS_GRAPH_TEST_SERVER_PORT", None)
+            server.terminate()
+            forced = False
+            try:
+                code = server.wait(timeout=SERVER_STOP_TIMEOUT)
+            except subprocess.TimeoutExpired:
+                forced = True
+                os.killpg(server.pid, signal.SIGKILL)
+                code = server.wait()
+            finally:
+                self.children.discard(server.pid)
+                log.close()
+            group_gone = group_exited(server.pid)
+            if not group_gone:
+                os.killpg(server.pid, signal.SIGKILL)
+            port_closed = False
+            try:
+                with socket.create_connection(("127.0.0.1", port), timeout=1):
+                    pass
+            except ConnectionRefusedError:
+                port_closed = True
+            self.receipts.append(dict(label=label + "-server-shutdown", pid=server.pid, port=port,
+                                      exit=code, forced=forced, groupGone=group_gone,
+                                      portClosed=port_closed, elapsedSeconds=round(time.monotonic() - started, 3)))
+            require(code == 0 and not forced and group_gone and port_closed,
+                    f"server cleanup failed: exit={code}, forced={forced}, groupGone={group_gone}, portClosed={port_closed}")
 
     def tests(self, package, selector, files, label, required_subtests=(), groups=1):
         # Source discovery also sees accidentally build-excluded added tests.
@@ -453,7 +589,8 @@ class Qualification:
         flags = ["go", "test", "-tags", "gms_pure_go", "-json", "-count=1", "-p=1",
                  "-parallel=1", "-timeout=15m", "-run"]
         if groups == 1:
-            out = self.run([*flags, selector, package], label, timeout=960)
+            with self.server(label):
+                out = self.run([*flags, selector, package], label, timeout=960, roots=len(expected))
         else:
             selections = partition_required_tests(source_names, groups)
             plan = dict(package=package, selector=selector, sourceRoots=sorted(expected),
@@ -470,7 +607,8 @@ class Qualification:
                     group_label, names, selected = group["label"], group["roots"], group["selector"]
                     (self.output / (label + "-groups.json")).write_text(json.dumps(plan, indent=2) + "\n")
                     try:
-                        result = self.run([*flags, selected, package], group_label, timeout=960)
+                        with self.server(group_label):
+                            result = self.run([*flags, selected, package], group_label, timeout=960, roots=len(names))
                         verify_tests([json.loads(line) for line in result.splitlines()], set(names))
                         group["passed"] = True
                     finally:
@@ -498,6 +636,15 @@ class Qualification:
 
     def cli(self, work, label, *args):
         return json.loads(self.run([self.bd, *args, "--json"], label, cwd=work))
+
+    def smoke_command(self, port):
+        argv = [sys.executable, str(self.root / "scripts/graph-bdp-read-smoke.py"),
+                "--bd", str(self.bd), "--server-port", str(port),
+                "--bdp-checkout", str(self.client_checkout), "--client-manifest", str(self.client_manifest),
+                "--node", str(self.node), "--output-dir", str(self.output / "http"),
+                "--owned-groups", str(self.output / "http-owned-groups.jsonl"),
+                "--command-timeout", str(SMOKE_COMMAND_TIMEOUT), "--total-timeout", str(SMOKE_TOTAL_TIMEOUT)]
+        return argv, SMOKE_WRAPPER_TIMEOUT
 
     def capture(self, engine, port):
         work = self.output / (engine + "-workspace")
@@ -536,29 +683,13 @@ class Qualification:
         require(version and version[0].strip() == "dolt version 2.1.8", "C0 requires released Dolt2.1.8")
         (self.output / "source.json").write_text(json.dumps(dict(commit=head, binarySHA256=digest(self.bd),
             doltSHA256=digest(self.dolt), runnerSHA256=digest(Path(__file__))), indent=2) + "\n")
-        with socket.socket() as reservation:
-            reservation.bind(("127.0.0.1", 0))
-            port = reservation.getsockname()[1]
-        server_root = self.output / "server-data"
-        server_root.mkdir()
-        log = (self.output / "server.log").open("wb")
-        server = subprocess.Popen([str(self.dolt), "sql-server", "--host", "127.0.0.1", "--port", str(port), "--data-dir", str(server_root)],
-                                  cwd=server_root, env=self.env, stdout=log, stderr=subprocess.STDOUT, start_new_session=True)
-        self.children.add(server.pid)
-        try:
-            deadline = time.monotonic() + 30
-            while True:
-                require(server.poll() is None, "owned server exited before readiness")
-                try:
-                    with socket.create_connection(("127.0.0.1", port), timeout=1):
-                        break
-                except OSError:
-                    require(time.monotonic() < deadline, "server readiness timed out")
-                    time.sleep(0.2)
-            self.env["BEADS_GRAPH_TEST_SERVER_PORT"] = str(port)
+        with contextlib.ExitStack() as servers:
             # Sequential package runs/provisioning; concurrency inside same-store tests remains exercised.
             self.tests("./internal/graphpatch", "^Test", (self.root / "internal/graphpatch").glob("*_test.go"), "graphpatch")
-            self.tests("./internal/storage/graphstore", "^Test", (self.root / "internal/storage/graphstore").glob("*_test.go"), "storage", groups=4)
+            self.tests("./internal/storage/graphstore", "^Test", (self.root / "internal/storage/graphstore").glob("*_test.go"), "storage",
+                       tuple("TestLinkUnlinkDefaultSourceReadBudget/" + engine + "/" + case
+                             for engine in ("embedded", "server")
+                             for case in ("id-default", "pair-default", "id-explicit")), groups=4)
             self.tests("./internal/configfile", "^TestGraphMode", (self.root / "internal/configfile").glob("graph_mode_test.go"), "config")
             self.tests("./internal/storage/issueops", "^TestResolve(CustomConfigStrict|InfraTypesStrict|ConfigLegacy)",
                        (self.root / "internal/storage/issueops").glob("config_strict_test.go"), "query-config")
@@ -570,6 +701,7 @@ class Qualification:
                        (self.root / "internal/types").glob("types_test.go"), "utc-types")
             self.tests("./internal/templates/agents", "^TestGraphPreview",
                        (self.root / "internal/templates/agents").glob("*_test.go"), "agent-template")
+            self.tests("./cmd/bd/setup", "^TestGraphPreview", (self.root / "cmd/bd/setup").glob("graph_claude_test.go"), "graph-claude-setup")
             self.tests("./cmd/bd", "^Test(GraphModeCLI|GraphPreview)", (self.root / "cmd/bd").glob("graph*test.go"), "cli",
                        ("TestGraphPreviewAgentInstructionsWorkflow/embedded/fresh",
                         "TestGraphPreviewAgentInstructionsWorkflow/embedded/shared-file",
@@ -579,6 +711,17 @@ class Qualification:
                         "TestGraphPreviewAgentInstructionsWorkflow/server/shared-file",
                         "TestGraphPreviewAgentInstructionsWorkflow/server/skip-agents",
                         "TestGraphPreviewAgentInstructionsWorkflow/server/full-profile-refusal",
+                        "TestGraphPreviewUsabilityWorkflow/embedded", "TestGraphPreviewUsabilityWorkflow/server",
+                        "TestGraphPreviewClaudeStopWorkflow/embedded", "TestGraphPreviewClaudeStopWorkflow/server",
+                        "TestGraphPreviewClaudeStopAutoInit/embedded", "TestGraphPreviewClaudeStopAutoInit/server",
+                        "TestGraphPreviewClaudeStopAutoInitPreflight",
+                        "TestGraphPreviewClaudeStopAutoInitRefusalMessages/global-plugin", "TestGraphPreviewClaudeStopAutoInitRefusalMessages/claude-symlink",
+                        "TestGraphPreviewClaudeStopInstallFailure/embedded", "TestGraphPreviewClaudeStopInstallFailure/server",
+                        "TestGraphPreviewClaudeStopSkipAgentsAlone/embedded", "TestGraphPreviewClaudeStopSkipAgentsAlone/server",
+                        "TestGraphPreviewClaudeStopHookAdmissionNonBlocking/embedded", "TestGraphPreviewClaudeStopHookAdmissionNonBlocking/server",
+                        "TestGraphPreviewClaudeStopProfileRefusal/embedded/missing", "TestGraphPreviewClaudeStopProfileRefusal/embedded/minimal", "TestGraphPreviewClaudeStopProfileRefusal/embedded/stale",
+                        "TestGraphPreviewClaudeStopProfileRefusal/server/missing", "TestGraphPreviewClaudeStopProfileRefusal/server/minimal", "TestGraphPreviewClaudeStopProfileRefusal/server/stale",
+                        "TestGraphPreviewCompatibilityDefaultsWorkflow/embedded", "TestGraphPreviewCompatibilityDefaultsWorkflow/server",
                         "TestGraphPreviewIssueAuthoringWorkflow/embedded", "TestGraphPreviewIssueAuthoringWorkflow/server",
                         "TestGraphPreviewIssueAppendWorkflow/embedded", "TestGraphPreviewIssueAppendWorkflow/server",
                         "TestGraphPreviewIssueClaimWorkflow/embedded", "TestGraphPreviewIssueClaimWorkflow/server",
@@ -587,7 +730,8 @@ class Qualification:
                         "TestGraphPreviewMemoryDeleteWorkflow/embedded", "TestGraphPreviewMemoryDeleteWorkflow/server",
                         "TestGraphPreviewQueryWorkflow/embedded", "TestGraphPreviewQueryWorkflow/server",
                         "TestGraphPreviewMemoryReadsWorkflow/embedded", "TestGraphPreviewMemoryReadsWorkflow/server",
-                        "TestGraphPreviewPropertiesPatchWorkflow/embedded", "TestGraphPreviewPropertiesPatchWorkflow/server"))
+                        "TestGraphPreviewPropertiesPatchWorkflow/embedded", "TestGraphPreviewPropertiesPatchWorkflow/server"),
+                       groups=3)
             self.env["BDP_SPEC_AT_PIN"] = str(self.client_checkout / "docs/specs/bdp.md")
             self.tests("./internal/httpapi/bdpwire", "^Test", (self.root / "internal/httpapi/bdpwire").glob("*_test.go"), "bdpwire")
             self.tests("./internal/httpapi/graphread", "^Test", (self.root / "internal/httpapi/graphread").glob("*_test.go"), "graphread",
@@ -601,13 +745,13 @@ class Qualification:
             python_result = (self.output / "python-example-tests.stderr").read_text()
             require(python_roots > 0 and re.search(rf"Ran {python_roots} tests? in", python_result)
                     and "skipped=" not in python_result, "Python example tests missing or skipped")
+            port = servers.enter_context(self.server("capture"))
             self.capture("embedded", port)
             self.capture("server", port)
-            self.run([sys.executable, str(self.root / "scripts/graph-bdp-read-smoke.py"),
-                      "--bd", str(self.bd), "--server-port", str(port),
-                      "--bdp-checkout", str(self.client_checkout), "--client-manifest", str(self.client_manifest),
-                      "--node", str(self.node), "--output-dir", str(self.output / "http"),
-                      "--owned-groups", str(self.output / "http-owned-groups.jsonl")], "bdp-http-capture", timeout=360,
+            # Per command < smoke total < this wrapper (SMOKE_*): the wrapper outlasts the smoke,
+            # so a command that outruns its deadline surfaces as the smoke's labelled failure.
+            argv, timeout = self.smoke_command(port)
+            self.run(argv, "bdp-http-capture", timeout=timeout,
                      owned_groups=self.output / "http-owned-groups.jsonl")
             verify_http_capture(self.output / "http", digest(self.bd))
             http_summary = json.loads((self.output / "http/summary.json").read_text())
@@ -615,33 +759,6 @@ class Qualification:
                                     ("client_harness_sha256", "scripts/graph-bdp-read-client.mjs"),
                                     ("python_example_sha256", "examples/bdp-read/read_beads.py")]:
                 require(http_summary[field] == digest(self.root / relative), "HTTP capture source changed")
-            require(server.poll() is None, "server exited during qualification")
-        finally:
-            server.terminate()
-            forced = False
-            try:
-                code = server.wait(timeout=15)
-            except subprocess.TimeoutExpired:
-                forced = True
-                os.killpg(server.pid, signal.SIGKILL)
-                code = server.wait()
-            finally:
-                self.children.discard(server.pid)
-                log.close()
-            group_gone = group_exited(server.pid)
-            if not group_gone:
-                os.killpg(server.pid, signal.SIGKILL)
-            port_closed = False
-            try:
-                with socket.create_connection(("127.0.0.1", port), timeout=1):
-                    pass
-            except ConnectionRefusedError:
-                port_closed = True
-            self.receipts.append(dict(label="server-shutdown", pid=server.pid, port=port,
-                                      exit=code, forced=forced, groupGone=group_gone,
-                                      portClosed=port_closed))
-            require(code == 0 and not forced and group_gone and port_closed,
-                    f"server cleanup failed: exit={code}, forced={forced}, groupGone={group_gone}, portClosed={port_closed}")
         require(not self.children, "owned child process remains")
         (self.output / "summary.json").write_text(json.dumps(dict(commit=head, passed=self.counts,
             installedCLICommands=10, engines=["embedded", "server"], childrenRemaining=0, bdpHTTP=True, pythonBDP=True), indent=2) + "\n")
@@ -661,6 +778,7 @@ def main():
         qualification.execute()
     finally:
         (qualification.output / "receipts.json").write_text(json.dumps(qualification.receipts, indent=2) + "\n")
+        publish_phase_report(qualification.receipts, os.environ.get("GITHUB_STEP_SUMMARY"))
 
 
 if __name__ == "__main__":

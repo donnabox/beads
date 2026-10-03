@@ -66,6 +66,12 @@ func (s *Store) beadEndpointInTx(ctx context.Context, tx *sql.Tx, path string) (
 // AddInformationalLink creates independent identity even for equal endpoints.
 // Link payload, retained Link and owned source snapshot commit together.
 func (s *Store) AddInformationalLink(ctx context.Context, request LinkCreateRequest) (LinkMutationResult, error) {
+	if request.TypeURL == "" {
+		request.TypeURL = RelatedTypeURL(s.ScopeURL())
+	}
+	if !IsInformationalTypeURL(s.ScopeURL(), request.TypeURL) {
+		return LinkMutationResult{}, fmt.Errorf("%w: informational Link Type is not supported", storage.ErrValidation)
+	}
 	for _, path := range []string{request.SourcePath, request.TargetPath} {
 		if err := validatePath(path); err != nil {
 			return LinkMutationResult{}, err
@@ -86,6 +92,9 @@ func (s *Store) AddInformationalLink(ctx context.Context, request LinkCreateRequ
 	var result LinkMutationResult
 	err = s.withTx(ctx, true, func(tx *sql.Tx) error {
 		if err := checkBinding(ctx, tx, s.options); err != nil {
+			return err
+		}
+		if err := s.selectedLinkTypeInTx(ctx, tx, request.TypeURL); err != nil {
 			return err
 		}
 		source, revision, owned, err := s.beadEndpointInTx(ctx, tx, request.SourcePath)
@@ -124,7 +133,7 @@ func (s *Store) AddInformationalLink(ctx context.Context, request LinkCreateRequ
 		if err != nil {
 			return err
 		}
-		if _, err := tx.ExecContext(ctx, `INSERT INTO graph_preview_catalog (path,resource_kind,type_url,revision,allocation_state,backing) VALUES (?,'link',?,?,'live','informational')`, path, RelatedTypeURL(s.options.Binding.ScopeURL), linkRevision); err != nil {
+		if _, err := tx.ExecContext(ctx, `INSERT INTO graph_preview_catalog (path,resource_kind,type_url,revision,allocation_state,backing) VALUES (?,'link',?,?,'live','informational')`, path, request.TypeURL, linkRevision); err != nil {
 			return err
 		}
 		if err := s.afterStage("link-catalog"); err != nil {
@@ -184,7 +193,7 @@ func (s *Store) writeLinkProperties(ctx context.Context, request LinkUpdateReque
 		if err != nil {
 			return err
 		}
-		if link.Type != RelatedTypeURL(s.options.Binding.ScopeURL) {
+		if !IsInformationalTypeURL(s.ScopeURL(), link.Type) {
 			return fmt.Errorf("%w: property update requires informational Link Type", storage.ErrValidation)
 		}
 		if err := checkRevisionGuard(request.ExpectedRevision, request.Unconditional, link.Revision, true, "Link"); err != nil {
@@ -274,7 +283,7 @@ func (s *Store) finishInformationalWriteInTx(ctx context.Context, tx *sql.Tx, pa
 	if err != nil {
 		return LinkMutationResult{}, err
 	}
-	if _, err := tx.ExecContext(ctx, `INSERT INTO graph_preview_versions (path,version,snapshot,actor) VALUES (?,?,?,?)`, path, link.Version, snapshot, actor); err != nil {
+	if err := insertPreviewVersionInTx(ctx, tx, path, link.Version, snapshot, actor); err != nil {
 		return LinkMutationResult{}, err
 	}
 	if err := s.afterStage("link-retained"); err != nil {
@@ -310,7 +319,7 @@ func (s *Store) recordOwnedMemoryInTx(ctx context.Context, tx *sql.Tx, sourcePat
 		if err != nil {
 			return nil, err
 		}
-		if _, err := tx.ExecContext(ctx, `INSERT INTO graph_preview_versions (path,version,snapshot,actor) VALUES (?,?,?,?)`, sourcePath, memory.Version, snapshot, actor); err != nil {
+		if err := insertPreviewVersionInTx(ctx, tx, sourcePath, memory.Version, snapshot, actor); err != nil {
 			return nil, err
 		}
 		if err := s.afterStage("source-retained"); err != nil {
@@ -330,8 +339,11 @@ func (s *Store) currentInformationalLinkInTx(ctx context.Context, tx *sql.Tx, pa
 	if err := tx.QueryRowContext(ctx, `SELECT resource_kind,type_url,revision,allocation_state,backing,backing_key FROM graph_preview_catalog WHERE path=?`, path).Scan(&kind, &typ, &revision, &state, &backing, &key); err != nil {
 		return LinkRecord{}, err
 	}
-	if kind != "link" || typ != RelatedTypeURL(s.options.Binding.ScopeURL) || !authorityID.MatchString(revision) || state != "live" || backing != "informational" || key.Valid {
+	if kind != "link" || !IsInformationalTypeURL(s.ScopeURL(), typ) || !authorityID.MatchString(revision) || state != "live" || backing != "informational" || key.Valid {
 		return LinkRecord{}, fmt.Errorf("%w: invalid informational Link allocation", ErrInvalidStore)
+	}
+	if err := s.informationalTypeInTx(ctx, tx, typ); err != nil {
+		return LinkRecord{}, err
 	}
 	var source, target string
 	var properties, attribution []byte

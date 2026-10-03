@@ -182,7 +182,7 @@ def verify_python_pages(observations, scope, expected_ids):
                "Python pagination did not exhaust complete inventory")
 
 
-def main():
+def build_parser():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--bd", type=Path, required=True)
     parser.add_argument("--server-port", type=int, required=True)
@@ -193,7 +193,11 @@ def main():
     parser.add_argument("--output-dir", type=Path, required=True)
     parser.add_argument("--command-timeout", type=float, default=60)
     parser.add_argument("--total-timeout", type=float, default=300)
-    args = parser.parse_args()
+    return parser
+
+
+def main():
+    args = build_parser().parse_args()
     for name in ["bd", "bdp_checkout", "node", "output_dir", "client_manifest"]:
         value = getattr(args, name)
         c0.require(value.is_absolute(), f"--{name.replace('_', '-')} must be absolute")
@@ -267,7 +271,7 @@ def main():
         capture.success("memory-issue-link", ["link", "beads/plan", "beads/work", "--resource-type", related,
             "--id", "links/context", "--properties", '{"note":"before page"}',
             "--if-source-revision", records["beads/plan"]["revision"], "--json"])
-        capture.success("issue-memory-link", ["link", "beads/work", "beads/plan", "--resource-type", related,
+        capture.success("issue-memory-link", ["link", "beads/work", "beads/plan", "--link-type", "types/example-cites",
             "--id", "links/back", "--properties", '{"note":"Issue context"}', "--json"])
         dependency = c0.envelope(capture.success("blocking-dependency", ["dep", "add", "beads/work", "beads/prereq", "--json"]))
         for path in [*records, "links/context", "links/back", dependency["link"]["id"]]:

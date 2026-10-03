@@ -42,6 +42,15 @@ import (
 //     sidecar). Proceeding would race a migration/restore mid-replace.
 //   - EXCLUSIVE failures of any kind are hard errors: maintenance refuses
 //     rather than pretends.
+//   - Strict --readonly is mutation-free (effectiveRootStorePolicy), so its
+//     SHARED hold opens the gate files read-only and never creates them (see
+//     workspacegate.Options.ReadOnly). A gate file that does not exist means
+//     nothing has ever been gated there, so the command proceeds holding
+//     nothing; an existing one is held SHARED like any other command's.
+//     Residual: on a workspace that has never been gated, a strict readonly
+//     command is invisible to a maintenance operation that starts while it
+//     runs. Every other command keeps creating the files, which is what makes
+//     it visible.
 //
 // Known residual (PR-B2 scope, documented honestly): the pre-chokepoint
 // DISCOVERY code paths (configfile.Load at main.go's early config probe and
@@ -178,6 +187,15 @@ func buildWorkspaceGateSet(beadsDir string, extraRoots ...string) ([]workspacega
 func acquireCommandWorkspaceGates(ctx context.Context, cmd *cobra.Command, beadsDir string) error {
 	exclusive := commandNeedsExclusiveGate(cmd)
 
+	// A restore replaces the store, so strict readonly refuses it before any gate
+	// file is created or the store is opened. Nothing is held yet, so the exit
+	// skips no release. Only readonlyMode is checked: CheckReadonly also answers a
+	// migration freeze, and a frozen restore keeps its place in the chokepoint's
+	// order.
+	if exclusive && readonlyMode {
+		CheckReadonly("backup restore")
+	}
+
 	// No workspace on disk: nothing to guard, and the store-open path will
 	// produce its own (better) "no database found" error. Gating here would
 	// scatter .gate.lock files into arbitrary directories users run bd in.
@@ -197,7 +215,9 @@ func acquireCommandWorkspaceGates(ctx context.Context, cmd *cobra.Command, beads
 	}
 
 	mode := workspacegate.Shared
-	opts := workspacegate.Options{}
+	// readonlyMode is already resolved here. Strict readonly promises not to
+	// mutate the workspace, so its SHARED hold must not create gate files.
+	opts := workspacegate.Options{ReadOnly: readonlyMode}
 	if exclusive {
 		mode = workspacegate.Exclusive
 		opts = exclusiveGateOptions("bd backup restore")

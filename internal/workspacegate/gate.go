@@ -118,6 +118,15 @@ type Options struct {
 	// effort, from the advisory sidecar). AcquireAll fires it at most
 	// once across the whole gate set.
 	OnWait func(holder string)
+	// ReadOnly makes a SHARED acquisition free of side effects, for commands
+	// that promise not to mutate the workspace (strict --readonly). The gate
+	// file is opened O_RDONLY and never created: a gate file that does not
+	// exist means nothing has ever been gated here (the reading ExclusiveHolder
+	// uses), so Acquire succeeds holding nothing. An existing file is held
+	// SHARED as usual, so maintenance still sees the holder and a live
+	// exclusive holder still turns it away. Ignored for Exclusive: a
+	// maintenance operation has to be able to create the file it locks.
+	ReadOnly bool
 }
 
 // Gate identifies one gate file. Construct via ForWorkspace or
@@ -342,6 +351,11 @@ func (h *Handle) Release() error {
 		return nil
 	}
 	h.once.Do(func() {
+		if h.f == nil {
+			// A ReadOnly acquisition of a gate file that does not exist:
+			// nothing was locked, so there is nothing to drop.
+			return
+		}
 		var errs []error
 		if h.mode == Exclusive {
 			// Remove the sidecar BEFORE unlocking: after the unlock a new
@@ -367,6 +381,9 @@ func (h *Handle) Release() error {
 // inherited by spawned children (Go opens files close-on-exec on Unix and
 // non-inheritable on Windows), so a dolt child outliving its bd parent
 // does not keep the gate held.
+//
+// A Shared acquisition with Options.ReadOnly never creates the gate file:
+// see that option for what it holds instead.
 func (g Gate) Acquire(ctx context.Context, mode Mode, opts Options) (*Handle, error) {
 	if g.path == "" {
 		return nil, errors.New("workspacegate: zero Gate; use ForWorkspace/ForPhysicalRoot")
@@ -387,8 +404,20 @@ func (g Gate) Acquire(ctx context.Context, mode Mode, opts Options) (*Handle, er
 	}
 	deadline := time.Now().Add(opts.Wait)
 
-	f, err := os.OpenFile(g.path, os.O_CREATE|os.O_RDWR, 0o600)
+	// An exclusive acquirer always has to create the file it locks, so
+	// ReadOnly applies to shared acquisition only.
+	readOnly := opts.ReadOnly && mode == Shared
+	flag := os.O_CREATE | os.O_RDWR
+	if readOnly {
+		flag = os.O_RDONLY
+	}
+	f, err := os.OpenFile(g.path, flag, 0o600)
 	if err != nil {
+		if readOnly && os.IsNotExist(err) {
+			// No gate file: nothing has ever gated here, so there is no
+			// holder to see and nothing to hold.
+			return &Handle{gate: g, mode: mode}, nil
+		}
 		return nil, fmt.Errorf("workspacegate: open gate %s: %w", g.path, err)
 	}
 

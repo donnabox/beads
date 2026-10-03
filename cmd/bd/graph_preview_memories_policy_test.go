@@ -30,7 +30,7 @@ func TestGraphPreviewMemoryDiscoveryConfiguredJSONFormatPrecedence(t *testing.T)
 	writeFile(t, filepath.Join(work, ".beads", "config.yaml"), []byte("json: true\n"))
 	t.Run("explicit-table", func(t *testing.T) {
 		out := graphPolicyCLI(t, bd, work, home, nil, "", "memories", "--format", "table")
-		if !strings.HasPrefix(out, "Memories (1; complete summaries)\n") || json.Valid([]byte(out)) || !strings.Contains(out, saved.Result.ID) || !strings.Contains(out, saved.Result.Version) || !strings.Contains(out, "Format plan") || !strings.Contains(out, "bd recall") || strings.Contains(out, body) {
+		if !strings.HasPrefix(out, "Memories (1):\n") || json.Valid([]byte(out)) || !strings.Contains(out, "beads/plan  Format plan") || strings.Contains(out, saved.Result.ID) || strings.Contains(out, saved.Result.Version) || !strings.Contains(out, "bd recall") || strings.Contains(out, body) {
 			t.Fatalf("configured JSON overrode or corrupted table: %q", out)
 		}
 	})

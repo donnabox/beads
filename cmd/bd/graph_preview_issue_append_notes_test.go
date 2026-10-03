@@ -139,7 +139,7 @@ func TestGraphPreviewIssueAppendNotesDispatchRefusals(t *testing.T) {
 		{"canonical-issue-route", "https://example.invalid/beads/work", []string{"--append-notes=\xff", "--unconditional"}, 2},
 		{"link-route", "links/context", []string{"--append-notes=Progress", "--unconditional"}, 5},
 		{"foreign-selector", "https://foreign.invalid/beads/work", []string{"--append-notes=Progress", "--unconditional"}, 2},
-		{"legacy-selector", "work-123", []string{"--append-notes=Progress", "--unconditional"}, 2},
+		{"unsupported-selector", "alias/work-123", []string{"--append-notes=Progress", "--unconditional"}, 2},
 		{"false-claim-dispatch", "beads/work", []string{"--append-notes=Progress", "--claim=false", "--unconditional"}, 2},
 		{"true-claim-dispatch", "beads/work", []string{"--append-notes=Progress", "--claim", "--unconditional"}, 5},
 	} {

@@ -41,6 +41,11 @@ func (s *Store) ListLinks(ctx context.Context, request LinksRequest) ([]LinkReco
 		if err := checkBinding(ctx, tx, s.options); err != nil {
 			return err
 		}
+		if request.TypeURL != "" {
+			if err := s.selectedLinkTypeInTx(ctx, tx, request.TypeURL); err != nil {
+				return err
+			}
+		}
 		if _, _, _, err := s.beadEndpointInTx(ctx, tx, request.BeadPath); err != nil {
 			return err
 		}
@@ -55,7 +60,7 @@ func (s *Store) ListLinks(ctx context.Context, request LinksRequest) ([]LinkReco
 }
 
 func (s *Store) validateLinkType(typ string, allowEmpty bool) error {
-	if (allowEmpty && typ == "") || typ == RelatedTypeURL(s.options.Binding.ScopeURL) || typ == DependencyTypeURL(s.options.Binding.ScopeURL) {
+	if (allowEmpty && typ == "") || IsInformationalTypeURL(s.ScopeURL(), typ) || typ == DependencyTypeURL(s.options.Binding.ScopeURL) {
 		return nil
 	}
 	return fmt.Errorf("%w: Link Type is not installed in this preview", storage.ErrValidation)
@@ -113,6 +118,9 @@ func (s *Store) incidentLinksInTx(ctx context.Context, tx *sql.Tx, request Links
 // Bead in one transaction. It neither replays deletion nor reuses identities.
 // Blocking Dependencies currently require canonical Link ID selection.
 func (s *Store) Unlink(ctx context.Context, request LinkDeleteRequest) (LinkDeleteResult, error) {
+	if request.DefaultInformationalSource && (request.ExpectedSourceRevision != "" || request.UnconditionalSource) {
+		return LinkDeleteResult{}, fmt.Errorf("%w: default informational source acceptance cannot accompany an explicit source guard", storage.ErrValidation)
+	}
 	if !utf8.ValidString(request.Actor) {
 		return LinkDeleteResult{}, fmt.Errorf("%w: actor must be UTF-8", storage.ErrValidation)
 	}
@@ -141,6 +149,11 @@ func (s *Store) Unlink(ctx context.Context, request LinkDeleteRequest) (LinkDele
 		if err := checkBinding(ctx, tx, s.options); err != nil {
 			return err
 		}
+		if request.TypeURL != "" {
+			if err := s.selectedLinkTypeInTx(ctx, tx, request.TypeURL); err != nil {
+				return err
+			}
+		}
 		path, err := s.selectUnlinkPathInTx(ctx, tx, request)
 		if err != nil {
 			return err
@@ -152,6 +165,11 @@ func (s *Store) Unlink(ctx context.Context, request LinkDeleteRequest) (LinkDele
 		if link.Type == DependencyTypeURL(s.options.Binding.ScopeURL) {
 			result, err = s.unlinkDependencyInTx(ctx, tx, path, link, request)
 			return err
+		}
+		// Only informational Links reach this point. Resolve the CLI default
+		// here, after transactional selection, without a whole-workspace read.
+		if request.DefaultInformationalSource {
+			request.UnconditionalSource = true
 		}
 		if err := checkRevisionGuard(request.ExpectedRevision, request.Unconditional, link.Revision, true, "Link"); err != nil {
 			return err
@@ -188,7 +206,7 @@ func (s *Store) Unlink(ctx context.Context, request LinkDeleteRequest) (LinkDele
 		if err != nil {
 			return err
 		}
-		if _, err := tx.ExecContext(ctx, `INSERT INTO graph_preview_versions(path,version,snapshot,actor) VALUES(?,?,?,?)`, path, deletionRevision, snapshot, request.Actor); err != nil {
+		if err := insertPreviewVersionInTx(ctx, tx, path, deletionRevision, snapshot, request.Actor); err != nil {
 			return err
 		}
 		if err := s.afterStage("link-retained"); err != nil {
@@ -270,7 +288,7 @@ func (s *Store) deletedLinkErrorInTx(ctx context.Context, tx *sql.Tx, path strin
 	if json.Unmarshal(previous, &link) != nil || link.ID != tombstone.ID || link.Type != typ || link.Revision != tombstone.PreviousVersion || link.Version != tombstone.PreviousVersion {
 		return fmt.Errorf("%w: invalid previous Link state", ErrInvalidStore)
 	}
-	if err := s.validateVersionLink(link, previous, previousActor); err != nil {
+	if err := s.validateVersionLink(ctx, tx, link, previous, previousActor); err != nil {
 		return err
 	}
 	var count int
@@ -287,7 +305,13 @@ func (s *Store) deletedLinkErrorInTx(ctx context.Context, tx *sql.Tx, path strin
 // mappings before a join can hide them as an apparently complete collection.
 func (s *Store) checkLinkMappingsInTx(ctx context.Context, tx *sql.Tx) error {
 	var invalidTypes int
-	if err := tx.QueryRowContext(ctx, `SELECT COUNT(*) FROM graph_preview_catalog WHERE resource_kind='link' AND allocation_state='live' AND ((backing='informational' AND type_url<>?) OR (backing='dependency' AND type_url<>?))`, RelatedTypeURL(s.options.Binding.ScopeURL), DependencyTypeURL(s.options.Binding.ScopeURL)).Scan(&invalidTypes); err != nil {
+	ids, err := s.installedInformationalTypes(ctx, tx)
+	if err != nil {
+		return err
+	}
+	placeholders, args := informationalTypeSQL(ids)
+	args = append(args, DependencyTypeURL(s.ScopeURL()))
+	if err := tx.QueryRowContext(ctx, `SELECT COUNT(*) FROM graph_preview_catalog WHERE resource_kind='link' AND allocation_state='live' AND ((backing='informational' AND type_url NOT IN (`+placeholders+`)) OR (backing='dependency' AND type_url<>?))`, args...).Scan(&invalidTypes); err != nil {
 		return err
 	}
 	if invalidTypes != 0 {

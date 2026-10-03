@@ -3,9 +3,14 @@
 package main
 
 import (
+	"encoding/json"
+	"errors"
 	"fmt"
 	"os"
+	"os/exec"
 	"path/filepath"
+	"regexp"
+	"sort"
 	"strings"
 	"testing"
 
@@ -24,10 +29,11 @@ import (
 // With history on, recording a version runs in the same transaction as the write, so a write
 // that introduces a number outside the I-JSON exact-integer range already fails atomically.
 // What that cannot help is a row that holds such a number BEFORE the switch is turned on:
-// written while history was off, or through a path that does not mint (bd sql, an import).
-// Once history is on, every later write to that row would fail. The switch therefore checks
-// first, with the same function the mint runs, and refuses to turn history on while any
-// issue the mint would version holds a value it would refuse.
+// written while history was off, or through a path that does not mint (bd sql, a pull from a
+// clone that had history off). Once history is on, every later write to that row would fail
+// if the row participates in history. The switch therefore checks first, with the same
+// function the mint runs, and refuses to turn history on while any issue the mint would
+// version holds a value it would refuse.
 //
 // What this pins, end to end and in a database of its own:
 //   - the refusal exits non-zero and prints the count, the ids and the remedy,
@@ -209,5 +215,222 @@ func TestEmbeddedVersionedHistorySetManyRefusesUnversionableMetadata(t *testing.
 	}
 	if got := strings.TrimSpace(bdConfig(t, bd, dir, "get", "vsm.marker")); got != "1" {
 		t.Fatalf("after fixing the row the batch did not store its other pair: config get vsm.marker says %q", got)
+	}
+}
+
+// gateIDFromCreateJSON reads the id out of `bd gate create --json` output, which may carry
+// warnings ahead of the object.
+func gateIDFromCreateJSON(t *testing.T, out string) string {
+	t.Helper()
+	start := strings.Index(out, "{")
+	if start < 0 {
+		t.Fatalf("no JSON object in `bd gate create --json` output:\n%s", out)
+	}
+	var created struct {
+		ID string `json:"id"`
+	}
+	if err := json.NewDecoder(strings.NewReader(out[start:])).Decode(&created); err != nil || created.ID == "" {
+		t.Fatalf("parsing `bd gate create --json` output: %v\n%s", err, out)
+	}
+	return created.ID
+}
+
+// createTimerGate creates a timer gate that blocks one issue, through the real command, so what
+// reaches the store is what a person can write.
+func createTimerGate(t *testing.T, bd, dir, blocks, timeout string) string {
+	t.Helper()
+	return gateIDFromCreateJSON(t, bdRunOK(t, bd, dir, "gate", "create", "--type=timer", "--blocks", blocks, "--timeout", timeout, "--json"))
+}
+
+// idsNamedIn returns the distinct issue ids with the given prefix that a command's output names.
+func idsNamedIn(out, prefix string) map[string]bool {
+	ids := map[string]bool{}
+	for _, id := range regexp.MustCompile(regexp.QuoteMeta(prefix)+`-[0-9a-z]+`).FindAllString(out, -1) {
+		ids[id] = true
+	}
+	return ids
+}
+
+func sortedIDSet(set map[string]bool) []string {
+	ids := make([]string, 0, len(set))
+	for id := range set {
+		ids = append(ids, id)
+	}
+	sort.Strings(ids)
+	return ids
+}
+
+// writeRefusedWithHistoryOn reports whether an ordinary write to the issue is refused when the
+// process records versions because its ENVIRONMENT says so. That plane does not pass through the
+// pre-enable scan, which makes it the way to ask the mint itself what it would refuse.
+func writeRefusedWithHistoryOn(t *testing.T, bd, dir, id string) bool {
+	t.Helper()
+	cmd := exec.Command(bd, "update", id, "--notes", "touched with history on")
+	cmd.Dir = dir
+	cmd.Env = append(bdEnv(dir), vhEnvVar+"=1")
+	out, err := cmd.CombinedOutput()
+	if err == nil {
+		return false
+	}
+	var exitErr *exec.ExitError
+	if !errors.As(err, &exitErr) {
+		t.Fatalf("bd update %s failed without an exit code: %v\n%s", id, err, out)
+	}
+	if !strings.Contains(string(out), "I-JSON") {
+		t.Fatalf("bd update %s failed, but not with the mint's refusal of a number outside the I-JSON range:\n%s", id, out)
+	}
+	return true
+}
+
+// createWithHistoryOn creates an issue in a process that records versions because its ENVIRONMENT
+// says so, which makes the row participate in history from its first write. A row created while
+// history is off does not participate: design §16.2b's write fence skips an update-shaped write to it.
+func createWithHistoryOn(t *testing.T, bd, dir string, args ...string) string {
+	t.Helper()
+	cmd := exec.Command(bd, append([]string{"create", "--silent"}, args...)...)
+	cmd.Dir = dir
+	cmd.Env = append(bdEnv(dir), vhEnvVar+"=1")
+	out, err := cmd.Output()
+	if err != nil {
+		var exitErr *exec.ExitError
+		if errors.As(err, &exitErr) {
+			t.Fatalf("bd create --silent %s with history on failed: %v\n%s", strings.Join(args, " "), err, exitErr.Stderr)
+		}
+		t.Fatalf("bd create --silent %s with history on failed: %v", strings.Join(args, " "), err)
+	}
+	return strings.TrimSpace(string(out))
+}
+
+// TestEmbeddedVersionedHistorySwitchRefusesAnUnrecordableGateTimeout drives the REAL
+// `bd config set versioned-history.enabled true` against a store that holds gates whose timeout a
+// version could not record.
+//
+// A gate's timeout is a time.Duration, which a version holds as a count of nanoseconds, so one past
+// 2^53-1 ns (about 104.25 days) is a number outside the I-JSON exact-integer range. Nothing stops
+// `bd gate create --timeout 2600h` while history is off, and once history is on every write to a
+// participating gate, a close included, is refused. A scan that read only metadata cleared the
+// switch over it.
+//
+// What this pins, end to end and in a database of its own:
+//   - the refusal names each gate past the range, open or closed, and the field the number was
+//     found in ("timeout"), and does not name a gate that is in range,
+//   - it offers the remedy for the field that is wrong: removing the gate, not a metadata edit, until
+//     an issue with a number in its metadata is there too,
+//   - it writes NOTHING: the setting is still off afterwards,
+//   - the scan names every offender, because it cannot see participation: a row written while
+//     history was off is a legacy row, which design §16.2b's write fence makes the mint skip, so
+//     with history on through the environment, a plane the scan does not guard, no write to one is
+//     refused. The scan can only refuse more than the mint does,
+//   - for a row that participates in history, the scan and the mint AGREE: the issue whose next
+//     write is refused is exactly the one the scan named,
+//   - once the remedies are applied, the switch turns on.
+func TestEmbeddedVersionedHistorySwitchRefusesAnUnrecordableGateTimeout(t *testing.T) {
+	if os.Getenv("BEADS_TEST_EMBEDDED_DOLT") != "1" {
+		t.Skip("embedded dolt integration tests are not enabled")
+	}
+	// The environment can only turn recording on and would make a passing run prove nothing
+	// about the store's own setting, so clear it. No t.Parallel: t.Setenv is incompatible.
+	t.Setenv(vhEnvVar, "")
+
+	bd := buildEmbeddedBD(t)
+	dir, _, _ := bdInit(t, bd, "--prefix", "vsg")
+
+	blocked := bdCreateSilent(t, bd, dir, "blocked by three gates")
+	clean := bdCreateSilent(t, bd, dir, "clean")
+	// History is off, so nothing refuses a gate whose timeout a version could not record.
+	overlong := createTimerGate(t, bd, dir, blocked, "2600h")
+	inRange := createTimerGate(t, bd, dir, blocked, "2500h")
+	closedOverlong := createTimerGate(t, bd, dir, blocked, "8760h")
+	bdRunOK(t, bd, dir, "gate", "resolve", closedOverlong)
+
+	out, code := bdRunFailCode(t, bd, dir, "config", "set", "versioned-history.enabled", "true")
+	if code == 0 {
+		t.Fatalf("enabling versioned history over a gate whose timeout is past the range exited 0; out=%s", out)
+	}
+	for name, id := range map[string]string{"the open gate past the range": overlong, "the closed gate past the range": closedOverlong} {
+		if !strings.Contains(out, id) {
+			t.Errorf("the refusal does not name %s (%s), whose timeout a version could not record:\n%s", name, id, out)
+		}
+	}
+	for name, id := range map[string]string{"the gate in range": inRange, "the issue the gates block": blocked, "the clean issue": clean} {
+		if strings.Contains(out, id) {
+			t.Errorf("the refusal names %s (%s), which the mint would record:\n%s", name, id, out)
+		}
+	}
+	for _, want := range []string{"2 issues", `"timeout"`, "I-JSON", "bd delete <id> --force", "only previews", "unblocks anything it was blocking"} {
+		if !strings.Contains(out, want) {
+			t.Errorf("the refusal does not contain %q, so it does not say what is wrong or how to fix it:\n%s", want, out)
+		}
+	}
+	if strings.Contains(out, "--unset-metadata") {
+		t.Errorf("the refusal offers a metadata edit although nothing holds a number in its metadata:\n%s", out)
+	}
+	if got := strings.TrimSpace(bdConfig(t, bd, dir, "get", "versioned-history.enabled")); strings.HasPrefix(got, "true") {
+		t.Fatalf("the refused `config set ... true` wrote the setting anyway: config get says %q", got)
+	}
+
+	// Add the other kind of offender. The refusal now has two fields to fix and offers a remedy for each.
+	holdsNumber := bdCreateSilent(t, bd, dir, "holds a nanosecond timestamp", "--metadata", `{"ts":1727000000000000000}`)
+	out, _ = bdRunFailCode(t, bd, dir, "config", "set", "versioned-history.enabled", "true")
+	for _, want := range []string{"3 issues", `"timeout"`, `"metadata"`, "bd delete <id> --force", "only previews", "unblocks anything it was blocking", "--unset-metadata"} {
+		if !strings.Contains(out, want) {
+			t.Errorf("the refusal over a gate and a metadata number does not contain %q:\n%s", want, out)
+		}
+	}
+
+	// The scan reads rows, not participation, so it names every row that holds a value the mint would
+	// refuse. Ask the mint, through a process that records because its environment says so (a plane the
+	// scan does not guard), what a write to each row does. Everything so far was written while history
+	// was off, so every row is a legacy row, and design §16.2b's write fence skips an update-shaped write
+	// to one before the refusal could run: none of these writes is refused, offenders included. That is
+	// the scan's deliberate over-approximation, in the safe direction: it can only refuse more than the
+	// mint does.
+	legacy := []string{blocked, clean, overlong, inRange, closedOverlong, holdsNumber}
+	for _, id := range legacy {
+		if writeRefusedWithHistoryOn(t, bd, dir, id) {
+			t.Errorf("the mint refused a write to %s, a row written while history was off: the write fence should have skipped it", id)
+		}
+	}
+	if got, want := strings.Join(sortedIDSet(idsNamedIn(out, "vsg")), ","), strings.Join(sortedIDSet(map[string]bool{overlong: true, closedOverlong: true, holdsNumber: true}), ","); got != want {
+		t.Errorf("the scan named %s, want exactly the offenders %s", got, want)
+	}
+
+	// A row participates in history when it was created while history was on. Create two that way, in
+	// range, then take one of them out of range while history is off, which nothing refuses. For a row
+	// that participates the scan and the mint agree: the offender is named and every write to it is
+	// refused, and the clean one is neither.
+	participatingClean := createWithHistoryOn(t, bd, dir, "participates, clean", "--metadata", `{"ts":1}`)
+	participating := createWithHistoryOn(t, bd, dir, "participates, then holds a nanosecond timestamp", "--metadata", `{"ts":1}`)
+	bdRunOK(t, bd, dir, "update", participating, "--metadata", `{"ts":1727000000000000000}`)
+
+	out, _ = bdRunFailCode(t, bd, dir, "config", "set", "versioned-history.enabled", "true")
+	named := idsNamedIn(out, "vsg")
+	namedParticipating := map[string]bool{}
+	refused := map[string]bool{}
+	for _, id := range []string{participatingClean, participating} {
+		if named[id] {
+			namedParticipating[id] = true
+		}
+		if writeRefusedWithHistoryOn(t, bd, dir, id) {
+			refused[id] = true
+		}
+	}
+	if got, want := strings.Join(sortedIDSet(namedParticipating), ","), strings.Join(sortedIDSet(refused), ","); got != want {
+		t.Errorf("of the rows that participate, the scan named %s but the mint refused a write to %s: they must be the same issues", got, want)
+	}
+	if got := strings.Join(sortedIDSet(refused), ","); got != participating {
+		t.Errorf("the mint refused a write to %v, want exactly %s", sortedIDSet(refused), participating)
+	}
+	if got, want := strings.Join(sortedIDSet(named), ","), strings.Join(sortedIDSet(map[string]bool{overlong: true, closedOverlong: true, holdsNumber: true, participating: true}), ","); got != want {
+		t.Errorf("the scan named %s, want the three offenders written while history was off and the participating one, %s", got, want)
+	}
+
+	// The remedies the refusal names, then the switch turns on.
+	bdRunOK(t, bd, dir, "delete", overlong, closedOverlong, "--force")
+	bdRunOK(t, bd, dir, "update", holdsNumber, "--unset-metadata", "ts")
+	bdRunOK(t, bd, dir, "update", participating, "--unset-metadata", "ts")
+	bdConfig(t, bd, dir, "set", "versioned-history.enabled", "true")
+	if got := strings.TrimSpace(bdConfig(t, bd, dir, "get", "versioned-history.enabled")); !strings.HasPrefix(got, "true") {
+		t.Fatalf("after applying the remedies the switch did not turn on: config get says %q", got)
 	}
 }

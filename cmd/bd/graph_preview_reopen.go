@@ -19,7 +19,7 @@ func runGraphPreviewReopen(cmd *cobra.Command, args []string) error {
 		return err
 	}
 	if len(args) != 1 {
-		return graphFailure("invalid_selector", "graph reopen requires one canonical beads/PATH", 2)
+		return graphFailure("invalid_selector", "graph reopen requires one Bead ID or beads/PATH", 2)
 	}
 	path, err := graphPreviewResourcePath(graphPreviewConfig.GraphScopeURL, args[0])
 	if err != nil {

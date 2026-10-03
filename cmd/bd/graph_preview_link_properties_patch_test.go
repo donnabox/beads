@@ -30,7 +30,7 @@ func TestGraphPreviewLinkPropertiesPatchRequest(t *testing.T) {
 		{"literal-dual-guard", raw, []string{"--if-revision=link-old", "--if-source-revision=source-old"}, "link-old", "source-old", false, false},
 		{"file-Link-unconditional", "@" + file, []string{"--unconditional", "--if-source-revision=source-old"}, "", "source-old", true, false},
 		{"stdin-source-unconditional", "@-", []string{"--if-revision=link-old", "--unconditional-source"}, "link-old", "", false, true},
-		{"unowned-source-no-guard", raw, []string{"--unconditional"}, "", "", true, false},
+		{"default-source-unconditional", raw, []string{"--unconditional"}, "", "", true, true},
 		{"both-unconditional", raw, []string{"--unconditional", "--unconditional-source"}, "", "", true, true},
 	} {
 		t.Run(tc.name, func(t *testing.T) {
