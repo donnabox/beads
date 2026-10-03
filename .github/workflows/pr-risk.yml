@@ -37,7 +37,7 @@ jobs:
     # F3: same-repo PRs and merge_group get the org's Blacksmith pool; forks,
     # Dependabot and any other event stay GitHub-hosted. This job restores no
     # GitHub-saved cache.
-    runs-on: ${{ (github.event_name == 'merge_group' || (github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository && github.actor != 'dependabot[bot]')) && 'blacksmith-2vcpu-ubuntu-2404' || 'ubuntu-latest' }}
+    runs-on: ${{ github.repository_owner == 'gastownhall' && (github.event_name == 'merge_group' || (github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository && github.actor != 'dependabot[bot]')) && 'blacksmith-2vcpu-ubuntu-2404' || 'ubuntu-latest' }}
     # F3: now on Blacksmith for same-repo PRs; a hang used to burn only the
     # default 360 minutes of a free GitHub-hosted runner, now Blacksmith
     # minutes too.
@@ -101,7 +101,7 @@ jobs:
     # it anything. Must stay byte-identical to pr.yml's copy
     # (TestPRRiskBazelCoverageJob) and to the TestSameRepoBlacksmithRunners
     # pin.
-    runs-on: ${{ (github.event_name == 'merge_group' || (github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository && github.actor != 'dependabot[bot]')) && 'blacksmith-2vcpu-ubuntu-2404' || 'ubuntu-latest' }}
+    runs-on: ${{ github.repository_owner == 'gastownhall' && (github.event_name == 'merge_group' || (github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository && github.actor != 'dependabot[bot]')) && 'blacksmith-2vcpu-ubuntu-2404' || 'ubuntu-latest' }}
     timeout-minutes: 5
     outputs:
       embedded: ${{ steps.decide.outputs.embedded }}
@@ -573,7 +573,7 @@ jobs:
     # GitHub-saved cache. Must match the TestSameRepoBlacksmithRunners pin;
     # the gate's NAME must never change (ruleset requires exactly "PR Risk
     # Gate / Required").
-    runs-on: ${{ (github.event_name == 'merge_group' || (github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository && github.actor != 'dependabot[bot]')) && 'blacksmith-2vcpu-ubuntu-2404' || 'ubuntu-latest' }}
+    runs-on: ${{ github.repository_owner == 'gastownhall' && (github.event_name == 'merge_group' || (github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository && github.actor != 'dependabot[bot]')) && 'blacksmith-2vcpu-ubuntu-2404' || 'ubuntu-latest' }}
     # F3: now on Blacksmith for same-repo PRs; a hang used to burn only the
     # default 360 minutes of a free GitHub-hosted runner, now Blacksmith
     # minutes too.
