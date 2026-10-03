@@ -204,10 +204,10 @@ const idsPresentBatch = 400
 
 // idsPresent returns which of ids exist in the oracle's issues table as of ref, and
 // the ids it refused to look up. The ids come out of the oracle's own rows, so each
-// is data, not a value the harness chose: it is checked here, where it is put into
-// a query, with issueops.ValidateRef as every other id and ref the harness queries
-// by is, and one that fails is never sent to dolt. A refused id is not present; the
-// caller says why.
+// is data, not a value the harness chose. Each is checked here, where it is put
+// into a query, with issueops.ValidateRef, the same check every other id and ref
+// the harness queries by passes, and one that fails is never sent to dolt. A refused
+// id is not present; the caller says why.
 func idsPresent(ctx context.Context, dataDir, ref string, ids []string) (map[string]bool, []string, error) {
 	present := make(map[string]bool, len(ids))
 	var refused []string

@@ -484,7 +484,7 @@ func TestB3ExternalDependency(t *testing.T) {
 
 // B3.HostileEdgeTarget: an edge target is an id the plan reads out of the oracle's
 // own dependency rows, so it is data, and bd accepts any id with a hyphen in it. An
-// id that carries SQL must never reach a query. This one ends in a backslash-quote
+// id that carries SQL must never reach a query. This one carries a backslash-quote
 // pair, which dolt reads as an escaped quote inside a string literal, so a value
 // that only had its quotes doubled would end the literal early and run the next
 // statement. The plan withholds the issue that points at it and says why, the rest
@@ -674,12 +674,11 @@ func TestAssembleWithholdingCascades(t *testing.T) {
 	}
 }
 
-// The cascade does not depend on the order the dependency rows arrive in. Dolt
-// returns them ordered by owner id, so a chain laid out against that order is the
-// usual case: here a-1 points at b-2, b-2 at c-3 and c-3 at m-9, which nothing
-// holds. One pass over the rows in this order withholds only c-3; withholding b-2
-// and then a-1 takes the loop running until nothing more changes, whichever row
-// comes first.
+// The cascade does not depend on the order the dependency rows arrive in. Here a-1
+// points at b-2, b-2 at c-3 and c-3 at m-9, which nothing holds, and the row that
+// starts the cascade can come first or last. With it last, as in id order, one pass
+// over the rows withholds only c-3; b-2 and then a-1 follow because the loop runs
+// until nothing more changes.
 func TestAssembleWithholdingCascadesInAnyRowOrder(t *testing.T) {
 	issues := []diffRow{
 		row("diff_type", "added", "to_id", "a-1", "to_title", "Points at b-2"),
