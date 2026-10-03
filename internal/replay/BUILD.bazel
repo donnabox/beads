@@ -4,7 +4,10 @@ load("@rules_go//go:def.bzl", "go_test")
 # sandbox runfiles: this tree plus the thin command wrappers under scripts/.
 go_test(
     name = "replay_test",
-    srcs = ["layout_test.go"],
+    srcs = [
+        "layout_test.go",
+        "pinnedbd_test.go",
+    ],
     data = [
         ":tree_go_srcs",
         "//scripts/driver-core:go_srcs",

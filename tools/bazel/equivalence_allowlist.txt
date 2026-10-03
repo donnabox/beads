@@ -16,6 +16,8 @@
 # CLI from source and the scenario tests read the files shipped next to the
 # sources; neither is in the Bazel sandbox, so they skip there.
 scripts/mutation-translator TestB1MainsCharacterised_TranslatorDryRun skip  # builds the CLI from source; runs under go test
+scripts/mutation-translator TestB3ExecuteNeedsAnExplicitBd skip  # builds the CLI from source; runs under go test
+scripts/mutation-translator TestB3PinnedBdOnTheCommandLine skip  # builds the CLI from source; runs under go test
 scripts/oracle-query TestB1MainsCharacterised_OracleCLI skip  # builds the CLI from source; runs under go test
 scripts/oracle-query TestB1OneDenyList skip  # builds the CLI from source; runs under go test
 scripts/scenarios TestPackageDoesNotEmbedOrListScenarios skip  # reads the scenario files shipped next to the sources; runs under go test

@@ -1,6 +1,7 @@
 // Command mutation-translator classifies, for one issue, the bd CLI
-// invocation(s) that replay a historical dolt_log commit's row-diff, and either
-// prints them (--dry-run) or executes them against a working clone. It is a thin
+// invocation(s) that replay a historical dolt_log commit step's row-diff, and
+// either prints them (--dry-run) or executes them against a working clone
+// through the bd binary named by --bd. It never looks bd up on PATH. It is a thin
 // wrapper over internal/replay/translate, which holds all of the logic.
 package main
 
@@ -22,10 +23,11 @@ func main() {
 	to := flag.String("to", "", "target commit hash, inclusive (required)")
 	issueID := flag.String("issue", "", "issue ID to classify and replay (required)")
 	dryRun := flag.Bool("dry-run", false, "classify and print actions without executing them")
+	bdPath := flag.String("bd", "", "bd binary that executes the actions (required unless --dry-run; never looked up on PATH)")
 	flag.Parse()
 
-	if *dataDir == "" || *workDir == "" || *from == "" || *to == "" || *issueID == "" {
-		fmt.Fprintln(os.Stderr, "usage: mutation-translator --data-dir DIR --work-dir DIR --from SHA --to SHA --issue ID [--dry-run]")
+	if *dataDir == "" || *workDir == "" || *from == "" || *to == "" || *issueID == "" || (!*dryRun && *bdPath == "") {
+		fmt.Fprintln(os.Stderr, "usage: mutation-translator --data-dir DIR --work-dir DIR --from SHA --to SHA --issue ID (--dry-run | --bd PATH)")
 		os.Exit(2)
 	}
 
@@ -40,7 +42,7 @@ func main() {
 			fmt.Println(strings.Join(a.Argv, " "))
 			continue
 		}
-		if err := translate.Execute(ctx, *workDir, a); err != nil {
+		if err := translate.ExecuteWith(ctx, *bdPath, *workDir, a); err != nil {
 			log.Fatalf("execute %v: %v", a.Argv, err)
 		}
 	}

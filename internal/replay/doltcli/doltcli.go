@@ -266,11 +266,18 @@ func RowMap(header []string, row []Cell) map[string]string {
 	return m
 }
 
+// sqlEscaper doubles the two characters that mean something inside a
+// single-quoted dolt string literal. dolt reads a backslash there as an escape, so
+// a lone one before a doubled quote would escape the first of the pair and end the
+// literal on the second.
+var sqlEscaper = strings.NewReplacer(`\`, `\\`, `'`, `''`)
+
 // SQLQuote wraps a value in single quotes for embedding in a dolt sql -q
-// statement, doubling any quote inside it. dolt sql -q has no bind-parameter
-// API, so callers validate refs and ids before they get here.
+// statement, doubling any quote or backslash inside it. dolt sql -q has no
+// bind-parameter API, so callers still validate refs and ids before they get
+// here; this keeps a value they miss from ending the literal.
 func SQLQuote(s string) string {
-	return "'" + strings.ReplaceAll(s, "'", "''") + "'"
+	return "'" + sqlEscaper.Replace(s) + "'"
 }
 
 // servedDataDir returns dir or its nearest ancestor that a dolt sql-server is
