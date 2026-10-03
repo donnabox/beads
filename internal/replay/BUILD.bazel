@@ -35,6 +35,7 @@ filegroup(
         "//internal/replay/oracle:go_srcs",
         "//internal/replay/replaytest:go_srcs",
         "//internal/replay/scenarios/compatwindow:go_srcs",
+        "//internal/replay/scenarios/lostupdate:go_srcs",
         "//internal/replay/translate:go_srcs",
     ],
     visibility = ["//:__subpackages__"],
