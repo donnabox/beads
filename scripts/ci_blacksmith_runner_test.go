@@ -29,14 +29,14 @@ import (
 // pr.yml's and pr-risk.yml's bazel-coverage/ci-gate/detect-ci-tier jobs - a
 // package-level const so every test that needs it (TestSameRepoBlacksmithRunners,
 // TestPRRiskBazelCoverageJob, ...) reads the one literal.
-const sameRepoBlacksmith2vcpu = "${{ (github.event_name == 'merge_group' || (github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository && github.actor != 'dependabot[bot]')) && 'blacksmith-2vcpu-ubuntu-2404' || 'ubuntu-latest' }}"
+const sameRepoBlacksmith2vcpu = "${{ github.repository_owner == 'gastownhall' && (github.event_name == 'merge_group' || (github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository && github.actor != 'dependabot[bot]')) && 'blacksmith-2vcpu-ubuntu-2404' || 'ubuntu-latest' }}"
 
 // F7a: the same same-repo expression at 4 vCPU and 8 vCPU, for jobs sized
 // larger than the 2 vCPU default (check-doc-flags, pr-policy-wrapper,
 // pr-risk.yml's test-nix at 4 vCPU; check-release-target-cross-compilation at
 // 8 vCPU). F7c's advisory workflows also use the 4 vCPU size.
-const sameRepoBlacksmith4vcpu = "${{ (github.event_name == 'merge_group' || (github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository && github.actor != 'dependabot[bot]')) && 'blacksmith-4vcpu-ubuntu-2404' || 'ubuntu-latest' }}"
-const sameRepoBlacksmith8vcpu = "${{ (github.event_name == 'merge_group' || (github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository && github.actor != 'dependabot[bot]')) && 'blacksmith-8vcpu-ubuntu-2404' || 'ubuntu-latest' }}"
+const sameRepoBlacksmith4vcpu = "${{ github.repository_owner == 'gastownhall' && (github.event_name == 'merge_group' || (github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository && github.actor != 'dependabot[bot]')) && 'blacksmith-4vcpu-ubuntu-2404' || 'ubuntu-latest' }}"
+const sameRepoBlacksmith8vcpu = "${{ github.repository_owner == 'gastownhall' && (github.event_name == 'merge_group' || (github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository && github.actor != 'dependabot[bot]')) && 'blacksmith-8vcpu-ubuntu-2404' || 'ubuntu-latest' }}"
 
 // --- a minimal GitHub Actions expression evaluator -------------------------
 //
@@ -351,6 +351,7 @@ func TestSameRepoBlacksmithExpressionSemantics(t *testing.T) {
 			"github.event_name":                             c.event,
 			"github.event.pull_request.head.repo.full_name": c.headRepo,
 			"github.repository":                             ownRepo,
+			"github.repository_owner":                       "gastownhall",
 			"github.actor":                                  c.actor,
 		}
 		for label, expr := range consts {
