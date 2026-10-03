@@ -47,6 +47,35 @@ func b2Edge(id, issueID, typ, target string) oracle.Row {
 		"metadata", "{}", "thread_id", nil, "depends_on_issue_id", target, "depends_on_wisp_id", nil, "depends_on_external", nil)
 }
 
+// b2EdgeMetadata is b2Edge with its metadata cell replaced: a string is the
+// stored document, nil is SQL NULL.
+func b2EdgeMetadata(meta any) oracle.Row {
+	row := b2Edge("d1", "x-1", "blocks", "x-2")
+	for i, col := range row.Columns {
+		if col != "metadata" {
+			continue
+		}
+		switch v := meta.(type) {
+		case nil:
+			row.Cells[i] = doltcli.Cell{Null: true}
+		case string:
+			row.Cells[i] = doltcli.Cell{Text: v}
+		default:
+			panic("b2EdgeMetadata: value must be a string or nil")
+		}
+	}
+	return row
+}
+
+// b2RowWithMetadataAt is b2Row of kv with a metadata cell inserted before the
+// pair at index pos, so a test can put the column first, in the middle or last.
+func b2RowWithMetadataAt(pos int, meta any, kv ...any) oracle.Row {
+	args := append([]any{}, kv[:2*pos]...)
+	args = append(args, "metadata", meta)
+	args = append(args, kv[2*pos:]...)
+	return b2Row(args...)
+}
+
 // b2Issue is an issues row carrying a few compared columns and a few stamps.
 func b2Issue(id string, extra ...any) oracle.Row {
 	kv := []any{"id", id, "title", "A title", "status", "open", "notes", nil,
@@ -191,6 +220,58 @@ func TestB2IntGate(t *testing.T) {
 			b2View(b2Issue("x-1", "title", "9007199254740992")))
 		if err != nil || res.Matched || res.Uncomparable() {
 			t.Errorf("(matched=%v, uncomparable=%v, err=%v), want a plain mismatch: only JSON documents are gated", res.Matched, res.Uncomparable(), err)
+		}
+	})
+}
+
+// B2.IntGateOneSided: the number gate reads both payloads, so a number outside
+// the exact range makes a pair uncomparable whichever side holds it. The first
+// two pairs are ones double rounding would call equal if the gate looked at one
+// side only (the oversized number canonicalizes onto the exact one); the third
+// shows the gate also reaches a number nested in a document.
+func TestB2IntGateOneSided(t *testing.T) {
+	uncomparable := func(t *testing.T, oracleJSON, candidateJSON string) {
+		t.Helper()
+		res, err := Compare([]byte(oracleJSON), []byte(candidateJSON))
+		if err != nil {
+			t.Fatalf("Compare: %v, want an uncomparable result and no error (the run continues)", err)
+		}
+		if res.Matched {
+			t.Fatal("Matched = true for a pair holding a number outside the exact range")
+		}
+		if res.Mismatch == nil || res.Mismatch.Category != "number-fidelity" {
+			t.Fatalf("Mismatch = %+v, want category number-fidelity", res.Mismatch)
+		}
+		if string(res.Mismatch.ExpectedJSON) != oracleJSON || string(res.Mismatch.ActualJSON) != candidateJSON {
+			t.Errorf("payloads = (%s, %s), want both verbatim (%s, %s)", res.Mismatch.ExpectedJSON, res.Mismatch.ActualJSON, oracleJSON, candidateJSON)
+		}
+		if !res.Uncomparable() {
+			t.Error("Uncomparable() = false, want true so the run can count it separately")
+		}
+	}
+	for _, p := range []struct{ name, exact, oversized string }{
+		{"an integer past 2^53", `{"n":9007199254740992}`, `{"n":9007199254740993}`},
+		{"a decimal that rounds onto an exact integer", `{"n":9007199254740994}`, `{"n":9007199254740993.5}`},
+		{"a number nested in a document", `{"metadata":{"ts":1}}`, `{"metadata":{"ts":1727000000000000123}}`},
+	} {
+		t.Run(p.name+", held by the oracle side", func(t *testing.T) { uncomparable(t, p.oversized, p.exact) })
+		t.Run(p.name+", held by the candidate side", func(t *testing.T) { uncomparable(t, p.exact, p.oversized) })
+	}
+	t.Run("through views, a JSON column holding such a number is uncomparable on either side", func(t *testing.T) {
+		exact, oversized := `{"n":9007199254740992}`, `{"n":9007199254740993}`
+		for _, c := range []struct{ name, oracleMeta, candidateMeta string }{
+			{"oracle side", oversized, exact},
+			{"candidate side", exact, oversized},
+		} {
+			res, _, err := CompareViews(
+				b2View(b2Issue("x-1", "metadata", c.oracleMeta)),
+				b2View(b2Issue("x-1", "metadata", c.candidateMeta)))
+			if err != nil {
+				t.Fatalf("%s: CompareViews: %v", c.name, err)
+			}
+			if res.Matched || !res.Uncomparable() {
+				t.Errorf("%s: (matched=%v, uncomparable=%v), want uncomparable", c.name, res.Matched, res.Uncomparable())
+			}
 		}
 	})
 }
@@ -422,6 +503,174 @@ func TestB2PayloadShape(t *testing.T) {
 	}
 }
 
+// B2.JSONColumnNull: a JSON column can hold SQL NULL or the document null. They
+// are different stored values, and rendering both as null called them equal. A
+// SQL NULL in a JSON column is left out of the payload and the document null is
+// the member with the value null; every other column still renders SQL NULL as
+// null, so SQL NULL and the text null stay apart there too.
+func TestB2JSONColumnNull(t *testing.T) {
+	// A carrier puts one metadata cell (nil is SQL NULL, a string is the stored
+	// document) into a JSON column of one table. section picks the JSON object
+	// that holds the member out of a decoded payload. wantCategory is what a
+	// mismatch in that table is called: a difference in the dependencies section is
+	// a dep-edge, and the pair needs no category of its own either way.
+	carriers := []struct {
+		name         string
+		wantCategory string
+		kv           []any // the other columns the position test puts around metadata
+		view         func(meta any) *oracle.View
+		viewOfRow    func(row oracle.Row) *oracle.View
+		section      func(doc map[string]any) map[string]any
+	}{
+		{
+			name:         "issues.metadata",
+			wantCategory: "unclassified",
+			kv:           []any{"id", "x-1", "title", "T"},
+			view:         func(meta any) *oracle.View { return b2View(b2Issue("x-1", "metadata", meta)) },
+			viewOfRow:    func(row oracle.Row) *oracle.View { return b2View(row) },
+			section:      func(doc map[string]any) map[string]any { return doc },
+		},
+		{
+			name:         "dependencies.metadata",
+			wantCategory: "dep-edge",
+			kv:           []any{"issue_id", "x-1", "type", "blocks"},
+			view:         func(meta any) *oracle.View { return b2View(b2Issue("x-1"), b2EdgeMetadata(meta)) },
+			viewOfRow:    func(row oracle.Row) *oracle.View { return b2View(b2Issue("x-1"), row) },
+			section: func(doc map[string]any) map[string]any {
+				edges, _ := doc["dependencies"].([]any)
+				if len(edges) != 1 {
+					return nil
+				}
+				edge, _ := edges[0].(map[string]any)
+				return edge
+			},
+		},
+	}
+	decode := func(t *testing.T, v *oracle.View) (raw []byte, doc map[string]any) {
+		t.Helper()
+		raw, err := Payload(v)
+		if err != nil {
+			t.Fatalf("Payload: %v", err)
+		}
+		if err := json.Unmarshal(raw, &doc); err != nil {
+			t.Fatalf("payload is not a JSON object: %v\n%s", err, raw)
+		}
+		return raw, doc
+	}
+
+	for _, c := range carriers {
+		t.Run(c.name, func(t *testing.T) {
+			t.Run("comparing", func(t *testing.T) {
+				for _, p := range []struct {
+					name         string
+					oracle, cand any
+					wantMatched  bool
+				}{
+					{"SQL NULL against the document null", nil, "null", false},
+					{"the document null against SQL NULL", "null", nil, false},
+					{"SQL NULL against SQL NULL", nil, nil, true},
+					{"the document null against the document null", "null", "null", true},
+					{"SQL NULL against an empty object", nil, "{}", false},
+					{"an empty object against SQL NULL", "{}", nil, false},
+					{"the document null against an empty object", "null", "{}", false},
+					{"an empty object against the document null", "{}", "null", false},
+				} {
+					t.Run(p.name, func(t *testing.T) {
+						res, _, err := CompareViews(c.view(p.oracle), c.view(p.cand))
+						if err != nil {
+							t.Fatalf("CompareViews: %v", err)
+						}
+						if res.Matched != p.wantMatched {
+							t.Fatalf("Matched = %v, want %v", res.Matched, p.wantMatched)
+						}
+						if !p.wantMatched && (res.Mismatch == nil || res.Mismatch.Category != c.wantCategory) {
+							t.Errorf("Mismatch = %+v, want category %q", res.Mismatch, c.wantCategory)
+						}
+					})
+				}
+			})
+
+			t.Run("payload shape", func(t *testing.T) {
+				member := func(meta any) (value any, present bool) {
+					_, doc := decode(t, c.view(meta))
+					section := c.section(doc)
+					if section == nil {
+						t.Fatalf("the payload has no such section: %v", doc)
+					}
+					value, present = section["metadata"]
+					return value, present
+				}
+				if v, present := member(nil); present {
+					t.Errorf("SQL NULL rendered as metadata = %v, want the member left out", v)
+				}
+				if v, present := member("null"); !present || v != nil {
+					t.Errorf("the document null rendered as (%v, present=%v), want the member present with the value null", v, present)
+				}
+				if v, present := member("{}"); !present || !reflect.DeepEqual(v, map[string]any{}) {
+					t.Errorf("an empty object rendered as (%v, present=%v), want the member present as an empty object", v, present)
+				}
+			})
+
+			// b2RowWithMetadataAt orders the columns as given, so the omitted member can
+			// be the first one written, a middle one, the last, or the only one.
+			t.Run("the omitted member can be first, in the middle, last or alone", func(t *testing.T) {
+				for _, p := range []struct {
+					name string
+					pos  int
+					kv   []any
+				}{
+					{"first", 0, c.kv},
+					{"in the middle", 1, c.kv},
+					{"last", 2, c.kv},
+					{"alone", 0, nil},
+				} {
+					t.Run(p.name, func(t *testing.T) {
+						row := func(meta any) oracle.Row { return b2RowWithMetadataAt(p.pos, meta, p.kv...) }
+						raw, doc := decode(t, c.viewOfRow(row(nil)))
+						if !json.Valid(raw) {
+							t.Fatalf("payload is not valid JSON: %s", raw)
+						}
+						section := c.section(doc)
+						if section == nil {
+							t.Fatalf("the payload has no such section: %s", raw)
+						}
+						if _, present := section["metadata"]; present {
+							t.Errorf("payload %s carries a metadata member for SQL NULL", raw)
+						}
+						for i := 0; i < len(p.kv); i += 2 {
+							if got := section[p.kv[i].(string)]; got != p.kv[i+1] {
+								t.Errorf("payload %s: %s = %v, want %v", raw, p.kv[i], got, p.kv[i+1])
+							}
+						}
+						res, _, err := CompareViews(c.viewOfRow(row(nil)), c.viewOfRow(row(nil)))
+						if err != nil || !res.Matched {
+							t.Errorf("SQL NULL against SQL NULL: (matched=%v, err=%v), want matched", res.Matched, err)
+						}
+						res, _, err = CompareViews(c.viewOfRow(row(nil)), c.viewOfRow(row("null")))
+						if err != nil || res.Matched {
+							t.Errorf("SQL NULL against the document null: (matched=%v, err=%v), want a mismatch", res.Matched, err)
+						}
+					})
+				}
+			})
+		})
+	}
+
+	t.Run("a TEXT column keeps SQL NULL and the text null apart, as before", func(t *testing.T) {
+		notes := func(v any) (value any, present bool) {
+			_, doc := decode(t, b2View(b2Issue("x-1", "notes", v)))
+			value, present = doc["notes"]
+			return value, present
+		}
+		if v, present := notes(nil); !present || v != nil {
+			t.Errorf("SQL NULL notes rendered as (%v, present=%v), want notes present with the value null", v, present)
+		}
+		if v, present := notes("null"); !present || v != "null" {
+			t.Errorf("the text null in notes rendered as (%v, present=%v), want notes as the string \"null\"", v, present)
+		}
+	})
+}
+
 // B2.StampsAreNotCompared: columns bd fills from the wall clock, derives or
 // takes from the writing environment never decide a match; every other column
 // does, including one the static lists have never heard of.
@@ -467,11 +716,13 @@ func TestB2SectionCategories(t *testing.T) {
 		wantDiff bool
 	}{
 		{"an extra edge on the candidate", b2View(base), b2View(base, edgeA), "dep-edge", true},
+		{"an edge the candidate lacks, both issues present", b2View(base, edgeA), b2View(base), "dep-edge", true},
 		{"an edge pointing elsewhere", b2View(base, edgeA), b2View(base, edgeB), "dep-edge", true},
 		{"a different edge type", b2View(base, edgeA), b2View(base, b2Edge("d1", "x-1", "related", "x-2")), "dep-edge", true},
 		{"edge and assignee both differ: the edge is the more actionable signal", b2View(base, edgeA), b2View(b2Issue("x-1", "assignee", "bob"), edgeB), "dep-edge", true},
 		{"only the assignee differs", b2View(b2Issue("x-1", "assignee", "amy")), b2View(b2Issue("x-1", "assignee", "bob")), "attribution", true},
 		{"only the title differs", b2View(base), b2View(b2Issue("x-1", "title", "Other")), "unclassified", true},
+		{"only a user-set timestamp differs", b2View(b2Issue("x-1", "due_at", "2026-02-01 00:00:00")), b2View(b2Issue("x-1", "due_at", "2026-02-02 00:00:00")), "as-of-mismatch", true},
 		{"identical views", b2View(base, edgeA), b2View(base, edgeA), "", false},
 	}
 	for _, c := range cases {
@@ -491,16 +742,46 @@ func TestB2SectionCategories(t *testing.T) {
 }
 
 // B2.ExistenceVerdicts: an issue that does not exist on either side matches
-// (a delete was replayed faithfully); existing on one side only does not.
+// (a delete was replayed faithfully); existing on one side only does not, and the
+// category says which side lacks it. The category is the only place the case is
+// recorded, so it is asserted, not only Matched. Whether a row exists does not
+// depend on any number in it, so a number outside the exact range in the present
+// view does not make the pair uncomparable.
 func TestB2ExistenceVerdicts(t *testing.T) {
-	if res, _, err := CompareViews(nil, nil); err != nil || !res.Matched {
-		t.Errorf("CompareViews(nil, nil) = (matched=%v, err=%v), want matched", res.Matched, err)
+	if res, _, err := CompareViews(nil, nil); err != nil || !res.Matched || res.Mismatch != nil {
+		t.Errorf("CompareViews(nil, nil) = (matched=%v, mismatch=%+v, err=%v), want matched with no mismatch", res.Matched, res.Mismatch, err)
 	}
-	present := b2View(b2Issue("x-1"))
-	if res, _, err := CompareViews(present, nil); err != nil || res.Matched {
-		t.Errorf("CompareViews(view, nil) = (matched=%v, err=%v), want a mismatch", res.Matched, err)
+	oneSided := func(t *testing.T, res Result, err error, wantCategory string) {
+		t.Helper()
+		if err != nil {
+			t.Fatalf("CompareViews: %v", err)
+		}
+		if res.Matched {
+			t.Fatal("Matched = true for a pair where exactly one issue exists")
+		}
+		if res.Mismatch == nil || res.Mismatch.Category != wantCategory {
+			t.Errorf("Mismatch = %+v, want category %q", res.Mismatch, wantCategory)
+		}
+		if res.Uncomparable() {
+			t.Error("Uncomparable() = true, want false: a missing row is a proven mismatch")
+		}
 	}
-	if res, _, err := CompareViews(nil, present); err != nil || res.Matched {
-		t.Errorf("CompareViews(nil, view) = (matched=%v, err=%v), want a mismatch", res.Matched, err)
+	for _, c := range []struct {
+		name string
+		view *oracle.View
+	}{
+		// A payload has a dependencies member whether or not the issue has edges.
+		{"an issue with no edges", b2View(b2Issue("x-1"))},
+		{"an issue with an edge", b2View(b2Issue("x-1"), b2Edge("d1", "x-1", "blocks", "x-2"))},
+		{"an issue whose metadata holds a number past 2^53", b2View(b2Issue("x-1", "metadata", `{"n":9007199254740993}`))},
+	} {
+		t.Run(c.name+", missing from the candidate", func(t *testing.T) {
+			res, _, err := CompareViews(c.view, nil)
+			oneSided(t, res, err, "issue-missing")
+		})
+		t.Run(c.name+", extra on the candidate", func(t *testing.T) {
+			res, _, err := CompareViews(nil, c.view)
+			oneSided(t, res, err, "issue-extra")
+		})
 	}
 }
