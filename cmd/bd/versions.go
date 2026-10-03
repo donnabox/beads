@@ -85,6 +85,14 @@ Examples:
 	SilenceUsage:  true,
 	SilenceErrors: true,
 	RunE: func(cmd *cobra.Command, args []string) error {
+		// A graph workspace has its own store and its own version planes, so
+		// the native path below (which reads the legacy decorated store) does
+		// not apply there. Dispatch before the metrics event so the graph
+		// implementation owns its own instrumentation.
+		if graphPreviewActive {
+			return runGraphPreviewVersions(cmd, args)
+		}
+
 		evt := metrics.NewCommandEvent("versions")
 		defer func() {
 			if c := metrics.Global(); c != nil {

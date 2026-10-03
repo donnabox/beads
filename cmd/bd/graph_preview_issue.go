@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"fmt"
+	"strings"
 	"unicode/utf8"
 
 	"github.com/spf13/cobra"
@@ -21,7 +22,14 @@ func runGraphPreviewCreateIssue(cmd *cobra.Command, args []string) error {
 	if err := graphPreviewWritePolicy(); err != nil {
 		return err
 	}
-	if err := graphPreviewFlags(cmd, "id", "title", "description", "body", "message", "type", "priority", "labels", "label", "design", "acceptance", "assignee", "estimate", "external-ref", "spec-id", "notes", "due"); err != nil {
+	beadType, err := graphPreviewCreateBeadType(cmd, graphPreviewConfig.GraphScopeURL)
+	if err != nil {
+		return err
+	}
+	if beadType == graphstore.MemoryTypeURL(graphPreviewConfig.GraphScopeURL) {
+		return runGraphPreviewCreateMemory(cmd, args)
+	}
+	if err := graphPreviewFlags(cmd, "bead-type", "id", "title", "description", "body", "message", "type", "priority", "labels", "label", "design", "acceptance", "assignee", "estimate", "external-ref", "spec-id", "notes", "due"); err != nil {
 		return err
 	}
 	path, err := graphPreviewCreateBeadPath(cmd)
@@ -126,4 +134,86 @@ func graphPreviewIssueCreateFields(cmd *cobra.Command, issue *types.Issue) error
 		issue.DueAt = due
 	}
 	return nil
+}
+
+// Nominal bead type is separate from the Issue classification selected by -t.
+// Only the two installed graph descriptors have a create writer in this slice.
+func graphPreviewCreateBeadType(cmd *cobra.Command, scope string) (string, error) {
+	if !cmd.Flags().Changed("bead-type") {
+		return graphstore.IssueTypeURL(scope), nil
+	}
+	selector, _ := cmd.Flags().GetString("bead-type")
+	typeURL, err := graphPreviewTypeURL(scope, selector)
+	if err != nil {
+		return "", graphFailure("invalid_selector", err.Error(), 2)
+	}
+	if typeURL != graphstore.IssueTypeURL(scope) && typeURL != graphstore.MemoryTypeURL(scope) {
+		return "", graphFailure("capability_unavailable", "graph create supports only the installed Issue and Memory bead types", 5)
+	}
+	return typeURL, nil
+}
+
+func runGraphPreviewCreateMemory(cmd *cobra.Command, args []string) error {
+	title, body, err := graphPreviewCreateMemoryInput(cmd, args)
+	if err != nil {
+		return err
+	}
+	path, err := graphPreviewCreateBeadPath(cmd)
+	if err != nil {
+		return err
+	}
+	return withGraphStore(func(ctx context.Context, store *graphstore.Store) (any, string, error) {
+		record, err := store.Create(ctx, graphstore.CreateRequest{Path: path, Title: title, Body: body, Actor: getActorWithGit()})
+		if err != nil {
+			return nil, "", err
+		}
+		return record, fmt.Sprintf("Created %s\n", path), nil
+	})
+}
+
+// Inline text only: validate aliases and explicit presence before the ordinary
+// description helper can read stdin. Issue-only flags cannot be silently lost.
+func graphPreviewCreateMemoryInput(cmd *cobra.Command, args []string) (string, string, error) {
+	if err := graphPreviewFlags(cmd, "bead-type", "id", "title", "description", "body", "message"); err != nil {
+		return "", "", err
+	}
+	if len(args) > 1 {
+		return "", "", graphFailure("invalid_selector", "Memory create accepts at most one title", 2)
+	}
+	bodyPresent, bodyValue := false, ""
+	for _, name := range []string{"description", "body", "message"} {
+		if !cmd.Flags().Changed(name) {
+			continue
+		}
+		value, _ := cmd.Flags().GetString(name)
+		if value == "-" {
+			return "", "", graphFailure("capability_unavailable", "graph Memory create accepts inline body text only; stdin and file sources are unavailable", 5)
+		}
+		if bodyPresent && value != bodyValue {
+			return "", "", graphFailure("invalid_properties", "Memory create description/body/message aliases must have the same value", 2)
+		}
+		bodyPresent, bodyValue = true, value
+	}
+	body, _, err := getDescriptionFlag(cmd)
+	if err != nil {
+		return "", "", err
+	}
+	title, _ := cmd.Flags().GetString("title")
+	if cmd.Flags().Changed("title") && strings.TrimSpace(title) == "" {
+		return "", "", graphFailure("invalid_properties", "an explicit --title must be nonempty", 2)
+	}
+	if len(args) > 0 || cmd.Flags().Changed("title") {
+		title, err = resolveTitle(args, title, "", "")
+		if err != nil {
+			return "", "", graphFailure("invalid_properties", err.Error(), 2)
+		}
+	} else if bodyPresent {
+		title = graphPreviewMemoryTitle(body)
+	} else {
+		return "", "", graphFailure("invalid_properties", "Memory create requires a title or inline body", 2)
+	}
+	if !utf8.ValidString(title) || !utf8.ValidString(body) {
+		return "", "", graphFailure("invalid_properties", "Memory title and body must be valid UTF-8", 2)
+	}
+	return title, body, nil
 }

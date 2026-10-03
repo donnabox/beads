@@ -21,6 +21,12 @@ func graphPreviewCreateBeadPath(cmd *cobra.Command) (string, error) {
 			return "", err
 		}
 		path = "beads/" + hex.EncodeToString(token[:])
+	} else if graph.ValidateBeadPath(path) != nil {
+		var err error
+		path, err = graphPreviewBareBeadPath(path)
+		if err != nil {
+			return "", graphFailure("invalid_selector", err.Error(), 2)
+		}
 	}
 	if err := graph.ValidateBeadPath(path); err != nil {
 		return "", graphFailure("invalid_selector", err.Error(), 2)

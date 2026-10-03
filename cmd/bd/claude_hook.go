@@ -63,6 +63,11 @@ var claudeHookCmd = &cobra.Command{
 	SilenceUsage: true,
 	Annotations:  map[string]string{skipStoreAnnotation: "1"},
 	RunE: func(cmd *cobra.Command, args []string) error {
+		if graphPreviewActive {
+			if err := admitGraphPreviewClaudeStop(cmd, args); err != nil {
+				return err
+			}
+		}
 		return runClaudeHook(cmd.Context(), args[0], os.Stdin, os.Stdout)
 	},
 }

@@ -5,6 +5,7 @@ package graphstore
 import (
 	"context"
 	"database/sql"
+	"encoding/json"
 	"errors"
 	"fmt"
 	"reflect"
@@ -170,8 +171,12 @@ func TestReadVersionRefusals(t *testing.T) {
 				"actor":            `UPDATE graph_preview_versions SET actor='different'`,
 			} {
 				t.Run(name, func(t *testing.T) {
-					var saved []byte
-					if err := s.db.QueryRowContext(ctx, `SELECT snapshot FROM graph_preview_versions WHERE path='beads/plan'`).Scan(&saved); err != nil {
+					// Restore the exact retained row, including its ordinal and change_at,
+					// so later cases probe the history the store actually wrote.
+					var saved, savedActor []byte
+					var savedOrdinal int64
+					var savedChangeAt any
+					if err := s.db.QueryRowContext(ctx, `SELECT snapshot, actor, ordinal, change_at FROM graph_preview_versions WHERE path='beads/plan' AND version=?`, memory.Version).Scan(&saved, &savedActor, &savedOrdinal, &savedChangeAt); err != nil {
 						t.Fatal(err)
 					}
 					if _, err := s.db.ExecContext(ctx, statement); err != nil {
@@ -181,7 +186,9 @@ func TestReadVersionRefusals(t *testing.T) {
 					if _, err := s.db.ExecContext(ctx, `UPDATE graph_preview_scope SET authority_id=?`, o.Binding.AuthorityID); err != nil {
 						t.Fatal(err)
 					}
-					if _, err := s.db.ExecContext(ctx, `REPLACE INTO graph_preview_versions(path,version,snapshot,actor) VALUES(?,?,?,'')`, "beads/plan", memory.Version, saved); err != nil {
+					// Pre-existing latent bug fixed in passing: this restore used to write
+					// actor='' instead of the saved actor, which was correct only by accident.
+					if _, err := s.db.ExecContext(ctx, `REPLACE INTO graph_preview_versions(path,version,snapshot,actor,ordinal,change_at) VALUES(?,?,?,?,?,?)`, "beads/plan", memory.Version, saved, savedActor, savedOrdinal, savedChangeAt); err != nil {
 						t.Fatal(err)
 					}
 					if !errors.Is(readErr, ErrInvalidStore) || got != nil {
@@ -232,5 +239,131 @@ func TestReadVersionMissingIssueBody(t *testing.T) {
 				t.Fatal(err)
 			}
 		})
+	}
+}
+
+// A retained owner may own only what its kind owns: informational Links for a
+// Memory, Dependencies for an Issue. validateVersionOwned is handed the owner's
+// Bead Type for a Memory but the one owned Link Type for an Issue, so the Memory
+// Type must not pass as an owned Link Type. A Link of that Type under a Memory is
+// an owned-membership fault, not one for the Dependency check to name later. The
+// valid owned sets and the other cross-kind Types are controls: they hold the line
+// on what a valid store accepts.
+func TestReadVersionOwnedMembershipByOwnerKind(t *testing.T) {
+	const membership = "invalid retained owned membership"
+	for _, backend := range []string{"embedded", "server"} {
+		t.Run(backend, func(t *testing.T) {
+			ctx, o := issueExperimentOptions(t, backend)
+			s := openVersionsStore(t, ctx, o)
+			scope := s.ScopeURL()
+			memory, err := s.Create(ctx, CreateRequest{Path: "beads/plan", Body: "Plan", Actor: "author"})
+			if err != nil {
+				t.Fatal(err)
+			}
+			if _, err := s.CreateIssue(ctx, "beads/work", plainIssue("Work")); err != nil {
+				t.Fatal(err)
+			}
+			if _, err := s.CreateIssue(ctx, "beads/prereq", plainIssue("Prerequisite")); err != nil {
+				t.Fatal(err)
+			}
+			dep, err := s.AddDependency(ctx, DependencyRequest{Path: "links/block", SourcePath: "beads/work", TargetPath: "beads/prereq", Actor: "author"})
+			if err != nil {
+				t.Fatal(err)
+			}
+			added, err := s.AddInformationalLink(ctx, LinkCreateRequest{Path: "links/context", SourcePath: "beads/plan", TargetPath: "beads/work", ExpectedSourceRevision: memory.Revision, Actor: "author"})
+			if err != nil {
+				t.Fatal(err)
+			}
+			planVersion := added.Source.(Record).Version
+			for _, tc := range []struct {
+				name, path, version, linkType, refusal string
+			}{
+				{"memory-owns-informational", "beads/plan", planVersion, "", ""},
+				{"issue-owns-dependency", "beads/work", dep.Source.Version, "", ""},
+				{"memory-owns-memory-typed", "beads/plan", planVersion, MemoryTypeURL(scope), membership},
+				{"memory-owns-dependency-typed", "beads/plan", planVersion, DependencyTypeURL(scope), membership},
+				{"issue-owns-informational-typed", "beads/work", dep.Source.Version, RelatedTypeURL(scope), membership},
+			} {
+				t.Run(tc.name, func(t *testing.T) {
+					if tc.linkType != "" {
+						restore := retypeOwnedLink(t, ctx, s, tc.path, tc.version, tc.linkType)
+						defer restore()
+					}
+					got, err := s.ReadVersion(ctx, tc.path, tc.version)
+					if tc.refusal == "" {
+						if err != nil || got == nil {
+							t.Fatalf("valid owned set refused: %+v %v", got, err)
+						}
+						return
+					}
+					if got != nil || !errors.Is(err, ErrInvalidStore) || !strings.HasSuffix(err.Error(), ": "+tc.refusal) {
+						t.Fatalf("want ErrInvalidStore ending %q, got %+v %v", tc.refusal, got, err)
+					}
+				})
+			}
+		})
+	}
+}
+
+// retypeOwnedLink rewrites the Type of the first Link in one retained owned set
+// and returns a func that puts the stored bytes back. Every enclosing value is
+// re-encoded canonically, so the Link Type is the only fault left to find.
+func retypeOwnedLink(t *testing.T, ctx context.Context, s *Store, path, version, typ string) func() {
+	t.Helper()
+	var backing string
+	if err := s.db.QueryRowContext(ctx, `SELECT backing FROM graph_preview_catalog WHERE path=?`, path).Scan(&backing); err != nil {
+		t.Fatal(err)
+	}
+	// An Issue keeps its owned set beside its mapping row, a Memory inside its snapshot.
+	table, column := "graph_preview_versions", "snapshot"
+	if backing == "issue" {
+		table, column = "graph_preview_issue_versions", "owned"
+	}
+	var saved []byte
+	if err := s.db.QueryRowContext(ctx, `SELECT `+column+` FROM `+table+` WHERE path=? AND version=?`, path, version).Scan(&saved); err != nil {
+		t.Fatal(err)
+	}
+	retype := func(owned []json.RawMessage) []json.RawMessage {
+		if len(owned) == 0 {
+			t.Fatalf("%s %s owns no Link to retype", path, version)
+		}
+		var link LinkRecord
+		if err := json.Unmarshal(owned[0], &link); err != nil {
+			t.Fatal(err)
+		}
+		link.Type = typ
+		raw, err := canonicalJSON(link)
+		if err != nil {
+			t.Fatal(err)
+		}
+		return append([]json.RawMessage{raw}, owned[1:]...)
+	}
+	var value any
+	if backing == "issue" {
+		var owned []json.RawMessage
+		if err := json.Unmarshal(saved, &owned); err != nil {
+			t.Fatal(err)
+		}
+		value = retype(owned)
+	} else {
+		var memory Record
+		if err := json.Unmarshal(saved, &memory); err != nil {
+			t.Fatal(err)
+		}
+		memory.Owned = retype(memory.Owned)
+		value = memory
+	}
+	rewritten, err := canonicalJSON(value)
+	if err != nil {
+		t.Fatal(err)
+	}
+	update := `UPDATE ` + table + ` SET ` + column + `=? WHERE path=? AND version=?`
+	if _, err := s.db.ExecContext(ctx, update, rewritten, path, version); err != nil {
+		t.Fatal(err)
+	}
+	return func() {
+		if _, err := s.db.ExecContext(ctx, update, saved, path, version); err != nil {
+			t.Error(err)
+		}
 	}
 }

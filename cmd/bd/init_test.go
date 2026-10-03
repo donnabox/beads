@@ -1864,6 +1864,10 @@ func TestInitServerModeWritesDoltCompatibilityMarker(t *testing.T) {
 	if err := os.MkdirAll(filepath.Join(doltDir, ".dolt"), 0o750); err != nil {
 		t.Fatalf("creating simulated server data dir: %v", err)
 	}
+	// The guard admits a non-empty .beads/dolt root only with a version witness naming bd 1.0 or later.
+	if err := os.WriteFile(filepath.Join(beadsDir, localVersionFile), []byte("1.3.0\n"), 0o600); err != nil {
+		t.Fatalf("writing version witness: %v", err)
+	}
 
 	database := uniqueTestDBName(t)
 	t.Cleanup(func() {
@@ -1910,6 +1914,10 @@ func TestInitServerModeWarnsOnMarkerFailureInQuietMode(t *testing.T) {
 	}
 	if err := os.WriteFile(filepath.Join(doltDir, ".dolt"), []byte("not a dir"), 0o600); err != nil {
 		t.Fatalf("creating invalid dot-dolt marker: %v", err)
+	}
+	// The guard admits a non-empty .beads/dolt root only with a version witness naming bd 1.0 or later.
+	if err := os.WriteFile(filepath.Join(beadsDir, localVersionFile), []byte("1.3.0\n"), 0o600); err != nil {
+		t.Fatalf("writing version witness: %v", err)
 	}
 
 	database := uniqueTestDBName(t)

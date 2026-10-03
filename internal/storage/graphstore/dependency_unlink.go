@@ -15,7 +15,7 @@ import (
 // allocation's backing key permits a later pair assertion under a NEW Link ID.
 func (s *Store) validDeletedLinkAllocation(kind, typ, backing string, key sql.NullString) bool {
 	return kind == "link" && !key.Valid &&
-		((backing == "informational" && typ == RelatedTypeURL(s.ScopeURL())) ||
+		((backing == "informational" && IsInformationalTypeURL(s.ScopeURL(), typ)) ||
 			(backing == "dependency" && typ == DependencyTypeURL(s.ScopeURL())))
 }
 
@@ -83,7 +83,7 @@ func (s *Store) unlinkDependencyInTx(ctx context.Context, tx *sql.Tx, path strin
 	if err != nil {
 		return LinkDeleteResult{}, err
 	}
-	if _, err := tx.ExecContext(ctx, `INSERT INTO graph_preview_versions(path,version,snapshot,actor) VALUES(?,?,?,?)`, path, revision, snapshot, request.Actor); err != nil {
+	if err := insertPreviewVersionInTx(ctx, tx, path, revision, snapshot, request.Actor); err != nil {
 		return LinkDeleteResult{}, err
 	}
 	if err := s.afterStage("link-retained"); err != nil {

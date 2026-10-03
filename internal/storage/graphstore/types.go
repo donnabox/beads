@@ -11,7 +11,7 @@ import (
 )
 
 // SchemaVersion identifies this explicitly experimental storage layout.
-const SchemaVersion = 5
+const SchemaVersion = 6
 
 // Binding is the exact identity expected by the local workspace metadata.
 // WorkspaceID is its canonical filesystem path; C0 does not support moving it.
@@ -138,6 +138,8 @@ const PreviewOwnedLinkLimit = 1000
 // LinkCreateRequest allocates an independent informational Link. Equal endpoints
 // do not deduplicate intent; an explicit allocated Path cannot be reused.
 type LinkCreateRequest struct {
+	// TypeURL selects an installed informational Type; empty preserves the original Related Type.
+	TypeURL                             string
 	Path, SourcePath, TargetPath, Actor string
 	Properties                          map[string]any
 	ExpectedSourceRevision              string
