@@ -80,6 +80,7 @@ go_library(
 go_test(
     name = "uow_test",
     srcs = [
+        "batch_applier_retry_budget_test.go",
         "batch_apply_contract_test.go",
         "batch_closer_contract_test.go",
         "batch_creator_contract_test.go",
@@ -98,6 +99,7 @@ go_test(
         "doltserver_provider_test.go",
         "doltserver_tx_test.go",
         "dualwrite_history_contract_test.go",
+        "dualwrite_participation_generation_contract_test.go",
         "edge_reader_contract_test.go",
         "errors_test.go",
         "expected_revision_contract_test.go",
@@ -150,6 +152,7 @@ go_test(
         "version_reconcile_boot_test.go",
         "version_reconcile_integration_test.go",
         "version_reconciler_contract_test.go",
+        "versioned_read_contract_test.go",
         "workspace_config_contract_test.go",
     ],
     data = [

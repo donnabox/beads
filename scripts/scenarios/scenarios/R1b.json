@@ -1,0 +1,38 @@
+{
+  "id": "R1b",
+  "title": "A forgotten Memory is not a never-created id: the two reads are told apart",
+  "spec": ["#5877 S3", "#5877 R5", "#5877 R16 (traced to S3)"],
+  "state": "pass",
+  "steps": [
+    {
+      "name": "remember-m1",
+      "argv": ["remember", "--stdin", "--id", "beads/r1b/m1", "--title", "M1", "--json"],
+      "stdin": {"name": "B1", "text": "body of M1\n"},
+      "expect": [{"op": "exit", "equals": 0}]
+    },
+    {
+      "name": "forget-m1",
+      "argv": ["forget", "beads/r1b/m1", "--unconditional", "--json"],
+      "expect": [{"op": "exit", "equals": 0}]
+    },
+    {
+      "name": "read-forgotten",
+      "argv": ["recall", "beads/r1b/m1"],
+      "capture": {"FORGOTTEN_CODE": {"stderr_code": true}},
+      "expect": [{"op": "exit", "nonzero": true}, {"op": "stdout", "empty": true}]
+    },
+    {
+      "name": "read-never-created",
+      "argv": ["recall", "beads/r1b/never-created"],
+      "capture": {"NEVER_CODE": {"stderr_code": true}},
+      "expect": [
+        {"op": "exit", "nonzero": true},
+        {"op": "stdout", "empty": true},
+        {"op": "compare",
+         "left": {"step": "read-forgotten", "field": "stderr_code"},
+         "right": {"step": "read-never-created", "field": "stderr_code"},
+         "relation": "differ"}
+      ]
+    }
+  ]
+}
