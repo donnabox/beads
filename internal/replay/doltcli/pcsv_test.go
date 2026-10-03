@@ -216,3 +216,50 @@ func TestB2PCSV(t *testing.T) {
 		t.Errorf("empty result = (%v, %v rows), want (%v, 0 rows)", zeroHeader, len(zeroRows), want)
 	}
 }
+
+// TestSQLQuoteRoundTrip runs awkward values through real dolt: each one, quoted by
+// SQLQuote and stored, is found again by an equality test on the same quoting and
+// reads back as exactly the string that went in, and none of them runs a
+// statement of its own. dolt reads a backslash in a string literal as an escape,
+// so a value ending in a backslash-quote pair ends the literal early unless the
+// backslash is doubled along with the quote.
+func TestSQLQuoteRoundTrip(t *testing.T) {
+	dir := replaytest.NewDoltDB(t, "quote")
+	ctx := context.Background()
+	replaytest.RunDolt(t, dir, "sql", "-q", "CREATE TABLE q (n INT PRIMARY KEY, v TEXT)")
+
+	values := []string{
+		"plain-1",
+		`it's`,
+		`a\b`,
+		`trailing\`,
+		`x\'`,
+		`x\''`,
+		`x\'); CREATE TABLE zz_injected (k INT); --`,
+		`\\'; CREATE TABLE zz_injected (k INT); --`,
+		"two\nlines",
+	}
+	for i, v := range values {
+		if _, err := doltcli.Run(ctx, dir, "sql", "-q", fmt.Sprintf("INSERT INTO q VALUES (%d, %s)", i, doltcli.SQLQuote(v))); err != nil {
+			t.Fatalf("storing %q as %s: %v", v, doltcli.SQLQuote(v), err)
+		}
+	}
+
+	for i, v := range values {
+		_, rows, err := doltcli.Query(ctx, dir, "SELECT n, v FROM q WHERE v = "+doltcli.SQLQuote(v))
+		if err != nil {
+			t.Fatalf("looking up %q: %v", v, err)
+		}
+		if len(rows) != 1 || rows[0][0].Text != fmt.Sprint(i) || rows[0][1].Text != v {
+			t.Errorf("looking up %q found %v, want the one row %d holding it", v, rows, i)
+		}
+	}
+
+	_, tables, err := doltcli.Query(ctx, dir, "SHOW TABLES")
+	if err != nil {
+		t.Fatalf("SHOW TABLES: %v", err)
+	}
+	if len(tables) != 1 || tables[0][0].Text != "q" {
+		t.Errorf("tables = %v, want only q: a quoted value ran a statement of its own", tables)
+	}
+}

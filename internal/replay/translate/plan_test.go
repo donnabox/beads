@@ -108,6 +108,21 @@ func commitTableChange(t *testing.T, table string) (dir, from, to string) {
 	return dir, from, headCommit(t, dir)
 }
 
+// tablesIn lists the tables of the dolt database at dir, uncommitted ones
+// included.
+func tablesIn(t *testing.T, dir string) []string {
+	t.Helper()
+	rows := parseCSV(t, runDolt(t, dir, "sql", "-q", "SHOW TABLES", "-r", "csv"))
+	if len(rows) == 0 {
+		return nil
+	}
+	names := make([]string, 0, len(rows)-1)
+	for _, r := range rows[1:] {
+		names = append(names, r[0])
+	}
+	return names
+}
+
 // ---- the table policy -----------------------------------------------------
 
 // B3.PolicyDrift: every table a freshly initialised store versions is
@@ -467,6 +482,50 @@ func TestB3ExternalDependency(t *testing.T) {
 	}
 }
 
+// B3.HostileEdgeTarget: an edge target is an id the plan reads out of the oracle's
+// own dependency rows, so it is data, and bd accepts any id with a hyphen in it. An
+// id that carries SQL must never reach a query. This one ends in a backslash-quote
+// pair, which dolt reads as an escaped quote inside a string literal, so a value
+// that only had its quotes doubled would end the literal early and run the next
+// statement. The plan withholds the issue that points at it and says why, the rest
+// of the step still plans, and the oracle is left exactly as it was.
+func TestB3HostileEdgeTarget(t *testing.T) {
+	fx := newMutationFixture(t)
+	const marker = "zz_marker"
+	hostile := `source-x\'); CREATE TABLE ` + marker + ` (k INT); --`
+	owner := createIssue(t, fx.sourceDir, "Points at a hostile id")
+	other := createIssue(t, fx.sourceDir, "Points at an ordinary id")
+	target := createIssue(t, fx.sourceDir, "Ordinary target")
+	runBd(t, fx.sourceDir, "create", "Hostile", "--id", hostile, "--force", "--type", "task")
+
+	from := headCommit(t, fx.source)
+	runBd(t, fx.sourceDir, "dep", "add", "--type", "related", owner, hostile)
+	runBd(t, fx.sourceDir, "dep", "add", other, target)
+	to := headCommit(t, fx.source)
+	tablesBefore := tablesIn(t, fx.source)
+
+	p, err := Plan(context.Background(), fx.source, from, to)
+	if tablesAfter := tablesIn(t, fx.source); !reflect.DeepEqual(tablesAfter, tablesBefore) {
+		t.Fatalf("planning changed the oracle's tables: before %v, after %v (an id read from its own rows reached SQL)", tablesBefore, tablesAfter)
+	}
+	if err != nil {
+		t.Fatalf("Plan: %v", err)
+	}
+
+	if len(p.Untranslatable) != 1 || p.Untranslatable[0].Issue != owner {
+		t.Fatalf("untranslatable = %v, want only %s, the owner of the edge to the hostile id", p.Untranslatable, owner)
+	}
+	if why := p.Untranslatable[0].Error(); !strings.Contains(why, "cannot be looked up") {
+		t.Errorf("the withheld issue does not say its target id was not looked up: %q", why)
+	}
+	if len(p.Actions) != 1 || p.Actions[0].Kind != KindDepAdd || p.Actions[0].Issue != other {
+		t.Fatalf("plan = %v, want only the ordinary edge from %s: one bad target must not take the rest of the step with it", argvLines(p.Actions), other)
+	}
+	if argv := p.Actions[0].Argv; argv[len(argv)-1] != target {
+		t.Errorf("ordinary edge argv = %q, want it to end at %s", argv, target)
+	}
+}
+
 // B3.PinnedBd: bd runs from the path the caller gives, whatever PATH holds. A
 // decoy bd first on PATH is never started while the plan replays through the
 // real one. (The source guard that nothing looks bd up on PATH is
@@ -615,6 +674,39 @@ func TestAssembleWithholdingCascades(t *testing.T) {
 	}
 }
 
+// The cascade does not depend on the order the dependency rows arrive in. Dolt
+// returns them ordered by owner id, so a chain laid out against that order is the
+// usual case: here a-1 points at b-2, b-2 at c-3 and c-3 at m-9, which nothing
+// holds. One pass over the rows in this order withholds only c-3; withholding b-2
+// and then a-1 takes the loop running until nothing more changes, whichever row
+// comes first.
+func TestAssembleWithholdingCascadesInAnyRowOrder(t *testing.T) {
+	issues := []diffRow{
+		row("diff_type", "added", "to_id", "a-1", "to_title", "Points at b-2"),
+		row("diff_type", "added", "to_id", "b-2", "to_title", "Points at c-3"),
+		row("diff_type", "added", "to_id", "c-3", "to_title", "Points at nothing"),
+	}
+	edges := []diffRow{
+		row("diff_type", "added", "to_issue_id", "a-1", "to_depends_on_issue_id", "b-2", "to_type", "blocks"),
+		row("diff_type", "added", "to_issue_id", "b-2", "to_depends_on_issue_id", "c-3", "to_type", "blocks"),
+		row("diff_type", "added", "to_issue_id", "c-3", "to_depends_on_issue_id", "m-9", "to_type", "blocks"),
+	}
+	for _, order := range [][3]int{{0, 1, 2}, {0, 2, 1}, {1, 0, 2}, {1, 2, 0}, {2, 0, 1}, {2, 1, 0}} {
+		deps := []diffRow{edges[order[0]], edges[order[1]], edges[order[2]]}
+		p := assemble(stepInput{From: "f", To: "t", Tables: issuesAndDeps(), Issues: issues, Deps: deps})
+		var withheld []string
+		for _, u := range p.Untranslatable {
+			withheld = append(withheld, u.Issue)
+		}
+		if !reflect.DeepEqual(withheld, []string{"a-1", "b-2", "c-3"}) {
+			t.Errorf("rows in order %v: withheld = %v, want [a-1 b-2 c-3]", order, withheld)
+		}
+		if len(p.Actions) != 0 {
+			t.Errorf("rows in order %v: actions = %v, want none: every issue here depends on the missing m-9", order, argvLines(p.Actions))
+		}
+	}
+}
+
 // A target outside the store is written to the external column; a target that is
 // a wisp, or no target at all, cannot be replayed.
 func TestAssembleEdgeTargets(t *testing.T) {
@@ -748,8 +840,10 @@ func TestAssembleUnrecognizedDiffTypes(t *testing.T) {
 	}
 }
 
-// Plan checks its refs before it reads anything, so a value that could carry SQL
-// never reaches a query, and Classify does the same for the issue id.
+// Plan checks its two refs before it reads anything, and Classify checks the issue
+// id, so a value a caller hands in that could carry SQL never reaches a query. The
+// ids Plan reads out of the oracle's own rows are checked where they are spliced
+// into one: TestB3HostileEdgeTarget.
 func TestPlanRejectsUnsafeRefs(t *testing.T) {
 	ctx := context.Background()
 	const good = "0123456789abcdefghijklmnopqrstuv"

@@ -161,6 +161,13 @@ func TestSQLQuote(t *testing.T) {
 		"":      "''",
 		"a''b":  "'a''''b'",
 		"a b c": "'a b c'",
+		// dolt reads a backslash in a string literal as an escape, so each one is
+		// doubled as well: a lone backslash before a doubled quote would otherwise
+		// escape the first of the pair and end the literal on the second.
+		`a\b`:  `'a\\b'`,
+		`\`:    `'\\'`,
+		`a\\b`: `'a\\\\b'`,
+		`x\'`:  `'x\\'''`,
 	} {
 		if got := SQLQuote(in); got != want {
 			t.Errorf("SQLQuote(%q) = %s, want %s", in, got, fmt.Sprint(want))
