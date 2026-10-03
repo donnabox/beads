@@ -59,7 +59,7 @@ var acquire struct {
 }
 
 func TestMain(m *testing.M) {
-	code := m.Run()
+	code := replaytest.Main(m)
 	if acquire.dir != "" {
 		_ = os.RemoveAll(acquire.dir)
 	}
