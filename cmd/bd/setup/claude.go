@@ -19,7 +19,10 @@ var (
 	errClaudeHooksMissing = errors.New("claude hooks not installed")
 )
 
-const claudeInstructionsFile = "CLAUDE.md"
+const (
+	claudeInstructionsFile = "CLAUDE.md"
+	claudeStopHookCommand  = "bd claude-hook stop"
+)
 
 var claudeAgentsIntegration = agentsIntegration{
 	name:         "Claude Code",
@@ -298,6 +301,9 @@ func installClaude(env claudeEnv, global bool, stealth bool) error {
 		if addHookCommand(hooks, "SessionStart", command) {
 			_, _ = fmt.Fprintln(env.stdout, "✓ Registered SessionStart hook")
 		}
+		if addHookCommand(hooks, "Stop", claudeStopHookCommand) {
+			_, _ = fmt.Fprintln(env.stdout, "✓ Registered Stop hook")
+		}
 	}
 
 	data, err := marshalSettings(settings)
@@ -495,6 +501,7 @@ func removeClaude(env claudeEnv, global bool) error {
 				removeHookCommand(hooks, "SessionStart", v)
 				removeHookCommand(hooks, "PreCompact", v)
 			}
+			removeHookCommand(hooks, "Stop", claudeStopHookCommand)
 
 			data, err = marshalSettings(settings)
 			if err != nil {
@@ -520,6 +527,7 @@ func removeClaude(env claudeEnv, global bool) error {
 						removeHookCommand(legacyHooks, "SessionStart", v)
 						removeHookCommand(legacyHooks, "PreCompact", v)
 					}
+					removeHookCommand(legacyHooks, "Stop", claudeStopHookCommand)
 					if migrated, marshalErr := marshalSettings(legacySettings); marshalErr == nil {
 						_ = writeSettingsIfChanged(env, legacyPath, migrated)
 					}

@@ -50,6 +50,9 @@ the flags appear in the command line.`,
 	SilenceUsage:  true,
 	SilenceErrors: true,
 	RunE: func(cmd *cobra.Command, args []string) error {
+		if graphPreviewActive {
+			return runGraphPreviewClose(cmd, args)
+		}
 		CheckReadonly("close") // also covers the migration freeze check (dc-6jaq)
 
 		evt := metrics.NewCommandEvent("close")
@@ -843,7 +846,7 @@ func resolveCloseTargets(ctx context.Context, localStore storage.DoltStorage, id
 		// Write-intent: a prefix-routed target opens writable so the close
 		// commits on the target head (#4141). Contributor auto-routing below
 		// stays read-only: it hydrates foreign projects that must not be mutated.
-		if r, err := resolveViaPrefixRoutingWithAccess(ctx, id, true); err == nil {
+		if r, err := resolveViaPrefixRoutingWithAccess(ctx, id, true, false); err == nil {
 			results = append(results, r)
 			continue
 		}
