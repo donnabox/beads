@@ -224,11 +224,14 @@ func TestB2IntGate(t *testing.T) {
 	})
 }
 
-// B2.IntGateOneSided: the number gate reads both payloads, so a number outside
-// the exact range makes a pair uncomparable whichever side holds it. The first
-// two pairs are ones double rounding would call equal if the gate looked at one
-// side only (the oversized number canonicalizes onto the exact one); the third
-// shows the gate also reaches a number nested in a document.
+// B2.IntGateOneSided: the number gate reads both payloads, so a number outside the
+// exact range makes a pair uncomparable whichever side holds it. The gate refuses a
+// literal whose nearest double is past 2^53-1, which is also the double RFC 8785
+// canonicalizes it to, so a literal and everything that canonicalizes equal to it are
+// refused together. A pair with exactly one refused side therefore holds two
+// different values, and a gate that read one side only would call it an ordinary
+// mismatch: another category, with hashes computed, and not uncomparable, so the run
+// would count a number it cannot compare as a real divergence.
 func TestB2IntGateOneSided(t *testing.T) {
 	uncomparable := func(t *testing.T, oracleJSON, candidateJSON string) {
 		t.Helper()
@@ -249,19 +252,20 @@ func TestB2IntGateOneSided(t *testing.T) {
 			t.Error("Uncomparable() = false, want true so the run can count it separately")
 		}
 	}
-	for _, p := range []struct{ name, exact, oversized string }{
-		{"an integer past 2^53", `{"n":9007199254740992}`, `{"n":9007199254740993}`},
-		{"a decimal that rounds onto an exact integer", `{"n":9007199254740994}`, `{"n":9007199254740993.5}`},
+	for _, p := range []struct{ name, admitted, refused string }{
+		{"the first integer past the range against the last one inside it", `{"n":9007199254740991}`, `{"n":9007199254740992}`},
+		{"a fraction whose nearest double is past the range", `{"n":1}`, `{"n":9007199254740993.5}`},
+		{"an exponent spelling of an integer past the range", `{"n":1}`, `{"n":9.007199254740993e15}`},
 		{"a number nested in a document", `{"metadata":{"ts":1}}`, `{"metadata":{"ts":1727000000000000123}}`},
 	} {
-		t.Run(p.name+", held by the oracle side", func(t *testing.T) { uncomparable(t, p.oversized, p.exact) })
-		t.Run(p.name+", held by the candidate side", func(t *testing.T) { uncomparable(t, p.exact, p.oversized) })
+		t.Run(p.name+", refused number held by the oracle side", func(t *testing.T) { uncomparable(t, p.refused, p.admitted) })
+		t.Run(p.name+", refused number held by the candidate side", func(t *testing.T) { uncomparable(t, p.admitted, p.refused) })
 	}
 	t.Run("through views, a JSON column holding such a number is uncomparable on either side", func(t *testing.T) {
-		exact, oversized := `{"n":9007199254740992}`, `{"n":9007199254740993}`
+		admitted, refused := `{"n":9007199254740991}`, `{"n":9007199254740993}`
 		for _, c := range []struct{ name, oracleMeta, candidateMeta string }{
-			{"oracle side", oversized, exact},
-			{"candidate side", exact, oversized},
+			{"oracle side", refused, admitted},
+			{"candidate side", admitted, refused},
 		} {
 			res, _, err := CompareViews(
 				b2View(b2Issue("x-1", "metadata", c.oracleMeta)),
