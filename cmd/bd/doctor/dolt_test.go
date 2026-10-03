@@ -14,11 +14,23 @@ import (
 // exists. GetBackend() always returns "dolt" after the dolt-native cleanup.
 // (bd-yqpwy)
 
+// clearDoltPortEnv empties both process-wide Dolt port variables for the
+// duration of the test. The cgo TestMain publishes its shared test server on
+// BEADS_DOLT_SERVER_PORT and BEADS_DOLT_PORT, and either one outranks a port
+// written to metadata.json, so a test that expects no server, or a server of
+// its own, must not inherit them.
+func clearDoltPortEnv(t *testing.T) {
+	t.Helper()
+	t.Setenv("BEADS_DOLT_SERVER_PORT", "")
+	t.Setenv("BEADS_DOLT_PORT", "")
+}
+
 func TestRunDoltHealthChecks_DoltBackendNoServer(t *testing.T) {
 	// GH#2722: In owned/embedded mode (non-external), when no server is
 	// running, server-dependent checks should be skipped gracefully (StatusOK)
 	// instead of reporting false errors. The embedded SharedStore checks
 	// already cover data integrity.
+	clearDoltPortEnv(t)
 	tmpDir := t.TempDir()
 	beadsDir := filepath.Join(tmpDir, ".beads")
 	if err := os.MkdirAll(beadsDir, 0o755); err != nil {
@@ -31,7 +43,7 @@ func TestRunDoltHealthChecks_DoltBackendNoServer(t *testing.T) {
 		t.Fatalf("failed to write config: %v", err)
 	}
 
-	// No BEADS_DOLT_SERVER_PORT set → port 0 → no server running
+	// Both port variables cleared above → port 0 → no server running
 	// No BEADS_DOLT_SHARED_SERVER → owned mode (not external)
 	checks := RunDoltHealthChecks(tmpDir)
 	if len(checks) != 7 {

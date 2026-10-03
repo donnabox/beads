@@ -122,6 +122,10 @@ func TestCheckFreshClone_ServerModeUnreachable(t *testing.T) {
 	//      legacy "Fresh clone detected (no database)" message (GH#35). In
 	//      server mode the local DB absence is expected; suggesting bd
 	//      bootstrap is wrong when the actual problem is connectivity/auth.
+
+	// The port in metadata.json below must be the one CheckFreshClone resolves.
+	clearDoltPortEnv(t)
+
 	tmpDir := t.TempDir()
 	beadsDir := filepath.Join(tmpDir, ".beads")
 	if err := os.MkdirAll(beadsDir, 0o755); err != nil {
