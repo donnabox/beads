@@ -165,7 +165,7 @@ func TestGraphPreviewMemoryPropertiesPatchRefusesBeforeInput(t *testing.T) {
 		{"missing-selector", nil, []string{"--unconditional"}, false, 2},
 		{"multiple-selectors", []string{"beads/a", "beads/b"}, []string{"--unconditional"}, false, 2},
 		{"foreign-selector", []string{"https://foreign.invalid/beads/a"}, []string{"--unconditional"}, false, 2},
-		{"legacy-selector", []string{"old-id"}, []string{"--unconditional"}, false, 2},
+		{"unsupported-selector", []string{"alias/old-id"}, []string{"--unconditional"}, false, 2},
 		{"link-selector", []string{"links/context"}, []string{"--unconditional", "--properties={}"}, false, 5},
 		{"missing-guard", []string{"beads/plan"}, nil, false, 2},
 		{"empty-guard", []string{"beads/plan"}, []string{"--if-revision="}, false, 2},

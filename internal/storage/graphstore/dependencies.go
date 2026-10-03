@@ -141,7 +141,7 @@ func (s *Store) AddDependency(ctx context.Context, request DependencyRequest) (D
 		if err != nil {
 			return err
 		}
-		if _, err := tx.ExecContext(ctx, `INSERT INTO graph_preview_versions (path,version,snapshot,actor) VALUES (?,?,?,?)`, path, revision, snapshot, request.Actor); err != nil {
+		if err := insertPreviewVersionInTx(ctx, tx, path, revision, snapshot, request.Actor); err != nil {
 			return err
 		}
 		if err := s.afterStage("link-retained"); err != nil {

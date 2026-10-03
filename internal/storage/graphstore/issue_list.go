@@ -159,17 +159,6 @@ func (s *Store) listIssuesInTx(ctx context.Context, tx *sql.Tx, request publicop
 	if count != 0 {
 		return IssueListPage{}, fmt.Errorf("%w: unknown allocation state", ErrInvalidStore)
 	}
-	if err := tx.QueryRowContext(ctx, "SELECT COUNT(*) FROM graph_preview_types").Scan(&count); err != nil {
-		return IssueListPage{}, err
-	}
-	if count != 4 {
-		return IssueListPage{}, fmt.Errorf("%w: unsupported Type installation", ErrInvalidStore)
-	}
-	for _, id := range []string{MemoryTypeURL(s.ScopeURL()), IssueTypeURL(s.ScopeURL()), DependencyTypeURL(s.ScopeURL()), RelatedTypeURL(s.ScopeURL())} {
-		if _, err := s.readTypeInTx(ctx, tx, id); err != nil {
-			return IssueListPage{}, err
-		}
-	}
 	if err := s.checkIssueListCatalogInTx(ctx, tx); err != nil {
 		return IssueListPage{}, err
 	}
@@ -289,6 +278,14 @@ func issueListConfigInTx(ctx context.Context, tx *sql.Tx) (workapi.ListConfig, e
 // retained-state verification remains scoped to queried Issues and their owned
 // Links, including the query's probe row.
 func (s *Store) checkIssueListCatalogInTx(ctx context.Context, tx *sql.Tx) error {
+	ids, err := s.installedInformationalTypes(ctx, tx)
+	if err != nil {
+		return err
+	}
+	informational := make(map[string]bool, len(ids))
+	for _, id := range ids {
+		informational[id] = true
+	}
 	rows, err := tx.QueryContext(ctx, `SELECT c.path,c.resource_kind,c.type_url,c.revision,c.backing,c.backing_key,
  p.path IS NOT NULL,i.id IS NOT NULL,d.id IS NOT NULL,l.path IS NOT NULL
  FROM graph_preview_catalog c
@@ -324,7 +321,7 @@ func (s *Store) checkIssueListCatalogInTx(ctx context.Context, tx *sql.Tx) error
 		case "dependency":
 			valid = valid && kind == "link" && strings.HasPrefix(path, "links/") && typ == DependencyTypeURL(s.ScopeURL()) && key.Valid && key.String != "" && dependencyExists
 		case "informational":
-			valid = valid && kind == "link" && strings.HasPrefix(path, "links/") && typ == RelatedTypeURL(s.ScopeURL()) && !key.Valid && informationalExists
+			valid = valid && kind == "link" && strings.HasPrefix(path, "links/") && informational[typ] && !key.Valid && informationalExists
 		default:
 			valid = false
 		}

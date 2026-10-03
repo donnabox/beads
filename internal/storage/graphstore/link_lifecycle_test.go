@@ -10,6 +10,7 @@ import (
 	"reflect"
 	"strings"
 	"testing"
+	"time"
 
 	"github.com/steveyegge/beads/internal/storage"
 )
@@ -510,7 +511,8 @@ func TestIncidentLinkBudgetAndExactPair(t *testing.T) {
 				if _, err := tx.ExecContext(ctx, `INSERT INTO graph_preview_links(path,source_path,target_path,properties,attribution) SELECT ?,'beads/source','beads/common',properties,attribution FROM graph_preview_links WHERE path='links/common-0'`, path); err != nil {
 					t.Fatal(err)
 				}
-				if _, err := tx.ExecContext(ctx, `INSERT INTO graph_preview_versions(path,version,snapshot,actor) VALUES(?,?,?,'')`, path, link.Version, snapshot); err != nil {
+				// Each path is fresh, so this is its first version: ordinal 1.
+				if _, err := tx.ExecContext(ctx, `INSERT INTO graph_preview_versions(path,version,snapshot,actor,ordinal,change_at) VALUES(?,?,?,'',1,?)`, path, link.Version, snapshot, time.Now().UTC()); err != nil {
 					t.Fatal(err)
 				}
 			}
@@ -581,6 +583,88 @@ func TestDeletedLinkPriorStateIntegrity(t *testing.T) {
 					}
 					if _, err := s.ShowLink(ctx, "links/prior"); !errors.Is(err, ErrInvalidStore) {
 						t.Fatalf("corruption masquerades as gone: %v", err)
+					}
+				})
+			}
+		})
+	}
+}
+
+// Whole-workspace reads may refuse oversized state, but subject-local unlink
+// must still permit shrinking recovery. Default source acceptance must enter
+// the existing transaction instead of adding a separate Read admission gate.
+func TestLinkUnlinkDefaultSourceReadBudget(t *testing.T) {
+	for _, backend := range []string{"embedded", "server"} {
+		t.Run(backend, func(t *testing.T) {
+			for _, selection := range []string{"id-default", "pair-default", "id-explicit"} {
+				t.Run(selection, func(t *testing.T) {
+					ctx, _, s, original, target, link := disclosureFixture(t, backend)
+					if _, err := s.Create(ctx, CreateRequest{Path: "beads/filler", Body: strings.Repeat("f", PreviewCurrentReadByteLimit/2-(512<<10))}); err != nil {
+						t.Fatal(err)
+					}
+					if _, err := s.Read(ctx, "links/out"); err != nil {
+						t.Fatalf("fixture unreadable: %v", err)
+					}
+					replacement, err := s.UpdateLink(ctx, LinkUpdateRequest{Path: "links/out", Properties: map[string]any{"note": strings.Repeat("x", 768<<10)}, ExpectedRevision: link.Link.Revision, ExpectedSourceRevision: original.Revision, Actor: "replacement"})
+					if err != nil || !replacement.Changed {
+						t.Fatalf("oversized replacement: changed=%t err=%v", replacement.Changed, err)
+					}
+					source := replacement.Source.(Record)
+					if _, err := s.Read(ctx, "links/out"); !errors.Is(err, ErrLimitExceeded) {
+						t.Fatalf("fixture must exceed current-read budget: %v", err)
+					}
+					request := LinkDeleteRequest{Path: "links/out", ExpectedRevision: replacement.Link.Revision, DefaultInformationalSource: true, Actor: "recovery"}
+					if selection == "pair-default" {
+						request.Path = ""
+						request.SourcePath, request.TargetPath, request.TypeURL = "beads/plan", "beads/target", RelatedTypeURL(s.ScopeURL())
+					} else if selection == "id-explicit" {
+						request.DefaultInformationalSource, request.UnconditionalSource = false, true
+					}
+					before := workflowState(t, ctx, s)
+					for _, refusal := range []struct {
+						name string
+						edit func(*LinkDeleteRequest)
+						want error
+					}{
+						{"stale-Link", func(r *LinkDeleteRequest) { r.ExpectedRevision = link.Link.Revision }, ErrConflict},
+						{"missing-Link-guard", func(r *LinkDeleteRequest) { r.ExpectedRevision = "" }, storage.ErrValidation},
+						{"stale-source", func(r *LinkDeleteRequest) {
+							r.DefaultInformationalSource = false
+							r.UnconditionalSource = false
+							r.ExpectedSourceRevision = original.Revision
+						}, ErrConflict},
+						{"default-with-explicit-token", func(r *LinkDeleteRequest) {
+							r.DefaultInformationalSource = true
+							r.UnconditionalSource = false
+							r.ExpectedSourceRevision = source.Revision
+						}, storage.ErrValidation},
+						{"default-with-explicit-unconditional", func(r *LinkDeleteRequest) { r.DefaultInformationalSource = true; r.UnconditionalSource = true }, storage.ErrValidation},
+					} {
+						bad := request
+						refusal.edit(&bad)
+						got, err := s.Unlink(ctx, bad)
+						if !errors.Is(err, refusal.want) || !reflect.DeepEqual(got, LinkDeleteResult{}) || !reflect.DeepEqual(before, workflowState(t, ctx, s)) {
+							t.Fatalf("%s changed state or returned wrong refusal: %+v %v", refusal.name, got, err)
+						}
+					}
+					got, err := s.Unlink(ctx, request)
+					if err != nil || !got.Changed {
+						t.Fatalf("unlink recovery: %+v %v", got, err)
+					}
+					assertReplacedMemory(t, got.ReplacedSource, source)
+					if _, err := s.Read(ctx, "links/out"); !errors.Is(err, ErrGone) {
+						t.Fatalf("deleted Link still readable: %v", err)
+					}
+					if current, err := s.Read(ctx, "beads/target"); err != nil || !reflect.DeepEqual(current, target) {
+						t.Fatalf("unlink failed to restore reads or changed target: %+v %v", current, err)
+					}
+					if current, err := s.Read(ctx, "beads/plan"); err != nil || !reflect.DeepEqual(current, got.Source) {
+						t.Fatalf("recovered source mismatch: %+v %v", current, err)
+					}
+					for path, version := range map[string]string{"links/out": replacement.Link.Version, "beads/plan": source.Version} {
+						if _, err := s.ReadVersion(ctx, path, version); err != nil {
+							t.Fatalf("lost retained %s: %v", path, err)
+						}
 					}
 				})
 			}

@@ -17,7 +17,7 @@ const (
 	ProfileFull Profile = "full"
 	// ProfileMinimal is the pointer-only profile for hook-enabled agents (Claude, Gemini).
 	ProfileMinimal Profile = "minimal"
-	// ProfileGraphPreview is hookless guidance for an explicitly initialized graph workspace.
+	// ProfileGraphPreview is guidance for an explicitly initialized graph workspace.
 	ProfileGraphPreview Profile = "graph-preview"
 )
 
@@ -254,7 +254,7 @@ func computeHash(body string) string {
 
 // graphPreviewBody reuses the contributor-owned Durable storage section from
 // the minimal template. Ordinary issue-tracker instructions remain unchanged;
-// graph workspaces need explicit identities and cannot use their prime hooks.
+// graph workspaces use canonical identities and cannot use their prime hooks.
 func graphPreviewBody() string {
 	durable, _, _ := strings.Cut(normalizeEmbeddedMarkdown(beadsSectionMinimal), "\n## Beads Issue Tracker")
 	return durable + `
@@ -263,7 +263,7 @@ func graphPreviewBody() string {
 
 This workspace uses the experimental graph format. Run ` + "`bd status --graph`" + ` for its supported capabilities.
 
-Choose a new canonical ID for each distinct fact. Supply both an explicit ID and title when creating a Memory:
+Create a distinct Memory for each fact. IDs and titles are generated when omitted; optional --id and --title keep deliberate names:
 
 ` + "```sh" + `
 bd remember "Use UTC for timestamps" --id beads/time-policy --title "Timestamp policy"
@@ -271,8 +271,8 @@ bd recall beads/time-policy
 bd memories timestamps --format records-json
 ` + "```" + `
 
-Use the returned Memory ID to read the same fact in later sessions. The recall command returns the saved body; memories returns matching summaries. Edit existing facts only with an explicit update and its observed revision guard.
+Use the returned Memory ID to read the same fact in later sessions. The recall command returns the saved body; memories returns matching summaries. Edit existing facts with --update MEMORY_ID; omitted fields are preserved. Updates accept the current state by default; add --if-revision TOKEN to reject a stale edit.
 
-This guidance is hookless. No session hooks, automatic context injection, or sync are configured. User, repository and orchestrator instructions take precedence; this block grants no authority to commit or push.
+Fresh graph initialization registers the project-local Claude Stop reminder by default unless --skip-hooks or --skip-agents is used. In an existing graph workspace without that hook, first reconcile a stale managed guidance block if present, then enable it with ` + "`bd setup claude`" + `; inspect it with ` + "`bd setup claude --check`" + ` or remove it with ` + "`bd setup claude --remove`" + `. The reminder does not automatically recall Memories or sync data. User, repository and orchestrator instructions take precedence; this block grants no authority to commit or push.
 `
 }

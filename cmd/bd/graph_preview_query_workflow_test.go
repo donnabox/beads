@@ -6,6 +6,7 @@ import (
 	"os"
 	"path/filepath"
 	"reflect"
+	"slices"
 	"strings"
 	"testing"
 
@@ -35,8 +36,12 @@ func TestGraphPreviewQueryWorkflow(t *testing.T) {
 			}
 			list := func(extra ...string) graphstore.IssueListPage {
 				t.Helper()
-				args := append([]string{"list", "--format", "records-json"}, extra...)
+				args := append([]string{"list", "--format", "records-json", "--bead-type", "types/preview-issue-v2"}, extra...)
 				return graphMixedResult[graphstore.IssueListPage](t, graphPolicyCLI(t, bd, work, home, nil, "", args...))
+			}
+			beads := func(extra ...string) ([]graphListedBead, bool) {
+				t.Helper()
+				return graphListDecode(t, graphPolicyCLI(t, bd, work, home, nil, "", append([]string{"list", "--format", "records-json"}, extra...)...))
 			}
 			blocked := func() []graphstore.BlockedIssue {
 				t.Helper()
@@ -121,6 +126,34 @@ func TestGraphPreviewQueryWorkflow(t *testing.T) {
 			if !reflect.DeepEqual(stable, graphMemoryReadSnapshot(t, work)) {
 				t.Fatal("no-op or stale edit changed the whole current snapshot")
 			}
+			// The inventory lists the newest recorded change first, so its order is
+			// checked against the records' own recorded times, not their IDs.
+			sortedIDs := func(items []graphListedBead) []string {
+				ids := []string{}
+				for _, item := range items {
+					ids = append(ids, item.ID)
+				}
+				slices.Sort(ids)
+				return ids
+			}
+			allBeads, more := beads("--all")
+			if more || len(allBeads) != 4 || !graphListNewestFirst(t, allBeads) || !slices.Equal(sortedIDs(allBeads), []string{scope + "beads/context", scope + "beads/gate", scope + "beads/plan", scope + "beads/work"}) {
+				t.Fatalf("complete mixed Bead inventory: %+v more=%t", allBeads, more)
+			}
+			firstPage, more := beads("--limit", "2")
+			if !more || !reflect.DeepEqual(firstPage, allBeads[:2]) {
+				t.Fatalf("bounded mixed Bead inventory: %+v more=%t", firstPage, more)
+			}
+			memories, more := beads("--bead-type", "types/preview-memory-v2", "--all")
+			if more || len(memories) != 2 || !graphListNewestFirst(t, memories) || !slices.Equal(sortedIDs(memories), []string{scope + "beads/context", scope + "beads/plan"}) {
+				t.Fatalf("Memory Type filter: %+v more=%t", memories, more)
+			}
+			if got := graphPolicyCLI(t, bd, work, home, nil, "", "list", "--all"); !strings.Contains(got, "Beads (4;") || !strings.Contains(got, "Memory") || !strings.Contains(got, "Issue") || strings.Contains(got, "private-memory-body") {
+				t.Fatalf("mixed human inventory omitted kind or leaked Memory body: %s", got)
+			}
+			graphPolicyCLI(t, bd, work, home, nil, "capability_unavailable", "list", "--bead-type", "types/preview-related-v2", "--format", "records-json")
+			graphPolicyCLI(t, bd, work, home, nil, "capability_unavailable", "list", "--bead-type", "types/uninstalled", "--format", "records-json")
+			graphPolicyCLI(t, bd, work, home, nil, "capability_unavailable", "list", "--bead-type", "types/preview-memory-v2", "--status", "open", "--format", "records-json")
 
 			page := list("--limit", "1", "--sort", "priority")
 			if len(page.Items) != 1 || page.Items[0].ID != scope+"beads/work" || !page.HasMore {

@@ -11,7 +11,7 @@ import (
 )
 
 // SchemaVersion identifies this explicitly experimental storage layout.
-const SchemaVersion = 5
+const SchemaVersion = 6
 
 // Binding is the exact identity expected by the local workspace metadata.
 // WorkspaceID is its canonical filesystem path; C0 does not support moving it.
@@ -138,6 +138,8 @@ const PreviewOwnedLinkLimit = 1000
 // LinkCreateRequest allocates an independent informational Link. Equal endpoints
 // do not deduplicate intent; an explicit allocated Path cannot be reused.
 type LinkCreateRequest struct {
+	// TypeURL selects an installed informational Type; empty preserves the original Related Type.
+	TypeURL                             string
 	Path, SourcePath, TargetPath, Actor string
 	Properties                          map[string]any
 	ExpectedSourceRevision              string
@@ -183,6 +185,10 @@ type LinkDeleteRequest struct {
 	Unconditional                                bool
 	ExpectedSourceRevision                       string
 	UnconditionalSource                          bool
+	// DefaultInformationalSource accepts the current source only after the
+	// selected Link is classified in the write transaction. It cannot accompany
+	// an explicit source guard and never relaxes a blocking Dependency guard.
+	DefaultInformationalSource bool
 }
 
 // LinkTombstone retains deletion state in this experimental local format.

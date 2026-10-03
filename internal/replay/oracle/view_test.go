@@ -3,8 +3,11 @@ package oracle
 import (
 	"context"
 	"errors"
+	"os"
+	"path/filepath"
 	"reflect"
 	"testing"
+	"time"
 
 	"github.com/steveyegge/beads/internal/replay/doltcli"
 	"github.com/steveyegge/beads/internal/replay/replaytest"
@@ -146,6 +149,89 @@ func TestB2RefContract(t *testing.T) {
 		view, err := ReadView(ctx, fx.dir, fx.full, "x-nope")
 		if err != nil || view != nil {
 			t.Errorf("ReadView of an issue that does not exist = (%v, %v), want (nil, nil)", view, err)
+		}
+	})
+}
+
+// putDoltFirst installs a stand-in dolt with the given script body ahead of any
+// real one on PATH.
+func putDoltFirst(t *testing.T, body string) {
+	t.Helper()
+	dir := t.TempDir()
+	script := "#!/bin/sh\n" + body + "\n"
+	if err := os.WriteFile(filepath.Join(dir, "dolt"), []byte(script), 0o755); err != nil {
+		t.Fatalf("writing the dolt stand-in: %v", err)
+	}
+	t.Setenv("PATH", dir+":/usr/bin:/bin")
+}
+
+// B2.ClassifyCancel: classify says why a read failed by probing, and a probe that
+// fails because the caller's context is done says nothing about the ref. A cancel
+// that lands during classification must leave the original error and must not
+// read as a flattened ref, or a scenario that expects exactly that failure would
+// pass on an interrupt.
+//
+// The cancel point is fixed by a stand-in dolt, not by a clock. It answers the log
+// probe, then on the ref probe it creates a marker file and blocks until it is
+// killed. The test cancels only once the marker exists, so the cancel always lands
+// while the ref probe is running, and that probe can end no other way.
+func TestB2ClassifyCancel(t *testing.T) {
+	cause := errors.New("the read that failed")
+
+	t.Run("a cancel that lands during the ref probe leaves the original error", func(t *testing.T) {
+		marker := filepath.Join(t.TempDir(), "ref-probe-started")
+		// exec replaces the shell, so killing the probe kills the sleep itself and
+		// leaves no child holding dolt's output pipes open.
+		putDoltFirst(t, `case "$3" in
+*hashof*) : > '`+marker+`'; exec sleep 3600 ;;
+*) printf 'count\n1\n' ;;
+esac`)
+		ctx, cancel := context.WithCancel(context.Background())
+		defer cancel()
+		result := make(chan error, 1)
+		go func() { result <- classify(ctx, t.TempDir(), "main", "issues", cause) }()
+
+		// Waiting for the marker is ordering, not timing: the deadline only bounds a
+		// stand-in that never starts.
+		deadline := time.Now().Add(2 * time.Minute)
+		for {
+			if _, err := os.Stat(marker); err == nil {
+				break
+			}
+			if time.Now().After(deadline) {
+				t.Fatal("the dolt stand-in never reached the ref probe")
+			}
+			time.Sleep(5 * time.Millisecond)
+		}
+		cancel()
+
+		err := <-result
+		if errors.Is(err, ErrRefUnresolvable) {
+			t.Errorf("classify = %v, want an interrupt not to read as an unresolvable ref", err)
+		}
+		if !errors.Is(err, cause) {
+			t.Errorf("classify = %v, want the original error", err)
+		}
+	})
+
+	t.Run("a ref dolt cannot resolve, with the context live, is still unresolvable", func(t *testing.T) {
+		putDoltFirst(t, `case "$3" in
+*hashof*) echo 'no such ref' >&2; exit 1 ;;
+*) printf 'count\n1\n' ;;
+esac`)
+		err := classify(context.Background(), t.TempDir(), "main", "issues", cause)
+		if !errors.Is(err, ErrRefUnresolvable) {
+			t.Errorf("classify = %v, want errors.Is ErrRefUnresolvable", err)
+		}
+	})
+
+	t.Run("a context that is already done leaves the original error", func(t *testing.T) {
+		putDoltFirst(t, `printf 'count\n1\n'`)
+		ctx, cancel := context.WithCancel(context.Background())
+		cancel()
+		err := classify(ctx, t.TempDir(), "main", "issues", cause)
+		if errors.Is(err, ErrRefUnresolvable) || !errors.Is(err, cause) {
+			t.Errorf("classify = %v, want the original error", err)
 		}
 	})
 }
