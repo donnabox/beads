@@ -126,8 +126,8 @@ func checkVersionedHistoryCanBeEnabled(ctx context.Context, key, value string) e
 // bd update, which works with history on or off, because a version is recorded
 // from the state after the write. bd update cannot change a gate's timeout, so the
 // gate is removed or its column is set with bd sql, while history is off; with
-// history on, every write to that row, a close included, is refused. bd sql needs
-// a server-backed store, which the text says.
+// history on, every write to that row, a close included, is refused if the row
+// participates in history. bd sql needs a server-backed store, which the text says.
 func unversionableIssueRefusal(found []storageissueops.UnversionableIssue) string {
 	noun, verb := "issues", "hold"
 	if len(found) == 1 {

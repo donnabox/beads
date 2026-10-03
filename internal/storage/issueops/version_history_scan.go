@@ -21,9 +21,10 @@ type UnversionableIssue struct {
 // given. It is the core of the check made when versioned history is switched on:
 // with history on, a write that introduces a value the mint refuses aborts in its
 // own transaction, but a row that already holds one -- written while history was
-// off, or by a path that does not mint -- would fail every later write to it. The
-// check is over the whole issue, as the mint's is, and not over its metadata
-// alone: a gate's timeout past 2^53-1 nanoseconds is refused too.
+// off, or by a path that does not mint -- would, if it participates in history,
+// fail every later write to it. The check is over the whole issue, as the mint's
+// is, and not over its metadata alone: a gate's timeout past 2^53-1 nanoseconds is
+// refused too.
 //
 // It skips the rows the mint never versions by IsWisp: ephemeral and no-history
 // rows are never versioned, so a value they hold can never abort a write. It

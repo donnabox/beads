@@ -241,8 +241,9 @@ func TestCheckIssueVersionableAgreesWithTheMint(t *testing.T) {
 // nothing in a clean store.
 //
 // A gate whose timeout is over 105 days is the case that motivated checking the
-// whole issue: its timeout is past 2^53-1 ns, so the mint refuses every write to
-// it, and a scan that looked only at metadata cleared the switch over it.
+// whole issue: its timeout is past 2^53-1 ns, so, if it participates in history,
+// the mint refuses every write to it, and a scan that looked only at metadata
+// cleared the switch over it.
 func TestFindUnversionableFindsWhatTheMintWouldRefuse(t *testing.T) {
 	oversize := json.RawMessage(`{"ts":1727000000000000000}`)
 	overlong := 105 * 24 * time.Hour
