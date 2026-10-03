@@ -42,6 +42,12 @@ not intended to be invoked directly by users.`,
 	PersistentPostRun: func(cmd *cobra.Command, args []string) {},
 
 	RunE: func(cmd *cobra.Command, _ []string) error {
+		// This internal helper intentionally bypasses the ordinary root pre-run,
+		// but must still refuse an unsupported graph-workspace invocation before
+		// constructing a legacy database server or publishing a proxy listener.
+		if _, err := admitGraphPreview(cmd); err != nil {
+			return err
+		}
 		backend := proxy.Backend(dbProxyChildBackend)
 		if err := backend.Validate(); err != nil {
 			return err
