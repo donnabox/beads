@@ -40,6 +40,18 @@ var ErrNotObject = errors.New("payload is not a JSON object")
 // exactly. Claiming a match would be false and claiming a mismatch unproven.
 const CategoryNumberFidelity = "number-fidelity"
 
+// CategoryIssueMissing is the Mismatch.Category of a pair where the oracle has a
+// row for the issue and the candidate has none: an issue bd lost or never made.
+// The candidate lacks the row. The string is stored with every mismatch, so it
+// does not change.
+const CategoryIssueMissing = "issue-missing"
+
+// CategoryIssueExtra is the Mismatch.Category of a pair where the candidate has a
+// row for the issue and the oracle has none: an issue bd holds that the oracle
+// does not, such as a delete that did not land. The oracle lacks the row. The
+// string is stored with every mismatch, so it does not change.
+const CategoryIssueExtra = "issue-extra"
+
 // Result is COMMIT_REPLAY_RESULT: the outcome of comparing an oracle
 // payload against a candidate payload.
 type Result struct {

@@ -210,12 +210,19 @@ func readTable(ctx context.Context, dir, ref, table, where string) ([]string, []
 // classify says why a read failed by asking dolt, not by reading its error text,
 // which is not a contract. The probes run only on the failure path. A directory
 // that is not a readable dolt database tells nothing about the ref, so the
-// original error stands; otherwise an unresolvable ref, then a missing table.
+// original error stands; otherwise an unresolvable ref, then a missing table. A
+// probe that fails because ctx is done tells nothing either, so an interrupt
+// never reads as a ref that is gone.
 func classify(ctx context.Context, dir, ref, table string, cause error) error {
 	if _, _, err := doltcli.Query(ctx, dir, "SELECT COUNT(*) FROM dolt_log"); err != nil {
 		return cause
 	}
 	if _, _, err := doltcli.Query(ctx, dir, "SELECT hashof("+doltcli.SQLQuote(ref)+")"); err != nil {
+		// A canceled or expired context fails this probe whatever the ref is, whether
+		// it was done before the probe started or ended it mid-run.
+		if ctx.Err() != nil {
+			return cause
+		}
 		return fmt.Errorf("%w: %q: %v", ErrRefUnresolvable, ref, cause)
 	}
 	_, tables, err := doltcli.Query(ctx, dir, "SHOW TABLES AS OF "+doltcli.SQLQuote(ref))

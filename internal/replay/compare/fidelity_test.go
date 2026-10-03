@@ -785,3 +785,22 @@ func TestB2ExistenceVerdicts(t *testing.T) {
 		})
 	}
 }
+
+// B2.ExistenceCategoryNames: the names are stored with every mismatch row, so the
+// strings are a contract, not an implementation detail. The literals are pinned
+// here, and the exported constants must be what CompareViews reports.
+func TestB2ExistenceCategoryNames(t *testing.T) {
+	if CategoryIssueMissing != "issue-missing" {
+		t.Errorf("CategoryIssueMissing = %q, want %q", CategoryIssueMissing, "issue-missing")
+	}
+	if CategoryIssueExtra != "issue-extra" {
+		t.Errorf("CategoryIssueExtra = %q, want %q", CategoryIssueExtra, "issue-extra")
+	}
+	present := b2View(b2Issue("x-1"))
+	if res, _, err := CompareViews(present, nil); err != nil || res.Mismatch == nil || res.Mismatch.Category != CategoryIssueMissing {
+		t.Errorf("CompareViews(view, nil) = (%+v, %v), want category %q", res.Mismatch, err, CategoryIssueMissing)
+	}
+	if res, _, err := CompareViews(nil, present); err != nil || res.Mismatch == nil || res.Mismatch.Category != CategoryIssueExtra {
+		t.Errorf("CompareViews(nil, view) = (%+v, %v), want category %q", res.Mismatch, err, CategoryIssueExtra)
+	}
+}

@@ -26,6 +26,11 @@ type Skew map[string]ColumnSkew
 // the documents they hold, and the dependencies section as an array of edges
 // built the same way. Stamp columns are left out. A nil view is the empty object.
 //
+// A JSON column that holds SQL NULL is the one exception to "null for SQL NULL":
+// its member is left out. The same column can also hold the document null, a
+// different stored value that is written as null, and leaving the member out keeps
+// the two apart without a marker value a document could also contain.
+//
 // Text is never passed through a number, so integers, decimals and timestamps
 // keep their exact spelling. Invalid UTF-8 is an error here rather than a quiet
 // U+FFFD, because two different byte strings must not become equal.
@@ -37,7 +42,11 @@ func Payload(v *oracle.View) ([]byte, error) {
 // columns that both sides' schemas have and that are not stamps. A column on one
 // side only is returned in the skew and never decides the result. A view that is
 // nil stands for an issue with no row at that ref: two missing issues match, and
-// one missing and one present do not.
+// one missing and one present do not. That mismatch is named for the side that
+// lacks the row, CategoryIssueMissing when the candidate does and
+// CategoryIssueExtra when the oracle does. Whether a row exists does not depend
+// on any number in it, so that category outranks the number gate: the pair is a
+// proven mismatch and never uncomparable.
 func CompareViews(oracleView, candidateView *oracle.View) (Result, Skew, error) {
 	skew := Skew{}
 	var issueShared, edgeShared map[string]bool
@@ -67,6 +76,16 @@ func CompareViews(oracleView, candidateView *oracle.View) (Result, Skew, error) 
 	result, err := Compare(oracleJSON, candidateJSON)
 	if err != nil {
 		return Result{}, nil, err
+	}
+	// A missing row renders as the empty object, which the classifier cannot tell
+	// from any other difference, so the category is decided here, from which view
+	// is nil. It replaces whatever Compare chose, the number gate's included.
+	if result.Mismatch != nil && (oracleView == nil) != (candidateView == nil) {
+		if candidateView == nil {
+			result.Mismatch.Category = CategoryIssueMissing
+		} else {
+			result.Mismatch.Category = CategoryIssueExtra
+		}
 	}
 	return result, skew, nil
 }
@@ -131,6 +150,13 @@ func payload(v *oracle.View, issueShared, edgeShared map[string]bool) ([]byte, e
 
 // writeMembers writes the members of one row's JSON object, in column order,
 // and returns how many it wrote.
+//
+// A SQL NULL is written as null, except in a JSON-typed column, where the member
+// is left out. That column can hold SQL NULL or the document null, they are
+// different stored values, and writing both as null would call them equal.
+// Leaving the member out is the one rendering no document can also produce, so it
+// needs no marker value. The count is of members written, so the separators stay
+// right wherever in the row the omitted column sits.
 func writeMembers(buf *bytes.Buffer, row oracle.Row, table string, shared map[string]bool) (int, error) {
 	if len(row.Cells) < len(row.Columns) {
 		return 0, fmt.Errorf("%s row has %d cells for %d columns", table, len(row.Cells), len(row.Columns))
@@ -140,13 +166,16 @@ func writeMembers(buf *bytes.Buffer, row oracle.Row, table string, shared map[st
 		if isStamp(table, col) || (shared != nil && !shared[col]) {
 			continue
 		}
+		cell := row.Cells[i]
+		if cell.Null && isJSONColumn(table, col) {
+			continue
+		}
 		if n > 0 {
 			buf.WriteByte(',')
 		}
 		n++
 		buf.Write(jsonString(col))
 		buf.WriteByte(':')
-		cell := row.Cells[i]
 		switch {
 		case cell.Null:
 			buf.WriteString("null")
