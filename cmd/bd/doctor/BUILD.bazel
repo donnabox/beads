@@ -156,7 +156,10 @@ go_test(
         "versionable_issues_embedded_test.go",
         "versionable_issues_test.go",
     ],
-    data = ["//cmd/bd:bd_for_tests"],
+    data = [
+        ":go_srcs",
+        "//cmd/bd:bd_for_tests",
+    ],
     embed = [":doctor"],
     env = {"BEADS_TEST_BD_BINARY": "$(rlocationpath //cmd/bd:bd_for_tests)"},
     deps = [
