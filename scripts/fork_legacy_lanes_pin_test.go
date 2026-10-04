@@ -112,3 +112,19 @@ func TestForkKeepsLegacyJobsAndGraphCore(t *testing.T) {
 		t.Errorf("ci-gate does not require graph-c0's result as GRAPH_C0 (needs %v, GRAPH_C0 = %q)", gate.Needs, step.Env["GRAPH_C0"])
 	}
 }
+
+// The pin above holds only while upstream's committed BAZEL_COVERS_FORKS is
+// "false" (#7136): "true" covers pull requests inside a GitHub fork like
+// same-repository ones, which retires their legacy tiers (graph-c0 needs
+// build-artifacts, and PR Core carries the replay census) and turns a run in
+// bazel.yml's mode cache, which is every run here while rbe-fork's mint is
+// closed, red. TestForkPullRequestsKeepLegacyLanes cannot see the flag: its
+// facts leave coversForks at its zero value. Upstream announces F13 as the
+// commit that sets it to "true".
+func TestForkKeepsBazelCoversForksOff(t *testing.T) {
+	for _, workflow := range []string{"pr.yml", prRiskWorkflowName} {
+		if got := readCIWorkflow(t, workflow).Env[prCoversForksFlag]; got != "false" {
+			t.Errorf("%s env.%s = %q, want \"false\": every pull request in this repository is a fork pull request, so covering them retires the legacy tiers the fork keeps (rule R5) and needs rbe-fork's mint open to pass; back to the architect (be-6i64d8)", workflow, prCoversForksFlag, got)
+		}
+	}
+}
