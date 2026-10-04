@@ -180,6 +180,7 @@
 15 2 TestIgnoredCursorHealRespectsOverrideUnderBroaderPattern
 15 2 TestLeaseLifecycleEmbedded
 15 2 TestLenientGateWarningBody_ShapedDecisions
+15 2 TestParticipationGenerationFence
 15 2 TestReadEventsAutoPruneStateResolvesBothHalvesInOneQuery
 15 2 TestSchemaAfterInit
 15 2 TestStageAndCommitAfterSQLCommitResponseLossIsIndeterminateAndNotReplayed
@@ -229,12 +230,14 @@
 15 4 TestMain
 15 4 TestMemoriesContract
 15 4 TestPromoteClearsNoHistory
+15 4 TestRecordVersionPreservesCurrentIssueState
 15 4 TestRemoteVerbPlainRemoteKeepsAmbientEnv
 15 4 TestReopenIssue
 15 4 TestWithPeerAuth
 15 4 TestWithPeerAuth_EnvFallbackDoesNotObservePeerCredentials
 
 15 5 TestActiveDatabaseSizeFailsForMissingEmbeddedDatabase
+15 5 TestAsOfReadContract
 15 5 TestBlockingAnnotatorContract
 15 5 TestBootstrapperContract
 15 5 TestBuildDSN_WithDatabase
@@ -345,6 +348,7 @@
 15 8 TestHasRepository
 15 8 TestLenientGateWarning_ComposedOutput
 15 8 TestMergeAndSettleWithStrategy_EmptyStrategyMatchesMergeAndSettle
+15 8 TestParticipationGenerationFixtureKitIsWired
 15 8 TestReclaimExpiredLeaseSurvivesRestartEmbedded
 15 8 TestRemoteVerbPlainRemoteWithoutAuthPresentsNone
 15 8 TestTransactionCleanupAfterSQLCommitIsIndeterminate
@@ -373,6 +377,7 @@
 15 9 TestPromoteStillWorksWithCollisionGuard
 15 9 TestReadyWorkWithMissingDeferredParentTables
 15 9 TestUpdateMergeOps_DoltEngine
+15 9 TestVersionedHistoryKeepsNumbersTheStoreDistinguishesApart
 
 15 10 TestBuildDSN_SpacesInPath
 15 10 TestCleanGitRemoteCacheGarbage_Throttled
@@ -401,6 +406,7 @@
 15 10 TestHelperProcess
 15 10 TestIgnoredCursorHealResumeRespectsOperatorOverride
 15 10 TestReclaimRefusesForeignReplicaLease
+15 10 TestRecordVersionKeepsSubSecondChangeAt
 15 10 TestRemoteEntryPointsUseVersionControlOps
 15 10 TestTransactionCleanupBeforeSQLCommitRemainsDefinite
 15 10 TestVersionReconcilerContract

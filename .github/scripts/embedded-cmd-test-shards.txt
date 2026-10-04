@@ -210,6 +210,7 @@
 50 1 TestEmbeddedDepAddWispSource
 50 1 TestEmbeddedListFiltering
 50 1 TestEmbeddedPrimeChangeDirDefaultTemplateMatchesTarget
+50 1 TestEmbeddedVersionedHistorySwitchScansEveryRowNotOnePage
 
 50 2 TestEmbeddedCreateRepoFromNonBeadsCwd
 50 2 TestEmbeddedDeleteJSONDependencyErrorContract
@@ -264,6 +265,7 @@
 50 11 TestEmbeddedDepA
 50 11 TestEmbeddedMaxRowsDepTreeAndDuplicates
 50 11 TestEmbeddedState
+50 11 TestEmbeddedVersionedHistorySwitchRoundTrip
 
 50 12 TestEmbeddedDirectCommitPathsBatchAutoCommitDoesNotAdvanceHead
 50 12 TestEmbeddedPrimeChangeDirPrimesTarget
@@ -288,7 +290,9 @@
 50 15 TestEmbeddedEpicCloseEligibleReasonFlag
 50 15 TestEmbeddedExplicitHierarchicalParentEdges
 50 15 TestEmbeddedVersionConcurrent
+50 15 TestEmbeddedVersionedHistorySetManyRefusesUnversionableMetadata
 
+50 16 TestEmbeddedBackupRestoreStrictReadonly
 50 16 TestEmbeddedBlockedLabelFilters
 50 16 TestEmbeddedKV
 50 16 TestEmbeddedMaxRowsReady
@@ -301,6 +305,7 @@
 50 17 TestEmbeddedCompact
 50 17 TestEmbeddedGateConcurrent
 50 17 TestEmbeddedListComments
+50 17 TestEmbeddedVersionedHistorySwitchRefusesAnUnrecordableGateTimeout
 
 50 18 TestEmbeddedContext
 50 18 TestEmbeddedContributorCreate
@@ -341,6 +346,7 @@
 50 24 TestEmbeddedImportUpsertAndPrefixSync
 50 24 TestEmbeddedQuery
 50 24 TestEmbeddedUpdateRoutedStoreCommitsTargetHead
+50 24 TestEmbeddedVersionedHistorySwitchRefusesUnversionableMetadata
 
 50 25 TestEmbeddedBackupConcurrent
 50 25 TestEmbeddedCreateStorageClassBasic
