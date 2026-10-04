@@ -32,15 +32,16 @@ is not available.
 Ordinary Issue workspaces:
 ` + historyCmd.Long
 	deferCmd.Long = `Graph preview workspaces:
-Use bd defer ID --if-revision TOKEN to put one live Issue in the dateless
-deferred state. Use --unconditional instead to explicitly accept the current
+Use bd defer ID --if-revision TOKEN to put one unassigned open Issue in the
+dateless deferred state. Use --unconditional instead to explicitly accept the current
 revision. A repeated defer is a no-op after guard checking. --until and
---reason are unavailable; there is no automatic wake-up.
+--reason are unavailable; there is no automatic wake-up. Claimed and
+in-progress Issues refuse until their release policy is settled.
 
 Ordinary Issue workspaces:
 ` + deferCmd.Long
 	undeferCmd.Long = `Graph preview workspaces:
-Use bd undefer ID --if-revision TOKEN to return one deferred Issue to open.
+Use bd undefer ID --if-revision TOKEN to return one unassigned deferred Issue to open.
 Use --unconditional instead to explicitly accept the current revision. A
 repeated undefer is a no-op after guard checking; one Issue is changed per
 command and there is no automatic wake-up.

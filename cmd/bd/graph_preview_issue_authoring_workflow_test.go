@@ -152,6 +152,16 @@ func TestGraphPreviewIssueDatelessDeferralWorkflow(t *testing.T) {
 			}
 			call(args...)
 			original := graphMixedResult[graphstore.IssueRecord](t, call("create", "Work", "--id", "work"))
+			claimed := graphMixedResult[graphstore.IssueRecord](t, call("create", "Claimed", "--id", "claimed"))
+			claimedState := graphMixedResult[graphstore.IssueMutationResult](t, call("update", "claimed", "--claim", "--actor", "operator"))
+			if !claimedState.Changed {
+				t.Fatal("claim setup did not change Issue")
+			}
+			refuse("constraint_violation", "defer", "claimed", "--unconditional")
+			refuse("constraint_violation", "undefer", "claimed", "--unconditional")
+			if got := graphMixedResult[graphstore.IssueRecord](t, call("show", "claimed")); !reflect.DeepEqual(got, claimedState.Issue) || got.Version == claimed.Version {
+				t.Fatalf("refused deferral changed claim: %+v", got)
+			}
 			memory := call("remember", "Context", "--id", "context", "--title", "Context")
 			refuse("invalid_selector", "defer", original.ID)
 			refuse("capability_unavailable", "defer", original.ID, "--until", "tomorrow", "--unconditional")
@@ -167,8 +177,10 @@ func TestGraphPreviewIssueDatelessDeferralWorkflow(t *testing.T) {
 			}
 			refuse("revision_conflict", "defer", "work", "--if-revision", original.Revision)
 			refuse("invalid_selector", "undefer", "work")
-			if got := graphMixedResult[[]graphstore.IssueRecord](t, call("ready")); len(got) != 0 {
-				t.Fatalf("deferred Issue remained ready: %+v", got)
+			for _, item := range graphMixedResult[[]graphstore.IssueRecord](t, call("ready")) {
+				if item.ID == original.ID {
+					t.Fatalf("deferred Issue remained ready: %+v", item)
+				}
 			}
 			noop := graphMixedResult[graphstore.IssueMutationResult](t, call("defer", "work", "--if-revision", deferred.Issue.Revision))
 			if noop.Changed || !reflect.DeepEqual(noop.Issue, deferred.Issue) {
@@ -178,8 +190,12 @@ func TestGraphPreviewIssueDatelessDeferralWorkflow(t *testing.T) {
 			if !opened.Changed || string(opened.Issue.Properties.Status) != "open" || opened.Issue.Version == deferred.Issue.Version {
 				t.Fatalf("undefer result: %+v", opened)
 			}
-			if got := graphMixedResult[[]graphstore.IssueRecord](t, call("ready")); len(got) != 1 || got[0].ID != original.ID {
-				t.Fatalf("undeferred Issue remained hidden: %+v", got)
+			foundWork := false
+			for _, item := range graphMixedResult[[]graphstore.IssueRecord](t, call("ready")) {
+				foundWork = foundWork || item.ID == original.ID
+			}
+			if !foundWork {
+				t.Fatal("undeferred Issue remained hidden")
 			}
 			if call("show", "context") != memory {
 				t.Fatal("deferral changed unrelated Memory")

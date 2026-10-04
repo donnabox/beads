@@ -503,6 +503,23 @@ func TestIssueDatelessDeferral(t *testing.T) {
 			if err != nil {
 				t.Fatal(err)
 			}
+			_, err = s.CreateIssue(ctx, "beads/claimed", plainIssue("Claimed"))
+			if err != nil {
+				t.Fatal(err)
+			}
+			claimedState, err := s.ClaimIssue(ctx, "beads/claimed", "operator")
+			if err != nil || !claimedState.Changed {
+				t.Fatalf("claim setup: %+v %v", claimedState, err)
+			}
+			for _, deferred := range []bool{true, false} {
+				if _, err := s.SetIssueDeferred(ctx, IssueDeferralRequest{Path: "beads/claimed", Actor: "operator", Unconditional: true, Deferred: deferred}); !errors.Is(err, ErrIssueDeferralConstraint) {
+					t.Fatalf("claimed Issue deferral=%t: %v", deferred, err)
+				}
+			}
+			unchangedClaim, err := s.ShowIssue(ctx, "beads/claimed")
+			if err != nil || !reflect.DeepEqual(unchangedClaim, claimedState.Issue) {
+				t.Fatalf("refused deferral changed claim: %+v %v", unchangedClaim, err)
+			}
 			const path = "beads/work"
 			deferRequest := IssueDeferralRequest{Path: path, Actor: "operator", ExpectedRevision: original.Revision, Deferred: true}
 			if _, err := s.SetIssueDeferred(ctx, IssueDeferralRequest{Path: path, Actor: "operator", Deferred: true}); !errors.Is(err, storage.ErrValidation) {
@@ -529,8 +546,13 @@ func TestIssueDatelessDeferral(t *testing.T) {
 			assertIssueEditVersion(t, ctx, s, path, deferred.Issue)
 			assertIssueEditCounts(t, ctx, s, original.Properties.ID, 2)
 			ready, err := s.ReadyIssues(ctx)
-			if err != nil || len(ready) != 0 {
-				t.Fatalf("deferred Issue appeared ready: %+v %v", ready, err)
+			if err != nil {
+				t.Fatal(err)
+			}
+			for _, item := range ready {
+				if item.ID == original.ID {
+					t.Fatalf("deferred Issue appeared ready: %+v", ready)
+				}
 			}
 			if _, err := s.SetIssueDeferred(ctx, deferRequest); !errors.Is(err, ErrConflict) {
 				t.Fatalf("stale guard: %v", err)
@@ -546,8 +568,15 @@ func TestIssueDatelessDeferral(t *testing.T) {
 			}
 			assertIssueEditCounts(t, ctx, s, original.Properties.ID, 3)
 			ready, err = s.ReadyIssues(ctx)
-			if err != nil || len(ready) != 1 || ready[0].ID != original.ID {
-				t.Fatalf("undeferred Issue not ready: %+v %v", ready, err)
+			if err != nil {
+				t.Fatal(err)
+			}
+			foundWork := false
+			for _, item := range ready {
+				foundWork = foundWork || item.ID == original.ID
+			}
+			if !foundWork {
+				t.Fatalf("undeferred Issue not ready: %+v", ready)
 			}
 			beforeNoop = workflowState(t, ctx, s)
 			noop, err = s.SetIssueDeferred(ctx, IssueDeferralRequest{Path: path, Actor: "operator", Unconditional: true})

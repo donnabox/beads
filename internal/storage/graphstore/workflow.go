@@ -3,6 +3,7 @@ package graphstore
 import (
 	"context"
 	"database/sql"
+	"errors"
 	"fmt"
 	"time"
 	"unicode/utf8"
@@ -66,6 +67,10 @@ func (s *Store) CloseIssue(ctx context.Context, path, reason, actor string) (Iss
 	return result, nil
 }
 
+// ErrIssueDeferralConstraint refuses an Issue whose assignment or lifecycle
+// state has no settled dateless deferral policy in the graph preview.
+var ErrIssueDeferralConstraint = errors.New("Issue state cannot be deferred or undeferred")
+
 // IssueDeferralRequest changes one durable Issue's dateless icebox state. The
 // graph revision guard is checked against the complete owned graph before the
 // native Issue writer records the sole retained successor.
@@ -96,8 +101,8 @@ func (s *Store) SetIssueDeferred(ctx context.Context, request IssueDeferralReque
 		if err := checkRevisionGuard(request.ExpectedRevision, request.Unconditional, before.Revision, true, "Issue"); err != nil {
 			return err
 		}
-		if before.Properties.Status == types.StatusClosed || before.Properties.Status == types.StatusPinned {
-			return fmt.Errorf("%w: only a live work Issue can be deferred or undeferred", ErrConflict)
+		if (before.Properties.Status != types.StatusOpen && before.Properties.Status != types.StatusDeferred) || before.Properties.Assignee != "" {
+			return fmt.Errorf("%w: dateless deferral requires an unassigned open or deferred Issue; claimed, in-progress, closed and pinned Issues need an explicit release or lifecycle decision", ErrIssueDeferralConstraint)
 		}
 		if request.Deferred == (before.Properties.Status == types.StatusDeferred) {
 			result = IssueMutationResult{Issue: before}
