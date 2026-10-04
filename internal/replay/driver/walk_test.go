@@ -154,7 +154,7 @@ func TestB6WalkChainIgnoresRowOrder(t *testing.T) {
 }
 
 func TestB6FirstParentChainRefusesABrokenLog(t *testing.T) {
-	commits, head := dagCommits()
+	commits, _ := dagCommits()
 	t.Run("unknown head", func(t *testing.T) {
 		if _, err := FirstParentChain(commits, "nope"); err == nil {
 			t.Fatal("a head that is not in the log was accepted")

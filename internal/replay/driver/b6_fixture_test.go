@@ -119,12 +119,23 @@ func copyProject(t testing.TB, src, dst string) {
 // needs: the project, its dolt database, the ids bd gave and the dolt head after
 // each step.
 type oracleHistory struct {
-	t     testing.TB
-	bin   string
-	dir   string
-	data  string
-	ids   []string
-	heads []string
+	t    testing.TB
+	bin  string
+	dir  string
+	data string
+	ids  []string
+	// heads are the commits the steps ended at, oldest first: every commit a
+	// command made, so a command that commits twice is two steps.
+	heads   []string
+	commits int
+}
+
+// adoptOracle wraps an existing copy of the template project.
+func adoptOracle(t testing.TB, bin, dir string) *oracleHistory {
+	t.Helper()
+	o := &oracleHistory{t: t, bin: bin, dir: dir, data: replaytest.DataDir(t, dir)}
+	o.commits = o.logCount()
+	return o
 }
 
 // newOracle copies the template into a fresh oracle project.
@@ -134,7 +145,21 @@ func newOracle(t testing.TB, root, name string) *oracleHistory {
 	tpl := templateProject(t)
 	dir := filepath.Join(root, name)
 	copyProject(t, tpl, dir)
-	return &oracleHistory{t: t, bin: replaytest.BdBin(t), dir: dir, data: replaytest.DataDir(t, dir)}
+	return adoptOracle(t, replaytest.BdBin(t), dir)
+}
+
+// logCount is the number of commits in the oracle's database.
+func (o *oracleHistory) logCount() int {
+	o.t.Helper()
+	_, rows, err := doltcli.Query(context.Background(), o.data, "SELECT COUNT(*) FROM dolt_log")
+	if err != nil || len(rows) != 1 || len(rows[0]) != 1 {
+		o.t.Fatalf("counting the commits of %s: rows=%v err=%v", o.data, rows, err)
+	}
+	var n int
+	if _, err := fmt.Sscanf(rows[0][0].Text, "%d", &n); err != nil {
+		o.t.Fatalf("counting the commits of %s: %q is not a count", o.data, rows[0][0].Text)
+	}
+	return n
 }
 
 // bd runs the bd that built the oracle, so both sides share one schema.
@@ -148,8 +173,22 @@ func (o *oracleHistory) head() string {
 	return replaytest.HeadCommit(o.t, o.data)
 }
 
-// step records the dolt head after the step the caller just ran.
-func (o *oracleHistory) step() { o.heads = append(o.heads, o.head()) }
+// step records the commits the caller's command just made, oldest first. The
+// newest commits by commit_order are those, because the history is linear until
+// a merge, and the merge is recorded by mergeSide instead.
+func (o *oracleHistory) step() {
+	o.t.Helper()
+	count := o.logCount()
+	made := count - o.commits
+	o.commits = count
+	_, rows, err := doltcli.Query(context.Background(), o.data, fmt.Sprintf("SELECT commit_hash FROM dolt_log ORDER BY commit_order DESC LIMIT %d", made))
+	if err != nil || len(rows) != made {
+		o.t.Fatalf("reading the %d newest commits of %s: rows=%v err=%v", made, o.data, rows, err)
+	}
+	for i := len(rows) - 1; i >= 0; i-- {
+		o.heads = append(o.heads, rows[i][0].Text)
+	}
+}
 
 // create makes an issue and records the step.
 func (o *oracleHistory) create(title string, extra ...string) string {
@@ -234,15 +273,29 @@ func shellQuote(s string) string { return "'" + strings.ReplaceAll(s, "'", `'\''
 // misbehave in exactly one way. It returns the script and its log.
 func bdStandIn(t testing.TB, realBd, body string) (bin, log string) {
 	t.Helper()
+	return bdStandInAfter(t, realBd, body, "")
+}
+
+// bdStandInAfter is bdStandIn with a second snippet that runs once the real bd
+// has finished, with its exit status in $rc and the subcommand in $cmd; the
+// stand-in then exits with that status. It is how a fixture changes what bd
+// left behind, as a candidate with a defect of its own would.
+func bdStandInAfter(t testing.TB, realBd, body, after string) (bin, log string) {
+	t.Helper()
 	dir := t.TempDir()
 	bin = filepath.Join(dir, "bd-stand-in")
 	log = filepath.Join(dir, "calls.log")
 	script := "#!/bin/sh\n" +
 		"REAL=" + shellQuote(realBd) + "\n" +
 		"LOG=" + shellQuote(log) + "\n" +
+		"cmd=\"$1\"\n" +
 		"printf '%s\\n' \"$*\" >> \"$LOG\"\n" +
-		body + "\n" +
-		"exec \"$REAL\" \"$@\"\n"
+		body + "\n"
+	if after == "" {
+		script += "exec \"$REAL\" \"$@\"\n"
+	} else {
+		script += "\"$REAL\" \"$@\"\nrc=$?\n" + after + "\nexit \"$rc\"\n"
+	}
 	if err := os.WriteFile(bin, []byte(script), 0o755); err != nil { // #nosec G306 -- a test stand-in must be executable
 		t.Fatalf("writing the bd stand-in: %v", err)
 	}

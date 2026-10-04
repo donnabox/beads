@@ -9,6 +9,7 @@ import (
 	"strings"
 	"testing"
 
+	"github.com/steveyegge/beads/internal/replay/doltcli"
 	"github.com/steveyegge/beads/internal/replay/replaytest"
 	"github.com/steveyegge/beads/internal/replay/translate"
 )
@@ -147,16 +148,29 @@ fi`)
 }
 
 // B6.DriverNullVsEmpty: a candidate that differs from the oracle only as NULL
-// versus the empty string is a mismatch, recorded by the driver itself. The
-// stand-in gives every issue it creates an empty spec_id, which bd stores as the
-// empty string; the oracle's rows hold NULL there. Read as text, both are "".
+// versus the empty string is a mismatch, recorded by the driver itself. bd has no
+// flag that turns a NULL column into the empty string (it stores NULL for an
+// empty assignee), so the stand-in does what a candidate with a defect of its own
+// would: once the real bd has created an issue, it sets the empty string in the
+// column the oracle holds NULL in, and commits. Read as text, both are "".
 func TestB6DriverNullVsEmpty(t *testing.T) {
 	requireBd(t)
 	requireDolt(t)
 	o := faultOracle(t)
 	a := o.ids[0]
-	bin, _ := bdStandIn(t, o.bin, `if [ "$1" = create ]; then shift; set -- create --spec-id "" "$@"; fi`)
-	f := newFixtureRun(t, o, bin)
+	f := newFixtureRun(t, o, o.bin)
+	dolt, err := doltcli.Path()
+	if err != nil {
+		t.Fatalf("dolt: %v", err)
+	}
+	bin, _ := bdStandInAfter(t, o.bin, "", `if [ "$rc" -eq 0 ] && [ "$cmd" = create ]; then
+	cd `+shellQuote(f.workData)+` || exit 1
+	export DOLT_ROOT_PATH=`+shellQuote(os.Getenv("DOLT_ROOT_PATH"))+` DOLT_DISABLE_EVENT_FLUSH=1
+	`+shellQuote(dolt)+` sql -q "UPDATE issues SET assignee = '' WHERE assignee IS NULL" || exit 1
+	`+shellQuote(dolt)+` add -A || exit 1
+	`+shellQuote(dolt)+` commit -m "stand-in: an empty assignee" || exit 1
+fi`)
+	f.cfg.Tools.IntegrationBin = bin
 	mustComplete(t, f)
 
 	row := f.resultFor(o.heads[0], a)
@@ -164,11 +178,11 @@ func TestB6DriverNullVsEmpty(t *testing.T) {
 		t.Fatalf("%s at %s = %q, want a mismatch: NULL is not the empty string", a, o.heads[0], row.Verdict)
 	}
 	m := mismatchFor(t, f, o.heads[0], a)
-	if got, present := issueMember(t, m.ExpectedJSON, "spec_id"); !present || got != nil {
-		t.Errorf("expected payload spec_id = %v (present=%v), want JSON null", got, present)
+	if got, present := issueMember(t, m.ExpectedJSON, "assignee"); !present || got != nil {
+		t.Errorf("expected payload assignee = %v (present=%v), want JSON null", got, present)
 	}
-	if got, present := issueMember(t, m.ActualJSON, "spec_id"); !present || got != "" {
-		t.Errorf("actual payload spec_id = %v (present=%v), want the empty string", got, present)
+	if got, present := issueMember(t, m.ActualJSON, "assignee"); !present || got != "" {
+		t.Errorf("actual payload assignee = %v (present=%v), want the empty string", got, present)
 	}
 }
 

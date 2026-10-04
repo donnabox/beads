@@ -7,10 +7,11 @@ import (
 	"path/filepath"
 )
 
-// Store is a dependency-free, append-only JSON-Lines persistence layer for
-// the ERD's four entities. JSONL rather than a SQL engine because NFR1/NFR2
-// forbid ever opening a write-capable connection to the shared Dolt server,
-// and a SQL-engine choice here could be mistaken for a step toward one.
+// Store is a dependency-free, append-only JSON-Lines persistence layer for the
+// ERD's entities and the run's coverage-gap rows, which also holds the run's
+// summary. JSONL rather than a SQL engine because NFR1/NFR2 forbid ever opening
+// a write-capable connection to the shared Dolt server, and a SQL-engine choice
+// here could be mistaken for a step toward one.
 type Store struct {
 	dir string
 }
@@ -56,20 +57,19 @@ func (s *Store) WriteMetricSample(ms MetricSample) error {
 	return s.appendJSONLine("metric_samples.jsonl", ms)
 }
 
-// dirSize returns the sum of regular file sizes under dir, recursively.
-func dirSize(dir string) (int64, error) {
-	var total int64
-	err := filepath.Walk(dir, func(_ string, info os.FileInfo, err error) error {
-		if err != nil {
-			return err
-		}
-		if info.Mode().IsRegular() {
-			total += info.Size()
-		}
-		return nil
-	})
+// WriteCoverageGap appends one (step, table) coverage-gap row.
+func (s *Store) WriteCoverageGap(row CoverageGapRow) error {
+	return s.appendJSONLine("coverage_gaps.jsonl", row)
+}
+
+// WriteSummary writes the run's summary as summary.json, replacing an earlier one.
+func (s *Store) WriteSummary(sum Summary) error {
+	data, err := json.MarshalIndent(sum, "", "  ")
 	if err != nil {
-		return 0, fmt.Errorf("computing directory size for %s: %w", dir, err)
+		return fmt.Errorf("marshaling the summary: %w", err)
 	}
-	return total, nil
+	if err := os.WriteFile(filepath.Join(s.dir, "summary.json"), append(data, '\n'), 0o600); err != nil {
+		return fmt.Errorf("writing summary.json: %w", err)
+	}
+	return nil
 }

@@ -32,7 +32,10 @@ func mergeSide(t *testing.T, o, side *oracleHistory) {
 	replaytest.RunDolt(t, o.data, "remote", "add", "up", url)
 	replaytest.RunDolt(t, o.data, "fetch", "up")
 	replaytest.RunDolt(t, o.data, "merge", "up/main", "--no-ff", "-m", "merge")
-	o.step()
+	// Only the merge is on the first-parent chain; the side branch's commits came
+	// with it into the log and are covered by the merge step's net diff.
+	o.commits = o.logCount()
+	o.heads = append(o.heads, o.head())
 }
 
 // The exit fixture: one corpus with a merge, a commit that changes several
@@ -48,7 +51,7 @@ func TestB6ExitFixture(t *testing.T) {
 	// The side project is a copy of the oracle at its base, advanced on its own.
 	sideDir := filepath.Join(t.TempDir(), "side")
 	copyProject(t, o.dir, sideDir)
-	side := &oracleHistory{t: t, bin: o.bin, dir: sideDir, data: replaytest.DataDir(t, sideDir)}
+	side := adoptOracle(t, o.bin, sideDir)
 
 	a := o.create("Alpha")                                                                                                     // 0: a create
 	b := o.create("Beta", "--deps", a)                                                                                         // 1: a create with an edge
@@ -60,14 +63,18 @@ func TestB6ExitFixture(t *testing.T) {
 	o.run("delete", c, "--force")                                                                                              // 7: a delete of an issue with an edge
 	m := o.create("Mainline")                                                                                                  // 8: the mainline side of the merge
 	o.run("close", m, "--reason", "done")                                                                                      // 9: a close
-	o.run("dep", "remove", b, a)                                                                                               // 10: an edge removed
+	o.run("dep", "remove", b, a)                                                                                               // 10 and 11: an edge removed, which bd commits twice
 	f1 := side.create("Side one")
 	f2 := side.create("Side two")
-	mergeSide(t, o, side) // 11: the merge step, first parent to the merge
-	if len(o.heads) != 12 {
-		t.Fatalf("the fixture made %d steps, want 12", len(o.heads))
+	mergeSide(t, o, side) // 12: the merge step, first parent to the merge
+	// bd commits a dep remove twice: the removal itself, then an auto-commit that
+	// only recomputes derived columns. The second is a step of its own that
+	// touches no issue the translator replays, so it has no row.
+	if len(o.heads) != 13 {
+		t.Fatalf("the fixture made %d steps, want 13", len(o.heads))
 	}
 	h := o.heads
+	mergeStep := len(h) - 1
 
 	bin, _ := bdStandIn(t, o.bin, "")
 	f := newFixtureRun(t, o, bin)
@@ -93,8 +100,8 @@ func TestB6ExitFixture(t *testing.T) {
 		{8, m, VerdictMatched, "create"},
 		{9, m, VerdictMatched, "close"},
 		{10, b, VerdictMatched, "dep_remove"},
-		{11, f1, VerdictMatched, "merge:create"},
-		{11, f2, VerdictMatched, "merge:create"},
+		{mergeStep, f1, VerdictMatched, "merge:create"},
+		{mergeStep, f2, VerdictMatched, "merge:create"},
 	}
 	sort.SliceStable(want, func(i, j int) bool {
 		if want[i].step != want[j].step {
@@ -140,8 +147,8 @@ func TestB6ExitFixture(t *testing.T) {
 		if !reflect.DeepEqual(got.Result, rows[i]) {
 			t.Errorf("event %d carries %+v, want the row written: %+v", i, got.Result, rows[i])
 		}
-		if got.Step != want[i].step || got.Merge != (want[i].step == 11) {
-			t.Errorf("event %d is step %d merge=%v, want step %d merge=%v", i, got.Step, got.Merge, want[i].step, want[i].step == 11)
+		if got.Step != want[i].step || got.Merge != (want[i].step == mergeStep) {
+			t.Errorf("event %d is step %d merge=%v, want step %d merge=%v", i, got.Step, got.Merge, want[i].step, want[i].step == mergeStep)
 		}
 	}
 
@@ -162,8 +169,8 @@ func TestB6ExitFixture(t *testing.T) {
 		t.Fatalf("counting the oracle's commits: %v", err)
 	}
 	cr := s.CoveredRange
-	if cr.BaseCommit != base || cr.HeadCommit != h[11] || cr.CommitsReplayed != 12 || cr.CommitsTotal <= 12 || strconv.Itoa(cr.CommitsTotal) != logRows[0][0].Text {
-		t.Errorf("covered_range = %+v, want base %s, head %s, 12 replayed and every commit of the history (%s) counted", cr, base, h[11], logRows[0][0].Text)
+	if cr.BaseCommit != base || cr.HeadCommit != h[mergeStep] || cr.CommitsReplayed != 13 || cr.CommitsTotal <= 13 || strconv.Itoa(cr.CommitsTotal) != logRows[0][0].Text {
+		t.Errorf("covered_range = %+v, want base %s, head %s, 13 replayed and every commit of the history (%s) counted", cr, base, h[mergeStep], logRows[0][0].Text)
 	}
 	if cr.BaseDate == "" || cr.HeadDate == "" {
 		t.Errorf("covered_range dates are empty: %+v", cr)
