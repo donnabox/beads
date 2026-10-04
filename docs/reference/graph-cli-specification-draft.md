@@ -146,7 +146,7 @@ presentation only.
 | 0 | Success or accepted semantic no-op | Emit the selected complete success form; an identical write does not create a new version. |
 | 2 | Invalid syntax or selector | Reject before a write; examples include conflicting aliases, malformed JSON, unsupported flag combinations and invalid bounds. |
 | 3 | Missing, gone or unknown retained version | Distinguish a never-present current ID, a removed current ID and an unavailable version; never substitute the current state for an old address. |
-| 4 | Revision/identity/constraint conflict | No partial write. Include enough canonical IDs to act on an ambiguous pair unlink or target incident-Link deletion refusal. The current linked-Memory deletion refusal is `deletion_policy_unresolved` at exit 5 until the proposed stable constraint error is implemented. |
+| 4 | Revision/identity/constraint conflict | No partial write. Include enough canonical IDs to act on an ambiguous pair unlink or target incident-Link deletion refusal. A linked Memory reports `constraint_violation` with the first incident Link ID and the total count. |
 | 5 | Unavailable capability, workspace/authority refusal or storage failure | Never fall through to an ordinary workspace or claim an unsupported feature ran. |
 | 6 | Outcome unknown | The client must inspect current state and retained versions before deciding whether to retry; the command must not claim failure or success of a write whose commit result is unknown. |
 
@@ -192,10 +192,11 @@ take a separate application lock. A native no-op must not acquire a new graph
 version. `defer` and `undefer` are specified below as NYI; no current Issue
 read or elapsed clock silently implements those target transitions.
 
-### Target operations that remain NYI
+### Target operations and linked-deletion policy
 
-These rows complete the intended non-Type CLI behavior for review; they do not
-extend this build's admission. Every proposed operation must gain an
+These rows complete the intended non-Type CLI behavior for review. The linked
+Memory refusal is implemented; the other rows do not extend this build's
+admission. Every proposed operation must gain an
 implementation, help text, two-engine installed tests and exact-source CI
 before its status changes. Existing incident-Link deletion refusal is retained:
 neither `--force` nor a future convenience command may silently cascade.
@@ -205,7 +206,7 @@ neither `--force` nor a future convenience command may silently cascade.
 | Arbitrary installed Bead authoring | `bd create --bead-type types/NAME --properties JSON [--id ID]` creates one Bead for any installed Bead Type that the current workspace can validate; the JSON value is an object and must satisfy that Type's descriptor before an atomic write. `--properties` is mutually exclusive with Issue/Memory convenience body, title and field flags, so a caller cannot create two competing documents. `bd update ID --properties JSON` replaces the whole validated document and `--patch JSON` applies an ordered patch; both require the existing-resource guard choice and preserve ID and Type. `bd show`, `bd list --bead-type`, `bd versions`, `bd compare` and `bd delete` work by canonical identity without assuming Issue fields. Type-specific lifecycle policy must be declared by the installed Type; the CLI never invents ready/close behavior for an arbitrary Bead. | NYI for authoring outside installed Issue/Memory writers. Current generic reads and nominal Type filtering cover only admitted installed records. Descriptor/installation semantics belong to Trish's Type design. |
 | Open metadata | `bd create [TITLE] --metadata JSON` and `bd link SOURCE TARGET --link-type types/NAME --metadata JSON` accept a JSON object separate from Type-validated properties. On `create`, metadata can accompany either convenience creation or `--bead-type types/NAME --properties JSON`; it cannot make an otherwise incomplete creation valid. `bd update RESOURCE --metadata JSON` replaces that whole open record; `--metadata-patch JSON` applies ordered add/replace/remove operations to it. Omission preserves metadata on update and initializes an empty object on create. A metadata edit requires the same resource and, where applicable, source guards as a properties edit. Metadata and properties edits cannot be combined in one invocation; neither changes ID, Type or Link endpoints. An identical edit is a no-op. Exact retained reads and comparison include the accepted metadata value. | NYI; current graph admission rejects these flags. This is a proposed CLI projection of BDP metadata, subject to the Type design's ownership boundary. |
 | `delete ISSUE` | `bd delete ID` only previews. `bd delete ID --force --if-revision TOKEN` or `bd delete ID --force --unconditional` applies to one Issue, atomically checking the Issue and its current incident Links. Any incident Link refuses with sorted canonical Link IDs; the caller explicitly unlinks and retries with a fresh revision. A successful deletion removes current state, reserves the ID and retains prior snapshots; current reads report gone, exact prior-version reads remain addressable. No deletion version, fabricated timestamp, automatic dependency unlink or cascade is promised. `forget` remains Memory-only. | NYI; graph Issue deletion returns `capability_unavailable`. |
-| Linked Memory deletion | Same explicit unlink-before-delete rule as for an Issue. A linked Memory is never deleted by `--force`; its current identity and snapshots remain after refusal. Once unlinked, ordinary unreferenced Memory deletion applies. | The refusal is implemented; the proposed stable error is `constraint_violation`, replacing the current `deletion_policy_unresolved` only after tested implementation. |
+| Linked Memory deletion | Same explicit unlink-before-delete rule as for an Issue. A linked Memory is never deleted by `--force`; its current identity and snapshots remain after refusal. Once unlinked, ordinary unreferenced Memory deletion applies. | Implemented with `constraint_violation`, the first incident Link ID and a total count. |
 | Issue labels after creation | `bd update ID --add-label X`, `--remove-label X`, or `--set-labels X,Y` changes one Issue's label set under a resource revision choice. Add-existing and remove-absent are no-ops; set replaces the set atomically, deduplicating normalized labels. The three modes are mutually exclusive in one invocation. Other fields and Links remain unchanged. Multi-Issue propagation is explicitly outside this CLI contract. | NYI; initial `create --label/--labels` works, mutation flags refuse. The held label/RowVersion/staging design must be settled before implementation. |
 | Issue notes replacement/clear | `bd update ID --notes TEXT --if-revision TOKEN` replaces the whole note text; explicit `--notes=` clears it. Omission preserves it. Replacement/clear require an observed revision, not `--unconditional`, and cannot combine with `--append-notes`. Identical replacement is a no-op. Accepted changes retain the prior version and never rewrite older snapshots. | NYI; only initial `create --notes` and guarded `update --append-notes` work. |
 | Deferral | `bd defer ID --if-revision TOKEN` sets one live Issue to deferred; `bd undefer ID --if-revision TOKEN` returns a deferred Issue to open. Each also accepts explicit `--unconditional` in place of `--if-revision`, never both. Each is one atomic transition, keeps fields/Links, records a retained version only if state changed, and affects `ready` through status rather than a hidden scheduler. A repeated transition is a no-op after guard validation. `--until` and automatic wake-up are excluded until a clock/wake contract is reviewed; passing them refuses. | NYI in graph workspaces. |
@@ -699,7 +700,9 @@ timestamp or actor event. Internal snapshot retention does not expose public
 History or restoration.
 
 Every live incident Link causes both preview and apply to refuse with
-`deletion_policy_unresolved`, including incoming, outgoing and self-Links.
+`constraint_violation`, including incoming, outgoing and self-Links. The error
+names the first incident Link ID and the total count so the caller can begin
+explicit unlinking.
 Explicitly unlinking each Link with its normal guards allows a later deletion;
 these are separate transactions, and a concurrently added Link can still cause
 deletion to refuse. `--force` does not cascade. Batch selectors, `--from-file`,
@@ -977,7 +980,7 @@ No defer, recurrence, mandatory deadline or scheduler behavior is added.
 
 ## Limits and remaining work
 
-Linked Memory deletion and Issue deletion,
+Deleting a linked Memory and Issue deletion,
 defer/scheduling, notes replacement/clear, label mutation,
 and full Memory remain unavailable. Issue creation can set initial
 labels; that does not adopt a label-editing contract. These restrictions apply

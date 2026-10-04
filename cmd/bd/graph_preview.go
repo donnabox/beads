@@ -690,8 +690,8 @@ func graphStorageError(err error) error {
 		return graphFailure("invalid_selector", err.Error(), 2)
 	case errors.Is(err, graphstore.ErrVersionUnknown):
 		return graphFailure("revision_unknown", err.Error(), 3)
-	case errors.Is(err, graphstore.ErrDeletionPolicyUnresolved):
-		return graphFailure("deletion_policy_unresolved", err.Error(), 5)
+	case errors.Is(err, graphstore.ErrIncidentLinkConstraint):
+		return graphFailure("constraint_violation", err.Error(), 4)
 	case errors.Is(err, graphstore.ErrGone):
 		return graphFailure("gone", err.Error(), 3)
 	case errors.Is(err, graphstore.ErrCapabilityUnavailable), errors.Is(err, graphstore.ErrLimitExceeded):
