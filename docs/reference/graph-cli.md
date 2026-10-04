@@ -36,6 +36,9 @@ technical reference is the evolving, detailed command matrix and contract;
 neither page is a frozen release note. The blog post explains the model and
 links to these pages for commands that may change after publication. Ordinary
 Beads workspaces keep their existing Issue and key/value-memory commands.
+The technical reference also carries a [Preview 2 CLI contract for review](/reference/graph-preview#preview-2-cli-contract-for-review);
+its **NYI** rows describe proposed behavior, not commands available in this
+build. Use the current command matrix there when trying the preview.
 
 In a graph workspace, a Bead is an Issue or a Memory. Its canonical identity
 is under `beads/`. In CLI arguments, `policy` means `beads/policy`; a Link

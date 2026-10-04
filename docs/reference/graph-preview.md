@@ -11,6 +11,213 @@ This integration checkpoint supports a bounded Memory/Issue workflow in a
 workspaces continue using their existing commands and storage. The generic
 model, Type names and result shapes remain an experimental preview.
 
+## Preview 2 CLI contract for review
+
+This section is the **proposed complete graph-mode CLI contract** for Preview 2.
+It states intended behavior even where the implementation is marked **NYI**.
+The [graph CLI guide](/reference/graph-cli) remains a task-oriented walkthrough;
+the implementation table and current-preview details below tell operators what
+this build actually does. A proposed row is not a claim that a command works.
+Review of this contract must settle its semantics before an NYI row can be
+advertised as implemented.
+
+This contract covers all graph-affected Bead, Link, History, discovery,
+agent-setup and serving entry points. Ordinary-project commands keep their
+ordinary contracts. Type descriptor design, installation, removal, update and
+migration belong to the separate Type design and BDP specification; this CLI
+contract covers only reading installed Types and choosing one for a Bead or
+Link. Administration, sync, import/export, backup and repair are not implicitly
+admitted by graph mode. A recognized command or flag excluded from graph
+admission returns `capability_unavailable` without opening the ordinary Issue
+store; an unknown spelling may be rejected by the parser first.
+
+### Common syntax, identity and write rules
+
+| Input | Contract |
+| --- | --- |
+| Workspace | `bd init --graph-mode link --scope-url URL` creates a **new** graph workspace. An existing ordinary, incomplete or incompatible graph workspace is never upgraded by init. Subsequent graph commands bind to that workspace's stored Scope and format; moving/copying it does not transfer authority. |
+| Bead selector | Bare `ID` is shorthand for `beads/ID`; `beads/PATH` and the exact local Scope URL are also accepted. A command accepting both Beads and Links requires explicit `links/PATH` for a Link. No selector probes both namespaces and no foreign URL or alias is silently resolved. |
+| Creation ID | `--id` is optional for Bead and Link creation. Omission allocates a fresh canonical ID. An explicit ID is used exactly or the create fails if ever allocated; deletion does not release it. |
+| Type selector | `--bead-type` and `--link-type` accept an installed `types/NAME` or its exact local Type URL. An uninstalled, wrong-kind or endpoint-incompatible Type fails before a write. `--type` on an Issue is its Issue classification, not a Bead Type. |
+| Current state | A bare read selects the current record. `--version TOKEN` selects one retained state; `bd versions` discovers tokens in store-local newest-first order. A live record's `revision` and `version` are the same opaque token, used respectively as a current-state guard and a retained address. Neither token contains chronology. |
+| Guarded write | `--if-revision TOKEN` rejects a changed resource even if the proposed edit would otherwise be a no-op. `--if-source-revision TOKEN` does the same for a Memory owning an outgoing informational Link. Stale conflicts have no partial effect. |
+| Unconditional write | `bd remember --update` and a Memory-owned informational Link **source** default to accepting the current state. Property/scalar `update`, `unlink` and applying a deletion require either `--if-revision` or explicit `--unconditional`; blocking Dependency unlink also requires an Issue-source choice. `close`, `reopen` and standalone `update --claim` use native Issue policy without that guard choice. Do not combine the guarded and unconditional spelling for one resource. A changed unconditional Memory/source write reports the actual replaced version and attribution. |
+| No-op and uncertainty | A semantically identical accepted edit records no new version, does not renew a claim and does not attribute an overwrite. An `outcome_unknown` result is never safe to replay blindly: inspect the canonical resource and versions before retrying. |
+| Read-only | `--readonly` and a frozen workspace reject every mutation before it writes. They do not relax identity, validation or read bounds. `--force` confirms only the operation named by a command; it never bypasses a guard or cascades a deletion. |
+
+The common graph controls are `--graph-mode` (assert `link`),
+`--directory` (workspace selection), `--actor` (attribution),
+`--readonly`, `--quiet`, `--no-color` and `--json` where that command has a
+structured result. `--db`, `BEADS_DB`, `BD_DB`, `BEADS_DIR` and backend
+overrides may affect **selection or refusal**, never redirect an admitted graph
+command into an unrelated store. Command-specific refusals of a common flag
+are explicit below. Flag omission differs from an explicitly supplied empty
+value; accepted empty values are described in the command-family sections
+below.
+Except for documented repeatable label filters, repeating a scalar selector is
+invalid. A flag not listed for an entry point is unavailable in graph mode.
+
+### Current admitted command and explicit-flag inventory
+
+`G` denotes the common controls above, subject to the listed output
+exception. Arguments and flags in this table are the current admitted
+graph-mode surface for each entry point; proposed NYI additions appear in the
+separate table below. Combinations and effects are defined here and in the
+command-family sections below. Hidden `--resource-type` is a compatibility
+spelling for `--link-type`, never an additional Type field; supplying both is
+invalid. An implementation marked NYI must refuse without falling back to
+ordinary storage.
+
+| Entry point and arguments | Additional explicit flags and aliases | Preview 2 target / current build |
+| --- | --- | --- |
+| `init` | `--scope-url`, `--prefix`, `--server`, `--external`, `--server-host`, `--server-port`, `--server-user`, `--server-socket`, `--server-tls`, `--database`, `--skip-hooks`, `--skip-agents`, `--non-interactive` | New graph workspace only / implemented. |
+| `status` | `--graph` | Report exact capability and limits / implemented; `--graph` required in a graph workspace. |
+| `types` | `--details` | Read installed Bead/Link Type IDs, or full stored descriptors / implemented. Type mutation commands are outside this contract. |
+| `remember [BODY]` | `--id`, `--title`, `--body-file`, `--stdin`, `--update`, `--if-revision`, `--unconditional` | Create or explicitly update one Memory / implemented. Exactly one body source when body is supplied; omitted fields survive update. |
+| `memories [SEARCH]` | `--all`, `--details`, `--format table\|records-json` | Bounded current Memory discovery / implemented; legacy `--json` refuses. |
+| `recall BEAD` | `--version` | Exact body bytes, current or retained / implemented; `--json` refuses and `--quiet` does not suppress body bytes. |
+| `create [TITLE]` | `--bead-type`, `--id`, `--title`, `--description`/`--body`/`--message`; Issue-only `--type`, `--priority`, `--labels`/`--label`, `--design`, `--acceptance`, `--assignee`, `--estimate`, `--external-ref`, `--spec-id`, `--notes`, `--due` | Create one Issue by default or Memory by Type / implemented. No file/stdin body route here. |
+| `show RESOURCE` | `--version` | Current or retained complete record / implemented. |
+| `versions RESOURCE`, `history RESOURCE` | no additional flags | One Resource's retained states newest first / implemented; graph `history` is this alias, ordinary `history` is different. |
+| `compare RESOURCE` | `--from`, `--to` | Two explicit retained states of the same Resource / implemented. Operand order determines direction. |
+| `update MEMORY` | `--properties` or `--patch`, `--if-revision`, `--unconditional` | Whole-property replacement or ordered patch / implemented. Body/title-only convenience uses `remember --update`. |
+| `update ISSUE` | `--title`, `--description`/`--body`/`--message`, `--design`, `--acceptance`, `--priority`, `--assignee`, `--append-notes`, `--estimate`, `--external-ref`, `--spec-id`, `--due`, `--if-revision`, `--unconditional`; standalone `--claim` | Listed scalar edits and append / implemented. `--claim` is mutually exclusive with every edit/guard. Label edits and note replacement are specified below, NYI. |
+| `update LINK` | `--properties` or `--patch`, `--if-revision`, `--unconditional`, `--if-source-revision`, `--unconditional-source` | Informational Link properties only / implemented. Endpoints and Type are immutable. |
+| `link SOURCE TARGET` | `--link-type`/`--resource-type`, `--id`, `--properties`, `--if-source-revision`, `--unconditional-source`; blocking alias `--type` | One typed Link, or an Issue-only blocking Dependency with ordinary default Type / implemented. Remote endpoints, bulk and bypass flags refuse. |
+| `dep add SOURCE TARGET` | `--type` | One local blocking Dependency between live Issues / implemented. No bulk form; Link Type and source-guard flags belong to `bd link` and are refused here. |
+| `links BEAD` | `--direction in\|out\|both`, `--link-type`/`--resource-type` | Bounded current incident Links / implemented, no cursor. |
+| `unlink LINK` or `unlink SOURCE TARGET` | `--link-type`/`--resource-type`, `--if-revision`, `--unconditional`, `--if-source-revision`, `--unconditional-source` | Remove an identified informational Link or blocking Dependency; pair form must identify exactly one informational Link / implemented. |
+| `delete BEAD`, `forget BEAD` | `--if-revision`, `--unconditional`; `delete` also `--force` | Preview then explicit apply, or direct apply, for an unreferenced Memory / implemented. Issue deletion target is specified below, NYI. |
+| `close ISSUE` | `--reason`/`--resolution`/`--message`/`--comment` | Native close of one Issue / implemented. No force or batch form. |
+| `reopen ISSUE` | `--reason` | Native reopen of one Issue / implemented. |
+| `ready`, `blocked` | no additional flags | Native Issue readiness and blocker views / implemented; no query filters. |
+| `list` | `--flat`, `--format records-json`, `--bead-type`, `--all`, `--limit`; Issue query: `--status`/`--state`, `--type`, `--title`, `--title-contains`, `--priority`, `--priority-min`, `--priority-max`, `--label`, `--label-any`, `--exclude-label`, `--pinned`, `--no-pinned`, `--sort`, `--reverse`, `--assignee`, `--no-assignee`, `--due-before`, `--due-after`, `--overdue` | Bounded all-Bead list unless an Issue filter/directory label selects native Issue-only query / implemented. Tree and legacy `--json` refuse. |
+| `graph BEAD` | `--view generic`, `--direction in\|out\|both`, `--depth`, `--max-nodes`, `--max-links` | Bounded current local summary traversal / implemented. |
+| `serve` | `--readonly`, `--addr`, `--allow-non-loopback`, `--auth-token-file`, `--insecure-no-auth`, `--allowed-host` | BDP Read listener on ordinary shared-server Dolt / implemented. Embedded serving and HTTP mutation refuse. |
+| `setup claude` | `--project`, `--check`, `--remove` | Project-local Stop reminder registration/check/removal / implemented; `--json` refuses. |
+| `claude-hook stop` | no additional flags | Hook JSON stdin/stdout protocol, no storage open / implemented; no CLI `--json`. |
+
+The following additions are part of the proposed Preview 2 contract but are
+**NYI in this build**. They do not enlarge the current admission inventory.
+Each argument and flag combination must be implemented and tested before its
+row can move into the current inventory.
+
+| Entry point | Proposed additions | Rule |
+| --- | --- | --- |
+| `create [TITLE]` | `--properties JSON`, `--metadata JSON` | A property document is accepted with `--bead-type`; it excludes Issue/Memory convenience fields. Metadata is a separate object and can accompany either creation form. |
+| `link SOURCE TARGET` | `--metadata JSON` | Sets the initial open metadata object on one typed informational Link; it is unavailable for a blocking Dependency. |
+| `update RESOURCE` | `--metadata JSON` or `--metadata-patch JSON` | Replace or patch open metadata under the resource and applicable source guard; the two modes and property edits are mutually exclusive. |
+| `update ISSUE` | `--add-label X`, `--remove-label X`, `--set-labels X,Y`, `--notes TEXT` | Label modes are mutually exclusive; notes replacement/clear has the stricter observed-revision rule below. |
+| `delete ISSUE` | existing `--force`, `--if-revision`, `--unconditional` | The existing spelling gains an Issue route with the incident-Link refusal specified below. |
+| `defer ISSUE`, `undefer ISSUE` | `--if-revision TOKEN` or `--unconditional` | One explicit resource guard choice is required; scheduling flags such as `--until` remain unavailable. |
+
+The implemented defaults are part of the contract, not unspecified CLI
+convenience: `link` without a Type requests a blocking Issue Dependency;
+`links` uses `--direction both`; `graph` requires `--view generic` and
+defaults to direction `both`, depth 1, 100 nodes and 200 Links. `list` uses
+the documented terminal-sensitive row limit, while `--all` or `--limit=0`
+removes that limit; an explicit `--limit` wins. `memories` without SEARCH is
+an inventory, not a read of an arbitrary Memory. On `create`, `--type`
+classifies an Issue and must not be interpreted as `--bead-type`.
+`--status` and `--state` are alternative Issue filters and cannot be combined.
+An Issue filter selects the Issue-only `list` route even when its value is
+empty; it cannot be combined with a non-Issue `--bead-type`.
+
+### Results, errors and repeatability
+
+The target success contract is one complete result on stdout, with diagnostics
+on stderr. Most `--json` success results use
+`{"schemaVersion":1,"preview":true,"result":<typed result>}`; the typed
+result shape for a command is the shape shown by that command's examples and
+tests below. `memories` and `list` use `--format records-json` for their
+structured result in the same envelope and refuse legacy `--json`. `recall`
+streams exactly one Memory body, with no added newline or envelope;
+`--quiet` cannot suppress it. `setup claude`, `claude-hook stop` and
+`serve` use their own human, hook or server protocol, not a CLI JSON
+envelope. Current `serve --json` is accepted but does not produce a CLI JSON
+envelope; the target contract refuses that combination so scripts do not
+mistake a running server for a JSON result. `--quiet` suppresses optional
+human success prose elsewhere; it never hides an error. `--no-color` changes
+presentation only.
+
+| Exit | Error category | Required behavior |
+| --- | --- | --- |
+| 0 | Success or accepted semantic no-op | Emit the selected complete success form; an identical write does not create a new version. |
+| 2 | Invalid syntax or selector | Reject before a write; examples include conflicting aliases, malformed JSON, unsupported flag combinations and invalid bounds. |
+| 3 | Missing, gone or unknown retained version | Distinguish a never-present current ID, a removed current ID and an unavailable version; never substitute the current state for an old address. |
+| 4 | Revision/identity/constraint conflict | No partial write. Include enough canonical IDs to act on an ambiguous pair unlink or target incident-Link deletion refusal. The current linked-Memory deletion refusal is `deletion_policy_unresolved` at exit 5 until the proposed stable constraint error is implemented. |
+| 5 | Unavailable capability, workspace/authority refusal or storage failure | Never fall through to an ordinary workspace or claim an unsupported feature ran. |
+| 6 | Outcome unknown | The client must inspect current state and retained versions before deciding whether to retry; the command must not claim failure or success of a write whose commit result is unknown. |
+
+Machine-readable errors use
+`{"code":"...","message":"...","retryable":false}` on stderr;
+human errors use `code: message` there. Neither form prints a partial
+success envelope on an admission, validation or storage refusal. An
+ambiguous-Link error must report sorted candidate canonical IDs. A future
+retryable category may change only with a separately reviewed contract; the
+current graph errors do not ask a caller to blindly retry. Scalar selectors
+and scalar edit flags are single-valued even if Cobra accepts repeated syntax:
+repetition rejects rather than silently taking the last occurrence. The
+repeatable `list --label`, `--label-any` and `--exclude-label` filters are
+the exceptions and combine according to their documented Issue query rules.
+This scalar-repeat rule is a **target conformance requirement** beyond the
+current parser's per-command checks, not a claim of existing enforcement.
+
+### Issue lifecycle binding
+
+Graph Issues use the ordinary Issue writer's policy for status categories,
+readiness, blocked prerequisites and claims, with the graph-specific CLI
+surface fixed here. This is an explicit normative dependency on the same
+release's [close](/cli-reference/close),
+[reopen](/cli-reference/reopen), [ready](/cli-reference/ready) and
+[update/claim](/cli-reference/update) contracts, not permission to dispatch a
+graph command through the ordinary workspace. A change to those ordinary
+contracts must be reviewed against this graph contract and its conformance
+tests. Graph Memories and informational Links have no Issue status, readiness,
+claim or close operation.
+
+| Entry point | State and transaction contract |
+| --- | --- |
+| `create` Issue | Starts open, with the accepted initial fields and no claim lease. Initial assignee is data, not an atomic claim. |
+| `update ISSUE --claim` | One native atomic claim for the current actor; true-only and no edit/guard flags. Eligibility follows the configured native active-status and pool-alias rules. A successful change retains the complete Issue state and native claim stamp together. Repeating an eligible same-actor claim is a no-op and never renews its five-minute nonrenewing lease. A different actor cannot take an active claim by merely spelling `--unconditional` or `--force`. |
+| `close ISSUE` | One checked native close with optional reason aliases; no batch, force or independent revision flag. An already-closed Issue is a no-op. A policy refusal leaves status, Links and retained state unchanged. |
+| `reopen ISSUE` | One native transition from a done-category status back to open, with optional `--reason`; a non-done Issue is a no-op after validation. No batch or guard bypass. |
+| `ready`, `blocked` | Read one checked current Issue view. `ready` derives readiness from Issue status and blocking Dependencies; `blocked` reports canonical blocking IDs. Neither records a version, touches a lease or changes the graph. |
+
+The native close/reopen/claim writer owns the atomic History stamp. The graph
+layer retains the resulting complete Issue projection in that same
+transaction; it must not mint a second stamp, substitute a fabricated time or
+take a separate application lock. A native no-op must not acquire a new graph
+version. `defer` and `undefer` are specified below as NYI; no current Issue
+read or elapsed clock silently implements those target transitions.
+
+### Target operations that remain NYI
+
+These rows complete the intended non-Type CLI behavior for review; they do not
+extend this build's admission. Every proposed operation must gain an
+implementation, help text, two-engine installed tests and exact-source CI
+before its status changes. Existing incident-Link deletion refusal is retained:
+neither `--force` nor a future convenience command may silently cascade.
+
+| Operation | Complete proposed contract | Current status |
+| --- | --- | --- |
+| Arbitrary installed Bead authoring | `bd create --bead-type types/NAME --properties JSON [--id ID]` creates one Bead for any installed Bead Type that the current workspace can validate; the JSON value is an object and must satisfy that Type's descriptor before an atomic write. `--properties` is mutually exclusive with Issue/Memory convenience body, title and field flags, so a caller cannot create two competing documents. `bd update ID --properties JSON` replaces the whole validated document and `--patch JSON` applies an ordered patch; both require the existing-resource guard choice and preserve ID and Type. `bd show`, `bd list --bead-type`, `bd versions`, `bd compare` and `bd delete` work by canonical identity without assuming Issue fields. Type-specific lifecycle policy must be declared by the installed Type; the CLI never invents ready/close behavior for an arbitrary Bead. | NYI for authoring outside installed Issue/Memory writers. Current generic reads and nominal Type filtering cover only admitted installed records. Descriptor/installation semantics belong to Trish's Type design. |
+| Open metadata | `bd create [TITLE] --metadata JSON` and `bd link SOURCE TARGET --link-type types/NAME --metadata JSON` accept a JSON object separate from Type-validated properties. On `create`, metadata can accompany either convenience creation or `--bead-type types/NAME --properties JSON`; it cannot make an otherwise incomplete creation valid. `bd update RESOURCE --metadata JSON` replaces that whole open record; `--metadata-patch JSON` applies ordered add/replace/remove operations to it. Omission preserves metadata on update and initializes an empty object on create. A metadata edit requires the same resource and, where applicable, source guards as a properties edit. Metadata and properties edits cannot be combined in one invocation; neither changes ID, Type or Link endpoints. An identical edit is a no-op. Exact retained reads and comparison include the accepted metadata value. | NYI; current graph admission rejects these flags. This is a proposed CLI projection of BDP metadata, subject to the Type design's ownership boundary. |
+| `delete ISSUE` | `bd delete ID` only previews. `bd delete ID --force --if-revision TOKEN` or `bd delete ID --force --unconditional` applies to one Issue, atomically checking the Issue and its current incident Links. Any incident Link refuses with sorted canonical Link IDs; the caller explicitly unlinks and retries with a fresh revision. A successful deletion removes current state, reserves the ID and retains prior snapshots; current reads report gone, exact prior-version reads remain addressable. No deletion version, fabricated timestamp, automatic dependency unlink or cascade is promised. `forget` remains Memory-only. | NYI; graph Issue deletion returns `capability_unavailable`. |
+| Linked Memory deletion | Same explicit unlink-before-delete rule as for an Issue. A linked Memory is never deleted by `--force`; its current identity and snapshots remain after refusal. Once unlinked, ordinary unreferenced Memory deletion applies. | The refusal is implemented; the proposed stable error is `constraint_violation`, replacing the current `deletion_policy_unresolved` only after tested implementation. |
+| Issue labels after creation | `bd update ID --add-label X`, `--remove-label X`, or `--set-labels X,Y` changes one Issue's label set under a resource revision choice. Add-existing and remove-absent are no-ops; set replaces the set atomically, deduplicating normalized labels. The three modes are mutually exclusive in one invocation. Other fields and Links remain unchanged. Multi-Issue propagation is explicitly outside this CLI contract. | NYI; initial `create --label/--labels` works, mutation flags refuse. The held label/RowVersion/staging design must be settled before implementation. |
+| Issue notes replacement/clear | `bd update ID --notes TEXT --if-revision TOKEN` replaces the whole note text; explicit `--notes=` clears it. Omission preserves it. Replacement/clear require an observed revision, not `--unconditional`, and cannot combine with `--append-notes`. Identical replacement is a no-op. Accepted changes retain the prior version and never rewrite older snapshots. | NYI; only initial `create --notes` and guarded `update --append-notes` work. |
+| Deferral | `bd defer ID --if-revision TOKEN` sets one live Issue to deferred; `bd undefer ID --if-revision TOKEN` returns a deferred Issue to open. Each also accepts explicit `--unconditional` in place of `--if-revision`, never both. Each is one atomic transition, keeps fields/Links, records a retained version only if state changed, and affects `ready` through status rather than a hidden scheduler. A repeated transition is a no-op after guard validation. `--until` and automatic wake-up are excluded until a clock/wake contract is reviewed; passing them refuses. | NYI in graph workspaces. |
+
+This target intentionally does **not** assert that old graph workspaces migrate,
+that a deletion has a citable deletion version, that `--force` bypasses Links,
+or that any CLI operation silently supplies HTTP Write or HTTP History. Metadata
+Type installation/migration, cross-Scope Link writing, batch graph
+mutation, alias resolution, automatic recall and full compatibility with every
+ordinary Issue command require separate contracts; they are not implied by
+this table. The current implementation's capability report remains
+authoritative until those contracts and code land.
+
 Start in a new directory with no `.beads` directory:
 
 ```sh
