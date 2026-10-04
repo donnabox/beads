@@ -18,6 +18,11 @@ readonly version="2.10.1"
 readonly max_attempts=3
 readonly retry_delay_seconds=5
 
+declare -A sha256_by_arch=(
+  [amd64]="dfa775874cf0561b404a02a8f4481fc69b28091da95aa697259820d429b09c99"
+  [arm64]="6652b42ae02915eb2f9cb2a2e0cac99514c8eded8388d88ae3e06e1a52c00de8"
+)
+
 : "${RUNNER_TEMP:?RUNNER_TEMP is required; this script is CI-only}"
 : "${GITHUB_PATH:?GITHUB_PATH is required; this script is CI-only}"
 
@@ -29,20 +34,15 @@ fi
 
 arch="$(uname -m)"
 case "$arch" in
-  x86_64 | amd64)
-    arch="amd64"
-    expected_sha256="dfa775874cf0561b404a02a8f4481fc69b28091da95aa697259820d429b09c99"
-    ;;
-  aarch64 | arm64)
-    arch="arm64"
-    expected_sha256="6652b42ae02915eb2f9cb2a2e0cac99514c8eded8388d88ae3e06e1a52c00de8"
-    ;;
+  x86_64 | amd64) arch="amd64" ;;
+  aarch64 | arm64) arch="arm64" ;;
   *)
     printf 'Unsupported architecture for pinned golangci-lint install: %s\n' "$arch" >&2
     exit 1
     ;;
 esac
 
+expected_sha256="${sha256_by_arch[$arch]:?no pinned sha256 for arch: $arch}"
 readonly asset="golangci-lint-${version}-${os}-${arch}.tar.gz"
 readonly url="https://github.com/golangci/golangci-lint/releases/download/v${version}/${asset}"
 

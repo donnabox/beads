@@ -146,14 +146,6 @@ if [[ -z "$BEADS_TEST_REPO_ROOT" ]]; then
     exit 1
 fi
 
-# Bash 3.2 treats expansion of an empty array as an unbound variable under
-# `set -u`, even when the array was initialized above. Keep the no-custom-flag
-# invocation separate so macOS runs the same test binary contract as Linux.
-if ((${#PASSTHROUGH[@]} > 0)); then
-    echo "Running: $BIN (cwd=$PKGDIR_ABS) ${TEST_ARGS[*]} ${PASSTHROUGH[*]}" >&2
-    cd "$PKGDIR_ABS"
-    exec "$BIN" "${TEST_ARGS[@]}" "${PASSTHROUGH[@]}"
-fi
-echo "Running: $BIN (cwd=$PKGDIR_ABS) ${TEST_ARGS[*]}" >&2
+echo "Running: $BIN (cwd=$PKGDIR_ABS) ${TEST_ARGS[*]} ${PASSTHROUGH[*]}" >&2
 cd "$PKGDIR_ABS"
-exec "$BIN" "${TEST_ARGS[@]}"
+exec "$BIN" "${TEST_ARGS[@]}" "${PASSTHROUGH[@]}"

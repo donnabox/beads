@@ -47,9 +47,6 @@ Examples:
 	SilenceUsage:  true,
 	SilenceErrors: true,
 	RunE: func(cmd *cobra.Command, args []string) error {
-		if graphPreviewActive {
-			return runGraphPreviewDeferral(cmd, args, true)
-		}
 		evt := metrics.NewCommandEvent("defer")
 		defer func() {
 			if c := metrics.Global(); c != nil {
@@ -155,8 +152,6 @@ Examples:
 }
 
 func init() {
-	deferCmd.Flags().String("if-revision", "", "Graph mode: require this observed Issue revision")
-	deferCmd.Flags().Bool("unconditional", false, "Graph mode: update without a revision comparison")
 	// Time-based scheduling flag (GH#820)
 	deferCmd.Flags().String("until", "", "Defer until specific time (e.g., +1h, tomorrow, next monday)")
 	deferCmd.Flags().String("reason", "", "Record why this issue is being deferred (appended to notes)")

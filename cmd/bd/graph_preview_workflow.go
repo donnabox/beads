@@ -148,46 +148,6 @@ func runGraphPreviewClose(cmd *cobra.Command, args []string) error {
 	})
 }
 
-func runGraphPreviewDeferral(cmd *cobra.Command, args []string, deferred bool) error {
-	if err := graphPreviewWritePolicy(); err != nil {
-		return err
-	}
-	if err := graphPreviewFlags(cmd, "if-revision", "unconditional"); err != nil {
-		return err
-	}
-	if len(args) != 1 {
-		return graphFailure("invalid_selector", "graph deferral requires exactly one Issue ID or beads/PATH", 2)
-	}
-	path, err := graphPreviewResourcePath(graphPreviewConfig.GraphScopeURL, args[0])
-	if err != nil {
-		return graphFailure("invalid_selector", err.Error(), 2)
-	}
-	if err := graph.ValidateBeadPath(path); err != nil {
-		return graphFailure("invalid_selector", err.Error(), 2)
-	}
-	revision, unconditional, err := graphPreviewRevisionGuard(cmd, false, true)
-	if err != nil {
-		return err
-	}
-	return withGraphStore(func(ctx context.Context, store *graphstore.Store) (any, string, error) {
-		result, err := store.SetIssueDeferred(ctx, graphstore.IssueDeferralRequest{
-			Path: path, Actor: getActorWithGit(), ExpectedRevision: revision,
-			Unconditional: unconditional, Deferred: deferred,
-		})
-		if err != nil {
-			return nil, "", err
-		}
-		if !result.Changed {
-			return result, fmt.Sprintf("Unchanged %s\n", result.Issue.ID), nil
-		}
-		verb := "Undeferred"
-		if deferred {
-			verb = "Deferred"
-		}
-		return result, fmt.Sprintf("%s %s\n", verb, result.Issue.ID), nil
-	})
-}
-
 func runGraphPreviewReady(cmd *cobra.Command, args []string) error {
 	if err := graphPreviewFlags(cmd); err != nil {
 		return err

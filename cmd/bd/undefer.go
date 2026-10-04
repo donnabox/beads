@@ -30,9 +30,6 @@ Examples:
 	SilenceUsage:  true,
 	SilenceErrors: true,
 	RunE: func(cmd *cobra.Command, args []string) error {
-		if graphPreviewActive {
-			return runGraphPreviewDeferral(cmd, args, false)
-		}
 		evt := metrics.NewCommandEvent("undefer")
 		defer func() {
 			if c := metrics.Global(); c != nil {
@@ -122,8 +119,6 @@ Examples:
 }
 
 func init() {
-	undeferCmd.Flags().String("if-revision", "", "Graph mode: require this observed Issue revision")
-	undeferCmd.Flags().Bool("unconditional", false, "Graph mode: update without a revision comparison")
 	undeferCmd.ValidArgsFunction = issueIDCompletion
 	rootCmd.AddCommand(undeferCmd)
 }

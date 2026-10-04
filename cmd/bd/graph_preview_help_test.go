@@ -13,7 +13,7 @@ func TestGraphPreviewHelpDocumentsPlaytestCommands(t *testing.T) {
 	for _, cmd := range []*cobra.Command{
 		initCmd, rememberCmd, memoriesCmd, recallCmd, createCmd, showCmd,
 		updateCmd, deleteCmd, forgetCmd, depAddCmd, linkCmd, closeCmd,
-		reopenCmd, deferCmd, undeferCmd, readyCmd, listCmd, blockedCmd, graphCmd, statusCmd,
+		reopenCmd, readyCmd, listCmd, blockedCmd, graphCmd, statusCmd,
 		typesCmd, versionsCmd, historyCmd,
 	} {
 		t.Run(cmd.Name()+"-scope", func(t *testing.T) {
@@ -43,8 +43,6 @@ func TestGraphPreviewHelpDocumentsPlaytestCommands(t *testing.T) {
 		{"types", typesCmd, []string{"Graph preview workspaces:", "types/NAME", "--details", "--bead-type", "--link-type"}},
 		{"versions", versionsCmd, []string{"Graph preview workspaces:", "Use bd versions ID to list one Memory, Issue or Link's retained versions newest", "Bare ID means beads/ID; use links/PATH for a Link.", "--version TOKEN or bd compare ID --from TOKEN --to TOKEN", "BDP HTTP History", "Ordinary Issue workspaces:", "List the versions recorded for a bead by versioned history."}},
 		{"history", historyCmd, []string{"Graph preview workspaces:", "bd history ID is an alias for bd versions ID.", "--limit and --events are not supported by the graph alias.", "BDP HTTP History", "Ordinary Issue workspaces:", "Show the complete version history of an issue"}},
-		{"defer", deferCmd, []string{"Graph preview workspaces:", "bd defer ID --if-revision TOKEN", "--unconditional", "--until and", "no automatic wake-up", "Ordinary Issue workspaces:"}},
-		{"undefer", undeferCmd, []string{"Graph preview workspaces:", "bd undefer ID --if-revision TOKEN", "--unconditional", "no automatic wake-up", "Ordinary Issue workspaces:"}},
 	} {
 		t.Run(tc.name, func(t *testing.T) {
 			out := captureStdout(t, tc.cmd.Help)
@@ -56,9 +54,9 @@ func TestGraphPreviewHelpDocumentsPlaytestCommands(t *testing.T) {
 		})
 	}
 
-	// Versions, history and dateless deferral lead with the graph section, ahead of their long
+	// versions and history lead with the graph section, ahead of their long
 	// ordinary descriptions (versioned-history recording, Dolt commits).
-	for _, cmd := range []*cobra.Command{versionsCmd, historyCmd, deferCmd, undeferCmd} {
+	for _, cmd := range []*cobra.Command{versionsCmd, historyCmd} {
 		t.Run(cmd.Name()+"-graph-first", func(t *testing.T) {
 			out := captureStdout(t, cmd.Help)
 			graphAt, ordinaryAt := strings.Index(out, "Graph preview workspaces:"), strings.Index(out, "Ordinary Issue workspaces:")

@@ -48,14 +48,10 @@ func underPinnedRootForTesting(wd string) bool {
 	if pinnedRootForTesting == "" || wd == "" {
 		return false
 	}
-	if wd == pinnedRootForTesting || strings.HasPrefix(wd, pinnedRootForTesting+string(filepath.Separator)) {
+	if wd == pinnedRootForTesting {
 		return true
 	}
-	// os.Getwd can report the physical spelling even when the pin was set
-	// through an alias such as macOS /var -> /private/var. Keep the fence
-	// effective for either spelling, without changing paths outside the pin.
-	physical, err := filepath.EvalSymlinks(wd)
-	return err == nil && (physical == pinnedRootForTesting || strings.HasPrefix(physical, pinnedRootForTesting+string(filepath.Separator)))
+	return strings.HasPrefix(wd, pinnedRootForTesting+string(filepath.Separator))
 }
 
 // initGitContext populates the gitContext with a single git call.
@@ -563,9 +559,6 @@ func PinNoRepositoryUnderForTesting(root string) {
 	abs, err := filepath.Abs(root)
 	if err == nil {
 		root = abs
-	}
-	if physical, err := filepath.EvalSymlinks(root); err == nil {
-		root = physical
 	}
 	pinnedRootForTesting = root
 	gitCtxOnce = sync.Once{}
