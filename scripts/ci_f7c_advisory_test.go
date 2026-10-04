@@ -1483,7 +1483,7 @@ func resolveRunsOnLabel(runsOn string, ctx map[string]string) string {
 	if !strings.Contains(runsOn, "${{") {
 		return strings.TrimSpace(runsOn)
 	}
-	v, err := evalGHExpr(runsOn, ctx)
+	v, err := evalGHExpr(runsOn, forkUpstreamWorld(ctx))
 	if err != nil {
 		return ""
 	}

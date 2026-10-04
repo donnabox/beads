@@ -333,7 +333,7 @@ func evalGHExpr(expr string, ctx map[string]string) (any, error) {
 // expression does not evaluate to a string.
 func mustEvalGHRunsOn(t *testing.T, expr string, ctx map[string]string) string {
 	t.Helper()
-	v, err := evalGHExpr(expr, ctx)
+	v, err := evalGHExpr(expr, forkUpstreamWorld(ctx))
 	if err != nil {
 		t.Fatalf("evalGHExpr(%q): %v", expr, err)
 	}
