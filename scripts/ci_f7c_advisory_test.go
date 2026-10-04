@@ -830,6 +830,7 @@ func TestF7cAdvisorySameRepoBlacksmithExpressionSemantics(t *testing.T) {
 					"github.event_name":                             c.event,
 					"github.event.pull_request.head.repo.full_name": c.headRepo,
 					"github.repository":                             ownRepo,
+					"github.repository_owner":                       "gastownhall",
 					"github.actor":                                  c.actor,
 				}
 				want := j.fallback

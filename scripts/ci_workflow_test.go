@@ -2619,7 +2619,7 @@ const mainWindowsTestBinariesCacheRunsOn = "${{ matrix.runner == 'blacksmith' &&
 // here is pinned to the literal `ubuntu-24.04` label instead so the
 // non-Blacksmith path keeps working after that migration regardless of when
 // it lands. Do not fold this back into sameRepoBlacksmith4vcpu.
-const sameRepoBlacksmith4vcpuNoble = "${{ (github.event_name == 'merge_group' || (github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository && github.actor != 'dependabot[bot]')) && 'blacksmith-4vcpu-ubuntu-2404' || 'ubuntu-24.04' }}"
+const sameRepoBlacksmith4vcpuNoble = "${{ github.repository_owner == 'gastownhall' && (github.event_name == 'merge_group' || (github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository && github.actor != 'dependabot[bot]')) && 'blacksmith-4vcpu-ubuntu-2404' || 'ubuntu-24.04' }}"
 
 // F7b: venue-matrix runs-on for main.yml jobs that seed a Blacksmith GOCACHE
 // alongside their existing GitHub-hosted seed ("venue: [blacksmith, github]"):
