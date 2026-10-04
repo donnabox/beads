@@ -30,7 +30,7 @@ func graphVersionsNotFound(selector string) error {
 // graphVersionRowsJSON fixes the wire shape in the CLI layer, where the
 // documented contract lives, instead of depending on struct tags in the store
 // package. The names are deliberate and documented in
-// docs/reference/graph-preview.md.
+// docs/reference/graph-cli-specification-draft.md.
 //
 // `ordinal` is NOT called `revision`: graph records already use `revision` for
 // the opaque token, and native Issues use it for the row-lock CAS token, which

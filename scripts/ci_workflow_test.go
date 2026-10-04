@@ -150,7 +150,9 @@ func TestGolangciLintInstallScriptPinned(t *testing.T) {
 		t.Errorf("install-golangci-lint.sh does not pin version %q", version)
 	}
 	for arch, sha := range wantSHA256 {
-		if !strings.Contains(script, "["+arch+"]=\""+sha+"\"") {
+		// The checksum must be assigned in the matching case arm. A flat
+		// checksum presence check would also pass if the two arches swapped.
+		if !strings.Contains(script, "arch=\""+arch+"\"\n    expected_sha256=\""+sha+"\"") {
 			t.Errorf("install-golangci-lint.sh does not pin %s sha256 %q", arch, sha)
 		}
 	}
