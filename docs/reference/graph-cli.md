@@ -168,6 +168,19 @@ bd forget other-scratch --unconditional
 Deletion removes current Memory state but reserves its ID and retains prior
 snapshots. It does not create a deletion version or promise erasure or restore.
 
+To set aside one live Issue without a wake-up date, use `bd defer`; return it
+to open with `bd undefer`. Both commands require either the revision shown by
+`bd show ID --json` or an explicit `--unconditional`. A repeated command is a
+no-op after guard validation. Deferred Issues do not appear in `bd ready`.
+Graph workspaces do not accept `--until` or `--reason` on these commands and
+do not wake Issues automatically.
+
+```sh
+bd show work --json
+bd defer work --if-revision REVISION_FROM_SHOW
+bd undefer work --unconditional
+```
+
 ## Create, inspect, edit and remove Links
 
 Use `bd types` to find installed Link Types. An informational Type such as

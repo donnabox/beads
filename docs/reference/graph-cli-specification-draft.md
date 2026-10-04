@@ -91,6 +91,7 @@ ordinary storage.
 | `delete BEAD`, `forget BEAD` | `--if-revision`, `--unconditional`; `delete` also `--force` | Preview then explicit apply, or direct apply, for an unreferenced Memory / implemented. Issue deletion target is specified below, NYI. |
 | `close ISSUE` | `--reason`/`--resolution`/`--message`/`--comment` | Native close of one Issue / implemented. No force or batch form. |
 | `reopen ISSUE` | `--reason` | Native reopen of one Issue / implemented. |
+| `defer ISSUE`, `undefer ISSUE` | `--if-revision TOKEN` or `--unconditional` | One explicit resource guard choice is required; dateless native Issue transition / implemented. Scheduling flags such as `--until` refuse. |
 | `ready`, `blocked` | no additional flags | Native Issue readiness and blocker views / implemented; no query filters. |
 | `list` | `--flat`, `--format records-json`, `--bead-type`, `--all`, `--limit`; Issue query: `--status`/`--state`, `--type`, `--title`, `--title-contains`, `--priority`, `--priority-min`, `--priority-max`, `--label`, `--label-any`, `--exclude-label`, `--pinned`, `--no-pinned`, `--sort`, `--reverse`, `--assignee`, `--no-assignee`, `--due-before`, `--due-after`, `--overdue` | Bounded all-Bead list unless an Issue filter/directory label selects native Issue-only query / implemented. Tree and legacy `--json` refuse. |
 | `graph BEAD` | `--view generic`, `--direction in\|out\|both`, `--depth`, `--max-nodes`, `--max-links` | Bounded current local summary traversal / implemented. |
@@ -110,7 +111,6 @@ row can move into the current inventory.
 | `update RESOURCE` | `--metadata JSON` or `--metadata-patch JSON` | Replace or patch open metadata under the resource and applicable source guard; the two modes and property edits are mutually exclusive. |
 | `update ISSUE` | `--add-label X`, `--remove-label X`, `--set-labels X,Y`, `--notes TEXT` | Label modes are mutually exclusive; notes replacement/clear has the stricter observed-revision rule below. |
 | `delete ISSUE` | existing `--force`, `--if-revision`, `--unconditional` | The existing spelling gains an Issue route with the incident-Link refusal specified below. |
-| `defer ISSUE`, `undefer ISSUE` | `--if-revision TOKEN` or `--unconditional` | One explicit resource guard choice is required; scheduling flags such as `--until` remain unavailable. |
 
 The implemented defaults are part of the contract, not unspecified CLI
 convenience: `link` without a Type requests a blocking Issue Dependency;
@@ -189,13 +189,13 @@ The native close/reopen/claim writer owns the atomic History stamp. The graph
 layer retains the resulting complete Issue projection in that same
 transaction; it must not mint a second stamp, substitute a fabricated time or
 take a separate application lock. A native no-op must not acquire a new graph
-version. `defer` and `undefer` are specified below as NYI; no current Issue
-read or elapsed clock silently implements those target transitions.
+version. `defer` and `undefer` use that same writer for dateless state changes;
+no current Issue read or elapsed clock silently implements a transition.
 
 ### Target operations and linked-deletion policy
 
 These rows complete the intended non-Type CLI behavior for review. The linked
-Memory refusal is implemented; the other rows do not extend this build's
+Memory refusal and dateless deferral are implemented; the other rows do not extend this build's
 admission. Every proposed operation must gain an
 implementation, help text, two-engine installed tests and exact-source CI
 before its status changes. Existing incident-Link deletion refusal is retained:
@@ -209,7 +209,7 @@ neither `--force` nor a future convenience command may silently cascade.
 | Linked Memory deletion | Same explicit unlink-before-delete rule as for an Issue. A linked Memory is never deleted by `--force`; its current identity and snapshots remain after refusal. Once unlinked, ordinary unreferenced Memory deletion applies. | Implemented with `constraint_violation`, the first incident Link ID and a total count. |
 | Issue labels after creation | `bd update ID --add-label X`, `--remove-label X`, or `--set-labels X,Y` changes one Issue's label set under a resource revision choice. Add-existing and remove-absent are no-ops; set replaces the set atomically, deduplicating normalized labels. The three modes are mutually exclusive in one invocation. Other fields and Links remain unchanged. Multi-Issue propagation is explicitly outside this CLI contract. | NYI; initial `create --label/--labels` works, mutation flags refuse. The held label/RowVersion/staging design must be settled before implementation. |
 | Issue notes replacement/clear | `bd update ID --notes TEXT --if-revision TOKEN` replaces the whole note text; explicit `--notes=` clears it. Omission preserves it. Replacement/clear require an observed revision, not `--unconditional`, and cannot combine with `--append-notes`. Identical replacement is a no-op. Accepted changes retain the prior version and never rewrite older snapshots. | NYI; only initial `create --notes` and guarded `update --append-notes` work. |
-| Deferral | `bd defer ID --if-revision TOKEN` sets one live Issue to deferred; `bd undefer ID --if-revision TOKEN` returns a deferred Issue to open. Each also accepts explicit `--unconditional` in place of `--if-revision`, never both. Each is one atomic transition, keeps fields/Links, records a retained version only if state changed, and affects `ready` through status rather than a hidden scheduler. A repeated transition is a no-op after guard validation. `--until` and automatic wake-up are excluded until a clock/wake contract is reviewed; passing them refuses. | NYI in graph workspaces. |
+| Deferral | `bd defer ID --if-revision TOKEN` sets one live Issue to deferred; `bd undefer ID --if-revision TOKEN` returns a deferred Issue to open. Each also accepts explicit `--unconditional` in place of `--if-revision`, never both. Each is one atomic transition, keeps fields/Links, records a retained version only if state changed, and affects `ready` through status rather than a hidden scheduler. A repeated transition is a no-op after guard validation. `--until` and automatic wake-up are excluded until a clock/wake contract is reviewed; passing them refuses. | Implemented for one dateless live Issue in graph workspaces. |
 
 This target intentionally does **not** assert that old graph workspaces migrate,
 that a deletion has a citable deletion version, that `--force` bypasses Links,
@@ -404,7 +404,7 @@ explicit creation title must remain nonempty; updates preserve omitted fields.
 | `list` or `list --format records-json` | Without an Issue filter, one bounded current snapshot of every Memory and every Issue the ordinary `bd list` would show: closed and pinned Issues are hidden unless `--all`, which also lifts the row limit. Newest recorded change first, ties by canonical Bead ID; human rows show local ID and kind, and for an Issue its status and priority, then the title. `--bead-type types/NAME` narrows by nominal Bead Type. A positive `BEADS_MAX_ROWS` refuses a page of more Beads than the cap. Any Issue filter (status/state, type, title/title-contains, priority and range, assignee/no-assignee, label/label-any/exclude-label, pinned/no-pinned, due-before/due-after/overdue, sort or reverse, or a matching configured directory label) selects the native Issue-only query, which lists Issues only, says so under the header in human output, and omits closed and pinned Issues unless `--all` or a filter selects them. See [All-Bead listing](#all-bead-listing). `hasMore` reports whether a row limit omitted matches; tree and legacy JSON remain unavailable. |
 | `blocked` | Complete native dependency-blocked Issue view with canonical blocker IDs. No filters or positive `BEADS_MAX_ROWS`. |
 | `graph BEAD --view generic` | Current local summary traversal with `--direction in\|out\|both`, `--depth`, `--max-nodes` and `--max-links`. |
-| `status --graph` | Report the capabilities and bounds admitted by this checkpoint, including initial Issue fields/notes, append-only notes, estimate/reference edits and due-date authoring/filtering. |
+| `status --graph` | Report the capabilities and bounds admitted by this checkpoint, including initial Issue fields/notes, append-only notes, estimate/reference edits, due-date authoring/filtering and dateless Issue deferral. |
 | `serve --readonly --addr HOST:PORT` | BDP Read over HTTP for an ordinary shared-server graph workspace. Existing token-file authentication, Host controls and non-loopback opt-in apply. Embedded serving is refused. |
 | `setup claude [--project] [--check\|--remove]` | Add, check or remove only the project-local Claude Stop hook (`bd claude-hook stop`); adding also ensures `CLAUDE.md` imports the graph guidance. Adding and `--check` require current graph-preview guidance. Global/stealth setup, other recipes and `--json` are unavailable. |
 | `claude-hook stop` | Steph's Stop reminder, which Claude Code runs with its JSON hook input on stdin; it does not open storage. If graph admission refuses it (for example, `BD_BACKEND` is set or the workspace was moved), it prints one warning line and exits 1, which Claude Code does not treat as blocking. |
@@ -709,7 +709,7 @@ deletion to refuse. `--force` does not cascade. Batch selectors, `--from-file`,
 `--cascade`, `--dry-run`, erasure and Issue deletion are unavailable in this
 graph slice. Ordinary Issue deletion and key/value `forget` remain unchanged.
 `status --graph` advertises `memoryUnreferencedDelete`; general `memoryDelete`
-remains false because linked Memory deletion policy is unresolved.
+remains false because deletion still refuses while incident Links are live.
 
 ## All-Bead listing
 
@@ -976,12 +976,11 @@ closed Issues even with `--all`; it neither changes status nor schedules work.
 After normalization, an unchanged due value or repeated clear is a no-op, while
 a stale revision still refuses. Current and exact retained reads preserve the
 accepted instant; due writes retain existing links, lease and lifecycle state.
-No defer, recurrence, mandatory deadline or scheduler behavior is added.
+No scheduled defer, recurrence, mandatory deadline or scheduler behavior is added.
 
 ## Limits and remaining work
 
-Deleting a linked Memory and Issue deletion,
-defer/scheduling, notes replacement/clear, label mutation,
+Issue deletion, scheduled defer, notes replacement/clear, label mutation,
 and full Memory remain unavailable. Issue creation can set initial
 labels; that does not adopt a label-editing contract. These restrictions apply
 to graph workspaces; ordinary Issue workspaces keep their existing behavior.

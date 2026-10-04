@@ -128,3 +128,62 @@ func TestGraphPreviewIssueAuthoringWorkflow(t *testing.T) {
 		})
 	}
 }
+
+func TestGraphPreviewIssueDatelessDeferralWorkflow(t *testing.T) {
+	bd := buildBDUnderTest(t)
+	for _, engine := range []string{"embedded", "server"} {
+		t.Run(engine, func(t *testing.T) {
+			work, home := t.TempDir(), t.TempDir()
+			args := []string{"init", "--graph-mode", "link", "--scope-url", "https://example.invalid/deferral/", "--skip-hooks", "--skip-agents", "--non-interactive"}
+			if engine == "server" {
+				port := os.Getenv("BEADS_GRAPH_TEST_SERVER_PORT")
+				if port == "" {
+					t.Skip("set BEADS_GRAPH_TEST_SERVER_PORT for ordinary shared-server deferral qualification")
+				}
+				args = append(args, "--server", "--external", "--server-host", "127.0.0.1", "--server-port", port, "--server-user", "root")
+			}
+			call := func(args ...string) string {
+				t.Helper()
+				return graphPolicyCLI(t, bd, work, home, nil, "", append(args, "--json")...)
+			}
+			refuse := func(code string, args ...string) {
+				t.Helper()
+				graphPolicyCLI(t, bd, work, home, nil, code, append(args, "--json")...)
+			}
+			call(args...)
+			original := graphMixedResult[graphstore.IssueRecord](t, call("create", "Work", "--id", "work"))
+			memory := call("remember", "Context", "--id", "context", "--title", "Context")
+			refuse("invalid_selector", "defer", original.ID)
+			refuse("capability_unavailable", "defer", original.ID, "--until", "tomorrow", "--unconditional")
+			refuse("capability_unavailable", "defer", original.ID, "--reason", "later", "--unconditional")
+			refuse("invalid_selector", "defer", original.ID, "context", "--unconditional")
+			refuse("invalid_properties", "defer", "context", "--unconditional")
+			if call("show", original.ID) == memory {
+				t.Fatal("Issue and Memory identity collided")
+			}
+			deferred := graphMixedResult[graphstore.IssueMutationResult](t, call("defer", "work", "--if-revision", original.Revision))
+			if !deferred.Changed || string(deferred.Issue.Properties.Status) != "deferred" || deferred.Issue.Properties.DeferUntil != nil || deferred.Issue.Version == original.Version {
+				t.Fatalf("defer result: %+v", deferred)
+			}
+			refuse("revision_conflict", "defer", "work", "--if-revision", original.Revision)
+			refuse("invalid_selector", "undefer", "work")
+			if got := graphMixedResult[[]graphstore.IssueRecord](t, call("ready")); len(got) != 0 {
+				t.Fatalf("deferred Issue remained ready: %+v", got)
+			}
+			noop := graphMixedResult[graphstore.IssueMutationResult](t, call("defer", "work", "--if-revision", deferred.Issue.Revision))
+			if noop.Changed || !reflect.DeepEqual(noop.Issue, deferred.Issue) {
+				t.Fatalf("repeat defer changed Issue: %+v", noop)
+			}
+			opened := graphMixedResult[graphstore.IssueMutationResult](t, call("undefer", "work", "--if-revision", deferred.Issue.Revision))
+			if !opened.Changed || string(opened.Issue.Properties.Status) != "open" || opened.Issue.Version == deferred.Issue.Version {
+				t.Fatalf("undefer result: %+v", opened)
+			}
+			if got := graphMixedResult[[]graphstore.IssueRecord](t, call("ready")); len(got) != 1 || got[0].ID != original.ID {
+				t.Fatalf("undeferred Issue remained hidden: %+v", got)
+			}
+			if call("show", "context") != memory {
+				t.Fatal("deferral changed unrelated Memory")
+			}
+		})
+	}
+}
