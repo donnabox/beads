@@ -398,8 +398,10 @@ func TestCheckVersionableIssues_AReadThatFailsDoesNotReadClean(t *testing.T) {
 	}
 }
 
-// With no database there is nothing to check, which every store-reading check here
-// answers as a pass; the message says so rather than claiming a store was inspected.
+// With no shared store the check reads nothing and answers as a pass, as every
+// store-reading check here does; its message says it did not check, rather than claiming
+// a store was inspected, because a nil store is also what a database that could not be
+// opened looks like.
 func TestCheckVersionableIssuesWithStore_NoDatabaseYet(t *testing.T) {
 	for name, ss := range map[string]*SharedStore{"no shared store": nil, "no store in it": {}} {
 		t.Run(name, func(t *testing.T) {

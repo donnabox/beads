@@ -27,8 +27,10 @@ const versionableIssuesListLimit = 20
 // It is the check `bd config set versioned-history.enabled true` makes once, kept as a
 // standing control. The environment and config.yaml planes can also turn history on,
 // and they do not pass through that command, so a store switched on by one of them
-// never gets its refusal; this is what finds the rows beforehand, and it can be run
-// against any store at any time.
+// never gets its refusal; this finds the rows beforehand and can be run at any time. It
+// runs wherever bd doctor does, which is server-backed workspaces: doctor does not yet
+// run in embedded mode, where the check made when the setting is turned on is the only
+// one.
 //
 // It runs the one function recording runs, over whole issues, through
 // issueops.FindUnversionable: the check and the mint cannot disagree because there is
@@ -38,15 +40,19 @@ const versionableIssuesListLimit = 20
 // is named too, which can only make it refuse more.
 //
 // A store that cannot be read does not pass: a check that could not run has not
-// passed, so the answer is a warning that says so. It is deliberately not
-// auto-fixable: replacing a value or removing a gate is the owner's decision.
+// passed, so the answer is a warning that says so. With no shared store at all it
+// checks nothing and says that, as its neighbors do, rather than calling the workspace
+// clean: the shared store is nil both for a workspace with no database and for one whose
+// database could not be opened, and this cannot tell them apart, so the database checks
+// are what report a failure to open. It is deliberately not auto-fixable: replacing a
+// value or removing a gate is the owner's decision.
 func CheckVersionableIssuesWithStore(ss *SharedStore) DoctorCheck {
 	store := ss.Store()
 	if store == nil {
 		return DoctorCheck{
 			Name:    versionableIssuesName,
 			Status:  StatusOK,
-			Message: "No database yet",
+			Message: "Not checked: no database could be opened",
 		}
 	}
 	reader, err := store.IssueReader()
