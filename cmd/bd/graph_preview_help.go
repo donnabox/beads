@@ -104,6 +104,12 @@ requires Issue endpoints and, unlike informational Types, one of
 remote-routing forms are unavailable in this graph preview.`},
 		{reopenCmd, `Reopen one closed Issue by ID or beads/ID, optionally
 with --reason. Batch and remote-routing forms are unavailable.`},
+		{unclaimCmd, `Release your own in-progress Issue claim with bd unclaim ID.
+The release clears the assignee and lease and reopens the Issue for another
+claimant. A repeated release refuses because there is no claim to release.
+Only one local ID is accepted. --force, --if-assignee and --reason are not
+available in graph workspaces while supervision and lease-expiry policy is
+settled. Other holders' claims cannot be released by this command.`},
 		{readyCmd, `Show current ready Issues with no graph-specific filters.
 This graph preview refuses positive BEADS_MAX_ROWS instead of truncating.`},
 		{listCmd, `Without Issue filters, bd list reads one bounded snapshot of current Beads

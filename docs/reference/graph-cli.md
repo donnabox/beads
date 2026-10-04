@@ -194,6 +194,25 @@ current Link but retains its identity and prior snapshots. The blocking
 endpoint. See the [technical reference](/reference/graph-preview) for the
 separate blocking Dependency unlink rules and Link Type bounds.
 
+## Claim and release Issue work
+
+`bd update ID --claim` atomically claims a live Issue for the current actor.
+`bd unclaim ID` releases **only that actor's in-progress claim**, clearing its
+assignee and lease and returning the Issue to open for another claimant. Both
+accepted changes retain complete Issue versions. A second unclaim refuses
+because no claim remains; it does not create another version.
+
+```sh
+bd update work --claim --actor rig.agent
+bd unclaim work --actor rig.agent
+bd update work --claim --actor another.agent
+```
+
+Graph unclaim accepts one local Issue at a time. `--force`,
+`--if-assignee`, and `--reason` are unavailable while supervisor release and
+lease-expiry policy is decided. It cannot release another actor's claim or
+turn an initially assigned open Issue into an unassigned one.
+
 ## Versioning and History
 
 **Revision** names the current state of one Bead or Link. Use its `revision`

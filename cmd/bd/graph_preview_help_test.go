@@ -13,7 +13,7 @@ func TestGraphPreviewHelpDocumentsPlaytestCommands(t *testing.T) {
 	for _, cmd := range []*cobra.Command{
 		initCmd, rememberCmd, memoriesCmd, recallCmd, createCmd, showCmd,
 		updateCmd, deleteCmd, forgetCmd, depAddCmd, linkCmd, closeCmd,
-		reopenCmd, readyCmd, listCmd, blockedCmd, graphCmd, statusCmd,
+		reopenCmd, unclaimCmd, readyCmd, listCmd, blockedCmd, graphCmd, statusCmd,
 		typesCmd, versionsCmd, historyCmd,
 	} {
 		t.Run(cmd.Name()+"-scope", func(t *testing.T) {
@@ -39,6 +39,7 @@ func TestGraphPreviewHelpDocumentsPlaytestCommands(t *testing.T) {
 			"--if-source-revision TOKEN or --unconditional-source.",
 		}},
 		{"update", updateCmd, []string{"Graph preview workspaces:", "--properties", "--if-revision TOKEN"}},
+		{"unclaim", unclaimCmd, []string{"Graph preview workspaces:", "bd unclaim ID", "--force", "lease"}},
 		{"list", listCmd, []string{"Graph preview workspaces:", "all installed Bead Types", "--bead-type types/NAME", "Issue-specific filters", "newest recorded change first", "hidden unless --all is given", "--all also removes the row limit", "BEADS_MAX_ROWS refuses a page of more Beads", "--sort, --reverse", "Issues only", "a line under the header saying Memories are", "it is simply not"}},
 		{"types", typesCmd, []string{"Graph preview workspaces:", "types/NAME", "--details", "--bead-type", "--link-type"}},
 		{"versions", versionsCmd, []string{"Graph preview workspaces:", "Use bd versions ID to list one Memory, Issue or Link's retained versions newest", "Bare ID means beads/ID; use links/PATH for a Link.", "--version TOKEN or bd compare ID --from TOKEN --to TOKEN", "BDP HTTP History", "Ordinary Issue workspaces:", "List the versions recorded for a bead by versioned history."}},
