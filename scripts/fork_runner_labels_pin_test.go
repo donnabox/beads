@@ -5,6 +5,7 @@ import (
 	"path/filepath"
 	"reflect"
 	"regexp"
+	"slices"
 	"sort"
 	"strconv"
 	"strings"
@@ -36,6 +37,14 @@ import (
 // needs.rbe.outputs.enabled (true in the fork modes), or a new expression
 // shape all fail here, not on the first pull request.
 //
+// The evaluator reads an identifier the context does not mention as null (the
+// real evaluator does), which can only make a comparison false. So a scan that
+// forgets to supply something an expression reads can only err towards "never
+// reaches Blacksmith": it passes, silently. It did, on F7b's include-matrix
+// marker (strategy.matrix.include[*].runner), whose key an earlier version of
+// this scan never read. The scan therefore reads include entries, and fails
+// closed on any identifier it does not supply (forkRunsOnReachesBlacksmith).
+//
 // A workflow whose only trigger is a push to main never runs from this tree:
 // main is a byte-identical upstream mirror and runs its own copy, so such a
 // file is not scanned (its runs on the mirror gate nothing).
@@ -43,6 +52,62 @@ import (
 const forkBlacksmithGuard = "github.repository_owner == 'gastownhall' && "
 
 var forkBlacksmithName = regexp.MustCompile(`(?i)\bblacksmith-[0-9]+vcpu`)
+
+// forkModelledIdents: the identifiers forkRunsOnContexts supplies. A runs-on
+// that reads any other identifier (and is not a matrix key of its own job) is
+// a violation: the evaluator would read it as null and the scan would pass
+// without having looked.
+var forkModelledIdents = map[string]bool{
+	"github.event_name":                             true,
+	"github.event.pull_request.head.repo.full_name": true,
+	"github.repository":                             true,
+	"github.repository_owner":                       true,
+	"github.actor":                                  true,
+	"needs.rbe.outputs.mode":                        true,
+	"needs.rbe.outputs.enabled":                     true,
+}
+
+// forkExprIdents: the identifiers expr reads, sorted and unique.
+func forkExprIdents(expr string) ([]string, error) {
+	body := strings.TrimSpace(expr)
+	body = strings.TrimSpace(strings.TrimSuffix(strings.TrimPrefix(body, "${{"), "}}"))
+	toks, err := ghTokenize(body)
+	if err != nil {
+		return nil, err
+	}
+	seen := map[string]bool{}
+	var out []string
+	for _, tok := range toks {
+		if tok.kind == "ident" && !seen[tok.val] {
+			seen[tok.val] = true
+			out = append(out, tok.val)
+		}
+	}
+	sort.Strings(out)
+	return out, nil
+}
+
+// forkMatrixKey: the matrix key a scalar under .strategy.matrix. feeds, from
+// its path after that marker. "os[1]" feeds os; "include[2].runner" feeds
+// runner (an include entry's own value for it, and viaInclude says so: another
+// combination may not get the key at all); an exclude entry feeds nothing,
+// since leaving it out only widens the combinations tried.
+func forkMatrixKey(rest string) (name string, ok, viaInclude bool) {
+	head, tail, indexed := strings.Cut(rest, "[")
+	switch {
+	case head == "exclude":
+		return "", false, false
+	case head == "include" && indexed:
+		_, entry, found := strings.Cut(tail, "].")
+		if !found {
+			return "", false, false
+		}
+		name, _, _ = strings.Cut(entry, "[")
+		return name, name != "", true
+	default:
+		return head, true, false
+	}
+}
 
 // forkRunsOnContexts: every context a runs-on expression can see in this
 // repository. The owner is never gastownhall (or is missing); rbe's mode is
@@ -96,13 +161,28 @@ func forkRunsOnContexts(matrix map[string][]string) []map[string]string {
 }
 
 // forkRunsOnReachesBlacksmith: "" when expr never resolves to a Blacksmith
-// label in this repository, else why. An expression the evaluator cannot read
-// fails closed.
+// label in this repository, else why. An expression the evaluator cannot read,
+// or that reads an identifier the scan does not supply, fails closed.
 func forkRunsOnReachesBlacksmith(expr string, matrix map[string][]string) string {
 	if !strings.HasPrefix(strings.TrimSpace(expr), "${{") {
 		return "a literal Blacksmith label"
 	}
-	for _, ctx := range forkRunsOnContexts(matrix) {
+	idents, err := forkExprIdents(expr)
+	if err != nil {
+		return "cannot be evaluated (" + err.Error() + "); extend this test or ask the architect"
+	}
+	read := map[string][]string{}
+	for _, id := range idents {
+		if key, ok := strings.CutPrefix(id, "matrix."); ok {
+			if len(matrix[key]) == 0 {
+				return "reads " + id + ", which this job's strategy.matrix never gives a value (a dynamic or unreadable matrix); extend this test or ask the architect"
+			}
+			read[key] = matrix[key]
+		} else if !forkModelledIdents[id] {
+			return "reads " + id + ", which this scan does not supply (the evaluator reads it as null, so a scan that leaves it out can only pass); extend this test or ask the architect"
+		}
+	}
+	for _, ctx := range forkRunsOnContexts(read) {
 		v, err := evalGHExpr(expr, ctx)
 		if err != nil {
 			return "cannot be evaluated (" + err.Error() + "); extend this test or ask the architect"
@@ -144,17 +224,32 @@ func forkRunnerLabelViolations(root *yaml.Node) []string {
 	}
 	const marker = ".strategy.matrix."
 	matrix := map[string]map[string][]string{} // job path -> matrix key -> values
+	viaInclude := map[string]map[string]bool{}
 	walkYAML(root, "", func(path string, key bool, value string) {
 		i := strings.Index(path, marker)
 		if key || i < 0 {
 			return
 		}
-		name, _, _ := strings.Cut(path[i+len(marker):], "[")
-		if matrix[path[:i]] == nil {
-			matrix[path[:i]] = map[string][]string{}
+		name, ok, include := forkMatrixKey(path[i+len(marker):])
+		if !ok {
+			return
 		}
-		matrix[path[:i]][name] = append(matrix[path[:i]][name], value)
+		job := path[:i]
+		if matrix[job] == nil {
+			matrix[job], viaInclude[job] = map[string][]string{}, map[string]bool{}
+		}
+		matrix[job][name] = append(matrix[job][name], value)
+		viaInclude[job][name] = viaInclude[job][name] || include
 	})
+	for job, keys := range matrix {
+		for name, values := range keys {
+			if viaInclude[job][name] {
+				values = append(values, "") // a combination no include entry reaches leaves the key unset
+			}
+			sort.Strings(values)
+			keys[name] = slices.Compact(values)
+		}
+	}
 	var out []string
 	walkYAML(root, "", func(path string, key bool, value string) {
 		if key || !forkBlacksmithName.MatchString(value) {
@@ -213,6 +308,13 @@ func TestForkRunnerLabelScanControls(t *testing.T) {
 	modeKeyed := "${{ needs.rbe.outputs.mode == 'remote' && 'blacksmith-4vcpu-ubuntu-2404' || 'ubuntu-latest' }}"
 	enabledKeyed := "${{ needs.rbe.outputs.enabled == 'true' && 'blacksmith-4vcpu-ubuntu-2404' || 'ubuntu-latest' }}"
 	matrixTernary := "    strategy:\n      matrix:\n        runner: [blacksmith, github]\n    runs-on: ${{ matrix.runner == 'blacksmith' && 'blacksmith-8vcpu-ubuntu-2404' || 'ubuntu-latest' }}\n"
+	includeMatrix := func(runsOn string) string {
+		return "    strategy:\n      matrix:\n        include:\n" +
+			"          - os: ubuntu-latest\n            runner: same-repo-linux\n" +
+			"          - os: macos-latest\n            runner: same-repo-macos\n" +
+			"          - os: windows-latest\n            runner: same-repo-windows\n" +
+			"    runs-on: " + runsOn + "\n"
+	}
 	const pr = "on:\n  pull_request:\n"
 	cases := []struct {
 		name    string
@@ -231,6 +333,13 @@ func TestForkRunnerLabelScanControls(t *testing.T) {
 		{"expression the evaluator cannot read", pr, "    runs-on: ${{ contains(github.ref, 'x') && 'blacksmith-2vcpu-ubuntu-2404' || 'ubuntu-latest' }}\n", 1},
 		{"matrix ternary on a pull_request workflow", pr, matrixTernary, 1},
 		{"matrix ternary on a workflow that also has a dispatch trigger", "on:\n  push:\n    branches: [main]\n  workflow_dispatch:\n", matrixTernary, 1},
+		{"include-matrix marker as F7b shipped it", pr, includeMatrix(forkMarkerRunsOn(t, false, false)), 1},
+		{"include-matrix marker with only the linux leg guarded", pr, includeMatrix(forkMarkerRunsOn(t, true, false)), 1},
+		{"include-matrix marker with only the windows leg guarded", pr, includeMatrix(forkMarkerRunsOn(t, false, true)), 1},
+		{"include key unset in a combination no entry reaches", pr, "    strategy:\n      matrix:\n        os: [a, b]\n        include:\n          - os: a\n            runner: x\n    runs-on: ${{ matrix.runner != 'x' && 'blacksmith-2vcpu-ubuntu-2404' || 'ubuntu-latest' }}\n", 1},
+		{"marker key no include entry or list gives", pr, "    strategy:\n      matrix:\n        os: [ubuntu-latest]\n    runs-on: " + forkMarkerRunsOn(t, true, true) + "\n", 1},
+		{"runs-on reads a context the scan does not supply", pr, "    runs-on: ${{ vars.USE_BLACKSMITH == 'true' && 'blacksmith-2vcpu-ubuntu-2404' || 'ubuntu-latest' }}\n", 1},
+		{"include-matrix marker with both legs guarded", pr, includeMatrix(forkMarkerRunsOn(t, true, true)), 0},
 		{"guarded literal", pr, "    runs-on: " + guarded + "\n", 0},
 		{"mode-keyed literal", pr, "    runs-on: " + modeKeyed + "\n", 0},
 		{"hosted runner", pr, "    runs-on: ubuntu-latest\n", 0},
@@ -256,5 +365,84 @@ func TestForkRunnerLabelScanControls(t *testing.T) {
 	upstream["github.repository_owner"] = "versioned-beads"
 	if got := mustEvalGHRunsOn(t, guarded, upstream); got != "ubuntu-latest" {
 		t.Errorf("the guarded literal in versioned-beads = %q, want ubuntu-latest", got)
+	}
+}
+
+// forkMarkerRunsOn builds upstream's platforms marker (the chained ternary on
+// matrix.runner, F7b) from its pinned constant, so it follows upstream's text,
+// with the guard in front of the same-repository predicate of each leg that
+// asks for one.
+func forkMarkerRunsOn(t *testing.T, guardLinux, guardWindows bool) string {
+	t.Helper()
+	const leg = "((github.event_name == 'merge_group'"
+	parts := strings.Split(strings.ReplaceAll(sameRepoPlatformsMatrixMarkerRunsOn, forkBlacksmithGuard, ""), leg)
+	if len(parts) != 3 {
+		t.Fatalf("sameRepoPlatformsMatrixMarkerRunsOn has %d same-repository legs, want 2: update this control (rule R6, be-ju6she)", len(parts)-1)
+	}
+	with := func(guard bool) string {
+		if guard {
+			return "(" + forkBlacksmithGuard + "(github.event_name == 'merge_group'"
+		}
+		return leg
+	}
+	return parts[0] + with(guardLinux) + parts[1] + with(guardWindows) + parts[2]
+}
+
+// forkUpstreamWorld: the context an upstream evaluator test means. Upstream's
+// tests model a pull request in gastownhall/beads and know nothing of an owner,
+// so a context that does not name one gets upstream's. Only the two helpers that
+// evaluate a runs-on for upstream's tests call this (mustEvalGHRunsOn,
+// resolveRunsOnLabel; rule R6's E1 puts the call in); this file's scan calls
+// evalGHExpr itself and always names the owner, because for the scan a missing
+// owner is a case to try, not a default.
+func forkUpstreamWorld(ctx map[string]string) map[string]string {
+	if _, ok := ctx["github.repository_owner"]; ok {
+		return ctx
+	}
+	world := make(map[string]string, len(ctx)+1)
+	for k, v := range ctx {
+		world[k] = v
+	}
+	world["github.repository_owner"] = "gastownhall"
+	return world
+}
+
+// Upstream's cache sweep (TestBlacksmithReachableAdvisoryJobsNeverSaveACache)
+// skips every job whose runs-on does not resolve to a Blacksmith label under
+// its two trust contexts. Those contexts name no owner, so once the guard is in
+// every job resolves to the hosted label, the sweep examines nothing, and it
+// still passes: 16 of its 76 (job, context) pairs before rule R6, 0 after (the
+// first R6 v2 sync, vb #101). This pins that the sweep still reaches every job
+// whose runs-on spells the same-repository predicate in front of a Blacksmith
+// label. If F7c's sweep is renamed or removed, delete this with it.
+func TestForkUpstreamSweepStillReachesBlacksmithJobs(t *testing.T) {
+	ctxNames := make([]string, 0, len(blacksmithTrustContexts))
+	for ctxName := range blacksmithTrustContexts {
+		ctxNames = append(ctxNames, ctxName)
+	}
+	sort.Strings(ctxNames)
+	spelled := 0
+	for _, file := range generalCacheSweepWorkflows {
+		jobs := readCIWorkflow(t, file).Jobs
+		names := make([]string, 0, len(jobs))
+		for name := range jobs {
+			names = append(names, name)
+		}
+		sort.Strings(names)
+		for _, name := range names {
+			runsOn := jobs[name].RunsOn
+			if !forkBlacksmithName.MatchString(runsOn) || !strings.Contains(runsOn, "head.repo.full_name == github.repository") {
+				continue
+			}
+			for _, ctxName := range ctxNames {
+				spelled++
+				if got := resolveRunsOnLabel(runsOn, blacksmithTrustContexts[ctxName]); !strings.HasPrefix(got, "blacksmith-") {
+					t.Errorf("%s job %s: runs-on resolves to %q under upstream's %s context, so upstream's cache sweep skips it; put the owner in upstream's world (rule R6, E1, be-ju6she)", file, name, got, ctxName)
+				}
+			}
+		}
+	}
+	if spelled == 0 {
+		t.Errorf("no job in the cache sweep's workflows spells the same-repository Blacksmith predicate: the sweep examines nothing, or upstream changed the shape; ask the architect")
 	}
 }
