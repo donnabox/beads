@@ -7,6 +7,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- **`bd doctor` finds issues that versioned history could not record.** The new
+  *Versionable Issues* check (Data & Config) names every issue holding a value a
+  version could not record: a number outside the exact-integer range (magnitude
+  above 2^53-1) in its metadata, or a gate whose timeout is past 2^53-1
+  nanoseconds, about 104.25 days. It runs the same whole-issue check recording
+  runs, through the scan `bd config set versioned-history.enabled true` makes
+  before it writes the setting, over the same rows, so the two cannot disagree.
+  That command checks once, and turning history on through
+  `BD_VERSIONED_HISTORY_ENABLED` or `config.yaml` does not go through it at all;
+  `bd doctor` can be run against a store at any time, before or after. It reports
+  how many issues, the first 20, the number and the field it was found in, and the
+  fix for that field, and a store that holds one fails the run. It needs a
+  server-backed workspace: `bd doctor` is not yet supported in embedded mode.
+
 ### Changed
 
 - `bd preflight --fix --json` no longer returns a `Version sync` fix result:
