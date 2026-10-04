@@ -72,7 +72,7 @@ GRAPH WORKSPACE PREVIEW
   token can read the complete workspace; cursors expire after five minutes
   and do not survive process restart. Stop serving before restoring storage.
   Bind a stable address reachable through the initialized Scope URL. Host
-  aliases do not change canonical identities. See docs/reference/graph-preview.md.
+  aliases do not change canonical identities. See docs/reference/graph-cli-specification-draft.md.
 
 LEGACY ISSUE WORKSPACES
 

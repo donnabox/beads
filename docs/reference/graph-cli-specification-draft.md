@@ -1,4 +1,4 @@
-# Mixed Memory and Issue graph preview
+# Graph CLI Specification (Draft)
 
 For setup and task-oriented commands, start with the
 [graph CLI guide](/reference/graph-cli). This page is the living technical
@@ -11,9 +11,10 @@ This integration checkpoint supports a bounded Memory/Issue workflow in a
 workspaces continue using their existing commands and storage. The generic
 model, Type names and result shapes remain an experimental preview.
 
-## Preview 2 CLI contract for review
+## Proposed command contract for the next milestone
 
-This section is the **proposed complete graph-mode CLI contract** for Preview 2.
+This section is the **proposed complete graph-mode CLI contract** for the next
+Beads Graph milestone.
 It states intended behavior even where the implementation is marked **NYI**.
 The [graph CLI guide](/reference/graph-cli) remains a task-oriented walkthrough;
 the implementation table and current-preview details below tell operators what
@@ -1145,3 +1146,25 @@ append only; replacement and clear remain unavailable. Guarded scalar edits keep
 owned Links and unrelated fields unchanged; an identical scalar edit records no
 new version. Current CLI records, exact retained records and BDP Read carry these
 fields without a new wire representation or HTTP write operation.
+
+## Differences from the Memory Beads proposal
+
+The [Memory Beads proposal, Revision 4](https://github.com/gastownhall/beads/issues/5877)
+describes a broader product target. Its R31 table identifies command changes,
+while other requirements define the Memory and shared-graph behavior those
+commands need. This draft describes the current graph CLI and proposed next
+milestone. The differences below are **not** claims that the proposal's target
+has shipped or that this draft supersedes it. Reconciliation is a product
+decision; an NYI label alone does not settle a conflicting contract.
+
+| Topic | Memory Beads proposal | This CLI specification and current build |
+| --- | --- | --- |
+| Human names and lookup | R2, R25 and R31 allow zero or more human keys for a canonical Memory and recall by key or ID; safe legacy-key conversion is also part of the target. | Graph selectors use a canonical Bead ID or exact local URL. No key or alias is created, resolved or migrated. Optional `--id` chooses identity, not a human key. This is an unresolved compatibility gap. |
+| Memory discovery | R6, R25 and R31 call for deterministic compact search with honest continuation/completeness, plus `bd memories --json` returning one complete, body-carrying record per Memory, including its keys. | `bd memories` returns bounded summaries in a single complete result with no cursor. It refuses `--json`; `--format records-json` is a summary form, and full body reading uses `bd recall`. The JSON spelling, complete-record form and continuation policy need reconciliation. |
+| Generic Bead listing | R31 says generic `bd list` can include Memory records identified by kind, while task-workflow filters do not select Memories; it does not prescribe a filter flag. | `bd list --bead-type types/preview-memory-v2` selects the installed Memory Type; `--type` remains an Issue classification filter. The generic listing goal is represented, but the CLI filter vocabulary is this draft's choice. |
+| Recall and structured inspection | R7 and R31 require exact historical recall and make identity, content, attribution and Link information available through structured records; they do not select a `bd recall --json` flag. | `bd recall` emits exact body bytes and refuses `--json`; `bd show --json` supplies the structured current or retained record separately. Whether a structured recall spelling should combine them remains open. |
+| Link vocabulary and addressing | R17, R23 and R31 use `bd link --type related` as the baseline informational relationship and allow user-defined non-workflow Types on Memory endpoints. References can name `latest` or a pinned version, including a cross-Scope target without resolving it. | `--link-type types/NAME` chooses an installed informational Link Type; `--type` retains its blocking Dependency meaning. The current workspace has only local, current-state endpoints, no pinned or cross-Scope Reference writing, and no Type installation CLI. The default vocabulary and flag compatibility need a decision. |
+| Removal, erasure and restoration | R5, R20 and R31 make `forget` an immediate recoverable disappearance; deletion removes Links following `latest`, retains pinned Links, and reports removed Links and released keys. The proposal also distinguishes `delete --erase --force` and restoration. | `forget` requires `--if-revision` or explicit `--unconditional`. Any incident Link blocks current Memory deletion until explicitly unlinked; graph Issue deletion is NYI. No cascade, erasure, restoration, key release or deletion version is promised. The linked-deletion policy is a deliberate safety boundary here and conflicts with the proposal's target. |
+| Agent context | R8, R25 and R31 replace `bd prime` body injection with guidance for selective discovery and recall. | Graph `bd prime` is refused. Generated agent guidance and the CLI read commands cover part of that workflow, but the proposed `prime` compatibility behavior is not implemented. |
+| Creation validity | R4 requires at least one of title or body to contain non-whitespace text on creation. | `bd remember` currently permits a whitespace-only body and derives an empty title. That admitted edge case differs from the proposal and needs an explicit validation decision. |
+| Shared capabilities and bulk surfaces | R3, R13, R18–R21, R27 and R27a require richer Reference, History, metadata/derivation, interchange and export behavior with explicit body-exposure posture. | Local exact versions and comparison exist, but public HTTP History, pinned References, restoration, interchange, Memory export and full metadata/derivation are not supplied by the current CLI. Proposed open metadata is NYI above; Type lifecycle and shared History remain separate contracts. |
