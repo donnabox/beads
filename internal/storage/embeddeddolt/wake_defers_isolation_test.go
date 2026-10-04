@@ -109,8 +109,10 @@ type wakeSeed struct {
 	metadata  string
 	timeoutNs int64
 	// expiredFor is how long ago the defer date passed. Rows are given distinct dates so that the
-	// order of the sweep's unordered SELECT is the same whether the engine reads the table by
-	// primary key or through the defer_until index.
+	// primary-key order and the defer_until order agree, but the sweep's unordered SELECT is served
+	// in neither: the engine returns rows by updated_at, at one-second granularity, and then by id,
+	// and seeding a row refreshes updated_at. A test that depends on the order rows are read in
+	// therefore seeds them in that order.
 	expiredFor time.Duration
 }
 
@@ -329,8 +331,10 @@ func TestWakeSweepSkipsTheRefusedRowAndWakesTheRest(t *testing.T) {
 		"wisp":     {id: e.id("e-wisp"), kind: kindWisp, metadata: poisonedMetadata, timeoutNs: cleanTimeoutNs, expiredFor: 2 * time.Hour},
 		"legacy":   {id: e.id("f-legacy"), kind: kindLegacy, metadata: poisonedMetadata, timeoutNs: cleanTimeoutNs, expiredFor: time.Hour},
 	}
-	for _, s := range seeds {
-		e.seed(t, s)
+	// Seed in a fixed order with the poisoned row first, so that the sweep reads it first (see
+	// wakeSeed.expiredFor). Ranging over the map would seed in a random order.
+	for _, name := range []string{"poisoned", "clean1", "clean2", "nohist", "wisp", "legacy"} {
+		e.seed(t, seeds[name])
 	}
 	poisoned := seeds["poisoned"].id
 
