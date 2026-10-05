@@ -333,9 +333,13 @@ func TestGraphPreviewGenericFlagsRefuseLegacyOpening(t *testing.T) {
 		{"link", "demo-one", "demo-two", "--id", "links/context"},
 		{"update", "demo-one", "--properties", `{}`, "--unconditional"},
 		{"update", "beads/plan", "--patch=@/missing/patch.json", "--unconditional"},
-		{"update", "demo-one", "--if-revision", "observed"},
+		// update and delete --if-revision is upstream's compare-and-swap outside
+		// link mode, so it is not a graph-only flag here (see
+		// TestGraphPreviewIfRevisionOutsideLinkModeIsUpstreamCAS). Their
+		// --unconditional companion is, and stays refused on its own.
+		{"update", "demo-one", "--unconditional"},
 		{"update", "demo-one", "--if-source-revision", "observed"},
-		{"delete", "beads/plan", "--if-revision", "observed"},
+		{"delete", "beads/plan", "--unconditional"},
 		{"delete", "beads/plan", "--unconditional=false"},
 		{"forget", "beads/plan", "--if-revision="},
 		{"forget", "beads/plan", "--unconditional"},
