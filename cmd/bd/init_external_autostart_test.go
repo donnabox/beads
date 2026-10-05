@@ -103,9 +103,9 @@ func unixEndpoint(path string) externalEndpoint {
 	return externalEndpoint{flags: []string{"--server-socket", path}, network: "unix", addr: path}
 }
 
-// shortSocketPath returns an unused unix socket path. Socket paths are capped
-// near 104 bytes and t.TempDir() nests too deeply under some runners.
-func shortSocketPath(t *testing.T) string {
+// externalInitSocketPath returns an unused unix socket path. Socket paths are
+// capped near 104 bytes and t.TempDir() nests too deeply under some runners.
+func externalInitSocketPath(t *testing.T) string {
 	t.Helper()
 	dir, err := os.MkdirTemp("", "bdx")
 	if err != nil {
@@ -126,7 +126,7 @@ func shortSocketPath(t *testing.T) string {
 // func reports how many connections bd made through it.
 func serveUnixProxy(t *testing.T, target string) (string, func() int) {
 	t.Helper()
-	path := shortSocketPath(t)
+	path := externalInitSocketPath(t)
 	ln, err := net.Listen("unix", path)
 	if err != nil {
 		t.Fatalf("listen on %s: %v", path, err)
@@ -283,7 +283,7 @@ func TestInitExternalUnreachableMessage(t *testing.T) {
 		{"shared-server host:port", "--shared-server", "",
 			func(t *testing.T) externalEndpoint { return tcpEndpoint(freeLoopbackPort(t)) }},
 		{"server socket", "--server", "",
-			func(t *testing.T) externalEndpoint { return unixEndpoint(shortSocketPath(t)) }},
+			func(t *testing.T) externalEndpoint { return unixEndpoint(externalInitSocketPath(t)) }},
 	}
 	for _, tc := range cases {
 		t.Run(tc.name, func(t *testing.T) {
@@ -342,7 +342,7 @@ func runProvisionerCell(t *testing.T, form, autoStart string, reachable bool) {
 		sock, socketConnections = serveUnixProxy(t, net.JoinHostPort("127.0.0.1", strconv.Itoa(testDoltServerPort)))
 		ep = unixEndpoint(sock)
 	default:
-		ep = unixEndpoint(shortSocketPath(t))
+		ep = unixEndpoint(externalInitSocketPath(t))
 	}
 
 	database := "provisioned"
