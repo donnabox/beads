@@ -1,0 +1,57 @@
+load("@rules_go//go:def.bzl", "go_library", "go_test")
+
+go_library(
+    name = "bdpwire",
+    srcs = [
+        "carrier.go",
+        "decode.go",
+        "doc.go",
+        "enums.go",
+        "history.go",
+        "json.go",
+        "owned.go",
+        "problem.go",
+        "reference.go",
+        "schema.go",
+        "types.go",
+    ],
+    embedsrcs = ["schema/bdp-v0.schema.json"],
+    importpath = "github.com/steveyegge/beads/internal/httpapi/bdpwire",
+    visibility = ["//:__subpackages__"],
+)
+
+go_test(
+    name = "bdpwire_test",
+    srcs = [
+        "decode_test.go",
+        "erasure_pointer_test.go",
+        "helpers_test.go",
+        "history_parity_test.go",
+        "history_test.go",
+        "imports_test.go",
+        "matrix_test.go",
+        "owned_council_test.go",
+        "owned_presence_test.go",
+        "pin_test.go",
+        "projection_test.go",
+        "roundtrip_test.go",
+        "schema_parity_test.go",
+        "strict_test.go",
+        "wildcard_pin_test.go",
+    ],
+    data = [":go_srcs"] + glob(["schema/**"]),
+    embed = [":bdpwire"],
+)
+
+# --- begin go_srcs (managed by tools/bazel/go_srcs.py; run `make bazel-sync`) ---
+
+filegroup(
+    name = "go_srcs",
+    srcs = glob(
+        ["**/*.go"],
+        allow_empty = True,
+    ),
+    visibility = ["//:__subpackages__"],
+)
+
+# --- end go_srcs ---

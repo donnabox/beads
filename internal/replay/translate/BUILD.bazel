@@ -1,0 +1,42 @@
+load("@rules_go//go:def.bzl", "go_library", "go_test")
+
+go_library(
+    name = "translate",
+    srcs = [
+        "plan.go",
+        "policy.go",
+        "translate.go",
+    ],
+    importpath = "github.com/steveyegge/beads/internal/replay/translate",
+    visibility = ["//:__subpackages__"],
+    deps = [
+        "//internal/replay/doltcli",
+        "//internal/storage/issueops",
+    ],
+)
+
+go_test(
+    name = "translate_test",
+    srcs = [
+        "plan_test.go",
+        "translate_test.go",
+    ],
+    embed = [":translate"],
+    deps = [
+        "//internal/replay/doltcli",
+        "//internal/replay/replaytest",
+    ],
+)
+
+# --- begin go_srcs (managed by tools/bazel/go_srcs.py; run `make bazel-sync`) ---
+
+filegroup(
+    name = "go_srcs",
+    srcs = glob(
+        ["**/*.go"],
+        allow_empty = True,
+    ),
+    visibility = ["//:__subpackages__"],
+)
+
+# --- end go_srcs ---

@@ -35,6 +35,10 @@ import (
 // rejected identically for both backends, and before any invocation that is
 // guaranteed to fail wastes a store open/migration.
 func validateCreateArgs(cmd *cobra.Command, args []string) error {
+	// Typed graph creation validates its own title/body after fail-closed admission.
+	if cmd.Flags().Changed("bead-type") {
+		return nil
+	}
 	markdownFile, _ := cmd.Flags().GetString("file")
 	graphFile, _ := cmd.Flags().GetString("graph")
 	titleFlag, _ := cmd.Flags().GetString("title")
@@ -52,6 +56,9 @@ var createCmd = &cobra.Command{
 	SilenceUsage:  true,
 	SilenceErrors: true,
 	RunE: func(cmd *cobra.Command, args []string) error {
+		if graphPreviewActive {
+			return runGraphPreviewCreateIssue(cmd, args)
+		}
 		CheckReadonly("create") // also covers the migration freeze check (dc-6jaq)
 
 		evt := metrics.NewCommandEvent("create")
@@ -233,7 +240,7 @@ var createCmd = &cobra.Command{
 		if dueStr != "" {
 			t, err := timeparsing.ParseRelativeTime(dueStr, time.Now())
 			if err != nil {
-				return HandleError("invalid --due format %q. Examples: +6h, tomorrow, next monday, 2025-01-15", dueStr)
+				return HandleError("invalid --due format %q. %s", dueStr, deferUntilFormatHint)
 			}
 			dueAt = &t
 		}
@@ -243,7 +250,7 @@ var createCmd = &cobra.Command{
 		if deferStr != "" {
 			t, err := timeparsing.ParseRelativeTime(deferStr, time.Now())
 			if err != nil {
-				return HandleError("invalid --defer format %q. Examples: +1h, tomorrow, next monday, 2025-01-15", deferStr)
+				return HandleError("invalid --defer format %q. %s", deferStr, deferUntilFormatHint)
 			}
 			// Warn if defer date is in the past (user probably meant future)
 			if t.Before(time.Now()) && !silent && !debug.IsQuiet() {

@@ -1,0 +1,47 @@
+load("@rules_go//go:def.bzl", "go_test")
+
+# The layout guards parse the harness source, which must be available in the
+# sandbox runfiles: this tree plus the thin command wrappers under scripts/.
+go_test(
+    name = "replay_test",
+    srcs = [
+        "layout_test.go",
+        "pinnedbd_test.go",
+    ],
+    data = [
+        ":tree_go_srcs",
+        "//scripts/driver-core:go_srcs",
+        "//scripts/mutation-translator:go_srcs",
+        "//scripts/oracle-query:go_srcs",
+    ],
+    deps = ["//internal/testutil/bazeltest"],
+)
+
+# --- begin go_srcs (managed by tools/bazel/go_srcs.py; run `make bazel-sync`) ---
+
+filegroup(
+    name = "go_srcs",
+    srcs = glob(
+        ["**/*.go"],
+        allow_empty = True,
+    ),
+    visibility = ["//:__subpackages__"],
+)
+
+filegroup(
+    name = "tree_go_srcs",
+    srcs = [
+        ":go_srcs",
+        "//internal/replay/compare:go_srcs",
+        "//internal/replay/doltcli:go_srcs",
+        "//internal/replay/driver:go_srcs",
+        "//internal/replay/oracle:go_srcs",
+        "//internal/replay/replaytest:go_srcs",
+        "//internal/replay/scenarios/compatwindow:go_srcs",
+        "//internal/replay/scenarios/lostupdate:go_srcs",
+        "//internal/replay/translate:go_srcs",
+    ],
+    visibility = ["//:__subpackages__"],
+)
+
+# --- end go_srcs ---

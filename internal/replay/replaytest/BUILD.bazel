@@ -1,0 +1,34 @@
+load("@rules_go//go:def.bzl", "go_library", "go_test")
+
+go_library(
+    name = "replaytest",
+    srcs = ["replaytest.go"],
+    importpath = "github.com/steveyegge/beads/internal/replay/replaytest",
+    visibility = ["//:__subpackages__"],
+    deps = [
+        "//internal/replay/doltcli",
+        "//internal/testutil/bazeltest",
+    ],
+)
+
+go_test(
+    name = "replaytest_test",
+    srcs = ["replaytest_test.go"],
+    deps = [
+        ":replaytest",
+        "//internal/replay/doltcli",
+    ],
+)
+
+# --- begin go_srcs (managed by tools/bazel/go_srcs.py; run `make bazel-sync`) ---
+
+filegroup(
+    name = "go_srcs",
+    srcs = glob(
+        ["**/*.go"],
+        allow_empty = True,
+    ),
+    visibility = ["//:__subpackages__"],
+)
+
+# --- end go_srcs ---
