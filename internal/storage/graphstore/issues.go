@@ -200,6 +200,12 @@ func (s *Store) showIssueInTx(ctx context.Context, tx *sql.Tx, path string) (Iss
 	if err != nil {
 		return IssueRecord{}, err
 	}
+	if state == "deleted" {
+		if err := s.validateDeletedIssueInTx(ctx, tx, path); err != nil {
+			return IssueRecord{}, err
+		}
+		return IssueRecord{}, ErrGone
+	}
 	if kind != "bead" || typ != IssueTypeURL(s.options.Binding.ScopeURL) || !authorityID.MatchString(revision) || state != "live" || backing != "issue" || issueID == "" {
 		return IssueRecord{}, fmt.Errorf("%w: invalid Issue allocation", ErrInvalidStore)
 	}

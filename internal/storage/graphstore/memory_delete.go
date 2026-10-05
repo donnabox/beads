@@ -10,9 +10,9 @@ import (
 	"github.com/steveyegge/beads/internal/storage"
 )
 
-// ErrIncidentLinkConstraint refuses deletion while a live Link still names the
-// Memory. The caller must unlink explicitly; --force never cascades.
-var ErrIncidentLinkConstraint = errors.New("Memory deletion requires unlinking live incident Links")
+// ErrIncidentLinkConstraint refuses Bead deletion while a live Link still
+// names it. The caller must unlink explicitly; --force never cascades.
+var ErrIncidentLinkConstraint = errors.New("deletion requires unlinking live incident Links")
 
 // MemoryDeleteRequest is an internal disposable-preview operation. Preview is
 // read-only and may omit a guard; apply requires an observed revision or explicit

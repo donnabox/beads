@@ -102,7 +102,10 @@ func TestGraphPreviewMemoryDeleteWorkflow(t *testing.T) {
 			plan := graphMixedResult[graphstore.Record](t, call("remember", "Plan", "--id", "beads/plan", "--title", "Plan"))
 			other := call("remember", "Context", "--id", "beads/other", "--title", "Context")
 			issue := call("create", "Keep Issue", "--id", "beads/work")
-			refuse("capability_unavailable", "delete", "beads/work")
+			issuePreview := graphMixedResult[graphstore.IssueDeleteResult](t, call("delete", "beads/work"))
+			if !issuePreview.Preview || issuePreview.Deleted || issuePreview.Issue.ID != scope+"beads/work" {
+				t.Fatal("Issue deletion preview did not preserve live Issue")
+			}
 			refuse("capability_unavailable", "forget", "beads/work", "--unconditional")
 			related := scope + "types/preview-related-v2"
 			call("link", "beads/plan", "beads/other", "--id", "links/outgoing", "--resource-type", related, "--if-source-revision", plan.Revision)

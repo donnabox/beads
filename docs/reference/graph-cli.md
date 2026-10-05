@@ -146,14 +146,14 @@ bd update work --title 'Move the release branch after review' --unconditional
 bd update policy --properties '{"title":"Code flow policy","body":"Land reviewed changes on integration."}' --unconditional
 ```
 
-Memory deletion applies only to an **unreferenced** Memory. `bd delete ID`
-previews the result without changing storage; `--force` applies it. `bd forget
-ID` applies the same deletion directly. Applying either command requires an
+`bd delete ID` previews deletion of one unreferenced Memory or Issue without
+changing storage; `--force` applies it. `bd forget ID` applies Memory deletion
+directly and does not accept Issues. Applying either command requires an
 explicit write choice, shown here with `--unconditional`. Any live incoming,
 outgoing or self-Link makes deletion refuse; `--force` does not cascade.
-The refusal names the first blocking Link ID and the total number of incident
-Links; unlink them explicitly before retrying with a fresh revision.
-Issue deletion is not available in this graph preview.
+Memory refusal names the first blocking Link ID and the total count. Issue
+refusal lists the incident Link IDs; unlink them explicitly before retrying
+with a fresh revision.
 
 ```sh
 bd remember 'Temporary note' --id scratch
@@ -162,10 +162,15 @@ bd delete scratch --force --unconditional
 # Or, for another unreferenced Memory:
 bd remember 'Another temporary note' --id other-scratch
 bd forget other-scratch --unconditional
+# An unreferenced Issue follows the same preview and guarded apply shape:
+bd create 'Temporary task' --id temp-work
+bd delete temp-work
+bd delete temp-work --force --unconditional
 ```
 
-Deletion removes current Memory state but reserves its ID and retains prior
-snapshots. It does not create a deletion version or promise erasure or restore.
+Deletion removes current Bead state but reserves its ID and retains prior
+snapshots. It does not create a graph deletion version or promise erasure or
+restore. Native Issue deletion records its ordinary delete journal event.
 
 Use `bd defer ID...` to set Issues aside and `bd undefer ID...` to return
 deferred Issues to open. An undated defer stays in the icebox until undeferred.
