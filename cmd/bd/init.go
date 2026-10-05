@@ -235,10 +235,21 @@ func shouldInitSharedGlobalDB(sharedServer, sharedServerMode, gateway bool) bool
 // differently per route (shared server, socket, remote host, auto-start pinned
 // off). One message serves them all: it names the endpoint that was dialed and
 // says that bd did not start a server.
+//
+// A dial to port 0 is the exception. The store leaves a zero port zero for
+// auto-start to fill in, so it means nothing named a port: the address is a
+// placeholder, not an endpoint. The message says so and how to name one, and
+// offers no default, since on a shared machine whatever listens on a default
+// port may belong to another project (GH#2098, GH#2372).
 func externalServerUnreachableMessage(err error) string {
 	var opErr *net.OpError
 	if !errors.As(err, &opErr) || opErr.Op != "dial" {
 		return ""
+	}
+	if addr, ok := opErr.Addr.(*net.TCPAddr); ok && addr.Port == 0 {
+		return fmt.Sprintf("Error: failed to open Dolt store: %v\n\n"+
+			"--external declares the Dolt server externally managed, so bd did not start one, and no port was named for it.\n"+
+			"Name the server's port with --server-port or BEADS_DOLT_SERVER_PORT.\n", opErr)
 	}
 	endpoint := "the configured endpoint"
 	if opErr.Addr != nil {
