@@ -1,13 +1,11 @@
-package driver_test
+package driver
 
 import (
 	"context"
-	"encoding/json"
 	"reflect"
 	"testing"
 
 	"github.com/steveyegge/beads/internal/replay/compare"
-	"github.com/steveyegge/beads/internal/replay/driver"
 	"github.com/steveyegge/beads/internal/replay/oracle"
 	"github.com/steveyegge/beads/internal/replay/replaytest"
 )
@@ -24,10 +22,11 @@ func seededDB(t *testing.T, name, title string) (dir, head string) {
 	return dir, replaytest.HeadCommit(t, dir)
 }
 
-// B1.DriverUsesLibs: the driver reads rows through oracle.QueryAsOf and
-// compares them with compare.Compare, in process. The result it returns is the
-// library's own type, not a renamed copy, and equals what a direct call to the
-// library produces for the same two rows.
+// B1.DriverUsesLibs: the driver reads views through oracle.ReadView and compares
+// them with compare.CompareViews, in process. The step environment of a real run
+// hands back the library's own View, equal to what a direct read returns, and
+// the comparison it feeds is the library's, so the verdict equals what a direct
+// call produces for the same two views.
 func TestB1DriverUsesLibs(t *testing.T) {
 	replaytest.Require(t, replaytest.NeedDolt)
 	ctx := context.Background()
@@ -35,12 +34,6 @@ func TestB1DriverUsesLibs(t *testing.T) {
 	oracleDir, oracleHead := seededDB(t, "oracle", "Widget")
 	sameDir, sameHead := seededDB(t, "same", "Widget")
 	otherDir, otherHead := seededDB(t, "other", "Gadget")
-
-	read := func(dir, head string) func(context.Context) (map[string]string, error) {
-		return func(ctx context.Context) (map[string]string, error) {
-			return oracle.QueryAsOf(ctx, dir, head, "x-1")
-		}
-	}
 
 	cases := []struct {
 		name      string
@@ -52,33 +45,40 @@ func TestB1DriverUsesLibs(t *testing.T) {
 	}
 	for _, tc := range cases {
 		t.Run(tc.name, func(t *testing.T) {
-			got, err := driver.ReplayAndCompare(ctx, read(oracleDir, oracleHead), read(tc.dir, tc.head))
-			if err != nil {
-				t.Fatalf("ReplayAndCompare: %v", err)
-			}
-			var _ compare.Result = got // the driver returns the library's type
+			env := realEnv{cfg: RunConfig{OracleDataDir: oracleDir, WorkDataDir: tc.dir}}
 
-			oracleRow, err := oracle.QueryAsOf(ctx, oracleDir, oracleHead, "x-1")
+			oracleView, err := env.OracleView(ctx, oracleHead, "x-1")
 			if err != nil {
-				t.Fatalf("oracle.QueryAsOf (oracle): %v", err)
+				t.Fatalf("OracleView: %v", err)
 			}
-			otherRow, err := oracle.QueryAsOf(ctx, tc.dir, tc.head, "x-1")
+			candidateView, err := env.CandidateView(ctx, tc.head, "x-1")
 			if err != nil {
-				t.Fatalf("oracle.QueryAsOf (candidate): %v", err)
+				t.Fatalf("CandidateView: %v", err)
 			}
-			// The rows hold only id, title and status, none of which the driver
-			// treats as incidental, so they go to the comparator unchanged.
-			oracleJSON, _ := json.Marshal(oracleRow)
-			otherJSON, _ := json.Marshal(otherRow)
-			want, err := compare.Compare(oracleJSON, otherJSON)
+			var _ *oracle.View = oracleView // the driver hands back the library's type
+
+			direct, err := oracle.ReadView(ctx, oracleDir, oracleHead, "x-1")
 			if err != nil {
-				t.Fatalf("compare.Compare: %v", err)
+				t.Fatalf("oracle.ReadView: %v", err)
 			}
-			if !reflect.DeepEqual(got, want) {
-				t.Errorf("driver result differs from the library's:\n got  %+v\n want %+v", got, want)
+			if !reflect.DeepEqual(oracleView, direct) {
+				t.Errorf("the driver's view differs from the library's:\n got  %+v\n want %+v", oracleView, direct)
+			}
+
+			got, _, err := compare.CompareViews(oracleView, candidateView)
+			if err != nil {
+				t.Fatalf("compare.CompareViews: %v", err)
 			}
 			if got.Matched != tc.wantMatch {
 				t.Errorf("Matched = %v, want %v", got.Matched, tc.wantMatch)
+			}
+
+			head, err := env.WorkHead(ctx)
+			if err != nil {
+				t.Fatalf("WorkHead: %v", err)
+			}
+			if want := replaytest.HeadCommit(t, tc.dir); head != want {
+				t.Errorf("WorkHead = %s, want the database's head %s", head, want)
 			}
 		})
 	}
