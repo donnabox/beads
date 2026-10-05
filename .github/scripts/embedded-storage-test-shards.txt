@@ -135,6 +135,7 @@
 # regeneration. Add them to the generator or the durations file instead.
 
 15 1 TestBatchApplyContract
+15 1 TestCreateBatchStampsParticipationGenerationOnBrandNewRows
 15 1 TestEmbeddedClaimerClaimsAnUnassignedOpenIssueAndAnswersTheBareRow
 15 1 TestEmbeddedClaimerReclaimsAcrossSpellingWithoutWriting
 15 1 TestEmbeddedDependencyEditorWritesTheTargetIntoItsTypedColumn
@@ -301,6 +302,7 @@
 15 7 TestCommitAllOutOfBandChangeAndHonestNoOp
 15 7 TestConcurrencyMultiProcess
 15 7 TestConcurrentOpenReturnsCached
+15 7 TestCreateBatchWithHistoryOffStampsNothing
 15 7 TestDualWriteContractFlagOff
 15 7 TestEmbeddedBatchCloserClaimNextIsNilWhenTheFrontIsEmpty
 15 7 TestEmbeddedBatchCloserForceBypassesOnlyClosePolicy
@@ -522,6 +524,7 @@
 15 14 TestReadyCounterContract
 15 14 TestUnknownProvenanceLeaseStaysReclaimable
 
+15 15 TestCreateBatchLeavesExistingLegacyRowUnstamped
 15 15 TestCreateIssue
 15 15 TestEdgeReaderContract
 15 15 TestEmbeddedBatchCloserAllRefusedBatchRecordsNoHistory
