@@ -503,28 +503,8 @@ func TestIssueDatelessDeferral(t *testing.T) {
 			if err != nil {
 				t.Fatal(err)
 			}
-			_, err = s.CreateIssue(ctx, "beads/claimed", plainIssue("Claimed"))
-			if err != nil {
-				t.Fatal(err)
-			}
-			claimedState, err := s.ClaimIssue(ctx, "beads/claimed", "operator")
-			if err != nil || !claimedState.Changed {
-				t.Fatalf("claim setup: %+v %v", claimedState, err)
-			}
-			for _, deferred := range []bool{true, false} {
-				if _, err := s.SetIssueDeferred(ctx, IssueDeferralRequest{Path: "beads/claimed", Actor: "operator", Unconditional: true, Deferred: deferred}); !errors.Is(err, ErrIssueDeferralConstraint) {
-					t.Fatalf("claimed Issue deferral=%t: %v", deferred, err)
-				}
-			}
-			unchangedClaim, err := s.ShowIssue(ctx, "beads/claimed")
-			if err != nil || !reflect.DeepEqual(unchangedClaim, claimedState.Issue) {
-				t.Fatalf("refused deferral changed claim: %+v %v", unchangedClaim, err)
-			}
 			const path = "beads/work"
 			deferRequest := IssueDeferralRequest{Path: path, Actor: "operator", ExpectedRevision: original.Revision, Deferred: true}
-			if _, err := s.SetIssueDeferred(ctx, IssueDeferralRequest{Path: path, Actor: "operator", Deferred: true}); !errors.Is(err, storage.ErrValidation) {
-				t.Fatalf("missing guard: %v", err)
-			}
 			beforeFault := workflowState(t, ctx, s)
 			fault := errors.New("injected deferral failure")
 			s.afterWrite = func(stage string) error {
@@ -583,6 +563,47 @@ func TestIssueDatelessDeferral(t *testing.T) {
 			if err != nil || noop.Changed || !reflect.DeepEqual(beforeNoop, workflowState(t, ctx, s)) {
 				t.Fatalf("repeat undefer wrote state: %+v %v", noop, err)
 			}
+		})
+	}
+}
+
+func TestIssueDatedDeferralWakesWithOneNativeAndGraphSuccessor(t *testing.T) {
+	for _, backend := range []string{"embedded", "server"} {
+		t.Run(backend, func(t *testing.T) {
+			ctx, o := issueExperimentOptions(t, backend)
+			s, err := OpenExisting(ctx, o)
+			if err != nil {
+				t.Fatal(err)
+			}
+			t.Cleanup(func() { _ = s.Close() })
+			created, err := s.CreateIssue(ctx, "beads/snooze", plainIssue("Snooze"))
+			if err != nil {
+				t.Fatal(err)
+			}
+			past := time.Now().UTC().Add(-time.Hour)
+			deferred, err := s.SetIssueDeferred(ctx, IssueDeferralRequest{
+				Path: "beads/snooze", Actor: "operator", Deferred: true,
+				Until: &past, Reason: "waiting on review",
+			})
+			if err != nil || !deferred.Changed || deferred.Issue.Properties.Status != types.StatusDeferred ||
+				deferred.Issue.Properties.DeferUntil == nil || deferred.Issue.Properties.Notes != "waiting on review" {
+				t.Fatalf("dated defer: %+v %v", deferred, err)
+			}
+			assertIssueEditCounts(t, ctx, s, created.Properties.ID, 2)
+			ready, err := s.ReadyIssues(ctx)
+			if err != nil || len(ready) != 1 || ready[0].ID != created.ID {
+				t.Fatalf("ready after wake: %+v %v", ready, err)
+			}
+			woken := ready[0]
+			if woken.Properties.Status != types.StatusOpen || woken.Properties.DeferUntil != nil || woken.Revision == deferred.Issue.Revision {
+				t.Fatalf("wake did not project native state: %+v", woken)
+			}
+			assertIssueEditCounts(t, ctx, s, created.Properties.ID, 3)
+			assertIssueEditVersion(t, ctx, s, "beads/snooze", woken)
+			if _, err := s.ReadyIssues(ctx); err != nil {
+				t.Fatal(err)
+			}
+			assertIssueEditCounts(t, ctx, s, created.Properties.ID, 3)
 		})
 	}
 }

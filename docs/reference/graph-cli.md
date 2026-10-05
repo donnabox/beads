@@ -167,19 +167,24 @@ bd forget other-scratch --unconditional
 Deletion removes current Memory state but reserves its ID and retains prior
 snapshots. It does not create a deletion version or promise erasure or restore.
 
-To set aside one unassigned open Issue without a wake-up date, use `bd defer`;
-return an unassigned deferred Issue to open with `bd undefer`. Claimed,
-in-progress, closed and pinned Issues refuse until their release/transition
-policy is settled. Both commands require either the revision shown by
-`bd show ID --json` or an explicit `--unconditional`. A repeated command is a
-no-op after guard validation. Deferred Issues do not appear in `bd ready`.
-Graph workspaces do not accept `--until` or `--reason` on these commands and
-do not wake Issues automatically.
+Use `bd defer ID...` to set Issues aside and `bd undefer ID...` to return
+deferred Issues to open. An undated defer stays in the icebox until undeferred.
+`--until` accepts the same date and relative-time forms as ordinary `bd`;
+the next `bd ready` after that time wakes the Issue, records a new version,
+and clears its defer date. `--reason` appends a line to the Issue's notes.
+Assigned Issues retain their assignee through defer and undefer. Neither
+command requires a revision flag, but `--if-revision` checks the observed
+revision for a single Issue. A repeated dateless defer or undefer is a no-op
+when no date or reason changes. `bd undefer` also clears a stale defer date
+without changing a non-deferred status.
 
 ```sh
+bd defer work --until tomorrow --reason 'Waiting on review'
+bd ready                       # Wakes work once its defer date has passed
+bd undefer work                 # Or restore it explicitly
+bd defer work another-work      # Set multiple Issues aside indefinitely
 bd show work --json
-bd defer work --if-revision REVISION_FROM_SHOW
-bd undefer work --unconditional
+bd undefer work --if-revision REVISION_FROM_SHOW
 ```
 
 ## Create, inspect, edit and remove Links

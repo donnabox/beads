@@ -157,16 +157,16 @@ func TestGraphPreviewIssueDatelessDeferralWorkflow(t *testing.T) {
 			if !claimedState.Changed {
 				t.Fatal("claim setup did not change Issue")
 			}
-			refuse("constraint_violation", "defer", "claimed", "--unconditional")
-			refuse("constraint_violation", "undefer", "claimed", "--unconditional")
-			if got := graphMixedResult[graphstore.IssueRecord](t, call("show", "claimed")); !reflect.DeepEqual(got, claimedState.Issue) || got.Version == claimed.Version {
-				t.Fatalf("refused deferral changed claim: %+v", got)
+			claimedDeferred := graphMixedResult[graphstore.IssueMutationResult](t, call("defer", "claimed"))
+			if !claimedDeferred.Changed || claimedDeferred.Issue.Properties.Assignee != "operator" || claimedDeferred.Issue.Version == claimed.Version {
+				t.Fatalf("claimed deferral lost assignment: %+v", claimedDeferred)
+			}
+			claimedOpened := graphMixedResult[graphstore.IssueMutationResult](t, call("undefer", "claimed"))
+			if !claimedOpened.Changed || claimedOpened.Issue.Properties.Assignee != "operator" {
+				t.Fatalf("claimed undefer lost assignment: %+v", claimedOpened)
 			}
 			memory := call("remember", "Context", "--id", "context", "--title", "Context")
-			refuse("invalid_selector", "defer", original.ID)
-			refuse("capability_unavailable", "defer", original.ID, "--until", "tomorrow", "--unconditional")
-			refuse("capability_unavailable", "defer", original.ID, "--reason", "later", "--unconditional")
-			refuse("invalid_selector", "defer", original.ID, "context", "--unconditional")
+			refuse("invalid_selector", "defer", original.ID, "--if-revision", original.Revision, "context")
 			refuse("invalid_properties", "defer", "context", "--unconditional")
 			if call("show", original.ID) == memory {
 				t.Fatal("Issue and Memory identity collided")
@@ -176,7 +176,7 @@ func TestGraphPreviewIssueDatelessDeferralWorkflow(t *testing.T) {
 				t.Fatalf("defer result: %+v", deferred)
 			}
 			refuse("revision_conflict", "defer", "work", "--if-revision", original.Revision)
-			refuse("invalid_selector", "undefer", "work")
+			refuse("invalid_selector", "undefer", "work", "--if-revision", "")
 			for _, item := range graphMixedResult[[]graphstore.IssueRecord](t, call("ready")) {
 				if item.ID == original.ID {
 					t.Fatalf("deferred Issue remained ready: %+v", item)
@@ -196,6 +196,27 @@ func TestGraphPreviewIssueDatelessDeferralWorkflow(t *testing.T) {
 			}
 			if !foundWork {
 				t.Fatal("undeferred Issue remained hidden")
+			}
+			snoozed := graphMixedResult[graphstore.IssueMutationResult](t, call("defer", "work", "--until", "2000-01-01", "--reason", "waiting on review"))
+			if !snoozed.Changed || snoozed.Issue.Properties.DeferUntil == nil || snoozed.Issue.Properties.Notes != "waiting on review" {
+				t.Fatalf("dated defer with reason: %+v", snoozed)
+			}
+			woke := graphMixedResult[[]graphstore.IssueRecord](t, call("ready"))
+			foundWork = false
+			for _, item := range woke {
+				foundWork = foundWork || (item.ID == original.ID && item.Properties.DeferUntil == nil && item.Version != snoozed.Issue.Version)
+			}
+			if !foundWork {
+				t.Fatalf("dated defer did not wake: %+v", woke)
+			}
+			other := graphMixedResult[graphstore.IssueRecord](t, call("create", "Other", "--id", "other"))
+			batch := graphMixedResult[[]graphstore.IssueMutationResult](t, call("defer", "work", other.ID))
+			if len(batch) != 2 || !batch[0].Changed || !batch[1].Changed {
+				t.Fatalf("batch defer: %+v", batch)
+			}
+			batch = graphMixedResult[[]graphstore.IssueMutationResult](t, call("undefer", "work", other.ID))
+			if len(batch) != 2 || !batch[0].Changed || !batch[1].Changed {
+				t.Fatalf("batch undefer: %+v", batch)
 			}
 			if call("show", "context") != memory {
 				t.Fatal("deferral changed unrelated Memory")
