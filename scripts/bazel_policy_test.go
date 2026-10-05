@@ -575,6 +575,30 @@ func TestBazelNoRemoteEndpointsInTrackedFiles(t *testing.T) {
 	}
 }
 
+// TestNoLocalPlanPathsInTrackedFiles: tracked files must not point readers
+// at a maintainer's private, out-of-repo planning notes (a home-directory
+// planning-notes tree), which no other contributor can open. Cite an
+// in-repo doc, a bead, or a PR instead. The needle is assembled at runtime so
+// this file does not match itself.
+func TestNoLocalPlanPathsInTrackedFiles(t *testing.T) {
+	root := bazelPolicyRoot(t)
+	if !gitRepoAvailable(root) {
+		t.Skip("not a git checkout (e.g. Bazel sandbox); tracked-file scan runs under go test and CI")
+	}
+	needle := "beads-" + "bazel-plan"
+	out, err := exec.Command("git", "-C", root, "grep", "-n", "-I", "-F", "-e", needle).Output()
+	if err != nil {
+		var exitErr *exec.ExitError
+		if errors.As(err, &exitErr) && exitErr.ExitCode() == 1 {
+			return // no matches
+		}
+		t.Fatalf("git grep: %v", err)
+	}
+	for _, line := range strings.Split(strings.TrimSpace(string(out)), "\n") {
+		t.Errorf("%s: tracked file references a local, non-repo %s path; point at an in-repo doc, bead or PR instead", line, needle)
+	}
+}
+
 // --- generated go_srcs filegroups are current -------------------------------
 
 // These checks walk the source checkout, which is not declared as Bazel data,
@@ -759,10 +783,12 @@ var allowedBazelTestTags = map[string]string{
 	"dolt-server": "starts hermetic dolt sql-servers (or completes the lane's job without -short); excluded from --config=prcore/ci, run by --config=doltserver",
 	// The same rules as dolt-server (hermetic servers, remote, fail-closed:
 	// checkDoltServerRules), for the tiers bazel.yml runs only with remote
-	// execution and, for the server storage tier, under the integration
-	// lane's build flags.
+	// execution (and, for the cmd/bd tier, the read-only cache) and, for the
+	// server storage and cmd/bd tiers, under the integration lane's build
+	// flags.
 	"dolt-server-proxied":     "proxied-server cmd/bd tier: starts hermetic dolt sql-servers; excluded from --config=prcore/ci, run by --config=doltserver-proxied",
 	"dolt-server-integration": "server-Dolt storage tier: starts hermetic dolt sql-servers and needs the integration build tag; excluded from --config=prcore/ci, run by --config=doltserver-integration",
+	"dolt-server-cmd":         "cmd/bd Dolt-server tier: the whole integration-tagged cmd/bd suite against hermetic dolt sql-servers; excluded from --config=prcore/ci, run by --config=doltserver-cmd",
 	"embedded":                "embedded-Dolt tier variant; excluded from --config=prcore/ci, run by --config=embedded",
 	"manual":                  "never part of //...: a repro/bench harness, or a build input only another target needs; excluded from --config=prcore/ci",
 	// For a go_test whose every test file is `//go:build integration`: in any
@@ -778,7 +804,7 @@ var allowedBazelTestTags = map[string]string{
 // and vice versa (TestBazelPRCoreExcludedTagsMatchTaxonomy), so a new lane
 // tag lands here, and through bazelIntegrationExcludedTags in the
 // integration lane's filter too.
-var bazelPRCoreExcludedTags = []string{"requires-docker", "dolt-server", "dolt-server-proxied", "dolt-server-integration", "embedded", "manual", "integration-only"}
+var bazelPRCoreExcludedTags = []string{"requires-docker", "dolt-server", "dolt-server-proxied", "dolt-server-integration", "dolt-server-cmd", "embedded", "manual", "integration-only"}
 
 // bazelIntegrationRunsTags are the PR-core-excluded tags --config=integration
 // runs: the integration lane is main.yml's integration jobs, whose
