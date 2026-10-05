@@ -9,15 +9,18 @@ import (
 	"github.com/steveyegge/beads/internal/storage"
 	"github.com/steveyegge/beads/internal/storage/issueops"
 	"github.com/steveyegge/beads/internal/types"
-	"github.com/steveyegge/beads/internal/workapi"
 	publicops "github.com/steveyegge/beads/issueops"
 )
 
-// UnclaimIssue releases only the current holder's in-progress graph Issue.
-// Force, expected-holder supervision and lease-expiry recovery are separate
-// policy decisions. The native release owns its lease, event and History stamp;
-// the graph layer records only the complete retained projection in that tx.
+// UnclaimIssue keeps the holder-only spelling for existing graph callers.
 func (s *Store) UnclaimIssue(ctx context.Context, path, actor string) (IssueMutationResult, error) {
+	return s.UnclaimIssueWithPolicy(ctx, path, actor, false, "", false)
+}
+
+// UnclaimIssueWithPolicy delegates authorization, lease cleanup, row CAS and
+// the single native History stamp to the ordinary Issue writer. Force bypasses
+// holder authorization only; conditional release checks the expected holder.
+func (s *Store) UnclaimIssueWithPolicy(ctx context.Context, path, actor string, force bool, expectedAssignee string, conditional bool) (IssueMutationResult, error) {
 	if err := validatePath(path); err != nil {
 		return IssueMutationResult{}, fmt.Errorf("%w: %v", storage.ErrValidation, err)
 	}
@@ -26,6 +29,17 @@ func (s *Store) UnclaimIssue(ctx context.Context, path, actor string) (IssueMuta
 	}
 	if err := types.CheckFieldLen("actor", actor); err != nil {
 		return IssueMutationResult{}, fmt.Errorf("%w: %w", storage.ErrValidation, err)
+	}
+	if force && conditional {
+		return IssueMutationResult{}, fmt.Errorf("%w: force and conditional unclaim are mutually exclusive", storage.ErrValidation)
+	}
+	if conditional && (expectedAssignee == "" || !utf8.ValidString(expectedAssignee)) {
+		return IssueMutationResult{}, fmt.Errorf("%w: expected assignee must be nonempty UTF-8", storage.ErrValidation)
+	}
+	if conditional {
+		if err := types.CheckFieldLen("expected assignee", expectedAssignee); err != nil {
+			return IssueMutationResult{}, fmt.Errorf("%w: %w", storage.ErrValidation, err)
+		}
 	}
 	var result IssueMutationResult
 	err := s.withTx(ctx, true, func(tx *sql.Tx) error {
@@ -36,24 +50,21 @@ func (s *Store) UnclaimIssue(ctx context.Context, path, actor string) (IssueMuta
 		if err != nil {
 			return err
 		}
-		if before.Properties.Status != types.StatusInProgress {
-			return fmt.Errorf("%w: graph unclaim requires an in-progress Issue", publicops.ErrNotReleasable)
-		}
-		request := publicops.ReleaseRequest{IssueID: before.Properties.ID, Actor: actor}
-		if err := workapi.ValidateReleaseRequest(request); err != nil {
-			return err
+		if before.Properties.Status == types.StatusClosed || (!conditional && before.Properties.Assignee == "") {
+			return fmt.Errorf("%w: Issue %s is closed or unassigned", publicops.ErrNotReleasable, before.Properties.ID)
 		}
 		if err := s.touchCoordination(ctx, tx); err != nil {
 			return err
 		}
 		unscope := issueops.ScopeVersionedHistoryTransaction(tx, true)
 		defer unscope()
-		released, _, err := issueops.ReleaseIssueInTx(ctx, tx, request)
+		if conditional {
+			err = issueops.UnclaimIssueIfAssigneeInTx(ctx, tx, before.Properties.ID, actor, expectedAssignee)
+		} else {
+			err = issueops.UnclaimIssueInTx(ctx, tx, before.Properties.ID, actor, force)
+		}
 		if err != nil {
 			return err
-		}
-		if !released.Changed || released.Issue == nil || released.Issue.RowVersion == before.Properties.RowVersion {
-			return fmt.Errorf("%w: Issue unclaim did not mint one native version", ErrInvalidStore)
 		}
 		if err := s.afterStage("issue-unclaim"); err != nil {
 			return err

@@ -37,9 +37,9 @@ func TestGraphPreviewIssueUnclaimWorkflow(t *testing.T) {
 			call(args...)
 			call("create", "Claim work", "--id", "beads/work", "--labels", "demo,graph")
 			assigned := graphMixedResult[graphstore.IssueRecord](t, call("create", "Assigned work", "--id", "beads/assigned", "--assignee", "rig.agent"))
-			refuse("constraint_violation", "unclaim", "assigned", "--actor", "rig.agent")
-			if got := graphMixedResult[graphstore.IssueRecord](t, call("show", "assigned")); !reflect.DeepEqual(got, assigned) {
-				t.Fatal("unclaim erased an initially assigned open Issue")
+			openRelease := graphMixedResult[graphstore.IssueMutationResult](t, call("unclaim", "assigned", "--actor", "rig.agent"))
+			if !openRelease.Changed || openRelease.Issue.Properties.Status != types.StatusOpen || openRelease.Issue.Properties.Assignee != "" || openRelease.Issue.Revision == assigned.Revision {
+				t.Fatalf("open assigned Issue did not follow native release: %+v", openRelease)
 			}
 			call("remember", "Context", "--id", "beads/context")
 			before := graphMixedResult[graphstore.IssueRecord](t, call("show", "work"))
@@ -48,18 +48,24 @@ func TestGraphPreviewIssueUnclaimWorkflow(t *testing.T) {
 				t.Fatalf("claim did not start work: %+v", claimed)
 			}
 			refuse("constraint_violation", "unclaim", "work", "--actor", "other.agent")
-			refuse("capability_unavailable", "unclaim", "work", "--actor", "other.agent", "--force")
-			refuse("capability_unavailable", "unclaim", "work", "--if-assignee", "rig.agent")
-			refuse("capability_unavailable", "unclaim", "work", "--reason", "leaving")
+			refuse("invalid_properties", "unclaim", "work", "--if-assignee", "")
+			refuse("constraint_violation", "unclaim", "work", "--if-assignee", "other.agent")
 			refuse("permission_denied", "unclaim", "work", "--actor", "rig.agent", "--readonly")
 			refuse("invalid_properties", "unclaim", "context", "--actor", "rig.agent")
 			refuse("invalid_selector", "unclaim", "links/context", "--actor", "rig.agent")
 			if got := graphMixedResult[graphstore.IssueRecord](t, call("show", "work")); !reflect.DeepEqual(got, claimed.Issue) {
 				t.Fatal("refused releases changed live claim")
 			}
-			released := graphMixedResult[graphstore.IssueMutationResult](t, call("unclaim", "work", "--actor", "rig_agent"))
+			released := graphMixedResult[graphstore.IssueMutationResult](t, call("unclaim", "work", "--actor", "rig_agent", "--reason", "handoff"))
 			if !released.Changed || released.Issue.Properties.Status != types.StatusOpen || released.Issue.Properties.Assignee != "" || released.Issue.Properties.LeaseExpiresAt != nil || released.Issue.Revision == claimed.Issue.Revision || released.Issue.Attribution.Actor != "rig_agent" {
 				t.Fatalf("incomplete release: %+v", released)
+			}
+			comments := graphMixedResult[[]*types.Comment](t, call("comments", "work"))
+			if len(comments) != 1 || comments[0].Text != "handoff" || comments[0].Author != "rig_agent" {
+				t.Fatalf("reason was not a native comment: %+v", comments)
+			}
+			if got := graphMixedResult[graphstore.IssueRecord](t, call("show", "work")); !reflect.DeepEqual(got, released.Issue) {
+				t.Fatal("comment changed retained Issue read")
 			}
 			for _, record := range []graphstore.IssueRecord{before, claimed.Issue, released.Issue} {
 				got := graphMixedResult[graphstore.IssueRecord](t, call("show", "work", "--version", record.Version))
@@ -74,6 +80,21 @@ func TestGraphPreviewIssueUnclaimWorkflow(t *testing.T) {
 			reclaimed := graphMixedResult[graphstore.IssueMutationResult](t, call("update", "work", "--claim", "--actor", "next.agent"))
 			if !reclaimed.Changed || reclaimed.Issue.Properties.Assignee != "next.agent" {
 				t.Fatalf("reclaim after release: %+v", reclaimed)
+			}
+			forced := graphMixedResult[graphstore.IssueMutationResult](t, call("unclaim", "work", "--actor", "supervisor", "--force"))
+			if !forced.Changed || forced.Issue.Properties.Assignee != "" || forced.Issue.Properties.Status != types.StatusOpen {
+				t.Fatalf("force release failed: %+v", forced)
+			}
+			call("update", "work", "--claim", "--actor", "next.agent")
+			conditional := graphMixedResult[graphstore.IssueMutationResult](t, call("unclaim", "work", "--actor", "supervisor", "--if-assignee", "next.agent"))
+			if !conditional.Changed || conditional.Issue.Properties.Assignee != "" {
+				t.Fatalf("conditional release failed: %+v", conditional)
+			}
+			call("create", "Batch one", "--id", "beads/batch-one", "--assignee", "next.agent")
+			call("create", "Batch two", "--id", "beads/batch-two", "--assignee", "next.agent")
+			batch := graphMixedResult[[]graphstore.IssueMutationResult](t, call("unclaim", "batch-one", "batch-two", "--actor", "next.agent"))
+			if len(batch) != 2 || !batch[0].Changed || !batch[1].Changed {
+				t.Fatalf("batch release failed: %+v", batch)
 			}
 		})
 	}

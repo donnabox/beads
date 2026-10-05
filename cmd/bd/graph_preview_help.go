@@ -32,19 +32,20 @@ is not available.
 Ordinary Issue workspaces:
 ` + historyCmd.Long
 	deferCmd.Long = `Graph preview workspaces:
-Use bd defer ID --if-revision TOKEN to put one unassigned open Issue in the
-dateless deferred state. Use --unconditional instead to explicitly accept the current
-revision. A repeated defer is a no-op after guard checking. --until and
---reason are unavailable; there is no automatic wake-up. Claimed and
-in-progress Issues refuse until their release policy is settled.
+Use bd defer ID... to defer one or more Issues. --until accepts ordinary bd
+date and relative-time forms; an undated defer stays deferred until restored.
+--reason appends to Issue notes. A later bd ready wakes due Issues, recording
+one native and graph version per changed Issue. A repeated dateless defer is a
+no-op when neither date nor notes change. Use --if-revision TOKEN for a
+single-Issue stale-write check or --unconditional to spell out the default.
 
 Ordinary Issue workspaces:
 ` + deferCmd.Long
 	undeferCmd.Long = `Graph preview workspaces:
-Use bd undefer ID --if-revision TOKEN to return one unassigned deferred Issue to open.
-Use --unconditional instead to explicitly accept the current revision. A
-repeated undefer is a no-op after guard checking; one Issue is changed per
-command and there is no automatic wake-up.
+Use bd undefer ID... to restore one or more deferred Issues to open. It also
+clears a stale defer date on a non-deferred Issue. A repeated undefer is a
+no-op if nothing changes. Use --if-revision TOKEN for a single-Issue
+stale-write check or --unconditional to spell out the default.
 
 Ordinary Issue workspaces:
 ` + undeferCmd.Long
@@ -121,12 +122,18 @@ requires Issue endpoints and, unlike informational Types, one of
 remote-routing forms are unavailable in this graph preview.`},
 		{reopenCmd, `Reopen one closed Issue by ID or beads/ID, optionally
 with --reason. Batch and remote-routing forms are unavailable.`},
-		{unclaimCmd, `Release your own in-progress Issue claim with bd unclaim ID.
-The release clears the assignee and lease and reopens the Issue for another
-claimant. A repeated release refuses because there is no claim to release.
-Only one local ID is accepted. --force, --if-assignee and --reason are not
-available in graph workspaces while supervision and lease-expiry policy is
-settled. Other holders' claims cannot be released by this command.`},
+		{unclaimCmd, `Use bd unclaim ID... to release one or more assigned open or
+in-progress Issues. By default only the current holder may release a claim.
+--force bypasses holder authorization but still respects the native row CAS;
+--if-assignee HOLDER releases only while that holder remains assigned. The two
+flags cannot be combined. --reason TEXT adds a native Issue comment after a
+successful release; bd comments ID reads it. The release clears the assignee,
+lease and started time, returns the Issue to open, and records one Issue and
+graph version. A repeated release refuses without creating a version.`},
+		{commentsCmd, `Use bd comments ID to read the native comment feed for a
+graph Issue. bd unclaim --reason appends there. Comments are outside the
+retained Issue snapshot and do not mint an Issue version. Comment creation
+through bd comments add is not available in this preview.`},
 		{readyCmd, `Show current ready Issues with no graph-specific filters.
 This graph preview refuses positive BEADS_MAX_ROWS instead of truncating.`},
 		{listCmd, `Without Issue filters, bd list reads one bounded snapshot of current Beads

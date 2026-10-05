@@ -219,21 +219,29 @@ separate blocking Dependency unlink rules and Link Type bounds.
 ## Claim and release Issue work
 
 `bd update ID --claim` atomically claims a live Issue for the current actor.
-`bd unclaim ID` releases **only that actor's in-progress claim**, clearing its
-assignee and lease and returning the Issue to open for another claimant. Both
-accepted changes retain complete Issue versions. A second unclaim refuses
-because no claim remains; it does not create another version.
+`bd unclaim ID...` releases assigned open or in-progress Issues. By default
+the current actor must hold each claim. Each successful release clears its
+assignee, lease, and started time, returns it to open, and retains one native
+Issue version and one graph version. A second unclaim refuses because no claim
+remains; it does not create another version. A batch attempts each ID and exits
+nonzero if any release fails.
 
 ```sh
 bd update work --claim --actor rig.agent
-bd unclaim work --actor rig.agent
+bd unclaim work --actor rig.agent --reason 'Handing this back'
+bd comments work              # The reason is a native Issue comment
 bd update work --claim --actor another.agent
+bd unclaim work --if-assignee another.agent --actor supervisor
 ```
 
-Graph unclaim accepts one local Issue at a time. `--force`,
-`--if-assignee`, and `--reason` are unavailable while supervisor release and
-lease-expiry policy is decided. It cannot release another actor's claim or
-turn an initially assigned open Issue into an unassigned one.
+`--if-assignee HOLDER` releases only while that holder remains assigned; a
+mismatch leaves the Issue and its lease untouched. `--force` bypasses the
+holder check for an abandoned claim, but still uses the native row
+compare-and-swap. The two flags cannot be combined. `--reason TEXT` appends a
+native Issue comment after the release; if that separate append fails, the
+release remains committed and the CLI warns. Comments are a separate feed,
+outside retained Issue state, and do not mint another Issue version. Other
+comment writes are not yet exposed in graph mode.
 
 ## Versioning and History
 
