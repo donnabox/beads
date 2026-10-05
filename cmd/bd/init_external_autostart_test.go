@@ -235,6 +235,33 @@ func TestInitServerExternalDeadPortStartsNoServer(t *testing.T) {
 	requireDoltRootEmpty(t, f.repoDir)
 }
 
+// TestInitServerExternalNoPortStartsNoServer is the --external boundary that
+// rule 2c (#5934) cannot see: the argv and the environment name no port, so
+// nothing but the flag declares the server external. A server init in that
+// shape launches a repo-local dolt by design (see
+// TestInitServerWithoutNamedPortStillStartsServer), so with --external it must
+// fail instead, and say that bd did not start one. There is no endpoint to
+// name, so the wording is checked without one.
+func TestInitServerExternalNoPortStartsNoServer(t *testing.T) {
+	f := newExternalInitFixture(t)
+
+	res := f.run("", "init", "--quiet", "--server", "--external", "--prefix", "x", "--skip-hooks", "--skip-agents")
+
+	if !res.failed {
+		t.Errorf("bd init --server --external succeeded with no server named:\n%s", res.output)
+	}
+	requireNoLaunch(t, res)
+	requireDoltRootEmpty(t, f.repoDir)
+	for _, want := range []string{"externally managed", "did not start"} {
+		if !strings.Contains(res.output, want) {
+			t.Errorf("output does not contain %q:\n%s", want, res.output)
+		}
+	}
+	if strings.Contains(res.output, "bd dolt start") {
+		t.Errorf("output advises `bd dolt start`:\n%s", res.output)
+	}
+}
+
 // TestInitSharedServerExternalDeadPortStillFails pins the sibling route that
 // already honors --external: the same dead endpoint under --shared-server
 // exits non-zero without launching dolt. Without it the test above could pass
@@ -252,18 +279,20 @@ func TestInitSharedServerExternalDeadPortStillFails(t *testing.T) {
 	requireNoLaunch(t, res)
 }
 
-// TestInitServerWithoutExternalStillStartsServer pins the other half of the
-// contract: --server alone still auto-starts a repo-local dolt. Without it
-// the shim assertions above would pass if nothing could ever launch dolt.
-func TestInitServerWithoutExternalStillStartsServer(t *testing.T) {
+// TestInitServerWithoutNamedPortStillStartsServer pins the other half of the
+// contract: a --server init that names no port is where bd starts a repo-local
+// dolt by design, so the no-launch assertions above cannot pass merely because
+// nothing can ever launch one. It names no port, in argv or in the environment
+// (envWithoutBeadsStorageSettings drops every BEADS_DOLT_* variable): a named
+// port is declared external by rule 2c (#5934) with or without --external, so
+// it would launch nothing here either way.
+func TestInitServerWithoutNamedPortStillStartsServer(t *testing.T) {
 	f := newExternalInitFixture(t)
-	ep := tcpEndpoint(freeLoopbackPort(t))
 
-	res := f.run("", append(append([]string{"init", "--quiet", "--server"}, ep.flags...),
-		"--prefix", "x", "--skip-hooks", "--skip-agents")...)
+	res := f.run("", "init", "--quiet", "--server", "--prefix", "x", "--skip-hooks", "--skip-agents")
 
 	if res.launches == "" {
-		t.Errorf("bd init --server without --external never reached dolt, so auto-start regressed:\n%s", res.output)
+		t.Errorf("bd init --server naming no port never reached dolt, so auto-start regressed:\n%s", res.output)
 	}
 }
 
