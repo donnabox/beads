@@ -32,8 +32,11 @@ const (
 	prAllowlistedStep  = "Run the Go tests the Bazel lane skips"
 	prScriptsChecksJob = "scripts-go-checks"
 	prScriptsChecksID  = "SCRIPTS_GO_CHECKS"
-	// bazel.yml's lanes for the step add --config=sole-run in mode remote.
-	bazelSoleRunEnv          = "${{ needs.rbe.outputs.mode == 'remote' && '--config=sole-run' || '' }}"
+	// bazel.yml's lanes for the step add --config=sole-run whenever they
+	// execute remotely (enabled: mode remote, and the rbe-fork modes
+	// fork-ro/fork-rw, whose lanes are a fork's only run once
+	// BAZEL_COVERS_FORKS covers it).
+	bazelSoleRunEnv          = "${{ needs.rbe.outputs.enabled == 'true' && '--config=sole-run' || '' }}"
 	bazelSoleRunArg          = `${BAZEL_SOLE_RUN:+"$BAZEL_SOLE_RUN"}`
 	bazelSoleRunNoCacheLine  = "test:sole-run --nocache_test_results"
 	bazelSoleRunEvictionLine = "test:sole-run --experimental_remote_cache_eviction_retries=0"
@@ -66,7 +69,7 @@ var bazelPRLaneRCLines = map[string][]string{
 		"test:prcore --test_arg=-test.skip=^TestEmbedded",
 		"test:prcore --test_env=BEADS_TEST_SKIP=dolt",
 		"test:prcore --test_env=BEADS_TEST_REQUIRE_EXCLUDE_PERMISSION=1",
-		"test:prcore --test_tag_filters=-requires-docker,-dolt-server,-dolt-server-proxied,-dolt-server-integration,-embedded,-manual,-integration-only",
+		"test:prcore --test_tag_filters=-requires-docker,-dolt-server,-dolt-server-proxied,-dolt-server-integration,-dolt-server-cmd,-embedded,-manual,-integration-only",
 	},
 	"ci": {
 		"test:ci --config=prcore",
@@ -287,6 +290,12 @@ func TestPRLegacyLanesDeferToBazelLanes(t *testing.T) {
 	add("covered, remote, lanes passed, legacy skipped", prGateFor(t, lanes, "pull_request", "remote", cov("true")), true, "")
 	add("not covered, remote, legacy ran", prGateFor(t, lanes, "pull_request", "remote", cov("false")), true, "")
 	add("merge_group, not covered, remote", prGateFor(t, lanes, "merge_group", "remote", cov("false")), true, "")
+	// rbe-fork: a covered fork or Dependabot PR (BAZEL_COVERS_FORKS) whose
+	// lanes ran remotely with a mint certificate.
+	for _, mode := range []string{"fork-ro", "fork-rw"} {
+		add("covered, mode "+mode+", lanes passed, legacy skipped", prGateFor(t, lanes, "pull_request", mode, cov("true")), true, "")
+		add("not covered, mode "+mode+", legacy ran", prGateFor(t, lanes, "pull_request", mode, cov("false")), true, "")
+	}
 	for _, mode := range []string{"local", "cache"} {
 		add("not covered, mode "+mode+", legacy ran", prGateFor(t, lanes, "pull_request", mode, cov("false")), true, "")
 	}
@@ -407,8 +416,10 @@ func testPackageGateJobs(t *testing.T, prGateRequired []string) {
 
 		detectCond := "steps.detect.outputs." + lane.detectOutput + " == 'true'"
 		detectIf := "${{ " + detectCond + " }}"
-		bazelPathIf := "${{ " + detectCond + " && needs." + bazelRBEJobName + ".outputs.enabled == 'true' }}"
-		fallbackIf := "${{ " + detectCond + " && needs." + bazelRBEJobName + ".outputs.enabled != 'true' }}"
+		// Mode remote, not enabled: the package gates take no rbe-fork
+		// certificate, so fork modes keep the go build fallback.
+		bazelPathIf := "${{ " + detectCond + " && needs." + bazelRBEJobName + ".outputs.mode == 'remote' }}"
+		fallbackIf := "${{ " + detectCond + " && needs." + bazelRBEJobName + ".outputs.mode != 'remote' }}"
 		wantNames := []string{
 			"", // checkout (no name)
 			"Decide applicability",
@@ -529,8 +540,11 @@ func testPackageGateJobs(t *testing.T, prGateRequired []string) {
 func TestPRDoltServerFingerprintRunsOnEveryPR(t *testing.T) {
 	pr := readCIWorkflow(t, "pr.yml")
 	job := pr.job(t, prFingerprintJob)
-	if job.If != "" || len(job.Needs) != 0 || job.ContinueOnError || job.RunsOn != "ubuntu-latest" || job.TimeoutMinutes == 0 {
-		t.Errorf("%s: if %q, needs %v, continue-on-error %v, runs-on %q, timeout %d; want an unconditional ubuntu-latest job with a timeout",
+	// F7a: moved to the same same-repo Blacksmith expression every other
+	// cache-free same-repo pr.yml job uses; forks/Dependabot still fall back
+	// to ubuntu-latest (TestSameRepoBlacksmithRunners covers that fallback).
+	if job.If != "" || len(job.Needs) != 0 || job.ContinueOnError || job.RunsOn != sameRepoBlacksmith2vcpu || job.TimeoutMinutes == 0 {
+		t.Errorf("%s: if %q, needs %v, continue-on-error %v, runs-on %q, timeout %d; want an unconditional same-repo-Blacksmith job with a timeout",
 			prFingerprintJob, job.If, job.Needs, job.ContinueOnError, job.RunsOn, job.TimeoutMinutes)
 	}
 	var names []string
@@ -574,9 +588,19 @@ func TestPRDoltServerFingerprintRunsOnEveryPR(t *testing.T) {
 func TestPRRunsGoTestsBazelSkips(t *testing.T) {
 	pr := readCIWorkflow(t, "pr.yml")
 	job := pr.job(t, prScriptsChecksJob)
-	if job.If != "" || job.ContinueOnError || len(job.Needs) != 0 || job.RunsOn != "ubuntu-latest" || job.TimeoutMinutes == 0 {
-		t.Errorf("%s: if %q, continue-on-error %v, needs %v, runs-on %q, timeout %d; want an unconditional ubuntu-latest job with a timeout",
+	// F7b: same-repo PRs now run this job on Blacksmith (forks/Dependabot keep
+	// ubuntu-latest); see sameRepoBlacksmith4vcpu in ci_blacksmith_runner_test.go.
+	if job.If != "" || job.ContinueOnError || len(job.Needs) != 0 || job.RunsOn != sameRepoBlacksmith4vcpu || job.TimeoutMinutes == 0 {
+		t.Errorf("%s: if %q, continue-on-error %v, needs %v, runs-on %q, timeout %d; want an unconditional same-repo-Blacksmith job with a timeout",
 			prScriptsChecksJob, job.If, job.ContinueOnError, job.Needs, job.RunsOn, job.TimeoutMinutes)
+	}
+	// F5.3: three legs behind matrix.check, not fail-fast (a vet regression
+	// must not hide an allowlisted regression, or vice versa).
+	if job.Strategy.FailFast {
+		t.Errorf("%s strategy.fail-fast = true, want false", prScriptsChecksJob)
+	}
+	if want := []string{"scripts-test", "vet", "allowlisted"}; !equalStrings(job.Strategy.Matrix.Check, want) {
+		t.Errorf("%s matrix.check = %v, want %v", prScriptsChecksJob, job.Strategy.Matrix.Check, want)
 	}
 	var names []string
 	for _, st := range job.Steps {
@@ -585,27 +609,45 @@ func TestPRRunsGoTestsBazelSkips(t *testing.T) {
 			t.Errorf("%s step %q has continue-on-error", prScriptsChecksJob, st.Name)
 		}
 	}
-	wantNames := []string{"", "Set up Go", "Restore Go module cache", "Restore race Go build cache", "Install Dolt",
-		"Configure Git and Dolt identity", "Go test the scripts packages", "Go vet with go test's checks", prAllowlistedStep}
+	wantNames := []string{"", "Set up Go", "Restore Go module cache", "Restore race Go build cache", "Restore vet Go build cache",
+		"Restore non-race Go build cache", "Install Dolt", "Configure Git and Dolt identity", "Go test the scripts packages",
+		"Go vet with go test's checks", prAllowlistedStep}
 	if !reflect.DeepEqual(names, wantNames) {
 		t.Errorf("%s steps %q, want %q", prScriptsChecksJob, names, wantNames)
 	}
-	// The environment PR Core's job gives its go test.
+	// The environment PR Core's job gives its go test (the race leg's cache
+	// restore and Dolt setup stay byte-for-byte the same as pr-core-wrapper's).
 	core := pr.job(t, "pr-core-wrapper")
 	for _, name := range []string{"Install Dolt", "Configure Git and Dolt identity", "Restore race Go build cache"} {
 		if got, want := job.step(t, name), core.step(t, name); got.Run != want.Run || !reflect.DeepEqual(got.With, want.With) || got.Uses != want.Uses {
 			t.Errorf("%s step %q differs from pr-core-wrapper's", prScriptsChecksJob, name)
 		}
 	}
-	untilDone := "${{ !cancelled() && steps.setup-go.outcome == 'success' }}"
+	legIf := func(checks ...string) string {
+		parts := make([]string, len(checks))
+		for i, c := range checks {
+			parts[i] = "matrix.check == '" + c + "'"
+		}
+		return strings.Join(parts, " || ")
+	}
+	// Dolt is only needed by the legs that use it; the vet leg skips it.
+	for _, name := range []string{"Install Dolt", "Configure Git and Dolt identity"} {
+		if got, want := job.step(t, name).If, legIf("scripts-test", "allowlisted"); got != want {
+			t.Errorf("%s step %q if = %q, want %q", prScriptsChecksJob, name, got, want)
+		}
+	}
 	for name, want := range map[string]struct {
 		run, ifc string
 		env      map[string]string
 	}{
-		"Go test the scripts packages": {"bash scripts/ci/scripts-go-test.sh", "", map[string]string{
+		"Go test the scripts packages": {"bash scripts/ci/scripts-go-test.sh", legIf("scripts-test"), map[string]string{
 			"BEADS_TEST_REQUIRE_EXCLUDE_PERMISSION": "1", "GOCACHE": "${{ runner.temp }}/go-cache/race"}},
-		"Go vet with go test's checks": {"bash scripts/ci/go-test-vet.sh", untilDone, nil},
-		prAllowlistedStep:              {"bash scripts/ci/allowlisted-go-tests.sh", untilDone, nil},
+		"Go vet with go test's checks": {"bash scripts/ci/go-test-vet.sh",
+			"${{ !cancelled() && steps.setup-go.outcome == 'success' && matrix.check == 'vet' }}",
+			map[string]string{"GOCACHE": "${{ runner.temp }}/go-cache/vet"}},
+		prAllowlistedStep: {"bash scripts/ci/allowlisted-go-tests.sh",
+			"${{ !cancelled() && steps.setup-go.outcome == 'success' && matrix.check == 'allowlisted' }}",
+			map[string]string{"GOCACHE": "${{ runner.temp }}/go-cache/non-race"}},
 	} {
 		st := job.step(t, name)
 		if st.Run != want.run || st.If != want.ifc || st.Shell != "" || (len(st.Env) != 0 || len(want.env) != 0) && !reflect.DeepEqual(st.Env, want.env) {
@@ -627,6 +669,21 @@ func TestPRRunsGoTestsBazelSkips(t *testing.T) {
 				}
 			}
 		}
+	}
+	// main.yml's push-only go-vet-cache job (F5.3) is the one explicit
+	// exception: it warms the vet cache pr.yml's vet leg restores, and
+	// nothing else in main.yml may run these scripts either.
+	for name, j := range readCIWorkflow(t, "main.yml").Jobs {
+		for _, st := range j.Steps {
+			for _, script := range []string{"allowlisted-go-tests.sh", "scripts-go-test.sh", "go-test-vet.sh"} {
+				if strings.Contains(st.Run, script) && name != "go-vet-cache" {
+					t.Errorf("main.yml %s step %q runs %s; only go-vet-cache may (go-test-vet.sh)", name, st.Name, script)
+				}
+			}
+		}
+	}
+	if got := readCIWorkflow(t, "main.yml").job(t, "go-vet-cache").step(t, "Go vet with go test's checks").Run; got != "bash scripts/ci/go-test-vet.sh" {
+		t.Errorf("main.yml go-vet-cache does not run go-test-vet.sh: %q", got)
 	}
 	if os.Getenv("TEST_SRCDIR") != "" {
 		return // scripts_test's runfiles hold none of the scripts (this part runs in that job itself)
