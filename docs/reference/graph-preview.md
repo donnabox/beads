@@ -249,7 +249,10 @@ bd unlink links/context --unconditional
 ```
 
 `--unconditional` explicitly accepts the current record; use an observed
-`--if-revision TOKEN` to reject a stale write. `remember --update` defaults to
+`--if-revision TOKEN` to reject a stale write. In an ordinary workspace,
+`bd update` and `bd delete` instead read `--if-revision` as the legacy
+compare-and-swap on a decimal bead revision, and `--unconditional` stays
+unavailable there. `remember --update` defaults to
 unconditional acceptance when neither flag is supplied. Property replacement,
 property patches, Memory deletion and Issue edits still require an explicit
 revision or unconditional choice. Source guards are
