@@ -552,6 +552,49 @@ const (
 	mintUnfenced
 )
 
+// mintSkipsRow reports whether the mint writes nothing for issue, which the
+// caller has just loaded as issueID. It is the one place that answers the
+// question: recordVersionAtInTx asks it before it reads or canonicalizes
+// anything else about the row, and the defer-wake sweep asks it before it wakes
+// a row, so the sweep cannot come to wake, or to skip, a row the mint treats
+// differently.
+//
+// It decides in the mint's order. A wisp or no-history row (IsWisp) is never
+// versioned, so it never reaches the second check. Then design §16.2b's write
+// fence, which only an update-shaped call (mintUpdate) runs:
+// participation_generation is read straight off the row rather than through
+// types.Issue, because it is dual-write bookkeeping, not part of the issue's
+// own content model, and so it stays out of the durable_state snapshot
+// canonicalDurableState marshals. A brand-new row (mintCreate) has no legacy
+// state to preserve, and recordVersionAtInTx stamps the column itself; the
+// test-support mint (mintUnfenced) never reads it at all. An update-shaped call
+// against a NULL (legacy) value is skipped here, before either half of this
+// seam's write runs. The fence runs before the admission gate
+// (canonicalDurableState) on purpose, so a legacy record is skipped whole:
+// nothing about it is canonicalized, admitted or refused. Ignoring schema skew
+// (internal/storage/schema/schema.go) has no bearing on this check: that
+// downgrades CheckForwardDrift's migration-cursor refusal, a different plane
+// than this column's real per-row data.
+//
+// An error is a failed read, not a refusal of the row.
+func mintSkipsRow(ctx context.Context, tx DBTX, issueID string, issue *types.Issue, kind versionMintKind) (bool, error) {
+	if IsWisp(issue) {
+		return true, nil
+	}
+	if kind == mintUpdate {
+		var participationGeneration sql.NullInt64
+		if err := tx.QueryRowContext(ctx,
+			"SELECT participation_generation FROM issues WHERE id = ?", issueID,
+		).Scan(&participationGeneration); err != nil {
+			return false, fmt.Errorf("versioned history: read participation_generation for %s: %w", issueID, err)
+		}
+		if !participationGeneration.Valid {
+			return true, nil
+		}
+	}
+	return false, nil
+}
+
 // recordVersionAtInTx is RecordVersionInTx, RecordVersionForCreateInTx and
 // RecordVersionAtInTx's shared body, taking at where the callers differ:
 // time.Now().UTC() for the production gate-checked paths, a caller-chosen
@@ -599,35 +642,8 @@ func recordVersionAtInTx(ctx context.Context, tx DBTX, issueID, actor string, at
 	if err != nil {
 		return fmt.Errorf("versioned history: snapshot %s: %w", issueID, err)
 	}
-	if IsWisp(issue) {
-		return nil
-	}
-
-	// design §16.2b write fence. Read straight off the row rather than
-	// through types.Issue: participation_generation is dual-write
-	// bookkeeping, not part of the issue's own content model, so it stays
-	// out of the durable_state snapshot canonicalDurableState marshals
-	// below. Only mintUpdate runs the check: a brand-new row (mintCreate) has
-	// no legacy state to preserve, and this same function stamps the column
-	// itself further down; the test-support mint (mintUnfenced) never reads it
-	// at all. An update-shaped call against a NULL (legacy) value returns
-	// here, before either half of this seam's write runs. The fence runs before
-	// the admission gate (canonicalDurableState) on purpose, so a legacy record
-	// is skipped whole: nothing about it is canonicalized, admitted or refused.
-	// BD_IGNORE_SCHEMA_SKEW (internal/storage/schema/schema.go) has no
-	// bearing on this check: it downgrades CheckForwardDrift's
-	// migration-cursor refusal, a different plane than this column's real
-	// per-row data.
-	if kind == mintUpdate {
-		var participationGeneration sql.NullInt64
-		if err := tx.QueryRowContext(ctx,
-			"SELECT participation_generation FROM issues WHERE id = ?", issueID,
-		).Scan(&participationGeneration); err != nil {
-			return fmt.Errorf("versioned history: read participation_generation for %s: %w", issueID, err)
-		}
-		if !participationGeneration.Valid {
-			return nil
-		}
+	if skips, err := mintSkipsRow(ctx, tx, issueID, issue, kind); err != nil || skips {
+		return err
 	}
 
 	// durable_state is the RFC 8785 (JCS) canonical form of the marshaled
