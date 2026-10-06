@@ -41,11 +41,14 @@ stack without running deferred functions — the per-command metrics event
 invocation records no usage event and any `defer`red cleanup (unit-of-work close,
 temp-file removal) is skipped. Instead return a `HandleError*` value: it prints
 the message and returns a sentinel `*exitError`; cobra unwinds the stack (running
-every `defer`), and `main()` maps the sentinel to exit code 1.
+every `defer`), and `main()` exits with the sentinel's code (1 for every
+`HandleError*` helper).
 
 **Characteristics:**
-- Prints `Error:` (plus `Hint:` for the `WithHint` variants) to stderr; the
-  `RespectJSON` variants emit a structured JSON error to stdout under `--json`
+- Prints `Error:` (plus `Hint:` for the `WithHint` variants) to stderr; under
+  `--json` the `RespectJSON` variants emit a structured JSON error to stdout
+  instead, `HandleErrorWithHint` emits it to stderr, and plain `HandleError`
+  has no JSON mode
 - Returns `&exitError{Code: 1}` up through `RunE`; `main()` exits 1 after
   deferred cleanup and the metrics flush have run
 - The command's `cobra.Command` **must** set `SilenceUsage: true` and
@@ -54,11 +57,14 @@ every `defer`), and `main()` maps the sentinel to exit code 1.
 
 **Narrow exceptions still using `os.Exit`:** process-level gates that run before
 or outside the `RunE` error path — e.g. `CheckReadonly`, which aborts a blocked
-command after flushing metrics first. A handful of pre-existing direct
-`os.Exit(1)` calls also remain inside handler bodies; new command code should
-return a `HandleError*` value instead of adding more.
+command after flushing metrics first (exit 1 for read-only mode,
+`ExitMigrationFrozen` (14) for a migration freeze), plus `main()` itself and its
+graceful-shutdown handler. The one handler body that still calls `os.Exit` is
+the hidden `send-metrics` flusher, which must not fall through to `main()`'s
+post-command tail. New command code should return a `HandleError*` value
+instead of adding more.
 
-**Files using this pattern:** nearly every command in `cmd/bd/` — search for
+**Files using this pattern:** most commands in `cmd/bd/` — search for
 `return HandleError` (e.g. `create.go`, `defer.go`, `dolt.go`, `unclaim.go`,
 `compact.go`).
 
@@ -70,11 +76,11 @@ return a `HandleError*` value instead of adding more.
 - **Optional operations** that enhance functionality but aren't required
 - **Metadata operations** (config updates, analytics, logging)
 - **Cleanup operations** (removing temp files, closing resources)
-- **Auxiliary features** (git hooks installation, merge driver setup)
+- **Auxiliary features** (git hooks installation, README generation)
 
 **Example:**
 ```go
-if err := createConfigYaml(beadsDir, false); err != nil {
+if err := createConfigYaml(beadsDir, false, ""); err != nil {
     fmt.Fprintf(os.Stderr, "Warning: failed to create config.yaml: %v\n", err)
     // Non-fatal - continue anyway
 }
@@ -86,9 +92,13 @@ if err := createConfigYaml(beadsDir, false); err != nil {
 - Command continues execution
 - Core functionality still works
 
-**Files using this pattern:** `cmd/bd/init.go`, `cmd/bd/sync.go` and
-`cmd/bd/create.go`, where auxiliary failures can be reported without hiding a
-failed core operation.
+**Files using this pattern:**
+- `cmd/bd/init.go` (search for `Warning:`)
+- `cmd/bd/sync_push_pull.go` (search for `Warning:`)
+- `cmd/bd/create.go`, `cmd/bd/gc.go` (search for `WarnError(`)
+
+These auxiliary failures can be reported without hiding a failed core
+operation.
 
 ---
 
@@ -111,8 +121,11 @@ _ = os.Remove(tempPath)
 - Operation failure has no material impact
 - Primary error already reported
 
-**Files using this pattern:** cleanup paths in `cmd/bd/init.go`,
-`cmd/bd/sync.go` and other command handlers.
+**Files using this pattern:**
+- `cmd/bd/init.go` (search for `_ = store.Close()`)
+- `cmd/bd/backup_export.go` (search for `_ = os.Remove(`)
+- `cmd/bd/setup/utils.go` *(temp-file cleanup in the atomic-write helper)*
+- Dozens of other locations throughout the codebase
 
 ---
 
@@ -168,7 +181,7 @@ if err != nil {
 ### Creating Auxiliary Config Files → Pattern B (Warn)
 
 ```go
-if err := createConfigYaml(localBeadsDir, false); err != nil {
+if err := createConfigYaml(beadsDir, false, ""); err != nil {
     fmt.Fprintf(os.Stderr, "Warning: failed to create config.yaml: %v\n", err)
     // Non-fatal - continue anyway
 }
@@ -188,8 +201,8 @@ defer func() {
 ### Optional Metadata Updates → Pattern B (Warn)
 
 ```go
-if err := store.SetMetadata(ctx, "last_import_hash", currentHash); err != nil {
-    fmt.Fprintf(os.Stderr, "Warning: failed to update last_import_hash: %v\n", err)
+if err := store.SetMetadata(ctx, "last_import_time", time.Now().Format(time.RFC3339)); err != nil {
+    fmt.Fprintf(os.Stderr, "Warning: failed to initialize last_import_time: %v\n", err)
 }
 ```
 
@@ -207,7 +220,7 @@ if err := store.CreateIssue(ctx, issue, actor); err != nil {
 
 ```go
 // BAD: Same type of operation handled differently
-if err := createConfigYaml(dir, false); err != nil {
+if err := createConfigYaml(dir, false, ""); err != nil {
     fmt.Fprintf(os.Stderr, "Warning: %v\n", err) // Warns
 }
 if err := createReadme(dir); err != nil {
@@ -218,7 +231,7 @@ if err := createReadme(dir); err != nil {
 
 ```go
 // GOOD: Consistent pattern for similar operations
-if err := createConfigYaml(dir, false); err != nil {
+if err := createConfigYaml(dir, false, ""); err != nil {
     fmt.Fprintf(os.Stderr, "Warning: failed to create config.yaml: %v\n", err)
 }
 if err := createReadme(dir); err != nil {
@@ -253,9 +266,8 @@ if err := installGitHooks(); err != nil {
 ```go
 // GOOD: Warn and suggest fix
 if err := installGitHooks(); err != nil {
-    yellow := color.New(color.FgYellow).SprintFunc()
-    fmt.Fprintf(os.Stderr, "\n%s Failed to install git hooks: %v\n", yellow("⚠"), err)
-    fmt.Fprintf(os.Stderr, "You can try again with: %s\n\n", cyan("bd doctor --fix"))
+    fmt.Fprintf(os.Stderr, "\n%s Failed to install git hooks: %v\n", ui.RenderWarn("⚠"), err)
+    fmt.Fprintf(os.Stderr, "You can try again with: %s\n\n", ui.RenderAccent("bd doctor --fix"))
 }
 ```
 
@@ -288,8 +300,8 @@ if err := store.SetConfig(ctx, "issue_prefix", prefix); err != nil {
     return HandleError("failed to set issue prefix: %v", err)
 }
 
-if err := syncbranch.Set(ctx, store, branch); err != nil {
-    return HandleError("failed to set sync branch: %v", err)
+if err := store.SetConfig(ctx, "sync.branch", branch); err != nil {
+    return HandleError("failed to set sync.branch: %v", err)
 }
 ```
 
@@ -305,8 +317,8 @@ Tracking metadata **enhances functionality** but the system works without it:
 
 ```go
 // Pattern B: Warn and continue
-if err := store.SetMetadata(ctx, "bd_version", Version); err != nil {
-    fmt.Fprintf(os.Stderr, "Warning: failed to store version metadata: %v\n", err)
+if err := store.SetLocalMetadata(ctx, "bd_version", Version); err != nil {
+    fmt.Fprintf(os.Stderr, "Warning: failed to write bd_version local metadata: %v\n", err)
     // Non-fatal - continue anyway
 }
 
@@ -314,19 +326,19 @@ if err := store.SetMetadata(ctx, "repo_id", repoID); err != nil {
     fmt.Fprintf(os.Stderr, "Warning: failed to set repo_id: %v\n", err)
 }
 
-if err := store.SetMetadata(ctx, "last_import_hash", hash); err != nil {
-    fmt.Fprintf(os.Stderr, "Warning: failed to update last_import_hash: %v\n", err)
+if err := store.SetMetadata(ctx, "last_import_time", time.Now().Format(time.RFC3339)); err != nil {
+    fmt.Fprintf(os.Stderr, "Warning: failed to initialize last_import_time: %v\n", err)
 }
 ```
 
 **Examples:**
-- `bd_version` - Enables version mismatch warnings on upgrades
+- `bd_version` - Enables version mismatch warnings on upgrades (clone-local, so written with `SetLocalMetadata`)
 - `repo_id` / `clone_id` - Helps with collision detection across clones
-- `last_import_hash` - Optimizes staleness detection (falls back to mtime if unavailable)
+- `last_import_time` - Marks the database as synced at init (client-local sync state)
 
 **Rationale:** System degrades gracefully if tracking metadata is unavailable. Core functionality (creating issues, importing data) still works. Failures here might indicate temporary issues (e.g., read-only filesystem) that shouldn't block the entire operation.
 
-**See also:** `cmd/bd/init.go` lines 206-272 for detailed inline documentation of this distinction.
+**See also:** `cmd/bd/init.go` (search for `CONFIGURATION METADATA` and `TRACKING METADATA`) for detailed inline documentation of this distinction.
 
 ### File Permission Errors
 
@@ -364,7 +376,8 @@ defer func() {
 ### Error Helpers
 
 `cmd/bd/errors.go` provides the shared helpers that enforce consistency. Pattern A
-handlers return one of the `HandleError*` values; Pattern B uses `WarnError`:
+handlers return one of the `HandleError*` values; Pattern B can use `WarnError`
+(most existing code writes the `Warning:` line to stderr directly instead):
 
 ```go
 // Return through RunE — prints "Error: ..." to stderr, returns *exitError{Code: 1}
@@ -373,9 +386,16 @@ func HandleError(format string, args ...interface{}) error
 // Like HandleError, but emits a structured JSON error to stdout under --json
 func HandleErrorRespectJSON(format string, args ...interface{}) error
 
-// Adds a "Hint: ..." line (the …RespectJSON variant routes JSON to stdout)
+// Adds a "Hint: ..." line (under --json the plain variant writes the JSON error
+// to stderr and the …RespectJSON variant writes it to stdout)
 func HandleErrorWithHint(message, hint string) error
 func HandleErrorWithHintRespectJSON(message, hint string) error
+
+// Typed capability refusal from the proxied-server front doors — "Error: ..." to
+// stderr, or under --json a JSON error carrying code, error, mutates (and reason,
+// when the registry gave one) to stdout; returns *exitError with the refusal's
+// own exit code (1 when it has none)
+func HandleProxyCapabilityError(err error) error
 
 // Exit 1 with no message, when the error was already reported
 func SilentExit() error
@@ -383,6 +403,11 @@ func SilentExit() error
 // Pattern B — prints "Warning: ..." to stderr and returns nothing
 func WarnError(format string, args ...interface{})
 ```
+
+A command that needs an exit code other than 1 returns `&exitError{Code: N}`
+rather than calling `os.Exit(N)` — for example `ExitMigrationFrozen` (14) in
+`cmd/bd/errors.go`, `ExitSyncConflict` (2) in `cmd/bd/sync.go`, and
+`ExitRemoteDivergenceRefused` (10) in `cmd/bd/init_safety.go`.
 
 ## Related Issues
 
@@ -392,7 +417,7 @@ func WarnError(format string, args ...interface{})
 
 ## References
 
-- `cmd/bd/errors.go` - The `HandleError*` / `WarnError` / `SilentExit` helpers and the `exitError` sentinel that `main()` maps to an exit code
+- `cmd/bd/errors.go` - The `HandleError*` / `HandleProxyCapabilityError` / `WarnError` / `SilentExit` helpers and the `exitError` sentinel that `main()` maps to an exit code
 - `cmd/bd/defer.go` - Clean example of Pattern A: `return HandleError(...)` from a `RunE` with `SilenceUsage`/`SilenceErrors` set
-- `cmd/bd/init.go` - Examples of all three patterns
-- `cmd/bd/sync.go` - Examples of Pattern B for metadata operations and Pattern C for cleanup operations
+- `cmd/bd/init.go` - Examples of Patterns B and C and of configuration vs. tracking metadata; its fatal errors are plain `fmt.Errorf` returns (or `*exitError` values), not `HandleError*`
+- `cmd/bd/migrate.go` - Examples of Pattern B for metadata operations (`repo_id`) and Pattern A for config updates (`sync.branch`)
