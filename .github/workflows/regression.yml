@@ -5,7 +5,7 @@ on:
   push:
     branches: [main]
   pull_request:
-    branches: [main, 'release/**', integration]
+    branches: [main, 'release/**', 'hotfix/**', integration]
   # Allow manual trigger
   workflow_dispatch:
 

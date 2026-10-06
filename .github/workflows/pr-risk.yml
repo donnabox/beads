@@ -2,7 +2,7 @@ name: PR Risk
 
 on:
   pull_request:
-    branches: [ main, 'release/**', integration ]
+    branches: [ main, 'release/**', 'hotfix/**', integration ]
   merge_group:
 
 concurrency:

@@ -226,7 +226,7 @@ bd history policy  # same listing in a graph workspace
 | --- | --- |
 | `--version TOKEN` | Select one exact retained state for `bd show`, or one retained Memory body for `bd recall`; use a saved `version` token. |
 | `--from TOKEN --to TOKEN` | Select the two complete states for `bd compare`. |
-| `--if-revision TOKEN` | On a supported write, refuse if the current record no longer has the saved `revision`. |
+| `--if-revision TOKEN` | On a supported write, refuse if the current record no longer has the saved `revision`. In an ordinary workspace, `bd update` and `bd delete` instead read it as the legacy compare-and-swap on a decimal bead `revision`. |
 | `--unconditional` | Where a write requires an explicit choice, accept the current record without an expected revision. |
 | `--if-source-revision TOKEN` | On a Memory-owned Link write, optionally require the source Memory's observed revision; otherwise that source defaults to unconditional acceptance. |
 

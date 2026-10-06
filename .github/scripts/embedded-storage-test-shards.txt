@@ -135,6 +135,7 @@
 # regeneration. Add them to the generator or the durations file instead.
 
 15 1 TestBatchApplyContract
+15 1 TestCreateBatchStampsParticipationGenerationOnBrandNewRows
 15 1 TestEmbeddedClaimerClaimsAnUnassignedOpenIssueAndAnswersTheBareRow
 15 1 TestEmbeddedClaimerReclaimsAcrossSpellingWithoutWriting
 15 1 TestEmbeddedDependencyEditorWritesTheTargetIntoItsTypedColumn
@@ -158,6 +159,7 @@
 
 15 2 TestActiveDatabaseSizeScopesToActiveEmbeddedDatabase
 15 2 TestCleanGitRemoteCacheGarbage
+15 2 TestCreateBatchFastPathsMatchPerRow_Embedded
 15 2 TestDepRekeyMarkerStillInIgnoredSeries
 15 2 TestDescendantWalkReachesEveryTargetKindAndStopsOnCycles
 15 2 TestDualWriteFixtureKitIsWired
@@ -212,6 +214,7 @@
 15 3 TestUpdateMergeOps_DoltEngine_TwoIssues
 15 3 TestWithPeerAuth_RestoresAbsentEnv
 
+15 4 TestCounterExcludeStatusAcceptsAWorkspaceCustomStatusWithoutIncludeInfra
 15 4 TestEmbeddedBatchCloserSettlesTheDependersOfWhatItClosed
 15 4 TestEmbeddedBlockedRecheckSettlesWhatTheWriteRecorded
 15 4 TestEmbeddedClaimIssueWrapperClaimsTheWispPlane
@@ -264,6 +267,7 @@
 15 5 TestExpectedRevisionContract
 15 5 TestGetDependentRecordsForIssuesEmbedded
 15 5 TestLargeBatchApplyWallClock_Embedded
+15 5 TestLargeGraphCreateTiming_Embedded
 15 5 TestLenientGateWarningBody_BluntRefusalKeepsSharedGuidance
 15 5 TestOpenReturnsCachedStore
 15 5 TestPartitionWispIDs
@@ -299,6 +303,7 @@
 15 7 TestCommitAllOutOfBandChangeAndHonestNoOp
 15 7 TestConcurrencyMultiProcess
 15 7 TestConcurrentOpenReturnsCached
+15 7 TestCreateBatchWithHistoryOffStampsNothing
 15 7 TestDualWriteContractFlagOff
 15 7 TestEmbeddedBatchCloserClaimNextIsNilWhenTheFrontIsEmpty
 15 7 TestEmbeddedBatchCloserForceBypassesOnlyClosePolicy
@@ -325,6 +330,7 @@
 15 8 TestAddLabel
 15 8 TestBuildDSN_NoDatabase
 15 8 TestCleanGitRemoteCacheGarbage_NoCacheDir
+15 8 TestCreateBatchFastPathsMatchPerRowLarge_Embedded
 15 8 TestDoltCommitResponseLossIsIndeterminate
 15 8 TestEmbeddedBatchCloserClaimNextHydratesWhenSomethingClosed
 15 8 TestEmbeddedBatchCloserClaimNextIsNilWhenNothingClosed
@@ -405,6 +411,7 @@
 15 10 TestEmbeddedTransactionWispLifecyclePersistsDurableDependent
 15 10 TestEpochContract
 15 10 TestGetReadyWorkMoleculeFilter
+15 10 TestGraphWalkPlansHonorJoinHints
 15 10 TestHelperProcess
 15 10 TestIgnoredCursorHealResumeRespectsOperatorOverride
 15 10 TestReclaimRefusesForeignReplicaLease
@@ -521,6 +528,7 @@
 15 14 TestUnknownProvenanceLeaseStaysReclaimable
 15 14 TestWakeSweepWritesNothingWhenEveryExpiredRowIsSkipped
 
+15 15 TestCreateBatchLeavesExistingLegacyRowUnstamped
 15 15 TestCreateIssue
 15 15 TestEdgeReaderContract
 15 15 TestEmbeddedBatchCloserAllRefusedBatchRecordsNoHistory
