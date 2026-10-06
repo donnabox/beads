@@ -672,7 +672,7 @@ func runGraphPreviewStatus(cmd *cobra.Command) error {
 					"memoryDiscovery": true, "memoryDiscoveryPagination": false, "memoryBodyFileInput": true, "memoryBodyStdinInput": true,
 					"memoryPropertiesUpdate": true, "memorySelectedUpdate": true, "memorySelectedUpdateUnconditional": true,
 					"memoryOverwriteDisclosure": true, "issueCreate": true, "issueCreateAuthorship": true, "issueTextUpdate": true, "issuePriorityUpdate": true, "issueAssigneeUpdate": true,
-					"issueCreateFields": true, "issueInitialNotes": true, "issueNotesAppend": true,
+					"issueCreateFields": true, "issueInitialNotes": true, "issueNotesAppend": true, "issueNotesReplace": true, "issueNotesClear": true,
 					"issueEstimateUpdate": true, "issueReferenceUpdate": true,
 					"memoryUnreferencedDelete": true, "issueUnreferencedDelete": true,
 					"informationalLink": true, "blockingDependency": true, "linkPropertiesUpdate": true,

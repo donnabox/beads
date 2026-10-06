@@ -76,6 +76,17 @@ func TestGraphPreviewIssueNotesReplaceAndClearWorkflow(t *testing.T) {
 				graphPolicyCLI(t, bd, work, home, nil, code, append(args, "--json")...)
 			}
 			call(args...)
+			var status struct {
+				Result struct {
+					Capabilities map[string]bool `json:"capabilities"`
+				} `json:"result"`
+			}
+			if err := json.Unmarshal([]byte(call("status", "--graph")), &status); err != nil {
+				t.Fatal(err)
+			}
+			if !status.Result.Capabilities["issueNotesReplace"] || !status.Result.Capabilities["issueNotesClear"] {
+				t.Fatal("graph status omitted supported Issue notes capabilities")
+			}
 			const path = "beads/work"
 			created := graphMixedResult[graphstore.IssueRecord](t, call("create", "Notes work", "--id", path, "--notes=First", "--design=Keep", "--actor=author"))
 			versions := call("versions", path)
