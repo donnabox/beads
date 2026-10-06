@@ -49,7 +49,7 @@ env:
   # "true" since ga-96smfk.15: after the canary every fork and Dependabot
   # run took fork-ro/fork-rw (none fell to cache). Rollback if the mint
   # becomes unreliable: commit "false" in both workflows.
-  BAZEL_COVERS_FORKS: "true"
+  BAZEL_COVERS_FORKS: "false" # versioned-beads fork: rule R5 (be-6i64d8), pinned by scripts/fork_legacy_lanes_pin_test.go
 
 jobs:
   detect-ci-tier:
