@@ -1,26 +1,28 @@
 # Graph CLI Specification (Draft)
 
 For setup and task-oriented commands, start with the
-[graph CLI guide](/reference/graph-cli). This page is the living technical
-reference for the preview's exact command matrix, contracts, bounds and
-unsupported operations. The blog post is the publication narrative; this
-reference and the CLI guide continue to change with the implementation.
+[graph CLI guide](/reference/graph-cli). This page specifies the intended
+graph CLI when it is ready for main. Its implementation ledger separately
+records what the current integration build supports and which release is
+targeted for unfinished work. The blog post is the publication narrative;
+this specification and the CLI guide continue to change with the product.
 
-This integration checkpoint supports a bounded Memory/Issue workflow in a
-**fresh, explicitly selected graph workspace**. Existing ordinary Issue
-workspaces continue using their existing commands and storage. The generic
-model, Type names and result shapes remain an experimental preview.
+The currently implemented subset supports a bounded Memory/Issue workflow in
+a **fresh, explicitly selected graph workspace**. Existing ordinary Issue
+workspaces continue using their existing commands and storage. This draft does
+not promise migration or that every target operation already runs.
 
-## Proposed command contract for the next milestone
+## Target graph CLI contract
 
-This section is the **proposed complete graph-mode CLI contract** for the next
-Beads Graph milestone.
-It states intended behavior even where the implementation is marked **NYI**.
-The [graph CLI guide](/reference/graph-cli) remains a task-oriented walkthrough;
-the implementation table and current-preview details below tell operators what
-this build actually does. A proposed row is not a claim that a command works.
-Review of this contract must settle its semantics before an NYI row can be
-advertised as implemented.
+This is the proposed complete graph-mode CLI contract, including commands
+that are not implemented yet. The [graph CLI guide](/reference/graph-cli)
+remains the task-oriented walkthrough. The implementation ledger below is a
+snapshot of `versioned-beads/beads:integration` at
+`612279957ed7a5f873d8c86c628de7ac2f3fa320`; it is not a claim that
+every target command works. Update that commit and the ledger whenever the
+integration source changes, and reconcile this specification and the guide
+with each admitted behavior change. A candidate PR does not become current
+behavior until it lands and the ledger is updated.
 
 This contract covers all graph-affected Bead, Link, History, discovery,
 agent-setup and serving entry points. Ordinary-project commands keep their
@@ -37,12 +39,14 @@ store; an unknown spelling may be rejected by the parser first.
 | Input | Contract |
 | --- | --- |
 | Workspace | `bd init --graph-mode link --scope-url URL` creates a **new** graph workspace. An existing ordinary, incomplete or incompatible graph workspace is never upgraded by init. Subsequent graph commands bind to that workspace's stored Scope and format; moving/copying it does not transfer authority. |
-| Bead selector | Bare `ID` is shorthand for `beads/ID`; `beads/PATH` and the exact local Scope URL are also accepted. A command accepting both Beads and Links requires explicit `links/PATH` for a Link. No selector probes both namespaces and no foreign URL or alias is silently resolved. |
+
+| Resource selector | A command that accepts both Beads and Links requires `beads/PATH` or `links/PATH`, or the exact local Scope URL, for either kind. A Bead-only command may accept bare `ID` as shorthand for `beads/ID`. No selector probes both namespaces and no foreign URL or alias is silently resolved. The current build still accepts a bare Bead ID on some mixed-resource commands; changing that parser behavior is a separate implementation item. |
 | Creation ID | `--id` is optional for Bead and Link creation. Omission allocates a fresh canonical ID. An explicit ID is used exactly or the create fails if ever allocated; deletion does not release it. |
 | Type selector | `--bead-type` and `--link-type` accept an installed `types/NAME` or its exact local Type URL. An uninstalled, wrong-kind or endpoint-incompatible Type fails before a write. `--type` on an Issue is its Issue classification, not a Bead Type. |
-| Current state | A bare read selects the current record. `--version TOKEN` selects one retained state; `bd versions` discovers tokens in store-local newest-first order. A live record's `revision` and `version` are the same opaque token, used respectively as a current-state guard and a retained address. Neither token contains chronology. |
-| Guarded write | `--if-revision TOKEN` rejects a changed resource even if the proposed edit would otherwise be a no-op. `--if-source-revision TOKEN` does the same for a Memory owning an outgoing informational Link. Stale conflicts have no partial effect. |
-| Unconditional write | `bd remember --update` and a Memory-owned informational Link **source** default to accepting the current state. Property/scalar `update`, `unlink` and applying a deletion require either `--if-revision` or explicit `--unconditional`; blocking Dependency unlink also requires an Issue-source choice. `close`, `reopen` and standalone `update --claim` use native Issue policy without that guard choice. Do not combine the guarded and unconditional spelling for one resource. A changed unconditional Memory/source write reports the actual replaced version and attribution. |
+
+| Current and retained state | A bare read selects the current record. `--version TOKEN` selects one retained state; `bd versions` discovers tokens in store-local newest-first order. Today a live record's `revision` and `version` are the **same opaque value**, not two counters. The CLI names its use as a current-state write guard `revision` and its use as an exact retained-state address `version`; the necessity of both public names is an open naming decision. Neither use encodes chronology. |
+| Guarded write | `--if-revision TOKEN` compares the current revision of the Resource being changed. `--if-source-revision TOKEN` separately compares the owning **source Bead** when a write changes one of its outgoing owned Links. It is about the Link's structural ownership, not a special property of the Memory Type. The current implementation supports this source guard for Memory-owned informational Links; other ownership cases need their own admission. A stale check rejects the whole write, including a would-be no-op. |
+| Unconditional write | `bd remember --update` and a Memory-owned informational Link **source** default to accepting the current state. Property/scalar `update`, `unlink` and applying a deletion currently require either `--if-revision` or explicit `--unconditional`; blocking Dependency unlink also requires an Issue-source choice. `close`, `reopen` and standalone `update --claim` use native Issue policy without that guard choice. Do not combine guarded and unconditional spelling for one resource. A changed unconditional Memory/source write reports the actual replaced version and attribution. Whether to extend unconditional defaults to all Bead operations is an open contract decision. |
 | No-op and uncertainty | A semantically identical accepted edit records no new version, does not renew a claim and does not attribute an overwrite. An `outcome_unknown` result is never safe to replay blindly: inspect the canonical resource and versions before retrying. |
 | Read-only | `--readonly` and a frozen workspace reject every mutation before it writes. They do not relax identity, validation or read bounds. `--force` confirms only the operation named by a command; it never bypasses a guard or cascades a deletion. |
 
@@ -58,18 +62,17 @@ below.
 Except for documented repeatable label filters, repeating a scalar selector is
 invalid. A flag not listed for an entry point is unavailable in graph mode.
 
-### Current admitted command and explicit-flag inventory
+### Implementation ledger and explicit-flag inventory
 
-`G` denotes the common controls above, subject to the listed output
-exception. Arguments and flags in this table are the current admitted
-graph-mode surface for each entry point; proposed NYI additions appear in the
-separate table below. Combinations and effects are defined here and in the
-command-family sections below. Hidden `--resource-type` is a compatibility
+This table describes the admitted graph-mode surface at the pinned integration
+commit above. The target contract also includes the not-yet-admitted additions
+below. Command-specific behavior is defined in the following sections; the
+common controls are listed above. Hidden `--resource-type` is a compatibility
 spelling for `--link-type`, never an additional Type field; supplying both is
 invalid. An implementation marked NYI must refuse without falling back to
 ordinary storage.
 
-| Entry point and arguments | Additional explicit flags and aliases | Preview 2 target / current build |
+| Entry point and arguments | Additional explicit flags and aliases | Current integration behavior |
 | --- | --- | --- |
 | `init` | `--scope-url`, `--prefix`, `--server`, `--external`, `--server-host`, `--server-port`, `--server-user`, `--server-socket`, `--server-tls`, `--database`, `--skip-hooks`, `--skip-agents`, `--non-interactive` | New graph workspace only / implemented. |
 | `status` | `--graph` | Report exact capability and limits / implemented; `--graph` required in a graph workspace. |
@@ -79,12 +82,13 @@ ordinary storage.
 | `recall BEAD` | `--version` | Exact body bytes, current or retained / implemented; `--json` refuses and `--quiet` does not suppress body bytes. |
 | `create [TITLE]` | `--bead-type`, `--id`, `--title`, `--description`/`--body`/`--message`; Issue-only `--type`, `--priority`, `--labels`/`--label`, `--design`, `--acceptance`, `--assignee`, `--estimate`, `--external-ref`, `--spec-id`, `--notes`, `--due` | Create one Issue by default or Memory by Type / implemented. No file/stdin body route here. |
 | `show RESOURCE` | `--version` | Current or retained complete record / implemented. |
-| `versions RESOURCE`, `history RESOURCE` | no additional flags | One Resource's retained states newest first / implemented; graph `history` is this alias, ordinary `history` is different. |
+| `versions RESOURCE` | no additional flags | List one Resource's retained states newest first. The rows supply tokens for exact reads and comparison. |
+| `history RESOURCE` | no additional flags | In a graph workspace, an alias for `versions RESOURCE` with the same rows. In an ordinary workspace, `bd history` has a different Dolt-commit contract; do not assume the graph alias there. |
 | `compare RESOURCE` | `--from`, `--to` | Two explicit retained states of the same Resource / implemented. Operand order determines direction. |
 | `update MEMORY` | `--properties` or `--patch`, `--if-revision`, `--unconditional` | Whole-property replacement or ordered patch / implemented. Body/title-only convenience uses `remember --update`. |
 | `update ISSUE` | `--title`, `--description`/`--body`/`--message`, `--design`, `--acceptance`, `--priority`, `--assignee`, `--append-notes`, `--estimate`, `--external-ref`, `--spec-id`, `--due`, `--if-revision`, `--unconditional`; standalone `--claim` | Listed scalar edits and append / implemented. `--claim` is mutually exclusive with every edit/guard. Label edits and note replacement are specified below, NYI. |
 | `update LINK` | `--properties` or `--patch`, `--if-revision`, `--unconditional`, `--if-source-revision`, `--unconditional-source` | Informational Link properties only / implemented. Endpoints and Type are immutable. |
-| `link SOURCE TARGET` | `--link-type`/`--resource-type`, `--id`, `--properties`, `--if-source-revision`, `--unconditional-source`; blocking alias `--type` | One typed Link, or an Issue-only blocking Dependency with ordinary default Type / implemented. Remote endpoints, bulk and bypass flags refuse. |
+| `link SOURCE TARGET` | `--link-type`/`--resource-type`, `--id`, `--properties`, `--if-source-revision`, `--unconditional-source`; blocking alias `--type` | One typed Link, or an Issue-only blocking Dependency with ordinary default Type / implemented. `--unconditional-source` explicitly accepts the current owning source Bead instead of checking a supplied `--if-source-revision`; for a Memory-owned informational Link, that source acceptance is already the default. Remote endpoints, bulk and bypass flags refuse. |
 | `dep add SOURCE TARGET` | `--type` | One local blocking Dependency between live Issues / implemented. No bulk form; Link Type and source-guard flags belong to `bd link` and are refused here. |
 | `links BEAD` | `--direction in\|out\|both`, `--link-type`/`--resource-type` | Bounded current incident Links / implemented, no cursor. |
 | `unlink LINK` or `unlink SOURCE TARGET` | `--link-type`/`--resource-type`, `--if-revision`, `--unconditional`, `--if-source-revision`, `--unconditional-source` | Remove an identified informational Link or blocking Dependency; pair form must identify exactly one informational Link / implemented. |
@@ -98,10 +102,23 @@ ordinary storage.
 | `setup claude` | `--project`, `--check`, `--remove` | Project-local Stop reminder registration/check/removal / implemented; `--json` refuses. |
 | `claude-hook stop` | no additional flags | Hook JSON stdin/stdout protocol, no storage open / implemented; no CLI `--json`. |
 
-The following additions are part of the proposed Preview 2 contract but are
-**NYI in this build**. They do not enlarge the current admission inventory.
+The following additions belong to the final target contract but are **NYI at
+the pinned integration commit**. They do not enlarge its admission inventory.
 Each argument and flag combination must be implemented and tested before its
-row can move into the current inventory.
+row can move into the current inventory. Release targets are planning status,
+not permission to advertise an NYI operation.
+
+| Surface | Target release | In pinned integration build | Candidate work |
+| --- | --- | --- | --- |
+| Existing command inventory above | Already in integration | Yes, within each row's stated bounds | Preserve while integrating new work. |
+| Issue defer/undefer, unclaim and deletion | Preview 2 candidate | No | Draft #105, #106 and #108; their combined source still needs qualification. |
+| Explicit mixed-resource selector disambiguation | Decision for the final CLI; release not assigned | No; some mixed commands accept bare Bead IDs | Parser and help changes required after contract review. |
+| Arbitrary installed Bead authoring and Type lifecycle | After the Type design is decided; release not assigned | No | Separate Type workstream owns descriptors and lifecycle. |
+| Open metadata; Issue label and note replacement | Release not assigned; design gates remain | No | No admitted implementation. |
+
+When integration advances, update the pinned commit, the rows above and any
+current-build statements throughout this document in the same change. A draft
+branch may demonstrate a candidate without changing the integration column.
 
 | Entry point | Proposed additions | Rule |
 | --- | --- | --- |
@@ -231,7 +248,7 @@ bd init --graph-mode link --scope-url https://example.org/team/ \
   --non-interactive
 bd remember 'The release uses the integration branch.' \
   --id plan --title 'Release plan' --json
-bd show plan --json
+bd show beads/plan --json
 # A separate invocation reopens the same stored Memory.
 bd show https://example.org/team/beads/plan --json
 bd status --graph --json
@@ -239,11 +256,14 @@ bd status --graph --json
 
 The Scope URL establishes local identity; initialization does not publish a
 web server at that address. Every Bead is canonically under `beads/`; every
-Link is under `links/`. CLI `plan` is shorthand for `beads/plan`, including in
-commands that also accept Links (`show`, `compare`, and `update`). Select a Link
-there with explicit `links/PATH`. Local canonical paths and their exact Scope
-URLs remain accepted; aliases and foreign Scope URLs are unavailable. This
-shorthand only changes CLI input, never stored identity or output.
+Link is under `links/`. The target contract requires the explicit namespace
+for **both** kinds on commands such as `show`, `versions`, `compare` and
+`update` that can select either kind. A Bead-only command such as `remember`
+may accept bare `plan` as shorthand for `beads/plan`. The pinned integration
+build still accepts a bare Bead ID in some mixed-resource commands, so the
+stricter target syntax needs parser, help and example updates before admission.
+Exact local Scope URLs remain accepted; aliases and foreign Scope URLs are
+unavailable. Shorthand only changes CLI input, never stored identity or output.
 Creation accepts an optional bare `--id ID` or canonical `--id beads/PATH`;
 omitting it generates a random canonical ID. An explicit ID is used at its
 canonical Bead path and duplicates fail;
@@ -495,10 +515,14 @@ bd update beads/plan --if-revision OBSERVED_MEMORY_REVISION --patch @changes.jso
 ```
 
 Use fresh observed tokens for each changed write. `--unconditional` accepts
-the current Resource; for a Memory-owned Link, the default `--unconditional-source` is a
-separate decision. An Issue-source informational Link does not require a
-source guard, but any supplied source guard is checked. Patching that Link
-does not change its Issue source. Issue properties and blocking Dependency
+the current Link itself. For a currently supported Memory-owned informational
+Link, the source Bead separately defaults to accepting its current state;
+`--unconditional-source` makes that choice explicit, while
+`--if-source-revision` rejects a stale source. An Issue-source informational
+Link does not currently require a source guard, but any supplied source guard
+is checked. Extending ownership to another Bead Type requires a corresponding
+source-guard contract; Memory is not the definition of ownership. Patching a
+Link does not change its Issue source. Issue properties and blocking Dependency
 properties cannot be patched through this route.
 
 Operation objects contain only `op`, `path`, and, for add/replace, `value`.
@@ -1159,8 +1183,8 @@ fields without a new wire representation or HTTP write operation.
 The [Memory Beads proposal, Revision 4](https://github.com/gastownhall/beads/issues/5877)
 describes a broader product target. Its R31 table identifies command changes,
 while other requirements define the Memory and shared-graph behavior those
-commands need. This draft describes the current graph CLI and proposed next
-milestone. The differences below are **not** claims that the proposal's target
+commands need. This draft describes the target graph CLI and separately pins
+the current integration subset. The differences below are **not** claims that the proposal's target
 has shipped or that this draft supersedes it. Reconciliation is a product
 decision; an NYI label alone does not settle a conflicting contract.
 
