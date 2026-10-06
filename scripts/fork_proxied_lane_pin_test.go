@@ -25,10 +25,18 @@ import (
 //     does not list by hash(name) % 15, which is how a sync's new tests landed
 //     unbalanced on shard 5.
 //
+// R9 has a fifth value that no test below reads: the timeout column ("25m") of
+// the proxied-test-shard.sh row of bazelShardScripts, in
+// pr_risk_bazel_coverage_test.go. Upstream's
+// TestBazelRetiredLanesCannotBeNarrowed holds that row equal to the script's
+// two timeouts, so a sync that re-applies the script re-applies the row too.
+//
 // Both rules live in lines a sync takes from upstream, so each test below fails
 // in the sync pull request, names what to put back, and leaves the fix to a
 // person. If upstream retires the lane, or the operator turns BAZEL_COVERS_FORKS
-// on, delete R9's edits and this file together (R8's lines are then harmless).
+// on, delete R9's edits and this file together, with its line in
+// scripts/BUILD.bazel and its two entries in
+// tools/bazel/equivalence_allowlist.txt (R8's lines are then harmless).
 
 const (
 	forkProxiedLaneJob   = "test-proxied-cmd"
