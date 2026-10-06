@@ -119,6 +119,17 @@ func TestGraphPreviewUsabilityWorkflow(t *testing.T) {
 			}
 			// Legacy spelling remains accepted for existing scripts.
 			call("link", memory.ID, other.ID, "--resource-type", "types/preview-related-v2")
+			sameIDBead := graphMixedResult[graphstore.Record](t, call("create", "Same local ID", "--bead-type", "types/preview-memory-v2", "--id", "edge"))
+			shortLink := graphMixedResult[graphstore.LinkMutationResult](t, call("link", memory.ID, other.ID, "--link-type", "types/example-follows", "--id", "edge"))
+			if sameIDBead.ID != scope+"beads/edge" || shortLink.Link.ID != scope+"links/edge" {
+				t.Fatal("bare Link ID was not scoped independently from the Bead ID")
+			}
+			refuse("invalid_selector", "link", memory.ID, other.ID, "--link-type", "types/example-follows", "--id", "beads/edge")
+			call("unlink", "edge", "--if-revision", shortLink.Link.Revision)
+			refuse("gone", "show", "links/edge")
+			if shown := graphMixedResult[graphstore.Record](t, call("show", "edge")); shown.ID != sameIDBead.ID {
+				t.Fatal("Link-only unlink selected the Bead with the same bare ID")
+			}
 			call("remember", "Updated code flow policy", "--update", "policy")
 			current := graphMixedResult[graphstore.Record](t, call("show", "policy"))
 			if current.ID != memory.ID || current.Properties.Body != "Updated code flow policy" {
