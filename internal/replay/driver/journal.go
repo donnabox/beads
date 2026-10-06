@@ -48,9 +48,6 @@ type journalState struct {
 	// stopped between steps. When a step was started more than once, a redo after
 	// a resume, it is the latest.
 	open *journalEntry
-	// torn is whether the file ended in a line its writer did not finish, which
-	// readJournal left out.
-	torn bool
 }
 
 // readJournal reads the journal of the run in outDir and checks it against the
@@ -59,11 +56,10 @@ type journalState struct {
 // a resume that went by such a journal could not tell what had been done.
 func readJournal(outDir string, steps []Step) (journalState, error) {
 	var js journalState
-	lines, torn, err := readJSONLines(filepath.Join(outDir, fileJournal))
+	lines, _, err := readJSONLines(filepath.Join(outDir, fileJournal))
 	if err != nil {
 		return js, fmt.Errorf("reading %s: %w", fileJournal, err)
 	}
-	js.torn = torn
 	for i, line := range lines {
 		var e journalEntry
 		if err := json.Unmarshal(line, &e); err != nil {
