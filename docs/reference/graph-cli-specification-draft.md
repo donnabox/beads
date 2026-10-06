@@ -62,6 +62,33 @@ below.
 Except for documented repeatable label filters, repeating a scalar selector is
 invalid. A flag not listed for an entry point is unavailable in graph mode.
 
+### Relationship to BDP
+
+The graph CLI and BDP are two ways to work with the same Scope, Beads, Links
+and installed Types. For capabilities both expose, they should agree on
+canonical identity, Type and property meaning, opaque revision equality,
+accepted changes versus no-ops, and refusal of invalid or stale mutations.
+CLI spelling and result presentation need not mirror HTTP requests. A local
+CLI operation does not, by itself, advertise a BDP HTTP capability: the
+current listener serves the Read profile only.
+
+| CLI surface | Corresponding BDP concept | Boundary to keep explicit |
+| --- | --- | --- |
+| `types`, `show`, `recall`, `list`, `memories`, `links` | Type and Resource reads, Bead/Link collections, and a Bead's incident-Link view | `recall` extracts a Memory body for a terminal; CLI listing is bounded and may apply Issue-specific filters, while BDP collections use cursors and generic selection. |
+| `create`, `remember`, `link` | Create Bead or create Link | BDP mutation targets belong to a write-capable profile and are not served by the current Read listener. CLI convenience fields and Issue defaults must resolve to the same resulting Resource state when a corresponding target exists. |
+| `update`, `remember --update`, `close`, `reopen`, `update --claim`, `defer`, `undefer`, `unclaim` | Change Bead or Link properties | The Issue lifecycle commands carry native eligibility, claim-lease and History rules. Their correspondence to a generic BDP mutation is a design and conformance question, not a promise that one HTTP request already reproduces them. |
+| `delete`, `forget`, `unlink` | Delete Bead or delete Link | The CLI's explicit-apply affordance and incident-Link refusal must not silently become a protocol cascade. HTTP deletion is not served yet. |
+| `versions`, graph `history`, `compare`, `show --version` | Retained Resource state | These local exact-version operations have no equivalent in the current BDP Read profile. BDP Events, changefeeds and collection cursors are different concepts; do not present them as retained-version reads. |
+| `graph`, `ready`, `blocked`, `dep`, `status`, `init`, `setup`, `serve` | CLI composition, Issue workflow, or workspace administration | These are not additional generic BDP Resource verbs. `dep add` creates a Link, but readiness and administration do not acquire protocol endpoints by having CLI commands. |
+
+As each shared capability is implemented, test both projections against the
+same Resource behavior and record any intentional difference in this table.
+Do not claim BDP Read+Update or Transactional conformance from CLI coverage;
+those profiles have separate transport and guarantee requirements. The open
+public `revision`/`version` naming and unconditional-write policy decisions
+above also need to be reconciled across both projections before either is
+called final.
+
 ### Implementation ledger and explicit-flag inventory
 
 This table describes the admitted graph-mode surface at the pinned integration
