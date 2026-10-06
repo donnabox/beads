@@ -33,7 +33,7 @@ import (
 // drift with the store's struct tags. Sharing the store type would make the two
 // agree by construction and test nothing.
 type graphVersionsRow struct {
-	Ordinal     int64  `json:"ordinal"`
+	Ordinal     int64  `json:"local_revision"`
 	Version     string `json:"version"`
 	ChangeAt    string `json:"change_at"`
 	Actor       string `json:"actor"`
@@ -47,11 +47,11 @@ type graphVersionsRow struct {
 //
 // `revision` is the absence that matters. Graph records spell the opaque
 // citable token `revision`, and a native Issue spells its row-lock CAS token
-// `revision`, so emitting it beside `ordinal` would invite a caller to compare
-// a store-local ordering key against an address. Two clones can hold the same
+// `revision`, so emitting it beside `local_revision` would invite a caller to
+// compare a store-local ordering key against an address. Two clones can hold the same
 // ordinal for different states, so that comparison is wrong rather than merely
 // confusing.
-var graphVersionsWireKeys = []string{"actor", "attribution", "change_at", "ordinal", "removed", "version"}
+var graphVersionsWireKeys = []string{"actor", "attribution", "change_at", "local_revision", "removed", "version"}
 
 // graphVersionsHumanRow matches one rendered row line: ordinal, microsecond
 // timestamp, actor, attribution. The token lives on its own following line, so
@@ -448,6 +448,9 @@ func TestGraphPreviewVersionsCLI(t *testing.T) {
 			// the projection, and a listing whose two renderings disagree about
 			// order is worse than either being wrong alone.
 			human := run(t, "versions", selector)
+			if !strings.Contains(human, "  REV  WHEN") || strings.Contains(human, "  ORD  WHEN") {
+				t.Fatalf("%s did not render the native-compatible REV heading:\n%s", selector, human)
+			}
 			parsed := graphVersionsHumanRows(t, selector, human)
 			if len(parsed) != len(rows) {
 				t.Fatalf("%s rendered %d rows for %d versions:\n%s", selector, len(parsed), len(rows), human)

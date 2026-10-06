@@ -16,8 +16,8 @@ first. Bare ID means beads/ID; use links/PATH for a Link. Every new graph
 Resource has a creation version; do not enable ordinary versioned-history
 recording for this command. Cite the opaque version token with bd show ID
 --version TOKEN or bd compare ID --from TOKEN --to TOKEN. The store-local
-ordinal only orders versions. --json returns the version rows. BDP HTTP History
-is not available.
+local_revision only orders versions within this store. --json names that field
+local_revision, matching ordinary bd versions. BDP HTTP History is unavailable.
 
 Ordinary Issue workspaces:
 ` + versionsCmd.Long
@@ -25,7 +25,7 @@ Ordinary Issue workspaces:
 	historyCmd.Long = `Graph preview workspaces:
 bd history ID is an alias for bd versions ID. It lists retained Memory, Issue
 or Link versions newest first; bare ID means beads/ID and Link IDs use
-links/PATH. Use the opaque token for exact reads, not the store-local ordinal.
+links/PATH. Use the opaque token for exact reads, not local_revision.
 --limit and --events are not supported by the graph alias. BDP HTTP History
 is not available.
 
