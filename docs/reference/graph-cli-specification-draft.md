@@ -440,7 +440,7 @@ explicit creation title must remain nonempty; updates preserve omitted fields.
 | `update BEAD` with Issue scalar flags | Inline `--title`, `--description`/`--body`/`--message`, `--design`, `--acceptance`, `--priority`, non-claim `--assignee`, `--estimate`, `--external-ref`, `--spec-id`, `--due` and literal `--append-notes`. Requires `--if-revision TOKEN` or `--unconditional`. Description aliases must agree. Files/stdin and other Issue fields are unavailable. |
 | `update BEAD --claim` | Atomically claim one Issue for the current actor using the native writer. Standalone `--claim=true` only; no other edits or revision/force guard. Repeating the same actor is a no-op and does not renew its five-minute lease. |
 | `show RESOURCE` | Current Memory, Issue or Link; optional `--version TOKEN` selects an exact retained record. Use `versions` to list a Resource's versions in order. |
-| `versions RESOURCE` | List one Memory, Issue or Link's retained versions newest first, each with its ordinal, version token, change time, actor and a `removed` marker. In a graph workspace `history RESOURCE` is an alias with the same output; ordinary workspaces keep the Dolt-commit `history`. |
+| `versions RESOURCE` | List one Memory, Issue or Link's retained versions newest first, each with its store-local `local_revision`, version token, change time, actor and a `removed` marker. Human output labels the number `REV`. In a graph workspace `history RESOURCE` is an alias with the same output; ordinary workspaces keep the Dolt-commit `history`. |
 | `compare RESOURCE --from TOKEN --to TOKEN` | Compare two complete retained preview versions of one Memory, Issue or Link. Explicit tokens determine direction, not chronology. |
 | `link SOURCE TARGET --link-type TYPE` | Use an installed Link Type as `types/NAME` or its full local URL. Informational Links permit `--id links/PATH`, `--properties JSON` and source guards. Memory sources own informational Links; Issue sources do not. |
 | `dep add SOURCE TARGET` or `link SOURCE TARGET` | A local blocking Dependency between Issues, using the ordinary default `blocks` type. No bulk, remote, routing or bypass flags. |
@@ -675,18 +675,20 @@ bd history beads/plan     # same output, graph workspaces only
 bd show beads/plan --version LISTED_TOKEN
 ```
 
-Each row carries `ordinal`, `version`, `change_at`, `actor`, `attribution`
-and `removed`; `--json` reports them under those names, inside a result that
-also names the `resource` and its `kind`. `version` is the
-opaque token and the only citable address for a version. `ordinal` is an
+Each row carries `local_revision`, `version`, `change_at`, `actor`,
+`attribution` and `removed`; `--json` reports them under those names, inside
+a result that also names the `resource` and its `kind`. Human output labels
+`local_revision` as `REV`, as ordinary `bd versions` does. The graph JSON
+envelope and other row fields remain graph-specific. `version` is the opaque
+token and the only citable address for a version. `local_revision` is an
 ordering key, not an address: it is local to one Resource in one store and
 cannot be passed to `show --version` or `compare`. The field is deliberately
 not named `revision`, which already means the opaque token in graph records
 and the row-lock token on native Issues. `change_at` is for display and is
 never used to order rows, so two versions written within the same second
-still list in write order. Memory and Link ordinals are allocated per
-Resource when each version is written. Issue rows come from the native Issue
-version record, use its revision as the ordinal and populate `attribution`
+still list in write order. Memory and Link local revision numbers are allocated
+per Resource when each version is written. Issue rows come from the native Issue
+version record, use its local revision number and populate `attribution`
 with its attribution status; Memory and Link rows leave `attribution` empty.
 A deleted Memory's list ends at its final live head; deletion adds no version
 to it.
