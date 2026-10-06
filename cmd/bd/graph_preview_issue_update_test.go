@@ -213,7 +213,7 @@ func TestGraphPreviewIssueAssigneeRefusals(t *testing.T) {
 		{"false-guard", []string{"--assignee=alice", "--unconditional=false"}, 2},
 		{"claim", []string{"--assignee=alice", "--unconditional", "--claim"}, 5},
 		{"false-claim", []string{"--assignee=alice", "--unconditional", "--claim=false"}, 5},
-		{"force", []string{"--assignee=alice", "--unconditional", "--force"}, 5},
+		{"force-without-notes", []string{"--assignee=alice", "--unconditional", "--force"}, 2},
 		{"assignee-precondition", []string{"--assignee=alice", "--unconditional", "--if-assignee="}, 5},
 		{"status-precondition", []string{"--assignee=alice", "--unconditional", "--if-status=open"}, 5},
 		{"status", []string{"--assignee=alice", "--unconditional", "--status=in_progress"}, 5},
