@@ -2,7 +2,9 @@ package driver
 
 import (
 	"context"
+	"errors"
 	"fmt"
+	"strconv"
 	"time"
 
 	"github.com/steveyegge/beads/internal/replay/doltcli"
@@ -32,18 +34,43 @@ type RunConfig struct {
 	OutDir          string
 	SampleSize      int
 	Tools           Tools
+	// Observer, when set, is told about every (step, issue) result as it is
+	// written. It may be nil.
+	Observer Observer
+	// Seed is the record of the seeding that gave the work clone the oracle's base
+	// state, nil when the work clone was not seeded. A base that holds issues is
+	// refused without one.
+	Seed *SeedRecord
 }
 
-// Run resolves the integration build under test to an exact commit,
-// discovers every issue touched by the oracle's commit history (or an
-// evenly-spaced sample of it), and for each one replays the corresponding
-// mutation into the work project and compares the result against the
-// oracle, persisting a CommitReplayResult (and a Mismatch, when the
-// comparison fails) plus storage/latency MetricSamples for every step.
-// A mismatch does not abort the run -- AC2 requires a result row for every
-// pair the run visits, matched or not; only an infrastructure failure
-// (a broken ref, a crashed subprocess, a write error) does.
+// ErrLegacyRowsPresent reports a work clone that holds issues created while
+// versioned history was off. Such a row never records versions, so a run that
+// finds one has not measured what it set out to. It is a fault of the harness
+// and is never a finding about the build under test.
+var ErrLegacyRowsPresent = errors.New("the work clone holds issues created while versioned history was off")
+
+// Run replays the oracle's history into the work project, step by step along the
+// first parent of each commit, and compares the work project's view of every
+// touched issue with the oracle's, persisting a CommitReplayResult for every
+// (step, issue) pair (and a Mismatch, a CoverageGapRow or a rejection where there
+// is one) and a summary of what the run covered. A mismatch does not abort the run
+// -- AC2 requires a result row for every pair the run visits, matched or not;
+// only an infrastructure failure (a broken ref, a bd that cannot run or is killed,
+// a write error) does.
+//
+// The work project has versioned history switched on before the first step, so
+// everything the replay creates records versions. A base that already holds
+// issues is refused, before anything is written, unless the work clone was
+// seeded from it.
 func Run(ctx context.Context, cfg RunConfig) (ReplayRun, error) {
+	walk, err := ReadWalk(ctx, cfg.OracleDataDir)
+	if err != nil {
+		return ReplayRun{}, fmt.Errorf("run: %w", err)
+	}
+	if err := checkSeedGuard(ctx, cfg.OracleDataDir, walk, cfg.Seed); err != nil {
+		return ReplayRun{}, fmt.Errorf("run: %w", err)
+	}
+
 	sha, err := runGit(ctx, cfg.IntegrationRepo, "rev-parse", cfg.IntegrationRef)
 	if err != nil {
 		return ReplayRun{}, fmt.Errorf("run: resolve integration ref %q: %w", cfg.IntegrationRef, err)
@@ -68,114 +95,103 @@ func Run(ctx context.Context, cfg RunConfig) (ReplayRun, error) {
 		return run, fmt.Errorf("run: %w", err)
 	}
 
-	if err := runReplayLoop(ctx, cfg, run, store); err != nil {
-		run.Status = "failed"
-		run.FinishedAt = time.Now().UTC()
-		if writeErr := store.WriteReplayRun(run); writeErr != nil {
-			return run, fmt.Errorf("run: %w (and failed to record failed status: %v)", err, writeErr)
-		}
-		return run, fmt.Errorf("run: %w", err)
-	}
+	steps := walk.Steps(cfg.SampleSize)
+	r := newRunner(run.ID, store, cfg.Observer)
+	loopErr := replayHistory(ctx, cfg, r, steps)
 
 	run.Status = "completed"
+	if loopErr != nil {
+		run.Status = "failed"
+	}
 	run.FinishedAt = time.Now().UTC()
+	if err := store.WriteSummary(r.summarize(run, walk, steps, cfg.Seed)); err != nil {
+		if loopErr == nil {
+			loopErr = fmt.Errorf("writing the summary: %w", err)
+			run.Status = "failed"
+		} else {
+			loopErr = fmt.Errorf("%w (and writing the summary: %v)", loopErr, err)
+		}
+	}
 	if err := store.WriteReplayRun(run); err != nil {
-		return run, fmt.Errorf("run: writing completed replay run: %w", err)
+		if loopErr == nil {
+			return run, fmt.Errorf("run: writing completed replay run: %w", err)
+		}
+		return run, fmt.Errorf("run: %w (and failed to record failed status: %v)", loopErr, err)
+	}
+	if loopErr != nil {
+		return run, fmt.Errorf("run: %w", loopErr)
 	}
 	return run, nil
 }
 
-func runReplayLoop(ctx context.Context, cfg RunConfig, run ReplayRun, store *Store) error {
-	commits, err := ListCommits(ctx, cfg.OracleDataDir)
-	if err != nil {
+// replayHistory switches versioned history on in the work clone, replays the
+// steps, and checks that every issue it made records versions.
+func replayHistory(ctx context.Context, cfg RunConfig, r *runner, steps []Step) error {
+	if err := enableVersionedHistory(ctx, cfg); err != nil {
 		return err
 	}
-	commits = selectSample(commits, cfg.SampleSize)
+	if err := r.runSteps(ctx, realEnv{cfg: cfg}, steps); err != nil {
+		return err
+	}
+	return verifyNoLegacyRows(ctx, cfg)
+}
 
-	for i := 0; i+1 < len(commits); i++ {
-		from, to := commits[i], commits[i+1]
-		touched, err := DiscoverTouchedIssues(ctx, cfg.OracleDataDir, from.Hash, to.Hash)
-		if err != nil {
-			return err
-		}
-		for _, ti := range touched {
-			if err := replayOne(ctx, cfg, run.ID, store, from.Hash, to.Hash, ti, to.IsMerge); err != nil {
-				return err
-			}
-		}
+// enableVersionedHistory switches versioned history on in the work clone through
+// the bd under test. It must happen before the first issue is created: a row made
+// while history is off is legacy for its whole life and never records.
+func enableVersionedHistory(ctx context.Context, cfg RunConfig) error {
+	if out, err := execBd(ctx, cfg.Tools.IntegrationBin, cfg.WorkDir, "config", "set", "versioned-history.enabled", "true"); err != nil {
+		return fmt.Errorf("switching versioned history on in the work clone: %w\n%s", err, out)
 	}
 	return nil
 }
 
-// replayOne replays a single touched issue's mutation for one commit pair,
-// records the comparison outcome, and emits its storage/latency samples.
-func replayOne(ctx context.Context, cfg RunConfig, runID string, store *Store, from, to string, ti TouchedIssue, isMerge bool) error {
-	mutationKind := MutationKindFor(ti.Diff, isMerge)
-
-	var writeLatency time.Duration
-	readOracle := func(ctx context.Context) (map[string]string, error) {
-		return oracle.QueryAsOf(ctx, cfg.OracleDataDir, to, ti.IssueID)
-	}
-	replay := func(ctx context.Context) (map[string]string, error) {
-		start := time.Now()
-		err := replayMutation(ctx, cfg.Tools.IntegrationBin, cfg.OracleDataDir, cfg.WorkDir, from, to, ti.IssueID)
-		writeLatency = time.Since(start)
-		if err != nil {
-			return nil, err
-		}
-		workHead, err := headCommitOf(ctx, cfg.WorkDataDir)
-		if err != nil {
-			return nil, err
-		}
-		return oracle.QueryAsOf(ctx, cfg.WorkDataDir, workHead, ti.IssueID)
-	}
-
-	result, err := ReplayAndCompare(ctx, readOracle, replay)
+// verifyNoLegacyRows is the check that the switch took. History that silently
+// stayed off would leave every created row legacy and a run that measured nothing
+// it claims to, so a legacy row is a harness error.
+func verifyNoLegacyRows(ctx context.Context, cfg RunConfig) error {
+	const query = "SELECT COUNT(*) FROM issues WHERE participation_generation IS NULL"
+	_, rows, err := doltcli.Query(ctx, cfg.WorkDataDir, query)
 	if err != nil {
-		return fmt.Errorf("replay %s at %s: %w", ti.IssueID, to, err)
+		return fmt.Errorf("checking the work clone for legacy rows: %w", err)
 	}
-
-	if err := store.WriteCommitReplayResult(CommitReplayResult{
-		RunID:         runID,
-		SourceCommit:  to,
-		IssueID:       ti.IssueID,
-		MutationKind:  mutationKind,
-		Matched:       result.Matched,
-		OracleHash:    result.OracleHash,
-		CandidateHash: result.CandidateHash,
-	}); err != nil {
-		return fmt.Errorf("write commit replay result for %s at %s: %w", ti.IssueID, to, err)
+	if len(rows) != 1 || len(rows[0]) != 1 {
+		return fmt.Errorf("checking the work clone for legacy rows: unexpected result %v", rows)
 	}
-
-	if !result.Matched && result.Mismatch != nil {
-		if err := store.WriteMismatch(Mismatch{
-			RunID:        runID,
-			SourceCommit: to,
-			IssueID:      ti.IssueID,
-			Category:     result.Mismatch.Category,
-			ExpectedJSON: result.Mismatch.ExpectedJSON,
-			ActualJSON:   result.Mismatch.ActualJSON,
-		}); err != nil {
-			return fmt.Errorf("write mismatch for %s at %s: %w", ti.IssueID, to, err)
-		}
-	}
-
-	if err := store.WriteMetricSample(MetricSample{
-		RunID: runID, Name: "write_latency_ms", Value: float64(writeLatency.Milliseconds()), SampledAt: time.Now().UTC(),
-	}); err != nil {
-		return fmt.Errorf("write latency metric for %s at %s: %w", ti.IssueID, to, err)
-	}
-	size, err := dirSize(cfg.WorkDataDir)
+	n, err := strconv.Atoi(rows[0][0].Text)
 	if err != nil {
-		return fmt.Errorf("measure work store size after %s at %s: %w", ti.IssueID, to, err)
+		return fmt.Errorf("checking the work clone for legacy rows: %q is not a count", rows[0][0].Text)
 	}
-	if err := store.WriteMetricSample(MetricSample{
-		RunID: runID, Name: "storage_bytes", Value: float64(size), SampledAt: time.Now().UTC(),
-	}); err != nil {
-		return fmt.Errorf("write storage metric for %s at %s: %w", ti.IssueID, to, err)
+	if n > 0 {
+		return fmt.Errorf("%w: %d issues", ErrLegacyRowsPresent, n)
 	}
-
 	return nil
+}
+
+// realEnv is the step environment of a real run: the oracle's dolt database, the
+// work clone's, and the bd under test.
+type realEnv struct {
+	cfg RunConfig
+}
+
+func (e realEnv) Plan(ctx context.Context, from, to string) (*translate.StepPlan, error) {
+	return translate.Plan(ctx, e.cfg.OracleDataDir, from, to)
+}
+
+func (e realEnv) OracleView(ctx context.Context, ref, issue string) (*oracle.View, error) {
+	return oracle.ReadView(ctx, e.cfg.OracleDataDir, ref, issue)
+}
+
+func (e realEnv) Execute(ctx context.Context, action translate.Action) error {
+	return translate.ExecuteWith(ctx, e.cfg.Tools.IntegrationBin, e.cfg.WorkDir, action)
+}
+
+func (e realEnv) WorkHead(ctx context.Context) (string, error) {
+	return headCommitOf(ctx, e.cfg.WorkDataDir)
+}
+
+func (e realEnv) CandidateView(ctx context.Context, ref, issue string) (*oracle.View, error) {
+	return oracle.ReadView(ctx, e.cfg.WorkDataDir, ref, issue)
 }
 
 // selectSample returns all of steps, copied, when n<=0 or n>=len(steps)
@@ -199,36 +215,15 @@ func selectSample[T any](steps []T, n int) []T {
 	return out
 }
 
-// headCommitOf returns dataDir's current head commit hash. Mirrors the
-// query fixture_test.go's headCommit test helper already relies on
-// empirically (dolt_log ordered newest-first by commit_order) rather than
-// gambling on whether Dolt's "AS OF" clause resolves the literal ref
-// "HEAD" the way git does.
+// headCommitOf returns dataDir's current head commit hash, as dolt itself names
+// it, rather than as the newest row of dolt_log, which promises no order.
 func headCommitOf(ctx context.Context, dataDir string) (string, error) {
-	header, rows, err := doltcli.Query(ctx, dataDir, "SELECT commit_hash FROM dolt_log ORDER BY commit_order DESC LIMIT 1")
+	_, rows, err := doltcli.Query(ctx, dataDir, "SELECT hashof('HEAD')")
 	if err != nil {
 		return "", fmt.Errorf("head commit of %s: %w", dataDir, err)
 	}
-	if len(rows) == 0 {
-		return "", fmt.Errorf("head commit of %s: dolt_log returned no rows", dataDir)
+	if len(rows) != 1 || len(rows[0]) != 1 || rows[0][0].Text == "" {
+		return "", fmt.Errorf("head commit of %s: dolt returned no head", dataDir)
 	}
-	row := doltcli.RowMap(header, rows[0])
-	return row["commit_hash"], nil
-}
-
-// replayMutation translates the mutation to issueID between from and to (as
-// recorded in the oracle's history at dataDir) and applies it to workDir,
-// executing bd commands through integrationBin rather than whatever "bd"
-// happens to resolve to on the ambient PATH.
-func replayMutation(ctx context.Context, integrationBin, dataDir, workDir, from, to, issueID string) error {
-	actions, err := translate.Classify(ctx, dataDir, from, to, issueID)
-	if err != nil {
-		return fmt.Errorf("replay mutation: classify: %w", err)
-	}
-	for _, a := range actions {
-		if err := translate.ExecuteWith(ctx, integrationBin, workDir, a); err != nil {
-			return fmt.Errorf("replay mutation: execute %v: %w", a.Argv, err)
-		}
-	}
-	return nil
+	return rows[0][0].Text, nil
 }

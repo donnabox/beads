@@ -4,10 +4,7 @@ import (
 	"context"
 	"fmt"
 	"os"
-	"os/exec"
 	"path/filepath"
-
-	"github.com/steveyegge/beads/internal/replay/doltcli"
 )
 
 // Options are the settings a driver-core command line carries.
@@ -24,7 +21,18 @@ type Options struct {
 // replays the oracle's history into it. The oracle read and the translator are
 // libraries called in process, so the integration binary is the only thing
 // built.
+//
+// A base that already holds issues is refused first, before anything is built or
+// created, because nothing seeds the work project from it yet.
 func (o Options) Run(ctx context.Context) (ReplayRun, error) {
+	walk, err := ReadWalk(ctx, o.OracleDataDir)
+	if err != nil {
+		return ReplayRun{}, fmt.Errorf("reading the oracle's history: %w", err)
+	}
+	if err := checkSeedGuard(ctx, o.OracleDataDir, walk, nil); err != nil {
+		return ReplayRun{}, err
+	}
+
 	toolsDir, err := os.MkdirTemp("", "driver-core-tools-*")
 	if err != nil {
 		return ReplayRun{}, fmt.Errorf("creating tools dir: %w", err)
@@ -66,10 +74,7 @@ func ensureWorkProject(ctx context.Context, workDir, integrationBin string) erro
 	if err := os.MkdirAll(workDir, 0o755); err != nil {
 		return fmt.Errorf("ensure work project: %w", err)
 	}
-	cmd := exec.CommandContext(ctx, integrationBin, "init", "--non-interactive", "--role=maintainer")
-	cmd.Dir = workDir
-	cmd.Env = doltcli.SanitizedEnv(os.Environ())
-	if out, err := cmd.CombinedOutput(); err != nil {
+	if out, err := execBd(ctx, integrationBin, workDir, "init", "--non-interactive", "--role=maintainer"); err != nil {
 		return fmt.Errorf("ensure work project: init: %w\n%s", err, out)
 	}
 	return nil

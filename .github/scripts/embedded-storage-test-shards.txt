@@ -155,6 +155,7 @@
 15 1 TestEmbeddedRoleFixtureKitHooksAreUsable
 15 1 TestLifecycleCreateContract
 15 1 TestMergeWithStrategy_OursKeepsLocal
+15 1 TestWakeSweepNamesASkippedRowOncePerProcess
 
 15 2 TestActiveDatabaseSizeScopesToActiveEmbeddedDatabase
 15 2 TestCleanGitRemoteCacheGarbage
@@ -323,6 +324,7 @@
 15 7 TestLifecycleCloseReopenContract
 15 7 TestReclaimAnyReplicaOverride
 15 7 TestTreeWalkerContract
+15 7 TestWakeSweepSkipsTheRefusedRowAndWakesTheRest
 15 7 TestWithPeerAuth_DivergedRemoteURLFailsClosed
 
 15 8 TestAddLabel
@@ -469,6 +471,7 @@
 15 12 TestReadyWorkPageTotalFilterMatrix
 15 12 TestRemoteVerbsPresentStoredPeerCredentials
 15 12 TestSearchWithMissingWispPlaneTables
+15 12 TestWakeSweepWithHistoryOffWakesTheRowItWouldOtherwiseSkip
 15 12 TestWorkspaceConfigContract
 
 15 13 TestCountsIncludeWispDependencies
@@ -523,6 +526,7 @@
 15 14 TestPruneEventsBatchDeletesTheLowestSeqsOnly
 15 14 TestReadyCounterContract
 15 14 TestUnknownProvenanceLeaseStaysReclaimable
+15 14 TestWakeSweepWritesNothingWhenEveryExpiredRowIsSkipped
 
 15 15 TestCreateBatchLeavesExistingLegacyRowUnstamped
 15 15 TestCreateIssue
@@ -550,3 +554,4 @@
 15 15 TestIgnoredCursorHealIsIdempotent
 15 15 TestReadyWorkStatementBudget
 15 15 TestReleaserContract
+15 15 TestWakeSweepDecidesAsTheMintDoesOnEveryKindOfRow

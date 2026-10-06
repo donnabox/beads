@@ -14,7 +14,6 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
-	"strings"
 
 	"github.com/steveyegge/beads/internal/replay/doltcli"
 	"github.com/steveyegge/beads/internal/storage/issueops"
@@ -144,7 +143,7 @@ func ExecuteWith(ctx context.Context, bdPath, workDir string, action Action) err
 	cmd.Env = doltcli.SanitizedEnv(os.Environ())
 	out, err := cmd.CombinedOutput()
 	if err != nil {
-		return fmt.Errorf("bd %s: %w\n%s", strings.Join(action.Argv, " "), err, out)
+		return execFailure(action.Argv, err, out)
 	}
 	return nil
 }

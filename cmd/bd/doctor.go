@@ -822,6 +822,20 @@ func runDiagnostics(path string) doctorResult {
 	labelWhitespaceCheck := convertWithCategory(doctor.CheckLabelWhitespaceWithStore(sharedStore), doctor.CategoryData)
 	result.Checks = append(result.Checks, labelWhitespaceCheck)
 
+	// Check 10e: versioned-history pre-flight — issues holding a value a version
+	// could not record (a number outside the exact-integer range in metadata, or a
+	// gate timeout past 2^53-1 ns). It is the check `bd config set
+	// versioned-history.enabled true` makes once, kept as a standing control for
+	// stores history reaches by another route. Unlike the warn-only data checks
+	// above, a store that is not clean fails the run: this is what a store is held
+	// to before history is turned on, so the exit status a script reads has to be
+	// able to say no.
+	versionableIssuesCheck := convertWithCategory(doctor.CheckVersionableIssuesWithStore(sharedStore), doctor.CategoryData)
+	result.Checks = append(result.Checks, versionableIssuesCheck)
+	if versionableIssuesCheck.Status == statusError || versionableIssuesCheck.Status == statusWarning {
+		result.OverallOK = false
+	}
+
 	// Check 11: Claude integration
 	claudeCheck := convertWithCategory(doctor.CheckClaude(path), doctor.CategoryIntegration)
 	result.Checks = append(result.Checks, claudeCheck)

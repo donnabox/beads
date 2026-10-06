@@ -19,7 +19,7 @@ func main() {
 	integrationRepo := flag.String("integration-repo", "", "path to the beads repo checkout to build the integration binary from (required)")
 	oracleDataDir := flag.String("oracle-data-dir", "", "dolt data directory containing the historical corpus to replay (required)")
 	workDir := flag.String("work-dir", "", "bd project directory to replay mutations into; created and initialized if it doesn't already exist (required)")
-	outDir := flag.String("out-dir", "", "directory to write replay_runs/commit_replay_results/mismatches/metric_samples JSONL files to (required)")
+	outDir := flag.String("out-dir", "", "directory to write the replay_runs, commit_replay_results, mismatches and coverage_gaps JSONL files and summary.json to (required)")
 	sampleSize := flag.Int("sample-size", 0, "number of evenly-spaced commits to sample; 0 replays the full history exhaustively")
 	flag.Parse()
 

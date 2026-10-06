@@ -229,6 +229,7 @@ go_test(
         "version_reconciler_contract_test.go",
         "version_subsecond_test.go",
         "versioned_read_contract_test.go",
+        "wake_defers_isolation_test.go",
         "workspace_config_contract_test.go",
     ],
     embed = [":embeddeddolt"],
