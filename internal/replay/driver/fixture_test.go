@@ -8,7 +8,9 @@ import (
 )
 
 func TestMain(m *testing.M) {
-	os.Exit(replaytest.Main(m))
+	code := replaytest.Main(m)
+	removeSharedFixtures()
+	os.Exit(code)
 }
 
 // ---- fixture helpers ------------------------------------------------------

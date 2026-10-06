@@ -141,23 +141,3 @@ func TestNewStore_CreatesDirectory(t *testing.T) {
 		t.Fatalf("NewStore did not create directory %s: err=%v", dir, err)
 	}
 }
-
-func TestDirSize_SumsRegularFiles(t *testing.T) {
-	dir := t.TempDir()
-	if err := os.WriteFile(filepath.Join(dir, "a.txt"), []byte("12345"), 0o644); err != nil {
-		t.Fatalf("WriteFile a.txt: %v", err)
-	}
-	if err := os.MkdirAll(filepath.Join(dir, "sub"), 0o755); err != nil {
-		t.Fatalf("MkdirAll: %v", err)
-	}
-	if err := os.WriteFile(filepath.Join(dir, "sub", "b.txt"), []byte("123"), 0o644); err != nil {
-		t.Fatalf("WriteFile b.txt: %v", err)
-	}
-	got, err := dirSize(dir)
-	if err != nil {
-		t.Fatalf("dirSize: %v", err)
-	}
-	if got != 8 {
-		t.Errorf("dirSize = %d, want 8", got)
-	}
-}

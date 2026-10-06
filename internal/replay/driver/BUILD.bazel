@@ -3,15 +3,18 @@ load("@rules_go//go:def.bzl", "go_library", "go_test")
 go_library(
     name = "driver",
     srcs = [
-        "discover.go",
+        "bd.go",
         "integration.go",
-        "mutationkind.go",
+        "observer.go",
         "options.go",
         "refname.go",
-        "replay.go",
         "run.go",
+        "runner.go",
+        "seed.go",
+        "step.go",
         "store.go",
         "types.go",
+        "walk.go",
     ],
     importpath = "github.com/steveyegge/beads/internal/replay/driver",
     visibility = ["//:__subpackages__"],
@@ -20,29 +23,31 @@ go_library(
         "//internal/replay/doltcli",
         "//internal/replay/oracle",
         "//internal/replay/translate",
-        "//internal/storage/issueops",
     ],
 )
 
 go_test(
     name = "driver_test",
     srcs = [
-        "discover_test.go",
+        "b6_fixture_test.go",
+        "b6_run_test.go",
         "e2e_test.go",
         "fixture_test.go",
         "integration_test.go",
         "libs_test.go",
-        "mutationkind_test.go",
         "refname_test.go",
-        "replay_test.go",
         "run_test.go",
+        "step_test.go",
         "store_test.go",
+        "walk_test.go",
     ],
     embed = [":driver"],
     deps = [
         "//internal/replay/compare",
+        "//internal/replay/doltcli",
         "//internal/replay/oracle",
         "//internal/replay/replaytest",
+        "//internal/replay/translate",
     ],
 )
 
