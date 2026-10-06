@@ -213,6 +213,7 @@ func checkGolden(t *testing.T, name string, o Outcome) {
 	if err := json.Unmarshal(b, &want); err != nil {
 		t.Fatalf("golden/%s.json: %v", name, err)
 	}
+	applyForkGoldenDeltas(t, name, &want)
 	got := digestOf(o)
 	norm := func(s []string) []string {
 		if len(s) == 0 {
