@@ -1,17 +1,24 @@
 # Error Handling Guidelines
 
-Last reviewed: 2026-07-07
+Last reviewed: 2026-10-06
 
 Freshness source: `cmd/bd/*.go`, especially command error exits and JSON error
-helpers in `cmd/bd/errors.go`.
+helpers in `cmd/bd/errors.go` and the graph admission path in
+`cmd/bd/graph_preview.go`.
 
-This document describes the error handling patterns used throughout the beads codebase and provides guidelines for when each pattern should be applied.
+This document describes the ordinary CLI's error handling patterns and gives
+guidelines for choosing among them. Graph-mode commands additionally use the
+typed `graphFailure` contract in `cmd/bd/graph_preview.go`; its exit categories
+and stderr envelope are specified in the
+[Graph CLI Specification (Draft)](../docs/reference/graph-cli-specification-draft.md#results-errors-and-repeatability).
+Do not translate a graph refusal into an ordinary `HandleError` exit 1 or a
+success-shaped JSON result.
 
 ## Overview
 
 The beads codebase currently uses **three distinct error handling patterns** across different scenarios. Understanding when to use each pattern is critical for maintaining consistent behavior and a good user experience.
 
-## The Three Patterns
+## The Three Ordinary CLI Patterns
 
 ### Pattern A: Return a Fatal Error Through `RunE` (`return HandleError(...)`)
 
@@ -79,11 +86,9 @@ if err := createConfigYaml(beadsDir, false); err != nil {
 - Command continues execution
 - Core functionality still works
 
-**Files using this pattern:**
-- `cmd/bd/init.go` (lines 155-157, 161-163, 167-169, 188-190, 236-238, 272-274, etc.)
-- `cmd/bd/sync.go` (lines 156, 257, 281, 329, 335, 720-722, 740, 743, 752, 762)
-- `cmd/bd/create.go` (lines 333-334, 340-341)
-- `cmd/bd/sync.go` *(handles Dolt sync operations)*
+**Files using this pattern:** `cmd/bd/init.go`, `cmd/bd/sync.go` and
+`cmd/bd/create.go`, where auxiliary failures can be reported without hiding a
+failed core operation.
 
 ---
 
@@ -106,11 +111,8 @@ _ = os.Remove(tempPath)
 - Operation failure has no material impact
 - Primary error already reported
 
-**Files using this pattern:**
-- `cmd/bd/init.go` (line 209, 326-327)
-- `cmd/bd/sync.go` (lines 696-698)
-- `cmd/bd/sync.go` *(sync cleanup)*
-- Dozens of other locations throughout the codebase
+**Files using this pattern:** cleanup paths in `cmd/bd/init.go`,
+`cmd/bd/sync.go` and other command handlers.
 
 ---
 
