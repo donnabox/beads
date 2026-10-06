@@ -47,11 +47,12 @@ const (
 )
 
 var (
-	serveAddr             string
-	serveAllowNonLoopback bool
-	serveAuthTokenFile    string
-	serveInsecureNoAuth   bool
-	serveAllowedHosts     []string
+	serveAddr              string
+	serveAllowNonLoopback  bool
+	serveAuthTokenFile     string
+	serveInsecureNoAuth    bool
+	serveAllowedHosts      []string
+	serveLargeApplyCeiling time.Duration
 )
 
 var serveCmd = &cobra.Command{
@@ -60,8 +61,25 @@ var serveCmd = &cobra.Command{
 	Long: `Serve the beads HTTP API — the same work surface the CLI answers, for
 automation clients that would otherwise fork a bd subprocess per call.
 
-The wire contract is described by an OpenAPI document (/v0); GET
-/v0/beads/context reports which operations this build actually implements.
+GRAPH WORKSPACE PREVIEW
+
+  In an initialized graph workspace backed by ordinary shared-server Dolt,
+  this command serves BDP Read at the persisted Scope URL path: discovery,
+  Resources, Types, properties, filtered inventories, incident Links and retained
+  pages. It accepts --readonly and publishes no HTTP write operations, History,
+  aliases, /healthz or legacy /v0 routes. Embedded graph serving is refused.
+  Use the authenticated Scope or bdp.json read for readiness. Every accepted
+  token can read the complete workspace; cursors expire after five minutes
+  and do not survive process restart. Stop serving before restoring storage.
+  Bind a stable address reachable through the initialized Scope URL. Host
+  aliases do not change canonical identities. See docs/reference/graph-preview.md.
+
+LEGACY ISSUE WORKSPACES
+
+  The following operation and probe descriptions apply to legacy Issue mode.
+  Its wire contract is described by an OpenAPI document (/v0); GET
+  /v0/beads/context reports which operations this build actually implements.
+  Deployment, token rotation and Host controls also apply to graph mode.
 
 DEPLOYMENT
 
@@ -149,6 +167,14 @@ DESTRUCTIVE OPERATIONS
   address can erase closed work; bind it accordingly.`,
 	Args: cobra.NoArgs,
 	RunE: func(cmd *cobra.Command, args []string) error {
+		if graphPreviewActive {
+			cmd.SilenceErrors, cmd.SilenceUsage = true, true
+			opts, err := resolveServeConfig()
+			if err != nil {
+				return HandleError("%v", err)
+			}
+			return runGraphServe(cmd, opts)
+		}
 		return runServe()
 	},
 }
@@ -175,6 +201,8 @@ func registerServeFlags(cmd *cobra.Command) {
 		"Serve a non-loopback bind with NO authentication. Every peer that can reach the address gets full read and claim access")
 	cmd.Flags().StringArrayVar(&serveAllowedHosts, "allowed-host", nil,
 		"Additional Host header value to answer to, e.g. a service DNS name. Repeatable; matched exactly, with no wildcards")
+	cmd.Flags().DurationVar(&serveLargeApplyCeiling, "large-apply-ceiling", httpapi.DefaultLargeApplyCeiling,
+		"Whole-run budget for a POST issues:batchApply request over 100 items (a ceiling, not a target; requests at or under 100 items are unaffected). Must be positive. The orchestrator's stop grace must be at least this long plus 5s, or an external SIGKILL can cut off an in-flight large apply a graceful drain would otherwise have waited out; see engdocs/SERVE_RUNBOOK.md")
 }
 
 // serveOptions is the part of a server's configuration that depends on NEITHER
@@ -187,11 +215,12 @@ func registerServeFlags(cmd *cobra.Command) {
 // server configuration that cannot yet describe a server. The field names match
 // Config's because they become those fields verbatim, in applyTo.
 type serveOptions struct {
-	Addr             string
-	AllowNonLoopback bool
-	InsecureNoAuth   bool
-	AllowedHosts     []string
-	Auth             *httpapi.TokenFileAuth
+	Addr              string
+	AllowNonLoopback  bool
+	InsecureNoAuth    bool
+	AllowedHosts      []string
+	Auth              *httpapi.TokenFileAuth
+	LargeApplyCeiling time.Duration
 }
 
 // applyTo writes the operator's choices onto the configuration a database arm
@@ -203,6 +232,7 @@ func (o serveOptions) applyTo(cfg *httpapi.Config) {
 	cfg.InsecureNoAuth = o.InsecureNoAuth
 	cfg.AllowedHosts = o.AllowedHosts
 	cfg.Auth = o.Auth
+	cfg.LargeApplyCeiling = o.LargeApplyCeiling
 }
 
 // resolveServeConfig turns the flags and their environment fallbacks into the
@@ -215,13 +245,17 @@ func (o serveOptions) applyTo(cfg *httpapi.Config) {
 // standing in, and must not arrive after a database has been opened.
 func resolveServeConfig() (serveOptions, error) {
 	cfg := serveOptions{
-		Addr:             serveAddr,
-		AllowNonLoopback: serveAllowNonLoopback,
-		InsecureNoAuth:   serveInsecureNoAuth,
-		AllowedHosts:     serveAllowedHosts,
+		Addr:              serveAddr,
+		AllowNonLoopback:  serveAllowNonLoopback,
+		InsecureNoAuth:    serveInsecureNoAuth,
+		AllowedHosts:      serveAllowedHosts,
+		LargeApplyCeiling: serveLargeApplyCeiling,
 	}
 	if _, err := httpapi.ValidateBindAddr(serveAddr, serveAllowNonLoopback); err != nil {
 		return cfg, err
+	}
+	if serveLargeApplyCeiling <= 0 {
+		return cfg, fmt.Errorf("--large-apply-ceiling must be positive, got %s", serveLargeApplyCeiling)
 	}
 
 	tokenFile := serveAuthTokenFile

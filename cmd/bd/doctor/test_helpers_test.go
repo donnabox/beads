@@ -4,13 +4,16 @@ package doctor
 
 import (
 	"context"
+	"crypto/sha256"
 	"database/sql"
+	"encoding/hex"
 	"fmt"
 	"path/filepath"
 	"testing"
 	"time"
 
 	_ "github.com/go-sql-driver/mysql"
+	"github.com/steveyegge/beads/internal/configfile"
 	"github.com/steveyegge/beads/internal/storage/dolt"
 	"github.com/steveyegge/beads/internal/storage/doltutil"
 	"github.com/steveyegge/beads/internal/testutil"
@@ -66,6 +69,42 @@ func newTestDoltStore(t *testing.T, prefix string) *dolt.DoltStore {
 		store.Close()
 	})
 	return store
+}
+
+// newDoctorTestDatabase creates an empty database on the shared test server
+// that no other test uses, points beadsDir's metadata.json at it, and drops it
+// when the test ends. The implicit "beads" database is shared state: the
+// phantom tests create it and other tests initialise it, so a test that
+// resolves to it sees whatever ran before. Both process-wide port variables
+// are cleared as well (see clearDoltPortEnv), so the metadata written here
+// decides where the code under test connects. Callers gate on the test server
+// and pass its port.
+func newDoctorTestDatabase(t *testing.T, beadsDir string, port int) string {
+	t.Helper()
+	clearDoltPortEnv(t)
+
+	h := sha256.Sum256([]byte(t.Name() + fmt.Sprintf("%d", time.Now().UnixNano())))
+	name := "doctest_" + hex.EncodeToString(h[:6])
+
+	// SetupSharedTestDB returns once the server lists the database, so the
+	// connection the code under test opens next does not race the catalog.
+	db, err := testutil.SetupSharedTestDB(port, name)
+	if err != nil {
+		t.Fatalf("failed to create test database %s: %v", name, err)
+	}
+	_ = db.Close()
+	t.Cleanup(func() { dropDoctorTestDatabase(name, port) })
+
+	cfg := configfile.DefaultConfig()
+	cfg.Backend = configfile.BackendDolt
+	cfg.DoltMode = configfile.DoltModeServer
+	cfg.DoltServerHost = "127.0.0.1"
+	cfg.DoltServerPort = port
+	cfg.DoltDatabase = name
+	if err := cfg.Save(beadsDir); err != nil {
+		t.Fatalf("failed to save config: %v", err)
+	}
+	return name
 }
 
 // dropDoctorTestDatabase drops a test database (best-effort cleanup).

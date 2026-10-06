@@ -1,0 +1,44 @@
+load("@rules_go//go:def.bzl", "go_library", "go_test")
+
+go_library(
+    name = "graphops",
+    srcs = [
+        "doc.go",
+        "errors.go",
+        "identity.go",
+        "laws.go",
+        "reader.go",
+        "types.go",
+        "types_role.go",
+    ],
+    importpath = "github.com/steveyegge/beads/graphops",
+    visibility = ["//visibility:public"],
+    deps = ["//beadserrors"],
+)
+
+# Package-shape tests parse source, which must be available in sandbox runfiles.
+go_test(
+    name = "graphops_test",
+    srcs = [
+        "laws_internal_test.go",
+        "laws_test.go",
+        "roles_test.go",
+        "types_test.go",
+    ],
+    data = [":go_srcs"],
+    embed = [":graphops"],
+    deps = ["//beadserrors"],
+)
+
+# --- begin go_srcs (managed by tools/bazel/go_srcs.py; run `make bazel-sync`) ---
+
+filegroup(
+    name = "go_srcs",
+    srcs = glob(
+        ["**/*.go"],
+        allow_empty = True,
+    ),
+    visibility = ["//:__subpackages__"],
+)
+
+# --- end go_srcs ---

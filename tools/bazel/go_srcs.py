@@ -34,20 +34,27 @@ import sys
 
 # Packages whose own Go source a test scans.
 PACKAGES = (
+    ".",  # //cmd/bd:bd_test (events-journal construction scan: the Go SDK opens)
     "backend",  # //backend:backend_test (public alias census)
     "backend/conformance",  # //backend/conformance, //internal/storage
     "beadserrors",  # role facade alias targets
     "cmd/bd",  # //cmd/bd:bd_test (capability registry, journal, serve scans)
     "cmd/bd/doctor",  # //cmd/bd:bd_test (events-journal construction scan)
     "cmd/bd/doctor/fix",  # //cmd/bd:bd_test (events-journal construction scan)
+    "graphops",  # //graphops:graphops_test (package shape and import boundary)
+    "internal/httpapi/bdpwire",  # wire import-boundary source scan
     "internal/types",  # role facade alias targets
     "issueops",  # //backend/conformance (role facade census)
     "journalops",  # //backend/conformance (role facade census)
     "memoryops",  # //backend/conformance (role facade census)
+    "scripts/driver-core",  # //internal/replay:replay_test (harness layout guards)
+    "scripts/mutation-translator",  # //internal/replay:replay_test (harness layout guards)
+    "scripts/oracle-query",  # //internal/replay:replay_test (harness layout guards)
 )
 
 # Roots whose whole Go tree a test scans.
 TREES = (
+    "internal/replay",  # //internal/replay:replay_test scans the whole harness library tree
     "internal/storage",  # //internal/storage walks every *_test.go below it
 )
 

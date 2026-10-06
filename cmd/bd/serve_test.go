@@ -13,10 +13,10 @@ import (
 	"sort"
 	"strings"
 	"testing"
+	"time"
 
 	"github.com/spf13/pflag"
 
-	"github.com/steveyegge/beads/internal/beads"
 	"github.com/steveyegge/beads/internal/configfile"
 	"github.com/steveyegge/beads/internal/httpapi"
 	"github.com/steveyegge/beads/internal/storage"
@@ -29,7 +29,10 @@ import (
 // deliberately, rather than arriving as one nobody designed.
 //
 // Every flag added here defaults to the behavior that existed without it, so
-// `bd serve` with no arguments is the same server it has always been.
+// a flag's default is never what changes `bd serve` with no arguments from
+// one release to the next. For --large-apply-ceiling that behavior is
+// httpapi.DefaultLargeApplyCeiling, the ceiling the server applies when none
+// is configured.
 func TestServeFlags(t *testing.T) {
 	var got []string
 	serveCmd.Flags().VisitAll(func(f *pflag.Flag) { got = append(got, f.Name) })
@@ -37,18 +40,20 @@ func TestServeFlags(t *testing.T) {
 
 	want := []string{
 		"addr", "allow-non-loopback", "allowed-host", "auth-token-file",
-		"insecure-no-auth",
+		"insecure-no-auth", "large-apply-ceiling",
 	}
 	if strings.Join(got, ",") != strings.Join(want, ",") {
 		t.Errorf("bd serve flags = %v, want %v", got, want)
 	}
 
 	// The defaults ARE the compatibility promise: no token file, no extra
-	// hosts, and no waiver.
+	// hosts, no waiver, and the large-apply ceiling that SERVE_RUNBOOK.md
+	// sizes an orchestrator's stop grace against.
 	for _, tc := range []struct{ flag, want string }{
 		{"auth-token-file", ""},
 		{"insecure-no-auth", "false"},
 		{"allowed-host", "[]"},
+		{"large-apply-ceiling", "5m0s"},
 	} {
 		f := serveCmd.Flags().Lookup(tc.flag)
 		if f == nil {
@@ -255,7 +260,7 @@ func useStorageModeGlobals(t *testing.T) {
 // So this pins what is left, and it is narrow and checkable:
 //
 //   - every httpapi.Config bd builds names exactly ONE COMPLETE database
-//     source — Provider alone, or Reader and Claimer together. A half-set pair
+//     source — Provider alone, GraphRead alone, or Reader and Claimer together. A half-set pair
 //     binds, answers every read, and nil-dereferences on the first claim;
 //     Listen refuses it, and so does this, one layer earlier;
 //   - both arms exist, so the test cannot pass because one was deleted;
@@ -271,7 +276,7 @@ func TestServeNamesOneDatabaseSourcePerServerItBuilds(t *testing.T) {
 	}
 
 	fset := token.NewFileSet()
-	var providerBacked, rolesBacked int
+	var providerBacked, rolesBacked, graphBacked int
 	for _, entry := range entries {
 		name := entry.Name()
 		if entry.IsDir() || !strings.HasSuffix(name, ".go") || strings.HasSuffix(name, "_test.go") {
@@ -301,17 +306,22 @@ func TestServeNamesOneDatabaseSourcePerServerItBuilds(t *testing.T) {
 			for _, lit := range httpapiConfigLiterals(fn) {
 				attributed++
 				keys := configLiteralKeys(lit)
-				provider := keys["Provider"]
+				provider, graph := keys["Provider"], keys["GraphRead"]
 				reader, claimer := keys["Reader"], keys["Claimer"]
 
 				switch {
-				case provider && (reader || claimer):
+				case provider && (reader || claimer || graph), graph && (reader || claimer):
 					t.Errorf("%s: this httpapi.Config names two database sources; pass exactly one",
 						fset.Position(lit.Pos()))
 				case reader != claimer:
 					t.Errorf("%s: this httpapi.Config sets one issue role without the other; a reader without a "+
 						"claimer binds, answers every read, and fails the first claim on a live server",
 						fset.Position(lit.Pos()))
+				case graph:
+					graphBacked++
+					if !functionMentions(fn, "DoltModeServer") || !functionMentions(fn, "OpenExisting") {
+						t.Errorf("%s: graph source must explicitly gate ordinary-server mode and open existing storage", fset.Position(lit.Pos()))
+					}
 				case provider:
 					providerBacked++
 				case reader && claimer:
@@ -333,7 +343,10 @@ func TestServeNamesOneDatabaseSourcePerServerItBuilds(t *testing.T) {
 		}
 	}
 
-	// Both arms, so the test cannot pass because one was deleted, renamed, or
+	if graphBacked == 0 {
+		t.Error("no graph Read source in cmd/bd")
+	}
+	// Both legacy arms, so the test cannot pass because one was deleted, renamed, or
 	// stopped naming a source at all.
 	if providerBacked == 0 {
 		t.Error("no provider-backed httpapi.Config in cmd/bd: the dolt SQL-server workspaces are no longer served")
@@ -484,8 +497,7 @@ func runServeUnderReadonly(t *testing.T, dir string) (string, error) {
 	// without this a directory with no workspace would still resolve to
 	// whichever one an earlier test in this binary left behind — and "no
 	// workspace" is the whole premise of the ordering assertion above.
-	beads.ResetCaches()
-	t.Cleanup(beads.ResetCaches)
+	resetRepoCachesForTest(t)
 
 	var err error
 	stderr := captureBootstrapStderr(t, func() { err = runServe() })
@@ -513,14 +525,17 @@ func withServeFlags(t *testing.T) {
 	addr, nonLoopback := serveAddr, serveAllowNonLoopback
 	token, insecure := serveAuthTokenFile, serveInsecureNoAuth
 	hosts := serveAllowedHosts
+	largeApplyCeiling := serveLargeApplyCeiling
 	t.Cleanup(func() {
 		serveAddr, serveAllowNonLoopback = addr, nonLoopback
 		serveAuthTokenFile, serveInsecureNoAuth = token, insecure
 		serveAllowedHosts = hosts
+		serveLargeApplyCeiling = largeApplyCeiling
 	})
 	serveAddr, serveAllowNonLoopback = "127.0.0.1:0", false
 	serveAuthTokenFile, serveInsecureNoAuth = "", false
 	serveAllowedHosts = nil
+	serveLargeApplyCeiling = httpapi.DefaultLargeApplyCeiling
 }
 
 func serveTokenFile(t *testing.T) string {
@@ -586,6 +601,20 @@ func TestServeConfigRefusesAnUnservablePosture(t *testing.T) {
 			apply:   func(*testing.T) { serveAllowedHosts = []string{"bd.beads.svc:8080"} },
 			wantErr: "--allowed-host",
 		},
+		{
+			name:    "a zero large-apply ceiling",
+			apply:   func(*testing.T) { serveLargeApplyCeiling = 0 },
+			wantErr: "--large-apply-ceiling",
+		},
+		{
+			name:    "a negative large-apply ceiling",
+			apply:   func(*testing.T) { serveLargeApplyCeiling = -time.Second },
+			wantErr: "--large-apply-ceiling",
+		},
+		{
+			name:  "a non-default large-apply ceiling",
+			apply: func(*testing.T) { serveLargeApplyCeiling = 90 * time.Second },
+		},
 	} {
 		t.Run(tc.name, func(t *testing.T) {
 			clearServeEnv(t)
@@ -649,6 +678,7 @@ func TestServeConfigCarriesTheOperatorsChoicesThrough(t *testing.T) {
 	withServeFlags(t)
 	serveAuthTokenFile = serveTokenFile(t)
 	serveAllowedHosts = []string{"bd-proj.beads.svc.cluster.local", "bd-proj.beads.svc"}
+	serveLargeApplyCeiling = 90 * time.Second
 
 	cfg, err := resolveServeConfig()
 	if err != nil {
@@ -662,6 +692,15 @@ func TestServeConfigCarriesTheOperatorsChoicesThrough(t *testing.T) {
 	}
 	if cfg.InsecureNoAuth {
 		t.Error("InsecureNoAuth is set without the flag")
+	}
+	if cfg.LargeApplyCeiling != serveLargeApplyCeiling {
+		t.Errorf("LargeApplyCeiling = %s, want %s (--large-apply-ceiling did not reach the server config)", cfg.LargeApplyCeiling, serveLargeApplyCeiling)
+	}
+
+	var httpCfg httpapi.Config
+	cfg.applyTo(&httpCfg)
+	if httpCfg.LargeApplyCeiling != serveLargeApplyCeiling {
+		t.Errorf("serveOptions.applyTo did not carry LargeApplyCeiling through: got %s, want %s", httpCfg.LargeApplyCeiling, serveLargeApplyCeiling)
 	}
 }
 

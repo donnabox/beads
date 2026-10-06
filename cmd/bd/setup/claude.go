@@ -19,7 +19,10 @@ var (
 	errClaudeHooksMissing = errors.New("claude hooks not installed")
 )
 
-const claudeInstructionsFile = "CLAUDE.md"
+const (
+	claudeInstructionsFile = "CLAUDE.md"
+	claudeStopHookCommand  = "bd claude-hook stop"
+)
 
 var claudeAgentsIntegration = agentsIntegration{
 	name:         "Claude Code",
@@ -225,10 +228,16 @@ func InstallClaude(global bool, stealth bool) error {
 // InstallClaudeProject installs project-local Claude hooks, returning an error
 // instead of exiting. Used by bd init to integrate Claude setup automatically.
 func InstallClaudeProject(stealth bool) error {
+	return InstallClaudeProjectTo(stealth, ProjectInstallOutput{})
+}
+
+// InstallClaudeProjectTo is InstallClaudeProject reporting to out.
+func InstallClaudeProjectTo(stealth bool, out ProjectInstallOutput) error {
 	env, err := claudeEnvProvider()
 	if err != nil {
 		return err
 	}
+	env.stdout, env.stderr = out.stdout(), out.stderr()
 	return installClaude(env, false, stealth)
 }
 
@@ -297,6 +306,9 @@ func installClaude(env claudeEnv, global bool, stealth bool) error {
 	} else {
 		if addHookCommand(hooks, "SessionStart", command) {
 			_, _ = fmt.Fprintln(env.stdout, "✓ Registered SessionStart hook")
+		}
+		if addHookCommand(hooks, "Stop", claudeStopHookCommand) {
+			_, _ = fmt.Fprintln(env.stdout, "✓ Registered Stop hook")
 		}
 	}
 
@@ -495,6 +507,7 @@ func removeClaude(env claudeEnv, global bool) error {
 				removeHookCommand(hooks, "SessionStart", v)
 				removeHookCommand(hooks, "PreCompact", v)
 			}
+			removeHookCommand(hooks, "Stop", claudeStopHookCommand)
 
 			data, err = marshalSettings(settings)
 			if err != nil {
@@ -520,6 +533,7 @@ func removeClaude(env claudeEnv, global bool) error {
 						removeHookCommand(legacyHooks, "SessionStart", v)
 						removeHookCommand(legacyHooks, "PreCompact", v)
 					}
+					removeHookCommand(legacyHooks, "Stop", claudeStopHookCommand)
 					if migrated, marshalErr := marshalSettings(legacySettings); marshalErr == nil {
 						_ = writeSettingsIfChanged(env, legacyPath, migrated)
 					}

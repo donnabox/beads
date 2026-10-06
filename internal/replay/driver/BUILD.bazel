@@ -1,0 +1,65 @@
+load("@rules_go//go:def.bzl", "go_library", "go_test")
+
+go_library(
+    name = "driver",
+    srcs = [
+        "bd.go",
+        "integration.go",
+        "observer.go",
+        "options.go",
+        "refname.go",
+        "run.go",
+        "runner.go",
+        "seed.go",
+        "step.go",
+        "store.go",
+        "types.go",
+        "walk.go",
+    ],
+    importpath = "github.com/steveyegge/beads/internal/replay/driver",
+    visibility = ["//:__subpackages__"],
+    deps = [
+        "//internal/replay/compare",
+        "//internal/replay/doltcli",
+        "//internal/replay/oracle",
+        "//internal/replay/translate",
+    ],
+)
+
+go_test(
+    name = "driver_test",
+    srcs = [
+        "b6_fixture_test.go",
+        "b6_run_test.go",
+        "e2e_test.go",
+        "fixture_test.go",
+        "integration_test.go",
+        "libs_test.go",
+        "refname_test.go",
+        "run_test.go",
+        "step_test.go",
+        "store_test.go",
+        "walk_test.go",
+    ],
+    embed = [":driver"],
+    deps = [
+        "//internal/replay/compare",
+        "//internal/replay/doltcli",
+        "//internal/replay/oracle",
+        "//internal/replay/replaytest",
+        "//internal/replay/translate",
+    ],
+)
+
+# --- begin go_srcs (managed by tools/bazel/go_srcs.py; run `make bazel-sync`) ---
+
+filegroup(
+    name = "go_srcs",
+    srcs = glob(
+        ["**/*.go"],
+        allow_empty = True,
+    ),
+    visibility = ["//:__subpackages__"],
+)
+
+# --- end go_srcs ---
