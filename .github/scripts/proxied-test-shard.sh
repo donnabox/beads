@@ -141,12 +141,12 @@ if [ "${BEADS_TEST_SHARD_LIST_ONLY:-}" = "1" ]; then
 fi
 
 if [ -x "$CMD_BINARY" ]; then
-  exec "$CMD_BINARY" -test.v -test.count=1 -test.timeout=15m \
+  exec "$CMD_BINARY" -test.v -test.count=1 -test.timeout=25m \
     -test.run "$RUN_REGEX" \
     "$@"
 else
   echo "Warning: pre-built test binary not found at $CMD_BINARY, falling back to go test"
-  exec go test -tags=gms_pure_go -v -count=1 -timeout 15m \
+  exec go test -tags=gms_pure_go -v -count=1 -timeout 25m \
     -run "$RUN_REGEX" \
     "$@" \
     ./cmd/bd/

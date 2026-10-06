@@ -2028,7 +2028,7 @@ type bazelShardScript struct {
 var bazelShardScripts = []bazelShardScript{
 	{".github/scripts/embedded-test-shard.sh", "CMD_BINARY", "20m", "gms_pure_go", true, "./cmd/bd/", ""},
 	{".github/scripts/embedded-storage-test-shard.sh", "STORAGE_BINARY", "20m", "gms_pure_go", true, "./internal/storage/embeddeddolt/", ""},
-	{".github/scripts/proxied-test-shard.sh", "CMD_BINARY", "15m", "gms_pure_go", false, "./cmd/bd/", ""},
+	{".github/scripts/proxied-test-shard.sh", "CMD_BINARY", "25m", "gms_pure_go", false, "./cmd/bd/", ""},
 	{".github/scripts/server-storage-test-shard.sh", "STORAGE_BINARY", "15m", "integration,gms_pure_go", false, "./internal/storage/dolt/", "internal/storage/dolt"},
 }
 

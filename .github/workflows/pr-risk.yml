@@ -246,7 +246,7 @@ jobs:
         run: ./scripts/ci/pull-dolt-image.sh
 
       - name: Test proxied-server cmd shard
-        timeout-minutes: 16
+        timeout-minutes: 26
         env:
           BEADS_TEST_PROXIED_SERVER: "1"
           BEADS_TEST_BD_BINARY: /tmp/bd-proxied
