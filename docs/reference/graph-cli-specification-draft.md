@@ -78,7 +78,8 @@ current listener serves the Read profile only.
 | `create`, `remember`, `link` | Create Bead or create Link | BDP mutation targets belong to a write-capable profile and are not served by the current Read listener. CLI convenience fields and Issue defaults must resolve to the same resulting Resource state when a corresponding target exists. |
 | `update`, `remember --update`, `close`, `reopen`, `update --claim`, `defer`, `undefer`, `unclaim` | Change Bead or Link properties | The Issue lifecycle commands carry native eligibility, claim-lease and History rules. Their correspondence to a generic BDP mutation is a design and conformance question, not a promise that one HTTP request already reproduces them. |
 | `delete`, `forget`, `unlink` | Delete Bead or delete Link | The CLI's explicit-apply affordance and incident-Link refusal must not silently become a protocol cascade. HTTP deletion is not served yet. |
-| `versions`, graph `history`, `compare`, `show --version` | Retained Resource state | These local exact-version operations have no equivalent in the current BDP Read profile. BDP Events, changefeeds and collection cursors are different concepts; do not present them as retained-version reads. |
+| `versions`, graph `history`, `show --version` | Retained Resource state | The BDP v0 draft defines `view=versions` pages and exact historical reads for History-capable services, but the current Beads Read listener does not serve that surface. BDP rows carry opaque `revision`, lineage and retained-body status, with cursor pagination; the CLI's `local_revision` is not a BDP wire member. BDP Events and changefeeds remain separate from retained-version reads. |
+| `compare` | Compare two retained Resource states | This is a local CLI convenience over two exact states, not a separate BDP operation. |
 | `graph`, `ready`, `blocked`, `dep`, `status`, `init`, `setup`, `serve` | CLI composition, Issue workflow, or workspace administration | These are not additional generic BDP Resource verbs. `dep add` creates a Link, but readiness and administration do not acquire protocol endpoints by having CLI commands. |
 
 As each shared capability is implemented, test both projections against the
@@ -587,7 +588,8 @@ keep their established admission policy. A no-op writes nothing and does not
 repair an oversized workspace; a properties document already above the
 patch limit cannot use this route to shrink itself. Runtime bound refusals
 report `capability_unavailable`. These bounded CLI changes do not enable a
-public BDP Write profile, a public History contract or durable request outcomes.
+BDP Write profile, serve the draft BDP History surface or provide durable
+request outcomes.
 
 ## Find and inspect retained Memory
 
@@ -720,9 +722,9 @@ at commit with `revision_conflict` (exit 4) and nothing is retained for it. A
 unique `(path, ordinal)` key backs this up. Issue ordinals are native revisions
 and are allocated by the native Issue writer.
 
-This is a CLI listing only: no
-HTTP History route or public History contract is added, `serve` publishes no
-History, and the list does not support as-of selection or restoration.
+This is a CLI listing only. The BDP v0 draft defines HTTP History, but this
+command adds no HTTP route or conformance claim; current `serve` publishes no
+History, and this list does not support as-of selection or restoration.
 `status --graph` reports `versionList: true` for this command;
 `historyExact: false` continues to describe the HTTP profile, where exact
 History remains unavailable.
