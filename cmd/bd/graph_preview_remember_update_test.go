@@ -18,6 +18,7 @@ func selectedRememberCommand(t *testing.T, flags []string) *cobra.Command {
 		cmd.Flags().String(name, "", "")
 	}
 	cmd.Flags().Bool("stdin", false, "")
+	cmd.Flags().Bool("create-only", false, "")
 	cmd.Flags().Bool("unconditional", false, "")
 	if err := cmd.ParseFlags(flags); err != nil {
 		t.Fatal(err)
@@ -69,6 +70,7 @@ func TestGraphPreviewRememberSelectedArgumentAdmission(t *testing.T) {
 		graph bool
 	}{
 		{"selected", []string{"--update=beads/plan"}, true},
+		{"create-only", []string{"--id=beads/plan", "--create-only"}, true},
 		{"empty-selected", []string{"--update="}, true},
 		{"guard-only", []string{"--if-revision=observed"}, true},
 		{"unconditional", []string{"--unconditional"}, true},
@@ -121,14 +123,18 @@ func TestGraphPreviewRememberSelectedRefusesBeforeInput(t *testing.T) {
 		{"empty-guard", []string{"--update=beads/plan", "--if-revision="}, false, 2},
 		{"both-guards", []string{"--update=beads/plan", "--if-revision=observed", "--unconditional"}, false, 2},
 		{"false-unconditional", []string{"--update=beads/plan", "--unconditional=false"}, false, 2},
-		{"create-unconditional", []string{"--id=beads/new", "--title=New", "--unconditional"}, false, 5},
+		{"generated-unconditional", []string{"--title=New", "--unconditional"}, false, 5},
 		{"invalid-guard", []string{"--update=beads/plan", "--if-revision=\xff"}, false, 2},
 		{"oversized-guard", []string{"--update=beads/plan", "--if-revision=" + strings.Repeat("x", graphstore.PreviewVersionTokenLimit+1)}, false, 2},
 		{"empty-selector", []string{"--update=", "--if-revision=observed"}, false, 2},
 		{"foreign-selector", []string{"--update=https://foreign.invalid/beads/plan", "--if-revision=observed"}, false, 2},
 		{"link-selector", []string{"--update=links/context", "--if-revision=observed"}, false, 2},
 		{"create-and-update", []string{"--id=beads/new", "--update=beads/plan", "--if-revision=observed"}, false, 2},
-		{"create-with-guard", []string{"--id=beads/new", "--title=New", "--if-revision=observed"}, false, 5},
+		{"generated-with-guard", []string{"--title=New", "--if-revision=observed"}, false, 5},
+		{"create-only-without-id", []string{"--create-only"}, false, 2},
+		{"create-only-false", []string{"--id=beads/new", "--create-only=false"}, false, 2},
+		{"create-only-with-guard", []string{"--id=beads/new", "--create-only", "--if-revision=observed"}, false, 2},
+		{"create-only-with-update", []string{"--id=beads/new", "--create-only", "--update=beads/plan"}, false, 2},
 		{"guard-without-selection", []string{"--if-revision=observed"}, false, 5},
 		{"invalid-title", []string{"--update=beads/plan", "--if-revision=observed", "--title=\xff"}, false, 2},
 		{"legacy-key", []string{"--update=beads/plan", "--if-revision=observed", "--key=legacy"}, false, 5},

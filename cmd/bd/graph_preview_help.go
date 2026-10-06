@@ -16,8 +16,8 @@ first. Bare ID means beads/ID; use links/PATH for a Link. Every new graph
 Resource has a creation version; do not enable ordinary versioned-history
 recording for this command. Cite the opaque version token with bd show ID
 --version TOKEN or bd compare ID --from TOKEN --to TOKEN. The store-local
-ordinal only orders versions. --json returns the version rows. BDP HTTP History
-is not available.
+local_revision only orders versions within this store. --json names that field
+local_revision, matching ordinary bd versions. BDP HTTP History is unavailable.
 
 Ordinary Issue workspaces:
 ` + versionsCmd.Long
@@ -25,12 +25,30 @@ Ordinary Issue workspaces:
 	historyCmd.Long = `Graph preview workspaces:
 bd history ID is an alias for bd versions ID. It lists retained Memory, Issue
 or Link versions newest first; bare ID means beads/ID and Link IDs use
-links/PATH. Use the opaque token for exact reads, not the store-local ordinal.
+links/PATH. Use the opaque token for exact reads, not local_revision.
 --limit and --events are not supported by the graph alias. BDP HTTP History
 is not available.
 
 Ordinary Issue workspaces:
 ` + historyCmd.Long
+	deferCmd.Long = `Graph preview workspaces:
+Use bd defer ID... to defer one or more Issues. --until accepts ordinary bd
+date and relative-time forms; an undated defer stays deferred until restored.
+--reason appends to Issue notes. A later bd ready wakes due Issues, recording
+one native and graph version per changed Issue. A repeated dateless defer is a
+no-op when neither date nor notes change. Use --if-revision TOKEN for a
+single-Issue stale-write check or --unconditional to spell out the default.
+
+Ordinary Issue workspaces:
+` + deferCmd.Long
+	undeferCmd.Long = `Graph preview workspaces:
+Use bd undefer ID... to restore one or more deferred Issues to open. It also
+clears a stale defer date on a non-deferred Issue. A repeated undefer is a
+no-op if nothing changes. Use --if-revision TOKEN for a single-Issue
+stale-write check or --unconditional to spell out the default.
+
+Ordinary Issue workspaces:
+` + undeferCmd.Long
 	for _, entry := range []struct {
 		cmd  *cobra.Command
 		text string
@@ -39,19 +57,21 @@ Ordinary Issue workspaces:
 The Scope URL names local identities; it does not start a web server.
 --server --external selects an ordinary shared Dolt server; otherwise storage
 is embedded. Existing .beads directories are never adopted or overwritten.`},
-		{rememberCmd, `Create a Memory with bd remember 'Policy text' [--id policy]
-[--title 'Policy']. An omitted ID is generated; an omitted title summarizes the
-body. Explicit duplicate IDs fail. Bare policy means canonical beads/policy.
-Graph Memories use canonical IDs, not legacy keys.
+		{rememberCmd, `Store a Memory with bd remember 'Policy text' [--id policy]
+[--title 'Policy']. An omitted ID is generated; an omitted creation title
+summarizes the body. With --id, an unused ID creates and an existing Memory
+updates in place, as ordinary bd remember --key does. Bare policy means
+canonical beads/policy. Graph Memories use canonical IDs, not legacy keys.
 
-Update an existing Memory with:
+To refuse any previously allocated ID, add --create-only with --id.
+To require an existing Memory, keep using --update instead of --id:
+  bd remember 'Revised policy' --id policy
   bd remember 'Revised policy' --update policy
   bd remember --update policy --title 'New title'
-Omitted fields remain unchanged. Use --body-file PATH or --stdin instead of
-positional body text. --update is required for an existing Memory; --id is
-creation-only. The current revision is accepted by default; add
---if-revision TOKEN to reject a stale update. Read the token with
-bd show policy --json. --unconditional explicitly selects the default.`},
+Omitted fields remain unchanged on update. Use --body-file PATH or --stdin
+instead of positional body text. An existing-ID update accepts the current
+revision by default; add --if-revision TOKEN to reject a stale update. Read
+the token with bd show policy --json. --unconditional spells out the default.`},
 		{memoriesCmd, `Search Memory titles and bodies with bd memories [SEARCH].
 Use --all for a complete bounded result, --details for version/Link counts,
 or --format records-json for machine-readable summaries. --json is unavailable;
@@ -104,6 +124,18 @@ requires Issue endpoints and, unlike informational Types, one of
 remote-routing forms are unavailable in this graph preview.`},
 		{reopenCmd, `Reopen one closed Issue by ID or beads/ID, optionally
 with --reason. Batch and remote-routing forms are unavailable.`},
+		{unclaimCmd, `Use bd unclaim ID... to release one or more assigned open or
+in-progress Issues. By default only the current holder may release a claim.
+--force bypasses holder authorization but still respects the native row CAS;
+--if-assignee HOLDER releases only while that holder remains assigned. The two
+flags cannot be combined. --reason TEXT adds a native Issue comment after a
+successful release; bd comments ID reads it. The release clears the assignee,
+lease and started time, returns the Issue to open, and records one Issue and
+graph version. A repeated release refuses without creating a version.`},
+		{commentsCmd, `Use bd comments ID to read the native comment feed for a
+graph Issue. bd unclaim --reason appends there. Comments are outside the
+retained Issue snapshot and do not mint an Issue version. Comment creation
+through bd comments add is not available in this preview.`},
 		{readyCmd, `Show current ready Issues with no graph-specific filters.
 This graph preview refuses positive BEADS_MAX_ROWS instead of truncating.`},
 		{listCmd, `Without Issue filters, bd list reads one bounded snapshot of current Beads

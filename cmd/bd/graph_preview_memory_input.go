@@ -25,7 +25,7 @@ func rememberArgs(cmd *cobra.Command, args []string) error {
 // Shared by argument and workspace admission: a graph-only flag must never
 // fall into the legacy remember path or read input there, even without a body.
 func rememberGraphFlagsChanged(cmd *cobra.Command) bool {
-	for _, name := range []string{"id", "title", "body-file", "stdin", "update", "if-revision", "unconditional"} {
+	for _, name := range []string{"id", "title", "body-file", "stdin", "update", "create-only", "if-revision", "unconditional"} {
 		if cmd.Flags().Changed(name) {
 			return true
 		}
