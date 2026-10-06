@@ -41,12 +41,12 @@ store; an unknown spelling may be rejected by the parser first.
 | Workspace | `bd init --graph-mode link --scope-url URL` creates a **new** graph workspace. An existing ordinary, incomplete or incompatible graph workspace is never upgraded by init. Subsequent graph commands bind to that workspace's stored Scope and format; moving/copying it does not transfer authority. |
 
 | Resource selector | A command that accepts both Beads and Links requires `beads/PATH` or `links/PATH`, or the exact local Scope URL, for either kind. A Bead-only command may accept bare `ID` as shorthand for `beads/ID`. No selector probes both namespaces and no foreign URL or alias is silently resolved. The current build still accepts a bare Bead ID on some mixed-resource commands; changing that parser behavior is a separate implementation item. |
-| Creation ID | `--id` is optional for Bead and Link creation. Omission allocates a fresh canonical ID. An explicit ID is used exactly or the create fails if ever allocated; deletion does not release it. |
+| Creation ID | `--id` is optional for Bead and Link creation. Omission allocates a fresh canonical ID. `bd create` and `bd link` use an explicit ID exactly or refuse if it was ever allocated; deletion does not release it. `bd remember --id ID` follows the compatibility upsert rule below, while `--create-only` requests duplicate refusal. |
 | Type selector | `--bead-type` and `--link-type` accept an installed `types/NAME` or its exact local Type URL. An uninstalled, wrong-kind or endpoint-incompatible Type fails before a write. `--type` on an Issue is its Issue classification, not a Bead Type. |
 
 | Current and retained state | A bare read selects the current record. `--version TOKEN` selects one retained state; `bd versions` discovers tokens in store-local newest-first order. Today a live record's `revision` and `version` are the **same opaque value**, not two counters. The CLI names its use as a current-state write guard `revision` and its use as an exact retained-state address `version`; the necessity of both public names is an open naming decision. Neither use encodes chronology. |
 | Guarded write | `--if-revision TOKEN` compares the current revision of the Resource being changed. `--if-source-revision TOKEN` separately compares the owning **source Bead** when a write changes one of its outgoing owned Links. It is about the Link's structural ownership, not a special property of the Memory Type. The current implementation supports this source guard for Memory-owned informational Links; other ownership cases need their own admission. A stale check rejects the whole write, including a would-be no-op. |
-| Unconditional write | `bd remember --update` and a Memory-owned informational Link **source** default to accepting the current state. Property/scalar `update`, `unlink` and applying a deletion currently require either `--if-revision` or explicit `--unconditional`; blocking Dependency unlink also requires an Issue-source choice. `close`, `reopen` and standalone `update --claim` use native Issue policy without that guard choice. Do not combine guarded and unconditional spelling for one resource. A changed unconditional Memory/source write reports the actual replaced version and attribution. Whether to extend unconditional defaults to all Bead operations is an open contract decision. |
+| Unconditional write | `bd remember` with an existing explicit Memory ID (and its existing-only `--update` spelling) defaults to accepting the current state, as does a Memory-owned informational Link **source**. `--if-revision` opts into a stale-write refusal; `--create-only` instead refuses an already reserved ID. Property/scalar `update`, `unlink` and applying a deletion currently require either `--if-revision` or explicit `--unconditional`; blocking Dependency unlink also requires an Issue-source choice. `close`, `reopen` and standalone `update --claim` use native Issue policy without that guard choice. Do not combine guarded and unconditional spelling for one resource. A changed unconditional Memory/source write reports the actual replaced version and attribution. Whether to extend unconditional defaults to all Bead operations is an open contract decision. |
 | No-op and uncertainty | A semantically identical accepted edit records no new version, does not renew a claim and does not attribute an overwrite. An `outcome_unknown` result is never safe to replay blindly: inspect the canonical resource and versions before retrying. |
 | Read-only | `--readonly` and a frozen workspace reject every mutation before it writes. They do not relax identity, validation or read bounds. `--force` confirms only the operation named by a command; it never bypasses a guard or cascades a deletion. |
 
@@ -75,8 +75,8 @@ current listener serves the Read profile only.
 | CLI surface | Corresponding BDP concept | Boundary to keep explicit |
 | --- | --- | --- |
 | `types`, `show`, `recall`, `list`, `memories`, `links` | Type and Resource reads, Bead/Link collections, and a Bead's incident-Link view | `recall` extracts a Memory body for a terminal; CLI listing is bounded and may apply Issue-specific filters, while BDP collections use cursors and generic selection. |
-| `create`, `remember`, `link` | Create Bead or create Link | BDP mutation targets belong to a write-capable profile and are not served by the current Read listener. CLI convenience fields and Issue defaults must resolve to the same resulting Resource state when a corresponding target exists. |
-| `update`, `remember --update`, `close`, `reopen`, `update --claim`, `defer`, `undefer`, `unclaim` | Change Bead or Link properties | The Issue lifecycle commands carry native eligibility, claim-lease and History rules. Their correspondence to a generic BDP mutation is a design and conformance question, not a promise that one HTTP request already reproduces them. |
+| `create`, `remember`, `link` | Create Bead or create Link | BDP mutation targets belong to a write-capable profile and are not served by the current Read listener. CLI convenience fields and Issue defaults must resolve to the same resulting Resource state when a corresponding target exists. `remember --id` may route to an update of an existing Memory; BDP create itself still refuses a duplicate. |
+| `update`, existing-ID `remember`, `close`, `reopen`, `update --claim`, `defer`, `undefer`, `unclaim` | Change Bead or Link properties | The Issue lifecycle commands carry native eligibility, claim-lease and History rules. Their correspondence to a generic BDP mutation is a design and conformance question, not a promise that one HTTP request already reproduces them. |
 | `delete`, `forget`, `unlink` | Delete Bead or delete Link | The CLI's explicit-apply affordance and incident-Link refusal must not silently become a protocol cascade. HTTP deletion is not served yet. |
 | `versions`, graph `history`, `show --version` | Retained Resource state | The BDP v0 draft defines `view=versions` pages and exact historical reads for History-capable services, but the current Beads Read listener does not serve that surface. BDP rows carry opaque `revision`, lineage and retained-body status, with cursor pagination; the CLI's `local_revision` is not a BDP wire member. BDP Events and changefeeds remain separate from retained-version reads. |
 | `compare` | Compare two retained Resource states | This is a local CLI convenience over two exact states, not a separate BDP operation. |
@@ -139,6 +139,7 @@ not permission to advertise an NYI operation.
 | Surface | Target release | In pinned integration build | Candidate work |
 | --- | --- | --- | --- |
 | Existing command inventory above | Already in integration | Yes, within each row's stated bounds | Preserve while integrating new work. |
+| Existing-ID `remember` default upsert and `--create-only` | Preview 2 candidate | No; `--id` creates only and `--update` selects an existing Memory | Route the CLI convenience to the existing create or Memory patch writer without changing BDP's distinct create/update operations; test both engines and keep the current-build help truthful until it lands. |
 | Issue defer/undefer, unclaim and deletion | Preview 2 candidate | No | Draft #105, #106 and #108; their combined source still needs qualification. |
 | Explicit mixed-resource selector disambiguation | Decision for the final CLI; release not assigned | No; some mixed commands accept bare Bead IDs | Parser and help changes required after contract review. |
 | Arbitrary installed Bead authoring and Type lifecycle | After the Type design is decided; release not assigned | No | Separate Type workstream owns descriptors and lifecycle. |
@@ -294,8 +295,9 @@ Exact local Scope URLs remain accepted; aliases and foreign Scope URLs are
 unavailable. Shorthand only changes CLI input, never stored identity or output.
 Creation accepts an optional bare `--id ID` or canonical `--id beads/PATH`;
 omitting it generates a random canonical ID. An explicit ID is used at its
-canonical Bead path and duplicates fail;
-an allocated identity cannot be reused for a different record.
+canonical Bead path. `create` refuses duplicates; `remember` applies the
+existing-Memory upsert rule unless `--create-only` is present. An allocated
+identity cannot be reused for a different record.
 
 For an ordinary external Dolt SQL server, add these options to `bd init`:
 
@@ -429,8 +431,9 @@ explicit creation title must remain nonempty; updates preserve omitted fields.
 | Command | Admitted scope and flags |
 |---|---|
 | `types [--details]` | List the Bead and Link Type IDs installed in this workspace. `--details` prints each complete persisted descriptor; `--json` returns the descriptors as structured data. An older four-Type workspace does not claim the two example Types. Legacy `--sections` is unavailable. |
-| `remember BODY [--id ID] [--title TITLE]` | Memory creation. Bare IDs resolve under `beads/`; an explicit `--body-file PATH` or `--stdin` replaces the positional body source. These sources are mutually exclusive; empty text is present content. |
-| `remember --update ID` | Change only supplied `--title` and/or one explicit body source, preserving omitted fields inside the transaction. Defaults to unconditional; optional `--if-revision TOKEN` rejects stale edits. Explicit `--unconditional` remains accepted. |
+| `remember BODY [--id ID] [--title TITLE]` | Without an ID, create a Memory at a fresh canonical ID. With an explicit ID, create if unused or update that live Memory by default, matching ordinary `bd remember --key` upsert behavior. Bare IDs resolve under `beads/`; one explicit `--body-file PATH` or `--stdin` replaces the positional body source. These sources are mutually exclusive; empty text is present content. Creation derives a title only when omitted; update preserves omitted fields. A reserved deleted ID or an Issue at that ID refuses. |
+| `remember --id ID --create-only` | Require a new Memory at this exact ID; any previously allocated ID refuses without changing it. Requires a body source and cannot combine with `--update` or update guards. This is the opt-in duplicate-refusal polarity; it is not a BDP create override. |
+| `remember --update ID` | Existing-only compatibility spelling for changing supplied `--title` and/or one explicit body source; a missing Memory refuses. `remember --id ID --if-revision TOKEN` is also existing-only. Updates preserve omitted fields inside the transaction and default to unconditional acceptance when no guard is supplied. Explicit `--unconditional` remains accepted; `--create-only` cannot combine with either update spelling. |
 | `memories [SEARCH]` | Complete bounded Memory title/body search summaries. Supports `--all`, `--details` and `--format table\|records-json`; legacy `--json` refuses. |
 | `recall BEAD` | Stream one Memory's exact body bytes. Optional `--version TOKEN` selects a retained body. `--quiet` does not suppress content; `--json` refuses. |
 | `update BEAD --properties JSON` | Replace a Memory's complete properties with exactly the `title` and `body` strings. Requires `--if-revision TOKEN` or `--unconditional`. |
@@ -509,8 +512,9 @@ bd unlink links/context --unconditional
 ```
 
 `--unconditional` explicitly accepts the current record; use an observed
-`--if-revision TOKEN` to reject a stale write. `remember --update` defaults to
-unconditional acceptance when neither flag is supplied. Property replacement,
+`--if-revision TOKEN` to reject a stale write. `remember --id` updates an
+existing Memory unconditionally by default; `--update` remains the existing-only
+spelling, while `--create-only` refuses any allocated ID. Property replacement,
 property patches, Memory deletion and Issue edits still require an explicit
 revision or unconditional choice. Source guards are
 `--if-source-revision TOKEN` or `--unconditional-source`. Memory-owned Link
