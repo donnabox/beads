@@ -14,7 +14,7 @@ import (
 	publicops "github.com/steveyegge/beads/issueops"
 )
 
-var graphPreviewIssueEditFlags = []string{"title", "description", "body", "message", "design", "acceptance", "priority", "assignee", "append-notes", "estimate", "external-ref", "spec-id", "due"}
+var graphPreviewIssueEditFlags = []string{"title", "description", "body", "message", "design", "acceptance", "priority", "assignee", "notes", "clear-notes", "append-notes", "estimate", "external-ref", "spec-id", "due"}
 
 func graphPreviewIssueEditFlagsChanged(cmd *cobra.Command) bool {
 	for _, name := range graphPreviewIssueEditFlags {
@@ -30,7 +30,7 @@ func graphPreviewIssueEditFlagsChanged(cmd *cobra.Command) bool {
 // broader workflow flags remain explicit refusals; legacy routing is unchanged.
 func graphPreviewIssueEditRequest(cmd *cobra.Command, path string) (graphstore.UpdateIssueRequest, error) {
 	request := graphstore.UpdateIssueRequest{Path: path}
-	allowed := append([]string{"if-revision", "unconditional"}, graphPreviewIssueEditFlags...)
+	allowed := append([]string{"if-revision", "unconditional", "force"}, graphPreviewIssueEditFlags...)
 	if err := graphPreviewFlags(cmd, allowed...); err != nil {
 		return request, err
 	}
@@ -42,6 +42,21 @@ func graphPreviewIssueEditRequest(cmd *cobra.Command, path string) (graphstore.U
 		return request, err
 	}
 	request.ExpectedRevision, request.Unconditional = revision, unconditional
+	if cmd.Flags().Changed("notes") && (cmd.Flags().Changed("clear-notes") || cmd.Flags().Changed("append-notes")) ||
+		cmd.Flags().Changed("clear-notes") && cmd.Flags().Changed("append-notes") {
+		return request, graphFailure("invalid_properties", "--notes, --clear-notes and --append-notes are mutually exclusive", 2)
+	}
+	if cmd.Flags().Changed("clear-notes") && !clearNotesRequested(cmd) {
+		return request, graphFailure("invalid_properties", "--clear-notes=false does not request an edit", 2)
+	}
+	if cmd.Flags().Changed("force") && !cmd.Flags().Changed("notes") {
+		return request, graphFailure("invalid_properties", "graph Issue update accepts --force only with --notes", 2)
+	}
+	request.ForceNotesOverwrite, _ = cmd.Flags().GetBool("force")
+	if clearNotesRequested(cmd) {
+		cleared := ""
+		request.Notes = &cleared
+	}
 	if cmd.Flags().Changed("due") {
 		value, err := graphPreviewIssueDueInput(cmd)
 		if err != nil {
@@ -89,6 +104,7 @@ func graphPreviewIssueEditRequest(cmd *cobra.Command, path string) (graphstore.U
 		{"body", &request.Description}, {"message", &request.Description},
 		{"design", &request.Design},
 		{"acceptance", &request.AcceptanceCriteria},
+		{"notes", &request.Notes},
 		{"append-notes", &request.AppendNotes},
 		{"external-ref", &request.ExternalRef}, {"spec-id", &request.SpecID},
 	}
@@ -99,6 +115,11 @@ func graphPreviewIssueEditRequest(cmd *cobra.Command, path string) (graphstore.U
 		value, _ := cmd.Flags().GetString(field.name)
 		if !utf8.ValidString(value) {
 			return request, graphFailure("invalid_properties", "Issue "+field.name+" must be valid UTF-8", 2)
+		}
+		if field.name == "notes" {
+			if err := validateNotesUpdate(value); err != nil {
+				return request, graphFailure("invalid_properties", err.Error(), 2)
+			}
 		}
 		if value == "-" && field.out == &request.Description {
 			return request, graphFailure("capability_unavailable", "graph Issue update currently accepts inline text only; stdin and file sources are unavailable", 5)

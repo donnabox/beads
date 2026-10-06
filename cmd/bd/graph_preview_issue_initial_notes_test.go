@@ -5,10 +5,13 @@ package main
 import (
 	"encoding/json"
 	"errors"
+	"os"
 	"path/filepath"
+	"reflect"
 	"strings"
 	"testing"
 
+	"github.com/steveyegge/beads/internal/storage/graphstore"
 	"github.com/steveyegge/beads/internal/types"
 )
 
@@ -43,6 +46,76 @@ func TestGraphPreviewIssueInitialNotesInput(t *testing.T) {
 			}
 			if err != nil || i.Notes != tc.value || i.Title != "Preserve" || i.Status != types.StatusOpen || i.Owner != "supplied-owner" || i.CreatedBy != "supplied-creator" {
 				t.Fatalf("literal input/default boundary changed: %+v %v", i, err)
+			}
+		})
+	}
+}
+
+// Each command below is a new installed process. The same workflow runs on
+// embedded Dolt and an ordinary shared-server database when the test server
+// port is supplied, so the CLI gate and native Issue writer are both exercised.
+func TestGraphPreviewIssueNotesReplaceAndClearWorkflow(t *testing.T) {
+	bd := buildBDUnderTest(t)
+	for _, engine := range []string{"embedded", "server"} {
+		t.Run(engine, func(t *testing.T) {
+			work, home := t.TempDir(), t.TempDir()
+			args := []string{"init", "--graph-mode", "link", "--scope-url", "https://example.invalid/issue-notes/", "--skip-hooks", "--skip-agents", "--non-interactive"}
+			if engine == "server" {
+				port := os.Getenv("BEADS_GRAPH_TEST_SERVER_PORT")
+				if port == "" {
+					t.Skip("set BEADS_GRAPH_TEST_SERVER_PORT for ordinary shared-server notes qualification")
+				}
+				args = append(args, "--server", "--external", "--server-host", "127.0.0.1", "--server-port", port, "--server-user", "root")
+			}
+			call := func(args ...string) string {
+				t.Helper()
+				return graphPolicyCLI(t, bd, work, home, nil, "", append(args, "--json")...)
+			}
+			refuse := func(code string, args ...string) {
+				t.Helper()
+				graphPolicyCLI(t, bd, work, home, nil, code, append(args, "--json")...)
+			}
+			call(args...)
+			const path = "beads/work"
+			created := graphMixedResult[graphstore.IssueRecord](t, call("create", "Notes work", "--id", path, "--notes=First", "--design=Keep", "--actor=author"))
+			versions := call("versions", path)
+			refuse("notes_overwrite_refused", "update", path, "--notes=Second", "--if-revision", created.Revision)
+			refuse("invalid_properties", "update", path, "--notes=", "--force", "--if-revision", created.Revision)
+			if got := graphMixedResult[graphstore.IssueRecord](t, call("show", path)); !reflect.DeepEqual(got, created) || call("versions", path) != versions {
+				t.Fatal("refused notes edit changed current Issue or retained history")
+			}
+			noop := graphMixedResult[graphstore.IssueMutationResult](t, call("update", path, "--notes=First", "--if-revision", created.Revision))
+			if noop.Changed || !reflect.DeepEqual(noop.Issue, created) || call("versions", path) != versions {
+				t.Fatal("identical notes replacement minted a version")
+			}
+			replaced := graphMixedResult[graphstore.IssueMutationResult](t, call("update", path, "--notes=Second", "--force", "--title=Revised", "--if-revision", created.Revision, "--actor=editor"))
+			if !replaced.Changed || replaced.Issue.Revision == created.Revision || replaced.Issue.Properties.Notes != "Second" || replaced.Issue.Properties.Title != "Revised" || replaced.Issue.Properties.Design != "Keep" || replaced.Issue.Attribution.Actor != "editor" {
+				t.Fatalf("forced notes update lost native fields or attribution: %+v", replaced)
+			}
+			refuse("revision_conflict", "update", path, "--notes=Stale", "--force", "--if-revision", created.Revision)
+			prior := graphMixedResult[graphstore.IssueRecord](t, call("show", path, "--version", created.Version))
+			if prior.Properties.Notes != "First" || prior.Properties.Title != "Notes work" {
+				t.Fatal("replacement rewrote the retained initial Issue")
+			}
+			appended := graphMixedResult[graphstore.IssueMutationResult](t, call("update", path, "--append-notes=Third", "--if-revision", replaced.Issue.Revision))
+			if !appended.Changed || appended.Issue.Properties.Notes != "Second\nThird" {
+				t.Fatal("append after replacement did not preserve both notes")
+			}
+			cleared := graphMixedResult[graphstore.IssueMutationResult](t, call("update", path, "--clear-notes", "--if-revision", appended.Issue.Revision))
+			if !cleared.Changed || cleared.Issue.Properties.Notes != "" || cleared.Issue.Properties.Title != "Revised" {
+				t.Fatal("explicit clear changed another field or retained notes")
+			}
+			if got := graphMixedResult[graphstore.IssueRecord](t, call("show", path, "--version", appended.Issue.Version)); got.Properties.Notes != "Second\nThird" {
+				t.Fatal("clear rewrote prior retained notes")
+			}
+			versions = call("versions", path)
+			noop = graphMixedResult[graphstore.IssueMutationResult](t, call("update", path, "--clear-notes", "--if-revision", cleared.Issue.Revision))
+			if noop.Changed || call("versions", path) != versions {
+				t.Fatal("clearing empty notes minted a version")
+			}
+			fromEmpty := graphMixedResult[graphstore.IssueMutationResult](t, call("update", path, "--notes=Fresh", "--unconditional"))
+			if !fromEmpty.Changed || fromEmpty.Issue.Properties.Notes != "Fresh" {
+				t.Fatal("setting notes on an empty Issue required force")
 			}
 		})
 	}
@@ -94,7 +167,7 @@ func TestGraphPreviewIssueCreateAuthorshipDispatch(t *testing.T) {
 					t.Fatal("fresh current/exact read changed complete initial authored Issue")
 				}
 			}
-			graphPolicyCLI(t, bd, work, home, nil, "capability_unavailable", "update", path, "--notes=", "--if-revision", envelope.Result.Version, "--json")
+			graphPolicyCLI(t, bd, work, home, nil, "invalid_properties", "update", path, "--notes=", "--if-revision", envelope.Result.Version, "--json")
 			if got := graphPolicyCLI(t, bd, work, home, nil, "", "show", path, "--json"); got != created {
 				t.Fatal("held notes clear changed initial Issue")
 			}

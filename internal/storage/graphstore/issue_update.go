@@ -13,11 +13,12 @@ import (
 	publicops "github.com/steveyegge/beads/issueops"
 )
 
-// UpdateIssueRequest admits existing Issue scalar edits and notes append.
+// UpdateIssueRequest admits existing Issue scalar edits, notes replacement and append.
 // Nil fields preserve their properties. Empty scalar strings clear fields where
 // the Issue domain permits; AppendNotes instead preserves native append semantics:
 // empty on empty is a no-op, while empty on nonempty appends one newline.
-// Notes replacement/clear remain reserved for contributor safeguard reconciliation.
+// Notes replacement uses the native writer's overwrite fence; clear is an
+// explicit CLI intent, not a special storage operation.
 // EstimatedMinutes nil preserves the nullable estimate; zero sets a present zero.
 // Clearing to null is not admitted. The existing Issue validator and SQL column
 // retain their ordinary bounds; no scheduler or duration interpretation is added.
@@ -31,12 +32,12 @@ import (
 // Unconditional bypasses the ordinary active-assignment transfer fence.
 type UpdateIssueRequest struct {
 	Path, Actor, ExpectedRevision                  string
-	Unconditional                                  bool
+	Unconditional, ForceNotesOverwrite             bool
 	Title, Description, Design, AcceptanceCriteria *string
 	Priority                                       *int
 	EstimatedMinutes                               *int
 	Assignee                                       *string
-	AppendNotes                                    *string
+	Notes, AppendNotes                             *string
 	ExternalRef, SpecID                            *string
 	DueAt                                          publicops.Field[*time.Time]
 }
@@ -63,6 +64,7 @@ func (s *Store) UpdateIssue(ctx context.Context, request UpdateIssueRequest) (Is
 		{"description", request.Description, &patch.Description},
 		{"design", request.Design, &patch.Design},
 		{"acceptance_criteria", request.AcceptanceCriteria, &patch.AcceptanceCriteria},
+		{"notes", request.Notes, &patch.Notes},
 		{"append_notes", request.AppendNotes, &patch.AppendNotes},
 	} {
 		if field.value == nil {
@@ -130,7 +132,7 @@ func (s *Store) UpdateIssue(ctx context.Context, request UpdateIssueRequest) (Is
 	if count == 0 {
 		return IssueMutationResult{}, fmt.Errorf("%w: Issue update requires an admitted field", storage.ErrValidation)
 	}
-	attempt := publicops.UpdateRequest{Actor: request.Actor, Patch: patch, IssuePlaneOnly: true}
+	attempt := publicops.UpdateRequest{Actor: request.Actor, Patch: patch, IssuePlaneOnly: true, ForceNotesOverwrite: request.ForceNotesOverwrite}
 	if err := issueops.ValidateUpdateRequest(attempt); err != nil {
 		return IssueMutationResult{}, err
 	}
@@ -207,9 +209,9 @@ func (s *Store) UpdateIssue(ctx context.Context, request UpdateIssueRequest) (Is
 		if err := s.recordIssueMappingInTx(ctx, tx, request.Path, before.Properties.ID); err != nil {
 			return err
 		}
-		// Append has no inverse in this preview. Charge the new retained head as
-		// well as current data; an unreadable result rolls back every write effect.
-		if patch.AppendNotes.Set {
+		// Charge the new retained head as well as current data; an unreadable
+		// replacement or append rolls back every write effect.
+		if patch.Notes.Set || patch.AppendNotes.Set {
 			if err := checkCurrentReadBytes(ctx, tx); err != nil {
 				return err
 			}
