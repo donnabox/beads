@@ -27,6 +27,7 @@ go_library(
         "//issueops",
     ],
 )
+
 go_test(
     name = "createbatchequiv_test",
     srcs = ["fork_golden_deltas_test.go"],
