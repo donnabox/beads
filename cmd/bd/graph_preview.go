@@ -56,11 +56,12 @@ var graphPreviewConfig *configfile.Config
 func init() {
 	rootCmd.PersistentFlags().String("graph-mode", "", "Assert workspace format: dependency or link (init selects format)")
 	initCmd.Flags().String("scope-url", "", "Permanent operator-selected Scope URL for a fresh disposable graph preview")
-	rememberCmd.Flags().String("id", "", "New Bead ID or beads/PATH (generated when omitted; graph preview only)")
-	rememberCmd.Flags().String("title", "", "Memory title (defaults to a short body summary on create; --update preserves omitted fields; graph preview only)")
+	rememberCmd.Flags().String("id", "", "Memory ID or beads/PATH; creates if unused or updates existing Memory (generated when omitted; graph preview only)")
+	rememberCmd.Flags().String("title", "", "Memory title (defaults to a short body summary on create; updates preserve omitted fields; graph preview only)")
 	rememberCmd.Flags().String("update", "", "Existing canonical Memory selector to update (graph preview only)")
-	rememberCmd.Flags().String("if-revision", "", "Require this observed Memory revision for --update (graph preview only)")
-	rememberCmd.Flags().Bool("unconditional", false, "Accept the current Memory revision (default for --update without --if-revision; graph preview only)")
+	rememberCmd.Flags().Bool("create-only", false, "Require a new Memory at --id; refuse an allocated ID (graph preview only)")
+	rememberCmd.Flags().String("if-revision", "", "Require this observed Memory revision for an existing-ID update (graph preview only)")
+	rememberCmd.Flags().Bool("unconditional", false, "Accept the current Memory revision (default for an existing-ID update without --if-revision; graph preview only)")
 	rememberCmd.Flags().String("body-file", "", "Read graph Memory body from this UTF-8 file (preview: at most 1 MiB)")
 	rememberCmd.Flags().Bool("stdin", false, "Read graph Memory body from stdin (preview: at most 1 MiB)")
 	// delete already has upstream's --if-revision (as do update, close and
@@ -551,8 +552,18 @@ func runGraphPreviewRemember(cmd *cobra.Command, args []string) error {
 	if err := graphPreviewWritePolicy(); err != nil {
 		return err
 	}
-	if err := graphPreviewFlags(cmd, "id", "title", "body-file", "stdin", "update", "if-revision", "unconditional"); err != nil {
+	if err := graphPreviewFlags(cmd, "id", "title", "body-file", "stdin", "update", "create-only", "if-revision", "unconditional"); err != nil {
 		return err
+	}
+	createOnly := cmd.Flags().Changed("create-only")
+	if createOnly {
+		enabled, _ := cmd.Flags().GetBool("create-only")
+		if !enabled {
+			return graphFailure("invalid_selector", "--create-only must be true when supplied", 2)
+		}
+		if !cmd.Flags().Changed("id") || cmd.Flags().Changed("update") || cmd.Flags().Changed("if-revision") || cmd.Flags().Changed("unconditional") {
+			return graphFailure("invalid_selector", "--create-only requires --id and cannot combine with --update or write guards", 2)
+		}
 	}
 	if cmd.Flags().Changed("update") {
 		if cmd.Flags().Changed("id") {
@@ -560,8 +571,11 @@ func runGraphPreviewRemember(cmd *cobra.Command, args []string) error {
 		}
 		return runGraphPreviewRememberUpdate(cmd, args)
 	}
+	if cmd.Flags().Changed("id") && !createOnly {
+		return runGraphPreviewRememberUpsert(cmd, args)
+	}
 	if cmd.Flags().Changed("if-revision") || cmd.Flags().Changed("unconditional") {
-		return graphFailure("capability_unavailable", "remember write guards require --update; creation does not accept them", 5)
+		return graphFailure("capability_unavailable", "remember write guards require --id or --update; generated-ID creation does not accept them", 5)
 	}
 	path, err := graphPreviewCreateBeadPath(cmd)
 	if err != nil {

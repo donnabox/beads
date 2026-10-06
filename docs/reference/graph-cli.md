@@ -44,17 +44,21 @@ In a graph workspace, a Bead is an Issue or a Memory. Its canonical identity
 is under `beads/`. In CLI arguments, `policy` means `beads/policy`; a Link
 still needs an explicit `links/ID` where a command accepts either kind of
 resource. The shorthand does not change stored IDs or HTTP URLs. Omit `--id`
-when creating a Bead to allocate an ID, or supply one to use it exactly;
-creating a second Bead at that ID fails. The examples below use explicit IDs
-only so later commands are easy to follow.
+when creating a Bead to allocate an ID, or supply one to use it exactly.
+`bd create` refuses a duplicate ID; `bd remember --id ID` updates an existing
+Memory at that ID unless `--create-only` is supplied. The examples below use
+explicit IDs only so later commands are easy to follow.
 
 ## Create Beads
 
-`bd remember` creates a Memory from text. It preserves the full body. Without
+`bd remember` stores a Memory from text. It preserves the full body. Without
 `--title`, it makes a title from the first nonempty body line (collapsed
-whitespace, at most 80 Unicode characters including an ellipsis). An explicit
-`--title` is used as supplied. It can also read a body from `--body-file PATH`
-or `--stdin` instead of the positional text.
+whitespace, at most 80 Unicode characters including an ellipsis) on creation.
+An explicit `--title` is used as supplied. It can also read a body from
+`--body-file PATH` or `--stdin` instead of the positional text. With `--id`,
+an unused ID creates and an existing Memory updates in place, matching
+ordinary `bd remember --key` behavior. `--create-only` with `--id` refuses
+any previously allocated ID, including one that has been deleted.
 
 ```sh
 bd remember 'Code flow policy: changes land on integration.' --id policy
@@ -127,18 +131,20 @@ An Issue filter cannot be combined with a non-Issue `--bead-type`.
 
 ## Update and delete Beads
 
-For a Memory, `bd remember --update ID` changes only the fields you supply.
-It requires `--update` so an existing Memory is never silently overwritten by
-a creation command. Omitted title or body stays unchanged; `--update` accepts
-the current revision by default. A title-only update needs no body argument.
+For a Memory, `bd remember --id ID` changes only the fields you supply if
+that ID already exists. Omitted title or body stays unchanged, and the current
+revision is accepted by default. `--update ID` remains an existing-only
+spelling; it refuses a missing Memory. A title-only update needs no body
+argument. Add `--if-revision TOKEN` to either spelling to reject a stale edit.
 
 ```sh
-bd remember 'Changes now land on the release branch.' --update policy
+bd remember 'Changes now land on the release branch.' --id policy
 bd remember --update policy --title 'Current code flow policy'
 ```
 
 `bd update` edits an Issue with its Issue flags, or replaces a Memory's whole
-properties document with `--properties`. Unlike `bd remember --update`, these
+properties document with `--properties`. Unlike `bd remember` with an existing
+ID, these
 routes require an explicit write choice; the examples use `--unconditional`
 to accept the current state. A Memory properties replacement supplies both
 `title` and `body` strings. See [Versioning and History](#versioning-and-history)
@@ -287,7 +293,8 @@ bd history policy  # same listing in a graph workspace
 | `--unconditional` | Where a write requires an explicit choice, accept the current record without an expected revision. |
 | `--if-source-revision TOKEN` | On a Memory-owned Link write, optionally require the source Memory's observed revision; otherwise that source defaults to unconditional acceptance. |
 
-`bd remember --update` defaults to unconditional acceptance. Memory deletion,
+`bd remember` with an existing `--id` or `--update` defaults to unconditional
+acceptance. Memory deletion,
 `bd update`, and Link edits/removal still have their command-specific guard
 requirements; consult the [Graph CLI Specification (Draft)](/reference/graph-cli-specification-draft) before
 automating them. A semantic no-op retains the existing revision.

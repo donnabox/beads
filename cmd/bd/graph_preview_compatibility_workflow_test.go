@@ -52,7 +52,7 @@ func TestGraphPreviewCompatibilityDefaultsWorkflow(t *testing.T) {
 				t.Fatal("explicit identity/title not preserved")
 			}
 			call("create", "Explicit Issue", "--id", "beads/fixed-issue")
-			refuse("identity_reserved", "remember", "Overwrite", "--id", "beads/fixed")
+			refuse("identity_reserved", "remember", "Overwrite", "--id", "beads/fixed", "--create-only")
 			refuse("identity_reserved", "create", "Overwrite", "--id", "beads/fixed-issue")
 			refuse("identity_reserved", "create", "Wrong kind", "--id", "beads/fixed")
 			refuse("identity_reserved", "remember", "Wrong kind", "--id", "beads/fixed-issue")
@@ -61,6 +61,19 @@ func TestGraphPreviewCompatibilityDefaultsWorkflow(t *testing.T) {
 			refuse("invalid_properties", "remember", "Body", "--title=")
 			if got := graphMixedResult[graphstore.Record](t, call("show", fixed.ID)); !reflect.DeepEqual(got, fixed) {
 				t.Fatal("refused creation changed existing Memory")
+			}
+			upserted := graphMixedResult[graphstore.MemoryMutationResult](t, call("remember", "Replacement body", "--id", "beads/fixed"))
+			if !upserted.Changed || upserted.Replaced == nil || upserted.Memory.ID != fixed.ID || upserted.Memory.Properties.Title != fixed.Properties.Title || upserted.Memory.Properties.Body != "Replacement body" {
+				t.Fatal("existing-ID remember failed to preserve title and disclose predecessor")
+			}
+			guardedUpsert := graphMixedResult[graphstore.MemoryMutationResult](t, call("remember", "--id", "beads/fixed", "--title", "Current policy", "--if-revision", upserted.Memory.Revision))
+			if !guardedUpsert.Changed || guardedUpsert.Replaced != nil || guardedUpsert.Memory.Properties.Body != "Replacement body" {
+				t.Fatal("guarded existing-ID title edit lost the omitted body or claimed an unconditional predecessor")
+			}
+			refuse("identity_reserved", "remember", "Another body", "--id", "beads/fixed", "--create-only")
+			refuse("revision_conflict", "remember", "Stale body", "--id", "beads/fixed", "--if-revision", fixed.Revision)
+			if current := graphMixedResult[graphstore.Record](t, call("show", fixed.ID)); !reflect.DeepEqual(current, guardedUpsert.Memory) {
+				t.Fatal("create-only or stale guard changed existing Memory")
 			}
 
 			edited := graphMixedResult[graphstore.MemoryMutationResult](t, call("remember", "New body", "--update", memory.ID))
