@@ -99,14 +99,14 @@ func runGraphPreviewUnlink(cmd *cobra.Command, args []string) error {
 		return err
 	}
 	if len(args) != 1 && len(args) != 2 {
-		return graphFailure("invalid_selector", "unlink requires one explicit links/PATH or two Bead IDs", 2)
+		return graphFailure("invalid_selector", "unlink requires one Link ID (or links/PATH) or two Bead IDs", 2)
 	}
 	request := graphstore.LinkDeleteRequest{Actor: getActorWithGit()}
 	if len(args) == 1 {
 		if graphPreviewLinkTypeChanged(cmd) {
 			return graphFailure("invalid_selector", "--link-type is only used for pair selection", 2)
 		}
-		path, err := graphPreviewResourcePath(graphPreviewConfig.GraphScopeURL, args[0])
+		path, err := graphPreviewLinkPath(graphPreviewConfig.GraphScopeURL, args[0])
 		if err != nil {
 			return graphFailure("invalid_selector", err.Error(), 2)
 		}

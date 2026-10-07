@@ -45,6 +45,30 @@ func graphPreviewBareBeadPath(selector string) (string, error) {
 	return path, nil
 }
 
+// A Link-only command can use a bare ID without probing the Bead namespace.
+// Mixed-resource commands continue to require an explicit links/PATH.
+func graphPreviewLinkPath(scope, selector string) (string, error) {
+	if graph.ValidateLinkPath(selector) == nil {
+		return selector, nil
+	}
+	if path, kind, ok := graph.SplitCanonicalURL(scope, selector); ok && kind == graph.KindLink {
+		return path, nil
+	}
+	for _, root := range []string{"beads/", "links/", "alias/", "types/"} {
+		if strings.HasPrefix(selector, root) {
+			return "", fmt.Errorf("invalid Link selector %q; use a valid links/PATH", selector)
+		}
+	}
+	if strings.Contains(selector, "://") {
+		return "", fmt.Errorf("invalid Link selector %q; a URL must be this workspace's Scope URL followed by links/PATH", selector)
+	}
+	path := "links/" + selector
+	if err := graph.ValidateLinkPath(path); err != nil {
+		return "", fmt.Errorf("invalid Link ID %q: %w", selector, err)
+	}
+	return path, nil
+}
+
 // Both familiar spellings and the experimental generic Type selector reach
 // one domain operation. No alternate Link writer can bypass Issue policy.
 func runGraphPreviewAddDependency(cmd *cobra.Command, args []string) error {

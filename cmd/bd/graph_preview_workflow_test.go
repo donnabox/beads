@@ -31,3 +31,27 @@ func TestGraphPreviewSelectorCannotChangeAuthority(t *testing.T) {
 		})
 	}
 }
+
+func TestGraphPreviewLinkOnlySelector(t *testing.T) {
+	const scope = "https://example.invalid/demo/"
+	for _, tc := range []struct{ selector, path string }{
+		{"edge", "links/edge"},
+		{"team/edge", "links/team/edge"},
+		{"links/edge", "links/edge"},
+		{scope + "links/edge", "links/edge"},
+		{"beads/edge", ""},
+		{"alias/edge", ""},
+		{"types/edge", ""},
+		{scope + "beads/edge", ""},
+		{"https://foreign.invalid/demo/links/edge", ""},
+		{"links/", ""},
+		{"", ""},
+	} {
+		t.Run(tc.selector, func(t *testing.T) {
+			path, err := graphPreviewLinkPath(scope, tc.selector)
+			if path != tc.path || (err == nil) != (tc.path != "") {
+				t.Fatalf("Link selector %q: path=%q err=%v", tc.selector, path, err)
+			}
+		})
+	}
+}
