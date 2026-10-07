@@ -101,12 +101,12 @@ func TestGraphPreviewUsabilityWorkflow(t *testing.T) {
 					t.Fatal("update changed Type")
 				}
 				// Every installed informational Type lists its history, not only Related.
-				resource, kind, versions, _ := graphVersionsListed(t, call("versions", link.Link.ID))
+				resource, kind, versions, members := graphVersionsListed(t, call("versions", link.Link.ID))
 				if resource != strings.TrimPrefix(link.Link.ID, scope) || kind != "link" || len(versions) != 2 ||
-					versions[0].Version != edited.Link.Revision || versions[1].Version != link.Link.Revision ||
-					versions[0].Removed || versions[1].Removed {
+					versions[0].Version != edited.Link.Revision || versions[1].Version != link.Link.Revision {
 					t.Fatalf("%s Link versions: resource=%q kind=%q rows=%+v", spec.typ, resource, kind, versions)
 				}
+				graphVersionsAssertKeys(t, spec.typ, members)
 				old := graphMixedResult[graphstore.LinkRecord](t, call("show", link.Link.ID, "--version", link.Link.Revision))
 				if !reflect.DeepEqual(old, link.Link) {
 					t.Fatal("retained Link changed")
