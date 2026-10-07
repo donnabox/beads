@@ -80,7 +80,7 @@ func init() {
 	registerGraphLinkTypeFlag(linkCmd)
 	createCmd.Flags().String("bead-type", "", "Installed Bead Type: types/NAME or full local URL (graph preview only)")
 	listCmd.Flags().String("bead-type", "", "List only this installed Bead Type: types/NAME or full local URL (graph preview only)")
-	linkCmd.Flags().String("id", "", "New canonical links/PATH for an informational graph Link")
+	linkCmd.Flags().String("id", "", "New informational Link ID or links/PATH (bare ID is shorthand for links/ID)")
 	linkCmd.Flags().String("properties", "", "Informational Link properties as JSON, @file, or @- (graph preview only)")
 	updateCmd.Flags().String("patch", "", "Apply ordered Memory or informational Link property operations from JSON, @file, or @- (graph preview only)")
 	updateCmd.Flags().String("properties", "", "Replace Memory or informational Link properties from JSON, @file, or @- (graph preview only)")
