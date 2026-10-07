@@ -155,6 +155,37 @@ bd update work --title 'Move the release branch after review' --unconditional
 bd update policy --properties '{"title":"Code flow policy","body":"Land reviewed changes on integration."}' --unconditional
 ```
 
+`bd close ID...` and `bd reopen ID...` accept one or more local Issues. A
+single `--reason` applies to every close target, repeated reasons map to IDs
+in input order, and `--reason-file PATH` preserves the file's literal text.
+The `bd done ID MESSAGE` alias accepts a trailing reason. A batch keeps
+successful changes when another target fails: successful records go to stdout,
+per-target failures go to stderr, and the command exits nonzero. Reopen
+reports already-open Issues without adding a version. `--force` overrides the
+native pinned, holder, blocker and open-child close policies; it does not make
+an already-closed Issue change again. `--session ID` records the closing
+session, with `CLAUDE_SESSION_ID` as its fallback. On a single Issue,
+`--if-revision TOKEN` from `bd show ID --json` refuses a stale close, including
+an already-closed retry. It cannot be combined with multiple IDs,
+`--suggest-next` or `--claim-next`; omission accepts the current revision.
+On a single Issue,
+`--suggest-next` reads Issues that this close newly unblocks; it does not claim
+them. `--claim-next` claims the highest-priority ready Issue in the same
+transaction as the close, only when at least one target actually closes. A
+mixed batch may keep a close and its claim while reporting another target's
+failure; retrying an already-closed batch makes no new claim or version.
+Interactive last-touched, gate evaluation, `--continue`, molecule advancement
+and remote routing remain pending.
+
+```sh
+bd close work review --reason 'Finished the work' --reason 'Review complete'
+bd close blocked-work --force --session review-session --reason 'Override approved'
+bd close blocker --suggest-next --reason 'Dependency finished'
+bd close blocker --claim-next --reason 'Dependency finished and next work claimed'
+bd close work --if-revision "$revision" --reason 'Finished the work'
+bd reopen work review --reason 'Follow-up needed'
+```
+
 `bd delete ID` previews deletion of one unreferenced Memory or Issue without
 changing storage; `--force` applies it. `bd forget ID` applies Memory deletion
 directly and does not accept Issues. Applying either command requires an
@@ -200,6 +231,28 @@ bd defer work another-work      # Set multiple Issues aside indefinitely
 bd show work --json
 bd undefer work --if-revision REVISION_FROM_SHOW
 ```
+
+The graph preview can narrow `bd ready` by priority, Issue classification,
+assignee, label, or defer state and can sort or limit the result. `bd blocked`
+accepts the ordinary label, label-any, and exclude-label filters. Both use
+the native blocker-aware predicate, then return canonical graph Issue IDs.
+An explicitly supplied blank label filter is an error, so a typo cannot turn
+an intended narrow query into the whole work queue.
+
+```sh
+bd ready --priority 2 --type task --limit 10 --json
+bd ready --label release --sort priority
+bd ready --claim --label release --actor rig.agent --json
+bd blocked --label release --json
+```
+
+`ready --claim --json` returns a one-element array of complete graph Issue
+records, or an empty array when no matching ready Issue exists. An empty claim
+does not create a claim lease or revision. As with ordinary `ready`, the lazy
+defer-wake before selection may separately version an expired deferred Issue.
+The remaining ordinary ready modes and blocked `--parent` remain in
+the [draft CLI specification](/reference/graph-cli-specification-draft)
+and refuse in this graph slice until their supporting graph behavior is ready.
 
 ## Edit Issue notes
 
@@ -280,16 +333,16 @@ comment writes are not yet exposed in graph mode.
 
 ## Versioning and History
 
-**Revision** names the current state of one Bead or Link. Use its `revision`
-value with `--if-revision` when a write must apply only to the state you read.
-A different current revision means the state changed and the guarded write
-refuses. **Version** means a retained state of that Resource: use the token
-with `--version`, or as an operand to `bd compare`, to retrieve or compare
-that exact state later. In this preview, the `revision` and `version` fields
-on a live record contain the **same opaque token**. They have different roles,
-not separate counters: revision is the current-state equality check, while a
-Resource ID plus version token is a retained-state address. Neither token
-encodes time or order, and a version is not a Dolt commit ID.
+**Revision** names the current state of one Bead or Link. A complete graph
+record has one opaque `revision` field. Use it with `--if-revision` when a
+write must apply only to the state you read. A different current revision
+means the state changed and the guarded write refuses. **Version** names a
+retained state of that Resource. `bd versions` rows and discovery summaries
+call its exact-read address `version`; use that token with `--version`, or as
+an operand to `bd compare`, to retrieve or compare the state later. A current
+record's `revision` is also its retained-state address. These names express
+two uses of one opaque token, not separate counters. The token encodes no
+time or order and is not a Dolt commit ID.
 
 Save a token from a record or `bd memories --details` to read that exact
 retained state later. Version reads do not depend on the record still being
@@ -328,9 +381,9 @@ time, and attribution. Use the **token** for `show --version` or `compare`, neve
 the local revision number. Human output calls the number `REV`, matching
 ordinary `bd versions`; graph JSON uses `local_revision`. It orders versions
 within this store and is not a stable cross-clone address. `change_at` is not
-the ordering authority. A removed Link's deletion marker is listed with
-`removed: true` but is not a readable Link version. Memory deletion adds no
-deletion version. There is still no
+the ordering authority. A removed Link still lists its prior citable versions;
+the private deletion marker is not a Resource version and is omitted. Memory
+deletion also adds no version. There is still no
 BDP HTTP History, as-of selection or restoration. `bd status --graph` reports
 `versionList: true`; `historyExact: false` refers to the unavailable HTTP
 History profile. The [technical reference](/reference/graph-cli-specification-draft#list-a-resources-versions)

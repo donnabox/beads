@@ -37,7 +37,7 @@ func TestGraphPreviewIssueAppendWorkflow(t *testing.T) {
 			}
 			exact := func(record graphstore.IssueRecord) {
 				t.Helper()
-				got := graphMixedResult[graphstore.IssueRecord](t, call("show", record.ID, "--version", record.Version))
+				got := graphMixedResult[graphstore.IssueRecord](t, call("show", record.ID, "--version", record.Revision))
 				properties := *record.Properties
 				properties.ContentHash, properties.RowVersion = "", 0
 				record.Properties = &properties
@@ -47,7 +47,7 @@ func TestGraphPreviewIssueAppendWorkflow(t *testing.T) {
 			}
 			checkAppend := func(before, current graphstore.IssueRecord, notes string) {
 				t.Helper()
-				if current.Properties == nil || current.Properties.Notes != notes || current.Revision == before.Revision || current.Version != current.Revision || current.ID != before.ID || current.Type != before.Type || current.Attribution.Actor != "holder" || !reflect.DeepEqual(current.Owned, before.Owned) {
+				if current.Properties == nil || current.Properties.Notes != notes || current.Revision == before.Revision || current.ID != before.ID || current.Type != before.Type || current.Attribution.Actor != "holder" || !reflect.DeepEqual(current.Owned, before.Owned) {
 					t.Fatalf("incomplete append: %+v", current)
 				}
 				properties := *current.Properties

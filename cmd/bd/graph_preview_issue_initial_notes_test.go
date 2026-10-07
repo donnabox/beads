@@ -104,7 +104,7 @@ func TestGraphPreviewIssueNotesReplaceAndClearWorkflow(t *testing.T) {
 				t.Fatalf("forced notes update lost native fields or attribution: %+v", replaced)
 			}
 			refuse("revision_conflict", "update", path, "--notes=Stale", "--force", "--if-revision", created.Revision)
-			prior := graphMixedResult[graphstore.IssueRecord](t, call("show", path, "--version", created.Version))
+			prior := graphMixedResult[graphstore.IssueRecord](t, call("show", path, "--version", created.Revision))
 			if prior.Properties.Notes != "First" || prior.Properties.Title != "Notes work" {
 				t.Fatal("replacement rewrote the retained initial Issue")
 			}
@@ -116,7 +116,7 @@ func TestGraphPreviewIssueNotesReplaceAndClearWorkflow(t *testing.T) {
 			if !cleared.Changed || cleared.Issue.Properties.Notes != "" || cleared.Issue.Properties.Title != "Revised" {
 				t.Fatal("explicit clear changed another field or retained notes")
 			}
-			if got := graphMixedResult[graphstore.IssueRecord](t, call("show", path, "--version", appended.Issue.Version)); got.Properties.Notes != "Second\nThird" {
+			if got := graphMixedResult[graphstore.IssueRecord](t, call("show", path, "--version", appended.Issue.Revision)); got.Properties.Notes != "Second\nThird" {
 				t.Fatal("clear rewrote prior retained notes")
 			}
 			versions = call("versions", path)
@@ -161,7 +161,7 @@ func TestGraphPreviewIssueCreateAuthorshipDispatch(t *testing.T) {
 			created := graphPolicyCLI(t, bd, work, home, env, "", args...)
 			var envelope struct {
 				Result struct {
-					Version     string
+					Revision    string
 					Properties  types.Issue
 					Attribution struct{ Actor string }
 				}
@@ -170,15 +170,15 @@ func TestGraphPreviewIssueCreateAuthorshipDispatch(t *testing.T) {
 				t.Fatal(err)
 			}
 			i := envelope.Result.Properties
-			if envelope.Result.Version == "" || i.CreatedBy != tc.wantActor || i.Owner != tc.wantOwner || envelope.Result.Attribution.Actor != tc.wantActor || i.Assignee != "assigned-worker" || i.Status != types.StatusOpen || i.Notes != "  Initial 雪\r\n " || i.LeaseExpiresAt != nil || i.HeartbeatAt != nil {
+			if envelope.Result.Revision == "" || i.CreatedBy != tc.wantActor || i.Owner != tc.wantOwner || envelope.Result.Attribution.Actor != tc.wantActor || i.Assignee != "assigned-worker" || i.Status != types.StatusOpen || i.Notes != "  Initial 雪\r\n " || i.LeaseExpiresAt != nil || i.HeartbeatAt != nil {
 				t.Fatalf("authorship, initial notes or no-claim boundary lost: %+v", envelope.Result)
 			}
-			for _, flags := range [][]string{nil, {"--version", envelope.Result.Version}} {
+			for _, flags := range [][]string{nil, {"--version", envelope.Result.Revision}} {
 				if got := graphPolicyCLI(t, bd, work, home, nil, "", append([]string{"show", path, "--json"}, flags...)...); got != created {
 					t.Fatal("fresh current/exact read changed complete initial authored Issue")
 				}
 			}
-			graphPolicyCLI(t, bd, work, home, nil, "invalid_properties", "update", path, "--notes=", "--if-revision", envelope.Result.Version, "--json")
+			graphPolicyCLI(t, bd, work, home, nil, "invalid_properties", "update", path, "--notes=", "--if-revision", envelope.Result.Revision, "--json")
 			if got := graphPolicyCLI(t, bd, work, home, nil, "", "show", path, "--json"); got != created {
 				t.Fatal("held notes clear changed initial Issue")
 			}
