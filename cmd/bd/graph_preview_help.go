@@ -91,7 +91,9 @@ fields refuse.`},
 		{showCmd, `Use bd show ID (equivalent to beads/ID) for a current Memory or
 Issue; use bd show links/ID for a Link. --version TOKEN selects one exact
 retained record; this is not
-an ordered history listing. --json returns the experimental graph record.`},
+an ordered history listing. --json returns the experimental graph record.
+Showing an Issue makes it the last-touched Issue for interactive update/close;
+showing a Memory or Link does not.`},
 		{updateCmd, `Use bd remember --update ID for selected Memory title/body
 edits. For complete Memory or informational Link property replacement, use:
   bd update policy --properties '{"title":"Policy","body":"Text"}' --if-revision TOKEN
@@ -99,7 +101,9 @@ edits. For complete Memory or informational Link property replacement, use:
 --if-revision TOKEN or --unconditional. Informational Links owned by a Memory
 may also use --if-source-revision TOKEN; without it, the current source is
 accepted. Blocking Dependency properties are not editable here. Issue scalar
-edits and standalone --claim are separate graph operations.`},
+edits and standalone --claim are separate graph operations. Without an ID,
+interactive Issue update uses the last-touched Issue; scripts require an ID
+unless BD_LAST_TOUCHED_FALLBACK=1 explicitly enables the fallback.`},
 		{deleteCmd, `For an unreferenced Memory, bd delete ID previews the
 deletion without writing. Apply with --force and either --if-revision TOKEN or
 --unconditional. Referenced Memories refuse; graph deletion does not cascade.`},
@@ -134,8 +138,10 @@ the current revision. On one Issue, --suggest-next lists Issues that closing it
 newly unblocks, without claiming them. --claim-next atomically claims the
 highest-priority ready Issue when at least one close lands; an already-closed
 retry earns no new claim. A mixed batch keeps its successful closes and claim
-even when another ID refuses. Interactive last-touched, gate evaluation,
---continue, molecule advancement and remote-routing forms remain unavailable.`},
+even when another ID refuses. Without an ID, interactive close uses the
+last-touched Issue; scripts require an ID unless BD_LAST_TOUCHED_FALLBACK=1
+explicitly enables the fallback. Gate evaluation, --continue, molecule
+advancement and remote-routing forms remain unavailable.`},
 		{reopenCmd, `Reopen one or more local closed Issues by ID or beads/ID,
 optionally with --reason. A batch reports changed Issues on stdout and
 per-Issue failures on stderr, then exits nonzero if any failed. Already-open

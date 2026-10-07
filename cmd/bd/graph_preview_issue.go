@@ -81,13 +81,17 @@ func runGraphPreviewCreateIssue(cmd *cobra.Command, args []string) error {
 	if err := graphPreviewIssueCreateFields(cmd, request.Issue); err != nil {
 		return err
 	}
-	return withGraphStore(func(ctx context.Context, store *graphstore.Store) (any, string, error) {
+	err = withGraphStore(func(ctx context.Context, store *graphstore.Store) (any, string, error) {
 		record, err := store.CreateIssue(ctx, path, request)
 		if err != nil {
 			return nil, "", err
 		}
 		return record, fmt.Sprintf("Created %s\n", path), nil
 	})
+	if err == nil {
+		SetLastTouchedID(path)
+	}
+	return err
 }
 
 // Initial assignment is an open Issue property, not a claim. Keep optional

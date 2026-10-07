@@ -144,7 +144,7 @@ func runGraphPreviewUpdateIssue(cmd *cobra.Command, path string) error {
 		return err
 	}
 	request.Actor = getActorWithGit()
-	return withGraphStore(func(ctx context.Context, store *graphstore.Store) (any, string, error) {
+	err = withGraphStore(func(ctx context.Context, store *graphstore.Store) (any, string, error) {
 		result, err := store.UpdateIssue(ctx, request)
 		if err != nil {
 			return nil, "", err
@@ -155,4 +155,8 @@ func runGraphPreviewUpdateIssue(cmd *cobra.Command, path string) error {
 		}
 		return result, fmt.Sprintf("%s %s", verb, result.Issue.ID), nil
 	})
+	if err == nil {
+		SetLastTouchedID(path)
+	}
+	return err
 }

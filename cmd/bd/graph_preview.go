@@ -617,7 +617,8 @@ func runGraphPreviewShow(cmd *cobra.Command, args []string) error {
 	if versioned && (version == "" || !utf8.ValidString(version) || len(version) > graphstore.PreviewVersionTokenLimit) {
 		return graphFailure("invalid_selector", "--version requires a nonempty UTF-8 token of at most 4096 bytes", 2)
 	}
-	return withGraphStore(func(ctx context.Context, s *graphstore.Store) (any, string, error) {
+	var shownIssue bool
+	err = withGraphStore(func(ctx context.Context, s *graphstore.Store) (any, string, error) {
 		var r any
 		var err error
 		if versioned {
@@ -628,12 +629,17 @@ func runGraphPreviewShow(cmd *cobra.Command, args []string) error {
 		if err != nil {
 			return nil, "", err
 		}
+		_, shownIssue = r.(graphstore.IssueRecord)
 		data, err := json.MarshalIndent(r, "", "  ")
 		if err != nil {
 			return nil, "", err
 		}
 		return r, string(data), nil
 	})
+	if err == nil && shownIssue {
+		SetLastTouchedID(path)
+	}
+	return err
 }
 
 func runGraphPreviewStatus(cmd *cobra.Command) error {

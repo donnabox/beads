@@ -150,6 +150,14 @@ to accept the current state. A Memory properties replacement supplies both
 `title` and `body` strings. See [Versioning and History](#versioning-and-history)
 when you need stale-write protection.
 
+Creating, updating, showing or closing a graph Issue records it as the last
+touched Issue. An Issue claimed by `bd ready --claim` becomes last touched as
+well; showing a Memory or Link does not replace that marker. At an interactive
+terminal, `bd update` and `bd close` may omit the Issue ID and use this marker.
+Scripts and agent sessions must supply an ID unless they explicitly set
+`BD_LAST_TOUCHED_FALLBACK=1`. `BD_LAST_TOUCHED_FALLBACK=0` disables the
+fallback, including at a terminal. `--readonly` does not write the marker.
+
 ```sh
 bd update work --title 'Move the release branch after review' --unconditional
 bd update policy --properties '{"title":"Code flow policy","body":"Land reviewed changes on integration."}' --unconditional
@@ -174,8 +182,8 @@ them. `--claim-next` claims the highest-priority ready Issue in the same
 transaction as the close, only when at least one target actually closes. A
 mixed batch may keep a close and its claim while reporting another target's
 failure; retrying an already-closed batch makes no new claim or version.
-Interactive last-touched, gate evaluation, `--continue`, molecule advancement
-and remote routing remain pending.
+Gate evaluation, `--continue`, molecule advancement and remote routing remain
+pending.
 
 ```sh
 bd close work review --reason 'Finished the work' --reason 'Review complete'

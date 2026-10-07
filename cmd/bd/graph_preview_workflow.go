@@ -143,6 +143,13 @@ func runGraphPreviewClose(cmd *cobra.Command, args []string) error {
 	if err := graphPreviewWritePolicy(); err != nil {
 		return err
 	}
+	if len(args) == 0 {
+		lastTouched := GetLastTouchedID()
+		if lastTouched == "" {
+			return graphFailure("invalid_selector", "no Issue ID provided and no last touched Issue", 2)
+		}
+		args = []string{lastTouched}
+	}
 	if err := graphPreviewFlags(cmd, "reason", "resolution", "message", "comment", "reason-file", "force", "session", "suggest-next", "claim-next", "if-revision"); err != nil {
 		return err
 	}
@@ -191,6 +198,7 @@ func runGraphPreviewClose(cmd *cobra.Command, args []string) error {
 		return runGraphPreviewCloseClaimNext(paths, targets, reasons, session, force, suggestNext)
 	}
 	var hadError bool
+	var firstSettled string
 	err = withGraphStore(func(ctx context.Context, store *graphstore.Store) (any, string, error) {
 		results := make([]graphstore.IssueMutationResult, 0, len(paths))
 		var human strings.Builder
@@ -208,6 +216,9 @@ func runGraphPreviewClose(cmd *cobra.Command, args []string) error {
 				continue
 			}
 			results = append(results, result)
+			if firstSettled == "" {
+				firstSettled = path
+			}
 			if result.OpenChildren > 0 {
 				fmt.Fprintf(os.Stderr, "warning: closing %s with %d open child issue(s) still active\n", targets[i], result.OpenChildren)
 			}
@@ -237,6 +248,7 @@ func runGraphPreviewClose(cmd *cobra.Command, args []string) error {
 	if err != nil {
 		return err
 	}
+	SetLastTouchedID(firstSettled)
 	if hadError {
 		return SilentExit()
 	}
@@ -246,6 +258,7 @@ func runGraphPreviewClose(cmd *cobra.Command, args []string) error {
 func runGraphPreviewCloseClaimNext(paths, targets, reasons []string, session string, force, suggestNext bool) error {
 	var hadError bool
 	var claimedID string
+	var firstSettled string
 	err := withGraphStore(func(ctx context.Context, store *graphstore.Store) (any, string, error) {
 		perPathReasons := make([]string, len(paths))
 		for i := range paths {
@@ -269,6 +282,9 @@ func runGraphPreviewCloseClaimNext(paths, targets, reasons []string, session str
 				continue
 			}
 			closed = append(closed, outcome.Issue)
+			if firstSettled == "" {
+				firstSettled = paths[i]
+			}
 			if outcome.OpenChildren > 0 {
 				fmt.Fprintf(os.Stderr, "warning: closing %s with %d open child issue(s) still active\n", targets[i], outcome.OpenChildren)
 			}
@@ -306,6 +322,11 @@ func runGraphPreviewCloseClaimNext(paths, targets, reasons []string, session str
 	})
 	if err != nil {
 		return err
+	}
+	if claimedID != "" {
+		SetLastTouchedID(claimedID)
+	} else {
+		SetLastTouchedID(firstSettled)
 	}
 	if hadError {
 		if claimedID != "" {
@@ -439,7 +460,7 @@ func runGraphPreviewReady(cmd *cobra.Command, args []string) error {
 			if claimed == nil {
 				return []graphstore.IssueRecord{}, "No ready work to claim", nil
 			}
-			SetLastTouchedID(claimed.Issue.Properties.ID)
+			SetLastTouchedID(claimed.Issue.ID)
 			return []graphstore.IssueRecord{claimed.Issue}, "Claimed Issue " + claimed.Issue.ID, nil
 		})
 	}

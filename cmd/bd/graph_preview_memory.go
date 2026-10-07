@@ -13,6 +13,16 @@ func runGraphPreviewUpdate(cmd *cobra.Command, args []string) error {
 	if err := graphPreviewWritePolicy(); err != nil {
 		return err
 	}
+	if len(args) == 0 {
+		if cmd.Flags().Changed("properties") || cmd.Flags().Changed("patch") {
+			return graphFailure("invalid_selector", "Memory and Link property updates require an explicit Resource ID", 2)
+		}
+		lastTouched := GetLastTouchedID()
+		if lastTouched == "" {
+			return graphFailure("invalid_selector", "no Issue ID provided and no last touched Issue", 2)
+		}
+		args = []string{lastTouched}
+	}
 	if len(args) != 1 {
 		return graphFailure("invalid_selector", "graph update requires one Bead ID (or beads/PATH) or explicit links/PATH", 2)
 	}
