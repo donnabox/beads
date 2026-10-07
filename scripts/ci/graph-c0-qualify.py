@@ -43,6 +43,15 @@ def require(condition, message):
         raise RuntimeError(message)
 
 
+def require_memory_creation(record, scope):
+    require(record.get("id") == scope + "beads/plan"
+            and record.get("type") == scope + "types/preview-memory-v2"
+            and record.get("properties") == {"title": "Plan", "body": "Durable C0 body — 記憶"}
+            and record.get("owned") == []
+            and isinstance(record.get("revision"), str) and bool(record["revision"])
+            and "version" not in record, "incomplete/non-Memory creation")
+
+
 def digest(path):
     return hashlib.sha256(path.read_bytes()).hexdigest()
 
@@ -659,9 +668,7 @@ class Qualification:
                 "initialization selected the wrong backend or Scope")
         created = self.cli(work, engine + "-create", "remember", "Durable C0 body — 記憶", "--id", "beads/plan", "--title", "Plan")
         record = created["result"]
-        require(record["id"] == scope + "beads/plan" and record["type"] == scope + "types/preview-memory-v2"
-                and record["properties"] == {"title": "Plan", "body": "Durable C0 body — 記憶"}
-                and record["owned"] == [] and record["revision"] and record["version"], "incomplete/non-Memory creation")
+        require_memory_creation(record, scope)
         # Each call starts and reaps a distinct installed CLI process.
         for suffix, identity in [("show", "beads/plan"), ("reopen", record["id"])]:
             require(self.cli(work, engine + "-" + suffix, "show", identity) == created,
