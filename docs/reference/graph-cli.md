@@ -226,7 +226,7 @@ snapshots after an accepted change.
 
 Use `bd types` to find installed Link Types. An informational Type such as
 `types/preview-related-v2` can connect a Memory to a Memory or Issue. An
-explicit `links/ID` makes subsequent edits easy; omit it to allocate an ID.
+explicit `--id ID` is shorthand for `--id links/ID`; omit it to allocate an ID.
 The Link's Type and endpoints do not change during a properties edit. For the
 installed preview informational Types, the optional property is a string
 `note`. A Memory owns its outgoing informational Links, so changing one also
@@ -235,11 +235,11 @@ it is linked.
 
 ```sh
 bd link policy work --link-type types/preview-related-v2 \
-  --id links/policy-work --properties '{"note":"work follows this policy"}'
+  --id policy-work --properties '{"note":"work follows this policy"}'
 bd links policy
 bd show links/policy-work --json
 bd update links/policy-work --properties '{"note":"reviewed policy"}' --unconditional
-bd unlink links/policy-work --unconditional
+bd unlink policy-work --unconditional
 ```
 
 `bd links ID` lists current incident Links. A Memory-owned informational Link

@@ -114,7 +114,7 @@ choose an installed informational Type, for example on a fresh workspace:
   bd link policy work --link-type types/example-cites
 Use bd types to see Link Types installed in this workspace. --link-type
 accepts types/NAME or a full local Type URL. An optional --id
-selects links/PATH; --properties supplies informational Link properties.
+selects a bare Link ID or links/PATH; --properties supplies informational Link properties.
 Memory-owned Links accept the current source by default, or use
 --if-source-revision TOKEN to reject a stale source. --unconditional-source
 explicitly selects the default. The blocking Type types/preview-blocks-v1

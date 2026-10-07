@@ -154,7 +154,11 @@ func runGraphPreviewLink(cmd *cobra.Command, args []string) error {
 	}
 	path, _ := cmd.Flags().GetString("id")
 	if cmd.Flags().Changed("id") {
-		if err := graph.ValidateLinkPath(path); err != nil {
+		if strings.Contains(path, "://") {
+			return graphFailure("invalid_selector", "--id accepts a bare Link ID or links/PATH, not a URL", 2)
+		}
+		path, err = graphPreviewLinkPath(graphPreviewConfig.GraphScopeURL, path)
+		if err != nil {
 			return graphFailure("invalid_selector", err.Error(), 2)
 		}
 	}
