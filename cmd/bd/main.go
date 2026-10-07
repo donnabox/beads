@@ -2408,7 +2408,7 @@ func writeMemDiagnostics(memProfileFlag string) {
 		if os.Getenv("BEADS_MEM_PROFILE_NOGC") == "" {
 			runtime.GC()
 		}
-		if f, err := os.Create(heapDest); err == nil { // #nosec G304 -- user-supplied profiling path
+		if f, err := os.Create(heapDest); err == nil { //nolint:gosec // G304: explicitly requested profiling path
 			_ = pprof.WriteHeapProfile(f)
 			_ = f.Close()
 		}
@@ -2417,7 +2417,7 @@ func writeMemDiagnostics(memProfileFlag string) {
 	if statsDest := memDiagnosticsDest(os.Getenv("BEADS_MEM_STATS")); statsDest != "" {
 		var ms runtime.MemStats
 		runtime.ReadMemStats(&ms)
-		if f, err := os.Create(statsDest); err == nil { // #nosec G304 -- user-supplied profiling path
+		if f, err := os.Create(statsDest); err == nil { //nolint:gosec // G304: explicitly requested profiling path
 			fmt.Fprintf(f, "HeapAlloc=%d HeapSys=%d HeapInuse=%d HeapObjects=%d\n",
 				ms.HeapAlloc, ms.HeapSys, ms.HeapInuse, ms.HeapObjects)
 			_ = f.Close()

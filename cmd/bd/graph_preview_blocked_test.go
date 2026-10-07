@@ -104,7 +104,9 @@ func TestGraphPreviewBlockedOutput(t *testing.T) {
 			Preview       bool
 			Result        []graphstore.BlockedIssue
 		}
-		if err := json.Unmarshal([]byte(output), &envelope); err != nil || envelope.SchemaVersion != 1 || !envelope.Preview || !reflect.DeepEqual(envelope.Result, []graphstore.BlockedIssue{item}) {
+		want := item
+		want.Issue.Version = "" // Complete CLI records expose revision only.
+		if err := json.Unmarshal([]byte(output), &envelope); err != nil || envelope.SchemaVersion != 1 || !envelope.Preview || !reflect.DeepEqual(envelope.Result, []graphstore.BlockedIssue{want}) || strings.Contains(output, `"version":"v1"`) {
 			t.Fatalf("complete graph envelope changed: %s %v", output, err)
 		}
 	}

@@ -295,16 +295,16 @@ comment writes are not yet exposed in graph mode.
 
 ## Versioning and History
 
-**Revision** names the current state of one Bead or Link. Use its `revision`
-value with `--if-revision` when a write must apply only to the state you read.
-A different current revision means the state changed and the guarded write
-refuses. **Version** means a retained state of that Resource: use the token
-with `--version`, or as an operand to `bd compare`, to retrieve or compare
-that exact state later. In this preview, the `revision` and `version` fields
-on a live record contain the **same opaque token**. They have different roles,
-not separate counters: revision is the current-state equality check, while a
-Resource ID plus version token is a retained-state address. Neither token
-encodes time or order, and a version is not a Dolt commit ID.
+**Revision** names the current state of one Bead or Link. A complete graph
+record has one opaque `revision` field. Use it with `--if-revision` when a
+write must apply only to the state you read. A different current revision
+means the state changed and the guarded write refuses. **Version** names a
+retained state of that Resource. `bd versions` rows and discovery summaries
+call its exact-read address `version`; use that token with `--version`, or as
+an operand to `bd compare`, to retrieve or compare the state later. A current
+record's `revision` is also its retained-state address. These names express
+two uses of one opaque token, not separate counters. The token encodes no
+time or order and is not a Dolt commit ID.
 
 Save a token from a record or `bd memories --details` to read that exact
 retained state later. Version reads do not depend on the record still being
