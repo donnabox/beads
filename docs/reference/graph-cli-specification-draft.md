@@ -495,7 +495,7 @@ explicit creation title must remain nonempty; updates preserve omitted fields.
 | `update BEAD` with Issue scalar flags | Inline `--title`, `--description`/`--body`/`--message`, `--design`, `--acceptance`, `--priority`, non-claim `--assignee`, `--estimate`, `--external-ref`, `--spec-id`, `--due` and literal `--append-notes`. Requires `--if-revision TOKEN` or `--unconditional`. Description aliases must agree. Files/stdin and other Issue fields are unavailable. |
 | `update BEAD --claim` | Atomically claim one Issue for the current actor using the native writer. Standalone `--claim=true` only; no other edits or revision/force guard. Repeating the same actor is a no-op and does not renew its five-minute lease. |
 | `show RESOURCE` | Current Memory, Issue or Link; optional `--version TOKEN` selects an exact retained record. Use `versions` to list a Resource's versions in order. |
-| `versions RESOURCE` | List one Memory, Issue or Link's retained **citable Resource states** newest first, each with its store-local `local_revision`, version token, change time and actor. A removed Link still lists its prior live versions, but deletion does not create a Link version. The pinned build currently includes a non-citable `removed` row as a local marker; that is a compatibility gap to remove before Preview 2 qualification. Human output labels the number `REV`. In a graph workspace `history RESOURCE` is an alias with the same output; ordinary workspaces keep the Dolt-commit `history`. |
+| `versions RESOURCE` | List one Memory, Issue or Link's retained **citable Resource states** newest first, each with its store-local `local_revision`, version token, change time and actor. A removed Link still lists its prior live versions, but deletion does not create a Link version. Human output labels the number `REV`. In a graph workspace `history RESOURCE` is an alias with the same output; ordinary workspaces keep the Dolt-commit `history`. The pinned integration build still exposes a non-citable deletion-marker row; [draft fork PR #73](https://github.com/donnabox/beads/pull/73) corrects that gap, pending combined-source qualification. |
 | `compare RESOURCE --from TOKEN --to TOKEN` | Compare two complete retained preview versions of one Memory, Issue or Link. Explicit tokens determine direction, not chronology. |
 | `link SOURCE TARGET --link-type TYPE` | Use an installed Link Type as `types/NAME` or its full local URL. Informational Links permit `--id links/PATH`, `--properties JSON` and source guards. Memory sources own informational Links; Issue sources do not. |
 | `dep add SOURCE TARGET` or `link SOURCE TARGET` | A local blocking Dependency between Issues, using the ordinary default `blocks` type. No bulk, remote, routing or bypass flags. |
@@ -753,10 +753,12 @@ to it.
 Every target `versions` row is a citable Resource state: its token is accepted
 by `show --version` and `compare`. Removing a Link retains its earlier states
 and identity but mints no new Link version. The deletion belongs to the
-history/event plane, not this Resource-version list. The pinned build still
-emits a non-citable `removed: true` deletion-marker row and calls its token
-`version`; that behavior is a known CLI/BDP mismatch, not the Preview 2
-contract. No replacement deletion version, timestamp or cascade is implied.
+history/event plane, not this Resource-version list. A private deletion marker
+may remain in the store to retain identity and old snapshots, but it is not
+returned as a `versions` row. The pinned integration build still emits that
+marker as a non-citable `removed: true` row; draft fork PR #73 corrects the
+CLI projection, pending combined-source qualification. No replacement deletion
+version, timestamp or cascade is implied.
 
 The command has two answers:
 
