@@ -273,7 +273,7 @@ func TestGraphPreviewC0DeferredCommandsRefuseBeforeLegacyOpen(t *testing.T) {
 		{"label", "rename", "old", "new", "--json"}, {"label", "rename", "old", "new", "--dry-run", "--json"},
 		{"update", "beads/plan", "-l", "new", "--unconditional", "--json"},
 		{"memories", "--json"}, {"recall", "beads/plan", "--json"},
-		{"list", "--json"}, {"ready", "--limit=1", "--json"}, {"close", "beads/plan", "--force", "--json"},
+		{"list", "--json"}, {"ready", "--explain", "--json"}, {"close", "beads/plan", "--force", "--json"},
 		{"link", "beads/plan", "beads/other", "--type=related", "--json"}, {"serve", "--json"},
 		{"db-proxy-child", "--root", filepath.Join(work, ".beads"), "--port", "1", "--backend", "external", "--json"},
 	} {

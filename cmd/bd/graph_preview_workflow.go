@@ -14,6 +14,7 @@ import (
 	"github.com/steveyegge/beads/internal/timeparsing"
 	"github.com/steveyegge/beads/internal/types"
 	"github.com/steveyegge/beads/internal/ui"
+	"github.com/steveyegge/beads/internal/utils"
 )
 
 // Returned canonical IDs can be fed back to the CLI. A bare local Bead path
@@ -288,11 +289,18 @@ func runGraphPreviewDeferral(cmd *cobra.Command, args []string, deferred bool) e
 }
 
 func runGraphPreviewReady(cmd *cobra.Command, args []string) error {
-	if err := graphPreviewFlags(cmd); err != nil {
+	if err := graphPreviewFlags(cmd, "limit", "priority", "assignee", "unassigned", "sort", "label", "label-any", "exclude-label", "type", "include-deferred", "claim"); err != nil {
 		return err
 	}
 	if len(args) != 0 {
 		return graphFailure("invalid_selector", "graph ready takes no positional arguments", 2)
+	}
+	if err := graphPreviewLabelFilters(cmd); err != nil {
+		return err
+	}
+	in, err := gatherReadyInput(cmd, nil)
+	if err != nil {
+		return err
 	}
 	// The legacy resolver warns and ignores malformed environment values.
 	// This deliberately bounded preview refuses unsupported policy instead.
@@ -301,12 +309,28 @@ func runGraphPreviewReady(cmd *cobra.Command, args []string) error {
 		if err != nil || maxRows < 0 {
 			return graphFailure("invalid_properties", "BEADS_MAX_ROWS must be a non-negative integer", 2)
 		}
-		if maxRows > 0 {
+		if maxRows > 0 && !in.claim {
 			return graphFailure("capability_unavailable", "graph ready preview does not implement a configured row cap; unset BEADS_MAX_ROWS to request the unfiltered view", 5)
 		}
 	}
+	if in.claim {
+		if err := graphPreviewWritePolicy(); err != nil {
+			return err
+		}
+		return withGraphStore(func(ctx context.Context, store *graphstore.Store) (any, string, error) {
+			claimed, err := store.ClaimReadyIssue(ctx, getActorWithGit(), in.filter)
+			if err != nil {
+				return nil, "", err
+			}
+			if claimed == nil {
+				return []graphstore.IssueRecord{}, "No ready work to claim", nil
+			}
+			SetLastTouchedID(claimed.Issue.Properties.ID)
+			return []graphstore.IssueRecord{claimed.Issue}, "Claimed Issue " + claimed.Issue.ID, nil
+		})
+	}
 	return withGraphStore(func(ctx context.Context, store *graphstore.Store) (any, string, error) {
-		issues, err := store.ReadyIssues(ctx)
+		issues, err := store.ReadyIssuesFiltered(ctx, in.filter)
 		if err != nil {
 			return nil, "", err
 		}
@@ -319,4 +343,23 @@ func runGraphPreviewReady(cmd *cobra.Command, args []string) error {
 		}
 		return issues, strings.TrimSuffix(human.String(), "\n"), nil
 	})
+}
+
+// Keep graph admission from turning a supplied blank label filter into an
+// unfiltered query. The ordinary fix is tracked separately in upstream #6632;
+// this graph route must retain the same distinction until that PR lands.
+func graphPreviewLabelFilters(cmd *cobra.Command) error {
+	for _, name := range []string{"label", "label-any", "exclude-label"} {
+		if !cmd.Flags().Changed(name) {
+			continue
+		}
+		values, err := cmd.Flags().GetStringSlice(name)
+		if err != nil {
+			return graphFailure("invalid_properties", "invalid --"+name+": "+err.Error(), 2)
+		}
+		if len(utils.NormalizeLabels(values)) == 0 {
+			return graphFailure("invalid_properties", "--"+name+" was supplied but contains no usable label", 2)
+		}
+	}
+	return nil
 }

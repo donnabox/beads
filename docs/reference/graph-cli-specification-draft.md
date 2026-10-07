@@ -265,7 +265,7 @@ claim or close operation.
 | `update ISSUE --claim` | One native atomic claim for the current actor; true-only and no edit/guard flags. Eligibility follows the configured native active-status and pool-alias rules. A successful change retains the complete Issue state and native claim stamp together. Repeating an eligible same-actor claim is a no-op and never renews its five-minute nonrenewing lease. A different actor cannot take an active claim by merely spelling `--unconditional` or `--force`. |
 | `close [ISSUE...]` | Native checked close and ordinary command behavior for zero, one or multiple IDs; the zero-ID last-touched fallback applies only under the ordinary interactive rule. Accepted close writes retain one complete graph projection with the native stamp. An already-closed Issue is a no-op. `--force` follows native pinned/gate policy; it does not bypass an explicit revision conflict. Post-close suggestion, atomic claim-next and molecule continuation have their ordinary lifecycle effects and restrictions. A refusal leaves that target's status, Links and retained state unchanged. |
 | `reopen ISSUE...` | One or more IDs, native transition from a done-category status to open, `closed_at` clearing and Reopened event. A non-done Issue is a no-op after validation; each accepted change retains the complete graph projection with the native stamp. |
-| `ready`, `blocked` | Native blocker-aware Issue views with all ordinary query and presentation controls. `ready --claim` atomically claims the first matching Issue and records the native claim/projection once. Read-only queries record no version, touch no lease and make no graph change; `blocked --parent` filters descendants while preserving canonical blocker IDs. |
+| `ready`, `blocked` | Native blocker-aware Issue views with all ordinary query and presentation controls. `ready --claim` atomically claims the first matching Issue and records the native claim/projection once. Its `--json` result is an array of complete graph Issue records with one element on success and zero when the filtered front is empty, preserving ordinary ready's array shape without inventing an Issue mutation wrapper. An empty claim itself records no version or lease; the ordinary lazy defer-wake before ready selection may separately version an expired deferred Issue. Apart from that wake, a ready read changes no state; blocked reads change no state. `blocked --parent` filters descendants while preserving canonical blocker IDs. |
 
 The current integration build has narrower graph command shapes: one explicit
 ID for `close` or `reopen`, no `ready` query flags and no `blocked --parent`.
@@ -941,8 +941,10 @@ The result is an array of objects with complete `issue` records and canonical
 accepts the ordinary `--parent` descendant filter but no positional selector.
 The pinned integration build currently refuses all filters, including an
 explicit empty `--parent`; a positive `BEADS_MAX_ROWS` also refuses there.
-No query wakes deferred work, repairs blocked state, creates versions or opens
-the ordinary store. Readonly and migration freeze permit these reads.
+`blocked` and generic traversal do not wake deferred work, repair blocked state,
+create versions or open the ordinary store. `ready` has the native lazy
+defer-wake behavior described above. Readonly and migration freeze permit these
+reads without authorizing a wake write.
 
 Generic traversal reads one checked current snapshot. Nodes expose only ID,
 Type, title, version and attribution; Links expose ID, Type, source, target,
