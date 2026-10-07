@@ -78,7 +78,7 @@ func TestGraphPreviewLastTouchedIssueWorkflow(t *testing.T) {
 				t.Fatalf("ready claim selected unexpected work: %+v", claimed)
 			}
 			marker(scope + "beads/first")
-			closed = graphMixedResult[graphstore.IssueMutationResult](t, fallback("close", "--reason", "claimed work done"))
+			closed = graphMixedResult[graphstore.IssueMutationResult](t, fallback("close", "--reason", "claimed work done", "--actor", "worker"))
 			if !closed.Changed || closed.Issue.ID != scope+"beads/first" {
 				t.Fatalf("no-ID close missed the claimed Issue: %+v", closed)
 			}
