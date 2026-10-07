@@ -186,8 +186,12 @@ empty; it cannot be combined with a non-Issue `--bead-type`.
 
 ### Results, errors and repeatability
 
-The target success contract is one complete result on stdout, with diagnostics
-on stderr. Most `--json` success results use
+The target single-target success contract is one complete result on stdout,
+with diagnostics on stderr. Multi-Issue lifecycle commands process targets in
+input order, as ordinary `bd` does: successful targets remain committed and
+appear on stdout even if a later target fails. Per-target failures appear on
+stderr and the command exits nonzero. A command-wide syntax or admission
+failure rejects before processing any target. Most `--json` success results use
 `{"schemaVersion":1,"preview":true,"result":<typed result>}`; the typed
 result shape for a command is the shape shown by that command's examples and
 tests below. `memories` and `list` use `--format records-json` for their
@@ -204,16 +208,18 @@ presentation only.
 | Exit | Error category | Required behavior |
 | --- | --- | --- |
 | 0 | Success or accepted semantic no-op | Emit the selected complete success form; an identical write does not create a new version. |
+| 1 | Partial multi-target Issue command failure | Preserve and report successful targets on stdout, report failed targets on stderr, and let callers inspect per-target results before retrying. This does not roll back earlier successful targets. |
 | 2 | Invalid syntax or selector | Reject before a write; examples include conflicting aliases, malformed JSON, unsupported flag combinations and invalid bounds. |
 | 3 | Missing, gone or unknown retained version | Distinguish a never-present current ID, a removed current ID and an unavailable version; never substitute the current state for an old address. |
-| 4 | Revision/identity/constraint conflict | No partial write. Include enough canonical IDs to act on an ambiguous pair unlink or target incident-Link deletion refusal. The current linked-Memory deletion refusal is `deletion_policy_unresolved` at exit 5 until the proposed stable constraint error is implemented. |
+| 4 | Revision/identity/constraint conflict | No partial write to the affected target. An earlier target in a multi-target Issue command may already have succeeded. Include enough canonical IDs to act on an ambiguous pair unlink or target incident-Link deletion refusal. The current linked-Memory deletion refusal is `deletion_policy_unresolved` at exit 5 until the proposed stable constraint error is implemented. |
 | 5 | Unavailable capability, workspace/authority refusal or storage failure | Never fall through to an ordinary workspace or claim an unsupported feature ran. |
 | 6 | Outcome unknown | The client must inspect current state and retained versions before deciding whether to retry; the command must not claim failure or success of a write whose commit result is unknown. |
 
 Machine-readable errors use
 `{"code":"...","message":"...","retryable":false}` on stderr;
-human errors use `code: message` there. Neither form prints a partial
-success envelope on an admission, validation or storage refusal. An
+human errors use `code: message` there. A command-wide admission or validation
+refusal prints no success envelope; a failed target prints no success record
+for that target, while successful targets in a batch remain visible. An
 ambiguous-Link error must report sorted candidate canonical IDs. A future
 retryable category may change only with a separately reviewed contract; the
 current graph errors do not ask a caller to blindly retry. Scalar selectors
