@@ -693,7 +693,11 @@ func graphPrint(result any, human string, quiet bool) error {
 
 func graphPrintTo(out io.Writer, result any, human string, quiet, structured bool) error {
 	if structured {
-		return json.NewEncoder(out).Encode(map[string]any{"schemaVersion": 1, "preview": true, "result": result})
+		projected, err := graphProjectCompleteRecords(result)
+		if err != nil {
+			return err
+		}
+		return json.NewEncoder(out).Encode(map[string]any{"schemaVersion": 1, "preview": true, "result": projected})
 	}
 	if !quiet {
 		_, err := fmt.Fprintln(out, human)

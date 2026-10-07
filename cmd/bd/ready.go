@@ -36,7 +36,13 @@ Use --gated to find molecules ready for gate-resume dispatch:
 Use --claim to atomically claim the first ready issue matching the filters:
   bd ready --claim --json
 
-This is useful for agents executing molecules to see which steps can run next.`,
+This is useful for agents executing molecules to see which steps can run next.
+
+In graph workspaces, the current preview supports filters for limit, priority,
+assignee, unassigned, sort, label, label-any, exclude-label, type, and
+include-deferred. --claim atomically claims the first matching ready Issue.
+Other ready modes require a later graph slice and currently refuse rather
+than silently ignoring flags.`,
 	SilenceUsage:  true,
 	SilenceErrors: true,
 	RunE: func(cmd *cobra.Command, args []string) error {
@@ -357,6 +363,7 @@ func blockedFilterFromFlags(cmd *cobra.Command) types.WorkFilter {
 var blockedCmd = &cobra.Command{
 	Use:           "blocked",
 	Short:         "Show blocked issues",
+	Long:          "Show dependency-blocked issues. In graph workspaces, label, label-any and exclude-label filters are supported; parent filtering requires a later graph slice.",
 	SilenceUsage:  true,
 	SilenceErrors: true,
 	RunE: func(cmd *cobra.Command, args []string) error {
