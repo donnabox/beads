@@ -91,7 +91,7 @@ func TestGraphPreviewIssueAuthoringWorkflow(t *testing.T) {
 				args []string
 			}{
 				{"invalid_properties", []string{"update", "beads/work", "--estimate=-1", "--unconditional"}},
-				{"capability_unavailable", []string{"update", "beads/work", "--notes=Replace", "--unconditional"}},
+				{"notes_overwrite_refused", []string{"update", "beads/work", "--notes=Replace", "--unconditional"}},
 				{"capability_unavailable", []string{"update", "beads/work", "--estimate=1", "--claim"}},
 				{"permission_denied", []string{"update", "beads/work", "--spec-id=No", "--unconditional", "--readonly"}},
 			} {

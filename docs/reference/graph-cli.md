@@ -201,6 +201,27 @@ bd show work --json
 bd undefer work --if-revision REVISION_FROM_SHOW
 ```
 
+## Edit Issue notes
+
+An Issue's notes can carry progress across sessions. `--append-notes` adds a
+line without discarding earlier notes. `--notes` sets a nonempty value; if it
+would replace different, nonempty notes, add `--force` to make that intent
+explicit. To erase notes, use `--clear-notes`: `--notes=` is refused, even with
+`--force`, because an accidentally empty shell value could erase the record.
+
+```sh
+bd show work --json                     # Read the current revision.
+bd update work --append-notes 'Review started.' --if-revision REVISION_FROM_SHOW
+bd update work --notes 'Revised handoff' --force --if-revision NEW_REVISION
+bd update work --clear-notes --if-revision LATEST_REVISION
+```
+
+Each graph Issue edit needs `--if-revision` or `--unconditional`. A stale guard
+refuses even with `--force`; force only authorizes the notes overwrite. An
+identical value or a clear of already-empty notes leaves the revision alone.
+Use `bd versions work` and `bd show work --version TOKEN` to inspect prior
+snapshots after an accepted change.
+
 ## Create, inspect, edit and remove Links
 
 Use `bd types` to find installed Link Types. An informational Type such as
