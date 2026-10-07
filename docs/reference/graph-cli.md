@@ -166,13 +166,18 @@ native pinned, holder, blocker and open-child close policies; it does not make
 an already-closed Issue change again. `--session ID` records the closing
 session, with `CLAUDE_SESSION_ID` as its fallback. On a single Issue,
 `--suggest-next` reads Issues that this close newly unblocks; it does not claim
-them. Interactive last-touched, gate evaluation, `--claim-next`, `--continue`,
-molecule advancement and remote routing remain pending.
+them. `--claim-next` claims the highest-priority ready Issue in the same
+transaction as the close, only when at least one target actually closes. A
+mixed batch may keep a close and its claim while reporting another target's
+failure; retrying an already-closed batch makes no new claim or version.
+Interactive last-touched, gate evaluation, `--continue`, molecule advancement
+and remote routing remain pending.
 
 ```sh
 bd close work review --reason 'Finished the work' --reason 'Review complete'
 bd close blocked-work --force --session review-session --reason 'Override approved'
 bd close blocker --suggest-next --reason 'Dependency finished'
+bd close blocker --claim-next --reason 'Dependency finished and next work claimed'
 bd reopen work review --reason 'Follow-up needed'
 ```
 

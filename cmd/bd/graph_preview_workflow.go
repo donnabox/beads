@@ -143,11 +143,12 @@ func runGraphPreviewClose(cmd *cobra.Command, args []string) error {
 	if err := graphPreviewWritePolicy(); err != nil {
 		return err
 	}
-	if err := graphPreviewFlags(cmd, "reason", "resolution", "message", "comment", "reason-file", "force", "session", "suggest-next"); err != nil {
+	if err := graphPreviewFlags(cmd, "reason", "resolution", "message", "comment", "reason-file", "force", "session", "suggest-next", "claim-next"); err != nil {
 		return err
 	}
 	force, _ := cmd.Flags().GetBool("force")
 	suggestNext, _ := cmd.Flags().GetBool("suggest-next")
+	claimNext, _ := cmd.Flags().GetBool("claim-next")
 	session, _ := cmd.Flags().GetString("session")
 	if session == "" {
 		session = os.Getenv("CLAUDE_SESSION_ID")
@@ -175,6 +176,9 @@ func runGraphPreviewClose(cmd *cobra.Command, args []string) error {
 			return graphFailure("invalid_selector", err.Error(), 2)
 		}
 		paths[i] = path
+	}
+	if claimNext {
+		return runGraphPreviewCloseClaimNext(paths, targets, reasons, session, force, suggestNext)
 	}
 	var hadError bool
 	err = withGraphStore(func(ctx context.Context, store *graphstore.Store) (any, string, error) {
@@ -223,6 +227,79 @@ func runGraphPreviewClose(cmd *cobra.Command, args []string) error {
 		return err
 	}
 	if hadError {
+		return SilentExit()
+	}
+	return nil
+}
+
+func runGraphPreviewCloseClaimNext(paths, targets, reasons []string, session string, force, suggestNext bool) error {
+	var hadError bool
+	var claimedID string
+	err := withGraphStore(func(ctx context.Context, store *graphstore.Store) (any, string, error) {
+		perPathReasons := make([]string, len(paths))
+		for i := range paths {
+			perPathReasons[i] = reasonForCloseIndex(reasons, i)
+		}
+		result, err := store.CloseIssues(ctx, graphstore.IssueCloseBatchRequest{
+			Paths: paths, Reasons: perPathReasons, Actor: getActorWithGit(), Session: session, Force: force, ClaimNext: true,
+		})
+		if err != nil {
+			return nil, "", err
+		}
+		closed := make([]graphstore.IssueRecord, 0, len(paths))
+		var human strings.Builder
+		for i, outcome := range result.Outcomes {
+			if outcome.Err != nil {
+				if len(paths) == 1 {
+					return nil, "", outcome.Err
+				}
+				_ = graphStorageError(fmt.Errorf("closing %s: %w", targets[i], outcome.Err))
+				hadError = true
+				continue
+			}
+			closed = append(closed, outcome.Issue)
+			if outcome.OpenChildren > 0 {
+				fmt.Fprintf(os.Stderr, "warning: closing %s with %d open child issue(s) still active\n", targets[i], outcome.OpenChildren)
+			}
+			if outcome.Changed {
+				fmt.Fprintf(&human, "Closed %s\n", targets[i])
+			} else {
+				fmt.Fprintf(&human, "Already closed %s\n", targets[i])
+			}
+		}
+		var output any = closed
+		if result.ClaimedNext != nil {
+			claimedID = result.ClaimedNext.ID
+			output = map[string]any{"closed": closed, "claimed": result.ClaimedNext}
+			fmt.Fprintf(&human, "Claimed next ready Issue %s\n", result.ClaimedNext.ID)
+		} else if len(closed) > 0 {
+			human.WriteString("No ready Issues available to claim.\n")
+		}
+		if suggestNext && len(closed) > 0 {
+			unblocked, err := store.NewlyUnblockedByClose(ctx, paths[0])
+			if err != nil {
+				fmt.Fprintf(os.Stderr, "Warning: could not find newly unblocked Issues: %v\n", err)
+			} else if len(unblocked) > 0 {
+				fields := map[string]any{"closed": closed, "unblocked": unblocked}
+				if result.ClaimedNext != nil {
+					fields["claimed"] = result.ClaimedNext
+				}
+				output = fields
+				human.WriteString("Newly unblocked:\n")
+				for _, issue := range unblocked {
+					fmt.Fprintf(&human, "  %s (P%d)\n", issue.ID, issue.Properties.Priority)
+				}
+			}
+		}
+		return output, strings.TrimSuffix(human.String(), "\n"), nil
+	})
+	if err != nil {
+		return err
+	}
+	if hadError {
+		if claimedID != "" {
+			_ = graphFailure("partial_close_claim_retained", "--claim-next already claimed "+claimedID+"; it remains assigned despite the sibling refusal", 1)
+		}
 		return SilentExit()
 	}
 	return nil

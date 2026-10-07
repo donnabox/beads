@@ -127,9 +127,11 @@ positional reason. A batch reports successful Issues on stdout and per-Issue
 failures on stderr, then exits nonzero if any failed. --force bypasses pinned,
 holder, blocker and open-child policy; --session (or CLAUDE_SESSION_ID) records
 the closing session. On one Issue, --suggest-next lists Issues that closing it
-newly unblocks, without claiming them. Interactive last-touched, gate
-evaluation, --claim-next, --continue, molecule advancement and remote-routing
-forms remain unavailable.`},
+newly unblocks, without claiming them. --claim-next atomically claims the
+highest-priority ready Issue when at least one close lands; an already-closed
+retry earns no new claim. A mixed batch keeps its successful closes and claim
+even when another ID refuses. Interactive last-touched, gate evaluation,
+--continue, molecule advancement and remote-routing forms remain unavailable.`},
 		{reopenCmd, `Reopen one or more local closed Issues by ID or beads/ID,
 optionally with --reason. A batch reports changed Issues on stdout and
 per-Issue failures on stderr, then exits nonzero if any failed. Already-open
