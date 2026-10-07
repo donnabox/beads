@@ -278,7 +278,13 @@ func TestGraphPreviewC0DeferredCommandsRefuseBeforeLegacyOpen(t *testing.T) {
 		{"db-proxy-child", "--root", filepath.Join(work, ".beads"), "--port", "1", "--backend", "external", "--json"},
 	} {
 		before := legacyUpgradeTreeDigest(t, work)
-		graphPolicyCLI(t, bd, work, home, nil, "capability_unavailable", args...)
+		code := "capability_unavailable"
+		if args[0] == "close" {
+			// --force is now admitted; the Memory selector must still be
+			// refused by the graph writer without touching its workspace.
+			code = "invalid_properties"
+		}
+		graphPolicyCLI(t, bd, work, home, nil, code, args...)
 		if after := legacyUpgradeTreeDigest(t, work); after != before {
 			t.Fatalf("refused %v changed workspace", args)
 		}
