@@ -32,16 +32,16 @@ func graphVersionsNotFound(selector string) error {
 // package. The names are deliberate and documented in
 // docs/reference/graph-preview.md.
 //
-// `ordinal` is NOT called `revision`: graph records already use `revision` for
-// the opaque token, and native Issues use it for the row-lock CAS token, which
-// is a string. A script that confused the two would silently compare an
-// ordering key against an address.
+// `local_revision` names the same per-Resource ordering number as ordinary
+// `bd versions --json`. It is NOT `revision`: graph records use that name for
+// an opaque token, and native Issues use it for a row-lock CAS token. Neither
+// token can be ordered or replaced by this store-local number.
 func graphVersionRowsJSON(rows []graphstore.VersionRow) []map[string]any {
 	out := make([]map[string]any, 0, len(rows))
 	for _, r := range rows {
 		out = append(out, map[string]any{
-			"ordinal": r.Ordinal,
-			"version": r.Version,
+			"local_revision": r.Ordinal,
+			"version":        r.Version,
 			// Fixed-width microseconds rather than RFC3339Nano, which strips
 			// trailing zeros and so varies in width between rows
 			// ("…51.65588Z" beside "…51.879092Z"). Parsers do not care, but
@@ -148,7 +148,7 @@ func renderGraphVersions(selector string, kind graphstore.ResourceKind, rows []g
 	var b strings.Builder
 	removed := false
 	fmt.Fprintf(&b, "Versions of %s (%d)\n\n", selector, len(rows))
-	fmt.Fprintf(&b, "  ORD  WHEN                        WHO                  ATTRIB\n")
+	fmt.Fprintf(&b, "  REV  WHEN                        WHO                  ATTRIB\n")
 	for _, r := range rows {
 		attrib := r.Attribution
 		if attrib == "" {
@@ -178,8 +178,8 @@ func renderGraphVersions(selector string, kind graphstore.ResourceKind, rows []g
 		fmt.Fprintf(&b, "       %s\n", r.Version)
 	}
 
-	b.WriteString("\nORD orders versions within this store and is NOT a citable address: two\n")
-	b.WriteString("clones can hold a different ordinal for the same state. Cite the token\n")
+	b.WriteString("\nREV is local to this store and is NOT a citable address: two\n")
+	b.WriteString("clones can hold a different local revision for the same state. Cite the token\n")
 	b.WriteString("under each row instead:\n\n")
 	fmt.Fprintf(&b, "  bd show %s --version <token>\n", selector)
 	fmt.Fprintf(&b, "  bd compare %s --from <token> --to <token>\n", selector)

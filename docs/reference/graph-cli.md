@@ -28,7 +28,7 @@ bd status --graph
 The Scope URL establishes canonical identity; this command does not start an
 HTTP server at that address. The example skips agent-file and hook setup to
 keep the CLI exercise isolated. See the
-[graph preview technical reference](/reference/graph-preview) for supported
+[Graph CLI Specification (Draft)](/reference/graph-cli-specification-draft) for supported
 embedded and external Dolt modes, agent setup, limits, and refusals.
 
 This page is the evolving **task-oriented CLI guide**. The graph preview
@@ -36,22 +36,29 @@ technical reference is the evolving, detailed command matrix and contract;
 neither page is a frozen release note. The blog post explains the model and
 links to these pages for commands that may change after publication. Ordinary
 Beads workspaces keep their existing Issue and key/value-memory commands.
+The technical reference also carries the [proposed next-milestone command contract](/reference/graph-cli-specification-draft#proposed-command-contract-for-the-next-milestone);
+its **NYI** rows describe proposed behavior, not commands available in this
+build. Use the current command matrix there when trying the preview.
 
 In a graph workspace, a Bead is an Issue or a Memory. Its canonical identity
 is under `beads/`. In CLI arguments, `policy` means `beads/policy`; a Link
 still needs an explicit `links/ID` where a command accepts either kind of
 resource. The shorthand does not change stored IDs or HTTP URLs. Omit `--id`
-when creating a Bead to allocate an ID, or supply one to use it exactly;
-creating a second Bead at that ID fails. The examples below use explicit IDs
-only so later commands are easy to follow.
+when creating a Bead to allocate an ID, or supply one to use it exactly.
+`bd create` refuses a duplicate ID; `bd remember --id ID` updates an existing
+Memory at that ID unless `--create-only` is supplied. The examples below use
+explicit IDs only so later commands are easy to follow.
 
 ## Create Beads
 
-`bd remember` creates a Memory from text. It preserves the full body. Without
+`bd remember` stores a Memory from text. It preserves the full body. Without
 `--title`, it makes a title from the first nonempty body line (collapsed
-whitespace, at most 80 Unicode characters including an ellipsis). An explicit
-`--title` is used as supplied. It can also read a body from `--body-file PATH`
-or `--stdin` instead of the positional text.
+whitespace, at most 80 Unicode characters including an ellipsis) on creation.
+An explicit `--title` is used as supplied. It can also read a body from
+`--body-file PATH` or `--stdin` instead of the positional text. With `--id`,
+an unused ID creates and an existing Memory updates in place, matching
+ordinary `bd remember --key` behavior. `--create-only` with `--id` refuses
+any previously allocated ID, including one that has been deleted.
 
 ```sh
 bd remember 'Code flow policy: changes land on integration.' --id policy
@@ -124,18 +131,20 @@ An Issue filter cannot be combined with a non-Issue `--bead-type`.
 
 ## Update and delete Beads
 
-For a Memory, `bd remember --update ID` changes only the fields you supply.
-It requires `--update` so an existing Memory is never silently overwritten by
-a creation command. Omitted title or body stays unchanged; `--update` accepts
-the current revision by default. A title-only update needs no body argument.
+For a Memory, `bd remember --id ID` changes only the fields you supply if
+that ID already exists. Omitted title or body stays unchanged, and the current
+revision is accepted by default. `--update ID` remains an existing-only
+spelling; it refuses a missing Memory. A title-only update needs no body
+argument. Add `--if-revision TOKEN` to either spelling to reject a stale edit.
 
 ```sh
-bd remember 'Changes now land on the release branch.' --update policy
+bd remember 'Changes now land on the release branch.' --id policy
 bd remember --update policy --title 'Current code flow policy'
 ```
 
 `bd update` edits an Issue with its Issue flags, or replaces a Memory's whole
-properties document with `--properties`. Unlike `bd remember --update`, these
+properties document with `--properties`. Unlike `bd remember` with an existing
+ID, these
 routes require an explicit write choice; the examples use `--unconditional`
 to accept the current state. A Memory properties replacement supplies both
 `title` and `body` strings. See [Versioning and History](#versioning-and-history)
@@ -146,12 +155,14 @@ bd update work --title 'Move the release branch after review' --unconditional
 bd update policy --properties '{"title":"Code flow policy","body":"Land reviewed changes on integration."}' --unconditional
 ```
 
-Memory deletion applies only to an **unreferenced** Memory. `bd delete ID`
-previews the result without changing storage; `--force` applies it. `bd forget
-ID` applies the same deletion directly. Applying either command requires an
+`bd delete ID` previews deletion of one unreferenced Memory or Issue without
+changing storage; `--force` applies it. `bd forget ID` applies Memory deletion
+directly and does not accept Issues. Applying either command requires an
 explicit write choice, shown here with `--unconditional`. Any live incoming,
 outgoing or self-Link makes deletion refuse; `--force` does not cascade.
-Issue deletion is not available in this graph preview.
+Memory refusal names the first blocking Link ID and the total count. Issue
+refusal lists the incident Link IDs; unlink them explicitly before retrying
+with a fresh revision.
 
 ```sh
 bd remember 'Temporary note' --id scratch
@@ -160,10 +171,35 @@ bd delete scratch --force --unconditional
 # Or, for another unreferenced Memory:
 bd remember 'Another temporary note' --id other-scratch
 bd forget other-scratch --unconditional
+# An unreferenced Issue follows the same preview and guarded apply shape:
+bd create 'Temporary task' --id temp-work
+bd delete temp-work
+bd delete temp-work --force --unconditional
 ```
 
-Deletion removes current Memory state but reserves its ID and retains prior
-snapshots. It does not create a deletion version or promise erasure or restore.
+Deletion removes current Bead state but reserves its ID and retains prior
+snapshots. It does not create a graph deletion version or promise erasure or
+restore. Native Issue deletion records its ordinary delete journal event.
+
+Use `bd defer ID...` to set Issues aside and `bd undefer ID...` to return
+deferred Issues to open. An undated defer stays in the icebox until undeferred.
+`--until` accepts the same date and relative-time forms as ordinary `bd`;
+the next `bd ready` after that time wakes the Issue, records a new version,
+and clears its defer date. `--reason` appends a line to the Issue's notes.
+Assigned Issues retain their assignee through defer and undefer. Neither
+command requires a revision flag, but `--if-revision` checks the observed
+revision for a single Issue. A repeated dateless defer or undefer is a no-op
+when no date or reason changes. `bd undefer` also clears a stale defer date
+without changing a non-deferred status.
+
+```sh
+bd defer work --until tomorrow --reason 'Waiting on review'
+bd ready                       # Wakes work once its defer date has passed
+bd undefer work                 # Or restore it explicitly
+bd defer work another-work      # Set multiple Issues aside indefinitely
+bd show work --json
+bd undefer work --if-revision REVISION_FROM_SHOW
+```
 
 ## Create, inspect, edit and remove Links
 
@@ -191,8 +227,35 @@ TOKEN` to reject a stale source. Link updates and unlink still require their
 own `--if-revision TOKEN` or `--unconditional` choice. Unlink removes the
 current Link but retains its identity and prior snapshots. The blocking
 `types/preview-blocks-v1` Type is only for live Issues; it refuses a Memory
-endpoint. See the [technical reference](/reference/graph-preview) for the
+endpoint. See the [Graph CLI Specification (Draft)](/reference/graph-cli-specification-draft) for the
 separate blocking Dependency unlink rules and Link Type bounds.
+
+## Claim and release Issue work
+
+`bd update ID --claim` atomically claims a live Issue for the current actor.
+`bd unclaim ID...` releases assigned open or in-progress Issues. By default
+the current actor must hold each claim. Each successful release clears its
+assignee, lease, and started time, returns it to open, and retains one native
+Issue version and one graph version. A second unclaim refuses because no claim
+remains; it does not create another version. A batch attempts each ID and exits
+nonzero if any release fails.
+
+```sh
+bd update work --claim --actor rig.agent
+bd unclaim work --actor rig.agent --reason 'Handing this back'
+bd comments work              # The reason is a native Issue comment
+bd update work --claim --actor another.agent
+bd unclaim work --if-assignee another.agent --actor supervisor
+```
+
+`--if-assignee HOLDER` releases only while that holder remains assigned; a
+mismatch leaves the Issue and its lease untouched. `--force` bypasses the
+holder check for an abandoned claim, but still uses the native row
+compare-and-swap. The two flags cannot be combined. `--reason TEXT` appends a
+native Issue comment after the release; if that separate append fails, the
+release remains committed and the CLI warns. Comments are a separate feed,
+outside retained Issue state, and do not mint another Issue version. Other
+comment writes are not yet exposed in graph mode.
 
 ## Versioning and History
 
@@ -230,23 +293,26 @@ bd history policy  # same listing in a graph workspace
 | `--unconditional` | Where a write requires an explicit choice, accept the current record without an expected revision. |
 | `--if-source-revision TOKEN` | On a Memory-owned Link write, optionally require the source Memory's observed revision; otherwise that source defaults to unconditional acceptance. |
 
-`bd remember --update` defaults to unconditional acceptance. Memory deletion,
+`bd remember` with an existing `--id` or `--update` defaults to unconditional
+acceptance. Memory deletion,
 `bd update`, and Link edits/removal still have their command-specific guard
-requirements; consult the [graph preview reference](/reference/graph-preview) before
+requirements; consult the [Graph CLI Specification (Draft)](/reference/graph-cli-specification-draft) before
 automating them. A semantic no-op retains the existing revision.
 
 `bd versions ID` lists a Memory, Issue or Link's versions newest first in a
 graph workspace. `bd history ID` is an alias there; in an ordinary workspace,
 `bd history` retains its Dolt-commit meaning. Each graph row includes an
-opaque `version` token, a store-local `ordinal`, a display `change_at` time,
-and attribution. Use the **token** for `show --version` or `compare`, never
-the ordinal. The ordinal orders versions within this store; it is not a stable
-cross-clone address. `change_at` is not the ordering authority. A removed
-Link's deletion marker is listed with `removed: true` but is not a readable
-Link version. Memory deletion adds no deletion version. There is still no
+opaque `version` token, a store-local `local_revision`, a display `change_at`
+time, and attribution. Use the **token** for `show --version` or `compare`, never
+the local revision number. Human output calls the number `REV`, matching
+ordinary `bd versions`; graph JSON uses `local_revision`. It orders versions
+within this store and is not a stable cross-clone address. `change_at` is not
+the ordering authority. A removed Link's deletion marker is listed with
+`removed: true` but is not a readable Link version. Memory deletion adds no
+deletion version. There is still no
 BDP HTTP History, as-of selection or restoration. `bd status --graph` reports
 `versionList: true`; `historyExact: false` refers to the unavailable HTTP
-History profile. The [technical reference](/reference/graph-preview#list-a-resources-versions)
+History profile. The [technical reference](/reference/graph-cli-specification-draft#list-a-resources-versions)
 details ordering and refusal behavior.
 
 ## Discover installed Types

@@ -696,29 +696,35 @@ func TestPRPreflightPlatformsRunStepsUseRestoredGoBuildCache(t *testing.T) {
 	}
 }
 
-// main.yml's test job macOS leg is the only macOS non-race GOCACHE seeder for
-// pr.yml's GitHub-hosted macOS legs. It must compile the same test packages
-// those legs compile (warm-non-race-cache.sh, shared with the Linux and
-// Windows seeders), not only the non-test ./cmd/bd graph its Build step does,
-// and it must do so before the cache is saved.
-func TestMainMacOSTestLegWarmsNonRaceGoBuildCache(t *testing.T) {
+// main.yml's test job runs the macOS -race -short suite on Blacksmith macOS
+// (blacksmithMacOSLabel, the image pr.yml's same-repo macOS legs use), and
+// restores the module and non-race caches main.yml's
+// blacksmith-macos-go-build-cache Blacksmith leg seeds: the same path and a
+// restore-keys prefix of that saver's key. It writes only its own race cache.
+func TestMainMacOSTestJobRestoresBlacksmithMacOSSaverCaches(t *testing.T) {
 	workflow := readCIWorkflow(t, "main.yml")
 	job := workflow.job(t, "test")
-	const name = "Warm non-race GOCACHE for macOS preflight/doc-freshness"
-	step := job.step(t, name)
-	if step.If != "matrix.os == 'macos-latest'" {
-		t.Errorf("%q if = %q, want the macOS leg only", name, step.If)
+	if want := "${{ '" + blacksmithMacOSLabel + "' }}"; job.RunsOn != want {
+		t.Errorf("main.yml test runs-on = %q, want %q", job.RunsOn, want)
 	}
-	if step.ContinueOnError != nil && step.ContinueOnError != false {
-		t.Errorf("%q may not continue on error", name)
+	if job.TimeoutMinutes == 0 {
+		t.Error("main.yml test has no timeout-minutes")
 	}
-	assertStepRunsExactly(t, job, name, "bash scripts/ci/warm-non-race-cache.sh")
-	assertGoCacheEnv(t, job, name, "non-race")
-	assertStepsBefore(t, job, []string{"Restore non-race Go build cache"}, []string{name})
-	assertStepsBefore(t, job, []string{name}, []string{"Save non-race Go build cache"})
-	save := job.step(t, "Save non-race Go build cache")
-	if !strings.Contains(save.If, "matrix.os == 'macos-latest'") || save.With["path"] != goBuildCachePath("non-race") {
-		t.Errorf("macOS non-race saver drifted: if=%q path=%q", save.If, save.With["path"])
+	saver := workflow.job(t, "blacksmith-macos-go-build-cache")
+	for _, pair := range [][2]string{
+		{"Restore Go module cache", "Save Go module cache"},
+		{"Restore non-race Go build cache", "Save non-race Go build cache"},
+	} {
+		restore, save := job.step(t, pair[0]), saver.step(t, pair[1])
+		if restore.With["path"] != save.With["path"] || restore.With["restore-keys"] == "" || !strings.HasPrefix(save.With["key"], restore.With["restore-keys"]) {
+			t.Errorf("main.yml test %q (%q, %q) cannot reach the macOS saver's %q (%q, %q)",
+				pair[0], restore.With["path"], restore.With["restore-keys"], pair[1], save.With["path"], save.With["key"])
+		}
+	}
+	for _, step := range job.Steps {
+		if actionFamily(step.Uses) == cacheSaveActionFamily && step.Name != "Save race Go build cache" {
+			t.Errorf("main.yml test step %q saves a cache; only its own race cache may (the macOS saver owns the rest)", step.Name)
+		}
 	}
 }
 
@@ -999,7 +1005,7 @@ func TestStorageDomainUOWJobsUseNestedTimeoutBudgets(t *testing.T) {
 		"go test -tags gms_pure_go -race -count=1 -timeout %dm -v ./cmd/bd/doctor/fix/",
 		doctorTimeoutMinutes)
 
-	for _, workflowName := range []string{"pr.yml", "main.yml"} {
+	for _, workflowName := range []string{"pr.yml"} {
 		t.Run(workflowName, func(t *testing.T) {
 			job := readCIWorkflow(t, workflowName).job(t, "test-domain-uow")
 			if job.TimeoutMinutes != jobTimeoutMinutes {
@@ -1050,11 +1056,7 @@ func TestMacOSTestJobsReuseWorkspaceBDBinary(t *testing.T) {
 		// default is what made this leg flaky). It sits on the invocation
 		// rather than in matrix.test-flags, so editing the matrix cannot
 		// silently drop it.
-		mainTestCommand = "go test -tags gms_pure_go ${{ matrix.test-flags }} -timeout=30m -skip '^TestEmbedded' ./..."
-		// The macOS leg is the only consumer of main.yml's matrix test-flags
-		// (the ubuntu leg's coverage step hardcodes its own). The deadline is
-		// deliberately NOT here — see mainTestCommand.
-		mainMacOSTestFlags = "-v -race -short"
+		mainTestCommand = "go test -tags gms_pure_go -v -race -short -timeout=30m -skip '^TestEmbedded' ./..."
 	)
 
 	workflows := map[string]ciWorkflow{
@@ -1065,7 +1067,7 @@ func TestMacOSTestJobsReuseWorkspaceBDBinary(t *testing.T) {
 	// pr.yml's own "test-macos" job (a full-suite pre-merge race against
 	// main.yml's macOS leg, run on every PR to catch macOS-only regressions
 	// before merge) was removed under the F4 rollout: main.yml's
-	// push-triggered macOS leg below is now the only lane that ever runs
+	// push-triggered macOS job below is now the only lane that ever runs
 	// this suite on macOS, so no PR run exercises it pre-merge any more.
 	// Nothing in pr.yml should carry the workspace bd binary override
 	// checked in the loop below.
@@ -1073,19 +1075,10 @@ func TestMacOSTestJobsReuseWorkspaceBDBinary(t *testing.T) {
 	assertStepRunsExactly(t, mainTest, "Build", buildCommand)
 	assertStepRunsExactly(t, mainTest, "Test", mainTestCommand)
 	assertStepsBefore(t, mainTest, []string{"Build"}, []string{"Test"})
-	if got := mainTest.step(t, "Build").If; got != "matrix.os != 'ubuntu-latest'" {
-		t.Errorf("main build condition = %q, want macOS-only condition", got)
-	}
-	if got := mainTest.step(t, "Test").If; got != "${{ !matrix.coverage }}" {
-		t.Errorf("main test condition = %q, want non-coverage condition", got)
-	}
-	if got := mainTest.Strategy.Matrix.OS; !equalStrings(got, []string{"ubuntu-latest", macOSRunner}) {
-		t.Errorf("main test matrix os = %v, want [ubuntu-latest %s]", got, macOSRunner)
-	}
-	if got := mainTest.Strategy.Matrix.Include; len(got) != 2 ||
-		got[0].OS != "ubuntu-latest" || !got[0].Coverage ||
-		got[1].OS != macOSRunner || got[1].Coverage || got[1].TestFlags != mainMacOSTestFlags {
-		t.Errorf("main test matrix include = %+v, want macOS non-coverage entry with %s", got, mainMacOSTestFlags)
+	for _, name := range []string{"Build", "Test"} {
+		if got := mainTest.step(t, name).If; got != "" {
+			t.Errorf("main %s condition = %q, want unconditional (the job is macOS only)", name, got)
+		}
 	}
 	assertStepEnvValue(t, mainTest, "Test", "BEADS_TEST_BD_BINARY", workspaceBDBinary)
 
@@ -1102,10 +1095,10 @@ func TestMacOSTestJobsReuseWorkspaceBDBinary(t *testing.T) {
 }
 
 // TestDoltTestcontainerStepsDisableRyuk pins TESTCONTAINERS_RYUK_DISABLED on
-// the four steps enumerated in the table below — the two Dolt-backed steps of
-// the test-domain-uow job, in pr.yml and main.yml. It is an allow-list of
+// the steps enumerated in the table below — the two Dolt-backed steps of
+// pr.yml's test-domain-uow job. It is an allow-list of
 // literal (workflow, job, step) triples, so it catches an un-pinning
-// regression on those four steps only; it does not detect the class, and a
+// regression on those steps only; it does not detect the class, and a
 // newly added container-starting step passes it unpinned.
 //
 // Why the pin: testcontainers-go shares one Ryuk reaper per host; when a step
@@ -1125,7 +1118,7 @@ func TestMacOSTestJobsReuseWorkspaceBDBinary(t *testing.T) {
 // job pre-caches the image via scripts/ci/pull-dolt-image.sh: checkDolt in
 // internal/testutil gates on `docker image inspect` and never auto-pulls. The
 // other jobs that do pull it are pr.yml/contract-corpus,
-// main.yml/test-proxied-cmd, pr-risk.yml/test-proxied-cmd,
+// pr-risk.yml/test-proxied-cmd,
 // pr-risk.yml/test-server-storage and -full, regression.yml/regression, and
 // bazel.yml's --config=docker lane. They are out of scope for this change, not
 // immune: no reap has been attributed to them, and the docker lane would
@@ -1135,7 +1128,7 @@ func TestMacOSTestJobsReuseWorkspaceBDBinary(t *testing.T) {
 // walks every job and step — is follow-up work on be-2on.
 //
 // Steps that run under BEADS_TEST_SKIP=dolt (pr-core.sh's hermetic wrapper,
-// the sharded main-linux-integration-* jobs) never start a container at all
+// nightly.yml's full-test) never start a container at all
 // and are correctly excluded: internal/testutil's readiness check treats
 // BEADS_TEST_SKIP=dolt as an explicit opt-out before it ever reaches Docker.
 func TestDoltTestcontainerStepsDisableRyuk(t *testing.T) {
@@ -1148,8 +1141,6 @@ func TestDoltTestcontainerStepsDisableRyuk(t *testing.T) {
 	steps := []doltContainerStep{
 		{"pr.yml", "test-domain-uow", "Test domain + uow + tracker"},
 		{"pr.yml", "test-domain-uow", "Test doctor/fix (Dolt-backed, hard-require container)"},
-		{"main.yml", "test-domain-uow", "Test domain + uow + tracker"},
-		{"main.yml", "test-domain-uow", "Test doctor/fix (Dolt-backed, hard-require container)"},
 	}
 
 	for _, tc := range steps {
@@ -1344,15 +1335,11 @@ func TestGoCacheOwnershipTopology(t *testing.T) {
 	assertGoCacheInventory(t, workflows["main.yml"].job(t, "build-artifacts"), []goCacheStep{
 		mainRestoreModuleCache(), mainRestoreBuildCache("non-race"), saveModuleCache(), saveBuildCache("non-race"),
 	})
-	assertGoCacheInventory(t, workflows["main.yml"].job(t, "build-embedded"), []goCacheStep{
-		mainRestoreModuleCache(), mainRestoreBuildCache("race"), saveBuildCache("race"),
-	})
-	assertGoCacheInventory(t, workflows["main.yml"].job(t, "pr-core-wrapper"), []goCacheStep{
-		mainRestoreModuleCache(), mainRestoreBuildCache("race"),
-	})
+	// Blacksmith macOS: restores what blacksmith-macos-go-build-cache's
+	// Blacksmith leg saves and owns only its race cache (day-bucketed, S7).
 	assertGoCacheInventory(t, workflows["main.yml"].job(t, "test"), []goCacheStep{
-		mainRestoreModuleCache(), mainRestoreBuildCacheIf("non-race", macOSMatrixCondition), mainRestoreBuildCache("race"),
-		saveModuleCacheAfterFailureOnMacOS(), saveBuildCacheAfterFailureOnMacOS("non-race"), saveBuildCacheAfterFailureOnMacOS("race"),
+		mainRestoreModuleCache(), mainRestoreBuildCacheDayBucketedIf("non-race", ""), mainRestoreBuildCacheDayBucketedIf("race", ""),
+		saveBuildCacheDayBucketedAfterFailureIf("race", ""),
 	})
 	assertGoCacheInventory(t, workflows["main.yml"].job(t, "test-windows"), []goCacheStep{
 		mainRestoreModuleCache(), mainRestoreBuildCacheDayBucketedIf("non-race", ""), saveModuleCache(), saveBuildCacheDayBucketed("non-race"),
@@ -1363,23 +1350,31 @@ func TestGoCacheOwnershipTopology(t *testing.T) {
 	assertGoCacheInventory(t, workflows["main.yml"].job(t, "go-vet-cache"), []goCacheStep{
 		mainRestoreModuleCache(), mainRestoreVetCache(), saveVetCache(),
 	})
-	assertConditionalCacheWritersHaveMatrixMember(t, workflows["main.yml"].job(t, "test"), macOSRunner)
 	// F4.7: seeds the module and xcompile caches pr.yml's windows-test-binaries
 	// job only restores (PR workflows never save).
 	assertGoCacheInventory(t, workflows["main.yml"].job(t, "windows-test-binaries-cache"), []goCacheStep{
 		mainRestoreModuleCache(), mainRestoreXCompileCache(), saveModuleCacheAfterFailure(), saveXCompileCache(),
 	})
-	// F7b: Blacksmith-only analogue of build-artifacts'/build-embedded's
-	// race/non-race GOCACHE saves, for same-repo PR consumers
+	// F7b: race/non-race GOCACHE saves for same-repo PR consumers
 	// (scripts-go-checks, pr-preflight-platforms, check-doc-freshness-platforms)
-	// that now run on Blacksmith, whose cache namespace is invisible to
-	// GitHub-hosted build-artifacts/build-embedded.
+	// that run on Blacksmith, whose cache namespace is invisible to
+	// GitHub-hosted build-artifacts; its github venue leg seeds the fork
+	// path's race cache (build-artifacts seeds its non-race one).
 	assertGoCacheInventory(t, workflows["main.yml"].job(t, "blacksmith-go-build-cache"), []goCacheStep{
 		mainRestoreModuleCache(),
 		mainRestoreBuildCacheDayBucketedIf("race", "matrix.flavor == 'race'"),
 		mainRestoreBuildCacheDayBucketedIf("non-race", "matrix.flavor == 'non-race'"),
 		saveBuildCacheDayBucketedAfterFailureIf("race", "matrix.flavor == 'race'"),
 		saveBuildCacheDayBucketedAfterFailureIf("non-race", "matrix.flavor == 'non-race'"),
+	})
+	// macOS saver for pr-preflight-platforms'/check-doc-freshness-platforms'
+	// macOS legs: its blacksmith venue leg seeds the same-repo path (and the
+	// `test` job), its github leg the fork path.
+	assertGoCacheInventory(t, workflows["main.yml"].job(t, "blacksmith-macos-go-build-cache"), []goCacheStep{
+		mainRestoreModuleCache(),
+		mainRestoreBuildCacheDayBucketedIf("non-race", ""),
+		saveModuleCacheAfterFailure(),
+		saveBuildCacheDayBucketedAfterFailureIf("non-race", ""),
 	})
 
 	assertGoCacheInventory(t, workflows["pr.yml"].job(t, "build-artifacts"), []goCacheStep{
@@ -1439,8 +1434,9 @@ func TestGoCacheOwnershipTopology(t *testing.T) {
 	})
 	assertNoUnmanagedGoCacheSteps(t, workflows, map[string]map[string]bool{
 		"main.yml": {
-			"build-artifacts": true, "build-embedded": true, "pr-core-wrapper": true, "test": true, "test-windows": true,
+			"build-artifacts": true, "test": true, "test-windows": true,
 			"pr-lint-wrapper": true, "go-vet-cache": true, "windows-test-binaries-cache": true, "blacksmith-go-build-cache": true,
+			"blacksmith-macos-go-build-cache": true,
 			// F7c: blacksmith-setup-go-cache's own restore/save pair seeds the
 			// self-defined blacksmith-sg-v1- cache namespace every advisory
 			// Blacksmith consumer restores from (B2, F7c implementation
@@ -1463,19 +1459,12 @@ func TestGoCacheOwnershipTopology(t *testing.T) {
 	assertStepsBefore(t, mainArtifacts, []string{"Restore Go module cache", "Restore non-race Go build cache"}, []string{"Build reusable Linux artifacts"})
 	assertStepsBefore(t, mainArtifacts, []string{"Build reusable Linux artifacts", "Upload build artifacts"}, []string{"Save Go module cache", "Save non-race Go build cache"})
 
-	mainEmbedded := workflows["main.yml"].job(t, "build-embedded")
 	embeddedRaceBuilds := []string{"Build embedded bd binary", "Build embedded storage test binary", "Build embedded cmd test binary"}
-	assertStepsBefore(t, mainEmbedded, []string{"Restore Go module cache", "Restore race Go build cache"}, embeddedRaceBuilds)
-	assertStepsBefore(t, mainEmbedded, append(embeddedRaceBuilds, "Upload binaries"), []string{"Save race Go build cache"})
 
-	assertStepsBefore(t, workflows["main.yml"].job(t, "pr-core-wrapper"),
-		[]string{"Restore Go module cache", "Restore race Go build cache"}, []string{"Run PR core wrapper"})
 	mainTest := workflows["main.yml"].job(t, "test")
-	assertStepsBefore(t, mainTest, []string{"Restore Go module cache"}, []string{"Install gotestsum", "Build", "Test (with coverage + JUnit XML)", "Test"})
+	assertStepsBefore(t, mainTest, []string{"Restore Go module cache"}, []string{"Build", "Test"})
 	assertStepsBefore(t, mainTest, []string{"Restore non-race Go build cache"}, []string{"Build"})
-	assertStepsBefore(t, mainTest, []string{"Restore race Go build cache"}, []string{"Test (with coverage + JUnit XML)", "Test"})
-	assertStepsBefore(t, mainTest, []string{"Build", "Test"}, []string{"Save Go module cache"})
-	assertStepsBefore(t, mainTest, []string{"Build"}, []string{"Save non-race Go build cache"})
+	assertStepsBefore(t, mainTest, []string{"Restore race Go build cache"}, []string{"Test"})
 	assertStepsBefore(t, mainTest, []string{"Test"}, []string{"Save race Go build cache"})
 
 	mainWindows := workflows["main.yml"].job(t, "test-windows")
@@ -1512,11 +1501,7 @@ func TestGoCacheOwnershipTopology(t *testing.T) {
 	assertStepsBefore(t, prRiskEmbedded, []string{"Restore non-race Go build cache"}, prRiskNonRaceBuilds)
 
 	assertGoCacheEnv(t, workflows["main.yml"].job(t, "build-artifacts"), "Build reusable Linux artifacts", "non-race")
-	for _, stepName := range []string{"Build embedded bd binary", "Build embedded storage test binary", "Build embedded cmd test binary"} {
-		assertGoCacheEnv(t, workflows["main.yml"].job(t, "build-embedded"), stepName, "race")
-	}
 	assertGoCacheEnv(t, workflows["main.yml"].job(t, "test"), "Build", "non-race")
-	assertGoCacheEnv(t, workflows["main.yml"].job(t, "test"), "Test (with coverage + JUnit XML)", "race")
 	assertGoCacheEnv(t, workflows["main.yml"].job(t, "test"), "Test", "race")
 	assertGoCacheEnv(t, workflows["main.yml"].job(t, "test-windows"), "Build (pure Go regex)", "non-race")
 	assertGoCacheEnv(t, workflows["main.yml"].job(t, "windows-test-binaries-cache"), "Build Windows test binaries", xcompileCacheProfile())
@@ -1543,25 +1528,23 @@ func TestGoCacheOwnershipTopology(t *testing.T) {
 
 	assertGoCacheWriter(t, workflows["main.yml"], "build-artifacts", "ubuntu-latest", "Save Go module cache", cacheMissCondition(goModuleCacheRestoreID))
 	assertGoCacheWriter(t, workflows["main.yml"], "build-artifacts", "ubuntu-latest", "Save non-race Go build cache", cacheMissCondition(goBuildCacheRestoreID("non-race")))
-	assertGoCacheWriter(t, workflows["main.yml"], "build-embedded", "ubuntu-latest", "Save race Go build cache", cacheMissCondition(goBuildCacheRestoreID("race")))
-	assertGoCacheWriter(t, workflows["main.yml"], "test", "${{ matrix.os }}", "Save Go module cache", failureSurvivingCacheSaveCondition(macOSMatrixCondition, cacheMissCondition(goModuleCacheRestoreID)))
-	assertGoCacheWriter(t, workflows["main.yml"], "test", "${{ matrix.os }}", "Save non-race Go build cache", failureSurvivingCacheSaveCondition(macOSMatrixCondition, cacheMissCondition(goBuildCacheRestoreID("non-race"))))
-	assertGoCacheWriter(t, workflows["main.yml"], "test", "${{ matrix.os }}", "Save race Go build cache", failureSurvivingCacheSaveCondition(macOSMatrixCondition, cacheMissCondition(goBuildCacheRestoreID("race"))))
+	assertGoCacheWriter(t, workflows["main.yml"], "test", mainBlacksmithMacOSTestRunsOn, "Save race Go build cache", failureSurvivingCacheSaveCondition(cacheMissCondition(goBuildCacheRestoreID("race"))))
 	assertGoCacheWriter(t, workflows["main.yml"], "test-windows", mainVenueBlacksmithWindows4vcpuRunsOn, "Save Go module cache", cacheMissCondition(goModuleCacheRestoreID))
 	assertGoCacheWriter(t, workflows["main.yml"], "test-windows", mainVenueBlacksmithWindows4vcpuRunsOn, "Save non-race Go build cache", cacheMissCondition(goBuildCacheRestoreID("non-race")))
 	assertGoCacheWriter(t, workflows["main.yml"], "pr-lint-wrapper", mainVenueBlacksmithUbuntu4vcpuRunsOn, "Save golangci-lint cache", failureSurvivingCacheSaveCondition(cacheMissCondition(golangciCacheRestoreID())))
 	assertGoCacheWriter(t, workflows["main.yml"], "go-vet-cache", mainVenueBlacksmithUbuntu4vcpuRunsOn, "Save vet Go build cache", failureSurvivingCacheSaveCondition(cacheMissCondition(goVetCacheRestoreID())))
 	assertGoCacheWriter(t, workflows["main.yml"], "blacksmith-go-build-cache", mainBlacksmithGoBuildCacheRunsOn, "Save race Go build cache", saveBuildCacheAfterFailureIf("race", "matrix.flavor == 'race'").ifCondition)
 	assertGoCacheWriter(t, workflows["main.yml"], "blacksmith-go-build-cache", mainBlacksmithGoBuildCacheRunsOn, "Save non-race Go build cache", saveBuildCacheAfterFailureIf("non-race", "matrix.flavor == 'non-race'").ifCondition)
+	assertGoCacheWriter(t, workflows["main.yml"], "blacksmith-macos-go-build-cache", mainBlacksmithMacOSGoBuildCacheRunsOn, "Save Go module cache", saveModuleCacheAfterFailure().ifCondition)
+	assertGoCacheWriter(t, workflows["main.yml"], "blacksmith-macos-go-build-cache", mainBlacksmithMacOSGoBuildCacheRunsOn, "Save non-race Go build cache", saveBuildCacheAfterFailureIf("non-race", "").ifCondition)
 	assertGoCacheWriter(t, workflows["main.yml"], "windows-test-binaries-cache", mainWindowsTestBinariesCacheRunsOn, "Save Go module cache", saveModuleCacheAfterFailure().ifCondition)
 	assertGoCacheWriter(t, workflows["main.yml"], "windows-test-binaries-cache", mainWindowsTestBinariesCacheRunsOn, "Save Go build cache (Windows cross-compile)", saveXCompileCache().ifCondition)
 	for _, target := range []struct{ workflow, job string }{
 		{"main.yml", "build-artifacts"},
-		{"main.yml", "build-embedded"},
-		{"main.yml", "pr-core-wrapper"},
 		{"main.yml", "test"},
 		{"main.yml", "test-windows"},
 		{"main.yml", "windows-test-binaries-cache"},
+		{"main.yml", "blacksmith-macos-go-build-cache"},
 		{"pr.yml", "build-artifacts"},
 		{"pr.yml", "pr-core-wrapper"},
 		{"pr.yml", "windows-test-binaries"},
@@ -1801,7 +1784,6 @@ const (
 	goModuleCachePath           = "~/go/pkg/mod"
 	goModuleCacheRestoreID      = "restore-go-module-cache"
 	macOSRunner                 = "macos-latest"
-	macOSMatrixCondition        = "matrix.os == '" + macOSRunner + "'"
 )
 
 type goCacheStep struct {
@@ -1917,14 +1899,8 @@ func saveModuleCacheIf(condition string) goCacheStep {
 	return goCacheStep{name: "Save Go module cache", family: cacheSaveActionFamily, key: goModuleCacheKey(), path: goModuleCachePath, ifCondition: combineConditions(condition, cacheMissCondition(goModuleCacheRestoreID))}
 }
 
-func saveModuleCacheAfterFailureOnMacOS() goCacheStep {
-	step := saveModuleCache()
-	step.ifCondition = failureSurvivingCacheSaveCondition(macOSMatrixCondition, cacheMissCondition(goModuleCacheRestoreID))
-	return step
-}
-
-// saveModuleCacheAfterFailure is saveModuleCacheAfterFailureOnMacOS without
-// the matrix condition, for single-runner saver jobs (windows-test-binaries-
+// saveModuleCacheAfterFailure is saveModuleCache with a failure-surviving
+// condition, for single-runner saver jobs (windows-test-binaries-
 // cache) where a flaky mid-build step (e.g. the mingw apt-get install)
 // should not prevent the module cache fetched before it from being saved.
 func saveModuleCacheAfterFailure() goCacheStep {
@@ -1957,14 +1933,8 @@ func saveBuildCacheIf(profile, condition string) goCacheStep {
 	return goCacheStep{name: "Save " + profile + " Go build cache", family: cacheSaveActionFamily, key: goBuildCacheKey(profile), path: goBuildCachePath(profile), ifCondition: combineConditions(condition, cacheMissCondition(goBuildCacheRestoreID(profile)))}
 }
 
-func saveBuildCacheAfterFailureOnMacOS(profile string) goCacheStep {
-	step := saveBuildCache(profile)
-	step.ifCondition = failureSurvivingCacheSaveCondition(macOSMatrixCondition, cacheMissCondition(goBuildCacheRestoreID(profile)))
-	return step
-}
-
-// saveBuildCacheAfterFailureIf is saveBuildCacheAfterFailureOnMacOS
-// parameterized on an arbitrary matrix condition, for main.yml's
+// saveBuildCacheAfterFailureIf is saveBuildCache with a failure-surviving
+// condition, optionally on an arbitrary matrix condition, for main.yml's
 // blacksmith-go-build-cache job (F7b), which gates its race/non-race saves on
 // matrix.flavor instead of matrix.os.
 func saveBuildCacheAfterFailureIf(profile, condition string) goCacheStep {
@@ -2106,36 +2076,6 @@ func assertGoCacheInventory(t *testing.T, job ciWorkflowJob, want []goCacheStep)
 		if step.Name != expected.name || step.ID != expected.id || actionFamily(step.Uses) != expected.family || step.With["key"] != expected.key || step.With["restore-keys"] != expected.restoreKeys || step.With["path"] != expected.path || step.If != expected.ifCondition {
 			t.Errorf("cache step %d = {name:%q id:%q family:%q key:%q restore-keys:%q path:%q if:%q}, want {name:%q id:%q family:%q key:%q restore-keys:%q path:%q if:%q}", i, step.Name, step.ID, actionFamily(step.Uses), step.With["key"], step.With["restore-keys"], step.With["path"], step.If, expected.name, expected.id, expected.family, expected.key, expected.restoreKeys, expected.path, expected.ifCondition)
 		}
-	}
-}
-
-func assertConditionalCacheWritersHaveMatrixMember(t *testing.T, job ciWorkflowJob, wantMember string) {
-	t.Helper()
-
-	memberCount := 0
-	for _, member := range job.Strategy.Matrix.OS {
-		if member == wantMember {
-			memberCount++
-		}
-	}
-	if memberCount != 1 {
-		t.Errorf("strategy matrix os has %d concrete %q members, want exactly 1: %v", memberCount, wantMember, job.Strategy.Matrix.OS)
-	}
-
-	conditionalWriters := 0
-	wantCondition := "matrix.os == '" + wantMember + "'"
-	for _, step := range job.Steps {
-		if actionFamily(step.Uses) != cacheSaveActionFamily {
-			continue
-		}
-		if !strings.Contains(step.If, wantCondition) {
-			t.Errorf("cache writer %q condition %q does not target matrix member %q", step.Name, step.If, wantMember)
-			continue
-		}
-		conditionalWriters++
-	}
-	if conditionalWriters == 0 {
-		t.Fatal("job has no conditional matrix cache writers")
 	}
 }
 
@@ -2800,13 +2740,19 @@ const mainWindowsTestBinariesCacheRunsOn = "${{ matrix.runner == 'blacksmith' &&
 const sameRepoBlacksmith4vcpuNoble = "${{ github.repository_owner == 'gastownhall' && (github.event_name == 'merge_group' || (github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository && github.actor != 'dependabot[bot]')) && 'blacksmith-4vcpu-ubuntu-2404' || 'ubuntu-24.04' }}"
 
 // F7b: venue-matrix runs-on for main.yml jobs that seed a Blacksmith GOCACHE
-// alongside their existing GitHub-hosted seed ("venue: [blacksmith, github]"):
-// pr-lint-wrapper, go-vet-cache, test-windows. blacksmith-go-build-cache needs
-// no fork/github fallback leg (main.yml only runs on push to main), so its
-// runs-on is a bare Blacksmith literal wrapped for actionlint, not a matrix.
+// alongside their GitHub-hosted seed ("venue: [blacksmith, github]"):
+// pr-lint-wrapper, go-vet-cache, test-windows, blacksmith-go-build-cache and
+// blacksmith-macos-go-build-cache.
 const mainVenueBlacksmithUbuntu4vcpuRunsOn = "${{ matrix.venue == 'blacksmith' && 'blacksmith-4vcpu-ubuntu-2404' || 'ubuntu-latest' }}"
 const mainVenueBlacksmithWindows4vcpuRunsOn = "${{ matrix.venue == 'blacksmith' && 'blacksmith-4vcpu-windows-2025' || 'windows-latest' }}"
-const mainBlacksmithGoBuildCacheRunsOn = "${{ 'blacksmith-4vcpu-ubuntu-2404' }}"
+const mainBlacksmithGoBuildCacheRunsOn = mainVenueBlacksmithUbuntu4vcpuRunsOn
+
+// main.yml's push-to-main-only macOS saver, on the exact labels pr.yml's
+// same-repo (blacksmithMacOSLabel) and fork (macOSRunner) macOS legs resolve to.
+const mainBlacksmithMacOSGoBuildCacheRunsOn = "${{ matrix.venue == 'blacksmith' && '" + blacksmithMacOSLabel + "' || '" + macOSRunner + "' }}"
+
+// main.yml's push-to-main-only macOS test job, on Blacksmith macOS.
+const mainBlacksmithMacOSTestRunsOn = "${{ '" + blacksmithMacOSLabel + "' }}"
 
 // pr.yml's call of bazel.yml: exactly these inputs (review D1 v2 N3). An rbe
 // override would put every PR in local mode and ungate the embedded tier
@@ -3148,6 +3094,10 @@ func TestSameRepoBlacksmithRunners(t *testing.T) {
 			"go-vet-cache":              mainVenueBlacksmithUbuntu4vcpuRunsOn,
 			"test-windows":              mainVenueBlacksmithWindows4vcpuRunsOn,
 			"blacksmith-go-build-cache": mainBlacksmithGoBuildCacheRunsOn,
+			// Same guard, seeding pr.yml's same-repo macOS legs.
+			"blacksmith-macos-go-build-cache": mainBlacksmithMacOSGoBuildCacheRunsOn,
+			// The macOS -race -short suite (Linux runs it under Bazel).
+			"test": mainBlacksmithMacOSTestRunsOn,
 		},
 	}
 	// The two required gates' display names are a stable external contract
@@ -3296,13 +3246,10 @@ func TestPRCIGateFastChecksTokens(t *testing.T) {
 			"migration-hygiene": "Run migration hygiene checks", "no-beads-changes": "Check for .beads/issues.jsonl changes",
 			"fmt": "Check gofmt",
 		}[stepID])
+		// Every step runs on both PR triggers, merge_group included (the
+		// .beads diff takes merge_group.base_sha there), so the gate
+		// excuses none of their skips.
 		wantIf := "${{ !cancelled() }}"
-		if stepID == "no-beads-changes" {
-			// pull_request-only, same as before the fold: merge_group has no
-			// base_ref to diff against. The CI_GATE_SKIPPED_OK allowlist
-			// below covers exactly that skip on merge_group runs.
-			wantIf = "${{ !cancelled() && github.event_name == 'pull_request' }}"
-		}
 		if step.ID != stepID || step.If != wantIf {
 			t.Errorf("fast-checks step %q: id %q, if %q; want id %q, if %q", step.Name, step.ID, step.If, stepID, wantIf)
 		}
@@ -3318,11 +3265,17 @@ func TestPRCIGateFastChecksTokens(t *testing.T) {
 			t.Errorf("ci-gate env %s = %q, want %q", m.token, gateStep.Env[m.token], wantEnv)
 		}
 	}
-	// CHECK_NO_BEADS_CHANGES's step only runs on pull_request; the gate's own
-	// run: script must still allow-list exactly that skip on merge_group,
-	// unchanged by the fold.
-	if !strings.Contains(gateStep.Run, `skipped_ok="CHECK_NO_BEADS_CHANGES"`) {
-		t.Error("ci-gate run script no longer allow-lists CHECK_NO_BEADS_CHANGES's merge_group skip")
+	// Merge queue: the .beads guard runs on merge_group too, diffing
+	// against the queue's base commit (a merge group has no base_ref), and
+	// the gate no longer excuses its skip there.
+	noBeads := job.step(t, "Check for .beads/issues.jsonl changes")
+	if noBeads.Env["MERGE_GROUP_BASE_SHA"] != "${{ github.event.merge_group.base_sha }}" ||
+		!strings.Contains(noBeads.Run, `base="${MERGE_GROUP_BASE_SHA:-origin/${GITHUB_BASE_REF:-main}}"`) ||
+		!strings.Contains(noBeads.Run, `git diff --name-only "$base"...HEAD`) || strings.Contains(noBeads.Run, "${{") {
+		t.Errorf("fast-checks .beads guard must diff merge_group.base_sha (merge queue) or origin/$GITHUB_BASE_REF (pull_request) without interpolating expressions: env %v\n%s", noBeads.Env, noBeads.Run)
+	}
+	if strings.Contains(gateStep.Run, "CHECK_NO_BEADS_CHANGES") {
+		t.Error("ci-gate run script excuses a CHECK_NO_BEADS_CHANGES skip; the guard runs on merge_group too")
 	}
 
 	// Review N-6 (2026-10-03): pin the folded steps' actual commands/env, not
@@ -4809,7 +4762,7 @@ func TestBazelIntegrationJob(t *testing.T) {
 	}
 	cmd := regexp.MustCompile(`\s*\\\n\s*`).ReplaceAllString(test.Run, " ")
 	// EXCLUDE_TARGETS: TestBazelIntegrationExcludesBdTestOnlyWhereCmdDoltCovers.
-	const wantCmd = `bazel test //... --config=integration --build_event_json_file="$RUNNER_TEMP/bazel-bep.json" ${EXCLUDE_TARGETS:+-- "$EXCLUDE_TARGETS"} 2>&1 | tee "$RUNNER_TEMP/bazel-test.log" || rc=$?`
+	const wantCmd = `bazel test //... --config=integration ` + bazelFreshArg + ` --build_event_json_file="$RUNNER_TEMP/bazel-bep.json" ${EXCLUDE_TARGETS:+-- "$EXCLUDE_TARGETS"} 2>&1 | tee "$RUNNER_TEMP/bazel-test.log" || rc=$?`
 	if !strings.Contains(cmd, wantCmd) || !strings.Contains(test.Run, "set -o pipefail") {
 		t.Errorf("%s test step does not run exactly %q:\n%s", bazelIntegJobName, wantCmd, test.Run)
 	}
@@ -4868,6 +4821,9 @@ func assertBazelTierStep(t *testing.T, job ciWorkflowJob, jobName, config string
 	}
 	cmd := regexp.MustCompile(`\s*\\\n\s*`).ReplaceAllString(step.Run, " ")
 	wantCmd := `bazel test //... --config=` + config + ` --build_event_json_file="$RUNNER_TEMP/` + bep + `"`
+	// Every `bazel test` ends its configs with nightly's fresh-results
+	// switch (ci_merge_queue_test.go).
+	wantCmd = `bazel test //... --config=` + config + ` ` + bazelFreshArg + ` --build_event_json_file="$RUNNER_TEMP/` + bep + `"`
 	if !strings.Contains(cmd, wantCmd) || !strings.Contains(step.Run, "set -o pipefail") || strings.Count(step.Run, "bazel test //") != 1 ||
 		strings.Contains(step.Run, "--config=remote-exec") || strings.Contains(step.Run, "--test_tag_filters") {
 		t.Errorf("%s step --config=%s does not run exactly %q:\n%s", jobName, config, wantCmd, step.Run)
@@ -4887,8 +4843,7 @@ func assertBazelTierStep(t *testing.T, job ciWorkflowJob, jobName, config string
 	}
 }
 
-// The proxied-server tier (pr-risk.yml "Test (Proxied Dolt Cmd N/15)"; main.yml's
-// twin runs the same shard script on a non-race binary) and the server-Dolt storage tier (pr-risk.yml "Test (Server Dolt
+// The proxied-server tier (pr-risk.yml "Test (Proxied Dolt Cmd N/15)") and the server-Dolt storage tier (pr-risk.yml "Test (Server Dolt
 // Conformance)", "Test (Server Dolt Full Suite N/16)") as Bazel variants:
 // each manifest-sharded variant runs its jobs' shard script with their shard
 // total, the conformance variant the job's exact flags, with the jobs' race
@@ -4945,16 +4900,6 @@ func TestBazelDoltServerTiersMirrorPRRisk(t *testing.T) {
 			t.Errorf("pr-risk.yml %q = %q, want %q", step, got, want)
 		}
 	}
-	// main.yml's twin proxied jobs run build-artifacts' bd-cmd-test, which
-	// is not race: bd_proxied_test (race, like PR Risk's) is the stricter of
-	// the two. Pinned so a change there is a decision, not drift.
-	mainYML := readCIWorkflow(t, "main.yml")
-	if run := mainYML.job(t, "build-artifacts").step(t, "Build reusable Linux artifacts").Run; !strings.Contains(run, `go test -tags gms_pure_go -c -o artifacts/bd-cmd-test ./cmd/bd`+"\n") {
-		t.Errorf("main.yml build-artifacts no longer builds the non-race bd-cmd-test this tier is documented against (.bazelrc, cmd/bd:bd_proxied_test):\n%s", run)
-	}
-	if got := mainYML.job(t, "test-proxied-cmd").step(t, "Test proxied-server cmd shard").Env["BEADS_TEST_CMD_BINARY"]; got != "${{ github.workspace }}/ci-build-artifacts/bd-cmd-test" {
-		t.Errorf("main.yml test-proxied-cmd BEADS_TEST_CMD_BINARY = %q, want build-artifacts' bd-cmd-test", got)
-	}
 	// The server jobs' binary: integration-tagged (the lane's build tags) and
 	// not race (dolt_race_off).
 	m := regexp.MustCompile(`^go test -tags=(\S+) -c -o /tmp/dolt-conformance-test \./internal/storage/dolt/$`).
@@ -4977,26 +4922,19 @@ func TestBazelDoltServerTiersMirrorPRRisk(t *testing.T) {
 		noBuildShardPin bool
 	}
 	tiers := []shardTier{
-		// pr-risk.yml/main.yml's own "Test (Proxied Dolt Cmd N/15)" matrix
+		// pr-risk.yml's own "Test (Proxied Dolt Cmd N/15)" matrix
 		// stays 15 (the legacy, frozen bd-init-cost-proxy manifest block),
 		// but cmd/bd:bd_proxied_test's shard_count need not match: the
 		// Bazel-only bazel-proxied job (bazel.yml) runs that target with its
 		// own duration-balanced manifest block, not these jobs'. Shard k in
 		// one split is not shard k in the other; see cmd/bd/BUILD.bazel's
-		// bd_proxied_test comment and bazel.yml's bazel-proxied comment. Both
-		// matrices are still required (below, after this loop) to equal each
-		// other and the legacy manifest block's total.
+		// bd_proxied_test comment and bazel.yml's bazel-proxied comment.
 		{"pr-risk.yml", "test-proxied-cmd", "Test proxied-server cmd shard", ".github/scripts/proxied-test-shard.sh", "BEADS_TEST_CMD_BINARY", "cmd/bd", "bd_proxied_test", "BEADS_TEST_PROXIED_SERVER", true},
-		{"main.yml", "test-proxied-cmd", "Test proxied-server cmd shard", ".github/scripts/proxied-test-shard.sh", "BEADS_TEST_CMD_BINARY", "cmd/bd", "bd_proxied_test", "BEADS_TEST_PROXIED_SERVER", true},
 		{"pr-risk.yml", "test-server-storage-full", "Test", ".github/scripts/server-storage-test-shard.sh", "BEADS_TEST_SERVER_TEST_BINARY", "internal/storage/dolt", "dolt_server_full_test", "BEADS_TEST_ENV_RUN_DOLT", false},
 	}
-	proxiedMatrixLen := map[string]int{}
 	for _, c := range tiers {
 		j := readCIWorkflow(t, c.workflow).job(t, c.job)
 		shards := len(j.Strategy.Matrix.Shard)
-		if c.target == "bd_proxied_test" {
-			proxiedMatrixLen[c.workflow] = shards
-		}
 		step := j.step(t, c.step)
 		if want := "bash " + c.script + " ${{ matrix.shard }} " + strconv.Itoa(shards); strings.TrimSpace(step.Run) != want {
 			t.Errorf("%s %s runs %q, want %q", c.workflow, c.job, step.Run, want)
@@ -5035,14 +4973,6 @@ func TestBazelDoltServerTiersMirrorPRRisk(t *testing.T) {
 			}
 		}
 	}
-	// S1: pr-risk.yml's and main.yml's legacy test-proxied-cmd matrices must
-	// stay equal to each other (they share one frozen manifest block); a
-	// divergence must fail here even though cmd/bd:bd_proxied_test's own
-	// shard_count is no longer pinned to either of them (above).
-	if a, b := proxiedMatrixLen["pr-risk.yml"], proxiedMatrixLen["main.yml"]; a != b {
-		t.Errorf("pr-risk.yml test-proxied-cmd has %d shards, main.yml has %d; these share one legacy manifest block and must match", a, b)
-	}
-
 	conf := risk.job(t, "test-server-storage").step(t, "Test").Run
 	quoted := regexp.MustCompile(`(-test\.[a-z]+) '([^']*)'|(-test\.[a-z]+=\S+|-test\.v)`)
 	fields := strings.Fields(conf)
@@ -5141,15 +5071,15 @@ func TestBazelDoltServerTiersMirrorPRRisk(t *testing.T) {
 const bazelEmbeddedTestRun = `set -o pipefail
 start=$(date +%s)
 rc=0
-bazel test //... --config=embedded \
+bazel test //... --config=embedded ${BAZEL_FRESH:+"$BAZEL_FRESH"} \
   --build_event_json_file="$RUNNER_TEMP/bazel-bep.json" \
   2>&1 | tee "$RUNNER_TEMP/bazel-test.log" || rc=$?
 echo "bazel test --config=embedded: exit $rc, $(( $(date +%s) - start ))s wall" | tee -a "$GITHUB_STEP_SUMMARY"
 exit "$rc"`
 
 // .bazelrc's --config=embedded, exactly and in order (review F4): no
-// --test_filter, no -test.short/-test.run/-test.skip, no retries, no
-// result caching. The conformance targets' own -test.run/-test.skip args
+// --test_filter, no -test.short/-test.run/-test.skip, no retries (result
+// caching as every lane's: nightly re-executes). The conformance targets' own -test.run/-test.skip args
 // (the legacy jobs' partition) are checked against pr-risk.yml below.
 var bazelEmbeddedRCLines = []string{
 	"test:embedded --@rules_go//go/config:race",
@@ -5161,7 +5091,6 @@ var bazelEmbeddedRCLines = []string{
 	"test:embedded --test_arg=-test.parallel=4",
 	"test:embedded --test_env=GO_TEST_WRAP_TESTV=1",
 	"test:embedded --remote_download_regex=.*/test\\.xml$",
-	"test:embedded --nocache_test_results",
 	"test:embedded --experimental_remote_cache_eviction_retries=0",
 }
 
@@ -5203,9 +5132,6 @@ func TestBazelEmbeddedJobMirrorsEmbeddedTier(t *testing.T) {
 		"test:embedded --test_tag_filters=embedded",
 		// The jobs pass no -parallel: GOMAXPROCS on 4-vCPU ubuntu-latest.
 		"test:embedded --test_arg=-test.parallel=4",
-		// The tier's only pre-merge run (D2 step 1) must execute, like the
-		// legacy jobs' -test.count=1, never replay a cached result.
-		"test:embedded --nocache_test_results",
 	} {
 		if !rc[want] {
 			t.Errorf(".bazelrc lacks %q", want)
@@ -5234,13 +5160,11 @@ func TestBazelEmbeddedJobMirrorsEmbeddedTier(t *testing.T) {
 		t.Errorf("setup-bazel's generated rc selects or narrows tests; it may only configure remote execution")
 	}
 	for line := range rc {
-		// Nothing turns result caching back on for the embedded lane (a
-		// later --cache_test_results wins over --nocache_test_results).
+		// Result caching: only the docker lane and nightly's fresh config
+		// turn it off (ci_merge_queue_test.go).
 		if !strings.HasPrefix(line, "#") && strings.Contains(line, "cache_test_results") &&
-			line != "test:embedded --nocache_test_results" && line != "test:docker --nocache_test_results" &&
-			line != "test:doltserver-proxied --nocache_test_results" && line != "test:doltserver-integration --nocache_test_results" &&
-			line != bazelSoleRunNoCacheLine {
-			t.Errorf(".bazelrc %q: only test:embedded and test:docker set test result caching", line)
+			line != "test:docker --nocache_test_results" && line != bazelFreshRCLine {
+			t.Errorf(".bazelrc %q: only test:docker and test:fresh set test result caching", line)
 		}
 		if strings.HasPrefix(line, "test:embedded ") && (strings.Contains(line, "-test.short") || strings.Contains(line, "BEADS_TEST_SKIP")) {
 			t.Errorf(".bazelrc %q: the embedded jobs run without -short and BEADS_TEST_SKIP", line)
@@ -5391,7 +5315,7 @@ func TestBazelPureJobMirrorsPureGoJob(t *testing.T) {
 		t.Errorf("%s PURE_CMD_BD_TESTS = %q, want pr.yml's -short -run selector %q", bazelPureJobName, job.Env["PURE_CMD_BD_TESTS"], m[1])
 	}
 	run := job.step(t, "Run pure-Go cmd/bd test subset (--config=pure)").Run
-	for _, required := range []string{"bazel test --config=pure " + bazelSoleRunArg + " //cmd/bd:bd_test", `"--test_arg=-test.run=$PURE_CMD_BD_TESTS"`, "(( n > 0 ))"} {
+	for _, required := range []string{"bazel test --config=pure " + bazelSoleRunArg + " " + bazelFreshArg + " //cmd/bd:bd_test", `"--test_arg=-test.run=$PURE_CMD_BD_TESTS"`, "(( n > 0 ))"} {
 		if !strings.Contains(run, required) {
 			t.Errorf("pure subset step does not contain %q:\n%s", required, run)
 		}

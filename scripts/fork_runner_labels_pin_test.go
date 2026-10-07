@@ -308,20 +308,28 @@ func TestForkRunnerLabelScanControls(t *testing.T) {
 	modeKeyed := "${{ needs.rbe.outputs.mode == 'remote' && 'blacksmith-4vcpu-ubuntu-2404' || 'ubuntu-latest' }}"
 	enabledKeyed := "${{ needs.rbe.outputs.enabled == 'true' && 'blacksmith-4vcpu-ubuntu-2404' || 'ubuntu-latest' }}"
 	matrixTernary := "    strategy:\n      matrix:\n        runner: [blacksmith, github]\n    runs-on: ${{ matrix.runner == 'blacksmith' && 'blacksmith-8vcpu-ubuntu-2404' || 'ubuntu-latest' }}\n"
+	// The marker's legs come from upstream's pinned constant, so a leg upstream
+	// adds (#7231 added macOS, a third) is exercised without an edit here, and
+	// every leg gets an include entry: a leg this control cannot reach would pass
+	// unexamined (rule R6, be-5g3cmt). os is only the marker's last fallback.
+	legKeys := forkMarkerLegKeys(t)
+	everyLeg := 1<<len(legKeys) - 1
 	includeMatrix := func(runsOn string) string {
-		return "    strategy:\n      matrix:\n        include:\n" +
-			"          - os: ubuntu-latest\n            runner: same-repo-linux\n" +
-			"          - os: macos-latest\n            runner: same-repo-macos\n" +
-			"          - os: windows-latest\n            runner: same-repo-windows\n" +
-			"    runs-on: " + runsOn + "\n"
+		var b strings.Builder
+		b.WriteString("    strategy:\n      matrix:\n        include:\n")
+		for _, key := range legKeys {
+			b.WriteString("          - os: hosted\n            runner: " + key + "\n")
+		}
+		return b.String() + "    runs-on: " + runsOn + "\n"
 	}
 	const pr = "on:\n  pull_request:\n"
-	cases := []struct {
+	type scanCase struct {
 		name    string
 		trigger string
 		body    string
 		want    int
-	}{
+	}
+	cases := []scanCase{
 		{"upstream's F3 literal as shipped", pr, "    runs-on: " + unguarded + "\n", 1},
 		{"upstream's 8 vCPU literal as shipped", pr, "    runs-on: " + strings.Replace(unguarded, "2vcpu", "8vcpu", 1) + "\n", 1},
 		{"guard that covers only the first operand", pr, "    runs-on: " + firstOperandOnly + "\n", 1},
@@ -333,18 +341,36 @@ func TestForkRunnerLabelScanControls(t *testing.T) {
 		{"expression the evaluator cannot read", pr, "    runs-on: ${{ contains(github.ref, 'x') && 'blacksmith-2vcpu-ubuntu-2404' || 'ubuntu-latest' }}\n", 1},
 		{"matrix ternary on a pull_request workflow", pr, matrixTernary, 1},
 		{"matrix ternary on a workflow that also has a dispatch trigger", "on:\n  push:\n    branches: [main]\n  workflow_dispatch:\n", matrixTernary, 1},
-		{"include-matrix marker as F7b shipped it", pr, includeMatrix(forkMarkerRunsOn(t, false, false)), 1},
-		{"include-matrix marker with only the linux leg guarded", pr, includeMatrix(forkMarkerRunsOn(t, true, false)), 1},
-		{"include-matrix marker with only the windows leg guarded", pr, includeMatrix(forkMarkerRunsOn(t, false, true)), 1},
 		{"include key unset in a combination no entry reaches", pr, "    strategy:\n      matrix:\n        os: [a, b]\n        include:\n          - os: a\n            runner: x\n    runs-on: ${{ matrix.runner != 'x' && 'blacksmith-2vcpu-ubuntu-2404' || 'ubuntu-latest' }}\n", 1},
-		{"marker key no include entry or list gives", pr, "    strategy:\n      matrix:\n        os: [ubuntu-latest]\n    runs-on: " + forkMarkerRunsOn(t, true, true) + "\n", 1},
+		{"marker key no include entry or list gives", pr, "    strategy:\n      matrix:\n        os: [ubuntu-latest]\n    runs-on: " + forkMarkerRunsOn(t, everyLeg) + "\n", 1},
 		{"runs-on reads a context the scan does not supply", pr, "    runs-on: ${{ vars.USE_BLACKSMITH == 'true' && 'blacksmith-2vcpu-ubuntu-2404' || 'ubuntu-latest' }}\n", 1},
-		{"include-matrix marker with both legs guarded", pr, includeMatrix(forkMarkerRunsOn(t, true, true)), 0},
 		{"guarded literal", pr, "    runs-on: " + guarded + "\n", 0},
 		{"mode-keyed literal", pr, "    runs-on: " + modeKeyed + "\n", 0},
 		{"hosted runner", pr, "    runs-on: ubuntu-latest\n", 0},
 		{"prose in a run script", pr, "    steps:\n      - run: |\n          # the Blacksmith runner's environment caps argv\n          echo hi\n", 0},
 		{"matrix ternary on a workflow that only runs on a push to main", "on:\n  push:\n    branches: [main]\n", matrixTernary, 0},
+	}
+	// The marker with every subset of its legs guarded (leg i is bit i, in the
+	// constant's order): the scan accepts it only when every leg is. A fixed list
+	// of rows breaks when upstream adds a leg, and a row that is missing is a leg
+	// that passes unexamined.
+	for guarded := 0; guarded <= everyLeg; guarded++ {
+		var on, off []string
+		for i, key := range legKeys {
+			if guarded>>i&1 == 1 {
+				on = append(on, key)
+			} else {
+				off = append(off, key)
+			}
+		}
+		c := scanCase{"include-matrix marker with " + strings.Join(on, ", ") + " guarded and " + strings.Join(off, ", ") + " open", pr, includeMatrix(forkMarkerRunsOn(t, guarded)), 1}
+		switch guarded {
+		case 0:
+			c.name = "include-matrix marker as F7b shipped it (no leg guarded)"
+		case everyLeg:
+			c.name, c.want = "include-matrix marker with every leg guarded", 0
+		}
+		cases = append(cases, c)
 	}
 	for _, c := range cases {
 		if got := forkRunnerLabelViolations(forkWorkflowDoc(t, c.trigger, c.body)); len(got) != c.want {
@@ -368,24 +394,54 @@ func TestForkRunnerLabelScanControls(t *testing.T) {
 	}
 }
 
-// forkMarkerRunsOn builds upstream's platforms marker (the chained ternary on
-// matrix.runner, F7b) from its pinned constant, so it follows upstream's text,
-// with the guard in front of the same-repository predicate of each leg that
-// asks for one.
-func forkMarkerRunsOn(t *testing.T, guardLinux, guardWindows bool) string {
+// forkMarkerLeg heads the same-repository predicate each leg of upstream's
+// platforms marker (the chained ternary on matrix.runner, F7b) carries once the
+// guard is taken out; forkMarkerLegKey finds the matrix.runner value that leg
+// tests for.
+const forkMarkerLeg = "((github.event_name == 'merge_group'"
+
+var forkMarkerLegKey = regexp.MustCompile(`matrix\.runner == '([^']+)' && `)
+
+// forkMarkerLegKeys: the matrix.runner value of each leg of the marker, in the
+// constant's order, read from the pinned constant so the controls follow
+// upstream's text. The legs are counted twice, by key and by predicate. A marker
+// whose counts differ, with fewer than two legs ("some legs guarded" means
+// nothing) or with more than six (the controls try every subset: 2^legs rows)
+// is a shape this control was not written for: ask the architect (rule R6,
+// be-5g3cmt; #7231 took the marker from two legs to three).
+func forkMarkerLegKeys(t *testing.T) []string {
 	t.Helper()
-	const leg = "((github.event_name == 'merge_group'"
-	parts := strings.Split(strings.ReplaceAll(sameRepoPlatformsMatrixMarkerRunsOn, forkBlacksmithGuard, ""), leg)
-	if len(parts) != 3 {
-		t.Fatalf("sameRepoPlatformsMatrixMarkerRunsOn has %d same-repository legs, want 2: update this control (rule R6, be-ju6she)", len(parts)-1)
+	var keys []string
+	for _, m := range forkMarkerLegKey.FindAllStringSubmatch(sameRepoPlatformsMatrixMarkerRunsOn, -1) {
+		keys = append(keys, m[1])
 	}
-	with := func(guard bool) string {
-		if guard {
-			return "(" + forkBlacksmithGuard + "(github.event_name == 'merge_group'"
+	legs := strings.Count(strings.ReplaceAll(sameRepoPlatformsMatrixMarkerRunsOn, forkBlacksmithGuard, ""), forkMarkerLeg)
+	if len(keys) != legs || legs < 2 || legs > 6 {
+		t.Fatalf("sameRepoPlatformsMatrixMarkerRunsOn has %d matrix.runner keys %q and %d same-repository predicates, want the same number, from 2 to 6: update this control (rule R6, be-5g3cmt)", len(keys), keys, legs)
+	}
+	return keys
+}
+
+// forkMarkerRunsOn builds upstream's platforms marker from its pinned constant,
+// so it follows upstream's text, with the guard in front of the same-repository
+// predicate of leg i when bit i of guarded is set.
+func forkMarkerRunsOn(t *testing.T, guarded int) string {
+	t.Helper()
+	parts := strings.Split(strings.ReplaceAll(sameRepoPlatformsMatrixMarkerRunsOn, forkBlacksmithGuard, ""), forkMarkerLeg)
+	if len(parts)-1 != len(forkMarkerLegKeys(t)) {
+		t.Fatalf("sameRepoPlatformsMatrixMarkerRunsOn has %d same-repository legs: update this control (rule R6, be-5g3cmt)", len(parts)-1)
+	}
+	var b strings.Builder
+	b.WriteString(parts[0])
+	for i, rest := range parts[1:] {
+		if guarded>>i&1 == 1 {
+			b.WriteString("(" + forkBlacksmithGuard + "(github.event_name == 'merge_group'")
+		} else {
+			b.WriteString(forkMarkerLeg)
 		}
-		return leg
+		b.WriteString(rest)
 	}
-	return parts[0] + with(guardLinux) + parts[1] + with(guardWindows) + parts[2]
+	return b.String()
 }
 
 // forkUpstreamWorld: the context an upstream evaluator test means. Upstream's
