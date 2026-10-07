@@ -18,7 +18,7 @@ This is the proposed complete graph-mode CLI contract, including commands
 that are not implemented yet. The [graph CLI guide](/reference/graph-cli)
 remains the task-oriented walkthrough. The implementation ledger below is a
 snapshot of `versioned-beads/beads:integration` at
-`612279957ed7a5f873d8c86c628de7ac2f3fa320`; it is not a claim that
+`1677c79849c33e16f8661311de10b4e3a3c29e06`; it is not a claim that
 every target command works. Update that commit and the ledger whenever the
 integration source changes, and reconcile this specification and the guide
 with each admitted behavior change. A candidate PR does not become current
