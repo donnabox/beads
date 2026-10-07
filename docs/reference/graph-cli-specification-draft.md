@@ -18,7 +18,7 @@ This is the proposed complete graph-mode CLI contract, including commands
 that are not implemented yet. The [graph CLI guide](/reference/graph-cli)
 remains the task-oriented walkthrough. The implementation ledger below is a
 snapshot of `versioned-beads/beads:integration` at
-`1677c79849c33e16f8661311de10b4e3a3c29e06`; it is not a claim that
+`356275a13290064fe903ace31984c14d1b9f7ad4`; it is not a claim that
 every target command works. Update that commit and the ledger whenever the
 integration source changes, and reconcile this specification and the guide
 with each admitted behavior change. A candidate PR does not become current
@@ -147,6 +147,7 @@ not permission to advertise an NYI operation.
 | Existing-ID `remember` default upsert and `--create-only` | Preview 2 candidate | No; `--id` creates only and `--update` selects an existing Memory | Route the CLI convenience to the existing create or Memory patch writer without changing BDP's distinct create/update operations; test both engines and keep the current-build help truthful until it lands. |
 | Issue defer/undefer, unclaim and deletion | Preview 2 candidate | No | Draft #105, #106 and #108; their combined source still needs qualification. |
 | Full ordinary Issue `close`, `reopen`, `ready` and `blocked` behavior | **Preview 2 mandatory; no dependent flag is NYI in the release target** | No; the current graph commands have the narrower shapes in the inventory above | Implement and test the complete ordinary command contracts, including batch and interactive behavior, molecule/ephemeral and parent controls, metadata queries, output choices and atomic ready-claim. A flag whose underlying graph feature is absent is unfinished release work, not a permanent graph exception. The [Issue lifecycle binding](#issue-lifecycle-binding) enumerates the flags and effects. |
+| Graph close force and session attribution | Slice of the mandatory ordinary close parity | No; pinned integration still refuses both options in graph mode | Fork draft [#68](https://github.com/donnabox/beads/pull/68) admits `--force` and `--session` through the checked Issue writer. Interactive fallback, evaluable gates, next-work actions and molecule effects remain required before the full close row is complete. |
 | Explicit mixed-resource selector disambiguation | Decision for the final CLI; release not assigned | No; some mixed commands accept bare Bead IDs | Parser and help changes required after contract review. |
 | Arbitrary installed Bead authoring and Type lifecycle | After the Type design is decided; release not assigned | No | Separate Type workstream owns descriptors and lifecycle. |
 | Open Bead/Link metadata | Preview 2 mandatory | No | Implement common metadata for both admitted Bead kinds and informational Links, with a matching BDP spec/schema decision before claiming protocol parity. Type lifecycle remains separate. |
