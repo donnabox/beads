@@ -198,13 +198,19 @@ func (s *Store) wakeExpiredDefersAdvisory(ctx context.Context) {
 // ReadyIssues uses the native lazy defer wake and scheduling query, then
 // resolves every result into the same canonical graph.
 func (s *Store) ReadyIssues(ctx context.Context) ([]IssueRecord, error) {
+	return s.ReadyIssuesFiltered(ctx, types.WorkFilter{})
+}
+
+// ReadyIssuesFiltered applies the ordinary ready predicate before projecting
+// the selected native Issues into their canonical graph records.
+func (s *Store) ReadyIssuesFiltered(ctx context.Context, filter types.WorkFilter) ([]IssueRecord, error) {
 	s.wakeExpiredDefersAdvisory(ctx)
 	result := []IssueRecord{}
 	err := s.withTx(ctx, false, func(tx *sql.Tx) error {
 		if err := checkBinding(ctx, tx, s.options); err != nil {
 			return err
 		}
-		ready, err := issueops.GetReadyWorkInTx(ctx, tx, types.WorkFilter{})
+		ready, err := issueops.GetReadyWorkInTx(ctx, tx, filter)
 		if err != nil {
 			return err
 		}

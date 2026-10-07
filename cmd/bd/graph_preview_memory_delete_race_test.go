@@ -163,7 +163,7 @@ func TestGraphPreviewMemoryDeleteConcurrentProcesses(t *testing.T) {
 			t.Error(err)
 		}
 	}()
-	issueRetained, err := inspection.ReadVersion(inspectCtx, "beads/work", issue.Version)
+	issueRetained, err := inspection.ReadVersion(inspectCtx, "beads/work", issue.Revision)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -171,8 +171,10 @@ func TestGraphPreviewMemoryDeleteConcurrentProcesses(t *testing.T) {
 		t.Run(other, func(t *testing.T) {
 			path := "beads/" + other
 			original := graphMixedResult[graphstore.Record](t, call(t, "remember", "Original body", "--id", path, "--title", "Original title"))
-			before, err := inspection.ReadVersion(inspectCtx, path, original.Version)
-			if err != nil || !reflect.DeepEqual(before, original) {
+			before, err := inspection.ReadVersion(inspectCtx, path, original.Revision)
+			expectedStoredOriginal := original
+			expectedStoredOriginal.Version = original.Revision
+			if err != nil || !reflect.DeepEqual(before, expectedStoredOriginal) {
 				t.Fatalf("initial retained predecessor: %+v %v", before, err)
 			}
 			commands := [2][]string{
@@ -210,7 +212,7 @@ func TestGraphPreviewMemoryDeleteConcurrentProcesses(t *testing.T) {
 				current := graphMixedResult[graphstore.Record](t, call(t, "show", path))
 				if other == "memory-update" {
 					updated := graphMixedResult[graphstore.MemoryMutationResult](t, results[1].stdout)
-					if !updated.Changed || updated.Replaced != nil || updated.Memory.Revision == original.Revision || updated.Memory.ID != original.ID || updated.Memory.Type != original.Type || updated.Memory.Version != updated.Memory.Revision || updated.Memory.Properties.Title != "Winning edit" || updated.Memory.Properties.Body != original.Properties.Body || !reflect.DeepEqual(updated.Memory.Owned, original.Owned) || !reflect.DeepEqual(current, updated.Memory) {
+					if !updated.Changed || updated.Replaced != nil || updated.Memory.Revision == original.Revision || updated.Memory.ID != original.ID || updated.Memory.Type != original.Type || updated.Memory.Version != "" || updated.Memory.Properties.Title != "Winning edit" || updated.Memory.Properties.Body != original.Properties.Body || !reflect.DeepEqual(updated.Memory.Owned, original.Owned) || !reflect.DeepEqual(current, updated.Memory) {
 						t.Fatalf("incomplete guarded edit winner: %+v current=%+v", updated, current)
 					}
 					finalLive = updated.Memory
@@ -231,7 +233,7 @@ func TestGraphPreviewMemoryDeleteConcurrentProcesses(t *testing.T) {
 			if _, err := inspection.CurrentSnapshot(inspectCtx); err != nil {
 				t.Fatalf("race left inconsistent inventory: %v", err)
 			}
-			if retained, err := inspection.ReadVersion(inspectCtx, path, original.Version); err != nil || !reflect.DeepEqual(retained, before) {
+			if retained, err := inspection.ReadVersion(inspectCtx, path, original.Revision); err != nil || !reflect.DeepEqual(retained, before) {
 				t.Fatalf("race changed retained predecessor: %+v %v", retained, err)
 			}
 			if call(t, "show", "beads/work") != issueShown {
@@ -247,13 +249,15 @@ func TestGraphPreviewMemoryDeleteConcurrentProcesses(t *testing.T) {
 			}
 			graphPolicyCLI(t, bd, work, home, nil, "gone", "show", path, "--json")
 			graphPolicyCLI(t, bd, work, home, nil, "identity_reserved", "remember", "Cannot reuse", "--id", path, "--title", "Reserved", "--json")
-			if retained, err := inspection.ReadVersion(inspectCtx, path, original.Version); err != nil || !reflect.DeepEqual(retained, before) {
+			if retained, err := inspection.ReadVersion(inspectCtx, path, original.Revision); err != nil || !reflect.DeepEqual(retained, before) {
 				t.Fatalf("final absence lost original snapshot: %+v %v", retained, err)
 			}
-			if retained, err := inspection.ReadVersion(inspectCtx, path, finalLive.Version); err != nil || !reflect.DeepEqual(retained, finalLive) {
+			expectedStoredFinal := finalLive
+			expectedStoredFinal.Version = finalLive.Revision
+			if retained, err := inspection.ReadVersion(inspectCtx, path, finalLive.Revision); err != nil || !reflect.DeepEqual(retained, expectedStoredFinal) {
 				t.Fatalf("final absence lost final live snapshot: %+v %v", retained, err)
 			}
-			if retained, err := inspection.ReadVersion(inspectCtx, "beads/work", issue.Version); err != nil || !reflect.DeepEqual(retained, issueRetained) {
+			if retained, err := inspection.ReadVersion(inspectCtx, "beads/work", issue.Revision); err != nil || !reflect.DeepEqual(retained, issueRetained) {
 				t.Fatalf("race changed Issue retained state: %+v %v", retained, err)
 			}
 		})

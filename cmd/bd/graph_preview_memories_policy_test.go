@@ -24,13 +24,13 @@ func TestGraphPreviewMemoryDiscoveryConfiguredJSONFormatPrecedence(t *testing.T)
 	var saved struct {
 		Result graphstore.Record `json:"result"`
 	}
-	if err := json.Unmarshal([]byte(created), &saved); err != nil || saved.Result.ID != scope+"beads/plan" || saved.Result.Version == "" {
+	if err := json.Unmarshal([]byte(created), &saved); err != nil || saved.Result.ID != scope+"beads/plan" || saved.Result.Revision == "" {
 		t.Fatalf("remember receipt: %s (%v)", created, err)
 	}
 	writeFile(t, filepath.Join(work, ".beads", "config.yaml"), []byte("json: true\n"))
 	t.Run("explicit-table", func(t *testing.T) {
 		out := graphPolicyCLI(t, bd, work, home, nil, "", "memories", "--format", "table")
-		if !strings.HasPrefix(out, "Memories (1):\n") || json.Valid([]byte(out)) || !strings.Contains(out, "beads/plan  Format plan") || strings.Contains(out, saved.Result.ID) || strings.Contains(out, saved.Result.Version) || !strings.Contains(out, "bd recall") || strings.Contains(out, body) {
+		if !strings.HasPrefix(out, "Memories (1):\n") || json.Valid([]byte(out)) || !strings.Contains(out, "beads/plan  Format plan") || strings.Contains(out, saved.Result.ID) || strings.Contains(out, saved.Result.Revision) || !strings.Contains(out, "bd recall") || strings.Contains(out, body) {
 			t.Fatalf("configured JSON overrode or corrupted table: %q", out)
 		}
 	})
@@ -49,7 +49,7 @@ func TestGraphPreviewMemoryDiscoveryConfiguredJSONFormatPrecedence(t *testing.T)
 			t.Fatalf("wrong summary envelope: %s", out)
 		}
 		item := result.Items[0]
-		if item.ID != saved.Result.ID || item.Version != saved.Result.Version || item.Title != saved.Result.Properties.Title || item.Attribution != saved.Result.Attribution || item.MatchedFields == nil || len(item.MatchedFields) != 0 || item.Excerpt != nil || strings.Contains(out, "PRIVATE_BODY_DO_NOT_PROJECT") {
+		if item.ID != saved.Result.ID || item.Version != saved.Result.Revision || item.Title != saved.Result.Properties.Title || item.Attribution != saved.Result.Attribution || item.MatchedFields == nil || len(item.MatchedFields) != 0 || item.Excerpt != nil || strings.Contains(out, "PRIVATE_BODY_DO_NOT_PROJECT") {
 			t.Fatalf("wrong summary record: %s", out)
 		}
 	})
