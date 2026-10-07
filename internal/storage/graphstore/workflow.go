@@ -27,6 +27,7 @@ func (s *Store) CloseIssue(ctx context.Context, path, reason, actor string) (Iss
 // Force bypasses only the native blocker/child and pinned/holder policies.
 type IssueCloseRequest struct {
 	Path, Reason, Actor, Session string
+	ExpectedRevision             string
 	Force                        bool
 }
 
@@ -46,6 +47,12 @@ func (s *Store) CloseIssueWithOptions(ctx context.Context, request IssueCloseReq
 		if err != nil {
 			return err
 		}
+		// The graph token guards the complete Issue/owned-Link projection. Pass
+		// the native row lock too, so the Issue writer remains the sole owner
+		// of lifecycle validation and its exactly-once History stamp.
+		if err := checkRevisionGuard(request.ExpectedRevision, false, before.Revision, false, "Issue"); err != nil {
+			return err
+		}
 		if before.Properties.Status == types.StatusClosed {
 			result = IssueMutationResult{Issue: before}
 			return nil
@@ -63,7 +70,11 @@ func (s *Store) CloseIssueWithOptions(ctx context.Context, request IssueCloseReq
 		}
 		unscope := issueops.ScopeVersionedHistoryTransaction(tx, true)
 		defer unscope()
-		closed, _, err := issueops.ExecuteClose(ctx, tx, publicops.CloseRequest{IssueID: before.Properties.ID, Reason: request.Reason, Actor: request.Actor, Session: request.Session, Force: request.Force})
+		closeRequest := publicops.CloseRequest{IssueID: before.Properties.ID, Reason: request.Reason, Actor: request.Actor, Session: request.Session, Force: request.Force}
+		if request.ExpectedRevision != "" {
+			closeRequest.ExpectedVersion = &before.Properties.RowVersion
+		}
+		closed, _, err := issueops.ExecuteClose(ctx, tx, closeRequest)
 		if err != nil {
 			return err
 		}

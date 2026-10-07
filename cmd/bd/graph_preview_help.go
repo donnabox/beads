@@ -127,7 +127,10 @@ applies to all IDs; repeat it once per ID for positional reasons, or use
 positional reason. A batch reports successful Issues on stdout and per-Issue
 failures on stderr, then exits nonzero if any failed. --force bypasses pinned,
 holder, blocker and open-child policy; --session (or CLAUDE_SESSION_ID) records
-the closing session. On one Issue, --suggest-next lists Issues that closing it
+the closing session. On one Issue, --if-revision TOKEN from bd show --json
+rejects a stale close, including an already-closed retry. It cannot be used
+with multiple IDs, --suggest-next or --claim-next. Without it, close accepts
+the current revision. On one Issue, --suggest-next lists Issues that closing it
 newly unblocks, without claiming them. --claim-next atomically claims the
 highest-priority ready Issue when at least one close lands; an already-closed
 retry earns no new claim. A mixed batch keeps its successful closes and claim

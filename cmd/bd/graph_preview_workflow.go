@@ -143,7 +143,7 @@ func runGraphPreviewClose(cmd *cobra.Command, args []string) error {
 	if err := graphPreviewWritePolicy(); err != nil {
 		return err
 	}
-	if err := graphPreviewFlags(cmd, "reason", "resolution", "message", "comment", "reason-file", "force", "session", "suggest-next", "claim-next"); err != nil {
+	if err := graphPreviewFlags(cmd, "reason", "resolution", "message", "comment", "reason-file", "force", "session", "suggest-next", "claim-next", "if-revision"); err != nil {
 		return err
 	}
 	force, _ := cmd.Flags().GetBool("force")
@@ -159,6 +159,16 @@ func runGraphPreviewClose(cmd *cobra.Command, args []string) error {
 	}
 	if len(targets) == 0 {
 		return graphFailure("invalid_selector", "graph close requires at least one Bead ID or beads/PATH", 2)
+	}
+	revision, _, err := graphPreviewRevisionGuard(cmd, false, false)
+	if err != nil {
+		return err
+	}
+	if revision != "" && len(targets) != 1 {
+		return graphFailure("invalid_selector", "--if-revision only works when closing a single Issue", 2)
+	}
+	if revision != "" && (suggestNext || claimNext) {
+		return graphFailure("invalid_selector", "--if-revision does not support --suggest-next or --claim-next", 2)
 	}
 	if suggestNext && len(targets) != 1 {
 		return graphFailure("invalid_selector", "--suggest-next only works when closing a single Issue", 2)
@@ -187,6 +197,7 @@ func runGraphPreviewClose(cmd *cobra.Command, args []string) error {
 		for i, path := range paths {
 			result, err := store.CloseIssueWithOptions(ctx, graphstore.IssueCloseRequest{
 				Path: path, Reason: reasonForCloseIndex(reasons, i), Actor: getActorWithGit(), Session: session, Force: force,
+				ExpectedRevision: revision,
 			})
 			if err != nil {
 				if len(paths) == 1 {
