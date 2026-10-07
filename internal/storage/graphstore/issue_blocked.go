@@ -26,10 +26,16 @@ type BlockedIssue struct {
 // or recomputes native blocking state. The current inventory bounds apply even
 // when the resulting dependency-blocked view is empty.
 func (s *Store) BlockedIssues(ctx context.Context) ([]BlockedIssue, error) {
+	return s.BlockedIssuesFiltered(ctx, types.WorkFilter{})
+}
+
+// BlockedIssuesFiltered uses the native blocked predicate and keeps the
+// complete graph admission and canonical ID checks in the same snapshot.
+func (s *Store) BlockedIssuesFiltered(ctx context.Context, filter types.WorkFilter) ([]BlockedIssue, error) {
 	var result []BlockedIssue
 	err := s.withTx(ctx, false, func(tx *sql.Tx) error {
 		var err error
-		result, err = s.blockedIssuesInTx(ctx, tx)
+		result, err = s.blockedIssuesFilteredInTx(ctx, tx, filter)
 		return err
 	})
 	if err != nil {
@@ -39,6 +45,10 @@ func (s *Store) BlockedIssues(ctx context.Context) ([]BlockedIssue, error) {
 }
 
 func (s *Store) blockedIssuesInTx(ctx context.Context, tx *sql.Tx) ([]BlockedIssue, error) {
+	return s.blockedIssuesFilteredInTx(ctx, tx, types.WorkFilter{})
+}
+
+func (s *Store) blockedIssuesFilteredInTx(ctx context.Context, tx *sql.Tx, filter types.WorkFilter) ([]BlockedIssue, error) {
 	snapshot, err := s.currentSnapshotInTx(ctx, tx)
 	if err != nil {
 		return nil, err
@@ -77,7 +87,7 @@ func (s *Store) blockedIssuesInTx(ctx context.Context, tx *sql.Tx) ([]BlockedIss
 		}
 		byNativeID[issue.Properties.ID] = issue
 	}
-	native, err := issueops.GetBlockedIssuesInTx(ctx, tx, types.WorkFilter{})
+	native, err := issueops.GetBlockedIssuesInTx(ctx, tx, filter)
 	if err != nil {
 		return nil, err
 	}

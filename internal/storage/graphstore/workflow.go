@@ -13,24 +13,36 @@ import (
 	"github.com/steveyegge/beads/internal/storage"
 	"github.com/steveyegge/beads/internal/storage/issueops"
 	"github.com/steveyegge/beads/internal/types"
+	"github.com/steveyegge/beads/internal/validation"
 	publicops "github.com/steveyegge/beads/issueops"
 )
 
 // CloseIssue delegates to the checked Issue-domain close, in the same fenced
-// transaction as retained state and graph identity. It offers no force bypass.
+// transaction as retained state and graph identity.
 func (s *Store) CloseIssue(ctx context.Context, path, reason, actor string) (IssueMutationResult, error) {
-	if err := validatePath(path); err != nil {
+	return s.CloseIssueWithOptions(ctx, IssueCloseRequest{Path: path, Reason: reason, Actor: actor})
+}
+
+// IssueCloseRequest carries the ordinary close policy into the graph writer.
+// Force bypasses only the native blocker/child and pinned/holder policies.
+type IssueCloseRequest struct {
+	Path, Reason, Actor, Session string
+	Force                        bool
+}
+
+func (s *Store) CloseIssueWithOptions(ctx context.Context, request IssueCloseRequest) (IssueMutationResult, error) {
+	if err := validatePath(request.Path); err != nil {
 		return IssueMutationResult{}, err
 	}
-	if actor == "" || !utf8.ValidString(actor) || !utf8.ValidString(reason) {
-		return IssueMutationResult{}, fmt.Errorf("%w: close requires UTF-8 actor and reason", storage.ErrValidation)
+	if request.Actor == "" || !utf8.ValidString(request.Actor) || !utf8.ValidString(request.Reason) || !utf8.ValidString(request.Session) {
+		return IssueMutationResult{}, fmt.Errorf("%w: close requires UTF-8 actor, reason and session", storage.ErrValidation)
 	}
 	var result IssueMutationResult
 	err := s.withTx(ctx, true, func(tx *sql.Tx) error {
 		if err := checkBinding(ctx, tx, s.options); err != nil {
 			return err
 		}
-		before, err := s.requireIssueInTx(ctx, tx, path)
+		before, err := s.requireIssueInTx(ctx, tx, request.Path)
 		if err != nil {
 			return err
 		}
@@ -38,12 +50,20 @@ func (s *Store) CloseIssue(ctx context.Context, path, reason, actor string) (Iss
 			result = IssueMutationResult{Issue: before}
 			return nil
 		}
+		if !request.Force && before.Properties.IssueType == types.TypeGate &&
+			(strings.HasPrefix(before.Properties.AwaitType, "gh:pr") || strings.HasPrefix(before.Properties.AwaitType, "gh:run") ||
+				before.Properties.AwaitType == "timer" || before.Properties.AwaitType == "bead") {
+			return fmt.Errorf("%w: graph close cannot yet evaluate this gate; use --force only after reviewing its condition", ErrCapabilityUnavailable)
+		}
+		if err := validation.Chain(validation.NotTemplate(), validation.NotPinned(request.Force), validation.AssigneeMatches(request.Actor, request.Force))(before.Properties.ID, before.Properties); err != nil {
+			return fmt.Errorf("%w: %v", storage.ErrValidation, err)
+		}
 		if err := s.touchCoordination(ctx, tx); err != nil {
 			return err
 		}
 		unscope := issueops.ScopeVersionedHistoryTransaction(tx, true)
 		defer unscope()
-		closed, _, err := issueops.ExecuteClose(ctx, tx, publicops.CloseRequest{IssueID: before.Properties.ID, Reason: reason, Actor: actor})
+		closed, _, err := issueops.ExecuteClose(ctx, tx, publicops.CloseRequest{IssueID: before.Properties.ID, Reason: request.Reason, Actor: request.Actor, Session: request.Session, Force: request.Force})
 		if err != nil {
 			return err
 		}
@@ -53,18 +73,60 @@ func (s *Store) CloseIssue(ctx context.Context, path, reason, actor string) (Iss
 		if err := s.afterStage("close"); err != nil {
 			return err
 		}
-		if err := s.recordIssueMappingInTx(ctx, tx, path, before.Properties.ID); err != nil {
+		if err := s.recordIssueMappingInTx(ctx, tx, request.Path, before.Properties.ID); err != nil {
 			return err
 		}
-		after, err := s.showIssueInTx(ctx, tx, path)
+		after, err := s.showIssueInTx(ctx, tx, request.Path)
 		if err != nil {
 			return err
 		}
-		result = IssueMutationResult{Issue: after, Changed: true}
+		result = IssueMutationResult{Issue: after, Changed: true, OpenChildren: closed.OpenChildren}
 		return nil
 	})
 	if err != nil {
 		return IssueMutationResult{}, err
+	}
+	return result, nil
+}
+
+// NewlyUnblockedByClose projects the native post-close dependency query into
+// canonical graph records. It is a separate read: a suggestion failure never
+// rolls back a close that has already committed.
+func (s *Store) NewlyUnblockedByClose(ctx context.Context, path string) ([]IssueRecord, error) {
+	if err := validatePath(path); err != nil {
+		return nil, err
+	}
+	result := []IssueRecord{}
+	err := s.withTx(ctx, false, func(tx *sql.Tx) error {
+		if err := checkBinding(ctx, tx, s.options); err != nil {
+			return err
+		}
+		closed, err := s.requireIssueInTx(ctx, tx, path)
+		if err != nil {
+			return err
+		}
+		if closed.Properties.Status != types.StatusClosed {
+			return fmt.Errorf("%w: suggestions require a closed Issue", storage.ErrValidation)
+		}
+		unblocked, err := issueops.GetNewlyUnblockedByCloseInTx(ctx, tx, closed.Properties.ID)
+		if err != nil {
+			return err
+		}
+		for _, issue := range unblocked {
+			var candidatePath string
+			if err := tx.QueryRowContext(ctx, `SELECT path FROM graph_preview_catalog WHERE backing='issue' AND backing_key=? AND allocation_state='live'`, issue.ID).Scan(&candidatePath); err != nil {
+				return fmt.Errorf("%w: unmapped newly unblocked Issue: %v", ErrInvalidStore, err)
+			}
+			candidate, err := s.showIssueInTx(ctx, tx, candidatePath)
+			if err != nil {
+				return err
+			}
+			result = append(result, candidate)
+		}
+		return nil
+	})
+	if err != nil {
+		return nil, err
 	}
 	return result, nil
 }
@@ -198,13 +260,19 @@ func (s *Store) wakeExpiredDefersAdvisory(ctx context.Context) {
 // ReadyIssues uses the native lazy defer wake and scheduling query, then
 // resolves every result into the same canonical graph.
 func (s *Store) ReadyIssues(ctx context.Context) ([]IssueRecord, error) {
+	return s.ReadyIssuesFiltered(ctx, types.WorkFilter{})
+}
+
+// ReadyIssuesFiltered applies the ordinary ready predicate before projecting
+// the selected native Issues into their canonical graph records.
+func (s *Store) ReadyIssuesFiltered(ctx context.Context, filter types.WorkFilter) ([]IssueRecord, error) {
 	s.wakeExpiredDefersAdvisory(ctx)
 	result := []IssueRecord{}
 	err := s.withTx(ctx, false, func(tx *sql.Tx) error {
 		if err := checkBinding(ctx, tx, s.options); err != nil {
 			return err
 		}
-		ready, err := issueops.GetReadyWorkInTx(ctx, tx, types.WorkFilter{})
+		ready, err := issueops.GetReadyWorkInTx(ctx, tx, filter)
 		if err != nil {
 			return err
 		}

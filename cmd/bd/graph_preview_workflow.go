@@ -14,6 +14,7 @@ import (
 	"github.com/steveyegge/beads/internal/timeparsing"
 	"github.com/steveyegge/beads/internal/types"
 	"github.com/steveyegge/beads/internal/ui"
+	"github.com/steveyegge/beads/internal/utils"
 )
 
 // Returned canonical IDs can be fed back to the CLI. A bare local Bead path
@@ -142,37 +143,166 @@ func runGraphPreviewClose(cmd *cobra.Command, args []string) error {
 	if err := graphPreviewWritePolicy(); err != nil {
 		return err
 	}
-	if err := graphPreviewFlags(cmd, "reason", "resolution", "message", "comment"); err != nil {
+	if err := graphPreviewFlags(cmd, "reason", "resolution", "message", "comment", "reason-file", "force", "session", "suggest-next", "claim-next"); err != nil {
 		return err
 	}
-	if len(args) != 1 {
-		return graphFailure("invalid_selector", "graph close requires one Bead ID or beads/PATH", 2)
+	force, _ := cmd.Flags().GetBool("force")
+	suggestNext, _ := cmd.Flags().GetBool("suggest-next")
+	claimNext, _ := cmd.Flags().GetBool("claim-next")
+	session, _ := cmd.Flags().GetString("session")
+	if session == "" {
+		session = os.Getenv("CLAUDE_SESSION_ID")
 	}
-	path, err := graphPreviewResourcePath(graphPreviewConfig.GraphScopeURL, args[0])
-	if err != nil {
-		return graphFailure("invalid_selector", err.Error(), 2)
-	}
-	if err := graph.ValidateBeadPath(path); err != nil {
-		return graphFailure("invalid_selector", err.Error(), 2)
-	}
-	reasons, _, err := resolveCloseReasons(cmd, args)
+	reasons, targets, err := resolveCloseReasons(cmd, args)
 	if err != nil {
 		return graphFailure("invalid_properties", err.Error(), 2)
+	}
+	if len(targets) == 0 {
+		return graphFailure("invalid_selector", "graph close requires at least one Bead ID or beads/PATH", 2)
+	}
+	if suggestNext && len(targets) != 1 {
+		return graphFailure("invalid_selector", "--suggest-next only works when closing a single Issue", 2)
 	}
 	if err := validateCloseReasons(reasons); err != nil {
 		return graphFailure("invalid_properties", err.Error(), 2)
 	}
-	return withGraphStore(func(ctx context.Context, store *graphstore.Store) (any, string, error) {
-		result, err := store.CloseIssue(ctx, path, reasons[0], getActorWithGit())
+	paths := make([]string, len(targets))
+	for i, selector := range targets {
+		path, err := graphPreviewResourcePath(graphPreviewConfig.GraphScopeURL, selector)
+		if err != nil {
+			return graphFailure("invalid_selector", err.Error(), 2)
+		}
+		if err := graph.ValidateBeadPath(path); err != nil {
+			return graphFailure("invalid_selector", err.Error(), 2)
+		}
+		paths[i] = path
+	}
+	if claimNext {
+		return runGraphPreviewCloseClaimNext(paths, targets, reasons, session, force, suggestNext)
+	}
+	var hadError bool
+	err = withGraphStore(func(ctx context.Context, store *graphstore.Store) (any, string, error) {
+		results := make([]graphstore.IssueMutationResult, 0, len(paths))
+		var human strings.Builder
+		for i, path := range paths {
+			result, err := store.CloseIssueWithOptions(ctx, graphstore.IssueCloseRequest{
+				Path: path, Reason: reasonForCloseIndex(reasons, i), Actor: getActorWithGit(), Session: session, Force: force,
+			})
+			if err != nil {
+				if len(paths) == 1 {
+					return nil, "", err
+				}
+				_ = graphStorageError(fmt.Errorf("closing %s: %w", targets[i], err))
+				hadError = true
+				continue
+			}
+			results = append(results, result)
+			if result.OpenChildren > 0 {
+				fmt.Fprintf(os.Stderr, "warning: closing %s with %d open child issue(s) still active\n", targets[i], result.OpenChildren)
+			}
+			verb := "Closed"
+			if !result.Changed {
+				verb = "Already closed"
+			}
+			fmt.Fprintf(&human, "%s %s\n", verb, targets[i])
+			if suggestNext {
+				unblocked, err := store.NewlyUnblockedByClose(ctx, path)
+				if err != nil {
+					fmt.Fprintf(os.Stderr, "Warning: could not find newly unblocked Issues: %v\n", err)
+				} else if len(unblocked) > 0 {
+					human.WriteString("\nNewly unblocked:\n")
+					for _, issue := range unblocked {
+						fmt.Fprintf(&human, "  %s (P%d)\n", issue.ID, issue.Properties.Priority)
+					}
+					return map[string]any{"closed": []graphstore.IssueRecord{result.Issue}, "unblocked": unblocked}, strings.TrimSuffix(human.String(), "\n"), nil
+				}
+			}
+		}
+		if len(paths) == 1 {
+			return results[0], human.String(), nil
+		}
+		return results, strings.TrimSuffix(human.String(), "\n"), nil
+	})
+	if err != nil {
+		return err
+	}
+	if hadError {
+		return SilentExit()
+	}
+	return nil
+}
+
+func runGraphPreviewCloseClaimNext(paths, targets, reasons []string, session string, force, suggestNext bool) error {
+	var hadError bool
+	var claimedID string
+	err := withGraphStore(func(ctx context.Context, store *graphstore.Store) (any, string, error) {
+		perPathReasons := make([]string, len(paths))
+		for i := range paths {
+			perPathReasons[i] = reasonForCloseIndex(reasons, i)
+		}
+		result, err := store.CloseIssues(ctx, graphstore.IssueCloseBatchRequest{
+			Paths: paths, Reasons: perPathReasons, Actor: getActorWithGit(), Session: session, Force: force, ClaimNext: true,
+		})
 		if err != nil {
 			return nil, "", err
 		}
-		verb := "Closed"
-		if !result.Changed {
-			verb = "Already closed"
+		closed := make([]graphstore.IssueRecord, 0, len(paths))
+		var human strings.Builder
+		for i, outcome := range result.Outcomes {
+			if outcome.Err != nil {
+				if len(paths) == 1 {
+					return nil, "", outcome.Err
+				}
+				_ = graphStorageError(fmt.Errorf("closing %s: %w", targets[i], outcome.Err))
+				hadError = true
+				continue
+			}
+			closed = append(closed, outcome.Issue)
+			if outcome.OpenChildren > 0 {
+				fmt.Fprintf(os.Stderr, "warning: closing %s with %d open child issue(s) still active\n", targets[i], outcome.OpenChildren)
+			}
+			if outcome.Changed {
+				fmt.Fprintf(&human, "Closed %s\n", targets[i])
+			} else {
+				fmt.Fprintf(&human, "Already closed %s\n", targets[i])
+			}
 		}
-		return result, fmt.Sprintf("%s %s\n", verb, args[0]), nil
+		var output any = closed
+		if result.ClaimedNext != nil {
+			claimedID = result.ClaimedNext.ID
+			output = map[string]any{"closed": closed, "claimed": result.ClaimedNext}
+			fmt.Fprintf(&human, "Claimed next ready Issue %s\n", result.ClaimedNext.ID)
+		} else if len(closed) > 0 {
+			human.WriteString("No ready Issues available to claim.\n")
+		}
+		if suggestNext && len(closed) > 0 {
+			unblocked, err := store.NewlyUnblockedByClose(ctx, paths[0])
+			if err != nil {
+				fmt.Fprintf(os.Stderr, "Warning: could not find newly unblocked Issues: %v\n", err)
+			} else if len(unblocked) > 0 {
+				fields := map[string]any{"closed": closed, "unblocked": unblocked}
+				if result.ClaimedNext != nil {
+					fields["claimed"] = result.ClaimedNext
+				}
+				output = fields
+				human.WriteString("Newly unblocked:\n")
+				for _, issue := range unblocked {
+					fmt.Fprintf(&human, "  %s (P%d)\n", issue.ID, issue.Properties.Priority)
+				}
+			}
+		}
+		return output, strings.TrimSuffix(human.String(), "\n"), nil
 	})
+	if err != nil {
+		return err
+	}
+	if hadError {
+		if claimedID != "" {
+			_ = graphFailure("partial_close_claim_retained", "--claim-next already claimed "+claimedID+"; it remains assigned despite the sibling refusal", 1)
+		}
+		return SilentExit()
+	}
+	return nil
 }
 
 func runGraphPreviewDeferral(cmd *cobra.Command, args []string, deferred bool) error {
@@ -262,11 +392,18 @@ func runGraphPreviewDeferral(cmd *cobra.Command, args []string, deferred bool) e
 }
 
 func runGraphPreviewReady(cmd *cobra.Command, args []string) error {
-	if err := graphPreviewFlags(cmd); err != nil {
+	if err := graphPreviewFlags(cmd, "limit", "priority", "assignee", "unassigned", "sort", "label", "label-any", "exclude-label", "type", "include-deferred", "claim"); err != nil {
 		return err
 	}
 	if len(args) != 0 {
 		return graphFailure("invalid_selector", "graph ready takes no positional arguments", 2)
+	}
+	if err := graphPreviewLabelFilters(cmd); err != nil {
+		return err
+	}
+	in, err := gatherReadyInput(cmd, nil)
+	if err != nil {
+		return err
 	}
 	// The legacy resolver warns and ignores malformed environment values.
 	// This deliberately bounded preview refuses unsupported policy instead.
@@ -275,12 +412,28 @@ func runGraphPreviewReady(cmd *cobra.Command, args []string) error {
 		if err != nil || maxRows < 0 {
 			return graphFailure("invalid_properties", "BEADS_MAX_ROWS must be a non-negative integer", 2)
 		}
-		if maxRows > 0 {
+		if maxRows > 0 && !in.claim {
 			return graphFailure("capability_unavailable", "graph ready preview does not implement a configured row cap; unset BEADS_MAX_ROWS to request the unfiltered view", 5)
 		}
 	}
+	if in.claim {
+		if err := graphPreviewWritePolicy(); err != nil {
+			return err
+		}
+		return withGraphStore(func(ctx context.Context, store *graphstore.Store) (any, string, error) {
+			claimed, err := store.ClaimReadyIssue(ctx, getActorWithGit(), in.filter)
+			if err != nil {
+				return nil, "", err
+			}
+			if claimed == nil {
+				return []graphstore.IssueRecord{}, "No ready work to claim", nil
+			}
+			SetLastTouchedID(claimed.Issue.Properties.ID)
+			return []graphstore.IssueRecord{claimed.Issue}, "Claimed Issue " + claimed.Issue.ID, nil
+		})
+	}
 	return withGraphStore(func(ctx context.Context, store *graphstore.Store) (any, string, error) {
-		issues, err := store.ReadyIssues(ctx)
+		issues, err := store.ReadyIssuesFiltered(ctx, in.filter)
 		if err != nil {
 			return nil, "", err
 		}
@@ -293,4 +446,23 @@ func runGraphPreviewReady(cmd *cobra.Command, args []string) error {
 		}
 		return issues, strings.TrimSuffix(human.String(), "\n"), nil
 	})
+}
+
+// Keep graph admission from turning a supplied blank label filter into an
+// unfiltered query. The ordinary fix is tracked separately in upstream #6632;
+// this graph route must retain the same distinction until that PR lands.
+func graphPreviewLabelFilters(cmd *cobra.Command) error {
+	for _, name := range []string{"label", "label-any", "exclude-label"} {
+		if !cmd.Flags().Changed(name) {
+			continue
+		}
+		values, err := cmd.Flags().GetStringSlice(name)
+		if err != nil {
+			return graphFailure("invalid_properties", "invalid --"+name+": "+err.Error(), 2)
+		}
+		if len(utils.NormalizeLabels(values)) == 0 {
+			return graphFailure("invalid_properties", "--"+name+" was supplied but contains no usable label", 2)
+		}
+	}
+	return nil
 }

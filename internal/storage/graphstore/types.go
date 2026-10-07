@@ -128,8 +128,9 @@ type DependencyResult struct {
 }
 
 type IssueMutationResult struct {
-	Issue   IssueRecord `json:"issue"`
-	Changed bool        `json:"changed"`
+	Issue        IssueRecord `json:"issue"`
+	Changed      bool        `json:"changed"`
+	OpenChildren int         `json:"openChildren,omitempty"`
 }
 
 // PreviewOwnedLinkLimit is a disposable descriptor budget, not a production limit.

@@ -120,10 +120,22 @@ Memory-owned Links accept the current source by default, or use
 explicitly selects the default. The blocking Type types/preview-blocks-v1
 requires Issue endpoints and, unlike informational Types, one of
 --if-source-revision TOKEN or --unconditional-source.`},
-		{closeCmd, `Close one live Issue by ID or beads/ID. Batch, force and
-remote-routing forms are unavailable in this graph preview.`},
-		{reopenCmd, `Reopen one closed Issue by ID or beads/ID, optionally
-with --reason. Batch and remote-routing forms are unavailable.`},
+		{closeCmd, `Close one or more local Issues by ID or beads/ID. One --reason
+applies to all IDs; repeat it once per ID for positional reasons, or use
+--reason-file PATH for literal file content. The done alias accepts a trailing
+positional reason. A batch reports successful Issues on stdout and per-Issue
+failures on stderr, then exits nonzero if any failed. --force bypasses pinned,
+holder, blocker and open-child policy; --session (or CLAUDE_SESSION_ID) records
+the closing session. On one Issue, --suggest-next lists Issues that closing it
+newly unblocks, without claiming them. --claim-next atomically claims the
+highest-priority ready Issue when at least one close lands; an already-closed
+retry earns no new claim. A mixed batch keeps its successful closes and claim
+even when another ID refuses. Interactive last-touched, gate evaluation,
+--continue, molecule advancement and remote-routing forms remain unavailable.`},
+		{reopenCmd, `Reopen one or more local closed Issues by ID or beads/ID,
+optionally with --reason. A batch reports changed Issues on stdout and
+per-Issue failures on stderr, then exits nonzero if any failed. Already-open
+Issues remain unchanged. Remote-routing forms remain unavailable.`},
 		{unclaimCmd, `Use bd unclaim ID... to release one or more assigned open or
 in-progress Issues. By default only the current holder may release a claim.
 --force bypasses holder authorization but still respects the native row CAS;
@@ -136,8 +148,11 @@ graph version. A repeated release refuses without creating a version.`},
 graph Issue. bd unclaim --reason appends there. Comments are outside the
 retained Issue snapshot and do not mint an Issue version. Comment creation
 through bd comments add is not available in this preview.`},
-		{readyCmd, `Show current ready Issues with no graph-specific filters.
-This graph preview refuses positive BEADS_MAX_ROWS instead of truncating.`},
+		{readyCmd, `Show current ready Issues with admitted priority, type, label,
+assignee, sort and deferred-state filters. --claim atomically claims the first
+matching ready Issue. This graph preview refuses positive BEADS_MAX_ROWS
+instead of truncating; parent, molecule, ephemeral and metadata filters remain
+unfinished.`},
 		{listCmd, `Without Issue filters, bd list reads one bounded snapshot of current Beads
 of all installed Bead Types and lists every Memory and every Issue the
 ordinary bd list would show, newest recorded change first. Closed and pinned
