@@ -216,6 +216,26 @@ bd show work --json
 bd undefer work --if-revision REVISION_FROM_SHOW
 ```
 
+The graph preview can narrow `bd ready` by priority, Issue classification,
+assignee, label, or defer state and can sort or limit the result. `bd blocked`
+accepts the ordinary label, label-any, and exclude-label filters. Both use
+the native blocker-aware predicate, then return canonical graph Issue IDs.
+An explicitly supplied blank label filter is an error, so a typo cannot turn
+an intended narrow query into the whole work queue.
+
+```sh
+bd ready --priority 2 --type task --limit 10 --json
+bd ready --label release --sort priority
+bd ready --claim --label release --actor rig.agent --json
+bd blocked --label release --json
+```
+
+`ready --claim --json` returns a one-element array of complete graph Issue
+records, or an empty array when no matching ready Issue exists. An empty claim
+changes no lease or revision. The remaining ordinary ready modes and blocked `--parent` remain in
+the [draft CLI specification](/reference/graph-cli-specification-draft)
+and refuse in this graph slice until their supporting graph behavior is ready.
+
 ## Edit Issue notes
 
 An Issue's notes can carry progress across sessions. `--append-notes` adds a
