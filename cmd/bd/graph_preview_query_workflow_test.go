@@ -99,21 +99,21 @@ func TestGraphPreviewQueryWorkflow(t *testing.T) {
 			type retainedRead struct{ id, version, output string }
 			var retained []retainedRead
 			for _, record := range []graphstore.Record{planBefore, memoryEdit.Memory} {
-				output := call("show", record.ID, "--version", record.Version)
+				output := call("show", record.ID, "--version", record.Revision)
 				if got := graphMixedResult[graphstore.Record](t, output); !reflect.DeepEqual(got, record) {
 					t.Fatalf("Memory predecessor/current retention: %+v want=%+v", got, record)
 				}
-				retained = append(retained, retainedRead{record.ID, record.Version, output})
+				retained = append(retained, retainedRead{record.ID, record.Revision, output})
 			}
 			for _, record := range []graphstore.IssueRecord{workBefore, issueEdit.Issue} {
 				properties := *record.Properties
 				properties.ContentHash, properties.RowVersion = "", 0
 				record.Properties = &properties
-				output := call("show", record.ID, "--version", record.Version)
+				output := call("show", record.ID, "--version", record.Revision)
 				if got := graphMixedResult[graphstore.IssueRecord](t, output); !reflect.DeepEqual(got, record) {
 					t.Fatalf("Issue predecessor/current retention: %+v want=%+v", got, record)
 				}
-				retained = append(retained, retainedRead{record.ID, record.Version, output})
+				retained = append(retained, retainedRead{record.ID, record.Revision, output})
 			}
 			stable := graphMemoryReadSnapshot(t, work)
 			memoryNoop := graphMixedResult[graphstore.MemoryMutationResult](t, call("update", "beads/plan", "--properties", replacement, "--if-revision", memoryEdit.Memory.Revision))
