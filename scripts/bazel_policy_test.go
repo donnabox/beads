@@ -342,6 +342,13 @@ var publicForkCacheLines = map[string]bool{
 const (
 	forkCacheEndpoint = "grpc" + "s://rbe-cache.ops.gascity.com:8443"
 	forkCacheInstance = "oss"
+	// zstd cache transfers: only the anonymous fork cache can advertise a
+	// compressor, so only fork-cache may ask for one, and only while
+	// write-bazelrc.sh's cache-zstd-probe.sh finds it advertised (a probe,
+	// not a repository variable: fork pull_request runs see no vars).
+	// Trusted remote-exec and rbe-fork never: their schedulers advertise
+	// none, and Bazel then refuses the remote.
+	forkCacheZstdLine = "build:fork-cache --remote_cache_compression"
 )
 
 // publicRBEForkPin: setup-bazel's fork-credential.sh pins the one endpoint
@@ -1258,6 +1265,9 @@ func checkBazelrcForkCache(bazelrc string) []error {
 	var errs []error
 	var opts []bazelrcOption
 	for _, o := range parseBazelrcOptions(bazelrc) {
+		if strings.Contains(o.flag, "remote_cache_compression") {
+			errs = append(errs, errors.New(o.source()+" sets "+o.flag+"; only setup-bazel's generated rc may, for fork-cache while rbe-cache advertises zstd"))
+		}
 		switch {
 		case o.config == "fork-cache":
 			opts = append(opts, o)
@@ -1415,6 +1425,8 @@ func TestBazelForkCacheConfig(t *testing.T) {
 		"slow timeout":               good + "build:fork-cache --remote_timeout=60\n",
 		"zero timeout":               good + "build:fork-cache --remote_timeout=0\n",
 		"duration timeout":           good + "build:fork-cache --remote_timeout=15s\n",
+		"zstd in .bazelrc":           good + "build:fork-cache --remote_cache_compression\n",
+		"trusted zstd in .bazelrc":   good + "build:remote-exec --remote_cache_compression\n",
 		"plain build expands":        good + "build --config=fork-cache\n",
 		"plain common expands":       good + "common --config=fork-cache\n",
 		"plain upload":               good + "build --remote_upload_local_results\n",
@@ -1456,8 +1468,10 @@ func sameTagSet(a, b map[string]bool) bool {
 }
 
 // TestBazelIntegrationLaneMatchesMainWorkflow keeps --config=integration in
-// step with main.yml's "Main Linux integration" jobs: the same build tags,
-// race, BEADS_TEST_SKIP=dolt, and none of the variants those jobs do not run.
+// step with the integration-tagged `go test` it replaced on push to main
+// (main.yml's former "Main Linux integration" jobs), whose one remaining Go
+// twin is nightly.yml's Full Test Suite: the same build tags, race,
+// BEADS_TEST_SKIP=dolt, and none of the variants that run does not use.
 // It also requires gazelle to see the same tags (root BUILD.bazel
 // `gazelle:build_tags`): gazelle drops a file whose build constraint names a
 // tag it does not know, so without it no BUILD file would list the integration
@@ -1466,17 +1480,21 @@ func sameTagSet(a, b map[string]bool) bool {
 // through `make bazel-sync`, whose staleness bazel.yml already fails on.
 func TestBazelIntegrationLaneMatchesMainWorkflow(t *testing.T) {
 	root := bazelPolicyRoot(t)
-	mainYML := readPolicyFile(t, root, ".github/workflows/main.yml")
-	jobTags := regexp.MustCompile(`-race -tags=(\S+) -timeout=30m`).FindAllStringSubmatch(mainYML, -1)
-	if len(jobTags) != 2 {
-		t.Fatalf("main.yml: want the two integration jobs' `go test -race -tags=... -timeout=30m`, found %d", len(jobTags))
+	nightly := readCIWorkflow(t, "nightly.yml").job(t, "full-test")
+	var want map[string]bool
+	for _, step := range nightly.Steps {
+		if m := regexp.MustCompile(`go test .*-race -tags=(\S+) .*-timeout=30m \./\.\.\.`).FindStringSubmatch(step.Run); m != nil {
+			if want != nil {
+				t.Fatalf("nightly.yml full-test: more than one integration `go test -race -tags=...` step")
+			}
+			want = tagSet(m[1])
+			if step.Env["BEADS_TEST_SKIP"] != "dolt" {
+				t.Fatal("nightly.yml full-test no longer runs with BEADS_TEST_SKIP=dolt; update test:integration")
+			}
+		}
 	}
-	want := tagSet(jobTags[0][1])
-	if !want["integration"] || !sameTagSet(want, tagSet(jobTags[1][1])) {
-		t.Fatalf("main.yml integration jobs' tags differ or lack integration: %q, %q", jobTags[0][1], jobTags[1][1])
-	}
-	if strings.Count(mainYML, "env BEADS_TEST_SKIP=dolt gotestsum") < 2 {
-		t.Fatal("main.yml integration jobs no longer run with BEADS_TEST_SKIP=dolt; update test:integration")
+	if !want["integration"] {
+		t.Fatalf("nightly.yml full-test: want one `go test -race -tags=...integration... -timeout=30m ./...` step, got tags %v", want)
 	}
 
 	bazelrc := readPolicyFile(t, root, ".bazelrc")
@@ -1490,7 +1508,7 @@ func TestBazelIntegrationLaneMatchesMainWorkflow(t *testing.T) {
 		}
 	}
 	if !sameTagSet(laneTags, want) {
-		t.Errorf(".bazelrc build:integration tags = %v, want main.yml's %v", laneTags, want)
+		t.Errorf(".bazelrc build:integration tags = %v, want nightly.yml full-test's %v", laneTags, want)
 	}
 	if err := checkBazelrcIntegrationLane(bazelrc); err != nil {
 		t.Error(err)
@@ -1537,5 +1555,40 @@ func TestBazelrcIntegrationLaneFixtures(t *testing.T) {
 		if err := checkBazelrcIntegrationLane(rc); err == nil {
 			t.Errorf("%s: expected an error for .bazelrc fixture:\n%s", name, rc)
 		}
+	}
+}
+
+// TestBazelRemoteCacheCompressionOnlyForkCache: --remote_cache_compression
+// appears in one place, write-bazelrc.sh's fork-cache line behind
+// the zstd probe. No .bazelrc config, workflow or other action file may set
+// it: every other remote (rbe-west's trusted schedulers on :443, rbe-fork on
+// :8444) advertises no compressor, and Bazel then refuses the remote.
+func TestBazelRemoteCacheCompressionOnlyForkCache(t *testing.T) {
+	root := bazelPolicyRoot(t)
+	files := []string{".bazelrc"}
+	for _, pattern := range []string{".github/workflows/*.yml", ".github/workflows/*.yaml", ".github/actions/*/*"} {
+		m, err := filepath.Glob(filepath.Join(root, pattern))
+		if err != nil {
+			t.Fatal(err)
+		}
+		for _, f := range m {
+			rel, err := filepath.Rel(root, f)
+			if err != nil {
+				t.Fatal(err)
+			}
+			files = append(files, rel)
+		}
+	}
+	var found []string
+	for _, f := range files {
+		for i, line := range strings.Split(readPolicyFile(t, root, f), "\n") {
+			if strings.Contains(line, "remote_cache_compression") && !strings.HasPrefix(strings.TrimSpace(line), "#") {
+				found = append(found, f+":"+strconv.Itoa(i+1)+": "+strings.TrimSpace(line))
+			}
+		}
+	}
+	want := setupBazelActionDir + "/write-bazelrc.sh:"
+	if len(found) != 1 || !strings.HasPrefix(found[0], want) || !strings.HasSuffix(found[0], `echo "`+forkCacheZstdLine+`"`) {
+		t.Errorf("--remote_cache_compression set at %q; want only %s echo %q", found, want, forkCacheZstdLine)
 	}
 }

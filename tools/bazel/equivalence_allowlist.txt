@@ -23,6 +23,12 @@ scripts/oracle-query TestB1OneDenyList skip  # builds the CLI from source; runs 
 scripts/scenarios TestPackageDoesNotEmbedOrListScenarios skip  # reads the scenario files shipped next to the sources; runs under go test
 scripts/scenarios TestREADMEDocumentsTheContract skip  # reads the scenario files shipped next to the sources; runs under go test
 
+# Fork-only tests in an upstream package (scripts/fork_proxied_lane_pin_test.go;
+# upstream has no copy). Their inputs, .github/scripts and cmd/bd, are not in
+# //scripts:scripts_test's runfiles, so they skip there (be-sudqo0, R8 and R9).
+scripts TestForkLegacyProxiedLaneTimeoutBudget skip  # reads .github/scripts/proxied-test-shard.sh, not in the runfiles; runs under go test
+scripts TestForkLegacyProxiedBlockCoversEveryTest skip  # runs scripts/ci/gen_proxied_shard_manifest.py --check over cmd/bd, not in the runfiles; runs under go test
+
 # The in-test `go build` of bd that this test guards does not happen under
 # Bazel (bd comes in through BEADS_TEST_BD_BINARY); go test still runs it.
 cmd/bd TestGOMODCACHENotUnderTestHome skip  # no in-test go build under Bazel; guarded by go test
@@ -41,6 +47,7 @@ scripts TestBazelNoRemoteEndpointsInTrackedFiles skip  # scans git-tracked files
 scripts TestBazelTestTagsFollowTaxonomy skip  # reads every BUILD file in the checkout; runs under go test
 scripts TestBazelTreeGoSrcsListsEveryPackage skip  # walks the source checkout; runs under go test
 scripts TestCheckTestingShortPassesOnCleanRepoTree skip  # walks the whole checkout; runs under go test
+test/docsync TestAgentInstructionFilesAreLinkedAndRouted skip  # walks the source checkout for every AGENTS.md; runs under go test
 scripts TestReleaseFormula* skip  # .beads/ is in .bazelignore, so the formula cannot be data; runs under go test
 
 # Policy tests whose inputs (other packages' BUILD files, .github/scripts,
