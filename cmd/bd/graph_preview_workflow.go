@@ -143,10 +143,11 @@ func runGraphPreviewClose(cmd *cobra.Command, args []string) error {
 	if err := graphPreviewWritePolicy(); err != nil {
 		return err
 	}
-	if err := graphPreviewFlags(cmd, "reason", "resolution", "message", "comment", "reason-file", "force", "session"); err != nil {
+	if err := graphPreviewFlags(cmd, "reason", "resolution", "message", "comment", "reason-file", "force", "session", "suggest-next"); err != nil {
 		return err
 	}
 	force, _ := cmd.Flags().GetBool("force")
+	suggestNext, _ := cmd.Flags().GetBool("suggest-next")
 	session, _ := cmd.Flags().GetString("session")
 	if session == "" {
 		session = os.Getenv("CLAUDE_SESSION_ID")
@@ -157,6 +158,9 @@ func runGraphPreviewClose(cmd *cobra.Command, args []string) error {
 	}
 	if len(targets) == 0 {
 		return graphFailure("invalid_selector", "graph close requires at least one Bead ID or beads/PATH", 2)
+	}
+	if suggestNext && len(targets) != 1 {
+		return graphFailure("invalid_selector", "--suggest-next only works when closing a single Issue", 2)
 	}
 	if err := validateCloseReasons(reasons); err != nil {
 		return graphFailure("invalid_properties", err.Error(), 2)
@@ -197,6 +201,18 @@ func runGraphPreviewClose(cmd *cobra.Command, args []string) error {
 				verb = "Already closed"
 			}
 			fmt.Fprintf(&human, "%s %s\n", verb, targets[i])
+			if suggestNext {
+				unblocked, err := store.NewlyUnblockedByClose(ctx, path)
+				if err != nil {
+					fmt.Fprintf(os.Stderr, "Warning: could not find newly unblocked Issues: %v\n", err)
+				} else if len(unblocked) > 0 {
+					human.WriteString("\nNewly unblocked:\n")
+					for _, issue := range unblocked {
+						fmt.Fprintf(&human, "  %s (P%d)\n", issue.ID, issue.Properties.Priority)
+					}
+					return map[string]any{"closed": []graphstore.IssueRecord{result.Issue}, "unblocked": unblocked}, strings.TrimSuffix(human.String(), "\n"), nil
+				}
+			}
 		}
 		if len(paths) == 1 {
 			return results[0], human.String(), nil

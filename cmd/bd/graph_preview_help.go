@@ -126,8 +126,10 @@ applies to all IDs; repeat it once per ID for positional reasons, or use
 positional reason. A batch reports successful Issues on stdout and per-Issue
 failures on stderr, then exits nonzero if any failed. --force bypasses pinned,
 holder, blocker and open-child policy; --session (or CLAUDE_SESSION_ID) records
-the closing session. Interactive last-touched, gate evaluation, post-close
-workflow and remote-routing forms remain unavailable.`},
+the closing session. On one Issue, --suggest-next lists Issues that closing it
+newly unblocks, without claiming them. Interactive last-touched, gate
+evaluation, --claim-next, --continue, molecule advancement and remote-routing
+forms remain unavailable.`},
 		{reopenCmd, `Reopen one or more local closed Issues by ID or beads/ID,
 optionally with --reason. A batch reports changed Issues on stdout and
 per-Issue failures on stderr, then exits nonzero if any failed. Already-open
@@ -144,8 +146,11 @@ graph version. A repeated release refuses without creating a version.`},
 graph Issue. bd unclaim --reason appends there. Comments are outside the
 retained Issue snapshot and do not mint an Issue version. Comment creation
 through bd comments add is not available in this preview.`},
-		{readyCmd, `Show current ready Issues with no graph-specific filters.
-This graph preview refuses positive BEADS_MAX_ROWS instead of truncating.`},
+		{readyCmd, `Show current ready Issues with admitted priority, type, label,
+assignee, sort and deferred-state filters. --claim atomically claims the first
+matching ready Issue. This graph preview refuses positive BEADS_MAX_ROWS
+instead of truncating; parent, molecule, ephemeral and metadata filters remain
+unfinished.`},
 		{listCmd, `Without Issue filters, bd list reads one bounded snapshot of current Beads
 of all installed Bead Types and lists every Memory and every Issue the
 ordinary bd list would show, newest recorded change first. Closed and pinned

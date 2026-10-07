@@ -89,6 +89,48 @@ func (s *Store) CloseIssueWithOptions(ctx context.Context, request IssueCloseReq
 	return result, nil
 }
 
+// NewlyUnblockedByClose projects the native post-close dependency query into
+// canonical graph records. It is a separate read: a suggestion failure never
+// rolls back a close that has already committed.
+func (s *Store) NewlyUnblockedByClose(ctx context.Context, path string) ([]IssueRecord, error) {
+	if err := validatePath(path); err != nil {
+		return nil, err
+	}
+	result := []IssueRecord{}
+	err := s.withTx(ctx, false, func(tx *sql.Tx) error {
+		if err := checkBinding(ctx, tx, s.options); err != nil {
+			return err
+		}
+		closed, err := s.requireIssueInTx(ctx, tx, path)
+		if err != nil {
+			return err
+		}
+		if closed.Properties.Status != types.StatusClosed {
+			return fmt.Errorf("%w: suggestions require a closed Issue", storage.ErrValidation)
+		}
+		unblocked, err := issueops.GetNewlyUnblockedByCloseInTx(ctx, tx, closed.Properties.ID)
+		if err != nil {
+			return err
+		}
+		for _, issue := range unblocked {
+			var candidatePath string
+			if err := tx.QueryRowContext(ctx, `SELECT path FROM graph_preview_catalog WHERE backing='issue' AND backing_key=? AND allocation_state='live'`, issue.ID).Scan(&candidatePath); err != nil {
+				return fmt.Errorf("%w: unmapped newly unblocked Issue: %v", ErrInvalidStore, err)
+			}
+			candidate, err := s.showIssueInTx(ctx, tx, candidatePath)
+			if err != nil {
+				return err
+			}
+			result = append(result, candidate)
+		}
+		return nil
+	})
+	if err != nil {
+		return nil, err
+	}
+	return result, nil
+}
+
 // IssueDeferralRequest changes one durable Issue's deferral state. An optional
 // graph revision guard is checked before the native Issue writer records the
 // sole retained successor.

@@ -167,3 +167,63 @@ func TestGraphPreviewCloseForceAndSessionWorkflow(t *testing.T) {
 		})
 	}
 }
+
+// A close can hand the user newly unblocked work without claiming or
+// versioning that work. The suggestion uses the native dependency query but
+// exposes only canonical graph Issues.
+func TestGraphPreviewCloseSuggestNextWorkflow(t *testing.T) {
+	bd := buildBDUnderTest(t)
+	for _, engine := range []string{"embedded", "server"} {
+		t.Run(engine, func(t *testing.T) {
+			work, home := t.TempDir(), t.TempDir()
+			initArgs := []string{"init", "--graph-mode", "link", "--scope-url", "https://example.invalid/close-suggest/", "--skip-hooks", "--skip-agents", "--non-interactive"}
+			if engine == "server" {
+				port := os.Getenv("BEADS_GRAPH_TEST_SERVER_PORT")
+				if port == "" {
+					t.Skip("set BEADS_GRAPH_TEST_SERVER_PORT for ordinary shared-server CLI qualification")
+				}
+				initArgs = append(initArgs, "--server", "--external", "--server-host", "127.0.0.1", "--server-port", port, "--server-user", "root")
+			}
+			call := func(code string, args ...string) string {
+				t.Helper()
+				return graphPolicyCLI(t, bd, work, home, nil, code, append(args, "--json")...)
+			}
+			call("", initArgs...)
+			call("", "create", "Prerequisite", "--id", "prerequisite")
+			call("", "create", "Dependent", "--id", "dependent")
+			call("", "dep", "add", "dependent", "prerequisite")
+			dependentBefore := call("", "versions", "dependent")
+			prerequisiteBefore := call("", "versions", "prerequisite")
+			call("", "create", "Unrelated", "--id", "unrelated")
+			unrelatedBefore := call("", "versions", "unrelated")
+			call("invalid_selector", "close", "prerequisite", "unrelated", "--suggest-next")
+			if call("", "versions", "prerequisite") != prerequisiteBefore || call("", "versions", "unrelated") != unrelatedBefore {
+				t.Fatal("multi-target suggestion refusal changed an Issue")
+			}
+			type suggestion struct {
+				Closed    []graphstore.IssueRecord `json:"closed"`
+				Unblocked []graphstore.IssueRecord `json:"unblocked"`
+			}
+			first := graphMixedResult[suggestion](t, call("", "close", "prerequisite", "--suggest-next", "--reason", "Done"))
+			if len(first.Closed) != 1 || first.Closed[0].Properties.Status != types.StatusClosed ||
+				len(first.Unblocked) != 1 || first.Unblocked[0].ID != "https://example.invalid/close-suggest/beads/dependent" {
+				t.Fatalf("close did not name newly unblocked Issue: %+v", first)
+			}
+			if call("", "versions", "dependent") != dependentBefore {
+				t.Fatal("suggestion changed or claimed the dependent Issue")
+			}
+			closedVersions := call("", "versions", "prerequisite")
+			if closedVersions == prerequisiteBefore {
+				t.Fatal("close did not retain its Issue successor")
+			}
+			again := graphMixedResult[suggestion](t, call("", "close", "prerequisite", "--suggest-next", "--reason", "Different"))
+			if len(again.Unblocked) != 1 || call("", "versions", "prerequisite") != closedVersions {
+				t.Fatalf("idempotent close lost suggestion or minted a version: %+v", again)
+			}
+			alone := graphMixedResult[graphstore.IssueMutationResult](t, call("", "close", "unrelated", "--suggest-next"))
+			if !alone.Changed || alone.Issue.Properties.Status != types.StatusClosed {
+				t.Fatalf("empty suggestion did not preserve close result: %+v", alone)
+			}
+		})
+	}
+}
