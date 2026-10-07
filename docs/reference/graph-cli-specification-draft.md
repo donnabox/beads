@@ -146,6 +146,7 @@ not permission to advertise an NYI operation.
 | Existing command inventory above | Already in integration | Yes, within each row's stated bounds | Preserve while integrating new work. |
 | Existing-ID `remember` default upsert and `--create-only` | Preview 2 candidate | No; `--id` creates only and `--update` selects an existing Memory | Route the CLI convenience to the existing create or Memory patch writer without changing BDP's distinct create/update operations; test both engines and keep the current-build help truthful until it lands. |
 | Issue defer/undefer, unclaim and deletion | Preview 2 candidate | No | Draft #105, #106 and #108; their combined source still needs qualification. |
+| Full ordinary Issue `close`, `reopen`, `ready` and `blocked` behavior | **Preview 2 mandatory; no dependent flag is NYI in the release target** | No; the current graph commands have the narrower shapes in the inventory above | Implement and test the complete ordinary command contracts, including batch and interactive behavior, molecule/ephemeral and parent controls, metadata queries, output choices and atomic ready-claim. A flag whose underlying graph feature is absent is unfinished release work, not a permanent graph exception. The [Issue lifecycle binding](#issue-lifecycle-binding) enumerates the flags and effects. |
 | Explicit mixed-resource selector disambiguation | Decision for the final CLI; release not assigned | No; some mixed commands accept bare Bead IDs | Parser and help changes required after contract review. |
 | Arbitrary installed Bead authoring and Type lifecycle | After the Type design is decided; release not assigned | No | Separate Type workstream owns descriptors and lifecycle. |
 | Open Bead/Link metadata | Preview 2 mandatory | No | Implement common metadata for both admitted Bead kinds and informational Links, with a matching BDP spec/schema decision before claiming protocol parity. Type lifecycle remains separate. |
@@ -166,6 +167,10 @@ branch may demonstrate a candidate without changing the integration column.
 | `delete BEAD` | existing `--force`, `--if-revision`, `--unconditional` | The same preview/apply spelling works for both admitted Bead kinds, Memory and Issue, with incident-Link refusal and retained prior states. The current integration branch admits only Memory; draft PR #108 adds Issue. |
 | `defer ISSUE...`, `undefer ISSUE...` | `defer`: `--until`, `--reason`; optional graph `--if-revision TOKEN` or `--unconditional` for one Issue | Target: ordinary `bd` defer/undefer behavior, including dated wake and multiple IDs. The current integration branch does not offer graph defer/undefer; draft PR #105 implements the target behavior but has not landed. |
 | `unclaim ISSUE...` | `--reason`, `--force` or `--if-assignee HOLDER` | Target: ordinary `bd` release behavior, including the ownership and conditional-release rules. The current integration branch does not offer graph unclaim; draft PR #106 implements the target behavior but has not landed. |
+| `close [ISSUE...]`, alias `done` | `--reason` (one shared or positionally repeated), `--reason-file`, `--force`, `--session`, `--suggest-next`, `--claim-next`, `--continue`, `--no-auto`; ordinary conditional `--if-revision` behavior | Match ordinary close eligibility, batch result/partial-failure behavior, interactive last-touched fallback, pinned/gate force rules, session attribution, next-work discovery and claim, and molecule advancement/auto-close. Honor the ordinary single-target restrictions on workflow and conditional flags. |
+| `reopen ISSUE...` | `--reason` | Require at least one ID, accept multiple IDs, clear the closed time and emit the ordinary Reopened event on accepted transitions; preserve native no-op behavior. |
+| `ready` | `--assignee`, `--claim`, `--exclude-label`, `--exclude-type`, `--explain`, `--gated`, `--has-metadata-key`, `--include-deferred`, `--include-ephemeral`, `--label`, `--label-any`, `--limit`, `--metadata-field`, `--mol`, `--mol-type`, `--offset`, `--parent`, `--plain`, `--pretty`, `--priority`, `--sort`, `--type`, `--unassigned` | Match ordinary blocker-aware filtering, ordering, presentation and atomic first-match claim. Preserve the ordinary proxied-server restriction on `--offset`; implement its supporting graph execution path rather than silently accepting an ineffective flag. |
+| `blocked` | `--parent` | Match ordinary dependency-blocked results and descendant filtering. |
 
 The implemented defaults are part of the contract, not unspecified CLI
 convenience: `link` without a Type requests a blocking Issue Dependency;
@@ -246,22 +251,24 @@ claim or close operation.
 | --- | --- |
 | `create` Issue | Starts open, with the accepted initial fields and no claim lease. Initial assignee is data, not an atomic claim. |
 | `update ISSUE --claim` | One native atomic claim for the current actor; true-only and no edit/guard flags. Eligibility follows the configured native active-status and pool-alias rules. A successful change retains the complete Issue state and native claim stamp together. Repeating an eligible same-actor claim is a no-op and never renews its five-minute nonrenewing lease. A different actor cannot take an active claim by merely spelling `--unconditional` or `--force`. |
-| `close ISSUE` | One checked native close with optional reason aliases; no batch, force or independent revision flag. An already-closed Issue is a no-op. A policy refusal leaves status, Links and retained state unchanged. |
-| `reopen ISSUE` | One native transition from a done-category status back to open, with optional `--reason`; a non-done Issue is a no-op after validation. No batch or guard bypass. |
-| `ready`, `blocked` | Read the current Issue set. `ready` derives readiness from Issue status and blocking Dependencies; `blocked` reports canonical blocking IDs. Neither records a version, touches a lease or changes the graph. |
+| `close [ISSUE...]` | Native checked close and ordinary command behavior for zero, one or multiple IDs; the zero-ID last-touched fallback applies only under the ordinary interactive rule. Accepted close writes retain one complete graph projection with the native stamp. An already-closed Issue is a no-op. `--force` follows native pinned/gate policy; it does not bypass an explicit revision conflict. Post-close suggestion, atomic claim-next and molecule continuation have their ordinary lifecycle effects and restrictions. A refusal leaves that target's status, Links and retained state unchanged. |
+| `reopen ISSUE...` | One or more IDs, native transition from a done-category status to open, `closed_at` clearing and Reopened event. A non-done Issue is a no-op after validation; each accepted change retains the complete graph projection with the native stamp. |
+| `ready`, `blocked` | Native blocker-aware Issue views with all ordinary query and presentation controls. `ready --claim` atomically claims the first matching Issue and records the native claim/projection once. Read-only queries record no version, touch no lease and make no graph change; `blocked --parent` filters descendants while preserving canonical blocker IDs. |
 
-The lifecycle **policy** above is shared with ordinary Issues, but the admitted
-graph command shapes are narrower. Ordinary `close` and `reopen` accept
-multiple IDs; graph `close` and `reopen` accept one. Ordinary `ready` and
-`blocked` expose additional query controls; graph versions currently take no
-positional IDs or filters and return their checked current views. Graph
-`update --claim` admits only a standalone claim. These are explicit preview
-surface limits, not a claim that ordinary `bd` has the same flags or output.
-The target is to preserve ordinary Issue command shape and lifecycle behavior
-where the graph model admits the underlying feature. Multi-ID close/reopen
-and ordinary ready/blocked query controls remain NYI in graph mode; the exact
-dependent-flag cutline is being reviewed separately. The current narrower
-spelling is not the final parity contract.
+The current integration build has narrower graph command shapes: one explicit
+ID for `close` or `reopen`, no `ready` query flags and no `blocked --parent`.
+That inventory describes the build, not the Preview 2 release target. The
+release target is the complete ordinary command contract for these four
+commands, including dependent molecule, ephemeral, parent, metadata and
+post-close behavior. No ordinary flag or lifecycle effect in this contract is
+designated NYI for Preview 2. `update --claim` remains a standalone graph
+entry point; `ready --claim` additionally follows the ordinary atomic
+first-match behavior. The ordinary command's own restrictions still apply:
+for example, `reopen` requires an ID, `close` permits a zero-ID fallback only
+where ordinary interactive policy permits it, and `ready --offset` requires
+the proxied-server path. If a supporting graph model or execution path is
+missing, that is mandatory implementation and qualification work before the
+release can claim parity.
 
 The native close/reopen/claim writer owns the atomic History stamp. The graph
 layer retains the resulting complete Issue projection in that same
@@ -483,11 +490,11 @@ explicit creation title must remain nonempty; updates preserve omitted fields.
 | `links BEAD` | Complete bounded current incident Links, with optional `--direction in\|out\|both` and `--link-type TYPE` filter. No pagination. |
 | `unlink LINK` | Remove one informational Link or blocking Dependency by canonical ID. Requires a Link guard; the source guard is optional for Memory-owned Links, required for blocking Dependencies. |
 | `unlink SOURCE TARGET --link-type TYPE` | Remove an unambiguous informational Link with the same guards. Multiple matches refuse and report candidate IDs. Blocking Dependency pair removal is unavailable. |
-| `close BEAD` | Close one Issue through the existing Issue policy, optionally with ordinary reason aliases. No force or batch operations. |
-| `reopen BEAD` | Reopen one Issue, optionally with `--reason`. |
-| `ready` | Unfiltered current ready Issues through ordinary readiness rules. No list filters, output limit or configured positive `BEADS_MAX_ROWS`. |
+| `close [BEAD...]`, alias `done` | Ordinary interactive last-touched fallback or explicit one/many Issue IDs; reason aliases or `--reason-file`, `--force`, `--session`, `--suggest-next`, `--claim-next`, `--continue`, `--no-auto` and the ordinary conditional-revision path. Native gate, molecule and next-work effects apply. The pinned integration build supports only one explicit ID and inline reason. |
+| `reopen BEAD...` | Reopen one or more Issues with optional `--reason`, clearing `closed_at` and recording the native Reopened event for accepted changes. The pinned integration build supports one explicit ID. |
+| `ready` | Ordinary blocker-aware Issue query, all [target flags](#target-operations-that-remain-nyi) and atomic `--claim` behavior. The pinned integration build admits only an unfiltered read. |
 | `list` or `list --format records-json` | Without an Issue filter, one bounded current snapshot of every Memory and every Issue the ordinary `bd list` would show: closed and pinned Issues are hidden unless `--all`, which also lifts the row limit. Newest recorded change first, ties by canonical Bead ID; human rows show local ID and kind, and for an Issue its status and priority, then the title. `--bead-type types/NAME` narrows by nominal Bead Type. A positive `BEADS_MAX_ROWS` refuses a page of more Beads than the cap. Any Issue filter (status/state, type, title/title-contains, priority and range, assignee/no-assignee, label/label-any/exclude-label, pinned/no-pinned, due-before/due-after/overdue, sort or reverse, or a matching configured directory label) selects the native Issue-only query, which lists Issues only, says so under the header in human output, and omits closed and pinned Issues unless `--all` or a filter selects them. See [All-Bead listing](#all-bead-listing). `hasMore` reports whether a row limit omitted matches; tree and legacy JSON remain unavailable. |
-| `blocked` | Complete native dependency-blocked Issue view with canonical blocker IDs. No filters or positive `BEADS_MAX_ROWS`. |
+| `blocked` | Native dependency-blocked Issue view with canonical blocker IDs and ordinary `--parent` descendant filter. The pinned integration build has no parent filter and refuses positive `BEADS_MAX_ROWS`. |
 | `graph BEAD --view generic` | Current local summary traversal with `--direction in\|out\|both`, `--depth`, `--max-nodes` and `--max-links`. |
 | `status --graph` | Report the capabilities and bounds admitted by this checkpoint, including initial Issue fields/notes, append-only notes, estimate/reference edits and due-date authoring/filtering. |
 | `serve --readonly --addr HOST:PORT` | BDP Read over HTTP for an ordinary shared-server graph workspace. Existing token-file authentication, Host controls and non-loopback opt-in apply. Embedded serving is refused. |
@@ -916,9 +923,10 @@ script interface below; these CLI result shapes are experimental.
 `blocked` follows the existing native dependency-blocked query. It is not the
 complement of ready, nor a query for every manually blocked or deferred Issue.
 The result is an array of objects with complete `issue` records and canonical
-`blockedBy` IDs, sorted by canonical ID. Empty is `[]`. It accepts no positional
-selectors or filter flags, even explicit empty values. A positive
-`BEADS_MAX_ROWS` refuses; zero or unset permits the complete bounded view.
+`blockedBy` IDs, sorted by canonical ID. Empty is `[]`. The Preview 2 target
+accepts the ordinary `--parent` descendant filter but no positional selector.
+The pinned integration build currently refuses all filters, including an
+explicit empty `--parent`; a positive `BEADS_MAX_ROWS` also refuses there.
 No query wakes deferred work, repairs blocked state, creates versions or opens
 the ordinary store. Readonly and migration freeze permit these reads.
 
