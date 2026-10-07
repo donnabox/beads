@@ -18,6 +18,7 @@ recording for this command. Cite the opaque version token with bd show ID
 --version TOKEN or bd compare ID --from TOKEN --to TOKEN. The store-local
 local_revision only orders versions within this store. --json names that field
 local_revision, matching ordinary bd versions. BDP HTTP History is unavailable.
+A removed Link lists only its prior citable versions; deletion adds no version.
 
 Ordinary Issue workspaces:
 ` + versionsCmd.Long

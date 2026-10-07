@@ -376,9 +376,9 @@ time, and attribution. Use the **token** for `show --version` or `compare`, neve
 the local revision number. Human output calls the number `REV`, matching
 ordinary `bd versions`; graph JSON uses `local_revision`. It orders versions
 within this store and is not a stable cross-clone address. `change_at` is not
-the ordering authority. A removed Link's deletion marker is listed with
-`removed: true` but is not a readable Link version. Memory deletion adds no
-deletion version. There is still no
+the ordering authority. A removed Link still lists its prior citable versions;
+the private deletion marker is not a Resource version and is omitted. Memory
+deletion also adds no version. There is still no
 BDP HTTP History, as-of selection or restoration. `bd status --graph` reports
 `versionList: true`; `historyExact: false` refers to the unavailable HTTP
 History profile. The [technical reference](/reference/graph-cli-specification-draft#list-a-resources-versions)
