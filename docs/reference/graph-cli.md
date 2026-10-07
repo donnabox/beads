@@ -232,7 +232,9 @@ bd blocked --label release --json
 
 `ready --claim --json` returns a one-element array of complete graph Issue
 records, or an empty array when no matching ready Issue exists. An empty claim
-changes no lease or revision. The remaining ordinary ready modes and blocked `--parent` remain in
+does not create a claim lease or revision. As with ordinary `ready`, the lazy
+defer-wake before selection may separately version an expired deferred Issue.
+The remaining ordinary ready modes and blocked `--parent` remain in
 the [draft CLI specification](/reference/graph-cli-specification-draft)
 and refuse in this graph slice until their supporting graph behavior is ready.
 
