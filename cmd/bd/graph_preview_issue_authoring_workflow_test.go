@@ -31,7 +31,7 @@ func TestGraphPreviewIssueAuthoringWorkflow(t *testing.T) {
 			}
 			exact := func(record graphstore.IssueRecord) {
 				t.Helper()
-				got := graphMixedResult[graphstore.IssueRecord](t, call("show", record.ID, "--version", record.Version))
+				got := graphMixedResult[graphstore.IssueRecord](t, call("show", record.ID, "--version", record.Revision))
 				p := *record.Properties
 				p.ContentHash, p.RowVersion = "", 0
 				record.Properties = &p
@@ -158,7 +158,7 @@ func TestGraphPreviewIssueDatelessDeferralWorkflow(t *testing.T) {
 				t.Fatal("claim setup did not change Issue")
 			}
 			claimedDeferred := graphMixedResult[graphstore.IssueMutationResult](t, call("defer", "claimed"))
-			if !claimedDeferred.Changed || claimedDeferred.Issue.Properties.Assignee != "operator" || claimedDeferred.Issue.Version == claimed.Version {
+			if !claimedDeferred.Changed || claimedDeferred.Issue.Properties.Assignee != "operator" || claimedDeferred.Issue.Revision == claimed.Revision {
 				t.Fatalf("claimed deferral lost assignment: %+v", claimedDeferred)
 			}
 			claimedOpened := graphMixedResult[graphstore.IssueMutationResult](t, call("undefer", "claimed"))
@@ -172,7 +172,7 @@ func TestGraphPreviewIssueDatelessDeferralWorkflow(t *testing.T) {
 				t.Fatal("Issue and Memory identity collided")
 			}
 			deferred := graphMixedResult[graphstore.IssueMutationResult](t, call("defer", "work", "--if-revision", original.Revision))
-			if !deferred.Changed || string(deferred.Issue.Properties.Status) != "deferred" || deferred.Issue.Properties.DeferUntil != nil || deferred.Issue.Version == original.Version {
+			if !deferred.Changed || string(deferred.Issue.Properties.Status) != "deferred" || deferred.Issue.Properties.DeferUntil != nil || deferred.Issue.Revision == original.Revision {
 				t.Fatalf("defer result: %+v", deferred)
 			}
 			refuse("revision_conflict", "defer", "work", "--if-revision", original.Revision)
@@ -187,7 +187,7 @@ func TestGraphPreviewIssueDatelessDeferralWorkflow(t *testing.T) {
 				t.Fatalf("repeat defer changed Issue: %+v", noop)
 			}
 			opened := graphMixedResult[graphstore.IssueMutationResult](t, call("undefer", "work", "--if-revision", deferred.Issue.Revision))
-			if !opened.Changed || string(opened.Issue.Properties.Status) != "open" || opened.Issue.Version == deferred.Issue.Version {
+			if !opened.Changed || string(opened.Issue.Properties.Status) != "open" || opened.Issue.Revision == deferred.Issue.Revision {
 				t.Fatalf("undefer result: %+v", opened)
 			}
 			foundWork := false
@@ -204,7 +204,7 @@ func TestGraphPreviewIssueDatelessDeferralWorkflow(t *testing.T) {
 			woke := graphMixedResult[[]graphstore.IssueRecord](t, call("ready"))
 			foundWork = false
 			for _, item := range woke {
-				foundWork = foundWork || (item.ID == original.ID && item.Properties.DeferUntil == nil && item.Version != snoozed.Issue.Version)
+				foundWork = foundWork || (item.ID == original.ID && item.Properties.DeferUntil == nil && item.Revision != snoozed.Issue.Revision)
 			}
 			if !foundWork {
 				t.Fatalf("dated defer did not wake: %+v", woke)

@@ -15,11 +15,14 @@ import (
 const graphIssueBlockedOutputLimit = 16 << 20
 
 func graphPreviewBlockedInput(cmd *cobra.Command, args []string) error {
-	if err := graphPreviewFlags(cmd); err != nil {
+	if err := graphPreviewFlags(cmd, "label", "label-any", "exclude-label"); err != nil {
 		return err
 	}
 	if len(args) != 0 {
 		return graphFailure("invalid_selector", "graph blocked takes no positional arguments", 2)
+	}
+	if err := graphPreviewLabelFilters(cmd); err != nil {
+		return err
 	}
 	if raw := os.Getenv(maxRowsEnvVar); raw != "" {
 		value, err := strconv.Atoi(raw)
@@ -37,8 +40,9 @@ func runGraphPreviewBlocked(cmd *cobra.Command, args []string) error {
 	if err := graphPreviewBlockedInput(cmd, args); err != nil {
 		return err
 	}
+	filter := blockedFilterFromFlags(cmd)
 	return withGraphStoreOutput(func(ctx context.Context, s *graphstore.Store) (any, string, error) {
-		issues, err := s.BlockedIssues(ctx)
+		issues, err := s.BlockedIssuesFiltered(ctx, filter)
 		if err != nil {
 			return nil, "", err
 		}

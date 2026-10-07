@@ -65,6 +65,22 @@ func TestGraphPreviewQueryWorkflow(t *testing.T) {
 				call("link", "beads/"+edge[0], "beads/"+edge[1], "--id", "links/"+edge[2], "--resource-type", related, "--unconditional-source")
 			}
 			dep := graphMixedResult[graphstore.DependencyResult](t, call("dep", "add", "beads/work", "beads/gate"))
+			graphPolicyCLI(t, bd, work, home, nil, "invalid_properties", "ready", "--label=", "--json")
+			graphPolicyCLI(t, bd, work, home, nil, "invalid_properties", "blocked", "--label-any=", "--json")
+			// The ordinary ready and blocked predicates now select canonical
+			// graph Issues without changing their blocker-aware membership.
+			if got := graphMixedResult[[]graphstore.BlockedIssue](t, call("blocked", "--label", "release")); len(got) != 1 || got[0].Issue.ID != scope+"beads/work" {
+				t.Fatalf("blocked --label missed work: %+v", got)
+			}
+			if got := graphMixedResult[[]graphstore.BlockedIssue](t, call("blocked", "--exclude-label", "release")); len(got) != 0 {
+				t.Fatalf("blocked --exclude-label leaked work: %+v", got)
+			}
+			if got := graphMixedResult[[]graphstore.IssueRecord](t, call("ready", "--priority", "2", "--type", "task")); len(got) != 1 || got[0].ID != scope+"beads/gate" {
+				t.Fatalf("ready priority/type filter missed gate: %+v", got)
+			}
+			if got := graphMixedResult[[]graphstore.IssueRecord](t, call("ready", "--priority", "1")); len(got) != 0 {
+				t.Fatalf("ready priority filter leaked blocked work: %+v", got)
+			}
 			// Complete the release journey in this same linked workspace before
 			// the existing query, close/reopen, explicit unlink and delete phases.
 			planBefore := graphMixedResult[graphstore.Record](t, call("show", "beads/plan"))
@@ -99,21 +115,21 @@ func TestGraphPreviewQueryWorkflow(t *testing.T) {
 			type retainedRead struct{ id, version, output string }
 			var retained []retainedRead
 			for _, record := range []graphstore.Record{planBefore, memoryEdit.Memory} {
-				output := call("show", record.ID, "--version", record.Version)
+				output := call("show", record.ID, "--version", record.Revision)
 				if got := graphMixedResult[graphstore.Record](t, output); !reflect.DeepEqual(got, record) {
 					t.Fatalf("Memory predecessor/current retention: %+v want=%+v", got, record)
 				}
-				retained = append(retained, retainedRead{record.ID, record.Version, output})
+				retained = append(retained, retainedRead{record.ID, record.Revision, output})
 			}
 			for _, record := range []graphstore.IssueRecord{workBefore, issueEdit.Issue} {
 				properties := *record.Properties
 				properties.ContentHash, properties.RowVersion = "", 0
 				record.Properties = &properties
-				output := call("show", record.ID, "--version", record.Version)
+				output := call("show", record.ID, "--version", record.Revision)
 				if got := graphMixedResult[graphstore.IssueRecord](t, output); !reflect.DeepEqual(got, record) {
 					t.Fatalf("Issue predecessor/current retention: %+v want=%+v", got, record)
 				}
-				retained = append(retained, retainedRead{record.ID, record.Version, output})
+				retained = append(retained, retainedRead{record.ID, record.Revision, output})
 			}
 			stable := graphMemoryReadSnapshot(t, work)
 			memoryNoop := graphMixedResult[graphstore.MemoryMutationResult](t, call("update", "beads/plan", "--properties", replacement, "--if-revision", memoryEdit.Memory.Revision))

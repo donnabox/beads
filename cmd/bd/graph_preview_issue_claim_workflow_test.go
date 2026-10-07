@@ -39,7 +39,7 @@ func TestGraphPreviewIssueClaimWorkflow(t *testing.T) {
 			}
 			exact := func(record graphstore.IssueRecord) {
 				t.Helper()
-				got := graphMixedResult[graphstore.IssueRecord](t, call("show", record.ID, "--version", record.Version))
+				got := graphMixedResult[graphstore.IssueRecord](t, call("show", record.ID, "--version", record.Revision))
 				properties := *record.Properties
 				properties.ContentHash, properties.RowVersion = "", 0
 				record.Properties = &properties
@@ -50,7 +50,7 @@ func TestGraphPreviewIssueClaimWorkflow(t *testing.T) {
 			assertClaim := func(before, current graphstore.IssueRecord, actor string) {
 				t.Helper()
 				p := current.Properties
-				if p == nil || p.Status != types.StatusInProgress || p.Assignee != actor || p.StartedAt == nil || p.HeartbeatAt == nil || p.LeaseExpiresAt == nil || p.LeaseExpiresAt.Sub(*p.HeartbeatAt) != 5*time.Minute || current.Revision == before.Revision || current.Version != current.Revision || current.ID != before.ID || current.Type != before.Type || current.Attribution.Actor != actor {
+				if p == nil || p.Status != types.StatusInProgress || p.Assignee != actor || p.StartedAt == nil || p.HeartbeatAt == nil || p.LeaseExpiresAt == nil || p.LeaseExpiresAt.Sub(*p.HeartbeatAt) != 5*time.Minute || current.Revision == before.Revision || current.ID != before.ID || current.Type != before.Type || current.Attribution.Actor != actor {
 					t.Fatalf("incomplete claim: %+v properties=%+v", current, p)
 				}
 				properties := *p

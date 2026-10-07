@@ -7,6 +7,7 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
+	"os"
 	"os/exec"
 	"reflect"
 	"regexp"
@@ -15,6 +16,8 @@ import (
 	"strings"
 	"testing"
 	"time"
+
+	"github.com/steveyegge/beads/internal/storage/graphstore"
 )
 
 // These are the CLI-level tests for graph-mode `bd versions` (and `bd history`
@@ -38,7 +41,59 @@ type graphVersionsRow struct {
 	ChangeAt    string `json:"change_at"`
 	Actor       string `json:"actor"`
 	Attribution string `json:"attribution"`
-	Removed     bool   `json:"removed"`
+}
+
+// The release contract must hold on both installed engines. The longer
+// projection test in this file pins every row field; this one proves that a
+// removed Link's listed addresses remain usable after a shared-server commit.
+func TestGraphPreviewRemovedLinkVersionsTwoEngines(t *testing.T) {
+	bd := buildBDUnderTest(t)
+	for _, engine := range []string{"embedded", "server"} {
+		t.Run(engine, func(t *testing.T) {
+			work, home := t.TempDir(), t.TempDir()
+			const scope = "https://example.invalid/citable-versions/"
+			call := func(args ...string) string {
+				t.Helper()
+				return graphVersionsOK(t, bd, work, home, append(args, "--json")...)
+			}
+			initArgs := []string{"init", "--graph-mode", "link", "--scope-url", scope,
+				"--skip-hooks", "--skip-agents", "--non-interactive"}
+			if engine == "server" {
+				port := os.Getenv("BEADS_GRAPH_TEST_SERVER_PORT")
+				if port == "" {
+					t.Skip("set BEADS_GRAPH_TEST_SERVER_PORT for ordinary shared-server qualification")
+				}
+				initArgs = append(initArgs, "--server", "--external", "--server-host", "127.0.0.1",
+					"--server-port", port, "--server-user", "root")
+			}
+			call(initArgs...)
+			call("create", "Source", "--id", "source")
+			call("create", "Target", "--id", "target")
+			call("link", "source", "target", "--id", "links/edge", "--resource-type", scope+"types/preview-related-v2")
+			call("update", "links/edge", "--properties", `{"note":"changed"}`, "--unconditional")
+			removed := graphMixedResult[graphstore.LinkDeleteResult](t, call("unlink", "links/edge", "--unconditional"))
+			listed := call("versions", "links/edge")
+			_, kind, rows, members := graphVersionsListed(t, listed)
+			if kind != "link" || len(rows) != 2 {
+				t.Fatalf("removed Link listed %q with %d citable versions: %s", kind, len(rows), listed)
+			}
+			graphVersionsAssertKeys(t, engine, members)
+			for _, row := range rows {
+				if row.Version == removed.Link.Version {
+					t.Fatalf("deletion marker became a version: %+v", row)
+				}
+				call("show", "links/edge", "--version", row.Version)
+			}
+			if got := call("history", "links/edge"); got != listed {
+				t.Fatalf("history alias differs from versions: history=%s versions=%s", got, listed)
+			}
+			_, stderr, code := graphVersionsProcess(t, bd, work, home,
+				"show", "links/edge", "--version", removed.Link.Version, "--json")
+			if code == 0 || !strings.Contains(stderr, "gone") {
+				t.Fatalf("private deletion token unexpectedly citable: code=%d stderr=%q", code, stderr)
+			}
+		})
+	}
 }
 
 // graphVersionsWireKeys is the COMPLETE member set of one row, sorted. The set
@@ -51,7 +106,7 @@ type graphVersionsRow struct {
 // compare a store-local ordering key against an address. Two clones can hold the same
 // ordinal for different states, so that comparison is wrong rather than merely
 // confusing.
-var graphVersionsWireKeys = []string{"actor", "attribution", "change_at", "local_revision", "removed", "version"}
+var graphVersionsWireKeys = []string{"actor", "attribution", "change_at", "local_revision", "version"}
 
 // graphVersionsHumanRow matches one rendered row line: ordinal, microsecond
 // timestamp, actor, attribution. The token lives on its own following line, so
@@ -236,14 +291,12 @@ func TestGraphPreviewVersionsCLI(t *testing.T) {
 	run(t, "remember", "Memory body", "--id", "beads/memory", "--title", "Memory subject", "--actor", author, "--json")
 	run(t, "update", "beads/memory", "--properties", `{"title":"Memory subject renamed","body":"Memory body again"}`,
 		"--unconditional", "--actor", author, "--json")
-	// Link plane: created, changed, then unlinked. The unlink is the only way
-	// to produce a deletion marker, which is the one listed row whose token
-	// `show --version` refuses. Source is an Issue rather than a Memory so the
-	// Link is unowned and these writes do not advance a second subject's
-	// history behind the assertions below.
+	// Link plane: created, changed, then unlinked. The private deletion marker
+	// must not appear among the citable versions. An Issue source leaves this
+	// Link unowned, so these writes do not advance a second subject's history.
 	run(t, "link", "beads/issue", "beads/target", "--id", "links/related", "--resource-type", relatedType, "--actor", author, "--json")
 	run(t, "update", "links/related", "--properties", `{"note":"changed"}`, "--unconditional", "--actor", author, "--json")
-	run(t, "unlink", "links/related", "--unconditional", "--actor", author, "--json")
+	removedLink := graphMixedResult[graphstore.LinkDeleteResult](t, run(t, "unlink", "links/related", "--unconditional", "--actor", author, "--json"))
 
 	t.Run("json-member-set", func(t *testing.T) {
 		// One plane getting the contract right says nothing about the others:
@@ -278,65 +331,39 @@ func TestGraphPreviewVersionsCLI(t *testing.T) {
 		}
 	})
 
-	t.Run("removed-marks-only-the-deletion-marker", func(t *testing.T) {
+	t.Run("removed-link-lists-only-citable-versions", func(t *testing.T) {
 		_, kind, rows, _ := graphVersionsListed(t, run(t, "versions", "links/related", "--json"))
 		if kind != "link" {
 			t.Fatalf("unlinked Link listed as %q", kind)
 		}
-		// create, update, unlink: the deletion marker is a retained version of
-		// its own, so a deleted Link lists three rows, not two.
-		if len(rows) != 3 {
-			t.Fatalf("expected create/update/unlink to retain three versions, got %d: %+v", len(rows), rows)
+		if len(rows) != 2 {
+			t.Fatalf("create/update should retain two citable Link versions, got %d: %+v", len(rows), rows)
 		}
-		if !rows[0].Removed {
-			t.Fatalf("newest row of an unlinked Link is not flagged removed: %+v", rows[0])
+		if removedLink.Link.Version == "" {
+			t.Fatal("unlink did not report its private deletion token")
 		}
-		for i, row := range rows[1:] {
-			// The flag means "listed, but this token is not citable". Setting it
-			// on a live version would send a reader away from a token that
-			// works; exactly one row can carry it.
-			if row.Removed {
-				t.Fatalf("live Link version at row %d flagged removed: %+v", i+1, row)
-			}
-		}
-		// Planes with no deletion marker must not flag anything. A deleted
-		// Memory's final head is a real retained Resource, and the Issue plane
-		// keeps no marker at all, so nothing here is ever removed.
-		for _, selector := range []string{"beads/issue", "beads/memory"} {
-			_, _, other, _ := graphVersionsListed(t, run(t, "versions", selector, "--json"))
-			for i, row := range other {
-				if row.Removed {
-					t.Fatalf("%s row %d flagged removed; only a Link deletion marker may be: %+v", selector, i, row)
-				}
-			}
-		}
-
-		const marker = "(removed; not citable)"
-		const footer = "The row marked removed is this Link's deletion marker."
 		human := run(t, "versions", "links/related")
-		if strings.Count(human, marker) != 1 {
-			t.Fatalf("expected exactly one %q mark:\n%s", marker, human)
+		if strings.Contains(human, removedLink.Link.Version) {
+			t.Fatalf("non-citable deletion token appeared in human version list:\n%s", human)
 		}
-		// The mark belongs to the newest row's token specifically. Printing it
-		// against the wrong token would be worse than omitting it.
-		if !strings.Contains(human, rows[0].Version+"  "+marker) {
-			t.Fatalf("mark is not on the deletion marker's token %q:\n%s", rows[0].Version, human)
+		if !strings.Contains(human, "This Link has been removed.") {
+			t.Fatalf("removed Link has no human state notice:\n%s", human)
 		}
-		for _, row := range rows[1:] {
-			if strings.Contains(human, row.Version+"  "+marker) {
-				t.Fatalf("live token %q rendered as removed:\n%s", row.Version, human)
+		for _, row := range rows {
+			if row.Version == removedLink.Link.Version {
+				t.Fatalf("non-citable deletion token appeared as a Resource version: %+v", row)
 			}
+			// Every returned token must actually work as an exact address.
+			run(t, "show", "links/related", "--version", row.Version, "--json")
 		}
-		if !strings.Contains(human, footer) {
-			t.Fatalf("marked row rendered without the footer that explains it:\n%s", human)
+		_, stderr, code := graphVersionsProcess(t, bd, work, home, "show", "links/related", "--version", removedLink.Link.Version, "--json")
+		if code == 0 || !strings.Contains(stderr, "gone") {
+			t.Fatalf("private deletion token unexpectedly citable: code=%d stderr=%q", code, stderr)
 		}
-		// The footer explains a mark. With no marked row there is nothing to
-		// explain, and printing it anyway would describe a row that is not
-		// there.
 		for _, selector := range []string{"beads/issue", "beads/memory"} {
 			clean := run(t, "versions", selector)
-			if strings.Contains(clean, marker) || strings.Contains(clean, footer) {
-				t.Fatalf("%s rendered removal guidance with no removed row:\n%s", selector, clean)
+			if strings.Contains(clean, "This Link has been removed.") {
+				t.Fatalf("%s rendered Link removal guidance:\n%s", selector, clean)
 			}
 		}
 	})

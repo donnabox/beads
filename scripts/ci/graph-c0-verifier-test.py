@@ -57,6 +57,24 @@ def without_server(label):
 SOURCE = Path(__file__).with_name("graph-c0-qualify.py").read_text()
 
 
+class MemoryCreationProjection(unittest.TestCase):
+    def test_revision_only_record_preserves_c0_creation_checks(self):
+        scope = "https://example.invalid/ci-c0/embedded/"
+        record = {
+            "id": scope + "beads/plan",
+            "type": scope + "types/preview-memory-v2",
+            "properties": {"title": "Plan", "body": "Durable C0 body — 記憶"},
+            "owned": [],
+            "revision": "opaque-token",
+        }
+        module.require_memory_creation(record, scope)
+        for change in ({"revision": ""}, {"revision": None}, {"version": "duplicate-token"},
+                       {"owned": ["unexpected"]}, {"type": scope + "types/preview-issue-v2"},
+                       {"properties": {"title": "Plan"}}):
+            with self.subTest(change=change), self.assertRaisesRegex(RuntimeError, "incomplete/non-Memory creation"):
+                module.require_memory_creation(dict(record, **change), scope)
+
+
 def lane_function(name):
     return next(n for n in ast.walk(ast.parse(SOURCE)) if isinstance(n, ast.FunctionDef) and n.name == name)
 
