@@ -155,6 +155,21 @@ bd update work --title 'Move the release branch after review' --unconditional
 bd update policy --properties '{"title":"Code flow policy","body":"Land reviewed changes on integration."}' --unconditional
 ```
 
+`bd close ID...` and `bd reopen ID...` accept one or more local Issues. A
+single `--reason` applies to every close target, repeated reasons map to IDs
+in input order, and `--reason-file PATH` preserves the file's literal text.
+The `bd done ID MESSAGE` alias accepts a trailing reason. A batch keeps
+successful changes when another target fails: successful records go to stdout,
+per-target failures go to stderr, and the command exits nonzero. Reopen
+reports already-open Issues without adding a version. Graph workspaces do not
+yet admit ordinary close force, interactive last-touched or post-close workflow
+flags, or remote routing.
+
+```sh
+bd close work review --reason 'Finished the work' --reason 'Review complete'
+bd reopen work review --reason 'Follow-up needed'
+```
+
 `bd delete ID` previews deletion of one unreferenced Memory or Issue without
 changing storage; `--force` applies it. `bd forget ID` applies Memory deletion
 directly and does not accept Issues. Applying either command requires an
