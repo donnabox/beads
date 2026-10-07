@@ -120,10 +120,16 @@ Memory-owned Links accept the current source by default, or use
 explicitly selects the default. The blocking Type types/preview-blocks-v1
 requires Issue endpoints and, unlike informational Types, one of
 --if-source-revision TOKEN or --unconditional-source.`},
-		{closeCmd, `Close one live Issue by ID or beads/ID. Batch, force and
-remote-routing forms are unavailable in this graph preview.`},
-		{reopenCmd, `Reopen one closed Issue by ID or beads/ID, optionally
-with --reason. Batch and remote-routing forms are unavailable.`},
+		{closeCmd, `Close one or more local Issues by ID or beads/ID. One --reason
+applies to all IDs; repeat it once per ID for positional reasons, or use
+--reason-file PATH for literal file content. The done alias accepts a trailing
+positional reason. A batch reports successful Issues on stdout and per-Issue
+failures on stderr, then exits nonzero if any failed. Force, interactive
+last-touched, post-close workflow and remote-routing forms remain unavailable.`},
+		{reopenCmd, `Reopen one or more local closed Issues by ID or beads/ID,
+optionally with --reason. A batch reports changed Issues on stdout and
+per-Issue failures on stderr, then exits nonzero if any failed. Already-open
+Issues remain unchanged. Remote-routing forms remain unavailable.`},
 		{unclaimCmd, `Use bd unclaim ID... to release one or more assigned open or
 in-progress Issues. By default only the current holder may release a claim.
 --force bypasses holder authorization but still respects the native row CAS;

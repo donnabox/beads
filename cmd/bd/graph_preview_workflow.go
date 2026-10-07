@@ -118,37 +118,63 @@ func runGraphPreviewClose(cmd *cobra.Command, args []string) error {
 	if err := graphPreviewWritePolicy(); err != nil {
 		return err
 	}
-	if err := graphPreviewFlags(cmd, "reason", "resolution", "message", "comment"); err != nil {
+	if err := graphPreviewFlags(cmd, "reason", "resolution", "message", "comment", "reason-file"); err != nil {
 		return err
 	}
-	if len(args) != 1 {
-		return graphFailure("invalid_selector", "graph close requires one Bead ID or beads/PATH", 2)
-	}
-	path, err := graphPreviewResourcePath(graphPreviewConfig.GraphScopeURL, args[0])
-	if err != nil {
-		return graphFailure("invalid_selector", err.Error(), 2)
-	}
-	if err := graph.ValidateBeadPath(path); err != nil {
-		return graphFailure("invalid_selector", err.Error(), 2)
-	}
-	reasons, _, err := resolveCloseReasons(cmd, args)
+	reasons, targets, err := resolveCloseReasons(cmd, args)
 	if err != nil {
 		return graphFailure("invalid_properties", err.Error(), 2)
+	}
+	if len(targets) == 0 {
+		return graphFailure("invalid_selector", "graph close requires at least one Bead ID or beads/PATH", 2)
 	}
 	if err := validateCloseReasons(reasons); err != nil {
 		return graphFailure("invalid_properties", err.Error(), 2)
 	}
-	return withGraphStore(func(ctx context.Context, store *graphstore.Store) (any, string, error) {
-		result, err := store.CloseIssue(ctx, path, reasons[0], getActorWithGit())
+	paths := make([]string, len(targets))
+	for i, selector := range targets {
+		path, err := graphPreviewResourcePath(graphPreviewConfig.GraphScopeURL, selector)
 		if err != nil {
-			return nil, "", err
+			return graphFailure("invalid_selector", err.Error(), 2)
 		}
-		verb := "Closed"
-		if !result.Changed {
-			verb = "Already closed"
+		if err := graph.ValidateBeadPath(path); err != nil {
+			return graphFailure("invalid_selector", err.Error(), 2)
 		}
-		return result, fmt.Sprintf("%s %s\n", verb, args[0]), nil
+		paths[i] = path
+	}
+	var hadError bool
+	err = withGraphStore(func(ctx context.Context, store *graphstore.Store) (any, string, error) {
+		results := make([]graphstore.IssueMutationResult, 0, len(paths))
+		var human strings.Builder
+		for i, path := range paths {
+			result, err := store.CloseIssue(ctx, path, reasonForCloseIndex(reasons, i), getActorWithGit())
+			if err != nil {
+				if len(paths) == 1 {
+					return nil, "", err
+				}
+				_ = graphStorageError(fmt.Errorf("closing %s: %w", targets[i], err))
+				hadError = true
+				continue
+			}
+			results = append(results, result)
+			verb := "Closed"
+			if !result.Changed {
+				verb = "Already closed"
+			}
+			fmt.Fprintf(&human, "%s %s\n", verb, targets[i])
+		}
+		if len(paths) == 1 {
+			return results[0], human.String(), nil
+		}
+		return results, strings.TrimSuffix(human.String(), "\n"), nil
 	})
+	if err != nil {
+		return err
+	}
+	if hadError {
+		return SilentExit()
+	}
+	return nil
 }
 
 func runGraphPreviewDeferral(cmd *cobra.Command, args []string, deferred bool) error {
