@@ -111,3 +111,59 @@ func TestGraphPreviewCloseReopenBatchWorkflow(t *testing.T) {
 		})
 	}
 }
+
+// --force and --session take the native Issue close route on both installed
+// engines; retrying a closed Issue cannot replace its first close reason or
+// session, and a refused close cannot create a graph version.
+func TestGraphPreviewCloseForceAndSessionWorkflow(t *testing.T) {
+	bd := buildBDUnderTest(t)
+	for _, engine := range []string{"embedded", "server"} {
+		t.Run(engine, func(t *testing.T) {
+			work, home := t.TempDir(), t.TempDir()
+			initArgs := []string{"init", "--graph-mode", "link", "--scope-url", "https://example.invalid/close-policy/", "--skip-hooks", "--skip-agents", "--non-interactive"}
+			if engine == "server" {
+				port := os.Getenv("BEADS_GRAPH_TEST_SERVER_PORT")
+				if port == "" {
+					t.Skip("set BEADS_GRAPH_TEST_SERVER_PORT for ordinary shared-server CLI qualification")
+				}
+				initArgs = append(initArgs, "--server", "--external", "--server-host", "127.0.0.1", "--server-port", port, "--server-user", "root")
+			}
+			call := func(extraEnv []string, code string, args ...string) string {
+				t.Helper()
+				return graphPolicyCLI(t, bd, work, home, extraEnv, code, append(args, "--json")...)
+			}
+			call(nil, "", initArgs...)
+			call(nil, "", "create", "Prerequisite", "--id", "beads/prerequisite")
+			call(nil, "", "create", "Blocked work", "--id", "beads/work")
+			call(nil, "", "dep", "add", "work", "prerequisite")
+			before := call(nil, "", "versions", "work")
+			call(nil, "constraint_violation", "close", "work", "--reason", "Not yet")
+			if got := call(nil, "", "versions", "work"); got != before {
+				t.Fatal("refused blocked close recorded a version")
+			}
+			closed := graphMixedResult[graphstore.IssueMutationResult](t, call(nil, "", "close", "work", "--force", "--reason", "Override", "--session", "session-one"))
+			if !closed.Changed || closed.Issue.Properties.Status != types.StatusClosed || closed.Issue.Properties.CloseReason != "Override" || closed.Issue.Properties.ClosedBySession != "session-one" {
+				t.Fatalf("forced close lost native state or session: %+v", closed)
+			}
+			closedVersions := call(nil, "", "versions", "work")
+			if closedVersions == before {
+				t.Fatal("forced close did not retain its Issue successor")
+			}
+			repeated := graphMixedResult[graphstore.IssueMutationResult](t, call(nil, "", "close", "work", "--force", "--reason", "Must not replace", "--session", "session-two"))
+			if repeated.Changed || repeated.Issue.Properties.CloseReason != "Override" || repeated.Issue.Properties.ClosedBySession != "session-one" || call(nil, "", "versions", "work") != closedVersions {
+				t.Fatalf("re-close changed the first close or retained a successor: %+v", repeated)
+			}
+
+			call(nil, "", "create", "Assigned work", "--id", "beads/assigned", "--assignee", "foreign-holder")
+			assignedBefore := call(nil, "", "versions", "assigned")
+			call(nil, "invalid_properties", "close", "assigned")
+			if call(nil, "", "versions", "assigned") != assignedBefore {
+				t.Fatal("refused foreign-holder close recorded a version")
+			}
+			forced := graphMixedResult[graphstore.IssueMutationResult](t, call([]string{"CLAUDE_SESSION_ID=session-from-env"}, "", "close", "assigned", "--force"))
+			if !forced.Changed || forced.Issue.Properties.ClosedBySession != "session-from-env" || forced.Issue.Properties.Status != types.StatusClosed {
+				t.Fatalf("forced holder close lost session fallback: %+v", forced)
+			}
+		})
+	}
+}

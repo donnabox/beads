@@ -143,8 +143,13 @@ func runGraphPreviewClose(cmd *cobra.Command, args []string) error {
 	if err := graphPreviewWritePolicy(); err != nil {
 		return err
 	}
-	if err := graphPreviewFlags(cmd, "reason", "resolution", "message", "comment", "reason-file"); err != nil {
+	if err := graphPreviewFlags(cmd, "reason", "resolution", "message", "comment", "reason-file", "force", "session"); err != nil {
 		return err
+	}
+	force, _ := cmd.Flags().GetBool("force")
+	session, _ := cmd.Flags().GetString("session")
+	if session == "" {
+		session = os.Getenv("CLAUDE_SESSION_ID")
 	}
 	reasons, targets, err := resolveCloseReasons(cmd, args)
 	if err != nil {
@@ -172,7 +177,9 @@ func runGraphPreviewClose(cmd *cobra.Command, args []string) error {
 		results := make([]graphstore.IssueMutationResult, 0, len(paths))
 		var human strings.Builder
 		for i, path := range paths {
-			result, err := store.CloseIssue(ctx, path, reasonForCloseIndex(reasons, i), getActorWithGit())
+			result, err := store.CloseIssueWithOptions(ctx, graphstore.IssueCloseRequest{
+				Path: path, Reason: reasonForCloseIndex(reasons, i), Actor: getActorWithGit(), Session: session, Force: force,
+			})
 			if err != nil {
 				if len(paths) == 1 {
 					return nil, "", err
@@ -182,6 +189,9 @@ func runGraphPreviewClose(cmd *cobra.Command, args []string) error {
 				continue
 			}
 			results = append(results, result)
+			if result.OpenChildren > 0 {
+				fmt.Fprintf(os.Stderr, "warning: closing %s with %d open child issue(s) still active\n", targets[i], result.OpenChildren)
+			}
 			verb := "Closed"
 			if !result.Changed {
 				verb = "Already closed"
