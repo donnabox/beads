@@ -43,7 +43,7 @@ store; an unknown spelling may be rejected by the parser first.
 | Creation ID | `--id` is optional on `bd create`, `bd remember` and `bd link`. Omission allocates a fresh canonical ID. `bd create` and `bd link` use an explicit ID exactly or refuse if it was ever allocated; deletion does not release it. `bd remember --id ID` creates a Memory at an unused ID or updates the existing Memory there, while `--create-only` requests duplicate refusal. A Link's `--id` takes the Link-only bare-ID shorthand; this is NYI in the current build. |
 | Type selector | `--bead-type` and `--link-type` accept an installed `types/NAME` or its exact local Type URL. An uninstalled, wrong-kind or endpoint-incompatible Type fails before a write. `--type` on an Issue is its Issue classification, not a Bead Type. |
 | Current and retained state | A bare read selects the current record. `--version TOKEN` selects one retained state; `bd versions` discovers tokens in store-local newest-first order. A complete graph Resource record exposes one opaque `revision` token, used for current-state write guards. The versions list calls the same kind of opaque exact-read address `version`; that name and `--version` remain for retained reads. Neither token encodes chronology. The current build still emits a redundant `version` field on full Resource records; removing it is an approved target change, not yet implemented. |
-| Guarded write | `--if-revision TOKEN` compares the current revision of the Resource being changed. `--if-source-revision TOKEN` separately compares the owning **source Bead** when a write changes one of its outgoing owned Links. It is about the Link's structural ownership, not a special property of the Memory Type. The current implementation supports this source guard for Memory-owned informational Links; other ownership cases need their own admission. A stale check rejects the whole write, including a would-be no-op. |
+| Guarded write | `--if-revision TOKEN` compares the current revision of the Resource being changed. `--if-source-revision TOKEN` separately compares the owning **source Bead** when a write changes one of its outgoing owned Links. The installed preview Issue Type owns blocking Dependencies, and the installed Memory Type owns its outgoing informational Links; an informational Link from an Issue is not owned by that Issue Type. Ownership comes from the installed Type descriptor, not the Link's name or a Memory-only rule. A stale check rejects the whole write, including a would-be no-op. |
 | Unconditional write | `bd remember --id ID` creates or updates by default; `--create-only` reverses that default and refuses an allocated ID. The older `bd remember --update ID` spelling remains supported for callers that explicitly select an existing Memory; it does not create. An existing-ID Memory update defaults to accepting the current state, as does a Memory-owned informational Link **source**. `--if-revision` opts into a stale-write refusal. Property/scalar `update`, `unlink` and applying a deletion currently require either `--if-revision` or explicit `--unconditional`; blocking Dependency unlink also requires an Issue-source choice. `close`, `reopen` and standalone `update --claim` use native Issue policy without that guard choice. Do not combine guarded and unconditional spelling for one resource. A changed unconditional Memory/source write reports the actual replaced version and attribution. Whether to extend unconditional defaults to all Bead operations is an open contract decision. |
 | No-op and uncertainty | A semantically identical accepted edit records no new version, does not renew a claim and does not attribute an overwrite. An `outcome_unknown` result is never safe to replay blindly: inspect the canonical resource and versions before retrying. |
 | Read-only | `--readonly` and a frozen workspace reject every mutation before it writes. They do not relax identity, validation or read bounds. `--force` confirms only the operation named by a command; it never bypasses a guard or cascades a deletion. |
@@ -180,6 +180,12 @@ the documented terminal-sensitive row limit, while `--all` or `--limit=0`
 removes that limit; an explicit `--limit` wins. `memories` without SEARCH is
 an inventory, not a read of an arbitrary Memory. On `create`, `--type`
 classifies an Issue and must not be interpreted as `--bead-type`.
+The preview adapter stores ordinary Issue classifications such as `task` and
+`bug` in the `issue_type` property of one installed Issue Bead Type. BDP's
+generic model treats distinct Bead Types as nominal Types, so a BDP collection
+filter on `type` cannot select one ordinary Issue classification in this
+preview. That adapter mapping preserves the existing CLI; it does not settle
+Trish's Type-lifecycle design or redefine BDP nominal typing.
 `--status` and `--state` are alternative Issue filters and cannot be combined.
 An Issue filter selects the Issue-only `list` route even when its value is
 empty; it cannot be combined with a non-Issue `--bead-type`.
@@ -488,7 +494,7 @@ explicit creation title must remain nonempty; updates preserve omitted fields.
 | `update BEAD` with Issue scalar flags | Inline `--title`, `--description`/`--body`/`--message`, `--design`, `--acceptance`, `--priority`, non-claim `--assignee`, `--estimate`, `--external-ref`, `--spec-id`, `--due` and literal `--append-notes`. Requires `--if-revision TOKEN` or `--unconditional`. Description aliases must agree. Files/stdin and other Issue fields are unavailable. |
 | `update BEAD --claim` | Atomically claim one Issue for the current actor using the native writer. Standalone `--claim=true` only; no other edits or revision/force guard. Repeating the same actor is a no-op and does not renew its five-minute lease. |
 | `show RESOURCE` | Current Memory, Issue or Link; optional `--version TOKEN` selects an exact retained record. Use `versions` to list a Resource's versions in order. |
-| `versions RESOURCE` | List one Memory, Issue or Link's retained versions newest first, each with its store-local `local_revision`, version token, change time, actor and a `removed` marker. Human output labels the number `REV`. In a graph workspace `history RESOURCE` is an alias with the same output; ordinary workspaces keep the Dolt-commit `history`. |
+| `versions RESOURCE` | List one Memory, Issue or Link's retained **citable Resource states** newest first, each with its store-local `local_revision`, version token, change time and actor. A removed Link still lists its prior live versions, but deletion does not create a Link version. The pinned build currently includes a non-citable `removed` row as a local marker; that is a compatibility gap to remove before Preview 2 qualification. Human output labels the number `REV`. In a graph workspace `history RESOURCE` is an alias with the same output; ordinary workspaces keep the Dolt-commit `history`. |
 | `compare RESOURCE --from TOKEN --to TOKEN` | Compare two complete retained preview versions of one Memory, Issue or Link. Explicit tokens determine direction, not chronology. |
 | `link SOURCE TARGET --link-type TYPE` | Use an installed Link Type as `types/NAME` or its full local URL. Informational Links permit `--id links/PATH`, `--properties JSON` and source guards. Memory sources own informational Links; Issue sources do not. |
 | `dep add SOURCE TARGET` or `link SOURCE TARGET` | A local blocking Dependency between Issues, using the ordinary default `blocks` type. No bulk, remote, routing or bypass flags. |
@@ -725,8 +731,8 @@ bd history beads/plan     # same output, graph workspaces only
 bd show beads/plan --version LISTED_TOKEN
 ```
 
-Each row carries `local_revision`, `version`, `change_at`, `actor`,
-`attribution` and `removed`; `--json` reports them under those names, inside
+Each target row carries `local_revision`, `version`, `change_at`, `actor` and
+`attribution`; `--json` reports them under those names, inside
 a result that also names the `resource` and its `kind`. Human output labels
 `local_revision` as `REV`, as ordinary `bd versions` does. The graph JSON
 envelope and other row fields remain graph-specific. `version` is the opaque
@@ -743,11 +749,13 @@ with its attribution status; Memory and Link rows leave `attribution` empty.
 A deleted Memory's list ends at its final live head; deletion adds no version
 to it.
 
-`removed` is false on every row except one: a removed Link's deletion marker.
-That row is listed, as the Link's newest version, because the removal is part
-of its history. It is not citable: `show --version` refuses its token with
-`gone`, as it always has. `removed: true` means "listed but not citable".
-Every other listed token is one `show --version` and `compare` accept.
+Every target `versions` row is a citable Resource state: its token is accepted
+by `show --version` and `compare`. Removing a Link retains its earlier states
+and identity but mints no new Link version. The deletion belongs to the
+history/event plane, not this Resource-version list. The pinned build still
+emits a non-citable `removed: true` deletion-marker row and calls its token
+`version`; that behavior is a known CLI/BDP mismatch, not the Preview 2
+contract. No replacement deletion version, timestamp or cascade is implied.
 
 The command has two answers:
 
