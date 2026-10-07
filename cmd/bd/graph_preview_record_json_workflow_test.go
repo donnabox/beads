@@ -52,7 +52,7 @@ func TestGraphPreviewRecordJSONWorkflow(t *testing.T) {
 				Link   json.RawMessage `json:"link"`
 				Source json.RawMessage `json:"source"`
 			}
-			if err := json.Unmarshal(call("link", "beads/plan", "beads/work", "--link-type", "types/preview-related-v2", "--properties", `{"version":"user value"}`), &receipt); err != nil {
+			if err := json.Unmarshal(call("link", "beads/plan", "beads/work", "--link-type", "types/preview-related-v2", "--properties", `{"note":"user value"}`), &receipt); err != nil {
 				t.Fatal(err)
 			}
 			graphAssertCompleteRecordRevisionOnly(t, receipt.Link)
@@ -66,8 +66,8 @@ func TestGraphPreviewRecordJSONWorkflow(t *testing.T) {
 			if err := json.Unmarshal(receipt.Link, &link); err != nil {
 				t.Fatal(err)
 			}
-			if string(link["properties"]) != `{"version":"user value"}` {
-				t.Fatalf("caller-authored version property changed: %s", receipt.Link)
+			if string(link["properties"]) != `{"note":"user value"}` {
+				t.Fatalf("caller-authored Link property changed: %s", receipt.Link)
 			}
 			graphAssertCompleteRecordRevisionOnly(t, call("show", "beads/plan", "--version", memoryRevision))
 		})
