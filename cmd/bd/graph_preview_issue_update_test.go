@@ -14,9 +14,13 @@ func issueTextCommand(t *testing.T, args ...string) *cobra.Command {
 	t.Helper()
 	cmd := &cobra.Command{}
 	cmd.Flags().IntP("estimate", "e", 0, "")
-	for _, name := range append(append([]string{}, graphPreviewIssueEditFlags...), "properties", "notes", "body-file", "design-file", "append-notes", "status", "if-assignee", "if-status", "if-revision", "if-source-revision") {
+	for _, name := range append(append([]string{}, graphPreviewIssueEditFlags...), "properties", "body-file", "design-file", "status", "if-assignee", "if-status", "if-revision", "if-source-revision") {
 		if cmd.Flags().Lookup(name) == nil {
-			cmd.Flags().String(name, "", "")
+			if name == "clear-notes" {
+				cmd.Flags().Bool(name, false, "")
+			} else {
+				cmd.Flags().String(name, "", "")
+			}
 		}
 	}
 	cmd.Flags().Bool("unconditional", false, "")
@@ -44,6 +48,38 @@ func TestGraphPreviewIssueTextPresenceAndAliases(t *testing.T) {
 	}
 }
 
+func TestGraphPreviewIssueNotesInput(t *testing.T) {
+	for _, tc := range []struct {
+		name       string
+		args       []string
+		wantNotes  string
+		wantForce  bool
+		wantAppend bool
+	}{
+		{"replace", []string{"--notes=New", "--force", "--if-revision=seen"}, "New", true, false},
+		{"clear", []string{"--clear-notes", "--if-revision=seen"}, "", false, false},
+		{"append", []string{"--append-notes=Next", "--if-revision=seen"}, "", false, true},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			cmd := issueTextCommand(t, tc.args...)
+			if !graphPreviewIssueEditFlagsChanged(cmd) {
+				t.Fatal("notes-only edit did not select the Issue route")
+			}
+			request, err := graphPreviewIssueEditRequest(cmd, "beads/task")
+			if err != nil || request.ExpectedRevision != "seen" || request.ForceNotesOverwrite != tc.wantForce || (request.AppendNotes != nil) != tc.wantAppend {
+				t.Fatalf("notes mode or guard lost: %+v %v", request, err)
+			}
+			if tc.wantAppend {
+				if request.Notes != nil || *request.AppendNotes != "Next" {
+					t.Fatalf("append became replacement: %+v", request)
+				}
+			} else if request.Notes == nil || *request.Notes != tc.wantNotes || request.AppendNotes != nil {
+				t.Fatalf("replacement/clear lost presence: %+v", request)
+			}
+		})
+	}
+}
+
 func TestGraphPreviewIssueTextRefusals(t *testing.T) {
 	for _, tc := range []struct {
 		name string
@@ -64,9 +100,13 @@ func TestGraphPreviewIssueTextRefusals(t *testing.T) {
 		{"stdin-flag", []string{"--design=Design", "--stdin", "--unconditional"}, 5},
 		{"stdin-description", []string{"--description=-", "--unconditional"}, 5},
 		{"stdin-alias", []string{"--body=-", "--unconditional"}, 5},
-		{"notes", []string{"--notes=Notes", "--unconditional"}, 5},
+		{"empty-notes", []string{"--notes=", "--unconditional"}, 2},
 		// Append still cannot be combined with replacement notes.
-		{"append", []string{"--design=Design", "--append-notes=More", "--notes=Replace", "--unconditional"}, 5},
+		{"append", []string{"--design=Design", "--append-notes=More", "--notes=Replace", "--unconditional"}, 2},
+		{"notes-clear", []string{"--notes=Replace", "--clear-notes", "--unconditional"}, 2},
+		{"append-clear", []string{"--append-notes=More", "--clear-notes", "--unconditional"}, 2},
+		{"clear-false", []string{"--clear-notes=false", "--unconditional"}, 2},
+		{"force-without-notes", []string{"--title=Title", "--force", "--unconditional"}, 2},
 		{"source-guard", []string{"--design=Design", "--if-source-revision=other", "--unconditional"}, 5},
 	} {
 		t.Run(tc.name, func(t *testing.T) {
@@ -124,7 +164,6 @@ func TestGraphPreviewIssuePriorityRefusals(t *testing.T) {
 	}
 	for _, args := range [][]string{
 		{"--priority=0", "--unconditional", "--properties={}"},
-		{"--priority=0", "--unconditional", "--notes="},
 		{"--priority=0", "--unconditional", "--status=open"},
 		{"--priority=0", "--unconditional", "--body-file=missing"},
 		{"--priority=0", "--unconditional", "--stdin=false"},
@@ -174,7 +213,7 @@ func TestGraphPreviewIssueAssigneeRefusals(t *testing.T) {
 		{"false-guard", []string{"--assignee=alice", "--unconditional=false"}, 2},
 		{"claim", []string{"--assignee=alice", "--unconditional", "--claim"}, 5},
 		{"false-claim", []string{"--assignee=alice", "--unconditional", "--claim=false"}, 5},
-		{"force", []string{"--assignee=alice", "--unconditional", "--force"}, 5},
+		{"force-without-notes", []string{"--assignee=alice", "--unconditional", "--force"}, 2},
 		{"assignee-precondition", []string{"--assignee=alice", "--unconditional", "--if-assignee="}, 5},
 		{"status-precondition", []string{"--assignee=alice", "--unconditional", "--if-status=open"}, 5},
 		{"status", []string{"--assignee=alice", "--unconditional", "--status=in_progress"}, 5},
