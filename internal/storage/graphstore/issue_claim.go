@@ -13,8 +13,9 @@ import (
 )
 
 // ClaimReadyIssue selects and claims one native ready Issue inside the graph
-// writer transaction. An empty front performs no SQL write, so it cannot mint
-// a lease, native History stamp, or graph revision.
+// writer transaction. An empty front performs no write in the claim transaction,
+// so it cannot mint a claim lease, History stamp, or graph revision. The native
+// lazy defer-wake preceding selection may separately version an expired Issue.
 func (s *Store) ClaimReadyIssue(ctx context.Context, actor string, filter types.WorkFilter) (*IssueMutationResult, error) {
 	if actor == "" || !utf8.ValidString(actor) {
 		return nil, fmt.Errorf("%w: Issue claim requires a nonempty UTF-8 actor", storage.ErrValidation)

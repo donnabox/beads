@@ -71,6 +71,21 @@ func TestGraphPreviewReadyClaimWorkflow(t *testing.T) {
 			if _, _, again, _ := graphVersionsListed(t, call("versions", "release")); !reflect.DeepEqual(again, versions) {
 				t.Fatal("empty claims added retained versions")
 			}
+			call("create", "Sleeping task", "--id", "sleeping", "--labels", "sleeping")
+			sleeping := graphMixedResult[graphstore.IssueMutationResult](t, call("defer", "sleeping", "--until", "2000-01-01"))
+			if sleeping.Issue.Properties.Status != types.StatusDeferred {
+				t.Fatalf("setup did not defer sleeping Issue: %+v", sleeping)
+			}
+			if got := graphMixedResult[[]graphstore.IssueRecord](t, call("ready", "--claim", "--label", "missing", "--actor", "ready-agent")); len(got) != 0 {
+				t.Fatalf("filtered empty claim unexpectedly selected work: %+v", got)
+			}
+			woken := graphMixedResult[graphstore.IssueRecord](t, call("show", "sleeping"))
+			if woken.Revision == sleeping.Issue.Revision || woken.Properties.Status != types.StatusOpen || woken.Properties.DeferUntil != nil || woken.Properties.LeaseExpiresAt != nil {
+				t.Fatalf("empty claim did not retain the separate native defer wake: %+v", woken)
+			}
+			if _, _, wakeVersions, _ := graphVersionsListed(t, call("versions", "sleeping")); len(wakeVersions) != 3 || wakeVersions[0].Version != woken.Revision {
+				t.Fatalf("empty claim did not retain one defer-wake version: %+v", wakeVersions)
+			}
 			if engine == "server" {
 				call("create", "Race task", "--id", "race", "--labels", "race")
 				outcomes := graphMutationRacePair(t, bd, work, home, [2][]string{
