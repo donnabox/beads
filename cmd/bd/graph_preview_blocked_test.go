@@ -96,7 +96,7 @@ func TestGraphPreviewBlockedAdmission(t *testing.T) {
 }
 
 func TestGraphPreviewBlockedOutput(t *testing.T) {
-	item := graphstore.BlockedIssue{Issue: graphstore.IssueRecord{ID: "https://example.test/beads/work", Revision: "v1", Version: "v1", Properties: &types.Issue{ID: "native-private-property", Title: "Line\n雪", Priority: 1}, Owned: []json.RawMessage{}}, BlockedBy: []string{"https://example.test/beads/prereq"}}
+	item := graphstore.BlockedIssue{Issue: graphstore.IssueRecord{ID: "https://example.test/beads/work", Revision: "v1", Version: "v1", Properties: &types.Issue{ID: "native-private-property", Title: "Line\n雪", Priority: 1}, Metadata: json.RawMessage(`{}`), Owned: []json.RawMessage{}}, BlockedBy: []string{"https://example.test/beads/prereq"}}
 	for _, quiet := range []bool{false, true} {
 		output, err := renderGraphIssueBlocked([]graphstore.BlockedIssue{item}, true, quiet)
 		if err != nil {
@@ -109,7 +109,7 @@ func TestGraphPreviewBlockedOutput(t *testing.T) {
 		}
 		want := item
 		want.Issue.Version = "" // Complete CLI records expose revision only.
-		if err := json.Unmarshal([]byte(output), &envelope); err != nil || envelope.SchemaVersion != 1 || !envelope.Preview || !reflect.DeepEqual(envelope.Result, []graphstore.BlockedIssue{want}) || strings.Contains(output, `"version":"v1"`) {
+		if err := json.Unmarshal([]byte(output), &envelope); err != nil || envelope.SchemaVersion != 1 || !envelope.Preview || !reflect.DeepEqual(envelope.Result, []graphstore.BlockedIssue{want}) || strings.Contains(output, `"version":"v1"`) || !strings.Contains(output, `"metadata":{}`) {
 			t.Fatalf("complete graph envelope changed: %s %v", output, err)
 		}
 	}
