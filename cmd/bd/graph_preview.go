@@ -58,6 +58,9 @@ func init() {
 	initCmd.Flags().String("scope-url", "", "Permanent operator-selected Scope URL for a fresh disposable graph preview")
 	rememberCmd.Flags().String("id", "", "Memory ID or beads/PATH; creates if unused or updates existing Memory (generated when omitted; graph preview only)")
 	rememberCmd.Flags().String("title", "", "Memory title (defaults to a short body summary on create; updates preserve omitted fields; graph preview only)")
+	rememberCmd.Flags().String("metadata", "", "Merge a JSON object into an existing Memory, or set initial metadata on create (graph preview only)")
+	rememberCmd.Flags().StringArray("set-metadata", nil, "Set Memory metadata key=value (repeatable; graph preview only)")
+	rememberCmd.Flags().StringArray("unset-metadata", nil, "Remove Memory metadata key (repeatable; graph preview only)")
 	rememberCmd.Flags().String("update", "", "Existing canonical Memory selector to update (graph preview only)")
 	rememberCmd.Flags().Bool("create-only", false, "Require a new Memory at --id; refuse an allocated ID (graph preview only)")
 	rememberCmd.Flags().String("if-revision", "", "Require this observed Memory revision for an existing-ID update (graph preview only)")
@@ -82,6 +85,7 @@ func init() {
 	listCmd.Flags().String("bead-type", "", "List only this installed Bead Type: types/NAME or full local URL (graph preview only)")
 	linkCmd.Flags().String("id", "", "New informational Link ID or links/PATH (bare ID is shorthand for links/ID)")
 	linkCmd.Flags().String("properties", "", "Informational Link properties as JSON, @file, or @- (graph preview only)")
+	linkCmd.Flags().String("metadata", "", "Initial informational Link metadata as a JSON object or @file (graph preview only)")
 	updateCmd.Flags().String("patch", "", "Apply ordered Memory or informational Link property operations from JSON, @file, or @- (graph preview only)")
 	updateCmd.Flags().String("properties", "", "Replace Memory or informational Link properties from JSON, @file, or @- (graph preview only)")
 	// update.go registers upstream's --if-revision (the decimal compare-and-swap
@@ -552,7 +556,7 @@ func runGraphPreviewRemember(cmd *cobra.Command, args []string) error {
 	if err := graphPreviewWritePolicy(); err != nil {
 		return err
 	}
-	if err := graphPreviewFlags(cmd, "id", "title", "body-file", "stdin", "update", "create-only", "if-revision", "unconditional"); err != nil {
+	if err := graphPreviewFlags(cmd, "id", "title", "body-file", "stdin", "update", "create-only", "if-revision", "unconditional", "metadata", "set-metadata", "unset-metadata"); err != nil {
 		return err
 	}
 	createOnly := cmd.Flags().Changed("create-only")
@@ -592,8 +596,12 @@ func runGraphPreviewRemember(cmd *cobra.Command, args []string) error {
 	if !cmd.Flags().Changed("title") {
 		title = graphPreviewMemoryTitle(body)
 	}
+	metadata, err := graphPreviewMetadataCreate(cmd)
+	if err != nil {
+		return err
+	}
 	return withGraphStore(func(ctx context.Context, s *graphstore.Store) (any, string, error) {
-		r, err := s.Create(ctx, graphstore.CreateRequest{Path: path, Title: title, Body: body, Actor: getActorWithGit()})
+		r, err := s.Create(ctx, graphstore.CreateRequest{Path: path, Title: title, Body: body, Actor: getActorWithGit(), Metadata: metadata})
 		if err != nil {
 			return nil, "", err
 		}
@@ -617,7 +625,8 @@ func runGraphPreviewShow(cmd *cobra.Command, args []string) error {
 	if versioned && (version == "" || !utf8.ValidString(version) || len(version) > graphstore.PreviewVersionTokenLimit) {
 		return graphFailure("invalid_selector", "--version requires a nonempty UTF-8 token of at most 4096 bytes", 2)
 	}
-	return withGraphStore(func(ctx context.Context, s *graphstore.Store) (any, string, error) {
+	var shownIssue bool
+	err = withGraphStore(func(ctx context.Context, s *graphstore.Store) (any, string, error) {
 		var r any
 		var err error
 		if versioned {
@@ -628,12 +637,17 @@ func runGraphPreviewShow(cmd *cobra.Command, args []string) error {
 		if err != nil {
 			return nil, "", err
 		}
+		_, shownIssue = r.(graphstore.IssueRecord)
 		data, err := json.MarshalIndent(r, "", "  ")
 		if err != nil {
 			return nil, "", err
 		}
 		return r, string(data), nil
 	})
+	if err == nil && shownIssue {
+		SetLastTouchedID(path)
+	}
+	return err
 }
 
 func runGraphPreviewStatus(cmd *cobra.Command) error {
@@ -683,7 +697,7 @@ func runGraphPreviewStatus(cmd *cobra.Command) error {
 					"issueListTree": false, "issueListLegacyJSON": false, "issueAssigneeFilter": true, "issueDueDate": true, "issueDueFilter": true, "issueClaim": true, "issueUnclaim": true, "issueWorkflows": false,
 					"blockingDependencyPairUnlink": false, "bdpRead": graphPreviewConfig.DoltMode == configfile.DoltModeServer, "historyExact": false, "versionList": true, "exactVersionRead": true, "exactVersionCompare": true,
 					"requestStatus": false, "backupContinuity": false}},
-			"Mixed graph preview: Memory create/read, guarded complete title/body replacement and selected remember updates, actual predecessor disclosure for unconditional Memory writes, unreferenced Memory and Issue deletion with read-only preview and retained identity/snapshots, Issue create/read including initial fields, notes, due date and ordinary creator/owner defaults, guarded inline Issue title/description/design/acceptance, priority, estimate, external/spec references, due date and non-claim assignee edits, standalone atomic Issue claims with five-minute nonrenewing leases and native-policy unclaim (holder, force or conditional, with optional reason and multiple IDs), Issue notes append, guarded replacement with explicit overwrite intent and deliberate clear, read-only comments, informational Links with property replacement and guarded unlink, blocking Dependencies with canonical-ID unlink, incident Links, and Issue close/reopen/defer/undefer/ready with dated wake. Bounded current all-Bead listing with nominal Bead Type filtering is available; Issue-specific filters retain the native Issue query and due/assignee filters. Complete dependency-blocked inspection and bounded current generic summary traversal are available. Memory discovery returns complete bounded title/body search summaries; current and exact retained body-only recall, show --version, explicit-version compare and ordered local bd versions/bd history listing are available; common metadata remains incomplete. Ordered Memory and informational Link property patches are available with existing resource/source guards. Full Memory, linked Memory deletion, later Issue workflows, HTTP History, adoption and recovery remain unavailable. BDP Read serving is available only on ordinary shared-server Dolt; embedded serving, HTTP writes and aliases remain unavailable.", nil
+			"Mixed graph preview: Memory create/read, guarded complete title/body replacement and selected remember updates, actual predecessor disclosure for unconditional Memory writes, unreferenced Memory and Issue deletion with read-only preview and retained identity/snapshots, Issue create/read including initial fields, notes, due date and ordinary creator/owner defaults, guarded inline Issue title/description/design/acceptance, priority, estimate, external/spec references, due date and non-claim assignee edits, standalone atomic Issue claims with five-minute nonrenewing leases and native-policy unclaim (holder, force or conditional, with optional reason and multiple IDs), Issue notes append, guarded replacement with explicit overwrite intent and deliberate clear, read-only comments, informational Links with property replacement and guarded unlink, blocking Dependencies with canonical-ID unlink, incident Links, and Issue close/reopen/defer/undefer/ready with dated wake. Bounded current all-Bead listing with nominal Bead Type filtering is available; Issue-specific filters retain the native Issue query and due/assignee filters. Complete dependency-blocked inspection and bounded current generic summary traversal are available. Memory discovery returns complete bounded title/body search summaries; current and exact retained body-only recall, show --version, explicit-version compare and ordered local bd versions/bd history listing are available; common metadata creation, guarded update, exact retained read and comparison are available for admitted Beads and informational Links. Ordered Memory and informational Link property patches are available with existing resource/source guards. Full Memory, linked Memory deletion, later Issue workflows, HTTP History, adoption and recovery remain unavailable. BDP Read serving is available only on ordinary shared-server Dolt; embedded serving, HTTP writes and aliases remain unavailable.", nil
 	})
 }
 
@@ -693,7 +707,11 @@ func graphPrint(result any, human string, quiet bool) error {
 
 func graphPrintTo(out io.Writer, result any, human string, quiet, structured bool) error {
 	if structured {
-		return json.NewEncoder(out).Encode(map[string]any{"schemaVersion": 1, "preview": true, "result": result})
+		projected, err := graphProjectCompleteRecords(result)
+		if err != nil {
+			return err
+		}
+		return json.NewEncoder(out).Encode(map[string]any{"schemaVersion": 1, "preview": true, "result": projected})
 	}
 	if !quiet {
 		_, err := fmt.Fprintln(out, human)

@@ -97,7 +97,11 @@ func TestGraphIssueListAssigneeFilters(t *testing.T) {
 					assertIssueListRetained(t, ctx, s, entry.path, before)
 				}
 				if entry.closed {
-					result, err := s.CloseIssue(ctx, entry.path, "complete", "fixture")
+					actor := "fixture"
+					if entry.assignee != "" {
+						actor = entry.assignee
+					}
+					result, err := s.CloseIssue(ctx, entry.path, "complete", actor)
 					if err != nil {
 						t.Fatal(err)
 					}

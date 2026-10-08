@@ -24,7 +24,7 @@ import threading
 import time
 
 
-PIN = "53bdbd03136875f952af184fce7b3c7af8f74e96"
+PIN = "5b4eb46c7f21f2272f4da5a230f042ce753cb304"
 HERE = Path(__file__).resolve().parent
 sys.dont_write_bytecode = True
 spec = importlib.util.spec_from_file_location("graph_c0_capture", HERE / "graph-c0-smoke.py")
@@ -260,7 +260,10 @@ def main():
         c0.require(init["scope"] == scope and init["backend"] == "server", "wrong initialized authority")
         records = {}
         for path, title in [("beads/alpha", "First memory"), ("beads/plan", "Plan — 雪")]:
-            records[path] = c0.envelope(capture.success("memory-create", c0.remember(path, "Deployment context — 雪", title)))
+            create = c0.remember(path, "Deployment context — 雪", title)
+            if path == "beads/plan":
+                create += ["--metadata", '{"team":"docs"}']
+            records[path] = c0.envelope(capture.success("memory-create", create))
         for path in ["beads/work", "beads/prereq"]:
             fields = [] if path == "beads/work" else [
                 "--design", "Initial design — 雪", "--acceptance", "Ready\r\n",
@@ -269,7 +272,7 @@ def main():
             records[path] = c0.envelope(capture.success("issue-create", ["create", "Deployment task", "--id", path, *fields, "--json"]))
         related = scope + "types/preview-related-v2"
         capture.success("memory-issue-link", ["link", "beads/plan", "beads/work", "--resource-type", related,
-            "--id", "links/context", "--properties", '{"note":"before page"}',
+            "--id", "links/context", "--properties", '{"note":"before page"}', "--metadata", '{"origin":"manual"}',
             "--if-source-revision", records["beads/plan"]["revision"], "--json"])
         capture.success("issue-memory-link", ["link", "beads/work", "beads/plan", "--link-type", "types/example-cites",
             "--id", "links/back", "--properties", '{"note":"Issue context"}', "--json"])
@@ -312,6 +315,10 @@ def main():
                    "Python consumer did not enumerate every Memory and Issue")
         c0.require(current == next(item for item in inventory if item["id"] == scope + "beads/plan")
                    and current["properties"]["title"] == "Plan — 雪", "Python current read differs from inventory")
+        c0.require(all(isinstance(item.get("metadata"), dict) for item in inventory)
+                   and current["metadata"] == {"team": "docs"}
+                   and current["ownedLinks"][related][0]["metadata"] == {"origin": "manual"},
+                   "Python HTTP consumer did not receive current common metadata")
         observations = json.loads((capture.output / "python-inventory-network.json").read_text())
         verify_python_pages(observations, scope, {scope + path for path in records})
         summary["python_pages"] = len(observations) - 1

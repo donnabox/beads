@@ -68,11 +68,14 @@ func TestGraphPreviewBlockedAdmission(t *testing.T) {
 		{name: "selector", args: []string{"beads/work"}, code: 2},
 		{name: "parent", flags: []string{"--parent=beads/p"}, code: 5},
 		{name: "empty-parent", flags: []string{"--parent="}, code: 5},
-		{name: "label", flags: []string{"--label=demo"}, code: 5},
-		{name: "short-label", flags: []string{"-l", "demo"}, code: 5},
-		{name: "csv-label", flags: []string{"--label=one,two"}, code: 5},
-		{name: "label-any", flags: []string{"--label-any=demo"}, code: 5},
-		{name: "exclude-label", flags: []string{"--exclude-label=demo"}, code: 5},
+		{name: "label", flags: []string{"--label=demo"}},
+		{name: "short-label", flags: []string{"-l", "demo"}},
+		{name: "csv-label", flags: []string{"--label=one,two"}},
+		{name: "label-any", flags: []string{"--label-any=demo"}},
+		{name: "exclude-label", flags: []string{"--exclude-label=demo"}},
+		{name: "blank-label", flags: []string{"--label="}, code: 2},
+		{name: "blank-label-any", flags: []string{"--label-any="}, code: 2},
+		{name: "blank-exclude-label", flags: []string{"--exclude-label="}, code: 2},
 		{name: "positive-cap", env: "1", code: 5}, {name: "bad-cap", env: "bad", code: 2}, {name: "negative-cap", env: "-1", code: 2},
 	} {
 		t.Run(tc.name, func(t *testing.T) {
@@ -93,7 +96,7 @@ func TestGraphPreviewBlockedAdmission(t *testing.T) {
 }
 
 func TestGraphPreviewBlockedOutput(t *testing.T) {
-	item := graphstore.BlockedIssue{Issue: graphstore.IssueRecord{ID: "https://example.test/beads/work", Revision: "v1", Version: "v1", Properties: &types.Issue{ID: "native-private-property", Title: "Line\n雪", Priority: 1}, Owned: []json.RawMessage{}}, BlockedBy: []string{"https://example.test/beads/prereq"}}
+	item := graphstore.BlockedIssue{Issue: graphstore.IssueRecord{ID: "https://example.test/beads/work", Revision: "v1", Version: "v1", Properties: &types.Issue{ID: "native-private-property", Title: "Line\n雪", Priority: 1}, Metadata: json.RawMessage(`{}`), Owned: []json.RawMessage{}}, BlockedBy: []string{"https://example.test/beads/prereq"}}
 	for _, quiet := range []bool{false, true} {
 		output, err := renderGraphIssueBlocked([]graphstore.BlockedIssue{item}, true, quiet)
 		if err != nil {
@@ -104,7 +107,9 @@ func TestGraphPreviewBlockedOutput(t *testing.T) {
 			Preview       bool
 			Result        []graphstore.BlockedIssue
 		}
-		if err := json.Unmarshal([]byte(output), &envelope); err != nil || envelope.SchemaVersion != 1 || !envelope.Preview || !reflect.DeepEqual(envelope.Result, []graphstore.BlockedIssue{item}) {
+		want := item
+		want.Issue.Version = "" // Complete CLI records expose revision only.
+		if err := json.Unmarshal([]byte(output), &envelope); err != nil || envelope.SchemaVersion != 1 || !envelope.Preview || !reflect.DeepEqual(envelope.Result, []graphstore.BlockedIssue{want}) || strings.Contains(output, `"version":"v1"`) || !strings.Contains(output, `"metadata":{}`) {
 			t.Fatalf("complete graph envelope changed: %s %v", output, err)
 		}
 	}

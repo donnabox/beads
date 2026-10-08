@@ -247,10 +247,10 @@ func TestGraphPreviewIfRevisionInLinkModeStaysGraphToken(t *testing.T) {
 	}
 }
 
-// close and assign take upstream's --if-revision and nothing else: this preview
-// implements no guarded close, and assign is not a link mode command at all, so
-// both are refused rather than quietly dropping the guard.
-func TestGraphPreviewCloseIfRevisionRefusedInLinkMode(t *testing.T) {
+// In graph mode close now interprets --if-revision as the opaque observed graph
+// Issue token. Assign has no graph route and still refuses the flag rather than
+// quietly dropping its upstream numeric guard.
+func TestGraphPreviewCloseIfRevisionUsesGraphToken(t *testing.T) {
 	bd := buildBDUnderTest(t)
 	work, home := t.TempDir(), t.TempDir()
 	call := func(args ...string) string {
@@ -263,15 +263,15 @@ func TestGraphPreviewCloseIfRevisionRefusedInLinkMode(t *testing.T) {
 	for _, args := range [][]string{
 		{"close", "beads/close-guard", "--if-revision", "1"},
 		{"close", "beads/close-guard", "--reason", "Done", "--if-revision", "1"},
-		{"assign", "beads/close-guard", "alice", "--if-revision", "1"},
 	} {
-		graphIfRevisionRefused(t, bd, work, home, 5, "capability_unavailable", args...)
+		graphIfRevisionRefused(t, bd, work, home, 4, "revision_conflict", args...)
 	}
+	graphIfRevisionRefused(t, bd, work, home, 5, "capability_unavailable", "assign", "beads/close-guard", "alice", "--if-revision", "1")
 	if call("show", "beads/close-guard") != before {
 		t.Fatal("a refused guarded close changed the Issue")
 	}
-	// The refusal is about the guard, not the verb.
-	if closed := graphMixedResult[graphstore.IssueMutationResult](t, call("close", "beads/close-guard", "--reason", "Done")); !closed.Changed {
-		t.Fatal("an unguarded close no longer applies")
+	observed := graphMixedResult[graphstore.IssueRecord](t, before)
+	if closed := graphMixedResult[graphstore.IssueMutationResult](t, call("close", "beads/close-guard", "--reason", "Done", "--if-revision", observed.Revision)); !closed.Changed {
+		t.Fatal("a close with the observed graph revision did not apply")
 	}
 }

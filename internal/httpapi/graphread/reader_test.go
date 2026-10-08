@@ -65,7 +65,7 @@ func TestAuthoritativeRecordsProjectToPublicWire(t *testing.T) {
 			if err != nil || len(empty.Beads) != 0 || len(empty.Links) != 0 || len(empty.Types) != 6 || empty.WriterToken == "" {
 				t.Fatalf("empty installed inventory: %+v, %v", empty, err)
 			}
-			memory, err := s.Create(ctx, graphstore.CreateRequest{Path: "beads/plan", Title: "Memory — 記憶", Body: "", Actor: "human:Donna <unchanged>"})
+			memory, err := s.Create(ctx, graphstore.CreateRequest{Path: "beads/plan", Title: "Memory — 記憶", Body: "", Actor: "human:Donna <unchanged>", Metadata: json.RawMessage(`{"reviewed":true}`)})
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -74,7 +74,7 @@ func TestAuthoritativeRecordsProjectToPublicWire(t *testing.T) {
 				t.Fatal(err)
 			}
 			createIssue := func(path string) graphstore.IssueRecord {
-				v, err := s.CreateIssue(ctx, path, issueops.CreateRequest{Issue: &issueops.Issue{Title: path, Status: "open", IssueType: "task", Priority: 2}, Actor: "agent:test"})
+				v, err := s.CreateIssue(ctx, path, issueops.CreateRequest{Issue: &issueops.Issue{Title: path, Status: "open", IssueType: "task", Priority: 2, Metadata: json.RawMessage(`{"team":"triage"}`)}, Actor: "agent:test"})
 				if err != nil {
 					t.Fatal(err)
 				}
@@ -98,10 +98,16 @@ func TestAuthoritativeRecordsProjectToPublicWire(t *testing.T) {
 			if first.ID != memory.ID || first.Revision != memory.Revision || first.OwnedLinks == nil || len(first.OwnedLinks) != 0 || string(first.Properties["body"]) != `""` || first.Attribution.Principal != memory.Attribution.Actor {
 				t.Fatalf("Memory projection changed identity/content: %+v", first)
 			}
+			if string(first.Metadata["reviewed"]) != "true" || len(readBead("beads/other").Metadata) != 0 {
+				t.Fatalf("Memory metadata projection = %#v", first.Metadata)
+			}
 			if readBead("beads/other").Attribution != nil {
 				t.Fatal("fabricated actor")
 			}
 			firstIssue := readBead("beads/task")
+			if string(firstIssue.Metadata["team"]) != `"triage"` {
+				t.Fatalf("Issue metadata projection = %#v", firstIssue.Metadata)
+			}
 			if group, ok := firstIssue.OwnedLinks[graphstore.DependencyTypeURL(o.Binding.ScopeURL)]; !ok || len(group) != 0 {
 				t.Fatal("missing declared empty owned group")
 			}
@@ -118,7 +124,7 @@ func TestAuthoritativeRecordsProjectToPublicWire(t *testing.T) {
 			}
 			var created graphstore.LinkRecord
 			for _, path := range []string{"links/z", "links/a"} {
-				v, err := s.AddInformationalLink(ctx, graphstore.LinkCreateRequest{Path: path, SourcePath: "beads/plan", TargetPath: "beads/other", Actor: "human:Donna", UnconditionalSource: true, Properties: map[string]any{"note": path}})
+				v, err := s.AddInformationalLink(ctx, graphstore.LinkCreateRequest{Path: path, SourcePath: "beads/plan", TargetPath: "beads/other", Actor: "human:Donna", UnconditionalSource: true, Properties: map[string]any{"note": path}, Metadata: json.RawMessage(`{"origin":"manual"}`)})
 				if err != nil {
 					t.Fatal(err)
 				}
@@ -139,6 +145,9 @@ func TestAuthoritativeRecordsProjectToPublicWire(t *testing.T) {
 			group := linked.OwnedLinks[created.Type]
 			if len(group) != 2 || !strings.HasSuffix(group[0].ID, "/links/a") || group[1].Source.URI != memory.ID || linked.Revision == first.Revision {
 				t.Fatal("owned projection ordering or membership differs")
+			}
+			if string(group[0].Metadata["origin"]) != `"manual"` {
+				t.Fatalf("owned Link metadata projection = %#v", group[0].Metadata)
 			}
 			if readBead("beads/other").Revision != other.Revision {
 				t.Fatal("incoming Link changed target")

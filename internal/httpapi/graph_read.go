@@ -2,7 +2,7 @@ package httpapi
 
 // BDP Read routing follows gastownhall/bdp docs/specs/bdp.md and
 // packages/server/src/read-request.ts at
-// 53bdbd03136875f952af184fce7b3c7af8f74e96. The graph workspace uses the existing
+// 5b4eb46c7f21f2272f4da5a230f042ce753cb304. The graph workspace uses the existing
 // server's Host, authentication and request admission controls, not its legacy
 // Issue HTTP routes. This handler owns no store and never performs a mutation.
 

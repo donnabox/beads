@@ -155,6 +155,10 @@ func (s *Store) decodeMemoryVersion(ctx context.Context, tx *sql.Tx, path, typ, 
 		!validVersionAttribution(memory.Attribution, actor) {
 		return Record{}, fmt.Errorf("%w: invalid retained Memory", ErrInvalidStore)
 	}
+	metadata, err := commonMetadata(memory.Metadata)
+	if err != nil || !bytes.Equal(metadata, memory.Metadata) {
+		return Record{}, fmt.Errorf("%w: invalid retained Memory metadata", ErrInvalidStore)
+	}
 	if err := s.validateVersionOwned(ctx, tx, memory.ID, MemoryTypeURL(s.ScopeURL()), memory.Owned); err != nil {
 		return Record{}, err
 	}
@@ -195,6 +199,10 @@ func validVersionAttribution(value Attribution, actor string) bool {
 }
 
 func (s *Store) validateVersionLink(ctx context.Context, tx *sql.Tx, link LinkRecord, raw []byte, actor string) error {
+	metadata, metadataErr := commonMetadata(link.Metadata)
+	if metadataErr != nil || !bytes.Equal(metadata, link.Metadata) {
+		return fmt.Errorf("%w: invalid retained Link metadata", ErrInvalidStore)
+	}
 	path := strings.TrimPrefix(link.ID, s.ScopeURL())
 	if validateLinkPath(path) != nil || s.ScopeURL()+path != link.ID || !authorityID.MatchString(link.Revision) ||
 		link.Version != link.Revision || !sameVersionJSON(raw, link) || !validVersionAttribution(link.Attribution, actor) {
@@ -293,7 +301,13 @@ func (s *Store) readIssueVersionInTx(ctx context.Context, tx *sql.Tx, path, vers
 		return IssueRecord{}, err
 	}
 	// Match the current graph projection without duplicating Jim's domain body.
+	metadata, err := commonMetadata(issue.Metadata)
+	if err != nil {
+		return IssueRecord{}, fmt.Errorf("%w: invalid retained Issue metadata: %v", ErrInvalidStore, err)
+	}
 	issue.Dependencies = nil
+	issue.Metadata = nil
 	result.Properties = &issue
+	result.Metadata = metadata
 	return result, nil
 }

@@ -15,6 +15,7 @@ import (
 	graph "github.com/steveyegge/beads/graphops"
 	"github.com/steveyegge/beads/internal/graphpatch"
 	"github.com/steveyegge/beads/internal/storage"
+	"github.com/steveyegge/beads/internal/storage/issueops"
 )
 
 func informationalProperties(properties map[string]any) ([]byte, error) {
@@ -89,6 +90,10 @@ func (s *Store) AddInformationalLink(ctx context.Context, request LinkCreateRequ
 	if err != nil {
 		return LinkMutationResult{}, err
 	}
+	metadata, err := commonMetadata(request.Metadata)
+	if err != nil {
+		return LinkMutationResult{}, err
+	}
 	var result LinkMutationResult
 	err = s.withTx(ctx, true, func(tx *sql.Tx) error {
 		if err := checkBinding(ctx, tx, s.options); err != nil {
@@ -143,7 +148,7 @@ func (s *Store) AddInformationalLink(ctx context.Context, request LinkCreateRequ
 		if err != nil {
 			return err
 		}
-		if _, err := tx.ExecContext(ctx, `INSERT INTO graph_preview_links (path,source_path,target_path,properties,attribution) VALUES (?,?,?,?,?)`, path, request.SourcePath, request.TargetPath, properties, attribution); err != nil {
+		if _, err := tx.ExecContext(ctx, `INSERT INTO graph_preview_links (path,source_path,target_path,properties,metadata,attribution) VALUES (?,?,?,?,?,?)`, path, request.SourcePath, request.TargetPath, properties, metadata, attribution); err != nil {
 			return err
 		}
 		if err := s.afterStage("link-payload"); err != nil {
@@ -170,8 +175,20 @@ func (s *Store) UpdateLink(ctx context.Context, request LinkUpdateRequest) (Link
 	if !utf8.ValidString(request.Actor) {
 		return LinkMutationResult{}, fmt.Errorf("%w: actor must be UTF-8", storage.ErrValidation)
 	}
+	if request.MetadataOnly {
+		if !hasCommonMetadataPatch(request.Metadata) {
+			return LinkMutationResult{}, fmt.Errorf("%w: Link update requires metadata or properties", storage.ErrValidation)
+		}
+		if err := validateCommonMetadataPatch(request.Metadata); err != nil {
+			return LinkMutationResult{}, err
+		}
+		return s.writeLinkProperties(ctx, request, nil, nil)
+	}
 	properties, err := informationalProperties(request.Properties)
 	if err != nil {
+		return LinkMutationResult{}, err
+	}
+	if err := validateCommonMetadataPatch(request.Metadata); err != nil {
 		return LinkMutationResult{}, err
 	}
 	return s.writeLinkProperties(ctx, request, properties, nil)
@@ -183,6 +200,9 @@ func (s *Store) UpdateLink(ctx context.Context, request LinkUpdateRequest) (Link
 func (s *Store) writeLinkProperties(ctx context.Context, request LinkUpdateRequest, properties []byte, patch *graphpatch.Patch) (LinkMutationResult, error) {
 	if patch != nil && properties != nil {
 		return LinkMutationResult{}, fmt.Errorf("%w: Link replacement and ordered patch are mutually exclusive", storage.ErrValidation)
+	}
+	if err := validateCommonMetadataPatch(request.Metadata); err != nil {
+		return LinkMutationResult{}, err
 	}
 	var result LinkMutationResult
 	err := s.withTx(ctx, true, func(tx *sql.Tx) error {
@@ -216,13 +236,24 @@ func (s *Store) writeLinkProperties(ctx context.Context, request LinkUpdateReque
 		if err != nil {
 			return err
 		}
+		if properties == nil && patch == nil {
+			properties = before
+		}
 		if patch != nil {
 			properties, err = applyLinkPropertiesPatch(patch, before)
 			if err != nil {
 				return err
 			}
 		}
-		if bytes.Equal(before, properties) {
+		metadata, metadataChanged, err := issueops.ApplyMetadataPatch(link.Metadata, request.Metadata)
+		if err != nil {
+			return err
+		}
+		metadata, err = commonMetadata(metadata)
+		if err != nil {
+			return err
+		}
+		if bytes.Equal(before, properties) && !metadataChanged {
 			result = LinkMutationResult{Link: link, Source: source}
 			return nil
 		}
@@ -243,7 +274,7 @@ func (s *Store) writeLinkProperties(ctx context.Context, request LinkUpdateReque
 		if err != nil {
 			return err
 		}
-		if _, err := tx.ExecContext(ctx, `UPDATE graph_preview_links SET properties=?, attribution=? WHERE path=?`, properties, attribution, request.Path); err != nil {
+		if _, err := tx.ExecContext(ctx, `UPDATE graph_preview_links SET properties=?, metadata=?, attribution=? WHERE path=?`, properties, metadata, attribution, request.Path); err != nil {
 			return err
 		}
 		if err := s.afterStage("link-payload"); err != nil {
@@ -252,7 +283,7 @@ func (s *Store) writeLinkProperties(ctx context.Context, request LinkUpdateReque
 		result, err = s.finishInformationalWriteInTx(ctx, tx, request.Path, sourcePath, request.Actor, source)
 		if err == nil {
 			result.ReplacedSource = replacedMemory(source, request.UnconditionalSource)
-			if patch != nil {
+			if patch != nil || hasCommonMetadataPatch(request.Metadata) {
 				// The new patch route must not commit a graph that current reads
 				// cannot acquire. Replacement retains its existing policy.
 				return checkCurrentReadBytes(ctx, tx)
@@ -346,8 +377,8 @@ func (s *Store) currentInformationalLinkInTx(ctx context.Context, tx *sql.Tx, pa
 		return LinkRecord{}, err
 	}
 	var source, target string
-	var properties, attribution []byte
-	if err := tx.QueryRowContext(ctx, `SELECT source_path,target_path,properties,attribution FROM graph_preview_links WHERE path=?`, path).Scan(&source, &target, &properties, &attribution); err != nil {
+	var properties, metadata, attribution []byte
+	if err := tx.QueryRowContext(ctx, `SELECT source_path,target_path,properties,metadata,attribution FROM graph_preview_links WHERE path=?`, path).Scan(&source, &target, &properties, &metadata, &attribution); err != nil {
 		return LinkRecord{}, fmt.Errorf("%w: missing informational backing: %v", ErrInvalidStore, err)
 	}
 	for _, endpoint := range []string{source, target} {
@@ -360,6 +391,11 @@ func (s *Store) currentInformationalLinkInTx(ctx context.Context, tx *sql.Tx, pa
 		}
 	}
 	r := LinkRecord{ID: graph.CanonicalURL(s.options.Binding.ScopeURL, path), Type: typ, Revision: revision, Version: revision, Source: graph.CanonicalURL(s.options.Binding.ScopeURL, source), Target: graph.CanonicalURL(s.options.Binding.ScopeURL, target)}
+	canonicalMetadata, err := commonMetadata(metadata)
+	if err != nil || !bytes.Equal(canonicalMetadata, metadata) {
+		return LinkRecord{}, fmt.Errorf("%w: invalid informational metadata", ErrInvalidStore)
+	}
+	r.Metadata = canonicalMetadata
 	if json.Unmarshal(properties, &r.Properties) != nil || json.Unmarshal(attribution, &r.Attribution) != nil {
 		return LinkRecord{}, fmt.Errorf("%w: malformed informational payload", ErrInvalidStore)
 	}

@@ -1,7 +1,7 @@
 package graphread
 
 // Semantic cases adapted from gastownhall/bdp read-selector.test.ts at
-// 53bdbd03136875f952af184fce7b3c7af8f74e96. JavaScript prototype/accessor tests
+// 5b4eb46c7f21f2272f4da5a230f042ce753cb304. JavaScript prototype/accessor tests
 // do not apply: Go candidates are JSON maps and arrays, with no user getters.
 
 import (

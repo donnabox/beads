@@ -1,7 +1,7 @@
 package graphread
 
 // Snapshot/cursor semantics follow gastownhall/bdp packages/server/src/read-pagination.ts
-// at 53bdbd03136875f952af184fce7b3c7af8f74e96. This internal implementation
+// at 5b4eb46c7f21f2272f4da5a230f042ce753cb304. This internal implementation
 // stores owned JSON bytes rather than JavaScript objects. It does not advertise
 // a BDP profile or supply the authority's epoch or authorization policy.
 

@@ -13,6 +13,16 @@ func runGraphPreviewUpdate(cmd *cobra.Command, args []string) error {
 	if err := graphPreviewWritePolicy(); err != nil {
 		return err
 	}
+	if len(args) == 0 {
+		if cmd.Flags().Changed("properties") || cmd.Flags().Changed("patch") {
+			return graphFailure("invalid_selector", "Memory and Link property updates require an explicit Resource ID", 2)
+		}
+		lastTouched := GetLastTouchedID()
+		if lastTouched == "" {
+			return graphFailure("invalid_selector", "no Issue ID provided and no last touched Issue", 2)
+		}
+		args = []string{lastTouched}
+	}
 	if len(args) != 1 {
 		return graphFailure("invalid_selector", "graph update requires one Bead ID (or beads/PATH) or explicit links/PATH", 2)
 	}
@@ -28,6 +38,9 @@ func runGraphPreviewUpdate(cmd *cobra.Command, args []string) error {
 	}
 	if cmd.Flags().Changed("claim") {
 		return runGraphPreviewClaimIssue(cmd, path)
+	}
+	if graphPreviewMetadataFlagsChanged(cmd) && !cmd.Flags().Changed("properties") && !graphPreviewIssueEditFlagsChanged(cmd) {
+		return runGraphPreviewUpdateMetadataOnly(cmd, path)
 	}
 	if strings.HasPrefix(path, "links/") {
 		return runGraphPreviewUpdateLink(cmd, args)
@@ -49,7 +62,7 @@ func graphPreviewMemoryProperties(properties map[string]any) (graphstore.Propert
 }
 
 func runGraphPreviewUpdateMemory(cmd *cobra.Command, path string) error {
-	if err := graphPreviewFlags(cmd, "properties", "if-revision", "unconditional"); err != nil {
+	if err := graphPreviewFlags(cmd, "properties", "metadata", "set-metadata", "unset-metadata", "if-revision", "unconditional"); err != nil {
 		return err
 	}
 	if !cmd.Flags().Changed("properties") {
@@ -68,8 +81,12 @@ func runGraphPreviewUpdateMemory(cmd *cobra.Command, path string) error {
 	if err != nil {
 		return graphFailure("invalid_properties", err.Error(), 2)
 	}
+	metadata, err := graphPreviewMetadataPatch(cmd)
+	if err != nil {
+		return err
+	}
 	return withGraphStore(func(ctx context.Context, store *graphstore.Store) (any, string, error) {
-		result, err := store.UpdateMemory(ctx, graphstore.MemoryUpdateRequest{Path: path, Properties: properties, Actor: getActorWithGit(), ExpectedRevision: revision, Unconditional: unconditional})
+		result, err := store.UpdateMemory(ctx, graphstore.MemoryUpdateRequest{Path: path, Properties: properties, Metadata: metadata, Actor: getActorWithGit(), ExpectedRevision: revision, Unconditional: unconditional})
 		verb := "Updated"
 		if !result.Changed {
 			verb = "Unchanged"

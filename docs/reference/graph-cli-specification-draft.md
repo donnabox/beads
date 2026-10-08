@@ -18,7 +18,7 @@ This is the proposed complete graph-mode CLI contract, including commands
 that are not implemented yet. The [graph CLI guide](/reference/graph-cli)
 remains the task-oriented walkthrough. The implementation ledger below is a
 snapshot of `versioned-beads/beads:integration` at
-`1677c79849c33e16f8661311de10b4e3a3c29e06`; it is not a claim that
+`356275a13290064fe903ace31984c14d1b9f7ad4`; it is not a claim that
 every target command works. Update that commit and the ledger whenever the
 integration source changes, and reconcile this specification and the guide
 with each admitted behavior change. A candidate PR does not become current
@@ -42,8 +42,8 @@ store; an unknown spelling may be rejected by the parser first.
 | Resource selector | A command that accepts both Beads and Links requires `beads/PATH` or `links/PATH`, or the exact local Scope URL, for either kind. A Bead-only command accepts bare `ID` as shorthand for `beads/ID`; a Link-only command accepts bare `ID` as shorthand for `links/ID`. The kind comes from the command, never from probing both namespaces. No foreign URL or alias is silently resolved. The current build still accepts a bare Bead ID on some mixed-resource commands and requires `links/PATH` on Link-only operations; those parser changes remain NYI. |
 | Creation ID | `--id` is optional on `bd create`, `bd remember` and `bd link`. Omission allocates a fresh canonical ID. `bd create` and `bd link` use an explicit ID exactly or refuse if it was ever allocated; deletion does not release it. `bd remember --id ID` creates a Memory at an unused ID or updates the existing Memory there, while `--create-only` requests duplicate refusal. A Link's `--id` takes the Link-only bare-ID shorthand; this is NYI in the current build. |
 | Type selector | `--bead-type` and `--link-type` accept an installed `types/NAME` or its exact local Type URL. An uninstalled, wrong-kind or endpoint-incompatible Type fails before a write. `--type` on an Issue is its Issue classification, not a Bead Type. |
-| Current and retained state | A bare read selects the current record. `--version TOKEN` selects one retained state; `bd versions` discovers tokens in store-local newest-first order. A complete graph Resource record exposes one opaque `revision` token, used for current-state write guards. The versions list calls the same kind of opaque exact-read address `version`; that name and `--version` remain for retained reads. Neither token encodes chronology. The current build still emits a redundant `version` field on full Resource records; removing it is an approved target change, not yet implemented. |
-| Guarded write | `--if-revision TOKEN` compares the current revision of the Resource being changed. `--if-source-revision TOKEN` separately compares the owning **source Bead** when a write changes one of its outgoing owned Links. It is about the Link's structural ownership, not a special property of the Memory Type. The current implementation supports this source guard for Memory-owned informational Links; other ownership cases need their own admission. A stale check rejects the whole write, including a would-be no-op. |
+| Current and retained state | A bare read selects the current record. `--version TOKEN` selects one retained state; `bd versions` discovers tokens in store-local newest-first order. A complete graph Resource record exposes one opaque `revision` token, used for current-state write guards. The versions list calls the same kind of opaque exact-read address `version`; that name and `--version` remain for retained reads. Neither token encodes chronology. This candidate emits only `revision` on complete Resource records, while retaining `version` on version-list rows and summary projections. |
+| Guarded write | `--if-revision TOKEN` compares the current revision of the Resource being changed. `--if-source-revision TOKEN` separately compares the owning **source Bead** when a write changes one of its outgoing owned Links. The installed preview Issue Type owns blocking Dependencies, and the installed Memory Type owns its outgoing informational Links; an informational Link from an Issue is not owned by that Issue Type. Ownership comes from the installed Type descriptor, not the Link's name or a Memory-only rule. A stale check rejects the whole write, including a would-be no-op. |
 | Unconditional write | `bd remember --id ID` creates or updates by default; `--create-only` reverses that default and refuses an allocated ID. The older `bd remember --update ID` spelling remains supported for callers that explicitly select an existing Memory; it does not create. An existing-ID Memory update defaults to accepting the current state, as does a Memory-owned informational Link **source**. `--if-revision` opts into a stale-write refusal. Property/scalar `update`, `unlink` and applying a deletion currently require either `--if-revision` or explicit `--unconditional`; blocking Dependency unlink also requires an Issue-source choice. `close`, `reopen` and standalone `update --claim` use native Issue policy without that guard choice. Do not combine guarded and unconditional spelling for one resource. A changed unconditional Memory/source write reports the actual replaced version and attribution. Whether to extend unconditional defaults to all Bead operations is an open contract decision. |
 | No-op and uncertainty | A semantically identical accepted edit records no new version, does not renew a claim and does not attribute an overwrite. An `outcome_unknown` result is never safe to replay blindly: inspect the canonical resource and versions before retrying. |
 | Read-only | `--readonly` and a frozen workspace reject every mutation before it writes. They do not relax identity, validation or read bounds. `--force` confirms only the operation named by a command; it never bypasses a guard or cascades a deletion. |
@@ -147,9 +147,10 @@ not permission to advertise an NYI operation.
 | Existing-ID `remember` default upsert and `--create-only` | Preview 2 candidate | No; `--id` creates only and `--update` selects an existing Memory | Route the CLI convenience to the existing create or Memory patch writer without changing BDP's distinct create/update operations; test both engines and keep the current-build help truthful until it lands. |
 | Issue defer/undefer, unclaim and deletion | Preview 2 candidate | No | Draft #105, #106 and #108; their combined source still needs qualification. |
 | Full ordinary Issue `close`, `reopen`, `ready` and `blocked` behavior | **Preview 2 mandatory; no dependent flag is NYI in the release target** | No; the current graph commands have the narrower shapes in the inventory above | Implement and test the complete ordinary command contracts, including batch and interactive behavior, molecule/ephemeral and parent controls, metadata queries, output choices and atomic ready-claim. A flag whose underlying graph feature is absent is unfinished release work, not a permanent graph exception. The [Issue lifecycle binding](#issue-lifecycle-binding) enumerates the flags and effects. |
+| Graph close force and session attribution | Slice of the mandatory ordinary close parity | No; pinned integration still refuses both options in graph mode | Fork draft [#68](https://github.com/donnabox/beads/pull/68) admits `--force` and `--session` through the checked Issue writer. Interactive fallback, evaluable gates, next-work actions and molecule effects remain required before the full close row is complete. |
 | Explicit mixed-resource selector disambiguation | Decision for the final CLI; release not assigned | No; some mixed commands accept bare Bead IDs | Parser and help changes required after contract review. |
 | Arbitrary installed Bead authoring and Type lifecycle | After the Type design is decided; release not assigned | No | Separate Type workstream owns descriptors and lifecycle. |
-| Open Bead/Link metadata | Preview 2 mandatory | No | Implement common metadata for both admitted Bead kinds and informational Links, with a matching BDP spec/schema decision before claiming protocol parity. Type lifecycle remains separate. |
+| Open Bead/Link metadata | Preview 2 mandatory | No | Implement common metadata for both admitted Bead kinds and informational Links. The BDP contract decision is one atomic Resource update across properties and metadata, with `{}` as the empty read value, including for older retained states without stored metadata. The normative spec, schemas and conformance work remain pending; Type lifecycle stays separate. |
 | Issue and Memory deletion through `bd delete` | Preview 2 mandatory | Memory only, when unreferenced | Draft #108 adds the Issue route; qualify the combined generic Bead lifecycle and retained reads on both engines. `forget` remains a Memory compatibility spelling. |
 | Issue notes replacement/clear | Preview 2 candidate, after the core lifecycle | No | Separate stacked fork PR #62 implements native overwrite/clear behavior; qualify and review it on the combined source. |
 | Issue label mutation | Preview 2 opportunistic, after mandatory work | No | Admit only with isolated transactional staging and installed two-engine proof; otherwise cut at the release decision. |
@@ -180,14 +181,24 @@ the documented terminal-sensitive row limit, while `--all` or `--limit=0`
 removes that limit; an explicit `--limit` wins. `memories` without SEARCH is
 an inventory, not a read of an arbitrary Memory. On `create`, `--type`
 classifies an Issue and must not be interpreted as `--bead-type`.
+The preview adapter stores ordinary Issue classifications such as `task` and
+`bug` in the `issue_type` property of one installed Issue Bead Type. BDP's
+generic model treats distinct Bead Types as nominal Types, so a BDP collection
+filter on `type` cannot select one ordinary Issue classification in this
+preview. That adapter mapping preserves the existing CLI; it does not settle
+Trish's Type-lifecycle design or redefine BDP nominal typing.
 `--status` and `--state` are alternative Issue filters and cannot be combined.
 An Issue filter selects the Issue-only `list` route even when its value is
 empty; it cannot be combined with a non-Issue `--bead-type`.
 
 ### Results, errors and repeatability
 
-The target success contract is one complete result on stdout, with diagnostics
-on stderr. Most `--json` success results use
+The target single-target success contract is one complete result on stdout,
+with diagnostics on stderr. Multi-Issue lifecycle commands process targets in
+input order, as ordinary `bd` does: successful targets remain committed and
+appear on stdout even if a later target fails. Per-target failures appear on
+stderr and the command exits nonzero. A command-wide syntax or admission
+failure rejects before processing any target. Most `--json` success results use
 `{"schemaVersion":1,"preview":true,"result":<typed result>}`; the typed
 result shape for a command is the shape shown by that command's examples and
 tests below. `memories` and `list` use `--format records-json` for their
@@ -204,16 +215,18 @@ presentation only.
 | Exit | Error category | Required behavior |
 | --- | --- | --- |
 | 0 | Success or accepted semantic no-op | Emit the selected complete success form; an identical write does not create a new version. |
+| 1 | Partial multi-target Issue command failure | Preserve and report successful targets on stdout, report failed targets on stderr, and let callers inspect per-target results before retrying. This does not roll back earlier successful targets. |
 | 2 | Invalid syntax or selector | Reject before a write; examples include conflicting aliases, malformed JSON, unsupported flag combinations and invalid bounds. |
 | 3 | Missing, gone or unknown retained version | Distinguish a never-present current ID, a removed current ID and an unavailable version; never substitute the current state for an old address. |
-| 4 | Revision/identity/constraint conflict | No partial write. Include enough canonical IDs to act on an ambiguous pair unlink or target incident-Link deletion refusal. The current linked-Memory deletion refusal is `deletion_policy_unresolved` at exit 5 until the proposed stable constraint error is implemented. |
+| 4 | Revision/identity/constraint conflict | No partial write to the affected target. An earlier target in a multi-target Issue command may already have succeeded. Include enough canonical IDs to act on an ambiguous pair unlink or target incident-Link deletion refusal. The current linked-Memory deletion refusal is `deletion_policy_unresolved` at exit 5 until the proposed stable constraint error is implemented. |
 | 5 | Unavailable capability, workspace/authority refusal or storage failure | Never fall through to an ordinary workspace or claim an unsupported feature ran. |
 | 6 | Outcome unknown | The client must inspect current state and retained versions before deciding whether to retry; the command must not claim failure or success of a write whose commit result is unknown. |
 
 Machine-readable errors use
 `{"code":"...","message":"...","retryable":false}` on stderr;
-human errors use `code: message` there. Neither form prints a partial
-success envelope on an admission, validation or storage refusal. An
+human errors use `code: message` there. A command-wide admission or validation
+refusal prints no success envelope; a failed target prints no success record
+for that target, while successful targets in a batch remain visible. An
 ambiguous-Link error must report sorted candidate canonical IDs. A future
 retryable category may change only with a separately reviewed contract; the
 current graph errors do not ask a caller to blindly retry. Scalar selectors
@@ -253,7 +266,7 @@ claim or close operation.
 | `update ISSUE --claim` | One native atomic claim for the current actor; true-only and no edit/guard flags. Eligibility follows the configured native active-status and pool-alias rules. A successful change retains the complete Issue state and native claim stamp together. Repeating an eligible same-actor claim is a no-op and never renews its five-minute nonrenewing lease. A different actor cannot take an active claim by merely spelling `--unconditional` or `--force`. |
 | `close [ISSUE...]` | Native checked close and ordinary command behavior for zero, one or multiple IDs; the zero-ID last-touched fallback applies only under the ordinary interactive rule. Accepted close writes retain one complete graph projection with the native stamp. An already-closed Issue is a no-op. `--force` follows native pinned/gate policy; it does not bypass an explicit revision conflict. Post-close suggestion, atomic claim-next and molecule continuation have their ordinary lifecycle effects and restrictions. A refusal leaves that target's status, Links and retained state unchanged. |
 | `reopen ISSUE...` | One or more IDs, native transition from a done-category status to open, `closed_at` clearing and Reopened event. A non-done Issue is a no-op after validation; each accepted change retains the complete graph projection with the native stamp. |
-| `ready`, `blocked` | Native blocker-aware Issue views with all ordinary query and presentation controls. `ready --claim` atomically claims the first matching Issue and records the native claim/projection once. Read-only queries record no version, touch no lease and make no graph change; `blocked --parent` filters descendants while preserving canonical blocker IDs. |
+| `ready`, `blocked` | Native blocker-aware Issue views with all ordinary query and presentation controls. `ready --claim` atomically claims the first matching Issue and records the native claim/projection once. Its `--json` result is an array of complete graph Issue records with one element on success and zero when the filtered front is empty, preserving ordinary ready's array shape without inventing an Issue mutation wrapper. An empty claim itself records no version or lease; the ordinary lazy defer-wake before ready selection may separately version an expired deferred Issue. Apart from that wake, a ready read changes no state; blocked reads change no state. `blocked --parent` filters descendants while preserving canonical blocker IDs. |
 
 The current integration build has narrower graph command shapes: one explicit
 ID for `close` or `reopen`, no `ready` query flags and no `blocked --parent`.
@@ -290,7 +303,7 @@ neither `--force` nor a future convenience command may silently cascade.
 | Operation | Complete proposed contract | Current status |
 | --- | --- | --- |
 | Arbitrary installed Bead authoring | `bd create --bead-type types/NAME --properties JSON [--id ID]` creates one Bead for any installed Bead Type that the current workspace can validate; the JSON value is an object and must satisfy that Type's descriptor before an atomic write. `--properties` is mutually exclusive with Issue/Memory convenience body, title and field flags, so a caller cannot create two competing documents. `bd update ID --properties JSON` replaces the whole validated document and `--patch JSON` applies an ordered patch; both require the existing-resource guard choice and preserve ID and Type. `bd show`, `bd list --bead-type`, `bd versions`, `bd compare` and `bd delete` work by canonical identity without assuming Issue fields. Type-specific lifecycle policy must be declared by the installed Type; the CLI never invents ready/close behavior for an arbitrary Bead. | NYI for authoring outside installed Issue/Memory writers. Current generic reads and nominal Type filtering cover only admitted installed records. Descriptor/installation semantics belong to Trish's Type design. |
-| Open metadata | `bd create [TITLE] --metadata JSON`, `bd remember [BODY] --metadata JSON`, and `bd link SOURCE TARGET --link-type types/NAME --metadata JSON` accept an initial JSON object separate from Type-validated properties. On generic `create`, metadata may accompany `--bead-type types/NAME --properties JSON` but cannot make incomplete creation valid. The empty default is `{}`. On an existing Resource, `bd update RESOURCE --metadata JSON` merges top-level keys inside the mutation transaction, matching ordinary `bd update`; `bd remember --id ID --metadata JSON` uses its existing-ID upsert policy. Repeatable `--set-metadata KEY=VALUE` and `--unset-metadata KEY` perform typed-value key edits; they may combine, with unset applied after set. `--metadata` cannot combine with set/unset. Metadata and an admitted properties/scalar edit may be one atomic write, while property replacement and property patch remain mutually exclusive. Omission preserves metadata. The same Resource and applicable owning-source guards cover the entire edit; no mode changes ID, Type or Link endpoints. A semantic no-op retains the revision. Exact retained reads and comparison include accepted metadata. | **Preview 2 mandatory, NYI** in the pinned integration build. Cover Memory, Issue and informational Link records, not Type installation. Current BDP v0 has no common top-level metadata member; the matching normative spec/schema amendment and conformance fixtures must be reviewed before claiming CLI/BDP parity. |
+| Open metadata | `bd create [TITLE] --metadata JSON`, `bd remember [BODY] --metadata JSON`, and `bd link SOURCE TARGET --link-type types/NAME --metadata JSON` accept an initial JSON object separate from Type-validated properties. On generic `create`, metadata may accompany `--bead-type types/NAME --properties JSON` but cannot make incomplete creation valid. The empty default is `{}`. On an existing Resource, `bd update RESOURCE --metadata JSON` merges top-level keys inside the mutation transaction, matching ordinary `bd update`; `bd remember --id ID --metadata JSON` uses its existing-ID upsert policy. Repeatable `--set-metadata KEY=VALUE` and `--unset-metadata KEY` perform typed-value key edits; they may combine, with unset applied after set. `--metadata` cannot combine with set/unset. Metadata may be cleared to `{}` by update/patch; clearing an already empty object is a no-op. Metadata and an admitted properties/scalar edit may be one atomic write, while property replacement and property patch remain mutually exclusive. Omission preserves metadata. The same Resource and applicable owning-source guards cover the entire edit; no mode changes ID, Type or Link endpoints. A semantic no-op retains the revision. Exact retained reads and comparison include accepted metadata; older retained states with no stored metadata read as `{}` without rewriting them. | **Preview 2 mandatory, NYI** in the pinned integration build. Cover Memory, Issue and informational Link records, not Type installation. The BDP atomic-update and empty-object decisions are settled; the matching normative spec/schema amendment and conformance fixtures remain pending before claiming CLI/BDP parity. |
 | `delete BEAD` for Memory and Issue | `bd delete ID` previews either admitted Bead kind. `bd delete ID --force --if-revision TOKEN` or `bd delete ID --force --unconditional` applies to one Bead, atomically checking its current revision and incident Links. Any incident Link refuses with sorted canonical Link IDs; the caller explicitly unlinks and retries with a fresh revision. A successful deletion removes current state, reserves the ID and retains prior snapshots; current reads report gone, exact prior-version reads remain addressable. No deletion version, fabricated timestamp, automatic dependency unlink or cascade is promised. `forget` remains Memory-only. This does not invent deletion for a future Type until its descriptor and writer exist. | **Preview 2 mandatory.** Unreferenced Memory preview/apply works in pinned integration; Issue deletion is NYI there. Draft PR #108 implements the Issue route but has not landed or completed combined-source qualification. |
 | Linked Memory deletion | Same explicit unlink-before-delete rule as for an Issue. A linked Memory is never deleted by `--force`; its current identity and snapshots remain after refusal. Once unlinked, ordinary unreferenced Memory deletion applies. | The refusal is implemented on integration with `deletion_policy_unresolved`. Draft PR #108 changes the typed refusal to `constraint_violation` while retaining the Memory, its ID and snapshots; it has not landed or completed release qualification. |
 | Issue labels after creation | `bd update ID --add-label X`, `--remove-label X`, and `--set-labels X,Y` change one Issue's label set under a resource revision choice. They may combine in one invocation: replace first, add second, remove last, so removal wins. Add-existing and remove-absent are no-ops; set replaces the set atomically, deduplicating normalized labels. A real label change advances the Issue RowVersion; a semantic no-op preserves it. Other fields and Links remain unchanged. Multi-Issue propagation is explicitly outside this CLI contract. | **Preview 2 opportunistic after the mandatory lifecycle/metadata work.** Initial `create --label/--labels` works; mutation is NYI. Admission requires staging that cannot publish unrelated pending Issue rows and installed two-engine proof. Otherwise cut it at the release decision. |
@@ -482,7 +495,7 @@ explicit creation title must remain nonempty; updates preserve omitted fields.
 | `update BEAD` with Issue scalar flags | Inline `--title`, `--description`/`--body`/`--message`, `--design`, `--acceptance`, `--priority`, non-claim `--assignee`, `--estimate`, `--external-ref`, `--spec-id`, `--due` and literal `--append-notes`. Requires `--if-revision TOKEN` or `--unconditional`. Description aliases must agree. Files/stdin and other Issue fields are unavailable. |
 | `update BEAD --claim` | Atomically claim one Issue for the current actor using the native writer. Standalone `--claim=true` only; no other edits or revision/force guard. Repeating the same actor is a no-op and does not renew its five-minute lease. |
 | `show RESOURCE` | Current Memory, Issue or Link; optional `--version TOKEN` selects an exact retained record. Use `versions` to list a Resource's versions in order. |
-| `versions RESOURCE` | List one Memory, Issue or Link's retained versions newest first, each with its store-local `local_revision`, version token, change time, actor and a `removed` marker. Human output labels the number `REV`. In a graph workspace `history RESOURCE` is an alias with the same output; ordinary workspaces keep the Dolt-commit `history`. |
+| `versions RESOURCE` | List one Memory, Issue or Link's retained **citable Resource states** newest first, each with its store-local `local_revision`, version token, change time and actor. A removed Link still lists its prior live versions, but deletion does not create a Link version. The private deletion marker is omitted from Resource-version rows. Human output labels the number `REV`. In a graph workspace `history RESOURCE` is an alias with the same output; ordinary workspaces keep the Dolt-commit `history`. |
 | `compare RESOURCE --from TOKEN --to TOKEN` | Compare two complete retained preview versions of one Memory, Issue or Link. Explicit tokens determine direction, not chronology. |
 | `link SOURCE TARGET --link-type TYPE` | Use an installed Link Type as `types/NAME` or its full local URL. Informational Links permit `--id links/PATH`, `--properties JSON` and source guards. Memory sources own informational Links; Issue sources do not. |
 | `dep add SOURCE TARGET` or `link SOURCE TARGET` | A local blocking Dependency between Issues, using the ordinary default `blocks` type. No bulk, remote, routing or bypass flags. |
@@ -719,8 +732,8 @@ bd history beads/plan     # same output, graph workspaces only
 bd show beads/plan --version LISTED_TOKEN
 ```
 
-Each row carries `local_revision`, `version`, `change_at`, `actor`,
-`attribution` and `removed`; `--json` reports them under those names, inside
+Each target row carries `local_revision`, `version`, `change_at`, `actor` and
+`attribution`; `--json` reports them under those names, inside
 a result that also names the `resource` and its `kind`. Human output labels
 `local_revision` as `REV`, as ordinary `bd versions` does. The graph JSON
 envelope and other row fields remain graph-specific. `version` is the opaque
@@ -737,11 +750,13 @@ with its attribution status; Memory and Link rows leave `attribution` empty.
 A deleted Memory's list ends at its final live head; deletion adds no version
 to it.
 
-`removed` is false on every row except one: a removed Link's deletion marker.
-That row is listed, as the Link's newest version, because the removal is part
-of its history. It is not citable: `show --version` refuses its token with
-`gone`, as it always has. `removed: true` means "listed but not citable".
-Every other listed token is one `show --version` and `compare` accept.
+Every target `versions` row is a citable Resource state: its token is accepted
+by `show --version` and `compare`. Removing a Link retains its earlier states
+and identity but mints no new Link version. The deletion belongs to the
+history/event plane, not this Resource-version list. A private deletion marker
+may remain in the store to retain identity and old snapshots, but it is not
+returned as a `versions` row. No replacement deletion version, timestamp or
+cascade is implied.
 
 The command has two answers:
 
@@ -927,8 +942,10 @@ The result is an array of objects with complete `issue` records and canonical
 accepts the ordinary `--parent` descendant filter but no positional selector.
 The pinned integration build currently refuses all filters, including an
 explicit empty `--parent`; a positive `BEADS_MAX_ROWS` also refuses there.
-No query wakes deferred work, repairs blocked state, creates versions or opens
-the ordinary store. Readonly and migration freeze permit these reads.
+`blocked` and generic traversal do not wake deferred work, repair blocked state,
+create versions or open the ordinary store. `ready` has the native lazy
+defer-wake behavior described above. Readonly and migration freeze permit these
+reads without authorizing a wake write.
 
 Generic traversal reads one checked current snapshot. Nodes expose only ID,
 Type, title, version and attribution; Links expose ID, Type, source, target,

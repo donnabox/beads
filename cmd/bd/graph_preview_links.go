@@ -132,7 +132,7 @@ func runGraphPreviewLink(cmd *cobra.Command, args []string) error {
 	}
 	// --type is deliberately absent: it belongs to the blocking Dependency route
 	// above, so this list refuses it before anything below could.
-	if err := graphPreviewFlags(cmd, "link-type", "resource-type", "id", "properties", "if-source-revision", "unconditional-source"); err != nil {
+	if err := graphPreviewFlags(cmd, "link-type", "resource-type", "id", "properties", "metadata", "if-source-revision", "unconditional-source"); err != nil {
 		return err
 	}
 	if !graphstore.IsInformationalTypeURL(graphPreviewConfig.GraphScopeURL, typ) {
@@ -174,9 +174,13 @@ func runGraphPreviewLink(cmd *cobra.Command, args []string) error {
 			return graphFailure("invalid_properties", err.Error(), 2)
 		}
 	}
+	metadata, err := graphPreviewMetadataCreate(cmd)
+	if err != nil {
+		return err
+	}
 	return withGraphStore(func(ctx context.Context, store *graphstore.Store) (any, string, error) {
 		result, err := store.AddInformationalLink(ctx, graphstore.LinkCreateRequest{
-			Path: path, TypeURL: typ, SourcePath: paths[0], TargetPath: paths[1], Properties: properties,
+			Path: path, TypeURL: typ, SourcePath: paths[0], TargetPath: paths[1], Properties: properties, Metadata: metadata,
 			Actor: getActorWithGit(), ExpectedSourceRevision: revision, UnconditionalSource: unconditional,
 		})
 		return result, graphPreviewReplacementSummary(fmt.Sprintf("Created %s: %s → %s", result.Link.ID, args[0], args[1]), result.ReplacedSource), err
@@ -187,7 +191,7 @@ func runGraphPreviewUpdateLink(cmd *cobra.Command, args []string) error {
 	if err := graphPreviewWritePolicy(); err != nil {
 		return err
 	}
-	if err := graphPreviewFlags(cmd, "properties", "if-revision", "unconditional", "if-source-revision", "unconditional-source"); err != nil {
+	if err := graphPreviewFlags(cmd, "properties", "metadata", "set-metadata", "unset-metadata", "if-revision", "unconditional", "if-source-revision", "unconditional-source"); err != nil {
 		return err
 	}
 	if len(args) != 1 {
@@ -216,9 +220,13 @@ func runGraphPreviewUpdateLink(cmd *cobra.Command, args []string) error {
 	if err != nil {
 		return graphFailure("invalid_properties", err.Error(), 2)
 	}
+	metadata, err := graphPreviewMetadataPatch(cmd)
+	if err != nil {
+		return err
+	}
 	return withGraphStore(func(ctx context.Context, store *graphstore.Store) (any, string, error) {
 		result, err := store.UpdateLink(ctx, graphstore.LinkUpdateRequest{
-			Path: path, Properties: properties, Actor: getActorWithGit(), ExpectedRevision: revision,
+			Path: path, Properties: properties, Metadata: metadata, Actor: getActorWithGit(), ExpectedRevision: revision,
 			Unconditional: unconditional, ExpectedSourceRevision: sourceRevision, UnconditionalSource: unconditionalSource,
 		})
 		verb := "Updated"

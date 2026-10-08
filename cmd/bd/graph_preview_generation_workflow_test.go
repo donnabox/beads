@@ -192,13 +192,13 @@ func TestGraphPreviewMarkerGenerationWorkflow(t *testing.T) {
 		if err != nil || string(marker) != "link-preview-v6\n" {
 			t.Fatalf("fresh workspace marker = %q (%v), want link-preview-v6 and a newline", marker, err)
 		}
-		// Adding a Type changes neither value an older bd checks besides the marker:
-		// the layout version stays what it was.
-		if cfg := loadConfig(t); cfg.GraphSchemaVersion != 6 {
-			t.Fatalf("graph_schema_version = %d, want 6", cfg.GraphSchemaVersion)
+		// Common metadata changes the storage layout independently of the
+		// installed Type generation.
+		if cfg := loadConfig(t); cfg.GraphSchemaVersion != 7 {
+			t.Fatalf("graph_schema_version = %d, want 7", cfg.GraphSchemaVersion)
 		}
-		if persisted := graphGenerationQueryInt(t, loadConfig(t), `SELECT schema_version FROM graph_preview_scope WHERE singleton = 1`); persisted != 6 {
-			t.Fatalf("persisted schema_version = %d, want 6", persisted)
+		if persisted := graphGenerationQueryInt(t, loadConfig(t), `SELECT schema_version FROM graph_preview_scope WHERE singleton = 1`); persisted != 7 {
+			t.Fatalf("persisted schema_version = %d, want 7", persisted)
 		}
 	})
 

@@ -10,6 +10,7 @@ import (
 	"github.com/spf13/cobra"
 	graph "github.com/steveyegge/beads/graphops"
 	"github.com/steveyegge/beads/internal/storage/graphstore"
+	"github.com/steveyegge/beads/internal/storage/issueops"
 )
 
 // An explicit ID follows ordinary remember's create-or-update convenience.
@@ -36,6 +37,14 @@ func runGraphPreviewRememberUpsert(cmd *cobra.Command, args []string) error {
 	if err != nil {
 		return err
 	}
+	metadata, err := graphPreviewMetadataPatch(cmd)
+	if err != nil {
+		return err
+	}
+	createMetadata, _, err := issueops.ApplyMetadataPatch(nil, metadata)
+	if err != nil {
+		return graphFailure("invalid_properties", err.Error(), 2)
+	}
 	actor := getActorWithGit()
 	return withGraphStore(func(ctx context.Context, store *graphstore.Store) (any, string, error) {
 		if body != nil && !cmd.Flags().Changed("if-revision") && !(title != nil && strings.TrimSpace(*title) == "") {
@@ -43,7 +52,7 @@ func runGraphPreviewRememberUpsert(cmd *cobra.Command, args []string) error {
 			if title != nil {
 				createTitle = *title
 			}
-			created, createErr := store.Create(ctx, graphstore.CreateRequest{Path: path, Title: createTitle, Body: *body, Actor: actor})
+			created, createErr := store.Create(ctx, graphstore.CreateRequest{Path: path, Title: createTitle, Body: *body, Actor: actor, Metadata: createMetadata})
 			if createErr == nil {
 				return created, fmt.Sprintf("Created %s\n", path), nil
 			}
@@ -52,7 +61,7 @@ func runGraphPreviewRememberUpsert(cmd *cobra.Command, args []string) error {
 			}
 			result, patchErr := store.PatchMemory(ctx, graphstore.MemoryPatchRequest{
 				Path: path, Title: title, Body: body, Actor: actor,
-				ExpectedRevision: revision, Unconditional: unconditional,
+				ExpectedRevision: revision, Unconditional: unconditional, Metadata: metadata,
 			})
 			if errors.Is(patchErr, graphstore.ErrNotFound) || errors.Is(patchErr, graphstore.ErrGone) || errors.Is(patchErr, graphstore.ErrCapabilityUnavailable) {
 				return nil, "", createErr // Deleted or non-Memory identity remains reserved.
@@ -61,7 +70,7 @@ func runGraphPreviewRememberUpsert(cmd *cobra.Command, args []string) error {
 		}
 		result, err := store.PatchMemory(ctx, graphstore.MemoryPatchRequest{
 			Path: path, Title: title, Body: body, Actor: actor,
-			ExpectedRevision: revision, Unconditional: unconditional,
+			ExpectedRevision: revision, Unconditional: unconditional, Metadata: metadata,
 		})
 		if errors.Is(err, graphstore.ErrNotFound) && title != nil && strings.TrimSpace(*title) == "" {
 			return nil, "", graphFailure("invalid_properties", "an explicit creation --title must be nonempty", 2)
@@ -107,10 +116,14 @@ func runGraphPreviewRememberUpdate(cmd *cobra.Command, args []string) error {
 	if err != nil {
 		return err
 	}
+	metadata, err := graphPreviewMetadataPatch(cmd)
+	if err != nil {
+		return err
+	}
 	return withGraphStore(func(ctx context.Context, store *graphstore.Store) (any, string, error) {
 		result, err := store.PatchMemory(ctx, graphstore.MemoryPatchRequest{
 			Path: path, Title: title, Body: body, Actor: getActorWithGit(),
-			ExpectedRevision: revision, Unconditional: unconditional,
+			ExpectedRevision: revision, Unconditional: unconditional, Metadata: metadata,
 		})
 		if err != nil {
 			return nil, "", err
@@ -136,8 +149,8 @@ func graphPreviewRememberPatchInput(cmd *cobra.Command, args []string) (*string,
 		title = &value
 	}
 	if len(args) == 0 && !cmd.Flags().Changed("body-file") && !cmd.Flags().Changed("stdin") {
-		if title == nil {
-			return nil, nil, graphFailure("invalid_properties", "an existing-ID remember write requires --title or one explicit body source", 2)
+		if title == nil && !graphPreviewMetadataFlagsChanged(cmd) {
+			return nil, nil, graphFailure("invalid_properties", "an existing-ID remember write requires --title, a metadata edit or one explicit body source", 2)
 		}
 		return title, nil, nil
 	}

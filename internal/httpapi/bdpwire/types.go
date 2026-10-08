@@ -180,6 +180,7 @@ type BeadRecord struct {
 	// Properties is the complete stored properties document, declared and
 	// undeclared members alike; it is never a schema-filtered projection.
 	Properties Properties `json:"properties"`
+	Metadata   Metadata   `json:"metadata,omitzero"`
 	// Links is present only on the `include=links` aggregate: the first page
 	// of the same result the Bead's `view=links` exposes. The default GET is
 	// bounded and never carries it.
@@ -209,6 +210,7 @@ type LinkRecord struct {
 	Source        Reference      `json:"source"`
 	Target        Reference      `json:"target"`
 	Properties    Properties     `json:"properties"`
+	Metadata      Metadata       `json:"metadata,omitzero"`
 }
 
 // Attribution is the `attribution` envelope carried per version on a Bead or

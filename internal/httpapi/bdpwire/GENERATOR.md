@@ -244,3 +244,27 @@ underlying type, with field/tag parity checked mechanically, and supplies strict
 decode/marshal methods at the History parser root. Ordinary `LinkRecord` retains
 its previous encoding/json behavior. No serving capability follows from this
 structural distinction.
+
+## Common metadata Read adoption — 2026-10-08 (pending qualification)
+
+The successor input is BDP `5b4eb46c7f21f2272f4da5a230f042ce753cb304`.
+The complete 158-definition schema and source files are copied from that exact
+commit. The derived Read seal contains 47 definitions, has 20 parser/matrix
+roots and reaches 46 definitions; the remaining names are accounted for by the
+projection census. The exact spec blob is
+`5dc99d3af17160cd8d8cca038a5f325f4ae7c699`. The generated projection
+digest is `26db67b2f8611a641df6b44bc42959bf047a9efc8b2d5a7d665fc3dd47d631a7`.
+Use the pinned spec bytes with `BDP_SPEC_AT_PIN` to reproduce the 13 current
+JSON fences. The previous Read-adoption record above remains historical.
+
+The new selected definitions add common `Metadata` and the four current
+Bead/Link record and collection wrappers. Current Read records emit `metadata`
+as an object, including `{}` when no members have been set. The base record
+keeps it optional for retained pre-metadata History records. The parity tests
+bind the current wrappers and enforce their required-property refinements over
+the base record. The resolver accepts only an identical property, a reference
+to a definition extending the base, or a nested array/map that narrows its
+record items; it retains the inherited owned-Link map key restriction. This
+adoption does not claim that HTTP serving or installed
+two-engine behavior has passed: those tests, current-source CI, and separate
+independent review of the verifier changes remain required.

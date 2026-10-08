@@ -40,6 +40,7 @@ type UpdateIssueRequest struct {
 	Notes, AppendNotes                             *string
 	ExternalRef, SpecID                            *string
 	DueAt                                          publicops.Field[*time.Time]
+	Metadata                                       publicops.MetadataPatch
 }
 
 // UpdateIssue delegates admitted scalar edits to the existing Issue domain writer and
@@ -129,6 +130,13 @@ func (s *Store) UpdateIssue(ctx context.Context, request UpdateIssueRequest) (Is
 		patch.DueAt = publicops.Field[*time.Time]{Set: true, Value: value}
 		count++
 	}
+	if err := validateCommonMetadataPatch(request.Metadata); err != nil {
+		return IssueMutationResult{}, err
+	}
+	if request.Metadata.Replace.Set || request.Metadata.Merge.Set || len(request.Metadata.Set) > 0 || len(request.Metadata.Unset) > 0 {
+		patch.Metadata = request.Metadata
+		count++
+	}
 	if count == 0 {
 		return IssueMutationResult{}, fmt.Errorf("%w: Issue update requires an admitted field", storage.ErrValidation)
 	}
@@ -152,17 +160,29 @@ func (s *Store) UpdateIssue(ctx context.Context, request UpdateIssueRequest) (Is
 		if err := checkRevisionGuard(request.ExpectedRevision, request.Unconditional, revision, true, "Issue"); err != nil {
 			return err
 		}
+		beforeNative := *before.Properties
+		beforeNative.Metadata = before.Metadata
 		// Resolve against the checked snapshot only for no-op planning. The native
 		// writer receives the original append intent and owns atomic composition.
-		updates, err := issueops.ResolveMergeOps(before.Properties, issueops.UpdateFields(patch))
+		updates, err := issueops.ResolveMergeOps(&beforeNative, issueops.UpdateFields(patch))
 		if err != nil {
 			return err
 		}
-		updates, err = issueops.DiscardNoopIssueUpdates(before.Properties, updates)
+		updates, err = issueops.DiscardNoopIssueUpdates(&beforeNative, updates)
 		if err != nil {
 			return err
 		}
-		if len(updates) == 0 {
+		resolvedMetadata, metadataChanged, err := issueops.ApplyMetadataPatch(before.Metadata, patch.Metadata)
+		if err != nil {
+			return err
+		}
+		// The native Issue writer owns this update, but graph records must meet
+		// the same I-JSON admission as Memory and Link metadata. Validate the
+		// resolved object before either the no-op return or any write effect.
+		if _, err := commonMetadata(resolvedMetadata); err != nil {
+			return err
+		}
+		if len(updates) == 0 && !metadataChanged {
 			result = IssueMutationResult{Issue: before}
 			return nil
 		}
@@ -210,8 +230,8 @@ func (s *Store) UpdateIssue(ctx context.Context, request UpdateIssueRequest) (Is
 			return err
 		}
 		// Charge the new retained head as well as current data; an unreadable
-		// replacement or append rolls back every write effect.
-		if patch.Notes.Set || patch.AppendNotes.Set {
+		// notes or metadata edit rolls back every write effect.
+		if patch.Notes.Set || patch.AppendNotes.Set || metadataChanged {
 			if err := checkCurrentReadBytes(ctx, tx); err != nil {
 				return err
 			}

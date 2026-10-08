@@ -1,6 +1,7 @@
 package graphstore
 
 import (
+	"bytes"
 	"fmt"
 	"math"
 	"reflect"
@@ -65,7 +66,12 @@ func validateIssueCreateFields(issue *types.Issue) error {
 }
 
 func sameIssueCreateFields(want, got *types.Issue) bool {
-	return got != nil && want.Design == got.Design && want.AcceptanceCriteria == got.AcceptanceCriteria &&
+	if want == nil || got == nil {
+		return false
+	}
+	wantMetadata, wantErr := commonMetadata(want.Metadata)
+	gotMetadata, gotErr := commonMetadata(got.Metadata)
+	return wantErr == nil && gotErr == nil && bytes.Equal(wantMetadata, gotMetadata) && want.Design == got.Design && want.AcceptanceCriteria == got.AcceptanceCriteria &&
 		want.Assignee == got.Assignee && want.SpecID == got.SpecID &&
 		sameIssueDue(want.DueAt, got.DueAt) && want.Notes == got.Notes && want.Owner == got.Owner && want.CreatedBy == got.CreatedBy &&
 		reflect.DeepEqual(want.EstimatedMinutes, got.EstimatedMinutes) && reflect.DeepEqual(want.ExternalRef, got.ExternalRef)

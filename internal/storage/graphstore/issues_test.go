@@ -237,7 +237,7 @@ func TestIssueAdapterRefusesUnsupportedRequests(t *testing.T) {
 		{"ephemeral", func(r *publicops.CreateRequest) { r.Issue.Ephemeral = true }},
 		{"no-history", func(r *publicops.CreateRequest) { r.Issue.NoHistory = true }},
 		{"parent", func(r *publicops.CreateRequest) { r.ParentID = "exp-parent" }},
-		{"metadata", func(r *publicops.CreateRequest) { r.Issue.Metadata = json.RawMessage(`{"x":1}`) }},
+		{"metadata-nonobject", func(r *publicops.CreateRequest) { r.Issue.Metadata = json.RawMessage(`[]`) }},
 		{"infra", func(r *publicops.CreateRequest) { r.Issue.IssueType = "agent" }},
 		{"wrong-prefix", func(r *publicops.CreateRequest) { r.Issue.ID = "other-123" }},
 	} {

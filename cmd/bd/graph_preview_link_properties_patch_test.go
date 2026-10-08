@@ -72,7 +72,6 @@ func TestGraphPreviewLinkPropertiesPatchRefusesBeforeInput(t *testing.T) {
 		{"Issue-title-conflict", []string{"--unconditional", "--title=x"}, 5},
 		{"claim-conflict", []string{"--claim"}, 5},
 		{"false-claim-conflict", []string{"--claim=false"}, 5},
-		{"metadata-conflict", []string{"--unconditional", "--metadata={}"}, 5},
 	} {
 		t.Run(tc.name, func(t *testing.T) {
 			cmd := memoryPropertiesPatchCommand(t, append([]string{"--patch=@-"}, tc.flags...)...)

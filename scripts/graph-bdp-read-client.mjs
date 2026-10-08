@@ -98,7 +98,9 @@ try {
   artifacts.planBefore = plan;
   assert.equal(plan.type, memoryType);
   assert.equal(plan.properties.title, 'Plan — 雪');
+  assert.deepEqual(plan.metadata, { team: 'docs' });
   assert.equal(plan.ownedLinks[relatedType][0].properties.note, 'before page');
+  assert.deepEqual(plan.ownedLinks[relatedType][0].metadata, { origin: 'manual' });
   for (const [resource, resourceID] of [['type', plan.type], ['bead', id('beads/work')], ['link', contextID]]) {
     const value = await perform({ kind: 'resource', resource, id: resourceID });
     assert.equal(value.id, resourceID);
@@ -126,6 +128,7 @@ try {
   assert.equal(exampleLink.source, id('beads/work'));
   assert.equal(exampleLink.target, planID);
   assert.deepEqual(exampleLink.properties, { note: 'Issue context' });
+  assert.deepEqual(exampleLink.metadata, {});
   artifacts.exampleLink = exampleLink;
   const properties = await perform({ kind: 'properties', resource: 'bead', id: planID });
   assert.deepEqual(properties, plan.properties);
@@ -140,6 +143,7 @@ try {
   const workBefore = artifacts['bead:' + workID];
   const targetBefore = await perform({ kind: 'resource', resource: 'bead', id: targetID });
   const dependencyBefore = await perform({ kind: 'resource', resource: 'link', id: dependencyID });
+  assert.deepEqual(dependencyBefore.metadata, {});
   assert.equal(dependencyBefore.source, workID);
   assert.equal(dependencyBefore.target, targetID);
   assert.deepEqual(Object.values(workBefore.ownedLinks).flat(), [dependencyBefore]);

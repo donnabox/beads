@@ -75,11 +75,11 @@ func TestGraphPreviewUsabilityWorkflow(t *testing.T) {
 			refuse("capability_unavailable", "link", memory.ID, other.ID, "--link-type", "types/missing")
 			refuse("invalid_properties", "link", memory.ID, other.ID, "--link-type", "types/preview-blocks-v1", "--unconditional-source")
 			human := graphPolicyCLI(t, bd, work, home, nil, "", "memories")
-			if !strings.Contains(human, "beads/policy") || !strings.Contains(human, "Code flow policy") || strings.Contains(human, scope) || strings.Contains(human, memory.Version) {
+			if !strings.Contains(human, "beads/policy") || !strings.Contains(human, "Code flow policy") || strings.Contains(human, scope) || strings.Contains(human, memory.Revision) {
 				t.Fatalf("noisy Memory list: %s", human)
 			}
 			details := graphPolicyCLI(t, bd, work, home, nil, "", "memories", "--details")
-			if !strings.Contains(details, memory.Version) {
+			if !strings.Contains(details, memory.Revision) {
 				t.Fatal("details omitted exact version")
 			}
 			for _, spec := range []struct{ typ, target string }{{"types/example-follows", other.ID}, {"types/example-cites", issue.ID}} {
@@ -101,18 +101,18 @@ func TestGraphPreviewUsabilityWorkflow(t *testing.T) {
 					t.Fatal("update changed Type")
 				}
 				// Every installed informational Type lists its history, not only Related.
-				resource, kind, versions, _ := graphVersionsListed(t, call("versions", link.Link.ID))
+				resource, kind, versions, members := graphVersionsListed(t, call("versions", link.Link.ID))
 				if resource != strings.TrimPrefix(link.Link.ID, scope) || kind != "link" || len(versions) != 2 ||
-					versions[0].Version != edited.Link.Revision || versions[1].Version != link.Link.Revision ||
-					versions[0].Removed || versions[1].Removed {
+					versions[0].Version != edited.Link.Revision || versions[1].Version != link.Link.Revision {
 					t.Fatalf("%s Link versions: resource=%q kind=%q rows=%+v", spec.typ, resource, kind, versions)
 				}
-				old := graphMixedResult[graphstore.LinkRecord](t, call("show", link.Link.ID, "--version", link.Link.Version))
+				graphVersionsAssertKeys(t, spec.typ, members)
+				old := graphMixedResult[graphstore.LinkRecord](t, call("show", link.Link.ID, "--version", link.Link.Revision))
 				if !reflect.DeepEqual(old, link.Link) {
 					t.Fatal("retained Link changed")
 				}
 				call("unlink", memory.ID, spec.target, "--link-type", scope+spec.typ, "--if-revision", edited.Link.Revision)
-				retained := graphMixedResult[graphstore.Record](t, call("show", memory.ID, "--version", owner.Version))
+				retained := graphMixedResult[graphstore.Record](t, call("show", memory.ID, "--version", owner.Revision))
 				if !reflect.DeepEqual(retained, owner) {
 					t.Fatal("unlink rewrote old Memory-owned snapshot")
 				}
@@ -135,7 +135,7 @@ func TestGraphPreviewUsabilityWorkflow(t *testing.T) {
 			if current.ID != memory.ID || current.Properties.Body != "Updated code flow policy" {
 				t.Fatal("short Memory update changed identity or lost its body")
 			}
-			call("compare", "policy", "--from", memory.Version, "--to", current.Version)
+			call("compare", "policy", "--from", memory.Revision, "--to", current.Revision)
 			ordinaryWork, ordinaryHome := t.TempDir(), t.TempDir()
 			graphPolicyCLI(t, bd, ordinaryWork, ordinaryHome, nil, "capability_unavailable", "create", "--bead-type", "types/preview-memory-v2", "--body", "No store", "--json")
 			graphPolicyCLI(t, bd, ordinaryWork, ordinaryHome, nil, "capability_unavailable", "list", "--bead-type", "types/preview-memory-v2", "--format", "records-json")

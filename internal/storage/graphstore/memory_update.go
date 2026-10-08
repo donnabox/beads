@@ -8,6 +8,8 @@ import (
 
 	"github.com/steveyegge/beads/internal/graphpatch"
 	"github.com/steveyegge/beads/internal/storage"
+	"github.com/steveyegge/beads/internal/storage/issueops"
+	publicops "github.com/steveyegge/beads/issueops"
 )
 
 // MemoryUpdateRequest replaces the complete experimental title/body payload.
@@ -18,6 +20,7 @@ type MemoryUpdateRequest struct {
 	Actor            string
 	ExpectedRevision string
 	Unconditional    bool
+	Metadata         publicops.MetadataPatch
 }
 
 type MemoryMutationResult struct {
@@ -33,7 +36,7 @@ func (s *Store) UpdateMemory(ctx context.Context, request MemoryUpdateRequest) (
 	return s.writeMemory(ctx, memoryWriteRequest{
 		path: request.Path, actor: request.Actor, expectedRevision: request.ExpectedRevision,
 		unconditional: request.Unconditional, title: request.Properties.Title, body: request.Properties.Body,
-		hasTitle: true, hasBody: true,
+		hasTitle: true, hasBody: true, metadataPatch: request.Metadata,
 	})
 }
 
@@ -47,13 +50,14 @@ type MemoryPatchRequest struct {
 	Actor            string
 	ExpectedRevision string
 	Unconditional    bool
+	Metadata         publicops.MetadataPatch
 }
 
 // PatchMemory resolves omitted fields from the actual predecessor inside the
 // mutation transaction, under the same guard and retention rules as UpdateMemory.
 func (s *Store) PatchMemory(ctx context.Context, request MemoryPatchRequest) (MemoryMutationResult, error) {
 	patch := memoryWriteRequest{path: request.Path, actor: request.Actor,
-		expectedRevision: request.ExpectedRevision, unconditional: request.Unconditional}
+		expectedRevision: request.ExpectedRevision, unconditional: request.Unconditional, metadataPatch: request.Metadata}
 	// Capture caller-owned pointers before entering the transaction. No pointer is
 	// retained or read by the transaction callback.
 	if request.Title != nil {
@@ -71,17 +75,21 @@ type memoryWriteRequest struct {
 	title, body                   string
 	hasTitle, hasBody             bool
 	propertiesPatch               *graphpatch.Patch
+	metadataPatch                 publicops.MetadataPatch
 }
 
 func (s *Store) writeMemory(ctx context.Context, request memoryWriteRequest) (MemoryMutationResult, error) {
 	if err := validatePath(request.path); err != nil {
 		return MemoryMutationResult{}, fmt.Errorf("%w: %v", storage.ErrValidation, err)
 	}
-	if !request.hasTitle && !request.hasBody && request.propertiesPatch == nil {
+	if !request.hasTitle && !request.hasBody && request.propertiesPatch == nil && !hasCommonMetadataPatch(request.metadataPatch) {
 		return MemoryMutationResult{}, fmt.Errorf("%w: at least one Memory field must be supplied", storage.ErrValidation)
 	}
 	if request.propertiesPatch != nil && (request.hasTitle || request.hasBody) {
 		return MemoryMutationResult{}, fmt.Errorf("%w: ordered Memory properties patch cannot be combined with field replacement", storage.ErrValidation)
+	}
+	if err := validateCommonMetadataPatch(request.metadataPatch); err != nil {
+		return MemoryMutationResult{}, err
 	}
 	if !utf8.ValidString(request.title) || !utf8.ValidString(request.body) || !utf8.ValidString(request.actor) {
 		return MemoryMutationResult{}, fmt.Errorf("%w: Memory title, body and actor must be UTF-8", storage.ErrValidation)
@@ -115,7 +123,15 @@ func (s *Store) writeMemory(ctx context.Context, request memoryWriteRequest) (Me
 				return err
 			}
 		}
-		if memory.Properties == next {
+		metadata, metadataChanged, err := issueops.ApplyMetadataPatch(memory.Metadata, request.metadataPatch)
+		if err != nil {
+			return err
+		}
+		metadata, err = commonMetadata(metadata)
+		if err != nil {
+			return err
+		}
+		if memory.Properties == next && !metadataChanged {
 			result = MemoryMutationResult{Memory: memory}
 			return nil
 		}
@@ -126,7 +142,7 @@ func (s *Store) writeMemory(ctx context.Context, request memoryWriteRequest) (Me
 		if err := s.touchCoordination(ctx, tx); err != nil {
 			return err
 		}
-		if _, err := tx.ExecContext(ctx, `UPDATE graph_preview_payloads SET properties=? WHERE path=?`, properties, request.path); err != nil {
+		if _, err := tx.ExecContext(ctx, `UPDATE graph_preview_payloads SET properties=?, metadata=? WHERE path=?`, properties, metadata, request.path); err != nil {
 			return err
 		}
 		if err := s.afterStage("memory-payload"); err != nil {
@@ -134,6 +150,7 @@ func (s *Store) writeMemory(ctx context.Context, request memoryWriteRequest) (Me
 		}
 		replaced := replacedMemory(memory, request.unconditional)
 		memory.Properties = next
+		memory.Metadata = metadata
 		accepted, err := s.recordOwnedMemoryInTx(ctx, tx, request.path, request.actor, memory)
 		if err != nil {
 			return err
@@ -141,7 +158,7 @@ func (s *Store) writeMemory(ctx context.Context, request memoryWriteRequest) (Me
 		// New ordered patches must not publish a state that exceeds the existing
 		// current-read acquisition budget. Existing replacement/field routes retain
 		// their prior admission behavior. A no-op above writes nothing.
-		if request.propertiesPatch != nil {
+		if request.propertiesPatch != nil || hasCommonMetadataPatch(request.metadataPatch) {
 			if err := checkCurrentReadBytes(ctx, tx); err != nil {
 				return err
 			}

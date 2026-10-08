@@ -33,9 +33,9 @@ func (r *Reader) Resource(ctx context.Context, path string) (any, error) {
 	}
 	switch v := record.(type) {
 	case graphstore.Record:
-		return r.bead(ctx, v.ID, v.Type, v.Revision, v.Properties, v.Owned, v.Attribution)
+		return r.bead(ctx, v.ID, v.Type, v.Revision, v.Properties, v.Metadata, v.Owned, v.Attribution)
 	case graphstore.IssueRecord:
-		return r.bead(ctx, v.ID, v.Type, v.Revision, v.Properties, v.Owned, v.Attribution)
+		return r.bead(ctx, v.ID, v.Type, v.Revision, v.Properties, v.Metadata, v.Owned, v.Attribution)
 	case graphstore.LinkRecord:
 		return link(v)
 	default:
@@ -57,7 +57,7 @@ func (r *Reader) Type(ctx context.Context, path string) (bdpwire.TypeDescriptor,
 	return result, nil
 }
 
-func (r *Reader) bead(ctx context.Context, id, typ, revision string, properties any, owned []json.RawMessage, attribution graphstore.Attribution) (bdpwire.BeadRecord, error) {
+func (r *Reader) bead(ctx context.Context, id, typ, revision string, properties any, metadata json.RawMessage, owned []json.RawMessage, attribution graphstore.Attribution) (bdpwire.BeadRecord, error) {
 	if !strings.HasPrefix(typ, r.store.ScopeURL()) {
 		return bdpwire.BeadRecord{}, fmt.Errorf("%w: Resource Type is outside installed Scope", graphstore.ErrInvalidStore)
 	}
@@ -65,16 +65,20 @@ func (r *Reader) bead(ctx context.Context, id, typ, revision string, properties 
 	if err != nil {
 		return bdpwire.BeadRecord{}, err
 	}
-	return bead(descriptor, id, typ, revision, properties, owned, attribution)
+	return bead(descriptor, id, typ, revision, properties, metadata, owned, attribution)
 }
 
-func bead(descriptor graph.TypeDescriptor, id, typ, revision string, properties any, owned []json.RawMessage, attribution graphstore.Attribution) (bdpwire.BeadRecord, error) {
+func bead(descriptor graph.TypeDescriptor, id, typ, revision string, properties any, metadata json.RawMessage, owned []json.RawMessage, attribution graphstore.Attribution) (bdpwire.BeadRecord, error) {
 	result := bdpwire.BeadRecord{ID: id, Type: typ, Revision: revision}
 	if descriptor.ID() != typ || descriptor.Describes() != graph.KindBead {
 		return result, fmt.Errorf("%w: Bead descriptor does not match its Type", graphstore.ErrInvalidStore)
 	}
 	var err error
 	result.Properties, err = projectProperties(properties)
+	if err != nil {
+		return result, err
+	}
+	result.Metadata, err = projectMetadata(metadata)
 	if err != nil {
 		return result, err
 	}
@@ -132,6 +136,10 @@ func link(v graphstore.LinkRecord) (bdpwire.LinkRecord, error) {
 	if err != nil {
 		return result, err
 	}
+	result.Metadata, err = projectMetadata(v.Metadata)
+	if err != nil {
+		return result, err
+	}
 	result.Attribution, err = projectAttribution(v.Attribution)
 	return result, err
 }
@@ -147,6 +155,17 @@ func projectProperties(value any) (bdpwire.Properties, error) {
 	var result bdpwire.Properties
 	if err := bdpwire.Unmarshal(raw, &result); err != nil {
 		return nil, fmt.Errorf("%w: properties shape: %v", graphstore.ErrInvalidStore, err)
+	}
+	return result, nil
+}
+
+func projectMetadata(raw json.RawMessage) (bdpwire.Metadata, error) {
+	if len(raw) == 0 {
+		raw = json.RawMessage(`{}`)
+	}
+	var result bdpwire.Metadata
+	if err := bdpwire.Unmarshal(raw, &result); err != nil {
+		return nil, fmt.Errorf("%w: metadata shape: %v", graphstore.ErrInvalidStore, err)
 	}
 	return result, nil
 }

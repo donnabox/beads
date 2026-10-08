@@ -102,7 +102,7 @@ func TestGraphPreviewIssueCreateFieldsDispatch(t *testing.T) {
 	created := graphPolicyCLI(t, bd, work, home, nil, "", "create", "First fields", "--id", "beads/work", "--design", "  雪\r\n ", "--acceptance", "accepted", "-a", "author", "-e", "0", "--external-ref", "tracker #42", "--spec-id", "spec/one", "--actor", "create-author", "--json")
 	var envelope struct {
 		Result struct {
-			Version    string
+			Revision   string
 			Properties types.Issue
 		}
 	}
@@ -110,10 +110,10 @@ func TestGraphPreviewIssueCreateFieldsDispatch(t *testing.T) {
 		t.Fatal(err)
 	}
 	i := envelope.Result.Properties
-	if envelope.Result.Version == "" || i.Design != "  雪\r\n " || i.AcceptanceCriteria != "accepted" || i.Assignee != "author" || i.EstimatedMinutes == nil || *i.EstimatedMinutes != 0 || i.ExternalRef == nil || *i.ExternalRef != "tracker #42" || i.SpecID != "spec/one" || i.Status != types.StatusOpen {
+	if envelope.Result.Revision == "" || i.Design != "  雪\r\n " || i.AcceptanceCriteria != "accepted" || i.Assignee != "author" || i.EstimatedMinutes == nil || *i.EstimatedMinutes != 0 || i.ExternalRef == nil || *i.ExternalRef != "tracker #42" || i.SpecID != "spec/one" || i.Status != types.StatusOpen {
 		t.Fatalf("production create lost fields: %+v", i)
 	}
-	for _, flags := range [][]string{nil, {"--version", envelope.Result.Version}} {
+	for _, flags := range [][]string{nil, {"--version", envelope.Result.Revision}} {
 		args := append([]string{"show", "beads/work", "--json"}, flags...)
 		if got := graphPolicyCLI(t, bd, work, home, nil, "", args...); got != created {
 			t.Fatal("fresh current/exact read differs from the complete first record")
@@ -129,7 +129,6 @@ func TestGraphPreviewIssueCreateFieldsDispatch(t *testing.T) {
 		{"status-with-notes", "--notes=", "capability_unavailable"},
 		{"status", "--status=open", "capability_unavailable"},
 		{"defer", "--defer=tomorrow", "capability_unavailable"},
-		{"metadata", "--metadata={}", "capability_unavailable"},
 		{"design-file", "--design-file=/missing-create-design", "capability_unavailable"},
 	} {
 		t.Run(tc.name, func(t *testing.T) {

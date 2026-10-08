@@ -8,7 +8,7 @@ import (
 // Pin is the gastownhall/bdp commit every vendored file under schema/ was
 // taken from. pin_test.go asserts it equals the `commit:` line of
 // schema/PROVENANCE, so the two cannot drift apart silently.
-const Pin = "53bdbd03136875f952af184fce7b3c7af8f74e96"
+const Pin = "5b4eb46c7f21f2272f4da5a230f042ce753cb304"
 
 // SchemaID is the bundle's canonical `$id`. It is a protocol identity —
 // compared exactly, never dereferenced — and the base the pinned matrix's
@@ -32,8 +32,8 @@ const ServiceDescRel = "service-desc"
 //go:embed schema/bdp-v0.schema.json
 var schemaBundle []byte
 
-// SchemaBundle returns the complete verbatim normative bundle (153 definitions).
-// The supported DTO scope is its separately pinned 42-definition Read projection;
+// SchemaBundle returns the complete verbatim normative bundle.
+// The supported DTO scope is its separately pinned Read projection;
 // returning the full artifact does not admit its excluded write definitions.
 // The returned slice is a
 // copy: callers may not mutate the embedded bytes. Package tests compare the

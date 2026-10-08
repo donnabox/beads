@@ -43,6 +43,15 @@ def require(condition, message):
         raise RuntimeError(message)
 
 
+def require_memory_creation(record, scope):
+    require(record.get("id") == scope + "beads/plan"
+            and record.get("type") == scope + "types/preview-memory-v2"
+            and record.get("properties") == {"title": "Plan", "body": "Durable C0 body — 記憶"}
+            and record.get("owned") == []
+            and isinstance(record.get("revision"), str) and bool(record["revision"])
+            and "version" not in record, "incomplete/non-Memory creation")
+
+
 def digest(path):
     return hashlib.sha256(path.read_bytes()).hexdigest()
 
@@ -134,7 +143,7 @@ def verify_http_capture(root, binary_hash):
     require(summary.get("passed") is True and summary.get("failure") is None
             and summary.get("active_children") == 0 and summary.get("cli_commands") == 16,
             "incomplete installed HTTP capture")
-    require(summary.get("client_pin") == "53bdbd03136875f952af184fce7b3c7af8f74e96"
+    require(summary.get("client_pin") == "5b4eb46c7f21f2272f4da5a230f042ce753cb304"
             and summary.get("installed_binary_sha256") == binary_hash, "HTTP source/binary provenance mismatch")
     require(summary.get("python") == {"passed": True, "beads": 4, "limit": 1,
             "authenticated": True, "mechanism": "unchanged standard-library example over BDP HTTP"},
@@ -659,9 +668,7 @@ class Qualification:
                 "initialization selected the wrong backend or Scope")
         created = self.cli(work, engine + "-create", "remember", "Durable C0 body — 記憶", "--id", "beads/plan", "--title", "Plan")
         record = created["result"]
-        require(record["id"] == scope + "beads/plan" and record["type"] == scope + "types/preview-memory-v2"
-                and record["properties"] == {"title": "Plan", "body": "Durable C0 body — 記憶"}
-                and record["owned"] == [] and record["revision"] and record["version"], "incomplete/non-Memory creation")
+        require_memory_creation(record, scope)
         # Each call starts and reaps a distinct installed CLI process.
         for suffix, identity in [("show", "beads/plan"), ("reopen", record["id"])]:
             require(self.cli(work, engine + "-" + suffix, "show", identity) == created,

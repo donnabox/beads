@@ -1,7 +1,7 @@
 package graphread
 
 // Collection semantics follow gastownhall/bdp at
-// 53bdbd03136875f952af184fce7b3c7af8f74e96, docs/specs/bdp.md and
+// 5b4eb46c7f21f2272f4da5a230f042ce753cb304, docs/specs/bdp.md and
 // packages/server/src/{read-request,authority-read}.ts. These are internal
 // mechanics, not an authorization policy or an advertised Read profile.
 

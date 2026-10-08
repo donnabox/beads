@@ -508,7 +508,7 @@ func TestIncidentLinkBudgetAndExactPair(t *testing.T) {
 				if _, err := tx.ExecContext(ctx, `INSERT INTO graph_preview_catalog(path,resource_kind,type_url,revision,allocation_state,backing) VALUES(?,'link',?,?,'live','informational')`, path, link.Type, link.Revision); err != nil {
 					t.Fatal(err)
 				}
-				if _, err := tx.ExecContext(ctx, `INSERT INTO graph_preview_links(path,source_path,target_path,properties,attribution) SELECT ?,'beads/source','beads/common',properties,attribution FROM graph_preview_links WHERE path='links/common-0'`, path); err != nil {
+				if _, err := tx.ExecContext(ctx, `INSERT INTO graph_preview_links(path,source_path,target_path,properties,metadata,attribution) SELECT ?,'beads/source','beads/common',properties,metadata,attribution FROM graph_preview_links WHERE path='links/common-0'`, path); err != nil {
 					t.Fatal(err)
 				}
 				// Each path is fresh, so this is its first version: ordinal 1.

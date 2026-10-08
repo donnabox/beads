@@ -12,6 +12,21 @@ import (
 // for it.
 type Properties map[string]json.RawMessage
 
+// Metadata is the Resource's separate, Type-independent open object. A nil
+// value means the member was absent in an older retained record; a non-nil
+// empty value is the explicit empty object on a current read.
+type Metadata map[string]json.RawMessage
+
+// MarshalJSON emits the required empty object for current records. An absent
+// historical member is represented by a nil Metadata with omitzero on the
+// containing base record, so this method is not called for that case.
+func (m Metadata) MarshalJSON() ([]byte, error) {
+	if m == nil {
+		return []byte("{}"), nil
+	}
+	return json.Marshal(map[string]json.RawMessage(m))
+}
+
 // MarshalJSON writes {} for nil and the members otherwise.
 func (p Properties) MarshalJSON() ([]byte, error) {
 	if p == nil {
@@ -78,3 +93,23 @@ func (s TypeSummaries) MarshalJSON() ([]byte, error) {
 // code-unit order of their canonical ids. An entry is present, possibly
 // empty, for every Link Type the Bead's Type owns.
 type OwnedLinks map[string]LinkRecords
+
+type CurrentBeadRecords []CurrentBeadRecord
+
+func (s CurrentBeadRecords) MarshalJSON() ([]byte, error) {
+	if s == nil {
+		return []byte("[]"), nil
+	}
+	return json.Marshal([]CurrentBeadRecord(s))
+}
+
+type CurrentLinkRecords []CurrentLinkRecord
+
+func (s CurrentLinkRecords) MarshalJSON() ([]byte, error) {
+	if s == nil {
+		return []byte("[]"), nil
+	}
+	return json.Marshal([]CurrentLinkRecord(s))
+}
+
+type CurrentOwnedLinks map[string]CurrentLinkRecords

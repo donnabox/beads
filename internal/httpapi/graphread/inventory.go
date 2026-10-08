@@ -51,13 +51,13 @@ func projectInventory(snapshot graphstore.Snapshot) (Inventory, error) {
 	for _, record := range snapshot.Records {
 		switch v := record.(type) {
 		case graphstore.Record:
-			projected, err := bead(descriptors[v.Type], v.ID, v.Type, v.Revision, v.Properties, v.Owned, v.Attribution)
+			projected, err := bead(descriptors[v.Type], v.ID, v.Type, v.Revision, v.Properties, v.Metadata, v.Owned, v.Attribution)
 			if err != nil {
 				return Inventory{}, err
 			}
 			result.Beads = append(result.Beads, projected)
 		case graphstore.IssueRecord:
-			projected, err := bead(descriptors[v.Type], v.ID, v.Type, v.Revision, v.Properties, v.Owned, v.Attribution)
+			projected, err := bead(descriptors[v.Type], v.ID, v.Type, v.Revision, v.Properties, v.Metadata, v.Owned, v.Attribution)
 			if err != nil {
 				return Inventory{}, err
 			}

@@ -3,7 +3,7 @@
 This small example reads the BDP HTTP interface. It does not invoke `bd`, read
 CLI JSON, or access a database. Python 3.9 or newer is enough; no packages need
 installing. It implements the BDP v0 Read shapes pinned by this repository to
-[gastownhall/bdp at 53bdbd03](https://github.com/gastownhall/bdp/tree/53bdbd03136875f952af184fce7b3c7af8f74e96).
+[gastownhall/bdp at 5b4eb46c](https://github.com/gastownhall/bdp/tree/5b4eb46c7f21f2272f4da5a230f042ce753cb304).
 It is an example consumer, not a complete protocol validator or SDK.
 
 Start the graph BDP service separately using the repository's
@@ -33,6 +33,9 @@ python3 examples/bdp-read/read_beads.py \
 ```
 
 This prints one Bead object. These are current reads, not History requests.
+Every current Bead and Link record includes a `metadata` object, even when it
+is empty (`{}`). The example preserves it alongside `properties` in its JSON
+output. A retained pre-metadata History record can omit that member.
 There is no CLI fallback if the HTTP server is unavailable.
 
 For an authenticated service, have your shell or secret manager provide

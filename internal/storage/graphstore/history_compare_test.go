@@ -12,10 +12,10 @@ import (
 )
 
 func comparisonMemory(version, body string) Record {
-	return Record{ID: "https://example.test/beads/plan", Type: "https://example.test/types/memory", Version: version, Revision: version, Properties: Properties{Title: "Plan", Body: body}, Owned: []json.RawMessage{}, Attribution: Attribution{Actor: "author", Status: "claimed", RecordedAt: "2026-09-26T12:00:00Z"}}
+	return Record{ID: "https://example.test/beads/plan", Type: "https://example.test/types/memory", Version: version, Revision: version, Properties: Properties{Title: "Plan", Body: body}, Metadata: json.RawMessage(`{}`), Owned: []json.RawMessage{}, Attribution: Attribution{Actor: "author", Status: "claimed", RecordedAt: "2026-09-26T12:00:00Z"}}
 }
 func comparisonLink(version string) LinkRecord {
-	return LinkRecord{ID: "https://example.test/links/context", Type: "https://example.test/types/related", Version: version, Revision: version, Source: "https://example.test/beads/plan", Target: "https://example.test/beads/work", Properties: map[string]any{"note": "context"}, Attribution: Attribution{Actor: "author", Status: "claimed", RecordedAt: "2026-09-26T12:00:00Z"}}
+	return LinkRecord{ID: "https://example.test/links/context", Type: "https://example.test/types/related", Version: version, Revision: version, Source: "https://example.test/beads/plan", Target: "https://example.test/beads/work", Properties: map[string]any{"note": "context"}, Metadata: json.RawMessage(`{}`), Attribution: Attribution{Actor: "author", Status: "claimed", RecordedAt: "2026-09-26T12:00:00Z"}}
 }
 func comparisonRaw(t *testing.T, value any) json.RawMessage {
 	t.Helper()
@@ -37,8 +37,14 @@ func TestVersionComparisonMemoryDirectionAndContext(t *testing.T) {
 	if len(got.Changes) != 1 || got.Changes[0].Area != "properties" || got.Changes[0].Member != "body" || string(got.Changes[0].From.Value) != string(comparisonRaw(t, before.Properties.Body)) || string(got.Changes[0].To.Value) != string(comparisonRaw(t, after.Properties.Body)) {
 		t.Fatalf("body comparison: %+v", got)
 	}
-	if got.From.Version != "before" || got.To.Version != "after" || got.To.Attribution.Actor != "editor" || !reflect.DeepEqual(got.Compared, []string{"properties", "owned"}) || !reflect.DeepEqual(got.Unsupported, []string{"commonMetadata", "inception", "derivation"}) {
+	if got.From.Version != "before" || got.To.Version != "after" || got.To.Attribution.Actor != "editor" || !reflect.DeepEqual(got.Compared, []string{"properties", "metadata", "owned"}) || !reflect.DeepEqual(got.Unsupported, []string{"inception", "derivation"}) {
 		t.Fatalf("context: %+v", got)
+	}
+	withMetadata := after
+	withMetadata.Metadata = json.RawMessage(`{"team":"docs"}`)
+	metadataChange, err := compareVersionRecords(after, withMetadata)
+	if err != nil || len(metadataChange.Changes) != 1 || metadataChange.Changes[0].Area != "metadata" || metadataChange.Changes[0].Member != "team" || metadataChange.Changes[0].From.Present || string(metadataChange.Changes[0].To.Value) != `"docs"` {
+		t.Fatalf("metadata comparison: %+v %v", metadataChange, err)
 	}
 	reverse, err := compareVersionRecords(after, before)
 	if err != nil || !reflect.DeepEqual(reverse.Changes[0].From, got.Changes[0].To) || !reflect.DeepEqual(reverse.Changes[0].To, got.Changes[0].From) {
@@ -135,13 +141,13 @@ func TestVersionComparisonJSONSemantics(t *testing.T) {
 	if got.Changes[0].Member != "gone" || !got.Changes[0].From.Present || string(got.Changes[0].From.Value) != "null" || got.Changes[0].To.Present || got.Changes[1].Member != "n" || string(got.Changes[1].From.Value) != "9007199254740993" || got.Changes[2].Member != "new" || got.Changes[2].From.Present || string(got.Changes[2].To.Value) != "null" {
 		t.Fatalf("absence/null/number: %+v", got.Changes)
 	}
-	if !reflect.DeepEqual(got.Compared, []string{"properties"}) || !reflect.DeepEqual(got.Unsupported, []string{"commonMetadata"}) {
+	if !reflect.DeepEqual(got.Compared, []string{"properties", "metadata"}) || len(got.Unsupported) != 0 {
 		t.Fatalf("Link scope: %+v", got)
 	}
 }
 
 func TestVersionComparisonIssueAllSerializedFields(t *testing.T) {
-	before := IssueRecord{ID: "https://example.test/beads/work", Type: "https://example.test/types/issue", Version: "a", Revision: "a", Properties: &publicops.Issue{ID: "work", Title: "Work", Priority: 2}, Owned: []json.RawMessage{}}
+	before := IssueRecord{ID: "https://example.test/beads/work", Type: "https://example.test/types/issue", Version: "a", Revision: "a", Properties: &publicops.Issue{ID: "work", Title: "Work", Priority: 2}, Metadata: json.RawMessage(`{}`), Owned: []json.RawMessage{}}
 	after := before
 	after.Version = "b"
 	after.Revision = "b"
@@ -154,7 +160,7 @@ func TestVersionComparisonIssueAllSerializedFields(t *testing.T) {
 	changed.Assignee = "worker"
 	changed.Owner = "owner"
 	changed.Labels = []string{"a", "b"}
-	changed.Metadata = json.RawMessage(`{"large":9007199254740993,"null":null}`)
+	after.Metadata = json.RawMessage(`{"null":null}`)
 	changed.UpdatedAt = time.Date(2026, 9, 26, 0, 0, 0, 0, time.UTC)
 	changed.Status = "closed"
 	changed.Priority = 1
@@ -179,13 +185,21 @@ func TestVersionComparisonIssueAllSerializedFields(t *testing.T) {
 		}
 	}
 	actual := []string{}
+	metadataChanges := []VersionChange{}
 	for _, change := range got.Changes {
-		actual = append(actual, change.Member)
+		if change.Area == "properties" {
+			actual = append(actual, change.Member)
+		} else if change.Area == "metadata" {
+			metadataChanges = append(metadataChanges, change)
+		}
 	}
 	if !reflect.DeepEqual(actual, expected) || len(actual) < 10 {
 		t.Fatalf("Issue fields: %v want %v", actual, expected)
 	}
-	if !reflect.DeepEqual(got.Unsupported, []string{"commonMetadata"}) {
+	if len(metadataChanges) != 1 || metadataChanges[0].Member != "null" || metadataChanges[0].From.Present || !metadataChanges[0].To.Present || string(metadataChanges[0].To.Value) != "null" {
+		t.Fatalf("Issue metadata changes: %+v", metadataChanges)
+	}
+	if len(got.Unsupported) != 0 {
 		t.Fatal(got.Unsupported)
 	}
 	if before.Properties.Dependencies != nil {

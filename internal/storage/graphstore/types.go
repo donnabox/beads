@@ -11,7 +11,7 @@ import (
 )
 
 // SchemaVersion identifies this explicitly experimental storage layout.
-const SchemaVersion = 6
+const SchemaVersion = 7
 
 // Binding is the exact identity expected by the local workspace metadata.
 // WorkspaceID is its canonical filesystem path; C0 does not support moving it.
@@ -43,10 +43,11 @@ type Options struct {
 
 // CreateRequest creates a new canonical Memory path; it is not a keyed upsert.
 type CreateRequest struct {
-	Path  string
-	Title string
-	Body  string
-	Actor string
+	Path     string
+	Title    string
+	Body     string
+	Actor    string
+	Metadata json.RawMessage
 }
 
 // Properties is the complete payload supported by the preview descriptor.
@@ -63,6 +64,7 @@ type Record struct {
 	Revision    string            `json:"revision"`
 	Version     string            `json:"version"`
 	Properties  Properties        `json:"properties"`
+	Metadata    json.RawMessage   `json:"metadata"`
 	Owned       []json.RawMessage `json:"owned"`
 	Attribution Attribution       `json:"attribution"`
 }
@@ -84,6 +86,7 @@ type IssueRecord struct {
 	Revision    string            `json:"revision"`
 	Version     string            `json:"version"`
 	Properties  *publicops.Issue  `json:"properties"`
+	Metadata    json.RawMessage   `json:"metadata"`
 	Owned       []json.RawMessage `json:"owned"`
 	Attribution Attribution       `json:"attribution"`
 }
@@ -111,14 +114,15 @@ type DependencyRequest struct {
 // LinkRecord projects an authoritative specialized Dependency or generic Link.
 // All preview endpoints are unpinned live local Beads.
 type LinkRecord struct {
-	ID          string         `json:"id"`
-	Type        string         `json:"type"`
-	Revision    string         `json:"revision"`
-	Version     string         `json:"version"`
-	Source      string         `json:"source"`
-	Target      string         `json:"target"`
-	Properties  map[string]any `json:"properties"`
-	Attribution Attribution    `json:"attribution"`
+	ID          string          `json:"id"`
+	Type        string          `json:"type"`
+	Revision    string          `json:"revision"`
+	Version     string          `json:"version"`
+	Source      string          `json:"source"`
+	Target      string          `json:"target"`
+	Properties  map[string]any  `json:"properties"`
+	Metadata    json.RawMessage `json:"metadata"`
+	Attribution Attribution     `json:"attribution"`
 }
 
 type DependencyResult struct {
@@ -128,8 +132,9 @@ type DependencyResult struct {
 }
 
 type IssueMutationResult struct {
-	Issue   IssueRecord `json:"issue"`
-	Changed bool        `json:"changed"`
+	Issue        IssueRecord `json:"issue"`
+	Changed      bool        `json:"changed"`
+	OpenChildren int         `json:"openChildren,omitempty"`
 }
 
 // PreviewOwnedLinkLimit is a disposable descriptor budget, not a production limit.
@@ -142,6 +147,7 @@ type LinkCreateRequest struct {
 	TypeURL                             string
 	Path, SourcePath, TargetPath, Actor string
 	Properties                          map[string]any
+	Metadata                            json.RawMessage
 	ExpectedSourceRevision              string
 	UnconditionalSource                 bool
 }
@@ -151,6 +157,8 @@ type LinkCreateRequest struct {
 type LinkUpdateRequest struct {
 	Path, Actor            string
 	Properties             map[string]any
+	Metadata               publicops.MetadataPatch
+	MetadataOnly           bool
 	ExpectedRevision       string
 	Unconditional          bool
 	ExpectedSourceRevision string

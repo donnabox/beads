@@ -30,13 +30,18 @@ func graphPreviewIssueEditFlagsChanged(cmd *cobra.Command) bool {
 // broader workflow flags remain explicit refusals; legacy routing is unchanged.
 func graphPreviewIssueEditRequest(cmd *cobra.Command, path string) (graphstore.UpdateIssueRequest, error) {
 	request := graphstore.UpdateIssueRequest{Path: path}
-	allowed := append([]string{"if-revision", "unconditional", "force"}, graphPreviewIssueEditFlags...)
+	allowed := append([]string{"if-revision", "unconditional", "force", "metadata", "set-metadata", "unset-metadata"}, graphPreviewIssueEditFlags...)
 	if err := graphPreviewFlags(cmd, allowed...); err != nil {
 		return request, err
 	}
-	if !graphPreviewIssueEditFlagsChanged(cmd) {
+	if !graphPreviewIssueEditFlagsChanged(cmd) && !graphPreviewMetadataFlagsChanged(cmd) {
 		return request, graphFailure("invalid_properties", "Issue update requires at least one supported field", 2)
 	}
+	metadata, err := graphPreviewMetadataPatch(cmd)
+	if err != nil {
+		return request, err
+	}
+	request.Metadata = metadata
 	revision, unconditional, err := graphPreviewRevisionGuard(cmd, false, true)
 	if err != nil {
 		return request, err
@@ -144,7 +149,7 @@ func runGraphPreviewUpdateIssue(cmd *cobra.Command, path string) error {
 		return err
 	}
 	request.Actor = getActorWithGit()
-	return withGraphStore(func(ctx context.Context, store *graphstore.Store) (any, string, error) {
+	err = withGraphStore(func(ctx context.Context, store *graphstore.Store) (any, string, error) {
 		result, err := store.UpdateIssue(ctx, request)
 		if err != nil {
 			return nil, "", err
@@ -155,4 +160,8 @@ func runGraphPreviewUpdateIssue(cmd *cobra.Command, path string) error {
 		}
 		return result, fmt.Sprintf("%s %s", verb, result.Issue.ID), nil
 	})
+	if err == nil {
+		SetLastTouchedID(path)
+	}
+	return err
 }

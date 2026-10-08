@@ -28,19 +28,16 @@ func TestFreshTypeNamesFollowPreviewTypeDefinitions(t *testing.T) {
 	}
 }
 
-// Two ways of answering a missing generation bump are wrong, and this pins the
-// two values they would change. Raising SchemaVersion refuses every existing
-// workspace, and it names the storage layout, which an extra Type row does not
-// alter. Narrowing installedPreviewTypes strands the legacy four-Type and the
-// six-Type workspaces already in the field. The workspace marker generation is
-// what tells a reader about the Type set; these stay as they are.
+// The common-metadata columns change the preview storage layout and require
+// SchemaVersion 7. Older workspaces remain pinned to their original binary;
+// this binary refuses them rather than silently upgrading their data. The
+// workspace marker generation still describes the installed Type set.
 //
 // Counting Types is plain SQL over graph_preview_types and identical on both
 // engines, so only the embedded engine is exercised here.
 func TestPreviewSchemaVersionAndInstalledTypeCounts(t *testing.T) {
-	if SchemaVersion != 6 {
-		t.Fatalf("SchemaVersion is %d, want 6: it names the storage layout, and a new installed Type does not change the layout. "+
-			"Signal a changed Type set with the workspace marker generation instead", SchemaVersion)
+	if SchemaVersion != 7 {
+		t.Fatalf("SchemaVersion is %d, want 7 for the common-metadata storage layout", SchemaVersion)
 	}
 	ctx, o := issueExperimentOptions(t, "embedded")
 	s, err := OpenExisting(ctx, o)

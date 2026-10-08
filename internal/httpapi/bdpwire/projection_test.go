@@ -14,7 +14,7 @@ import (
 	"testing"
 )
 
-const readProjectionSHA256 = "0feaa86a2ba5180d6396e1b52b0b2ee339b0a79a0650ecc0c0e6045b17d053e7"
+const readProjectionSHA256 = "26db67b2f8611a641df6b44bc42959bf047a9efc8b2d5a7d665fc3dd47d631a7"
 
 // restrictedCanonical is a test-only serializer for this exact schema corpus.
 // ASCII avoids UTF-16 ordering/escaping ambiguities; integral int64 numbers
@@ -300,7 +300,7 @@ func deriveProjectionArtifacts(t *testing.T) ([]byte, []byte) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	if len(names) != 42 || len(defs) != 153 || len(roots) != 16 || len(reached) != 41 {
+	if len(names) != 47 || len(defs) != 158 || len(roots) != 20 || len(reached) != 46 {
 		t.Fatalf("projection census changed: %d/%d/%d/%d", len(names), len(defs), len(roots), len(reached))
 	}
 	pairs := []any{}

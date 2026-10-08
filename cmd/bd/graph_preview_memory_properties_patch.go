@@ -36,7 +36,7 @@ func runGraphPreviewMemoryPropertiesPatch(cmd *cobra.Command, path string) error
 
 func graphPreviewMemoryPropertiesPatchRequest(cmd *cobra.Command, path string) (graphstore.MemoryPropertiesPatchRequest, error) {
 	var request graphstore.MemoryPropertiesPatchRequest
-	if err := graphPreviewFlags(cmd, "patch", "if-revision", "unconditional"); err != nil {
+	if err := graphPreviewFlags(cmd, "patch", "metadata", "set-metadata", "unset-metadata", "if-revision", "unconditional"); err != nil {
 		return request, err
 	}
 	if err := graph.ValidateBeadPath(path); err != nil {
@@ -57,7 +57,11 @@ func graphPreviewMemoryPropertiesPatchRequest(cmd *cobra.Command, path string) (
 	if err != nil {
 		return request, graphFailure("invalid_properties", err.Error(), 2)
 	}
-	return graphstore.MemoryPropertiesPatchRequest{Path: path, Patch: raw, Actor: getActorWithGit(), ExpectedRevision: revision, Unconditional: unconditional}, nil
+	metadata, err := graphPreviewMetadataPatch(cmd)
+	if err != nil {
+		return request, err
+	}
+	return graphstore.MemoryPropertiesPatchRequest{Path: path, Patch: raw, Actor: getActorWithGit(), ExpectedRevision: revision, Unconditional: unconditional, Metadata: metadata}, nil
 }
 
 // Keep operation-list bytes intact. The shared parser owns strict duplicate,
