@@ -130,7 +130,7 @@ func (s *Store) UpdateIssue(ctx context.Context, request UpdateIssueRequest) (Is
 		patch.DueAt = publicops.Field[*time.Time]{Set: true, Value: value}
 		count++
 	}
-	if err := issueops.ValidateMetadataPatch(request.Metadata); err != nil {
+	if err := validateCommonMetadataPatch(request.Metadata); err != nil {
 		return IssueMutationResult{}, err
 	}
 	if request.Metadata.Replace.Set || request.Metadata.Merge.Set || len(request.Metadata.Set) > 0 || len(request.Metadata.Unset) > 0 {
@@ -230,8 +230,8 @@ func (s *Store) UpdateIssue(ctx context.Context, request UpdateIssueRequest) (Is
 			return err
 		}
 		// Charge the new retained head as well as current data; an unreadable
-		// replacement or append rolls back every write effect.
-		if patch.Notes.Set || patch.AppendNotes.Set {
+		// notes or metadata edit rolls back every write effect.
+		if patch.Notes.Set || patch.AppendNotes.Set || metadataChanged {
 			if err := checkCurrentReadBytes(ctx, tx); err != nil {
 				return err
 			}

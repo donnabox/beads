@@ -6,8 +6,11 @@ import (
 	"bytes"
 	"encoding/json"
 	"errors"
+	"reflect"
+	"strings"
 	"testing"
 
+	"github.com/steveyegge/beads/internal/storage"
 	publicops "github.com/steveyegge/beads/issueops"
 )
 
@@ -59,6 +62,16 @@ func TestCommonMetadataStoredAndRetainedAcrossResourceKinds(t *testing.T) {
 			if err != nil || !issueChanged.Changed || !bytes.Equal(issueChanged.Issue.Metadata, []byte(`{"team":"release"}`)) || len(issueChanged.Issue.Properties.Metadata) != 0 {
 				t.Fatalf("Issue metadata-only edit = %+v, %v", issueChanged, err)
 			}
+			// The ordinary metadata merge unmarshals an object into a map. Graph
+			// admission must reject duplicate raw members before that loses them.
+			beforeDuplicate := workflowState(t, ctx, s)
+			duplicate := publicops.MetadataPatch{Merge: publicops.Field[json.RawMessage]{Set: true, Value: json.RawMessage(`{"team":"one","team":"two"}`)}}
+			if got, err := s.UpdateIssue(ctx, UpdateIssueRequest{Path: "beads/work", Actor: "editor", ExpectedRevision: issueChanged.Issue.Revision, Metadata: duplicate}); !errors.Is(err, storage.ErrValidation) || !reflect.DeepEqual(got, IssueMutationResult{}) {
+				t.Fatalf("duplicate metadata merge must refuse with zero Issue result: %+v, %v", got, err)
+			}
+			if !reflect.DeepEqual(beforeDuplicate, workflowState(t, ctx, s)) {
+				t.Fatal("duplicate metadata merge changed native Issue or History state")
+			}
 			// The ordinary Issue writer accepts broader JSON than graph I-JSON.
 			// A refused graph update must roll back its native row and History too.
 			invalid := publicops.MetadataPatch{Merge: publicops.Field[json.RawMessage]{Set: true, Value: json.RawMessage(`{"nanoseconds":1727000000000000000}`)}}
@@ -99,6 +112,57 @@ func TestCommonMetadataStoredAndRetainedAcrossResourceKinds(t *testing.T) {
 				if !bytes.Equal(got, want.metadata) {
 					t.Fatalf("retained %s %s metadata = %s, want %s", want.path, want.version, got, want.metadata)
 				}
+			}
+		})
+	}
+}
+
+func TestCommonMetadataPatchValidatesEachRawInput(t *testing.T) {
+	for _, patch := range []publicops.MetadataPatch{
+		{Merge: publicops.Field[json.RawMessage]{Set: true, Value: json.RawMessage(`{"x":1,"x":2}`)}},
+		{Replace: publicops.Field[json.RawMessage]{Set: true, Value: json.RawMessage(`{"x":1,"x":2}`)}},
+		{Set: map[string]json.RawMessage{"x": json.RawMessage(`{"a":1,"a":2}`)}, Unset: []string{"x"}},
+	} {
+		if err := validateCommonMetadataPatch(patch); !errors.Is(err, storage.ErrValidation) {
+			t.Fatalf("raw duplicate metadata patch admitted: %+v, %v", patch, err)
+		}
+	}
+}
+
+// Metadata-only Issue edits must obey the same post-write acquisition budget
+// as notes edits and Memory/Link metadata patches. The original Issue row,
+// native History, graph mapping and sibling title all roll back together.
+func TestIssueMetadataPatchPreservesCurrentReadBudget(t *testing.T) {
+	for _, backend := range []string{"embedded", "server"} {
+		t.Run(backend, func(t *testing.T) {
+			ctx, o := issueExperimentOptions(t, backend)
+			s, err := OpenExisting(ctx, o)
+			if err != nil {
+				t.Fatal(err)
+			}
+			t.Cleanup(func() { _ = s.Close() })
+			original, err := s.CreateIssue(ctx, "beads/work", plainIssue("Original"))
+			if err != nil {
+				t.Fatal(err)
+			}
+			if _, err := s.Create(ctx, CreateRequest{Path: "beads/context", Body: strings.Repeat("x", 7<<20)}); err != nil {
+				t.Fatal(err)
+			}
+			before := workflowState(t, ctx, s)
+			title := "Must roll back"
+			metadata := json.RawMessage(`{"note":"` + strings.Repeat("m", 1536<<10) + `"}`)
+			got, err := s.UpdateIssue(ctx, UpdateIssueRequest{
+				Path: "beads/work", Actor: "editor", ExpectedRevision: original.Revision,
+				Title: &title, Metadata: publicops.MetadataPatch{Merge: publicops.Field[json.RawMessage]{Set: true, Value: metadata}},
+			})
+			if !errors.Is(err, ErrLimitExceeded) || !reflect.DeepEqual(got, IssueMutationResult{}) {
+				t.Fatalf("over-budget Issue metadata edit must refuse with zero result: %+v, %v", got, err)
+			}
+			if !reflect.DeepEqual(before, workflowState(t, ctx, s)) {
+				t.Fatal("over-budget metadata edit leaked Issue row or History")
+			}
+			if current, err := s.ShowIssue(ctx, "beads/work"); err != nil || !reflect.DeepEqual(current, original) {
+				t.Fatalf("Issue changed after metadata refusal: %+v, %v", current, err)
 			}
 		})
 	}

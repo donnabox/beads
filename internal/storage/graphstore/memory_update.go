@@ -88,7 +88,7 @@ func (s *Store) writeMemory(ctx context.Context, request memoryWriteRequest) (Me
 	if request.propertiesPatch != nil && (request.hasTitle || request.hasBody) {
 		return MemoryMutationResult{}, fmt.Errorf("%w: ordered Memory properties patch cannot be combined with field replacement", storage.ErrValidation)
 	}
-	if err := issueops.ValidateMetadataPatch(request.metadataPatch); err != nil {
+	if err := validateCommonMetadataPatch(request.metadataPatch); err != nil {
 		return MemoryMutationResult{}, err
 	}
 	if !utf8.ValidString(request.title) || !utf8.ValidString(request.body) || !utf8.ValidString(request.actor) {

@@ -35,6 +35,9 @@ func TestGraphPreviewCommonMetadataInstalledWorkflow(t *testing.T) {
 				init = append(init, "--server", "--external", "--server-host", "127.0.0.1", "--server-port", port, "--server-user", "root")
 			}
 			call(init...)
+			// Graph metadata has the stricter I-JSON admission contract. Reject
+			// duplicates before the ordinary Issue merge collapses object keys.
+			refuse("invalid_properties", "remember", "Duplicate body", "--id", "duplicate", "--metadata", `{"x":1,"x":2}`)
 			memory := graphMixedResult[graphstore.Record](t, call("remember", "First body", "--id", "plan", "--metadata", `{"team":"docs"}`))
 			if !bytes.Equal(memory.Metadata, []byte(`{"team":"docs"}`)) {
 				t.Fatalf("Memory metadata = %s", memory.Metadata)
@@ -52,6 +55,7 @@ func TestGraphPreviewCommonMetadataInstalledWorkflow(t *testing.T) {
 				t.Fatalf("remember unset-only metadata = %+v", unsetByRemember)
 			}
 			issue := graphMixedResult[graphstore.IssueRecord](t, call("create", "Work", "--id", "work", "--metadata", `{"team":"issues"}`))
+			refuse("invalid_properties", "update", issue.ID, "--metadata", `{"x":1,"x":2}`, "--if-revision", issue.Revision)
 			if !bytes.Equal(issue.Metadata, []byte(`{"team":"issues"}`)) || len(issue.Properties.Metadata) != 0 {
 				t.Fatalf("Issue metadata = %s, properties=%+v", issue.Metadata, issue.Properties)
 			}

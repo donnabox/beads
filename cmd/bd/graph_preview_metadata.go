@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 
 	"github.com/spf13/cobra"
+	graph "github.com/steveyegge/beads/graphops"
 	"github.com/steveyegge/beads/internal/storage/issueops"
 	publicops "github.com/steveyegge/beads/issueops"
 )
@@ -36,6 +37,13 @@ func graphPreviewMetadataPatch(cmd *cobra.Command) (publicops.MetadataPatch, err
 		parsed, err := readMetadataFlag(value)
 		if err != nil {
 			return patch, graphFailure("invalid_properties", err.Error(), 2)
+		}
+		canonical, err := graph.CanonicalizeJSON(parsed)
+		if err != nil {
+			return patch, graphFailure("invalid_properties", err.Error(), 2)
+		}
+		if len(canonical) == 0 || canonical[0] != '{' {
+			return patch, graphFailure("invalid_properties", "metadata must be a JSON object", 2)
 		}
 		patch.Merge = publicops.Field[json.RawMessage]{Set: true, Value: parsed}
 	}
