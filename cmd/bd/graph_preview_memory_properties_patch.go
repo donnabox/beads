@@ -57,7 +57,7 @@ func graphPreviewMemoryPropertiesPatchRequest(cmd *cobra.Command, path string) (
 	if err != nil {
 		return request, graphFailure("invalid_properties", err.Error(), 2)
 	}
-	metadata, _, err := graphPreviewMetadataPatch(cmd)
+	metadata, err := graphPreviewMetadataPatch(cmd)
 	if err != nil {
 		return request, err
 	}

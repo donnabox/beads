@@ -37,7 +37,7 @@ func runGraphPreviewRememberUpsert(cmd *cobra.Command, args []string) error {
 	if err != nil {
 		return err
 	}
-	metadata, _, err := graphPreviewMetadataPatch(cmd)
+	metadata, err := graphPreviewMetadataPatch(cmd)
 	if err != nil {
 		return err
 	}
@@ -116,7 +116,7 @@ func runGraphPreviewRememberUpdate(cmd *cobra.Command, args []string) error {
 	if err != nil {
 		return err
 	}
-	metadata, _, err := graphPreviewMetadataPatch(cmd)
+	metadata, err := graphPreviewMetadataPatch(cmd)
 	if err != nil {
 		return err
 	}

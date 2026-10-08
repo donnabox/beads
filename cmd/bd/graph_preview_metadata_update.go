@@ -14,7 +14,7 @@ func runGraphPreviewUpdateMetadataOnly(cmd *cobra.Command, path string) error {
 	if err := graphPreviewFlags(cmd, "metadata", "set-metadata", "unset-metadata", "if-revision", "unconditional", "if-source-revision", "unconditional-source"); err != nil {
 		return err
 	}
-	patch, _, err := graphPreviewMetadataPatch(cmd)
+	patch, err := graphPreviewMetadataPatch(cmd)
 	if err != nil {
 		return err
 	}

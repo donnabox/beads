@@ -220,7 +220,7 @@ func runGraphPreviewUpdateLink(cmd *cobra.Command, args []string) error {
 	if err != nil {
 		return graphFailure("invalid_properties", err.Error(), 2)
 	}
-	metadata, _, err := graphPreviewMetadataPatch(cmd)
+	metadata, err := graphPreviewMetadataPatch(cmd)
 	if err != nil {
 		return err
 	}

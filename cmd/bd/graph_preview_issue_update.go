@@ -37,7 +37,7 @@ func graphPreviewIssueEditRequest(cmd *cobra.Command, path string) (graphstore.U
 	if !graphPreviewIssueEditFlagsChanged(cmd) && !graphPreviewMetadataFlagsChanged(cmd) {
 		return request, graphFailure("invalid_properties", "Issue update requires at least one supported field", 2)
 	}
-	metadata, _, err := graphPreviewMetadataPatch(cmd)
+	metadata, err := graphPreviewMetadataPatch(cmd)
 	if err != nil {
 		return request, err
 	}
