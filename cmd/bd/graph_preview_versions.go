@@ -65,7 +65,7 @@ func graphVersionRowsJSON(rows []graphstore.VersionRow) []map[string]any {
 //   - there is no such thing: nothing is allocated at that path.
 //
 // The third shape, "something prevented a complete answer", is NOT reachable as
-// a normal answer here. Every plane in a SchemaVersion-6 workspace can order,
+// a normal answer here. Every plane in a SchemaVersion-7 workspace can order,
 // so a store that cannot answer is a corrupt store, and corruption is a refusal
 // rather than an outcome. There is deliberately no "exists but empty" success
 // case either: a subject's creation IS version 1, written in the same

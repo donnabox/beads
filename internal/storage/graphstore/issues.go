@@ -31,9 +31,12 @@ func validateIssueCreate(request publicops.CreateRequest) error {
 	// CloneCreateRequest materializes empty relation slices. Their lengths
 	// were checked above; preserve that empty representation without admitting
 	// any dependency or comment values into this bounded adapter.
-	allowed := &types.Issue{ID: i.ID, Title: i.Title, Description: i.Description, Notes: i.Notes, Owner: i.Owner, CreatedBy: i.CreatedBy, Design: i.Design, AcceptanceCriteria: i.AcceptanceCriteria, Assignee: i.Assignee, EstimatedMinutes: i.EstimatedMinutes, ExternalRef: i.ExternalRef, SpecID: i.SpecID, IssueType: i.IssueType, Status: i.Status, Priority: i.Priority, DueAt: i.DueAt, Labels: i.Labels, Dependencies: i.Dependencies, Comments: i.Comments}
+	allowed := &types.Issue{ID: i.ID, Title: i.Title, Description: i.Description, Notes: i.Notes, Owner: i.Owner, CreatedBy: i.CreatedBy, Design: i.Design, AcceptanceCriteria: i.AcceptanceCriteria, Assignee: i.Assignee, EstimatedMinutes: i.EstimatedMinutes, ExternalRef: i.ExternalRef, SpecID: i.SpecID, IssueType: i.IssueType, Status: i.Status, Priority: i.Priority, DueAt: i.DueAt, Labels: i.Labels, Dependencies: i.Dependencies, Comments: i.Comments, Metadata: i.Metadata}
 	if !reflect.DeepEqual(i, allowed) {
-		return fmt.Errorf("%w: Issue preview accepts only ID, title, description, design, acceptance, initial notes, owner, creator, assignee, estimate, external/spec references, classification, status, priority, due date and labels; no relationships, metadata, ephemeral or no-history records", storage.ErrValidation)
+		return fmt.Errorf("%w: Issue preview accepts only ID, title, description, design, acceptance, initial notes, owner, creator, assignee, estimate, external/spec references, classification, status, priority, due date, labels and metadata; no relationships, ephemeral or no-history records", storage.ErrValidation)
+	}
+	if _, err := commonMetadata(i.Metadata); err != nil {
+		return err
 	}
 	return validateIssueCreateFields(i)
 }
@@ -247,7 +250,12 @@ func (s *Store) showIssueInTx(ctx context.Context, tx *sql.Tx, path string) (Iss
 	}
 	// The private v2 graph projection expresses dependencies once, canonically.
 	// Jim's authoritative Issue snapshot still retains its original domain shape.
+	metadata, err := commonMetadata(issue.Metadata)
+	if err != nil {
+		return IssueRecord{}, fmt.Errorf("%w: invalid Issue metadata: %v", ErrInvalidStore, err)
+	}
 	issue.Dependencies = nil
+	issue.Metadata = nil
 	return IssueRecord{ID: graph.CanonicalURL(s.options.Binding.ScopeURL, path), Type: typ, Revision: revision, Version: revision,
-		Properties: issue, Owned: owned, Attribution: Attribution{Actor: actor, Status: status, RecordedAt: at.UTC().Format(time.RFC3339Nano)}}, nil
+		Properties: issue, Metadata: metadata, Owned: owned, Attribution: Attribution{Actor: actor, Status: status, RecordedAt: at.UTC().Format(time.RFC3339Nano)}}, nil
 }

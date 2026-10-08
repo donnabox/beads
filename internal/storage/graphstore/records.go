@@ -33,13 +33,17 @@ func (s *Store) Create(ctx context.Context, req CreateRequest) (Record, error) {
 	if !utf8.ValidString(req.Title) || !utf8.ValidString(req.Body) || !utf8.ValidString(req.Actor) {
 		return Record{}, errors.New("Memory title, body and actor must be valid UTF-8")
 	}
+	metadata, err := commonMetadata(req.Metadata)
+	if err != nil {
+		return Record{}, err
+	}
 	revision, err := freshToken()
 	if err != nil {
 		return Record{}, err
 	}
 	r := Record{ID: graph.CanonicalURL(s.options.Binding.ScopeURL, req.Path),
 		Type: MemoryTypeURL(s.options.Binding.ScopeURL), Revision: revision, Version: revision,
-		Properties: Properties{Title: req.Title, Body: req.Body}, Owned: []json.RawMessage{}}
+		Properties: Properties{Title: req.Title, Body: req.Body}, Metadata: metadata, Owned: []json.RawMessage{}}
 	r.Attribution = Attribution{Actor: req.Actor, Status: "unknown", RecordedAt: time.Now().UTC().Format(time.RFC3339Nano)}
 	if req.Actor != "" {
 		r.Attribution.Status = "claimed"
@@ -84,7 +88,7 @@ func (s *Store) createInTx(ctx context.Context, tx *sql.Tx, req CreateRequest, r
 	if err := s.afterStage("allocation"); err != nil {
 		return err
 	}
-	if _, err = tx.ExecContext(ctx, `INSERT INTO graph_preview_payloads (path, properties) VALUES (?, ?)`, req.Path, properties); err != nil {
+	if _, err = tx.ExecContext(ctx, `INSERT INTO graph_preview_payloads (path, properties, metadata) VALUES (?, ?, ?)`, req.Path, properties, r.Metadata); err != nil {
 		return err
 	}
 	if err := s.afterStage("payload"); err != nil {
@@ -169,9 +173,9 @@ func (s *Store) showMemoryInTx(ctx context.Context, tx *sql.Tx, path string) (Re
 	if kind != "bead" || typ != MemoryTypeURL(s.options.Binding.ScopeURL) || !authorityID.MatchString(revision) || state != "live" || backing != "generic" {
 		return Record{}, fmt.Errorf("%w: unsupported or corrupt allocation", ErrInvalidStore)
 	}
-	var payload, snapshot []byte
+	var payload, metadata, snapshot []byte
 	var actor string
-	if err := tx.QueryRowContext(ctx, `SELECT properties FROM graph_preview_payloads WHERE path = ?`, path).Scan(&payload); err != nil {
+	if err := tx.QueryRowContext(ctx, `SELECT properties, metadata FROM graph_preview_payloads WHERE path = ?`, path).Scan(&payload, &metadata); err != nil {
 		return Record{}, fmt.Errorf("%w: missing current payload: %v", ErrInvalidStore, err)
 	}
 	if err := tx.QueryRowContext(ctx, `SELECT snapshot, actor FROM graph_preview_versions WHERE path = ? AND version = ?`, path, revision).Scan(&snapshot, &actor); err != nil {
@@ -182,6 +186,10 @@ func (s *Store) showMemoryInTx(ctx context.Context, tx *sql.Tx, path string) (Re
 	var retained Record
 	if err := json.Unmarshal(snapshot, &retained); err != nil {
 		return Record{}, fmt.Errorf("%w: malformed retained state", ErrInvalidStore)
+	}
+	record.Metadata, err = commonMetadata(metadata)
+	if err != nil || !bytes.Equal(record.Metadata, metadata) {
+		return Record{}, fmt.Errorf("%w: invalid current Memory metadata", ErrInvalidStore)
 	}
 	record.Owned, err = s.memoryOwnedLinksInTx(ctx, tx, path)
 	if err != nil {

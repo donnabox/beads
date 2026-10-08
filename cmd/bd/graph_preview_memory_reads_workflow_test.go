@@ -297,7 +297,7 @@ func TestGraphPreviewMemoryReadsWorkflow(t *testing.T) {
 					Resource: graphstore.VersionComparisonResource{ID: from.ID, Type: from.Type},
 					From:     graphstore.VersionComparisonEndpoint{Version: from.Revision, Attribution: from.Attribution},
 					To:       graphstore.VersionComparisonEndpoint{Version: to.Revision, Attribution: to.Attribution},
-					Compared: []string{"properties", "owned"}, Unsupported: []string{"commonMetadata", "inception", "derivation"}, Changes: changes,
+					Compared: []string{"properties", "metadata", "owned"}, Unsupported: []string{"inception", "derivation"}, Changes: changes,
 				})
 				return output
 			}
@@ -381,8 +381,8 @@ func TestGraphPreviewMemoryReadsWorkflow(t *testing.T) {
 			compare(edited, linked, []graphstore.VersionChange{{Area: "owned", ID: firstLink.ID, From: graphstore.VersionValue{}, To: graphMemoryReadValue(t, firstLink)}})
 			compare(linked, current, []graphstore.VersionChange{{Area: "owned", ID: firstLink.ID, From: graphMemoryReadValue(t, firstLink), To: graphMemoryReadValue(t, changedLink)}})
 			linkComparison := call("compare", firstLink.ID, "--from", firstLink.Revision, "--to", changedLink.Revision)
-			graphMemoryReadComparison(t, linkComparison, graphstore.VersionComparison{Resource: graphstore.VersionComparisonResource{ID: firstLink.ID, Type: firstLink.Type, Source: firstLink.Source, Target: firstLink.Target}, From: graphstore.VersionComparisonEndpoint{Version: firstLink.Revision, Attribution: firstLink.Attribution}, To: graphstore.VersionComparisonEndpoint{Version: changedLink.Revision, Attribution: changedLink.Attribution}, Compared: []string{"properties"}, Unsupported: []string{"commonMetadata"}, Changes: []graphstore.VersionChange{{Area: "properties", Member: "note", From: graphMemoryReadValue(t, "first"), To: graphMemoryReadValue(t, "second")}}})
-			graphMemoryReadComparison(t, call("compare", issue.ID, "--from", issue.Revision, "--to", issue.Revision), graphstore.VersionComparison{Resource: graphstore.VersionComparisonResource{ID: issue.ID, Type: issue.Type}, From: graphstore.VersionComparisonEndpoint{Version: issueOld.Revision, Attribution: issueOld.Attribution}, To: graphstore.VersionComparisonEndpoint{Version: issueOld.Revision, Attribution: issueOld.Attribution}, Compared: []string{"properties", "owned"}, Unsupported: []string{"commonMetadata"}, Changes: []graphstore.VersionChange{}})
+			graphMemoryReadComparison(t, linkComparison, graphstore.VersionComparison{Resource: graphstore.VersionComparisonResource{ID: firstLink.ID, Type: firstLink.Type, Source: firstLink.Source, Target: firstLink.Target}, From: graphstore.VersionComparisonEndpoint{Version: firstLink.Revision, Attribution: firstLink.Attribution}, To: graphstore.VersionComparisonEndpoint{Version: changedLink.Revision, Attribution: changedLink.Attribution}, Compared: []string{"properties", "metadata"}, Unsupported: []string{}, Changes: []graphstore.VersionChange{{Area: "properties", Member: "note", From: graphMemoryReadValue(t, "first"), To: graphMemoryReadValue(t, "second")}}})
+			graphMemoryReadComparison(t, call("compare", issue.ID, "--from", issue.Revision, "--to", issue.Revision), graphstore.VersionComparison{Resource: graphstore.VersionComparisonResource{ID: issue.ID, Type: issue.Type}, From: graphstore.VersionComparisonEndpoint{Version: issueOld.Revision, Attribution: issueOld.Attribution}, To: graphstore.VersionComparisonEndpoint{Version: issueOld.Revision, Attribution: issueOld.Attribution}, Compared: []string{"properties", "metadata", "owned"}, Unsupported: []string{}, Changes: []graphstore.VersionChange{}})
 			for _, token := range []string{"unknown-token", contextMemory.Revision, "", strings.Repeat("x", 4097), string([]byte{255})} {
 				code := "revision_unknown"
 				if token == "" || len(token) > 4096 || token == string([]byte{255}) {

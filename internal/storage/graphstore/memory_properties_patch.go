@@ -9,6 +9,7 @@ import (
 	"github.com/steveyegge/beads/graphops"
 	"github.com/steveyegge/beads/internal/graphpatch"
 	"github.com/steveyegge/beads/internal/storage"
+	publicops "github.com/steveyegge/beads/issueops"
 )
 
 // MemoryPropertiesPatchRequest applies ordered property operations to the
@@ -20,6 +21,7 @@ type MemoryPropertiesPatchRequest struct {
 	Actor            string
 	ExpectedRevision string
 	Unconditional    bool
+	Metadata         publicops.MetadataPatch
 }
 
 func (s *Store) PatchMemoryProperties(ctx context.Context, request MemoryPropertiesPatchRequest) (MemoryMutationResult, error) {
@@ -29,7 +31,7 @@ func (s *Store) PatchMemoryProperties(ctx context.Context, request MemoryPropert
 	}
 	return s.writeMemory(ctx, memoryWriteRequest{
 		path: request.Path, actor: request.Actor, expectedRevision: request.ExpectedRevision,
-		unconditional: request.Unconditional, propertiesPatch: patch,
+		unconditional: request.Unconditional, propertiesPatch: patch, metadataPatch: request.Metadata,
 	})
 }
 

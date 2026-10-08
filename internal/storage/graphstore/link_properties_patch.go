@@ -9,6 +9,7 @@ import (
 	"github.com/steveyegge/beads/graphops"
 	"github.com/steveyegge/beads/internal/graphpatch"
 	"github.com/steveyegge/beads/internal/storage"
+	publicops "github.com/steveyegge/beads/issueops"
 )
 
 // LinkPropertiesPatchRequest changes only informational Link properties. The
@@ -23,6 +24,7 @@ type LinkPropertiesPatchRequest struct {
 	Unconditional          bool
 	ExpectedSourceRevision string
 	UnconditionalSource    bool
+	Metadata               publicops.MetadataPatch
 }
 
 func (s *Store) PatchLinkProperties(ctx context.Context, request LinkPropertiesPatchRequest) (LinkMutationResult, error) {
@@ -39,7 +41,7 @@ func (s *Store) PatchLinkProperties(ctx context.Context, request LinkPropertiesP
 	return s.writeLinkProperties(ctx, LinkUpdateRequest{
 		Path: request.Path, Actor: request.Actor, ExpectedRevision: request.ExpectedRevision,
 		Unconditional: request.Unconditional, ExpectedSourceRevision: request.ExpectedSourceRevision,
-		UnconditionalSource: request.UnconditionalSource,
+		UnconditionalSource: request.UnconditionalSource, Metadata: request.Metadata,
 	}, nil, patch)
 }
 

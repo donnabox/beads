@@ -9,10 +9,10 @@
 
 Graph workspaces are not migrated between graph schema versions. If a
 workspace's `graph_schema_version` in `.beads/metadata.json` is not this
-build's `6`, `bd` refuses it with `graph_not_initialized` and does not open
-its database. Preserve its data and create a fresh workspace. A schema-6
-workspace created before the two example Link Types existed opens and works
-normally without them; see [Discover installed Types](#discover-installed-types).
+build's `7`, `bd` refuses it with `graph_not_initialized` and does not open
+its database. Preserve its data and create a fresh workspace. The optional
+example Link Types need not be installed; see
+[Discover installed Types](#discover-installed-types).
 
 Build `bd` from the [integration branch](https://github.com/versioned-beads/beads/tree/integration),
 not a released binary, and initialize a new project explicitly:
@@ -61,7 +61,8 @@ ordinary `bd remember --key` behavior. `--create-only` with `--id` refuses
 any previously allocated ID, including one that has been deleted.
 
 ```sh
-bd remember 'Code flow policy: changes land on integration.' --id policy
+bd remember 'Code flow policy: changes land on integration.' --id policy \
+  --metadata '{"team":"docs"}'
 bd remember 'Keep review branches until their changes land.' --title 'Review branch policy'
 ```
 
@@ -149,6 +150,24 @@ routes require an explicit write choice; the examples use `--unconditional`
 to accept the current state. A Memory properties replacement supplies both
 `title` and `body` strings. See [Versioning and History](#versioning-and-history)
 when you need stale-write protection.
+
+Issue, Memory and informational Link records also have a separate open
+metadata object. The default is `{}`. Supply `--metadata JSON` when creating
+one, or on `bd update` to merge the JSON object's top-level keys. To set a
+typed value or remove a key, use repeatable `--set-metadata KEY=VALUE` and
+`--unset-metadata KEY`; those two flags can combine, and unsetting wins.
+`--metadata` cannot combine with set or unset. Metadata and an admitted
+property or Issue field edit commit together under the same revision choice.
+Omitting metadata leaves it unchanged; a metadata-only edit is also valid.
+An identical edit retains the current revision. Existing-ID `bd remember`
+accepts `--metadata`, `--set-metadata`, or `--unset-metadata` with or without a
+body and applies them to that Memory. On creation, these flags form its initial
+metadata object.
+
+```sh
+bd update policy --metadata '{"reviewed":true}' --unconditional
+bd update policy --unset-metadata team --unconditional
+```
 
 Creating, updating, showing or closing a graph Issue records it as the last
 touched Issue. An Issue claimed by `bd ready --claim` becomes last touched as
@@ -296,7 +315,8 @@ it is linked.
 
 ```sh
 bd link policy work --link-type types/preview-related-v2 \
-  --id policy-work --properties '{"note":"work follows this policy"}'
+  --id policy-work --properties '{"note":"work follows this policy"}' \
+  --metadata '{"origin":"manual"}'
 bd links policy
 bd show links/policy-work --json
 bd update links/policy-work --properties '{"note":"reviewed policy"}' --unconditional

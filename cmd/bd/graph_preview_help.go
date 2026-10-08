@@ -59,7 +59,8 @@ The Scope URL names local identities; it does not start a web server.
 --server --external selects an ordinary shared Dolt server; otherwise storage
 is embedded. Existing .beads directories are never adopted or overwritten.`},
 		{rememberCmd, `Store a Memory with bd remember 'Policy text' [--id policy]
-[--title 'Policy']. An omitted ID is generated; an omitted creation title
+[--title 'Policy'] [--metadata '{"team":"docs"}']. Metadata is a JSON
+object separate from Memory title/body properties. An omitted ID is generated; an omitted creation title
 summarizes the body. With --id, an unused ID creates and an existing Memory
 updates in place, as ordinary bd remember --key does. Bare policy means
 canonical beads/policy. Graph Memories use canonical IDs, not legacy keys.
@@ -81,6 +82,8 @@ use bd recall ID for the exact body.`},
 selects a retained body; use bd show ID --json for the record. Graph
 recall does not accept legacy keys or --json.`},
 		{createCmd, `Create an Issue by default, with an optional --id ID.
+--metadata accepts one JSON object on Issue or Memory creation; omitted
+metadata is {}. Metadata is separate from Type-validated properties.
 Use --bead-type types/preview-memory-v2 to create a Memory instead:
   bd create --bead-type types/preview-memory-v2 --id policy --body 'Code flow policy'
 Use bd types to see Bead Types installed in this workspace. Both types/NAME
@@ -97,6 +100,11 @@ showing a Memory or Link does not.`},
 		{updateCmd, `Use bd remember --update ID for selected Memory title/body
 edits. For complete Memory or informational Link property replacement, use:
   bd update policy --properties '{"title":"Policy","body":"Text"}' --if-revision TOKEN
+--metadata merges a JSON object's top-level keys; --set-metadata KEY=VALUE
+sets one typed JSON value and --unset-metadata KEY removes one key. Set and
+unset may combine (unset wins); --metadata cannot combine with either.
+Metadata may accompany a property or Issue scalar edit atomically, and a
+metadata-only update uses the same Resource and owning-source guards.
 --patch applies ordered property operations. Generic updates require
 --if-revision TOKEN or --unconditional. Informational Links owned by a Memory
 may also use --if-source-revision TOKEN; without it, the current source is
@@ -121,7 +129,9 @@ Use bd types to see Link Types installed in this workspace. --link-type
 accepts types/NAME or a full local Type URL. An optional --id
 selects a bare Link ID or links/PATH; --properties supplies informational Link properties.
 Memory-owned Links accept the current source by default, or use
---if-source-revision TOKEN to reject a stale source. --unconditional-source
+--if-source-revision TOKEN to reject a stale source. --metadata JSON supplies
+an initial open metadata object for informational Links; blocking Dependencies
+do not accept it. --unconditional-source
 explicitly selects the default. The blocking Type types/preview-blocks-v1
 requires Issue endpoints and, unlike informational Types, one of
 --if-source-revision TOKEN or --unconditional-source.`},

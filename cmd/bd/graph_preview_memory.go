@@ -39,6 +39,9 @@ func runGraphPreviewUpdate(cmd *cobra.Command, args []string) error {
 	if cmd.Flags().Changed("claim") {
 		return runGraphPreviewClaimIssue(cmd, path)
 	}
+	if graphPreviewMetadataFlagsChanged(cmd) && !cmd.Flags().Changed("properties") && !graphPreviewIssueEditFlagsChanged(cmd) {
+		return runGraphPreviewUpdateMetadataOnly(cmd, path)
+	}
 	if strings.HasPrefix(path, "links/") {
 		return runGraphPreviewUpdateLink(cmd, args)
 	}
@@ -59,7 +62,7 @@ func graphPreviewMemoryProperties(properties map[string]any) (graphstore.Propert
 }
 
 func runGraphPreviewUpdateMemory(cmd *cobra.Command, path string) error {
-	if err := graphPreviewFlags(cmd, "properties", "if-revision", "unconditional"); err != nil {
+	if err := graphPreviewFlags(cmd, "properties", "metadata", "set-metadata", "unset-metadata", "if-revision", "unconditional"); err != nil {
 		return err
 	}
 	if !cmd.Flags().Changed("properties") {
@@ -78,8 +81,12 @@ func runGraphPreviewUpdateMemory(cmd *cobra.Command, path string) error {
 	if err != nil {
 		return graphFailure("invalid_properties", err.Error(), 2)
 	}
+	metadata, _, err := graphPreviewMetadataPatch(cmd)
+	if err != nil {
+		return err
+	}
 	return withGraphStore(func(ctx context.Context, store *graphstore.Store) (any, string, error) {
-		result, err := store.UpdateMemory(ctx, graphstore.MemoryUpdateRequest{Path: path, Properties: properties, Actor: getActorWithGit(), ExpectedRevision: revision, Unconditional: unconditional})
+		result, err := store.UpdateMemory(ctx, graphstore.MemoryUpdateRequest{Path: path, Properties: properties, Metadata: metadata, Actor: getActorWithGit(), ExpectedRevision: revision, Unconditional: unconditional})
 		verb := "Updated"
 		if !result.Changed {
 			verb = "Unchanged"

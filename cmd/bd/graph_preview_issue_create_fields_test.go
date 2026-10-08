@@ -129,7 +129,6 @@ func TestGraphPreviewIssueCreateFieldsDispatch(t *testing.T) {
 		{"status-with-notes", "--notes=", "capability_unavailable"},
 		{"status", "--status=open", "capability_unavailable"},
 		{"defer", "--defer=tomorrow", "capability_unavailable"},
-		{"metadata", "--metadata={}", "capability_unavailable"},
 		{"design-file", "--design-file=/missing-create-design", "capability_unavailable"},
 	} {
 		t.Run(tc.name, func(t *testing.T) {

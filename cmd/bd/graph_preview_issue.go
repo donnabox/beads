@@ -29,7 +29,7 @@ func runGraphPreviewCreateIssue(cmd *cobra.Command, args []string) error {
 	if beadType == graphstore.MemoryTypeURL(graphPreviewConfig.GraphScopeURL) {
 		return runGraphPreviewCreateMemory(cmd, args)
 	}
-	if err := graphPreviewFlags(cmd, "bead-type", "id", "title", "description", "body", "message", "type", "priority", "labels", "label", "design", "acceptance", "assignee", "estimate", "external-ref", "spec-id", "notes", "due"); err != nil {
+	if err := graphPreviewFlags(cmd, "bead-type", "id", "title", "description", "body", "message", "type", "priority", "labels", "label", "design", "acceptance", "assignee", "estimate", "external-ref", "spec-id", "notes", "due", "metadata"); err != nil {
 		return err
 	}
 	path, err := graphPreviewCreateBeadPath(cmd)
@@ -78,6 +78,10 @@ func runGraphPreviewCreateIssue(cmd *cobra.Command, args []string) error {
 		Title: title, Description: description, Status: types.StatusOpen,
 		Priority: priority, IssueType: issueType, Labels: utils.NormalizeLabels(append(labels, aliasLabels...)),
 	}}
+	request.Issue.Metadata, err = graphPreviewMetadataCreate(cmd)
+	if err != nil {
+		return err
+	}
 	if err := graphPreviewIssueCreateFields(cmd, request.Issue); err != nil {
 		return err
 	}
@@ -166,8 +170,12 @@ func runGraphPreviewCreateMemory(cmd *cobra.Command, args []string) error {
 	if err != nil {
 		return err
 	}
+	metadata, err := graphPreviewMetadataCreate(cmd)
+	if err != nil {
+		return err
+	}
 	return withGraphStore(func(ctx context.Context, store *graphstore.Store) (any, string, error) {
-		record, err := store.Create(ctx, graphstore.CreateRequest{Path: path, Title: title, Body: body, Actor: getActorWithGit()})
+		record, err := store.Create(ctx, graphstore.CreateRequest{Path: path, Title: title, Body: body, Actor: getActorWithGit(), Metadata: metadata})
 		if err != nil {
 			return nil, "", err
 		}
@@ -178,7 +186,7 @@ func runGraphPreviewCreateMemory(cmd *cobra.Command, args []string) error {
 // Inline text only: validate aliases and explicit presence before the ordinary
 // description helper can read stdin. Issue-only flags cannot be silently lost.
 func graphPreviewCreateMemoryInput(cmd *cobra.Command, args []string) (string, string, error) {
-	if err := graphPreviewFlags(cmd, "bead-type", "id", "title", "description", "body", "message"); err != nil {
+	if err := graphPreviewFlags(cmd, "bead-type", "id", "title", "description", "body", "message", "metadata"); err != nil {
 		return "", "", err
 	}
 	if len(args) > 1 {
