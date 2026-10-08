@@ -4,6 +4,7 @@ go_library(
     name = "bdpwire",
     srcs = [
         "carrier.go",
+        "current.go",
         "decode.go",
         "doc.go",
         "enums.go",

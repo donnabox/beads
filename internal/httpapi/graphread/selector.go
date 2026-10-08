@@ -2,7 +2,7 @@ package graphread
 
 // Selector semantics and conformance cases are adapted from gastownhall/bdp
 // packages/server/src/read-selector.ts at
-// 53bdbd03136875f952af184fce7b3c7af8f74e96. This module deliberately has no HTTP
+// 5b4eb46c7f21f2272f4da5a230f042ce753cb304. This module deliberately has no HTTP
 // mappings. Paths see only the BDP selection projection, never response metadata.
 
 import (

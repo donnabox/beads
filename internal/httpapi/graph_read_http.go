@@ -1,7 +1,7 @@
 package httpapi
 
 // HTTP media and entity-tag rules are adapted from gastownhall/bdp
-// packages/server/src/read-http.ts at 53bdbd03136875f952af184fce7b3c7af8f74e96.
+// packages/server/src/read-http.ts at 5b4eb46c7f21f2272f4da5a230f042ce753cb304.
 // The caller must finish routing, authorization, storage access and wire
 // validation before invoking this finalizer. This Read surface has no actual
 // representation modification date; Resource timestamps are not HTTP dates.
