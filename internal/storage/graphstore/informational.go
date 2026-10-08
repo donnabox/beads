@@ -179,7 +179,7 @@ func (s *Store) UpdateLink(ctx context.Context, request LinkUpdateRequest) (Link
 		if !hasCommonMetadataPatch(request.Metadata) {
 			return LinkMutationResult{}, fmt.Errorf("%w: Link update requires metadata or properties", storage.ErrValidation)
 		}
-		if err := issueops.ValidateMetadataPatch(request.Metadata); err != nil {
+		if err := validateCommonMetadataPatch(request.Metadata); err != nil {
 			return LinkMutationResult{}, err
 		}
 		return s.writeLinkProperties(ctx, request, nil, nil)
@@ -188,7 +188,7 @@ func (s *Store) UpdateLink(ctx context.Context, request LinkUpdateRequest) (Link
 	if err != nil {
 		return LinkMutationResult{}, err
 	}
-	if err := issueops.ValidateMetadataPatch(request.Metadata); err != nil {
+	if err := validateCommonMetadataPatch(request.Metadata); err != nil {
 		return LinkMutationResult{}, err
 	}
 	return s.writeLinkProperties(ctx, request, properties, nil)
@@ -201,7 +201,7 @@ func (s *Store) writeLinkProperties(ctx context.Context, request LinkUpdateReque
 	if patch != nil && properties != nil {
 		return LinkMutationResult{}, fmt.Errorf("%w: Link replacement and ordered patch are mutually exclusive", storage.ErrValidation)
 	}
-	if err := issueops.ValidateMetadataPatch(request.Metadata); err != nil {
+	if err := validateCommonMetadataPatch(request.Metadata); err != nil {
 		return LinkMutationResult{}, err
 	}
 	var result LinkMutationResult
