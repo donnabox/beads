@@ -114,6 +114,9 @@ pagination in an ordinary shared-server graph workspace. Follow every
 response's `next` URL until it is `null`, or use the
 [public Python read example](https://github.com/versioned-beads/beads/blob/integration/examples/bdp-read/read_beads.py), which
 follows those pages.
+BDP Read returns the common `metadata` object on current Issues, Memories,
+informational Links and owned Links, using `{}` when no keys have been set.
+An older retained record can omit `metadata` without rewriting its history.
 
 The Issue filters are `--status` (or `--state`), `--type`, `--title`,
 `--title-contains`, `--priority`, `--priority-min`, `--priority-max`,
