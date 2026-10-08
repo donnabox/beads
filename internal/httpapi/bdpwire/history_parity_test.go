@@ -22,8 +22,55 @@ func schemaNullable(t *testing.T, schema map[string]any) bool {
 	return false
 }
 
+// A current overlay may only substitute a definition that itself extends the
+// base definition. For the owned-Link map, retain the base key restriction
+// while narrowing its array items. Reject every other replacement shape.
+func narrowedReadProperty(t *testing.T, defs map[string]any, base, overlay map[string]any) map[string]any {
+	t.Helper()
+	if reflect.DeepEqual(base, overlay) {
+		return base
+	}
+	if oldRef, ok := refName(t, base); ok {
+		newRef, ok := refName(t, overlay)
+		if !ok || len(base) != 1 || len(overlay) != 1 {
+			t.Fatal("unsupported current Read ref overlay")
+		}
+		child := asMap(t, defs[newRef], newRef)
+		all := asSlice(t, child["allOf"], newRef+" allOf")
+		if len(all) != 2 {
+			t.Fatal("current Read overlay does not extend a base definition")
+		}
+		parent, ok := refName(t, asMap(t, all[0], "current base ref"))
+		if !ok || parent != oldRef {
+			t.Fatal("current Read overlay changed its base definition")
+		}
+		return overlay
+	}
+	if base["type"] == "array" && overlay["type"] == "array" && len(base) == 2 && len(overlay) == 2 {
+		return map[string]any{"type": "array", "items": narrowedReadProperty(t, defs,
+			asMap(t, base["items"], "base items"), asMap(t, overlay["items"], "current items"))}
+	}
+	if base["type"] == "object" && overlay["type"] == "object" && len(overlay) == 2 {
+		if _, ok := base["propertyNames"]; !ok {
+			t.Fatal("unsupported current Read map overlay")
+		}
+		out := map[string]any{}
+		for k, v := range base {
+			out[k] = v
+		}
+		out["additionalProperties"] = narrowedReadProperty(t, defs,
+			asMap(t, base["additionalProperties"], "base values"),
+			asMap(t, overlay["additionalProperties"], "current values"))
+		return out
+	}
+	t.Fatal("unsupported current Read property overlay")
+	return nil
+}
+
 // A bounded resolved view shared by parity and zero-value gates. It supports
-// exact object refs and the historical Bead's false-property restriction only.
+// exact object refs, the historical Bead's false-property restriction, and
+// current Read overlays that strengthen required metadata or narrow nested
+// record members to their current forms.
 func resolvedObject(t *testing.T, defs map[string]any, name string) map[string]any {
 	t.Helper()
 	var resolve func(map[string]any, map[string]bool) map[string]any
@@ -52,24 +99,51 @@ func resolvedObject(t *testing.T, defs map[string]any, name string) map[string]a
 			props[k] = v
 		}
 		restriction := asMap(t, all[1], "restriction")
-		if len(restriction) != 2 || restriction["type"] != "object" {
+		if (len(restriction) != 2 && len(restriction) != 3) || restriction["type"] != "object" {
 			t.Fatal("unsupported restriction")
 		}
-		for k, v := range asMap(t, restriction["properties"], "restriction properties") {
-			if v != false {
-				t.Fatal("unsupported nonfalse restriction")
+		for key := range restriction {
+			if key != "type" && key != "properties" && key != "required" {
+				t.Fatal("unsupported restriction keyword")
 			}
+		}
+		required := append([]any(nil), asSlice(t, base["required"], "required")...)
+		for k, v := range asMap(t, restriction["properties"], "restriction properties") {
 			if _, ok := props[k]; !ok {
 				t.Fatal("restriction lacks base member")
 			}
-			for _, r := range asSlice(t, base["required"], "required") {
-				if r == k {
-					t.Fatal("cannot remove required member")
+			if v == false {
+				for _, r := range required {
+					if r == k {
+						t.Fatal("cannot remove required member")
+					}
 				}
+				delete(props, k)
+				continue
 			}
-			delete(props, k)
+			replacement, ok := v.(map[string]any)
+			if !ok {
+				t.Fatal("unsupported replacement restriction")
+			}
+			props[k] = narrowedReadProperty(t, defs,
+				asMap(t, props[k], "base property"), replacement)
+		}
+		if additions, ok := restriction["required"]; ok {
+			for _, r := range asSlice(t, additions, "restriction required") {
+				name, ok := r.(string)
+				if !ok || props[name] == nil {
+					t.Fatal("restriction requires absent member")
+				}
+				for _, existing := range required {
+					if existing == name {
+						t.Fatal("duplicate required restriction")
+					}
+				}
+				required = append(required, name)
+			}
 		}
 		out["properties"] = props
+		out["required"] = required
 		return out
 	}
 	return resolve(asMap(t, defs[name], name), map[string]bool{name: true})

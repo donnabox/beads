@@ -2351,15 +2351,15 @@ jobs:
         run: |
           set -euo pipefail
           mkdir -p "$RUNNER_TEMP/bdp-client-build"
-          mkdir "$RUNNER_TEMP/bdp-client-53bdbd0"
-          cd "$RUNNER_TEMP/bdp-client-53bdbd0"
+          mkdir "$RUNNER_TEMP/bdp-client-5b4eb46"
+          cd "$RUNNER_TEMP/bdp-client-5b4eb46"
           export GIT_CONFIG_NOSYSTEM=1 GIT_CONFIG_GLOBAL=/dev/null GIT_TERMINAL_PROMPT=0
           {
             git init
             git -c credential.helper= fetch --depth=1 https://github.com/gastownhall/bdp.git \
-              53bdbd03136875f952af184fce7b3c7af8f74e96
+              5b4eb46c7f21f2272f4da5a230f042ce753cb304
             git checkout --detach FETCH_HEAD
-            test "$(git rev-parse HEAD)" = 53bdbd03136875f952af184fce7b3c7af8f74e96
+            test "$(git rev-parse HEAD)" = 5b4eb46c7f21f2272f4da5a230f042ce753cb304
             npm install --global --ignore-scripts pnpm@11.20.0
             test "$(node --version)" = v24.16.0
             test "$(pnpm --version)" = 11.20.0
@@ -2396,7 +2396,7 @@ jobs:
             --bd "$RUNNER_TEMP/graph-c0-bin/bd" \
             --dolt "$RUNNER_TEMP/graph-c0-bin/dolt" \
             --artifacts "$RUNNER_TEMP/graph-c0-build" \
-            --bdp-checkout "$RUNNER_TEMP/bdp-client-53bdbd0" \
+            --bdp-checkout "$RUNNER_TEMP/bdp-client-5b4eb46" \
             --client-manifest "$RUNNER_TEMP/bdp-client-build/client-build.json" \
             --node "$(command -v node)" \
             --output "$RUNNER_TEMP/graph-c0-evidence"

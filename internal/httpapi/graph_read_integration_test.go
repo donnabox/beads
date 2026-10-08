@@ -48,11 +48,15 @@ func TestGraphReadHTTPAuthorityAndSecurity(t *testing.T) {
 	}
 	t.Cleanup(func() { _ = store.Close() })
 	for _, path := range []string{"beads/plan", "beads/other"} {
-		if _, err := store.Create(ctx, graphstore.CreateRequest{Path: path, Title: "記憶"}); err != nil {
+		request := graphstore.CreateRequest{Path: path, Title: "記憶"}
+		if path == "beads/plan" {
+			request.Metadata = json.RawMessage(`{"team":"docs"}`)
+		}
+		if _, err := store.Create(ctx, request); err != nil {
 			t.Fatal(err)
 		}
 	}
-	if _, err := store.AddInformationalLink(ctx, graphstore.LinkCreateRequest{Path: "links/context", SourcePath: "beads/plan", TargetPath: "beads/other", UnconditionalSource: true, Properties: map[string]any{"note": "initial"}}); err != nil {
+	if _, err := store.AddInformationalLink(ctx, graphstore.LinkCreateRequest{Path: "links/context", SourcePath: "beads/plan", TargetPath: "beads/other", UnconditionalSource: true, Properties: map[string]any{"note": "initial"}, Metadata: json.RawMessage(`{"origin":"manual"}`)}); err != nil {
 		t.Fatal(err)
 	}
 	graph, err := NewGraphRead(graphread.New(store), scope)
@@ -134,6 +138,20 @@ func TestGraphReadHTTPAuthorityAndSecurity(t *testing.T) {
 	if response.StatusCode != 200 || bdpwire.Unmarshal(body, &bead) != nil || bead.ID != scope+"beads/plan" {
 		t.Fatalf("transport alias reassigned identity: %d %s", response.StatusCode, body)
 	}
+	if string(bead.Metadata["team"]) != `"docs"` {
+		t.Fatalf("HTTP current Memory omitted common metadata: %s", body)
+	}
+	response, body = request("GET", "/read/beads/other", "first-token", "", nil)
+	var emptyMetadataBead bdpwire.BeadRecord
+	if response.StatusCode != 200 || bdpwire.Unmarshal(body, &emptyMetadataBead) != nil || emptyMetadataBead.Metadata == nil || len(emptyMetadataBead.Metadata) != 0 {
+		t.Fatalf("HTTP current Memory did not emit empty metadata object: %d %s", response.StatusCode, body)
+	}
+	response, body = request("GET", "/read/links/context", "first-token", "", nil)
+	var directLink bdpwire.LinkRecord
+	if response.StatusCode != 200 || bdpwire.Unmarshal(body, &directLink) != nil || string(directLink.Metadata["origin"]) != `"manual"` {
+		t.Fatalf("HTTP current Link omitted common metadata: %d %s", response.StatusCode, body)
+	}
+	response, body = request("GET", "/read/beads/plan", "first-token", "transport.example", nil)
 	getLength := len(body)
 	response, body = request("HEAD", "/read/beads/plan", "first-token", "", nil)
 	if response.StatusCode != 200 || len(body) != 0 || response.ContentLength != int64(getLength) {
@@ -208,6 +226,9 @@ func TestGraphReadHTTPAuthorityAndSecurity(t *testing.T) {
 		if len(owned) != 1 || owned[0].Revision != aggregate.Links.Items[0].Revision || string(owned[0].Properties["note"]) != string(aggregate.Links.Items[0].Properties["note"]) {
 			t.Fatal("aggregate mixed two storage snapshots")
 		}
+		if string(owned[0].Metadata["origin"]) != `"manual"` || string(aggregate.Links.Items[0].Metadata["origin"]) != `"manual"` {
+			t.Fatalf("HTTP aggregate omitted Link metadata: %s", body)
+		}
 	}
 	stopAndWait()
 	// The same canonical HTTP reader exposes native Issue edits. This exercises
@@ -228,7 +249,7 @@ func TestGraphReadHTTPAuthorityAndSecurity(t *testing.T) {
 		}
 		resp, raw := request("GET", "/read/beads/work", "second-token-longer", "", nil)
 		var record bdpwire.BeadRecord
-		if resp.StatusCode != 200 || bdpwire.Unmarshal(raw, &record) != nil || record.ID != edited.Issue.ID || record.Revision != edited.Issue.Revision || string(record.Properties["priority"]) != "0" || string(record.Properties["assignee"]) != `"agent.雪"` || record.Attribution == nil || record.Attribution.Principal != "editor" {
+		if resp.StatusCode != 200 || bdpwire.Unmarshal(raw, &record) != nil || record.ID != edited.Issue.ID || record.Revision != edited.Issue.Revision || string(record.Properties["priority"]) != "0" || string(record.Properties["assignee"]) != `"agent.雪"` || record.Attribution == nil || record.Attribution.Principal != "editor" || record.Metadata == nil || len(record.Metadata) != 0 {
 			t.Fatalf("canonical Issue edit not exposed: %d %s", resp.StatusCode, raw)
 		}
 		resp, raw = request("GET", "/read/beads/?limit=100", "second-token-longer", "", nil)

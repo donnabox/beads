@@ -64,20 +64,20 @@ var roundTrips = []roundTrip{
 	{"fixtures/read-bdpbd-v1.json", "/oracles/resources/*/properties", newTarget[Properties]()},
 
 	// docs/specs/bdp.md examples at the pin (schema/PROVENANCE names the lines).
-	{"spec-examples/0591-scope-aggregate-constraints-1.json", "/maximumEndpointMultiplicity/*", newTarget[MaximumEndpointMultiplicityPolicy]()},
-	{"spec-examples/2189-scope-discovery-and-human-documentation-1.json", "", newTarget[ReadDiscovery]()},
-	{"spec-examples/2383-advertised-limits-1.json", "/limits", newTarget[AdvertisedLimits]()},
-	{"spec-examples/2896-resource-records-1.json", "", newTarget[BeadRecord]()},
-	{"spec-examples/2911-resource-records-2.json", "", newTarget[LinkRecord]()},
-	{"spec-examples/2946-resource-records-3.json", "", newTarget[Reference]()},
-	{"spec-examples/2955-resource-records-4.json", "", newTarget[Reference]()},
-	{"spec-examples/3023-resource-views-1.json", "", newTarget[BeadRecord]()},
-	{"spec-examples/3023-resource-views-1.json", "/links", newTarget[LinkCollection]()},
-	{"spec-examples/3023-resource-views-1.json", "/links/items/*", newTarget[LinkRecord]()},
-	{"spec-examples/3427-types-and-type-descriptors-1.json", "", newTarget[TypesInventory]()},
-	{"spec-examples/3427-types-and-type-descriptors-1.json", "/items/*", newTarget[TypeSummary]()},
-	{"spec-examples/3469-types-and-type-descriptors-2.json", "", newTarget[TypeDescriptor]()},
-	{"spec-examples/3486-types-and-type-descriptors-3.json", "", newTarget[TypeDescriptor]()},
+	{"spec-examples/0593-scope-aggregate-constraints-1.json", "/maximumEndpointMultiplicity/*", newTarget[MaximumEndpointMultiplicityPolicy]()},
+	{"spec-examples/2211-scope-discovery-and-human-documentation-1.json", "", newTarget[ReadDiscovery]()},
+	{"spec-examples/2405-advertised-limits-1.json", "/limits", newTarget[AdvertisedLimits]()},
+	{"spec-examples/2918-resource-records-1.json", "", newTarget[BeadRecord]()},
+	{"spec-examples/2934-resource-records-2.json", "", newTarget[LinkRecord]()},
+	{"spec-examples/2977-resource-records-3.json", "", newTarget[Reference]()},
+	{"spec-examples/2986-resource-records-4.json", "", newTarget[Reference]()},
+	{"spec-examples/3054-resource-views-1.json", "", newTarget[BeadRecord]()},
+	{"spec-examples/3054-resource-views-1.json", "/links", newTarget[LinkCollection]()},
+	{"spec-examples/3054-resource-views-1.json", "/links/items/*", newTarget[LinkRecord]()},
+	{"spec-examples/3458-types-and-type-descriptors-1.json", "", newTarget[TypesInventory]()},
+	{"spec-examples/3458-types-and-type-descriptors-1.json", "/items/*", newTarget[TypeSummary]()},
+	{"spec-examples/3500-types-and-type-descriptors-2.json", "", newTarget[TypeDescriptor]()},
+	{"spec-examples/3517-types-and-type-descriptors-3.json", "", newTarget[TypeDescriptor]()},
 }
 
 func TestFixturesRoundTripThroughTheWireTypes(t *testing.T) {
@@ -233,8 +233,8 @@ func TestFixturesExerciseTheShapesThatMatter(t *testing.T) {
 // forget.
 func TestHigherProfileDiscoveryIsRefusedByTheReadType(t *testing.T) {
 	for _, tc := range []struct{ file, prohibited string }{
-		{"spec-examples/2203-scope-discovery-and-human-documentation-2.json", "operations"},
-		{"spec-examples/2219-scope-discovery-and-human-documentation-3.json", "scopeEpoch"},
+		{"spec-examples/2225-scope-discovery-and-human-documentation-2.json", "operations"},
+		{"spec-examples/2241-scope-discovery-and-human-documentation-3.json", "scopeEpoch"},
 	} {
 		var d ReadDiscovery
 		err := Unmarshal(readSchemaFile(t, tc.file), &d)
@@ -245,5 +245,50 @@ func TestHigherProfileDiscoveryIsRefusedByTheReadType(t *testing.T) {
 		if !strings.Contains(err.Error(), "unknown field") {
 			t.Errorf("%s: refused for the wrong reason: %v", tc.file, err)
 		}
+	}
+}
+
+func TestCurrentMetadataIsRequiredWhileRetainedBaseMayOmitIt(t *testing.T) {
+	base := []byte(`{"id":"https://example.test/beads/plan","type":"https://example.test/types/memory","revision":"v1","properties":{}}`)
+	var retained BeadRecord
+	if err := Unmarshal(base, &retained); err != nil {
+		t.Fatalf("pre-metadata retained Bead: %v", err)
+	}
+	encoded, err := json.Marshal(retained)
+	if err != nil || bytes.Contains(encoded, []byte(`"metadata"`)) {
+		t.Fatalf("retained Bead gained metadata: %s, %v", encoded, err)
+	}
+	var current CurrentBeadRecord
+	if err := Unmarshal(base, &current); err == nil {
+		t.Fatal("current Bead accepted missing metadata")
+	}
+	current.Metadata = Metadata{}
+	encoded, err = json.Marshal(current)
+	if err != nil || !bytes.Contains(encoded, []byte(`"metadata":{}`)) {
+		t.Fatalf("current Bead lost empty metadata: %s, %v", encoded, err)
+	}
+	if err := Unmarshal(encoded, &current); err != nil {
+		t.Fatalf("current Bead with empty metadata: %v", err)
+	}
+	linkBase := []byte(`{"id":"https://example.test/links/context","type":"https://example.test/types/related","revision":"v1","source":"https://example.test/beads/plan","target":"https://example.test/beads/work","properties":{}}`)
+	var retainedLink LinkRecord
+	if err := Unmarshal(linkBase, &retainedLink); err != nil {
+		t.Fatalf("pre-metadata retained Link: %v", err)
+	}
+	encoded, err = json.Marshal(retainedLink)
+	if err != nil || bytes.Contains(encoded, []byte(`"metadata"`)) {
+		t.Fatalf("retained Link gained metadata: %s, %v", encoded, err)
+	}
+	var currentLink CurrentLinkRecord
+	if err := Unmarshal(linkBase, &currentLink); err == nil {
+		t.Fatal("current Link accepted missing metadata")
+	}
+	currentLink.Metadata = Metadata{}
+	encoded, err = json.Marshal(currentLink)
+	if err != nil || !bytes.Contains(encoded, []byte(`"metadata":{}`)) {
+		t.Fatalf("current Link lost empty metadata: %s, %v", encoded, err)
+	}
+	if err := Unmarshal(encoded, &currentLink); err != nil {
+		t.Fatalf("current Link with empty metadata: %v", err)
 	}
 }
