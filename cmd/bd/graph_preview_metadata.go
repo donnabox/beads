@@ -4,15 +4,16 @@ import (
 	"encoding/json"
 
 	"github.com/spf13/cobra"
+	"github.com/steveyegge/beads/internal/storage/issueops"
 	publicops "github.com/steveyegge/beads/issueops"
 )
 
 func graphPreviewMetadataCreate(cmd *cobra.Command) (json.RawMessage, error) {
-	if !cmd.Flags().Changed("metadata") {
-		return nil, nil
+	patch, err := graphPreviewMetadataPatch(cmd)
+	if err != nil {
+		return nil, err
 	}
-	value, _ := cmd.Flags().GetString("metadata")
-	metadata, err := readMetadataFlag(value)
+	metadata, _, err := issueops.ApplyMetadataPatch(nil, patch)
 	if err != nil {
 		return nil, graphFailure("invalid_properties", err.Error(), 2)
 	}
