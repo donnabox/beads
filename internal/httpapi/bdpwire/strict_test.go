@@ -33,7 +33,8 @@ func TestStrictDecodeMemberNamesAreExactAndUnique(t *testing.T) {
 		{`{"uri":"urn:x","revision":"r","URI":"urn:y"}`, &Reference{}, `unknown field "URI"`},
 		{`{"uri":"urn:x","revision":"r","Revision":"s"}`, &Reference{}, `unknown field "Revision"`},
 		{`{"uri":"urn:x","uri":"urn:y","revision":"r"}`, &Reference{}, `duplicate member "uri"`},
-		{`{"Principal":"agent:p","status":"claimed"}`, &Attribution{}, `unknown field "Principal"`},
+		{`{"Principal":"agent:p","basis":"writer-supplied"}`, &Attribution{}, `unknown field "Principal"`},
+		{`{"principal":"agent:p","status":"claimed"}`, &Attribution{}, `unknown field "status"`},
 		{`{"id":"` + beadURL + `","type":"` + typeURL + `","revision":"r1","properties":{},"Revision":"r2"}`, &BeadRecord{}, `unknown field "Revision"`},
 		{`{"id":"` + linkURL + `","type":"` + typeURL + `","revision":"r1","source":"` + beadURL + `","target":"urn:x","properties":{},"Source":"urn:z"}`, &LinkRecord{}, `unknown field "Source"`},
 		{`{"id":"` + linkURL + `","type":"` + typeURL + `","revision":"r1","source":{"uri":"` + beadURL + `","revision":"r","URI":"x"},"target":"urn:x","properties":{}}`, &LinkRecord{}, `source: unknown field "URI"`},
@@ -158,7 +159,7 @@ func TestStrictDecodeRequiresTheBundlesRequiredMembers(t *testing.T) {
 		{`{"bdpVersion":"0","profile":"read","scope":"https://s.example/acme/","beads":"https://s.example/acme/beads/","links":"https://s.example/acme/links/"}`, &ReadDiscovery{}, "types"},
 		{`{"linkConformsTo":"` + typeURL + `","endpoint":"source"}`, &MaximumEndpointMultiplicityPolicy{}, "max"},
 		{`{"type":"t","code":"forbidden"}`, &ReadProblem{}, "retry"},
-		{`{"principal":"agent:p"}`, &Attribution{}, "status"},
+		{`{"principal":"agent:p"}`, &Attribution{}, "basis"},
 		{`{"revision":"r"}`, &Reference{}, "uri"},
 		{`{"uri":"urn:x"}`, &Reference{}, "revision"},
 		{`{"id":"` + typeURL + `","name":"X"}`, &TypeSummary{}, "describes"},
@@ -354,7 +355,7 @@ func TestUnmarshalTargetsAndReaders(t *testing.T) {
 	wantDecodeError(t, Decode(failingReader{}, &Attribution{}), "failing reader", "read failed")
 	// Whitespace anywhere outside strings is not significant.
 	var a Attribution
-	if err := Unmarshal([]byte(" {\n\t\"principal\" :\t\"agent:p\" ,\n \"status\": \"claimed\" }\n"), &a); err != nil || a.Principal != "agent:p" {
+	if err := Unmarshal([]byte(" {\n\t\"principal\" :\t\"agent:p\" ,\n \"basis\": \"writer-supplied\" }\n"), &a); err != nil || a.Principal != "agent:p" {
 		t.Errorf("whitespace: %+v %v", a, err)
 	}
 	// Map keys are exact too, and values decode recursively with their path

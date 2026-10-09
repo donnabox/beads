@@ -272,7 +272,16 @@ func TestGraphPreviewGenericSummaryAllowlist(t *testing.T) {
 		t.Fatal(err)
 	}
 	for _, node := range nodes {
-		if len(node) != 5 || node["id"] == nil || node["type"] == nil || node["title"] == nil || node["version"] == nil || node["attribution"] == nil {
+		wantFields := 5
+		if node["id"] == issue.ID {
+			wantFields = 4 // No principal was recorded for the native Issue.
+			if _, present := node["attribution"]; present {
+				t.Fatalf("principal-free attribution leaked: %+v", node)
+			}
+		} else if node["attribution"] == nil {
+			t.Fatalf("attributed Memory lost its attribution: %+v", node)
+		}
+		if len(node) != wantFields || node["id"] == nil || node["type"] == nil || node["title"] == nil || node["version"] == nil {
 			t.Fatalf("node field allowlist differs: %+v", node)
 		}
 	}

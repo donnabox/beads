@@ -23,7 +23,7 @@ func TestStrictDecodeRefusesUnknownMembersInClosedEnvelopes(t *testing.T) {
 		target any
 	}{
 		{"bead record", `{"id":"` + beadURL + `","type":"` + typeURL + `","revision":"r1","properties":{},"extra":1}`, &BeadRecord{}},
-		{"attribution nested in a record", `{"id":"` + beadURL + `","type":"` + typeURL + `","revision":"r1","attribution":{"principal":"agent:p","status":"claimed","note":"x"},"properties":{}}`, &BeadRecord{}},
+		{"attribution nested in a record", `{"id":"` + beadURL + `","type":"` + typeURL + `","revision":"r1","attribution":{"principal":"agent:p","basis":"writer-supplied","note":"x"},"properties":{}}`, &BeadRecord{}},
 		{"link nested in ownedLinks", `{"id":"` + beadURL + `","type":"` + typeURL + `","revision":"r1","properties":{},"ownedLinks":{"` + typeURL + `":[{"id":"` + linkURL + `","type":"` + typeURL + `","revision":"r1","source":"` + beadURL + `","target":"urn:x","properties":{},"label":"no"}]}}`, &BeadRecord{}},
 		{"link in an embedded page", `{"id":"` + beadURL + `","type":"` + typeURL + `","revision":"r1","properties":{},"links":{"items":[{"id":"` + linkURL + `","type":"` + typeURL + `","revision":"r1","source":"` + beadURL + `","target":"urn:x","properties":{},"direction":"outbound"}],"next":null}}`, &BeadRecord{}},
 		{"discovery with a Read+Update member", `{"bdpVersion":"0","profile":"read","scope":"https://s.example/acme/","beads":"https://s.example/acme/beads/","links":"https://s.example/acme/links/","types":"https://s.example/acme/types/","operations":"https://s.example/acme/operations/"}`, &ReadDiscovery{}},
@@ -49,13 +49,13 @@ func TestStrictDecodeRefusesUnknownMembersInClosedEnvelopes(t *testing.T) {
 
 func TestStrictDecodeRefusesTrailingData(t *testing.T) {
 	var a Attribution
-	if err := Unmarshal([]byte(`{"principal":"agent:p","status":"claimed"} {}`), &a); err == nil {
+	if err := Unmarshal([]byte(`{"principal":"agent:p","basis":"writer-supplied"} {}`), &a); err == nil {
 		t.Error("a second document was accepted")
 	}
-	if err := Unmarshal([]byte(`{"principal":"agent:p","status":"claimed"} x`), &a); err == nil {
+	if err := Unmarshal([]byte(`{"principal":"agent:p","basis":"writer-supplied"} x`), &a); err == nil {
 		t.Error("trailing garbage was accepted")
 	}
-	if err := Unmarshal([]byte("  {\"principal\":\"agent:p\",\"status\":\"claimed\"}\n"), &a); err != nil {
+	if err := Unmarshal([]byte("  {\"principal\":\"agent:p\",\"basis\":\"writer-supplied\"}\n"), &a); err != nil {
 		t.Errorf("surrounding whitespace was refused: %v", err)
 	}
 }

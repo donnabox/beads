@@ -102,7 +102,7 @@ var inlineEnums = map[reflect.Type][]string{
 	reflect.TypeOf(Describes("")):            {string(DescribesBead), string(DescribesLink)},
 	reflect.TypeOf(ExternalPolicy("")):       {string(ExternalNone), string(ExternalOpaque), string(ExternalBead)},
 	reflect.TypeOf(Endpoint("")):             {string(EndpointSource), string(EndpointTarget)},
-	reflect.TypeOf(AttributionStatus("")):    {string(AttributionClaimed), string(AttributionUnknown)},
+	reflect.TypeOf(AttributionBasis("")):     {string(AttributionWriterSupplied), string(AttributionUnknown)},
 	reflect.TypeOf(CollectionOrder("")):      {string(OrderCanonicalURI)},
 }
 

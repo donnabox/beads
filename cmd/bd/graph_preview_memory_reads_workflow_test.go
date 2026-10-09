@@ -131,7 +131,9 @@ func graphMemoryReadValue(t *testing.T, value any) graphstore.VersionValue {
 
 func graphMemoryReadComparison(t *testing.T, output string, want graphstore.VersionComparison) {
 	t.Helper()
-	got := graphMixedResult[graphstore.VersionComparison](t, output)
+	// Keep the public JSON envelope intact: decoding through the internal
+	// snapshot type would discard the public attribution basis.
+	got := graphMixedResult[json.RawMessage](t, output)
 	// Normalize JSON member order inside retained owned-Link values; the oracle
 	// still checks every value, presence bit, endpoint and unsupported field.
 	semantic := func(value any, expected bool) any {

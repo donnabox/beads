@@ -72,6 +72,10 @@ The graph CLI and BDP are two ways to work with the same Scope, Beads, Links
 and installed Types. For capabilities both expose, they should agree on
 canonical identity, Type and property meaning, opaque revision equality,
 accepted changes versus no-ops, and refusal of invalid or stale mutations.
+Carried attribution follows BDP's `attribution.basis` vocabulary:
+`writer-supplied` or `unknown`, required with a present principal. An absent
+attribution means no principal was recorded. This is distinct from an Issue's
+domain `properties.status` and never attests the principal's identity.
 CLI spelling and result presentation need not mirror HTTP requests. A local
 CLI operation does not, by itself, advertise a BDP HTTP capability: the
 current listener serves the Read profile only.

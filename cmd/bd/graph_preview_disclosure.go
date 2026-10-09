@@ -12,7 +12,10 @@ func graphPreviewReplacementSummary(summary string, replaced *graphstore.Replace
 	if replaced == nil {
 		return summary
 	}
-	return fmt.Sprintf("%s\nReplaced Memory %s version %s; recorded attribution: actor=%q status=%q recordedAt=%q",
+	if replaced.Attribution.Actor == "" {
+		return fmt.Sprintf("%s\nReplaced Memory %s version %s; no recorded attribution", summary, replaced.ID, replaced.Version)
+	}
+	return fmt.Sprintf("%s\nReplaced Memory %s version %s; recorded attribution: actor=%q basis=%q recordedAt=%q",
 		summary, replaced.ID, replaced.Version, replaced.Attribution.Actor,
-		replaced.Attribution.Status, replaced.Attribution.RecordedAt)
+		graphPublicAttributionBasis(replaced.Attribution.Status), replaced.Attribution.RecordedAt)
 }

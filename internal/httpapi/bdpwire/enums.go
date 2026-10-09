@@ -151,25 +151,25 @@ func (e Endpoint) Valid() bool {
 	return false
 }
 
-// AttributionStatus is the basis a realization records for a carried
+// AttributionBasis is the basis a realization records for a carried
 // attribution's principal. It is data, not evidence: there is deliberately no
-// status asserting the authority verified the principal, because that would
+// basis asserting the authority verified the principal, because that would
 // be an authority claim, which this member never carries.
-type AttributionStatus string
+type AttributionBasis string
 
-// The two v0 statuses: AttributionClaimed — the writer of that version
+// The two v0 bases: AttributionWriterSupplied — the writer of that version
 // supplied the principal, as written; AttributionUnknown — the principal is
 // carried from data whose relationship to this version the realization cannot
 // establish (an imported record, say).
 const (
-	AttributionClaimed AttributionStatus = "claimed"
-	AttributionUnknown AttributionStatus = "unknown"
+	AttributionWriterSupplied AttributionBasis = "writer-supplied"
+	AttributionUnknown        AttributionBasis = "unknown"
 )
 
-// Valid reports whether s is a member of the bundle's vocabulary.
-func (s AttributionStatus) Valid() bool {
-	switch s {
-	case AttributionClaimed, AttributionUnknown:
+// Valid reports whether b is a member of the bundle's vocabulary.
+func (b AttributionBasis) Valid() bool {
+	switch b {
+	case AttributionWriterSupplied, AttributionUnknown:
 		return true
 	}
 	return false

@@ -171,11 +171,20 @@ func projectMetadata(raw json.RawMessage) (bdpwire.Metadata, error) {
 }
 
 func projectAttribution(value graphstore.Attribution) (*bdpwire.Attribution, error) {
-	if value.Actor == "" && value.Status == "unknown" {
-		return nil, nil
-	}
-	if value.Actor == "" || value.Status != "claimed" {
+	if value.Actor == "" {
+		if value.Status == "unknown" || value.Status == "" {
+			return nil, nil
+		}
 		return nil, fmt.Errorf("%w: unsupported attribution", graphstore.ErrInvalidStore)
 	}
-	return &bdpwire.Attribution{Principal: value.Actor, Status: bdpwire.AttributionClaimed}, nil
+	var basis bdpwire.AttributionBasis
+	switch value.Status {
+	case "claimed":
+		basis = bdpwire.AttributionWriterSupplied
+	case "unknown":
+		basis = bdpwire.AttributionUnknown
+	default:
+		return nil, fmt.Errorf("%w: unsupported attribution", graphstore.ErrInvalidStore)
+	}
+	return &bdpwire.Attribution{Principal: value.Actor, Basis: basis}, nil
 }

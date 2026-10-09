@@ -50,7 +50,11 @@ func runGraphPreviewCompare(cmd *cobra.Command, args []string) error {
 		if err != nil {
 			return nil, "", err
 		}
-		human, err := json.MarshalIndent(result, "", "  ")
+		projected, err := graphProjectCompleteRecords(result)
+		if err != nil {
+			return nil, "", err
+		}
+		human, err := json.MarshalIndent(projected, "", "  ")
 		return result, string(human), err
 	})
 }

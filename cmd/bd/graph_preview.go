@@ -638,7 +638,11 @@ func runGraphPreviewShow(cmd *cobra.Command, args []string) error {
 			return nil, "", err
 		}
 		_, shownIssue = r.(graphstore.IssueRecord)
-		data, err := json.MarshalIndent(r, "", "  ")
+		projected, err := graphProjectCompleteRecords(r)
+		if err != nil {
+			return nil, "", err
+		}
+		data, err := json.MarshalIndent(projected, "", "  ")
 		if err != nil {
 			return nil, "", err
 		}

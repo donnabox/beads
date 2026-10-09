@@ -216,10 +216,10 @@ type LinkRecord struct {
 // Attribution is the `attribution` envelope carried per version on a Bead or
 // Link record. Principal is a nonempty opaque string — SHOULD be namespaced
 // (`agent:…`, `human:…`, `svc:…`) and is compared only for byte equality —
-// and Status records the realization's basis for it, never a BDP guarantee.
+// and Basis records the realization's basis for it, never a BDP guarantee.
 type Attribution struct {
-	Principal string            `json:"principal"`
-	Status    AttributionStatus `json:"status"`
+	Principal string           `json:"principal"`
+	Basis     AttributionBasis `json:"basis"`
 }
 
 // BeadCollection is the `beadCollection` envelope: one page of complete Bead

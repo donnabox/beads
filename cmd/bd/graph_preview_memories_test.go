@@ -3,7 +3,6 @@ package main
 import (
 	"encoding/json"
 	"errors"
-	"reflect"
 	"strings"
 	"testing"
 
@@ -33,14 +32,23 @@ func TestGraphPreviewMemoryDiscoveryRendering(t *testing.T) {
 		t.Fatal(err)
 	}
 	var envelope struct {
-		SchemaVersion int                        `json:"schemaVersion"`
-		Preview       bool                       `json:"preview"`
-		Result        graphMemoryDiscoveryResult `json:"result"`
+		SchemaVersion int  `json:"schemaVersion"`
+		Preview       bool `json:"preview"`
+		Result        struct {
+			Complete bool    `json:"complete"`
+			Next     *string `json:"next"`
+			Items    []struct {
+				Attribution struct {
+					Actor string `json:"actor"`
+					Basis string `json:"basis"`
+				} `json:"attribution"`
+			} `json:"items"`
+		} `json:"result"`
 	}
 	if err := json.Unmarshal([]byte(structured), &envelope); err != nil {
 		t.Fatal(err)
 	}
-	if envelope.SchemaVersion != 1 || !envelope.Preview || !envelope.Result.Complete || envelope.Result.Next != nil || !reflect.DeepEqual(envelope.Result, result) {
+	if envelope.SchemaVersion != 1 || !envelope.Preview || !envelope.Result.Complete || envelope.Result.Next != nil || len(envelope.Result.Items) != 1 || envelope.Result.Items[0].Attribution.Actor != "actor\nname" || envelope.Result.Items[0].Attribution.Basis != "writer-supplied" {
 		t.Fatalf("structured summary changed or disappeared under quiet: %+v", envelope)
 	}
 	quiet, err := renderGraphMemoryDiscovery(result, false, true)

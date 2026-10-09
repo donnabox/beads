@@ -69,7 +69,9 @@ func renderGraphMemoryDiscovery(result graphMemoryDiscoveryResult, structured, q
 				fmt.Fprintf(&human, "    %s (%s)\n", graphMemoryDisplayText(item.Excerpt.Text), label)
 			}
 			if item.Details != nil {
-				fmt.Fprintf(&human, "    Attribution: actor=%q status=%q recordedAt=%q\n", item.Attribution.Actor, item.Attribution.Status, item.Attribution.RecordedAt)
+				if item.Attribution.Actor != "" {
+					fmt.Fprintf(&human, "    Attribution: actor=%q basis=%q recordedAt=%q\n", item.Attribution.Actor, graphPublicAttributionBasis(item.Attribution.Status), item.Attribution.RecordedAt)
+				}
 				fmt.Fprintf(&human, "    Owned Links: %d\n", item.Details.OwnedLinkCount)
 				fmt.Fprintf(&human, "    Recall: bd recall %s --version %s\n", graphMemoryDisplayText(graphMemoryShellArg(id)), graphMemoryDisplayText(graphMemoryShellArg(item.Version)))
 			}

@@ -268,3 +268,14 @@ record items; it retains the inherited owned-Link map key restriction. This
 adoption does not claim that HTTP serving or installed
 two-engine behavior has passed: those tests, current-source CI, and separate
 independent review of the verifier changes remain required.
+
+## Carried attribution basis adoption — 2026-10-09
+
+The successor input is BDP `de99030d13a57e77f4f2660b91ea3c39b82823cb`,
+stacked on the metadata source above. It renames the public attribution
+member `status` to `basis` and the writer-supplied value `claimed` to
+`writer-supplied`; `unknown` remains. The 47-definition Read projection digest
+is `2db57a82d9bf99f3fb5d18646e8bd6c7646590d1e806aa266de8af415ee83545`.
+All verbatim files and the spec-derived JSON fences are re-pinned in
+`schema/PROVENANCE`. Native graphstore snapshots retain their historical
+`status` encoding; the Read projection changes only the public wire form.

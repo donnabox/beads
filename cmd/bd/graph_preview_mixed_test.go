@@ -15,12 +15,80 @@ import (
 func graphMixedResult[T any](t *testing.T, output string) T {
 	t.Helper()
 	var envelope struct {
-		Result T `json:"result"`
+		Result json.RawMessage `json:"result"`
 	}
 	if err := json.Unmarshal([]byte(output), &envelope); err != nil {
 		t.Fatalf("decode command output: %v\n%s", err, output)
 	}
-	return envelope.Result
+	var result T
+	if _, raw := any(result).(json.RawMessage); raw {
+		return any(envelope.Result).(T)
+	}
+	// Legacy workflow oracles use graphstore structs. Translate only the
+	// carried attribution envelope back to its storage vocabulary before
+	// decoding them; public-wire assertions use the unmodified raw output.
+	projected, err := graphMixedStoredAttribution(envelope.Result)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if err := json.Unmarshal(projected, &result); err != nil {
+		t.Fatalf("decode command result: %v\n%s", err, output)
+	}
+	return result
+}
+
+func graphMixedStoredAttribution(raw json.RawMessage) (json.RawMessage, error) {
+	value := strings.TrimSpace(string(raw))
+	if value == "" {
+		return raw, nil
+	}
+	switch value[0] {
+	case '{':
+		var members map[string]json.RawMessage
+		if err := json.Unmarshal(raw, &members); err != nil {
+			return nil, err
+		}
+		if attribution, ok := members["attribution"]; ok {
+			var carried map[string]json.RawMessage
+			if len(attribution) > 0 && attribution[0] == '{' && json.Unmarshal(attribution, &carried) == nil {
+				if basis, ok := carried["basis"]; ok {
+					if string(basis) == `"writer-supplied"` {
+						carried["status"] = json.RawMessage(`"claimed"`)
+					} else {
+						carried["status"] = basis
+					}
+					delete(carried, "basis")
+					members["attribution"], _ = json.Marshal(carried)
+				}
+			}
+		}
+		for key, member := range members {
+			if key == "properties" || key == "metadata" || key == "attribution" {
+				continue
+			}
+			child, err := graphMixedStoredAttribution(member)
+			if err != nil {
+				return nil, err
+			}
+			members[key] = child
+		}
+		return json.Marshal(members)
+	case '[':
+		var items []json.RawMessage
+		if err := json.Unmarshal(raw, &items); err != nil {
+			return nil, err
+		}
+		for i, item := range items {
+			child, err := graphMixedStoredAttribution(item)
+			if err != nil {
+				return nil, err
+			}
+			items[i] = child
+		}
+		return json.Marshal(items)
+	default:
+		return raw, nil
+	}
 }
 
 // One complete installed-command sequence keeps the transferred adapters honest.

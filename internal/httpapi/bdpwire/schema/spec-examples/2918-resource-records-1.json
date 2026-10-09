@@ -2,7 +2,7 @@
   "id": "https://beads.example/acme/beads/task-42",
   "type": "https://work.example/types/task",
   "revision": "opaque-task-revision",
-  "attribution": { "principal": "agent:planner", "status": "claimed" },
+  "attribution": { "principal": "agent:planner", "basis": "writer-supplied" },
   "properties": {
     "title": "Specify BDP mutation",
     "status": "open"

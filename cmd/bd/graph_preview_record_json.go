@@ -3,6 +3,7 @@ package main
 import (
 	"bytes"
 	"encoding/json"
+	"fmt"
 	"strings"
 )
 
@@ -33,6 +34,17 @@ func graphProjectRecordJSONIn(raw json.RawMessage, ownedComparisonValue bool) (j
 		}
 		if graphIsCompleteRecord(members) {
 			delete(members, "version")
+		}
+		if attribution, ok := members["attribution"]; ok {
+			projected, present, err := graphProjectCarriedAttribution(attribution)
+			if err != nil {
+				return nil, err
+			}
+			if present {
+				members["attribution"] = projected
+			} else {
+				delete(members, "attribution")
+			}
 		}
 		ownedChange := string(members["area"]) == `"owned"`
 		for key, member := range members {
@@ -69,6 +81,59 @@ func graphProjectRecordJSONIn(raw json.RawMessage, ownedComparisonValue bool) (j
 	default:
 		return raw, nil
 	}
+}
+
+// Only storage attribution has actor/status/recordedAt. Caller-authored
+// properties and metadata never reach this function, even if they contain an
+// unrelated member named attribution.
+func graphProjectCarriedAttribution(raw json.RawMessage) (json.RawMessage, bool, error) {
+	value := bytes.TrimSpace(raw)
+	if bytes.Equal(value, []byte("null")) {
+		return nil, false, nil
+	}
+	if len(value) == 0 || value[0] != '{' {
+		// Native Issue version rows carry a scalar attribution label,
+		// independent of the BDP carried-attribution envelope.
+		return raw, true, nil
+	}
+	var members map[string]json.RawMessage
+	if err := json.Unmarshal(raw, &members); err != nil {
+		return nil, false, err
+	}
+	if _, ok := members["actor"]; !ok {
+		return raw, true, nil
+	}
+	var actor, status string
+	if err := json.Unmarshal(members["actor"], &actor); err != nil {
+		return nil, false, err
+	}
+	if err := json.Unmarshal(members["status"], &status); err != nil {
+		return nil, false, err
+	}
+	if actor == "" && (status == "unknown" || status == "") {
+		return nil, false, nil
+	}
+	if actor == "" {
+		return nil, false, fmt.Errorf("stored attribution has no actor")
+	}
+	switch status {
+	case "claimed":
+		members["basis"] = json.RawMessage(`"writer-supplied"`)
+	case "unknown":
+		members["basis"] = json.RawMessage(`"unknown"`)
+	default:
+		return nil, false, fmt.Errorf("unsupported stored attribution status %q", status)
+	}
+	delete(members, "status")
+	projected, err := json.Marshal(members)
+	return projected, true, err
+}
+
+func graphPublicAttributionBasis(status string) string {
+	if status == "claimed" {
+		return "writer-supplied"
+	}
+	return status
 }
 
 func graphIsCompleteRecord(members map[string]json.RawMessage) bool {

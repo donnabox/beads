@@ -14,7 +14,7 @@ import (
 	"testing"
 )
 
-const readProjectionSHA256 = "26db67b2f8611a641df6b44bc42959bf047a9efc8b2d5a7d665fc3dd47d631a7"
+const readProjectionSHA256 = "2db57a82d9bf99f3fb5d18646e8bd6c7646590d1e806aa266de8af415ee83545"
 
 // restrictedCanonical is a test-only serializer for this exact schema corpus.
 // ASCII avoids UTF-16 ordering/escaping ambiguities; integral int64 numbers

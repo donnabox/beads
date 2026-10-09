@@ -404,6 +404,13 @@ acceptance. Memory deletion,
 requirements; consult the [Graph CLI Specification (Draft)](/reference/graph-cli-specification-draft) before
 automating them. A semantic no-op retains the existing revision.
 
+Structured graph output carries an `attribution` object only when a principal
+was recorded. Its `basis` is `writer-supplied` when that version's writer
+supplied the actor, or `unknown` when the relationship to the version cannot
+be established. `basis` describes the source of the value; it does not assert
+that an authority authenticated the actor. The stored snapshot format retains
+its older `status` field, while CLI and BDP Read projections use `basis`.
+
 `bd versions ID` lists a Memory, Issue or Link's versions newest first in a
 graph workspace. `bd history ID` is an alias there; in an ordinary workspace,
 `bd history` retains its Dolt-commit meaning. Each graph row includes an

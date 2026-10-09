@@ -209,20 +209,20 @@ func TestFixturesExerciseTheShapesThatMatter(t *testing.T) {
 		t.Error("the owned-links oracle carries no pinned target")
 	}
 
-	statuses := map[AttributionStatus]bool{}
+	bases := map[AttributionBasis]bool{}
 	for _, doc := range selectAll(reference, "/oracles/attribution/*") {
 		raw, _ := json.Marshal(doc)
 		var a Attribution
 		if err := Unmarshal(raw, &a); err != nil {
 			t.Fatal(err)
 		}
-		if !a.Status.Valid() {
-			t.Errorf("attribution status %q", a.Status)
+		if !a.Basis.Valid() {
+			t.Errorf("attribution basis %q", a.Basis)
 		}
-		statuses[a.Status] = true
+		bases[a.Basis] = true
 	}
-	if !statuses[AttributionClaimed] || !statuses[AttributionUnknown] {
-		t.Errorf("attribution oracle statuses %v; both claimed and unknown must be exercised", statuses)
+	if !bases[AttributionWriterSupplied] || !bases[AttributionUnknown] {
+		t.Errorf("attribution oracle bases %v; both writer-supplied and unknown must be exercised", bases)
 	}
 }
 
