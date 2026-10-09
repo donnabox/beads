@@ -24,7 +24,7 @@ import threading
 import time
 
 
-PIN = "5b4eb46c7f21f2272f4da5a230f042ce753cb304"
+PIN = "de99030d13a57e77f4f2660b91ea3c39b82823cb"
 HERE = Path(__file__).resolve().parent
 sys.dont_write_bytecode = True
 spec = importlib.util.spec_from_file_location("graph_c0_capture", HERE / "graph-c0-smoke.py")

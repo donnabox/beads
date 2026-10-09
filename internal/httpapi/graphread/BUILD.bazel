@@ -24,6 +24,7 @@ go_library(
 go_test(
     name = "graphread_test",
     srcs = [
+        "attribution_basis_test.go",
         "inventory_test.go",
         "memory_delete_test.go",
         "metadata_projection_test.go",

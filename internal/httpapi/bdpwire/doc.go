@@ -11,7 +11,7 @@
 // https://github.com/donnabox/beads/pull/18.
 //
 // THE PROVENANCE FILE (spec B8). The bundle is vendored verbatim at schema/bdp-v0.schema.json from
-// gastownhall/bdp commit 5b4eb46c, with the Read-profile
+// gastownhall/bdp commit de99030d, with the Read-profile
 // fixtures and the executable Read matrix from the same commit beside it.
 // schema/PROVENANCE names every vendored file with its sha256 and its upstream git
 // blob sha1, and pin_test.go recomputes both from the bytes on disk, so a
