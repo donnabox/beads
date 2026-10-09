@@ -20,6 +20,12 @@ Accepted by Donna during the design interview on 2026-10-08: **we want a usable 
 
 Evaluate the query and transaction proposals against that requirement. The exact command coverage, supported query shapes, scale envelopes and latency/request/byte budgets remain open; this decision does not promise constant latency for arbitrary queries or accept the proposed wire syntax.
 
+### D02 — Required relationship-aware queries
+
+Accepted by Donna during the design interview on 2026-10-08: every provider claiming Issues-pack compatibility must support generic relationship predicates, filtering and ordering sufficient for queries such as “return ten open tasks with no unfinished blockers.” The Issues pack supplies the domain predicates; providers evaluate the generic operations efficiently. Full-Scope download is not an acceptable prerequisite for these ordinary cold-client commands.
+
+Donna wants to keep the expression language bounded. Treat that as a design goal to validate against the command audit; the operator set, nesting/recursion rules and execution budgets are not yet accepted. A bounded expression shape alone does not bound the amount of data examined.
+
 ## Evidence
 
 The [CLI audit](audit-20261008/README.md) classifies 274 main registry paths and five Preview additions, with source/test contracts and cost analysis. 219 existing BDP tests and 20 additional bounded probes passed. This is parser/schema/fixture/model evidence, not end-to-end Transactional provider qualification. [Verification](audit-20261008/verification.json) pins source commits and checks 287 citation anchors and 160 source files. The [earlier source map](baseline/runtime-boundary-map.md) records 13 runtime interfaces and five paths.
