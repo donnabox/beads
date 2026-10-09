@@ -32,6 +32,12 @@ The [CLI audit](audit-20261008/README.md) classifies 274 main registry paths and
 
 The historical [journal audit](audit-20261008/event-log-audit.md) distinguished Events and change groups. The current review must sharpen that distinction: missing original command intent is not itself an obstacle to forward state replication. Neither before-images nor original selectors are intrinsically necessary to apply complete committed effects. The question is whether today's Event Source contract carries every state/control transition and an adequate atomic replay boundary.
 
+## Beads 1.3 journal comparison
+
+Donna requested a comparison of the shipped Beads 1.3 journal with BDP before choosing possible 1.4 changes. The [comparison and recommendation](beads-1.3-journal-vs-bdp.md), backed by an [independent source audit](beads-1.3-journal-source-audit.md), finds substantial overlap with BDP's **changefeed**, especially its postimages. The existing journal's transactional capture is reusable; its flat records lack transaction framing, history epochs and snapshot/checkpoint rendezvous, and some writers/state changes can bypass it.
+
+Recommendation, not an accepted release scope: converge the committed-effects capture, preserve the legacy projection, and add the stronger replication guarantees before claiming BDP compatibility. Preserve comment payloads despite contradictory six-op projection guidance. Coordinate with existing journal PRs 7211/7213/7144. No implementation or release artifacts were changed. D01/D02 remain accepted; the bounded-expression-language question remains open while this research is discussed.
+
 ## Current questions
 
 1. Propose the smallest coherent generic query and transaction additions that make current Issue workflows efficient, with examples beyond Issues, provider costs, limits, authorization semantics and failure behavior.
