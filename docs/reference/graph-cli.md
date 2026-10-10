@@ -483,3 +483,7 @@ The supported graph `bd create` Bead Types are the installed Issue and Memory
 descriptors. `bd link` uses installed Link Types. The ordinary `bd types`
 command lists Issue classifications instead; select a graph workspace to see
 the graph Type catalog.
+
+## Import an ordinary export
+
+The independent legacy import workstream adds bounded `bd import` for a fresh graph workspace. See the [legacy import contract](/reference/graph-legacy-import) for supported data, identity mappings and refusals. This candidate capability is pending release integration; graph-format import follows graph export.

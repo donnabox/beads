@@ -1,0 +1,131 @@
+Review complete. One caveat up front: **the branch was being committed to while I read it.** Six commits landed during the review (`ba81dcc9d` … `0087b490f`), and several files changed under me more than once. Everything below is pinned to `0087b490f` (`git diff 76fde9c9c..0087b490f`), and the two High findings were reproduced by running code at that revision.
+
+---
+
+## High
+
+### 1. Imported Beads cannot be linked to anything created afterwards — `bd dep add` fails with a raw SQL error
+
+**`internal/storage/graphstore/legacy_import.go:191`** (`prepareLegacyImport`), with the failure surfacing at **`internal/storage/graphstore/dependencies.go:123`**.
+
+Import preserves source IDs verbatim and skips prefix validation (`BatchCreateOptions{SkipPrefixValidation: true}`, `legacy_import.go:71`), but never reconciles the imported ID prefix with the workspace's `issue_prefix`. The ordinary classic path does exactly this reconciliation, deliberately and at length (`cmd/bd/import.go:417-425` seed, `:471-477` sync). The graph path does neither.
+
+Consequence: `issueops` routes any cross-prefix edge to `depends_on_external` (`internal/storage/issueops/dependencies.go:102-114`), after which `AddDependency`'s `SELECT id FROM dependencies WHERE issue_id=? AND depends_on_issue_id=?` finds nothing and returns bare `sql.ErrNoRows`. `graphStorageError`'s default branch (`cmd/bd/graph_preview.go:781`) renders that as `graph_not_initialized: sql: no rows in result set`, exit 5 — a diagnostic that falsely claims the workspace is not a graph workspace.
+
+Measured, embedded backend, workspace prefix `exp`:
+
+```
+native create minted id="exp-sln"
+dep fresh -> legacy-a: changed=false err=sql: no rows in result set
+dep legacy-a -> fresh: changed=false err=sql: no rows in result set
+```
+
+And import itself *admits* mixed-prefix batches (it only refuses cross-prefix **edges**, `legacy_import.go:257`), so two imported Beads can be mutually unlinkable too:
+
+```
+import of mixed-prefix Issues ACCEPTED
+AddDependency cross-prefix -> changed=false err=sql: no rows in result set
+```
+
+This is the normal post-import workflow: import the old tracker, then keep working. It is broken in both directions. The transaction rolls back, so no corruption — but the capability is dead and the error is uninterpretable. The guide never tells the user to match `bd init --prefix` to the export's prefix.
+
+**Fix:** in `prepareLegacyImport`, require that every Issue ID shares one `types.ExtractPrefix` value; in the transaction, require it to equal `config.issue_prefix`, or set `issue_prefix` to it — `requireEmptyLegacyTarget` already guarantees no ID has been minted yet, so this is the safe graph analogue of the classic seed. Separately, `AddDependency` should refuse a cross-prefix pair up front with `storage.ErrValidation`, and `dependencies.go:123` should not leak `sql.ErrNoRows` into `graphStorageError`'s default branch.
+
+### 2. `make test` fails — the new capability is not in the guard list
+
+**`cmd/bd/graph_preview.go:698`** adds `"legacyImport": true` to the `status --graph` capabilities map. **`cmd/bd/graph_preview_policy_test.go:308-333`** is a two-way guard: it fails on a missing implemented capability *and* on `enabled && !wantEnabled[capability]`. `legacyImport` was not added to `wantEnabled`.
+
+Executed at `0087b490f`:
+
+```
+--- FAIL: TestGraphPreviewC0DeferredCommandsRefuseBeforeLegacyOpen (29.29s)
+    graph_preview_policy_test.go:331: unimplemented capability advertised: legacyImport
+```
+
+Not in `.test-skip`, cgo-tagged, so it runs under `make test`.
+
+**Fix:** add `"legacyImport"` to the `wantEnabled` list at `graph_preview_policy_test.go:309-323`. (`graphImport`/`graphExport` are `false` and need nothing.)
+
+---
+
+## Medium
+
+### 3. The documented 16 MiB input bound is unreachable, and the refusal lands after the whole import has executed
+
+**`internal/legacyimport/jsonl.go:21`** (`MaxBytes = 16 MiB`) vs **`legacy_import.go:167`** (`checkCurrentReadBytes` as the transaction's *last* step) and **`docs/reference/graph-legacy-import.md:60`**.
+
+`PreviewCurrentReadByteLimit` is also 16 MiB but charges persisted bytes with 1–3 copies plus 256 bytes per row, so an input anywhere near `MaxBytes` can never fit. Measured on embedded:
+
+| input | result |
+|---|---|
+| 8.1 MB / 400 Issues | accepted, 2.6 s |
+| 15.7 MB / 390 Issues | `graph preview result limit exceeded: complete current read exceeds the 16777216-byte acquisition budget before payload decoding` |
+
+The doc hedges with "and must fit the preview's current-read budget", but "bounded to 16 MiB of input" reads as an accepted size, and `MaxBytes` reinforces it. The user-visible message never names input size as the cause, and the refusal arrives only after every row, version and catalog entry has been written.
+
+**Fix:** estimate the read-byte charge from the parsed batch in `prepareLegacyImport` and refuse before `withTx` with a message that names the input size; lower `MaxBytes` to a figure that can actually commit; state the effective bound in the doc.
+
+### 4. The `_schema` provenance header is stricter than the importer whose format this claims to accept
+
+**`internal/legacyimport/jsonl.go:75-89`.** Only five keys are tolerated beside `_schema`, every value must be a string, and `_schema` must equal the literal `"beads-jsonl/1"`. Both existing readers (`cmd/bd/import.go:327`, `cmd/bd/import_shared.go:1240`) skip *any* line carrying `_schema`, regardless of its other keys or value.
+
+Nothing in this repo writes that header — `import_shared.go:1231` describes it as produced by an external "stable-ordering / git-merge convention", i.e. provenance from a producer that is free to add keys. A file today's `bd import` ingests fine (`{"_schema":"beads-jsonl/2",…}`, or any sixth `_`-prefixed key) refuses the whole graph import. The header carries no data, so the strictness buys nothing. `docs/reference/graph-legacy-import.md:39` ("A standalone historical `_schema` header is accepted") overstates what is implemented.
+
+**Fix:** skip any `_schema` line whose remaining keys are all `_`-prefixed, and drop the pin on the `_schema` value — the parser's "refuse unknown fields so data cannot be lost" rationale does not apply to a record with no data.
+
+### 5. `bonded_from` is parsed, compat-handled and unit-tested, but can never be imported
+
+**`internal/legacyimport/jsonl.go:286-303`** adds a `types.BondRef` special case (a `proto_id` alias plus a `source_id`/`proto_id` conflict check), and **`jsonl_test.go:60-68`** (`TestHistoricalBondRef`) asserts it round-trips.
+
+`BondedFrom` has no SQL column and no persistence anywhere — the only non-test references are in-memory clones (`internal/storage/issueops/public_create.go:135`, `internal/storage/public_snapshot.go:79`, `hook_decorator.go:650`). So `HydrateIssueOperationResult` returns `BondedFrom == nil`, and `verifyLegacyIssue` (`legacy_import.go:360`) refuses the import with `Issue X field bonded_from cannot be represented exactly in graph storage`. Same for `source_formula`/`source_location`.
+
+The unit test passes because it stops at the parser, giving false confidence that the field is supported. **Fix:** either refuse `bonded_from`/`source_formula`/`source_location` in `prepareLegacyImport` with an explicit message (and delete the BondRef special case and its test), or add an end-to-end test proving the storage-layer refusal is the intended contract.
+
+### 6. The three size/count limits report two different codes and exit statuses
+
+- `legacyimport.Parse` oversize (`jsonl.go:42`) → wrapped by `cmd/bd/graph_preview_import.go:35` → `invalid_properties`, exit 2.
+- `PreviewSnapshotLimit` (`legacy_import.go:315`) → `storage.ErrValidation` → `invalid_properties`, exit 2.
+- `checkCurrentReadBytes` (`collection_read_bounds.go:80`) → `ErrLimitExceeded` → `capability_unavailable`, exit 5.
+
+Every other preview size limit uses `capability_unavailable`/5 (e.g. the Memory body limit, `cmd/bd/graph_preview_memory_input.go:80`). So two refusals for *the same cause* — "your input is too big" — hand an agent different codes and exit statuses depending on which check fires first.
+
+**Fix:** wrap the `MaxBytes` and `PreviewSnapshotLimit` refusals with `graphstore.ErrLimitExceeded` so all three render `capability_unavailable` (5).
+
+### 7. Field-preservation coverage is one two-Issue fixture
+
+**`internal/storage/graphstore/legacy_import_test.go:17-21`** and **`cmd/bd/testdata/legacy-import/ordinary.jsonl`**.
+
+The feature's entire value proposition is byte-exact field preservation enforced by `verifyLegacyIssue`. The fixture exercises roughly fifteen Issue fields. The parser accepts ~50. Never exercised through storage: `started_at`, `defer_until`, `estimated_minutes`, `external_ref`, `spec_id`, `assignee`, `source_system`, `closed_by_session`, `pinned`, `is_template`, `compaction_level`/`compacted_at`/`compacted_at_commit`/`original_size`, `mol_type`, `work_type`, `wisp_type`, `sender`, `storage_class`, and the gate (`await_type`/`await_id`/`timeout`/`waiters`) and event (`event_kind`/`actor`/`target`/`payload`) families. Each is either silently coerced or a hard refusal of real exports, and finding #5 shows at least one is the latter.
+
+**Fix:** one table-driven storage test per field family asserting either exact preservation or an explicit refusal.
+
+---
+
+## Low
+
+### 8. An empty or header-only source commits a no-op "success"
+`cmd/bd/import.go:243` now lets a zero-byte file through in graph mode, and `legacy_import.go:56-58` returns `nil` from inside `withTx(write=true)` before `touchCoordination`, committing an empty transaction and printing `Imported 0 Issues, 0 Memories, 0 Dependencies and 0 comments from <path>` at exit 0. Ordinary mode prints `Empty file: <path>`. An operator who points import at the wrong (empty) file gets a success message. **Fix:** refuse an empty batch with `invalid_properties`, or keep the ordinary-mode "empty source" message.
+
+### 9. `insertPreviewVersionInTx`'s fence argument is now factually wrong
+`internal/storage/graphstore/records.go:228-231` states "Every one of the six callers has already called touchCoordination" and enumerates the call sites. `legacy_import.go:112` is a seventh and is not listed. The new caller *does* satisfy the fence (`legacy_import.go:59`), so the safety property holds — but the comment is the only record of why, and it names the exact hazard as "a FUTURE WRITER that inserts a version without calling touchCoordination". **Fix:** add `legacy_import.go:112` and correct the count.
+
+### 10. Timeout budget is untested at the documented ceiling, and a deadline renders as `graph_not_initialized`
+`cmd/bd/graph_preview.go:540` gives import the generic 30 s; `:488` gives init 2 min and `cmd/bd/import.go:146` gives ordinary import 5 min, both on the grounds that bulk work outlives interactive deadlines. Measured at the documented 1,000-resource limit (500 Issues + 499 Links + labels + comments), embedded: **5.8 s** — so there is headroom on that backend. Untested: the server backend, and anything near the byte ceiling. If the deadline does fire, `context.DeadlineExceeded` hits `graphStorageError`'s default branch and reports `graph_not_initialized`, contradicting `docs/reference/graph-legacy-import.md:62` ("Engine errors and timeout roll back before commit"). **Fix:** give the import route its own longer budget, and map `context.DeadlineExceeded` to a timeout code.
+
+### 11. Untested CLI branches
+`cmd/bd/graph_preview_import.go:21` (`len(args) > 1` → `invalid_selector`) is unreachable in the test suite; so are `--input` plus a positional file, and `--global` (which `graphPreviewFlags` refuses, silently making `runImportInner:232`'s `global-issues.jsonl` branch dead in graph mode).
+
+### 12. BUILD file ordering will be rewritten by gazelle
+`cmd/bd/BUILD.bazel` `go_test` srcs places `graph_preview_import_workflow_test.go` after `graph_preview_issue_append_notes_test.go` (correct slot is after `graph_preview_if_revision_test.go`); `internal/storage/graphstore/BUILD.bazel` `go_test` deps places `//internal/legacyimport` before `//internal/config`. Both lists are otherwise sorted. Self-healing via the bazel-autofix workflow per `CLAUDE.md`, so cosmetic — but it will produce a push to the branch.
+
+### 13. `--json` shape nits
+`legacy_import.go:48` puts an English sentence in `result.history`; an agent cannot branch on it, and it will churn without a wire-contract review (the `capabilities` map already carries machine-checkable booleans). Separately, the capability names `graphImport`/`graphExport` read as being about `cmd/bd/graph_export.go` (the existing DOT/HTML graph writer); `graphRecordImport`/`graphRecordExport` would not collide.
+
+### 14. Redundant / incomplete transaction-stage work
+`createInTx` re-runs `touchCoordination` per Memory (`records.go:72`), so a batch with M memories issues M+1 UPDATEs of the same singleton cell and fires `afterStage("coordination")` M+1 times. The fault-injection stage list (`legacy_import_test.go:91`) omits `"coordination"` — the one stage that is now reachable from two different call paths.
+
+---
+
+## Verified as sound
+
+Worth recording so these aren't re-litigated: the fault-injection matrix genuinely proves rollback across all nine named stages plus `labels`/`comments`/`child_counters`/`writer_token`; dry-run uses `withTx(write=false)` so it reserves no identity; `requireEmptyLegacyTarget` runs inside the transaction and `touchCoordination` fences it against concurrent graph writers; `verifyLegacyIssue`'s dependency-count check does catch `PersistDependenciesWithOptionsResult`'s *unconditional* silent "target not found" skip (`create.go:1167-1170`), which would otherwise drop edges with no error; `depid.New` always yields a valid link path; `validatePath` rejects any ID that would make the `"A -> B"` result keys ambiguous; and `--readonly`/migration freeze are correctly handled by `graphPreviewWritePolicy` ahead of the `CheckReadonly` path it bypasses. The `--json` wire shape is not pinned by `protocol/`'s corpus, and `docs/cli-reference/` is generated from the `v1.2.2` pin (`docs/cli-docs.pin`), so neither the `importCmd.Long` change nor the new result type creates drift there.

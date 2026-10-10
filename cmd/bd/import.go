@@ -24,6 +24,16 @@ var importCmd = &cobra.Command{
 	Short: "Import issues from a JSONL file or stdin into the database",
 	Long: `Import issues from a JSONL file (newline-delimited JSON) into the database.
 
+In a graph workspace, import accepts the existing ordinary export format only,
+into an empty fresh workspace, in one atomic transaction. IDs become local
+Bead paths, blocks dependencies become Links, comments remain a separate feed,
+and legacy key/value memories become Memory Beads. Unsupported records or
+relationships refuse the whole import. --dry-run validates through the same
+transaction and rolls it back. Repeat imports refuse an occupied workspace;
+--dedup and --allow-stale are unavailable. Source history is not in an ordinary
+export; each imported Bead starts new graph history. Graph data import is
+unavailable until graph export is implemented. See the graph import guide.
+
 If no file is specified, imports from the configured import.path under .beads/
 (default: issues.jsonl). Use "-" to read from stdin; redirecting stdin without
 "-" or a file argument is an error, so a typo'd 'bd import < file' cannot
@@ -147,6 +157,9 @@ func bulkLoadPoolReadTimeout(cmd *cobra.Command) time.Duration {
 }
 
 func runImport(cmd *cobra.Command, args []string) error {
+	if graphPreviewActive {
+		return runGraphPreviewImport(cmd, args)
+	}
 	// Strict --readonly refuses import, a --dry-run preview included (it
 	// refuses create --dry-run too). Guarded, unlike the write commands'
 	// unconditional call, because CheckReadonly also answers a migration freeze
@@ -209,7 +222,10 @@ func runImportInner(args []string) error {
 		if fi, statErr := os.Stdin.Stat(); statErr == nil && fi.Mode()&os.ModeCharDevice == 0 {
 			return fmt.Errorf("stdin is redirected, but without \"-\" bd import ignores it and imports the default JSONL instead; use 'bd import -' to import what you piped, or name a file explicitly")
 		}
-		beadsDir := beads.FindBeadsDir()
+		beadsDir := graphPreviewDir
+		if !graphPreviewActive {
+			beadsDir = beads.FindBeadsDir()
+		}
 		if beadsDir == "" {
 			return fmt.Errorf("%s — %s", activeWorkspaceNotFoundError(), diagHint())
 		}
@@ -224,7 +240,7 @@ func runImportInner(args []string) error {
 	if err != nil {
 		return fmt.Errorf("cannot read %s: %w", jsonlPath, err)
 	}
-	if info.Size() == 0 {
+	if info.Size() == 0 && !graphPreviewActive {
 		if jsonOutput {
 			return outputJSON(importResultJSON{Source: jsonlPath})
 		}
@@ -258,6 +274,9 @@ type importResultJSON struct {
 }
 
 func runImportFromReader(ctx context.Context, r io.Reader, source string) error {
+	if graphPreviewActive {
+		return runGraphPreviewImportReader(r, source)
+	}
 	issues, memories, err := parseImportRecords(r)
 	if err != nil {
 		return err
