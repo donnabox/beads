@@ -1,11 +1,11 @@
 # BDP in beads: the bead-graph plan
 
-**Status:** Draft v27 — feat/bead-graph — W-arch amendments **A1–A9 and rulings 13–14 RULED 2026-09-07; A10 RULED 2026-09-08**; every P-1 decision is ruled; **P0 is open**. (Thirteen adversarial review rounds:
+**Status:** Draft v28 — feat/bead-graph — W-arch amendments **A1–A9 and rulings 13–14 RULED 2026-09-07; A10 RULED 2026-09-08**; every P-1 decision is ruled; **P0 is open**. (Thirteen adversarial review rounds:
 1–7 on the whole plan, SOUND at round 7; 8–13 on the storage-interfaces
 section, SOUND-ADDITION at round 13; v6 withdrew the Issue projection from
 v0 on review-round-5 counterexamples; v9–v11 record the P-1 ruling tranches — all
-twelve decisions are ruled; v14–v21 reopened P-1 for the nine amendments; v22–v23 record all nine ruled; v24–v25 record rulings 13–14; v26 records the 2026-09-09 source alignment and council gate/traceability corrections; v27 carries the 2026-09-10 formal-review corrections and dependency refresh; P0 current-wire completion remains open)
-**Date:** 2026-09-10 (v26: 2026-09-09; v1: 2026-08-31; v25: 2026-09-02)
+twelve decisions are ruled; v14–v21 reopened P-1 for the nine amendments; v22–v23 record all nine ruled; v24–v25 record rulings 13–14; v26 records the 2026-09-09 source alignment and council gate/traceability corrections; v27 carries the 2026-09-10 formal-review corrections and dependency refresh; v28 records P0 Read adoption on this owning design surface and the 2026-09-12 dependency refresh; P0 current-wire completion remains open)
+**Date:** 2026-09-12 (v27: 2026-09-10; v26: 2026-09-09; v1: 2026-08-31; v25: 2026-09-02)
 **Owners:** Donna Box (ruling), janet (drafting/implementation)
 **References:** the BDP spec (gastownhall/bdp `docs/specs/bdp.md`), beads#6051,
 this repo's `backend/` conformance surface, `engdocs/PROJECT_CHARTER.md`.
@@ -37,6 +37,43 @@ during P0 vendoring; earlier drafts said 38).
 **No implementation phase begins until the pin is written here.** BDP remains
 a draft; "matrix green" exits below mean green against the *pinned* matrix,
 re-pinned deliberately, never against a moving `main`.
+
+### P0 Read adoption record (2026-09-10)
+
+The current P0 contract input supersedes the original pin above with the exact
+BDP Read foundation merge `19923f5bb6cc3f4ee4c508e36df3bd4c5c52344b`.
+The spec blob is `79049a703ef957e3eed7cbe56c093356c47b0658`. The vendored
+27-definition schema SHA-256 is
+`e4c4b7bebd75fe06cd4f7a39c5731c774bf23437dd7d01114819b436b624e4d3`;
+Read catalog SHA-256 is
+`8867d1eed53f9f37047e11835c0a5a2021d9ff3140f64245cd38735f754d9924`;
+46-plan Read matrix SHA-256 is
+`4e087ff545b514e9cc0608ffebc8ccd7deeb0a9baa2cdd67c5450a9ea9e0900a`.
+The upstream ordered named Read projection is
+`b4c13b1d8e78bd556ace7db9c65729f86ea43428c069168bc3aba84bbe073d1a`,
+recorded in [`docs/design/evidence/read-cohort/read-v1.json`](https://github.com/gastownhall/bdp/blob/19923f5bb6cc3f4ee4c508e36df3bd4c5c52344b/docs/design/evidence/read-cohort/read-v1.json)
+at `targets[].segments[].bindings.schemaReadProjection`. This is the SHA-256
+of canonical JSON/JCS bytes of the ordered `[name, definition]` pairs for the
+27 sealed names, not a source-file hash. The pinned
+[`projectReadSchemaBundle` recipe](https://github.com/gastownhall/bdp/blob/19923f5bb6cc3f4ee4c508e36df3bd4c5c52344b/packages/conformance/src/schema-read-projection.ts)
+defines that order; the [cohort generator](https://github.com/gastownhall/bdp/blob/19923f5bb6cc3f4ee4c508e36df3bd4c5c52344b/scripts/generate-read-cohort.mts#L565-L569)
+binds the digest and the [evidence gate](https://github.com/gastownhall/bdp/blob/19923f5bb6cc3f4ee4c508e36df3bd4c5c52344b/scripts/read-cohort-evidence.mjs#L332-L358)
+recomputes it.
+This is provenance of the adopted upstream Read input, not Go observation evidence.
+All six verbatim files and 13 extracted examples have complete byte/blob/range
+records in [PROVENANCE on the published P0 branch](https://github.com/gastownhall/beads/blob/a4b0ff638b4a5cebbe1b2d504897ae1449bd308f/internal/httpapi/bdpwire/schema/PROVENANCE).
+
+Local source adoption is recorded by `4ab80d75f3a11a9c53c5404251899eb1d4d29170`;
+`fdfb2738d58e107b714013a4c5a6eb4b19461c52` corrects Go/ECMAScript line-terminator
+parity without changing those vendored bytes. The tests on the dated Beads base and seven
+executed Dolt spikes are recorded in
+[P0 verification rows on that published source](https://github.com/gastownhall/beads/blob/a4b0ff638b4a5cebbe1b2d504897ae1449bd308f/engdocs/BDP_P0_VERIFICATION_ROWS.md#current-main-read-contract-refresh--2026-09-10).
+The initial refresh passed 95 top-level / 192 including subtests, zero skips.
+The later pattern correction passed all affected package tests; the optional
+source-fence reconstruction was separately verified against the exact pin.
+These are contract and spike checks. Hosted review/readiness, P1 mechanisms,
+P2 HTTP serving and P3 write-profile adoption remain separate gates. These
+dated results do not establish current hosted review or merge readiness.
 
 Model laws this plan builds to (the baseline pin plus the dated #19/#20
 Mutation results correction, pinned in §0a):
@@ -71,7 +108,8 @@ Mutation results correction, pinned in §0a):
 
 This dated alignment updates the historical survey and P3 dependencies without
 changing the ruled v0 scope: **graph Beads/Links only; no Issue projection**.
-The §0 Read pin remains the historical P0 wire input, not a claim that it
+The original §0 Read pin above this historical alignment was superseded by
+the dated P0 adoption record above. Neither pin is a claim that it
 contains subsequent rulings. Donna's 2026-09-09 continuation authorizes
 materialization on the condition that this design and P0 track both evolving
 BDP and Jim's versioned-beads work, as recorded in the [operator continuation](https://github.com/donnabox/agent-coordination/blob/4fd57836ae052dec41b66493b88954bdabbb4d0f/context/janet/beads-workstream-state.md). The following are read/verified source
@@ -83,8 +121,8 @@ spec, bundle, problem rows, catalog, illustrative fixtures and executable matrix
 (or its explicit pending status). The claim-specific evidence exit remains
 required; a source pin alone cannot discharge it.
 
-The following table preserves the **2026-09-09 source snapshot**; the current
-2026-09-10 refresh immediately below supersedes its dependency statuses.
+The following tables preserve the **2026-09-09 and 2026-09-10 source snapshots**.
+The 2026-09-12 refresh below supersedes their dependency statuses.
 
 | Source | Exact pin | State / graph consequence |
 | --- | --- | --- |
@@ -96,26 +134,41 @@ The following table preserves the **2026-09-09 source snapshot**; the current
 | Jim #6304 Phase 1 | merge `2bb1e20de0f0072d7600656ea3cb7f606929dcc6` | Merged 2026-09-08; migration 0067 includes issue/wisp shape parity, ignored-series twin and raw-SQL replay / CLI override. |
 | Jim #6358 Phase 2 | `5fdfb92fe544c9a83feb098e83f2ccdd87b896c8` | Open; current writer/inventory, superseding older incomplete call-site reports; 0068 reserves attribution and byte-preserving storage, not the deferred durable-address migration. |
 
-### Current dependency refresh (2026-09-10)
+<a id="current-dependency-refresh-2026-09-10"></a>
 
-This docs-only successor incorporates Beads main
+### Historical dependency refresh (2026-09-10)
+
+That docs-only successor incorporated Beads main
 `a690b0a8c4d1ddc4f0bd9bf767499625dd71bc96`. It preserves both dependencies:
-**BDP #19/#20 and Jim's versioned-beads work**. Current source/check observations
-below are dated, not ongoing readiness claims.
+**BDP #19/#20 and Jim's versioned-beads work**. The source/check observations
+below describe that date, not current readiness.
 
 | Source | Exact current source | State and phase consequence |
 | --- | --- | --- |
-| BDP Read foundation #29 | merge `19923f5bb6cc3f4ee4c508e36df3bd4c5c52344b`, source head `599361130bfaa07c2b5d157f3ecbe44f0691cb9e` | Merged 2026-09-10. Candidate input for the P0 wire owner’s §0 re-pin record (bundle/projection/matrix pins still owed): wildcard, numeric, named-projection and erased-pointer corrections from #22/#23/#24/#27 are incorporated ancestries. P0 adoption and current-base checks are separate work, not performed by this design correction. |
+| BDP Read foundation #29 | merge `19923f5bb6cc3f4ee4c508e36df3bd4c5c52344b`, source head `599361130bfaa07c2b5d157f3ecbe44f0691cb9e` | Merged 2026-09-10. Adopted by the P0 successor in the dated §0 record above, including bundle/projection/matrix pins and current-base checks. Wildcard, numeric, named-projection and erased-pointer corrections from #22/#23/#24/#27 are incorporated ancestries. The earlier design-only refresh did not perform this adoption. |
 | BDP #19 Read+Update | merge `6d88f857cb643fe4e5d77e1dc45038a7d2e5ebb5`, source head `a2531e43baa5c6b27f22149b214326d8736e6198` | Merged 2026-09-10 wire/spec, without RU runtime. A P3 RU realization adopts a reviewed selected-profile pin and its own evidence; it need not wait for TX-only runtime. |
 | BDP #20 Transactional | published PR head `5c3f3b10a2edbb77d914b7260cdf035008fc34c7`; reviewed local correction `0166ff8ef57c481f9ee8fb1223f728f12f9c75f4` (unpushed; no fetchable source pin) | Open draft at the published head. The local correction contains the reviewed G1–G5 HTTP clarification; it is not the remote PR head or a merged dependency. Shared Read HTTP implementation and fresh observations remain a gate before #20 lands. |
 | Jim #6147 Phase 0 | `9c4e7a8f1959582f07db3b87641cb33863fda860` | Open; snapshot shows 117 successful, two skipped and two failed checks (PR Core and CI Gate / Required). Nil-hook contract scaffolding is not graph CAS or History realization; these failures are not automatically P0 blockers. |
 | Jim #6304 Phase 1 | source `162a47703bb702d43e3192c79b6b802cf650d31d`, merge `2bb1e20de0f0072d7600656ea3cb7f606929dcc6` | Merged 2026-09-08, including 0067. Its historical head had 119 successful and one skipped checks. |
 | Jim #6358 Phase 2 | `5fdfb92fe544c9a83feb098e83f2ccdd87b896c8` | Open; snapshot shows 121 successful and two skipped checks, with both CI Gate / Required checks successful. This is its own check evidence, not graph conformance. Migration 0068 remains reserved; graph P1 rechecks its actual slot. |
 
-The candidate P0 Read input is the explicit #29 merge, not the later RU bundle
-or a moving BDP main; the wire owner records the complete §0 adoption pins. Preserve §0's original pin and historical results until
-the separate P0 successor records actual adoption, source/fixture provenance
-and current Go boundary checks. P0 proves contracts; P2 must prove live Go Read
+### Current dependency refresh (2026-09-12)
+
+The Beads base remains `a690b0a8c4d1ddc4f0bd9bf767499625dd71bc96`.
+The following source updates change dependency status, not the adopted P0
+Read contract or its historical verification results:
+
+| Source | Exact current source | State and phase consequence |
+| --- | --- | --- |
+| BDP #20 Transactional | merge `741829b6423ed70fd23676576459ad9f6215d027` | Merged wire/spec, including the shared G1–G5 HTTP clarification. The earlier local `0166ff8e` correction is historical. This is not TX runtime or a Beads profile adoption. |
+| BDP #30 History | merge `1fe8cf32afabd02ca62d86548409f82dd756e357` | The selected History wire/spec materialization is merged. Server/client/adapter realization, provider mapping and capability advertisement remain separate work. |
+| BDP Read runtime through #40 | main `eac6017541895bb4cb1399e1a8056bb7375b185c` | [Dated BDP status and evidence boundaries](https://github.com/gastownhall/bdp/blob/eac6017541895bb4cb1399e1a8056bb7375b185c/STATUS.md) record subsequent shared Read work and its named-target qualifications. Those observations are not Beads evidence and do not re-pin this P0 to the later bundle or matrix. |
+| Jim #6147 / #6358 | `9c4e7a8f1959582f07db3b87641cb33863fda860` / `5fdfb92fe544c9a83feb098e83f2ccdd87b896c8` | Both remain open. #6304 and migration 0067 are merged; Phase 2 claims 0068. Their checks do not establish graph conformance. |
+| Advisory registry #6149 | `71b82aa02abd1284ce3b7b6bffc5952b6d66a4f8` | Still open, not a slot allocator. Its [current rows](https://github.com/gastownhall/beads/blob/71b82aa02abd1284ce3b7b6bffc5952b6d66a4f8/CLAIMED.md) propose Phase 3 at 0069–0070 and graph at 0071 if Donna agrees, while the graph row still says 0069+. This overlap is unresolved; P1 must recheck the actual slot after its ADR and owner coordination. No number is selected here. |
+
+The adopted P0 Read input is the explicit #29 merge, with the complete §0
+adoption pins, source/fixture provenance and current Go boundary checks recorded
+above. The original pin and results remain historical. P0 proves contracts; P2 must prove live Go Read
 serving, current-view/owned closure, HTTP behavior and stable cross-request
 cursors. The preserved #29 cohort does not prove the later G1–G5 prose.
 P1 retains its storage/replication ADR gate; P3 retains its selected write-profile
@@ -150,10 +203,10 @@ snapshot-ledger integration; Event delivery alone is not that assurance.
 The same continuation also ACKed manifest-handle retrieval, same-epoch receipt-
 page URL restart survival, body-less 406 negotiation refusal and the initial
 receipt/finite-feed validator policy. At the historical #20 pin these five HTTP
-choices were pending materialization. The local reviewed correction in the refresh above contains
-their wire prose, while shared Read runtime and observations remain pending.
-The graph wire/serving phases must adopt their reviewed result, including
-shared Read consequences.
+choices were pending materialization. The merged #20 source and subsequent
+BDP shared Read work are recorded in the 2026-09-12 refresh above. The graph
+wire/serving phases must deliberately adopt the applicable reviewed contracts
+and prove them at the Beads boundary, including shared Read consequences.
 
 **Jim's current contribution and limits.** The [current writer](https://github.com/gastownhall/beads/blob/5fdfb92fe544c9a83feb098e83f2ccdd87b896c8/internal/storage/issueops/version_history.go#L24-L65)
 records dependency changes and final outgoing dependency state. The [current
@@ -170,8 +223,13 @@ revision, identity, ownership or transaction guarantees. Future C-lane work
 should build on this contributor work while proving its translation, rather
 than citing the old uninstrumented-writer survey as current evidence.
 
-**Translation constraints.** Jim's JCS writer rounds numbers before preserving
-the resulting bytes in LONGBLOB. The [BDP numeric rule](https://github.com/gastownhall/bdp/blob/2c537a6f8a4f42e4fef0fa5d47439bcb25d2efe7/docs/specs/bdp.md#L644-L661)
+**Translation constraints.** On the normal Dolt write path, its JSON column
+rounds metadata numbers before a version row is minted; the content token
+describes the stored state. Jim's [correction](https://github.com/gastownhall/beads/pull/6422#issuecomment-5620982279)
+withdraws the stronger normal-path history-collapse claim; a divergence is
+reachable only off that path. His admission follow-up after #6358 and the
+cross-PR canonicalizer policy remain separate contributor-owned work. JCS
+preserves its resulting bytes in LONGBLOB. The [BDP numeric rule](https://github.com/gastownhall/bdp/blob/2c537a6f8a4f42e4fef0fa5d47439bcb25d2efe7/docs/specs/bdp.md#L644-L661)
 refuses inadmissible values before BDP mutation acceptance. An Issue-to-BDP
 mapping must be established before allocating its BDP revision; it cannot
 round or rewrite already-addressed BDP state. Random graph revisions, local
@@ -185,13 +243,14 @@ has nil hooks and treats Unretained/disclosure as a later axis; BDP separates
 incomplete reconstruction from authorization. Local Hold contracts are not
 BDP wire holds, and product test shapes are not BDP conformance observations.
 
-**History direction now selected; upstream materialization pending.** Donna
+**History direction selected; wire materialization merged, realization pending.** Donna
 ACKed the earlier sixteen core choices and the final twenty-two initial-History
 choices on 2026-09-09; the [durable ACK and consolidated choices](https://github.com/donnabox/agent-coordination/blob/4fd57836ae052dec41b66493b88954bdabbb4d0f/context/janet/history-tx-complete-ballot-20260909.md)
 record the selected alternatives. This is a dependency record for the approved 38-unit
-direction, not a competing normative definition or a claim that these pins
-already contain the resulting schemas. The upstream History author owns the
-closed prose/schema/fixture materialization before this realization adopts it:
+direction, not a competing normative definition. The historical pins did not
+contain its resulting schemas; #30 now supplies the merged materialization
+at the source in the current refresh. This realization must adopt and prove
+that contract separately. The following preserves the selected direction:
 
 - Complete optional History on all three profiles, canonical Bead/Link
   revision resolution and stable `view=versions` enumeration; retained
@@ -229,7 +288,8 @@ closed prose/schema/fixture materialization before this realization adopts it:
   pieces, unknown provenance and temporary I/O. `revision-allocation-unsafe`
   is the selected write-only persistent repair-required conflict; transient
   safety-inspection failure retains its existing temporary-failure behavior.
-  Their exact profile/schema fan-out remains upstream materialization.
+  Their profile/schema fan-out is in the merged #30 materialization; adoption
+  and runtime proof remain separate.
   Historical resolution never makes an old token a current write guard: the
   existing `expectedRevision` equality/current-state law still applies.
 
@@ -1042,7 +1102,8 @@ allocation/tombstone ledger. No legacy IDs are served in v0.
   and illustrative [`fixtures/transactional/`](https://github.com/gastownhall/bdp/tree/5c3f3b10a2edbb77d914b7260cdf035008fc34c7/fixtures/transactional).
   These are catalog metadata and illustrations, not executable write matrices
   or observed runtime evidence; those remain pending at these pins. The
-  shared HTTP ACKs also require their reviewed upstream materialization.
+  shared HTTP ACKs are materialized in merged #20; this phase must adopt
+  their reviewed result and supply its own runtime evidence.
   Profiles are **Scope-wide**
   (uniformity law), and the Event-delta gate binds exactly the profile
   that has Events: a Scope containing owning Types cannot advertise the
@@ -1091,7 +1152,7 @@ This plan covers the graph store and its Read serving. Sibling workstreams,
 each owning its own writeup:
 
 - **W-arch** — `BDP_GRAPH_ARCHITECTURE.md` and
-  `BDP_GRAPH_CLI_AND_STORAGE_SPEC.md` (v16, 2026-09-10; v15: 2026-09-09;
+  `BDP_GRAPH_CLI_AND_STORAGE_SPEC.md` (v17, 2026-09-12; v16: 2026-09-10; v15: 2026-09-09;
   v14: 2026-09-02), eight council rounds with live Dolt probes; A1–A9 and
   decisions 13–14 ruled 2026-09-07, with A10 ruled 2026-09-08 and recorded
   in §9.
