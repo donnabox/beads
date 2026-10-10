@@ -351,8 +351,10 @@ build still accepts a bare Bead ID in some mixed-resource commands, so the
 stricter target syntax needs parser, help and example updates before admission.
 Exact local Scope URLs remain accepted; aliases and foreign Scope URLs are
 unavailable. Shorthand only changes CLI input, never stored identity or output.
-Creation accepts an optional bare `--id ID` or canonical `--id beads/PATH`;
-omitting it generates a random canonical ID. An explicit ID is used at its
+Creation accepts an optional bare `--id ID` or canonical `--id beads/PATH`.
+When an Issue ID is omitted, `create` uses the native configured-prefix Issue
+ID at its canonical Bead path, adding a suffix only if that path is reserved.
+Other Bead types use their own ID generators. An explicit ID is used at its
 canonical Bead path. `create` refuses duplicates; `remember` applies the
 existing-Memory upsert rule unless `--create-only` is present. An allocated
 identity cannot be reused for a different record.
