@@ -53,7 +53,7 @@ and do not recreate source history. Blank lines are ignored. Other schema versio
 | Comments | IDs, Issue ownership, authors, text and supplied timestamps are preserved in the separate current comment feed. Older int64 numeric IDs become their decimal string spelling. Missing IDs are derived by the ordinary writer. Comments do not become retained Issue versions. Duplicate IDs/content or unrepresentable values refuse rather than disappear. |
 | Legacy memories | A key/value record becomes a Memory at `SCOPE/beads/KEY`, with title `KEY`, body `VALUE` and empty metadata. The key must form a valid local Bead path and cannot collide with another imported identity. The result maps keys to URLs. |
 | Counts, content hashes and readiness | Exported dependency/dependent/comment counts and readiness are projections; recomputed from accepted data. |
-| Source history | Ordinary export contains no retained revisions, events or Dolt history. Each imported Bead and Link starts new retained graph history; import attribution names the importing actor. Earlier source history is neither reconstructed nor advertised as preserved. |
+| Source history | Ordinary export contains no retained revisions, events or Dolt history. Each imported Bead and Link starts new retained graph history. Initial Issue/Memory writes name the importing actor; Link attribution carries the source dependency creator and timestamp. Earlier source history is neither reconstructed nor advertised as preserved. |
 | Compound lineage | Nonempty `bonded_from`, `source_formula` and `source_location` refuse because ordinary storage does not persist them. |
 | Ephemeral, no-history, live leases and explicit storage-class markers | Refused (including an explicit `versioned` marker that the ordinary writer normalizes away). Import does not recreate active claims or change storage planes. |
 | Tombstones, graph records and unknown fields | Refused. This stage imports the existing format only. Graph-format import follows graph export. |
@@ -62,8 +62,10 @@ Admission rejects input above 16 MiB, JSON deeper than 128 levels, and more than
 1,000 total Beads and Links. These are rejection ceilings, not guaranteed accepted
 sizes: persisted payloads, relations and retained snapshots must also fit the
 16 MiB current-read budget. That check can refuse a smaller input after staging
-it; the entire transaction rolls back. Size refusals use `capability_unavailable`. It does not split a large input into
-partially committed chunks. Engine errors and timeout roll back before commit;
+it; the entire transaction rolls back. Byte/resource ceilings use
+`capability_unavailable`; malformed JSON, including excessive nesting, uses
+`invalid_properties`. Import does not split a large input into partially
+committed chunks. Engine errors and timeout roll back before commit;
 an uncertain commit outcome is reported as `outcome_unknown`, without automatic
 replay. Inspect the destination before deciding what to do after that error.
 

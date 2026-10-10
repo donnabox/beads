@@ -5,7 +5,9 @@ Codex delegation and the actual external `claude -p` CLI reviewed the same core
 prompt against integration base `76fde9c9cb0865d430bf12d76fc473490f51128a`.
 The initial tree changed during review; Claude pinned its findings to `0087b490f`.
 The full original Claude findings are in [claude-initial-review.txt](claude-initial-review.txt).
-A bounded repair review targets immutable repair commit `ba235baae`.
+The [bounded repair review](claude-repair-review.txt) targets immutable repair
+commit `ba235baae` and reports **no confirmed blocker**. Claude ran no tests in
+that follow-up; the qualification receipt records author-run checks.
 
 ## High-confidence findings
 
@@ -37,7 +39,15 @@ added fingerprints for labels, comments, child counters and writer fencing.
 
 ## Suggested updates and disagreements
 
-All confirmed High blockers were repaired. The conservative header policy and
+All confirmed High blockers were repaired and both seats confirmed disposition.
+Claude's residual non-blocking items are recorded in its full repair receipt:
+unusual source prefix grammar and defensive unreachable SQL-error classification
+remain follow-up hygiene; comment grammar and depth-refusal documentation were
+clarified. The existing Dependency durable workflow and close-conflict tests passed in
+embedded mode ([receipt](dependency-regression.jsonl)); optional server variants
+skipped because the already-qualified import server had been cleaned up. The
+95-case required import qualification separately exercised post-import
+dependencies on both engines without skips. The conservative header policy and
 independent persisted-byte check deliberately differ from Claude's suggested
 permissive-header/lowered-input alternatives; supported/refused data and atomic
 rollback are explicit. Full release acceptance still needs repository gates,
