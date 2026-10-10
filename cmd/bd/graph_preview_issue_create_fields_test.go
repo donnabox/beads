@@ -10,6 +10,7 @@ import (
 	"testing"
 
 	"github.com/spf13/cobra"
+	"github.com/steveyegge/beads/internal/storage/graphstore"
 	"github.com/steveyegge/beads/internal/types"
 )
 
@@ -113,6 +114,16 @@ func TestGraphPreviewIssueCreateFieldsDispatch(t *testing.T) {
 	if envelope.Result.Revision == "" || i.Design != "  雪\r\n " || i.AcceptanceCriteria != "accepted" || i.Assignee != "author" || i.EstimatedMinutes == nil || *i.EstimatedMinutes != 0 || i.ExternalRef == nil || *i.ExternalRef != "tracker #42" || i.SpecID != "spec/one" || i.Status != types.StatusOpen {
 		t.Fatalf("production create lost fields: %+v", i)
 	}
+	fromProperties := graphMixedResult[graphstore.IssueRecord](t, graphPolicyCLI(t, bd, work, home, nil, "", "create", "--id", "beads/from-properties", "--properties", `{"title":"Typed issue","description":"Exact description","priority":1,"estimated_minutes":45,"labels":["preview"],"assignee":"reviewer"}`, "--metadata", `{"team":"docs"}`, "--json"))
+	if fromProperties.Properties.Title != "Typed issue" || fromProperties.Properties.Description != "Exact description" || fromProperties.Properties.Priority != 1 || fromProperties.Properties.EstimatedMinutes == nil || *fromProperties.Properties.EstimatedMinutes != 45 || fromProperties.Properties.Assignee != "reviewer" || len(fromProperties.Properties.Labels) != 1 || string(fromProperties.Metadata) != `{"team":"docs"}` {
+		t.Fatalf("Issue properties initializer lost typed values or metadata: %+v", fromProperties)
+	}
+	memory := graphMixedResult[graphstore.Record](t, graphPolicyCLI(t, bd, work, home, nil, "", "create", "--bead-type", "types/preview-memory-v2", "--id", "beads/memory-properties", "--properties", `{"title":"Typed memory","body":"Exact body"}`, "--json"))
+	if memory.Properties.Title != "Typed memory" || memory.Properties.Body != "Exact body" {
+		t.Fatalf("Memory properties initializer lost typed values: %+v", memory)
+	}
+	graphPolicyCLI(t, bd, work, home, nil, "invalid_properties", "create", "--id", "beads/duplicate-properties", "--title", "Title", "--properties", `{"title":"Title"}`, "--json")
+	graphPolicyCLI(t, bd, work, home, nil, "invalid_properties", "create", "--id", "beads/immutable-properties", "--properties", `{"title":"Refused","status":"closed"}`, "--json")
 	for _, flags := range [][]string{nil, {"--version", envelope.Result.Revision}} {
 		args := append([]string{"show", "beads/work", "--json"}, flags...)
 		if got := graphPolicyCLI(t, bd, work, home, nil, "", args...); got != created {

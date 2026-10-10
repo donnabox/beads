@@ -29,7 +29,7 @@ func TestGraphPreviewHelpDocumentsPlaytestCommands(t *testing.T) {
 		want []string
 	}{
 		{"remember", rememberCmd, []string{"Graph preview workspaces:", "bd remember 'Revised policy' --id policy", "bd remember 'Revised policy' --update policy", "--create-only", "--if-revision TOKEN", "Omitted fields remain unchanged"}},
-		{"create", createCmd, []string{"Graph preview workspaces:", "--bead-type types/preview-memory-v2", "--id policy"}},
+		{"create", createCmd, []string{"Graph preview workspaces:", "--bead-type types/preview-memory-v2", "--id policy", "--properties JSON"}},
 		{"link", linkCmd, []string{
 			"Graph preview workspaces:", "--link-type types/example-cites", "Memory or Issue",
 			// --link-type sits beside the ordinary -t/--type, so its own usage says it is graph-only.

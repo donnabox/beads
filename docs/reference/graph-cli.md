@@ -146,13 +146,16 @@ bd remember 'Changes now land on the release branch.' --id policy
 bd remember --update policy --title 'Current code flow policy'
 ```
 
-`bd update` edits an Issue with its Issue flags, or replaces a Memory's whole
-properties document with `--properties`. Unlike `bd remember` with an existing
-ID, these
-routes require an explicit write choice; the examples use `--unconditional`
-to accept the current state. A Memory properties replacement supplies both
-`title` and `body` strings. See [Versioning and History](#versioning-and-history)
-when you need stale-write protection.
+`--properties JSON` initializes writable Type properties on `bd create` and
+`bd remember`, and shallowly merges named top-level properties on `bd update`
+or an existing-ID `bd remember`. It works for the installed Issue and Memory
+Bead Types and informational Link Types. Omitted keys survive; `{}` is a no-op.
+Issue property edits still use the native Issue writer and History recorder.
+Use `bd update ID --patch '[{"op":"replace","path":"/name","value":...}]'`
+for ordered property operations, including removal. A patch of an Issue may
+change only its writable scalar properties. A stale `--if-revision TOKEN`
+refuses a write; omission accepts the current state. See
+[Versioning and History](#versioning-and-history) for exact-version reads.
 
 Issue, Memory and informational Link records also have a separate open
 metadata object. The default is `{}`. Supply `--metadata JSON` when creating
@@ -181,8 +184,10 @@ Scripts and agent sessions must supply an ID unless they explicitly set
 fallback, including at a terminal. `--readonly` does not write the marker.
 
 ```sh
-bd update work --title 'Move the release branch after review' --unconditional
-bd update policy --properties '{"title":"Code flow policy","body":"Land reviewed changes on integration."}' --unconditional
+bd update work --title 'Move the release branch after review'
+bd update policy --properties '{"body":"Land reviewed changes on integration."}'
+bd update work --properties '{"priority":1,"description":"Review the release branch."}'
+bd update work --patch '[{"op":"replace","path":"/description","value":"Reviewed."}]'
 ```
 
 `bd close ID...` and `bd reopen ID...` accept one or more local Issues. A

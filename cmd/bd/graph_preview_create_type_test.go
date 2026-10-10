@@ -6,13 +6,14 @@ import (
 
 	"github.com/spf13/cobra"
 	"github.com/steveyegge/beads/internal/storage/graphstore"
+	"github.com/steveyegge/beads/internal/types"
 )
 
 func graphCreateTypeCommand(t *testing.T, flags []string) *cobra.Command {
 	t.Helper()
 	cmd := &cobra.Command{}
 	registerCommonIssueFlags(cmd)
-	for _, name := range []string{"id", "title", "bead-type", "type", "priority", "labels", "label", "spec-id", "due", "file", "graph", "storage-class"} {
+	for _, name := range []string{"id", "title", "bead-type", "properties", "type", "priority", "labels", "label", "spec-id", "due", "file", "graph", "storage-class"} {
 		cmd.Flags().String(name, "", "")
 	}
 	cmd.Flags().Int("estimate", 0, "")
@@ -20,6 +21,37 @@ func graphCreateTypeCommand(t *testing.T, flags []string) *cobra.Command {
 		t.Fatal(err)
 	}
 	return cmd
+}
+
+func TestGraphPreviewIssueCreateProperties(t *testing.T) {
+	issue := &types.Issue{}
+	cmd := graphCreateTypeCommand(t, nil)
+	err := graphPreviewApplyIssueCreateProperties(cmd, issue, map[string]any{
+		"design": "Design notes", "labels": []any{"release", "preview"},
+		"estimated_minutes": float64(45), "external_ref": "gh-7450",
+	})
+	if err != nil || issue.Design != "Design notes" || len(issue.Labels) != 2 || issue.EstimatedMinutes == nil || *issue.EstimatedMinutes != 45 || issue.ExternalRef == nil || *issue.ExternalRef != "gh-7450" {
+		t.Fatalf("typed Issue property initialization failed: %+v, %v", issue, err)
+	}
+	for _, tc := range []struct {
+		name  string
+		flags []string
+		props map[string]any
+	}{
+		{"duplicate-estimate", []string{"--estimate=45"}, map[string]any{"estimated_minutes": float64(45)}},
+		{"fractional-estimate", nil, map[string]any{"estimated_minutes": 1.5}},
+		{"immutable-status", nil, map[string]any{"status": "closed"}},
+		{"wrong-label-type", nil, map[string]any{"labels": []any{"valid", float64(3)}}},
+		{"invalid-due", nil, map[string]any{"due_at": "tomorrow"}},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			cmd := graphCreateTypeCommand(t, tc.flags)
+			var failure *exitError
+			if err := graphPreviewApplyIssueCreateProperties(cmd, &types.Issue{}, tc.props); !errors.As(err, &failure) || failure.Code != 2 {
+				t.Fatalf("expected typed property refusal, got %v", err)
+			}
+		})
+	}
 }
 
 func TestGraphPreviewCreateBeadTypeSelection(t *testing.T) {
@@ -68,6 +100,9 @@ func TestGraphPreviewCreateMemoryInput(t *testing.T) {
 		{name: "body-summary", flags: []string{"--body=  Code  flow\tpolicy\nKeep all body text."}, title: "Code flow policy", body: "  Code  flow\tpolicy\nKeep all body text."},
 		{name: "message-summary", flags: []string{"--message=Memory — 雪"}, title: "Memory — 雪", body: "Memory — 雪"},
 		{name: "matching-body-aliases", flags: []string{"--description=Same body", "--body=Same body", "--message=Same body"}, title: "Same body", body: "Same body"},
+		{name: "exact-properties", flags: []string{`--properties={"title":"Property title","body":"Property body"}`}, title: "Property title", body: "Property body"},
+		{name: "properties-body-summary", flags: []string{`--properties={"body":"Property body"}`}, title: "Property body", body: "Property body"},
+		{name: "properties-disjoint-title", args: []string{"Positional title"}, flags: []string{`--properties={"body":"Property body"}`}, title: "Positional title", body: "Property body"},
 		{name: "explicit-empty-body", flags: []string{"--body="}},
 		{name: "no-content", code: 2},
 		{name: "conflicting-titles", args: []string{"Other"}, flags: []string{"--title=Title"}, code: 2},
@@ -78,6 +113,10 @@ func TestGraphPreviewCreateMemoryInput(t *testing.T) {
 		{name: "conflicting-body-aliases", flags: []string{"--description=One", "--body=Two"}, code: 2},
 		{name: "empty-description-conflict", flags: []string{"--description=", "--message=Body"}, code: 2},
 		{name: "empty-message-conflict", flags: []string{"--description=Body", "--message="}, code: 2},
+		{name: "properties-title-duplicate", args: []string{"Positional title"}, flags: []string{`--properties={"title":"Property title"}`}, code: 2},
+		{name: "properties-body-duplicate", flags: []string{"--body=Body", `--properties={"body":"Body"}`}, code: 2},
+		{name: "properties-unknown", flags: []string{`--properties={"content":"Body"}`}, code: 2},
+		{name: "properties-wrong-type", flags: []string{`--properties={"body":3}`}, code: 2},
 		{name: "invalid-title", flags: []string{"--title=\xff"}, code: 2},
 		{name: "invalid-body", flags: []string{"--body=\xff"}, code: 2},
 		{name: "description-stdin", flags: []string{"--description=-"}, code: 5},

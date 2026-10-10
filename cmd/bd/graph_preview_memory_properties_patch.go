@@ -22,6 +22,13 @@ func runGraphPreviewMemoryPropertiesPatch(cmd *cobra.Command, path string) error
 		return err
 	}
 	return withGraphStore(func(ctx context.Context, store *graphstore.Store) (any, string, error) {
+		current, err := store.Read(ctx, path)
+		if err != nil {
+			return nil, "", err
+		}
+		if issue, ok := current.(graphstore.IssueRecord); ok {
+			return graphPreviewPatchIssueProperties(ctx, store, cmd, request, issue)
+		}
 		result, err := store.PatchMemoryProperties(ctx, request)
 		if err != nil {
 			return nil, "", err

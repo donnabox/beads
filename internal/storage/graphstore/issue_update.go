@@ -33,6 +33,7 @@ import (
 type UpdateIssueRequest struct {
 	Path, Actor, ExpectedRevision                  string
 	Unconditional, ForceNotesOverwrite             bool
+	PropertiesProvided, ClearEstimatedMinutes      bool
 	Title, Description, Design, AcceptanceCriteria *string
 	Priority                                       *int
 	EstimatedMinutes                               *int
@@ -86,6 +87,9 @@ func (s *Store) UpdateIssue(ctx context.Context, request UpdateIssueRequest) (Is
 		patch.Priority = publicops.Field[int]{Set: true, Value: *request.Priority}
 		count++
 	}
+	if request.EstimatedMinutes != nil && request.ClearEstimatedMinutes {
+		return IssueMutationResult{}, fmt.Errorf("%w: Issue estimate cannot be set and cleared together", storage.ErrValidation)
+	}
 	if request.EstimatedMinutes != nil {
 		value := *request.EstimatedMinutes
 		// The existing Issue column is a signed SQL INT on both backends. Reject
@@ -94,6 +98,9 @@ func (s *Store) UpdateIssue(ctx context.Context, request UpdateIssueRequest) (Is
 			return IssueMutationResult{}, err
 		}
 		patch.EstimatedMinutes = publicops.Field[*int]{Set: true, Value: &value}
+		count++
+	} else if request.ClearEstimatedMinutes {
+		patch.EstimatedMinutes = publicops.Field[*int]{Set: true}
 		count++
 	}
 	// These limits describe the existing VARCHAR columns, not reference syntax.
@@ -137,12 +144,14 @@ func (s *Store) UpdateIssue(ctx context.Context, request UpdateIssueRequest) (Is
 		patch.Metadata = request.Metadata
 		count++
 	}
-	if count == 0 {
+	if count == 0 && !request.PropertiesProvided {
 		return IssueMutationResult{}, fmt.Errorf("%w: Issue update requires an admitted field", storage.ErrValidation)
 	}
 	attempt := publicops.UpdateRequest{Actor: request.Actor, Patch: patch, IssuePlaneOnly: true, ForceNotesOverwrite: request.ForceNotesOverwrite}
-	if err := issueops.ValidateUpdateRequest(attempt); err != nil {
-		return IssueMutationResult{}, err
+	if count > 0 {
+		if err := issueops.ValidateUpdateRequest(attempt); err != nil {
+			return IssueMutationResult{}, err
+		}
 	}
 	var result IssueMutationResult
 	err := s.withTx(ctx, true, func(tx *sql.Tx) error {
@@ -203,9 +212,11 @@ func (s *Store) UpdateIssue(ctx context.Context, request UpdateIssueRequest) (Is
 		// range without returning an error. The shared writer hydrates the actual
 		// stored result; never publish or retain an estimate different from the
 		// accepted intent. Refusal rolls back sibling edits and audit effects too.
-		if patch.EstimatedMinutes.Set && (updated.Issue == nil || updated.Issue.EstimatedMinutes == nil ||
-			*updated.Issue.EstimatedMinutes != *patch.EstimatedMinutes.Value) {
-			return fmt.Errorf("%w: Issue estimate cannot be represented exactly by storage", storage.ErrValidation)
+		if patch.EstimatedMinutes.Set {
+			if updated.Issue == nil || (patch.EstimatedMinutes.Value == nil) != (updated.Issue.EstimatedMinutes == nil) ||
+				(patch.EstimatedMinutes.Value != nil && *updated.Issue.EstimatedMinutes != *patch.EstimatedMinutes.Value) {
+				return fmt.Errorf("%w: Issue estimate cannot be represented exactly by storage", storage.ErrValidation)
+			}
 		}
 		if patch.ExternalRef.Set {
 			if updated.Issue == nil || (patch.ExternalRef.Value == nil) != (updated.Issue.ExternalRef == nil) ||

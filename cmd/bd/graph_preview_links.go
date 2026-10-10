@@ -205,7 +205,7 @@ func runGraphPreviewUpdateLink(cmd *cobra.Command, args []string) error {
 		return graphFailure("capability_unavailable", "this preview updates informational Link properties only", 5)
 	}
 	if !cmd.Flags().Changed("properties") {
-		return graphFailure("invalid_properties", "Link update requires --properties to explicitly replace the complete properties object", 2)
+		return graphFailure("invalid_properties", "Link update requires --properties to merge named top-level properties", 2)
 	}
 	revision, unconditional, err := graphPreviewRevisionGuard(cmd, false, true)
 	if err != nil {
@@ -226,7 +226,7 @@ func runGraphPreviewUpdateLink(cmd *cobra.Command, args []string) error {
 	}
 	return withGraphStore(func(ctx context.Context, store *graphstore.Store) (any, string, error) {
 		result, err := store.UpdateLink(ctx, graphstore.LinkUpdateRequest{
-			Path: path, Properties: properties, Metadata: metadata, Actor: getActorWithGit(), ExpectedRevision: revision,
+			Path: path, Properties: properties, MergeProperties: true, Metadata: metadata, Actor: getActorWithGit(), ExpectedRevision: revision,
 			Unconditional: unconditional, ExpectedSourceRevision: sourceRevision, UnconditionalSource: unconditionalSource,
 		})
 		verb := "Updated"

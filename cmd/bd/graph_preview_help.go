@@ -84,6 +84,9 @@ recall does not accept legacy keys or --json.`},
 		{createCmd, `Create an Issue by default, with an optional --id ID.
 --metadata accepts one JSON object on Issue or Memory creation; omitted
 metadata is {}. Metadata is separate from Type-validated properties.
+--properties JSON initializes the selected Type's writable fields, such as
+Issue description or Memory body. It may accompany shorthand flags only when
+they supply different fields; duplicate fields refuse.
 Use --bead-type types/preview-memory-v2 to create a Memory instead:
   bd create --bead-type types/preview-memory-v2 --id policy --body 'Code flow policy'
 Use bd types to see Bead Types installed in this workspace. Both types/NAME
@@ -98,15 +101,19 @@ an ordered history listing. --json returns the experimental graph record.
 Showing an Issue makes it the last-touched Issue for interactive update/close;
 showing a Memory or Link does not.`},
 		{updateCmd, `Use bd remember --update ID for selected Memory title/body
-edits. For complete Memory or informational Link property replacement, use:
-  bd update policy --properties '{"title":"Policy","body":"Text"}' --if-revision TOKEN
+edits. --properties JSON shallowly merges named top-level properties on an
+Issue, Memory, or informational Link, preserving omitted keys. The same flag
+initializes properties on bd create and bd remember. For example:
+  bd update policy --properties '{"body":"Revised text"}' --if-revision TOKEN
+An empty object is a no-op. --patch applies ordered add/replace/remove property
+operations, including on writable native Issue scalar properties.
 --metadata merges a JSON object's top-level keys; --set-metadata KEY=VALUE
 sets one typed JSON value and --unset-metadata KEY removes one key. Set and
 unset may combine (unset wins); --metadata cannot combine with either.
 Metadata may accompany a property or Issue scalar edit atomically, and a
 metadata-only update uses the same Resource and owning-source guards.
---patch applies ordered property operations. Generic updates require
---if-revision TOKEN or --unconditional. Informational Links owned by a Memory
+Generic updates accept the current state when --if-revision is omitted.
+Informational Links owned by a Memory
 may also use --if-source-revision TOKEN; without it, the current source is
 accepted. Blocking Dependency properties are not editable here. Issue scalar
 edits and standalone --claim are separate graph operations. Without an ID,

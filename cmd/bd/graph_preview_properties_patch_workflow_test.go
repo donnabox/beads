@@ -380,7 +380,7 @@ func TestGraphPreviewPropertiesPatchWorkflow(t *testing.T) {
 			refuse("revision_conflict", "update", link.ID, "--patch", patch("replace", "/note", "root"), "--if-revision", link.Revision, "--if-source-revision", beforeIntervening.Revision)
 			refuse("revision_conflict", "update", unowned.ID, "--patch", patch("replace", "/note", "unowned"), "--unconditional", "--if-source-revision", initial.Revision)
 			refuse("invalid_properties", "update", dependency.Link.ID, "--patch", patch("add", "/note", "unsupported"), "--unconditional")
-			refuse("capability_unavailable", "update", issue.ID, "--patch", patch("replace", "/title", "no"), "--unconditional")
+			refuse("invalid_properties", "update", issue.ID, "--patch", patch("add", "/status", "closed"), "--unconditional")
 			early("invalid_selector", memory.ID)
 			early("invalid_selector", memory.ID, "--unconditional", "--if-revision", memory.Revision)
 			early("invalid_selector", memory.ID, "--if-revision", string([]byte{255}))

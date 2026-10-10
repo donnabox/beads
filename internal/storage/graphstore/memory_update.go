@@ -44,20 +44,22 @@ func (s *Store) UpdateMemory(ctx context.Context, request MemoryUpdateRequest) (
 // checked predecessor's field; a pointer to an empty string clears that field.
 // At least one field must be supplied. This is an internal preview API.
 type MemoryPatchRequest struct {
-	Path             string
-	Title            *string
-	Body             *string
-	Actor            string
-	ExpectedRevision string
-	Unconditional    bool
-	Metadata         publicops.MetadataPatch
+	Path               string
+	Title              *string
+	Body               *string
+	PropertiesProvided bool
+	Actor              string
+	ExpectedRevision   string
+	Unconditional      bool
+	Metadata           publicops.MetadataPatch
 }
 
 // PatchMemory resolves omitted fields from the actual predecessor inside the
 // mutation transaction, under the same guard and retention rules as UpdateMemory.
 func (s *Store) PatchMemory(ctx context.Context, request MemoryPatchRequest) (MemoryMutationResult, error) {
 	patch := memoryWriteRequest{path: request.Path, actor: request.Actor,
-		expectedRevision: request.ExpectedRevision, unconditional: request.Unconditional, metadataPatch: request.Metadata}
+		expectedRevision: request.ExpectedRevision, unconditional: request.Unconditional, metadataPatch: request.Metadata,
+		propertiesProvided: request.PropertiesProvided}
 	// Capture caller-owned pointers before entering the transaction. No pointer is
 	// retained or read by the transaction callback.
 	if request.Title != nil {
@@ -75,6 +77,7 @@ type memoryWriteRequest struct {
 	title, body                   string
 	hasTitle, hasBody             bool
 	propertiesPatch               *graphpatch.Patch
+	propertiesProvided            bool
 	metadataPatch                 publicops.MetadataPatch
 }
 
@@ -82,7 +85,7 @@ func (s *Store) writeMemory(ctx context.Context, request memoryWriteRequest) (Me
 	if err := validatePath(request.path); err != nil {
 		return MemoryMutationResult{}, fmt.Errorf("%w: %v", storage.ErrValidation, err)
 	}
-	if !request.hasTitle && !request.hasBody && request.propertiesPatch == nil && !hasCommonMetadataPatch(request.metadataPatch) {
+	if !request.hasTitle && !request.hasBody && request.propertiesPatch == nil && !request.propertiesProvided && !hasCommonMetadataPatch(request.metadataPatch) {
 		return MemoryMutationResult{}, fmt.Errorf("%w: at least one Memory field must be supplied", storage.ErrValidation)
 	}
 	if request.propertiesPatch != nil && (request.hasTitle || request.hasBody) {

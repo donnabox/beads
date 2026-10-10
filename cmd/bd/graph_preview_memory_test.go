@@ -2,21 +2,28 @@ package main
 
 import "testing"
 
-func TestGraphPreviewMemoryReplacementPresence(t *testing.T) {
+func TestGraphPreviewMemoryMergePresence(t *testing.T) {
 	for _, properties := range []map[string]any{
-		{"title": "", "body": ""}, {"title": " Plan ", "body": "雪\n"},
+		nil, {}, {"title": ""}, {"body": "雪\n"},
+		{"title": " Plan ", "body": "雪\n"},
 	} {
-		got, err := graphPreviewMemoryProperties(properties)
-		if err != nil || got.Title != properties["title"] || got.Body != properties["body"] {
-			t.Fatalf("changed explicit strings: %+v %v", got, err)
+		title, body, err := graphPreviewMemoryProperties(properties)
+		if err != nil {
+			t.Fatalf("refused valid merge %v: %v", properties, err)
+		}
+		if value, ok := properties["title"]; ok && (title == nil || *title != value) || !ok && title != nil {
+			t.Fatalf("changed title presence: %v, %v", properties, title)
+		}
+		if value, ok := properties["body"]; ok && (body == nil || *body != value) || !ok && body != nil {
+			t.Fatalf("changed body presence: %v, %v", properties, body)
 		}
 	}
 	for _, properties := range []map[string]any{
-		nil, {}, {"title": "Plan"}, {"body": "Text"}, {"title": nil, "body": ""},
+		{"title": nil, "body": ""},
 		{"title": "", "body": false}, {"title": "", "body": "", "metadata": map[string]any{}},
 	} {
-		if _, err := graphPreviewMemoryProperties(properties); err == nil {
-			t.Fatalf("admitted incomplete or invalid replacement: %v", properties)
+		if _, _, err := graphPreviewMemoryProperties(properties); err == nil {
+			t.Fatalf("admitted invalid merge: %v", properties)
 		}
 	}
 }

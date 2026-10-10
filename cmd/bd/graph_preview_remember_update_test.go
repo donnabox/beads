@@ -14,7 +14,7 @@ import (
 func selectedRememberCommand(t *testing.T, flags []string) *cobra.Command {
 	t.Helper()
 	cmd := &cobra.Command{}
-	for _, name := range []string{"id", "title", "update", "if-revision", "body-file", "key"} {
+	for _, name := range []string{"id", "title", "update", "if-revision", "body-file", "key", "properties"} {
 		cmd.Flags().String(name, "", "")
 	}
 	cmd.Flags().Bool("stdin", false, "")
@@ -39,6 +39,13 @@ func TestGraphPreviewRememberSelectedPatchInput(t *testing.T) {
 		{"clear-title", []string{"--title="}, nil, memoryPatchInputString(""), nil, false},
 		{"both", []string{"--title=new"}, []string{"body"}, memoryPatchInputString("new"), memoryPatchInputString("body"), false},
 		{"both-empty", []string{"--title="}, []string{""}, memoryPatchInputString(""), memoryPatchInputString(""), false},
+		{"properties-body", []string{`--properties={"body":"typed body"}`}, nil, nil, memoryPatchInputString("typed body"), false},
+		{"properties-title", []string{`--properties={"title":"typed title"}`}, nil, memoryPatchInputString("typed title"), nil, false},
+		{"properties-empty-noop", []string{`--properties={}`}, nil, nil, nil, false},
+		{"properties-and-body", []string{`--properties={"title":"typed title"}`}, []string{"positional body"}, memoryPatchInputString("typed title"), memoryPatchInputString("positional body"), false},
+		{"duplicate-body", []string{`--properties={"body":"body"}`}, []string{"body"}, nil, nil, true},
+		{"duplicate-title", []string{"--title=title", `--properties={"title":"title"}`}, nil, nil, nil, true},
+		{"unknown-property", []string{`--properties={"content":"body"}`}, nil, nil, nil, true},
 		{"neither", nil, nil, nil, nil, true},
 		{"invalid-title", []string{"--title=\xff"}, nil, nil, nil, true},
 		{"false-stdin-with-title", []string{"--title=new", "--stdin=false"}, nil, nil, nil, true},
@@ -77,6 +84,7 @@ func TestGraphPreviewRememberSelectedArgumentAdmission(t *testing.T) {
 		{"false-unconditional", []string{"--unconditional=false"}, true},
 		{"empty-guard", []string{"--if-revision="}, true},
 		{"existing-file", []string{"--body-file=body.md"}, true},
+		{"properties", []string{`--properties={}`}, true},
 		{"legacy-key", []string{"--key=plan"}, false},
 		{"bare-legacy", nil, false},
 	} {

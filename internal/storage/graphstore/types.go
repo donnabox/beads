@@ -152,13 +152,14 @@ type LinkCreateRequest struct {
 	UnconditionalSource                 bool
 }
 
-// LinkUpdateRequest replaces properties without changing Type or endpoints.
+// LinkUpdateRequest changes properties without changing Type or endpoints.
 // A guard is mandatory for the Link and, when owned, its source Memory.
 type LinkUpdateRequest struct {
 	Path, Actor            string
 	Properties             map[string]any
 	Metadata               publicops.MetadataPatch
 	MetadataOnly           bool
+	MergeProperties        bool
 	ExpectedRevision       string
 	Unconditional          bool
 	ExpectedSourceRevision string

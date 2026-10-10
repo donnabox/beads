@@ -60,7 +60,7 @@ func runGraphPreviewRememberUpsert(cmd *cobra.Command, args []string) error {
 				return nil, "", createErr
 			}
 			result, patchErr := store.PatchMemory(ctx, graphstore.MemoryPatchRequest{
-				Path: path, Title: title, Body: body, Actor: actor,
+				Path: path, Title: title, Body: body, PropertiesProvided: cmd.Flags().Changed("properties"), Actor: actor,
 				ExpectedRevision: revision, Unconditional: unconditional, Metadata: metadata,
 			})
 			if errors.Is(patchErr, graphstore.ErrNotFound) || errors.Is(patchErr, graphstore.ErrGone) || errors.Is(patchErr, graphstore.ErrCapabilityUnavailable) {
@@ -69,7 +69,7 @@ func runGraphPreviewRememberUpsert(cmd *cobra.Command, args []string) error {
 			return graphPreviewRememberPatchResult(result, patchErr)
 		}
 		result, err := store.PatchMemory(ctx, graphstore.MemoryPatchRequest{
-			Path: path, Title: title, Body: body, Actor: actor,
+			Path: path, Title: title, Body: body, PropertiesProvided: cmd.Flags().Changed("properties"), Actor: actor,
 			ExpectedRevision: revision, Unconditional: unconditional, Metadata: metadata,
 		})
 		if errors.Is(err, graphstore.ErrNotFound) && title != nil && strings.TrimSpace(*title) == "" {
@@ -122,7 +122,7 @@ func runGraphPreviewRememberUpdate(cmd *cobra.Command, args []string) error {
 	}
 	return withGraphStore(func(ctx context.Context, store *graphstore.Store) (any, string, error) {
 		result, err := store.PatchMemory(ctx, graphstore.MemoryPatchRequest{
-			Path: path, Title: title, Body: body, Actor: getActorWithGit(),
+			Path: path, Title: title, Body: body, PropertiesProvided: cmd.Flags().Changed("properties"), Actor: getActorWithGit(),
 			ExpectedRevision: revision, Unconditional: unconditional, Metadata: metadata,
 		})
 		if err != nil {
@@ -140,19 +140,39 @@ func runGraphPreviewRememberUpdate(cmd *cobra.Command, args []string) error {
 // explicitly empty string means clear. Without a body source, title-only edits
 // do not inspect stdin, regardless of whether a pipe is attached.
 func graphPreviewRememberPatchInput(cmd *cobra.Command, args []string) (*string, *string, error) {
+	var propertyTitle, propertyBody *string
+	if cmd.Flags().Changed("properties") {
+		input, _ := cmd.Flags().GetString("properties")
+		values, err := graphPreviewProperties(input, cmd.InOrStdin())
+		if err != nil {
+			return nil, nil, graphFailure("invalid_properties", err.Error(), 2)
+		}
+		propertyTitle, propertyBody, err = graphPreviewMemoryProperties(values)
+		if err != nil {
+			return nil, nil, graphFailure("invalid_properties", err.Error(), 2)
+		}
+	}
 	var title *string
 	if cmd.Flags().Changed("title") {
+		if propertyTitle != nil {
+			return nil, nil, graphFailure("invalid_properties", "Memory title was supplied by both --properties and --title", 2)
+		}
 		value, _ := cmd.Flags().GetString("title")
 		if !utf8.ValidString(value) {
 			return nil, nil, graphFailure("invalid_properties", "Memory title must be valid UTF-8", 2)
 		}
 		title = &value
+	} else {
+		title = propertyTitle
 	}
 	if len(args) == 0 && !cmd.Flags().Changed("body-file") && !cmd.Flags().Changed("stdin") {
-		if title == nil && !graphPreviewMetadataFlagsChanged(cmd) {
-			return nil, nil, graphFailure("invalid_properties", "an existing-ID remember write requires --title, a metadata edit or one explicit body source", 2)
+		if title == nil && propertyBody == nil && !cmd.Flags().Changed("properties") && !graphPreviewMetadataFlagsChanged(cmd) {
+			return nil, nil, graphFailure("invalid_properties", "an existing-ID remember write requires --properties, --title, a metadata edit or one explicit body source", 2)
 		}
-		return title, nil, nil
+		return title, propertyBody, nil
+	}
+	if propertyBody != nil {
+		return nil, nil, graphFailure("invalid_properties", "Memory body was supplied by both --properties and a shorthand body source", 2)
 	}
 	body, err := graphPreviewRememberBody(cmd, args)
 	if err != nil {

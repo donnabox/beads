@@ -139,6 +139,46 @@ func TestGraphPreviewCompatibilityDefaultsWorkflow(t *testing.T) {
 			refuse("capability_unavailable", "unlink", issue.ID, gate.ID, "--resource-type", graphstore.DependencyTypeURL(scope), "--if-revision", dependency.Link.Revision)
 			refuse("invalid_properties", "unlink", dependency.Link.ID, "--if-revision", dependency.Link.Revision)
 			call("unlink", dependency.Link.ID, "--if-revision", dependency.Link.Revision, "--unconditional-source")
+			propertyMemory := graphMixedResult[graphstore.Record](t, call("remember", "--id", "beads/property-memory", "--properties", `{"title":"Property title","body":"First body"}`))
+			merged := graphMixedResult[graphstore.MemoryMutationResult](t, call("update", propertyMemory.ID, "--properties", `{"body":"Second body"}`, "--if-revision", propertyMemory.Revision))
+			if merged.Memory.Properties.Title != "Property title" || merged.Memory.Properties.Body != "Second body" {
+				t.Fatal("Memory property merge lost an omitted title")
+			}
+			emptyMerge := graphMixedResult[graphstore.MemoryMutationResult](t, call("update", propertyMemory.ID, "--properties", `{}`, "--if-revision", merged.Memory.Revision))
+			if emptyMerge.Changed || emptyMerge.Memory.Revision != merged.Memory.Revision {
+				t.Fatal("empty Memory property merge created a version")
+			}
+			rememberMerge := graphMixedResult[graphstore.MemoryMutationResult](t, call("remember", "--update", propertyMemory.ID, "--properties", `{"title":"Retitled"}`))
+			if rememberMerge.Memory.Properties.Body != "Second body" || rememberMerge.Memory.Properties.Title != "Retitled" {
+				t.Fatal("remember property merge lost the omitted body")
+			}
+			propertyLink := graphMixedResult[graphstore.LinkMutationResult](t, call("link", propertyMemory.ID, issue.ID, "--link-type", related, "--properties", `{"note":"keep"}`))
+			linkEmptyMerge := graphMixedResult[graphstore.LinkMutationResult](t, call("update", propertyLink.Link.ID, "--properties", `{}`, "--if-revision", propertyLink.Link.Revision))
+			if linkEmptyMerge.Changed || linkEmptyMerge.Link.Revision != propertyLink.Link.Revision || linkEmptyMerge.Link.Properties["note"] != "keep" {
+				t.Fatal("empty Link property merge cleared a field or created a version")
+			}
+			linkCleared := graphMixedResult[graphstore.LinkMutationResult](t, call("update", propertyLink.Link.ID, "--patch", `[{"op":"replace","path":"","value":{}}]`, "--if-revision", propertyLink.Link.Revision))
+			if !linkCleared.Changed || len(linkCleared.Link.Properties) != 0 {
+				t.Fatal("explicit Link root patch did not clear properties")
+			}
+			propertyIssue := graphMixedResult[graphstore.IssueRecord](t, call("create", "--id", "beads/property-issue", "--properties", `{"title":"Property Issue","priority":1,"description":"Initial","estimated_minutes":7}`))
+			if propertyIssue.Properties.Title != "Property Issue" || propertyIssue.Properties.Priority != 1 || propertyIssue.Properties.Description != "Initial" || propertyIssue.Properties.EstimatedMinutes == nil || *propertyIssue.Properties.EstimatedMinutes != 7 {
+				t.Fatal("Issue property initialization lost typed values")
+			}
+			issueMerge := graphMixedResult[graphstore.IssueMutationResult](t, call("update", propertyIssue.ID, "--properties", `{"description":"Revised"}`, "--if-revision", propertyIssue.Revision))
+			if !issueMerge.Changed || issueMerge.Issue.Properties.Title != "Property Issue" || issueMerge.Issue.Properties.Priority != 1 || issueMerge.Issue.Properties.Description != "Revised" {
+				t.Fatal("Issue property merge lost an omitted field")
+			}
+			issueNoop := graphMixedResult[graphstore.IssueMutationResult](t, call("update", propertyIssue.ID, "--properties", `{}`, "--if-revision", issueMerge.Issue.Revision))
+			if issueNoop.Changed || issueNoop.Issue.Revision != issueMerge.Issue.Revision {
+				t.Fatal("empty Issue property merge created a version")
+			}
+			issuePatched := graphMixedResult[graphstore.IssueMutationResult](t, call("update", propertyIssue.ID, "--patch", `[{"op":"replace","path":"/description","value":"Patched"},{"op":"remove","path":"/estimated_minutes"}]`, "--if-revision", issueMerge.Issue.Revision))
+			if !issuePatched.Changed || issuePatched.Issue.Properties.Description != "Patched" || issuePatched.Issue.Properties.EstimatedMinutes != nil {
+				t.Fatal("Issue property patch bypassed native field semantics")
+			}
+			refuse("revision_conflict", "update", propertyIssue.ID, "--properties", `{"title":"stale"}`, "--if-revision", propertyIssue.Revision)
+			refuse("invalid_properties", "update", propertyIssue.ID, "--properties", `{"status":"closed"}`, "--if-revision", issuePatched.Issue.Revision)
 		})
 	}
 }

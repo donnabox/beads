@@ -48,6 +48,42 @@ func TestGraphPreviewIssueTextPresenceAndAliases(t *testing.T) {
 	}
 }
 
+func TestGraphPreviewIssuePropertyMerge(t *testing.T) {
+	for _, tc := range []struct {
+		name      string
+		args      []string
+		wantError bool
+	}{
+		{"empty", []string{"--properties={}", "--if-revision=seen"}, false},
+		{"typed", []string{"--properties={\"title\":\"New\",\"priority\":2,\"estimated_minutes\":7}", "--if-revision=seen"}, false},
+		{"clear-estimate", []string{"--properties={\"estimated_minutes\":null}", "--if-revision=seen"}, false},
+		{"duplicate", []string{"--title=New", "--properties={\"title\":\"New\"}", "--if-revision=seen"}, true},
+		{"duplicate-alias", []string{"--body=New", "--properties={\"description\":\"New\"}", "--if-revision=seen"}, true},
+		{"read-only", []string{"--properties={\"status\":\"closed\"}", "--if-revision=seen"}, true},
+		{"wrong-type", []string{"--properties={\"priority\":\"2\"}", "--if-revision=seen"}, true},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			cmd := issueTextCommand(t, tc.args...)
+			request, err := graphPreviewIssueEditRequest(cmd, "beads/task")
+			if err == nil {
+				err = graphPreviewIssuePropertyMerge(cmd, &request)
+			}
+			if (err != nil) != tc.wantError {
+				t.Fatalf("request=%+v error=%v", request, err)
+			}
+			if err == nil && !request.PropertiesProvided {
+				t.Fatal("property presence was lost")
+			}
+			if tc.name == "typed" && (request.Title == nil || *request.Title != "New" || request.Priority == nil || *request.Priority != 2 || request.EstimatedMinutes == nil || *request.EstimatedMinutes != 7) {
+				t.Fatalf("typed values lost: %+v", request)
+			}
+			if tc.name == "clear-estimate" && !request.ClearEstimatedMinutes {
+				t.Fatal("nullable estimate clear lost")
+			}
+		})
+	}
+}
+
 func TestGraphPreviewIssueNotesInput(t *testing.T) {
 	for _, tc := range []struct {
 		name       string
@@ -94,7 +130,6 @@ func TestGraphPreviewIssueTextRefusals(t *testing.T) {
 		{"long-title", []string{"--title=" + strings.Repeat("x", 501), "--unconditional"}, 2},
 		{"invalid-utf8", []string{"--design=\xff", "--unconditional"}, 2},
 		{"different-aliases", []string{"--description=a", "--body=b", "--unconditional"}, 2},
-		{"generic-properties", []string{"--title=Title", "--properties={}", "--unconditional"}, 5},
 		{"workflow", []string{"--design=Design", "--status=closed", "--unconditional"}, 5},
 		{"file", []string{"--design=Design", "--body-file=missing", "--unconditional"}, 5},
 		{"stdin-flag", []string{"--design=Design", "--stdin", "--unconditional"}, 5},
