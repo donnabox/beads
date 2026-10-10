@@ -28,11 +28,11 @@ func TestGraphPreviewIssueEstimatePresence(t *testing.T) {
 			}
 		})
 	}
-	got, err := graphPreviewIssueEditRequest(issueTextCommand(t, "--title=Sized", "--unconditional"), "beads/work")
+	got, err := graphPreviewIssueEditRequest(issueTextCommand(t, "--title=Sized"), "beads/work")
 	if err != nil || got.EstimatedMinutes != nil {
 		t.Fatalf("omission became a zero: %+v %v", got, err)
 	}
-	got, err = graphPreviewIssueEditRequest(issueTextCommand(t, "-e", "0", "--title=Sized", "--priority=1", "--append-notes=Done", "--unconditional"), "beads/work")
+	got, err = graphPreviewIssueEditRequest(issueTextCommand(t, "-e", "0", "--title=Sized", "--priority=1", "--append-notes=Done"), "beads/work")
 	if err != nil || got.EstimatedMinutes == nil || *got.EstimatedMinutes != 0 || got.Title == nil || *got.Title != "Sized" || got.Priority == nil || *got.Priority != 1 || got.AppendNotes == nil || *got.AppendNotes != "Done" || !got.Unconditional {
 		t.Fatalf("mixed intent lost: %+v %v", got, err)
 	}
@@ -44,13 +44,9 @@ func TestGraphPreviewIssueEstimateRefusals(t *testing.T) {
 		args []string
 		code int
 	}{
-		{"negative", []string{"-e", "-1", "--unconditional"}, 2},
-		{"missing-guard", []string{"-e", "0"}, 2},
-		{"both-guards", []string{"-e", "0", "--if-revision=x", "--unconditional"}, 2},
-		{"false-unconditional", []string{"-e", "0", "--unconditional=false"}, 2},
-		{"status", []string{"-e", "0", "--status=open", "--unconditional"}, 5},
-		{"properties", []string{"-e", "0", "--properties={}", "--unconditional"}, 5},
-		{"claim", []string{"-e", "0", "--claim", "--unconditional"}, 5},
+		{"negative", []string{"-e", "-1"}, 2},
+		{"status", []string{"-e", "0", "--status=open"}, 5},
+		{"claim", []string{"-e", "0", "--claim"}, 5},
 	} {
 		t.Run(tc.name, func(t *testing.T) {
 			_, err := graphPreviewIssueEditRequest(issueTextCommand(t, tc.args...), "beads/work")
@@ -59,6 +55,11 @@ func TestGraphPreviewIssueEstimateRefusals(t *testing.T) {
 				t.Fatalf("want exit%d before storage: %v", tc.code, err)
 			}
 		})
+	}
+	cmd := issueTextCommand(t, "-e", "0", "--properties={}")
+	request, err := graphPreviewIssueEditRequest(cmd, "beads/work")
+	if err != nil || !cmd.Flags().Changed("properties") || request.EstimatedMinutes == nil || *request.EstimatedMinutes != 0 {
+		t.Fatalf("mixed estimate and empty property merge: %+v %v", request, err)
 	}
 	// Parsing belongs to the existing integer flag, including platform overflow.
 	for _, value := range []string{"", "1.5", "null", "999999999999999999999999999"} {
@@ -76,7 +77,7 @@ func TestGraphPreviewIssueEstimateReadonly(t *testing.T) {
 	old := readonlyMode
 	readonlyMode = true
 	t.Cleanup(func() { readonlyMode = old })
-	err := runGraphPreviewUpdate(issueTextCommand(t, "-e", "0", "--unconditional"), []string{"beads/work"})
+	err := runGraphPreviewUpdate(issueTextCommand(t, "-e", "0"), []string{"beads/work"})
 	var refusal *exitError
 	if !errors.As(err, &refusal) || refusal.Code != 5 {
 		t.Fatalf("readonly estimate reached storage: %v", err)

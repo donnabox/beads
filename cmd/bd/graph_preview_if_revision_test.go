@@ -73,9 +73,10 @@ func graphIfRevisionRefused(t *testing.T, bd, work, home string, wantExit int, w
 	}
 }
 
-// Who owns --if-revision (and its fork-only --unconditional companion) on each
-// verb is part of the CLI contract, visible in --help: upstream's definition
-// on the four verbs it owns, the preview's own on the three it does not.
+// Who owns --if-revision on each verb is part of the CLI contract, visible in
+// --help: upstream's definition on the four verbs it owns, the preview's own
+// on the three it does not. Only destructive preview verbs retain an explicit
+// --unconditional choice.
 func TestGraphPreviewIfRevisionFlagOwnership(t *testing.T) {
 	for _, cmd := range []*cobra.Command{updateCmd, deleteCmd, closeCmd, assignCmd} {
 		flag := cmd.Flags().Lookup("if-revision")
@@ -101,7 +102,7 @@ func TestGraphPreviewIfRevisionFlagOwnership(t *testing.T) {
 		cmd  *cobra.Command
 		want bool
 	}{
-		{updateCmd, true}, {deleteCmd, true}, {forgetCmd, true}, {rememberCmd, true}, {graphUnlinkCmd, true},
+		{updateCmd, false}, {deleteCmd, true}, {forgetCmd, true}, {rememberCmd, false}, {graphUnlinkCmd, true},
 		{closeCmd, false}, {assignCmd, false},
 	} {
 		if has := tc.cmd.Flags().Lookup("unconditional") != nil; has != tc.want {
@@ -175,7 +176,6 @@ func TestGraphPreviewIfRevisionOutsideLinkModeIsUpstreamCAS(t *testing.T) {
 	}
 
 	for _, args := range [][]string{
-		{"update", id, "--priority", "3", "--unconditional"},
 		{"delete", id, "--force", "--unconditional"},
 		{"forget", "ifrev-key", "--unconditional"},
 		{"forget", "ifrev-key", "--if-revision", "1"},

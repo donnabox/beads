@@ -82,10 +82,10 @@ func TestGraphPreviewIssueDueDispatch(t *testing.T) {
 		args       []string
 	}{
 		{"invalid-create", "invalid_properties", []string{"create", "Bad", "--id", "beads/bad", "--due=not-a-date"}},
-		{"invalid-update", "invalid_properties", []string{"update", "beads/work", "--due=not-a-date", "--unconditional"}},
-		{"defer-held", "capability_unavailable", []string{"update", "beads/work", "--due=", "--defer=", "--unconditional"}},
+		{"invalid-update", "invalid_properties", []string{"update", "beads/work", "--due=not-a-date"}},
+		{"defer-held", "capability_unavailable", []string{"update", "beads/work", "--due=", "--defer="}},
 		{"create-status-held", "capability_unavailable", []string{"create", "Bad", "--id", "beads/bad", "--due=2030-01-01", "--status=open"}},
-		{"readonly-before-parse", "permission_denied", []string{"update", "beads/work", "--due=not-a-date", "--unconditional", "--readonly"}},
+		{"readonly-before-parse", "permission_denied", []string{"update", "beads/work", "--due=not-a-date", "--readonly"}},
 	} {
 		t.Run(tc.name, func(t *testing.T) { graphPolicyCLI(t, bd, work, home, nil, tc.code, append(tc.args, "--json")...) })
 	}

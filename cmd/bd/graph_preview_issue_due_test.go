@@ -17,11 +17,11 @@ func TestGraphPreviewIssueDuePresence(t *testing.T) {
 		set, clear bool
 		want       string
 	}{
-		{"omitted", []string{"--title=Keep", "--unconditional"}, false, false, ""},
+		{"omitted", []string{"--title=Keep"}, false, false, ""},
 		{"clear", []string{"--due=", "--if-revision=observed"}, true, true, ""},
 		{"offset", []string{"--due=2030-01-02T03:04:05-07:00", "--if-revision=observed"}, true, false, "2030-01-02T10:04:05Z"},
-		{"fraction-preserved-for-storage", []string{"--due=2030-01-02T03:04:05.6Z", "--unconditional"}, true, false, "2030-01-02T03:04:05.6Z"},
-		{"mixed", []string{"--due=2030-01-02T03:04:05Z", "--title=New", "--priority=P0", "--unconditional"}, true, false, "2030-01-02T03:04:05Z"},
+		{"fraction-preserved-for-storage", []string{"--due=2030-01-02T03:04:05.6Z"}, true, false, "2030-01-02T03:04:05.6Z"},
+		{"mixed", []string{"--due=2030-01-02T03:04:05Z", "--title=New", "--priority=P0"}, true, false, "2030-01-02T03:04:05Z"},
 	} {
 		t.Run(tc.name, func(t *testing.T) {
 			cmd := issueTextCommand(t, tc.args...)
@@ -52,7 +52,7 @@ func TestGraphPreviewIssueDuePresence(t *testing.T) {
 	}{{"relative", "+6h", 6 * time.Hour}, {"relative-minutes", "+30min", 30 * time.Minute}} {
 		t.Run(tc.name, func(t *testing.T) {
 			before := time.Now().Add(tc.duration)
-			got, err := graphPreviewIssueEditRequest(issueTextCommand(t, "--due="+tc.input, "--unconditional"), "beads/work")
+			got, err := graphPreviewIssueEditRequest(issueTextCommand(t, "--due="+tc.input), "beads/work")
 			after := time.Now().Add(tc.duration)
 			if err != nil || got.DueAt.Value == nil || got.DueAt.Value.Before(before) || got.DueAt.Value.After(after) {
 				t.Fatalf("native relative input: %+v %v", got, err)
@@ -67,16 +67,12 @@ func TestGraphPreviewIssueDueRefusals(t *testing.T) {
 		args []string
 		code int
 	}{
-		{"syntax", []string{"--due=not-a-date", "--unconditional"}, 2},
-		{"utf8", []string{"--due=\xff", "--unconditional"}, 2},
-		{"oversize", []string{"--due=" + strings.Repeat("x", 4097), "--unconditional"}, 2},
-		{"missing-guard", []string{"--due="}, 2},
-		{"both-guards", []string{"--due=", "--if-revision=x", "--unconditional"}, 2},
-		{"false-unconditional", []string{"--due=", "--unconditional=false"}, 2},
-		{"properties", []string{"--due=", "--properties={}", "--unconditional"}, 5},
-		{"status", []string{"--due=", "--status=open", "--unconditional"}, 5},
-		{"source-guard", []string{"--due=", "--if-source-revision=x", "--unconditional"}, 5},
-		{"file", []string{"--due=", "--body-file=missing", "--unconditional"}, 5},
+		{"syntax", []string{"--due=not-a-date"}, 2},
+		{"utf8", []string{"--due=\xff"}, 2},
+		{"oversize", []string{"--due=" + strings.Repeat("x", 4097)}, 2},
+		{"status", []string{"--due=", "--status=open"}, 5},
+		{"source-guard", []string{"--due=", "--if-source-revision=x"}, 5},
+		{"file", []string{"--due=", "--body-file=missing"}, 5},
 	} {
 		t.Run(tc.name, func(t *testing.T) {
 			_, err := graphPreviewIssueEditRequest(issueTextCommand(t, tc.args...), "beads/work")
@@ -85,6 +81,12 @@ func TestGraphPreviewIssueDueRefusals(t *testing.T) {
 				t.Fatalf("want exit%d before storage, got %v", tc.code, err)
 			}
 		})
+	}
+	// The generic setter may accompany a distinct native Issue edit flag.
+	cmd := issueTextCommand(t, "--due=", "--properties={}")
+	request, err := graphPreviewIssueEditRequest(cmd, "beads/work")
+	if err != nil || !cmd.Flags().Changed("properties") || !request.DueAt.Set || request.DueAt.Value != nil {
+		t.Fatalf("mixed due clear and empty property merge: %+v %v", request, err)
 	}
 }
 
@@ -95,7 +97,7 @@ func TestGraphPreviewIssueDuePolicyDispatch(t *testing.T) {
 	t.Run("readonly-before-invalid-input", func(t *testing.T) {
 		readonlyMode = true
 		defer func() { readonlyMode = priorReadonly }()
-		err := runGraphPreviewUpdate(issueTextCommand(t, "--due=not-a-date", "--unconditional"), []string{"beads/work"})
+		err := runGraphPreviewUpdate(issueTextCommand(t, "--due=not-a-date"), []string{"beads/work"})
 		var failure *exitError
 		if !errors.As(err, &failure) || failure.Code != 5 {
 			t.Fatalf("readonly did not precede parsing: %v", err)

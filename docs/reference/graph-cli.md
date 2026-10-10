@@ -89,7 +89,7 @@ in this one.
 | Command | Graph workspace behavior |
 | --- | --- |
 | `bd memories [SEARCH]` | List current Memory title/body summaries. Use `--all` for all matches within the preview's bounds, `--details` for saved version and attribution, or `--format records-json` for structured summaries. |
-| `bd recall ID` | Print **one** Memory's exact body bytes. It does not enumerate Memories or add a newline. |
+| `bd recall ID` | Print **one** Memory's body followed by a newline, as ordinary `bd recall` does. It does not enumerate Memories. |
 | `bd show ID --json` | Read one current Issue or Memory record; use `links/ID` for a Link. |
 | `bd list` or `bd list --format records-json` | Without an Issue filter, list every current Memory and Issue the ordinary `bd list` would show, newest recorded change first; closed and pinned Issues need `--all`. Use `--bead-type types/NAME` to narrow by nominal Type. An Issue filter, or a matching directory label, switches to the Issue-only query described below and says so. |
 
@@ -146,13 +146,23 @@ bd remember 'Changes now land on the release branch.' --id policy
 bd remember --update policy --title 'Current code flow policy'
 ```
 
-`bd update` edits an Issue with its Issue flags, or replaces a Memory's whole
-properties document with `--properties`. Unlike `bd remember` with an existing
-ID, these
-routes require an explicit write choice; the examples use `--unconditional`
-to accept the current state. A Memory properties replacement supplies both
-`title` and `body` strings. See [Versioning and History](#versioning-and-history)
-when you need stale-write protection.
+`--properties JSON` initializes writable Type properties on `bd create` and
+`bd remember`, and shallowly merges named top-level properties on `bd update`
+or an existing-ID `bd remember`. It works for the installed Issue and Memory
+Bead Types and informational Link Types. Omitted keys survive; `{}` is a no-op.
+Issue property edits still use the native Issue writer and History recorder.
+Use `bd update ID --patch '[{"op":"replace","path":"/name","value":...}]'`
+for ordered property operations, including removal. A patch of an Issue may
+change only its writable scalar properties. A stale `--if-revision TOKEN`
+refuses a write; omission accepts the current state. See
+[Versioning and History](#versioning-and-history) for exact-version reads.
+
+This changes the earlier graph-preview `bd update LINK --properties '{}'`
+behavior: an empty object now preserves the existing `note` instead of
+clearing it. Remove the note explicitly with
+`bd update LINK --patch '[{"op":"remove","path":"/note"}]'` or replace the
+whole property object with
+`bd update LINK --patch '[{"op":"replace","path":"","value":{}}]'`.
 
 Issue, Memory and informational Link records also have a separate open
 metadata object. The default is `{}`. Supply `--metadata JSON` when creating
@@ -168,8 +178,8 @@ body and applies them to that Memory. On creation, these flags form its initial
 metadata object.
 
 ```sh
-bd update policy --metadata '{"reviewed":true}' --unconditional
-bd update policy --unset-metadata team --unconditional
+bd update policy --metadata '{"reviewed":true}'
+bd update policy --unset-metadata team
 ```
 
 Creating, updating, showing or closing a graph Issue records it as the last
@@ -181,8 +191,10 @@ Scripts and agent sessions must supply an ID unless they explicitly set
 fallback, including at a terminal. `--readonly` does not write the marker.
 
 ```sh
-bd update work --title 'Move the release branch after review' --unconditional
-bd update policy --properties '{"title":"Code flow policy","body":"Land reviewed changes on integration."}' --unconditional
+bd update work --title 'Move the release branch after review'
+bd update policy --properties '{"body":"Land reviewed changes on integration."}'
+bd update work --properties '{"priority":1,"description":"Review the release branch."}'
+bd update work --patch '[{"op":"replace","path":"/description","value":"Reviewed."}]'
 ```
 
 `bd close ID...` and `bd reopen ID...` accept one or more local Issues. A
@@ -299,7 +311,7 @@ bd update work --notes 'Revised handoff' --force --if-revision NEW_REVISION
 bd update work --clear-notes --if-revision LATEST_REVISION
 ```
 
-Each graph Issue edit needs `--if-revision` or `--unconditional`. A stale guard
+An Issue edit accepts the current state by default. A stale `--if-revision`
 refuses even with `--force`; force only authorizes the notes overwrite. An
 identical value or a clear of already-empty notes leaves the revision alone.
 Use `bd versions work` and `bd show work --version TOKEN` to inspect prior
@@ -322,18 +334,30 @@ bd link policy work --link-type types/preview-related-v2 \
   --metadata '{"origin":"manual"}'
 bd links policy
 bd show links/policy-work --json
-bd update links/policy-work --properties '{"note":"reviewed policy"}' --unconditional
+bd update links/policy-work --properties '{"note":"reviewed policy"}'
 bd unlink policy-work --unconditional
 ```
 
-`bd links ID` lists current incident Links. A Memory-owned informational Link
+`bd links ID` lists current incident Links with Type
+first and in-Scope IDs relative to the Scope URL; JSON retains canonical URLs.
+`bd link SOURCE TARGET` without `--link-type` is an Issue dependency shorthand.
+A Memory-owned informational Link
 defaults to accepting the current source state; add `--if-source-revision
-TOKEN` to reject a stale source. Link updates and unlink still require their
-own `--if-revision TOKEN` or `--unconditional` choice. Unlink removes the
+TOKEN` to reject a stale source. Link updates accept the current Link by
+default; Link removal still needs `--if-revision TOKEN` or `--unconditional`.
+Removal deletes the
 current Link but retains its identity and prior snapshots. The blocking
 `types/preview-blocks-v1` Type is only for live Issues; it refuses a Memory
 endpoint. See the [Graph CLI Specification (Draft)](/reference/graph-cli-specification-draft) for the
 separate blocking Dependency unlink rules and Link Type bounds.
+
+For two live Issues, `bd dep add BLOCKED BLOCKER` creates a blocking Link.
+`bd dep BLOCKER --blocks BLOCKED` is the same operation with the arguments in
+the opposite order. Add `--id links/ID` to `bd dep add` when the Link needs a
+chosen local identity; repeating the same pair with that ID or no ID is a
+no-op, while a different ID refuses. `bd dep
+relate` and `bd dep unrelate` are outside this graph preview because the
+ordinary command owns two directed relationships, not one Link.
 
 ## Claim and release Issue work
 
@@ -395,12 +419,12 @@ bd history policy  # same listing in a graph workspace
 | `--version TOKEN` | Select one exact retained state for `bd show`, or one retained Memory body for `bd recall`; use a saved `version` token. |
 | `--from TOKEN --to TOKEN` | Select the two complete states for `bd compare`. |
 | `--if-revision TOKEN` | On a supported write, refuse if the current record no longer has the saved `revision`. In an ordinary workspace, `bd update` and `bd delete` instead read it as the legacy compare-and-swap on a decimal bead `revision`. |
-| `--unconditional` | Where a write requires an explicit choice, accept the current record without an expected revision. |
+| `--unconditional` | On deletion and Link removal, explicitly accept the current record without an expected revision. Graph deferral also accepts it as an explicit spelling of its current-state default. Ordinary edits no longer use this flag. |
 | `--if-source-revision TOKEN` | On a Memory-owned Link write, optionally require the source Memory's observed revision; otherwise that source defaults to unconditional acceptance. |
 
-`bd remember` with an existing `--id` or `--update` defaults to unconditional
-acceptance. Memory deletion,
-`bd update`, and Link edits/removal still have their command-specific guard
+`bd remember` with an existing `--id` or `--update`, `bd update`, and `bd link
+update` default to accepting the current state. Memory deletion and Link
+removal still have their command-specific guard
 requirements; consult the [Graph CLI Specification (Draft)](/reference/graph-cli-specification-draft) before
 automating them. A semantic no-op retains the existing revision.
 

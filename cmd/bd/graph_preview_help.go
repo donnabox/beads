@@ -59,8 +59,10 @@ The Scope URL names local identities; it does not start a web server.
 --server --external selects an ordinary shared Dolt server; otherwise storage
 is embedded. Existing .beads directories are never adopted or overwritten.`},
 		{rememberCmd, `Store a Memory with bd remember 'Policy text' [--id policy]
-[--title 'Policy'] [--metadata '{"team":"docs"}']. Metadata is a JSON
-object separate from Memory title/body properties. An omitted ID is generated; an omitted creation title
+[--title 'Policy'] [--metadata '{"team":"docs"}']. Alternatively,
+--properties '{"title":"Policy"}' initializes the typed Memory property;
+do not supply the same field with both --properties and a shorthand flag.
+Metadata is a JSON object separate from Memory title/body properties. An omitted ID is generated; an omitted creation title
 summarizes the body. With --id, an unused ID creates and an existing Memory
 updates in place, as ordinary bd remember --key does. Bare policy means
 canonical beads/policy. Graph Memories use canonical IDs, not legacy keys.
@@ -73,7 +75,7 @@ To require an existing Memory, keep using --update instead of --id:
 Omitted fields remain unchanged on update. Use --body-file PATH or --stdin
 instead of positional body text. An existing-ID update accepts the current
 revision by default; add --if-revision TOKEN to reject a stale update. Read
-the token with bd show policy --json. --unconditional spells out the default.`},
+the token with bd show policy --json.`},
 		{memoriesCmd, `Search Memory titles and bodies with bd memories [SEARCH].
 Use --all for a complete bounded result, --details for version/Link counts,
 or --format records-json for machine-readable summaries. --json is unavailable;
@@ -84,6 +86,9 @@ recall does not accept legacy keys or --json.`},
 		{createCmd, `Create an Issue by default, with an optional --id ID.
 --metadata accepts one JSON object on Issue or Memory creation; omitted
 metadata is {}. Metadata is separate from Type-validated properties.
+--properties JSON initializes the selected Type's writable fields, such as
+Issue description or Memory body. It may accompany shorthand flags only when
+they supply different fields; duplicate fields refuse.
 Use --bead-type types/preview-memory-v2 to create a Memory instead:
   bd create --bead-type types/preview-memory-v2 --id policy --body 'Code flow policy'
 Use bd types to see Bead Types installed in this workspace. Both types/NAME
@@ -98,16 +103,20 @@ an ordered history listing. --json returns the experimental graph record.
 Showing an Issue makes it the last-touched Issue for interactive update/close;
 showing a Memory or Link does not.`},
 		{updateCmd, `Use bd remember --update ID for selected Memory title/body
-edits. For complete Memory or informational Link property replacement, use:
-  bd update policy --properties '{"title":"Policy","body":"Text"}' --if-revision TOKEN
+edits. --properties JSON shallowly merges named top-level properties on an
+Issue, Memory, or informational Link, preserving omitted keys. The same flag
+initializes properties on bd create and bd remember. For example:
+  bd update policy --properties '{"body":"Revised text"}' --if-revision TOKEN
+An empty object is a no-op. --patch applies ordered add/replace/remove property
+operations, including on writable native Issue scalar properties.
 --metadata merges a JSON object's top-level keys; --set-metadata KEY=VALUE
 sets one typed JSON value and --unset-metadata KEY removes one key. Set and
 unset may combine (unset wins); --metadata cannot combine with either.
 Metadata may accompany a property or Issue scalar edit atomically, and a
 metadata-only update uses the same Resource and owning-source guards.
---patch applies ordered property operations. Generic updates require
---if-revision TOKEN or --unconditional. Informational Links owned by a Memory
-may also use --if-source-revision TOKEN; without it, the current source is
+Generic updates accept the current state when --if-revision is omitted.
+Informational Links owned by a Memory may also use --if-source-revision TOKEN;
+without it, the current source is
 accepted. Blocking Dependency properties are not editable here. Issue scalar
 edits and standalone --claim are separate graph operations. Without an ID,
 interactive Issue update uses the last-touched Issue; scripts require an ID
@@ -118,9 +127,14 @@ deletion without writing. Apply with --force and either --if-revision TOKEN or
 		{forgetCmd, `Use bd forget ID to delete one unreferenced Memory now.
 Supply --if-revision TOKEN or --unconditional. Canonical IDs are retained and
 incident Links prevent deletion; no cascade is performed.`},
+		{depCmd, `Use bd dep BLOCKER --blocks BLOCKED to create a blocking
+Dependency between two live Issues. Bare bd dep prints help; the ordinary
+--no-cycle-check option is unavailable in graph preview workspaces.`},
 		{depAddCmd, `Use bd dep add issue blocker for a blocking
-Dependency between two live Issues. Memory endpoints, remote routing and bulk
-dependency flags are unavailable in this preview.`},
+Dependency between two live Issues, optionally with --id links/ID.
+bd dep blocker --blocks issue is the same operation with reversed arguments.
+Memory endpoints, remote routing and bulk dependency flags are unavailable
+in this preview.`},
 		{linkCmd, `Without --link-type, bd link SOURCE TARGET creates the ordinary
 blocking Dependency between two live Issues. For a Memory or Issue endpoint,
 choose an installed informational Type, for example on a fresh workspace:

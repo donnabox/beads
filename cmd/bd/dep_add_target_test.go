@@ -226,6 +226,7 @@ func newDepAddCommandForTest() *cobra.Command {
 	cmd.Flags().String("blocked-by", "", "")
 	cmd.Flags().String("depends-on", "", "")
 	cmd.Flags().String("file", "", "")
+	cmd.Flags().String("id", "", "")
 	cmd.Flags().Bool("no-cycle-check", false, "")
 	return cmd
 }

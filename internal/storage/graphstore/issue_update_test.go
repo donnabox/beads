@@ -38,6 +38,47 @@ func assertIssueEditCounts(t *testing.T, ctx context.Context, s *Store, id strin
 	}
 }
 
+func TestIssuePropertyEmptyMergeAndEstimateClear(t *testing.T) {
+	for _, backend := range []string{"embedded", "server"} {
+		t.Run(backend, func(t *testing.T) {
+			ctx, options := issueExperimentOptions(t, backend)
+			store, err := OpenExisting(ctx, options)
+			if err != nil {
+				t.Fatal(err)
+			}
+			defer func() {
+				if err := store.Close(); err != nil {
+					t.Error(err)
+				}
+			}()
+			original, err := store.CreateIssue(ctx, "beads/work", plainIssue("Work"))
+			if err != nil {
+				t.Fatal(err)
+			}
+			empty, err := store.UpdateIssue(ctx, UpdateIssueRequest{Path: "beads/work", Actor: "editor", ExpectedRevision: original.Revision, PropertiesProvided: true})
+			if err != nil || empty.Changed || empty.Issue.Revision != original.Revision {
+				t.Fatalf("empty merge: %+v %v", empty, err)
+			}
+			assertIssueEditCounts(t, ctx, store, original.Properties.ID, 1)
+			minutes := 7
+			set, err := store.UpdateIssue(ctx, UpdateIssueRequest{Path: "beads/work", Actor: "editor", ExpectedRevision: original.Revision, EstimatedMinutes: &minutes})
+			if err != nil || !set.Changed || set.Issue.Properties.EstimatedMinutes == nil {
+				t.Fatalf("set estimate: %+v %v", set, err)
+			}
+			cleared, err := store.UpdateIssue(ctx, UpdateIssueRequest{Path: "beads/work", Actor: "editor", ExpectedRevision: set.Issue.Revision, ClearEstimatedMinutes: true})
+			if err != nil || !cleared.Changed || cleared.Issue.Properties.EstimatedMinutes != nil {
+				t.Fatalf("clear estimate: %+v %v", cleared, err)
+			}
+			assertIssueEditCounts(t, ctx, store, original.Properties.ID, 3)
+			noop, err := store.UpdateIssue(ctx, UpdateIssueRequest{Path: "beads/work", Actor: "another", ExpectedRevision: cleared.Issue.Revision, ClearEstimatedMinutes: true})
+			if err != nil || noop.Changed || noop.Issue.Revision != cleared.Issue.Revision {
+				t.Fatalf("repeat clear: %+v %v", noop, err)
+			}
+			assertIssueEditCounts(t, ctx, store, original.Properties.ID, 3)
+		})
+	}
+}
+
 func TestIssueUpdateLifecycle(t *testing.T) {
 	for _, backend := range []string{"embedded", "server"} {
 		t.Run(backend, func(t *testing.T) {

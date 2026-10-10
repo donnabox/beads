@@ -15,13 +15,29 @@ import (
 )
 
 // The update dispatcher checks write policy and canonical Scope selection first.
-// This route never pre-reads a Memory or refreshes the user's observed guard.
+// Read the selected Type before dispatch. Issue patches pin and retry a
+// checked predecessor; Memory patches evaluate inside their write transaction.
 func runGraphPreviewMemoryPropertiesPatch(cmd *cobra.Command, path string) error {
 	request, err := graphPreviewMemoryPropertiesPatchRequest(cmd, path)
 	if err != nil {
 		return err
 	}
-	return withGraphStore(func(ctx context.Context, store *graphstore.Store) (any, string, error) {
+	issueUpdated := false
+	err = withGraphStore(func(ctx context.Context, store *graphstore.Store) (any, string, error) {
+		current, err := store.Read(ctx, path)
+		if err != nil {
+			return nil, "", err
+		}
+		if issue, ok := current.(graphstore.IssueRecord); ok {
+			result, summary, err := graphPreviewPatchIssueProperties(ctx, store, cmd, request, issue)
+			if err == nil {
+				issueUpdated = true
+			}
+			return result, summary, err
+		}
+		if cmd.Flags().Changed("force") {
+			return nil, "", graphFailure("invalid_properties", "--force applies only to an Issue notes patch", 2)
+		}
 		result, err := store.PatchMemoryProperties(ctx, request)
 		if err != nil {
 			return nil, "", err
@@ -32,11 +48,15 @@ func runGraphPreviewMemoryPropertiesPatch(cmd *cobra.Command, path string) error
 		}
 		return graphPreviewReplacementResult(result, fmt.Sprintf("%s %s", verb, result.Memory.ID), result.Replaced, nil)
 	})
+	if err == nil && issueUpdated {
+		SetLastTouchedID(path)
+	}
+	return err
 }
 
 func graphPreviewMemoryPropertiesPatchRequest(cmd *cobra.Command, path string) (graphstore.MemoryPropertiesPatchRequest, error) {
 	var request graphstore.MemoryPropertiesPatchRequest
-	if err := graphPreviewFlags(cmd, "patch", "metadata", "set-metadata", "unset-metadata", "if-revision", "unconditional"); err != nil {
+	if err := graphPreviewFlags(cmd, "patch", "metadata", "set-metadata", "unset-metadata", "if-revision", "force"); err != nil {
 		return request, err
 	}
 	if err := graph.ValidateBeadPath(path); err != nil {
@@ -45,7 +65,7 @@ func graphPreviewMemoryPropertiesPatchRequest(cmd *cobra.Command, path string) (
 	if !cmd.Flags().Changed("patch") {
 		return request, graphFailure("invalid_properties", "Memory properties patch requires --patch JSON, @file, or @-", 2)
 	}
-	revision, unconditional, err := graphPreviewRevisionGuard(cmd, false, true)
+	revision, unconditional, err := graphPreviewEditRevisionGuard(cmd)
 	if err != nil {
 		return request, err
 	}

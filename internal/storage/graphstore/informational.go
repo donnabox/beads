@@ -201,6 +201,9 @@ func (s *Store) writeLinkProperties(ctx context.Context, request LinkUpdateReque
 	if patch != nil && properties != nil {
 		return LinkMutationResult{}, fmt.Errorf("%w: Link replacement and ordered patch are mutually exclusive", storage.ErrValidation)
 	}
+	if request.MergeProperties && (properties == nil || patch != nil) {
+		return LinkMutationResult{}, fmt.Errorf("%w: Link property merge requires one properties object", storage.ErrValidation)
+	}
 	if err := validateCommonMetadataPatch(request.Metadata); err != nil {
 		return LinkMutationResult{}, err
 	}
@@ -236,11 +239,29 @@ func (s *Store) writeLinkProperties(ctx context.Context, request LinkUpdateReque
 		if err != nil {
 			return err
 		}
-		if properties == nil && patch == nil {
-			properties = before
+		nextProperties := properties
+		if request.MergeProperties {
+			var delta map[string]any
+			if err := json.Unmarshal(properties, &delta); err != nil {
+				return err
+			}
+			merged := make(map[string]any, len(link.Properties)+len(delta))
+			for key, value := range link.Properties {
+				merged[key] = value
+			}
+			for key, value := range delta {
+				merged[key] = value
+			}
+			nextProperties, err = informationalProperties(merged)
+			if err != nil {
+				return err
+			}
+		}
+		if nextProperties == nil && patch == nil {
+			nextProperties = before
 		}
 		if patch != nil {
-			properties, err = applyLinkPropertiesPatch(patch, before)
+			nextProperties, err = applyLinkPropertiesPatch(patch, before)
 			if err != nil {
 				return err
 			}
@@ -253,7 +274,7 @@ func (s *Store) writeLinkProperties(ctx context.Context, request LinkUpdateReque
 		if err != nil {
 			return err
 		}
-		if bytes.Equal(before, properties) && !metadataChanged {
+		if bytes.Equal(before, nextProperties) && !metadataChanged {
 			result = LinkMutationResult{Link: link, Source: source}
 			return nil
 		}
@@ -274,7 +295,7 @@ func (s *Store) writeLinkProperties(ctx context.Context, request LinkUpdateReque
 		if err != nil {
 			return err
 		}
-		if _, err := tx.ExecContext(ctx, `UPDATE graph_preview_links SET properties=?, metadata=?, attribution=? WHERE path=?`, properties, metadata, attribution, request.Path); err != nil {
+		if _, err := tx.ExecContext(ctx, `UPDATE graph_preview_links SET properties=?, metadata=?, attribution=? WHERE path=?`, nextProperties, metadata, attribution, request.Path); err != nil {
 			return err
 		}
 		if err := s.afterStage("link-payload"); err != nil {
@@ -283,7 +304,7 @@ func (s *Store) writeLinkProperties(ctx context.Context, request LinkUpdateReque
 		result, err = s.finishInformationalWriteInTx(ctx, tx, request.Path, sourcePath, request.Actor, source)
 		if err == nil {
 			result.ReplacedSource = replacedMemory(source, request.UnconditionalSource)
-			if patch != nil || hasCommonMetadataPatch(request.Metadata) {
+			if patch != nil || request.MergeProperties || hasCommonMetadataPatch(request.Metadata) {
 				// The new patch route must not commit a graph that current reads
 				// cannot acquire. Replacement retains its existing policy.
 				return checkCurrentReadBytes(ctx, tx)

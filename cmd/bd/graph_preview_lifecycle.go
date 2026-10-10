@@ -82,13 +82,27 @@ func runGraphPreviewLinks(cmd *cobra.Command, args []string) error {
 		}
 		var human strings.Builder
 		for _, link := range result {
-			fmt.Fprintf(&human, "%s  %s → %s\n", link.ID, link.Source, link.Target)
+			fmt.Fprintf(&human, "%s  %s  %s → %s\n",
+				graphPreviewDisplayLocalURL(link.Type), graphPreviewDisplayLocalURL(link.ID),
+				graphPreviewDisplayLocalURL(link.Source), graphPreviewDisplayLocalURL(link.Target))
 		}
 		if len(result) == 0 {
 			human.WriteString("No incident Links.\n")
 		}
 		return result, strings.TrimSuffix(human.String(), "\n"), nil
 	})
+}
+
+// Only the human view shortens URLs. JSON retains canonical IDs and foreign
+// endpoints are never made to look local.
+func graphPreviewDisplayLocalURL(url string) string {
+	if path, _, ok := graph.SplitCanonicalURL(graphPreviewConfig.GraphScopeURL, url); ok {
+		return path
+	}
+	if strings.HasPrefix(url, graphPreviewConfig.GraphScopeURL+"types/") {
+		return strings.TrimPrefix(url, graphPreviewConfig.GraphScopeURL)
+	}
+	return url
 }
 
 func runGraphPreviewUnlink(cmd *cobra.Command, args []string) error {

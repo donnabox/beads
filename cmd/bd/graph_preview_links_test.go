@@ -70,6 +70,34 @@ func TestGraphPreviewRevisionGuardIsExplicit(t *testing.T) {
 	}
 }
 
+func TestGraphPreviewEditRevisionGuardDefaultsToCurrent(t *testing.T) {
+	for _, command := range []*cobra.Command{rememberCmd, updateCmd} {
+		if command.Flags().Lookup("unconditional") != nil {
+			t.Fatalf("%s still advertises the removed edit flag", command.CommandPath())
+		}
+	}
+	for _, tc := range []struct {
+		args         []string
+		wantRevision string
+		wantCurrent  bool
+		wantError    bool
+	}{
+		{nil, "", true, false},
+		{[]string{"--if-revision=observed"}, "observed", false, false},
+		{[]string{"--if-revision="}, "", false, true},
+	} {
+		cmd := &cobra.Command{}
+		cmd.Flags().String("if-revision", "", "")
+		if err := cmd.ParseFlags(tc.args); err != nil {
+			t.Fatal(err)
+		}
+		revision, current, err := graphPreviewEditRevisionGuard(cmd)
+		if revision != tc.wantRevision || current != tc.wantCurrent || (err != nil) != tc.wantError {
+			t.Fatalf("args=%v revision=%q current=%t err=%v", tc.args, revision, current, err)
+		}
+	}
+}
+
 func TestGraphPreviewLocalTypeSelectors(t *testing.T) {
 	const scope = "https://example.invalid/demo/"
 	for _, selector := range []string{"types/preview-related-v2", scope + "types/preview-related-v2", "types/example-follows"} {
@@ -81,6 +109,22 @@ func TestGraphPreviewLocalTypeSelectors(t *testing.T) {
 	for _, selector := range []string{"", "types/", "types/../x", "types/example%2Dfollows", "types/example?x=1", "types//x", "beads/foo", "https://other.invalid/types/example-follows", scope + "types/example-follows#x"} {
 		if _, err := graphPreviewTypeURL(scope, selector); err == nil {
 			t.Errorf("accepted %q", selector)
+		}
+	}
+}
+
+func TestGraphPreviewLinkDisplayKeepsForeignURLs(t *testing.T) {
+	old := graphPreviewConfig
+	graphPreviewConfig = &configfile.Config{GraphScopeURL: "https://example.invalid/demo/"}
+	t.Cleanup(func() { graphPreviewConfig = old })
+	for input, want := range map[string]string{
+		"https://example.invalid/demo/types/preview-related-v2": "types/preview-related-v2",
+		"https://example.invalid/demo/links/edge":               "links/edge",
+		"https://example.invalid/demo/beads/work":               "beads/work",
+		"https://remote.invalid/beads/work":                     "https://remote.invalid/beads/work",
+	} {
+		if got := graphPreviewDisplayLocalURL(input); got != want {
+			t.Errorf("%q displayed as %q, want %q", input, got, want)
 		}
 	}
 }

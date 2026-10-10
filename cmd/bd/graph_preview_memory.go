@@ -51,24 +51,32 @@ func runGraphPreviewUpdate(cmd *cobra.Command, args []string) error {
 	return runGraphPreviewUpdateMemory(cmd, path)
 }
 
-// Replacement is explicit: a missing string is not an instruction to clear it.
-func graphPreviewMemoryProperties(properties map[string]any) (graphstore.Properties, error) {
-	title, titleOK := properties["title"].(string)
-	body, bodyOK := properties["body"].(string)
-	if len(properties) != 2 || !titleOK || !bodyOK {
-		return graphstore.Properties{}, fmt.Errorf("Memory replacement requires exactly the title and body string properties")
+// A top-level properties object edits only named Memory members. Missing
+// members preserve their values in the checked storage transaction.
+func graphPreviewMemoryProperties(properties map[string]any) (*string, *string, error) {
+	var title, body *string
+	for name, value := range properties {
+		text, ok := value.(string)
+		if !ok || (name != "title" && name != "body") {
+			return nil, nil, fmt.Errorf("Memory properties admit only title and body JSON strings")
+		}
+		if name == "title" {
+			title = &text
+		} else {
+			body = &text
+		}
 	}
-	return graphstore.Properties{Title: title, Body: body}, nil
+	return title, body, nil
 }
 
 func runGraphPreviewUpdateMemory(cmd *cobra.Command, path string) error {
-	if err := graphPreviewFlags(cmd, "properties", "metadata", "set-metadata", "unset-metadata", "if-revision", "unconditional"); err != nil {
+	if err := graphPreviewFlags(cmd, "properties", "metadata", "set-metadata", "unset-metadata", "if-revision", "force"); err != nil {
 		return err
 	}
 	if !cmd.Flags().Changed("properties") {
-		return graphFailure("invalid_properties", "Memory update requires --properties to explicitly replace title and body", 2)
+		return graphFailure("invalid_properties", "Memory update requires --properties to merge named top-level properties", 2)
 	}
-	revision, unconditional, err := graphPreviewRevisionGuard(cmd, false, true)
+	revision, unconditional, err := graphPreviewEditRevisionGuard(cmd)
 	if err != nil {
 		return err
 	}
@@ -77,20 +85,49 @@ func runGraphPreviewUpdateMemory(cmd *cobra.Command, path string) error {
 	if err != nil {
 		return graphFailure("invalid_properties", err.Error(), 2)
 	}
-	properties, err := graphPreviewMemoryProperties(values)
-	if err != nil {
-		return graphFailure("invalid_properties", err.Error(), 2)
-	}
 	metadata, err := graphPreviewMetadataPatch(cmd)
 	if err != nil {
 		return err
 	}
-	return withGraphStore(func(ctx context.Context, store *graphstore.Store) (any, string, error) {
-		result, err := store.UpdateMemory(ctx, graphstore.MemoryUpdateRequest{Path: path, Properties: properties, Metadata: metadata, Actor: getActorWithGit(), ExpectedRevision: revision, Unconditional: unconditional})
+	issueUpdated := false
+	err = withGraphStore(func(ctx context.Context, store *graphstore.Store) (any, string, error) {
+		current, err := store.Read(ctx, path)
+		if err != nil {
+			return nil, "", err
+		}
+		if _, ok := current.(graphstore.IssueRecord); ok {
+			request := graphstore.UpdateIssueRequest{Path: path, Actor: getActorWithGit(), ExpectedRevision: revision, Unconditional: unconditional, Metadata: metadata}
+			request.ForceNotesOverwrite, _ = cmd.Flags().GetBool("force")
+			if err := graphPreviewApplyIssueProperties(cmd, &request, values); err != nil {
+				return nil, "", err
+			}
+			result, err := store.UpdateIssue(ctx, request)
+			if err != nil {
+				return nil, "", err
+			}
+			issueUpdated = true
+			verb := "Updated"
+			if !result.Changed {
+				verb = "Unchanged"
+			}
+			return result, fmt.Sprintf("%s %s", verb, result.Issue.ID), nil
+		}
+		if cmd.Flags().Changed("force") {
+			return nil, "", graphFailure("invalid_properties", "--force applies only to an Issue notes edit", 2)
+		}
+		title, body, err := graphPreviewMemoryProperties(values)
+		if err != nil {
+			return nil, "", graphFailure("invalid_properties", err.Error(), 2)
+		}
+		result, err := store.PatchMemory(ctx, graphstore.MemoryPatchRequest{Path: path, Title: title, Body: body, PropertiesProvided: true, Metadata: metadata, Actor: getActorWithGit(), ExpectedRevision: revision, Unconditional: unconditional})
 		verb := "Updated"
 		if !result.Changed {
 			verb = "Unchanged"
 		}
 		return graphPreviewReplacementResult(result, fmt.Sprintf("%s %s", verb, result.Memory.ID), result.Replaced, err)
 	})
+	if err == nil && issueUpdated {
+		SetLastTouchedID(path)
+	}
+	return err
 }

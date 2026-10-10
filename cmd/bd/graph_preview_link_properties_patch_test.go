@@ -28,10 +28,10 @@ func TestGraphPreviewLinkPropertiesPatchRequest(t *testing.T) {
 		unconditional, sourceUnconditional bool
 	}{
 		{"literal-dual-guard", raw, []string{"--if-revision=link-old", "--if-source-revision=source-old"}, "link-old", "source-old", false, false},
-		{"file-Link-unconditional", "@" + file, []string{"--unconditional", "--if-source-revision=source-old"}, "", "source-old", true, false},
+		{"file-Link-unconditional", "@" + file, []string{"--if-source-revision=source-old"}, "", "source-old", true, false},
 		{"stdin-source-unconditional", "@-", []string{"--if-revision=link-old", "--unconditional-source"}, "link-old", "", false, true},
-		{"default-source-unconditional", raw, []string{"--unconditional"}, "", "", true, true},
-		{"both-unconditional", raw, []string{"--unconditional", "--unconditional-source"}, "", "", true, true},
+		{"default-source-unconditional", raw, []string{}, "", "", true, true},
+		{"both-unconditional", raw, []string{"--unconditional-source"}, "", "", true, true},
 	} {
 		t.Run(tc.name, func(t *testing.T) {
 			cmd := memoryPropertiesPatchCommand(t, append([]string{"--patch=" + tc.input}, tc.flags...)...)
@@ -57,19 +57,16 @@ func TestGraphPreviewLinkPropertiesPatchRefusesBeforeInput(t *testing.T) {
 		flags []string
 		code  int
 	}{
-		{"missing-Link-guard", nil, 2},
 		{"empty-Link-guard", []string{"--if-revision="}, 2},
-		{"both-Link-guards", []string{"--if-revision=old", "--unconditional"}, 2},
-		{"false-Link-unconditional", []string{"--unconditional=false"}, 2},
 		{"invalid-Link-token", []string{"--if-revision=\xff"}, 2},
 		{"oversized-Link-token", []string{"--if-revision=" + strings.Repeat("x", graphstore.PreviewVersionTokenLimit+1)}, 2},
-		{"empty-source-guard", []string{"--unconditional", "--if-source-revision="}, 2},
-		{"both-source-guards", []string{"--unconditional", "--if-source-revision=old", "--unconditional-source"}, 2},
-		{"false-source-unconditional", []string{"--unconditional", "--unconditional-source=false"}, 2},
-		{"invalid-source-token", []string{"--unconditional", "--if-source-revision=\xff"}, 2},
-		{"oversized-source-token", []string{"--unconditional", "--if-source-revision=" + strings.Repeat("x", graphstore.PreviewVersionTokenLimit+1)}, 2},
-		{"replacement-conflict", []string{"--unconditional", "--properties={}"}, 5},
-		{"Issue-title-conflict", []string{"--unconditional", "--title=x"}, 5},
+		{"empty-source-guard", []string{"--if-source-revision="}, 2},
+		{"both-source-guards", []string{"--if-source-revision=old", "--unconditional-source"}, 2},
+		{"false-source-unconditional", []string{"--unconditional-source=false"}, 2},
+		{"invalid-source-token", []string{"--if-source-revision=\xff"}, 2},
+		{"oversized-source-token", []string{"--if-source-revision=" + strings.Repeat("x", graphstore.PreviewVersionTokenLimit+1)}, 2},
+		{"replacement-conflict", []string{"--properties={}"}, 5},
+		{"Issue-title-conflict", []string{"--title=x"}, 5},
 		{"claim-conflict", []string{"--claim"}, 5},
 		{"false-claim-conflict", []string{"--claim=false"}, 5},
 	} {
@@ -85,7 +82,7 @@ func TestGraphPreviewLinkPropertiesPatchRefusesBeforeInput(t *testing.T) {
 		})
 	}
 	t.Run("malformed-Link-selector", func(t *testing.T) {
-		cmd := memoryPropertiesPatchCommand(t, "--patch=@-", "--unconditional")
+		cmd := memoryPropertiesPatchCommand(t, "--patch=@-")
 		probe := &memoryPropertiesPatchProbe{}
 		cmd.SetIn(probe)
 		err := runGraphPreviewUpdate(cmd, []string{"links/"})
@@ -97,7 +94,7 @@ func TestGraphPreviewLinkPropertiesPatchRefusesBeforeInput(t *testing.T) {
 	t.Run("readonly", func(t *testing.T) {
 		readonlyMode = true
 		defer func() { readonlyMode = false }()
-		cmd := memoryPropertiesPatchCommand(t, "--patch=@-", "--unconditional")
+		cmd := memoryPropertiesPatchCommand(t, "--patch=@-")
 		probe := &memoryPropertiesPatchProbe{}
 		cmd.SetIn(probe)
 		err := runGraphPreviewUpdate(cmd, []string{"links/context"})
@@ -122,7 +119,7 @@ func TestGraphPreviewLinkPropertiesPatchSyntaxBeforeStore(t *testing.T) {
 		{"duplicate-member", `[{"op":"add","path":"/note","value":1,"value":2}]`},
 	} {
 		t.Run(tc.name, func(t *testing.T) {
-			cmd := memoryPropertiesPatchCommand(t, "--patch="+tc.raw, "--unconditional")
+			cmd := memoryPropertiesPatchCommand(t, "--patch="+tc.raw)
 			err := runGraphPreviewUpdate(cmd, []string{"links/context"})
 			var failure *exitError
 			if !errors.As(err, &failure) || failure.Code != 2 {

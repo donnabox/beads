@@ -62,7 +62,7 @@ func TestGraphPreviewIssueAppendNotesInput(t *testing.T) {
 
 func TestGraphPreviewIssueAppendNotesMixedAndOmitted(t *testing.T) {
 	cmd := issueTextCommand(t, "--append-notes=\nLiteral fragment", "--title=  Revised 雪  ",
-		"--description=", "--priority=P0", "--assignee= crew.alice ", "--unconditional")
+		"--description=", "--priority=P0", "--assignee= crew.alice ")
 	appendNotesNoInput(t, cmd)
 	request, err := graphPreviewIssueEditRequest(cmd, "beads/work")
 	if err != nil {
@@ -71,13 +71,13 @@ func TestGraphPreviewIssueAppendNotesMixedAndOmitted(t *testing.T) {
 	if request.AppendNotes == nil || *request.AppendNotes != "\nLiteral fragment" || request.Title == nil || *request.Title != "Revised 雪" ||
 		request.Description == nil || *request.Description != "" || request.Priority == nil || *request.Priority != 0 ||
 		request.Assignee == nil || *request.Assignee != " crew.alice " || !request.Unconditional || request.ExpectedRevision != "" {
-		t.Fatal("mixed request lost the append fragment, field presence or explicit unconditional guard")
+		t.Fatal("mixed request lost the append fragment, field presence or current-revision default")
 	}
-	request, err = graphPreviewIssueEditRequest(issueTextCommand(t, "--title=Only title", "--unconditional"), "beads/work")
+	request, err = graphPreviewIssueEditRequest(issueTextCommand(t, "--title=Only title"), "beads/work")
 	if err != nil || request.AppendNotes != nil {
 		t.Fatalf("omitted append became an explicit empty fragment: %v", err)
 	}
-	request, err = graphPreviewIssueEditRequest(issueTextCommand(t, "--append-notes=", "--unconditional"), "beads/work")
+	request, err = graphPreviewIssueEditRequest(issueTextCommand(t, "--append-notes="), "beads/work")
 	if err != nil || request.AppendNotes == nil || *request.AppendNotes != "" || !request.Unconditional {
 		t.Fatalf("explicit empty append was discarded: %v", err)
 	}
@@ -89,25 +89,20 @@ func TestGraphPreviewIssueAppendNotesRefusals(t *testing.T) {
 		args []string
 		code int
 	}{
-		{"invalid-utf8", []string{"--append-notes=\xff", "--unconditional"}, 2},
-		{"missing-guard", []string{"--append-notes=Progress"}, 2},
+		{"invalid-utf8", []string{"--append-notes=\xff"}, 2},
 		{"empty-guard", []string{"--append-notes=", "--if-revision="}, 2},
-		{"false-unconditional", []string{"--append-notes=Progress", "--unconditional=false"}, 2},
-		{"both-guards", []string{"--append-notes=Progress", "--if-revision=observed", "--unconditional"}, 2},
-		{"revision-and-false-unconditional", []string{"--append-notes=Progress", "--if-revision=observed", "--unconditional=false"}, 2},
-		{"replacement-notes", []string{"--append-notes=Progress", "--notes=Replacement", "--unconditional"}, 2},
-		{"clear-replacement-notes", []string{"--append-notes=Progress", "--notes=", "--unconditional"}, 2},
-		{"force", []string{"--append-notes=Progress", "--force", "--unconditional"}, 2},
-		{"false-force", []string{"--append-notes=Progress", "--force=false", "--unconditional"}, 2},
-		{"claim", []string{"--append-notes=Progress", "--claim", "--unconditional"}, 5},
-		{"false-claim-direct-request", []string{"--append-notes=Progress", "--claim=false", "--unconditional"}, 5},
-		{"workflow", []string{"--append-notes=Progress", "--status=closed", "--unconditional"}, 5},
-		{"generic-properties", []string{"--append-notes=Progress", "--properties={}", "--unconditional"}, 5},
-		{"source-guard", []string{"--append-notes=Progress", "--if-source-revision=other", "--unconditional"}, 5},
-		{"assignee-guard", []string{"--append-notes=Progress", "--if-assignee=", "--unconditional"}, 5},
-		{"status-guard", []string{"--append-notes=Progress", "--if-status=open", "--unconditional"}, 5},
-		{"file", []string{"--append-notes=Progress", "--body-file=missing", "--unconditional"}, 5},
-		{"stdin-false", []string{"--append-notes=Progress", "--stdin=false", "--unconditional"}, 5},
+		{"replacement-notes", []string{"--append-notes=Progress", "--notes=Replacement"}, 2},
+		{"clear-replacement-notes", []string{"--append-notes=Progress", "--notes="}, 2},
+		{"force", []string{"--append-notes=Progress", "--force"}, 2},
+		{"false-force", []string{"--append-notes=Progress", "--force=false"}, 2},
+		{"claim", []string{"--append-notes=Progress", "--claim"}, 5},
+		{"false-claim-direct-request", []string{"--append-notes=Progress", "--claim=false"}, 5},
+		{"workflow", []string{"--append-notes=Progress", "--status=closed"}, 5},
+		{"source-guard", []string{"--append-notes=Progress", "--if-source-revision=other"}, 5},
+		{"assignee-guard", []string{"--append-notes=Progress", "--if-assignee="}, 5},
+		{"status-guard", []string{"--append-notes=Progress", "--if-status=open"}, 5},
+		{"file", []string{"--append-notes=Progress", "--body-file=missing"}, 5},
+		{"stdin-false", []string{"--append-notes=Progress", "--stdin=false"}, 5},
 	} {
 		t.Run(tc.name, func(t *testing.T) {
 			cmd := issueTextCommand(t, tc.args...)
@@ -118,6 +113,12 @@ func TestGraphPreviewIssueAppendNotesRefusals(t *testing.T) {
 				t.Fatalf("expected refusal exit%d before input/storage, got %v", tc.code, err)
 			}
 		})
+	}
+	cmd := issueTextCommand(t, "--append-notes=Progress", "--properties={}")
+	appendNotesNoInput(t, cmd)
+	request, err := graphPreviewIssueEditRequest(cmd, "beads/work")
+	if err != nil || !cmd.Flags().Changed("properties") || request.AppendNotes == nil || *request.AppendNotes != "Progress" {
+		t.Fatalf("mixed append and empty property merge: %+v %v", request, err)
 	}
 }
 
@@ -135,13 +136,13 @@ func TestGraphPreviewIssueAppendNotesDispatchRefusals(t *testing.T) {
 	}{
 		// Invalid text reaches Issue admission (exit2), rather than falling
 		// through to Memory's unsupported-field refusal (exit5).
-		{"issue-route", "beads/work", []string{"--append-notes=\xff", "--unconditional"}, 2},
-		{"canonical-issue-route", "https://example.invalid/beads/work", []string{"--append-notes=\xff", "--unconditional"}, 2},
-		{"link-route", "links/context", []string{"--append-notes=Progress", "--unconditional"}, 5},
-		{"foreign-selector", "https://foreign.invalid/beads/work", []string{"--append-notes=Progress", "--unconditional"}, 2},
-		{"unsupported-selector", "alias/work-123", []string{"--append-notes=Progress", "--unconditional"}, 2},
-		{"false-claim-dispatch", "beads/work", []string{"--append-notes=Progress", "--claim=false", "--unconditional"}, 2},
-		{"true-claim-dispatch", "beads/work", []string{"--append-notes=Progress", "--claim", "--unconditional"}, 5},
+		{"issue-route", "beads/work", []string{"--append-notes=\xff"}, 2},
+		{"canonical-issue-route", "https://example.invalid/beads/work", []string{"--append-notes=\xff"}, 2},
+		{"link-route", "links/context", []string{"--append-notes=Progress"}, 5},
+		{"foreign-selector", "https://foreign.invalid/beads/work", []string{"--append-notes=Progress"}, 2},
+		{"unsupported-selector", "alias/work-123", []string{"--append-notes=Progress"}, 2},
+		{"false-claim-dispatch", "beads/work", []string{"--append-notes=Progress", "--claim=false"}, 2},
+		{"true-claim-dispatch", "beads/work", []string{"--append-notes=Progress", "--claim"}, 5},
 	} {
 		t.Run(tc.name, func(t *testing.T) {
 			cmd := issueTextCommand(t, tc.flags...)
@@ -156,7 +157,7 @@ func TestGraphPreviewIssueAppendNotesDispatchRefusals(t *testing.T) {
 	// This tests the Memory route's own field admission, not the store-backed
 	// classification of a healthy Memory selected through generic update.
 	t.Run("direct-memory-route", func(t *testing.T) {
-		cmd := issueTextCommand(t, "--append-notes=Progress", "--unconditional")
+		cmd := issueTextCommand(t, "--append-notes=Progress")
 		appendNotesNoInput(t, cmd)
 		err := runGraphPreviewUpdateMemory(cmd, "beads/plan")
 		var failure *exitError
@@ -170,7 +171,7 @@ func TestGraphPreviewIssueAppendNotesReadonlyBeforeDispatch(t *testing.T) {
 	oldConfig, oldReadonly := graphPreviewConfig, readonlyMode
 	graphPreviewConfig, readonlyMode = nil, true
 	t.Cleanup(func() { graphPreviewConfig, readonlyMode = oldConfig, oldReadonly })
-	cmd := issueTextCommand(t, "--append-notes=-", "--unconditional")
+	cmd := issueTextCommand(t, "--append-notes=-")
 	appendNotesNoInput(t, cmd)
 	err := runGraphPreviewUpdate(cmd, []string{"beads/work"})
 	var failure *exitError

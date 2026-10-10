@@ -14,12 +14,11 @@ import (
 func selectedRememberCommand(t *testing.T, flags []string) *cobra.Command {
 	t.Helper()
 	cmd := &cobra.Command{}
-	for _, name := range []string{"id", "title", "update", "if-revision", "body-file", "key"} {
+	for _, name := range []string{"id", "title", "update", "if-revision", "body-file", "key", "properties"} {
 		cmd.Flags().String(name, "", "")
 	}
 	cmd.Flags().Bool("stdin", false, "")
 	cmd.Flags().Bool("create-only", false, "")
-	cmd.Flags().Bool("unconditional", false, "")
 	if err := cmd.ParseFlags(flags); err != nil {
 		t.Fatal(err)
 	}
@@ -39,6 +38,13 @@ func TestGraphPreviewRememberSelectedPatchInput(t *testing.T) {
 		{"clear-title", []string{"--title="}, nil, memoryPatchInputString(""), nil, false},
 		{"both", []string{"--title=new"}, []string{"body"}, memoryPatchInputString("new"), memoryPatchInputString("body"), false},
 		{"both-empty", []string{"--title="}, []string{""}, memoryPatchInputString(""), memoryPatchInputString(""), false},
+		{"properties-body", []string{`--properties={"body":"typed body"}`}, nil, nil, memoryPatchInputString("typed body"), false},
+		{"properties-title", []string{`--properties={"title":"typed title"}`}, nil, memoryPatchInputString("typed title"), nil, false},
+		{"properties-empty-noop", []string{`--properties={}`}, nil, nil, nil, false},
+		{"properties-and-body", []string{`--properties={"title":"typed title"}`}, []string{"positional body"}, memoryPatchInputString("typed title"), memoryPatchInputString("positional body"), false},
+		{"duplicate-body", []string{`--properties={"body":"body"}`}, []string{"body"}, nil, nil, true},
+		{"duplicate-title", []string{"--title=title", `--properties={"title":"title"}`}, nil, nil, nil, true},
+		{"unknown-property", []string{`--properties={"content":"body"}`}, nil, nil, nil, true},
 		{"neither", nil, nil, nil, nil, true},
 		{"invalid-title", []string{"--title=\xff"}, nil, nil, nil, true},
 		{"false-stdin-with-title", []string{"--title=new", "--stdin=false"}, nil, nil, nil, true},
@@ -73,10 +79,9 @@ func TestGraphPreviewRememberSelectedArgumentAdmission(t *testing.T) {
 		{"create-only", []string{"--id=beads/plan", "--create-only"}, true},
 		{"empty-selected", []string{"--update="}, true},
 		{"guard-only", []string{"--if-revision=observed"}, true},
-		{"unconditional", []string{"--unconditional"}, true},
-		{"false-unconditional", []string{"--unconditional=false"}, true},
 		{"empty-guard", []string{"--if-revision="}, true},
 		{"existing-file", []string{"--body-file=body.md"}, true},
+		{"properties", []string{`--properties={}`}, true},
 		{"legacy-key", []string{"--key=plan"}, false},
 		{"bare-legacy", nil, false},
 	} {
@@ -121,9 +126,6 @@ func TestGraphPreviewRememberSelectedRefusesBeforeInput(t *testing.T) {
 		code     int
 	}{
 		{"empty-guard", []string{"--update=beads/plan", "--if-revision="}, false, 2},
-		{"both-guards", []string{"--update=beads/plan", "--if-revision=observed", "--unconditional"}, false, 2},
-		{"false-unconditional", []string{"--update=beads/plan", "--unconditional=false"}, false, 2},
-		{"generated-unconditional", []string{"--title=New", "--unconditional"}, false, 5},
 		{"invalid-guard", []string{"--update=beads/plan", "--if-revision=\xff"}, false, 2},
 		{"oversized-guard", []string{"--update=beads/plan", "--if-revision=" + strings.Repeat("x", graphstore.PreviewVersionTokenLimit+1)}, false, 2},
 		{"empty-selector", []string{"--update=", "--if-revision=observed"}, false, 2},

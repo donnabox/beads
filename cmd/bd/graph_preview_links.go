@@ -70,6 +70,20 @@ func graphPreviewRevisionGuard(cmd *cobra.Command, source, required bool) (strin
 	return revision, unconditional, nil
 }
 
+// Ordinary edits use the current predecessor when no comparison was asked for.
+// The writer still checks a supplied token atomically and records the actual
+// replaced version. Destructive commands retain their separate explicit guard.
+func graphPreviewEditRevisionGuard(cmd *cobra.Command) (string, bool, error) {
+	if !cmd.Flags().Changed("if-revision") {
+		return "", true, nil
+	}
+	revision, _ := cmd.Flags().GetString("if-revision")
+	if revision == "" {
+		return "", false, graphFailure("invalid_selector", "--if-revision requires a nonempty revision token", 2)
+	}
+	return revision, false, nil
+}
+
 // The old name remains a hidden compatibility alias for existing scripts.
 func registerGraphLinkTypeFlag(cmd *cobra.Command) {
 	cmd.Flags().String("link-type", "", "Installed Link Type: types/NAME or full local URL (graph preview only)")
@@ -154,9 +168,6 @@ func runGraphPreviewLink(cmd *cobra.Command, args []string) error {
 	}
 	path, _ := cmd.Flags().GetString("id")
 	if cmd.Flags().Changed("id") {
-		if strings.Contains(path, "://") {
-			return graphFailure("invalid_selector", "--id accepts a bare Link ID or links/PATH, not a URL", 2)
-		}
 		path, err = graphPreviewLinkPath(graphPreviewConfig.GraphScopeURL, path)
 		if err != nil {
 			return graphFailure("invalid_selector", err.Error(), 2)
@@ -191,7 +202,7 @@ func runGraphPreviewUpdateLink(cmd *cobra.Command, args []string) error {
 	if err := graphPreviewWritePolicy(); err != nil {
 		return err
 	}
-	if err := graphPreviewFlags(cmd, "properties", "metadata", "set-metadata", "unset-metadata", "if-revision", "unconditional", "if-source-revision", "unconditional-source"); err != nil {
+	if err := graphPreviewFlags(cmd, "properties", "metadata", "set-metadata", "unset-metadata", "if-revision", "if-source-revision", "unconditional-source"); err != nil {
 		return err
 	}
 	if len(args) != 1 {
@@ -205,9 +216,9 @@ func runGraphPreviewUpdateLink(cmd *cobra.Command, args []string) error {
 		return graphFailure("capability_unavailable", "this preview updates informational Link properties only", 5)
 	}
 	if !cmd.Flags().Changed("properties") {
-		return graphFailure("invalid_properties", "Link update requires --properties to explicitly replace the complete properties object", 2)
+		return graphFailure("invalid_properties", "Link update requires --properties to merge named top-level properties", 2)
 	}
-	revision, unconditional, err := graphPreviewRevisionGuard(cmd, false, true)
+	revision, unconditional, err := graphPreviewEditRevisionGuard(cmd)
 	if err != nil {
 		return err
 	}
@@ -226,7 +237,7 @@ func runGraphPreviewUpdateLink(cmd *cobra.Command, args []string) error {
 	}
 	return withGraphStore(func(ctx context.Context, store *graphstore.Store) (any, string, error) {
 		result, err := store.UpdateLink(ctx, graphstore.LinkUpdateRequest{
-			Path: path, Properties: properties, Metadata: metadata, Actor: getActorWithGit(), ExpectedRevision: revision,
+			Path: path, Properties: properties, MergeProperties: true, Metadata: metadata, Actor: getActorWithGit(), ExpectedRevision: revision,
 			Unconditional: unconditional, ExpectedSourceRevision: sourceRevision, UnconditionalSource: unconditionalSource,
 		})
 		verb := "Updated"

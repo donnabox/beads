@@ -98,7 +98,7 @@ func TestGraphPreviewCLIWritePolicy(t *testing.T) {
 					t.Fatal("refused remember changed workspace")
 				}
 				for _, subject := range []string{"beads/plan", "links/context"} {
-					patchArgs := []string{"update", subject, "--patch=@" + filepath.Join(work, "missing-patch.json"), "--unconditional", "--json"}
+					patchArgs := []string{"update", subject, "--patch=@" + filepath.Join(work, "missing-patch.json"), "--json"}
 					graphPolicyCLI(t, bd, work, home, tc.env, tc.code, append(patchArgs, tc.flags...)...)
 					if after := legacyUpgradeTreeDigest(t, work); after != before {
 						t.Fatal("refused patch changed workspace")
@@ -267,11 +267,13 @@ func TestGraphPreviewC0DeferredCommandsRefuseBeforeLegacyOpen(t *testing.T) {
 	work, home := t.TempDir(), t.TempDir()
 	graphPolicyCLI(t, bd, work, home, nil, "", "init", "--graph-mode", "link", "--scope-url", "https://example.invalid/c0/", "--skip-hooks", "--skip-agents", "--non-interactive", "--json")
 	created := graphPolicyCLI(t, bd, work, home, nil, "", "remember", "C0 body", "--id", "beads/plan", "--title", "Plan", "--json")
+	// Generic typed creation is now admitted and must stay on the graph writer.
+	graphPolicyCLI(t, bd, work, home, nil, "", "create", "Title", "--properties", `{"description":"Graph only"}`)
 	for _, args := range [][]string{
-		{"create", "Must refuse", "--estimate=3", "--due=tomorrow", "--defer=tomorrow", "--json"}, {"update", "beads/plan", "--title", "Must refuse", "--priority=1", "--unconditional", "--json"},
+		{"create", "Must refuse", "--estimate=3", "--due=tomorrow", "--defer=tomorrow", "--json"}, {"update", "beads/plan", "--title", "Must refuse", "--priority=1", "--json"},
 		// Native upstream label operations must not enter the graph writer.
 		{"label", "rename", "old", "new", "--json"}, {"label", "rename", "old", "new", "--dry-run", "--json"},
-		{"update", "beads/plan", "-l", "new", "--unconditional", "--json"},
+		{"update", "beads/plan", "-l", "new", "--json"},
 		{"memories", "--json"}, {"recall", "beads/plan", "--json"},
 		{"list", "--json"}, {"ready", "--explain", "--json"}, {"close", "beads/plan", "--force", "--json"},
 		{"link", "beads/plan", "beads/other", "--type=related", "--json"}, {"serve", "--json"},
@@ -306,9 +308,9 @@ func TestGraphPreviewC0DeferredCommandsRefuseBeforeLegacyOpen(t *testing.T) {
 	wantEnabled := map[string]bool{}
 	for _, capability := range []string{
 		"memoryCreate", "memoryRead", "memoryBodyFileInput", "memoryBodyStdinInput", "memoryPropertiesUpdate",
-		"memorySelectedUpdate", "memorySelectedUpdateUnconditional", "memoryOverwriteDisclosure", "memoryUnreferencedDelete", "issueUnreferencedDelete", "issueCreate", "issueCreateAuthorship",
-		"issueCreateFields", "issueInitialNotes", "issueNotesAppend", "issueNotesReplace", "issueNotesClear", "issueEstimateUpdate", "issueReferenceUpdate",
-		"issueClaim", "issueUnclaim", "issueTextUpdate", "issuePriorityUpdate", "issueAssigneeUpdate", "issueAssigneeFilter", "issueDueDate", "issueDueFilter", "informationalLink", "blockingDependency", "linkPropertiesUpdate", "linkUnlink", "blockingDependencyUnlink",
+		"memorySelectedUpdate", "memorySelectedUpdateCurrentByDefault", "memoryOverwriteDisclosure", "memoryUnreferencedDelete", "issueUnreferencedDelete", "issueCreate", "issueCreateAuthorship",
+		"issueCreateFields", "issueInitialNotes", "issueNotesAppend", "issueNotesReplace", "issueNotesClear", "issueEstimateUpdate", "issueReferenceUpdate", "issuePropertiesUpdate", "issuePropertiesPatch",
+		"issueClaim", "issueUnclaim", "issueTextUpdate", "issuePriorityUpdate", "issueAssigneeUpdate", "issueAssigneeFilter", "issueDueDate", "issueDueFilter", "informationalLink", "blockingDependency", "blockingDependencyShorthand", "blockingDependencyExplicitID", "linkPropertiesUpdate", "linkUnlink", "blockingDependencyUnlink",
 		"incidentLinks", "ownedLinks", "issueClose", "issueReopen", "issueDatelessDeferral", "issueDatedDeferral", "issueReady", "genericRead",
 		"issueList", "beadList", "beadTypeFilter", "issueBlocked", "genericTraversal",
 		"memoryDiscovery", "memoryBodyRecall", "exactVersionRead", "exactVersionCompare",
@@ -334,16 +336,19 @@ func TestGraphPreviewC0DeferredCommandsRefuseBeforeLegacyOpen(t *testing.T) {
 func TestGraphPreviewGenericFlagsRefuseLegacyOpening(t *testing.T) {
 	bd := buildBDUnderTest(t)
 	for _, args := range [][]string{
-		{"remember", "--update", "beads/plan", "--title", "Refused", "--unconditional"},
+		{"remember", "--update", "beads/plan", "--title", "Refused"},
 		{"link", "demo-one", "demo-two", "--properties", `{}`},
 		{"link", "demo-one", "demo-two", "--id", "links/context"},
-		{"update", "demo-one", "--properties", `{}`, "--unconditional"},
-		{"update", "beads/plan", "--patch=@/missing/patch.json", "--unconditional"},
+		{"link", "demo-one", "demo-two", "--metadata", `{}`},
+		{"dep", "add", "demo-one", "demo-two", "--id", "links/context"},
+		{"remember", "body", "--set-metadata", "team=docs"},
+		{"remember", "body", "--unset-metadata", "team"},
+		{"update", "demo-one", "--properties", `{}`},
+		{"update", "beads/plan", "--patch=@/missing/patch.json"},
 		// update and delete --if-revision is upstream's compare-and-swap outside
 		// link mode, so it is not a graph-only flag here (see
-		// TestGraphPreviewIfRevisionOutsideLinkModeIsUpstreamCAS). Their
-		// --unconditional companion is, and stays refused on its own.
-		{"update", "demo-one", "--unconditional"},
+		// TestGraphPreviewIfRevisionOutsideLinkModeIsUpstreamCAS).
+		// New graph-only source guards still refuse before legacy opening.
 		{"update", "demo-one", "--if-source-revision", "observed"},
 		{"delete", "beads/plan", "--unconditional"},
 		{"delete", "beads/plan", "--unconditional=false"},

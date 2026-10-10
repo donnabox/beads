@@ -85,15 +85,15 @@ func TestGraphPreviewIssueAssignmentWorkflow(t *testing.T) {
 				t.Fatal("same-value edit was not a semantic no-op")
 			}
 			refuse("revision_conflict", "update", "beads/work", "--priority", "0", "--assignee", "alice", "--if-revision", original.Revision)
-			refuse("permission_denied", "update", "beads/work", "--priority", "1", "--unconditional", "--readonly")
-			refuse("capability_unavailable", "update", "beads/work", "--assignee", "bob", "--claim", "--unconditional")
-			refuse("capability_unavailable", "update", "beads/context", "--priority", "1", "--unconditional")
-			refuse("capability_unavailable", "update", "links/context", "--assignee", "bob", "--unconditional")
+			refuse("permission_denied", "update", "beads/work", "--priority", "1", "--readonly")
+			refuse("capability_unavailable", "update", "beads/work", "--assignee", "bob", "--claim")
+			refuse("capability_unavailable", "update", "beads/context", "--priority", "1")
+			refuse("capability_unavailable", "update", "links/context", "--assignee", "bob")
 			// A freeze must block this newly admitted edit before its writer opens.
 			writeFile(t, filepath.Join(work, "mayor", "town.json"), []byte("{}\n"))
 			freeze := filepath.Join(work, "MIGRATION-FREEZE")
 			writeFile(t, freeze, []byte("assignment-test\t2026-09-28T00:00:00Z\tfreeze\n"))
-			refuse("permission_denied", "update", "beads/work", "--assignee", "bob", "--unconditional")
+			refuse("permission_denied", "update", "beads/work", "--assignee", "bob")
 			if err := os.Remove(freeze); err != nil {
 				t.Fatal(err)
 			}

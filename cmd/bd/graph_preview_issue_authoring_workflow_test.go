@@ -90,10 +90,10 @@ func TestGraphPreviewIssueAuthoringWorkflow(t *testing.T) {
 				code string
 				args []string
 			}{
-				{"invalid_properties", []string{"update", "beads/work", "--estimate=-1", "--unconditional"}},
-				{"notes_overwrite_refused", []string{"update", "beads/work", "--notes=Replace", "--unconditional"}},
+				{"invalid_properties", []string{"update", "beads/work", "--estimate=-1"}},
+				{"notes_overwrite_refused", []string{"update", "beads/work", "--notes=Replace"}},
 				{"capability_unavailable", []string{"update", "beads/work", "--estimate=1", "--claim"}},
-				{"permission_denied", []string{"update", "beads/work", "--spec-id=No", "--unconditional", "--readonly"}},
+				{"permission_denied", []string{"update", "beads/work", "--spec-id=No", "--readonly"}},
 			} {
 				graphPolicyCLI(t, bd, work, home, nil, refusal.code, append(refusal.args, "--json")...)
 			}
@@ -167,7 +167,7 @@ func TestGraphPreviewIssueDatelessDeferralWorkflow(t *testing.T) {
 			}
 			memory := call("remember", "Context", "--id", "context", "--title", "Context")
 			refuse("invalid_selector", "defer", original.ID, "--if-revision", original.Revision, "context")
-			refuse("invalid_properties", "defer", "context", "--unconditional")
+			refuse("invalid_properties", "defer", "context")
 			if call("show", original.ID) == memory {
 				t.Fatal("Issue and Memory identity collided")
 			}

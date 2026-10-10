@@ -482,7 +482,7 @@ Examples:
   bd recall auth-jwt
 
 In graph preview workspaces, select one canonical Memory ID or Scope URL.
-Recall streams the exact body with no framing or added newline, including empty
+Recall prints the body with one trailing newline, including empty
 content. --version TOKEN selects a retained body; --quiet does not suppress it.
 Graph recall --json is unavailable; show --json returns the experimental record.`,
 	GroupID:       "setup",
