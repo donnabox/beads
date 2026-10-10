@@ -51,6 +51,7 @@ func graphMemoryReadRaw(t *testing.T, bd, work, home, want, code string, args ..
 		t.Fatalf("read process exceeded deadline: %v stderr=%s", ctx.Err(), stderr.String())
 	}
 	if code == "" {
+		want += "\n" // Match ordinary bd recall's human-output framing.
 		if err != nil || stderr.Len() != 0 || !bytes.Equal(stdout.Bytes(), []byte(want)) {
 			t.Fatalf("raw read %v: err=%v stdout=%q want=%q stderr=%q", args, err, stdout.Bytes(), want, stderr.Bytes())
 		}

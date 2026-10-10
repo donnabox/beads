@@ -681,11 +681,12 @@ graph Memory-list mapping and refuses. Explicit `--format table` or
 Ordinary KV-memory workspaces retain their existing output and `--format json`
 alias. BDP Read remains the protocol interface for scripts.
 
-`recall` writes the selected body's exact bytes with no envelope, added newline
-or quiet suppression. Empty content succeeds with zero output bytes. Without
-`--version`, it reads current Memory; with a token from a saved result it reads
-that retained body even after edits or deletion. Graph JSON recall remains
-unavailable because the complete Memory representation is unresolved.
+`recall` writes the selected body followed by one newline, matching ordinary
+`bd recall`; quiet does not suppress it. Empty content succeeds and writes a
+newline. Without `--version`, it reads current Memory; with a token from a
+saved result it reads that retained body even after edits or deletion. Graph
+JSON recall remains unavailable because the complete Memory representation is
+unresolved.
 
 `show --version` also supports retained Issue and Link records, including their
 saved owned Links. Tokens are opaque nonempty UTF-8 strings of at most 4,096

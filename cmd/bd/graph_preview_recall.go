@@ -9,7 +9,8 @@ import (
 	"github.com/steveyegge/beads/internal/storage/graphstore"
 )
 
-// Recall is a content stream: no framing, extra newline, or quiet suppression.
+// Recall follows ordinary bd's human output: one trailing newline, even when
+// the stored body is empty. Quiet does not suppress the requested body.
 // The structured Memory contract requires fields this preview does not provide.
 func runGraphPreviewRecall(cmd *cobra.Command, args []string) error {
 	if err := graphPreviewFlags(cmd, "version"); err != nil {
@@ -47,7 +48,7 @@ func runGraphPreviewRecall(cmd *cobra.Command, args []string) error {
 		}
 		return nil, memory.Properties.Body, nil
 	}, func(_ any, body string) error {
-		_, err := fmt.Fprint(cmd.OutOrStdout(), body)
+		_, err := fmt.Fprintln(cmd.OutOrStdout(), body)
 		return err
 	})
 }

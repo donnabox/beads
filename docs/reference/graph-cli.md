@@ -89,7 +89,7 @@ in this one.
 | Command | Graph workspace behavior |
 | --- | --- |
 | `bd memories [SEARCH]` | List current Memory title/body summaries. Use `--all` for all matches within the preview's bounds, `--details` for saved version and attribution, or `--format records-json` for structured summaries. |
-| `bd recall ID` | Print **one** Memory's exact body bytes. It does not enumerate Memories or add a newline. |
+| `bd recall ID` | Print **one** Memory's body followed by a newline, as ordinary `bd recall` does. It does not enumerate Memories. |
 | `bd show ID --json` | Read one current Issue or Memory record; use `links/ID` for a Link. |
 | `bd list` or `bd list --format records-json` | Without an Issue filter, list every current Memory and Issue the ordinary `bd list` would show, newest recorded change first; closed and pinned Issues need `--all`. Use `--bead-type types/NAME` to narrow by nominal Type. An Issue filter, or a matching directory label, switches to the Issue-only query described below and says so. |
 
