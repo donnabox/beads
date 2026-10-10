@@ -125,3 +125,37 @@ Multiple commands need not equal multiple transactions, and one legacy command c
 The worked model deliberately keeps current BDP's group `changes`/`erasures` and snapshot rules while examining the mutation vocabulary. Folding every recovery/projection transition into one event-only stream remains a separate design decision. D03 rules out domain-specific event types; it does not require falsifying graph lifecycle facts or dropping generic replication control information. [Snapshot contract](https://github.com/gastownhall/bdp/blob/182f1fcf8a01d896976bff3c9e3fb87c596c6ca6/docs/specs/bdp.md#L2043-L2065) [Projection and Event visibility](https://github.com/gastownhall/bdp/blob/182f1fcf8a01d896976bff3c9e3fb87c596c6ca6/docs/specs/bdp.md#L6037-L6234)
 
 No runtime implementation, tests or normative protocol changes accompany this model.
+
+## Stream-only bridge for legacy dependency identity
+
+Donna asked whether the event stream can serve both current Beads and a generic graph without first rationalizing the command line. **Yes: use a generic, opaque Link reference in the stream and adapt legacy pair-addressed relationships at publication.** This is a proposal, not a new accepted decision. It changes the stream contract and its identity bookkeeping, not the CLI's lookup or the legacy store's one-edge-per-directed-pair rule.
+
+Current dependency rows have a deterministic UUID derived from `(source, target)`; Type is excluded. Metadata updates look up that same pair. Removal followed by recreation derives the same storage UUID again. The shipped journal does not publish that UUID in its dependency payload. A raw storage key therefore identifies a relationship slot and cannot by itself establish a nonreused Link lifetime. [Legacy ID derivation](https://github.com/gastownhall/beads/blob/c21880105fc1608a58f8472fdeff8f57a3f0c263/internal/storage/depid/depid.go) [Pair-addressed mutation](https://github.com/gastownhall/beads/blob/c21880105fc1608a58f8472fdeff8f57a3f0c263/internal/storage/issueops/dependencies.go#L310-L374)
+
+### One consumer model
+
+Every published Link has an opaque reference, its source, target, Type and properties. Lifecycle/updated Events name that reference; linked/unlinked facts carry the same reference and endpoint context. Consumers key Links by this opaque reference, never by `(source, target)` or `(source, target, Type)`.
+
+- **Generic graph producer:** use its existing independent Link identity. Parallel same-pair Links remain distinct.
+- **Legacy Beads producer:** maintain a durable mapping from the currently live dependency slot to a published lifetime identity. Keep it for all metadata updates. Retire it on delete; allocate a fresh identity if the pair is recreated. Store this mapping at the capture/publication boundary; it need not become a new CLI argument or change dependency uniqueness.
+
+Illustrative mapping, with endpoint observation facts abbreviated:
+
+| Legacy change | Published effect |
+|---|---|
+| Create A → B | Allocate L1; `created L1`, `linked L1` at A and B. |
+| Refresh metadata on A → B | Retain L1; `updated L1` if logical state changed. |
+| Delete A → B | `deleted L1`, `unlinked L1` at A and B; retire mapping. |
+| Recreate A → B | Allocate L2, despite the reused storage UUID; `created L2`, `linked L2` at A and B. |
+
+The generic graph producer may additionally publish L3 from A to B while L2 is live. The same consumer stores both. Current Beads never emits that state because its model forbids it; the event schema does not inherit that restriction.
+
+The lifetime identity can be a durable allocated token or derived from a stable creation-occurrence identity plus source identity. It must not be freshly randomized each time a row is read, derived solely from endpoint/type values, or silently recalculated on resnapshot. Event delivery IDs and Resource lifetime IDs are separate: one Link may have many update Events. A BDP-compatible realization must also use the same Link identity in canonical reads/snapshots and preserve the Scope non-reuse guarantee across epoch changes. Stream-local handles alone do not constitute a full BDP implementation. [BDP identity contract](https://github.com/gastownhall/bdp/blob/182f1fcf8a01d896976bff3c9e3fb87c596c6ca6/docs/specs/bdp.md#L617-L640)
+
+### Why this needs state, but not a CLI redesign
+
+For new writes, the capture path can distinguish creation, update and deletion and retain the identity assignment with its durable output. A projecting adapter over the old journal instead needs an established baseline and a durable active-Link map: `dep_add` means upsert, so the record alone does not say whether the Link already existed. A replay of an old record must yield the same projected identity/event IDs and not allocate another Link. Persist adapter state, consumed cursor and output atomically, or through an equivalently replay-safe mechanism.
+
+A baseline must contain existing Link identities and agree with the continuation point. It represents existing state; it must not fabricate historical creation events. If a prune/reset/unrecorded write destroys continuity, the adapter must fail/rebaseline rather than pretend to know which Link lifetime continued. The legacy journal's known gaps still apply. Exact original transaction boundaries cannot be recovered from its flat rows; capture them prospectively for the stronger contract.
+
+Thus the answer has a boundary: **one generic five-verb stream can represent both systems, with stateful identity adaptation. A stateless rename of the old event fields cannot supply independent Link lifetimes, exact creation-vs-update meaning, or missing transaction history.** This proposal preserves those distinctions and leaves command-line rationalization for later.
