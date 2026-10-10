@@ -136,15 +136,18 @@ func runGraphPreviewAddDependency(cmd *cobra.Command, args []string) error {
 }
 
 func runGraphPreviewDepBlocks(cmd *cobra.Command, args []string) error {
-	if err := graphPreviewWritePolicy(); err != nil {
-		return err
-	}
 	if err := graphPreviewFlags(cmd, "blocks"); err != nil {
 		return err
 	}
 	blocked, _ := cmd.Flags().GetString("blocks")
+	if len(args) == 0 && blocked == "" {
+		return cmd.Help()
+	}
 	if len(args) != 1 || blocked == "" {
 		return graphFailure("invalid_selector", "dep BLOCKER --blocks BLOCKED requires two Issue IDs", 2)
+	}
+	if err := graphPreviewWritePolicy(); err != nil {
+		return err
 	}
 	sourcePath, err := graphPreviewBeadSelector(blocked)
 	if err != nil {

@@ -306,9 +306,9 @@ func TestGraphPreviewC0DeferredCommandsRefuseBeforeLegacyOpen(t *testing.T) {
 	wantEnabled := map[string]bool{}
 	for _, capability := range []string{
 		"memoryCreate", "memoryRead", "memoryBodyFileInput", "memoryBodyStdinInput", "memoryPropertiesUpdate",
-		"memorySelectedUpdate", "memorySelectedUpdateUnconditional", "memoryOverwriteDisclosure", "memoryUnreferencedDelete", "issueUnreferencedDelete", "issueCreate", "issueCreateAuthorship",
+		"memorySelectedUpdate", "memorySelectedUpdateCurrentByDefault", "memoryOverwriteDisclosure", "memoryUnreferencedDelete", "issueUnreferencedDelete", "issueCreate", "issueCreateAuthorship",
 		"issueCreateFields", "issueInitialNotes", "issueNotesAppend", "issueNotesReplace", "issueNotesClear", "issueEstimateUpdate", "issueReferenceUpdate",
-		"issueClaim", "issueUnclaim", "issueTextUpdate", "issuePriorityUpdate", "issueAssigneeUpdate", "issueAssigneeFilter", "issueDueDate", "issueDueFilter", "informationalLink", "blockingDependency", "linkPropertiesUpdate", "linkUnlink", "blockingDependencyUnlink",
+		"issueClaim", "issueUnclaim", "issueTextUpdate", "issuePriorityUpdate", "issueAssigneeUpdate", "issueAssigneeFilter", "issueDueDate", "issueDueFilter", "informationalLink", "blockingDependency", "blockingDependencyShorthand", "blockingDependencyExplicitID", "linkPropertiesUpdate", "linkUnlink", "blockingDependencyUnlink",
 		"incidentLinks", "ownedLinks", "issueClose", "issueReopen", "issueDatelessDeferral", "issueDatedDeferral", "issueReady", "genericRead",
 		"issueList", "beadList", "beadTypeFilter", "issueBlocked", "genericTraversal",
 		"memoryDiscovery", "memoryBodyRecall", "exactVersionRead", "exactVersionCompare",
@@ -337,11 +337,15 @@ func TestGraphPreviewGenericFlagsRefuseLegacyOpening(t *testing.T) {
 		{"remember", "--update", "beads/plan", "--title", "Refused"},
 		{"link", "demo-one", "demo-two", "--properties", `{}`},
 		{"link", "demo-one", "demo-two", "--id", "links/context"},
+		{"link", "demo-one", "demo-two", "--metadata", `{}`},
+		{"dep", "add", "demo-one", "demo-two", "--id", "links/context"},
+		{"remember", "body", "--set-metadata", "team=docs"},
+		{"remember", "body", "--unset-metadata", "team"},
 		{"update", "demo-one", "--properties", `{}`},
 		{"update", "beads/plan", "--patch=@/missing/patch.json"},
 		// update and delete --if-revision is upstream's compare-and-swap outside
 		// link mode, so it is not a graph-only flag here (see
-		// TestGraphPreviewIfRevisionOutsideLinkModeIsUpstreamCAS). Their
+		// TestGraphPreviewIfRevisionOutsideLinkModeIsUpstreamCAS).
 		// New graph-only source guards still refuse before legacy opening.
 		{"update", "demo-one", "--if-source-revision", "observed"},
 		{"delete", "beads/plan", "--unconditional"},

@@ -304,8 +304,11 @@ func admitGraphPreview(cmd *cobra.Command) (handled bool, admissionErr error) {
 		if cmd == createCmd && cmd.Flags().Changed("bead-type") {
 			return true, graphFailure("capability_unavailable", "--bead-type requires a workspace initialized with graph_mode link", 5)
 		}
-		if cmd == linkCmd && (graphPreviewLinkTypeChanged(cmd) || cmd.Flags().Changed("id") || cmd.Flags().Changed("properties") || cmd.Flags().Changed("if-source-revision") || cmd.Flags().Changed("unconditional-source")) {
+		if cmd == linkCmd && (graphPreviewLinkTypeChanged(cmd) || cmd.Flags().Changed("id") || cmd.Flags().Changed("properties") || cmd.Flags().Changed("metadata") || cmd.Flags().Changed("if-source-revision") || cmd.Flags().Changed("unconditional-source")) {
 			return true, graphFailure("capability_unavailable", "generic Link options require a workspace initialized with graph_mode link", 5)
+		}
+		if cmd == depAddCmd && cmd.Flags().Changed("id") {
+			return true, graphFailure("capability_unavailable", "--id requires a workspace initialized with graph_mode link", 5)
 		}
 		// --if-revision is absent on purpose: outside link mode it is upstream's
 		// compare-and-swap on a decimal bead revision, not a graph option.
@@ -682,12 +685,12 @@ func runGraphPreviewStatus(cmd *cobra.Command) error {
 				"capabilities": map[string]bool{
 					"memoryCreate": true, "memoryRead": true, "memoryBodyRecall": true, "memoryJSONRecall": false,
 					"memoryDiscovery": true, "memoryDiscoveryPagination": false, "memoryBodyFileInput": true, "memoryBodyStdinInput": true,
-					"memoryPropertiesUpdate": true, "memorySelectedUpdate": true, "memorySelectedUpdateUnconditional": true,
+					"memoryPropertiesUpdate": true, "memorySelectedUpdate": true, "memorySelectedUpdateCurrentByDefault": true,
 					"memoryOverwriteDisclosure": true, "issueCreate": true, "issueCreateAuthorship": true, "issueTextUpdate": true, "issuePriorityUpdate": true, "issueAssigneeUpdate": true,
 					"issueCreateFields": true, "issueInitialNotes": true, "issueNotesAppend": true, "issueNotesReplace": true, "issueNotesClear": true,
 					"issueEstimateUpdate": true, "issueReferenceUpdate": true,
 					"memoryUnreferencedDelete": true, "issueUnreferencedDelete": true,
-					"informationalLink": true, "blockingDependency": true, "linkPropertiesUpdate": true,
+					"informationalLink": true, "blockingDependency": true, "blockingDependencyShorthand": true, "blockingDependencyExplicitID": true, "linkPropertiesUpdate": true,
 					"linkUnlink": true, "blockingDependencyUnlink": true, "incidentLinks": true, "ownedLinks": true,
 					"issueClose": true, "issueReopen": true, "issueDatelessDeferral": true, "issueDatedDeferral": true, "issueReady": true, "genericRead": true,
 					"memory": false, "memoryDelete": false, "memoryPropertiesPatch": true, "linkPropertiesPatch": true,

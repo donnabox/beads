@@ -130,6 +130,12 @@ func TestGraphPreviewCompatibilityDefaultsWorkflow(t *testing.T) {
 				t.Fatalf("links omitted type-first local display: %q", human)
 			}
 			call("unlink", unowned.Link.ID, "--if-revision", unowned.Link.Revision)
+			canonicalID := scope + "links/canonical"
+			canonical := graphMixedResult[graphstore.LinkMutationResult](t, call("link", issue.ID, other.ID, "--link-type", related, "--id", canonicalID))
+			if canonical.Link.ID != canonicalID {
+				t.Fatal("informational Link did not accept an in-scope canonical ID")
+			}
+			call("unlink", canonicalID, "--if-revision", canonical.Link.Revision)
 			if call("show", issue.ID) != issueBefore {
 				t.Fatal("default informational unlink changed its Issue source")
 			}
@@ -150,6 +156,13 @@ func TestGraphPreviewCompatibilityDefaultsWorkflow(t *testing.T) {
 			if explicit.Link.ID != scope+"links/chosen-block" {
 				t.Fatal("dep add --id did not allocate the selected Link")
 			}
+			sameExplicit := graphMixedResult[graphstore.DependencyResult](t, call("dep", "add", issue.ID, otherBlocker.ID, "--id", "links/chosen-block"))
+			if sameExplicit.Changed || sameExplicit.Link.ID != explicit.Link.ID {
+				t.Fatal("dep add --id did not preserve the matching pair as a no-op")
+			}
+			refuse("invalid_properties", "dep", "add", issue.ID, otherBlocker.ID, "--id", "links/different-block")
+			thirdBlocker := graphMixedResult[graphstore.IssueRecord](t, call("create", "Third prerequisite"))
+			refuse("identity_reserved", "dep", "add", issue.ID, thirdBlocker.ID, "--id", "links/chosen-block")
 			refuse("capability_unavailable", "unlink", issue.ID, gate.ID, "--resource-type", graphstore.DependencyTypeURL(scope), "--if-revision", dependency.Link.Revision)
 			refuse("invalid_properties", "unlink", dependency.Link.ID, "--if-revision", dependency.Link.Revision)
 			call("unlink", dependency.Link.ID, "--if-revision", dependency.Link.Revision, "--unconditional-source")

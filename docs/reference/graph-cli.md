@@ -341,7 +341,8 @@ separate blocking Dependency unlink rules and Link Type bounds.
 For two live Issues, `bd dep add BLOCKED BLOCKER` creates a blocking Link.
 `bd dep BLOCKER --blocks BLOCKED` is the same operation with the arguments in
 the opposite order. Add `--id links/ID` to `bd dep add` when the Link needs a
-chosen local identity; repeating the same pair is still a no-op. `bd dep
+chosen local identity; repeating the same pair with that ID or no ID is a
+no-op, while a different ID refuses. `bd dep
 relate` and `bd dep unrelate` are outside this graph preview because the
 ordinary command owns two directed relationships, not one Link.
 

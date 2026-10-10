@@ -107,8 +107,8 @@ Metadata may accompany a property or Issue scalar edit atomically, and a
 metadata-only update uses the same Resource and owning-source guards.
 --patch applies ordered property operations. Generic updates require
 no revision flag by default; --if-revision TOKEN rejects a stale edit.
-Informational Links owned by a Memory
-may also use --if-source-revision TOKEN; without it, the current source is
+Informational Links owned by a Memory may also use
+--if-source-revision TOKEN; without it, the current source is
 accepted. Blocking Dependency properties are not editable here. Issue scalar
 edits and standalone --claim are separate graph operations. Without an ID,
 interactive Issue update uses the last-touched Issue; scripts require an ID
@@ -119,11 +119,14 @@ deletion without writing. Apply with --force and either --if-revision TOKEN or
 		{forgetCmd, `Use bd forget ID to delete one unreferenced Memory now.
 Supply --if-revision TOKEN or --unconditional. Canonical IDs are retained and
 incident Links prevent deletion; no cascade is performed.`},
+		{depCmd, `Use bd dep BLOCKER --blocks BLOCKED to create a blocking
+Dependency between two live Issues. Bare bd dep prints help; the ordinary
+--no-cycle-check option is unavailable in graph preview workspaces.`},
 		{depAddCmd, `Use bd dep add issue blocker for a blocking
 Dependency between two live Issues, optionally with --id links/ID.
 bd dep blocker --blocks issue is the same operation with reversed arguments.
-Memory endpoints, remote routing and bulk
-dependency flags are unavailable in this preview.`},
+Memory endpoints, remote routing and bulk dependency flags are unavailable
+in this preview.`},
 		{linkCmd, `Without --link-type, bd link SOURCE TARGET creates the ordinary
 blocking Dependency between two live Issues. For a Memory or Issue endpoint,
 choose an installed informational Type, for example on a fresh workspace:

@@ -434,9 +434,6 @@ Examples:
 		if graphPreviewActive {
 			return runGraphPreviewAddDependency(cmd, args)
 		}
-		if cmd.Flags().Changed("id") {
-			return graphFailure("capability_unavailable", "dep add --id requires a graph preview workspace", 5)
-		}
 		CheckReadonly("dep add")
 
 		evt := metrics.NewCommandEvent("dep-add")
