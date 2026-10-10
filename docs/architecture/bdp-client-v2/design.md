@@ -1,8 +1,8 @@
 # BDP client platform and protocol design
 
-Status: exploratory design, owned by Vickie with product rulings by Donna. Last updated: 2026-10-08.
+Status: exploratory design, owned by Vickie with product rulings by Donna. Last updated: 2026-10-10.
 
-This Markdown document on `donnabox/beads:codex/vickie-bdp-client-design` is the single plan of record at Donna's request. It replaces the upstream issue and intentionally overrides the fleet's issue-shaped tracker convention. It is not a normative BDP amendment, release commitment, or implementation authorization. Work remains on this fork branch until Donna asks otherwise; do not create an upstream issue or PR for it.
+This Markdown document on `donnabox/beads:codex/vickie-bdp-client-design` is the single plan of record at Donna's request. It replaces the upstream issue and intentionally overrides the fleet's issue-shaped tracker convention. It is a coordination and design record, not a normative BDP amendment or release commitment. Earlier client/journal proposals remain on this fork branch; the BDP editorial and implementation work authorized below has separate upstream review PRs.
 
 ## Current priority: BDP profile structure and implementation
 
@@ -27,11 +27,14 @@ Use asynchronous bounded workers with disjoint write scopes under this interacti
 
 First-round review surfaces:
 
-- [BDP PR66](https://github.com/gastownhall/bdp/pull/66), integration of current PR64/65 with the later fixture vocabulary corrected. At `a9bcf9ed`, the complete bounded suite passes 7,583 tests across 108 files with one optional skip; prior sealed Read cohort remains historical evidence.
-- [BDP PR67](https://github.com/gastownhall/bdp/pull/67), cumulative profile editorial structure. Original clauses/anchors are mapped; section-scoped conformance citation migration and protocol checks are still underway. This is a draft, not a completed conformance audit.
-- [BDP PR68](https://github.com/gastownhall/bdp/pull/68), initial durable mutable reference HTTP surface at `ec9df671`. Targeted tests, process restart/replay smoke and independent code review pass; final combined-tree checks are underway. Development-only, with no full Read+Update or Transactional advertisement.
+- [BDP PR66](https://github.com/gastownhall/bdp/pull/66), Janet PR64/65 integration at `a9bcf9ed1d869aaba2cb49fe9cca10e3b8d52a94`. Corrected 28 later fixture members to the integrated attribution vocabulary. Build/typecheck/boundaries/format and the full bounded suite pass: 108 files, 7,583 tests, one optional skip. The prior sealed Read cohort remains historical evidence.
+- [BDP PR67](https://github.com/gastownhall/bdp/pull/67), cumulative profile structure at `c493faf12460fee63e313f9ee83135acee5dbe92`. All 61 original blocks are mapped, all 84 old anchors survive, and 183 links resolve without lower-profile links into later definitions. Migrated 94 citations, preserving case semantics and assertions. The citation integration passed 1,629 conformance/protocol tests; final review repairs passed 970 affected tests. Independent review found no lost protocol guarantee. The clause map records the remaining design questions.
+- [BDP PR68](https://github.com/gastownhall/bdp/pull/68), initial durable mutable reference HTTP surface at `ec9df671157a0f4c7a7a484160222254c7777170`. Six Resource singleton mutations use the existing SQLite recovery and shared live reads. Full validation passes: 109 files, 7,588 tests and one optional skip; build, typecheck, boundaries, process restart/replay and installed-package smoke pass. Independent review found no blocker. Development-only, with no full Read+Update or Transactional advertisement.
+- [Initial CLI operation crosswalk](preview2-operation-crosswalk.md): five operations with fixed-source evidence, interface translations, conditional guards, metadata/properties semantics, atomicity, JSON and Event boundaries. Qualified CLI pin confirmation and executable cross-repo parity remain outstanding; neither blocks delivery of this source-review artifact.
 
-These PRs are separate review units and none is merged or included in Preview 2. The remaining first-round gates are editorial citation/consistency checks, final runtime validation and the initial CLI operation crosswalk. Subsequent profile completion remains ongoing work after this bounded round.
+The first editorial round and initial implementation slice are delivered as drafts, separate from Preview 2. No PR is merged, no release promotion is made, and full write profiles are not qualified. Three-provider council review remains a readiness gate before marking these PRs ready. Remaining implementation work includes aliases, sequences, complete HTTP admission/recovery and qualification; the Transactional slice must atomically commit Resource changes, durable outcome and change group rather than loop over independently committing members. Exact gaps and the next boundary are recorded in PR68's progress document.
+
+The crosswalk identifies two further cold-client decisions: portable efficient recent-first ordering and optional owning-source guards. Accepted main also differs from qualified records on metadata and attribution; PR66 integrates the proposed remedy. Janet owns qualified CLI evidence and release impact. Do not treat these future writer/ordering decisions as new Preview 2 Read blockers.
 
 
 ## Agreed direction
