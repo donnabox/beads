@@ -29,6 +29,8 @@ import (
 	"github.com/steveyegge/beads/internal/migration"
 	"github.com/steveyegge/beads/internal/storage"
 	"github.com/steveyegge/beads/internal/storage/graphstore"
+	"github.com/steveyegge/beads/internal/types"
+	"github.com/steveyegge/beads/internal/workapi"
 	publicops "github.com/steveyegge/beads/issueops"
 )
 
@@ -300,6 +302,9 @@ func admitGraphPreview(cmd *cobra.Command) (handled bool, admissionErr error) {
 		}
 		if cmd == memoriesCmd && (cmd.Flags().Changed("all") || cmd.Flags().Changed("details") || (cmd.Flags().Changed("format") && !strings.EqualFold(format, "json"))) {
 			return true, graphFailure("capability_unavailable", "Memory discovery options require an experimental graph workspace", 5)
+		}
+		if cmd == showCmd && cmd.Flags().Changed("format") {
+			return true, graphFailure("capability_unavailable", "--format requires an experimental graph workspace", 5)
 		}
 		if (cmd == showCmd || cmd == recallCmd) && cmd.Flags().Changed("version") {
 			return true, graphFailure("capability_unavailable", "--version requires an experimental graph workspace", 5)
@@ -626,8 +631,15 @@ func runGraphPreviewRemember(cmd *cobra.Command, args []string) error {
 }
 
 func runGraphPreviewShow(cmd *cobra.Command, args []string) error {
-	if err := graphPreviewFlags(cmd, "version"); err != nil {
+	if err := graphPreviewFlags(cmd, "version", "format", "include-dependents", "include-comments", "brief-deps"); err != nil {
 		return err
+	}
+	format, _ := cmd.Flags().GetString("format")
+	if format != "" && format != "graph-json" {
+		return graphFailure("invalid_selector", "graph show --format must be graph-json", 2)
+	}
+	if format != "" && (cmd.Flags().Changed("include-dependents") || cmd.Flags().Changed("include-comments") || cmd.Flags().Changed("brief-deps")) {
+		return graphFailure("capability_unavailable", "Issue detail flags require legacy Issue --json output", 5)
 	}
 	if len(args) != 1 {
 		return graphFailure("invalid_selector", "graph show requires one Bead ID (or beads/PATH) or explicit links/PATH", 2)
@@ -638,11 +650,14 @@ func runGraphPreviewShow(cmd *cobra.Command, args []string) error {
 	}
 	version, _ := cmd.Flags().GetString("version")
 	versioned := cmd.Flags().Changed("version")
+	if versioned && (cmd.Flags().Changed("include-dependents") || cmd.Flags().Changed("include-comments") || cmd.Flags().Changed("brief-deps")) {
+		return graphFailure("capability_unavailable", "Issue detail flags cannot describe an exact retained version", 5)
+	}
 	if versioned && (version == "" || !utf8.ValidString(version) || len(version) > graphstore.PreviewVersionTokenLimit) {
 		return graphFailure("invalid_selector", "--version requires a nonempty UTF-8 token of at most 4096 bytes", 2)
 	}
-	var shownIssue bool
-	err = withGraphStore(func(ctx context.Context, s *graphstore.Store) (any, string, error) {
+	var shownIssue, legacyIssue bool
+	err = withGraphStoreOutput(func(ctx context.Context, s *graphstore.Store) (any, string, error) {
 		var r any
 		var err error
 		if versioned {
@@ -654,6 +669,20 @@ func runGraphPreviewShow(cmd *cobra.Command, args []string) error {
 			return nil, "", err
 		}
 		_, shownIssue = r.(graphstore.IssueRecord)
+		if shownIssue && jsonOutput && format == "" && !versioned {
+			includeDependents, _ := cmd.Flags().GetBool("include-dependents")
+			includeComments, _ := cmd.Flags().GetBool("include-comments")
+			briefDeps, _ := cmd.Flags().GetBool("brief-deps")
+			details, err := s.ShowIssueDetails(ctx, path, workapi.DetailOptions{IncludeDependents: includeDependents, IncludeComments: includeComments, BriefDeps: briefDeps})
+			if err != nil {
+				return nil, "", err
+			}
+			legacyIssue = true
+			return []*types.IssueDetails{details}, "", nil
+		}
+		if !shownIssue && (cmd.Flags().Changed("include-dependents") || cmd.Flags().Changed("include-comments") || cmd.Flags().Changed("brief-deps")) {
+			return nil, "", graphFailure("capability_unavailable", "Issue detail flags require an Issue", 5)
+		}
 		projected, err := graphProjectCompleteRecords(r)
 		if err != nil {
 			return nil, "", err
@@ -663,6 +692,14 @@ func runGraphPreviewShow(cmd *cobra.Command, args []string) error {
 			return nil, "", err
 		}
 		return r, string(data), nil
+	}, func(result any, human string) error {
+		if legacyIssue {
+			return outputJSON(result)
+		}
+		if format == "graph-json" {
+			return graphPrintTo(os.Stdout, result, human, quietFlag, true)
+		}
+		return graphPrint(result, human, quietFlag)
 	})
 	if err == nil && shownIssue {
 		SetLastTouchedID(path)
