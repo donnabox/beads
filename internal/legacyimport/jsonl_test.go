@@ -25,6 +25,8 @@ func TestLegacyInputRefusals(t *testing.T) {
 		`{"title":"original","Title":"replacement"}`, `{"_type":"memory","key":"x","value":"keep","Value":"drop"}`,
 		`{"dependencies":[{"type":"blocks","Type":"parent-child"}]}`, `{"bonded_from":[{"source_id":"x","future":"lost"}]}`,
 		`{"bonded_from":[{"source_id":"a","proto_id":"b","bond_type":"parallel"}]}`,
+		`{"priority":null}`, `{"no_history":null}`, `{"_type":null,"id":"x"}`, `{"dependent_count":null}`, `{"wisp":null}`,
+		`{"_type":"memory","key":"x"}`, `{"_type":"memory","key":"x","value":null}`,
 		`null`, `[]`, `{"title":"first"} trailing`, `{"id":"x","title":"x","history":[]}`,
 		`{"id":"https://example.invalid/beads/x","type":"types/issue","properties":{"title":"x"}}`,
 		`{"_type":"graph","id":"x"}`, `{"_type":"memory","key":"x","value":"v","future":1}`,

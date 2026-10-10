@@ -89,12 +89,18 @@ func parseLine(raw []byte, result *Batch) error {
 	}
 	var kind string
 	if value, ok := fields["_type"]; ok {
+		if bytes.Equal(value, []byte("null")) {
+			return fmt.Errorf("_type must be a string")
+		}
 		if err := json.Unmarshal(value, &kind); err != nil {
 			return err
 		}
 		delete(fields, "_type")
 	}
 	if kind == "memory" {
+		if _, ok := fields["value"]; !ok {
+			return fmt.Errorf("memory value must be present")
+		}
 		body, err := json.Marshal(fields)
 		if err != nil {
 			return err
@@ -115,7 +121,7 @@ func parseLine(raw []byte, result *Batch) error {
 	for _, name := range []string{"dependency_count", "dependent_count", "comment_count"} {
 		if value, ok := fields[name]; ok {
 			var count int
-			if err := json.Unmarshal(value, &count); err != nil || count < 0 {
+			if err := json.Unmarshal(value, &count); err != nil || count < 0 || bytes.Equal(value, []byte("null")) {
 				return fmt.Errorf("%s must be a nonnegative integer", name)
 			}
 			delete(fields, name) // Projections are recomputed from imported relationships.
@@ -124,6 +130,9 @@ func parseLine(raw []byte, result *Batch) error {
 	for _, name := range []string{"wisp", "wisp_plane"} {
 		if value, ok := fields[name]; ok {
 			var marker bool
+			if bytes.Equal(value, []byte("null")) {
+				return fmt.Errorf("%s must be a boolean", name)
+			}
 			if err := json.Unmarshal(value, &marker); err != nil {
 				return err
 			}
@@ -243,6 +252,15 @@ func checkedToken(decoder *json.Decoder, raw []byte) (json.Token, error) {
 // DisallowUnknownFields still accepts case-insensitive aliases. Admit exact
 // exported names before it or a compatibility unmarshaller can overwrite data.
 func exactFields(raw []byte, typ reflect.Type) error {
+	raw = bytes.TrimSpace(raw)
+	if bytes.Equal(raw, []byte("null")) {
+		switch typ.Kind() {
+		case reflect.Pointer, reflect.Slice, reflect.Map, reflect.Interface:
+			return nil
+		default:
+			return fmt.Errorf("null is unsupported for legacy %s", typ)
+		}
+	}
 	for typ.Kind() == reflect.Pointer {
 		typ = typ.Elem()
 	}
