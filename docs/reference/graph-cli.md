@@ -333,6 +333,22 @@ bd update work --notes 'Revised handoff' --force --if-revision NEW_REVISION
 bd update work --clear-notes --if-revision LATEST_REVISION
 ```
 
+`bd assign ID PERSON`, `bd priority ID LEVEL` and `bd note ID TEXT` use the
+same native Issue writer as `bd update`. They accept a current Issue, preserve
+other fields, and reject Memory and Link targets. Assign accepts an optional
+`--if-revision` graph token and preserves the native live-claim transfer
+fence; `--force` is explicit when that fence must be bypassed. The note command
+also accepts its ordinary `--stdin` and `--file` text sources. These shortcuts
+keep their ordinary Issue-shaped `--json` response; use
+`bd show ID --format graph-json` when the complete graph Resource envelope is
+needed.
+
+```sh
+bd priority work 1
+bd note work 'Checklist complete.'
+bd assign work alice
+```
+
 An Issue edit accepts the current state by default. A stale `--if-revision`
 refuses even with `--force`; force only authorizes the notes overwrite. An
 identical value or a clear of already-empty notes leaves the revision alone.
