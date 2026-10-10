@@ -64,7 +64,7 @@ func TestGraphPreviewIssueDueDispatch(t *testing.T) {
 	if !changed.Result.Changed || changed.Result.Issue.Properties.DueAt != nil || changed.Result.Issue.Revision == first.Result.Revision {
 		t.Fatal("due clear did not reach Issue writer")
 	}
-	if exact := graphPolicyCLI(t, bd, work, home, nil, "", "show", "beads/work", "--version", first.Result.Revision, "--json"); exact != created {
+	if exact := graphPolicyCLI(t, bd, work, home, nil, "", "show", "beads/work", "--version", first.Result.Revision, "--format", "graph-json", "--json"); exact != created {
 		t.Fatal("clearing due changed initial retained record")
 	}
 	graphPolicyCLI(t, bd, work, home, nil, "", "update", "beads/work", "--due=2000-01-01T00:00:00Z", "--if-revision", changed.Result.Issue.Revision, "--json")

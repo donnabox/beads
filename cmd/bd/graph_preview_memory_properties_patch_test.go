@@ -11,9 +11,11 @@ import (
 	"testing"
 
 	"github.com/spf13/cobra"
+	graph "github.com/steveyegge/beads/graphops"
 	"github.com/steveyegge/beads/internal/configfile"
 	"github.com/steveyegge/beads/internal/graphpatch"
 	"github.com/steveyegge/beads/internal/storage/graphstore"
+	"github.com/steveyegge/beads/internal/storage/issueops"
 )
 
 const memoryPropertiesPatchExample = `[{"op":"replace","path":"/body","value":"  雪\r\n  "}]`
@@ -32,7 +34,7 @@ func isolatePropertiesPatchAdmission(t *testing.T) {
 func memoryPropertiesPatchCommand(t *testing.T, flags ...string) *cobra.Command {
 	t.Helper()
 	cmd := &cobra.Command{}
-	for _, name := range []string{"patch", "properties", "if-revision", "if-source-revision", "title", "status", "notes", "actor", "body-file", "request-id", "metadata"} {
+	for _, name := range []string{"patch", "properties", "replace-properties", "if-revision", "if-source-revision", "title", "status", "notes", "actor", "body-file", "request-id", "metadata", "replace-metadata", "id", "update"} {
 		cmd.Flags().String(name, "", "")
 	}
 	for _, name := range []string{"unconditional", "unconditional-source", "claim", "force", "readonly", "dry-run", "stdin"} {
@@ -42,6 +44,71 @@ func memoryPropertiesPatchCommand(t *testing.T, flags ...string) *cobra.Command 
 		t.Fatal(err)
 	}
 	return cmd
+}
+
+func TestGraphPreviewMetadataReplacementClearsAndConflicts(t *testing.T) {
+	cmd := memoryPropertiesPatchCommand(t, "--replace-metadata={}")
+	patch, err := graphPreviewMetadataPatch(cmd)
+	if err != nil || !patch.Replace.Set {
+		t.Fatalf("metadata replacement not selected: %+v %v", patch, err)
+	}
+	next, changed, err := issueops.ApplyMetadataPatch([]byte(`{"old":true}`), patch)
+	if err != nil || !changed || string(next) != "{}" {
+		t.Fatalf("metadata replacement did not clear: %s %t %v", next, changed, err)
+	}
+	_, changed, err = issueops.ApplyMetadataPatch(next, patch)
+	if err != nil || changed {
+		t.Fatalf("identical replacement minted a change: %t %v", changed, err)
+	}
+	for _, args := range [][]string{
+		{"--replace-metadata={}", "--metadata={}"},
+		{"--replace-metadata=null"},
+		{"--replace-metadata=[]"},
+	} {
+		if _, err := graphPreviewMetadataPatch(memoryPropertiesPatchCommand(t, args...)); err == nil {
+			t.Fatalf("invalid replacement admitted: %v", args)
+		}
+	}
+}
+
+func TestGraphPreviewRememberReplacementRequiresOneExistingSelector(t *testing.T) {
+	for _, flags := range [][]string{
+		{"--replace-properties={\"title\":\"x\",\"body\":\"y\"}"},
+		{"--replace-properties={\"title\":\"x\",\"body\":\"y\"}", "--id=x", "--update=y"},
+		{"--replace-properties={\"title\":\"x\",\"body\":\"y\"}", "--title=x"},
+	} {
+		if err := runGraphPreviewRememberPropertiesReplacement(memoryPropertiesPatchCommand(t, flags...), nil); err == nil {
+			t.Fatalf("replacement without one existing selector admitted: %v", flags)
+		}
+	}
+}
+
+func TestGraphPreviewPropertyReplacementIsRootPatch(t *testing.T) {
+	const value = `{"title":"new","body":"雪","large":1234567890123456}`
+	cmd := memoryPropertiesPatchCommand(t, "--replace-properties="+value, "--if-revision=seen", "--replace-metadata={}")
+	request, err := graphPreviewMemoryPropertiesPatchRequest(cmd, "beads/plan")
+	if err != nil {
+		t.Fatal(err)
+	}
+	if request.ExpectedRevision != "seen" || request.Unconditional || !request.Metadata.Replace.Set || string(request.Metadata.Replace.Value) != "{}" {
+		t.Fatalf("replacement lost guards or metadata: %+v", request)
+	}
+	if !bytes.Contains(request.Patch, []byte(`1234567890123456`)) {
+		t.Fatalf("replacement changed JSON number: %s", request.Patch)
+	}
+	patch, err := graphpatch.Parse(request.Patch)
+	if err != nil {
+		t.Fatal(err)
+	}
+	before, err := graph.NewProperties([]byte(`{"title":"old","body":"old","omitted":true}`))
+	if err != nil {
+		t.Fatal(err)
+	}
+	after, err := patch.Apply(before)
+	want, canonicalErr := graph.CanonicalizeJSON([]byte(value))
+	if err != nil || canonicalErr != nil || !bytes.Equal(after.Bytes(), want) {
+		t.Fatalf("root replacement got %s, %v", after.Bytes(), err)
+	}
 }
 
 type memoryPropertiesPatchProbe struct {

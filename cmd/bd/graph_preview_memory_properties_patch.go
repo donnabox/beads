@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"io"
 	"os"
@@ -56,14 +57,14 @@ func runGraphPreviewMemoryPropertiesPatch(cmd *cobra.Command, path string) error
 
 func graphPreviewMemoryPropertiesPatchRequest(cmd *cobra.Command, path string) (graphstore.MemoryPropertiesPatchRequest, error) {
 	var request graphstore.MemoryPropertiesPatchRequest
-	if err := graphPreviewFlags(cmd, "patch", "metadata", "set-metadata", "unset-metadata", "if-revision", "force"); err != nil {
+	if err := graphPreviewFlags(cmd, "patch", "replace-properties", "metadata", "replace-metadata", "set-metadata", "unset-metadata", "if-revision", "force"); err != nil {
 		return request, err
 	}
 	if err := graph.ValidateBeadPath(path); err != nil {
 		return request, graphFailure("invalid_selector", err.Error(), 2)
 	}
-	if !cmd.Flags().Changed("patch") {
-		return request, graphFailure("invalid_properties", "Memory properties patch requires --patch JSON, @file, or @-", 2)
+	if !cmd.Flags().Changed("patch") && !cmd.Flags().Changed("replace-properties") {
+		return request, graphFailure("invalid_properties", "property update requires --patch or --replace-properties", 2)
 	}
 	revision, unconditional, err := graphPreviewEditRevisionGuard(cmd)
 	if err != nil {
@@ -72,8 +73,7 @@ func graphPreviewMemoryPropertiesPatchRequest(cmd *cobra.Command, path string) (
 	if !utf8.ValidString(revision) || len(revision) > graphstore.PreviewVersionTokenLimit {
 		return request, graphFailure("invalid_selector", fmt.Sprintf("--if-revision requires a UTF-8 token of at most %d bytes", graphstore.PreviewVersionTokenLimit), 2)
 	}
-	input, _ := cmd.Flags().GetString("patch")
-	raw, err := graphPreviewMemoryPropertiesPatchInput(input, cmd.InOrStdin())
+	raw, err := graphPreviewPropertyOperations(cmd)
 	if err != nil {
 		return request, graphFailure("invalid_properties", err.Error(), 2)
 	}
@@ -82,6 +82,33 @@ func graphPreviewMemoryPropertiesPatchRequest(cmd *cobra.Command, path string) (
 		return request, err
 	}
 	return graphstore.MemoryPropertiesPatchRequest{Path: path, Patch: raw, Actor: getActorWithGit(), ExpectedRevision: revision, Unconditional: unconditional, Metadata: metadata}, nil
+}
+
+// A full replacement is a single root operation evaluated against the checked
+// predecessor by the existing Type writer. That writer retains validation,
+// no-op suppression and Issue History ownership.
+func graphPreviewPropertyOperations(cmd *cobra.Command) ([]byte, error) {
+	if cmd.Flags().Changed("replace-properties") {
+		input, _ := cmd.Flags().GetString("replace-properties")
+		values, err := graphPreviewPropertiesJSON(input, cmd.InOrStdin())
+		if err != nil {
+			return nil, err
+		}
+		payload, err := json.Marshal([]struct {
+			Op    string          `json:"op"`
+			Path  string          `json:"path"`
+			Value json.RawMessage `json:"value"`
+		}{{Op: "replace", Path: "", Value: values}})
+		if err != nil {
+			return nil, err
+		}
+		if _, err := graphpatch.Parse(payload); err != nil {
+			return nil, err
+		}
+		return payload, nil
+	}
+	input, _ := cmd.Flags().GetString("patch")
+	return graphPreviewMemoryPropertiesPatchInput(input, cmd.InOrStdin())
 }
 
 // Keep operation-list bytes intact. The shared parser owns strict duplicate,

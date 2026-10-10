@@ -92,7 +92,7 @@ func TestGraphPreviewIssueNotesReplaceAndClearWorkflow(t *testing.T) {
 			versions := call("versions", path)
 			refuse("notes_overwrite_refused", "update", path, "--notes=Second", "--if-revision", created.Revision)
 			refuse("invalid_properties", "update", path, "--notes=", "--force", "--if-revision", created.Revision)
-			if got := graphMixedResult[graphstore.IssueRecord](t, call("show", path)); !reflect.DeepEqual(got, created) || call("versions", path) != versions {
+			if got := graphMixedResult[graphstore.IssueRecord](t, call("show", path, "--format", "graph-json")); !reflect.DeepEqual(got, created) || call("versions", path) != versions {
 				t.Fatal("refused notes edit changed current Issue or retained history")
 			}
 			noop := graphMixedResult[graphstore.IssueMutationResult](t, call("update", path, "--notes=First", "--if-revision", created.Revision))
@@ -174,12 +174,12 @@ func TestGraphPreviewIssueCreateAuthorshipDispatch(t *testing.T) {
 				t.Fatalf("authorship, initial notes or no-claim boundary lost: %+v", envelope.Result)
 			}
 			for _, flags := range [][]string{nil, {"--version", envelope.Result.Revision}} {
-				if got := graphPolicyCLI(t, bd, work, home, nil, "", append([]string{"show", path, "--json"}, flags...)...); got != created {
+				if got := graphPolicyCLI(t, bd, work, home, nil, "", append([]string{"show", path, "--format", "graph-json", "--json"}, flags...)...); got != created {
 					t.Fatal("fresh current/exact read changed complete initial authored Issue")
 				}
 			}
 			graphPolicyCLI(t, bd, work, home, nil, "invalid_properties", "update", path, "--notes=", "--if-revision", envelope.Result.Revision, "--json")
-			if got := graphPolicyCLI(t, bd, work, home, nil, "", "show", path, "--json"); got != created {
+			if got := graphPolicyCLI(t, bd, work, home, nil, "", "show", path, "--format", "graph-json", "--json"); got != created {
 				t.Fatal("held notes clear changed initial Issue")
 			}
 		})

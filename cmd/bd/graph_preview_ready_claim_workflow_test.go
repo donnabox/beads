@@ -37,7 +37,7 @@ func TestGraphPreviewReadyClaimWorkflow(t *testing.T) {
 			call("create", "Docs task", "--id", "docs", "--priority", "2", "--labels", "docs")
 			call("create", "Blocked task", "--id", "blocked", "--priority", "0", "--labels", "release")
 			call("dep", "add", "blocked", "docs")
-			before := graphMixedResult[graphstore.IssueRecord](t, call("show", "release"))
+			before := graphMixedResult[graphstore.IssueRecord](t, call("show", "--format", "graph-json", "release"))
 			if got := graphMixedResult[[]graphstore.IssueRecord](t, call("ready", "--label", "release")); len(got) != 1 || got[0].ID != before.ID {
 				t.Fatalf("filtered ready front: %+v", got)
 			}
@@ -52,7 +52,7 @@ func TestGraphPreviewReadyClaimWorkflow(t *testing.T) {
 			if p := current.Properties; p == nil || p.Status != types.StatusInProgress || p.Assignee != "ready-agent" || p.LeaseExpiresAt == nil || p.HeartbeatAt == nil || p.LeaseExpiresAt.Sub(*p.HeartbeatAt) != 5*time.Minute {
 				t.Fatalf("claimed Issue did not retain native lease: %+v", p)
 			}
-			if got := graphMixedResult[graphstore.IssueRecord](t, call("show", "release")); !reflect.DeepEqual(got, current) {
+			if got := graphMixedResult[graphstore.IssueRecord](t, call("show", "--format", "graph-json", "release")); !reflect.DeepEqual(got, current) {
 				t.Fatalf("fresh process did not see claimed record: %+v", got)
 			}
 			_, kind, versions, _ := graphVersionsListed(t, call("versions", "release"))
@@ -65,7 +65,7 @@ func TestGraphPreviewReadyClaimWorkflow(t *testing.T) {
 			if got := graphMixedResult[[]graphstore.IssueRecord](t, call("ready", "--claim", "--priority", "0", "--actor", "ready-agent")); len(got) != 0 {
 				t.Fatalf("blocked Issue was selected for claim: %+v", got)
 			}
-			if got := graphMixedResult[graphstore.IssueRecord](t, call("show", "release")); !reflect.DeepEqual(got, current) {
+			if got := graphMixedResult[graphstore.IssueRecord](t, call("show", "--format", "graph-json", "release")); !reflect.DeepEqual(got, current) {
 				t.Fatal("empty claims changed the existing lease or revision")
 			}
 			if _, _, again, _ := graphVersionsListed(t, call("versions", "release")); !reflect.DeepEqual(again, versions) {
@@ -79,7 +79,7 @@ func TestGraphPreviewReadyClaimWorkflow(t *testing.T) {
 			if got := graphMixedResult[[]graphstore.IssueRecord](t, call("ready", "--claim", "--label", "missing", "--actor", "ready-agent")); len(got) != 0 {
 				t.Fatalf("filtered empty claim unexpectedly selected work: %+v", got)
 			}
-			woken := graphMixedResult[graphstore.IssueRecord](t, call("show", "sleeping"))
+			woken := graphMixedResult[graphstore.IssueRecord](t, call("show", "--format", "graph-json", "sleeping"))
 			if woken.Revision == sleeping.Issue.Revision || woken.Properties.Status != types.StatusOpen || woken.Properties.DeferUntil != nil || woken.Properties.LeaseExpiresAt != nil {
 				t.Fatalf("empty claim did not retain the separate native defer wake: %+v", woken)
 			}

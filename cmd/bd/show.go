@@ -38,6 +38,9 @@ var showCmd = &cobra.Command{
 		if graphPreviewActive {
 			return runGraphPreviewShow(cmd, args)
 		}
+		if cmd.Flags().Changed("format") {
+			return HandleErrorRespectJSON("--format is available only in a graph preview workspace")
+		}
 		evt := metrics.NewCommandEvent("show")
 		defer func() {
 			if c := metrics.Global(); c != nil {
@@ -326,6 +329,7 @@ func init() {
 	showCmd.Flags().Bool("include-dependents", false, "Stream full dependent issues in JSON output (--json only; may be slow on hub beads)")
 	showCmd.Flags().Bool("include-comments", false, "Stream full comment bodies in JSON output (--json only; may be slow on issues with many comments)")
 	showCmd.Flags().Bool("brief-deps", false, "Reduce each dependency to its identity fields in JSON output (--json only; drops description, design, notes and acceptance criteria)")
+	showCmd.Flags().String("format", "", "Graph preview output format: graph-json preserves the experimental complete-record envelope")
 	showCmd.ValidArgsFunction = issueIDCompletion
 	rootCmd.AddCommand(showCmd)
 }

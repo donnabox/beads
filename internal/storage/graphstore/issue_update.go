@@ -31,17 +31,17 @@ import (
 // Assignee nil preserves its value; empty clears it. Neither the graph guard nor
 // Unconditional bypasses the ordinary active-assignment transfer fence.
 type UpdateIssueRequest struct {
-	Path, Actor, ExpectedRevision                  string
-	Unconditional, ForceNotesOverwrite             bool
-	PropertiesProvided, ClearEstimatedMinutes      bool
-	Title, Description, Design, AcceptanceCriteria *string
-	Priority                                       *int
-	EstimatedMinutes                               *int
-	Assignee                                       *string
-	Notes, AppendNotes                             *string
-	ExternalRef, SpecID                            *string
-	DueAt                                          publicops.Field[*time.Time]
-	Metadata                                       publicops.MetadataPatch
+	Path, Actor, ExpectedRevision                             string
+	Unconditional, ForceNotesOverwrite, ForceAssigneeTransfer bool
+	PropertiesProvided, ClearEstimatedMinutes                 bool
+	Title, Description, Design, AcceptanceCriteria            *string
+	Priority                                                  *int
+	EstimatedMinutes                                          *int
+	Assignee                                                  *string
+	Notes, AppendNotes                                        *string
+	ExternalRef, SpecID                                       *string
+	DueAt                                                     publicops.Field[*time.Time]
+	Metadata                                                  publicops.MetadataPatch
 }
 
 // UpdateIssue delegates admitted scalar edits to the existing Issue domain writer and
@@ -147,7 +147,7 @@ func (s *Store) UpdateIssue(ctx context.Context, request UpdateIssueRequest) (Is
 	if count == 0 && !request.PropertiesProvided {
 		return IssueMutationResult{}, fmt.Errorf("%w: Issue update requires an admitted field", storage.ErrValidation)
 	}
-	attempt := publicops.UpdateRequest{Actor: request.Actor, Patch: patch, IssuePlaneOnly: true, ForceNotesOverwrite: request.ForceNotesOverwrite}
+	attempt := publicops.UpdateRequest{Actor: request.Actor, Patch: patch, IssuePlaneOnly: true, ForceNotesOverwrite: request.ForceNotesOverwrite, ForceAssigneeTransfer: request.ForceAssigneeTransfer}
 	if err := issueops.ValidateUpdateRequest(attempt); err != nil {
 		return IssueMutationResult{}, err
 	}

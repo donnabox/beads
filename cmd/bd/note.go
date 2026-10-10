@@ -119,6 +119,9 @@ To read notes on an issue, use: bd show <id>`,
 	SilenceUsage:  true,
 	SilenceErrors: true,
 	RunE: func(cmd *cobra.Command, args []string) error {
+		if graphPreviewActive {
+			return runGraphPreviewNote(cmd, args)
+		}
 		CheckReadonly("note")
 
 		evt := metrics.NewCommandEvent("note")

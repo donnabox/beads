@@ -20,7 +20,7 @@ func TestGraphPreviewCompatibilityDefaultsWorkflow(t *testing.T) {
 		t.Run(engine, func(t *testing.T) {
 			work, home := t.TempDir(), t.TempDir()
 			const scope = "https://example.invalid/compatibility/"
-			args := []string{"init", "--graph-mode", "link", "--scope-url", scope, "--skip-hooks", "--skip-agents", "--non-interactive"}
+			args := []string{"init", "--graph-mode", "link", "--prefix", "compat", "--scope-url", scope, "--skip-hooks", "--skip-agents", "--non-interactive"}
 			if engine == "server" {
 				port := os.Getenv("BEADS_GRAPH_TEST_SERVER_PORT")
 				if port == "" {
@@ -44,6 +44,9 @@ func TestGraphPreviewCompatibilityDefaultsWorkflow(t *testing.T) {
 			if memory.ID == other.ID || memory.ID == issue.ID || other.ID == issue.ID || !strings.HasPrefix(memory.ID, scope+"beads/") {
 				t.Fatal("omitted IDs did not allocate distinct canonical identities")
 			}
+			if !strings.HasPrefix(issue.Properties.ID, "compat-") || issue.ID != scope+"beads/"+issue.Properties.ID {
+				t.Fatalf("generated Issue path did not use the configured native prefix: %+v", issue)
+			}
 			if memory.Properties.Title != "Code flow policy" || memory.Properties.Body != body {
 				t.Fatal("default title changed body or failed to summarize")
 			}
@@ -51,7 +54,10 @@ func TestGraphPreviewCompatibilityDefaultsWorkflow(t *testing.T) {
 			if fixed.ID != scope+"beads/fixed" || fixed.Properties.Title != "  Explicit title  " {
 				t.Fatal("explicit identity/title not preserved")
 			}
-			call("create", "Explicit Issue", "--id", "beads/fixed-issue")
+			explicitIssue := graphMixedResult[graphstore.IssueRecord](t, call("create", "Explicit Issue", "--id", "beads/fixed-issue"))
+			if explicitIssue.ID != scope+"beads/fixed-issue" {
+				t.Fatalf("explicit Issue path changed: %+v", explicitIssue)
+			}
 			refuse("identity_reserved", "remember", "Overwrite", "--id", "beads/fixed", "--create-only")
 			refuse("identity_reserved", "create", "Overwrite", "--id", "beads/fixed-issue")
 			refuse("identity_reserved", "create", "Wrong kind", "--id", "beads/fixed")
