@@ -18,6 +18,18 @@ import (
 const graphPreviewPropertiesLimit = 1 << 20
 
 func graphPreviewProperties(input string, stdin io.Reader) (map[string]any, error) {
+	canonical, err := graphPreviewPropertiesJSON(input, stdin)
+	if err != nil {
+		return nil, err
+	}
+	var properties map[string]any
+	if err := json.Unmarshal(canonical, &properties); err != nil {
+		return nil, err
+	}
+	return properties, nil
+}
+
+func graphPreviewPropertiesJSON(input string, stdin io.Reader) (json.RawMessage, error) {
 	var reader io.Reader = strings.NewReader(input)
 	if strings.HasPrefix(input, "@") {
 		if input == "@-" {
@@ -44,11 +56,10 @@ func graphPreviewProperties(input string, stdin io.Reader) (map[string]any, erro
 	if err != nil {
 		return nil, err
 	}
-	var properties map[string]any
-	if err := json.Unmarshal(canonical, &properties); err != nil || properties == nil {
+	if len(canonical) == 0 || canonical[0] != '{' {
 		return nil, fmt.Errorf("Resource properties must be a JSON object")
 	}
-	return properties, nil
+	return canonical, nil
 }
 
 func graphPreviewRevisionGuard(cmd *cobra.Command, source, required bool) (string, bool, error) {
@@ -86,7 +97,7 @@ func graphPreviewEditRevisionGuard(cmd *cobra.Command) (string, bool, error) {
 
 // The old name remains a hidden compatibility alias for existing scripts.
 func registerGraphLinkTypeFlag(cmd *cobra.Command) {
-	cmd.Flags().String("link-type", "", "Installed Link Type: types/NAME or full local URL (graph preview only)")
+	cmd.Flags().String("link-type", "", "Installed Link Type: NAME, types/NAME, or full local URL (graph preview only)")
 	cmd.Flags().String("resource-type", "", "Compatibility alias for --link-type")
 	_ = cmd.Flags().MarkHidden("resource-type")
 }
@@ -96,12 +107,14 @@ func graphPreviewLinkTypeChanged(cmd *cobra.Command) bool {
 }
 
 func graphPreviewTypeURL(scope, selector string) (string, error) {
-	if strings.HasPrefix(selector, "types/") {
+	if selector != "" && !strings.Contains(selector, "/") {
+		selector = scope + "types/" + selector
+	} else if strings.HasPrefix(selector, "types/") {
 		selector = scope + selector
 	}
 	prefix := scope + "types/"
 	if !strings.HasPrefix(selector, prefix) {
-		return "", fmt.Errorf("Type must be types/NAME or a canonical Type URL in this Scope")
+		return "", fmt.Errorf("Type must be NAME, types/NAME, or a canonical Type URL in this Scope")
 	}
 	for _, segment := range strings.Split(strings.TrimPrefix(selector, prefix), "/") {
 		if err := graph.ValidateCanonicalSegment(segment); err != nil {
@@ -202,7 +215,7 @@ func runGraphPreviewUpdateLink(cmd *cobra.Command, args []string) error {
 	if err := graphPreviewWritePolicy(); err != nil {
 		return err
 	}
-	if err := graphPreviewFlags(cmd, "properties", "metadata", "set-metadata", "unset-metadata", "if-revision", "if-source-revision", "unconditional-source"); err != nil {
+	if err := graphPreviewFlags(cmd, "properties", "metadata", "replace-metadata", "set-metadata", "unset-metadata", "if-revision", "if-source-revision", "unconditional-source"); err != nil {
 		return err
 	}
 	if len(args) != 1 {

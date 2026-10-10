@@ -74,15 +74,22 @@ positional title or `--title` and an inline `--body` (also spelled
 `--description` or `--message`). It derives a title from the body if none is
 given. This form does not read a body from a file or stdin.
 
+When an Issue is created without `--id`, its canonical `beads/` ID uses the
+Issue ID allocated under the workspace prefix set by `bd init --prefix`. For
+example, a generated `mp-53` Issue is `beads/mp-53` locally. An explicitly
+supplied `--id` remains the requested canonical path. Generated Memory IDs
+remain random `beads/` paths; generated Link IDs remain under `links/`.
+
 ```sh
 bd create 'Move the release branch' --id work --type task
-bd create --bead-type types/preview-memory-v2 \
+bd create --bead-type preview-memory-v2 \
   --body 'Code flow policy: keep the old policy as a versioned Memory.'
 ```
 
 Use `bd types` in the selected workspace to discover its installed
-`types/NAME` IDs. Do not assume a Type shown in another workspace is installed
-in this one.
+`types/NAME` IDs. The `types/` prefix is optional when passing a Type name to
+`--bead-type` or `--link-type`; full local Type URLs also work. Do not assume a
+Type shown in another workspace is installed in this one.
 
 ## Find and read Beads
 
@@ -90,7 +97,8 @@ in this one.
 | --- | --- |
 | `bd memories [SEARCH]` | List current Memory title/body summaries. Use `--all` for all matches within the preview's bounds, `--details` for saved version and attribution, or `--format records-json` for structured summaries. |
 | `bd recall ID` | Print **one** Memory's body followed by a newline, as ordinary `bd recall` does. It does not enumerate Memories. |
-| `bd show ID --json` | Read one current Issue or Memory record; use `links/ID` for a Link. |
+| `bd show ID --json` | A current Issue uses the ordinary `bd show` JSON detail array, including labels, dependency/comment counts, Scope-relative Bead IDs that round-trip to graph commands, and the graph revision token. Memory and Link still use the preview complete-record envelope. |
+| `bd show ID --format graph-json` | Read the preview complete-record envelope explicitly, including for an Issue or an exact `--version` read. This is a preview record, not a BDP Resource representation. |
 | `bd list` or `bd list --format records-json` | Without an Issue filter, list every current Memory and Issue the ordinary `bd list` would show, newest recorded change first; closed and pinned Issues need `--all`. Use `--bead-type types/NAME` to narrow by nominal Type. An Issue filter, or a matching directory label, switches to the Issue-only query described below and says so. |
 
 ```sh
@@ -98,6 +106,7 @@ bd memories --all
 bd memories 'code flow' --details
 bd recall policy
 bd show work --json
+bd show work --format graph-json
 bd list --all
 bd list --format records-json --bead-type types/preview-memory-v2 --all
 ```
@@ -150,6 +159,14 @@ bd remember --update policy --title 'Current code flow policy'
 `bd remember`, and shallowly merges named top-level properties on `bd update`
 or an existing-ID `bd remember`. It works for the installed Issue and Memory
 Bead Types and informational Link Types. Omitted keys survive; `{}` is a no-op.
+Use `bd update ID --replace-properties JSON` to replace the whole properties
+object, including clearing omitted optional fields. The replacement must still
+satisfy the selected Type: `{}` clears informational Link properties, while an
+Issue still needs its required title and a Memory still needs title and body.
+`bd remember --id EXISTING --replace-properties JSON` and `bd remember
+--update EXISTING --replace-properties JSON` use the same existing-only Memory
+replacement; use `--properties` to initialize a new Memory.
+Replacement cannot combine with `--properties`, `--patch`, or Issue field flags.
 Issue property edits still use the native Issue writer and History recorder.
 Use `bd update ID --patch '[{"op":"replace","path":"/name","value":...}]'`
 for ordered property operations, including removal. A patch of an Issue may
@@ -171,6 +188,9 @@ typed value or remove a key, use repeatable `--set-metadata KEY=VALUE` and
 `--unset-metadata KEY`; those two flags can combine, and unsetting wins.
 `--metadata` cannot combine with set or unset. Metadata and an admitted
 property or Issue field edit commit together under the same revision choice.
+Use `--replace-metadata JSON` on `bd update` or `bd remember` to replace the
+whole metadata object; `{}` clears it. It cannot combine with `--metadata`,
+`--set-metadata`, or `--unset-metadata`.
 Omitting metadata leaves it unchanged; a metadata-only edit is also valid.
 An identical edit retains the current revision. Existing-ID `bd remember`
 accepts `--metadata`, `--set-metadata`, or `--unset-metadata` with or without a
@@ -180,6 +200,8 @@ metadata object.
 ```sh
 bd update policy --metadata '{"reviewed":true}'
 bd update policy --unset-metadata team
+bd update policy --replace-metadata '{}'
+bd update links/policy-work --replace-properties '{}'
 ```
 
 Creating, updating, showing or closing a graph Issue records it as the last
@@ -460,8 +482,8 @@ details ordering and refusal behavior.
 ## Discover installed Types
 
 `bd types` reads the descriptors **installed in this workspace** and lists
-Bead Types separately from Link Types. Use the printed `types/NAME` ID with
-`--bead-type` or `--link-type`; a full local Type URL also works.
+Bead Types separately from Link Types. Use a printed `types/NAME` ID or just
+`NAME` with `--bead-type` or `--link-type`; a full local Type URL also works.
 `--details` shows each complete stored descriptor, and `--json` returns the
 descriptors as structured data.
 

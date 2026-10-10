@@ -38,9 +38,12 @@ func runGraphPreviewCreateIssue(cmd *cobra.Command, args []string) error {
 	if err != nil {
 		return err
 	}
-	path, err := graphPreviewCreateBeadPath(cmd)
-	if err != nil {
-		return err
+	path := ""
+	if cmd.Flags().Changed("id") {
+		path, err = graphPreviewCreateBeadPath(cmd)
+		if err != nil {
+			return err
+		}
 	}
 	titleFlag, _ := cmd.Flags().GetString("title")
 	if value, ok := properties["title"]; ok {
@@ -139,6 +142,7 @@ func runGraphPreviewCreateIssue(cmd *cobra.Command, args []string) error {
 		if err != nil {
 			return nil, "", err
 		}
+		path = graphPreviewDisplayLocalURL(record.ID)
 		return record, fmt.Sprintf("Created %s\n", path), nil
 	})
 	if err == nil {

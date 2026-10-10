@@ -259,7 +259,7 @@ func TestGraphPreviewCloseIfRevisionUsesGraphToken(t *testing.T) {
 	}
 	call("init", "--graph-mode", "link", "--scope-url", "https://example.invalid/close-if-revision/", "--skip-hooks", "--skip-agents", "--non-interactive")
 	call("create", "Close guard", "--id", "beads/close-guard")
-	before := call("show", "beads/close-guard")
+	before := call("show", "--format", "graph-json", "beads/close-guard")
 	for _, args := range [][]string{
 		{"close", "beads/close-guard", "--if-revision", "1"},
 		{"close", "beads/close-guard", "--reason", "Done", "--if-revision", "1"},
@@ -267,7 +267,7 @@ func TestGraphPreviewCloseIfRevisionUsesGraphToken(t *testing.T) {
 		graphIfRevisionRefused(t, bd, work, home, 4, "revision_conflict", args...)
 	}
 	graphIfRevisionRefused(t, bd, work, home, 5, "capability_unavailable", "assign", "beads/close-guard", "alice", "--if-revision", "1")
-	if call("show", "beads/close-guard") != before {
+	if call("show", "--format", "graph-json", "beads/close-guard") != before {
 		t.Fatal("a refused guarded close changed the Issue")
 	}
 	observed := graphMixedResult[graphstore.IssueRecord](t, before)

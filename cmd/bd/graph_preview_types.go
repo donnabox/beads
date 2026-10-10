@@ -60,7 +60,7 @@ func runGraphPreviewTypes(cmd *cobra.Command, args []string) error {
 				}
 			}
 		}
-		human := fmt.Sprintf("Bead Types (%d):\n%s\nLink Types (%d):\n%s\nUse these types/NAME IDs with --bead-type or --link-type.",
+		human := fmt.Sprintf("Bead Types (%d):\n%s\nLink Types (%d):\n%s\nUse these Type names, types/NAME IDs, or full local URLs with --bead-type or --link-type.",
 			len(inventory.BeadTypes), beadText.String(), len(inventory.LinkTypes), linkText.String())
 		return inventory, human, nil
 	})

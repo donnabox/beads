@@ -56,7 +56,7 @@ func TestGraphPreviewIssueAppendWorkflow(t *testing.T) {
 				if !reflect.DeepEqual(properties, *before.Properties) {
 					t.Fatal("notes-only append changed unrelated properties, lease or closure")
 				}
-				if got := graphMixedResult[graphstore.IssueRecord](t, call("show", current.ID)); !reflect.DeepEqual(got, current) {
+				if got := graphMixedResult[graphstore.IssueRecord](t, call("show", "--format", "graph-json", current.ID)); !reflect.DeepEqual(got, current) {
 					t.Fatal("fresh-process read differs from append")
 				}
 				exact(before)
@@ -68,7 +68,7 @@ func TestGraphPreviewIssueAppendWorkflow(t *testing.T) {
 			target := call("create", "Prerequisite", "--id", "beads/gate")
 			dependency := graphMixedResult[graphstore.DependencyResult](t, call("dep", "add", "beads/work", "beads/gate"))
 			link := graphMixedResult[graphstore.LinkMutationResult](t, call("link", "beads/work", "beads/context", "--id", "links/context", "--resource-type", scope+"types/preview-related-v2"))
-			original := graphMixedResult[graphstore.IssueRecord](t, call("show", "beads/work"))
+			original := graphMixedResult[graphstore.IssueRecord](t, call("show", "--format", "graph-json", "beads/work"))
 			claimed := graphMixedResult[graphstore.IssueMutationResult](t, call("update", "beads/work", "--claim", "--actor", "holder"))
 			if !claimed.Changed || claimed.Issue.Properties.Assignee != "holder" || claimed.Issue.Properties.LeaseExpiresAt == nil {
 				t.Fatalf("claim: %+v", claimed)
@@ -113,7 +113,7 @@ func TestGraphPreviewIssueAppendWorkflow(t *testing.T) {
 			if !reflect.DeepEqual(state, graphMemoryReadSnapshot(t, work)) {
 				t.Fatal("refusals changed complete current state")
 			}
-			if call("show", "beads/context") != memory || call("show", "beads/gate") != target {
+			if call("show", "beads/context") != memory || call("show", "beads/gate", "--format", "graph-json") != target {
 				t.Fatal("append changed surrounding Beads")
 			}
 			if got := graphMixedResult[graphstore.LinkRecord](t, call("show", dependency.Link.ID)); !reflect.DeepEqual(got, dependency.Link) {
@@ -152,7 +152,7 @@ func TestGraphPreviewIssueAppendWorkflow(t *testing.T) {
 			}
 			call("close", "beads/gate", "--reason", "Done", "--actor", "holder")
 			call("close", "beads/work", "--reason", "Done", "--actor", "holder")
-			closed := graphMixedResult[graphstore.IssueRecord](t, call("show", "beads/work"))
+			closed := graphMixedResult[graphstore.IssueRecord](t, call("show", "--format", "graph-json", "beads/work"))
 			changed := graphMixedResult[graphstore.IssueMutationResult](t, call("update", "beads/work", "--append-notes=Post-completion", "--if-revision", closed.Revision, "--actor", "holder"))
 			if !changed.Changed {
 				t.Fatal("closed append reported no-op")
