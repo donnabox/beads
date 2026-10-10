@@ -4,13 +4,34 @@ Status: exploratory design, owned by Vickie with product rulings by Donna. Last 
 
 This Markdown document on `donnabox/beads:codex/vickie-bdp-client-design` is the single plan of record at Donna's request. It replaces the upstream issue and intentionally overrides the fleet's issue-shaped tracker convention. It is not a normative BDP amendment, release commitment, or implementation authorization. Work remains on this fork branch until Donna asks otherwise; do not create an upstream issue or PR for it.
 
+## Current priority: BDP profile structure and implementation
+
+BDP specification and executable profiles take priority over further V2 architecture design. Work is authorized in the BDP repository on normative prose, schemas, examples, validation, reference implementations and conformance. Donna retains product rulings; Vickie owns BDP integration and normative changes. Janet owns Beads CLI implementation and Preview 2 release integration; Trish owns Types for Preview 3. No merge is authorized. PR78 remains the earlier client/journal design discussion; profile implementation belongs in separate reviewable BDP PRs.
+
+Keep one specification file, organized into three cumulative, substantially self-contained parts: **Read → Read+Update → Transactional**. Each part defines the minimum concepts needed for its own semantics and may depend only on earlier parts. Read uses Resource revisions and ordinary read/pagination semantics; it must not depend on transaction identity, Scope epochs, commit positions, Events or replication snapshots. Introduce a concept in a later part only where its semantics require it. Capability-specific material such as History must have an explicit profile location instead of leaking later-profile requirements into basic reads.
+
+| Work | Owner / boundary | First deliverable | Done when |
+|---|---|---|---|
+| Editorial | Bounded editorial worker; Vickie integrates normative changes | Section allocation, concept-dependency map, old-to-new clause/anchor map and contradiction register | Every existing normative requirement is located or explicitly dispositioned; no normative forward dependency; profile examples and schemas agree; unresolved semantics are visible rather than silently changed |
+| Implementation | Bounded implementation worker, isolated files/worktree | Current runtime/conformance inventory, then one complete Read+Update operation through the installed reference endpoint | Request validation, persistence, guards, errors, response and observed resulting state pass positive/negative executable cases; no unqualified profile advertisement |
+| CLI crosswalk | Vickie, with independent review as useful; Janet supplies qualified CLI evidence | create/delete/list/show/update matrix | Each row pins CLI and BDP evidence and covers IDs/references, guards, merge/replace, JSON, errors, atomicity and Events; classified equivalent, legitimate shape difference, BDP gap, CLI gap or unresolved ruling; Preview 2 relevance explicit |
+| Integration | Vickie | Small separate PRs for editorial movement, semantic rulings and runtime slices | Each PR aligns affected prose/schema/examples/conformance; exact tested head and limits recorded; no CLI parity claim without checking both sides |
+
+Implementation proceeds cumulatively: preserve the Read baseline; make Read+Update executable and qualified; then implement Transactional atomic batch, rollback/concurrency, durable outcomes and ordered Events/changefeed/snapshot recovery. Existing evaluators and fixtures are reusable evidence, not proof that either write profile is served. Apply each profile's required contract without importing a later profile's wire concepts for convenience. The existing BDP implementation stack is the starting point; this does not initiate the later Rust V2 rewrite.
+
+Editorial moves and heading/link repairs should be separable from behavior changes. Establish stable clause identities and an anchor migration map early so code/conformance work can proceed while prose moves. Contradictions go into a decision register with evidence and alternatives; only genuine design choices come back to Donna. Proposed Event enrichments and query changes remain proposals until resolved.
+
+Preview 2 is not the delivery target for the profile reorganization or broad write implementation. Record isolated actual compatibility blockers for Janet; release inclusion remains a separate decision. Use current qualified CLI behavior rather than the tip of an unqualified branch. At planning inspection, release tracker #7170 pins CLI staging at `76fde9c9cb0865d430bf12d76fc473490f51128a`; verify this with Janet before parity qualification. BDP main is `182f1fcf8a01d896976bff3c9e3fb87c596c6ca6`; pending PR64 common metadata and PR65 attribution basis must be tracked separately, with exact accepted source chosen before integration. Trish's PR60 is design evidence, not an adopted wire contract.
+
+Use asynchronous bounded workers with disjoint write scopes under this interactive session. Vickie retains design decisions, the integration queue and the agent bus. No separate interactive role is needed to begin the editorial and implementation inventories. Concrete implementation assignments follow those inventories and the agreed profile boundaries.
+
 ## Agreed direction
 
 BDP is the provider interface. A provider writes and owns its HTTP endpoint over its chosen store. Our Rust CLI/client is a surface over BDP; commands need not correspond one-to-one with requests. Any provider meeting the required generic BDP capabilities must run the Issues pack without Issue-specific provider code.
 
 Packs build on Gas City core concepts and carry Bead/Link definitions, skills and extensible CLI commands. Issue commands belong in an Issues pack. A shared provider library is possible, but does not take over the endpoint. Brian's team plans the Postgres store; our team designs the client. Current `bd` must coexist side-by-side. Mode/URL/Scope configuration is a candidate, not settled syntax.
 
-Trish owns Type lifecycle design. Janet owns current Beads/Preview 2 integration, CLI/BDP alignment and qualification. Do not edit their branches, PRs, specs, tests, playgrounds or shared databases. Coordinate dependencies through the existing bus. No V2 implementation or merge is authorized.
+Trish owns Type lifecycle design. Janet owns current Beads/Preview 2 integration, CLI/BDP alignment and qualification. Do not edit their branches, PRs, specs, tests, playgrounds or shared databases. Coordinate dependencies through the existing bus. BDP profile implementation is authorized under the current priority above; V2 client implementation and merges remain out of scope.
 
 ## Accepted decisions
 
