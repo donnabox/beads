@@ -8,6 +8,7 @@ import (
 
 	"github.com/steveyegge/beads/internal/audit"
 	"github.com/steveyegge/beads/internal/debug"
+	"github.com/steveyegge/beads/internal/storage"
 	"github.com/steveyegge/beads/internal/storage/uow"
 	"github.com/steveyegge/beads/internal/types"
 	"github.com/steveyegge/beads/internal/ui"
@@ -29,11 +30,22 @@ import (
 func runCloseDirectIfRevision(ctx context.Context, id, reason string, force bool, session string, expectedVersion int64) error {
 	result, err := resolveAndGetIssueForMutation(ctx, store, id)
 	if err != nil {
+		// A guarded delete may remove the row before this pre-read. Its
+		// winning revision is then gone, just as if Close reached the writer
+		// and lost the guard there. Match the guarded delete route's result.
+		if isNotFoundErr(err) {
+			if reported, ok := reportIfRevisionFailure("closing", id, storage.ErrNotFound, &expectedVersion); ok {
+				return reported
+			}
+		}
 		fmt.Fprintf(os.Stderr, "Error resolving %s: %v\n", id, err)
 		return &exitError{Code: 1}
 	}
 	defer result.Close()
 	if result.Issue == nil {
+		if reported, ok := reportIfRevisionFailure("closing", id, storage.ErrNotFound, &expectedVersion); ok {
+			return reported
+		}
 		fmt.Fprintf(os.Stderr, "Issue %s not found\n", id)
 		return &exitError{Code: 1}
 	}

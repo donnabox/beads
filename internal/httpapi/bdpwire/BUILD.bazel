@@ -40,7 +40,10 @@ go_test(
         "strict_test.go",
         "wildcard_pin_test.go",
     ],
-    data = [":go_srcs", "//:THIRD_PARTY_LICENSES"] + glob(["schema/**"]),
+    data = [
+        ":go_srcs",
+        "//:THIRD_PARTY_LICENSES",
+    ] + glob(["schema/**"]),
     embed = [":bdpwire"],
 )
 
