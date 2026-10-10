@@ -87,7 +87,7 @@ func graphPreviewRememberPatchResult(result graphstore.MemoryMutationResult, err
 	if !result.Changed {
 		verb = "Unchanged"
 	}
-	return result, graphPreviewReplacementSummary(fmt.Sprintf("%s %s: %q", verb, result.Memory.ID, result.Memory.Properties.Title), result.Replaced), nil
+	return graphPreviewReplacementResult(result, fmt.Sprintf("%s %s: %q", verb, result.Memory.ID, result.Memory.Properties.Title), result.Replaced, nil)
 }
 
 // Omitted fields are resolved by the existing writer inside its transaction,
@@ -132,7 +132,7 @@ func runGraphPreviewRememberUpdate(cmd *cobra.Command, args []string) error {
 		if !result.Changed {
 			verb = "Unchanged"
 		}
-		return result, graphPreviewReplacementSummary(fmt.Sprintf("%s %s: %q", verb, result.Memory.ID, result.Memory.Properties.Title), result.Replaced), nil
+		return graphPreviewReplacementResult(result, fmt.Sprintf("%s %s: %q", verb, result.Memory.ID, result.Memory.Properties.Title), result.Replaced, nil)
 	})
 }
 

@@ -2,6 +2,9 @@ package main
 
 import (
 	"encoding/json"
+	"errors"
+	"fmt"
+	"os"
 	"strings"
 	"testing"
 
@@ -76,5 +79,68 @@ func TestGraphPreviewNativeIssueVersionAttributionLabelUnchanged(t *testing.T) {
 	}
 	if string(projected) != `{"attribution":"native-issue-writer"}` {
 		t.Fatalf("native Issue version attribution changed: %s", projected)
+	}
+}
+
+func TestGraphPreviewInvalidStoredAttributionRefusesAsInvalidStore(t *testing.T) {
+	for _, status := range []string{"verified", ""} {
+		_, _, err := graphProjectCarriedAttribution(json.RawMessage(fmt.Sprintf(`{"actor":"agent:writer","status":%q}`, status)))
+		if !errors.Is(err, graphstore.ErrInvalidStore) {
+			t.Fatalf("status %q should be invalid store: %v", status, err)
+		}
+	}
+	_, _, err := graphProjectCarriedAttribution(json.RawMessage(`{"actor":"","status":"claimed"}`))
+	if !errors.Is(err, graphstore.ErrInvalidStore) {
+		t.Fatalf("principal-free claimed attribution should be invalid store: %v", err)
+	}
+	for _, raw := range []string{`{"actor":123,"status":"claimed"}`, `{"actor":"agent:writer"}`} {
+		if _, _, err := graphProjectCarriedAttribution(json.RawMessage(raw)); !errors.Is(err, graphstore.ErrInvalidStore) {
+			t.Fatalf("malformed stored attribution %s should be invalid store: %v", raw, err)
+		}
+	}
+	if _, err := graphPublicAttributionBasis("verified"); !errors.Is(err, graphstore.ErrInvalidStore) {
+		t.Fatalf("human attribution should fail closed: %v", err)
+	}
+
+	stderr, err := os.CreateTemp(t.TempDir(), "stderr")
+	if err != nil {
+		t.Fatal(err)
+	}
+	oldStderr, oldJSON := os.Stderr, jsonOutput
+	os.Stderr, jsonOutput = stderr, true
+	t.Cleanup(func() {
+		os.Stderr, jsonOutput = oldStderr, oldJSON
+		_ = stderr.Close()
+	})
+	result := graphStorageError(fmt.Errorf("projection: %w", graphstore.ErrInvalidStore))
+	var failure *exitError
+	if !errors.As(result, &failure) || failure.Code != 5 {
+		t.Fatalf("invalid store must exit5: %v", result)
+	}
+	if _, err := stderr.Seek(0, 0); err != nil {
+		t.Fatal(err)
+	}
+	var envelope struct {
+		Code string `json:"code"`
+	}
+	if err := json.NewDecoder(stderr).Decode(&envelope); err != nil || envelope.Code != "invalid_store" {
+		t.Fatalf("invalid store must use its own code: %+v, %v", envelope, err)
+	}
+}
+
+func TestGraphPreviewReplacementDisclosureUsesPublicBasis(t *testing.T) {
+	replaced := &graphstore.ReplacedMemory{ID: "beads/plan", Version: "saved", Attribution: graphstore.Attribution{Actor: "agent:writer", Status: "claimed"}}
+	human, err := graphPreviewReplacementSummary("Updated", replaced)
+	if err != nil || !strings.Contains(human, `basis="writer-supplied"`) || strings.Contains(human, `status="claimed"`) {
+		t.Fatalf("replacement disclosure: %q, %v", human, err)
+	}
+	replaced.Attribution = graphstore.Attribution{Status: "unknown"}
+	human, err = graphPreviewReplacementSummary("Updated", replaced)
+	if err != nil || !strings.Contains(human, "no recorded attribution") {
+		t.Fatalf("absent attribution disclosure: %q, %v", human, err)
+	}
+	replaced.Attribution = graphstore.Attribution{Actor: "agent:writer", Status: "verified"}
+	if _, err := graphPreviewReplacementSummary("Updated", replaced); !errors.Is(err, graphstore.ErrInvalidStore) {
+		t.Fatalf("out-of-vocabulary disclosure should fail closed: %v", err)
 	}
 }

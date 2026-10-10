@@ -5,6 +5,8 @@ import (
 	"encoding/json"
 	"fmt"
 	"strings"
+
+	"github.com/steveyegge/beads/internal/storage/graphstore"
 )
 
 // graphProjectCompleteRecords changes only the CLI representation. The store
@@ -98,23 +100,23 @@ func graphProjectCarriedAttribution(raw json.RawMessage) (json.RawMessage, bool,
 	}
 	var members map[string]json.RawMessage
 	if err := json.Unmarshal(raw, &members); err != nil {
-		return nil, false, err
+		return nil, false, fmt.Errorf("%w: decode stored attribution: %v", graphstore.ErrInvalidStore, err)
 	}
 	if _, ok := members["actor"]; !ok {
 		return raw, true, nil
 	}
 	var actor, status string
 	if err := json.Unmarshal(members["actor"], &actor); err != nil {
-		return nil, false, err
+		return nil, false, fmt.Errorf("%w: decode stored attribution actor: %v", graphstore.ErrInvalidStore, err)
 	}
 	if err := json.Unmarshal(members["status"], &status); err != nil {
-		return nil, false, err
+		return nil, false, fmt.Errorf("%w: decode stored attribution status: %v", graphstore.ErrInvalidStore, err)
 	}
 	if actor == "" && (status == "unknown" || status == "") {
 		return nil, false, nil
 	}
 	if actor == "" {
-		return nil, false, fmt.Errorf("stored attribution has no actor")
+		return nil, false, fmt.Errorf("%w: stored attribution has no actor", graphstore.ErrInvalidStore)
 	}
 	switch status {
 	case "claimed":
@@ -122,18 +124,22 @@ func graphProjectCarriedAttribution(raw json.RawMessage) (json.RawMessage, bool,
 	case "unknown":
 		members["basis"] = json.RawMessage(`"unknown"`)
 	default:
-		return nil, false, fmt.Errorf("unsupported stored attribution status %q", status)
+		return nil, false, fmt.Errorf("%w: unsupported stored attribution status %q", graphstore.ErrInvalidStore, status)
 	}
 	delete(members, "status")
 	projected, err := json.Marshal(members)
 	return projected, true, err
 }
 
-func graphPublicAttributionBasis(status string) string {
-	if status == "claimed" {
-		return "writer-supplied"
+func graphPublicAttributionBasis(status string) (string, error) {
+	switch status {
+	case "claimed":
+		return "writer-supplied", nil
+	case "unknown":
+		return "unknown", nil
+	default:
+		return "", fmt.Errorf("%w: unsupported stored attribution status %q", graphstore.ErrInvalidStore, status)
 	}
-	return status
 }
 
 func graphIsCompleteRecord(members map[string]json.RawMessage) bool {

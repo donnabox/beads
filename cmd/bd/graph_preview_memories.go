@@ -70,7 +70,16 @@ func renderGraphMemoryDiscovery(result graphMemoryDiscoveryResult, structured, q
 			}
 			if item.Details != nil {
 				if item.Attribution.Actor != "" {
-					fmt.Fprintf(&human, "    Attribution: actor=%q basis=%q recordedAt=%q\n", item.Attribution.Actor, graphPublicAttributionBasis(item.Attribution.Status), item.Attribution.RecordedAt)
+					basis, err := graphPublicAttributionBasis(item.Attribution.Status)
+					if err != nil {
+						return "", err
+					}
+					fmt.Fprintf(&human, "    Attribution: actor=%q basis=%q recordedAt=%q\n", item.Attribution.Actor, basis, item.Attribution.RecordedAt)
+				} else {
+					if item.Attribution.Status != "" && item.Attribution.Status != "unknown" {
+						return "", fmt.Errorf("%w: stored attribution has no actor", graphstore.ErrInvalidStore)
+					}
+					human.WriteString("    Attribution: none recorded\n")
 				}
 				fmt.Fprintf(&human, "    Owned Links: %d\n", item.Details.OwnedLinkCount)
 				fmt.Fprintf(&human, "    Recall: bd recall %s --version %s\n", graphMemoryDisplayText(graphMemoryShellArg(id)), graphMemoryDisplayText(graphMemoryShellArg(item.Version)))

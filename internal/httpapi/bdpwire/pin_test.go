@@ -104,6 +104,24 @@ func TestPinHeaderNamesThePinnedCommitAndBundle(t *testing.T) {
 	if got := pin.header["spec-blob"]; !lowerHex40.MatchString(got) {
 		t.Errorf("PROVENANCE spec-blob = %q, want the spec file's 40-hex git blob sha1", got)
 	}
+	licenses, err := os.ReadFile(filepath.Join("..", "..", "..", "THIRD_PARTY_LICENSES"))
+	if err != nil {
+		t.Fatalf("read THIRD_PARTY_LICENSES: %v", err)
+	}
+	bdpSection := strings.SplitN(string(licenses), "gastownhall/bdp", 2)
+	if len(bdpSection) != 2 {
+		t.Fatal("THIRD_PARTY_LICENSES has no gastownhall/bdp entry")
+	}
+	section := strings.SplitN(bdpSection[1], "================================================================================", 2)[0]
+	var listedPins []string
+	for _, line := range strings.Split(section, "\n") {
+		if strings.HasPrefix(line, "Pinned commit: ") {
+			listedPins = append(listedPins, strings.TrimPrefix(line, "Pinned commit: "))
+		}
+	}
+	if len(listedPins) != 1 || listedPins[0] != Pin {
+		t.Errorf("THIRD_PARTY_LICENSES gastownhall/bdp pins = %q, want only %q", listedPins, Pin)
+	}
 }
 
 // fenceRange parses a derived entry's upstream column and checks it against

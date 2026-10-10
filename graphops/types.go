@@ -153,24 +153,24 @@ func (r Revision) IsZero() bool { return r.token == "" }
 // Equal is the only comparison a revision supports.
 func (r Revision) Equal(o Revision) bool { return r.token == o.token }
 
-// AttributionStatus is the closed set of bases for a carried attribution.
-type AttributionStatus string
+// AttributionBasis is the closed set of bases for a carried attribution.
+type AttributionBasis string
 
-// The two statuses. There is deliberately no status that asserts
+// The two bases. There is deliberately no basis that asserts
 // authentication: the member is data, not evidence.
 const (
-	// AttributionClaimed: the principal was supplied by the writer of that
+	// AttributionWriterSupplied: the principal was supplied by the writer of that
 	// version, as written.
-	AttributionClaimed AttributionStatus = "claimed"
+	AttributionWriterSupplied AttributionBasis = "writer-supplied"
 	// AttributionUnknown: the principal is carried from data whose relation to
 	// this version the realization cannot establish (an import; a creator
 	// recorded where the writer of the current version was not).
-	AttributionUnknown AttributionStatus = "unknown"
+	AttributionUnknown AttributionBasis = "unknown"
 )
 
-// Valid reports whether s is one of the two statuses.
-func (s AttributionStatus) Valid() bool {
-	return s == AttributionClaimed || s == AttributionUnknown
+// Valid reports whether b is one of the two bases.
+func (b AttributionBasis) Valid() bool {
+	return b == AttributionWriterSupplied || b == AttributionUnknown
 }
 
 // Attribution is the carried, per-version attribution of a Bead or Link:
@@ -179,30 +179,30 @@ func (s AttributionStatus) Valid() bool {
 // Link accessors return it with a presence flag.
 type Attribution struct {
 	principal string
-	status    AttributionStatus
+	basis     AttributionBasis
 }
 
 // NewAttribution builds a present attribution: a nonempty opaque principal and
-// one of the two statuses. Principals are compared for byte equality only;
+// one of the two bases. Principals are compared for byte equality only;
 // BDP mandates no namespace.
-func NewAttribution(principal string, status AttributionStatus) (Attribution, error) {
+func NewAttribution(principal string, basis AttributionBasis) (Attribution, error) {
 	if principal == "" {
 		return Attribution{}, fmt.Errorf("%w: attribution principal must be nonempty", ErrValidation)
 	}
 	if err := validUTF8(principal, "attribution principal"); err != nil {
 		return Attribution{}, err
 	}
-	if !status.Valid() {
-		return Attribution{}, fmt.Errorf("%w: attribution status %q is not claimed or unknown", ErrValidation, status)
+	if !basis.Valid() {
+		return Attribution{}, fmt.Errorf("%w: attribution basis %q is not writer-supplied or unknown", ErrValidation, basis)
 	}
-	return Attribution{principal: principal, status: status}, nil
+	return Attribution{principal: principal, basis: basis}, nil
 }
 
 // Principal names who the version is attributed to.
 func (a Attribution) Principal() string { return a.principal }
 
-// Status is the realization's basis for the value.
-func (a Attribution) Status() AttributionStatus { return a.status }
+// Basis describes how the realization obtained the principal.
+func (a Attribution) Basis() AttributionBasis { return a.basis }
 
 // IsZero reports the absent attribution.
 func (a Attribution) IsZero() bool { return a.principal == "" }

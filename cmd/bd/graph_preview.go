@@ -746,6 +746,8 @@ func graphStorageError(err error) error {
 		return graphFailure("capability_unavailable", err.Error(), 5)
 	case errors.Is(err, graphstore.ErrOutcomeUnknown):
 		return graphFailure("outcome_unknown", err.Error()+"; do not automatically replay; inspect the canonical ID before deciding the next action", 6)
+	case errors.Is(err, graphstore.ErrInvalidStore):
+		return graphFailure("invalid_store", err.Error(), 5)
 	case errors.Is(err, graph.ErrValidation):
 		return graphFailure("invalid_properties", err.Error(), 2)
 	case errors.Is(err, storage.ErrValidation), errors.Is(err, publicops.ErrValidation):

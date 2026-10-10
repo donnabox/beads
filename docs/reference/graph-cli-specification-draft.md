@@ -231,6 +231,8 @@ Machine-readable errors use
 human errors use `code: message` there. A command-wide admission or validation
 refusal prints no success envelope; a failed target prints no success record
 for that target, while successful targets in a batch remain visible. An
+invalid retained store attribution reports `invalid_store` (exit 5), never
+`graph_not_initialized`; it does not project an out-of-vocabulary public basis. An
 ambiguous-Link error must report sorted candidate canonical IDs. A future
 retryable category may change only with a separately reviewed contract; the
 current graph errors do not ask a caller to blindly retry. Scalar selectors
@@ -749,8 +751,10 @@ and the row-lock token on native Issues. `change_at` is for display and is
 never used to order rows, so two versions written within the same second
 still list in write order. Memory and Link local revision numbers are allocated
 per Resource when each version is written. Issue rows come from the native Issue
-version record, use its local revision number and populate `attribution`
-with its attribution status; Memory and Link rows leave `attribution` empty.
+version record, use its local revision number and populate the scalar
+`attribution` field with its native status label (`claimed` or `unknown`);
+Memory and Link rows leave `attribution` empty. This field is distinct from
+the carried-attribution object on complete records.
 A deleted Memory's list ends at its final live head; deletion adds no version
 to it.
 

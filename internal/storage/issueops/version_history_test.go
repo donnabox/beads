@@ -2,12 +2,12 @@ package issueops
 
 import "testing"
 
-// These tests pin the derivation rule for issue_versions.attribution_status,
-// the NOT NULL column migration 0068 step 6 adds. Its vocabulary is BDP's
-// carried-attribution status (gastownhall/bdp#18, merged 2026-09-07): exactly
-// two values, "claimed" and "unknown". "imported" is provenance, not an
-// assertion, and is not a status — it returns as a separate provenance marker
-// in the phase that first imports history, for which no writer exists yet.
+// These tests pin the stored derivation rule for
+// issue_versions.attribution_status, the NOT NULL column migration 0068 step 6
+// adds. Its internal tokens are "claimed" and "unknown". Public BDP carried
+// attribution instead uses basis "writer-supplied" or "unknown" when a
+// principal exists; graphread.projectAttribution performs that projection.
+// "imported" is provenance, not an attribution basis.
 //
 // RecordVersionInTx receives only a plain actor string from every call site
 // (none passes any additional attribution context), so the only signal
@@ -35,11 +35,10 @@ func TestAttributionStatusForActor(t *testing.T) {
 	}
 }
 
-// TestAttributionStatusValuesMatchBDP pins the two legal values verbatim
-// against bdp#18's vocabulary, so a future edit cannot silently rename one,
-// or reintroduce a value BDP does not carry, without failing here — and
-// checks that the derivation never yields anything outside that set.
-func TestAttributionStatusValuesMatchBDP(t *testing.T) {
+// TestAttributionStatusValuesAreTheStoredEncoding pins the native column's
+// closed vocabulary and checks that actor-based derivation stays within it.
+// It does not assert public BDP vocabulary; graphread tests that projection.
+func TestAttributionStatusValuesAreTheStoredEncoding(t *testing.T) {
 	t.Parallel()
 
 	values := map[string]string{

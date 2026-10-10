@@ -54,8 +54,11 @@ func TestStringsMustBeValidUTF8(t *testing.T) {
 	}
 	okDecl, _ := graphops.NewOwnedLinkDecl("https://work.example/types/c", "", 1)
 	for name, construct := range map[string]func(s string) error{
-		"revision":  func(s string) error { _, err := graphops.NewRevision(s); return err },
-		"principal": func(s string) error { _, err := graphops.NewAttribution(s, graphops.AttributionClaimed); return err },
+		"revision": func(s string) error { _, err := graphops.NewRevision(s); return err },
+		"principal": func(s string) error {
+			_, err := graphops.NewAttribution(s, graphops.AttributionWriterSupplied)
+			return err
+		},
 		"in-Scope pin": func(s string) error {
 			_, err := graphops.NewInScopeRef("beads/x", s)
 			return err
@@ -115,26 +118,30 @@ func TestStringsMustBeValidUTF8(t *testing.T) {
 }
 
 func TestAttribution(t *testing.T) {
-	if _, err := graphops.NewAttribution("", graphops.AttributionClaimed); !errors.Is(err, graphops.ErrValidation) {
+	if _, err := graphops.NewAttribution("", graphops.AttributionWriterSupplied); !errors.Is(err, graphops.ErrValidation) {
 		t.Fatalf("empty principal: %v", err)
 	}
 	if _, err := graphops.NewAttribution("agent:x", "verified"); !errors.Is(err, graphops.ErrValidation) {
-		t.Fatalf("a status asserting authentication must not exist: %v", err)
+		t.Fatalf("a basis asserting authentication must not exist: %v", err)
 	}
 	a, err := graphops.NewAttribution("agent:planner", graphops.AttributionUnknown)
-	if err != nil || a.Principal() != "agent:planner" || a.Status() != graphops.AttributionUnknown || a.IsZero() {
+	if err != nil || a.Principal() != "agent:planner" || a.Basis() != graphops.AttributionUnknown || a.IsZero() {
 		t.Fatalf("attribution: %+v %v", a, err)
+	}
+	writer, err := graphops.NewAttribution("agent:writer", graphops.AttributionWriterSupplied)
+	if err != nil || writer.Basis() != "writer-supplied" {
+		t.Fatalf("writer-supplied basis: %+v %v", writer, err)
 	}
 	if !(graphops.Attribution{}).IsZero() {
 		t.Fatal("zero attribution is absent")
 	}
-	for _, s := range []graphops.AttributionStatus{graphops.AttributionClaimed, graphops.AttributionUnknown} {
+	for _, s := range []graphops.AttributionBasis{graphops.AttributionWriterSupplied, graphops.AttributionUnknown} {
 		if !s.Valid() {
 			t.Errorf("%s should be valid", s)
 		}
 	}
-	if graphops.AttributionStatus("").Valid() {
-		t.Error("empty status should not be valid")
+	if graphops.AttributionBasis("").Valid() {
+		t.Error("empty basis should not be valid")
 	}
 }
 
@@ -375,7 +382,7 @@ func TestRef(t *testing.T) {
 func TestBeadAndLink(t *testing.T) {
 	const scope = "https://beads.example/acme/"
 	rev := graphops.MintRevision()
-	attr, _ := graphops.NewAttribution("agent:planner", graphops.AttributionClaimed)
+	attr, _ := graphops.NewAttribution("agent:planner", graphops.AttributionWriterSupplied)
 	props, _ := graphops.NewProperties([]byte(`{"title":"Specify BDP mutation","status":"open"}`))
 	bead, err := graphops.NewBead(graphops.BeadSpec{Path: "beads/task-42", TypeURL: "https://work.example/types/task", Revision: rev, Attribution: attr, Properties: props})
 	if err != nil {

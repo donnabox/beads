@@ -1,6 +1,7 @@
 package graphread
 
 import (
+	"errors"
 	"testing"
 
 	"github.com/steveyegge/beads/internal/httpapi/bdpwire"
@@ -27,5 +28,10 @@ func TestProjectAttributionUsesPublicBasisWithoutChangingStoredStatus(t *testing
 	absent, err = projectAttribution(graphstore.Attribution{})
 	if err != nil || absent != nil {
 		t.Fatalf("zero attribution should be absent: %v %+v", err, absent)
+	}
+	for _, invalid := range []graphstore.Attribution{{Actor: "agent:writer", Status: "verified"}, {Status: "claimed"}} {
+		if projected, err := projectAttribution(invalid); projected != nil || !errors.Is(err, graphstore.ErrInvalidStore) {
+			t.Fatalf("invalid stored attribution %+v must fail closed: %+v, %v", invalid, projected, err)
+		}
 	}
 }

@@ -404,18 +404,21 @@ acceptance. Memory deletion,
 requirements; consult the [Graph CLI Specification (Draft)](/reference/graph-cli-specification-draft) before
 automating them. A semantic no-op retains the existing revision.
 
-Structured graph output carries an `attribution` object only when a principal
-was recorded. Its `basis` is `writer-supplied` when that version's writer
+Record-bearing results from `bd show`, `bd compare`, `bd query`, and
+`bd memories --format records-json` carry an `attribution` object only when a
+principal was recorded. Its `basis` is `writer-supplied` when that version's writer
 supplied the actor, or `unknown` when the relationship to the version cannot
 be established. `basis` describes the source of the value; it does not assert
 that an authority authenticated the actor. The stored snapshot format retains
-its older `status` field, while CLI and BDP Read projections use `basis`.
+its older `status` field, while complete CLI record and BDP Read projections use `basis`.
 
 `bd versions ID` lists a Memory, Issue or Link's versions newest first in a
 graph workspace. `bd history ID` is an alias there; in an ordinary workspace,
 `bd history` retains its Dolt-commit meaning. Each graph row includes an
 opaque `version` token, a store-local `local_revision`, a display `change_at`
-time, and attribution. Use the **token** for `show --version` or `compare`, never
+time, and attribution. The `bd versions --json` row's scalar `attribution` is
+the native per-version status label (`claimed`, `unknown`, or empty), not the
+carried-attribution object above. Use the **token** for `show --version` or `compare`, never
 the local revision number. Human output calls the number `REV`, matching
 ordinary `bd versions`; graph JSON uses `local_revision`. It orders versions
 within this store and is not a stable cross-clone address. `change_at` is not

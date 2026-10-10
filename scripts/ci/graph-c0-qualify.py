@@ -198,6 +198,7 @@ def verify_issue_append_capture(root, summary, binary_hash, network):
     require(notes["appendText"] == text and after["properties"] == dict(claimed["properties"],
             notes=text, updated_at=after["properties"]["updated_at"]), "appended properties/lease changed or bytes lost")
     require(after["revision"] != claimed["revision"] and after["attribution"]["principal"] == actor
+            and after["attribution"]["basis"] == "writer-supplied"
             and after["ownedLinks"] == claimed["ownedLinks"] == before["ownedLinks"], "append ownership/revision proof missing")
     require(notes["properties"] == after["properties"] and notes["inventory"]["next"] is None
             and len(notes["inventory"]["items"]) == 4
@@ -270,7 +271,9 @@ def verify_issue_authoring_capture(root, summary, binary_hash, network):
     require(all(item["id"] == resource and item["type"] == before["type"] and item["ownedLinks"] == before["ownedLinks"] for item in (edited, after)),
             "authoring changed identity/type/ownership")
     actor = "bdp-read-author"
-    require(all(item["attribution"]["principal"] == actor for item in (edited, after)), "authoring attribution missing")
+    require(all(item["attribution"]["principal"] == actor
+                and item["attribution"]["basis"] == "writer-supplied" for item in (edited, after)),
+            "authoring attribution missing or has wrong basis")
     require(proof["properties"] == after["properties"] and proof["inventory"]["next"] is None
             and len(proof["inventory"]["items"]) == 4
             and [item for item in proof["inventory"]["items"] if item["id"] == resource] == [after], "authoring BDP current/properties/inventory disagree")

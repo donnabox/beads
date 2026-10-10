@@ -3,6 +3,7 @@ package main
 import (
 	"encoding/json"
 	"errors"
+	"reflect"
 	"strings"
 	"testing"
 
@@ -24,36 +25,41 @@ func TestGraphPreviewMemoryDiscoveryRendering(t *testing.T) {
 			t.Fatalf("unescaped data in human output: %q", human)
 		}
 	}
-	if !strings.Contains(human, "--version 'saved'\"'\"'quoted'") || !strings.Contains(human, "Owned Links: 2") {
+	if !strings.Contains(human, "--version 'saved'\"'\"'quoted'") || !strings.Contains(human, "Owned Links: 2") || !strings.Contains(human, `basis="writer-supplied"`) {
 		t.Fatalf("missing exact recall or details: %s", human)
 	}
 	structured, err := renderGraphMemoryDiscovery(result, true, true)
 	if err != nil {
 		t.Fatal(err)
 	}
-	var envelope struct {
-		SchemaVersion int  `json:"schemaVersion"`
-		Preview       bool `json:"preview"`
-		Result        struct {
-			Complete bool    `json:"complete"`
-			Next     *string `json:"next"`
-			Items    []struct {
-				Attribution struct {
-					Actor string `json:"actor"`
-					Basis string `json:"basis"`
-				} `json:"attribution"`
-			} `json:"items"`
-		} `json:"result"`
-	}
+	var envelope map[string]any
 	if err := json.Unmarshal([]byte(structured), &envelope); err != nil {
 		t.Fatal(err)
 	}
-	if envelope.SchemaVersion != 1 || !envelope.Preview || !envelope.Result.Complete || envelope.Result.Next != nil || len(envelope.Result.Items) != 1 || envelope.Result.Items[0].Attribution.Actor != "actor\nname" || envelope.Result.Items[0].Attribution.Basis != "writer-supplied" {
+	want := map[string]any{"schemaVersion": float64(1), "preview": true, "result": map[string]any{
+		"projection": "summary", "scope": "https://example.invalid/", "complete": true, "next": nil,
+		"items": []any{map[string]any{
+			"id": "https://example.invalid/beads/plan", "type": "", "title": "Plan\n\x1b[31m", "version": "saved'quoted",
+			"attribution":   map[string]any{"actor": "actor\nname", "basis": "writer-supplied", "recordedAt": "observed"},
+			"matchedFields": []any{"body"}, "excerpt": map[string]any{"field": "body", "text": "line\nbody", "truncated": true},
+			"details": map[string]any{"ownedLinkCount": float64(2)},
+		}},
+	}}
+	if !reflect.DeepEqual(envelope, want) {
 		t.Fatalf("structured summary changed or disappeared under quiet: %+v", envelope)
 	}
 	quiet, err := renderGraphMemoryDiscovery(result, false, true)
 	if err != nil || quiet != "" {
 		t.Fatalf("quiet human output: %q, %v", quiet, err)
+	}
+	result.Items[0].Attribution = graphstore.Attribution{Status: "unknown"}
+	withoutPrincipal, err := renderGraphMemoryDiscovery(result, false, false)
+	if err != nil || !strings.Contains(withoutPrincipal, "Attribution: none recorded") {
+		t.Fatalf("missing explicit absent-attribution disclosure: %q, %v", withoutPrincipal, err)
+	}
+	result.Items[0].Attribution = graphstore.Attribution{Actor: "agent:writer", Status: "verified"}
+	if _, err := renderGraphMemoryDiscovery(result, false, false); !errors.Is(err, graphstore.ErrInvalidStore) {
+		t.Fatalf("out-of-vocabulary human attribution should fail closed: %v", err)
 	}
 }
 

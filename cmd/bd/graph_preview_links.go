@@ -183,7 +183,7 @@ func runGraphPreviewLink(cmd *cobra.Command, args []string) error {
 			Path: path, TypeURL: typ, SourcePath: paths[0], TargetPath: paths[1], Properties: properties, Metadata: metadata,
 			Actor: getActorWithGit(), ExpectedSourceRevision: revision, UnconditionalSource: unconditional,
 		})
-		return result, graphPreviewReplacementSummary(fmt.Sprintf("Created %s: %s → %s", result.Link.ID, args[0], args[1]), result.ReplacedSource), err
+		return graphPreviewReplacementResult(result, fmt.Sprintf("Created %s: %s → %s", result.Link.ID, args[0], args[1]), result.ReplacedSource, err)
 	})
 }
 
@@ -233,6 +233,6 @@ func runGraphPreviewUpdateLink(cmd *cobra.Command, args []string) error {
 		if !result.Changed {
 			verb = "Unchanged"
 		}
-		return result, graphPreviewReplacementSummary(fmt.Sprintf("%s %s", verb, result.Link.ID), result.ReplacedSource), err
+		return graphPreviewReplacementResult(result, fmt.Sprintf("%s %s", verb, result.Link.ID), result.ReplacedSource, err)
 	})
 }

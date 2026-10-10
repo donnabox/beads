@@ -26,7 +26,7 @@ func runGraphPreviewLinkPropertiesPatch(cmd *cobra.Command, path string) error {
 		if !result.Changed {
 			verb = "Unchanged"
 		}
-		return result, graphPreviewReplacementSummary(fmt.Sprintf("%s %s", verb, result.Link.ID), result.ReplacedSource), nil
+		return graphPreviewReplacementResult(result, fmt.Sprintf("%s %s", verb, result.Link.ID), result.ReplacedSource, nil)
 	})
 }
 

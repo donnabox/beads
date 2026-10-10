@@ -182,6 +182,8 @@ func projectAttribution(value graphstore.Attribution) (*bdpwire.Attribution, err
 	case "claimed":
 		basis = bdpwire.AttributionWriterSupplied
 	case "unknown":
+		// Current graphstore validation cannot persist a principal with unknown
+		// status; retain the wire mapping for a future admitted import path.
 		basis = bdpwire.AttributionUnknown
 	default:
 		return nil, fmt.Errorf("%w: unsupported attribution", graphstore.ErrInvalidStore)

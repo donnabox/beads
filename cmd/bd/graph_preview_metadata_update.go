@@ -44,10 +44,10 @@ func runGraphPreviewUpdateMetadataOnly(cmd *cobra.Command, path string) error {
 				return nil, "", graphFailure("invalid_selector", "Memory updates have no owning-source guard", 2)
 			}
 			result, err := store.PatchMemory(ctx, graphstore.MemoryPatchRequest{Path: path, Actor: actor, ExpectedRevision: revision, Unconditional: unconditional, Metadata: patch})
-			return result, graphPreviewReplacementSummary(fmt.Sprintf("Updated %s", result.Memory.ID), result.Replaced), err
+			return graphPreviewReplacementResult(result, fmt.Sprintf("Updated %s", result.Memory.ID), result.Replaced, err)
 		case graphstore.LinkRecord:
 			result, err := store.UpdateLink(ctx, graphstore.LinkUpdateRequest{Path: path, Actor: actor, ExpectedRevision: revision, Unconditional: unconditional, ExpectedSourceRevision: sourceRevision, UnconditionalSource: unconditionalSource, Metadata: patch, MetadataOnly: true})
-			return result, graphPreviewReplacementSummary(fmt.Sprintf("Updated %s", result.Link.ID), result.ReplacedSource), err
+			return graphPreviewReplacementResult(result, fmt.Sprintf("Updated %s", result.Link.ID), result.ReplacedSource, err)
 		default:
 			return nil, "", graphFailure("capability_unavailable", "metadata update requires an admitted Bead or informational Link", 5)
 		}
