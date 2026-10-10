@@ -1,0 +1,18 @@
+load("@rules_go//go:def.bzl", "go_library", "go_test")
+
+go_library(
+    name = "legacyimport",
+    srcs = ["jsonl.go"],
+    importpath = "github.com/steveyegge/beads/internal/legacyimport",
+    visibility = ["//:__subpackages__"],
+    deps = [
+        "//graphops",
+        "//internal/types",
+    ],
+)
+
+go_test(
+    name = "legacyimport_test",
+    srcs = ["jsonl_test.go"],
+    embed = [":legacyimport"],
+)
