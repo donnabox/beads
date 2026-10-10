@@ -40,6 +40,8 @@ The historical [journal audit](audit-20261008/event-log-audit.md) distinguished 
 
 ## Beads 1.3 journal comparison
 
+Donna supplied a design criterion: when working 1.3.1 exposes information BDP lacks, assess whether generic implementations would benefit from it for efficiency or convenience, and seriously consider adding it. Existing BDP shape is not a reason by itself to reject useful information. This accepts the evaluation principle, not every proposed field or Event change. The [comparison's reassessment](normalized-1.3-vs-current-bdp.md#reassessment-useful-journal-information-as-protocol-input) revisits complete state, owned Links, deleted content, successful no-op observations, operation attribution and cursors under that criterion.
+
 The [detailed side-by-side comparison](normalized-1.3-vs-current-bdp.md) holds the proposed close/comment normalization and Link lifetime identity changes constant, then compares modified 1.3 with both current BDP Events and Scope change groups. It separates the now-aligned vocabulary from remaining payload, transaction, snapshot, epoch, coverage, projection and erasure obligations. These assumptions are a comparison scenario, not implementation or release approval.
 
 Donna requested a comparison of the shipped Beads 1.3 journal with BDP before choosing possible 1.4 changes. The [comparison and recommendation](beads-1.3-journal-vs-bdp.md), backed by an [independent source audit](beads-1.3-journal-source-audit.md), finds substantial overlap with BDP's **changefeed**, especially its postimages. The existing journal's transactional capture is reusable; its flat records lack transaction framing, history epochs and snapshot/checkpoint rendezvous, and some writers/state changes can bypass it.
