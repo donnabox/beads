@@ -37,7 +37,6 @@ func TestGraphPreviewIssueReferencesRefusals(t *testing.T) {
 		{"external-invalid-utf8", []string{"--external-ref=\xff"}, 2},
 		{"spec-invalid-utf8", []string{"--spec-id=\xff"}, 2},
 		{"status", []string{"--external-ref=x", "--status=open"}, 5},
-		{"properties", []string{"--spec-id=x", "--properties={}"}, 5},
 		{"claim", []string{"--external-ref=x", "--claim"}, 5},
 	} {
 		t.Run(tc.name, func(t *testing.T) {
@@ -59,6 +58,12 @@ func TestGraphPreviewIssueReferencesRefusals(t *testing.T) {
 				t.Fatalf("want exit%d before storage: %v", tc.code, err)
 			}
 		})
+	}
+	// The generic setter may accompany a distinct native Issue edit flag.
+	cmd := issueTextCommand(t, "--spec-id=x", "--properties={}")
+	request, err := graphPreviewIssueEditRequest(cmd, "beads/work")
+	if err != nil || !cmd.Flags().Changed("properties") || request.SpecID == nil || *request.SpecID != "x" {
+		t.Fatalf("mixed spec id and empty property merge: %+v %v", request, err)
 	}
 }
 

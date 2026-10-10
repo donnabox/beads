@@ -70,7 +70,6 @@ func TestGraphPreviewIssueDueRefusals(t *testing.T) {
 		{"syntax", []string{"--due=not-a-date"}, 2},
 		{"utf8", []string{"--due=\xff"}, 2},
 		{"oversize", []string{"--due=" + strings.Repeat("x", 4097)}, 2},
-		{"properties", []string{"--due=", "--properties={}"}, 5},
 		{"status", []string{"--due=", "--status=open"}, 5},
 		{"source-guard", []string{"--due=", "--if-source-revision=x"}, 5},
 		{"file", []string{"--due=", "--body-file=missing"}, 5},
@@ -82,6 +81,12 @@ func TestGraphPreviewIssueDueRefusals(t *testing.T) {
 				t.Fatalf("want exit%d before storage, got %v", tc.code, err)
 			}
 		})
+	}
+	// The generic setter may accompany a distinct native Issue edit flag.
+	cmd := issueTextCommand(t, "--due=", "--properties={}")
+	request, err := graphPreviewIssueEditRequest(cmd, "beads/work")
+	if err != nil || !cmd.Flags().Changed("properties") || !request.DueAt.Set || request.DueAt.Value != nil {
+		t.Fatalf("mixed due clear and empty property merge: %+v %v", request, err)
 	}
 }
 
