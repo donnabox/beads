@@ -423,8 +423,22 @@ holder check for an abandoned claim, but still uses the native row
 compare-and-swap. The two flags cannot be combined. `--reason TEXT` appends a
 native Issue comment after the release; if that separate append fails, the
 release remains committed and the CLI warns. Comments are a separate feed,
-outside retained Issue state, and do not mint another Issue version. Other
-comment writes are not yet exposed in graph mode.
+outside retained Issue state, and do not mint another Issue version.
+
+Add comments with either familiar command, then list the feed:
+
+```sh
+bd comment work 'Ready for review'
+bd comments add work 'Reviewer confirmed' --author alice
+bd comments work --json
+```
+
+`bd comment` accepts positional text, `--stdin`, or `--file`; `bd comments add`
+accepts positional text or `--file` and its ordinary `--author` override. Both
+return the stored native comment with `--json`, using the Scope-relative Issue
+ID in `issue_id`. `bd comments ID --json` retains the ordinary comment-array
+shape. Comment writes leave the Issue revision and retained version list
+unchanged.
 
 ## Versioning and History
 

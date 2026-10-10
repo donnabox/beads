@@ -191,9 +191,10 @@ successful release; bd comments ID reads it. The release clears the assignee,
 lease and started time, returns the Issue to open, and records one Issue and
 graph version. A repeated release refuses without creating a version.`},
 		{commentsCmd, `Use bd comments ID to read the native comment feed for a
-graph Issue. bd unclaim --reason appends there. Comments are outside the
-retained Issue snapshot and do not mint an Issue version. Comment creation
-through bd comments add is not available in this preview.`},
+graph Issue. bd comment ID TEXT and bd comments add ID TEXT each append one
+comment; --json uses the ordinary comment or comment-array shape. bd unclaim
+--reason also appends there. Comments are outside the retained Issue snapshot
+and do not mint an Issue version.`},
 		{readyCmd, `Show current ready Issues with admitted priority, type, label,
 assignee, sort and deferred-state filters. --claim atomically claims the first
 matching ready Issue. This graph preview refuses positive BEADS_MAX_ROWS

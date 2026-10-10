@@ -123,6 +123,9 @@ To list comments on an issue, use the plural form: bd comments <id>`,
 	SilenceUsage:  true,
 	SilenceErrors: true,
 	RunE: func(cmd *cobra.Command, args []string) error {
+		if graphPreviewActive {
+			return runGraphPreviewAddComment(cmd, args, false)
+		}
 		CheckReadonly("comment")
 
 		evt := metrics.NewCommandEvent("comment")

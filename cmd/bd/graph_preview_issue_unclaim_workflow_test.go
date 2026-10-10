@@ -3,6 +3,7 @@
 package main
 
 import (
+	"encoding/json"
 	"os"
 	"reflect"
 	"testing"
@@ -60,8 +61,11 @@ func TestGraphPreviewIssueUnclaimWorkflow(t *testing.T) {
 			if !released.Changed || released.Issue.Properties.Status != types.StatusOpen || released.Issue.Properties.Assignee != "" || released.Issue.Properties.LeaseExpiresAt != nil || released.Issue.Revision == claimed.Issue.Revision || released.Issue.Attribution.Actor != "rig_agent" {
 				t.Fatalf("incomplete release: %+v", released)
 			}
-			comments := graphMixedResult[[]*types.Comment](t, call("comments", "work"))
-			if len(comments) != 1 || comments[0].Text != "handoff" || comments[0].Author != "rig_agent" {
+			var comments []*types.Comment
+			if err := json.Unmarshal([]byte(call("comments", "work")), &comments); err != nil {
+				t.Fatalf("decode native comment array: %v", err)
+			}
+			if len(comments) != 1 || comments[0].Text != "handoff" || comments[0].Author != "rig_agent" || comments[0].IssueID != "beads/work" {
 				t.Fatalf("reason was not a native comment: %+v", comments)
 			}
 			if got := graphMixedResult[graphstore.IssueRecord](t, call("show", "--format", "graph-json", "work")); !reflect.DeepEqual(got, released.Issue) {

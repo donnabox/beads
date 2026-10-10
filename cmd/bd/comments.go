@@ -200,6 +200,9 @@ Examples:
 	SilenceUsage:  true,
 	SilenceErrors: true,
 	RunE: func(cmd *cobra.Command, args []string) error {
+		if graphPreviewActive {
+			return runGraphPreviewAddComment(cmd, args, true)
+		}
 		CheckReadonly("comment add")
 
 		evt := metrics.NewCommandEvent("comments-add")
