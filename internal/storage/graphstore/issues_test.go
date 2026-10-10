@@ -72,6 +72,52 @@ func plainIssue(title string) publicops.CreateRequest {
 	}}
 }
 
+func TestGeneratedIssuePathUsesNativePrefixAndReservedPaths(t *testing.T) {
+	for _, backend := range []string{"embedded", "server"} {
+		t.Run(backend, func(t *testing.T) {
+			ctx, o := issueExperimentOptions(t, backend)
+			s, err := OpenExisting(ctx, o)
+			if err != nil {
+				t.Fatal(err)
+			}
+			t.Cleanup(func() { _ = s.Close() })
+
+			hashed, err := s.CreateIssue(ctx, "", plainIssue("Hash allocated Issue"))
+			if err != nil || !strings.HasPrefix(hashed.Properties.ID, "exp-") || hashed.ID != o.Binding.ScopeURL+"beads/"+hashed.Properties.ID {
+				t.Fatalf("native hash ID did not become canonical path: %+v, %v", hashed, err)
+			}
+			if err := s.withTx(ctx, true, func(tx *sql.Tx) error {
+				_, err := tx.ExecContext(ctx, "INSERT INTO config (`key`,value) VALUES ('issue_id_mode','counter') ON DUPLICATE KEY UPDATE value='counter'")
+				return err
+			}); err != nil {
+				t.Fatal(err)
+			}
+			reserved, err := s.Create(ctx, CreateRequest{Path: "beads/exp-1", Title: "reserved", Body: "Memory", Actor: "test-author"})
+			if err != nil {
+				t.Fatal(err)
+			}
+			first, err := s.CreateIssue(ctx, "", plainIssue("Counter allocated Issue"))
+			if err != nil || first.Properties.ID != "exp-1" || !strings.HasPrefix(first.ID, o.Binding.ScopeURL+"beads/exp-1-") || first.ID == reserved.ID {
+				t.Fatalf("reserved path was reused or native counter lost: %+v, %v", first, err)
+			}
+			if got, err := s.Show(ctx, "beads/exp-1"); err != nil || !reflect.DeepEqual(got, reserved) {
+				t.Fatalf("reserved Memory changed: %+v, %v", got, err)
+			}
+			second, err := s.CreateIssue(ctx, "", plainIssue("Next counter Issue"))
+			if err != nil || second.Properties.ID != "exp-2" || second.ID != o.Binding.ScopeURL+"beads/exp-2" {
+				t.Fatalf("next native counter was not canonical: %+v, %v", second, err)
+			}
+			explicit, err := s.CreateIssue(ctx, "beads/custom", plainIssue("Explicit graph path"))
+			if err != nil || explicit.ID != o.Binding.ScopeURL+"beads/custom" {
+				t.Fatalf("explicit graph path changed: %+v, %v", explicit, err)
+			}
+			if _, err := s.CreateIssue(ctx, "beads/custom", plainIssue("Duplicate graph path")); !errors.Is(err, ErrAlreadyExists) {
+				t.Fatalf("explicit graph path reservation was lost: %v", err)
+			}
+		})
+	}
+}
+
 func TestIssueAdapterCreateReadReopen(t *testing.T) {
 	for _, backend := range []string{"embedded", "server"} {
 		t.Run(backend, func(t *testing.T) {

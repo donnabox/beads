@@ -74,6 +74,12 @@ positional title or `--title` and an inline `--body` (also spelled
 `--description` or `--message`). It derives a title from the body if none is
 given. This form does not read a body from a file or stdin.
 
+When an Issue is created without `--id`, its canonical `beads/` ID uses the
+Issue ID allocated under the workspace prefix set by `bd init --prefix`. For
+example, a generated `mp-53` Issue is `beads/mp-53` locally. An explicitly
+supplied `--id` remains the requested canonical path. Generated Memory IDs
+remain random `beads/` paths; generated Link IDs remain under `links/`.
+
 ```sh
 bd create 'Move the release branch' --id work --type task
 bd create --bead-type preview-memory-v2 \

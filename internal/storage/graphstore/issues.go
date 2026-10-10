@@ -45,8 +45,10 @@ func validateIssueCreate(request publicops.CreateRequest) error {
 // retained writer in the graph transaction. Specialized tables are the only
 // current authority; issue_versions is the only Issue snapshot store.
 func (s *Store) CreateIssue(ctx context.Context, path string, request publicops.CreateRequest) (IssueRecord, error) {
-	if err := validatePath(path); err != nil {
-		return IssueRecord{}, err
+	if path != "" {
+		if err := validatePath(path); err != nil {
+			return IssueRecord{}, err
+		}
 	}
 	request = issueops.CloneCreateRequest(request)
 	if err := validateIssueCreate(request); err != nil {
@@ -72,19 +74,32 @@ func (s *Store) CreateIssue(ctx context.Context, path string, request publicops.
 		if err := s.touchCoordination(ctx, tx); err != nil {
 			return err
 		}
-		var exists int
-		err := tx.QueryRowContext(ctx, `SELECT 1 FROM graph_preview_catalog WHERE path=?`, path).Scan(&exists)
-		if err == nil {
-			return ErrAlreadyExists
-		}
-		if !errors.Is(err, sql.ErrNoRows) {
-			return err
+		if path != "" {
+			var exists int
+			err := tx.QueryRowContext(ctx, `SELECT 1 FROM graph_preview_catalog WHERE path=?`, path).Scan(&exists)
+			if err == nil {
+				return ErrAlreadyExists
+			}
+			if !errors.Is(err, sql.ErrNoRows) {
+				return err
+			}
 		}
 		unScope := issueops.ScopeVersionedHistoryTransaction(tx, true)
 		defer unScope()
 		created, _, err := issueops.ExecuteCreate(ctx, tx, request)
 		if err != nil {
 			return err
+		}
+		if path == "" {
+			// An omitted graph --id follows the ordinary Issue writer, including
+			// its configured prefix, hash/counter mode and collision handling.
+			// The catalog may independently reserve an ID for a Memory or a
+			// deleted Bead. Keep the native Issue ID while choosing an unused
+			// canonical path in this same transaction.
+			path, err = generatedIssuePath(ctx, tx, created.Issue.ID)
+			if err != nil {
+				return err
+			}
 		}
 		// ExecuteCreate already owns the initial retained snapshot. Verify its
 		// hydrated values before publishing the graph mapping; a coercion rolls
@@ -132,6 +147,35 @@ func (s *Store) CreateIssue(ctx context.Context, path string, request publicops.
 		return IssueRecord{}, err
 	}
 	return result, nil
+}
+
+// generatedIssuePath prefers the native Issue ID. A Memory or deleted Bead can
+// independently reserve that canonical path, so only that rare collision gets
+// a new suffix; the native Issue ID and its counter/hash allocation stay put.
+func generatedIssuePath(ctx context.Context, tx *sql.Tx, issueID string) (string, error) {
+	base := "beads/" + issueID
+	for attempt := 0; attempt < 16; attempt++ {
+		path := base
+		if attempt != 0 {
+			token, err := freshToken()
+			if err != nil {
+				return "", err
+			}
+			path += "-" + token
+		}
+		if err := validatePath(path); err != nil {
+			return "", err
+		}
+		var exists int
+		err := tx.QueryRowContext(ctx, `SELECT 1 FROM graph_preview_catalog WHERE path=?`, path).Scan(&exists)
+		if errors.Is(err, sql.ErrNoRows) {
+			return path, nil
+		}
+		if err != nil {
+			return "", err
+		}
+	}
+	return "", ErrAlreadyExists
 }
 
 // Read dispatches the immutable backing selection and reads its authoritative

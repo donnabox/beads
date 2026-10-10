@@ -84,6 +84,9 @@ use bd recall ID for the exact body.`},
 selects a retained body; use bd show ID --json for the record. Graph
 recall does not accept legacy keys or --json.`},
 		{createCmd, `Create an Issue by default, with an optional --id ID.
+Without --id, the canonical beads/ path uses the Issue ID allocated by the
+ordinary writer, including this workspace's configured prefix and ID mode.
+An explicit --id keeps exactly the requested canonical path.
 --metadata accepts one JSON object on Issue or Memory creation; omitted
 metadata is {}. Metadata is separate from Type-validated properties.
 --properties JSON initializes the selected Type's writable fields, such as
