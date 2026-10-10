@@ -403,19 +403,36 @@ unset last; they cannot combine with the metadata-merge spelling.
 > initial properties object. Every update validates the resulting object before
 > committing properties and metadata together.
 
-Owned Link mutations can also affect the source Bead's version. Preserve
-`--if-source-revision` and `--unconditional-source` separately from the Link's
-own guard. The current Memory-owned informational source accepts the current
-source by default; blocking Link deletion requires an explicit source choice.
-Ownership comes from the installed descriptor. The target is not versioned
-merely because it is linked.
+Owned Link mutations can also affect the source Bead's version. On every
+owned-Link route, omission of `--if-source-revision` means **use the source
+Bead's current state**. This applies uniformly to creation, update and deletion,
+including generic blocking creation and all convenience adapters. The public
+`--unconditional-source` flag is removed; accepting the current source requires
+no flag.
 
-> **Pending source-guard clarification.** The removal of `--unconditional`
-> is settled for the Resource being changed. Whether to remove
-> `--unconditional-source` and make omission of `--if-source-revision` accept
-> the current source on every route remains a separate clarification. Until
-> resolved, this draft retains the existing source rules above, including
-> the explicit source choice on generic blocking creation.
+When supplied, `--if-source-revision TOKEN` is checked atomically alongside
+any Link `--if-revision` precondition, within the same operation transaction.
+Either stale value refuses the entire operation, even a would-be semantic
+no-op. Omitting one precondition does not disable the other. Creation has no
+existing Link revision to guard, but still checks a supplied source revision.
+
+Omission must record the actual source predecessor used by the operation and
+preserve existing ownership, attribution and exactly-once rules. A changed
+write accepting the current source retains the existing predecessor and
+overwrite-attribution disclosure; an accepted semantic no-op creates no new
+version and claims no overwrite. Accepting the current source does not permit
+a separate unchecked read followed by a write, or duplicate source-version
+or attribution effects.
+
+Ownership comes from the installed descriptor. The target is not versioned
+merely because it is linked. These defaults change only source-revision
+acceptance, not which Bead owns a Link or which operations affect that owner.
+
+This resolves the preview inconsistency: Memory-owned informational Links
+already default to current-source acceptance, while generic blocking creation
+requires an explicit source choice in the inspected Preview 2 contract. The
+proposal replaces that distinction with the uniform rule above.
+[Preview 2 source-guard contract](https://github.com/donnabox/beads/blob/ff25e824d80d4c1a52370c539ff8c767f1410de6/docs/reference/graph-cli-specification-draft.md).
 
 **Proposed delete policy:** canonical `delete` previews by default for both
 kinds; `--force` applies the deletion using the selected guard. This extends
@@ -538,16 +555,18 @@ generic-command direction:
 - Define ordinary dependency Resource identity and the migration to Issue and
   Dependency nominal Type bindings with `issue_type`/`dep_type` properties.
 - Reconcile the properties-edit sidebar with Janet's updated design.
-- Resolve whether source preconditions use the same omission rule as Resource
-  preconditions; see the separate sidebar in §2.6.
 - Define Type authoring, installation, evolution and metatype representation
   in the Type design; reuse this CLI's verbs once those services exist.
 
 Acceptance coverage must include both workspace modes, alias defaults/output,
 Type validation, directional semantics, ambiguous pairs, bulk atomicity,
 multi-edge identity, stale Link/source guards, no-ops, retained history,
-mixed-resource filters and incomplete graph scans. The source audit verifies
-existing behavior; this document does not claim those target checks have run.
+mixed-resource filters and incomplete graph scans. Owned-Link coverage must
+exercise omitted and supplied source preconditions on every create/update/delete
+route and adapter, independently of Link preconditions; verify atomic refusal
+on either stale token (including no-ops), actual source-predecessor recording,
+and preservation of ownership, attribution and exactly-once effects. The source
+audit verifies existing behavior; this document does not claim those target checks have run.
 
 ## 3. Detailed convenience aliases
 
@@ -590,7 +609,7 @@ unescaped string into JSON. Concrete examples below use `tracks` and `blocks`.
 | --- | --- | --- |
 | `bd link A B` | `bd create --link-type D --source A --target B --properties '{"dep_type":"blocks"}'` | Preserve historical blocking default and the applicable workspace capability checks. |
 | `bd link A B --type tracks` | `bd create --link-type D --source A --target B --properties '{"dep_type":"tracks"}'` | The legacy link path retains its custom-classification policy. Other admitted values populate the same property. |
-| `bd link A B --link-type TYPE` | `bd create --link-type TYPE --source A --target B` | Forward properties, metadata, ID and source-revision options supported by the selected nominal Type. |
+| `bd link A B --link-type TYPE` | `bd create --link-type TYPE --source A --target B` | Forward supported properties, metadata and ID options. Forward an optional `--if-source-revision`; omission accepts the current source under §2.6. |
 | `bd dep add A B` | `bd create --link-type D --source A --target B --properties '{"dep_type":"blocks"}'` | B blocks A; preserve dependency validation and rendering. |
 | `bd dep add A B --type tracks` | `bd create --link-type D --source A --target B --properties '{"dep_type":"tracks"}'` | Preserve the dep path's validated vocabulary and normalization before populating the property. |
 | `bd dep add A --blocked-by B` / `--depends-on B` | `bd create --link-type D --source A --target B --properties '{"dep_type":"blocks"}'` | Preserve the ordered pair; normalize documented blocking aliases. |
@@ -603,7 +622,7 @@ unescaped string into JSON. Concrete examples below use `tracks` and `blocks`.
 | `bd links A` | `bd list --kind link --incident-to A` | Preserve default direction both and the existing result shape. |
 | `bd links A --direction out` / `in` | `bd list --kind link --source A` / `bd list --kind link --target A` | Preserve direction and rendering. |
 | `bd dep remove A B` / `rm A B` | Resolve with `bd list --link-type D --source A --target B`; apply `bd delete L --force`. | Pair resolution and deletion share the mutation service. Preserve supported dangling/external target handling and ordinary-mode pair deletion where Resource IDs do not exist. |
-| `bd unlink LINK` | `bd delete links/LINK --force` for a bare ID; `bd delete L --force` for a qualified identity. | Bare ID means Link here. Forward supplied revision preconditions and apply the source policy in §2.6. |
+| `bd unlink LINK` | `bd delete links/LINK --force` for a bare ID; `bd delete L --force` for a qualified identity. | Bare ID means Link here. Forward supplied Link/source revision preconditions; omission of the source precondition accepts its current state under §2.6. |
 | `bd unlink A B --link-type TYPE` | Resolve with `bd list --link-type TYPE --source A --target B`; apply `bd delete L --force`. | Require exactly one informational Link; refuse zero/ambiguous matches. Blocking graph pair deletion remains unsupported until its domain service supports it. |
 | `bd dep relate A B` | `bd create --link-type D --source A --target B --properties '{"dep_type":"relates-to"}'` and `bd create --link-type D --source B --target A --properties '{"dep_type":"relates-to"}'` | Two directional Dependencies, with the workflow's transaction contract; not one nominal `related` Link. |
 | `bd dep unrelate A B` | Resolve using `bd list --link-type D --property-field dep_type=relates-to --where '(source = "A" AND target = "B") OR (source = "B" AND target = "A")'`; apply `bd delete L --force` to each resolved identity. | Select both ordered pairs and validate classification. Do not reproduce untyped deletion of an unrelated edge; disclose that correction. |
@@ -846,6 +865,7 @@ first, then show the useful conveniences and their additional behavior.
 The compatibility goal is preservation of useful existing workflows, not
 preservation of known unsafe behavior. Explicitly disclose exceptions such as
 typed unrelate removal, removal of `--unconditional` with optional
-`--if-revision`, and any root-command JSON contract change. No alias can
-make an unsupported storage capability exist or resolve an unsettled Type
-lifecycle policy by implication.
+`--if-revision`, removal of `--unconditional-source` with current-source
+acceptance by default on every owned-Link route, and any root-command JSON
+contract change. No alias can make an unsupported storage capability exist or
+resolve an unsettled Type lifecycle policy by implication.
