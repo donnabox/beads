@@ -99,6 +99,18 @@ At inspection, [PR7211][adaptive-pr] and [PR7213][converge-pr] are open. They ad
 
 This review does not modify these PRs or Janet's Preview 2 artifacts. Its recommendations belong to the fork design until Donna decides release scope.
 
+## Clarification: zero domain events, comments and Link updates
+
+Donna ruled on 2026-10-09 that the generic stream has zero domain-specific event types (D03). The earlier examples of a comment Bead were alternatives, not a requirement or accepted data model. Likewise preserving the current journal verbatim is a compatibility option needing an explicit migration decision, not a reason to retain domain events in the generic stream.
+
+Current structured comments are records with `id`, `issue_id`, `author`, `text` and `created_at`. They have string identities, though not canonical Bead identities. They are not a string array. The journal additionally distinguishes structured and audit provenance. [Shipped Comment shape](https://github.com/gastownhall/beads/blob/f45b249ce6b40ba62aecc03949e6371e8f7c79d8/internal/types/types.go#L1593-L1604)
+
+If the chosen logical model embeds a collection of comment objects in its parent Bead, appending one can be a generic update of that collection. A committed patch could append an object at `/comments/-` rather than retransmitting the whole collection. Exact wire paths are illustrative. This requires canonical reads/snapshots to include or consistently expose the collection and the parent version to advance with it; renaming today's `comment` record to `update` alone does not supply those semantics. Keep comment IDs and attribution/time metadata as data. Do not silently replace object identity with an unstable array offset or lose retry deduplication. Efficient append, large-thread reads and concurrent writes remain design choices.
+
+Current dependencies **do** carry metadata: the shipped Dependency includes a JSON-encoded `metadata` string, creation attribution/time and a thread ID. A same-type dependency re-add updates stored metadata and emits the existing `dep_add` journal record as an upsert. Therefore current link-like data has mutable state that a generic stream must represent. Recommend generic `updated` with a Link subject rather than adding `dep_updated`. Creating/removing a relationship still produces generic Link lifecycle/endpoint facts as defined by the chosen contract. Were a particular Link Type immutable and propertyless, it would simply never need a property-update event. [Shipped Dependency shape](https://github.com/gastownhall/beads/blob/f45b249ce6b40ba62aecc03949e6371e8f7c79d8/internal/types/types.go#L1104-L1123) [Metadata refresh and journal emission](https://github.com/gastownhall/beads/blob/f45b249ce6b40ba62aecc03949e6371e8f7c79d8/internal/storage/issueops/dependencies.go#L260-L278)
+
+The close/update asymmetry is also in the shipped writers: dedicated close emits journal `close`; the generic update writer emits journal `update` even when the audit event names closure. Normalize the generic stream to the committed state transition, independently of the command entry point. [Close](https://github.com/gastownhall/beads/blob/f45b249ce6b40ba62aecc03949e6371e8f7c79d8/internal/storage/issueops/close.go#L374-L389) [Update](https://github.com/gastownhall/beads/blob/f45b249ce6b40ba62aecc03949e6371e8f7c79d8/internal/storage/issueops/update.go#L540-L546)
+
 ## Validation needed before promising replication
 
 - A transaction changing A and B, interrupted after the first transport fragment, is never published half-applied; the quiet final transaction completes.
@@ -108,7 +120,7 @@ This review does not modify these PRs or Janet's Preview 2 artifacts. Its recomm
 - New readers detect old/incomplete payload shape; old readers retain their published contract.
 - BDP adapters preserve canonical identity/revisions, authorization-view transitions, erasure and idempotent mutation outcomes; replica replay emits no new authority mutations.
 
-Verification resolved 20 immutable remote source files and checked 45 file/line references plus relative file links. This was source/spec research and an independent code-reading pass. No new runtime tests, database mutations, release qualification, implementation or merge were performed. Existing test source and golden fixtures are evidence of intended behavior, not fresh test results.
+The initial comparison verified 20 immutable remote source files and 45 file/line references plus relative file links. The later clarification additionally inspected the shipped Comment/Dependency shapes and close/update/metadata write paths. This was source/spec research and an independent code-reading pass. No new runtime tests, database mutations, release qualification, implementation or merge were performed. Existing test source and golden fixtures are evidence of intended behavior, not fresh test results.
 
 [release]: https://github.com/gastownhall/beads/releases/tag/v1.3.0
 [journal]: https://github.com/gastownhall/beads/blob/f45b249ce6b40ba62aecc03949e6371e8f7c79d8/docs/reference/events-journal.md

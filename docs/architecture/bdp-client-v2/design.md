@@ -26,6 +26,12 @@ Accepted by Donna during the design interview on 2026-10-08: every provider clai
 
 Donna wants to keep the expression language bounded. Treat that as a design goal to validate against the command audit; the operator set, nesting/recursion rules and execution budgets are not yet accepted. A bounded expression shape alone does not bound the amount of data examined.
 
+### D03 — Zero domain-specific event types
+
+Accepted by Donna on 2026-10-09: the generic stream must contain **zero domain-specific event types**. Closing, commenting, assignment and other application actions must be expressed through generic resource/state transitions; no special `close`, `comment` or Issue-only event kind is admitted. This does not settle the exact generic vocabulary or comment data model, and is not authorization to change release code. Compatibility with existing consumers requires an explicit migration decision.
+
+Comments need not become Beads to satisfy D03. An inline collection of comment objects could be part of the parent Bead's canonical state and change through a generic update. That choice remains proposed, including owner revisions, efficient append and pagination. Current comments already have string IDs, author, text and creation time; current dependencies have mutable JSON metadata. [Source-grounded clarification](beads-1.3-journal-vs-bdp.md#clarification-zero-domain-events-comments-and-link-updates)
+
 ## Evidence
 
 The [CLI audit](audit-20261008/README.md) classifies 274 main registry paths and five Preview additions, with source/test contracts and cost analysis. 219 existing BDP tests and 20 additional bounded probes passed. This is parser/schema/fixture/model evidence, not end-to-end Transactional provider qualification. [Verification](audit-20261008/verification.json) pins source commits and checks 287 citation anchors and 160 source files. The [earlier source map](baseline/runtime-boundary-map.md) records 13 runtime interfaces and five paths.
@@ -36,7 +42,7 @@ The historical [journal audit](audit-20261008/event-log-audit.md) distinguished 
 
 Donna requested a comparison of the shipped Beads 1.3 journal with BDP before choosing possible 1.4 changes. The [comparison and recommendation](beads-1.3-journal-vs-bdp.md), backed by an [independent source audit](beads-1.3-journal-source-audit.md), finds substantial overlap with BDP's **changefeed**, especially its postimages. The existing journal's transactional capture is reusable; its flat records lack transaction framing, history epochs and snapshot/checkpoint rendezvous, and some writers/state changes can bypass it.
 
-Recommendation, not an accepted release scope: converge the committed-effects capture, preserve the legacy projection, and add the stronger replication guarantees before claiming BDP compatibility. Preserve comment payloads despite contradictory six-op projection guidance. Coordinate with existing journal PRs 7211/7213/7144. No implementation or release artifacts were changed. D01/D02 remain accepted; the bounded-expression-language question remains open while this research is discussed.
+Recommendation, not an accepted release scope: converge the committed-effects capture, preserve the legacy projection, and add the stronger replication guarantees before claiming BDP compatibility. Preserve comment payloads despite contradictory six-op projection guidance. Coordinate with existing journal PRs 7211/7213/7144. No implementation or release artifacts were changed. D01/D02/D03 are accepted; the bounded-expression-language question remains open while this research is discussed.
 
 ## Current questions
 
