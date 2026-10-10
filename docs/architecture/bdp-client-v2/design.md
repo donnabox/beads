@@ -40,6 +40,8 @@ The historical [journal audit](audit-20261008/event-log-audit.md) distinguished 
 
 ## Beads 1.3 journal comparison
 
+The [detailed side-by-side comparison](normalized-1.3-vs-current-bdp.md) holds the proposed close/comment normalization and Link lifetime identity changes constant, then compares modified 1.3 with both current BDP Events and Scope change groups. It separates the now-aligned vocabulary from remaining payload, transaction, snapshot, epoch, coverage, projection and erasure obligations. These assumptions are a comparison scenario, not implementation or release approval.
+
 Donna requested a comparison of the shipped Beads 1.3 journal with BDP before choosing possible 1.4 changes. The [comparison and recommendation](beads-1.3-journal-vs-bdp.md), backed by an [independent source audit](beads-1.3-journal-source-audit.md), finds substantial overlap with BDP's **changefeed**, especially its postimages. The existing journal's transactional capture is reusable; its flat records lack transaction framing, history epochs and snapshot/checkpoint rendezvous, and some writers/state changes can bypass it.
 
 Recommendation, not an accepted release scope: converge the committed-effects capture, preserve the legacy projection, and add the stronger replication guarantees before claiming BDP compatibility. Preserve comment payloads despite contradictory six-op projection guidance. Coordinate with existing journal PRs 7211/7213/7144. No implementation or release artifacts were changed. D01/D02/D03 are accepted; the bounded-expression-language question remains open while this research is discussed.
