@@ -6,8 +6,14 @@ from pathlib import Path
 parser = argparse.ArgumentParser(description=__doc__)
 parser.add_argument("--bd", type=Path, required=True)
 parser.add_argument("--output", type=Path, required=True)
+parser.add_argument("--source-dir", type=Path, required=True, help="Clean checkout used for the canonical producer build")
 a = parser.parse_args()
 binary = a.bd.resolve()
+source_dir = a.source_dir.resolve()
+source = subprocess.check_output(["git", "rev-parse", "HEAD"], cwd=source_dir, text=True).strip()
+source_tree = subprocess.check_output(["git", "rev-parse", "HEAD^{tree}"], cwd=source_dir, text=True).strip()
+if subprocess.check_output(["git", "status", "--porcelain"], cwd=source_dir, text=True).strip():
+    parser.error("producer source checkout must be clean")
 a.output.mkdir(parents=True, exist_ok=True)
 receipts = []
 with tempfile.TemporaryDirectory(prefix="iris-legacy-producer-") as temporary:
@@ -34,8 +40,11 @@ with tempfile.TemporaryDirectory(prefix="iris-legacy-producer-") as temporary:
     call("remember","Remembered context","--key","fixture-key")
     exported = call("export","--include-memories")
     (a.output/"ordinary.jsonl").write_text(exported)
-    provenance = dict(baseSource="76fde9c9cb0865d430bf12d76fc473490f51128a", binarySHA256=hashlib.sha256(binary.read_bytes()).hexdigest(),
-                      producerVersion=call("version"), fixtureSHA256=hashlib.sha256(exported.encode()).hexdigest(),
+    version = call("version")
+    if source[:9] not in version:
+        raise RuntimeError("producer build version does not match clean source HEAD")
+    provenance = dict(producerSource=source, producerSourceTree=source_tree, sourceState="clean checkout; canonical make install-force build", binarySHA256=hashlib.sha256(binary.read_bytes()).hexdigest(),
+                      producerVersion=version, fixtureSHA256=hashlib.sha256(exported.encode()).hexdigest(),
                       data="exclusively synthetic disposable workspace; no production inputs", receipts=receipts)
     (a.output/"producer.json").write_text(json.dumps(provenance, ensure_ascii=False, indent=2)+"\n")
 print(str(a.output/"ordinary.jsonl"))
