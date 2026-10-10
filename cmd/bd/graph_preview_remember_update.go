@@ -23,12 +23,9 @@ func runGraphPreviewRememberUpsert(cmd *cobra.Command, args []string) error {
 	if err != nil {
 		return err
 	}
-	revision, unconditional, err := graphPreviewRevisionGuard(cmd, false, false)
+	revision, unconditional, err := graphPreviewEditRevisionGuard(cmd)
 	if err != nil {
 		return err
-	}
-	if !cmd.Flags().Changed("if-revision") && !cmd.Flags().Changed("unconditional") {
-		unconditional = true
 	}
 	if !utf8.ValidString(revision) || len(revision) > graphstore.PreviewVersionTokenLimit {
 		return graphFailure("invalid_selector", fmt.Sprintf("--if-revision requires a UTF-8 token of at most %d bytes", graphstore.PreviewVersionTokenLimit), 2)
@@ -102,12 +99,9 @@ func runGraphPreviewRememberUpdate(cmd *cobra.Command, args []string) error {
 	if err := graph.ValidateBeadPath(path); err != nil {
 		return graphFailure("invalid_selector", err.Error(), 2)
 	}
-	revision, unconditional, err := graphPreviewRevisionGuard(cmd, false, false)
+	revision, unconditional, err := graphPreviewEditRevisionGuard(cmd)
 	if err != nil {
 		return err
-	}
-	if !cmd.Flags().Changed("if-revision") && !cmd.Flags().Changed("unconditional") {
-		unconditional = true
 	}
 	if !utf8.ValidString(revision) || len(revision) > graphstore.PreviewVersionTokenLimit {
 		return graphFailure("invalid_selector", fmt.Sprintf("--if-revision requires a UTF-8 token of at most %d bytes", graphstore.PreviewVersionTokenLimit), 2)

@@ -43,7 +43,7 @@ func runGraphPreviewMemoryPropertiesPatch(cmd *cobra.Command, path string) error
 
 func graphPreviewMemoryPropertiesPatchRequest(cmd *cobra.Command, path string) (graphstore.MemoryPropertiesPatchRequest, error) {
 	var request graphstore.MemoryPropertiesPatchRequest
-	if err := graphPreviewFlags(cmd, "patch", "metadata", "set-metadata", "unset-metadata", "if-revision", "unconditional"); err != nil {
+	if err := graphPreviewFlags(cmd, "patch", "metadata", "set-metadata", "unset-metadata", "if-revision"); err != nil {
 		return request, err
 	}
 	if err := graph.ValidateBeadPath(path); err != nil {
@@ -52,7 +52,7 @@ func graphPreviewMemoryPropertiesPatchRequest(cmd *cobra.Command, path string) (
 	if !cmd.Flags().Changed("patch") {
 		return request, graphFailure("invalid_properties", "Memory properties patch requires --patch JSON, @file, or @-", 2)
 	}
-	revision, unconditional, err := graphPreviewRevisionGuard(cmd, false, true)
+	revision, unconditional, err := graphPreviewEditRevisionGuard(cmd)
 	if err != nil {
 		return request, err
 	}

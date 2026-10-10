@@ -12,7 +12,7 @@ import (
 func TestGraphPreviewHelpDocumentsPlaytestCommands(t *testing.T) {
 	for _, cmd := range []*cobra.Command{
 		initCmd, rememberCmd, memoriesCmd, recallCmd, createCmd, showCmd,
-		updateCmd, deleteCmd, forgetCmd, depAddCmd, linkCmd, closeCmd,
+		updateCmd, deleteCmd, forgetCmd, depCmd, depAddCmd, linkCmd, closeCmd,
 		reopenCmd, unclaimCmd, commentsCmd, deferCmd, undeferCmd, readyCmd, listCmd, blockedCmd, graphCmd, statusCmd,
 		typesCmd, versionsCmd, historyCmd,
 	} {
@@ -30,6 +30,7 @@ func TestGraphPreviewHelpDocumentsPlaytestCommands(t *testing.T) {
 	}{
 		{"remember", rememberCmd, []string{"Graph preview workspaces:", "bd remember 'Revised policy' --id policy", "bd remember 'Revised policy' --update policy", "--create-only", "--if-revision TOKEN", "Omitted fields remain unchanged"}},
 		{"create", createCmd, []string{"Graph preview workspaces:", "--bead-type types/preview-memory-v2", "--id policy", "--properties JSON"}},
+		{"dep", depCmd, []string{"Graph preview workspaces:", "bd dep BLOCKER --blocks BLOCKED", "--no-cycle-check"}},
 		{"link", linkCmd, []string{
 			"Graph preview workspaces:", "--link-type types/example-cites", "Memory or Issue",
 			// --link-type sits beside the ordinary -t/--type, so its own usage says it is graph-only.

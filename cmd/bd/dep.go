@@ -267,6 +267,9 @@ Examples:
 	SilenceUsage:  true,
 	SilenceErrors: true,
 	RunE: func(cmd *cobra.Command, args []string) error {
+		if graphPreviewActive {
+			return runGraphPreviewDepBlocks(cmd, args)
+		}
 		evt := metrics.NewCommandEvent("dep")
 		defer func() {
 			if c := metrics.Global(); c != nil {
@@ -1648,6 +1651,7 @@ func init() {
 	depCmd.Flags().Bool("no-cycle-check", false, "Skip the post-add cycle warning (the per-edge cycle check still runs)")
 
 	depAddCmd.Flags().StringP("type", "t", "blocks", "Dependency type (blocks|tracks|related|parent-child|discovered-from|until|caused-by|validates|relates-to|supersedes); 'blocked-by' and 'depends-on' are accepted as aliases for 'blocks'")
+	depAddCmd.Flags().String("id", "", "Graph preview: explicit blocking Link ID or links/PATH")
 	depAddCmd.Flags().String("blocked-by", "", "Issue ID that blocks the first issue (alternative to positional arg)")
 	depAddCmd.Flags().String("depends-on", "", "Issue ID that the first issue depends on (alias for --blocked-by)")
 	depAddCmd.Flags().String("file", "", "Read dependency edges from JSONL file, or '-' for stdin")

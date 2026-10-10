@@ -171,8 +171,8 @@ body and applies them to that Memory. On creation, these flags form its initial
 metadata object.
 
 ```sh
-bd update policy --metadata '{"reviewed":true}' --unconditional
-bd update policy --unset-metadata team --unconditional
+bd update policy --metadata '{"reviewed":true}'
+bd update policy --unset-metadata team
 ```
 
 Creating, updating, showing or closing a graph Issue records it as the last
@@ -304,7 +304,7 @@ bd update work --notes 'Revised handoff' --force --if-revision NEW_REVISION
 bd update work --clear-notes --if-revision LATEST_REVISION
 ```
 
-Each graph Issue edit needs `--if-revision` or `--unconditional`. A stale guard
+An Issue edit accepts the current state by default. A stale `--if-revision`
 refuses even with `--force`; force only authorizes the notes overwrite. An
 identical value or a clear of already-empty notes leaves the revision alone.
 Use `bd versions work` and `bd show work --version TOKEN` to inspect prior
@@ -327,18 +327,30 @@ bd link policy work --link-type types/preview-related-v2 \
   --metadata '{"origin":"manual"}'
 bd links policy
 bd show links/policy-work --json
-bd update links/policy-work --properties '{"note":"reviewed policy"}' --unconditional
+bd update links/policy-work --properties '{"note":"reviewed policy"}'
 bd unlink policy-work --unconditional
 ```
 
-`bd links ID` lists current incident Links. A Memory-owned informational Link
+`bd links ID` lists current incident Links with Type
+first and in-Scope IDs relative to the Scope URL; JSON retains canonical URLs.
+`bd link SOURCE TARGET` without `--link-type` is an Issue dependency shorthand.
+A Memory-owned informational Link
 defaults to accepting the current source state; add `--if-source-revision
-TOKEN` to reject a stale source. Link updates and unlink still require their
-own `--if-revision TOKEN` or `--unconditional` choice. Unlink removes the
+TOKEN` to reject a stale source. Link updates accept the current Link by
+default; Link removal still needs `--if-revision TOKEN` or `--unconditional`.
+Removal deletes the
 current Link but retains its identity and prior snapshots. The blocking
 `types/preview-blocks-v1` Type is only for live Issues; it refuses a Memory
 endpoint. See the [Graph CLI Specification (Draft)](/reference/graph-cli-specification-draft) for the
 separate blocking Dependency unlink rules and Link Type bounds.
+
+For two live Issues, `bd dep add BLOCKED BLOCKER` creates a blocking Link.
+`bd dep BLOCKER --blocks BLOCKED` is the same operation with the arguments in
+the opposite order. Add `--id links/ID` to `bd dep add` when the Link needs a
+chosen local identity; repeating the same pair with that ID or no ID is a
+no-op, while a different ID refuses. `bd dep
+relate` and `bd dep unrelate` are outside this graph preview because the
+ordinary command owns two directed relationships, not one Link.
 
 ## Claim and release Issue work
 
@@ -400,12 +412,12 @@ bd history policy  # same listing in a graph workspace
 | `--version TOKEN` | Select one exact retained state for `bd show`, or one retained Memory body for `bd recall`; use a saved `version` token. |
 | `--from TOKEN --to TOKEN` | Select the two complete states for `bd compare`. |
 | `--if-revision TOKEN` | On a supported write, refuse if the current record no longer has the saved `revision`. In an ordinary workspace, `bd update` and `bd delete` instead read it as the legacy compare-and-swap on a decimal bead `revision`. |
-| `--unconditional` | Where a write requires an explicit choice, accept the current record without an expected revision. |
+| `--unconditional` | On deletion and Link removal, explicitly accept the current record without an expected revision. Graph deferral also accepts it as an explicit spelling of its current-state default. Ordinary edits no longer use this flag. |
 | `--if-source-revision TOKEN` | On a Memory-owned Link write, optionally require the source Memory's observed revision; otherwise that source defaults to unconditional acceptance. |
 
-`bd remember` with an existing `--id` or `--update` defaults to unconditional
-acceptance. Memory deletion,
-`bd update`, and Link edits/removal still have their command-specific guard
+`bd remember` with an existing `--id` or `--update`, `bd update`, and `bd link
+update` default to accepting the current state. Memory deletion and Link
+removal still have their command-specific guard
 requirements; consult the [Graph CLI Specification (Draft)](/reference/graph-cli-specification-draft) before
 automating them. A semantic no-op retains the existing revision.
 

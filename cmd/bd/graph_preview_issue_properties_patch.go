@@ -66,10 +66,11 @@ func graphPreviewPatchIssueProperties(ctx context.Context, store *graphstore.Sto
 		}
 	}
 	request := graphstore.UpdateIssueRequest{Path: input.Path, Actor: input.Actor, ExpectedRevision: input.ExpectedRevision, Unconditional: input.Unconditional, Metadata: input.Metadata}
-	if request.ExpectedRevision == "" && !request.Unconditional {
+	if request.ExpectedRevision == "" {
 		// Omission means edit the current resource. Pin the pre-read snapshot so a
 		// concurrent writer cannot turn the computed patch into a lost update.
 		request.ExpectedRevision = issue.Revision
+		request.Unconditional = false
 	}
 	if err := graphPreviewApplyIssueProperties(cmd, &request, changes); err != nil {
 		return nil, "", err

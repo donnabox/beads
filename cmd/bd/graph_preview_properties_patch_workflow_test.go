@@ -169,7 +169,7 @@ func TestGraphPreviewPropertiesPatchWorkflow(t *testing.T) {
 					}()
 				}
 			}
-			early("capability_unavailable", "beads/plan", "--unconditional")
+			early("capability_unavailable", "beads/plan")
 			args := []string{"init", "--graph-mode", "link", "--scope-url", scope, "--skip-hooks", "--skip-agents", "--non-interactive"}
 			if engine == "server" {
 				port := os.Getenv("BEADS_GRAPH_TEST_SERVER_PORT")
@@ -237,9 +237,7 @@ func TestGraphPreviewPropertiesPatchWorkflow(t *testing.T) {
 				t.Helper()
 				before := memory
 				args := []string{"update", memory.ID, "--patch", input, "--actor", "patch-author", "--json"}
-				if unconditional {
-					args = append(args, "--unconditional")
-				} else {
+				if !unconditional {
 					args = append(args, "--if-revision", before.Revision)
 				}
 				result := graphMixedResult[graphstore.MemoryMutationResult](t, graphPatchProcess(t, bd, work, home, stdin, "", 90*time.Second, args...))
@@ -263,9 +261,7 @@ func TestGraphPreviewPropertiesPatchWorkflow(t *testing.T) {
 				t.Helper()
 				before, source := link, memory
 				args := []string{"update", link.ID, "--patch", input, "--actor", "patch-author", "--json"}
-				if unconditional {
-					args = append(args, "--unconditional")
-				} else {
+				if !unconditional {
 					args = append(args, "--if-revision", link.Revision)
 				}
 				if sourceUnconditional {
@@ -351,26 +347,26 @@ func TestGraphPreviewPropertiesPatchWorkflow(t *testing.T) {
 
 			beforeRefusal := graphMemoryReadSnapshot(t, work)
 			for _, bad := range []string{`[{"op":"replace","path":"/title","value":"must rollback"},{"op":"remove","path":"/body"}]`, `[{"op":"replace","path":"/body","value":"must rollback"},{"op":"replace","path":"/missing","value":1}]`, `[{"op":"copy","from":"/title","path":"/body"}]`, `[{"op":"remove","path":"/bad~2"}]`, `[{"op":"replace","op":"add","path":"/body","value":"x"}]`, `[{"op":"add","path":"/temporary","value":9007199254740993}]`, `[{"op":"replace","path":"/body","value":"\ud800"}]`, `[]`} {
-				refuse("invalid_properties", "update", memory.ID, "--patch", bad, "--unconditional")
+				refuse("invalid_properties", "update", memory.ID, "--patch", bad)
 			}
 			for _, selector := range []string{memory.ID, link.ID} {
-				refuse("invalid_properties", "update", selector, "--patch", "@"+file("invalid-utf8.json", string([]byte{255})), "--unconditional")
-				refuse("invalid_properties", "update", selector, "--patch", "@"+file("oversize.json", strings.Repeat(" ", (1<<20)+1)), "--unconditional")
+				refuse("invalid_properties", "update", selector, "--patch", "@"+file("invalid-utf8.json", string([]byte{255})))
+				refuse("invalid_properties", "update", selector, "--patch", "@"+file("oversize.json", strings.Repeat(" ", (1<<20)+1)))
 			}
 			for _, bad := range []string{
 				`[{"op":"replace","path":"/note","value":"must rollback"},{"op":"remove","path":"/missing"}]`,
 				`[{"op":"replace","path":"/note","value":"must rollback"},{"op":"replace","path":"/note","value":null}]`,
 			} {
-				refuse("invalid_properties", "update", link.ID, "--patch", bad, "--unconditional", "--unconditional-source")
+				refuse("invalid_properties", "update", link.ID, "--patch", bad, "--unconditional-source")
 			}
 			tooMany := "[" + strings.TrimSuffix(strings.Repeat(`{"op":"replace","path":"/title","value":"x"},`, 257), ",") + "]"
-			refuse("invalid_properties", "update", memory.ID, "--patch", tooMany, "--unconditional")
-			refuse("invalid_properties", "update", memory.ID, "--patch", `[{"op":"remove","path":"/`+strings.Repeat("x", 4096)+`"}]`, "--unconditional")
+			refuse("invalid_properties", "update", memory.ID, "--patch", tooMany)
+			refuse("invalid_properties", "update", memory.ID, "--patch", `[{"op":"remove","path":"/`+strings.Repeat("x", 4096)+`"}]`)
 			// The large intermediate value is valid input; repeated operations
 			// exceed the evaluation-work proxy before final removal can hide it.
 			expensive := `[{"op":"add","path":"/work","value":[` + strings.TrimSuffix(strings.Repeat("0,", 50000), ",") + `]},` + strings.Repeat(`{"op":"replace","path":"/work/0","value":0},`, 220) + `{"op":"remove","path":"/work"}]`
-			refuse("capability_unavailable", "update", memory.ID, "--patch", "@"+file("evaluation-bound.json", expensive), "--unconditional")
-			defaultSourceNoop := graphMixedResult[graphstore.LinkMutationResult](t, call("update", link.ID, "--patch", patch("replace", "/note", "root"), "--unconditional"))
+			refuse("capability_unavailable", "update", memory.ID, "--patch", "@"+file("evaluation-bound.json", expensive))
+			defaultSourceNoop := graphMixedResult[graphstore.LinkMutationResult](t, call("update", link.ID, "--patch", patch("replace", "/note", "root")))
 			if defaultSourceNoop.Changed || defaultSourceNoop.ReplacedSource != nil {
 				t.Fatal("default source acceptance must preserve a semantic no-op")
 			}
@@ -378,20 +374,19 @@ func TestGraphPreviewPropertiesPatchWorkflow(t *testing.T) {
 			graphPatchEqual(t, defaultSourceNoop.Source, memory)
 			refuse("revision_conflict", "update", link.ID, "--patch", patch("replace", "/note", "root"), "--if-revision", beforeIntervening.Revision, "--if-source-revision", memory.Revision)
 			refuse("revision_conflict", "update", link.ID, "--patch", patch("replace", "/note", "root"), "--if-revision", link.Revision, "--if-source-revision", beforeIntervening.Revision)
-			refuse("revision_conflict", "update", unowned.ID, "--patch", patch("replace", "/note", "unowned"), "--unconditional", "--if-source-revision", initial.Revision)
-			refuse("invalid_properties", "update", dependency.Link.ID, "--patch", patch("add", "/note", "unsupported"), "--unconditional")
-			refuse("invalid_properties", "update", issue.ID, "--patch", patch("add", "/status", "closed"), "--unconditional")
-			early("invalid_selector", memory.ID)
-			early("invalid_selector", memory.ID, "--unconditional", "--if-revision", memory.Revision)
+			refuse("revision_conflict", "update", unowned.ID, "--patch", patch("replace", "/note", "unowned"), "--if-source-revision", initial.Revision)
+			refuse("invalid_properties", "update", dependency.Link.ID, "--patch", patch("add", "/note", "unsupported"))
+			refuse("invalid_properties", "update", issue.ID, "--patch", patch("add", "/status", "closed"))
+			early("invalid_selector", memory.ID, "--if-revision", "")
 			early("invalid_selector", memory.ID, "--if-revision", string([]byte{255}))
-			early("invalid_selector", "beads/", "--unconditional")
-			early("capability_unavailable", memory.ID, "--unconditional", "--properties", "{}")
-			early("invalid_selector", link.ID, "--unconditional", "--if-source-revision", memory.Revision, "--unconditional-source")
-			early("permission_denied", memory.ID, "--unconditional", "--readonly")
+			early("invalid_selector", "beads/")
+			early("capability_unavailable", memory.ID, "--properties", "{}")
+			early("invalid_selector", link.ID, "--if-source-revision", memory.Revision, "--unconditional-source")
+			early("permission_denied", memory.ID, "--readonly")
 			writeFile(t, filepath.Join(work, "mayor", "town.json"), []byte("{}\n"))
 			freeze := filepath.Join(work, "MIGRATION-FREEZE")
 			writeFile(t, freeze, []byte("patch\t2026-09-28T00:00:00Z\tpolicy\n"))
-			early("permission_denied", link.ID, "--unconditional", "--unconditional-source")
+			early("permission_denied", link.ID, "--unconditional-source")
 			if err := os.Remove(freeze); err != nil {
 				t.Fatal(err)
 			}
@@ -402,7 +397,7 @@ func TestGraphPreviewPropertiesPatchWorkflow(t *testing.T) {
 			for _, quiet := range []bool{false, true} {
 				before := memory
 				body := "human body"
-				args := []string{"update", memory.ID, "--patch", patch("replace", "/body", body), "--unconditional", "--actor", "patch-author"}
+				args := []string{"update", memory.ID, "--patch", patch("replace", "/body", body), "--actor", "patch-author"}
 				if quiet {
 					body = "quiet body"
 					args[3] = patch("replace", "/body", body)
@@ -424,7 +419,7 @@ func TestGraphPreviewPropertiesPatchWorkflow(t *testing.T) {
 			}
 			noopBefore = graphMemoryReadSnapshot(t, work)
 			for _, quiet := range []bool{false, true} {
-				args := []string{"update", memory.ID, "--patch", patch("replace", "/body", memory.Properties.Body), "--unconditional"}
+				args := []string{"update", memory.ID, "--patch", patch("replace", "/body", memory.Properties.Body)}
 				if quiet {
 					args = append(args, "--quiet")
 				}
@@ -526,7 +521,7 @@ func TestGraphPreviewPropertiesPatchWorkflow(t *testing.T) {
 				before := memory
 				commands := [2][]string{}
 				for i, title := range []string{"Unconditional A", "Unconditional B"} {
-					commands[i] = []string{"update", memory.ID, "--patch", patch("replace", "/title", title), "--unconditional", "--actor", "patch-author", "--json"}
+					commands[i] = []string{"update", memory.ID, "--patch", patch("replace", "/title", title), "--actor", "patch-author", "--json"}
 				}
 				results := graphDeleteRacePair(t, bd, work, home, commands)
 				accepted := []graphstore.MemoryMutationResult{}
@@ -573,8 +568,8 @@ func TestGraphPreviewPropertiesPatchWorkflow(t *testing.T) {
 			}
 			final := memory
 			call("delete", memory.ID, "--force", "--if-revision", memory.Revision)
-			refuse("gone", "update", memory.ID, "--patch", patch("replace", "/title", "no resurrection"), "--unconditional")
-			refuse("gone", "update", link.ID, "--patch", patch("add", "/note", "no resurrection"), "--unconditional", "--unconditional-source")
+			refuse("gone", "update", memory.ID, "--patch", patch("replace", "/title", "no resurrection"))
+			refuse("gone", "update", link.ID, "--patch", patch("add", "/note", "no resurrection"), "--unconditional-source")
 			graphPolicyCLI(t, bd, work, home, nil, "identity_reserved", "remember", "no reuse", "--id", "beads/plan", "--title", "Reserved", "--json")
 			for key, value := range saved {
 				index := strings.LastIndex(key, "@")

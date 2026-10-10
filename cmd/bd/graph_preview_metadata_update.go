@@ -11,14 +11,14 @@ import (
 // The read chooses a writer only. It supplies no guard or update base: each
 // selected writer re-reads and checks the current Resource in its transaction.
 func runGraphPreviewUpdateMetadataOnly(cmd *cobra.Command, path string) error {
-	if err := graphPreviewFlags(cmd, "metadata", "set-metadata", "unset-metadata", "if-revision", "unconditional", "if-source-revision", "unconditional-source"); err != nil {
+	if err := graphPreviewFlags(cmd, "metadata", "set-metadata", "unset-metadata", "if-revision", "if-source-revision", "unconditional-source"); err != nil {
 		return err
 	}
 	patch, err := graphPreviewMetadataPatch(cmd)
 	if err != nil {
 		return err
 	}
-	revision, unconditional, err := graphPreviewRevisionGuard(cmd, false, true)
+	revision, unconditional, err := graphPreviewEditRevisionGuard(cmd)
 	if err != nil {
 		return err
 	}
