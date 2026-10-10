@@ -88,6 +88,13 @@ func TestGeneratedIssuePathUsesNativePrefixAndReservedPaths(t *testing.T) {
 			}
 			if err := s.withTx(ctx, true, func(tx *sql.Tx) error {
 				_, err := tx.ExecContext(ctx, "INSERT INTO config (`key`,value) VALUES ('issue_id_mode','counter') ON DUPLICATE KEY UPDATE value='counter'")
+				if err != nil {
+					return err
+				}
+				// A hash ID may happen to have a numeric suffix. Native counter
+				// seeding treats that suffix as the starting counter, so pin this
+				// fixture to zero to exercise the reserved exp-1 path reliably.
+				_, err = tx.ExecContext(ctx, "INSERT INTO issue_counter (prefix,last_id) VALUES ('exp',0) ON DUPLICATE KEY UPDATE last_id=0")
 				return err
 			}); err != nil {
 				t.Fatal(err)
