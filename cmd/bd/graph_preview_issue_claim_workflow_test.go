@@ -61,7 +61,7 @@ func TestGraphPreviewIssueClaimWorkflow(t *testing.T) {
 				if !reflect.DeepEqual(properties, *before.Properties) || !reflect.DeepEqual(current.Owned, before.Owned) {
 					t.Fatal("claim changed unrelated Issue properties or owned Links")
 				}
-				if got := graphMixedResult[graphstore.IssueRecord](t, call("show", current.ID)); !reflect.DeepEqual(got, current) {
+				if got := graphMixedResult[graphstore.IssueRecord](t, call("show", "--format", "graph-json", current.ID)); !reflect.DeepEqual(got, current) {
 					t.Fatal("fresh process did not read complete claim")
 				}
 				exact(before)
@@ -73,7 +73,7 @@ func TestGraphPreviewIssueClaimWorkflow(t *testing.T) {
 			target := call("create", "Prerequisite", "--id", "beads/gate")
 			dependency := graphMixedResult[graphstore.DependencyResult](t, call("dep", "add", "beads/work", "beads/gate"))
 			link := graphMixedResult[graphstore.LinkMutationResult](t, call("link", "beads/work", "beads/context", "--id", "links/context", "--resource-type", scope+"types/preview-related-v2"))
-			before := graphMixedResult[graphstore.IssueRecord](t, call("show", "beads/work"))
+			before := graphMixedResult[graphstore.IssueRecord](t, call("show", "--format", "graph-json", "beads/work"))
 			claimed := graphMixedResult[graphstore.IssueMutationResult](t, call("update", "beads/work", "--claim", "--actor", "rig.agent"))
 			if !claimed.Changed {
 				t.Fatal("initial claim did not change Issue")
@@ -107,7 +107,7 @@ func TestGraphPreviewIssueClaimWorkflow(t *testing.T) {
 			if !reflect.DeepEqual(state, graphMemoryReadSnapshot(t, work)) {
 				t.Fatal("no-op/refusal changed current graph, including lease timestamps")
 			}
-			if call("show", "beads/context") != memory || call("show", "beads/gate") != target {
+			if call("show", "beads/context") != memory || call("show", "beads/gate", "--format", "graph-json") != target {
 				t.Fatal("claim changed unrelated Beads")
 			}
 			if got := graphMixedResult[graphstore.LinkRecord](t, call("show", dependency.Link.ID)); !reflect.DeepEqual(got, dependency.Link) {

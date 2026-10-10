@@ -43,8 +43,8 @@ func TestGraphPreviewCloseClaimNextWorkflow(t *testing.T) {
 			call("create", "Next work", "--id", "dependent", "--priority", "0")
 			call("create", "Spare work", "--id", "spare", "--priority", "1")
 			call("dep", "add", "dependent", "blocker")
-			dependentBefore := graphMixedResult[graphstore.IssueRecord](t, call("show", "dependent"))
-			spareBefore := graphMixedResult[graphstore.IssueRecord](t, call("show", "spare"))
+			dependentBefore := graphMixedResult[graphstore.IssueRecord](t, call("show", "--format", "graph-json", "dependent"))
+			spareBefore := graphMixedResult[graphstore.IssueRecord](t, call("show", "--format", "graph-json", "spare"))
 			blockerBefore := call("versions", "blocker")
 			type claimResult struct {
 				Closed  []graphstore.IssueRecord `json:"closed"`
@@ -67,11 +67,11 @@ func TestGraphPreviewCloseClaimNextWorkflow(t *testing.T) {
 				t.Fatalf("already-closed retry changed Issue or claimed work: %+v", retry)
 			}
 			if call("versions", "blocker") != closedVersions || call("versions", "dependent") != dependentVersions ||
-				!reflect.DeepEqual(graphMixedResult[graphstore.IssueRecord](t, call("show", "spare")), spareBefore) {
+				!reflect.DeepEqual(graphMixedResult[graphstore.IssueRecord](t, call("show", "--format", "graph-json", "spare")), spareBefore) {
 				t.Fatal("no-op retry minted a version or claimed spare work")
 			}
 			call("create", "Higher priority spare", "--id", "next", "--priority", "0")
-			nextBefore := graphMixedResult[graphstore.IssueRecord](t, call("show", "next"))
+			nextBefore := graphMixedResult[graphstore.IssueRecord](t, call("show", "--format", "graph-json", "next"))
 			partial := func(wantClaim string, args ...string) string {
 				t.Helper()
 				ctx, cancel := context.WithTimeout(context.Background(), 90*time.Second)
@@ -105,7 +105,7 @@ func TestGraphPreviewCloseClaimNextWorkflow(t *testing.T) {
 				mixed.Claimed.ID != scope+"beads/next" || mixed.Claimed.Revision == nextBefore.Revision || mixed.Claimed.Properties.Status != types.StatusInProgress {
 				t.Fatalf("partial close lost the committed close or claim: %+v", mixed)
 			}
-			if got := graphMixedResult[graphstore.IssueRecord](t, call("show", "next")); !reflect.DeepEqual(got, mixed.Claimed) {
+			if got := graphMixedResult[graphstore.IssueRecord](t, call("show", "--format", "graph-json", "next")); !reflect.DeepEqual(got, mixed.Claimed) {
 				t.Fatal("partial failure hid or rolled back its retained claim")
 			}
 			spareVersions, nextVersions := call("versions", "spare"), call("versions", "next")
