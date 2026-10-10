@@ -70,7 +70,7 @@ func TestGraphPreviewRemovedLinkVersionsTwoEngines(t *testing.T) {
 			call("create", "Source", "--id", "source")
 			call("create", "Target", "--id", "target")
 			call("link", "source", "target", "--id", "links/edge", "--resource-type", scope+"types/preview-related-v2")
-			call("update", "links/edge", "--properties", `{"note":"changed"}`, "--unconditional")
+			call("update", "links/edge", "--properties", `{"note":"changed"}`)
 			removed := graphMixedResult[graphstore.LinkDeleteResult](t, call("unlink", "links/edge", "--unconditional"))
 			listed := call("versions", "links/edge")
 			_, kind, rows, members := graphVersionsListed(t, listed)
@@ -285,17 +285,17 @@ func TestGraphPreviewVersionsCLI(t *testing.T) {
 	// and a second row to carry native attribution.
 	run(t, "create", "Issue subject", "--id", "beads/issue", "--actor", author, "--json")
 	run(t, "create", "Link target", "--id", "beads/target", "--actor", author, "--json")
-	run(t, "update", "beads/issue", "--title", "Issue subject renamed", "--unconditional", "--actor", author, "--json")
+	run(t, "update", "beads/issue", "--title", "Issue subject renamed", "--actor", author, "--json")
 	// Memory plane: created, then replaced. Memory records no attribution
 	// status at all, which is a different thing from recording an empty one.
 	run(t, "remember", "Memory body", "--id", "beads/memory", "--title", "Memory subject", "--actor", author, "--json")
 	run(t, "update", "beads/memory", "--properties", `{"title":"Memory subject renamed","body":"Memory body again"}`,
-		"--unconditional", "--actor", author, "--json")
+		"--actor", author, "--json")
 	// Link plane: created, changed, then unlinked. The private deletion marker
 	// must not appear among the citable versions. An Issue source leaves this
 	// Link unowned, so these writes do not advance a second subject's history.
 	run(t, "link", "beads/issue", "beads/target", "--id", "links/related", "--resource-type", relatedType, "--actor", author, "--json")
-	run(t, "update", "links/related", "--properties", `{"note":"changed"}`, "--unconditional", "--actor", author, "--json")
+	run(t, "update", "links/related", "--properties", `{"note":"changed"}`, "--actor", author, "--json")
 	removedLink := graphMixedResult[graphstore.LinkDeleteResult](t, run(t, "unlink", "links/related", "--unconditional", "--actor", author, "--json"))
 
 	t.Run("json-member-set", func(t *testing.T) {

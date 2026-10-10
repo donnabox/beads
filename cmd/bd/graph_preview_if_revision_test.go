@@ -175,7 +175,7 @@ func TestGraphPreviewIfRevisionOutsideLinkModeIsUpstreamCAS(t *testing.T) {
 	}
 
 	for _, args := range [][]string{
-		{"update", id, "--priority", "3", "--unconditional"},
+		{"update", id, "--priority", "3"},
 		{"delete", id, "--force", "--unconditional"},
 		{"forget", "ifrev-key", "--unconditional"},
 		{"forget", "ifrev-key", "--if-revision", "1"},

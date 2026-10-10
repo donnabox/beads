@@ -85,8 +85,7 @@ func TestGraphPreviewCompatibilityDefaultsWorkflow(t *testing.T) {
 				t.Fatal("default edit created a no-op version")
 			}
 			refuse("revision_conflict", "remember", "New body", "--update", memory.ID, "--if-revision", memory.Revision)
-			refuse("invalid_selector", "remember", "No", "--update", memory.ID, "--if-revision", edited.Memory.Revision, "--unconditional")
-			refuse("invalid_selector", "remember", "No", "--update", memory.ID, "--unconditional=false")
+			refuse("invalid_selector", "remember", "No", "--update", memory.ID, "--if-revision=")
 			titled := graphMixedResult[graphstore.MemoryMutationResult](t, call("remember", "--update", memory.ID, "--title", "New title", "--if-revision", edited.Memory.Revision))
 			if titled.Memory.Properties.Body != "New body" || titled.Replaced != nil {
 				t.Fatal("guarded title edit lost omitted body")
@@ -105,8 +104,7 @@ func TestGraphPreviewCompatibilityDefaultsWorkflow(t *testing.T) {
 				t.Fatal("stale/conflicting source guards changed Memory")
 			}
 			mixed := graphMixedResult[graphstore.LinkMutationResult](t, call("link", memory.ID, issue.ID, "--resource-type", related))
-			refuse("invalid_selector", "update", link.Link.ID, "--properties", `{}`)
-			changed := graphMixedResult[graphstore.LinkMutationResult](t, call("update", link.Link.ID, "--properties", `{"note":"current source"}`, "--if-revision", link.Link.Revision))
+			changed := graphMixedResult[graphstore.LinkMutationResult](t, call("update", link.Link.ID, "--properties", `{"note":"current source"}`))
 			if !changed.Changed || changed.ReplacedSource == nil {
 				t.Fatal("default source guard did not support Link replacement")
 			}
@@ -127,15 +125,31 @@ func TestGraphPreviewCompatibilityDefaultsWorkflow(t *testing.T) {
 			if unowned.ReplacedSource != nil || call("show", issue.ID) != issueBefore {
 				t.Fatal("default informational Link changed or disclosed its Issue source")
 			}
+			human := graphPolicyCLI(t, bd, work, home, nil, "", "links", issue.ID)
+			if !strings.Contains(human, "types/preview-related-v2  "+strings.TrimPrefix(unowned.Link.ID, scope)+"  "+strings.TrimPrefix(issue.ID, scope)+" → "+strings.TrimPrefix(memory.ID, scope)) {
+				t.Fatalf("links omitted type-first local display: %q", human)
+			}
 			call("unlink", unowned.Link.ID, "--if-revision", unowned.Link.Revision)
 			if call("show", issue.ID) != issueBefore {
 				t.Fatal("default informational unlink changed its Issue source")
 			}
-			// Resource/delete/Issue guards remain required explicit choices.
+			// Destructive operations retain their explicit revision choice.
 			refuse("invalid_selector", "delete", memory.ID, "--force")
-			refuse("invalid_selector", "update", issue.ID, "--title", "No implicit Issue write")
+			updatedIssue := graphMixedResult[graphstore.IssueMutationResult](t, call("update", issue.ID, "--title", "Issue edits accept current"))
+			if updatedIssue.Issue.Properties.Title != "Issue edits accept current" {
+				t.Fatal("ordinary Issue update did not accept the current predecessor")
+			}
 			gate := graphMixedResult[graphstore.IssueRecord](t, call("create", "Prerequisite"))
 			dependency := graphMixedResult[graphstore.DependencyResult](t, call("dep", "add", issue.ID, gate.ID))
+			shortcut := graphMixedResult[graphstore.DependencyResult](t, call("dep", gate.ID, "--blocks", issue.ID))
+			if shortcut.Changed || shortcut.Link.ID != dependency.Link.ID {
+				t.Fatal("dep --blocks did not preserve the existing blocking Link as a no-op")
+			}
+			otherBlocker := graphMixedResult[graphstore.IssueRecord](t, call("create", "Another prerequisite"))
+			explicit := graphMixedResult[graphstore.DependencyResult](t, call("dep", "add", issue.ID, otherBlocker.ID, "--id", "links/chosen-block"))
+			if explicit.Link.ID != scope+"links/chosen-block" {
+				t.Fatal("dep add --id did not allocate the selected Link")
+			}
 			refuse("capability_unavailable", "unlink", issue.ID, gate.ID, "--resource-type", graphstore.DependencyTypeURL(scope), "--if-revision", dependency.Link.Revision)
 			refuse("invalid_properties", "unlink", dependency.Link.ID, "--if-revision", dependency.Link.Revision)
 			call("unlink", dependency.Link.ID, "--if-revision", dependency.Link.Revision, "--unconditional-source")

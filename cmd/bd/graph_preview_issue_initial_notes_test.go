@@ -124,7 +124,7 @@ func TestGraphPreviewIssueNotesReplaceAndClearWorkflow(t *testing.T) {
 			if noop.Changed || call("versions", path) != versions {
 				t.Fatal("clearing empty notes minted a version")
 			}
-			fromEmpty := graphMixedResult[graphstore.IssueMutationResult](t, call("update", path, "--notes=Fresh", "--unconditional"))
+			fromEmpty := graphMixedResult[graphstore.IssueMutationResult](t, call("update", path, "--notes=Fresh"))
 			if !fromEmpty.Changed || fromEmpty.Issue.Properties.Notes != "Fresh" {
 				t.Fatal("setting notes on an empty Issue required force")
 			}

@@ -57,7 +57,7 @@ func TestGraphPreviewMixedCoreWorkflow(t *testing.T) {
 			if !selected.Changed || selected.Memory.Properties.Body != memory.Properties.Body || selected.Replaced != nil {
 				t.Fatal("selected guarded update lost omitted body or claimed unconditional overwrite")
 			}
-			replaced := graphMixedResult[graphstore.MemoryMutationResult](t, call("update", "beads/plan", "--properties", `{"title":"Final plan","body":"Replaced body"}`, "--unconditional"))
+			replaced := graphMixedResult[graphstore.MemoryMutationResult](t, call("update", "beads/plan", "--properties", `{"title":"Final plan","body":"Replaced body"}`))
 			if !replaced.Changed || replaced.Replaced == nil || replaced.Memory.Revision == selected.Memory.Revision {
 				t.Fatal("unconditional Memory replacement omitted predecessor disclosure")
 			}
