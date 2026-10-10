@@ -40,7 +40,8 @@ func TestGraphPreviewShowLegacyIssueJSON(t *testing.T) {
 	if got.DependencyCount == nil || *got.DependencyCount != 1 || len(got.Dependencies) != 1 || got.Dependencies[0].ID != "beads/needs" || got.Dependencies[0].Title != "Prerequisite" || got.DependentCount == nil || *got.DependentCount != 0 || got.CommentCount == nil || *got.CommentCount != 0 {
 		t.Fatalf("ordinary detail rows or counts were lost: %+v", got)
 	}
-	if len(got.Labels) != 2 || got.Labels[0] != "one" || got.Labels[1] != "two" || string(got.Metadata) != `{"review":true}` {
+	var metadata map[string]any
+	if err := json.Unmarshal(got.Metadata, &metadata); err != nil || len(metadata) != 1 || metadata["review"] != true || len(got.Labels) != 2 || got.Labels[0] != "one" || got.Labels[1] != "two" {
 		t.Fatalf("ordinary Issue labels or metadata were lost: %+v", got)
 	}
 	for _, id := range []string{got.ID, got.Dependencies[0].ID} {
