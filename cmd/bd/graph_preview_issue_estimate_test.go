@@ -46,7 +46,6 @@ func TestGraphPreviewIssueEstimateRefusals(t *testing.T) {
 	}{
 		{"negative", []string{"-e", "-1"}, 2},
 		{"status", []string{"-e", "0", "--status=open"}, 5},
-		{"properties", []string{"-e", "0", "--properties={}"}, 5},
 		{"claim", []string{"-e", "0", "--claim"}, 5},
 	} {
 		t.Run(tc.name, func(t *testing.T) {
@@ -56,6 +55,11 @@ func TestGraphPreviewIssueEstimateRefusals(t *testing.T) {
 				t.Fatalf("want exit%d before storage: %v", tc.code, err)
 			}
 		})
+	}
+	cmd := issueTextCommand(t, "-e", "0", "--properties={}")
+	request, err := graphPreviewIssueEditRequest(cmd, "beads/work")
+	if err != nil || !cmd.Flags().Changed("properties") || request.EstimatedMinutes == nil || *request.EstimatedMinutes != 0 {
+		t.Fatalf("mixed estimate and empty property merge: %+v %v", request, err)
 	}
 	// Parsing belongs to the existing integer flag, including platform overflow.
 	for _, value := range []string{"", "1.5", "null", "999999999999999999999999999"} {

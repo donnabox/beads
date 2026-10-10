@@ -98,7 +98,6 @@ func TestGraphPreviewIssueAppendNotesRefusals(t *testing.T) {
 		{"claim", []string{"--append-notes=Progress", "--claim"}, 5},
 		{"false-claim-direct-request", []string{"--append-notes=Progress", "--claim=false"}, 5},
 		{"workflow", []string{"--append-notes=Progress", "--status=closed"}, 5},
-		{"generic-properties", []string{"--append-notes=Progress", "--properties={}"}, 5},
 		{"source-guard", []string{"--append-notes=Progress", "--if-source-revision=other"}, 5},
 		{"assignee-guard", []string{"--append-notes=Progress", "--if-assignee="}, 5},
 		{"status-guard", []string{"--append-notes=Progress", "--if-status=open"}, 5},
@@ -114,6 +113,12 @@ func TestGraphPreviewIssueAppendNotesRefusals(t *testing.T) {
 				t.Fatalf("expected refusal exit%d before input/storage, got %v", tc.code, err)
 			}
 		})
+	}
+	cmd := issueTextCommand(t, "--append-notes=Progress", "--properties={}")
+	appendNotesNoInput(t, cmd)
+	request, err := graphPreviewIssueEditRequest(cmd, "beads/work")
+	if err != nil || !cmd.Flags().Changed("properties") || request.AppendNotes == nil || *request.AppendNotes != "Progress" {
+		t.Fatalf("mixed append and empty property merge: %+v %v", request, err)
 	}
 }
 

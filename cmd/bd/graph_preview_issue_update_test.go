@@ -195,7 +195,6 @@ func TestGraphPreviewIssuePriorityRefusals(t *testing.T) {
 		})
 	}
 	for _, args := range [][]string{
-		{"--priority=0", "--properties={}"},
 		{"--priority=0", "--status=open"},
 		{"--priority=0", "--body-file=missing"},
 		{"--priority=0", "--stdin=false"},
@@ -209,6 +208,11 @@ func TestGraphPreviewIssuePriorityRefusals(t *testing.T) {
 				t.Fatalf("unsupported explicit option must refuse with exit5 before input: %v", err)
 			}
 		})
+	}
+	cmd := issueTextCommand(t, "--priority=0", "--properties={}")
+	request, err := graphPreviewIssueEditRequest(cmd, "beads/work")
+	if err != nil || !cmd.Flags().Changed("properties") || request.Priority == nil || *request.Priority != 0 {
+		t.Fatalf("mixed priority and empty property merge: %+v %v", request, err)
 	}
 }
 

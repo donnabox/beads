@@ -267,8 +267,9 @@ func TestGraphPreviewC0DeferredCommandsRefuseBeforeLegacyOpen(t *testing.T) {
 	work, home := t.TempDir(), t.TempDir()
 	graphPolicyCLI(t, bd, work, home, nil, "", "init", "--graph-mode", "link", "--scope-url", "https://example.invalid/c0/", "--skip-hooks", "--skip-agents", "--non-interactive", "--json")
 	created := graphPolicyCLI(t, bd, work, home, nil, "", "remember", "C0 body", "--id", "beads/plan", "--title", "Plan", "--json")
+	// Generic typed creation is now admitted and must stay on the graph writer.
+	graphPolicyCLI(t, bd, work, home, nil, "", "create", "Title", "--properties", `{"description":"Graph only"}`)
 	for _, args := range [][]string{
-		{"create", "Title", "--properties", `{"description":"Graph only"}`},
 		{"create", "Must refuse", "--estimate=3", "--due=tomorrow", "--defer=tomorrow", "--json"}, {"update", "beads/plan", "--title", "Must refuse", "--priority=1", "--json"},
 		// Native upstream label operations must not enter the graph writer.
 		{"label", "rename", "old", "new", "--json"}, {"label", "rename", "old", "new", "--dry-run", "--json"},
