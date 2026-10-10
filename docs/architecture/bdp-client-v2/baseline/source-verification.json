@@ -1,0 +1,104 @@
+{
+  "runtime_commit": "23c54902ca14087c5766eec6be2784ed71d7a216",
+  "cited_runtime_files": {
+    "graphops/doc.go": {
+      "blob": "b6d99c2463ab9f6f7c41b343ad92e97daa14050f",
+      "bytes": 1422
+    },
+    "internal/storage/graphstore/backend.go": {
+      "blob": "37e45bc33b097f39d3fc4529e9fd1593b4e32882",
+      "bytes": 8246
+    },
+    "internal/httpapi/graphread/reader.go": {
+      "blob": "60cfb512260b336fe7b6cc83ecbc894c7d04e091",
+      "bytes": 6491
+    },
+    "internal/storage/graphstore/issue_update.go": {
+      "blob": "aa4762dde6623e613776306bfc26d4e77934cb1c",
+      "bytes": 9423
+    },
+    "internal/storage/issueops/execution.go": {
+      "blob": "6e1d5a9802ab96b2351bf4da06bc93e6bf7bbb1a",
+      "bytes": 15949
+    },
+    "cmd/bd/main.go": {
+      "blob": "74426675406594827f8d569ce776723935711d28",
+      "bytes": 126537
+    },
+    "cmd/bd/graph_preview.go": {
+      "blob": "d4be3fa356c0ada83493cbcbaec8916dce619fc0",
+      "bytes": 40848
+    },
+    "internal/storage/graphstore/schema.go": {
+      "blob": "df75fb7c735180893c0d99e2a13f084a31e920bb",
+      "bytes": 10019
+    },
+    "internal/storage/graphstore/types_read.go": {
+      "blob": "dd571c9c4ff0983d5d66e47733e7062a5faf9910",
+      "bytes": 4108
+    },
+    "internal/storage/graphstore/informational_types.go": {
+      "blob": "c761077c7227aefafdb11a255a1f91d38bbb977b",
+      "bytes": 5974
+    },
+    "internal/storage/graphstore/memory_update.go": {
+      "blob": "8095ee6592520e6b113a93c6e4aac3982c9d4821",
+      "bytes": 5728
+    },
+    "internal/storage/graphstore/informational.go": {
+      "blob": "fed03102413d1c778f6c06818aaa60b6af04abd8",
+      "bytes": 15749
+    },
+    "internal/storage/graphstore/issues.go": {
+      "blob": "8afe0fcda0645ae5d3cbc2b86ce761a12e22f979",
+      "bytes": 10472
+    },
+    "internal/storage/graphstore/records.go": {
+      "blob": "f1c3fee6caa07251159c7391e8167422f5477ddc",
+      "bytes": 11551
+    },
+    "internal/storage/embeddeddolt/open.go": {
+      "blob": "d984f75b1429e1ddd82a450d13528d98b1fca82d",
+      "bytes": 3606
+    },
+    "internal/storage/graphstore/history_exact.go": {
+      "blob": "1f2b87f7caaded1c7162f3d92183cc40cebefb4d",
+      "bytes": 12929
+    },
+    "internal/storage/graphstore/version_history.go": {
+      "blob": "3397400a75ade50069b245e0d96eb4178300545b",
+      "bytes": 24476
+    },
+    "cmd/bd/graph_preview_serve.go": {
+      "blob": "c0b82d533e0a54625bf24025c626cfe1796d9ed2",
+      "bytes": 1623
+    },
+    "internal/httpapi/graph_read.go": {
+      "blob": "f07ca02be9a90fd22412ca7ef9e150efd70ad495",
+      "bytes": 12958
+    },
+    "internal/httpapi/server.go": {
+      "blob": "4e19bb3a0a19b391b33a60cec84a19ebc472eec6",
+      "bytes": 108582
+    },
+    "internal/httpapi/graph_read_routes.go": {
+      "blob": "d28df62a695960fcfebee9de1ced720e6ac751f1",
+      "bytes": 5481
+    },
+    "cmd/bd/update.go": {
+      "blob": "7e64ec74c31b6c9a6992021d7490ca6e8a0c06d7",
+      "bytes": 46973
+    },
+    "internal/storage/graphstore/memory_delete.go": {
+      "blob": "3ea8f8a3ce5e2072a80e223155db2046e8231eaf",
+      "bytes": 7317
+    }
+  },
+  "unique_runtime_files": 23,
+  "runtime_citation_count": 32,
+  "reference_links_resolve_in_document": true,
+  "citation_line_bounds_checked": true,
+  "source_only": true,
+  "tests_run": false,
+  "document_sha256": "c4ceaf469560b3ed4ced9bb72e60d5fa9165657c576ca1b9c233097fdca00475"
+}

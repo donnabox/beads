@@ -1,0 +1,16 @@
+(node:54174) ExperimentalWarning: Transform Types is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
+PASS four generic batch recipes conform to pinned wire schema (not execution)
+PASS schema rejects a batch read/result-binding operation
+PASS schema rejects partial-success batch option
+PASS actual selector supports scalar Issue filters and exact map label membership
+PASS actual selector rejects contains search and array wildcard membership
+PASS actual selector retains URI order; first page misses best-priority and only substring match
+PASS CAS model gives exactly one winner for eight stale claim attempts
+PASS CAS model detects lost-append race and permits reread/recompute retry
+PASS model counterexample: incoming unowned edge leaves target revision unchanged, allowing stale close
+PASS zero-match predicate model rejects phantom before staging close
+PASS equal cardinality cannot detect membership replacement; explicit exclusion can
+PASS large enumerated guard hits real negotiated selector byte limit
+{"records":50000,"pageSize":100,"pages":500,"resourceJsonBytes":59300007,"matches":1,"interpretation":"Measured bytes for coarse-filter/full-scan fallback on synthetic corpus. Not HTTP traffic, throughput, universal lower bound, or a latency benchmark."}
+12 probes passed. Parser/schema checks and small explicit models only; no Transactional provider behavior established.
