@@ -73,6 +73,19 @@ func TestGraphPreviewIssueCommentWriteWorkflow(t *testing.T) {
 			if after.Revision != before.Revision || call("versions", "beads/work") != versions {
 				t.Fatal("comments minted an Issue Resource version")
 			}
+			for _, command := range [][]string{
+				{"comment", "beads/work", "Quiet singular", "--quiet"},
+				{"comments", "add", "beads/work", "Quiet plural", "--quiet"},
+			} {
+				if got := graphPolicyCLI(t, bd, work, home, nil, "", command...); got != "" {
+					t.Fatalf("quiet comment %v printed %q", command, got)
+				}
+			}
+			var afterQuiet []*types.Comment
+			quietFeed := call("comments", "beads/work")
+			if err := json.Unmarshal([]byte(quietFeed), &afterQuiet); err != nil || len(afterQuiet) != 4 {
+				t.Fatalf("quiet comment writes did not both persist: %v\n%s", err, quietFeed)
+			}
 			refuse("invalid_properties", "comment", "beads/work", " ")
 			refuse("permission_denied", "comment", "beads/work", "No", "--readonly")
 			refuse("permission_denied", "comments", "add", "beads/work", "No", "--readonly")

@@ -53,6 +53,9 @@ func runGraphPreviewAddComment(cmd *cobra.Command, args []string, plural bool) e
 		if jsonOutput {
 			return outputJSON(result)
 		}
+		if quietFlag {
+			return nil
+		}
 		_, err := fmt.Fprint(cmd.OutOrStdout(), human)
 		return err
 	})
