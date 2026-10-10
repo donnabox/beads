@@ -45,9 +45,10 @@
 // checked by ReadDiscovery.Validate and ReadProblem.Validate. The owned
 // declaration sum additionally checks the pinned key pattern, positive bounds
 // and the explicit-max versus wildcard-max rule when decoding or marshaling;
-// OwnedLinks keys follow that same pinned pattern through both codecs and
-// Validate. resource-erased rejects pointer presence through both codecs and
-// Validate.
+// OwnedLinks keys follow that same pinned pattern through both decoding entry
+// points and Validate. resource-erased rejects pointer presence through those
+// entry points and Validate. For OwnedOutgoingDeclarations and ReadProblem, they
+// share the same decoder; their tests prove custom-method wiring.
 //
 // DECODING POSTURE. DECISION: Unmarshal and Decode are strict — an unknown
 // member in a closed envelope is an error, and so are the shape violations

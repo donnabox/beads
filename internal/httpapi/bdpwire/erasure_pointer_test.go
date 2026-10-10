@@ -5,7 +5,7 @@ import (
 	"testing"
 )
 
-func TestErasedPointerPresenceAcrossCodecsAndValidation(t *testing.T) {
+func TestErasedPointerPresenceAcrossEntryPointsAndValidation(t *testing.T) {
 	for _, value := range []string{`null`, `false`, `0`, `""`, `"beads/secret"`, `{}`, `[]`} {
 		t.Run(value, func(t *testing.T) {
 			p := NewReadProblem(CodeResourceErased)
@@ -17,12 +17,14 @@ func TestErasedPointerPresenceAcrossCodecsAndValidation(t *testing.T) {
 				t.Fatal("marshal allowed pointer")
 			}
 			raw := `{"type":"` + p.Type + `","code":"resource-erased","retry":"never","pointer":` + value + `}`
-			var a, b ReadProblem
-			if err := Unmarshal([]byte(raw), &a); err == nil {
+			// Strict Unmarshal and encoding/json dispatch into decodeProblem.
+			// This checks both entry points, not independent decoder agreement.
+			var direct, standard ReadProblem
+			if err := Unmarshal([]byte(raw), &direct); err == nil {
 				t.Fatal("strict decode allowed pointer")
 			}
-			if err := json.Unmarshal([]byte(raw), &b); err == nil {
-				t.Fatal("JSON decode allowed pointer")
+			if err := json.Unmarshal([]byte(raw), &standard); err == nil {
+				t.Fatal("encoding/json entry point allowed pointer")
 			}
 		})
 	}
