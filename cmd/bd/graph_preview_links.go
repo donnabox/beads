@@ -86,7 +86,7 @@ func graphPreviewEditRevisionGuard(cmd *cobra.Command) (string, bool, error) {
 
 // The old name remains a hidden compatibility alias for existing scripts.
 func registerGraphLinkTypeFlag(cmd *cobra.Command) {
-	cmd.Flags().String("link-type", "", "Installed Link Type: types/NAME or full local URL (graph preview only)")
+	cmd.Flags().String("link-type", "", "Installed Link Type: NAME, types/NAME, or full local URL (graph preview only)")
 	cmd.Flags().String("resource-type", "", "Compatibility alias for --link-type")
 	_ = cmd.Flags().MarkHidden("resource-type")
 }
@@ -96,12 +96,14 @@ func graphPreviewLinkTypeChanged(cmd *cobra.Command) bool {
 }
 
 func graphPreviewTypeURL(scope, selector string) (string, error) {
-	if strings.HasPrefix(selector, "types/") {
+	if selector != "" && !strings.Contains(selector, "/") {
+		selector = scope + "types/" + selector
+	} else if strings.HasPrefix(selector, "types/") {
 		selector = scope + selector
 	}
 	prefix := scope + "types/"
 	if !strings.HasPrefix(selector, prefix) {
-		return "", fmt.Errorf("Type must be types/NAME or a canonical Type URL in this Scope")
+		return "", fmt.Errorf("Type must be NAME, types/NAME, or a canonical Type URL in this Scope")
 	}
 	for _, segment := range strings.Split(strings.TrimPrefix(selector, prefix), "/") {
 		if err := graph.ValidateCanonicalSegment(segment); err != nil {

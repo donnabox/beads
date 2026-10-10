@@ -100,13 +100,14 @@ func TestGraphPreviewEditRevisionGuardDefaultsToCurrent(t *testing.T) {
 
 func TestGraphPreviewLocalTypeSelectors(t *testing.T) {
 	const scope = "https://example.invalid/demo/"
-	for _, selector := range []string{"types/preview-related-v2", scope + "types/preview-related-v2", "types/example-follows"} {
+	for _, selector := range []string{"preview-related-v2", "types/preview-related-v2", scope + "types/preview-related-v2", "example-follows", "types/example-follows"} {
 		got, err := graphPreviewTypeURL(scope, selector)
-		if err != nil || got != scope+strings.TrimPrefix(selector, scope) {
+		want := scope + "types/" + strings.TrimPrefix(strings.TrimPrefix(selector, scope), "types/")
+		if err != nil || got != want {
 			t.Fatalf("%q: %q, %v", selector, got, err)
 		}
 	}
-	for _, selector := range []string{"", "types/", "types/../x", "types/example%2Dfollows", "types/example?x=1", "types//x", "beads/foo", "https://other.invalid/types/example-follows", scope + "types/example-follows#x"} {
+	for _, selector := range []string{"", "types/", "types/../x", "types/example%2Dfollows", "types/example?x=1", "types//x", "beads/foo", "https://other.invalid/types/example-follows", scope + "types/example-follows#x", "bad?type", "bad%2Ftype"} {
 		if _, err := graphPreviewTypeURL(scope, selector); err == nil {
 			t.Errorf("accepted %q", selector)
 		}

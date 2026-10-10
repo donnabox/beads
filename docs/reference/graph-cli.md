@@ -76,13 +76,14 @@ given. This form does not read a body from a file or stdin.
 
 ```sh
 bd create 'Move the release branch' --id work --type task
-bd create --bead-type types/preview-memory-v2 \
+bd create --bead-type preview-memory-v2 \
   --body 'Code flow policy: keep the old policy as a versioned Memory.'
 ```
 
 Use `bd types` in the selected workspace to discover its installed
-`types/NAME` IDs. Do not assume a Type shown in another workspace is installed
-in this one.
+`types/NAME` IDs. The `types/` prefix is optional when passing a Type name to
+`--bead-type` or `--link-type`; full local Type URLs also work. Do not assume a
+Type shown in another workspace is installed in this one.
 
 ## Find and read Beads
 
@@ -460,8 +461,8 @@ details ordering and refusal behavior.
 ## Discover installed Types
 
 `bd types` reads the descriptors **installed in this workspace** and lists
-Bead Types separately from Link Types. Use the printed `types/NAME` ID with
-`--bead-type` or `--link-type`; a full local Type URL also works.
+Bead Types separately from Link Types. Use a printed `types/NAME` ID or just
+`NAME` with `--bead-type` or `--link-type`; a full local Type URL also works.
 `--details` shows each complete stored descriptor, and `--json` returns the
 descriptors as structured data.
 

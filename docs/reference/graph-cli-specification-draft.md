@@ -41,7 +41,7 @@ store; an unknown spelling may be rejected by the parser first.
 | Workspace | `bd init --graph-mode link --scope-url URL` creates a **new** graph workspace. An existing ordinary, incomplete or incompatible graph workspace is never upgraded by init. Subsequent graph commands bind to that workspace's stored Scope and format; moving/copying it does not transfer authority. |
 | Resource selector | A command that accepts both Beads and Links requires `beads/PATH` or `links/PATH`, or the exact local Scope URL, for either kind. A Bead-only command accepts bare `ID` as shorthand for `beads/ID`; a Link-only command accepts bare `ID` as shorthand for `links/ID`. The kind comes from the command, never from probing both namespaces. No foreign URL or alias is silently resolved. The current build still accepts a bare Bead ID on some mixed-resource commands and requires `links/PATH` on Link-only operations; those parser changes remain NYI. |
 | Creation ID | `--id` is optional on `bd create`, `bd remember`, `bd link` and graph `bd dep add`. Omission allocates a fresh canonical ID. `bd create` and `bd link` use an explicit ID exactly or refuse if it was ever allocated; deletion does not release it. `bd remember --id ID` creates a Memory at an unused ID or updates the existing Memory there, while `--create-only` requests duplicate refusal. Link-only `--id` accepts a bare ID as shorthand for `links/ID`; repeating an existing blocking pair with the same explicit Link ID remains a no-op. |
-| Type selector | `--bead-type` and `--link-type` accept an installed `types/NAME` or its exact local Type URL. An uninstalled, wrong-kind or endpoint-incompatible Type fails before a write. `--type` on an Issue is its Issue classification, not a Bead Type. |
+| Type selector | `--bead-type` and `--link-type` accept an installed `NAME`, `types/NAME`, or its exact local Type URL. An uninstalled, wrong-kind or endpoint-incompatible Type fails before a write. `--type` on an Issue is its Issue classification, not a Bead Type. |
 | Current and retained state | A bare read selects the current record. `--version TOKEN` selects one retained state; `bd versions` discovers tokens in store-local newest-first order. A complete graph Resource record exposes one opaque `revision` token, used for current-state write guards. The versions list calls the same kind of opaque exact-read address `version`; that name and `--version` remain for retained reads. Neither token encodes chronology. This candidate emits only `revision` on complete Resource records, while retaining `version` on version-list rows and summary projections. |
 | Guarded write | `--if-revision TOKEN` compares the current revision of the Resource being changed. `--if-source-revision TOKEN` separately compares the owning **source Bead** when a write changes one of its outgoing owned Links. The installed preview Issue Type owns blocking Dependencies, and the installed Memory Type owns its outgoing informational Links; an informational Link from an Issue is not owned by that Issue Type. Ownership comes from the installed Type descriptor, not the Link's name or a Memory-only rule. A stale check rejects the whole write, including a would-be no-op. |
 | Current-state write | `bd remember --id ID` creates or updates by default; `--create-only` refuses an allocated ID. The older `bd remember --update ID` remains existing-only. `bd update` accepts the current predecessor when `--if-revision` is omitted; a supplied token opts into atomic stale-write refusal. `--unconditional` is not an edit flag. A changed current-state Memory or Link write reports the actual replaced version and attribution. Applying deletion and removing a Link still require `--if-revision` or explicit `--unconditional`; blocking Dependency removal also requires an Issue-source choice. `close`, `reopen` and standalone `update --claim` retain native Issue policy. A Memory-owned informational Link source accepts its current predecessor unless `--if-source-revision` is supplied. |
@@ -547,7 +547,7 @@ New workspaces install three informational Link Types: `types/preview-related-v2
 and `types/example-cites` (the source cites the target as context). All accept
 Memory or Issue endpoints and optional `note` properties; none affects scheduling.
 The blocking Type is `types/preview-blocks-v1` and requires Issue endpoints.
-Use scope-relative `types/NAME` or the full local Type URL. Existing four-Type
+Use `NAME`, scope-relative `types/NAME`, or the full local Type URL. Existing four-Type
 workspaces remain readable and writable with their original Types; reads do not
 install the two examples. Arbitrary Type installation is unavailable.
 `--resource-type` remains a hidden compatibility alias for `--link-type`; do not
@@ -867,9 +867,9 @@ Beads (2; more: false; graph preview)
 
 `--format records-json` returns the same Beads, in the same order, as
 complete Memory and Issue records in `result.items`, with `result.hasMore`.
-An optional `--bead-type types/NAME` keeps one installed Bead Type; Link
+An optional `--bead-type NAME` (also `types/NAME`) keeps one installed Bead Type; Link
 Types and uninstalled Types refuse with `capability_unavailable`, and a
-selector that is neither `types/NAME` nor a full local Type URL refuses with
+selector that is neither `NAME`, `types/NAME`, nor a full local Type URL refuses with
 `invalid_selector`. `--bead-type types/preview-issue-v2` on its own stays in
 this mode, so it hides closed and pinned Issues too unless `--all` is given.
 `--limit N` returns the first N Beads and a truthful `hasMore`, not a
