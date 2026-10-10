@@ -87,8 +87,8 @@ func init() {
 	linkCmd.Flags().String("id", "", "New informational Link ID or links/PATH (bare ID is shorthand for links/ID)")
 	linkCmd.Flags().String("properties", "", "Informational Link properties as JSON, @file, or @- (graph preview only)")
 	linkCmd.Flags().String("metadata", "", "Initial informational Link metadata as a JSON object or @file (graph preview only)")
-	updateCmd.Flags().String("patch", "", "Apply ordered Memory or informational Link property operations from JSON, @file, or @- (graph preview only)")
-	updateCmd.Flags().String("properties", "", "Replace Memory or informational Link properties from JSON, @file, or @- (graph preview only)")
+	updateCmd.Flags().String("patch", "", "Apply ordered Issue, Memory or informational Link property operations from JSON, @file, or @- (graph preview only)")
+	updateCmd.Flags().String("properties", "", "Shallowly merge named Issue, Memory or informational Link properties from JSON, @file, or @- (graph preview only)")
 	// update.go registers upstream's --if-revision (the decimal compare-and-swap
 	// outside link mode); link mode reads that same flag as a graph token.
 	updateCmd.Flags().String("if-source-revision", "", "Require this observed source revision for an experimental owned Link")
@@ -588,18 +588,21 @@ func runGraphPreviewRemember(cmd *cobra.Command, args []string) error {
 	if err != nil {
 		return err
 	}
+	if len(args) == 0 && !cmd.Flags().Changed("body-file") && !cmd.Flags().Changed("stdin") && !cmd.Flags().Changed("title") && !cmd.Flags().Changed("properties") {
+		return graphFailure("invalid_properties", "Memory creation requires a body source or --properties with body", 2)
+	}
 	titleInput, bodyInput, err := graphPreviewRememberPatchInput(cmd, args)
 	if err != nil {
 		return err
+	}
+	if titleInput != nil && strings.TrimSpace(*titleInput) == "" {
+		return graphFailure("invalid_properties", "an explicit creation title must be nonempty", 2)
 	}
 	if bodyInput == nil {
 		return graphFailure("invalid_properties", "Memory creation requires a body source or --properties with body", 2)
 	}
 	title := graphPreviewMemoryTitle(*bodyInput)
 	if titleInput != nil {
-		if strings.TrimSpace(*titleInput) == "" {
-			return graphFailure("invalid_properties", "an explicit creation title must be nonempty", 2)
-		}
 		title = *titleInput
 	}
 	metadata, err := graphPreviewMetadataCreate(cmd)
@@ -693,7 +696,7 @@ func runGraphPreviewStatus(cmd *cobra.Command) error {
 					"memoryPropertiesUpdate": true, "memorySelectedUpdate": true, "memorySelectedUpdateCurrentByDefault": true,
 					"memoryOverwriteDisclosure": true, "issueCreate": true, "issueCreateAuthorship": true, "issueTextUpdate": true, "issuePriorityUpdate": true, "issueAssigneeUpdate": true,
 					"issueCreateFields": true, "issueInitialNotes": true, "issueNotesAppend": true, "issueNotesReplace": true, "issueNotesClear": true,
-					"issueEstimateUpdate": true, "issueReferenceUpdate": true,
+					"issueEstimateUpdate": true, "issueReferenceUpdate": true, "issuePropertiesUpdate": true, "issuePropertiesPatch": true,
 					"memoryUnreferencedDelete": true, "issueUnreferencedDelete": true,
 					"informationalLink": true, "blockingDependency": true, "blockingDependencyShorthand": true, "blockingDependencyExplicitID": true, "linkPropertiesUpdate": true,
 					"linkUnlink": true, "blockingDependencyUnlink": true, "incidentLinks": true, "ownedLinks": true,
@@ -703,7 +706,7 @@ func runGraphPreviewStatus(cmd *cobra.Command) error {
 					"issueListTree": false, "issueListLegacyJSON": false, "issueAssigneeFilter": true, "issueDueDate": true, "issueDueFilter": true, "issueClaim": true, "issueUnclaim": true, "issueWorkflows": false,
 					"blockingDependencyPairUnlink": false, "bdpRead": graphPreviewConfig.DoltMode == configfile.DoltModeServer, "historyExact": false, "versionList": true, "exactVersionRead": true, "exactVersionCompare": true,
 					"requestStatus": false, "backupContinuity": false}},
-			"Mixed graph preview: Memory create/read, complete title/body replacement and selected remember updates with optional revision comparison and actual predecessor disclosure, unreferenced Memory and Issue deletion with read-only preview and retained identity/snapshots, Issue create/read including initial fields, notes, due date and ordinary creator/owner defaults, inline Issue title/description/design/acceptance, priority, estimate, external/spec references, due date and non-claim assignee edits with optional revision comparison, standalone atomic Issue claims with five-minute nonrenewing leases and native-policy unclaim (holder, force or conditional, with optional reason and multiple IDs), Issue notes append, guarded replacement with explicit overwrite intent and deliberate clear, read-only comments, informational Links with property replacement and guarded unlink, blocking Dependencies with canonical-ID unlink, incident Links, and Issue close/reopen/defer/undefer/ready with dated wake. dep BLOCKER --blocks BLOCKED is available, and dep add accepts an explicit Link ID. Bounded current all-Bead listing with nominal Bead Type filtering is available; Issue-specific filters retain the native Issue query and due/assignee filters. Complete dependency-blocked inspection and bounded current generic summary traversal are available. Memory discovery returns complete bounded title/body search summaries; current and exact retained body-only recall, show --version, explicit-version compare and ordered local bd versions/bd history listing are available; common metadata creation, optional-revision update, exact retained read and comparison are available for admitted Beads and informational Links. Ordered Memory and informational Link property patches are available with optional resource/source comparisons. Full Memory, linked Memory deletion, later Issue workflows, HTTP History, adoption and recovery remain unavailable. BDP Read serving is available only on ordinary shared-server Dolt; embedded serving, HTTP writes and aliases remain unavailable.", nil
+			"Mixed graph preview: Memory create/read, typed Issue and Memory property initialization and shallow property merge with optional revision comparison and actual predecessor disclosure, unreferenced Memory and Issue deletion with read-only preview and retained identity/snapshots, Issue create/read including initial fields, notes, due date and ordinary creator/owner defaults, inline Issue title/description/design/acceptance, priority, estimate, external/spec references, due date and non-claim assignee edits with optional revision comparison, standalone atomic Issue claims with five-minute nonrenewing leases and native-policy unclaim (holder, force or conditional, with optional reason and multiple IDs), Issue notes append, guarded replacement with explicit overwrite intent and deliberate clear, read-only comments, informational Links with shallow property merge and guarded unlink, blocking Dependencies with canonical-ID unlink, incident Links, and Issue close/reopen/defer/undefer/ready with dated wake. dep BLOCKER --blocks BLOCKED is available, and dep add accepts an explicit Link ID. Bounded current all-Bead listing with nominal Bead Type filtering is available; Issue-specific filters retain the native Issue query and due/assignee filters. Complete dependency-blocked inspection and bounded current generic summary traversal are available. Memory discovery returns complete bounded title/body search summaries; current and exact retained body-only recall, show --version, explicit-version compare and ordered local bd versions/bd history listing are available; common metadata creation, optional-revision update, exact retained read and comparison are available for admitted Beads and informational Links. Ordered Issue, Memory and informational Link property patches are available with optional resource/source comparisons. Full Memory, linked Memory deletion, later Issue workflows, HTTP History, adoption and recovery remain unavailable. BDP Read serving is available only on ordinary shared-server Dolt; embedded serving, HTTP writes and aliases remain unavailable.", nil
 	})
 }
 
@@ -727,6 +730,12 @@ func graphPrintTo(out io.Writer, result any, human string, quiet, structured boo
 }
 
 func graphStorageError(err error) error {
+	// A graph route may validate a selected Type only after reading it inside
+	// withGraphStore. graphFailure has already reported this typed CLI refusal.
+	var reported *exitError
+	if errors.As(err, &reported) {
+		return reported
+	}
 	var ambiguous *graphstore.ErrAmbiguousLink
 	if errors.As(err, &ambiguous) {
 		if jsonOutput {

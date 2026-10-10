@@ -161,7 +161,7 @@ branch may demonstrate a candidate without changing the integration column.
 
 | Entry point | Proposed additions | Rule |
 | --- | --- | --- |
-| `create [TITLE]`, `remember [BODY]` | `--properties JSON` for the selected installed Bead Type; `--metadata JSON` for either creation route | `--properties` initializes named Type properties. Issue and Memory shorthand flags may supply other fields, but the same property cannot be supplied twice. A created Memory still needs a body. Metadata is a separate JSON object. Existing-ID `remember --properties` shallowly merges named Memory fields under the same guard/default as body/title edits. |
+| `create [TITLE]`, `remember [BODY]` | `--properties JSON` for the selected installed Bead Type; `--metadata JSON` for either creation route | `--properties` initializes named Type properties. Issue and Memory shorthand flags may supply other fields, but the same property cannot be supplied twice. `remember` creation still needs a body; `create` retains its selected Type's existing validation. Metadata is a separate JSON object. Existing-ID `remember --properties` shallowly merges named Memory fields under the same guard/default as body/title edits. |
 | `link SOURCE TARGET` | `--metadata JSON` | Sets the initial open metadata object on one typed informational Link; it is unavailable for a blocking Dependency. |
 | `update RESOURCE` | `--metadata JSON`, repeatable `--set-metadata KEY=VALUE`, repeatable `--unset-metadata KEY` | Match ordinary `bd update`: `--metadata` merges top-level keys inside the write transaction and cannot combine with set/unset; set and unset may combine, with unset applied last. Omission preserves metadata. Metadata can accompany an admitted property/scalar edit in the same atomic write and uses its Resource and applicable source guard. |
 | `update ISSUE` | `--add-label X`, `--remove-label X`, `--set-labels X,Y`; `--notes TEXT`, `--clear-notes`, `--force` | Label flags may combine as in ordinary `bd update`: replace, then add, then remove, so removal wins. Notes use the ordinary overwrite fence and the existing graph Issue revision-guard choice below. |
@@ -584,8 +584,9 @@ erasure, restoration or identifier reuse.
 
 `--patch` applies a nonempty ordered array to a checked predecessor. Memory
 and Link evaluate inside their write transactions; Issue pins the observed
-revision before evaluating and lets its native writer commit or reject a
-concurrent change. It cannot be combined with
+revision before evaluating and retries against the new current state if an
+unguarded concurrent writer wins, while its native writer owns the commit.
+An explicit stale `--if-revision` still refuses. A patch cannot be combined with
 `--properties`, selected Memory fields or Issue update flags. For example:
 
 ```sh

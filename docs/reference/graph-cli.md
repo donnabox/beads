@@ -157,6 +157,13 @@ change only its writable scalar properties. A stale `--if-revision TOKEN`
 refuses a write; omission accepts the current state. See
 [Versioning and History](#versioning-and-history) for exact-version reads.
 
+This changes the earlier graph-preview `bd update LINK --properties '{}'`
+behavior: an empty object now preserves the existing `note` instead of
+clearing it. Remove the note explicitly with
+`bd update LINK --patch '[{"op":"remove","path":"/note"}]'` or replace the
+whole property object with
+`bd update LINK --patch '[{"op":"replace","path":"","value":{}}]'`.
+
 Issue, Memory and informational Link records also have a separate open
 metadata object. The default is `{}`. Supply `--metadata JSON` when creating
 one, or on `bd update` to merge the JSON object's top-level keys. To set a

@@ -204,6 +204,16 @@ func TestGraphPreviewCompatibilityDefaultsWorkflow(t *testing.T) {
 			if !issuePatched.Changed || issuePatched.Issue.Properties.Description != "Patched" || issuePatched.Issue.Properties.EstimatedMinutes != nil {
 				t.Fatal("Issue property patch bypassed native field semantics")
 			}
+			withNotes := graphMixedResult[graphstore.IssueMutationResult](t, call("update", propertyIssue.ID, "--properties", `{"notes":"first"}`))
+			refuse("notes_overwrite_refused", "update", propertyIssue.ID, "--properties", `{"notes":"second"}`)
+			forcedNotes := graphMixedResult[graphstore.IssueMutationResult](t, call("update", propertyIssue.ID, "--properties", `{"notes":"second"}`, "--force"))
+			if !withNotes.Changed || !forcedNotes.Changed || forcedNotes.Issue.Properties.Notes != "second" {
+				t.Fatal("Issue notes property merge did not preserve the native overwrite fence")
+			}
+			forcedPatch := graphMixedResult[graphstore.IssueMutationResult](t, call("update", propertyIssue.ID, "--patch", `[{"op":"replace","path":"/notes","value":"third"}]`, "--force"))
+			if !forcedPatch.Changed || forcedPatch.Issue.Properties.Notes != "third" {
+				t.Fatal("Issue notes property patch did not honor deliberate force")
+			}
 			refuse("revision_conflict", "update", propertyIssue.ID, "--properties", `{"title":"stale"}`, "--if-revision", propertyIssue.Revision)
 			refuse("invalid_properties", "update", propertyIssue.ID, "--properties", `{"status":"closed"}`, "--if-revision", issuePatched.Issue.Revision)
 		})

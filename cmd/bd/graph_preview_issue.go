@@ -412,16 +412,17 @@ func graphPreviewCreateMemoryInput(cmd *cobra.Command, args []string) (string, s
 		body = bodyValue
 	}
 	title, _ := cmd.Flags().GetString("title")
+	_, propertyTitlePresent := properties["title"]
 	if value, ok := properties["title"]; ok {
 		if len(args) > 0 || cmd.Flags().Changed("title") {
 			return "", "", graphFailure("invalid_properties", "Memory title was supplied by both --properties and a shorthand", 2)
 		}
 		title = value.(string)
 	}
-	if cmd.Flags().Changed("title") && strings.TrimSpace(title) == "" {
+	if (cmd.Flags().Changed("title") || propertyTitlePresent) && strings.TrimSpace(title) == "" {
 		return "", "", graphFailure("invalid_properties", "an explicit --title must be nonempty", 2)
 	}
-	if len(args) > 0 || cmd.Flags().Changed("title") || properties["title"] != nil {
+	if len(args) > 0 || cmd.Flags().Changed("title") || propertyTitlePresent {
 		title, err = resolveTitle(args, title, "", "")
 		if err != nil {
 			return "", "", graphFailure("invalid_properties", err.Error(), 2)

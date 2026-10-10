@@ -70,7 +70,7 @@ func graphPreviewMemoryProperties(properties map[string]any) (*string, *string, 
 }
 
 func runGraphPreviewUpdateMemory(cmd *cobra.Command, path string) error {
-	if err := graphPreviewFlags(cmd, "properties", "metadata", "set-metadata", "unset-metadata", "if-revision"); err != nil {
+	if err := graphPreviewFlags(cmd, "properties", "metadata", "set-metadata", "unset-metadata", "if-revision", "force"); err != nil {
 		return err
 	}
 	if !cmd.Flags().Changed("properties") {
@@ -97,6 +97,7 @@ func runGraphPreviewUpdateMemory(cmd *cobra.Command, path string) error {
 		}
 		if _, ok := current.(graphstore.IssueRecord); ok {
 			request := graphstore.UpdateIssueRequest{Path: path, Actor: getActorWithGit(), ExpectedRevision: revision, Unconditional: unconditional, Metadata: metadata}
+			request.ForceNotesOverwrite, _ = cmd.Flags().GetBool("force")
 			if err := graphPreviewApplyIssueProperties(cmd, &request, values); err != nil {
 				return nil, "", err
 			}
@@ -110,6 +111,9 @@ func runGraphPreviewUpdateMemory(cmd *cobra.Command, path string) error {
 				verb = "Unchanged"
 			}
 			return result, fmt.Sprintf("%s %s", verb, result.Issue.ID), nil
+		}
+		if cmd.Flags().Changed("force") {
+			return nil, "", graphFailure("invalid_properties", "--force applies only to an Issue notes edit", 2)
 		}
 		title, body, err := graphPreviewMemoryProperties(values)
 		if err != nil {

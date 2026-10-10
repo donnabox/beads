@@ -148,10 +148,8 @@ func (s *Store) UpdateIssue(ctx context.Context, request UpdateIssueRequest) (Is
 		return IssueMutationResult{}, fmt.Errorf("%w: Issue update requires an admitted field", storage.ErrValidation)
 	}
 	attempt := publicops.UpdateRequest{Actor: request.Actor, Patch: patch, IssuePlaneOnly: true, ForceNotesOverwrite: request.ForceNotesOverwrite}
-	if count > 0 {
-		if err := issueops.ValidateUpdateRequest(attempt); err != nil {
-			return IssueMutationResult{}, err
-		}
+	if err := issueops.ValidateUpdateRequest(attempt); err != nil {
+		return IssueMutationResult{}, err
 	}
 	var result IssueMutationResult
 	err := s.withTx(ctx, true, func(tx *sql.Tx) error {
