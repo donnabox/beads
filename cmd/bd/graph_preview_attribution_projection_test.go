@@ -1,10 +1,10 @@
 package main
 
 import (
+	"bytes"
 	"encoding/json"
 	"errors"
 	"fmt"
-	"os"
 	"strings"
 	"testing"
 
@@ -102,28 +102,21 @@ func TestGraphPreviewInvalidStoredAttributionRefusesAsInvalidStore(t *testing.T)
 		t.Fatalf("human attribution should fail closed: %v", err)
 	}
 
-	stderr, err := os.CreateTemp(t.TempDir(), "stderr")
-	if err != nil {
-		t.Fatal(err)
-	}
-	oldStderr, oldJSON := os.Stderr, jsonOutput
-	os.Stderr, jsonOutput = stderr, true
+	var diagnostic bytes.Buffer
+	oldOutput, oldJSON := graphFailureOutput, jsonOutput
+	graphFailureOutput, jsonOutput = &diagnostic, true
 	t.Cleanup(func() {
-		os.Stderr, jsonOutput = oldStderr, oldJSON
-		_ = stderr.Close()
+		graphFailureOutput, jsonOutput = oldOutput, oldJSON
 	})
 	result := graphStorageError(fmt.Errorf("projection: %w", graphstore.ErrInvalidStore))
 	var failure *exitError
 	if !errors.As(result, &failure) || failure.Code != 5 {
 		t.Fatalf("invalid store must exit5: %v", result)
 	}
-	if _, err := stderr.Seek(0, 0); err != nil {
-		t.Fatal(err)
-	}
 	var envelope struct {
 		Code string `json:"code"`
 	}
-	if err := json.NewDecoder(stderr).Decode(&envelope); err != nil || envelope.Code != "invalid_store" {
+	if err := json.Unmarshal(diagnostic.Bytes(), &envelope); err != nil || envelope.Code != "invalid_store" {
 		t.Fatalf("invalid store must use its own code: %+v, %v", envelope, err)
 	}
 }
@@ -138,6 +131,10 @@ func TestGraphPreviewReplacementDisclosureUsesPublicBasis(t *testing.T) {
 	human, err = graphPreviewReplacementSummary("Updated", replaced)
 	if err != nil || !strings.Contains(human, "no recorded attribution") {
 		t.Fatalf("absent attribution disclosure: %q, %v", human, err)
+	}
+	replaced.Attribution = graphstore.Attribution{Status: "claimed"}
+	if _, err := graphPreviewReplacementSummary("Updated", replaced); !errors.Is(err, graphstore.ErrInvalidStore) {
+		t.Fatalf("actorless claimed attribution should fail closed: %v", err)
 	}
 	replaced.Attribution = graphstore.Attribution{Actor: "agent:writer", Status: "verified"}
 	if _, err := graphPreviewReplacementSummary("Updated", replaced); !errors.Is(err, graphstore.ErrInvalidStore) {

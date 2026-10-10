@@ -231,8 +231,9 @@ Machine-readable errors use
 human errors use `code: message` there. A command-wide admission or validation
 refusal prints no success envelope; a failed target prints no success record
 for that target, while successful targets in a batch remain visible. An
-invalid retained store attribution reports `invalid_store` (exit 5), never
-`graph_not_initialized`; it does not project an out-of-vocabulary public basis. An
+invalid stored graph record, including invalid retained attribution, reports
+`invalid_store` (exit 5), never `graph_not_initialized`; an out-of-vocabulary
+stored status does not project a public basis. An
 ambiguous-Link error must report sorted candidate canonical IDs. A future
 retryable category may change only with a separately reviewed contract; the
 current graph errors do not ask a caller to blindly retry. Scalar selectors

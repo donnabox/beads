@@ -404,13 +404,16 @@ acceptance. Memory deletion,
 requirements; consult the [Graph CLI Specification (Draft)](/reference/graph-cli-specification-draft) before
 automating them. A semantic no-op retains the existing revision.
 
-Record-bearing results from `bd show`, `bd compare`, `bd query`, and
-`bd memories --format records-json` carry an `attribution` object only when a
-principal was recorded. Its `basis` is `writer-supplied` when that version's writer
+Structured graph records carry an `attribution` object only when a principal
+was recorded. This applies to reads such as `bd show`, `bd compare`,
+`bd memories --format records-json` and `bd list --format records-json`, and to
+mutation results from `bd remember`, `bd create`, `bd update`, `bd link`,
+`bd unlink` and `bd delete`, including nested replaced-source records.
+Its `basis` is `writer-supplied` when that version's writer
 supplied the actor, or `unknown` when the relationship to the version cannot
 be established. `basis` describes the source of the value; it does not assert
 that an authority authenticated the actor. The stored snapshot format retains
-its older `status` field, while complete CLI record and BDP Read projections use `basis`.
+its older `status` field, while carried CLI record and BDP Read projections use `basis`.
 
 `bd versions ID` lists a Memory, Issue or Link's versions newest first in a
 graph workspace. `bd history ID` is an alias there; in an ordinary workspace,

@@ -122,6 +122,7 @@ func graphProjectCarriedAttribution(raw json.RawMessage) (json.RawMessage, bool,
 	case "claimed":
 		members["basis"] = json.RawMessage(`"writer-supplied"`)
 	case "unknown":
+		// Defensive reader path for imported historical records with an actor but no attested basis.
 		members["basis"] = json.RawMessage(`"unknown"`)
 	default:
 		return nil, false, fmt.Errorf("%w: unsupported stored attribution status %q", graphstore.ErrInvalidStore, status)
@@ -136,6 +137,7 @@ func graphPublicAttributionBasis(status string) (string, error) {
 	case "claimed":
 		return "writer-supplied", nil
 	case "unknown":
+		// Defensive reader path for imported historical records with an actor but no attested basis.
 		return "unknown", nil
 	default:
 		return "", fmt.Errorf("%w: unsupported stored attribution status %q", graphstore.ErrInvalidStore, status)

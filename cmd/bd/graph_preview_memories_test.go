@@ -57,6 +57,10 @@ func TestGraphPreviewMemoryDiscoveryRendering(t *testing.T) {
 	if err != nil || !strings.Contains(withoutPrincipal, "Attribution: none recorded") {
 		t.Fatalf("missing explicit absent-attribution disclosure: %q, %v", withoutPrincipal, err)
 	}
+	result.Items[0].Attribution = graphstore.Attribution{Status: "claimed"}
+	if _, err := renderGraphMemoryDiscovery(result, false, false); !errors.Is(err, graphstore.ErrInvalidStore) {
+		t.Fatalf("actorless claimed attribution should fail closed: %v", err)
+	}
 	result.Items[0].Attribution = graphstore.Attribution{Actor: "agent:writer", Status: "verified"}
 	if _, err := renderGraphMemoryDiscovery(result, false, false); !errors.Is(err, graphstore.ErrInvalidStore) {
 		t.Fatalf("out-of-vocabulary human attribution should fail closed: %v", err)
@@ -116,7 +120,7 @@ func TestGraphPreviewMemoryDiscoverySearchRendering(t *testing.T) {
 func TestGraphPreviewMemoryDiscoveryTerminalEscaping(t *testing.T) {
 	result := graphMemoryDiscoveryResult{Scope: "https://example.invalid/", Items: []graphMemoryDiscoveryItem{{
 		ID: "https://example.invalid/beads/id\r\t\x1b[2J", Title: "Policy\n\u202eend", Version: "version\x1b[31m\n",
-		Attribution: graphstore.Attribution{Actor: "actor\x00", RecordedAt: "time\r"}, Details: &graphMemoryDiscoveryDetails{},
+		Attribution: graphstore.Attribution{Actor: "actor\x00", Status: "claimed", RecordedAt: "time\r"}, Details: &graphMemoryDiscoveryDetails{},
 	}}}
 	output, err := renderGraphMemoryDiscovery(result, false, false)
 	if err != nil {
@@ -127,9 +131,12 @@ func TestGraphPreviewMemoryDiscoveryTerminalEscaping(t *testing.T) {
 			t.Fatalf("unsafe terminal character %q in %q", unsafe, output)
 		}
 	}
-	for _, escaped := range []string{`beads/id\r\t\x1b[2J`, `Policy\n\u202eend`, `version\x1b[31m\n`} {
+	for _, escaped := range []string{`beads/id\r\t\x1b[2J`, `Policy\n\u202eend`, `version\x1b[31m\n`, `actor\x00`, `time\r`} {
 		if !strings.Contains(output, escaped) {
 			t.Fatalf("data vanished instead of being escaped: %q in %q", escaped, output)
 		}
+	}
+	if !strings.Contains(output, `basis="writer-supplied"`) {
+		t.Fatalf("valid stored attribution did not reach escaped output: %q", output)
 	}
 }
