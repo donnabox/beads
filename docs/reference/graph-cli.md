@@ -157,6 +157,14 @@ bd remember --update policy --title 'Current code flow policy'
 `bd remember`, and shallowly merges named top-level properties on `bd update`
 or an existing-ID `bd remember`. It works for the installed Issue and Memory
 Bead Types and informational Link Types. Omitted keys survive; `{}` is a no-op.
+Use `bd update ID --replace-properties JSON` to replace the whole properties
+object, including clearing omitted optional fields. The replacement must still
+satisfy the selected Type: `{}` clears informational Link properties, while an
+Issue still needs its required title and a Memory still needs title and body.
+`bd remember --id EXISTING --replace-properties JSON` and `bd remember
+--update EXISTING --replace-properties JSON` use the same existing-only Memory
+replacement; use `--properties` to initialize a new Memory.
+Replacement cannot combine with `--properties`, `--patch`, or Issue field flags.
 Issue property edits still use the native Issue writer and History recorder.
 Use `bd update ID --patch '[{"op":"replace","path":"/name","value":...}]'`
 for ordered property operations, including removal. A patch of an Issue may
@@ -178,6 +186,9 @@ typed value or remove a key, use repeatable `--set-metadata KEY=VALUE` and
 `--unset-metadata KEY`; those two flags can combine, and unsetting wins.
 `--metadata` cannot combine with set or unset. Metadata and an admitted
 property or Issue field edit commit together under the same revision choice.
+Use `--replace-metadata JSON` on `bd update` or `bd remember` to replace the
+whole metadata object; `{}` clears it. It cannot combine with `--metadata`,
+`--set-metadata`, or `--unset-metadata`.
 Omitting metadata leaves it unchanged; a metadata-only edit is also valid.
 An identical edit retains the current revision. Existing-ID `bd remember`
 accepts `--metadata`, `--set-metadata`, or `--unset-metadata` with or without a
@@ -187,6 +198,8 @@ metadata object.
 ```sh
 bd update policy --metadata '{"reviewed":true}'
 bd update policy --unset-metadata team
+bd update policy --replace-metadata '{}'
+bd update links/policy-work --replace-properties '{}'
 ```
 
 Creating, updating, showing or closing a graph Issue records it as the last

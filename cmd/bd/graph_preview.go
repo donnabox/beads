@@ -59,7 +59,9 @@ func init() {
 	rememberCmd.Flags().String("id", "", "Memory ID or beads/PATH; creates if unused or updates existing Memory (generated when omitted; graph preview only)")
 	rememberCmd.Flags().String("title", "", "Memory title (defaults to a short body summary on create; updates preserve omitted fields; graph preview only)")
 	rememberCmd.Flags().String("metadata", "", "Merge a JSON object into an existing Memory, or set initial metadata on create (graph preview only)")
+	rememberCmd.Flags().String("replace-metadata", "", "Replace all Memory metadata with a JSON object on an existing-ID edit (graph preview only)")
 	rememberCmd.Flags().String("properties", "", "Initialize or merge named Memory properties from a JSON object, @file, or @- (graph preview only)")
+	rememberCmd.Flags().String("replace-properties", "", "Replace all properties of an existing Memory selected by --id or --update (graph preview only)")
 	rememberCmd.Flags().StringArray("set-metadata", nil, "Set Memory metadata key=value (repeatable; graph preview only)")
 	rememberCmd.Flags().StringArray("unset-metadata", nil, "Remove Memory metadata key (repeatable; graph preview only)")
 	rememberCmd.Flags().String("update", "", "Existing canonical Memory selector to update (graph preview only)")
@@ -89,6 +91,8 @@ func init() {
 	linkCmd.Flags().String("metadata", "", "Initial informational Link metadata as a JSON object or @file (graph preview only)")
 	updateCmd.Flags().String("patch", "", "Apply ordered Issue, Memory or informational Link property operations from JSON, @file, or @- (graph preview only)")
 	updateCmd.Flags().String("properties", "", "Shallowly merge named Issue, Memory or informational Link properties from JSON, @file, or @- (graph preview only)")
+	updateCmd.Flags().String("replace-properties", "", "Replace all writable Issue, Memory or informational Link properties with a JSON object, @file, or @- (graph preview only)")
+	updateCmd.Flags().String("replace-metadata", "", "Replace all Resource metadata with a JSON object or @file (graph preview only)")
 	// update.go registers upstream's --if-revision (the decimal compare-and-swap
 	// outside link mode); link mode reads that same flag as a graph token.
 	updateCmd.Flags().String("if-source-revision", "", "Require this observed source revision for an experimental owned Link")
@@ -559,8 +563,11 @@ func runGraphPreviewRemember(cmd *cobra.Command, args []string) error {
 	if err := graphPreviewWritePolicy(); err != nil {
 		return err
 	}
-	if err := graphPreviewFlags(cmd, "id", "title", "body-file", "stdin", "update", "create-only", "if-revision", "metadata", "set-metadata", "unset-metadata", "properties"); err != nil {
+	if err := graphPreviewFlags(cmd, "id", "title", "body-file", "stdin", "update", "create-only", "if-revision", "metadata", "replace-metadata", "set-metadata", "unset-metadata", "properties", "replace-properties"); err != nil {
 		return err
+	}
+	if cmd.Flags().Changed("replace-properties") {
+		return runGraphPreviewRememberPropertiesReplacement(cmd, args)
 	}
 	createOnly := cmd.Flags().Changed("create-only")
 	if createOnly {

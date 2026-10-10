@@ -18,6 +18,18 @@ import (
 const graphPreviewPropertiesLimit = 1 << 20
 
 func graphPreviewProperties(input string, stdin io.Reader) (map[string]any, error) {
+	canonical, err := graphPreviewPropertiesJSON(input, stdin)
+	if err != nil {
+		return nil, err
+	}
+	var properties map[string]any
+	if err := json.Unmarshal(canonical, &properties); err != nil {
+		return nil, err
+	}
+	return properties, nil
+}
+
+func graphPreviewPropertiesJSON(input string, stdin io.Reader) (json.RawMessage, error) {
 	var reader io.Reader = strings.NewReader(input)
 	if strings.HasPrefix(input, "@") {
 		if input == "@-" {
@@ -44,11 +56,10 @@ func graphPreviewProperties(input string, stdin io.Reader) (map[string]any, erro
 	if err != nil {
 		return nil, err
 	}
-	var properties map[string]any
-	if err := json.Unmarshal(canonical, &properties); err != nil || properties == nil {
+	if len(canonical) == 0 || canonical[0] != '{' {
 		return nil, fmt.Errorf("Resource properties must be a JSON object")
 	}
-	return properties, nil
+	return canonical, nil
 }
 
 func graphPreviewRevisionGuard(cmd *cobra.Command, source, required bool) (string, bool, error) {
@@ -204,7 +215,7 @@ func runGraphPreviewUpdateLink(cmd *cobra.Command, args []string) error {
 	if err := graphPreviewWritePolicy(); err != nil {
 		return err
 	}
-	if err := graphPreviewFlags(cmd, "properties", "metadata", "set-metadata", "unset-metadata", "if-revision", "if-source-revision", "unconditional-source"); err != nil {
+	if err := graphPreviewFlags(cmd, "properties", "metadata", "replace-metadata", "set-metadata", "unset-metadata", "if-revision", "if-source-revision", "unconditional-source"); err != nil {
 		return err
 	}
 	if len(args) != 1 {

@@ -87,6 +87,55 @@ func graphPreviewRememberPatchResult(result graphstore.MemoryMutationResult, err
 	return graphPreviewReplacementResult(result, fmt.Sprintf("%s %s: %q", verb, result.Memory.ID, result.Memory.Properties.Title), result.Replaced, nil)
 }
 
+// Replacement needs an existing Memory. Creation initializes the complete
+// document with --properties; a missing explicit ID is never silently created
+// by this edit route. The checked Memory writer applies properties and metadata
+// together, retaining its revision/no-op rules.
+func runGraphPreviewRememberPropertiesReplacement(cmd *cobra.Command, args []string) error {
+	if len(args) != 0 || cmd.Flags().Changed("title") || cmd.Flags().Changed("body-file") || cmd.Flags().Changed("stdin") || cmd.Flags().Changed("properties") || cmd.Flags().Changed("create-only") {
+		return graphFailure("invalid_properties", "--replace-properties requires an existing --id or --update and cannot combine with body, title or --properties", 2)
+	}
+	if cmd.Flags().Changed("id") == cmd.Flags().Changed("update") {
+		return graphFailure("invalid_selector", "--replace-properties requires exactly one of --id or --update", 2)
+	}
+	var path string
+	var err error
+	if cmd.Flags().Changed("id") {
+		path, err = graphPreviewCreateBeadPath(cmd)
+	} else {
+		selector, _ := cmd.Flags().GetString("update")
+		path, err = graphPreviewResourcePath(graphPreviewConfig.GraphScopeURL, selector)
+	}
+	if err != nil {
+		return graphFailure("invalid_selector", err.Error(), 2)
+	}
+	if err := graph.ValidateBeadPath(path); err != nil {
+		return graphFailure("invalid_selector", err.Error(), 2)
+	}
+	revision, unconditional, err := graphPreviewEditRevisionGuard(cmd)
+	if err != nil {
+		return err
+	}
+	if !utf8.ValidString(revision) || len(revision) > graphstore.PreviewVersionTokenLimit {
+		return graphFailure("invalid_selector", fmt.Sprintf("--if-revision requires a UTF-8 token of at most %d bytes", graphstore.PreviewVersionTokenLimit), 2)
+	}
+	raw, err := graphPreviewPropertyOperations(cmd)
+	if err != nil {
+		return graphFailure("invalid_properties", err.Error(), 2)
+	}
+	metadata, err := graphPreviewMetadataPatch(cmd)
+	if err != nil {
+		return err
+	}
+	return withGraphStore(func(ctx context.Context, store *graphstore.Store) (any, string, error) {
+		result, err := store.PatchMemoryProperties(ctx, graphstore.MemoryPropertiesPatchRequest{
+			Path: path, Patch: raw, Actor: getActorWithGit(), ExpectedRevision: revision,
+			Unconditional: unconditional, Metadata: metadata,
+		})
+		return graphPreviewRememberPatchResult(result, err)
+	})
+}
+
 // Omitted fields are resolved by the existing writer inside its transaction,
 // from the actual accepted predecessor. This command never reads and refreshes
 // a guard, manufactures an unconditional replacement from stale content, or retries.
