@@ -1,0 +1,109 @@
+Original make test failure excerpts; full local log retained in /Users/dbox/.local/state/iris/make-test-01.jsonl. CLI package was actively running TestQuickBlockedDuringMigrationFreeze for 7 seconds when total package budget expired; this is not evidence of that test hanging.
+
+upported-preview (0.25s)
+=== RUN   TestGraphPreviewC0DeferredCommandsRefuseBeforeLegacyOpen
+    graph_preview_policy_test.go:331: unimplemented capability advertised: legacyImport
+--- FAIL: TestGraphPreviewC0DeferredCommandsRefuseBeforeLegacyOpen (9.83s)
+=== RUN   TestGraphPreviewGenericFlagsRefuseLegacyOpening
+--- PASS: TestGraphPreviewGenericFlagsRefuseLegacyOpening (1.04s)
+=== RUN   TestGraphPreviewPropertiesPatchWorkflow
+=== RUN   TestGraphPreviewPropertiesPatchWorkflow/embedded
+=== RUN   TestGraphPreviewPropertiesPatchWorkflow/server
+    graph_preview_properties_patch_workflow_test.go:177: set BEADS_GRAPH_TEST_SERVER_PORT for ordinary shared-server patch qualification
+--- PASS: TestGraphPreviewPropertiesPatchWorkflow (49.45s)
+    --- PASS: TestGraphPreviewPropertiesPatchWorkflow/embedded (49.38s)
+    --- SKIP: TestGraphPreviewPropertiesPatchWorkflow/server (0.07s)
+=== RUN   TestGraphPreviewQueryWorkflow
+=== RUN   TestGraphPreviewQueryWorkflow/embedded
+=== RUN   TestGraphPreviewQueryWorkflow/server
+    graph_preview_query_workflow_test.go:29: set BEADS_GRAPH_TEST_SERVER_PORT for ordinary shared-server CLI qualification
+--- PASS: TestGraphPreviewQueryWorkflow (27.35s)
+    --- PASS: TestGraphPreviewQueryWorkflow/embedded (27.33s)
+    --- SKIP: TestGraphPreviewQueryWorkflow/server (0.03s)
+=== RUN   TestGraphPreviewReadyClaimWorkflow
+=== RUN   TestGraphPreviewReadyClaimWorkflow/embedded
+=== RUN   TestGraphPreviewReadyClaimWorkflow/server
+    graph_preview_ready_claim_workflow_test.go:27: set BEADS_GRAPH_TEST_SERVER_PORT for ordinary shared-server qualification
+--- PASS: TestGraphPreviewReadyClaimWorkflow (10.33s)
+    --- PASS: TestGraphPreviewReadyClaimWorkflow/embedded (10.33s)
+    --- SKIP: TestGraphPreviewReadyClaimWorkflow/server (0.00s)
+=== RUN   TestGraphPreviewRecordJSONWorkflow
+=== RUN   TestGraphPreviewRecordJSONWorkflow/embedded
+=== RUN   TestGraphPreviewRecordJSONWorkflow/server
+    graph_preview_record_json_workflow_test.go:39: set BE
+
+N   TestMigrationFreezeProbeAndTargetedGate
+--- PASS: TestMigrationFreezeProbeAndTargetedGate (0.01s)
+=== RUN   TestQuickBlockedDuringMigrationFreeze
+coverage: 29.4% of statements
+panic: test timed out after 25m0s
+	running tests:
+		TestQuickBlockedDuringMigrationFreeze (7s)
+
+goroutine 29744 [running]:
+testing.(*M).startAlarm.func1()
+	/Users/dbox/go/pkg/mod/golang.org/toolchain@v0.0.1-go1.26.7.darwin-arm64/src/testing/testing.go:2802 +0x2cc
+created by time.goFunc
+	/Users/dbox/go/pkg/mod/golang.org/toolchain@v0.0.1-go1.26.7.darwin-arm64/src/time/sleep.go:215 +0x38
+
+goroutine 1 [chan receive]:
+testing.(*T).Run(0x9757a3efd48, {0x106381cd2?, 0x13e7370002385c50?}, 0x10b3022e8)
+	/Users/dbox/go/pkg/mod/golang.org/toolchain@v0.0.1-go1.26.7.darwin-arm64/src/testing/testing.go:2109 +0x3bc
+testing.runTests.func1(0x9757a3efd48)
+	/Users/dbox/go/pkg/mod/golang.org/toolchain@v0.0.1-go1.26.7.darwin-arm64/src/testing/testing.go:2585 +0x40
+testing.tRunner(0x9757a3efd48, 0x9757ab1f528)
+	/Users/dbox/go/pkg/mod/golang.org/toolchain@v0.0.1-go1.26.7.darwin-arm64/src/testing/testing.go:2036 +0xc4
+testing.runTests({0x1062fa569, 0x1b}, {0x10635765b, 0x22}, 0x9757988d038, {0x10cd292e0, 0xd93, 0xd93}, {0xffffffffffffffff?, 0x30?, ...})
+	/Users/dbox/go/pkg/mod/golang.org/toolchain@v0.0.1-go1.26.7.darwin-arm64/src/testing/testing.go:2583 +0x3f0
+testing.(*M).Run(0x9757a37e8c0)
+	/Users/dbox/go/pkg/mod/golang.org/toolchain@v0.0.1-go1.26.7.darwin-arm64/src/testing/testing.go:2443 +0x578
+github.com/steveyegge/beads/cmd/bd.runTestsAndSweep({0x10b336e80?, 0x9757a37e8c0?})
+	/Users/dbox/repos/wt/iris/legacy-import-export/cmd/bd/test_repo_beads_guard_test.go:59 +0x44
+github.com/steveyegge/beads/cmd/bd.testMainInner(0x9757a37e8c0)
+	/Users/dbox/repos/wt/iris/legacy-import-export/cmd/bd/test_repo_beads_guard_test.go:389 +0xcd8
+github.com/steveyegge/beads/cmd/bd.TestMain(0x9757a37e8c0)
+	/Users/dbox/repos/wt/iris/legacy-import-export/cmd/bd/test_repo_beads_guard_test.go:76 +0x30
+main.main()
+
+
+InheritedCloexec_Idempotent (0.01s)
+=== RUN   TestMarkInheritedCloexec_ChildDoesNotInherit
+    fdhygiene_unix_test.go:128: fd 4 still present in the child's fd table after marking
+--- FAIL: TestMarkInheritedCloexec_ChildDoesNotInherit (0.02s)
+FAIL
+coverage: 76.7% of statements
+FAIL	github.com/steveyegge/beads/internal/fdhygiene	0.273s
+=== RUN   TestMatchGlob
+=== RUN   TestMatchGlob/design_design
+=== RUN   TestMatchGlob/design_implement
+=== RUN   TestMatchGlob/design_design.draft
+=== RUN   TestMatchGlob/*_design
+=== RUN   TestMatchGlob/*_implement.draft
+=== RUN   TestMatchGlob/*_
+=== RUN   TestMatchGlob/*.implement_shiny.implement
+=== RUN   TestMatchGlob/*.implement_design.implement
+=== RUN   TestMatchGlob/*.implement_implement
+=== RUN   TestMatchGlob/*.implement_shiny.design
+=== RUN   TestMatchGlob/shiny.*_shiny.design
+=== RUN   TestMatchGlob/shiny.*_shiny.implement
+=== RUN   TestMatchGlob/shiny.*_shiny
+=== RUN   TestMatchGlob/shiny.*_enterprise.design
+=== RUN   TestMatchGlob/*.refine-*_implement.refine-1
+=== RUN   TestMatchGlob/*.refine-*_implement.refine-2
+=== RUN   TestMatchGlob/*.refine-*_implement.draft
+--- PASS: TestMatchGlob (0.00s)
+    --- PASS: TestMatchGlob/design_design (0.00s)
+    --- PASS: TestMatchGlob/design_implement (0.00s)
+    --- PASS: TestMatchGlob/design_design.draft (0.00s)
+    --- PASS: TestMatchGlob/*_design (0.00s)
+    --- PASS: TestMatchGlob/*_implement.draft (0.00s)
+    --- PASS: TestMatchGlob/*_ (0.00s)
+    --- PASS: TestMatchGlob/*.implement_shiny.implement (0.00s)
+    --- PASS: TestMatchGlob/*.implement_design.implement (0.00s)
+    --- PASS: TestMatchGlob/*.implement_implement (0.00s)
+    --- PASS: TestMatchGlob/*.implement_shiny.design (0.00s)
+    --- PASS: TestMatchGlob/shiny.*_shiny.design (0.00s)
+    --- PASS: TestMatchGlob/shiny.*_shiny.implement (0.00s)
+    --- PASS: TestMatchGlob/shiny.*_shiny (0.00s)
+    --- PASS: TestMatchGlob/shiny.*_enterprise.design (0.00s)
+    --- PASS: TestMatchGlob/*.refine-*_implement
