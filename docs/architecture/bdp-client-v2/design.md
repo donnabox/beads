@@ -25,6 +25,15 @@ Preview 2 is not the delivery target for the profile reorganization or broad wri
 
 Use asynchronous bounded workers with disjoint write scopes under this interactive session. Vickie retains design decisions, the integration queue and the agent bus. No separate interactive role is needed to begin the editorial and implementation inventories. Concrete implementation assignments follow those inventories and the agreed profile boundaries.
 
+First-round review surfaces:
+
+- [BDP PR66](https://github.com/gastownhall/bdp/pull/66), integration of current PR64/65 with the later fixture vocabulary corrected. At `a9bcf9ed`, the complete bounded suite passes 7,583 tests across 108 files with one optional skip; prior sealed Read cohort remains historical evidence.
+- [BDP PR67](https://github.com/gastownhall/bdp/pull/67), cumulative profile editorial structure. Original clauses/anchors are mapped; section-scoped conformance citation migration and protocol checks are still underway. This is a draft, not a completed conformance audit.
+- [BDP PR68](https://github.com/gastownhall/bdp/pull/68), initial durable mutable reference HTTP surface at `ec9df671`. Targeted tests, process restart/replay smoke and independent code review pass; final combined-tree checks are underway. Development-only, with no full Read+Update or Transactional advertisement.
+
+These PRs are separate review units and none is merged or included in Preview 2. The remaining first-round gates are editorial citation/consistency checks, final runtime validation and the initial CLI operation crosswalk. Subsequent profile completion remains ongoing work after this bounded round.
+
+
 ## Agreed direction
 
 BDP is the provider interface. A provider writes and owns its HTTP endpoint over its chosen store. Our Rust CLI/client is a surface over BDP; commands need not correspond one-to-one with requests. Any provider meeting the required generic BDP capabilities must run the Issues pack without Issue-specific provider code.
