@@ -459,6 +459,11 @@ var proxyCapabilityRegistry = []capabilityRow{
 	refusedPath("compare", "proxy.compare.unsupported", ProxyReasonUnimplemented, "generic graph CLI: gastownhall/beads#6703"),
 	refusedPath("links", "proxy.links.unsupported", ProxyReasonUnimplemented, "generic graph CLI: gastownhall/beads#6703"),
 	refusedPath("unlink", "proxy.unlink.unsupported", ProxyReasonUnimplemented, "generic graph CLI: gastownhall/beads#6703"),
+	refusedPath("link add", "proxy.link.add.unsupported", ProxyReasonDesign, ""),
+	refusedPath("link list", "proxy.link.list.unsupported", ProxyReasonDesign, ""),
+	refusedPath("link show", "proxy.link.show.unsupported", ProxyReasonDesign, ""),
+	refusedPath("link update", "proxy.link.update.unsupported", ProxyReasonDesign, ""),
+	refusedPath("link remove", "proxy.link.remove.unsupported", ProxyReasonDesign, ""),
 
 	// --- versioned history ----------------------------------------------------
 	// `bd versions` is a pure read (issueops.ListVersionsInTx in one read

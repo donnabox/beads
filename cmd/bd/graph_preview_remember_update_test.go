@@ -19,7 +19,6 @@ func selectedRememberCommand(t *testing.T, flags []string) *cobra.Command {
 	}
 	cmd.Flags().Bool("stdin", false, "")
 	cmd.Flags().Bool("create-only", false, "")
-	cmd.Flags().Bool("unconditional", false, "")
 	if err := cmd.ParseFlags(flags); err != nil {
 		t.Fatal(err)
 	}
@@ -73,8 +72,6 @@ func TestGraphPreviewRememberSelectedArgumentAdmission(t *testing.T) {
 		{"create-only", []string{"--id=beads/plan", "--create-only"}, true},
 		{"empty-selected", []string{"--update="}, true},
 		{"guard-only", []string{"--if-revision=observed"}, true},
-		{"unconditional", []string{"--unconditional"}, true},
-		{"false-unconditional", []string{"--unconditional=false"}, true},
 		{"empty-guard", []string{"--if-revision="}, true},
 		{"existing-file", []string{"--body-file=body.md"}, true},
 		{"legacy-key", []string{"--key=plan"}, false},
@@ -121,9 +118,6 @@ func TestGraphPreviewRememberSelectedRefusesBeforeInput(t *testing.T) {
 		code     int
 	}{
 		{"empty-guard", []string{"--update=beads/plan", "--if-revision="}, false, 2},
-		{"both-guards", []string{"--update=beads/plan", "--if-revision=observed", "--unconditional"}, false, 2},
-		{"false-unconditional", []string{"--update=beads/plan", "--unconditional=false"}, false, 2},
-		{"generated-unconditional", []string{"--title=New", "--unconditional"}, false, 5},
 		{"invalid-guard", []string{"--update=beads/plan", "--if-revision=\xff"}, false, 2},
 		{"oversized-guard", []string{"--update=beads/plan", "--if-revision=" + strings.Repeat("x", graphstore.PreviewVersionTokenLimit+1)}, false, 2},
 		{"empty-selector", []string{"--update=", "--if-revision=observed"}, false, 2},

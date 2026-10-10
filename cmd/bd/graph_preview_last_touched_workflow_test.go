@@ -49,7 +49,7 @@ func TestGraphPreviewLastTouchedIssueWorkflow(t *testing.T) {
 			call(initArgs...)
 			graphPolicyCLI(t, bd, work, home, []string{"BD_LAST_TOUCHED_FALLBACK=1"}, "invalid_selector", "close", "--json")
 			graphPolicyCLI(t, bd, work, home, []string{"BD_LAST_TOUCHED_FALLBACK=1"}, "invalid_selector",
-				"update", "--priority", "0", "--unconditional", "--json")
+				"update", "--priority", "0", "--json")
 			call("create", "First", "--id", "first", "--priority", "2")
 			marker("beads/first")
 			call("create", "Second", "--id", "second", "--priority", "1")
@@ -58,11 +58,11 @@ func TestGraphPreviewLastTouchedIssueWorkflow(t *testing.T) {
 			call("show", "memory")
 			marker("beads/second")
 			graphPolicyCLI(t, bd, work, home, []string{"BD_LAST_TOUCHED_FALLBACK=1"}, "invalid_selector",
-				"update", "--properties", `{"title":"Wrong","body":"Target"}`, "--unconditional", "--json")
+				"update", "--properties", `{"title":"Wrong","body":"Target"}`, "--json")
 			marker("beads/second")
 			call("show", "first")
 			marker("beads/first")
-			updated := graphMixedResult[graphstore.IssueMutationResult](t, fallback("update", "--priority", "0", "--unconditional"))
+			updated := graphMixedResult[graphstore.IssueMutationResult](t, fallback("update", "--priority", "0"))
 			if !updated.Changed || updated.Issue.ID != scope+"beads/first" || updated.Issue.Properties.Priority != 0 {
 				t.Fatalf("no-ID update missed the last shown Issue: %+v", updated)
 			}

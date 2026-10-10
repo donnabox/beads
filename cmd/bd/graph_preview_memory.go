@@ -62,13 +62,13 @@ func graphPreviewMemoryProperties(properties map[string]any) (graphstore.Propert
 }
 
 func runGraphPreviewUpdateMemory(cmd *cobra.Command, path string) error {
-	if err := graphPreviewFlags(cmd, "properties", "metadata", "set-metadata", "unset-metadata", "if-revision", "unconditional"); err != nil {
+	if err := graphPreviewFlags(cmd, "properties", "metadata", "set-metadata", "unset-metadata", "if-revision"); err != nil {
 		return err
 	}
 	if !cmd.Flags().Changed("properties") {
 		return graphFailure("invalid_properties", "Memory update requires --properties to explicitly replace title and body", 2)
 	}
-	revision, unconditional, err := graphPreviewRevisionGuard(cmd, false, true)
+	revision, unconditional, err := graphPreviewEditRevisionGuard(cmd)
 	if err != nil {
 		return err
 	}
