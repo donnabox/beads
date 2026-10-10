@@ -697,7 +697,7 @@ func runGraphPreviewShow(cmd *cobra.Command, args []string) error {
 			return outputJSON(result)
 		}
 		if format == "graph-json" {
-			return graphPrintTo(os.Stdout, result, human, quietFlag, true)
+			return graphPrintTo(cmd.OutOrStdout(), result, human, quietFlag, true)
 		}
 		return graphPrint(result, human, quietFlag)
 	})

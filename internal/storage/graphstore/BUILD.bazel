@@ -49,6 +49,7 @@ go_library(
         "//internal/storage",
         "//internal/storage/dberrors",
         "//internal/storage/doltutil",
+        "//internal/storage/domain",
         "//internal/storage/embeddeddolt",
         "//internal/storage/issueops",
         "//internal/storage/schema",
