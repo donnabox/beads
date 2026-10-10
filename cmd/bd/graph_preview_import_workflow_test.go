@@ -44,11 +44,14 @@ func TestGraphPreviewLegacyImportInstalledWorkflow(t *testing.T) {
 			before := call("", "", "list", "--all", "--format", "records-json")
 			for _, input := range []string{
 				string(fixture) + "\n{broken}",
+				"",
+				`{"_schema":"beads-jsonl/1"}`,
+				`{"id":"one-a","title":"a"}` + "\n" + `{"id":"two-b","title":"b"}`,
 				strings.Replace(string(fixture), `"depends_on_id":"legacy-a"`, `"depends_on_id":"absent"`, 1),
 				strings.Replace(string(fixture), `"type":"blocks"`, `"type":"parent-child"`, 1),
 				string(fixture) + `{"_type":"issue","id":"bad","title":"bad","history":[]}`,
-				`{"id":"a","title":"a","dependencies":[{"depends_on_id":"b","type":"blocks"}]}
-{"id":"b","title":"b","dependencies":[{"depends_on_id":"a","type":"blocks"}]}`,
+				`{"id":"old-a","title":"a","dependencies":[{"depends_on_id":"old-b","type":"blocks"}]}
+{"id":"old-b","title":"b","dependencies":[{"depends_on_id":"old-a","type":"blocks"}]}`,
 			} {
 				call(input, "invalid_properties", "import", "-")
 				if got := call("", "", "list", "--all", "--format", "records-json"); got != before {
@@ -57,6 +60,10 @@ func TestGraphPreviewLegacyImportInstalledWorkflow(t *testing.T) {
 			}
 			call(string(fixture), "capability_unavailable", "import", "-", "--allow-stale")
 			call(string(fixture), "capability_unavailable", "import", "-", "--dedup")
+			call(string(fixture), "capability_unavailable", "import", "-", "--global")
+			call("", "invalid_selector", "import", "one", "two")
+			call("", "invalid_properties", "import", "one", "--input", "two")
+			call(strings.Repeat(" ", 16*1024*1024+1), "capability_unavailable", "import", "-")
 			call(string(fixture), "permission_denied", "import", "-", "--readonly")
 			call(string(fixture), "invalid_properties", "import")
 			preview := graphMixedResult[graphstore.LegacyImportResult](t, call(string(fixture), "", "import", "-", "--dry-run"))
@@ -98,6 +105,12 @@ func TestGraphPreviewLegacyImportInstalledWorkflow(t *testing.T) {
 					t.Fatal("repeat import changed data or History")
 				}
 			}
+			fresh := graphMixedResult[graphstore.IssueRecord](t, call("", "", "create", "After import"))
+			if !strings.HasPrefix(fresh.Properties.ID, "legacy-") {
+				t.Fatalf("new Issue prefix: %s", fresh.Properties.ID)
+			}
+			call("", "", "dep", "add", fresh.ID, "legacy-a")
+			call("", "", "dep", "add", "legacy-b", fresh.ID)
 		})
 	}
 }

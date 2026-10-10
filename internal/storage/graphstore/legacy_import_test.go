@@ -6,12 +6,15 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
+	"fmt"
 	"reflect"
 	"sort"
 	"strings"
 	"testing"
 
 	"github.com/steveyegge/beads/internal/legacyimport"
+	"github.com/steveyegge/beads/internal/types"
+	publicops "github.com/steveyegge/beads/issueops"
 )
 
 const legacyImportFixture = `{"_type":"issue","id":"old-a","title":"Prerequisite","priority":0,"status":"closed","issue_type":"task","created_at":"2026-01-01T00:00:00Z","updated_at":"2026-01-02T00:00:00Z","closed_at":"2026-01-02T00:00:00Z","close_reason":"done","created_by":"original","owner":"owner@example.invalid"}
@@ -68,6 +71,11 @@ func legacyImportState(t *testing.T, ctx context.Context, s *Store) map[string]s
 		t.Fatal(err)
 	}
 	state["writer_token"] = token
+	var prefix string
+	if err := s.db.QueryRowContext(ctx, "SELECT value FROM config WHERE `key`='issue_prefix'").Scan(&prefix); err != nil {
+		t.Fatal(err)
+	}
+	state["issue_prefix"] = prefix
 	return state
 }
 
@@ -86,7 +94,7 @@ func TestLegacyImportAtomicityAndPersistence(t *testing.T) {
 			})
 			batch := parseLegacyFixture(t, legacyImportFixture)
 			before := legacyImportState(t, ctx, s)
-			for _, stage := range []string{"import-native", "import-issues", "import-links", "source-catalog", "source-retained", "allocation", "payload", "retained", "import-retained"} {
+			for _, stage := range []string{"coordination", "import-prefix", "import-native", "import-issues", "import-links", "source-catalog", "source-retained", "allocation", "payload", "retained", "import-retained"} {
 				t.Run(stage, func(t *testing.T) {
 					fault := errors.New("injected late import failure")
 					s.afterWrite = func(at string) error {
@@ -151,6 +159,16 @@ func TestLegacyImportAtomicityAndPersistence(t *testing.T) {
 			if err != nil || !reflect.DeepEqual(b, after) {
 				t.Fatalf("reopen lost data: %v", err)
 			}
+			fresh, err := s.CreateIssue(ctx, "beads/new-work", publicops.CreateRequest{Actor: "importer", Issue: &types.Issue{Title: "After import", Priority: 2, Status: types.StatusOpen, IssueType: types.TypeTask}})
+			if err != nil || types.ExtractPrefix(fresh.Properties.ID) != "old-" {
+				t.Fatalf("post-import ID prefix: %+v %v", fresh, err)
+			}
+			for _, pair := range [][2]string{{"beads/new-work", "beads/old-a"}, {"beads/old-b", "beads/new-work"}} {
+				if _, err := s.AddDependency(ctx, DependencyRequest{SourcePath: pair[0], TargetPath: pair[1], Actor: "importer"}); err != nil {
+					t.Fatalf("post-import dependency %v: %v", pair, err)
+				}
+			}
+
 		})
 	}
 }
@@ -179,8 +197,15 @@ func TestLegacyImportValidationRollsBack(t *testing.T) {
 				`{"id":"x","title":"x","no_history":true}`,
 				`{"id":"x","title":"x","lease_expires_at":"2099-01-01T00:00:00Z"}`,
 				`{"id":"x","title":"x","status":"tombstone"}`,
-				`{"id":"a","title":"a","dependencies":[{"depends_on_id":"b","type":"blocks"}]}
-{"id":"b","title":"b","dependencies":[{"depends_on_id":"a","type":"blocks"}]}`,
+				`{"id":"old-a","title":"a","dependencies":[{"depends_on_id":"old-b","type":"blocks"}]}
+{"id":"old-b","title":"b","dependencies":[{"depends_on_id":"old-a","type":"blocks"}]}`,
+				`{"id":"one-a","title":"a"}` + "\n" + `{"id":"two-b","title":"b"}`,
+				`{"id":"old-a","title":"a","bonded_from":[{"proto_id":"p"}]}`,
+				`{"id":"old-a","title":"a","source_formula":"formula"}`,
+				`{"id":"old-a","title":"a","source_location":"steps[0]"}`,
+				`{"id":"old-a","title":"a","storage_class":"versioned"}`,
+				"",
+				`{"_schema":"beads-jsonl/1"}`,
 			} {
 				if _, err := s.ImportLegacy(ctx, parseLegacyFixture(t, input), "importer", false); err == nil {
 					t.Fatalf("accepted %s", input)
@@ -188,6 +213,81 @@ func TestLegacyImportValidationRollsBack(t *testing.T) {
 				if !reflect.DeepEqual(before, legacyImportState(t, ctx, s)) {
 					t.Fatal("invalid import changed graph")
 				}
+			}
+		})
+	}
+}
+
+// These fields appear in ordinary exports but are not exercised by the small
+// producer fixture. Import itself verifies the hydrated native row and retained
+// graph projection before returning, including during rollback-only dry-run.
+func TestLegacyImportFieldFamilies(t *testing.T) {
+	families := map[string]string{
+		"assignment":     `"assignee":"iris","estimated_minutes":20,"external_ref":"gh-123","spec_id":"spec","source_system":"adapter"`,
+		"schedule":       `"status":"deferred","started_at":"2026-01-01T00:00:00Z","defer_until":"2099-01-01T00:00:00Z","due_at":"2099-01-02T00:00:00Z"`,
+		"closing":        `"status":"closed","closed_at":"2026-01-02T00:00:00Z","closed_by_session":"session","close_reason":"finished"`,
+		"context":        `"pinned":true,"is_template":true`,
+		"compaction":     `"compaction_level":1,"compacted_at":"2026-01-02T00:00:00Z","compacted_at_commit":"abc123","original_size":100`,
+		"classification": `"mol_type":"swarm","work_type":"open_competition","wisp_type":"patrol","sender":"original"`,
+		"gate":           `"await_type":"timer","await_id":"timer-1","timeout":60000000000,"waiters":["iris@example.invalid"]`,
+		"event":          `"event_kind":"agent.started","actor":"actor","target":"target","payload":"{\"flag\":true}"`,
+	}
+	for _, backend := range []string{"embedded", "server"} {
+		t.Run(backend, func(t *testing.T) {
+			ctx, o := issueExperimentOptions(t, backend)
+			s, err := OpenExisting(ctx, o)
+			if err != nil {
+				t.Fatal(err)
+			}
+			t.Cleanup(func() {
+				if err := s.Close(); err != nil {
+					t.Error(err)
+				}
+			})
+			before := legacyImportState(t, ctx, s)
+			for name, fields := range families {
+				t.Run(name, func(t *testing.T) {
+					input := `{"id":"old-a","title":"Fields","created_at":"2026-01-01T00:00:00Z","updated_at":"2026-01-02T00:00:00Z",` + fields + `}`
+					if _, err := s.ImportLegacy(ctx, parseLegacyFixture(t, input), "importer", true); err != nil {
+						t.Fatal(err)
+					}
+					if !reflect.DeepEqual(before, legacyImportState(t, ctx, s)) {
+						t.Fatal("field dry-run changed database")
+					}
+				})
+			}
+		})
+	}
+}
+
+func TestLegacyImportCurrentReadLimitRollsBack(t *testing.T) {
+	for _, backend := range []string{"embedded", "server"} {
+		t.Run(backend, func(t *testing.T) {
+			ctx, o := issueExperimentOptions(t, backend)
+			s, err := OpenExisting(ctx, o)
+			if err != nil {
+				t.Fatal(err)
+			}
+			t.Cleanup(func() {
+				if err := s.Close(); err != nil {
+					t.Error(err)
+				}
+			})
+			before := legacyImportState(t, ctx, s)
+			batch := parseLegacyFixture(t, `{"id":"old-a","title":"Large","description":"`+strings.Repeat("x", 9*1024*1024)+`"}`)
+			_, err = s.ImportLegacy(ctx, batch, "importer", false)
+			if !errors.Is(err, ErrLimitExceeded) {
+				t.Fatalf("read-budget error: %v", err)
+			}
+			if !reflect.DeepEqual(before, legacyImportState(t, ctx, s)) {
+				t.Fatal("read-budget refusal left data or prefix")
+			}
+			many := legacyimport.Batch{}
+			for i := 0; i <= PreviewSnapshotLimit; i++ {
+				many.Memories = append(many.Memories, legacyimport.Memory{Key: fmt.Sprintf("key-%d", i), Value: "value"})
+			}
+			if _, err := s.ImportLegacy(ctx, many, "importer", false); !errors.Is(err, ErrLimitExceeded) {
+				t.Fatalf("count-budget error: %v", err)
 			}
 		})
 	}

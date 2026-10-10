@@ -537,7 +537,11 @@ func withGraphStore(fn func(context.Context, *graphstore.Store) (any, string, er
 
 // Output starts only after the operation and ordinary store cleanup succeed.
 func withGraphStoreOutput(fn func(context.Context, *graphstore.Store) (any, string, error), output func(any, string) error) error {
-	ctx, cancel := context.WithTimeout(getRootContext(), 30*time.Second)
+	return withGraphStoreBudget(30*time.Second, fn, output)
+}
+
+func withGraphStoreBudget(budget time.Duration, fn func(context.Context, *graphstore.Store) (any, string, error), output func(any, string) error) error {
+	ctx, cancel := context.WithTimeout(getRootContext(), budget)
 	defer cancel()
 	s, err := graphstore.OpenExisting(ctx, graphOptions(graphPreviewConfig))
 	if err != nil {
@@ -762,6 +766,8 @@ func graphStorageError(err error) error {
 		return graphFailure("capability_unavailable", err.Error(), 5)
 	case errors.Is(err, graphstore.ErrOutcomeUnknown):
 		return graphFailure("outcome_unknown", err.Error()+"; do not automatically replay; inspect the canonical ID before deciding the next action", 6)
+	case errors.Is(err, context.DeadlineExceeded), errors.Is(err, context.Canceled):
+		return graphFailure("capability_unavailable", err.Error(), 5)
 	case errors.Is(err, graphstore.ErrInvalidStore):
 		return graphFailure("invalid_store", err.Error(), 5)
 	case errors.Is(err, graph.ErrValidation):

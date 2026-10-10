@@ -5,6 +5,7 @@ import (
 	"bufio"
 	"bytes"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"io"
 	"reflect"
@@ -19,6 +20,9 @@ import (
 
 // MaxBytes bounds an entire atomic import, rather than each individual line.
 const MaxBytes = 16 * 1024 * 1024
+
+// ErrLimitExceeded distinguishes bounded admission from malformed legacy data.
+var ErrLimitExceeded = errors.New("legacy input limit exceeded")
 
 // Memory is the key/value vocabulary used by ordinary export --include-memories.
 type Memory struct {
@@ -39,7 +43,7 @@ func Parse(r io.Reader) (Batch, error) {
 		return Batch{}, err
 	}
 	if len(data) > MaxBytes {
-		return Batch{}, fmt.Errorf("legacy import exceeds %d bytes", MaxBytes)
+		return Batch{}, fmt.Errorf("%w: legacy import exceeds %d bytes", ErrLimitExceeded, MaxBytes)
 	}
 	if !utf8.Valid(data) {
 		return Batch{}, fmt.Errorf("legacy import must be UTF-8")

@@ -53,11 +53,19 @@ func (s *Store) ImportLegacy(ctx context.Context, input legacyimport.Batch, acto
 		if err := requireEmptyLegacyTarget(ctx, tx); err != nil {
 			return err
 		}
-		if len(batch.Issues)+len(batch.Memories) == 0 {
-			return nil
-		}
 		if err := s.touchCoordination(ctx, tx); err != nil {
 			return err
+		}
+		// A fresh workspace can safely adopt the sole source prefix. Keep it in
+		// this transaction so dry-run/failure never alters future ID allocation.
+		if len(batch.Issues) > 0 {
+			prefix := strings.TrimSuffix(types.ExtractPrefix(batch.Issues[0].ID), "-")
+			if _, err := tx.ExecContext(ctx, "UPDATE config SET value=? WHERE `key`='issue_prefix'", prefix); err != nil {
+				return err
+			}
+			if err := s.afterStage("import-prefix"); err != nil {
+				return err
+			}
 		}
 		infra := issueops.ResolveInfraTypesInTx(ctx, tx)
 		for _, issue := range batch.Issues {
@@ -164,7 +172,10 @@ func (s *Store) ImportLegacy(ctx context.Context, input legacyimport.Batch, acto
 		if err := s.afterStage("import-retained"); err != nil {
 			return err
 		}
-		return checkCurrentReadBytes(ctx, tx)
+		if err := checkCurrentReadBytes(ctx, tx); err != nil {
+			return fmt.Errorf("legacy input's stored representation exceeds the current-read budget: %w", err)
+		}
+		return nil
 	})
 	if err != nil {
 		return LegacyImportResult{}, err
@@ -201,12 +212,16 @@ func prepareLegacyImport(input legacyimport.Batch, actor string) (legacyimport.B
 		return invalid("legacy input: %v", err)
 	}
 	if len(raw) > legacyimport.MaxBytes {
-		return invalid("legacy import exceeds %d bytes", legacyimport.MaxBytes)
+		return legacyimport.Batch{}, fmt.Errorf("%w: legacy import exceeds %d bytes", ErrLimitExceeded, legacyimport.MaxBytes)
 	}
 	var batch legacyimport.Batch
 	if err := json.Unmarshal(raw, &batch); err != nil {
 		return invalid("legacy input: %v", err)
 	}
+	if len(batch.Issues)+len(batch.Memories) == 0 {
+		return invalid("legacy import requires at least one Issue or Memory; source is empty")
+	}
+	prefix := ""
 	ids := map[string]bool{}
 	commentIDs := map[string]bool{}
 	resources := len(batch.Issues) + len(batch.Memories)
@@ -220,9 +235,20 @@ func prepareLegacyImport(input legacyimport.Batch, actor string) (legacyimport.B
 		if ids[issue.ID] {
 			return invalid("duplicate Issue ID %q", issue.ID)
 		}
+		issuePrefix := types.ExtractPrefix(issue.ID)
+		if issuePrefix == "" || issuePrefix == "-" {
+			return invalid("Issue %s requires a nonempty ordinary ID prefix", issue.ID)
+		}
+		if prefix != "" && prefix != issuePrefix {
+			return invalid("legacy import requires one Issue ID prefix; %s differs from %s", issue.ID, prefix)
+		}
+		prefix = issuePrefix
 		ids[issue.ID] = true
-		if issue.Ephemeral || issue.NoHistory || issue.StorageClass.Normalize() == types.StorageClassEphemeral || issue.StorageClass.Normalize() == types.StorageClassUnversioned || issue.LeaseExpiresAt != nil || issue.HeartbeatAt != nil || issue.LeaseGrantedNode != "" {
-			return invalid("Issue %s has unsupported ephemeral, no-history or live lease data", issue.ID)
+		if len(issue.BondedFrom) != 0 || issue.SourceFormula != "" || issue.SourceLocation != "" {
+			return invalid("Issue %s has unsupported bonded_from, source_formula or source_location lineage", issue.ID)
+		}
+		if issue.Ephemeral || issue.NoHistory || issue.StorageClass != "" || issue.LeaseExpiresAt != nil || issue.HeartbeatAt != nil || issue.LeaseGrantedNode != "" {
+			return invalid("Issue %s has unsupported ephemeral, no-history, explicit storage-class or live lease data", issue.ID)
 		}
 		if issue.Status == "tombstone" {
 			return invalid("tombstone %s is unsupported", issue.ID)
@@ -274,7 +300,7 @@ func prepareLegacyImport(input legacyimport.Batch, actor string) (legacyimport.B
 			resources++
 		}
 		if len(issue.Dependencies) > PreviewOwnedLinkLimit {
-			return invalid("Issue %s exceeds owned Link limit", issue.ID)
+			return legacyimport.Batch{}, fmt.Errorf("%w: Issue %s exceeds owned Link limit", ErrLimitExceeded, issue.ID)
 		}
 		for _, comment := range issue.Comments {
 			if comment == nil {
@@ -312,7 +338,7 @@ func prepareLegacyImport(input legacyimport.Batch, actor string) (legacyimport.B
 		ids[memory.Key] = true
 	}
 	if resources > PreviewSnapshotLimit {
-		return invalid("legacy import exceeds preview limit of %d Beads and Links", PreviewSnapshotLimit)
+		return legacyimport.Batch{}, fmt.Errorf("%w: legacy import exceeds preview limit of %d Beads and Links", ErrLimitExceeded, PreviewSnapshotLimit)
 	}
 	return batch, nil
 }

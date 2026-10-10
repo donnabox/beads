@@ -135,9 +135,9 @@ go_test(
     shard_count = 8,
     deps = [
         "//graphops",
-        "//internal/legacyimport",
         "//internal/config",
         "//internal/graphpatch",
+        "//internal/legacyimport",
         "//internal/storage",
         "//internal/storage/domain",
         "//internal/storage/issueops",

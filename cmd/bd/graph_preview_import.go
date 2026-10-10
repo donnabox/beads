@@ -2,8 +2,10 @@ package main
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"io"
+	"time"
 
 	"github.com/spf13/cobra"
 	"github.com/steveyegge/beads/internal/legacyimport"
@@ -32,9 +34,12 @@ func runGraphPreviewImport(cmd *cobra.Command, args []string) error {
 func runGraphPreviewImportReader(reader io.Reader, source string) error {
 	batch, err := legacyimport.Parse(reader)
 	if err != nil {
+		if errors.Is(err, legacyimport.ErrLimitExceeded) {
+			return graphStorageError(fmt.Errorf("%w: %w", graphstore.ErrLimitExceeded, err))
+		}
 		return graphFailure("invalid_properties", err.Error(), 2)
 	}
-	return withGraphStore(func(ctx context.Context, s *graphstore.Store) (any, string, error) {
+	return withGraphStoreBudget(5*time.Minute, func(ctx context.Context, s *graphstore.Store) (any, string, error) {
 		result, err := s.ImportLegacy(ctx, batch, getActorWithGit(), importDryRun)
 		if err != nil {
 			return nil, "", err
@@ -44,5 +49,7 @@ func runGraphPreviewImportReader(reader io.Reader, source string) error {
 			action = "Would import"
 		}
 		return result, fmt.Sprintf("%s %d Issues, %d Memories, %d Dependencies and %d comments from %s. Source history is not present in legacy exports.", action, result.Issues, result.Memories, result.Dependencies, result.Comments, source), nil
+	}, func(result any, human string) error {
+		return graphPrint(result, human, quietFlag)
 	})
 }

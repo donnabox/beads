@@ -40,11 +40,11 @@ also accepted. With `--include-memories`, exports additionally contain
 `_type: "memory"`, `key` and `value` records. A standalone historical `_schema`
 header with `_schema: "beads-jsonl/1"` is accepted; optional `_dolt_branch`,
 `_dolt_commit`, `_project_id` and `_sort` provenance strings are read as a header
-and do not recreate source history. Blank lines are ignored.
+and do not recreate source history. Blank lines are ignored. Other schema versions/provenance keys refuse; graph import deliberately admits a narrower subset than ordinary import. Empty or header-only sources refuse.
 
 | Data | Graph import behavior |
 | --- | --- |
-| Issue IDs | Required and preserved as the underlying Issue ID. The graph identity is `SCOPE/beads/ID`; the result maps each source ID to its graph URL. A source ID must form a valid local Bead path. |
+| Issue IDs | Required and preserved as the underlying Issue ID. The graph identity is `SCOPE/beads/ID`; the result maps each source ID to its graph URL. All Issue IDs must have one nonempty ordinary prefix and form valid local Bead paths. Import atomically sets the fresh workspace's Issue prefix to that source prefix, so later creates and dependencies continue to work; dry-run rolls that change back. |
 | Current Issue content and workflow fields | Preserved using the ordinary Issue writer. Missing status/type default to open/task; missing timestamps are filled at import. Omitted priority remains P0, matching ordinary import. Invalid statuses, types or values refuse. Fields that storage cannot represent exactly refuse the whole import. |
 | Issue metadata | Preserved as common graph metadata. It must meet graph JSON-object validation; array/scalar metadata and duplicate keys refuse. JSON formatting and object key order are canonicalized. |
 | Labels | Preserved as a set. Storage representation that loses values refuses. |
@@ -54,11 +54,15 @@ and do not recreate source history. Blank lines are ignored.
 | Legacy memories | A key/value record becomes a Memory at `SCOPE/beads/KEY`, with title `KEY`, body `VALUE` and empty metadata. The key must form a valid local Bead path and cannot collide with another imported identity. The result maps keys to URLs. |
 | Counts, content hashes and readiness | Exported dependency/dependent/comment counts and readiness are projections; recomputed from accepted data. |
 | Source history | Ordinary export contains no retained revisions, events or Dolt history. Each imported Bead and Link starts new retained graph history; import attribution names the importing actor. Earlier source history is neither reconstructed nor advertised as preserved. |
-| Ephemeral, no-history and live leases | Refused. Import does not recreate active claims or change storage planes. |
+| Compound lineage | Nonempty `bonded_from`, `source_formula` and `source_location` refuse because ordinary storage does not persist them. |
+| Ephemeral, no-history, live leases and explicit storage-class markers | Refused (including an explicit `versioned` marker that the ordinary writer normalizes away). Import does not recreate active claims or change storage planes. |
 | Tombstones, graph records and unknown fields | Refused. This stage imports the existing format only. Graph-format import follows graph export. |
 
-Import is bounded to 16 MiB of input and 1,000 total Beads and Links, and must
-fit the preview's current-read budget. It does not split a large input into
+Admission rejects input above 16 MiB, JSON deeper than 128 levels, and more than
+1,000 total Beads and Links. These are rejection ceilings, not guaranteed accepted
+sizes: persisted payloads, relations and retained snapshots must also fit the
+16 MiB current-read budget. That check can refuse a smaller input after staging
+it; the entire transaction rolls back. Size refusals use `capability_unavailable`. It does not split a large input into
 partially committed chunks. Engine errors and timeout roll back before commit;
 an uncertain commit outcome is reported as `outcome_unknown`, without automatic
 replay. Inspect the destination before deciding what to do after that error.
