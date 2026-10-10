@@ -75,7 +75,9 @@ To require an existing Memory, keep using --update instead of --id:
 Omitted fields remain unchanged on update. Use --body-file PATH or --stdin
 instead of positional body text. An existing-ID update accepts the current
 revision by default; add --if-revision TOKEN to reject a stale update. Read
-the token with bd show policy --json.`},
+the token with bd show policy --json. --replace-properties JSON replaces all
+Memory properties where the Type permits it, and --replace-metadata JSON
+replaces all metadata; {} clears the selected document.`},
 		{memoriesCmd, `Search Memory titles and bodies with bd memories [SEARCH].
 Use --all for a complete bounded result, --details for version/Link counts,
 or --format records-json for machine-readable summaries. --json is unavailable;
@@ -92,17 +94,20 @@ metadata is {}. Metadata is separate from Type-validated properties.
 --properties JSON initializes the selected Type's writable fields, such as
 Issue description or Memory body. It may accompany shorthand flags only when
 they supply different fields; duplicate fields refuse.
-Use --bead-type types/preview-memory-v2 to create a Memory instead:
-  bd create --bead-type types/preview-memory-v2 --id policy --body 'Code flow policy'
-Use bd types to see Bead Types installed in this workspace. Both types/NAME
-and full local Type URLs work. --type remains the Issue classification
+Use --bead-type preview-memory-v2 to create a Memory instead:
+  bd create --bead-type preview-memory-v2 --id policy --body 'Code flow policy'
+Use bd types to see Bead Types installed in this workspace. A short NAME,
+types/NAME, or a full local Type URL works. --type remains the Issue classification
 (for example task or bug), not the Bead Type. Memory creation
 accepts body/description/message and an optional title; unsupported Issue-only
 fields refuse.`},
 		{showCmd, `Use bd show ID (equivalent to beads/ID) for a current Memory or
 Issue; use bd show links/ID for a Link. --version TOKEN selects one exact
-retained record; this is not
-an ordered history listing. --json returns the experimental graph record.
+retained record; this is not an ordered history listing. A current Issue's
+--json uses the ordinary detail array with Scope-relative Bead IDs and its
+graph revision token. Memory, Link, and exact --version reads use the
+experimental graph envelope; --format graph-json explicitly requests that
+envelope for a current Issue too. graph-json is not a BDP Resource format.
 Showing an Issue makes it the last-touched Issue for interactive update/close;
 showing a Memory or Link does not.`},
 		{updateCmd, `Use bd remember --update ID for selected Memory title/body
@@ -110,7 +115,11 @@ edits. --properties JSON shallowly merges named top-level properties on an
 Issue, Memory, or informational Link, preserving omitted keys. The same flag
 initializes properties on bd create and bd remember. For example:
   bd update policy --properties '{"body":"Revised text"}' --if-revision TOKEN
-An empty object is a no-op. --patch applies ordered add/replace/remove property
+An empty merge object is a no-op. --replace-properties JSON replaces all
+writable properties, and --replace-metadata JSON replaces all metadata; {}
+clears the selected document where the Type allows it. The replacement flags
+cannot combine with merge, patch, or key edits for the same document, but
+property and metadata changes can be made atomically. --patch applies ordered add/replace/remove property
 operations, including on writable native Issue scalar properties.
 --metadata merges a JSON object's top-level keys; --set-metadata KEY=VALUE
 sets one typed JSON value and --unset-metadata KEY removes one key. Set and

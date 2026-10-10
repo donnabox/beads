@@ -28,8 +28,8 @@ func TestGraphPreviewHelpDocumentsPlaytestCommands(t *testing.T) {
 		cmd  *cobra.Command
 		want []string
 	}{
-		{"remember", rememberCmd, []string{"Graph preview workspaces:", "bd remember 'Revised policy' --id policy", "bd remember 'Revised policy' --update policy", "--create-only", "--if-revision TOKEN", "Omitted fields remain unchanged"}},
-		{"create", createCmd, []string{"Graph preview workspaces:", "--bead-type types/preview-memory-v2", "--id policy", "--properties JSON"}},
+		{"remember", rememberCmd, []string{"Graph preview workspaces:", "bd remember 'Revised policy' --id policy", "bd remember 'Revised policy' --update policy", "--create-only", "--if-revision TOKEN", "--replace-properties", "--replace-metadata", "Omitted fields remain unchanged"}},
+		{"create", createCmd, []string{"Graph preview workspaces:", "--bead-type preview-memory-v2", "--id policy", "--properties JSON", "types/NAME"}},
 		{"dep", depCmd, []string{"Graph preview workspaces:", "bd dep BLOCKER --blocks BLOCKED", "--no-cycle-check"}},
 		{"link", linkCmd, []string{
 			"Graph preview workspaces:", "--link-type types/example-cites", "Memory or Issue",
@@ -39,7 +39,8 @@ func TestGraphPreviewHelpDocumentsPlaytestCommands(t *testing.T) {
 			"The blocking Type types/preview-blocks-v1", "unlike informational Types, one of",
 			"--if-source-revision TOKEN or --unconditional-source.",
 		}},
-		{"update", updateCmd, []string{"Graph preview workspaces:", "--properties", "--if-revision TOKEN"}},
+		{"show", showCmd, []string{"Graph preview workspaces:", "ordinary detail array", "--format graph-json"}},
+		{"update", updateCmd, []string{"Graph preview workspaces:", "--properties", "--replace-properties", "--replace-metadata", "--if-revision TOKEN"}},
 		{"unclaim", unclaimCmd, []string{"Graph preview workspaces:", "bd unclaim ID...", "--force", "--if-assignee HOLDER", "--reason TEXT", "bd comments ID"}},
 		{"comments", commentsCmd, []string{"Graph preview workspaces:", "bd comments ID", "outside the", "Issue version"}},
 		{"list", listCmd, []string{"Graph preview workspaces:", "all installed Bead Types", "--bead-type types/NAME", "Issue-specific filters", "newest recorded change first", "hidden unless --all is given", "--all also removes the row limit", "BEADS_MAX_ROWS refuses a page of more Beads", "--sort, --reverse", "Issues only", "a line under the header saying Memories are", "it is simply not"}},
