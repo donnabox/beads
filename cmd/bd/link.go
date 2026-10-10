@@ -13,11 +13,15 @@ import (
 var linkCmd = &cobra.Command{
 	Use:     "link <id1> <id2>",
 	GroupID: "issues",
-	Short:   "Link two issues with a dependency",
+	Short:   "Manage Links; bare SOURCE TARGET links two Issues",
 	Long: `Link two issues with a dependency.
 
 Shorthand for 'bd dep add <id1> <id2>'. By default creates a "blocks"
 dependency (id2 blocks id1). Use --type to specify a different relationship.
+
+In a graph preview workspace, use 'bd link add SOURCE TARGET --link-type
+types/NAME' for an explicitly typed Link, then 'bd link list', 'show',
+'update' or 'remove'. The bare two-ID form keeps its blocking-Issue default.
 
 Examples:
   bd link bd-123 bd-456                    # bd-456 blocks bd-123

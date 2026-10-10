@@ -89,11 +89,11 @@ func TestGraphPreviewIssueClaimWorkflow(t *testing.T) {
 			}
 			refuse("constraint_violation", "update", "beads/work", "--claim", "--actor", "foreign")
 			refuse("invalid_properties", "update", "beads/work", "--claim=false", "--actor", "rig.agent")
-			refuse("invalid_properties", "update", "beads/work", "--claim=false", "--priority=0", "--unconditional")
+			refuse("invalid_properties", "update", "beads/work", "--claim=false", "--priority=0")
 			refuse("capability_unavailable", "update", "beads/work", "--claim", "--priority=0")
 			refuse("capability_unavailable", "update", "beads/work", "--claim", "--assignee=other")
 			refuse("capability_unavailable", "update", "beads/work", "--claim", "--if-revision", current.Revision)
-			refuse("capability_unavailable", "update", "beads/work", "--claim", "--patch=[]", "--unconditional")
+			refuse("capability_unavailable", "update", "beads/work", "--claim", "--patch=[]")
 			refuse("permission_denied", "update", "beads/work", "--claim", "--readonly")
 			refuse("invalid_properties", "update", "beads/context", "--claim")
 			refuse("invalid_selector", "update", "links/context", "--claim")

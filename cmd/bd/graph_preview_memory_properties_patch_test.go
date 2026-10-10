@@ -131,10 +131,10 @@ func TestGraphPreviewMemoryPropertiesPatchRequest(t *testing.T) {
 	oldActor := actor
 	t.Cleanup(func() { actor = oldActor })
 	actor = "patch-author"
-	for _, flags := range [][]string{{"--if-revision=observed"}, {"--unconditional"}} {
+	for _, flags := range [][]string{{"--if-revision=observed"}, {}} {
 		cmd := memoryPropertiesPatchCommand(t, append([]string{"--patch=" + memoryPropertiesPatchExample}, flags...)...)
 		request, err := graphPreviewMemoryPropertiesPatchRequest(cmd, "beads/plan")
-		if err != nil || request.Path != "beads/plan" || request.Actor != "patch-author" || !bytes.Equal(request.Patch, []byte(memoryPropertiesPatchExample)) || request.Unconditional != (flags[0] == "--unconditional") || (!request.Unconditional && request.ExpectedRevision != "observed") {
+		if err != nil || request.Path != "beads/plan" || request.Actor != "patch-author" || !bytes.Equal(request.Patch, []byte(memoryPropertiesPatchExample)) || request.Unconditional != (len(flags) == 0) || (!request.Unconditional && request.ExpectedRevision != "observed") {
 			t.Fatalf("patch request lost intent: %+v %v", request, err)
 		}
 	}
@@ -162,26 +162,23 @@ func TestGraphPreviewMemoryPropertiesPatchRefusesBeforeInput(t *testing.T) {
 		readonly    bool
 		code        int
 	}{
-		{"missing-selector", nil, []string{"--unconditional"}, false, 2},
-		{"multiple-selectors", []string{"beads/a", "beads/b"}, []string{"--unconditional"}, false, 2},
-		{"foreign-selector", []string{"https://foreign.invalid/beads/a"}, []string{"--unconditional"}, false, 2},
-		{"unsupported-selector", []string{"alias/old-id"}, []string{"--unconditional"}, false, 2},
-		{"link-selector", []string{"links/context"}, []string{"--unconditional", "--properties={}"}, false, 5},
-		{"missing-guard", []string{"beads/plan"}, nil, false, 2},
+		{"missing-selector", nil, []string{}, false, 2},
+		{"multiple-selectors", []string{"beads/a", "beads/b"}, []string{}, false, 2},
+		{"foreign-selector", []string{"https://foreign.invalid/beads/a"}, []string{}, false, 2},
+		{"unsupported-selector", []string{"alias/old-id"}, []string{}, false, 2},
+		{"link-selector", []string{"links/context"}, []string{"--properties={}"}, false, 5},
 		{"empty-guard", []string{"beads/plan"}, []string{"--if-revision="}, false, 2},
-		{"both-guards", []string{"beads/plan"}, []string{"--if-revision=old", "--unconditional"}, false, 2},
-		{"false-unconditional", []string{"beads/plan"}, []string{"--unconditional=false"}, false, 2},
 		{"invalid-guard", []string{"beads/plan"}, []string{"--if-revision=\xff"}, false, 2},
 		{"oversized-guard", []string{"beads/plan"}, []string{"--if-revision=" + strings.Repeat("x", graphstore.PreviewVersionTokenLimit+1)}, false, 2},
-		{"replacement-conflict", []string{"beads/plan"}, []string{"--unconditional", "--properties={}"}, false, 5},
-		{"Issue-title-conflict", []string{"beads/work"}, []string{"--unconditional", "--title=Issue"}, false, 5},
+		{"replacement-conflict", []string{"beads/plan"}, []string{"--properties={}"}, false, 5},
+		{"Issue-title-conflict", []string{"beads/work"}, []string{"--title=Issue"}, false, 5},
 		{"claim-conflict", []string{"beads/work"}, []string{"--claim=true"}, false, 5},
 		{"false-claim-conflict", []string{"beads/work"}, []string{"--claim=false"}, false, 5},
-		{"source-guard", []string{"beads/plan"}, []string{"--unconditional", "--if-source-revision=old"}, false, 5},
-		{"false-source-unconditional", []string{"beads/plan"}, []string{"--unconditional", "--unconditional-source=false"}, false, 5},
-		{"notes-conflict", []string{"beads/plan"}, []string{"--unconditional", "--notes="}, false, 5},
-		{"request-status-unavailable", []string{"beads/plan"}, []string{"--unconditional", "--request-id=id"}, false, 5},
-		{"readonly", []string{"beads/plan"}, []string{"--unconditional"}, true, 5},
+		{"source-guard", []string{"beads/plan"}, []string{"--if-source-revision=old"}, false, 5},
+		{"false-source-unconditional", []string{"beads/plan"}, []string{"--unconditional-source=false"}, false, 5},
+		{"notes-conflict", []string{"beads/plan"}, []string{"--notes="}, false, 5},
+		{"request-status-unavailable", []string{"beads/plan"}, []string{"--request-id=id"}, false, 5},
+		{"readonly", []string{"beads/plan"}, []string{}, true, 5},
 	} {
 		t.Run(tc.name, func(t *testing.T) {
 			readonlyMode = tc.readonly
@@ -202,7 +199,7 @@ func TestGraphPreviewMemoryPropertiesPatchRefusesBeforeInput(t *testing.T) {
 			t.Fatal(err)
 		}
 		t.Setenv("BD_MIGRATION_FREEZE_FILE", freeze)
-		cmd := memoryPropertiesPatchCommand(t, "--patch=@-", "--unconditional")
+		cmd := memoryPropertiesPatchCommand(t, "--patch=@-")
 		probe := &memoryPropertiesPatchProbe{}
 		cmd.SetIn(probe)
 		err := runGraphPreviewUpdate(cmd, []string{"beads/plan"})
@@ -255,7 +252,7 @@ func TestGraphPreviewMemoryPropertiesPatchSyntaxBeforeStore(t *testing.T) {
 		{"missing-file", "@" + filepath.Join(t.TempDir(), "missing.json")},
 	} {
 		t.Run(tc.name, func(t *testing.T) {
-			cmd := memoryPropertiesPatchCommand(t, "--patch="+tc.input, "--unconditional")
+			cmd := memoryPropertiesPatchCommand(t, "--patch="+tc.input)
 			probe := &memoryPropertiesPatchProbe{}
 			cmd.SetIn(probe)
 			err := runGraphPreviewUpdate(cmd, []string{"beads/plan"})

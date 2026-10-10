@@ -70,6 +70,20 @@ func graphPreviewRevisionGuard(cmd *cobra.Command, source, required bool) (strin
 	return revision, unconditional, nil
 }
 
+// Ordinary edits use the current predecessor when no comparison was asked for.
+// The writer still checks a supplied token atomically and records the actual
+// replaced version. Destructive commands retain their separate explicit guard.
+func graphPreviewEditRevisionGuard(cmd *cobra.Command) (string, bool, error) {
+	if !cmd.Flags().Changed("if-revision") {
+		return "", true, nil
+	}
+	revision, _ := cmd.Flags().GetString("if-revision")
+	if revision == "" {
+		return "", false, graphFailure("invalid_selector", "--if-revision requires a nonempty revision token", 2)
+	}
+	return revision, false, nil
+}
+
 // The old name remains a hidden compatibility alias for existing scripts.
 func registerGraphLinkTypeFlag(cmd *cobra.Command) {
 	cmd.Flags().String("link-type", "", "Installed Link Type: types/NAME or full local URL (graph preview only)")
@@ -191,7 +205,7 @@ func runGraphPreviewUpdateLink(cmd *cobra.Command, args []string) error {
 	if err := graphPreviewWritePolicy(); err != nil {
 		return err
 	}
-	if err := graphPreviewFlags(cmd, "properties", "metadata", "set-metadata", "unset-metadata", "if-revision", "unconditional", "if-source-revision", "unconditional-source"); err != nil {
+	if err := graphPreviewFlags(cmd, "properties", "metadata", "set-metadata", "unset-metadata", "if-revision", "if-source-revision", "unconditional-source"); err != nil {
 		return err
 	}
 	if len(args) != 1 {
@@ -207,7 +221,7 @@ func runGraphPreviewUpdateLink(cmd *cobra.Command, args []string) error {
 	if !cmd.Flags().Changed("properties") {
 		return graphFailure("invalid_properties", "Link update requires --properties to explicitly replace the complete properties object", 2)
 	}
-	revision, unconditional, err := graphPreviewRevisionGuard(cmd, false, true)
+	revision, unconditional, err := graphPreviewEditRevisionGuard(cmd)
 	if err != nil {
 		return err
 	}
