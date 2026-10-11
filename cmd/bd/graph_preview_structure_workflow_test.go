@@ -28,6 +28,35 @@ func TestGraphPreviewDependencyRowCapGate(t *testing.T) {
 	}
 }
 
+func TestGraphPreviewDepTreeBothDistinguishesDirections(t *testing.T) {
+	bd := buildBDUnderTest(t)
+	work, home := t.TempDir(), t.TempDir()
+	const scope = "https://example.invalid/tree-directions/"
+	graphPolicyCLI(t, bd, work, home, nil, "", "init", "--graph-mode", "link", "--prefix", "demo", "--scope-url", scope, "--skip-hooks", "--skip-agents", "--non-interactive", "--json")
+	for _, issue := range []struct{ id, title string }{
+		{"beads/root", "Root"},
+		{"beads/blocker", "Blocker"},
+		{"beads/dependent", "Dependent"},
+	} {
+		graphPolicyCLI(t, bd, work, home, nil, "", "create", issue.title, "--id", issue.id, "--json")
+	}
+	graphPolicyCLI(t, bd, work, home, nil, "", "dep", "add", "beads/root", "beads/blocker", "--json")
+	graphPolicyCLI(t, bd, work, home, nil, "", "dep", "add", "beads/dependent", "beads/root", "--json")
+
+	got := strings.TrimSpace(graphPolicyCLI(t, bd, work, home, nil, "", "dep", "tree", "root", "--direction", "both"))
+	want := strings.Join([]string{
+		"Blocking dependency tree for beads/root (both; graph preview)",
+		"beads/root  Root",
+		"Dependencies (what beads/root depends on):",
+		"  beads/blocker  Blocker",
+		"Dependents (what depends on beads/root):",
+		"  beads/dependent  Dependent",
+	}, "\n")
+	if got != want {
+		t.Fatalf("both-direction tree must separate blockers from dependents\nwant:\n%s\ngot:\n%s", want, got)
+	}
+}
+
 func TestGraphPreviewStructureReads(t *testing.T) {
 	bd := buildBDUnderTest(t)
 	work, home := t.TempDir(), t.TempDir()

@@ -180,12 +180,13 @@ func runGraphPreviewDepTree(cmd *cobra.Command, args []string) error {
 		if !g.hasIssue(root) {
 			return nil, "", graphstore.ErrNotFound
 		}
-		var nodes []graphDependencyTreeNode
+		var nodes, dependencies, dependents []graphDependencyTreeNode
 		if direction == "both" {
-			nodes = append(nodes, g.tree(root, "down", maxDepth)...)
-			up := g.tree(root, "up", maxDepth)
-			if len(up) > 1 {
-				nodes = append(nodes, up[1:]...)
+			dependencies = g.tree(root, "down", maxDepth)
+			dependents = g.tree(root, "up", maxDepth)
+			nodes = append(nodes, dependencies...)
+			if len(dependents) > 1 {
+				nodes = append(nodes, dependents[1:]...)
 			}
 		} else {
 			nodes = g.tree(root, direction, maxDepth)
@@ -205,8 +206,29 @@ func runGraphPreviewDepTree(cmd *cobra.Command, args []string) error {
 		}
 		var human strings.Builder
 		fmt.Fprintf(&human, "Blocking dependency tree for %s (%s; graph preview)\n", path, direction)
-		for _, node := range nodes {
+		writeNode := func(node graphDependencyTreeNode) {
 			fmt.Fprintf(&human, "%s%s  %s\n", strings.Repeat("  ", node.Depth), graphPreviewDisplayLocalURL(node.Issue.ID), node.Issue.Properties.Title)
+		}
+		if direction == "both" {
+			writeNode(nodes[0])
+			fmt.Fprintf(&human, "Dependencies (what %s depends on):\n", path)
+			if len(dependencies) == 1 {
+				human.WriteString("  (none)\n")
+			}
+			for _, node := range dependencies[1:] {
+				writeNode(node)
+			}
+			fmt.Fprintf(&human, "Dependents (what depends on %s):\n", path)
+			if len(dependents) == 1 {
+				human.WriteString("  (none)\n")
+			}
+			for _, node := range dependents[1:] {
+				writeNode(node)
+			}
+		} else {
+			for _, node := range nodes {
+				writeNode(node)
+			}
 		}
 		return nodes, strings.TrimSuffix(human.String(), "\n"), nil
 	})
