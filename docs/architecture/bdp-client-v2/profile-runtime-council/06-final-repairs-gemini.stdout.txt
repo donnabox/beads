@@ -1,0 +1,132 @@
+### Findings
+
+#### Proven Defects
+
+##### [Medium] Stale Action and Assertion Counts in Implementation Progress Report
+- **File & Section**: [`docs/design/update-implementation-progress.md`](file:///Users/dbox/repos/wt/vickie/bdp-integration-logs/profile-runtime-council/docs/design/update-implementation-progress.md#L353-L364)
+- **Concrete Issue**: The narrative in [`docs/design/update-implementation-progress.md`](file:///Users/dbox/repos/wt/vickie/bdp-integration-logs/profile-runtime-council/docs/design/update-implementation-progress.md#L353-L364) records:
+  > *"The inventory has 54 bounded rows and 27 omissions, with 25 plans, 253 actions and 797 assertions... Validation: 102 focused tests passed... The saved non-attesting report records all 797 assertions passing."*
+  
+  In this frozen commit, [`packages/conformance/development/README.md#L7`](file:///Users/dbox/repos/wt/vickie/bdp-integration-logs/profile-runtime-council/packages/conformance/development/README.md#L7) correctly inventories **264 HTTP/lifecycle actions**, and [`packages/conformance/development/read-update-manifest-v1.json`](file:///Users/dbox/repos/wt/vickie/bdp-integration-logs/profile-runtime-council/packages/conformance/development/read-update-manifest-v1.json) defines:
+  - 221 baseline actions
+  - 32 actions in the two new process scenarios (`process-pending`: 20, `process-interleaving`: 12)
+  - 11 explicit alias witness actions added to existing scenarios (`alias-retained-reference`: 6, `alias-recorded-miss`: 3, `alias-pinned-reference`: 2)
+  
+  Total manifest actions: $221 + 32 + 11 = 264$.
+  
+  The documented counts ($253$ actions, $797$ assertions) were tallied when only the two process scenarios were present ($221 + 32 = 253$ actions; $705 \text{ base} + 1 \text{ allocation diff} + 64 \text{ pending} + 27 \text{ interleaving} = 797$ assertions) and failed to incorporate the subsequent 11 alias witness actions (which add 29 assertions, totaling ~826 assertions). The saved report claim does not match the actual manifest state in head.
+- **Reachable Trigger**: Inspection or CI auditing comparing `read-update-manifest-v1.json` or matrix output against the figures in `update-implementation-progress.md`.
+- **Impact**: Progress documentation and attestation claims cite stale run metrics that do not witness the 11 alias state witness actions present in the manifest.
+- **Fix / Next Step**: Re-run the matrix against the complete 264-action manifest, update `docs/design/update-implementation-progress.md` with 264 actions and the corresponding assertion total (~826 assertions), and refresh the serialized report.
+
+---
+
+##### [Low] Multi-Alias Heading Prefix Truncates Preceding Anchor Excerpts
+- **File & Section**: [`packages/conformance/src/markdown.ts#L48-L56`](file:///Users/dbox/repos/wt/vickie/bdp-integration-logs/profile-runtime-council/packages/conformance/src/markdown.ts#L48-L56)
+- **Concrete Issue**: In [`markdownAnchors`](file:///Users/dbox/repos/wt/vickie/bdp-integration-logs/profile-runtime-council/packages/conformance/src/markdown.ts#L11), heading aliasing is evaluated as:
+  ```ts
+  const aliasesHeading =
+    next !== undefined && markdown.slice(match.index + match[0].length, next.index).trim() === "";
+  ```
+  If multiple explicit anchors precede a single heading sequentially (e.g. `<a id="alias-1"></a>\n<a id="alias-2"></a>\n### Heading`), the slice between `alias-1` and `Heading` contains `<a id="alias-2"></a>`. `trim() === ""` is `false` for `alias-1`. Consequently, `alias-1` is classified as an interior anchor rather than an alias, setting `end: next.index` (the offset of `### Heading`). Citations pointing to `alias-1` receive only the whitespace and HTML tag between the anchors, entirely excluding the heading and section body.
+- **Reachable Trigger**: Authoring more than one explicit anchor before a heading in specification documents and citing the earlier anchor.
+- **Impact**: Any catalog requirement referencing the non-immediate alias fails catalog citation validation (`CatalogValidationError`) because the section body is truncated before the heading text starts.
+- **Fix / Next Step**: Allow `aliasesHeading` to recognize preceding siblings by stripping whitespace and preceding standalone `<a\s+[^>]*><\/a>` tags from the slice between `match.index + match[0].length` and `next.index`.
+
+---
+
+##### [Low] Discrepancy in Allocation Noncollision Assertion Target
+- **File & Section**: [`packages/conformance/development/read-update-manifest-v1.json#L6741`](file:///Users/dbox/repos/wt/vickie/bdp-integration-logs/profile-runtime-council/packages/conformance/development/read-update-manifest-v1.json#L6741), [`packages/conformance/development/read-update-manifest-v1.json#L6774-L6780`](file:///Users/dbox/repos/wt/vickie/bdp-integration-logs/profile-runtime-council/packages/conformance/development/read-update-manifest-v1.json#L6774-L6780), and [`packages/conformance/development/read-update-coverage-v1.json#L451`](file:///Users/dbox/repos/wt/vickie/bdp-integration-logs/profile-runtime-council/packages/conformance/development/read-update-coverage-v1.json#L451)
+- **Concrete Issue**: In `development.read-update.alias-allocation`, the action supplies `"excludedIdentity": "beads/reserved"`, asserting:
+  ```json
+  {
+    "id": "differs-from-reserved-alias",
+    "kind": "json-pointer",
+    "pointer": "/identity/differsFromExcludedIdentity",
+    "exists": true,
+    "equals": true
+  }
+  ```
+  In BDP, allocated Bead IDs exist in the `beads/` hierarchy, whereas aliases exist in the `alias/` hierarchy. Comparing the allocated URI against `beads/reserved` checks inequality against an unallocated bead path, not the live reserved alias (`alias/reserved`). Furthermore, this is a single-shot inequality observation against a random ID, not deterministic collision skipping.
+- **Reachable Trigger**: Auditing the evidence basis of `read-update.alias.allocation`.
+- **Impact**: While [`read-update-coverage-v1.json#L462-L464`](file:///Users/dbox/repos/wt/vickie/bdp-integration-logs/profile-runtime-council/packages/conformance/development/read-update-coverage-v1.json#L462-L464) limits explicitly state that collision skipping is *not* qualified, the assertion label `differs-from-reserved-alias` and the README narrative ("differs from the live reserved alias segment") claim an alias comparison that the test does not execute.
+- **Fix / Next Step**: Clarify in manifest and README that the observation checks that an allocated bead ID does not match the reserved bead candidate path, retaining the row's unqualified collision-skipping limitation until a deterministic allocation harness is provided.
+
+---
+
+#### Questions Needing Omitted Context
+
+1. **Multiline Regex Behavior with CRLF Line Endings**:
+   - In [`packages/conformance/src/markdown.ts#L15`](file:///Users/dbox/repos/wt/vickie/bdp-integration-logs/profile-runtime-council/packages/conformance/src/markdown.ts#L15) and [`packages/conformance/src/markdown.ts#L43`](file:///Users/dbox/repos/wt/vickie/bdp-integration-logs/profile-runtime-council/packages/conformance/src/markdown.ts#L43):
+     ```ts
+     /^(#{1,6})[ \t]+(.+?)[ \t]*#*[ \t]*$/gm
+     /^ *<a\s+(?:id|name)=["']([^"']+)["']\s*><\/a> *$/gm
+     ```
+     In JavaScript RegExp multiline mode (`m`), `$` asserts position before `\n`. If input markdown contains Windows CRLF (`\r\n`), `[ \t]*` and ` *` do not match `\r`, causing matches to fail. The supplied packet shows standard Unix LF usage, but git checkout settings with `core.autocrlf=true` could break anchor indexing.
+
+---
+
+### Evaluation of Prior Council Gap Closures
+
+#### 1. Alias Status-Only Precondition Gaps
+- **Assessment**: **Closed**.
+- **Evidence**:
+  1. [`apps/bdptest/src/development-matrix.test.ts#L65-L72`](file:///Users/dbox/repos/wt/vickie/bdp-integration-logs/profile-runtime-council/apps/bdptest/src/development-matrix.test.ts#L65-L72) wires `input.resolveAlias === true` to `transport.resolveAlias` (which operates with manual redirect handling) and restricts observations to `GET` at `${execution.scope}alias/`.
+  2. Exactly 11 explicit alias witness actions (`repoint-state`, `delete-original-state`, `fresh-repoint-state`, `delete-fresh-state`, `fresh-restored-state`, `original-reassigned-state`, `assign-state`, `unassign-state`, `reassign-state`, `repoint-state`, `delete-alias-state`) were inserted across `read-update-manifest-v1.json`.
+  3. Each active alias mutation is directly witnessed with HTTP 307, asserting the exact canonical `Location` header and `body: false`. Each deletion is directly witnessed with HTTP 404 and `body/code: "resource-not-found"`. HTTP 200 from the preceding mutation is no longer used as sole proof of state.
+
+#### 2. Owner-Zero and Slug Parsing Gaps
+- **Assessment**: **Closed**.
+- **Evidence**:
+  1. **Owner-Zero Elimination**: [`packages/conformance/src/profile-catalog-boundaries.test.ts#L14-L62`](file:///Users/dbox/repos/wt/vickie/bdp-integration-logs/profile-runtime-council/packages/conformance/src/profile-catalog-boundaries.test.ts#L14-L62) removes default `owner = 0`. Top-level sections are statically inventoried (`sections`). Unclassified headings yield `profile: undefined` and trigger `Unclassified or missing anchor: ${anchor}`. Headings under informative end matter or navigation guides can no longer silently satisfy `owner <= rank[profile]`.
+  2. **Shared Table Excerpt Fencing**: Anchors in `sharedAnchors` capture their exact text bounds (`sharedText`), and `assertProfileCitation` verifies that cited excerpts are contained within those bounds, preventing Read scenarios from citing Transactional rows.
+  3. **Slug Parsing & Double Hyphens**: [`packages/conformance/src/markdown.ts#L20-L28`](file:///Users/dbox/repos/wt/vickie/bdp-integration-logs/profile-runtime-council/packages/conformance/src/markdown.ts#L20-L28) replaces single spaces (`.replace(/ /g, "-")`) rather than collapsing `[ \t]+`, matching GitHub's anchor generation where punctuation removal preserves adjacent spaces (e.g. `Part I — Read` $\rightarrow$ `#part-i--read`).
+  4. **Duplicate Collision Handling**: Heading duplicate tracking uses a `while (used.has(slug))` loop to avoid suffix collisions when literal numbered headings follow duplicates (e.g. `## A`, `## A`, `## A-1`, `## A` produces `#a`, `#a-1`, `#a-1-1`, `#a-2`).
+  5. **Anchor Collisions & Code Fences**: Explicit anchors inside fenced code blocks are masked out; collisions between explicit/explicit and explicit/heading anchors throw `Ambiguous Markdown anchor`.
+
+---
+
+### Bounded Packet Evidence & Core Protocols Review
+
+1. **Pending Race Fencing & Process Actions**:
+   - [`apps/bdptest/test-support/development-process-actions.ts#L70-L80`](file:///Users/dbox/repos/wt/vickie/bdp-integration-logs/profile-runtime-council/apps/bdptest/test-support/development-process-actions.ts#L70-L80) introduces `development.process.release-response`, which awaits the original HTTP `Promise<Response>` rather than relying on a fragile scheduler turn counter (`turn-completed, 4`) that shifted when interleaved requests dispatched extra turns.
+   - `development.read-update.process-pending` proves that claiming at sequence admission properly fences pending keys: member 1 (creator), member 2 (dependent), and member 3 (tail) all return `idempotency-in-progress` (HTTP 409, `retry: after-delay`). A subsequent request presenting an independent tail executes, while a fresh key dependent on the in-progress creator receives transient failure. Replaying after release produces identical canonical JSON digests, and subsequent presentation of the fresh key succeeds and replays, proving transient nonretention.
+   - `development.read-update.process-interleaving` confirms that an interleaving update to `beads/prefix` while parked succeeds, advances the revision, and is preserved when the original sequence's later update completes.
+
+2. **Development 404 Routing**:
+   - [`packages/server/src/development-runtime.ts#L166-L167`](file:///Users/dbox/repos/wt/vickie/bdp-integration-logs/profile-runtime-council/packages/server/src/development-runtime.ts#L166-L167) rejects unknown `/development/*` routes immediately with `resource-not-found` before checking method, media type, or key admission. This fixes the previous defect where unknown routes returned `405 Method Not Allowed` with an `Allow: GET, HEAD` header.
+
+3. **Cumulative Spec Boundaries & Discovery Clarity**:
+   - [`docs/specs/bdp.md#L3731-L3746`](file:///Users/dbox/repos/wt/vickie/bdp-integration-logs/profile-runtime-council/docs/specs/bdp.md#L3731-L3746) clarifies that `historicalResolution` is optional in all three profiles (Read, Read+Update, Transactional) and is distinct from Transactional-only scope-history fence members (`scopeEpoch`, `authorizationView`, etc.).
+   - [`docs/specs/bdp.md#L3314-L3320`](file:///Users/dbox/repos/wt/vickie/bdp-integration-logs/profile-runtime-council/docs/specs/bdp.md#L3314-L3320) corrects the tombstone retention statement, acknowledging that distinct successful keys (including semantic no-ops) grow tombstone storage without adding Resource revisions.
+
+---
+
+### Known Bounded Exclusions Relevant to Packet
+
+The following areas are intentionally omitted from qualification in this slice and do not constitute regressions:
+1. **Public Write-Profile Conformance**: Conformance claims remain disabled; observations in this packet are development-only (`kind: diagnostic`).
+2. **Deterministic Collision Skipping**: The private random allocator is sampled, but deterministic collision skipping remains unqualified on row `read-update.alias.allocation`.
+3. **Claim Atomicity & Midpoint Faults**: Row `read-update.idempotency.claim-atomicity` remains omitted due to lack of a fault-injection fixture during multi-key admission claiming.
+4. **Historical Resolution and Expiry**: Discovery advertises `historicalResolution` as optional across all profiles, but historical resolution execution and 24-hour key expiration are not qualified by this test harness.
+
+---
+
+### Files and Ranges Inspected
+
+- [`apps/bdptest/src/development-matrix.test.ts#L62-L125`](file:///Users/dbox/repos/wt/vickie/bdp-integration-logs/profile-runtime-council/apps/bdptest/src/development-matrix.test.ts#L62-L125), [`#L199-L233`](file:///Users/dbox/repos/wt/vickie/bdp-integration-logs/profile-runtime-council/apps/bdptest/src/development-matrix.test.ts#L199-L233), [`#L254-L295`](file:///Users/dbox/repos/wt/vickie/bdp-integration-logs/profile-runtime-council/apps/bdptest/src/development-matrix.test.ts#L254-L295) (diff hunks)
+- [`apps/bdptest/src/development-server.test.ts#L643-L679`](file:///Users/dbox/repos/wt/vickie/bdp-integration-logs/profile-runtime-council/apps/bdptest/src/development-server.test.ts#L643-L679) (diff hunk)
+- [`apps/bdptest/test-support/development-process-actions.ts#L1-L139`](file:///Users/dbox/repos/wt/vickie/bdp-integration-logs/profile-runtime-council/apps/bdptest/test-support/development-process-actions.ts#L1-L139) (complete file via supplement)
+- [`docs/design/update-implementation-progress.md#L332-L366`](file:///Users/dbox/repos/wt/vickie/bdp-integration-logs/profile-runtime-council/docs/design/update-implementation-progress.md#L332-L366) (diff hunk)
+- [`docs/specs/bdp.md#L3234-L3273`](file:///Users/dbox/repos/wt/vickie/bdp-integration-logs/profile-runtime-council/docs/specs/bdp.md#L3234-L3273), [`#L3314-L3323`](file:///Users/dbox/repos/wt/vickie/bdp-integration-logs/profile-runtime-council/docs/specs/bdp.md#L3314-L3323), [`#L3714-L3750`](file:///Users/dbox/repos/wt/vickie/bdp-integration-logs/profile-runtime-council/docs/specs/bdp.md#L3714-L3750) (diff hunks and supplement excerpts)
+- [`packages/conformance/development/README.md#L4-L17`](file:///Users/dbox/repos/wt/vickie/bdp-integration-logs/profile-runtime-council/packages/conformance/development/README.md#L4-L17), [`#L113-L195`](file:///Users/dbox/repos/wt/vickie/bdp-integration-logs/profile-runtime-council/packages/conformance/development/README.md#L113-L195) (diff hunks)
+- [`packages/conformance/development/read-update-catalog-v1.json#L993-L1070`](file:///Users/dbox/repos/wt/vickie/bdp-integration-logs/profile-runtime-council/packages/conformance/development/read-update-catalog-v1.json#L993-L1070) (diff hunk)
+- [`packages/conformance/development/read-update-coverage-v1.json#L447-L466`](file:///Users/dbox/repos/wt/vickie/bdp-integration-logs/profile-runtime-council/packages/conformance/development/read-update-coverage-v1.json#L447-L466), [`#L598-L662`](file:///Users/dbox/repos/wt/vickie/bdp-integration-logs/profile-runtime-council/packages/conformance/development/read-update-coverage-v1.json#L598-L662), [`#L665-L714`](file:///Users/dbox/repos/wt/vickie/bdp-integration-logs/profile-runtime-council/packages/conformance/development/read-update-coverage-v1.json#L665-L714), [`#L813-L958`](file:///Users/dbox/repos/wt/vickie/bdp-integration-logs/profile-runtime-council/packages/conformance/development/read-update-coverage-v1.json#L813-L958) (diff hunks)
+- [`packages/conformance/development/read-update-manifest-v1.json#L6737-L6780`](file:///Users/dbox/repos/wt/vickie/bdp-integration-logs/profile-runtime-council/packages/conformance/development/read-update-manifest-v1.json#L6737-L6780), [`#L7958-L8668`](file:///Users/dbox/repos/wt/vickie/bdp-integration-logs/profile-runtime-council/packages/conformance/development/read-update-manifest-v1.json#L7958-L8668), [`#L8736-L9235`](file:///Users/dbox/repos/wt/vickie/bdp-integration-logs/profile-runtime-council/packages/conformance/development/read-update-manifest-v1.json#L8736-L9235), [`#L9299-L9334`](file:///Users/dbox/repos/wt/vickie/bdp-integration-logs/profile-runtime-council/packages/conformance/development/read-update-manifest-v1.json#L9299-L9334), [`#L9716-L10994`](file:///Users/dbox/repos/wt/vickie/bdp-integration-logs/profile-runtime-council/packages/conformance/development/read-update-manifest-v1.json#L9716-L10994) (diff hunks)
+- [`packages/conformance/src/catalog.test.ts#L285-L348`](file:///Users/dbox/repos/wt/vickie/bdp-integration-logs/profile-runtime-council/packages/conformance/src/catalog.test.ts#L285-L348) (diff hunk)
+- [`packages/conformance/src/catalog.ts#L1-L6`](file:///Users/dbox/repos/wt/vickie/bdp-integration-logs/profile-runtime-council/packages/conformance/src/catalog.ts#L1-L6), [`#L159-L174`](file:///Users/dbox/repos/wt/vickie/bdp-integration-logs/profile-runtime-council/packages/conformance/src/catalog.ts#L159-L174), [`#L345-L440`](file:///Users/dbox/repos/wt/vickie/bdp-integration-logs/profile-runtime-council/packages/conformance/src/catalog.ts#L345-L440) (diff hunks)
+- [`packages/conformance/src/markdown.ts#L1-L116`](file:///Users/dbox/repos/wt/vickie/bdp-integration-logs/profile-runtime-council/packages/conformance/src/markdown.ts#L1-L116) (complete file via supplement)
+- [`packages/conformance/src/profile-catalog-boundaries.test.ts#L1-L177`](file:///Users/dbox/repos/wt/vickie/bdp-integration-logs/profile-runtime-council/packages/conformance/src/profile-catalog-boundaries.test.ts#L1-L177) (diff hunks)
+- [`packages/server/src/development-runtime.ts#L163-L173`](file:///Users/dbox/repos/wt/vickie/bdp-integration-logs/profile-runtime-council/packages/server/src/development-runtime.ts#L163-L173), [`#L209-L217`](file:///Users/dbox/repos/wt/vickie/bdp-integration-logs/profile-runtime-council/packages/server/src/development-runtime.ts#L209-L217) (diff hunks)
+
+**Truncated / Unread Material**: All repository content outside the supplied 14-file diff hunks and supplement excerpts was unread. Entire-branch coverage is neither claimed nor evaluated.

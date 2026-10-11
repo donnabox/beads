@@ -1,0 +1,96 @@
+### 1. Scope, Files Read, and Coverage Limits
+
+**Explicitly read file paths and line ranges:**
+- [`docs/specs/bdp.md`](file:///Users/dbox/repos/wt/vickie/bdp-integration-logs/profile-runtime-council/docs/specs/bdp.md#L3141-L3375): lines 3141–3375 (Idempotency keys, duplicate keys/retained dispositions, outcome retention, durability/recovery).
+- [`docs/specs/bdp.md`](file:///Users/dbox/repos/wt/vickie/bdp-integration-logs/profile-runtime-council/docs/specs/bdp.md#L3793-L4099): lines 3793–4099 (Mutation Transactions, Transactional receipts/admission/sequence projection).
+- [`packages/server/src/member-executor.ts`](file:///Users/dbox/repos/wt/vickie/bdp-integration-logs/profile-runtime-council/packages/server/src/member-executor.ts#L1-L817): lines 1–817 (Read+Update single-member execution, snapshotting, comparison, disclosure gating).
+- [`packages/server/src/sequence-executor.ts`](file:///Users/dbox/repos/wt/vickie/bdp-integration-logs/profile-runtime-council/packages/server/src/sequence-executor.ts#L1-L676): lines 1–676 (Sequence lifecycle, admission registration, turn scheduling, cleanup/abandonment, draining).
+- [`packages/server/src/recovery-store.ts`](file:///Users/dbox/repos/wt/vickie/bdp-integration-logs/profile-runtime-council/packages/server/src/recovery-store.ts#L1-L934): lines 1–934 (SQLite durability, admission key state, claim recovery, savepoints, allocations, tombstone expiry).
+- [`packages/server/src/transaction-batch.ts`](file:///Users/dbox/repos/wt/vickie/bdp-integration-logs/profile-runtime-council/packages/server/src/transaction-batch.ts#L1-L538): lines 1–538 (Batch preparation, normalization, witness recording, batch mutation evaluation).
+- [`packages/server/src/transaction-store.ts`](file:///Users/dbox/repos/wt/vickie/bdp-integration-logs/profile-runtime-council/packages/server/src/transaction-store.ts#L1-L479): lines 1–479 (Transactional store initialization, receipt management, sweep, admission, execution setup up to line 479).
+
+**Truncated / unread material:**
+- [`packages/server/src/transaction-store.ts`](file:///Users/dbox/repos/wt/vickie/bdp-integration-logs/profile-runtime-council/packages/server/src/transaction-store.ts#L480-L808): lines 480–808 were truncated in the supplied packet and could not be reviewed.
+- Omitted dependencies outside the packet: [`packages/server/src/member-identity.ts`](file:///Users/dbox/repos/wt/vickie/bdp-integration-logs/profile-runtime-council/packages/server/src/member-identity.ts), [`packages/server/src/resource-evaluator.ts`](file:///Users/dbox/repos/wt/vickie/bdp-integration-logs/profile-runtime-council/packages/server/src/resource-evaluator.ts), [`packages/server/src/alias-evaluator.ts`](file:///Users/dbox/repos/wt/vickie/bdp-integration-logs/profile-runtime-council/packages/server/src/alias-evaluator.ts), [`packages/server/src/retained-disclosure.ts`](file:///Users/dbox/repos/wt/vickie/bdp-integration-logs/profile-runtime-council/packages/server/src/retained-disclosure.ts), and [`@bdp/protocol`](file:///Users/dbox/repos/wt/vickie/bdp-integration-logs/profile-runtime-council/packages/protocol).
+
+No whole-branch coverage is claimed beyond these exact excerpts.
+
+---
+
+### 2. Known Bounded Exclusions
+
+- **Public Transactional Service:** Private Transactional implementation in [`transaction-batch.ts`](file:///Users/dbox/repos/wt/vickie/bdp-integration-logs/profile-runtime-council/packages/server/src/transaction-batch.ts) and [`transaction-store.ts`](file:///Users/dbox/repos/wt/vickie/bdp-integration-logs/profile-runtime-council/packages/server/src/transaction-store.ts) is an internal development slice; full public profile exposure and cross-profile transports are intentionally disabled.
+- **Transactional Sequence Dependencies and Dynamic Aliases:** In [`packages/server/src/transaction-batch.ts#L127-L133`](file:///Users/dbox/repos/wt/vickie/bdp-integration-logs/profile-runtime-council/packages/server/src/transaction-batch.ts#L127-L133), `@`-references and turn-time alias resolutions explicitly throw development bounds (`"development sequence dependencies require durable reservations"` and `"development sequence Resource aliases require turn-time resolution"`). These are documented exclusions, not regressions.
+- **Write-profile Conformance Claims:** All conformance row advertisements for write profiles remain intentionally disabled.
+
+---
+
+### 3. Proven Defects
+
+#### Finding 1: Medium Severity
+- **File & Lines:** [`packages/server/src/transaction-batch.ts#L443-L450`](file:///Users/dbox/repos/wt/vickie/bdp-integration-logs/profile-runtime-council/packages/server/src/transaction-batch.ts#L443-L450) and [`packages/server/src/transaction-batch.ts#L483-L510`](file:///Users/dbox/repos/wt/vickie/bdp-integration-logs/profile-runtime-council/packages/server/src/transaction-batch.ts#L483-L510)
+- **Concrete Issue:** Unhandled crash (`Error: update lacks previous state` or `Error: successful transition lacks Resource state`) when `bead` or `link` in an `updateBead`, `updateLink`, `deleteBead`, or `deleteLink` operation carries a Pinned Reference object (e.g. `{ uri: string, revision: string }`).
+- **Reachable Trigger:** A caller submits a batch or singleton update/delete where the target Resource locator is supplied as a Pinned Reference object `{ uri, revision }`. In [`normalizeTransaction`](file:///Users/dbox/repos/wt/vickie/bdp-integration-logs/profile-runtime-council/packages/server/src/transaction-batch.ts#L298-L300) and [`evaluateTransaction`](file:///Users/dbox/repos/wt/vickie/bdp-integration-logs/profile-runtime-council/packages/server/src/transaction-batch.ts#L430-L442), `ref` is handled as `string | { uri: string, revision: string }`. However, lines 443–445 test `typeof locator === "string"`:
+  ```ts
+  const locator = input.bead ?? input.link;
+  const beforeRow =
+    typeof locator === "string"
+      ? tx.resource(
+          locator.startsWith(options.scope) ? locator.slice(options.scope.length) : locator,
+        )
+      : undefined;
+  ```
+  When `locator` is a Pinned Reference object, `typeof locator === "string"` evaluates to `false`, leaving `beforeRow` and `before` undefined. If the resource evaluator succeeds, line 508 (`if (!before) throw new Error("update lacks previous state")`) or line 484 (`if (!subject) throw new Error("successful transition lacks Resource state")`) throws an unhandled server error instead of processing the transition.
+- **Impact:** Admitted updates/deletions specifying pinned references fail with unexpected internal 500 exceptions, aborting the transaction without producing a valid problem or receipt.
+- **Fix / Next Step:** Normalize `locator` via `referenceUri(locator)` (which is already imported at [`packages/server/src/transaction-batch.ts#L8`](file:///Users/dbox/repos/wt/vickie/bdp-integration-logs/profile-runtime-council/packages/server/src/transaction-batch.ts#L8) and used at line 432):
+  ```ts
+  const rawLocator = input.bead ?? input.link;
+  const uri = rawLocator ? referenceUri(rawLocator) : undefined;
+  const beforeRow =
+    typeof uri === "string"
+      ? tx.resource(
+          uri.startsWith(options.scope) ? uri.slice(options.scope.length) : uri,
+        )
+      : undefined;
+  ```
+
+---
+
+### 4. Questions Needing Omitted Context
+
+#### Question 1: Unchecked `null` Target Leak in Alias Decorator
+- **File & Lines:** [`packages/server/src/member-executor.ts#L627-L630`](file:///Users/dbox/repos/wt/vickie/bdp-integration-logs/profile-runtime-council/packages/server/src/member-executor.ts#L627-L630)
+- **Context:** In [`member-executor.ts`](file:///Users/dbox/repos/wt/vickie/bdp-integration-logs/profile-runtime-council/packages/server/src/member-executor.ts#L627-L630):
+  ```ts
+  alias(path) {
+    const captured = capturedMemberAlias(member, path);
+    return captured.captured ? captured.target : tx.alias(path);
+  }
+  ```
+  In [`StoreReader`](file:///Users/dbox/repos/wt/vickie/bdp-integration-logs/profile-runtime-council/packages/server/src/recovery-store.ts#L93), `alias(path)` is specified as returning `string | undefined`. For recorded misses, witness data retains `target: null` (e.g. line 304). If `capturedMemberAlias(member, path).target` returns `null` for a captured miss (as done in witness structures), returning `captured.target` directly leaks `null` across a contract expecting `string | undefined`. By comparison, [`transaction-batch.ts#L461`](file:///Users/dbox/repos/wt/vickie/bdp-integration-logs/profile-runtime-council/packages/server/src/transaction-batch.ts#L461) explicitly sanitizes `target == null ? undefined : target.slice(...)`.
+- **Missing Information:** The implementation of [`capturedMemberAlias`](file:///Users/dbox/repos/wt/vickie/bdp-integration-logs/profile-runtime-council/packages/server/src/member-identity.ts) is in omitted file `member-identity.ts`. Does `capturedMemberAlias` return `target: undefined` when a miss is captured, or does it return `
+`target: null`? If `null`, evaluators performing `tx.alias(path) !== undefined` will treat a captured miss as a present target instead of an unassigned alias.
+
+#### Question 2: Handling of Sequence `@name` References Pointing to Non-Creating Members
+- **File & Lines:** [`packages/server/src/sequence-executor.ts#L483-L490`](file:///Users/dbox/repos/wt/vickie/bdp-integration-logs/profile-runtime-council/packages/server/src/sequence-executor.ts#L483-L490) and [`packages/server/src/member-executor.ts#L535-L544`](file:///Users/dbox/repos/wt/vickie/bdp-integration-logs/profile-runtime-council/packages/server/src/member-executor.ts#L535-L544)
+- **Context:** [`runMember`](file:///Users/dbox/repos/wt/vickie/bdp-integration-logs/profile-runtime-council/packages/server/src/member-executor.ts#L535-L544) sets `turn.creator = undefined` for non-creation operations (`updateBead`, `deleteBead`, etc.). [`sequence-executor.ts#L499`](file:///Users/dbox/repos/wt/vickie/bdp-integration-logs/profile-runtime-council/packages/server/src/sequence-executor.ts#L499) stores this `undefined` into `attempt.creators`. If a subsequent member contains an `@name` reference naming an earlier non-creation member that carried a `name`, line 487 throws an uncaught `TypeError("completed prefix lacks creator fact")`:
+  ```ts
+  const fact = attempt.creators[index];
+  if (!fact) throw new TypeError("completed prefix lacks creator fact");
+  return fact;
+  ```
+  This triggers `SequenceLifecycleError("member", TypeError)` and causes an unhandled 500 rejection of the entire sequence submission rather than returning a member-level problem (such as `validation-failed` or `binding-unavailable`).
+- **Missing Information:** The implementation of [`prepareMemberDependencies`](file:///Users/dbox/repos/wt/vickie/bdp-integration-logs/profile-runtime-council/packages/server/src/member-identity.ts) is in omitted file `member-identity.ts`. Does carrier preparation in `@bdp/protocol` or `prepareMemberDependencies` reject `@name` references pointing to non-creation operation names prior to calling `creators(earlierIndex)`?
+
+---
+
+### 5. Architectural Assessment of Boundaries
+
+1. **Read -> Read+Update -> Transactional Boundaries:**
+   - Durable write ownership, admission linearizability, and recovery are cleanly maintained across SQLite `BEGIN IMMEDIATE` transactions.
+   - Idempotency key namespaces (Scope URL + Authenticated Principal, plus Scope Epoch for Transactional) and outcome retention rules (24h minimum floor, tombstones for committed outcomes, discarding of failed dispositions) match normative specifications.
+   - Replay disclosure re-authorization against the present Authorization View correctly returns non-retained `forbidden` problems without erasing the original mutation outcome.
+
+2. **Durable Retention and Recovery:**
+   - In [`recovery-store.ts`](file:///Users/dbox/repos/wt/vickie/bdp-integration-logs/profile-runtime-council/packages/server/src/recovery-store.ts#L610) and [`transaction-store.ts`](file:///Users/dbox/repos/wt/vickie/bdp-integration-logs/profile-runtime-council/packages/server/src/transaction-store.ts#L298-L300), startup sweeps clear abandoned `claimed`/`pending` records to ensure restart recovery clears abandoned claims rather than locking them indefinitely.
+   - Resource identity and revision allocations are safely isolated within savepoints and strict constraints.

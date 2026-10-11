@@ -1,0 +1,7 @@
+# Native Codex review — alias diagnostic delta
+
+Reviewed 72bdaad02b6fb2b803d4af7a8c4f90ada2f0d2d5 → 59915ea916a210f5ce36611eb6d799f7c3124056.
+
+No actionable defect found. The manifest, coverage file and executor helper are byte-identical to independently reviewed 0965971b855bd7af0753bc40487a0e0efac1f0eb. That prior read-only review inspected every new plan and passed 269 targeted tests; it is preserved at ../../bdp-editorial-review/alias-qualification-review.md. I inspected the integration delta and the additional textual citation migration against the present contract. All 23 diagnostic scenario non-citation fields are unchanged; the 38 total citation differences versus the older author branch comprise the prior 28 common-profile migrations and 10 new alias-plan migrations. New claims remain 48 bounded / 33 omitted of the same 81 rows; neither these diagnostics nor the fresh Read seal admit a write profile.
+
+State proofs cover recorded targets/misses through repoint/deletion/reassignment, fresh locator reevaluation on every retry, opaque pin byte equality, unknown/wrong-root subjects and admitted failure retention. Deterministic allocator collision skipping, hidden authorization, retention/disclosure variants and historical/external endpoint serviceability remain unqualified. No runtime, normative spec, schema, or Read evidence change occurs in this delta. No full-suite rerun in this council slice. Coverage is this six-file delta, not the unchanged whole branch.

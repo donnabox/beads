@@ -1,0 +1,187 @@
+## Findings
+
+Proven defects first, then questions. Each labelled **regression** (new vs. review base `a9bcf9ed`) or **baseline** (pre-existing, unchanged by this branch).
+
+---
+
+### F1 — High — Transactional admission of `historicalResolution` lost — **REGRESSION**
+
+**Where:** `docs/specs/bdp.md` §Discovery profile membership, lines 3714–3743 (table 3734–3743); with §Scope discovery line 1048, §Historical resolution 1580–1583, §Read discovery 1087–1093, §Read+Update discovery 2002–2006.
+
+**Issue:** Base `a9bcf9ed:2137-2140` read: *"All three discovery definitions optionally admit the closed `historicalResolution: { "version": 1 }` member. It describes Historical resolution, **distinct from the Transactional `history` Scope-history member**."* Head retains admission only for Read (1089) and Read+Update (2005). §Transactional discovery (3678–3712) states no closed member list, and the one exhaustive per-profile membership statement — the table at 3734–3743 — has **no `historicalResolution` row**. The disambiguating clause was deleted too, leaving prose at 3720–3721 (*"The history, receipt, snapshot, changefeed, and Event members are required only in Transactional and prohibited in both lower profiles"*) with nothing to distinguish `historicalResolution` from those members.
+
+**Reachable trigger:** Build a discovery validator or generate closed discovery types from §Discovery profile membership. A Transactional Scope that implements the inherited History capability (1580–1581: *"A cumulative profile inherits it without requiring it"*) MUST advertise `historicalResolution` (1582: *"Discovery advertises it only as…"*) but has no admitting rule. Symmetrically, reading `historicalResolution` as one of the prohibited "history members" contradicts 1089 and 2005.
+
+**Impact:** Cumulative-boundary contradiction on the single member that carries the optional History capability across all three profiles. Transactional + History discovery is unspecified; a generated closed `transactionalDiscovery` type could reject a required member.
+
+**Fix:** Add `historicalResolution | optional | optional | optional` to the table at 3734–3743, and restore one clause distinguishing it from the Transactional Scope-history fence members.
+
+**Provenance:** narrowing happened inside `a9bcf9ed..e9361d77` (`e9361d77:1101` reads *"The Read discovery definition optionally admits…"*); head then dropped the paragraph entirely. Unverified: whether `schemas/bdp-v0.schema.json` still admits it — schema not in this packet.
+
+---
+
+### F2 — High — Permanent tombstones for operations that commit nothing — **BASELINE**
+
+**Where:** `docs/specs/bdp.md` §Outcome retention, lines 3311–3321.
+
+**Issue:** The Scope-lifetime tombstone class includes `updated` *"including a semantic no-op"*, while the same sentence asserts *"tombstone storage is therefore bounded by the committed effects, as identity tombstones already are, and no principal can grow it with requests that commit nothing."* A semantic no-op commits nothing: 2122 (*"retains the existing revision"*), 2165–2166 (*"mints no revision and records no attribution"*), 3589 (*"No-ops retain the old revision and context"*), 5557 (*"emits no `updated` Event"*). The analogy also fails for effectful updates: identity tombstones are one per identity ever allocated; key tombstones are one per committed **operation**, unbounded over a fixed Resource population.
+
+**Reachable trigger:** An authenticated principal repeatedly submits `update-bead` with the Resource's current `properties`/`metadata` and a fresh `Idempotency-Key`. Each returns an `updated` disposition → "committed state" → MUST retain a compact tombstone for the lifetime of the logical Scope.
+
+**Impact:** Unbounded permanent durable-storage growth per principal with zero committed effect — exactly what the paragraph claims is impossible. The stated bound is also unverifiable in conformance.
+
+**Fix:** Exclude semantic no-ops from the committed-state tombstone class (re-executing a no-op under a forgotten key is harmless, so nothing is lost), and restate the bound as one tombstone per committed effect rather than claiming parity with identity tombstones.
+
+**Baseline:** identical at `a9bcf9ed:4386-4395`. Section diff of §Idempotency keys → §Durability and recovery shows only provenance-label removal plus one cross-reference removal between base and head — the idempotency/retention/recovery normative text is otherwise unchanged.
+
+---
+
+### F3 — Medium — Boundary test exempts all shared sections — **NEW CODE**
+
+**Where:** `packages/conformance/src/profile-catalog-boundaries.test.ts:32` and `:70`.
+
+**Issue:** `owner = 0` for every `##` heading that is not one of the three Part titles, and `expect(owner).toBeLessThanOrEqual(rank[scenario.requiredProfile])` always passes when `owner === 0` (minimum rank is 1). At head, `## Conformance index and informative end matter` (`bdp.md:6536`) and all its subsections are owner 0: `### Normative conformance matrix` (6538), `#### Owned-Link wildcard conformance rows` (6565), `#### Numeric-model conformance rows` (6582), `#### History conformance rows` (6596), `#### Read+Update conformance rows` (6640), `#### Transactional conformance rows` (6732), `### Deferred model features` (6907). The entire preface (`bdp.md:1-209`) is owner 0, exempted only by the one hard-coded check at test line 72.
+
+**Reachable trigger:** A scenario with `requiredProfile: "read"` whose `requirement.anchor` is `#transactional-conformance-rows` satisfies both assertions.
+
+**Impact:** The guard cannot detect mis-profiled citations into shared end matter — which is where the per-profile obligation row tables actually live — so it delivers less than its comment at lines 10–11 claims (*"A valid quote/anchor alone cannot establish profile applicability"*). Secondary: inserting any new `##` heading inside a Part silently resets owner to 0 for the remainder of that Part, and the three spot checks at lines 57–59 anchor near each Part's start, so they will not catch it.
+
+**Fix:** Treat owner 0 as "not part-owned" and fail unless the anchor is on an explicit shared-anchor allowlist; separately assert the exact expected set of `##` headings so an inserted `##` breaks the test instead of silently widening it.
+
+---
+
+### F4 — Medium — Test's anchor universe diverges from the document's — **NEW CODE**
+
+**Where:** `packages/conformance/src/profile-catalog-boundaries.test.ts:12-43` (`headingOwners`, slug at 34–37).
+
+**Issue:** The ownership map is built from ATX headings only, so the document's two explicit anchors are invisible: `bdp.md:362` `<a id="references"></a>` — which has **no heading at head** (no `References` heading exists) — and `bdp.md:2370` `<a id="batch-local-resource-references"></a>`, preserved across the rename to `### Sequence-local Resource references` (2372). Both resolve: the spec links to the second at `bdp.md:2471`, and `spec-present-contract-map.md:44` links to `#references`. Separately, the local slugger collapses whitespace runs (`.replace(/[ \t]+/g,"-")`) where GitHub emits one hyphen per space, so `## Part I — Read` registers as `#part-i-read` while the rendered anchor is `#part-i--read`.
+
+**Reachable trigger:** A catalog requirement citing `#references` or `#batch-local-resource-references` fails `expect(owner, label).toBeDefined()` — reported as an unknown anchor, not a boundary violation — though the anchor resolves. Conversely a citation of the non-resolving `#part-i-read` is accepted and mapped to Part I.
+
+**Impact:** The test's notion of a valid anchor diverges from the document's; the two preserved compatibility anchors carry no part ownership at all, so profile applicability for that material cannot be established by this guard. Plausibly the cause of the "two citation migrations" at `spec-present-contract-map.md:85-86` — i.e. catalogs moved off resolving anchors to satisfy the test.
+
+**Fix:** Index `<a id=>`/`<a name=>` anchors with their enclosing part's ownership, and use the repo's shared slugger (or `github-slugger`) rather than a local approximation so ownership and link resolution agree. Restore a real heading for `#references` or retarget its citers.
+
+---
+
+### F5 — Medium — Undisclosed alias existence oracle in key comparison — **BASELINE**
+
+**Where:** `docs/specs/bdp.md:3199-3204` (§Idempotency keys), with 3292–3299 and 3489–3491.
+
+**Issue:** A previously unrecorded alias locator is resolved for key comparison *"through a store lookup, without filtering the alias by the principal's Authorization View"* (3200–3202). The comparison outcome is observable: equal → retained disposition replayed; not equal, including a miss → `idempotency-conflict`. The defense at 3294–3297 addresses only Resource disclosure, not the existence bit of the alias→target mapping, while 3489–3491 asserts *"aliases are not an enumeration oracle"* and 3452–3454 admits exactly **one** deliberate exception to that posture (`identity-taken`).
+
+**Reachable trigger:** A principal whose original member recorded locator `A` → canonical Bead `X` retries the same key with locator `B`. `B` is resolved now, unfiltered; replay vs. `idempotency-conflict` reveals whether `B` currently resolves to `X`, for a `B` the principal's Authorization View need not project.
+
+**Impact:** A second, undisclosed exception to the no-enumeration-oracle posture — one bit per probe, bounded to the principal's own key namespace. Not a Resource-content leak.
+
+**Fix:** Either acknowledge it as an accepted exception in the same explicit terms as `identity-taken`, or state that the only distinguishable fact is "does locator L resolve to the target this key already recorded."
+
+**Baseline:** identical at `a9bcf9ed:4275`.
+
+---
+
+### F6 — Medium — `changeContext` admission on `deleteLink` is Type-dependent or inert — **BASELINE**
+
+**Where:** `docs/specs/bdp.md:3577-3579`, with 3580–3581 and 3590–3591.
+
+**Issue:** *"The member appears on create/update Bead and Link, **owned-capable deleteLink**, including their sequence forms"* reads two ways. (a) `deleteLink` always admits it. (b) Only `deleteLink` on a Link whose Type is owned by its source admits it — which requires a generic client to consult a Type Descriptor to know whether a request member is admitted, contradicting the uniformity principle at 183–185 (*"A generic client does not need a Type Descriptor to make a request or parse a response"*). Under (a), `deleteLink` on a non-owned Link mints no version, so the context is recorded nowhere (3590–3591) yet is preserved in semantic mutation identity (3580–3581).
+
+**Reachable trigger (reading a):** Delete a non-owned Link with `changeContext: {"message":"x"}`; a retry that omits the member is a different semantic identity → `idempotency-conflict`, whose retry disposition is `never` (3394), for an input with no recorded effect.
+
+**Impact:** Either a uniformity violation or a permanently unrecoverable retry caused by an inert input.
+
+**Fix:** State admission in Type-independent terms, and either exclude context from semantic identity where the operation mints no version, or say explicitly that inert context still binds the key.
+
+**Baseline:** identical at `a9bcf9ed:3423`.
+
+---
+
+### F7 — Medium — Validation record covers a different commit range than the review
+
+**Where:** `docs/design/spec-present-contract-map.md:4`, `:65-67`, `:76-79`, `:81-100`.
+
+**Issue:** The document's stated baseline is `e9361d77b862aa0e6ddfa19cf272225f62c32d35` (line 4). `e9361d77` is 7 commits after the review base `a9bcf9ed` and **41 commits before** the frozen head, so the restructure into three cumulative Parts — including the creation of §Discovery profile membership and the `historicalResolution` narrowing in F1 — lies outside the slice this validation list describes. The list reports *"42 files, 1,636 tests passed, no skips"* (84–85) while 76–79 and 99–100 state the Read evidence byte-binding drift is unresolved and that full-repository tests and evidence generation were not run; the exclusion is not restated in the validation list, so "no skips" reads as "nothing excluded."
+
+**Reachable trigger:** Reading §"Validation of this pass" as the branch's validation record.
+
+**Impact:** No supplied validation record for `a9bcf9ed..72bdaad0`, and no current fresh Read evidence anywhere in this packet. Additionally, 65–67 records one changed **Read** catalog citation excerpt while 99 records sealed evidence as untouched — by construction that **adds** to the Read evidence byte-binding drift rather than merely inheriting it, which 76–79 does not say.
+
+**Fix:** State the validation record's commit range; restate in the validation list which checks were excluded and that one is known-failing; record whether this pass's one Read excerpt change adds new drift. Run the two-target qualification and regenerate Read evidence before any Read seal claim.
+
+---
+
+### F8 — Low — Development doc states a sequence capability it later withdraws
+
+**Where:** `docs/design/profile-implementation-progress.md:8` vs `:86`.
+
+**Issue:** Line 8 says the executable exercises *"the existing Resource/member evaluators and the Read/sequence lifecycle"*; line 86 says *"No aliases or sequence receiver … is claimed."* Reconcilable (internal machinery reused without an exposed target) but line 8 reads as a capability line 86 withdraws.
+
+**Reachable trigger:** Line 8 quoted as evidence that sequence semantics are exercised.
+
+**Impact:** Overstated capability in a document whose purpose is bounded, non-attesting diagnostics.
+
+**Fix:** "…the existing Resource/member evaluators and the internal member-execution lifecycle; no `sequence` HTTP receiver is exposed."
+
+---
+
+### F9 — Low — Production boundary test depends on a bounded development artifact — **NEW CODE**
+
+**Where:** `packages/conformance/src/profile-catalog-boundaries.test.ts:46-53`.
+
+**Issue:** `catalogs` hard-codes `packages/conformance/development/read-update-catalog-v1.json` and `read()` is an unguarded `readFileSync`. Renaming or removing the development catalog fails the production suite with a file-not-found rather than a coverage signal, and makes a development-only artifact load-bearing for a normative guard.
+
+**Fix:** Enumerate development catalogs by directory scan with explicit skip-if-absent, or move that assertion into a development-scoped test file.
+
+---
+
+## Questions needing omitted context (not findings)
+
+1. **Revision-scheme declaration carrier.** 873–878 requires a content-derived scheme to *"declare, by name, the number model it serializes under"*, but no `readDiscovery` member (1087–1093) carries such a declaration and revisions are opaque/equality-only (851–853). Where is it surfaced? `bdp.md:217-848`, `942-1045`, `1226-1577` are not in the packet.
+2. **Read-profile alias resolution.** `aliases` is admitted in Read discovery (1090–1091) and the Part III table (3742) *"exactly when the authority serves alias resolution"*, but the minimum Read list (104–112) neither includes nor excludes it (114–117), and every alias cross-reference targets `#alias-targets`. I verified no Part-I or Part-II link targets a later part at head, so Part I never cites `#alias-targets` — leaving Read-profile alias-resolution obligations undefined in Part I. If they live only in Part II, a Read scenario cannot cite them under F3's test. `bdp.md:1226-1577` unread.
+3. **`requiredProfile` enum validation.** Test line 70 does `rank[scenario.requiredProfile]`; an out-of-enum value yields `toBeLessThanOrEqual(undefined)` — a framework error, not a boundary failure. Does `loadScenarioCatalogJson` constrain it? `packages/conformance/src/index.ts` and `validateCatalogCitations` are not in this packet.
+4. **Schema agreement for F1.** Does `schemas/bdp-v0.schema.json` admit `historicalResolution` in its Transactional discovery definition? Not in packet. Note `transactionalDiscovery` is named nowhere in `bdp.md` at base **or** head — baseline, not a regression.
+5. **Abandoned-claim liveness.** §Durability and recovery 3351–3355 names only *"restart or failover"* as the clearing event, yet forbids answering `idempotency-in-progress` *"indefinitely"*. A worker that dies while the authority stays up has no named clearing event. `packages/server/src/recovery-store.ts` is in packet 02 — I make no claim about the implementation.
+6. **Lower-profile client on a Transactional Scope.** §Outcome retention 3303–3310 tells a client needing a recoverable window to *"use an authority that advertises one"*, while §Transactional limits 3783–3789 forbids a Transactional document from advertising `retention.idempotency` (baseline: `a9bcf9ed:2396`). A Read+Update-only client cannot discover the window `retention.receipt` actually provides. Intended, or should Part II state the mapping? No new decision proposed.
+
+---
+
+## Checks that came back clean (stated for scope, not as credit)
+
+- No Part-I or Part-II internal link targets a later part at head (0 violations across 142 headings) — the claim at `spec-present-contract-map.md:91` holds for Parts I/II.
+- Content deleted from §Revisions and §Carried attribution is **relocated, not dropped**: revision minting / no-op rule and `expectedRevision` → `### Mutation revisions and guards` (head 2113–2132); the retained-address write-guard clause → new `### Retained-address guards` (2134–2137); allocation-failure rules → `### Revision allocation failures` (2139–2148); attribution per-version and fan-out → `### Attribution on mutations` (2150–2166); `updated` Event → 5557; transaction-wide mismatch → 4121; operation-local no-op detection → 4116; set-mutation attribution fan-out → 4203.
+- `#bead-data-model` and `#bdp-json-and-http-protocol` survive the h2→h3 demotion (head 217, 1028).
+- No duplicate heading titles at head, so the test's duplicate-suffix logic at lines 38–40 is inert for this document.
+- `retention.idempotency` prohibition and the §Discovery profile membership table rows are byte-identical to base — not new product decisions.
+
+---
+
+## Files and ranges actually read
+
+**Read in full (the packet):**
+- `/Users/dbox/repos/wt/vickie/bdp-integration-logs/profile-runtime-council/01-profile-contract.txt` lines 1–1866 (two passes; nothing in the staged file left unread).
+- `/Users/dbox/repos/wt/vickie/bdp-integration-logs/profile-runtime-council/snapshot-index.json` lines 1–277.
+
+Staged content within that packet: `docs/specs/bdp.md` 1–216, 849–941, 1046–1225, 1578–1856, 1990–2034, 3141–3599, 3601–3792, 4889–4925, 5283–5325; `docs/design/spec-present-contract-map.md` 1–100; `packages/conformance/src/profile-catalog-boundaries.test.ts` 1–76; `docs/design/profile-implementation-progress.md` 1–121.
+
+**Additional read-only inspection** in `/Users/dbox/repos/wt/vickie/bdp-read-reseal` via `git show` only — no checkout, no edits, no tests run:
+- Heading inventories of `docs/specs/bdp.md` at head, base, and `e9361d77`.
+- Head: 352–366, 2108–2172, 2462–2478, 6505–6528; heading lists for 1–209, 1990–2500, 6536–6936.
+- Base: 2125–2212; section extracts of §Revisions, §Carried attribution, §Transactional limits, §Mutation receipts, §Authorization fences, §History fences and actor identity, §Idempotency keys → §Durability and recovery.
+- Targeted greps for the contested sentences, anchors, and `<a id=>` occurrences at base, `e9361d77`, and head.
+- One command created two scratch files under `/tmp` for a section diff; they were deleted in the next command. No repository file was written or modified.
+
+**Truncated / unread:**
+- `docs/specs/bdp.md` 217–848, 942–1045, 1226–1577, 1857–1989, 2035–3140, 3600, 3793–4888, 4926–5282, 5326–6936 are **not** in the packet. I opened small slices of some of these only to locate relocated text (2099–2172, 2370–2372, 4103, 4116, 4121, 4203, 5096, 5557, 6505–6528, plus heading lists). Those slices are **not reviewed**.
+- Not supplied at all: `schemas/bdp-v0.schema.json`; `packages/conformance/catalog/*.json`; `packages/conformance/src/index.ts` (`loadScenarioCatalogJson`, `validateCatalogCitations`); `packages/conformance/development/read-update-catalog-v1.json`; everything in packets 02 and 03.
+- The branch changes **59 files** (`a9bcf9ed..72bdaad0`, 48 commits). This packet stages **4**. No entire-branch coverage is claimed and none should be inferred.
+
+---
+
+## Bounded exclusions relevant to this packet
+
+- Write-profile conformance claims intentionally disabled: `spec-present-contract-map.md:79`, `profile-implementation-progress.md:88`.
+- Transactional implementation intentionally bounded; the atomic batch owner/store boundary is a future slice (`profile-implementation-progress.md:107-114`).
+- Development runtime deliberately omits aliases, a sequence receiver, full HTTP conditional/HEAD/CORS negotiation, a production identity/policy engine, a complete schema engine, and generalized startup/restore qualification (`:86-92`); its root emits no `service-desc` and is not BDP discovery (`:63-66`).
+- History remains an optional capability advertising no retention/participation guarantee (`bdp.md:1586-1588`); surviving-citation lifecycle, import endpoint, pre-removal reports, exact-byte witnesses and bulk checks deferred (`1851-1855`).
+- Read+Update has no durable receipts, no Events, no exposed epoch (`bdp.md:151-152`, `3526-3530`).
+- Graceful-restart smoke only, explicitly not power-loss durability (`profile-implementation-progress.md:81-82`) — so §Durability and recovery's atomicity MUST (`bdp.md:3340-3347`) has **no** evidence in this packet; `recovery-store.ts` is packet 02.

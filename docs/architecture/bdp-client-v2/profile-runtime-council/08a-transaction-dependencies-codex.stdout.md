@@ -1,0 +1,17 @@
+# Native review: canonical Transactional dependencies and cancellation repair
+
+Head `b7eefc9ecad02540f9c26576220841c78f1725cb`; base `486ad62d7c6ecb8e36dad4e596b1597fde425cdd`.
+
+No additional actionable defect found in this bounded source review. This does not qualify a public Transactional profile.
+
+Read all nine changed-file diffs, the complete new dependency/comparison modules and23-case dependency test file, the two cancellation regression cases, and current store admission/fact/execution/cancellation/close control paths. Earlier reviewed baseline store/batch/sequence behavior supplies unchanged context; exact extra source packet ranges are in08a-transaction-dependencies-index.json. No claim to reread every unchanged line or the whole branch.
+
+- Unknown dependent keys reserve unresolved templates under immutable sequence-attempt/member slots. Non-reference fields and opaque pins remain in semantic identity. Creator facts are written with creator effects/terminal receipt, independently of failure retention; startup retracts pending owners and clears facts only after configuration validation.
+- Foreign pending creators and transient bindings take precedence before consulting dependent keys. Only this attempt's reservation is released. Successful/failed/expired creators supply bound or unbound facts; completed dependent identity is immutable. Existing keys are classified in their eligible turn under the inherited sequence contract.
+- Partial direct comparison can prove known-field/pin/supplied-ID/repeated-creator mismatch before full binding, then waits outside SQLite with a single finite deadline. Retraction competes for fresh admission under that original deadline; epoch change stops comparison. This helper is not a public HTTP owner or operational pending-recovery supervisor.
+- Explicit private format/identity-policy bump prevents reinterpretation of older retained state. New format tests reject the prior declaration byte-identically before pending recovery.
+- The prior packet07 diagnostic issue is repaired by routing nextSequence cancellation through cleanupThenThrow. The new regression has both ordinary and failed-cancellation controls, a committed prefix, failed middle, pending tail, acyclic traversal at later inspect/maintain/admitSequence, and prefix/tail recovery. Source matches the exact originally reproduced control path. Parent independently tested the combined candidate; this council did not rerun that suite.
+
+Remaining exclusions are deliberate: turn-time Resource alias sequence operands, mutable authorization/disclosure and withheld projections, set operations, owned-Link lifecycle, full native schemas, public HTTP admission and finite operational pending ownership. No new product ruling or schema/wire claim inferred. No source edits or qualification evidence generated.
+
+Independent fix verification: reran the exact packet07 external disposable reproduction against b7eefc9's built modules on pinned Node24.16.0. Exit0; both immediate and later fenced error traversals now include original sequence execution failure and sequence cancellation storage failure, and traversal detects no cycle. Script/output:08-sequence-cancel-cause-verification.{mjs,stdout.txt}. Prototype hook restored, store closed, temporary directory removed. This closes the reproduced diagnostic finding at this successor without expanding physical-fault claims.
