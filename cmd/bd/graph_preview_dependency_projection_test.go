@@ -2,14 +2,18 @@ package main
 
 import (
 	"errors"
+	"reflect"
 	"testing"
 
 	"github.com/steveyegge/beads/internal/storage/graphstore"
+	"github.com/steveyegge/beads/internal/types"
 )
 
 func TestGraphDependencyProjectionUsesMappedBlockingLinks(t *testing.T) {
 	const scope = "https://example.invalid/structure/"
-	issue := func(id string) graphstore.IssueRecord { return graphstore.IssueRecord{ID: scope + "beads/" + id} }
+	issue := func(id string) graphstore.IssueRecord {
+		return graphstore.IssueRecord{ID: scope + "beads/" + id, Properties: &types.Issue{ID: "native-" + id}}
+	}
 	link := func(id, source, target string) graphstore.LinkRecord {
 		return graphstore.LinkRecord{ID: scope + "links/" + id, Type: graphstore.DependencyTypeURL(scope), Source: scope + "beads/" + source, Target: scope + "beads/" + target}
 	}
@@ -42,6 +46,12 @@ func TestGraphDependencyProjectionUsesMappedBlockingLinks(t *testing.T) {
 	}
 	if cycles := g.cycles(); len(cycles) != 1 || len(cycles[0]) != 3 {
 		t.Fatalf("blocking cycle omitted: %+v", cycles)
+	}
+	if native, err := g.nativeCycleIDs(); err != nil || !reflect.DeepEqual(native, [][]string{{"native-a", "native-b", "native-c"}}) {
+		t.Fatalf("familiar check must use native Issue IDs: cycles=%v err=%v", native, err)
+	}
+	if canonical := g.cycles(); !reflect.DeepEqual(canonical, [][]string{{scope + "beads/a", scope + "beads/b", scope + "beads/c"}}) {
+		t.Fatalf("graph-specific cycles lost canonical IDs: %v", canonical)
 	}
 	snapshot.Records = append(snapshot.Records, link("unmapped", "a", "missing"))
 	if _, err := projectGraphDependencies(snapshot, scope); !errors.Is(err, graphstore.ErrInvalidStore) {

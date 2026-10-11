@@ -5,12 +5,118 @@ package main
 import (
 	"encoding/json"
 	"errors"
+	"path/filepath"
+	"reflect"
 	"strings"
 	"testing"
 
 	"github.com/spf13/cobra"
+	graph "github.com/steveyegge/beads/graphops"
+	"github.com/steveyegge/beads/internal/configfile"
+	"github.com/steveyegge/beads/internal/storage/embeddeddolt"
 	"github.com/steveyegge/beads/internal/storage/graphstore"
+	"github.com/steveyegge/beads/internal/storage/issueops"
 )
+
+// A native graph writer rejects cycles. For the read-only check's cyclic case,
+// retarget one mapped Dependency in a disposable workspace and update its
+// retained Link and owning Issue bytes together. This is fixture setup only.
+func graphPreviewRetargetDependencyForCycle(t *testing.T, work, scope string, link graphstore.LinkRecord, sourceID, targetID, targetURL string) {
+	t.Helper()
+	cfg, err := configfile.LoadForDiscovery(filepath.Join(work, ".beads"))
+	if err != nil || cfg == nil {
+		t.Fatalf("load fixture workspace: config=%v err=%v", cfg, err)
+	}
+	ctx := t.Context()
+	db, closeDB, err := embeddeddolt.OpenSQL(ctx, filepath.Join(cfg.GraphWorkspace, "embeddeddolt"), cfg.DoltDatabase, "main")
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer func() {
+		if err := closeDB(); err != nil {
+			t.Error(err)
+		}
+	}()
+	tx, err := db.BeginTx(ctx, nil)
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer tx.Rollback() //nolint:errcheck // Commit below owns the successful path.
+	canonical := func(value any) []byte {
+		t.Helper()
+		raw, err := json.Marshal(value)
+		if err != nil {
+			t.Fatal(err)
+		}
+		result, err := graph.CanonicalizeJSON(raw)
+		if err != nil {
+			t.Fatal(err)
+		}
+		return result
+	}
+	linkPath := strings.TrimPrefix(link.ID, scope)
+	if linkPath == link.ID {
+		t.Fatalf("unexpected Link Scope: %s", link.ID)
+	}
+	var dependencyID string
+	if err := tx.QueryRowContext(ctx, `SELECT backing_key FROM graph_preview_catalog WHERE path=?`, linkPath).Scan(&dependencyID); err != nil {
+		t.Fatal(err)
+	}
+	changed, err := tx.ExecContext(ctx, `UPDATE dependencies SET depends_on_issue_id=? WHERE id=? AND issue_id=?`, targetID, dependencyID, sourceID)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if count, err := changed.RowsAffected(); err != nil || count != 1 {
+		t.Fatalf("retarget dependency: rows=%d err=%v", count, err)
+	}
+	link.Target = targetURL
+	linkBytes := canonical(link)
+	if _, err := tx.ExecContext(ctx, `UPDATE graph_preview_versions SET snapshot=? WHERE path=? AND version=?`, linkBytes, linkPath, link.Version); err != nil {
+		t.Fatal(err)
+	}
+	sourcePath := strings.TrimPrefix(link.Source, scope)
+	if _, err := tx.ExecContext(ctx, `UPDATE graph_preview_issue_versions SET owned=? WHERE path=? AND version=(SELECT revision FROM graph_preview_catalog WHERE path=?)`, canonical([]json.RawMessage{linkBytes}), sourcePath, sourcePath); err != nil {
+		t.Fatal(err)
+	}
+	issue, err := issueops.HydrateIssueOperationResult(ctx, tx, sourceID, false)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if _, err := tx.ExecContext(ctx, `UPDATE issue_versions SET durable_state=? WHERE issue_id=? AND revision=(SELECT current_revision FROM issues WHERE id=?)`, canonical(issue), sourceID, sourceID); err != nil {
+		t.Fatal(err)
+	}
+	if err := tx.Commit(); err != nil {
+		t.Fatal(err)
+	}
+}
+
+func TestGraphPreviewCheckCycleJSONUsesNativeIssueIDs(t *testing.T) {
+	bd := buildBDUnderTest(t)
+	work, home := t.TempDir(), t.TempDir()
+	const scope = "https://example.invalid/check-cycles/"
+	graphPolicyCLI(t, bd, work, home, nil, "", "init", "--graph-mode", "link", "--prefix", "demo", "--scope-url", scope, "--skip-hooks", "--skip-agents", "--non-interactive", "--json")
+	a := graphMixedResult[graphstore.IssueRecord](t, graphPolicyCLI(t, bd, work, home, nil, "", "create", "A", "--id", "beads/a", "--json"))
+	b := graphMixedResult[graphstore.IssueRecord](t, graphPolicyCLI(t, bd, work, home, nil, "", "create", "B", "--id", "beads/b", "--json"))
+	graphPolicyCLI(t, bd, work, home, nil, "", "create", "C", "--id", "beads/c", "--json")
+	graphPolicyCLI(t, bd, work, home, nil, "", "dep", "add", "beads/a", "beads/b", "--json")
+	bc := graphMixedResult[graphstore.DependencyResult](t, graphPolicyCLI(t, bd, work, home, nil, "", "dep", "add", "beads/b", "beads/c", "--json"))
+	graphPreviewRetargetDependencyForCycle(t, work, scope, bc.Link, b.Properties.ID, a.Properties.ID, a.ID)
+
+	stdout, stderr, exit := graphGenerationRun(t, bd, work, home, "graph", "check", "--json")
+	if exit != 1 || stderr != "" {
+		t.Fatalf("cyclic graph check: exit=%d stderr=%q stdout=%q", exit, stderr, stdout)
+	}
+	var check graphDependencyCheck
+	if err := json.Unmarshal([]byte(stdout), &check); err != nil {
+		t.Fatalf("decode cyclic graph check: %v: %s", err, stdout)
+	}
+	if check.Clean || check.Summary.CycleCount != 1 || !reflect.DeepEqual(check.Cycles, [][]string{{a.Properties.ID, b.Properties.ID}}) {
+		t.Fatalf("check JSON must identify native Issue cycle members: %+v", check)
+	}
+	if specific := graphPolicyCLI(t, bd, work, home, nil, "", "dep", "cycles"); !strings.Contains(specific, a.ID+" → "+b.ID) {
+		t.Fatalf("graph-specific cycle projection lost canonical URLs: %q", specific)
+	}
+}
 
 func TestGraphPreviewDependencyRowCapGate(t *testing.T) {
 	cmd := &cobra.Command{}
