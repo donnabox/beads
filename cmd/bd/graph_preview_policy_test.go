@@ -9,6 +9,7 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+	"strings"
 	"testing"
 	"time"
 )
@@ -247,6 +248,14 @@ func graphPolicyCLI(t *testing.T, bd, work, home string, extraEnv []string, code
 	}
 	if out.Len() != 0 {
 		t.Fatalf("refusal emitted success stdout: %s", out.String())
+	}
+	// Cobra's ordinary Args validators run before graph dispatch and retain
+	// their native plain-text errors, even for a graph workspace.
+	if strings.HasPrefix(code, "stderr:") {
+		if !strings.Contains(stderr.String(), strings.TrimPrefix(code, "stderr:")) {
+			t.Fatalf("expected Cobra refusal %q; stderr=%s", code, stderr.String())
+		}
+		return out.String()
 	}
 	var diagnostic struct {
 		Code      string `json:"code"`

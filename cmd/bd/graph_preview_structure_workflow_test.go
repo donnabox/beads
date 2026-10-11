@@ -194,6 +194,32 @@ func TestGraphPreviewStructureReads(t *testing.T) {
 	}
 	workHistory := graphPolicyCLI(t, bd, work, home, nil, "", "versions", "work", "--json")
 	parentHistory := graphPolicyCLI(t, bd, work, home, nil, "", "versions", "parent", "--json")
+	// Native dep add treats an empty alias as absent, and gives --blocked-by
+	// precedence when both nonempty aliases are present. These repeat the
+	// existing edge, so neither form may append source History.
+	for _, flags := range [][]string{
+		{"work", "parent", "--blocked-by=", "--json"},
+		{"work", "--blocked-by", "parent", "--depends-on", "isolated", "--json"},
+	} {
+		result := graphMixedResult[graphstore.DependencyResult](t, graphPolicyCLI(t, bd, work, home, nil, "", append([]string{"dep", "add"}, flags...)...))
+		if result.Changed || result.Link.ID != created.Link.ID {
+			t.Fatalf("native alias precedence changed the blocking pair for %v: %+v", flags, result)
+		}
+	}
+	for _, flags := range [][]string{
+		{"work", "parent", "--blocked-by", "isolated", "--json"},
+		{"work", "parent", "--depends-on", "isolated", "--json"},
+		{"work", "parent", "--blocked-by", "parent", "--depends-on", "isolated", "--json"},
+	} {
+		graphPolicyCLI(t, bd, work, home, nil, "stderr:cannot use both positional depends-on-id and --blocked-by/--depends-on flag", append([]string{"dep", "add"}, flags...)...)
+	}
+	graphPolicyCLI(t, bd, work, home, nil, "stderr:requires 2 arg(s)", "dep", "add", "work", "--blocked-by=", "--json")
+	if after := graphPolicyCLI(t, bd, work, home, nil, "", "versions", "work", "--json"); after != workHistory {
+		t.Fatalf("refused dependency arguments or alias no-op appended source History\nbefore: %s\nafter: %s", workHistory, after)
+	}
+	if after := graphPolicyCLI(t, bd, work, home, nil, "", "versions", "parent", "--json"); after != parentHistory {
+		t.Fatalf("refused dependency arguments or alias no-op appended target History\nbefore: %s\nafter: %s", parentHistory, after)
+	}
 	for _, tc := range []struct {
 		selector, direction string
 	}{

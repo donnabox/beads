@@ -84,6 +84,12 @@ func runGraphPreviewAddDependency(cmd *cobra.Command, args []string) error {
 	// for one edge and never bypasses the domain writer's cycle validation.
 	blockedBy, _ := cmd.Flags().GetString("blocked-by")
 	dependsOn, _ := cmd.Flags().GetString("depends-on")
+	// Match dep add's native Args contract even if another graph caller reaches
+	// this writer without Cobra's positional validation. An explicitly empty
+	// flag is inert; a nonempty flag cannot compete with a positional target.
+	if len(args) > 1 && (blockedBy != "" || dependsOn != "") {
+		return graphFailure("invalid_selector", "cannot use both positional depends-on-id and --blocked-by/--depends-on flag", 2)
+	}
 	if len(args) == 1 {
 		target := blockedBy
 		if target == "" {
