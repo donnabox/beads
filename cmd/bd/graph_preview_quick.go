@@ -26,14 +26,11 @@ func runGraphPreviewQuick(cmd *cobra.Command, args []string) error {
 	if parent != "" {
 		return graphFailure("capability_unavailable", "graph quick capture does not yet support parent-child dependencies; use bd create without --parent", 5)
 	}
-	// resolveTitle reports legacy diagnostics itself. Validate the empty quick
-	// capture case here so graph JSON callers receive one typed diagnostic.
-	if strings.TrimSpace(strings.Join(args, " ")) == "" {
+	// Ordinary q joins its positional arguments without create's flag-looking
+	// title check. Cobra's -- terminator permits titles beginning with '-'.
+	title := strings.Join(args, " ")
+	if strings.TrimSpace(title) == "" {
 		return graphFailure("invalid_properties", "title cannot be empty or whitespace-only", 2)
-	}
-	title, err := resolveTitle([]string{strings.Join(args, " ")}, "", "", "")
-	if err != nil {
-		return graphFailure("invalid_properties", err.Error(), 2)
 	}
 	priorityText, _ := cmd.Flags().GetString("priority")
 	priority, err := validation.ValidatePriority(priorityText)

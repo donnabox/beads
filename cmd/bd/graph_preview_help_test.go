@@ -12,7 +12,7 @@ import (
 func TestGraphPreviewHelpDocumentsPlaytestCommands(t *testing.T) {
 	for _, cmd := range []*cobra.Command{
 		initCmd, rememberCmd, memoriesCmd, recallCmd, createCmd, showCmd,
-		updateCmd, deleteCmd, forgetCmd, depCmd, depAddCmd, depRemoveCmd, linkCmd, closeCmd,
+		updateCmd, deleteCmd, forgetCmd, depCmd, depAddCmd, depRemoveCmd, linkCmd, quickCmd, closeCmd,
 		reopenCmd, unclaimCmd, commentsCmd, deferCmd, undeferCmd, readyCmd, listCmd, blockedCmd, graphCmd, statusCmd,
 		typesCmd, versionsCmd, historyCmd,
 	} {
@@ -30,6 +30,7 @@ func TestGraphPreviewHelpDocumentsPlaytestCommands(t *testing.T) {
 	}{
 		{"remember", rememberCmd, []string{"Graph preview workspaces:", "bd remember 'Revised policy' --id policy", "bd remember 'Revised policy' --update policy", "--create-only", "--if-revision TOKEN", "--replace-properties", "--replace-metadata", "Omitted fields remain unchanged"}},
 		{"create", createCmd, []string{"Graph preview workspaces:", "--bead-type preview-memory-v2", "--id policy", "--properties JSON", "types/NAME"}},
+		{"q", quickCmd, []string{"Graph preview workspaces:", "bd q -- -follow-up", "--parent is unavailable here", "Ordinary Issue workspaces:", "bd q \"Subtask\" --parent"}},
 		{"dep", depCmd, []string{"Graph preview workspaces:", "bd dep BLOCKER --blocks BLOCKED", "--no-cycle-check"}},
 		{"dep-remove", depRemoveCmd, []string{"Graph preview workspaces:", "bd dep remove issue blocker", "status not_found", "dependency_removed", "bd unlink"}},
 		{"link", linkCmd, []string{
