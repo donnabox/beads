@@ -1,0 +1,21 @@
+{
+  "source_commit": "e4fa8dde0d320012051cc77239d2595fe8b19b76",
+  "source_tree": "1f596fa3446e6ab6dd5f0caee4e55d21153b8e7b",
+  "parents": [
+    "a1411241c311aadbf140cfb8f5f7d2200437c84f",
+    "b7439a14d331f0f70ced0b02d186412abbc9051d"
+  ],
+  "canonical_binary_sha256": "cbfa25f484f413d7e85751db43d1380fc048a417f3455dddff3bb8c059df4f3d",
+  "compile_packages": [
+    "cmd/bd",
+    "internal/storage/graphstore",
+    "internal/legacyimport"
+  ],
+  "pure_cases_pass": 86,
+  "pure_fail": 0,
+  "pure_skip": 0,
+  "make_check_docs": "pass",
+  "combined_engine_qualified": false,
+  "database_started": false,
+  "release_staged": false
+}
