@@ -182,6 +182,16 @@ func TestGraphPreviewStructureReads(t *testing.T) {
 	if created.Link.Source != scope+"beads/work" || created.Link.Target != scope+"beads/parent" {
 		t.Fatalf("dependency endpoints lost canonical IDs: %+v", created.Link)
 	}
+	// The native positional and flag forms share one blocking writer. A repeated
+	// pair is a no-op and must not append a second source History version.
+	flagged := graphMixedResult[graphstore.DependencyResult](t, graphPolicyCLI(t, bd, work, home, nil, "", "dep", "add", "work", "--blocked-by", "parent", "--no-cycle-check", "--json"))
+	if flagged.Changed || flagged.Link.ID != created.Link.ID || flagged.Source.Revision != created.Source.Revision {
+		t.Fatalf("--blocked-by changed a repeated blocking pair: %+v", flagged)
+	}
+	alias := graphMixedResult[graphstore.DependencyResult](t, graphPolicyCLI(t, bd, work, home, nil, "", "dep", "add", "work", "--depends-on", "parent", "--json"))
+	if alias.Changed || alias.Link.ID != created.Link.ID || alias.Source.Revision != created.Source.Revision {
+		t.Fatalf("--depends-on changed a repeated blocking pair: %+v", alias)
+	}
 	workHistory := graphPolicyCLI(t, bd, work, home, nil, "", "versions", "work", "--json")
 	parentHistory := graphPolicyCLI(t, bd, work, home, nil, "", "versions", "parent", "--json")
 	for _, tc := range []struct {
@@ -277,6 +287,10 @@ func TestGraphPreviewUnmappedIssueStructureRefusesWithoutMutation(t *testing.T) 
 	before := legacyUpgradeTreeDigest(t, work)
 
 	for _, args := range [][]string{
+		{"create", "Child", "--parent", "original", "--json"},
+		{"dep", "add", "original", "replacement", "--type", "parent-child", "--json"},
+		{"dep", "add", "original", "replacement", "--type", "duplicates", "--json"},
+		{"dep", "add", "original", "replacement", "--type", "supersedes", "--json"},
 		{"duplicate", "original", "--of", "replacement", "--json"},
 		{"supersede", "original", "--with", "replacement", "--json"},
 		{"epic", "status", "--json"},

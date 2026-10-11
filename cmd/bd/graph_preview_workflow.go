@@ -76,8 +76,22 @@ func runGraphPreviewAddDependency(cmd *cobra.Command, args []string) error {
 	if err := graphPreviewWritePolicy(); err != nil {
 		return err
 	}
-	if err := graphPreviewFlags(cmd, "type", "link-type", "resource-type", "id", "if-source-revision", "unconditional-source"); err != nil {
+	if err := graphPreviewFlags(cmd, "type", "link-type", "resource-type", "id", "if-source-revision", "unconditional-source", "blocked-by", "depends-on", "no-cycle-check"); err != nil {
 		return err
+	}
+	// Keep the ordinary single-edge spellings. Native --blocked-by wins if both
+	// aliases are supplied; --no-cycle-check suppresses only a post-add warning
+	// for one edge and never bypasses the domain writer's cycle validation.
+	blockedBy, _ := cmd.Flags().GetString("blocked-by")
+	dependsOn, _ := cmd.Flags().GetString("depends-on")
+	if len(args) == 1 {
+		target := blockedBy
+		if target == "" {
+			target = dependsOn
+		}
+		if target != "" {
+			args = append(args, target)
+		}
 	}
 	if len(args) != 2 {
 		return graphFailure("invalid_selector", "graph Dependency creation requires two Bead IDs or beads/PATH arguments", 2)
@@ -162,7 +176,7 @@ func runGraphPreviewDepBlocks(cmd *cobra.Command, args []string) error {
 
 func graphPreviewInsertDependency(sourcePath, targetPath, linkPath, sourceRevision, sourceLabel, targetLabel string) error {
 	return withGraphStore(func(ctx context.Context, store *graphstore.Store) (any, string, error) {
-		result, err := store.AddDependency(ctx, graphstore.DependencyRequest{Path: linkPath, SourcePath: sourcePath, TargetPath: targetPath, Actor: getActorWithGit(), ExpectedSourceRevision: sourceRevision})
+		result, err := store.AddDependency(ctx, graphstore.DependencyRequest{Path: linkPath, SourcePath: sourcePath, TargetPath: targetPath, Type: types.DepBlocks, Actor: getActorWithGit(), ExpectedSourceRevision: sourceRevision})
 		if err != nil {
 			if strings.Contains(err.Error(), "operation requires a live durable Issue, not generic") {
 				return nil, "", fmt.Errorf("blocking Link Type requires two live Issues; use an informational Type such as types/preview-related-v2 for Memory endpoints: %w", err)

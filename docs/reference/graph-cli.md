@@ -519,6 +519,9 @@ endpoint. See the [Graph CLI Specification (Draft)](/reference/graph-cli-specifi
 separate blocking Dependency unlink rules and Link Type bounds.
 
 For two live Issues, `bd dep add BLOCKED BLOCKER` creates a blocking Link.
+The native `bd dep add BLOCKED --blocked-by BLOCKER` and `--depends-on BLOCKER`
+spellings create the same edge. On one edge, `--no-cycle-check` suppresses only
+the post-add warning; it does not bypass the writer's cycle check.
 `bd dep BLOCKER --blocks BLOCKED` is the same operation with the arguments in
 the opposite order. Add `--id links/ID` to `bd dep add` when the Link needs a
 chosen local identity; repeating the same pair with that ID or no ID is a

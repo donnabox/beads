@@ -156,6 +156,9 @@ Dependency between two live Issues. Bare bd dep prints help; the ordinary
 --no-cycle-check option is unavailable in graph preview workspaces.`},
 		{depAddCmd, `Use bd dep add issue blocker for a blocking
 Dependency between two live Issues, optionally with --id links/ID.
+The ordinary --blocked-by blocker and --depends-on blocker spellings replace
+the second positional argument. For a single edge, --no-cycle-check only
+suppresses a post-add warning; the domain writer still validates cycles.
 bd dep blocker --blocks issue is the same operation with reversed arguments.
 Memory endpoints, remote routing and bulk dependency flags are unavailable
 in this preview.`},
