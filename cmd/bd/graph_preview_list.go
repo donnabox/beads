@@ -112,7 +112,7 @@ func graphIssueListInput(cmd *cobra.Command, argv []string) (listInput, bool, er
 	}
 	flat, _ := cmd.Flags().GetBool("flat")
 	if (cmd.Flags().Changed("format") && !structured) || (cmd.Flags().Changed("flat") && !flat) {
-		return fail("capability_unavailable", "graph list supports flat output or --format records-json; tree and legacy JSON are unavailable", 5)
+		return fail("capability_unavailable", "graph list supports flat output, Issue-only --json, or --format records-json; tree and --format json are unavailable", 5)
 	}
 	if err := graphIssueListRepeatedFilters(cmd, argv); err != nil {
 		return fail("capability_unavailable", err.Error(), 5)
