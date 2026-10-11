@@ -6,6 +6,8 @@ Issue. Each heading may contain ordinary `### Priority`, `### Type`,
 and `### Labels` sections. The ordinary parser, template lint and native Issue
 batch writer are reused. All headings and graph Issue identities land in one
 transaction, so a refused item leaves none of the file's Issues behind.
+`--json` returns the ordinary bare array of Issue objects with Scope-relative
+IDs, preserving the familiar fields rather than using a graph envelope.
 
 This bounded route requires durable Issues with native History. It refuses
 `### Dependencies`, ephemeral/no-history storage, infrastructure Issue types,

@@ -3,11 +3,13 @@
 package main
 
 import (
+	"encoding/json"
 	"os"
 	"path/filepath"
 	"testing"
 
 	"github.com/steveyegge/beads/internal/storage/graphstore"
+	"github.com/steveyegge/beads/internal/types"
 )
 
 // A markdown file is one native Issue batch and one graph catalog transaction.
@@ -35,23 +37,35 @@ func TestGraphPreviewCreateMarkdownBatchWorkflow(t *testing.T) {
 			if err := os.WriteFile(plan, []byte("## First heading\n\n### Description\nFirst body.\n\n### Priority\n1\n\n### Type\nbug\n\n## Second heading\n\n### Description\nSecond body.\n"), 0600); err != nil {
 				t.Fatal(err)
 			}
-			records := graphMixedResult[[]graphstore.IssueRecord](t, call("", "create", "--file", plan))
-			if len(records) != 2 || records[0].Properties.Title != "First heading" || records[0].Properties.Priority != 1 || records[0].Properties.Description != "First body." || records[1].Properties.Title != "Second heading" {
-				t.Fatalf("markdown batch fields: %+v", records)
+			var issues []*types.Issue
+			raw := call("", "create", "--file", plan)
+			if err := json.Unmarshal([]byte(raw), &issues); err != nil {
+				t.Fatalf("markdown --json must be the ordinary bare Issue array: %v\n%s", err, raw)
 			}
-			for _, record := range records {
-				shown := graphMixedResult[graphstore.IssueRecord](t, call("", "show", record.ID, "--format", "graph-json"))
-				if shown.Revision != record.Revision || shown.Properties.ID != record.Properties.ID {
-					t.Fatalf("markdown Issue mapping differs: created=%+v shown=%+v", record, shown)
+			if len(issues) != 2 || issues[0].Title != "First heading" || issues[0].Priority != 1 || issues[0].Description != "First body." || issues[1].Title != "Second heading" {
+				t.Fatalf("markdown batch fields: %+v", issues)
+			}
+			for _, issue := range issues {
+				shown := graphMixedResult[graphstore.IssueRecord](t, call("", "show", issue.ID, "--format", "graph-json"))
+				if shown.Properties.Title != issue.Title || shown.Properties.ID == issue.ID || shown.ID != "https://example.invalid/markdown/"+issue.ID {
+					t.Fatalf("markdown Issue mapping differs: created=%+v shown=%+v", issue, shown)
 				}
 			}
 			if err := os.WriteFile(plan, []byte("## Must not land\n\n## Has a dependency\n\n### Dependencies\nmissing-issue\n"), 0600); err != nil {
 				t.Fatal(err)
 			}
 			call("capability_unavailable", "create", "--file", plan)
+			if err := os.WriteFile(plan, []byte("No level-two Issue headings here.\n"), 0600); err != nil {
+				t.Fatal(err)
+			}
+			call("invalid_properties", "create", "--file", plan)
+			if err := os.WriteFile(plan, []byte("## Needs validation\n\n### Type\nbug\n\n### Description\nNo reproduction steps.\n"), 0600); err != nil {
+				t.Fatal(err)
+			}
+			call("invalid_properties", "create", "--file", plan, "--validate")
 			page := graphMixedResult[graphstore.IssueListPage](t, call("", "list", "--all", "--format=records-json"))
 			if len(page.Items) != 2 {
-				t.Fatalf("refused markdown file left a partial Issue: %+v", page.Items)
+				t.Fatalf("refused markdown file or lint left a partial Issue: %+v", page.Items)
 			}
 		})
 	}
