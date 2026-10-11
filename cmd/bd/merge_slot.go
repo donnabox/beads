@@ -114,6 +114,9 @@ func init() {
 }
 
 func runMergeSlotCreate(cmd *cobra.Command, args []string) error {
+	if graphPreviewActive {
+		return runGraphPreviewMergeSlot(cmd)
+	}
 	if usesProxiedServer() {
 		return HandleErrorRespectJSON("merge-slot create is not supported in proxied-server mode")
 	}
@@ -148,6 +151,9 @@ func runMergeSlotCreate(cmd *cobra.Command, args []string) error {
 }
 
 func runMergeSlotCheck(cmd *cobra.Command, args []string) error {
+	if graphPreviewActive {
+		return runGraphPreviewMergeSlot(cmd)
+	}
 	if usesProxiedServer() {
 		return HandleErrorRespectJSON("merge-slot check is not supported in proxied-server mode")
 	}
@@ -208,6 +214,9 @@ func runMergeSlotCheck(cmd *cobra.Command, args []string) error {
 }
 
 func runMergeSlotAcquire(cmd *cobra.Command, args []string) error {
+	if graphPreviewActive {
+		return runGraphPreviewMergeSlot(cmd)
+	}
 	if usesProxiedServer() {
 		return HandleErrorRespectJSON("merge-slot acquire is not supported in proxied-server mode")
 	}
@@ -293,6 +302,9 @@ func runMergeSlotAcquire(cmd *cobra.Command, args []string) error {
 }
 
 func runMergeSlotRelease(cmd *cobra.Command, args []string) error {
+	if graphPreviewActive {
+		return runGraphPreviewMergeSlot(cmd)
+	}
 	if usesProxiedServer() {
 		return HandleErrorRespectJSON("merge-slot release is not supported in proxied-server mode")
 	}
