@@ -30,7 +30,8 @@ that would collapse distinct supplied comments refuses the whole transaction.
 [source-checks.json](source-checks.json) pins source-file hashes and the parent head.
 [pure.jsonl](pure.jsonl) records **103 passing cases/subtests, zero failures/skips**
 across parser, pure storage preparation/verification and CLI guard/error/help
-checks. All three packages compiled; this run opens no database. [Lint](lint.log)
+checks. All three packages compiled; this run opens no database. [Canonical build provenance](build.json) pins the private installed binary; it is
+build evidence only. [Lint](lint.log)
 passed all required profiles with zero findings and [docs](docs.log) passed.
 [Comment benchmark](comment-benchmark.log) measures verification at 10/100/1,000
 comments, roughly 4/7/37 microseconds on this machine. It measures the helper only,
@@ -60,7 +61,7 @@ UTF-8, config, Memory verification and comment-budget repairs. Singleton ambiguo
 IDs require explicit configuration rather than an invented prefix; config presence
 is checked directly rather than requiring a changed-row count of one.
 
-Native implementation review found the old cancellation test only returned an
+[Native implementation review](native-review.txt) found the old cancellation test only returned an
 error and the prefix example omitted the flag on apply. Both are repaired and
 bounded native verification reports no confirmed blocker. Actual Claude frozen
 implementation review is still running; its findings and final disposition must
