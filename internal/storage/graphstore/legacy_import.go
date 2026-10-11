@@ -209,7 +209,7 @@ func (s *Store) ImportLegacyWithPrefix(ctx context.Context, input legacyimport.B
 func requireEmptyLegacyTarget(ctx context.Context, tx *sql.Tx) error {
 	// Include reserved/deleted allocations and unmapped native rows: deleting
 	// everything or bypassing graph writers never makes a workspace fresh again.
-	for _, table := range []string{"graph_preview_catalog", "issues", "wisps", "dependencies", "comments", "issue_versions", "graph_preview_versions", "graph_preview_issue_versions"} {
+	for _, table := range []string{"graph_preview_catalog", "graph_preview_payloads", "graph_preview_links", "issues", "wisps", "dependencies", "comments", "labels", "wisp_dependencies", "wisp_comments", "wisp_labels", "issue_versions", "graph_preview_versions", "graph_preview_issue_versions"} {
 		var count int
 		//nolint:gosec // G201: table is from the fixed internal list above.
 		if err := tx.QueryRowContext(ctx, "SELECT COUNT(*) FROM "+table).Scan(&count); err != nil {
@@ -218,6 +218,15 @@ func requireEmptyLegacyTarget(ctx context.Context, tx *sql.Tx) error {
 		if count != 0 {
 			return fmt.Errorf("%w: legacy import requires an empty fresh graph workspace; %s is occupied (repeat imports do not update or duplicate data)", storage.ErrValidation, table)
 		}
+	}
+	// Classic Memories are config-backed live data, including empty values.
+	// Infrastructure configuration alone does not make a destination occupied.
+	var memories int
+	if err := tx.QueryRowContext(ctx, "SELECT COUNT(*) FROM config WHERE LEFT(`key`,10)='kv.memory.'").Scan(&memories); err != nil {
+		return err
+	}
+	if memories != 0 {
+		return fmt.Errorf("%w: legacy import requires an empty fresh graph workspace; legacy KV Memories are present", storage.ErrValidation)
 	}
 	return nil
 }

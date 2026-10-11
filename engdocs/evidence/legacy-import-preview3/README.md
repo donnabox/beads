@@ -94,3 +94,24 @@ otherwise read current state and give false retained-state evidence. This patch
 repair is confirmed by a [bounded native review](prepared-revision-review.txt),
 but is not an executed installed test or new runtime qualification. Full
 active-source council remains a gate after genuine fixture activation.
+
+## Fresh destination completeness repair
+
+The freshness guard also refuses unrelated graph payload/Link rows, native
+labels and wisp auxiliary rows, and classic config-backed KV Memories including
+empty values. Ordinary configuration remains allowed. Refusal returns zero
+result and preserves preexisting rows rather than adopting or repairing them.
+The authored TestLegacyImportFreshDataPlanes checks apply/dry-run in both modes,
+all those data planes, full row/prefix/writer-token state and a configuration
+control. Its runtime cases are unrun pending explicit Janet engine handback.
+
+The [initial review manifest](freshness-manifest.json) and
+[prompt](freshness-prompt.txt) identify the bounded actual Claude review now
+running. [Native review](freshness-native.txt) found two fixture hazards, both repaired: wisp comment
+and label foreign keys require the test-only orphan bypass, and failed FK reset
+must discard the borrowed connection. The [repaired source hashes](freshness-repaired-manifest.json)
+identify current source. [Pure preparation checks](freshness-pure-repaired.log) passed13cases with0failures/skips,
+and [lint allprofiles](freshness-lint-repaired.log) passed; they compile the new
+engine-test source without running it. Earlier council/build/runtime evidence
+qualifies its recorded source only. The current repair needs bounded council
+completion, a new canonical build and fresh two-mode proof.

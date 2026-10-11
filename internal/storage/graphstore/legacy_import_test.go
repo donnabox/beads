@@ -6,6 +6,7 @@ import (
 	"context"
 	"crypto/sha256"
 	"database/sql"
+	"database/sql/driver"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -245,7 +246,7 @@ func parseLegacyFixture(t *testing.T, input string) legacyimport.Batch {
 func legacyImportState(t *testing.T, ctx context.Context, s *Store) map[string]string {
 	t.Helper()
 	state := reopenState(t, ctx, s)
-	for _, table := range []string{"labels", "comments", "child_counters"} {
+	for _, table := range []string{"labels", "comments", "child_counters", "wisps", "wisp_dependencies", "wisp_comments", "wisp_labels", "config"} {
 		rows, err := s.db.QueryContext(ctx, "SELECT * FROM "+table)
 		if err != nil {
 			t.Fatal(err)
@@ -288,6 +289,100 @@ func legacyImportState(t *testing.T, ctx context.Context, s *Store) map[string]s
 	}
 	state["issue_prefix"] = prefix
 	return state
+}
+
+// Controlled contamination is confined to disposable test stores. Foreign-key
+// checks are disabled on one borrowed connection only for orphan fixtures and
+// restored before that connection returns to the pool.
+func legacyImportContaminate(ctx context.Context, s *Store, query string, orphan bool) (err error) {
+	conn, err := s.db.Conn(ctx)
+	if err != nil {
+		return err
+	}
+	defer func() { err = errors.Join(err, conn.Close()) }()
+	if orphan {
+		if _, err := conn.ExecContext(ctx, "SET FOREIGN_KEY_CHECKS=0"); err != nil {
+			return err
+		}
+		defer func() {
+			restore, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+			defer cancel()
+			_, resetErr := conn.ExecContext(restore, "SET FOREIGN_KEY_CHECKS=1")
+			if resetErr != nil {
+				// A failed reset must not return a permissive session to the pool.
+				discardErr := conn.Raw(func(any) error { return driver.ErrBadConn })
+				resetErr = errors.Join(resetErr, discardErr)
+			}
+			err = errors.Join(err, resetErr)
+		}()
+	}
+	_, err = conn.ExecContext(ctx, query)
+	return err
+}
+
+func TestLegacyImportFreshDataPlanes(t *testing.T) {
+	for _, backend := range []string{"embedded", "server"} {
+		t.Run(backend, func(t *testing.T) {
+			ctx, options := issueExperimentOptions(t, backend)
+			s, err := OpenExisting(ctx, options)
+			if err != nil {
+				t.Fatal(err)
+			}
+			t.Cleanup(func() {
+				if err := s.Close(); err != nil {
+					t.Error(err)
+				}
+			})
+			batch := parseLegacyFixture(t, legacyImportFixture)
+			cases := []struct {
+				name, insert, remove, message string
+				orphan                        bool
+			}{
+				{"payload", "INSERT INTO graph_preview_payloads(path,properties) VALUES('beads/orphan','{}')", "DELETE FROM graph_preview_payloads WHERE path='beads/orphan'", "graph_preview_payloads", false},
+				{"link", "INSERT INTO graph_preview_links(path,source_path,target_path,properties,attribution) VALUES('links/orphan','beads/absent','beads/absent','{}','{}')", "DELETE FROM graph_preview_links WHERE path='links/orphan'", "graph_preview_links", false},
+				{"label", "INSERT INTO labels(issue_id,label) VALUES('absent','retained')", "DELETE FROM labels WHERE issue_id='absent'", "labels", true},
+				{"wisp-dependency", "INSERT INTO wisp_dependencies(id,issue_id,depends_on_external) VALUES('orphan-dep','absent','external:target')", "DELETE FROM wisp_dependencies WHERE id='orphan-dep'", "wisp_dependencies", true},
+				{"wisp-comment", "INSERT INTO wisp_comments(id,issue_id,text) VALUES('orphan-comment','absent','retained')", "DELETE FROM wisp_comments WHERE id='orphan-comment'", "wisp_comments", true},
+				{"wisp-label", "INSERT INTO wisp_labels(issue_id,label) VALUES('absent','retained')", "DELETE FROM wisp_labels WHERE issue_id='absent'", "wisp_labels", true},
+				{"kv-memory", "INSERT INTO config (`key`,value) VALUES('kv.memory.retained','original')", "DELETE FROM config WHERE `key`='kv.memory.retained'", "legacy KV Memories", false},
+				{"empty-kv-memory", "INSERT INTO config (`key`,value) VALUES('kv.memory.retained','')", "DELETE FROM config WHERE `key`='kv.memory.retained'", "legacy KV Memories", false},
+			}
+			for _, test := range cases {
+				t.Run(test.name, func(t *testing.T) {
+					if err := legacyImportContaminate(ctx, s, test.insert, test.orphan); err != nil {
+						t.Fatal(err)
+					}
+					before := legacyImportState(t, ctx, s)
+					for _, dry := range []bool{true, false} {
+						t.Run(fmt.Sprintf("dry=%t", dry), func(t *testing.T) {
+							got, err := s.ImportLegacy(ctx, batch, "importer", dry)
+							if !errors.Is(err, storage.ErrValidation) || !strings.Contains(err.Error(), test.message) || !reflect.DeepEqual(got, LegacyImportResult{}) {
+								t.Fatalf("occupied plane admitted or result leaked: %+v %v", got, err)
+							}
+							if !reflect.DeepEqual(before, legacyImportState(t, ctx, s)) {
+								t.Fatal("refusal changed existing rows, prefix or writer token")
+							}
+						})
+					}
+					if _, err := s.db.ExecContext(ctx, test.remove); err != nil {
+						t.Fatal(err)
+					}
+				})
+			}
+			// Similar configuration keys are not Memories. Ordinary config does
+			// not disqualify the fresh destination or get overwritten by dry-run.
+			if _, err := s.db.ExecContext(ctx, "INSERT INTO config (`key`,value) VALUES('kv.memoryx.retained','ordinary config'),('iris.test.setting','kept')"); err != nil {
+				t.Fatal(err)
+			}
+			before := legacyImportState(t, ctx, s)
+			if _, err := s.ImportLegacy(ctx, batch, "importer", true); err != nil {
+				t.Fatalf("ordinary configuration disqualified fresh destination: %v", err)
+			}
+			if !reflect.DeepEqual(before, legacyImportState(t, ctx, s)) {
+				t.Fatal("dry-run changed ordinary configuration")
+			}
+		})
+	}
 }
 
 func TestLegacyImportAtomicityAndPersistence(t *testing.T) {
