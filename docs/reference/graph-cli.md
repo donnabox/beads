@@ -163,6 +163,40 @@ exit status zero. For one Issue, `--if-revision TOKEN` from `bd show --json`
 refuses a stale close before changing that Issue. An already closed Issue is a
 no-op and retains its original close reason and version.
 
+## Issue coordination
+
+`bd heartbeat ISSUE` refreshes the current holder's in-progress lease without
+creating an Issue version or History event. `bd reclaim` recovers expired
+Issue leases through the native Issue writer; its `--older-than`, `--id`,
+assignee, label and replica selectors retain their ordinary meanings. Both
+commands accept local Issue IDs in a graph workspace. `bd state ISSUE
+DIMENSION` reads a state label, and `bd state list ISSUE` reads all state
+labels. `bd set-state` is still unavailable. Bare `bd status` reports the
+ordinary Issue summary; `bd status --graph` reports graph capabilities.
+
+`bd merge-slot create`, `check`, `acquire` and `release` use an Issue-only
+coordination slot. Acquire accepts `--holder` and `--wait`; release accepts
+`--holder`. The graph route preserves the ordinary flat JSON reports and
+holder/queue behavior. The broader `bd gate` workflow remains unavailable.
+
+## Blocking dependency views
+
+`bd dep list ISSUE`, `bd dep tree ISSUE`, `bd dep cycles`, `bd graph ISSUE`
+and `bd graph check` read the current blocking Dependency graph. The tree
+supports `--direction down|up|both`; its both-direction human view labels
+dependencies and dependents separately. `bd graph check --json` returns the
+ordinary flat check object and local Issue IDs in its `cycles`. The existing
+`bd graph ISSUE --view generic` still traverses generic Links.
+
+These views read a complete bounded graph snapshot. `bd graph ISSUE` and
+`bd dep tree ISSUE` refuse a positive `--max-rows` cap that would make their
+blocking answer incomplete.
+`dep list/tree/cycles --json` and `graph ISSUE --json` refuse until their
+ordinary JSON shapes can be preserved; use the human view or the explicit
+generic graph JSON view. Parent-child `children`, duplicate, supersede and
+epic workflows still refuse because the corresponding Link mappings are not
+installed.
+
 ## Update and delete Beads
 
 For a Memory, `bd remember --id ID` changes only the fields you supply if
