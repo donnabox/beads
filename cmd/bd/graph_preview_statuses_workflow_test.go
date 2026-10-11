@@ -50,7 +50,7 @@ func TestGraphPreviewStatusesWorkflow(t *testing.T) {
 			if !strings.Contains(human, "Built-in statuses:") || !strings.Contains(human, "No custom statuses configured.") {
 				t.Fatalf("status inventory missing human details: %q", human)
 			}
-			graphPolicyCLI(t, bd, work, home, nil, "invalid_selector", "statuses", "unexpected")
+			graphPolicyCLI(t, bd, work, home, nil, "invalid_selector", "statuses", "unexpected", "--json")
 			var again any
 			if err := json.Unmarshal([]byte(graphPolicyCLI(t, bd, work, home, nil, "", "statuses", "--json")), &again); err != nil {
 				t.Fatal(err)

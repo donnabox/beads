@@ -89,8 +89,8 @@ func TestGraphPreviewIssueCommentWriteWorkflow(t *testing.T) {
 			refuse("invalid_properties", "comment", "beads/work", " ")
 			refuse("permission_denied", "comment", "beads/work", "No", "--readonly")
 			refuse("permission_denied", "comments", "add", "beads/work", "No", "--readonly")
-			refuse("capability_unavailable", "comment", "beads/memory", "No")
-			refuse("capability_unavailable", "comments", "add", "beads/memory", "No")
+			refuse("invalid_properties", "comment", "beads/memory", "No")
+			refuse("invalid_properties", "comments", "add", "beads/memory", "No")
 		})
 	}
 }
