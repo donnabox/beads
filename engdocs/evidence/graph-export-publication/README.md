@@ -13,8 +13,8 @@ caller-owned and may retain partial bytes after failure. Successful final writes
 or file finalization remain successful despite cancellation during or afterward.
 The inherited filesystem boundary lacks directory fsync/power-loss proof,
 non-Unix rename atomicity, and cleanup causes suppressed by atomicfile. No core
-atomicfile behavior is changed. A native Low doc-qualification finding remains
-pending actual Claude completion before source wording is updated.
+atomicfile behavior is changed. Platform permissions/rename/symlink/ACL and physical cleanup limits are now
+explicit in source comments. Empty paths refuse before file creation.
 
 [Canonical pure run](pure.log):9 roots/27 cases,0failures/0skips. Temporary
 files exercise replacement, permission preservation on Unix, cancellation,
@@ -31,3 +31,16 @@ atomic search found external gastownhall/beads#6875 (rjgeng); its full three-fil
 diff concerns classic relation loader errors, no publication mechanics. No code
 adopted, contributor PR modified, closed, superseded or merged. Its contribution
 is preserved. This slice is draft progress and does not close full export10.
+
+
+## Repaired publication contract and tests
+
+The [actual initial Claude review](claude-initial.txt) completed exit0;
+[dispositions](dispositions.md) separate confirmed repairs from speculative or
+inherited changes. Windows permission disclosure and umask-safe preservation
+are repaired, alongside empty-path refusal and input byte immutability tests.
+[Repaired pure evidence](final-pure-umask077.log) passes10 roots/28 cases with
+zero failures/skips under umask077. [Manifest](final-manifest.txt),
+[prompt](final-prompt.txt) and [native confirmation](final-native.txt) identify
+the successor packet; actual Claude is running. Current source still chooses
+no public format, default permission or CLI contract.

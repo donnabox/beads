@@ -55,10 +55,14 @@ func TestPublishFileReplacement(t *testing.T) {
 				t.Fatal(err)
 			}
 			data := bytes.Repeat([]byte{0xff}, size) // The sink imposes no JSON/UTF-8 format.
+			originalData := bytes.Clone(data)
 			if err := PublishFile(context.Background(), path, data, 0o640); err != nil {
 				t.Fatal(err)
 			}
 			requireFile(t, path, data)
+			if !bytes.Equal(data, originalData) {
+				t.Fatal("publication changed caller data")
+			}
 			requireNoTemps(t, path)
 			info, err := os.Stat(path)
 			if err != nil {
@@ -149,6 +153,10 @@ func TestPublishFileFailurePreservesDestination(t *testing.T) {
 			if err := os.WriteFile(path, original, 0o644); err != nil {
 				t.Fatal(err)
 			}
+			beforeInfo, err := os.Stat(path)
+			if err != nil {
+				t.Fatal(err)
+			}
 			ctx, cancel := context.WithCancel(context.Background())
 			defer cancel()
 			writes, closes, aborts := 0, 0, 0
@@ -193,7 +201,7 @@ func TestPublishFileFailurePreservesDestination(t *testing.T) {
 					},
 				}, nil
 			}
-			err := publishFile(ctx, path, bytes.Repeat([]byte("x"), tc.dataSize), 0o600, factory)
+			err = publishFile(ctx, path, bytes.Repeat([]byte("x"), tc.dataSize), 0o600, factory)
 			if !errors.Is(err, tc.want) {
 				t.Fatalf("error = %v, want %v", err, tc.want)
 			}
@@ -217,7 +225,7 @@ func TestPublishFileFailurePreservesDestination(t *testing.T) {
 			requireFile(t, path, original)
 			requireNoTemps(t, path)
 			info, err := os.Stat(path)
-			if err != nil || (runtime.GOOS != "windows" && info.Mode().Perm() != 0o644) {
+			if err != nil || info.Mode().Perm() != beforeInfo.Mode().Perm() {
 				t.Fatalf("original permissions changed: %v %v", info, err)
 			}
 		})
@@ -343,10 +351,26 @@ func TestWriteStreamEmptyAndNilWriter(t *testing.T) {
 	}
 	var got bytes.Buffer
 	data := bytes.Repeat([]byte("data"), writeChunkBytes)
+	originalData := bytes.Clone(data)
 	if err := WriteStream(context.Background(), &got, data); err != nil {
 		t.Fatal(err)
 	}
 	if !bytes.Equal(got.Bytes(), data) {
 		t.Fatal("multi-write stream changed bytes")
+	}
+	if !bytes.Equal(data, originalData) {
+		t.Fatal("stream changed caller data")
+	}
+}
+
+func TestPublishFileEmptyPathBeforeIO(t *testing.T) {
+	called := false
+	err := publishFile(context.Background(), "", []byte("data"), 0o600,
+		func(string, os.FileMode) (publicationWriter, error) {
+			called = true
+			return nil, errors.New("unexpected create")
+		})
+	if called || !errors.Is(err, ErrEmptyPath) {
+		t.Fatalf("empty path: create=%t error=%v", called, err)
 	}
 }

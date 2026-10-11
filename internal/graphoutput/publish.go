@@ -16,10 +16,13 @@ import (
 var (
 	ErrNilContext = errors.New("graph output requires a context")
 	ErrNilWriter  = errors.New("graph output requires a writer")
+	ErrEmptyPath  = errors.New("graph output requires a destination path")
 )
 
 const writeChunkBytes = 32 * 1024
 
+// publicationWriter is the private atomicfile adapter and test seam. Abort
+// must be safe after any Close attempt; only returned errors can be preserved.
 type publicationWriter interface {
 	io.Writer
 	Close() error
@@ -28,13 +31,20 @@ type publicationWriter interface {
 
 type writerFactory func(string, os.FileMode) (publicationWriter, error)
 
-// PublishFile atomically replaces path with data using caller-selected permissions.
+// PublishFile replaces path using atomicfile's platform rename semantics.
+// Unix replacement is atomic; other platforms may not provide that guarantee.
+// Permissions use os.Chmod: Unix mode bits are honored; on Windows only the
+// read-only attribute is set, and the file inherits the parent directory's ACL.
+// Replacing a read-only Windows destination may fail. Symlink destinations are
+// replaced rather than followed; existing ownership/ACLs are not retained.
 // The caller owns data and must not modify it during publication. Cancellation
 // is checked before creating the temporary file, before each write, and just
 // before Close enters fsync/rename. Close itself is not interruptible: successful
 // publication returns success even if cancellation races with or follows it.
-// This protects readers from partial files, not power loss or missing directory
-// fsync. Failures abort the owned writer, preserving operation and abort errors.
+// Unix rename protects readers from partial files, not power loss or missing directory
+// fsync. Failures abort the owned writer, preserving returned operation/abort
+// errors; atomicfile suppresses some physical cleanup errors and cannot retry
+// cleanup after a failed Close.
 func PublishFile(ctx context.Context, path string, data []byte, perm os.FileMode) error {
 	return publishFile(ctx, path, data, perm, func(path string, perm os.FileMode) (publicationWriter, error) {
 		return atomicfile.Create(path, perm)
@@ -44,6 +54,9 @@ func PublishFile(ctx context.Context, path string, data []byte, perm os.FileMode
 func publishFile(ctx context.Context, path string, data []byte, perm os.FileMode, create writerFactory) (err error) {
 	if err := contextError(ctx); err != nil {
 		return err
+	}
+	if path == "" {
+		return ErrEmptyPath
 	}
 	w, err := create(path, perm)
 	if err != nil {
