@@ -106,6 +106,10 @@ func TestGraphPreviewLegacyImportSummaryPrefix(t *testing.T) {
 	if !strings.Contains(withPrefix, "Workspace Issue prefix: web-app.") {
 		t.Fatalf("adopted prefix not disclosed: %s", withPrefix)
 	}
+	preview := graphPreviewLegacyImportSummary("Would import", "stdin", graphstore.LegacyImportResult{IssuePrefix: "web-app", DryRun: true})
+	if !strings.Contains(preview, "Would adopt Issue prefix: web-app.") || strings.Contains(preview, "Workspace Issue prefix:") {
+		t.Fatalf("dry-run prefix adoption claimed: %s", preview)
+	}
 	memories := graphPreviewLegacyImportSummary("Would import", "stdin", graphstore.LegacyImportResult{Memories: 1})
 	if strings.Contains(memories, "Issue prefix:") {
 		t.Fatalf("memory-only prefix invented: %s", memories)

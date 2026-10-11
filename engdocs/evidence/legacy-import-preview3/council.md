@@ -16,7 +16,22 @@ Donna. This is source review, not runtime or release qualification.
 | Duplicate owned-Link reads | Claude, Low | Retain independent post-write graph validation within existing resource/read/time ceilings; measure engine cost before widening shared core interfaces. |
 
 The self-contained final repair prompt was supplied to both seats. Native Codex
-reports no confirmed introduced blocker. Actual Claude bounded repair review is
-still active; collect its raw result and disposition before marking council done.
+reports no confirmed introduced blocker. [Actual Claude bounded repair review](repair-claude.txt) and final confirmation
+completed. Its confirmed caller-isolation test defect is repaired with a duplicate
+before a later distinct label; actual JSON-minus-tag and field-specific validation
+checks cover the SDK assumptions. Dry-run output now says it would adopt the
+prefix; the strict read error carries its origin. Native final confirmation
+reports no introduced blocker.
+
+Claude's second pass requested a one-way cleanup assertion to permit legitimate
+driver error variance; its final pass requested guarding the reverse direction
+for clean rollback. The returned error chain does not expose a successful rollback
+acknowledgment separately, and absence of sql.ErrTxDone cannot prove clean rollback.
+We keep ErrTxDone => uncertainty, allow other uncertain cleanup errors, retain
+context identity/unchanged-state assertions, and remove the test comment that
+claimed to assert the clean branch. The conservative core classification remains
+unchanged; no engine-specific inference or new core hook is introduced. The final
+summary nit uses an explicit if/else. These dispositions resolve the concrete
+introduced defects without claiming runtime evidence.
 The genuine completeness fixture and fresh installed two-engine no-skip gate
 remain mandatory. Older installed receipts do not qualify these repairs.

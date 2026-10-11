@@ -17,6 +17,7 @@ import (
 
 	graph "github.com/steveyegge/beads/graphops"
 	"github.com/steveyegge/beads/internal/legacyimport"
+	"github.com/steveyegge/beads/internal/storage"
 	"github.com/steveyegge/beads/internal/types"
 	publicops "github.com/steveyegge/beads/issueops"
 )
@@ -75,17 +76,21 @@ func TestLegacyImportPrefixAdmission(t *testing.T) {
 }
 
 func TestLegacyImportLabelSetAndInternalState(t *testing.T) {
-	issue := &types.Issue{ID: "old-a", Title: "Imported", Labels: []string{"two", "one", "two"}}
+	issue := &types.Issue{ID: "old-a", Title: "Imported", Labels: []string{"one", "two", "one", "three"}}
 	prepared, err := prepareLegacyImport(legacyimport.Batch{Issues: []*types.Issue{issue}}, "importer")
-	if err != nil || !reflect.DeepEqual(prepared.Issues[0].Labels, []string{"two", "one"}) || !reflect.DeepEqual(issue.Labels, []string{"two", "one", "two"}) {
+	if err != nil || !reflect.DeepEqual(prepared.Issues[0].Labels, []string{"one", "two", "three"}) || !reflect.DeepEqual(issue.Labels, []string{"one", "two", "one", "three"}) {
 		t.Fatalf("label set or caller changed: %+v %+v %v", prepared, issue, err)
 	}
 	plane := false
-	for _, internal := range []*types.Issue{
-		{WispPlaneOverride: &plane}, {IDPrefix: "custom"}, {PrefixOverride: "other"}, {SourceRepo: "another"}, {IsLitePartial: true},
+	for field, internal := range map[string]*types.Issue{
+		"WispPlaneOverride": {WispPlaneOverride: &plane}, "IDPrefix": {IDPrefix: "custom"}, "PrefixOverride": {PrefixOverride: "other"}, "SourceRepo": {SourceRepo: "another"}, "IsLitePartial": {IsLitePartial: true},
 	} {
+		tag, ok := reflect.TypeOf(types.Issue{}).FieldByName(field)
+		if !ok || tag.Tag.Get("json") != "-" {
+			t.Fatalf("internal field %s entered legacy JSON: %v", field, tag)
+		}
 		internal.ID, internal.Title = "old-a", "Imported"
-		if _, err := prepareLegacyImport(legacyimport.Batch{Issues: []*types.Issue{internal}}, "importer"); err == nil {
+		if _, err := prepareLegacyImport(legacyimport.Batch{Issues: []*types.Issue{internal}}, "importer"); !errors.Is(err, storage.ErrValidation) || !strings.Contains(err.Error(), field) {
 			t.Fatalf("nonserialized state silently ignored: %+v", internal)
 		}
 	}
@@ -358,12 +363,12 @@ func TestLegacyImportAtomicityAndPersistence(t *testing.T) {
 					// Inspect through the independent live context, after driver
 					// cancellation and transaction cleanup have completed.
 					// A driver watcher may already have rolled back the transaction.
-					// That cleanup uncertainty must keep outcome_unknown precedence;
-					// a clean explicit rollback keeps the ordinary canceled refusal.
+					// ErrTxDone cleanup must keep outcome_unknown precedence;
+					// other driver cleanup errors may also be uncertain.
 					unknown := errors.Is(err, ErrOutcomeUnknown)
 					alreadyDone := errors.Is(err, sql.ErrTxDone)
-					if !reached || !errors.Is(err, expected) || unknown != alreadyDone || !reflect.DeepEqual(before, legacyImportState(t, ctx, s)) {
-						t.Fatalf("late context cancellation/deadline did not roll back: reached=%v err=%v", reached, err)
+					if !reached || !errors.Is(err, expected) || (alreadyDone && !unknown) || !reflect.DeepEqual(before, legacyImportState(t, ctx, s)) {
+						t.Fatalf("late context classification or rollback failed: reached=%v unknown=%v alreadyDone=%v err=%v", reached, unknown, alreadyDone, err)
 					}
 				})
 			}

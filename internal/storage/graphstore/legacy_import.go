@@ -85,7 +85,7 @@ func (s *Store) ImportLegacyWithPrefix(ctx context.Context, input legacyimport.B
 		}
 		infra, err := issueops.ResolveInfraTypesStrictInTx(ctx, tx)
 		if err != nil {
-			return err
+			return fmt.Errorf("resolve infrastructure Issue types: %w", err)
 		}
 		for _, issue := range batch.Issues {
 			if infra[string(issue.IssueType.Normalize())] {
@@ -247,8 +247,22 @@ func prepareLegacyImportWithPrefix(input legacyimport.Batch, actor, sourcePrefix
 		return invalid("legacy Issue and Memory strings must be UTF-8")
 	}
 	for _, issue := range input.Issues {
-		if issue != nil && (issue.WispPlaneOverride != nil || issue.IDPrefix != "" || issue.PrefixOverride != "" || issue.SourceRepo != "" || issue.IsLitePartial) {
-			return invalid("Issue %s has unsupported in-memory storage-plane, routing or partial-record state", issue.ID)
+		if issue == nil {
+			continue
+		}
+		for _, field := range []struct {
+			name string
+			set  bool
+		}{
+			{"WispPlaneOverride", issue.WispPlaneOverride != nil},
+			{"IDPrefix", issue.IDPrefix != ""},
+			{"PrefixOverride", issue.PrefixOverride != ""},
+			{"SourceRepo", issue.SourceRepo != ""},
+			{"IsLitePartial", issue.IsLitePartial},
+		} {
+			if field.set {
+				return invalid("Issue %q sets unsupported in-memory field %s", issue.ID, field.name)
+			}
 		}
 	}
 	// encoding/json replaces invalid UTF-8 strings. Check keys/values before

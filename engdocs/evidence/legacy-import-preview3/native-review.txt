@@ -10,3 +10,5 @@ Final bounded follow-up:
 Two %w operands preserve ErrInvalidStore and original cancellation/deadline identity. CLI keeps cancellation precedence and outcome_unknown first. Benchmark constructs/reverses independent feeds before ResetTimer; 10/100/1000 sizes and no machine-dependent pass/fail threshold. No confirmed blocker; no tests/DB run by reviewer.
 
 Reviewer: /root/iris_native_review. Actual Claude remains a separate active external reviewer. Gemini excluded by operator.
+
+Final self-contained repair confirmation: no confirmed introduced blocker. Revised label input exposes caller mutation; SDK tests verify json-minus tags and named-field validation; one-way ErrTxDone implies uncertainty permits other legitimate cleanup failures. Dry-run wording/error wrapping preserve intended behavior. Reviewer used no tests/DB or additional traversal.

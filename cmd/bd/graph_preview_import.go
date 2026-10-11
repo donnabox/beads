@@ -60,7 +60,11 @@ func runGraphPreviewImportReader(reader io.Reader, source string) error {
 func graphPreviewLegacyImportSummary(action, source string, result graphstore.LegacyImportResult) string {
 	prefix := ""
 	if result.IssuePrefix != "" {
-		prefix = fmt.Sprintf(" Workspace Issue prefix: %s.", result.IssuePrefix)
+		if result.DryRun {
+			prefix = fmt.Sprintf(" Would adopt Issue prefix: %s.", result.IssuePrefix)
+		} else {
+			prefix = fmt.Sprintf(" Workspace Issue prefix: %s.", result.IssuePrefix)
+		}
 	}
 	return fmt.Sprintf("%s %d Issues, %d Memories, %d Dependencies and %d comments from %s.%s Source history is not present in legacy exports.", action, result.Issues, result.Memories, result.Dependencies, result.Comments, source, prefix)
 }

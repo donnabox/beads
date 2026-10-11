@@ -64,8 +64,10 @@ is checked directly rather than requiring a changed-row count of one.
 [Native implementation review](native-review.txt) found the old cancellation test only returned an
 error and the prefix example omitted the flag on apply. Both are repaired and
 bounded native verification reports no confirmed blocker. [Actual Claude implementation review](implementation-claude.txt) completed with no
-confirmed code blocker. The final bounded repair review is active; its disposition
-must be collected before claiming council completion. Current source differs from the
+confirmed code blocker. The [bounded repair review](repair-claude.txt) and
+[final confirmation](final-confirmation-claude.txt) completed. Confirmed test and
+wording findings are repaired; [council dispositions](council.md) record the
+classification disagreement. Neither seat has a remaining confirmed code blocker. Current source differs from the
 snapshot in these repaired tests/docs, error-cause wrapping the benchmark, strict infrastructure-config read, prefix disclosure in human output,
 label set normalization and refusal of nonserialized SDK routing/plane state.
 
