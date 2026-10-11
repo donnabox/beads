@@ -7,7 +7,9 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
+	"os"
 	"os/exec"
+	"path/filepath"
 	"strconv"
 	"strings"
 	"testing"
@@ -118,6 +120,10 @@ func TestGraphPreviewIfRevisionFlagOwnership(t *testing.T) {
 func TestGraphPreviewIfRevisionOutsideLinkModeIsUpstreamCAS(t *testing.T) {
 	bd := buildBDUnderTest(t)
 	work, home := t.TempDir(), t.TempDir()
+	if data, err := os.ReadFile(filepath.Join(work, ".beads", "metadata.json")); err == nil {
+		t.Fatalf("disposable workspace %q unexpectedly has metadata before init: %s", work, data)
+	}
+	t.Logf("native guard workspace: %s", work)
 	call := func(args ...string) string {
 		t.Helper()
 		return graphPolicyCLI(t, bd, work, home, nil, "", args...)
