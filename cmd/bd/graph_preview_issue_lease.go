@@ -27,13 +27,17 @@ func runGraphPreviewHeartbeat(cmd *cobra.Command, selector string) error {
 		if err != nil {
 			return nil, "", err
 		}
-		return map[string]string{"id": issue.ID, "status": "heartbeat", "owner": actor},
-			fmt.Sprintf("Heartbeat %s (lease refreshed)", issue.ID), nil
+		return graphHeartbeatReport(issue, actor)
 	})
 	if err == nil {
 		SetLastTouchedID(path)
 	}
 	return err
+}
+
+func graphHeartbeatReport(issue graphstore.IssueRecord, actor string) (any, string, error) {
+	return map[string]string{"id": issue.Properties.ID, "status": "heartbeat", "owner": actor},
+		fmt.Sprintf("Heartbeat %s (lease refreshed)", issue.Properties.ID), nil
 }
 
 func runGraphPreviewReclaim(cmd *cobra.Command) error {
@@ -51,6 +55,9 @@ func runGraphPreviewReclaim(cmd *cobra.Command) error {
 	if err != nil {
 		return graphFailure("invalid_properties", err.Error(), 2)
 	}
+	// The native report describes the operator's scope, not the mapped Issue
+	// IDs supplied internally to fence this preview to graph-owned rows.
+	scoped := !filter.IsEmpty()
 	// Parse every selector before storage opens. Mapping to native IDs happens
 	// below through the graph catalog, never by assuming path == Issue ID.
 	paths := make([]string, len(filter.IDs))
@@ -87,6 +94,10 @@ func runGraphPreviewReclaim(cmd *cobra.Command) error {
 			}
 			human = fmt.Sprintf("Reclaimed %d stale-lease Issue(s): %s", len(reclaimed), strings.Join(ids, ", "))
 		}
-		return map[string]any{"reclaimed": reclaimed, "count": len(reclaimed), "scoped": !filter.IsEmpty()}, human, nil
+		return graphReclaimReport(reclaimed, scoped, human)
 	})
+}
+
+func graphReclaimReport(reclaimed []types.ReclaimedLease, scoped bool, human string) (any, string, error) {
+	return map[string]any{"reclaimed": reclaimed, "count": len(reclaimed), "scoped": scoped}, human, nil
 }

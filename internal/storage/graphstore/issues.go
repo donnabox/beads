@@ -281,10 +281,9 @@ func (s *Store) showIssueInTx(ctx context.Context, tx *sql.Tx, path string) (Iss
 	if err := json.Unmarshal(snapshot, &retainedIssue); err != nil {
 		return IssueRecord{}, fmt.Errorf("%w: malformed retained Issue", ErrInvalidStore)
 	}
-	if issue.Status == types.StatusInProgress && retainedIssue.LeaseExpiresAt != nil &&
-		(issue.LeaseExpiresAt == nil || issue.HeartbeatAt == nil) {
-		return IssueRecord{}, fmt.Errorf("%w: active Issue lease disappeared outside native recovery", ErrInvalidStore)
-	}
+	// A claimed Issue can arrive on another replica without its granting node's
+	// ignored leases row. Native heartbeat may re-arm that lease locally; neither
+	// the missing row nor the later refresh changes durable Issue History.
 	comparison := *issue
 	comparison.LeaseExpiresAt = retainedIssue.LeaseExpiresAt
 	comparison.HeartbeatAt = retainedIssue.HeartbeatAt

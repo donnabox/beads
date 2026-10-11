@@ -72,6 +72,60 @@ func TestGraphIssueHeartbeatAndReclaimNativeHistory(t *testing.T) {
 	}
 }
 
+func TestGraphIssueMissingNodeLocalLeaseRemainsReadableAndHeartbeatRearms(t *testing.T) {
+	for _, backend := range []string{"embedded", "server"} {
+		t.Run(backend, func(t *testing.T) {
+			ctx, _, s, original, _, _ := reopenFixture(t, backend)
+			claimed, err := s.ClaimIssue(ctx, "beads/work", "holder")
+			if err != nil || !claimed.Changed {
+				t.Fatalf("claim: %+v %v", claimed, err)
+			}
+			assertIssueEditCounts(t, ctx, s, original.Properties.ID, 3)
+			if err := s.withTx(ctx, true, func(tx *sql.Tx) error {
+				_, err := tx.ExecContext(ctx, `DELETE FROM leases WHERE issue_id=?`, original.Properties.ID)
+				return err
+			}); err != nil {
+				t.Fatal(err)
+			}
+			// Another replica has the durable claim but not the granting node's
+			// ignored lease row. Its graph read still validates retained History.
+			remote, err := s.ShowIssue(ctx, "beads/work")
+			if err != nil || remote.Revision != claimed.Issue.Revision || remote.Properties.Status != types.StatusInProgress ||
+				remote.Properties.Assignee != "holder" || remote.Properties.LeaseExpiresAt != nil || remote.Properties.HeartbeatAt != nil {
+				t.Fatalf("remote claim read: %+v %v", remote, err)
+			}
+			assertIssueEditVersion(t, ctx, s, "beads/work", claimed.Issue)
+			var eventsBefore, journalBefore int
+			if err := s.db.QueryRowContext(ctx, `SELECT COUNT(*) FROM events WHERE issue_id=?`, original.Properties.ID).Scan(&eventsBefore); err != nil {
+				t.Fatal(err)
+			}
+			if err := s.db.QueryRowContext(ctx, `SELECT COUNT(*) FROM bd_events_journal WHERE issue_id=?`, original.Properties.ID).Scan(&journalBefore); err != nil {
+				t.Fatal(err)
+			}
+			before := reopenState(t, ctx, s)
+			if _, err := s.HeartbeatIssue(ctx, "beads/work", "stranger"); !errors.Is(err, storage.ErrAlreadyClaimed) || !reflect.DeepEqual(before, reopenState(t, ctx, s)) {
+				t.Fatalf("foreign rearm changed state: %v", err)
+			}
+			rearmed, err := s.HeartbeatIssue(ctx, "beads/work", "holder")
+			if err != nil || rearmed.Revision != claimed.Issue.Revision || rearmed.Properties.LeaseExpiresAt == nil || rearmed.Properties.HeartbeatAt == nil {
+				t.Fatalf("holder rearm: %+v %v", rearmed, err)
+			}
+			assertIssueEditCounts(t, ctx, s, original.Properties.ID, 3)
+			assertIssueEditVersion(t, ctx, s, "beads/work", claimed.Issue)
+			var eventsAfter, journalAfter int
+			if err := s.db.QueryRowContext(ctx, `SELECT COUNT(*) FROM events WHERE issue_id=?`, original.Properties.ID).Scan(&eventsAfter); err != nil {
+				t.Fatal(err)
+			}
+			if err := s.db.QueryRowContext(ctx, `SELECT COUNT(*) FROM bd_events_journal WHERE issue_id=?`, original.Properties.ID).Scan(&journalAfter); err != nil {
+				t.Fatal(err)
+			}
+			if eventsAfter != eventsBefore || journalAfter != journalBefore {
+				t.Fatalf("lease rearm minted durable audit: events %d->%d journal %d->%d", eventsBefore, eventsAfter, journalBefore, journalAfter)
+			}
+		})
+	}
+}
+
 func mustShowLeaseIssue(t *testing.T, ctx context.Context, s *Store, path string) IssueRecord {
 	t.Helper()
 	issue, err := s.ShowIssue(ctx, path)
