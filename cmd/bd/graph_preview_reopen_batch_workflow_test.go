@@ -54,7 +54,7 @@ func TestGraphPreviewCloseReopenBatchWorkflow(t *testing.T) {
 				t.Fatal("batch reopen did not retain both Issue successors")
 			}
 
-			runPartial := func(args ...string) string {
+			runMixedBatch := func(wantExit int, wantStderr string, args ...string) string {
 				t.Helper()
 				ctx, cancel := context.WithTimeout(context.Background(), 90*time.Second)
 				defer cancel()
@@ -75,33 +75,39 @@ func TestGraphPreviewCloseReopenBatchWorkflow(t *testing.T) {
 				if ctx.Err() != nil {
 					t.Fatalf("batch hung: %v", ctx.Err())
 				}
-				if exit, ok := err.(*exec.ExitError); !ok || exit.ExitCode() != 1 {
-					t.Fatalf("partial batch exit = %v; stdout=%s stderr=%s", err, stdout.String(), stderr.String())
+				gotExit := 0
+				if exit, ok := err.(*exec.ExitError); ok {
+					gotExit = exit.ExitCode()
+				} else if err != nil {
+					t.Fatalf("mixed batch could not run: %v", err)
 				}
-				if !strings.Contains(stderr.String(), `"code":"not_found"`) {
-					t.Fatalf("missing target was not reported on stderr: %s", stderr.String())
+				if gotExit != wantExit || !strings.Contains(stderr.String(), wantStderr) {
+					t.Fatalf("mixed batch exit=%d want=%d; stdout=%s stderr=%s", gotExit, wantExit, stdout.String(), stderr.String())
+				}
+				if wantExit == 0 && strings.Contains(stderr.String(), `"code":`) {
+					t.Fatalf("native-compatible defer warning became a structured graph error: %s", stderr.String())
 				}
 				return stdout.String()
 			}
 
 			call("close", "first")
-			changed := graphMixedResult[[]graphstore.IssueMutationResult](t, runPartial("reopen", "first", "missing"))
+			changed := graphMixedResult[[]graphstore.IssueMutationResult](t, runMixedBatch(1, `"code":"not_found"`, "reopen", "first", "missing"))
 			if len(changed) != 1 || !changed[0].Changed || changed[0].Issue.Properties.Status != types.StatusOpen {
 				t.Fatalf("partial batch hid the successful reopen: %+v", changed)
 			}
 			call("create", "Third", "--id", "beads/third")
-			closedPartial := graphMixedResult[[]graphstore.IssueMutationResult](t, runPartial("close", "third", "missing"))
+			closedPartial := graphMixedResult[[]graphstore.IssueMutationResult](t, runMixedBatch(1, `"code":"not_found"`, "close", "third", "missing"))
 			if len(closedPartial) != 1 || !closedPartial[0].Changed || closedPartial[0].Issue.Properties.Status != types.StatusClosed {
 				t.Fatalf("partial batch hid the successful close: %+v", closedPartial)
 			}
 			call("reopen", "third")
-			deferredPartial := graphMixedResult[[]graphstore.IssueMutationResult](t, runPartial("defer", "third", "missing"))
+			deferredPartial := graphMixedResult[[]graphstore.IssueMutationResult](t, runMixedBatch(0, "Error changing deferral for missing:", "defer", "third", "missing"))
 			if len(deferredPartial) != 1 || !deferredPartial[0].Changed || deferredPartial[0].Issue.Properties.Status != types.StatusDeferred {
-				t.Fatalf("partial defer hid the successful Issue or returned success: %+v", deferredPartial)
+				t.Fatalf("mixed defer hid the successful Issue: %+v", deferredPartial)
 			}
-			undeferredPartial := graphMixedResult[[]graphstore.IssueMutationResult](t, runPartial("undefer", "third", "missing"))
+			undeferredPartial := graphMixedResult[[]graphstore.IssueMutationResult](t, runMixedBatch(0, "Error changing deferral for missing:", "undefer", "third", "missing"))
 			if len(undeferredPartial) != 1 || !undeferredPartial[0].Changed || undeferredPartial[0].Issue.Properties.Status != types.StatusOpen {
-				t.Fatalf("partial undefer hid the successful Issue or returned success: %+v", undeferredPartial)
+				t.Fatalf("mixed undefer hid the successful Issue: %+v", undeferredPartial)
 			}
 			positional := graphMixedResult[graphstore.IssueMutationResult](t, call("done", "third", "Positional reason"))
 			if !positional.Changed || positional.Issue.Properties.CloseReason != "Positional reason" {

@@ -429,8 +429,7 @@ func runGraphPreviewDeferral(cmd *cobra.Command, args []string, deferred bool) e
 			return graphFailure("invalid_properties", "reason cannot be empty", 2)
 		}
 	}
-	var hadError bool
-	err = withGraphStore(func(ctx context.Context, store *graphstore.Store) (any, string, error) {
+	return withGraphStore(func(ctx context.Context, store *graphstore.Store) (any, string, error) {
 		results := make([]graphstore.IssueMutationResult, 0, len(paths))
 		var human strings.Builder
 		for i, path := range paths {
@@ -442,8 +441,7 @@ func runGraphPreviewDeferral(cmd *cobra.Command, args []string, deferred bool) e
 				if len(paths) == 1 {
 					return nil, "", err
 				}
-				_ = graphStorageError(fmt.Errorf("changing deferral for %s: %w", args[i], err))
-				hadError = true
+				fmt.Fprintf(os.Stderr, "Error changing deferral for %s: %v\n", args[i], err)
 				continue
 			}
 			results = append(results, result)
@@ -461,13 +459,6 @@ func runGraphPreviewDeferral(cmd *cobra.Command, args []string, deferred bool) e
 		}
 		return results, strings.TrimSuffix(human.String(), "\n"), nil
 	})
-	if err != nil {
-		return err
-	}
-	if hadError {
-		return SilentExit()
-	}
-	return nil
 }
 
 func runGraphPreviewReady(cmd *cobra.Command, args []string) error {
