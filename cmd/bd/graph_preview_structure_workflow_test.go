@@ -69,10 +69,27 @@ func graphPreviewRetargetDependencyForCycle(t *testing.T, work, scope string, li
 	if count, err := changed.RowsAffected(); err != nil || count != 1 {
 		t.Fatalf("retarget dependency: rows=%d err=%v", count, err)
 	}
-	link.Target = targetURL
-	linkBytes := canonical(link)
-	if _, err := tx.ExecContext(ctx, `UPDATE graph_preview_versions SET snapshot=? WHERE path=? AND version=?`, linkBytes, linkPath, link.Version); err != nil {
+	// The CLI carries the public revision token; read the exact stored
+	// snapshot so this synthetic cycle preserves every retained Link field.
+	var retained []byte
+	if err := tx.QueryRowContext(ctx, `SELECT snapshot FROM graph_preview_versions WHERE path=? AND version=(SELECT revision FROM graph_preview_catalog WHERE path=?)`, linkPath, linkPath).Scan(&retained); err != nil {
 		t.Fatal(err)
+	}
+	var stored graphstore.LinkRecord
+	if err := json.Unmarshal(retained, &stored); err != nil {
+		t.Fatal(err)
+	}
+	if stored.ID != link.ID {
+		t.Fatalf("retained Link mismatch: %s != %s", stored.ID, link.ID)
+	}
+	stored.Target = targetURL
+	linkBytes := canonical(stored)
+	updated, err := tx.ExecContext(ctx, `UPDATE graph_preview_versions SET snapshot=? WHERE path=? AND version=(SELECT revision FROM graph_preview_catalog WHERE path=?)`, linkBytes, linkPath, linkPath)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if count, err := updated.RowsAffected(); err != nil || count != 1 {
+		t.Fatalf("retarget retained Link: rows=%d err=%v", count, err)
 	}
 	sourcePath := strings.TrimPrefix(link.Source, scope)
 	if _, err := tx.ExecContext(ctx, `UPDATE graph_preview_issue_versions SET owned=? WHERE path=? AND version=(SELECT revision FROM graph_preview_catalog WHERE path=?)`, canonical([]json.RawMessage{linkBytes}), sourcePath, sourcePath); err != nil {
