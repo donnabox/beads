@@ -1,0 +1,76 @@
+# Preview 3 legacy import quality work
+
+Donna deliberately deferred independent draft PR86 to Preview 3. Stage 1 remains
+ordinary legacy export JSONL into a fresh graph workspace. Graph-format import
+follows the corresponding export later. No production or in-place data is used.
+Janet owns the future qualified core integration pin; no Preview 2 admission or
+staging is requested.
+
+## Implemented repairs
+
+Source-prefix inference is resolved once across the complete batch. A mixed
+numeric/hash batch supports multi-part prefixes independently of source order.
+Ambiguous all-letter multi-part IDs need the graph-only `--source-prefix` because
+ordinary JSONL omits source configuration. Supplied configuration must match every
+Issue ID without rewriting it; results report the adopted `issue_prefix`.
+
+Ordinary Memory keys retain their exact original key and value, including empty
+values. Valid direct paths are reserved first; canonical or digest addresses with
+collision checks remap other keys deterministically. Imported Issue paths cannot
+be overwritten. The complete result maps each original key to its graph URL.
+
+Original string UTF-8 is checked before JSON cloning. Missing prefix configuration
+refuses; an existing no-op prefix update remains valid. Memory read-back must match
+exact content. Comment verification uses a native-ID index, and the batch has a
+separate 1,000-comment cap. Native comment deduplication remains unchanged: data
+that would collapse distinct supplied comments refuses the whole transaction.
+
+## Evidence and limits
+
+[source-checks.json](source-checks.json) pins source-file hashes and the parent head.
+[pure.jsonl](pure.jsonl) records **103 passing cases/subtests, zero failures/skips**
+across parser, pure storage preparation/verification and CLI guard/error/help
+checks. All three packages compiled; this run opens no database. [Lint](lint.log)
+passed all required profiles with zero findings and [docs](docs.log) passed.
+[Comment benchmark](comment-benchmark.log) measures verification at 10/100/1,000
+comments, roughly 4/7/37 microseconds on this machine. It measures the helper only,
+not native database persistence, and imposes no machine-dependent time assertion.
+
+[Earlier installed proof](../legacy-import-2026-10-10/README.md) qualifies the old
+product source only. **The current repaired source is not installed-qualified.**
+New storage tests cover applied/reopened field families, actual late context
+cancellation/deadline, and normalized comment IDs/times and late dedup refusal;
+these need both engines. No pending test is claimed to have passed.
+
+The [prepared installed completeness test](completeness-workflow.patch) is retained
+as a patch until genuine producer fixtures exist; it is not registered as a
+mandatory test with missing data. After the engine slot is free, apply this patch
+and run the committed [producer generator](../../../scripts/legacy-import-fixture.py)
+with its completeness profile, the clean canonical producer at
+`76fde9c9cb0865d430bf12d76fc473490f51128a`, and prefix `web-app`. The intended corpus
+has four Issues and 16 Memory keys. Do not handwrite the ordinary export. Add the
+generated fixture/receipt exports and docsync runfiles, freeze/install the exact
+new source, and execute both installed modes without skips before readiness.
+
+## Council and open gates
+
+Native Codex and actual Claude review the same frozen implementation prompt;
+Gemini is excluded as requested. [Plan findings](plan-claude.txt) led to the prefix,
+UTF-8, config, Memory verification and comment-budget repairs. Singleton ambiguous
+IDs require explicit configuration rather than an invented prefix; config presence
+is checked directly rather than requiring a changed-row count of one.
+
+Native implementation review found the old cancellation test only returned an
+error and the prefix example omitted the flag on apply. Both are repaired and
+bounded native verification reports no confirmed blocker. Actual Claude frozen
+implementation review is still running; its findings and final disposition must
+be added before claiming council completion. Current source differs from the
+snapshot in these repaired tests/docs, error-cause wrapping and the benchmark.
+
+Remaining gates: genuine expanded fixture, applied/reopened preservation and
+real cancellation rollback in both installed modes, exact-head hosted checks,
+completed two-seat council and cleanup. Related/hierarchy/conditional/waits-for
+relationships, custom workflow definitions absent from the dump, and source
+history unavailable in ordinary exports remain explicit boundaries in the
+[user contract](../../../docs/reference/graph-legacy-import.md). Contract questions
+are on the agent bus. This report is progress, not release acceptance.

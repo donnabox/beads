@@ -21,7 +21,15 @@ bd comments legacy-b --json
 `bd import FILE`, `bd import -i FILE` and `bd import -` use the same format and
 validation. With no source argument, the configured ordinary import path is
 used inside this workspace. Redirected stdin requires `-`. Use `--json` for
-counts, source-to-graph identity maps and an explicit history disposition.
+counts, source-to-graph identity maps and an explicit history disposition. If the source IDs are ambiguous,
+use the original configured prefix on both dry-run and apply:
+
+```bash
+bd import old-issues.jsonl --source-prefix web-app --dry-run --json
+bd import old-issues.jsonl --source-prefix web-app --json
+```
+
+
 The same command works in embedded mode and an ordinary shared-server graph
 workspace initialized with `--server --external`.
 
@@ -44,7 +52,7 @@ and do not recreate source history. Blank lines are ignored. Other schema versio
 
 | Data | Graph import behavior |
 | --- | --- |
-| Issue IDs | Required and preserved as the underlying Issue ID. The graph identity is `SCOPE/beads/ID`; the result maps each source ID to its graph URL. All Issue IDs must have one nonempty inferred ordinary prefix and form valid local Bead paths. The ordinary ID helper recognizes numeric and three-to-eight-character hash suffixes, retaining multi-part prefixes such as `web-app` in `web-app-123`. JSONL has no configured-prefix field; ambiguous word-like or longer hash suffixes use its first-hyphen fallback, so the original configured prefix cannot always be recovered. Import atomically sets the fresh workspace's Issue prefix to that source prefix, so later creates and dependencies continue to work; dry-run rolls that change back. |
+| Issue IDs | Required and preserved as the underlying Issue ID. The graph identity is `SCOPE/beads/ID`; the result maps each source ID to its graph URL. All Issue IDs must match one nonempty ordinary prefix and form valid local Bead paths. The whole batch resolves numeric/hash candidates, so `web-app-123` and `web-app-abcdef` share `web-app` regardless of record order. JSONL omits source configuration; if all IDs have ambiguous multi-hyphen spellings, supply the original prefix with `--source-prefix PREFIX`. The result reports the adopted `issue_prefix`. Prefixes with surrounding whitespace or a trailing hyphen refuse; IDs are never rewritten. Import atomically sets the fresh workspace's Issue prefix to that source prefix, so later creates and dependencies continue to work; dry-run rolls that change back. |
 | Current Issue content and workflow fields | Preserved using the ordinary Issue writer. Missing status/type default to open/task; missing timestamps are filled at import. Omitted priority remains P0, matching ordinary import. Invalid statuses, types or values refuse. Fields that storage cannot represent exactly refuse the whole import. |
 | Issue metadata | Preserved as common graph metadata. It must meet graph JSON-object validation; array/scalar metadata and duplicate keys refuse. JSON formatting and object key order are canonicalized. |
 | Labels | Preserved as a set. Storage representation that loses values refuses. |
@@ -59,7 +67,7 @@ and do not recreate source history. Blank lines are ignored. Other schema versio
 | Tombstones, graph records and unknown fields | Refused. This stage imports the existing format only. Graph-format import follows graph export. |
 
 Admission rejects input above 16 MiB, JSON deeper than 128 levels, and more than
-1,000 total Beads and Links. These are rejection ceilings, not guaranteed accepted
+1,000 total Beads and Links or 1,000 total comments. The comment ceiling is separate from the Bead/Link count. These are rejection ceilings, not guaranteed accepted
 sizes: persisted payloads, relations and retained snapshots must also fit the
 16 MiB current-read budget. That check can refuse a smaller input after staging
 it; the entire transaction rolls back. Byte/resource ceilings use

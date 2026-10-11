@@ -1,0 +1,31 @@
+{
+  "status": "source/pure checks only; current installed qualification pending",
+  "parentHead": "99cef73782fb2203f0542e0b983a2d687627b42f",
+  "sourceFilesSHA256": {
+    "cmd/bd/import.go": "8bdbdd9a08e325df78629e0f3ce59b77fd024abef39c11e3ad3ce0a93eb80b63",
+    "cmd/bd/graph_preview_import.go": "7f4b3a0bb42ac06fb1b094625fadceb64167abd6e8578b70d09cb3055857cc2d",
+    "cmd/bd/graph_preview_assignee_error_test.go": "432ad2bfec3faa6a9a73c1e26fea9442681d1fa18ce262bd1a5111ff1a8ff36a",
+    "internal/storage/graphstore/legacy_import.go": "6208c5222159a51820ae28fe77e7241ddc29612a12da56e2cddaa43e10ef31f7",
+    "internal/storage/graphstore/legacy_import_test.go": "89ae042a3ae8f8521366c3519e44b776aa404345a7fb8381fc3813885c1eba19",
+    "scripts/legacy-import-fixture.py": "57599e91561686396b02a1b2e3e30c7f15030456b70b4bb7bdc9fca5dd083471",
+    "docs/reference/graph-legacy-import.md": "137e5124b47b68783e3d5ce2513e24cf6afdade3d7c7a8999527fb6e8483cacc"
+  },
+  "testCases": {
+    "pass": 103,
+    "fail": 0,
+    "skip": 0
+  },
+  "databaseModesQualified": [],
+  "pendingInstalledTestPatchSHA256": "52ba8b851a2241928684f842e09d53efb580757164e203569478990d735a315b",
+  "producerSource": "76fde9c9cb0865d430bf12d76fc473490f51128a",
+  "producerCompletenessFixture": "not generated; engine slot waiting",
+  "requiredRuntimeTests": [
+    "TestLegacyImportAtomicityAndPersistence",
+    "TestLegacyImportValidationRollsBack",
+    "TestLegacyImportFieldFamilies",
+    "TestLegacyImportCommentFeedPersistence",
+    "TestLegacyImportCurrentReadLimitRollsBack",
+    "TestGraphPreviewLegacyImportInstalledWorkflow",
+    "TestGraphPreviewLegacyImportCompletenessInstalledWorkflow"
+  ]
+}

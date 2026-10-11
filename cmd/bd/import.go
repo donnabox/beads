@@ -34,6 +34,11 @@ transaction and rolls it back. Repeat imports refuse an occupied workspace;
 export; each imported Bead starts new graph history. Graph data import is
 unavailable until graph export is implemented. See the graph import guide.
 
+Legacy JSONL omits source prefix configuration. Graph import infers one prefix
+across the Issue batch and reports it as issue_prefix. For ambiguous IDs, pass
+--source-prefix with the prefix configured in the original workspace. IDs are
+preserved; a prefix that does not match every Issue refuses the whole import.
+
 If no file is specified, imports from the configured import.path under .beads/
 (default: issues.jsonl). Use "-" to read from stdin; redirecting stdin without
 "-" or a file argument is an error, so a typo'd 'bd import < file' cannot
@@ -120,14 +125,16 @@ EXAMPLES:
 }
 
 var (
-	importDryRun     bool
-	importDedup      bool
-	importAllowStale bool
-	importInput      string
+	importDryRun       bool
+	importDedup        bool
+	importAllowStale   bool
+	importInput        string
+	importSourcePrefix string
 )
 
 func init() {
 	importCmd.Flags().StringVarP(&importInput, "input", "i", "", "Read JSONL from a specific file")
+	importCmd.Flags().StringVar(&importSourcePrefix, "source-prefix", "", "Source Issue prefix from the original workspace configuration (graph import only)")
 	importCmd.Flags().BoolVar(&importDryRun, "dry-run", false, "Show what would be imported without importing")
 	importCmd.Flags().BoolVar(&importDedup, "dedup", false, "Skip lines whose title matches an existing open issue")
 	importCmd.Flags().BoolVar(&importAllowStale, "allow-stale", false, "Import rows even when older than the local issue (required to restore an older snapshot)")
@@ -159,6 +166,9 @@ func bulkLoadPoolReadTimeout(cmd *cobra.Command) time.Duration {
 func runImport(cmd *cobra.Command, args []string) error {
 	if graphPreviewActive {
 		return runGraphPreviewImport(cmd, args)
+	}
+	if cmd.Flags().Changed("source-prefix") {
+		return fmt.Errorf("--source-prefix is available only for import into a graph workspace")
 	}
 	// Strict --readonly refuses import, a --dry-run preview included (it
 	// refuses create --dry-run too). Guarded, unlike the write commands'

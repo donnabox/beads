@@ -6,11 +6,27 @@ import (
 	"errors"
 	"fmt"
 	"os"
+	"strings"
 	"testing"
 
+	"github.com/spf13/cobra"
 	"github.com/steveyegge/beads/internal/storage"
 	"github.com/steveyegge/beads/internal/storage/graphstore"
 )
+
+func TestLegacyImportSourcePrefixIsGraphOnly(t *testing.T) {
+	cmd := &cobra.Command{}
+	cmd.Flags().String("source-prefix", "", "")
+	if err := cmd.Flags().Set("source-prefix", "web-app"); err != nil {
+		t.Fatal(err)
+	}
+	oldGraph := graphPreviewActive
+	graphPreviewActive = false
+	defer func() { graphPreviewActive = oldGraph }()
+	if err := runImport(cmd, nil); err == nil || !strings.Contains(err.Error(), "graph workspace") {
+		t.Fatalf("ordinary import admitted graph-only source configuration: %v", err)
+	}
+}
 
 func TestGraphPreviewAssigneeOwnershipError(t *testing.T) {
 	stderr, err := os.CreateTemp(t.TempDir(), "stderr")

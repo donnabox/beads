@@ -43,6 +43,60 @@ func TestLegacyImportPrefixAdmission(t *testing.T) {
 			}
 		})
 	}
+	for _, ids := range [][]string{{"web-app-123", "web-app-abcdef"}, {"web-app-abcdef", "web-app-123"}} {
+		var batch legacyimport.Batch
+		for _, id := range ids {
+			batch.Issues = append(batch.Issues, &types.Issue{ID: id, Title: "Imported"})
+		}
+		prepared, err := prepareLegacyImportWithPrefix(batch, "importer", "")
+		if err != nil || prepared.prefix != "web-app" {
+			t.Fatalf("whole-batch prefix %v = %q, %v", ids, prepared.prefix, err)
+		}
+	}
+	ambiguous := legacyimport.Batch{Issues: []*types.Issue{{ID: "web-app-abcdef", Title: "Imported"}}}
+	if _, err := prepareLegacyImport(ambiguous, "importer"); err == nil || !strings.Contains(err.Error(), "ambiguous") {
+		t.Fatalf("ambiguous prefix not refused: %v", err)
+	}
+	for _, prefix := range []string{"web-app", "web"} {
+		prepared, err := prepareLegacyImportWithPrefix(ambiguous, "importer", prefix)
+		if err != nil || prepared.prefix != prefix {
+			t.Fatalf("explicit prefix %q = %q, %v", prefix, prepared.prefix, err)
+		}
+	}
+	for _, prefix := range []string{"web-", " web-app", "web-app ", "other"} {
+		if _, err := prepareLegacyImportWithPrefix(ambiguous, "importer", prefix); err == nil {
+			t.Fatalf("invalid override %q admitted", prefix)
+		}
+	}
+	if _, err := prepareLegacyImportWithPrefix(legacyimport.Batch{Memories: []legacyimport.Memory{{Key: "key"}}}, "importer", "web-app"); err == nil {
+		t.Fatal("memory-only source prefix admitted")
+	}
+}
+
+func TestLegacyImportCommentBudgetAndOriginalUTF8(t *testing.T) {
+	issue := &types.Issue{ID: "old-a", Title: "Imported"}
+	for i := range LegacyImportCommentLimit {
+		issue.Comments = append(issue.Comments, &types.Comment{ID: fmt.Sprint(i), Text: "Comment"})
+	}
+	batch := legacyimport.Batch{Issues: []*types.Issue{issue}}
+	if _, err := prepareLegacyImport(batch, "importer"); err != nil {
+		t.Fatal(err)
+	}
+	issue.Comments = append(issue.Comments, &types.Comment{ID: "one-too-many"})
+	if _, err := prepareLegacyImport(batch, "importer"); !errors.Is(err, ErrLimitExceeded) {
+		t.Fatalf("comment ceiling: %v", err)
+	}
+	for _, invalid := range []*types.Issue{
+		{ID: "old-a", Title: "bad\xff"},
+		{ID: "old-a", Title: "Imported", Description: "bad\xff"},
+		{ID: "old-a", Title: "Imported", Labels: []string{"bad\xff"}},
+		{ID: "old-a", Title: "Imported", Comments: []*types.Comment{{Text: "bad\xff"}}},
+		{ID: "old-a", Title: "Imported", Dependencies: []*types.Dependency{{DependsOnID: "bad\xff"}}},
+	} {
+		if _, err := prepareLegacyImport(legacyimport.Batch{Issues: []*types.Issue{invalid}}, "importer"); err == nil {
+			t.Fatal("invalid original UTF-8 was normalized instead of refused")
+		}
+	}
 }
 
 func TestLegacyImportMemoryPaths(t *testing.T) {
@@ -119,6 +173,35 @@ func TestLegacyImportCommentVerification(t *testing.T) {
 	got.Comments[0].Text = "changed"
 	if err := verifyLegacyIssue(want, got); err == nil {
 		t.Fatal("changed comment text admitted")
+	}
+}
+
+// Benchmark helper verification separately from native persistence. Sizes up
+// to the admitted ceiling make verification cost observable without timing
+// assertions that depend on the test machine or database engine.
+func BenchmarkLegacyImportCommentVerification(b *testing.B) {
+	for _, count := range []int{10, 100, LegacyImportCommentLimit} {
+		b.Run(fmt.Sprint(count), func(b *testing.B) {
+			want := &types.Issue{ID: "old-a", Title: "Issue"}
+			got := &types.Issue{ID: "old-a", Title: "Issue"}
+			stamp := time.Date(2026, 1, 1, 0, 0, 0, 0, time.UTC)
+			for i := range count {
+				c := types.Comment{ID: fmt.Sprint(i), IssueID: want.ID, Author: "author", Text: "text", CreatedAt: stamp}
+				want.Comments = append(want.Comments, &c)
+				copy := c
+				got.Comments = append(got.Comments, &copy)
+			}
+			for i, j := 0, len(got.Comments)-1; i < j; i, j = i+1, j-1 {
+				got.Comments[i], got.Comments[j] = got.Comments[j], got.Comments[i]
+			}
+			b.ReportAllocs()
+			b.ResetTimer()
+			for b.Loop() {
+				if err := verifyLegacyIssue(want, got); err != nil {
+					b.Fatal(err)
+				}
+			}
+		})
 	}
 }
 
@@ -199,6 +282,15 @@ func TestLegacyImportAtomicityAndPersistence(t *testing.T) {
 			})
 			batch := parseLegacyFixture(t, legacyImportFixture)
 			before := legacyImportState(t, ctx, s)
+			// A matching prefix update may report zero changed rows. It still
+			// validates and dry-run must preserve the configuration.
+			samePrefix := strings.ReplaceAll(legacyImportFixture, "old-", before["issue_prefix"]+"-")
+			if _, err := s.ImportLegacy(ctx, parseLegacyFixture(t, samePrefix), "importer", true); err != nil {
+				t.Fatalf("same-prefix dry-run: %v", err)
+			}
+			if !reflect.DeepEqual(before, legacyImportState(t, ctx, s)) {
+				t.Fatal("same-prefix dry-run changed configuration")
+			}
 			for _, stage := range []string{"coordination", "import-prefix", "import-native", "import-issues", "import-links", "source-catalog", "source-retained", "allocation", "payload", "retained", "import-retained"} {
 				t.Run(stage, func(t *testing.T) {
 					fault := errors.New("injected late import failure")
@@ -218,18 +310,37 @@ func TestLegacyImportAtomicityAndPersistence(t *testing.T) {
 					}
 				})
 			}
-			for _, fault := range []error{context.Canceled, context.DeadlineExceeded} {
-				t.Run(fault.Error(), func(t *testing.T) {
+			for _, deadline := range []bool{false, true} {
+				t.Run(fmt.Sprintf("late-context-deadline=%t", deadline), func(t *testing.T) {
+					var operation context.Context
+					var cancel context.CancelFunc
+					var expected error
+					if deadline {
+						operation, cancel = context.WithTimeout(ctx, 15*time.Second)
+						expected = context.DeadlineExceeded
+					} else {
+						operation, cancel = context.WithCancel(ctx)
+						expected = context.Canceled
+					}
+					defer cancel()
+					reached := false
 					s.afterWrite = func(stage string) error {
 						if stage == "import-retained" {
-							return fault
+							reached = true
+							if deadline {
+								<-operation.Done()
+							} else {
+								cancel()
+							}
 						}
 						return nil
 					}
-					_, err := s.ImportLegacy(ctx, batch, "importer", false)
+					_, err := s.ImportLegacy(operation, batch, "importer", false)
 					s.afterWrite = nil
-					if !errors.Is(err, fault) || !reflect.DeepEqual(before, legacyImportState(t, ctx, s)) {
-						t.Fatalf("late cancellation/deadline did not roll back: %v", err)
+					// Inspect through the independent live context, after driver
+					// cancellation and transaction cleanup have completed.
+					if !reached || !errors.Is(err, expected) || !reflect.DeepEqual(before, legacyImportState(t, ctx, s)) {
+						t.Fatalf("late context cancellation/deadline did not roll back: reached=%v err=%v", reached, err)
 					}
 				})
 			}

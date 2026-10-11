@@ -47,7 +47,7 @@ with tempfile.TemporaryDirectory(prefix="iris-legacy-producer-") as temporary:
     call("close",prerequisite,"--reason","Synthetic completion","--actor","fixture-author","--json")
     call("remember","Remembered context","--key","fixture-key")
     if complete:
-        call("create","Persistent context","--id",a.prefix+"-c3d","--type","decision","--status","pinned","--labels","context,記憶","--metadata",'{"unicode":"記憶","empty":{},"number":0}',"--actor","fixture-author","--json")
+        call("create","Persistent context","--id",a.prefix+"-abcdef","--type","decision","--status","pinned","--labels","context,記憶","--metadata",'{"unicode":"記憶","empty":{},"number":0}',"--actor","fixture-author","--json")
         call("create","Operational record","--id",a.prefix+"-d4e","--type","event","--event-category","fixture.started","--event-actor","fixture-actor","--event-target",dependent,"--event-payload",'{"synthetic":true}',"--actor","fixture-author","--json")
         # Reserve direct canonical spellings as well as their decoded keys so
         # importer allocation must be independent of exported record order.

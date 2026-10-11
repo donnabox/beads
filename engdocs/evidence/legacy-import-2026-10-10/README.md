@@ -1,12 +1,15 @@
 # Iris stage 1 legacy import qualification
 
-Recommendation: **Preview 2 candidate**, subject to green corrected-head CI and
-Janet's combined integration qualification. The operator clarified that Preview 2
-does not require release-level completeness. The earlier blanket Preview 3
-recommendation applied too strict a bar: required import cases pass in both
-installed modes, and the unrelated baseline file-descriptor failure does not
-establish an import defect. Donna decides the cutline. This report is an independent
-candidate, not Preview 2 acceptance.
+Release disposition: **deliberately deferred to Preview 3 by Donna**. PR86 is
+an independent draft; no Preview 2 admission or staging is requested. Iris is
+improving completeness and quality for the ordinary-format import milestone.
+Graph-format import follows the corresponding export in a later milestone.
+
+The qualification below is historical evidence for product source `ba235baae`.
+It does not qualify subsequent Preview 3 repairs. Those repairs require fresh
+producer-backed installed embedded/shared-server proof and the requested native
+Codex plus actual Claude council, with Gemini excluded. Janet selects the future
+integration pin; Donna owns release acceptance.
 
 ## Scope and inventory
 
