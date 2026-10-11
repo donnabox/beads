@@ -80,8 +80,10 @@ Current bounded follow-ups:
 |---|---|---|
 | Transactional implementation | Durable retry witnesses for Resource-alias operands | Alias singleton slice `d1e62ebc848aff57d46c873013c81efeaf29cd38` passed 464 tests / 6 files and independent 120 tests plus byte-identical format refusal. Next isolated slice proposes original-locator/target/miss witnesses before implementation. |
 | Update qualification | Process disconnect/drain/SIGKILL diagnostics | Bind existing emitted-runtime IPC/process observations to the same diagnostic runner, without runtime/public admission changes. |
-| Editorial integration | Reviewed PR67 plus combined runtime | Merge is clean and diagnostic citations are migrated. Build/checks/both smokes pass; full run found three sealed Read evidence tests failing after catalog citation changes. Diagnose binding versus historical-evidence handling; do not alter sealed evidence or claim a green candidate. |
-| Independent review | Next combined candidate | Raw Update review is complete. Await editorial integration diagnosis/frozen head before reviewing merged source and evidence handling. |
+| Editorial integration | Reviewed PR67 plus combined runtime | Candidate `29eb76fd8d6a841e69df54c0a88bd22477ae9465` cleanly merges the histories and migrates 22 diagnostic citations. Build/checks/both smokes pass; full run has 7,674 pass, three failures and one skip. Production evidence verification confirms exact Read catalog byte drift requires fresh observations under the existing seal contract. Historical evidence/constants remain untouched. Read-only fresh-qualification workflow inventory is underway; candidate is unqualified. |
+| Independent review | Next combined candidate | Raw Update review is complete. Combined candidate is frozen with a documented current Read evidence drift gate; further source review must retain that limitation. |
+
+[Combined candidate diagnosis](profile-write-integration-diagnosis.md) pins all three failing assertions, old/new Read catalog hashes and the production verifier result. Fresh evidence must be collected before current qualification; do not rehash or relabel the historical sealed run. This blocks editorial candidate qualification, not the independent write implementation lanes.
 
 The heartbeat continues through successive slices toward tested Update and Transactional support, stopping on completion, an operator pause, supersession or an unavoidable decision. It reports meaningful results and blockers, not routine unchanged polls. First-round completed work above remains the baseline.
 
