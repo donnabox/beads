@@ -141,3 +141,21 @@ The prepared installed workflow now independently asserts the one expected
 blocking Link's type/endpoints and absence of owned Links on other Issues;
 matching current/retained state alone could otherwise hide a missing edge.
 The patch remains inactive pending the genuine corpus.
+
+
+## Producer fixture publication mechanics
+
+The development generator now verifies structured Build/Commit identity before
+initialization, rechecks source/binary stability after export, refuses existing
+output, and publishes UTF-8 fixture/receipt files together from a sibling staged
+directory. No source/binary mismatch can leave a new dump paired with an old
+receipt. It assumes a single publisher; portable directory rename provides no
+atomic no-replace guarantee against concurrent creation.
+
+[Mocked mechanics tests](fixture-generator-tests.py) use a deliberately
+non-executable fake binary and mock every subprocess. [Child raw results](fixture-generator-final.log)
+pass13 tests with no failures/skips. [Initial harness failure](fixture-generator-initial-harness.log)
+was a macOS path alias mismatch, corrected in the harness. These tests are not
+an ordinary producer corpus or engine qualification. Run from any checkout with
+Python; the committed harness resolves this checkout's script. The genuine
+completeness corpus still waits for Janet's explicit engine handback.
