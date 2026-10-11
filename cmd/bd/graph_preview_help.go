@@ -53,7 +53,7 @@ Ordinary Issue workspaces:
 	quickCmd.Long = `Graph preview workspaces:
 Use bd q TITLE to create one Issue and print only its Scope-relative ID.
 Pass -- before a title beginning with '-', for example bd q -- -follow-up.
---parent is unavailable in graph quick capture; the parent-child journey
+--parent is unavailable here; the graph parent-child journey
 is not admitted yet.
 
 Ordinary Issue workspaces:
