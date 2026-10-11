@@ -344,13 +344,29 @@ func admitGraphPreview(cmd *cobra.Command) (handled bool, admissionErr error) {
 	if err != nil || real != cfg.GraphWorkspace {
 		return true, graphFailure("not_authority", "graph_mode workspace binding differs; copied/moved workspaces cannot claim this authority", 5)
 	}
-	if cmd != setupCmd && cmd != claudeHookCmd && cmd != memoriesCmd && cmd != recallCmd && cmd != graphCompareCmd && cmd != listCmd && cmd != blockedCmd && cmd != graphCmd && cmd != rememberCmd && cmd != createCmd && cmd != showCmd && cmd != statusCmd && cmd != stateCmd && cmd != stateListCmd && cmd != depCmd && cmd != depAddCmd && cmd != linkCmd && cmd != closeCmd && cmd != reopenCmd && cmd != unclaimCmd && cmd != heartbeatCmd && cmd != reclaimCmd && cmd != mergeSlotCreateCmd && cmd != mergeSlotCheckCmd && cmd != mergeSlotAcquireCmd && cmd != mergeSlotReleaseCmd && cmd != commentsCmd && cmd != deferCmd && cmd != undeferCmd && cmd != readyCmd && cmd != updateCmd && cmd != assignCmd && cmd != priorityCmd && cmd != noteCmd && cmd != todoCmd && cmd != addTodoCmd && cmd != listTodosCmd && cmd != doneTodoCmd && cmd != graphUnlinkCmd && cmd != graphLinksCmd && cmd != serveCmd && cmd != deleteCmd && cmd != forgetCmd && cmd != typesCmd && cmd != versionsCmd && cmd != historyCmd {
+	// These Issue commands require native relationship kinds that the current
+	// installed blocking Link Type cannot represent or retain. Refuse before a
+	// store opens; an empty epic result would conceal real parent-child state,
+	// and a duplicate/supersede close without its edge would lie about History.
+	switch cmd {
+	case childrenCmd:
+		return true, graphFailure("capability_unavailable", "graph children requires a canonical parent-child Link mapping; this preview cannot distinguish an empty family from unmapped parent-child Dependencies", 5)
+	case duplicateCmd:
+		return true, graphFailure("capability_unavailable", "graph duplicate requires a native duplicates Dependency with canonical Link and owned History mappings; this preview admits only blocking Dependencies", 5)
+	case supersedeCmd:
+		return true, graphFailure("capability_unavailable", "graph supersede requires a native supersedes Dependency with canonical Link and owned History mappings; this preview admits only blocking Dependencies", 5)
+	case epicStatusCmd:
+		return true, graphFailure("capability_unavailable", "graph epic status requires native parent-child Dependencies projected from canonical Links; this preview cannot report epic progress from blocking Links", 5)
+	case closeEligibleEpicsCmd:
+		return true, graphFailure("capability_unavailable", "graph epic close-eligible requires native parent-child Dependencies with canonical Link mapping and owned Issue History for closure; this preview cannot determine eligible epics", 5)
+	}
+	if cmd != setupCmd && cmd != claudeHookCmd && cmd != memoriesCmd && cmd != recallCmd && cmd != graphCompareCmd && cmd != listCmd && cmd != blockedCmd && cmd != graphCmd && cmd != graphCheckCmd && cmd != rememberCmd && cmd != createCmd && cmd != showCmd && cmd != statusCmd && cmd != stateCmd && cmd != stateListCmd && cmd != depCmd && cmd != depAddCmd && cmd != depListCmd && cmd != depTreeCmd && cmd != depCyclesCmd && cmd != linkCmd && cmd != closeCmd && cmd != reopenCmd && cmd != unclaimCmd && cmd != heartbeatCmd && cmd != reclaimCmd && cmd != mergeSlotCreateCmd && cmd != mergeSlotCheckCmd && cmd != mergeSlotAcquireCmd && cmd != mergeSlotReleaseCmd && cmd != commentsCmd && cmd != deferCmd && cmd != undeferCmd && cmd != readyCmd && cmd != updateCmd && cmd != assignCmd && cmd != priorityCmd && cmd != noteCmd && cmd != todoCmd && cmd != addTodoCmd && cmd != listTodosCmd && cmd != doneTodoCmd && cmd != graphUnlinkCmd && cmd != graphLinksCmd && cmd != serveCmd && cmd != deleteCmd && cmd != forgetCmd && cmd != typesCmd && cmd != versionsCmd && cmd != historyCmd {
 		// COUPLING: admitting versionsCmd and historyCmd here is only safe
 		// because each has an early `if graphPreviewActive` dispatch to
 		// runGraphPreviewVersions. Admission suppresses legacy store opening,
 		// so admitting a command WITHOUT its dispatch makes it panic on a nil
 		// store rather than refuse. See the note in history.go.
-		return true, graphFailure("capability_unavailable", "this graph preview supports remember, memories, recall, versions (and history as its alias here), compare, create, show, update, assign, priority, note, todo, delete, forget, dep add and dep --blocks, link, links, unlink, close, reopen, unclaim, heartbeat, reclaim, merge-slot create/check/acquire/release, state read, defer, undefer, ready, list/--format records-json, blocked, graph --view generic, types, status and status --graph, project-local setup claude, claude-hook stop and shared-server serve; this command has not opened the legacy store", 5)
+		return true, graphFailure("capability_unavailable", "this graph preview supports remember, memories, recall, versions (and history as its alias here), compare, create, show, update, assign, priority, note, todo, delete, forget, dep add/list/tree/cycles and dep --blocks, link, links, unlink, close, reopen, unclaim, heartbeat, reclaim, merge-slot create/check/acquire/release, state read, defer, undefer, ready, list/--format records-json, blocked, graph ISSUE, graph check and graph --view generic, types, status and status --graph, project-local setup claude, claude-hook stop and shared-server serve; this command has not opened the legacy store", 5)
 	}
 	graphPreviewActive, graphPreviewConfig, graphPreviewDir = true, cfg, dir
 	if err := configureGraphPreview(cmd); err != nil {
