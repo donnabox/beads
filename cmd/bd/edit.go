@@ -30,6 +30,9 @@ Examples:
 	SilenceUsage:  true,
 	SilenceErrors: true,
 	RunE: func(cmd *cobra.Command, args []string) error {
+		if graphPreviewActive {
+			return runGraphPreviewEdit(cmd, args)
+		}
 		CheckReadonly("edit")
 
 		evt := metrics.NewCommandEvent("edit")
