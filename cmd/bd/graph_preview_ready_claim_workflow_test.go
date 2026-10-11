@@ -33,13 +33,37 @@ func TestGraphPreviewReadyClaimWorkflow(t *testing.T) {
 				return graphPolicyCLI(t, bd, work, home, nil, "", append(args, "--json")...)
 			}
 			call(initArgs...)
-			call("create", "Release task", "--id", "release", "--priority", "1", "--labels", "release")
+			call("create", "Release task", "--id", "release", "--priority", "1", "--labels", "release", "--metadata", `{"team":"delivery"}`)
 			call("create", "Docs task", "--id", "docs", "--priority", "2", "--labels", "docs")
 			call("create", "Blocked task", "--id", "blocked", "--priority", "0", "--labels", "release")
 			call("dep", "add", "blocked", "docs")
 			before := graphMixedResult[graphstore.IssueRecord](t, call("show", "--format", "graph-json", "release"))
 			if got := graphMixedResult[[]graphstore.IssueRecord](t, call("ready", "--label", "release")); len(got) != 1 || got[0].ID != before.ID {
 				t.Fatalf("filtered ready front: %+v", got)
+			}
+			for _, flags := range [][]string{
+				{"--label-pattern", "rel*"},
+				{"--label-regex", "^rel.*$"},
+				{"--exclude-type", "bug"},
+				{"--metadata-field", "team=delivery"},
+				{"--has-metadata-key", "team"},
+			} {
+				got := graphMixedResult[[]graphstore.IssueRecord](t, call(append([]string{"ready"}, flags...)...))
+				if len(got) == 0 || got[0].ID != before.ID {
+					t.Fatalf("ready filter %v lost release Issue: %+v", flags, got)
+				}
+			}
+			for _, flags := range [][]string{
+				{"--label-pattern", "missing*"},
+				{"--label-regex", "^missing$"},
+				{"--exclude-type", "task"},
+				{"--metadata-field", "team=other"},
+				{"--has-metadata-key", "missing"},
+			} {
+				got := graphMixedResult[[]graphstore.IssueRecord](t, call(append([]string{"ready", "--label", "release"}, flags...)...))
+				if len(got) != 0 {
+					t.Fatalf("ready filter %v ignored exclusion: %+v", flags, got)
+				}
 			}
 			if got := graphMixedResult[[]graphstore.BlockedIssue](t, call("blocked", "--label", "release")); len(got) != 1 || got[0].Issue.ID != scope+"beads/blocked" {
 				t.Fatalf("filtered blocked front: %+v", got)
@@ -61,6 +85,9 @@ func TestGraphPreviewReadyClaimWorkflow(t *testing.T) {
 			}
 			if got := graphMixedResult[[]graphstore.IssueRecord](t, call("ready", "--claim", "--label", "release", "--actor", "ready-agent")); len(got) != 0 {
 				t.Fatalf("empty filtered front claimed work: %+v", got)
+			}
+			if got := graphMixedResult[[]graphstore.IssueRecord](t, call("ready", "--claim", "--metadata-field", "team=other", "--actor", "ready-agent")); len(got) != 0 {
+				t.Fatalf("metadata-filtered empty claim unexpectedly selected work: %+v", got)
 			}
 			if got := graphMixedResult[[]graphstore.IssueRecord](t, call("ready", "--claim", "--priority", "0", "--actor", "ready-agent")); len(got) != 0 {
 				t.Fatalf("blocked Issue was selected for claim: %+v", got)
