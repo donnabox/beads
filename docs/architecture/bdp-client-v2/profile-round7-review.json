@@ -45,5 +45,15 @@
       ]
     }
   ],
-  "scope": "Independent bounded review; no full-profile, combined-head, or current Read-seal claim."
+  "scope": "Independent bounded review; no full-profile, combined-head, or current Read-seal claim.",
+  "baselineVerification": {
+    "observations": 27,
+    "exitCode": 0,
+    "version": "bd 1.0.5 Homebrew",
+    "schema": 1,
+    "executableSha256": "2fff6a2dc534cf8b56ec1f7a0c98b1e8509a0a5408905c420769a7213ee34707",
+    "log": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/pinned-bd-baseline-review.log",
+    "logSha256": "a98af76171cd4ea396c7b184649dda9fbe8926353cc86f86c1784b68c8c397b2",
+    "limits": "Existing pin; host-local identity difference expected. No capture or policy change; owned fixtures/processes cleaned."
+  }
 }
