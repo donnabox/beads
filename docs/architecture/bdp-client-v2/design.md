@@ -110,6 +110,10 @@ Packs build on Gas City core concepts and carry Bead/Link definitions, skills an
 
 Trish owns Type lifecycle design. Janet owns current Beads/Preview 2 integration, CLI/BDP alignment and qualification. Do not edit their branches, PRs, specs, tests, playgrounds or shared databases. Coordinate dependencies through the existing bus. BDP profile implementation is authorized under the current priority above; V2 client implementation and merges remain out of scope.
 
+## Simplicity review
+
+Donna explicitly directs a YAGNI review: mechanisms need a concrete product purpose, not speculative future utility or existing implementation effort. The [BDP simplicity catalog](yagni-catalog.md) lists 36 current-contract candidates across History, Read, mutation and Transactional/replication, plus four Type-related pointers reserved for coordination with Trish. Each gives the source, benefit/cost, a smaller alternative and the guarantee lost. Review one decision at a time, beginning with what exact historical retrieval requires. No individual removal or profile change is approved yet. Existing bounded implementation may finish, but do not widen its scope while these choices are being reviewed. Catalog recommendations are not normative law and do not justify weakening conformance claims.
+
 ## Batch composition direction
 
 Donna agrees that ordinary `bd create`, `bd update` and `bd delete` should work inside `bd batch` when transactionally expressible, with create covering Beads and Links in the new CLI. Treat these as shared semantic command implementations. This is a CLI composition direction, not adoption of a new BDP wire operation or a claim that every current operation is already reducible. Remaining distinctions include alias mutation, bulk target selection and sequence-versus-atomic-batch behavior. Coordinate concrete CLI findings with Janet; do not edit her branch.
