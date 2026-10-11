@@ -24,6 +24,13 @@ integration source changes, and reconcile this specification and the guide
 with each admitted behavior change. A candidate PR does not become current
 behavior until it lands and the ledger is updated.
 
+The grouped everyday Issue candidate in this branch adds `bd q`, native
+`comment`/`comments add`, `statuses`, Issue-only legacy `list --json`,
+bounded `search`/`count`/`query`, and editor-backed `edit`. Its commands are
+candidate behavior until the exact source passes local and hosted qualification
+and is staged. The historical ledger below still describes its pinned
+integration commit; do not read a candidate row as a release claim.
+
 This contract covers all graph-affected Bead, Link, History, discovery,
 agent-setup and serving entry points. Ordinary-project commands keep their
 ordinary contracts. Type descriptor design, installation, removal, update and
@@ -127,7 +134,6 @@ ordinary storage.
 | `assign ISSUE PERSON` | `--if-revision`, `--force` | Set or clear an Issue assignee through the native Issue writer; a foreign live-claim transfer needs explicit `--force`. Omitted revision guard accepts current state. |
 | `priority ISSUE LEVEL` | No additional flags | Set P0–P4 priority through the native Issue writer. |
 | `note ISSUE [TEXT...]` | `--stdin`, `--file` | Append text to an Issue's notes through the native Issue writer; text sources are mutually exclusive. |
-| `comment ISSUE [TEXT...]`, `comments add ISSUE [TEXT...]` | Singular: `--stdin`, `--file`; plural: `--file`, `--author` | Add one native Issue comment. Both return the stored comment with `--json`; neither creates an Issue Resource version. `comments ISSUE` reads the feed. |
 | `update LINK` | `--properties` or `--patch`, optional `--if-revision`, `--if-source-revision`, `--unconditional-source` | Informational Link properties only / implemented. Endpoints and Type are immutable. |
 | `link SOURCE TARGET` | `--link-type`/`--resource-type`, `--id`, `--properties`, `--if-source-revision`, `--unconditional-source`; blocking alias `--type` | One typed Link, or an Issue-only blocking Dependency with ordinary default Type / implemented. `--unconditional-source` explicitly accepts the current owning source Bead instead of checking a supplied `--if-source-revision`; for a Memory-owned informational Link, that source acceptance is already the default. Remote endpoints, bulk and bypass flags refuse. |
 | `dep add SOURCE TARGET` | `--type`, optional `--id` | One local blocking Dependency between live Issues / implemented. No bulk form; Link Type and source-guard flags belong to `bd link` and are refused here. `dep BLOCKER --blocks BLOCKED` reverses the positional order for the same operation. |
@@ -948,7 +954,7 @@ its priority and its quoted title, for example
 A line under the header says that Memories are not listed and names the
 option that selected the query; structured output carries no such line.
 `--format records-json` returns the experimental graph envelope. Tree output
-(`--tree`, `--pretty` or `--flat=false`), `--json`, `--format json`, watch,
+(`--tree`, `--pretty` or `--flat=false`), legacy `--json`/`--format json`, watch,
 readiness, parent/ID/routing/offset selectors, repeated
 status/state/type/assignee/bead-type filters and supplied-empty labels
 refuse. Defer filters remain unavailable; due selection
@@ -956,7 +962,10 @@ does not schedule or wake work.
 This does not change ordinary list parsing or implement contributor-owned filter
 unions. Records-json selects structured errors and overrides ambient human
 format selection; explicit `--json` still refuses. BDP Read remains the documented
-script interface below; these CLI result shapes are experimental.
+script interface below; these CLI result shapes are experimental. The grouped
+everyday candidate adds ordinary Issue-only array output for `list --json`;
+that candidate is distinct from the pinned integration ledger above and from
+the all-Bead `records-json` format.
 
 `blocked` follows the existing native dependency-blocked query. It is not the
 complement of ready, nor a query for every manually blocked or deferred Issue.
