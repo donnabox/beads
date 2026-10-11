@@ -22,7 +22,7 @@ index 2963cd913..2fc921c30 100644
  )
  
  // Installed process admission, input selection and persisted graph projections
-@@ -114,3 +120,209 @@ func TestGraphPreviewLegacyImportInstalledWorkflow(t *testing.T) {
+@@ -114,3 +120,225 @@ func TestGraphPreviewLegacyImportInstalledWorkflow(t *testing.T) {
  		})
  	}
  }
@@ -181,6 +181,22 @@ index 2963cd913..2fc921c30 100644
 +				canonical, err := graph.CanonicalizeJSON(metadata)
 +				if err != nil || got.Revision == "" || !bytes.Equal(canonical, got.Metadata) {
 +					t.Fatalf("Issue %s metadata changed: %s (%v)", source.ID, got.Metadata, err)
++				}
++				wantOwned := 0
++				if source.ID == "web-app-b2c" {
++					wantOwned = 1
++				}
++				if len(got.Owned) != wantOwned {
++					t.Fatalf("Issue %s dependency count: got %d want %d", source.ID, len(got.Owned), wantOwned)
++				}
++				if wantOwned == 1 {
++					var link graphstore.LinkRecord
++					if err := json.Unmarshal(got.Owned[0], &link); err != nil {
++						t.Fatal(err)
++					}
++					if link.Type != graphstore.DependencyTypeURL(scope) || link.Source != id || link.Target != result.IDs["web-app-a1b"] {
++						t.Fatalf("Issue %s dependency lost type or endpoints: %+v", source.ID, link)
++					}
 +				}
 +				retained := graphMixedResult[graphstore.IssueRecord](t, call("", "", "show", id, "--version", got.Revision))
 +				if !reflect.DeepEqual(got.Properties, retained.Properties) || !bytes.Equal(got.Metadata, retained.Metadata) || !reflect.DeepEqual(got.Owned, retained.Owned) {

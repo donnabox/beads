@@ -35,7 +35,9 @@ workspace initialized with `--server --external`.
 
 The destination must be empty and fresh: existing Beads, Links, native rows or
 reserved/deleted identities refuse import. This includes orphan graph payloads
-and Links, native labels and wisp auxiliary rows, and classic KV Memories even
+and Links, native labels, event/provenance feeds, journals, leases, snapshots,
+previous identity/sequence allocations, counters and wisp
+auxiliary rows, and classic KV Memories even
 when their values are empty. Import preserves these rows by refusing the
 destination; it does not repair or adopt them. Ordinary infrastructure
 configuration is allowed. Repeating a successful import

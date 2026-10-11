@@ -246,7 +246,7 @@ func parseLegacyFixture(t *testing.T, input string) legacyimport.Batch {
 func legacyImportState(t *testing.T, ctx context.Context, s *Store) map[string]string {
 	t.Helper()
 	state := reopenState(t, ctx, s)
-	for _, table := range []string{"labels", "comments", "child_counters", "wisps", "wisp_dependencies", "wisp_comments", "wisp_labels", "config"} {
+	for _, table := range []string{"labels", "comments", "child_counters", "wisps", "wisp_dependencies", "wisp_comments", "wisp_labels", "wisp_events", "wisp_child_counters", "provenance_events", "issue_snapshots", "compaction_snapshots", "issue_counter", "config"} {
 		rows, err := s.db.QueryContext(ctx, "SELECT * FROM "+table)
 		if err != nil {
 			t.Fatal(err)
@@ -344,6 +344,17 @@ func TestLegacyImportFreshDataPlanes(t *testing.T) {
 				{"wisp-dependency", "INSERT INTO wisp_dependencies(id,issue_id,depends_on_external) VALUES('orphan-dep','absent','external:target')", "DELETE FROM wisp_dependencies WHERE id='orphan-dep'", "wisp_dependencies", true},
 				{"wisp-comment", "INSERT INTO wisp_comments(id,issue_id,text) VALUES('orphan-comment','absent','retained')", "DELETE FROM wisp_comments WHERE id='orphan-comment'", "wisp_comments", true},
 				{"wisp-label", "INSERT INTO wisp_labels(issue_id,label) VALUES('absent','retained')", "DELETE FROM wisp_labels WHERE issue_id='absent'", "wisp_labels", true},
+				{"event", "INSERT INTO events(id,issue_id,event_type,actor) VALUES('orphan-event','old-b','created','previous-author')", "DELETE FROM events WHERE id='orphan-event'", "events", true},
+				{"provenance", "INSERT INTO provenance_events(id,issue_id,kind,source) VALUES('orphan-provenance','old-b','commit','previous-source')", "DELETE FROM provenance_events WHERE id='orphan-provenance'", "provenance_events", true},
+				{"counter", "INSERT INTO child_counters(parent_id,last_child) VALUES('old-b',42)", "DELETE FROM child_counters WHERE parent_id='old-b'", "child_counters", true},
+				{"issue-snapshot", "INSERT INTO issue_snapshots(id,issue_id,snapshot_time,compaction_level,original_size,compressed_size,original_content) VALUES('orphan-snapshot','old-b','2026-01-01',1,1,1,'previous content')", "DELETE FROM issue_snapshots WHERE id='orphan-snapshot'", "issue_snapshots", true},
+				{"compaction-snapshot", "INSERT INTO compaction_snapshots(id,issue_id,compaction_level,snapshot_json) VALUES('orphan-compaction','old-b',1,'{}')", "DELETE FROM compaction_snapshots WHERE id='orphan-compaction'", "compaction_snapshots", true},
+				{"wisp-event", "INSERT INTO wisp_events(id,issue_id,event_type) VALUES('orphan-wisp-event','absent','created')", "DELETE FROM wisp_events WHERE id='orphan-wisp-event'", "wisp_events", true},
+				{"wisp-counter", "INSERT INTO wisp_child_counters(parent_id,last_child) VALUES('absent',42)", "DELETE FROM wisp_child_counters WHERE parent_id='absent'", "wisp_child_counters", true},
+				{"journal", "INSERT INTO bd_events_journal(seq,ts,op,issue_id,issue_json) VALUES(42,'2026-01-01','create','old-b','{}')", "DELETE FROM bd_events_journal WHERE seq=42", "bd_events_journal", false},
+				{"lease", "INSERT INTO leases(issue_id,holder,granted_at,lease_expires_at,heartbeat_at) VALUES('absent','previous-holder','2026-01-01','2099-01-01','2026-01-01')", "DELETE FROM leases WHERE issue_id='absent'", "leases", false},
+				{"allocator", "INSERT INTO issue_counter(prefix,last_id) VALUES('old',42)", "DELETE FROM issue_counter WHERE prefix='old'", "issue_counter", false},
+				{"journal-sequence", "UPDATE bd_events_seq SET next_seq=42 WHERE id=0", "UPDATE bd_events_seq SET next_seq=0 WHERE id=0", "bd_events_seq", false},
 				{"kv-memory", "INSERT INTO config (`key`,value) VALUES('kv.memory.retained','original')", "DELETE FROM config WHERE `key`='kv.memory.retained'", "legacy KV Memories", false},
 				{"empty-kv-memory", "INSERT INTO config (`key`,value) VALUES('kv.memory.retained','')", "DELETE FROM config WHERE `key`='kv.memory.retained'", "legacy KV Memories", false},
 			}
@@ -356,7 +367,11 @@ func TestLegacyImportFreshDataPlanes(t *testing.T) {
 					for _, dry := range []bool{true, false} {
 						t.Run(fmt.Sprintf("dry=%t", dry), func(t *testing.T) {
 							got, err := s.ImportLegacy(ctx, batch, "importer", dry)
-							if !errors.Is(err, storage.ErrValidation) || !strings.Contains(err.Error(), test.message) || !reflect.DeepEqual(got, LegacyImportResult{}) {
+							message := "; " + test.message + " is occupied"
+							if strings.Contains(test.message, "KV Memories") {
+								message = test.message + " are present in config"
+							}
+							if !errors.Is(err, storage.ErrValidation) || !strings.Contains(err.Error(), message) || !reflect.DeepEqual(got, LegacyImportResult{}) {
 								t.Fatalf("occupied plane admitted or result leaked: %+v %v", got, err)
 							}
 							if !reflect.DeepEqual(before, legacyImportState(t, ctx, s)) {
@@ -380,6 +395,15 @@ func TestLegacyImportFreshDataPlanes(t *testing.T) {
 			}
 			if !reflect.DeepEqual(before, legacyImportState(t, ctx, s)) {
 				t.Fatal("dry-run changed ordinary configuration")
+			}
+			if _, err := s.ImportLegacy(ctx, batch, "importer", false); err != nil {
+				t.Fatalf("ordinary configuration disqualified apply: %v", err)
+			}
+			for key, want := range map[string]string{"kv.memoryx.retained": "ordinary config", "iris.test.setting": "kept", "issue_prefix": "old"} {
+				var value string
+				if err := s.db.QueryRowContext(ctx, "SELECT value FROM config WHERE `key`=?", key).Scan(&value); err != nil || value != want {
+					t.Fatalf("apply changed allowed configuration %q: %q %v", key, value, err)
+				}
 			}
 		})
 	}

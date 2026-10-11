@@ -20,6 +20,7 @@ import (
 	"github.com/steveyegge/beads/internal/storage/depid"
 	"github.com/steveyegge/beads/internal/storage/domain"
 	"github.com/steveyegge/beads/internal/storage/issueops"
+	"github.com/steveyegge/beads/internal/storage/kvkeys"
 	"github.com/steveyegge/beads/internal/types"
 	"github.com/steveyegge/beads/internal/utils"
 )
@@ -209,9 +210,21 @@ func (s *Store) ImportLegacyWithPrefix(ctx context.Context, input legacyimport.B
 func requireEmptyLegacyTarget(ctx context.Context, tx *sql.Tx) error {
 	// Include reserved/deleted allocations and unmapped native rows: deleting
 	// everything or bypassing graph writers never makes a workspace fresh again.
-	for _, table := range []string{"graph_preview_catalog", "graph_preview_payloads", "graph_preview_links", "issues", "wisps", "dependencies", "comments", "labels", "wisp_dependencies", "wisp_comments", "wisp_labels", "issue_versions", "graph_preview_versions", "graph_preview_issue_versions"} {
+	tables := []string{"graph_preview_catalog", "graph_preview_payloads", "graph_preview_links", "issue_versions", "graph_preview_versions", "graph_preview_issue_versions", "bd_events_journal", "leases", "issue_counter"}
+	// Init installs both main and ignored migration lanes, including the wisp
+	// counters. Missing tables fail closed; import never repairs the schema.
+	// Reuse the native ownership inventory so orphan history and counters cannot
+	// attach themselves to newly imported identities.
+	tables = append(tables, issueops.DeleteCascadeTables(false)...)
+	tables = append(tables, issueops.DeleteCascadeTables(true)...)
+	seen := make(map[string]bool, len(tables))
+	for _, table := range tables {
+		if seen[table] {
+			continue
+		}
+		seen[table] = true
 		var count int
-		//nolint:gosec // G201: table is from the fixed internal list above.
+		//nolint:gosec // G201: fixed graph tables and native deletion inventory.
 		if err := tx.QueryRowContext(ctx, "SELECT COUNT(*) FROM "+table).Scan(&count); err != nil {
 			return err
 		}
@@ -219,14 +232,23 @@ func requireEmptyLegacyTarget(ctx context.Context, tx *sql.Tx) error {
 			return fmt.Errorf("%w: legacy import requires an empty fresh graph workspace; %s is occupied (repeat imports do not update or duplicate data)", storage.ErrValidation, table)
 		}
 	}
+	// The journal sequence is seeded at (0,0), so row presence alone is normal.
+	// A consumed sequence still records prior history after journal deletion.
+	var usedSequence int
+	if err := tx.QueryRowContext(ctx, "SELECT COUNT(*) FROM bd_events_seq WHERE id<>0 OR next_seq<>0").Scan(&usedSequence); err != nil {
+		return err
+	}
+	if usedSequence != 0 {
+		return fmt.Errorf("%w: legacy import requires an empty fresh graph workspace; bd_events_seq is occupied (prior journal sequence allocation)", storage.ErrValidation)
+	}
 	// Classic Memories are config-backed live data, including empty values.
 	// Infrastructure configuration alone does not make a destination occupied.
 	var memories int
-	if err := tx.QueryRowContext(ctx, "SELECT COUNT(*) FROM config WHERE LEFT(`key`,10)='kv.memory.'").Scan(&memories); err != nil {
+	if err := tx.QueryRowContext(ctx, "SELECT COUNT(*) FROM config WHERE LEFT(`key`,?)=?", len(kvkeys.MemoryConfigKeyPrefix), kvkeys.MemoryConfigKeyPrefix).Scan(&memories); err != nil {
 		return err
 	}
 	if memories != 0 {
-		return fmt.Errorf("%w: legacy import requires an empty fresh graph workspace; legacy KV Memories are present", storage.ErrValidation)
+		return fmt.Errorf("%w: legacy import requires an empty fresh graph workspace; %d legacy KV Memories are present in config under %q; use a newly initialized empty graph workspace", storage.ErrValidation, memories, kvkeys.MemoryConfigKeyPrefix)
 	}
 	return nil
 }

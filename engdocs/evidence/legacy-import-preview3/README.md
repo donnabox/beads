@@ -115,3 +115,29 @@ and [lint allprofiles](freshness-lint-repaired.log) passed; they compile the new
 engine-test source without running it. Earlier council/build/runtime evidence
 qualifies its recorded source only. The current repair needs bounded council
 completion, a new canonical build and fresh two-mode proof.
+
+
+## Native history freshness repair
+
+The [actual initial Claude review](freshness-initial-claude.txt) completed with
+exit0. Its frozen packet predates the two native fixture repairs described
+above, so it does not qualify the subsequent source. Its Medium finding was
+confirmed: native events, provenance, snapshots and allocation counters could
+survive without live Issues and collide with imported IDs. The guard now reuses
+both native deletion-table inventories, also checks journal, leases and the
+Issue allocator, and refuses a consumed journal sequence (the fresh (0,0) seed
+is allowed). Tests now author19 occupied planes in apply/dry-run in both modes;
+ordinary config survives an actual apply control. They remain engine-unrun.
+The KV prefix uses the central constant with query parameters; refusals name
+the table or KV prefix/count. Missing native schema fails closed.
+
+The [final-source manifest](freshness-final-manifest.json),
+[prompt](freshness-final-prompt.txt) and [native confirmation](freshness-final-native.txt)
+identify the frozen bounded successor review; actual Claude is still running.
+[Pure checks](freshness-final-pure.log) pass13 cases with zero failures/skips;
+[lint](freshness-final-lint.log) passes all profiles. These checks compile, but
+do not execute, the new engine tests. Earlier installed proof remains historical.
+The prepared installed workflow now independently asserts the one expected
+blocking Link's type/endpoints and absence of owned Links on other Issues;
+matching current/retained state alone could otherwise hide a missing edge.
+The patch remains inactive pending the genuine corpus.
