@@ -155,6 +155,43 @@ func runGraphPreviewAddDependency(cmd *cobra.Command, args []string) error {
 	return graphPreviewInsertDependency(paths[0], paths[1], linkPath, sourceRevision, args[0], args[1])
 }
 
+// The ordinary dep remove verb addresses an Issue pair, not a Link ID. Pair
+// selection and the no-op check happen inside the graph store's one write
+// transaction; the actual removal uses the canonical guarded unlink writer.
+func runGraphPreviewRemoveDependency(cmd *cobra.Command, args []string) error {
+	if err := graphPreviewWritePolicy(); err != nil {
+		return err
+	}
+	if err := graphPreviewFlags(cmd); err != nil {
+		return err
+	}
+	if len(args) != 2 {
+		return graphFailure("invalid_selector", "dep remove requires two Issue IDs or beads/PATH arguments", 2)
+	}
+	sourcePath, err := graphPreviewBeadSelector(args[0])
+	if err != nil {
+		return err
+	}
+	targetPath, err := graphPreviewBeadSelector(args[1])
+	if err != nil {
+		return err
+	}
+	return withGraphFamiliarStore(func(ctx context.Context, store *graphstore.Store) (any, string, error) {
+		removed, err := store.RemoveDependency(ctx, sourcePath, targetPath, getActorWithGit())
+		if err != nil {
+			return nil, "", err
+		}
+		status, human := "not_found", fmt.Sprintf("No dependency found: %s → %s", removed.Source.Properties.ID, removed.Target.Properties.ID)
+		if removed.Removed {
+			status, human = "removed", fmt.Sprintf("Removed dependency: %s → %s", removed.Source.Properties.ID, removed.Target.Properties.ID)
+		}
+		return map[string]any{
+			"status": status, "removed": removed.Removed,
+			"issue_id": removed.Source.Properties.ID, "depends_on_id": removed.Target.Properties.ID,
+		}, human, nil
+	})
+}
+
 func runGraphPreviewDepBlocks(cmd *cobra.Command, args []string) error {
 	if err := graphPreviewFlags(cmd, "blocks"); err != nil {
 		return err

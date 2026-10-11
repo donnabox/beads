@@ -1208,6 +1208,9 @@ var depRemoveCmd = &cobra.Command{
 	SilenceUsage:  true,
 	SilenceErrors: true,
 	RunE: func(cmd *cobra.Command, args []string) error {
+		if graphPreviewActive {
+			return runGraphPreviewRemoveDependency(cmd, args)
+		}
 		CheckReadonly("dep remove")
 
 		evt := metrics.NewCommandEvent("dep-remove")

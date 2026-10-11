@@ -136,6 +136,15 @@ type DependencyResult struct {
 	Changed bool        `json:"changed"`
 }
 
+// DependencyRemoveResult is the native pair-removal outcome. A missing edge
+// returns Removed=false with both checked live Issues and no Link tombstone.
+type DependencyRemoveResult struct {
+	Removed bool
+	Source  IssueRecord
+	Target  IssueRecord
+	Link    LinkTombstone
+}
+
 type IssueMutationResult struct {
 	Issue        IssueRecord `json:"issue"`
 	Changed      bool        `json:"changed"`

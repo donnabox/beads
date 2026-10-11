@@ -301,6 +301,58 @@ func TestGraphPreviewStructureReads(t *testing.T) {
 	}
 }
 
+func TestGraphPreviewDepRemovePairAndNoop(t *testing.T) {
+	bd := buildBDUnderTest(t)
+	work, home := t.TempDir(), t.TempDir()
+	const scope = "https://example.invalid/dep-remove/"
+	call := func(code string, args ...string) string {
+		return graphPolicyCLI(t, bd, work, home, nil, code, args...)
+	}
+	call("", "init", "--graph-mode", "link", "--prefix", "demo", "--scope-url", scope, "--skip-hooks", "--skip-agents", "--non-interactive", "--json")
+	for _, id := range []string{"work", "first", "second"} {
+		call("", "create", id, "--id", "beads/"+id, "--json")
+	}
+	added := graphMixedResult[graphstore.DependencyResult](t, call("", "dep", "add", "work", "first", "--id", "links/first", "--json"))
+	firstHistory := call("", "versions", "first", "--json")
+	workHistory := call("", "versions", "work", "--json")
+	type removalJSON struct {
+		Status      string `json:"status"`
+		Removed     bool   `json:"removed"`
+		IssueID     string `json:"issue_id"`
+		DependsOnID string `json:"depends_on_id"`
+	}
+	decode := func(raw string) removalJSON {
+		t.Helper()
+		var result removalJSON
+		if err := json.Unmarshal([]byte(raw), &result); err != nil {
+			t.Fatalf("dep remove did not preserve native flat JSON: %v: %s", err, raw)
+		}
+		return result
+	}
+	missing := decode(call("", "dep", "remove", "work", "second", "--json"))
+	if missing.Status != "not_found" || missing.Removed || missing.IssueID != added.Source.Properties.ID || missing.DependsOnID == "" || call("", "versions", "work", "--json") != workHistory {
+		t.Fatalf("absent pair was not a native no-op: %+v", missing)
+	}
+	removed := decode(call("", "dep", "remove", "work", "first", "--json"))
+	if removed.Status != "removed" || !removed.Removed || removed.IssueID != added.Source.Properties.ID || removed.DependsOnID != "first" {
+		t.Fatalf("pair removal lost native JSON fields: %+v", removed)
+	}
+	if _, _, before, _ := graphVersionsListed(t, workHistory); len(before) == 0 {
+		t.Fatal("source has no creation/add History")
+	} else if _, _, after, _ := graphVersionsListed(t, call("", "versions", "work", "--json")); len(after) != len(before)+1 {
+		t.Fatalf("pair removal should append exactly one source History version: %d → %d", len(before), len(after))
+	}
+	call("gone", "show", "links/first", "--json")
+	afterRemoval := call("", "versions", "work", "--json")
+	again := decode(call("", "dep", "rm", "work", "first", "--json"))
+	if again.Status != "not_found" || again.Removed || call("", "versions", "work", "--json") != afterRemoval {
+		t.Fatalf("repeated pair removal changed source History: %+v", again)
+	}
+	if got := call("", "versions", "first", "--json"); got != firstHistory {
+		t.Fatalf("pair removal changed target History\nbefore: %s\nafter: %s", firstHistory, got)
+	}
+}
+
 func TestGraphPreviewUnmappedIssueStructureRefusesWithoutMutation(t *testing.T) {
 	bd := buildBDUnderTest(t)
 	work, home := t.TempDir(), t.TempDir()

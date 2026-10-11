@@ -3,12 +3,78 @@ package graphstore
 import (
 	"context"
 	"database/sql"
+	"errors"
 	"fmt"
 	"strings"
+	"unicode/utf8"
 
+	"github.com/steveyegge/beads/internal/storage"
 	"github.com/steveyegge/beads/internal/storage/issueops"
 	publicops "github.com/steveyegge/beads/issueops"
 )
+
+// RemoveDependency is the Issue pair form of the native dep remove verb. It
+// selects only the installed blocking Link in the same write transaction as
+// the canonical unlink/Issue writer. An absent pair is a true no-op: no event,
+// retained version, tombstone, or coordination write is produced. The generic
+// unlink command keeps its explicit canonical-Link-ID and guard contract.
+func (s *Store) RemoveDependency(ctx context.Context, sourcePath, targetPath, actor string) (DependencyRemoveResult, error) {
+	for _, path := range []string{sourcePath, targetPath} {
+		if err := validatePath(path); err != nil {
+			return DependencyRemoveResult{}, err
+		}
+	}
+	if actor == "" || !utf8.ValidString(actor) {
+		return DependencyRemoveResult{}, fmt.Errorf("%w: remove dependency requires a UTF-8 actor", storage.ErrValidation)
+	}
+	var result DependencyRemoveResult
+	err := s.withTx(ctx, true, func(tx *sql.Tx) error {
+		if err := checkBinding(ctx, tx, s.options); err != nil {
+			return err
+		}
+		source, err := s.requireIssueInTx(ctx, tx, sourcePath)
+		if err != nil {
+			return err
+		}
+		target, err := s.requireIssueInTx(ctx, tx, targetPath)
+		if err != nil {
+			return err
+		}
+		result.Source, result.Target = source, target
+		path, err := s.selectUnlinkPathInTx(ctx, tx, LinkDeleteRequest{
+			SourcePath: sourcePath, TargetPath: targetPath, TypeURL: DependencyTypeURL(s.ScopeURL()),
+		})
+		if errors.Is(err, ErrNotFound) {
+			return nil
+		}
+		if err != nil {
+			return err
+		}
+		link, err := s.showLinkInTx(ctx, tx, path)
+		if err != nil {
+			return err
+		}
+		if link.Type != DependencyTypeURL(s.ScopeURL()) {
+			return fmt.Errorf("%w: selected pair is not a blocking Dependency", ErrInvalidStore)
+		}
+		removed, err := s.unlinkDependencyInTx(ctx, tx, path, link, LinkDeleteRequest{
+			Actor: actor, ExpectedRevision: link.Revision, ExpectedSourceRevision: source.Revision,
+		})
+		if err != nil {
+			return err
+		}
+		current, ok := removed.Source.(IssueRecord)
+		if !ok || !removed.Changed {
+			return fmt.Errorf("%w: blocking writer returned no changed Issue", ErrInvalidStore)
+		}
+		result.Removed, result.Source, result.Link = true, current, removed.Link
+		return nil
+	})
+	if err != nil {
+		return DependencyRemoveResult{}, err
+	}
+	return result, nil
+}
 
 // validDeletedLinkAllocation separates reserved canonical identity from current
 // authority. Dependency row IDs are deterministic per pair; clearing the deleted

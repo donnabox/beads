@@ -18,7 +18,8 @@ Informational Links also accept an unambiguous source/target pair selected with
 --link-type; bare endpoint IDs mean beads/ID. Requires a Link revision guard. Source revision protection is
 optional for Memory-owned Links and required for blocking Dependencies. The ID
 stays reserved and prior snapshots remain retained. Blocking pair selection is
-not supported.`,
+not supported by unlink; use bd dep remove ISSUE BLOCKER for the native pair
+verb and its absent-pair no-op.`,
 	SilenceUsage: true, SilenceErrors: true,
 	RunE: runGraphPreviewUnlink,
 }
