@@ -73,9 +73,9 @@ sizes: persisted payloads, relations and retained snapshots must also fit the
 it; the entire transaction rolls back. Byte/resource ceilings use
 `capability_unavailable`; malformed JSON, including excessive nesting, uses
 `invalid_properties`. Import does not split a large input into partially
-committed chunks. Engine errors and timeout roll back before commit;
-an uncertain commit outcome is reported as `outcome_unknown`, without automatic
-replay. Inspect the destination before deciding what to do after that error.
+committed chunks. Definite failures and dry-runs roll back before commit. If commit or rollback
+cleanup is uncertain, including cancellation after the driver has ended the
+transaction, import reports `outcome_unknown` (exit 6), without automatic replay. Inspect the destination before deciding what to do after that error.
 
 This is a fresh-workspace interchange operation. It does not migrate an
 existing workspace in place or carry full backup/restore history.

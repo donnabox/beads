@@ -51,8 +51,16 @@ func runGraphPreviewImportReader(reader io.Reader, source string) error {
 		if importDryRun {
 			action = "Would import"
 		}
-		return result, fmt.Sprintf("%s %d Issues, %d Memories, %d Dependencies and %d comments from %s. Source history is not present in legacy exports.", action, result.Issues, result.Memories, result.Dependencies, result.Comments, source), nil
+		return result, graphPreviewLegacyImportSummary(action, source, result), nil
 	}, func(result any, human string) error {
 		return graphPrint(result, human, quietFlag)
 	})
+}
+
+func graphPreviewLegacyImportSummary(action, source string, result graphstore.LegacyImportResult) string {
+	prefix := ""
+	if result.IssuePrefix != "" {
+		prefix = fmt.Sprintf(" Workspace Issue prefix: %s.", result.IssuePrefix)
+	}
+	return fmt.Sprintf("%s %d Issues, %d Memories, %d Dependencies and %d comments from %s.%s Source history is not present in legacy exports.", action, result.Issues, result.Memories, result.Dependencies, result.Comments, source, prefix)
 }

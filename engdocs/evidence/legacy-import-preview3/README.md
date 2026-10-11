@@ -28,7 +28,7 @@ that would collapse distinct supplied comments refuses the whole transaction.
 ## Evidence and limits
 
 [source-checks.json](source-checks.json) pins source-file hashes and the parent head.
-[pure.jsonl](pure.jsonl) records **103 passing cases/subtests, zero failures/skips**
+[pure.jsonl](pure.jsonl) records **105 passing cases/subtests, zero failures/skips**
 across parser, pure storage preparation/verification and CLI guard/error/help
 checks. All three packages compiled; this run opens no database. [Canonical build provenance](build.json) pins the private installed binary; it is
 build evidence only. [Lint](lint.log)
@@ -55,7 +55,7 @@ new source, and execute both installed modes without skips before readiness.
 
 ## Council and open gates
 
-Native Codex and actual Claude review the same frozen implementation prompt;
+Native Codex and actual Claude reviewed the same frozen implementation prompt;
 Gemini is excluded as requested. [Plan findings](plan-claude.txt) led to the prefix,
 UTF-8, config, Memory verification and comment-budget repairs. Singleton ambiguous
 IDs require explicit configuration rather than an invented prefix; config presence
@@ -63,10 +63,19 @@ is checked directly rather than requiring a changed-row count of one.
 
 [Native implementation review](native-review.txt) found the old cancellation test only returned an
 error and the prefix example omitted the flag on apply. Both are repaired and
-bounded native verification reports no confirmed blocker. Actual Claude frozen
-implementation review is still running; its findings and final disposition must
-be added before claiming council completion. Current source differs from the
-snapshot in these repaired tests/docs, error-cause wrapping and the benchmark.
+bounded native verification reports no confirmed blocker. [Actual Claude implementation review](implementation-claude.txt) completed with no
+confirmed code blocker. The final bounded repair review is active; its disposition
+must be collected before claiming council completion. Current source differs from the
+snapshot in these repaired tests/docs, error-cause wrapping the benchmark, strict infrastructure-config read, prefix disclosure in human output,
+label set normalization and refusal of nonserialized SDK routing/plane state.
+
+The final source repairs preserve underlying config error causes, use the existing
+strict infrastructure-config helper, disclose adopted prefixes in human output,
+normalize labels as a set on the isolated copy, and refuse unsupported internal
+SDK fields before JSON cloning. The real cancellation test additionally checks
+uncertainty classification against driver transaction cleanup. The independent
+owned-Link post-write read remains intentional; measure its bounded cost in the
+engine gate before considering storage-interface changes.
 
 Remaining gates: genuine expanded fixture, applied/reopened preservation and
 real cancellation rollback in both installed modes, exact-head hosted checks,

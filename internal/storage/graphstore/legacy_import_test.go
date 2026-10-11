@@ -5,6 +5,7 @@ package graphstore
 import (
 	"context"
 	"crypto/sha256"
+	"database/sql"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -70,6 +71,23 @@ func TestLegacyImportPrefixAdmission(t *testing.T) {
 	}
 	if _, err := prepareLegacyImportWithPrefix(legacyimport.Batch{Memories: []legacyimport.Memory{{Key: "key"}}}, "importer", "web-app"); err == nil {
 		t.Fatal("memory-only source prefix admitted")
+	}
+}
+
+func TestLegacyImportLabelSetAndInternalState(t *testing.T) {
+	issue := &types.Issue{ID: "old-a", Title: "Imported", Labels: []string{"two", "one", "two"}}
+	prepared, err := prepareLegacyImport(legacyimport.Batch{Issues: []*types.Issue{issue}}, "importer")
+	if err != nil || !reflect.DeepEqual(prepared.Issues[0].Labels, []string{"two", "one"}) || !reflect.DeepEqual(issue.Labels, []string{"two", "one", "two"}) {
+		t.Fatalf("label set or caller changed: %+v %+v %v", prepared, issue, err)
+	}
+	plane := false
+	for _, internal := range []*types.Issue{
+		{WispPlaneOverride: &plane}, {IDPrefix: "custom"}, {PrefixOverride: "other"}, {SourceRepo: "another"}, {IsLitePartial: true},
+	} {
+		internal.ID, internal.Title = "old-a", "Imported"
+		if _, err := prepareLegacyImport(legacyimport.Batch{Issues: []*types.Issue{internal}}, "importer"); err == nil {
+			t.Fatalf("nonserialized state silently ignored: %+v", internal)
+		}
 	}
 }
 
@@ -339,7 +357,12 @@ func TestLegacyImportAtomicityAndPersistence(t *testing.T) {
 					s.afterWrite = nil
 					// Inspect through the independent live context, after driver
 					// cancellation and transaction cleanup have completed.
-					if !reached || !errors.Is(err, expected) || !reflect.DeepEqual(before, legacyImportState(t, ctx, s)) {
+					// A driver watcher may already have rolled back the transaction.
+					// That cleanup uncertainty must keep outcome_unknown precedence;
+					// a clean explicit rollback keeps the ordinary canceled refusal.
+					unknown := errors.Is(err, ErrOutcomeUnknown)
+					alreadyDone := errors.Is(err, sql.ErrTxDone)
+					if !reached || !errors.Is(err, expected) || unknown != alreadyDone || !reflect.DeepEqual(before, legacyImportState(t, ctx, s)) {
 						t.Fatalf("late context cancellation/deadline did not roll back: reached=%v err=%v", reached, err)
 					}
 				})

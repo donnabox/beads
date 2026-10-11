@@ -83,7 +83,10 @@ func (s *Store) ImportLegacyWithPrefix(ctx context.Context, input legacyimport.B
 				return err
 			}
 		}
-		infra := issueops.ResolveInfraTypesInTx(ctx, tx)
+		infra, err := issueops.ResolveInfraTypesStrictInTx(ctx, tx)
+		if err != nil {
+			return err
+		}
 		for _, issue := range batch.Issues {
 			if infra[string(issue.IssueType.Normalize())] {
 				return fmt.Errorf("%w: infrastructure Issue %s is unsupported", storage.ErrValidation, issue.ID)
@@ -243,6 +246,11 @@ func prepareLegacyImportWithPrefix(input legacyimport.Batch, actor, sourcePrefix
 	if !legacyImportStringsValid(reflect.ValueOf(input)) {
 		return invalid("legacy Issue and Memory strings must be UTF-8")
 	}
+	for _, issue := range input.Issues {
+		if issue != nil && (issue.WispPlaneOverride != nil || issue.IDPrefix != "" || issue.PrefixOverride != "" || issue.SourceRepo != "" || issue.IsLitePartial) {
+			return invalid("Issue %s has unsupported in-memory storage-plane, routing or partial-record state", issue.ID)
+		}
+	}
 	// encoding/json replaces invalid UTF-8 strings. Check keys/values before
 	// cloning so a direct caller cannot accidentally import replacement text.
 	for _, memory := range input.Memories {
@@ -293,6 +301,17 @@ func prepareLegacyImportWithPrefix(input legacyimport.Batch, actor, sourcePrefix
 		if issue.Status == "tombstone" {
 			return invalid("tombstone %s is unsupported", issue.ID)
 		}
+		// Labels are a set in native storage. Normalize the isolated copy so
+		// duplicate source spellings cannot be mistaken for storage loss.
+		seenLabels := make(map[string]bool, len(issue.Labels))
+		labels := issue.Labels[:0]
+		for _, label := range issue.Labels {
+			if !seenLabels[label] {
+				labels = append(labels, label)
+				seenLabels[label] = true
+			}
+		}
+		issue.Labels = labels
 		issue.SetDefaults()
 		now := time.Now().UTC().Truncate(time.Second)
 		if issue.CreatedAt.IsZero() {

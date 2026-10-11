@@ -100,3 +100,14 @@ func TestGraphPreviewImportDeadlineDisposition(t *testing.T) {
 		}
 	}
 }
+
+func TestGraphPreviewLegacyImportSummaryPrefix(t *testing.T) {
+	withPrefix := graphPreviewLegacyImportSummary("Imported", "source.jsonl", graphstore.LegacyImportResult{IssuePrefix: "web-app", Issues: 1})
+	if !strings.Contains(withPrefix, "Workspace Issue prefix: web-app.") {
+		t.Fatalf("adopted prefix not disclosed: %s", withPrefix)
+	}
+	memories := graphPreviewLegacyImportSummary("Would import", "stdin", graphstore.LegacyImportResult{Memories: 1})
+	if strings.Contains(memories, "Issue prefix:") {
+		t.Fatalf("memory-only prefix invented: %s", memories)
+	}
+}
