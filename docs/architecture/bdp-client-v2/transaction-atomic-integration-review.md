@@ -24,3 +24,9 @@ Pinned Node24.16.0 / pnpm11.20.0. Build completed before emitted-runtime process
 - No surviving owned test processes. Full repository suite not rerun locally; exact new-head CI still required on publication.
 
 Logs and structured results are adjacent with transaction-atomic-fixed-review-* / transaction-atomic-integration-* prefixes. Combined test JSON and complete diagnostic report are retained; checks have explicit exit files.
+
+## Published full-suite verification and subsequent finding
+
+[CI38112180016](https://github.com/gastownhall/bdp/actions/runs/38112180016) at exact `486ad62d7c6ecb8e36dad4e596b1597fde425cdd` passed 115 files / 7,753 tests, one optional skip, seven preflight tests, installed smoke and actual `evidence.verified` with the unchanged Read seal/run head/89 rows.
+
+Subsequent council packet07 found a separate diagnostic path: nextSequence aggregates an original turn failure with cancelSequence cleanup failure but later fenced access retains only the cancellation error. This bounded follow-up is being repaired; storage remains fenced, and this does not establish data corruption. The earlier direct/admission cleanup finding remains fixed.
