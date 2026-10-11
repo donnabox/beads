@@ -1,0 +1,47 @@
+Running: go test -p 4 -parallel 4 -timeout 25m -v -run ^(TestExportCurrentSnapshotContextBeforeOpen|TestExportCommentOriginalUTF8|TestExportSnapshotClosure|TestExportReadProjectionIncludesUnjoinedComments)$ -count 1 ./internal/storage/graphstore
+Skipping: 
+
+=== RUN   TestExportCurrentSnapshotContextBeforeOpen
+--- PASS: TestExportCurrentSnapshotContextBeforeOpen (0.00s)
+=== RUN   TestExportCommentOriginalUTF8
+=== RUN   TestExportCommentOriginalUTF8/ID
+=== RUN   TestExportCommentOriginalUTF8/IssueID
+=== RUN   TestExportCommentOriginalUTF8/Author
+=== RUN   TestExportCommentOriginalUTF8/Text
+--- PASS: TestExportCommentOriginalUTF8 (0.00s)
+    --- PASS: TestExportCommentOriginalUTF8/ID (0.00s)
+    --- PASS: TestExportCommentOriginalUTF8/IssueID (0.00s)
+    --- PASS: TestExportCommentOriginalUTF8/Author (0.00s)
+    --- PASS: TestExportCommentOriginalUTF8/Text (0.00s)
+=== RUN   TestExportSnapshotClosure
+=== RUN   TestExportSnapshotClosure/wrong-type-kind
+=== RUN   TestExportSnapshotClosure/duplicate-type
+=== RUN   TestExportSnapshotClosure/missing-owned-link
+=== RUN   TestExportSnapshotClosure/owned-link-content-differs
+=== RUN   TestExportSnapshotClosure/noncanonical-identity
+=== RUN   TestExportSnapshotClosure/unknown-record
+=== RUN   TestExportSnapshotClosure/missing-type
+=== RUN   TestExportSnapshotClosure/duplicate-resource
+=== RUN   TestExportSnapshotClosure/duplicate-owned-link
+=== RUN   TestExportSnapshotClosure/unowned-issue-informational-link
+=== RUN   TestExportSnapshotClosure/duplicate-native-issue-id
+=== RUN   TestExportSnapshotClosure/missing-endpoint
+=== RUN   TestExportSnapshotClosure/endpoint-is-link
+--- PASS: TestExportSnapshotClosure (0.00s)
+    --- PASS: TestExportSnapshotClosure/wrong-type-kind (0.00s)
+    --- PASS: TestExportSnapshotClosure/duplicate-type (0.00s)
+    --- PASS: TestExportSnapshotClosure/missing-owned-link (0.00s)
+    --- PASS: TestExportSnapshotClosure/owned-link-content-differs (0.00s)
+    --- PASS: TestExportSnapshotClosure/noncanonical-identity (0.00s)
+    --- PASS: TestExportSnapshotClosure/unknown-record (0.00s)
+    --- PASS: TestExportSnapshotClosure/missing-type (0.00s)
+    --- PASS: TestExportSnapshotClosure/duplicate-resource (0.00s)
+    --- PASS: TestExportSnapshotClosure/duplicate-owned-link (0.00s)
+    --- PASS: TestExportSnapshotClosure/unowned-issue-informational-link (0.00s)
+    --- PASS: TestExportSnapshotClosure/duplicate-native-issue-id (0.00s)
+    --- PASS: TestExportSnapshotClosure/missing-endpoint (0.00s)
+    --- PASS: TestExportSnapshotClosure/endpoint-is-link (0.00s)
+=== RUN   TestExportReadProjectionIncludesUnjoinedComments
+--- PASS: TestExportReadProjectionIncludesUnjoinedComments (0.00s)
+PASS
+ok  	github.com/steveyegge/beads/internal/storage/graphstore	0.848s

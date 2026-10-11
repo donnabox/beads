@@ -1,6 +1,7 @@
 # Independent graph export milestone
 
-Status: discovery in progress; interchange format and CLI contract are proposals
+Status: inventory and plan council complete; internal reader implementation in progress.
+Interchange format and CLI contract are proposals
 until coordinated and reviewed. Governing plan: donnabox/agent-coordination#6.
 Supporting export issue: donnabox/agent-coordination#10.
 
@@ -95,8 +96,10 @@ are outside that snapshot. Calling `IssueComments` or configuration accessors
 afterward does not extend its consistency guarantee. A candidate export reader
 should collect the approved current-state components in one transaction through
 the storage boundary and finish cleanup before returning a publishable result.
-Its aggregate bounds must include comments/configuration/Types as applicable;
-the existing record budget alone does not prove whole-export boundedness.
+Its aggregate bounds include comments/configuration/Types and deleted Issue final
+heads decoded during existing mapping validation. The existing record budget
+alone does not prove whole-export boundedness. This accounts for persisted
+acquisition bytes, not exact Go heap use or encoded output size.
 
 | Data | Source seam | Export implication |
 | --- | --- | --- |
@@ -159,7 +162,7 @@ current snapshot reader or supplies transactional comments/configuration.
 | Comments | Preserve native IDs, native ownership, canonical Issue subject, author, text and supplied timestamp from the same transaction. |
 | Source binding | Include approved Scope/authority/schema-generation provenance; omit canonical filesystem WorkspaceID and connection settings. Destination authority remapping is future importer work. |
 | `config.issue_prefix` | Acquire the exact persisted value, without a helper trimming a trailing hyphen; include approved source configuration rather than infer it from IDs. |
-| Classic `kv.memory.*` configuration | Not graph Memory; explicitly excluded unless the contract owner adds this distinct plane. |
+| Classic `kv.memory.*` configuration and wisp live planes | Not graph Memory/Issue inventory; initial reader refuses present rows by plane name. Inclusion requires a distinct approved acquisition contract. |
 | Live leases | Acquire faithfully as current observation; final format must preserve as non-restorable observation, explicitly omit, or refuse. Never clear source claims during export. |
 | Deleted/reserved allocations and tombstones | Current-only profile discloses omission/count; absence does not certify that a source-authority path is unallocated. Never claim source never-reuse state was preserved. |
 | Prior graph/Issue versions, journal, Dolt branches/history | Explicit current-only omission; a history/archive profile requires separate bounded acquisition. |
@@ -203,3 +206,29 @@ from partial files; it does not promise directory-fsync/power-loss durability.
 Ordinary failures clean owned temp files; crashes may leave temp residue. The
 current graph wrapper's 30-second context covers reads; the final CLI design
 must define cancellation through serialization and the publication boundary.
+
+## Initial reader boundary and pending evidence
+
+`ExportCurrentSnapshot` is an internal detached result, with no interchange
+schema or CLI contract. It uses the existing transaction boundary and current
+record/Type validation, adds native comments keyed by canonical relative Issue
+path, exact persisted prefix and a deleted-allocation count, and returns zero
+state on any acquisition or transaction/connection cleanup error. The caller
+still owns final Store closure and must check it before publication.
+
+Preflight charges all current comment columns, including orphan rows, in the
+same 16 MiB budget as the graph acquisition; its comment count ceiling derives
+from the existing 256-byte row charge. Deleted Issue final retained heads also
+share that budget because mapping validation reads them. Original UTF-8 is
+validated before a future encoder can replace bytes. Current wisp payloads,
+relations, comments, labels and legacy KV Memories refuse by plane name.
+History, journals, counters and unrelated configuration remain outside the
+result. Source-preservation tests compare logical rows; engine filesystem
+bookkeeping is not claimed unchanged.
+
+Pure tests and compile checks do not qualify an engine. Authored embedded/server
+lifecycle, rollback, bounds and controlled-interleaving cases await Janet's
+explicit engine handback. Callback stage faults do not stand in for actual
+driver rollback/connection/rows-close fault injection. Those cleanup tests,
+installed acquisition, serializer/publication checks and final output contract
+remain gates before exporter readiness.
