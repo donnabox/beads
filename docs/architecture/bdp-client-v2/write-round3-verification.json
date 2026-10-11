@@ -1,0 +1,59 @@
+{
+  "kind": "bounded-development-integration-verification",
+  "sourceCommit": "d84ae338b3849ca02912ffa417af39a714861933",
+  "repository": "gastownhall/bdp",
+  "branch": "codex/vickie-bdp-write-integration",
+  "pullRequests": {
+    "71": "08aab0ae5b412562726665648b4240f928bd680c",
+    "72": "bd1d0f2f8b534a8760791c86dd0bfb522a22ac99"
+  },
+  "toolchain": {
+    "node": "24.16.0",
+    "pnpm": "11.20.0"
+  },
+  "suite": {
+    "filesPassed": 110,
+    "testsPassed": 7624,
+    "testsSkipped": 1,
+    "testsFailed": 0,
+    "maxWorkers": 2
+  },
+  "checks": [
+    {
+      "command": "build",
+      "exitCode": 0
+    },
+    {
+      "command": "typecheck",
+      "exitCode": 0
+    },
+    {
+      "command": "check:boundaries",
+      "exitCode": 0
+    },
+    {
+      "command": "smoke:development",
+      "exitCode": 0
+    },
+    {
+      "command": "smoke",
+      "exitCode": 0
+    }
+  ],
+  "logSha256": {
+    "smoke-development.log": "bebe9264c581ce8928b0629b925b3bdc5c494a7f01a880584b27e37094a60ea9",
+    "check-boundaries.log": "53f4cd856bde25513486a59799c5a05e0650fbb756bf1580fb07e56c2fdeeef3",
+    "tests.json": "a581d11787cbfaf3b974d307659f9a2d3f0a4fcdb1e01876075a7efb36a93357",
+    "typecheck.log": "91d54ffbee73a3ac72294d090e58d77745f8b93edbf94b862807698273a6505a",
+    "smoke.log": "904f59ddeebb3a9634906c612fcf033b23f125be94c2adc5cd035f1d3278147d",
+    "checks.json": "1eb665855ff0a6da7568c0b7b4e4efc8862bbbb7cc9a2abf2bb721e5d1448139",
+    "tests.log": "85e48209294aca090bad39ddb7e8b23cb80d0973d8f99f7b8a4a549cdd7c2538",
+    "build.log": "232dac5e840e45b3bb06e6e04249b5241f2e1b4f6c797a22c046d916302ac208"
+  },
+  "limitations": [
+    "Development composition only; no complete Read+Update or Transactional qualification.",
+    "Public profile admission remains unchanged.",
+    "No main merge, Preview 2 promotion, CLI parity claim, or historical evidence relabeling.",
+    "Council readiness review remains open."
+  ]
+}
