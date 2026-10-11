@@ -23,3 +23,7 @@ Pinned Node24.16.0 / pnpm11.20.0. Frozen install and build completed before runt
 - Clean checkout and no surviving owned child process after checks. No full repository suite run; remote CI remains necessary upon publication.
 
 Logs and JSON reports are adjacent with prefix `update-contextual-review-`. Both test results and complete diagnostic observations are saved. No fixes are requested by this review.
+
+## Published full-suite check
+
+[CI38111757051](https://github.com/gastownhall/bdp/actions/runs/38111757051) at exact `8c0e043f6bfc5dae8b66044721a0aee170d66c97` passed 115 files / 7,743 tests, one optional skip, seven preflight tests, installed smoke and actual `evidence.verified`. Root checked the downloaded log and original Read seal/head/89-row event. Subsequent-head results remain separate.
