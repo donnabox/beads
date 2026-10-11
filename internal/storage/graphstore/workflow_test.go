@@ -19,6 +19,28 @@ import (
 	"github.com/steveyegge/beads/internal/types"
 )
 
+// The graph writer must never turn a caller's nonblocking native relationship
+// into the only currently installed Link Type (blocks). Until the Type-set
+// generation decision is made, even direct store callers are refused before
+// opening storage, with no apparent successful Link or Issue result.
+func TestDependencyTypeAdmissionBeforeStoreOpen(t *testing.T) {
+	for _, kind := range []types.DependencyType{types.DepParentChild, types.DepDuplicates, types.DepSupersedes, types.DepTracks, "custom"} {
+		t.Run(string(kind), func(t *testing.T) {
+			result, err := (&Store{}).AddDependency(context.Background(), DependencyRequest{
+				SourcePath: "beads/source", TargetPath: "beads/target", Type: kind, Actor: "author",
+			})
+			if !errors.Is(err, ErrCapabilityUnavailable) || !reflect.DeepEqual(result, DependencyResult{}) {
+				t.Fatalf("kind %q produced result %+v, err %v", kind, result, err)
+			}
+		})
+	}
+	for _, kind := range []types.DependencyType{"", types.DepBlocks} {
+		if resolved, err := previewDependencyType(kind); err != nil || resolved != types.DepBlocks {
+			t.Fatalf("kind %q resolved to %q, err %v", kind, resolved, err)
+		}
+	}
+}
+
 // This scenario exercises the real domain writers, retained source membership,
 // canonical allocation and scheduling query in one normal initialized database.
 // The process-level installed CLI boundary is covered separately by the harness.
