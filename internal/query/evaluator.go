@@ -1066,5 +1066,12 @@ func PredicateAt(expression string, now time.Time) (func(*types.Issue) bool, err
 	if err != nil {
 		return nil, err
 	}
+	return PredicateNodeAt(node, now)
+}
+
+// PredicateNodeAt evaluates a parsed subtree. Checked graph readers can keep
+// a public-ID or parent comparison outside this native Issue predicate while
+// preserving the parser's original value and operator in the other subtrees.
+func PredicateNodeAt(node Node, now time.Time) (func(*types.Issue) bool, error) {
 	return NewEvaluator(now).buildPredicate(node)
 }

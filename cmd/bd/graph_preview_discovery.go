@@ -13,6 +13,7 @@ import (
 
 	"github.com/spf13/cobra"
 	"github.com/steveyegge/beads/internal/query"
+	"github.com/steveyegge/beads/internal/storage"
 	"github.com/steveyegge/beads/internal/storage/graphstore"
 	storageissueops "github.com/steveyegge/beads/internal/storage/issueops"
 	"github.com/steveyegge/beads/internal/types"
@@ -69,7 +70,7 @@ func graphDiscoveryText(raw, name string) error {
 }
 
 func runGraphPreviewSearch(cmd *cobra.Command, args []string) error {
-	if err := graphDiscoveryFlags(cmd, "query", "status", "assignee", "type", "label", "label-any", "limit", "long", "sort", "reverse", "priority-min", "priority-max", "desc-contains", "notes-contains", "external-contains", "empty-description", "no-assignee", "no-labels"); err != nil {
+	if err := graphDiscoveryFlags(cmd, "query", "status", "assignee", "type", "label", "label-any", "limit", "long", "sort", "reverse", "priority-min", "priority-max", "desc-contains", "notes-contains", "external-contains", "empty-description", "no-assignee", "no-labels", "created-after", "created-before", "updated-after", "updated-before", "closed-after", "closed-before", "metadata-field", "has-metadata-key"); err != nil {
 		return err
 	}
 	query := strings.Join(args, " ")
@@ -119,6 +120,50 @@ func runGraphPreviewSearch(cmd *cobra.Command, args []string) error {
 	filter.EmptyDescription, _ = cmd.Flags().GetBool("empty-description")
 	filter.NoAssignee, _ = cmd.Flags().GetBool("no-assignee")
 	filter.NoLabels, _ = cmd.Flags().GetBool("no-labels")
+	for _, bound := range []struct {
+		flag string
+		dest **time.Time
+	}{
+		{"created-after", &filter.CreatedAfter},
+		{"created-before", &filter.CreatedBefore},
+		{"updated-after", &filter.UpdatedAfter},
+		{"updated-before", &filter.UpdatedBefore},
+		{"closed-after", &filter.ClosedAfter},
+		{"closed-before", &filter.ClosedBefore},
+	} {
+		raw, _ := cmd.Flags().GetString(bound.flag)
+		if raw == "" {
+			continue
+		}
+		parsed, err := parseTimeFlag(raw)
+		if err != nil {
+			return graphFailure("invalid_selector", "parsing --"+bound.flag+": "+err.Error(), 2)
+		}
+		*bound.dest = &parsed
+	}
+	metadataFields, _ := cmd.Flags().GetStringArray("metadata-field")
+	for _, field := range metadataFields {
+		key, value, ok := strings.Cut(field, "=")
+		if !ok || key == "" {
+			return graphFailure("invalid_selector", fmt.Sprintf("invalid --metadata-field: expected key=value, got %q", field), 2)
+		}
+		if err := storage.ValidateMetadataKey(key); err != nil {
+			return graphFailure("invalid_selector", "invalid --metadata-field key: "+err.Error(), 2)
+		}
+		if err := graphDiscoveryText(value, "metadata value"); err != nil {
+			return err
+		}
+		if filter.MetadataFields == nil {
+			filter.MetadataFields = make(map[string]string, len(metadataFields))
+		}
+		filter.MetadataFields[key] = value
+	}
+	filter.HasMetadataKey, _ = cmd.Flags().GetString("has-metadata-key")
+	if filter.HasMetadataKey != "" {
+		if err := storage.ValidateMetadataKey(filter.HasMetadataKey); err != nil {
+			return graphFailure("invalid_selector", "invalid --has-metadata-key: "+err.Error(), 2)
+		}
+	}
 	if cmd.Flags().Changed("priority-min") {
 		raw, _ := cmd.Flags().GetString("priority-min")
 		value, err := validation.ValidatePriority(raw)
@@ -246,7 +291,7 @@ func runGraphPreviewCount(cmd *cobra.Command, args []string) error {
 	if len(args) != 0 {
 		return graphFailure("invalid_selector", "count does not accept positional arguments", 2)
 	}
-	if err := graphDiscoveryFlags(cmd, "status", "priority", "assignee", "type", "label", "label-any", "title", "title-contains", "desc-contains", "notes-contains", "created-after", "created-before", "updated-after", "updated-before", "closed-after", "closed-before", "empty-description", "no-assignee", "no-labels", "priority-min", "priority-max", "by-status", "by-priority", "by-type", "by-assignee", "by-label"); err != nil {
+	if err := graphDiscoveryFlags(cmd, "status", "priority", "assignee", "type", "label", "label-any", "title", "id", "parent", "no-parent", "exclude-type", "exclude-status", "title-contains", "desc-contains", "notes-contains", "created-after", "created-before", "updated-after", "updated-before", "closed-after", "closed-before", "empty-description", "no-assignee", "no-labels", "priority-min", "priority-max", "by-status", "by-priority", "by-type", "by-assignee", "by-label"); err != nil {
 		return err
 	}
 	selectedGroups := 0
@@ -290,10 +335,32 @@ func runGraphPreviewCount(cmd *cobra.Command, args []string) error {
 		return graphFailure("invalid_selector", err.Error(), 2)
 	}
 	filter.SkipWisps = true
+	// The native filter names backing IDs. Resolve public selectors against the
+	// checked rows after graph projection, never against opaque backing keys.
+	ids := make(map[string]bool, len(filter.IDs))
+	for _, id := range filter.IDs {
+		path, err := graphDiscoveryIssuePath(id)
+		if err != nil {
+			return err
+		}
+		ids[path] = true
+	}
+	filter.IDs = nil
+	parent := ""
+	if filter.ParentID != nil {
+		parent, err = graphDiscoveryIssuePath(*filter.ParentID)
+		if err != nil {
+			return err
+		}
+		filter.ParentID = nil
+	}
+	noParent := filter.NoParent
+	filter.NoParent = false
 	rows, err := graphDiscoveryRows("", filter)
 	if err != nil {
 		return err
 	}
+	rows = graphDiscoverySelectRows(rows, ids, parent, noParent)
 	if group == "" {
 		if jsonOutput {
 			return graphDiscoveryJSON(cmd.OutOrStdout(), struct {
@@ -350,6 +417,33 @@ func runGraphPreviewCount(cmd *cobra.Command, args []string) error {
 	return nil
 }
 
+func graphDiscoveryIssuePath(selector string) (string, error) {
+	path, err := graphPreviewResourcePath(graphPreviewConfig.GraphScopeURL, selector)
+	if err != nil || !strings.HasPrefix(path, "beads/") {
+		return "", graphFailure("invalid_selector", fmt.Sprintf("invalid graph Issue selector %q", selector), 2)
+	}
+	return path, nil
+}
+
+// The edge wins over dotted-ID inference, just as native ParentID does.
+func graphDiscoveryParentMatch(row *types.IssueWithCounts, parent string) bool {
+	if row.Parent != nil {
+		return *row.Parent == parent
+	}
+	return strings.HasPrefix(row.ID, parent+".")
+}
+
+func graphDiscoverySelectRows(rows []*types.IssueWithCounts, ids map[string]bool, parent string, noParent bool) []*types.IssueWithCounts {
+	selected := make([]*types.IssueWithCounts, 0, len(rows))
+	for _, row := range rows {
+		if len(ids) > 0 && !ids[row.ID] || parent != "" && !graphDiscoveryParentMatch(row, parent) || noParent && row.Parent != nil {
+			continue
+		}
+		selected = append(selected, row)
+	}
+	return selected
+}
+
 func runGraphPreviewQuery(cmd *cobra.Command, args []string) error {
 	if err := graphDiscoveryFlags(cmd, "limit", "offset", "all", "long", "sort", "reverse", "parse-only"); err != nil {
 		return err
@@ -374,13 +468,17 @@ func runGraphPreviewQuery(cmd *cobra.Command, args []string) error {
 		return graphFailure("capability_unavailable", "graph query does not support --sort "+input.request.SortBy, 5)
 	}
 	if graphQueryUnsupportedField(input.expression) {
-		return graphFailure("capability_unavailable", "graph query does not support parent, mol_type, or ephemeral fields", 5)
+		return graphFailure("capability_unavailable", "graph query does not support mol_type or ephemeral fields", 5)
 	}
 	plan, err := workapi.BuildQueryPlan(input.request)
 	if err != nil {
 		return graphFailure("invalid_selector", err.Error(), 2)
 	}
-	predicate, err := query.PredicateAt(input.expression, time.Now())
+	node, err := query.Parse(input.expression)
+	if err != nil {
+		return graphFailure("invalid_selector", "invalid query expression: "+err.Error(), 2)
+	}
+	predicate, err := graphQueryPredicate(node, time.Now())
 	if err != nil {
 		return graphFailure("invalid_selector", "invalid query expression: "+err.Error(), 2)
 	}
@@ -390,7 +488,13 @@ func runGraphPreviewQuery(cmd *cobra.Command, args []string) error {
 	if err != nil {
 		return err
 	}
-	rows = workapi.ApplyQueryPredicate(rows, predicate)
+	selected := make([]*types.IssueWithCounts, 0, len(rows))
+	for _, row := range rows {
+		if predicate(row) {
+			selected = append(selected, row)
+		}
+	}
+	rows = selected
 	items, more := workapi.FinishPageAt(rows, plan.SortBy, plan.Reverse, plan.Offset, plan.Limit, false)
 	if jsonOutput {
 		if err := graphDiscoveryJSON(cmd.OutOrStdout(), items); err != nil {
@@ -412,7 +516,7 @@ func graphQueryUnsupportedField(expression string) bool {
 	unsupported = func(node query.Node) bool {
 		switch n := node.(type) {
 		case *query.ComparisonNode:
-			return n.Field == "parent" || n.Field == "mol_type" || n.Field == "ephemeral"
+			return n.Field == "mol_type" || n.Field == "ephemeral"
 		case *query.AndNode:
 			return unsupported(n.Left) || unsupported(n.Right)
 		case *query.OrNode:
@@ -424,4 +528,37 @@ func graphQueryUnsupportedField(expression string) bool {
 		}
 	}
 	return unsupported(node)
+}
+
+func graphQueryPredicate(node query.Node, now time.Time) (func(*types.IssueWithCounts) bool, error) {
+	switch n := node.(type) {
+	case *query.ComparisonNode:
+		if n.Field == "parent" {
+			if n.Op != query.OpEquals {
+				return nil, fmt.Errorf("parent only supports = operator")
+			}
+			parent, err := graphDiscoveryIssuePath(n.Value)
+			if err != nil {
+				return nil, err
+			}
+			return func(row *types.IssueWithCounts) bool { return graphDiscoveryParentMatch(row, parent) }, nil
+		}
+	case *query.AndNode:
+		left, err := graphQueryPredicate(n.Left, now)
+		if err != nil {
+			return nil, err
+		}
+		right, err := graphQueryPredicate(n.Right, now)
+		if err != nil {
+			return nil, err
+		}
+		return func(row *types.IssueWithCounts) bool { return left(row) && right(row) }, nil
+	}
+	// Native BuildQueryPlan has already refused OR/NOT forms that require an
+	// unsupported parent predicate. Its remaining subtrees use native rules.
+	native, err := query.PredicateNodeAt(node, now)
+	if err != nil {
+		return nil, err
+	}
+	return func(row *types.IssueWithCounts) bool { return native(row.Issue) }, nil
 }

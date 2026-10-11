@@ -223,22 +223,26 @@ Results include closed Issues unless --status narrows them. --json returns the
 ordinary counted Issue row array with Scope-relative IDs. Supported filters:
 --status, --assignee, --type, --label, --label-any, --priority-min,
 --priority-max, --desc-contains, --notes-contains, --external-contains,
---empty-description, --no-assignee, --no-labels, --limit, --sort, --reverse,
-and --long. Only built-in status names are admitted here. Date and metadata
-filters are unavailable in graph preview.`},
+--empty-description, --no-assignee, --no-labels, created/updated/closed date
+bounds, --metadata-field, --has-metadata-key, --limit, --sort, --reverse, and
+--long. Only built-in status names are admitted here.`},
 		{countCmd, `Count current durable graph Issues, including closed Issues by default.
 The ordinary scalar and --by-status/priority/type/assignee/label JSON shapes
 are preserved. Supported filters: --status, --priority, --assignee, --type,
 --label, --label-any, --title, --title-contains, --desc-contains,
 --notes-contains, date bounds, --empty-description, --no-assignee, --no-labels,
-and --priority-min/max. Parent, ephemeral, infrastructure, exclusion,
-metadata, and backing-ID filters are unavailable in graph preview.`},
+--priority-min/max, --id, --parent, --no-parent, --exclude-type and
+--exclude-status. IDs and parents accept local graph Issue paths or bare IDs;
+an edge-less dotted child matches --parent by ID prefix and --no-parent as a
+top-level Issue. Excluded statuses are limited to built-in names. Ephemeral,
+infrastructure and metadata count filters are unavailable in graph preview.`},
 		{queryCmd, `Query current durable graph Issues with ordinary field comparisons,
 AND, OR, NOT, dates and canonical local Bead IDs. Closed Issues are excluded
 unless --all or an explicit status comparison includes them. --json returns
 the ordinary counted Issue row array. --limit, --offset, --sort, --reverse,
---long and --parse-only work. Parent, mol_type and ephemeral predicates are
-unavailable in graph preview.`},
+--long and --parse-only work. A parent=ID comparison works in an AND chain;
+OR and NOT parent forms follow native query refusals. mol_type and ephemeral
+predicates are unavailable in graph preview.`},
 		{blockedCmd, `Show current dependency-blocked Issues with canonical
 blocker IDs. Filters and positive BEADS_MAX_ROWS are unavailable.`},
 		{graphCmd, `Use bd graph ID --view generic to traverse the current

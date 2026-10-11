@@ -47,7 +47,7 @@ func TestGraphQueryFieldAdmissionUsesAST(t *testing.T) {
 		unsupported bool
 	}{
 		{"title=parenting AND type=task", false},
-		{"parent=beads/work", true},
+		{"parent=beads/work", false},
 		{"type=task OR ephemeral=true", true},
 		{"NOT mol_type=work", true},
 	} {
@@ -61,5 +61,44 @@ func TestGraphQueryFieldAdmissionUsesAST(t *testing.T) {
 	}
 	if !match(&types.Issue{ID: "beads/work"}) || !match(&types.Issue{Title: "Other"}) || match(&types.Issue{ID: "beads/missing"}) {
 		t.Fatal("full predicate did not match canonical graph IDs and boolean alternatives")
+	}
+}
+
+func TestGraphDiscoveryCanonicalCountSelectors(t *testing.T) {
+	parent := "beads/work"
+	other := "beads/other"
+	rows := []*types.IssueWithCounts{
+		{Issue: &types.Issue{ID: parent}},
+		{Issue: &types.Issue{ID: "beads/work.child"}},
+		{Issue: &types.Issue{ID: "beads/edge"}, Parent: &parent},
+		{Issue: &types.Issue{ID: "beads/work.other-edge"}, Parent: &other},
+	}
+	ids := func(rows []*types.IssueWithCounts) []string {
+		got := make([]string, 0, len(rows))
+		for _, row := range rows {
+			got = append(got, row.ID)
+		}
+		return got
+	}
+	if got := ids(graphDiscoverySelectRows(rows, map[string]bool{"beads/edge": true}, "", false)); !reflect.DeepEqual(got, []string{"beads/edge"}) {
+		t.Fatalf("ID filter = %v", got)
+	}
+	if got := ids(graphDiscoverySelectRows(rows, nil, parent, false)); !reflect.DeepEqual(got, []string{"beads/work.child", "beads/edge"}) {
+		t.Fatalf("parent filter = %v", got)
+	}
+	if got := ids(graphDiscoverySelectRows(rows, nil, "", true)); !reflect.DeepEqual(got, []string{"beads/work", "beads/work.child"}) {
+		t.Fatalf("no-parent filter = %v", got)
+	}
+	parentNode, err := query.Parse("parent=beads/work AND type=task")
+	if err != nil {
+		t.Fatal(err)
+	}
+	match, err := graphQueryPredicate(parentNode, time.Now())
+	if err != nil {
+		t.Fatal(err)
+	}
+	rows[1].IssueType, rows[2].IssueType = types.TypeTask, types.TypeBug
+	if !match(rows[1]) || match(rows[2]) || match(rows[3]) {
+		t.Fatal("query parent predicate lost canonical parent or other field")
 	}
 }
