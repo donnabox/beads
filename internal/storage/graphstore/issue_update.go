@@ -161,7 +161,7 @@ func (s *Store) UpdateIssue(ctx context.Context, request UpdateIssueRequest) (Is
 		path := request.Path
 		if request.NativeID != "" {
 			var err error
-			path, err = s.resolveLiveIssueSelectorInTx(ctx, tx, IssueSelector{Path: request.Path, NativeID: request.NativeID})
+			path, _, err = s.resolveLiveIssueSelectorInTx(ctx, tx, IssueSelector{Path: request.Path, NativeID: request.NativeID})
 			if err != nil {
 				if errors.Is(err, errNonIssueSelector) {
 					return ErrCapabilityUnavailable

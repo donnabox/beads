@@ -40,6 +40,12 @@ The technical reference also carries the [proposed next-milestone command contra
 its **NYI** rows describe proposed behavior, not commands available in this
 build. Use the current command matrix there when trying the preview.
 
+The coordination and blocking-view walkthroughs below describe a **local,
+unqualified combined-tail candidate**. They are for a disposable workspace
+created from that candidate, not a claim that these commands have landed in the
+fork integration branch or a released binary. The draft specification keeps
+the older pinned integration ledger separate from this candidate inventory.
+
 In a graph workspace, a Bead is an Issue or a Memory. Its canonical identity
 is under `beads/`. In CLI arguments, `policy` means `beads/policy`; a Link
 still needs an explicit `links/ID` where a command accepts either kind of
@@ -149,6 +155,121 @@ An Issue filter cannot be combined with a non-Issue `--bead-type`.
 familiar Issue field names and Scope-relative IDs. Memories are omitted from
 that shape. Use `--format records-json` to read all Bead Types as graph
 records; the formats serve different clients and are not interchangeable.
+
+## Quick task Issues
+
+`bd todo` is a shortcut for regular task Issues in a graph workspace. Add
+creates an open task at P2 by default and assigns it to the current actor.
+The bare command and `bd todo list` show open tasks; `bd todo list --all`
+includes completed tasks. JSON uses the ordinary todo Issue, array and
+completion shapes with Scope-relative `beads/PATH` IDs.
+
+```sh
+bd todo add 'Write the migration tests' --description 'Cover old data'
+bd todo list --all
+bd todo done beads/TEAM-123 --reason 'Tests landed'
+```
+
+`bd todo done` accepts any Issue, including one whose type is not `task`.
+Without a revision guard, it tries each supplied ID in order, reports a
+failed target on stderr and still returns the successfully closed IDs with
+exit status zero. For one Issue, `--if-revision TOKEN` from `bd show --json`
+refuses a stale close before changing that Issue. An already closed Issue is a
+no-op and retains its original close reason and version.
+
+## Issue coordination
+
+`bd heartbeat ISSUE` refreshes the current holder's in-progress lease without
+creating an Issue version or History event. `bd reclaim` recovers expired
+Issue leases through the native Issue writer; its `--older-than`, `--id`,
+assignee, label and replica selectors retain their ordinary meanings. Both
+commands accept local Issue IDs in a graph workspace. `bd state ISSUE
+DIMENSION` reads a state label, and `bd state list ISSUE` reads all state
+labels. `bd set-state` is still unavailable. Bare `bd status` reports the
+ordinary Issue summary; `bd status --graph` reports graph capabilities.
+
+`bd merge-slot create`, `check`, `acquire` and `release` use an Issue-only
+coordination slot. Acquire accepts `--holder` and `--wait`; release accepts
+`--holder`. The graph route preserves the ordinary flat JSON reports and
+holder/queue behavior. The broader `bd gate` workflow remains unavailable.
+
+In a fresh disposable graph workspace initialized as above, the following
+sequence creates an Issue, claims it as one actor and refreshes that actor's
+lease. `bd state` reads labels only; it does not create state. The slot is a
+separate Issue-only coordination primitive, so create it once per workspace.
+
+```sh
+bd create 'Review the release' --id lease-demo --type task
+bd update lease-demo --claim --actor demo
+bd heartbeat lease-demo --actor demo
+bd state lease-demo patrol
+bd state list lease-demo --json
+bd status
+bd status --graph --json
+bd merge-slot create --actor demo
+bd merge-slot check --json
+bd merge-slot acquire --holder demo --actor demo
+bd merge-slot check --json
+bd merge-slot release --holder demo --actor demo
+```
+
+An unset state dimension prints a missing-value message (or JSON `null`).
+Heartbeat requires the current in-progress holder and writes no Issue version
+or History event. To exercise recovery, let a claimed Issue's lease actually
+expire first, then run `bd reclaim --older-than 0s --id lease-demo --json` in
+that same disposable workspace. An active lease is not reclaimed; a successful
+reclaim uses the native Issue writer and records the graph projection. The
+default grace period is longer than zero. Scope flags include repeatable
+`--id`, `--assignee`, `--label`, `--label-any`, `--exclude-label`, and
+`--any-replica`; use the latter only when recovering a lease from a departed
+replica. `bd set-state` and `bd gate` still refuse in graph mode.
+
+## Blocking dependency views
+
+`bd dep list ISSUE`, `bd dep tree ISSUE`, `bd dep cycles`, `bd graph ISSUE`
+and `bd graph check` read the current blocking Dependency graph. The tree
+supports `--direction down|up|both`; its both-direction human view labels
+dependencies and dependents separately. `bd graph check --json` returns the
+ordinary flat check object and local Issue IDs in its `cycles`. The existing
+`bd graph ISSUE --view generic` still traverses generic Links.
+
+These views read a complete bounded graph snapshot. `bd graph ISSUE` and
+`bd dep tree ISSUE` refuse a positive `--max-rows` cap that would make their
+blocking answer incomplete.
+`dep list/tree/cycles --json` and `graph ISSUE --json` refuse until their
+ordinary JSON shapes can be preserved; use the human view or the explicit
+generic graph JSON view. Parent-child `children`, duplicate, supersede and
+epic workflows still refuse because the corresponding Link mappings are not
+installed.
+
+This disposable fixture shows the direction of a blocking edge: `plan`
+depends on `tests`. The human views use local Issue IDs. `graph check --json`
+returns a flat object containing `clean`, `cycles` and
+`summary.cycle_count`; cycle members are local Issue IDs. It exits nonzero
+when it finds a cycle.
+
+```sh
+bd create 'Prepare the release' --id plan --type task
+bd create 'Write release tests' --id tests --type task
+bd dep add plan tests
+bd dep list plan
+bd dep tree plan --direction down
+bd dep tree tests --direction up
+bd dep tree plan --direction both
+bd dep cycles
+bd graph plan
+bd graph check --json
+bd graph plan --view generic --direction out --depth 2 --json
+```
+
+`dep list --direction up` lists dependents instead; `dep tree` also accepts
+`--max-depth` and deprecated `--reverse` (equivalent to `--direction up`).
+`dep cycles --limit N` caps displayed cycles, not the count reported.
+`dep list/tree/cycles --json` and `graph ISSUE --json` refuse because the
+ordinary JSON shapes are not yet preserved. A positive `--max-rows` or
+`BEADS_MAX_ROWS` also refuses the full blocking graph/tree snapshot rather
+than returning a partial answer. Generic traversal is a separate explicit
+Link view with its own bounds and JSON shape.
 
 ## Update and delete Beads
 
@@ -305,7 +426,9 @@ bd undefer work --if-revision REVISION_FROM_SHOW
 ```
 
 The graph preview can narrow `bd ready` by priority, Issue classification,
-assignee, label, or defer state and can sort or limit the result. `bd blocked`
+assignee, label (including glob or regex), top-level metadata, excluded Issue
+type, or defer state and can sort or limit the result. Listing and atomic
+`--claim` use the same native filter. `bd blocked`
 accepts the ordinary label, label-any, and exclude-label filters. Both use
 the native blocker-aware predicate, then return canonical graph Issue IDs.
 An explicitly supplied blank label filter is an error, so a typo cannot turn
@@ -314,6 +437,7 @@ an intended narrow query into the whole work queue.
 ```sh
 bd ready --priority 2 --type task --limit 10 --json
 bd ready --label release --sort priority
+bd ready --metadata-field team=delivery --exclude-type bug --json
 bd ready --claim --label release --actor rig.agent --json
 bd blocked --label release --json
 ```
@@ -398,12 +522,24 @@ endpoint. See the [Graph CLI Specification (Draft)](/reference/graph-cli-specifi
 separate blocking Dependency unlink rules and Link Type bounds.
 
 For two live Issues, `bd dep add BLOCKED BLOCKER` creates a blocking Link.
+The native `bd dep add BLOCKED --blocked-by BLOCKER` and `--depends-on BLOCKER`
+spellings create the same edge. On one edge, `--no-cycle-check` suppresses only
+the post-add warning; it does not bypass the writer's cycle check.
 `bd dep BLOCKER --blocks BLOCKED` is the same operation with the arguments in
 the opposite order. Add `--id links/ID` to `bd dep add` when the Link needs a
 chosen local identity; repeating the same pair with that ID or no ID is a
-no-op, while a different ID refuses. `bd dep
-relate` and `bd dep unrelate` are outside this graph preview because the
-ordinary command owns two directed relationships, not one Link.
+no-op, while a different ID refuses. `bd dep remove BLOCKED BLOCKER` (also
+`bd dep rm`) removes the blocking pair through the same Issue writer as
+canonical `bd unlink links/ID`. An absent pair reports `not_found` without
+adding Issue History or a Link tombstone; an actual removal records one native
+dependency event and source version. The target Issue stays unchanged.
+Bare native Issue IDs are resolved within the same removal transaction when
+their graph paths differ. A bare ID that also names a different Bead refuses
+as ambiguous; use `beads/PATH` or its full canonical URL to select explicitly.
+`bd unlink` continues to require an exact Link ID and revision guard for a
+blocking Dependency. `bd dep relate` and `bd dep unrelate` are outside this
+graph preview because the ordinary command owns two directed relationships,
+not one Link.
 
 ## Claim and release Issue work
 

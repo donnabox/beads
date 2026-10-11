@@ -36,6 +36,9 @@ Examples:
 	SilenceUsage:  true,
 	SilenceErrors: true,
 	RunE: func(cmd *cobra.Command, args []string) error {
+		if graphPreviewActive {
+			return runGraphPreviewHeartbeat(cmd, args[0])
+		}
 		CheckReadonly("heartbeat")
 
 		evt := metrics.NewCommandEvent("heartbeat")

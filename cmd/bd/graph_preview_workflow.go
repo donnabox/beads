@@ -76,8 +76,28 @@ func runGraphPreviewAddDependency(cmd *cobra.Command, args []string) error {
 	if err := graphPreviewWritePolicy(); err != nil {
 		return err
 	}
-	if err := graphPreviewFlags(cmd, "type", "link-type", "resource-type", "id", "if-source-revision", "unconditional-source"); err != nil {
+	if err := graphPreviewFlags(cmd, "type", "link-type", "resource-type", "id", "if-source-revision", "unconditional-source", "blocked-by", "depends-on", "no-cycle-check"); err != nil {
 		return err
+	}
+	// Keep the ordinary single-edge spellings. Native --blocked-by wins if both
+	// aliases are supplied; --no-cycle-check suppresses only a post-add warning
+	// for one edge and never bypasses the domain writer's cycle validation.
+	blockedBy, _ := cmd.Flags().GetString("blocked-by")
+	dependsOn, _ := cmd.Flags().GetString("depends-on")
+	// Match dep add's native Args contract even if another graph caller reaches
+	// this writer without Cobra's positional validation. An explicitly empty
+	// flag is inert; a nonempty flag cannot compete with a positional target.
+	if len(args) > 1 && (blockedBy != "" || dependsOn != "") {
+		return graphFailure("invalid_selector", "cannot use both positional depends-on-id and --blocked-by/--depends-on flag", 2)
+	}
+	if len(args) == 1 {
+		target := blockedBy
+		if target == "" {
+			target = dependsOn
+		}
+		if target != "" {
+			args = append(args, target)
+		}
 	}
 	if len(args) != 2 {
 		return graphFailure("invalid_selector", "graph Dependency creation requires two Bead IDs or beads/PATH arguments", 2)
@@ -135,6 +155,50 @@ func runGraphPreviewAddDependency(cmd *cobra.Command, args []string) error {
 	return graphPreviewInsertDependency(paths[0], paths[1], linkPath, sourceRevision, args[0], args[1])
 }
 
+// The ordinary dep remove verb addresses an Issue pair, not a Link ID. Pair
+// selection and the no-op check happen inside the graph store's one write
+// transaction; the actual removal uses the canonical guarded unlink writer.
+func runGraphPreviewRemoveDependency(cmd *cobra.Command, args []string) error {
+	if err := graphPreviewWritePolicy(); err != nil {
+		return err
+	}
+	if err := graphPreviewFlags(cmd); err != nil {
+		return err
+	}
+	if len(args) != 2 {
+		return graphFailure("invalid_selector", "dep remove requires two Issue IDs or beads/PATH arguments", 2)
+	}
+	sourcePath, err := graphPreviewBeadSelector(args[0])
+	if err != nil {
+		return err
+	}
+	targetPath, err := graphPreviewBeadSelector(args[1])
+	if err != nil {
+		return err
+	}
+	request := graphstore.DependencyRemoveRequest{SourcePath: sourcePath, TargetPath: targetPath, Actor: getActorWithGit()}
+	if sourcePath == "beads/"+args[0] {
+		request.SourceNativeID = args[0]
+	}
+	if targetPath == "beads/"+args[1] {
+		request.TargetNativeID = args[1]
+	}
+	return withGraphFamiliarStore(func(ctx context.Context, store *graphstore.Store) (any, string, error) {
+		removed, err := store.RemoveDependency(ctx, request)
+		if err != nil {
+			return nil, "", err
+		}
+		status, human := "not_found", fmt.Sprintf("No dependency found: %s → %s", removed.Source.Properties.ID, removed.Target.Properties.ID)
+		if removed.Removed {
+			status, human = "removed", fmt.Sprintf("Removed dependency: %s → %s", removed.Source.Properties.ID, removed.Target.Properties.ID)
+		}
+		return map[string]any{
+			"status": status, "removed": removed.Removed,
+			"issue_id": removed.Source.Properties.ID, "depends_on_id": removed.Target.Properties.ID,
+		}, human, nil
+	})
+}
+
 func runGraphPreviewDepBlocks(cmd *cobra.Command, args []string) error {
 	if err := graphPreviewFlags(cmd, "blocks"); err != nil {
 		return err
@@ -162,7 +226,7 @@ func runGraphPreviewDepBlocks(cmd *cobra.Command, args []string) error {
 
 func graphPreviewInsertDependency(sourcePath, targetPath, linkPath, sourceRevision, sourceLabel, targetLabel string) error {
 	return withGraphStore(func(ctx context.Context, store *graphstore.Store) (any, string, error) {
-		result, err := store.AddDependency(ctx, graphstore.DependencyRequest{Path: linkPath, SourcePath: sourcePath, TargetPath: targetPath, Actor: getActorWithGit(), ExpectedSourceRevision: sourceRevision})
+		result, err := store.AddDependency(ctx, graphstore.DependencyRequest{Path: linkPath, SourcePath: sourcePath, TargetPath: targetPath, Type: types.DepBlocks, Actor: getActorWithGit(), ExpectedSourceRevision: sourceRevision})
 		if err != nil {
 			if strings.Contains(err.Error(), "operation requires a live durable Issue, not generic") {
 				return nil, "", fmt.Errorf("blocking Link Type requires two live Issues; use an informational Type such as types/preview-related-v2 for Memory endpoints: %w", err)
@@ -462,7 +526,7 @@ func runGraphPreviewDeferral(cmd *cobra.Command, args []string, deferred bool) e
 }
 
 func runGraphPreviewReady(cmd *cobra.Command, args []string) error {
-	if err := graphPreviewFlags(cmd, "limit", "priority", "assignee", "unassigned", "sort", "label", "label-any", "exclude-label", "type", "include-deferred", "claim"); err != nil {
+	if err := graphPreviewFlags(cmd, "limit", "priority", "assignee", "unassigned", "sort", "label", "label-any", "exclude-label", "label-pattern", "label-regex", "type", "exclude-type", "metadata-field", "has-metadata-key", "include-deferred", "claim"); err != nil {
 		return err
 	}
 	if len(args) != 0 {

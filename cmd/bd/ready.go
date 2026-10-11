@@ -39,7 +39,8 @@ Use --claim to atomically claim the first ready issue matching the filters:
 This is useful for agents executing molecules to see which steps can run next.
 
 In graph workspaces, the current preview supports filters for limit, priority,
-assignee, unassigned, sort, label, label-any, exclude-label, type, and
+assignee, unassigned, sort, label, label-any, exclude-label, label-pattern,
+label-regex, type, exclude-type, metadata-field, has-metadata-key, and
 include-deferred. --claim atomically claims the first matching ready Issue.
 Other ready modes require a later graph slice and currently refuse rather
 than silently ignoring flags.`,

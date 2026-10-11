@@ -7,6 +7,7 @@ import (
 	"encoding/json"
 	"errors"
 
+	"github.com/steveyegge/beads/internal/types"
 	publicops "github.com/steveyegge/beads/issueops"
 )
 
@@ -100,11 +101,15 @@ var (
 	ErrOutcomeUnknown = errors.New("graph transaction outcome is unknown; do not replay automatically")
 )
 
-// DependencyRequest asserts one blocking Dependency between live local Issues.
-// Path is an optional never-reused Link allocation; empty allocates a fresh path.
+// DependencyRequest asserts one Issue Dependency between live local Issues.
+// The current installed Type set admits only blocks; a requested nonblocking
+// native type must be refused rather than silently written as blocks. Empty
+// Type preserves the original blocking-only caller contract. Path is an
+// optional never-reused Link allocation; empty allocates a fresh path.
 type DependencyRequest struct {
 	// ExpectedSourceRevision guards generic authoring; empty retains the legacy command contract.
 	ExpectedSourceRevision string
+	Type                   types.DependencyType
 	SourcePath             string
 	TargetPath             string
 	Path                   string
@@ -129,6 +134,24 @@ type DependencyResult struct {
 	Link    LinkRecord  `json:"link"`
 	Source  IssueRecord `json:"source"`
 	Changed bool        `json:"changed"`
+}
+
+// DependencyRemoveRequest keeps an explicit graph path authoritative. Native
+// ID fallback is supplied only for a bare CLI selector and resolved atomically
+// against the live Issue catalog, with collisions refused.
+type DependencyRemoveRequest struct {
+	SourcePath, TargetPath         string
+	SourceNativeID, TargetNativeID string
+	Actor                          string
+}
+
+// DependencyRemoveResult is the native pair-removal outcome. A missing edge
+// returns Removed=false with both checked live Issues and no Link tombstone.
+type DependencyRemoveResult struct {
+	Removed bool
+	Source  IssueRecord
+	Target  IssueRecord
+	Link    LinkTombstone
 }
 
 type IssueMutationResult struct {

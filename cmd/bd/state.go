@@ -71,6 +71,9 @@ Examples:
 	SilenceUsage:  true,
 	SilenceErrors: true,
 	RunE: func(cmd *cobra.Command, args []string) error {
+		if graphPreviewActive {
+			return runGraphPreviewState(cmd, args[0], args[1], false)
+		}
 		evt := metrics.NewCommandEvent("state")
 		defer func() {
 			if c := metrics.Global(); c != nil {
@@ -302,6 +305,9 @@ Example:
 	SilenceUsage:  true,
 	SilenceErrors: true,
 	RunE: func(cmd *cobra.Command, args []string) error {
+		if graphPreviewActive {
+			return runGraphPreviewState(cmd, args[0], "", true)
+		}
 		evt := metrics.NewCommandEvent("state-list")
 		defer func() {
 			if c := metrics.Global(); c != nil {
