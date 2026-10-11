@@ -1,8 +1,8 @@
 package main
 
 import (
-	"bytes"
 	"encoding/json"
+	"fmt"
 	"testing"
 
 	"github.com/steveyegge/beads/internal/storage/graphstore"
@@ -15,18 +15,9 @@ func TestGraphPreviewHeartbeatReportsNativeIssueID(t *testing.T) {
 	if err != nil || human != "Heartbeat real-id (lease refreshed)" {
 		t.Fatalf("heartbeat report: %q %v", human, err)
 	}
-	var out bytes.Buffer
-	if err := graphPrintTo(&out, result, human, false, true); err != nil {
-		t.Fatal(err)
-	}
-	var envelope struct {
-		Result struct{ ID, Status, Owner string }
-	}
-	if err := json.Unmarshal(out.Bytes(), &envelope); err != nil {
-		t.Fatal(err)
-	}
-	if envelope.Result.ID != "real-id" || envelope.Result.Status != "heartbeat" || envelope.Result.Owner != "holder" {
-		t.Fatalf("heartbeat JSON projected canonical URL: %s", out.String())
+	object := assertGraphFamiliarJSON(t, result)
+	if string(object["id"]) != `"real-id"` || string(object["status"]) != `"heartbeat"` || string(object["owner"]) != `"holder"` {
+		t.Fatalf("heartbeat JSON projected wrong fields: %+v", object)
 	}
 }
 
@@ -49,23 +40,25 @@ func TestGraphPreviewReclaimReportKeepsOperatorScope(t *testing.T) {
 			if err != nil || human != "No stale leases to reclaim" {
 				t.Fatalf("reclaim report: %q %v", human, err)
 			}
-			var out bytes.Buffer
-			if err := graphPrintTo(&out, result, human, false, true); err != nil {
-				t.Fatal(err)
-			}
-			var envelope struct {
-				Result struct {
-					Scoped    bool
-					Count     int
-					Reclaimed []types.ReclaimedLease
-				}
-			}
-			if err := json.Unmarshal(out.Bytes(), &envelope); err != nil {
-				t.Fatal(err)
-			}
-			if envelope.Result.Scoped != tc.scoped || envelope.Result.Count != 0 || envelope.Result.Reclaimed == nil {
-				t.Fatalf("wrong reclaim JSON scope: %s", out.String())
+			object := assertGraphFamiliarJSON(t, result)
+			if string(object["scoped"]) != fmt.Sprint(tc.scoped) || string(object["count"]) != "0" || string(object["reclaimed"]) != "[]" {
+				t.Fatalf("wrong reclaim JSON scope: %+v", object)
 			}
 		})
+	}
+}
+
+func TestGraphPreviewReclaimReportsNativeIssueID(t *testing.T) {
+	result, _, err := graphReclaimReport([]types.ReclaimedLease{{ID: "real-id", PreviousOwner: "holder"}}, true, "reclaimed")
+	if err != nil {
+		t.Fatal(err)
+	}
+	object := assertGraphFamiliarJSON(t, result)
+	var reclaimed []types.ReclaimedLease
+	if err := json.Unmarshal(object["reclaimed"], &reclaimed); err != nil {
+		t.Fatal(err)
+	}
+	if len(reclaimed) != 1 || reclaimed[0].ID != "real-id" || reclaimed[0].PreviousOwner != "holder" {
+		t.Fatalf("reclaim local ID changed: %+v", reclaimed)
 	}
 }

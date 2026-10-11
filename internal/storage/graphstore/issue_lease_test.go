@@ -51,7 +51,7 @@ func TestGraphIssueHeartbeatAndReclaimNativeHistory(t *testing.T) {
 				t.Fatal(err)
 			}
 			reclaimed, err := s.ReclaimExpiredIssueLeases(ctx, 0, types.ReclaimFilter{IDs: []string{original.Properties.ID}}, "reaper")
-			if err != nil || len(reclaimed) != 1 || reclaimed[0].PreviousOwner != "holder" || reclaimed[0].ID != original.ID {
+			if err != nil || len(reclaimed) != 1 || reclaimed[0].PreviousOwner != "holder" || reclaimed[0].ID != original.Properties.ID {
 				t.Fatalf("reclaim: %+v %v", reclaimed, err)
 			}
 			after := mustShowLeaseIssue(t, ctx, s, "beads/work")

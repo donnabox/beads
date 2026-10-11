@@ -18,16 +18,17 @@ func runGraphPreviewHeartbeat(cmd *cobra.Command, selector string) error {
 	if err := graphPreviewFlags(cmd); err != nil {
 		return err
 	}
+	leaseActor := graphPreviewCoordinationActor()
 	path, err := graphPreviewResourcePath(graphPreviewConfig.GraphScopeURL, selector)
 	if err != nil || graph.ValidateBeadPath(path) != nil {
 		return graphFailure("invalid_selector", "heartbeat requires a local Issue ID or beads/PATH", 2)
 	}
-	err = withGraphStore(func(ctx context.Context, store *graphstore.Store) (any, string, error) {
-		issue, err := store.HeartbeatIssue(ctx, path, actor)
+	err = withGraphFamiliarStore(func(ctx context.Context, store *graphstore.Store) (any, string, error) {
+		issue, err := store.HeartbeatIssue(ctx, path, leaseActor)
 		if err != nil {
 			return nil, "", err
 		}
-		return graphHeartbeatReport(issue, actor)
+		return graphHeartbeatReport(issue, leaseActor)
 	})
 	if err == nil {
 		SetLastTouchedID(path)
@@ -47,6 +48,7 @@ func runGraphPreviewReclaim(cmd *cobra.Command) error {
 	if err := graphPreviewFlags(cmd, "older-than", "id", "assignee", "label", "label-any", "exclude-label", "any-replica"); err != nil {
 		return err
 	}
+	leaseActor := graphPreviewCoordinationActor()
 	olderThan, _ := cmd.Flags().GetDuration("older-than")
 	if olderThan < 0 {
 		return graphFailure("invalid_properties", "--older-than must not be negative", 2)
@@ -68,7 +70,7 @@ func runGraphPreviewReclaim(cmd *cobra.Command) error {
 		}
 		paths[i] = path
 	}
-	return withGraphStore(func(ctx context.Context, store *graphstore.Store) (any, string, error) {
+	return withGraphFamiliarStore(func(ctx context.Context, store *graphstore.Store) (any, string, error) {
 		if len(paths) > 0 {
 			filter.IDs = make([]string, 0, len(paths))
 			for _, path := range paths {
@@ -79,7 +81,7 @@ func runGraphPreviewReclaim(cmd *cobra.Command) error {
 				filter.IDs = append(filter.IDs, issue.Properties.ID)
 			}
 		}
-		reclaimed, err := store.ReclaimExpiredIssueLeases(ctx, olderThan, filter, actor)
+		reclaimed, err := store.ReclaimExpiredIssueLeases(ctx, olderThan, filter, leaseActor)
 		if err != nil {
 			return nil, "", err
 		}

@@ -24,12 +24,13 @@ func runGraphPreviewMergeSlot(cmd *cobra.Command) error {
 	} else if err := graphPreviewFlags(cmd); err != nil {
 		return err
 	}
+	leaseActor := graphPreviewCoordinationActor()
 
 	var idleExit bool
-	err := withGraphStore(func(ctx context.Context, s *graphstore.Store) (any, string, error) {
+	err := withGraphFamiliarStore(func(ctx context.Context, s *graphstore.Store) (any, string, error) {
 		switch cmd {
 		case mergeSlotCreateCmd:
-			issue, err := s.MergeSlotCreate(ctx, actor)
+			issue, err := s.MergeSlotCreate(ctx, leaseActor)
 			if err != nil {
 				return nil, "", err
 			}
@@ -63,12 +64,12 @@ func runGraphPreviewMergeSlot(cmd *cobra.Command) error {
 		case mergeSlotAcquireCmd:
 			holder := mergeSlotHolder
 			if holder == "" {
-				holder = actor
+				holder = leaseActor
 			}
 			if holder == "" {
 				return nil, "", fmt.Errorf("no holder specified; use --holder or set BEADS_ACTOR env var")
 			}
-			result, changed, err := s.MergeSlotAcquire(ctx, holder, actor, mergeSlotAddWaiter)
+			result, changed, err := s.MergeSlotAcquire(ctx, holder, leaseActor, mergeSlotAddWaiter)
 			if err != nil {
 				return nil, "", err
 			}
@@ -87,7 +88,7 @@ func runGraphPreviewMergeSlot(cmd *cobra.Command) error {
 			return map[string]any{"id": result.SlotID, "acquired": false, "holder": result.Holder},
 				fmt.Sprintf("slot held by: %s\nUse --wait to add yourself to the waiters queue.", result.Holder), nil
 		case mergeSlotReleaseCmd:
-			id, changed, err := s.MergeSlotRelease(ctx, mergeSlotHolder, actor)
+			id, changed, err := s.MergeSlotRelease(ctx, mergeSlotHolder, leaseActor)
 			if err != nil {
 				return nil, "", err
 			}

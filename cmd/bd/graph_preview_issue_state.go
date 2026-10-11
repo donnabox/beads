@@ -19,7 +19,7 @@ func runGraphPreviewState(cmd *cobra.Command, selector, dimension string, list b
 	if err != nil || graph.ValidateBeadPath(path) != nil {
 		return graphFailure("invalid_selector", "state requires a local Issue ID or beads/PATH", 2)
 	}
-	return withGraphStore(func(ctx context.Context, store *graphstore.Store) (any, string, error) {
+	return withGraphFamiliarStore(func(ctx context.Context, store *graphstore.Store) (any, string, error) {
 		resource, err := store.Read(ctx, path)
 		if err != nil {
 			return nil, "", err
@@ -28,30 +28,34 @@ func runGraphPreviewState(cmd *cobra.Command, selector, dimension string, list b
 		if !ok {
 			return nil, "", graphstore.ErrCapabilityUnavailable
 		}
-		if list {
-			states := collectStateLabels(issue.Properties.Labels)
-			names := make([]string, 0, len(states))
-			for name := range states {
-				names = append(names, name)
-			}
-			sort.Strings(names)
-			lines := make([]string, 0, len(names))
-			for _, name := range names {
-				lines = append(lines, fmt.Sprintf("%s: %s", name, states[name]))
-			}
-			human := fmt.Sprintf("%s has no state labels", issue.ID)
-			if len(lines) > 0 {
-				human = strings.Join(lines, "\n")
-			}
-			return map[string]any{"issue_id": issue.ID, "states": states}, human, nil
-		}
-		value, _ := findStateLabel(issue.Properties.Labels, dimension)
-		var outputValue any
-		human := fmt.Sprintf("(no %s state set)", dimension)
-		if value != "" {
-			outputValue = value
-			human = value
-		}
-		return map[string]any{"issue_id": issue.ID, "dimension": dimension, "value": outputValue}, human, nil
+		return graphStateReport(issue, dimension, list)
 	})
+}
+
+func graphStateReport(issue graphstore.IssueRecord, dimension string, list bool) (any, string, error) {
+	if list {
+		states := collectStateLabels(issue.Properties.Labels)
+		names := make([]string, 0, len(states))
+		for name := range states {
+			names = append(names, name)
+		}
+		sort.Strings(names)
+		lines := make([]string, 0, len(names))
+		for _, name := range names {
+			lines = append(lines, fmt.Sprintf("%s: %s", name, states[name]))
+		}
+		human := fmt.Sprintf("%s has no state labels", issue.Properties.ID)
+		if len(lines) > 0 {
+			human = strings.Join(lines, "\n")
+		}
+		return map[string]any{"issue_id": issue.Properties.ID, "states": states}, human, nil
+	}
+	value, _ := findStateLabel(issue.Properties.Labels, dimension)
+	var outputValue any
+	human := fmt.Sprintf("(no %s state set)", dimension)
+	if value != "" {
+		outputValue = value
+		human = value
+	}
+	return map[string]any{"issue_id": issue.Properties.ID, "dimension": dimension, "value": outputValue}, human, nil
 }

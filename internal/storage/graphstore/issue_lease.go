@@ -7,7 +7,6 @@ import (
 	"time"
 	"unicode/utf8"
 
-	graph "github.com/steveyegge/beads/graphops"
 	"github.com/steveyegge/beads/internal/storage"
 	"github.com/steveyegge/beads/internal/storage/issueops"
 	"github.com/steveyegge/beads/internal/types"
@@ -51,7 +50,8 @@ func (s *Store) HeartbeatIssue(ctx context.Context, path, actor string) (IssueRe
 
 // ReclaimExpiredIssueLeases gives the native reaper only graph-mapped Issue
 // IDs, then maps every durable native recovery version into graph History in
-// the same transaction. An empty sweep leaves even coordination untouched.
+// the same transaction. It returns native local Issue IDs, as the ordinary
+// reclaim command does. An empty sweep leaves even coordination untouched.
 func (s *Store) ReclaimExpiredIssueLeases(ctx context.Context, olderThan time.Duration, filter types.ReclaimFilter, actor string) ([]types.ReclaimedLease, error) {
 	if olderThan < 0 || actor == "" || !utf8.ValidString(actor) {
 		return nil, fmt.Errorf("%w: invalid reclaim grace or actor", storage.ErrValidation)
@@ -114,7 +114,6 @@ func (s *Store) ReclaimExpiredIssueLeases(ctx context.Context, olderThan time.Du
 			if _, err := s.showIssueInTx(ctx, tx, path); err != nil {
 				return err
 			}
-			reclaimed[i].ID = graph.CanonicalURL(s.options.Binding.ScopeURL, path)
 		}
 		return nil
 	})
