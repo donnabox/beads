@@ -6,6 +6,18 @@ import "github.com/spf13/cobra"
 // intact and add an explicitly scoped section for commands reused by the graph
 // preview, so their legacy descriptions do not mislead graph operators.
 func init() {
+	todoCmd.Long = `Graph preview workspaces:
+bd todo add TITLE creates an open task Issue at P2 by default, assigned to
+the current actor. bd todo and bd todo list show open task Issues;
+bd todo list --all includes completed task Issues. bd todo done ID... closes
+any Issue, as in ordinary workspaces, with reason Completed unless --reason
+is supplied. Each unguarded ID is attempted independently; failed targets
+are reported to stderr while successful closes are returned.
+For one Issue, --if-revision TOKEN refuses a stale completion. List and add
+JSON keep the familiar Issue shape with canonical beads/PATH IDs.
+
+Ordinary Issue workspaces:
+` + todoCmd.Long
 	// These commands have long ordinary-mode descriptions. Put the graph
 	// distinction first so help does not lead graph users to turn on legacy
 	// recording or expect Dolt commits and unsupported flags.

@@ -142,6 +142,27 @@ is not applied to a Memory. Its human rows add status and priority, for example
 `"https://example.org/team/beads/work" "open" P2 "Move the release branch"`.
 An Issue filter cannot be combined with a non-Issue `--bead-type`.
 
+## Quick task Issues
+
+`bd todo` is a shortcut for regular task Issues in a graph workspace. Add
+creates an open task at P2 by default and assigns it to the current actor.
+The bare command and `bd todo list` show open tasks; `bd todo list --all`
+includes completed tasks. JSON uses the ordinary todo Issue, array and
+completion shapes with Scope-relative `beads/PATH` IDs.
+
+```sh
+bd todo add 'Write the migration tests' --description 'Cover old data'
+bd todo list --all
+bd todo done beads/TEAM-123 --reason 'Tests landed'
+```
+
+`bd todo done` accepts any Issue, including one whose type is not `task`.
+Without a revision guard, it tries each supplied ID in order, reports a
+failed target on stderr and still returns the successfully closed IDs with
+exit status zero. For one Issue, `--if-revision TOKEN` from `bd show --json`
+refuses a stale close before changing that Issue. An already closed Issue is a
+no-op and retains its original close reason and version.
+
 ## Update and delete Beads
 
 For a Memory, `bd remember --id ID` changes only the fields you supply if
