@@ -339,7 +339,7 @@ func runGraphPreviewCount(cmd *cobra.Command, args []string) error {
 	// checked rows after graph projection, never against opaque backing keys.
 	ids := make(map[string]bool, len(filter.IDs))
 	for _, id := range filter.IDs {
-		path, err := graphDiscoveryIssuePath(id)
+		path, err := graphDiscoveryIssuePath(graphPreviewConfig.GraphScopeURL, id)
 		if err != nil {
 			return err
 		}
@@ -348,7 +348,7 @@ func runGraphPreviewCount(cmd *cobra.Command, args []string) error {
 	filter.IDs = nil
 	parent := ""
 	if filter.ParentID != nil {
-		parent, err = graphDiscoveryIssuePath(*filter.ParentID)
+		parent, err = graphDiscoveryIssuePath(graphPreviewConfig.GraphScopeURL, *filter.ParentID)
 		if err != nil {
 			return err
 		}
@@ -417,8 +417,9 @@ func runGraphPreviewCount(cmd *cobra.Command, args []string) error {
 	return nil
 }
 
-func graphDiscoveryIssuePath(selector string) (string, error) {
-	path, err := graphPreviewResourcePath(graphPreviewConfig.GraphScopeURL, selector)
+// Explicit scope keeps selector parsing independent of command admission state.
+func graphDiscoveryIssuePath(scopeURL, selector string) (string, error) {
+	path, err := graphPreviewResourcePath(scopeURL, selector)
 	if err != nil || !strings.HasPrefix(path, "beads/") {
 		return "", graphFailure("invalid_selector", fmt.Sprintf("invalid graph Issue selector %q", selector), 2)
 	}
@@ -478,7 +479,7 @@ func runGraphPreviewQuery(cmd *cobra.Command, args []string) error {
 	if err != nil {
 		return graphFailure("invalid_selector", "invalid query expression: "+err.Error(), 2)
 	}
-	predicate, err := graphQueryPredicate(node, time.Now())
+	predicate, err := graphQueryPredicate(node, time.Now(), graphPreviewConfig.GraphScopeURL)
 	if err != nil {
 		return graphFailure("invalid_selector", "invalid query expression: "+err.Error(), 2)
 	}
@@ -530,25 +531,25 @@ func graphQueryUnsupportedField(expression string) bool {
 	return unsupported(node)
 }
 
-func graphQueryPredicate(node query.Node, now time.Time) (func(*types.IssueWithCounts) bool, error) {
+func graphQueryPredicate(node query.Node, now time.Time, scopeURL string) (func(*types.IssueWithCounts) bool, error) {
 	switch n := node.(type) {
 	case *query.ComparisonNode:
 		if n.Field == "parent" {
 			if n.Op != query.OpEquals {
 				return nil, fmt.Errorf("parent only supports = operator")
 			}
-			parent, err := graphDiscoveryIssuePath(n.Value)
+			parent, err := graphDiscoveryIssuePath(scopeURL, n.Value)
 			if err != nil {
 				return nil, err
 			}
 			return func(row *types.IssueWithCounts) bool { return graphDiscoveryParentMatch(row, parent) }, nil
 		}
 	case *query.AndNode:
-		left, err := graphQueryPredicate(n.Left, now)
+		left, err := graphQueryPredicate(n.Left, now, scopeURL)
 		if err != nil {
 			return nil, err
 		}
-		right, err := graphQueryPredicate(n.Right, now)
+		right, err := graphQueryPredicate(n.Right, now, scopeURL)
 		if err != nil {
 			return nil, err
 		}

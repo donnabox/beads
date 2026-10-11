@@ -93,12 +93,29 @@ func TestGraphDiscoveryCanonicalCountSelectors(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	match, err := graphQueryPredicate(parentNode, time.Now())
+	match, err := graphQueryPredicate(parentNode, time.Now(), "https://example.invalid/discovery/")
 	if err != nil {
 		t.Fatal(err)
 	}
 	rows[1].IssueType, rows[2].IssueType = types.TypeTask, types.TypeBug
 	if !match(rows[1]) || match(rows[2]) || match(rows[3]) {
 		t.Fatal("query parent predicate lost canonical parent or other field")
+	}
+}
+
+func TestGraphDiscoveryIssuePathWithExplicitScope(t *testing.T) {
+	scope := "https://example.invalid/discovery/"
+	for _, tc := range []struct {
+		selector string
+		want     string
+	}{
+		{"work", "beads/work"},
+		{"beads/work", "beads/work"},
+		{scope + "beads/work", "beads/work"},
+	} {
+		got, err := graphDiscoveryIssuePath(scope, tc.selector)
+		if err != nil || got != tc.want {
+			t.Errorf("selector %q: got %q, %v; want %q", tc.selector, got, err, tc.want)
+		}
 	}
 }
