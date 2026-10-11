@@ -19,7 +19,7 @@ func runGraphPreviewAssign(cmd *cobra.Command, args []string) error {
 	if err := graphPreviewFlags(cmd, "force", "if-revision"); err != nil {
 		return err
 	}
-	path, err := graphPreviewResourcePath(graphPreviewConfig.GraphScopeURL, args[0])
+	selected, err := graphPreviewIssueSelector(args[0])
 	if err != nil {
 		return graphFailure("invalid_selector", err.Error(), 2)
 	}
@@ -29,16 +29,18 @@ func runGraphPreviewAssign(cmd *cobra.Command, args []string) error {
 	}
 	force, _ := cmd.Flags().GetBool("force")
 	assignee := args[1]
+	var touched string
 	err = withGraphStoreOutput(func(ctx context.Context, store *graphstore.Store) (any, string, error) {
 		result, err := store.UpdateIssue(ctx, graphstore.UpdateIssueRequest{
-			Path: path, Actor: getActorWithGit(), ExpectedRevision: revision,
+			Path: selected.Path, NativeID: selected.NativeID, Actor: getActorWithGit(), ExpectedRevision: revision,
 			Unconditional: unconditional, Assignee: &assignee, ForceAssigneeTransfer: force,
 		})
 		if err != nil {
 			return nil, "", err
 		}
 		issue := *result.Issue.Properties
-		issue.ID = path
+		issue.ID = graphPreviewDisplayLocalURL(result.Issue.ID)
+		touched = issue.ID
 		if assignee == "" {
 			return &issue, fmt.Sprintf("%s Unassigned %s\n", ui.RenderPass("✓"), formatFeedbackID(issue.ID, issue.Title)), nil
 		}
@@ -51,7 +53,7 @@ func runGraphPreviewAssign(cmd *cobra.Command, args []string) error {
 		return err
 	})
 	if err == nil {
-		SetLastTouchedID(path)
+		SetLastTouchedID(touched)
 	}
 	return err
 }
@@ -63,7 +65,7 @@ func runGraphPreviewPriority(cmd *cobra.Command, args []string) error {
 	if err := graphPreviewFlags(cmd); err != nil {
 		return err
 	}
-	path, err := graphPreviewResourcePath(graphPreviewConfig.GraphScopeURL, args[0])
+	selected, err := graphPreviewIssueSelector(args[0])
 	if err != nil {
 		return graphFailure("invalid_selector", err.Error(), 2)
 	}
@@ -71,15 +73,17 @@ func runGraphPreviewPriority(cmd *cobra.Command, args []string) error {
 	if err != nil {
 		return graphFailure("invalid_properties", err.Error(), 2)
 	}
+	var touched string
 	err = withGraphStoreOutput(func(ctx context.Context, store *graphstore.Store) (any, string, error) {
 		result, err := store.UpdateIssue(ctx, graphstore.UpdateIssueRequest{
-			Path: path, Actor: getActorWithGit(), Unconditional: true, Priority: &priority,
+			Path: selected.Path, NativeID: selected.NativeID, Actor: getActorWithGit(), Unconditional: true, Priority: &priority,
 		})
 		if err != nil {
 			return nil, "", err
 		}
 		issue := *result.Issue.Properties
-		issue.ID = path // returned IDs must resolve to this graph Resource
+		issue.ID = graphPreviewDisplayLocalURL(result.Issue.ID)
+		touched = issue.ID
 		return &issue, fmt.Sprintf("%s Set priority of %s to P%d\n", ui.RenderPass("✓"), formatFeedbackID(issue.ID, issue.Title), priority), nil
 	}, func(result any, human string) error {
 		if jsonOutput {
@@ -89,7 +93,7 @@ func runGraphPreviewPriority(cmd *cobra.Command, args []string) error {
 		return err
 	})
 	if err == nil {
-		SetLastTouchedID(path)
+		SetLastTouchedID(touched)
 	}
 	return err
 }
@@ -101,7 +105,7 @@ func runGraphPreviewNote(cmd *cobra.Command, args []string) error {
 	if err := graphPreviewFlags(cmd, "stdin", "file"); err != nil {
 		return err
 	}
-	path, err := graphPreviewResourcePath(graphPreviewConfig.GraphScopeURL, args[0])
+	selected, err := graphPreviewIssueSelector(args[0])
 	if err != nil {
 		return graphFailure("invalid_selector", err.Error(), 2)
 	}
@@ -109,15 +113,17 @@ func runGraphPreviewNote(cmd *cobra.Command, args []string) error {
 	if err != nil {
 		return graphFailure("invalid_properties", err.Error(), 2)
 	}
+	var touched string
 	err = withGraphStoreOutput(func(ctx context.Context, store *graphstore.Store) (any, string, error) {
 		result, err := store.UpdateIssue(ctx, graphstore.UpdateIssueRequest{
-			Path: path, Actor: getActorWithGit(), Unconditional: true, AppendNotes: &note,
+			Path: selected.Path, NativeID: selected.NativeID, Actor: getActorWithGit(), Unconditional: true, AppendNotes: &note,
 		})
 		if err != nil {
 			return nil, "", err
 		}
 		issue := *result.Issue.Properties
-		issue.ID = path // backing IDs can name a different canonical Bead
+		issue.ID = graphPreviewDisplayLocalURL(result.Issue.ID)
+		touched = issue.ID
 		return &issue, fmt.Sprintf("%s Note added to %s\n", ui.RenderPass("✓"), formatFeedbackID(issue.ID, issue.Title)), nil
 	}, func(result any, human string) error {
 		if jsonOutput {
@@ -127,7 +133,7 @@ func runGraphPreviewNote(cmd *cobra.Command, args []string) error {
 		return err
 	})
 	if err == nil {
-		SetLastTouchedID(path)
+		SetLastTouchedID(touched)
 	}
 	return err
 }

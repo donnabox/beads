@@ -6,6 +6,7 @@ import (
 	"encoding/json"
 	"testing"
 
+	"github.com/steveyegge/beads/internal/storage/graphstore"
 	"github.com/steveyegge/beads/internal/types"
 )
 
@@ -103,6 +104,40 @@ func TestGraphPreviewIssueDiscoveryWorkflow(t *testing.T) {
 			graphPolicyCLI(t, bd, work, home, nil, "invalid_selector", "count", "--by-status", "--by-type", "--json")
 			graphPolicyCLI(t, bd, work, home, nil, "invalid_selector", "query", "parent!=beads/work", "--json")
 			graphPolicyCLI(t, bd, work, home, nil, "invalid_selector", "query", "type=task", "--offset", "1", "--sort", "priority", "--json")
+
+			custom := graphMixedResult[graphstore.IssueRecord](t, call("create", "Custom path", "--id", "beads/custom-path"))
+			call("create", "Dotted child", "--id", "beads/custom-path.child")
+			if custom.Properties.ID == "custom-path" {
+				t.Fatal("fixture needs a native ID distinct from its graph path")
+			}
+			if out := call("count", "--id", custom.Properties.ID); json.Unmarshal([]byte(out), &count) != nil || count.Count != 1 {
+				t.Fatalf("count native Issue ID: %s", out)
+			}
+			if out := call("count", "--parent", custom.Properties.ID); json.Unmarshal([]byte(out), &count) != nil || count.Count != 1 {
+				t.Fatalf("count native parent ID: %s", out)
+			}
+			call("remember", "Colliding Memory", "--id", "beads/"+custom.Properties.ID)
+			graphPolicyCLI(t, bd, work, home, nil, "invalid_properties", "count", "--id", custom.Properties.ID, "--json")
+			graphPolicyCLI(t, bd, work, home, nil, "invalid_properties", "count", "--parent", custom.Properties.ID, "--json")
+			if out := call("count", "--id", "beads/custom-path"); json.Unmarshal([]byte(out), &count) != nil || count.Count != 1 {
+				t.Fatalf("explicit count path after native-ID collision: %s", out)
+			}
+		})
+	}
+}
+
+func TestGraphPreviewSearchConfiguredStatus(t *testing.T) {
+	bd := buildBDUnderTest(t)
+	for _, engine := range []string{"embedded", "server"} {
+		t.Run(engine, func(t *testing.T) {
+			work, home := graphListWorkspace(t, bd, engine, "https://example.invalid/custom-search/")
+			graphListConfig(t, work, "status:\n  custom: [\"triaged:active\"]\n")
+			var found []*types.IssueWithCounts
+			out := graphPolicyCLI(t, bd, work, home, nil, "", "search", "work", "--status", "triaged", "--json")
+			if err := json.Unmarshal([]byte(out), &found); err != nil || found == nil || len(found) != 0 {
+				t.Fatalf("configured custom status was refused or returned unexpected rows: %s (%v)", out, err)
+			}
+			graphPolicyCLI(t, bd, work, home, nil, "invalid_selector", "search", "work", "--status", "unknown", "--json")
 		})
 	}
 }

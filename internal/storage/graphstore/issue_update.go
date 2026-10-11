@@ -3,6 +3,7 @@ package graphstore
 import (
 	"context"
 	"database/sql"
+	"errors"
 	"fmt"
 	"time"
 	"unicode/utf8"
@@ -32,6 +33,7 @@ import (
 // Unconditional bypasses the ordinary active-assignment transfer fence.
 type UpdateIssueRequest struct {
 	Path, Actor, ExpectedRevision                             string
+	NativeID                                                  string
 	Unconditional, ForceNotesOverwrite, ForceAssigneeTransfer bool
 	PropertiesProvided, ClearEstimatedMinutes                 bool
 	Title, Description, Design, AcceptanceCriteria            *string
@@ -48,7 +50,7 @@ type UpdateIssueRequest struct {
 // retained-version recorder. Payload, opaque graph revision and complete owned
 // state commit together; this adds no public History ordering or change context.
 func (s *Store) UpdateIssue(ctx context.Context, request UpdateIssueRequest) (IssueMutationResult, error) {
-	if err := validatePath(request.Path); err != nil {
+	if err := validateIssueSelector(IssueSelector{Path: request.Path, NativeID: request.NativeID}); err != nil {
 		return IssueMutationResult{}, fmt.Errorf("%w: %v", storage.ErrValidation, err)
 	}
 	if request.Actor == "" || !utf8.ValidString(request.Actor) {
@@ -156,7 +158,18 @@ func (s *Store) UpdateIssue(ctx context.Context, request UpdateIssueRequest) (Is
 		if err := checkBinding(ctx, tx, s.options); err != nil {
 			return err
 		}
-		current, revision, _, err := s.beadEndpointInTx(ctx, tx, request.Path)
+		path := request.Path
+		if request.NativeID != "" {
+			var err error
+			path, _, err = s.resolveLiveIssueSelectorInTx(ctx, tx, IssueSelector{Path: request.Path, NativeID: request.NativeID})
+			if err != nil {
+				if errors.Is(err, errNonIssueSelector) {
+					return ErrCapabilityUnavailable
+				}
+				return err
+			}
+		}
+		current, revision, _, err := s.beadEndpointInTx(ctx, tx, path)
 		if err != nil {
 			return err
 		}
@@ -235,7 +248,7 @@ func (s *Store) UpdateIssue(ctx context.Context, request UpdateIssueRequest) (Is
 		if err := s.afterStage("issue-retained"); err != nil {
 			return err
 		}
-		if err := s.recordIssueMappingInTx(ctx, tx, request.Path, before.Properties.ID); err != nil {
+		if err := s.recordIssueMappingInTx(ctx, tx, path, before.Properties.ID); err != nil {
 			return err
 		}
 		// Charge the new retained head as well as current data; an unreadable
@@ -245,7 +258,7 @@ func (s *Store) UpdateIssue(ctx context.Context, request UpdateIssueRequest) (Is
 				return err
 			}
 		}
-		after, err := s.showIssueInTx(ctx, tx, request.Path)
+		after, err := s.showIssueInTx(ctx, tx, path)
 		if err != nil {
 			return err
 		}

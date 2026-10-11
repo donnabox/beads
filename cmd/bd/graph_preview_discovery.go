@@ -36,6 +36,44 @@ func graphDiscoveryRows(query string, filter types.IssueFilter) ([]*types.IssueW
 	return rows, err
 }
 
+func graphSearchDiscoveryRows(filter types.IssueFilter, status string) ([]*types.IssueWithCounts, error) {
+	var rows []*types.IssueWithCounts
+	err := withGraphStoreOutput(func(ctx context.Context, s *graphstore.Store) (any, string, error) {
+		if status != "" && status != "all" {
+			custom, err := s.ListCustomStatuses(ctx)
+			if err != nil {
+				return nil, "", err
+			}
+			names := make([]string, 0, len(custom))
+			for _, item := range custom {
+				names = append(names, item.Name)
+			}
+			if err := workapi.ApplyStatusFilter(&filter, status, names); err != nil {
+				return nil, "", graphFailure("invalid_selector", err.Error(), 2)
+			}
+		}
+		var err error
+		rows, err = s.SearchIssueRows(ctx, "", filter)
+		return nil, "", err
+	}, func(any, string) error { return nil })
+	return rows, err
+}
+
+func graphCountDiscoveryRows(filter types.IssueFilter, selectors []graphstore.IssueSelector) ([]*types.IssueWithCounts, []string, error) {
+	var rows []*types.IssueWithCounts
+	var paths []string
+	err := withGraphStoreOutput(func(ctx context.Context, s *graphstore.Store) (any, string, error) {
+		var err error
+		paths, err = s.ResolveIssuePaths(ctx, selectors)
+		if err != nil {
+			return nil, "", err
+		}
+		rows, err = s.SearchIssueRows(ctx, "", filter)
+		return nil, "", err
+	}, func(any, string) error { return nil })
+	return rows, paths, err
+}
+
 func graphDiscoveryJSON(w io.Writer, value any) error {
 	encoder := json.NewEncoder(w)
 	encoder.SetIndent("", "  ")
@@ -93,11 +131,6 @@ func runGraphPreviewSearch(cmd *cobra.Command, args []string) error {
 	}
 	filter := graphDiscoveryFilter()
 	status, _ := cmd.Flags().GetString("status")
-	if status != "" && status != "all" {
-		if err := workapi.ApplyStatusFilter(&filter, status, nil); err != nil {
-			return graphFailure("invalid_selector", err.Error()+"; graph search currently admits built-in statuses only", 2)
-		}
-	}
 	assignee, _ := cmd.Flags().GetString("assignee")
 	if assignee != "" {
 		filter.Assignee = &assignee
@@ -200,7 +233,7 @@ func runGraphPreviewSearch(cmd *cobra.Command, args []string) error {
 	}
 	reverse, _ := cmd.Flags().GetBool("reverse")
 	longFormat, _ := cmd.Flags().GetBool("long")
-	rows, err := graphDiscoveryRows("", filter)
+	rows, err := graphSearchDiscoveryRows(filter, status)
 	if err != nil {
 		return err
 	}
@@ -345,30 +378,39 @@ func runGraphPreviewCount(cmd *cobra.Command, args []string) error {
 		return graphFailure("invalid_selector", err.Error(), 2)
 	}
 	filter.SkipWisps = true
-	// The native filter names backing IDs. Resolve public selectors against the
-	// checked rows after graph projection, never against opaque backing keys.
-	ids := make(map[string]bool, len(filter.IDs))
+	// Resolve bare native IDs through the checked catalog. Explicit graph paths
+	// remain exact, and an ambiguous bare ID fails before the count is printed.
+	selectors := make([]graphstore.IssueSelector, 0, len(filter.IDs)+1)
 	for _, id := range filter.IDs {
-		path, err := graphDiscoveryIssuePath(graphPreviewConfig.GraphScopeURL, id)
+		selected, err := graphPreviewIssueSelector(id)
 		if err != nil {
-			return err
+			return graphFailure("invalid_selector", err.Error(), 2)
 		}
-		ids[path] = true
+		selectors = append(selectors, selected)
 	}
+	idCount := len(selectors)
 	filter.IDs = nil
-	parent := ""
 	if filter.ParentID != nil {
-		parent, err = graphDiscoveryIssuePath(graphPreviewConfig.GraphScopeURL, *filter.ParentID)
+		selected, err := graphPreviewIssueSelector(*filter.ParentID)
 		if err != nil {
-			return err
+			return graphFailure("invalid_selector", err.Error(), 2)
 		}
+		selectors = append(selectors, selected)
 		filter.ParentID = nil
 	}
 	noParent := filter.NoParent
 	filter.NoParent = false
-	rows, err := graphDiscoveryRows("", filter)
+	rows, paths, err := graphCountDiscoveryRows(filter, selectors)
 	if err != nil {
 		return err
+	}
+	ids := make(map[string]bool, idCount)
+	for _, path := range paths[:idCount] {
+		ids[path] = true
+	}
+	parent := ""
+	if len(paths) > idCount {
+		parent = paths[idCount]
 	}
 	rows = graphDiscoverySelectRows(rows, ids, parent, noParent)
 	if group == "" {

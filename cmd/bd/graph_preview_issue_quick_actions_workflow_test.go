@@ -95,6 +95,31 @@ func TestGraphPreviewIssueQuickActionsWorkflow(t *testing.T) {
 			refuse("capability_unavailable", "priority", "beads/context", "2")
 			refuse("capability_unavailable", "note", "beads/context", "No")
 			refuse("capability_unavailable", "assign", "beads/context", "alice")
+
+			custom := graphMixedResult[graphstore.IssueRecord](t, call("create", "Custom path", "--id", "beads/custom-path"))
+			if custom.Properties.ID == "custom-path" {
+				t.Fatal("fixture needs a native ID distinct from its graph path")
+			}
+			if got := issue(call("priority", custom.Properties.ID, "1")); got.ID != "beads/custom-path" || got.Priority != 1 {
+				t.Fatalf("native-ID priority selected the wrong Issue: %+v", got)
+			}
+			if got := issue(call("note", custom.Properties.ID, "Native ID note")); got.ID != "beads/custom-path" || got.Notes != "Native ID note" {
+				t.Fatalf("native-ID note selected the wrong Issue: %+v", got)
+			}
+			if got := issue(call("assign", custom.Properties.ID, "carol")); got.ID != "beads/custom-path" || got.Assignee != "carol" {
+				t.Fatalf("native-ID assign selected the wrong Issue: %+v", got)
+			}
+			call("remember", "Colliding Memory", "--id", "beads/"+custom.Properties.ID)
+			beforeCollision := graphMemoryReadSnapshot(t, work)
+			refuse("invalid_properties", "priority", custom.Properties.ID, "0")
+			refuse("invalid_properties", "note", custom.Properties.ID, "Wrong target")
+			refuse("invalid_properties", "assign", custom.Properties.ID, "wrong")
+			if !reflect.DeepEqual(beforeCollision, graphMemoryReadSnapshot(t, work)) {
+				t.Fatal("ambiguous native ID changed Issue or Memory state")
+			}
+			if got := issue(call("priority", "beads/custom-path", "0")); got.Priority != 0 {
+				t.Fatalf("explicit path did not select custom Issue: %+v", got)
+			}
 		})
 	}
 }
