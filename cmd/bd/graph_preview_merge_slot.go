@@ -11,13 +11,14 @@ import (
 )
 
 func runGraphPreviewMergeSlot(cmd *cobra.Command) error {
-	write := cmd != mergeSlotCheckCmd
+	op := cmd.Name()
+	write := op != "check"
 	if write {
 		if err := graphPreviewWritePolicy(); err != nil {
 			return err
 		}
 	}
-	if cmd == mergeSlotAcquireCmd || cmd == mergeSlotReleaseCmd {
+	if op == "acquire" || op == "release" {
 		if err := graphPreviewFlags(cmd, "holder", "wait"); err != nil {
 			return err
 		}
@@ -28,8 +29,8 @@ func runGraphPreviewMergeSlot(cmd *cobra.Command) error {
 
 	var idleExit bool
 	err := withGraphFamiliarStore(func(ctx context.Context, s *graphstore.Store) (any, string, error) {
-		switch cmd {
-		case mergeSlotCreateCmd:
+		switch op {
+		case "create":
 			issue, err := s.MergeSlotCreate(ctx, leaseActor)
 			if err != nil {
 				return nil, "", err
@@ -37,7 +38,7 @@ func runGraphPreviewMergeSlot(cmd *cobra.Command) error {
 			commandDidWrite.Store(true)
 			return map[string]any{"id": issue.Properties.ID, "status": string(issue.Properties.Status)},
 				fmt.Sprintf("%s Created merge slot: %s", ui.RenderPass("✓"), issue.Properties.ID), nil
-		case mergeSlotCheckCmd:
+		case "check":
 			status, err := s.MergeSlotCheck(ctx)
 			if errors.Is(err, graphstore.ErrNotFound) {
 				id, idErr := s.MergeSlotID(ctx)
@@ -61,7 +62,7 @@ func runGraphPreviewMergeSlot(cmd *cobra.Command) error {
 				}
 			}
 			return map[string]any{"id": status.SlotID, "available": status.Available, "holder": nilIfEmpty(status.Holder), "waiters": status.Waiters}, human, nil
-		case mergeSlotAcquireCmd:
+		case "acquire":
 			holder := mergeSlotHolder
 			if holder == "" {
 				holder = leaseActor
@@ -87,7 +88,7 @@ func runGraphPreviewMergeSlot(cmd *cobra.Command) error {
 			}
 			return map[string]any{"id": result.SlotID, "acquired": false, "holder": result.Holder},
 				fmt.Sprintf("slot held by: %s\nUse --wait to add yourself to the waiters queue.", result.Holder), nil
-		case mergeSlotReleaseCmd:
+		case "release":
 			id, changed, err := s.MergeSlotRelease(ctx, mergeSlotHolder, leaseActor)
 			if err != nil {
 				return nil, "", err
