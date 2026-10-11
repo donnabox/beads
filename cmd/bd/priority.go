@@ -31,6 +31,9 @@ Examples:
 	SilenceUsage:  true,
 	SilenceErrors: true,
 	RunE: func(cmd *cobra.Command, args []string) error {
+		if graphPreviewActive {
+			return runGraphPreviewPriority(cmd, args)
+		}
 		CheckReadonly("priority")
 
 		evt := metrics.NewCommandEvent("priority")

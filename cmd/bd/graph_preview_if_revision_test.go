@@ -247,9 +247,8 @@ func TestGraphPreviewIfRevisionInLinkModeStaysGraphToken(t *testing.T) {
 	}
 }
 
-// In graph mode close now interprets --if-revision as the opaque observed graph
-// Issue token. Assign has no graph route and still refuses the flag rather than
-// quietly dropping its upstream numeric guard.
+// In graph mode close and assign interpret --if-revision as the opaque observed
+// graph Issue token; neither accepts an upstream numeric revision as a guard.
 func TestGraphPreviewCloseIfRevisionUsesGraphToken(t *testing.T) {
 	bd := buildBDUnderTest(t)
 	work, home := t.TempDir(), t.TempDir()
@@ -266,7 +265,7 @@ func TestGraphPreviewCloseIfRevisionUsesGraphToken(t *testing.T) {
 	} {
 		graphIfRevisionRefused(t, bd, work, home, 4, "revision_conflict", args...)
 	}
-	graphIfRevisionRefused(t, bd, work, home, 5, "capability_unavailable", "assign", "beads/close-guard", "alice", "--if-revision", "1")
+	graphIfRevisionRefused(t, bd, work, home, 4, "revision_conflict", "assign", "beads/close-guard", "alice", "--if-revision", "1")
 	if call("show", "--format", "graph-json", "beads/close-guard") != before {
 		t.Fatal("a refused guarded close changed the Issue")
 	}
