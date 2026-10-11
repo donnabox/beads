@@ -3,6 +3,7 @@
 package main
 
 import (
+	"encoding/json"
 	"errors"
 	"strings"
 	"testing"
@@ -34,6 +35,7 @@ func TestGraphPreviewStructureReads(t *testing.T) {
 	graphPolicyCLI(t, bd, work, home, nil, "", "init", "--graph-mode", "link", "--prefix", "demo", "--scope-url", scope, "--skip-hooks", "--skip-agents", "--non-interactive", "--json")
 	graphPolicyCLI(t, bd, work, home, nil, "", "create", "Parent", "--id", "beads/parent", "--json")
 	graphPolicyCLI(t, bd, work, home, nil, "", "create", "Work", "--id", "beads/work", "--json")
+	graphPolicyCLI(t, bd, work, home, nil, "", "create", "Isolated", "--id", "beads/isolated", "--json")
 
 	// A blocking-only workspace has no canonical parent-child Link mapping.
 	// An empty children result would falsely look like a complete family read.
@@ -68,12 +70,25 @@ func TestGraphPreviewStructureReads(t *testing.T) {
 	if view := graphPolicyCLI(t, bd, work, home, nil, "", "graph", "work"); !strings.Contains(view, "beads/work depends on beads/parent") || !strings.Contains(view, "2 Issues, 1 Dependencies") {
 		t.Fatalf("blocking graph lost its component: %q", view)
 	}
-	check := graphMixedResult[graphDependencyCheck](t, graphPolicyCLI(t, bd, work, home, nil, "", "graph", "check", "--json"))
+	var check graphDependencyCheck
+	checkJSON := graphPolicyCLI(t, bd, work, home, nil, "", "graph", "check", "--json")
+	if err := json.Unmarshal([]byte(checkJSON), &check); err != nil {
+		t.Fatalf("graph check must use native top-level JSON: %v: %s", err, checkJSON)
+	}
 	if !check.Clean || len(check.Cycles) != 0 {
 		t.Fatalf("acyclic native blocking graph failed check: %+v", check)
 	}
 	if tree := graphPolicyCLI(t, bd, work, home, nil, "", "dep", "tree", "work"); !strings.Contains(tree, "beads/work") || !strings.Contains(tree, "beads/parent") {
 		t.Fatalf("blocking dependency tree lost its nodes: %q", tree)
+	}
+	if tree := graphPolicyCLI(t, bd, work, home, nil, "", "dep", "tree", "isolated"); !strings.Contains(tree, "has no dependencies") {
+		t.Fatalf("isolated Issue falsely reported a dependency tree: %q", tree)
+	}
+	if tree := graphPolicyCLI(t, bd, work, home, nil, "", "dep", "tree", "isolated", "--direction", "up"); !strings.Contains(tree, "has no dependents") {
+		t.Fatalf("isolated Issue falsely reported dependents: %q", tree)
+	}
+	if tree := graphPolicyCLI(t, bd, work, home, nil, "", "dep", "tree", "work", "--direction", "both"); !strings.Contains(tree, "beads/work") || !strings.Contains(tree, "beads/parent") || strings.Index(tree, "beads/parent") < strings.Index(tree, "beads/work") {
+		t.Fatalf("both-direction dependency tree must start at its root: %q", tree)
 	}
 	if cycles := graphPolicyCLI(t, bd, work, home, nil, "", "dep", "cycles"); !strings.Contains(cycles, "No blocking dependency cycles") {
 		t.Fatalf("acyclic blocking graph reported cycles: %q", cycles)

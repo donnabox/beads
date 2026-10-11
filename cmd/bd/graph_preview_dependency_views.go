@@ -120,6 +120,15 @@ func runGraphPreviewCheck(cmd *cobra.Command, args []string) error {
 		}
 		return result, strings.TrimSuffix(human.String(), "\n"), nil
 	}, func(result any, human string) error {
+		if jsonOutput {
+			if err := outputJSON(result); err != nil {
+				return err
+			}
+			if !result.(graphDependencyCheck).Clean {
+				return SilentExit()
+			}
+			return nil
+		}
 		if err := graphPrintTo(cmd.OutOrStdout(), result, human, quietFlag, jsonOutput); err != nil {
 			return err
 		}
@@ -173,13 +182,26 @@ func runGraphPreviewDepTree(cmd *cobra.Command, args []string) error {
 		}
 		var nodes []graphDependencyTreeNode
 		if direction == "both" {
+			nodes = append(nodes, g.tree(root, "down", maxDepth)...)
 			up := g.tree(root, "up", maxDepth)
 			if len(up) > 1 {
 				nodes = append(nodes, up[1:]...)
 			}
-			nodes = append(nodes, g.tree(root, "down", maxDepth)...)
 		} else {
 			nodes = g.tree(root, direction, maxDepth)
+		}
+		if len(nodes) == 1 {
+			nodes = nil // An isolated Issue has no dependency tree.
+		}
+		if len(nodes) == 0 {
+			switch direction {
+			case "up":
+				return nodes, fmt.Sprintf("%s has no dependents", path), nil
+			case "both":
+				return nodes, fmt.Sprintf("%s has no dependencies or dependents", path), nil
+			default:
+				return nodes, fmt.Sprintf("%s has no dependencies", path), nil
+			}
 		}
 		var human strings.Builder
 		fmt.Fprintf(&human, "Blocking dependency tree for %s (%s; graph preview)\n", path, direction)
