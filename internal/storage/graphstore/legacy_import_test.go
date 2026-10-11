@@ -43,6 +43,60 @@ func TestLegacyImportPrefixAdmission(t *testing.T) {
 			}
 		})
 	}
+	for _, ids := range [][]string{{"web-app-123", "web-app-abcdef"}, {"web-app-abcdef", "web-app-123"}} {
+		var batch legacyimport.Batch
+		for _, id := range ids {
+			batch.Issues = append(batch.Issues, &types.Issue{ID: id, Title: "Imported"})
+		}
+		prepared, err := prepareLegacyImportWithPrefix(batch, "importer", "")
+		if err != nil || prepared.prefix != "web-app" {
+			t.Fatalf("whole-batch prefix %v = %q, %v", ids, prepared.prefix, err)
+		}
+	}
+	ambiguous := legacyimport.Batch{Issues: []*types.Issue{{ID: "web-app-abcdef", Title: "Imported"}}}
+	if _, err := prepareLegacyImport(ambiguous, "importer"); err == nil || !strings.Contains(err.Error(), "ambiguous") {
+		t.Fatalf("ambiguous prefix not refused: %v", err)
+	}
+	for _, prefix := range []string{"web-app", "web"} {
+		prepared, err := prepareLegacyImportWithPrefix(ambiguous, "importer", prefix)
+		if err != nil || prepared.prefix != prefix {
+			t.Fatalf("explicit prefix %q = %q, %v", prefix, prepared.prefix, err)
+		}
+	}
+	for _, prefix := range []string{"web-", " web-app", "web-app ", "other"} {
+		if _, err := prepareLegacyImportWithPrefix(ambiguous, "importer", prefix); err == nil {
+			t.Fatalf("invalid override %q admitted", prefix)
+		}
+	}
+	if _, err := prepareLegacyImportWithPrefix(legacyimport.Batch{Memories: []legacyimport.Memory{{Key: "key"}}}, "importer", "web-app"); err == nil {
+		t.Fatal("memory-only source prefix admitted")
+	}
+}
+
+func TestLegacyImportCommentBudgetAndOriginalUTF8(t *testing.T) {
+	issue := &types.Issue{ID: "old-a", Title: "Imported"}
+	for i := range LegacyImportCommentLimit {
+		issue.Comments = append(issue.Comments, &types.Comment{ID: fmt.Sprint(i), Text: "Comment"})
+	}
+	batch := legacyimport.Batch{Issues: []*types.Issue{issue}}
+	if _, err := prepareLegacyImport(batch, "importer"); err != nil {
+		t.Fatal(err)
+	}
+	issue.Comments = append(issue.Comments, &types.Comment{ID: "one-too-many"})
+	if _, err := prepareLegacyImport(batch, "importer"); !errors.Is(err, ErrLimitExceeded) {
+		t.Fatalf("comment ceiling: %v", err)
+	}
+	for _, invalid := range []*types.Issue{
+		{ID: "old-a", Title: "bad\xff"},
+		{ID: "old-a", Title: "Imported", Description: "bad\xff"},
+		{ID: "old-a", Title: "Imported", Labels: []string{"bad\xff"}},
+		{ID: "old-a", Title: "Imported", Comments: []*types.Comment{{Text: "bad\xff"}}},
+		{ID: "old-a", Title: "Imported", Dependencies: []*types.Dependency{{DependsOnID: "bad\xff"}}},
+	} {
+		if _, err := prepareLegacyImport(legacyimport.Batch{Issues: []*types.Issue{invalid}}, "importer"); err == nil {
+			t.Fatal("invalid original UTF-8 was normalized instead of refused")
+		}
+	}
 }
 
 func TestLegacyImportMemoryPaths(t *testing.T) {

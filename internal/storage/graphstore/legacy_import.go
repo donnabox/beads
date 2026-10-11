@@ -8,6 +8,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"reflect"
 	"sort"
 	"strings"
 	"time"
@@ -25,6 +26,7 @@ import (
 
 // LegacyImportResult makes each old identity's new graph address explicit.
 type LegacyImportResult struct {
+	IssuePrefix   string            `json:"issue_prefix,omitempty"`
 	Issues        int               `json:"issues"`
 	Memories      int               `json:"memories"`
 	Dependencies  int               `json:"dependencies"`
@@ -41,12 +43,19 @@ type LegacyImportResult struct {
 // transaction. It never adopts existing rows or replays a failed transaction.
 // Dry-run executes the same engine validation in a rollback-only transaction.
 func (s *Store) ImportLegacy(ctx context.Context, input legacyimport.Batch, actor string, dryRun bool) (LegacyImportResult, error) {
-	batch, err := prepareLegacyImport(input, actor)
+	return s.ImportLegacyWithPrefix(ctx, input, actor, dryRun, "")
+}
+
+// ImportLegacyWithPrefix supplies configuration missing from legacy JSONL.
+// A supplied prefix must match every Issue identity exactly; it never rewrites IDs.
+func (s *Store) ImportLegacyWithPrefix(ctx context.Context, input legacyimport.Batch, actor string, dryRun bool, sourcePrefix string) (LegacyImportResult, error) {
+	prepared, err := prepareLegacyImportWithPrefix(input, actor, sourcePrefix)
 	if err != nil {
 		return LegacyImportResult{}, err
 	}
+	batch := prepared.Batch
 	memoryPaths := legacyImportMemoryPaths(batch)
-	result := LegacyImportResult{Issues: len(batch.Issues), Memories: len(batch.Memories),
+	result := LegacyImportResult{IssuePrefix: prepared.prefix, Issues: len(batch.Issues), Memories: len(batch.Memories),
 		IDs: map[string]string{}, MemoryIDs: map[string]string{}, DependencyIDs: map[string]string{},
 		DryRun: dryRun, History: "current data only; new initial graph versions; source history is not present in legacy export"}
 	err = s.withTx(ctx, !dryRun, func(tx *sql.Tx) error {
@@ -62,7 +71,11 @@ func (s *Store) ImportLegacy(ctx context.Context, input legacyimport.Batch, acto
 		// A fresh workspace can safely adopt the sole source prefix. Keep it in
 		// this transaction so dry-run/failure never alters future ID allocation.
 		if len(batch.Issues) > 0 {
-			prefix := legacyImportPrefix(batch.Issues[0].ID)
+			prefix := prepared.prefix
+			var previous string
+			if err := tx.QueryRowContext(ctx, "SELECT value FROM config WHERE `key`='issue_prefix'").Scan(&previous); err != nil {
+				return fmt.Errorf("%w: fresh workspace Issue prefix configuration is missing or unreadable: %v", ErrInvalidStore, err)
+			}
 			if _, err := tx.ExecContext(ctx, "UPDATE config SET value=? WHERE `key`='issue_prefix'", prefix); err != nil {
 				return err
 			}
@@ -167,8 +180,12 @@ func (s *Store) ImportLegacy(ctx context.Context, input legacyimport.Batch, acto
 			if err := s.createInTx(ctx, tx, CreateRequest{Path: path, Actor: actor}, r, properties, snapshot); err != nil {
 				return err
 			}
-			if _, err := s.showMemoryInTx(ctx, tx, path); err != nil {
+			stored, err := s.showMemoryInTx(ctx, tx, path)
+			if err != nil {
 				return err
+			}
+			if stored.Properties.Title != memory.Key || stored.Properties.Body != memory.Value {
+				return fmt.Errorf("%w: Memory %q key/value cannot be preserved exactly", storage.ErrValidation, memory.Key)
 			}
 			result.MemoryIDs[memory.Key] = r.ID
 		}
@@ -202,12 +219,27 @@ func requireEmptyLegacyTarget(ctx context.Context, tx *sql.Tx) error {
 	return nil
 }
 
+const LegacyImportCommentLimit = 1000
+
+type preparedLegacyImport struct {
+	legacyimport.Batch
+	prefix string
+}
+
 func prepareLegacyImport(input legacyimport.Batch, actor string) (legacyimport.Batch, error) {
-	invalid := func(format string, args ...any) (legacyimport.Batch, error) {
-		return legacyimport.Batch{}, fmt.Errorf("%w: "+format, append([]any{storage.ErrValidation}, args...)...)
+	prepared, err := prepareLegacyImportWithPrefix(input, actor, "")
+	return prepared.Batch, err
+}
+
+func prepareLegacyImportWithPrefix(input legacyimport.Batch, actor, sourcePrefix string) (preparedLegacyImport, error) {
+	invalid := func(format string, args ...any) (preparedLegacyImport, error) {
+		return preparedLegacyImport{}, fmt.Errorf("%w: "+format, append([]any{storage.ErrValidation}, args...)...)
 	}
 	if actor == "" || !utf8.ValidString(actor) {
 		return invalid("legacy import requires a UTF-8 actor")
+	}
+	if !legacyImportStringsValid(reflect.ValueOf(input)) {
+		return invalid("legacy Issue and Memory strings must be UTF-8")
 	}
 	// encoding/json replaces invalid UTF-8 strings. Check keys/values before
 	// cloning so a direct caller cannot accidentally import replacement text.
@@ -222,7 +254,7 @@ func prepareLegacyImport(input legacyimport.Batch, actor string) (legacyimport.B
 		return invalid("legacy input: %v", err)
 	}
 	if len(raw) > legacyimport.MaxBytes {
-		return legacyimport.Batch{}, fmt.Errorf("%w: legacy import exceeds %d bytes", ErrLimitExceeded, legacyimport.MaxBytes)
+		return preparedLegacyImport{}, fmt.Errorf("%w: legacy import exceeds %d bytes", ErrLimitExceeded, legacyimport.MaxBytes)
 	}
 	var batch legacyimport.Batch
 	if err := json.Unmarshal(raw, &batch); err != nil {
@@ -231,7 +263,7 @@ func prepareLegacyImport(input legacyimport.Batch, actor string) (legacyimport.B
 	if len(batch.Issues)+len(batch.Memories) == 0 {
 		return invalid("legacy import requires at least one Issue or Memory; source is empty")
 	}
-	prefix := ""
+	comments := 0
 	ids := map[string]bool{}
 	commentIDs := map[string]bool{}
 	resources := len(batch.Issues) + len(batch.Memories)
@@ -249,10 +281,6 @@ func prepareLegacyImport(input legacyimport.Batch, actor string) (legacyimport.B
 		if issuePrefix == "" {
 			return invalid("Issue %s requires a nonempty ordinary ID prefix", issue.ID)
 		}
-		if prefix != "" && prefix != issuePrefix {
-			return invalid("legacy import requires one Issue ID prefix; %s differs from %s", issue.ID, prefix)
-		}
-		prefix = issuePrefix
 		ids[issue.ID] = true
 		if len(issue.BondedFrom) != 0 || issue.SourceFormula != "" || issue.SourceLocation != "" {
 			return invalid("Issue %s has unsupported bonded_from, source_formula or source_location lineage", issue.ID)
@@ -310,7 +338,11 @@ func prepareLegacyImport(input legacyimport.Batch, actor string) (legacyimport.B
 			resources++
 		}
 		if len(issue.Dependencies) > PreviewOwnedLinkLimit {
-			return legacyimport.Batch{}, fmt.Errorf("%w: Issue %s exceeds owned Link limit", ErrLimitExceeded, issue.ID)
+			return preparedLegacyImport{}, fmt.Errorf("%w: Issue %s exceeds owned Link limit", ErrLimitExceeded, issue.ID)
+		}
+		comments += len(issue.Comments)
+		if comments > LegacyImportCommentLimit {
+			return preparedLegacyImport{}, fmt.Errorf("%w: legacy import exceeds %d comments", ErrLimitExceeded, LegacyImportCommentLimit)
 		}
 		for _, comment := range issue.Comments {
 			if comment == nil {
@@ -328,6 +360,10 @@ func prepareLegacyImport(input legacyimport.Batch, actor string) (legacyimport.B
 			}
 		}
 	}
+	prefix, err := resolveLegacyImportPrefix(batch.Issues, sourcePrefix)
+	if err != nil {
+		return preparedLegacyImport{}, err
+	}
 	for _, issue := range batch.Issues {
 		for _, dep := range issue.Dependencies {
 			if !ids[dep.DependsOnID] {
@@ -343,9 +379,9 @@ func prepareLegacyImport(input legacyimport.Batch, actor string) (legacyimport.B
 		memoryKeys[memory.Key] = true
 	}
 	if resources > PreviewSnapshotLimit {
-		return legacyimport.Batch{}, fmt.Errorf("%w: legacy import exceeds preview limit of %d Beads and Links", ErrLimitExceeded, PreviewSnapshotLimit)
+		return preparedLegacyImport{}, fmt.Errorf("%w: legacy import exceeds preview limit of %d Beads and Links", ErrLimitExceeded, PreviewSnapshotLimit)
 	}
-	return batch, nil
+	return preparedLegacyImport{Batch: batch, prefix: prefix}, nil
 }
 
 // Ordinary JSONL does not carry configured prefixes. Use the same inference
@@ -356,6 +392,74 @@ func legacyImportPrefix(id string) string {
 		return ""
 	}
 	return utils.ExtractIssuePrefix(id)
+}
+
+// Resolve once from the complete batch. A numeric/hash candidate can resolve
+// all-letter suffixes under that same prefix. With only ambiguous custom/hash
+// spellings, configuration is absent from JSONL and must be supplied explicitly.
+func resolveLegacyImportPrefix(issues []*types.Issue, supplied string) (string, error) {
+	invalid := func(message string) (string, error) {
+		return "", fmt.Errorf("%w: %s", storage.ErrValidation, message)
+	}
+	if len(issues) == 0 {
+		if supplied != "" {
+			return invalid("source prefix requires at least one Issue")
+		}
+		return "", nil
+	}
+	prefix := supplied
+	if prefix == "" {
+		for _, issue := range issues {
+			candidate := legacyImportPrefix(issue.ID)
+			if len(candidate) > len(prefix) || (len(candidate) == len(prefix) && candidate < prefix) {
+				prefix = candidate
+			}
+		}
+	}
+	if prefix == "" || strings.TrimSpace(prefix) != prefix || strings.HasSuffix(prefix, "-") || !utf8.ValidString(prefix) {
+		return invalid("source prefix must be nonempty UTF-8, without surrounding whitespace or a trailing hyphen")
+	}
+	confident := false
+	for _, issue := range issues {
+		if !strings.HasPrefix(issue.ID, prefix+"-") || len(issue.ID) == len(prefix)+1 {
+			return invalid(fmt.Sprintf("legacy import requires one Issue ID prefix; %s does not match %s", issue.ID, prefix))
+		}
+		if strings.LastIndex(issue.ID, "-") == len(prefix) {
+			confident = true
+		}
+	}
+	if supplied == "" && !confident {
+		return invalid("source Issue prefix is ambiguous; supply --source-prefix from the original workspace configuration")
+	}
+	return prefix, nil
+}
+
+// Check original strings before encoding/json can replace invalid UTF-8.
+// Legacy rows contain scalar fields, optional fields and relation slices;
+// unexported time internals and raw JSON bytes are handled by their own codecs.
+func legacyImportStringsValid(value reflect.Value) bool {
+	switch value.Kind() {
+	case reflect.String:
+		return utf8.ValidString(value.String())
+	case reflect.Pointer:
+		return value.IsNil() || legacyImportStringsValid(value.Elem())
+	case reflect.Struct:
+		for i := 0; i < value.NumField(); i++ {
+			if value.Type().Field(i).PkgPath == "" && !legacyImportStringsValid(value.Field(i)) {
+				return false
+			}
+		}
+	case reflect.Slice:
+		if value.Type().Elem().Kind() == reflect.Uint8 {
+			break
+		}
+		for i := 0; i < value.Len(); i++ {
+			if !legacyImportStringsValid(value.Index(i)) {
+				return false
+			}
+		}
+	}
+	return true
 }
 
 // Memory keys are data, not graph paths. Preserve valid direct paths first,
@@ -458,7 +562,7 @@ func verifyLegacyIssue(want, got *types.Issue) error {
 		// The native writer fills missing IDs before this check. A missing
 		// timestamp still permits its generated time, without wildcard pairing.
 		stored := storedComments[comment.ID]
-		if stored == nil || comment.IssueID != stored.IssueID || comment.Author != stored.Author || comment.Text != stored.Text || (!comment.CreatedAt.IsZero() && !comment.CreatedAt.Equal(stored.CreatedAt)) {
+		if comment.ID == "" || stored == nil || comment.IssueID != stored.IssueID || comment.Author != stored.Author || comment.Text != stored.Text || (!comment.CreatedAt.IsZero() && !comment.CreatedAt.Equal(stored.CreatedAt)) {
 			return fmt.Errorf("%w: comment for %s cannot be preserved exactly", storage.ErrValidation, w.ID)
 		}
 		delete(storedComments, comment.ID)

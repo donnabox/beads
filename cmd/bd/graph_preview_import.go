@@ -16,8 +16,11 @@ func runGraphPreviewImport(cmd *cobra.Command, args []string) error {
 	if err := graphPreviewWritePolicy(); err != nil {
 		return err
 	}
-	if err := graphPreviewFlags(cmd, "input", "dry-run"); err != nil {
+	if err := graphPreviewFlags(cmd, "input", "dry-run", "source-prefix"); err != nil {
 		return err
+	}
+	if cmd.Flags().Changed("source-prefix") && importSourcePrefix == "" {
+		return graphFailure("invalid_properties", "--source-prefix requires a nonempty prefix", 2)
 	}
 	if len(args) > 1 {
 		return graphFailure("invalid_selector", "import accepts one file or '-'", 2)
@@ -40,7 +43,7 @@ func runGraphPreviewImportReader(reader io.Reader, source string) error {
 		return graphFailure("invalid_properties", err.Error(), 2)
 	}
 	return withGraphStoreBudget(5*time.Minute, func(ctx context.Context, s *graphstore.Store) (any, string, error) {
-		result, err := s.ImportLegacy(ctx, batch, getActorWithGit(), importDryRun)
+		result, err := s.ImportLegacyWithPrefix(ctx, batch, getActorWithGit(), importDryRun, importSourcePrefix)
 		if err != nil {
 			return nil, "", err
 		}
