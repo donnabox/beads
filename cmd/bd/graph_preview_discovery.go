@@ -62,6 +62,11 @@ func graphDiscoveryFlags(cmd *cobra.Command, allowed ...string) error {
 	return graphPreviewFlags(cmd, append(allowed, "format")...)
 }
 
+func graphDiscoveryWantsJSON(cmd *cobra.Command) bool {
+	format, _ := cmd.Flags().GetString("format")
+	return jsonOutput || strings.EqualFold(format, "json")
+}
+
 func graphDiscoveryText(raw, name string) error {
 	if !utf8.ValidString(raw) || len(raw) > graphstore.PreviewIssueListRequestByteLimit {
 		return graphFailure("invalid_selector", name+" must be UTF-8 and within the graph preview request bound", 2)
@@ -209,7 +214,7 @@ func runGraphPreviewSearch(cmd *cobra.Command, args []string) error {
 	}
 	issues := queryPageIssues(rows)
 	workapi.SortIssues(issues, sortBy, reverse)
-	if jsonOutput {
+	if graphDiscoveryWantsJSON(cmd) {
 		ordered := make([]*types.IssueWithCounts, 0, len(issues))
 		byID := make(map[string]*types.IssueWithCounts, len(rows))
 		for _, row := range rows {
@@ -362,7 +367,7 @@ func runGraphPreviewCount(cmd *cobra.Command, args []string) error {
 	}
 	rows = graphDiscoverySelectRows(rows, ids, parent, noParent)
 	if group == "" {
-		if jsonOutput {
+		if graphDiscoveryWantsJSON(cmd) {
 			return graphDiscoveryJSON(cmd.OutOrStdout(), struct {
 				Count int64 `json:"count"`
 			}{int64(len(rows))})
@@ -400,7 +405,7 @@ func runGraphPreviewCount(cmd *cobra.Command, args []string) error {
 		groups = append(groups, groupCount{label, count})
 	}
 	slices.SortFunc(groups, func(a, b groupCount) int { return strings.Compare(a.Group, b.Group) })
-	if jsonOutput {
+	if graphDiscoveryWantsJSON(cmd) {
 		return graphDiscoveryJSON(cmd.OutOrStdout(), struct {
 			Total  int64        `json:"total"`
 			Groups []groupCount `json:"groups"`
@@ -497,7 +502,7 @@ func runGraphPreviewQuery(cmd *cobra.Command, args []string) error {
 	}
 	rows = selected
 	items, more := workapi.FinishPageAt(rows, plan.SortBy, plan.Reverse, plan.Offset, plan.Limit, false)
-	if jsonOutput {
+	if graphDiscoveryWantsJSON(cmd) {
 		if err := graphDiscoveryJSON(cmd.OutOrStdout(), items); err != nil {
 			return err
 		}
