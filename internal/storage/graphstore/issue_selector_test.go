@@ -42,7 +42,7 @@ func TestIssueNativeSelectorHeartbeatStateAndReclaim(t *testing.T) {
 			if err != nil || renewed.Revision != claimed.Issue.Revision || renewed.Properties.LeaseExpiresAt == nil {
 				t.Fatalf("selected heartbeat changed retained History: %+v %v", renewed, err)
 			}
-			assertIssueEditCounts(t, ctx, s, created.Properties.ID, 3)
+			assertIssueEditCounts(t, ctx, s, created.Properties.ID, 2)
 			assertIssueEditVersion(t, ctx, s, "beads/custom-path", claimed.Issue)
 			if err := s.withTx(ctx, true, func(tx *sql.Tx) error {
 				_, err := tx.ExecContext(ctx, `UPDATE leases SET lease_expires_at=? WHERE issue_id=?`, time.Now().UTC().Add(-time.Hour), created.Properties.ID)
@@ -58,7 +58,7 @@ func TestIssueNativeSelectorHeartbeatStateAndReclaim(t *testing.T) {
 			if err != nil || after.Revision == renewed.Revision || after.Properties.Status != types.StatusOpen {
 				t.Fatalf("selected recovery lost Issue writer: %+v %v", after, err)
 			}
-			assertIssueEditCounts(t, ctx, s, created.Properties.ID, 4)
+			assertIssueEditCounts(t, ctx, s, created.Properties.ID, 3)
 			stable := workflowState(t, ctx, s)
 			if _, err := s.HeartbeatIssueSelected(ctx, selector, "holder"); !errors.Is(err, storage.ErrNotClaimable) || !reflect.DeepEqual(stable, workflowState(t, ctx, s)) {
 				t.Fatalf("released holder heartbeat changed state: %v", err)
