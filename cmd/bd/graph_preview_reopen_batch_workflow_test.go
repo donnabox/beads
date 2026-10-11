@@ -85,7 +85,7 @@ func TestGraphPreviewCloseReopenBatchWorkflow(t *testing.T) {
 					t.Fatalf("mixed batch exit=%d want=%d; stdout=%s stderr=%s", gotExit, wantExit, stdout.String(), stderr.String())
 				}
 				if wantExit == 0 && strings.Contains(stderr.String(), `"code":`) {
-					t.Fatalf("native-compatible defer warning became a structured graph error: %s", stderr.String())
+					t.Fatalf("proxied-style mixed defer warning became a structured graph error: %s", stderr.String())
 				}
 				return stdout.String()
 			}
@@ -101,6 +101,11 @@ func TestGraphPreviewCloseReopenBatchWorkflow(t *testing.T) {
 				t.Fatalf("partial batch hid the successful close: %+v", closedPartial)
 			}
 			call("reopen", "third")
+			// Ordinary direct defer/undefer pre-resolves all IDs and rejects a
+			// missing sibling before writing, while the ordinary proxied route
+			// commits survivors and returns 0 with a plain stderr warning.
+			// Preserve the graph route's existing proxied-style behavior until
+			// that native split receives a release-contract decision.
 			deferredPartial := graphMixedResult[[]graphstore.IssueMutationResult](t, runMixedBatch(0, "Error changing deferral for missing:", "defer", "third", "missing"))
 			if len(deferredPartial) != 1 || !deferredPartial[0].Changed || deferredPartial[0].Issue.Properties.Status != types.StatusDeferred {
 				t.Fatalf("mixed defer hid the successful Issue: %+v", deferredPartial)
