@@ -318,6 +318,11 @@ func runGraphPreviewCount(cmd *cobra.Command, args []string) error {
 			return graphFailure("invalid_selector", "parsing --"+name+": "+err.Error(), 2)
 		}
 	}
+	parentSelector, _ := cmd.Flags().GetString("parent")
+	noParentRequested, _ := cmd.Flags().GetBool("no-parent")
+	if parentSelector != "" && noParentRequested {
+		return graphFailure("invalid_selector", "--parent and --no-parent are mutually exclusive", 2)
+	}
 	request, group, err := parseCountRequest(cmd)
 	if err != nil {
 		return err // ordinary parser already emitted this diagnostic
