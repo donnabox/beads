@@ -474,6 +474,14 @@ linters:
         text: 'do not write a filter here'
         linters:
           - forbidigo
+      # Graph discovery builds one bounded native Issue filter shared by
+      # search/count/query before the checked graphstore read. The ordinary
+      # count/query builders still own their native semantics; this file only
+      # applies the preview's durable-scope and supported-selector cutline.
+      - path: '^cmd/bd/graph_preview_discovery\.go$'
+        text: 'do not write a filter here'
+        linters:
+          - forbidigo
       # Molecule reporting: each selects the members of one molecule.
       - path: '^cmd/bd/mol_(current|port|progress|ready_gated|stale)\.go$'
         text: 'do not write a filter here'

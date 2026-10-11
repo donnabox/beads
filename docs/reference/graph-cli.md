@@ -100,6 +100,7 @@ Type shown in another workspace is installed in this one.
 | `bd show ID --json` | A current Issue uses the ordinary `bd show` JSON detail array, including labels, dependency/comment counts, Scope-relative Bead IDs that round-trip to graph commands, and the graph revision token. Memory and Link still use the preview complete-record envelope. |
 | `bd show ID --format graph-json` | Read the preview complete-record envelope explicitly, including for an Issue or an exact `--version` read. This is a preview record, not a BDP Resource representation. |
 | `bd list` or `bd list --format records-json` | Without an Issue filter, list every current Memory and Issue the ordinary `bd list` would show, newest recorded change first; closed and pinned Issues need `--all`. Use `--bead-type types/NAME` to narrow by nominal Type. An Issue filter, or a matching directory label, switches to the Issue-only query described below and says so. |
+| `bd statuses [--json]` | List built-in Issue statuses and any custom statuses resolved for this workspace, using the ordinary command's human and JSON shapes. This is Issue status discovery, not Bead Type discovery. |
 
 ```sh
 bd memories --all
@@ -109,6 +110,7 @@ bd show work --json
 bd show work --format graph-json
 bd list --all
 bd list --format records-json --bead-type types/preview-memory-v2 --all
+bd statuses --json
 ```
 
 Without an Issue filter, `bd list` reads one bounded snapshot of every
@@ -476,8 +478,22 @@ holder check for an abandoned claim, but still uses the native row
 compare-and-swap. The two flags cannot be combined. `--reason TEXT` appends a
 native Issue comment after the release; if that separate append fails, the
 release remains committed and the CLI warns. Comments are a separate feed,
-outside retained Issue state, and do not mint another Issue version. Other
-comment writes are not yet exposed in graph mode.
+outside retained Issue state, and do not mint another Issue version.
+
+Add comments with either familiar command, then list the feed:
+
+```sh
+bd comment work 'Ready for review'
+bd comments add work 'Reviewer confirmed' --author alice
+bd comments work --json
+```
+
+`bd comment` accepts positional text, `--stdin`, or `--file`; `bd comments add`
+accepts positional text or `--file` and its ordinary `--author` override. Both
+return the stored native comment with `--json`, using the Scope-relative Issue
+ID in `issue_id`. `bd comments ID --json` retains the ordinary comment-array
+shape. Comment writes leave the Issue revision and retained version list
+unchanged.
 
 ## Versioning and History
 

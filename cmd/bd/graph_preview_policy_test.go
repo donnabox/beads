@@ -275,7 +275,7 @@ func TestGraphPreviewC0DeferredCommandsRefuseBeforeLegacyOpen(t *testing.T) {
 		{"label", "rename", "old", "new", "--json"}, {"label", "rename", "old", "new", "--dry-run", "--json"},
 		{"update", "beads/plan", "-l", "new", "--json"},
 		{"memories", "--json"}, {"recall", "beads/plan", "--json"},
-		{"list", "--json"}, {"ready", "--explain", "--json"}, {"close", "beads/plan", "--force", "--json"},
+		{"ready", "--explain", "--json"}, {"close", "beads/plan", "--force", "--json"},
 		{"link", "beads/plan", "beads/other", "--type=related", "--json"}, {"serve", "--json"},
 		{"db-proxy-child", "--root", filepath.Join(work, ".beads"), "--port", "1", "--backend", "external", "--json"},
 	} {
@@ -312,7 +312,7 @@ func TestGraphPreviewC0DeferredCommandsRefuseBeforeLegacyOpen(t *testing.T) {
 		"issueCreateFields", "issueInitialNotes", "issueNotesAppend", "issueNotesReplace", "issueNotesClear", "issueEstimateUpdate", "issueReferenceUpdate", "issuePropertiesUpdate", "issuePropertiesPatch",
 		"issueClaim", "issueUnclaim", "issueTextUpdate", "issuePriorityUpdate", "issueAssigneeUpdate", "issueAssigneeFilter", "issueDueDate", "issueDueFilter", "informationalLink", "blockingDependency", "blockingDependencyShorthand", "blockingDependencyExplicitID", "linkPropertiesUpdate", "linkUnlink", "blockingDependencyUnlink",
 		"incidentLinks", "ownedLinks", "issueClose", "issueReopen", "issueDatelessDeferral", "issueDatedDeferral", "issueReady", "genericRead",
-		"issueList", "beadList", "beadTypeFilter", "issueBlocked", "genericTraversal",
+		"issueList", "issueListLegacyJSON", "beadList", "beadTypeFilter", "issueBlocked", "genericTraversal",
 		"memoryDiscovery", "memoryBodyRecall", "exactVersionRead", "exactVersionCompare",
 		// versionList is `bd versions` (and `bd history` as its graph-mode
 		// alias). It sits beside the exactVersion* pair deliberately: those

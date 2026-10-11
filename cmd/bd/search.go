@@ -49,6 +49,9 @@ Examples:
 				c.CloseEventAndAdd(evt)
 			}
 		}()
+		if graphPreviewActive {
+			return runGraphPreviewSearch(cmd, args)
+		}
 
 		if usesProxiedServer() {
 			return runSearchProxiedServer(cmd, rootCtx, args)

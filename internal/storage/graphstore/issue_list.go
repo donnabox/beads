@@ -227,6 +227,27 @@ func (s *Store) listIssuesInTx(ctx context.Context, tx *sql.Tx, request publicop
 
 type issueListConfigSource struct{ config workapi.ListConfig }
 
+// ListCustomStatuses reads the same resolved Issue status configuration as
+// graph Issue list. It does not open the legacy store or modify the workspace.
+func (s *Store) ListCustomStatuses(ctx context.Context) ([]types.CustomStatus, error) {
+	var statuses []types.CustomStatus
+	err := s.withTx(ctx, false, func(tx *sql.Tx) error {
+		if err := checkBinding(ctx, tx, s.options); err != nil {
+			return err
+		}
+		cfg, err := issueListConfigInTx(ctx, tx)
+		if err != nil {
+			return err
+		}
+		statuses = cfg.CustomStatuses
+		return nil
+	})
+	if err != nil {
+		return nil, err
+	}
+	return statuses, nil
+}
+
 func (s issueListConfigSource) GetCustomStatuses(context.Context) ([]types.CustomStatus, error) {
 	return s.config.CustomStatuses, nil
 }

@@ -24,7 +24,7 @@ func graphListTestCommand(t *testing.T, args []string) *cobra.Command {
 	cmd.Flags().StringP("type", "t", "", "")
 	cmd.Flags().StringP("assignee", "a", "", "")
 	cmd.Flags().StringSlice("exclude-type", nil, "")
-	for _, name := range []string{"flat", "json", "quiet", "pinned", "no-pinned", "reverse", "ready", "tree", "no-assignee", "overdue"} {
+	for _, name := range []string{"flat", "json", "quiet", "pinned", "no-pinned", "reverse", "ready", "tree", "no-assignee", "overdue", "include-comments"} {
 		cmd.Flags().Bool(name, false, "")
 	}
 	for _, name := range []string{"label", "label-any", "exclude-label"} {
@@ -59,10 +59,12 @@ func TestGraphPreviewIssueListInput(t *testing.T) {
 		{"records-ambient", []string{"--format=records-json", "--limit=3"}, true, 0, true, 3},
 		{"explicit-limit-wins-all", []string{"--flat", "--all", "--limit=1"}, false, 0, false, 1},
 		{"bare", nil, false, 0, false, 0},
-		{"legacy-json", []string{"--json"}, false, 5, false, 0},
+		{"legacy-json", []string{"--json"}, false, 0, false, 0},
+		{"legacy-json-comments", []string{"--json", "--include-comments"}, false, 0, false, 0},
+		{"comments-need-json", []string{"--include-comments"}, false, 5, false, 0},
 		{"false-json", []string{"--flat", "--json=false"}, false, 5, false, 0},
 		{"format-json", []string{"--format=JSON"}, false, 5, false, 0},
-		{"ambient-flat", []string{"--flat"}, true, 5, false, 0},
+		{"ambient-flat", []string{"--flat"}, true, 0, false, 0},
 		{"false-flat", []string{"--flat=false"}, false, 5, false, 0},
 		{"false-ready", []string{"--flat", "--ready=false"}, false, 5, false, 0},
 		{"false-tree", []string{"--flat", "--tree=false"}, false, 5, false, 0},
