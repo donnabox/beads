@@ -72,3 +72,14 @@ Pinned Node 24.16.0 / pnpm 11.20.0, frozen install, build before process tests.
 Logs, exact repro driver/results and reports:
 `/Users/dbox/repos/wt/vickie/bdp-integration-logs/profile-boundary-followup/`.
 Root owns any subsequent publication/integration decision.
+
+## Published full-suite verification
+
+Root verified published PR83 head `3a8f9d553a2944bc7d1d7812a284f0160dcbe798`
+and [Linux CI38111288272](https://github.com/gastownhall/bdp/actions/runs/38111288272).
+The run passed 115 files / 7,743 tests with one optional skip, seven preflight
+tests, installed-package smoke and the actual `evidence.verified` event.
+The event retains seal `6142cf73deae687bc3e9668cc014ea408fa02843`, observed
+run head `4f0ed57906525c36bc55b343b77e0f07edbb7553`, evidence commit
+`72bdaad02b6fb2b803d4af7a8c4f90ada2f0d2d5` and 89 applicable target rows.
+This is exact-head CI evidence, not full write-profile admission.
