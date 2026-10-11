@@ -91,4 +91,6 @@ The prepared completeness patch requests exact retained state with the public
 `revision` token and checks that token is nonempty. The CLI deliberately removes
 the internal `version` alias; passing an empty alias to `show --version` could
 otherwise read current state and give false retained-state evidence. This patch
-repair is not an executed installed test or new runtime qualification.
+repair is confirmed by a [bounded native review](prepared-revision-review.txt),
+but is not an executed installed test or new runtime qualification. Full
+active-source council remains a gate after genuine fixture activation.
