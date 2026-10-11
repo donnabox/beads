@@ -13,15 +13,13 @@ import (
 	"github.com/steveyegge/beads/internal/storage/issueops"
 )
 
-// This pins a refusal boundary, not a supported heartbeat/recovery workflow.
-// Lease fields are part of the complete retained Issue projection at this base.
-// A native coordinator that changes only the local lease bypasses the graph
-// writer, so current graph operations must refuse rather than invent a version
-// or silently hydrate today's lease into the saved Issue record.
+// External lease deletion remains an integrity refusal. A supported graph
+// heartbeat is tested separately because its live lease projection is allowed
+// to differ from the retained Issue version without rewriting History.
 func TestIssueClaimExternalLeaseBoundary(t *testing.T) {
 	for _, backend := range []string{"embedded", "server"} {
 		t.Run(backend, func(t *testing.T) {
-			for _, change := range []string{"heartbeat", "lease-deletion"} {
+			for _, change := range []string{"lease-deletion"} {
 				t.Run(change, func(t *testing.T) {
 					ctx, _, s, original, _, _ := reopenFixture(t, backend)
 					const actor = "lease-boundary-actor"
@@ -42,9 +40,6 @@ func TestIssueClaimExternalLeaseBoundary(t *testing.T) {
 					// projection change observable even with second-precision SQL
 					// timestamps; there is no sleep, fake clock or schema fixture.
 					err = s.withTx(ctx, true, func(tx *sql.Tx) error {
-						if change == "heartbeat" {
-							return issueops.HeartbeatIssueInTx(issueops.WithLeaseTTL(ctx, 10*time.Minute), tx, original.Properties.ID, actor)
-						}
 						return issueops.DeleteLeaseInTx(ctx, tx, original.Properties.ID)
 					})
 					if err != nil {

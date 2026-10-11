@@ -1,0 +1,82 @@
+//go:build cgo
+
+package graphstore
+
+import (
+	"context"
+	"database/sql"
+	"errors"
+	"reflect"
+	"testing"
+	"time"
+
+	"github.com/steveyegge/beads/internal/storage"
+	"github.com/steveyegge/beads/internal/storage/issueops"
+	"github.com/steveyegge/beads/internal/types"
+)
+
+func TestGraphIssueHeartbeatAndReclaimNativeHistory(t *testing.T) {
+	for _, backend := range []string{"embedded", "server"} {
+		t.Run(backend, func(t *testing.T) {
+			ctx, _, s, original, _, _ := reopenFixture(t, backend)
+			claimed, err := s.ClaimIssue(ctx, "beads/work", "holder")
+			if err != nil || !claimed.Changed {
+				t.Fatalf("claim: %+v %v", claimed, err)
+			}
+			assertIssueEditCounts(t, ctx, s, original.Properties.ID, 3)
+			before := reopenState(t, ctx, s)
+			if _, err := s.HeartbeatIssue(ctx, "beads/work", "stranger"); !errors.Is(err, storage.ErrAlreadyClaimed) || !reflect.DeepEqual(before, reopenState(t, ctx, s)) {
+				t.Fatalf("foreign heartbeat changed state: %v", err)
+			}
+			renewed, err := s.HeartbeatIssue(issueops.WithLeaseTTL(ctx, 10*time.Minute), "beads/work", "holder")
+			if err != nil || renewed.Revision != claimed.Issue.Revision || renewed.Properties.LeaseExpiresAt == nil ||
+				renewed.Properties.LeaseExpiresAt.Sub(*renewed.Properties.HeartbeatAt) != 10*time.Minute {
+				t.Fatalf("heartbeat: %+v %v", renewed, err)
+			}
+			assertIssueEditCounts(t, ctx, s, original.Properties.ID, 3)
+			assertIssueEditVersion(t, ctx, s, "beads/work", claimed.Issue)
+			current, err := s.ShowIssue(ctx, "beads/work")
+			if err != nil || !reflect.DeepEqual(current, renewed) {
+				t.Fatalf("current lease after heartbeat: %+v %v", current, err)
+			}
+			// A scoped sweep cannot touch a live lease or unrelated Issue.
+			none, err := s.ReclaimExpiredIssueLeases(ctx, 0, types.ReclaimFilter{IDs: []string{original.Properties.ID}}, "reaper")
+			if err != nil || len(none) != 0 || !reflect.DeepEqual(current, mustShowLeaseIssue(t, ctx, s, "beads/work")) {
+				t.Fatalf("live lease reclaimed: %+v %v", none, err)
+			}
+			if err := s.withTx(ctx, true, func(tx *sql.Tx) error {
+				_, err := tx.ExecContext(ctx, `UPDATE leases SET lease_expires_at=? WHERE issue_id=?`, time.Now().UTC().Add(-time.Hour), original.Properties.ID)
+				return err
+			}); err != nil {
+				t.Fatal(err)
+			}
+			reclaimed, err := s.ReclaimExpiredIssueLeases(ctx, 0, types.ReclaimFilter{IDs: []string{original.Properties.ID}}, "reaper")
+			if err != nil || len(reclaimed) != 1 || reclaimed[0].PreviousOwner != "holder" || reclaimed[0].ID != original.ID {
+				t.Fatalf("reclaim: %+v %v", reclaimed, err)
+			}
+			after := mustShowLeaseIssue(t, ctx, s, "beads/work")
+			if after.Revision == renewed.Revision || after.Properties.Status != types.StatusOpen || after.Properties.Assignee != "" || after.Properties.LeaseExpiresAt != nil {
+				t.Fatalf("reclaim did not release Issue: %+v", after)
+			}
+			assertIssueEditCounts(t, ctx, s, original.Properties.ID, 4)
+			assertIssueEditVersion(t, ctx, s, "beads/work", after)
+			state := reopenState(t, ctx, s)
+			none, err = s.ReclaimExpiredIssueLeases(ctx, 0, types.ReclaimFilter{}, "reaper")
+			if err != nil || len(none) != 0 || !reflect.DeepEqual(state, reopenState(t, ctx, s)) {
+				t.Fatalf("repeat reclaim changed state: %+v %v", none, err)
+			}
+			if _, err := s.HeartbeatIssue(ctx, "beads/work", "holder"); !errors.Is(err, storage.ErrNotClaimable) || !reflect.DeepEqual(state, reopenState(t, ctx, s)) {
+				t.Fatalf("reclaimed holder renewed lease: %v", err)
+			}
+		})
+	}
+}
+
+func mustShowLeaseIssue(t *testing.T, ctx context.Context, s *Store, path string) IssueRecord {
+	t.Helper()
+	issue, err := s.ShowIssue(ctx, path)
+	if err != nil {
+		t.Fatal(err)
+	}
+	return issue
+}

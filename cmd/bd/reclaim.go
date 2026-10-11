@@ -80,6 +80,9 @@ Examples:
 	SilenceUsage:  true,
 	SilenceErrors: true,
 	RunE: func(cmd *cobra.Command, args []string) error {
+		if graphPreviewActive {
+			return runGraphPreviewReclaim(cmd)
+		}
 		evt := metrics.NewCommandEvent("reclaim")
 		defer func() {
 			if c := metrics.Global(); c != nil {

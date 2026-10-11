@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"context"
 	"database/sql"
+	"encoding/json"
 	"errors"
 	"fmt"
 	"reflect"
@@ -273,7 +274,22 @@ func (s *Store) showIssueInTx(ctx context.Context, tx *sql.Tx, path string) (Iss
 	if err != nil {
 		return IssueRecord{}, fmt.Errorf("%w: Issue retained mapping: %v", ErrInvalidStore, err)
 	}
-	canonical, err := canonicalJSON(issue)
+	// Lease liveness is node-local and deliberately unversioned. Compare the
+	// durable Issue against its retained version while preserving the live lease
+	// fields in the current projection. A heartbeat must not mint History.
+	var retainedIssue types.Issue
+	if err := json.Unmarshal(snapshot, &retainedIssue); err != nil {
+		return IssueRecord{}, fmt.Errorf("%w: malformed retained Issue", ErrInvalidStore)
+	}
+	if issue.Status == types.StatusInProgress && retainedIssue.LeaseExpiresAt != nil &&
+		(issue.LeaseExpiresAt == nil || issue.HeartbeatAt == nil) {
+		return IssueRecord{}, fmt.Errorf("%w: active Issue lease disappeared outside native recovery", ErrInvalidStore)
+	}
+	comparison := *issue
+	comparison.LeaseExpiresAt = retainedIssue.LeaseExpiresAt
+	comparison.HeartbeatAt = retainedIssue.HeartbeatAt
+	comparison.LeaseGrantedNode = retainedIssue.LeaseGrantedNode
+	canonical, err := canonicalJSON(&comparison)
 	if err != nil {
 		return IssueRecord{}, err
 	}
