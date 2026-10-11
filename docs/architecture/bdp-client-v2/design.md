@@ -1,6 +1,6 @@
 # BDP client platform and protocol design
 
-Status: exploratory design, owned by Vickie with product rulings by Donna. Last updated: 2026-10-10.
+Status: exploratory design, owned by Vickie with product rulings by Donna. Last updated: 2026-10-11.
 
 This Markdown document on `donnabox/beads:codex/vickie-bdp-client-design` is the single plan of record at Donna's request. It replaces the upstream issue and intentionally overrides the fleet's issue-shaped tracker convention. It is a coordination and design record, not a normative BDP amendment or release commitment. Earlier client/journal proposals remain on this fork branch; the BDP editorial and implementation work authorized below has separate upstream review PRs.
 
@@ -30,7 +30,7 @@ Use asynchronous bounded workers with disjoint write scopes under this interacti
 First-round review surfaces:
 
 - [BDP PR66](https://github.com/gastownhall/bdp/pull/66), Janet PR64/65 integration at `a9bcf9ed1d869aaba2cb49fe9cca10e3b8d52a94`. Corrected 28 later fixture members to the integrated attribution vocabulary. Build/typecheck/boundaries/format and the full bounded suite pass: 108 files, 7,583 tests, one optional skip. The prior sealed Read cohort remains historical evidence.
-- [BDP PR67](https://github.com/gastownhall/bdp/pull/67), cumulative profile structure at `e9361d77b862aa0e6ddfa19cf272225f62c32d35`. All 61 original blocks and 84 original anchors are preserved; 144 anchors and 185 internal links pass the profile-dependency audit. All 539 specification citations across six catalogs respect profile ownership. Nine additive History sibling cases preserve higher-profile obligations without changing original case IDs/profiles; History remains metadata-only. Council repairs restore local requirement force, closed membership as actually defined by the schemas, actor prohibitions and independent per-profile Problem table tests. Independent review and author verification each passed 42 files / 1,636 tests; final affected wording checks passed 307 tests. Typecheck, boundaries and formatting pass; canonical/package schemas remain unchanged. The [council report](profile-editorial-council.md) records all 17 dispositions and the remaining partial external-review coverage. No full repository or CLI parity rerun is claimed for this editorial slice. Schema tightening remains a separate design question; readiness is still open.
+- [BDP PR67](https://github.com/gastownhall/bdp/pull/67), cumulative profile structure and present-contract cleanup at `5d7694e8be2f5f4ca72856b288dac0ecd383cd2f`. Removes development chronology and consolidates optional History without losing operative requirements. Maps account for all original blocks and 17 removed ledger entries; 539 citations, 144 anchors and 170 internal links pass audit without lower-profile forward dependencies. Eleven excerpt edits preserve case identities/profiles/counts; nine additive History sibling cases retain original obligations. Author 42 files / 1,636 tests passed before final small wording cleanup, followed by nine affected tests; independent final review passed 58 tests and checked every ledger disposition. Schemas, runtime and sealed evidence are unchanged. Earlier [council dispositions](profile-editorial-council.md) retain the partial external-coverage caveat; final readiness and combined current Read qualification remain open.
 - [BDP PR68](https://github.com/gastownhall/bdp/pull/68), initial durable mutable reference HTTP surface at `ec9df671157a0f4c7a7a484160222254c7777170`. Six Resource singleton mutations use the existing SQLite recovery and shared live reads. Full validation passes: 109 files, 7,588 tests and one optional skip; build, typecheck, boundaries, process restart/replay and installed-package smoke pass. Independent review found no blocker. Development-only, with no full Read+Update or Transactional advertisement.
 - [Initial CLI operation crosswalk](preview2-operation-crosswalk.md): five operations with fixed-source evidence, interface translations, conditional guards, metadata/properties semantics, atomicity, JSON and Event boundaries. Qualified CLI pin confirmation and executable cross-repo parity remain outstanding; neither blocks delivery of this source-review artifact.
 
@@ -80,15 +80,22 @@ These slices compose at `21ba42bf28b483a5ee22c77b6b28b67d464f3045`. Full validat
 
 Runtime slices through PR79 compose at `0ccdc9bd8acd808cbddd103119c679a3f2dd42ae`: 113 files, 7,700 tests pass and one optional skip, plus build/typecheck/boundaries and both smokes. [Verification receipt](write-round6-verification.json). Editorial PR67 remains in the separate candidate pending cleanup, integration and fresh Read observations.
 
+Latest reviewed delivery:
+
+- [PR80](https://github.com/gastownhall/bdp/pull/80), `5f07a51c0bc0e32652b02ab16cdb2fd4c7f76bc3`: emitted-process disconnect/drain/SIGKILL diagnostics. Seventeen plans, 132 actions and 515 assertions; 44 bounded row mappings and 37 omissions, with `claimEligible: false`. Author 256 tests and independent 68 tests passed. Digests compare canonical parsed JSON; this is not power-loss or mid-commit durability proof.
+- [PR81](https://github.com/gastownhall/bdp/pull/81), `4a9137e01817712aedce0b780abb39d02cf1470c`: private Transactional sequence owner with atomic unknown-key admission, ordered separate commits, pending precedence, retry/expiry projection and fenced cleanup. Author 494 tests and independent 127 tests passed. Sequence dependencies and Resource-alias operands remain refused before admission. No HTTP or full-profile claim.
+- [Independent review receipts](profile-round7-review.json) pin exact heads and test-report digests for the present-contract cleanup and these two implementation slices. All PRs remain drafts and unmerged.
+
 Current bounded follow-ups:
 
 | Worker | Scope | Acceptance / state |
 |---|---|---|
-| Transactional implementation | Durable retry witnesses for Resource-alias operands | Witness slice `1fb51f4ef5a6ee607737e72fb50ef0a2ca55ab36` passed 479 tests across six files and independent 201-test review. Next isolated work designs a sequence adapter sharing the same owner and receipt namespace; HTTP remains later. |
-| Update qualification | Process disconnect/drain/SIGKILL diagnostics | Frozen local `5f07a51c0bc0e32652b02ab16cdb2fd4c7f76bc3` binds existing emitted-runtime IPC/process observations: 17 plans, 132 actions, 515 assertions; 44 bounded rows, 37 omissions. 256 focused tests and checks/smokes pass; independent review underway before publication. No runtime/public admission changes. |
-| Editorial integration | Reviewed PR67 plus combined runtime | Candidate `29eb76fd8d6a841e69df54c0a88bd22477ae9465` cleanly merges the histories and migrates 22 diagnostic citations. Build/checks/both smokes pass; full run has 7,674 pass, three failures and one skip. Production evidence verification confirms exact Read catalog byte drift requires fresh observations under the existing seal contract. Historical evidence/constants remain untouched. The [fresh-qualification workflow](read-reseal-feasibility.md) supports disposable BDP fixtures with the existing CLI pin; baseline verification is still required. Finish editorial cleanup and integration before new observations; candidate remains unqualified. |
-| Independent review | Next combined candidate | Witness review completed at exact head with 201 passing tests. Runtime integration validation continues; editorial integration retains the documented current Read evidence drift gate. |
-| Editorial cleanup | Present-contract spec prose | Isolated branch from e9361d77 removes development chronology and consolidates optional historical-read details while preserving operative clauses and aligned catalog citations. |
+| Transactional implementation | Durable sequence dependencies and member-turn alias resolution | Derive representation and next implementation slice from current clauses; preserve frozen PR81 while distinguishing genuine product decisions from implementation choices. |
+| Update qualification | Alias allocation, canonical references and pinned retry witnesses | New isolated diagnostics branch from PR80. Add observed cases without runtime hooks. Deterministic allocated-ID collision skipping remains explicitly omitted because public HTTP cannot force that condition. |
+| Editorial integration | Combined present-contract and runtime successor | Isolated successor combines prior candidate 29eb76fd, runtime 0ccdc9bd, process 5f07a51, editorial 5d7694 and sequence 4a9137 using ordinary merges. Six citation repairs; full checks underway. Freeze reviewed source before fresh Read observations. |
+| Independent review | Existing pinned CLI baseline | Run baseline verification with disposable BDP-owned fixtures and the existing bd1.0.5 binary; never recapture a drifting baseline or alter policy. |
+
+The [fresh-qualification workflow](read-reseal-feasibility.md) remains the next Read evidence step after combined validation. The earlier candidate's three failures reflect genuine stale catalog bindings, not assertions to weaken.
 
 [Combined candidate diagnosis](profile-write-integration-diagnosis.md) pins all three failing assertions, old/new Read catalog hashes and the production verifier result. Fresh evidence must be collected before current qualification; do not rehash or relabel the historical sealed run. This blocks editorial candidate qualification, not the independent write implementation lanes.
 
@@ -102,6 +109,10 @@ BDP is the provider interface. A provider writes and owns its HTTP endpoint over
 Packs build on Gas City core concepts and carry Bead/Link definitions, skills and extensible CLI commands. Issue commands belong in an Issues pack. A shared provider library is possible, but does not take over the endpoint. Brian's team plans the Postgres store; our team designs the client. Current `bd` must coexist side-by-side. Mode/URL/Scope configuration is a candidate, not settled syntax.
 
 Trish owns Type lifecycle design. Janet owns current Beads/Preview 2 integration, CLI/BDP alignment and qualification. Do not edit their branches, PRs, specs, tests, playgrounds or shared databases. Coordinate dependencies through the existing bus. BDP profile implementation is authorized under the current priority above; V2 client implementation and merges remain out of scope.
+
+## Batch composition direction
+
+Donna agrees that ordinary `bd create`, `bd update` and `bd delete` should work inside `bd batch` when transactionally expressible, with create covering Beads and Links in the new CLI. Treat these as shared semantic command implementations. This is a CLI composition direction, not adoption of a new BDP wire operation or a claim that every current operation is already reducible. Remaining distinctions include alias mutation, bulk target selection and sequence-versus-atomic-batch behavior. Coordinate concrete CLI findings with Janet; do not edit her branch.
 
 ## Accepted decisions
 
