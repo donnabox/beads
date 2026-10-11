@@ -56,6 +56,9 @@ func TestGraphPreviewIssueCreateProperties(t *testing.T) {
 
 func TestGraphPreviewCreateBeadTypeSelection(t *testing.T) {
 	const scope = "https://example.invalid/project/"
+	previous := graphPreviewTypeGeneration
+	graphPreviewTypeGeneration = 0
+	t.Cleanup(func() { graphPreviewTypeGeneration = previous })
 	for _, tc := range []struct {
 		name, want string
 		flags      []string
@@ -86,6 +89,62 @@ func TestGraphPreviewCreateBeadTypeSelection(t *testing.T) {
 				}
 			}
 		})
+	}
+}
+
+func TestGraphPreviewCreateBeadTypeFollowsWorkspaceGeneration(t *testing.T) {
+	const scope = "https://example.invalid/project/"
+	previous := graphPreviewTypeGeneration
+	t.Cleanup(func() { graphPreviewTypeGeneration = previous })
+	for _, tc := range []struct {
+		generation int
+		issueType  string
+		blockType  string
+	}{
+		{5, graphstore.IssueTypeURL(scope), graphstore.DependencyTypeURL(scope)},
+		{6, graphstore.IssueTypeURL(scope), graphstore.DependencyTypeURL(scope)},
+		{7, graphstore.RelationshipIssueTypeURL(scope), graphstore.RelationshipBlockingTypeURL(scope)},
+	} {
+		graphPreviewTypeGeneration = tc.generation
+		if got := graphPreviewBlockingTypeURL(scope); got != tc.blockType {
+			t.Fatalf("generation %d blocking Type %q, want %q", tc.generation, got, tc.blockType)
+		}
+		for _, flags := range [][]string{nil, {"--bead-type=" + tc.issueType}} {
+			if got, err := graphPreviewCreateBeadType(graphCreateTypeCommand(t, flags), scope); err != nil || got != tc.issueType {
+				t.Fatalf("generation %d flags %v: Issue Type %q, err %v", tc.generation, flags, got, err)
+			}
+		}
+		other := graphstore.IssueTypeURL(scope)
+		if tc.generation != 7 {
+			other = graphstore.RelationshipIssueTypeURL(scope)
+		}
+		if got, err := graphPreviewCreateBeadType(graphCreateTypeCommand(t, []string{"--bead-type=" + other}), scope); got != "" || err == nil {
+			t.Fatalf("generation %d admitted other Issue Type %q: %q, %v", tc.generation, other, got, err)
+		}
+	}
+}
+
+func TestGraphPreviewNativeDependencySelectionFollowsWorkspaceGeneration(t *testing.T) {
+	const scope = "https://example.invalid/project/"
+	previous := graphPreviewTypeGeneration
+	t.Cleanup(func() { graphPreviewTypeGeneration = previous })
+	for _, generation := range []int{5, 6, 7} {
+		graphPreviewTypeGeneration = generation
+		for _, native := range []types.DependencyType{types.DepBlocks, types.DepParentChild, types.DepDuplicates, types.DepSupersedes} {
+			url, admitted := graphPreviewDependencyTypeURL(scope, native)
+			if admitted != (native == types.DepBlocks || generation == 7) {
+				t.Fatalf("generation %d native %q admission = %t", generation, native, admitted)
+			}
+			if !admitted {
+				continue
+			}
+			if got, ok := graphPreviewNativeDependencyType(scope, url); !ok || got != native {
+				t.Fatalf("generation %d native %q URL %q maps back to %q, %t", generation, native, url, got, ok)
+			}
+		}
+		if _, ok := graphPreviewNativeDependencyType(scope, graphstore.DependencyTypeURL(scope)); ok != (generation != 7) {
+			t.Fatalf("generation %d admitted the wrong blocking Type", generation)
+		}
 	}
 }
 

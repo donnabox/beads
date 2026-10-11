@@ -151,7 +151,7 @@ func runGraphPreviewLink(cmd *cobra.Command, args []string) error {
 	if err != nil {
 		return err
 	}
-	if typ == "" || typ == graphstore.DependencyTypeURL(graphPreviewConfig.GraphScopeURL) {
+	if _, native := graphPreviewNativeDependencyType(graphPreviewConfig.GraphScopeURL, typ); typ == "" || native {
 		return runGraphPreviewAddDependency(cmd, args)
 	}
 	if err := graphPreviewWritePolicy(); err != nil {

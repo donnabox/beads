@@ -158,8 +158,8 @@ func TestExampleInformationalTypeLifecycle(t *testing.T) {
 				t.Fatalf("Issue query with examples: %+v %v", got, err)
 			}
 			inventory, err := s.CurrentSnapshot(ctx)
-			if err != nil || len(inventory.Types) != 6 {
-				t.Fatalf("six-Type inventory: %+v %v", inventory.Types, err)
+			if err != nil || len(inventory.Types) != 11 {
+				t.Fatalf("eleven-Type inventory: %+v %v", inventory.Types, err)
 			}
 			for _, record := range inventory.Records {
 				if link, ok := record.(LinkRecord); ok && link.Type == RelatedTypeURL(s.ScopeURL()) {
@@ -183,9 +183,9 @@ func TestExampleTypesLegacyInstallation(t *testing.T) {
 					t.Error(err)
 				}
 			})
-			// Removing unused example rows recreates precisely the prior four-row
+			// Removing unused v7 and example rows recreates precisely the prior four-row
 			// installation; its schema, original descriptors and record format match.
-			if _, err := s.db.ExecContext(ctx, `DELETE FROM graph_preview_types WHERE name IN ('example-follows','example-cites')`); err != nil {
+			if _, err := s.db.ExecContext(ctx, `DELETE FROM graph_preview_types WHERE name IN ('example-follows','example-cites','issue-v3','blocks-v2','parent-child','duplicates','supersedes')`); err != nil {
 				t.Fatal(err)
 			}
 			source, err := s.Create(ctx, CreateRequest{Path: "beads/source", Body: "Original policy"})

@@ -114,6 +114,10 @@ func TestDependencyWorkflowDurableSequence(t *testing.T) {
 			if err != nil {
 				t.Fatal(err)
 			}
+			blockingType, _ := relationshipDependencyTypeURL(o.Binding.ScopeURL, types.DepBlocks)
+			if source.Type != RelationshipIssueTypeURL(o.Binding.ScopeURL) || target.Type != source.Type || added.Link.Type != blockingType {
+				t.Fatalf("fresh v7 Issue/Dependency Types differ: source=%s target=%s link=%s", source.Type, target.Type, added.Link.Type)
+			}
 			if !added.Changed || added.Link.Source != source.ID || added.Link.Target != target.ID || added.Source.Version == source.Version || len(added.Source.Owned) != 1 || len(added.Source.Properties.Dependencies) != 0 {
 				t.Fatalf("wrong Dependency result: %+v", added)
 			}
@@ -235,6 +239,84 @@ func TestDependencyWorkflowDurableSequence(t *testing.T) {
 				t.Fatalf("Issue reopen: %v", err)
 			}
 			assertReadyIDs(t, ctx, s, source.ID)
+		})
+	}
+}
+
+func TestV7NativeRelationshipAddAndCanonicalUnlink(t *testing.T) {
+	for _, backend := range []string{"embedded", "server"} {
+		t.Run(backend, func(t *testing.T) {
+			ctx, options := issueExperimentOptions(t, backend)
+			store, err := OpenExisting(ctx, options)
+			if err != nil {
+				t.Fatal(err)
+			}
+			t.Cleanup(func() { _ = store.Close() })
+			for _, native := range []types.DependencyType{types.DepParentChild, types.DepDuplicates, types.DepSupersedes} {
+				t.Run(string(native), func(t *testing.T) {
+					from, err := store.CreateIssue(ctx, "beads/from-"+string(native), plainIssue("Source"))
+					if err != nil {
+						t.Fatal(err)
+					}
+					to, err := store.CreateIssue(ctx, "beads/to-"+string(native), plainIssue("Target"))
+					if err != nil {
+						t.Fatal(err)
+					}
+					typeURL, _ := relationshipDependencyTypeURL(options.Binding.ScopeURL, native)
+					request := DependencyRequest{SourcePath: "beads/from-" + string(native), TargetPath: "beads/to-" + string(native), TypeURL: typeURL, Actor: "author", ExpectedSourceRevision: from.Revision}
+					added, err := store.AddDependency(ctx, request)
+					if err != nil || !added.Changed || added.Link.Type != typeURL || added.Link.Source != from.ID || added.Link.Target != to.ID || len(added.Source.Owned) != 1 {
+						t.Fatalf("native relationship add: %+v, %v", added, err)
+					}
+					var nativeKind string
+					if err := store.db.QueryRowContext(ctx, `SELECT d.type FROM dependencies d JOIN graph_preview_catalog c ON c.backing_key=d.id WHERE c.path=?`, strings.TrimPrefix(added.Link.ID, options.Binding.ScopeURL)).Scan(&nativeKind); err != nil || nativeKind != string(native) {
+						t.Fatalf("native dependency kind = %q, %v", nativeKind, err)
+					}
+					countVersions := func() (int, int) {
+						t.Helper()
+						var nativeCount, graphCount int
+						if err := store.db.QueryRowContext(ctx, `SELECT COUNT(*) FROM issue_versions WHERE issue_id=?`, from.Properties.ID).Scan(&nativeCount); err != nil {
+							t.Fatal(err)
+						}
+						if err := store.db.QueryRowContext(ctx, `SELECT COUNT(*) FROM graph_preview_issue_versions WHERE issue_id=?`, from.Properties.ID).Scan(&graphCount); err != nil {
+							t.Fatal(err)
+						}
+						return nativeCount, graphCount
+					}
+					if n, g := countVersions(); n != 2 || g != 2 {
+						t.Fatalf("add recorded %d native and %d graph versions; want 2 each", n, g)
+					}
+					if _, err := store.AddDependency(ctx, request); !errors.Is(err, ErrConflict) {
+						t.Fatalf("stale source guard did not precede same-pair no-op: %v", err)
+					}
+					request.ExpectedSourceRevision = added.Source.Revision
+					repeated, err := store.AddDependency(ctx, request)
+					if err != nil || repeated.Changed || !reflect.DeepEqual(repeated.Link, added.Link) {
+						t.Fatalf("same-pair assertion must be a no-op: %+v, %v", repeated, err)
+					}
+					if n, g := countVersions(); n != 2 || g != 2 {
+						t.Fatalf("no-op recorded %d native and %d graph versions", n, g)
+					}
+					request.TypeURL = RelationshipBlockingTypeURL(options.Binding.ScopeURL)
+					if _, err := store.AddDependency(ctx, request); !errors.Is(err, storage.ErrValidation) {
+						t.Fatalf("same pair with another Type was admitted: %v", err)
+					}
+					if _, err := store.Unlink(ctx, LinkDeleteRequest{Path: strings.TrimPrefix(added.Link.ID, options.Binding.ScopeURL), Actor: "remover", ExpectedRevision: added.Link.Revision, ExpectedSourceRevision: from.Revision}); !errors.Is(err, ErrConflict) {
+						t.Fatalf("stale unlink source guard was admitted: %v", err)
+					}
+					removed, err := store.Unlink(ctx, LinkDeleteRequest{Path: strings.TrimPrefix(added.Link.ID, options.Binding.ScopeURL), Actor: "remover", ExpectedRevision: added.Link.Revision, ExpectedSourceRevision: added.Source.Revision})
+					removedSource, isIssue := removed.Source.(IssueRecord)
+					if err != nil || !removed.Changed || removed.Link.Type != typeURL || !isIssue || len(removedSource.Owned) != 0 {
+						t.Fatalf("canonical native relationship unlink: %+v, %v", removed, err)
+					}
+					if n, g := countVersions(); n != 3 || g != 3 {
+						t.Fatalf("unlink recorded %d native and %d graph versions; want 3 each", n, g)
+					}
+					if _, err := store.ShowLink(ctx, strings.TrimPrefix(added.Link.ID, options.Binding.ScopeURL)); !errors.Is(err, ErrGone) {
+						t.Fatalf("canonical Link identity was not tombstoned: %v", err)
+					}
+				})
+			}
 		})
 	}
 }

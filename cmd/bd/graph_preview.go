@@ -40,20 +40,40 @@ const graphPreviewMarker = "graph-preview-format"
 // graphPreviewGeneration is the only one this bd writes; admission accepts every
 // entry of graphPreviewSupportedGenerations. link-preview-v5 is the legacy
 // generation: four installed Types, or six in a workspace made after the example
-// Link Types were added and before link-preview-v6 existed. Changing which Types a
+// Link Types were added and before link-preview-v6 existed. The v7 generation
+// appends a distinct Issue v3 and four Issue-owned native Dependency Link Types;
+// old descriptors and pinned playgrounds remain unchanged. Changing which Types a
 // fresh init installs is a new generation, which
 // TestGraphPreviewGenerationPinsFreshInstallTypes enforces.
 const (
 	graphPreviewGenerationPrefix = "link-preview-v"
-	graphPreviewGeneration       = "link-preview-v6\n"
+	graphPreviewGeneration       = "link-preview-v7\n"
 )
 
-var graphPreviewSupportedGenerations = []string{"link-preview-v5\n", graphPreviewGeneration}
+var graphPreviewSupportedGenerations = []string{"link-preview-v5\n", "link-preview-v6\n", graphPreviewGeneration}
 
 var graphPreviewActive bool
 var graphPreviewStructuredErrors bool
 var graphPreviewDir string
 var graphPreviewConfig *configfile.Config
+var graphPreviewTypeGeneration int
+
+// Admission pins the installed Type generation before any graph command runs.
+// A zero value is used only by selector unit tests and retains the legacy
+// default; real fresh workspaces set generation 7 during admission.
+func graphPreviewIssueTypeURL(scope string) string {
+	if graphPreviewTypeGeneration == 7 {
+		return graphstore.RelationshipIssueTypeURL(scope)
+	}
+	return graphstore.IssueTypeURL(scope)
+}
+
+func graphPreviewBlockingTypeURL(scope string) string {
+	if graphPreviewTypeGeneration == 7 {
+		return graphstore.RelationshipBlockingTypeURL(scope)
+	}
+	return graphstore.DependencyTypeURL(scope)
+}
 
 func init() {
 	rootCmd.PersistentFlags().String("graph-mode", "", "Assert workspace format: dependency or link (init selects format)")
@@ -218,7 +238,7 @@ func admitGraphPreview(cmd *cobra.Command) (handled bool, admissionErr error) {
 	// Reset this state for every command; ordinary output policy is unchanged.
 	format, _ := cmd.Flags().GetString("format")
 	graphPreviewStructuredErrors = (cmd == memoriesCmd && format == "records-json") || (cmd == listCmd && (format == "records-json" || strings.EqualFold(format, "json"))) || ((cmd == searchCmd || cmd == countCmd || cmd == queryCmd) && cmd.Flags().Changed("format"))
-	graphPreviewActive, graphPreviewConfig, graphPreviewDir = false, nil, ""
+	graphPreviewActive, graphPreviewConfig, graphPreviewDir, graphPreviewTypeGeneration = false, nil, "", 0
 	flag, _ := cmd.Flags().GetString("graph-mode")
 	env := os.Getenv("BD_GRAPH_MODE")
 	if flag != "" && env != "" && flag != env {
@@ -276,7 +296,7 @@ func admitGraphPreview(cmd *cobra.Command) (handled bool, admissionErr error) {
 		if _, err := os.Lstat(dir); !os.IsNotExist(err) {
 			return true, graphFailure("graph_not_initialized", "graph_mode link initialization requires a fresh .beads directory; existing or incomplete stores are never replaced", 5)
 		}
-		graphPreviewActive, graphPreviewDir = true, dir
+		graphPreviewActive, graphPreviewDir, graphPreviewTypeGeneration = true, dir, 7
 		return true, configureGraphPreview(cmd)
 	}
 	if requested != "" && requested != mode {
@@ -344,21 +364,20 @@ func admitGraphPreview(cmd *cobra.Command) (handled bool, admissionErr error) {
 	if err != nil || real != cfg.GraphWorkspace {
 		return true, graphFailure("not_authority", "graph_mode workspace binding differs; copied/moved workspaces cannot claim this authority", 5)
 	}
-	// These Issue commands require native relationship kinds that the current
-	// installed blocking Link Type cannot represent or retain. Refuse before a
-	// store opens; an empty epic result would conceal real parent-child state,
-	// and a duplicate/supersede close without its edge would lie about History.
+	// These relationship commands are not complete graph CLI journeys yet.
+	// Refuse before opening the store: a Type mapping alone does not make
+	// children/epic projections or edge-plus-close History atomic.
 	switch cmd {
 	case childrenCmd:
-		return true, graphFailure("capability_unavailable", "graph children requires a canonical parent-child Link mapping; this preview cannot distinguish an empty family from unmapped parent-child Dependencies", 5)
+		return true, graphFailure("capability_unavailable", "graph children needs a complete canonical parent-child projection; this graph CLI does not provide one yet", 5)
 	case duplicateCmd:
-		return true, graphFailure("capability_unavailable", "graph duplicate requires a native duplicates Dependency with canonical Link and owned History mappings; this preview admits only blocking Dependencies", 5)
+		return true, graphFailure("capability_unavailable", "graph duplicate requires one atomic duplicates edge and native close reason; this graph CLI does not provide that journey yet", 5)
 	case supersedeCmd:
-		return true, graphFailure("capability_unavailable", "graph supersede requires a native supersedes Dependency with canonical Link and owned History mappings; this preview admits only blocking Dependencies", 5)
+		return true, graphFailure("capability_unavailable", "graph supersede requires one atomic supersedes edge and native close reason; this graph CLI does not provide that journey yet", 5)
 	case epicStatusCmd:
-		return true, graphFailure("capability_unavailable", "graph epic status requires native parent-child Dependencies projected from canonical Links; this preview cannot report epic progress from blocking Links", 5)
+		return true, graphFailure("capability_unavailable", "graph epic status needs a complete canonical parent-child progress projection; this graph CLI does not provide one yet", 5)
 	case closeEligibleEpicsCmd:
-		return true, graphFailure("capability_unavailable", "graph epic close-eligible requires native parent-child Dependencies with canonical Link mapping and owned Issue History for closure; this preview cannot determine eligible epics", 5)
+		return true, graphFailure("capability_unavailable", "graph epic close-eligible needs native parent-child and closure eligibility policy; this graph CLI does not provide that journey yet", 5)
 	}
 	if cmd != setupCmd && cmd != claudeHookCmd && cmd != memoriesCmd && cmd != recallCmd && cmd != graphCompareCmd && cmd != listCmd && cmd != blockedCmd && cmd != graphCmd && cmd != graphCheckCmd && cmd != rememberCmd && cmd != createCmd && cmd != showCmd && cmd != statusCmd && cmd != stateCmd && cmd != stateListCmd && cmd != depCmd && cmd != depAddCmd && cmd != depRemoveCmd && cmd != depListCmd && cmd != depTreeCmd && cmd != depCyclesCmd && cmd != linkCmd && cmd != closeCmd && cmd != reopenCmd && cmd != unclaimCmd && cmd != heartbeatCmd && cmd != reclaimCmd && cmd != mergeSlotCreateCmd && cmd != mergeSlotCheckCmd && cmd != mergeSlotAcquireCmd && cmd != mergeSlotReleaseCmd && cmd != commentsCmd && cmd != deferCmd && cmd != undeferCmd && cmd != readyCmd && cmd != updateCmd && cmd != assignCmd && cmd != priorityCmd && cmd != noteCmd && cmd != todoCmd && cmd != addTodoCmd && cmd != listTodosCmd && cmd != doneTodoCmd && cmd != graphUnlinkCmd && cmd != graphLinksCmd && cmd != serveCmd && cmd != deleteCmd && cmd != forgetCmd && cmd != typesCmd && cmd != versionsCmd && cmd != historyCmd && cmd != searchCmd && cmd != countCmd && cmd != queryCmd && cmd != quickCmd && cmd != statusesCmd && cmd != commentCmd && cmd != commentsAddCmd && cmd != editCmd {
 		// COUPLING: admitting versionsCmd and historyCmd here is only safe
@@ -369,6 +388,14 @@ func admitGraphPreview(cmd *cobra.Command) (handled bool, admissionErr error) {
 		return true, graphFailure("capability_unavailable", "this graph preview supports remember, memories, recall, versions (and history as its alias here), compare, create, q, show, update, edit, assign, priority, note, comment, comments add, todo, delete, forget, dep add/remove/list/tree/cycles and dep --blocks, link, links, unlink, close, reopen, unclaim, heartbeat, reclaim, merge-slot create/check/acquire/release, state read, defer, undefer, ready, list/--format records-json and Issue-only list --json, search, count, query, blocked, graph ISSUE, graph check and graph --view generic, types, status and status --graph, statuses, project-local setup claude, claude-hook stop and shared-server serve; this command has not opened the legacy store", 5)
 	}
 	graphPreviewActive, graphPreviewConfig, graphPreviewDir = true, cfg, dir
+	switch string(marker) {
+	case "link-preview-v5\n":
+		graphPreviewTypeGeneration = 5
+	case "link-preview-v6\n":
+		graphPreviewTypeGeneration = 6
+	case graphPreviewGeneration:
+		graphPreviewTypeGeneration = 7
+	}
 	if err := configureGraphPreview(cmd); err != nil {
 		return true, err
 	}
@@ -547,8 +574,9 @@ func graphOptions(cfg *configfile.Config) graphstore.Options {
 		password = configfile.LookupCredentialsPassword(cfg.DoltServerHost, cfg.DoltServerPort)
 	}
 	return graphstore.Options{Backend: cfg.DoltMode, DataDir: filepath.Join(graphPreviewDir, "embeddeddolt"), Database: cfg.DoltDatabase, Branch: "main",
-		Binding:    graphstore.Binding{WorkspaceID: cfg.GraphWorkspace, ScopeURL: cfg.GraphScopeURL, AuthorityID: cfg.GraphAuthorityID, SchemaVersion: cfg.GraphSchemaVersion},
-		ServerHost: cfg.DoltServerHost, ServerPort: cfg.DoltServerPort, ServerUser: cfg.DoltServerUser, ServerPassword: password, ServerSocket: cfg.DoltServerSocket, ServerTLS: cfg.DoltServerTLS}
+		Binding:        graphstore.Binding{WorkspaceID: cfg.GraphWorkspace, ScopeURL: cfg.GraphScopeURL, AuthorityID: cfg.GraphAuthorityID, SchemaVersion: cfg.GraphSchemaVersion},
+		TypeGeneration: graphPreviewTypeGeneration,
+		ServerHost:     cfg.DoltServerHost, ServerPort: cfg.DoltServerPort, ServerUser: cfg.DoltServerUser, ServerPassword: password, ServerSocket: cfg.DoltServerSocket, ServerTLS: cfg.DoltServerTLS}
 }
 
 func withGraphStore(fn func(context.Context, *graphstore.Store) (any, string, error)) error {

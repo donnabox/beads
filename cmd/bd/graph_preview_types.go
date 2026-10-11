@@ -18,7 +18,8 @@ type graphTypeInventory struct {
 }
 
 // The source of this inventory is the selected workspace's persisted Type
-// installation. A binary with six known Types may open an older four-Type store.
+// installation. This binary admits the older four- and six-Type stores without
+// changing their descriptors or upgrading their data.
 func runGraphPreviewTypes(cmd *cobra.Command, args []string) error {
 	if err := graphPreviewFlags(cmd, "details"); err != nil {
 		return err

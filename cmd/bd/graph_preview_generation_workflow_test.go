@@ -5,6 +5,7 @@ package main
 import (
 	"bytes"
 	"context"
+	"database/sql"
 	"encoding/json"
 	"errors"
 	"os"
@@ -14,8 +15,12 @@ import (
 	"testing"
 	"time"
 
+	_ "github.com/go-sql-driver/mysql"
 	"github.com/steveyegge/beads/internal/configfile"
+	"github.com/steveyegge/beads/internal/storage/doltutil"
 	"github.com/steveyegge/beads/internal/storage/embeddeddolt"
+	"github.com/steveyegge/beads/internal/storage/graphstore"
+	"github.com/steveyegge/beads/internal/types"
 )
 
 // The two refusals that existed before generations were admitted by one
@@ -184,13 +189,13 @@ func TestGraphPreviewMarkerGenerationWorkflow(t *testing.T) {
 		}
 	}
 	newerRefusal := func(number string) string {
-		return "graph_mode workspace format link-preview-v" + number + " is newer than this bd supports (link-preview-v6); upgrade bd; no database was opened"
+		return "graph_mode workspace format link-preview-v" + number + " is newer than this bd supports (link-preview-v7); upgrade bd; no database was opened"
 	}
 
 	t.Run("fresh init writes the current generation", func(t *testing.T) {
 		marker, err := os.ReadFile(markerPath)
-		if err != nil || string(marker) != "link-preview-v6\n" {
-			t.Fatalf("fresh workspace marker = %q (%v), want link-preview-v6 and a newline", marker, err)
+		if err != nil || string(marker) != "link-preview-v7\n" {
+			t.Fatalf("fresh workspace marker = %q (%v), want link-preview-v7 and a newline", marker, err)
 		}
 		// Common metadata changes the storage layout independently of the
 		// installed Type generation.
@@ -202,6 +207,15 @@ func TestGraphPreviewMarkerGenerationWorkflow(t *testing.T) {
 		}
 	})
 
+	t.Run("admits link-preview-v7 over eleven Types", func(t *testing.T) {
+		if beads, links := readTypes(t, "link-preview-v7\n"); beads != 3 || links != 8 {
+			t.Fatalf("installed Types = %d Bead, %d Link; want 3 and 8", beads, links)
+		}
+	})
+
+	// Recreate the exact preceding six-Type installation. The new binary reads
+	// it as v6 and v5 without inserting any v7 Type or changing old fingerprints.
+	graphGenerationExec(t, loadConfig(t), `DELETE FROM graph_preview_types WHERE name IN ('issue-v3','blocks-v2','parent-child','duplicates','supersedes')`)
 	t.Run("admits link-preview-v6 over six Types", func(t *testing.T) {
 		if beads, links := readTypes(t, "link-preview-v6\n"); beads != 2 || links != 4 {
 			t.Fatalf("installed Types = %d Bead, %d Link; want 2 and 4", beads, links)
@@ -213,28 +227,40 @@ func TestGraphPreviewMarkerGenerationWorkflow(t *testing.T) {
 			t.Fatalf("installed Types = %d Bead, %d Link; want 2 and 4", beads, links)
 		}
 	})
+	t.Run("v7 marker does not adopt a v6 installation", func(t *testing.T) {
+		writeFile(t, markerPath, []byte("link-preview-v7\n"))
+		before := legacyUpgradeTreeDigest(t, beadsDir)
+		stdout, stderr, exit := graphGenerationRun(t, bd, work, home, "types", "--json")
+		if exit != 5 || stdout != "" || !strings.Contains(stderr, `"code":"invalid_store"`) ||
+			!strings.Contains(stderr, "marker and installed Type generation differ") {
+			t.Fatalf("v7 marker over six Types: exit=%d stdout=%q stderr=%q", exit, stdout, stderr)
+		}
+		if after := legacyUpgradeTreeDigest(t, beadsDir); after != before {
+			t.Fatal("generation mismatch read changed the workspace")
+		}
+	})
 
 	t.Run("refuses a newer generation at the first gate", func(t *testing.T) {
-		// 10 sorts before 6 as text and 18446744073709551616 overflows 64 bits;
+		// 10 sorts before 7 as text and 18446744073709551616 overflows 64 bits;
 		// both are still newer, and the write is refused the same way as a read.
-		for _, number := range []string{"7", "10", "18446744073709551616"} {
+		for _, number := range []string{"8", "10", "18446744073709551616"} {
 			refuse(t, "link-preview-v"+number+"\n", newerRefusal(number), "types")
 		}
-		refuse(t, "link-preview-v7\n", newerRefusal("7"), "remember", "Refused write", "--id", "beads/refused", "--title", "Refused")
+		refuse(t, "link-preview-v8\n", newerRefusal("8"), "remember", "Refused write", "--id", "beads/refused", "--title", "Refused")
 	})
 
 	t.Run("keeps the existing refusal for every other marker", func(t *testing.T) {
 		for _, tc := range []struct{ name, marker string }{
 			{"older generation", "link-preview-v4\n"},
 			{"empty file", ""},
-			{"current generation without a newline", "link-preview-v6"},
-			{"newer generation without a newline", "link-preview-v7"},
+			{"current generation without a newline", "link-preview-v7"},
+			{"newer generation without a newline", "link-preview-v8"},
 			{"leading zero", "link-preview-v06\n"},
-			{"trailing text on the current generation", "link-preview-v6x\n"},
-			{"trailing text on a newer generation", "link-preview-v7x\n"},
+			{"trailing text on the current generation", "link-preview-v7x\n"},
+			{"trailing text on a newer generation", "link-preview-v8x\n"},
 			{"no number", "link-preview-v"},
 			{"no number with a newline", "link-preview-v\n"},
-			{"newer generation with a second newline", "link-preview-v7\n\n"},
+			{"newer generation with a second newline", "link-preview-v8\n\n"},
 		} {
 			t.Run(tc.name, func(t *testing.T) {
 				refuse(t, tc.marker, graphGenerationFirstGateRefusal, "types")
@@ -277,7 +303,7 @@ func TestGraphPreviewMarkerGenerationWorkflow(t *testing.T) {
 				t.Fatalf("a supported marker was refused as a marker problem: %s", stderr)
 			}
 		}
-		refuse(t, "link-preview-v7\n", newerRefusal("7"), "types")
+		refuse(t, "link-preview-v8\n", newerRefusal("8"), "types")
 	})
 
 	t.Run("admits link-preview-v5 over the legacy four Types", func(t *testing.T) {
@@ -288,4 +314,180 @@ func TestGraphPreviewMarkerGenerationWorkflow(t *testing.T) {
 			t.Fatalf("installed Types = %d Bead, %d Link; want the original 2 and 2", beads, links)
 		}
 	})
+}
+
+// Inspect the same native rows the installed CLI must have written. Close the
+// connection before the next CLI process, particularly for embedded workspaces.
+type graphInstalledRelationshipState struct {
+	NativeType, SourceID, TargetID, LinkType              string
+	NativeVersions, GraphVersions, LinkVersions, PairRows int
+}
+
+func graphInstalledRelationship(t *testing.T, work, linkPath, sourceID, targetID string) graphInstalledRelationshipState {
+	t.Helper()
+	cfg, err := configfile.LoadForDiscovery(filepath.Join(work, ".beads"))
+	if err != nil || cfg == nil {
+		t.Fatalf("load graph workspace binding: %v", err)
+	}
+	ctx, cancel := context.WithTimeout(t.Context(), 90*time.Second)
+	defer cancel()
+	var db *sql.DB
+	var closeDB func() error
+	if cfg.DoltMode == configfile.DoltModeServer {
+		user := cfg.DoltServerUser
+		if user == "" {
+			user = configfile.DefaultDoltServerUser
+		}
+		db, err = sql.Open("mysql", doltutil.ServerDSN{
+			Host: cfg.DoltServerHost, Port: cfg.DoltServerPort, User: user,
+			Database: cfg.DoltDatabase, Socket: cfg.DoltServerSocket, TLS: cfg.DoltServerTLS,
+		}.String())
+		if err == nil {
+			closeDB = db.Close
+		}
+	} else {
+		db, closeDB, err = embeddeddolt.OpenSQL(ctx, filepath.Join(cfg.GraphWorkspace, "embeddeddolt"), cfg.DoltDatabase, "main")
+	}
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer func() {
+		if err := closeDB(); err != nil {
+			t.Error(err)
+		}
+	}()
+	state := graphInstalledRelationshipState{}
+	query := `SELECT d.type,d.issue_id,d.depends_on_issue_id,c.type_url FROM graph_preview_catalog c
+ JOIN dependencies d ON d.id=c.backing_key WHERE c.path=? AND c.backing='dependency' AND c.allocation_state='live'`
+	err = db.QueryRowContext(ctx, query, linkPath).Scan(&state.NativeType, &state.SourceID, &state.TargetID, &state.LinkType)
+	if err != nil && !errors.Is(err, sql.ErrNoRows) {
+		t.Fatal(err)
+	}
+	for _, item := range []struct {
+		query string
+		args  []any
+		out   *int
+	}{
+		{`SELECT COUNT(*) FROM issue_versions WHERE issue_id=?`, []any{sourceID}, &state.NativeVersions},
+		{`SELECT COUNT(*) FROM graph_preview_issue_versions WHERE issue_id=?`, []any{sourceID}, &state.GraphVersions},
+		{`SELECT COUNT(*) FROM graph_preview_versions WHERE path=?`, []any{linkPath}, &state.LinkVersions},
+		{`SELECT COUNT(*) FROM dependencies WHERE issue_id=? AND depends_on_issue_id=?`, []any{sourceID, targetID}, &state.PairRows},
+	} {
+		if err := db.QueryRowContext(ctx, item.query, item.args...).Scan(item.out); err != nil {
+			t.Fatal(err)
+		}
+	}
+	return state
+}
+
+func TestGraphPreviewInstalledV7TypedRelationshipsAndLegacyRefusal(t *testing.T) {
+	bd := buildBDUnderTest(t)
+	const scope = "https://example.invalid/typed-relationships/"
+	for _, engine := range []string{"embedded", "server"} {
+		t.Run("v7-"+engine, func(t *testing.T) {
+			work, home := graphListWorkspace(t, bd, engine, scope)
+			call := func(args ...string) string {
+				t.Helper()
+				return graphPolicyCLI(t, bd, work, home, nil, "", append(args, "--json")...)
+			}
+			refuse := func(code string, args ...string) {
+				t.Helper()
+				graphPolicyCLI(t, bd, work, home, nil, code, append(args, "--json")...)
+			}
+			for _, tc := range []struct {
+				name    string
+				kind    types.DependencyType
+				viaLink bool
+			}{
+				{"dep-parent", types.DepParentChild, false},
+				{"dep-duplicate", types.DepDuplicates, false},
+				{"dep-supersede", types.DepSupersedes, false},
+				{"link-duplicate", types.DepDuplicates, true},
+			} {
+				t.Run(tc.name, func(t *testing.T) {
+					sourcePath, targetPath, linkPath := "beads/source-"+tc.name, "beads/target-"+tc.name, "links/"+tc.name
+					source := graphMixedResult[graphstore.IssueRecord](t, call("create", "Source", "--id", sourcePath))
+					target := graphMixedResult[graphstore.IssueRecord](t, call("create", "Target", "--id", targetPath))
+					typeURL, _ := graphstore.RelationshipDependencyTypeURL(scope, tc.kind)
+					addArgs := []string{"dep", "add", sourcePath, targetPath, "--type", string(tc.kind), "--id", linkPath}
+					if tc.viaLink {
+						addArgs = []string{"link", sourcePath, targetPath, "--link-type", typeURL, "--id", linkPath, "--if-source-revision", source.Revision}
+					}
+					added := graphMixedResult[graphstore.DependencyResult](t, call(addArgs...))
+					if !added.Changed || added.Link.Type != typeURL || added.Link.Source != source.ID || added.Link.Target != target.ID || len(added.Source.Owned) != 1 {
+						t.Fatalf("rendered native Link differs: %+v", added)
+					}
+					shown := graphMixedResult[graphstore.LinkRecord](t, call("show", linkPath))
+					if shown.Type != typeURL || shown.Source != source.ID || shown.Target != target.ID {
+						t.Fatalf("shown Link differs from native endpoints: %+v", shown)
+					}
+					state := graphInstalledRelationship(t, work, linkPath, source.Properties.ID, target.Properties.ID)
+					if state.NativeType != string(tc.kind) || state.SourceID != source.Properties.ID || state.TargetID != target.Properties.ID || state.LinkType != typeURL ||
+						state.NativeVersions != 2 || state.GraphVersions != 2 || state.LinkVersions != 1 || state.PairRows != 1 {
+						t.Fatalf("native Link mapping or History after add: %+v", state)
+					}
+					beforeNoOp := call("show", sourcePath, "--format", "graph-json")
+					if tc.viaLink {
+						addArgs[len(addArgs)-1] = added.Source.Revision
+					}
+					repeated := graphMixedResult[graphstore.DependencyResult](t, call(addArgs...))
+					if repeated.Changed || repeated.Link.ID != added.Link.ID || repeated.Source.Revision != added.Source.Revision {
+						t.Fatalf("same pair was not an exact no-op: %+v", repeated)
+					}
+					if again := graphInstalledRelationship(t, work, linkPath, source.Properties.ID, target.Properties.ID); again != state {
+						t.Fatalf("no-op changed native or retained state: before=%+v after=%+v", state, again)
+					}
+					if afterNoOp := call("show", sourcePath, "--format", "graph-json"); afterNoOp != beforeNoOp {
+						t.Fatal("same-pair no-op changed the source record")
+					}
+					refuse("revision_conflict", "unlink", linkPath, "--if-revision", added.Link.Revision, "--if-source-revision", source.Revision)
+					removed := graphMixedResult[graphstore.LinkDeleteResult](t, call("unlink", added.Link.ID, "--if-revision", added.Link.Revision, "--if-source-revision", added.Source.Revision))
+					if !removed.Changed || removed.Link.Type != typeURL || removed.Link.State != "deleted" {
+						t.Fatalf("canonical unlink did not tombstone typed Link: %+v", removed)
+					}
+					refuse("gone", "show", linkPath)
+					if owner := graphMixedResult[graphstore.IssueRecord](t, call("show", sourcePath, "--format", "graph-json")); len(owner.Owned) != 0 {
+						t.Fatalf("unlinked native Link remains owned: %+v", owner.Owned)
+					}
+					state = graphInstalledRelationship(t, work, linkPath, source.Properties.ID, target.Properties.ID)
+					if state.NativeType != "" || state.PairRows != 0 || state.NativeVersions != 3 || state.GraphVersions != 3 || state.LinkVersions != 2 {
+						t.Fatalf("native unlink or retained History differs: %+v", state)
+					}
+				})
+			}
+		})
+	}
+
+	for _, generation := range []string{"v5", "v6"} {
+		t.Run(generation+"-pinned", func(t *testing.T) {
+			work, home := graphListWorkspace(t, bd, "embedded", scope)
+			beadsDir := filepath.Join(work, ".beads")
+			cfg, err := configfile.LoadForDiscovery(beadsDir)
+			if err != nil || cfg == nil {
+				t.Fatalf("load graph workspace binding: %v", err)
+			}
+			graphGenerationExec(t, cfg, `DELETE FROM graph_preview_types WHERE name IN ('issue-v3','blocks-v2','parent-child','duplicates','supersedes')`)
+			writeFile(t, filepath.Join(beadsDir, graphPreviewMarker), []byte("link-preview-"+generation+"\n"))
+			call := func(args ...string) string {
+				t.Helper()
+				return graphPolicyCLI(t, bd, work, home, nil, "", append(args, "--json")...)
+			}
+			call("create", "Source", "--id", "beads/source")
+			call("create", "Target", "--id", "beads/target")
+			before := call("show", "beads/source", "--format", "graph-json")
+			for _, kind := range []types.DependencyType{types.DepParentChild, types.DepDuplicates, types.DepSupersedes} {
+				graphPolicyCLI(t, bd, work, home, nil, "capability_unavailable", "dep", "add", "beads/source", "beads/target", "--type", string(kind), "--json")
+				typeURL, _ := graphstore.RelationshipDependencyTypeURL(scope, kind)
+				graphPolicyCLI(t, bd, work, home, nil, "capability_unavailable", "link", "beads/source", "beads/target", "--link-type", typeURL, "--unconditional-source", "--json")
+			}
+			if after := call("show", "beads/source", "--format", "graph-json"); after != before || graphGenerationQueryInt(t, cfg, `SELECT COUNT(*) FROM dependencies`) != 0 ||
+				graphGenerationQueryInt(t, cfg, `SELECT COUNT(*) FROM graph_preview_types`) != 6 {
+				t.Fatal("pinned workspace changed after typed relationship refusals")
+			}
+			blocking := graphMixedResult[graphstore.DependencyResult](t, call("dep", "add", "beads/source", "beads/target"))
+			if blocking.Link.Type != graphstore.DependencyTypeURL(scope) {
+				t.Fatalf("pinned workspace lost its original blocking Type: %+v", blocking.Link)
+			}
+		})
+	}
 }

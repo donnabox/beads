@@ -114,6 +114,7 @@ func runGraphPreviewAddDependency(cmd *cobra.Command, args []string) error {
 		paths[i] = path
 	}
 	var sourceRevision string
+	var selectedType string
 	linkPath := ""
 	if cmd.Flags().Changed("id") {
 		selector, _ := cmd.Flags().GetString("id")
@@ -136,9 +137,14 @@ func runGraphPreviewAddDependency(cmd *cobra.Command, args []string) error {
 		if err != nil {
 			return err
 		}
-		if resourceType != graphstore.DependencyTypeURL(graphPreviewConfig.GraphScopeURL) {
-			return graphFailure("capability_unavailable", "this preview accepts only the installed Type "+graphstore.DependencyTypeURL(graphPreviewConfig.GraphScopeURL), 5)
+		nativeType, ok := graphPreviewNativeDependencyType(graphPreviewConfig.GraphScopeURL, resourceType)
+		if !ok {
+			if graphPreviewTypeGeneration != 7 {
+				return graphFailure("capability_unavailable", "this preview accepts only the installed Type "+graphPreviewBlockingTypeURL(graphPreviewConfig.GraphScopeURL), 5)
+			}
+			return graphFailure("capability_unavailable", "this preview accepts only an installed Issue-owned native Dependency Link Type", 5)
 		}
+		selectedType, _ = graphPreviewDependencyTypeURL(graphPreviewConfig.GraphScopeURL, nativeType)
 	} else {
 		if cmd.Flags().Changed("if-source-revision") || cmd.Flags().Changed("unconditional-source") {
 			return graphFailure("invalid_selector", "source guard options require --link-type", 2)
@@ -148,11 +154,37 @@ func runGraphPreviewAddDependency(cmd *cobra.Command, args []string) error {
 		if err := validateDependencyType(typ); err != nil {
 			return graphFailure("invalid_properties", err.Error(), 2)
 		}
-		if typ != types.DepBlocks {
-			return graphFailure("capability_unavailable", "this preview supports only local blocking Dependencies", 5)
+		var ok bool
+		selectedType, ok = graphPreviewDependencyTypeURL(graphPreviewConfig.GraphScopeURL, typ)
+		if !ok {
+			if graphPreviewTypeGeneration != 7 {
+				return graphFailure("capability_unavailable", "this preview supports only local blocking Dependencies", 5)
+			}
+			return graphFailure("capability_unavailable", "this workspace generation does not support that native Dependency Type", 5)
 		}
 	}
-	return graphPreviewInsertDependency(paths[0], paths[1], linkPath, sourceRevision, args[0], args[1])
+	return graphPreviewInsertDependency(paths[0], paths[1], selectedType, linkPath, sourceRevision, args[0], args[1])
+}
+
+// CLI admission follows the persisted generation; the store independently
+// checks the installed Type in the write transaction.
+func graphPreviewDependencyTypeURL(scope string, native types.DependencyType) (string, bool) {
+	if graphPreviewTypeGeneration == 7 {
+		return graphstore.RelationshipDependencyTypeURL(scope, native)
+	}
+	if native == types.DepBlocks {
+		return graphstore.DependencyTypeURL(scope), true
+	}
+	return "", false
+}
+
+func graphPreviewNativeDependencyType(scope, typeURL string) (types.DependencyType, bool) {
+	for _, native := range []types.DependencyType{types.DepBlocks, types.DepParentChild, types.DepDuplicates, types.DepSupersedes} {
+		if candidate, ok := graphPreviewDependencyTypeURL(scope, native); ok && candidate == typeURL {
+			return native, true
+		}
+	}
+	return "", false
 }
 
 // The ordinary dep remove verb addresses an Issue pair, not a Link ID. Pair
@@ -221,15 +253,19 @@ func runGraphPreviewDepBlocks(cmd *cobra.Command, args []string) error {
 	if err != nil {
 		return err
 	}
-	return graphPreviewInsertDependency(sourcePath, targetPath, "", "", blocked, args[0])
+	return graphPreviewInsertDependency(sourcePath, targetPath, "", "", "", blocked, args[0])
 }
 
-func graphPreviewInsertDependency(sourcePath, targetPath, linkPath, sourceRevision, sourceLabel, targetLabel string) error {
+func graphPreviewInsertDependency(sourcePath, targetPath, typeURL, linkPath, sourceRevision, sourceLabel, targetLabel string) error {
 	return withGraphStore(func(ctx context.Context, store *graphstore.Store) (any, string, error) {
-		result, err := store.AddDependency(ctx, graphstore.DependencyRequest{Path: linkPath, SourcePath: sourcePath, TargetPath: targetPath, Type: types.DepBlocks, Actor: getActorWithGit(), ExpectedSourceRevision: sourceRevision})
+		result, err := store.AddDependency(ctx, graphstore.DependencyRequest{Path: linkPath, TypeURL: typeURL, SourcePath: sourcePath, TargetPath: targetPath, Actor: getActorWithGit(), ExpectedSourceRevision: sourceRevision})
 		if err != nil {
 			if strings.Contains(err.Error(), "operation requires a live durable Issue, not generic") {
-				return nil, "", fmt.Errorf("blocking Link Type requires two live Issues; use an informational Type such as types/preview-related-v2 for Memory endpoints: %w", err)
+				kind := "blocking"
+				if typeURL != "" && typeURL != graphPreviewBlockingTypeURL(graphPreviewConfig.GraphScopeURL) {
+					kind = "native Dependency"
+				}
+				return nil, "", fmt.Errorf("%s Link Type requires two live Issues; use an informational Type such as types/preview-related-v2 for Memory endpoints: %w", kind, err)
 			}
 			return nil, "", err
 		}
@@ -237,7 +273,10 @@ func graphPreviewInsertDependency(sourcePath, targetPath, linkPath, sourceRevisi
 		if !result.Changed {
 			verb = "Unchanged"
 		}
-		return result, fmt.Sprintf("%s %s: %s depends on %s\n", verb, result.Link.ID, sourceLabel, targetLabel), nil
+		if typeURL == "" || typeURL == graphPreviewBlockingTypeURL(graphPreviewConfig.GraphScopeURL) {
+			return result, fmt.Sprintf("%s %s: %s depends on %s\n", verb, result.Link.ID, sourceLabel, targetLabel), nil
+		}
+		return result, fmt.Sprintf("%s %s: %s → %s\n", verb, result.Link.ID, sourceLabel, targetLabel), nil
 	})
 }
 

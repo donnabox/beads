@@ -64,6 +64,10 @@ func (s *Store) ShowIssueDetails(ctx context.Context, path string, opts workapi.
 }
 
 func (s *Store) projectIssueDetailIDsInTx(ctx context.Context, tx *sql.Tx, details *types.IssueDetails) error {
+	issueType, err := installedIssueTypeURLInTx(ctx, tx, s.ScopeURL())
+	if err != nil {
+		return err
+	}
 	paths := map[string]string{}
 	canonicalPath := func(nativeID string) (string, error) {
 		if path, ok := paths[nativeID]; ok {
@@ -77,7 +81,7 @@ func (s *Store) projectIssueDetailIDsInTx(ctx context.Context, tx *sql.Tx, detai
 		if err != nil {
 			return "", err
 		}
-		if kind != "bead" || typ != IssueTypeURL(s.ScopeURL()) || state != "live" || validatePath(path) != nil {
+		if kind != "bead" || typ != issueType || state != "live" || validatePath(path) != nil {
 			return "", fmt.Errorf("%w: invalid Issue detail allocation", ErrInvalidStore)
 		}
 		paths[nativeID] = path

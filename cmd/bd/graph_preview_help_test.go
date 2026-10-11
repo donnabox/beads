@@ -38,7 +38,7 @@ func TestGraphPreviewHelpDocumentsPlaytestCommands(t *testing.T) {
 			// --link-type sits beside the ordinary -t/--type, so its own usage says it is graph-only.
 			"Installed Link Type: NAME, types/NAME, or full local URL (graph preview only)",
 			// Informational Links default to the current source; the blocking Type does not.
-			"The blocking Type types/preview-blocks-v1", "unlike informational Types, one of",
+			"The blocking Type types/preview-blocks-v2", "types/preview-blocks-v1 in pinned v5/v6", "unlike informational Types, one of",
 			"--if-source-revision TOKEN or --unconditional-source.",
 		}},
 		{"show", showCmd, []string{"Graph preview workspaces:", "ordinary detail array", "--format graph-json"}},

@@ -13,6 +13,7 @@ import (
 	"time"
 
 	"github.com/steveyegge/beads/internal/storage"
+	"github.com/steveyegge/beads/internal/types"
 )
 
 func TestLinkUnlinkAndIncidentLifecycle(t *testing.T) {
@@ -56,7 +57,7 @@ func TestLinkUnlinkAndIncidentLifecycle(t *testing.T) {
 			assertIncident(t, ctx, s, LinksRequest{BeadPath: "beads/work"}, dep.Link, info.Link)
 			assertIncident(t, ctx, s, LinksRequest{BeadPath: "beads/work", Direction: "in"})
 			assertIncident(t, ctx, s, LinksRequest{BeadPath: "beads/work", TypeURL: RelatedTypeURL(o.Binding.ScopeURL)}, info.Link)
-			if _, err := s.Unlink(ctx, LinkDeleteRequest{SourcePath: "beads/work", TargetPath: "beads/prereq", TypeURL: DependencyTypeURL(o.Binding.ScopeURL), Actor: "author", Unconditional: true, UnconditionalSource: true}); !errors.Is(err, ErrCapabilityUnavailable) {
+			if _, err := s.Unlink(ctx, LinkDeleteRequest{SourcePath: "beads/work", TargetPath: "beads/prereq", TypeURL: dep.Link.Type, Actor: "author", Unconditional: true, UnconditionalSource: true}); !errors.Is(err, ErrCapabilityUnavailable) {
 				t.Fatalf("blocking removal: %v", err)
 			}
 			if _, err := s.ListLinks(ctx, LinksRequest{BeadPath: "beads/work", Direction: "other"}); !errors.Is(err, storage.ErrValidation) {
@@ -400,7 +401,7 @@ func TestLinkUnlinkConcurrentMutations(t *testing.T) {
 
 func TestIncidentMappingCorruptionRefuses(t *testing.T) {
 	for _, backend := range []string{"embedded", "server"} {
-		for _, corruption := range []string{"informational-catalog", "informational-payload", "informational-type", "dependency-catalog", "dependency-payload"} {
+		for _, corruption := range []string{"informational-catalog", "informational-payload", "informational-type", "dependency-catalog", "dependency-payload", "dependency-type"} {
 			t.Run(backend+"/"+corruption, func(t *testing.T) {
 				ctx, o := issueExperimentOptions(t, backend)
 				s, err := OpenExisting(ctx, o)
@@ -420,7 +421,7 @@ func TestIncidentMappingCorruptionRefuses(t *testing.T) {
 				typ := RelatedTypeURL(o.Binding.ScopeURL)
 				if strings.HasPrefix(corruption, "dependency") {
 					_, err = s.AddDependency(ctx, DependencyRequest{Path: "links/test", SourcePath: "beads/source", TargetPath: "beads/target", Actor: "author"})
-					typ = DependencyTypeURL(o.Binding.ScopeURL)
+					typ, _ = relationshipDependencyTypeURL(o.Binding.ScopeURL, types.DepBlocks)
 				} else {
 					_, err = s.AddInformationalLink(ctx, LinkCreateRequest{Path: "links/test", SourcePath: "beads/source", TargetPath: "beads/target"})
 				}
@@ -433,6 +434,7 @@ func TestIncidentMappingCorruptionRefuses(t *testing.T) {
 					"informational-type":    `UPDATE graph_preview_catalog SET type_url='https://wrong.example/type' WHERE path='links/test'`,
 					"dependency-catalog":    `DELETE FROM graph_preview_catalog WHERE path='links/test'`,
 					"dependency-payload":    `DELETE FROM dependencies`,
+					"dependency-type":       `UPDATE graph_preview_catalog SET type_url='` + o.Binding.ScopeURL + `types/preview-parent-child-v1' WHERE path='links/test'`,
 				}[corruption]
 				if _, err := s.db.ExecContext(ctx, query); err != nil {
 					t.Fatal(err)
@@ -444,7 +446,7 @@ func TestIncidentMappingCorruptionRefuses(t *testing.T) {
 				// Blocking pair selection is outside the preview capability and
 				// refuses before reading storage, even when that storage is corrupt.
 				wantPairError := ErrInvalidStore
-				if typ == DependencyTypeURL(o.Binding.ScopeURL) {
+				if typ != RelatedTypeURL(o.Binding.ScopeURL) {
 					wantPairError = ErrCapabilityUnavailable
 				}
 				if _, err := s.Unlink(ctx, LinkDeleteRequest{SourcePath: "beads/source", TargetPath: "beads/target", TypeURL: typ, Unconditional: true, UnconditionalSource: true}); !errors.Is(err, wantPairError) {

@@ -6,6 +6,7 @@ import (
 
 	graph "github.com/steveyegge/beads/graphops"
 	"github.com/steveyegge/beads/internal/storage/graphstore"
+	"github.com/steveyegge/beads/internal/types"
 )
 
 const graphGenericBound = 1000
@@ -76,6 +77,28 @@ func projectGraphGeneric(snapshot graphstore.Snapshot, scope string, in graphGen
 	if len(snapshot.Records) > graphstore.PreviewSnapshotLimit {
 		return zero, fmt.Errorf("%w: current inventory exceeds %d Resources", graphstore.ErrLimitExceeded, graphstore.PreviewSnapshotLimit)
 	}
+	issueType := graphstore.IssueTypeURL(scope)
+	dependencyTypes := map[string]bool{graphstore.DependencyTypeURL(scope): true}
+	if len(snapshot.Types) == 11 {
+		installed := map[string]bool{}
+		for _, descriptor := range snapshot.Types {
+			installed[descriptor.ID()] = true
+		}
+		if !installed[graphstore.RelationshipIssueTypeURL(scope)] || !installed[graphstore.RelationshipBlockingTypeURL(scope)] {
+			return invalid("incomplete v7 Type installation")
+		}
+		issueType = graphstore.RelationshipIssueTypeURL(scope)
+		dependencyTypes = map[string]bool{}
+		for _, native := range []types.DependencyType{types.DepBlocks, types.DepParentChild, types.DepDuplicates, types.DepSupersedes} {
+			id, _ := graphstore.RelationshipDependencyTypeURL(scope, native)
+			if !installed[id] {
+				return invalid("incomplete v7 relationship Type installation")
+			}
+			dependencyTypes[id] = true
+		}
+	} else if len(snapshot.Types) != 0 && len(snapshot.Types) != 4 && len(snapshot.Types) != 6 {
+		return invalid("unsupported Type installation")
+	}
 	nodes := map[string]graphGenericNode{}
 	links := map[string]graphGenericLink{}
 	for _, value := range snapshot.Records {
@@ -87,12 +110,12 @@ func projectGraphGeneric(snapshot graphstore.Snapshot, scope string, in graphGen
 			}
 			node = graphGenericNode{record.ID, record.Type, record.Properties.Title, record.Version, record.Attribution}
 		case graphstore.IssueRecord:
-			if record.Properties == nil || record.Type != graphstore.IssueTypeURL(scope) {
+			if record.Properties == nil || record.Type != issueType {
 				return invalid("unsupported or incomplete Issue")
 			}
 			node = graphGenericNode{record.ID, record.Type, record.Properties.Title, record.Version, record.Attribution}
 		case graphstore.LinkRecord:
-			if !graphstore.IsInformationalTypeURL(scope, record.Type) && record.Type != graphstore.DependencyTypeURL(scope) {
+			if !graphstore.IsInformationalTypeURL(scope, record.Type) && !dependencyTypes[record.Type] {
 				return invalid("unsupported Link Type")
 			}
 			if _, kind, ok := graph.SplitCanonicalURL(scope, record.ID); !ok || kind != graph.KindLink || record.Version == "" {

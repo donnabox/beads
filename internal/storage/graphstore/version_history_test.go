@@ -775,10 +775,10 @@ func TestVersionsOfExampleInformationalLinks(t *testing.T) {
 			if err != nil || related.Link.Type != RelatedTypeURL(s.ScopeURL()) {
 				t.Fatalf("Related Link: %+v %v", related, err)
 			}
-			// Removing both example rows leaves exactly the original four-Type
+			// Removing the v7 and both example rows leaves the original four-Type
 			// installation, as in TestExampleTypesLegacyInstallation. Such a store
 			// can hold an example allocation only if it is corrupt.
-			if _, err := s.db.ExecContext(ctx, `DELETE FROM graph_preview_types WHERE name IN ('example-follows','example-cites')`); err != nil {
+			if _, err := s.db.ExecContext(ctx, `DELETE FROM graph_preview_types WHERE name IN ('example-follows','example-cites','issue-v3','blocks-v2','parent-child','duplicates','supersedes')`); err != nil {
 				t.Fatal(err)
 			}
 			for _, subject := range allocated {

@@ -148,13 +148,17 @@ func (s *Store) versionsWithin(ctx context.Context, path string, bounds versionB
 // snapshot, so a concurrent writer cannot interleave a new head between the
 // kind resolution and the list.
 func (s *Store) versionsInTx(ctx context.Context, tx *sql.Tx, path string, bounds versionBounds) (ResourceKind, []VersionRow, error) {
+	issueType, err := installedIssueTypeURLInTx(ctx, tx, s.ScopeURL())
+	if err != nil {
+		return "", nil, err
+	}
 	var kind, backing, state, head string
 	var typ, key sql.NullString
 	// The type_url bound and the NullString are readVersionInTx's, not an
 	// invention: an oversized type_url selects as NULL and then fails the
 	// !typ.Valid check below, so a listing cannot be tricked into trusting a
 	// type it never actually compared.
-	err := tx.QueryRowContext(ctx, `SELECT resource_kind,backing,allocation_state,revision,
+	err = tx.QueryRowContext(ctx, `SELECT resource_kind,backing,allocation_state,revision,
  CASE WHEN OCTET_LENGTH(type_url)<=? THEN type_url ELSE NULL END,backing_key
  FROM graph_preview_catalog WHERE path=?`, len(s.ScopeURL())+256, path).Scan(&kind, &backing, &state, &head, &typ, &key)
 	if errors.Is(err, sql.ErrNoRows) {
@@ -211,7 +215,7 @@ func (s *Store) versionsInTx(ctx context.Context, tx *sql.Tx, path string, bound
 			if err := s.validDeletedIssueAllocationInTx(ctx, tx, path, kind, typ.String, head, state, backing, key); err != nil {
 				return "", nil, err
 			}
-		} else if !s.validDeletedLinkAllocation(kind, typ.String, backing, key) {
+		} else if !s.validDeletedLinkAllocation(kind, typ.String, backing, key, issueType) {
 			return "", nil, fmt.Errorf("%w: unsupported deleted subject", ErrInvalidStore)
 		}
 	}
@@ -221,7 +225,7 @@ func (s *Store) versionsInTx(ctx context.Context, tx *sql.Tx, path string, bound
 		// name the same Issue the catalog is bound to before it is trusted. The
 		// type URL is compared too: backing alone was never enough to establish
 		// that this allocation is the kind of thing it claims to be.
-		if typ.String != IssueTypeURL(s.ScopeURL()) || !key.Valid || key.String == "" {
+		if typ.String != issueType || !key.Valid || key.String == "" {
 			return "", nil, fmt.Errorf("%w: invalid Issue allocation", ErrInvalidStore)
 		}
 		rows, err := issueVersionsInTx(ctx, tx, path, key.String, head, bounds)
@@ -233,7 +237,7 @@ func (s *Store) versionsInTx(ctx context.Context, tx *sql.Tx, path string, bound
 		rows, err := previewVersionsInTx(ctx, tx, path, head, "", bounds)
 		return KindMemory, rows, err
 	case backing == "informational" && kind == "link" && IsInformationalTypeURL(s.ScopeURL(), typ.String),
-		backing == "dependency" && kind == "link" && typ.String == DependencyTypeURL(s.ScopeURL()):
+		backing == "dependency" && kind == "link" && isNativeDependencyLinkType(s.ScopeURL(), issueType, typ.String):
 		// Every informational Type the binary knows is accepted here, but only
 		// one this store has INSTALLED is valid: a legacy four-Type installation
 		// never holds the example Types, so an allocation naming one is corrupt

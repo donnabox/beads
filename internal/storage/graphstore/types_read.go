@@ -80,13 +80,21 @@ func (s *Store) readTypeInTx(ctx context.Context, tx *sql.Tx, id string) (graph.
 		name = "example-follows"
 	case ExampleCitesTypeURL(s.ScopeURL()):
 		name = "example-cites"
+	case RelationshipIssueTypeURL(s.ScopeURL()):
+		name = "issue-v3"
 	default:
-		return graph.TypeDescriptor{}, ErrNotFound
+		var ok bool
+		name, ok = relationshipDependencyInstallName(s.ScopeURL(), id)
+		if !ok {
+			return graph.TypeDescriptor{}, ErrNotFound
+		}
 	}
 	var raw []byte
 	var fingerprint string
 	if err := tx.QueryRowContext(ctx, `SELECT descriptor,fingerprint FROM graph_preview_types WHERE name=?`, name).Scan(&raw, &fingerprint); err != nil {
-		if errors.Is(err, sql.ErrNoRows) && (name == "example-follows" || name == "example-cites") {
+		if errors.Is(err, sql.ErrNoRows) &&
+			(name == "example-follows" || name == "example-cites" || name == "issue-v3" ||
+				name == "blocks-v2" || name == "parent-child" || name == "duplicates" || name == "supersedes") {
 			return graph.TypeDescriptor{}, ErrNotFound
 		}
 		return graph.TypeDescriptor{}, fmt.Errorf("%w: read installed %s descriptor: %v", ErrInvalidStore, name, err)

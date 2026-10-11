@@ -182,7 +182,7 @@ func TestIssueAdapterCreateReadReopen(t *testing.T) {
 			if req.Issue.ID != "" {
 				t.Fatal("adapter mutated caller's request")
 			}
-			if created.ID != o.Binding.ScopeURL+"beads/task" || created.Type != IssueTypeURL(o.Binding.ScopeURL) || !strings.HasPrefix(created.Properties.ID, "exp-") || created.Owned == nil {
+			if created.ID != o.Binding.ScopeURL+"beads/task" || created.Type != RelationshipIssueTypeURL(o.Binding.ScopeURL) || !strings.HasPrefix(created.Properties.ID, "exp-") || created.Owned == nil {
 				t.Fatalf("wrong record: %+v", created)
 			}
 			if _, err := s.CreateIssue(ctx, "beads/task", plainIssue("duplicate path")); !errors.Is(err, ErrAlreadyExists) {

@@ -281,7 +281,7 @@ func TestReadVersionOwnedMembershipByOwnerKind(t *testing.T) {
 				{"memory-owns-informational", "beads/plan", planVersion, "", ""},
 				{"issue-owns-dependency", "beads/work", dep.Source.Version, "", ""},
 				{"memory-owns-memory-typed", "beads/plan", planVersion, MemoryTypeURL(scope), membership},
-				{"memory-owns-dependency-typed", "beads/plan", planVersion, DependencyTypeURL(scope), membership},
+				{"memory-owns-dependency-typed", "beads/plan", planVersion, dep.Link.Type, membership},
 				{"issue-owns-informational-typed", "beads/work", dep.Source.Version, RelatedTypeURL(scope), membership},
 			} {
 				t.Run(tc.name, func(t *testing.T) {

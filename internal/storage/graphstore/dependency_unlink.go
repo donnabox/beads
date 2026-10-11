@@ -10,6 +10,7 @@ import (
 
 	"github.com/steveyegge/beads/internal/storage"
 	"github.com/steveyegge/beads/internal/storage/issueops"
+	"github.com/steveyegge/beads/internal/types"
 	publicops "github.com/steveyegge/beads/issueops"
 )
 
@@ -48,8 +49,12 @@ func (s *Store) RemoveDependency(ctx context.Context, request DependencyRemoveRe
 			return err
 		}
 		result.Source, result.Target = source, target
+		blockingType, ok := nativeDependencyTypeURLForIssueType(s.ScopeURL(), source.Type, types.DepBlocks)
+		if !ok || target.Type != source.Type {
+			return fmt.Errorf("%w: Issue pair has no shared installed blocking Type", ErrInvalidStore)
+		}
 		path, err := s.selectUnlinkPathInTx(ctx, tx, LinkDeleteRequest{
-			SourcePath: sourcePath, TargetPath: targetPath, TypeURL: DependencyTypeURL(s.ScopeURL()),
+			SourcePath: sourcePath, TargetPath: targetPath, TypeURL: blockingType,
 		})
 		if errors.Is(err, ErrNotFound) {
 			return nil
@@ -61,7 +66,7 @@ func (s *Store) RemoveDependency(ctx context.Context, request DependencyRemoveRe
 		if err != nil {
 			return err
 		}
-		if link.Type != DependencyTypeURL(s.ScopeURL()) {
+		if link.Type != blockingType {
 			return fmt.Errorf("%w: selected pair is not a blocking Dependency", ErrInvalidStore)
 		}
 		removed, err := s.unlinkDependencyInTx(ctx, tx, path, link, LinkDeleteRequest{
@@ -137,14 +142,14 @@ func (s *Store) resolveDependencyRemoveIssueInTx(ctx context.Context, tx *sql.Tx
 // validDeletedLinkAllocation separates reserved canonical identity from current
 // authority. Dependency row IDs are deterministic per pair; clearing the deleted
 // allocation's backing key permits a later pair assertion under a NEW Link ID.
-func (s *Store) validDeletedLinkAllocation(kind, typ, backing string, key sql.NullString) bool {
+func (s *Store) validDeletedLinkAllocation(kind, typ, backing string, key sql.NullString, issueType string) bool {
 	return kind == "link" && !key.Valid &&
 		((backing == "informational" && IsInformationalTypeURL(s.ScopeURL(), typ)) ||
-			(backing == "dependency" && typ == DependencyTypeURL(s.ScopeURL())))
+			(backing == "dependency" && isNativeDependencyLinkType(s.ScopeURL(), issueType, typ)))
 }
 
 // unlinkDependencyInTx extends the existing guarded unlink transaction only for
-// a checked live canonical blocking Link. The Issue-domain removal remains the
+// a checked live canonical native Dependency Link. The Issue-domain removal remains the
 // sole writer of Dependency rows and derived readiness state.
 func (s *Store) unlinkDependencyInTx(ctx context.Context, tx *sql.Tx, path string, link LinkRecord, request LinkDeleteRequest) (LinkDeleteResult, error) {
 	if err := checkRevisionGuard(request.ExpectedRevision, request.Unconditional, link.Revision, true, "Link"); err != nil {

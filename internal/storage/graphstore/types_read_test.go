@@ -31,7 +31,14 @@ func TestReadInstalledTypes(t *testing.T) {
 			if err := s.db.QueryRowContext(ctx, `SELECT writer_token FROM graph_preview_scope WHERE singleton=1`).Scan(&writerBefore); err != nil {
 				t.Fatal(err)
 			}
-			for name, id := range map[string]string{"memory": MemoryTypeURL(o.Binding.ScopeURL), "issue": IssueTypeURL(o.Binding.ScopeURL), "dependency": DependencyTypeURL(o.Binding.ScopeURL), "related": RelatedTypeURL(o.Binding.ScopeURL), "example-follows": ExampleFollowsTypeURL(o.Binding.ScopeURL), "example-cites": ExampleCitesTypeURL(o.Binding.ScopeURL)} {
+			for name, id := range map[string]string{
+				"memory": MemoryTypeURL(o.Binding.ScopeURL), "issue": IssueTypeURL(o.Binding.ScopeURL),
+				"dependency": DependencyTypeURL(o.Binding.ScopeURL), "related": RelatedTypeURL(o.Binding.ScopeURL),
+				"example-follows": ExampleFollowsTypeURL(o.Binding.ScopeURL), "example-cites": ExampleCitesTypeURL(o.Binding.ScopeURL),
+				"issue-v3":  RelationshipIssueTypeURL(o.Binding.ScopeURL),
+				"blocks-v2": o.Binding.ScopeURL + "types/preview-blocks-v2", "parent-child": o.Binding.ScopeURL + "types/preview-parent-child-v1",
+				"duplicates": o.Binding.ScopeURL + "types/preview-duplicates-v1", "supersedes": o.Binding.ScopeURL + "types/preview-supersedes-v1",
+			} {
 				got, err := s.ReadType(ctx, strings.TrimPrefix(id, o.Binding.ScopeURL))
 				if err != nil {
 					t.Fatal(err)
@@ -89,7 +96,7 @@ func TestListInstalledTypesReflectsPersistedInstallation(t *testing.T) {
 		t.Fatal(err)
 	}
 	installed, err := store.ListInstalledTypes(ctx)
-	if err != nil || len(installed) != 6 {
+	if err != nil || len(installed) != 11 {
 		t.Fatalf("fresh installed Types: %d %v", len(installed), err)
 	}
 	rows, err := store.db.QueryContext(ctx, `SELECT descriptor FROM graph_preview_types`)
@@ -119,7 +126,7 @@ func TestListInstalledTypesReflectsPersistedInstallation(t *testing.T) {
 			t.Fatalf("%s did not return its persisted descriptor", descriptor.ID())
 		}
 	}
-	if _, err := store.db.ExecContext(ctx, `DELETE FROM graph_preview_types WHERE name IN ('example-follows','example-cites')`); err != nil {
+	if _, err := store.db.ExecContext(ctx, `DELETE FROM graph_preview_types WHERE name IN ('example-follows','example-cites','issue-v3','blocks-v2','parent-child','duplicates','supersedes')`); err != nil {
 		t.Fatal(err)
 	}
 	installed, err = store.ListInstalledTypes(ctx)

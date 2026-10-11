@@ -63,6 +63,9 @@ func (s *Store) validateLinkType(typ string, allowEmpty bool) error {
 	if (allowEmpty && typ == "") || IsInformationalTypeURL(s.ScopeURL(), typ) || typ == DependencyTypeURL(s.options.Binding.ScopeURL) {
 		return nil
 	}
+	if _, known := nativeRelationshipDependencyType(s.ScopeURL(), typ); known && s.options.TypeGeneration != 5 && s.options.TypeGeneration != 6 {
+		return nil // The transactional installed-Type check still guards old stores.
+	}
 	return fmt.Errorf("%w: Link Type is not installed in this preview", storage.ErrValidation)
 }
 
@@ -140,8 +143,8 @@ func (s *Store) Unlink(ctx context.Context, request LinkDeleteRequest) (LinkDele
 		if err := s.validateLinkType(request.TypeURL, false); err != nil {
 			return LinkDeleteResult{}, err
 		}
-		if request.TypeURL == DependencyTypeURL(s.options.Binding.ScopeURL) {
-			return LinkDeleteResult{}, fmt.Errorf("%w: blocking Dependency unlink requires its canonical Link ID", ErrCapabilityUnavailable)
+		if request.TypeURL == DependencyTypeURL(s.options.Binding.ScopeURL) || !IsInformationalTypeURL(s.ScopeURL(), request.TypeURL) {
+			return LinkDeleteResult{}, fmt.Errorf("%w: native Dependency unlink requires its canonical Link ID", ErrCapabilityUnavailable)
 		}
 	}
 	var result LinkDeleteResult
@@ -162,9 +165,16 @@ func (s *Store) Unlink(ctx context.Context, request LinkDeleteRequest) (LinkDele
 		if err != nil {
 			return err
 		}
-		if link.Type == DependencyTypeURL(s.options.Binding.ScopeURL) {
+		issueType, err := installedIssueTypeURLInTx(ctx, tx, s.ScopeURL())
+		if err != nil {
+			return err
+		}
+		if isNativeDependencyLinkType(s.ScopeURL(), issueType, link.Type) {
 			result, err = s.unlinkDependencyInTx(ctx, tx, path, link, request)
 			return err
+		}
+		if !IsInformationalTypeURL(s.ScopeURL(), link.Type) {
+			return fmt.Errorf("%w: native relationship Link unlink is not admitted in this preview", ErrCapabilityUnavailable)
 		}
 		// Only informational Links reach this point. Resolve the CLI default
 		// here, after transactional selection, without a whole-workspace read.
@@ -257,12 +267,16 @@ func (s *Store) selectUnlinkPathInTx(ctx context.Context, tx *sql.Tx, request Li
 // A valid tombstone is distinct from missing or corrupt state. Missing retained
 // deletion/previous state must not be disguised as ordinary gone.
 func (s *Store) deletedLinkErrorInTx(ctx context.Context, tx *sql.Tx, path string) error {
+	issueType, err := installedIssueTypeURLInTx(ctx, tx, s.ScopeURL())
+	if err != nil {
+		return err
+	}
 	var kind, typ, revision, backing string
 	var key sql.NullString
 	if err := tx.QueryRowContext(ctx, `SELECT resource_kind,type_url,revision,backing,backing_key FROM graph_preview_catalog WHERE path=?`, path).Scan(&kind, &typ, &revision, &backing, &key); err != nil {
 		return err
 	}
-	if !s.validDeletedLinkAllocation(kind, typ, backing, key) || !authorityID.MatchString(revision) {
+	if !s.validDeletedLinkAllocation(kind, typ, backing, key, issueType) || !authorityID.MatchString(revision) {
 		return fmt.Errorf("%w: invalid deleted allocation", ErrInvalidStore)
 	}
 	var snapshot []byte
@@ -305,17 +319,40 @@ func (s *Store) deletedLinkErrorInTx(ctx context.Context, tx *sql.Tx, path strin
 // mappings before a join can hide them as an apparently complete collection.
 func (s *Store) checkLinkMappingsInTx(ctx context.Context, tx *sql.Tx) error {
 	var invalidTypes int
+	issueType, err := installedIssueTypeURLInTx(ctx, tx, s.ScopeURL())
+	if err != nil {
+		return err
+	}
 	ids, err := s.installedInformationalTypes(ctx, tx)
 	if err != nil {
 		return err
 	}
-	placeholders, args := informationalTypeSQL(ids)
-	args = append(args, DependencyTypeURL(s.ScopeURL()))
-	if err := tx.QueryRowContext(ctx, `SELECT COUNT(*) FROM graph_preview_catalog WHERE resource_kind='link' AND allocation_state='live' AND ((backing='informational' AND type_url NOT IN (`+placeholders+`)) OR (backing='dependency' AND type_url<>?))`, args...).Scan(&invalidTypes); err != nil {
+	infoPlaceholders, args := informationalTypeSQL(ids)
+	dependencyTypes := dependencyLinkTypesForIssueType(s.ScopeURL(), issueType)
+	depPlaceholders, depArgs := informationalTypeSQL(dependencyTypes)
+	args = append(args, depArgs...)
+	if err := tx.QueryRowContext(ctx, `SELECT COUNT(*) FROM graph_preview_catalog WHERE resource_kind='link' AND allocation_state='live' AND ((backing='informational' AND type_url NOT IN (`+infoPlaceholders+`)) OR (backing='dependency' AND type_url NOT IN (`+depPlaceholders+`)))`, args...).Scan(&invalidTypes); err != nil {
 		return err
 	}
 	if invalidTypes != 0 {
 		return fmt.Errorf("%w: Link Type differs from its authority", ErrInvalidStore)
+	}
+	if issueType == RelationshipIssueTypeURL(s.ScopeURL()) {
+		// A v7 Link Type names exactly one native Dependency kind. Keep the
+		// legacy collection check's admission behavior unchanged.
+		pairs := make([]string, 0, len(dependencyTypes))
+		pairArgs := make([]any, 0, len(dependencyTypes)*2)
+		for _, linkType := range dependencyTypes {
+			native, _ := nativeDependencyTypeForIssueType(s.ScopeURL(), issueType, linkType)
+			pairs = append(pairs, "(d.type=? AND c.type_url=?)")
+			pairArgs = append(pairArgs, string(native), linkType)
+		}
+		if err := tx.QueryRowContext(ctx, `SELECT COUNT(*) FROM graph_preview_catalog c JOIN dependencies d ON d.id=c.backing_key WHERE c.backing='dependency' AND c.allocation_state='live' AND NOT (`+strings.Join(pairs, " OR ")+`)`, pairArgs...).Scan(&invalidTypes); err != nil {
+			return err
+		}
+		if invalidTypes != 0 {
+			return fmt.Errorf("%w: native Dependency kind and Link Type differ", ErrInvalidStore)
+		}
 	}
 	for _, query := range []string{
 		`SELECT COUNT(*) FROM graph_preview_catalog c LEFT JOIN graph_preview_links l ON l.path=c.path LEFT JOIN dependencies d ON d.id=c.backing_key

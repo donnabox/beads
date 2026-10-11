@@ -19,6 +19,12 @@ type graphDependencyProjection struct {
 }
 
 func projectGraphDependencies(snapshot graphstore.Snapshot, scope string) (graphDependencyProjection, error) {
+	blockingType := graphstore.DependencyTypeURL(scope)
+	if len(snapshot.Types) == 11 {
+		// Fresh v7 workspaces install a distinct blocking Link identity. Older
+		// pinned workspaces retain blocks-v1 and must keep their current view.
+		blockingType = graphstore.RelationshipBlockingTypeURL(scope)
+	}
 	g := graphDependencyProjection{
 		issues: map[string]graphstore.IssueRecord{}, links: []graphstore.LinkRecord{},
 		down: map[string][]string{}, up: map[string][]string{},
@@ -30,7 +36,7 @@ func projectGraphDependencies(snapshot graphstore.Snapshot, scope string) (graph
 	}
 	for _, raw := range snapshot.Records {
 		link, ok := raw.(graphstore.LinkRecord)
-		if !ok || link.Type != graphstore.DependencyTypeURL(scope) {
+		if !ok || link.Type != blockingType {
 			continue
 		}
 		if _, ok := g.issues[link.Source]; !ok {

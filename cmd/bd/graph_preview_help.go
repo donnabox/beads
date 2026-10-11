@@ -120,7 +120,8 @@ Use bd types to see Bead Types installed in this workspace. A short NAME,
 types/NAME, or a full local Type URL works. --type remains the Issue classification
 (for example task or bug), not the Bead Type. Memory creation
 accepts body/description/message and an optional title; unsupported Issue-only
-fields refuse.`},
+fields refuse. Fresh v7 workspaces create types/preview-issue-v3 Issues;
+pinned v5/v6 workspaces continue to create types/preview-issue-v2 Issues.`},
 		{showCmd, `Use bd show ID (equivalent to beads/ID) for a current Memory or
 Issue; use bd show links/ID for a Link. --version TOKEN selects one exact
 retained record; this is not an ordered history listing. A current Issue's
@@ -188,7 +189,8 @@ Memory-owned Links accept the current source by default, or use
 --if-source-revision TOKEN to reject a stale source. --metadata JSON supplies
 an initial open metadata object for informational Links; blocking Dependencies
 do not accept it. --unconditional-source
-explicitly selects the default. The blocking Type types/preview-blocks-v1
+explicitly selects the default. The blocking Type types/preview-blocks-v2 in
+fresh v7 workspaces, or types/preview-blocks-v1 in pinned v5/v6 workspaces,
 requires Issue endpoints and, unlike informational Types, one of
 --if-source-revision TOKEN or --unconditional-source.`},
 		{closeCmd, `Close one or more local Issues by ID or beads/ID. One --reason

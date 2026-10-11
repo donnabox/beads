@@ -26,11 +26,15 @@ type Binding struct {
 // Options selects an explicit backend. Existing opens never provision or migrate.
 // DataDir is the already-created embedded engine directory, not a second DB.
 type Options struct {
-	Backend        string
-	DataDir        string
-	Database       string
-	Branch         string
-	Binding        Binding
+	Backend  string
+	DataDir  string
+	Database string
+	Branch   string
+	Binding  Binding
+	// TypeGeneration is the admitted workspace marker generation. Zero lets
+	// direct storage callers inspect any recognized persisted generation; the
+	// CLI supplies 5, 6, or 7 and requires that marker's installed Type count.
+	TypeGeneration int
 	ServerHost     string
 	ServerPort     int
 	ServerUser     string
@@ -101,15 +105,16 @@ var (
 	ErrOutcomeUnknown = errors.New("graph transaction outcome is unknown; do not replay automatically")
 )
 
-// DependencyRequest asserts one Issue Dependency between live local Issues.
-// The current installed Type set admits only blocks; a requested nonblocking
-// native type must be refused rather than silently written as blocks. Empty
-// Type preserves the original blocking-only caller contract. Path is an
+// DependencyRequest asserts one Issue-owned native Dependency between live
+// local Issues. Type preserves the legacy blocking-only caller contract and
+// rejects unsupported kinds; TypeURL selects an installed canonical Link Type
+// in the workspace generation. If both are set, they must agree. Path is an
 // optional never-reused Link allocation; empty allocates a fresh path.
 type DependencyRequest struct {
 	// ExpectedSourceRevision guards generic authoring; empty retains the legacy command contract.
 	ExpectedSourceRevision string
 	Type                   types.DependencyType
+	TypeURL                string
 	SourcePath             string
 	TargetPath             string
 	Path                   string

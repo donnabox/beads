@@ -25,14 +25,22 @@ type previewTypeDefinition struct {
 	build func(string) (graph.TypeDescriptor, error)
 }
 
-// The original four entries are a complete legacy installation. Examples are
-// installed together only in new workspaces; reads never upgrade an old store.
+// The original four entries and the first six entries are complete legacy
+// installations. The relationship descriptors are appended only for fresh v7
+// workspaces; reads never upgrade an old store or replace an old fingerprint.
 func previewTypeDefinitions() []previewTypeDefinition {
-	return []previewTypeDefinition{
+	definitions := []previewTypeDefinition{
 		{"memory", memoryDescriptor}, {"issue", issueDescriptor},
 		{"dependency", dependencyDescriptor}, {"related", relatedDescriptor},
 		{"example-follows", exampleFollowsDescriptor}, {"example-cites", exampleCitesDescriptor},
+		{"issue-v3", relationshipIssueDescriptor},
 	}
+	for _, relation := range relationshipDependencyTypes {
+		definitions = append(definitions, previewTypeDefinition{relation.installName, func(scope string) (graph.TypeDescriptor, error) {
+			return relationshipDependencyDescriptor(scope, relation.native)
+		}})
+	}
+	return definitions
 }
 
 // FreshTypeNames lists, in installation order, the Types a fresh init installs.
@@ -68,16 +76,16 @@ func exampleInformationalDescriptor(id, name, meaning string) (graph.TypeDescrip
 	})
 }
 
-// installedPreviewTypes admits exactly the original four or all six immutable
-// descriptors. Count and SQL byte-length guards bound metadata acquisition and
-// reject partial, unknown, replaced or oversized installations.
+// installedPreviewTypes admits exactly the immutable four-, six-, or eleven-
+// Type generations. Count and SQL byte-length guards bound metadata acquisition
+// and reject partial, unknown, replaced or oversized installations.
 func installedPreviewTypes(ctx context.Context, tx *sql.Tx, scope string) ([]graph.TypeDescriptor, error) {
 	var count int
 	if err := tx.QueryRowContext(ctx, `SELECT COUNT(*) FROM graph_preview_types`).Scan(&count); err != nil {
 		return nil, err
 	}
 	definitions := previewTypeDefinitions()
-	if count != 4 && count != len(definitions) {
+	if count != 4 && count != 6 && count != len(definitions) {
 		return nil, fmt.Errorf("%w: unsupported Type installation", ErrInvalidStore)
 	}
 	result := make([]graph.TypeDescriptor, 0, count)

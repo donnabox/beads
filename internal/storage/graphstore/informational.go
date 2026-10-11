@@ -386,6 +386,10 @@ func (s *Store) recordOwnedMemoryInTx(ctx context.Context, tx *sql.Tx, sourcePat
 }
 
 func (s *Store) currentInformationalLinkInTx(ctx context.Context, tx *sql.Tx, path string) (LinkRecord, error) {
+	issueType, err := installedIssueTypeURLInTx(ctx, tx, s.ScopeURL())
+	if err != nil {
+		return LinkRecord{}, err
+	}
 	var kind, typ, revision, state, backing string
 	var key sql.NullString
 	if err := tx.QueryRowContext(ctx, `SELECT resource_kind,type_url,revision,allocation_state,backing,backing_key FROM graph_preview_catalog WHERE path=?`, path).Scan(&kind, &typ, &revision, &state, &backing, &key); err != nil {
@@ -407,7 +411,7 @@ func (s *Store) currentInformationalLinkInTx(ctx context.Context, tx *sql.Tx, pa
 		if err := tx.QueryRowContext(ctx, `SELECT resource_kind,type_url,allocation_state,backing FROM graph_preview_catalog WHERE path=?`, endpoint).Scan(&kind, &typ, &state, &backing); err != nil {
 			return LinkRecord{}, fmt.Errorf("%w: missing endpoint: %v", ErrInvalidStore, err)
 		}
-		if validatePath(endpoint) != nil || kind != "bead" || state != "live" || !((backing == "generic" && typ == MemoryTypeURL(s.options.Binding.ScopeURL)) || (backing == "issue" && typ == IssueTypeURL(s.options.Binding.ScopeURL))) {
+		if validatePath(endpoint) != nil || kind != "bead" || state != "live" || !((backing == "generic" && typ == MemoryTypeURL(s.options.Binding.ScopeURL)) || (backing == "issue" && typ == issueType)) {
 			return LinkRecord{}, fmt.Errorf("%w: invalid informational endpoint", ErrInvalidStore)
 		}
 	}

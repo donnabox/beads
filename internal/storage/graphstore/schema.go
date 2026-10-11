@@ -13,6 +13,7 @@ import (
 
 	graph "github.com/steveyegge/beads/graphops"
 	"github.com/steveyegge/beads/internal/storage/issueops"
+	"github.com/steveyegge/beads/internal/types"
 )
 
 // These tables are deliberately preview-specific. They share the standard
@@ -95,6 +96,104 @@ func dependencyDescriptor(scope string) (graph.TypeDescriptor, error) {
 		Description: "Disposable Dependency adapter. Unpinned live local durable Issue endpoints; empty properties. The source depends on the target and owns this Link. Issue-domain pair uniqueness applies. No generic multiedge or production Dependency contract is established.",
 		Source:      &endpoint, Target: &endpoint,
 	})
+}
+
+// RelationshipIssueTypeURL is a distinct descriptor identity for a future
+// workspace generation. The installed Issue v2 descriptor above is immutable:
+// it owns only blocking Links, so adding relationship ownership to it would
+// make existing workspaces fail their fingerprint check. Fresh v7 workspaces
+// install this identity; older workspaces remain pinned to Issue v2.
+func RelationshipIssueTypeURL(scope string) string { return scope + "types/preview-issue-v3" }
+
+func relationshipIssueDescriptor(scope string) (graph.TypeDescriptor, error) {
+	owned := make([]graph.OwnedLinkDecl, 0, len(relationshipDependencyTypes))
+	for _, relation := range relationshipDependencyTypes {
+		link, err := graph.NewOwnedLinkDecl(scope+relation.path, "", PreviewOwnedLinkLimit)
+		if err != nil {
+			return graph.TypeDescriptor{}, err
+		}
+		owned = append(owned, link)
+	}
+	return graph.NewTypeDescriptor(graph.TypeDescriptorSpec{
+		ID: RelationshipIssueTypeURL(scope), Name: "Experimental Issue v3", Describes: graph.KindBead,
+		Description:  "Disposable specialized Issue adapter with source-owned blocking, parent-child, duplicates, and supersedes Dependency Links. Issue classification remains a property. Native Issue writers own lifecycle and retained History; these Link Types do not define a close reason or authorize an edge-plus-close operation.",
+		OwnsOutgoing: owned,
+	})
+}
+
+type relationshipDependencyType struct {
+	native      types.DependencyType
+	installName string
+	path        string
+	name        string
+}
+
+// The one-to-one native Dependency kind to canonical Link Type mapping for a
+// fresh v7 generation. It is deliberately separate from the v2 blocking
+// descriptor; no old descriptor bytes or installed set change here.
+var relationshipDependencyTypes = [...]relationshipDependencyType{
+	{types.DepBlocks, "blocks-v2", "types/preview-blocks-v2", "Experimental blocking Dependency v2"},
+	{types.DepParentChild, "parent-child", "types/preview-parent-child-v1", "Experimental parent-child Dependency v1"},
+	{types.DepDuplicates, "duplicates", "types/preview-duplicates-v1", "Experimental duplicates Dependency v1"},
+	{types.DepSupersedes, "supersedes", "types/preview-supersedes-v1", "Experimental supersedes Dependency v1"},
+}
+
+func relationshipDependencyTypeURL(scope string, native types.DependencyType) (string, bool) {
+	for _, relation := range relationshipDependencyTypes {
+		if relation.native == native {
+			return scope + relation.path, true
+		}
+	}
+	return "", false
+}
+
+// RelationshipDependencyTypeURL names a v7 native Dependency Link Type. This
+// is an identity lookup, not permission to create the relationship.
+func RelationshipDependencyTypeURL(scope string, native types.DependencyType) (string, bool) {
+	return relationshipDependencyTypeURL(scope, native)
+}
+
+// RelationshipBlockingTypeURL is the installed blocking Link identity in a
+// fresh v7 workspace. Older pinned workspaces retain DependencyTypeURL.
+func RelationshipBlockingTypeURL(scope string) string {
+	id, _ := relationshipDependencyTypeURL(scope, types.DepBlocks)
+	return id
+}
+
+func nativeRelationshipDependencyType(scope, id string) (types.DependencyType, bool) {
+	for _, relation := range relationshipDependencyTypes {
+		if id == scope+relation.path {
+			return relation.native, true
+		}
+	}
+	return "", false
+}
+
+func relationshipDependencyInstallName(scope, id string) (string, bool) {
+	for _, relation := range relationshipDependencyTypes {
+		if id == scope+relation.path {
+			return relation.installName, true
+		}
+	}
+	return "", false
+}
+
+func relationshipDependencyDescriptor(scope string, native types.DependencyType) (graph.TypeDescriptor, error) {
+	for _, relation := range relationshipDependencyTypes {
+		if relation.native != native {
+			continue
+		}
+		endpoint, err := graph.NewEndpointConstraint([]string{RelationshipIssueTypeURL(scope)}, graph.ExternalNone)
+		if err != nil {
+			return graph.TypeDescriptor{}, err
+		}
+		return graph.NewTypeDescriptor(graph.TypeDescriptorSpec{
+			ID: scope + relation.path, Name: relation.name, Describes: graph.KindLink,
+			Description: "Disposable Issue-owned native " + string(native) + " Dependency. Both endpoints are live, unpinned local Issue v3 Beads; properties are empty. Native Dependency pair uniqueness applies. This descriptor does not define Issue close behavior.",
+			Source:      &endpoint, Target: &endpoint,
+		})
+	}
+	return graph.TypeDescriptor{}, fmt.Errorf("unsupported native relationship Dependency %q", native)
 }
 
 // RelatedTypeURL names the private experimental informational Link descriptor.
@@ -203,8 +302,15 @@ func checkBinding(ctx context.Context, tx *sql.Tx, o Options) error {
 	if b != o.Binding || !authorityID.MatchString(token) {
 		return fmt.Errorf("%w: persisted binding differs from workspace", ErrInvalidStore)
 	}
-	if _, err := installedPreviewTypes(ctx, tx, b.ScopeURL); err != nil {
+	installed, err := installedPreviewTypes(ctx, tx, b.ScopeURL)
+	if err != nil {
 		return err
+	}
+	count := len(installed)
+	if (o.TypeGeneration == 5 && count != 4 && count != 6) ||
+		(o.TypeGeneration == 6 && count != 6) ||
+		(o.TypeGeneration == 7 && count != len(previewTypeDefinitions())) {
+		return fmt.Errorf("%w: workspace marker and installed Type generation differ", ErrInvalidStore)
 	}
 	if _, err := issueops.ReadConfigPrefix(ctx, tx); err != nil {
 		return fmt.Errorf("%w: Issue configuration: %v", ErrInvalidStore, err)

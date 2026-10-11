@@ -62,18 +62,25 @@ func TestPreviewSchemaVersionAndInstalledTypeCounts(t *testing.T) {
 		descriptors, err := installedPreviewTypes(ctx, tx, s.ScopeURL())
 		return len(descriptors), err
 	}
-	if count, err := installed(); err != nil || count != 6 {
-		t.Fatalf("fresh installation admitted %d Types with %v, want all 6", count, err)
+	if count, err := installed(); err != nil || count != 11 {
+		t.Fatalf("fresh installation admitted %d Types with %v, want all 11", count, err)
 	}
-	// Five Types is neither the legacy installation nor the current one.
-	if _, err := s.db.ExecContext(ctx, `DELETE FROM graph_preview_types WHERE name='example-cites'`); err != nil {
+	// Ten Types is a partial relationship generation and must be refused.
+	if _, err := s.db.ExecContext(ctx, `DELETE FROM graph_preview_types WHERE name='supersedes'`); err != nil {
 		t.Fatal(err)
 	}
 	if count, err := installed(); !errors.Is(err, ErrInvalidStore) {
-		t.Fatalf("five Types admitted: %d Types with %v, want ErrInvalidStore", count, err)
+		t.Fatalf("ten Types admitted: %d Types with %v, want ErrInvalidStore", count, err)
 	}
-	// Removing the second example row leaves precisely the original four.
-	if _, err := s.db.ExecContext(ctx, `DELETE FROM graph_preview_types WHERE name='example-follows'`); err != nil {
+	// Remove the rest of the v7 suffix to recover the exact six-Type set.
+	if _, err := s.db.ExecContext(ctx, `DELETE FROM graph_preview_types WHERE name IN ('issue-v3','blocks-v2','parent-child','duplicates')`); err != nil {
+		t.Fatal(err)
+	}
+	if count, err := installed(); err != nil || count != 6 {
+		t.Fatalf("prior installation admitted %d Types with %v, want 6", count, err)
+	}
+	// Removing both example rows leaves precisely the original four.
+	if _, err := s.db.ExecContext(ctx, `DELETE FROM graph_preview_types WHERE name IN ('example-follows','example-cites')`); err != nil {
 		t.Fatal(err)
 	}
 	if count, err := installed(); err != nil || count != 4 {

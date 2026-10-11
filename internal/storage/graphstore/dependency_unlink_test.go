@@ -309,7 +309,7 @@ func TestDependencyUnlinkRefusalRollback(t *testing.T) {
 					r.Path = ""
 					r.SourcePath = "beads/source"
 					r.TargetPath = "beads/first"
-					r.TypeURL = DependencyTypeURL(s.ScopeURL())
+					r.TypeURL = f.links[0].Type
 				}, ErrCapabilityUnavailable},
 			}
 			for _, tc := range cases {

@@ -69,6 +69,10 @@ func (s *Store) CreateIssue(ctx context.Context, path string, request publicops.
 		if err := checkBinding(ctx, tx, s.options); err != nil {
 			return err
 		}
+		issueType, err := installedIssueTypeURLInTx(ctx, tx, s.ScopeURL())
+		if err != nil {
+			return err
+		}
 		if issueops.ResolveInfraTypesInTx(ctx, tx)[string(request.Issue.IssueType.Normalize())] {
 			return fmt.Errorf("%w: infrastructure Issue types are not admitted by the graph preview", storage.ErrValidation)
 		}
@@ -120,7 +124,7 @@ func (s *Store) CreateIssue(ctx context.Context, path string, request publicops.
 		}
 		if _, err := tx.ExecContext(ctx, `INSERT INTO graph_preview_catalog
             (path,resource_kind,type_url,revision,allocation_state,backing,backing_key)
-            VALUES (?,'bead',?,?,'live','issue',?)`, path, IssueTypeURL(s.options.Binding.ScopeURL), revision, created.Issue.ID); err != nil {
+			VALUES (?,'bead',?,?,'live','issue',?)`, path, issueType, revision, created.Issue.ID); err != nil {
 			return err
 		}
 		if err := s.afterStage("issue-catalog"); err != nil {
@@ -239,8 +243,12 @@ func (s *Store) ShowIssue(ctx context.Context, path string) (IssueRecord, error)
 }
 
 func (s *Store) showIssueInTx(ctx context.Context, tx *sql.Tx, path string) (IssueRecord, error) {
+	issueType, err := installedIssueTypeURLInTx(ctx, tx, s.ScopeURL())
+	if err != nil {
+		return IssueRecord{}, err
+	}
 	var kind, typ, revision, state, backing, issueID string
-	err := tx.QueryRowContext(ctx, `SELECT resource_kind,type_url,revision,allocation_state,backing,backing_key
+	err = tx.QueryRowContext(ctx, `SELECT resource_kind,type_url,revision,allocation_state,backing,backing_key
         FROM graph_preview_catalog WHERE path=?`, path).Scan(&kind, &typ, &revision, &state, &backing, &issueID)
 	if errors.Is(err, sql.ErrNoRows) {
 		return IssueRecord{}, ErrNotFound
@@ -254,7 +262,7 @@ func (s *Store) showIssueInTx(ctx context.Context, tx *sql.Tx, path string) (Iss
 		}
 		return IssueRecord{}, ErrGone
 	}
-	if kind != "bead" || typ != IssueTypeURL(s.options.Binding.ScopeURL) || !authorityID.MatchString(revision) || state != "live" || backing != "issue" || issueID == "" {
+	if kind != "bead" || typ != issueType || !authorityID.MatchString(revision) || state != "live" || backing != "issue" || issueID == "" {
 		return IssueRecord{}, fmt.Errorf("%w: invalid Issue allocation", ErrInvalidStore)
 	}
 	// Comments are a separate native Issue feed, outside durable_state and its
@@ -307,7 +315,7 @@ func (s *Store) showIssueInTx(ctx context.Context, tx *sql.Tx, path string) (Iss
 	if !bytes.Equal(retainedOwned, canonicalOwned) {
 		return IssueRecord{}, fmt.Errorf("%w: Issue owned state differs from retained version", ErrInvalidStore)
 	}
-	// The private v2 graph projection expresses dependencies once, canonically.
+	// The graph projection expresses dependencies once, canonically.
 	// Jim's authoritative Issue snapshot still retains its original domain shape.
 	metadata, err := commonMetadata(issue.Metadata)
 	if err != nil {
@@ -317,4 +325,22 @@ func (s *Store) showIssueInTx(ctx context.Context, tx *sql.Tx, path string) (Iss
 	issue.Metadata = nil
 	return IssueRecord{ID: graph.CanonicalURL(s.options.Binding.ScopeURL, path), Type: typ, Revision: revision, Version: revision,
 		Properties: issue, Metadata: metadata, Owned: owned, Attribution: Attribution{Actor: actor, Status: status, RecordedAt: at.UTC().Format(time.RFC3339Nano)}}, nil
+}
+
+// The installed Type set, already fingerprint-checked by checkBinding, selects
+// the Issue allocation identity. A fresh v7 store uses Issue v3; pinned v5/v6
+// stores continue to allocate and hydrate Issue v2 without an in-place upgrade.
+func installedIssueTypeURLInTx(ctx context.Context, tx *sql.Tx, scope string) (string, error) {
+	var count int
+	if err := tx.QueryRowContext(ctx, `SELECT COUNT(*) FROM graph_preview_types`).Scan(&count); err != nil {
+		return "", err
+	}
+	switch count {
+	case 4, 6:
+		return IssueTypeURL(scope), nil
+	case 11:
+		return RelationshipIssueTypeURL(scope), nil
+	default:
+		return "", fmt.Errorf("%w: unsupported Type installation", ErrInvalidStore)
+	}
 }
