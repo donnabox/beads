@@ -1346,6 +1346,9 @@ honored on the --proxied-server route too, which it was not before.`,
 	SilenceUsage:  true,
 	SilenceErrors: true,
 	RunE: func(cmd *cobra.Command, args []string) error {
+		if graphPreviewActive {
+			return runGraphPreviewDepTree(cmd, args)
+		}
 		evt := metrics.NewCommandEvent("dep-tree")
 		defer func() {
 			if c := metrics.Global(); c != nil {
@@ -1365,6 +1368,9 @@ var depCyclesCmd = &cobra.Command{
 	SilenceUsage:  true,
 	SilenceErrors: true,
 	RunE: func(cmd *cobra.Command, args []string) error {
+		if graphPreviewActive {
+			return runGraphPreviewDepCycles(cmd, args)
+		}
 		evt := metrics.NewCommandEvent("dep-cycles")
 		defer func() {
 			if c := metrics.Global(); c != nil {
