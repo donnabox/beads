@@ -54,8 +54,12 @@ func (s *Store) AddDependency(ctx context.Context, request DependencyRequest) (D
 	if request.Actor == "" || !utf8.ValidString(request.Actor) || request.SourcePath == request.TargetPath {
 		return DependencyResult{}, fmt.Errorf("%w: Dependency requires an actor and two distinct local Issues", storage.ErrValidation)
 	}
+	depType, err := previewDependencyType(request.Type)
+	if err != nil {
+		return DependencyResult{}, err
+	}
 	var result DependencyResult
-	err := s.withTx(ctx, true, func(tx *sql.Tx) error {
+	err = s.withTx(ctx, true, func(tx *sql.Tx) error {
 		if err := checkBinding(ctx, tx, s.options); err != nil {
 			return err
 		}
@@ -108,7 +112,7 @@ func (s *Store) AddDependency(ctx context.Context, request DependencyRequest) (D
 		unscope := issueops.ScopeVersionedHistoryTransaction(tx, true)
 		defer unscope()
 		_, _, err = issueops.ExecuteAddDependencies(ctx, tx, publicops.AddDependenciesRequest{
-			Actor: request.Actor, Edges: []publicops.DependencyEdge{{IssueID: source.Properties.ID, DependsOnID: target.Properties.ID, Type: types.DepBlocks}},
+			Actor: request.Actor, Edges: []publicops.DependencyEdge{{IssueID: source.Properties.ID, DependsOnID: target.Properties.ID, Type: depType}},
 		})
 		if err != nil {
 			if errors.Is(err, publicops.ErrDependencyCycle) {
@@ -161,6 +165,17 @@ func (s *Store) AddDependency(ctx context.Context, request DependencyRequest) (D
 		return DependencyResult{}, err
 	}
 	return result, nil
+}
+
+// previewDependencyType is the writer-side boundary between a native edge kind
+// and the graph Type installed in this workspace. A caller may name a future
+// relationship, but this generation has only the blocking Type and cannot
+// represent a different edge in canonical Link or owned Issue History state.
+func previewDependencyType(requested types.DependencyType) (types.DependencyType, error) {
+	if requested == "" || requested == types.DepBlocks {
+		return types.DepBlocks, nil
+	}
+	return "", fmt.Errorf("%w: native %s Dependency has no installed canonical Link Type", ErrCapabilityUnavailable, requested)
 }
 
 func (s *Store) requireIssueInTx(ctx context.Context, tx *sql.Tx, path string) (IssueRecord, error) {

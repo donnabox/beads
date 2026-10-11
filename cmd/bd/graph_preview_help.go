@@ -6,6 +6,18 @@ import "github.com/spf13/cobra"
 // intact and add an explicitly scoped section for commands reused by the graph
 // preview, so their legacy descriptions do not mislead graph operators.
 func init() {
+	todoCmd.Long = `Graph preview workspaces:
+bd todo add TITLE creates an open task Issue at P2 by default, assigned to
+the current actor. bd todo and bd todo list show open task Issues;
+bd todo list --all includes completed task Issues. bd todo done ID... closes
+any Issue, as in ordinary workspaces, with reason Completed unless --reason
+is supplied. Each unguarded ID is attempted independently; failed targets
+are reported to stderr while successful closes are returned.
+For one Issue, --if-revision TOKEN refuses a stale completion. List and add
+JSON keep the familiar Issue shape with canonical beads/PATH IDs.
+
+Ordinary Issue workspaces:
+` + todoCmd.Long
 	// These commands have long ordinary-mode descriptions. Put the graph
 	// distinction first so help does not lead graph users to turn on legacy
 	// recording or expect Dolt commits and unsupported flags.
@@ -152,9 +164,19 @@ Dependency between two live Issues. Bare bd dep prints help; the ordinary
 --no-cycle-check option is unavailable in graph preview workspaces.`},
 		{depAddCmd, `Use bd dep add issue blocker for a blocking
 Dependency between two live Issues, optionally with --id links/ID.
+The ordinary --blocked-by blocker and --depends-on blocker spellings replace
+the second positional argument. For a single edge, --no-cycle-check only
+suppresses a post-add warning; the domain writer still validates cycles.
 bd dep blocker --blocks issue is the same operation with reversed arguments.
 Memory endpoints, remote routing and bulk dependency flags are unavailable
 in this preview.`},
+		{depRemoveCmd, `Use bd dep remove issue blocker (or bd dep rm) to
+remove one local blocking Dependency by its Issue pair. An absent pair is a
+successful no-op and reports status not_found with --json. A real removal
+records one native dependency_removed event and one source Issue version;
+the target Issue is unchanged. Bare native Issue IDs are accepted when their
+graph path is unambiguous; use explicit beads/PATH if a different Bead claims
+that bare name. For exact guarded Link-ID removal use bd unlink.`},
 		{linkCmd, `Without --link-type, bd link SOURCE TARGET creates the ordinary
 blocking Dependency between two live Issues. For a Memory or Issue endpoint,
 choose an installed informational Type, for example on a fresh workspace:
@@ -254,11 +276,12 @@ OR and NOT parent forms follow native query refusals. mol_type and ephemeral
 predicates are unavailable in graph preview.`},
 		{blockedCmd, `Show current dependency-blocked Issues with canonical
 blocker IDs. Filters and positive BEADS_MAX_ROWS are unavailable.`},
-		{graphCmd, `Use bd graph ID --view generic to traverse the current
-local graph. Control direction, depth, node and Link bounds with --direction,
---depth, --max-nodes and --max-links. Legacy visualization modes are unavailable.`},
-		{statusCmd, `Use bd status --graph to inspect this workspace's supported
-graph capabilities and limits. Ordinary issue-statistics mode is unavailable.`},
+		{graphCmd, `Use bd graph ISSUE for the current blocking Dependency view,
+or bd graph check for a flat consistency report. --view generic traverses
+the current graph with --direction, --depth, --max-nodes and --max-links.
+Legacy visualization modes are unavailable.`},
+		{statusCmd, `Use bd status for ordinary Issue statistics in this workspace.
+Use bd status --graph to inspect graph capabilities and limits.`},
 		{typesCmd, `Use bd types to list the Bead and Link Types actually installed
 in this workspace, grouped by category. The displayed types/NAME IDs are
 accepted by --bead-type and --link-type. Add --details to show each complete
