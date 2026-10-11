@@ -4,6 +4,7 @@ package graphstore
 
 import (
 	"context"
+	"crypto/sha256"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -11,11 +12,115 @@ import (
 	"sort"
 	"strings"
 	"testing"
+	"time"
 
+	graph "github.com/steveyegge/beads/graphops"
 	"github.com/steveyegge/beads/internal/legacyimport"
 	"github.com/steveyegge/beads/internal/types"
 	publicops "github.com/steveyegge/beads/issueops"
 )
+
+func TestLegacyImportPrefixAdmission(t *testing.T) {
+	for _, id := range []string{"web-app-123", "web-app-a1b", "web-app-abc", "web-app-123.1.2"} {
+		t.Run(id, func(t *testing.T) {
+			batch := legacyimport.Batch{Issues: []*types.Issue{{ID: id, Title: "Imported"}}}
+			if _, err := prepareLegacyImport(batch, "importer"); err != nil {
+				t.Fatal(err)
+			}
+			if got := legacyImportPrefix(id); got != "web-app" {
+				t.Fatalf("prefix=%q", got)
+			}
+		})
+	}
+	for _, ids := range [][]string{{"web-app-123", "web-api-456"}, {"web-app-"}, {"missing"}, {"-123"}} {
+		t.Run(strings.Join(ids, ","), func(t *testing.T) {
+			var batch legacyimport.Batch
+			for _, id := range ids {
+				batch.Issues = append(batch.Issues, &types.Issue{ID: id, Title: "Imported"})
+			}
+			if _, err := prepareLegacyImport(batch, "importer"); err == nil {
+				t.Fatal("invalid or mixed inferred prefixes admitted")
+			}
+		})
+	}
+}
+
+func TestLegacyImportMemoryPaths(t *testing.T) {
+	keys := []string{"safe", "old-a", "has space", "has%20space", "雪", "%", ".", "..", "a/b", "a//b", "back\\slash", "control\x00", " leading ", "Case", "case", strings.Repeat("long", 300)}
+	// A direct key must retain its address even if it occupies a remap's
+	// preferred hash path. Remap allocation must not depend on input order.
+	digest := sha256.Sum256([]byte("."))
+	reserved := fmt.Sprintf("imported-memory-%x", digest)
+	keys = append(keys, reserved)
+	batch := legacyimport.Batch{Issues: []*types.Issue{{ID: "old-a", Title: "Issue"}}}
+	for _, key := range keys {
+		batch.Memories = append(batch.Memories, legacyimport.Memory{Key: key, Value: ""})
+	}
+	prepared, err := prepareLegacyImport(batch, "importer")
+	if err != nil {
+		t.Fatal(err)
+	}
+	paths := legacyImportMemoryPaths(prepared)
+	seen := map[string]bool{"beads/old-a": true}
+	for _, key := range keys {
+		path := paths[key]
+		if err := validatePath(path); err != nil || seen[path] {
+			t.Fatalf("key=%q path=%q duplicate=%v err=%v", key, path, seen[path], err)
+		}
+		seen[path] = true
+	}
+	for _, key := range []string{"safe", "has%20space", "a/b", "Case", "case", reserved} {
+		if paths[key] != "beads/"+key {
+			t.Fatalf("safe direct mapping changed: %q -> %q", key, paths[key])
+		}
+	}
+	if paths["雪"] != "beads/"+graph.CanonicalSegment("雪") || paths["has space"] == paths["has%20space"] {
+		t.Fatal("encoded keys collide or Unicode path is not canonical")
+	}
+	if paths["."] != "beads/"+reserved+"-1" {
+		t.Fatalf("fallback displaced direct key: %q", paths["."])
+	}
+	for i, j := 0, len(prepared.Memories)-1; i < j; i, j = i+1, j-1 {
+		prepared.Memories[i], prepared.Memories[j] = prepared.Memories[j], prepared.Memories[i]
+	}
+	if got := legacyImportMemoryPaths(prepared); !reflect.DeepEqual(paths, got) {
+		t.Fatalf("order changed mappings: %v -> %v", paths, got)
+	}
+	batch.Memories = append(batch.Memories, legacyimport.Memory{Key: "safe", Value: "different"})
+	if _, err := prepareLegacyImport(batch, "importer"); err == nil {
+		t.Fatal("duplicate memory key admitted")
+	}
+	for _, memory := range []legacyimport.Memory{{Key: ""}, {Key: "bad\xff"}, {Key: "valid", Value: "bad\xff"}} {
+		if _, err := prepareLegacyImport(legacyimport.Batch{Memories: []legacyimport.Memory{memory}}, "importer"); err == nil {
+			t.Fatalf("invalid memory admitted: %+v", memory)
+		}
+	}
+}
+
+func TestLegacyImportCommentVerification(t *testing.T) {
+	want := &types.Issue{ID: "old-a", Title: "Issue"}
+	got := &types.Issue{ID: "old-a", Title: "Issue"}
+	stamp := time.Date(2026, 1, 1, 0, 0, 0, 0, time.UTC)
+	for i := range 10000 {
+		c := types.Comment{ID: fmt.Sprintf("comment-%d", i), IssueID: want.ID, Author: "author", Text: "text", CreatedAt: stamp}
+		want.Comments = append(want.Comments, &c)
+		copy := c
+		got.Comments = append(got.Comments, &copy)
+	}
+	// Missing timestamps stay wildcards; native creation has already assigned
+	// IDs before verification. Stored feed ordering is irrelevant to identity.
+	want.Comments[0].CreatedAt = time.Time{}
+	for i, j := 0, len(got.Comments)-1; i < j; i, j = i+1, j-1 {
+		got.Comments[i], got.Comments[j] = got.Comments[j], got.Comments[i]
+	}
+	if err := verifyLegacyIssue(want, got); err != nil {
+		t.Fatal(err)
+	}
+	got.Comments[0].Text = "changed"
+	if err := verifyLegacyIssue(want, got); err == nil {
+		t.Fatal("changed comment text admitted")
+	}
+}
 
 const legacyImportFixture = `{"_type":"issue","id":"old-a","title":"Prerequisite","priority":0,"status":"closed","issue_type":"task","created_at":"2026-01-01T00:00:00Z","updated_at":"2026-01-02T00:00:00Z","closed_at":"2026-01-02T00:00:00Z","close_reason":"done","created_by":"original","owner":"owner@example.invalid"}
 {"_type":"issue","id":"old-b","title":"Work","priority":2,"status":"open","issue_type":"bug","created_at":"2026-01-01T00:00:00Z","updated_at":"2026-01-02T00:00:00Z","description":"A body","design":"Design","acceptance_criteria":"Tests","notes":"Notes","labels":["two","one"],"metadata":{"custom":{"flag":true}},"dependencies":[{"issue_id":"old-b","depends_on_id":"old-a","type":"blocks","created_at":"2026-01-01T00:00:00Z","created_by":"original","metadata":"{ }"}],"comments":[{"id":"old-comment","issue_id":"old-b","author":"original","text":"A note","created_at":"2026-01-01T00:00:00Z"}]}
@@ -110,6 +215,21 @@ func TestLegacyImportAtomicityAndPersistence(t *testing.T) {
 					}
 					if !reflect.DeepEqual(before, legacyImportState(t, ctx, s)) {
 						t.Fatal("failed import left database changes")
+					}
+				})
+			}
+			for _, fault := range []error{context.Canceled, context.DeadlineExceeded} {
+				t.Run(fault.Error(), func(t *testing.T) {
+					s.afterWrite = func(stage string) error {
+						if stage == "import-retained" {
+							return fault
+						}
+						return nil
+					}
+					_, err := s.ImportLegacy(ctx, batch, "importer", false)
+					s.afterWrite = nil
+					if !errors.Is(err, fault) || !reflect.DeepEqual(before, legacyImportState(t, ctx, s)) {
+						t.Fatalf("late cancellation/deadline did not roll back: %v", err)
 					}
 				})
 			}
@@ -220,7 +340,8 @@ func TestLegacyImportValidationRollsBack(t *testing.T) {
 
 // These fields appear in ordinary exports but are not exercised by the small
 // producer fixture. Import itself verifies the hydrated native row and retained
-// graph projection before returning, including during rollback-only dry-run.
+// graph projection before returning. Exercise each family's rollback first,
+// then apply all families together and compare current/retained reads on reopen.
 func TestLegacyImportFieldFamilies(t *testing.T) {
 	families := map[string]string{
 		"assignment":     `"assignee":"iris","estimated_minutes":20,"external_ref":"gh-123","spec_id":"spec","source_system":"adapter"`,
@@ -255,6 +376,134 @@ func TestLegacyImportFieldFamilies(t *testing.T) {
 						t.Fatal("field dry-run changed database")
 					}
 				})
+			}
+			var names []string
+			for name := range families {
+				names = append(names, name)
+			}
+			sort.Strings(names)
+			var input strings.Builder
+			for i, name := range names {
+				fmt.Fprintf(&input, `{"id":"fields-%d","title":"%s","created_at":"2026-01-01T00:00:00Z","updated_at":"2026-01-02T00:00:00Z",%s}`+"\n", i+1, name, families[name])
+			}
+			if _, err := s.ImportLegacy(ctx, parseLegacyFixture(t, input.String()), "importer", false); err != nil {
+				t.Fatal(err)
+			}
+			if err := s.Close(); err != nil {
+				t.Fatal(err)
+			}
+			s, err = OpenExisting(ctx, o)
+			if err != nil {
+				t.Fatal(err)
+			}
+			for i, name := range names {
+				path := fmt.Sprintf("beads/fields-%d", i+1)
+				current, err := s.ShowIssue(ctx, path)
+				if err != nil {
+					t.Fatal(err)
+				}
+				payload, err := json.Marshal(current.Properties)
+				if err != nil {
+					t.Fatal(err)
+				}
+				var got, want map[string]json.RawMessage
+				if err := json.Unmarshal(payload, &got); err != nil {
+					t.Fatal(err)
+				}
+				if err := json.Unmarshal([]byte("{"+families[name]+"}"), &want); err != nil {
+					t.Fatal(err)
+				}
+				for field, value := range want {
+					if string(got[field]) != string(value) {
+						t.Errorf("%s field %s=%s, want %s", name, field, got[field], value)
+					}
+				}
+				_, versions, err := s.Versions(ctx, path)
+				if err != nil || len(versions) != 1 {
+					t.Fatalf("%s initial versions=%v err=%v", name, versions, err)
+				}
+				retained, err := s.ReadVersion(ctx, path, versions[0].Version)
+				if err != nil {
+					t.Fatal(err)
+				}
+				initial, ok := retained.(IssueRecord)
+				if !ok {
+					t.Fatalf("%s retained type=%T", name, retained)
+				}
+				// Native row locks and content digests are deliberately excluded
+				// from retained Issue history; compare only the durable payload.
+				current.Properties.RowVersion, current.Properties.ContentHash = 0, ""
+				if !reflect.DeepEqual(current, initial) {
+					t.Fatalf("%s current/initial retained mismatch: %v", name, err)
+				}
+			}
+		})
+	}
+}
+
+// Exercise native comment normalization and persistence, not just the verifier.
+func TestLegacyImportCommentFeedPersistence(t *testing.T) {
+	for _, backend := range []string{"embedded", "server"} {
+		t.Run(backend, func(t *testing.T) {
+			ctx, o := issueExperimentOptions(t, backend)
+			s, err := OpenExisting(ctx, o)
+			if err != nil {
+				t.Fatal(err)
+			}
+			t.Cleanup(func() {
+				if err := s.Close(); err != nil {
+					t.Error(err)
+				}
+			})
+			stamp := time.Date(2026, 1, 1, 0, 0, 0, 0, time.UTC)
+			before := legacyImportState(t, ctx, s)
+			collapsed := &types.Issue{ID: "comments-a1b", Title: "Distinct source comments", Comments: []*types.Comment{
+				{ID: "first", Author: "author", Text: "same", CreatedAt: stamp},
+				{ID: "second", Author: "author", Text: "same", CreatedAt: stamp},
+			}}
+			if _, err := s.ImportLegacy(ctx, legacyimport.Batch{Issues: []*types.Issue{collapsed}}, "importer", false); err == nil {
+				t.Fatal("native duplicate-content collapse was silently accepted")
+			}
+			if !reflect.DeepEqual(before, legacyImportState(t, ctx, s)) {
+				t.Fatal("late comment refusal changed the database")
+			}
+			issue := &types.Issue{ID: "comments-a1b", Title: "Comment-heavy import"}
+			for i := range 80 {
+				comment := &types.Comment{Author: "author", Text: fmt.Sprintf("Comment %d", i)}
+				if i%2 == 0 {
+					comment.ID = fmt.Sprintf("source-%d", i)
+					comment.CreatedAt = stamp.Add(time.Duration(i) * time.Second)
+				}
+				issue.Comments = append(issue.Comments, comment)
+			}
+			result, err := s.ImportLegacy(ctx, legacyimport.Batch{Issues: []*types.Issue{issue}}, "importer", false)
+			if err != nil || result.Comments != 80 {
+				t.Fatalf("comment-heavy import: %+v %v", result, err)
+			}
+			if err := s.Close(); err != nil {
+				t.Fatal(err)
+			}
+			s, err = OpenExisting(ctx, o)
+			if err != nil {
+				t.Fatal(err)
+			}
+			feed, err := s.IssueComments(ctx, "beads/comments-a1b")
+			if err != nil || len(feed) != 80 {
+				t.Fatalf("reopened comment feed: %d %v", len(feed), err)
+			}
+			byText, ids := map[string]*types.Comment{}, map[string]bool{}
+			for _, comment := range feed {
+				if comment.ID == "" || ids[comment.ID] || comment.IssueID != issue.ID || comment.Author != "author" || comment.CreatedAt.IsZero() {
+					t.Fatalf("invalid normalized comment: %+v", comment)
+				}
+				ids[comment.ID] = true
+				byText[comment.Text] = comment
+			}
+			for _, original := range issue.Comments {
+				stored := byText[original.Text]
+				if stored == nil || (original.ID != "" && stored.ID != original.ID) || (!original.CreatedAt.IsZero() && !original.CreatedAt.Equal(stored.CreatedAt)) {
+					t.Fatalf("source comment changed: %+v -> %+v", original, stored)
+				}
 			}
 		})
 	}

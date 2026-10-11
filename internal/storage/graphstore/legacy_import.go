@@ -3,6 +3,7 @@ package graphstore
 import (
 	"bytes"
 	"context"
+	"crypto/sha256"
 	"database/sql"
 	"encoding/json"
 	"errors"
@@ -19,6 +20,7 @@ import (
 	"github.com/steveyegge/beads/internal/storage/domain"
 	"github.com/steveyegge/beads/internal/storage/issueops"
 	"github.com/steveyegge/beads/internal/types"
+	"github.com/steveyegge/beads/internal/utils"
 )
 
 // LegacyImportResult makes each old identity's new graph address explicit.
@@ -43,6 +45,7 @@ func (s *Store) ImportLegacy(ctx context.Context, input legacyimport.Batch, acto
 	if err != nil {
 		return LegacyImportResult{}, err
 	}
+	memoryPaths := legacyImportMemoryPaths(batch)
 	result := LegacyImportResult{Issues: len(batch.Issues), Memories: len(batch.Memories),
 		IDs: map[string]string{}, MemoryIDs: map[string]string{}, DependencyIDs: map[string]string{},
 		DryRun: dryRun, History: "current data only; new initial graph versions; source history is not present in legacy export"}
@@ -59,7 +62,7 @@ func (s *Store) ImportLegacy(ctx context.Context, input legacyimport.Batch, acto
 		// A fresh workspace can safely adopt the sole source prefix. Keep it in
 		// this transaction so dry-run/failure never alters future ID allocation.
 		if len(batch.Issues) > 0 {
-			prefix := strings.TrimSuffix(types.ExtractPrefix(batch.Issues[0].ID), "-")
+			prefix := legacyImportPrefix(batch.Issues[0].ID)
 			if _, err := tx.ExecContext(ctx, "UPDATE config SET value=? WHERE `key`='issue_prefix'", prefix); err != nil {
 				return err
 			}
@@ -145,7 +148,7 @@ func (s *Store) ImportLegacy(ctx context.Context, input legacyimport.Batch, acto
 			}
 		}
 		for _, memory := range batch.Memories {
-			path := "beads/" + memory.Key
+			path := memoryPaths[memory.Key]
 			revision, err := freshToken()
 			if err != nil {
 				return err
@@ -206,6 +209,13 @@ func prepareLegacyImport(input legacyimport.Batch, actor string) (legacyimport.B
 	if actor == "" || !utf8.ValidString(actor) {
 		return invalid("legacy import requires a UTF-8 actor")
 	}
+	// encoding/json replaces invalid UTF-8 strings. Check keys/values before
+	// cloning so a direct caller cannot accidentally import replacement text.
+	for _, memory := range input.Memories {
+		if memory.Key == "" || !utf8.ValidString(memory.Key) || !utf8.ValidString(memory.Value) {
+			return invalid("memory requires a nonempty UTF-8 key and UTF-8 value")
+		}
+	}
 	// Isolate mutable native-import normalization from the caller's values.
 	raw, err := json.Marshal(input)
 	if err != nil {
@@ -235,8 +245,8 @@ func prepareLegacyImport(input legacyimport.Batch, actor string) (legacyimport.B
 		if ids[issue.ID] {
 			return invalid("duplicate Issue ID %q", issue.ID)
 		}
-		issuePrefix := types.ExtractPrefix(issue.ID)
-		if issuePrefix == "" || issuePrefix == "-" {
+		issuePrefix := legacyImportPrefix(issue.ID)
+		if issuePrefix == "" {
 			return invalid("Issue %s requires a nonempty ordinary ID prefix", issue.ID)
 		}
 		if prefix != "" && prefix != issuePrefix {
@@ -325,22 +335,69 @@ func prepareLegacyImport(input legacyimport.Batch, actor string) (legacyimport.B
 			}
 		}
 	}
+	memoryKeys := map[string]bool{}
 	for _, memory := range batch.Memories {
-		if memory.Key == "" || !utf8.ValidString(memory.Key) || !utf8.ValidString(memory.Value) {
-			return invalid("memory requires a nonempty UTF-8 key and UTF-8 value")
+		if memoryKeys[memory.Key] {
+			return invalid("duplicate memory key %q", memory.Key)
 		}
-		if err := validatePath("beads/" + memory.Key); err != nil {
-			return invalid("memory key %q: %v", memory.Key, err)
-		}
-		if ids[memory.Key] {
-			return invalid("memory key %q duplicates another Bead identity", memory.Key)
-		}
-		ids[memory.Key] = true
+		memoryKeys[memory.Key] = true
 	}
 	if resources > PreviewSnapshotLimit {
 		return legacyimport.Batch{}, fmt.Errorf("%w: legacy import exceeds preview limit of %d Beads and Links", ErrLimitExceeded, PreviewSnapshotLimit)
 	}
 	return batch, nil
+}
+
+// Ordinary JSONL does not carry configured prefixes. Use the same inference
+// as ordinary ID handling, including multi-part numeric/hash prefixes. A bare
+// prefix with no ID suffix is never an exported Issue identity.
+func legacyImportPrefix(id string) string {
+	if strings.HasSuffix(id, "-") {
+		return ""
+	}
+	return utils.ExtractIssuePrefix(id)
+}
+
+// Memory keys are data, not graph paths. Preserve valid direct paths first,
+// then allocate canonical or digest paths without stealing another identity.
+// Sorting only remaps makes allocation independent of export record order.
+// The batch has already been checked for duplicate/non-UTF-8 keys.
+func legacyImportMemoryPaths(batch legacyimport.Batch) map[string]string {
+	paths := make(map[string]string, len(batch.Memories))
+	occupied := make(map[string]bool, len(batch.Issues)+len(batch.Memories))
+	for _, issue := range batch.Issues {
+		occupied["beads/"+issue.ID] = true
+	}
+	var remap []string
+	for _, memory := range batch.Memories {
+		path := "beads/" + memory.Key
+		if len(path) <= 1024 && validatePath(path) == nil && !occupied[path] {
+			paths[memory.Key] = path
+			occupied[path] = true
+		} else {
+			remap = append(remap, memory.Key)
+		}
+	}
+	sort.Strings(remap)
+	for _, key := range remap {
+		// Encoding cannot shorten a key. Avoid allocating an expanded path
+		// for a large key that can only fit under its digest address.
+		path := ""
+		if len(key) <= 1024-len("beads/") {
+			path = "beads/" + graph.CanonicalSegment(key)
+		}
+		if path == "" || validatePath(path) != nil || occupied[path] {
+			digest := sha256.Sum256([]byte(key))
+			base := fmt.Sprintf("beads/imported-memory-%x", digest)
+			path = base
+			for suffix := 1; occupied[path]; suffix++ {
+				path = fmt.Sprintf("%s-%d", base, suffix)
+			}
+		}
+		paths[key] = path
+		occupied[path] = true
+	}
+	return paths
 }
 
 func verifyLegacyIssue(want, got *types.Issue) error {
@@ -393,17 +450,18 @@ func verifyLegacyIssue(want, got *types.Issue) error {
 	if len(want.Comments) != len(got.Comments) {
 		return fmt.Errorf("%w: comments for %s cannot be preserved exactly", storage.ErrValidation, w.ID)
 	}
+	storedComments := make(map[string]*types.Comment, len(got.Comments))
+	for _, stored := range got.Comments {
+		storedComments[stored.ID] = stored
+	}
 	for _, comment := range want.Comments {
-		found := false
-		for _, stored := range got.Comments {
-			if comment.ID == stored.ID && comment.IssueID == stored.IssueID && comment.Author == stored.Author && comment.Text == stored.Text && (comment.CreatedAt.IsZero() || comment.CreatedAt.Equal(stored.CreatedAt)) {
-				found = true
-				break
-			}
-		}
-		if !found {
+		// The native writer fills missing IDs before this check. A missing
+		// timestamp still permits its generated time, without wildcard pairing.
+		stored := storedComments[comment.ID]
+		if stored == nil || comment.IssueID != stored.IssueID || comment.Author != stored.Author || comment.Text != stored.Text || (!comment.CreatedAt.IsZero() && !comment.CreatedAt.Equal(stored.CreatedAt)) {
 			return fmt.Errorf("%w: comment for %s cannot be preserved exactly", storage.ErrValidation, w.ID)
 		}
+		delete(storedComments, comment.ID)
 	}
 	// Verify edge provenance separately; the graph Link reader validates its
 	// shape and the native retained snapshot validates the complete edge set.
