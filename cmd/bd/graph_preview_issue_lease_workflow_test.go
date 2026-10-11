@@ -75,6 +75,15 @@ func TestGraphPreviewIssueLeaseCommands(t *testing.T) {
 			if states, ok := listed["states"].(map[string]any); !ok || states["mode"] != "degraded" {
 				t.Fatalf("state list: %+v", listed)
 			}
+			call("remember", "Ordinary Memory", "--id", "beads/plain-memory")
+			memoryBefore := graphMemoryReadSnapshot(t, work)
+			for _, selector := range []string{"plain-memory", "beads/plain-memory", scope + "beads/plain-memory"} {
+				refuse("capability_unavailable", "state", selector, "mode")
+				refuse("capability_unavailable", "state", "list", selector)
+			}
+			if !reflect.DeepEqual(memoryBefore, graphMemoryReadSnapshot(t, work)) {
+				t.Fatal("state refusal on Memory changed graph state")
+			}
 
 			// A familiar native ID may differ from its explicit canonical path.
 			// Every Issue-only command must resolve it through the checked catalog.

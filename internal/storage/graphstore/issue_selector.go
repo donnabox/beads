@@ -17,6 +17,14 @@ type IssueSelector struct {
 	NativeID string
 }
 
+// A non-Issue selection has a different user-visible state-read refusal from
+// a bare name that ambiguously identifies an Issue and another graph Bead.
+var errNonIssueSelector = errors.New("selector is not an Issue")
+
+func nonIssueSelectorError(backing string) error {
+	return fmt.Errorf("%w: selector names %s, not an Issue: %w", storage.ErrValidation, backing, errNonIssueSelector)
+}
+
 func validateIssueSelector(selector IssueSelector) error {
 	if err := validatePath(selector.Path); err != nil {
 		return err
@@ -32,11 +40,22 @@ func validateIssueSelector(selector IssueSelector) error {
 // that path is a Memory or a retained deletion. Explicit paths remain exact.
 func (s *Store) resolveLiveIssueSelectorInTx(ctx context.Context, tx *sql.Tx, selector IssueSelector) (string, IssueRecord, error) {
 	if selector.NativeID == "" {
+		var backing string
+		err := tx.QueryRowContext(ctx, `SELECT backing FROM graph_preview_catalog WHERE path=?`, selector.Path).Scan(&backing)
+		if errors.Is(err, sql.ErrNoRows) {
+			return "", IssueRecord{}, ErrNotFound
+		}
+		if err != nil {
+			return "", IssueRecord{}, err
+		}
+		if backing != "issue" {
+			return "", IssueRecord{}, nonIssueSelectorError(backing)
+		}
 		issue, err := s.requireIssueInTx(ctx, tx, selector.Path)
 		return selector.Path, issue, err
 	}
-	var exists int
-	err := tx.QueryRowContext(ctx, `SELECT 1 FROM graph_preview_catalog WHERE path=?`, selector.Path).Scan(&exists)
+	var backing string
+	err := tx.QueryRowContext(ctx, `SELECT backing FROM graph_preview_catalog WHERE path=?`, selector.Path).Scan(&backing)
 	pathExists := err == nil
 	if err != nil && !errors.Is(err, sql.ErrNoRows) {
 		return "", IssueRecord{}, err
@@ -73,6 +92,9 @@ func (s *Store) resolveLiveIssueSelectorInTx(ctx context.Context, tx *sql.Tx, se
 			return "", IssueRecord{}, fmt.Errorf("%w: invalid native Issue graph allocation: %v", ErrInvalidStore, err)
 		}
 	}
+	if pathExists && backing != "issue" {
+		return "", IssueRecord{}, nonIssueSelectorError(backing)
+	}
 	issue, err := s.requireIssueInTx(ctx, tx, path)
 	return path, issue, err
 }
@@ -91,6 +113,9 @@ func (s *Store) ShowIssueSelected(ctx context.Context, selector IssueSelector) (
 		return err
 	})
 	if err != nil {
+		if errors.Is(err, errNonIssueSelector) {
+			return IssueRecord{}, ErrCapabilityUnavailable
+		}
 		return IssueRecord{}, err
 	}
 	return result, nil
