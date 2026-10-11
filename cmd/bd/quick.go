@@ -38,6 +38,9 @@ Example:
 				c.CloseEventAndAdd(evt)
 			}
 		}()
+		if graphPreviewActive {
+			return runGraphPreviewQuick(cmd, args)
+		}
 
 		CheckReadonly("q")
 
