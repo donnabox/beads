@@ -106,8 +106,8 @@ all those data planes, full row/prefix/writer-token state and a configuration
 control. Its runtime cases are unrun pending explicit Janet engine handback.
 
 The [initial review manifest](freshness-manifest.json) and
-[prompt](freshness-prompt.txt) identify the bounded actual Claude review now
-running. [Native review](freshness-native.txt) found two fixture hazards, both repaired: wisp comment
+[prompt](freshness-prompt.txt) identify the initial bounded Claude review,
+which completed as recorded below. [Native review](freshness-native.txt) found two fixture hazards, both repaired: wisp comment
 and label foreign keys require the test-only orphan bypass, and failed FK reset
 must discard the borrowed connection. The [repaired source hashes](freshness-repaired-manifest.json)
 identify current source. [Pure preparation checks](freshness-pure-repaired.log) passed13cases with0failures/skips,
@@ -133,7 +133,7 @@ the table or KV prefix/count. Missing native schema fails closed.
 
 The [final-source manifest](freshness-final-manifest.json),
 [prompt](freshness-final-prompt.txt) and [native confirmation](freshness-final-native.txt)
-identify the frozen bounded successor review; actual Claude is still running.
+identify the frozen bounded successor review, now completed as recorded below.
 [Pure checks](freshness-final-pure.log) pass13 cases with zero failures/skips;
 [lint](freshness-final-lint.log) passes all profiles. These checks compile, but
 do not execute, the new engine tests. Earlier installed proof remains historical.
@@ -159,3 +159,26 @@ was a macOS path alias mismatch, corrected in the harness. These tests are not
 an ordinary producer corpus or engine qualification. Run from any checkout with
 Python; the committed harness resolves this checkout's script. The genuine
 completeness corpus still waits for Janet's explicit engine handback.
+
+
+The [actual frozen history-repair review](freshness-final-claude.txt) completed
+exit0 and verified all four immutable hashes at start/end. It confirms the native
+history guard, all19 fixture DDLs, seed rules, and absence of false fresh-Init
+refusals. Its new Medium G1 identifies a test reliability risk: thousands of
+statements shared the initialization90-second budget. Per-case bounded contexts
+and independent cleanup are now implemented, preserving full per-mode snapshots.
+Low G2 asks isolated assertions for eight already-guarded native/preview planes;
+these fixtures are now authored (27cases/26distinctplanes). Low G3 character-count coupling is repaired
+with RuneCountInString; Low G4 named unreadable-plane ErrInvalidStore/cause and
+fresh initialization guidance is repaired. Native production confirmation finds
+no blocker. Repaired test source still needs frozen council and exact engine proof.
+No preceding source or mocked generator result qualifies those runtime gates.
+
+
+[Matrix manifest](matrix-manifest.json) and [native confirmation](matrix-native.txt)
+identify the G1-G4 repairs. [Exact canonical pure command](matrix-pure-command.txt)
+and [raw result](matrix-pure.jsonl) pass5 roots/13 cases,0failures/0skips; this
+compiles27 occupied-plane cases for both modes without executing them. The
+bounded actual successor packet is prepared but deliberately **not launched**
+at Donna's overnight pause. Resume with that review, genuine corpus generation
+only after explicit engine handback, and exact-head installed qualification.

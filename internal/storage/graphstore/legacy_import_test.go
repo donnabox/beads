@@ -338,6 +338,14 @@ func TestLegacyImportFreshDataPlanes(t *testing.T) {
 				name, insert, remove, message string
 				orphan                        bool
 			}{
+				{"issue", "INSERT INTO issues(id,title,description,design,acceptance_criteria,notes,created_at,updated_at) VALUES('retained-issue','Retained','','','','','2026-01-01','2026-01-01')", "DELETE FROM issues WHERE id='retained-issue'", "issues", false},
+				{"dependency", "INSERT INTO dependencies(id,issue_id,depends_on_external,created_by) VALUES('orphan-native-dep','absent','external:target','previous-author')", "DELETE FROM dependencies WHERE id='orphan-native-dep'", "dependencies", true},
+				{"comment", "INSERT INTO comments(id,issue_id,author,text) VALUES('orphan-native-comment','absent','previous-author','retained')", "DELETE FROM comments WHERE id='orphan-native-comment'", "comments", true},
+				{"wisp", "INSERT INTO wisps(id,title,description,design,acceptance_criteria,notes,created_at,updated_at) VALUES('retained-wisp','Retained','','','','','2026-01-01','2026-01-01')", "DELETE FROM wisps WHERE id='retained-wisp'", "wisps", false},
+				{"issue-version", "INSERT INTO issue_versions(issue_id,revision,epoch,durable_state,change_at,attribution_status) VALUES('absent',1,1,'{}','2026-01-01','supplied')", "DELETE FROM issue_versions WHERE issue_id='absent' AND revision=1", "issue_versions", false},
+				{"graph-version", "INSERT INTO graph_preview_versions(path,version,snapshot,actor,ordinal,change_at) VALUES('beads/orphan','0123456789abcdef0123456789abcdef','{}','previous-author',1,'2026-01-01')", "DELETE FROM graph_preview_versions WHERE path='beads/orphan'", "graph_preview_versions", false},
+				{"graph-issue-version", "INSERT INTO graph_preview_issue_versions(path,version,issue_id,issue_revision,owned) VALUES('beads/orphan','0123456789abcdef0123456789abcdef','absent',1,'[]')", "DELETE FROM graph_preview_issue_versions WHERE path='beads/orphan'", "graph_preview_issue_versions", false},
+				{"catalog", "INSERT INTO graph_preview_catalog(path,resource_kind,type_url,revision,allocation_state,backing) VALUES('beads/orphan','bead','https://example.invalid/types/preview-memory-v2','0123456789abcdef0123456789abcdef','live','memory')", "DELETE FROM graph_preview_catalog WHERE path='beads/orphan'", "graph_preview_catalog", false},
 				{"payload", "INSERT INTO graph_preview_payloads(path,properties) VALUES('beads/orphan','{}')", "DELETE FROM graph_preview_payloads WHERE path='beads/orphan'", "graph_preview_payloads", false},
 				{"link", "INSERT INTO graph_preview_links(path,source_path,target_path,properties,attribution) VALUES('links/orphan','beads/absent','beads/absent','{}','{}')", "DELETE FROM graph_preview_links WHERE path='links/orphan'", "graph_preview_links", false},
 				{"label", "INSERT INTO labels(issue_id,label) VALUES('absent','retained')", "DELETE FROM labels WHERE issue_id='absent'", "labels", true},
@@ -360,13 +368,25 @@ func TestLegacyImportFreshDataPlanes(t *testing.T) {
 			}
 			for _, test := range cases {
 				t.Run(test.name, func(t *testing.T) {
-					if err := legacyImportContaminate(ctx, s, test.insert, test.orphan); err != nil {
+					// Init's deadline must not become the cumulative matrix budget.
+					operation, cancel := context.WithTimeout(context.WithoutCancel(ctx), 90*time.Second)
+					t.Cleanup(cancel)
+					// Register before insertion so Fatal and an expired case still
+					// remove its fixture using a separate, live cleanup context.
+					t.Cleanup(func() {
+						cleanup, stop := context.WithTimeout(context.WithoutCancel(ctx), 10*time.Second)
+						defer stop()
+						if _, err := s.db.ExecContext(cleanup, test.remove); err != nil {
+							t.Errorf("remove %s fixture: %v", test.name, err)
+						}
+					})
+					if err := legacyImportContaminate(operation, s, test.insert, test.orphan); err != nil {
 						t.Fatal(err)
 					}
-					before := legacyImportState(t, ctx, s)
+					before := legacyImportState(t, operation, s)
 					for _, dry := range []bool{true, false} {
 						t.Run(fmt.Sprintf("dry=%t", dry), func(t *testing.T) {
-							got, err := s.ImportLegacy(ctx, batch, "importer", dry)
+							got, err := s.ImportLegacy(operation, batch, "importer", dry)
 							message := "; " + test.message + " is occupied"
 							if strings.Contains(test.message, "KV Memories") {
 								message = test.message + " are present in config"
@@ -374,37 +394,45 @@ func TestLegacyImportFreshDataPlanes(t *testing.T) {
 							if !errors.Is(err, storage.ErrValidation) || !strings.Contains(err.Error(), message) || !reflect.DeepEqual(got, LegacyImportResult{}) {
 								t.Fatalf("occupied plane admitted or result leaked: %+v %v", got, err)
 							}
-							if !reflect.DeepEqual(before, legacyImportState(t, ctx, s)) {
+							if !reflect.DeepEqual(before, legacyImportState(t, operation, s)) {
 								t.Fatal("refusal changed existing rows, prefix or writer token")
 							}
 						})
-					}
-					if _, err := s.db.ExecContext(ctx, test.remove); err != nil {
-						t.Fatal(err)
 					}
 				})
 			}
 			// Similar configuration keys are not Memories. Ordinary config does
 			// not disqualify the fresh destination or get overwritten by dry-run.
-			if _, err := s.db.ExecContext(ctx, "INSERT INTO config (`key`,value) VALUES('kv.memoryx.retained','ordinary config'),('iris.test.setting','kept')"); err != nil {
-				t.Fatal(err)
-			}
-			before := legacyImportState(t, ctx, s)
-			if _, err := s.ImportLegacy(ctx, batch, "importer", true); err != nil {
-				t.Fatalf("ordinary configuration disqualified fresh destination: %v", err)
-			}
-			if !reflect.DeepEqual(before, legacyImportState(t, ctx, s)) {
-				t.Fatal("dry-run changed ordinary configuration")
-			}
-			if _, err := s.ImportLegacy(ctx, batch, "importer", false); err != nil {
-				t.Fatalf("ordinary configuration disqualified apply: %v", err)
-			}
-			for key, want := range map[string]string{"kv.memoryx.retained": "ordinary config", "iris.test.setting": "kept", "issue_prefix": "old"} {
-				var value string
-				if err := s.db.QueryRowContext(ctx, "SELECT value FROM config WHERE `key`=?", key).Scan(&value); err != nil || value != want {
-					t.Fatalf("apply changed allowed configuration %q: %q %v", key, value, err)
+			t.Run("ordinary-config", func(t *testing.T) {
+				operation, cancel := context.WithTimeout(context.WithoutCancel(ctx), 90*time.Second)
+				t.Cleanup(cancel)
+				t.Cleanup(func() {
+					cleanup, stop := context.WithTimeout(context.WithoutCancel(ctx), 10*time.Second)
+					defer stop()
+					if _, err := s.db.ExecContext(cleanup, "DELETE FROM config WHERE `key` IN ('kv.memoryx.retained','iris.test.setting')"); err != nil {
+						t.Errorf("remove ordinary config fixtures: %v", err)
+					}
+				})
+				if _, err := s.db.ExecContext(operation, "INSERT INTO config (`key`,value) VALUES('kv.memoryx.retained','ordinary config'),('iris.test.setting','kept')"); err != nil {
+					t.Fatal(err)
 				}
-			}
+				before := legacyImportState(t, operation, s)
+				if _, err := s.ImportLegacy(operation, batch, "importer", true); err != nil {
+					t.Fatalf("ordinary configuration disqualified fresh destination: %v", err)
+				}
+				if !reflect.DeepEqual(before, legacyImportState(t, operation, s)) {
+					t.Fatal("dry-run changed ordinary configuration")
+				}
+				if _, err := s.ImportLegacy(operation, batch, "importer", false); err != nil {
+					t.Fatalf("ordinary configuration disqualified apply: %v", err)
+				}
+				for key, want := range map[string]string{"kv.memoryx.retained": "ordinary config", "iris.test.setting": "kept", "issue_prefix": "old"} {
+					var value string
+					if err := s.db.QueryRowContext(operation, "SELECT value FROM config WHERE `key`=?", key).Scan(&value); err != nil || value != want {
+						t.Fatalf("apply changed allowed configuration %q: %q %v", key, value, err)
+					}
+				}
+			})
 		})
 	}
 }

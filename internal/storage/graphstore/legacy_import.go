@@ -226,7 +226,7 @@ func requireEmptyLegacyTarget(ctx context.Context, tx *sql.Tx) error {
 		var count int
 		//nolint:gosec // G201: fixed graph tables and native deletion inventory.
 		if err := tx.QueryRowContext(ctx, "SELECT COUNT(*) FROM "+table).Scan(&count); err != nil {
-			return err
+			return fmt.Errorf("%w: cannot establish workspace freshness from %s; use a fully initialized fresh graph workspace (import does not repair schema): %w", ErrInvalidStore, table, err)
 		}
 		if count != 0 {
 			return fmt.Errorf("%w: legacy import requires an empty fresh graph workspace; %s is occupied (repeat imports do not update or duplicate data)", storage.ErrValidation, table)
@@ -236,7 +236,7 @@ func requireEmptyLegacyTarget(ctx context.Context, tx *sql.Tx) error {
 	// A consumed sequence still records prior history after journal deletion.
 	var usedSequence int
 	if err := tx.QueryRowContext(ctx, "SELECT COUNT(*) FROM bd_events_seq WHERE id<>0 OR next_seq<>0").Scan(&usedSequence); err != nil {
-		return err
+		return fmt.Errorf("%w: cannot establish workspace freshness from bd_events_seq; use a fully initialized fresh graph workspace (import does not repair schema): %w", ErrInvalidStore, err)
 	}
 	if usedSequence != 0 {
 		return fmt.Errorf("%w: legacy import requires an empty fresh graph workspace; bd_events_seq is occupied (prior journal sequence allocation)", storage.ErrValidation)
@@ -244,8 +244,8 @@ func requireEmptyLegacyTarget(ctx context.Context, tx *sql.Tx) error {
 	// Classic Memories are config-backed live data, including empty values.
 	// Infrastructure configuration alone does not make a destination occupied.
 	var memories int
-	if err := tx.QueryRowContext(ctx, "SELECT COUNT(*) FROM config WHERE LEFT(`key`,?)=?", len(kvkeys.MemoryConfigKeyPrefix), kvkeys.MemoryConfigKeyPrefix).Scan(&memories); err != nil {
-		return err
+	if err := tx.QueryRowContext(ctx, "SELECT COUNT(*) FROM config WHERE LEFT(`key`,?)=?", utf8.RuneCountInString(kvkeys.MemoryConfigKeyPrefix), kvkeys.MemoryConfigKeyPrefix).Scan(&memories); err != nil {
+		return fmt.Errorf("%w: cannot establish workspace freshness from config; use a fully initialized fresh graph workspace (import does not repair schema): %w", ErrInvalidStore, err)
 	}
 	if memories != 0 {
 		return fmt.Errorf("%w: legacy import requires an empty fresh graph workspace; %d legacy KV Memories are present in config under %q; use a newly initialized empty graph workspace", storage.ErrValidation, memories, kvkeys.MemoryConfigKeyPrefix)
