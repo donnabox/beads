@@ -34,7 +34,7 @@ Examples:
 		parentID := args[0]
 		pretty, _ := cmd.Flags().GetBool("pretty")
 		if graphPreviewActive {
-			return runGraphPreviewChildren(cmd, parentID, pretty)
+			return graphFailure("capability_unavailable", "graph children requires a canonical parent-child Link mapping", 5)
 		}
 
 		_ = listCmd.Flags().Set("parent", parentID)

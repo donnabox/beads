@@ -23,9 +23,39 @@ func graphPreviewDependencySnapshot(ctx context.Context, store *graphstore.Store
 	return projectGraphDependencies(snapshot, store.ScopeURL())
 }
 
+// The blocking view reads a complete snapshot before projecting a component
+// or tree. A positive row cap cannot bound that read, so refuse it up front.
+func graphPreviewRejectDependencyRowCap(cmd *cobra.Command) error {
+	var maxRows int
+	var source string
+	if cmd.Flags().Changed(maxRowsFlagName) {
+		value, err := cmd.Flags().GetInt(maxRowsFlagName)
+		if err != nil || value < 0 {
+			return graphFailure("invalid_selector", "--max-rows must be a non-negative integer", 2)
+		}
+		maxRows, source = value, "--"+maxRowsFlagName
+	} else {
+		value, envSource, _, ok := parseMaxRowsEnv()
+		if !ok {
+			return graphFailure("invalid_properties", "BEADS_MAX_ROWS must be a non-negative integer", 2)
+		}
+		maxRows, source = value, envSource
+	}
+	if maxRows > 0 {
+		return graphFailure("capability_unavailable", fmt.Sprintf("blocking dependency snapshot does not enforce %s=%d; unset the cap or use --max-rows=0", source, maxRows), 5)
+	}
+	return nil
+}
+
 func runGraphPreviewDependencyGraph(cmd *cobra.Command, args []string) error {
-	if err := graphPreviewFlags(cmd); err != nil {
+	if err := graphPreviewFlags(cmd, "max-rows"); err != nil {
 		return err
+	}
+	if err := graphPreviewRejectDependencyRowCap(cmd); err != nil {
+		return err
+	}
+	if jsonOutput {
+		return graphFailure("capability_unavailable", "graph ISSUE --json cannot preserve the native layout and Issue record shape; use the human blocking view or --view generic for explicit graph JSON", 5)
 	}
 	if len(args) != 1 {
 		return graphFailure("invalid_selector", "graph requires one local Issue ID; --view generic retains generic Link traversal", 2)
@@ -101,8 +131,14 @@ func runGraphPreviewCheck(cmd *cobra.Command, args []string) error {
 }
 
 func runGraphPreviewDepTree(cmd *cobra.Command, args []string) error {
-	if err := graphPreviewFlags(cmd, "direction", "reverse", "max-depth", "show-all-paths"); err != nil {
+	if err := graphPreviewFlags(cmd, "direction", "reverse", "max-depth", "show-all-paths", "max-rows"); err != nil {
 		return err
+	}
+	if err := graphPreviewRejectDependencyRowCap(cmd); err != nil {
+		return err
+	}
+	if jsonOutput {
+		return graphFailure("capability_unavailable", "graph dep tree --json cannot preserve native flattened TreeNode Issue fields; use the human blocking tree", 5)
 	}
 	if len(args) != 1 {
 		return graphFailure("invalid_selector", "dep tree requires one local Issue ID", 2)
@@ -157,6 +193,9 @@ func runGraphPreviewDepTree(cmd *cobra.Command, args []string) error {
 func runGraphPreviewDepCycles(cmd *cobra.Command, args []string) error {
 	if err := graphPreviewFlags(cmd, "limit"); err != nil {
 		return err
+	}
+	if jsonOutput {
+		return graphFailure("capability_unavailable", "graph dep cycles --json cannot preserve native Cycle member Issue records; use the human blocking cycle report", 5)
 	}
 	if len(args) != 0 {
 		return graphFailure("invalid_selector", "dep cycles takes no Issue ID", 2)

@@ -9,31 +9,6 @@ import (
 	"github.com/steveyegge/beads/internal/storage/graphstore"
 )
 
-func runGraphPreviewChildren(cmd *cobra.Command, selector string, pretty bool) error {
-	if err := graphPreviewFlags(cmd, "pretty"); err != nil {
-		return err
-	}
-	if pretty {
-		return graphFailure("capability_unavailable", "graph children tree rendering is unavailable", 5)
-	}
-	path, err := graphPreviewBeadSelector(selector)
-	if err != nil {
-		return err
-	}
-	return withGraphStore(func(ctx context.Context, store *graphstore.Store) (any, string, error) {
-		children, err := store.ListChildren(ctx, path)
-		if err != nil {
-			return nil, "", err
-		}
-		var human strings.Builder
-		fmt.Fprintf(&human, "Children of %s (%d; graph preview)\n", graphPreviewDisplayLocalURL(store.ScopeURL()+path), len(children))
-		for _, child := range children {
-			fmt.Fprintf(&human, "%s  %s  %s\n", graphPreviewDisplayLocalURL(child.ID), child.Properties.Status, child.Properties.Title)
-		}
-		return children, strings.TrimSuffix(human.String(), "\n"), nil
-	})
-}
-
 func runGraphPreviewDepList(cmd *cobra.Command, selectors []string) error {
 	if err := graphPreviewFlags(cmd, "direction", "type"); err != nil {
 		return err
@@ -57,6 +32,9 @@ func runGraphPreviewDepList(cmd *cobra.Command, selectors []string) error {
 			paths = append(paths, path)
 			seen[path] = true
 		}
+	}
+	if jsonOutput {
+		return graphFailure("capability_unavailable", "graph dep list --json cannot preserve native single-Issue versus batch Dependency record shapes; use the human blocking view", 5)
 	}
 	return withGraphStore(func(ctx context.Context, store *graphstore.Store) (any, string, error) {
 		links := make([]graphstore.LinkRecord, 0)
