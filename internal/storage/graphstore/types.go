@@ -136,6 +136,15 @@ type DependencyResult struct {
 	Changed bool        `json:"changed"`
 }
 
+// DependencyRemoveRequest keeps an explicit graph path authoritative. Native
+// ID fallback is supplied only for a bare CLI selector and resolved atomically
+// against the live Issue catalog, with collisions refused.
+type DependencyRemoveRequest struct {
+	SourcePath, TargetPath         string
+	SourceNativeID, TargetNativeID string
+	Actor                          string
+}
+
 // DependencyRemoveResult is the native pair-removal outcome. A missing edge
 // returns Removed=false with both checked live Issues and no Link tombstone.
 type DependencyRemoveResult struct {

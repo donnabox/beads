@@ -18,13 +18,20 @@ import (
 // the canonical unlink/Issue writer. An absent pair is a true no-op: no event,
 // retained version, tombstone, or coordination write is produced. The generic
 // unlink command keeps its explicit canonical-Link-ID and guard contract.
-func (s *Store) RemoveDependency(ctx context.Context, sourcePath, targetPath, actor string) (DependencyRemoveResult, error) {
-	for _, path := range []string{sourcePath, targetPath} {
+func (s *Store) RemoveDependency(ctx context.Context, request DependencyRemoveRequest) (DependencyRemoveResult, error) {
+	for _, path := range []string{request.SourcePath, request.TargetPath} {
 		if err := validatePath(path); err != nil {
 			return DependencyRemoveResult{}, err
 		}
 	}
-	if actor == "" || !utf8.ValidString(actor) {
+	for _, selector := range []struct{ path, nativeID string }{
+		{request.SourcePath, request.SourceNativeID}, {request.TargetPath, request.TargetNativeID},
+	} {
+		if selector.nativeID != "" && selector.path != "beads/"+selector.nativeID {
+			return DependencyRemoveResult{}, fmt.Errorf("%w: native Issue fallback requires its matching bare selector", storage.ErrValidation)
+		}
+	}
+	if request.Actor == "" || !utf8.ValidString(request.Actor) {
 		return DependencyRemoveResult{}, fmt.Errorf("%w: remove dependency requires a UTF-8 actor", storage.ErrValidation)
 	}
 	var result DependencyRemoveResult
@@ -32,11 +39,11 @@ func (s *Store) RemoveDependency(ctx context.Context, sourcePath, targetPath, ac
 		if err := checkBinding(ctx, tx, s.options); err != nil {
 			return err
 		}
-		source, err := s.requireIssueInTx(ctx, tx, sourcePath)
+		sourcePath, source, err := s.resolveDependencyRemoveIssueInTx(ctx, tx, request.SourcePath, request.SourceNativeID)
 		if err != nil {
 			return err
 		}
-		target, err := s.requireIssueInTx(ctx, tx, targetPath)
+		targetPath, target, err := s.resolveDependencyRemoveIssueInTx(ctx, tx, request.TargetPath, request.TargetNativeID)
 		if err != nil {
 			return err
 		}
@@ -58,7 +65,7 @@ func (s *Store) RemoveDependency(ctx context.Context, sourcePath, targetPath, ac
 			return fmt.Errorf("%w: selected pair is not a blocking Dependency", ErrInvalidStore)
 		}
 		removed, err := s.unlinkDependencyInTx(ctx, tx, path, link, LinkDeleteRequest{
-			Actor: actor, ExpectedRevision: link.Revision, ExpectedSourceRevision: source.Revision,
+			Actor: request.Actor, ExpectedRevision: link.Revision, ExpectedSourceRevision: source.Revision,
 		})
 		if err != nil {
 			return err
@@ -74,6 +81,57 @@ func (s *Store) RemoveDependency(ctx context.Context, sourcePath, targetPath, ac
 		return DependencyRemoveResult{}, err
 	}
 	return result, nil
+}
+
+// A bare native ID can differ from the Issue's canonical path. Resolve it in
+// the same transaction as pair selection and unlink. A colliding path remains
+// ambiguous even if it names a Memory or deleted Bead; spelling beads/PATH or
+// the full Scope URL makes that explicit identity authoritative instead.
+func (s *Store) resolveDependencyRemoveIssueInTx(ctx context.Context, tx *sql.Tx, candidatePath, nativeID string) (string, IssueRecord, error) {
+	if nativeID == "" {
+		issue, err := s.requireIssueInTx(ctx, tx, candidatePath)
+		return candidatePath, issue, err
+	}
+	var exists int
+	err := tx.QueryRowContext(ctx, `SELECT 1 FROM graph_preview_catalog WHERE path=?`, candidatePath).Scan(&exists)
+	pathExists := err == nil
+	if err != nil && !errors.Is(err, sql.ErrNoRows) {
+		return "", IssueRecord{}, err
+	}
+	rows, err := tx.QueryContext(ctx, `SELECT path FROM graph_preview_catalog WHERE backing='issue' AND backing_key=? LIMIT 2`, nativeID)
+	if err != nil {
+		return "", IssueRecord{}, err
+	}
+	var nativePaths []string
+	for rows.Next() {
+		var path string
+		if err := rows.Scan(&path); err != nil {
+			_ = rows.Close()
+			return "", IssueRecord{}, err
+		}
+		nativePaths = append(nativePaths, path)
+	}
+	if err := errors.Join(rows.Err(), rows.Close()); err != nil {
+		return "", IssueRecord{}, err
+	}
+	if len(nativePaths) > 1 {
+		return "", IssueRecord{}, fmt.Errorf("%w: native Issue ID has multiple graph allocations", ErrInvalidStore)
+	}
+	if len(nativePaths) == 1 && pathExists && nativePaths[0] != candidatePath {
+		return "", IssueRecord{}, fmt.Errorf("%w: bare Issue ID %q matches both a graph path and a different native Issue; use an explicit beads/PATH", storage.ErrValidation, nativeID)
+	}
+	path := candidatePath
+	if !pathExists {
+		if len(nativePaths) == 0 {
+			return "", IssueRecord{}, ErrNotFound
+		}
+		path = nativePaths[0]
+		if err := validatePath(path); err != nil {
+			return "", IssueRecord{}, fmt.Errorf("%w: invalid native Issue graph allocation: %v", ErrInvalidStore, err)
+		}
+	}
+	issue, err := s.requireIssueInTx(ctx, tx, path)
+	return path, issue, err
 }
 
 // validDeletedLinkAllocation separates reserved canonical identity from current

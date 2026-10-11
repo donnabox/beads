@@ -176,8 +176,15 @@ func runGraphPreviewRemoveDependency(cmd *cobra.Command, args []string) error {
 	if err != nil {
 		return err
 	}
+	request := graphstore.DependencyRemoveRequest{SourcePath: sourcePath, TargetPath: targetPath, Actor: getActorWithGit()}
+	if sourcePath == "beads/"+args[0] {
+		request.SourceNativeID = args[0]
+	}
+	if targetPath == "beads/"+args[1] {
+		request.TargetNativeID = args[1]
+	}
 	return withGraphFamiliarStore(func(ctx context.Context, store *graphstore.Store) (any, string, error) {
-		removed, err := store.RemoveDependency(ctx, sourcePath, targetPath, getActorWithGit())
+		removed, err := store.RemoveDependency(ctx, request)
 		if err != nil {
 			return nil, "", err
 		}

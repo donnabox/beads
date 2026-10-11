@@ -120,11 +120,11 @@ func TestDependencyPairRemoveUsesNativeWriterAndNoop(t *testing.T) {
 			}
 			before := workflowState(t, f.ctx, f.store)
 			events := dependencyRemovalCount(t, f)
-			missing, err := f.store.RemoveDependency(f.ctx, "beads/source", "beads/third", "remover")
+			missing, err := f.store.RemoveDependency(f.ctx, DependencyRemoveRequest{SourcePath: "beads/source", TargetPath: "beads/third", Actor: "remover"})
 			if err != nil || missing.Removed || !reflect.DeepEqual(missing.Source, f.source) || !reflect.DeepEqual(missing.Target, f.targets[2]) || !reflect.DeepEqual(before, workflowState(t, f.ctx, f.store)) {
 				t.Fatalf("absent pair changed state: %+v %v", missing, err)
 			}
-			removed, err := f.store.RemoveDependency(f.ctx, "beads/source", "beads/first", "remover")
+			removed, err := f.store.RemoveDependency(f.ctx, DependencyRemoveRequest{SourcePath: "beads/source", TargetPath: "beads/first", Actor: "remover"})
 			if err != nil || !removed.Removed || removed.Link.ID != f.links[0].ID || removed.Link.State != "deleted" || removed.Source.Revision == f.source.Revision || !reflect.DeepEqual(removed.Target, f.targets[0]) {
 				t.Fatalf("pair removal lost canonical Link/Issue write: %+v %v", removed, err)
 			}
@@ -142,11 +142,11 @@ func TestDependencyPairRemoveUsesNativeWriterAndNoop(t *testing.T) {
 				t.Fatalf("target changed: %+v %v", current, err)
 			}
 			before = workflowState(t, f.ctx, f.store)
-			repeated, err := f.store.RemoveDependency(f.ctx, "beads/source", "beads/first", "remover")
+			repeated, err := f.store.RemoveDependency(f.ctx, DependencyRemoveRequest{SourcePath: "beads/source", TargetPath: "beads/first", Actor: "remover"})
 			if err != nil || repeated.Removed || repeated.Link.ID != "" || !reflect.DeepEqual(repeated.Source, removed.Source) || !reflect.DeepEqual(before, workflowState(t, f.ctx, f.store)) || dependencyRemovalCount(t, f) != events+1 {
 				t.Fatalf("repeat pair removal changed state: %+v %v", repeated, err)
 			}
-			if _, err := f.store.RemoveDependency(f.ctx, "beads/source", "beads/second", ""); !errors.Is(err, storage.ErrValidation) || !reflect.DeepEqual(before, workflowState(t, f.ctx, f.store)) {
+			if _, err := f.store.RemoveDependency(f.ctx, DependencyRemoveRequest{SourcePath: "beads/source", TargetPath: "beads/second"}); !errors.Is(err, storage.ErrValidation) || !reflect.DeepEqual(before, workflowState(t, f.ctx, f.store)) {
 				t.Fatalf("invalid actor changed state: %v", err)
 			}
 		})

@@ -309,8 +309,9 @@ func TestGraphPreviewDepRemovePairAndNoop(t *testing.T) {
 		return graphPolicyCLI(t, bd, work, home, nil, code, args...)
 	}
 	call("", "init", "--graph-mode", "link", "--prefix", "demo", "--scope-url", scope, "--skip-hooks", "--skip-agents", "--non-interactive", "--json")
+	created := map[string]graphstore.IssueRecord{}
 	for _, id := range []string{"work", "first", "second"} {
-		call("", "create", id, "--id", "beads/"+id, "--json")
+		created[id] = graphMixedResult[graphstore.IssueRecord](t, call("", "create", id, "--id", "beads/"+id, "--json"))
 	}
 	added := graphMixedResult[graphstore.DependencyResult](t, call("", "dep", "add", "work", "first", "--id", "links/first", "--json"))
 	firstHistory := call("", "versions", "first", "--json")
@@ -334,7 +335,7 @@ func TestGraphPreviewDepRemovePairAndNoop(t *testing.T) {
 		t.Fatalf("absent pair was not a native no-op: %+v", missing)
 	}
 	removed := decode(call("", "dep", "remove", "work", "first", "--json"))
-	if removed.Status != "removed" || !removed.Removed || removed.IssueID != added.Source.Properties.ID || removed.DependsOnID != "first" {
+	if removed.Status != "removed" || !removed.Removed || removed.IssueID != added.Source.Properties.ID || removed.DependsOnID != created["first"].Properties.ID {
 		t.Fatalf("pair removal lost native JSON fields: %+v", removed)
 	}
 	if _, _, before, _ := graphVersionsListed(t, workHistory); len(before) == 0 {
@@ -350,6 +351,30 @@ func TestGraphPreviewDepRemovePairAndNoop(t *testing.T) {
 	}
 	if got := call("", "versions", "first", "--json"); got != firstHistory {
 		t.Fatalf("pair removal changed target History\nbefore: %s\nafter: %s", firstHistory, got)
+	}
+	// Explicit canonical paths can differ from native backing IDs. The native
+	// IDs printed by familiar dep output must resolve to these mapped Issues,
+	// while a colliding graph Bead must make the bare spelling ambiguous.
+	source := graphMixedResult[graphstore.IssueRecord](t, call("", "create", "Custom source", "--id", "beads/custom-source-path", "--json"))
+	target := graphMixedResult[graphstore.IssueRecord](t, call("", "create", "Custom target", "--id", "beads/custom-target-path", "--json"))
+	if source.Properties.ID == "custom-source-path" || target.Properties.ID == "custom-target-path" {
+		t.Fatalf("fixture must distinguish canonical path from native backing ID: %s %s", source.Properties.ID, target.Properties.ID)
+	}
+	call("", "dep", "add", "beads/custom-source-path", "beads/custom-target-path", "--id", "links/custom-edge", "--json")
+	native := decode(call("", "dep", "remove", source.Properties.ID, target.Properties.ID, "--json"))
+	if !native.Removed || native.IssueID != source.Properties.ID || native.DependsOnID != target.Properties.ID {
+		t.Fatalf("bare native IDs did not resolve the checked Issue pair: %+v", native)
+	}
+	call("", "dep", "add", "beads/custom-source-path", "beads/custom-target-path", "--id", "links/custom-readded", "--json")
+	call("", "remember", "Colliding Memory", "--id", "beads/"+source.Properties.ID, "--json")
+	beforeAmbiguous := call("", "versions", "beads/custom-source-path", "--json")
+	call("invalid_properties", "dep", "remove", source.Properties.ID, target.Properties.ID, "--json")
+	if after := call("", "versions", "beads/custom-source-path", "--json"); after != beforeAmbiguous {
+		t.Fatalf("ambiguous native selector changed Issue History\nbefore: %s\nafter: %s", beforeAmbiguous, after)
+	}
+	explicit := decode(call("", "dep", "remove", "beads/custom-source-path", scope+"beads/custom-target-path", "--json"))
+	if !explicit.Removed || explicit.IssueID != source.Properties.ID || explicit.DependsOnID != target.Properties.ID {
+		t.Fatalf("explicit canonical selectors lost authority after bare-ID collision: %+v", explicit)
 	}
 }
 
