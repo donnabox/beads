@@ -234,7 +234,7 @@ func graphPolicyCLI(t *testing.T, bd, work, home string, extraEnv []string, code
 	cmd.Stdout, cmd.Stderr = &out, &stderr
 	err := cmd.Run()
 	if ctx.Err() != nil {
-		t.Fatalf("CLI did not complete within deadline: %v\n%s", ctx.Err(), stderr.String())
+		t.Fatalf("CLI did not complete within deadline: %v args=%v\n%s", ctx.Err(), args, stderr.String())
 	}
 	if code == "" {
 		if err != nil {

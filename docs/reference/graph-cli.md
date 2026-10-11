@@ -109,6 +109,7 @@ bd recall policy
 bd show work --json
 bd show work --format graph-json
 bd list --all
+bd list --json --all
 bd list --format records-json --bead-type types/preview-memory-v2 --all
 bd statuses --json
 ```
@@ -143,6 +144,11 @@ selected the query. A directory label alone never refuses a `--bead-type`; it
 is not applied to a Memory. Its human rows add status and priority, for example
 `"https://example.org/team/beads/work" "open" P2 "Move the release branch"`.
 An Issue filter cannot be combined with a non-Issue `--bead-type`.
+
+`bd list --json` returns the ordinary Issue-only array, including the
+familiar Issue field names and Scope-relative IDs. Memories are omitted from
+that shape. Use `--format records-json` to read all Bead Types as graph
+records; the formats serve different clients and are not interchangeable.
 
 ## Quick task Issues
 

@@ -141,7 +141,7 @@ func TestGraphPreviewIssueDueListInput(t *testing.T) {
 		{name: "utf8", args: []string{"--flat", "--due-before=\xff"}, code: 2},
 		{name: "oversize", args: []string{"--flat", "--due-after=" + strings.Repeat("x", 4097)}, code: 2},
 		{name: "no-due-sort", args: []string{"--flat", "--sort=due"}, code: 5},
-		{name: "legacy-json-gate", args: []string{"--flat", "--overdue", "--json"}, code: 5},
+		{name: "legacy-json-due-filter", args: []string{"--flat", "--overdue", "--json"}, overdue: true},
 	} {
 		t.Run(tc.name, func(t *testing.T) {
 			cmd := graphListTestCommand(t, nil)

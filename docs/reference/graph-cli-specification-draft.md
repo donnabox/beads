@@ -24,6 +24,13 @@ integration source changes, and reconcile this specification and the guide
 with each admitted behavior change. A candidate PR does not become current
 behavior until it lands and the ledger is updated.
 
+The grouped everyday Issue candidate in this branch adds `bd q`, native
+`comment`/`comments add`, `statuses`, Issue-only legacy `list --json`,
+bounded `search`/`count`/`query`, and editor-backed `edit`. Its commands are
+candidate behavior until the exact source passes local and hosted qualification
+and is staged. The historical ledger below still describes its pinned
+integration commit; do not read a candidate row as a release claim.
+
 This contract covers all graph-affected Bead, Link, History, discovery,
 agent-setup and serving entry points. Ordinary-project commands keep their
 ordinary contracts. Type descriptor design, installation, removal, update and
@@ -127,7 +134,6 @@ ordinary storage.
 | `assign ISSUE PERSON` | `--if-revision`, `--force` | Set or clear an Issue assignee through the native Issue writer; a foreign live-claim transfer needs explicit `--force`. Omitted revision guard accepts current state. |
 | `priority ISSUE LEVEL` | No additional flags | Set P0–P4 priority through the native Issue writer. |
 | `note ISSUE [TEXT...]` | `--stdin`, `--file` | Append text to an Issue's notes through the native Issue writer; text sources are mutually exclusive. |
-| `comment ISSUE [TEXT...]`, `comments add ISSUE [TEXT...]` | Singular: `--stdin`, `--file`; plural: `--file`, `--author` | Add one native Issue comment. Both return the stored comment with `--json`; neither creates an Issue Resource version. `comments ISSUE` reads the feed. |
 | `update LINK` | `--properties` or `--patch`, optional `--if-revision`, `--if-source-revision`, `--unconditional-source` | Informational Link properties only / implemented. Endpoints and Type are immutable. |
 | `link SOURCE TARGET` | `--link-type`/`--resource-type`, `--id`, `--properties`, `--if-source-revision`, `--unconditional-source`; blocking alias `--type` | One typed Link, or an Issue-only blocking Dependency with ordinary default Type / implemented. `--unconditional-source` explicitly accepts the current owning source Bead instead of checking a supplied `--if-source-revision`; for a Memory-owned informational Link, that source acceptance is already the default. Remote endpoints, bulk and bypass flags refuse. |
 | `dep add SOURCE TARGET` | `--type`, optional `--id` | One local blocking Dependency between live Issues / implemented. No bulk form; Link Type and source-guard flags belong to `bd link` and are refused here. `dep BLOCKER --blocks BLOCKED` reverses the positional order for the same operation. |
@@ -522,7 +528,7 @@ explicit creation title must remain nonempty; updates preserve omitted fields.
 | `close [BEAD...]`, alias `done` | Ordinary interactive last-touched fallback or explicit one/many Issue IDs; reason aliases or `--reason-file`, `--force`, `--session`, `--suggest-next`, `--claim-next`, `--continue`, `--no-auto` and the ordinary conditional-revision path. Native gate, molecule and next-work effects apply. The pinned integration build supports only one explicit ID and inline reason. |
 | `reopen BEAD...` | Reopen one or more Issues with optional `--reason`, clearing `closed_at` and recording the native Reopened event for accepted changes. The pinned integration build supports one explicit ID. |
 | `ready` | Ordinary blocker-aware Issue query, all [target flags](#target-operations-that-remain-nyi) and atomic `--claim` behavior. The pinned integration build admits only an unfiltered read. |
-| `list` or `list --format records-json` | Without an Issue filter, one bounded current snapshot of every Memory and every Issue the ordinary `bd list` would show: closed and pinned Issues are hidden unless `--all`, which also lifts the row limit. Newest recorded change first, ties by canonical Bead ID; human rows show local ID and kind, and for an Issue its status and priority, then the title. `--bead-type types/NAME` narrows by nominal Bead Type. A positive `BEADS_MAX_ROWS` refuses a page of more Beads than the cap. Any Issue filter (status/state, type, title/title-contains, priority and range, assignee/no-assignee, label/label-any/exclude-label, pinned/no-pinned, due-before/due-after/overdue, sort or reverse, or a matching configured directory label) selects the native Issue-only query, which lists Issues only, says so under the header in human output, and omits closed and pinned Issues unless `--all` or a filter selects them. See [All-Bead listing](#all-bead-listing). `hasMore` reports whether a row limit omitted matches; tree and legacy JSON remain unavailable. |
+| `list` or `list --format records-json` | Without an Issue filter, one bounded current snapshot of every Memory and every Issue the ordinary `bd list` would show: closed and pinned Issues are hidden unless `--all`, which also lifts the row limit. Newest recorded change first, ties by canonical Bead ID; human rows show local ID and kind, and for an Issue its status and priority, then the title. `--bead-type types/NAME` narrows by nominal Bead Type. A positive `BEADS_MAX_ROWS` refuses a page of more Beads than the cap. Any Issue filter (status/state, type, title/title-contains, priority and range, assignee/no-assignee, label/label-any/exclude-label, pinned/no-pinned, due-before/due-after/overdue, sort or reverse, or a matching configured directory label) selects the native Issue-only query, which lists Issues only, says so under the header in human output, and omits closed and pinned Issues unless `--all` or a filter selects them. See [All-Bead listing](#all-bead-listing). `hasMore` reports whether a row limit omitted matches; tree remains unavailable. `list --json` uses the ordinary Issue-only array shape and never includes Memories. |
 | `blocked` | Native dependency-blocked Issue view with canonical blocker IDs and ordinary `--parent` descendant filter. The pinned integration build has no parent filter and refuses positive `BEADS_MAX_ROWS`. |
 | `graph BEAD --view generic` | Current local summary traversal with `--direction in\|out\|both`, `--depth`, `--max-nodes` and `--max-links`. |
 | `status --graph` | Report the capabilities and bounds admitted by this checkpoint, including initial Issue fields/notes, append-only notes, estimate/reference edits and due-date authoring/filtering. |
@@ -948,15 +954,18 @@ its priority and its quoted title, for example
 A line under the header says that Memories are not listed and names the
 option that selected the query; structured output carries no such line.
 `--format records-json` returns the experimental graph envelope. Tree output
-(`--tree`, `--pretty` or `--flat=false`), `--json`, `--format json`, watch,
+(`--tree`, `--pretty` or `--flat=false`), `--format json`, watch,
 readiness, parent/ID/routing/offset selectors, repeated
 status/state/type/assignee/bead-type filters and supplied-empty labels
 refuse. Defer filters remain unavailable; due selection
 does not schedule or wake work.
 This does not change ordinary list parsing or implement contributor-owned filter
 unions. Records-json selects structured errors and overrides ambient human
-format selection; explicit `--json` still refuses. BDP Read remains the documented
-script interface below; these CLI result shapes are experimental.
+format selection. `list --json` returns the ordinary Issue-only array and does
+not include Memories; `--format records-json` remains the all-Bead graph
+envelope. BDP Read remains the documented script interface below; these CLI
+result shapes are experimental. The pinned integration ledger above predates
+the grouped everyday candidate and still records its original refusal.
 
 `blocked` follows the existing native dependency-blocked query. It is not the
 complement of ready, nor a query for every manually blocked or deferred Issue.
