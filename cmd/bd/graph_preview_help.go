@@ -8,9 +8,11 @@ import "github.com/spf13/cobra"
 func init() {
 	todoCmd.Long = `Graph preview workspaces:
 bd todo add TITLE creates an open task Issue at P2 by default, assigned to
-the current actor. bd todo and bd todo list show open task Issues; add --all
-to list completed task Issues too. bd todo done ID... closes any Issue, as in
-ordinary workspaces, with reason Completed unless --reason is supplied.
+the current actor. bd todo and bd todo list show open task Issues;
+bd todo list --all includes completed task Issues. bd todo done ID... closes
+any Issue, as in ordinary workspaces, with reason Completed unless --reason
+is supplied. Each unguarded ID is attempted independently; failed targets
+are reported to stderr while successful closes are returned.
 For one Issue, --if-revision TOKEN refuses a stale completion. List and add
 JSON keep the familiar Issue shape with canonical beads/PATH IDs.
 

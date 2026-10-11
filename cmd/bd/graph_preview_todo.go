@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"os"
 	"strings"
@@ -145,32 +146,32 @@ func runGraphPreviewTodoDone(cmd *cobra.Command, args []string) error {
 	if reason == "" {
 		reason = "Completed"
 	}
-	paths := make([]string, len(args))
-	for i, selector := range args {
-		path, err := graphPreviewResourcePath(graphPreviewConfig.GraphScopeURL, selector)
-		if err != nil {
+	// A guarded write is one atomic decision and keeps typed refusals. Native
+	// unguarded batches instead try every selector independently, even after a
+	// malformed or missing ID, and return success with the IDs they closed.
+	if revision != "" {
+		if _, err := graphTodoIssuePath(args[0]); err != nil {
 			return graphFailure("invalid_selector", err.Error(), 2)
 		}
-		if err := graph.ValidateBeadPath(path); err != nil {
-			return graphFailure("invalid_selector", err.Error(), 2)
-		}
-		paths[i] = path
 	}
-	var hadError bool
 	var firstSettled string
 	err = withGraphStoreOutput(func(ctx context.Context, store *graphstore.Store) (any, string, error) {
-		closed := make([]string, 0, len(paths))
+		closed := make([]string, 0, len(args))
 		var human strings.Builder
-		for _, path := range paths {
+		for _, selector := range args {
+			path, err := graphTodoIssuePath(selector)
+			if err != nil {
+				graphTodoTargetError(selector, err, true)
+				continue
+			}
 			result, err := store.CloseIssueWithOptions(ctx, graphstore.IssueCloseRequest{
 				Path: path, Reason: reason, Actor: getActorWithGit(), ExpectedRevision: revision,
 			})
 			if err != nil {
-				if len(paths) == 1 {
+				if revision != "" {
 					return nil, "", err
 				}
-				_ = graphStorageError(fmt.Errorf("closing %s: %w", path, err))
-				hadError = true
+				graphTodoTargetError(selector, err, errors.Is(err, graphstore.ErrNotFound))
 				continue
 			}
 			if firstSettled == "" {
@@ -196,10 +197,26 @@ func runGraphPreviewTodoDone(cmd *cobra.Command, args []string) error {
 	if firstSettled != "" {
 		SetLastTouchedID(firstSettled)
 	}
-	if hadError {
-		return SilentExit()
-	}
 	return nil
+}
+
+func graphTodoIssuePath(selector string) (string, error) {
+	path, err := graphPreviewResourcePath(graphPreviewConfig.GraphScopeURL, selector)
+	if err != nil {
+		return "", err
+	}
+	if err := graph.ValidateBeadPath(path); err != nil {
+		return "", err
+	}
+	return path, nil
+}
+
+func graphTodoTargetError(selector string, err error, lookup bool) {
+	verb := "close"
+	if lookup {
+		verb = "get issue"
+	}
+	fmt.Fprintf(os.Stderr, "Error: failed to %s %s: %v\n", verb, selector, err) //nolint:gosec // Stderr diagnostics, not a browser context.
 }
 
 // The ordinary todo command emits raw JSON for add, list and done. Preserve

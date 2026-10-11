@@ -6,6 +6,7 @@ import (
 	"encoding/json"
 	"os"
 	"reflect"
+	"strings"
 	"testing"
 
 	"github.com/steveyegge/beads/internal/storage/graphstore"
@@ -105,6 +106,35 @@ func TestGraphPreviewTodoIssueWorkflow(t *testing.T) {
 				t.Fatalf("bare TODO omitted the default-priority open task: %+v", got)
 			}
 			graphPolicyCLI(t, bd, work, home, nil, "invalid_properties", "todo", "done", "memo", "--json")
+
+			// Native todo done tries every target and exits successfully even
+			// when an individual ID is malformed or missing. Both valid writes
+			// must commit through the native Issue History writer exactly once.
+			batch := func(bad string) {
+				t.Helper()
+				first := issue(call("todo", "add", "First batch task"))
+				last := issue(call("todo", "add", "Last batch task"))
+				out, stderr, code := graphVersionsProcess(t, bd, work, home, "todo", "done", first.ID, bad, last.ID, "--json")
+				if code != 0 || !strings.Contains(stderr, "Error: failed to get issue "+bad+":") {
+					t.Fatalf("batch %q: exit=%d stdout=%s stderr=%s", bad, code, out, stderr)
+				}
+				var result struct {
+					Closed []string `json:"closed"`
+					Reason string   `json:"reason"`
+				}
+				if err := json.Unmarshal([]byte(out), &result); err != nil || !reflect.DeepEqual(result.Closed, []string{first.ID, last.ID}) || result.Reason != "Completed" {
+					t.Fatalf("batch %q lost successful IDs: %s (%v)", bad, out, err)
+				}
+				for _, id := range result.Closed {
+					record := graphMixedResult[graphstore.IssueRecord](t, call("show", id, "--format", "graph-json"))
+					_, _, rows, _ := graphVersionsListed(t, call("versions", id))
+					if record.Properties.Status != types.StatusClosed || len(rows) != 2 || rows[0].Version != record.Revision {
+						t.Fatalf("batch target %s did not close with one retained successor: %+v %+v", id, record, rows)
+					}
+				}
+			}
+			batch("links/not-an-issue")
+			batch("beads/missing")
 		})
 	}
 }
