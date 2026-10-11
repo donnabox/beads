@@ -229,7 +229,8 @@ pinned Issues omitted unless --all or a filter selects them, quoted rows
 with status and priority, and a line under the header saying Memories are
 not listed. A typed filter cannot be combined with a non-Issue --bead-type;
 a configured directory label alone does not refuse one, it is simply not
-applied to Memories. Tree output and legacy --json are unavailable.`},
+applied to Memories. Tree output is unavailable. --json returns the ordinary
+Issue-only array; use --format records-json for generic Bead records.`},
 		{searchCmd, `Search current graph Issues by title or canonical local Bead ID.
 Results include closed Issues unless --status narrows them. --json returns the
 ordinary counted Issue row array with Scope-relative IDs. Supported filters:
@@ -257,11 +258,12 @@ OR and NOT parent forms follow native query refusals. mol_type and ephemeral
 predicates are unavailable in graph preview.`},
 		{blockedCmd, `Show current dependency-blocked Issues with canonical
 blocker IDs. Filters and positive BEADS_MAX_ROWS are unavailable.`},
-		{graphCmd, `Use bd graph ID --view generic to traverse the current
-local graph. Control direction, depth, node and Link bounds with --direction,
---depth, --max-nodes and --max-links. Legacy visualization modes are unavailable.`},
-		{statusCmd, `Use bd status --graph to inspect this workspace's supported
-graph capabilities and limits. Ordinary issue-statistics mode is unavailable.`},
+		{graphCmd, `Use bd graph ISSUE for the current blocking Dependency view,
+or bd graph check for a flat consistency report. --view generic traverses
+the current graph with --direction, --depth, --max-nodes and --max-links.
+Legacy visualization modes are unavailable.`},
+		{statusCmd, `Use bd status for ordinary Issue statistics in this workspace.
+Use bd status --graph to inspect graph capabilities and limits.`},
 		{typesCmd, `Use bd types to list the Bead and Link Types actually installed
 in this workspace, grouped by category. The displayed types/NAME IDs are
 accepted by --bead-type and --link-type. Add --details to show each complete
