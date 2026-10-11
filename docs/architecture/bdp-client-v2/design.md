@@ -49,6 +49,13 @@ Donna asked for Update and Transactional implementation to continue autonomously
 
 Both lanes start from verified runtime `ec9df671157a0f4c7a7a484160222254c7777170` (PR68), incorporating PR66. Update owns development receiver/executable wiring; Transactional initially owns new batch/transaction store modules and tests. Any shared durable-store edits require coordination before changes. Editorial PR67 is the cumulative wording reference; unresolved query/event enrichment proposals and Trish Types are not implementation law.
 
+Continuation progress:
+
+- [PR69](https://github.com/gastownhall/bdp/pull/69), `276d9fde7966e2825360b3ac50f08d29507f27f3`: alias singletons and ordered sequences over real HTTP. 326 focused tests, independent 11-test HTTP rerun, build/typecheck/boundaries and process restart smoke pass. Next receiver work covers Problems, media/conditional HTTP and HEAD; full Update qualification remains open.
+- [PR70](https://github.com/gastownhall/bdp/pull/70), `64fe7befb24b8d595dac611257cf840588436faa`: private atomic create-Bead/Link batch, pending/terminal receipts, ordered group, late-failure rollback and abrupt-exit recovery. 357 focused tests, independent 13-test owner rerun and installed-package smoke pass. Review repaired Link Event subject/source and private-package inventory defects. No HTTP/public profile claim. Next slice adds guarded Resource updates/deletes and no-op/final-postimage semantics.
+- [Executable qualification checklist](write-profile-next-qualification.md) records 81 Update and 133 Transactional catalog rows, reusable tests and required receiver/recovery observations. These catalogs remain metadata-only; listed cases are not coverage claims.
+- Both slices compose cleanly at validation head `28cfbade60b2a7c1bc7a1c3b56b5006f00c878b6`; combined build/typecheck/boundaries, full suite (110 files, 7,607 pass, one optional skip), development restart smoke and installed-package smoke pass. [Verification receipt](write-round2-verification.json). External editorial council seats are reviewing PR67; no readiness result is claimed yet.
+
 The heartbeat continues through successive slices toward tested Update and Transactional support, stopping on completion, an operator pause, supersession or an unavoidable decision. It reports meaningful results and blockers, not routine unchanged polls. First-round completed work above remains the baseline.
 
 
