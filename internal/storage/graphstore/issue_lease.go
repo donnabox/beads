@@ -15,7 +15,13 @@ import (
 // HeartbeatIssue refreshes only the native node-local lease. Its retained
 // Issue version and graph revision deliberately remain unchanged.
 func (s *Store) HeartbeatIssue(ctx context.Context, path, actor string) (IssueRecord, error) {
-	if err := validatePath(path); err != nil {
+	return s.HeartbeatIssueSelected(ctx, IssueSelector{Path: path}, actor)
+}
+
+// HeartbeatIssueSelected resolves a bare native ID and renews the lease in
+// one transaction; explicit graph paths never fall back to native IDs.
+func (s *Store) HeartbeatIssueSelected(ctx context.Context, selector IssueSelector, actor string) (IssueRecord, error) {
+	if err := validateIssueSelector(selector); err != nil {
 		return IssueRecord{}, err
 	}
 	if actor == "" || !utf8.ValidString(actor) {
@@ -29,7 +35,7 @@ func (s *Store) HeartbeatIssue(ctx context.Context, path, actor string) (IssueRe
 		if err := checkBinding(ctx, tx, s.options); err != nil {
 			return err
 		}
-		before, err := s.requireIssueInTx(ctx, tx, path)
+		path, before, err := s.resolveLiveIssueSelectorInTx(ctx, tx, selector)
 		if err != nil {
 			return err
 		}
@@ -53,16 +59,38 @@ func (s *Store) HeartbeatIssue(ctx context.Context, path, actor string) (IssueRe
 // the same transaction. It returns native local Issue IDs, as the ordinary
 // reclaim command does. An empty sweep leaves even coordination untouched.
 func (s *Store) ReclaimExpiredIssueLeases(ctx context.Context, olderThan time.Duration, filter types.ReclaimFilter, actor string) ([]types.ReclaimedLease, error) {
+	return s.ReclaimExpiredIssueLeasesSelected(ctx, olderThan, filter, nil, actor)
+}
+
+// ReclaimExpiredIssueLeasesSelected resolves scoped CLI selectors in the
+// recovery transaction, so a concurrent catalog change cannot retarget the
+// native Issue IDs selected for recovery.
+func (s *Store) ReclaimExpiredIssueLeasesSelected(ctx context.Context, olderThan time.Duration, filter types.ReclaimFilter, selectors []IssueSelector, actor string) ([]types.ReclaimedLease, error) {
 	if olderThan < 0 || actor == "" || !utf8.ValidString(actor) {
 		return nil, fmt.Errorf("%w: invalid reclaim grace or actor", storage.ErrValidation)
 	}
 	if err := types.CheckFieldLen("actor", actor); err != nil {
 		return nil, err
 	}
+	for _, selector := range selectors {
+		if err := validateIssueSelector(selector); err != nil {
+			return nil, err
+		}
+	}
 	var reclaimed []types.ReclaimedLease
 	err := s.withTx(ctx, true, func(tx *sql.Tx) error {
 		if err := checkBinding(ctx, tx, s.options); err != nil {
 			return err
+		}
+		if len(selectors) > 0 {
+			filter.IDs = make([]string, 0, len(selectors))
+			for _, selector := range selectors {
+				_, issue, err := s.resolveLiveIssueSelectorInTx(ctx, tx, selector)
+				if err != nil {
+					return err
+				}
+				filter.IDs = append(filter.IDs, issue.Properties.ID)
+			}
 		}
 		rows, err := tx.QueryContext(ctx, `SELECT backing_key,path FROM graph_preview_catalog WHERE backing='issue' AND allocation_state='live'`)
 		if err != nil {

@@ -7,7 +7,6 @@ import (
 	"strings"
 
 	"github.com/spf13/cobra"
-	graph "github.com/steveyegge/beads/graphops"
 	"github.com/steveyegge/beads/internal/storage/graphstore"
 )
 
@@ -15,18 +14,14 @@ func runGraphPreviewState(cmd *cobra.Command, selector, dimension string, list b
 	if err := graphPreviewFlags(cmd); err != nil {
 		return err
 	}
-	path, err := graphPreviewResourcePath(graphPreviewConfig.GraphScopeURL, selector)
-	if err != nil || graph.ValidateBeadPath(path) != nil {
+	selected, err := graphPreviewIssueSelector(selector)
+	if err != nil {
 		return graphFailure("invalid_selector", "state requires a local Issue ID or beads/PATH", 2)
 	}
 	return withGraphFamiliarStore(func(ctx context.Context, store *graphstore.Store) (any, string, error) {
-		resource, err := store.Read(ctx, path)
+		issue, err := store.ShowIssueSelected(ctx, selected)
 		if err != nil {
 			return nil, "", err
-		}
-		issue, ok := resource.(graphstore.IssueRecord)
-		if !ok {
-			return nil, "", graphstore.ErrCapabilityUnavailable
 		}
 		return graphStateReport(issue, dimension, list)
 	})
