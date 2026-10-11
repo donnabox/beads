@@ -23,9 +23,9 @@ fresh disposable stores and the coordinated engine slot.
 
 - Inventory classic `cmd/bd/export.go` and its filters, flags, read transaction,
   file publication and stdout behavior. Existing `cmd/bd/graph_export.go` renders
-  DOT/Mermaid diagrams; it is not a graph interchange format.
-- Inventory graph snapshot, retained Issue fields, metadata, comments, Memory
-  keys/values, Links, Types and configuration. Identify which can be captured in
+  DOT/HTML diagrams; it is not a graph interchange format.
+- Inventory graph snapshot, retained Issue fields, metadata, comments, graph
+  Memory title/body, Links, Types and configuration. Identify which can be captured in
   a single consistent read through the existing storage boundary.
 - Propose a versioned format with exact identity/property preservation and
   deterministic serialization. Choose explicit inclusion, exclusion or refusal
@@ -45,7 +45,8 @@ fresh disposable stores and the coordinated engine slot.
    Use a controlled concurrent-writer test to prove records, Links, comments and
    included configuration all belong to one snapshot, rather than individually
    valid results from different transactions.
-2. Preserve exact IDs, dependency endpoints, metadata, Memory key/value content
+2. Preserve exact canonical Scope-qualified graph IDs and native Issue IDs,
+   dependency endpoints, metadata, graph Memory title/body content
    and admitted comments. Test deterministic output and empty, mixed and bounded
    graphs; disclose any identity remapping explicitly.
 3. Validate and serialize before publication. File output uses atomic publication
@@ -77,10 +78,11 @@ re-run preflight when the concrete implementation scope is known.
 
 ## First implementation slices
 
-Begin with a pure format serializer and disposable synthetic fixtures after the
-contract review. Add a consistent storage reader only if the inventory proves
-the existing boundary insufficient, keeping it separate from CLI wiring. Add
-CLI routing and atomic publication next, followed by installed qualification.
+Acquire current records/Types through `currentSnapshotInTx`; a dedicated same-
+transaction export reader is required for comments and exact persisted prefix.
+Implement this internal acquisition slice separately from file-format and CLI
+decisions. Add a pure serializer and detached synthetic fixtures after the
+format review, then CLI routing/atomic publication and installed qualification.
 Keep every slice free of PR86 implementation dependencies.
 
 ## Initial storage findings
@@ -127,3 +129,77 @@ than inherit ordinary export's `0644` without review.
    refusal; no full-history claim from per-resource readers?
 5. Aggregate resource/comment/encoded-byte ceilings, timeout/error contract and
    output file permissions?
+
+## Council clarifications and proposed field dispositions
+
+The native and external council reviews are retained under
+`engdocs/evidence/graph-export-plan/`. The discovery/acceptance plan is repaired;
+interchange vocabulary and CLI decisions remain proposals on the agent bus.
+The isolated internal acquisition reader does not establish a public format.
+
+Other complete-read projections are `graphstore.ListBeads` in `bead_list.go`
+(and CLI `graphProjectCompleteRecords`) and `graphread.Inventory` in
+`internal/httpapi/graphread/inventory.go`. ListBeads answers Bead listing policy,
+not a full Bead-and-Link interchange archive. Inventory consumes CurrentSnapshot
+and projects the pinned BDP Read shape; its documentation prohibits serializing
+its internal structure as a BDP response. Neither replaces the chosen complete
+current snapshot reader or supplies transactional comments/configuration.
+
+| Member/family | Proposed export disposition; contract coordination still open |
+| --- | --- |
+| Canonical graph ID, Type, revision | Preserve absolute Scope-qualified observations; revisions do not authorize destination revision minting. |
+| Internal `version` alias | Deliberately distinguish alias from public `revision`; do not silently substitute a BDP projection. |
+| Memory properties | Preserve path, title, body exactly; include common metadata, attribution and owned state. |
+| Native Issue properties | Preserve exact native `properties.id`, workflow fields and dates as represented; lease fields need the explicit runtime disposition below. |
+| Link source/target/properties | Preserve exact endpoints and properties, validate endpoint/Type closure. |
+| Common metadata | Preserve strict canonical JSON without lossy typed decoding or changing caller keys such as `version`/`attribution`. |
+| Attribution | Preserve actor, status/basis choice and observed recordedAt explicitly; attribution is distinct from caller metadata. |
+| Owned Links | Preserve complete owned snapshots and top-level Links, with identical authoritative values/revisions. |
+| Installed Types | Preserve persisted canonical descriptors and fingerprints, including actual installation generation. |
+| Comments | Preserve native IDs, native ownership, canonical Issue subject, author, text and supplied timestamp from the same transaction. |
+| Source binding | Include approved Scope/authority/schema-generation provenance; omit canonical filesystem WorkspaceID and connection settings. Destination authority remapping is future importer work. |
+| `config.issue_prefix` | Acquire the exact persisted value, without a helper trimming a trailing hyphen; include approved source configuration rather than infer it from IDs. |
+| Classic `kv.memory.*` configuration | Not graph Memory; explicitly excluded unless the contract owner adds this distinct plane. |
+| Live leases | Acquire faithfully as current observation; final format must preserve as non-restorable observation, explicitly omit, or refuse. Never clear source claims during export. |
+| Deleted/reserved allocations and tombstones | Current-only profile discloses omission/count; absence does not certify that a source-authority path is unallocated. Never claim source never-reuse state was preserved. |
+| Prior graph/Issue versions, journal, Dolt branches/history | Explicit current-only omission; a history/archive profile requires separate bounded acquisition. |
+| WriterToken/local ordinals | Internal consistency inputs, not public revision, cursor, Scope epoch or durable snapshot handle. |
+
+Storage JSON contains `version` and attribution actor/status/recordedAt. CLI
+record shaping removes the alias and projects status to basis. BDP Read shaping
+uses principal/basis and drops recordedAt. Export must pin a deliberate
+projection with a field-fidelity test rather than inherit either lossy public
+shape accidentally. A distinct `formatVersion` is proposed; CLI schemaVersion,
+storage schema generation and BDP envelope version are separate concepts.
+
+Determinism means unchanged source state produces identical bytes, including
+observed attribution timestamps; it does not promise identical bytes for two
+separately created stores. Use strict canonical JSON, then strict decode and
+structural comparison with the detached acquired data before publication. Do
+not use a generic decoder that rounds numbers. Do not fabricate export-time
+attribution or history timestamps.
+
+The storage reader is not gated on BDP Read serving. Installed qualification
+means embedded mode and `dolt.mode=server` using a separately provisioned ordinary
+SQL server with static credentials. `dolt.shared-server` and proxied-server
+workspaces retain their current refusal. Current store validity, including
+validated deleted mappings, is a precondition. The current acquisition has a
+1,000-live-resource/16 MiB preview bound; additional comment/orphan acquisition
+and encoded output must be bounded before allocation/publication. Breaches
+refuse the entire export, naming the bound; no listing pagination or truncation.
+
+CLI wiring must add early graph dispatch together with graph command admission,
+validate an explicit graph flag allowlist, preserve the proxy registry and
+refuse inherited filters/scrub flags that have no implemented graph semantics.
+Graph mode/generation gates isolate execution, but shared CLI files can still
+regress ordinary behavior: run ordinary-export regression tests. Avoid changes
+to `graphstore/records.go` and `dependencies.go`, which PR86 also touches.
+
+Proposed complete graph output includes Memory bodies and uses `0600` for files;
+this differs deliberately from classic opt-in Memory export. Coordinate the
+inclusion policy before exposing flags. Publish a fully validated buffer with
+atomicfile after all storage cleanup. Atomic rename protects concurrent readers
+from partial files; it does not promise directory-fsync/power-loss durability.
+Ordinary failures clean owned temp files; crashes may leave temp residue. The
+current graph wrapper's 30-second context covers reads; the final CLI design
+must define cancellation through serialization and the publication boundary.
