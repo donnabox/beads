@@ -319,7 +319,7 @@ func TestGraphPreviewC0DeferredCommandsRefuseBeforeLegacyOpen(t *testing.T) {
 		// read ONE token, this one enumerates them in order. It is distinct
 		// from historyExact, which stays false and describes the HTTP profile.
 		"versionList",
-		"memoryPropertiesPatch", "linkPropertiesPatch",
+		"memoryPropertiesPatch", "linkPropertiesPatch", "legacyImport",
 	} {
 		wantEnabled[capability] = true
 		if !result.Result.Capabilities[capability] {

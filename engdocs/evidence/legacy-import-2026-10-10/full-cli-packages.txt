@@ -1,0 +1,10 @@
+Final product source ba235baae. Canonical installed bd1.3.0(ba235baae); command: BEADS_TEST_BD_BINARY=<canonical installed binary> TEST_TIMEOUT=40m TEST_COUNT=1 TEST_VERBOSE=1 ./scripts/test.sh ./cmd/bd/...
+Exit0. Optional environment-dependent tests skipped under the normal local runner; these are separate from the required import qualification0skips.
+
+ok  	github.com/steveyegge/beads/cmd/bd	1302.324s
+ok  	github.com/steveyegge/beads/cmd/bd/doctor	42.810s
+ok  	github.com/steveyegge/beads/cmd/bd/doctor/fix	13.832s
+ok  	github.com/steveyegge/beads/cmd/bd/protocol	48.092s
+ok  	github.com/steveyegge/beads/cmd/bd/setup	5.947s
+
+The verbose log contains an intentional orphan-sweep probe message naming TestRunTestsAndSweepReapsOrphanedServer. That test passes and sweeps its deliberately leaked server; it is not an outer suite failure.

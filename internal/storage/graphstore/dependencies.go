@@ -70,6 +70,9 @@ func (s *Store) AddDependency(ctx context.Context, request DependencyRequest) (D
 		if err != nil {
 			return err
 		}
+		if types.ExtractPrefix(source.Properties.ID) != types.ExtractPrefix(target.Properties.ID) || issueops.IsExternalDepTarget(source.Properties.ID, target.Properties.ID) {
+			return fmt.Errorf("%w: blocking Dependency requires same-prefix local Issues", storage.ErrValidation)
+		}
 		for _, raw := range source.Owned {
 			var existing LinkRecord
 			if err := json.Unmarshal(raw, &existing); err != nil {
