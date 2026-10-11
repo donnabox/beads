@@ -528,9 +528,18 @@ the post-add warning; it does not bypass the writer's cycle check.
 `bd dep BLOCKER --blocks BLOCKED` is the same operation with the arguments in
 the opposite order. Add `--id links/ID` to `bd dep add` when the Link needs a
 chosen local identity; repeating the same pair with that ID or no ID is a
-no-op, while a different ID refuses. `bd dep
-relate` and `bd dep unrelate` are outside this graph preview because the
-ordinary command owns two directed relationships, not one Link.
+no-op, while a different ID refuses. `bd dep remove BLOCKED BLOCKER` (also
+`bd dep rm`) removes the blocking pair through the same Issue writer as
+canonical `bd unlink links/ID`. An absent pair reports `not_found` without
+adding Issue History or a Link tombstone; an actual removal records one native
+dependency event and source version. The target Issue stays unchanged.
+Bare native Issue IDs are resolved within the same removal transaction when
+their graph paths differ. A bare ID that also names a different Bead refuses
+as ambiguous; use `beads/PATH` or its full canonical URL to select explicitly.
+`bd unlink` continues to require an exact Link ID and revision guard for a
+blocking Dependency. `bd dep relate` and `bd dep unrelate` are outside this
+graph preview because the ordinary command owns two directed relationships,
+not one Link.
 
 ## Claim and release Issue work
 

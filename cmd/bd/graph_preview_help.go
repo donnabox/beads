@@ -162,6 +162,13 @@ suppresses a post-add warning; the domain writer still validates cycles.
 bd dep blocker --blocks issue is the same operation with reversed arguments.
 Memory endpoints, remote routing and bulk dependency flags are unavailable
 in this preview.`},
+		{depRemoveCmd, `Use bd dep remove issue blocker (or bd dep rm) to
+remove one local blocking Dependency by its Issue pair. An absent pair is a
+successful no-op and reports status not_found with --json. A real removal
+records one native dependency_removed event and one source Issue version;
+the target Issue is unchanged. Bare native Issue IDs are accepted when their
+graph path is unambiguous; use explicit beads/PATH if a different Bead claims
+that bare name. For exact guarded Link-ID removal use bd unlink.`},
 		{linkCmd, `Without --link-type, bd link SOURCE TARGET creates the ordinary
 blocking Dependency between two live Issues. For a Memory or Issue endpoint,
 choose an installed informational Type, for example on a fresh workspace:
