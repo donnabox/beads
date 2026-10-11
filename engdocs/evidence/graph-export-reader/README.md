@@ -14,7 +14,8 @@ are addressed: first check the persisted binding, remove an impossible by-value
 mutation assertion, and reread detachment on the same Store. The bounded
 [repair manifest](repair-manifest.json), [prompt](repair-prompt.txt) and
 [native repair review](repair-native.txt) cover those repairs and new cleanup
-tests. Actual Claude repair review is running. Runtime remains unqualified.
+tests. Actual Claude repair review completed as recorded below. Runtime remains
+unqualified.
 
 [Pure evidence](pure.log) records four roots and17subtests:21PASS,0FAIL,0SKIP.
 The exact-package runner uses canonical build flags and constructs no backend.
@@ -75,5 +76,7 @@ The [final pure run](final-pure.log) passed11 roots/40 total cases with0failures
 and0skips in1.009s. [Lint](final-lint.log) passed all profiles. The
 [manifest](final-manifest.txt), [prompt](final-prompt.txt) and
 [native confirmation](final-native.txt) identify the repaired-source successor
-council; actual Claude is running. Real mixed snapshot/query/backend cleanup
+council; actual Claude was stopped at Donna's overnight pause (exit143, no
+findings). [Attempt record](final-review-interrupted.json) preserves the boundary;
+rerun that frozen audit on resume. No completed successor council is claimed. Real mixed snapshot/query/backend cleanup
 proof remains unrun until explicit Janet engine handback.
