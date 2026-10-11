@@ -31,6 +31,12 @@ candidate behavior until the exact source passes local and hosted qualification
 and is staged. The historical ledger below still describes its pinned
 integration commit; do not read a candidate row as a release claim.
 
+The local combined-tail candidate additionally implements the bounded Issue
+coordination and blocking-Dependency views listed below. It has **not** passed
+the required installed two-engine and hosted qualification and has not been
+admitted to the fork integration branch. Its presence in this working branch
+does not change the pinned ledger or advertise a release capability.
+
 This contract covers all graph-affected Bead, Link, History, discovery,
 agent-setup and serving entry points. Ordinary-project commands keep their
 ordinary contracts. Type descriptor design, installation, removal, update and
@@ -149,6 +155,31 @@ ordinary storage.
 | `setup claude` | `--project`, `--check`, `--remove` | Project-local Stop reminder registration/check/removal / implemented; `--json` refuses. |
 | `claude-hook stop` | no additional flags | Hook JSON stdin/stdout protocol, no storage open / implemented; no CLI `--json`. |
 
+#### Local combined-tail candidate (unqualified)
+
+The following rows describe source present in this branch, **not** the pinned
+integration build above. They become an admitted inventory only after
+exact-source embedded/shared-server and hosted checks, independent review and
+fork staging. Issue lifecycle writes continue through the native Issue writer;
+the lease heartbeat is deliberately history-free.
+
+| Candidate entry point | Accepted graph flags and behavior |
+| --- | --- |
+| `todo add TITLE...`, `todo [list]`, `todo done ISSUE...` | `add --priority --description` creates an assigned open task Issue; `list --all` includes completed tasks. `done --reason` closes targets through the native Issue writer; `--if-revision TOKEN` requires one target. Without a guard, targets are attempted in order and failures are reported individually. JSON keeps the ordinary todo shapes with local Issue IDs. |
+| `heartbeat ISSUE` (`hb`) | The current holder renews an in-progress Issue's node-local lease. It creates no Issue version or History event. No command-specific flags. |
+| `reclaim` | `--older-than DURATION`, repeatable `--id` and `--assignee`, `--label`, `--label-any`, `--exclude-label`, `--any-replica`. Only expired leases within the requested scope are eligible; accepted recovery goes through the native Issue writer and graph projection. A supplied empty scope filter refuses. JSON reports `reclaimed`, `count` and `scoped`. |
+| `state ISSUE DIMENSION`, `state list ISSUE` | Read Issue state labels without mutation; JSON returns the local `issue_id` with `dimension` and nullable `value`, or `states` for the list. `set-state` remains unavailable. |
+| bare `status` | Ordinary Issue summary; `status --graph` remains the separate graph capability/limit report. Other ordinary status filters remain unavailable. |
+| `merge-slot create\|check\|acquire\|release` | One Issue-only slot. `acquire --holder NAME [--wait]` and `release --holder NAME` accept an explicit holder; otherwise the current actor is used. Check and create take no command-specific flags. JSON uses the ordinary flat slot report; the broader `gate` workflow remains unavailable. |
+| `dep list ISSUE...` | Human blocking-Dependency view; `--direction down\|up` and `--type blocks` only. `--json` refuses because native single and batch Dependency JSON shapes are not reproduced. |
+| `dep tree ISSUE` | Human blocking tree; `--direction down\|up\|both`, `--reverse`, `--max-depth`, deprecated no-op `--show-all-paths`. A positive `--max-rows` or `BEADS_MAX_ROWS` refuses rather than truncating the snapshot; `--json` refuses. |
+| `dep cycles` | Human blocking-cycle report, with `--limit` controlling displayed cycles (0 means all). `--json` refuses. |
+| `graph ISSUE`, `graph check` | Human blocking graph and cycle-integrity views. `graph ISSUE` refuses a positive row cap and `--json`; explicit `graph ISSUE --view generic` retains generic-Link traversal and its graph JSON. `graph check --json` returns the flat `clean`, `cycles`, `summary.cycle_count` shape with local Issue IDs; a detected cycle makes the check exit nonzero. |
+
+Parent/child, duplicate, supersede and epic relationship mappings, `gate`,
+`set-state`, and Issue label mutation remain unavailable in this candidate.
+The existing `dep add`/`--blocks` blocking write is separate from these reads.
+
 The following additions belong to the final target contract but are **NYI at
 the pinned integration commit**. They do not enlarge its admission inventory.
 Each argument and flag combination must be implemented and tested before its
@@ -189,9 +220,10 @@ branch may demonstrate a candidate without changing the integration column.
 
 The implemented defaults are part of the contract, not unspecified CLI
 convenience: `link` without a Type requests a blocking Issue Dependency;
-`links` uses `--direction both`; `graph` requires `--view generic` and
-defaults to direction `both`, depth 1, 100 nodes and 200 Links. `list` uses
-the documented terminal-sensitive row limit, while `--all` or `--limit=0`
+`links` uses `--direction both`; generic-Link `graph` requires explicit
+`--view generic` and defaults to direction `both`, depth 1, 100 nodes and
+200 Links. The human `graph ISSUE` form instead shows blocking Dependencies.
+`list` uses the documented terminal-sensitive row limit, while `--all` or `--limit=0`
 removes that limit; an explicit `--limit` wins. `memories` without SEARCH is
 an inventory, not a read of an arbitrary Memory. On `create`, `--type`
 classifies an Issue and must not be interpreted as `--bead-type`.
@@ -530,8 +562,9 @@ explicit creation title must remain nonempty; updates preserve omitted fields.
 | `ready` | Ordinary blocker-aware Issue query, all [target flags](#target-operations-that-remain-nyi) and atomic `--claim` behavior. The pinned integration build admits only an unfiltered read. |
 | `list` or `list --format records-json` | Without an Issue filter, one bounded current snapshot of every Memory and every Issue the ordinary `bd list` would show: closed and pinned Issues are hidden unless `--all`, which also lifts the row limit. Newest recorded change first, ties by canonical Bead ID; human rows show local ID and kind, and for an Issue its status and priority, then the title. `--bead-type types/NAME` narrows by nominal Bead Type. A positive `BEADS_MAX_ROWS` refuses a page of more Beads than the cap. Any Issue filter (status/state, type, title/title-contains, priority and range, assignee/no-assignee, label/label-any/exclude-label, pinned/no-pinned, due-before/due-after/overdue, sort or reverse, or a matching configured directory label) selects the native Issue-only query, which lists Issues only, says so under the header in human output, and omits closed and pinned Issues unless `--all` or a filter selects them. See [All-Bead listing](#all-bead-listing). `hasMore` reports whether a row limit omitted matches; tree remains unavailable. `list --json` uses the ordinary Issue-only array shape and never includes Memories. |
 | `blocked` | Native dependency-blocked Issue view with canonical blocker IDs and ordinary `--parent` descendant filter. The pinned integration build has no parent filter and refuses positive `BEADS_MAX_ROWS`. |
-| `graph BEAD --view generic` | Current local summary traversal with `--direction in\|out\|both`, `--depth`, `--max-nodes` and `--max-links`. |
-| `status --graph` | Report the capabilities and bounds admitted by this checkpoint, including initial Issue fields/notes, append-only notes, estimate/reference edits and due-date authoring/filtering. |
+| `graph ISSUE`, `graph check` | Human blocking-Dependency view for an Issue and a cycle-integrity check. The check has a flat JSON form with local Issue IDs; the Issue view's legacy JSON remains unavailable. A positive row cap refuses a would-be incomplete blocking snapshot. |
+| `graph BEAD --view generic` | Explicit generic-Link summary traversal with `--direction in\|out\|both`, `--depth`, `--max-nodes` and `--max-links`; its JSON is a distinct graph shape. |
+| `status`, `status --graph` | Bare `status` summarizes ordinary Issues; `--graph` reports graph capabilities and bounds. The local combined-tail implementation remains unqualified. |
 | `serve --readonly --addr HOST:PORT` | BDP Read over HTTP for an ordinary shared-server graph workspace. Existing token-file authentication, Host controls and non-loopback opt-in apply. Embedded serving is refused. |
 | `setup claude [--project] [--check\|--remove]` | Add, check or remove only the project-local Claude Stop hook (`bd claude-hook stop`); adding also ensures `CLAUDE.md` imports the graph guidance. Adding and `--check` require current graph-preview guidance. Global/stealth setup, other recipes and `--json` are unavailable. |
 | `claude-hook stop` | Steph's Stop reminder, which Claude Code runs with its JSON hook input on stdin; it does not open storage. If graph admission refuses it (for example, `BD_BACKEND` is set or the workspace was moved), it prints one warning line and exits 1, which Claude Code does not treat as blocking. |
@@ -1027,9 +1060,11 @@ a stale revision still refuses, even if every requested value is already current
 Assignment does not claim work, start a lease or change status. The ordinary
 active-holder fence still applies to guarded and unconditional transfers. An
 authorized transfer or clear removes the prior lease; unrelated edits preserve
-it. Clearing an in-progress assignment does not reopen the Issue. Graph claim is
-available only in the standalone form below; heartbeat and reclaim remain unavailable. Changes made through an external lease
-writer have no supported graph-preview repair path.
+it. Clearing an in-progress assignment does not reopen the Issue. At the
+ledger's pinned commit, graph claim is available only in the standalone form
+below; heartbeat and reclaim are unavailable there. The local combined-tail
+candidate adds bounded heartbeat and reclaim routes, subject to qualification.
+An external lease writer gives the pinned build no graph-preview repair path.
 
 Assignee listing reuses native SQL comparison/collation, not actor identity
 normalization. `--no-assignee` includes native empty/NULL assignments. An empty
@@ -1081,7 +1116,11 @@ A foreign holder or non-claimable status is refused without mutation.
 
 The native lease lasts five minutes. Repeating the claim as the same actor
 (including equivalent actor spelling) is a no-op, including the lease timestamps.
-This preview does not provide heartbeat, renewal, reclaim, unclaim or lease repair.
+At the ledger's pinned commit, heartbeat and reclaim are unavailable. The
+qualified fork integration already has `unclaim`; the unqualified local
+combined-tail candidate adds same-holder heartbeat renewal without an Issue
+version or History event, and expired-lease reclaim through the native Issue
+writer and complete graph projection.
 An external writer that changes the lease bypasses the saved graph projection;
 current graph reads and writes then refuse that mismatch. Previously retained
 snapshots remain readable. Do not use external lease commands on these preview

@@ -40,6 +40,12 @@ The technical reference also carries the [proposed next-milestone command contra
 its **NYI** rows describe proposed behavior, not commands available in this
 build. Use the current command matrix there when trying the preview.
 
+The coordination and blocking-view walkthroughs below describe a **local,
+unqualified combined-tail candidate**. They are for a disposable workspace
+created from that candidate, not a claim that these commands have landed in the
+fork integration branch or a released binary. The draft specification keeps
+the older pinned integration ledger separate from this candidate inventory.
+
 In a graph workspace, a Bead is an Issue or a Memory. Its canonical identity
 is under `beads/`. In CLI arguments, `policy` means `beads/policy`; a Link
 still needs an explicit `links/ID` where a command accepts either kind of
@@ -187,6 +193,37 @@ coordination slot. Acquire accepts `--holder` and `--wait`; release accepts
 `--holder`. The graph route preserves the ordinary flat JSON reports and
 holder/queue behavior. The broader `bd gate` workflow remains unavailable.
 
+In a fresh disposable graph workspace initialized as above, the following
+sequence creates an Issue, claims it as one actor and refreshes that actor's
+lease. `bd state` reads labels only; it does not create state. The slot is a
+separate Issue-only coordination primitive, so create it once per workspace.
+
+```sh
+bd create 'Review the release' --id lease-demo --type task
+bd update lease-demo --claim --actor demo
+bd heartbeat lease-demo --actor demo
+bd state lease-demo patrol
+bd state list lease-demo --json
+bd status
+bd status --graph --json
+bd merge-slot create --actor demo
+bd merge-slot check --json
+bd merge-slot acquire --holder demo --actor demo
+bd merge-slot check --json
+bd merge-slot release --holder demo --actor demo
+```
+
+An unset state dimension prints a missing-value message (or JSON `null`).
+Heartbeat requires the current in-progress holder and writes no Issue version
+or History event. To exercise recovery, let a claimed Issue's lease actually
+expire first, then run `bd reclaim --older-than 0s --id lease-demo --json` in
+that same disposable workspace. An active lease is not reclaimed; a successful
+reclaim uses the native Issue writer and records the graph projection. The
+default grace period is longer than zero. Scope flags include repeatable
+`--id`, `--assignee`, `--label`, `--label-any`, `--exclude-label`, and
+`--any-replica`; use the latter only when recovering a lease from a departed
+replica. `bd set-state` and `bd gate` still refuse in graph mode.
+
 ## Blocking dependency views
 
 `bd dep list ISSUE`, `bd dep tree ISSUE`, `bd dep cycles`, `bd graph ISSUE`
@@ -204,6 +241,35 @@ ordinary JSON shapes can be preserved; use the human view or the explicit
 generic graph JSON view. Parent-child `children`, duplicate, supersede and
 epic workflows still refuse because the corresponding Link mappings are not
 installed.
+
+This disposable fixture shows the direction of a blocking edge: `plan`
+depends on `tests`. The human views use local Issue IDs. `graph check --json`
+returns a flat object containing `clean`, `cycles` and
+`summary.cycle_count`; cycle members are local Issue IDs. It exits nonzero
+when it finds a cycle.
+
+```sh
+bd create 'Prepare the release' --id plan --type task
+bd create 'Write release tests' --id tests --type task
+bd dep add plan tests
+bd dep list plan
+bd dep tree plan --direction down
+bd dep tree tests --direction up
+bd dep tree plan --direction both
+bd dep cycles
+bd graph plan
+bd graph check --json
+bd graph plan --view generic --direction out --depth 2 --json
+```
+
+`dep list --direction up` lists dependents instead; `dep tree` also accepts
+`--max-depth` and deprecated `--reverse` (equivalent to `--direction up`).
+`dep cycles --limit N` caps displayed cycles, not the count reported.
+`dep list/tree/cycles --json` and `graph ISSUE --json` refuse because the
+ordinary JSON shapes are not yet preserved. A positive `--max-rows` or
+`BEADS_MAX_ROWS` also refuses the full blocking graph/tree snapshot rather
+than returning a partial answer. Generic traversal is a separate explicit
+Link view with its own bounds and JSON shape.
 
 ## Update and delete Beads
 
