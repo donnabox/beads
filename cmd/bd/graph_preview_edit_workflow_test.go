@@ -41,8 +41,8 @@ func TestGraphPreviewEditWorkflow(t *testing.T) {
 			call("", nil, "remember", "Memory body", "--id", "beads/memory", "--title", "Memory")
 			original := graphMixedResult[graphstore.IssueRecord](t, call("", nil, "create", "Edit me", "--id", "beads/work", "--description", "Original description", "--notes", "Original notes"))
 			versions := call("", nil, "versions", "work")
-			unchanged := graphMixedResult[graphstore.IssueRecord](t, call("", editor("exit 0"), "edit", "work"))
-			if !reflect.DeepEqual(unchanged, original) || call("", nil, "versions", "work") != versions {
+			unchanged := graphMixedResult[graphstore.IssueMutationResult](t, call("", editor("exit 0"), "edit", "work"))
+			if unchanged.Changed || !reflect.DeepEqual(unchanged.Issue, original) || call("", nil, "versions", "work") != versions {
 				t.Fatal("unedited tempfile changed Issue or History")
 			}
 			changed := graphMixedResult[graphstore.IssueMutationResult](t, call("", editor(`printf 'Edited description\n' > "$1"`), "edit", "work"))

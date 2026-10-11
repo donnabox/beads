@@ -114,7 +114,7 @@ func runGraphPreviewEdit(cmd *cobra.Command, args []string) error {
 	value := strings.TrimSpace(string(content))
 	if value == current {
 		saved = true
-		return graphPrint(issue, "No changes made\n", quietFlag)
+		return graphPrint(graphstore.IssueMutationResult{Issue: issue}, "No changes made\n", quietFlag)
 	}
 	if field == "title" {
 		if err := types.ValidateIssueTitle(value); err != nil {
