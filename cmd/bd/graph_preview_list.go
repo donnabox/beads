@@ -3,6 +3,7 @@ package main
 import (
 	"bytes"
 	"context"
+	"encoding/json"
 	"errors"
 	"fmt"
 	"io"
@@ -30,6 +31,8 @@ func runGraphPreviewList(cmd *cobra.Command) error {
 	if err != nil {
 		return err
 	}
+	jsonFlag, _ := cmd.Flags().GetBool("json")
+	legacyJSON := !structured && (jsonOutput || jsonFlag)
 	selectedType := ""
 	if cmd.Flags().Changed("bead-type") {
 		selector, _ := cmd.Flags().GetString("bead-type")
@@ -41,6 +44,32 @@ func runGraphPreviewList(cmd *cobra.Command) error {
 	plan := planGraphList(typed, graphIssueListConfigLabel(cmd, in), selectedType, graphstore.IssueTypeURL(graphPreviewConfig.GraphScopeURL))
 	if plan.refuse {
 		return graphFailure("capability_unavailable", "Issue list filters cannot be combined with a non-Issue --bead-type", 5)
+	}
+	if legacyJSON {
+		if selectedType != "" && selectedType != graphstore.IssueTypeURL(graphPreviewConfig.GraphScopeURL) {
+			return graphFailure("capability_unavailable", "legacy list JSON contains Issues only", 5)
+		}
+		return withGraphStoreOutput(func(ctx context.Context, s *graphstore.Store) (any, string, error) {
+			page, err := s.ListIssuesLegacy(ctx, in.ListRequest)
+			if errors.Is(err, storage.ErrValidation) {
+				return nil, "", fmt.Errorf("%w: %w", errGraphListSelector, err)
+			}
+			return page, "", err
+		}, func(value any, _ string) error {
+			page := value.(graphstore.LegacyIssueListPage)
+			encoded, err := json.Marshal(page.Items)
+			if err != nil {
+				return err
+			}
+			if len(encoded) > graphIssueListOutputLimit {
+				return fmt.Errorf("%w: Issue list JSON exceeds %d bytes; narrow the query", graphstore.ErrLimitExceeded, graphIssueListOutputLimit)
+			}
+			if err := outputJSON(page.Items); err != nil {
+				return err
+			}
+			printTruncationHint(page.HasMore, in.effectiveLimit)
+			return nil
+		})
 	}
 	if !plan.issueQuery {
 		return withGraphStoreOutput(func(ctx context.Context, s *graphstore.Store) (any, string, error) {
@@ -69,13 +98,17 @@ func graphIssueListInput(cmd *cobra.Command, argv []string) (listInput, bool, er
 	fail := func(code, message string, exit int) (listInput, bool, error) {
 		return listInput{}, false, graphFailure(code, message, exit)
 	}
-	if err := graphPreviewFlags(cmd, "flat", "format", "bead-type", "status", "state", "type", "all", "limit", "title", "title-contains", "priority", "priority-min", "priority-max", "label", "label-any", "exclude-label", "pinned", "no-pinned", "sort", "reverse", "assignee", "no-assignee", "due-before", "due-after", "overdue"); err != nil {
+	if err := graphPreviewFlags(cmd, "flat", "format", "bead-type", "status", "state", "type", "all", "limit", "title", "title-contains", "priority", "priority-min", "priority-max", "label", "label-any", "exclude-label", "pinned", "no-pinned", "sort", "reverse", "assignee", "no-assignee", "due-before", "due-after", "overdue", "include-comments"); err != nil {
 		return listInput{}, false, err
 	}
 	format, _ := cmd.Flags().GetString("format")
 	structured := format == "records-json"
-	if cmd.Flags().Changed("json") || (jsonOutput && !structured) {
-		return fail("capability_unavailable", "graph list preserves the Issue JSON compatibility gate; use --format records-json for experimental graph records", 5)
+	jsonFlag, _ := cmd.Flags().GetBool("json")
+	if cmd.Flags().Changed("json") && !jsonFlag && !jsonOutput {
+		return fail("capability_unavailable", "graph list does not support explicit --json=false", 5)
+	}
+	if cmd.Flags().Changed("include-comments") && (structured || !(jsonOutput || jsonFlag)) {
+		return fail("capability_unavailable", "--include-comments requires legacy Issue --json", 5)
 	}
 	flat, _ := cmd.Flags().GetBool("flat")
 	if (cmd.Flags().Changed("format") && !structured) || (cmd.Flags().Changed("flat") && !flat) {
