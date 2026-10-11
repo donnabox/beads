@@ -62,7 +62,7 @@ func runGraphPreviewList(cmd *cobra.Command) error {
 				return err
 			}
 			if len(encoded) > graphIssueListOutputLimit {
-				return fmt.Errorf("%w: Issue list JSON exceeds %d bytes; narrow the query", graphstore.ErrLimitExceeded, graphIssueListOutputLimit)
+				return graphFailure("capability_unavailable", fmt.Sprintf("Issue list JSON exceeds %d bytes; narrow the query", graphIssueListOutputLimit), 5)
 			}
 			if err := outputJSON(page.Items); err != nil {
 				return err

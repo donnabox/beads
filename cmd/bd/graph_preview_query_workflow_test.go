@@ -3,6 +3,7 @@
 package main
 
 import (
+	"encoding/json"
 	"os"
 	"path/filepath"
 	"reflect"
@@ -257,7 +258,27 @@ func TestGraphPreviewQueryWorkflow(t *testing.T) {
 			}
 			before[dep.Link.ID] = call("show", dep.Link.ID)
 			graphPolicyCLI(t, bd, work, home, nil, "capability_unavailable", "graph", "beads/plan", "--view", "generic", "--depth", "10", "--max-nodes", "2", "--json")
-			graphPolicyCLI(t, bd, work, home, nil, "capability_unavailable", "list", "--json")
+			var legacyIssues []struct {
+				ID string `json:"id"`
+			}
+			legacyJSON := graphPolicyCLI(t, bd, work, home, nil, "", "list", "--json", "--all")
+			if err := json.Unmarshal([]byte(legacyJSON), &legacyIssues); err != nil {
+				t.Fatalf("decode legacy Issue list: %v\n%s", err, legacyJSON)
+			}
+			legacyIDs := make([]string, 0, len(legacyIssues))
+			for _, issue := range legacyIssues {
+				legacyIDs = append(legacyIDs, issue.ID)
+			}
+			slices.Sort(legacyIDs)
+			if !slices.Equal(legacyIDs, []string{"beads/gate", "beads/work"}) {
+				t.Fatalf("legacy Issue list IDs = %v", legacyIDs)
+			}
+			status := graphMixedResult[struct {
+				Capabilities map[string]bool `json:"capabilities"`
+			}](t, call("status", "--graph"))
+			if !status.Capabilities["issueListLegacyJSON"] {
+				t.Fatal("graph status did not advertise legacy Issue list JSON")
+			}
 			graphPolicyCLI(t, bd, work, home, nil, "capability_unavailable", "list", "--format", "records-json", "--watch")
 			graphPolicyCLI(t, bd, work, home, nil, "invalid_selector", "graph", "https://foreign.invalid/beads/plan", "--view", "generic", "--json")
 			normalList, normalBlocked := list("--all"), blocked()
