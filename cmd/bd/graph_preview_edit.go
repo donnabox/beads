@@ -112,10 +112,9 @@ func runGraphPreviewEdit(cmd *cobra.Command, args []string) error {
 		return graphFailure("route_unavailable", fmt.Sprintf("reading edited file: %v; edit file is preserved in %s", err, tmpPath), 5)
 	}
 	value := strings.TrimSpace(string(content))
-	if value == current {
-		saved = true
-		return graphPrint(graphstore.IssueMutationResult{Issue: issue}, "No changes made\n", quietFlag)
-	}
+	// Even an untouched file must pass the graph revision check. The writer
+	// returns the current Issue without a History entry when the field is equal.
+	unedited := value == current
 	if field == "title" {
 		if err := types.ValidateIssueTitle(value); err != nil {
 			return graphFailure("invalid_properties", fmt.Sprintf("%v; edit file is preserved in %s", err, tmpPath), 2)
@@ -140,12 +139,15 @@ func runGraphPreviewEdit(cmd *cobra.Command, args []string) error {
 		if err != nil {
 			return nil, "", fmt.Errorf("edit file is preserved in %s: %w", tmpPath, err)
 		}
+		if unedited && !result.Changed {
+			return result, "No changes made", nil
+		}
 		verb := "Updated"
 		if !result.Changed {
 			verb = "Unchanged"
 		}
 		name := strings.ReplaceAll(field, "_", " ")
-		return result, fmt.Sprintf("%s %s %s for issue: %s\n", ui.RenderPass("✓"), verb, name, formatFeedbackID(path, result.Issue.Properties.Title)), nil
+		return result, fmt.Sprintf("%s %s %s for issue: %s", ui.RenderPass("✓"), verb, name, formatFeedbackID(path, result.Issue.Properties.Title)), nil
 	}, func(result any, human string) error { return graphPrint(result, human, quietFlag) })
 	if err != nil {
 		return err

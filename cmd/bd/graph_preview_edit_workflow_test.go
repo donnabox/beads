@@ -79,6 +79,14 @@ func TestGraphPreviewEditWorkflow(t *testing.T) {
 			if afterRace.Properties.Title != "Concurrent" || afterRace.Properties.Description != "Edited description" || call("", nil, "versions", "work") == beforeRace {
 				t.Fatal("stale editor overwrote a concurrent Issue update")
 			}
+			_, _, rowsBeforeUntouchedRace, _ := graphVersionsListed(t, call("", nil, "versions", "work"))
+			untouchedRaceEditor := editor(`"$BD_BIN" update work --title UntouchedRace --json >/dev/null`)
+			call("revision_conflict", append(untouchedRaceEditor, "BD_BIN="+bd), "edit", "work")
+			current := graphMixedResult[graphstore.IssueRecord](t, call("", nil, "show", "work", "--format", "graph-json"))
+			_, _, rowsAfterUntouchedRace, _ := graphVersionsListed(t, call("", nil, "versions", "work"))
+			if current.Properties.Title != "UntouchedRace" || current.Properties.Description != "Edited description" || len(rowsAfterUntouchedRace) != len(rowsBeforeUntouchedRace)+1 {
+				t.Fatal("unchanged editor content returned stale success or added History")
+			}
 		})
 	}
 }
