@@ -183,6 +183,8 @@ Start with H01–H06: what historical reading promises. Then T01–T02: whether 
 
 **Current:** Transactional completed keys retain compact outcomes for the epoch; failed receipts can be forgotten after retention; details can expire separately while allocations survive. Read+Update retains committed-key tombstones for the logical Scope’s lifetime; Transactional retains them for the epoch. Both can expire detail and eventually forget failed dispositions. [Sources](https://github.com/gastownhall/bdp/blob/5d7694e8be2f5f4ca72856b288dac0ecd383cd2f/docs/specs/bdp.md#transactional-limits), [receipts](https://github.com/gastownhall/bdp/blob/5d7694e8be2f5f4ca72856b288dac0ecd383cd2f/docs/specs/bdp.md#mutation-receipt-responses)
 
+**Storage cost:** successful semantic no-ops retain key tombstones too. Many distinct successful keys can therefore grow storage without creating more Resource revisions. Forgetting those keys would allow a formerly no-op request to execute after the state changes, so this cost cannot be removed while preserving the same late-retry promise. [Retention rule](https://github.com/gastownhall/bdp/blob/5d7694e8be2f5f4ca72856b288dac0ecd383cd2f/docs/specs/bdp.md#outcome-retention)
+
 **Recommendation:** compare a clearly bounded replay window with the present epoch-long no-repeat promise. Do not quietly expire successful deduplication while claiming its guarantee. **Lost if narrowed:** safe very-late retry under the old key. **Decision:** how long must a client be able to retry, and what happens after that time?
 
 ### U06 — JSON Patch subset and array semantics

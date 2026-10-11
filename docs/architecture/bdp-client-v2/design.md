@@ -100,6 +100,13 @@ Current bounded follow-ups:
 | Integration validation | Pending/interleaving integration published | Reviewed ordinary merge e538e23 preserves evidence ancestry and all assertions. 102 focused tests, checks, both smokes and evidence gate pass. Current full CI38109989016 remains running;21654be full-CI success is prior evidence. Next independently review the alias assertion repair when frozen. |
 | Council | Frozen PR83 at 72bdaad | Native and two external reviews use the same three bounded source packets: profile contract, write ownership/recovery, and HTTP/conformance/evidence. Supplied ranges and hashes recorded; no whole-branch coverage claim beyond actual reviewed content. The 72bdaad→59915ea diagnostics-only delta is a separate packet for all reviewers. No readiness change until dispositions are resolved. |
 
+Council follow-ups are bounded repairs to the existing contract and its evidence:
+
+- Alias setup witnesses: frozen `f0f3cb9f4768d9dad4df7986e763eb51e2cb4cd0`, now under independent review and integration. Eleven direct alias reads establish repoint/delete state before replay; allocation evidence is labeled as URL serialization stability, with an observed reserved-path inequality. No forced-collision or full grammar claim.
+- Profile citation validation: repair section ownership and rendered/explicit anchors with negative cases. Preserve cumulative profile boundaries; check the actual catalog validator as well as its test.
+- Editorial clarity: separately restore the already-optional historical-resolution table entry and correct the no-op tombstone cost rationale while preserving existing retention requirements. No-op forgetting is not approved.
+- Development routing: confirmed unreachable unknown-operation 404 behind a generic 405 branch. A bounded receiving-path repair and regression test remain queued; no production profile claim depends on it.
+
 The [earlier candidate diagnosis](profile-write-integration-diagnosis.md) remains historical evidence of the genuine catalog mismatch. The fresh [qualification workflow](read-reseal-feasibility.md) has now been executed for PR83 with unchanged pin and policy. Further changed inputs must satisfy the same verifier, without weakening checks.
 
 The heartbeat continues through successive slices toward tested Update and Transactional support, stopping on completion, an operator pause, supersession or an unavoidable decision. It reports meaningful results and blockers, not routine unchanged polls. First-round completed work above remains the baseline.
