@@ -37,6 +37,21 @@ The first editorial round and initial implementation slice are delivered as draf
 The crosswalk identifies two further cold-client decisions: portable efficient recent-first ordering and optional owning-source guards. Accepted main also differs from qualified records on metadata and attribution; PR66 integrates the proposed remedy. Janet owns qualified CLI evidence and release impact. Do not treat these future writer/ordering decisions as new Preview 2 Read blockers.
 
 
+### Autonomous continuation: complete the write profiles
+
+Donna asked for Update and Transactional implementation to continue autonomously after the first-round handoff. Keep bounded workers active and replace completed assignments with the next safe slice; a draft PR alone is not this continuation's stopping condition. Vickie owns integration, review and validation. Continue independently of Preview 2, without merging main or changing Janet/Trish surfaces. Surface genuine product decisions while continuing unaffected work.
+
+| Lane | Initial bounded assignment | Done when |
+|---|---|---|
+| Update | Complete alias singleton and ordered sequence HTTP paths on the existing durable development receiver; then close remaining HTTP/recovery and conformance gaps | All eight singleton targets and sequences have observed success/refusal/retry/restart behavior; full Read+Update advertisement waits for executable required-contract evidence |
+| Transactional | Implement a separate atomic batch/store boundary for Bead+Link local references, one durable outcome and ordered change group | Success commits all effects/outcome/group together; late failure leaves no partial graph/group; retained duplicates and restart recovery satisfy the Transactional contract |
+| Review/integration | Review bounded commits, preserve separate PR units and apply council findings before ready | Exact heads validated with appropriate tests, evidence and limitations; no unsupported conformance or parity claims |
+
+Both lanes start from verified runtime `ec9df671157a0f4c7a7a484160222254c7777170` (PR68), incorporating PR66. Update owns development receiver/executable wiring; Transactional initially owns new batch/transaction store modules and tests. Any shared durable-store edits require coordination before changes. Editorial PR67 is the cumulative wording reference; unresolved query/event enrichment proposals and Trish Types are not implementation law.
+
+The heartbeat continues through successive slices toward tested Update and Transactional support, stopping on completion, an operator pause, supersession or an unavoidable decision. It reports meaningful results and blockers, not routine unchanged polls. First-round completed work above remains the baseline.
+
+
 ## Agreed direction
 
 BDP is the provider interface. A provider writes and owns its HTTP endpoint over its chosen store. Our Rust CLI/client is a surface over BDP; commands need not correspond one-to-one with requests. Any provider meeting the required generic BDP capabilities must run the Issues pack without Issue-specific provider code.
