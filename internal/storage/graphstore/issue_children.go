@@ -86,12 +86,16 @@ func (s *Store) ListIssueDependencies(ctx context.Context, issuePath, direction 
 		if err := checkBinding(ctx, tx, s.options); err != nil {
 			return err
 		}
-		if _, err := s.requireIssueInTx(ctx, tx, issuePath); err != nil {
+		issue, err := s.requireIssueInTx(ctx, tx, issuePath)
+		if err != nil {
 			return err
 		}
-		var err error
+		blockingType, ok := nativeDependencyTypeURLForIssueType(s.ScopeURL(), issue.Type, types.DepBlocks)
+		if !ok {
+			return fmt.Errorf("%w: Issue has no installed blocking Type", ErrInvalidStore)
+		}
 		links, err = s.incidentLinksInTx(ctx, tx, LinksRequest{
-			BeadPath: issuePath, Direction: direction, TypeURL: DependencyTypeURL(s.ScopeURL()),
+			BeadPath: issuePath, Direction: direction, TypeURL: blockingType,
 		}, "")
 		return err
 	})
