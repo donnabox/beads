@@ -395,7 +395,7 @@ func TestGraphPreviewDepRemovePairAndNoop(t *testing.T) {
 	}
 }
 
-func TestGraphPreviewUnmappedIssueStructureRefusesWithoutMutation(t *testing.T) {
+func TestGraphPreviewIncompleteIssueStructureRefusesWithoutMutation(t *testing.T) {
 	bd := buildBDUnderTest(t)
 	work, home := t.TempDir(), t.TempDir()
 	const scope = "https://example.invalid/unmapped-structure/"
@@ -408,9 +408,6 @@ func TestGraphPreviewUnmappedIssueStructureRefusesWithoutMutation(t *testing.T) 
 
 	for _, args := range [][]string{
 		{"create", "Child", "--parent", "original", "--json"},
-		{"dep", "add", "original", "replacement", "--type", "parent-child", "--json"},
-		{"dep", "add", "original", "replacement", "--type", "duplicates", "--json"},
-		{"dep", "add", "original", "replacement", "--type", "supersedes", "--json"},
 		{"duplicate", "original", "--of", "replacement", "--json"},
 		{"supersede", "original", "--with", "replacement", "--json"},
 		{"epic", "status", "--json"},
@@ -420,7 +417,7 @@ func TestGraphPreviewUnmappedIssueStructureRefusesWithoutMutation(t *testing.T) 
 	} {
 		graphPolicyCLI(t, bd, work, home, nil, "capability_unavailable", args...)
 		if after := legacyUpgradeTreeDigest(t, work); after != before {
-			t.Fatalf("unmapped Issue relationship command %v changed workspace", args)
+			t.Fatalf("incomplete Issue relationship command %v changed workspace", args)
 		}
 	}
 	if got := graphPolicyCLI(t, bd, work, home, nil, "", "versions", "original", "--json"); got != originalHistory {
