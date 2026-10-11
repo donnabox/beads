@@ -84,3 +84,35 @@ func TestGraphPreviewStructureReads(t *testing.T) {
 		t.Fatalf("child and dependency reads changed parent History\nbefore: %s\nafter: %s", parentHistory, got)
 	}
 }
+
+func TestGraphPreviewUnmappedIssueStructureRefusesWithoutMutation(t *testing.T) {
+	bd := buildBDUnderTest(t)
+	work, home := t.TempDir(), t.TempDir()
+	const scope = "https://example.invalid/unmapped-structure/"
+	graphPolicyCLI(t, bd, work, home, nil, "", "init", "--graph-mode", "link", "--prefix", "demo", "--scope-url", scope, "--skip-hooks", "--skip-agents", "--non-interactive", "--json")
+	graphPolicyCLI(t, bd, work, home, nil, "", "create", "Original", "--id", "beads/original", "--json")
+	graphPolicyCLI(t, bd, work, home, nil, "", "create", "Replacement", "--id", "beads/replacement", "--json")
+	originalHistory := graphPolicyCLI(t, bd, work, home, nil, "", "versions", "original", "--json")
+	replacementHistory := graphPolicyCLI(t, bd, work, home, nil, "", "versions", "replacement", "--json")
+	before := legacyUpgradeTreeDigest(t, work)
+
+	for _, args := range [][]string{
+		{"duplicate", "original", "--of", "replacement", "--json"},
+		{"supersede", "original", "--with", "replacement", "--json"},
+		{"epic", "status", "--json"},
+		{"epic", "status", "--eligible-only", "--json"},
+		{"epic", "close-eligible", "--dry-run", "--json"},
+		{"epic", "close-eligible", "--json"},
+	} {
+		graphPolicyCLI(t, bd, work, home, nil, "capability_unavailable", args...)
+		if after := legacyUpgradeTreeDigest(t, work); after != before {
+			t.Fatalf("unmapped Issue relationship command %v changed workspace", args)
+		}
+	}
+	if got := graphPolicyCLI(t, bd, work, home, nil, "", "versions", "original", "--json"); got != originalHistory {
+		t.Fatalf("refused relationship commands changed original History\nbefore: %s\nafter: %s", originalHistory, got)
+	}
+	if got := graphPolicyCLI(t, bd, work, home, nil, "", "versions", "replacement", "--json"); got != replacementHistory {
+		t.Fatalf("refused relationship commands changed replacement History\nbefore: %s\nafter: %s", replacementHistory, got)
+	}
+}

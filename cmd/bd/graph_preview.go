@@ -341,6 +341,20 @@ func admitGraphPreview(cmd *cobra.Command) (handled bool, admissionErr error) {
 	if err != nil || real != cfg.GraphWorkspace {
 		return true, graphFailure("not_authority", "graph_mode workspace binding differs; copied/moved workspaces cannot claim this authority", 5)
 	}
+	// These Issue commands require native relationship kinds that the current
+	// installed blocking Link Type cannot represent or retain. Refuse before a
+	// store opens; an empty epic result would conceal real parent-child state,
+	// and a duplicate/supersede close without its edge would lie about History.
+	switch cmd {
+	case duplicateCmd:
+		return true, graphFailure("capability_unavailable", "graph duplicate requires a native duplicates Dependency with canonical Link and owned History mappings; this preview admits only blocking Dependencies", 5)
+	case supersedeCmd:
+		return true, graphFailure("capability_unavailable", "graph supersede requires a native supersedes Dependency with canonical Link and owned History mappings; this preview admits only blocking Dependencies", 5)
+	case epicStatusCmd:
+		return true, graphFailure("capability_unavailable", "graph epic status requires native parent-child Dependencies projected from canonical Links; this preview cannot report epic progress from blocking Links", 5)
+	case closeEligibleEpicsCmd:
+		return true, graphFailure("capability_unavailable", "graph epic close-eligible requires native parent-child Dependencies with canonical Link mapping and owned Issue History for closure; this preview cannot determine eligible epics", 5)
+	}
 	if cmd != setupCmd && cmd != claudeHookCmd && cmd != memoriesCmd && cmd != recallCmd && cmd != graphCompareCmd && cmd != listCmd && cmd != childrenCmd && cmd != blockedCmd && cmd != graphCmd && cmd != graphCheckCmd && cmd != rememberCmd && cmd != createCmd && cmd != showCmd && cmd != statusCmd && cmd != depCmd && cmd != depAddCmd && cmd != depListCmd && cmd != depTreeCmd && cmd != depCyclesCmd && cmd != linkCmd && cmd != closeCmd && cmd != reopenCmd && cmd != unclaimCmd && cmd != commentsCmd && cmd != deferCmd && cmd != undeferCmd && cmd != readyCmd && cmd != updateCmd && cmd != graphUnlinkCmd && cmd != graphLinksCmd && cmd != serveCmd && cmd != deleteCmd && cmd != forgetCmd && cmd != typesCmd && cmd != versionsCmd && cmd != historyCmd {
 		// COUPLING: admitting versionsCmd and historyCmd here is only safe
 		// because each has an early `if graphPreviewActive` dispatch to
