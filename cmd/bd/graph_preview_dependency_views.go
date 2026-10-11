@@ -107,7 +107,10 @@ func runGraphPreviewCheck(cmd *cobra.Command, args []string) error {
 		if err != nil {
 			return nil, "", err
 		}
-		cycles := g.cycles()
+		cycles, err := g.nativeCycleIDs()
+		if err != nil {
+			return nil, "", err
+		}
 		result := graphDependencyCheck{Clean: len(cycles) == 0, Cycles: cycles}
 		result.Summary.CycleCount = len(cycles)
 		if result.Clean {

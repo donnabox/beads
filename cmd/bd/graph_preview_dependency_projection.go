@@ -9,7 +9,8 @@ import (
 
 // graphDependencyProjection is a single checked current snapshot, narrowed to
 // native Issues and their mapped blocking Dependencies. Its IDs remain canonical
-// graph URLs; no Issue backing ID is exposed as a substitute identity.
+// graph URLs; the familiar graph check renders native backing IDs only at its
+// output boundary.
 type graphDependencyProjection struct {
 	issues map[string]graphstore.IssueRecord
 	links  []graphstore.LinkRecord
@@ -148,4 +149,21 @@ func (g graphDependencyProjection) cycles() [][]string {
 		}
 	}
 	return cycles
+}
+
+// graph check is an ordinary Issue command: its cycle members are native Issue
+// IDs. Keep cycles() canonical for graph-specific projections and translate only
+// at the familiar command boundary.
+func (g graphDependencyProjection) nativeCycleIDs() ([][]string, error) {
+	cycles := g.cycles()
+	for i := range cycles {
+		for j, url := range cycles[i] {
+			issue, ok := g.issues[url]
+			if !ok || issue.Properties == nil || issue.Properties.ID == "" {
+				return nil, fmt.Errorf("%w: blocking cycle member has no native Issue ID", graphstore.ErrInvalidStore)
+			}
+			cycles[i][j] = issue.Properties.ID
+		}
+	}
+	return cycles, nil
 }
