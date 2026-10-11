@@ -84,7 +84,7 @@ func TestGraphPreviewQueryWorkflow(t *testing.T) {
 			// Complete the release journey in this same linked workspace before
 			// the existing query, close/reopen, explicit unlink and delete phases.
 			planBefore := graphMixedResult[graphstore.Record](t, call("show", "beads/plan"))
-			workBefore := graphMixedResult[graphstore.IssueRecord](t, call("show", "beads/work"))
+			workBefore := graphMixedResult[graphstore.IssueRecord](t, call("show", "--format", "graph-json", "beads/work"))
 			unrelated := map[string]string{}
 			for _, path := range []string{"beads/context", "beads/gate", "links/context", "links/work", "links/gate", dep.Link.ID} {
 				unrelated[path] = call("show", path)
@@ -102,7 +102,7 @@ func TestGraphPreviewQueryWorkflow(t *testing.T) {
 			if got := graphMixedResult[graphstore.Record](t, call("show", "beads/plan")); !reflect.DeepEqual(got, memoryEdit.Memory) {
 				t.Fatal("fresh-process Memory differs from accepted edit")
 			}
-			if got := graphMixedResult[graphstore.IssueRecord](t, call("show", "beads/work")); !reflect.DeepEqual(got, issueEdit.Issue) {
+			if got := graphMixedResult[graphstore.IssueRecord](t, call("show", "--format", "graph-json", "beads/work")); !reflect.DeepEqual(got, issueEdit.Issue) {
 				t.Fatal("fresh-process Issue differs from accepted edit")
 			}
 			for path, want := range unrelated {
@@ -296,7 +296,7 @@ func TestGraphPreviewQueryWorkflow(t *testing.T) {
 			call("reopen", "beads/gate")
 			assertBlocked(true)
 			assertReady(false, true)
-			source := graphMixedResult[graphstore.IssueRecord](t, call("show", "beads/work"))
+			source := graphMixedResult[graphstore.IssueRecord](t, call("show", "--format", "graph-json", "beads/work"))
 			call("unlink", dep.Link.ID, "--if-revision", dep.Link.Revision, "--if-source-revision", source.Revision)
 			assertBlocked(false)
 			assertReady(true, true)

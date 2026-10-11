@@ -117,7 +117,7 @@ func TestGraphPreviewMemoryDeleteWorkflow(t *testing.T) {
 				refuse("constraint_violation", "delete", "beads/plan")
 				refuse("constraint_violation", "delete", "beads/plan", "--force", "--if-revision", current.Revision)
 				refuse("constraint_violation", "forget", "beads/plan", "--unconditional")
-				if call("show", "beads/plan") != before || call("show", path) != linkBefore || call("show", "beads/other") != other || call("show", "beads/work") != issue {
+				if call("show", "beads/plan") != before || call("show", path) != linkBefore || call("show", "beads/other") != other || call("show", "beads/work", "--format", "graph-json") != issue {
 					t.Fatal("incident-Link refusal changed Memory, Link or another endpoint")
 				}
 				link := graphMixedResult[graphstore.LinkRecord](t, linkBefore)
@@ -134,7 +134,7 @@ func TestGraphPreviewMemoryDeleteWorkflow(t *testing.T) {
 			}
 			refuse("gone", "show", "beads/plan")
 			refuse("identity_reserved", "remember", "replacement", "--id", "beads/plan", "--title", "Cannot reuse")
-			if call("show", "beads/other") != other || call("show", "beads/work") != issue {
+			if call("show", "beads/other") != other || call("show", "beads/work", "--format", "graph-json") != issue {
 				t.Fatal("Memory deletion changed unrelated surviving records")
 			}
 		})

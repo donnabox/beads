@@ -27,8 +27,12 @@ func graphPreviewMetadataCreate(cmd *cobra.Command) (json.RawMessage, error) {
 func graphPreviewMetadataPatch(cmd *cobra.Command) (publicops.MetadataPatch, error) {
 	var patch publicops.MetadataPatch
 	merge := cmd.Flags().Changed("metadata")
+	replace := cmd.Flags().Changed("replace-metadata")
 	set := cmd.Flags().Changed("set-metadata")
 	unset := cmd.Flags().Changed("unset-metadata")
+	if replace && (merge || set || unset) {
+		return patch, graphFailure("invalid_properties", "cannot combine --replace-metadata with --metadata, --set-metadata or --unset-metadata", 2)
+	}
 	if merge && (set || unset) {
 		return patch, graphFailure("invalid_properties", "cannot combine --metadata with --set-metadata or --unset-metadata", 2)
 	}
@@ -47,6 +51,21 @@ func graphPreviewMetadataPatch(cmd *cobra.Command) (publicops.MetadataPatch, err
 		}
 		patch.Merge = publicops.Field[json.RawMessage]{Set: true, Value: parsed}
 	}
+	if replace {
+		value, _ := cmd.Flags().GetString("replace-metadata")
+		parsed, err := readMetadataFlag(value)
+		if err != nil {
+			return patch, graphFailure("invalid_properties", err.Error(), 2)
+		}
+		canonical, err := graph.CanonicalizeJSON(parsed)
+		if err != nil {
+			return patch, graphFailure("invalid_properties", err.Error(), 2)
+		}
+		if len(canonical) == 0 || canonical[0] != '{' {
+			return patch, graphFailure("invalid_properties", "replacement metadata must be a JSON object", 2)
+		}
+		patch.Replace = publicops.Field[json.RawMessage]{Set: true, Value: canonical}
+	}
 	if set {
 		flags, _ := cmd.Flags().GetStringArray("set-metadata")
 		parsed, err := parseSetMetadataFlags(flags)
@@ -62,5 +81,5 @@ func graphPreviewMetadataPatch(cmd *cobra.Command) (publicops.MetadataPatch, err
 }
 
 func graphPreviewMetadataFlagsChanged(cmd *cobra.Command) bool {
-	return cmd.Flags().Changed("metadata") || cmd.Flags().Changed("set-metadata") || cmd.Flags().Changed("unset-metadata")
+	return cmd.Flags().Changed("metadata") || cmd.Flags().Changed("replace-metadata") || cmd.Flags().Changed("set-metadata") || cmd.Flags().Changed("unset-metadata")
 }

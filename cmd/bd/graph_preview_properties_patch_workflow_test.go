@@ -198,7 +198,7 @@ func TestGraphPreviewPropertiesPatchWorkflow(t *testing.T) {
 			issue := graphMixedResult[graphstore.IssueRecord](t, call("create", "Work", "--id", "beads/work"))
 			target := graphMixedResult[graphstore.IssueRecord](t, call("create", "Target", "--id", "beads/target"))
 			dependency := graphMixedResult[graphstore.DependencyResult](t, call("dep", "add", issue.ID, target.ID))
-			issueCurrent, targetCurrent := call("show", issue.ID), call("show", target.ID)
+			issueCurrent, targetCurrent := call("show", issue.ID, "--format", "graph-json"), call("show", target.ID, "--format", "graph-json")
 			showMemory := func() graphstore.Record {
 				t.Helper()
 				return graphMixedResult[graphstore.Record](t, call("show", memory.ID))
@@ -225,7 +225,7 @@ func TestGraphPreviewPropertiesPatchWorkflow(t *testing.T) {
 			retain(unowned.ID, unowned.Revision, unowned)
 			unchanged := func() {
 				t.Helper()
-				if call("show", issue.ID) != issueCurrent || call("show", target.ID) != targetCurrent {
+				if call("show", issue.ID, "--format", "graph-json") != issueCurrent || call("show", target.ID, "--format", "graph-json") != targetCurrent {
 					t.Fatal("patch changed unrelated native Issue")
 				}
 				graphPatchEqual(t, graphMixedResult[graphstore.Record](t, call("show", survivor.ID)), survivor)
@@ -576,7 +576,7 @@ func TestGraphPreviewPropertiesPatchWorkflow(t *testing.T) {
 				graphPatchEqual(t, graphMixedResult[any](t, call("show", key[:index], "--version", key[index+1:])), value)
 			}
 			graphMemoryReadRaw(t, bd, work, home, final.Properties.Body, "", "recall", final.ID, "--version", final.Revision)
-			if call("show", issue.ID) != issueCurrent || call("show", target.ID) != targetCurrent {
+			if call("show", issue.ID, "--format", "graph-json") != issueCurrent || call("show", target.ID, "--format", "graph-json") != targetCurrent {
 				t.Fatal("deletion changed Issue survivors")
 			}
 			graphPatchEqual(t, graphMixedResult[graphstore.Record](t, call("show", survivor.ID)), survivor)

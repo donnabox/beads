@@ -63,8 +63,10 @@ func TestGraphPreviewCreateBeadTypeSelection(t *testing.T) {
 	}{
 		{name: "default-issue", want: graphstore.IssueTypeURL(scope)},
 		{name: "classification-is-not-bead-type", flags: []string{"--type=bug"}, want: graphstore.IssueTypeURL(scope)},
+		{name: "short-issue", flags: []string{"--bead-type=preview-issue-v2"}, want: graphstore.IssueTypeURL(scope)},
 		{name: "relative-issue", flags: []string{"--bead-type=types/preview-issue-v2"}, want: graphstore.IssueTypeURL(scope)},
 		{name: "canonical-issue", flags: []string{"--bead-type=" + graphstore.IssueTypeURL(scope)}, want: graphstore.IssueTypeURL(scope)},
+		{name: "short-memory", flags: []string{"--bead-type=preview-memory-v2"}, want: graphstore.MemoryTypeURL(scope)},
 		{name: "relative-memory", flags: []string{"--bead-type=types/preview-memory-v2"}, want: graphstore.MemoryTypeURL(scope)},
 		{name: "canonical-memory", flags: []string{"--bead-type=" + graphstore.MemoryTypeURL(scope)}, want: graphstore.MemoryTypeURL(scope)},
 		{name: "empty", flags: []string{"--bead-type="}, code: 2},

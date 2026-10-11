@@ -32,14 +32,14 @@ func runGraphPreviewLinkPropertiesPatch(cmd *cobra.Command, path string) error {
 
 func graphPreviewLinkPropertiesPatchRequest(cmd *cobra.Command, path string) (graphstore.LinkPropertiesPatchRequest, error) {
 	var request graphstore.LinkPropertiesPatchRequest
-	if err := graphPreviewFlags(cmd, "patch", "metadata", "set-metadata", "unset-metadata", "if-revision", "if-source-revision", "unconditional-source"); err != nil {
+	if err := graphPreviewFlags(cmd, "patch", "replace-properties", "metadata", "replace-metadata", "set-metadata", "unset-metadata", "if-revision", "if-source-revision", "unconditional-source"); err != nil {
 		return request, err
 	}
 	if err := graph.ValidateLinkPath(path); err != nil {
 		return request, graphFailure("invalid_selector", err.Error(), 2)
 	}
-	if !cmd.Flags().Changed("patch") {
-		return request, graphFailure("invalid_properties", "Link properties patch requires --patch JSON, @file, or @-", 2)
+	if !cmd.Flags().Changed("patch") && !cmd.Flags().Changed("replace-properties") {
+		return request, graphFailure("invalid_properties", "property update requires --patch or --replace-properties", 2)
 	}
 	revision, unconditional, err := graphPreviewEditRevisionGuard(cmd)
 	if err != nil {
@@ -54,8 +54,7 @@ func graphPreviewLinkPropertiesPatchRequest(cmd *cobra.Command, path string) (gr
 			return request, graphFailure("invalid_selector", fmt.Sprintf("--%s requires a UTF-8 token of at most %d bytes", token.name, graphstore.PreviewVersionTokenLimit), 2)
 		}
 	}
-	input, _ := cmd.Flags().GetString("patch")
-	raw, err := graphPreviewMemoryPropertiesPatchInput(input, cmd.InOrStdin())
+	raw, err := graphPreviewPropertyOperations(cmd)
 	if err != nil {
 		return request, graphFailure("invalid_properties", err.Error(), 2)
 	}

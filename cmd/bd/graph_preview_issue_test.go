@@ -36,7 +36,7 @@ func TestGraphPreviewIssueCreateReopen(t *testing.T) {
 		t.Fatalf("Issue content or configured ID prefix was lost: %+v", r.Properties)
 	}
 	for range 2 {
-		shown := graphPolicyCLI(t, bd, work, home, nil, "", "show", "beads/work", "--json")
+		shown := graphPolicyCLI(t, bd, work, home, nil, "", "show", "beads/work", "--format", "graph-json", "--json")
 		if shown != created {
 			t.Fatalf("fresh process changed graph record\ncreate: %s\nshow: %s", created, shown)
 		}

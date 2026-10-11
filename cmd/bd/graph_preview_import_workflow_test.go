@@ -81,7 +81,7 @@ func TestGraphPreviewLegacyImportInstalledWorkflow(t *testing.T) {
 			if result.DryRun || result.IDs["legacy-b"] != scope+"beads/legacy-b" || result.MemoryIDs["fixture-key"] != scope+"beads/fixture-key" {
 				t.Fatalf("result=%+v", result)
 			}
-			issue := graphMixedResult[graphstore.IssueRecord](t, call("", "", "show", "legacy-b"))
+			issue := graphMixedResult[graphstore.IssueRecord](t, call("", "", "show", "legacy-b", "--format", "graph-json"))
 			if len(issue.Owned) != 1 || issue.Properties.Notes != "A note" || issue.Properties.ID != "legacy-b" {
 				t.Fatalf("issue=%+v", issue)
 			}
