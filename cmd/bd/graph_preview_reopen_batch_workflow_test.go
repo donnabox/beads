@@ -95,6 +95,14 @@ func TestGraphPreviewCloseReopenBatchWorkflow(t *testing.T) {
 				t.Fatalf("partial batch hid the successful close: %+v", closedPartial)
 			}
 			call("reopen", "third")
+			deferredPartial := graphMixedResult[[]graphstore.IssueMutationResult](t, runPartial("defer", "third", "missing"))
+			if len(deferredPartial) != 1 || !deferredPartial[0].Changed || deferredPartial[0].Issue.Properties.Status != types.StatusDeferred {
+				t.Fatalf("partial defer hid the successful Issue or returned success: %+v", deferredPartial)
+			}
+			undeferredPartial := graphMixedResult[[]graphstore.IssueMutationResult](t, runPartial("undefer", "third", "missing"))
+			if len(undeferredPartial) != 1 || !undeferredPartial[0].Changed || undeferredPartial[0].Issue.Properties.Status != types.StatusOpen {
+				t.Fatalf("partial undefer hid the successful Issue or returned success: %+v", undeferredPartial)
+			}
 			positional := graphMixedResult[graphstore.IssueMutationResult](t, call("done", "third", "Positional reason"))
 			if !positional.Changed || positional.Issue.Properties.CloseReason != "Positional reason" {
 				t.Fatalf("done alias lost its positional reason: %+v", positional)

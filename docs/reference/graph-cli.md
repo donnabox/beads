@@ -426,7 +426,9 @@ bd undefer work --if-revision REVISION_FROM_SHOW
 ```
 
 The graph preview can narrow `bd ready` by priority, Issue classification,
-assignee, label, or defer state and can sort or limit the result. `bd blocked`
+assignee, label (including glob or regex), top-level metadata, excluded Issue
+type, or defer state and can sort or limit the result. Listing and atomic
+`--claim` use the same native filter. `bd blocked`
 accepts the ordinary label, label-any, and exclude-label filters. Both use
 the native blocker-aware predicate, then return canonical graph Issue IDs.
 An explicitly supplied blank label filter is an error, so a typo cannot turn
@@ -435,6 +437,7 @@ an intended narrow query into the whole work queue.
 ```sh
 bd ready --priority 2 --type task --limit 10 --json
 bd ready --label release --sort priority
+bd ready --metadata-field team=delivery --exclude-type bug --json
 bd ready --claim --label release --actor rig.agent --json
 bd blocked --label release --json
 ```
