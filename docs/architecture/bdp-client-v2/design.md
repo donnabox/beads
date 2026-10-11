@@ -72,14 +72,16 @@ These slices compose at `21ba42bf28b483a5ee22c77b6b28b67d464f3045`. Full validat
 
 [PR77](https://github.com/gastownhall/bdp/pull/77), `d1e62ebc848aff57d46c873013c81efeaf29cd38`, adds alias singleton mutations to the atomic owner. Locator and receipt commit together without Resource revisions, Events, groups or position advance; expired allocations are empty. 464 tests across six files and independent 120-test review pass, including byte-identical refusal of older private formats before pending recovery or expiry maintenance. Build/checks and installed smoke pass. Resource-alias operands remain explicitly refused until durable original-locator/target/miss retry witnesses are implemented. No HTTP or full profile claim.
 
+[PR78](https://github.com/gastownhall/bdp/pull/78), `5a05519d212467e92f390e6c25c9eb0af4d874ec`, extends Update diagnostics to raw credentials/keys, media/Accept, JSON/UTF-8 and body bounds. Fourteen plans execute 105 actions and 398 assertions; 41 of 81 required rows have bounded observations, 40 remain omissions. Independent review passed 136 tests, including unchanged general executor guards; authored verification passed 120 tests, build/checks and both smokes. Fixed test credentials and raw framing stay in the disposable loopback fixture. The next slice binds real process recovery observations.
+
 Current bounded follow-ups:
 
 | Worker | Scope | Acceptance / state |
 |---|---|---|
 | Transactional implementation | Durable retry witnesses for Resource-alias operands | Alias singleton slice `d1e62ebc848aff57d46c873013c81efeaf29cd38` passed 464 tests / 6 files and independent 120 tests plus byte-identical format refusal. Next isolated slice proposes original-locator/target/miss witnesses before implementation. |
-| Update qualification | Raw HTTP refusal/admission/retained-key diagnostics | Extend the existing runner with bounded fixed-fixture raw transport while preserving general executor security guards; commit and review pending. No runtime changes or public admission. |
-| Editorial integration | Reviewed PR67 plus combined runtime | Isolated candidate merges both histories and repairs development diagnostic citations; full combined validation required. |
-| Independent review | Raw Update diagnostics | Verify fixed loopback fixture transport, retained-failure non-reexecution and honest 41/81 bounded mappings at frozen `5a05519d212467e92f390e6c25c9eb0af4d874ec`. |
+| Update qualification | Process disconnect/drain/SIGKILL diagnostics | Bind existing emitted-runtime IPC/process observations to the same diagnostic runner, without runtime/public admission changes. |
+| Editorial integration | Reviewed PR67 plus combined runtime | Merge is clean and diagnostic citations are migrated. Build/checks/both smokes pass; full run found three sealed Read evidence tests failing after catalog citation changes. Diagnose binding versus historical-evidence handling; do not alter sealed evidence or claim a green candidate. |
+| Independent review | Next combined candidate | Raw Update review is complete. Await editorial integration diagnosis/frozen head before reviewing merged source and evidence handling. |
 
 The heartbeat continues through successive slices toward tested Update and Transactional support, stopping on completion, an operator pause, supersession or an unavoidable decision. It reports meaningful results and blockers, not routine unchanged polls. First-round completed work above remains the baseline.
 
