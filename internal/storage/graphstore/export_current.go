@@ -61,6 +61,9 @@ func (s *Store) ExportCurrentSnapshot(ctx context.Context) (ExportCurrentState, 
 }
 
 func (s *Store) exportCurrentSnapshotInTx(ctx context.Context, tx *sql.Tx) (ExportCurrentState, error) {
+	if err := checkBinding(ctx, tx, s.options); err != nil {
+		return ExportCurrentState{}, err
+	}
 	count, err := checkExportReadBounds(ctx, tx)
 	if err != nil {
 		return ExportCurrentState{}, err

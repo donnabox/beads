@@ -85,6 +85,13 @@ func TestExportCurrentSnapshotLifecycle(t *testing.T) {
 			// or the next acquisition and survive neither close nor reopen.
 			current.CommentsByIssuePath["beads/work"][0].Text = "caller mutation"
 			delete(current.CommentsByIssuePath, "beads/prereq")
+			fresh, err := s.ExportCurrentSnapshot(ctx)
+			if err != nil || !reflect.DeepEqual(fresh.CommentsByIssuePath["beads/work"], wantComments) || !reflect.DeepEqual(fresh.Snapshot, ordinary) {
+				t.Fatalf("same-Store detachment: %+v %v", fresh, err)
+			}
+			if comments, present := fresh.CommentsByIssuePath["beads/prereq"]; !present || comments == nil || len(comments) != 0 {
+				t.Fatal("caller deletion affected the next acquisition")
+			}
 			if err := s.Close(); err != nil {
 				t.Fatal(err)
 			}

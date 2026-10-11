@@ -8,8 +8,13 @@ not add a public format, serializer, CLI, BDP profile or migration operation.
 
 The [frozen manifest](manifest.json) identifies reader/test/BUILD content given
 to the same [council prompt](prompt.txt). The [native review](native.txt) found no
-confirmed defects. The external implementation review is still running; no
-completed council or runtime readiness is claimed from this checkpoint.
+confirmed defects. [Actual Claude implementation review](implementation-claude.txt) completed
+with no confirmed reader correctness defect and three Low findings. All three
+are addressed: first check the persisted binding, remove an impossible by-value
+mutation assertion, and reread detachment on the same Store. The bounded
+[repair manifest](repair-manifest.json), [prompt](repair-prompt.txt) and
+[native repair review](repair-native.txt) cover those repairs and new cleanup
+tests. Actual Claude repair review is running. Runtime remains unqualified.
 
 [Pure evidence](pure.log) records four roots and17subtests:21PASS,0FAIL,0SKIP.
 The exact-package runner uses canonical build flags and constructs no backend.
@@ -36,8 +41,16 @@ logical source rows, and forced writer interleaving in embedded and ordinary
 SQL server modes. These authored cases are **unrun** until Janet explicitly
 hands back the engine slot. No Iris DB/server work was started.
 
-Callback faults do not cover real driver rollback/connection/rows-close faults.
-Those cleanup tests remain required before export readiness. Installed binary,
+The [repair pure run](repair-pure.log) passed nine roots plus19subtests
+(28PASS/0FAIL/0SKIP) in0.913s. It includes actual driver rollback, comment
+EOF-close plus rollback, SQL scan/close/rollback, ErrBadConn logical cleanup,
+and separate physical Store.Close failure through a test-owned SQL connector.
+The [child run](cleanup-child.log) also passed its five roots plus two subtests.
+These tests prove database/sql cleanup propagation, not engine acknowledgments.
+Late non-EOF iteration error injection remains a nonblocking coverage gap.
+The initial [parallel lint collision](repair-lint.log) is preserved; the
+[sequential retry](repair-lint-retry.log) passed allprofiles with0findings.
+Actual backend cleanup qualification remains required before readiness. Installed binary,
 encoded-output budget, permissions and cleanup-before-publication proof belong
 to the later independently reviewed exporter/CLI milestone. Current limits
 measure persisted acquisition bytes, not exact heap or JSON output size.

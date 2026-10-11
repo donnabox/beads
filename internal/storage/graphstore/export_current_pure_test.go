@@ -40,9 +40,6 @@ func TestExportCommentOriginalUTF8(t *testing.T) {
 			if err := validateExportComment(invalid); !errors.Is(err, ErrInvalidStore) {
 				t.Fatalf("invalid UTF-8 was admitted: %v", err)
 			}
-			if reflect.ValueOf(invalid).FieldByName(field).String() != "original\xffbytes" {
-				t.Fatal("validation replaced original bytes")
-			}
 		})
 	}
 	if err := validateExportComment(types.Comment{}); err != nil {
