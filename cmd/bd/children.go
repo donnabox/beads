@@ -33,6 +33,9 @@ Examples:
 
 		parentID := args[0]
 		pretty, _ := cmd.Flags().GetBool("pretty")
+		if graphPreviewActive {
+			return runGraphPreviewChildren(cmd, parentID, pretty)
+		}
 
 		_ = listCmd.Flags().Set("parent", parentID)
 		defer func() { _ = listCmd.Flags().Set("parent", "") }()
