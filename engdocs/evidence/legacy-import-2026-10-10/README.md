@@ -1,9 +1,12 @@
 # Iris stage 1 legacy import qualification
 
-Recommendation: **Preview 3**. Import's required focused cases pass in both
-installed modes, but the broad repository gate is not green and exact-head CI /
-Janet integration are outstanding. Donna decides the cutline. This report is
-an independent candidate, not Preview 2 acceptance.
+Recommendation: **Preview 2 candidate**, subject to green corrected-head CI and
+Janet's combined integration qualification. The operator clarified that Preview 2
+does not require release-level completeness. The earlier blanket Preview 3
+recommendation applied too strict a bar: required import cases pass in both
+installed modes, and the unrelated baseline file-descriptor failure does not
+establish an import defect. Donna decides the cutline. This report is an independent
+candidate, not Preview 2 acceptance.
 
 ## Scope and inventory
 
@@ -80,8 +83,13 @@ coercion. They were fixed before final qualification. The [original broad failur
 original council findings remain recorded; no failing case was skipped to get
 the 95-case result.
 
-Exact-head CI, BUILD synchronization, a green broad baseline and Janet's
-integration/release qualification remain open. The governing tracker is
+CI completed for artifact head `f1eaca1ed`: 110 successful checks, six skipped
+checks, and three failures. Both Bazel tiers failed only the documentation link
+test, which could not see the three linked synthetic-fixture files in its
+sandbox; the aggregate CI gate consequently failed. The BUILD runfile declarations
+now include those targets. Corrected-head CI and Janet's combined installed
+two-engine qualification remain open. No unimplemented import behavior was
+identified by these CI failures. The governing tracker is
 [donnabox/agent-coordination#6](https://github.com/donnabox/agent-coordination/issues/6);
 [stage-1 issue #9](https://github.com/donnabox/agent-coordination/issues/9) supports
 this PR without closing the subsequent export workstream. Graph-format import

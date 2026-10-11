@@ -114,6 +114,12 @@ exports_files(
     visibility = ["//:__pkg__"],
 )
 
+# Disposable fixture producer linked from the legacy import evidence.
+exports_files(
+    ["legacy-import-fixture.py"],
+    visibility = ["//:__pkg__"],
+)
+
 exports_files(
     ["ci/gofmt-bin.sh"],
     visibility = ["//scripts/prlintmake:__pkg__"],
