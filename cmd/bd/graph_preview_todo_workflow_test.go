@@ -105,7 +105,18 @@ func TestGraphPreviewTodoIssueWorkflow(t *testing.T) {
 			if got := list("todo"); len(got) != 1 || got[0].ID != defaultPriority.ID {
 				t.Fatalf("bare TODO omitted the default-priority open task: %+v", got)
 			}
-			graphPolicyCLI(t, bd, work, home, nil, "invalid_properties", "todo", "done", "memo", "--json")
+			memoryBefore := graphMemoryReadSnapshot(t, work)
+			out, stderr, code := graphVersionsProcess(t, bd, work, home, "todo", "done", "memo", "--json")
+			var nonIssue struct {
+				Closed []string `json:"closed"`
+				Reason string   `json:"reason"`
+			}
+			if err := json.Unmarshal([]byte(out), &nonIssue); code != 0 || err != nil || len(nonIssue.Closed) != 0 || nonIssue.Reason != "Completed" || !strings.Contains(stderr, "Error: failed to get issue memo:") {
+				t.Fatalf("non-Issue TODO target: exit=%d stdout=%s stderr=%s decode=%v", code, out, stderr, err)
+			}
+			if !reflect.DeepEqual(memoryBefore, graphMemoryReadSnapshot(t, work)) {
+				t.Fatal("non-Issue TODO target changed graph state")
+			}
 
 			// Native todo done tries every target and exits successfully even
 			// when an individual ID is malformed or missing. Both valid writes
