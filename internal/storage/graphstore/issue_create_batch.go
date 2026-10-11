@@ -39,6 +39,10 @@ func (s *Store) CreateIssueBatch(ctx context.Context, request publicops.CreateBa
 		if err := checkBinding(ctx, tx, s.options); err != nil {
 			return err
 		}
+		issueType, err := installedIssueTypeURLInTx(ctx, tx, s.ScopeURL())
+		if err != nil {
+			return err
+		}
 		for index, item := range request.Items {
 			if issueops.ResolveInfraTypesInTx(ctx, tx)[string(item.Issue.IssueType.Normalize())] {
 				return issueops.CreateBatchItemError(index, fmt.Errorf("%w: infrastructure Issue types are not admitted by the graph preview", storage.ErrValidation))
@@ -76,7 +80,7 @@ func (s *Store) CreateIssueBatch(ctx context.Context, request publicops.CreateBa
 			}
 			if _, err := tx.ExecContext(ctx, `INSERT INTO graph_preview_catalog
 				(path,resource_kind,type_url,revision,allocation_state,backing,backing_key)
-				VALUES (?,'bead',?,?,'live','issue',?)`, path, IssueTypeURL(s.options.Binding.ScopeURL), revision, issue.ID); err != nil {
+				VALUES (?,'bead',?,?,'live','issue',?)`, path, issueType, revision, issue.ID); err != nil {
 				return err
 			}
 			if err := s.afterStage("issue-catalog"); err != nil {
