@@ -3,6 +3,7 @@
 package main
 
 import (
+	"encoding/json"
 	"os"
 	"reflect"
 	"testing"
@@ -57,7 +58,11 @@ func TestGraphPreviewIssueLeaseCommands(t *testing.T) {
 				t.Fatal("live-lease reclaim changed graph state")
 			}
 			call("create", "Stateful work", "--id", "beads/stateful", "--labels", "mode:degraded")
-			initialStatus := graphMixedResult[map[string]any](t, call("status"))
+			// Bare status retains the native JSON shape, not the graph result envelope.
+			var initialStatus map[string]any
+			if err := json.Unmarshal([]byte(call("status")), &initialStatus); err != nil {
+				t.Fatalf("decode native status: %v", err)
+			}
 			if summary, ok := initialStatus["summary"].(map[string]any); !ok || summary["total_issues"] != float64(2) {
 				t.Fatalf("bare status did not count native Issues: %+v", initialStatus)
 			}
