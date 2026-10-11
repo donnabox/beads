@@ -1,6 +1,7 @@
 package main
 
 import (
+	"errors"
 	"strings"
 
 	graph "github.com/steveyegge/beads/graphops"
@@ -12,7 +13,7 @@ import (
 func graphPreviewIssueSelector(selector string) (graphstore.IssueSelector, error) {
 	path, err := graphPreviewResourcePath(graphPreviewConfig.GraphScopeURL, selector)
 	if err != nil || graph.ValidateBeadPath(path) != nil {
-		return graphstore.IssueSelector{}, graphFailure("invalid_selector", "expected a local Issue ID or beads/PATH", 2)
+		return graphstore.IssueSelector{}, errors.New("expected a local Issue ID or beads/PATH")
 	}
 	selected := graphstore.IssueSelector{Path: path}
 	if selector == strings.TrimPrefix(path, "beads/") {
