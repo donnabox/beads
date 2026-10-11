@@ -179,10 +179,10 @@ index 2963cd913..2fc921c30 100644
 +					metadata = []byte(`{}`)
 +				}
 +				canonical, err := graph.CanonicalizeJSON(metadata)
-+				if err != nil || !bytes.Equal(canonical, got.Metadata) {
++				if err != nil || got.Revision == "" || !bytes.Equal(canonical, got.Metadata) {
 +					t.Fatalf("Issue %s metadata changed: %s (%v)", source.ID, got.Metadata, err)
 +				}
-+				retained := graphMixedResult[graphstore.IssueRecord](t, call("", "", "show", id, "--version", got.Version))
++				retained := graphMixedResult[graphstore.IssueRecord](t, call("", "", "show", id, "--version", got.Revision))
 +				if !reflect.DeepEqual(got.Properties, retained.Properties) || !bytes.Equal(got.Metadata, retained.Metadata) || !reflect.DeepEqual(got.Owned, retained.Owned) {
 +					t.Fatalf("Issue %s initial retained state differs", source.ID)
 +				}
@@ -201,8 +201,8 @@ index 2963cd913..2fc921c30 100644
 +				}
 +				allocated[id] = true
 +				got := graphMixedResult[graphstore.Record](t, call("", "", "show", id))
-+				retained := graphMixedResult[graphstore.Record](t, call("", "", "show", id, "--version", got.Version))
-+				if got.ID != id || got.Properties.Title != key || got.Properties.Body != value || !reflect.DeepEqual(got.Properties, retained.Properties) {
++				retained := graphMixedResult[graphstore.Record](t, call("", "", "show", id, "--version", got.Revision))
++				if got.ID != id || got.Revision == "" || got.Properties.Title != key || got.Properties.Body != value || !reflect.DeepEqual(got.Properties, retained.Properties) {
 +					t.Fatalf("memory %q lost original key/value or retained state: %+v %+v", key, got, retained)
 +				}
 +			}

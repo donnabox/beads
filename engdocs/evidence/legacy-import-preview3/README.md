@@ -45,7 +45,7 @@ these need both engines. No pending test is claimed to have passed.
 
 The [prepared installed completeness test](completeness-workflow.patch) is retained
 as a patch until genuine producer fixtures exist; it is not registered as a
-mandatory test with missing data. After the engine slot is free, apply this patch
+mandatory test with missing data. After Janet explicitly hands back the engine slot, apply this patch
 and run the committed [producer generator](../../../scripts/legacy-import-fixture.py)
 with its completeness profile, the clean canonical producer at
 `76fde9c9cb0865d430bf12d76fc473490f51128a`, and prefix `web-app`. The intended corpus
@@ -86,3 +86,9 @@ relationships, custom workflow definitions absent from the dump, and source
 history unavailable in ordinary exports remain explicit boundaries in the
 [user contract](../../../docs/reference/graph-legacy-import.md). Contract questions
 are on the agent bus. This report is progress, not release acceptance.
+
+The prepared completeness patch requests exact retained state with the public
+`revision` token and checks that token is nonempty. The CLI deliberately removes
+the internal `version` alias; passing an empty alias to `show --version` could
+otherwise read current state and give false retained-state evidence. This patch
+repair is not an executed installed test or new runtime qualification.
