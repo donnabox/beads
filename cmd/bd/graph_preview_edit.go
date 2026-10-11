@@ -102,7 +102,7 @@ func runGraphPreviewEdit(cmd *cobra.Command, args []string) error {
 	}
 	process := exec.Command(parts[0], append(parts[1:], tmpPath)...) //nolint:gosec // editor is the user's selected command
 	process.Env = envWithoutSharedHoldMarker()
-	process.Stdin, process.Stdout, process.Stderr = os.Stdin, os.Stdout, os.Stderr
+	process.Stdin, process.Stdout, process.Stderr = cmd.InOrStdin(), cmd.OutOrStdout(), cmd.ErrOrStderr()
 	if err := process.Run(); err != nil {
 		return graphFailure("route_unavailable", fmt.Sprintf("running editor: %v; edit file is preserved in %s", err, tmpPath), 5)
 	}
