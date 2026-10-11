@@ -32,9 +32,9 @@ func TestGraphPreviewQuickCaptureWorkflow(t *testing.T) {
 			if record.ID != "https://example.invalid/quick-capture/"+created || record.Properties.Title != "Quick capture" || record.Properties.Priority != 1 || record.Properties.IssueType != "bug" || len(record.Properties.Labels) != 1 || record.Properties.Labels[0] != "triage" {
 				t.Fatalf("quick capture lost Issue fields: ID=%q title=%q priority=%d type=%q labels=%v", record.ID, record.Properties.Title, record.Properties.Priority, record.Properties.IssueType, record.Properties.Labels)
 			}
-			graphPolicyCLI(t, bd, work, home, nil, "capability_unavailable", "q", "Child", "--parent", created)
-			graphPolicyCLI(t, bd, work, home, nil, "permission_denied", "q", "Forbidden", "--readonly")
-			graphPolicyCLI(t, bd, work, home, nil, "invalid_properties", "q", "   ")
+			graphPolicyCLI(t, bd, work, home, nil, "capability_unavailable", "q", "Child", "--parent", created, "--json")
+			graphPolicyCLI(t, bd, work, home, nil, "permission_denied", "q", "Forbidden", "--readonly", "--json")
+			graphPolicyCLI(t, bd, work, home, nil, "invalid_properties", "q", "   ", "--json")
 		})
 	}
 }
