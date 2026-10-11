@@ -33,8 +33,9 @@ type writerFactory func(string, os.FileMode) (publicationWriter, error)
 
 // PublishFile replaces path using atomicfile's platform rename semantics.
 // Unix replacement is atomic; other platforms may not provide that guarantee.
-// Permissions use os.Chmod: Unix mode bits are honored; on Windows only the
-// read-only attribute is set, and the file inherits the parent directory's ACL.
+// Permissions are applied with (*os.File).Chmod to the temporary file before
+// rename: Unix mode bits are honored independently of umask; on Windows only
+// the read-only attribute is set, and the file inherits the parent directory's ACL.
 // Replacing a read-only Windows destination may fail. Symlink destinations are
 // replaced rather than followed; existing ownership/ACLs are not retained.
 // The caller owns data and must not modify it during publication. Cancellation
@@ -45,6 +46,7 @@ type writerFactory func(string, os.FileMode) (publicationWriter, error)
 // fsync. Failures abort the owned writer, preserving returned operation/abort
 // errors; atomicfile suppresses some physical cleanup errors and cannot retry
 // cleanup after a failed Close.
+// Nil ctx or an empty path returns ErrNilContext or ErrEmptyPath before creation.
 func PublishFile(ctx context.Context, path string, data []byte, perm os.FileMode) error {
 	return publishFile(ctx, path, data, perm, func(path string, perm os.FileMode) (publicationWriter, error) {
 		return atomicfile.Create(path, perm)
@@ -87,6 +89,7 @@ func publishFile(ctx context.Context, path string, data []byte, perm os.FileMode
 // after failure; there is no rollback. Writes are not interruptible. Once the
 // final write succeeds, later cancellation does not turn complete output into
 // a failure. The caller must not modify data during the call.
+// Nil ctx or writer returns ErrNilContext or ErrNilWriter, with context checked first.
 func WriteStream(ctx context.Context, w io.Writer, data []byte) error {
 	if err := contextError(ctx); err != nil {
 		return err

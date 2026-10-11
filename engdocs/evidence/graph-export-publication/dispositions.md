@@ -41,5 +41,11 @@ frozen manifest remains immutable; the repaired packet has a separate manifest.
 Native Low non-Unix atomicity wording is repaired. Inherited I1-I10 are retained
 in raw review; directory fsync, power loss, suppressed cleanup causes, symlinks,
 ACL/ownership and read-only limits are disclosed. Core atomicfile is unchanged.
-The actual repaired-source successor audit remains running. Neither this slice
+The [actual repaired-source successor audit](claude-final.txt) completed exit0
+and confirms no functional regression. Its two Low documentation nits are
+repaired: name temporary-file descriptor Chmod before rename and document the
+input sentinel precedence. Its Low symlink regression-test suggestion is
+deferred to future publication/CLI qualification: inherited atomicfile is
+unchanged and the documented rename behavior is statically confirmed. No
+required runtime/source-preservation gate is omitted by that deferral. Neither this slice
 nor its predecessor settles format/CLI or full exporter readiness.

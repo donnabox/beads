@@ -23,8 +23,9 @@ wrapper's error handling, not actual fsync/remove faults. Windows permission
 assertions are guarded while content/cleanup assertions remain. [Lint](lint.log)
 passes native/windows/darwin profiles. BUILD source check passes; local Bazel
 and Windows runtime were not run. [Manifest](manifest.txt), [prompt](prompt.txt)
-and [native review](native.txt) identify the frozen packet; actual Claude is
-running. No engine work occurs in this slice.
+and [native review](native.txt) identify the initial frozen packet. Actual
+initial Claude completed; the successor audit is recorded below. No engine
+work occurs in this slice.
 
 Contributor preflight found no exact publication topic match. Broader export
 atomic search found external gastownhall/beads#6875 (rjgeng); its full three-file
@@ -42,5 +43,6 @@ are repaired, alongside empty-path refusal and input byte immutability tests.
 [Repaired pure evidence](final-pure-umask077.log) passes10 roots/28 cases with
 zero failures/skips under umask077. [Manifest](final-manifest.txt),
 [prompt](final-prompt.txt) and [native confirmation](final-native.txt) identify
-the successor packet; actual Claude is running. Current source still chooses
+the successor packet. Actual Claude completed with exit0 and found no
+functional regression; [raw confirmation](claude-final.txt) is retained. Current source still chooses
 no public format, default permission or CLI contract.
