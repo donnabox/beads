@@ -1,0 +1,75 @@
+{
+  "kind": "development-write-integration-verification",
+  "claimEligible": false,
+  "candidateHead": "21ba42bf28b483a5ee22c77b6b28b67d464f3045",
+  "fullValidationHead": "7fd6936797620d6a4f4c45685ae85cdf50c8bd89",
+  "finalDelta": "Explicit SQLOutputValue type annotation for a test variable only; final typecheck and affected-file lint/format passed.",
+  "profilesAdvertised": false,
+  "checks": [
+    {
+      "command": [
+        "build"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "typecheck"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "check:boundaries"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "exec",
+        "vitest",
+        "run",
+        "--maxWorkers=2",
+        "--reporter=default",
+        "--reporter=json",
+        "--outputFile.json=/Users/dbox/repos/wt/vickie/bdp-integration-logs/write-round5/tests.json"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "smoke:development"
+      ],
+      "exitCode": 0
+    },
+    {
+      "command": [
+        "smoke"
+      ],
+      "exitCode": 0
+    }
+  ],
+  "testFiles": 113,
+  "passedTests": 7669,
+  "optionalSkippedTests": 1,
+  "limits": [
+    "Development reference evidence only; neither complete write profile qualified.",
+    "No CLI parity qualification, main merge or Preview 2 promotion.",
+    "Editorial PR67 not yet in this runtime candidate."
+  ],
+  "logDigests": {
+    "build.log": "232dac5e840e45b3bb06e6e04249b5241f2e1b4f6c797a22c046d916302ac208",
+    "check-boundaries.log": "53f4cd856bde25513486a59799c5a05e0650fbb756bf1580fb07e56c2fdeeef3",
+    "checks.json": "cbe7219efacaa648d46ca0a7b9044ad8dbf96a48de9fa62d072a06778514c3fb",
+    "final-format.log": "69f194727da43cc6a463e6d0d05b764b64b63443a79688b0efdee53ab030c136",
+    "final-lint.log": "c2c8bbbb112e1015744389616a59c72ea8d2c82c3c244a61b5e39441851520cf",
+    "final-typecheck.log": "91d54ffbee73a3ac72294d090e58d77745f8b93edbf94b862807698273a6505a",
+    "qualification-independent.json": "06d5456f511b17b79824047a333fb180e364503bd4aed79d14246e16c589b1ea",
+    "qualification-independent.log": "565c72ecb89bf77db16c1a9038b183049c847974ba137f4da35a66849dc6ef5d",
+    "smoke-development.log": "ff4640e71e794ced454234d7bb095adbdb0b799aaa479b00872c544d75a28c20",
+    "smoke.log": "904f59ddeebb3a9634906c612fcf033b23f125be94c2adc5cd035f1d3278147d",
+    "tests.json": "375d9b31c10c721c0f4665eaab360a1bfe6c1eacbcfc83f364194123faf11ac7",
+    "tests.log": "df8ecff9d469f7892c603450943e4331767313771c963d6deaf53473df2bc7fc",
+    "typecheck.log": "91d54ffbee73a3ac72294d090e58d77745f8b93edbf94b862807698273a6505a"
+  }
+}

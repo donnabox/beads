@@ -55,4 +55,8 @@ Original Claude severity retained below. All line numbers refer to frozen c493fa
 
 ## Integration disposition
 
-Vickie accepts the validated layering, citation ownership, requirement-force and mechanical repairs under the existing editorial scope. The initial schema-name/link repairs are published in PR67 at `2535b898`; the remaining repairs and full catalog profile audit are assigned in an isolated branch based on that commit. No protocol design ruling is inferred from reviewer recommendations. Readiness remains blocked on repairs and verification, with Gemini partial coverage explicitly retained.
+Vickie accepted the validated layering, citation ownership, requirement-force and mechanical repairs under the existing editorial scope. PR67 now publishes repaired head `e9361d77b862aa0e6ddfa19cf272225f62c32d35`. All 539 specification citations across six catalogs pass the profile audit. Nine additive History siblings preserve all prior obligations and original case identities/profiles. Local membership text matches unchanged schema acceptance rather than tightening it implicitly.
+
+Independent review of that exact head found no unresolved repair blocker and reran 42 protocol/conformance files, 1,636 tests successfully. Anchor verification finds 144 anchors, 185 resolving links, all 84 originals preserved and no lower-profile forward dependency. The source remains editorial: canonical and packaged schema bytes are unchanged. Review record: [independent repair review](editorial-repair-independent-review.md).
+
+No protocol design ruling is inferred from recommendations. Partial external coverage remains as recorded above; the independent repair audit does not retroactively expand it. PR67 remains draft pending readiness judgment. The existing Read schema's accepted later-capability limit fields remain a separate design question; relevance is not schema rejection.
