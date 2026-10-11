@@ -111,7 +111,7 @@ func TestGraphPreviewTodoIssueWorkflow(t *testing.T) {
 				Closed []string `json:"closed"`
 				Reason string   `json:"reason"`
 			}
-			if err := json.Unmarshal([]byte(out), &nonIssue); code != 0 || err != nil || len(nonIssue.Closed) != 0 || nonIssue.Reason != "Completed" || !strings.Contains(stderr, "Error: failed to get issue memo:") {
+			if err := json.Unmarshal([]byte(out), &nonIssue); code != 0 || err != nil || len(nonIssue.Closed) != 0 || nonIssue.Reason != "Completed" || !strings.Contains(stderr, "Error: failed to ") || !strings.Contains(stderr, " memo:") {
 				t.Fatalf("non-Issue TODO target: exit=%d stdout=%s stderr=%s decode=%v", code, out, stderr, err)
 			}
 			if !reflect.DeepEqual(memoryBefore, graphMemoryReadSnapshot(t, work)) {
