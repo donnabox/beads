@@ -218,6 +218,27 @@ with status and priority, and a line under the header saying Memories are
 not listed. A typed filter cannot be combined with a non-Issue --bead-type;
 a configured directory label alone does not refuse one, it is simply not
 applied to Memories. Tree output and legacy --json are unavailable.`},
+		{searchCmd, `Search current graph Issues by title or canonical local Bead ID.
+Results include closed Issues unless --status narrows them. --json returns the
+ordinary counted Issue row array with Scope-relative IDs. Supported filters:
+--status, --assignee, --type, --label, --label-any, --priority-min,
+--priority-max, --desc-contains, --notes-contains, --external-contains,
+--empty-description, --no-assignee, --no-labels, --limit, --sort, --reverse,
+and --long. Only built-in status names are admitted here. Date and metadata
+filters are unavailable in graph preview.`},
+		{countCmd, `Count current durable graph Issues, including closed Issues by default.
+The ordinary scalar and --by-status/priority/type/assignee/label JSON shapes
+are preserved. Supported filters: --status, --priority, --assignee, --type,
+--label, --label-any, --title, --title-contains, --desc-contains,
+--notes-contains, date bounds, --empty-description, --no-assignee, --no-labels,
+and --priority-min/max. Parent, ephemeral, infrastructure, exclusion,
+metadata, and backing-ID filters are unavailable in graph preview.`},
+		{queryCmd, `Query current durable graph Issues with ordinary field comparisons,
+AND, OR, NOT, dates and canonical local Bead IDs. Closed Issues are excluded
+unless --all or an explicit status comparison includes them. --json returns
+the ordinary counted Issue row array. --limit, --offset, --sort, --reverse,
+--long and --parse-only work. Parent, mol_type and ephemeral predicates are
+unavailable in graph preview.`},
 		{blockedCmd, `Show current dependency-blocked Issues with canonical
 blocker IDs. Filters and positive BEADS_MAX_ROWS are unavailable.`},
 		{graphCmd, `Use bd graph ID --view generic to traverse the current

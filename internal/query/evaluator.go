@@ -1057,3 +1057,14 @@ func EvaluateAt(query string, now time.Time) (*QueryResult, error) {
 	eval := NewEvaluator(now)
 	return eval.Evaluate(node)
 }
+
+// PredicateAt evaluates an entire parsed expression against one Issue. It is
+// useful to a bounded, checked snapshot reader that cannot push native Issue
+// filters down without changing graph IDs into backing IDs first.
+func PredicateAt(expression string, now time.Time) (func(*types.Issue) bool, error) {
+	node, err := Parse(expression)
+	if err != nil {
+		return nil, err
+	}
+	return NewEvaluator(now).buildPredicate(node)
+}

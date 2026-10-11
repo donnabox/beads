@@ -44,6 +44,9 @@ Examples:
 				c.CloseEventAndAdd(evt)
 			}
 		}()
+		if graphPreviewActive {
+			return runGraphPreviewCount(cmd, args)
+		}
 
 		request, groupBy, err := parseCountRequest(cmd)
 		if err != nil {
