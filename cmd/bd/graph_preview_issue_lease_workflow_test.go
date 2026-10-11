@@ -29,6 +29,14 @@ func TestGraphPreviewIssueLeaseCommands(t *testing.T) {
 				t.Helper()
 				return graphPolicyCLI(t, bd, work, home, nil, "", append(args, "--json")...)
 			}
+			nativeJSON := func(args ...string) map[string]any {
+				t.Helper()
+				var result map[string]any
+				if err := json.Unmarshal([]byte(call(args...)), &result); err != nil {
+					t.Fatalf("decode native command %v: %v", args, err)
+				}
+				return result
+			}
 			refuse := func(code string, args ...string) {
 				t.Helper()
 				graphPolicyCLI(t, bd, work, home, nil, code, append(args, "--json")...)
@@ -58,11 +66,8 @@ func TestGraphPreviewIssueLeaseCommands(t *testing.T) {
 				t.Fatal("live-lease reclaim changed graph state")
 			}
 			call("create", "Stateful work", "--id", "beads/stateful", "--labels", "mode:degraded")
-			// Bare status retains the native JSON shape, not the graph result envelope.
-			var initialStatus map[string]any
-			if err := json.Unmarshal([]byte(call("status")), &initialStatus); err != nil {
-				t.Fatalf("decode native status: %v", err)
-			}
+			// Bare status and state retain their native JSON shapes.
+			initialStatus := nativeJSON("status")
 			if summary, ok := initialStatus["summary"].(map[string]any); !ok || summary["total_issues"] != float64(2) {
 				t.Fatalf("bare status did not count native Issues: %+v", initialStatus)
 			}
@@ -72,11 +77,11 @@ func TestGraphPreviewIssueLeaseCommands(t *testing.T) {
 			if !reflect.DeepEqual(stateBefore, graphMemoryReadSnapshot(t, work)) {
 				t.Fatal("state refusal changed graph state")
 			}
-			read := graphMixedResult[map[string]any](t, call("state", "stateful", "mode"))
+			read := nativeJSON("state", "stateful", "mode")
 			if read["value"] != "degraded" {
 				t.Fatalf("state read: %+v", read)
 			}
-			listed := graphMixedResult[map[string]any](t, call("state", "list", "stateful"))
+			listed := nativeJSON("state", "list", "stateful")
 			if states, ok := listed["states"].(map[string]any); !ok || states["mode"] != "degraded" {
 				t.Fatalf("state list: %+v", listed)
 			}
@@ -99,10 +104,10 @@ func TestGraphPreviewIssueLeaseCommands(t *testing.T) {
 			customClaim := graphMixedResult[graphstore.IssueMutationResult](t, call("update", "beads/custom-path", "--claim", "--actor", "holder"))
 			customBefore := call("versions", "beads/custom-path")
 			call("heartbeat", custom.Properties.ID, "--actor", "holder")
-			if got := graphMixedResult[map[string]any](t, call("state", custom.Properties.ID, "mode")); got["value"] != "ready" || got["issue_id"] != custom.Properties.ID {
+			if got := nativeJSON("state", custom.Properties.ID, "mode"); got["value"] != "ready" || got["issue_id"] != custom.Properties.ID {
 				t.Fatalf("native-ID state read selected wrong Issue: %+v", got)
 			}
-			if got := graphMixedResult[map[string]any](t, call("state", "list", custom.Properties.ID)); got["issue_id"] != custom.Properties.ID {
+			if got := nativeJSON("state", "list", custom.Properties.ID); got["issue_id"] != custom.Properties.ID {
 				t.Fatalf("native-ID state list selected wrong Issue: %+v", got)
 			}
 			call("reclaim", "--older-than=0s", "--id="+custom.Properties.ID, "--actor", "reaper")
@@ -122,7 +127,7 @@ func TestGraphPreviewIssueLeaseCommands(t *testing.T) {
 			}
 			call("heartbeat", "beads/custom-path", "--actor", "holder")
 			call("reclaim", "--older-than=0s", "--id="+scope+"beads/custom-path", "--actor", "reaper")
-			if got := graphMixedResult[map[string]any](t, call("state", "beads/custom-path", "mode")); got["value"] != "ready" {
+			if got := nativeJSON("state", "beads/custom-path", "mode"); got["value"] != "ready" {
 				t.Fatalf("explicit path lost precedence: %+v", got)
 			}
 		})
