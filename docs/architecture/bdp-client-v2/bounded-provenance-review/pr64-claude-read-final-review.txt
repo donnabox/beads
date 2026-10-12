@@ -1,0 +1,132 @@
+I have what I need. Read-only: no files written; `git status` clean after every command; HEAD still `3deafd6`.
+
+## Scope and method
+
+Frozen HEAD `3deafd650958fe0845efcdfe37c868f98b7ec652`, range `1af8d4d..3deafd6` — 16 files, +398/−61, commits `21522d4`, `3e7b672`, merge `2a4ede9`, `d653124`, `3deafd6`. Node 24.16.0 from PATH.
+
+I re-derived rather than trusted. Independently reproduced:
+
+- **All 12 cohort bindings** recomputed from committed bytes at HEAD — `catalog c1d2ef59`, `manifest b42dde86`, both fixtures, `schema c68e6f53`, `validator`, `runner`, `executor`, packaged `harness c6e01101` (shared by both targets, correctly), matrix `harness` for both targets: **12/12 exact match**. The matrix and packaged harness digests include the new `current-read-transport.ts`, so the artifact's observer identity really is the observer code at HEAD.
+- **Projection digest** `26db67b2…` recomputed with my own RFC 8785 JCS over the 47 sealed `[name, definition]` pairs; matches the artifact binding and the test pin. Independent reachability walk: 47 sealed, **46 reachable, 0 unsealed-reachable**, only `protocolProfile` sealed-but-unreachable. Legacy `beadRecord`/`linkRecord`/`beadCollection`/`linkCollection` remain *reachable* (via `currentBeadCollection`, `beadRecord`, `historicalBeadRecord`) so dropping them from the **roots** list changes coverage not one bit — correct, and the digest is a function of the sealed list and definition text, neither of which moved.
+- **Roots**: exactly the 16 the test now asserts (9 `READ_VALUE_SCHEMA_REFS` ∪ 6 History ∪ manifest-named `properties`/`readProblem`/`readDiscovery`/`typesInventory`/4× `current*`).
+- **Evidence constant** = SHA-256(artifact)[0:40] = `e425bb5c8256e306b251800ba1ba738a4f82a1ed` ✓. **Rows = 89** (bdptest 11+36, bdpbd 8+34), all `pass`, scores 47 + 42.
+- **Git facts**: `runHead 2a4ede9` is an ancestor of `evidenceCommit d653124`; delta is *exactly* the two `ALLOWED_EVIDENCE_DELTA_PATHS`; post-evidence delta is one test file (`member-identity.test.ts`) that is in no binding path. The re-seal is honest.
+- **Schema semantics probed directly with ajv2020 over the committed bundle** (results below).
+- `pnpm typecheck` ✓, `check:boundaries` ✓ (11 packages), `format:check` ✓, `lint` → 3 warnings + 1 info, byte-identical to the recorded baseline and none in changed files.
+
+Could not run `pnpm evidence:verify`: it exits 3 (`build the workspace before verifying`) and building writes files, which you prohibited. I re-derived every check it performs instead — see above — and your `final-evidence.log` records it green at `d653124` with rows 89, projection 47/46.
+
+## Test count, independently checked
+
+| Run | Files | Total | Passed | Failed | Skipped |
+|---|---|---|---|---|---|
+| Your `final-tests.log`, started 22:43:55 (= `d653124`) | 108 | 7618 | 7617 | 0 | 1 |
+| **My run at frozen `3deafd6`, this worktree** | 108 | **7618** | 7597 | 7 | 14 |
+
+Same total, 7618. The 7 failures and 13 extra skips are all build-dependent, not code: `recovery-store.test.ts` and `sequence-executor.test.ts` spawn child processes that `import` `packages/server/node_modules/@bdp/protocol/dist/index.js` (`ERR_MODULE_NOT_FOUND` — this worktree has `node_modules` but no `tsc -b` output), and `demo-history`/`demo-read`/`e2e-ready` self-skip without a build. So **your 7617 figure is confirmed**, and `3deafd6` adds no test case (it rewrites one assertion), which is why the total is identical at `d653` and HEAD.
+
+**Your "final tiny test 180?" is wrong — the actual number is 95.** The post-`3deafd6` targeted run was one file, `packages/server/src/member-identity.test.ts`; `diagnostic-test-strengthening.log` records 95 tests, and I re-ran it at HEAD: **95 passed, 1 file, 420ms**.
+
+All eight new tests in the range ran and passed in my run: the five `fails the actual Read matrix when … wire metadata is omitted` rows, `checks client-action wire records before legacy metadata projection`, and both `selects {bead,link} metadata independently of colliding properties`.
+
+---
+
+# Closure of the two remaining original findings
+
+**Original #2 (HIGH — metadata-requiring Read cohort unenforceable) — CLOSED, on both planes, with a counterfactual proof.**
+
+*Raw-wire plane.* The manifest now names only `current*`: 17 `currentLinkCollection`, 6 `currentBeadCollection`, 1 `currentBeadRecord`, 1 `currentLinkRecord` — exactly the 25 sites the original finding counted as legacy (1/1/6/17). No legacy ref survives anywhere in `packages/conformance/`; the remaining legacy refs live only in the schema bundle's retained/historical/Transactional structures, which is correct.
+
+I probed the overlay directly with ajv2020 against the committed bundle, because `required: ["metadata"]` at the top level would have been a shallow fix:
+
+```
+bead w/o metadata                 INVALID (/ must have required property 'metadata')
+link w/o metadata                 INVALID (/ …)
+collection item 0 w/o metadata    INVALID (/items/0 …)
+collection item 1 w/o metadata    INVALID (/items/1 …)
+inline links aggregate item       INVALID (/links/items/0 …)
+ownedLinks entry                  INVALID (/ownedLinks/https:~1~1…~1blocks/0 …)
+metadata: null                    INVALID (/metadata must be object)
+legacy beadRecord/linkRecord      VALID        ← retained/historical stay permissive
+```
+
+So the requirement bites at all four nesting positions, including the two the original finding did not even name.
+
+*Counterfactual.* `apps/bdptest/src/read-matrix.test.ts:183-290` runs the **real** `runConformanceMatrix` over `createRawHttpScenarioTarget` — the same execution path the cohort uses — behind a proxy that strips `metadata` from the served body, across all five representation classes (bead record, Link record, Bead collection, Link collection, inline owned Link). It asserts `row.state === "fail"`, `assertions.find(id==="schema").passed === false`, **and** that no non-schema assertion failed — so the failure is attributed, not incidental. The `omit=false` leg proves the same harness passes. `declaredTargetLabel: "metadata-wire-negative-control"` and no `emitMatrixRunForCohort` call: the control emits no evidence, and my `git status` after the full suite confirms nothing was mutated.
+
+*Client plane.* `createCurrentReadTransport` (`packages/client/test-support/current-read-transport.ts:12-27`) wraps `createFetchTransport` and validates `result.body` — which I confirmed at `packages/client/src/index.ts` is the *raw bounded JSON*, with projection happening later inside `BdpClient`, so the observation genuinely precedes compatibility projection. All six real-target client operations are wired (`testing.ts:71-111`); the three that are *not* (`unsupported-discovery`, `resource-without-type-resolution`, `malformed-success-response`) use synthetic in-process transports serving hand-built bodies and must not be, which is right. All three cohort-emitting composition sites pass it (`scripts/generate-read-cohort.mts:268`, `apps/bdptest/src/read-matrix.test.ts:428`, `apps/bdpbd/src/read-matrix.test.ts:546`), each building the validator from the committed `schemas/bdp-v0.schema.json` — the same bytes bound as `schema` and projected as `schemaReadProjection`. `apps/bdptest/src/read-matrix.test.ts:318-365` proves non-vacuity: the identical metadata-stripped response resolves `success` without the observer and rejects with it, and `expect(omittedBodies).toBe(2)` proves the fetch actually mutated one body per run.
+
+`3e7b672` is a genuine correction, not cosmetics: `21522d4` had inserted the function `createCurrentReadWireValidator` into `IN_PROCESS_ONLY_CAPABILITIES`, a `Set<string>` of capability tokens. I diffed the set at HEAD against `1af8d4d` — byte-identical, so no legitimate token was lost in the revert.
+
+**Original #4 (MEDIUM — selector `metadata` addressability unlanded, fails silently) — CLOSED on correctness; one coverage residual (N7 below).**
+
+`read-selector.ts:155` adds `metadata` to `ROOT_SELECTOR_MEMBERS`; `bdp.md:794-807` updates both candidate shapes and adds the collision rule. The rule matches the implementation exactly: the `ROOT_SELECTOR_MEMBERS` gate at `read-selector.ts:818` applies only at `position === 0`, so `@.metadata.x` reads the common plane and `@.properties.metadata.x` still reads a property named `metadata` — which the new test asserts in both directions on one candidate carrying both. The test also covers quoted/escaped member names, negative index, `== null` vs `!@.metadata.missing`, absence on a legacy candidate, and candidate immutability, parameterized over bead and Link.
+
+End-to-end reachability holds: both production call sites pass whole records (`packages/server/src/index.ts:1482` → `body.items`, validated through the `current*` parse table; `authority-read.ts:829` → `result.items` from `readStoredResource`), so candidates always carry `metadata`. `$[?@.metadata.owner == "team"]` no longer silently selects nothing.
+
+---
+
+# Prior-review notes
+
+- **N1 (metadata numeric update diagnostics are byte-identical duplicates)** — unchanged and still open, as you specified. `member-identity.ts` source is untouched in this range; only its test moved. Still correctly scoped as pre-`Update`-advertisement, not a merge blocker.
+- **N2 (the anti-relabel test could not fail)** — **CLOSED** by `3deafd6`. `member-identity.test.ts:1419` now asserts `expect(admission.diagnostics[0]).not.toHaveProperty("document")`. The `if (!admission.ok)` guard is TS narrowing, not an escape hatch: the preceding `toMatchObject({ok: false, …})` fails first if `ok` were ever true, so the assertion is reachable. 95/95 pass.
+- **N3 (stale `bindings.schema` provenance)** — **CLOSED** by `d653124`, exactly as predicted: `bindings.schema` moved `29d84b98 → c68e6f53` (= the committed bundle), `runHead` and the constant moved, and `schemaReadProjection` did **not** move. Comparing the artifact at `1af8d4d` vs HEAD, the only bindings that changed are `harness` (observer code), `manifest` (the ref migration), `schema` (this fix), and `targetProcess` for `bdpbd`/packaged alone — the one binding that legitimately varies per run. All 89 rows byte-identical, which is the expected outcome of a deterministic re-run; freshness is carried by the bindings and by `repaired-final-cohort.log`'s 209s two-target run at `2a4ede9`.
+- **N4–N6** — deferred polish, unchanged. The three new spec lines respect the local wrap convention (72/62 chars), so N6's long-line count did not grow.
+
+---
+
+# New findings (all LOW; no blockers)
+
+**N7. LOW — The newly spec'd metadata selector has no executable coverage; the sealed profile never observes a target resolving one.**
+
+`packages/conformance/fixtures/read-reference-v1.json:166` · `docs/specs/bdp.md:806-807` · `packages/server/src/read-selector.test.ts:66-108`
+
+*Defect:* `@.metadata` appears in exactly one file in the repo — the unit test. The sealed `read.collections.selector` oracle still selects on `$[?@.properties.status == "open" && @.type == "…/task"]` only, and its catalog row cites one sentence about Authorization View and nothing about candidate shapes, so the new normative sentence has no citation either (same inherited pattern N4 described — no catalog row cites candidate-shape text at all).
+
+*Failure scenario:* a target (or a future adapter/port refactor) that drops `metadata` from the candidate records it hands `selectReadResources` would make every metadata selector silently select nothing, and all 89 sealed rows would still pass. Nothing between the unit test and the wire witnesses the member reaching a selector.
+
+*Fix:* add a metadata predicate to `/oracles/pagination/selector/input` (the fixture records already carry `metadata`) — note this moves the fixture binding and costs a re-seal — or, free of re-seal cost, add a server-level test driving the selector through `index.ts:1482`/`authority-read.ts:829` rather than calling `selectReadResources` directly.
+
+**N8. LOW — The strict wire observer is opt-in per composition site, and nothing requires it for an evidence-emitting run.**
+
+`packages/client/test-support/testing.ts:31` · guards at `:54-67` · sites at `scripts/generate-read-cohort.mts:268`, `apps/bdptest/src/read-matrix.test.ts:428`, `apps/bdpbd/src/read-matrix.test.ts:546`
+
+*Defect:* `validateReadWire?` is optional while the two sibling options are both type-guarded (`typeof … !== "function"` throws). The client half of #2's closure rests entirely on three call sites remembering to pass it; neither `createBdpClientScenarioActionExecutor` nor the matrix/generator emission path asserts it was supplied.
+
+*Failure scenario:* a fourth client-executor composition — or a refactor that moves one — omits `validateReadWire` and emits cohort rows observed only through the permissive client. If the new site lives in a file outside `READ_OBSERVER_SUPPORT_PATHS`, not even the harness digest moves, so nothing in the tree says the observation weakened.
+
+*Fix:* make the option required whenever `fetchImplementation` is present (the executor already throws on the other two malformed options), or assert its presence where cohort rows are emitted.
+
+**N9. LOW — The observer binding is provenance the gate never recomputes, so observer code can drift after the evidence commit while the gate stays green.**
+
+`scripts/read-cohort-evidence.mjs:37-46,359` · `packages/conformance/src/cohort-verification.ts:89-98,318`
+
+*Defect:* the gate re-derives `catalog`, `manifest`, `fixture` and `schemaReadProjection`. `harness` (and `executor`, `validator`, `runner`) are format-checked as 64-hex and nothing more, and the delta confinement window ends at the evidence commit by design ("later unrelated commits do not reopen a sealed cohort").
+
+*Failure scenario:* a commit after `d653124` neuters `createCurrentReadTransport`'s `validate?.(…)` call. `pnpm evidence:verify` stays green with a `harness` binding describing bytes that no longer exist — precisely the surface #2's client-plane closure depends on. The only thing that catches it is the new test at `apps/bdptest/src/read-matrix.test.ts:318`, i.e. the test suite rather than the evidence gate.
+
+*Fix:* fold `harness` into `derivedInputBindings`. I verified this is cheap and green today: plain `node` 24.16 imports `scripts/read-harness-bindings.ts` directly (type stripping is on by default — confirmed by execution), and all three harness digests already re-derive exactly from HEAD bytes, so adding the check costs nothing now. The trade-off is yours: it would force a re-seal on every edit to `apps/*/src/read-matrix.test.ts`, which is what `21522d4` → `d653124` already did voluntarily, and what `3deafd6` sidestepped by landing in a different file.
+
+**N10. LOW — The wire observer fails open on any URL shape it cannot classify, and duplicates a classifier that keys on a different rule.**
+
+`packages/conformance/test-support/testing.ts:1919-1940` vs `:1690-1697`
+
+*Defect:* `createCurrentReadWireValidator` returns without validating for any unclassified path, and no counter asserts that a given client action validated at least one body. Its branch order also means `beads/<id>/links/` (no `view`) would be classified `currentBeadRecord`, whereas `pageSchemaFor`, 230 lines above in the same file, classifies any `pathname.endsWith("/links/")` as a Link collection.
+
+I checked this is **not** reachable today: the live grammar is `{bead}?view=links` (`read-request.ts:416`, `bdp.md:3034`), `pageSchemaFor`'s `/links/` test matches only the scope-level `{scope}links/`, so the two classifiers agree on every current form; `?view=properties|versions|events` and `?revision=` are skipped correctly; `types/` and `bdp.json` fall through correctly; and scope slicing is safe because `parseCanonicalScope` (`read-values.ts:316-320`), which `BdpClient` applies at `index.ts:1232`, requires a trailing `/`.
+
+*Failure scenario:* the grammar grows — a new current-record path form, or a second spelling of an existing one — and enforcement for that form silently disappears (fail-open), or a new non-record representation under `beads/` without a `view` marker gets validated as a bead record and throws a false failure.
+
+*Fix:* derive both classifiers from one function, and count validated bodies per client action so an action that validated none fails loudly.
+
+**Two polish items, no action needed to merge:** `apps/bdptest/src/read-matrix.test.ts:360` uses a bare `rejects.toThrow()`; attribution currently rests on the paired permissive run (which is the right design), but `toThrow(/current Read wire failed/)` would pin it against a future TypeError in the composition. And the synthetic client observers still serve metadata-less current bead records (`packages/client/test-support/testing.ts:576`, `:644`); those rows claim client behavior, not target conformance, so this is consistent with "legacy parsing stays permissive" — but they are now the only metadata-less current-record bodies left in the Read lane, and updating the two literals would stop the kit modelling a non-conformant current record. Also worth noting: `d653124`'s comment rewrite in `read-conformance-capability.ts:19-20` is accurate on the substance (the artifact really is a fresh two-target run from its declared head) but dropped the `D29 = C` / `RP1` ruling identifiers and ends on "older evidence remains pinned to its original source", a clause with no antecedent in the new text; the rulings remain documented at `schema-read-projection.ts:9-51`.
+
+---
+
+## Disposition
+
+**Original #2 and #4 both close.** #2 closes on substance I verified three independent ways — the manifest refs, the overlay's transitive `required` at four nesting positions probed directly, and a counterfactual that fails the real matrix through the real raw-HTTP path for all five representation classes while proving the permissive client still accepts the same bytes. #4 closes on correctness, with coverage left in the one place that matters least for this merge and most for the next change (N7).
+
+The evidence work is clean: fresh two-target run at `2a4ede9`, bindings that all re-derive from committed bytes, delta confined to the two allowed paths, projection digest unmoved and independently reproduced, 89 rows, and a test-only tail commit that touches nothing the seal names.
+
+No blockers, no MEDIUM. N7–N10 are all LOW and all point the same direction: the enforcement itself is now real, but three of its four load-bearing joints (per-site opt-in, unrecomputed observer binding, fail-open classification) are held by convention rather than by a gate. N9 is the one I would fix before the next re-seal, because it is green today and costs one line of derivation.

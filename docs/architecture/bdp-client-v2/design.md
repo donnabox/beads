@@ -317,6 +317,16 @@ Inventory classification: current protocol/API/schema/fixtures migrate now; genu
 
 Initial isolated checkouts: `/Users/dbox/repos/wt/vickie/bdp-pr64-readiness` (b5a5b41 review), `bdp-revision-provenance` (a7edb0c author), `bdp-four-part-editorial` (cd22ac3 author). Root owns external changes, integration and the sole plan. Existing unfinished Update/TX service branches remain separate; do not accidentally fold them into this bounded migration.
 
+### Final integration repair gate
+
+The final Claude reviews are complete. PR64's original Read/selector findings and PR65's A–E findings are closed. Two minor PR65 documentary residuals were corrected atbf53b5f and ordinarily integrated into PR83b0a6bca; native confirms no executable behavior change. Earlier exact CI3deafd6/074a6e3/2c8b63c passed, with refreshed CI for the documentary descendants pending.
+
+Do not mark the PRs ready yet. The final83 review found two genuine integration issues: four distinct requirements in `read.resource.external-endpoint` were clobbered into duplicate citations, and the current spec requires document-relative diagnostic locations while unapplied numeric properties patches still report request-relative locations. Its reported pending-cohort failure at18415bc is already closed by the actual919/fcc cohort and7,860-test/CI pass; it is not a new failure on the published successor.
+
+Bounded repairs are active in separate clones. profile_runtime_inventory owns64 inline formatter, matching normative/citation clarification and regressions: omit optional `instanceLocation` for unapplied numeric patches in either document, preserve create-time locations, caller messages and rejection/atomicity. profiles_integration_validation owns83 shared formatter/TX tests and restores the four original citations, with a regression against duplicate citation loss. The actual development/TX default callers will place offending request pointers in diagnostic messages, explicitly identified as request locations; arbitrary caller text is not rewritten. No new wire field, identity semantic or profile claim. Root will reconcile these repairs into65/83, obtain focused native+Claude closure, regenerate affected evidence, validate and land in order.
+
+Read-review low findings N7–N10 (broader server selector coverage, required per-composition observer, harness-binding drift enforcement, shared routing classifier) remain future hardening, not demonstrated current failures. The current three observation sites and fresh bindings were independently verified. The evidence gate's narrower binding checks are explicitly documented; no claim it catches every later observer change.83 low normalization-before-count efficiency is deferred; historical vector and seal-log clarity are being addressed in the bounded83 repair. No human product decision is needed for these corrections.
+
 ### Current delivery checkpoint: all three candidates published
 
 | PR | Current candidate | Evidence and checks | Remaining readiness gate |

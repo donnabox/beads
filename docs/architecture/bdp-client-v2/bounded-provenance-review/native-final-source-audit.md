@@ -50,3 +50,9 @@ Final PR65 verification is preserved in `../pr65-review-repairs/native-docs-foll
 - PR83 recorded build, typecheck, boundaries, formatting, normal executable smoke, development executable smoke and seven E2E preflight checks pass. Lint completes with five warnings and one informational notice; this is not called warning-free.
 
 The evidence claim is Read-only. Passing component tests and development smoke do not create Read+Update, Transactional or History capability admission. Native review is complete for the exact scopes above; other reviewers' pending results remain the integration owner's separate gate.
+
+## Documentation-only follow-up `bf53b5fb4ec0a30083cac9577c4f5c289a718c73`
+
+Independently inspected the exact two-file PR65 child of `074a6e3` (4 additions/2 deletions). No findings. `recovery-store.ts` changes only its function documentation from “Format 2” to “Format 3”, matching the unchanged runtime format constant. `STATUS.md` narrows its description of the evidence gate: catalog, manifest, fixture and Read-projection bindings are re-derived and ancestry checked; remaining recorded bindings are format-checked provenance, not hashes re-derived from today's tree. Checked this against `deriveReadInputBindings`, projection derivation and verification input assembly.
+
+No executable expression, schema, parser, current Read assertion, observer, fixture body, request identity, retained-state policy, artifact or capability constant changes. This follow-up does not warrant a new observed source or fresh cohort; the existing actual run head and seal must remain intact. Build/evidence/format checks were underway in the parent workstream and are not claimed as completed by this addendum. Ordinary integration into PR83 should preserve its distinct `919baf5`/`fccaa537` cohort narration while adopting only this verification-scope clarification and comment correction.
