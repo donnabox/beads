@@ -2,8 +2,9 @@ package main
 
 import (
 	"context"
+	"errors"
 	"fmt"
-	"os"
+	"strings"
 
 	"github.com/spf13/cobra"
 	"github.com/steveyegge/beads/internal/storage/graphstore"
@@ -11,6 +12,9 @@ import (
 )
 
 func runGraphPreviewEpicStatus(cmd *cobra.Command) error {
+	if err := requireGraphPreviewRelationshipGeneration(); err != nil {
+		return err
+	}
 	if err := graphPreviewFlags(cmd, "eligible-only"); err != nil {
 		return err
 	}
@@ -32,6 +36,9 @@ type graphPreviewEpicCloseResult struct {
 }
 
 func runGraphPreviewEpicCloseEligible(cmd *cobra.Command) error {
+	if err := requireGraphPreviewRelationshipGeneration(); err != nil {
+		return err
+	}
 	if err := graphPreviewFlags(cmd, "dry-run", "reason"); err != nil {
 		return err
 	}
@@ -54,12 +61,13 @@ func runGraphPreviewEpicCloseEligible(cmd *cobra.Command) error {
 		if dryRun {
 			return result, "", nil
 		}
+		actor := getActorWithGit()
 		for _, status := range result.eligible {
 			path := status.Epic.ID
 			current, err := store.ShowIssue(ctx, path)
 			if err == nil {
 				_, err = store.CloseEligibleEpic(ctx, graphstore.EpicCloseRequest{
-					Path: path, ExpectedRevision: current.Revision, Reason: reason, Actor: "system",
+					Path: path, ExpectedRevision: current.Revision, Reason: reason, Actor: actor,
 				})
 			}
 			if err != nil {
@@ -67,6 +75,13 @@ func runGraphPreviewEpicCloseEligible(cmd *cobra.Command) error {
 				continue
 			}
 			result.closed = append(result.closed, path)
+		}
+		if len(result.closed) > 0 {
+			commandDidWrite.Store(true)
+		}
+		if len(result.errors) > 0 {
+			return nil, "", fmt.Errorf("epic close-eligible closed %d of %d eligible epics (closed IDs: %s); failures: %w",
+				len(result.closed), len(result.eligible), strings.Join(result.closed, ", "), errors.Join(result.errors...))
 		}
 		return result, "", nil
 	}, func(raw any, _ string) error {
@@ -77,12 +92,13 @@ func runGraphPreviewEpicCloseEligible(cmd *cobra.Command) error {
 		if result.dryRun {
 			return outputCloseEligibleDryRun(result.eligible, result.reason)
 		}
-		for _, err := range result.errors {
-			fmt.Fprintf(os.Stderr, "Error closing %v\n", err)
-		}
-		if len(result.closed) > 0 {
-			commandDidWrite.Store(true)
-		}
 		return outputCloseEligibleResult(result.closed, result.reason)
 	})
+}
+
+func requireGraphPreviewRelationshipGeneration() error {
+	if graphPreviewTypeGeneration != 7 {
+		return graphFailure("capability_unavailable", "graph epic requires a fresh relationship workspace; this pinned workspace has no parent-child Link Type", 5)
+	}
+	return nil
 }

@@ -5,6 +5,7 @@ package main
 import (
 	"encoding/json"
 	"errors"
+	"fmt"
 	"path/filepath"
 	"reflect"
 	"strings"
@@ -406,6 +407,69 @@ func TestGraphPreviewEpicNativeProgressAndClose(t *testing.T) {
 	}
 	if got := call("", "epic", "status", "--json"); strings.TrimSpace(got) != "[]" {
 		t.Fatalf("closed epic still open: %s", got)
+	}
+}
+
+func TestGraphPreviewEpicCloseEligibleActorAndPartialFailure(t *testing.T) {
+	bd := buildBDUnderTest(t)
+	work, home := t.TempDir(), t.TempDir()
+	const scope = "https://example.invalid/epic-actors/"
+	call := func(args ...string) string {
+		t.Helper()
+		return graphPolicyCLI(t, bd, work, home, nil, "", append(args, "--json")...)
+	}
+	call("init", "--graph-mode", "link", "--prefix", "demo", "--scope-url", scope, "--skip-hooks", "--skip-agents", "--non-interactive")
+	for _, owner := range []string{"alice", "bob"} {
+		epic := "beads/" + owner + "-epic"
+		child := "beads/" + owner + "-child"
+		call("create", owner+" epic", "--id", epic, "--type", "epic", "--assignee", owner, "--actor", owner)
+		call("create", owner+" child", "--id", child)
+		call("dep", "add", child, epic, "--type", "parent-child")
+		call("close", child, "--reason", "Done")
+	}
+	beforeAlice := call("versions", "beads/alice-epic")
+	beforeBob := call("versions", "beads/bob-epic")
+	checkFailure := func(actor string, wantClosed int) {
+		t.Helper()
+		stdout, stderr, exit := graphGenerationRun(t, bd, work, home, "epic", "close-eligible", "--actor", actor, "--json")
+		if exit == 0 || stdout != "" {
+			t.Fatalf("actor %s: close failures looked successful: exit=%d stdout=%q stderr=%q", actor, exit, stdout, stderr)
+		}
+		var diagnostic struct {
+			Code, Message string
+		}
+		if err := json.Unmarshal([]byte(stderr), &diagnostic); err != nil || diagnostic.Code != "invalid_properties" ||
+			!strings.Contains(diagnostic.Message, fmt.Sprintf("closed %d of 2 eligible epics", wantClosed)) {
+			t.Fatalf("actor %s: missing typed partial-failure receipt: %+v, %v", actor, diagnostic, err)
+		}
+		if wantClosed == 1 && !strings.Contains(diagnostic.Message, "beads/alice-epic") {
+			t.Fatalf("partial failure omitted successfully closed ID: %+v", diagnostic)
+		}
+	}
+	checkFailure("stranger", 0)
+	if call("versions", "beads/alice-epic") != beforeAlice || call("versions", "beads/bob-epic") != beforeBob {
+		t.Fatal("all-refused epic close appended History")
+	}
+	checkFailure("alice", 1)
+	_, _, aliceBeforeRows, _ := graphVersionsListed(t, beforeAlice)
+	_, _, aliceAfterRows, _ := graphVersionsListed(t, call("versions", "beads/alice-epic"))
+	if len(aliceAfterRows) != len(aliceBeforeRows)+1 {
+		t.Fatalf("successful sibling close must append one Issue History version: %d -> %d", len(aliceBeforeRows), len(aliceAfterRows))
+	}
+	if got := graphMixedResult[graphstore.IssueRecord](t, call("show", "beads/alice-epic", "--format", "graph-json")); got.Properties.Status != "closed" || got.Attribution.Actor != "alice" {
+		t.Fatalf("explicit actor lost authority or provenance: %+v", got)
+	}
+	if got := graphMixedResult[graphstore.IssueRecord](t, call("show", "beads/bob-epic", "--format", "graph-json")); got.Properties.Status == "closed" {
+		t.Fatalf("another actor closed Bob's epic: %+v", got)
+	}
+	if call("versions", "beads/bob-epic") != beforeBob {
+		t.Fatal("refused sibling appended History")
+	}
+	if got := call("epic", "close-eligible", "--actor", "bob"); !strings.Contains(got, `"count": 1`) {
+		t.Fatalf("assigned actor could not finish remaining epic: %s", got)
+	}
+	if got := graphMixedResult[graphstore.IssueRecord](t, call("show", "beads/bob-epic", "--format", "graph-json")); got.Properties.Status != "closed" || got.Attribution.Actor != "bob" {
+		t.Fatalf("second epic close lost actor provenance: %+v", got)
 	}
 }
 

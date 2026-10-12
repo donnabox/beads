@@ -33,6 +33,9 @@ func (s *Store) ListChildren(ctx context.Context, parentPath string) ([]IssueRec
 }
 
 func (s *Store) listChildrenInTx(ctx context.Context, tx *sql.Tx, parentPath string) ([]IssueRecord, error) {
+	if err := s.requireRelationshipGeneration(); err != nil {
+		return nil, err
+	}
 	if err := checkCurrentReadBytes(ctx, tx); err != nil {
 		return nil, err
 	}
@@ -79,6 +82,13 @@ func (s *Store) listChildrenInTx(ctx context.Context, tx *sql.Tx, parentPath str
 		children = append(children, child)
 	}
 	return children, nil
+}
+
+func (s *Store) requireRelationshipGeneration() error {
+	if s.options.TypeGeneration != 7 {
+		return fmt.Errorf("%w: parent-child relationships require a fresh v7 workspace", ErrCapabilityUnavailable)
+	}
+	return nil
 }
 
 // ListChildrenLegacy keeps bd children --json's ordinary counted Issue row

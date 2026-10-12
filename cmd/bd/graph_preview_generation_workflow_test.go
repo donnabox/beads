@@ -281,7 +281,7 @@ func TestGraphPreviewMarkerGenerationWorkflow(t *testing.T) {
 		}
 	})
 
-	t.Run("a newer generation is refused before the store is opened", func(t *testing.T) {
+	t.Run("generation-specific routes refuse before the store is opened", func(t *testing.T) {
 		away := filepath.Join(beadsDir, "embeddeddolt.away")
 		if err := os.Rename(dataDir, away); err != nil {
 			t.Fatal(err)
@@ -304,6 +304,17 @@ func TestGraphPreviewMarkerGenerationWorkflow(t *testing.T) {
 			}
 		}
 		refuse(t, "link-preview-v8\n", newerRefusal("8"), "types")
+		for _, marker := range []string{"link-preview-v5\n", "link-preview-v6\n"} {
+			writeFile(t, markerPath, []byte(marker))
+			for _, args := range [][]string{
+				{"children", "beads/parent", "--json"},
+				{"epic", "status", "--json"},
+				{"epic", "close-eligible", "--dry-run", "--json"},
+				{"epic", "close-eligible", "--json"},
+			} {
+				graphPolicyCLI(t, bd, work, home, nil, "capability_unavailable", args...)
+			}
+		}
 	})
 
 	t.Run("admits link-preview-v5 over the legacy four Types", func(t *testing.T) {
@@ -475,6 +486,14 @@ func TestGraphPreviewInstalledV7TypedRelationshipsAndLegacyRefusal(t *testing.T)
 			call("create", "Source", "--id", "beads/source")
 			call("create", "Target", "--id", "beads/target")
 			before := call("show", "beads/source", "--format", "graph-json")
+			for _, args := range [][]string{
+				{"children", "beads/source", "--json"},
+				{"epic", "status", "--json"},
+				{"epic", "close-eligible", "--dry-run", "--json"},
+				{"epic", "close-eligible", "--json"},
+			} {
+				graphPolicyCLI(t, bd, work, home, nil, "capability_unavailable", args...)
+			}
 			for _, kind := range []types.DependencyType{types.DepParentChild, types.DepDuplicates, types.DepSupersedes} {
 				graphPolicyCLI(t, bd, work, home, nil, "capability_unavailable", "dep", "add", "beads/source", "beads/target", "--type", string(kind), "--json")
 				typeURL, _ := graphstore.RelationshipDependencyTypeURL(scope, kind)

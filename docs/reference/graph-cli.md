@@ -238,14 +238,19 @@ These views read a complete bounded graph snapshot. `bd graph ISSUE` and
 blocking answer incomplete.
 `dep list/tree/cycles --json` and `graph ISSUE --json` refuse until their
 ordinary JSON shapes can be preserved; use the human view or the explicit
-generic graph JSON view. In the local relationship-journeys candidate,
-`bd children PARENT` and `bd children PARENT --json` read immediate native
-parent-child Links, including closed children. The JSON result retains the
-ordinary Issue array shape; an empty family is `[]`. A dotted Issue ID or a
-blocking dependency alone does not make a child. `children --pretty`,
-`create --parent`, duplicate, supersede and epic workflows still refuse.
-This candidate has not completed the full release qualification or landed in
-the integration branch.
+generic graph JSON view. In the local relationship-journeys candidate, fresh
+v7 workspaces support `bd children PARENT` and `bd children PARENT --json` for
+immediate native parent-child Links, including closed children. The JSON result
+retains the ordinary Issue array shape; an empty family is `[]`. A dotted Issue
+ID or blocking dependency alone does not make a child. `bd epic status` reports
+progress from those same checked relationships, and `bd epic close-eligible`
+closes an epic only when every child has a completing close reason. An explicit
+`--actor` controls the close writer and History attribution; any failed close
+makes the command exit nonzero, with successful sibling IDs in the diagnostic.
+Pinned v5/v6 workspaces refuse these new relationship journeys before opening
+the store. `children --pretty`, `create --parent`, duplicate and supersede still
+refuse. This candidate has not completed release qualification or landed in the
+integration branch.
 
 This disposable fixture shows the direction of a blocking edge: `plan`
 depends on `tests`. The human views use local Issue IDs. `graph check --json`
