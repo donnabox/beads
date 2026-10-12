@@ -28,3 +28,21 @@ Tests ran with Node v24.16.0 in separate exact-commit archives `native64-source/
 - Total selected test executions: **586 passed across 9 file executions** (some suites intentionally run against both distinct implementations).
 
 No full suites or fresh cohorts were rerun here. The Read catalog bytes changed in PR83, so earlier seals must not be relabeled as observations of this correction; root's actual fresh qualification remains separate. This review does not claim those in-progress qualifications finished or authorize public write-profile advertisement.
+
+## Final ancestry/evidence-only audit
+
+**No findings.** Audited PR65 `d4d78fc85f9645210564f428d785145d45400d6d` and PR83 `4a6c020296aac7e7331af8f52e527365786d83cd` without repeating runtime review or tests.
+
+PR65 includes final PR64 `a57991f` as an ancestor through ordinary merge `cca16bbe67faebddc9be6644b6002eee70be4895`. Its actual observed source is that merge, sealed at `c197096c475af70a631e39e026af71c1e60c8ec2`; the run-head-to-seal diff is exactly artifact plus shipped constant. Its final `d4d78fc` child changes only STATUS.
+
+PR83 `4a6c020` has `d4d78fc` as an ordinary merge parent/ancestor. Crucially, the complete diff from its actual integrated seal `dbaf63a24219e1ea3f80394746853598b0d4464a` to `4a6c020` is **STATUS only**. Runtime, wire/schema, tests, observer, catalog, artifact and constant bytes are unchanged. The resolved integrated artifact still names actual source `e5f7d0c43c151426350ceededdc77fe7e372db9b`; the standalone PR65 observations are identified separately as preserved historical ancestry, not substituted for integrated observations.
+
+Independently invoked each current checkout's exported evidence-verifier `main()` with Node v24.16.0. Both exit 0:
+
+- `native-final65-evidence.log`: source `cca16bbe…`, seal `c197096…`, constant `1497814237d74f3495ade9e80c06b0bd709d719c`.
+- `native-final83-evidence.log`: source `e5f7d0c…`, seal `dbaf63a…`, constant `674982be2123b9b7aae630bf79c3f774122900cd`.
+- Each verifies 89 applicable observations and projection `bd7da0fc3f8082e0bfb6f4969c04409f2a610e12408dbc6a0bd14b4b351127cc`, with 47 sealed definitions and 46 reachable.
+
+STATUS claims match the preserved generation/full-run logs: PR65 162.25-second cohort and **7624 passed/1 skipped across 108 files**; PR83 203.18-second cohort and **7868 passed/1 skipped across 117 files**. The 38 packaged/11 self-certified counts are case definitions, with the established per-target observation distinctions retained. These full suites were inspected, not rerun. No fresh cohort is necessary for the final STATUS-only reconciliation, and no old observed source was relabeled.
+
+No remote write or publication verification was performed by this reviewer. All native findings remain closed for these exact source/evidence scopes; this is not public write-profile qualification.

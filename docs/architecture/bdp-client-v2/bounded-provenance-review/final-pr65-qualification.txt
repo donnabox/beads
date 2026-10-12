@@ -1,0 +1,9 @@
+PR65 clean merged source: cca16bbe67faebddc9be6644b6002eee70be4895
+Parents: 84566e39ba2796b2785d63d45bb7c711c26eba86 and PR64 evidence a57991fc24f1600613ad005f57a7d96900b88b24
+Evidence commit: c197096c475af70a631e39e026af71c1e60c8ec2 (direct successor; artifact+constant only)
+Node v24.16.0; pnpm 11.20.0
+Fresh cohort generation PASS: 162.25 seconds, 38 packaged and 11 self-certified cases, 89 applicable rows verified.
+Full serial suite PASS: 108 files, 7624 passed, 1 skipped, 94.13 seconds.
+PASS: build, typecheck, dependency boundaries, full formatting, lint (three inherited warnings and one info), installed-package smoke, readiness preflight (7 tests).
+Evidence verify: see verify.log for full hashes.
+Only evidence-pair merge resolution and fresh artifact/constant writes; no semantic/test/document changes during qualification.
