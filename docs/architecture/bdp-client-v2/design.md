@@ -6,9 +6,9 @@ This Markdown document on `donnabox/beads:codex/vickie-bdp-client-design` is the
 
 ## Current priority: BDP profile structure and implementation
 
-**Paused by Donna for the night on 2026-10-11 UTC.** Heartbeat `vickie-bdp-profiles` is verified PAUSED. Finish only the current clean checkpoints; no new work, integration or automatic restart until the operator resumes. The role session claim remains intact. Published PR83 stays at verified `cd22ac3`; subsequent branch checkpoints are not integrated or readiness claims. The operator subsequently authorized a bounded review-policy update and coordination with Janet about landing PR64/65; the implementation workers and heartbeat remain paused.
+**Autonomous work resumed by Donna.** Execute the approved metadata/provenance and editorial aims; choose whether to merge now or wait for proposal acceptance based on throughput and validated readiness. The prior pause and no-main-merge restriction are superseded for this bounded work. No Preview 2 promotion or edits to Janet’s CLI/staging/playgrounds/shared databases or Trish’s Type branch.
 
-BDP specification and executable profiles take priority over further V2 architecture design. Work is authorized in the BDP repository on normative prose, schemas, examples, validation, reference implementations and conformance. Donna retains product rulings; Vickie owns BDP integration and normative changes. Janet owns Beads CLI implementation and Preview 2 release integration; Trish owns Types for Preview 3. No merge is authorized. PR78 remains the earlier client/journal design discussion; profile implementation belongs in separate reviewable BDP PRs.
+BDP specification and executable profiles take priority over further V2 architecture design. Work is authorized in the BDP repository on normative prose, schemas, examples, validation, reference implementations and conformance. Donna retains product rulings; Vickie owns BDP integration and normative changes. Janet owns Beads CLI implementation and Preview 2 release integration; Trish owns Types for Preview 3. Donna authorizes choosing the landing timing for the approved bounded work after review and verification. PR78 remains the earlier client/journal design discussion; profile implementation belongs in separate reviewable BDP PRs.
 
 Keep one specification file, organized into three cumulative, substantially self-contained parts: **Read → Read+Update → Transactional**. Each part defines the minimum concepts needed for its own semantics and may depend only on earlier parts. Read uses Resource revisions and ordinary read/pagination semantics; it must not depend on transaction identity, Scope epochs, commit positions, Events or replication snapshots. Introduce a concept in a later part only where its semantics require it. Capability-specific material such as History must have an explicit profile location instead of leaking later-profile requirements into basic reads.
 
@@ -301,6 +301,21 @@ The first decision I recommend discussing is the shared query algebra and transa
 This work moved from the former upstream issue into this fork branch after Donna requested a quieter design workspace. The full previous issue and its comments are preserved in [the historical archive](legacy-tracker-archive.md); old links inside evidence are not live authority.
 
 The branch and archive were verified before attempting issue removal. GitHub denied `DeleteIssue` because the current account lacks permission. The former issue is now closed as not planned, its current title/body replaced with a withdrawal, and all four author-written comments deleted. One automatic triage comment remains; actual issue deletion requires an upstream administrator. No replacement issue or PR was created. The fork itself is public.
+
+## Active delivery: common revision provenance and clear profile boundaries
+
+Donna approved the common `revisionProvenance` organization now, independently of full Beads7510 acceptance, and directed autonomous execution plus an implementation-status comment on that proposal after PR65 is revised. Preserve PR65’s actor basis/absence semantics while replacing `attribution.principal` with `revisionProvenance.actor.id`, `attribution.basis` with `.actor.basis`, and `changeContext` fields with `.committedAt`, `.agent`, `.message`. Keep existing field availability, immutable-version/no-op/owned-Link behavior and present/absent/undetermined encodings. No sources, completeness, Activity Beads, terminal deletion revisions, additional History requirement or profile advertisement in this slice.
+
+| Lane | Work and boundaries | Done when |
+|---|---|---|
+| PR64 readiness | Independent Codex + Claude review of b5a5b41 against main, including later examples; root resolves findings | Recorded findings/dispositions, exact-head checks/evidence reviewed, ordinary merge or documented technical reason to defer |
+| PR65 revision | Isolated branch from a7edb0c, ordinary merge of final PR64; inventory then migrate current normative/schema/runtime/test/fixture surfaces; preserve historical evidence | One canonical envelope, meaningful negative/no-op/owned-Link tests, full affected checks and fresh actual Read qualification, exact-head dual review, PR65 updated |
+| Editorial | Isolated branch from PR83 cd22ac3; top-level Data Model / Read / Read+Update / Transactional, minimal common model, citation/profile checks | Four unambiguous sections, no dated amendment narration, unchanged operative contract and valid citations/profile ownership |
+| Integration | Root coordinates Janet/Trish, updates PR65/83 and preserves ancestry | Reconciled stack with verified checks and reviewed changes; no unsupported write-profile claims; proposal7510 comment accurately distinguishes implemented subset and deferred features |
+
+Inventory classification: current protocol/API/schema/fixtures migrate now; genuine preexisting adapter inputs and negative legacy-shape tests remain explicit compatibility cases; sealed historical reports/evidence remain frozen; unrelated Type/provenance proposal docs are not silently rewritten. Record concrete inventory and validation batches before broad edits. Refresh evidence from actual source observations; never relabel previous run hashes. Review plans and resulting deltas with Codex + Claude. No Gemini gate.
+
+Initial isolated checkouts: `/Users/dbox/repos/wt/vickie/bdp-pr64-readiness` (b5a5b41 review), `bdp-revision-provenance` (a7edb0c author), `bdp-four-part-editorial` (cd22ac3 author). Root owns external changes, integration and the sole plan. Existing unfinished Update/TX service branches remain separate; do not accidentally fold them into this bounded migration.
 
 ## Product review: metadata and editorial boundaries
 
