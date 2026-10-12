@@ -348,6 +348,67 @@ func TestGraphPreviewChildrenNative(t *testing.T) {
 	}
 }
 
+func TestGraphPreviewEpicNativeProgressAndClose(t *testing.T) {
+	bd := buildBDUnderTest(t)
+	work, home := t.TempDir(), t.TempDir()
+	const scope = "https://example.invalid/native-epic/"
+	call := func(code string, args ...string) string {
+		return graphPolicyCLI(t, bd, work, home, nil, code, args...)
+	}
+	call("", "init", "--graph-mode", "link", "--prefix", "demo", "--scope-url", scope, "--skip-hooks", "--skip-agents", "--non-interactive", "--json")
+	call("", "create", "Release epic", "--id", "beads/epic", "--type", "epic", "--json")
+	call("", "create", "Child work", "--id", "beads/child", "--json")
+	call("", "create", "Dotted lookalike", "--id", "beads/epic.lookalike", "--json")
+	call("", "dep", "add", "child", "epic", "--type", "parent-child", "--json")
+	decode := func(raw string) []struct {
+		Epic struct {
+			ID string `json:"id"`
+		} `json:"epic"`
+		TotalChildren    int  `json:"total_children"`
+		ClosedChildren   int  `json:"closed_children"`
+		EligibleForClose bool `json:"eligible_for_close"`
+	} {
+		t.Helper()
+		var statuses []struct {
+			Epic struct {
+				ID string `json:"id"`
+			} `json:"epic"`
+			TotalChildren    int  `json:"total_children"`
+			ClosedChildren   int  `json:"closed_children"`
+			EligibleForClose bool `json:"eligible_for_close"`
+		}
+		if err := json.Unmarshal([]byte(raw), &statuses); err != nil {
+			t.Fatalf("epic status JSON: %v: %s", err, raw)
+		}
+		return statuses
+	}
+	statuses := decode(call("", "epic", "status", "--json"))
+	if len(statuses) != 1 || statuses[0].Epic.ID != "beads/epic" || statuses[0].TotalChildren != 1 || statuses[0].ClosedChildren != 0 || statuses[0].EligibleForClose {
+		t.Fatalf("native child membership: %+v", statuses)
+	}
+	if got := call("", "epic", "status", "--eligible-only", "--json"); strings.TrimSpace(got) != "[]" {
+		t.Fatalf("open child was eligible: %s", got)
+	}
+	if got := call("", "epic", "close-eligible", "--json"); !strings.Contains(got, `"count": 0`) {
+		t.Fatalf("open child permitted epic close: %s", got)
+	}
+	call("", "close", "child", "--reason", "Done", "--json")
+	statuses = decode(call("", "epic", "status", "--eligible-only", "--json"))
+	if len(statuses) != 1 || statuses[0].ClosedChildren != 1 || !statuses[0].EligibleForClose {
+		t.Fatalf("completed child did not qualify epic: %+v", statuses)
+	}
+	before := call("", "versions", "epic", "--json")
+	if got := call("", "epic", "close-eligible", "--dry-run", "--json"); !strings.Contains(got, `"eligible_for_close": true`) || call("", "versions", "epic", "--json") != before {
+		t.Fatalf("dry-run changed epic or lost eligibility: %s", got)
+	}
+	if got := call("", "epic", "close-eligible", "--json"); !strings.Contains(got, `"count": 1`) || !strings.Contains(got, `"beads/epic"`) {
+		t.Fatalf("eligible epic did not close: %s", got)
+	}
+	if got := call("", "epic", "status", "--json"); strings.TrimSpace(got) != "[]" {
+		t.Fatalf("closed epic still open: %s", got)
+	}
+}
+
 func TestGraphPreviewDepRemovePairAndNoop(t *testing.T) {
 	bd := buildBDUnderTest(t)
 	work, home := t.TempDir(), t.TempDir()
@@ -440,10 +501,6 @@ func TestGraphPreviewIncompleteIssueStructureRefusesWithoutMutation(t *testing.T
 		{"create", "Child", "--parent", "original", "--json"},
 		{"duplicate", "original", "--of", "replacement", "--json"},
 		{"supersede", "original", "--with", "replacement", "--json"},
-		{"epic", "status", "--json"},
-		{"epic", "status", "--eligible-only", "--json"},
-		{"epic", "close-eligible", "--dry-run", "--json"},
-		{"epic", "close-eligible", "--json"},
 	} {
 		graphPolicyCLI(t, bd, work, home, nil, "capability_unavailable", args...)
 		if after := legacyUpgradeTreeDigest(t, work); after != before {
