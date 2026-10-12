@@ -33,13 +33,13 @@ func (s *Store) ListChildren(ctx context.Context, parentPath string) ([]IssueRec
 }
 
 func (s *Store) listChildrenInTx(ctx context.Context, tx *sql.Tx, parentPath string) ([]IssueRecord, error) {
-	if err := s.requireRelationshipGeneration(); err != nil {
-		return nil, err
-	}
 	if err := checkCurrentReadBytes(ctx, tx); err != nil {
 		return nil, err
 	}
 	if err := checkBinding(ctx, tx, s.options); err != nil {
+		return nil, err
+	}
+	if err := s.requireRelationshipGenerationInTx(ctx, tx); err != nil {
 		return nil, err
 	}
 	parent, err := s.requireIssueInTx(ctx, tx, parentPath)
@@ -84,11 +84,24 @@ func (s *Store) listChildrenInTx(ctx context.Context, tx *sql.Tx, parentPath str
 	return children, nil
 }
 
-func (s *Store) requireRelationshipGeneration() error {
-	if s.options.TypeGeneration != 7 {
-		return fmt.Errorf("%w: parent-child relationships require a fresh v7 workspace", ErrCapabilityUnavailable)
+// TypeGeneration zero is the direct Store API's unspecified marker, not an
+// older installation. Every caller runs checkBinding first, which checks all
+// installed descriptor bytes and fingerprints. Its validated set must also be
+// the complete fresh generation before a relationship journey is available.
+func (s *Store) requireRelationshipGenerationInTx(ctx context.Context, tx *sql.Tx) error {
+	if s.options.TypeGeneration == 7 {
+		return nil
 	}
-	return nil
+	if s.options.TypeGeneration == 0 {
+		var count int
+		if err := tx.QueryRowContext(ctx, `SELECT COUNT(*) FROM graph_preview_types`).Scan(&count); err != nil {
+			return err
+		}
+		if count == len(previewTypeDefinitions()) {
+			return nil
+		}
+	}
+	return fmt.Errorf("%w: parent-child relationships require a full v7 Type installation", ErrCapabilityUnavailable)
 }
 
 // ListChildrenLegacy keeps bd children --json's ordinary counted Issue row

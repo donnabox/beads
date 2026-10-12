@@ -17,12 +17,12 @@ import (
 // paths in one read transaction. Each counted child must also be a mapped
 // immediate parent-child relationship in this workspace.
 func (s *Store) EpicStatuses(ctx context.Context) ([]*types.EpicStatus, error) {
-	if err := s.requireRelationshipGeneration(); err != nil {
-		return nil, err
-	}
 	result := []*types.EpicStatus{}
 	err := s.withTx(ctx, false, func(tx *sql.Tx) error {
 		if err := checkBinding(ctx, tx, s.options); err != nil {
+			return err
+		}
+		if err := s.requireRelationshipGenerationInTx(ctx, tx); err != nil {
 			return err
 		}
 		if err := checkCurrentReadBytes(ctx, tx); err != nil {
@@ -92,9 +92,6 @@ type EpicCloseRequest struct {
 // CloseEligibleEpic rechecks the ordinary completion rule and closes exactly
 // one epic through the native Issue writer in the same graph transaction.
 func (s *Store) CloseEligibleEpic(ctx context.Context, request EpicCloseRequest) (IssueMutationResult, error) {
-	if err := s.requireRelationshipGeneration(); err != nil {
-		return IssueMutationResult{}, err
-	}
 	if err := validatePath(request.Path); err != nil {
 		return IssueMutationResult{}, err
 	}
@@ -104,6 +101,9 @@ func (s *Store) CloseEligibleEpic(ctx context.Context, request EpicCloseRequest)
 	var result IssueMutationResult
 	err := s.withTx(ctx, true, func(tx *sql.Tx) error {
 		if err := checkBinding(ctx, tx, s.options); err != nil {
+			return err
+		}
+		if err := s.requireRelationshipGenerationInTx(ctx, tx); err != nil {
 			return err
 		}
 		before, err := s.requireIssueInTx(ctx, tx, request.Path)

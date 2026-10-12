@@ -6,6 +6,8 @@ import (
 	"errors"
 	"slices"
 	"testing"
+
+	"github.com/steveyegge/beads/internal/types"
 )
 
 // The workspace format generation is checked against the Types a fresh init
@@ -26,6 +28,82 @@ func TestFreshTypeNamesFollowPreviewTypeDefinitions(t *testing.T) {
 	if again := FreshTypeNames(); !slices.Equal(again, want) {
 		t.Fatalf("changing the returned slice changed a later call: %v", again)
 	}
+}
+
+// Direct Store callers may omit TypeGeneration. That zero value can describe a
+// fresh v7 installation or an older pinned one; only the installed, checked
+// descriptor set decides whether relationship journeys are available.
+func TestUnspecifiedStoreGenerationRequiresFullV7Relationships(t *testing.T) {
+	ctx, options := issueExperimentOptions(t, "embedded")
+	if options.TypeGeneration != 0 {
+		t.Fatalf("direct Store fixture should omit TypeGeneration, got %d", options.TypeGeneration)
+	}
+	store, err := OpenExisting(ctx, options)
+	if err != nil {
+		t.Fatal(err)
+	}
+	t.Cleanup(func() {
+		if err := store.Close(); err != nil {
+			t.Error(err)
+		}
+	})
+	epicRequest := plainIssue("Release epic")
+	epicRequest.Issue.IssueType = types.TypeEpic
+	epic, err := store.CreateIssue(ctx, "beads/epic", epicRequest)
+	if err != nil {
+		t.Fatal(err)
+	}
+	request := EpicCloseRequest{Path: "beads/epic", ExpectedRevision: epic.Revision, Reason: "Done", Actor: "author"}
+	if _, err := store.ListChildren(ctx, "beads/epic"); err != nil {
+		t.Fatalf("fresh v7 children rejected with unspecified generation: %v", err)
+	}
+	if _, err := store.ListChildrenLegacy(ctx, "beads/epic"); err != nil {
+		t.Fatalf("fresh v7 counted children rejected with unspecified generation: %v", err)
+	}
+	if _, err := store.EpicStatuses(ctx); err != nil {
+		t.Fatalf("fresh v7 epic progress rejected with unspecified generation: %v", err)
+	}
+	if _, err := store.CloseEligibleEpic(ctx, request); !errors.Is(err, ErrConflict) {
+		t.Fatalf("empty epic should reach eligibility check, got %v", err)
+	}
+
+	var fingerprint string
+	if err := store.db.QueryRowContext(ctx, `SELECT fingerprint FROM graph_preview_types WHERE name='parent-child'`).Scan(&fingerprint); err != nil {
+		t.Fatal(err)
+	}
+	if _, err := store.db.ExecContext(ctx, `UPDATE graph_preview_types SET fingerprint='wrong' WHERE name='parent-child'`); err != nil {
+		t.Fatal(err)
+	}
+	if _, err := store.EpicStatuses(ctx); !errors.Is(err, ErrInvalidStore) {
+		t.Fatalf("altered v7 fingerprint admitted: %v", err)
+	}
+	if _, err := store.db.ExecContext(ctx, `UPDATE graph_preview_types SET fingerprint=? WHERE name='parent-child'`, fingerprint); err != nil {
+		t.Fatal(err)
+	}
+
+	checkRefused := func(generation string) {
+		t.Helper()
+		if _, err := store.ListChildren(ctx, "beads/epic"); !errors.Is(err, ErrCapabilityUnavailable) {
+			t.Fatalf("%s children admitted: %v", generation, err)
+		}
+		if _, err := store.ListChildrenLegacy(ctx, "beads/epic"); !errors.Is(err, ErrCapabilityUnavailable) {
+			t.Fatalf("%s counted children admitted: %v", generation, err)
+		}
+		if _, err := store.EpicStatuses(ctx); !errors.Is(err, ErrCapabilityUnavailable) {
+			t.Fatalf("%s epic progress admitted: %v", generation, err)
+		}
+		if _, err := store.CloseEligibleEpic(ctx, request); !errors.Is(err, ErrCapabilityUnavailable) {
+			t.Fatalf("%s epic close admitted: %v", generation, err)
+		}
+	}
+	if _, err := store.db.ExecContext(ctx, `DELETE FROM graph_preview_types WHERE name IN ('issue-v3','blocks-v2','parent-child','duplicates','supersedes')`); err != nil {
+		t.Fatal(err)
+	}
+	checkRefused("six-Type")
+	if _, err := store.db.ExecContext(ctx, `DELETE FROM graph_preview_types WHERE name IN ('example-follows','example-cites')`); err != nil {
+		t.Fatal(err)
+	}
+	checkRefused("four-Type")
 }
 
 // The common-metadata columns change the preview storage layout and require
