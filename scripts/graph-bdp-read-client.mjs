@@ -30,8 +30,10 @@ const memoryType = id('types/preview-memory-v2');
 const relatedType = id('types/preview-related-v2');
 const exampleFollowsType = id('types/example-follows');
 const exampleCitesType = id('types/example-cites');
-const installedTypeIDs = [memoryType, id('types/preview-issue-v2'),
-  relatedType, id('types/preview-blocks-v1'), exampleFollowsType, exampleCitesType].sort();
+const installedTypeIDs = [memoryType, id('types/preview-issue-v2'), id('types/preview-issue-v3'),
+  relatedType, id('types/preview-blocks-v1'), id('types/preview-blocks-v2'),
+  id('types/preview-parent-child-v1'), id('types/preview-duplicates-v1'),
+  id('types/preview-supersedes-v1'), exampleFollowsType, exampleCitesType].sort();
 
 // Observational decoration only: delegates to native fetch without synthesizing
 // any status, body, routing, or discovery. It does not log credentials.
