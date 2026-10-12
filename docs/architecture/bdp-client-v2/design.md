@@ -302,6 +302,16 @@ This work moved from the former upstream issue into this fork branch after Donna
 
 The branch and archive were verified before attempting issue removal. GitHub denied `DeleteIssue` because the current account lacks permission. The former issue is now closed as not planned, its current title/body replaced with a withdrawal, and all four author-written comments deleted. One automatic triage comment remains; actual issue deletion requires an upstream administrator. No replacement issue or PR was created. The fork itself is public.
 
+## Product review: metadata and editorial boundaries
+
+Donna explicitly ACKed PR64’s four summarized contract choices: common client-authored, Type-independent metadata on Beads and Links; atomic properties-plus-metadata updates; patch/clear/omission/no-op semantics; and owned-Link source revision behavior. This records substantive product agreement on those choices, not completed technical review, merge authorization or a decision about pre-metadata compatibility provisions.
+
+Donna also requested unmistakable top-level sections for **Data Model → Read → Read+Update → Transactional**. At the inspected heads, PR64 `b5a5b41` still has the older model/protocol organization and dated History amendment labels; PR83 `cd22ac3` already has top-level profile Parts and removes those labels, but nests Bead Data Model beneath Read. The next editorial correction must give the shared minimum data model its own top-level boundary while retaining cumulative dependencies and defining mutation/transaction-only concepts only in their profiles. Check section allocation, anchors, citations and profile ownership after the change.
+
+“History amendment” is draft-development narration attached to actual historical Resource-read requirements. Remove the amendment labels/dates and state the current contract directly. Exact revision retrieval and other actual History semantics are not removed merely by this editorial instruction; previously cataloged YAGNI decisions remain separate. The current question does not decide whether to keep the pre-metadata record/Event/digest compatibility clauses.
+
+Done when: the normative document renders the four requested section boundaries clearly, no draft-history amendment labels remain, and existing normative requirements/citations retain correct ownership without introducing lower-profile dependencies on later concepts. This is a bounded editorial follow-up; the background implementation pause remains unchanged.
+
 ## Current council and landing policy
 
 Donna directed council reviews to use **Codex + Claude for the foreseeable future** because Gemini is unavailable. Do not wait for, retry or substitute a Gemini review. This updates the readiness requirement without relabeling historical review evidence.
