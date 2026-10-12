@@ -114,7 +114,7 @@ Council follow-ups are bounded repairs to the existing contract and its evidence
 
 The [earlier candidate diagnosis](profile-write-integration-diagnosis.md) remains historical evidence of the genuine catalog mismatch. The fresh [qualification workflow](read-reseal-feasibility.md) has now been executed for PR83 with unchanged pin and policy. Further changed inputs must satisfy the same verifier, without weakening checks.
 
-The heartbeat is paused at Donna’s request. After explicit operator resumption it may continue through successive slices toward tested Update and Transactional support, stopping on completion, another operator pause, supersession or an unavoidable decision. It reports meaningful results and blockers, not routine unchanged polls. First-round completed work above remains the baseline.
+The earlier night pause is superseded by the active bounded provenance/editorial delivery below. The heartbeat is active for that assignment; the unfinished broader service branches remain paused and separate. It reports meaningful results and blockers, not routine unchanged polls.
 
 
 ## Agreed direction
@@ -317,15 +317,27 @@ Inventory classification: current protocol/API/schema/fixtures migrate now; genu
 
 Initial isolated checkouts: `/Users/dbox/repos/wt/vickie/bdp-pr64-readiness` (b5a5b41 review), `bdp-revision-provenance` (a7edb0c author), `bdp-four-part-editorial` (cd22ac3 author). Root owns external changes, integration and the sole plan. Existing unfinished Update/TX service branches remain separate; do not accidentally fold them into this bounded migration.
 
+### Verified intermediate checkpoint
+
+PR64 updated remote head `c1712f2d26f889f723ffb79c01146c87883a65df` fixes synthesized metadata immutability, clarifies combined patch limits, and completes owned-Link metadata Event folding. The preceding exact full run passed 7,584 tests / 108 files with one optional skip; the subsequent spec-only change passed 73 citation/projection/evidence tests. Actual Read generation observed `3bfe7d6650f884a60e902826bb898a405ad5eef2`, with evidence-only successor `5ae2a311da3126b2545f6fa4100c7cc152a30dba`, seal `18c4f62e73d0225f6db9faf3186a5229a7c480cc`, and 89 rows. Verification passed. [CI38207147204](https://github.com/gastownhall/bdp/actions/runs/38207147204) is pending at this checkpoint; external review also remains pending. No merge yet.
+
+PR65 author source `d7fccb4390eaf1ad43fda3464f6b407cf393b5f1` received independent review; its stale regression pin is corrected in `744fa9e`, and ordinary merges preserve fresh PR64 ancestry and metadata Event prose in `6b64c1c`. Subsequent `90228b3` adds global private recovery-format refusal before maintenance, with byte-identical old-store tests. This is a deliberate refusal, not automatic migration or reseeding. Fresh actual Read generation is running from that clean source. Current author broad run at d7 passed 7,580 tests with five old-pin/evidence failures and one skip; these failures are not represented as successful qualification.
+
+Four-part editorial `96ffc56a2ff440eb3e25a9d442ef196644ce294f` preserves 137 operative section bodies modulo inserted aliases, 144 prior anchors and 744 citations. Both reviewers found no blocking semantic regression. Smaller anchor/dependency/prose findings are being folded into the integrated document. The external reviewer used Node26 for one inherited stack-depth test, which failed; the pinned Node24 run passed all 1,661 tests. These scopes stay distinct.
+
+PR83 integration is active in an isolated checkout, reconciling the common envelope and editorial changes while preserving expanded runtime tests. It must explicitly refuse old private recovery/transaction stores before maintenance and retain complete provenance in Events. Fresh evidence and exact integrated-source review follow source freeze. This work does not incorporate the paused service branches or advertise write-profile conformance.
+
+Reports: [metadata review](bounded-provenance-review/pr64-native-review.md), [metadata repair](bounded-provenance-review/pr64-native-repair-addendum.md), [provenance review](bounded-provenance-review/provenance-native-review.md), [provenance supplement](bounded-provenance-review/provenance-native-supplement.md), [editorial external review](bounded-provenance-review/editorial-claude-review.txt). These are exact-source intermediate reports, not final readiness claims.
+
 ## Product review: metadata and editorial boundaries
 
-Donna explicitly ACKed PR64’s four summarized contract choices: common client-authored, Type-independent metadata on Beads and Links; atomic properties-plus-metadata updates; patch/clear/omission/no-op semantics; and owned-Link source revision behavior. This records substantive product agreement on those choices, not completed technical review, merge authorization or a decision about pre-metadata compatibility provisions.
+Donna explicitly ACKed PR64’s four summarized contract choices: common client-authored, Type-independent metadata on Beads and Links; atomic properties-plus-metadata updates; patch/clear/omission/no-op semantics; and owned-Link source revision behavior. That initial ACK did not complete technical review or decide pre-metadata compatibility. The later autonomous-execution instruction separately authorizes merge timing for the bounded aims after verification; existing compatibility clauses remain in place.
 
 Donna also requested unmistakable top-level sections for **Data Model → Read → Read+Update → Transactional**. At the inspected heads, PR64 `b5a5b41` still has the older model/protocol organization and dated History amendment labels; PR83 `cd22ac3` already has top-level profile Parts and removes those labels, but nests Bead Data Model beneath Read. The next editorial correction must give the shared minimum data model its own top-level boundary while retaining cumulative dependencies and defining mutation/transaction-only concepts only in their profiles. Check section allocation, anchors, citations and profile ownership after the change.
 
 “History amendment” is draft-development narration attached to actual historical Resource-read requirements. Remove the amendment labels/dates and state the current contract directly. Exact revision retrieval and other actual History semantics are not removed merely by this editorial instruction; previously cataloged YAGNI decisions remain separate. The current question does not decide whether to keep the pre-metadata record/Event/digest compatibility clauses.
 
-Done when: the normative document renders the four requested section boundaries clearly, no draft-history amendment labels remain, and existing normative requirements/citations retain correct ownership without introducing lower-profile dependencies on later concepts. This is a bounded editorial follow-up; the background implementation pause remains unchanged.
+Done when: the normative document renders the four requested section boundaries clearly, no draft-history amendment labels remain, and existing normative requirements/citations retain correct ownership without introducing lower-profile dependencies on later concepts. This is now part of the active bounded delivery; the unrelated unfinished service work remains separate.
 
 ## Current council and landing policy
 
@@ -339,9 +351,9 @@ Janet’s [landing response](https://github.com/donnabox/agent-coordination/issu
 - **PR65** at `a7edb0c2c5c8e799a82f05cfbbb00b8aa0795d3c`: branched from PR64’s earlier `5b4eb46`, so reconcile with final PR64/main using ordinary ancestry. Preserve the normative-source/evidence split and 89-row seal; obtain CI and evidence verification on the resulting head, plus substantive human review and finding dispositions. Approved attribution values and downstream Beads compatibility do not waive these gates.
 - **PR83**: reconcile landed ancestry afterward; its broader readiness stays separate. Its green CI is not a substitute for reconciled PR65 checks. No squash, rebase or historical-evidence relabeling.
 
-The review-policy update and coordination are complete. Remaining landing done-when predicates: current-delta review/dispositions and Donna’s substantive approval for each PR; exact reconciled PR65 CI and evidence verification; ordered ordinary landings preserving evidence ancestry. Keep PR64/65/83 draft and unmerged pending those gates. This bounded coordination update does not restart implementation workers or the heartbeat.
+The review-policy update and coordination are complete. Remaining landing done-when predicates: current-delta review/dispositions and Donna’s substantive approval for each PR; exact reconciled PR65 CI and evidence verification; ordered ordinary landings preserving evidence ancestry. Keep PR64/65/83 draft and unmerged pending those gates. That historical coordination-only limit was superseded by the later autonomous-execution instruction and the active bounded delivery above.
 
-## Night pause checkpoint
+## Historical night pause checkpoint — superseded for bounded delivery
 
 Published PR83 remains draft at `cd22ac3e388be3baffaf1d3a4caac7c4bd288502`, with full CI and evidence verified above. No main merge, Preview 2 promotion or write-profile admission. Subsequent checkpoints remain separate branches until independent review and integration.
 
