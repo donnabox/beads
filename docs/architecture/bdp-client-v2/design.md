@@ -308,9 +308,13 @@ Donna directed council reviews to use **Codex + Claude for the foreseeable futur
 
 PR83 at `cd22ac3e388be3baffaf1d3a4caac7c4bd288502` contains the current remote heads of PR64–82 and PR84, verified by Git ancestry. The existing two-provider supplements cover `b7eefc9`; later admission/diagnostic changes and any selected clarity correction still need matching council coverage and dispositions. Full write-profile implementation is not a prerequisite for merging the guarded development implementation; public profile admission remains gated separately.
 
-Janet is being asked for the remaining PR64/65 acceptance requirements and preferred landing order: land those independently first, or accept their inclusion through PR83. Her bus note says PR64 must precede the later Type amendment. Preserve ordinary history and exact Read evidence; do not infer Preview 2 promotion or merge authority from the reviewer-policy change. This bounded policy/coordination task does not restart the implementation workers or heartbeat.
+Janet’s [landing response](https://github.com/donnabox/agent-coordination/issues/1#issuecomment-6117659568) chooses **PR64 first, then PR65, separately before the later Type amendment**. Do not hold these smaller contracts behind PR83’s runtime readiness.
 
-Done when: the plan and launch record the two-provider gate; the bus contains a request to Janet for exact remaining blockers, dependency ordering and landing preference. Landing itself still requires the remaining review dispositions and authorization.
+- **PR64** at `b5a5b4153130dd91fb3ddb30f5aafc8f57311d2e`: green exact-head CI; substantive human review of its current delta and explicit Codex/Claude finding dispositions remain. The earlier `5b4eb46` seal and later illustrative Update examples have separate evidence scopes. No new Preview 2 CLI qualification is needed merely to land this BDP contract.
+- **PR65** at `a7edb0c2c5c8e799a82f05cfbbb00b8aa0795d3c`: branched from PR64’s earlier `5b4eb46`, so reconcile with final PR64/main using ordinary ancestry. Preserve the normative-source/evidence split and 89-row seal; obtain CI and evidence verification on the resulting head, plus substantive human review and finding dispositions. Approved attribution values and downstream Beads compatibility do not waive these gates.
+- **PR83**: reconcile landed ancestry afterward; its broader readiness stays separate. Its green CI is not a substitute for reconciled PR65 checks. No squash, rebase or historical-evidence relabeling.
+
+The review-policy update and coordination are complete. Remaining landing done-when predicates: current-delta review/dispositions and Donna’s substantive approval for each PR; exact reconciled PR65 CI and evidence verification; ordered ordinary landings preserving evidence ancestry. Keep PR64/65/83 draft and unmerged pending those gates. This bounded coordination update does not restart implementation workers or the heartbeat.
 
 ## Night pause checkpoint
 
