@@ -26,6 +26,9 @@ var epicStatusCmd = &cobra.Command{
 	SilenceUsage:  true,
 	SilenceErrors: true,
 	RunE: func(cmd *cobra.Command, args []string) error {
+		if graphPreviewActive {
+			return runGraphPreviewEpicStatus(cmd)
+		}
 		evt := metrics.NewCommandEvent("epic-status")
 		defer func() {
 			if c := metrics.Global(); c != nil {
@@ -110,6 +113,9 @@ var closeEligibleEpicsCmd = &cobra.Command{
 	SilenceUsage:  true,
 	SilenceErrors: true,
 	RunE: func(cmd *cobra.Command, args []string) error {
+		if graphPreviewActive {
+			return runGraphPreviewEpicCloseEligible(cmd)
+		}
 		evt := metrics.NewCommandEvent("epic-close-eligible")
 		defer func() {
 			if c := metrics.Global(); c != nil {
