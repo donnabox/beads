@@ -307,6 +307,7 @@ func TestGraphPreviewMarkerGenerationWorkflow(t *testing.T) {
 		for _, marker := range []string{"link-preview-v5\n", "link-preview-v6\n"} {
 			writeFile(t, markerPath, []byte(marker))
 			for _, args := range [][]string{
+				{"create", "Child", "--parent", "parent", "--json"},
 				{"children", "beads/parent", "--json"},
 				{"epic", "status", "--json"},
 				{"epic", "close-eligible", "--dry-run", "--json"},

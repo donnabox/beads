@@ -34,8 +34,28 @@ func runGraphPreviewCreateIssue(cmd *cobra.Command, args []string) error {
 	if beadType == graphstore.MemoryTypeURL(graphPreviewConfig.GraphScopeURL) {
 		return runGraphPreviewCreateMemory(cmd, args)
 	}
-	if err := graphPreviewFlags(cmd, "bead-type", "id", "title", "description", "body", "message", "type", "priority", "labels", "label", "design", "acceptance", "assignee", "estimate", "external-ref", "spec-id", "notes", "due", "metadata", "properties"); err != nil {
+	if err := graphPreviewFlags(cmd, "bead-type", "id", "parent", "no-inherit-labels", "title", "description", "body", "message", "type", "priority", "labels", "label", "design", "acceptance", "assignee", "estimate", "external-ref", "spec-id", "notes", "due", "metadata", "properties"); err != nil {
 		return err
+	}
+	parentSelector, _ := cmd.Flags().GetString("parent")
+	if cmd.Flags().Changed("parent") && parentSelector == "" {
+		return graphFailure("invalid_selector", "--parent requires an Issue ID", 2)
+	}
+	if parentSelector != "" && graphPreviewTypeGeneration != 7 {
+		return graphFailure("capability_unavailable", "create --parent requires a fresh v7 relationship workspace", 5)
+	}
+	if parentSelector != "" && cmd.Flags().Changed("id") {
+		return graphFailure("invalid_selector", "cannot specify both --id and --parent", 2)
+	}
+	if parentSelector == "" && cmd.Flags().Changed("no-inherit-labels") {
+		return graphFailure("invalid_selector", "--no-inherit-labels requires --parent", 2)
+	}
+	parentPath := ""
+	if parentSelector != "" {
+		parentPath, err = graphPreviewBeadSelector(parentSelector)
+		if err != nil {
+			return err
+		}
 	}
 	properties, err := graphPreviewCreateProperties(cmd)
 	if err != nil {
@@ -141,9 +161,27 @@ func runGraphPreviewCreateIssue(cmd *cobra.Command, args []string) error {
 		return err
 	}
 	err = withGraphStore(func(ctx context.Context, store *graphstore.Store) (any, string, error) {
-		record, err := store.CreateIssue(ctx, path, request)
-		if err != nil {
-			return nil, "", err
+		var record graphstore.IssueRecord
+		if parentPath != "" {
+			parent, err := store.ShowIssue(ctx, parentPath)
+			if err != nil {
+				return nil, "", fmt.Errorf("parent Issue %s: %w", parentSelector, err)
+			}
+			noInherit, _ := cmd.Flags().GetBool("no-inherit-labels")
+			created, err := store.CreateChildIssue(ctx, graphstore.IssueChildCreateRequest{
+				ParentPath: parentPath, ExpectedParentRevision: parent.Revision,
+				InheritLabels: !noInherit, Create: request,
+			})
+			if err != nil {
+				return nil, "", err
+			}
+			record = created.Child
+		} else {
+			var err error
+			record, err = store.CreateIssue(ctx, path, request)
+			if err != nil {
+				return nil, "", err
+			}
 		}
 		path = graphPreviewDisplayLocalURL(record.ID)
 		return record, fmt.Sprintf("Created %s\n", path), nil

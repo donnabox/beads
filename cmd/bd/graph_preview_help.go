@@ -66,7 +66,7 @@ Ordinary Issue workspaces:
 Use bd q TITLE to create one Issue and print only its Scope-relative ID.
 Pass -- before a title beginning with '-', for example bd q -- -follow-up.
 --parent is unavailable here; the graph parent-child journey
-is not admitted yet.
+is available through bd create on fresh v7 workspaces.
 
 Ordinary Issue workspaces:
 ` + quickCmd.Long
@@ -109,6 +109,10 @@ recall does not accept legacy keys or --json.`},
 Without --id, the canonical beads/ path uses the Issue ID allocated by the
 ordinary writer, including this workspace's configured prefix and ID mode.
 An explicit --id keeps exactly the requested canonical path.
+On a fresh v7 relationship workspace, --parent ID creates a dotted child ID
+and its parent-child Link in one transaction. The parent must be a local Issue;
+the child inherits its labels unless --no-inherit-labels is set. --parent and
+--id cannot be combined. Pinned v5/v6 workspaces still refuse --parent.
 --metadata accepts one JSON object on Issue or Memory creation; omitted
 metadata is {}. Metadata is separate from Type-validated properties.
 --properties JSON initializes the selected Type's writable fields, such as

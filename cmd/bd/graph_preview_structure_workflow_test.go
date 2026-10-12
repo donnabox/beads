@@ -562,7 +562,6 @@ func TestGraphPreviewIncompleteIssueStructureRefusesWithoutMutation(t *testing.T
 	before := legacyUpgradeTreeDigest(t, work)
 
 	for _, args := range [][]string{
-		{"create", "Child", "--parent", "original", "--json"},
 		{"duplicate", "original", "--of", "replacement", "--json"},
 		{"supersede", "original", "--with", "replacement", "--json"},
 	} {
