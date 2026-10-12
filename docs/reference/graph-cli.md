@@ -247,10 +247,14 @@ progress from those same checked relationships, and `bd epic close-eligible`
 closes an epic only when every child has a completing close reason. An explicit
 `--actor` controls the close writer and History attribution; any failed close
 makes the command exit nonzero, with successful sibling IDs in the diagnostic.
-Pinned v5/v6 workspaces refuse these new relationship journeys before opening
-the store. `children --pretty`, `create --parent`, duplicate and supersede still
-refuse. This candidate has not completed release qualification or landed in the
-integration branch.
+In a freshly initialized v7 workspace, this separate local
+`create --parent PARENT` candidate uses the native Issue
+writer to allocate a child ID and parent-child Dependency, then retains the
+matching graph Issue and Link in the same transaction. It inherits the parent's
+labels unless `--no-inherit-labels` is set. Pinned v5/v6 workspaces refuse these
+new relationship journeys before opening the store. `children --pretty`,
+duplicate and supersede still refuse. These candidates have not completed
+release qualification or landed in the integration branch.
 
 This disposable fixture shows the direction of a blocking edge: `plan`
 depends on `tests`. The human views use local Issue IDs. `graph check --json`
