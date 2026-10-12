@@ -16,7 +16,7 @@ func TestGraphIssueLegacyListProjection(t *testing.T) {
 			if _, err := store.Create(ctx, CreateRequest{Path: "beads/context", Body: "not an Issue"}); err != nil {
 				t.Fatal(err)
 			}
-			for _, path := range []string{"beads/work", "beads/prereq", "beads/parent"} {
+			for _, path := range []string{"beads/work", "beads/prereq", "beads/parent", "beads/parent.lookalike"} {
 				if _, err := store.CreateIssue(ctx, path, plainIssue(path)); err != nil {
 					t.Fatal(err)
 				}
@@ -35,7 +35,7 @@ func TestGraphIssueLegacyListProjection(t *testing.T) {
 				t.Fatal(err)
 			}
 			page, err := store.ListIssuesLegacy(ctx, publicops.ListRequest{AllFlag: true, Limit: issueListInt(0)})
-			if err != nil || page.HasMore || len(page.Items) != 3 {
+			if err != nil || page.HasMore || len(page.Items) != 4 {
 				t.Fatalf("counted Issue page: %+v %v", page, err)
 			}
 			byID := make(map[string]bool, len(page.Items))
@@ -56,6 +56,17 @@ func TestGraphIssueLegacyListProjection(t *testing.T) {
 				if item.ID == "beads/work" && (item.CommentsOmitted != nil || len(item.Comments) != 1 || item.Comments[0].IssueID != "beads/work") {
 					t.Fatalf("included canonical comment: %+v", item)
 				}
+			}
+			children, err := store.ListChildrenLegacy(ctx, "beads/parent")
+			if err != nil || len(children) != 1 {
+				t.Fatalf("native children: %+v %v", children, err)
+			}
+			if got := children[0]; got.ID != "beads/work" || got.Parent == nil || *got.Parent != "beads/parent" || got.DependencyCount != 1 || got.CommentCount != 1 || got.CommentsOmitted == nil || !*got.CommentsOmitted {
+				t.Fatalf("children legacy row lost ordinary shape or native parent: %+v", got)
+			}
+			empty, err := store.ListChildrenLegacy(ctx, "beads/prereq")
+			if err != nil || empty == nil || len(empty) != 0 {
+				t.Fatalf("empty native children: %+v %v", empty, err)
 			}
 		})
 	}

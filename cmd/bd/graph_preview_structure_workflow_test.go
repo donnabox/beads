@@ -189,11 +189,13 @@ func TestGraphPreviewStructureReads(t *testing.T) {
 	graphPolicyCLI(t, bd, work, home, nil, "", "create", "Work", "--id", "beads/work", "--json")
 	graphPolicyCLI(t, bd, work, home, nil, "", "create", "Isolated", "--id", "beads/isolated", "--json")
 
-	// A blocking-only workspace has no canonical parent-child Link mapping.
-	// An empty children result would falsely look like a complete family read.
-	graphPolicyCLI(t, bd, work, home, nil, "capability_unavailable", "children", scope+"beads/parent", "--json")
+	// Only native parent-child edges count. A blocking dependency does not
+	// make an Issue a child.
+	if got := graphPolicyCLI(t, bd, work, home, nil, "", "children", scope+"beads/parent", "--json"); strings.TrimSpace(got) != "[]" {
+		t.Fatalf("empty native children must retain the ordinary JSON array shape: %q", got)
+	}
 	graphPolicyCLI(t, bd, work, home, nil, "capability_unavailable", "children", "parent", "--pretty", "--json")
-	graphPolicyCLI(t, bd, work, home, nil, "capability_unavailable", "children", "missing", "--json")
+	graphPolicyCLI(t, bd, work, home, nil, "not_found", "children", "missing", "--json")
 
 	created := graphMixedResult[graphstore.DependencyResult](t, graphPolicyCLI(t, bd, work, home, nil, "", "dep", "add", "beads/work", "beads/parent", "--json"))
 	if created.Link.Source != scope+"beads/work" || created.Link.Target != scope+"beads/parent" {
@@ -248,7 +250,9 @@ func TestGraphPreviewStructureReads(t *testing.T) {
 			t.Fatalf("%s list lost blocking dependency: %q", tc.direction, got)
 		}
 	}
-	graphPolicyCLI(t, bd, work, home, nil, "capability_unavailable", "children", "parent", "--json")
+	if got := graphPolicyCLI(t, bd, work, home, nil, "", "children", "parent", "--json"); strings.TrimSpace(got) != "[]" {
+		t.Fatalf("blocking dependency leaked into native children: %q", got)
+	}
 	graphPolicyCLI(t, bd, work, home, nil, "capability_unavailable", "dep", "list", "work", "--type", "parent-child", "--json")
 	graphPolicyCLI(t, bd, work, home, nil, "invalid_selector", "dep", "list", "work", "--direction", "both", "--json")
 	graphPolicyCLI(t, bd, work, home, nil, "invalid_selector", "dep", "list", "https://other.invalid/beads/work", "--json")
@@ -315,6 +319,32 @@ func TestGraphPreviewStructureReads(t *testing.T) {
 	}
 	if got := graphPolicyCLI(t, bd, work, home, nil, "", "versions", "parent", "--json"); got != parentHistory {
 		t.Fatalf("child and dependency reads changed parent History\nbefore: %s\nafter: %s", parentHistory, got)
+	}
+}
+
+func TestGraphPreviewChildrenNative(t *testing.T) {
+	bd := buildBDUnderTest(t)
+	work, home := t.TempDir(), t.TempDir()
+	const scope = "https://example.invalid/native-children/"
+	graphPolicyCLI(t, bd, work, home, nil, "", "init", "--graph-mode", "link", "--prefix", "demo", "--scope-url", scope, "--skip-hooks", "--skip-agents", "--non-interactive", "--json")
+	for _, id := range []string{"beads/parent", "beads/child", "beads/parent.lookalike"} {
+		graphPolicyCLI(t, bd, work, home, nil, "", "create", id, "--id", id, "--json")
+	}
+	graphPolicyCLI(t, bd, work, home, nil, "", "dep", "add", "child", "parent", "--type", "parent-child", "--json")
+	var children []struct {
+		ID     string  `json:"id"`
+		Parent *string `json:"parent"`
+		Title  string  `json:"title"`
+	}
+	got := graphPolicyCLI(t, bd, work, home, nil, "", "children", "parent", "--json")
+	if err := json.Unmarshal([]byte(got), &children); err != nil {
+		t.Fatalf("ordinary children JSON shape: %v: %s", err, got)
+	}
+	if len(children) != 1 || children[0].ID != "beads/child" || children[0].Parent == nil || *children[0].Parent != "beads/parent" || children[0].Title != "beads/child" {
+		t.Fatalf("native edge membership or ordinary row shape: %+v", children)
+	}
+	if text := graphPolicyCLI(t, bd, work, home, nil, "", "children", scope+"beads/parent"); !strings.Contains(text, "beads/child") || strings.Contains(text, "parent.lookalike") {
+		t.Fatalf("human children omitted native child or inferred dotted ID: %q", text)
 	}
 }
 
