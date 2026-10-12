@@ -10,6 +10,7 @@ import (
 	"github.com/steveyegge/beads/internal/storage"
 	"github.com/steveyegge/beads/internal/storage/issueops"
 	"github.com/steveyegge/beads/internal/types"
+	"github.com/steveyegge/beads/internal/validation"
 )
 
 // EpicStatuses projects the ordinary native completion policy onto live graph
@@ -95,7 +96,10 @@ func (s *Store) CloseEligibleEpic(ctx context.Context, request EpicCloseRequest)
 		return IssueMutationResult{}, fmt.Errorf("%w: epic close requires revision, UTF-8 actor and reason", storage.ErrValidation)
 	}
 	var result IssueMutationResult
-	err := s.withIssueCoordinationTx(ctx, func(tx *sql.Tx) error {
+	err := s.withTx(ctx, true, func(tx *sql.Tx) error {
+		if err := checkBinding(ctx, tx, s.options); err != nil {
+			return err
+		}
 		before, err := s.requireIssueInTx(ctx, tx, request.Path)
 		if err != nil {
 			return err
@@ -108,6 +112,9 @@ func (s *Store) CloseEligibleEpic(ctx context.Context, request EpicCloseRequest)
 		}
 		if before.Properties.Status == types.StatusClosed {
 			return fmt.Errorf("%w: epic is already closed", ErrConflict)
+		}
+		if err := validation.Chain(validation.NotTemplate(), validation.NotPinned(false), validation.AssigneeMatches(request.Actor, false))(before.Properties.ID, before.Properties); err != nil {
+			return fmt.Errorf("%w: %v", storage.ErrValidation, err)
 		}
 		statuses, err := issueops.GetEpicsEligibleForClosureInTx(ctx, tx)
 		if err != nil {
@@ -141,7 +148,9 @@ func (s *Store) CloseEligibleEpic(ctx context.Context, request EpicCloseRequest)
 		if err := s.touchCoordination(ctx, tx); err != nil {
 			return err
 		}
-		closed, err := issueops.CloseIssueInTx(ctx, tx, before.Properties.ID, request.Reason, request.Actor, "")
+		unscope := issueops.ScopeVersionedHistoryTransaction(tx, true)
+		defer unscope()
+		closed, err := issueops.CloseIssueCheckedInTx(ctx, tx, before.Properties.ID, request.Reason, request.Actor, "", false, nil)
 		if err != nil {
 			return err
 		}
