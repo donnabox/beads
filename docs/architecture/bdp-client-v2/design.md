@@ -62,7 +62,7 @@ Original service-review lows: RU trusted callback capability narrowing and publi
 
 ### Live worker ledger
 
-Checkpoint 2026-10-13T21:58:45Z. Autonomous profile completion is **ACTIVE after explicit operator resume**. Same session2026-10-08T20:26:35Z-81e5 verified remote; no reclaim. Heartbeat ACTIVE. Operator has about2.5hours power/connectivity; wind down by2026-10-14T00:10Z, checkpoint/stop owned processes/pauseheartbeat by00:20Z (5:20p.m.PacificOct13) unlessextended. Prior pause snapshot preserved in operator-battery-pause.md. No release/Preview2promotion/publicwriteadmission.
+Checkpoint 2026-10-13T22:05:41Z. Autonomous profile completion is **ACTIVE after explicit operator resume**. Same session2026-10-08T20:26:35Z-81e5 verified remote; no reclaim. Heartbeat ACTIVE. Operator has about2.5hours power/connectivity; wind down by2026-10-14T00:10Z, checkpoint/stop owned processes/pauseheartbeat by00:20Z (5:20p.m.PacificOct13) unlessextended. Prior pause snapshot preserved in operator-battery-pause.md. No release/Preview2promotion/publicwriteadmission.
 
 ## Current source and gates
 
@@ -72,11 +72,11 @@ Main2e7d454a616467122884306fcd8d1d853b0bf5c1 verifiedPR95 merge. PR96 DRAFT adva
 
 | Worker | Work | Source/output | Gate |
 |---|---|---|---|
-| update_implementation | COMPLETE/available frozenrepair | vickie-numeric-admission-review-repair / codex/vickie-numeric-admission-review-repair,06b0e04; logs/read-update-numeric-admission-review-repair | Fresh22targeted/genuinebothshards18.790spass; nochildren/clean. [Repairreport](read-update-numeric-admission-review-repair-report.md) |
+| update_implementation | ACTIVE metadata closure implementation;06b preserved | vickie-numeric-admission-review-repair / codex/vickie-numeric-admission-review-repair,06b0e04; logs/read-update-numeric-admission-review-repair | Newvickie-numeric-metadata-closure from06b; [root acceptance](read-update-numeric-metadata-root-acceptance.md). Fourfiles/Awholeapprovedexactclauses/Bfalse; firststagefreshsourceevidence required |
 | profile_editorial_inventory | COMPLETE native06b closure | outputread-update-numeric-admission-review-repair-native-review.md | 11independenttests/buildpass, artifact/reporthashaudit; [closure](read-update-numeric-admission-review-repair-native-review.md) |
 | profile_runtime_inventory | COMPLETE metadata plan revision | Original78b5b980 preserved; outputrevisedplan/dispositions inlogs | [Revisedplan](read-update-numeric-metadata-closure-plan-revised.md)11d5f02e + [dispositions](read-update-numeric-metadata-closure-plan-dispositions.md)5d35f10e rootread; nativeclosureactive |
-| transaction_implementation | ACTIVE repaired integration | combinedc1c17aafc22242883283e07e0d63ad6140daa94a treeb42dc600a245fc219e52b825c81ce68ed362bf7b in vickie-set-numeric-conformance-integration | New6d0284e4802666791a4bf1795a977e02ac3cb5ea tree8a3f024529bbf3d85f061cf8562e27fd6bdabd2b, ordinaryc1+06b, exact7TX/5RU blobs. set-numeric-repair-integration checksactive |
-| profiles_integration_validation | ACTIVE revisedmetadata nativeclosure | outputread-update-numeric-metadata-revised-native-closure.md | Readonly11d5f02e plan/9findings against06b; noimplementation |
+| transaction_implementation | COMPLETE repaired integration | combinedc1c17aafc22242883283e07e0d63ad6140daa94a treeb42dc600a245fc219e52b825c81ce68ed362bf7b in vickie-set-numeric-conformance-integration | New6d0284e4802666791a4bf1795a977e02ac3cb5ea tree8a3f024529bbf3d85f061cf8562e27fd6bdabd2b, ordinaryc1+06b, exact7TX/5RU blobs. set-numeric-repair-integration verified/pushed;88focused/static/build/Readseal/freshset1/TX31/RU22 pass. Rootreadreport; external9ebreviewpending |
+| profiles_integration_validation | COMPLETE revisedmetadata nativeclosure | outputread-update-numeric-metadata-revised-native-closure.md | [Closure](read-update-numeric-metadata-revised-native-closure.md)217ae1fc clean/rootread; authoringauthorizedseparately |
 
 Combinedc1 report rootread: ordinary9eb+bbab,7TX/5RUfileblobs exact.88focused/static/build/smokes/Readseal plusfreshset1/TX31/RU13 pass; TXsixrows2.041s,74actions/10closedchildren, RU54genuine15.997s/all129mapping/reporthashaudit. Clean/sourcebound1b126payload; no newpublicclaim. Report [combinedintegration](set-numeric-conformance-integration-report.md). Old9eb author/native evidence remains separatelybound.
 
@@ -91,6 +91,12 @@ Combinedc1 report rootread: ordinary9eb+bbab,7TX/5RUfileblobs exact.88focused/st
 Complete06b evidence/nativeclosure, publishordinaryPR96successor/newCI; mergeonlyafterallgates/actualtreeverification. Read/dispose resumedTXreviews, integrateacceptedrepair intoTXcandidate, verify/publish. Advanceacceptedboundedmetadata/setfollow-ons aftercouncil/root decisions. No humanproductdecisionblocksindependentwork. Publicprofilesremainclosed untilrequiredcumulativeevidence supportsselection.
 
 Soleplan forkdesign.md; logs /Users/dbox/repos/wt/vickie/bdp-integration-logs. Sessionguard beforealloutwardwrites. Preservepriorfailures/exactsourceevidence and ordinaryancestry. NoJanetCLI/staging/playgrounds/sharedDB, TrishTypes, optionalHistory/YAGNI/provenance or releasechanges.
+
+## Metadata authoring acceptance
+
+Rootread [revisedplan](read-update-numeric-metadata-closure-plan-revised.md), [nine dispositions](read-update-numeric-metadata-closure-plan-dispositions.md) and [nativeclosure](read-update-numeric-metadata-revised-native-closure.md). [Rootacceptance](read-update-numeric-metadata-root-acceptance.md) authorizes four-file isolated06bsuccessor. Aattributionwholeacceptedforexactthreeclauses/audit65cb5ea5 withpreservedwitnesses/freshsourceevidence; Bfalsependingfutureindependentclosure. Actualpriorcapture assertions mustpass, clonealoneinsufficient. Preserve06bguards, A75/B81/156 andold16+new2<=18, namedgrowthandlastblockpins. No runtime/publicchange. Expectedfirststage31whole/98uncovered,54authored/129required; no unconditionalprofileclaim.
+
+Rootread [6d integrationreport](set-numeric-repair-integration-report.md): exact7TX/5RUblobs, freshsixrowTX2.243s/54rowRU19.532s, all129mappings/reports independentlychecked, nochildren/clean. Source6d0284e4802666791a4bf1795a977e02ac3cb5ea pushed; originalscopedcouncilsremainbinding. No PR/readyclaimyet; waitingPR96mainmerge and external9ebreview.
 
 ## Current priority: BDP profile structure and implementation
 
