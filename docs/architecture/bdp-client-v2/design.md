@@ -62,11 +62,13 @@ Original service-review lows: RU trusted callback capability narrowing and publi
 
 ### Live worker ledger
 
-Checkpoint 2026-10-13T19:23:12Z. Autonomous profile completion is **ACTIVE**, session `2026-10-08T20:26:35Z-81e5`. Operator authorizes ordinary main merges after exact-head green CI, native Codex plus Claude council, finding dispositions, scope review and actual merged-tree verification. Gemini excluded. No release or Preview2 promotion. Public write-profile admission stays closed until cumulative installed required-contract evidence supports it.
+Checkpoint 2026-10-13T19:35:22Z. Autonomous profile completion is **ACTIVE**, session `2026-10-08T20:26:35Z-81e5`. Operator authorizes ordinary main merges after exact-head green CI, native Codex plus Claude council, finding dispositions, scope review and actual merged-tree verification. Gemini excluded. No release or Preview2 promotion. Public write-profile admission stays closed until cumulative installed required-contract evidence supports it.
 
 ## Verified main and delivered work
 
-Main **2a40740cb98545f4e83166c8e58e2aee0e587a65**, PR94 merged2026-10-13T19:11:45Z. Tree **d779f7f321bc1244dc09528eba4f2c4b0c3c35af** equals reviewed9c7b643d22562ebabd8d9b51a24157b66f3e5c89; ordinary parents92c+9c. Exact CI38451827662/job115484400402 passed19:10:36Z. Original native/Claude council and independent repair closure complete; all three findings and stale numeric-catalog assertion repaired. Source9c passed283regressions/242freshinstalled tests; independent19focused/32catalog-cumulative plus three denial probes. [Merge readiness](read-update-attribution-merge-readiness.md), [actual tree verification](read-update-attribution-merge-verification.json), [native closure](read-update-attribution-review-repair-native-review.md). PR94 is merged and non-resumable as pending.
+Main **2e7d454a616467122884306fcd8d1d853b0bf5c1**, PR95 merged2026-10-13T19:32:46Z. Tree **395a1d5b87775698c11fcdb65fedd5bb147279d6** equals reviewed2019649745e7d11be70de4089361619e7b8ecd7f; ordinary parents previousmain2a407+201. ExactCI38454278145/job115492850998 passed19:32:06Z. Native+Claude council, all dispositions, native final-doc closure and cross-profile installed integration checks complete. [PR95 readiness](transaction-set-merge-readiness.md), [actual tree verification](transaction-set-merge-verification.json). PR95 is merged and non-resumable as pending; public write admission remains closed.
+
+Prior PR94 merged2a40740cb98545f4e83166c8e58e2aee0e587a65, tree d779f7f3 exactlyreviewed9c, at19:11:45Z after exactCI38451827662 and council/closure. [PR94 readiness](read-update-attribution-merge-readiness.md), [actual verification](read-update-attribution-merge-verification.json), [native closure](read-update-attribution-review-repair-native-review.md). It is also non-resumable as pending.
 
 Current Update inventory:129required,52authored,30whole,99withoutwhole,77unplanned. Diagnostic counts never qualify a profile. PR94 added bounded attribution/numeric no-op observations, both flagsfalse. Actual two-shard aggregate20.735s under90s on9c; historical measurements remain source-bound.
 
@@ -74,13 +76,13 @@ Prior merged increments remain ordinary ancestry: [PR93 multi-artifact execution
 
 ## PR95 and Transactional runtime
 
-Draft https://github.com/gastownhall/bdp/pull/95 now at **2019649745e7d11be70de4089361619e7b8ecd7f**, pushed and remotely verified. Isolated `/Users/dbox/repos/wt/vickie/vickie-transaction-set-final-docs`, branchcodex/vickie-transaction-set-final-docs; PR branchcodex/vickie-transaction-set-review-repair advanced ordinarily. Parent10517d59 is ordinary3964+main2a407 integration. Only final doc supersession paragraph differs from105. Exact newCI38454278145/job115492850998 queued19:22:10Z. Prior3964 CI38452038923 passed19:16:09Z; not substitute for current CI.
+https://github.com/gastownhall/bdp/pull/95 is **MERGED**; see verifiedmain above. Historical reviewed source201 remains in `/Users/dbox/repos/wt/vickie/vickie-transaction-set-final-docs`, branchcodex/vickie-transaction-set-final-docs. Ordinary parent105 integrated3964+main2a407; final201 changed only the reviewed doc paragraph. Exact201CI passed and merged-tree proof is complete.
 
 Runtime implements bounded updateWhere/deleteWhere singleton and atomic batch serving through the same durable owner. Twelve-target binding, staged selection/cardinality, inline/paged receipts, owned rollback and restart observations are private; no public profile advertisement or conformance-authority allowlist expansion. Q1/Q2 negative Selector grammar/candidate-scan bounds remain explicit gaps.
 
 Original2f7 native review exposed a weak owned-update oracle; test-onlyc934 closes it with literal n1 and both revision advances, and the precise original mutant now fails. Ordinary integrationeb493 with main92c was validated separately. Original external review had five findings;3964 repairs shape-before-private-depth ordering, duplicate singleton parsing, sequence-set refusal and accurate scope/supersession documentation. [Five dispositions](transaction-set-http-root-dispositions.md), [repair report](transaction-set-review-repair-report.md), [native closure](transaction-set-review-repair-native-review.md). Exact3964 passes625TXtests/23files/static/smokes/Readseal and freshpacked set1+TX35; payload1b12629f is new source-bound runtime evidence. Native151focused and1000serializer/10deep-input probes pass; root read and accepted. Earlier evidence is never relabeled3964.
 
-**Council complete.** External3964 repair review completedexit0, no runtime regression, one Low stale-doc omission. Root extended only supersession paragraph in201; [final disposition](transaction-set-final-root-dispositions.md), [independent clean doc closure](transaction-set-final-docs-native-closure.md), [Claude review](transaction-set-review-repair-claude-review.txt). All actionable findings closed; exact201 CI remains readiness gate.
+**Council complete.** External3964 repair review completedexit0, no runtime regression, one Low stale-doc omission. Root extended only supersession paragraph in201; [final disposition](transaction-set-final-root-dispositions.md), [independent clean doc closure](transaction-set-final-docs-native-closure.md), [Claude review](transaction-set-review-repair-claude-review.txt). All actionable findings closed; exact201 CI and merge verification are complete.
 
 Root read and accepted [105 integration report](transaction-set-attribution-integration-report.md), [safe summary](transaction-set-attribution-integration-summary.json) and [exact parent-file proof](transaction-set-attribution-integration-source.json).1,085affected+21catalog tests/static/build/Readseal/bothsmokes pass. Freshinstalled set1/TX35/RU20 pass; RU includes genuine52row aggregate plus attribution/numeric and16controls,154other tests intentionallyfiltered. All129 mappings/report hashes checked; sourceclean/nochildren. Payload1b12629f; these actual observations remain105 evidence, not relabeled201.
 
@@ -88,13 +90,19 @@ Root read and accepted [105 integration report](transaction-set-attribution-inte
 
 | Worker | Current assignment | Exact source / output | Next gate |
 |---|---|---|---|
-| profiles_integration_validation | COMPLETE/available;105 validation accepted | Report/source/summary linked above; immutable105 checkout retained | Exact201 CI pending, root owns merge |
-| update_implementation | Two numeric admission/diagnostic-location rows and nine controls | `/Users/dbox/repos/wt/vickie/vickie-read-update-numeric-admission`, branchcodex/vickie-read-update-numeric-admission, ordinary fromverifiedmain2a407. Output `read-update-numeric-admission/report.md` plus safe source/packed summary | Five-file scope, preserved old rows/caps; freeze then fresh both-shard installed evidence and independent council |
-| profile_runtime_inventory | COMPLETE/available; two-row clause audit | [Audit](read-update-attribution-numeric-whole-audit.md)65cb5ea5. Attribution eligible; numeric missing bad metadataChange witness. No flags changed | Root later reviews bounded follow-on; current author preserves old rows |
-| profile_editorial_inventory | Available; completed revised Update plan closure | [Clean closure](read-update-after-attribution-revised-native-closure.md)69ef9dab | Reuse for bounded review |
+| profiles_integration_validation | COMPLETE/available;105 validation accepted | Report/source/summary linked above; immutable105 checkout retained | Delivered inPR95; available for next integration |
+| update_implementation | Frozen numeric admission candidate; fresh packed evidence running | **131fb9874ae53f94ea7c15d5b77bd6caa4a704e9**, tree4cf48b5f9950470e8779c09264d4b5f71b169d2e, direct2a407. `/Users/dbox/repos/wt/vickie/vickie-read-update-numeric-admission`, branchcodex/vickie-read-update-numeric-admission, pushed/remotelyverified | [Author report](read-update-numeric-admission-report.md); exact packed proof then ordinary integration with main |
+| profile_runtime_inventory | COMPLETE/available; follow-on plan drafted | [Plan](read-update-numeric-metadata-closure-plan.md)78b5b980; [whole-clause audit](read-update-attribution-numeric-whole-audit.md)65cb5ea5 | Native plan clean; external plan review active; no implementation approval |
+| profile_editorial_inventory | ACTIVE independent native131 code/evidence review | Promptread-update-numeric-admission-review-prompt.txt; outputread-update-numeric-admission-native-review.md | Review frozenfive-filediff, isolated targeted checks; no author writes |
 | transaction_implementation | ACTIVE next private set conformance slice | `/Users/dbox/repos/wt/vickie/vickie-transaction-set-conformance`, branchcodex/vickie-transaction-set-conformance fromaccepted201. Outputtransaction-set-conformance/report.md | Reconcile old anchors, exact seven-file scope, fresh six-row installed evidence then council |
 
 Workers own isolated checkouts, never outward publication. Root owns coordination, branches/PR publication and main merges. No shared source/evaluator/authority/packaging edit without root arbitration.
+
+## Current review processes and evidence
+
+**External Claude numeric-admission code review ACTIVE**, session13345 PID20701, stdoutread-update-numeric-admission-claude-review.txt. Native samecore review active. Frozen131 owns five files, R72/N52actions and9controls, old49/C/A/B preserved,54authored/30whole/99uncovered/75unplanned. Source allowances pass.285regressions/10files,19focused/static/build/smokes/Readseal pass before freeze. First broader aggregate timeout is preserved: actual134s Maintenance Sleep crossed120s ceiling. Awake parent/current comparison under process-scoped temporary caffeinate passed20.577/21.649s with unchanged90/120/5/30limits; no persistent power changes. Current exact packed cohort under240s supervisor is still running; no final installed pass claimed yet.
+
+**Metadata closure follow-on plan in council**, [plan](read-update-numeric-metadata-closure-plan.md)78b5b980, [clean native review](read-update-numeric-metadata-native-plan-review.md)1a06ce2b, rootread. ExternalClaude session85539 PID16406 ACTIVE, outputread-update-numeric-metadata-claude-plan-review.txt. Four-file proposal: attribution promotion supported by three selected clauses; append <=8 Bactions plus one control to close badmetadataChange admission, with later independent B acceptance. Proposed authoring bounds B81/A+B156 (runtime caps unchanged); all R/N rows and controls frozen. Current actual provisional source leaves sufficient space under existing fences. Must reconcile accepted frozenR/N parent and wait council/root before implementation. No flags changed or borrowed evidence.
 
 ## Accepted next slices
 
@@ -104,8 +112,8 @@ Workers own isolated checkouts, never outward publication. Root owns coordinatio
 
 ## Next actions and stopping predicates
 
-1. All PR95 review findings/integration checks closed. Watch exact201 CI38454278145; if green and source unchanged, merge ordinarily and verify actual remote parents/tree.
-2. Review active numeric admission and TX set conformance outputs. Prepare the separately scoped attribution promotion/numeric metadata witness follow-on after current author freeze; no flag changes yet.
+1. PR95 delivered/mergedtree verified. Complete131 native+Claude council/packed evidence, integrate ordinarily withmain2e7 and publish bounded reviewed PR.
+2. Review active TX set conformance output; continue metadata-closure plan council and reconcile acceptedR/N predecessor before dispatch. No coverage flags changed yet.
 3. Continue required runtime and cumulative installed evidence until cold public profile selection is supported; drafts, diagnostic counts and elapsed absence are not stopping conditions. Stop only on achieved delivery, operator pause, supersession or unavoidable human decision after independent work is exhausted.
 
 No immediate human decision blocks active work. Separate product questions include Selector grammar/complexity, metadata-only incident-Link membership and retained Snapshot minimum comparison; infer no ruling. No Janet CLI/staging/playgrounds/shared databases, Trish Types, optional History/YAGNI/provenance redesign, release or Preview2 promotion.
