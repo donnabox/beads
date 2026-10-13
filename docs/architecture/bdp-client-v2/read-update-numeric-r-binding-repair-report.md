@@ -1,0 +1,21 @@
+# R route binding repair — frozen candidate
+
+Source `4578be4bfb107790079e7faf532029a5b13328c5`, direct frozen88c0776341cba8d9797412f7307c630fdf8a6c04; checkout `/Users/dbox/repos/wt/vickie/vickie-numeric-r-binding-repair`, branch `codex/vickie-numeric-r-binding-repair`. Exactly one literal changed in the approved app test. The accepted four-file R implementation remains88; no manifest, coverage, control, runtime, parser or deadline changed in this successor.
+
+The prior88packed run had208pass/1fail solely because its route digest hashed only routes. The current pin272c31e6bdf474d3889042e3bc636f4f144b58ea1e87a8f8176c772a1a026110 independently binds the existing full scope/profile/routes/header-cap/body-cap tuple. `route-preimages.json` reproduces parent24b63… before deriving the new tuple. Ordered51-route assertion is unchanged and already passed88. Failed88reports remain separately preserved; not relabeled.
+
+Clean→typecheck→build, format/lint/boundaries, affected cumulative installed observation plus source guards, Readseal and both smokes pass. Final fresh packed209-test run is pending; report will append exact outcome. Public admission remains closed; Rpartial, B/Napproved whole33/96 in diagnostic inventory only.
+
+## Exact final packed outcome
+
+Fresh protocol/server tarballs installed into `packed/install`; exact clean source **4578be4bfb107790079e7faf532029a5b13328c5**. Full selected three-file invocation (`read-update-matrix.test.ts`, `numeric-model-catalog.test.ts`, `cumulative-artifact.test.ts`) passed **209 tests,0 failed,0 pending**; supervisor130.544s under240. Includes all old app scenarios/controls, two numeric positive rows and three new R response controls. `packed/matrix.json` and `matrix.exit.json` retain actual command, timestamps and status; `packed/source.json` binds archive hashes and installed entry. Earlier failed88run remains under its own log directory.
+
+Genuine cumulative54scenario/2shard observation passed in **17.699771s**, leaving **72.300229s** under90; baseline timing is separately recorded, not added again to the cumulative elapsed time. Final-source33whole/96uncovered/75omitted of129required. Independent complete row bindings and selected/unplanned denominator preserved. Rfalse; B/Ntrue only under root audits. Both real child reports are persisted and hash-associated, public claim false.
+
+Payload digest `1b12629fe54c39c8f7864dbb13bdba16bcbe4298b0a5bd420fa19daaa4fb7ec2` and common runtime identity `1720b63b49a7be3299d4b2865de4db9fcbe47560f217a32eea6397db7ea54ca5` are unchanged from accepted runtime; the clean launcher git SHA binds the new evidence source, not independent target git attestation. Common scope/profile/History=false, installed contract/policy/auth/fixture identities are recorded separately from each shard’s route config. Baseline route digest unchanged; continuation full tuple digest272c31… now correct. Expected raw document facts and Problems are independently authored; opaque raw correction response→GET revision linkage remains unobserved and is not borrowed from captures.
+
+Source audit: implementation continuation878548bytes/22972nodes, growth33997/826; coverage708995bytes, growth5580.98new binding strings5460bytes; net reasons/flags120bytes. All new and prior fences pass with no capacity/timeout increase. A/B/C/N raw scenarios, baseline49, fixture/index/catalog and six old control tables are identical to b604 (see prior `source-audit.json`). Only R24old actions deliberately changed,16added and48old actions preserved; no old row relabeling.
+
+Pre-freeze successor clean/typecheck/build, format/lint/boundaries,3 affected tests (206 unselected), Readseal and both smokes all exit0. Parent88had49focused passes before freeze. First typecheck/focused mistakes and first packed digest failure are retained as failures, not qualification evidence. Full repository suite was not rerun for this evidence-only four-file change; this full three-file run plus static/boundary/seal/smoke checks is the stated validation scope.
+
+No sampled test-owned subprocess remains. Scoped caffeinate terminated cleanly after the finite supervisor; source remains clean/frozen. This worker performed no outward actions. Root separately pushed frozen4578 for durability; no PR/public admission is claimed here. Independent council/release disposition belongs to root.

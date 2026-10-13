@@ -1,0 +1,13 @@
+# R numeric closure — frozen candidate, packed validation in progress
+
+Frozen source `88c0776341cba8d9797412f7307c630fdf8a6c04`, direct ordinary parent `b604320267dd0adcf1ec91854550fb402a1155e7`, checkout `/Users/dbox/repos/wt/vickie/vickie-numeric-r-closure`, branch `codex/vickie-numeric-r-closure`. Clean source; no publication. Exactly four accepted files; no runtime/catalog/schema/fixture/index/TX change. Root acceptance: `read-update-after-metadata-root-acceptance.md`, revised plan6a120/dispositionsafeb/nativeclosurebe6b.
+
+The candidate has R88 actions/619 assertions (41 raw+47 client,32 POST), N52 unchanged,140total. R remains partial; root-approved B/N changes yield33 whole/96 not whole/54 authored/129 required, public claim false. All A/B/C/N raw blocks and six old control tables remain byte-identical. Independent source audit and full changed/added action ledger are adjacent.
+
+Generated continuation878548bytes/22972nodes (+33997/+826); coverage708995bytes (+5580);98 added bindings occupying5460bytes. No fence increased. Full source audit checks both the new and inherited tighter budgets. Route inventory51 and independent ordered digest9a625cd0cd901ebf18619256a40df5a6751e329238e2efd7b8d75ebbeaedd421.
+
+Pre-freeze clean→typecheck→build, format/lint/boundaries,49 focused tests/3files (160 unselected), Readseal and both smokes passed. Earlier two typecheck failures were test typing mistakes; focused first attempt had2 failures (Link create request used output-shaped refs; preservation hash compared parser-normalized objects). Corrected within authorized source, preserved logs. Second focused11 passed; final49 passed. No protocol oracle or runtime was weakened. Fresh packed both-shard/all three-file tests are now running; this report does not yet claim their success.
+
+## Frozen88 packed outcome — failed, preserved
+
+Fresh packed three-file run completed exit1:208pass/1fail in129.35s (supervisor129.97s). Sole failure was the hardcoded continuation routeDigest: the ordered route array passed, but the pin hashed routes alone rather than the existing full `{scope,profile,routes,maximumRequestHeaderBytes,maximumRequestBodyBytes}` preimage. No target or control failure. Actual child reports and failed attempt ledger remain under `packed/artifact-set-progress.json.*`; no successful aggregate report was written or claimed. Independent `route-preimages.json` reproduces parent24b63… and computes corrected272c31… without copying target output. An ordinary isolated successor changes that one literal only;88source stays immutable. Scoped caffeinate was terminated and no sampled test-owned process remains.
