@@ -1,0 +1,156 @@
+Read-only review complete. No files written; frozen checkout confirmed at `dfcf1a95950fd213a9c0b98c266ee9869918da06`, working tree clean.
+
+# Findings — plan G2a (changefeed SSE) vs. frozen dfcf
+
+## 1. HIGH — `stringifyJsonValue` rationale is factually wrong; done-when 13 specifies a test that cannot mean what it says
+
+**Plan**: §"One owner, one frame at a time" (line 54); §"Executable done-when" item 13.
+
+**Evidence**
+- `packages/protocol/src/json-values.ts:93-96`: "Primitive escaping/number formatting is **exactly JSON.stringify's**"; line 114 emits every scalar via `JSON.stringify(item)`.
+- `json-values.ts:31-33`: "Numeric values here have **lost their original spelling**: raw write requests still require lossless numeric admission before reaching this boundary."
+- `transaction-store.ts:557`: retained group bodies are `JSON.parse(body)` — spelling is already gone before projection.
+- Losslessness is an *admission-time* property: `json-admission.ts:211-218` `isAdmissibleJsonNumber` **refuses** any literal whose exact decimal differs from `exactDecimal(JSON.stringify(nearest))`.
+
+**Impact**: The plan's stated reason for preferring `stringifyJsonValue` ("so exact numeric literals survive") is false — it is numerically identical to `JSON.stringify`. An implementer writing done-when 13's "numeric literal frame test" either asserts something false (`1.0e2` surviving as `1.0e2`) or writes a vacuous assertion and files it as evidence of "lossless serialization" the system does not provide.
+
+**Bounded fix**: Restate the rationale as the two properties the helper actually supplies — (a) byte-identity with the finite JSON page and with `deliver()`'s Content-Length serializer (`transaction-runtime.ts:76-78`), and (b) immutable-snapshot / accessor-swap and unpaired-surrogate safety. Rewrite done-when 13 to assert the SSE `data` field is byte-identical to that group's encoding inside the corresponding finite page, and cite admission-time numeric admissibility as the real lossless guarantee.
+
+## 2. HIGH — finite-HTTP preservation: two pinned `406` assertions are affected, one inverted, and the plan calls its test work "bounded additions"
+
+**Plan**: §"Exact file ownership and predecessor gate" (Tests paragraph); §"Admission and representation selection" step 3.
+
+**Evidence**
+- `packages/server/src/transaction-changefeed.test.ts:676-680`: GET `changes/?after=genesis` with `Accept: text/event-stream` → **406, empty body** (today's pinned behavior). G2a inverts this.
+- `packages/server/src/transaction-events.test.ts:472-476`: `events/` with `Accept: text/event-stream` → **406 for both GET and HEAD**. G2a must *preserve* this (G2b is unimplemented).
+- Both are produced by the same single gate: `read-http.ts:26-33` inside `applyReadHttpSemantics`, applied once for every GET/HEAD at `transaction-http.ts:448-450`.
+
+**Impact**: If the extracted media helper is wired into `applyReadHttpSemantics` rather than only into the `changes/` branch at `transaction-http.ts:322-332`, the Event routes either start returning `200 text/event-stream` for transport that does not exist, or lose their honest 406. Separately, "bounded additions to service/HTTP/runtime tests" hides a mandatory *change* to an existing pinned assertion — exactly the kind of silent rewrite the plan's own discipline forbids.
+
+**Bounded fix**: Name both assertions in the plan. Require SSE selection to be reachable only from the changefeed branch, with `applyReadHttpSemantics` left byte-behaviour-identical for JSON/204. Add a done-when that `events/` and `?view=events` still return bodyless 406 for `Accept: text/event-stream` under G2a.
+
+## 3. MEDIUM-HIGH — `Last-Event-ID: genesis` has no disposition and bypasses the epoch/view binding
+
+**Plan**: §"Real ambiguities" item 2; step 1; done-when 3.
+
+**Evidence**
+- `transaction-changefeed.ts:56-62`: `parseCheckpoint` returns `{position: 0}` for `"genesis"` **before** any tag comparison; `checkpointPosition` (74-86) returns `0` immediately, so the epoch check (81-82) and view check (83-84) never run.
+- `genesis` is never emitted as an SSE `id`: `transactionCheckpoint` yields `"genesis"` only at position 0, and groups occupy positions ≥ 1.
+- Spec `#event-id-and-checkpoint-character-profile` 6572-6573 reserves genesis and says it is "never assigned to an Event or later position".
+- `transaction-changefeed.test.ts:674-675` already exercises `last-event-id: genesis` on the finite path.
+
+**Impact**: Under the plan's rule "a positive Last-Event-ID overrides `after` for SSE", a client or intermediary sending `Last-Event-ID: genesis` to a `start=now` stream silently gets a complete-history replay with **no epoch/view validation** — precisely the case the mandatory erasure fence (6464-6473: "a read whose `after` precedes P fails with `cursor-expired`") must reject. The plan's ambiguity #2 covers only empty/whitespace/malformed/repeated headers.
+
+**Bounded fix**: Add an explicit disposition for a reserved, never-emitted checkpoint arriving in `Last-Event-ID` — refuse as local-reference `invalid-parameter`, or record it as a named private gap — and add the case to done-when 3.
+
+## 4. MEDIUM — ambiguity #1's "no query intent" limb is already settled by frozen code and a pinned test
+
+**Plan**: §"Real ambiguities" item 1 ("Last-Event-ID with original start=now, **or with no query intent**").
+
+**Evidence**
+- `transaction-changefeed.ts:99`: `if ((after === null) === (start === null)) throw new TransactionChangefeedParameterError()` — exactly one intent required, evaluated before any Accept or header inspection.
+- `transaction-changefeed.test.ts:669-673` pins `changes/` + a valid `last-event-id` → `400` `invalid-parameter`.
+- Spec 5974: "Omitting both is an error. It never means 'start at whatever history remains.'"
+
+**Impact**: The only implementable G2a behavior for header-without-query is the inherited 400. Presenting it as an open combination invites an implementer to relax the one-intent parser to "support EventSource", which breaks the pinned 400 and contradicts 5974. This conflates a routine settled case with genuine normative ambiguity.
+
+**Bounded fix**: Split item 1 — keep only "header + original `start=now`" as genuinely unresolved; state that "header with no query intent" is settled as 400 by 5965-5975 plus `transaction-changefeed.ts:99`, and that the parser must not be relaxed.
+
+## 5. MEDIUM — an existing client-disconnect seam is overlooked, and installing one changes two existing finite call sites
+
+**Plan**: §"Actual code, reusable seams and missing transport" (line 38); step on disconnect/cleanup (line 58); done-when 10.
+
+**Evidence**
+- `packages/server/src/index.ts:443-455` `createNodeHttpDisconnectSignal` already folds `incoming 'aborted'` and `outgoing 'close'` (when `!writableFinished`) into one `AbortSignal`; `index.ts:479-481` passes it through `new Request(..., { signal })`; `index.ts:496-499` already maps `ScopeServerOperationAbortedError` to `outgoing.destroy()`.
+- `transaction-runtime.ts:130` builds a signal-less `Request`, while `transaction-http.ts:329` and `:345-350` **already** pass `request.signal` into `service.changes`/`service.events`.
+- `transaction-consistency.ts:107` throws `ScopeServerOperationAbortedError` when the signal is aborted; `handle`'s catch (`transaction-http.ts:420-444`) has no branch for it → bodyless `empty(500)`.
+
+**Impact**: (a) "Request currently has no client-disconnect signal" overstates the gap repo-wide and risks duplicating a seam the plan's own "do not duplicate policy machinery" rule forbids; `index.ts` is absent from the ownership list. (b) Wiring a real signal silently reclassifies an existing finite behavior: a client disconnecting during a minimum wait on `changes/`/`events/` now produces an abort routed through the internal-fault branch instead of a completed-then-discarded read.
+
+**Bounded fix**: Name `createNodeHttpDisconnectSignal` as the pattern (export it with root coordination, or declare the ~10-line duplication deliberate). Add a `ScopeServerOperationAbortedError` branch that destroys the socket rather than synthesizing 500. Add a done-when pinning that finite `changes/`/`events/` minimum-wait behavior is unchanged for non-disconnecting clients. Drive slot release from the `response` `'close'` event (fires on destroy as well as FIN), not FIN detection, so the one-slot cap cannot leak for the 10s socket timeout.
+
+## 6. MEDIUM — step 1's pre-admission cursor validation is unreachable with the codec "unchanged"
+
+**Plan**: step 1 ("compute the effective live cursor **before owner admission**… checked against the exact existing token/cursor codec **and current epoch/view**"), vs. line 34 ("Use these helpers unchanged") and line 84 (current group codec excluded from G2a's writable files).
+
+**Evidence**: `parseCheckpoint` is module-private (`transaction-changefeed.ts:56`). The exported entries are `transactionChangefeedRequest` (path/query only, line 87), `transactionCheckpoint`, and `checkpointPosition` — the last requires a `TransactionReadContext`, produced only by `readContext()` inside `enter()` (`transaction-store.ts:1390-1394`).
+
+**Impact**: The implementer must either add an exported pre-admission token parser to `transaction-changefeed.ts` (contradicting the ownership list, and a likely textual conflict with Snapshot's checkpoint/token work) or move epoch/view binding inside owner admission (contradicting step 1's ordering, which done-when 7 depends on: "missing/foreign/stale/invalid cursor cases preserve existing disclosure/errors before negotiation").
+
+**Bounded fix**: Split step 1 into two phases — token-profile syntax check before admission, epoch/view binding inside the first owner entry — and either move `transaction-changefeed.ts` into the writable list for one additive export or state that phase one reuses the first `service.changes` call and accept that ordering.
+
+## 7. MEDIUM — already-pinned narrated SSE HTTP rows are never cited, and the regression list omits their test
+
+**Plan**: §"Required contract and optional behavior" table (cites only `docs/specs/bdp.md` ranges); done-when 14.
+
+**Evidence**
+- `fixtures/transactional/http-contracts.json` → `sse-selected-after-json-exclusion`: GET `changes/?after=ckpt-42`, `Accept: application/json;q=0, text/event-stream;q=0.7` → 200, `Content-Type: text/event-stream`, `Cache-Control: no-store, no-transform`, three BDP context headers, `"ended": false`.
+- Same file → `changes-head-event-stream`: HEAD, identical headers, `"ended": true`.
+- `packages/protocol/src/transactional-http-contracts.test.ts:404-406` pins SSE `Cache-Control` to **exactly** `no-store, no-transform` (no `private`); 407-411 require all three context headers on every transactional row; 372-376 forbid `etag`/`last-modified` on `changes`/`events` rows; 657-660 reject a HEAD SSE row with `ended:false`.
+- No `Vary` appears anywhere in the fixture, while the plan's step 3 says "Retain Vary: Accept".
+
+**Impact**: G2a could satisfy all 14 done-when items while emitting `Cache-Control: private, no-store` + `no-transform` (the shape `jsonResponse` at `read-http-routing.ts:43-51` produces, which `applyReadHttpSemantics` never rewrites for non-JSON 200s) and no gate would catch the contradiction with the repo's own narrated contract. Done-when 14's regression list does not name `packages/protocol`.
+
+**Bounded fix**: Add both row ids to the contract table as the pinned SSE header set; state explicitly whether `Vary: Accept` is emitted on the SSE 200 and reconcile with the rows; add `packages/protocol` http-contracts to done-when 14's regression set.
+
+## 8. MEDIUM — stream registration vs. `service.close()`'s one-shot `active` snapshot is left ambiguous; ordinary shutdown is indistinguishable from an owner fault
+
+**Plan**: line 33 ("An indefinite stream cannot simply remain in that active set forever"), line 58, line 59, done-when 10.
+
+**Evidence**: `transaction-service.ts:82-97` `run()` calls `check()` and registers one promise per call. `close()` (394-411) sets `accepting = false`, then evaluates `Promise.allSettled([...active])` **once, synchronously** when the async IIFE starts — nothing registered afterwards is awaited. Any later `run()` throws the plain `Error("transaction service is closing or closed")` from `check()` (line 80).
+
+**Impact**: Registering the pump as one long-lived `run()` task makes `close()` block indefinitely — a direction the plan's warning ("do not await service.close from a stream task that service.close is itself waiting on") does not cover. Registering per-poll means shutdown surfaces as a plain `Error`, which the plan's rule at line 59 ("an owner fault or gap after stream headers closes the stream") would record in retained diagnostics as an owner fault, making done-when 10's "original+cleanup diagnostic causes are retained" untruthful about cause.
+
+**Bounded fix**: Pin a separate `streams` registry that `close()` cancels **before** it snapshots `active`, leaving mutation drain semantics untouched; require ordinary-shutdown cancellation to be a distinct retained cause from an owner fault in done-when 10.
+
+## 9. LOW-MEDIUM — only one of four captured transport deadlines is analysed; the 5s heartbeat is sized against an unverified assumption
+
+**Plan**: line 55 ("fit the current10s idle timeout"); done-when 11.
+
+**Evidence**: `transaction-runtime-configuration.ts:102-111` captures and hashes `requestTimeout: 10000`, `headersTimeout: 10000`, `timeout: 10000`, `keepAliveTimeout: 1000`. `transaction-runtime.ts:180-193` installs all four and asserts them; `:193` destroys the socket on `'timeout'`. The plan names only "the actual10s socket timeout".
+
+**Impact**: Whether `server.requestTimeout` continues to govern after the request has been fully received decides whether a >10s idle stream is achievable at all. If it does, the heartbeat cannot save the stream and done-when 11 fails for a reason the plan never considered; if it does not, the test may pass against `server.timeout` while a different deadline closes installed streams under other conditions. I did not execute Node to settle its `requestTimeout` behaviour — that is the point: neither does the plan.
+
+**Bounded fix**: Enumerate all four deadlines, record as an observed evidence fact which of them apply after response headers are sent, and derive the heartbeat interval from that observation rather than from `timeout` alone. Also pin the raw SSE recorder's own deadline relative to the 10s server deadline (the existing exact-mode helpers use 5000ms: `transactional-execution-binding.ts:187`, `raw-development-http.ts:52`).
+
+## 10. LOW-MEDIUM — the non-attesting marker is not carried into the stream branch, and ambiguity #1's EventSource rationale is unobservable in this fixture
+
+**Plan**: step 4 ("source-private discriminated transport result"); §"Real ambiguities" item 1.
+
+**Evidence**: `transaction-http.ts:446` sets `x-bdp-development: non-attesting` on every `handle()` result and `transaction-runtime.ts:77` sets it again in `deliver()`; `transaction-http.test.ts:180` asserts it. A discriminated stream-admission result bypasses both. Separately, `transaction-runtime.ts:138-141` refuses **any** `Origin`-bearing request with 403, and `TRANSACTION_RUNTIME_DEFAULTS.transport.cors` is `"disabled"` (`transaction-runtime-configuration.ts:110`); the plan also omits `retry` initially.
+
+**Impact**: An SSE 200 could ship without the wire-level honesty marker for a `claimEligible: false` build. And the plan's recommended Last-Event-ID interpretation is justified by "supports native EventSource reconnect" — a client class no done-when can witness here, since a browser `EventSource` either gets 403 or cannot read the response without CORS headers.
+
+**Bounded fix**: State explicitly that the stream-admission headers and the streaming delivery path both carry `x-bdp-development: non-attesting`. Restate ambiguity #1's rationale as spec-textual (6276-6282) rather than as observed EventSource behavior, and note that no G2a evidence exercises a real `EventSource`.
+
+## 11. LOW — the `read-http.ts` extraction has four consumers; two are outside the ownership list
+
+**Plan**: §"Exact file ownership" ("narrow `read-http.ts`/tests").
+
+**Evidence**: `read-http.ts` exports are consumed by `index.ts:65`, `development-runtime.ts:19` (used at 133, 137, 348, 392, 464-466), `read-http-routing.ts:10`, and `transaction-http.ts:26`. It is **not** a package entry — `packages/server/package.json` exposes only `.` and `./development` — so "public API" here means this internal set.
+
+**Bounded fix**: Require the extraction to be strictly additive (unchanged signatures for `acceptsJson`, `applyReadHttpSemantics`, `resourceRevisionEtag`, plus one new sibling helper) and name `index.ts` and `development-runtime.ts` as read-only consumers whose behavior a regression must pin.
+
+## 12. LOW — a genuine normative ambiguity the plan omits: SSE has no `observedHeadPosition` equivalent
+
+**Plan**: §"Real ambiguities" (claims to enumerate the real ones).
+
+**Evidence**: Spec 6105-6107 ties `observedHeadPosition` to "the finite read" and says it "lets a client recognize catch-up even when `groups` is empty". The SSE message carries only the group (6110-6111), and `TransactionChangeGroup` (`transaction-changefeed.ts:31-43`) has no head member. Yet the mandatory erasure fence (6475-6481) makes caught-up-ness the server-side eligibility predicate. `readChanges` already computes `observedHeadPosition` per poll (`transaction-store.ts:1423`) and the pump would discard it.
+
+**Bounded fix**: Add this to §"Real ambiguities" as an explicit private gap — do **not** invent an SSE field or event — and record that the pump already receives the head position per poll, which the later fence will need.
+
+---
+
+# Verified sound (no action)
+
+Checked and reproduced against dfcf, so these are not findings:
+
+- **Bound arithmetic is exact.** `TRANSACTION_EVENT_GROUP_BYTES` recomputes to **169,345,024** from `transaction-events.ts:21-31` (R=262144, Q=65536, S=65536, N=458752, A=8192, H=1048576, K=64; the `min` selects branch 2); `TRANSACTION_CHANGEFEED_BYTES` recomputes to **186,334,744** from `transaction-changefeed.ts:19-25`. Both match the plan. The `MAX_STRING_LENGTH` guard already exists at `transaction-changefeed.ts:26`.
+- **`start=now` is captured once.** `transaction-service.ts:234-241` evaluates `owner.captureChangesStart()` inside `run()`'s start callback, outside `waitForTransactionMinimum`'s retry loop (`transaction-consistency.ts:106-120`), which retries only on `"behind"`. The plan's line 47 and done-when 2 are correct.
+- **No store edit needed for G2a.** `readChanges` (`transaction-store.ts:1375-1429`) returns zero or one immutable complete group, holds no SQLite across an await, and treats an absent positive row as corruption (1398, 1402-1403, 1409-1410) rather than guessed expiry.
+- **Frame safety holds.** `stringifyJsonValue` escapes LF/CR/controls via `JSON.stringify` for scalars and keys; U+2028/U+2029 are not SSE line terminators, so unescaped occurrences cannot split a frame. Checkpoints match `[A-Za-z0-9_-]{1,256}` (`transaction-changefeed.ts:53`, format `cg_<43>_<43>_<pos>` ≈ 94 bytes).
+- **Line/anchor references are accurate**: store `1272`/`1375`, service `219`, runtime `74`, `read-http.ts:10`, `transaction-http.ts:322-355`. All four cited catalog rows exist in `packages/conformance/catalog/transactional-v1.json` (`transactional.changefeed.sse`, `.sse-reconnect`, `transactional.http.head-parity`, `transactional.http.finite-validator-omission`).
+- **Metadata suppression under seams** matches `transaction-runtime-configuration.ts:328` (`metadata()` returns `undefined` whenever any seam is supplied), and `installedTransactionBinding` (`transactional-execution-binding.ts:28-35`) rejects absent metadata — so "tests may use a timing seam with attestation suppressed; installed evidence uses actual defaults" is implementable as written.
+- **Line 73 is stronger than the plan claims.** `TransactionEventProjectionGap` fires only for `source.kind === "bead"` (`transaction-events.ts:232, 240-247`); `projectTransactionChangeGroup` passes `{kind: "scope"}` (`transaction-changefeed.ts:141`), so the metadata-only incident-Link ruling is **unreachable** from the G2a changefeed path, not merely deferrable.
+- **Snapshot serialization gate is reasonable.** Snapshot core at `b9afb27` currently touches only `transaction-snapshot.ts` and `transaction-store.ts` (+55, including a `format` bump to `bdp-private-transaction-snapshot-9` and added `configuration` members). It does not yet touch service/HTTP/runtime, so the plan's "root must first identify exact accepted Snapshot service/HTTP/runtime integration" is a forward gate, not a current conflict. Both lanes will mutate the hashed `settings` object and therefore `runtimeConfigurationIdentity` — the plan's "H1b installed metadata must be freshly observed after integration" covers that.
+- **`handle` blast radius is contained**: its only caller is `transaction-runtime.ts:144`, so widening its return type to a discriminated union is a one-site change, not a public-API break.

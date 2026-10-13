@@ -105,3 +105,14 @@ Reviewed original is retained byte-for-byte as `read-update-required-next-plan.r
 9. **Accept shared-source precision.** `profile-contract-plan.ts` did change its type and TX-guarded emitted literal; no RU-reachable behavioral change. Exact4a source/payload binding, never old a899 relabeling.
 
 Implementation remains blocked on root’s acceptance of this revised plan, not a product decision. No public qualification or automatic whole-contract claim.
+
+
+## Approved mechanical oracle clarification during authoring
+
+Parent approved replacing raw HTTP collection-body captures after the first real probe demonstrated that `runner.ts:captureValue` only captures absolute HTTP(S) URLs for HTTP actions. Programmatic client action captures permit complete JSON; the earlier general claim that raw captures could retain arbitrary collection bodies was wrong. `read-update-admission-evidence/positive.json` and `focused-one.log` initially recorded the URL-only failure (later positive reports are superseded; the exact failed run remains in focused-one.log/json). No runner/executor widening.
+
+Each limit100 collection now checks exact independently accounted sorted IDs/count and next:null, and every item equals the latest complete Resource capture from its earlier actual successful command or GET. Earlier capture sources independently pin identity/type/properties/metadata/endpoints and applicable schema; updates replace the binding, deletes remove it, creates add it. Opaque revisions are carried only as observed equality. No refused request supplies its own expected record. Known alias307/404/Location checks remain separate.
+
+For raw parameter-acceptance mutations, raw JSON-object captures have the same URL-only restriction: assert actual mutation result independently, then credentialed client GET independently pins the expected identity/type/properties/metadata and captures its complete postimage for subsequent collections. This uses existing operations and does not claim an opaque raw-result revision comparison that the harness cannot express.
+
+Accepted b12f plan is preserved as `read-update-required-next-plan.accepted-b12f.md`; this clarification grants no whole-credit promotion or larger target/harness budget. The generator ledger measures added per-item assertion bytes/actions before freeze.

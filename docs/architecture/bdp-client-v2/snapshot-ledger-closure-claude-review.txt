@@ -1,0 +1,108 @@
+## Snapshot ledger closure review — `dc15bc9..f72566b` (6 files, +168/−18)
+
+**Method.** Read the full diff and every caller of the changed seams. Verified SQL semantics and plans with two `:memory:` SQLite experiments (differential correctness; timing) — no files written, no repo suite re-run (it creates temp dirs under `$TMPDIR`, excluded by your read-only constraint). Author evidence logs read, not reproduced. My runtime is Node 26.0.0 / SQLite 3.53.1, **not** the pinned 24.16.0 / 3.53.0 — timings below are indicative, ordering and firing behaviour are exact.
+
+**Verdict: no Medium or High defect. All six prior findings are genuinely closed. Three Low/Info items remain, all disclosure- or ergonomics-shaped.**
+
+---
+
+## Verified closures
+
+**F1 — single JSON classification, ordering intact. CONFIRMED.**
+`transaction-snapshot.ts:246-250` parses `$.expired` exactly once per row. Order inside `ledgerBounds()` is aggregate (`:236`) → classification (`:247`) → detail guard (`:254-259`), and `ledgerBounds()` precedes both `expire`'s `=0` candidate query (`:270`) and `liveLedger`'s `=0` query (`:296`), so neither `=0` predicate is ever evaluated against an unproven flag. Measured at 65,536 rows / 464-byte dispositions: old combined query 40.5 ms → new classification 25.2 ms, consistent with the predecessor's 21.3 ms projection on its own hardware.
+
+**F2 — DISTINCT orphan-or-expired detail guard. CONFIRMED, and strictly stronger than what it replaced.** Differential run over ten corruption shapes:
+
+| state | old combined arm | new classification | new records guard | new pages guard |
+|---|---|---|---|---|
+| healthy live+detail, expired detail-free | pass | pass | pass | pass |
+| expired row retains records | FIRES | pass | **FIRES** | pass |
+| expired row retains pages only | FIRES | pass | pass | **FIRES** |
+| orphan records (no parent) | *pass* | pass | **FIRES** | pass |
+| orphan pages (no parent) | *pass* | pass | pass | **FIRES** |
+| `expired:1` / missing / `null` | FIRES | **FIRES** | pass | pass |
+| malformed JSON disposition | throws | **throws** | — | — |
+
+Superset of the old arm plus both orphan cases the predecessor flagged. My own `EXPLAIN QUERY PLAN` matches `query-plans.log`: `CO-ROUTINE detail` → `SCAN … USING COVERING INDEX` with **no temp B-tree for DISTINCT**, then one `SEARCH snapshots USING INDEX sqlite_autoindex_snapshots_1 (id=?)` per distinct handle. The `ifnull(…, 1)` default correctly makes a missing parent fail; classification running first guarantees the subquery can only return 0 or 1, never NULL.
+
+The two new tests (`transaction-snapshot.test.ts:1057-1092`) do isolate their arms despite sharing one message — the `records` case deletes every `snapshot_pages` row and the `pages` case every `snapshot_records` row, so only the intended guard can fire. The `receipts WHERE owner IS NOT NULL` count of 1 after refusal is real evidence that the provisioning `atomic` rolled back.
+
+**F3 — live precondition. CONFIRMED, and the boundary is exactly right.**
+`expire` takes candidates where `expires < now` (`:270`); the new assertion requires `now <= d.expires` (`:305`); `manifest()` declares cursor-expired on `now > d.expires` (`:564`). All three agree on the same `live ⟺ now <= expires` convention — no off-by-one at `now == expires`. The sole caller of `capture` is `transaction-store.ts:1299`, taking `now` from the same `instant()` as the `expire` at `:1297`, and `sweep`/maintenance never calls `capture`. So the author's framing — internal precondition, not a present caller bug — is accurate, and the assertion cannot fire in production today. Placement after the `rows.length <= liveHandles` check preserves the original corruption message, which the new nine-live fixture (`:1124`) pins.
+
+Side effect worth noting as closed: with all live rows now guaranteed unexpired, the predecessor's unactionable `503 retryAfter: 0` is unreachable, and `Math.min(...live.map(…))` cannot see an empty array (both `temporarily-unavailable` branches require `live.length >= 8`, or bytes above 64 MiB which `recordBytes ≤ 32 MiB` already excluded).
+
+**F4 — cached immutable epoch, startup ordering and shared read context. CONFIRMED.**
+`epoch` is assigned at `transaction-store.ts:520`, inside the synchronous provisioning `atomic` (`atomic` invokes its callback inline, `:329-337`), after configuration and contract-capture validation and before the first `sweep(instant())` at `:525` — which is the first `readContext()` use. Every consumer (`:536` readConfiguration, `:555` readContext, `:954`, `:1117`, `:1288` store identity) sits at or after `:535`; the maintenance timer is installed at `:1205`. No TDZ window, no `undefined` window.
+
+This also closes a divergence that already existed: `:954`/`:1117` were reading the once-captured const while `readContext` re-read from SQLite each entry. Now single-sourced. `comparisonEpoch()` (`:1486`) deliberately still re-reads, and its consumer `transaction-comparison.ts:42-45` compares it against `store.scopeEpoch`, which was *already* a once-read value — so that liveness probe is semantically unchanged.
+
+The two observation tests are not weakened: `transaction-read.test.ts:586-587` and `transaction-store.test.ts:2964-2965` still assert `this.isTransaction === true` per observation and still assert reentrancy rejection; only the count drops (4→2, 3→2).
+
+**F5 — 65,536-disposition statement-reuse guard. CONFIRMED and load-bearing.**
+`transaction-snapshot.test.ts:616-637` spans the real expiry loop (`f.setTime(1300001)` makes all 65,536 clones candidates). The three mutation statements each asserted prepared exactly once proves the loop body executed *and* compiled once; the global dedup assertion additionally covers `disposition()`'s two per-candidate statements, which were already cache-warm and so would surface only as duplicates under regression. Reverting any `statement(...)` to `db.prepare(...)` fails this. Recorded duration 2,544 ms, in line with the predecessor's 2,649 ms.
+
+**F6 — empty-owned-Link ceiling fixtures.** Documented in the committed note (`transaction-snapshot-core-review-closure.md`), not papered over. Confirmed.
+
+Author evidence spot-checks: `focused.log` shows `Test Files 8 passed (8) / Tests 306 passed (306) / 8.34s`; 44 Snapshot tests = prior 40 + the 4 added here; 44+132+20+13+21+20+17+39 = 306. Arithmetic in the report holds.
+
+---
+
+## Remaining defects
+
+### 1. Low — the detail guard's cost on a *lightly-used* store is undisclosed and is the one case where it is a net regression
+`transaction-snapshot.ts:254-259`, reached from `:265` and `:600`
+
+Measured `ledgerBounds()` totals (20 reps, warmed):
+
+| fixture | old | new |
+|---|---|---|
+| 65,536 expired, no detail (predecessor's fixture) | 44.1 ms | **28.9 ms** |
+| 65,528 expired + 8 live × 4,096 records / 128 pages | 55.1 ms | **30.3 ms** |
+| **0 expired + 8 live × 4,096 records / 128 pages** | **0.01 ms** | **0.59 ms** |
+
+The first two are the win the closure is justified by. The third is the ordinary case — a healthy store at full live population, where the old `EXISTS` arm cost nothing because it was gated behind `expired=1` and there were no expired rows. The guard now scans ~33k covering-index entries unconditionally, at two `ledgerBounds()` per `captureSnapshot`, one per `readSnapshot`/`readSnapshotPage`, and one per 1 Hz sweep tick, all inside the exclusive owner lock.
+
+**Evidence of the disclosure gap:** the predecessor's "Measured **~0 ms**" came from its 65,536-expired/zero-detail fixture. The closure report repeats the shape of that claim ("The tradeoff is scanning retained-detail index entries… it is not free"), and `query-plans.log` carries plans but no timings on a populated fixture — so nothing in the delta's evidence establishes the populated-store number.
+
+**Fix:** no code change warranted — the DISTINCT form is near-optimal for this schema, and the alternatives are the durable counter and dynamic policy you've ruled out. Record the populated-store figure alongside the plans in `query-plans.log`, and replace "Their work scales with retained detail" in the closure note with the measured per-call cost at ceiling live population.
+
+### 2. Low — `rejects orphaned %s before pending recovery…` names an ordering the code does not have
+`transaction-snapshot.test.ts:1058`
+
+The refusal does not precede pending-claim retraction. `DELETE FROM receipts WHERE owner IS NOT NULL` (`transaction-store.ts:521`) and `DELETE FROM creator_facts` (`:523`) execute first; the guard fires inside `sweep` at `:525` and the deletes are undone by the `atomic` ROLLBACK. The test's own assertion (`owner IS NOT NULL` count == 1) demonstrates *rollback integrity*, not ordering.
+
+**Why it matters here specifically:** the adjacent closure-note paragraph makes a genuine ordering claim for the format-9/incompatible-view refusals — those really do precede retraction, at `transaction-store.ts:500` vs `:521`. A reader moving between the two will reasonably infer the orphan refusal has the same property. It has a weaker one.
+
+**Failure scenario:** someone later hardens the retraction path by moving it outside the provisioning transaction (or adds a pre-transaction cleanup step), relying on the test name as the guarantee that orphan refusal fences first. The test keeps passing — its file-bytes and receipt-count assertions are satisfied by the transaction, not by ordering — while the stated property is gone.
+
+**Fix:** rename to `rejects orphaned %s during startup recovery without modifying the file`, or move the detail guard ahead of the retraction DELETE if the ordering is actually wanted.
+
+### 3. Info — `capture()` transiently constructs exactly the state the new guard rejects
+`transaction-snapshot.ts:657` and `:709` (detail inserts) vs `:740` (`INSERT INTO snapshots`)
+
+Within the capture transaction, `snapshot_records` and `snapshot_pages` rows for the new handle exist with no parent row for ~all of `capture`'s body. Safe today: `ledgerBounds()` is called only at `:265` and `:600`, both before any insert; there are no `fault` hooks anywhere in the snapshot module (grep confirms zero); and `capture` is wrapped in a single `atomic` so nothing partial commits. But the invariant this delta introduces is now transaction-boundary-only, and the guard would self-trip if an integrity re-check or a `fault` seam were ever placed inside `capture`'s body — which is plausible, since `transaction-store.ts:1300` already hangs `after-snapshot-copy` just outside it.
+
+**Fix:** one comment at `:657` stating that the parent row lands last and that no intra-capture integrity re-entry is permitted. Reordering is not worth it — the disposition cannot be sealed until the page ranges exist.
+
+### 4. Info — the dedup guard fails by timeout, not by assertion
+`transaction-snapshot.test.ts:628`
+
+`expirySql.filter((sql, index) => expirySql.indexOf(sql) !== index)` is O(n²). Under the exact regression it guards, `prepared` holds ~327,680 entries, so both the regressed expiry loop (~12.4 s pre-repair, per the predecessor) and the assertion itself blow the budget. `vitest.config.ts` sets no `testTimeout`, and this test — unlike the 30,000 ms one above it at `:590` — passes no timeout argument, so the default 5,000 ms applies against a current 2,544 ms run. The guard does still fire; the diagnostic is just `test timed out` rather than the duplicated SQL.
+
+**Fix:** `expect(new Set(expirySql).size).toBe(expirySql.length)` — O(n), and a Set-based first-duplicate lookup gives a readable message.
+
+---
+
+## Optional adjacent enhancements (not demanded)
+
+- Both detail guards raise the identical `"orphaned or expired detail"` string. The tests isolate arms structurally, but an operator reading a fenced owner cannot tell records from pages. A per-table suffix would cost nothing.
+- The closure note says the guards use "the record/page primary-key prefixes". For `snapshot_records` the planner actually selects `sqlite_autoindex_snapshot_records_2`, the `UNIQUE(snapshot,id)` index, not the PK. Both are snapshot-prefixed and covering, so the substance holds; the wording is a touch off.
+
+## Accepted bounded limitations (correctly disclosed, no action)
+
+- **No durable issuance counter.** The guard closes the predecessor's concrete scenario — deleting a `snapshots` row while its 4,096 `snapshot_records` remain is now refused at open. The *detail-free* variant is not and cannot be: deleting an already-expired, already-swept row silently recycles a permanent issuance slot and turns that handle's lawful 410 into a 404. The report states this plainly ("not a new independent durable counter").
+- **Classification remains the dominant per-tick cost at a loaded ledger** (~25 ms at 65,536 rows, paid on every Snapshot read entry and every sweep). Halved, not eliminated; the note's "no latency or throughput guarantee is claimed" is honest.
+- **Epoch corruption after open is no longer detected per entry.** Deliberate, and the narrower fencing surface is the point of F4.
+- **Ceiling population is still never combined with owned-Link topology.** Committed to the note; no new large-capacity exercise was added or claimed.
+- **The new precondition escalates a hypothetical mis-ordering from a bounded 503 to a 500 integrity fence.** Intentional, test-pinned, and unreachable from the single present caller.
