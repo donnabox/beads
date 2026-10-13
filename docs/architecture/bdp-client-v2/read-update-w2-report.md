@@ -67,3 +67,5 @@ Report bindings:
   "exactConfigurationDigest": "3d36a5222635858592d92c2b79df03bae8b0c9ac1deeb9e5c176498c9f6b94e9"
 }
 ```
+
+Actual unfiltered record: {'pass': 40, 'harness-error': 94} over 134 selected cumulative/companion outcomes; 40 authored scenarios, 28 proposed whole required IDs, 101 uncovered of 129 required IDs. It records 608 client observations, 44 HTTP setup observations, 21 native Read observations and 40 isolated scenario sessions. `sourceDirty` is false and `claimEligible` is false. The process check after completion found no remaining child using this packed installation.
