@@ -4,7 +4,7 @@ Exact head `69c1e95493924f3aae3d962252cdb3b02d3a95e8`, draftPR88, codex/vickie-i
 
 CI38355238048 atc104 failed pre-build typecheck because installed startup tests used generated declaration imports. Clean local reproduction also found the same mistake in successor closuretest. Fixd9 changes only those two tests: dynamic URL-based imports still execute emitted JS; typeof source imports typecheck before dist exists. Clean→typecheck→build now passes. No workflow relaxation.
 
-Exact final-tree full suite8,081passed/129files/one optional skip; format/lint(existing warnings)/boundaries pass; both installed/development smokes,7preflight tests and unchanged89-row Read evidence pass. Logs installed-profiles-combined-*.log. CI38356316908 now runs, no green claim yet.
+Exact final-tree full suite8,081passed/129files/one optional skip; format/lint(existing warnings)/boundaries pass; both installed/development smokes,7preflight tests and unchanged89-row Read evidence pass. Logs installed-profiles-combined-*.log. ExactCI38356316908 SUCCESS, full log pr88-69c-ci.log.
 
 Native closes installed4cf symlink identity refusal; independent13tests and original actual-code probe. This is readiness/identity admission, not sandboxing: dependency code may initialize before factory checks. Externaldea closes startup/import/owner limits with7,924tests plus independent probes. New dea low/info followups do not reopen those findings; forged argv by host is outside bare-import guarantee, packed inertness separately verified by reviewer, future tuple key collisions/dead alias cleanup remain optional followups.
 
