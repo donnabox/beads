@@ -62,32 +62,35 @@ Original service-review lows: RU trusted callback capability narrowing and publi
 
 ### Live worker ledger
 
-Checkpoint 2026-10-13T19:58:52Z. Autonomous profile completion is **PAUSED by the operator for low battery**. Heartbeatvickie-bdp-profiles is PAUSED. Do not resume until explicit operator direction. Session2026-10-08T20:26:35Z-81e5 remains unchanged; no reclaim. No release/Preview2promotion or public write-profile admission.
+Checkpoint 2026-10-13T21:55:40Z. Autonomous profile completion is **ACTIVE after explicit operator resume**. Same session2026-10-08T20:26:35Z-81e5 verified remote; no reclaim. Heartbeat ACTIVE. Operator has about2.5hours power/connectivity; wind down by2026-10-14T00:10Z, checkpoint/stop owned processes/pauseheartbeat by00:20Z (5:20p.m.PacificOct13) unlessextended. Prior pause snapshot preserved in operator-battery-pause.md. No release/Preview2promotion/publicwriteadmission.
 
-## Current source and PR
+## Current source and gates
 
-Main2e7d454a616467122884306fcd8d1d853b0bf5c1 is verified mergedPR95; priorPR94 is also merged. [PR96](https://github.com/gastownhall/bdp/pull/96) remainsDRAFT atbbab34f78864e7b3d2210ecc4527c9143e5e53ef. CI38457283500/job115503157943 passed2026-10-13T19:55:16Z. Native131 review clean; Claude131 completed with twoLOW test gaps, accepted in [root dispositions](read-update-numeric-admission-root-dispositions.md). GreenCI does not close these findings. No further merge performed.
+Main2e7d454a616467122884306fcd8d1d853b0bf5c1 verifiedPR95 merge. PR96 DRAFT atbbab34f78864e7b3d2210ecc4527c9143e5e53ef, exactCI38457283500 passed19:55:16Z. Native131clean; Claude131twoLOW findings accepted in [dispositions](read-update-numeric-admission-root-dispositions.md). Repair now frozen06b0e04a921c8501e36a8a68480cee72dc4c54b3 directbbab; root inspected actualtwo-test-filediff, no artifacts/runtime/coverage changed. Newhead needs installedchecks/nativeclosure/CI before readiness or merge. PriorCI not relabeled.
 
-## Paused workers and resumable work
+## Active worker ledger
 
-- update_implementation: PAUSING/stop requested. Isolated `/Users/dbox/repos/wt/vickie/vickie-numeric-admission-review-repair`, HEADbbab34f, two uncommitted test files: apps/bdptest/src/read-update-matrix.test.ts and packages/conformance/src/numeric-model-catalog.test.ts. Preserve WIP; do not treat as validated/frozen. Fixes Nliteral/depth guards, catalog rejection reason and stale test name. Worker pause report in logs/read-update-numeric-admission-review-repair. Needs final inspection/checks, frozen source, fresh evidence and native closure before advancingPR96.
-- transaction_implementation: COMPLETE/idle. Combined c1c17aafc22242883283e07e0d63ad6140daa94a treeb42dc600a245fc219e52b825c81ce68ed362bf7b, ordinary9eb+bbab in `/Users/dbox/repos/wt/vickie/vickie-set-numeric-conformance-integration`, branchcodex/vickie-set-numeric-conformance-integration. Worker reports88focused plus freshset1/TX31/RU13, genuineTXsixrows2.041s/RU54rows15.997s; clean/nochildren. Report logs/set-numeric-conformance-integration/report.md arrived atpause, root has not completed detailed review. Excludes current RUrepair and remains unpublished integrationcandidate.
-- profile_editorial_inventory: COMPLETE/idle. Native9eb code review clean with93tests; [report](transaction-set-conformance-native-review.md). NextTXplan038487f4 native review clean, outputtransaction-after-set-conformance-native-plan-review.md; root detailed review pending.
-- profiles_integration_validation: COMPLETE/idle. [NextTXplan](transaction-after-set-conformance-plan.md)038487f4 proposes two partialsetmutation/zero-match rows, fourfiles,<=48actions/sixcontrols, explicit224KiBplanningfence with unchanged1MiBparser/executionlimits. No implementation approved.
-- profile_runtime_inventory: COMPLETE/idle. [Metadata closure plan](read-update-numeric-metadata-closure-plan.md)78b5b980 and nativeplanreview complete. No implementation approved.
+| Worker | Work | Source/output | Gate |
+|---|---|---|---|
+| update_implementation | ACTIVE frozenrepair installed verification | vickie-numeric-admission-review-repair / codex/vickie-numeric-admission-review-repair,06b0e04; logs/read-update-numeric-admission-review-repair | Prior10focused/build/static/Readseal and3guard-removal controls pass; freshfrozenbothshard/RNcontrols running |
+| profile_editorial_inventory | ACTIVE native06b closure | outputread-update-numeric-admission-review-repair-native-review.md | Immutableauthor, isolatedtargetedchecks; nooutward |
+| profile_runtime_inventory | ACTIVE metadata plan revision | Original78b5b980 preserved; outputrevisedplan/dispositions inlogs | Rootread external9findings; acceptboundedcorrections with factualqualifications; noimplementation |
+| transaction_implementation | COMPLETE/available | combinedc1c17aafc22242883283e07e0d63ad6140daa94a treeb42dc600a245fc219e52b825c81ce68ed362bf7b in vickie-set-numeric-conformance-integration | Rootreadreport/actualscope; needs acceptedRUrepairordinaryintegration andexternalTXcouncil |
+| profiles_integration_validation | COMPLETE/available | nextTXplan038487f4 | Nativeclean/rootread; resumedexternalreviewpending; noimplementation |
 
-## External review processes stopped or completed
+Combinedc1 report rootread: ordinary9eb+bbab,7TX/5RUfileblobs exact.88focused/static/build/smokes/Readseal plusfreshset1/TX31/RU13 pass; TXsixrows2.041s,74actions/10closedchildren, RU54genuine15.997s/all129mapping/reporthashaudit. Clean/sourcebound1b126payload; no newpublicclaim. Report [combinedintegration](set-numeric-conformance-integration-report.md). Old9eb author/native evidence remains separatelybound.
 
-All owned externalClaude processes stopped. Numeric131 session13345 completedexit0, reviewed/twoLOW accepted. Metadata plan session85539 completedexit0 beforepause; outputread-update-numeric-metadata-claude-plan-review.txt is saved but unread/undispositioned byroot. TX9eb session37978/PID33144 and nextTXplan session69109/PID38586 deliberately terminatedSIGTERM atoperatorpause; both exited143, not completed council. Preserve any partialoutputs; resume those reviews afteroperatorresume, never claim passes. No owned caffeinate or review/test processes observed aftercleanup.
+## External council processes
 
-## Resume order
+- TX9eb code: resumedClaude session66160, outputtransaction-set-conformance-claude-resumed-review.txt. Originalsession37978 exited143 atoperatorpause, preserved, notpass. Exact9eb frozen/pushed; native93tests clean, authorpackedset1/TX44/RU209 pass.
+- NextTXplan038487f431fce8c2f7cae3501016b74ff11870c2219efb588a27731fea63cf5b: resumedClaude session25244, outputtransaction-after-set-conformance-claude-resumed-plan-review.txt, correctedexacthashprompt. Original69109 exited143. [Nativeplanreview](transaction-after-set-conformance-native-plan-review.md) clean/rootread, feasibleM30/Z16actions. Rootplanning224KiBauthoringfence approval remainspendingcouncil, no1MiBparserchange.
+- Metadata plan external85539 completedexit0 beforepause; rootnowread [review](read-update-numeric-metadata-claude-plan-review.txt). Ninefindings: explicitA75/B81/total156limits, secondProblemcontroltotal18, namedgrowthpins, acceptedparentpackedgate, traceablecoveragebasis, exactmetadata law, rawresponse/GETopaqueversionresidual, factualparentnames, robustlastblockpin. F4staleassertion rejected:131andbbab didhavecleanfreshpackedpasses, notonlytimeout;134ssleepcrossed120souter, notproved240ssupervisorfailure. Revisionworkerassigned. No automaticwholepromotion.
 
-1. Verify remote session still ours and operator explicitly resumes; reactivateheartbeat only then.
-2. Read Update workerpause report/preserveWIP; read metadata externalreview; finish boundedrepair/checks and independentclosure. OrdinaryadvancePR96, newexactCI, readiness, merge onlyafterallgates.
-3. Restart paused TXcode/nextplanClaude reviews, read actualcombinedc1 report/source/safe summaries. Ordinaryintegrate acceptedRUrepair intoTX candidate, fresh affectedchecks; publishreviewablePR. No evidence relabeling.
-4. Continueaccepted metadata/set nextslices onlyaftertheir council/root gates. Publicadmission stays closed untilfullrequired cumulative installed evidence.
+## Next safe actions
 
-Soleplan remains forkdesign.md. All logs under `/Users/dbox/repos/wt/vickie/bdp-integration-logs`. Prior exact reports staylinked in supportingdocuments; no historical evidence rewritten. No unavoidable human product decision needs action atthispause.
+Complete06b evidence/nativeclosure, publishordinaryPR96successor/newCI; mergeonlyafterallgates/actualtreeverification. Read/dispose resumedTXreviews, integrateacceptedrepair intoTXcandidate, verify/publish. Advanceacceptedboundedmetadata/setfollow-ons aftercouncil/root decisions. No humanproductdecisionblocksindependentwork. Publicprofilesremainclosed untilrequiredcumulativeevidence supportsselection.
+
+Soleplan forkdesign.md; logs /Users/dbox/repos/wt/vickie/bdp-integration-logs. Sessionguard beforealloutwardwrites. Preservepriorfailures/exactsourceevidence and ordinaryancestry. NoJanetCLI/staging/playgrounds/sharedDB, TrishTypes, optionalHistory/YAGNI/provenance or releasechanges.
 
 ## Current priority: BDP profile structure and implementation
 
