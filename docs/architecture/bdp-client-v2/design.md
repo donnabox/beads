@@ -62,13 +62,13 @@ Original service-review lows: RU trusted callback capability narrowing and publi
 
 ### Live worker ledger
 
-Checkpoint 2026-10-13T22:24:14Z. Autonomous profile completion is **active** under the existing session `2026-10-08T20:26:35Z-81e5`. The operator resumed with a 2.5-hour power/connectivity window. Begin wind-down at **2026-10-14T00:10Z**; checkpoint, stop owned local processes and pause the heartbeat by **00:20Z (5:20 p.m. Pacific October 13)** unless extended. No release, Preview 2 promotion or public write-profile admission.
+Checkpoint 2026-10-13T22:31:00Z. Autonomous profile completion is **active** under the existing session `2026-10-08T20:26:35Z-81e5`. The operator resumed with a 2.5-hour power/connectivity window. Begin wind-down at **2026-10-14T00:10Z**; checkpoint, stop owned local processes and pause the heartbeat by **00:20Z (5:20 p.m. Pacific October 13)** unless extended. No release, Preview 2 promotion or public write-profile admission.
 
 ## Verified delivery and current gates
 
 [PR96](https://github.com/gastownhall/bdp/pull/96) merged at22:08:08Z as `90d3fd3385e5b0422c2c406e3c0dc38918873e04`. Remote main and actual tree `6eb97d923c18b6cb84c641220fa4cdb8f4851e5e` verified; tree exactly matches tested `06b0e04a921c8501e36a8a68480cee72dc4c54b3`, ordinary parents prior main `2e7d454` and06b. Exact CI38474249797/job115560903390 passed22:07:17Z. Native131 review, Claude131 findings, independent06b closure and root scope acceptance complete. Two test repairs preserve all artifact bytes; fresh installed22 targeted checks include genuine both-shard18.790s evidence. [Merge verification](numeric-admission-merge-verification.json), [readiness](numeric-admission-merge-readiness.md), [closure](read-update-numeric-admission-final-root-closure.md). Earlier bbab/131 evidence remains separately bound.
 
-[PR97](https://github.com/gastownhall/bdp/pull/97) is DRAFT, advanced ordinarily to `e517f6f9667e1087f864921bdce2b446c9bb8225`, tree `d3a724c7271ffdbd1ca8a812eda16930924dff8b`. Exact CI38476772309/job115569270575 running; prior6d CI38475579654 passed22:16:34Z and is historical. Claude's single LOW description finding is fixed with five-byte deletion only; root independently checked actual diff and all other11 TX/RU blobs. [Root native closure](transaction-set-description-root-closure.md), [fresh report](transaction-set-description-repair-report.md). Installed set1/TX31/RU22 pass; six TX rows2.623s/all10 children closed,54 genuine RU rows22.796s/all129 mappings verified. New fixture716bytes/SHA3a7899ce and actual configuration identities recorded. No executable change or relabeled evidence.
+[PR97](https://github.com/gastownhall/bdp/pull/97) **merged22:29:07Z** as `3daa660b70e14ece54161ac3c173be69829c65c9`. Remote main and actual tree `d3a724c7271ffdbd1ca8a812eda16930924dff8b` verified; exact tested e517 tree, ordinary parents prior main90d3fd and e517. CI38476772309/job115569270575 passed22:28:13Z. Native/Claude council and LOW description finding closed, fresh source-bound installed evidence/root scope review complete. [Readiness](transaction-set-conformance-merge-readiness.md), [actual merge verification](transaction-set-conformance-merge-verification.json), [root closure](transaction-set-description-root-closure.md), [fresh report](transaction-set-description-repair-report.md). Old6d/9eb evidence remains separately identified. PR API showed a stale base SHA; fresh remote main ref and independent merge-tree calculation were used, then actual merged parents/tree verified.
 
 Fresh integration with metadata4d is frozen `8873facfe0d2e530c51953275eb2643ace4e12b7`, tree `248270dd0489b6ea44b19ebc098bcbb2996c79a4`, ordinary parentse517+4d. Exact4RU/7TX file blobs preserved, no conflicts. [PR98](https://github.com/gastownhall/bdp/pull/98) is now DRAFT on that exact8873 head, remote verified; CI38477466054/job115571592517 running. Root read [integrated report](metadata-set-integration-report.md) and actual source map:94focused/build/static/smokes/Read seal; fresh set1/TX31/RU13 pass, TX2.261s/all10children closed, genuine RU54rows19.493s/all129mappings and hashes verified. Metadata council remains an independent readiness gate.
 
@@ -78,13 +78,15 @@ Current qualification remains bounded: RU129 required/54 authored/30 whole/99 no
 
 | Worker | Current work | Source / evidence | Next gate |
 | --- | --- | --- | --- |
-| update_implementation | COMPLETE metadata slice | Frozen4d19a6a, [report](read-update-numeric-metadata-closure-report.md);204/204 final installed tests, genuine aggregate21.146s, clean/children closed | External code council pending; root pushed branch and remotely verified4d |
-| profile_editorial_inventory | COMPLETE native4d and next R/N plan review | [Native code review](read-update-numeric-metadata-closure-native-review.md), SHA44ed52c0; [plan review](after-metadata-native-plan-review.md), SHA90dafe9a | One LOW provisional source/coverage arithmetic correction; no authoring authority |
+| update_implementation | ACTIVE expanded TX + metadata integration validation | Frozen50b242d265bb0dcfbfd0353caf76eb4c3d91bd9d, ordinary8873+00fa; exact4RU/4TX blobs/no conflicts | Output effects-metadata-integration/report.md; no publication/readiness yet |
+| profile_editorial_inventory | ACTIVE native TX00fa code review | Source vickie-set-effects-evidence; report transaction-set-effects-native-review.md | Read-only while author final evidence inspected; no automatic whole credit |
 | profile_runtime_inventory | COMPLETE next R/N plan | [Plan](read-update-after-metadata-plan.md), SHAc027010f | Native/Claude review active; actual4d coverage703415 supersedes provisional703313 |
-| transaction_implementation | ACTIVE complete-set/zero-match authoring | New `vickie-set-effects-evidence` / `codex/vickie-set-effects-evidence`, exacte517 parent | Four files, approved revised plan/root acceptance; freeze early |
-| profiles_integration_validation | COMPLETE8873 validation; ACTIVE read-only B whole-clause audit | [Integration report](metadata-set-integration-report.md); new output read-update-numeric-metadata-whole-audit.md | B remains false; audit exact selected clauses against81 actions, no borrowed R/N evidence |
+| transaction_implementation | COMPLETE TX effects; ACTIVE next receipt plan | Frozen00fa81281291e83bac16f917250a7f5615c744ae, direct e517, [report](transaction-set-effects-evidence-report.md); output transaction-after-effects-receipt-plan.md | Source council pending; next plan only, receipt harness seam identified |
+| profiles_integration_validation | COMPLETE B whole-clause audit | [Audit](read-update-numeric-metadata-whole-audit.md), SHAa0adb7f6; [integration](metadata-set-integration-report.md) | Five selected obligations supported; root conditional acceptance, flags unchanged pending successor |
 
 ## Council results and active processes
+
+TX00fa code council active: native profile_editorial_inventory plus external Claude session86847, stdout transaction-set-effects-claude-review.txt. Exact four-file source frozen; author final evidence complete.89focused/build/static/smokes/Read seal, fresh set1/TX38/RU22 pass. Eight partial TX rows121actions,13sessions+bootstrap/all14closed,3.118s. Manifest238693bytes/6699nodes, coverage41812; fixture716/3a7899 unchanged; all6 predecessor raw objects and7 controls pass. Genuine RU54rows19.953s,129mappings/hash audit passes. Earlier annotation/old route-digest-pin failures and57 approved surplus draft header removals remain disclosed. Root read report. No outward publication of00fa yet.
 
 Metadata4d code: native complete and clean; root read actual review/source/author204-test report. External Claude session53383/PID98302, stdout `read-update-numeric-metadata-closure-claude-review.txt`, verified alive; pending.
 
@@ -102,11 +104,15 @@ New read-only R/N audit supports N's four selected obligations on configured tar
 
 ## Next actions
 
-Merge PR97 once exacte517 CI passes, with scope/ancestry and actual merged-tree verification. PR98 has fresh8873 combined evidence and is draft; finish metadata external council and exact CI before readiness. Continue approved TX effects slice. Review next R/N plan before any authoring or promotion, preserving disjoint ownership. No unavoidable human product decision currently blocks independent progress.
+PR97 delivery verified; do not resume its old repair. Preserve actual main3daa660b. PR98 has fresh8873 combined evidence and is draft; finish metadata external council and exact CI before readiness. Continue approved TX effects slice. Review next R/N plan before any authoring or promotion, preserving disjoint ownership. No unavoidable human product decision currently blocks independent progress.
 
 Sole plan remains this fork design.md. Logs `/Users/dbox/repos/wt/vickie/bdp-integration-logs`; every outward action uses `guarded-action.py` to reread remote session. Keep the bus cursor and power deadline. No Janet CLI/staging/playgrounds/shared databases, Trish Types, optional History/YAGNI/provenance or release changes. Prior battery-pause evidence stays in [pause record](operator-battery-pause.md); completed branches are historical, not duplicate work to restart.
 
 TX pre-freeze author measurement exceeded proposed manifest fence because its draft helper added context-presence assertions to every point GET. Root authorized removing only redundant draft assertions on GETs that participate in no metadata/context comparison, retaining all required state/schema/context oracles and all predecessor objects. Author must record exact removed draft IDs and resulting measured bounds; no required evidence or limit change authorized.
+
+## Conditional B/N coverage acceptance
+
+Root read full B audit a0adb7f6 and prior N audit2782cfe6 plus native plan review. [Conditional acceptance](read-update-numeric-whole-root-acceptance.md) approves B/N whole credit in the next reviewed coverage successor only after metadata council closure and fresh final-source genuine both-shard evidence. No flag in PR98 has changed. B's effectful raw-response opaque revision linkage remains disclosed and is outside selected no-op retention law; actual no-op full-record witnesses cover revision retention. N's own four selected obligations are supported. From current A31 whole, B+N would yield33/96; R remains false, no public admission. Next R plan must explicitly incorporate this bounded clarification after external review, preserving B/N raw bytes and controls.
 
 ## Current priority: BDP profile structure and implementation
 
