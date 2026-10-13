@@ -1,0 +1,97 @@
+Plan SHA‑256 and frozen commit both match exactly (`19624131…205e`, `33ebad3e…a9f8`, worktree clean at that commit). Verified against source; no files written.
+
+# Findings
+
+## 1. MEDIUM — Development-gap return precedes the principal decision, so plan line 60's ordering is an unflagged change to existing behavior
+
+**Section:** §Existing seams and bounded change → "One preparation/identity path" (plan line 60); done-when item 3.
+**File:** `packages/server/src/transaction-submission.ts:77–92`.
+
+**Impact.** Plan line 60 requires the unsupported-Selector gap "after completing unambiguous closed-shape/key syntax checks **and trusted authorization**". The current code returns `{kind:"development-limit"}` from the catch at 78–79, *before* the `unauthenticated` check at 89 and `forbidden` at 91. So an unauthenticated POST whose body carries an unsupported Selector — and today, an unauthenticated batch carrying any set, via `assertResourceOperation` at `transaction-batch.ts:87–90` — receives a bodyless 500 with `x-bdp-development-limit` instead of 401. That discloses the composition gap pre-auth and inverts `bdp.md` 4506–4508 (step 3, the principal). The plan phrases this as returning "the existing bodyless development 500", implying only the placement of a *new* check; in fact the existing return site must move, and that changes observable behavior for a request class that exists today.
+
+**Correction.** Have preparation record the gap category and return it only after the 401/403 branch — mirroring the in-repo precedent at `transaction-http.ts:299–304` (401 → 403 → `developmentGap("minimum-position")`). Leave the `TypeError`/`JsonSyntaxError` → `malformed-request` return where it is; spec step 2 does precede the principal, and step 2 explicitly includes "an absent, repeated, or invalid `Idempotency-Key`" (4502–4505), so the current key-grammar-before-401 order at lines 75–76 is correct and should not be "fixed". Item 3's phrase "401/403 before key" should be tightened to "before retained-key comparison" so it is not read as contradicting step 2.
+
+**Missing discriminating cases.** unauthenticated × unsupported-Selector set; `canMutate:false` × unsupported-Selector set; both again with the set inside a mixed batch — each must yield 401/403 with no key, no receipt, and no `x-bdp-development-limit` header.
+
+## 2. MEDIUM — Done-when item 2 puts two opposite admission phases in one clause
+
+**Section:** done-when item 2 (plan line 105); normative anchors (plan line 44).
+**Files:** `packages/server/src/transaction-set.ts:28–37,53–66`; `packages/server/src/transaction-batch.ts:781–800`.
+
+**Impact.** `nonnegativeInteger` is BigInt-based with no safe-integer cap, and `$defs/cardinality` has `minimum:0` with no `maximum`, so `cardinality:{min:9007199254740993}` is schema-valid *and* passes `prepareSetCore`. The refusal only lands at execution, where `admitJsonNumbers(op.input, …)` (which walks the whole set record, cardinality included) rejects it → `422 validation-failed` embedded in a `failed` receipt at 200, **after the key is bound and a receipt exists**. Negative and fractional bounds, by contrast, fail in `prepareSetCore` → `TypeError` → pre-key `400 malformed-request`. Item 2 lists both in one clause under a first sentence reading "create no key, receipt, identity, group or Resource", and never states the phase of "invalid-number diagnostic admission". An implementer pins the wrong side of the key boundary.
+
+The phase itself is defensible, but the plan's own anchor note understates the governing text: line 42 characterizes `#bdp-json-and-http-protocol` 892–902 as "I-JSON Unicode/duplicate-member syntax", while 892–895 is exactly what puts *every* admitted JSON text under binary64 round-trip admission — the rule the cardinality case turns on. `#json-mutation-admission` 2518–2521 routes inadmissible numbers to `validation-failed` rather than `malformed-request`, and the pre-admission list 4493–4530 does not catch a schema-valid integer, so post-admission in-receipt failure is the right placement.
+
+**Correction.** Split item 2: (a) grammar/closed-shape/negative/fractional/empty-cardinality → pre-key 400, no key, no receipt; (b) schema-valid non-round-tripping bound → key bound, `200` receipt with `status:"failed"` embedding `422 validation-failed`, correct outer `operationIndex`, diagnostic naming `/cardinality/min`. Correct line 42 to note 892–895 carries the number model.
+
+**Missing discriminating cases.** `{"min": 9007199254740993}` and `{"min": 1e30}` (admitted at preparation, failed in receipt) versus `{"min": -1}` and `{"min": 1.5}` (pre-key 400); plus `{"min":5,"max":2}`, which line 44 asserts has no syntax constraint — it is accepted and always yields `cardinality-violated` 409 in-receipt, and no item pins it.
+
+## 3. MEDIUM — Item 9's canonical cascade proof has no pinned-endpoint case, where the spec's own selector silently misses the Link
+
+**Section:** done-when item 9 (plan line 112); anchors line 37.
+**Files:** `packages/server/src/read-selector.ts:853–861,895–902`; `packages/server/src/resource-evaluator.ts:353–379`.
+
+**Impact.** `$defs/linkRecord.source`/`target` is `reference` = `absoluteUri` **or** `pinnedReference` object, and `storedRecord` reconstructs the stored shape verbatim. `compare`/`primitiveJsonEqual` return false for object-vs-string, so the spec's own cascade selector at `bdp.md` 4928 does not select a Link whose endpoint is pinned. `bdp.md` 868–878 makes this intentional ("A Selector compares stored values exactly… the dedicated `source`, `target`, and `endpoint` collection filters… are the pin-transparent way to select by endpoint") — but those are Read *collection* parameters, not Selector syntax, so set mutation has no pin-transparent endpoint selection at all. Consequence: `deleteWhere(links)` under-selects, the paired guarded `deleteBead` fails `incident-links-exist`, and the complete transaction rolls back, for a request that looks correct and is the documented pattern.
+
+**Correction.** Add to item 9 a Link whose `source` is a Pinned Reference; assert the matched count excludes it and the paired `deleteBead` fails `incident-links-exist` with full rollback and no change. Record the limitation in `transaction-implementation-progress.md` (plan line 98) rather than leaving it to be discovered after serving opens.
+
+## 4. LOW–MEDIUM — Private depth bound at the singleton↔batch set seam is unpinned and will diverge by two levels
+
+**Section:** plan lines 56 and 64; done-when items 2 and 4.
+**Files:** `packages/server/src/transaction-batch.ts:131–137,176–180`; `transaction-set.ts:17–27,79–94`.
+
+**Impact.** `prepareTransactionSingleton` deliberately starts its walk at depth 2 — "Apply the same operation-content depth bound as the batch wrapper" (178–179) — so an RU singleton and its one-operation batch agree on the private 32-level bound. `prepareTransactionSetCore` applies `losslessText(root)` from depth 0 (line 134), which puts a batch set member's `change` root at depth 3 and is the binding constraint. `prepareSetCore`'s own `transactionInputText` walk over the synthesized record starts at 0, putting `change` at depth 1. If a set singleton is wired by calling `prepareSetCore` on the bare decoded body with no root-relative walk, it accepts `change` documents **two levels deeper** than the batch form — a body admitted as a singleton and refused with a bodyless 500 as a one-operation batch. That contradicts plan line 64 ("Existing singleton↔one-operation batch equal identity must hold across actual HTTP") at the margin.
+
+**Correction.** State in plan line 56 that the set singleton applies the same depth-2-equivalent budget as `prepareTransactionSingleton`.
+**Missing discriminating case.** One `change` document at exactly the boundary nesting, accepted identically through `operations/update-where` and through a one-operation `operations/batch`, and one level deeper refused identically through both.
+
+## 5. LOW — `receiptMaximumItems` (32) bounds finite Event pages as well as receipt pages; the bounds inventory omits this
+
+**Section:** plan line 80 ("Receipt inline/page maximum is 32 at actual installed defaults"); done-when items 10 and 11.
+**File:** `packages/server/src/transaction-store.ts:210–214,682,718`.
+
+**Impact.** `transactionReceiptMaximum` defaults to `TRANSACTION_MAXIMUM_OPERATIONS` (32), and the same value bounds the **finite Event page** at line 682, not only receipt pages at 718. Item 10 mandates a 32-selected-Resource fixture (33 entries, one durable next page). That same transaction induces one Event per selected Bead, up to three per selected Link with in-Scope endpoints, up to four with an owned source — so the Event observation item 11 demands will itself span several finite Event pages at the same 32 bound, while item 11's oracle ("removes/reorders a real observed expanded entry/Event") presumes a complete expanded list.
+
+**Correction.** Record in plan line 80 that one knob bounds receipt pages *and* finite Event pages. In item 11, state whether the Event/changefeed oracle reuses the 32-selection fixture (then require Event-page continuation following and pin the induced-Event count per selected Link) or a deliberately smaller one.
+
+## 6. LOW — "Original-request pointers" is cited but never made executable for set failures
+
+**Section:** plan line 38; done-when items 2 and 7.
+**File:** `packages/server/src/transaction-batch.ts:781–800,820–829`.
+
+**Impact.** `bdp.md` 5258–5262 requires the receipt problem to carry `pointer`, an RFC 6901 pointer into the request body as submitted, "so that in a batch it begins with `/operations/{operationIndex}` and in a singleton it addresses the record directly". The source emits no `pointer` member anywhere; the set numeric diagnostic embeds an operation-relative path inside `message` ("unsupported number at request location /cardinality/min") with no `/operations/{i}` prefix. `$defs/receiptProblem` makes `pointer` optional, so this is a truthfulness/quality gap rather than a schema violation — but the plan cites the clause and then never pins it. It also interacts with cross-form identity: `encodeSemanticValue` is invoked over `[{operation,input}]` with carrier kind excluded and objects unordered, so a singleton and its one-operation batch share one normalized identity and one durable receipt, which can only record the original submission's spelling.
+
+**Correction.** Either state in item 7 that set receipts omit `pointer` in S2a and record it in `transaction-implementation-progress.md`, or add it with the batch prefix. Either way add one sentence that the recorded pointer reflects the original submitted carrier form, not a cross-form retry's.
+
+## 7. LOW — Two further hardcoded ten-target inventories; the proposed reserved overlap is too narrow
+
+**Section:** §Installed inventory dependency (plan lines 74, 76) and file-ownership row (line 96).
+**Files:** `apps/bdptest/test-support/transactional-execution-binding.ts:50–61` with the enforcing assertion at **70–71**; `apps/bdptest/src/transactional-binding.test.ts:59–70`; `packages/server/src/transaction-http.test.ts:169`.
+
+**Impact.** Plan line 74 treats this as "this independent expectation", one file/test overlap, and cites lines 45–68 — a range that stops *before* line 70's `isDeepStrictEqual(ready.targets, operationTargets)`, which is what actually enforces the inventory. Separately, `installedTransactionBinding` is fed a second hardcoded ten-name `ready()` fixture at `transactional-binding.test.ts:59–70`; if the helper becomes twelve and that fixture does not, every test in that file throws "installed operation target inventory mismatch". (`transaction-http.test.ts:169`, `toHaveLength(10)`, is already covered by plan line 94.)
+
+**Correction.** Name `transactional-execution-binding.ts:50–71` *and* `apps/bdptest/src/transactional-binding.test.ts:59–70` in the root reservation. Non-blocking for S2a but worth visibility: `packages/conformance/src/transactional-observation.ts:144–156` carries a third, nine-name mutation-source allowlist used for dynamic receipt authority, which omits `update-where`/`delete-where` — consistent with plan line 76 keeping runner admission and receipt-authority rewrite out of scope, but it means set rows can never be credited through the ordinary runner until the conformance lane updates it.
+
+## 8. INFORMATIONAL — the per-operation rescan is semantically mandatory, so the memory follow-up cannot amortize it
+
+**Section:** §Bounds (plan lines 82–86).
+**Files:** `packages/server/src/transaction-store.ts:1131–1138`; `transaction-batch.ts:802–814`.
+
+**Impact.** The unbounded-scan claim is accurate and well grounded, but understates the shape: `resources(kind)` runs `SELECT id FROM resources WHERE kind=?` and then one `requiredResource(id)` lookup **per row** (N+1), and the set branch calls it once **per set operation** — so up to 32 outer sets materialize the complete collection up to 32 times, plus `isResourceVisible` per candidate. The follow-up sketch ("stream one frozen stored row at a time") should say explicitly that staged-selection semantics (`bdp.md` 4245–4248: the Selector "observes the effects of preceding operations in the same Mutation Transaction", pinned by done-when item 5) forbid caching or sharing a candidate snapshot across operations, so the 32× amplification is irreducible and only per-row retention is improvable.
+
+**Correction.** Add that sentence to lines 84–86, so a later implementer does not "optimize" by hoisting one snapshot per transaction and silently break item 5.
+
+# Direct answer: yes, the settled valid subset can progress with Q1/Q2 visible — with finding 1 fixed
+
+The structural property that makes it safe is stronger than the plan states, and worth recording explicitly: `selectReadResources` parses and bounds the Selector **completely before touching candidates** (`parseSelector` at `read-selector.ts:182`, candidate loop at 184), and `evaluate` raises no `ReadSelectorError` — only an internal-invariant `Error`. So `prepareSetCore`'s empty-collection probe at line 96 is a *total* pre-admission decision: every syntax, unsupported-feature, bytes, depth and nodes refusal is candidate-independent and deterministic, and a request admitted at preparation cannot raise a Selector refusal later at execution against a populated collection. That is what lets the valid/invalid partition be drawn pre-key without risking an admitted-then-faulted transaction, and it is why Q1/Q2 can stay open.
+
+Everything else I checked holds up:
+
+- **Twelve-target binding is feasible with no protocol or schema edit.** `bdp.md` 4316–4331 and 4336–4350 name exactly the twelve; `$defs/updateWhereRequest`/`deleteWhereRequest` are closed roots that exclude `operation` (grounding plan line 35's "set singleton bodies exclude discriminator" in the schema rather than inference); `$defs/batchOperation` is the closed eight-record union; `sequenceMember` is a closed eight-record union with no sets, grounding "sets are not sequence members". `packages/protocol/src/transactional-http-contracts.test.ts:165` already pins the twelve-name regex. `transaction-runtime.ts:354` derives `targets` from `handler.targets`, and `handler.methodResponse` is the single raw method authority (`transaction-runtime.ts:135`) — no second route table is needed (`development-runtime.ts:40–49` is the separate Read+Update listener).
+- **Anchors spot-checked and accurate** (±1–2 lines): 4165–4172, 4180–4186, 4220–4286, 4305–4381, 4460–4588 with the ordered steps at 4493–4530, 4872–4942, 4990ff, 5141–5180, 5247–5276, 5284–5337, 5573–5588, 3795–3801, 849–878. Schema claims verified verbatim: `selector` is `{type:string,minLength:1}`; `cardinality` is closed, `minProperties:1`, integer `minimum:0`, no maximum, no `min<=max`.
+- **Bounds unchanged and correctly inventoried** apart from finding 5: `TRANSACTION_RUNTIME_LIMITS` is exactly 32/256/32/256KiB/64KiB/64KiB/512KiB/16; `TRANSACTION_SELECTOR_LIMITS` is 4096/32/256 measured on decoded UTF‑8, the right analogue of `bdp.md` 1065–1066's post-percent-decoding rule.
+- **Owned effects / ordering / receipts hold.** Cardinality (816–829) precedes the matched charge (833) — the 064 repair is intact; selection sorts by `compareCanonicalIds` (814) matching 5159–5165 and 5576–5582; the `matched` entry precedes per-Resource entries (835, 658); no-ops push results but mint no revision or Event (662); owned fan-out is capped at four facts (756–763); `revisionProvenance` on a beads `deleteWhere` is accepted and inert, matching 4249–4253's "deletion mints no version for the deleted Resources themselves" — no owner fault. `ROOT_SELECTOR_MEMBERS` is exactly the spec's candidate vocabulary at 833–843, so `revision` is correctly unselectable.
+- **Identity is order-insensitive.** `encodeSemanticValue` treats objects as unordered and normalizes numeric spelling to coefficient/exponent, satisfying 4451–4457, while Selector text is encoded as an exact string node — so plan line 58's distinction ("numeric spelling equality applies to numeric JSON members; it does not normalize numeric-looking text within Selector strings") is correct in source. `carrier.keys` is read only by the RU member/sequence executors and `prepareTransactionSequence:244`, never by the Transactional singleton/batch owner, so the `keys:[]` carrier from `prepareTransactionSetCore` is safe for the proposed unification.
+- **Q1/Q2 are correctly framed as unresolved, not as license.** The pre-admission list at 4493–4530 never names selector bounds, and the receipt `limit-exceeded` enumeration at 5316–5319 names only examined/matched/mutated Resources, induced Events and duration. No existing normative phase covers a selector-bytes/depth/nodes refusal at mutation, so holding it as a bodyless, self-identifying development 500 (`x-bdp-development-limit` plus `x-bdp-development: non-attesting`) invents no protocol law and stays inside the 4588–4592 row's "bodyless `500` an unexpected internal fault produces anywhere" carve-out. Finding 2 identifies a *third* admission-phase question — numeric admission of control members — that the plan treats as settled; it is resolvable from 892–895 + 2518–2521 + 4493–4530 without a new ruling, but it needs to be written down rather than assumed.
+
+No finding requires abandoning S2a or choosing a new protocol law. Findings 1 and 4 are prerequisites to the increment behaving identically across the two carrier forms; 2, 3, 5 and 6 are matrix and disclosure corrections; 7 widens the reservation; 8 protects the deferred follow-up from a plausible wrong optimization.
