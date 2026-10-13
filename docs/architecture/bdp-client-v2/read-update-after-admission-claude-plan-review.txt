@@ -1,0 +1,117 @@
+I verified the plan against the frozen tree and the actual catalog/schema/runtime. Findings in severity order; verified-correct items are summarized at the end.
+
+---
+
+## F1 — High — Row A's pinned correction is not expressible through the existing client contract, and the already-noted fix is inverted
+
+**Where:** plan §Row A item 2 and line 37 ("preserving any opaque pin") · `apps/bdptest/test-support/read-update-exact-client.ts:105-115` · `packages/server/src/resource-evaluator.ts:724-738` · `docs/specs/bdp.md:2449-2460`
+
+**Evidence.** The exact client's `bodyBindings` substitutes **strings only, into top-level fields** from the whitelist `["type","bead","link","source","target","expectedRevision"]` (`body[field] = string(...)`, line 110-114). There is no mechanism to place a captured canonical Bead URL inside a `{uri, revision}` object, and `id` is not substitutable at all. So the corrected `{uri: <canonical>, revision: <pin>}` cannot be authored from a capture.
+
+Separately, the premise behind the already-noted correction does not hold. Spec 2449-2460: *"The pin is provenance, not a constraint: an authority stores and echoes it byte-identically, compares it only for equality, and performs no semantic validation…"* The runtime agrees — `resource-evaluator.ts:736` passes `reference.revision` straight through, and nothing in `packages/server/src` ever compares an endpoint pin against a stored revision. A literal `"fixture-pin"` on the corrected request therefore returns 200, not a failure.
+
+**Impact.** (a) As written the vector cannot be authored on the client lane. (b) Switching to "an independently observed actual revision" is strictly weaker evidence: a real revision cannot distinguish *pin-unvalidated* from *pin-validated-and-happened-to-match*. The opaque literal is the stronger choice and additionally witnesses the byte-identical echo the spec requires.
+
+**Bounded fix.** Keep the literal opaque pin. Give the replacement Bead a **supplied literal creation id** (e.g. `beads/ra-pin-target`) so both the bad and the corrected body are fully literal, and author the pair either on the raw lane (`{binding:"operations", path:"create-link"}` + explicit `idempotency-key`, exactly as existing `read-update.singleton.*` rows do) or as a client action with a literal body and no `bodyBindings` for `source`/`target`. Add one assertion that the stored Link echoes `revision` byte-identically.
+
+---
+
+## F2 — High — the rows must be inserted at canonical catalog positions, and two pinned digests must both be re-pinned
+
+**Where:** plan line 71 · `packages/conformance/src/cumulative-artifact.test.ts:114-116` · `apps/bdptest/src/read-update-matrix.test.ts:204-212, 245-250, 916-918, 1233-1235`
+
+**Evidence.** The bundle test asserts `manifest.scenarios.map(id)` equals the merged catalog order filtered to planned ids. Reconstructing that order (read-v1 minus `retires`, then read-update-v1 — verified to reproduce the current 47 exactly), the required positions are:
+
+| new row | insert after | insert before |
+|---|---|---|
+| `read-update.singleton.no-local-bindings` | `read-update.singleton.unsupported-media-type` (#33) | `read-update.singleton.result-headers` |
+| `read-update.alias.non-canonical-target` | `read-update.alias.delete-releases` (#37) | `read-update.alias.no-version-minted` |
+| `read-update.alias.unknown-subject` | `read-update.alias.non-canonical-target` | `read-update.alias.no-version-minted` |
+
+`clientReadRoutes` is derived by iterating manifest scenarios in order (204-212) and deduped first-occurrence (245-250), so mid-manifest insertion shifts route order. `exactConfigurationDigest` is pinned as the literal `fdcbe130767421273c839d15cd8db5fef4b8047e7aabe192a54c1d4110aca6be` in **two** places — line 917 and line 1234.
+
+**Impact.** Appending the rows fails the order check; re-pinning one digest occurrence leaves the other failing.
+
+**Bounded fix.** Insert at the three positions above; re-pin both literals from one measured run; bump the `// One aggregate job starts 47 isolated authorities` comment at line 804 to 50.
+
+---
+
+## F3 — Medium — coverage rows require a full ordered assertion-id enumeration, and that file is absent from the byte budget
+
+**Where:** plan §Wire/oracle/scope/capacity (four-file list; byte budget) · `packages/conformance/src/cumulative-artifact.test.ts:176-190`
+
+**Evidence.** For every planned scenario the coverage row's `status` must flip to `"bounded-observation"` and `bindings[0].assertions` must equal `actions.flatMap(a => a.assertions.map(x => \`${a.id}.${x.id}\`))` **exactly and in order**. Measured density on the closest analogue, `read-update.singleton.unsupported-media-type`: 116 actions / 735 assertion ids / 30,029 coverage bytes ≈ 259 coverage bytes per action. At ~295 new actions that is ≈ 76 KB added to `read-update-coverage-v1.json`. The manifest side is fine: 3,094,308 / 1,583 ≈ 1,955 bytes per action × 295 ≈ 577 KB, inside the 750,000-byte target.
+
+**Impact.** A mandatory, mechanical authoring step the plan never names, and a second artifact growing unbudgeted — the capacity section accounts only for the manifest's 4 MiB cap.
+
+**Bounded fix.** Generate `bindings[0].assertions` mechanically from the authored actions; add a coverage-bytes line alongside the manifest line in the budget (and state the ≈577 KB manifest estimate so the 750,000 target is checkable before authoring).
+
+---
+
+## F4 — Medium — Row A's slot-inventory rule is applied asymmetrically
+
+**Where:** plan §Row A items 1-4 and line 39
+
+**Evidence.** The complete `@name`-capable slot inventory is exactly seven: `updateBead.bead`, `deleteBead.bead`, `createLink.source`, `createLink.target`, `updateLink.link`, `deleteLink.link`, `putAlias.target` (`$defs.{updateBead,deleteBead,updateLink,deleteLink}Members` → `resourceReference`; `createLinkMembers.source|target` → `inputReference`; `putAliasMembers.target` → `resourceReference`). Each is overridden by a `durable*` variant in its singleton request definition. The plan covers all seven — the inventory is complete, no missed slot.
+
+But `putAliasMembers.alias` and `deleteAliasMembers.alias` are **already** `durableResourceReference` at the shared members level — the same situation as `createBeadMembers.id` and `createLinkMembers.id`, which the plan deliberately excludes as "not sequence-local reference slots". The plan includes the two alias-member vectors and excludes the two creation-id vectors on identical facts. (Rejection for all of these comes from the schema: `read-update-values.ts:262-263` explicitly skips `@`-prefixed values; `validateAliasSyntax` at 291-306 additionally fires for `alias`, and runs identically for sequence members at line 317.)
+
+**Impact.** The "whole candidate after a reference-slot inventory" claim rests on a rule the inventory does not apply consistently.
+
+**Bounded fix.** State the rule. If it is *every slot a singleton request definition constrains*, add `createBead.id` and `createLink.id` bare-`@made` vectors (13 total; both are `durableResourceReference`, both give the expected 400). If it is *only slots whose singleton definition differs from the shared members definition*, drop the two alias-member vectors and attribute them to the `#alias-targets` grammar sentence (spec 2963-2965), which this requirement does not select.
+
+---
+
+## F5 — Medium — the "within a Pinned Reference" half of the clause is reachable at only two slots; record it
+
+**Where:** plan §Row A item 2 and the `singleton.no-local-bindings` credit boundary
+
+**Evidence.** `inputPinnedReference` is referenced only from `createLinkMembers.source|target`. `putAliasRequest.target`, `updateBead.bead`, `deleteBead.bead`, `updateLink.link`, `deleteLink.link` are plain strings in both the members and the singleton definitions, so no pinned form exists there to reject. At the two reachable slots the contrast is genuine: `inputPinnedReference.uri` → `resourceReference` admits `@name` in a sequence, while `durableInputPinnedReference.uri` → `durableResourceReference` (`^[^@]`) rejects it in a singleton.
+
+**Impact.** Left implicit, a reviewer reads the four pinned vectors as 2-of-7 coverage of the pinned half rather than full coverage of its reachable surface.
+
+**Bounded fix.** One line in the credit boundary naming the two reachable slots and the `$defs` fact (`inputPinnedReference` vs `durableInputPinnedReference`) that makes the other five unreachable.
+
+---
+
+## F6 — Medium — Row B's first retry probe cannot discriminate, and is guaranteed inert by the identity model
+
+**Where:** plan §Row B "Retry discriminators", first sentence · `packages/server/src/member-identity.ts:88-91` · `packages/server/src/member-executor.ts:751-768` · `packages/server/src/alias-evaluator.ts:156-159`
+
+**Evidence.** The field-rule table gives `putAlias` exactly `{field:"alias"}` and `{field:"target", binding:"bead"}` — **neither carries `alias: true`**, so no alias witness enters `identityJson` for an alias put. Changing the live resolution of the alias named by the put's wrong-category `target` therefore cannot change the semantic identity, and the retry is a verbatim retained replay. Re-execution would also yield the same 422, since the category check at `alias-evaluator.ts:158-159` fires before any resolution.
+
+**Impact.** The probe's outcome is identical under both hypotheses — it is a control, not a discriminator. The plan concedes this two sentences later but still presents it first under "Retry discriminators".
+
+**Bounded fix.** Relabel it as a no-effect control. If an alias-resolution-change discriminator is wanted, site it on a slot that does carry an alias witness — `updateBead.bead` or `createLink.source|target`, both `alias: true` in the same table. The load-bearing discriminators remain the changed-input same-key 409 and Row C's create-then-replay retained 404, both of which check out against `member-executor.ts:764-780`.
+
+---
+
+## F7 — Low — ledger discipline the plan half-states
+
+**Where:** plan §Wire/capacity bullets 2 and 4 · `apps/bdptest/src/read-update-matrix.test.ts:1824-1859`, `204-212`
+
+**Evidence.** The live-identity ledger does `live[collection].add(operation.id)` for every successful create (1850) and compares a collection GET's `identities` assertion against the accumulated sorted set (1836-1838) — a create without a supplied `id` inserts `undefined`. Collection GETs on `beads`/`links` must carry `query: {limit:"100"}` plus a `complete` assertion (`/next` = null) and an `identities` assertion (1831-1838) — the plan states this part correctly. The enforced per-row ceilings are `peak.beads <= 64` and `peak.links <= 16` (1858-1859); `limit=100` is the page request, not a live-identity bound, so "all under actual page maximum 100" names the wrong constraint for the 24/12 budget (which is inside 64/16 regardless). Also: client GETs only resolve `targetBinding` against runner bindings and `clientReadRoutes` only whitelists bindings present in the fixture, so every Link/Bead/alias a row inspects needs a fixture binding in file #3 (unused bindings are harmless — verified by the test at 1224-1236, which shows they leave the digest unchanged).
+
+**Bounded fix.** Require every row create to supply a literal row-owned `id`; add each new row to `ledgers` with measured `actions/raw/client/peak`; restate the live bound as 64 Beads / 16 Links per row with `limit=100` as the page request.
+
+---
+
+## F8 — Nit
+
+"leaving ~350KiB headroom": 1,099,996 − 750,000 = 349,996 bytes = **341.8 KiB**. The 3,094,308 and 1,099,996 figures themselves are exact.
+
+---
+
+## Verified correct (no action)
+
+- **Counts.** 129 required rows, 47 `bounded-observation`, 26 `wholeContract`, 21 partial, 82 omitted, 103 uncovered — all exact; `uncoveredIds` is pinned at 103 in the matrix test (line 919). All three target rows are currently `omitted` with empty bindings.
+- **Selected clauses.** The plan's paraphrases match the catalog verbatim for all three IDs, and all six spec line ranges (2096-2099, 2988-2993, 3528-3531, 2964-2968, 2985-2988, 3513-3527) land exactly on the cited text.
+- **Source seams.** `read-update-preflight.ts:39-54`, `read-update-values.ts:217`, `alias-evaluator.ts:67-96 / 136-143 / 146-160 / 162`, `resource-evaluator.ts:724-737`, `member-executor.ts:593-676`, `alias-evaluator.test.ts:249-280` — all accurate, including the check order (wrong-root → uniqueness → target category → visible-target load) and the warning that alias paths must avoid committed Bead local IDs so `identity-taken` cannot mask the category fault.
+- **Row B inputs are valid and reach the intended code.** External URIs survive preflight (`preflight:122`, "External references remain byte-exact"); in-Scope absolute alias/Link URLs survive canonical-spelling checks; local and pinned Link paths as createLink endpoints both hit `bad("Link endpoint is not a Bead reference")` before any Type-contract work. Vector arithmetic (5 + 4 = 9) checks out, and the corpus mirrors the five categories already exercised in `alias-evaluator.test.ts:256-261`.
+- **Exactly-one-diagnostic is a real observation.** The installed limit is `{diagnostics: 32, diagnosticBytes: 524288}` (matrix test:901), so asserting length 1 is not forced by configuration. `assertAliasDiagnosticLimits` guarantees no truncation of that one diagnostic; `diagnosticsTruncated` is a schema member and can be asserted absent.
+- **Retry semantics.** Ordinary member failures are retained (`member-executor.ts:669-677`, `key_state` effect `'failure'`); exact replay returns the retained Problem, changed input under the same key returns 409 `idempotency-conflict` (764-768); retention is 24 h. Carrier rejection throws in `prepareReadUpdateSingleton` (`development-authority.ts:313`) **before** key claim, mapped to 400 `malformed-request` at `development-runtime.ts:477-478` — so Row A's same-key reuse is sound.
+- **Sequence shape.** Outer 200 with a failed member and a committed tail is the actual behavior (`read-update.sequence.order-and-partial-commit`), member `validation-failed` → 422 and `resource-not-found` → 404 (`sequence-executor.ts:160-190`).
+- **Row C routing.** Wrong-root `alias` members under `beads/`/`links/` → 404 at `alias-evaluator.ts:148`; `updateBead.bead` naming a Link and `updateLink.link` naming a Bead → 404 at `resource-evaluator.ts:638-640`.
+- **Four-file claim holds.** Routes and client-GET whitelists derive automatically from fixture bindings + manifest actions; no scenario count or manifest digest is pinned outside `read-update-matrix.test.ts`. The "fifth-file exact-list" the plan anticipates is real and correctly identified — the reviewed whole-contract list at `cumulative-artifact.test.ts:147-174` — and is untouched while all three rows stay partial.
+- **Runner seams exist.** Raw POST with an arbitrary literal body and explicit `idempotency-key` is already used on all eight singleton routes plus `sequence`; schema wrappers `harnessInstalled_{mutationResult,aliasResult,sequenceResponse,readUpdateProblem}` all exist; counterfactual controls are driven from in-memory manifest mutation inside file #4.
+- **Environment.** 8 singleton routes + sequence in the Operation Directory and route whitelist; 5 s exchange (`requestTimeoutMs: 5000`), 30 s focused, 90 s cooperative abort, 120 s outer; Node 24.16.0 / pnpm 11.20.0; each scenario launches its own installed reference process, so the three new rows add three authority launches on top of 47.
