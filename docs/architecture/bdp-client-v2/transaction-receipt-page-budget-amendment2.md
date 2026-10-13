@@ -10,14 +10,14 @@ runner.ts captureValue (around2470) returns only absolute HTTP(S) URLs for HTTP 
 
 | Metric | Approved candidate | Corrected candidate | Delta / proposed fence |
 |---|---:|---:|---|
-| Manifest bytes |366621|377073|+10452; propose total370KiB=378880,1807headroom|
-| Growth from238693 |127928|138380|propose136KiB=139264,884headroom|
+| Manifest bytes |366621|377077|+10456; propose total370KiB=378880,1803headroom|
+| Growth from238693 |127928|138384|propose136KiB=139264,880headroom|
 | Authoring JSON-value nodes |9843|10071|+228; propose10200,129headroom|
-| Coverage bytes |54804|54800|only assertion mirror rename; +16KiB from41812 unchanged|
+| Coverage bytes |54804|54804|original assertion ID retained; +16KiB from41812 unchanged|
 | Actions |18new/139total|18new/139total|unchanged, no contingency|
 | Resources/sessions/children |32/15/16|32/15/16|unchanged|
 
-Corrected manifest SHA256 `3d32e67d38ed3a4753707a8d88e343fbf462ea9821538dc355d5d63200b06a8f` at manifest-final-literal.formatted.json. Corrected coverage SHA256 `ebc4a2d4c99bc617eafcdd5c564ea5891afc9927e6b2e32472dd289282decdef` at coverage-final-literal.candidate.json. Narrow artifact diff saved in amendment2-manifest.diff. Original reviewed candidates remain unchanged. Final loopback source still needs all8 old raw object preservation verification after installation; no old object is intentionally changed by this candidate.
+Corrected manifest SHA256 `fb0a71cb5f568a3c65bbae35f2f0946710e5906088dc11dd31fe88c6bbdbcc29` at manifest-final-literal.formatted.json. Corrected coverage SHA256 `f21d2822b789ff3e03c633b89c2412ee3bb2e7b38ece62e8eed0923d930f9172` at coverage-final-literal.candidate.json. Narrow artifact diff saved in amendment2-manifest.diff. Original reviewed candidates remain unchanged. Final loopback source still needs all8 old raw object preservation verification after installation; no old object is intentionally changed by this candidate.
 
 The10200 fence is strictly authoring test JSON-node accounting. Runtime OBSERVED_JSON_MAX_CONTAINER_ENTRIES=10000 is unchanged; it applies separately to each actual response. No parser, transport, owner, mutation, raw-body, response, wire or deadline setting changes.
 
@@ -32,3 +32,11 @@ Root/native review must approve this narrow correction before installation/fence
 ScenarioCapture on HTTP accepts only response-url/header-link/json-pointer results that are absolute URLs (runner.ts captureValue). json-pointer equalsBinding can compare arbitrary captured client values, but these collection reads are HTTP and have no permitted client projection. json-equals accepts literal/fixture values, not an earlier HTTP body. response-metadata-equals compares only status/named headers; header equalsResponse is ETag-specific and cannot attest individual opaque Resource revisions/provenance. An optional collection validator would not be equivalent to full-envelope equality or a portable required check. With unchanged18 actions, current private receipt-read action and no new grammar/runtime/fixture, there is no existing supported assertion that captures/recompares the entire current collection's opaque fields. A separate actual-wire app callback witness would be additional non-DSL evidence, not a substitute silently relabeled as this canonical assertion; it is not proposed here.
 
 Scope disposition requested: retain independent semantic current-state/schema/count/order checks and exact recorded root/page body retention, explicitly leave current collection opaque revision/provenance equality across reopen unqualified. Whole row remains partial. No new capture semantics, helper or extra request is requested.
+
+## External final dispositions
+
+- Preserve p-final assertion ID `exact-later-items` while replacing its kind/payload with the complete literal tuple oracle. The coverage assertion mirror therefore remains exactly the original54804-byte candidate, including `p-final:exact-later-items`; no stale binding. Corrected manifest377077bytes/growth138384/10071nodes fits the proposed136KiB/370KiB/10200 fences (880growth/1803total bytes and129nodes headroom).
+- Thin authoring headroom is intentional for fixed18new/139total actions; no contingency or runtime limit change.
+- Final collection after reopen remains unexecuted in the failed draft. Fresh source-frozen packed execution must prove the ordered oracle; if it fails, diagnose rather than relax ordering.
+- URL-only capture restriction is specifically HTTP captureValue. Private client captures support arbitrary JSON, so retained root/page whole-body equality remains exact. The separate current collection opaque revision/provenance residual remains explicit and unqualified.
+- External final text was read by root from session83904 while process completion was pending; no successful exit is inferred here. Root acceptance remains required before source adoption.

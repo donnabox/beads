@@ -62,7 +62,7 @@ Original service-review lows: RU trusted callback capability narrowing and publi
 
 ### Live worker ledger
 
-Checkpoint 2026-10-13T23:27:33Z. Autonomous profile completion remains **active** under session `2026-10-08T20:26:35Z-81e5`. Operator authorizes ready main merges after exact-head CI, selected two-reviewer council, finding dispositions, scope/ordinary ancestry and actual merged-tree verification. No release, Preview2 promotion or public write-profile admission.
+Checkpoint 2026-10-13T23:35:31Z. Autonomous profile completion remains **active** under session `2026-10-08T20:26:35Z-81e5`. Operator authorizes ready main merges after exact-head CI, selected two-reviewer council, finding dispositions, scope/ordinary ancestry and actual merged-tree verification. No release, Preview2 promotion or public write-profile admission.
 
 **Power:** wind down2026-10-14T00:10Z; checkpoint/push, stop owned processes and pause heartbeat by00:20Z unless extended. Keep the role claim.
 
@@ -118,6 +118,16 @@ Next: check exactc958CI, ordinary merge-tree against fresh main; ready/mergePR99
 PR96 merged90d3fd3385e5b0422c2c406e3c0dc38918873e04 (exact06b tree), PR97 merged3daa660b70e14ece54161ac3c173be69829c65c9 (exacte517 tree), PR98 merged77b above. Each has durable readiness/actual-merge verification reports. These are completed/non-resumable; preserve source-specific historical evidence rather than rerunning or relabeling it.
 
 Latest23:29Z: PR100 remote fast-forwarded and verified to final e08673227362119dfafe7a8eabe38a0a11125104; [final integration report](numeric-r-council-integration-report.md) read by root:20 catalog+27 fresh installed pass, genuine54rows16.585611s, all129 mappings/hashes verified, cleanup complete. Still stacked/no eligible CI trigger until PR99 lands. Helper external [review](transaction-receipt-page-helper-claude-review.txt) completed with two Low findings; update_implementation assigned isolated43e child to correct later nonterminal-page classification and add cross-direction authority tests. Amendment2 explicitly discloses current opaque collection-envelope continuity is not observed; native confirms no selected pagination conjunct lost, external pending.
+
+## Latest authoritative checkpoint23:35Z
+
+PR99 **merged23:33:55Z** as055bd8653f5c4e1594dc5a84c305f2ecea99f958, exactc958treec0fa3c30092476ea56fe21ca9f2da6a1c53e5ab1/parents/main verified. CI38483730089 SUCCESS23:32:51Z. [Readiness](effects-merge-readiness.md), [verification](effects-merge-verification.json). Originalb604failure remains preserved/unexplained. PR100 is now draft **b14b91b762f9d2e5f9eb3102fec70e02a0879d45**, ordinarye086+actualmain055bd865, exacttestede086tree9e4c20413724218f0210db9f97a668cc34104e5a. Retargetedmain beforepush; CI38485095656/job115596706922 queued23:34:44Z. [Reconciliation](numeric-r-main-reconciliation.md). FinalwholeR remainsfalse33/96; root/native/externalcodefindingsclosed, next-planreviewdoesnotalterPR100.
+
+Receipt helper **55299682e1ecfe7ee84c95975abdb94685607a07** direct43e pushed/remoteverified, exact2fileLowrepairs334testspass. [Rootclosure](receipt-page-helper-root-closure.md), [report](receipt-page-helper-repair-report.md). Amendment2 finalmanifest377077B/growth138384/10071nodes/fixed18new139total, coverage54804unchanged; authorized136KiB/370KiB/10200authoringonly. [Acceptance](transaction-receipt-page-amendment2-root-acceptance.md), [external](transaction-receipt-page-array-capture-claude-review.txt), [dispositions](transaction-receipt-page-budget-amendment2-dispositions.md). HTTP /items capture impossible; bothliteral32tuples preserve selectedsemanticcurrentstate, currentopaqueenvelopereopencontinuityexplicitlyunqualified. Root/page wholeJSONstillretainedexactly. No runtime/publicgrammar/capchanges.
+
+transaction_implementation froze **df51dfcd8d68e3d0a4e91c7be285c3ffd669c3f0** tree8d127781c3eb425b00ef5568900f2457fbbec0cd, ordinaryevidence successor afterhelper552996. Fourartifactfilesdiffvs552996. Preliminary9rowpositive andfivecontrols pass; finalfrozenvalidationactive. Nativeprofile_editorial_inventory reviewing; earlyLowrequestsindependenttupleguardfor p-later-state aswellasfinal. ExternalClaude54353 active from23:33Z. Sourceunpublisheduntilreview/validation.
+
+After-R zerowitness whole-credit plan **not accepted**. [Externalreview](read-update-after-r-claude-plan-review.txt) found missing meaningfulschemaPropertyChange resulting-statepartition; rootandnativeaccepted. [Disposition](read-update-after-r-root-dispositions.md). profile_runtime_inventory revising boundedperkindrefusal/fullunchanged/correction planwithallinheritedfences, planningonly. Preserve originalnativepositiveashistorical. Noborrowedrows/narrowedselectedlaw/wholepromotion. External oldreviewersallcomplete; onlynewreceipt54353active. Deadlinewinddown00:10Z/pause00:20Z unchanged.
 
 ## Current priority: BDP profile structure and implementation
 
