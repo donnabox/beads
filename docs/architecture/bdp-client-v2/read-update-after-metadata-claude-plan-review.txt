@@ -1,0 +1,133 @@
+Verification complete. Reporting findings only — no files written.
+
+## Verification basis
+
+- Plan `read-update-after-metadata-plan.md` SHA256 `c027010f…7fed` — **matches** the given pin.
+- `HEAD` = `4d19a6a8a749b8f21cf96070a66e1c85f1528f1b`, clean tree, `frozen-head.txt` agrees. Accepted predecessor `06b0e04a921c8501e36a8a68480cee72dc4c54b3` = tip of `codex/vickie-numeric-admission-review-repair` — **plan's basis SHA is correct**.
+- Audit `read-update-numeric-admission-whole-audit.md` SHA256 `2782cfe6765be3eb…` — **matches** root pin `2782cfe6`.
+
+**Confirmed accurate in the plan** (so I don't re-litigate these): catalog `numeric-model-v1.json:38–68` = R, five requirements, unchanged; fourth selectedText at `bdp.md:2658`; admissibility definition at `bdp.md:709` (inside 694–723); Numeric admission at `bdp.md:2522–2530`; PROTO-016 (`requirements.md:109–115`) is compound and does carry the properties/any-depth obligation. R = 72 actions / 29 raw / 43 client / 24 raw POST / 521 assertions; N = 52 / 21 / 31 / 373 — all exact. Route inventory 49, digest `24b63b02…`; 49+2+8 = 59 arithmetic is right. R/N ceilings `995852/26286/714717/37247` and remaining fixture 7540 all check out against `read-update-matrix.test.ts:3975–3985`. B-slice fences `905650/23614/710902` check out against `4212–4214` + `4349–4354`. Fixture 29707. Continuation 844551 B / 22146 nodes / SHA `d6ad2f7…` matches 4d exactly. Counts 129/54/31 → N-only 32/97 (and 33/96 if B lands) are right. Timing pins 5s/30s/90s/120s verified; 240s is the external pack supervisor.
+
+Also confirmed feasible as facts, not estimates: `withSchemaCohort` is applied to **every** scenario child (`read-update-matrix.test.ts:344`), so the cohort needs no configuration change; base/child schema contents are as described; `contracts()` + `validatePropertyContracts` really do evaluate the inherited base, so `{n:-1,enabled:true,detail:"ok"}` under the child Type yields exactly one diagnostic; its shape is fully derivable without execution — `{message:"Schema assertion failed: minimum", type:"<scope>types/schema-bead-base", schemaLocation:"<scope>schemas/schema-bead-base#/properties/n/minimum", instanceLocation:"/n"}` (`installed-schema-evaluator.ts:1119–1137`, `1077`; `resource-evaluator.ts:192–210`, `277–282`) — the plan's schemaLocation prediction is **exactly right**, and the message is deterministic, so its "if the formatter yields nondeterministic detail" hedge is unnecessary. `types/task` has no `ownsOutgoing` and `maximumEndpointMultiplicity` is `[]`, so a 4th link on `nr-source`/`nr-target` does not disturb `nr-final-source`/`nr-final-target` whole-record equality. Control substitution is app-local (`read-update-matrix.test.ts:418–475`), so a new `schema-location` mode stays inside the four-file scope. The baseline peak-Resource ledger (`2250–2267`) covers only `read-update-v1.json`, not R/N.
+
+---
+
+# Blockers
+
+## B1 — The `-refused`/`-corrected` ID pairing pin makes R change 2's eight-action ledger impossible as written
+**File/section:** plan §"R change 2"; pin at `apps/bdptest/src/read-update-matrix.test.ts:4058–4067`
+
+That loop runs over R and N. For **every** raw POST whose id ends `-refused`, it resolves `id.replace(/-refused$/,"-corrected")` in the same row, dereferences it unguarded (`.find(...)!` → `corrected.family`), requires identical `target`, and requires the two bodies to be equal after replacing every numeric token with `NUMBER`. All 12 of R's current `*-refused` raw POSTs satisfy this.
+
+Change 2 proposes "**Two raw refusals plus two client reads per kind = 8 extra actions**" with "existing successful corrections remain the positive comparators". The existing corrections are `nr-{bead,link}-integer-create-corrected` / `-patch-corrected`, already claimed by the existing `*-create-refused` / `*-patch-refused`. A new `…-refused` id cannot map onto them, and the plan forbids renaming ("All prior IDs/actions remain").
+
+**Impact:** either (a) +4 new corrected raw POSTs — R = 100 actions / 53 raw / 47 client / 36 raw POST, R+N = 152, invalidating every budget number root is being asked to authorize (96/49/47/32, 148, ≤56 KiB, ≤1400 nodes, ≤7 KiB, ≤128 bindings); or (b) ids deliberately named off-convention to evade a live pairing invariant, which is the opposite of the plan's own "meaningful paired success/refusal/afterstate" rule.
+
+**Minimal fix:** state option (a) explicitly, re-derive the whole §"Execution, scope and sensitivity budget" and §"Real source headroom" ledgers at 100 actions, and re-check them against B2/B3 before asking root for a ceiling. Do not pick (b).
+
+## B2 — Coverage baseline and SHA are stale; every derived coverage margin in the plan is wrong
+**File/section:** plan §"Real source headroom"
+
+Plan: "coverage `703313` bytes (SHA `10a1954c48b67e90a1afd3936b61f6586f557bd38cbe810d8ac07ac1f26a7cc1`)".
+Actual 4d (`read-update-numeric-metadata-closure/source-audit.json:18–20`, `report.md:19`, and the file itself): **703415 bytes, 14460 nodes, SHA256 `8274385bff08618e15ccbdb863127f5a472606970c14c735f4d9805f9ff01954`.** The continuation figures and SHA match 4d exactly; only coverage is from a pre-freeze snapshot (the closure report records a later "precise coverage wording and cross-row new-key ledger addition").
+
+| Plan claim | Actual |
+|---|---|
+| room vs R/N ceiling: 11404 coverage bytes | **11302** |
+| remaining under B fence: 7589 coverage bytes | **7487** |
+| post-fence slack: 421 coverage bytes | **319** |
+
+**Impact:** the single tightest gate in the plan is overstated by 102 bytes — 24% of the claimed slack — and the quoted coverage SHA would not survive the "exact pending-parent reconciliation" the plan itself demands.
+
+**Minimal fix:** re-anchor §"Real source headroom" on 703415 / 14460 / `8274385b…` and restate the three derived numbers.
+
+## B3 — The ≤7 KiB coverage fence and the ≤128-binding fence are mutually inconsistent at the measured cost per binding, and the slice does not fit the inherited B ceiling
+**File/section:** plan §"Real source headroom"; enforced at `read-update-matrix.test.ts:4351–4354` and `packages/conformance/src/cumulative-artifact.test.ts:198–203`
+
+Facts: coverage `bindings[0].assertions` must equal the flattened `<actionId>.<assertionId>` list exactly, so one added assertion = one added binding. Measured on-disk cost in the pretty-printed coverage file: R's 496 `nr-*` binding lines occupy **28273 bytes = 57.0 bytes/binding**. The measured B slice is worse all-in: 66 new bindings → **4801 coverage bytes = 72.7 bytes/binding** (`source-audit.json:21`).
+
+Therefore:
+- The plan's own ceiling, 128 bindings × 57 = **7296 bytes**, already exceeds its proposed ≤7 KiB (7168) fence before any reason text.
+- Hard B-slice ceiling is 7487 bytes (B2). Reserving ~1000 bytes for the two reason rewrites the plan requires — R's reason must now describe nested precision + metadata refusals + the schema comparator (currently 253 chars), and N's must become a durable whole-credit reason "citing the four exact selected obligations, actual N IDs/diagnostics/positive comparators and audit 2782cfe6 with its full final hash" (currently 318 chars; comparable A whole reason is 542 and carries one hash) — leaves ~6487 bytes ⇒ **roughly 90–113 new assertions, not 128.**
+- *Estimate, not fact:* the plan's own specified assertion set needs ~118 bindings in its leanest reading and ~140 as §"R change 3" literally specifies (derived from existing per-action assertion counts: 36 for change 2, 62 for change 3's writes, 20–42 for the descriptor/schema reads). With B1's +4 corrected actions it is ~174. All three exceed the fitted 90–113.
+
+Nodes and continuation bytes are *not* the pinch (projected ~1200–1300 nodes against 1400/1468, and ~48–54 KiB against 56 KiB/61099) — contrary to the plan's "especially nodes/reason text".
+
+**Impact:** as specified, this slice cannot pass `4351–4354` without breaching the accepted B-slice growth assertion the plan correctly promises to keep. The plan presents it as "feasible but tight".
+
+**Minimal fix:** recompute the coverage fence from measured bytes-per-binding, state the resulting hard assertion cap (~90–113), and cut scope to fit — see H2 for the cheapest cut — or take the two-step split the plan already names as a fallback, rather than carrying a fence that cannot hold.
+
+---
+
+# High
+
+## H1 — §"R change 3" and §"Real source headroom" specify contradictory descriptor oracles
+**File/section:** plan §"R change 3" vs §"Real source headroom"
+
+§change-3 requires "Independently assert descriptor identity/name/describes/conformsTo/propertiesSchema plus full schema JSON" — five enumerated per-field assertions plus a document equality. §headroom then claims savings from the opposite: "R new schema reads can use exact authored whole-document equality to avoid redundant per-leaf assertions". The difference is ~22 bindings (~1250–1600 coverage bytes), i.e. the margin that decides B3.
+
+**Minimal fix:** pick one. Whole-document equality on the descriptor is strictly stronger than the five named fields and cheaper; say so in §change-3 and delete the per-field list.
+
+## H2 — The eight descriptor/schema GET actions evidence retrievability, not enforcement, and four of them read a surface the implementation labels non-attesting
+**File/section:** plan §"R change 3" ("GET all four descriptors and all four referenced schema documents … (8 actions)")
+
+The selected fourth clause is about the authority **enforcing** Type and properties-schema constraints. Enforcement is established entirely by the refused/corrected create pair plus the diagnostic's owning-Type URI and `schemaLocation` (both verified derivable above). The eight reads add no enforcement conjunct. Separately: descriptor retrieval is already whole-credited as `read.types.descriptor` (`cumulative-artifact.test.ts:163`), and the hosted schema documents are served by a dedicated branch that sets `x-bdp-development: non-attesting` (`packages/server/src/development-runtime.ts:333–365`, asserted as expected behaviour at `apps/bdptest/src/installed-reference.test.ts:228`) — a development-marked hosting surface, not a profile contract surface.
+
+The accepted audit's own option 3 scoped this conjunct at "**a representative four-action arrangement — refused create, absence GET, corrected create, independent GET** … potentially one new Resource/route". The plan takes that to 16 actions, 2 Resources and 10 routes.
+
+**Impact:** ~20 bindings, ~330 nodes, ~15 KiB continuation bytes and 8 of the 10 new routes bought for no clause coverage — and it is exactly the budget that makes B3 unfittable.
+
+**Minimal fix:** drop the eight descriptor/schema GETs and the eight routes they add (route inventory 49 → 51, not 59). If root wants the referenced schema corroborated, one descriptor read per kind with whole-document equality (2 actions, 2 routes) is the bounded version.
+
+## H3 — Change 1 breaks a named static corpus pin; the plan only says "corpus pins" generically
+**File/section:** plan §"R change 1"; pin at `read-update-matrix.test.ts:4104–4107`
+
+Current pins assert `body("create-refused")`/`body("patch-refused")` contain `"value":0.12345678901234567891`, `body("create-corrected")` contains `"value":0.125`, `body("patch-corrected")` contains `"value":0.25`. Replacing scalar `properties.value` with `{items:[{"a/b~c":<literal>}]}` removes every one of those substrings for the precision kind. The plan's only coverage of this is "Reconcile R/N action pins, R raw exchange/POST counts, corpus pins and route inventory".
+
+**Impact:** a vague instruction here invites the cheap repair — weakening `'"value":0.125'` to a bare `'0.125'` — which the nested form also satisfies and which stops discriminating placement. (The `stripNumbers` pairing at `4064–4066` still passes, since refused/corrected share the nested shape.)
+
+**Minimal fix:** name the pin and the replacement in §change-1: per-kind divergence (precision asserts `"a/b~c":0.12345678901234567891` / `0.125` / `0.25` **inside** the pinned `"value":{"items":[{…}]}` structure; integer and overflow keep the existing `"value":<literal>` form), and state that substring-only literal pins are not an acceptable substitute.
+
+---
+
+# Medium
+
+## M1 — Change 3's schema-document GETs need a binding that does not exist
+**File/section:** plan §"R change 3"; `apps/bdptest/test-support/read-update-artifact-execution.ts:20–48`
+
+`artifactRoutes` resolves `action.target.binding` against a closed map of fixture bindings plus `scope`, `service-desc`, `beads`, `links`, `types`, `operations`, and throws `"Read target binding is not in the fixed fixture"` otherwise. There is **no `schemas` binding**. Descriptor reads work (`binding:"types"`, `path:"schema-bead-base"` — precedent exists). Schema-document reads only work as `binding:"scope"`, `path:"schemas/schema-bead-base"`, and **no existing raw action in either manifest uses `scope` with a `path`** (measured: `scope` appears 5× with `path: null`). Adding a `schemas` binding would touch the fixture or that helper — both outside the four-file scope.
+
+**Minimal fix:** if the reads survive H2, state the exact `binding`/`path` form; flag the `scope`+`path` combination as untried rather than "the actual Scope-bound exact raw HTTP transport".
+
+## M2 — No normative body schema exists for the hosted schema documents; the plan's "normative + independent" pattern silently does not hold for them
+**File/section:** plan §"R change 3"
+
+Available raw `$defs` are `currentBeadCollection`, `currentLinkCollection`, `mutationResult`, `readProblem`, `readUpdateDiscovery`, `readUpdateOperationDirectory`, `readUpdateProblem`, `typeDescriptor`. Descriptor reads can use `#/$defs/typeDescriptor`; the four schema-document reads have no normative oracle at all, leaving authored whole-document equality as their only check.
+
+**Minimal fix:** if retained, declare that residual explicitly alongside the already-declared raw opaque-revision residual.
+
+## M3 — The pinned R/N ledger is larger than the "72/52/124" the plan says it is replacing
+**File/section:** plan §"Execution, scope and sensitivity budget"
+
+`read-update-matrix.test.ts:4011–4124` also pins, co-located: `expect(row.actions).toHaveLength(72)` and `…(52)` (exact, not ≤); the **ordered** created-Resource list `expect([...created]).toEqual([…8 ids])`; `expect(assertions).toBeLessThanOrEqual(1300)`; `expect(new Set(keys).size).toBe(keys.length)`; `numericAdmissionRawControls` `toHaveLength(6)` and client `toHaveLength(3)` (exact — the three new cases must go in a separate table, as `metadataClosureRawControls` did, or these break).
+
+The assertion ceiling is not breached (*estimate:* ~1012–1070 of 1300), but root is being asked to authorize "148, replacing only the prior 72/52/124" against a ledger that has five more exact pins.
+
+**Minimal fix:** enumerate all of them in the budget section, note 1300 is not breached, and state that the three new controls land in a new table so `toHaveLength(6)`/`(3)` are preserved rather than edited.
+
+## M4 — The execution baseline the plan defers to is never stated
+**File/section:** plan §"Execution, scope and sensitivity budget"
+
+The plan quotes only 06b ("aggregate 18.790s had 71.210s remaining; this is historical support only") and then says "Accepted metadata parent's exact passing margin is the execution baseline" without giving it. The actual 4d numbers (`read-update-numeric-metadata-closure/report.md:43`): aggregate **21.146170417s** (baseline 18.429184959s), **68.853829583s remaining under 90s**, observed increment 2.356548834s, whole three-file invocation **154.12s of 240s**.
+
+**Impact:** the only quantified timing headroom in the plan belongs to a superseded parent, so "feasibility" is unverifiable as written. (*Estimate:* +24–28 R actions is ~+0.3–0.5s aggregate and ~+15–25s of supervisor time for three extra control runs — comfortable against 68.85s and 85.9s respectively.)
+
+**Minimal fix:** quote the 4d figures.
+
+---
+
+# Not findings — checked and clear
+
+No evidence of fake wire, relabeled reports, invented SHAs, cap/runtime/public-boundary increase, catalog narrowing, Types-lifecycle change, or fifth-file creep. The plan correctly refuses to invent a successor SHA, correctly refuses to retain R's row digest (`read-update-matrix.test.ts:3997–3998`) as a false preservation pin, correctly identifies the B-slice fences as tighter than the R/N ones, correctly carries the audit's 30/99 → 31/98 forward to 31→32/97 after A's promotion on 4d, and correctly grounds its diagnostic predictions in observed behaviour: `/value/items/0/a~1b~0c` matches N's whole-document pointer form, `/propertiesChange/0/value/items/0/a~1b~0c` with no `instanceLocation` matches N's unapplied-patch form, `/number` with `document:"metadata"` matches `nn-*-metadata-create-refused`, and `/metadataChange/1/value` matches the observed request-location message. `1e-400` is genuinely refused in metadata today, and the raw decoder path is not asked to change — the plan's "do not parse an inadmissible number to derive expectations" is consistent with `4056` ("Parse only to inspect fixed IDs"). Change 2's ordering is internally coherent: item 2's `number:0` on the corrected create is what makes item 3/4's `replace /number` a valid patch.
+
+**Bottom line:** the contract reasoning, diagnostic predictions and preservation discipline hold up. The budget does not — B1 adds four unbudgeted raw POSTs, B2 overstates the tightest margin, and B3 shows the coverage fence cannot hold at the measured cost per binding. H2 is the cheapest way back inside the fences. Root approval for authoring or N promotion should wait on a re-derived ledger.
