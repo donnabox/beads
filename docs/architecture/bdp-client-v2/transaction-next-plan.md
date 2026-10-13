@@ -1,6 +1,6 @@
 # Next Transactional vertical slice: current point/receipt minimum reads
 
-Read-only inventory against frozen8844fe738d7457d6c9d3ea71b0b8d0fa778eecde;
+Initial read-only inventory against frozen8844fe738d7457d6c9d3ea71b0b8d0fa778eecde;
 its parent b1de5f3 contains T2b. Root subsequently approved implementing the clear
 canonical complete-tuple point/receipt subset, with no inferred continuation or
 partial-header semantics. Sole fork design remains plan of record.
@@ -47,7 +47,7 @@ inspect(). None should be advertised from existing diagnostic primitives.
 
 ## Approved smallest complete subset
 
-Canonical Bead/Link Resource and properties GET/HEAD, plus receipt-root-instance
+Existing visible canonical Bead/Link Resource and properties GET/HEAD, plus receipt-root-instance
 GET/HEAD, with a complete canonical supported minimum tuple. No continuation,
 collection/bootstrap, alias redirect, Type artifact or replication serving claim.
 Supported current point requests and receipt instances should fully honor:
@@ -87,7 +87,9 @@ readReceipt and mutation observed paths stay compatible.
 
 transaction-read.ts/test + authority-read.ts/test: a source-private per-request
 condition seam in the existing plane, evaluated after captured authorization and
-before materialization in its one owner entry. Constructor supplies fixed trusted
+after point materialization in its one owner entry but before delivery. An absent
+Resource result with controls remains an explicit private visibility gap, avoiding
+an unruled 404-versus-barrier order. Constructor supplies fixed trusted
 condition evaluator; receiving passes immutable data only, never a caller callback.
 TX boundary owns strong tuple validation and typed behind/refusal errors. Read/RU
 calls with no source condition keep exact behavior; no TX concepts become required
@@ -104,14 +106,15 @@ transaction-http.ts/test + transaction-runtime.ts/test: snapshot raw header tupl
 before awaiting; use point/receipt service path only for approved routes; translate
 existing problem envelope shapes (catch-up-timeout is a Transactional direct code,
 not readProblem's narrower union), preserve current response context and HEAD/
-conditional processing. Per-request router closure may pass immutable controls;
+conditional processing. The stable router receives the actual Request; a pre-route classification gate
+rejects alias/probe/discovery/collection/malformed routes with supplied controls;
 never mutable cross-request state. Add private emitted helper allowlist/denied
 import smoke entries and progress note.
 
 Shared ownership: root must coordinate authority-read.ts with Update/P1; do not
 edit development-runtime/authority/config/contracts, evaluator, schemas, Types,
 public index/exports or evidence. Minimal read seams only; no store write/format
-changes. Start new isolated successor from8844; root integration/publication only.
+changes. Implementation is in an isolated successor from7bfba525; root integration/publication only.
 
 ## Whole-subset done predicates and executable matrix
 
@@ -159,6 +162,55 @@ changes. Start new isolated successor from8844; root integration/publication onl
    issued. The exact unknown-position refusal is not explicit; do not invent a
    lexical comparison or call inability to decode an actual exhausted wait.
 
+4. An absent or hidden Resource is requested with an incompatible epoch/view or
+   future minimum. Does Resource 404 precede the barrier, or vice versa? Receipt
+   nondisclosure has an explicit order; current point Resource clauses do not.
+   This implementation leaves that combination unqualified and returns only an
+   internal bodyless development-gap response, never an invented wire rule.
+
 These questions do not block the approved canonical complete tuple point/receipt
 subset. They do block claiming complete minimum-position support across the full
 surface. No new product semantics are adopted by this plan.
+
+
+## External plan review dispositions (14 findings)
+
+Implementation base is 7bfba525, with the command-control and exact operation
+routing repairs already present. This plan does not promote narrated protocol
+fixtures into executable evidence.
+
+1. Implemented final-attempt captured context on 409/410/503; receipt 401/404 has
+   no context. Tests advance the actual owner during an exhausted wait.
+2. Corrected predecessor: 7bf includes POST no-key/effect control refusals.
+3. Stable shared Read router receives Request; preclassification gates all
+   unsupported targets before alias/probe/discovery execution.
+4. Actual HTTP Problem bodies validate against canonical transactionalProblem;
+   no public protocol parser/type added for this private receiver.
+5. Reviewer suggestion of tuple-first on absent Resources is not adopted.
+   Parent confirmed genuine missing ordering rule; explicit visibility gap.
+6. Inventoried transaction-comparison.ts lines41–54: performance.now, original
+   deadline, bounded5ms delay. Minimum waiting uses the same pattern with a
+   separate typed behind outcome and finite/nondecreasing clock validation;
+   receipt comparison/retraction/key policy is not copied or changed.
+7. Existing synchronous receipt method preserved; additive tracked async method
+   drains on close. Receipt delivery cancellation does not cancel the finite wait;
+   point AbortSignal cancels delivery. No indefinite default scheduling.
+8. GET and HEAD use identical waits, final context and Retry-After; HEAD strips
+   the body only after selection/refusal.
+9. Receipt attempts release SQLite before bounded5ms sleep; no busy-loop polling.
+10. Fixture conditions are narrated precedent only. Current executable tests use
+    real owner/HTTP/commit/retention facts; no receipt-page qualification.
+11. Partial/duplicate/malformed tuples remain internal gaps, not normative400.
+    Exhaustive receipt error table alone does not establish a tuple policy.
+12. No replica-routing configuration exists, so local waiting is used. Origin
+    is refused and CORS disabled; no claim of enabled-CORS header coverage.
+13. Point attempts use the existing synchronous exclusive owner mutex; receipt
+    attempts use atomic SQLite. No claim of a new SQL transaction on each point.
+14. Updated POST inventory to7bf. Earlier tests supplying only minimum position
+    still exercise an unsupported partial tuple, and remain bodyless500 tests.
+
+Additional inherited repair review: command controls authenticate/authorize before
+privategap, with actual receipt-table empty checks; batch depth marker asserted.
+Actual authority-form CONNECT receives400 from raw-target validation; origin-form
+405 probes are not claims about standard CONNECT. Non-operation Allow is based
+on target shape regardless of existence, preserving nondisclosure.

@@ -1,0 +1,73 @@
+**No files written or modified.** `git status --porcelain` empty, `HEAD` still `4cf6acd`. Probe scratch was confined to `/private/tmp/bdp-symlink-probe/` and removed at exit. The 0-byte `update-payload-symlink-claude-review.txt` was left empty per your no-write instruction; this is stdout only.
+
+---
+
+# Narrow closure review — `4cf6acd` vs `39a7674`
+
+Two files, +62 −9. Read `update-payload-symlink/review.md`, `update-payload-symlink-native-review.md`, and the preceding `update-installed-followup-claude-review.txt` (the A/B/C/D/B′/C′/E/F review of `39a7674`).
+
+## Both questions answered: yes
+
+**Internal payload links now fail readiness.** Three guards in `packages/server/src/installed-reference.ts`:
+
+| Line | Guard | Covers |
+|---|---|---|
+| `:21` | `lstat(manifestPath).isSymbolicLink()` | directly read package manifest |
+| `:30` | `relative && lstat(join(root, relative)).isSymbolicLink()` | explicitly traversed `dist`/`schemas` roots |
+| `:36` | `entry.isSymbolicLink()` inside the readdir loop | every entry in every scanned directory |
+
+**Node-resolved package roots remain allowed, structurally and not by accident.** `lstat` only refuses to follow the *final* path component, so `lstat(<linked-root>/package.json)` and `lstat(<linked-root>/dist)` both traverse the root link and report the real target. `bindFiles("")` — the non-workspace dependency entry — is deliberately exempted by the `relative &&` test, so a pnpm/npm store link at the root is never lstat'd as a candidate.
+
+### My own probe (fixture identical to the test's `isolatedPayload()`, Node 24.16.0, in-process against built `dist`)
+
+```
+A baseline, protocol root symlink      STARTED  payloadIdentity=ab1971510a1978ad…  storeExists=true
+B protocol/schemas dir symlinked       REFUSED  internal runtime payload symlink unsupported  storeExists=false
+D server/dist/<subdir> symlinked       REFUSED  internal runtime payload symlink unsupported  storeExists=false
+E fast-uri LICENSE symlinked           REFUSED  internal runtime payload symlink unsupported  storeExists=false
+F fast-uri types/index.d.ts symlinked  REFUSED  internal runtime payload symlink unsupported  storeExists=false
+G symlink inside skipped node_modules  STARTED  payloadIdentity=ab1971510a1978ad…  storeExists=true
+H dangling symlink in fast-uri root    REFUSED  internal runtime payload symlink unsupported  storeExists=false
+```
+
+A is the package-root allowance, live. B is the `:30` guard, which **no repo test reaches** (see below). H confirms dangling links fail closed — `lstat` classifies them before anything tries to read them.
+
+## Symlink residual closure: closed, with the boundary stated exactly
+
+Enumerating every path that contributes to `payloadIdentity`: workspace packages hash `package.json` (lstat'd at `:21`) plus `dist/**` and, for protocol, `schemas/**` (roots lstat'd at `:30`, every descendant entry checked at `:36`); dependency packages hash `**` from the root with every entry checked. Every path component *below* the resolved package root is therefore proven non-symlink before its bytes are read. Components at or above the root may be links — that is the intended allowance.
+
+The only symlinks still skipped silently are entries named `node_modules` or `.git`, because `:35`'s `continue` precedes the `:36` throw. Correct: those subtrees are excluded from identity regardless of link status, and probe G confirms it — a symlinked bundled `node_modules/inner` yields a `payloadIdentity` byte-identical to baseline. Code inside them is reachable only through declared-dependency resolution, which binds it as its own package. Undeclared/optional/peer-only edges escaping the closure is **prior finding C**, unchanged and not this repair's job.
+
+So: **prior finding B is closed, and it is closed fail-closed rather than fail-open.** No remaining symlink channel alters `payloadIdentity` without refusal.
+
+## Guarantee bound
+
+Identity/readiness admission only. The native repro is the clean demonstration: `update-payload-symlink-native-repro.log` records `NATIVE_CHANGED_UTILS_EXECUTED` on stderr *before* `installed reference qualification failed` — the linked `utils.cjs` ran its module initializer, then the factory refused. The guard sits inside `startInstalledReferenceCandidate`, downstream of ESM/CJS loading; it prevents a linked payload from returning a qualification identity and readiness, not from executing. `review.md:13` and the native review `:7` both state this correctly and neither overclaims. Not a sandbox, not attestation, no defense against concurrent filesystem mutation between `lstat` and `readFile`.
+
+---
+
+## One concrete new issue
+
+### LOW · the entry guard refuses on symlinks that contribute nothing to `payloadIdentity`
+
+`installed-reference.ts:36`. The throw fires on *every* symlinked entry, before the `/\.(?:[cm]?js|json|node|wasm)$/` filter that decides what is actually hashed. Probe cases E and F: a symlinked `LICENSE` and a symlinked `types/index.d.ts` inside `fast-uri` each refuse startup, though neither was ever hashed and neither is loadable. Before `4cf6acd` both were silently skipped and harmless.
+
+Reachability is the same shape as prior finding C′ — not today's pnpm/npm layouts (regular files and hardlinks), but any store-backed or vendored `node_modules` where package contents are links rather than copies (Nix, Bazel, distro-packaged trees, a tarball that genuinely packs a symlinked license or doc). There, the candidate cannot start at all, and the message names a payload symlink for a file that is not payload. Fail-closed and bounded, so this is a scope-of-refusal flag, not a hole.
+
+Fix if undesired: move the `:36` throw below the directory/extension discrimination, so it refuses only links that would otherwise have been hashed or recursed into — a symlinked `.js`, `.json`, `.node`, `.wasm`, or directory. The three maintained tests all exercise exactly those cases and would stay green.
+
+## Evidence-precision notes (not defects)
+
+- **`:30` is the only guard with no repo test.** It is unreachable through a readdir entry — a recursed directory is already proven non-symlink at `:36`, making the `:30` lstat redundant on that path. Its sole non-redundant role is the explicit `bindFiles("dist")` / `bindFiles("schemas")` calls, and the three new cases all tamper with `fast-uri`, which enters via `bindFiles("")`. Verified externally (probe B); worth a fourth case replacing `@bdp/protocol/schemas`.
+- **The listener-rebind assertion at `installed-reference.test.ts:474-481` is near-vacuous.** `launchInstalledReference` rejects *on child exit*, so by the time the test binds `config.listener.port` the child is already dead and could not be holding any port — the assertion cannot distinguish "never listened" from "listened, then exited". The ordering claim in `review.md:11` ("its configured listener port can be rebound") therefore rests entirely on `existsSync(store) === false` at `:472`, which is sound because store creation is durable and precedes the listener. The rebind check is harmless, just not load-bearing.
+- **The three cases pin *that* startup refused, not *why*.** `installed reference qualification failed` is the generic redacted stderr (`installed-reference-process.ts:79`) for any factory failure. That redaction is deliberate, so this is inherent rather than fixable — but it does mean an unrelated future failure in that fixture keeps these tests green. The tests are still genuine tripwires: without the guards, all three mutations start successfully (symlinked `utils.js` and `lib` are skipped as neither file nor directory; a symlinked `package.json` is read straight through), so each would fail on the missing rejection.
+- A symlinked `@bdp/server/dist` is not reachable as a *symlink* refusal: Node realpaths the ESM entry, so `import.meta.url` already points at the target and `root` becomes the target's parent. It fails closed anyway, on `lstat` ENOENT for the missing `package.json`, with a misdirecting error. Contrived; recording only.
+- Nit: each recursed directory is lstat'd twice (once as a Dirent at `:36`, once at `:30` on entry). Negligible at ~14 package visits, but the `:30` call could be hoisted to the two explicit call sites instead.
+
+## Prior findings: unchanged, correctly so
+
+`development-runtime.ts` and `installed-reference-configuration.ts` are byte-untouched by this diff. **Finding A** — the only present-tense reproducible defect from the `39a7674` review, four live routes emitting `empty()` 405s without the non-attesting marker — remains open and is out of scope for a two-file payload-symlink repair. **C** (dependencies-only traversal, CJS `require.resolve` vs ESM loading), **D** (depth cap bounds depth not work), **B′**/**C′** (protocol-relative/relative URIs missed, non-URI strings over-refused), **E** (listener-retry verification limit), **F** (order-sensitive `authenticationIdentity`) all remain declared and untouched. No regression: the positive `isolatedPayload()` test keeps the protocol package-root symlink and the regular-file byte-change identity discrimination, and the extraction of that helper from the former single-iteration `for (const name of ["@bdp/server"])` loop also clears the prior review's second nit.
+
+## Author evidence I did not re-execute
+
+Per your instruction, no broad rerun. I confirmed the native stream's exit codes (`install/build/focused/repro` all 0) and its `Tests 13 passed (13)` in one focused file. `review.md`'s six-file/54-test focused run, the packed and development smokes, `evidence:verify`'s 89 rows, typecheck/boundaries/format/lint, and the packed `payloadIdentity` `0c2782d5…aa902` remain author results. My findings rest on the two-file diff read in full plus the in-process probe above.
