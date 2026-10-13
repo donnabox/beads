@@ -62,13 +62,13 @@ Original service-review lows: RU trusted callback capability narrowing and publi
 
 ### Live worker ledger
 
-Checkpoint 2026-10-13T22:12:35Z. Autonomous profile completion is **active** under the existing session `2026-10-08T20:26:35Z-81e5`. The operator resumed with a 2.5-hour power/connectivity window. Begin wind-down at **2026-10-14T00:10Z**; checkpoint, stop owned local processes and pause the heartbeat by **00:20Z (5:20 p.m. Pacific October 13)** unless extended. No release, Preview 2 promotion or public write-profile admission.
+Checkpoint 2026-10-13T22:15:02Z. Autonomous profile completion is **active** under the existing session `2026-10-08T20:26:35Z-81e5`. The operator resumed with a 2.5-hour power/connectivity window. Begin wind-down at **2026-10-14T00:10Z**; checkpoint, stop owned local processes and pause the heartbeat by **00:20Z (5:20 p.m. Pacific October 13)** unless extended. No release, Preview 2 promotion or public write-profile admission.
 
 ## Verified delivery and current gates
 
 [PR96](https://github.com/gastownhall/bdp/pull/96) merged at22:08:08Z as `90d3fd3385e5b0422c2c406e3c0dc38918873e04`. Remote main and actual tree `6eb97d923c18b6cb84c641220fa4cdb8f4851e5e` verified; tree exactly matches tested `06b0e04a921c8501e36a8a68480cee72dc4c54b3`, ordinary parents prior main `2e7d454` and06b. Exact CI38474249797/job115560903390 passed22:07:17Z. Native131 review, Claude131 findings, independent06b closure and root scope acceptance complete. Two test repairs preserve all artifact bytes; fresh installed22 targeted checks include genuine both-shard18.790s evidence. [Merge verification](numeric-admission-merge-verification.json), [readiness](numeric-admission-merge-readiness.md), [closure](read-update-numeric-admission-final-root-closure.md). Earlier bbab/131 evidence remains separately bound.
 
-[PR97](https://github.com/gastownhall/bdp/pull/97) is DRAFT at `6d0284e4802666791a4bf1795a977e02ac3cb5ea`, tree `8a3f024529bbf3d85f061cf8562e27fd6bdabd2b`; exact CI38475579654/job115565315698 pending. Local fresh-main merge-base diff verified exactly seven TX files afterPR96 landed. No conflict resolutions: seven TX blobs exactly9eb, five inherited RU blobs exactly06b. [Fresh integration report](set-numeric-repair-integration-report.md):88 focused checks, build/static/smokes/Read seal; installed set1/TX31/RU22 pass, six TX rows2.243s with10 children closed,54 genuine RU rows19.532s and all129 required mappings/report hashes verified. Root read report. External9eb council is remaining substantive gate; do not rebase or borrow stale evidence.
+[PR97](https://github.com/gastownhall/bdp/pull/97) is DRAFT at `6d0284e4802666791a4bf1795a977e02ac3cb5ea`, tree `8a3f024529bbf3d85f061cf8562e27fd6bdabd2b`; exact CI38475579654/job115565315698 pending. Local fresh-main merge-base diff verified exactly seven TX files afterPR96 landed. No conflict resolutions: seven TX blobs exactly9eb, five inherited RU blobs exactly06b. [Fresh integration report](set-numeric-repair-integration-report.md):88 focused checks, build/static/smokes/Read seal; installed set1/TX31/RU22 pass, six TX rows2.243s with10 children closed,54 genuine RU rows19.532s and all129 required mappings/report hashes verified. Root read report. External9eb council completed with one LOW stale fixture-description finding, accepted for a narrow successor and fresh identity-bound evidence. Do not rebase or borrow stale evidence.
 
 Current qualification remains bounded: RU129 required/54 authored/30 whole/99 not whole/75 without authored scenarios; TX250 required plus5 optional, six partial rows and249 explicit unimplemented results. Public write profiles remain closed.
 
@@ -76,16 +76,19 @@ Current qualification remains bounded: RU129 required/54 authored/30 whole/99 no
 
 | Worker | Current bounded work | Source / evidence | Next gate |
 | --- | --- | --- | --- |
-| update_implementation | ACTIVE four-file metadata closure | Isolated `vickie-numeric-metadata-closure`, `codex/vickie-numeric-metadata-closure`, starts exact06b | Freeze/report, independent council and fresh both-shard evidence |
+| update_implementation | ACTIVE final-source packed metadata validation | Frozen `4d19a6a8a749b8f21cf96070a66e1c85f1528f1b`, direct06b, isolated `vickie-numeric-metadata-closure` | Four files; local39 checks/build/static/Read seal/smokes passed; native and Claude code reviews active |
 | profile_runtime_inventory | ACTIVE next R/N evidence plan, read-only | `read-update-after-metadata-plan.md` output; current catalog unchanged, no B source writes | Plan review; no implementation authority |
-| profile_editorial_inventory | COMPLETE numeric whole-clause audit | [R/N audit](read-update-numeric-admission-whole-audit.md), SHA2782cfe6765be3eb5eb6ee81037cf15cf0f3dc2b4b167e1e418c32483f0cc99d | N supports whole eligibility subject to root/final evidence; R remains partial |
-| transaction_implementation | COMPLETE6d integration; available | PR97/report above | Current code council before next implementation |
-| profiles_integration_validation | COMPLETE metadata plan native closure; available | [Native closure](read-update-numeric-metadata-revised-native-closure.md), SHA217ae1fc | Read-only review available after author freeze |
+| profile_editorial_inventory | ACTIVE native4d19 metadata code review; R/N audit complete | [R/N audit](read-update-numeric-admission-whole-audit.md); new output `read-update-numeric-metadata-closure-native-review.md` | N supports eligibility subject to separate root/final evidence; active4d leaves B/R/N false |
+| transaction_implementation | ACTIVE fixture-description repair | Frozen `e517f6f9667e1087f864921bdce2b446c9bb8225`, tree `d3a724c7271ffdbd1ca8a812eda16930924dff8b`, ordinary6d successor; `transaction-set-description-repair/report.md` | Freeze, fresh source/identity evidence, native closure and exact CI |
+| profiles_integration_validation | ACTIVE next TX plan revision | Five Claude plan findings; revised plan/dispositions output | Root acceptance after actual action ledger, bounded size and no-effect controls are reconciled |
 
-## Active external council
+## Council results and follow-up
 
-- TX source9eb: Claude session66160/PID80764, `transaction-set-conformance-claude-resumed-review.txt`, started about21:54Z; verified process alive at22:10Z. Native [review](transaction-set-conformance-native-review.md) clean with93 independent tests. Original pre-pause session37978 exited143 deliberately; not a passing review.
-- Next TX plan038487f431fce8c2f7cae3501016b74ff11870c2219efb588a27731fea63cf5b: Claude session25244/PID80804, `transaction-after-set-conformance-claude-resumed-plan-review.txt`; same start/liveness. [Plan](transaction-after-set-conformance-plan.md), [native review](transaction-after-set-conformance-native-plan-review.md). Root approval of224KiB planning fence and final authoring predecessor awaits council. Runtime/parser1MiB and deadlines unchanged. Original pre-pause69109 exited143, not pass.
+Metadata4d code council is now active: native `profile_editorial_inventory` plus external Claude session53383, stdout `read-update-numeric-metadata-closure-claude-review.txt`, launched about22:16Z. Read-only; source frozen while author validates. Root inspected actual test/coverage diff.
+
+Both earlier resumed Claude processes exited0; root read full outputs. TX source9eb [review](transaction-set-conformance-claude-resumed-review.txt) found one LOW stale fixture description, accepted in [root dispositions](transaction-set-conformance-root-dispositions.md). Native [review](transaction-set-conformance-native-review.md) is clean with93 independent tests. Ordinary6d successor is now authorized to remove the count and rerun source/configuration-bound evidence. Original pre-pause37978 exited143; not a passing review.
+
+Next TX plan038487 [Claude review](transaction-after-set-conformance-claude-resumed-plan-review.txt) found two medium/three low planning issues. Revision assigned: ID-based predecessor count anchors; actual M/Z action ledger; consistent byte fences; named new GETbeads/c route; explicit no-effect/header-presence discriminator. Original [plan](transaction-after-set-conformance-plan.md) and [native review](transaction-after-set-conformance-native-plan-review.md) preserved. No next-slice implementation authorized yet. No parser/deadline changes. Original pre-pause69109 exited143, not pass.
 
 ## Accepted metadata slice and follow-on audit
 
