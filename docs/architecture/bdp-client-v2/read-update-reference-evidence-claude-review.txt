@@ -1,0 +1,95 @@
+# Static review — `579019b` against `8e12162`
+
+Checkout `/Users/dbox/repos/wt/vickie/vickie-read-update-reference-evidence`, tree clean, `579019b^ == 8e12162e63502660cc562503c9506789919ab604` (direct ordinary successor, non-merge). Read `report.md`, `deferred-c-draft/README.md`, `read-update-after-admission-root-dispositions.md`. Diff is exactly four evidence files. No files written; no suite run (native reviewer owns the bounded probes). Manifest inspected programmatically by selected row, never dumped.
+
+---
+
+## Findings
+
+### F1 — medium — B cannot separate "wrong category" from "absolute spelling" for 3 of its 9 vectors
+
+**Location.** `packages/conformance/matrices/read-update-v1.json`, row `read-update.alias.non-canonical-target`, actions `rb-alias-absolute`, `rb-link-absolute`, `rb-external`.
+
+**Evidence.** I scanned all 49 scenarios across every reference slot (`target`/`source`/`bead`/`link`, bare and as a pinned `uri`) for absolute in-Scope spellings. Exactly two occur in the whole manifest — `rb-alias-absolute` and `rb-link-absolute`, both expecting 422. **No authored action anywhere in the manifest observes an absolute canonical in-Scope reference being admitted.** Every 200 in row B uses a local `beads/…` spelling (`rb-repoint`, `rb-alias-fresh`, `rb-link-fresh`, all four seeds). The implementation does admit the absolute form — `alias-evaluator.ts:108-120`, `canonical()` returns a schemed reference as-is and `pathInScope(scope, target, "beads/")` then accepts it — and `bdp.md:2389` lists "an absolute canonical Bead URL" as an admitted put target. So this is a gap in the authored observation set, not a product bug.
+
+**Impact.** An authority that rejected *every* absolute-URI put target with `validation-failed` would pass `rb-alias-absolute`, `rb-link-absolute` **and** `rb-external`, plus every control in the row. The selected clause turns on category — "an alias, absolute or local, a Link, or an external URI" — and the external-URI category, one of the clause's three, sits entirely inside the hole. Root cannot accept the clause on the absolute and external vectors from this row alone.
+
+**Bounded fix.** One additional admitted put in row B with `target: "https://reference.invalid/acme/beads/rb-target"` → 200 plus its 307 alias readback. ≈40 nodes against 3,554 headroom; reuses the existing `alias-0` oracle kind; no runtime/runner/schema/catalog change.
+
+### F2 — low — B has no in-row admitted Pinned Reference
+
+**Location.** Same row, `rb-endpoint-source-pin`, `rb-endpoint-target-pin`.
+
+**Evidence.** Row B's only pinned references are those two 422 vectors. Admitted pins live in row A (`ra-create-link-source-pin-corrected`, `ra-create-link-target-pin-corrected`) and in the pre-existing `read-update.singleton.create-link` (`create-local-pin` with `"w1-opaque-pin-NEVER-live"`, `create-external-pin`), both already 200 at `8e`.
+
+**Impact.** Within row B the two pinned 422s are not separable from a rejection of the Pinned Reference *shape* on `create-link`; attribution is cross-row. This coverage file's own omitted-row reason text states that "cross-row observations do not award this required ID whole-contract credit," so the same discipline applies at promotion.
+
+**Bounded fix.** One admitted `create-link` in row B with `source: {uri: "beads/rb-target", revision: "fixture-pin"}` → 200, ≈40 nodes. Severity is below F1 because corroboration exists in two other rows, one predating this change.
+
+### F3 — medium (promotion gate, not a defect in the commit) — the installed diagnostic does not name the cause
+
+**Location.** Oracle `/oracles/referenceEvidence/value-17` (consumed by `rb-alias-local`, `rb-alias-absolute`, `rb-link-local`, `rb-link-absolute`, `rb-external`, `rb-alias-replay`); runtime `packages/server/src/alias-evaluator.ts:66-71` and `:88-97`.
+
+**Evidence.** `targetDiagnostics` is one frozen single-element constant and `badTarget()` is its only throw site, reached from the single `if (proposedId === undefined)` branch. All five categories therefore produce a byte-identical Problem whose message recites the rule — "an alias put's target must be a canonical in-Scope Bead reference; an alias, a Link, or an external URI is not admitted" — rather than naming which category the request actually used. The complete-equality oracle records this faithfully. The Link-endpoint half is fine: `resource-evaluator.ts:732` emits "Link endpoint is not a Bead reference", which does name its cause.
+
+**Impact.** B's selected clause requires "carrying one diagnostic that names the cause". The row proves one diagnostic exists and is exact, and simultaneously demonstrates that this authority structurally cannot name the category. Selected-clause acceptance needs an explicit root ruling on whether a rule-reciting message satisfies "names the cause"; if it does not, promotion requires a product change outside this slice.
+
+**Bounded action.** No change to this commit. Record the gate explicitly in `report.md` and the coverage `reason` — the report's "absence of … type attribution" phrase discloses it only obliquely — and route the wording question to root before any whole promotion.
+
+### F4 — low — the 58 new collection reads get no new negative control
+
+**Location.** `apps/bdptest/src/read-update-matrix.test.ts:2033-2064` (the existing `it.each(["alias-location", "stale-collection-record"])` covers `admissionRows[0]` only) versus the new controls at `:2170-2378`.
+
+**Evidence.** The new rows add 58 collection reads (`final-ledger.json` `collectionSchemaEnvelopes` 30 + 28), 25 distinct `identities-*` tuple oracles and ~90 `record-N` `equalsBinding` assertions. The seven new post-wire controls target a singleton `postimage` (`ra-update-bead-corrected-0-read`), a pin echo, metadata, two Problem bodies, the outer sequence status and a tail result; plus one alias `location` and one fixture-digest case. None perturbs a collection `identities` or `record-N` assertion. The static ledger does recompute the identity tuple *values* from authored inputs, but that checks the oracle, not that the runner enforces it.
+
+**Impact.** A wiring regression that dropped or mis-bound a collection oracle in the new rows would escape every control added here, even though the analogous control already exists for the predecessor row.
+
+**Bounded fix.** One case added to the existing `it.each` — repoint `ra-final-beads`'s `record-0` `equalsBinding` to `ra-seed-source-0-record`, or perturb one `identities-9` tuple — expecting exactly the named assertion to fail. Test-only; no manifest change.
+
+### F5 — low — the ledger's sequence-failure exclusion is coupled to one assertion-pointer shape
+
+**Location.** `apps/bdptest/src/read-update-matrix.test.ts:1882-1894`.
+
+**Evidence.** The exclusion fires only for an assertion whose `pointer` is *exactly* `/body/results/${index}` and whose resolved expected value carries `.status >= 400`. Both new rows satisfy that via `failed-member` → `value-19`/`value-20`. A future row expressing the same fact as `/body/results/0/status`, or at a deeper pointer, would not be excluded.
+
+**Impact.** The live-identity ledger would then count a reached Sequence failure as a successful create. It fails loudly — identity-tuple mismatch — rather than passing falsely, so this is maintainability, not a correctness hole.
+
+**Bounded fix.** Match any assertion whose pointer is `/body/results/${index}` or a child of it, or key the exclusion on the authored member's own expected status.
+
+### Nit — doubled `rb-rb-` prefix
+
+`reference.beads.rb-rb-sequence-alias-tail` / `reference.beads.rb-rb-sequence-endpoint-tail` and the matching `beads/rb-rb-…` IDs (fixture bindings, manifest, `author.py`). Generator artifact, cosmetic. Fixing it changes the fixture digest and every bound hash, so it belongs with the next fixture revision, not this commit.
+
+---
+
+## Verified correct
+
+**Scope and immutability.** All 47 predecessor scenario blocks are byte-identical by raw-text span extraction (not merely semantically equal) and hold their relative order. `packages/conformance/catalog/read-update-v1.json` is byte-identical to `8e`; no runner, schema, server, or public-profile file is touched. Coverage holds 129 rows with only the two new rows changed; the other 127 are byte-equal. **C (`read-update.alias.unknown-subject`) remains `omitted`, `wholeContract:false`, `bindings: []`.** Both new rows are `bounded-observation`, `wholeContract:false`; whole count stays 26, uncovered stays 103, `claimEligible:false`. The new rows sit at their canonical catalog positions — the manifest's read-update subset is still catalog-ordered.
+
+**Capacity, no cap raised.** 96,446 nodes under the unchanged `assertJsonComplexity` algorithm; `ARTIFACT_MAX_JSON_NODES = 100_000` untouched → 3,554 free, which covers a 662-node follow-up and the report's ~1,500 reserve. Manifest 3,601,051 bytes (+298,148) under unchanged `CUMULATIVE_MANIFEST_MAX_BYTES = 4_194_304` → 593,253 free. Fixture 26,370 bytes / 687 nodes under unchanged `ARTIFACT_MAX_BYTES = 1_048_576`. Coverage 566,870 (+45,216). Every figure reproduces `final-ledger.json` and the report exactly.
+
+**A — 13 vectors, correctly classified.** 99 actions (46 http / 53 client), 570 assertions, max authored body 236 B — matches the report table and `packed-summary.json`. `@made` matches `localBindingReference` `^@[A-Za-z][A-Za-z0-9_-]*$` exactly, so these are genuine `@name` spellings, and the singleton definitions override to `durableResourceReference` (`^[^@]`) / `durableInputReference` — literally the clause's "the bundle's singleton request definitions reject the spelling". The 13 forms cover all 8 singleton request definitions and all 11 reference-bearing slots; the 7 sequence-capable slots and 2 pinned forms are right per spec (`putAlias.target` is `@name`-capable in a sequence per `bdp.md:2389`; pinned is Link-endpoint-only). The alias-path and supplied-ID companions are correctly booked as durable-grammar only — their 400 is independently reachable via the alias grammar (`bdp.md:2964`) and the wrong-fixed-root rule, so they genuinely earn no local-binding credit. Pair discipline holds: identical `idempotencyKey` and `targetBinding`, bodies differing in exactly one reference field, no `bodyBindings`.
+
+**A — afterstate chains track state rather than restating a baseline.** `ra-delete-bead-after-beads` already binds `record-3` to `ra-update-bead-corrected-0-record`; `ra-create-link-source-pin-after-links` moves to `identities-3`, and so on through all 30 reads. Each carries explicit `limit=100`, `next:null`, the collection schema, an identity tuple and per-item `equalsBinding` to an earlier verified record. Afterstate reads are placed before the correction, never after.
+
+**Pins are opaque provenance.** `fixture-pin` is arbitrary and echoed byte-identically (`value-9`/`value-10`), with a post-wire control on a wrong echo, and no 409/412 is asserted anywhere from a pin. Consistent with `bdp.md:2448-2460` and the F1 disposition; the withdrawn actual-revision advice leaves no trace. `ra-metadata-literal` is the right companion control — `^[^@]` applies only to reference slots, so `metadata.tag = "@made"` → 200 proves the rejection is positional, not byte-sequence-based.
+
+**Key release versus retained failure — the strongest part of the delivery.** A reuses the same key with a changed body and gets 200; `bdp.md:4525-4527` says "Every refusal above creates no receipt and binds no key. A syntactically invalid request therefore never consults key state," so a carrier-syntax 400 releases the key. B shows the complement: same key + same body → the retained 422 byte-identical (`retained-problem` via `equalsBinding`), same key + changed body → 409 `idempotency-conflict`, fresh key → 200, per `bdp.md:3253-3257` ("Every other disposition, success or failure, is retained"). The two rows are mutually discriminating — had A's 400 bound the key, A's correction would be the 409 B exhibits. The report also correctly refuses to claim `rb-repoint` + `rb-alias-replay` as a retention-versus-re-execution discriminator, since the alias survives the repoint and re-execution yields the same 422.
+
+**B — the nine vectors are inside the selected clause, not borrowed.** The catalog entry carries a third requirement whose selected text reads "…an alias, a Link, or an external URI as an alias put's `target`, **or a Link path as a Link endpoint** — is `validation-failed`". So the four `rb-endpoint-*` vectors belong to B's clause rather than a neighbouring law. The Link-endpoint side is also correctly bounded: an alias as an endpoint is admitted (`read-update.alias.reference-resolution`) and an external endpoint is opaque (`bdp.md:2446`), so only "a Link path" is wrong-category — exactly what B tests, with no missing endpoint categories. 72 actions (43/29), 359 assertions, max body 506 B — matches. Both diagnostic strings are the real runtime constants.
+
+**B — sequence tails and alias oracles.** Both mixed sequences return outer 200 with `indices` `[[0],[1]]`, member 0 pinned to a complete 422 Problem carrying `operationIndex`, and the tail created then GET-verified against its own captured record; the afterstate collections prove the failed member created nothing (`identities-12` holds only `links/rb-live`). Failed alias puts leave no alias (`value-8`, 404) while the known live alias still resolves 307 → `beads/rb-source`, so the category is established against live positives rather than by mere absence.
+
+**fixturePointer compression is value-preserving and not a self-oracle.** I resolved all 150 pointers and compared both committed rows against `precompression-new-rows.json` action-by-action: **929 assertions, zero mismatches**, with all non-assertion action bodies and row metadata byte-equal. All 40 `referenceEvidence` oracles are consumed; none orphaned. All 25 `identities-*` oracles are read only by `identities` assertions, and the static ledger recomputes each expected tuple set from the manifest's own authored creates and deletes — excluding reached Sequence failures — so the identity oracles derive from inputs, never from target output. The fixture-corruption test proves the oracle is load-bearing and that the changed digest propagates into both `configuration.fixtureDigest` and `reportBinding.artifacts.fixtureDigest`. The pointer resolver unescapes `~1` before `~0`, in the correct order.
+
+Two residuals worth naming, neither a defect: the two 422 diagnostic prose strings are necessarily implementation-derived, since the clause fixes no wording — those assertions detect drift, not wrongness (that is F3). And A's complete `/body` equality on the 400 is a genuine strengthening over the predecessor's field-by-field style (0 of 47 old rows did this for a 400) and is safe: `pointer` appears only in `transactionalProblem`/`receiptProblem`, and all three spec mentions sit in Transactional sections, so the Read+Update profile recommends no extra member for `malformed-request` whose absence could be wrongly pinned.
+
+**Verification reproduces from the retained logs.** `full-local.log` 2 files / 136 passed / 97.49 s; `packed/matrix.log` 4 files / 165 passed / 99.54 s; `ab-focused.log` 14 passed; `focused.log` 17 passed (three-row draft). `packed-summary.json`: 49 sessions all pass, 985 client / 44 setup / 21 native Read observations, 867 exchanges, 85 harness-error, aggregate 16,938.6 ms, reference-row test 1,017.0 ms, max client body octets 236 / 506. Preserved failures are real and not overwritten: `initial.exit=1` (artifact-bundle.ts:454 at 100,400 nodes, before any target execution) and `compressed.exit=1` (the static-ledger failure, fixed in the app ledger rather than the runtime). `build`, `boundaries`, `format`, `lint`, `large-lint`, `typecheck-final`, `full-local`, `packed-run`, `focused`, `ab-focused` all exit 0. No `.only`, `.skip`, or `.todo` in the test file. The aggregate comment moved 47 → 49, matching the A+B-only split rather than F2's planned 50.
+
+**Deferred C.** `deferred-c-draft/README.md` is adequate: it names the exact reuse set, requires identity-preserving renaming on oracle-name collision (which matters, since all 40 committed oracles are already consumed by A+B), forbids overwriting newer artifacts, denies the draft any credit on a future source, and discloses that the 17-pass report predates the type-only test repair.
+
+---
+
+## One reconciliation item
+
+The prompt sizes the follow-up at 662 nodes; `report.md` and `deferred-c-draft/README.md` size it at ~1,500. 3,554 covers either, so nothing is blocked — but the two figures should be reconciled before the follow-up is authored, so the reserve is not double-counted against the same headroom.
