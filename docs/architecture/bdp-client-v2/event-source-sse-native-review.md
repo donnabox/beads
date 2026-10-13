@@ -1,0 +1,39 @@
+# Native code review — Event Source SSE
+
+## Result
+
+**No actionable findings in the reviewed change.** The frozen implementation is consistent with the bounded G2b plan and preserves the reviewed G2a transport/cancellation boundary. This conclusion is for this private serving slice; it is not full Transactional qualification, public admission, or a resolution of the documented metadata-only incident-Link membership gap.
+
+Source: `33ebad3ec539852ff46990a3647ca8195276a9f8` against `15c2641053609081b2f2ff63cd734770b64f7859`, including owner checkpoint `e6b44a0038371ef72a40c919a75c8f0d46af4d37`. Author checkout `/Users/dbox/repos/wt/vickie/vickie-event-source-sse` remained untouched. Tests/build ran in isolated detached clone `/Users/dbox/repos/wt/vickie/vickie-event-source-sse-native-review`; its tracked tree is clean.
+
+Reviewed the revised plan, root acceptance and frozen author report; production changes in all seven changed owner/projection/service/pump/HTTP/runtime/configuration files; all added Event tests, changes to finite Event/G2a/configuration tests; installed observation test; and implementation progress additions. Relevant normative Event replay/framing/retained-source clauses were checked in the frozen spec. No new semantics were inferred from tests.
+
+## Correctness checks
+
+- **Owner continuation and bounded work:** `transaction-store.ts:604–707,1585–1637` authenticates frozen opaque handles in an owner-local WeakMap. Source and captured context are immutable; handles contain neither group bodies nor SQLite statements. Known identity/minimum precede effective header cursor validity. Initial public IDs require actual projected membership. Each non-idle entry reads one expected group and faults on a positional hole. Idle caught-up entries return before constructing the group reader. Advance rejects foreign handles, lost identity, incompatible context, and head regression. Reusing an older genuine handle deliberately re-observes history, as the accepted plan permits.
+- **No missing or duplicate suffix:** The partial-packet path keeps the current group and last included original ordinal; it advances to the next group only when all remaining projected Events were considered. The finite collector retains its exact serialized envelope/comma/continuation reservation and lookahead. Independently rerun tests cover self-Link endpoint facts, every reconnect suffix, count boundaries, a real 4-MiB byte boundary, finite preparation behavior, and new irrelevant/relevant groups after caught-up idle.
+- **Pump and backpressure:** `transaction-sse.ts:86–181` has one delivery loop for both payload kinds. It awaits each frame's write/drain, retains no speculative next packet, discards the completed packet before the next pull, and passes the delivered packet's successor only afterward. Heartbeats use the same write barrier at every next-pull boundary, including empty historical backlog. Backlog yields a cancellable turn; caught-up polling uses the existing delay. Both wrappers release their initial arguments on return, and `transaction-runtime.ts:185–217` clears the initial HTTP selection after transfer. Existing cancellation/error listener cleanup is shared, not duplicated.
+- **HTTP context and lifecycle:** `transaction-http.ts:458–493,577–586` separates finite JSON from selected SSE, ignores reconnect headers for JSON, and passes original raw header multiplicity to the owner path. Query grammar remains prior to ownership lookup; a valid header overrides only a syntactically valid query. HEAD/conditional/media outcomes do not allocate a stream slot. The runtime retains the captured initial context for a capacity refusal; known-source parameter failures carry their originating entry context. Tests advance the owner between observation and response construction to distinguish this from a later inspect. Shared capacity, pre-abort, minimum-wait disconnect, normal shutdown and genuine post-header cause retention passed.
+- **Retained deletion and explicit gap:** Deleted Resource Event Sources continue through retained identity while ordinary GET is404. A metadata-only incident-Link gap still closes/refuses the affected Bead projection and remains reachable on reconnect; Scope and Link sources remain available. No skipped Event, fabricated error Event or second HTTP status was introduced.
+- **Wire and public boundary:** Event frames repeat complete Event id/type/data and blank-line framing. Actual source HTTP tests compare raw finite data substrings and normalized numeric/UTF-8/newline values. Runtime configuration includes the actual one-group/4-MiB mechanics without changing timers. No protocol/schema/catalog/public-export/launcher/mutation/evaluator changes occur in the 13-file diff; dependency boundary checks pass.
+
+## Independent execution
+
+Pinned executable environment: Node `/Users/dbox/.nvm/versions/node/v24.16.0/bin/node`; pnpm `/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs`; Node bin prepended to PATH. All logs below are under `bdp-integration-logs/event-source-sse-native/`.
+
+1. Remote session guard `/Users/dbox/repos/wt/vickie/bdp-integration-logs/guarded-action.py /usr/bin/true`: exit0.
+2. `pnpm install --frozen-lockfile`: exit0 (`install.log`).
+3. Initial focused run before build: exit1 (`focused.log`), 26 tests passed and emitted-module imports failed because the fresh clone had no `packages/server/dist/transaction-runtime.js`. This is a reviewer setup failure, retained honestly; it is not counted as passing evidence or a source defect.
+4. `pnpm build`: exit0 (`build.log`).
+5. `pnpm exec vitest run packages/server/src/transaction-event-sse.test.ts packages/server/src/transaction-events.test.ts packages/server/src/transaction-sse.test.ts packages/server/src/transaction-runtime-configuration.test.ts --maxWorkers=2 --reporter=verbose`: exit0, **94 tests / 4 files**, 3.77s (`focused-built.log`). This covers source owner/pump tests and actual HTTP tests loading the freshly emitted runtime.
+6. `pnpm check:boundaries`: exit0 (`boundaries.log`). `git diff --check 15c2641..33ebad3`: exit0.
+
+No additional synthetic discriminator was necessary: the focused tests directly exercise the suspected continuation, drain, heartbeat, context and cancellation failure boundaries. No broad server/workspace or installed cohort was redundantly rerun.
+
+## Installed evidence inspection and limits
+
+Read the author's `packed-33ebad3e/stages.json`, `source.json`, and actual `transaction-event-sse-observation.json`. They identify the exact frozen commit, a clean source, `claimEligible:false`, 15,157.53ms sparse idle, two comments and one subsequent Event. Independently decoded all four retained wire captures and recomputed their SHA-256: each matches its recorded digest (4,217 / 2,759 / 1,163 / 1,175 bytes). The test's target is a separate installed process; source-only raw recorder imports are observer support. This inspection corroborates the recorded evidence; it does **not** relabel the author's packed run as a second independent installed execution.
+
+The raw partial-prefix test withholds the final LF from the first actual frame: no complete application Event precedes that disconnect. Same-group between-ordinal reconnect is separately proven at the owner boundary, not claimed as a second actual-network partial-frame experiment. Fixed owner view/epoch and append-only retention do not exercise mutable authorization, erasure or pruning. Encoded page/frame bounds are not heap or synchronous parse-latency bounds. Browser EventSource/CORS, G2a start=now plus reconnect-header behavior, remaining set HTTP admission and full qualification remain outside this slice.
+
+All review-owned commands completed. Process inspection found no remaining review-owned Node/test children; no forced cleanup was needed. No source, evidence, capability or coordination record was modified, and no outward action occurred.

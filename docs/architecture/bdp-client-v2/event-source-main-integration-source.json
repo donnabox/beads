@@ -1,0 +1,27 @@
+{
+  "head": "6a13489d0de673fd59c50b6be1d65e93f3b4be6a",
+  "tree": "28eea2abfc5e53399c9a92dd7da44eb74b33d418",
+  "parents": [
+    "33ebad3ec539852ff46990a3647ca8195276a9f8",
+    "f31424cdfc57871925a04659208686bac7bddfed"
+  ],
+  "main": "f31424cdfc57871925a04659208686bac7bddfed",
+  "reviewedCandidate": "33ebad3ec539852ff46990a3647ca8195276a9f8",
+  "filesDifferentFromMain": [
+    "apps/bdptest/src/transactional-event-sse-installed.test.ts",
+    "docs/design/transaction-implementation-progress.md",
+    "packages/server/src/transaction-event-sse.test.ts",
+    "packages/server/src/transaction-events.test.ts",
+    "packages/server/src/transaction-events.ts",
+    "packages/server/src/transaction-http.ts",
+    "packages/server/src/transaction-runtime-configuration.test.ts",
+    "packages/server/src/transaction-runtime-configuration.ts",
+    "packages/server/src/transaction-runtime.ts",
+    "packages/server/src/transaction-service.ts",
+    "packages/server/src/transaction-sse.test.ts",
+    "packages/server/src/transaction-sse.ts",
+    "packages/server/src/transaction-store.ts"
+  ],
+  "allDifferentFilesEqualFrozenCandidate": true,
+  "clean": true
+}
