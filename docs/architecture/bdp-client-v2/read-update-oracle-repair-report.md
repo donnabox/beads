@@ -23,3 +23,7 @@ Artifact bindings:
 - exact configuration `ae2f29b8cfe45a180057e387bfef03aa1f31957be0b32760f5d7217ad81fca13`
 
 Source/payload relationship remains launcher/reviewer provenance, not independent target attestation. Temporary test stores/listeners/children closed; retained tarballs/install/progress are deliberate external review artifacts. Checkout stayed clean. Next authorized slice is W1 only in another successor, incorporating `read-update-next-execution-native-plan-review.md`; W1b/W2/W3 remain deferred.
+
+## Review clarification
+
+The test proxy reserializes forwarded response heads and bodies with recomputed framing. Its controls prove assertion sensitivity over a real socket, not octet-transparent forwarding or independent framing qualification. Narrow external review closes the two value-oracle P2s; collection links-plane absence and diagnostic cleanup are assigned to the W1 successor.
