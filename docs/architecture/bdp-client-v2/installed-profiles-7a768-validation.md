@@ -2,7 +2,7 @@
 
 Exact clean/pushed source `7a768c160eecd6c698c934a47492a5943359c50d`, ordinary merge of frozen W1 `459d32b67e3d8c2c4e4e667bc7481649ca33eee3` into prior bf462023. No merge conflicts or source changes during tests. PR88 remains draft.
 
-Pinned Node24.16.0/pnpm11.20.0. Clean → prebuild typecheck → build; **8,166tests/137files pass**, one optional skip,49.68s. Formatting/lint/boundaries, both smokes, seven preflight and unchanged89-row Read evidence pass. Exact CI38363438169 running at publication; prior38361918560 is green only forbf462023.
+Pinned Node24.16.0/pnpm11.20.0. Clean → prebuild typecheck → build; **8,166tests/137files pass**, one optional skip,49.68s. Formatting/lint/boundaries, both smokes, seven preflight and unchanged89-row Read evidence pass. Exact CI38363438169 SUCCESS:8,166tests/137files/one optional skip, seven preflight, both smokes and unchanged evidence. Independently retrieved complete CI log is pr88-7a768-ci.log. Prior38361918560 remains evidence forbf462023 only.
 
 Fresh protocol/server tarballs installed into isolated prefix;55tests/fourfiles pass18.29s (cumulative matrix, exactclient, developmentserver, installedoraclecontrols). Actual installed progress names this clean source,33authored sessions/199clientexchanges/44setupwrites/21conditionalobservations,129required,25wholeflags/104uncovered,claimEligible:false. Whole flags remain subject to W1 independent review. Payload digest `1b70570064fafd29c95223d8c90790775cab915165ee3d8452c1c363a983d8cc` equals priorbf462 because only harness/artifacts changed. Harness/fixture/route identities retain their own bindings; source association is launcher/reviewer provenance, not target attestation.
 
