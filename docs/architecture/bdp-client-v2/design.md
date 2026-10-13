@@ -62,7 +62,7 @@ Original service-review lows: RU trusted callback capability narrowing and publi
 
 ### Live worker ledger
 
-Checkpoint 2026-10-13T22:46:05Z. Autonomous profile completion is **active** under the existing session `2026-10-08T20:26:35Z-81e5`. The operator resumed with a 2.5-hour power/connectivity window. Begin wind-down at **2026-10-14T00:10Z**; checkpoint, stop owned local processes and pause the heartbeat by **00:20Z (5:20 p.m. Pacific October 13)** unless extended. No release, Preview 2 promotion or public write-profile admission.
+Checkpoint 2026-10-13T22:47:11Z. Autonomous profile completion is **active** under the existing session `2026-10-08T20:26:35Z-81e5`. The operator resumed with a 2.5-hour power/connectivity window. Begin wind-down at **2026-10-14T00:10Z**; checkpoint, stop owned local processes and pause the heartbeat by **00:20Z (5:20 p.m. Pacific October 13)** unless extended. No release, Preview 2 promotion or public write-profile admission.
 
 ## Verified delivery and current gates
 
@@ -80,9 +80,9 @@ Current qualification remains bounded: RU129 required/54 authored/30 whole/99 no
 
 | Worker | Current work | Source / evidence | Next gate |
 | --- | --- | --- | --- |
-| update_implementation | ACTIVE b604 combined validation; metadata repair COMPLETE1ecb | [Repair report](metadata-review-repair-report.md), [root closure](metadata-review-repair-root-closure.md); PR98 remote1ecb and PR99 remoteb604 | Fresh combined TX/RU checks; exact new CI and final TX external review |
-| profile_editorial_inventory | COMPLETE native receipt-plan review | [Review](transaction-after-effects-receipt-native-plan-review.md), SHA8098dd8d | One Medium installed-metadata source mismatch; revised4bb05 addresses it, external pending |
-| profile_runtime_inventory | ACTIVE next R plan revision | Originalc027 and completed [external review](read-update-after-metadata-claude-plan-review.txt) | Recompute finite coverage budget; drop8redundant descriptor/schema reads, explicit complete refusal→correction map, B/N conditional credit; no authoring yet |
+| update_implementation | COMPLETE b604 combined validation and1ecb repair | [Repair report](metadata-review-repair-report.md), [root closure](metadata-review-repair-root-closure.md); PR98 remote1ecb and PR99 remoteb604 | Fresh [combined report](effects-metadata-repair-integration-report.md) root read; exact new CI/dependency remain |
+| profile_editorial_inventory | ACTIVE revised-R native closure; receipt-plan review complete | [Review](transaction-after-effects-receipt-native-plan-review.md), SHA8098dd8d | One Medium installed-metadata source mismatch; revised4bb05 addresses it, external pending |
+| profile_runtime_inventory | COMPLETE revised R plan6a120d48 | [Revision](read-update-after-metadata-plan-revised.md), [dispositions](read-update-after-metadata-plan-dispositions.md) root read | Native closure active; R88/N52/140total,98bindings5460B+1708reasonspace, no authoring yet |
 | transaction_implementation | COMPLETE revised receipt plan | [Revision](transaction-after-effects-receipt-plan-revised.md), SHA4bb05e65; [dispositions](transaction-after-effects-receipt-plan-dispositions.md), SHA02c92b31 | External original-plan council pending; no source authoring yet |
 | profiles_integration_validation | COMPLETE B whole-clause audit | [Audit](read-update-numeric-metadata-whole-audit.md), SHAa0adb7f6; [integration](metadata-set-integration-report.md) | Five selected obligations supported; root conditional acceptance, flags unchanged pending successor |
 
@@ -125,6 +125,12 @@ Root read full B audit a0adb7f6 and prior N audit2782cfe6 plus native plan revie
 PR98 remote verified1ecb7e899c25feff849a97017b60c7b87c21830b, tree4a6ac580c1d4dd19dc83cad22b56f7c2c7feb704, direct8873. Root inspected actual diff, all six council dispositions, negative-control reports, final report and source bindings. [Root closure](metadata-review-repair-root-closure.md) closes narrow correction; exact CI38479477557/job115578253889 started22:41:40Z and remains separate merge gate. Fresh12 selected installed checks, genuine54row RU15.863s,129mapping/report hash checks, no children/power assertions. Report [here](metadata-review-repair-report.md). Initial merge-tree lacked remote main object; fetched currentmain3daa and independent calculation matches exact1ecb tree. Recheck main/CI before merge.
 
 PR99 remote verifiedb604320267dd0adcf1ec91854550fb402a1155e7, ordinary50b+1ecb, only RU app-test repair versus50b. All TX files and artifacts preserved. Root inspected actual parent/diff; fresh combined validation active and new CI pending. TX00fa council now closed by root dispositions; currentb604 CI38479779925/job115579254122 started22:44:27Z. Earlier50b green CI remains historical.
+
+## Fresh b604 integration verified
+
+Root read full [report](effects-metadata-repair-integration-report.md): all stages pass;95focused/7files, installed set1/TX38/RU12 pass; TX121actions2.954s/all14children closed; genuine RU54rows16.112s/73.888s remaining. All255TX ordered rows/eight authoredbindings and129RU mappings plus written/canonical hashes checked. Frozenb604 tree04d6757bb4858297dfd5dc5e85576c30d1d1936c, payload1b126 unchanged, cleanupcomplete andclean. CI38479779925 and PR98dependency remain; code councils closed.
+
+Root read complete revised R plan6a120d48/dispositionsafeb1b5c and assigned independent native closure. Explicit18-refusal map preserves all oldpairings/semanticbodyguard; eight schema/descriptor GETs removed; R88/N52/140actions, routes51, planned98bindings5460bytes leaves1708for R/B/N reasons/flags within unchanged7KiB. Generatedbyte/nodefit remains stoppinggate. Actual authorbase can be accepted1ecb (artifactbytes unchanged) once revisedplanclosure passes; noimplementation authorization yet.
 
 ## Current priority: BDP profile structure and implementation
 
