@@ -126,3 +126,5 @@ Implementation successor starts from reviewed M1 closure 80d9ef0941a6cb7d46c4b6a
 - F11: base exact mode/configuration digest stays fixed; actual validated dial route and current session generation are rebound per prepare/reopen. Both ordinary and dynamic requests use current session.
 
 Root native constraints: bounded cleanup drains dynamic operations; no old execute closure after reopen, no emulated output counted as wire, retained receipt provenance never rewritten. No new public Transactional run admission or complete profile claim.
+
+Root approved bounded existing response-metadata-equals header whitelist extension: bdp-scope-epoch, bdp-authorization-view, bdp-scope-position. Existing grammar only; parser/runner positive and duplicate/unsupported-name tests required. Request header allowlists remain distinct. This lets finite Event observations compare actual current context with a preceding observed commit/seed without inventing an observation operation.
