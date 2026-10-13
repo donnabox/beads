@@ -457,8 +457,14 @@ var proxyCapabilityRegistry = []capabilityRow{
 	// Generic graph commands have no proxied-provider route. Graph workspace
 	// admission handles their supported direct embedded/server path first.
 	refusedPath("compare", "proxy.compare.unsupported", ProxyReasonUnimplemented, "generic graph CLI: gastownhall/beads#6703"),
-	refusedPath("links", "proxy.links.unsupported", ProxyReasonUnimplemented, "generic graph CLI: gastownhall/beads#6703"),
-	refusedPath("unlink", "proxy.unlink.unsupported", ProxyReasonUnimplemented, "generic graph CLI: gastownhall/beads#6703"),
+	refusedPath("link create", "proxy.link.create.unsupported", ProxyReasonUnimplemented, "generic graph CLI: gastownhall/beads#6703"),
+	refusedPath("link list", "proxy.link.list.unsupported", ProxyReasonUnimplemented, "generic graph CLI: gastownhall/beads#6703"),
+	refusedPath("link show", "proxy.link.show.unsupported", ProxyReasonUnimplemented, "generic graph CLI: gastownhall/beads#6703"),
+	refusedPath("link update", "proxy.link.update.unsupported", ProxyReasonUnimplemented, "generic graph CLI: gastownhall/beads#6703"),
+	refusedPath("link delete", "proxy.link.delete.unsupported", ProxyReasonUnimplemented, "generic graph CLI: gastownhall/beads#6703"),
+	refusedPath("link versions", "proxy.link.versions.unsupported", ProxyReasonUnimplemented, "generic graph CLI: gastownhall/beads#6703"),
+	refusedPath("link compare", "proxy.link.compare.unsupported", ProxyReasonUnimplemented, "generic graph CLI: gastownhall/beads#6703"),
+	refusedPath("link count", "proxy.link.count.unsupported", ProxyReasonUnimplemented, "generic graph CLI: gastownhall/beads#6703"),
 
 	// --- versioned history ----------------------------------------------------
 	// `bd versions` is a pure read (issueops.ListVersionsInTx in one read

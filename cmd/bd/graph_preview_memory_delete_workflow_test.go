@@ -121,7 +121,7 @@ func TestGraphPreviewMemoryDeleteWorkflow(t *testing.T) {
 					t.Fatal("incident-Link refusal changed Memory, Link or another endpoint")
 				}
 				link := graphMixedResult[graphstore.LinkRecord](t, linkBefore)
-				args := []string{"unlink", path, "--if-revision", link.Revision}
+				args := []string{"link", "delete", "--force", path, "--if-revision", link.Revision}
 				if path == "links/outgoing" {
 					args = append(args, "--if-source-revision", current.Revision)
 				}

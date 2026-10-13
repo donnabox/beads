@@ -13,8 +13,10 @@ import (
 var linkCmd = &cobra.Command{
 	Use:     "link <id1> <id2>",
 	GroupID: "issues",
-	Short:   "Link two issues with a dependency",
-	Long: `Link two issues with a dependency.
+	Short:   "Create, inspect, update and delete Links",
+	Long: `Use bd link create/list/show/update/delete/versions/compare/count for Links
+in a graph workspace. The two-ID form remains the ordinary Dependency
+shorthand.
 
 Shorthand for 'bd dep add <id1> <id2>'. By default creates a "blocks"
 dependency (id2 blocks id1). Use --type to specify a different relationship.

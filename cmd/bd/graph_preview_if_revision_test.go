@@ -88,7 +88,7 @@ func TestGraphPreviewIfRevisionFlagOwnership(t *testing.T) {
 			t.Errorf("bd %s --if-revision is not upstream's compare-and-swap flag; usage = %q", cmd.Name(), flag.Usage)
 		}
 	}
-	for _, cmd := range []*cobra.Command{rememberCmd, forgetCmd, graphUnlinkCmd} {
+	for _, cmd := range []*cobra.Command{rememberCmd, forgetCmd, linkDeleteCmd} {
 		flag := cmd.Flags().Lookup("if-revision")
 		if flag == nil {
 			t.Errorf("bd %s lost its graph preview --if-revision", cmd.Name())
@@ -102,7 +102,7 @@ func TestGraphPreviewIfRevisionFlagOwnership(t *testing.T) {
 		cmd  *cobra.Command
 		want bool
 	}{
-		{updateCmd, false}, {deleteCmd, true}, {forgetCmd, true}, {rememberCmd, false}, {graphUnlinkCmd, true},
+		{updateCmd, false}, {deleteCmd, true}, {forgetCmd, true}, {rememberCmd, false}, {linkDeleteCmd, false},
 		{closeCmd, false}, {assignCmd, false},
 	} {
 		if has := tc.cmd.Flags().Lookup("unconditional") != nil; has != tc.want {

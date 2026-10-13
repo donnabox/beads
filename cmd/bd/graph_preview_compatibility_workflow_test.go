@@ -123,25 +123,28 @@ func TestGraphPreviewCompatibilityDefaultsWorkflow(t *testing.T) {
 				t.Fatal("default source guard did not support ordered Link patch")
 			}
 			refuse("revision_conflict", "update", link.Link.ID, "--properties", `{}`, "--if-revision", link.Link.Revision)
-			refuse("invalid_selector", "unlink", mixed.Link.ID)
-			call("unlink", memory.ID, issue.ID, "--resource-type", related, "--if-revision", mixed.Link.Revision)
-			call("unlink", link.Link.ID, "--if-revision", patched.Link.Revision)
+			preview := graphMixedResult[map[string]any](t, call("link", "delete", mixed.Link.ID))
+			if preview["preview"] != true {
+				t.Fatal("Link deletion did not preview by default")
+			}
+			call("link", "delete", "--force", mixed.Link.ID, "--if-revision", mixed.Link.Revision)
+			call("link", "delete", "--force", link.Link.ID, "--if-revision", patched.Link.Revision)
 			issueBefore := call("show", issue.ID)
 			unowned := graphMixedResult[graphstore.LinkMutationResult](t, call("link", issue.ID, memory.ID, "--resource-type", related))
 			if unowned.ReplacedSource != nil || call("show", issue.ID) != issueBefore {
 				t.Fatal("default informational Link changed or disclosed its Issue source")
 			}
-			human := graphPolicyCLI(t, bd, work, home, nil, "", "links", issue.ID)
+			human := graphPolicyCLI(t, bd, work, home, nil, "", "link", "list", "--incident-to", issue.ID)
 			if !strings.Contains(human, "types/preview-related-v2  "+strings.TrimPrefix(unowned.Link.ID, scope)+"  "+strings.TrimPrefix(issue.ID, scope)+" → "+strings.TrimPrefix(memory.ID, scope)) {
 				t.Fatalf("links omitted type-first local display: %q", human)
 			}
-			call("unlink", unowned.Link.ID, "--if-revision", unowned.Link.Revision)
+			call("link", "delete", "--force", unowned.Link.ID, "--if-revision", unowned.Link.Revision)
 			canonicalID := scope + "links/canonical"
 			canonical := graphMixedResult[graphstore.LinkMutationResult](t, call("link", issue.ID, other.ID, "--link-type", related, "--id", canonicalID))
 			if canonical.Link.ID != canonicalID {
 				t.Fatal("informational Link did not accept an in-scope canonical ID")
 			}
-			call("unlink", canonicalID, "--if-revision", canonical.Link.Revision)
+			call("link", "delete", "--force", canonicalID, "--if-revision", canonical.Link.Revision)
 			if call("show", issue.ID) != issueBefore {
 				t.Fatal("default informational unlink changed its Issue source")
 			}
@@ -169,9 +172,7 @@ func TestGraphPreviewCompatibilityDefaultsWorkflow(t *testing.T) {
 			refuse("invalid_properties", "dep", "add", issue.ID, otherBlocker.ID, "--id", "links/different-block")
 			thirdBlocker := graphMixedResult[graphstore.IssueRecord](t, call("create", "Third prerequisite"))
 			refuse("identity_reserved", "dep", "add", issue.ID, thirdBlocker.ID, "--id", "links/chosen-block")
-			refuse("capability_unavailable", "unlink", issue.ID, gate.ID, "--resource-type", dependency.Link.Type, "--if-revision", dependency.Link.Revision)
-			refuse("invalid_properties", "unlink", dependency.Link.ID, "--if-revision", dependency.Link.Revision)
-			call("unlink", dependency.Link.ID, "--if-revision", dependency.Link.Revision, "--unconditional-source")
+			call("link", "delete", "--force", dependency.Link.ID, "--if-revision", dependency.Link.Revision)
 			propertyMemory := graphMixedResult[graphstore.Record](t, call("remember", "--id", "beads/property-memory", "--properties", `{"title":"Property title","body":"First body"}`))
 			merged := graphMixedResult[graphstore.MemoryMutationResult](t, call("update", propertyMemory.ID, "--properties", `{"body":"Second body"}`, "--if-revision", propertyMemory.Revision))
 			if merged.Memory.Properties.Title != "Property title" || merged.Memory.Properties.Body != "Second body" {

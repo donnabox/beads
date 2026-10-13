@@ -205,6 +205,11 @@ type LinkMutationResult struct {
 // Empty direction means both. Empty TypeURL admits all installed Link Types.
 type LinksRequest struct{ BeadPath, Direction, TypeURL string }
 
+// LinkCollectionRequest selects current Links without enumerating Beads.
+// An empty selector is unconstrained; the preview refuses an incomplete
+// collection rather than returning a silently truncated page.
+type LinkCollectionRequest struct{ TypeURL, SourcePath, TargetPath, IncidentPath string }
+
 // PreviewIncidentLinkLimit bounds this disposable non-paginated reader.
 const PreviewIncidentLinkLimit = 1000
 

@@ -318,13 +318,13 @@ func TestGraphPreviewQueryWorkflow(t *testing.T) {
 			assertBlocked(true)
 			assertReady(false, true)
 			source := graphMixedResult[graphstore.IssueRecord](t, call("show", "--format", "graph-json", "beads/work"))
-			call("unlink", dep.Link.ID, "--if-revision", dep.Link.Revision, "--if-source-revision", source.Revision)
+			call("link", "delete", "--force", dep.Link.ID, "--if-revision", dep.Link.Revision, "--if-source-revision", source.Revision)
 			assertBlocked(false)
 			assertReady(true, true)
 			for _, path := range []string{"links/context", "links/work"} {
 				link := graphMixedResult[graphstore.LinkRecord](t, call("show", path))
 				memory := graphMixedResult[graphstore.Record](t, call("show", "beads/plan"))
-				call("unlink", path, "--if-revision", link.Revision, "--if-source-revision", memory.Revision)
+				call("link", "delete", "--force", path, "--if-revision", link.Revision, "--if-source-revision", memory.Revision)
 			}
 			memory := graphMixedResult[graphstore.Record](t, call("show", "beads/plan"))
 			deleted := graphMixedResult[graphstore.MemoryDeleteResult](t, call("delete", "beads/plan", "--force", "--if-revision", memory.Revision))

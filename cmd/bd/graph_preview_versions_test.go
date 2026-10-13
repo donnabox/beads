@@ -71,7 +71,7 @@ func TestGraphPreviewRemovedLinkVersionsTwoEngines(t *testing.T) {
 			call("create", "Target", "--id", "target")
 			call("link", "source", "target", "--id", "links/edge", "--resource-type", scope+"types/preview-related-v2")
 			call("update", "links/edge", "--properties", `{"note":"changed"}`)
-			removed := graphMixedResult[graphstore.LinkDeleteResult](t, call("unlink", "links/edge", "--unconditional"))
+			removed := graphMixedResult[graphstore.LinkDeleteResult](t, call("link", "delete", "--force", "links/edge"))
 			listed := call("versions", "links/edge")
 			_, kind, rows, members := graphVersionsListed(t, listed)
 			if kind != "link" || len(rows) != 2 {
@@ -296,7 +296,7 @@ func TestGraphPreviewVersionsCLI(t *testing.T) {
 	// Link unowned, so these writes do not advance a second subject's history.
 	run(t, "link", "beads/issue", "beads/target", "--id", "links/related", "--resource-type", relatedType, "--actor", author, "--json")
 	run(t, "update", "links/related", "--properties", `{"note":"changed"}`, "--actor", author, "--json")
-	removedLink := graphMixedResult[graphstore.LinkDeleteResult](t, run(t, "unlink", "links/related", "--unconditional", "--actor", author, "--json"))
+	removedLink := graphMixedResult[graphstore.LinkDeleteResult](t, run(t, "link", "delete", "--force", "links/related", "--actor", author, "--json"))
 
 	t.Run("json-member-set", func(t *testing.T) {
 		// One plane getting the contract right says nothing about the others:

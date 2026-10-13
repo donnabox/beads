@@ -49,7 +49,7 @@ func TestGraphPreviewIssueDeleteWorkflow(t *testing.T) {
 				t.Fatal("incident Link refusal changed Issue")
 			}
 			link := graphMixedResult[graphstore.LinkRecord](t, call("show", "links/relation"))
-			call("unlink", "links/relation", "--if-revision", link.Revision)
+			call("link", "delete", "--force", "links/relation", "--if-revision", link.Revision)
 			final := graphMixedResult[graphstore.IssueRecord](t, call("show", "--format", "graph-json", "work"))
 			before := call("versions", "work")
 			deleted := graphMixedResult[graphstore.IssueDeleteResult](t, call("delete", "work", "--force", "--if-revision", final.Revision))

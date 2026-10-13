@@ -83,7 +83,7 @@ func TestGraphPreviewUsabilityWorkflow(t *testing.T) {
 				t.Fatal("details omitted exact version")
 			}
 			for _, spec := range []struct{ typ, target string }{{"types/example-follows", other.ID}, {"types/example-cites", issue.ID}} {
-				link := graphMixedResult[graphstore.LinkMutationResult](t, call("link", "policy", strings.TrimPrefix(spec.target, scope+"beads/"), "--link-type", spec.typ, "--properties", `{"note":"code flow"}`))
+				link := graphMixedResult[graphstore.LinkMutationResult](t, call("link", "create", "--source", "policy", "--target", strings.TrimPrefix(spec.target, scope+"beads/"), "--link-type", spec.typ, "--properties", `{"note":"code flow"}`))
 				if link.Link.Type != scope+spec.typ || link.Link.Source != memory.ID || link.Link.Target != spec.target || link.ReplacedSource == nil {
 					t.Fatal("informational Link lost Type/endpoints/ownership")
 				}
@@ -92,26 +92,33 @@ func TestGraphPreviewUsabilityWorkflow(t *testing.T) {
 				if len(owner.Owned) != 1 || json.Unmarshal(owner.Owned[0], &owned) != nil || owned.Type != scope+spec.typ {
 					t.Fatal("selected Type not retained as owned")
 				}
-				incident := graphMixedResult[[]graphstore.LinkRecord](t, call("links", "policy", "--link-type", spec.typ))
+				incident := graphMixedResult[[]graphstore.LinkRecord](t, call("link", "list", "--incident-to", "policy", "--link-type", spec.typ))
 				if len(incident) != 1 || incident[0].Type != scope+spec.typ {
 					t.Fatal("local Type filter failed")
 				}
-				edited := graphMixedResult[graphstore.LinkMutationResult](t, call("update", link.Link.ID, "--properties", `{"note":"updated"}`, "--if-revision", link.Link.Revision))
+				count := graphMixedResult[map[string]int](t, call("link", "count", "--link-type", spec.typ))
+				if count["count"] != 1 {
+					t.Fatalf("Link collection count = %d, want 1", count["count"])
+				}
+				edited := graphMixedResult[graphstore.LinkMutationResult](t, call("link", "update", link.Link.ID, "--properties", `{"note":"updated"}`, "--if-revision", link.Link.Revision))
 				if edited.Link.Type != link.Link.Type {
 					t.Fatal("update changed Type")
 				}
 				// Every installed informational Type lists its history, not only Related.
-				resource, kind, versions, members := graphVersionsListed(t, call("versions", link.Link.ID))
+				resource, kind, versions, members := graphVersionsListed(t, call("link", "versions", link.Link.ID))
 				if resource != strings.TrimPrefix(link.Link.ID, scope) || kind != "link" || len(versions) != 2 ||
 					versions[0].Version != edited.Link.Revision || versions[1].Version != link.Link.Revision {
 					t.Fatalf("%s Link versions: resource=%q kind=%q rows=%+v", spec.typ, resource, kind, versions)
 				}
 				graphVersionsAssertKeys(t, spec.typ, members)
-				old := graphMixedResult[graphstore.LinkRecord](t, call("show", link.Link.ID, "--version", link.Link.Revision))
+				old := graphMixedResult[graphstore.LinkRecord](t, call("link", "show", link.Link.ID, "--version", link.Link.Revision))
 				if !reflect.DeepEqual(old, link.Link) {
 					t.Fatal("retained Link changed")
 				}
-				call("unlink", memory.ID, spec.target, "--link-type", scope+spec.typ, "--if-revision", edited.Link.Revision)
+				if comparison := call("link", "compare", link.Link.ID, "--from", link.Link.Revision, "--to", edited.Link.Revision); !strings.Contains(comparison, "note") {
+					t.Fatalf("Link comparison omitted changed property: %s", comparison)
+				}
+				call("link", "delete", "--force", link.Link.ID, "--if-revision", edited.Link.Revision)
 				retained := graphMixedResult[graphstore.Record](t, call("show", memory.ID, "--version", owner.Revision))
 				if !reflect.DeepEqual(retained, owner) {
 					t.Fatal("unlink rewrote old Memory-owned snapshot")
@@ -125,7 +132,7 @@ func TestGraphPreviewUsabilityWorkflow(t *testing.T) {
 				t.Fatal("bare Link ID was not scoped independently from the Bead ID")
 			}
 			refuse("invalid_selector", "link", memory.ID, other.ID, "--link-type", "types/example-follows", "--id", "beads/edge")
-			call("unlink", "edge", "--if-revision", shortLink.Link.Revision)
+			call("link", "delete", "--force", "edge", "--if-revision", shortLink.Link.Revision)
 			refuse("gone", "show", "links/edge")
 			if shown := graphMixedResult[graphstore.Record](t, call("show", "edge")); shown.ID != sameIDBead.ID {
 				t.Fatal("Link-only unlink selected the Bead with the same bare ID")

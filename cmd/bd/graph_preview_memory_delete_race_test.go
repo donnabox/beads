@@ -222,7 +222,7 @@ func TestGraphPreviewMemoryDeleteConcurrentProcesses(t *testing.T) {
 					if !added.Changed || !reflect.DeepEqual(added.Link, link) || link.ID != scope+"links/incoming" || link.Source != issue.ID || link.Target != original.ID || !reflect.DeepEqual(current, original) {
 						t.Fatalf("incomplete incoming Link winner: %+v current=%+v", added, current)
 					}
-					incident := graphMixedResult[[]graphstore.LinkRecord](t, call(t, "links", path))
+					incident := graphMixedResult[[]graphstore.LinkRecord](t, call(t, "link", "list", "--incident-to", path))
 					if len(incident) != 1 || !reflect.DeepEqual(incident[0], link) {
 						t.Fatalf("incomplete incident state: %+v", incident)
 					}
@@ -243,7 +243,7 @@ func TestGraphPreviewMemoryDeleteConcurrentProcesses(t *testing.T) {
 			// assertions. Explicit unlink/forget are separate normal operations.
 			if !deleteWon {
 				if other == "incoming-link" {
-					call(t, "unlink", "links/incoming", "--if-revision", link.Revision)
+					call(t, "link", "delete", "--force", "links/incoming", "--if-revision", link.Revision)
 				}
 				call(t, "forget", path, "--if-revision", finalLive.Revision)
 			}

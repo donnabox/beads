@@ -144,7 +144,7 @@ func TestGraphPreviewMixedCoreWorkflow(t *testing.T) {
 			if call("show", "beads/work") != issueBefore || call("show", "beads/context") != other {
 				t.Fatal("unowned informational Link versioned an endpoint")
 			}
-			incident := graphMixedResult[[]graphstore.LinkRecord](t, call("links", "beads/plan"))
+			incident := graphMixedResult[[]graphstore.LinkRecord](t, call("link", "list", "--incident-to", "beads/plan"))
 			if len(incident) != 2 {
 				t.Fatalf("Memory incident Links = %d, want 2", len(incident))
 			}
@@ -200,7 +200,7 @@ func TestGraphPreviewMixedCoreWorkflow(t *testing.T) {
 				t.Fatal("closing prerequisite did not unblock Issue")
 			}
 			workIssue := graphMixedResult[graphstore.IssueRecord](t, call("show", "--format", "graph-json", "beads/work"))
-			call("unlink", dependency.Link.ID, "--if-revision", dependency.Link.Revision, "--if-source-revision", workIssue.Revision)
+			call("link", "delete", "--force", dependency.Link.ID, "--if-revision", dependency.Link.Revision, "--if-source-revision", workIssue.Revision)
 			call("close", "beads/work", "--reason", "Done")
 			call("reopen", "beads/work", "--reason", "One more change")
 			workIssue = graphMixedResult[graphstore.IssueRecord](t, call("show", "--format", "graph-json", "beads/work"))
@@ -215,7 +215,7 @@ func TestGraphPreviewMixedCoreWorkflow(t *testing.T) {
 
 			for _, linkPath := range []string{"links/context", "links/work", "links/unowned"} {
 				link := graphMixedResult[graphstore.LinkRecord](t, call("show", linkPath))
-				args := []string{"unlink", linkPath, "--if-revision", link.Revision}
+				args := []string{"link", "delete", "--force", linkPath, "--if-revision", link.Revision}
 				if linkPath != "links/unowned" {
 					owner := graphMixedResult[graphstore.Record](t, call("show", "beads/plan"))
 					args = append(args, "--if-source-revision", owner.Revision)
@@ -223,7 +223,7 @@ func TestGraphPreviewMixedCoreWorkflow(t *testing.T) {
 				call(args...)
 				refuse("gone", "show", linkPath)
 			}
-			if links := graphMixedResult[[]graphstore.LinkRecord](t, call("links", "beads/plan")); len(links) != 0 {
+			if links := graphMixedResult[[]graphstore.LinkRecord](t, call("link", "list", "--incident-to", "beads/plan")); len(links) != 0 {
 				t.Fatal("unlinked Memory retained current incident Links")
 			}
 			final := graphMixedResult[graphstore.Record](t, call("show", scope+"beads/plan"))

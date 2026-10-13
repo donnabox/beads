@@ -562,7 +562,7 @@ func TestGraphPreviewPropertiesPatchWorkflow(t *testing.T) {
 			}
 			unchanged()
 			for _, owned := range []graphstore.LinkRecord{link, twin, self} {
-				call("unlink", owned.ID, "--if-revision", owned.Revision, "--if-source-revision", memory.Revision)
+				call("link", "delete", "--force", owned.ID, "--if-revision", owned.Revision, "--if-source-revision", memory.Revision)
 				memory = showMemory()
 				retain(memory.ID, memory.Revision, memory)
 			}

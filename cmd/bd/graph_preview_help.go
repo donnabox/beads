@@ -181,8 +181,14 @@ successful no-op and reports status not_found with --json. A real removal
 records one native dependency_removed event and one source Issue version;
 the target Issue is unchanged. Bare native Issue IDs are accepted when their
 graph path is unambiguous; use explicit beads/PATH if a different Bead claims
-that bare name. For exact guarded Link-ID removal use bd unlink.`},
-		{linkCmd, `Without --link-type, bd link SOURCE TARGET creates the ordinary
+that bare name. For Link-ID removal use bd link delete ID --force.`},
+		{linkCmd, `The canonical graph Link namespace is bd link
+create/list/show/update/delete/versions/compare/count. Create requires
+--link-type, --source and --target; list and count query complete current
+Link collections within the preview's advertised bounds. Delete previews
+by default and --force applies the checked mutation.
+
+Without --link-type, bd link SOURCE TARGET creates the ordinary
 blocking Dependency between two live Issues. For a Memory or Issue endpoint,
 choose an installed informational Type, for example on a fresh workspace:
   bd link policy work --link-type types/example-cites

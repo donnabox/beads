@@ -159,7 +159,7 @@ func runGraphPreviewLink(cmd *cobra.Command, args []string) error {
 	}
 	// --type is deliberately absent: it belongs to the blocking Dependency route
 	// above, so this list refuses it before anything below could.
-	if err := graphPreviewFlags(cmd, "link-type", "resource-type", "id", "properties", "metadata", "if-source-revision", "unconditional-source"); err != nil {
+	if err := graphPreviewFlags(cmd, "link-type", "resource-type", "source", "target", "id", "properties", "metadata", "if-source-revision", "unconditional-source"); err != nil {
 		return err
 	}
 	if !graphstore.IsInformationalTypeURL(graphPreviewConfig.GraphScopeURL, typ) {

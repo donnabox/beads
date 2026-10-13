@@ -196,6 +196,61 @@ func TestLinkUnlinkAndIncidentLifecycle(t *testing.T) {
 	}
 }
 
+func TestCollectLinksSelectsCompleteCurrentLinks(t *testing.T) {
+	for _, backend := range []string{"embedded", "server"} {
+		t.Run(backend, func(t *testing.T) {
+			ctx, options := issueExperimentOptions(t, backend)
+			store, err := OpenExisting(ctx, options)
+			if err != nil {
+				t.Fatal(err)
+			}
+			t.Cleanup(func() {
+				if err := store.Close(); err != nil {
+					t.Error(err)
+				}
+			})
+			for _, path := range []string{"beads/source", "beads/target", "beads/other"} {
+				if _, err := store.Create(ctx, CreateRequest{Path: path}); err != nil {
+					t.Fatal(err)
+				}
+			}
+			first, err := store.AddInformationalLink(ctx, LinkCreateRequest{Path: "links/first", SourcePath: "beads/source", TargetPath: "beads/target"})
+			if err != nil {
+				t.Fatal(err)
+			}
+			second, err := store.AddInformationalLink(ctx, LinkCreateRequest{Path: "links/second", SourcePath: "beads/other", TargetPath: "beads/source"})
+			if err != nil {
+				t.Fatal(err)
+			}
+			all, err := store.CollectLinks(ctx, LinkCollectionRequest{})
+			if err != nil || len(all) != 2 || all[0].ID != first.Link.ID || all[1].ID != second.Link.ID {
+				t.Fatalf("all current Links: %+v, %v", all, err)
+			}
+			for _, tc := range []struct {
+				request LinkCollectionRequest
+				want    string
+			}{
+				{LinkCollectionRequest{SourcePath: "beads/source"}, first.Link.ID},
+				{LinkCollectionRequest{TargetPath: "beads/source"}, second.Link.ID},
+				{LinkCollectionRequest{IncidentPath: "beads/target"}, first.Link.ID},
+				{LinkCollectionRequest{TypeURL: RelatedTypeURL(options.Binding.ScopeURL), SourcePath: "beads/other"}, second.Link.ID},
+			} {
+				links, err := store.CollectLinks(ctx, tc.request)
+				if err != nil || len(links) != 1 || links[0].ID != tc.want {
+					t.Fatalf("request %+v: %+v, %v", tc.request, links, err)
+				}
+			}
+			if _, err := store.Unlink(ctx, LinkDeleteRequest{Path: "links/first", Unconditional: true, UnconditionalSource: true}); err != nil {
+				t.Fatal(err)
+			}
+			current, err := store.CollectLinks(ctx, LinkCollectionRequest{})
+			if err != nil || len(current) != 1 || current[0].ID != second.Link.ID {
+				t.Fatalf("after deletion: %+v, %v", current, err)
+			}
+		})
+	}
+}
+
 func assertIncident(t *testing.T, ctx context.Context, s *Store, request LinksRequest, want ...LinkRecord) {
 	t.Helper()
 	got, err := s.ListLinks(ctx, request)

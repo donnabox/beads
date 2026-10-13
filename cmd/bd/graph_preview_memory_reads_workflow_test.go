@@ -438,7 +438,7 @@ func TestGraphPreviewMemoryReadsWorkflow(t *testing.T) {
 				t.Fatal("reads changed retained Issue")
 			}
 
-			unlinked := graphMixedResult[graphstore.LinkDeleteResult](t, call("unlink", changedLink.ID, "--if-revision", changedLink.Revision, "--if-source-revision", current.Revision))
+			unlinked := graphMixedResult[graphstore.LinkDeleteResult](t, call("link", "delete", "--force", changedLink.ID, "--if-revision", changedLink.Revision, "--if-source-revision", current.Revision))
 			if !unlinked.Changed || unlinked.Link.State != "deleted" || unlinked.Link.PreviousVersion != changedLink.Revision {
 				t.Fatalf("unlink receipt: %+v", unlinked)
 			}

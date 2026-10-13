@@ -21,6 +21,81 @@ var (
 	ErrLimitExceeded         = errors.New("graph preview result limit exceeded")
 )
 
+// CollectLinks returns every matching current Link from one bounded,
+// authority-checked snapshot. The bound applies before filtering: a caller
+// cannot mistake a truncated workspace scan for a complete answer. Unlike
+// ListLinks, this is not a per-Bead incident walk.
+func (s *Store) CollectLinks(ctx context.Context, request LinkCollectionRequest) ([]LinkRecord, error) {
+	if err := s.validateLinkType(request.TypeURL, true); err != nil {
+		return nil, err
+	}
+	for _, path := range []string{request.SourcePath, request.TargetPath, request.IncidentPath} {
+		if path != "" {
+			if err := validatePath(path); err != nil {
+				return nil, err
+			}
+		}
+	}
+	var result []LinkRecord
+	err := s.withTx(ctx, false, func(tx *sql.Tx) error {
+		if err := checkCurrentReadBytes(ctx, tx); err != nil {
+			return err
+		}
+		if err := checkBinding(ctx, tx, s.options); err != nil {
+			return err
+		}
+		if err := s.checkLinkMappingsInTx(ctx, tx); err != nil {
+			return err
+		}
+		if request.TypeURL != "" {
+			if err := s.selectedLinkTypeInTx(ctx, tx, request.TypeURL); err != nil {
+				return err
+			}
+		}
+		rows, err := tx.QueryContext(ctx, `SELECT path FROM graph_preview_catalog
+ WHERE allocation_state='live' AND resource_kind='link' LIMIT ?`, PreviewSnapshotLimit+1)
+		if err != nil {
+			return err
+		}
+		paths := []string{}
+		for rows.Next() {
+			var path string
+			if err := rows.Scan(&path); err != nil {
+				return errors.Join(err, rows.Close())
+			}
+			paths = append(paths, path)
+		}
+		if err := errors.Join(rows.Err(), rows.Close()); err != nil {
+			return err
+		}
+		if len(paths) > PreviewSnapshotLimit {
+			return fmt.Errorf("%w: complete Link collection exceeds %d live Links; pagination is unavailable", ErrLimitExceeded, PreviewSnapshotLimit)
+		}
+		sort.Slice(paths, func(i, j int) bool { return graph.CompareCodeUnits(paths[i], paths[j]) < 0 })
+		result = make([]LinkRecord, 0, len(paths))
+		for _, path := range paths {
+			link, err := s.showLinkInTx(ctx, tx, path)
+			if err != nil {
+				return err
+			}
+			if request.TypeURL != "" && link.Type != request.TypeURL ||
+				request.SourcePath != "" && !linkEndpointMatches(s.ScopeURL(), link.Source, request.SourcePath) ||
+				request.TargetPath != "" && !linkEndpointMatches(s.ScopeURL(), link.Target, request.TargetPath) ||
+				request.IncidentPath != "" && !linkEndpointMatches(s.ScopeURL(), link.Source, request.IncidentPath) && !linkEndpointMatches(s.ScopeURL(), link.Target, request.IncidentPath) {
+				continue
+			}
+			result = append(result, link)
+		}
+		return nil
+	})
+	if err != nil {
+		return nil, err
+	}
+	return result, nil
+}
+
+func linkEndpointMatches(scope, endpoint, path string) bool { return endpoint == scope+path }
+
 // ListLinks returns complete, canonically ordered live incident state, or an
 // explicit limit error. It performs no endpoint resolution outside this Scope.
 func (s *Store) ListLinks(ctx context.Context, request LinksRequest) ([]LinkRecord, error) {
