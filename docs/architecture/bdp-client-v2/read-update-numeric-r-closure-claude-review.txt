@@ -1,0 +1,38 @@
+I verified the diff against the parent commit by reconstructing the harness's own derivations from source data (routes, digests, comparator maps, coverage bindings, spec clause anchors) rather than running the suites.
+
+## Findings
+
+### 1. High — pinned continuation `routeDigest` does not match the value the harness computes
+`apps/bdptest/src/read-update-matrix.test.ts:1348`
+
+The literal was changed to `9a625cd0cd901ebf18619256a40df5a6751e329238e2efd7b8d75ebbeaedd421`. `associateArtifactObservations` computes that field as `sha256(canonicalJson({scope, profile, routes, maximumRequestHeaderBytes, maximumRequestBodyBytes}))` (`apps/bdptest/test-support/read-update-artifact-execution.ts:257-262`). Reconstructing that exact preimage from `artifactRoutes` + the fixture bindings reproduces the parent's pin `24b63b02…` bit-for-bit on the 49-route parent, which validates the model; on the 51-route candidate it yields **`272c31e6bdf474d3889042e3bc636f4f144b58ea1e87a8f8176c772a1a026110`**. The committed literal matches neither that preimage, nor a routes-array-only digest (`d6258910…`), nor any contiguous placement of the two new `GET …/{beads,links}/nr-schema` routes.
+
+- **Failure scenario:** `it("executes the partial cumulative RU matrix against actual installed factory HTTP…")` runs both shards against real installed servers, passes the ordered 51-route array assertion at `1293-1346` and the count at `1346`, then fails at `1347-1349`. No aggregate progress evidence is written (`evidence.failedSet()` path).
+- **Impact:** the gating two-shard cumulative evidence test cannot pass. Independently confirmed by the adjacent `read-update-numeric-r-closure/report.md` packed run (208 pass / 1 fail) and `route-preimages.json`, which record the same corrected value; the committed source still carries the wrong literal.
+- **Fix:** replace the literal with `272c31e6bdf474d3889042e3bc636f4f144b58ea1e87a8f8176c772a1a026110`. Nothing else in the route inventory needs to change.
+
+### 2. Low — the revised R row lost its source-span digest anchor without replacement
+`apps/bdptest/src/read-update-matrix.test.ts:4008-4023`
+
+The `["read-update.numeric-model.round-trip-admission", "942b7143…"]` entry was deleted from the span-digest table rather than updated; attribution, `alias.unknown-subject` and `nested-refusal` keep theirs (all three still verify). The new test anchors the 48 unchanged companions (`3378857a…`, which I confirmed is byte-identical in parent and candidate), the changed/added id ledger, 619 assertions and 98 bindings / 5460 bytes — but not the bytes of the 24 changed + 16 added actions, which include every authored `complete-problem` oracle (e.g. the `schema-bead-base` vs `schema-bead-child` `schemaLocation`).
+
+- **Failure scenario:** a later silent edit to any changed/added action's expected Problem, status or postimage that keeps assertion ids and counts intact passes all four tests in this file.
+- **Fix:** re-add the entry as `["read-update.numeric-model.round-trip-admission", "12982a61faf2f6710ad165d69022ba2e8c9cc083e599118910a173c52fb9aa6c"]`, or pin a hash of the changed+added subset in the new closure test.
+
+### 3. Low — the duplicate-comparator control throws before reaching the guard it is meant to exercise
+`apps/bdptest/src/read-update-matrix.test.ts:4693-4697`
+
+The case appends a clone of `nr-bead-schema-create-refused`, which makes the refusal-set equality at `4624` fail first (19 vs 18 ids). The `expect(found, "unique refusal/comparator").toHaveLength(1)` guard at `4627` is never reached, and the bare `.toThrow()` hides it.
+
+- **Failure scenario:** a duplicated *corrected* action — the only case that guard exists for — leaves the refusal set unchanged, so nothing in the suite detects it.
+- **Fix:** duplicate `nr-bead-schema-create-corrected` instead and assert `.toThrow("unique refusal/comparator")`.
+
+## Areas checked that are clean
+
+- **Comparator map / companion mapping:** all 18 refusal→correction pairs satisfy target equality, non-idempotency header equality, `Idempotency-Key === action.id`, numbers-stripped equality, exactly-one-occurrence of both leaves, exact one-leaf replacement, and refusal-before-correction ordering. The dual use of `nr-{bead,link}-integer-create-corrected`/`-patch-corrected` as companion for both the value refusal and the metadata refusal is consistent: each refusal isolates exactly one inadmissible leaf.
+- **Nested decimal refusals:** request-side nesting (`{"items":[{"a/b~c":…}]}`) and response-side `instanceLocation` `/value/items/0/a~1b~0c` match; the flattening counterfactual fires.
+- **Metadata rollback:** `*-meta-absent` (404) and `*-meta-unchanged` (`equalsBinding` to the pre-patch `*-created-read` full record) correctly pin atomic refusal of the mixed properties+metadata patch.
+- **Problem shapes:** every new expected Problem is exactly what `member-numeric-diagnostics.ts` + `development-authority.ts` (used by the installed reference via `startDevelopmentReferenceRuntime`) and `resource-evaluator.ts:collectDiagnostics` produce — including `document`/`instanceLocation` presence rules and the absence of `pointer` on singleton creates. `document` is optional in `$defs/validationDiagnostic`, so `metadata-label` correctly fails only `complete-problem`.
+- **Inherited schema:** `schema-bead-child` conformsTo `schema-bead-base`, whose schema declares `n: {integer, minimum: 0}`; `validatePropertyContracts` stamps `type: entry.descriptor.id`, so the base-type/base-schema diagnostic is right, and the `schema-location` control's child-URI substitution is a genuine discriminator.
+- **Controls:** all three new controls corrupt assertion input only after a real refused exchange; `counterfactualApplications` is 1 (keys unique); `row.actions` holds client actions only, so the "everything else passes" assertions hold.
+- **Counts, fences, promotion:** 88/52/140 actions, 41 exchanges / 47 client / 32 POST, 619 assertions, 98 bindings / 5460 bytes, unchanged-companion digest, 129 required / 33 whole / 96 not whole / 54 authored, `claimEligible: false`, R `wholeContract: false` — all verified. Growth is +33997 bytes / +826 nodes / +5580 coverage bytes, inside every new and inherited fence (including the `METADATA_CLOSURE_*` and `NUMERIC_ADMISSION_*` ceilings); max new POST body 588 bytes; all inherited span digests, the fixture digest and the artifact-set digest still hold; the whole-contract list in `cumulative-artifact.test.ts` matches file order; every coverage binding matches its manifest. The two promoted reasons enumerate exactly the catalog's selected clauses for those rows (5 and 4 respectively), and the deferred response→GET revision linkage is genuinely outside those selected clause texts.
