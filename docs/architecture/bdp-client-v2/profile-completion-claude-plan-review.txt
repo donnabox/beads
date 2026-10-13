@@ -1,0 +1,139 @@
+Reviewed at source `caf5ca75` (`/Users/dbox/repos/wt/vickie/bdp-provenance-runtime-integration`) against the plan section `Autonomous profile completion — active execution plan` (design.md:7–28, with the continuation at 67–140). No files written.
+
+---
+
+# 1. Independent mandatory-vs-conditional matrix (built from current source, not from the plan)
+
+| Claim | Required rows (distinct) | Where they live | Conditional / capability-gated |
+|---|---|---|---|
+| Read | 49 (44 normative + 5 diagnostic) | `catalog/read-v1.json` | 10 of 49 carry `applicability.requires` in `matrices/read-v1.json`; committed cohort records 2 N/A for bdptest (`read.alias.absent`, `read.numeric-model.declared-token-model`) and 7 for bdpbd |
+| Read+Update delta | **86**, not 81 | 81 in `read-update-v1.json` + **5 only in companions** | exactly **1** conditional in the whole RU+TX set (`read-update.sequence.retry-after-hint`, a `MAY`); 2 wildcard rows are configuration-conditional |
+| Transactional delta | 133 | `transactional-v1.json` | none |
+| History | 30 | `history-v1.json` | all 30 conditional on advertising `historicalResolution` |
+| Cumulative RU | 49 + 86 − (retirements) | — | **0 retirements declared today** |
+| Cumulative TX | 49 + 86 + 133 − 12 | — | 12 retirements declared, all RU→TX |
+
+Method: parsed all six catalogs; scanned the 214 spec matrix rows at `docs/specs/bdp.md:6698–6965` for conditionality markers (`MAY`, "when advertised", "honestly not applicable", "only when"). Exactly one hit. **Conclusion the plan does not state: for an advertised profile, essentially every row is unconditional.** The only honest-applicability mechanism is harness-side (`applicability.requires` + fixture capabilities), not a catalog or spec class. "Honest applicability" (U3/T4) therefore cannot absorb the gaps below — it can only record capability absence.
+
+Family counts for the TX delta: idempotency 31, singleton 26, sequence 22, receipt 21, alias 19, **erasure 19**, http 16, batch 13, **changefeed 11**, event 10, discovery 8, **snapshot 6**, **set 5**, validation 4, restore 2.
+
+---
+
+# 2. Findings
+
+### F1 — BLOCKER: no slice produces an installed configuration that can advertise a write profile
+
+- **Location/evidence:** `apps/bdptest/src/server-composition.ts` composes `createReferenceFixturePort` (immutable, `@bdp/adapter-in-memory`) and calls `admitReadServerProfile(config.server.advertisedProfile, "bdptest")`. `packages/server/src/index.ts:271` types `AdmittedReadProfile.profile` as the literal `"read"`; `index.ts:307` refuses any other value. The mutable SQLite owner is `packages/server/src/development-authority.ts`, reachable only through `development-runtime.ts` — a *separate* `node:http` server with its own routing, a 32–256-char bearer token on every request, `x-bdp-development: non-attesting` on every body, mutation targets at `/development/<name>`, and the explicit comment at `development-runtime.ts:186` "No service-desc or BDP discovery profile".
+- **Impact:** U1→U3 and T1→T4 can each satisfy their Done-when predicates in full and still leave zero installed services able to advertise `read-update`. The plan's own goal sentence (design.md:11) is unreachable from the slice list. The paused U1 branch makes this concrete: the authorized composition plan builds canonical discovery "only in a disposable source-test receiver" (design.md:124).
+- **Fix (required implementation, root-owned, must precede U1):** add a slice "installed mutable reference payload" — durable `recovery-store` seeded from `@bdp/protocol` `reference-domain.ts` with the ten `https://work.example/types/*` descriptors passed through `create: { types }`; `operations/` and `alias/` mounted inside `createReadServer`'s routing (not a second listener); `advertisedProfile` plumbed from `@bdp/config` (which already accepts all three profiles, `packages/config/src/index.ts:376–379`) into `discoveryFor` (`index.ts:1527`); admission widened to a per-profile record. Then retarget U1 at that composition.
+
+### F2 — BLOCKER: the cumulative Read+Update required set contains a Read row the profile contradicts, and a passing test pins it
+
+- **Location/evidence:** `read.discovery.document` cites "These are the only members admitted by the closed `readDiscovery` definition". `schemas/bdp-v0.schema.json` → `readDiscovery` has `profile: {"const":"read"}` and `additionalProperties: false`. `docs/specs/bdp.md:3779` marks `operations` *prohibited* in Read and *required* in Read+Update. `read-update-v1.json` declares **zero** `retires` members, while `transactional-v1.json` declares 12 — including `transactional.discovery.document → read-update.discovery.document`, i.e. the exact analogous retirement one level up. `packages/conformance/src/transactional-catalog.test.ts:170` asserts `[...retiredScenarioIds(combined, "read-update")]` equals `[]`.
+- **Impact:** against a genuinely RU-advertised target this row must fail. `pass` is the only admissible state for an applicable row and `fail` closes the cohort for all targets (`matrices/README.md` §"Required set and admissible state"). It cannot honestly be N/A — discovery is always served. Read+Update is therefore unqualifiable as the catalogs stand, independent of any runtime work.
+- **Fix:** add `retires: ["read.discovery.document"]` to `read-update.discovery.document`; audit `read.discovery.optional-limits` the same way (RU's `limits` validates against the different closed `readUpdateAdvertisedLimits`); update `transactional-catalog.test.ts:170` to the new expected set. Leave `read.alias.absent` alone — it is already gated by `alias-absent-v1` and correctly recorded N/A for bdptest in the committed artifact.
+
+### F3 — BLOCKER: five required Read+Update obligations are dropped by the only documented composition rule
+
+- **Location/evidence:** `read-update.owned-wildcard.explicit-precedence`, `read-update.owned-wildcard.undeclared-type-versions-source`, `read-update.numeric-model.same-value-no-op`, `…round-trip-admission`, `…nested-refusal` exist **only** in `owned-wildcard-v1.json` / `numeric-model-v1.json`. `matrices/README.md` §"Write-profile catalog composition" says to combine "the Read, Read+Update and Transactional scenario arrays"; `transactional-catalog.test.ts:164–167` combines exactly those three. Meanwhile those two companion files duplicate six Read-profile IDs already in `read-v1.json`, so naive concatenation throws on the unique-ID check in `catalog.ts` (`scenario identifier … must be unique`). `development/read-update-coverage-v1.json` inventories "all 81 current normative catalog rows" — the real delta is 86.
+- **Impact:** a composed RU/TX bundle silently omits five required obligations, and the one documented inclusion path cannot be executed literally without a parse error. The coverage denominator ("58 of 81", design.md:115) is wrong by construction.
+- **Fix:** move the five RU rows into `read-update-v1.json` and make the companions pure views of the canonical files (or publish a dedup-and-include composition rule with a test that builds all three cumulative bundles). Re-base the coverage inventory on 86.
+
+### F4 — BLOCKER: required cumulative *Read* rows cannot pass against the only mutable owner, by construction
+
+Named rows and the exact mechanism:
+
+| Required Read row | Blocking source |
+|---|---|
+| `read.http.cache-cors`, `read.http.method-405` (`cors-disabled` capability sends Origin-bearing GET and OPTIONS) | `development-runtime.ts:155` — any request carrying `Origin` is refused `forbidden` |
+| `read.http.raw-request-targets` (absolute-form must succeed) | `development-runtime.ts:158` — request target must start with `/` |
+| `read.discovery.scope-service-desc`, `read.discovery.document`, `read.discovery.canonical-navigation` | `development-runtime.ts:186` — no service-desc, no discovery document |
+| `read.types.inventory`, `read.types.descriptor`, `read.resource.external-endpoint`, `read.collections.structural-predicates`, `read.owned-wildcard.*`, `read.owned.closure` | `development-authority.ts:95,102` — exactly two `bdp.example` Types installed; anything else throws `unexpected installed development Type` / `uninstalled development Resource Type` |
+| `read.discovery.optional-limits` (binds shipping 50/200/16384/PT300S) | `development-authority.ts:149–151` — 20/100, selector 4096, 60 s cursor TTL |
+
+- **Impact:** the cumulative-Read half of U3 and T4 is impossible on that target regardless of how many RU diagnostic rows get bound. The dev README already concedes this ("The report cannot establish missing inherited Read contracts either") — the plan does not.
+- **Fix:** folded into F1. The installed RU payload must host the `read-reference-v1` realization at the evidenced Read limits, with the public `node-http-target.ts` raw-target behavior and ordinary CORS-disabled handling. Keep the loopback token receiver as a dev tool with no evidence role.
+
+### F5 — HIGH: the evidence gate cannot detect a changed installed configuration, and its allowed delta is a hole for write constants
+
+- **Location/evidence:** `cohort-verification.ts:101` — `installedPayload`, `targetProcess`, `workspace` are `PACKAGED_ONLY_BINDING_KEYS`, format-checked as SHA-256 hex and never recomputed. `scripts/generate-read-cohort.mts:589` records `installedPayload` as the digest of uncommitted built entry bytes and `targetProcess` as a digest of the launch recipe including `baseEnv` (where `BDP_SERVER_ADVERTISED_PROFILE` lives). `scripts/read-cohort-evidence.mjs:23` sets `ALLOWED_EVIDENCE_DELTA_PATHS` to the artifact plus `packages/server/src/read-conformance-capability.ts`, and `evidenceCommit` is the last commit touching either.
+- **Impact:** (a) flipping bdptest's composition to a mutable RU payload leaves `pnpm evidence:verify` green on Read evidence observed against the immutable Read-only payload — the "same actual installed configuration" rule is honour-system, not mechanized; (b) a write-profile admission constant added to `read-conformance-capability.ts` (the natural home — it owns `ReadServerTarget` and `hasReadConformanceEvidence`) lands *inside* the Read gate's allowed delta with no write cohort behind it, and the Read gate still passes.
+- **Fix:** put write admission in its own module with its own gate and its own allowed-delta pair; add a verified `advertisedProfile` field to the artifact root and per segment; recompute a composition digest over **committed** sources (`apps/*/src/server-composition.ts`, the launch config) instead of dist bytes; extend `VERIFICATION_INPUT_PATHS` to each claimed profile's catalog/manifest/fixture.
+
+### F6 — HIGH: a write cohort cannot be expressed, and bdpbd can never reach Read+Update
+
+- **Location/evidence:** `cohort-verification.ts:252–271` — "Exactly the two public targets, each present once", both of `READ_COHORT_TARGETS` required, missing one is "a half-cohort". The committed artifact records `read.alias.resolution` as `notApplicable` for bdpbd → bdpbd serves no aliases; spec `#discovery-profile-membership` makes `aliases` **required** at RU/TX and §Alias targets makes `put-alias`/`delete-alias` required RU targets. `packages/adapter-bd` has no mutation surface at all.
+- **Impact:** no artifact shape today can carry an RU claim; and a bdptest-only claim is a weaker standard than the one the Read cohort set, and than the spec matrix bullet on "cross-implementation client/server combinations" (`bdp.md:6616`).
+- **Fix:** generalize the verifier to a profile→required-target map before U3 begins; obtain the ruling in D-2 below.
+
+### F7 — HIGH: the Transactional lane omits three required subsystems entirely
+
+- **Location/evidence:** `transaction-batch.ts:63` throws `"set operations are not implemented by this private owner"` for `updateWhere`/`deleteWhere`, while `bdp.md:4322–4351` lists 12 required TX directory targets including both. **No file** under `packages/server/src` contains the string `changefeed`. The plan text itself contains zero occurrences of `update-where`, `UpdateWhere` or "set mutation", and "erasure" appears only inside the Proposal-2 replica discussion (design.md:195, 294, 305, 313, 323) — never in the execution plan (lines 7–140). T3's enumeration stops at "epochs/positions/barriers/conditional ordering/replication Snapshot/changefeed".
+- **Impact:** set 5 + event 10 + changefeed 11 + snapshot 6 + erasure 19 + restore 2 ≈ **53 of 133** TX rows sit outside any slice's acceptance predicate. T3/T4 are satisfiable while ~40% of the Transactional required set is unimplemented, which is exactly the "diagnostics advertise a profile" failure mode the instruction forbids.
+- **Fix:** either add explicit T5 (Set mutation, its receipt `matched` entry, set expansion order, attribution fan-out) and T6 (erasure records, permanent ledger, snapshot `erasures` projection, restore re-emission, replica discard) with their own predicates — or amend the plan to state that **Transactional advertisement is out of scope for this run** and the T lanes deliver private-owner implementation only. I recommend the latter; see D-4.
+
+### F8 — HIGH: U2 compresses the largest remaining Update subsystem into one line
+
+- **Location/evidence:** `development/read-update-coverage-v1.json` omission categories: `policy-principals` 8, `owned-contracts` 3, `schema-contracts` 2, `controlled-scheduling` 3, `retention-recovery-control` 1, `disabled-capability` 1. `development-authority.ts:36–41` — one fixed principal `bdptest-development-operator` and a policy of `() => true` for every predicate. `read-update.idempotency.principal-isolation` requires keys scoped to "the pair of the canonical Scope URL and the authenticated principal"; `singleton.hidden-subject`, `alias.authorization`, `alias.forbidden`, `alias.retained-without-reauthorization`, `idempotency.authorization-view`, `idempotency.forbidden-retained`, `singleton.incident-links-nondisclosure` all need ≥2 principals and a view that hides a live Resource. For Read the analogous rows were met with in-process control headers "honored by nothing in the server package" → the 11 self-certified rows.
+- **Impact:** U2's Done-when ("authentication comes from trusted transport inputs, never actor attribution") understates an authorization/credential subsystem whose *shape* is a product decision, and understates it right where the plan is most likely to improvise.
+- **Fix:** split into U2a (installed Type/schema/ownership — `installed-contract-artifact.ts` and `installed-schema-*.ts` already exist and are reusable) and U2b (installed principal/authorization configuration), and give U2b an acceptance predicate naming those 8 rows and whether each is packaged or self-certified. Gate U2b on D-1.
+
+### F9 — MEDIUM: the file partition collides on the only code the Read evidence covers
+
+- **Location/evidence:** `packages/server/src/index.ts` (1,569 lines) simultaneously holds `createReadServer`, `discoveryFor`, the Node listener and `admitReadServerProfile` — U1's "private HTTP routing/index/discovery" and root's P-slice packaging both land there. `read-pagination.ts`, `read-http.ts`, `read-request.ts`, `read-selector.ts`, `node-http-target.ts` are imported by both the public Read server and the development path, and T1 is explicitly scoped to "pagination context seams". (`authority-read.ts` is genuinely private to the mutable path — only `read-sequence-lifecycle.ts` and `sequence-executor.ts` import it, so that part of the partition is sound.)
+- **Impact:** silent cross-lane conflicts in the exact files the sealed Read evidence attests.
+- **Fix:** name those six files root-arbitrated in design.md:24 (which currently names only "shared store/evaluator/limits and packaging/conformance"); have U1 extract discovery/routing into a new module so `index.ts` stays a barrel.
+
+### F10 — MEDIUM: T2's "cold navigation" has no owner
+
+- **Location/evidence:** `packages/client/src` has `read-update.ts` with `parseReadUpdateDiscovery` and directory navigation — and it hard-requires `operations === "${scope}operations/"` and `aliases === "${scope}alias/"` (`read-update.ts:709–720`), so it cannot drive `/development/<name>`. There is **no** transactional client module.
+- **Impact:** T2's Done-when will either silently become raw-HTTP-only or quietly expand into `packages/client`, which is outside T1's declared scope.
+- **Fix:** state that T2's cold-client evidence comes from the conformance executor — `executable-manifest.ts:629` already permits POST for any row whose `requiredProfile` is not `read` — and defer a TX client to a separately named slice.
+
+### F11 — MEDIUM: "bdptest SQLite reference service" names two different artifacts
+
+- **Location/evidence:** bdptest's installed payload is the in-memory reference fixture; SQLite (`node:sqlite` `DatabaseSync`, `recovery-store.ts:4`) exists only behind the development authority.
+- **Impact:** the ambiguity is the root cause of F1 and F4 and will keep re-appearing in worker reports as "progress on bdptest".
+- **Fix:** in design.md:9 and U1's Done-when, say "the installed `bdptest --serve` payload backed by the durable recovery store, seeded with the reference-domain realization".
+
+### F12 — MEDIUM: RU→TX retirement adequacy is unaudited beyond the declared 12
+
+- **Location/evidence:** `bdp.md:4982–4988` sidebar: "Read+Update uses inline singleton and sequence-member dispositions, not durable Mutation Receipts"; `bdp.md:3644` says the directory, singleton, sequence and error envelopes "have the explicit Transactional forms defined here". Yet only 12 RU rows are retired, and inline-envelope rows are inherited unchanged: `read-update.sequence.member-problem-shape` (whose own title says "inside 200 OK"), `sequence.order-and-partial-commit`, `sequence.retained-failure`, `sequence.idempotent-retry`, `sequence.disconnect`, `problem.table`, `http.cache-no-store`, `http.request-too-large`.
+- **Mitigating fact I verified:** receipt `results` entries reuse the same `operationIndex`/`operationName`/`outcome`/`resource`/`sourceRevision` shapes (`bdp.md:5008–5048`), so RU *content* rows do legitimately survive. The exposure is the envelope and status rows.
+- **Fix:** produce a row-by-row RU→TX inheritance audit in the same change as F2's retirements, before T4.
+
+### F13 — LOW: U3/T4's Done-when describes an outcome the runner cannot produce
+
+- **Location/evidence:** `matrices/README.md:499` — "The report's `claimEligible` member is therefore hard-coded to `false`"; the claim lives only in a cohort artifact plus `pnpm evidence:verify`.
+- **Fix:** restate U3/T4 as "a new cumulative cohort artifact, a new per-profile generator segment, and a passing per-profile gate", not "executable catalog obligations bound to actual installed target".
+
+### Checked and **not** findings (so no one spends time on them)
+
+- "eight singleton targets plus sequence" (U1) and "all nine targets" (design.md:124) are the same thing and match `bdp.md:2071–2087` exactly.
+- "89 applicable rows" (design.md:353) is the per-target sum, 47 bdptest + 42 bdpbd over a 49-row required set — consistent with the committed artifact.
+- `@bdp/config` already accepts `read-update`/`transactional` for `server.advertisedProfile` with no default, and admission fails closed. That boundary is correct as-is.
+
+---
+
+# 3. Genuine product decisions (not derivable from the current spec or source)
+
+- **D-1 — Installed authentication/authorization model for a public write profile.** Eight required RU rows need ≥2 authenticated principals and a view that hides a live Resource *on the installed service*. The spec supplies no credential scheme and only says "an anonymous principal counting as one principal". Options: (a) ship a startup-config principal/credential/view-policy surface (new security-review scope, secrets in config); (b) record those rows as self-certified in-process under the existing Read precedent, with the artifact saying so; (c) don't advertise RU. **Blocks U2b only** — U1, F2/F3 catalog repairs and F1 payload work proceed either way.
+- **D-2 — Single-target write evidence.** bdpbd cannot serve aliases and has no mutation surface, so RU/TX evidence can only be bdptest. Is a one-target cohort acceptable for a public advertisement, given the Read cohort was deliberately two-target and `bdp.md:6616` asks for cross-implementation combinations? **Blocks the verifier generalization shape (F6), not its timing.**
+- **D-3 — Erasure administration.** `bdp.md:6372`: "erasure is not a BDP operation" — it is an administrative act. Observing the 19 erasure rows black-box needs an operator surface the reference service does not have. Ship an operator erasure command, accept self-certified erasure evidence, or don't advertise Transactional.
+- **D-4 — Scope of this run.** Given F7, drive **Read+Update** to a real installed advertisement and keep the T lanes as private-owner implementation with no advertisement claim. This is the one decision I'd ask for first; it changes T3/T4's predicates.
+- **D-5 — Re-sealing Read.** Making the installed payload mutable means the current sealed Read cohort and constant must be regenerated against the new configuration for the cumulative rule to be true. Confirm that retiring the present seal by ordinary re-generation (new run head, new constant, no relabeling) is accepted.
+
+---
+
+# 4. Sequencing correction
+
+The plan runs U1 and T1 first from preserved branches. That ordering puts runtime work ahead of two classes of blocker that invalidate it.
+
+- **P0 — root, metadata/tooling only, no runtime risk:** F2 + F3 + F12 catalog repairs; F6 verifier generalization; F5 gate split; F9 partition update. Everything downstream is unqualifiable until these land, and none of it needs a worker or a decision.
+- **P1 — root:** F1/F4/F11 installed mutable payload with profile-plumbed discovery and per-profile admission.
+- **P2 — U1, retargeted:** canonical `operations/` + `alias/` on *that* composition, not a disposable receiver. Preserve the preserved `96ae78e` work as the extraction it is.
+- **P3 — U2a then U2b:** installed Types/schema/ownership (reuse `installed-contract-artifact.ts`, `installed-schema-*.ts`); principals/authorization gated on D-1.
+- **P4 — U3:** cumulative RU manifest (~133 rows after retirements), fixture capabilities, generator segment, per-profile gate.
+- **T lanes:** continue `transaction-read` / direct-carrier work as private-owner implementation with no advertisement claim; TX advertisement stays blocked on D-2, D-3 and new T5/T6.
+
+The absence window is not a reason to compress P0 — it is the cheapest, most independent work on the list and it is the part that currently makes the stated goal unreachable.
