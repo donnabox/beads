@@ -15,8 +15,9 @@ singletons, batches and the existing private valid-set core. No new HTTP set rou
 profile/discovery claim, policy configuration, Type lifecycle or compiler work.
 
 Predecessors: reviewed compiled-contract cbecfea; reviewed root recovery-low5e;
-current set repair from update_implementation (failure type preserves required
-Problem members, cardinality before matched-count charge). Their ordinary integration
+set repair 064db8a99629122f130a91ee8b5189432ffe97e9 from update_implementation
+(failure type preserves required Problem members, cardinality before matched-count
+charge). Its external review is pending; root must integrate/accept it first. Their ordinary integration
 should precede authoring because both sets and owned transitions meet in batch.ts.
 The set author confirmed current accounting implements matchedResources and
 inducedEvents only, NOT mutatedResources. Do not invent or conflate a byte budget.
@@ -106,15 +107,26 @@ Actual source:
    same-turn source before/postimage, Bead kind and outcome.sourceRevision. These
    are internal invariants, not invented request errors.
 
-3. Use every actual changed ID to overwrite its final changes-map entry; use every
-   deleted ID's final live identity for tombstone. Reuse direct subject identity and
-   captured before rows, refusing internal inconsistency. Later mutations/deletion
+3. Evaluator changed/deleted IDs are Scope-relative paths, used ONLY for same-turn
+   tx.resource(localId) lookup. The changes Map is ALWAYS keyed by the absolute
+   canonical readStoredResource(row,scope).id or outcome.deleted.resource.id. Never
+   mix local paths and canonical keys: each Resource must normalize to one entry.
+   Identify the owning source local path from validated outcome.source and Scope.
+   For the direct deletion, use the before snapshot already captured before evaluator
+   execution and verify its canonical identity/revision against outcome.deleted;
+   the post-deletion resource lookup is necessarily absent. Reuse captured before
+   rows for other invariants, refusing internal inconsistency. Later mutations/deletion
    overwrite that Resource's map entry, while earlier receipt results and Events
    stay immutable. Do not synthesize source updates from final transaction state.
    Changes array order is not semantic; no requirement to reorder its Map insertion.
 
-4. Build the Link lifecycle delta ONCE and use it for the Link Event and nested
-   ownedLink update (id/type added to nested delta). After existing incidence facts,
+4. Derive the Link lifecycle delta once. Construct the nested ownedLink delta
+   FIELD BY FIELD (id,type,previousRevision,revision, optional change/metadataChange/
+   revisionProvenance), not by unconstrained spreading of Event data. At least one
+   patch field must exist for an effectful update: accepted update inputs have no
+   whole-value properties/metadata member, and no-patch inputs are no-ops that exit
+   before Event emission. Assert this invariant, including the source updated data's
+   exclusion of change/metadataChange alongside ownedLink. After existing incidence facts,
    append source updated with source previousRevision/new revision, ownedLink,
    and source provenance. Creation uses full Link postimage; deletion uses identity.
    Preserve absence/removal of provenance rather than copying an earlier version.
@@ -132,7 +144,10 @@ Actual source:
    Preserve repaired cardinality/cap ordering and failure type, not an alternative
    set parser/limit path. HTTP sets stay closed.
 
-6. Enable owning installed descriptors only after these seams pass. Preserve schema-
+6. Enable owning installed descriptors only after these seams pass. A compiled
+   owning fixture must bundle every explicitly owned Link Type descriptor (and its
+   referenced endpoint Types) and obey existing capture dependency/max limits;
+   do not diagnose an incomplete fixture as a batch failure. Preserve schema-
    backed compiled registry, descriptor exactness, runtime limits and pinned capture.
    Schema-free owning fixtures can use the existing descriptor evaluator fallback;
    no reason to introduce a second ownership rule. Format8 and identities need not
@@ -160,10 +175,13 @@ checks against full state; no authorization-based filtering of incident index.
 ## File scope and ownership
 
 Expected edits: transaction-batch.ts; transaction-store.ts (owned installation guard
-only); new transaction-owned.test.ts; narrow installed-contract test update replacing
-its now-stale owned-refusal assertion; transaction-implementation-progress.md.
+only); new transaction-owned.test.ts; narrow installed-contract test update moving the
+owned case OUT of the shared negative/no-file-created test into its own positive
+fixture with a distinct path and explicit close; transaction-implementation-progress.md.
 Actual emitted HTTP evidence may live in the new test via existing runtime fixture.
 No transaction-runtime/service/receipt-page/Read engine/public export changes expected.
+The surviving missing-compiled-schema guard error must drop its stale "and unowned"
+wording. Preserve every other refusal and the negative fixture's no-file invariant.
 No shared Resource evaluator or compiler edits: sourceRecipe remains private, existing
 isResourceVisible is imported. A small source-private fact helper only if it materially
 reduces duplication; any new module needs smoke inventory/denied deep-import evidence.
@@ -178,7 +196,9 @@ Root coordinates after set repair. RU retention has no source overlap.
 2. Event payloads pass normative bundle and semantic assertions: Link subject on
    lifecycle/incidence; source subject on final owned updated; group source remains
    Scope events/; exact ordinals; source-before-target self-Link facts; nested update
-   delta excludes full properties; deletion excludes payload; attribution agrees.
+   delta excludes full properties and contains at least one patch field; the source
+   updated shape excludes direct patch fields alongside ownedLink; deletion excludes
+   payload; attribution agrees.
 3. Two owned Links on one source in one batch, and direct source update interleaved
    with Link updates, form consecutive source revision chains per operation. Receipt
    carries intermediate sourceRevision; group carries final source only. Reverse an
@@ -239,3 +259,25 @@ root8d/current637 already fixed set closure. Plan updated to preserve/regress it
 Capture-before-put was accepted as a reasonable local seam; direct deleted-subject
 identity tracking still needs explicit checks (existing direct before snapshot, not
 an absent post-deletion lookup). External council remains pending; no implementation.
+
+
+## External council dispositions (review of root637, before required064)
+
+1. Cardinality/cap HIGH is stale relative to explicitly required064. Root directed
+   preserving064's deliberate cardinality-before-cap correction and its discriminating
+   guarded409-versus-transactionwide413 regression, not reverting to a94's old ordering.
+   Exact predecessor064db8a99629122f130a91ee8b5189432ffe97e9 awaits external review and
+   root integration. No owned implementation before that gate.
+2. Canonical/local Map-key warning accepted explicitly in step3. Local changed/deleted
+   IDs are lookup keys only; absolute canonical Resource IDs key every state change.
+3. Visibility fix already integrated at a94/root8d: reuse/regression, no new fix claim.
+4. Owned positive installation gets a separate fixture path and close; negative
+   provisioning test preserves all refusal/no-file checks, and guard wording updates.
+5. Compiled owned fixture includes complete Link/endpoint descriptor dependencies.
+6. Nested delta built field-by-field with nonempty patch invariant and source-shape
+   exclusivity asserted; no future whole-value update semantics inferred.
+
+Council confirms same-transaction putResource preimage timing and direct deleted Link
+before snapshot are sufficient; no sourceRecipe API needed. Fact ordering/provenance,
+no-op receipt handling, Format8 compatibility and unchanged receipt/page/service paths
+are confirmed. No new product decision identified. This remains plan-only.

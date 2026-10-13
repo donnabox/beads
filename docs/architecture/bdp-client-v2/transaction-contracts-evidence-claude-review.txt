@@ -1,0 +1,49 @@
+## Findings
+
+Frozen review of `7b6f8bc` vs `cbecfea` in `/Users/dbox/repos/wt/vickie/vickie-transaction-contracts-evidence` (HEAD matches, tree clean, `git diff --check` clean, exactly the three claimed files, 88+/15−, tests/docs only — no runtime source touched). No files written, no builds or tests run, native report not read. **No correctness defect in the diff.** Five residual evidence-level findings, all LOW.
+
+**1. LOW — the predecessor-identity observation is true but not reproducible from anything committed, and the artifacts cited as proof are self-asserting**
+`apps/bdptest/src/development-contracts.test.ts:719-724`; `bdp-integration-logs/transaction-contracts-evidence/prior-identity.mjs:11`, `predecessor-source.diff`, `report.md:19-23`
+I verified the claim independently and it holds: `fccb951` exists and **is an ancestor of** `3e2b878`; `git diff fccb951 3e2b878` touches only tests, docs, conformance fixtures and 5 lines of `transaction-runtime.ts` — no compiler, artifact or schema source; the compiler files last changed at `4078ca7`, 62 commits earlier, so the dist/commit mtime skew (built 00:51, committed 00:53) cannot matter; the sibling worktree is clean at `fccb951` and its `dist/development-contracts.js` genuinely has no `capture` field (only `captured` locals, plus the probe's `assert.equal('capture' in result, false)`); and the `bundle()`/`artifact` reconstruction in the probe matches the committed fixture byte-for-byte, which is why its literal agrees with the one the shipped test pins. **But none of that is demonstrated by the evidence bundle.** `prior-identity.mjs:11` *prints* `compilerSourceAtFccbEquals3e:true` as a hardcoded constant — nothing computes it — and `predecessor-source.diff` is a 0-byte file carrying no `$ …` command header, unlike every other log in the directory. `report.md:21` cites that empty file as the proof. The probe also imports an absolute path into an uncommitted sibling worktree's `dist/`.
+Fix: compute the boolean (`execFileSync("git", ["diff", "--quiet", "fccb951", "3e2b878", "--", "packages/server/src", "apps/bdptest/src"])`) instead of printing a literal, write the diff command's header into `predecessor-source.diff`, and put the one-line reproduction in the test comment.
+
+**2. LOW — the pinned literal silently depends on three ceiling constants, so an unrelated bound change invites re-pasting**
+`apps/bdptest/src/development-contracts.test.ts:721-724`
+Identity hashes `{artifacts, artifactLimits, graphLimits, evaluatorLimits}` (`transaction-installed-contracts.test.ts:155-168`). Any tuning of `CONTRACT_ARTIFACT_CEILINGS`, `SCHEMA_GRAPH_CEILINGS` or `EVALUATOR_CEILINGS` — or any fixture edit — breaks the literal with a bare hash mismatch, and the comment says only "observed with the actual pre-capture compiler at fccb951". The cheap repair is pasting the new value, which converts the cross-build witness straight back into the same-commit re-derivation the original LOW 3 objected to.
+Fix: one comment line naming the four hashed inputs and "re-observe against a pre-capture build; do not paste the new value".
+
+**3. LOW — capture detachment is witnessed for schema bytes only; no descriptor buffer is ever mutated**
+`apps/bdptest/src/development-contracts.test.ts:728-730`; same shape at `packages/server/src/transaction-installed-contracts.test.ts:172-174`
+Both tests zero `input.schemas[0].utf8Bytes` and then merely drop references with `input.descriptors.length = 0`. Emptying an array detects nothing. If a future ingestion change retained a descriptor's caller `Uint8Array` by reference instead of the intrinsic copy, both "detached" assertions still pass, and the TX offline reconstruction passes too since it reads the already-copied capture. Descriptor-side aliasing has no witness in either test.
+Fix: add `present(input.descriptors[0]).utf8Bytes.fill(0)` beside the schema fill in both tests.
+
+**4. LOW — LOW 6's inventory leg is untouched, and the new HEAD assertions cannot fail independently of one line**
+`packages/server/src/transaction-installed-contracts.test.ts:398-409` (HEAD), `:411-414` (collection)
+`transaction-runtime.ts:85-88` sets `content-length` from the computed body and then `response.end(req.method === "HEAD" ? undefined : bytes)` — there is no separate HEAD projection, so status/content-length/empty-body agreement is structural. The probe does witness HEAD routing, auth and method admission through real HTTP (worth having), but it cannot catch a wrong HEAD body projection because none exists to be wrong. Meanwhile the `types/` collection is still matched on `id` only via `toMatchObject`, unchanged by this commit: an entry could lose or corrupt `propertiesSchema`/`conformsTo` relative to the exactly-pinned GET and nothing fails. Predicate 1's "list agreement" stays unwitnessed.
+Fix: `expect(items[0]).toEqual(<the GET body>)` for at least one id, or `toEqual` the two-item array against the compiled descriptors.
+
+**5. LOW — "exact … receipt" is asserted as a superset match**
+`packages/server/src/transaction-installed-contracts.test.ts:221-226`; `report.md:33-34`; progress note final paragraph
+`toMatchObject({kind:"existing", receipt: set})` passes if the replayed receipt carries fields the original lacked (a later-added timestamp, a grown diagnostics array). report.md promises "the exact original retained failed receipt, including disposition/identity/details" and the note says "replay the exact failed-set receipt". Same claim-vs-assertion class the seven LOWs were about.
+Fix: `expect(setRetry).toEqual({ kind: "existing", receipt: set })`, and the same for the pre-existing `bad` retry at `:218`.
+
+## Which of the seven LOWs are closed
+
+| # | Status | Basis |
+|---|---|---|
+| 1 memory retention | **Closed** (disclosure route) | Progress-note ¶1 states capture retention for all consumers incl. RU and the separate UTF8 hosting copies; no dedup, which the finding allowed. Unquantified (no ~1.34×+1× / ~39 MiB figure) — nit only. |
+| 2 offline-only schema URI | **Closed** (disclosure route) | Note ¶2 records the unenforced convention. Verified accurate: `transaction-store.ts:191` refuses `propertiesSchema` only when *uncompiled*; no locality constraint exists, so a Scope-local URI is installable with no route — exactly as disclosed. |
+| 3 shared tests + identity witness | **Closed, both legs** | `development-contracts.test.ts:717-742` adds deep-freeze, `Reflect.set`, detachment and a real cross-build literal; provenance independently verified above. Residuals → findings 1, 2, 3. |
+| 4 unbounded `configuration` | **Closed by disclosure — and the finding's magnitude was wrong** | `installed-contract-artifact.ts:146-157` refuses any supplied limit above `CONTRACT_ARTIFACT_CEILINGS`, and `:331` charges every artifact against the aggregate `totalBytes` (16 MiB). "4096 × 1 MiB ⇒ multi-GiB" was not reachable on the compiled path; the note's rebuttal is correct. The legacy schema-free `options.types` path remains genuinely unbounded into `configurationIdentity` — disclosed, not bounded. |
+| 5 identity rollback | **Closed, genuinely discriminating** | `transaction-store.ts:997` does `INSERT OR IGNORE INTO identities` inside the rolled-back `effects` savepoint, and `resource-evaluator.ts:662` refuses a create whose id `identityWasCommitted`, so `:239`'s `recreate-tentative` → `completed` fails on a leak. Dropping `%tentative` from the raw query costs nothing: rollback of the resource row is still witnessed by `inspect().resources` length 1 right after the failed batch. |
+| 6 Type HEAD / inventory | **Partially closed** | HEAD added and real. Inventory-agreement-on-`id`-only is unchanged → finding 4. No overclaim: report item 6 claims only HEAD. |
+| 7 failed-set replay | **Closed** (main leg) | `:221-226` replays the byte-identical `prepareTransactionSetCore` payload under key `set` after an intervening write. Optional `schemaLocation` pin not added (was optional); wording → finding 5. |
+
+Six of seven fully closed, one partially.
+
+## Verification cross-checks
+
+- report.md's run claims hold: `regressions.log` = 30 passed / 3 files (incl. the three process-loss variants and the new shared test at 2 ms); build, `tsc -p tsconfig.check.json`, boundaries (11 packages), format (381 files) all clean; both smokes PASS with `claimEligible:false`; Node v24.16.0 / pnpm 11.20.0 as stated.
+- `evidence-verify.log` is **byte-identical** to the parent run's and shows `rows: 89` — "unchanged 89-row" is accurate.
+- `lint.log` differs from the parent's `lint-final.log` by one character: the timing on `Checked 381 files in 274ms` vs `289ms`. "3 warnings / 1 info, inherited" is exact, and all four are outside the diff.
+- "No runtime/production source changes" and "full 690-test parent regression was not repeated" are both honest — the diffstat confirms the first, and the second is volunteered rather than papered over.
