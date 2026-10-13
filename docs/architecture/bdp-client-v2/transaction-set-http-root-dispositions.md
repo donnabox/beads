@@ -1,0 +1,5 @@
+# S2a set HTTP council dispositions
+
+Reviewed source2f7a1641c613680c5b4dfe056b933bfa6af869dd remains immutable. Native council reported a reproducible installed evidence P2: replacing intended owned-Link patch n1 with n0 makes it a no-op, yet the installed test still passes. Root inspected the source and accepts the gap. This is insufficient test discrimination, not an observed runtime failure.
+
+Authorize isolated ordinary successor with a narrow installed-test repair: capture live owner/Link before the mutation; independently pin the resulting literal properties n1, both expected revision advances and effectPosition presence; retain result/live comparison and existing no-op/rollback controls. Preserve the native actual no-op mutant as a red-to-green discriminator. Do not alter runtime semantics, bounds, or public advertisement. Exact affected installed evidence and independent closure are required. External Claude review remains active; additional findings receive explicit dispositions before integration.
