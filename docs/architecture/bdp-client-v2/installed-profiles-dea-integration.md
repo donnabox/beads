@@ -1,6 +1,6 @@
 # Installed Update integration
 
-Exact candidate: `560c10a75797c2f1f66641d7407e11ba98343a44`, branch `codex/vickie-installed-profiles`, [draft PR88](https://github.com/gastownhall/bdp/pull/88), stacked on PR86.
+Exact candidate: `560c10a75797c2f1f66641d7407e11ba98343a44`, branch `codex/vickie-installed-profiles`, [draft PR88](https://github.com/gastownhall/bdp/pull/88), includes PR86 by ordinary ancestry, targets main for existing CI.
 
 Ordinary merge of `dea6f9e7a95a3e3eba9c667de39360346f25bdf4` into numeric/PR86 integration `fd21cf32c171b305c9d655e7dac720a50abf724c`. The only conflict was the smoke private-export denial list; both parents' entries were retained. Tree verified before merge commit; no source changes afterward. Remote head verified.
 
