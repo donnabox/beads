@@ -1,0 +1,55 @@
+{
+  "sourceCommit": "965f27cd1268c390d7b7c9e6302b0e1f8a76e4eb",
+  "sourceDirty": false,
+  "configuration": {
+    "scope": "https://reference.invalid/acme/",
+    "profile": "read-update",
+    "history": false,
+    "sourceCommit": "965f27cd1268c390d7b7c9e6302b0e1f8a76e4eb",
+    "installedPayloadDigest": "cac59fd75a1e406211f4c39fe77e70ed1cfb9c1c4e5d625e1f93e0bc015511c5",
+    "installedContractsDigest": "48667497d6e13064316d0364cf8f49dfc247ab9189306985a357d7b558333dfe",
+    "policyDigest": "dbe8dbd5430f26e19e754d38167cd8084a32d702c695550e2ee0063dc2912430",
+    "authenticationDigest": "66941efc779f4f2431d65fdd5b2387b2af67bd7c1559e09dac032f82259ea16e",
+    "fixtureDigest": "a200afeb240f4c0c14e7bab43605d753e1640de8f17920c7dc5c174a901fb450",
+    "fixtureId": "reference-read-update-schema-v1",
+    "capabilities": [
+      "installed-read-update-http"
+    ]
+  },
+  "baselineReceipt": {
+    "event": "qualification.ready",
+    "scope": "https://reference.invalid/acme/",
+    "claimEligible": false,
+    "configurationIdentity": "1720b63b49a7be3299d4b2865de4db9fcbe47560f217a32eea6397db7ea54ca5",
+    "artifactIdentity": "development-schema5-48667497d6e13064316d0364cf8f49dfc247ab9189306985a357d7b558333dfe",
+    "payloadIdentity": "cac59fd75a1e406211f4c39fe77e70ed1cfb9c1c4e5d625e1f93e0bc015511c5",
+    "policyIdentity": "dbe8dbd5430f26e19e754d38167cd8084a32d702c695550e2ee0063dc2912430",
+    "authenticationIdentity": "66941efc779f4f2431d65fdd5b2387b2af67bd7c1559e09dac032f82259ea16e",
+    "profile": "read-update",
+    "history": false
+  },
+  "reportBinding": {
+    "artifacts": {
+      "catalogDigest": "e26d3fc758a34ebb0b5028be15d28e3e09db87dc7984bba7bad6a00b26329aa0",
+      "manifestDigest": "f5ef88ba8e2032fdd04bd8ecc5b3d2705db2cf95447df87a52c0d2c0e93fcf94",
+      "fixtureDigest": "a200afeb240f4c0c14e7bab43605d753e1640de8f17920c7dc5c174a901fb450"
+    },
+    "exactConfigurationDigest": "092b9ac9abf64dcd02f592059bc6333b0a6dfc69efe9d50332086335474c8f3c"
+  },
+  "targetEntry": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/read-update-retry-closure/packed/install/node_modules/@bdp/server/dist/installed-reference-process.js",
+  "required": 129,
+  "authored": 45,
+  "uncovered": 103,
+  "sessions": 45,
+  "wire": 781,
+  "setup": 44,
+  "nativeRead": 21,
+  "passedScenarios": 45,
+  "tests": 131,
+  "files": 4,
+  "claimEligible": false,
+  "run": {
+    "exit": 0,
+    "seconds": 65.5304958820343
+  }
+}

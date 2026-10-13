@@ -1,0 +1,81 @@
+## Verdict
+
+`29e7151` vs `8e45ef4` holds up. Four-file delta, worktree clean, no runtime/catalog/runner/schema edits. The central evidential claims are real, not asserted: at **every** replay point a fresh execution would produce a *different* answer, so the retained-vs-current discrimination is load-bearing rather than coincidental. I found no defect that would let a non-conforming authority pass either row. Six findings, all low severity — claim-precision and oracle-completeness, not correctness.
+
+I made no edits and ran no tests. I did recompute both digest pins read-only from the committed bytes (below).
+
+---
+
+## Findings
+
+### 1. Retained-Problem equality is not closed — `title`/`instance`/`retryAfter` unconstrained
+**Severity** Low (latent; no live gap) · **Location** `packages/conformance/matrices/read-update-v1.json` (every `problem-*`/`absent-*` group in both rows); `schemas/bdp-v0.schema.json` `$defs.readUpdateProblem`, `$defs.sequenceMemberProblem`
+
+`readUpdateProblem` and `sequenceMemberProblem` carry **no** `additionalProperties`/`unevaluatedProperties: false` — unlike `mutationResult` and `sequenceMemberResult`, which are closed. The rows pin 4 present fields (`status`/`type`/`code`/`retry`) and 5 absences (`detail`, `outcome`, `resource`, `diagnostics`, `diagnosticsTruncated`), but never constrain `title`, `instance`, or `retryAfter`.
+
+**Impact** Today this is latent only: `packages/server/src/member-executor.ts:116-133` and `read-request.ts:265` emit exactly `{type, code, status, retry}` (+ diagnostics), and the recorded wire in `positive.json` contains precisely `('code','retry','status','type')` — so the plan's "every **actual** non-positional field" is satisfied. But a retained failure that gained a `title` or `instance` on replay would pass every assertion in both rows *and* the open schema. The report's "full Problem tuple" and F2's "every normative Problem field" overstate what is pinned. Note the new rows are already strictly richer than the neighbour `sequence.member-problem-shape`, which pins only code/status/type/retry/no-outcome.
+
+**Fix** Add `absent-title-*`, `absent-instance-*`, `absent-retryafter-*` to each Problem group (cheap, no schema change), and narrow the report wording to "four pinned fields plus five pinned absences".
+
+### 2. Three oracles have no negative control; one control is status-only
+**Severity** Low · **Location** `apps/bdptest/src/read-update-matrix.test.ts:1612-1617`
+
+"changed record is not a conflict" corrupts only `status → 200` on `b-conflict`, leaving the Problem body intact, so it validates the `status` assertion's wiring, not the body-level conflict oracle. Unguarded entirely: `a-replay.name-0` (cross-carrier name projection — the row-A analogue of the clause row B does control), `reordered-again.same-results` (repeat-replay stability), `d-after` (fresh member actually committed).
+
+**Impact** 13 controls over 491 assertions is thin by design and the report doesn't overclaim, but the name-projection oracle is controlled in only one of the two rows that depend on it.
+
+**Fix** Corrupt `body/code` together with `body/status` in the b-conflict control; add controls for the three uncovered oracles.
+
+### 3. Control targeting is positional where this file's own idiom is content-based
+**Severity** Low (maintainability) · **Location** `apps/bdptest/src/read-update-matrix.test.ts:387-392`
+
+`...actions.filter(a => a.family === "client")[retryClientIndex++]` matches the target by position in the filtered client-action list. The adjacent `patchControl` mechanism (same function, lines 412-461) instead matches on observable input — `w1Input.idempotencyKey`, `method`. `ScenarioActionExecution` (`packages/conformance/src/scenario-action.ts:55-62`) carries no action `id`, so a runner-supplied id isn't available and the plan forbids a runner seam — the positional counter is a consequence of the interface, not a free choice.
+
+**Impact** Self-validating today: `counterfactualApplications === 1` plus the per-action failing-assertion lookup both fail loudly on drift. But inserting any client action ahead of a target silently retargets the corruption, and `status`/`postimage`/`indices`/`name-0` repeat across actions, so the failure mode is a confusing miss rather than an obvious one. The alignment invariant (one `actionExecutor` call per client action, in manifest order) is undocumented and unasserted.
+
+**Fix** In-slice, no runner change: before applying, assert the matched `clientAction.input` deep-equals `execution.input`. Or match on `idempotencyKey`/`method`+`targetBinding` like the neighbouring control layer.
+
+### 4. The singleton→sequence retained-success replay changes carrier *and* name at once
+**Severity** Low · **Location** matrix row `read-update.idempotency.cross-carrier`, action `a-replay`
+
+`a-replay` presents `retry-cross-a` as a sequence member **with** `name: "renamed"`, where `a-initial` was a singleton with no name. Both are lawful — `bdp.md:3209` excludes `idempotencyKey` and `name` from semantic identity — but there is no singleton→sequence retained-success replay with a byte-identical record. The cited carrier-equivalence clause is therefore observed in its cleanest form only in the sequence→singleton direction (`b-replay`, where a singleton *cannot* carry a name).
+
+**Impact** A regression in the `name` exclusion and a regression in carrier equivalence both surface as the same single failure; the two cannot be distinguished from the row.
+
+**Fix** Add one unnamed sequence member replaying `retry-cross-a`, or move the name projection onto a separate key.
+
+### 5. Dead `a-disposition` capture reads as a stronger comparison than is performed
+**Severity** Low · **Location** `packages/conformance/matrices/read-update-v1.json:66092`
+
+`a-initial` captures the full singleton disposition `/body` as `a-disposition`; nothing references it. The plan anticipated a "full original-disposition comparison … within the same carrier", but `a-final-replay` compares only `/body/resource` to `a-original`.
+
+**Impact** Nothing is actually unasserted — `mutationResult` is closed via `unevaluatedProperties: false`, and for a bead postimage `source`/`sourceRevision`/`deleted` are forbidden, so `{outcome, resource}` fully pins the body. This is dead weight, not an evidence gap.
+
+**Fix** Either drop the capture or add `a-final-replay.disposition` with `equalsBinding: "a-disposition"`.
+
+### 6. Residual limit: no state-side oracle against a spurious extra allocation
+**Severity** Low (residual limit, not a defect) · **Location** both rows
+
+Re-execution of the allocated creator *is* excluded at response level — `reordered.retained-body-results-3` deep-equals `position-a-original` including the allocated id and revision, so a fresh execution (new id) fails. Row A's explicit-id replays are excluded a second way, since a fresh execution would be `identity-taken`. The one uncovered shape is "returned the correct retained disposition **and additionally** created a bead": neither row reads the bead collection.
+
+**Fix (optional, priced)** One `GET beads/` with an identity-set assertion after `reordered`. Note this is *not* free: `clientReadRoutes` precedes `readRoutes` and dedupe keeps the first position, so adding a client GET on the `beads` binding reorders the closed allowlist and moves `exactConfigurationDigest` even though the route set is unchanged.
+
+---
+
+## Independently verified (no finding)
+
+- **Digest pins recomputed from committed bytes.** Replaying `readRoutes` + `clientReadRoutes` + the 9 POST routes, dedupe, `sortJsonValue` → sha256: parent reproduces `bdffd6f9…836a07`, HEAD reproduces `092b9ac9…4c8f3c` exactly. Delta is exactly the 7 new `GET …/beads/retry-*` routes; nothing removed, parent relative order preserved, no wildcard, credentials not in the digest preimage. Captured-ID GETs correctly add no fixed route (`knownReadBindings` lookup returns undefined) — F5 honoured.
+- **43 prior rows semantically unchanged** by independent JSON compare against `8e45ef4`; order preserved; new rows at indices 41/42. Catalog order is 53 (`sequence.idempotent-retry`) < 64 (`idempotency.cross-carrier`) — F6 correct, and enforced by the *unedited* `cumulative-artifact.test.ts:116-118`.
+- **Inventory** 129 rows / 45 `bounded-observation` / 84 `omitted` / 26 `wholeContract` → 19 partial, uncovered 103 = 129−26. Both new rows `wholeContract: false`; the pinned whole-contract list is unchanged.
+- **Coverage bindings** match the manifest exactly, in order: 161 + 330 = **491** assertions across **60** actions — the report's figures.
+- **Retained-vs-current is genuine.** `f-replay`/`g-replay`/`reordered[2]` run *after* the subject exists, so a fresh update would 200 — the 404 can only be retention, and `f-after-replay`/`f-after` prove non-application at the state. `reordered[0]` would be `identity-taken` if freshly executed. `reordered[3]` deep-equals the original allocated id+revision.
+- **Name rules normatively grounded.** `bdp.md:3209` (identity excludes `idempotencyKey` and `name`); `:3278-3279` (disposition excludes `operationIndex`/`operationName`); `:3286-3288` (retained disposition "positioned with the present member's `operationIndex` and `operationName`"); `:3304-3305` (postimage at mutation time, not a fresh read); `:2109-2111` (carrier equivalence). All F4 line corrections land exactly; `:3307-3311` reauthorization correctly excluded. `updateBead` carries no name — the retained missing-subject member stays unnamed, name add/remove witnesses ride on creators, matching root's accepted correction.
+- **Oracle independence is structural.** `runner.ts:2911-2922` validates `equalsBinding` against bindings established by *earlier* actions and registers the action's own captures only afterwards, so an assertion cannot be derived from the response it asserts. `equalsBinding` is `deepEqual` (`runner.ts:2038-2048`) — full structural equality of retained resources including revision.
+- **Exact length / no duplicate result holds.** `json-array-tuples` with `ordered: true` enforces `actual.length === expected.length` (`runner.ts:2184-2190`), so the `indices` tuples do pin array length — the separate `no-extra-result` guard used by `member-problem-shape` is not needed here.
+- **Controls are post-wire.** `observe(structuredClone(output))` fires inside the exact client before `actionExecutor` patches a clone; raw records untouched; each test asserts `counterfactualApplications === 1` and anchors the failing assertion to the *named* action, so mis-targeting fails rather than passes. `mutationResult` closure grounds the "singleton carries sequence index" → `schema` control.
+- **Evidence ledger matches.** 97 tests / 2 files (14 new: 1 positive + 13 controls); packed 126 / 4 files; aggregate 11842 ms baseline → 12329 ms local → 12229 ms packed, well inside the unchanged 90 s/120 s budgets; matrix wall 63.98 s; 45 sessions, 781/44/21 observations; `claimEligible: false`; all exits 0 except the two retained authoring-failure logs. Fresh disposable authority per scenario confirmed, so key namespaces don't leak between rows.
+- **Plan freeze.** `read-update-next-evidence-plan.reviewed-original.md` hashes to `e2236d26…0bdcfb` as reported, and the active plan's first 93 lines are byte-identical — F1–F7 are appended, not substituted.
+
+## Deliberately not raised
+
+The lost-response/admitted-work clause (the row's second catalog requirement, `#sequence-request-envelope`), retention/expiry, in-flight, disconnect, crash/restart, authorization-view, other principals/Scopes, and the alias/pin/`@name`/eight-operation identity corpus are all explicitly excluded by the plan and disclosed as partial in the report. Both rows stay `wholeContract: false`, no neighbouring row takes credit, and `claimEligible` stays false. That disclosure is accurate and I'm not treating it as a gap.
