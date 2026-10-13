@@ -214,11 +214,11 @@ func TestCollectLinksSelectsCompleteCurrentLinks(t *testing.T) {
 					t.Fatal(err)
 				}
 			}
-			first, err := store.AddInformationalLink(ctx, LinkCreateRequest{Path: "links/first", SourcePath: "beads/source", TargetPath: "beads/target"})
+			first, err := store.AddInformationalLink(ctx, LinkCreateRequest{Path: "links/first", SourcePath: "beads/source", TargetPath: "beads/target", UnconditionalSource: true})
 			if err != nil {
 				t.Fatal(err)
 			}
-			second, err := store.AddInformationalLink(ctx, LinkCreateRequest{Path: "links/second", SourcePath: "beads/other", TargetPath: "beads/source"})
+			second, err := store.AddInformationalLink(ctx, LinkCreateRequest{Path: "links/second", SourcePath: "beads/other", TargetPath: "beads/source", UnconditionalSource: true})
 			if err != nil {
 				t.Fatal(err)
 			}
