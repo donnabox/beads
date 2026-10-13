@@ -1,0 +1,19 @@
+# Independent native review: retention and installed-contract follow-ups
+
+Review source pins: RU **6413f29fa1053f5a9118c43ba4f00d7b7a51e1f2** versus8e3781; TX **fc75dc5e83e8b87db22f28e7137f57ee6204f3df** versus7b6f8. Frozen author checkouts read-only; isolated review clones `native-review-retention-6413f29` and `native-review-contracts-fc75dc5` used for tests/builds. No external reviewer reports read before this finding record.
+
+## Findings recorded before execution
+
+**No actionable correctness or evidence-integrity defect found in these bounded diffs.** Focused validation pending below; this statement does not qualify either full profile.
+
+RU production change is only the explicit missing `contractCapture` branch in recovery-store.ts:643–650. A missing row yields undefined and now reports integrity; present unequal byte length/text still reports store-mismatch. Format/Scope/installation/lineage checks at630–640 precede this gate; claim deletion at682 follows it. The surrounding startup transaction rolls back/closes on refusal. The new format3-shaped fixture removes capture, preserves a pending claim and retained disposition, asserts the precise older-format rejection, byte identity and no create/reseed. It discriminates gate ordering without invoking a real migration. Corruption tests independently cover missing capture versus unequal capture/Type inventory and then restore valid bytes to prove normal recovery still works. The STATUS hot-journal qualification avoids the earlier universal physical-byte-preservation claim; SQLite recovery and BDP claim cleanup are distinct.
+
+The current format4 comment names the active compatibility boundary. It does not change identity normalization. Twin serialized-capture ceilings are intentionally documented/deferred; the production RU caller bounds its expectation, and the lower-level recovery caller responsibility is explicit. No hidden migration, weakened capture comparison or startup repair introduced.
+
+TX follow-up changes tests/docs only. Descriptor input mutation complements the existing schema-buffer mutation, checking detached immutable capture rather than merely deleting references. Both receipt replays now compare complete internal `{kind: existing, receipt}` values. The actual runtime HTTP test derives exact inventory id/name/describes summaries from the installed fixture and dereferences both Type IDs for complete descriptor equality; the first descriptor's GET bytes and HEAD content length remain compared. These are independent fixture-vs-response assertions, not response-vs-itself. Docs accurately preserve the scope: stronger tests, no runtime/profile claim. Literal compiler identity witness remains tied to the explicitly named historical artifact/graph/evaluator inputs.
+
+Normative evidence inspected: bdp.md Installed Type contracts2534–2555 and Descriptor installation; Types inventory1120–1131 requires summaries linked to descriptors; Transactional mutation/receipt retention sections3835 onward. Private recovery format/error classifications are implementation contracts, not invented wire requirements. Tests/docs do not change normative law.
+
+## Verification
+
+PASS, Node24.16.0/pnpm11.20.0 in fresh isolated clones: both pre-build typechecks and builds; RU88tests/2files2.13s (`retention-contracts-native-ru-tests.log/.json`); TX27tests/2files2.39s (`retention-contracts-native-tx-tests.log/.json`). Both source trees remain clean. Tested files: RU development-retention/recovery-store; TX transaction-installed-contracts and app development-contracts. No source modifications or outward actions. No full-suite/profile parity claim. No external reviewer report was consulted for this review. The historical literal identity was exercised by the test but its old compiler reproduction script was not independently rerun. No actionable findings after execution.
