@@ -1,0 +1,5 @@
+# PR100 readiness
+
+Fresh remoteheadb14b91b762f9d2e5f9eb3102fec70e02a0879d45, main055bd8653f5c4e1594dc5a84c305f2ecea99f958; exactCI38485095656/job115596706922 SUCCESS2026-10-13T23:46:43Z. Independent ordinary merge-tree9e4c20413724218f0210db9f97a668cc34104e5a equals tested e086 and reconciled b14 exactly. Four RU file scope reviewed; no runtime/TX/fixture/schema/catalog changes. Full native4578/external88 council and root closure of exact requested route/guard repairs recorded in numeric-r-root-council-closure.md; diagnostics council separately closed. Final combined e08620catalog/27installed,54row16.586s/all129 mappings/hashes/cleanup passed; b14 is byte-identical ordinary main reconciliation. Fresh CI qualifies this exact head without relabeling older evidence.
+
+R remains partial with33whole/96notwhole. Separate proposed whole-credit plan was rejected because schema-update witness remains absent; no current PRclaim depends on it. All original controls/request bytes outside accepted R slice retained. Operator ready-main merge authorization applies; ordinary exact-head merge and actualtree verification required. No release/Preview2/public profile claim.
