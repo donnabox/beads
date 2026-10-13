@@ -74,7 +74,9 @@ Checkpoint 2026-10-13T09:57:27Z. Autonomous completion ACTIVE under session2026-
 
 - **Next replication planning:** transaction_implementation completed [requiredcontractburn-down](transaction-required-contract-burndown.md), canonical250requirements=43Read/74RU/133TX, notpasses. Authoring boundedfiniteG1changefeedplan, read-only; reuseEventScope renderer/groupowner, noSnapshot/SSEyet. LaterSnapshot→coldDiscovery and actualinstalledTXconformance stillrequired. Mutableprojection/erasure/restore remainexplicit applicability/design gaps, notautomaticallyN/A.
 
-Current reviews: three frozenfollowups,ownedimplementation,schema-plan+7dbudget. Current writers: materialization andfiniteEvents, separatecheckouts/sharedstorehunks coordinated. Prior637CIfailure remains historical; b543/c0successareexactsuccessors. Cursor2026-10-13T09:39:59Z incremental inboxownharvestonly; busupdatepending this checkpoint. Continue beyonddrafts, preserveordinaryancestry/exactevidence. No JanetCLI/staging/playground/sharedDB orTrishType edits.
+Current reviews: three frozenfollowups,ownedimplementation,schema-plan+7dbudget. Current writers: materialization andfiniteEvents, separatecheckouts/sharedstorehunks coordinated. Prior637CIfailure remains historical; b543/c0successareexactsuccessors. Cursor2026-10-13T09:58:13Z incremental inboxownharvestonly; currentc0harvest posted. Continue beyonddrafts, preserveordinaryancestry/exactevidence. No JanetCLI/staging/playground/sharedDB orTrishType edits.
+
+Materialization stress update: M256 no-op receipt replay crossed pre-agreed1GiB child RSS ceiling (sample1154256KiB) after a67124671-byte receipt from8near-R Resources x32sets. Run killed/temporary store removed; replay not qualified. Logs transaction-materialization/stress-noop.log and summary.json. Root rejects M256 measured recommendation; author now measures denseE256 independently, then smallerM128/M64/M32 with comfortableheadroom. Code remains isolated/unfrozen/unpublished. No new semantics or row-storage redesign.
 
 ## Current priority: BDP profile structure and implementation
 
