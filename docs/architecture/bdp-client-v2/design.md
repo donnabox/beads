@@ -62,21 +62,21 @@ Original service-review lows: RU trusted callback capability narrowing and publi
 
 ### Live worker ledger
 
-Checkpoint 2026-10-13T21:55:40Z. Autonomous profile completion is **ACTIVE after explicit operator resume**. Same session2026-10-08T20:26:35Z-81e5 verified remote; no reclaim. Heartbeat ACTIVE. Operator has about2.5hours power/connectivity; wind down by2026-10-14T00:10Z, checkpoint/stop owned processes/pauseheartbeat by00:20Z (5:20p.m.PacificOct13) unlessextended. Prior pause snapshot preserved in operator-battery-pause.md. No release/Preview2promotion/publicwriteadmission.
+Checkpoint 2026-10-13T21:58:45Z. Autonomous profile completion is **ACTIVE after explicit operator resume**. Same session2026-10-08T20:26:35Z-81e5 verified remote; no reclaim. Heartbeat ACTIVE. Operator has about2.5hours power/connectivity; wind down by2026-10-14T00:10Z, checkpoint/stop owned processes/pauseheartbeat by00:20Z (5:20p.m.PacificOct13) unlessextended. Prior pause snapshot preserved in operator-battery-pause.md. No release/Preview2promotion/publicwriteadmission.
 
 ## Current source and gates
 
-Main2e7d454a616467122884306fcd8d1d853b0bf5c1 verifiedPR95 merge. PR96 DRAFT atbbab34f78864e7b3d2210ecc4527c9143e5e53ef, exactCI38457283500 passed19:55:16Z. Native131clean; Claude131twoLOW findings accepted in [dispositions](read-update-numeric-admission-root-dispositions.md). Repair now frozen06b0e04a921c8501e36a8a68480cee72dc4c54b3 directbbab; root inspected actualtwo-test-filediff, no artifacts/runtime/coverage changed. Newhead needs installedchecks/nativeclosure/CI before readiness or merge. PriorCI not relabeled.
+Main2e7d454a616467122884306fcd8d1d853b0bf5c1 verifiedPR95 merge. PR96 DRAFT advancedordinary to06b0e04a921c8501e36a8a68480cee72dc4c54b3; newCI38474249797/job115560903390 ACTIVE. Oldbbab CI38457283500 passed19:55:16Z, historicalonly. Native131clean; Claude131twoLOW findings accepted in [dispositions](read-update-numeric-admission-root-dispositions.md). Repair now frozen06b0e04a921c8501e36a8a68480cee72dc4c54b3 directbbab; root inspected actualtwo-test-filediff, no artifacts/runtime/coverage changed. Installedchecks/nativeclosure/rootscope are COMPLETE; newexactCI is remaining readiness gate. [Rootclosure](read-update-numeric-admission-final-root-closure.md). PriorCI not relabeled.
 
 ## Active worker ledger
 
 | Worker | Work | Source/output | Gate |
 |---|---|---|---|
-| update_implementation | ACTIVE frozenrepair installed verification | vickie-numeric-admission-review-repair / codex/vickie-numeric-admission-review-repair,06b0e04; logs/read-update-numeric-admission-review-repair | Prior10focused/build/static/Readseal and3guard-removal controls pass; freshfrozenbothshard/RNcontrols running |
-| profile_editorial_inventory | ACTIVE native06b closure | outputread-update-numeric-admission-review-repair-native-review.md | Immutableauthor, isolatedtargetedchecks; nooutward |
-| profile_runtime_inventory | ACTIVE metadata plan revision | Original78b5b980 preserved; outputrevisedplan/dispositions inlogs | Rootread external9findings; acceptboundedcorrections with factualqualifications; noimplementation |
-| transaction_implementation | COMPLETE/available | combinedc1c17aafc22242883283e07e0d63ad6140daa94a treeb42dc600a245fc219e52b825c81ce68ed362bf7b in vickie-set-numeric-conformance-integration | Rootreadreport/actualscope; needs acceptedRUrepairordinaryintegration andexternalTXcouncil |
-| profiles_integration_validation | COMPLETE/available | nextTXplan038487f4 | Nativeclean/rootread; resumedexternalreviewpending; noimplementation |
+| update_implementation | COMPLETE/available frozenrepair | vickie-numeric-admission-review-repair / codex/vickie-numeric-admission-review-repair,06b0e04; logs/read-update-numeric-admission-review-repair | Fresh22targeted/genuinebothshards18.790spass; nochildren/clean. [Repairreport](read-update-numeric-admission-review-repair-report.md) |
+| profile_editorial_inventory | COMPLETE native06b closure | outputread-update-numeric-admission-review-repair-native-review.md | 11independenttests/buildpass, artifact/reporthashaudit; [closure](read-update-numeric-admission-review-repair-native-review.md) |
+| profile_runtime_inventory | COMPLETE metadata plan revision | Original78b5b980 preserved; outputrevisedplan/dispositions inlogs | [Revisedplan](read-update-numeric-metadata-closure-plan-revised.md)11d5f02e + [dispositions](read-update-numeric-metadata-closure-plan-dispositions.md)5d35f10e rootread; nativeclosureactive |
+| transaction_implementation | ACTIVE repaired integration | combinedc1c17aafc22242883283e07e0d63ad6140daa94a treeb42dc600a245fc219e52b825c81ce68ed362bf7b in vickie-set-numeric-conformance-integration | New6d0284e4802666791a4bf1795a977e02ac3cb5ea tree8a3f024529bbf3d85f061cf8562e27fd6bdabd2b, ordinaryc1+06b, exact7TX/5RU blobs. set-numeric-repair-integration checksactive |
+| profiles_integration_validation | ACTIVE revisedmetadata nativeclosure | outputread-update-numeric-metadata-revised-native-closure.md | Readonly11d5f02e plan/9findings against06b; noimplementation |
 
 Combinedc1 report rootread: ordinary9eb+bbab,7TX/5RUfileblobs exact.88focused/static/build/smokes/Readseal plusfreshset1/TX31/RU13 pass; TXsixrows2.041s,74actions/10closedchildren, RU54genuine15.997s/all129mapping/reporthashaudit. Clean/sourcebound1b126payload; no newpublicclaim. Report [combinedintegration](set-numeric-conformance-integration-report.md). Old9eb author/native evidence remains separatelybound.
 
