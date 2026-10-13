@@ -62,7 +62,7 @@ Original service-review lows: RU trusted callback capability narrowing and publi
 
 ### Live worker ledger
 
-Checkpoint 2026-10-13T18:23:28Z. Autonomous profile completion is **ACTIVE**, session `2026-10-08T20:26:35Z-81e5`. Operator authorizes ready BDP main merges after exact-head green CI, native plus Claude council, finding dispositions, scope review and ordinary ancestry. Gemini is excluded. No release or Preview2 promotion; public write-profile selection remains closed.
+Checkpoint 2026-10-13T18:25:27Z. Autonomous profile completion is **ACTIVE**, session `2026-10-08T20:26:35Z-81e5`. Operator authorizes ready BDP main merges after exact-head green CI, native plus Claude council, finding dispositions, scope review and ordinary ancestry. Gemini is excluded. No release or Preview2 promotion; public write-profile selection remains closed.
 
 ## Verified main
 
