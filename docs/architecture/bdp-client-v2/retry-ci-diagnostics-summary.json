@@ -1,0 +1,74 @@
+{
+  "source": {
+    "source": "99e28c5155afa31a55868c219f7771fa46bcef1d",
+    "tree": "5451341705a7d637b1c1178f637d021155013d79",
+    "parent": "b604320267dd0adcf1ec91854550fb402a1155e7",
+    "branch": "codex/vickie-retry-ci-diagnostics",
+    "origin": "https://github.com/gastownhall/bdp.git",
+    "status": "",
+    "files": [
+      "apps/bdptest/src/read-update-matrix.test.ts"
+    ],
+    "testSha256": "d45f0ee7390bbbf889e2228e717e35842d737a5a79a29e64482b51bd50e1a1bf"
+  },
+  "claimEligible": false,
+  "underlyingCiFailureResolved": false,
+  "tests": {
+    "passed": 23,
+    "failed": 0,
+    "skipped": 169,
+    "startedAtMs": 1791932779141,
+    "finishedAtMs": 1791932792406.5903
+  },
+  "stages": {
+    "typecheck": {
+      "command": [
+        "node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "typecheck"
+      ],
+      "exit": 0,
+      "elapsedSeconds": 0.8376760482788086,
+      "finishedAt": 1791932730.0157351
+    },
+    "build": {
+      "command": [
+        "node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "build"
+      ],
+      "exit": 0,
+      "elapsedSeconds": 0.8194239139556885,
+      "finishedAt": 1791932730.835399
+    },
+    "format": {
+      "command": [
+        "node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "exec",
+        "biome",
+        "format",
+        "apps/bdptest/src/read-update-matrix.test.ts"
+      ],
+      "exit": 0,
+      "elapsedSeconds": 0.2916700839996338,
+      "finishedAt": 1791932731.127338
+    },
+    "lint": {
+      "command": [
+        "node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "exec",
+        "biome",
+        "lint",
+        "apps/bdptest/src/read-update-matrix.test.ts"
+      ],
+      "exit": 0,
+      "elapsedSeconds": 0.2912430763244629,
+      "finishedAt": 1791932731.418856
+    }
+  },
+  "frozenTestExit": 0,
+  "frozenReportSha256": "3e39618bfa8e1852c19f55a7f95494f1dbfddaf6343106315657872ba3c15a1f",
+  "cleanup": "No owned child processes remain; no caffeinate was started."
+}
