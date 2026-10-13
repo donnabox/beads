@@ -184,3 +184,47 @@ is proposed in this smaller installed-contract slice.
 No unresolved operator decision is required for the proposed schema-backed unowned
 semantics. The minimal shared captured-artifact view is root-approved; main implementation
 awaits council. RU durable retention remains a separate follow-up. HTTP set error policy and broader profile activation remain separate.
+
+## Authorized implementation revision after both council reviews
+
+Implementation base: 3e2b8784daefd5893f990785cfe91f1d872a2ffe. Recovery-low5e remains
+separate for root integration. Both native and Claude plan reviews are incorporated.
+
+- Capture is a SEPARATE bounded metadata row, never embedded in configurationIdentity.
+  Existing configuration text stays bounded by the existing inventory plus small
+  closure digest/runtime-limits fields; no AuthorityReadPlane changes. TX capture
+  serialization has an explicit finite byte cap derived conservatively from artifact
+  ceilings, including entry URI/metadata overhead; reject before opening any owner.
+- Private runtime accepts JSON-transportable bounded plain artifacts (URI + UTF8 text
+  and artifact limits), requires explicit stable Scope, then compiles inside its own
+  module instance. Store accepts only the existing branded compiled object. Require
+  all compiled Type IDs under Scope types/ using existing installed-factory policy.
+  Preserve old schema-free fixture path. Exact descriptor agreement is checked.
+- Separate capture contains detached ingest artifact records/limits and actual graph/
+  evaluator constant witnesses. Identity algorithm unchanged; no exact-field validator
+  is applied to the branded object. Persist/check exact bytes under locked installation
+  metadata. Runtime properties/diagnostic limits are included in configuration before
+  maintenance. Changed compiler constants fail closed; no overrides/reseed/migration.
+- Existing identity supplies changed-artifact refusal; new capture supplies exact
+  retention and offline reconstruction evidence. Recompile saved exact bytes through
+  the SAME existing compiler with current policy; saved constants are comparison
+  witnesses, never controls. Persist full capture for installation lifetime, with no
+  artifact GC even after delete/expiry/retraction. Detect tampered capture despite an
+  unchanged claimed fingerprint before maintenance.
+- Explicit exclusions: aggregate policy remains empty, owned Types refused, no schema
+  GET/HEAD hosting (external synthetic schema URI is offline-only), no public profile.
+  Small inline server fixture duplicates only necessary transitive schema structure;
+  no server-to-app imports. Existing shared compiler tests regress the accessor.
+- Native A-D accepted as lifetime retention, tamper/limits/branding/refusal, honest
+  schema-reference-only HTTP evidence and actual predecessor-format/crash tests.
+  Claude two HIGHs accepted via separate row and compile-in-runtime input seam; all
+  MEDIUMs accepted via scope-locality, limit pinning, identity attribution and build
+  constant refusal. LOWs accepted via explicit aggregate/hosting limits, small fixture
+  budget, corrected citations (installed factory123-186; authority143-154/231-237),
+  and branded accessor without exact-object-field introspection.
+
+Required focused positives/negatives remain the nine predicates above, with actual
+child/dist restart/HTTP tests, offline saved-capture reconstruction, input bounds,
+caller mutation, corrupted metadata and changed limits, retained capture through
+normal maintenance, late batch/set rollback and sequence prefix commits. Root owns
+outward actions and broader integration. Main implementation now authorized.
