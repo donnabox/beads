@@ -1,0 +1,45 @@
+Verified independently. No files written, no builds or tests run.
+
+## Scope confirmed
+
+`39dd934` vs `ededc12` is one sentence in one file (`docs/design/read-update-executable-progress.md:43`, W1 "Seven are assessed complete" → "Six…"). Code identical. The W1 table has nine rows and now names three incomplete (`alias.delete-releases`, `create-link`, `document-patch-merge-replace`), so the corrected count is right. `ededc12`'s parent is `7d2d23c`; both worktrees are clean at the claimed commits with origin `gastownhall/bdp`.
+
+## Prior F1–F5 — all closed, none silently demoted
+
+**F1 (excluded ops + array order unwitnessed under a `whole: true` claim) — closed two ways, both honest.**
+- *Order*: both arms, both documents, now carry `add /ordered "first"` then `replace /ordered "second"`, with the literal assertion pinning `ordered: "second"`. Reverse execution fails (`replace` on a missing target), so this is a genuine order witness, not an order-invariant pair like the one I flagged.
+- *Excluded ops*: six new requests (`move`+`test` on properties, `copy` on metadata, per kind). `from: "/keep"` names a member that exists post-patch and the `test` operand equals the stored value, so these would succeed or mutate under ordinary RFC 6902 — not accidentally-invalid operands. Each pairs an effectful `add /must-not-commit` on the other document, asserts `400`/`malformed-request`/`problems/request`/`never`, and is followed by a full `/body` equality GET against `before-invalid` / `link-before-invalid` (revision included). I checked the normative request schema at `docs/specs/bdp.md:4725-4737` — `op` is restricted to `add`/`replace`/`remove` — so `400 malformed-request` is normatively entailed, not an undisclosed installed choice.
+- *Demotion*: `wholeContract` → `false`, row removed from the pinned whole-ID list (`cumulative-artifact.test.ts:162`), `uncoveredIds` 101 → 102, doc 28 → 27 whole. Counts reconcile exactly: 129 rows = 41 authored + 88 omitted, 27 whole → 102 uncovered. I also checked the demotion *rationale*'s section membership, since that was the mechanism of the original over-reach: effective-Type validation, combined-document no-op retention and numeric admissibility are all genuinely inside `#property-change-values` (`bdp.md:2259-2266`), so the stated reason is accurate rather than borrowed from the adjacent section.
+
+**F2** — closed. Reason restores both qualifiers: "Negative controls detect returned-body, afterstate, order-result and clear-root corruption; scoped to the cited row clauses."
+
+**F3** — closed. Disclosed in the doc prose *and* the validation coverage reason ("root `instanceLocation` presence … installed-authority choices, not universal required spellings").
+
+**F4** — closed. The new `link-clear` control injects `resurrected: true`; `link-clear-properties` asserts `properties` equals `{}` exactly, so it must fail, and the test pins failing assertion `["properties"]` on that action. The report's note that downstream captured-response comparisons can also fail is correct and appropriately scoped.
+
+**F5** — closed. `link-metadata-remove` → `link-metadata-scalar` with `{op:"replace", path:"", value:"not-an-object"}` — unambiguous non-object result, same 422 diagnostics, independent unchanged Link and both endpoint records. No stale references to the old id anywhere.
+
+## F9 / F12 — pinning fix reads clean
+
+`prior-identity.mjs` now asserts `sourceCheckout` (`vickie-contracts-evidence-final`) is at `fc75dc5e…` and `git status --porcelain` empty (`:8-12`), reads the fixture from that checkout (`:67-68`), extracts `base`/`owner`/`edge`/`schema` from that same source instead of hardcoding them (`:70-75`), and asserts the computed identity equals the literal scraped from the frozen `expect(installed.identity).toBe("…")` (`:81-83`). The third live worktree is gone from the fixture path; `predecessor-source.diff` now runs with `cwd` = the fc75 checkout (`exit=0`). `prior-identity.pinned.log` / `.exit=0` record identity `development-schema5-894c98da…`, `sourceHead fc75dc5e…`, `predecessorHead fccb951c…`, `fixtureSourceSha256 9cfcbb50…`, and the four `u2` URLs. The frozen test's `Reproduce:` line points at the same path, so it is now valid rather than accidentally valid. F12's comment is corrected to "Runtime compiler/schema dependency closure (type-only imports excluded; protocol barrel included)". `.pre-f9` originals retained.
+
+## New finding — actionable delta
+
+**1. Low–Medium — the full-cited-section standard introduced by this delta demotes one row and leaves its broader sibling untouched.**
+
+`docs/design/read-update-executable-progress.md:121`; `packages/conformance/test-support/read-update-coverage-v1.json` (`document-patch-atomicity`); `packages/conformance/src/cumulative-artifact.test.ts:163`.
+
+The doc's governing rule is "full relevant sections reached by each catalog citation govern," and this commit applies it to demote `document-patch-merge-replace` — whose only anchor is `#property-change-values` — for effective-Type validation, combined-document no-op retention and numeric admissibility. Of the four catalog rows whose citations reach that section, three are now `whole=false` (`update-bead`, `document-patch-merge-replace`, `document-patch-validation`). The one that remains `whole=true` is `document-patch-atomicity` — the row with the *broadest* closure, citing `#property-change-values` **plus** `#property-changes` **plus** `#attribution-on-mutations`. Its probes use only `remove` and `replace`; it has no `add`, no excluded-op, no effective-Type and no numeric-equality observation, and effective-Type rejection is unobservable in this configuration at all (no installed `propertiesSchema`, as the validation row's own Limits state). Its reason is still the pre-delta "scoped to the cited row clauses," and its Limits cell mentions only the absent Link arm and concurrency — neither the clauses that just demoted its sibling nor a reason it survives them.
+
+Failure scenario: a reader auditing the 27-item whole-contract list applies the delta's own stated standard to the row directly above the demoted one and finds it unreconciled — so the list's remaining `true` entries can't be taken as having passed the standard this commit introduces.
+
+Fix: either demote `document-patch-atomicity` as well, or add one sentence to its Limits cell and coverage reason stating why its citation closure does not import the `#property-change-values` clauses that forced merge-replace to `whole=false`.
+
+## Noted residuals, not findings
+
+- `prior-identity.mjs:3-4,66` still loads the compiler from `vickie-transaction-set-integration/packages/server/dist/`, which is gitignored (`.gitignore:2 dist/`), so the predecessor's `--porcelain` clean check cannot attest that build. The identity-literal assertion at `:83` backstops this — a dist built from behaviour-changing source would mismatch — so the exposure is narrow. `bdp-integration-logs` is also not a git repo, so the frozen test points at a mutable script; the `.pre-f9` copies are the only drift record.
+- `link-order` and `link-result` both corrupt `link-merge-replace.properties` through the same literal matcher, so the eighth control adds little beyond the seventh. Honestly counted as "Eight controls," not overclaimed.
+
+## Report attribution
+
+`read-update-patch-followup-report.md` attributes tests and packed evidence to `ededc12`, not to `39dd934`, and says so explicitly. The arithmetic checks out: `cumulative-artifact.test.ts` has exactly 6 `it(` blocks (3 top-level, 3 inside describes), so 74 + 817 − 6 = 885 distinct across 2 + 27 − 1 = 28 files. I corroborated the overlap and the arithmetic; the absolute 74 / 817 figures are run-observed and I did not re-derive them. Independently confirmed from the trees: only `document-patch-merge-replace` and `document-patch-validation` changed in the manifest (per-scenario hashing), top-level manifest and scenario order unchanged, manifest is 1,806,985 bytes as stated, the 12 new actions reuse existing bindings without changing first-occurrence GET route order (consistent with the unchanged `be0e83fb…` pin), coverage bindings are mechanically derived from manifest actions with that equality asserted in-test, and `patchOperations: 128` leaves the 6-op arrays far from the bound.

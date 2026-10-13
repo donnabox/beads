@@ -1,0 +1,129 @@
+Reviewed `transaction-changefeed-plan.md` against `docs/specs/bdp.md` + `schemas/bdp-v0.schema.json` at frozen `c0d67388cd849410b38ec7ecb3a328771431dbfa`, and against the c0 owner source the plan claims to extend. Findings only; nothing written or modified.
+
+---
+
+# Findings
+
+## H1 — Whole-group serving envelope exceeds the serializer ceiling; already determinate at c0, not contingent
+
+**Location:** plan line 67; done-when 10 (line 105). Owner: `packages/server/src/transaction-batch.ts:55-56`, `packages/server/src/transaction-store.ts:1026`, `transaction-batch.ts:63-67`.
+
+**Issue:** Line 67 defers the boundary question — "If the predecessor tuple cannot bound the serving envelope, report that before implementation readiness." The c0 tuple already settles it. `maximumInducedEvents = 4096` and `maximumMatchedResources = 4096` (`transaction-batch.ts:55-56`, enforced at `:569` and `:811` with `413 limit-exceeded`), and the per-Resource admission bound the store passes to the evaluator is `representationBytes: 262144`. A maximally admissible transaction therefore commits one group whose `changes` alone reaches 4096 × 256 KiB = 1 GiB, plus up to 4096 × 64 KiB ≈ 256 MiB of `created`/`updated` Event `data`. `buffer.constants.MAX_STRING_LENGTH` is 536,870,888 bytes (~512 MiB). The ceiling binds first at **commit** (`json(group)` → `transactionStorageText` → `stringifyJsonValue`, `transaction-store.ts:1071`), before any serving path exists.
+
+Separately, line 67 names the wrong authority for the bound. The spec's named limit on change-group size is the transaction group's count members — `transaction.inducedEvents` / `transaction.matchedResources` (bdp.md:5727 "Event-expansion limits also bound change-group size"; 4280-4287), not the installed "count/property/diagnostic tuple."
+
+**Impact:** done-when 10 ("Construct/measure an actual boundary group and prove it is returned whole") is unachievable as written. The plan forbids all three remedies it names (silent slicing, retroactive refusal, unadvertised truncation), and the spec's one sanctioned remedy for an undeliverable projected transition — rotate the view token and require a fresh snapshot (bdp.md:5663-5667) — is explicitly out of G1 scope (no policy/view mutation, no Snapshot). G1 as specified has no conforming exit for the worst admissible group.
+
+**Fix:** Promote line 67's contingency to a stated precondition resolved before implementation. Either (a) state the slice's actual effective admission tuple (the installed profile's real `inducedEvents`/`matchedResources`/`representationBytes`, which may sit far below the 4096/256 KiB headroom) and prove *tuple product + envelope overhead < MAX_STRING_LENGTH*, making done-when 10's boundary group constructible; or (b) record in the burn-down that whole-group serving is qualified only up to a stated committed-group byte ceiling, and that the above-ceiling case requires the 5663-5667 view-rotation path and is therefore Snapshot-dependent. Replace "maximum raw committed-group representation" with the two normative count limits (5727, 4280-4287) as the derivation basis.
+
+*Caveat:* I measured `MAX_STRING_LENGTH` on the Node available here (v26.0.0), not the plan's pinned Node 24.16. The V8 constant is 2^29−24 on 64-bit across that range, but I did not verify it on 24.16.
+
+---
+
+## M1 — Replica oracle omits the mandatory owned-agreement rejection
+
+**Location:** plan done-when 3 (line 98); anchor row line 21; line 38.
+
+**Issue:** bdp.md:5710-5713 and 5946-5954 make consumer-side verification mandatory and negative: "the same verification applies to a change group: a source Bead's `upsert` and the `upsert` or `tombstone` of each of its owned Links MUST agree, and a group whose entries disagree is rejected as an authority fault, never applied in part," verified *before* the group is applied. The plan's done-when 3 refusal list is "wrong previousPosition, reorder/gap, wrong epoch/view and conflicting duplicate" — owned inline/first-class disagreement is absent. Done-when 2 and 4 check agreement only *positively*, against authority reads; that proves the authority is self-consistent, not that the replica refuses a disagreeing group.
+
+**Impact:** `transactional.changefeed.owned-link-agreement`, a row the plan explicitly targets (line 28), is not exercised in its mandatory direction. Owned transitions are already integrated at c0 (plan line 9), so this is in-slice, not deferred.
+
+**Fix:** Add to done-when 3: a group whose source-Bead inline `ownedLinks` member disagrees member-for-member with that Link's own first-class `changes` entry (or its tombstone) is refused as an authority fault, with no partial application and no cursor advance. In the anchor table, cite 5946-5954 alongside 5707-5713 — the rejection rule's text lives under Scope snapshots, not in the 5642-5733 range the plan currently cites for "owned source/Link agreement."
+
+---
+
+## M2 — Finite-JSON `Last-Event-ID`: the recommended default is the non-conforming branch
+
+**Location:** plan line 82; council question line 111.
+
+**Issue:** The plan is right that bdp.md:6112-6115 states `Last-Event-ID` precedence only inside the SSE paragraph and defines no finite-JSON semantics. But its recommended default is to **refuse** ("an explicit private unsupported-control gap"). The `changes/` observation table (6552-6555) enumerates the permitted GET/HEAD failures — "ordinary authorization, query, cursor, epoch/view, minimum-position, erasure/history-expiry, and service failures." An unrecognized request header field is none of those, and HTTP's default for one is to ignore it. Since SSE is unimplemented here, automatic reconnect cannot be in play, so no client's durable checkpoint can be overridden by ignoring it.
+
+**Impact:** A client that sets `Last-Event-ID` harmlessly — or a proxy that replays it — gets a refusal with no normative basis, and done-when 8's regressions would freeze that refusal as expected behavior.
+
+**Fix:** Invert the default: on a finite JSON request, ignore `Last-Event-ID` entirely — it neither supplies nor overrides a start intent. `Last-Event-ID` present with no explicit start intent is already the missing-intent error (5974), which needs no new rule. Narrow the council question to whether to log it.
+
+---
+
+## L1 — Outward spelling of the three position fields is never stated; genesis position vs genesis checkpoint not pinned
+
+**Location:** plan lines 42-44, 53, 61, 65; done-when 5 (line 100), done-when 3 (line 98).
+
+**Issue:** The plan specifies the checkpoint codec to the character and explicitly refuses raw `pos-N` as a client checkpoint, but never says what `position`, `previousPosition`, `observedHeadPosition` or `BDP-Scope-Position` carry on the wire. At c0 they are `pos-${n}` (`transaction-store.ts:930`, `:506-514`) with `pos-0` as the de facto genesis position, while the genesis *checkpoint* is the reserved literal `genesis` (bdp.md:6572). Both are legal `wireToken`s (`^[A-Za-z0-9_-]{1,256}$`; bdp.md:6565, 6578-6581), and 3691-3694 makes positions a token kind independent of checkpoints — so keeping `pos-N` is a **permitted** choice. It is just an unstated one, and it means a genesis-empty page carries `after: "genesis"` with `observedHeadPosition: "pos-0"`.
+
+**Impact:** done-when 5's "genesis-empty" and done-when 3's "wrong previousPosition" cases have no pinned expected values, and the minimum-position header must round-trip whatever spelling the page publishes.
+
+**Fix:** State that the three position fields and `BDP-Scope-Position` remain the raw `pos-N` spelling, that `pos-0` is the genesis position, and that `genesis` is a checkpoint value only — never a position value. Add an oracle assertion that the replica compares positions for equality only (bdp.md:3685-3686) and never performs arithmetic on the `pos-N` spelling, since that spelling invites exactly the client behavior 3685-3686 forbids.
+
+---
+
+## L2 — Integrity-assertion list omits `projectionAdvance` and the visible-group non-empty invariant
+
+**Location:** plan line 65 (validation list); line 33 (owner field inventory); targeted row list line 28.
+
+**Issue:** `$defs.changeGroup` requires `projectionAdvance` and is `additionalProperties: false`; its `allOf` requires, for the non-advance branch, `transaction` plus at least one of `changes`/`erasures`/`events` non-empty. The plan's validation list is "scope/epoch/view/position/previousPosition, transaction, eventCount and ordinal ordering" — neither `projectionAdvance` nor the non-empty invariant appears, and line 33's field inventory omits `projectionAdvance`. The plan targets `transactional.changefeed.wire-form` (line 28), whose text *is* that invariant.
+
+**Impact:** Validation-coverage gap only, not a wire defect: c0 already emits the literal `projectionAdvance: false` (`transaction-store.ts:1062`) and gates group insertion on `result.events.length > 0` (`:1067`), so both invariants hold by construction. done-when 1's schema check would catch a regression after the fact.
+
+**Fix:** Add `projectionAdvance === false` and the at-least-one-non-empty check to line 65's assertion list so the targeted row is exercised directly rather than inherited from the schema validator.
+
+---
+
+## L3 — "ordinal ordering" is weaker than this slice can prove
+
+**Location:** plan line 65; done-when 4 (line 99).
+
+**Issue:** bdp.md:6054-6055 requires every Event's "zero-based authority-group `ordinal`", with gaps permitted only where intervening facts are hidden. This slice is all-visible with no hidden facts, and c0 assigns `const ordinal = events.length` (`transaction-batch.ts:570`), so ordinals are provably `0..eventCount-1` contiguous. "Validate ... ordinal ordering" would accept `1,2,3`.
+
+**Fix:** Assert zero-based contiguity `0..eventCount-1` for this slice, and note that relaxation to the gap-tolerant form belongs to the hidden-fact / projection-advance work already in the burn-down.
+
+---
+
+## L4 — `next` spelled relatively in its own field definition
+
+**Location:** plan line 63, against anchor row line 26 and done-when 1 (line 96).
+
+**Issue:** `changefeedPage.next` is `oneOf [absoluteHttpUrl, null]` in the frozen schema. Line 63 — the plan's actual field specification — writes the value as "`changes/?after=<last-returned-checkpoint>`", while line 26 and done-when 1 both say absolute.
+
+**Impact:** Nil if the implementer reads all three; one schema-validation failure if line 63 is taken as the spec.
+
+**Fix:** Spell line 63 as the absolute `${scope}changes/?after=<checkpoint>`.
+
+---
+
+## L5 — Over-qualification of the `invalid-parameter` mapping inflates the council list
+
+**Location:** plan line 74; council question line 111.
+
+**Issue:** The plan calls 400 `invalid-parameter` a "documented reference convention" whose "exact generic feed parameter mapping is not separately specified," and warns against treating "the collection-specific 1550 clause" as a universal feed law. That warning is sound in isolation, but the frozen spec applies `invalid-parameter` to unsupported/repeated query members at non-collection surfaces too: alias queries (bdp.md:1677) and `view=versions` pages (1774, "other/repeated members are `invalid-parameter`"). The `changes/` observation table lists "ordinary ... query ... failures" among its permitted outcomes (6554), and the registry fixes `invalid-parameter` at family `request`, status 400, retry `never` (1896).
+
+**Impact:** One of three council questions asks for a ruling the frozen spec already supports, delaying an otherwise settled branch.
+
+**Fix:** Reclassify as a mapping derived from 1677 + 1774 + 6554 + 1896, not a convention awaiting approval. Keep only the finite-JSON `Last-Event-ID` boundary (M2) open on line 111.
+
+---
+
+# Correctly qualified — no action
+
+Verified as genuinely out-of-slice rather than quietly dropped:
+
+- **SSE and `Last-Event-ID` precedence** (6110-6128), including HEAD-without-frames for acceptable SSE (5810-5813). `406` for SSE-only `Accept` matches the shared bodyless `406` at 6554.
+- **Snapshot rendezvous / anchor** (5742-5756, 6467). Reserving the checkpoint codec for Snapshot reuse without allocating a handle is consistent with 5750-5756 and with "global retention window rather than per-client retention pins."
+- **Erasure ledger and pre-erasure checkpoint expiry** (6520-6534, 6125-6128) — empty ledger is the actual configuration; keeping the required empty `erasures` array is right per 6060-6063.
+- **Projection advance under a genuinely hidden transaction** (5658-5662, 6082-6102) — unreachable in an all-visible fixture.
+- **`replay-window`'s "late cursor"** (5753-5754) — unreachable with no pruning. Line 28's "(supported retained/fence cases)" and line 114 are accurate; line 77's insistence that internal corruption not be mislabeled client `400`, and that a future pruned window implement `410` + honest `minimumReplayPosition`, is the right call.
+- **Discovery `changes` / `minimumReplayPosition` membership** (3738-3753, 3759-3760). Verified: c0 serves no transactional discovery document — neither `headPosition` nor `minimumReplayPosition` appears anywhere under `packages/server/src`. Line 20's claim holds, and done-when 12 keeps cold discovery in the burn-down. Worth naming those two members explicitly there, since `changes/` served without them is undiscoverable by a conforming client.
+
+# Permitted implementation choices, correctly identified as such
+
+No new public mechanism is required for any of these, and the plan is right not to invent one:
+
+- **One whole group per page.** `page.defaultItems`/`maximumItems` count Resource records (1053-1059) and receipt result entries (3830-3831); neither defines group-count semantics. Line 25 is accurate and line 7's "implementation bound, not a new advertised protocol limit" is the correct framing.
+- **A public group `checkpoint` distinct from the stored position.** `$defs.changeGroup` requires `checkpoint` and `position` as separate members, and 3691-3694 makes the token kinds independent. The `cg_<tag>_<tag>_<n>` codec fits `wireToken` and stays under 256. Line 36's rule — don't swap the Event renderer's input to the new spelling on one path only — is the load-bearing constraint and is correct, because c0 derives Event IDs from the stored position (`id: \`${position}-${ordinal}\``, `transaction-batch.ts:571`).
+- **Serving stored `changes` unchanged.** Verified safe: c0 postimages come from `readStoredResource` over the stored body, which carries inline `ownedLinks` but not the `links` aggregate (`resource-evaluator.ts:353-380`), so they already satisfy the `"links": false` prohibition in `$defs.stateChange` and the 5697-5699 / 5707-5709 pair. Pre-metadata preservation (line 65) matches 6068-6071, and `beadRecord` does not require `metadata`, so retained records validate.
+- **Byte-identity between `group.events` and Scope `events/` pages** (line 36, done-when 4) is *stronger* than the spec requires — only the identical-token-spelling rule at 6565-6567 is mandatory — but it is a sound self-imposed invariant, not an unstated obligation.
+- **Omitting `ETag`/`Last-Modified`** is an obligation, not a choice (6538-6539, MUST omit), and line 55 states it correctly, including the refusal to fabricate validators from a checkpoint. The required `Cache-Control: private, no-store` for finite feeds (6560-6561) is covered by the existing helper (`transaction-http.ts:55`, `:155`) the plan reuses at line 89, though the plan never names it.
+
+# Two readings worth preserving as-is
+
+- **`start=now` admission-time anchor retained across the minimum wait** (lines 51-52) is exactly 6077-6078 read against 5783-5786. The plan's observation that capturing the anchor *after* the wait, or renewing it per attempt, would silently skip the intervening suffix is correct and is the discriminating case worth the test at done-when 5. This does not need a council ruling.
+- **Head later than the delivered group** (line 61, done-when 5/7) is exactly 6104-6107 plus 5802-5803: `observedHeadPosition` reports the observed prefix so a client can recognize catch-up, while the durable cursor advances only to an applied `group.checkpoint`, and `304`/`412` advance nothing. The minimum-position interaction is consistent — the minimum is satisfied by the observed prefix, not by the delivered group's position, so a one-group page below the requested minimum is not "success with an older position."
