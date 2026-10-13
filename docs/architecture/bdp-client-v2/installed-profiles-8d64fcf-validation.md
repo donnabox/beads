@@ -11,3 +11,5 @@ Native c1:89tests plus private cap probes. Native seta94:304tests plus actual409
 Fresh packaged validation and exact CI are recorded separately once completed. Public Update/Transactional profile selection remains closed; set HTTP admission awaits the separate Selector-limit decision. Required profile delivery continues.
 
 Fresh package verification:69tests/fourfiles pass26.61s after packing protocol/server and npm installing into isolated directory. sourceDirty:false; sourceCommit exact8d64fcf. Actual payload 1d75b2cc934028fa62282f9a113ef807036fb106e22f4d57b5533550687dca1d. Exact harness digest f04e98d80971e813b73d1b57d225c0a6bfb0669647d6bbf9b026a908bbf37f26. Counts {'sessions': 36, 'observations': 373, 'setupObservations': 44, 'nativeReadObservations': 21, 'requiredIds': 129, 'plannedIds': 36, 'uncoveredIds': 102}. claimEligible:false;27recordedwhole/102uncovered remain proposed credit with outstanding sensitivity controls.
+
+Exact CI38370313016 SUCCESS at8d64fcf, downloaded pr88-8d64fcf-ci.log confirms8,223tests/139files/one optional skip,7preflight,smokes and unchanged89-row Read evidence.
