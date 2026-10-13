@@ -91,3 +91,17 @@ Expected edited files only:
 No product ruling or new runtime mechanism is needed. Selector complexity, metadata-only incident Link behavior, Types/provenance and optional History are excluded. If the implementation unexpectedly requires a new binding operation, route wildcard, test clock, policy replacement or runtime seam, stop that expansion and report it instead of widening this slice.
 
 Done-when after separate authorization: build with pinned Node24.16/pnpm11.20; focused cumulative-artifact and these actual installed rows pass; each negative control discriminates; full current installed RU matrix passes within existing cooperative90s/outer120s budgets; a fresh packed target run records actual source/payload/configuration with both new rows, all129 IDs preserved, `claimEligible:false`,26whole/103uncovered unchanged; applicable type/boundary/format checks pass. Preserve the current five-second individual exact HTTP timeout, fresh per-row disposable stores and existing finally cleanup. No timing sleeps, concurrency claim, long retention wait or new budget mechanism. Freeze clean code and external exact run evidence for independent review. No implementation has been started by this plan.
+
+## Accepted council dispositions before implementation
+
+F1: Add fourth owned file, fixtures/read-update-reference-v1.json, for named fixed-path client GETs. Use client GETs so the existing post-wire control layer can discriminate afterstate; raw HTTP remains available for absence but is not needed here.
+F2: Ordered tuples project operationIndex only. Per-member assertions check name presence/absence, outcome, resource equality and every normative Problem field, with optional detail explicitly absent. No mixed optional-field tuple and no runner change.
+F3: Existing sequence.local-bindings/dependent-key-conflict already observes sequence-to-singleton changed-input conflict. Novel evidence is retained-success/failure replay across carriers and current-position projection; conflicts remain row-local controls, not a novelty claim.
+F4: Correct exact source citations: carrier equivalence2109–2111, retained equality/current positions3286–3288, retained postimage3304–3305. Reauthorization3307–3311 is excluded.
+F5: Recompute both exactConfigurationDigest pins from actual expanded fixed routes; captured-ID GETs add no fixed route.
+F6: A/B labels are presentation labels only. Canonical insertion follows required catalog order: sequence.idempotent-retry precedes idempotency.cross-carrier.
+F7: Measure unchanged43-row baseline before authoring. Preserve cooperative90s/outer120s; if approached, report rather than thin observations or widen budgets.
+
+Implementation authorized by root from8e45ef4d2c9674296f217ac0cf75bc706f49ff09; both rows remain partial. No runtime/executor/H1/M1 changes.
+
+Implementation correction: names apply to creating operations, not updateBead. Row B adds a name to an initially unnamed successful create and removes the other creator name; the retained missing-subject update remains unnamed. Root accepted this grammar-preserving correction. Baseline43 installed rows passed11.84s test/12.32s total with current budgets.
