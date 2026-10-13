@@ -1,0 +1,145 @@
+Review complete. Nothing written or modified; no builds or tests run.
+
+---
+
+# Review — `c1a1744` vs `3e2b878` (W1b claim repair)
+
+**Boundary verified.** 8 files, +2025/−331: `apps/bdptest/src/read-update-matrix.test.ts`, `docs/design/read-update-executable-progress.md`, `packages/conformance/{catalog,matrices}/read-update-v1.json`, `packages/conformance/src/{artifact-bundle.ts,cumulative-artifact.test.ts}`, `packages/conformance/test-support/{profile-contract-plan.ts,read-update-coverage-v1.json}`. `schemas/`, `packages/protocol/`, `packages/server/`, `runner.ts`, `src/index.ts`, every `package.json` untouched. Confirmed W1b repair, not W2 sequence work. Tree clean at `c1a1744`; manifest and fixture sha256 reproduce `db1a0630…`/`3a60db87…` in `read-update-w1b-repair-report.md:71-72`.
+
+**Verified against the recorded wire** (`read-update-w1b-repair-native-progress.json`, `sourceCommit c1a1744`, `sourceDirty:false`, `counterfactualApplications:0`, all 36 new actions pass): the owned Link advances `1df486ae→a06ea9b8→8fc66abb`; each `matching-link-*` returns 200 with the revision **unchanged**, each `stale-link-*` returns 409 `revision-mismatch`. The unowned Link advances `cb6bc445→6842336a` with the same accept/refuse pair. The no-op row advances `4d32f2f7→8bb3d499→9d7bbc13` and `owned-noop` returns `9d7bbc13` unchanged, with `8bb3d499` refused afterwards. **Prior finding 1 is genuinely closed** — a frozen-revision authority cannot both accept and refuse the same string.
+
+---
+
+## Findings
+
+### 1 — MEDIUM — the planner's cross-profile gate has no control, though the ledger required one
+
+**Location** `packages/conformance/test-support/profile-contract-plan.ts:238-240`; test `packages/conformance/src/cumulative-artifact.test.ts:222-290`.
+
+The budget gate is `selection.profile === "read-update" && !selection.history`. The new test constructs **only** a baseline `read-update` selection (`:226`, `:232`). The "ordinary" control at `:282-289` varies the *manifest* (`catalogId: "read-v1"`), which exercises the re-check at `profile-contract-plan.ts:250`, not the selection gate. Delete `selection.profile === "read-update" && !selection.history` from the condition and every assertion in the new test still passes. `bdp-integration-logs/live-ledger.md:7` records "Exact boundary and cross profile controls required"; the exact-boundary half was delivered, the cross-profile half was not.
+
+**Fix** Two assertions in the same test. Both throw inside `snapshotSource` before any profile/row validation, so they are clean one-line controls:
+```ts
+const readSelection = loadProfileContractSelection("read");
+const readConfiguration = bindServedProfileConfiguration({ ...base, profile: "read" });
+expect(() => planProfileExecution(readSelection, readConfiguration,
+  { configuration: readConfiguration, manifest: padded(1_048_577) }))
+  .toThrow("manifest source must not exceed 1048576 bytes");
+```
+and the same with `loadProfileContractSelection("read-update", true)` + `history: true`.
+
+### 2 — MEDIUM — 107 of 108 new assertions have no row-local control; the one control covers only the refusal direction
+
+**Location** `apps/bdptest/src/read-update-matrix.test.ts:414-428` (`w1bKey`/`w1bRead`), table `:722-740`.
+
+The commit adds 12 actions × 3 assertions to each of three rows. Exactly one counterfactual targets a new action: `stale-link` → `stale-link-properties.revision-mismatch`, in one row. No entry exists for any `matching-link-*` or `read-after-*` action. Uncontrolled and load-bearing:
+
+- `matching-link-noop.retained-link` / `read-after-matching-link-noop.retained-link` — the only assertions that fail if the no-op mints a version, i.e. `owned-link-no-op`'s central obligation.
+- `stale-link-unowned-update.revision-mismatch` + `matching-link-unowned-update.retained-link` — the sole evidence for the clause this commit **restores** to `catalog/read-update-v1.json:253`. A normative clause is raised back into a `wholeContract:true` row with no control.
+
+Risk is bounded — `runner.ts:2888-2892` rejects an `equalsBinding` naming an unestablished capture at validation time, and `deepEqual` (`runner.ts:3284`) is a real structural comparison — so these assertions are discriminating by construction. The defect is that the commit's own standard was applied to one of twelve new action families.
+
+**Fix** Two table rows mirroring the existing shape:
+```ts
+w1bKey["retained-noop-link"] = "matching-link-noop";
+if (w1bCounterfactual === "retained-noop-link")
+  (body.resource as { revision: string }).revision = "freshly-minted-on-noop";
+["retained-noop-link", "read-update.singleton.owned-link-no-op", "matching-link-noop", ["retained-link"]]
+```
+(a plain string keeps `harnessInstalled_mutationResult` valid, so the set stays singular), and
+```ts
+w1bKey["stale-unowned-link"] = "stale-link-unowned-update";   // reuse body.code = "alias-path-taken"
+["stale-unowned-link", "read-update.singleton.update-link", "stale-link-unowned-update", ["revision-mismatch"]]
+```
+Place the second in `update-link` so the restored clause's own row carries it.
+
+### 3 — LOW — the planner grants 4 MiB by self-declared `catalogId`, after parsing, to carriers its matching factory rejects
+
+**Location** `packages/conformance/test-support/profile-contract-plan.ts:235-251`; compare `packages/conformance/src/artifact-bundle.ts:134` and `:186-187`.
+
+The factory gates on an explicit parameter (`cumulative !== undefined`) and separately requires `manifestVersion === 2`. The planner gates on the selection only, then re-applies 1 MiB by reading `catalogId` **out of the already-parsed manifest**. Three consequences:
+
+1. A non-cumulative carrier's bytes are UTF-8 decoded, `JSON.parse`d, complexity-walked and parsed into an `ExecutableScenarioManifest` at up to 4 MiB before the 1 MiB refusal fires — the byte cap exists to bound exactly that work. `read-update-w1b-repair-native-review.md:20` acknowledges this; `docs/design/read-update-executable-progress.md:91` does not.
+2. A 2 MiB `{catalogId:"read-update-v1", manifestVersion:1, scenarios:[…]}` manifest is now **accepted** (plan returns with `carrierBlocker`) where before it threw on bytes. The matching factory refuses it at `artifact-bundle.ts:186`.
+3. `:251` allocates and discards a full copy purely to throw.
+
+**Fix** Minimally, add the version condition so the planner refuses what the factory refuses: `if (manifest && source && !(manifest.catalogId === "read-update-v1" && manifest.manifestVersion === 2)) copySourceBytes(…)`. Better: give `planProfileExecution` an explicit cumulative opt-in mirroring the factory's `cumulative` parameter, so the budget never depends on content read from the oversized bytes.
+
+### 4 — LOW — the design doc states the manifest exceeded 1 MiB; at this commit it does not
+
+**Location** `docs/design/read-update-executable-progress.md:91`.
+
+The frozen manifest is **1,047,302 bytes** (`git cat-file -s` at `c1a1744`) — 1,274 bytes, 0.12%, *under* `ARTIFACT_MAX_BYTES` (1,048,576). `read-update-w1b-repair-report.md:18` is more precise ("the prettified expanded cumulative manifest crossed 1MiB … 27 tests failed before any HTTP"), but that describes a pre-freeze state not reproducible from the frozen tree. As committed, nothing in-tree exercises the 4 MiB path except the synthetic padded test, and a reviewer measuring the file to check "was this relaxation forced?" gets "no".
+
+**Fix** Restate `:91` as the present condition and its margin: "The expanded prettified cumulative manifest reaches 1,047,302 bytes, within 1,274 bytes of the ordinary 1 MiB source bound, which it crossed during authoring and will cross again on the next row." Leave the rest of the paragraph.
+
+### 5 — LOW — every fresh-guard Link probe is a semantic no-op; the coverage reason says "retained usability"
+
+**Location** all twelve `matching-link-*` actions (e.g. `packages/conformance/matrices/read-update-v1.json`, `owned-link-source-revision`/`matching-link-properties`); reasons at `read-update-coverage-v1.json:1406`, `:1914`, `:2362`.
+
+Each sends `propertiesChange: [{op:"replace", path:"/edge", value:2}]` against a Link whose `/edge` is already `2` (`owned-properties` sets it; `unowned-update` sets it — verified). Each therefore falls under `docs/specs/bdp.md` §4.6 retention and is asserted to return the unchanged record. This is deliberate and is what makes retention observable — but it means the acceptance leg witnesses guard admission only for an *admitted non-mutating* write. Same limitation the prior review logged as residual #5 for the owner side, now replicated on the Link side and not disclosed. The *advancement* half of the reason is proved; "retained usability" reads stronger than what was observed.
+
+**Fix** Disclosure, not new actions — adding a state-changing matching probe would perturb the staged revision chain. Append to the three reasons: "The matching Link guards are RFC 6902 §4.6 no-ops; they witness current-guard admission and revision retention, not admission for a state-changing Link write."
+
+### 6 — LOW — the assertions pin consecutive-revision inequality, not advancement
+
+**Location** `stale-link-properties` / `stale-link-metadata` in all three rows.
+
+`link-created-revision` is refused only while `link-properties-revision` is live; `link-properties-revision` only while `link-metadata-revision` is live. `link-created-revision` is never re-presented after `owned-metadata`. An authority cycling A→B→A satisfies every new assertion. The recorded run shows no recycling (`1df486ae`/`a06ea9b8`/`8fc66abb` are pairwise distinct), so this is about what the row *pins*, not about observed behaviour — but the reason says "own-revision advancement", which is strictly stronger than "consecutive revisions differ".
+
+**Fix** Either weaken the reason to "consecutive Link revisions differ after each observed transition", or add one action `stale-link-created-after-metadata` re-presenting `link-created-revision` after `owned-metadata`, expecting 409.
+
+### 7 — LOW — the `owned-plane` injection's optional chaining can silently no-op, unlike its sibling
+
+**Location** `apps/bdptest/src/read-update-matrix.test.ts:447-451`.
+
+```ts
+(body.ownedLinks as Record<string, unknown[]>)[`${scope}types/relates`]?.push(…)
+```
+If `body.ownedLinks` is absent the index throws a bare `TypeError`; if the `relates` key is absent the `?.` makes the counterfactual a silent no-op. The sibling `owner-inline-link` at `:464-470` does it correctly (resolve, then `if (!link) throw Error(…)`). Not a false pass — `counterfactualApplications` still increments at `:438` and the test fails — but it fails with "expected 'pass' to be 'fail'" instead of naming the missing shape.
+
+**Fix**
+```ts
+const plane = (body.ownedLinks as Record<string, unknown[]> | undefined)?.[`${scope}types/relates`];
+if (!plane) throw Error("actual owner owned-Link plane missing");
+plane.push(structuredClone(execution.bindings["link-metadata"]));
+```
+
+### 8 — LOW — attribution's reason is now accurate, but the one-assertion close was left on the table
+
+**Location** `packages/conformance/test-support/read-update-coverage-v1.json:2711`; `unowned-create`/`read-unowned-create` in `update-link`.
+
+The rewritten reason is honest and takes no cross-row credit, and `cumulative-artifact.test.ts:180` still mechanically forces `omitted`. But the prior review's concrete close for `#carried-attribution` clause 3 — add `{id: "no-provenance", kind: "json-pointer", pointer: "/revisionProvenance", exists: false}` to `unowned-create` and `read-unowned-create` — was not taken; the new reason instead asserts the branch "remains unobserved". `unowned-create` is already edited in this diff, so the cost is one assertion per action. Flagging as an available close, not an error.
+
+---
+
+## Prior-finding dispositions (`read-update-w1b-claude-review.txt`)
+
+| # | Prior finding | Disposition |
+|---|---|---|
+| 1 | MEDIUM — no owned-Link own-revision transition observed; `update-link` title dropped the clause | **RESOLVED**, and better than the proposed fix. Matching/stale pairs added after both owned transitions, around the no-op, and on the unowned update; all witnessed on the wire. Catalog title at `:253` is byte-equal to the spec-matrix Obligation cell at `docs/specs/bdp.md:6730`; the new `#mutation-revisions-and-guards` citation matches `:2144-2147` under the heading at `:2142` (hard-wrapped in the spec — `catalog.ts:175` normalizes whitespace, so it validates). No spec edit. The chosen `alias-path-taken` substitution beats my predecessor's `"not-revision-mismatch"`: it is a valid `readUpdateProblemCode` whose conditional branch (`type` conflict / `status` 409 / `retry` after-state-change) is byte-identical to `revision-mismatch`'s, so the expected set stays singular — `read-update-w1b-repair-report.md:27` records the discarded `identity-taken` attempt that did not. Residuals → findings 2, 5, 6. |
+| 2 | LOW — attribution's inventory reason false | **RESOLVED** for the reason. Clause-3 close deferred → finding 8. |
+| 3 | LOW — `empty-owned-plane` has no row-local control | **RESOLVED**. Verified the injected `currentLinkRecord` keeps `harnessInstalled_currentBeadRecord` valid (`beadRecord.ownedLinks.additionalProperties.items = linkRecord`, narrowed to `currentLinkRecord`), so `["empty-owned-plane"]` is exactly right. Robustness nit → finding 7. |
+| 4 | LOW — source/sourceRevision biconditional, one-present case | **RESOLVED** exactly as proposed. Verified `mutationResultMembers.dependentRequired` makes `body-schema` fail while `no-source-revision` still passes, so `["body-schema","no-source"]` is exact. |
+| 5 | LOW — partial ownership pin on a wildcard owner | **RESOLVED** exactly as proposed. The pinned literal matches `reference-domain.ts:62-71` after the Scope remap at `installed-reference-configuration.ts:50-59`; `runner.ts:3284` sorts keys, so the pin is order-insensitive. |
+
+Prior residual limitations #2, #4, #6, #7, #8 persist unchanged. **#3 is worth re-flagging**: this commit depended on a *manual* title restoration, and `read-update-catalog.test.ts` still compares only ids and order — the same gap that let the clause go missing would let it go missing again.
+
+---
+
+## What holds
+
+- **No public API or admission change.** `src/index.ts:21-24` names its artifact-bundle exports and excludes `CUMULATIVE_MANIFEST_MAX_BYTES` and `copySourceBytes`; `test-support/testing.ts` likewise. `copySourceBytes`'s new third parameter defaults to `ARTIFACT_MAX_BYTES`, so no existing call site changes. Independently checked against the built `dist/index.js` by `read-update-w1b-repair-native-bounds.mjs:14-16`.
+- **Structural diff is exactly as claimed.** 36 scenarios before and after; 3 changed, 0 added/removed; per row exactly 12 added actions, 0 removed, one assertion renamed (`decision.explicit-owner` → `decision.owner-ownership`). Coverage bindings track exactly, enforced at `cumulative-artifact.test.ts:186-190`. The `wholeContract` list at `:147-175` is unchanged at 27 — no row promoted.
+- **Incidental strengthening.** Inserting the guard pairs between `link-after-*` and `owner-after-*` means `owner-after-properties.source-revision` and its siblings now also witness that a no-op Link write does not version the owner.
+- **Control isolation is sound** despite shared idempotency keys. `stale-link-properties`, every `matching-link-*` and `unowned-create` collide across all three rows, but controls run with `selectedIds=[id]` (`:787`), none of the three rows declares a `prerequisiteScenario`, and `counterfactualApplications === 0` (`:431`) + `toBe(1)` (`:788`) bound each to one application.
+- **The byte-cap boundary test is exact.** `JSON.stringify(manifest)` is 514,165 pure-ASCII chars (`strLen === byteLength`), so `padEnd(1_048_577)` / `padEnd(4_194_304)` / `padEnd(4_194_305)` hit those byte counts precisely and trailing spaces keep the JSON valid. 1 MiB+1 and exactly 4 MiB accepted privately; 4 MiB+1 refused privately; >1 MiB refused through `createConformanceArtifactBundle`, `createDevelopmentReadUpdateArtifactBundle`, the fixture source and the `read-v1` planner carrier — as documented.
+- **JSON structural bounds unchanged and not close.** Depth 128 (manifest max 11), nodes 100,000 (manifest 29,416), containers 10,000 (manifest max 72). The catalog keeps the 1 MiB default (`artifact-bundle.ts:130`) and the cumulative factory synthesizes its catalog bytes internally (`:115`), so no caller can route an oversized catalog through the elevated budget.
+- **No qualification claim anywhere in the diff.** `claimEligible: false` in the inventory, the planner (`profile-contract-plan.ts:348`), the receipt and the report.
+
+## Residual limitations of this review
+
+1. **Not re-executed.** Per instruction I wrote nothing and ran no build or test. Behavioural claims are re-derivation from the frozen manifest, catalog, schema bundle, runner, descriptor and control harness, cross-checked against `read-update-w1b-repair-native-progress.json` and confirmed by reproducing the frozen manifest/fixture digests. I did not recompute `exactConfigurationDigest` from first principles.
+2. **Findings 1 and 3 are reasoned from the planner source, not executed.** I did not construct a `read`-profile plan to confirm the untested path throws where I say it would; the throw ordering in `planProfileExecution` (`snapshotSource` at `:235` precedes all row validation) is clear from the source but unverified by execution.
+3. **Packed cohort unverified.** The 57-test / 4-file packed figure at `read-update-w1b-repair-report.md:35` cites `read-update-installed-c1a1744/`, which I did not inspect.
+4. **Control minimality is still per-action.** Each counterfactual asserts the failing set of one named action; none asserts that no other action failed. Inherited, not introduced.

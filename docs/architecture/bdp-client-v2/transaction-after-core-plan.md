@@ -28,7 +28,7 @@ was not found in the supplied log location; no result from it is assumed.
 ## Concrete current seams
 
 - `development-contracts.ts:54–145` exposes branded immutable DevelopmentContracts:
-  identity, descriptors, canonical installed Type bytes, and ResourceContractRegistry.
+  identity, descriptors, installed Type bytes, and ResourceContractRegistry.
   Compilation consumes a captured offline artifact closure and existing evaluator;
   no authority request performs network resolution. Its registry checks exact bytes.
 - `development-authority.ts:126–160,223–240` already derives installation identity,
@@ -228,3 +228,10 @@ child/dist restart/HTTP tests, offline saved-capture reconstruction, input bound
 caller mutation, corrupted metadata and changed limits, retained capture through
 normal maintenance, late batch/set rollback and sequence prefix commits. Root owns
 outward actions and broader integration. Main implementation now authorized.
+
+
+Implementation clarification: stringifyJsonValue preserves ECMAScript property
+ordering; it is not a canonical identity serializer. Identity behavior is unchanged.
+Root accepted runtime omission of redundant types when plain artifacts are supplied:
+the child-side compiled descriptors supply the store inventory. When both are given,
+exact installed-byte agreement is still required. Schema-free input requires types.
