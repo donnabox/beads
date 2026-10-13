@@ -1,0 +1,74 @@
+## Scope verified
+
+| Item | Value |
+|---|---|
+| Frozen base | `4f5f5b1c201f79411c6b88a076dae9c1053c8282` |
+| Supplement | `c245cddeb2e0ee64ce58d1b27a9e9f6990df5cd7` (HEAD, worktree clean) |
+| Changed files | **1** — `packages/server/src/member-identity.test.ts`, +14 / −10, 3 hunks |
+| Production source delta | **empty** — `git diff 4f5f5b1 c245cdd -- . ':!*.test.ts'` returns nothing |
+| Ancestry | `c245cdd` ← `89c07d1` ← `4f5f5b1` (linear) |
+
+Static review only: no build, no test run, no writes. The "6 failed / 217 passed" baseline is taken from `numeric-contract-native-review.md:24`, not re-executed here.
+
+Line-level accounting of the diff: 10 removals / 14 additions, of which exactly **one** `expect(...)` line is removed and re-added in equivalent form (`:1328`). No assertion, matcher, or control case is deleted anywhere in the diff — the changes are payload-expression substitutions plus a relocation of `type`/`schemaLocation` from the *expected* literal into the *callback* literal.
+
+## The six repaired cases
+
+| Group | Location | Parameterization | Repair |
+|---|---|---|---|
+| 1 | `member-identity.test.ts:1299–1349` | `createBead`, `createLink` | expected payload → `{message, instanceLocation}`; `n` recomputed from it |
+| 2 | `:1422–1471` | `updateBead`, `updateLink` | expected payload → `{message}`; `type`/`schemaLocation` moved into `formatted`; `diagnosticBytes` recomputed |
+| 3 | `:1475–1515` | `updateBead`, `updateLink` | expected payload → `{message}`; Type fields moved into the `diagnostic` closure; `bytes` recomputed |
+
+2 + 2 + 2 = 6, matching the three groups × Bead/Link in the native log. Each now encodes exactly what `member-numeric-diagnostics.ts` emits: create/properties → `{message, instanceLocation}` (`:27–31`); update/non-`metadataChange` → `{message}` (`:44`).
+
+## Guarantees — each checked against the implementation
+
+**Exact bound is arithmetically exact, not re-fitted.** `json-admission.ts:312` seeds `bytes = 2` for the brackets; `:346–349` computes `nextBytes = bytes + (diagnostics.length ? 1 : 0) + encode(JSON.stringify(diagnostic)).byteLength`; `:350` rejects on `nextBytes > byteLimit`. For the first entry that is identically `Buffer.byteLength(JSON.stringify([diag]))`. So `diagnosticBytes: n` admits at equality and `n - 1` trips `:351–354` → `"diagnostic byte bound cannot retain the first entry"`. Both halves of the boundary are live at `:1336–1348`, `:1449–1468`, `:1497–1512`.
+
+**Key order is irrelevant to the math.** `:335–345` rebuilds the diagnostic as `type, schemaLocation, instanceLocation, document, message`; the test literals are message-first. Same key set ⇒ identical serialized length, and `toEqual` is order-insensitive.
+
+**Escaped pointer + multibyte survive as a real byte test.** Group 1's `pointer` is `/é~1~0~1` + 150 `x` (`:1300–1301`), correct RFC 6901 encoding of `é/~/xxx…`; `instanceLocation` comes from `occurrence.pointer.slice(object.length + 1)` = `slice(11)`, and the empty-key sibling yields `"/"` (`:1328`). `Buffer.byteLength` (utf8) and `diagnosticEncoder = new TextEncoder()` (`json-admission.ts:73`) agree on `é` = 2 bytes, so `n` is byte-true including the multibyte char.
+
+**Stripping is still pinned by a strict matcher.** `:1328`, `:1458`, `:1508` use `toEqual`, which fails on any extra defined own property — an emitted `type`/`schemaLocation`/`document` breaks them. The callbacks still hand in the bogus Type fields (`:1309–1310`, `:1443–1444`, `:1492–1493`), so negative coverage is intact.
+
+**The `toMatchObject` sub-assertions did not become a hole.** `:1341–1345` and `:1502–1506` use `toMatchObject`, which tolerates extra received properties — but because `diagnosticBytes` is now *exactly* the stripped payload's size, an unstripped diagnostic would exceed the budget and throw `"first entry"` rather than match. The tightened boundary substitutes for the loose matcher, and the same payload carries a strict `toEqual` at `:1328` / `:1508` regardless.
+
+**Anti-relabeling, non-mutation, truncation, pointer omission** — all retained: `:1459–1460` and `:1418–1419` (`not.toHaveProperty("instanceLocation"|"document")`), `:1333` / `:1461–1462` (frozen callback object unchanged), `:1318` (`this` undefined) and `:1334` (`calls === 2`), `:1344` / `:1505` (`diagnosticsTruncated: true`), `:1329–1332` / `:1509` (offending pointers).
+
+**No-effects / replay / ordering untouched.** `member-executor.test.ts` is byte-identical to `4f5f5b1`. Its `numeric admission in %s` matrix (`:2280–2345`) supplies bogus `type`/`schemaLocation`/`instanceLocation` and pins `toHaveProperty("diagnostics", [...])` (deep equality) across all four operations × both documents, asserts `contracts.get()` throws if Type lookup were reached, pre-existing bodies deep-equal, refused create id `undefined`, and post-reopen replay deep-equals with a throwing callback and `clock` uncalled. This is also what keeps the **create/metadata** strip under negative-input coverage, since `member-identity.test.ts:1287` uses a clean callback there.
+
+**No stale expectations left anywhere.** In `member-identity.test.ts`, `schemaLocation` now appears only at `:1220`, `:1310`, `:1444`, `:1493` — all callback *inputs*. The sibling block already migrated in `4f5f5b1` (`:1200–1255`) is consistent. `1e400` occurs in only two files repo-wide (`member-identity.test.ts`, `member-executor.test.ts`). The helper's only other caller is `transaction-batch.ts:456`, whose budget hardcodes a message-only `diagnostic` (`:460–465`); no `transaction*.test.ts` mentions `schemaLocation`. `sequence-executor.test.ts:2401` is a deliberate `parseReadUpdateProblem`-constructed legacy retained outcome, not live formatter output; `:2454` is a genuine S5 Type emitter.
+
+**Verdict: the six failures are repaired and none of the exact / one-byte-short / truncation / escaped-pointer / no-effects / replay guarantees is weakened.** The change does not remove the failing boundary checks; it re-derives them from the compliant payload.
+
+## Findings
+
+### N1 — Low, nonblocking future hardening (carried forward, unreachable confirmed)
+**Location** `packages/server/src/member-numeric-diagnostics.ts:12` and `:55`
+
+**Evidence (strengthened vs. Report 2).** `let selectedBudget = budget` forwards the embedder's `type`/`schemaLocation` verbatim for any operation outside create/update. Reachability is closed on both callers:
+- *Member path* (`member-identity.ts:431`, embedder-supplied budget): the fallback ops are `deleteBead`, `deleteLink`, `putAlias`, `deleteAlias`. Per `schemas/bdp-v0.schema.json`, `deleteBeadMembers`/`deleteLinkMembers`/`putAliasMembers`/`deleteAliasMembers` contain only string refs, `$defs/expectedRevision` = `{"type":"string","minLength":1}`, and `revisionProvenanceInput` (strings/null). No number-typed and no free-form (`"value": true`) member exists, so `mapLosslessJson` can yield no occurrence and `diagnostic` is never invoked.
+- *Transactional path* (`transaction-batch.ts:456`): `updateWhere`/`deleteWhere` **would** reach the fallback and **do** carry free-form JSON (`updateWhereMembers.change` → `$defs/propertyChange` with `"value": true`) — but `assertResourceOperation` (`transaction-batch.ts:56–67`, invoked at `:104` and `:118` during prepare) rejects them with `TransactionDevelopmentLimitError` before `evaluateTransaction`, and that path's `diagnostic` is in-tree message-only regardless.
+
+**Impact** No live Spec 3459 violation. Latent: the guarantee rests on per-operation enumeration plus an input schema that happens to have no numbers in those four operations. Adding a numeric-bearing member to any of them, or implementing `updateWhere`/`deleteWhere` for the private owner, silently re-admits Type claims on a non-Type refusal with no test to catch it.
+
+**Fix** Make stripping the default: initialize `:12` to a budget whose `diagnostic` returns `Object.freeze({ message: diagnostic(occurrence).message })`, and let the create/update branches add `document`/`instanceLocation` on top. If `updateWhere` is later implemented, that default also gives it a defined, compliant pointer treatment rather than passthrough. Not a blocker for this supplement — no production source change belongs in it.
+
+### N2 — Low (test coverage), optional
+**Location** `packages/server/src/member-executor.test.ts:2318–2327`
+
+**Evidence** The matrix pins `diagnostics` exactly but asserts nothing about `diagnosticsTruncated`. `problem()` attaches it only when true (`member-executor.ts:126–129`), and `#/$defs/readUpdateProblem` forbids it outside `validation-failed`.
+
+**Impact** None today — every matrix case produces a single occurrence, so absence is the correct state. Unchanged by `c245cdd` (this file is untouched), so still open and still optional; no behavior regression is shown.
+
+**Fix** One line: `expect(refused.disposition).not.toHaveProperty("diagnosticsTruncated")`.
+
+### N3 — Low, optional consistency nit (no regression)
+**Location** `member-identity.test.ts:1328`, `:1458–1460`, `:1508` vs. `:1240–1242`
+
+**Evidence** The block already migrated in `4f5f5b1` states intent explicitly with `not.toHaveProperty("type")` and `not.toHaveProperty("schemaLocation")` alongside its `toEqual`. The three repaired blocks rely on `toEqual` alone for the Type fields, even though groups 2 and 3 do spell out `not.toHaveProperty("instanceLocation")` / `("document")`.
+
+**Impact** None — `toEqual` fails on extra defined own properties, so enforcement is equivalent. Purely an intent-documentation asymmetry: a future reader widening a matcher to `toMatchObject` would silently drop the Spec 3459 check in these three blocks but not in `:1240–1242`.
+
+**Fix** Optional — add the two `not.toHaveProperty` lines per repaired block to match the sibling's style.
