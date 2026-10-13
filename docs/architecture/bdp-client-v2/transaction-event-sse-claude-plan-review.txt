@@ -1,0 +1,122 @@
+## Findings
+
+### F1 — High: frameless backlog traversal emits no keepalive and trips the runtime's own socket timeout
+
+**Plan:** §"One pump, two payload adapters" item 4 (line 76); done-when 12 (line 137).
+**Source:** `packages/server/src/transaction-sse.ts:86-92` — the elapsed-heartbeat check lives *inside* `if (page.groups.length === 0)`. `packages/server/src/transaction-runtime.ts:225` sets `server.timeout = settings.transport.timeout` = `10000` (`transaction-runtime-configuration.ts:119`), and `transaction-runtime.ts:236` destroys the socket on `timeout`.
+
+The plan says "Heartbeats still use the existing 5s monotonic interval" and "Yield between bounded backlog packets so timers/disconnects can run." The existing heartbeat is **not a timer** — it is an inline `performance.now() - lastWrite` test reachable only on the empty-page branch. The plan's new third state (empty payload *with* remaining historical work → advance progress, yield a turn, pull again) never enters that branch, so it never evaluates the heartbeat. For the changefeed this state cannot exist, because every admitted group yields a frame; that is why G2a's only heartbeat test (`transaction-sse.test.ts:292`, `heartbeatMilliseconds: 2`) exercises the empty-page path exclusively.
+
+**Failure scenario:** Bead `B` is created in group 1, followed by N unrelated groups. A client connects with `Accept: text/event-stream` and `Last-Event-ID` = B's creation Event. Every bounded step returns payload-empty/work-remaining, so the pump loops on the yield branch and writes zero bytes. Group bodies may each be materialized up to `TRANSACTION_EVENT_GROUP_BYTES` = 169,345,024 and are `JSON.parse`d synchronously (`transaction-store.ts:578-580`). Once 10s of wall clock elapse with no write, the socket's inactivity timer fires and `socket.destroy()` kills the stream before the client sees a single frame; `EventSource` reconnects at the same ID and repeats. Even below 10s, any silence past 5s violates the plan's own keepalive intent.
+
+**Minimal repair:** hoist the elapsed-heartbeat evaluation out of the empty-page branch so it runs once per pump iteration, at the same point the loop would otherwise pull from the owner (preserving done-when 8's "a blocked frame prevents all further owner reads/comments"). Add a predicate: a sparse prefix whose traversal exceeds the heartbeat interval emits comments, does not trip the transport timeout, and still delivers the first relevant Event.
+
+---
+
+### F2 — Medium-high: post-header projection-gap close is an unbounded reconnect loop, and done-when 1 is unsatisfiable for such a Source
+
+**Plan:** line 89; done-when 1 (line 126) and done-when 10 (line 135).
+**Source:** `transaction-events.ts:240-248` throws `TransactionEventProjectionGap("incident-link-metadata")`; `transaction-http.ts:542-543` maps it pre-header to a 500 `x-bdp-development-limit`; `transaction-runtime.ts:186` destroys the socket post-header. This gap is thrown only from the Event projection — `grep` confirms no changefeed path raises it, so this is a new G2b transport consequence, not a G2a one.
+
+**Failure scenario:** Bead `B` is an endpoint of incident Link `L`; group *k* carries an `updated` Event on `L` with `metadataChange` and no `change`. Finite `GET B?view=events` returns 500 development-limit, because the finite loop scans to head. SSE begins at group 1, succeeds, and sends headers + 200; the pump reaches group *k*, `advance` throws, and the socket is destroyed with no frame-level signal. A conforming `EventSource` reconnects with its last ID (which precedes *k*), re-traverses the whole prefix, and faults at *k* again — a hot loop at the UA retry interval, each iteration re-paying the traversal in F1. Separately, done-when 1 ("SSE frames equal independently observed finite JSON Events") cannot hold for this Source at all, since the finite read produces no page to compare against.
+
+**Minimal repair:** scope done-when 1 explicitly to gap-free Sources, and extend done-when 10 with a predicate that the post-header refusal is deterministic and that a reconnect receives the identical refusal at the identical group — recording the reconnect loop as an accepted consequence of the unresolved membership gap. No new product semantics needed; this only makes the existing gap's transport cost explicit.
+
+---
+
+### F3 — Medium: the plan cites "prepared once per owner observation" as a strength, then adopts a design that abandons it; the oracle as worded cannot observe the replacement cost
+
+**Plan:** line 29 ("Statements are prepared once per owner observation") versus line 49 ("at most **one group per owner entry**") and line 99 (sparse-work oracle).
+**Source:** `transaction-store.ts:563-568` — `retainedGroupReader()` prepares two statements per call, with the comment "Prepare once per owner observation, not once per scanned group." `transaction-store.ts:376-380` — `metadata()` prepares per call, so `readContext()` adds one more preparation per entry. The existing pinned assertion `transaction-events.test.ts:644` requires exactly **2** `/FROM groups/` preparations for a finite scan across 13 groups.
+
+**Failure scenario:** the same 13-group prefix costs 2 group-statement preparations finite and 26 under one-group-per-entry, plus 13 `metadata` preparations. Worse, the oracle is ambiguous between the two existing seams: `transaction-events.test.ts:604-610/644` counts `prepare` calls matching `/FROM groups/` (nonzero on *every* idle advance), while `:572-592` intercepts `.get` on `SELECT body FROM groups WHERE position=?` (the `bodySelected` style). Predicate 6's "repeated idle advances select **zero historical bodies**" is only true under the second seam; written against the first, which is what "the existing DatabaseSync seam" most directly names, the predicate fails while the design is actually correct.
+
+**Minimal repair:** (a) state the oracle in terms of `get` executions on `SELECT body FROM groups WHERE position=?`; (b) require `advance` not to construct `retainedGroupReader()` at all when the next position is beyond captured head; (c) either memoize the two group statements and the position statement in owner closure scope (prepared once per owner, as `readConfiguration` is at `:537`) or state plainly that per-entry preparation is accepted, with a predicate bounding statements prepared per advance to a constant.
+
+---
+
+### F4 — Medium: no predicate requires current Scope context on Event SSE refusals, and the stale-cursor 410 is not separated from the normative `event-history-expired` 410
+
+**Plan:** lines 85-86; predicates 2 (line 127), 4 (line 129), 7 (line 132).
+**Normative:** `docs/specs/bdp.md:5793-5798` (every Transactional Scope-bounded read reports epoch/view/position); `:5805-5807` ("Required current Scope context remains required on 304 and 412 responses"); `:5629-5640` (410 `event-history-expired` needs authorization and disclosure policy; unknown identities always 404; 410 must not be an enumeration oracle).
+**Source:** `packages/protocol/src/index.ts:496,506,507,511` → `invalid-parameter` 400, `foreign-view` 409, `cursor-expired` **410**, `temporarily-unavailable` 503. `transaction-events.ts:118-122` throws context-bearing `TransactionMinimumFailure`, which `transaction-http.ts:523-536` wraps with `context(...)`; a source-mismatched cursor throws a bare `TransactionEventParameterError` → `transaction-http.ts:538-541` → 400 with **no** `bdp-*` fields. The changefeed SSE 304/412 path does retain context only because the response was built by `context(...)` first (`transaction-http.ts:412-428`).
+
+**Failure scenario:** a stale `Last-Event-ID` (mismatched epoch tag) on a retained Bead Source answers **410 `cursor-expired`** — indistinguishable at the status line from the policy-gated `event-history-expired` 410 the plan promises not to fabricate, and distinguishable only by the `code` member. A source-mismatched ID answers 400 carrying no Scope context at all. Predicate 2 enumerates stale/foreign/unissued cases but asserts nothing about which code or which headers; predicate 4 asserts only that no history-expired *policy* is invented.
+
+**Minimal repair:** add three predicates — (i) the three `bdp-*` fields are present on Event SSE 200/304/412/406/409/410/503; (ii) a stale or foreign cursor emits `cursor-expired`/`foreign-view`, never `event-history-expired`, and only after the identity 404; (iii) record whether the bare-`TransactionEventParameterError` 400's omission of Scope context is the intended existing convention, so it is a decision rather than an artifact.
+
+---
+
+### F5 — Medium: capability lifetime has no bound on live tokens and no refusal for a superseded one
+
+**Plan:** lines 39, 43; pump item 3 (line 75); predicates 5 (line 130), 8 (line 133).
+**Source:** `transaction-store.ts:283-308` is the in-repo precedent — the `claims` and `sequenceAdmissions` WeakMaps carry explicit `busy` / `cancelled` state precisely so a capability is non-reentrant and revocable. The plan's `scan` state (line 39) carries descriptor, epoch/view, position, ordinal, head — and no lifecycle bit.
+
+**Failure scenario:** item 3 deliberately keeps the pre-adoption capability valid while the prospective one exists, so at least two are simultaneously valid, and nothing revokes the predecessor on adoption. Advancing the retained pre-adoption token after adoption re-reads the same group and re-emits ordinals already framed: duplicate Events on a live stream, each with a legitimate stable ID, so no wire-level invariant catches it. Predicate 5 tests foreign, fabricated, and closed/fenced-owner tokens — never a legitimately issued but **superseded** one. Done-when 8 bounds packets and pending frames but says nothing about capabilities.
+
+**Minimal repair:** give `scan` the same explicit state the existing WeakMaps use — mark the input capability superseded inside `advance` and refuse a second advance of it — and add a predicate that the pre-adoption token is refused after adoption, with at most two capabilities live per stream.
+
+---
+
+### F6 — Medium-low: the shared finite/stream helper's byte accounting and membership mode are unspecified, with no byte-identical-boundary predicate
+
+**Plan:** lines 59-61; predicates 3 (line 128), 13 (line 138).
+**Source:** `transaction-store.ts:1416-1418` (`envelopeBytes` = the JSON page envelope minus the literal `null`); `:1441-1453` (each candidate reserves the exact `eventContinuation(...)` JSON, even when it turns out to be terminal); `:1448` (the combined item/byte test); `:1431-1438` (`cursorMatched` proves public-cursor membership from the *same* projection the collector walks).
+
+**Failure scenario:** an SSE packet has neither a JSON envelope nor a continuation URL. A helper parameterized only as "item cap + byte budget" either (a) drops the finite envelope/continuation reservation — moving the chosen boundary ordinal and `next` for a fixture sitting at the exact byte edge, i.e. changing behavior the current finite tests pin — or (b) imposes the finite reservation on packets, in which case "existing … finite Event page byte bounds" (plan line 55) means something different from the frame bound derived in §"Memory and work accounting" (line 93). The helper also needs an explicit membership-proof mode, since `begin` must prove the supplied cursor from the shared projection while `advance` must not.
+
+**Minimal repair:** state the helper's signature explicitly — item cap, byte budget, a caller-supplied per-candidate overhead/reservation function, and a membership-proof flag — and add a predicate that a fixture tuned to the exact finite byte edge selects the identical boundary ordinal and identical `next` before and after extraction.
+
+---
+
+### F7 — Low-medium: `invalidReconnect` ordering burns the full minimum budget and answers 503, and is asymmetric with the query-`after` rejection it preserves
+
+**Plan:** lines 41 and 86.
+**Source:** `transaction-store.ts:1394-1411` orders identity → `unsupported` → context → `checkTransactionMinimum` → cursor. `transaction-consistency.ts:106-119` retries the attempt until the deadline, then raises `catch-up-timeout`; the budget is `minimumReadBudgetMs: 1000` (`transaction-runtime-configuration.ts:111`). The query-side `after` is parsed inside `transactionEventRequest` (`transaction-events.ts:158`), called at `transaction-http.ts:440` *before* any owner access — hence before the identity 404.
+
+**Failure scenario:** `GET …?view=events` with `Accept: text/event-stream`, a malformed `Last-Event-ID`, and `BDP-Minimum-Scope-Position` one past head. The attempt throws `behind` before reaching the `invalidReconnect` throw, so the wait loop spends its full 1s and answers **503 catch-up-timeout** for a request that could never succeed. The same malformed token in the `after` query answers 400 *before* the 404. Neither ordering is wrong — but the plan nominates header/nondisclosure ordering for council review and predicates neither.
+
+**Minimal repair:** add two predicates — the minimum/epoch/view decision precedes the reconnect-validity decision (so this case is 503 by design), and the query-syntax 400 precedes the 404 while the header-validity 400 follows it. If the 1s hold is unwanted, evaluate `invalidReconnect` after the identity check and before `checkTransactionMinimum`; either way the choice should be written down.
+
+---
+
+### F8 — Low: missing acceptance predicates (one line each)
+
+- **Capacity refusal.** A second concurrent stream of either kind must answer 503 `temporarily-unavailable` before any frame, dropping the already-materialized initial packet and its scan capability (`transaction-service.ts:205-206`, `transaction-runtime.ts:188-189`). Done-when 12 only *sequences* tests around the single slot; nothing asserts the refusal, and plan line 86 lists capability-drop only for HEAD/304/412.
+- **HEAD with an invalid or repeated `Last-Event-ID`.** Line 86 states HEAD creates no slot but never says what HEAD answers for a bad reconnect field.
+- **No `retry:` field.** Spec `:6273-6274` makes it optional; the plan pins that comments carry no ID but never that the stream emits no `retry`.
+- **Empty `Last-Event-ID`.** Predicate 2 lists "empty" as a case but never records the chosen disposition. The HTML reconnect contract sends the field only when the last-event-ID string is non-empty, so "absent → earliest retained" is also defensible; the G2a changefeed 400 is the only precedent. Pick one and record why.
+- **Overridden-query semantics.** Line 88 says a syntactically valid overridden `after` is not looked up; predicate 2 should include the case where that query cursor *would* have produced 410/409/400 and the request nevertheless succeeds on the header.
+- **`Vary` on Event SSE 200.** The changefeed sets `vary: Accept` (`transaction-http.ts:418`); state whether `Last-Event-ID` joins it. Moot under `no-store`, but the plan claims header reuse without naming fields.
+
+---
+
+### F9 — Low: two normative citations don't resolve to the claims they carry
+
+- Plan line 25 cites `#transactional-http-consistency`, "lines 5766–5813", for same-entry epoch/view/position **plus** pre-shortcut minimum/expiry ordering **plus** "HEAD ends without frames". That range spans three sections (`:5766` Transactional HTTP consistency, `:5791` Transactional Resource read context, `:5800` Transactional conditional reads); the HEAD and 304/412-context rules are in the third (`:5805-5813`), not at the cited anchor. Cite `#transactional-conditional-reads` for those two claims.
+- Plan line 21 cites `:5629-5640` for the deleted-Source rule but omits `:5623-5627` (Transactional Resource Event view), which is what makes `view=events` valid on a Bead or Link at all — the route this plan activates.
+
+Both are documentation-grade, but the plan states that anchors are the durable reference.
+
+---
+
+## What I verified, and the limits of that
+
+Verified at the frozen commit (`git rev-parse HEAD` = `b64d7e46652739c6436259a8c8ed4c5e8049a077`, tree clean) and the plan file's SHA256 matches `bacc2b82…`:
+
+- **No pruning.** `sweep` (`transaction-store.ts:465-480`) touches only snapshots and receipts; no `DELETE FROM groups` exists outside tests. The plan's append-only premise holds.
+- **Retained identity after deletion.** `identities` is `INSERT OR IGNORE` only (`:1061`), never deleted, and `CREATE TABLE identities(id TEXT PRIMARY KEY)` (`:177`) has no tombstone column — so predicate 4's retained deleted-Source streaming is sound, including for a Bead deleted mid-stream.
+- **Nondisclosure ordering in the finite path.** The identity check (`:1397-1403`) precedes the `unsupported` minimum gap and `checkTransactionMinimum`, so predicate 4's "unknown Source 404 precedes owner minimum/cursor decisions" is already true.
+- **Negotiation.** `selectChangefeedMedia` (`read-http.ts:95-99`) returns `json` on a missing `Accept` and on ties, so "JSON remains default/tie winner" holds, and reuse needs no edit to `read-http.ts` (which the plan keeps untouched).
+- **Normative claims.** Exclusive `after`, earliest-on-omission, `next` null at current end (`bdp.md:6184-6189`); `Last-Event-ID` as the exclusive replay cursor overriding `after` (`:6276-6282`); `id`/`event`/`data` framing (`:6271-6274`); ETag/Last-Modified omission and SSE `no-store, no-transform` (`:6538-6561`); the 256-char case-sensitive token profile and `genesis` never being an Event ID (`:6565-6576`).
+- **Public surface.** `packages/server/src/index.ts` exports nothing transaction-related and `package.json` exposes only `.` and `./development`, so adding an Event-stream variant to `TransactionHttpResult` leaks no capability type publicly.
+
+Limits:
+
+- **Static only.** No build, typecheck, lint, test, or process run. Nothing was written or modified.
+- **Out-of-repo plan claims unchecked.** I did not verify the paused-WIP SHA256 `deb205…`, `transaction-event-sse-design-notes.md`, the resume-guard session token, or anything else under `bdp-integration-logs/` beyond the reviewed file.
+- **Arithmetic taken from pinned assertions.** `TRANSACTION_EVENT_GROUP_BYTES = 169345024` and `TRANSACTION_EVENT_FIRST_PAGE_BYTES = 1778688` are confirmed only via `transaction-events.test.ts:565-566`, not independently evaluated. I checked the claimed 512-byte framing overhead by hand (`4+256+1+7+8+1+6+2 = 285`) and derived the ≤256 Event-ID bound from max-safe-integer position/ordinal (~172 chars); neither was executed.
+- **F1's threshold is reasoned, not measured.** It rests on the ordering fact that a write is what resets socket inactivity, combined with the configured `timeout = 10000` and the `server.on("timeout") → socket.destroy()` handler. I did not time a large sparse traversal, so the exact N at which the socket dies is unmeasured; the finding stands on "no write ⇒ no reset", not on a measured crossing.
+- **Severities are my judgment** on an explicitly unimplemented plan; none of these are observed runtime failures.
+- **G2a overlap avoided.** F1, F2, F3, F5, F6 are new G2b consequences. F4's observation that a bare `TransactionEventParameterError` 400 carries no Scope context, and F7's query-before-404 asymmetry, touch shared `transaction-http.ts` behavior G2a also exercises — I raise them only as Event SSE predicate gaps, not as G2a repairs. I did not evaluate the changefeed's `If-Match: *` handling (`read-http.ts:50-63` with `etag = null`), which belongs to the running G2a review.
+- **Per the brief**, I treated metadata-only incident-Link membership and erasure as explicit separate gaps; F2 reports only the new transport consequence of the existing gap and proposes no membership ruling.
