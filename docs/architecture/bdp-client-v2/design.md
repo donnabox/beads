@@ -27,6 +27,12 @@ Review policy: native + Claude only, as Donna directed. Review this continuation
 
 Initial next actions: launch independent U1 and T1 workers from preserved96ae78e/c4fce0b against current main, inspect exact merge changes including metadata/provenance/diagnostics/evidence, and audit current required contracts. Reuse the existing ten-minute heartbeat to review reports, integrate/validate/publish bounded progress and assign the next safe slice; do not stop merely because the first PR is open. Stop on achieved profile-delivery predicates, explicit pause, supersession or unavoidable human decision after exhausting independent work. Eight hours is the operator's expected absence, not a license to stop at the first draft or to invent semantics.
 
+### Live worker ledger
+
+As of 2026-10-12 UTC, root has restarted `update_implementation` for U1 in `/Users/dbox/repos/wt/vickie/vickie-update-served` and `transaction_implementation` for T1 in `/Users/dbox/repos/wt/vickie/vickie-transaction-served`. `profile_runtime_inventory` is the independent native plan/required-contract reviewer; external Claude reviews the same active plan. The ten-minute `vickie-bdp-profiles` heartbeat is ACTIVE with this full-completion scope. These are execution handles, not branch-state claims; inspect actual heads and reports on every continuation. Root arbitrates shared changes and owns publication. There is no current unavoidable human decision.
+
+The older continuation and bounded-delivery sections below retain historical evidence only. Their paused-worker, draft-PR and heartbeat state is superseded by this active plan. They must not be used to restart closed work or halt the newly authorized service implementation.
+
 ## Current priority: BDP profile structure and implementation
 
 **Autonomous profile completion resumed by Donna.** The metadata/provenance/editorial delivery remains complete. Donna now directs autonomous implementation toward working Update and Transactional profiles while she is AFK for about eight hours. Resume the preserved implementation branches against verified main, keep progress moving through bounded reviewable slices, and publish qualified PRs. No new product semantics are inferred from this instruction. Current required contracts govern; optional History, YAGNI removals, Types and provenance proposals stay separate. No Preview2 promotion or edits to Janet’s CLI/staging/playgrounds/shared databases or Trish’s branches.
@@ -137,7 +143,7 @@ Council follow-ups are bounded repairs to the existing contract and its evidence
 
 The [earlier candidate diagnosis](profile-write-integration-diagnosis.md) remains historical evidence of the genuine catalog mismatch. The fresh [qualification workflow](read-reseal-feasibility.md) has now been executed for PR83 with unchanged pin and policy. Further changed inputs must satisfy the same verifier, without weakening checks.
 
-The earlier night pause is superseded by the active bounded provenance/editorial delivery below. The heartbeat is active for that assignment; the unfinished broader service branches remain paused and separate. It reports meaningful results and blockers, not routine unchanged polls.
+Historical checkpoint: the night pause was superseded by the bounded provenance/editorial delivery, which has now completed. The active plan at the top governs the newly resumed service work and heartbeat.
 
 
 ## Agreed direction
@@ -150,7 +156,7 @@ Trish owns Type lifecycle design. Janet owns current Beads/Preview 2 integration
 
 ## Simplicity review
 
-Donna explicitly directs a YAGNI review: mechanisms need a concrete product purpose, not speculative future utility or existing implementation effort. The [BDP simplicity catalog](yagni-catalog.md) lists 36 current-contract candidates across History, Read, mutation and Transactional/replication, plus four Type-related pointers reserved for coordination with Trish. Each gives the source, benefit/cost, a smaller alternative and the guarantee lost. Review one decision at a time, beginning with what exact historical retrieval requires. No individual removal or profile change is approved yet. Existing bounded implementation may finish, but do not widen its scope while these choices are being reviewed. Catalog recommendations are not normative law and do not justify weakening conformance claims.
+Donna explicitly directs a YAGNI review: mechanisms need a concrete product purpose, not speculative future utility or existing implementation effort. The [BDP simplicity catalog](yagni-catalog.md) lists 36 current-contract candidates across History, Read, mutation and Transactional/replication, plus four Type-related pointers reserved for coordination with Trish. Each gives the source, benefit/cost, a smaller alternative and the guarantee lost. Review one decision at a time, beginning with what exact historical retrieval requires. No individual removal or profile change is approved yet. The current autonomous profile implementation proceeds against the existing required contract; no proposed simplification is silently adopted. Catalog recommendations are not normative law and do not justify weakening conformance claims.
 
 ## Batch composition direction
 
@@ -325,7 +331,7 @@ This work moved from the former upstream issue into this fork branch after Donna
 
 The branch and archive were verified before attempting issue removal. GitHub denied `DeleteIssue` because the current account lacks permission. The former issue is now closed as not planned, its current title/body replaced with a withdrawal, and all four author-written comments deleted. One automatic triage comment remains; actual issue deletion requires an upstream administrator. No replacement issue or PR was created. The fork itself is public.
 
-## Active delivery: common revision provenance and clear profile boundaries
+## Completed delivery: common revision provenance and clear profile boundaries
 
 Donna approved the common `revisionProvenance` organization now, independently of full Beads7510 acceptance, and directed autonomous execution plus an implementation-status comment on that proposal after PR65 is revised. Preserve PR65’s actor basis/absence semantics while replacing `attribution.principal` with `revisionProvenance.actor.id`, `attribution.basis` with `.actor.basis`, and `changeContext` fields with `.committedAt`, `.agent`, `.message`. Keep existing field availability, immutable-version/no-op/owned-Link behavior and present/absent/undetermined encodings. No sources, completeness, Activity Beads, terminal deletion revisions, additional History requirement or profile advertisement in this slice.
 
