@@ -38,3 +38,19 @@ Three repro assertions intentionally assert the observed faulty acceptance; all3
 Pinned Node24.16.0/pnpm11.20.0, frozen install and build passed in isolated clone. Focused serial suite:375 passed in11 files,9.19s. Exact list matches author report: profile-contract-plan/catalog/read-update-catalog/transactional-catalog/artifact-bundle/numeric-model-catalog/owned-wildcard-catalog/history-catalog/profile-catalog-boundaries/development-read-update/runner.
 
 Structured result: `profile-contract-native-focused.json`; verbose log/exit alongside. No broad duplicate suite, actual served qualification, evidence generation or source/outward mutation. Root owns routing these findings and independent re-review after repair.
+
+
+## Independent closure at 9ea4089
+
+Reviewed exact successor `9ea408958e08be38cc4e586a4846caf3d6ef6874`, direct child of preserved `abdd1d4af45cd02ad1238b311462a1b154e44b79`. Reviewed three-file repair diff and author report `profile-contract-selection-repair-report.md`. Frozen author checkout untouched; isolated review clone updated to detached successor.
+
+**Both P2 findings CLOSED.**
+
+- Configuration records reject proxies (including revoked proxies) before reflection, reject custom prototypes, and inspect own descriptors once. Only exact enumerable own data members are captured. Accessors are rejected without reading them; output uses explicit captured primitives rather than spreading caller input.
+- Commit/digest/Scope/fixture values must be primitive strings before regex or URL construction. No coercible object reaches equality. Profile/History checks remain strict scalar checks.
+- Capability arrays reject proxy/subclass/accessor/sparse/custom-iterator/extra-member forms, capture only own data values, require primitive nonempty strings, and sort/freeze a newly allocated array. Neither caller record nor original array is frozen or aliased in the result. Null-prototype plain records remain accepted. No prototype or caller hook is used in the accepted value traversal.
+- Independent versions of the exact three original reproducers now require rejection and verify zero getter/ownKeys/toString calls. All three pass. Persisted source: `profile-contract-native-closure.test.ts` in this log directory; run it from packages/conformance/src in an isolated clone, as with the original reproducer. The original faulty-acceptance repro remains unchanged separately.
+
+Independent validation: build PASS; focused serial suite397 tests/12 files PASS in4.31s (394 maintained tests across original11 files plus3 independent closure tests); typecheck PASS. Structured log `profile-contract-native-repair-focused.json`, verbose/exit companions; build/type logs share `profile-contract-native-repair-*`. No broad suite, new evidence generation or public qualification claimed. Isolated scratch test removed to external logs; author and review checkouts clean.
+
+Verdict: native closure approved for the two reported binding defects. Original catalog/inheritance assessment and source-private, non-attesting limits stand. External Claude supplement is independent and remains root-owned.

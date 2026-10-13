@@ -69,3 +69,11 @@ Independent exact-commit archive: `profile-service-native/t1-repair`. Explicit N
 - PASS **250 tests / 5 files** (`t1-repair-tests.log`): public pagination regression, pagination engine, transaction-read, authority-read and read-sequence-lifecycle. The emitted `@bdp/server` import test checks exact public object shape, inaccessible context methods/factory, ignored malicious getter/extra-argument proxy, unchanged tight-budget continuation, and rejected package deep imports. Internal tests preserve same-entry current context, original page context, budget/expiry accounting and cleanup behavior.
 
 The updated installed-package smoke assertions were inspected but not independently rerun; the author's report records its own successful packed smoke. No full suite, combined integration tree, or fresh evidence cohort was run here. No author-source edits or outward actions were taken. This verdict closes the bounded T1 API issue and does not extend the earlier U1/T1 qualification scope.
+
+### Clean-checkout type-test import follow-up
+
+Inspected root's uncommitted three-line test-only diff in `/Users/dbox/repos/wt/vickie/vickie-profile-services-integration`: both type-query imports in `read-pagination-public.test.ts` change from generated `../dist/index.js` to source public entry `./index.js`, and the test label now accurately says public types rather than emitted declarations. No executable package-root probe, negative API assertion, getter/extra-argument case, or deep-import denial changes.
+
+The change fixes the actual CI ordering (`pnpm typecheck` precedes `pnpm build`): source type checking no longer requires generated server declarations. Independently copied only this test delta into the private 1949f25 archive, ran `tsc -b --clean` and then `tsc -p tsconfig.check.json` with Node24.16.0; both passed with empty diagnostic logs. Confirmed `packages/server/dist/index.js` and `index.d.ts` were absent during/after that clean source check. Logs: `profile-service-native/t1-clean-import-clean.log` and `t1-clean-import-typecheck.log`.
+
+No new finding; prior API-privacy closure stands. Type assertions now verify the public source signature, while actual emitted/package-root runtime coverage remains separately present. This bounded check does not claim a rerun of the combined integration suite or CI job.
