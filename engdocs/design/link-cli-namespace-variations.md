@@ -3,7 +3,11 @@
 The command-design discussion in this research note is superseded by
 [Beads canonical CLI and convenience aliases](canonical-cli.md). Retain this
 file as the source audit and record of explored alternatives; use the new
-document for the current proposal.
+document for the current proposal. The accepted direction as of 2026-10-13
+is Bead verbs at the root and parallel Link verbs under `bd link`, with no
+Resource-kind polymorphism. Compatibility is pinned to shipping v1.3.1;
+preview-only Link aliases and polymorphic routes are removed. The alternatives
+and broader alias allowance below are historical, not the accepted surface.
 
 Research and design discussion, 2026-10-09. This is a proposal, not a change to
 the CLI or an amendment to the graph/BDP specifications.

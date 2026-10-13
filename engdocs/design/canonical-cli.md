@@ -1,7 +1,7 @@
 # Beads canonical CLI and convenience aliases
 
-Status: design proposal based on the agreed generic-command direction.
-Date: 2026-10-09.
+Status: design proposal; separate Bead and Link command namespaces accepted.
+Updated: 2026-10-13.
 
 This document specifies a target CLI, not the capabilities of an existing
 release. It replaces the command-design alternatives in
@@ -17,7 +17,7 @@ Beads currently exposes related operations through several different shapes:
 
 - Issue-oriented verbs such as `create`, `show`, `update`, and `delete`.
 - A dependency namespace, `dep`, with its own verbs and shorthand.
-- Relationship verbs and collections: `link`, `links`, and `unlink`.
+- Shipped relationship shorthand `link`, plus preview-only `links` and `unlink`.
 - Memory conveniences: `remember`, `memories`, `recall`, and `forget`.
 - Graph queries, history, and workflow operations with separate conventions.
 
@@ -27,39 +27,48 @@ model. Type definitions may themselves become Beads. A CLI whose generic
 operations assume Issues, Memories, or a fixed inventory of Types will require
 new command-specific implementations for every extension.
 
-The problem is therefore broader than renaming `dep` to `link`. We need one
-operation model that can create, discover, inspect, change, and delete Resources
-regardless of which built-in or user-defined Type describes them.
+The problem is therefore broader than renaming `dep` to `link`. We need shared
+operation semantics across built-in and user-defined Types, with an explicit
+command namespace selecting Beads or Links. Users should not have to infer
+which verbs accept both kinds or which flag changes the kind being operated on.
 
 ### 1.2 Design direction
 
-The canonical interface uses generic verbs:
+The canonical Resource commands are non-polymorphic across kinds. Root verbs
+operate on Beads; the parallel verbs under `bd link` operate on Links:
 
-```text
-bd create
-bd list
-bd show
-bd update
-bd delete
-bd versions
-bd compare
-```
+| Operation | Beads | Links |
+| --- | --- | --- |
+| Create | `bd create` | `bd link create` |
+| List | `bd list` | `bd link list` |
+| Show | `bd show ID` | `bd link show ID` |
+| Update | `bd update ID` | `bd link update ID` |
+| Delete | `bd delete ID` | `bd link delete ID` |
+| Versions | `bd versions ID` | `bd link versions ID` |
+| Compare | `bd compare ID` | `bd link compare ID` |
+| Search | `bd search TEXT` | `bd link search TEXT` |
+| Query | `bd query EXPRESSION` | `bd link query EXPRESSION` |
+| Count | `bd count` | `bd link count` |
 
-Command interpretation follows three rules:
+The command path selects kind before Type or identity resolution. A wrong-kind
+ID or Type selector is rejected, not dispatched to the other namespace.
+There is no exception for versions, comparison, or other read-only operations.
+Shared services, predicate semantics and validation keep the two surfaces
+aligned without maintaining separate implementations.
 
-1. **Creation is selected by Type:** `--bead-type` or `--link-type`.
-2. **Listing is selected by filters:** kind, Type, endpoints, metadata,
-   properties, and applicable domain filters.
-3. **Existing-resource operations are selected by identity:** the ID selects
-   the Resource kind, and the stored Resource determines its Type.
+Multiple Bead Types still use the root verbs; multiple Link Types use the Link
+verbs. This decision removes kind polymorphism, not support for user-defined
+Types or for Type definitions eventually becoming Beads.
 
 Topology operations use `bd graph traverse`, `bd graph tree`, and
-`bd graph cycles`. They operate on graphs rather than individual Resources.
+`bd graph cycles`. Workspace operations can encompass connected Beads and Links.
+Neither category selects a single Resource's kind from an overloaded ID.
 
-Existing commands can remain as aliases or compatibility adapters. `dep` is
-never the canonical Resource namespace. Aliases are useful interfaces, not
-temporary mistakes that must all be removed. They must share operation services
-instead of becoming independent implementations of the data model.
+Compatibility is measured against the shipping product, upstream v1.3.1.
+Preserve its `bd dep` family and `bd link A B` shorthand with their shipped
+behavior. Remove preview-only polymorphic Resource routes and preview-only
+Link aliases, including root `links` and `unlink`. No hidden compatibility
+forwarding keeps those removed forms working. `dep` is never canonical.
 
 ### 1.3 Terminology
 
@@ -94,8 +103,17 @@ The source audit is pinned to upstream stable
 [v1.3.1, c1c4b642](https://github.com/gastownhall/beads/tree/c1c4b642ac1c08d8c828007a1c2f96e47e43ef7c)
 and the user-selected fork's
 [preview2-integration, ff25e824](https://github.com/donnabox/beads/tree/ff25e824d80d4c1a52370c539ff8c767f1410de6).
-These are different from the installed Homebrew 1.0.5 binary and the local
-checkout's HEAD used for some initial exploration.
+The namespace re-audit additionally inspected
+[preview2-integration, 63733f4d](https://github.com/donnabox/beads/tree/63733f4d005611c1d6d19c8707f651ac16e441cc)
+on 2026-10-13. The original comparison remains pinned to ff25e824; implementation
+observations below name the relevant snapshot when they differ.
+
+The shipping boundary is explicit: v1.3.1 has `bd link A B` and `bd dep`, but
+no top-level `links` or `unlink`. Preview's `show`, `update`, `versions`,
+`history`, and `compare` accept Link IDs; that experimental polymorphism is
+removed. Existing paths, flags, defaults, output and effects define shipped
+compatibility, not the mere presence of a command name. A shipped root alias
+does not imply a new Link alias with the same name.
 
 The following differences must survive normalization or be changed explicitly:
 
@@ -110,7 +128,9 @@ The following differences must survive normalization or be changed explicitly:
   `--type` values as `issue_type` and `dep_type` properties on their respective
   nominal Types. This requires an explicit data/model transition; it is not a
   claim that the pinned preview already implements that representation.
-- `dep list` and `links` have different default directions and result shapes.
+- Shipping `dep list` and preview-only `links` have different directions and
+  result shapes. Preserve the former; document the latter's replacement rather
+  than retaining it as an alias.
 - Link removal, Bead deletion, Memory upsert, Issue closure and deduplication
   have different semantics. They cannot all be implemented as textual aliases
   for one generic mutation.
@@ -139,138 +159,140 @@ must refuse explicitly, without falling through to a different storage mode.
 
 ## 2. Specification of the canonical CLI
 
-### 2.1 Shared identity and Type rules
+### 2.1 Namespace, identity and Type rules
 
 Bead IDs use `beads/PATH`; Link IDs use `links/PATH`. Exact canonical URLs in
-the selected Scope are also valid where the implementation supports them.
-Existing bare-ID Bead shorthand may remain. A generic command never probes
-both namespaces to guess which Resource the caller intended.
+the selected Scope are also valid where supported. The command path determines
+which kind is accepted:
 
-Type selectors name an installed, usable Type. The selector's descriptor must
-describe the requested kind. The current `types/NAME` shorthand and exact local
-Type URL remain valid; representing definitions as Beads later requires an
-explicit identity/alias decision, not silently rewriting those existing URLs.
+| Input | Required behavior |
+| --- | --- |
+| `bd show example` / `bd show beads/example` | Select a Bead. |
+| `bd link show example` / `bd link show links/example` | Select a Link. |
+| `bd show links/example` | Reject; direct the caller to `bd link show`. |
+| `bd link show beads/example` | Reject; expected a Link. |
+| Qualified URL | Accept only when its kind agrees with the command namespace. |
 
-ID, kind and nominal Type remain stable across ordinary updates. A Link's
-source and target also remain stable. Type versioning is expected to introduce
-explicit nominal Type updates later; this proposal retains the current
-restriction until that design defines the operation and migration rules.
-Changing identity or endpoints likewise requires a separate operation or a
-new Resource, not a properties edit.
+These rules apply to all single-Resource verbs, including versions and compare,
+and to each ID in a multi-ID operation. Never probe both namespaces or silently
+retry in the other namespace. Link endpoints remain Bead selectors even though
+the Link being created, queried or edited belongs to the Link namespace.
 
-User-defined Types use the same operation paths as built-ins. Their properties
-are validated by their descriptors; generic authoring must not assume Issue
-fields, Memory title/body, or the preview's optional Link `note` property.
+`--bead-type` belongs to Bead operations; `--link-type` belongs to Link
+operations and graph edge selection. A selector must name an installed, usable
+Type of the expected kind. The current `types/NAME` shorthand and exact local
+Type URL remain valid; definitions becoming Beads later requires an explicit
+identity/alias decision, not silently rewriting existing URLs.
+
+ID, kind and nominal Type remain stable across ordinary updates. Link source
+and target remain stable. Type versioning is expected to introduce explicit
+nominal Type updates later; the current restriction remains until that design
+defines the operation and migration rules. Identity or endpoint changes likewise
+require a separate operation or a new Resource, not a properties edit.
+
+User-defined Types use the same paths as built-ins within their kind. Properties
+are validated by their descriptors; authoring must not assume Issue fields,
+Memory title/body, or the preview's optional Link `note` property.
 
 ### 2.2 Create
 
 ```sh
 bd create --bead-type TYPE --properties JSON [--metadata JSON] [--id ID]
-bd create --link-type TYPE --source BEAD --target BEAD \
-  [--properties JSON] [--metadata JSON] [--id ID]
+bd link create --link-type TYPE --source BEAD --target BEAD \
+  [--properties JSON] [--metadata JSON] [--id ID] [--if-source-revision TOKEN]
 ```
 
 | Input | Required behavior |
 | --- | --- |
-| `--bead-type` | Select Bead creation; reject `--source` or `--target`, including explicitly empty values. |
-| `--link-type` | Select Link creation; require both endpoints and validate them against the descriptor. |
-| Both selectors | Reject before writing. |
-| Neither selector | Preserve default Issue creation as a convenience binding to the Issue Type. A Dependency alias may supply its nominal Type binding. Endpoints alone never infer a Link Type. |
-| `--id` omitted | Allocate and reserve an ID in the selected kind's namespace. |
-| `--id` supplied | Use exactly that identity or refuse; a deleted, reserved identity is not reusable. |
-| Properties omitted | Use an empty object only if the Type permits it; otherwise report the required data. |
+| `bd create` | Always creates a Bead. Omitted `--bead-type` preserves the default Issue binding. |
+| `bd link create` | Always creates a Link; requires `--link-type`, `--source` and `--target`. Validate both endpoints against the descriptor. |
+| Wrong-kind Type flag | Reject before writing. A Type flag never switches namespaces. |
+| Endpoints on root `create` | Reject `--source` and `--target`, including explicitly empty values. Shipped compound flags such as `--parent` retain their own workflow contracts. |
+| `--id` omitted | Allocate and reserve an identity in the command's kind namespace. |
+| `--id` supplied | Require the matching kind and use exactly that identity or refuse; a deleted, reserved identity is not reusable. |
+| Properties omitted | Use an empty object only if the Type permits it; otherwise report required data. |
 | Metadata omitted | Use the empty metadata object. |
 
 JSON inputs support inline JSON, `@FILE`, and `@-` for stdin. Supplied objects
 are validated before writing. Create never means upsert. Type-specific fields
-and whole-document `--properties` cannot provide competing values for the
-same properties document.
+and `--properties` cannot provide competing values for the same properties
+object.
 
-Endpoint order is explicit. For a Dependency with `dep_type=blocks`, SOURCE
-depends on TARGET. For `tracks`, the tracker is SOURCE; for `parent-child`,
-the child is SOURCE. The Dependency domain interprets these properties. Other
-nominal Link Types define their own semantics. Generic parsing never reverses
-operands based on the English meaning of a Type or classification name.
+For a Dependency with `dep_type=blocks`, SOURCE depends on TARGET. For
+`tracks`, the tracker is SOURCE; for `parent-child`, the child is SOURCE.
+The Dependency domain interprets these properties. Other nominal Link Types
+define their own semantics. Parsing never reverses endpoints based on a Type
+or classification's English meaning.
 
-The pinned graph blocking route does not accept arbitrary properties,
-metadata or a caller-selected Link ID. The target Dependency model needs a
-writer that admits and validates `dep_type` and enforces its domain policy.
-Renaming the command cannot make that capability available. Source ownership
-and revision rules apply as specified in §2.6.
+Legacy `--type` remains a domain property convenience, orthogonal to nominal
+Type selection. Default Issue creation maps it to `properties.issue_type`.
+Dependency adapters, or an explicitly selected Dependency nominal Type under
+`bd link create`, map it to `properties.dep_type`. Other nominal Types reject
+that shorthand. Update resolves it from the existing Resource's Type without
+changing its kind or nominal Type. Conflicting property values are errors.
 
-Legacy `--type` is a contextual property convenience. It can supply the Issue
-or Dependency nominal Type binding when the command context already identifies
-that domain; its value never determines the Resource kind:
+Thus `bd create --type task` still creates an Issue, and
+`bd dep add A B --type tracks` supplies the Dependency Type and endpoints.
+`bd create --link-type TYPE` is rejected. Generic Link authoring uses
+`bd link create`; the grandfathered `bd link A B` form retains its shipped
+Dependency shorthand and flags, not preview-only generic extensions.
 
-| Context | Meaning of `--type VALUE` |
-| --- | --- |
-| Default `bd create`, or explicit Issue Type | Bind Issue if needed; set `properties.issue_type=VALUE`. |
-| Explicit Dependency Link Type, or a Dependency convenience such as `bd dep add` or legacy `bd link A B` | Bind Dependency if needed; set `properties.dep_type=VALUE`. |
-| Any other explicit nominal Type | Reject this domain shorthand. |
-
-Thus `bd create --type task` remains valid, and `bd dep add A B --type tracks`
-supplies the Dependency Type and endpoints. Generic Link creation still uses
-`--link-type`; `bd create --type tracks --source A --target B` is rejected
-because the default context is Issue. Open classification vocabularies make
-guessing kind from values unsafe. Conflicting shorthand and explicit property
-values are errors. Update resolves the same shorthand from the existing
-Resource's nominal Type without changing it.
+The ff25e824 graph blocking route does not accept arbitrary properties,
+metadata or caller-selected Link IDs; the later 63733f4d route adds explicit
+Dependency IDs. The target `dep_type` property representation still needs its
+corresponding domain writer and policy. Namespace registration alone does not
+supply missing storage capabilities. Source-revision rules are specified in §2.6.
 
 ### 2.3 List: collection selection
 
 ```sh
 bd list
-bd list --kind bead
-bd list --kind link
-bd list --kind all
 bd list --bead-type TYPE
-bd list --link-type TYPE
+bd link list
+bd link list --link-type TYPE
 ```
 
-| Selector | Meaning |
+| Command | Meaning |
 | --- | --- |
-| No kind or nominal Type | Existing default Bead view. Preserve the documented default Issue visibility rules. |
-| `--kind bead` | Bead collection. |
-| `--kind link` | Current Link collection across Link Types. No endpoint anchor is required. |
-| `--kind all` | Mixed current Bead and Link collection. |
-| `--bead-type TYPE` | Beads of that nominal Type; implies Bead kind. |
-| `--link-type TYPE` | Links of that nominal Type; implies Link kind. |
+| `bd list` | Current Bead collection with the documented default Bead/Issue visibility rules. |
+| `bd list --bead-type TYPE` | Beads of that nominal Type. |
+| `bd link list` | Current Links across Link Types; no endpoint anchor required. |
+| `bd link list --link-type TYPE` | Links of that nominal Type. |
 
-Reject both nominal Type selectors together. An explicit kind must agree with
-the implied kind; `--kind all` plus a single-kind Type selector is rejected
-rather than given an undocumented union meaning.
+Kind is fixed by the command path. Resource collection commands have no
+`--kind bead`, `--kind link`, or `--kind all` selector. They reject wrong-kind
+Type flags. Predicates cannot widen a Bead collection into Links or vice versa.
 
-`--kind link` with no other filters means the workspace's current Links, not
-Links belonging to an implicit last-touched Bead. No matches is a successful
-empty result. Listing excludes removed Resources and retained historical
-versions; use version operations for retained state.
+Unanchored `bd link list` means the workspace's current Links, not incident
+Links of an implicit last-touched Bead. No matches is a successful empty result.
+Listing excludes removed Resources and retained historical versions; use the
+corresponding versions command for history. Unanchored Link listing needs a
+proper collection query, not incident-edge enumeration for every Bead.
 
-`--kind all` is useful for Resource inventory, metadata audits and generic
-clients. It does not mean unlimited output, historical records, or automatic
-inclusion of every endpoint mentioned by a Link. Kind selection, visibility
-and result limits are independent. Existing `--all` retains its documented
-visibility/limit role; it does not become a synonym for `--kind all`.
-
-Unanchored Link and mixed listing require proper collection queries. They
-must not be implemented by repeatedly enumerating incident Links for every
-Bead and hoping to deduplicate the results.
+Existing `--all` retains its documented visibility/limit role. It never adds
+the other Resource kind. There is no mixed Bead-and-Link list/query/count in
+this Resource interface; a caller needing both performs the two explicit
+queries and retains each kind. Such separate queries do not imply an atomic
+cross-kind snapshot. Graph/workspace operations can still handle connected
+Resources together under their own contracts (§2.8).
 
 ### 2.4 List: endpoint, metadata and property filters
 
 ```sh
-bd list --kind link --source A
-bd list --kind link --target B
-bd list --kind link --incident-to A
-bd list --link-type TYPE --source A --target B
-bd list --kind all --metadata-field team=compiler
-bd list --kind link --has-metadata-key reviewed_by
+bd link list --source A
+bd link list --target B
+bd link list --incident-to A
+bd link list --link-type TYPE --source A --target B
+bd list --metadata-field team=compiler
+bd link list --metadata-field team=compiler
+bd link list --has-metadata-key reviewed_by
 bd list --bead-type TYPE --property-field severity=high
-bd list --link-type TYPE --has-property-key note
+bd link list --link-type TYPE --has-property-key note
 ```
 
-Endpoint filters require Link selection through `--kind link` or
-`--link-type`. `--source A --target B` means AND. `--incident-to A` means
-source A OR target A. Initially reject combining `--incident-to` with either
+Endpoint filters belong to `bd link list` (and Link query/count); root Bead
+collection commands reject them. `--source A --target B` means AND.
+`--incident-to A` means source A OR target A. Initially reject combining `--incident-to` with either
 source or target; additional set expressions belong in the predicate syntax.
 
 Metadata and properties remain distinct filter namespaces. Repeatable
@@ -283,7 +305,7 @@ The existing metadata equality flags retain their accepted value conventions.
 Typed comparison is available through the predicate form:
 
 ```sh
-bd list --kind all \
+bd link list \
   --where 'metadata.team = "compiler" AND properties.risk >= 3'
 ```
 
@@ -292,9 +314,9 @@ supports explicit AND, OR, NOT and grouping, typed literals, comparisons and
 field-existence tests. Strings require quoting when needed by the grammar;
 JSON string `"3"` and numeric `3` must not silently compare as the same value.
 
-The shared predicate model exposes canonical `source` and `target` identity
-fields alongside `kind`, `type`, `metadata` and `properties`. Endpoint literals
-are resolved and normalized using the same rules as endpoint flags. Here
+The shared predicate model exposes nominal `type`, `metadata` and `properties`;
+Link predicates also expose canonical `source` and `target` identity fields.
+Endpoint literals are resolved and normalized using the same rules as endpoint flags. Here
 `type` means nominal Type; legacy classifications use `properties.issue_type`
 or `properties.dep_type`.
 
@@ -309,77 +331,91 @@ when that distinction matters. Malformed predicates and unsupported operators
 are errors. When an explicitly selected Type makes a property/operator
 combination invalid, reject it rather than return a misleading empty result.
 
-Current v1.3.1 supports ordinary metadata equality/key-existence filters, but
-preview2 graph listing does not yet admit them. General property filters and
-cross-kind predicates are target capabilities.
+v1.3.1 supports ordinary metadata equality/key-existence filters; the original
+ff25e824 graph list allowlist did not. By 63733f4d, Issue discovery in graph mode
+admits metadata filters. The two namespace-scoped generic query surfaces and
+general property filters specified here remain target capabilities.
 [Existing filters](https://github.com/gastownhall/beads/blob/c1c4b642ac1c08d8c828007a1c2f96e47e43ef7c/cmd/bd/list.go#L517),
 [query evaluator](https://github.com/gastownhall/beads/blob/c1c4b642ac1c08d8c828007a1c2f96e47e43ef7c/internal/query/evaluator.go#L499),
-[preview allowlist](https://github.com/donnabox/beads/blob/ff25e824d80d4c1a52370c539ff8c767f1410de6/cmd/bd/graph_preview_list.go#L85).
+[original preview allowlist](https://github.com/donnabox/beads/blob/ff25e824d80d4c1a52370c539ff8c767f1410de6/cmd/bd/graph_preview_list.go#L85),
+[current preview discovery](https://github.com/donnabox/beads/blob/63733f4d005611c1d6d19c8707f651ac16e441cc/cmd/bd/graph_preview_discovery.go).
 
-### 2.5 List: domain shortcuts and presentation
+### 2.5 Discovery, domain shortcuts and presentation
 
 Issue filters such as status, priority, assignee, labels and due dates remain
-conveniences over the same query machinery. On an otherwise default Bead list,
-an Issue-specific flag may select the existing Issue view, with the existing
-disclosure. An explicitly selected Link, mixed collection, or incompatible
-Bead Type rejects that shorthand instead of silently hiding other Resources.
-Generic metadata/property predicates can filter a mixed collection.
+conveniences over the shared query machinery. On a default Bead list, an
+Issue-specific flag may select the existing Issue view, with its disclosure.
+Incompatible explicit Bead Types and Link commands reject Issue-specific
+shortcuts rather than silently hiding Resources.
 
-`--type VALUE` follows the same domain binding rule as creation: the default
-Bead view binds Issue and filters `properties.issue_type`; `--kind link`
-binds Dependency and filters `properties.dep_type`. Explicit Issue or
-Dependency Type selectors allow the corresponding shorthand. Other nominal
-Types reject it. `--kind all --type VALUE` is ambiguous and is rejected;
-mixed queries use explicit property predicates. For example:
+`bd list --type VALUE` binds Issue and filters `properties.issue_type`.
+`bd link list --type VALUE` binds Dependency and filters `properties.dep_type`.
+An explicit compatible nominal Type permits the respective shorthand; other
+nominal Types reject it. Generic property filters add no implicit nominal Type
+binding:
 
 ```sh
 bd list --type bug
-bd list --kind link --type tracks
-bd list --kind link --property-field dep_type=tracks
+bd link list --type tracks
+bd link list --property-field dep_type=tracks
 ```
 
-The second command selects Dependency Links explicitly through the shorthand;
-the third uses a generic property filter and adds no nominal Type binding.
+The same separation applies to search, query and count:
 
-Filtering occurs before ordering and limiting. Ordinary flags and `--where`
-must lower to one query model, not separate evaluators with subtly different
-truth rules. Type-aware search and count adapters use that model as well.
+```sh
+bd search TEXT [--bead-type TYPE]
+bd link search TEXT [--link-type TYPE]
+bd query EXPRESSION [--bead-type TYPE]
+bd link query EXPRESSION [--link-type TYPE]
+bd count [Bead filters]
+bd link count [Link filters]
+```
 
-Canonical results must have a stable record shape independent of filters or
-row count. Human mixed output includes ID, kind and nominal Type, with a
-Type-aware summary. It must not require every record to have title, status
-or priority. Kind/Type can be CLI projection fields without changing the BDP
-Resource schema.
+Query shares the list predicate model within its namespace. Count evaluates
+matching records independently of list page limits. Search requires a defined
+searchable field contract per Type; arbitrary Links need not have title or
+body fields. Search fields, generic count grouping and query grammar details
+must be pinned before implementation. Shipped Issue search/query/count defaults,
+field aliases and output remain compatibility contracts; broader Bead-Type
+support is an explicit extension. At 63733f4d these three commands are admitted
+in graph mode but remain Issue-only.
 
-Use deterministic ordering with canonical ID as a tie-breaker. Preserve legacy
-default ordering on compatibility paths. Generic Link/mixed listing defaults
-to ID order until a common ordering contract is defined. Issue-only sorts on
-an incompatible collection are rejected.
+Filtering precedes ordering and limiting. Flags and predicates use one query
+model. Human results identify the Resource and nominal Type with a Type-aware
+summary; they must not require every Type to have title, status or priority.
+Result shapes remain stable across filters and row counts. A common envelope
+can serve both namespaces without permitting mixed-kind operands or rows.
 
-Normal row limits apply; `--limit 0` explicitly requests an unbounded result
-subject to advertised safety bounds. A bounded collection either exposes a
-usable continuation or explicitly reports truncation. A `hasMore` boolean
-without a cursor must never be described as pagination. Snapshot/continuation
-semantics must be specified before promising a complete mutable-store walk.
+Use deterministic ordering with canonical ID as a tie-breaker. Preserve shipped
+default ordering on compatibility paths. Link listing defaults to ID order
+until a common ordering contract is defined. Incompatible domain sorts fail.
 
-Canonical JSON uses one documented collection contract, including items and
-completeness/continuation information; exact envelope fields must be pinned
-with conformance fixtures before implementation. Compatibility adapters may
-preserve their existing JSON shapes. A changed contract at an existing root
-spelling such as `bd list --json` requires an announced release boundary:
-an alias cannot simultaneously preserve old bytes and publish new ones at the
-same spelling. Existing graph `--format records-json` remains an explicit
-compatibility format until that boundary is chosen.
+Normal row limits apply; `--limit 0` requests an unbounded result subject to
+advertised safety bounds. A bounded collection exposes usable continuation or
+explicitly reports truncation. `hasMore` without a cursor is not pagination.
+Specify snapshot/continuation behavior before promising a complete mutable-store
+walk.
+
+Canonical collection envelopes include items and completeness/continuation
+information; pin exact fields with conformance fixtures. Shipped JSON shapes
+must remain compatible. A new envelope that changes a shipped root command's
+output requires a separately approved release boundary; this namespace decision
+does not authorize that change. Experimental preview formats may be replaced
+with the target contract at the documented preview transition.
 
 ### 2.6 Show, update and delete
 
 ```sh
-bd show RESOURCE_ID [--version TOKEN] [--json]
-bd update RESOURCE_ID --properties JSON [metadata edits] [--if-revision TOKEN]
-bd update RESOURCE_ID --patch JSON [metadata edits] [--if-revision TOKEN]
-bd update RESOURCE_ID --metadata JSON [--if-revision TOKEN]
-bd delete RESOURCE_ID
-bd delete RESOURCE_ID --force [--if-revision TOKEN]
+bd show BEAD_ID [--version TOKEN] [--json]
+bd link show LINK_ID [--version TOKEN] [--json]
+bd update BEAD_ID --properties JSON [metadata edits] [--if-revision TOKEN]
+bd link update LINK_ID --properties JSON [metadata edits] [--if-revision TOKEN]
+bd update BEAD_ID --patch JSON [metadata edits] [--if-revision TOKEN]
+bd link update LINK_ID --patch JSON [metadata edits] [--if-revision TOKEN]
+bd update BEAD_ID --metadata JSON [--if-revision TOKEN]
+bd link update LINK_ID --metadata JSON [--if-revision TOKEN]
+bd delete BEAD_ID [--force] [--if-revision TOKEN]
+bd link delete LINK_ID [--force] [--if-revision TOKEN]
 ```
 
 `--if-revision TOKEN` opts into a revision precondition. Omission accepts the
@@ -438,7 +474,9 @@ proposal replaces that distinction with the uniform rule above.
 kinds; `--force` applies the deletion using the selected guard. This extends
 the existing Bead-delete convention consistently to Links. It is a proposed
 resolution of the earlier delete-policy question, not existing Link behavior.
-Legacy `unlink` and `forget` adapters can preserve immediate application.
+The shipped `forget` convenience preserves immediate application. Preview-only
+`unlink` is removed; callers adopt `bd link delete` and its documented apply
+policy. No new pair-delete shorthand is introduced for generic Links.
 
 Force confirms application; it does not bypass revision checks, Type policy,
 or incident-Link constraints. Deletion removes current state, reserves the
@@ -454,12 +492,16 @@ mapping before it can be advertised. Do not guess a synthetic `links/ID`.
 ### 2.7 Versions and comparison
 
 ```sh
-bd versions RESOURCE_ID
-bd show RESOURCE_ID --version TOKEN
-bd compare RESOURCE_ID --from TOKEN --to TOKEN
+bd versions BEAD_ID
+bd link versions LINK_ID
+bd show BEAD_ID --version TOKEN
+bd link show LINK_ID --version TOKEN
+bd compare BEAD_ID --from TOKEN --to TOKEN
+bd link compare LINK_ID --from TOKEN --to TOKEN
 ```
 
-These work by identity and supported history capability, including when the
+Each command accepts only its namespace's kind. These operations use identity
+and supported history capability, including when the
 current Resource has been removed. Versions lists retained citable states in
 the store's defined order; opaque tokens themselves are not sortable counters.
 Compare uses the caller's explicit operand order.
@@ -467,6 +509,11 @@ Compare uses the caller's explicit operand order.
 Private deletion markers are not Resource versions. A missing Resource and a
 deleted Resource with retained history must not be conflated. This design
 does not equate graph Resource history with ordinary Dolt commit history.
+
+Shipping `bd history` remains a Bead-side command with its existing ordinary
+commit/event behavior. Its graph-mode Bead version-listing route can remain;
+its preview Link-ID route is removed. `bd link versions` is the sole Link
+version-listing spelling in this design; do not introduce `bd link history`.
 
 ### 2.8 Graph operations
 
@@ -485,7 +532,7 @@ bd graph cycles --link-type TYPE --property-field dep_type=blocks
 | `tree` | Render a tree projection of a selected traversal, marking revisits, parallel Links and cycles. The underlying graph need not be a tree. |
 | `cycles` | Discover cycles in selected edges. No root means workspace-wide; a root selects its directed reachable subgraph. |
 
-All three operations share Link selection with `bd list`. They differ in what
+All three operations share Link selection with `bd link list`. They differ in what
 they compute over that selection: reachability, a tree projection, or cycles.
 They remain under `graph` because they compute topology instead of returning
 the selected Resource rows. In the last example, TYPE must be the installed
@@ -498,7 +545,7 @@ Dependency Type; `dep_type` is its ordinary property, not a nominal Type name.
 | `--property-field`, `--has-property-key` | Select edges by Link properties, with the same Type validation and missing-field rules. |
 | `--where EXPRESSION` | Use the shared predicate model over Links, including boolean combinations of Type, endpoint, metadata and property conditions. |
 | `--source`, `--target`, `--incident-to` | Restrict eligible edges globally, using the list rules. These can cut paths; they do not designate a traversal root. |
-| `--kind` | Link kind is implicit. An explicit `--kind link` is redundant but valid; Bead/all selections are rejected. |
+| `--kind` | Not offered: edge selection already operates on Links. |
 | `--bead-type` and Issue field shortcuts | No unqualified node filter. Future node-selection and output-filter syntax must distinguish pruning traversal from hiding displayed nodes. |
 | Sorting and row limits | Apply to presentation only, where supported. They must never silently truncate the input to reachability or cycle analysis. |
 | Legacy `--all` | Does not select an edge domain or remove algorithm bounds. Legacy visibility behavior belongs to the relevant adapter. |
@@ -531,11 +578,16 @@ current Links. Cycles are graph facts, not automatically domain errors:
 informational cycles can be valid. Dependency-specific scheduling selection
 belongs to the `bd dep cycles` adapter. It binds the Dependency nominal Type
 and translates the domain policy into predicates over `properties.dep_type`.
-The inspected default scheduling set is `blocks`, `conditional-blocks`, and
-`parent-child`; it is not the set of every readiness-affecting classification.
-The domain service supplies this policy, rather than hardcoding it in generic
-CLI parsing. Section 3.2 gives the translation and explains the additional
-`--include-tracks` behavior.
+The shipping cycle report selects `blocks` and `conditional-blocks`; mutation
+cycle validation additionally includes `parent-child`. These are distinct
+contracts, and neither is the set of every readiness-affecting classification.
+The domain service supplies each policy rather than hardcoding it in generic
+CLI parsing. Section 3.2 distinguishes shipping behavior from preview extensions.
+
+Workspace operations such as import/export, events, status, schema discovery,
+backup and sync can encompass both kinds. They do not dispatch a Resource verb
+by operand kind. A graph traversal can return Beads and Links together without
+reintroducing root Resource polymorphism. The batch grammar remains deferred.
 
 ### 2.9 Implementation and remaining decisions
 
@@ -546,12 +598,13 @@ separate paths. Preview2's command-identity admission gate must deliberately
 admit new routes; unrecognized graph operations cannot fall into legacy storage.
 
 Before implementation, settle these bounded details without reopening the
-generic-command direction:
+accepted namespace and shipping-compatibility direction:
 
 - Confirm the proposed uniform delete preview/apply convention.
 - Pin predicate escaping, typed literals and missing/null truth tables.
-- Pin canonical JSON envelopes, pagination consistency and the release boundary
-  for root-command output changes.
+- Pin canonical JSON envelopes and pagination consistency while preserving
+  shipped output; any incompatible shipped-output change needs separate approval.
+- Pin Type-aware searchable fields and generic count grouping for both namespaces.
 - Define ordinary dependency Resource identity and the migration to Issue and
   Dependency nominal Type bindings with `issue_type`/`dep_type` properties.
 - Reconcile the properties-edit sidebar with Janet's updated design.
@@ -561,12 +614,15 @@ generic-command direction:
 Acceptance coverage must include both workspace modes, alias defaults/output,
 Type validation, directional semantics, ambiguous pairs, bulk atomicity,
 multi-edge identity, stale Link/source guards, no-ops, retained history,
-mixed-resource filters and incomplete graph scans. Owned-Link coverage must
-exercise omitted and supplied source preconditions on every create/update/delete
+namespace-scoped filters and incomplete graph scans. Verify wrong-kind refusal
+for every Resource verb, removal of preview Link aliases, absence of root
+Link dispatch, and preservation of shipped dependency/shorthand behavior.
+Owned-Link coverage must exercise omitted and supplied source preconditions on every create/update/delete
 route and adapter, independently of Link preconditions; verify atomic refusal
 on either stale token (including no-ops), actual source-predecessor recording,
 and preservation of ownership, attribution and exactly-once effects. The source
-audit verifies existing behavior; this document does not claim those target checks have run.
+audit verifies existing behavior; this document does not claim those target
+checks have run.
 
 ## 3. Detailed convenience aliases
 
@@ -580,7 +636,8 @@ Three forms are supported:
 | Compatibility adapter | Translates arguments, supplies historical defaults, preserves applicable legacy validation/output and calls shared services. |
 | Domain convenience | Performs a meaningful workflow, possibly composing multiple changes atomically. It must disclose effects beyond Resource CRUD. |
 
-Aliases may remain indefinitely. Document their canonical operation and any
+Shipped aliases may remain indefinitely. Preview-only Link aliases are removed.
+Document every retained adapter's canonical operation and any
 extra behavior in help. They cannot silently fall back across workspace modes,
 invent missing Type mappings, or replace unsupported functionality with a
 partial approximation. Conflicting explicit options are errors, not silently
@@ -592,7 +649,7 @@ URLs. Resolve the nominal Type binding separately.
 Where Resource identity or Type services do not yet exist, the adapter shares
 the appropriate domain service and reports the capability boundary honestly.
 
-### 3.2 Existing relationship commands
+### 3.2 Shipping relationship commands
 
 The translations below specify the target canonical calls. `D` stands for the
 workspace's installed Dependency nominal Type selector, not a new literal Type
@@ -607,28 +664,22 @@ unescaped string into JSON. Concrete examples below use `tracks` and `blocks`.
 
 | Existing command | Exact canonical syntax after binding/resolution | Adapter behavior beyond the canonical call |
 | --- | --- | --- |
-| `bd link A B` | `bd create --link-type D --source A --target B --properties '{"dep_type":"blocks"}'` | Preserve historical blocking default and the applicable workspace capability checks. |
-| `bd link A B --type tracks` | `bd create --link-type D --source A --target B --properties '{"dep_type":"tracks"}'` | The legacy link path retains its custom-classification policy. Other admitted values populate the same property. |
-| `bd link A B --link-type TYPE` | `bd create --link-type TYPE --source A --target B` | Forward supported properties, metadata and ID options. Forward an optional `--if-source-revision`; omission accepts the current source under §2.6. |
-| `bd dep add A B` | `bd create --link-type D --source A --target B --properties '{"dep_type":"blocks"}'` | B blocks A; preserve dependency validation and rendering. |
-| `bd dep add A B --type tracks` | `bd create --link-type D --source A --target B --properties '{"dep_type":"tracks"}'` | Preserve the dep path's validated vocabulary and normalization before populating the property. |
-| `bd dep add A --blocked-by B` / `--depends-on B` | `bd create --link-type D --source A --target B --properties '{"dep_type":"blocks"}'` | Preserve the ordered pair; normalize documented blocking aliases. |
-| `bd dep A --blocks B` / `-b B` | `bd create --link-type D --source B --target A --properties '{"dep_type":"blocks"}'` | Reverse the operands: B depends on A. |
-| `bd dep add --file FILE` / `--file -` | No single canonical CLI invocation yet; normalize each entry to the corresponding `bd create --link-type D --source A --target B --properties JSON` operation inside the bulk service. | Preserve JSONL grammar, same-store requirements, transaction semantics and final cycle checks. Do not execute independent create commands. See §3.9 for the separate batch interface. |
-| `bd dep list A` | `bd list --link-type D --source A` | Default down→out; project related Issues into the legacy single-ID output. |
-| `bd dep list A --direction up` | `bd list --link-type D --target A` | Up→in; retain the legacy projection. |
-| `bd dep list A B` | `bd list --link-type D --where 'source = "A" OR source = "B"'` | A/B inside the predicate stand for canonical endpoint IDs. Extend the OR for more IDs; retain multi-ID raw-edge output. Up uses target instead of source. |
-| `bd dep list A --type tracks` | `bd list --link-type D --source A --property-field dep_type=tracks` | Filter the Dependency classification, not nominal Type. |
-| `bd links A` | `bd list --kind link --incident-to A` | Preserve default direction both and the existing result shape. |
-| `bd links A --direction out` / `in` | `bd list --kind link --source A` / `bd list --kind link --target A` | Preserve direction and rendering. |
-| `bd dep remove A B` / `rm A B` | Resolve with `bd list --link-type D --source A --target B`; apply `bd delete L --force`. | Pair resolution and deletion share the mutation service. Preserve supported dangling/external target handling and ordinary-mode pair deletion where Resource IDs do not exist. |
-| `bd unlink LINK` | `bd delete links/LINK --force` for a bare ID; `bd delete L --force` for a qualified identity. | Bare ID means Link here. Forward supplied Link/source revision preconditions; omission of the source precondition accepts its current state under §2.6. |
-| `bd unlink A B --link-type TYPE` | Resolve with `bd list --link-type TYPE --source A --target B`; apply `bd delete L --force`. | Require exactly one informational Link; refuse zero/ambiguous matches. Blocking graph pair deletion remains unsupported until its domain service supports it. |
-| `bd dep relate A B` | `bd create --link-type D --source A --target B --properties '{"dep_type":"relates-to"}'` and `bd create --link-type D --source B --target A --properties '{"dep_type":"relates-to"}'` | Two directional Dependencies, with the workflow's transaction contract; not one nominal `related` Link. |
-| `bd dep unrelate A B` | Resolve using `bd list --link-type D --property-field dep_type=relates-to --where '(source = "A" AND target = "B") OR (source = "B" AND target = "A")'`; apply `bd delete L --force` to each resolved identity. | Select both ordered pairs and validate classification. Do not reproduce untyped deletion of an unrelated edge; disclose that correction. |
+| `bd link A B` | `bd link create --link-type D --source A --target B --properties '{"dep_type":"blocks"}'` | Preserve historical blocking default and the applicable workspace capability checks. |
+| `bd link A B --type tracks` | `bd link create --link-type D --source A --target B --properties '{"dep_type":"tracks"}'` | The legacy link path retains its custom-classification policy. Other admitted values populate the same property. |
+| `bd dep add A B` | `bd link create --link-type D --source A --target B --properties '{"dep_type":"blocks"}'` | B blocks A; preserve dependency validation and rendering. |
+| `bd dep add A B --type tracks` | `bd link create --link-type D --source A --target B --properties '{"dep_type":"tracks"}'` | Preserve the dep path's validated vocabulary and normalization before populating the property. |
+| `bd dep add A --blocked-by B` / `--depends-on B` | `bd link create --link-type D --source A --target B --properties '{"dep_type":"blocks"}'` | Preserve the ordered pair; normalize documented blocking aliases. |
+| `bd dep A --blocks B` / `-b B` | `bd link create --link-type D --source B --target A --properties '{"dep_type":"blocks"}'` | Reverse the operands: B depends on A. |
+| `bd dep add --file FILE` / `--file -` | No single canonical CLI invocation yet; normalize each entry to the corresponding `bd link create --link-type D --source A --target B --properties JSON` operation inside the bulk service. | Preserve JSONL grammar, same-store requirements, transaction semantics and final cycle checks. Do not execute independent create commands. See §3.9 for the separate batch interface. |
+| `bd dep list A` | `bd link list --link-type D --source A` | Default down→out; project related Issues into the legacy single-ID output. |
+| `bd dep list A --direction up` | `bd link list --link-type D --target A` | Up→in; retain the legacy projection. |
+| `bd dep list A B` | `bd link list --link-type D --where 'source = "A" OR source = "B"'` | A/B inside the predicate stand for canonical endpoint IDs. Extend the OR for more IDs; retain multi-ID raw-edge output. Up uses target instead of source. |
+| `bd dep list A --type tracks` | `bd link list --link-type D --source A --property-field dep_type=tracks` | Filter the Dependency classification, not nominal Type. |
+| `bd dep remove A B` / `rm A B` | Resolve with `bd link list --link-type D --source A --target B`; apply `bd link delete L --force`. | Pair resolution and deletion share the mutation service. Preserve supported dangling/external target handling and ordinary-mode pair deletion where Resource IDs do not exist. |
+| `bd dep relate A B` | `bd link create --link-type D --source A --target B --properties '{"dep_type":"relates-to"}'` and `bd link create --link-type D --source B --target A --properties '{"dep_type":"relates-to"}'` | Two directional Dependencies, with the workflow's transaction contract; not one nominal `related` Link. |
+| `bd dep unrelate A B` | Resolve using `bd link list --link-type D --property-field dep_type=relates-to --where '(source = "A" AND target = "B") OR (source = "B" AND target = "A")'`; apply `bd link delete L --force` to each resolved identity. | Select both ordered pairs and validate classification. Do not reproduce untyped deletion of an unrelated edge; disclose that correction. |
 | `bd dep tree A` | `bd graph tree A --link-type D --direction out --depth N` | Translate down→out, up→in, both→both and max-depth→depth. Preserve legacy status/output filtering, Mermaid rendering and deprecated flag handling without changing traversal semantics. |
-| `bd dep cycles` | `bd graph cycles --link-type D --where 'properties.dep_type = "blocks" OR properties.dep_type = "conditional-blocks" OR properties.dep_type = "parent-child"'` | Resolve the scheduling predicate from domain policy. Preserve output and exit conventions. |
-| `bd dep cycles --include-tracks` | `bd graph cycles --link-type D --where 'properties.dep_type = "blocks" OR properties.dep_type = "conditional-blocks" OR properties.dep_type = "parent-child" OR properties.dep_type = "tracks"'` plus the domain cycle-report rule below. | This edge selection alone is not a complete translation of the legacy report. |
+| `bd dep cycles` | `bd graph cycles --link-type D --where 'properties.dep_type = "blocks" OR properties.dep_type = "conditional-blocks"'` | Preserve the shipped report's edge selection, projection, output and exit conventions; mutation validation has a broader edge set. |
 
 The query-then-delete entries describe resolution and mutation, not safe
 multi-process shell recipes. The adapter checks identity, classification and
@@ -642,12 +693,17 @@ their real transaction/partial-failure contract. A table containing two calls
 does not promise that two independent CLI invocations are atomic. Graph support
 requires the underlying writer and admission changes.
 
-`--include-tracks` widens the legacy scheduling report while excluding loops
-made only of tracks edges. Its existing reporting algorithm and projection
-remain in the domain service; merely admitting tracks into a generic edge
-predicate does not reproduce that result contract. The legacy `--limit` caps
-the rendered cycle list, retains the total count, and does not truncate JSON.
-These are adapter presentation rules, not bounds on graph analysis.
+Shipping v1.3.1 cycle reporting uses `blocks` and `conditional-blocks`.
+Its mutation validation also considers `parent-child`; normalization must not
+silently broaden the report to match that validation set.
+[Shipping cycle selection](https://github.com/gastownhall/beads/blob/c1c4b642ac1c08d8c828007a1c2f96e47e43ef7c/internal/storage/issueops/cycles.go).
+
+The inspected preview broadens the cycle report and adds `--include-tracks`
+and report limiting. Those extensions are not shipping compatibility guarantees.
+In particular, including tracks but suppressing tracks-only loops requires a
+domain reporting rule beyond a generic edge predicate. Retention of those
+preview domain options is a separate decision; this namespace proposal neither
+grandfathers them nor silently replaces shipping cycle semantics.
 [Preview cycle options](https://github.com/donnabox/beads/blob/ff25e824d80d4c1a52370c539ff8c767f1410de6/cmd/bd/dep.go).
 
 Ordinary `link --type` and `dep add --type` retain their different validation
@@ -657,7 +713,7 @@ legacy link must not silently acquire scheduling semantics merely because the
 command is renamed. Nominal Type binding and classification validation are
 separate steps; installed-Type capability restrictions still apply.
 
-### 3.3 Existing generic reads and graph views
+### 3.3 Bead reads and graph views
 
 In the remaining tables, `I` and `M` are the workspace's Issue and Memory
 nominal Type selectors; `K` is the eventual metatype selector, if Type
@@ -671,9 +727,9 @@ not independent shell commands with an implied transaction.
 
 | Existing command | Canonical spelling / operation composition | Adapter behavior |
 | --- | --- | --- |
-| `bd show/update/delete ID` | `bd show ID`; `bd update ID` with the supplied edits; `bd delete ID` (or `--force` to apply). | Canonical spelling. Keep default Bead shorthand and applicable Issue field conveniences. Output/guard changes at the same spelling require a declared compatibility boundary. |
-| `bd versions ID` | `bd versions ID`. | Canonical retained-version operation where supported. Ordinary and graph history backends remain distinct. |
-| `bd history ID` in graph mode | `bd versions ID`. | Alias to versions, preserving its accepted flags and output. |
+| `bd show/update/delete ID` | `bd show ID`; `bd update ID` with the supplied edits; `bd delete ID` (or `--force` to apply). | Bead-only canonical spelling. Keep shipped Bead shorthand and Issue field conveniences; reject Link IDs. Shipped output changes require separate approval. |
+| `bd versions ID` | `bd versions ID`. | Bead-only retained-version operation where supported. Links use `bd link versions`; history backends remain distinct. |
+| `bd history ID` in graph mode | `bd versions ID`. | Bead-only route to versions. Remove preview Link-ID acceptance; add no Link history alias. |
 | `bd history ID` in ordinary mode | Retain `bd history ID`; no equivalent retained-Resource-version call. | Retain ordinary commit-history semantics; do not relabel Dolt commits as Resource versions. |
 | `bd graph A --view generic` | `bd graph traverse A --direction both --depth N`, forwarding the existing depth and bounds. | Traverse adapter retaining preview2's default direction both, depth/bounds and output. |
 | Ordinary `bd graph A` / `--all` | Retain `bd graph A` / `bd graph --all`; the dependency/epic view has no single generic rendering equivalent. | Retain existing dependency/epic view and rendering options, including dot/HTML/compact modes. Reuse graph services without silently changing view semantics. |
@@ -683,17 +739,17 @@ not independent shell commands with an implied transaction.
 
 | Existing command | Canonical spelling / operation composition | Adapter behavior |
 | --- | --- | --- |
-| `bd query EXPRESSION` | `bd list --bead-type I --where EXPRESSION` after grammar and default-visibility normalization. | Generic selection/predicate service underlying `list --where`; retain the legacy Issue grammar, default exclusion of closed Issues, date expressions, field aliases, parse-only mode and output. Explicit generic selection can expose the new Resource query contract. |
+| `bd query EXPRESSION` | Retain `bd query EXPRESSION`; equivalent selection is `bd list --bead-type I --where EXPRESSION` after grammar and default-visibility normalization. | Generic selection/predicate service underlying `list --where`; retain the legacy Issue grammar, default exclusion of closed Issues, date expressions, field aliases, parse-only mode and output. Explicit Bead-Type selection can extend the query within the Bead namespace; Links use `bd link query`. |
 | `bd search TEXT` | Retain `bd search TEXT`; an exact resolved identity can use `bd show beads/ID`, but generic text-search/prefix syntax is not specified here. | Query convenience with its existing ID-like exact/prefix path versus title-text path. Preserve all-status search by default; it is not simply default `list --title`. Description search stays explicit. |
-| `bd count [filters]` | Retain `bd count [filters]`; generic aggregation syntax is not specified by CRUD. | Aggregation over the same selection model, independent of list page limits. Preserve its Issue-only, all-status default and `--by-*` grouping semantics; never count only the first returned page. Generic Resource counting is an extension. |
-| `bd children PARENT` | Select edges with `bd list --link-type D --target PARENT --property-field dep_type=parent-child`; resolve/project each source with `bd show beads/ID`. | Issue child query / parent-child relationship view, preserving its all-status and presentation defaults. Return child Beads, not raw Links. |
+| `bd count [filters]` | Retain `bd count [filters]`; generic aggregation syntax is not specified by CRUD. | Aggregation over the same selection model, independent of list page limits. Preserve its Issue-only, all-status default and `--by-*` grouping semantics; never count only the first returned page. Broader Bead-Type counting is an extension; Links use `bd link count`. |
+| `bd children PARENT` | Select edges with `bd link list --link-type D --target PARENT --property-field dep_type=parent-child`; resolve/project each source with `bd show beads/ID`. | Issue child query / parent-child relationship view, preserving its all-status and presentation defaults. Return child Beads, not raw Links. |
 | `bd ready` | Retain `bd ready` and its claim options; no single generic list/update equivalent. | Domain readiness query using actual scheduling semantics. A claim option remains an atomic selection-and-claim workflow, not list followed by update. |
 | `bd blocked` | Retain `bd blocked`; no equivalent stored-status predicate. | Domain blocker query, not `status=blocked`; dependent Issues can still have stored status open. |
 | `bd stale`, `bd orphans`, `bd lint` | Retain `bd stale`, `bd orphans`, and `bd lint`; their full analyses have no specified single generic equivalent. | Keep their domain analysis and defaults. Reuse query facilities where applicable; do not claim they are simple field-filter aliases without proving equivalence. |
 
-Preview2 graph mode currently refuses query/search/count despite those commands
-being registered in the binary. Exposing their generic forms requires query
-and aggregation implementation and admission work.
+At the original ff25e824 audit these commands were refused in graph mode. The
+63733f4d preview now admits Issue search/query/count. Broader Bead-Type discovery
+and the parallel Link commands still need query, aggregation and admission work.
 
 ### 3.5 Memory conveniences
 
@@ -719,10 +775,10 @@ identity and apply atomically through shared services; a shell-style
 | Existing command or flag | Canonical spelling / operation composition | Adapter behavior |
 | --- | --- | --- |
 | `bd create TITLE`, existing `new` alias, `q TITLE` | `bd create --bead-type I --properties JSON` with TITLE and the Issue defaults encoded in JSON. | Default Issue-Type convenience. Preserve q's ID-only result and accepted inputs. |
-| `bd create --parent P` | `bd create --bead-type I --properties JSON`, then `bd create --link-type D --source NEW --target P --properties '{"dep_type":"parent-child"}'` within the compound service. | Atomic Issue creation plus structural relationship and applicable inheritance/ID policy. |
-| `bd create --deps SPEC` | `bd create --bead-type I --properties JSON` plus one `bd create --link-type D --source A --target B --properties JSON` per normalized dependency, in the same compound service. | Atomic Issue-and-edge creation. Preserve historical parsing: explicit `blocks:B` reverses direction, while bare B and `blocked-by:B` mean the new Issue depends on B. |
+| `bd create --parent P` | `bd create --bead-type I --properties JSON`, then `bd link create --link-type D --source NEW --target P --properties '{"dep_type":"parent-child"}'` within the compound service. | Atomic Issue creation plus structural relationship and applicable inheritance/ID policy. |
+| `bd create --deps SPEC` | `bd create --bead-type I --properties JSON` plus one `bd link create --link-type D --source A --target B --properties JSON` per normalized dependency, in the same compound service. | Atomic Issue-and-edge creation. Preserve historical parsing: explicit `blocks:B` reverses direction, while bare B and `blocked-by:B` mean the new Issue depends on B. |
 | `bd create --waits-for ...` / graph-plan creation | Retain `bd create --waits-for ...` and graph-plan creation; no single generic equivalent or complete canonical plan-input format is specified. | Compound domain creation including edge metadata and scheduling policy; preserve atomicity. |
-| `bd update --parent P` / `--parent ''` | Resolve with `bd list --link-type D --source ID --property-field dep_type=parent-child`; delete the old L with `bd delete L --force`; when P is nonempty, create with `bd create --link-type D --source ID --target P --properties '{"dep_type":"parent-child"}'`. | Reparent or clear parent; replace/remove the appropriate old edges instead of merely adding another. |
+| `bd update --parent P` / `--parent ''` | Resolve with `bd link list --link-type D --source ID --property-field dep_type=parent-child`; delete the old L with `bd link delete L --force`; when P is nonempty, create with `bd link create --link-type D --source ID --target P --properties '{"dep_type":"parent-child"}'`. | Reparent or clear parent; replace/remove the appropriate old edges instead of merely adding another. |
 | `bd close` / `done`, `reopen`, `defer`, `undefer` | Retain `bd close ID`, `bd reopen ID`, `bd defer ID`, and `bd undefer ID` with their domain options; no equivalent generic property-only edit. | Preserve Issue lifecycle rules, reason handling, events, batching, no-ops and any next-work effects. Not simple property assignment. |
 | `bd update --claim`, `bd unclaim` | Retain `bd update ID --claim` and `bd unclaim ID`; no equivalent unguarded property edit. | Preserve atomic claim/lease/holder policy and concurrency checks. |
 | `bd assign` | `bd update ID --assignee USER` through the existing Issue field convenience; generic property-edit spelling awaits §2.6. | Preserve assignment/update-assignee behavior; assigning an Issue is not automatically a lease-bearing claim. |
@@ -737,44 +793,62 @@ contract; do not improve or weaken it accidentally under an alias label.
 Current graph admission gaps remain explicit. This design does not assert that
 all ordinary Issue conveniences already work in preview2.
 
-### 3.7 Optional noun-scoped conveniences
+### 3.7 Preview migration and alias discipline
 
-These can be added for discoverability without becoming the canonical model:
+Preview callers migrate to the explicit Link namespace. Removed commands and
+wrong-kind operands fail with an actionable replacement; they do not forward
+silently or remain hidden aliases.
 
-| Convenience family | Canonical spelling / operation composition | Adapter behavior |
+| Removed preview/proposed form | Canonical replacement | Required behavior |
 | --- | --- | --- |
-| `bd bead create/list/show/update/delete` | `bd create --bead-type TYPE`; `bd list --kind bead`; `bd show beads/ID`; `bd update beads/ID`; `bd delete beads/ID`, with the supplied payload/options. | Restrict generic operations to Bead kind. |
-| `bd link create/list/show/update/delete` | `bd create --link-type TYPE --source A --target B`; `bd list --kind link`; `bd show links/ID`; `bd update links/ID`; `bd delete links/ID`, with the supplied payload/options. | Restrict to Link kind; creation accepts positional endpoints; Link-only IDs may be bare. `bd link A B` remains the legacy parent shorthand. |
-| `bd issue create/list/show/update/delete` | `bd create --bead-type I`; `bd list --bead-type I`; `bd show beads/ID`; `bd update beads/ID`; `bd delete beads/ID`, with payload/options and an Issue-only check. | Bind the installed Issue Type and admit Issue field conveniences. |
-| `bd memory create/list/show/update/delete` | `bd create --bead-type M`; `bd list --bead-type M`; `bd show beads/ID`; `bd update beads/ID`; `bd delete beads/ID`, with payload/options and a Memory-only check. | Bind the installed Memory Type. These generic noun aliases do not silently inherit remember's upsert or recall's exact-body output. |
-| `bd type create/list/show/update/delete` | If definitions become Beads: `bd create --bead-type K`; `bd list --bead-type K`; `bd show beads/ID`; `bd update beads/ID`; `bd delete beads/ID`, subject to Type lifecycle policy. | Semantic Type-definition view over the eventual Type services; if definitions are Beads, use the metatype and generic Bead operations. |
+| `bd show links/L` | `bd link show L` | Root show rejects Link IDs, including qualified URLs and `view` alias calls. |
+| `bd update links/L` | `bd link update L` | Move property/metadata edits and optional source preconditions to the Link command. |
+| `bd versions links/L` | `bd link versions L` | Root versions is Bead-only. |
+| `bd compare links/L --from V1 --to V2` | `bd link compare L --from V1 --to V2` | Root compare is Bead-only. |
+| `bd history links/L` | `bd link versions L` | No `bd link history` alias. |
+| `bd links B` | `bd link list --incident-to B` | Remove root links; translate explicit directions to source/target filters. |
+| `bd unlink L` | `bd link delete L` | Remove root unlink; callers use the selected delete preview/apply contract. |
+| `bd unlink A B --link-type TYPE` | `bd link list --link-type TYPE --source A --target B`, then `bd link delete L` | Identify the intended Link explicitly; no new pair-delete convenience. List results do not grant atomic query/delete semantics. |
+| `bd link A B --link-type TYPE` | `bd link create --link-type TYPE --source A --target B` | Remove preview-only generic authoring extensions from the shipped shorthand. |
+| Earlier proposed `bd create --link-type TYPE` | `bd link create --link-type TYPE --source A --target B` | Root create cannot switch kind; endpoints are required in the replacement. |
+| Earlier proposed `bd list --kind link` | `bd link list` | No Resource `--kind` selector. |
+| Earlier proposed `bd list --kind all` | Separate `bd list` and `bd link list` calls | No mixed Resource collection command or implied shared snapshot. |
+| Earlier proposed root Link search/query/count | `bd link search`, `bd link query`, `bd link count` | Collection predicates never widen the command's kind. |
 
-Type bindings must be resolved from the workspace's supported Type model, not
-hardcoded example preview Type IDs. A requested binding that is absent fails
-clearly. Type lifecycle verbs remain unavailable until their services exist.
+Grandfather exact shipped paths and behaviors. Keep root `new`, `view`, `done`
+and the `dep` aliases where they shipped; do not automatically add `bd link new`,
+`bd link view`, `bd link history`, `bd link rm`, or other mirrored synonyms.
+The Link namespace's ten verbs are canonical commands, not convenience aliases.
+Optional `bd bead`, `bd issue`, `bd memory` and `bd type` CRUD wrappers from the
+previous draft are not part of this proposal's accepted command surface.
 
-For a parent that supports both a shorthand and subcommands, verb names and
-aliases take precedence before ID resolution. Qualified IDs avoid collisions.
-Do not guess that a token is an ID merely because a matching Bead exists.
+`bd link A B [--type T]` remains the shipping Dependency shorthand. New Link
+subcommand names take precedence before endpoint-ID resolution. A colliding
+Bead token must use its unambiguous qualified identity, such as `beads/create`.
+Normal shipped Issue IDs remain valid. Never guess that a verb token is an ID
+because a matching Bead exists; test the qualification escape explicitly.
 
-User-defined Types need no generated top-level nouns. Operators can compose
-their own shell conveniences around the canonical commands. A configurable
-alias registry is a possible later feature, not a requirement of this design.
+The current Issue-only `edit`, `label`/`tag`, `comment`/`comments`, `note`,
+`provenance`, `lint`, `rename`, `restore`, `stale`, and duplicate workflows do not
+automatically acquire Link versions. Such additions require their own capability
+contracts. In particular, current restore recovers pre-compaction Issue content,
+not a deleted Link, and endpoint equality does not establish Link duplication.
 
+User-defined Types need no generated command nouns. Resolve their installed
+Type within the appropriate namespace and validate against its descriptor.
 
-### 3.8 Type discovery conveniences
+### 3.8 Type discovery and Type definitions
 
-| Existing or proposed convenience | Canonical spelling | Adapter behavior |
+| Existing command or future operation | Canonical spelling | Behavior |
 | --- | --- | --- |
-| Ordinary `bd types` | Retain `bd types`; no generic Type-definition query equivalent. | Lists Issue classifications, not nominal Types. |
-| Graph `bd types` | Retain `bd types` until Type-definition representation is settled. | Lists installed nominal Type descriptors. |
-| Future `bd type list` | `bd list --bead-type K` if definitions become Beads. | K must resolve to the supported metatype; installation state and lifecycle policy still belong to the Type service. |
+| Ordinary `bd types` | `bd types` | Preserve the shipped Issue-classification inventory. |
+| Graph `bd types` | `bd types` | Workspace discovery of installed Bead/Link descriptors; not a polymorphic Resource-ID verb. |
+| Type-definition CRUD, if definitions become Beads | `bd create --bead-type K`, `bd list --bead-type K`, `bd show beads/ID`, `bd update beads/ID`, `bd delete beads/ID` | K is the eventual metatype. Definition CRUD remains on the Bead side even for definitions describing Links. |
 
-`bd types` currently means different things by workspace: Issue classifications
-in ordinary mode, installed Bead/Link descriptors in graph mode. Preserve that
-behavior explicitly. A future `bd type list` can provide a Type-definition
-view once the representation is resolved; it must not silently recast task/bug
-classifications as nominal Types or treat every Bead as a Type definition.
+Do not silently recast task/bug classifications as nominal Types or treat every
+Bead as a Type definition. Type representation, installation and lifecycle are
+separate designs. A Link-scoped Type discovery view may be considered later;
+this proposal adds no `bd link types` or `bd type` alias family.
 
 ### 3.9 Batch operations: a separate parser and transaction boundary
 
@@ -836,9 +910,9 @@ That difference must be preserved or intentionally changed.
 
 The parser dispatches directly to transaction operations rather than recursively
 invoking top-level Cobra handlers. Consequently, renaming or aliasing `dep`
-at the root does not affect `dep add/remove` inside batch input. Any decision to translate existing batch scripts would need to address this
-parser explicitly. Whether to preserve its language, extend it, or introduce
-canonical operation records remains open, including how Type selectors,
+at the root does not affect `dep add/remove` inside batch input. Any decision
+to translate existing batch scripts would need to address this parser explicitly.
+Whether to preserve its language, extend it, or introduce canonical operation records remains open, including how Type selectors,
 properties, metadata and optional preconditions would be expressed.
 
 Any extension must retain one transaction, rollback on failure, and the domain
@@ -859,13 +933,17 @@ adapter needs a recorded contract covering operand direction, defaults,
 validation, output, errors, mutation effects and workspace capabilities.
 
 Existing aliases should not produce noisy deprecation warnings merely because
-they are aliases. New documentation should teach the generic canonical verbs
-first, then show the useful conveniences and their additional behavior.
+they are aliases. New documentation should teach the two canonical namespaces
+first, then show shipping conveniences and their additional behavior. Publish the preview
+migration table with the release; remove old preview spellings from completion,
+examples, scripts and command registration. Preserve shipped paths and refuse
+removed experimental forms instead of retaining compatibility forwarding.
 
 The compatibility goal is preservation of useful existing workflows, not
 preservation of known unsafe behavior. Explicitly disclose exceptions such as
 typed unrelate removal, removal of `--unconditional` with optional
 `--if-revision`, removal of `--unconditional-source` with current-source
-acceptance by default on every owned-Link route, and any root-command JSON
-contract change. No alias can make an unsupported storage capability exist or
-resolve an unsettled Type lifecycle policy by implication.
+acceptance by default on every owned-Link route, and the deliberate removal of
+preview polymorphism and aliases. Shipped root JSON contracts remain protected
+unless a separate change is approved. No alias can make an unsupported storage
+capability exist or resolve an unsettled Type lifecycle policy by implication.
