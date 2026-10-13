@@ -1,0 +1,36 @@
+# Final H1b harness supplement — independent native review
+
+**Disposition: accept this bounded supplement; no new actionable findings.**
+
+Reviewed immutable `9d379c5497df6f74f32ab565424e9174cf14f5c4`, direct parent `ee947ae919472d937625d196e2b5e5b67aa809d1`, nine harness/test/docs files. Read the prior Claude closure report and root's `profile-review-dispositions-20261013T1340.md`, plus the author's completed `transaction-harness-final/report.md`. Did not read the concurrent external final review. Author checkout `vickie-transaction-harness-final` remains clean; independent work used disposable `vickie-harness-final-native-review`. No outward actions or frozen source edits.
+
+## Requested closure
+
+1. **Target facts versus harness evidence: closed.** `TransactionalReceiptFailure` is a private helper type with no runner import cycle. The runner maps it to target `fail`, preserves its fixed safe reason through programmatic action handling, and retains the action error reason. `TransactionalHarnessError` stays a harness error. Source registration validates the wire/parsed observation before schema classification: missing validator is harness infrastructure failure; an actual invalid target document or foreign receipt identity is target failure. Retained JSON parse and whole-body mismatch are target failures; self-inconsistent wire evidence is harness failure. Reasons do not interpolate raw response data or credentials.
+
+   The permanent raw HTTP tests exercise source-schema failure, missing validator, source wire disagreement and changed retained facts. I independently extended that real-socket test to cover **malformed source JSON**, **malformed retained JSON**, and **dynamic receipt wire/parsed-header disagreement**. They report respectively `fail/source receipt schema invalid`, `fail/retained receipt JSON invalid`, and `harness-error/receipt wire headers mismatch`. The dynamic cases retain the safe action reason and dynamic configuration metadata. No private target sentinel is leaked. These are small actual socket test authorities plus an explicitly injected harness self-inconsistency, not additional installed conformance rows.
+
+2. **Dead state and authority branches: closed.** The unused wire copy, unreachable retained-GET authority extension and redundant late session attachment are removed. Only canonical mutation response capture grants receipt authority. Ordinary capture remains valid and cannot authorize a follow-up receipt route. The digest remains provenance of the original observed response; whole retained JSON facts remain the comparison, so later consistent serving headers can change. The changed-header positive and non-regrant controls passed. Construction-time metadata continues to cover failed exchanges.
+
+3. **Cleanup lifecycle bound: closed.** `RawHttpScenarioTargetOptions.cleanupTimeoutMs` is the explicitly authorized additive existing harness option, validated as a positive bounded integer. Omission still uses the existing request-timeout, then 30-second fallback; TX explicitly supplies 10 seconds while retaining 5-second request bounds. The same cleanup value governs active and late-prepared session cleanup. Parent signals remain combined with the local cleanup deadline; a reopen does not gain independent fresh 10-second work phases.
+
+   Permanent tests invoke the real session close seam: a 30ms cooperative close fails under the old 5ms default and completes under explicit 200ms cleanup. Invalid explicit bounds refuse before startup. My independent close probe waits until the real close callback receives its signal, then aborts the parent while a larger explicit cleanup budget remains: close rejects as abort and the callback observes cancellation. No elapsed-time threshold or 10-second sleep is needed to prove parent precedence.
+
+4. **Original failure plus cleanup causes: closed.** The installed wrapper now records cleanup errors even when the runner has already converted them to row diagnostics. If the work signal aborted, its original reason is saved before emergency close. The final AggregateError retains distinct causes; the outer message is no longer treated as the only evidence. The permanent actual-installed negative kills only its own disposable child, then verifies the original Error identity and the child-close failure are both reachable and every tracked child has terminated. I ran that test in the focused suite; it passed. This is a negative cleanup observation, not successful conformance execution.
+
+5. **Abort ordering and limits: accurately scoped.** Documentation distinguishes ordinary drain-before-child-signal cleanup from abort, where child close and request cancellation can start concurrently and settle before final cleanup resolves. Emergency cleanup may outlive the work deadline, but abort cannot publish success. Response-constant consolidation is explicitly deferred, without claiming duplication has been eliminated. No runtime owner, serving, Snapshot, schema, catalog, claim gate or legacy exclusion change is present.
+
+The two original native P2 repairs remain intact: aggregate cooperative cancellation and ordinary Resource capture have positive/negative installed tests in this focused run. No public Transactional profile claim follows from this review.
+
+## Independent verification and actual exits
+
+Pinned Node24.16.0 / pnpm11.20.0, maxWorkers1. Logs and disposable patch are under `bdp-integration-logs/transaction-harness-final-native/`.
+
+- Frozen install, clean **pre-build typecheck**, build: exit **0** (`install.log`, `typecheck.log`, `build.log`).
+- Unmodified focused suite: **346 passed / seven files, zero failures/skips, 19.16s, exit 0** (`focused.log`, `focused.json`). bdptest transactional matrix/binding; conformance cumulative/observation/raw-session-target/runner/report. Includes all 22 installed matrix tests, including actual child-kill cause preservation.
+- Independent extension: **eight passed / two files**, 33 unrelated tests excluded by filter, 555ms, exit **0** (`probes.log`, `probes.json`). Four original error-attribution baselines plus three added raw/dynamic error cases and one added close-parent-abort case. Exact review-only edit: `native-probes.patch`. No failed or interrupted run in this review.
+- Fresh author packed observation source/hash checked independently against `transaction-harness-final/hashes.json`: exact 9d379 source; report SHA-256 `375f13cb741daa9f40e6f540d9b9130706b559aa7aa92ba9e45496a0f0823e36`. It retains four partial pass rows, 35 actual HTTP exchanges, ten dynamic receipt exchanges and five physical sessions; `claimEligible:false`. The runtime payload remains unchanged by this harness-only delta.
+
+The focused suite and probes completed normally; test-owned listeners/processes were drained by their cleanup paths. Frozen author source is unchanged. I did not repeat the author-reported 8,507-test full suite, smokes or fresh packed TX 22/RU 112 suites. Those supporting author runs are separately recorded and not represented as native reruns.
+
+All 250 required obligations remain uncovered for whole-profile qualification; the four observed rows are still partial. This report closes the bounded harness residues only.
