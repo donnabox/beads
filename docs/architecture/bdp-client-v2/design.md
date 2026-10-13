@@ -62,7 +62,7 @@ Original service-review lows: RU trusted callback capability narrowing and publi
 
 ### Live worker ledger
 
-Checkpoint 2026-10-13T19:45:37Z. Autonomous profile completion is **ACTIVE**, session `2026-10-08T20:26:35Z-81e5`. Operator authorizes ordinary main merges after exact-head green CI, native Codex plus Claude council, finding dispositions, scope review and actual merged-tree verification. Gemini excluded. No release or Preview2 promotion. Public write-profile admission stays closed until cumulative installed required-contract evidence supports it.
+Checkpoint 2026-10-13T19:46:24Z. Autonomous profile completion is **ACTIVE**, session `2026-10-08T20:26:35Z-81e5`. Operator authorizes ordinary main merges after exact-head green CI, native Codex plus Claude council, finding dispositions, scope review and actual merged-tree verification. Gemini excluded. No release or Preview2 promotion. Public write-profile admission stays closed until cumulative installed required-contract evidence supports it.
 
 ## Verified main and delivered work
 
@@ -90,7 +90,7 @@ Root read and accepted [105 integration report](transaction-set-attribution-inte
 
 | Worker | Current assignment | Exact source / output | Next gate |
 |---|---|---|---|
-| profiles_integration_validation | COMPLETE/available; frozen integration validated | `/Users/dbox/repos/wt/vickie/vickie-numeric-admission-main-integration`, branchcodex/vickie-numeric-admission-main-integration; outputnumeric-admission-main-integration/report.md andsafeJSON | bbab34f78864e7b3d2210ecc4527c9143e5e53ef validated/pushed; draftPR96; exactCI and Claude pending |
+| profiles_integration_validation | COMPLETE bbab validation; ACTIVE next bounded TX evidence plan | `/Users/dbox/repos/wt/vickie/vickie-numeric-admission-main-integration`, branchcodex/vickie-numeric-admission-main-integration; outputnumeric-admission-main-integration/report.md andsafeJSON | bbab34f validated/pushed; draftPR96 exactCI38457283500 active. Read-only transaction-after-set-conformance-plan.md task; no implementation approval |
 | update_implementation | COMPLETE frozen numeric admission candidate | **131fb9874ae53f94ea7c15d5b77bd6caa4a704e9**, tree4cf48b5f9950470e8779c09264d4b5f71b169d2e, direct2a407. `/Users/dbox/repos/wt/vickie/vickie-read-update-numeric-admission`, branchcodex/vickie-read-update-numeric-admission, pushed/remotelyverified | [Author report](read-update-numeric-admission-report.md), [packed summary](read-update-numeric-admission-packed-summary.json), [source audit](read-update-numeric-admission-source-audit.json), rootreadaccepted; councilactive |
 | profile_runtime_inventory | COMPLETE/available; follow-on plan drafted | [Plan](read-update-numeric-metadata-closure-plan.md)78b5b980; [whole-clause audit](read-update-attribution-numeric-whole-audit.md)65cb5ea5 | Native plan clean; external plan review active; no implementation approval |
 | profile_editorial_inventory | COMPLETE131native clean; ACTIVE independent9eb TX code/evidence review | [131 review](read-update-numeric-admission-native-review.md); next outputtransaction-set-conformance-native-review.md | Frozen9eb source immutable; isolated targeted checks permitted |
