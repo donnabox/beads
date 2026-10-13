@@ -7,3 +7,15 @@ Authorize isolated ordinary successor with a narrow installed-test repair: captu
 ## Native closure accepted
 
 Root read independent c934 closure report. Exact original emitted n1-to-n0 counterprobe now fails the named literal assertion, normal/restored actual HTTP tests pass, original emitted bytes restored and no children remain. One-file repair is accepted; no new findings. Full2f7 external review remains pending and is not waived.
+
+## External council findings
+
+Root read full2f7 external review and accepts five bounded findings for an ordinary successor of tested integrationeb4939b6c3e9496a450724953142e47c7933f69e.
+
+1. Reproduce and repair eager private depth refusal preempting determinate invalid root/member/key shapes. Complete known shape checks before principal/private gap as already accepted; preserve byte/depth bounds and no key admission. Inspect nested parser timing, not only moving a line. No new law for negative Selectors.
+2. Explicitly disclose remaining known-location pointer omissions for non-set Resource failures. That broader evaluator work is separate; set-only repair cannot claim a global pointer contract.
+3. Remove duplicate singleton set full parsing if safely contained: raw closed-key/route discriminator defense plus one authoritative shape validation. Preserve actual request-byte and wrapper-equivalent depth semantics. No new parser abstraction or wide refactor.
+4. Add actual sequence set refusal400/no key or receipt observation to pin existing separate sequence behavior.
+5. Add explicit supersession notes for historical set-refusal and old gap-ordering claims without rewriting historical test evidence.
+
+Author assigned codex/vickie-transaction-set-review-repair, isolated successor fromeb493. Original c934 native oracle closure stays accepted; new runtime changes receive scoped independent closure and fresh installed evidence before readiness. Integrationeb493 passed1070focused, static/smokes and installed set1/TX22/RUaggregate1; it is preserved evidence, not the new source.
