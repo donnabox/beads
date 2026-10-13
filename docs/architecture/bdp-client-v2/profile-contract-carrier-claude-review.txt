@@ -1,0 +1,80 @@
+## Scope — static only
+
+**Reviewed:** `/Users/dbox/repos/wt/vickie/bdp-integration-logs/profile-contract-carrier-repair.patch` (4075 bytes), 2 files, `+39/−5`: `packages/conformance/src/profile-contract-plan.test.ts` (+32, test-only) and `packages/conformance/test-support/profile-contract-plan.ts` (+7/−4).
+
+**Base identity verified:** patch pre-image blobs `86882ee` / `73cd7fd` equal `HEAD:…profile-contract-plan.test.ts` / `HEAD:…test-support/profile-contract-plan.ts` at frozen `1f2d75fbaa67f631e72bd79384c829d7588b7277`, clean tree. `git apply --check --stat` → applies cleanly, `2 files changed, 39 insertions(+), 5 deletions(-)`. The delta below is applied **mentally**; the cwd remains the unrepaired base. Authored commit `11cbe3cc2cc4b167cd10ebdd08af667e37a03301` is not present in this worktree and was not fetched — I reviewed the patch bytes, not that commit object.
+
+**Method:** reads only (`Read`, `grep`, `python3 -c` JSON inspection of catalog/matrix/fixture, `git show`, `git apply --check`). **No files written, no tests run, no typecheck, no build, no planner execution, no network, no served/RU/TX run.** Every readiness conclusion below is derived by reading the patched expression against the runner/factory source — not observed. Prior-review base differs: N1/N2 were measured against `28b5da2`; this patch rebases onto `1f2d75f`, which already replaced recursive `dependencyReady` with a single catalog pass.
+
+---
+
+## N1 — "unsupported carrier fabricates `blockedPrerequisites`" → **CLOSED**
+
+The patch deletes `!carrierBlocker &&` from the `dependencyReady` loop (base `:400`). `dependencyReady` becomes purely row-presence + capability + graph readiness; carrier support survives only in the readiness precedence at `:416-426` and the plan-level `carrierBlocker`.
+
+Traced against base source: at profile `read-update` with real v1 `matrices/read-v1.json`, `read.discovery.canonical-navigation` and `read.discovery.optional-limits` declare `prerequisiteScenario: "read.discovery.scope-service-desc"`, which **is** RU-selected (`catalog/read-v1.json` position 0, consumer at position 2 → `earlier` true, no missing capabilities → `dependencyReady` true). Those two fabricated entries disappear. The nine genuine dependents of `read.discovery.document` survive the fix for a reason independent of the carrier: `document` is RU-retired, so the `if (!required.has(id)) continue` guard never populates `dependencyReady` for it and `.get(dep) !== true` still blocks. Existing assertions `toHaveLength(9)` and `every(readiness === "carrier-unsupported")` (`:347-348`) therefore still hold, as does `:276`'s `"read-v1 version 1 on read-update"` (real manifest is `manifestVersion: 1`). The doc sentence N1 inverted — "unsupported carriers do not hide dependency failures" — is now accurate rather than merely literal.
+
+## N2 — "carrier rule over-blocks `manifestVersion 2` at Read+Update" → **CLOSED**, rule mirrors the real gates with one dropped condition
+
+Patched rule (base `:346-349` → patched `:346-352`): supported ⟺ `catalogId === "read-v1" && (profile === "read" || (profile === "read-update" && manifestVersion === 2))`.
+
+Compared against actual guards I read in this base:
+
+| cell (ordinary factory ⇒ `catalogId` always `read-v1`) | runner `validateRunOptions` | patched planner |
+|---|---|---|
+| `read` + v1 | admitted (`:2559-2566` needs `profile !== "read"`) | supported ✓ |
+| `read` + v2 | admitted (`:2576-2586` exempts `read`) | supported ✓ |
+| `read-update` + v1 | **refused** `:2559-2566` | blocked ✓ |
+| `read-update` + v2 | admitted **only if** `exactExecution` present and `scope`+`profile` match (`:2576-2586`) | supported — unconditionally (see NEW‑1) |
+| `transactional` + v1 / v2 | refused `:2559-2566` / `:2576-2586` | blocked ✓ |
+| `catalogId !== "read-v1"` | n/a — factory refuses to emit (`artifact-bundle.ts:143-147`, `expectedCatalogId = read-v${catalogVersion}`, `catalog.ts:110-111` pins `catalogVersion` to 1) | blocked ✓ |
+
+The factory applies no `manifestVersion` gate (`executable-manifest.ts:465-467` accepts 1 or 2), confirming N2's premise. `manifest === undefined` still short-circuits to *no* blocker (all rows `unplanned`), unchanged. The replacement comment is accurate on both facts it asserts (factory accepts `read-v1`; runner permits v2 RU only with matching exact execution configuration) and correctly disclaims execution/qualification.
+
+## N3 — already closed at base, not in this patch
+
+`1f2d75f` replaced the unmemoized recursion with one ordered catalog pass plus a `Map` memo and added the lookup-budget test (`:399-457`). Nothing in this patch touches traversal cost; removing `!carrierBlocker` does not reintroduce recursion.
+
+---
+
+## Regression-test meaningfulness
+
+The new test (lands after base `:457`) is a genuine two-sided guard, and each fix is independently pinned:
+
+- **Red at base for N1:** v1 iteration — `carrierBlocker` set ⇒ base `dependencyReady(first)` is `false` ⇒ `second.blockedPrerequisites === [first.id]` ⇒ `rows.every(length === 0)` fails.
+- **Red at base for N2:** v2 iteration — base rule ignores version at non-Read ⇒ readiness `carrier-unsupported`, not `ready-unexecuted`.
+- Reverting either fix alone still fails exactly one iteration; they are not co-dependent.
+- The fixture is real, not invented: filtered RU rows resolve to `read.discovery.scope-service-desc` (`requests`-form) and `read.discovery.canonical-navigation` (`requests`-form, no `actions` key, so the injected `requests` override is the one `(row.actions ?? row.requests)` reads). Both declare `setup.requires: ["public-http"]` ⊆ the 18 fixture capabilities, `applicability.requires: []`, `setup.fixture: "reference-read-v1"` = derived `fixtureId`; catalog positions 0 and 2 satisfy `earlier`. `own`'s key set `{id, method, target, headers, captures, assertions}` ⊆ `REQUEST_KEYS`, so the v2 `reportExactUnknownKeys` pass (`executable-manifest.ts:910-911`) has nothing to reject; `[dependency, own]` satisfies both "prerequisite requests must precede own requests" and "at least one owned request". `rows` is exactly 2 by construction (ids come from `selected.required`, so a non-selected id would throw rather than silently vacuum the `every`).
+- `claimEligible:false` is asserted in both iterations; no admission path, served target or observation is claimed anywhere.
+
+Weaknesses in the new test, all minor:
+- `expect(plan.unobservedIds).toHaveLength(selected.required.length)` is tautological — `unobservedIds` is `requirements.map(id)` and `requirements` maps `selection.required`. It can never fail. (Same shape as the pre-existing `:451`.)
+- The N2 guard is a ternary inside a test named only for N1 ("does not turn supported prerequisites into blockers…"), so an N2-only regression reports under a misleading name.
+- The `read` + `manifestVersion: 2` cell — newly adjacent to a version-sensitive condition — is pinned by no test; `:289-311` covers `read` only with `catalogId: "unadmitted-v1"`.
+
+---
+
+## New findings
+
+**NEW‑1 (LOW, fail-open mirror gap) — the v2 Read+Update admission drops the runner's `exactExecution` condition.**
+`test-support/profile-contract-plan.ts` patched `:346-352`. The runner admits v2 at `read-update` only when `options.exactExecution` exists and its `configuration.scope`/`profile` equal the run's (`runner.ts:2576-2586`); a stricter runtime gate repeats this for *every* HTTP action whenever `profile !== "read"` (`runner.ts:1384-1398`: `manifestVersion !== 2` or a missing/mismatched binding throws). The planner models no `exactExecution` at all — `grep` finds the identifier nowhere in the module or the design doc. So a future RU v2 manifest planned here reports `ready-unexecuted`, i.e. "supported carrier" per `docs/design/profile-contract-planning.md:49`, for a combination the runner refuses unless the eventual caller also passes a matching binding. Narrow in practice — the plan's own `ServedProfileConfiguration` carries exactly the `scope`/`profile` R3 compares, so a runner invoked with it satisfies the condition — but the direction is now fail-*open*, the opposite of every other gate in this module, and N2's correction traded a false refusal for an unconditional admission. Fix: either carry the condition into the reason/readiness ("carrier admissible only with matching exact execution configuration"), or key the rule on a modeled exact-execution binding rather than profile+version alone.
+
+**NEW‑2 (LOW, doc/code divergence) — the design doc now contradicts the rule it documents, and no lockstep test covers it.**
+`docs/design/profile-contract-planning.md:51`: "Current ordinary normative bundles admit only `read-v1`; normative Update/TX carriers therefore remain unsupported in this groundwork." After this patch an RU-profile plan over a v2 `read-v1` manifest is a **supported** carrier and its rows can reach `ready-unexecuted`, so the second clause is false as a statement about the planner. `:47`'s `carrier-unsupported` row also still describes the gate as a "manifest catalog/profile combination", omitting the manifest version the rule now reads. This is a two-file patch; the doc is untouched. The only test that opens this file (`profile-contract-plan.test.ts:226`) parses the 81-row audit table, not the readiness prose, so nothing fails on the drift. Same class of defect as prior finding 2 (behavior moved without its normative description), at much lower stakes.
+
+**NEW‑3 (nit) — the replacement comment no longer explains the refusal the expression still encodes.**
+The deleted comment stated the live reason `read-v1` + v1 is blocked at non-Read profiles; the new one explains only the v2 RU admission. A reader of patched `:343-352` cannot derive why `read-v1`/v1/`read-update` is refused, which is the branch the pre-existing tests at `:268-288` and `:289-311` actually exercise. One clause restoring the `runner.ts:2559-2566` refusal would make the comment match the rule.
+
+---
+
+## Carrier-truth and claim discipline
+
+Consistent with the stated frame: no cumulative executor or new carrier is introduced. The patch widens an existing-carrier *description* to match gates already in `runner.ts`/`artifact-bundle.ts`; `catalogVersion` stays pinned at 1, `expectedCatalogId` is unchanged, no public export moves (`grep` confirms the planner's only importer is its own test), and `claimEligible` remains the hardcoded `false` returned at `:430`. Nothing here asserts that any RU manifest exists, parses, or was executed.
+
+**Residual from the prior review, unchanged by this patch:** the planner's prerequisite-order check uses merged cumulative catalog order while `runner.ts:2608-2616` uses the bound bundle catalog's order — identical for Read rows today, divergent if a future cumulative catalog reorders.
+
+## Verification limits
+
+- Static reading only. I did not run vitest, `tsc`, or the planner, so "red at base / green patched" above is derived from the code paths, not measured. In particular I did not execute `validateFixtureOraclePointers` or `parseExecutableScenarioManifest` on the synthesized `pair` — I verified key sets, ordering and owned-action rules by reading the parser, which is weaker evidence than a run.
+- I did not inspect commit `11cbe3c` itself (absent from this worktree); if its tree differs from these patch bytes, this review does not cover the difference.
+- No assessment of whether the other 11 prior findings remain closed at `1f2d75f`; scope was N1/N2 plus new defects in this delta.

@@ -1,0 +1,145 @@
+## Review — frozen repair `dea6f9e` vs `4078ca7`
+
+**Read-only.** No file in the repo was written or modified. All building, probing and differential work was done in `git archive` extractions under `/private/tmp` (`bdp-repair-review-dea6f9e`, `bdp-baseline-4078ca7`) plus probe scripts in `/private/tmp/bdp-probes`. `git status --porcelain` in the frozen tree is empty and `HEAD` is still `dea6f9e7a95a3e3eba9c667de39360346f25bdf4` at exit. The only command run inside the frozen tree was `scripts/read-cohort-evidence.mjs`, after confirming by inspection that it contains no write/mkdir/unlink calls (it needs real git history, which the scratch extraction lacks).
+
+Diff audited: 7 files, +348 −48. Read `update-installed-claude-review.txt` and `update-installed-repair-native-review.md`.
+
+### Verification I actually ran (pinned Node 24.16.0 / pnpm 11.20.0)
+
+| Check | Result |
+|---|---|
+| `pnpm install --frozen-lockfile` | lockfile up to date, 61 packages |
+| `pnpm build` (`clean && tsc -b`) | exit 0 |
+| `typecheck` / `check:boundaries` / `format:check` | exit 0 / 11 packages valid / 347 files clean |
+| `lint` | exit 0, 3 warnings + 1 info (same counts as on `4078ca7` — pre-existing) |
+| focused: `installed-reference{,-import,-startup}.test.ts`, `--maxWorkers=2` | **14 passed / 3 files**, 2.54s |
+| **full repository suite**, `--maxWorkers=2` | **7924 passed, 1 skipped / 122 files**, exit 0, 63s — exactly +6 tests / +2 files over the prior review's 7918/120, matching the two added files |
+| `pnpm smoke` (packed, outside workspace) | exit 0; `artifactIdentity` reproduces byte-for-byte (`development-schema5-e1dff401…f148e7`); `payloadIdentity` `8973a5bf…56d9ea` (differs from `4078ca7`'s `b8a74cc5…`, as it must — dist bytes changed) |
+| `pnpm smoke:development` | PASS, `claimEligible:false` |
+| `pnpm evidence:verify` | `evidence.verified`, unchanged Read artifact, 89 rows |
+
+Everything below rests on my own out-of-tree probes against live candidates built from both commits; the author's tests are corroboration.
+
+---
+
+## Closure dispositions — findings 1–3
+
+### Finding 1 (M4, HIGH) — **CLOSED**
+
+`installed-reference-process.ts:63-78`. `isEntrypoint()` compares `realpathSync(process.argv[1])` against `realpathSync(fileURLToPath(import.meta.url))` and `void main()` runs only behind it.
+
+Eight probes, all against the built module:
+
+| Scenario | `4078ca7` behaviour (per the finding) | `dea6f9e` observed |
+|---|---|---|
+| A — `node -e 'await import(...)'`, no IPC | stderr + host `exitCode === 2` | exit 0, stderr `""`, `exitCode` unchanged, 0 `message`/`SIGTERM` listeners added |
+| B — bare import inside an **IPC** host | channel destroyed, child exit 2, parent `ERR_IPC_CHANNEL_CLOSED` | host received **both** of its own messages (`{app:"first"}`, `{app:"second"}`), `connected:true`, `msgListeners:1` (its own), exit 0 |
+| C — `node --import <module> host.mjs` + IPC (the `NODE_OPTIONS=--import` vector) | same hijack | identical to B — fully inert |
+| D — real direct exec, no IPC | — | exit 2, stdout empty, stderr exactly `installed reference qualification failed\n` |
+| E — direct exec through a **symlink** | — | exit 2 + same redacted line — `realpath` correctly still classes it as the entry, so the refusal is not bypassable by symlinking |
+| F — `new Worker(module)` | — | worker exits 2, **host `exitCode` unaffected** (`null`), host exits 0 |
+| G — `argv[1]` unresolvable at import time | — | `realpathSync` throws → caught → inert (fail-closed) |
+| H — host forges `process.argv[1]` to the module path, then imports | — | hijack returns: host `exitCode:2` + stderr (see N1 below) |
+
+The packed path is also covered: `pnpm smoke` spawns the tarball's `dist/installed-reference-process.js` as the entry and it still completes the full IPC lifecycle. Both halves of M4 — bare-import inertness including inherited IPC, and the no-IPC refusal on real execution — hold.
+
+### Finding 2 (H3, HIGH) — **CLOSED**, including the un-demonstrated consequence (b)
+
+`development-runtime.ts:298` (`let serving = false`), `:303` (first predicate in `handle`), `:544` (set as the final statement of the startup `try`, after the full per-credential discover/route loop), `:565` (cleared in `close()`).
+
+Two things worth recording about how I got evidence:
+
+1. **Unmocked raw-socket races cannot land a request in the window — on either commit.** I ran out-of-process racers that connect the instant `server.listen` binds, with 1 and with 32 credentials. On both `dea6f9e` and `4078ca7` the TCP connection is accepted inside the window (`connectMsAfterStart` 51–65 vs `startupMs` 58–71) with request bytes already queued, yet the response is always produced after readiness. The reason is structural: **the `listen` → `serving = true` phase makes no poll-phase yield** — `openDevelopmentAuthority` and the 32 `await view.discover()` calls all resolve on the microtask queue. So the exposure is narrower in practice than the finding implied, and a barrier is required to observe the gate at all.
+
+2. **With a barrier, the differential is decisive.** I wrote my own ESM loader hooks (`module.register`, `/private/tmp/bdp-probes/gate-hooks.mjs`) that wrap the real `openDevelopmentAuthority` and suspend the **second** principal's `discover()` — the same class of instrumentation as the author's `vi.mock`, written independently, driving the real `startInstalledReferenceCandidate` and real HTTP. Same probe, both commits:
+
+| During startup (`startupSettled:false`, 1 route built) | `4078ca7` | `dea6f9e` |
+|---|---|---|
+| valid-credential `GET` scope probe | **204** | **503** `temporarily-unavailable`, `retry:"after-delay"` |
+| valid-credential `POST operations/create-bead` | **200 `created`**, resource `…/beads/early` | **503** |
+| **no** credential | 401 `unauthenticated` + `www-authenticate` | **503** |
+| bad credential | 401 | **503** |
+| unknown path | 404 | **503** |
+| after a startup that then **fails**, durable reopen: `beads/early` | **200 — the write survived a failed startup** | **404**, and the same idempotency key yields a fresh **200** |
+
+The last row is consequence **(b)**, which the original review could only report as a structural mechanism ("I lost the connect race twice"). It is now an observed outcome on the baseline and observably absent on the repair. Consequence **(a)** is closed too: during startup *nothing* gets 401 any more, so a conforming retrying cold client sees only a retryable 503.
+
+**Shutdown implications — checked, no regression.** `close()` sets `serving = false` alongside `closing = true`; `close()` is idempotent (same promise object); the listener is released on both the success and the failure path (port rebindable in every run); on the success path the store reopens with the resource durable (`beads/early` 200 after reopen), on the failure path it reopens empty with the key unclaimed. Requests arriving after `close()` begins get `ECONNREFUSED`/503, never a served response.
+
+The window between `serving = true` and the caller holding the handle is closed by construction: there is no `await` between `:544` and the `return` at `:562-576`, and `startInstalledReferenceCandidate` computes `payloadIdentity` *before* starting the runtime and does only synchronous work after it — so the caller's continuation runs as a microtask, before any I/O callback.
+
+Two of the four items on the finding's prescribed fix list were not implemented — see N5.
+
+### Finding 3 (M2, MEDIUM) — **CLOSED**, and verified more completely than the author's test
+
+`development-authority.ts:40-74` defines the frozen `DEVELOPMENT_OWNER_LIMITS`; `installed-reference-configuration.ts:160` hashes it as a single `ownerLimits` key.
+
+**Hashed — verified exhaustively.** I reconstructed the digest preimage independently from the capture's public outputs (`revision`, `scope`, `contracts.identity`, `policy.identity()`, `aggregate`, `ownerLimits`, per-credential `tokenDigest`, `cors`, `history`) and reproduced `configurationIdentity` exactly. I then walked the tuple to **26 leaves** and perturbed each one in isolation: **0 of 26 left the digest unchanged**, with an identical-clone control reproducing the baseline. Every value the finding enumerated — `patchOperations`, `patchPathBytes`, `patchPathDepth`, `representationBytes`, `maintenanceIntervalMs`, `retainedStateCapacity`, `maxRetainedCursorPositionsPerSnapshot`, `retainedSnapshotByteCapacity`, `retainedSnapshotNodeCapacity`, `maxOpaqueTokenLength`, `tokenGenerationAttempts` — moves the identity. (The repo test pins 6 of the 26.)
+
+**Consumed — verified over real HTTP against the real factory:**
+
+- `member.patchOperations` 128 → **200**; 129 → **413 `limit-exceeded`**
+- `member.patchPathBytes` exceeded → **413 `limit-exceeded`**
+- `update.sequenceOperations` 32 → **200**; 33 → **413**
+- `update.requestBodyBytes` exceeded → **413 `request-too-large`**
+- `opaqueTokenBytes` → emitted pagination cursor decodes to exactly **24 bytes** (32 base64url chars), within `maxOpaqueTokenLength: 64`
+- `read.page.defaultItems` → page of exactly 20; advertised `limits` block byte-identical to `4078ca7`
+
+The remaining leaves (`patchPathDepth`, `representationBytes`, the four retained-snapshot capacities, `tokenGenerationAttempts`, `idleCleanup`, the lifecycle trio) ride the same two object spreads as the values proven in force, so consumption follows from the spread rather than from separate wiring.
+
+**No values changed and no override was introduced.** I diffed every moved literal against `4078ca7`: all identical. `DEVELOPMENT_OWNER_LIMITS` is not re-exported from `index.ts` or `development.ts` (only `DEVELOPMENT_BEAD_TYPE`/`DEVELOPMENT_LINK_TYPE` are), so no public configuration surface grew.
+
+**The docs' compatibility claim checks out.** `docs/design/update-implementation-progress.md` says this "changes qualification configuration identities, not persisted installation identities." Cross-build probe: a store provisioned by the `4078ca7` build reopens cleanly under the `dea6f9e` build with `create:false` — resource present (200), retained idempotency key replays (200) — while `configurationIdentity` changes (`190eee55…` → `4b642b4d…`) and `artifactIdentity` is unchanged. `installationIdentity` derives only from `contractIdentity` + the aggregate digest, so it is untouched.
+
+One invariant I went looking for and found already enforced: splitting `day` into separate `lifecycle.retentionMs` and `lifecycle.minimumRetentionMs` fields makes divergence newly *expressible*, but `member-executor.ts:438` rejects `retentionMs < minimumRetentionMs` (and any `minimumRetentionMs < 86_400_000`) at construction. Fail-closed. Not a finding.
+
+---
+
+## Findings 4–9 — **NOT DISPOSED HERE**
+
+Findings 4 (fixture/emitted composition fork), 5 (`close()` caches a rejected `completion`), 6 (hosted-schema route missing `x-bdp-development`), 7 (`payloadIdentity` excludes `node_modules`/`fast-uri`), 8 (`referenceTypeArtifacts` has no output-side assertion) and 9 (L2 implemented but unpinned) are assigned to a separate successor. This repair touches none of their code: `installed-reference.ts`, `development-runtime.ts:345-361` and `:561-574` are unchanged except for the two `serving` lines. **I am not reporting any of them as fixed**, and nothing I ran contradicts their original statements.
+
+---
+
+## Residuals in the bounded changed code
+
+### N1 — LOW · The entrypoint test reads a mutable global; `import.meta.main` is available on the pinned runtime
+
+`packages/server/src/installed-reference-process.ts:63-71`
+
+**Impact.** `process.argv[1]` is writable. Probe H: a host that assigns `process.argv[1] = "<module path>"` and then merely imports the module re-opens the full M4 hijack — observed host `exitCode:2` plus the stderr line, from an import alone. This is deliberate action by the host rather than the bare import M4 named, so the finding stays closed, but the check is softer than it needs to be.
+
+**Fix.** `if (import.meta.main)`. I confirmed `import.meta.main === true` under the pinned Node 24.16.0. It is unforgeable, removes two `realpathSync` calls from every import, and preserves scenarios D/E (verified behaviour there is the correct refusal, not inertness).
+
+### N2 — LOW · Inertness is pinned against the workspace `dist`, never the packed tarball
+
+`apps/bdptest/src/installed-reference-import.test.ts:7-10`
+
+**Impact.** The new probes target `../../../packages/server/dist/installed-reference-process.js`. The original finding's reachability argument was specifically `files: ["dist"]` shipping the module in the tarball. `scripts/smoke-executables.mjs:352-371` still only asserts that the **exports map** denies `@bdp/server/installed-reference-process` and `…/dist/installed-reference-process.js` — the two specifiers the finding showed are bypassed by file-path and `--import` resolution. So the artifact that actually ships has no inertness assertion.
+
+**Fix.** Add one bare-import assertion to the smoke against `installedReferenceEntry`'s directory (the smoke already computes that path at `:390-396`). I verified by hand that the packed copy is inert, so this is a coverage gap, not a defect.
+
+### N3 — LOW · Two new spread sites can silently shadow validated or advertised bounds
+
+`packages/server/src/development-authority.ts:214-217` and `:257-266`
+
+**Impact.** `limits: { ...bounds, ...DEVELOPMENT_OWNER_LIMITS.member }` — `bounds` is the output of `snapshotReadUpdateRuntimeLimits`, which validates feasibility (`read-update-runtime-limits.ts:22-44`). A future key added to `member` that collides with `requestBodyBytes`/`propertiesBytes`/`diagnosticBytes`/`diagnosticCount`/`maximumFirstDiagnosticBytes` would win over the validated snapshot and bypass that validation. Symmetrically, `pagination: { defaultPageItems: readLimits.page.defaultItems, maxPageItems: …, cursorTtlMs: …, ...DEVELOPMENT_OWNER_LIMITS.pagination, … }` places the spread *after* the three values derived from `readLimits` — a key named `maxPageItems` added to the `pagination` group would silently enforce a page bound different from the one `advertisedLimits: readLimits` publishes. Before this change all of these were sibling literals in one object, where a collision is a visible duplicate key.
+
+**Fix.** Put the spreads first (`{ ...DEVELOPMENT_OWNER_LIMITS.member, ...bounds }` is wrong — `bounds` must not win either), or simply assert after construction that the pagination page bounds equal `readLimits.page.*` and that `member` shares no key with `bounds`. Same shape as finding 8's "nothing enforces that" observation.
+
+### N4 — INFO · `DEVELOPMENT_RETENTION_MS` is now a dead export with a narrowed meaning
+
+`packages/server/src/development-authority.ts:77`. It was the sole retention constant; it is now an alias for `lifecycle.minimumRetentionMs` specifically, and after `installed-reference-configuration.ts` stopped importing it, it has **zero** consumers anywhere in the repo and is not re-exported from `index.ts` or `development.ts`. Either drop it or point it at the tuple so the name stops implying "the retention".
+
+### N5 — INFO · Two of finding 2's four prescribed items were not implemented (both now moot)
+
+- The startup `catch` at `development-runtime.ts:545-558` still does not drain `pending`, unlike `close()` at `:568`. This is now harmless *because* of the gate: a task admitted before `serving = true` can only reach `refused(…, "temporarily-unavailable")`, which never touches `authority`. The reason it is safe is the gate, not the catch — worth recording so a future edit before `:544` does not quietly reintroduce the race.
+- The post-body admission re-check at `:452` is still `if (response.destroyed || closing)`, not `|| !serving`. Equivalent today because the only transition that clears `serving` also sets `closing`, in the same statement.
+
+---
+
+## Verdict
+
+All three assigned findings are closed, with independent evidence stronger than the author's in each case: 8 process-lifecycle probes for M4, a two-commit differential that observes the baseline committing a write during a *failed* startup for H3, and exhaustive 26-of-26 leaf coverage plus live HTTP enforcement for M2. The full 7924-test suite, both smokes and evidence verification pass on the frozen commit. The residuals above are all LOW/INFO and none of them reopens a closed finding.
+
+Scope unchanged from the prior review: this is not installed/full-profile qualification, public admission, or fresh Read evidence, and findings 4–9 remain open with their successor.
