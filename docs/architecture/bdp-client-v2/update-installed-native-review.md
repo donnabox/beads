@@ -53,3 +53,8 @@ Pinned Node24.16.0/pnpm11.20.0. Isolated build PASS. Targeted14-file suite491 pa
 Separate startup probe1 test passed by asserting faulty observed200/200 acceptance; it is a defect reproducer, not desired-behavior qualification. Bare-import process probe exited2, confirming the import side effect. External probe source/logs preserved; scratch source removed. No full duplicate suite or new packaged smoke was rerun beyond installed process tests; author's packed smoke remains author evidence. No source/outward edits or claim of full write-profile eligibility. Both checkouts clean at completion.
 
 Verdict: hold P1a council closure for the three bounded refinements above. U2 fixes need not be reworked; no new operator product decision is needed.
+
+
+## Successor closure at dea6f9e
+
+All three native findings H3/M4/M2 are closed at frozen `dea6f9e7a95a3e3eba9c667de39360346f25bdf4`. Independent isolated build and15 tests/4 files passed, including the original controlled startup reproduction (now503/503), original bare import (nowexit0/no state change), IPC import inertness, actual entry lifecycle, and owner-limit identity checks. H3 remains a controlled initialization invariant; M2 is identity coverage, not an asserted behavioral exploit. Full closure and exact evidence: `update-installed-repair-native-review.md`. No public/full-profile qualification or outward action.

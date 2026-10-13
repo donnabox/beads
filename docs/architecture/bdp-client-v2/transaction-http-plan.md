@@ -31,3 +31,48 @@ Fixed all-visible, schema-free/unowned policy remains explicit. Service requires
 4. Unsupported minimum controls cannot yield200/304; test them against successful Resource/collection/receipt paths, expired cursor and foreign receipt cases. Report these as refusal safety only, not barrier qualification. Conditional request fields on POST cannot prevent execution.
 5. Actual network response disconnect does not cancel admitted work; graceful runtime close drains accepted work and store reopen proves terminal outcome. Bounded process launcher/restart tests use emitted build; label process exit/SQL injection honestly, no power-loss claim.
 6. Build first; focused HTTP/service/store/Read/runtime and inherited regression tests with2workers; typecheck/boundaries/format/lint, installed/development smokes and unchanged evidence verification. No test processes remain. Freeze exact clean commit, external report and next gaps for independent review; root publishes.
+
+## Accepted review dispositions (supersede interim response choices above)
+
+Canonical identity is an optional explicit validated private Scope configuration,
+independent of loopback binding; absence is only a disposable same-port fixture.
+Actual tests use a canonical HTTPS identity and different ephemeral bindings,
+without rewriting any retained URL. Public installed configuration is untouched.
+Unsupported valid set/depth/alias-sequence and minimum-control categories return
+bodyless internal 500 with a development marker, not invented malformed/limit or
+temporary/catch-up outcomes. Schema-valid discovery remains absent with the same
+honest internal gap. Genuine finite unresolved comparison maps to 503
+ temporarily-unavailable and Retry-After. Context on implemented successful
+Read/receipt/304/412 paths is implemented now; T3 only owns remaining barrier,
+expiry/retained-context ordering and complete required consistency behavior.
+
+External 16-finding disposition:
+1. Fixed canonical identity separated from listener; no fixed-port law adopted.
+2. Unsupported valid request -> bodyless500, no key/effects; set targets absent.
+3. Actual Read/receipt200/304/412 current context covered now.
+4. No fabricated catch-up/temporary proof. All supplied controls refused as an
+   explicit private incomplete behavior, including already-satisfied minima.
+5. POST never enters Read conditional handling; receipt delivery preserved.
+6. Target method routing precedes generic Read and receipt existence checks.
+7. Close stops delivery/admission and drains accepted work; injected uncertain
+   commit fences owner, live routes fail bodyless500, reopen recovers pending.
+8. Body cap shared; target cap8192 applies to POST, not a blanket Read413.
+9. No blanket rule omitting context from every error adopted. Existing Read
+   observations retain their actual context; unauthorized receipt nondisclosure
+   exposes none. T3 must complete ordering, not add diagnostic inspect reads.
+10. Actual unresolved dependency comparison503, no disclosed receipt/second
+    execution; later equal completion200 verified.
+11. Stray sequence carrier key rejected400 before member admission.
+12. Prior-epoch guard tested by persisted-fact injection, no rotation claim.
+13. Reuses target normalization, Read semantics, acceptsJson and body cap.
+    Node listener shell remains deliberately separate from concurrent P1a work.
+14. sequence/sequenceObserved share one runner and lifecycle task semantics.
+15. Same-owner afterstate uses exclusive SQLite authority, not a replica barrier.
+16. Original submissions terminal;202 exercised by equal pending member retry.
+
+T2a external findings F1/F2 repaired by same-entry execution/replay observations,
+no delivery clock reread or receipt-ID scan; GET scan remains a performance gap.
+F3 enforces serving position>=required/effect. F4 guards stored prior epoch. F5
+sequenceObserved is implemented. F6 scheduler eventual-delivery precondition is
+explicit. F7 uses one unchanged cap and actual inline result guard. F8 new guard
+failures retain receipt ID/key; the old delivery-unavailable path is removed.
