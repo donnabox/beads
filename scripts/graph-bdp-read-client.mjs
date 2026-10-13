@@ -520,7 +520,7 @@ try {
     assert.equal(retainedFirst.items[0].id, id('beads/alpha'));
     assert.ok(retainedFirst.next);
 
-    const deletionArgs = ['unlink', dependencyID, '--if-revision', deletionLinkBefore.revision,
+    const deletionArgs = ['link', 'delete', dependencyID, '--force', '--if-revision', deletionLinkBefore.revision,
       '--if-source-revision', deletionSourceBefore.revision, '--actor', 'bdp-read-dependency-remover', '--json'];
     const deletionBinary = digest(await readFile(process.env.BDP_BD));
     let deletionExecution;
