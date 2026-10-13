@@ -1,269 +1,353 @@
-# Private transaction materialization budget — proposed bounded follow-up
+# Private transaction materialization budget — revised proposal
 
-Read-only plan against frozen **064db8a99629122f130a91ee8b5189432ffe97e9** in
-`vickie-transaction-set-bounds` (parent8d64fcf). Prospective owned transitions are
-based on `transaction-owned-transitions-plan.md`, not implemented evidence. No
-source, schema, public profile or limit advertisement changed. Root/council must
-approve scope before implementation.
+Plan only. No production budget, admission rule, schema, public advertisement, or
+source file changed. Original proposal is preserved byte-for-byte as
+`transaction-materialization-plan.original.md` (SHA-256
+`97f07f2bc25191dcf2c6d9ff5640161d5e4d2a53c698f29423a6aa5e57919ac8`).
+This revision uses actual owned implementation **01e2d5470941a49240fab7820a6dea1b6deb291e**
+in `vickie-transaction-owned`, coordinated with its author; it does not assume the
+older prospective Event shape. Root must accept this revision before implementation.
 
 ## Recommendation
 
-Start the reference fixture at **32 cumulative matched Resources per transaction**,
-keeping the existing32 explicit-operation,4096 Event,65536 request-byte and262144
-per-Resource representation bounds. Count repeat matches and no-ops, preserve
-cardinality-before-budget ordering, and retain the existing413/limit-exceeded/
-transaction.matchedResources failure with no invented operation index.
+Use the existing private count vocabulary with **M=256 cumulative matched Resources
+and E=256 induced Events**, retaining O=32 explicit operations, Q=65536 raw request
+bytes and R=262144 complete Resource representation bytes. The two independent
+counts bound different artifacts: no-op result volume needs M; change-group fanout
+needs E. No byte refusal is relabeled as a Resource count.
 
-A fixed count of128 can satisfy a conservative whole-string proof below, but its
-505,675,776-byte prospective group bound is too close to the actual536,870,888-code-
-unit V8 ceiling to be a comfortable reference budget.64 is intermediate;32 gives
-more headroom while matching the existing explicit-operation capacity. This is a
-reference implementation operational tradeoff, not a BDP product maximum.32 is a
-proposal, not a committed limit or public claim.
+Under the explicit prerequisites below, conservative whole JSON bounds are:
 
-Two small installation conditions are necessary for an unconditional bound over
-new records: bound the configured Scope's encoded overhead, and prevent silently
-opening stores whose retained data was admitted under the prior larger budget.
-Lowering only the batch.ts constant is insufficient to assert a new bound for all
-served records. Do not redesign storage merely to avoid those private conditions.
+- completed receipt: **173,346,816 bytes**;
+- effective group: **305,397,760 bytes**;
+- actual pinned V8 string ceiling: **536,870,888 code units**;
+- SQLite MAX_LENGTH: **1,000,000,000 bytes**.
 
-## Source facts and counterexamples
+The group has about 43% headroom below the first string ceiling. These are bounds,
+not desirable target allocations and not a heap-safety proof. The recommendation is
+conditional on bounded real workload measurements. M32/E4096 has a tighter corrected
+group bound of169,345,024 and receipt39,391,232, but unnecessarily rejects tiny/no-op
+sets above32. M256/E128 is a useful fallback (group154,402,816) if measurements reject
+E256: it preserves no-op capacity but halves Event-heavy work. Do not choose the
+highest count that barely fits a string ceiling.
 
-At frozen064:
+M256/E256 includes every count combination accepted under the previous proposed
+M32/E4096: at most M+O=64 invocations, each at most4 Events, gives at most256 Events.
+This argument overcounts set carrier entries, which only makes it safer. Thus this
+revision preserves that proposal's worst-case owned atomic-work envelope while
+allowing up to8x the matches in less Event-intensive workloads. It does NOT preserve
+all workloads of the current4096/4096 implementation; lowering either cap is an
+intentional private reference-implementation capacity change.
 
-- transaction-batch.ts54–67:32 operations,4096 induced Events,4096 cumulative matches,
- 65536-byte carrier,65536 properties,524288 diagnostic bytes/16 diagnostics.
-- transaction-batch.ts707–750: each valid set selects once at its staged turn,
- applies cardinality first, charges selected.length including repeated/no-op matches,
- then emits one matched entry and invokes the existing evaluator once per Resource.
-- transaction-store.ts747–755 bounds idempotency keys to256 ASCII characters;
- principal strings are nonempty/well-formed but have no length bound.
-- transaction-store.ts944–956 allocates UUID identities/revisions.989–993 supplies
- the actual262144 representation cap; resource-evaluator.ts1048–1100 checks both
- materialized subject and source before writes. Deletion does not cascade; a Bead
- with incident Links is refused (1028–1029). Alias mutations have no Resource Events.
-- transaction-batch.ts544–570,624–657 constructs current lifecycle/incidence Events.
- Current unowned Link creation/deletion produces at most3 facts, update1. The owned
- plan adds at most one source updated Event and one source Resource: at most4 facts
- and2 changed/deleted Resource identities per invocation, not an arbitrary cascade.
-- transaction-store.ts1012–1070 serializes one complete terminal receipt and one
- complete effective group before persistence. Receipt paging does not remove that
- work:481–501 stores ranges over the existing complete result list.
-- protocol/json-values.ts95–141 snapshots values, collects chunks and joins one
- complete string. There is no implicit output cap, streaming or byte-limit refusal.
-- transaction-store.ts175–196 accepts canonical Scope without a length bound and
- persists exact Scope in configuration;848–860 includes its receipt URL even for
- zero-match work. Thus a count bound alone is not a bound over arbitrary installation
- metadata. The current configuration lacks the matched cap and representation tuple.
-- transaction-store.ts819–850 compares retained keys before fresh admission; replay
- must not be reevaluated against a newly lowered match cap.
+Retain the original private installation condition **S<=65536**, where S is encoded
+JSON length of Scope+`events/`. This is a chosen implementation condition, not an
+inferred BDP URL limit. A4096 Scope cap is unnecessary to establish the recommended
+bound, and the compiler's4096 diagnostic-Type-ID bound is not authority for limiting
+Scope URLs. The alternative is quantified below, without recommending a second
+unneeded narrowing.
 
-The prior emitted probe built an exactly262144-byte Resource through ordinary
-mutations (largest request60138 bytes), then persisted/reopened/replayed a32-match
-no-op receipt of8,392,367 bytes.4096 such postimages alone project1,073,741,824 bytes.
-This is a reachable input family; no GiB allocation/failure was attempted. See
-`transaction-set-bounds/receipt-size-probe.mjs/.log`. Pinned Node24.16.0 reports
-MAX_STRING_LENGTH536870888; its SQLite reports MAX_LENGTH1000000000. The initial
-4096 cap does not close that materialization gap.
+## Source basis and closed scope
 
-## Conservative whole-string calculation
+Exact line references below are against owned01e2d547:
 
-All lengths below are compact JSON UTF-8 bytes, not JS object sizes. A byte bound
-also bounds UTF-16 code units for the well-formed encoded JSON, so it is sufficient
-for the observed V8 string ceiling as well as SQLite's TEXT byte ceiling.
+- `transaction-batch.ts:54–68`: current4096/4096 counts,32 operations,Q/properties/
+  diagnostic limits. `:568–585`: Event capacity checked before push; fixed envelope.
+- `transaction-batch.ts:626–653`: evaluator changes/deletions become final Resource
+  images or identity tombstones in a Map; repeated versions deduplicate only here.
+  `:655–698`: direct lifecycle and local endpoint facts. `:700–740`: owned source
+  Event, with exact create/update/delete variants.
+- `transaction-batch.ts:779–838`: materialize entire candidate collection, visibility
+  filter, selector, sort, cardinality, cumulative match charge, then member work.
+  Sets forward properties patches only; explicit operations may also patch metadata.
+- `transaction-store.ts:210–218`: exact installation configuration; `:457–464`
+  compatibility comparison; `:923–930` safe-integer position allocation;
+  `:1024–1029` actual evaluator limits; `:1043–1101` receipt/group persistence.
+- `resource-evaluator.ts:97–108`: representation/properties bounds currently OPTIONAL.
+  `:1048–1059` checks complete subject and source body JSON before writes.
+  `:1077–1101` result carries direct record/tombstone plus source ID/revision, never
+  a second source body. `:1145–1162` source body embeds owned Link records.
+- `transaction-store.ts:1549–1565` inspect() materializes all resources/groups.
+  `recovery-store.ts:189–204,580–598` is a different RU schema/format/owner.
 
-Let:
+Only stores newly provisioned under, or exactly reopened with, the accepted fixed
+budget tuple are covered. All Resource rows must have been written through this
+owner/evaluator under R; no arbitrary database injection, old-budget records or
+cross-store resource import are included. The owner has no Resource seed/import
+option. Fixed UUID revisions/transactions, bounded key/position/time encodings and
+current closed outcome shapes are also prerequisites.
 
-- M = cumulative set matches; O=32; K=M+O. Each match invokes evaluation once; every
- explicit operation invokes at most once. K deliberately overcounts set carrier
- entries as if they were additional singletons. No-op invocations remain counted.
- There are at mostO extra matched-summary entries.
-- R=262144 for each complete current/new Resource, including metadata, owned inline
- records, references and attribution. Tombstone identity is a subset of a live
- record. New installs contain only records written under that bound; corrupted rows
- and external database edits are integrity faults outside this proof.
-- Q=65536 raw carrier bytes. S is encoded JSON byte length of Scope+"events/", and
- the proposed private installation precondition is S<=Q. Receipt URL suffix adds
- only a fixed number of bytes covered below. This bounds actual configured Scope,
- including reopen, not merely a short test URL.
-- N=7Q bounds reserialized admitted request data. Do NOT assume N=Q:1e20 is4 wire
- bytes and21 JSON output bytes. JSON.stringify finite-number tokens are at most25
- characters. Input number tokens of at least4 bytes therefore expand by at most
- 25/4<7; one/two-byte tokens do not expand; three-byte tokens expand to at most10
- characters (e.g.9e9), also<7. Ordinary JSON string/key escaping does not enlarge a
- valid original token's UTF-8 encoding; whitespace removal reduces it. Punctuation
- does not expand. Thus7Q safely covers all normalized patch data in one carrier.
- Scope-relative identity substitution is NOT covered by N; Resource fields below
- cover canonical references separately. Patch payload values are not @ bindings.
-- A=8192 fixed structural bytes per invocation, plus H=1048576 per whole document.
- These deliberately loose allowances cover JSON keys/punctuation, four Event
- envelopes, two change wrappers, UUID revisions/transaction, timestamps, integer
- ordinals/positions, result tags, stable view/epoch and256-byte key. Variable Scope,
- Resource data, operation name, patch payload and diagnostics are accounted for
- separately. Neither allowance licenses arbitrary new extension fields.
+## Normalize patch bytes explicitly
 
-`transaction-materialization-ratios.mjs/.log` exercises the emitted decoder,
-admission and encoder on exponent/negative-zero/Unicode/control-character examples;
-observed1e20 ratio5.25 and9e9 ratio3.333. The general7x bound is the token argument
-above, not an empirical claim inferred from a few examples. Initial script invocation
-omitted its required diagnostic-budget argument; corrected invocation passed. No
-source tests or suite were run for this read-only plan.
+Lengths here are compact JSON UTF-8 bytes. This bounds UTF-16 code units of the
+well-formed encoded JSON too. Let **N=7Q=458752** bound normalization of request
+JSON values. A raw4-byte `1e20` becomes21 output bytes; Q is not a normalized patch
+bound. Finite JSON.stringify number tokens have at most25 characters. Tokens of at
+least4 input bytes expand by at most25/4<7; length1–2 do not expand; length3 has at
+most10 output characters. Strings/keys of accepted well-formed JSON do not grow
+relative to their valid original JSON encoding; whitespace removal helps.
 
-Conservative per-invocation group contributions, including up to2 final changes:
+Both patch lists of one invocation together are subsets of that one carrier and
+therefore <=N **combined**, not N for each list. The normalized carrier partitions
+into these two array values plus other fields; the sum of the two array serializations
+cannot exceed its <=7Q encoding. Array/member names, separating commas and any
+wrapper duplication are paid by A. For an owned update the two Events together
+therefore charge at most2N, never4N. The source Event outer provenance is charged
+to the source R and its nested Link provenance to the separate Link R. Charging N
+once per Event is deliberately loose. A set repeats its
+one properties patch across matches, so a carrier-wide N must not be charged only
+once to the entire transaction. An owned update duplicates the admitted patch in
+the Link Event and source Event. A patch may add a large temporary value and remove
+it before the final record, so its bytes are not bounded by the postimage R.
 
-1. Owned creation/deletion is bounded by **11R+4S+A**. Bound Link lifecycle Event by
- 2R+S, each of two graph facts by2R+S, source updated by3R+S (source identity and
- attribution, nested complete Link record), and final changes by2R. Deletion is
- smaller. Include previous UUID revisions and all fixed keys in A. Creation emits
- no user-supplied patch arrays.
-2. Owned update is bounded by **7R+2S+2N+A**: Link lifecycle<=2R+S+N; source update
- <=3R+S+N; final changes<=2R. Only two Events; no graph facts on update. N includes
- both propertiesChange and metadataChange together. This intentionally counts the
- same input patch twice when the source Event embeds the Link delta.
-3. Unowned transitions fit those envelopes. No-op/alias mutations contribute no
- group. Each invocation may count the same final Resource in this bound even though
- the actual changes Map keeps only its last postimage, so deduplication only helps.
-4. A receipt result is bounded by **2R+Q+A**: direct Resource/tombstone, possible
- source/sourceRevision, and operationName from the carrier. Alias outcomes (Scope+
- path and target identity) fit the same bound. No-op receipts retain full postimages
- and obey exactly this bound. Each matched entry is below128 bytes. Add S+H once for
- the receipt envelope. Failed receipts have no partial results: diagnostic bytes
- <=524288, name<=Q, Scope<=S, fixed fields withinH, far below the successful bound.
+The review's E*(2R+S) Event formula does not account for these patch bytes; it is
+not an established bound. This revision does not claim a constructed real input
+violates that formula; it replaces its unsupported premise with an explicit N term.
 
-Use the larger group coefficient for every K invocation, although mixed operations
-cannot simultaneously maximize all terms. This yields:
+The revised probe uses the actual emitted protocol decoder/admission/encoder.
+Escaped lone surrogates are **rejected** by that decoder, rather than being admitted
+as the review's JSON.parse experiment assumed; both high/low cases are recorded.
+Accepted pair/exponent cases satisfy the7x bound. This is supplementary evidence;
+the token argument, not sampling alone, establishes N.
 
-| M | K | Whole group, create/delete bound | Whole group, update bound | Whole completed receipt bound |
-|---:|---:|---:|---:|---:|
-|32|64|202,899,456|186,122,240|39,391,232|
-|64|96|303,824,896|278,659,072|58,527,744|
-|128|160|505,675,776|463,732,736|96,800,768|
-|256|288|909,377,536|833,880,064|173,346,816|
+## Exact Event and invocation partitions
 
-Formulas: `K*(11R+4Q+A)+H`, `K*(7R+16Q+A)+H`, and
-`K*(2R+Q+A)+32*128+Q+H`. Numeric values use the maximal permittedS=Q.
-128 passes this deliberately conservative string test;256 does not. This does NOT
-prove256 actually produces a failing group: correlation between inline source and
-Link sizes, carrier size and reused identifiers may support a tighter proof later.
-There is no reason to pursue that optimization before reference delivery.
+Let A=8192 fixed structural bytes per invocation and H=1048576 per document.
+A covers at most4 closed Event envelopes,2 change wrappers,result punctuation and
+fixed revision/transaction/time/position fields. H covers document envelope,
+fixed receipt URI suffix/page envelope and bounded failure diagnostics. Variable
+Scope, Resource fields, patches, operation names and diagnostic bytes are accounted
+for explicitly; neither allowance licenses arbitrary extensions.
 
-Existing sequences contain at most32 singleton RU-kind members, not nested set
-batches. Their combined response therefore contains at most32 single-Resource/alias
-receipts, not32 M-sized batch receipts. Preserve that restriction; nesting batches
-or set carriers in sequences would require redoing the aggregate response bound.
-Receipt page output contains a subset of an already-bounded receipt plus bounded
-Scope-derived next URI; continuation never recomputes mutable effects. Future pages
-that aggregate multiple complete change groups need their own output budget; this
-per-group proof is not that qualification.
+An Event's subject/subjectType and ordinary lifecycle data draw disjoint fields
+from the same serialized Resource: id/type/properties/metadata/revision/provenance/
+endpoints. They are not separately charged R each. Fixed renamed keys belong to A.
+The incidence Event duplicates Link id/type in its data and envelope, so <=2R.
+The source Event combines source identity/provenance fields with Link fields; <=2R
+conservatively, even though creation's Link is also embedded in the source body.
+Previous bodies never appear: only previousRevision/sourceRevision are serialized.
+Adding a preimage body to ANY Event/change/result invalidates this proof and requires
+an explicit new calculation. Capturing a prior row for evaluation is not permission
+to serialize it.
 
-## Why even32 is not a heap proof
+Per-Event variable contributions (plus S per Event and fixed overhead in A):
 
-Two hundred MB is a coarse worst-case group bound, not a desirable fixture size.
-JSON snapshots, admitted values, staged row copies, changes, Event arrays, serializer
-chunks, joined strings, SQLite bindings and response Buffers can coexist. JavaScript
-object/node overhead depends on shape and is not bounded by a small fixed multiple
-of text bytes. Many tiny fields can be worse than one large string. Candidate scans
-remain independent of M and can visit an arbitrarily large collection before the
-match guard. Owned inline state amplifies copies even when the final group dedupes.
+| Event | Resource/patch contribution |
+|---|---:|
+| Direct created | R |
+| Direct deleted | R (identity subset of old live record) |
+| Direct updated | R + N |
+| Endpoint linked/unlinked | 2R |
+| Owning source updated for create/delete | 2R |
+| Owning source updated for update | 2R + N |
 
-Consequently the claim should be: a small fixed budget removes the demonstrated
-platform string-limit exposure for newly admitted records under the stated
-installation; measured stress determines whether it is practical. It is NOT
-"cannot OOM", a total authority memory bound, a scan bound, or complete TX readiness.
-The existing32 explicit operations already consume part of the conservative bound;
-reducing M cannot erase that baseline. Prefer32 initially; do not promote128 simply
-because it barely fits an engine constant. If real maximum-shape tests are still
-impractical at32, reduce the private budget further or take the physical alternative
-below—do not catch allocation failure and invent a count-limit Problem.
+To include change records rigorously, partition by invocation. Let t be the number
+of local endpoint facts; t=0..2 for unowned Links, **t=1..2 for owned Links** because
+the source must be local and live. Self-Links retain both endpoint facts (t=2).
+No-op and alias work produce zero Events/changes, but retain result entries.
 
-## Installation, retention and identity consequences
+| Effective invocation | Event count e | Events + assigned changes, excluding A |
+|---|---:|---:|
+| Bead create/delete | 1 | 2R + S |
+| Unowned Resource update | 1 | 2R + N + S |
+| Unowned Link create/delete | 1+t | (2+2t)R + (1+t)S |
+| Owned Link create/delete | 2+t | (5+2t)R + (2+t)S |
+| Owned Link update | 2 | 5R + 2N + 2S |
 
-1. Use one immutable source-private budget tuple for existing count/request/Resource
- bounds and startup proof, consumed by evaluator/owner. No options, flags, public
- exports, wire fields or new byte-limit vocabulary. Validate S<=Q BEFORE provisioning
- or maintenance. Persist/bind the tuple in existing exact installation configuration
- alongside Scope. The configured Scope is already persisted; reopen must validate
- that same value and tuple. Fixed owner/view/UUID formats remain proof assumptions.
-2. Reuse the current incompatible-installation refusal for an older configuration
- without this tuple. Do not silently interpret old4096-budget stores as the new
- installation. Keep old files/artifacts historical and use a new disposable store;
- no migration/data loss is authorized. Private compatibility identity change does
- not change semantic request equality policy or normative wire format.
-3. If compatibility with old files is required instead, it needs an explicit legacy
- carve-out: old receipt/group bytes remain replayable at their original size and are
- outside the new bound, or a reviewed physical migration. Lowering a live limit may
- affect fresh keys but must never turn an already-retained equal key into a new limit
- refusal or recompute its result. Retained conflict still wins. Failed limit outcomes
- stay bound until existing failed-key forgetting rules apply; fresh keys then observe
- current state/current capacity. No cap value is added to canonical request identity.
-4. The proof is about receipt/group JSON strings. SQLite also sizes complete rows:
- raw trusted principal currently has no bound and is stored beside receipt/identity/
- witnesses. A blanket whole-database-row-fit claim would additionally require a
- compact validated principal/configuration boundary and bounds for identity/witness
- encodings. Existing installed fixture principals are small; do not pretend the
- public protocol limits that hidden trusted string. If root wants the broader row
- guarantee in this slice, validate the captured principal identifiers using the same
- privateQ budget and account for identity/witness overhead, without inventing IAM.
+The first four rows also conservatively cover tombstones and omitted remote
+incidence facts. Every row is <= **e*(2.5R+N+S)**. For owned create/delete, dividing
+(5+2t) by(2+t) gives at most7/3<2.5; owned update gives exactly2.5R+N before S.
+At most2 changed/deleted identities per invocation remain a load-bearing invariant;
+there is no delete cascade. The final Map can only reduce the sum of assigned
+change bytes. This uses exact shapes, not merely the looser #changes<=#Events fact.
 
-The customer-visible tradeoff is explicit: a fresh set selecting33 matches will
-atomically fail under proposedM32 even when each Resource is tiny;32 repeated matches
-of the same Resource consume the same budget as32 distinct matches. There is no
-silent first-page mutation. Splitting work trades away cross-chunk atomicity; clients
-that require a larger atomic set need a differently provisioned implementation,
-not an automatic retry that hides this distinction. Cardinality failure still wins
-when the client's own guard is violated. The4096 Event cap remains a true upper bound
-but may be unreachable at the current lower invocation budget; do not claim that
-its boundary was exercised without a lower Event-cap test seam or a valid future
-fanout path.
+Let K=M+O (overcounts set operation headers as extra invocations). Then:
 
-## Candidate implementation scope and done predicates
+```
+Event-limited group <= E*(2.5R+N+S) + K*A + H
+Invocation-limited group <= K*(max(9R+4S, 5R+2N+2S)+A) + H
+Group <= min(those two bounds)
+Receipt <= K*(2R+Q+A) + O*128 + S + H
+```
 
-After council acceptance, coordinate transaction-batch/store with the owned-Link
-worker. Proposed scope: existing private budget constants, owner configuration and
-Scope startup check, set/store tests, narrow progress doc. Preserve exact shared
-contract capture; no schema, public admission, HTTP sets, Type lifecycle or new
-storage framework. A source-private helper only if it reduces duplicated constants;
-no public option to raise the budget.
+Receipt derivation: direct Resource/tombstone <=R; source identity/revision or alias
+extra fields fit another R; operationName <=Q; O matched-summary entries fit128
+bytes each. Repeated no-ops carry full records and are counted, despite no Events.
+Aliases currently occur only in singleton/sequence members, not batches; their
+locator/target strings fit this overbound. Failed receipts have no partial results,
+diagnostics<=524288 plus name<=Q and Scope<=S, inside the separate H allowance with
+headroom. Expired details keep smaller allocation identity lists. None of these
+claims treats an unbounded trusted principal as part of a bounded JSON outcome.
 
-Done when all of these are executable or precisely source-derived:
+## Recomputed alternatives
 
-1. One fixed tuple is consumed by preparation/evaluation/owner representation limits
- and installation identity. A changed/missing tuple or invalid Scope refuses before
- provisioning/maintenance; reopening the valid exact tuple succeeds. Old-source
- fixture proves compatibility refusal, not reinterpretation of historical receipts.
-2. Actual M matches succeed and M+1 refuse atomically; repeated no-ops count. Preserve
- the guard-vs-cap discriminator, rollback preceding effects, lack of fabricated
- operationIndex, and retained equality/conflict/fresh-key behavior through reopen.
- The current4096 regression becomes historical evidence, not a false current limit.
-3. Build R-sized metadata through ordinary sub-Q requests, then execute M repeated
- no-ops; measure actual receipt encoding, replay, observation and pages through
- emitted owner/HTTP. No DB injection, limit raising or fabricated Resource result.
-4.32 explicit operations remain supported. Exercise mixed sets/singletons, maximum
- name/key bytes, alias put/delete sequence, exponent patches, escaped strings,
- unchanged before/after state on limits, and failed diagnostic bound. Every counted
- invocation is covered; no reliance solely on returned result order.
-5. Owned integration establishes2-Resource/4-Event maxima, before/after Resource
- checks and exact payload formulas with real fixtures before claiming that portion
- implemented. Test source-inline size nearR, repeated source versions, self-Link,
- two endpoint facts and no-op sourceRevision. Record maximum actual group/receipt
- strings and peak RSS for large strings AND dense small-field payloads in bounded
- child processes. Fix an execution-time/memory qualification budget before the run;
- abort means inconclusive, not safe. Do not allocate the conservative500MB128 bound
- merely to demonstrate arithmetic.
-6. Compiler/build/boundaries, focused transaction/evaluator/receipt-page/recovery
- regressions, and existing packed/development smokes pass. Frozen Read evidence is
- neither resealed nor relabeled. Report exact Node/SQLite limits and bound arithmetic.
+Use original S=Q=65536. All values below are whole compact JSON byte upper bounds,
+not measurements. Existing32 operations remain fixed in every alternative.
 
-## Smallest fallback under existing wire
+| M | E | Group bound | Receipt bound |
+|---:|---:|---:|---:|
+|32|4096|169,345,024|39,391,232|
+|64|256|253,493,248|58,527,744|
+|128|256|304,349,184|96,800,768|
+|256|128|154,402,816|173,346,816|
+|256|256|305,397,760|173,346,816|
+|256|384|456,392,704|173,346,816|
+|256|512|607,387,648|173,346,816|
 
-If count reduction plus explicit private installation conditions is unacceptable,
-reuse existing receipt page planning but store immutable result entries separately
-from receipt header/core; likewise store each Event/change separately from group
-header under the SAME SQLite transaction and ownership fence. Reads assemble only
-one existing bounded wire page. Keep stable receipt/page identities, exact retained
-order/postimages, crash atomicity and all existing receipt/Problem shapes. This
-changes private physical format and recovery/expiry/indexing; it is a separate
-reviewed slice, not a quick constant fix. It still needs bounded page materialization
-and does not by itself make an arbitrarily large unpaged group response practical.
-Do not map a serializer/SQLite allocation exception to matchedResources or
-mutatedResources: those fields are counts. No new error vocabulary is proposed.
+E512 is not established safe by this proof; the upper bound exceeding a ceiling is
+not proof that a real reachable group fails. E384 has inadequate comfortable
+headroom for this fixture. At S4096, E256/M256 becomes289,669,120 for groups and
+173,285,376 for receipts: it helps but does not justify copying the review's
+205,783,040 result, which omitted patches. Exact arithmetic and every partition
+inequality are executable in `transaction-materialization-revised-proof.mjs`.
+
+Sequences still contain at most32 singleton operations, never nested set batches;
+they do not multiply a256-match receipt by32. Receipt pages contain subsets of a
+previously bounded complete receipt plus bounded next URI. Whole histories or pages
+that aggregate multiple groups need their own bound; this is not their qualification.
+
+## Required compiler and installation prerequisites
+
+A serialized tuple without enforcement is insufficient. The actual evaluator
+currently accepts omission of propertiesBytes/representationBytes. Proposed scope
+must close this before relying on R:
+
+1. Make those two fields required finite positive bounds at the evaluation boundary;
+   use the single immutable private tuple in the actual TX owner call site and its
+   identity. Compiler-negative tests must fail when either field is omitted, and
+   real subject/source overflow tests must fail without effects. Diagnostic and
+   patch limits retain their existing semantics. Updating shared evaluator typings
+   requires a bounded call-site/test audit and root/owner coordination; no silent
+   unbounded fallback. A narrower TX-only required subtype is an alternative if
+   shared optionality is intentionally retained, but then claims must stay strictly
+   about that typed TX owner and include proof every TX construction uses it.
+2. Tuple contains M,E,O,Q,properties cap,R,diagnostic bounds and the chosen Scope
+   condition. Freeze, consume and persist it in existing exact configuration, rather
+   than duplicating numeric literals. Scope check before provisioning; persisted
+   tuple comparison before any BDP maintenance. No new public switch or limit field.
+3. Old missing/different tuple refuses compatibility; no migration or historical
+   receipt rewrite. Current public metadata does not advertise M/E, but private
+   configuration/qualification identity necessarily changes. Preserve old artifacts.
+4. Equal retained keys are compared/replayed before fresh capacity admission; never
+   recompute them under a lowered count. Conflict remains conflict. Count failure
+   remains a retained failed receipt until existing forgetting; fresh keys follow
+   the new installation. Do not place operational caps in semantic request identity.
+5. SQLite hot-journal recovery must occur before reading configuration; do NOT move
+   tuple refusal ahead of SQLite recovery. The required boundary is before BDP
+   pending retraction/creator cleanup/retention sweep, preserving the reviewed
+   transaction recovery repair and actual refusal/valid-reopen witnesses.
+
+`recovery-store.ts` is explicitly OUT of the TX tuple scope: it is the distinct
+Read+Update owner/schema (key_state, installed_types, policy, format3), not a loader
+or reseeder of TX receipts/groups. TX owns its separate resources/receipts/groups
+schema/configuration and has no RU import route. Wrong-owner files must continue
+to refuse; an actual future migration/import seam would need the same R/retention
+proof before it exists. No claim about all RU stores follows from this TX plan.
+
+The output-string proof is also not a complete SQLite-row proof. Raw trusted
+principal strings are presently nonempty but unbounded and stored beside receipt
+and witnesses. Identity/witness/configuration fields need their own bounds before
+claiming every row fits MAX_LENGTH. Existing fixed fixture principals are small.
+Do not invent an IAM policy or conceal this distinction. Private principal bounds
+are a separate small choice if root wants the stronger full-row guarantee.
+
+## Capacity, failure and memory consequences
+
+The two counts are cumulative: repeated matches/no-ops consume M, each actual fact
+consumes E. Both failures use existing413/limit-exceeded with transaction.matchedResources
+or transaction.inducedEvents, no fabricated operationIndex. Cardinality runs first
+for the current set. For20+20 matches M32 fails after the second selection, whereas
+M256 does not; if the supplied max100 is satisfied it does not suppress cumulative
+capacity failure. The absence of a failing operation index makes smaller limits
+harder to diagnose. Do NOT add a pre-admission cardinality.max<=M restriction: a
+max100 request matching5 is valid today; rejecting it changes existing behavior.
+
+At E256, up to256 ordinary one-Event updates,128 owned two-Event updates, or64 owned
+four-Event create/deletes fit the Event count when no other work consumes it; the
+32-operation limit still applies, so larger totals require supported sets. Actual
+remaining capacity depends on other operations and cardinality. Nonmutating work
+can reach M256 without Events. Atomic chunking remains the caller's decision and
+loses cross-chunk atomicity; never silently split and claim one transaction.
+
+No count bounds total authority memory. Before either guard, selection currently
+materializes `resources(kind)`, JSON-parses every Resource, filters transitive
+visibility, retains selector output and sorts it. Peak candidate memory scales with
+C*R for collection size C (plus representation/object overhead), up to32 times per
+batch, not a streaming scan. Event checks occur during fanout but cannot repair this
+prior whole-collection materialization. Serializer snapshots/chunks/strings, Event
+arrays, receipts, staged rows and SQLite bindings can coexist. Dense tiny-field
+objects have large overhead; no fixed text-byte multiple proves heap safety.
+
+Stress must NOT call inspect(): that helper parses all Resources AND all historical
+groups and changes the workload being measured. Use emitted owner/HTTP point reads,
+receipts/pages and size-only observation at the single current-group serialization
+boundary if necessary. No full history fetch; no synthetic group or DB injection.
+The owned author's stopped earlier workload is inconclusive (graph shape and
+redundant historical AJV work both changed); do not attribute a diagnosed runtime
+performance defect to that observation.
+
+## Bounded implementation and acceptance proposal
+
+No implementation is authorized by this document alone. After root acceptance,
+coordinate budget/batch/store and the minimal shared evaluator typing audit. Do not
+edit schemas, HTTP set admission, Type lifecycle, public evidence gates or Read
+artifacts. Done when:
+
+1. One consumed immutable tuple and required compiler bounds enforce the premises;
+   missing/changed tuple refuses before BDP maintenance, after necessary SQLite
+   recovery. Valid exact reopen succeeds; old fixtures remain historical.
+2. Actual M256/257 repeated-no-op match boundary and E256/257 effective Event boundary
+   prove atomic rollback, the exact retained limit Problem and no fabricated index.
+   Include cardinality/cap coexistence, no-op count, mixed work, same-key replay,
+   changed-key conflict and fresh-key recovery before/after reopen. Existing4096
+   evidence is historical, not relabeled as current.
+3. Each owned shape has exact Event field assertions: local/remote endpoint cases,
+   self-Link both facts, source event last, at most2 Resource effects, no preimage
+   body anywhere, no-op keeps both revisions but emits nothing. Source inline state
+   and direct postimages both enforce R. Patch tests include transient large values,
+   exponent normalization, metadata-only explicit update and properties-only sets.
+4. Through normal sub-Q mutations construct near-R records; measure M no-op receipt
+   storage/replay/pages and representative E-bounded group serialization without
+   inspect(). Include32 explicit operations, names/keys near bounds, aliases, repeated
+   source versions, dense arrays/objects and sparse large-string records. Use separate bounded child
+   processes and pre-agreed memory/time abort thresholds; record RSS and actual byte
+   counts. Abort means inconclusive, never proof of safety. Do not allocate the
+   conservative305MB bound merely to validate arithmetic.
+5. Stress/recovery fixtures operate on disposable stores, prove clean close and
+   reopen exact bytes, and do not scan unrelated historical groups. Configuration
+   refusal/hot-journal ordering stays covered by existing recovery witnesses.
+6. Focused evaluator/owned/set/receipt/page/recovery checks, compiler/build/boundaries
+   and applicable smokes pass. Report precise artifacts, configuration and runtime;
+   no broad profile readiness or no-OOM claim. If E256 is impractical, evaluate E128
+   with the same M256 before dropping matches; if the candidate scan dominates,
+   neither knob solves it and a separately reviewed physical/iterator slice is needed.
+
+The existing-wire fallback remains immutable result/Event/change rows under the
+same fenced SQLite transaction, with existing receipt page planning and bounded
+page assembly. It requires private format/recovery changes and cannot be smuggled
+into a constant repair. No serializer/SQLite exception may become a fake count
+limit; no new byte vocabulary or semantics is proposed here.
+
+## Review dispositions and evidence
+
+1. Independent Event knob: accepted, with corrected patch-aware arithmetic.
+2. Optional R enforcement: accepted as a required compiler/owner premise, with
+   shared-file scope explicitly requiring coordination.
+3. Preimage bodies: explicit forbidden proof assumption and regression predicate.
+4. Partition: now derived field-by-field and invocation-by-invocation, including
+   incidence duplication and owned source patches.
+5. Diagnosability: named; no new cardinality admission rule accepted.
+6. Scope4096: evaluated, not inferred from unrelated diagnostic limits; original
+   private65536 condition already suffices and avoids unnecessary narrowing.
+7. Selection materialization: explicit C*R/whole-collection limit of the proposal.
+8. inspect(): forbidden in memory/size stress, not merely discouraged.
+9. Recovery scope: RU owner excluded by schema/path; TX recovery ordering preserved.
+10. Lone surrogates: actual receiver decoder rejects them; recorded separately.
+
+Read-only source inspection and small proof/encoding probe only; no suite, build,
+load test, code mutation or outward write. Probe exit0 on Node24.16.0; actual
+MAX_STRING_LENGTH536870888 and SQLite MAX_LENGTH1000000000 recorded in
+`transaction-materialization-revised-proof.log`. Its initial run assumed lone
+surrogates admitted and failed; preserved as `*-initial.log`, corrected to assert
+actual refusal. The original shell exit capture also hit zsh's read-only `status`
+variable; rerun uses a dedicated variable and records explicit exit. Neither
+failure is represented as successful validation. No source checkout was modified.
