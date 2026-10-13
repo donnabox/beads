@@ -1,0 +1,191 @@
+{
+  "source": "419756cd01dc8b4798b900369c510513026896c7",
+  "clean": true,
+  "claimEligible": false,
+  "parents": [
+    "15c2641053609081b2f2ff63cd734770b64f7859",
+    "47d7580ae6b42be2fb31f5435d408aba615021d6"
+  ],
+  "merge": {
+    "runtimeParent": "15c2641053609081b2f2ff63cd734770b64f7859",
+    "main": "47d7580ae6b42be2fb31f5435d408aba615021d6",
+    "mainTree": "f14ca53d69c7d1ec9d5a44cc8bcf7be4cf1da5b3",
+    "mergedTree": "63f3fc91c0bc0b833940e3aad61a8f34e22d30be",
+    "conflicts": [],
+    "exactMainEvidenceFiles": [
+      "apps/bdptest/src/read-update-matrix.test.ts",
+      "packages/conformance/fixtures/read-update-reference-v1.json",
+      "packages/conformance/matrices/read-update-v1.json",
+      "packages/conformance/src/cumulative-artifact.test.ts",
+      "packages/conformance/test-support/read-update-coverage-v1.json"
+    ],
+    "runtimeProtocolClientScriptsExactly15c": true,
+    "old47RawBlocksIdentical": true,
+    "all49IncludingABExactlyMain": true,
+    "whole": 30,
+    "uncovered": 99,
+    "required": 129
+  },
+  "stages": [
+    {
+      "stage": "install",
+      "exit": 0,
+      "seconds": 0.5067520141601562
+    },
+    {
+      "stage": "typecheck",
+      "exit": 0,
+      "seconds": 1.5132472515106201
+    },
+    {
+      "stage": "build",
+      "exit": 0,
+      "seconds": 0.8297591209411621
+    },
+    {
+      "stage": "cumulative",
+      "exit": 0,
+      "seconds": 1.3731539249420166
+    },
+    {
+      "stage": "affected-ru",
+      "exit": 0,
+      "seconds": 97.98321294784546
+    },
+    {
+      "stage": "check-boundaries",
+      "exit": 0,
+      "seconds": 0.5536770820617676
+    },
+    {
+      "stage": "format-check",
+      "exit": 0,
+      "seconds": 1.4754109382629395
+    },
+    {
+      "stage": "lint",
+      "exit": 0,
+      "seconds": 0.4546029567718506
+    },
+    {
+      "stage": "smoke",
+      "exit": 0,
+      "seconds": 4.919641017913818
+    },
+    {
+      "stage": "smoke-development",
+      "exit": 0,
+      "seconds": 0.6094760894775391
+    },
+    {
+      "stage": "e2e-ready-preflight",
+      "exit": 0,
+      "seconds": 1.0402991771697998
+    },
+    {
+      "stage": "evidence-verify",
+      "exit": 0,
+      "seconds": 0.2982048988342285
+    },
+    {
+      "stage": "pack-protocol",
+      "exit": 0,
+      "seconds": 0.23296403884887695
+    },
+    {
+      "stage": "pack-server",
+      "exit": 0,
+      "seconds": 0.2894480228424072
+    },
+    {
+      "stage": "packed-install",
+      "exit": 0,
+      "seconds": 0.28247880935668945
+    },
+    {
+      "stage": "packed-ru",
+      "exit": 0,
+      "seconds": 97.02276396751404
+    }
+  ],
+  "tests": {
+    "cumulative": {
+      "passed": 6,
+      "failed": 0,
+      "pending": 0,
+      "files": 1,
+      "success": true
+    },
+    "affected-ru": {
+      "passed": 138,
+      "failed": 0,
+      "pending": 0,
+      "files": 1,
+      "success": true
+    },
+    "packed-ru": {
+      "passed": 173,
+      "failed": 0,
+      "pending": 0,
+      "files": 4,
+      "success": true
+    }
+  },
+  "archives": {
+    "protocol.tgz": "2943f90cd4d0c5ac973dc84c75c80b6b0d944e688b0210990438a482a0a61a8c",
+    "server.tgz": "965cbc5779489634355fb804b3c8b2ebbfe599041e421a4dd82fec8deed22be7"
+  },
+  "configuration": {
+    "scope": "https://reference.invalid/acme/",
+    "profile": "read-update",
+    "history": false,
+    "sourceCommit": "419756cd01dc8b4798b900369c510513026896c7",
+    "installedPayloadDigest": "c3fe7cf4cc30154d57686de8b042886193b419a48b3b2af8fb8139480024fde8",
+    "installedContractsDigest": "48667497d6e13064316d0364cf8f49dfc247ab9189306985a357d7b558333dfe",
+    "policyDigest": "dbe8dbd5430f26e19e754d38167cd8084a32d702c695550e2ee0063dc2912430",
+    "authenticationDigest": "66941efc779f4f2431d65fdd5b2387b2af67bd7c1559e09dac032f82259ea16e",
+    "fixtureDigest": "f5f38235dfd28cf06e760688e2054d3e29d8d64b08c4c729baa94f380f1f7a63",
+    "fixtureId": "reference-read-update-schema-v1",
+    "capabilities": [
+      "installed-read-update-http"
+    ]
+  },
+  "reportBinding": {
+    "artifacts": {
+      "catalogDigest": "e26d3fc758a34ebb0b5028be15d28e3e09db87dc7984bba7bad6a00b26329aa0",
+      "manifestDigest": "c86b33535f25a1d117ce021a3bb70164f5635bdaee50758e3428c130ccc3227f",
+      "fixtureDigest": "f5f38235dfd28cf06e760688e2054d3e29d8d64b08c4c729baa94f380f1f7a63"
+    },
+    "exactConfigurationDigest": "3224c31c83988dc0606cb76ee1f4ba8e6394159bdf7daaccc301461316cc2477"
+  },
+  "baselineReceipt": {
+    "event": "qualification.ready",
+    "scope": "https://reference.invalid/acme/",
+    "claimEligible": false,
+    "configurationIdentity": "1720b63b49a7be3299d4b2865de4db9fcbe47560f217a32eea6397db7ea54ca5",
+    "artifactIdentity": "development-schema5-48667497d6e13064316d0364cf8f49dfc247ab9189306985a357d7b558333dfe",
+    "payloadIdentity": "c3fe7cf4cc30154d57686de8b042886193b419a48b3b2af8fb8139480024fde8",
+    "policyIdentity": "dbe8dbd5430f26e19e754d38167cd8084a32d702c695550e2ee0063dc2912430",
+    "authenticationIdentity": "66941efc779f4f2431d65fdd5b2387b2af67bd7c1559e09dac032f82259ea16e",
+    "profile": "read-update",
+    "history": false
+  },
+  "required": 129,
+  "planned": 49,
+  "uncovered": 99,
+  "whole": 30,
+  "sessions": 49,
+  "clientObservations": 985,
+  "nativeReadObservations": 21,
+  "setupObservations": 44,
+  "states": {
+    "harness-error": 85,
+    "pass": 49
+  },
+  "runtimeAncestorEvidence": {
+    "source": "15c2641053609081b2f2ff63cd734770b64f7859",
+    "report": "../changefeed-sse-final-integration/report.md",
+    "sameRuntimeTree": true,
+    "notReexecutedAtThisSource": true
+  }
+}
