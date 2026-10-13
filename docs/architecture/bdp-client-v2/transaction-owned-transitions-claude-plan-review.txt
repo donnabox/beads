@@ -1,0 +1,66 @@
+Reviewed the plan against root `637e0ed`. Spec is byte-identical at cbec and root (blob `83ae4d8`), so all normative citations were checkable directly — they hold. The defects are in the plan's predecessor description and two seam details.
+
+## Findings
+
+### 1. HIGH — Plan inverts a94's cardinality/cap ordering; step 5 would regress it silently
+**File:** plan lines 19–20 and 129–130 vs `packages/server/src/transaction-batch.ts:686-702`
+
+Plan describes the landed set repair as "cardinality before matched-count charge". Root is the opposite: `matchedResources += selected.length; if (matchedResources > matchMaximum) throw new MatchExpansionLimit()` at `:686-687`, **then** the cardinality block at `:689-702`. `git show a94ab98` confirms the charge+throw was inserted above the cardinality block.
+
+**Impact:** Step 5 says "Preserve repaired cardinality/cap ordering and failure type." An implementer trusting line 19–20 reorders them, and a request that is both over the match cap and outside its cardinality range flips from `413 limit-exceeded` / `limit: transaction.matchedResources` / no `operationIndex` to `409 cardinality-violated` / `operationIndex: n`. Spec 5251–5257 requires the transaction-wide limit to omit `operationIndex`, so the regression is a wire-visible failure-type change — and it lands green: `transaction-set.test.ts:714` exercises the cap with no cardinality, `:190` cardinality with no cap, and `:747-807` uses `maximumMatchedResources: 1` against exactly 1 match with `cardinality {min:1,max:1}`. Nothing discriminates the order.
+
+**Fix:** Correct line 19–20 to "matched-count charge at `:686` precedes the cardinality check at `:689`", and add a predicate pinning it (`maximumMatchedResources: 1` + 2-match selector + `cardinality {min: 5}` → expect `limit-exceeded`).
+
+### 2. HIGH — Step 3's "changed ID" is a different key space from the `changes` map key
+**File:** plan lines 107–112 vs `resource-evaluator.ts:1060,1099-1100` and `transaction-batch.ts:586`
+
+`ResourceEvaluation.changed`/`deleted` carry **scope-relative local paths** (`writes.map(w => w.id)` where `w.id = local(scope, record.id)`; `deleted: [id]`). The `changes` map is keyed by the **absolute canonical URI** (`changes.set(subject.id, …)`, and `materializeVersion` sets `id: recipe.id`). Step 3 as written ("use every actual changed ID to overwrite its final changes-map entry; use every deleted ID's final live identity for tombstone") produces a second entry keyed `beads/a` beside `https://…/beads/a`.
+
+**Impact:** the group's `changes` carries two entries for one Resource, breaking spec 5703 ("Multiple operations on one Resource normalize to its final projected postimage or tombstone") and the mandatory agreement check at 5952–5953, which a replica must reject as an authority fault rather than apply in part. It also defeats the overwrite semantics step 3 is specifically trying to get.
+
+**Fix:** State that `changed`/`deleted` entries are local paths used only for `tx.resource(localId)` lookups, and the map key stays the absolute `readStoredResource(row, scope).id` / `outcome.deleted.resource.id`. To identify which changed id is the source, slice `outcome.source` by the scope prefix exactly as `:547` already does.
+
+### 3. MEDIUM — Step 5's visibility fix is already at root
+**File:** plan lines 74–75, 126–128 vs `transaction-batch.ts:679`
+
+Root already filters with `isResourceVisible(tx, record, options.scope, options.policy)`; a94 replaced the bare `options.policy.canRead(record)`. As you flagged, step 5 is a reuse/regression guard, not new work — its only live content is the frozen-member-set and cap/cardinality wording. Leaving it phrased as a fix invites someone to "re-apply" it.
+
+### 4. MEDIUM — The installed-contract test change is not an assertion swap; it breaks the no-file-created invariant
+**File:** plan lines 160–161 vs `transaction-installed-contracts.test.ts:320-367`
+
+The owned refusal at `transaction-store.ts:189-195` throws **before** the file is created at `:236` (`openSync(file, "wx")`). That is why `:366` can assert `expect(existsSync(file)).toBe(false)` after five expected-throw opens that all share one `options.file`.
+
+**Impact:** removing the owned clause makes the `:360-362` call succeed — it creates `absent.sqlite`, leaks an open SQLite handle, and fails `:366`.
+
+**Fix:** The plan should say the owned case moves out of this negative test into its own file path with an explicit `close()`, not "replace its now-stale owned-refusal assertion." Separately, `:194`'s message is shared by both clauses — drop "and unowned Types" so the surviving schema refusal isn't misdescribed. The fixture at `:339-359` is already a valid owning bundle and is the right one to reuse for the enabling test.
+
+### 5. MEDIUM — Step 6's compiled owning fixture must bundle its owned Link descriptors
+**File:** plan lines 132–139 vs `installed-contract-artifact.ts:265-283,379-382`
+
+`checkDependencies` requires every non-`*` key of `ownsOutgoing` to resolve to a descriptor **in the same bundle** with `describes === "link"`, else `refuse("descriptor-dependency")`; `:379-382` additionally bounds each `max` by `limits.maxOwnershipMax`. The schema-free fallback registry at `transaction-store.ts:1016-1021` applies neither.
+
+**Impact:** a compiled owning fixture that omits the Link Type descriptor refuses at artifact capture, far from the batch seam — easy to misdiagnose as the owned transition failing. One sentence in step 6 fixes it.
+
+### 6. LOW–MEDIUM — Step 4 omits the invariant that keeps the nested delta schema-valid
+**File:** plan lines 115–121 vs `schemas/bdp-v0.schema.json` (`updatedData`, `ownedLinkDelta`) and `transaction-batch.ts:612-613`
+
+`updatedData.oneOf` forbids `change`/`metadataChange` alongside `ownedLink`; `ownedLinkDelta` is `additionalProperties: false` with `anyOf` requiring at least one of `change`/`metadataChange`. `:612-613` emits those members only when `input.propertiesChange`/`input.metadataChange !== undefined`. The only reason an empty nested delta is impossible is that `updateBead`/`updateLink` inputs have no whole-value `properties`/`metadata` member (`read-update-values.ts:71-92`), so an input with neither patch is necessarily a no-op (`resource-evaluator.ts:862-866`) and returns at `:582` before any Event.
+
+**Fix:** state that invariant in step 4 and pin it in predicate 2, and say the nested delta is constructed field-by-field rather than by spreading the link Event's data object — otherwise a future whole-value update member emits an `ownedLink` carrying a delta that fails the bundle.
+
+## Confirmations (no work needed; the plan is right)
+
+- **Attribution agreement** (5462–5466) already holds: `resource-evaluator.ts:874-884` runs `metadata(before)` and `metadata(source)` through the same non-no-op branch with one shared `context` (`:1003-1007`), so subject and source provenance are equal-or-both-absent. Step 4's "preserve absence/removal rather than copying an earlier version" is exactly what `:1141-1148` does and what 5505–5508 requires.
+- **No-op** needs nothing beyond deleting the `:577` throw: `writes` is gated on `!noOp` (`:1059`) while `sourceRevision` is still set from `source.revision` (`:1084/:1089`), and `results.push` at `:578` precedes the empty-`changed` early return at `:582`. Group suppression already keys off `events.length > 0` (`transaction-store.ts:1072`).
+- **Event ordering** matches 5481–5484 as-is: lifecycle `:599-618`, source-then-target incidence `:619-631`, new source fact appended last. The self-Link double fact falls out of the two-iteration loop → four facts, as step 4 claims.
+- **Incidence subject** is the Link, not the endpoint Bead — the spec's own example at 6160–6178 serves a `linked` fact from `beads/task-42?view=events` with `subject: …/links/assigned-to-81`. Predicate 2 is correct and matches `:625`.
+- **`before` capture** at `:544-550` is safe: `bead`/`link` are always plain strings (`ReadUpdateInputReference` applies only to createLink endpoints), and alias locators are substituted at `:790-793` before `applyResource`.
+- **putResource-wrapper timing is sound.** Writes happen only at `:1093`, after every check, in `[after, sourceAfter]` order with distinct ids, so reading `tx.resource(id)` immediately before each write yields that operation's true preimage. `deleteResource` at `:1094` runs after, so the deleted Link's preimage remains the `before` from `:550`. This answers the plan's own gap question at lines 220–222 affirmatively.
+- **Receipt/page/service need no change:** result entries already carry `source`/`sourceRevision` from the evaluator; `parseReceipt` is bare `JSON.parse` (`:351-353`); `createPagePlan` (`:519-534`) slices `results` by index only; no bundle validation runs in the serving path. Predicate 11 is reachable with no page-plan edit.
+- **Step 6's Format-8 claim holds:** `configuration` (`:213-221`) embeds every installed descriptor's bytes and is compared as `configurationIdentity`, so a Type gaining `ownsOutgoing` on reopen is refused before maintenance — no retroactive-ownership hazard on rows written without an `ownedLinks` member.
+- **Bundle is complete:** `ownedLinkChange`/`ownedLinkDelta`/`updatedData.ownedLink` exist, and `resourceIdentity` (`{id,type,revision}`, `additionalProperties: false`) matches `outcome.deleted.resource` exactly, so the deletion delta can reuse it directly.
+- **Existing evaluator coverage** is as described: `resource-evaluator.test.ts:1251-1438` covers source-only versioning, provenance/no-op, wildcard whole-set bounds, canonical sorting and self-Link, hidden-target closure, and source write refusal with rollback.
+
+## Citation drift
+
+Source line numbers run ~20–25 lines early (`applyResource` is 537–634, not 514–617; the set selection filter is 670–682, not 648–660; the owned install guard is 189–195 within the cited 183–197) — consistent with cbec's base predating a94's +27 lines, and benign except for finding 3, where the cited range carries a stale semantic claim. `store.ts:601ff` is `transaction-store.ts:601` (`observeReceipt`) and the content claim is accurate.
