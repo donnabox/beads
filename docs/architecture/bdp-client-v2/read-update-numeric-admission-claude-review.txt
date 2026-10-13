@@ -1,0 +1,64 @@
+## Review — `131fb987` (parent `2a40740c`), five-file evidence-only numeric-admission slice
+
+### What I verified independently (not just from the author report)
+
+| Check | Result |
+|---|---|
+| Diff scope | `git diff --numstat` = exactly the 5 authorized paths; continuation manifest has **0 deletions** (rows appended only). No runtime/schema/normative-catalog/runner/executor/index/public change. |
+| Frozen old blocks | Recomputed from the committed file: attribution `1b81ae03…` /229073 B, C `39eb2fe2…` /114099 B, no-op `368c2d3d…` /191793 B — all byte-identical to plan. Baseline `c86b3353…` and index `72779808…` unchanged. |
+| Budgets | 823730 B/21614 n (+288678/+7328 ≤ 460800/12000, and ≤ 27158 total); coverage 698614 (+50457 ≤ 66560); fixture 29707 (+652 ≤ 8192). All match `source-audit.json` exactly. |
+| Coverage | 129 rows, none added/removed/reordered, only the two target rows changed; 30 whole / 54 authored / 99 uncovered / 75 omitted; both `wholeContract:false`; bindings equal the exact ordered action.assertion inventory (521 / 373). |
+| Fixture | 14 bindings added, no value collision with the 240 existing ones; every other byte unchanged. |
+| Routes/digest | I re-implemented `artifactRoutes` + RFC 8785 canonicalisation in Python from the manifest+fixture: **49 routes in exactly the asserted order**, digest `24b63b02859bd1caa9bd477a8121a43e3255b4e3942773e29f514677b4f0cbab` — matches. The POST reordering (`create-bead`/`create-link` ahead of `sequence`) is the correct consequence of R/N raw mutations entering the `reads` block, not drift. |
+| Ledgers | R 72 actions/521 assertions/29 raw/43 client/24 raw mutations/8 resources/max raw 566 B; N 52/373/21/31/16/6/373 B. All raw bodies < 4 KiB, all idempotency keys unique. |
+| Law alignment | Literals match the current `numeric-model-v1` selectedText verbatim: `9007199254740993`, a twenty-significant-digit decimal, `1e300` + expanded form, `-0.0`≡`0`; `1e309`/`1e-400` justified by the round-trip definition, not quoted as new law. No Type/`schemaLocation` blame anywhere. |
+| Oracles | Patch refusals compare `/body` to the whole prior record (revision included) via `equalsBinding`; raw actions carry only URL/string navigation captures — no raw object capture. Corrections are fresh-key and effectful (…992→…994, 0.125→0.25, 1e300→1e299) with companion metadata change asserted in both the raw response and the independent GET. |
+| Controls | All nine target real actions; `failed` lists are consistent with each action's assertion inventory; `counterfactualApplications === 1` self-checks single application; `admissionControl` is positional arg 15, `retryControl` arg 11 — both correct. |
+
+**Evidence state has changed since the task was written.** The packed cohort finished at 12:34 and `report.md`/`source-audit.json` were regenerated at 12:35. `packed/source.json` = head `131fb987`, `clean: true`; `packed/matrix.json` = **254 passed / 0 failed / 0 pending** across 5 files, including the aggregate RU matrix test; `install.exit.json` exit 0; no residual processes. The preserved failures check out: `focused-final.log:196` is literally `Test timed out in 120000ms` at 171.037 s, and `aggregate-host-sleep.log` confirms `Maintenance Sleep 12:24:42 → 12:26:56 (134 secs)` — not an assertion failure, and correctly not counted as qualification. The awake comparison is honestly labelled dirty-source (`awake-current/source.json` `dirty: true`).
+
+---
+
+### Findings
+
+**1. LOW — regression-guard asymmetry: the N row's distinguishing partitions have no static pin**
+`apps/bdptest/src/read-update-matrix.test.ts:4086` (end of the `roundTrip` literal loop, 4066–4086)
+
+The static ledger pins R's three lexical classes against the manifest (`"value":9007199254740993` / `0.12345678901234567891` / `1e309`, the corrected and effectful literals, and the `one`/`zero`/`expanded` corpus). There is no equivalent block for N. Nothing in any test asserts that `nn-bead-metadata-create-refused` carries `1e-400`, that `nn-bead-metadata-patch-refused` carries the twenty-digit decimal, or that the deep leaf sits at depth 16 under `/deep/d0…/d13/a~1b~0c`.
+
+*Failure scenario:* a later edit shortens the chain to `d0/d1` and correspondingly rewrites the expected `instanceLocation` in `complete-problem`, or swaps `1e-400` for `9007199254740993`. The row still returns 422 with a matching diagnostic, all 254 tests still pass, and the slice silently stops sampling the depth/underflow/precision-in-metadata classes the plan committed to — while the coverage `reason` text continues to claim "finite depth 16" and the catalog row still cites "at any depth".
+
+*Partial mitigation already present:* control 8 pins the two-diagnostic shape at runtime (`toHaveLength(2)`), control 5 implies `/shallow` is `diagnostics[0]`, and client control 9's path pins the `metadata.outer[0]["a/b~c"]` escaped-key shape. Depth and the two refused literals are unguarded.
+
+*Fix:* add an N-side loop mirroring 4066–4086 — assert `nn-<kind>-properties-create-refused` body contains `"shallow":9007199254740993` and a `/deep` chain of exactly 14 `d<n>` segments terminating in `"a/b~c":9007199254740993`, that `nn-<kind>-metadata-create-refused` contains `"a/b~c":1e-400`, and that `nn-<kind>-metadata-patch-refused` contains `"a/b~c":0.12345678901234567891`.
+
+**2. LOW — catalog denial controls can pass for the wrong reason**
+`packages/conformance/src/numeric-model-catalog.test.ts:120` and `:123`
+
+```ts
+expect(() => assertBindings(entry, { ...manifest, catalogId: "read-v1" })).toThrow(
+  /read-update-reference-continuation-v1.json/,
+);
+expect(() => assertBindings(entry, { ...manifest, manifestVersion: 1 })).toThrow(
+  /read-update-reference-continuation-v1.json/,
+);
+```
+`entry` is interpolated into *every* failure message `assertBindings` can produce, including `` `${entry} binds ${row.id}` `` (line 84). The matcher therefore does not distinguish the intended catalog-binding refusal from an unrelated ownership failure. It is correct today only because the spread keeps `scenarios` approved; the plan's rule for the app controls ("fail its exact intended assertion IDs, not merely any schema/harness failure") is not honoured here. The unescaped `.` in the regex is a secondary nit.
+
+*Failure scenario:* if `approvedBindings` later drifts so the continuation also trips a binding check, both assertions keep passing while the `catalogId: read-update-v1` / `manifestVersion: 2` guard is no longer exercised at all.
+
+*Fix:* match on the discriminating text instead, e.g. `.toThrow(/read-update-v1/)` and `.toThrow(/\b2\b/)`, or assert on the thrown `expected`/`actual` — or split the catalogId/manifestVersion checks into a named helper whose message is unique.
+
+---
+
+### Notes (not findings)
+
+- `apps/bdptest/src/read-update-matrix.test.ts:3643` — the test is still named *"pins attribution/numeric source budgets, raw literals and prior scenario bytes"* but no longer pins any source budget; all four anchors moved to the new test at `:3995`. The plan's "no static assertion deleted without a replacement" is satisfied, but the stale name invites a future reader to assume budgets are still enforced there. Rename suggested at root's convenience.
+- `"large":1e300` is the one member of the admitted spelling corpus without an explicit lexical pin at `:4082-4084`; it is still covered semantically by each row's `properties` expectation.
+- The alias row C (73 actions) sits in neither the old 148 nor the new 124 action ledger. Pre-existing at 9c, explicitly out of this slice's scope — flagging only so root knows the "all groups enumerated" predicate has that pre-existing hole.
+- `nr-*/nn-*-updated-read` capture ~20 bindings (including `-rev`) that nothing consumes. Harmless; matches the existing row idiom.
+- Metadata refusal is framed conservatively: the catalog's own cited text for `nested-refusal` already says *"A numeric failure in an unapplied `properties` or `metadata` patch may omit `instanceLocation`"*, so the "configured adjunct inferred from the general number model" wording under-claims rather than over-claims. No new norm is asserted.
+
+### Scope limits
+
+Read-only; no files written, no tests/builds/servers/agents/network, no credentials touched. I did not re-execute anything — control outcomes and assertion-failure sets were checked by static reasoning against the manifest and then cross-read against the already-recorded `focused-second.json`, `focused-final.json`, `awake-*/aggregate.json` and `packed/matrix.json`. I could not locate a file named `design.md` anywhere under `/Users/dbox/repos/wt/vickie` or `/Users/dbox/repos` (max depth 4), so the sole-plan document was reviewed via the accepted plan `read-update-after-attribution-next-plan-revised.md` (SHA-256 `0af9d4d4…` confirmed), the normative `catalog/numeric-model-v1.json`, and `docs/specs/bdp.md`. I did not audit the unchanged baseline-49 rows or the pre-existing 16 controls beyond confirming they are byte-unchanged.
