@@ -1,0 +1,106 @@
+Review complete. Source untouched, worktree clean at `0ff180a`, all probe directories removed.
+
+---
+
+# Review: `0ff180a` (durable receipt pages) vs. parent `d325208`
+
+Read: `transaction-receipt-pages/report.md`, `transaction-after-minimum-plan.md`, `transaction-after-minimum-native-plan-review.md`, `transaction-after-minimum-claude-plan-review.txt`, `transaction-point-minimum-claude-review.txt`, `transaction-point-minimum-native-review.md`. Spec clauses checked directly: `bdp.md:3831–3833`, `5067–5073`, `5160–5200`, `6563–6584`; schema `$defs/mutationReceiptPage` (`schemas/bdp-v0.schema.json:4094–4121`); `authority-read.ts:371–384`.
+
+Probes ran only in `/private/tmp` disposable directories against `packages/server/dist` (built from the frozen commit) under the pinned Node 24.16.0; no suite was rerun, nothing in the repo was written.
+
+## Findings
+
+### F1 — High. The new read-only installation preflight blocks SQLite journal recovery, so a crash during any owner transaction makes the store permanently unopenable.
+
+**Location** `packages/server/src/transaction-store.ts:215–231`, against `transaction-store.ts:439–441` (`journal_mode=DELETE; synchronous=FULL; locking_mode=EXCLUSIVE`) and `transaction-store.ts:1081–1099` (the 1 s maintenance sweep).
+
+`openTransactionStore({create:false})` now opens `new DatabaseSync(options.file, { readOnly: true })` and runs a `SELECT` on it before the writable connection. In rollback-journal mode, a process death inside a transaction leaves a hot journal. SQLite must roll that journal back before any read — which requires write access — so the preflight's `SELECT` returns `SQLITE_READONLY_ROLLBACK` and the function throws before reaching `new DatabaseSync(options.file)` at line 232. There is no fallback and no retry path: every subsequent start repeats the same preflight.
+
+**Failure scenario (measured, real store + real dist).** Created a store (`receiptMaximumItems: 2`), committed 60 single-operation receipts, advanced the clock past `expiresAt`, and SIGKILLed the process inside `fault("before-maintenance-commit")` — i.e. inside the owner's own periodic `sweep()` transaction, which in production runs every 1000 ms:
+
+```
+committed 60 receipts
+child exit: 137                       (SIGKILL)
+journal present after crash: true
+attempt 1 REFUSED -> ERR_SQLITE_ERROR | attempt to write a readonly database
+attempt 2 REFUSED -> ERR_SQLITE_ERROR | attempt to write a readonly database
+attempt 3 REFUSED -> ERR_SQLITE_ERROR | attempt to write a readonly database
+ordinary writable recovery: receipts = 60 | receipt_pages = 60
+journal after writable recovery: false
+open after manual recovery: OK
+```
+
+The data was never at risk: an ordinary writable `DatabaseSync` rolls the journal back, all 60 receipts and all 60 page plans survive, and `openTransactionStore` then opens normally. Only the preflight stands between the crash and recovery. Confirmed independently with a raw-SQLite reproduction (hot journal → read-only open fails 776, writable open recovers and deletes the journal) and with a benign control: a journal left by a crash that needs *no* recovery is ignored and the read-only open succeeds, which is why the existing `transaction-runtime.test.ts` restart witness — SIGKILL *after* the response, outside any transaction — passes.
+
+**Impact.** Pending-receipt retraction, `expireRow` maintenance and the whole uncertain-COMMIT story rest on reopen: `atomic()`'s fence comment says "Reopen determines its durable state" (`transaction-store.ts:314–316`). After this change, the one crash shape that recovery exists for cannot reopen. For this slice specifically it also defeats `bdp.md:5181–5188` ("An already issued receipt-page URL MUST remain usable across ordinary restart or failover in the same Scope epoch… Temporary inability to serve available detail is a service failure, not permission to discard the handle"): the handle is intact on disk and unreachable.
+
+**Fix.** Remove the preflight. It is redundant for its stated purpose: now that `receiptMaximumItems` is part of `configuration` (`transaction-store.ts:191–197`), the pre-existing writable check at `transaction-store.ts:450–457` already refuses *before* `DELETE FROM receipts WHERE owner IS NOT NULL` (458), `DELETE FROM creator_facts` (461) and `sweep(instant())` (462), all inside one `atomic` that rolls back and closes on throw — exactly what the native review's P2 asked for, and what `transaction-store.test.ts:1919–1941` already proved byte-identical. If the belt-and-braces check is kept, make it non-fatal: catch any preflight open/query failure and fall through to the writable path rather than propagating it.
+
+---
+
+### F2 — Low–Medium. Root receipts still decide read-triggered retention disposal before answering the unsupported-minimum gap; only the page path got the corrected order.
+
+**Location** `packages/server/src/transaction-http.ts:336–342` versus the new page branch at `321–335`.
+
+The page branch passes `"unsupported"` into the owner, and `transaction-store.ts:1445` returns `{kind:"unsupported"}` after identity/nondisclosure but before `readContext()` (1446), `checkTransactionMinimum` (1448) and `expireRow` (1449). The root branch instead calls `service.receipt(access, url.href)` at 338 — a full `readReceipt` whose `retainedReceipt` runs `expireRow(stored, instant())` (`transaction-store.ts:623`) — and only then returns `developmentGap("minimum-position")` at 342.
+
+**Failure scenario.** `GET …/receipts/<id>` with `BDP-Minimum-Scope-Position: <unparseable>` on a receipt already past `expiresAt`: the owner compacts the completed receipt to `detail: "expired"` (or forgets a failed one) and *then* answers 500 `minimum-position`. A request the server declares it cannot process has advanced retention state; a page read of the same receipt with the same header does not. Real-world harm is small — the detail was already disposal-eligible and the 1 s sweep would reach it anyway — but the two branches now disagree about where the private gap sits relative to expiry, and the report's F2 disposition ("explicit private unsupported-control result after identity nondisclosure but before expiry") reads as though it covered both.
+
+**Fix.** Give `readReceipt` the same shape as `readReceiptPage`: accept `TransactionMinimum | "unsupported"`, and when the condition is `"unsupported"`, return a typed `unsupported` result from inside `retainedReceipt`'s `beforeRetention` hook — after the id/epoch nondisclosure filter, before `expireRow`. Then `transaction-http.ts` can hoist the root gap to match line 328.
+
+---
+
+### F3 — Low. Preflight failures surface as raw SQLite/JSON errors instead of the owner's existing diagnostics.
+
+**Location** `packages/server/src/transaction-store.ts:220–227`.
+
+`preflight.prepare(…).get()?.value` is `undefined` when the `configuration` row is absent, so `String(undefined)` → `JSON.parse("undefined")` throws `SyntaxError: "undefined" is not valid JSON` where `metadata()` (`transaction-store.ts:331–335`) would have thrown "missing transaction metadata". Likewise a zero-byte file left by a crashed `create` now yields `no such table: metadata` from the preflight, and a concurrent exclusive owner yields a bare `database is locked`, instead of routing through the fenced/mismatch diagnostics the rest of the open path uses.
+
+**Fix.** Check `typeof row?.value === "string"` and reuse the existing message; wrap the whole preflight in a try that converts unexpected failures into the documented refusal (and, per F1, falls through for recovery-class errors).
+
+---
+
+### F4 — Low. Two of the new page-URL invariants can never fire, so the reported "same-root navigation check" is weaker than stated.
+
+**Location** `packages/server/src/transaction-store.ts:1444` and `packages/server/src/transaction-service.ts:245`.
+
+`parentId` and `token` are derived from `id` by `id.lastIndexOf("/pages/")` (1424–1427), so `id !== pageUrl(parentId, token)` at 1444 is unconditionally false. The same holds for `!id.startsWith(\`${result.page.receipt}/pages/\`)` at service:245, because `result.page.receipt` *is* `id.slice(0, marker)`. The genuinely load-bearing parts of that guard — `results.length < 1`, `> maximum`, and the `next`-prefix/`length === maximum` pair at 246–249 — do validate store output; report F3's "same-root navigation checks" over-describes the `id` half.
+
+**Fix.** Either delete both clauses, or make them independent — e.g. assert `parentId.startsWith(\`${scope}receipts/\`)` in the store, which would also reject a crafted `…/pages/…` path outside the receipt namespace rather than relying on `receipt_pages` lookup failure.
+
+---
+
+### F5 — Low. Missing independent counterexamples.
+
+- **No crash-recovery reopen witness.** `transaction-receipt-pages.test.ts:233–249` exits the child with `process.exit(79)` after the commit, and `transaction-runtime.test.ts` SIGKILLs after the HTTP response — both outside any open transaction, so neither can produce the hot journal that F1 turns fatal. A disposable fixture that kills inside `fault("before-maintenance-commit")` or `fault("after-terminal")` and then reopens would have caught it.
+- **`pagination.maxPageItems` branch untested.** `transaction-service.ts:60` is never exercised: `transaction-service.test.ts:148` perturbs only `advertisedLimits.page.maximumItems` (31). `authority-read.ts:383` independently couples the two, so this is belt-and-braces, but the report's "one immutable validated maximum supplies store partitioning, service `page.maximumItems` and Read `pagination.maxPageItems`" has evidence for two of the three.
+- **No close/drain witness for an in-flight page wait.** `service.receiptPage` goes through the same `run()` tracker (`transaction-service.ts:81–96`, `348–368`) as `receiptAtMinimum`, so the mechanism is shared, but only the receipt variant has a drain test.
+- **The page `unsupported` 500 is not asserted to withhold context.** The ordering test checks status and `x-bdp-development-limit` only; `developmentGap` does bypass `context()`, so the behavior is correct and simply unasserted — unlike the 401/404/unknown cases, which do assert `bdp-scope-position` absence.
+- **No concurrent page-read/commit interleaving probe** analogous to d325's 12-waiter point probe. Each page attempt takes `BEGIN IMMEDIATE` plus a full chain validation, so it is the more expensive waiter of the two.
+
+### Informational
+
+`transaction-store.ts:1460`'s comment ("The immutable full facts are frozen by this entry's projection") is inaccurate: `observeReceipt` → `receiptPrefix` freezes a fresh `slice(0, maximum)`, so entries at indices ≥ `maximum` are frozen by the local `freeze(page)` at 1473 instead, and the full retained array is never frozen. No functional defect — the page's own entries are frozen before escaping.
+
+---
+
+## Verified correct in the focus areas
+
+- **Atomic persisted page boundaries, complete results.** `createPagePlan` (`transaction-store.ts:495–511`) runs inside the terminal `atomic`, after the receipt row `UPDATE` and before `fault("after-terminal")` (1035–1036), so rollback leaves no page rows — asserted directly for both `after-effects` and `after-terminal`. `receipt_pages(receipt PRIMARY KEY)` + `receipt_page_ranges(token PRIMARY KEY, UNIQUE(receipt,start))` (146–147); no stored `next`, successor derived by `ORDER BY start`. Five entries at maximum 2 give 2/2/1 with every `operationIndex` exactly once in order, and page bodies validate against `$defs/mutationReceiptPage` (`receipt`/`results`/`next`, `minItems: 1`, `additionalProperties: false`) — all three satisfied, `page.receipt === root.id` per `bdp.md:5173`. `next` is absolute because `receipt.id` is `${scope}receipts/${uuid}` (831).
+- **Exact advertised bound.** One validated value feeds the store fingerprint, `advertisedLimits.page.maximumItems` and `pagination.maxPageItems` (`transaction-runtime.ts:82–83, 244, 251`), with `createTransactionService` asserting equality (57–62) and `authority-read.ts:382–383` coupling `defaultItems`/`defaultPageItems`. `bdp.md:5168–5172` — "`page.maximumItems`, when advertised, bounds the entries in the receipt's inline `results` and in each page" — settles the plan review's normative ambiguity #2 in favour of `maximumItems`, so declining to derive the bound from `defaultItems` is correct, not merely a chosen reading. No smaller bound hides under 32.
+- **Restart-stable URLs.** Boundaries are recorded, never re-derived; `receiptMaximumItems` is byte-compared in `configuration`, so a reopen cannot re-partition. The runtime witness uses a configured `scope` whose path itself contains `/pages/` and a *different* listener port on the second start, asserting `listenUrl` differs and the page body is identical. `transaction-http.ts:321` slices relative to the receipt namespace and `transaction-store.ts:1424` uses `lastIndexOf("/pages/")`, so neither a `/pages/` scope nor a nested `…/pages/x/pages/y` path misroutes.
+- **Disclosure → minimum → expiry → representation for pages.** `transaction-store.ts:1428–1452` orders it exactly: principal-scoped plan lookup, epoch filter, token match (uniform `missing`), unsupported gap, `readContext`, `checkTransactionMinimum`, `expireRow`, then expired-vs-page. The HTTP ordering test runs the whole ladder against an *already* expiry-eligible receipt and gets 500-gap / 401 / 404 / 404 / 503+`Retry-After`+`pos-1` / 409 / 410 — proving minimum precedes expiry even for a row that has since been compacted. `private, no-store`, no `ETag`/`Last-Modified`, GET/HEAD parity and 304/412 all asserted, satisfying `bdp.md:5190–5194`.
+- **Chain corruption rejection.** `pagePlan` (512–562) validates parent binding, `entries ≥ 1`, `maximum === receiptMaximumItems`, `results.length === entries` for available detail, token charset/uniqueness, contiguity from `maximum`, exact `end`, and complete coverage. The four-case regression (missing / overlap / truncated / foreign-parent) shows both root and page reads throwing rather than re-partitioning, truncating or returning a false 410. A tampered `principal` also fails closed via `row(saved.principal, saved.key)`.
+- **`expireRow` invariant preserved.** The raw row keeps `next: null`, so the `receipt.next !== null` guard at 370 still holds, and compaction walks the *full* array — all five creation allocations survive, tail pages included.
+- **syntax400 and genesis.** `transaction-http.ts:351` returns the already-decided 400 under a valid tuple, leaving the 410 cursor case and alias/collection/discovery routes gapped exactly as the d325 review recommended; `alias/missing`'s 404 stays gapped defensibly, since it comes from real alias resolution rather than a pure parse. `transaction-consistency.ts:15` maps `genesis` → 0, which passes the `[A-Za-z0-9_-]{1,256}` token test and is trivially satisfied by every position — correct per `bdp.md:6571–6573` (reserved initial Scope checkpoint) and `6578–6581` (Scope positions share that token profile).
+- **Private surface.** `transactionReceiptMaximum` added to the packed-root denial list; `receiptMaximumItems` is a test seam on `TransactionRuntimeTestSeams`, not a public option or profile flag.
+
+## Disposition of prior findings
+
+**Plan review F1–F7.** F1 **resolved**, and better than its own suggestion (see "exact advertised bound" above). F2 **resolved for pages**, not for root → F2 here. F3 **resolved** — `checked()` (`transaction-service.ts:135–148`) replaces the `next !== null` rejection with non-empty / `≤ maximum` / `next` under `${id}/pages/` with `length === maximum`, plus the page counterpart at 243–250; the 410 is modeled as a distinct `expired` kind reusing `cursor-expired`, so no new problem code. F4 **resolved**; `UNIQUE(receipt,start)` is equivalent to the review's `UNIQUE(principal,key,start)` given `receipt` is the receipt id, and the justified `principal`/`key` redundancy is kept so the page read reaches the receipt row by primary key. F5 **resolved** — default 32, and the raw/observed split holds: `observeReceipt` is reached only at 1037, 1134, 1453, 1499, leaving `execute`/`admit`/`receipt`/`nextSequence`/`creatorFact`/`expireRow` on full facts and `transaction-sequence.ts:60`'s singleton guard satisfied. F6 **partially adopted, honestly** — the bound is in the fingerprint and the format bumped to `-6`, but both branches still emit the single generic "transaction installation mismatch"; assertability was delivered by distinct byte-identical fixtures rather than distinct messages, which meets the review's intent though not its letter. Note that this new evidence exercises the *read-only* path, so the pre-existing writable-path byte-identity test at `transaction-store.test.ts:1919–1941` is currently short-circuited; removing the preflight per F1 restores it. F7 **adopted as stated**, with its cost warning now realized rather than avoided — the maxima-1/2/5 fixtures do cap their Read query pages, confined to new fixtures, with the 32 default leaving the 89-row Read evidence untouched. Smaller items all addressed: `options.scope` used for the restart witness, no new fault stage, `/receipts/{id}/pages` → 404 asserted, citations corrected.
+
+**Native plan review.** P2 (bind to the advertised maximum) adopted. P2 (validate before opening the owner) adopted in two places: the fingerprint, which is correct and sufficient, **and** the read-only preflight, which exceeds the ask ("validate the shared bound … before `openTransactionStore`, then pass the same detached values to both components" — `transaction-runtime.ts:82–83`) and is the cause of F1. "Fail closed on an inconsistent recorded page plan" adopted with the four-case corruption regression, as specified.
+
+**d325 F1–F5.** F1 **resolved for the disclosed-and-still-stored case** via `retainedReceipt`'s `beforeRetention` hook (611–627, 1493–1495); the service test's `forget: true` variant documents the residual — the 1 s sweep can still forget a failed receipt mid-wait, giving 404 — which is inherent to retention and disclosed, with no invented pin. F2 **resolved for 400s only**, matching the review's own carve-outs. F3 **resolved as documentation**, consistent with root's accepted disposition in the native review; no plumbing added and the progress doc no longer implies point disconnects cancel. F4 **resolved**, with unknown opaque positions correctly left as a declared gap. F5 **not fixed, disclosed**; page polls are now the more expensive waiter (`BEGIN IMMEDIATE` plus full chain validation per 5 ms poll), still bounded and still framed as a loopback limit rather than a concurrency qualification.
+
+**Bottom line.** The paging slice itself is sound: boundaries are durable and atomic, results are complete and unsplit, the bound is exactly the advertised one, corruption fails closed, and the page refusal ladder matches `4590–4624`/`5167–5188` including the minimum-before-expiry ordering the prior reviews asked for. F1 is the one blocker, and it is not in the paging design — it is the extra read-only preflight bolted on in front of an installation check that already ran early enough.
