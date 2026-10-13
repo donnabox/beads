@@ -1,0 +1,57 @@
+## Verdict
+
+All eight council findings are closed at `9d2ddba`; the two negative controls are coherent and exactly-discriminating; coverage bindings re-project with **0 mismatches**; no claim inflation in the coverage inventory. The residual issues are all in the two prose artifacts (progress doc + follow-up report), two of them re-introducing the same misattribution class the original finding 2 was about.
+
+### Closure of the 8 findings (independently verified, not taken from the report)
+
+| # | Closed how | Verification |
+|---|---|---|
+| 1 | Per-row reasons rewritten from the plan's clause map | `coverage:6681` / `:6831`. Every positive clause checked against the row's actions: type-contract has child-declared `schema-{bead,link}-child` invalid creates → `validation-failed`, `schema-{bead,link}-uninstalled` → `type-not-installed`, `after-*` 404 `resource-not-found`, two positive create controls. diagnostics has exact `type`/`schemaLocation`/`instanceLocation` + full Problem tuple + `diagnostic-limits` pinning 32/524288. No overclaim. |
+| 2 | W1 paragraph scoped to `39dd934`/`ededc12` | `docs:133`. Scoping is correct; the added current-pin sentence is finding **A** below. |
+| 3 | Genuinely independent shipped capture | `installed-schema-cohort.test.ts:50-57` now drives the empty-artifact branch at `installed-reference-configuration.ts:135-143` and compares compiled descriptors across two capture calls — no longer the same expression on both sides. Order-safe (both compiled lists share one total order; filtering preserves it). Not vacuous: the empty branch installs 13 via `referenceTypeArtifacts`, so `shippedIds` has 13 members. |
+| 4 | Capture now asserted | `:58-61` pins 17 descriptors and `captured.schemas` ≡ the four `{uri, utf8}` (bytes), which `:41-46` ties to each `$id` ≡ `retrievalUri` ≡ `propertiesSchema`. Hosted bytes are independently pinned over HTTP by whole-document `exact` equality (`schema-document-schema-*`). |
+| 5 | Corrected spelling: `document` pinned **absent** | Legal and correct: `bdp.md:3461` — "The optional `document` is `properties` or `metadata`; omission means `properties`." The emitter omits it structurally for properties (`resource-evaluator.ts:277-282` sets only message/schemaLocation/instanceLocation/type; `:459`/`:527` pass `document` only when `"metadata"`). Audit of the whole matrix: **all 15** actions asserting `diagnostics/0/*` now pin `document` (13 absent-pins incl. 11 new, 2 `equals:"metadata"`) — no probe left unpinned. |
+| 6 | `schema-contract-code` control added | `read-update-matrix.test.ts:439-444`, gated at `:387-389`, expected at `:1434-1439`. Mutation stays schema-valid against `$defs.readUpdateProblem` (`type` const is already `…/problems/validation` for `type-not-installed`; `retry→"never"`; `diagnostics:[{message}]` satisfies `validationDiagnostics`/`minItems:1`), so `:1498` exactly-equals `["problem-code"]` holds — confirmed by the initial-fail (`['body-schema','problem-code']`) → recheck-pass trace. |
+| 7 | Doc scoped to the patch-validation row | `docs:140`. Matches the matrix: only `document-patch-validation` has `-endpoint-a/-b` GETs. |
+| 8 | Doc states bounds are echoed/recorded | `docs:142`, code unchanged as agreed. |
+
+Evidence accounting is honest where it matters: 84/82+2 and the refusal to claim an all-84 rerun or a fresh packed successor match the logs; the corrected branch is confined to `patchControl === "schema-contract-code"`, and the coverage gate (`cumulative-artifact.test.ts`, 6 tests) ran on files the corrections never touched.
+
+---
+
+## Findings
+
+**A. MEDIUM — the new current-pin sentence misattributes what the two pinned digests cover**
+`docs/design/read-update-executable-progress.md:146` ("The current digest pins also include the four added Types, hosted schemas and eight added exact GET routes").
+Both pins are `exactConfigurationDigest` (`apps/bdptest/src/read-update-matrix.test.ts:876`, `:1193`), computed at `packages/conformance/src/runner.ts:1362-1380` over `{scope, profile, routes, maximumRequestHeaderBytes, maximumRequestBodyBytes}` only — the exact configuration carries no artifact bytes (`raw-http-scenario-target.ts:161-171`). Descriptor and schema bytes enter `contracts.identity`/`identity` instead (`installed-reference-configuration.ts:175-186`, `:201`), which the harness never pins to a literal. Failure scenario: a reviewer auditing `bdffd6f9…` concludes the pin would have moved if a Type descriptor body or a hosted schema document changed; it would not, as long as the eight URLs are unchanged — the exact misattribution finding 2 was raised about, in the sentence written to fix it.
+**Remedy:** "the pins moved because the admitted route set gained the eight exact GET routes for the four Types and four hosted schemas; the artifact bytes themselves are carried by the separate installed contract/configuration identity and by the cohort capture test, not by these pins."
+
+**B. MEDIUM — same line still claims fresh same-source packed observations this pin does not have**
+`docs/design/read-update-executable-progress.md:146` (final sentence: "The new artifact/route/fixture identities are recorded with fresh same-source packed observations in the frozen candidate report").
+True at `2c10d19` (102 tests/6 files packed at exact clean 2c10, `read-update-schema-execution-report.md:38`). At `9d2ddba` the follow-up report explicitly declines it: "The original packed 102 test observation remains at 2c10 and is not relabeled… no all 84 final rerun or fresh-packed successor claim. Integration must run fresh packed observations on its actual combined source." The commit edited this very line and left the claim unpinned, so the frozen doc asserts packed evidence for a source state that has none — a reader reconciling doc against report gets contradictory answers.
+**Remedy:** pin it the way line 133 was pinned: "recorded at `2c10d19` with that pin's packed run; this follow-up's 11 assertions, 2 controls and capture assertions have no fresh packed observation and require one at integration."
+
+**C. LOW — two of the three rows that pin the omission spelling carry no row-local caveat**
+`packages/conformance/test-support/read-update-coverage-v1.json:972` (`singleton.update-bead`, 1 absent-pin) and `:6831` (`validation.diagnostics`, 4 absent-pins).
+The sibling row that already had absent-pins carries it (`:1467`: "Properties document omission and root instanceLocation presence are installed choices, not universal mandatory spellings"). The progress doc carries the global caveat, but per finding 1's own premise the `reason` is the row-local record a promotion reviewer reads. Failure scenario: a later reviewer promoting `validation.diagnostics` reads "properties-relative instance location" as a universal observation and treats the `document`-absence assertions as pinning mandated behaviour rather than one of two spec-legal spellings.
+**Remedy:** append the `:1467` clause verbatim to both reasons.
+
+**D. LOW — the cross-branch comparison is object-level, while the doc's claim is "byte-identical"**
+`apps/bdptest/src/installed-schema-cohort.test.ts:55-57` vs `docs/…progress.md:138` ("thirteen byte-identical remapped shipped descriptors").
+The new assertion compares parsed `contracts.descriptors`; the byte-level assertion (`:35-37`) is the single-branch one. `stringifyJsonValue` preserves insertion order (`packages/protocol/src/json-values.ts:126-141`), so deep equality does not formally imply equal installed bytes. No suspected mismatch — both branches derive from one `referenceTypeArtifacts(scope)` call — so this is a missing oracle for the stated adjective, not a defect.
+**Remedy:** one line, using the already-exposed canonical byte map: assert `shippedIds` entries of `captured.configuration.contracts.types` equal the same entries of `shippedCapture.configuration.contracts.types`.
+
+**E. LOW — inserted sentences break the antecedent and over-scope their subject**
+`docs/design/read-update-executable-progress.md:142`.
+"Schema rejection probes pin the installed spelling…" sits inside the diagnostics-row paragraph but describes 11 probes spread over three rows (update-bead 1, document-patch-validation 6, diagnostics 4); the following "**Its** actual discovery count/byte bounds are asserted" now has "the discriminator"/"other providers" as its nearest antecedent instead of the diagnostics row.
+**Remedy:** "The eleven schema-rejection probes across the three schema rows pin…" and restore the explicit subject: "The diagnostics row's actual discovery count/byte bounds are asserted…".
+
+**F. LOW — the diff adds a lint warning the report does not account for**
+`apps/bdptest/src/read-update-matrix.test.ts:446` (new `noNonNullAssertion`), vs report "required lint … pass" / "required biome lint succeeds".
+`schema-evidence-followup-lint.log` ends at "Found 43 warnings. Found 1 info." with 24 diagnostics suppressed; the new control line is among them. `biome lint` exits 0 on warnings and lines 448-452 already use the identical pattern, so this is disclosure, not style drift — but "lint passes" with an undisclosed +1 warning is weaker than this report's own standard.
+**Remedy:** record the warning count delta in the report, or hoist one checked local (`const diagnostic = changed.body.diagnostics[0]; if (!diagnostic) throw …`) and drop the assertions at `:446-452`.
+
+**G. LOW — retained evidence set does not substantiate several Verification claims**
+`bdp-integration-logs/schema-evidence-followup-*` vs report §Verification.
+Only `-tests.log`, `-recheck.log`, `-lint.log` exist — no `.exit` files and no logs for frozen install, build, typecheck, `git diff` check, or the format command with its "explicit 4MiB tool input ceiling", all of which are asserted as passing. Neighbouring evidence sets in the same directory do keep per-command `.exit` files (e.g. `alias-matrix-timeout-*.exit`). Separately, "Coverage gate passed" *is* substantiated — `cumulative-artifact.test.ts` lines 4-9 of `-tests.log`, including "pins cumulative source digest map, catalog order and every coverage binding" — but the report never says so, leaving it indistinguishable from the unlogged claims. (I re-ran the gate's own projection over all 43 planned rows independently: 0 mismatches; 129 rows / 43 bounded-observation / 86 omitted / 26 whole / `claimEligible:false`.)
+**Remedy:** retain the command logs and exit codes for this pin, or name per claim which retained log substantiates it and mark the rest as unlogged.
