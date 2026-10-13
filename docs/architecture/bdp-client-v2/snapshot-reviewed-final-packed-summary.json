@@ -1,0 +1,61 @@
+{
+  "claimEligible": false,
+  "sourceCommit": "dc15bc92bc83253da1d3d1fc7f47df6ef3b4924b",
+  "sourceDirty": false,
+  "configuration": {
+    "scope": "https://reference.invalid/acme/",
+    "profile": "read-update",
+    "history": false,
+    "sourceCommit": "dc15bc92bc83253da1d3d1fc7f47df6ef3b4924b",
+    "installedPayloadDigest": "4b67f32a66e559b879dc897ff8548276790618a7c509bccdca5e98798b423516",
+    "installedContractsDigest": "48667497d6e13064316d0364cf8f49dfc247ab9189306985a357d7b558333dfe",
+    "policyDigest": "dbe8dbd5430f26e19e754d38167cd8084a32d702c695550e2ee0063dc2912430",
+    "authenticationDigest": "66941efc779f4f2431d65fdd5b2387b2af67bd7c1559e09dac032f82259ea16e",
+    "fixtureDigest": "a200afeb240f4c0c14e7bab43605d753e1640de8f17920c7dc5c174a901fb450",
+    "fixtureId": "reference-read-update-schema-v1",
+    "capabilities": [
+      "installed-read-update-http"
+    ]
+  },
+  "baselineReceipt": {
+    "event": "qualification.ready",
+    "scope": "https://reference.invalid/acme/",
+    "claimEligible": false,
+    "configurationIdentity": "1720b63b49a7be3299d4b2865de4db9fcbe47560f217a32eea6397db7ea54ca5",
+    "artifactIdentity": "development-schema5-48667497d6e13064316d0364cf8f49dfc247ab9189306985a357d7b558333dfe",
+    "payloadIdentity": "4b67f32a66e559b879dc897ff8548276790618a7c509bccdca5e98798b423516",
+    "policyIdentity": "dbe8dbd5430f26e19e754d38167cd8084a32d702c695550e2ee0063dc2912430",
+    "authenticationIdentity": "66941efc779f4f2431d65fdd5b2387b2af67bd7c1559e09dac032f82259ea16e",
+    "profile": "read-update",
+    "history": false
+  },
+  "reportBinding": {
+    "artifacts": {
+      "catalogDigest": "e26d3fc758a34ebb0b5028be15d28e3e09db87dc7984bba7bad6a00b26329aa0",
+      "manifestDigest": "6961ecb631d971c1e22bda91074d63a008bfa659e38cc519b59963d39c6157cd",
+      "fixtureDigest": "a200afeb240f4c0c14e7bab43605d753e1640de8f17920c7dc5c174a901fb450"
+    },
+    "exactConfigurationDigest": "092b9ac9abf64dcd02f592059bc6333b0a6dfc69efe9d50332086335474c8f3c"
+  },
+  "targetEntry": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/snapshot-reviewed-final-validation/packed/install/node_modules/@bdp/server/dist/installed-reference-process.js",
+  "catalogSources": {
+    "read-v1.json": "769ff9f24cfdfe74a47670240b04149b520af23b2c71a431883fd15e988adeb0",
+    "read-update-v1.json": "0ad91810510dd7b688b291863d9b33949bba85fab69d6004ef1423b8c5e47039",
+    "transactional-v1.json": "d824e73b05a37ba6c7a66b3d97769dcb6b27fe0204310b0155b5c18a11e232d0",
+    "numeric-model-v1.json": "f4428d53cc1e67beaa146ba9811cd9676e47e84d75a344ba68eb9a24cdc2d0a5",
+    "owned-wildcard-v1.json": "6023bff763b7579992fc9092901f2f8ddfc752f264c2a9de6bc0caf0880c5ecd"
+  },
+  "plannedManifestDigest": "6961ecb631d971c1e22bda91074d63a008bfa659e38cc519b59963d39c6157cd",
+  "required": 129,
+  "authored": 45,
+  "uncovered": 103,
+  "whole": 26,
+  "testPassed": 134,
+  "testFailed": 0,
+  "testFiles": 4,
+  "rawReportSha256": "92600502d90e21b84752517d50fa66c08437a43e400d48e9890cb7a628de16b9",
+  "sessions": 45,
+  "observations": 781,
+  "setupObservations": 44,
+  "nativeReadObservations": 21
+}
