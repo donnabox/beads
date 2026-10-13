@@ -4,9 +4,9 @@ Status: exploratory design, owned by Vickie with product rulings by Donna. Last 
 
 This Markdown document on `donnabox/beads:codex/vickie-bdp-client-design` is the single plan of record at Donna's request. It replaces the upstream issue and intentionally overrides the fleet's issue-shaped tracker convention. It is a coordination and design record, not a normative BDP amendment or release commitment. Earlier client/journal proposals remain on this fork branch; the BDP editorial and implementation work authorized below has separate upstream review PRs.
 
-## Autonomous profile completion — paused execution plan
+## Autonomous profile completion — active execution plan
 
-**Operator pause, 2026-10-13:** heartbeat disabled, workers idle, unfinished source preserved. Resume only on operator authorization. Current evidence and exact next actions are in the live ledger below.
+**Operator resumed, 2026-10-13:** autonomous implementation and review restarted. Existing no-main-merge restriction remains pending the explicit merge-policy answer. Current evidence and exact next actions are in the live ledger below.
 
 Source: BDP main `caf5ca75a4e9b9c7865e61e97f849ab736c21e64`, normative `docs/specs/bdp.md`, mirrored schema/catalogs, completed review dispositions and preserved Update/Transactional work. Initial deployable target is the existing bdptest/SQLite reference implementation. The bdpbd adapter retains its independently qualified Read behavior; no Beads CLI implementation is required or edited to make bdptest progress. This is the sole plan; supporting audit/worker reports do not create competing authority.
 
@@ -62,11 +62,11 @@ Original service-review lows: RU trusted callback capability narrowing and publi
 
 ### Live worker ledger
 
-Checkpoint 2026-10-13T15:03:43Z. Autonomous profile completion is **PAUSED BY OPERATOR** under session `2026-10-08T20:26:35Z-81e5`. The target is installed bdptest/SQLite. Main remains `caf5ca75a4e9b9c7865e61e97f849ab736c21e64`. No main merge or Preview2 promotion. Public write-profile selection remains closed. Pending operator decisions remain Selector complexity admission, metadata-only incident-Link Events and retained Snapshot minimum comparison; Do not resume work until the operator authorizes it. Session ownership is retained; this is a pause, not retirement.
+Checkpoint 2026-10-13T15:55:22Z. Autonomous profile completion is **ACTIVE — OPERATOR RESUMED** under session `2026-10-08T20:26:35Z-81e5`. The target is installed bdptest/SQLite. Main remains `caf5ca75a4e9b9c7865e61e97f849ab736c21e64`. No main merge or Preview2 promotion. Public write-profile selection remains closed. Pending operator decisions remain Selector complexity admission, metadata-only incident-Link Events and retained Snapshot minimum comparison; Operator resumed work. Session ownership is unchanged. Existing no-main-merge restriction remains until the operator answers the explicit merge-policy question.
 
 ## Published result
 
-Draft [PR88](https://github.com/gastownhall/bdp/pull/88) is now **30351f5249ae41575bf62ed4c924a6a76fe68c4c**. Both remote source branch `codex/vickie-write-evidence-integration` and PR branch `codex/vickie-installed-profiles` were verified at that head. New exact-head CI **38417625455/job115366170156** is running. The PR body states the bounded evidence and remaining gaps; it remains draft.
+Draft [PR88](https://github.com/gastownhall/bdp/pull/88) is now **30351f5249ae41575bf62ed4c924a6a76fe68c4c**. Both remote source branch `codex/vickie-write-evidence-integration` and PR branch `codex/vickie-installed-profiles` were verified at that head. Exact-head CI **38417625455/job115366170156** passed successfully; remote verified on resume. The PR body states the bounded evidence and remaining gaps; it remains draft.
 
 Current30351 ordinarily merges reviewed admission successor d9a22c3 into0944, changing only four evidence/test files. Runtime trees are identical to0944. Dedicated validation passed all static checks, six cumulative-artifact tests and **152 fresh installed RU tests /four files**,47 actual sessions. [Report](write-evidence-integration-report.md), [safe bindings](write-evidence-integration-summary.json). Actual whole inventory is **28/129**,101 uncovered;47 authored, claimEligiblefalse. Reference579 is not integrated. No main merge or readiness promotion.
 
@@ -80,15 +80,15 @@ This advances f725 through ordinary ancestry: Snapshot serving6413, harness9cf, 
 
 Historical0944 inventory was **26/129**,103 uncovered; current30351 is28/129,101uncovered; both47 authored rows. All four authored TX rows remain partial. These are diagnostic counts, not qualified profiles.
 
-## Paused workers and preserved work
+## Resumed workers and immediate work
 
-Heartbeat `vickie-bdp-profiles` is verified PAUSED. All subagents are idle and no owned test/review process remains. Remote CI already launched for PR88 may finish independently; it was not cancelled. The session claim remains unchanged.
+Operator resumed autonomous work and asked about merge policy. Current restriction still prohibits main merges and Preview2 promotion. PR86 is ready/green/mergeable at12343ce; PR87 is draft/green at1f2d75; PR88 is draft/green at30351. Root requested authorization for autonomous BDP merges only after exact-head checks and selected-pair review, dispositions and scope gates. No merge has occurred.
 
-- Update repair is **uncommitted WIP** in `/Users/dbox/repos/wt/vickie/vickie-read-update-reference-repair`, branch `codex/vickie-read-update-reference-repair`, HEAD579019b. Three dirty evidence files.21focused tests passed, but preservation audit failed after manifest serialization; restore original47 raw blocks before any freeze/claim. No final packed run or promotion. [Pause report](read-update-reference-repair-pause.md), [saved WIP patch](read-update-reference-repair-paused.patch). Frozen579 remains unchanged/remotely preserved.
-- G2a SSE is clean/frozen/pushed at **b64d7e46652739c6436259a8c8ed4c5e8049a077**, branch `codex/vickie-changefeed-sse`. Author exact packages passed SSE1/TX+Snapshot30/RU151; native321tests/5probes accepted. External SSE review was stopped on operator request with no final output, exit143; it is incomplete and must resume before integration. [Author](changefeed-sse-report.md), [native](changefeed-sse-native-review.md), [review pause](changefeed-sse-claude-paused.md).
-- G2b Event Source SSE has an incomplete read-only [plan draft](transaction-event-sse-plan.md), hashdeb205bd0004caee44ab0e0536f7743c8081c3f5f73f828406090eadc315aee8. No source changes. API factoring/bounds/installed acceptance plan are unfinished. [Pause report](transaction-event-sse-pause.md).
-- Artifact segmentation plan is frozenfbe348e. Native accepted with conditions. External review returned complete output at pause; findings remain undispositioned and implementation is unassigned. [External review](read-update-artifact-segmentation-claude-plan-review.txt). Do not treat completion as approval.
-- Root's30351 integration is pushed, clean and independently validated; its exact CI remains running at pause. No other active author or validator.
+- **update_implementation ACTIVE:** bounded reference repair in `vickie-read-update-reference-repair`, base579. On resume, repository formatting restored original47 raw-block byte identity; audit passes, only B semantic changes, fixture unchanged. Measured96,450nodes; projected97,112 with662 comparator reserve. Final tests/clean commit/fresh installed validation are running; both new whole flags still false. Prior [pause report](read-update-reference-repair-pause.md) and [WIP patch](read-update-reference-repair-paused.patch) remain historical checkpoints, not the current validation state.
+- **transaction_implementation ACTIVE:** completing read-only G2b Event Source SSE plan from [saved draft](transaction-event-sse-plan.md). No G2b implementation assigned before review. G2a b64 remains clean/frozen/pushed and native accepted.
+- **profile_runtime_inventory ACTIVE:** source-grounded reconciliation of segmentation plan with native/external findings. Revised supporting plan/dispositions only, no implementation or cap change yet.
+- **External SSE review ACTIVE:** restarted on frozenb64 after operator resume, execution session66058, output `logs/changefeed-sse-claude-resumed-review.txt`. Earlier stopped review remains incomplete, not approval. Native321tests/5probes already accepted independently.
+- Other workers idle/available. Root owns merge-policy clarification, final readiness audits and exact integration. No shared database or other agent work touched.
 
 ## Review dispositions now settled
 
@@ -116,9 +116,9 @@ The entire C draft, fixture/oracles/controls, hashes and reuse instructions are 
 
 [Segmentation proposal](read-update-artifact-segmentation-plan.md), hashfbe348ebe48adda900712cc2f1f9d60776a958bb4773957c76230b7c15cbd331, recommends exactly two ordinaryv2 manifests with unchanged per-source bounds, one shared fixture/served configuration, separate actual exact-route/report bindings and a private validated inventory. Existing baseline stays byte-identical; C moves to the second source and stays partial. One90s aggregate; no merged fabricated report, public format or claims. [Native review](read-update-artifact-segmentation-native-plan-review.md) accepts with implementation conditions; External review completed at pause; findings need disposition. Implementation not yet assigned. [G2b preparation notes](transaction-event-sse-design-notes.md) record the sparse-source scan concern for later EventSource SSE; no new store edit assigned.
 
-On operator-authorized continuation: inspect30351 CI; finish the reference repair's raw-block preservation and validation; restart the incomplete SSE external review and disposition findings before integration; reconcile segmentation review; complete G2b plan. Product rulings remain Selector admission, metadata-only incident-Link Events and retained Snapshot minimum guarantees. No autonomous work is active while paused.
+Current continuation:30351 CI is green; finish the reference repair's raw-block preservation and validation; restart the incomplete SSE external review and disposition findings before integration; reconcile segmentation review; complete G2b plan. Product rulings remain Selector admission, metadata-only incident-Link Events and retained Snapshot minimum guarantees. Autonomous work has resumed; merge authorization is a separate pending question.
 
-Sole plan: `/Users/dbox/repos/wt/vickie/bdp-client-design/checkout/docs/architecture/bdp-client-v2/design.md`. Logs: `/Users/dbox/repos/wt/vickie/bdp-integration-logs`. Use pinned Node24.16.0/pnpm11.20.0. Guard every outward mutation with guarded-action.py and remote session comparison; never reclaim. No Janet CLI/staging/playgrounds/shared databases, Trish Types, optional History/YAGNI/provenance expansion. Keep raw credential-bearing progress local. Heartbeat is paused on operator request; no automatic continuation.
+Sole plan: `/Users/dbox/repos/wt/vickie/bdp-client-design/checkout/docs/architecture/bdp-client-v2/design.md`. Logs: `/Users/dbox/repos/wt/vickie/bdp-integration-logs`. Use pinned Node24.16.0/pnpm11.20.0. Guard every outward mutation with guarded-action.py and remote session comparison; never reclaim. No Janet CLI/staging/playgrounds/shared databases, Trish Types, optional History/YAGNI/provenance expansion. Keep raw credential-bearing progress local. Heartbeat is being re-enabled on explicit operator resume; retain all guards and stay quiet on unchanged state.
 
 ## Current priority: BDP profile structure and implementation
 
