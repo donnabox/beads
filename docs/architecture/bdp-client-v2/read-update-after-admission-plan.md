@@ -92,3 +92,10 @@ For a previously missing alias-put target, create that exact Bead under a differ
 - Clean isolated local commit/report only after root authorizes implementation. Parent owns council/integration/publication. No source changes for this proposal.
 
 No concrete missing runtime capability identified for the proposed visible-reference slice. The absent hidden/invisible fixture observation is a real coverage dependency, not proof the runtime lacks policy support. Concurrent/pending/retention/crash laws and full alias reference-idempotency (recorded misses, new locator comparison, tombstones, authorization views) remain separate larger slices; do not credit them from these bounded retry witnesses. No unresolved product decision blocks this proposal.
+
+
+## Authorized measured-capacity split (2026-10-13)
+
+The complete three-row draft had100400 nodes and was rejected by the unchanged100000-node manifest parser before target execution (244actions,3741660formattedbytes). Root approved existing fixturePointer deduplication of only new independently authored structured constants and collection identity tuples; all1287 assertions and exact expected JSON were preserved, yielding99600 nodes. All three rows then passed actual installed HTTP and17focused checks, but this draft is not delivered qualification.
+
+Root's separate admission bare-JSON comparison requires approximately1500 nodes. Root explicitly authorizes **A+B now, entire C deferred** to a later artifact segmentation slice, rather than trimming its corpus or widening limits. C's3154 nodes and73 actions are removed as one requirement; its complete authored draft, fixture/oracles/controls and exact source hashes live in read-update-reference-evidence/deferred-c-draft. Final source keeps C omitted with empty bindings and gives it no partial credit. All47 old rows/flags remain unchanged; final selection has49 authored,26whole,103uncovered. A+B retain all13syntax vectors and9category vectors, mixed sequences and retry/state controls. Final source is expected96446nodes; verify actual bytes/nodes and reserve in finalreport. No protocol, runner or artifact-cap change.
