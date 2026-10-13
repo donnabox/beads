@@ -32,3 +32,7 @@ The abrupt-child-exit test proves tentative capture is absent on reopen and grap
 Pinned Node24.16.0/pnpm11.20.0, frozen-lock install and clean build passed. Focused `transaction-snapshot.test.ts` with maxWorkers2: **27 passed,1 file,8.10s** (7.72s test time), no failures/skips. Full logs and JSON: `transaction-snapshot-core-native/{install,build,tests}.log`, `tests.json`. These tests did not cover F1; the external actual-code reproduction does.
 
 No full repository suite, packed Snapshot cohort, HTTP serving, population-wide performance qualification or Q1 semantics were tested. Existing test timeouts were unchanged. The issuance-limit test took3.948s, recorded in JSON; the author's12.38s-under-load/15s budget caveat remains valid despite this faster isolated run. Tests and reproduction removed their disposable stores; no review-owned child remained, and isolated git status was clean. Author source stayed frozen.
+
+## Follow-up closure
+
+The required page-framing defect and abrupt-exit wording follow-up were independently closed at `a0a068c689f5588701c2b7a350bb677dc4f114ae`; see `transaction-snapshot-page-repair-native-review.md`. The findings and evidence above remain pinned to original b9afb.

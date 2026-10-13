@@ -107,3 +107,22 @@ Initial properties<1KiB and ≤8 operations; TX source manifest≤1MiB; existing
 Done when fresh protocol/server tarballs are installed in a clean directory; actual source/tarball/module/package-root/payload/contracts/runtime/configuration/policy/authentication and per-session binding facts are recorded; four positive partial cases execute with no skip; countercontrols discriminate; all traffic uses the raw recorder; bootstrap/prepare/reopen validation precedes actions; immutable old receipt provenance survives valid endpoint rebinding; public/deep-import gates remain closed; all canonical gaps remain visible. Startup refusal, disconnect, abort and assertion failure must close/await children, preserve causes and release owner locks. No owned children remain.
 
 Build/typecheck/boundaries/format/lint/both smokes/public gates/report-v3 refusal and unchanged Read evidence verification must pass, then freeze exact source and fresh observation report for independent review. No public profile promotion or historical evidence relabeling. Four bounded observations are progress toward qualification, never whole-profile evidence.
+
+
+## Accepted implementation closure (2026-10-13)
+
+Implementation successor starts from reviewed M1 closure 80d9ef0941a6cb7d46c4b6ad18cab76a0fcfcd4f. The reviewed 50cea plan is preserved separately; this section resolves its conflicts.
+
+- F1: private client projection is closed `{status, headers, body, bodyPresent, bodyOctets}` with lower-case headers and JSON assertions. Internally validate the normative receipt; projection schemas wrap that receipt when used.
+- F2: session capability supplies current AbortSignal and registers every dynamic promise with the same pending set awaited by cleanup/reopen. Runner constructs the raw executor and owns observation; holder owns lifetime only.
+- F3: register receipt authority in runRequest capture loop while wire bytes, parsed body, exact observation and current session remain in scope. Source authority is immutable and survives validated reopen without rewritten provenance.
+- F4: within one credential configuration only authorization changes by handle. Across permission-swapped configurations each has its own baseline; all three actual identities change and cross-pairing is refused.
+- F5: all dynamic fields are excluded by LegacyObservedExchange types, assertLegacyScenario, and v3 report serializer. Tests cover each gate.
+- F6: launcher provisions the directory; reopen uses create:false. Physical endpoint may differ while logical identity remains equal.
+- F7: one structural marker `private-exact-available` in planner and coverage. Coverage status independently becomes `bounded-observation` only after real execution. Update transaction-harness-review-closure.md and retire pending marker/refusal checks coherently. Four rows remain partial; 250 canonical obligations remain visible.
+- F8: existing validateRunOptions action walk refuses reserved transactional.receipt-read for ordinary runners before setup or arbitrary callback execution.
+- F9: count induced Scope Events per fixture row before authoring; actual no-next assertions guard finite inventory below32 and byte bound. Resource collection limit32 is predeclared; Event routes have no limit query.
+- F10: require actual metadata at bootstrap, preparation and reopen. Negative missing-metadata test refuses before action. No seams in installed config. Read and validate returned authorityMode. Installed credentials are generated with CSPRNG; digests do not assert entropy provenance or secrecy.
+- F11: base exact mode/configuration digest stays fixed; actual validated dial route and current session generation are rebound per prepare/reopen. Both ordinary and dynamic requests use current session.
+
+Root native constraints: bounded cleanup drains dynamic operations; no old execute closure after reopen, no emulated output counted as wire, retained receipt provenance never rewritten. No new public Transactional run admission or complete profile claim.

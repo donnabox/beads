@@ -1,0 +1,129 @@
+Verified: plan SHA-256 `50cea58fe1987755841207cb9d843525ce01f1af3e35da5b0ee56893978e9b5d` matches. Read-only inspection at clean `8e45ef4d2c9674296f217ac0cf75bc706f49ff09` (`vickie-transaction-harness-closure`) and clean `b2d6eefd263bde18ee2430fbfb4b901a2d866cf6` (`vickie-transaction-runtime-configuration`). No files written, nothing built or executed.
+
+# Remaining concrete implementation blockers
+
+## F1 · HEAD-receipt observation is unauthorable: the client lane accepts only `json-*` assertions — Blocker
+
+**Location:** `packages/conformance/src/executable-manifest.ts:1300-1309` (`"non-HTTP actions permit only JSON assertions"`), `:254` (`json-schema` is `{id,kind,schema}` — no pointer) · plan §Four partial observations ("Receipt readable: … HEAD bodyless with required context") · plan §Receipt authority item 4 ("Preserve actual status, response headers, body octets/text … in the bounded **internal** observation/ledger").
+
+`parseProgrammaticAction` rejects every assertion whose `kind` does not start with `json-`. So a `client` action can never carry `body-absent`, `header`, `header-tokens`, `media-type`, `status` or `wire-not-contains`. The receipt GET/HEAD must stay on the client lane (its URL is a runtime capture, so an `http` action would hit `prepareExactRequest` → `validateExactRunConfiguration` against the base routes at `runner.ts:1033`/`:1470` and fail `exact-configuration`). The plan's projection is specified as `{status,body,…}` and puts headers/body-octets in the *internal* ledger — which leaves no authored path to assert "HEAD bodyless" or "required context" headers. The same restriction means an unpointered `json-schema` on a receipt GET validates the whole projection, not `/body`.
+
+**Impact:** row 3's HEAD half, and any header/context assertion on a receipt read, cannot be written. Discovered only after the interceptor exists.
+
+**Fix:** pin the projection's closed shape in the plan — `{status, headers: {<lower-case>: string}, body, bodyPresent, bodyOctets}` — and state that receipt assertions are expressed as `json-pointer`/`json-equals`/`json-array-*` into it (`/status`, `/headers/x-bdp-…`, `/bodyPresent`, `/body/status`), with `json-schema` either applied to a projection-wrapper schema or performed internally by the ledger. Keep the existing `/status` and `/body/status` pointers valid unchanged.
+
+## F2 · The private interceptor's dial escapes the target's abort and drain accounting — Blocker
+
+**Location:** `packages/conformance/src/raw-http-scenario-target.ts:72-79` (`active`), `:81-101` (`close` aborts `ending.controller`, then `await Promise.allSettled([...ending.pending])` before `ending.close`), `:256-269` (`dispatch` is the *only* place that ANDs the request signal with `session.controller.signal` and registers the operation in `active.pending`) · plan §Private receipt dispatch ("Preserve current preparation/cleanup abort and pending-operation settlement, **including requests created by this private interceptor**"; snapshot contents = "actual dial route, immutable logical/physical binding, credential resolver and fixed raw executor options").
+
+The plan has the runner build its own executor via `createRawHttpExchangeExecutor(dialRoute, …)`. That bypasses `dispatch` entirely, so the dynamic receipt socket is neither aborted by `session.controller` nor awaited by `close()`. The enumerated snapshot contents carry no session abort signal and no registration hook. The plan's generation/`after close` checks guard request *start*, not an in-flight request; `target.close()` (the emergency path, and `harness.cleanup`) can tear the child down with the receipt socket open.
+
+**Impact:** the stated settlement guarantee is not implementable from the stated snapshot; abandoned sockets and non-deterministic cleanup causes on the abort/timeout controls the plan makes mandatory.
+
+**Fix:** add two items to the private session snapshot and name them: the session's abort signal (to be ANDed into the dynamic request signal, as `dispatch` does) and a `register(operation)` hook that inserts into the same pending set `close()` awaits — or have the holder wrap execution so the runner still owns configuration, observation and recording while the target owns dialing lifetime.
+
+## F3 · Receipt authority cannot be registered where the plan implies; the source wire evidence is gone by then — Blocker
+
+**Location:** plan §Receipt authority items 1 and 6 · `packages/conformance/src/runner.ts:1026-1311` (`runRequest` — `response`, `response.wireResponseBytes`, `capturedExact` are function-local), `:1305-1306` (captures store only the resolved string into `bindings`), `:1307-1310` (`priorResponses` retains only `{status, headers}`), `:840-852` (interception point, which runs on a *later* action).
+
+Item 1 requires the ledger to record "original action/response identity, source JSON pointer, canonical URL, original logical/physical binding and credential/view association"; item 6 requires "the source response's immutable wire identity/digest and pointer link" to be checked before assertions count. None of that survives past the `completed`/`missing` POST's `runRequest` frame. By the time the interceptor sees `input.binding === "receipt"`, only the captured URL string exists. The plan never names the registration seam, and §Owned files only says "runner.ts interceptor/context/ledger/recording".
+
+**Impact:** the countercontrols "wrong source pointer/status/body", "substituted prior response" and "source-response digest mismatch" have nothing to compare against.
+
+**Fix:** name `runRequest`'s capture loop (`runner.ts:1305-1306`) as the TX-branch registration seam and enumerate what is captured there from the live response: action id, canonical response URL, `/id` pointer and value, status, a digest over the decoded body (or over `wireResponseBytes`), the exact-observation reference, and the current session's logical+physical binding and credential handle.
+
+---
+
+# High
+
+## F4 · The permission-swap control is unsatisfiable as written
+
+**Location:** plan §Installed factory ("Real permission swaps between two tokens of one principal must change actual authentication/policy/runtime identities and observed POST authorization") · `packages/server/src/transaction-runtime-configuration.ts:208-221` (`associations` is the whole sorted credential set; `authenticationIdentity` digests it), `:325-342` (`policyIdentity` and `runtimeConfigurationIdentity` both include `associations`) · `packages/server/src/transaction-http.ts:250-252`, `:287-292`.
+
+In M1 all three identities are functions of the credential *set*, not of which handle a request presents. Selecting a second handle at request time changes only the observed 200/403 — every identity stays equal. Only a *different configuration* (different credential set) moves the digests, and that runtime then fails the bootstrap/prepare expected-versus-actual equality the plan mandates on every prepare and reopen, so it needs its own expected baseline.
+
+**Impact:** as read literally the control can never pass; as read charitably it needs a second baseline the plan does not provide, and the adjacent negative control ("altering only one returned identity while holding the rest fixed is an injected mismatch") depends on which reading applies.
+
+**Fix:** split it. Within one configuration: only POST authorization varies (operator 200 vs read-only 403), identities stay equal — that is the positive policy observation. Across configurations: a swapped credential set must change `authenticationIdentity`, `policyIdentity` and `runtimeConfigurationIdentity` together, validated against its own recorded baseline, with `assertSameServedProfileConfiguration` refusing the cross-pairing.
+
+---
+
+# Medium
+
+## F5 · The v3/v4 boundary is enumerated in three places; the plan names one
+
+**Location:** plan §Receipt authority item 5 and §Owned files (`report.ts`/`report.test.ts` only) · `packages/conformance/src/report.ts:7-21` (named) · `runner.ts:249-260` **not named** — `LegacyObservedExchange = Omit<ObservedExchange,"request"|"transportError"|"harnessError"> & {…}`, so any *new top-level* optional field on `ObservedExchange` is inherited as legal in v3 · `runner.ts:419-431` **not named** — `assertLegacyScenario`, the runtime v3 gate, checks only `request.exact`, `harnessError`, `transportError.writeState` · `index.ts:151` exports `LegacyConformanceRunResult` publicly.
+
+**Impact:** the plan's "Keep them closed and bounded, v4-only" is false at the type level and at the runner's own runtime gate; only `serializeConformanceReport` would refuse. M7 is therefore only partly discharged.
+
+**Fix:** add `dynamicExactConfiguration`, `dynamicExactConfigurationDigest`, `sourceReceiptObservation` and the served-session binding reference to the `Omit` list at `runner.ts:249`, to `assertLegacyScenario`, and to `report.ts`'s rejection list; add regressions in both `runner.test.ts` and `report.test.ts`.
+
+## F6 · Reopen cannot reuse the `create:true` configuration, and nothing provisions the store directory
+
+**Location:** plan §Installed factory ("`transaction-installed-configuration.ts`: … directory/create intent"; "one configuration followed by close-only messages"; "A **same-config** reopen keeps equal logical … identities") · `packages/server/src/transaction-store.ts:255` (`openSync(options.file, "wx", 0o600)` — exclusive create, EEXIST if present), `:256-257`, `:472-500` (`create:false` requires byte-identical stored `configuration` and `contractCapture`), `:501-504` (reopen retracts only `owner IS NOT NULL` receipts, so completed/failed receipts and the graph do survive) · `packages/server/src/transaction-runtime-configuration.ts:332-342` (`runtimeConfigurationIdentity` preimage excludes `directory`/`create`) · precedent already in-tree: `transaction-installed-contracts.test.ts:473` reopens with `{...options, create:false}` · no mkdir on the TX path (compare `recovery-store.ts:348`).
+
+**Impact:** the mandatory capture→close→reopen→follow control fails at startup if "same-config" is taken literally; and `openSync(…,"wx")` fails ENOENT unless the directory already exists.
+
+**Fix:** state that reopen relaunches the same closed configuration with `create:false` on the same absolute directory, that `directory`/`create` are deliberately outside the identity preimage so logical identity is still equal, and that the launcher (not the child) provisions the directory.
+
+## F7 · Two divergent transport markers, and the doc that pins the current one is unowned
+
+**Location:** plan §Owned files ("set coverage to `bounded-observation` and `transportAdmission:"private-installed"`") vs the next bullet ("use an explicit **private-exact-available** structural marker") · `packages/conformance/test-support/profile-contract-plan.ts:201` (`transportAdmission?: "pending"` — closed literal), `:364` (keyed only on `bound.profile === "transactional"`) · pinned by `transactional-cumulative.test.ts:92` (`"authored-unexecuted"`) and `:180` (`"pending"`) · `docs/design/transaction-harness-review-closure.md:7` documents `transportAdmission: "pending"` and "H1b must update this marker only with its actual transport implementation" — not in §Owned files.
+
+**Impact:** two vocabularies for one transition across two artifacts, a closed literal type that must widen, and a design doc that goes stale with no check to catch it.
+
+**Fix:** state both values explicitly as deliberately distinct (coverage = observation status; planner = structural transport availability), widen `ProfileExecutionPlan["transportAdmission"]` to the named union, and add the doc line to §Owned files.
+
+## F8 · Refusing the reserved operation on ordinary runs is a new gate, not an existing one
+
+**Location:** plan §Private receipt dispatch ("Ordinary runs must refuse that reserved operation before an arbitrary actionExecutor can emulate it") · `packages/conformance/src/executable-manifest.ts:1263` (`operation` is only `readId`-shaped — no reserved vocabulary exists) · RU's `installed.exact-request` is honoured purely by the caller's `actionExecutor`, never by the runner · `runner.ts:2634-2653` (`validateRunOptions` already walks every manifest action, pre-setup).
+
+**Impact:** without naming the seam, the privilege boundary is stated but not placed; a public RU manifest plus a caller-supplied `actionExecutor` could claim `transactional.receipt-read` today.
+
+**Fix:** name `validateRunOptions`'s existing action walk as the refusal point for `family:"client" && operation==="transactional.receipt-read"` when `transactional === false`, with a pre-setup test asserting `harness.prepare` was not called.
+
+---
+
+# Low
+
+- **F9 · The Scope-Event page bound is load-bearing but uncounted.** Rows 1/2/4 assert finite Scope Events with mandatory `next:null`; `transaction-store.ts:1347` truncates at `events.length + 1 > receiptMaximumItems` (32, via `transaction-runtime-configuration.ts:84`) or `TRANSACTION_EVENT_PAGE_BYTES` (`transaction-events.ts:18`, 4 MiB), and induced events fan out per operation (`inducedEvents: 256`). The plan correctly declares a non-null `next` a failing fixture assumption but never inventories the induced-event count for the authored bodies, so a fan-out silently converts a positive observation into a failure. Pre-count induced events per authored row.
+- **F10 · `metadata()` returns `undefined` under any test seam.** `transaction-runtime-configuration.ts:323-324`: identity is withheld when `seamCapture.supplied || configuredScope === undefined || contracts === undefined`. The plan's prohibition on clocks/schedulers/overrides is therefore not merely hygiene — it is the precondition for the prerequisite facts existing at all. Worth saying so explicitly, and worth a negative control asserting `configurationMetadata === undefined` refuses bootstrap rather than silently proceeding.
+- **F11 · `exactMode` is snapshotted once at target construction, not per prepare.** `raw-http-scenario-target.ts:55-60` snapshots at construction; only the dial-route executor is rebuilt per prepare (`:134`), and `prepare` hard-requires `snapshot.exactMode.scope === scope` (`:107-111`). The plan's "reuse that lifecycle ordering" is right, but the prior review's "`:55-60` re-snapshots the exact mode" was not; with canonical authority the fixed base mode is correct and the per-session rebinding is the dial route alone. Record that distinction so the reopen control is not mistakenly expected to re-derive the base mode.
+
+---
+
+# Prior blockers: confirmed resolved against `8e45` and `b2d6`
+
+**B1 (private session handoff / raw receipt recorder) — resolved in substance.** The seam the plan describes is exactly what the source shows: `runScenarioAction` already receives `options` and `exchanges` (`runner.ts:805-820`, called at `:617-633`); `runProgrammaticAction` receives neither (`:855-866`); the interception point before it is `:840`; `snapshotRunOptions` destructures a fixed list and silently drops extras (`:463-503`), so a separate private parameter on `runMatrix`→`runScenario`→`runScenarioAction` is both necessary and sufficient. `createRawHttpScenarioTarget` does hide `active`/`dialRoute` (`:72-79`). The reassembly is mechanically available: `createRawHttpExchangeExecutor(dialRoute, {exactMode, maximumHeaderBytes, maximumBodyBytes, requestTimeoutMs})` (`http-executor.ts:164-191`), and `executeExact` independently re-gates the single-route mode — `validateExactRunConfiguration(mode, url.href, method)` at `:670` precedes credential resolution at `:680` and `append("Host", url.host)` at `:715`. `exactExecution.configuration` deliberately omits `resolveCredentials` (`runner.ts:1366`), so the holder supplying it is required, not optional. Client actions are excluded from `preflightExactPlans` (`:1410-1413`), so no base-route predeclaration is needed for the dynamic route. Subject to F1–F3.
+
+**B2 — resolved, and the blast radius is exactly one file.** `http-executor.ts:57` and `:443` still hold. After widening, `transactional-cumulative.test.ts` breaks in three places: `:311-316` (`invalidExact` now snapshots, run proceeds to `harness.prepare`, so `rejects.toThrow("Exact HTTP execution binding is invalid")` fails), `:325-328` (the `snapshotExactHttpMode` throw expectation must flip to success), `:329` (`prepare` was called). The plan's replacement controls — valid TX snapshot succeeds, malformed mode / mismatched routes fail pre-setup, RU control at `:323` retained, no-exactExecution refusal at `:289-291` retained with reworded message (`runner.ts:2619-2623`) — cover all three. Nothing else pins it: `http-executor.test.ts:646` and `raw-http-scenario-target.test.ts:190` only use `read-update`, and `runner.test.ts:4972-4998`'s `"transactional"` case still rejects at `runner.ts:2602-2610` on run-profile/config-profile mismatch, independent of the executor guard.
+
+**B3 — resolved and accurate.** `runCumulativeTransactionalMatrix` (`runner.ts:323-327`), brand/profile gate (`:335`), `transactional-v1`, and the inventory table match `manifest-v1.json` byte-for-byte: 8 actions, 2+4+4+6 = 16 assertions, `retained` encoded as `family:"client"`, `operation:"transactional.receipt-read"`, `input:{binding:"receipt",method:"GET"}` with `receipt` captured from `/id` by `completed`. TX 1 MiB vs RU 4 MiB and 250 requirements confirmed.
+
+**H4 — resolved.** `transportAdmission` is keyed only on profile (`profile-contract-plan.ts:364`); coverage is pinned at `transactional-cumulative.test.ts:91-105` including the derived `${action.id}:${assertion.id}` bindings; the manifest contains zero GET/HEAD actions. The plan's "profile-only marker and coverage `pending-h1b` must retire coherently, not merely inherit passing executor admission" is exactly right. Subject to F7.
+
+**M5 — resolved, and the correction is right.** `transaction-events.ts:132-140`: the Scope route is `events/` and allows only `after`; `?limit=32` raises `TransactionEventParameterError`. Resource collections at `?limit=32` are admissible because `maxPageItems = receiptMaximumItems = 32` (`transaction-runtime-configuration.ts:84`, `:300`; `transaction-batch.ts:61`). `{binding:"scope",path:"beads/",query:{limit:"32"}}` resolves correctly through `runner.ts:2316-2329`, and using the built-in `scope` binding is required, not merely tidy — `validateFixturePreparation:2722-2732` enforces exact binding-name equality and forbids a fixture binding named `scope`.
+
+**M6 — resolved and precise.** `scripts/smoke-executables.mjs:134-355` is exact set equality; `:439-443` auto-covers only `installed-schema-*`/`transaction-*` `.js` under the single `@bdp/server/dist/<name>` spelling. `installed-payload` matches neither prefix, so both spellings plus all four emitted suffixes must be listed explicitly — as the plan says. M1's six added lines (`transaction-runtime-configuration`, inventory + both spellings) are the lines to preserve through ordinary merge.
+
+**M7 — partly resolved.** See F5.
+
+**L8 — resolved, attribution now correct.** RU header 16,384 / body 131,072 (`read-update-matrix.test.ts:209-210`); the TX server's own body limit is 65,536 (`transaction-batch.ts:66`), so the plan's exact-request body cap matches the server exactly. Response caps 65,536 / 1,048,576 are the executor defaults (`http-executor.ts:156`, `:173-175`), and `RAW_WIRE_EVIDENCE_MAX_BYTES = 2_097_152` (`runner.ts:52`, used only at `:1791`) is hard-coded and absent from the `exactConfigurationDigest` preimage (`:1383-1401`). `TRANSACTION_HTTP_TARGET_BYTES = 8192` bounds POST targets.
+
+**L9 — resolved.** The RU child's ready message genuinely omits `listenUrl` (`installed-reference-process.ts:49-60`), and its `stopping` guard is the template for "no late ready after disconnect/close". Per-prepare dial rebinding is real (`raw-http-scenario-target.ts:134`). See F11 for the one imprecision inherited from the prior review.
+
+**L10 — resolved, and already satisfied.** `fixture-v1.json` already declares exactly `installed-transactional-http` and `transactional-receipt-observation`, and `manifest-v1.json`'s `setup.requires` already names them per row. No fixture capability edit is needed; `runner.ts:2714-2721` checks subset, `:2722-2732` checks binding-name equality.
+
+**L11 — resolved.** All eight authored actions are `raw`; `preflightExactPlans:1410-1413` plus `runRequest:1034-1041` mean a non-`raw` action at a non-Read profile still dials `options.execute`, so the refusing stub is required.
+
+**L12 — resolved, and verified safe.** `installed-reference.ts:72` derives the root from `new URL("../", import.meta.url)`; both modules emit into the same `dist/`, so the closure is identical. No test pins a literal payload digest (only shape `/^[a-f0-9]{64}$/` and equality-across-sessions), so the new bytes changing the identity breaks nothing.
+
+**L13 — resolved.** `projectExactObservation:1609-1616` omits `bodyDigest` unless `approvedSyntheticManifestDigest` equals the manifest digest, so refusing approval does suppress the exported request digest while leaving internal mismatch checks intact.
+
+**M1 prerequisites — present at `b2d6eef`.** `startTransactionRuntime` returns `{scope, listenUrl, configurationMetadata, targets, close}` (`transaction-runtime.ts:251-279`); `metadata()` returns `runtimeConfigurationIdentity`, `artifactIdentity`, `policyIdentity`, `authenticationIdentity`, `scope`, `profile`, `history`, `claimEligible:false` (`transaction-runtime-configuration.ts:332-352`), with each credential's `canMutate` inside the `associations` preimage (`:212-221`) — F3 of the M1 review is discharged. `authorityMode:"canonical"` gives the canonical Host rule (`transaction-runtime.ts:111-113`), which matches `append("Host", url.host)`, and port 0 yields the actual `listenUrl` (`:203-212`). The identity preimage excludes the port, so logical identity survives reopen while the physical endpoint changes — exactly as the plan asserts.
+
+# Verdict
+
+The four prior blockers plus H4 and M5–M7 are substantively discharged, and the two framing errors are fixed: the receipt mechanism is now the private-interceptor design the source actually supports, and the plan is honest that the session handoff is new plumbing. B3's inventory is byte-accurate. What remains is not architecture but three unauthorable-as-written details — the client lane's `json-*`-only assertion vocabulary (F1), the snapshot's missing abort/pending hooks (F2), and the absent ledger-registration seam (F3) — plus one control that cannot pass under either reading (F4). F5–F8 are bounded edits to places the plan already owns but does not name. Fix F1–F4 before authoring; F5–F8 before the four observations are written. F9–F11 are precision.
+
+All four rows stay partial: `claimEligible:false`, `wholeContract:false`, 250 requirements retained, no public TX admission, no promotion of the Read seal.
