@@ -9,7 +9,7 @@ Ordinary ancestry composes Update evidence/budget64ac05, owned/capture evidence8
 - Integrated runtime at parent **5b0e25f**: clean, prebuild typecheck, build, full **8,347 tests / 144 files pass**, one skip, 57.74 seconds. Boundaries, formatting/lint, unchanged89-row Read evidence, both smokes and seven preflight checks all pass. Logs `installed-profiles-5b0e25f/`.
 - Final head only demotes an overbroad atomicity credit and updates its expected count/gate/prose. **Six catalog/binding tests pass** on e2f1385. This is not a claim that the full suite was rerun after that evidence-only merge.
 - Fresh protocol/server tarballs installed outside the checkout: **104 tests / four files pass**, 43.68 seconds, sourceCommit e2f1385, sourceDirty false. Includes actual cumulative installed HTTP, exact-client, development-server and installed Read oracles. Logs `installed-profiles-packed-e2f1385/`.
-- Exact CI **38382996092** was in progress at 2026-10-13T10:25:46Z; no CI success inferred.
+- Exact CI **38382996092 passes** on e2f1385; job115247781832 ran the full suite, preflight, smoke and Read gate.
 
 Actual cumulative report:41 sessions,662 client exchanges,44 setup observations,21 native Read observations.129 required rows,41 authored,26 whole-credit rows,103 uncovered; **claimEligible:false**. The count reduction repairs evidence claims, not runtime behavior. Historical c0 report remains unchanged.
 
