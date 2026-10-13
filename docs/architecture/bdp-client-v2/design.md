@@ -62,17 +62,25 @@ Original service-review lows: RU trusted callback capability narrowing and publi
 
 ### Live worker ledger
 
-Checkpoint 2026-10-13T15:55:22Z. Autonomous profile completion is **ACTIVE — OPERATOR RESUMED** under session `2026-10-08T20:26:35Z-81e5`. The target is installed bdptest/SQLite. Main remains `caf5ca75a4e9b9c7865e61e97f849ab736c21e64`. No main merge or Preview2 promotion. Public write-profile selection remains closed. Pending operator decisions remain Selector complexity admission, metadata-only incident-Link Events and retained Snapshot minimum comparison; Operator resumed work. Session ownership is unchanged. Existing no-main-merge restriction remains until the operator answers the explicit merge-policy question.
+Checkpoint 2026-10-13T16:02:20Z. Autonomous profile completion is **ACTIVE** under session `2026-10-08T20:26:35Z-81e5`. The operator explicitly authorized merging ready pending BDP PRs. Main is now **1f9d7dbc401f6a265cf1ce0bdfea0fe493cd79a5**. Main merges require exact-head green CI, native Codex plus Claude review, findings disposition and ordinary ancestry; release/Preview2 promotion remains unauthorized. Public write-profile selection remains closed. Product decisions remain Selector complexity admission, metadata-only incident-Link Events and retained Snapshot minimum comparison.
+
+## Main merges verified
+
+- [PR86](https://github.com/gastownhall/bdp/pull/86) merged as **fdc685d4c1eefd01236deaa5023d2c2bf303db64**. Its tree exactly equals tested12343ce (`b7801626673aac9518c43219d73c645de466d758`).
+- [PR88](https://github.com/gastownhall/bdp/pull/88) merged as **1f9d7dbc401f6a265cf1ce0bdfea0fe493cd79a5**. Actual main tree **58d6e711c56dc78ce69e53f6075ace0b23d03711** exactly equals tested30351f5; zero source diff.
+- [PR87](https://github.com/gastownhall/bdp/pull/87) was automatically marked merged by GitHub because its complete1f2d75 ancestry is included in88. This lands the intermediate carrier/readiness corrections together, avoiding a separate incomplete planner landing.
+
+[Readiness and review disposition](main-merge-readiness.md). Candidate CI and installed observations retain their exact original source binding. No release or public write-profile qualification is claimed.
 
 ## Published result
 
-Draft [PR88](https://github.com/gastownhall/bdp/pull/88) is now **30351f5249ae41575bf62ed4c924a6a76fe68c4c**. Both remote source branch `codex/vickie-write-evidence-integration` and PR branch `codex/vickie-installed-profiles` were verified at that head. Exact-head CI **38417625455/job115366170156** passed successfully; remote verified on resume. The PR body states the bounded evidence and remaining gaps; it remains draft.
+Merged [PR88](https://github.com/gastownhall/bdp/pull/88) is now **30351f5249ae41575bf62ed4c924a6a76fe68c4c**. Both remote source branch `codex/vickie-write-evidence-integration` and PR branch `codex/vickie-installed-profiles` were verified at that head. Exact-head CI **38417625455/job115366170156** passed successfully; remote verified on resume. The PR body states bounded evidence and remaining gaps; ready status and main merge were operator-authorized.
 
-Current30351 ordinarily merges reviewed admission successor d9a22c3 into0944, changing only four evidence/test files. Runtime trees are identical to0944. Dedicated validation passed all static checks, six cumulative-artifact tests and **152 fresh installed RU tests /four files**,47 actual sessions. [Report](write-evidence-integration-report.md), [safe bindings](write-evidence-integration-summary.json). Actual whole inventory is **28/129**,101 uncovered;47 authored, claimEligiblefalse. Reference579 is not integrated. No main merge or readiness promotion.
+Current30351 ordinarily merges reviewed admission successor d9a22c3 into0944, changing only four evidence/test files. Runtime trees are identical to0944. Dedicated validation passed all static checks, six cumulative-artifact tests and **152 fresh installed RU tests /four files**,47 actual sessions. [Report](write-evidence-integration-report.md), [safe bindings](write-evidence-integration-summary.json). Actual whole inventory is **28/129**,101 uncovered;47 authored, claimEligiblefalse. Reference579 is not integrated. Main merge is verified above; no public-profile promotion.
 
 Predecessor0944 exact [CI38413582119](https://github.com/gastownhall/bdp/actions/runs/38413582119) passed **8,627 tests /155 files**, one existing optional skip, preflight7 and installed smoke. That remains predecessor evidence, not current30351 CI.
 
-This advances f725 through ordinary ancestry: Snapshot serving6413, harness9cf, Update admission8e, shared Snapshot deadlineffe, then root's final Snapshot assertion/disclosure correction0944. No rebase, force push or main merge. PR86 ready12343ce and PR87 draft1f2d75 remain ancestors.
+This advances f725 through ordinary ancestry: Snapshot serving6413, harness9cf, Update admission8e, shared Snapshot deadlineffe, then root's final Snapshot assertion/disclosure correction0944. No rebase or force push. PR86 and PR87 remain ordinary ancestors, now merged.
 
 - Combined **9e4392bc3a759405d2e318005f41a01244fb3b34** passed **8,625 tests /155 files**, one existing optional skip, plus build, type/static checks, both smokes, preflight and historical Read89 verification. [Report](write-profiles-reviewed-report.md).
 - Integrated **94ef8da934694b6ef12653851ccee0716130a8aa** passed fresh packages/isolated install and **181 tests /six files**: TX22, RU151, Snapshot8. Actual four partial TX rows/35 HTTP exchanges/five physical sessions;47 RU sessions/903 client observations/778 reported exchanges including21 native Read/44 setup;127 Snapshot HTTP exchanges. [Report](write-profiles-final-packed-report.md), [safe bindings](write-profiles-final-packed-summary.json).
@@ -80,15 +88,14 @@ This advances f725 through ordinary ancestry: Snapshot serving6413, harness9cf, 
 
 Historical0944 inventory was **26/129**,103 uncovered; current30351 is28/129,101uncovered; both47 authored rows. All four authored TX rows remain partial. These are diagnostic counts, not qualified profiles.
 
-## Resumed workers and immediate work
+## Workers and immediate work
 
-Operator resumed autonomous work and asked about merge policy. Current restriction still prohibits main merges and Preview2 promotion. PR86 is ready/green/mergeable at12343ce; PR87 is draft/green at1f2d75; PR88 is draft/green at30351. Root requested authorization for autonomous BDP merges only after exact-head checks and selected-pair review, dispositions and scope gates. No merge has occurred.
+- **profile_runtime_inventory ACTIVE:** independent closure review of reference repair88e428ce, direct579 successor. Author142 local and171 fresh installed tests pass; original47 raw blocks preserved; only three evidence/test files changed, +4nodes. A/B coverage flags remain false. [Report](read-update-reference-repair-report.md), [safe bindings](read-update-reference-repair-packed-summary.json). Original author update_implementation is idle after guarded push/verification.
+- **transaction_implementation ACTIVE:** completing bounded G2b Event Source SSE plan. No implementation assigned before review; G2a b64 remains frozen/pushed/native accepted.
+- **External G2a SSE review ACTIVE:** frozenb64, execution66058, logs/changefeed-sse-claude-resumed-review.txt. Earlier stopped review remains incomplete, not approval.
+- **Segmentation plan reconciled:** [revised plan](read-update-artifact-segmentation-revised-plan.md), SHA256d5377fb47a7c64f424c77889a5e777c1cbcb36121a85c36bcc6394ad54ccf610; [dispositions](read-update-artifact-segmentation-revised-dispositions.md). Original reviewed plan remains unchanged. Explicit omitted requirements, shared-fixture collision controls, prerequisite closure and aggregate time/parse accounting retained. Root acceptance/implementation assignment pending.
 
-- **update_implementation ACTIVE:** bounded reference repair in `vickie-read-update-reference-repair`, base579. On resume, repository formatting restored original47 raw-block byte identity; audit passes, only B semantic changes, fixture unchanged. Measured96,450nodes; projected97,112 with662 comparator reserve. Final tests/clean commit/fresh installed validation are running; both new whole flags still false. Prior [pause report](read-update-reference-repair-pause.md) and [WIP patch](read-update-reference-repair-paused.patch) remain historical checkpoints, not the current validation state.
-- **transaction_implementation ACTIVE:** completing read-only G2b Event Source SSE plan from [saved draft](transaction-event-sse-plan.md). No G2b implementation assigned before review. G2a b64 remains clean/frozen/pushed and native accepted.
-- **profile_runtime_inventory ACTIVE:** source-grounded reconciliation of segmentation plan with native/external findings. Revised supporting plan/dispositions only, no implementation or cap change yet.
-- **External SSE review ACTIVE:** restarted on frozenb64 after operator resume, execution session66058, output `logs/changefeed-sse-claude-resumed-review.txt`. Earlier stopped review remains incomplete, not approval. Native321tests/5probes already accepted independently.
-- Other workers idle/available. Root owns merge-policy clarification, final readiness audits and exact integration. No shared database or other agent work touched.
+Root owns subsequent integrations, exact verification and autonomous merge readiness. No shared database or other agent work touched.
 
 ## Review dispositions now settled
 
@@ -116,9 +123,9 @@ The entire C draft, fixture/oracles/controls, hashes and reuse instructions are 
 
 [Segmentation proposal](read-update-artifact-segmentation-plan.md), hashfbe348ebe48adda900712cc2f1f9d60776a958bb4773957c76230b7c15cbd331, recommends exactly two ordinaryv2 manifests with unchanged per-source bounds, one shared fixture/served configuration, separate actual exact-route/report bindings and a private validated inventory. Existing baseline stays byte-identical; C moves to the second source and stays partial. One90s aggregate; no merged fabricated report, public format or claims. [Native review](read-update-artifact-segmentation-native-plan-review.md) accepts with implementation conditions; External review completed at pause; findings need disposition. Implementation not yet assigned. [G2b preparation notes](transaction-event-sse-design-notes.md) record the sparse-source scan concern for later EventSource SSE; no new store edit assigned.
 
-Current continuation:30351 CI is green; finish the reference repair's raw-block preservation and validation; restart the incomplete SSE external review and disposition findings before integration; reconcile segmentation review; complete G2b plan. Product rulings remain Selector admission, metadata-only incident-Link Events and retained Snapshot minimum guarantees. Autonomous work has resumed; merge authorization is a separate pending question.
+Current continuation:30351 CI is green; finish the reference repair's raw-block preservation and validation; restart the incomplete SSE external review and disposition findings before integration; reconcile segmentation review; complete G2b plan. Product rulings remain Selector admission, metadata-only incident-Link Events and retained Snapshot minimum guarantees. Autonomous work continues with explicit authorization to merge ready BDP work;86/87/88 are now landed.
 
-Sole plan: `/Users/dbox/repos/wt/vickie/bdp-client-design/checkout/docs/architecture/bdp-client-v2/design.md`. Logs: `/Users/dbox/repos/wt/vickie/bdp-integration-logs`. Use pinned Node24.16.0/pnpm11.20.0. Guard every outward mutation with guarded-action.py and remote session comparison; never reclaim. No Janet CLI/staging/playgrounds/shared databases, Trish Types, optional History/YAGNI/provenance expansion. Keep raw credential-bearing progress local. Heartbeat is being re-enabled on explicit operator resume; retain all guards and stay quiet on unchanged state.
+Sole plan: `/Users/dbox/repos/wt/vickie/bdp-client-design/checkout/docs/architecture/bdp-client-v2/design.md`. Logs: `/Users/dbox/repos/wt/vickie/bdp-integration-logs`. Use pinned Node24.16.0/pnpm11.20.0. Guard every outward mutation with guarded-action.py and remote session comparison; never reclaim. No Janet CLI/staging/playgrounds/shared databases, Trish Types, optional History/YAGNI/provenance expansion. Keep raw credential-bearing progress local. Heartbeat is ACTIVE with the authorized merge policy; retain all guards and stay quiet on unchanged state.
 
 ## Current priority: BDP profile structure and implementation
 
