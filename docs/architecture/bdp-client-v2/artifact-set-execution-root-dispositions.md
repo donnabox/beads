@@ -19,3 +19,7 @@ Claude reviewed frozen7d read-only, confirmed baseline/C/configuration/policy/cl
 7. Assert intended mismatch labels for association negative controls so an earlier unintended rejection cannot stand in for the target discriminator.
 
 Only the app helper/tests need change; runtime/runner/manifests/fixture/coverage/bounds remain unchanged. b569 stays frozen for independent native review, and its report is not relabeled as final closure. The new successor receives scoped review and exact fresh evidence.
+
+## Native b569 closure
+
+Independent446regressions and12actual/persistence controls close the original loss of genuine child reports. One combined actual-response cancellation plus evidence-directory permission failure loses the original AbortSignal.reason from the in-memory cause graph, while baseline bytes survive, no success summary is emitted and all children drain. Accept this narrow P2 in the same app-only review successor: preserve original cancellation alongside execution/persistence/cleanup errors, without serializing raw causes. The reproduced red probe and exact scope are in artifact-set-failure-retention-native-review.md. This is not a new runtime failure or a false-profile claim.
