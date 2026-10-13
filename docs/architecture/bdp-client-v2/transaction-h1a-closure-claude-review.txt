@@ -1,0 +1,55 @@
+No files written; no tests or builds run. Everything below is from reading `825ce5a..8e45ef4`, the `825ce5a` prose/reason diff, and the frozen sources they touch.
+
+## Scope check
+
+`825ce5a..8e45ef4` is exactly 3 files / +40−5: the new closure doc, `transactional-cumulative.test.ts`, and one optional field on `ProfileExecutionPlan`. No production file is touched. `825ce5a` is 4 files, all prose plus one coverage `reason` string.
+
+## Verified closed
+
+- **Module-root export + subpath guard** (`transactional-cumulative.test.ts:333-349`). `await import("./index.js")` replaces the text scan; `Object.keys(root)` on a namespace object does include star re-exports, so the `export * from "./runner.js"` escape is closed. `Object.keys(pkg.exports)` matches `packages/conformance/package.json:13-22` exactly and in order, so a wildcard subpath now breaks the suite. `dist/` is gitignored with 0 tracked files, so no stale-artifact variant.
+- **Exact transport error + direct positive RU control** (`:311-328`). Sound, and sound for the right reason: `snapshotExactHttpMode` runs `snapshotExactRoutes` at `http-executor.ts:442` *before* the profile gate at `:443`, so the positive assertion at `:323` proves scope/routes/bounds/handles valid and the flip at `:324-328` isolates `profile` as the only differing input. Both legs now fail when H1b admits `"transactional"` at `http-executor.ts:443` — the outer leg because `snapshotExactExecution` (`runner.ts:1350-1380`) would stop throwing `"Exact HTTP execution binding is invalid"`, the inner because the direct call would stop throwing. This is the full remedy prior finding 2 asked for, including the message pin.
+- **Strict action binding** (`:100-107`). `Array.isArray(plan?.actions)` + `toStrictEqual` closes the `requests`-shaped vacuous-pass path exactly as prescribed.
+- **Deferred future-caller hardening.** Accurate: `createBoundArtifactBundle` takes the `cumulative` argument from only two call sites (`artifact-bundle.ts:114, :136`), both guarded by `assertCanonicalProfileContractSelection` at `:109`/`:131`, and neither factory is in `src/index.ts`. "Exactly two guarded private callers" holds.
+- **Canonical selection described as brand, not content.** The reworded claim is supported by code I found, not just asserted: `profile-contract-plan.test.ts:101-115` builds a fully-formed, loader-shaped but unbranded selection via `inspectProfileContractSourcesForTest` with a trimmed catalog and asserts `planProfileExecution` refuses with `"factory-loaded"`. Same chokepoint (`profile-contract-selection.ts:109-112`) the TX loop hits. Declining the test change and rewording is a legitimate bounded choice here.
+- **`825ce5a` prose.** Root-pointer clause at `read-update-coverage-v1.json:6831` is now byte-verbatim with `:1467` (grep: 2 plural occurrences); the singular form survives only at `:972` (`read-update.singleton.update-bead`), which prior review explicitly said needs no instanceLocation clause. Event-boundary rationale restated as cost/priority rather than exposure constraint. "byte-identical" → "identical canonical representations", which matches what `installed-schema-cohort.test.ts` actually compares. Stress disclosures land: ~30% matches 50,568,556 / 169,345,024, and the sampled-vs-self RSS asymmetry is now stated. `d907a1e1576c5795c17edb5f15528f47edfd7d6b` resolves to `d907a1e` here. The "tuple below" misdirection at `:1030` is fixed.
+
+## Actionable findings
+
+**1 — Low-medium · `transportAdmission` has no control that fails when H1b admits transport**
+`test-support/profile-contract-plan.ts:364`; assertion at `src/transactional-cumulative.test.ts:180`.
+The marker is keyed on `bound.profile === "transactional"` alone — never on transport state. `bound.profile === selection.profile` is enforced at `:228`, so the predicate itself is correct, but it is profile-shaped, not admission-shaped. The two transport controls in this same commit *do* fail on H1b's admission; this one does not: after `http-executor.ts:443` accepts `"transactional"`, `planProfileExecution` keeps emitting `transportAdmission: "pending"` and `:180` keeps passing. Making the limitation machine-readable therefore introduces a staleness class the prose-only version did not have — a consumer reading the plan object gets a confidently wrong flag, with a green suite. "H1b must update this marker only with its actual transport implementation" is the doc's only enforcement.
+*Fix (cheapest honest version):* move the marker assertion into the closed-transport `it` at `:274-331`, next to the two refusals, so admitting the profile breaks one named control block rather than leaving one of three silently green. Stronger: derive the marker from the executor's own admission predicate instead of the profile string, and name `http-executor.ts:443` as the invariant owner in the comment at `:364`.
+
+**2 — Low · Private-admission guard is name-based, and covers 3 of 5 private cumulative symbols**
+`src/transactional-cumulative.test.ts:333-340`.
+`expect(Object.keys(root)).not.toContain(symbol)` compares export *names*, so `export { runCumulativeTransactionalMatrix as runTxMatrix } from "./runner.js"` in `src/index.ts` ships the private carrier with the suite green — the same "routine edit publishes the carrier" class prior finding 1 was raised for, now reachable by alias instead of by text. Separately, the loop enumerates three symbols while the test title says "all private symbols": `createCumulativeReadUpdateArtifactBundle` (`artifact-bundle.ts:105`) and `CUMULATIVE_MANIFEST_MAX_BYTES` (`:19`) are equally private and unguarded. A blanket `export *` would be caught by the TX entries, but a targeted named re-export of the RU factory would not.
+*Fix:* assert by value identity, which closes both limbs at once — `for (const symbol of [createCumulativeTransactionalArtifactBundle, createCumulativeReadUpdateArtifactBundle, runCumulativeTransactionalMatrix, isCumulativeTransactionalArtifactBundle]) expect(Object.values(root)).not.toContain(symbol)`. Three of the four are already imported at `:4-21`; only `isCumulativeTransactionalArtifactBundle` needs adding.
+
+**3 — Low · Retained-evidence link is pinned to a mutable branch ref**
+`docs/design/transaction-implementation-progress.md:1223`.
+The new disclosure correctly pins source commit and emitted tree digest, then links the artifacts it leans on at `.../tree/codex/vickie-bdp-client-design/docs/architecture/...` — a branch, not a commit. The sentence's stated purpose is retention ("retain the source status rather than claiming a pristine committed source run"), but a branch segment can move or be deleted, so the scripts and outputs are not durably addressable from the doc. This is the same standard prior review applied when it flagged the missing in-doc source pin.
+*Fix:* replace the branch segment with a commit SHA in the tree path.
+
+**4 — Low · `transportAdmission` vocabulary split, with nothing binding the two**
+`test-support/profile-contract-plan.ts:201` (`"pending"`) vs `test-support/transactional/coverage-v1.json:5` (`"pending-h1b"`).
+Two spellings for one concept, in the same package, asserted independently (`:180` and `:92-94`). Nothing ties the plan marker to the authored coverage marker, so H1b can retire one and leave the other, and a reviewer grepping either string finds only half the surface.
+*Fix:* align the plan value to `"pending-h1b"`, or assert the relation in the coverage test (`expect(coverage.transportAdmission.startsWith(plan.transportAdmission)).toBe(true)`).
+
+## H1b retirement needs (obligations, not defects)
+
+These are things H1b must consciously do; none is a bug in H1a's unimplemented-target evidence.
+
+- **Will fail loudly on admission — retire deliberately.** `transactional-cumulative.test.ts:316` (`"Exact HTTP execution binding is invalid"`) and `:324-328` (direct `snapshotExactHttpMode` profile flip) both break the moment `http-executor.ts:443` accepts `"transactional"`. `:289-291` (`"transport admission pending"`) likewise. That is the intended design and it now works.
+- **Will *not* fail on admission — the one gap.** `transportAdmission: "pending"` at `profile-contract-plan.ts:364` and its assertion at `:180`; plus `coverage-v1.json:5`'s `"pending-h1b"`. Both must be retired by hand (see findings 1 and 4).
+- **Will become load-bearing rather than redundant.** The `transactional` sub-clauses in the v2 non-Read gate (`runner.ts:~2615`) are dead for the TX path today given the brand gate; H1b's admission makes them live, so they need real coverage then.
+- **Four coverage rows must flip together.** `coverage-v1.json` rows 8/19/35/51 all carry `wholeContract: false` and the identical "No target observed" reason, and `:99` asserts that substring for every row — so H1b cannot credit one row without the others unless it changes the loop.
+- **Expected-catalogId mapping is the deferred seam.** `artifact-bundle.ts:179`'s `` `${cumulative.profile}-v1` `` is safe only while exactly two guarded callers exist. H1b (or any third cumulative factory) must close it at the seam, per the prior review's prescribed record.
+
+## Notes, no action
+
+- The positive assertion at `:323` is load-bearing. `snapshotExactHttpMode`'s message is the generic `configuration()` string from `http-executor.ts:362`, shared by every validation failure in that file (`dataRecord`, `arrayItems`, `canonicalHttpUrl`, …), so the negative at `:324-328` is non-discriminating on its own. Removing or weakening `:323` silently collapses the differential. Worth a one-line comment, not a change.
+- `expect(Object.keys(pkg.exports)).toEqual([...])` is order-sensitive, so a pure key reordering in `package.json` fails the suite. That reads as deliberate — any exports edit gets a conscious review — but it is stricter than the prior review's prescribed wildcard filter.
+- The empty-`assertions` ambiguity from prior finding 5's second paragraph is still open: an action declaring zero assertions contributes nothing to the flattened list and is indistinguishable from an absent action. `toStrictEqual` does not address this, and the prescribed fix did not ask it to.
+- The closure doc cites no file paths, and is not indexed in `docs/design/README.md`. Both match house convention — `transaction-event-review-closure.md` does the same, and no progress/closure doc is indexed.
+- `"private": true` on the package means there is no publication surface at all; the `files`/`exports` guards are really about workspace resolution. Unpinned, but not load-bearing — the exports map blocks the private symbols either way.
+- I did not execute the suite, so I cannot report observed pass/fail. The two assertions whose correctness depends on fixture data rather than on logic — `snapshotExactHttpMode(mode)` validating at `:323`, and the `pkg.exports` key order — are self-reporting: if either is wrong the test fails loudly rather than passing vacuously.

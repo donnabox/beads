@@ -1,0 +1,110 @@
+Read the frozen diff (87423d5 vs d907a1e), the H1a report, and the prior revised-Claude review. Read-only; nothing written, built, or executed. Line numbers are at 87423d5.
+
+---
+
+# Scope verdict first
+
+Both H1a conditions from the prior review are met on the code, not just in prose:
+
+- **F7 is closed.** `runner.ts:333-338` brands on the snapshot (not the caller's object, so no TOCTOU) and refuses before `validateRunOptions`. `runMatrix` is the single chokepoint — `grep` confirms `ConformanceArtifactBundle` has no non-test consumer outside `artifact-bundle.ts`/`runner.ts`/`index.ts`. The `read`-declared path mattered too and is covered: at `profile === "read"` the v2 non-Read gate (`:2615`) is skipped entirely, so pre-brand-gate a TX bundle declared `read` would have produced a *report* of `missing-plan` rows, not a refusal. The `it.each` at `:243` covers all three declarations.
+- **F1 wording is amended** (`profile-contract-plan.ts:212-213`), and the planner's 1 MiB TX cap needed no edit as predicted (`:239-242` grants 4 MiB only on `selection.profile === "read-update" && !history`; `:251-256` re-checks every other carrier at the ordinary bound).
+- **Public Read/RU behavior is byte-equivalent.** `cumulative === undefined ? undefined : CUM_MAX` → `cumulative?.profile === "read-update" ? CUM_MAX : undefined` is identical for `createConformanceArtifactBundle` and `createDevelopmentReadUpdateArtifactBundle` (both pass `cumulative === undefined`) and for RU. `expectedCatalogId` interpolates to the same `"read-update-v1"`. The `transactional=false` branch of `:2615` is textually equivalent to the old condition, and the RU error string is unchanged. `apps/bdptest/src/read-update-matrix.test.ts` is unaffected.
+- **Artifact evidence reproduces.** I recomputed all three: manifest 11033 B / `07ba57c2…befed`, fixture 549 B / `9577eb72…a4db`, coverage 2465 B / `8aa3267…ec9e7d`. Exact match to the report.
+- **Transport really is closed, and for the reason claimed.** `http-executor.ts:443` rejects any profile outside `read`/`read-update`, and it is reached from `snapshotExactExecution` (`runner.ts:1350-1366`) inside `snapshotRunOptions`. There is no second path: `validateExactRunConfiguration` (`http-executor.ts:543`) is deliberately profile-agnostic, so `preflightExactPlans` cannot admit TX either. Since `:2615` also requires `exactExecution !== undefined`, `runCumulativeTransactionalMatrix` is unconditionally refusing today — which is the stated intent, not a defect.
+
+Six findings, none blocking. Four are test/data-precision; two are hardening.
+
+---
+
+# 1 · Packaging guard checks source text, not the surface that actually ships — Medium
+
+**Location:** `src/transactional-cumulative.test.ts:318-328`; `package.json:7-22`.
+
+The guard reads `src/index.ts` as a *string* and asserts the three private symbol names are absent, plus that `files` omits `test-support`. But `files` **does** include `dist`, and `runCumulativeTransactionalMatrix` / `createCumulativeTransactionalArtifactBundle` / `isCumulativeTransactionalArtifactBundle` are `export`ed from `src/runner.ts` and `src/artifact-bundle.ts`, so they compile into `dist/` and ship. The only thing keeping them unreachable by a consumer is that `exports` (`:13-22`) has no wildcard subpath — and no test pins that.
+
+**Impact:** two realistic edits silently publish the private TX carrier with a green suite. (a) Adding `"./dist/*": "./dist/*"` or `"./*"` to `exports` — a routine convenience change — makes both factories importable. (b) Changing `index.ts` to `export * from "./runner.js"` re-exports all three symbols while the text scan still passes, because the symbol names never appear in the file.
+
+**Fix:** assert the runtime surface instead of the text, and pin the subpath map:
+
+```ts
+const root = await import("./index.js");
+for (const symbol of [...]) expect(Object.keys(root)).not.toContain(symbol);
+expect(Object.keys(pkg.exports).filter((k) => k.includes("*"))).toEqual([]);
+```
+
+Keep the `files` assertion; it is still the right check for `test-support/`.
+
+# 2 · The TX-transport refusal control asserts no message, and the refusal it observes comes from a file H1b is scheduled to change — Medium-low
+
+**Location:** `src/transactional-cumulative.test.ts:306-313`; actual thrower `http-executor.ts:443` via `runner.ts:1350-1366`.
+
+The hostile-cast probe is `await expect(runCumulativeTransactionalMatrix({...input, exactExecution: invalidExact as unknown as ...})).rejects.toThrow()` — no message. Traced through, the throw happens at `runner.ts:333` (`snapshotRunOptions` → `snapshotExactExecution` → `snapshotExactHttpMode`), i.e. **before** the new brand gate at `:334`, and surfaces as `"Exact HTTP execution binding is invalid"`. The comment above it ("H1a cannot manufacture an exact TX mode by changing its type") is correct, and the invariant it rests on lives entirely in an unmodified file.
+
+**Impact:** this is the one control standing behind the report's "the existing exact executor still rejects Transactional." When H1b performs F1's remedy — admitting `"transactional"` at `http-executor.ts:443` — this assertion keeps passing, because the config's single `POST batch` route will not match every action's resolved target and `preflightExactPlans` (`runner.ts:1443-1452`) throws `"Selected exact HTTP requests do not match the configured execution boundary"` instead. The test cannot detect the transport gate opening, which is precisely the event it exists to detect. (The pre-existing `runner.test.ts:4971` `"transactional"` case has the same message-free shape, so this matches house style — but that case is not load-bearing for a closed-transport claim.)
+
+**Fix:** pin the message here (`.rejects.toThrow("Exact HTTP execution binding is invalid")`) and add a direct one-liner that `snapshotExactHttpMode({ ...valid, profile: "transactional" })` throws. Then H1b's admission edit must consciously retire a named control rather than silently inherit a green one.
+
+# 3 · `ProfileExecutionPlan` carries the TX transport caveat only in a doc comment — Low-medium
+
+**Location:** `test-support/profile-contract-plan.ts:208-215` (caveat), `:264-278` (new TX `carrierBlocker` clause), `:181-206` (returned shape); asserted at `src/transactional-cumulative.test.ts:177-181`.
+
+The new TX clause makes the four baseline rows `readiness: "ready-unexecuted"` with `carrierBlocker: undefined` — structurally identical to RU, where exact transport actually exists. The distinction ("TX structural readiness does not admit TX exact transport") exists only as prose in the JSDoc. The authored coverage JSON already models it in data (`coverage-v1.json:5`, `"transportAdmission": "pending-h1b"`); the plan object does not.
+
+**Impact:** this is an inconsistency inside H1a's own material, not an H1b gap. Any consumer or report built on the plan object reads 4 TX rows as transport-ready with no machine-readable qualifier, and the test at `:177` asserts exactly that (`carrierBlocker` undefined) without asserting the caveat. The precision F1's remedy asked for survives only as long as someone reads the comment.
+
+**Fix:** add an optional field mirroring the coverage vocabulary — `readonly transportAdmission?: "pending"`, set when `bound.profile === "transactional"` — and assert it alongside `expect(plan.carrierBlocker).toBeUndefined()`.
+
+# 4 · `expectedCatalogId` interpolation widens the id space past its two callers — Low
+
+**Location:** `src/artifact-bundle.ts:179-183`; digest selection at `:242-245`.
+
+Replacing the `"read-update-v1"` literal with `` `${cumulative.profile}-v1` `` keys the expected catalogId off `ProtocolProfile`, which is open to `read`, `read-update`, `transactional` and whatever is added next. Today the two factories' own guards (`:110`, `:132`) constrain it, so there is no live hole.
+
+**Impact:** a future `createCumulativeReadArtifactBundle` — or any caller reaching `createBoundArtifactBundle` with a `read` selection — would expect `expectedCatalogId === "read-v1"`, colliding with the ordinary public Read artifact id (`:183`), while taking the cumulative `catalogDigest` branch (the catalog-digest-map hash, `:245`) rather than the catalog-bytes hash. Two differently-attested bundle kinds would then share one catalogId, and nothing in `createBoundArtifactBundle` would object.
+
+**Fix:** close the mapping at the seam rather than at each caller:
+
+```ts
+const CUMULATIVE_CATALOG_IDS = { "read-update": "read-update-v1", transactional: "transactional-v1" } as const;
+const id = CUMULATIVE_CATALOG_IDS[cumulative.profile as keyof typeof CUMULATIVE_CATALOG_IDS];
+if (id === undefined) throw new ConformanceArtifactBundleError("no cumulative carrier for this profile");
+```
+
+The same record can drive the 4 MiB decision at `:163`, replacing the bare `=== "read-update"` string compare.
+
+# 5 · Coverage-binding equality can pass vacuously on a `requests`-shaped row — Low
+
+**Location:** `src/transactional-cumulative.test.ts:95-105`.
+
+```ts
+expect(row.bindings).toEqual([{ scenario: row.id, assertions: plan?.actions?.flatMap(...) }]);
+```
+
+`toEqual` treats an `undefined` property as absent. A v2 manifest row may legitimately use `requests` instead of `actions` (`artifact-bundle.ts:270`, `scenario.actions ?? scenario.requests`), in which case `plan?.actions?.flatMap(...)` is `undefined` and matches a coverage row carrying no `assertions` key at all. Separately, an action whose `assertions` array is empty contributes nothing to the flattened list, so the file cannot distinguish "action declared without assertions" from "action absent" — relevant to the `transactional.receipt-read` client action if its assertions move during H1b.
+
+**Impact:** the assertion that keeps `coverage-v1.json` honest against the manifest degrades to a tautology for a row authored in the other legal shape. Nothing currently triggers it; all four rows use `actions`.
+
+**Fix:** `toStrictEqual`, plus `expect(Array.isArray(plan?.actions)).toBe(true)` before building the expectation.
+
+# 6 · Two selection negative controls exercise one code path, and overstate what is checked — Low
+
+**Location:** `src/transactional-cumulative.test.ts:117-120`; report line 7 ("Structural/shrunken selections … are refused").
+
+Both loop entries (`{...selected}` and `{...selected, required: selected.required.slice(1)}`) fail at the same statement — `assertCanonicalProfileContractSelection` (`profile-contract-selection.ts:109-112`), a `WeakSet` identity check — because the spread already breaks the brand. The `required.slice(1)` variant adds no coverage; there is no completeness or content validation of a selection anywhere, only object identity.
+
+**Impact:** the claim is true today but for a narrower reason than it reads. The defense is sound (`inspectProfileContractSourcesForTest` deliberately does not brand), but a reviewer taking the report at face value would expect a shrunken-selection *content* check that does not exist.
+
+**Fix:** replace the second entry with `inspectProfileContractSourcesForTest("transactional", false, …)` — a fully-formed, canonical-shaped, deliberately unbranded selection. That tests the claim the code actually makes ("only the factory loader's selections are accepted") instead of re-testing the spread.
+
+---
+
+# Minor notes, no action needed
+
+- **The new `transactional` ternary in `:2615` is redundant with `:2602-2609`.** Given the brand gate guarantees `profile === "transactional"`, and `:2602` already requires `configuration.profile === options.profile && configuration.scope === options.scope` for any v2 bundle with a defined `exactExecution`, three of the four OR sub-clauses are dead for the TX path; only `exactExecution === undefined` is live. The RU branch has carried the same redundancy since before this commit, and the sub-clauses become live under H1b's admission, so it reads as deliberate defense rather than drift.
+- **The RU-4 MiB retention control uses synthetic RU artifacts**, not the shipped `matrices/read-update-v1.json` + `fixtures/read-update-reference-v1.json`: `ruManifest` (`:48-69`) is one row grafted onto the TX manifest, bound to the TX fixture via `configuration("read-update")`. Fine for a byte-budget boundary, and it does satisfy F7's remedy; just narrower than it looks. Note the chosen row, `read-update.discovery.document`, is retired by `catalog/transactional-v1.json:36` — it is required at RU only, which is why the RU leg works and why it could not be reused at TX.
+- **The TX v1-refusal message branch (`:214-220`) is untested for its distinguishing content**: the test asserts `.toThrow("requires version 2")`, which matches both the RU and TX strings. Cosmetic.
+- `bindings.subject` and `bindings.created` in `fixture-v1.json` are unreferenced — every resource path lives inside the exact `raw.body` strings, which carry no substitution mechanism by design. Given that `created` (`beads/new`) is exactly the rollback row's missing atomicity poststate, these read as placeholders for H1b's declared poststate controls rather than dead data. Not flagged per scope.
+- Embedding the semantic Scope (`https://reference.invalid/acme/`) in raw bodies is correct, not a portability bug: RU does the same (`read-update-matrix.test.ts:54`) and dials a live ephemeral port while keeping the canonical Host (`http-executor.ts:198`).
+- The `transactional.receipt-read` client operation parses because the manifest parser has no client-operation allowlist (`executable-manifest.ts:774`). Declared-future, as the report states.
+- The manifest row-order assertion (`:85-88`) is a genuine ordering check, not a tautology — left side is manifest order, right side is catalog order filtered to manifest membership.
+- The two re-exports land at `test-support/testing.ts:1-2`, above the `import` block. Harmless under ESM hoisting, and the file already interleaves exports and imports (`:8-10` sit above `:11`).
