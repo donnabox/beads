@@ -1,0 +1,5 @@
+# Native review: maintenance timer isolation
+
+Reviewed exact2fa2d0291d0a4dec95bc8b4e864c8f30c00b74b8 againstfccb951. No actionable findings. Two-file change forwards the existing validated store interval only through a source-private runtime test seam. Undefined preserves default1000ms; no installed/public option or policy is added. Timer cleanup and owner validation still run in the existing owner.
+
+The specific read-triggered-retention test uses60000ms and waits1100ms on real timers, so its HTTP assertions distinguish unsupported reads from an independent legitimate sweep. Author counterfactual log confirms removal of forwarding fails404 vs500; restoredauthor42tests pass. Root independently reran the exact target against built source and passed (root-test.log); other37tests were deliberately filtered, not additional evidence. Inspected full diff and original store interval validation. This closes the native recovery P3 within bounded test scope; no runtime profile qualification is implied.
