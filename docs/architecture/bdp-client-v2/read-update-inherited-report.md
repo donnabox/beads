@@ -90,3 +90,7 @@ Final identity binding:
   "nativeReadObservations": 21
 }
 ```
+
+## Subsequent native review correction (2026-10-12)
+
+The frozen c562 source and packed progress above are historical observations. Native response-mutation probes identified missing whole-contract oracles in `read.collections.beads` (stored properties, metadata, Type) and `read.types.inventory` (name, describes). The 17-whole/112-uncovered completeness conclusion is withdrawn pending a successor repair and review; observed test/run counts are unchanged. No frozen source or historical progress JSON was rewritten.
