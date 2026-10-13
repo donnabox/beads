@@ -1,0 +1,66 @@
+Verified the report's claims independently and ran targeted probes out-of-tree (probe files in `/tmp/asv`, nothing written in the repo).
+
+## Findings
+
+### 1. Medium — a provably unobservable row can own a requirement and claim `bounded-observation`
+`packages/conformance/test-support/read-update-artifact-set.ts:152-174`
+
+The per-shard loop never checks an owned scenario's capability gating against the one shared fixture it binds. Two cases, both confirmed by probe:
+
+- `setup.requires: ["absent-capability"]` → accepted; `set.requirements[first].owner === "shard-0"`, coverage row `bounded-observation`.
+- `applicability.requires: ["absent-capability"]` → accepted, **and** the row escapes `validateFixtureOraclePointers` (`src/artifact-bundle.ts:260-269` deliberately skips inapplicable scenarios). I constructed a row with `fixturePointer: "/oracles/missing"`: identical row with `applicability.requires: []` is rejected; gated on an undeclared capability it is accepted with an owner and a full coverage binding.
+
+This is statically decidable, not merely suspicious: `runner.ts:2915-2921` requires the harness's prepared capabilities to be a *subset* of the bound fixture's declared capabilities, so `setup.requires ⊄ fixture.capabilities` guarantees `harness-error` at run time (`runner.ts:606-612`) and `applicability.requires ⊄ fixture.capabilities` guarantees `not-applicable` (`runner.ts:613-619`). Under the plan's association rules ("baseline-owned rows must pass") such a set fails only *after* a full installed run — precisely the late failure the preflight exists to prevent. The plan delegates capability checks to "each ordinary bundle", but the bundle's delegation is applicability-scoped by design, so the hole sits in the seam this validator was created to own.
+
+**Minimal repair** — inside the shard loop, for each owned row: reject unless `scenario.setup.requires` and `scenario.applicability.requires` are both subsets of `bundle.fixture.capabilities`. **Safe today**: all 47 baseline rows and all 3 deferred-C draft rows use `setup.requires: ["installed-read-update-http"]` and `applicability.requires: []` against a fixture declaring exactly `["installed-read-update-http"]`, so the check rejects nothing real.
+
+### 2. Low — two-source failures are not attributable to a source
+`read-update-artifact-set.ts:78-87`, `134`, `140-147`, `189`
+
+`source()` validates `label` is a string and then discards it, and the only labels passed downstream are hardcoded. Probed messages:
+
+| input broken | message |
+|---|---|
+| shard-1 manifest invalid JSON | `manifest: invalid JSON` |
+| shard-0 manifest invalid JSON | `manifest: invalid JSON` (identical) |
+| caller supplies `label: "continuation-shard"` | `manifest: invalid JSON` (dropped) |
+| coverage 1 MiB+1 | `fixture source must not exceed 1048576 bytes` |
+| fixture 1 MiB+1 | `fixture source must not exceed 1048576 bytes` (identical) |
+| index 16 KiB+1 | `manifest source must not exceed 16384 bytes` |
+
+For a step whose whole point is two sources, the delegated parse/limit lane cannot say which one failed. **Repair:** keep `label` in `source()` and set it per shard (`label: entry.id`) — `createCumulativeReadUpdateArtifactBundle` already threads `sources.manifest.label` into `parseBoundedJson`, so shard attribution needs no `artifact-bundle.ts` change. For the ceiling messages, do a named `byteLength` precheck locally rather than widening `copySourceBytes`'s `kind`.
+
+### 3. Low — coverage binding does not uniquely pin the authored action/assertion split
+`read-update-artifact-set.ts:225-227`
+
+`expected` joins ids with `"."`, and `ID_PATTERN` permits dots inside ids. Probed: action `obs.status` + assertion `code`, and action `obs` + assertion `status.code`, both produce `["obs.status.code"]` — so re-splitting a row's actions/assertions can leave the "complete ordered action/assertion list" check passing unchanged. Latent only: 0 of the real corpus's action ids and 0 assertion ids contain a dot. **Repair:** reject owned rows whose action/assertion ids contain `"."` (cheaper than changing the binding format, which would rewrite the 528 KB coverage file).
+
+### 4. Low — `wholeContract: true` accepted on any planned row, untested
+`read-update-artifact-set.ts:238-241`, test `:356`
+
+Flipping two planned rows to `wholeContract: true` is accepted and surfaced on `set.coverage.rows`. Mitigated: it changes `coverageDigest` → `setDigest` (probed), and the reviewed 28-ID gate still lives in the unchanged `src/cumulative-artifact.test.ts:147-180`. But the only whole-flag negative (`whole-omitted`) targets an *unplanned* row; nothing pins that a planned row's flag is inert here. **Repair:** add one test asserting the flip is accepted-but-grants-nothing and moves `setDigest`.
+
+### 5. Nits
+- `read-update-artifact-set.ts:228` — `expected.length === 0` is unreachable: `executable-manifest.ts:727-730` requires non-empty `actions`/`requests` and `:1571-1574` non-empty `assertions` per action.
+- `:210` — `reason.length === 0` only; `"   "` passes (probed).
+- test `:383-399`, `:413-438` — exact-byte and ceiling matrices cover `names[0]` only, never the continuation manifest.
+- test `:487-489` — `expect(testing.ts).not.toContain("ownData")` is textual and would not catch an `export * from "./profile-contract-plan.js"`. The boundary does hold in fact: no `export *` anywhere in `test-support/`, `testing.ts` re-exports only three named planner symbols, `ownData`'s sole consumer is the new helper, and `package.json` exports has no `./testing`. Assert the module's export names instead.
+- Helper throws bare `Error`, not `ConformanceArtifactBundleError`, unlike every neighbour.
+
+## Verified sound
+
+Real-artifact compatibility (the thing tiny matrices can't show): the validator's coverage rule reproduces the shipped corpus exactly — 129 coverage rows vs 129 canonical required, identical order, 47 planned / 82 omitted, 28 `wholeContract`, **0 binding mismatches**, including all 7 prerequisite-bearing rows (so real coverage does include prerequisite-action assertion ids). `plan.actions ?? plan.requests` correctly avoids the vacuous fallback — note the unchanged `cumulative-artifact.test.ts:195` still uses `(planned.actions ?? [])`, latent only because all 47 real rows use `actions`.
+
+Real-scale construction with the actual 3,328,407-byte / 89,024-node baseline manifest + real 15,888-byte fixture + real 528 KB coverage as shard 0 and a synthetic continuation as shard 1: **56 ms, 22.7 MB heap delta**, 48 owned requirements, 28 whole preserved; `copyReadUpdateArtifactSetSources` round-trip reproduces the identical `setDigest`; the unmodified coverage that still omits the continuation row is rejected with `planned requirement needs exactly one nonempty ordered coverage binding`.
+
+Also confirmed: captured-input ordering (every `copySourceBytes` precedes the first factory call); membership non-null assertions at `:161` are safe (`parseScenario` rejects a missing `requiredProfile`, so the cumulative check at `artifact-bundle.ts:221-226` cannot be bypassed); `scenarios: []` is accepted by the parser so `:158` is live; `freeze` is sound here (every already-frozen child is `deepFreeze`d, selection is deep-frozen by its loader, no cycles); self-prerequisite rejected; unknown top-level source field rejected; cross-shard canonical interleaving accepted (plan-sanctioned); `bounded-observation` on an unplanned row rejected (correct but untested); `SOURCE` regex is genuinely closed to flat `matrices/*.json`. Diff is exactly 3 files / 790 insertions / 1 deletion, the `profile-contract-plan.ts` change is the bare `export` keyword, and `runner.ts` / `executable-manifest.ts` / `src/index.ts` / package exports / schemas are untouched — no new parser, executor or public surface.
+
+Report claims re-run independently: 56/56 new tests; 402/402 across the 6 claimed files; `tsc -p tsconfig.check.json` exit 0; `check-dependency-boundaries` valid for 11 packages; biome 21 warnings / 0 errors on the three changed files.
+
+## Observation — record the base measurement
+
+The report restates caps but not the measured base the plan's done-when item 0 asks for. At this HEAD: manifest 3,328,407 bytes / 89,024 nodes; fixture 15,888 / 423; coverage 528,050 / 10,996. Merging the deferred-C draft's three rows (`no-local-bindings`, `alias.non-canonical-target`, `alias.unknown-subject`, +11,238 nodes) gives **100,262 nodes — exactly 262 over the 100,000 cap**, reproducing the plan's projection, with ~656 KB of byte headroom left under 4 MiB. The segmentation premise holds at this exact base, and nodes (not bytes) are the sole binding constraint. That is cheap to add and worth stating affirmatively.
+
+## Verification limits
+
+Static review plus out-of-tree probes against this frozen tree only. No installed service, packed run, app adapter, report association, configuration-identity, abort/drain or route-digest behaviour was exercised — all staged next, consistent with the report. The real-scale probe used a synthetic continuation row, not C's preserved scenario/oracles, and re-serialized coverage (so its `sourceBytes.coverage` of 387,783 reflects my compact JSON, not the 528,050-byte shipped file). I did not audit the C draft's oracle-pointer semantics, the fixture merge collision set, or whether `cumulative-artifact.test.ts` should already reuse set validation. Probes ran on Node 26 against the repo's vitest 4.1.10, not the pinned Node 24.16.0; the regression and typecheck re-runs used the repo toolchain directly.
