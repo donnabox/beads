@@ -1,0 +1,103 @@
+## Verification baseline
+
+Repo HEAD `28a2f3799edd9a642086702453bfb7c8d8597f5b`, clean. Plan SHA256 `116be54f…7285a` matches. All four artifact measurements in the plan's headroom table reproduce exactly (3,626,922/97,116 · 521,921/13,945 · 29,055/750 · 646,402/13,461), as do the factory caps they imply (`CUMULATIVE_MANIFEST_MAX_BYTES` 4,194,304, `ARTIFACT_MAX_BYTES` 1,048,576, `ARTIFACT_MAX_JSON_NODES` 100,000), the inventory counts (129/52/30/99/77), baseline manifest hash `c86b3353…`, 35 shard-1 routes, diagnostic bounds 32/524288, Node 24.16.0/pnpm 11.20.0, and the packed figures (241 tests/5 files/123.76 s/1,241,456 KiB).
+
+---
+
+## HIGH — coverage static pin cannot absorb the two rows
+
+**Location** `apps/bdptest/src/read-update-matrix.test.ts:3579`
+
+**Problem** The pin is `coverageBytes.length - 590847 <= 65536`, i.e. a ceiling of 656,383 total. The file is already 646,402 — **9,981 bytes of headroom**. The plan's §107 ceiling "coverage <= 65KiB" is not an increment allowance; it is a restatement of this pin's delta constant, 85 % of which the *previous* slice already consumed. `bdp-integration-logs/read-update-attribution-numeric/source-audit.json` records that slice (2 rows, 142 actions, 1,163 assertions) growing coverage by **55,555 bytes**. The proposed slice is 124 actions and ≤1,300 assertions; measured coverage cost is ~48.5 bytes/assertion (numeric row 533 assertions = 25,853 bytes; attribution 630 = 30,384), so the projection is **48,000–63,000 bytes** — and even at the lowest observed assertion density in the corpus (4.9/action, the C row) 124 actions yields ~608 assertions ≈ 29,500 bytes, still 3× the headroom.
+
+**Impact** Authoring cannot complete inside the plan as written. §107 says to "stop/report before … cap/time changes" and §119's predicate is "Static ledger meets all … source-growth caps", so the implementer is instructed to halt at exactly the point this breach surfaces — after both rows are authored.
+
+**Fix** State in §107 and §113 that line 3579's anchor is re-anchored to the integrated successor's coverage byte count with a freshly stated delta (the same re-anchoring the prior slice performed: anchors 114,182/3,158/28,753/590,847 are all pre-prior-slice values). Name the new anchor/delta pair in the plan so it is a reviewed decision, not a mid-authoring cap change.
+
+---
+
+## HIGH — continuation manifest byte pin is the binding constraint, and the plan's ceiling is looser than it
+
+**Location** `apps/bdptest/src/read-update-matrix.test.ts:3576` (bytes), `:3577` (nodes)
+
+**Problem** `bytes.length - 114182 <= 650*1024` caps the file at 779,782; it is 521,921, so **257,861 bytes (251.8 KiB) of headroom**. The plan proposes an incremental ceiling of **450 KiB** — 1.8× what the repo actually permits, so the plan's own static gate passes while the repo assertion fails. Scaling the prior slice's measured +407,739 bytes by action count (124/142) gives ≈356 KB; that is conservative, because R alone plans 29 raw actions of 72 against the existing numeric row's 15 of 73, and raw actions carry authored body strings. Per-scenario pretty bytes at 28a: attribution 215,942, numeric 191,793, C 114,099 (≈2,600–3,100 bytes/action).
+
+The node pin is *not* the problem and should be stated as such: headroom 13,213 against a projected ≈9,400 (prior slice +10,787), so the plan's "16,000 nodes" is also loose but harmless.
+
+**Impact** Same stop-and-report trap as above, discovered only after authoring.
+
+**Fix** Replace §107's "incremental continuation<=450KiB/16,000nodes" with the two real quantities — bytes are capped by line 3576 at 251.8 KiB over 28a and must be re-anchored; nodes have 13,213 and need no change — and add line 3576's new anchor/delta to the owned-file change list.
+
+---
+
+## MEDIUM — two further static pins in the owned test file are unaccounted for
+
+**Location** `apps/bdptest/src/read-update-matrix.test.ts:3654` and `:3668`
+
+**Problem** `:3654` asserts `totalActions <= 150` over the loop at `:3596–3641`, which currently covers attribution (69) + numeric (73) = 142. `:3668` asserts `attributionNumericControls.length + 3 <= 16`, currently 12 + 3 = 15. If R/N join that loop the total becomes 266; if the nine controls join the existing arrays the total becomes 24. The plan says "<=9new controls" (§107) and "Preserve existing controls byte-for-byte where possible" (§79) but never says which side of these two constants the new rows land on.
+
+**Impact** Either two more constants change unannounced, or two new pinned loops/arrays appear that the plan's four-file inventory and done-when predicates don't describe — in which case the existing `<=16` pin silently stops bounding total control count.
+
+**Fix** Decide and state it: either R/N extend the existing loop and arrays (then name the new constants, e.g. 150→280 and 16→25), or they get their own pinned loop and control arrays (then say the existing pins stay byte-identical and what the new ones are).
+
+---
+
+## MEDIUM — R step 4 is not a discriminator for `propertiesChange` actually being applied
+
+**Location** Plan §60 (R step 4), against the table at §51–53
+
+**Problem** Step 2 creates the subject with `properties.value` set to the admitted replacement (9007199254740992 / 0.125 / 1e300). Step 4 then "correct[s] only the literal and key" on the refused patch — and the only admitted literal the plan supplies per case is that same replacement. So `/value` already holds that exact value, and the step-4 GET's properties assertion is satisfied even by an authority that silently drops `propertiesChange` while applying the companion `metadataChange`. The metadata change alone covers "reject-all-numbers" and "ignore all input", which is what §60 claims, but not "ignores the properties patch specifically" — the failure mode closest to the silent-corruption concern §14 motivates the row with.
+
+**Impact** The row's strongest positive discriminator is weaker than stated; a real propertiesChange-dropping regression passes R.
+
+**Fix** Have step 4 correct to a *different* admissible literal than step 2's postimage — integer 9007199254740994 (which also exercises §51's even/odd-past-2^53 point against the preceding row), precision 0.25, overflow 1e299. The refusal/correction minimal pair is unaffected: those two requests still differ only in the literal and the key.
+
+---
+
+## LOW — the Problem-response controls cannot use the seam §79 names
+
+**Location** Plan §79 and controls 2, 5, 6, 7, 8; `read-update-matrix.test.ts:455–491` (client seam) vs `:397–435` (raw seam)
+
+**Problem** `RetryControl` is applied inside `actionExecutor`, which positionally selects `actions.filter(a => a.family === "client")` — it cannot reach a raw exchange. Controls 2/5/6/7/8 corrupt the Problem returned to a **raw** mutation (§39 puts every numeric create/update on `family:http`), so they must go through the `numericControl` branch of `executeExact`, whose hit predicate is hardcoded to one scenario ID and two idempotency-key literals and whose mode is a three-literal union. Control 1 (pre-transmission token swap) likewise. Only 3, 4 and 9 are `RetryControl`-shaped. Separately, the one existing response-substituting branch rewrites `status`, `bodyText` **and** `bodyOctets` together; a control that edits a diagnostic field without recomputing `bodyOctets` will trip octet assertions too and violate §91's "exact intended assertion set".
+
+**Impact** §79 reads as if one seam covers all nine; an implementer following it literally stalls on five of them, and the derived-field hazard is undocumented.
+
+**Fix** In §79, split the nine explicitly by seam (1,2,5,6,7,8 → exact raw wrapper; 3,4,9 → client `RetryControl`), and require response-substituting controls to keep `bodyOctets` consistent with the substituted `bodyText`.
+
+---
+
+## LOW — §23's "below actual receiver bounds" names a bound that does not exist
+
+**Location** Plan §23 (nested-refusal limit column), against `packages/protocol/src/json-admission.ts:3–5` and `packages/server/src/development-authority.ts:51,54`
+
+**Problem** There is no document-depth bound to be "below". The lossless parser's own contract is that it "imposes no hidden nesting/wire limit", and the only depth limits in the installed configuration are `patchPathDepth: 32` and `selector.depth: 32`, neither of which governs a properties/metadata value's nesting. The real bounds on N's depth-16 case are `requestBodyBytes`/`propertiesBytes` = 64 KiB and, for the client-side expected postimages stored in the manifest, `ARTIFACT_MAX_JSON_DEPTH` = 128 (`packages/conformance/src/artifact-bundle.ts:20`).
+
+**Impact** None to feasibility — the hedge errs conservative — but the sentence misstates why depth 16 is a sampling choice, which matters if a later reviewer tries to justify the sample size from a bound.
+
+**Fix** Cite the 64 KiB body/properties bounds and the 128-level artifact depth cap instead.
+
+---
+
+## LOW — N cases 3 and 4 rest on an inferred, not quoted, metadata refusal obligation
+
+**Location** Plan §23/§25/§125, against `catalog/numeric-model-v1.json:71–97`, `docs/specs/bdp.md:2522–2529`, `docs/design/requirements.md:109–115`
+
+**Problem** Every *mandating* clause is `properties`-scoped: the `#numeric-admission` MUST, PROTO-016, and all five of round-trip-admission's quoted requirements. `docs/design/numeric-model-decisions.md` contains the string "metadata" zero times — NM3 scopes the pointer to "within `properties`", NM4 says its scope decision touches "nothing in the draft beyond the phrase 'a `properties` document'". The metadata cases rest on `bdp.md:891–903` (general number model) plus `:3462–3467`, which *presupposes* a metadata numeric failure and mandates its `document` label without mandating the refusal itself. §25 does disclose the 891–903 basis, so this is adequately grounded for wholeContract:false evidence.
+
+**Impact** §125's "Any concrete contrary HTTP behavior discovered later is a runtime-owner finding, not permission to change the oracle" over-reaches for this one case: if the metadata refusal itself were later changed, that is a spec question, not an oracle regression.
+
+**Fix** One sentence in §23's nested-refusal limit column marking N3/N4's refusal obligation as inferred from `bdp.md:891–903` rather than quoted, with the diagnostic *shape* (document label, omitted instanceLocation) being the directly-quoted part.
+
+---
+
+## Verified clean (no finding)
+
+- **Numeric classes.** All eight literals behave as the plan asserts under `isAdmissibleJsonNumber`: `9007199254740993`, `0.12345678901234567891`, `1e309` (finite-check), `1e-400` (exact ≠ "0") refused; `9007199254740992`, `0.125`, `1e300`, `1.0`, `-0.0`, the 301-digit expansion, and `0` admitted. `1e309` is valid JSON syntax so the 422-not-400 distinction (`bdp.md:3413`) holds.
+- **Diagnostic shapes.** `development-authority.ts:230–238` + `member-numeric-diagnostics.ts:13–31/35–53` produce exactly the four shapes §43 specifies, including the document-relative `pointer.slice(object.length+1)`, the absent `document` on properties patches (spec: omission means `properties`), and RFC 6901 escaping in correct `~`-then-`/` order, so raw key `a/b~c` → `a~1b~0c`. Problem body is `{type, code, status, retry, diagnostics}` with no title/instance, and `diagnosticsTruncated` is emitted only when true.
+- **Source line references.** All plan citations resolve: catalog 38–68/71–97, `bdp.md` 694–723/891–903/2518–2520/2522–2529/2658–2659/3413/3452–3473/6650/6651, PROTO-016 at requirements.md:109–115, and the five runtime files at the stated lines.
+- **Ledger arithmetic.** R 6+4+24+24+12+2 = 72 with 29 raw / 43 client; N 6+4+32+8+2 = 52 with 21 raw / 31 client; 8 and 6 resources; 124 combined; 14 bindings → 35+14 = 49 routes (consistent with the prior slice's 27→35 for 8 bindings).
+- **Four-file scope survives main integration.** `origin/main` = `92c1887`; its only delta from the merge-base is `packages/conformance/src/read-update-catalog.test.ts`, whose new `assertManifestBinding` is membership-based and tolerates added continuation rows. `cumulative-artifact.test.ts:100–200` and `read-update-artifact-set.test.ts:182–216` are fully data-driven off the coverage/manifest pair and need no edit. Every 52/30/77/99/35/routeDigest/selectedIds assertion lives in the one owned test file.
+- **Setup seams.** `maximumEndpointMultiplicity: []` confirms three same-pair Links are permitted; `installed-schema-cohort.ts:55–71` appends to shipped descriptors without altering Task/relates; metadata is `{"type":"object","additionalProperties":true}` so N's depth-3 nested metadata is well-formed; unused fixture bindings do not become routes, and a binding to a not-yet-existing ID is already precedented (`beads/rc-missing`).
+- **Preservation and index.** The artifact index carries no scenario IDs (242 bytes) and genuinely needs no change; canonical required order places round-trip-admission and nested-refusal after same-value-no-op, so appending satisfies the factory's "shard scenarios must follow canonical required order"; the C-block hash extraction at `:3583–3590` still finds a following `{` after an append; raw bodies are stored as UTF-8 strings so no JSON.parse→stringify round trip occurs; fixture pin headroom (32,466 against ~530 for 14 bindings) and the 90/120/5/30 s bounds all hold.
+
+**Scope inspected:** the plan end-to-end; `packages/conformance/{catalog/numeric-model-v1.json, test-support/read-update-coverage-v1.json, test-support/read-update-artifact-set*.{json,ts}, fixtures/read-update-reference-v1.json, matrices/read-update-reference-continuation-v1.json, src/{artifact-bundle,cumulative-artifact.test,read-update-artifact-set.test,read-update-catalog.test}.ts}`; `packages/protocol/src/{json-admission,read-update-values}.ts`; `packages/server/src/{member-executor,member-numeric-diagnostics,development-authority}.ts`; `apps/bdptest/src/read-update-matrix.test.ts` and `apps/bdptest/test-support/installed-schema-cohort.ts`; `schemas/bdp-v0.schema.json`; `docs/specs/bdp.md`, `docs/design/{requirements,numeric-model-decisions}.md`; git ancestry 28a/4819068/92c1887; and the cited `bdp-integration-logs/read-update-attribution-numeric/{source-audit,packed-summary}.json`. Read-only — no files written, no builds, tests, servers or credentials. Projections in the two HIGH findings are scaled from the prior slice's recorded growth and from measured per-row sizes at 28a, not from an executed authoring.
