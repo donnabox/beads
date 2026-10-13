@@ -1,0 +1,89 @@
+# Next Read+Update evidence: reference errors and retry consequences
+
+Read-only proposal based on frozen **394d3208790a488fd790257da9d48f4b293f129a**, `/Users/dbox/repos/wt/vickie/vickie-read-update-admission-evidence`. Sole fork design plan’s Autonomous profile completion/U3 predicates were read: actual installed cumulative evidence, cold-client usability, existing normative semantics, no public activation before qualification. This report is supporting work, not a competing plan or implementation authority.394d’s external review is still pending; source and flags remain unchanged.
+
+Current selection has129 required IDs,47 authored observations,26 whole,21 partial and82 omitted, hence103 uncovered. This proposal does not assume the two admission rows will be promoted. All three proposed rows below are currently omitted. No implementation or tests were run for this inventory.
+
+## Proposed bounded slice
+
+Observe **carrier-syntax rejection versus reached-member reference failure** using the existing installed operator fixture, unowned Link Type and real singleton/sequence routes. The distinction is useful to a client: a corrected key may be reused after malformed carrier rejection; a reached member’s ordinary failure is retained and its changed input conflicts. No new policy, Selector/Event/Snapshot semantics, Type lifecycle or provenance proposal is involved.
+
+| Required ID | Exact catalog-selected clauses | Credit boundary |
+| --- | --- | --- |
+| `read-update.singleton.no-local-bindings` | `#operation-directory-and-singleton-targets`: “A singleton never accepts `@name`, bare or within a Pinned Reference”; bundle rejection is carrier syntax before execution with `malformed-request`. Spec2096–2099. | Whole candidate after a reference-slot inventory and independent selected-clause audit. Initially false. Does not mean an arbitrary string value inside metadata/properties cannot contain `@`. |
+| `read-update.alias.non-canonical-target` | `#alias-targets`: alias target, absolute/local, Link or external URI as put target fails `validation-failed` with one diagnostic naming the cause; put target admits no alias spelling. `#readupdate-problem-details` also explicitly selects a Link path used as a Link endpoint. Spec2988–2993, corresponding later alias-reference paragraph,3528–3531. | Whole candidate only if **both** alias-put target corpus and Link-endpoint category clause are observed. Initially false. No invisible-target/auth or general schema-diagnostic credit. |
+| `read-update.alias.unknown-subject` | `#alias-targets`: unknown/invisible canonical target and unknown alias delete are `resource-not-found`; well-formed wrong alias root fails when reached. `#readupdate-problem-details` selects wrong-root Bead/Link/alias subjects as not-found. Spec2964–2968,2985–2988,3513–3527. | Deliberately **partial**: unknown/live-wrong-kind/wrong-root observations available now; hidden/invisible subjects and nondisclosure across actual authorization views are absent from this fixed operator fixture. No promotion. |
+
+Canonical catalog is `packages/conformance/catalog/read-update-v1.json`; bind its exact requirements, not whole surrounding headings. Retention/expiry, anonymous namespace, concurrency and authorization-view laws are separate requirements and are not inherited credit from these retry discriminators.
+
+## Source-grounded support
+
+- Eight singleton targets plus sequence are already in actual Operation Directory and installed exact route whitelist. Discovery and capture helpers are exercised in394d. No new route class or method is needed.
+- `packages/protocol/src/read-update-preflight.ts:39–54` parses the singleton before constructing its prepared carrier. `read-update-values.ts:217` dispatches current request definitions; schema `createLinkRequest` overrides source/target as durable references, while other singleton subject overrides reject local bindings. Current singleton references can be sent through existing exact client/HTTP actions; no pre-synthesized outcome is needed.
+- `packages/server/src/alias-evaluator.ts:67–96` builds the existing one-cause noncanonical-target diagnostic;146–160 distinguishes wrong alias root, uniqueness, target category and visible Bead lookup;136–143/162 handle missing/wrong-kind/unknown alias. No proposal to change their order. Choose alias paths that never collide with committed Bead local IDs, so uniqueness cannot mask the intended target-category fault.
+- `resource-evaluator.ts:724–737` rejects an in-Scope Link path as a Link endpoint with `validation-failed`; the same path as a subject is a different not-found case. Local endpoints must otherwise be live, and endpoint Type compatibility must be valid.
+- `member-executor.ts:593–676` invokes the real evaluator inside the owner and retains ordinary disposition; prepared-carrier rejection occurs before this path. `alias-evaluator.test.ts:249–280` and parser tests are useful source evidence, not installed qualification. Actual HTTP state/retry witnesses are still required.
+- Existing required runner schema wrappers cover direct mutation/alias/Problem and sequence envelopes. Raw HTTP captures remain **URL-only**; reuse394d’s per-item comparison to earlier verified client Resource captures. No raw collection-body capture or broad harness change.
+
+## Row A: singleton binding syntax, same-key correction
+
+Inventory the actual reference slots before authoring; expected11 vectors:
+
+1. `updateBead.bead` and `deleteBead.bead`, bare `@made`.
+2. `createLink.source` and `.target`, each bare `@made` and `{uri:"@made",revision:"fixture-pin"}`.
+3. `updateLink.link` and `deleteLink.link`, bare.
+4. `putAlias.alias`, `putAlias.target`, and `deleteAlias.alias`, bare.
+
+Each vector gets a valid key, otherwise valid/effectful body and independently prepared live canonical replacement. Deletion subjects have no incident Links; Link operations use the installed unowned type. Assert direct400 `malformed-request`, exact deterministic Problem and normative schema, no mutation result, unchanged relevant current records and known alias resolution. Replace only the bad reference (preserving any opaque pin) with its known canonical reference and resend the **same key**. Require actual200 and intended effect/current GET or alias307/404. A wrongly retained carrier failure would replay400 or conflict; a wrongly executed invalid member would alter state before correction.
+
+Pin the corrected request’s complete relevant body/result fields independently; final collection identities/count/next:null and latest recorded Resource bodies exclude unexpected creations. Add a positive create/update with literal `@made` in permitted metadata to ensure the implementation is not incorrectly rejecting arbitrary document strings. Type IDs and supplied creation IDs use their own URI/local-ID grammars; do not count them as sequence-local reference slots or silently interpret metadata as references. If the actual parser inventory exposes an additional `@name`-capable singleton reference slot, report it and account for it before any whole claim.
+
+## Row B: wrong target category, retained failure and independent tail
+
+### Required category corpus
+
+- Alias put target: known live alias as local spelling and absolute alias URL; live Link as local and absolute canonical Link URL; a syntactically valid external HTTP Bead-shaped URI. Use a fresh/proven alias path with no Bead-local-ID collision. The local/absolute alias cases cannot be mistaken for missing-alias failures: first observe the live alias307 and exact canonical target.
+- CreateLink endpoint: source/target using a live in-Scope Link path, both bare and pinned forms. These are wrong **category**, not an unavailable canonical Bead or an external endpoint policy question. Other endpoint and type are valid.
+
+All nine vectors require422 `validation-failed` under normative Problem schema, not400 or404. Alias put requires exactly one diagnostic naming the canonical in-Scope Bead-only cause. Pin that current fixed diagnostic as fixture output, without making English wording a new general protocol law; assert no second diagnostic and no false truncation/type attribution. Link endpoint diagnostics get their existing appropriate shape/message, not alias-specific wording. Assert no alias repoint/creation and no Link/Resource change.
+
+Use singleton cases for the corpus, then one representative noncanonical alias target and one Link-endpoint category failure in a sequence with an independent effectful trailing create. Require outer200, failed member422 at its actual index, tail success and exact tail GET. This distinguishes member failure from whole-carrier rejection; final array order alone is not execution-order evidence.
+
+### Retry discriminators
+
+For one alias-put case, repeat the exact key/input after changing the live alias resolution: same complete retained Problem, no unexpected alias/Resource effects. Correct its target under the **same key**:409 `idempotency-conflict`; fresh key with the corrected canonical Bead succeeds and resolution proves the result. For a failed Link endpoint, exact retry returns the original422; corrected canonical Bead under the same key conflicts, fresh key succeeds and the stored Link has canonical endpoints. Repointing the alias does not remove its wrong category, so repeated422 equality alone is not a retained-versus-fresh discriminator. The changed-input same-key409 proves a retained identity exists; row C supplies the stronger now-satisfiable-but-still404 state discriminator. Whole-object failure equality includes all fixture fields; capture client initial Problem and compare retained replays when possible, while independently asserting its original type/code/status/retry/diagnostics. Failure output cannot define its own oracle.
+
+## Row C: missing and wrong-root subjects, explicitly partial
+
+Use a small corpus: missing canonical Bead target on alias put (local/absolute); missing alias on delete (local/absolute); put/delete with a syntactically valid `alias` member under `beads/` or `links/`; representative `updateBead.bead` naming a live Link and `updateLink.link` naming a live Bead. Existing resources at the wrong-kind URLs must be observed beforehand so a not-found response means “not this required kind,” not merely nonexistent data.
+
+Every result is404 `resource-not-found` with complete expected fixture Problem. Prove original live wrong-kind Resources remain unchanged and authored alias paths retain expected307/404 state. At least one wrong-root alias subject appears in a sequence with an independent trailing create: outer200, member404, tail commits. A malformed `@name` belongs to row A and must not be mislabeled here.
+
+For a previously missing alias-put target, create that exact Bead under a different key; replay the original failed put and require the **retained404** while fresh-key put succeeds. For missing alias delete, create that alias, replay the old delete and require retained404 with live307 unchanged, then fresh-key delete succeeds and404 resolution follows. These state changes distinguish retention from re-execution. Do not infer invisible-resource nondisclosure from these operator-visible cases. Avoid changing installed policy/auth configuration to chase whole credit within this slice.
+
+## Wire, oracle, scope and capacity discipline
+
+- Follow observed Scope→descriptor→directory. Literal raw routes, if used for body fidelity, must first match observed directory values; most requests can use the existing captured-target exact client. Credentials remain the fixed operator handle, no network fetch to external reference URI.
+- Prior Resource captures must independently pin id/type/properties/metadata, endpoints and relevant owned-field absence. After each change update the expected binding; remove deleted IDs. Collections use explicit limit100 with exact sorted ID/count and next:null; inspect every returned item against earlier verified captures. Known alias paths have separate307/Location/empty-body or404 checks. No alias enumeration.
+- Four evidence files only: `packages/conformance/matrices/read-update-v1.json`, `packages/conformance/test-support/read-update-coverage-v1.json`, `packages/conformance/fixtures/read-update-reference-v1.json`, `apps/bdptest/src/read-update-matrix.test.ts`. No runner/executor/schema/catalog/runtime/TX edits. A later independently accepted whole promotion may require root-authorized fifth-file exact-list update; it is not implied by this plan.
+- Use unique row-owned IDs/keys; keep at most24 live Beads and12 Links per row, all under actual page maximum100. Starting estimates: row A80–100 actions, row B80–105, row C65–90 (including discovery, real setup, immediate state/retries). Target total<=295 new actions, maximum120 in any row; record exact raw/client/manifest-setup/out-of-band setup counts and max bodies/headers. All bodies expected<2KiB. These are planning bounds, not permission to omit a cited case; report before widening if actual authoring exceeds them.
+- Current manifest3,094,308 bytes,4MiB cap leaves1,099,996 bytes. Target additional serialized bytes<=750,000, leaving~350KiB headroom. Count actual bytes/nodes before runs; if it cannot fit, stop with evidence and split the scope through root rather than enlarging the cap. Reuse existing assertion kinds, not duplicated inline schemas or a new framework.
+- Initial flagsfalse. With three rows authored and no promotions, selection remains129required/26whole/103uncovered;50 authored. Both route digest pins and any authority-count comment must reflect actual canonical insertion and exact route order. All old47 scenario blocks stay unchanged; neither admission promotion nor current pending review is assumed.
+
+## Discriminating controls
+
+1. Row A input control replaces one bad `@name` with valid canonical reference but leaves400 expectation: actual200 must fail the named refusal oracle. Another control moves literal `@made` into metadata only and requires the positive path, preventing global string-rejection logic.
+2. Row B substitute missing canonical Bead target for wrong-category alias target: actual404 must fail the422/diagnostic oracle. Replace one wrong Link endpoint with valid Bead: actual200 must fail the retained category-failure expectation. Both perturb otherwise admissible records.
+3. Post-wire control on a retained failure adds or removes a Problem field, testing complete equality; changed-key conflict control changes the **Problem body**, not only HTTP status. Named once-applied target selection retains input-equality guard.
+4. Afterstate control presents earlier Resource image instead of later corrected image, and wrong alias Location instead of known current target: named full-body/location checks fail. Row C old-failed-delete falsely returning success must fail retained404 and live-alias witnesses.
+5. For sequence members, dropping tail commit or turning the member failure into whole-carrier failure must fail actual outer envelope and independent tail-state oracles. No proof of internal order is claimed solely from response indices.
+
+## Done when and exclusions
+
+- Exact selected requirements mapped to actual assertions; row C remains partial with hidden/invisible variants explicit. Rows A/B are not promoted until independent review accepts their full selected-clause coverage.
+- Real positive/negative/request-correction and retained-failure distinctions pass on fresh packed installed target, with meaningful controls failing exact expected oracles; no synthetic target responses or source-only substitution.
+- Static/live fixture bounds, manifest bytes/nodes, actual row action counts, route order and old-row identity pass. No ignored validation failures or silently skipped vectors.
+- Pinned Node24.16/pnpm11.20, build before process tests; focused rows plus cumulative binding checks and fresh packed matrix/client/service/oracle suite. Record exact source/payload/config/fixture/route digests. Baseline394d aggregate14.679s local packed, new admission pair1.296s; these do not predict Linux CI. Preserve5s exchange,30s focused,90s cooperative aggregate/120s outer deadlines. Measure rather than extrapolate or widen.
+- Clean isolated local commit/report only after root authorizes implementation. Parent owns council/integration/publication. No source changes for this proposal.
+
+No concrete missing runtime capability identified for the proposed visible-reference slice. The absent hidden/invisible fixture observation is a real coverage dependency, not proof the runtime lacks policy support. Concurrent/pending/retention/crash laws and full alias reference-idempotency (recorded misses, new locator comparison, tombstones, authorization views) remain separate larger slices; do not credit them from these bounded retry witnesses. No unresolved product decision blocks this proposal.

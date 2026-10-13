@@ -1,0 +1,116 @@
+Static review only — I did not build, run tests, or write anything in the frozen checkout. All conclusions below are from reading the diff and the surrounding code.
+
+# H1b closure review — `dfcf1a9..ee947ae` (12 files, +752/−127)
+
+**Disposition: closure accepted with eight residues, none blocking.** Both native P2s are genuinely closed with real signal/evidence paths, not just tests. F2, F3 and F7 are closed. F1, F4, F5 and F6 are each closed for the *enumerated* complaint but leave a concrete residue. No new protocol or Snapshot work; four rows remain partial; public/legacy admission untouched.
+
+---
+
+## Findings
+
+### 1. MEDIUM — Non-enumerated harness refusals still publish as target failures with the cause erased
+
+`packages/conformance/src/runner.ts:1069-1075`, `runner.ts:954`, `packages/conformance/src/transactional-observation.ts:171,173,222,234-262`
+
+External F1's fix (b) had two halves: pass the typed error through `runProgrammaticAction`, **and** "record `failure.cause` message in `executionError.message`". Only the first half shipped:
+
+```ts
+: error instanceof ScenarioDeadlineError || error instanceof TransactionalHarnessError
+  ? error
+  : new ScenarioActionExecutionFailure("action execution failed", { cause: error });
+```
+
+Anything in the private receipt lane that is not a `TransactionalHarnessError` still collapses to `state: "fail"`, `reason: "action execution failed"`, `executionError.message: "action execution failed"`. Reachable cases, all on a real 200 receipt GET (so all after `observe()` runs — assertions are thrown first, which is why the new 401 witness never reaches them):
+
+- `runner.ts:954` `retained receipt schema or identity mismatch`
+- `transactional-observation.ts:222` `retained receipt differs from original wire facts`
+- `validateReceiptWire` :234/:237/:240/:244/:247/:253/:262 — seven plain `Error`s
+
+The `validateReceiptWire` family compares the harness's own wire capture against its own parsed response. A mismatch there is a harness-evidence defect, and it is now published as **negative target evidence** — the exact contradiction of plan item 7 that F1 raised, in a lane the closure did not enumerate.
+
+Symmetric residue in the register lane: `transactional-observation.ts:173` (`source receipt schema invalid`) and the `validateReceiptWire(response, "GET")` call at :188 are plain `Error`s, so they fall to `runner.ts:783`'s final `else` → `harness-error` with reason **`"scenario harness failed"`**. Right lane, reason gone.
+
+Net: `receipt wire headers mismatch` reports as `harness-error`/"scenario harness failed" if it fires during registration, and `fail`/"action execution failed" if it fires during the read. Neither report names the refusal, so the new countercontrol discipline at `transactional-matrix.test.ts:352-360` cannot be extended to these.
+
+**Fix:** make `validateReceiptWire`'s throws and `transactional-observation.ts:173` `TransactionalHarnessError`. For the two genuine target-misbehaviour cases (`runner.ts:954`, `transactional-observation.ts:222`) keep `fail` but carry the reason — throw `ScenarioObservationFailure` (already mapped to `fail` with `error.message` at `runner.ts:726`) and add it to the passthrough list at `runner.ts:1072`. Then pin one wire-evidence reason in the matrix countercontrol the way `binding`/`method`/`credential` now are.
+
+### 2. LOW — F4's reader was removed but the writer was kept: `entry.wire` is dead retained state
+
+`transactional-observation.ts:84` (`wire: Buffer`), `:199` (`wire: Buffer.from(response.wireResponseBytes)`)
+
+Grep over `packages/conformance/src` returns **zero** reads of `entry.wire` after the `resolve()` self-rehash was dropped. `responseDigest` is likewise write-only (`:194` writes it; nothing re-derives it — it is report provenance, which is the accepted disposition). So each ledger entry retains a full defensive copy of the receipt-producing response wire — ceiling 2,097,152 bytes, up to `maximum` = scenario action count entries — that nothing can read. The actual read-time check is `validate()` at `:221`, which compares parsed JSON bodies, not bytes.
+
+F4 offered "drop the branch as dead defensive code, **or** make it meaningful". The closure did the first and left the state.
+
+**Fix:** drop `wire` from the ledger entry type and the `Buffer.from(...)` at `:199`. If the retained wire should instead be meaningful, compare it against the subsequent read's `response.wireResponseBytes` inside `validate()` — that is a real check, unlike the removed self-rehash.
+
+### 3. LOW — Reopen's close phase still inherits `requestTimeoutMs`, so the documented 10-second lifecycle budget is not uniform
+
+`runner.ts:983` → `transactional-observation.ts:114` → `transactional-execution-binding.ts:202` → `raw-http-scenario-target.ts:61,87`
+
+The reopen *action* now gets `prepareTimeoutMs` (10 s in the matrix) — that part is correct and is what the new synthetic unit proves. But `context.reopen` first does `await target.close(signal)`, and `createRawHttpScenarioTarget` computes `cleanupTimeoutMs = snapshot.requestTimeoutMs ?? 30_000` = **5000** (`transactional-execution-binding.ts:187`), then bounds cleanup with `AbortSignal.any([signal, AbortSignal.timeout(cleanupTimeoutMs)])`. So the shutdown half of reopen — `controller.abort()`, `Promise.allSettled([...pending])`, then `child.close()` whose own launcher bound is **10 s** (`scripts/transaction-installed-observation.mjs:31`) — is capped at 5 s, inside which a 10 s child close cannot complete. On expiry `settleCleanup` (`raw-http-scenario-target.ts:292`) rejects → `TransactionalHarnessError("transaction session reopen failed")`: the same flaky-harness-error outcome F6 described, from a different trigger.
+
+`docs/design/transaction-harness-review-closure.md:25` ("Preparation/reopen retains its 10-second lifecycle budget") overstates this, and `transactional-cumulative.test.ts:408-487` uses a synthetic context that bypasses `target.close()` entirely, so it cannot see it.
+
+**Fix:** add an explicit `cleanupTimeoutMs` option to `createRawHttpScenarioTarget` (defaulting to today's `requestTimeoutMs`) and set it to `10000` beside `requestTimeoutMs: 5000` at `transactional-execution-binding.ts:185-190`, so the nesting is monotone with the launcher's 10 s `bounded()`. Then state the actual nesting in the design doc.
+
+### 4. LOW — The new `retainedSource` authority branch is unreachable, untested, and widens the documented model
+
+`transactional-observation.ts:158-161, :170`
+
+`retainedSource` needs `register()` called with `method === "GET"` on a URL already in the ledger. `register()` is only reached from runRequest's capture loop under `transactional && served` (`runner.ts:1458`), and every receipt GET goes through the dynamic lane, which calls `runRequest` with `captures: []` and `transactional: undefined` (`runner.ts:916-920, 937, 943`). An ordinary exact GET to a receipt URL is refused earlier because receipt routes are absent from the base exact route table. And no manifest row captures `/id` from a receipt GET — all four rows' receipt-read captures use `/body/...`. The branch cannot fire, and no unit test drives it (the new observation tests cover the POST-mutation and ordinary-resource routes only).
+
+This matters because the branch *grants* authority, its guard at `:170` is a plain `Error` (finding 1), and both `dispositions.md:6` and `docs/.../closure.md:27` assert authority may come from "an already authorized receipt read" — prose the code cannot currently honour. The native P2 repair was explicitly motivated by reusing this runner for inherited Read/Update rows, which is exactly the change that would make it live.
+
+**Fix:** either drop `retainedSource` and the `|| retainedSource` disjunct and align both documents to "canonical mutation response only", or add a unit test that calls `register()` with a receipt-GET request and pins both the accept and a typed `isDeepStrictEqual` reject.
+
+### 5. LOW — Dead late `servedSession` re-attachment left behind
+
+`runner.ts:1491-1495`. The closure moved attachment to construction (`runner.ts:1159-1160`), so this tail block is now a no-op rewrite with the same value in the ordinary lane and is skipped entirely in the dynamic lane (`served` is undefined there). It is the pattern the fix replaced. **Fix:** delete it.
+
+### 6. LOW, unreachable-defensive — the `responseLimits` "derivation" adds a sixth copy of the constants and a statically dead guard
+
+`transactional-observation.ts:20` declares `responseLimits` with *literal* types, so the new guard at `:95-100` is unreachable under the declared contract — the new test must cast through `as unknown as` to reach it (`transactional-observation.test.ts:193-203`). The same three numbers now appear in the literal type (`:20`), the guard (`:96-98`), `register` (`:183`), `validateReceiptWire` (`:233,:237,:256`), and `transactional-execution-binding.ts:135-137, :188-189`. The dynamic deadline is still an unrecorded literal (`runner.ts:906` `Math.min(timeoutMs, 5000)`, mirrored at `transactional-execution-binding.ts:187`) because `responseLimits` carries no timeout to derive from.
+
+This is hardening, not a defect — it turns silent drift into a loud refusal, and `Math.min` does fix F5's tighter-budget half. Flagged only because the disposition presents it as closing F5's *duplication* concern, which it does not: the drift surface grew. **Fix (optional):** export one frozen `TRANSACTIONAL_RESPONSE_LIMITS` (plus `requestTimeoutMs`), widen the interface to `number`, have the binding and `validateReceiptWire` read it, and keep the guard as the single equality check.
+
+### 7. LOW — `observe()`'s cleanup wrapper can mask the cohort deadline reason
+
+`transactional-matrix.test.ts:236-247`. When the run fails *and* `target.close()` fails, `failure` becomes `AggregateError(..., "installed cohort cleanup failed")`, whose `.message` no longer contains the deadline reason — and the new cohort witness at `:541` asserts `rejects.toThrow("installed cohort deadline")`, so it depends on cleanup succeeding. In the launcher, `onAbort` (`scripts/transaction-installed-observation.mjs:61-63`) swallows `close()`'s rejection, but because `closing` is memoized the binding's later `child.close()` awaits the *same* rejected promise, so a non-clean exit under abort does surface — as this masking AggregateError. Not demonstrated to fire. **Fix:** preserve `failure.message` as the AggregateError message, or assert on `.errors` in the test.
+
+### 8. INFORMATIONAL — abort-path drain ordering is no longer strictly "drain, then close child"
+
+`scripts/transaction-installed-observation.mjs:61-65` registers `onAbort` on the same signal the session derives from (`transactional-execution-binding.ts:147`). On cohort abort both fire: the launcher sends `{command:"close"}` while the session's `close()` is still doing `controller.abort()` → `Promise.allSettled([...pending])` → `child.close()`. Both converge on abort and `closing` memoization closes the child once, so pending requests still settle as aborts — but the ordering the predecessor verified at `transactional-binding.test.ts:98` now holds only on the non-abort path. The new `it.each(["close","cohort"])` test uses a stub `launch`, so it never exercises the real launcher's abort listener. No fix needed; `docs/.../closure.md:23` reads as if the abort path is ordered.
+
+---
+
+## Closure confirmed
+
+**Native P2 #1 (aggregate abort / startup / reopen / child drain) — closed.** The 90 s cooperative controller is armed before bootstrap (`transactional-matrix.test.ts:127-130`) with a hard `budgetMs > 90000` refusal at `:95`, and the signal reaches every stated surface, verified end to end rather than by test alone:
+
+| surface | path |
+|---|---|
+| bootstrap | `launchInstalledTransaction(entry, configuration, signal)` `:140` |
+| runner/setup | `options.signal` → `relayAbort(options.signal, controller)` `runner.ts:544` → `prepareSignal` `:554`, action loop `:652` |
+| matrix loop | `runOptions.signal?.aborted` precheck `runner.ts:384` stops remaining scenarios |
+| session | `AbortSignal.any([controller.signal, signal])` `transactional-execution-binding.ts:147` |
+| reopen | reopen action's `actionSignal` includes the scenario controller `runner.ts:1034` |
+| dynamic traffic | `AbortSignal.any([request.signal, active.signal])` `runner.ts:912` |
+| children | launcher `onAbort` + memoized `close()` `observation.mjs:47-65` |
+| no late publication | `signal.throwIfAborted()` at `:249`, after `observed` is assigned |
+
+Both deadline signals that feed the session signal are `clear()`ed on success (`runner.ts:589`, `:1079`) and the preparation controller is not aborted in `prepare`'s `finally` (`raw-http-scenario-target.ts:151-154`), so the live session signal is not falsely aborted after a successful prepare or reopen — the one way this change could have broken the positive rows. The pre-abort witness is correct: `throwIfAborted()` precedes both `setTimeout` and any launch, so no timer or child leaks.
+
+**Native P2 #2 (ordinary capture vs receipt authority) — closed.** `register` now qualifies only `POST {scope}operations/<op>` for the nine canonical mutation operations, and ordinary captures return early after `ledger.delete(binding)`. Verified against the fixture: `fixture-v1.json` `batch` = `https://reference.invalid/acme/operations/batch`, so `operation` resolves to `"batch"` and all four rows still register authority. `operations/sequence` is correctly **excluded** — `TransactionSequenceResponse` is `{results: Entry[]}` (`transaction-sequence.ts:8-10`) with no top-level `id`, so it is not a receipt source. The `response.url !== request.url` guard is safe: both sides are normalized hrefs (`resolveTarget` `runner.ts:2506-2517` vs `http-executor.ts:763`). Positive + negative installed witnesses both present.
+
+The guard also dropped `capture.from.kind === "json-pointer"`, so non-pointer captures in a transactional scenario now require full exact-observation consistency instead of bypassing it. That is a tightening, not a regression — but it is untested (no non-pointer capture exists in the four rows).
+
+**F2 (dynamic linkage on failed exchanges) — closed structurally, not just by witness.** `runRequest` spreads `...dynamic` into `observed` at `runner.ts:1159` and `exchanges.push(observed)` at `:1168` — before `prepareExactRequest`, before execution, before assertions. So *every* inner failure path (non-200, authored-header/body mismatch, transport error after reopen, `observe` throw) carries all four linkage fields, not only the 401 case the new test pins.
+
+**F3 (required context header presence) — closed, and provably non-vacuous.** 21 clauses added across 7 actions; coverage/manifest parity is exact (50/59/44/64 ids, zero asymmetry either direction). Both sides of all four `serving-context` comparisons are covered (`commit`+`events`, `seed`+`events-before`+`events-after`, `fresh`+`events`). These cannot break the four rows: `receiptResponse` always applies `context()` (`transaction-http.ts:140`), so the POST priors always carry the headers; for the existing equality assertions to pass today, the Events responses must already carry equal — hence present — values. The three names are still absent from `EXACT_REPORT_HEADER_NAMES` (`runner.ts:3297`), so exported exchange evidence shows the assertion outcome but not the values — consistent with the disposition, worth knowing.
+
+**F7 — closed.** `development-schema5-${"f".repeat(64)}` satisfies `installed-contract-identity.ts:3`, so refusal now comes from `assertSameServedProfileConfiguration`'s digest comparison rather than identity decoding. The test does not pin which guard refused, but a regression in the comparison would now fail it (decoding succeeds), which is the point.
+
+**Four rows partial / admission unchanged — confirmed.** `coverage-v1.json`: all four rows `wholeContract: false`, `claimEligible: false`, `status: "bounded-observation"`, `transportAdmission: "private-exact-available"`. `transactional-matrix.test.ts:256-262` still pins 250 required, 255 catalog rows, exactly 4 passing, `claimEligible` false, 5 sessions. No `index.ts` or `package.json` in the diff (`git diff --stat -- '*index.ts' '*package.json'` is empty), so `TransactionalHarnessError` stays inside the unexported, deep-import-denied `transactional-observation` module and never appears in a public signature. `TRANSACTIONAL_EXCHANGE_FIELDS` is unchanged at four entries, so the legacy-exclusion type assertion at `runner.test.ts:5949` still covers the whole set. No catalog, selection, schema or legacy-metadata change.
+
+**Not re-litigated:** everything the predecessor reports already cleared, and `validateReceiptWire`'s hardcoded `HTTP/1.1 <status> OK` reason phrase (pre-existing, outside this diff, and only reachable on 200 responses).

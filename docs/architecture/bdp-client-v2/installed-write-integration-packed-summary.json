@@ -1,0 +1,154 @@
+{
+  "status": "provisional compatibility evidence; pending council; no approval or promotion",
+  "sourceCommit": "a88b1b50a5fbdf6a05933dac22504cd0e05b7bfe",
+  "sourceCleanBefore": true,
+  "sourceCleanAfter": true,
+  "tests": {
+    "transactional": {
+      "files": 1,
+      "passed": 21,
+      "failed": 0,
+      "pending": 0,
+      "success": true,
+      "seconds": 17.81894087791443
+    },
+    "readUpdate": {
+      "files": 4,
+      "passed": 146,
+      "failed": 0,
+      "pending": 0,
+      "success": true,
+      "seconds": 90.81190609931946
+    }
+  },
+  "transactional": {
+    "claimEligible": false,
+    "binding": {
+      "scope": "https://reference.invalid/acme/",
+      "profile": "transactional",
+      "history": false,
+      "sourceCommit": "a88b1b50a5fbdf6a05933dac22504cd0e05b7bfe",
+      "installedPayloadDigest": "0527198d4905f8db61ad877f46523fefe6d9b423c58f11ea467a5921a51b149c",
+      "installedContractsDigest": "c67d12264b97e16c76bf68f850eaf394f61896bb72491e06603ef1d6debb335b",
+      "policyDigest": "ea6dd9418e83c2d3df805d750021887667b10a8e50873298830ff01ce573037b",
+      "authenticationDigest": "f8dd07c245e23b7ba53e994bc4e58533a644769bdf305da5fc5e50446a96803c",
+      "fixtureDigest": "8a1252afaae04e57e07cd722b77f66d26c6c696c823733aa97be256938fa41c1",
+      "fixtureId": "reference-transactional-v1",
+      "capabilities": [
+        "installed-transactional-http",
+        "transactional-receipt-observation"
+      ]
+    },
+    "runtimeConfigurationIdentity": "cc13696b4fffaa3184769dc4ba93f20cbbb832a96d87036fed5c567cded11590",
+    "artifactBindings": {
+      "catalogDigest": "e26d3fc758a34ebb0b5028be15d28e3e09db87dc7984bba7bad6a00b26329aa0",
+      "manifestDigest": "3e94be3777e974ea9a311d71ee4325ac3686f7c863c5d53b9debc96d2d1689b1",
+      "fixtureDigest": "8a1252afaae04e57e07cd722b77f66d26c6c696c823733aa97be256938fa41c1"
+    },
+    "exactRoutesDigest": "b40715fbed6344a208135a2608499f22acf511cccd79cf2e66a579b9f60da152",
+    "dynamicRouteDigests": [
+      "024cab33c5da17326acc22030ccef43061470d9d51db6edd5b1f84094c1406fd",
+      "236b51dfcf89d649c6931d0077cca165526f9d84db0afe7ca7e0977fd9b57191",
+      "4e07eeb1c124f9458846ef96a46f38b4782204430b13453de2f091a88ab56d7b",
+      "6c91f9387f820ba96bd5ba61da09a87aedc04f579885ae43f6b391f3b7145760",
+      "eca90f1950554ad6ef01226828faa19b36249b7265dd0b9c2b67b66a22fec4da",
+      "f26acd4deda39a889478a770294f6c826dfec5ff9d74feed516052b0301f9100",
+      "f36fbfdbba15751b07bc78b4d40bf7fd980bdd25cc335ead0a6048d0005b976c"
+    ],
+    "rowStates": {
+      "harness-error": 251,
+      "pass": 4
+    },
+    "physicalSessions": 5,
+    "rawHttpExchanges": 35,
+    "rawSources": {
+      "raw-http1-serializer": 35
+    },
+    "dynamicReceiptHttpExchangesSubset": 10,
+    "clientControlActions": {
+      "transactional.receipt-read": 10,
+      "transactional.reopen": 1
+    },
+    "observedRows": [
+      {
+        "id": "transactional.batch.atomic-commit",
+        "state": "pass",
+        "rawHttpExchanges": 7
+      },
+      {
+        "id": "transactional.batch.rollback",
+        "state": "pass",
+        "rawHttpExchanges": 9
+      },
+      {
+        "id": "transactional.receipt.readable",
+        "state": "pass",
+        "rawHttpExchanges": 8
+      },
+      {
+        "id": "transactional.idempotency.failed-retained",
+        "state": "pass",
+        "rawHttpExchanges": 11
+      }
+    ]
+  },
+  "readUpdate": {
+    "claimEligible": false,
+    "configuration": {
+      "scope": "https://reference.invalid/acme/",
+      "profile": "read-update",
+      "history": false,
+      "sourceCommit": "a88b1b50a5fbdf6a05933dac22504cd0e05b7bfe",
+      "installedPayloadDigest": "0527198d4905f8db61ad877f46523fefe6d9b423c58f11ea467a5921a51b149c",
+      "installedContractsDigest": "48667497d6e13064316d0364cf8f49dfc247ab9189306985a357d7b558333dfe",
+      "policyDigest": "dbe8dbd5430f26e19e754d38167cd8084a32d702c695550e2ee0063dc2912430",
+      "authenticationDigest": "66941efc779f4f2431d65fdd5b2387b2af67bd7c1559e09dac032f82259ea16e",
+      "fixtureDigest": "ebcf9771f3c45afc8d6a4de097b39ce25b03821d68d4d9015ae798edeb8c6af4",
+      "fixtureId": "reference-read-update-schema-v1",
+      "capabilities": [
+        "installed-read-update-http"
+      ]
+    },
+    "reportBinding": {
+      "artifacts": {
+        "catalogDigest": "e26d3fc758a34ebb0b5028be15d28e3e09db87dc7984bba7bad6a00b26329aa0",
+        "manifestDigest": "9ec35ef4179afcdfe1ec77f9264ba7c8ef7285d5d23aa5b1b4161b47fd576be5",
+        "fixtureDigest": "ebcf9771f3c45afc8d6a4de097b39ce25b03821d68d4d9015ae798edeb8c6af4"
+      },
+      "exactConfigurationDigest": "fdcbe130767421273c839d15cd8db5fef4b8047e7aabe192a54c1d4110aca6be"
+    },
+    "requiredIds": 129,
+    "plannedIds": 47,
+    "uncoveredIds": 103,
+    "wholeContracts": 26,
+    "rowStates": {
+      "pass": 47,
+      "harness-error": 87
+    },
+    "sessions": 47,
+    "clientActions": 917,
+    "rawHttpExchanges": 645,
+    "nativeReadHttpExchanges": 21,
+    "setupClientObservations": 44,
+    "admissionRows": [
+      {
+        "id": "read-update.singleton.idempotency-key-required",
+        "state": "pass",
+        "rawHttpExchanges": 151,
+        "clientActions": 93,
+        "assertions": 2036
+      },
+      {
+        "id": "read-update.singleton.unsupported-media-type",
+        "state": "pass",
+        "rawHttpExchanges": 73,
+        "clientActions": 43,
+        "assertions": 735
+      }
+    ],
+    "selectedTimingsMs": {
+      "executes the partial cumulative RU matrix against actual installed factory HTTP and afterstate": 13751.387458,
+      "observes key and media admission against installed HTTP with paired afterstate": 1712.069749999995
+    }
+  }
+}
