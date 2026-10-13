@@ -47,4 +47,23 @@ Disclosure corrections: current matching guards are semantic no-ops; the guard p
 
 Pre-follow-up full regression:868tests/28files PASS59.99s. The final clean build and complete rerun include the two added controls and planner version/selection gates. All prior counterfactual failures were in expected sensitivity sets or stale identity pins; actual W2 authority behavior matched normative expectations after correcting the test's initial404 retry value.
 
-Final source validation: clean → pre-build typecheck → build PASS; **870tests/28files PASS46.09s** (`read-update-sequence-freeze-tests.log/.json`). Focused format/lint (explicit4MiB inspection limit), dependency boundaries, diff check and unchanged89-row Read evidence PASS (`read-update-sequence-freeze-checks.log`). The manifest is1,680,134 bytes at this source (measured from Git below if different); no ordinary source limit or installed target policy was changed by W2.
+Final source validation: clean → pre-build typecheck → build PASS; **870tests/28files PASS46.09s** (`read-update-sequence-freeze-tests.log/.json`). Focused format/lint (explicit4MiB inspection limit), dependency boundaries, diff check and unchanged89-row Read evidence PASS (`read-update-sequence-freeze-checks.log`). The manifest is1,680,148 bytes at this source; no ordinary source limit or installed target policy was changed by W2.
+
+
+## Frozen packed installation
+
+Frozen source **0b34fe7dae75d9a60838bd5d733d1665dd5e7c83**, direct successor of c1a17442ff2f5936616e7644e827dfa28dcd5ab7, remains clean and unchanged. Fresh protocol/server packages installed into the isolated `read-update-installed-0b34fe7/install` directory passed **79 tests / 5 files in 41.49 seconds**. Logs, JSON test results and the actual unfiltered progress record are alongside that directory. This includes the actual installed authority HTTP run and the bounded sensitivity controls; it is not public qualification.
+
+Actual payload digest: `0f914e6d688078dab562bc84a092fd143370abd4000f8ce5c6b0d0635c24ac26`. Installed contract digest: `e1dff401b5caafb04a4d935775d67eeefeae7bcf306d5d100b979a64eef148e7`. The source commit is launcher/reviewer-checked provenance, not independent target attestation. Runtime identity consistency is checked against the actual ready receipt for each isolated scenario.
+
+Report bindings:
+```json
+{
+  "artifacts": {
+    "catalogDigest": "e26d3fc758a34ebb0b5028be15d28e3e09db87dc7984bba7bad6a00b26329aa0",
+    "manifestDigest": "8c3ad930b22f1567f5a8ebefa98c1deb081ca43279b6c13f625e53edf5d8cf8a",
+    "fixtureDigest": "5790ed71c03bbe0fa8f3a639a1ae1c95352b39ad8dc4d48c3254c4eab63f4398"
+  },
+  "exactConfigurationDigest": "3d36a5222635858592d92c2b79df03bae8b0c9ac1deeb9e5c176498c9f6b94e9"
+}
+```
