@@ -1,0 +1,124 @@
+{
+  "source": "a53f4bbf573c64fe900de373b3fef75170002f7c",
+  "tree": "4a6f4cc5ad198c7beb2d0f855583d0f33e75a037",
+  "parent": "3f486c245bfd31f41fd42f5acc8e0f13683bad42",
+  "clean": true,
+  "files": {
+    "packages/server/src/transaction-discovery.test.ts": {
+      "bytes": 4516,
+      "sha256": "1a328d4e4822322bd237857e0b7e01752a151d26fbe1ea69474123dccb63f9a4"
+    },
+    "packages/server/src/transaction-read.test.ts": {
+      "bytes": 32333,
+      "sha256": "a59cc36adaeb2f75b579106a17d0d41146995545d3977974b0e6e4ef75e95bcf"
+    },
+    "packages/server/src/transaction-service.test.ts": {
+      "bytes": 52197,
+      "sha256": "727cf226ff7bf6b2842f0a1651f327fc8492377caefd58fcded7b39d55f71b05"
+    },
+    "packages/server/test-support/schema-graph-policy.json": {
+      "bytes": 7700,
+      "sha256": "02f566f0c38335c6b125d591d1e0319f75cf3064ebe4cadc1ac6d08b44eb7011"
+    }
+  },
+  "claimEligible": false,
+  "tests": {
+    "passed": 84,
+    "files": 4
+  },
+  "checks": {
+    "affected": {
+      "command": [
+        "node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "exec",
+        "vitest",
+        "run",
+        "packages/server/src/installed-schema-graph.policy.test.ts",
+        "packages/server/src/transaction-service.test.ts",
+        "packages/server/src/transaction-read.test.ts",
+        "packages/server/src/transaction-discovery.test.ts",
+        "--maxWorkers=2",
+        "--reporter=verbose",
+        "--reporter=json",
+        "--outputFile.json=/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-cold-discovery-external-repair/affected.json"
+      ],
+      "exit": 0,
+      "seconds": 1.428
+    },
+    "typecheck": {
+      "command": [
+        "node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "typecheck"
+      ],
+      "exit": 0,
+      "seconds": 0.863
+    },
+    "format": {
+      "command": [
+        "node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "exec",
+        "biome",
+        "format",
+        "packages/server/test-support/schema-graph-policy.json",
+        "packages/server/src/transaction-service.test.ts",
+        "packages/server/src/transaction-read.test.ts",
+        "packages/server/src/transaction-discovery.test.ts"
+      ],
+      "exit": 0,
+      "seconds": 0.251
+    },
+    "lint": {
+      "command": [
+        "node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "exec",
+        "biome",
+        "lint",
+        "packages/server/src/transaction-service.test.ts",
+        "packages/server/src/transaction-read.test.ts",
+        "packages/server/src/transaction-discovery.test.ts"
+      ],
+      "exit": 0,
+      "seconds": 0.255
+    },
+    "boundaries": {
+      "command": [
+        "node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "check:boundaries"
+      ],
+      "exit": 0,
+      "seconds": 0.571
+    }
+  },
+  "packages": {
+    "protocol": {
+      "baselineSource": "3f486c245bfd31f41fd42f5acc8e0f13683bad42",
+      "retainedArchive": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-cold-discovery-review-repair/packs/protocol.tgz",
+      "baselineArchiveSha256": "4683cb6c6333c332a4bcb7efc3e28f32d1d8d06a7264913f65c31d3a826d4227",
+      "candidateArchiveSha256": "4683cb6c6333c332a4bcb7efc3e28f32d1d8d06a7264913f65c31d3a826d4227",
+      "fileCount": 63,
+      "memberPathsAndBytesExactlyEqual": true
+    },
+    "server": {
+      "baselineSource": "3f486c245bfd31f41fd42f5acc8e0f13683bad42",
+      "retainedArchive": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-cold-discovery-review-repair/packs/server.tgz",
+      "baselineArchiveSha256": "92ab7c6036a6c45009c99bd6045f772f27067839207177492661d1b2af75b1dc",
+      "candidateArchiveSha256": "92ab7c6036a6c45009c99bd6045f772f27067839207177492661d1b2af75b1dc",
+      "fileCount": 246,
+      "memberPathsAndBytesExactlyEqual": true
+    }
+  },
+  "freshInstalledRun": false,
+  "installedEvidenceSource": "3f486c245bfd31f41fd42f5acc8e0f13683bad42",
+  "ownedChildrenRemaining": 0,
+  "guardedPush": {
+    "remote": "https://github.com/gastownhall/bdp.git",
+    "branch": "codex/vickie-tx-discovery-repair",
+    "verifiedHead": "a53f4bbf573c64fe900de373b3fef75170002f7c",
+    "expectedSession": "2026-10-08T20:26:35Z-81e5"
+  }
+}

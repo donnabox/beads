@@ -1,0 +1,123 @@
+## Verdict
+
+**Yes — returning the existing 404 for a compatible, already-satisfied source context is correct**, and the mechanism the plan picks (one `checkSourceCondition` edit, no HTTP/service/store change) is the right one. I verified the failure-class discrimination is exhaustive for the route subset, the context propagation is genuinely same-entry, the conditional/HEAD claims hold against the real helper, and the ledger arithmetic (pos-1/pos-2, 9 URLs, delete ordering) is sound. Ten findings below; none invalidate the recommendation, but #1 and #2 would produce a wrong implementation or a failing oracle as written.
+
+---
+
+## Findings
+
+### 1. MEDIUM — `sourceCondition` is forwarded by the ordinary `readFor` facet, so the new 404 branch is reachable outside `minimumFor`'s subset
+**File/section:** `packages/server/src/transaction-read.ts:96-99` · plan §Source trace item 3, §Precise implementation boundary
+
+The callback signature is `(condition, observation, refusal)` — it carries **no request**, so the new branch cannot discriminate route. Meanwhile `composed.readFor(...).perform/resolveAlias` forward caller `options` verbatim, and `authority-read.ts:1056` reads `sourceCondition` out of them; `transaction-service.ts:274-275` forwards too. Today every out-of-subset missing result (alias, Type, `bead-links` anchor, continuation) throws the Gap — that *is* the "alias minimum is wholly refused" behaviour the rulings audit row 16 and plan line 22 rely on.
+
+**Impact:** after the repair, an in-process caller passing a satisfied tuple through `readFor` gets `404 + context` for a missing alias/Type/incident anchor. Not reachable over HTTP today (`grep` confirms line 121 is the *only* site in the repo that sets `sourceCondition`), so no wire regression — but it directly contradicts "The proposed repair does **not** widen this route predicate" and "Alias 307/alias absence … remain unchanged."
+
+**Bounded correction:** in the same owned file, have `composed.readFor` forward only `signal` and drop `sourceCondition`, so the source-condition callback stays reachable solely through `minimumFor`. Strictly a narrowing; no new abstraction, option, or interface; nothing currently depends on the forwarding. Add one read-test asserting a `readFor`-supplied `sourceCondition` is not honoured.
+
+---
+
+### 2. MEDIUM — Owned-link side effects are unspecified; row #1's "no unexpected result" is wrong as written
+**File/section:** plan §Installed ledger rows 1-2 · `apps/bdptest/.../transactional-collection-minimum-installed.test.ts:88` · `packages/server/src/resource-evaluator.ts:962-968`, `member-executor.ts:235`
+
+The reused `artifacts()` declares `Task.ownsOutgoing = { Relationship: { max: 32 } }`. `resource-evaluator.ts:962-968` builds a `sourceRecipe` with a freshly `allocateRevision()`d version of the link's **source bead** whenever an owned link is created or removed, and the per-operation result carries a `source` field (`member-executor.ts:235`).
+
+**Impact:** batch #1's `createLink l` also emits a new version of bead `a`; batch #2's `deleteLink l` emits another before `a` is itself deleted. Row #2 half-hedges this ("may update source"); row #1 does not mention it while demanding "no unexpected result". Any strict-equality oracle on the link result or on the receipt's change/event set fails. The predecessor avoided this with "1 Bead/0 Links" (`transaction-cold-discovery-serving-next-plan.md:90`), but rows 9-10 need a deleted Link, and the coupling can't be removed without editing the shared `artifacts()` the existing collection scenario depends on.
+
+**Bounded correction:** make the side effect an asserted expectation. Scope rows #1/#2 to the receipt's **per-operation `results`** (exactly 3 and 2 entries, exact outcomes/identities), expect the `createLink`/`deleteLink` result to carry `source: ${scope}beads/a`, and state that `a` gains an extra owner version in *both* batches while `b` (target only) is untouched. Do not assert `changes`/`events` cardinality.
+
+---
+
+### 3. MEDIUM — "No remaining normative ambiguity" rests on a negative inference; the affirmative mandate is omitted
+**File/section:** plan §Settled contract, lines 18-22 · `docs/specs/bdp.md:5781-5786`, `:1445-1448`, `:5793-5798`
+
+`:5781-5786` enumerates exactly three authority outcomes for a complete tuple — "a representation at that position or later", wait/route, or "the normative foreign-view, cursor-expired, or catch-up-timeout problem". A nondisclosing 404 is literally none of the three. So "there is no remaining minimum failure to arbitrate" is an *interpretation* (reading "eligible observation" to cover a problem representation of the observed prefix), and declaring "no remaining normative ambiguity" overstates it.
+
+**Impact:** the plan simultaneously under-uses its two strongest clauses. `:1445-1448` **mandates** the uniform 404 for a deleted/unknown/non-visible identity, and `:5793-5798` says **every** Transactional Scope-bounded read reports epoch/view/position — which today's bodyless, header-free 500 does not. The rulings audit states this outright ("ordinary 404 remains dictated"); the plan paraphrases it only as permission. The strongest available argument — that the status quo is *non-conformant* and this is defect repair — is never made.
+
+**Bounded correction:** restate the basis affirmatively (current 500 violates `:1445-1448` and `:5793-5798`), and say explicitly that `:5781-5786`'s enumeration is read to include a problem representation of the satisfied prefix — naming that as the one interpretive step taken.
+
+---
+
+### 4. MEDIUM — Undisclosed divergence from the owner's shipped nondisclosure ordering; the progress-doc edit will contradict existing text
+**File/section:** `packages/server/src/transaction-http.ts:471,485` · `docs/design/transaction-implementation-progress.md:1058-1060` and `:661-671` · `transaction-http.test.ts:1495-1525`
+
+The Event-source route already returns a bare `resource-not-found` **before** any minimum handling and **without** context headers — documented at progress:1058-1060 as "a local reference ordering choice". Receipt-page reads do the same, asserted at http.test:1495-1525 (404, all three `bdp-scope-*` headers absent, under `{}`, `pos-99`, foreign view, and unknown spelling).
+
+**Impact:** after the repair, Resource/properties becomes the **only** route that checks the minimum first, attaches context to a nondisclosing 404, and refuses behind/foreign with a 500 rather than a 404. The plan claims "no … error-precedence redesign" and that the collision "is deliberately not resolved" — but for this route it *does* pick an ordering, opposite to the shipped Event convention. File 5's edit lands in the same document, so leaving `:661-671` and `:1058-1060` unreconciled publishes two contradictory conventions.
+
+**Bounded correction:** cite progress:1058-1060 and http.test:1495ff in §Settled contract; state that this slice deliberately does **not** adopt the Event/receipt 404-before-minimum convention for Resource reads, and that the intra-owner divergence is a known consequence for root to accept. File 5 must replace the `:661-671` paragraph *and* reconcile it against `:1058-1060`.
+
+---
+
+### 5. LOW-MEDIUM — No installed row can fail if the minimum check is dropped entirely
+**File/section:** plan §Installed ledger rows 3-10
+
+All eight read rows use satisfied (equal or earlier) minima, so a blanket `return` for `resource-not-found` passes all ten exchanges. The plan is honest that discrimination lives in source mutants — but the predecessor budgeted "behind/foreign missing controls" *inside* the same 10 (`serving-next-plan:90`), and the installed ledger is what root freezes as final proof.
+
+**Bounded correction:** convert row #10 (redundant with row #8's absent/earlier-minimum pattern) into a behind control on the same URL — `GET links/l?view=properties` with `bdp-minimum-scope-position: pos-3` → 500, `x-bdp-development-limit: minimum-position-visibility`, no `bdp-scope-*` headers, empty body. Costs no new URL (still 9), no new child, keeps exactly 10 exchanges, and cannot wait: the Gap is not a `TransactionMinimumFailure`, so `waitForTransactionMinimum` (`transaction-consistency.ts:111`) rethrows immediately. Precedent exists at installed:590-592.
+
+---
+
+### 6. LOW — Ambiguous placement of the tuple/context parse could silently alter the preserved control path
+**File/section:** plan §Precise implementation boundary, bullets 1-2
+
+"Keep the early invalid-parameter/limit-exceeded handling unchanged" plus "parse the current observation **outside** the special missing-result catch" never says *before or after* the early return. Placed before, `transactionReadContexts(observation)` would newly run on the control-refusal path (`transaction-read.test.ts:606-634`), adding a throw-on-corrupt-context side effect and wasted work where the plan promises no change.
+
+**Bounded correction:** say "after the preserved early return and outside the translation catch," and note the explicit `return` after the missing-case check so the satisfied path does not fall through into the second `checkTransactionMinimum` and re-raise the raw failure.
+
+---
+
+### 7. LOW — The mandated unexpected-reason branch has no stated, workable test seam
+**File/section:** plan §Precise implementation boundary bullet 4, §Focused executable oracles
+
+The allowlist deliberately excludes `catch-up-timeout`, but `checkTransactionMinimum` emits only the other three (`transaction-consistency.ts:69-77`), so the rejection branch is unreachable from real inputs. `checkTransactionMinimum` is a static named ESM import, so `vi.spyOn` cannot intercept it; module mocking is the only route. "Keep it in the test seam and assert exact identity" names no mechanism.
+
+**Bounded correction:** either specify `vi.doMock("./transaction-consistency.js", async (importOriginal) => ({ ...(await importOriginal()), checkTransactionMinimum: … }))` with a dynamic re-import of `transaction-read.js` in an isolated block — preserving the real `TransactionMinimumFailure` class so `instanceof` still holds — or declare the branch defensive and deliberately unexercised. (Production injection is already correctly forbidden.)
+
+---
+
+### 8. LOW — Unlisted behaviour delta: corrupted source context on a missing target changes its 500 flavour
+**File/section:** plan §Validation #5
+
+Today a missing target short-circuits to the Gap *before* `transactionReadContexts` runs, so a malformed/mismatched `sourceContext` yields 500 + `minimum-position-visibility`. After the repair it yields the integrity `Error` → `empty(500)` with no marker (`transaction-http.ts:587`). The plan's oracles *require* exactly this, but §Validation #5's "Behind/foreign/unsupported requests retain their previous gaps" doesn't list it. No existing test covers the combination, so there's no regression — only an undisclosed change.
+
+**Bounded correction:** add it to the enumerated deltas in §Validation #5.
+
+---
+
+### 9. LOW — Pin-inconsistent and off-by-a-few line citations
+**File/section:** plan §Source trace, §HTTP contract, §Settled contract
+
+- `transaction-http.test.ts:1206ff` is a **b20** line number; at the plan's declared basis **aebf** that test is at line **1190** (`git show aebf656:…` confirms). The basis paragraph names aebf.
+- `transaction-consistency.ts:106–126` points **past end of file** (121 lines); the retry loop is 106-120.
+- Undershoots: callback is 56-**69** (cited 56-68); `minimumFor` 105-**127** (cited 105-125); `transactionReadContexts` 135-**174** (cited 135-171).
+- `"Transactional HTTP consistency, lines 5758–5787"` starts 8 lines **before** that heading (5766); 5758-5765 belongs to the preceding section's strict-reads paragraph.
+
+Accurate as cited: spec `:1445-1450`, `:5793-5799`, `:5801-5811`; `authority-read.ts:509-515`, `:852ff`, `:977-998`. SHA256 `27e5747…` verified, and `git diff aebf656 b20c929 -- transaction-read.ts` is empty — the frozen-callback claim holds.
+
+**Bounded correction:** re-anchor to the successor's actual base before authoring (the plan already instructs this) and fix the EOF overshoot.
+
+---
+
+### 10. LOW — Two installed-fixture helper surfaces the ledger needs are not exposed
+**File/section:** `apps/bdptest/.../transactional-collection-minimum-installed.test.ts:321-372`, `:172-185`
+
+(a) `start()` returns `{exchange, baseline, signal, write, close, report}` — not `observations` or a count — so "exact final 10" cannot be asserted from the fixture; the new test must wrap `f.exchange` locally or the returned object must expose a count. (b) `report()` hardcodes `observation: "private-installed-collection-minimum"` and `withInstalled` calls `start(signal)` with no arguments, so the new scenario will emit the **original** scenario's label. Both sit inside owned file 4 and neither needs a sixth file — but the plan's "Reuse … existing … reporting helpers" and "keep the original collection test's label/output intact" imply no helper change is needed.
+
+**Bounded correction:** state the two minimal additions — a defaulted `label` threaded `withInstalled` → `start` → `report`, and a local exchange counter (or an exposed count) — and confirm the original scenario's emitted label/output stays byte-identical.
+
+---
+
+## Verified correct (no change needed)
+
+- **Failure-class discrimination is exhaustive and no broader.** Within `minimumFor`'s predicate the only refusal codes reaching the callback are `invalid-parameter`/`limit-exceeded` (`authority-read.ts:752-761` via `readControlProblem`, and `read-request.ts:954-965` can produce only those two) and `resource-not-found` (`authority-read.ts:797,801`). Request-validation `invalid-parameter` is a `preContext` refusal and never reaches the callback (`:983`, `:1084-1091`). `checkTransactionMinimum` emits exactly `cursor-expired`/`foreign-view`/`behind` (`transaction-consistency.ts:69-77`), so the three-reason allowlist is tight and excluding `catch-up-timeout` is right — only `waitForTransactionMinimum:117` manufactures it, above the callback. The plain `Error("invalid owner minimum position")` at `:76` is not a `TransactionMinimumFailure` and propagates.
+- **No wait introduced.** `waitForTransactionMinimum` retries only `TransactionMinimumFailure` with `reason === "behind"` (`:111`); the Gap is a distinct class, so missing+behind still fails immediately.
+- **Same-entry context is real, not reconstructed.** `observed()` (`authority-read.ts:509-515`) retains the observation on the materialized Problem; the callback runs inside the single owner entry with that same `context.observation` (`:981-992`) and is skipped for a pre-context refusal (`:983`); `transactionReadContexts` re-validates epoch/view against the observation rather than trusting the owner (`transaction-read.ts:154-165`).
+- **No HTTP production change needed.** `readRoute.perform` already attaches `transactionReadContexts(result.observation).current` whenever `"observation" in result`, true for an observed refusal (`transaction-http.ts:220-234`); `problem()` yields `application/problem+json`, `cache-control: private, no-store`, no ETag (`read-http-routing.ts:44-52`, `transaction-http.ts:89-106`).
+- **Conditionals/HEAD hold.** `applyReadHttpSemantics` transforms only `status===200` with `content-type: application/json`, or 204 (`read-http.ts:10-39`) — a 404 is never turned into 304/412 under `If-None-Match: *` or a mismatching `If-Match`. The HEAD branch (`:42-46`) drops the body and sets content-length from the serialized problem; precedent for a nonzero-content-length HEAD problem exists at `http.test:1256-1259` (503) and installed`:504`.
+- **Deletion oracle sound.** `deleteResource` hard-deletes (`transaction-store.ts:1199-1203`), so a deleted target hits `graph.point() === undefined` → `notFound()`. Retained history is off in the installed fixture (`expect(child.ready.history).toBe(false)`, installed`:213`), correctly excluding the optional 410.
+- **Ledger arithmetic checks out.** One transaction = exactly one position increment regardless of operation count (`transaction-store.ts:1123-1130`, `:1264-1270`), and for an effective batch `requiredPosition === effectPosition === position` (`:1275-1276`) — so literal pos-1/pos-2 is a sound independent expectation. Delete order l-then-a is *required*: `incident-links-exist` → 409 otherwise (`resource-evaluator.ts:1028-1029`), and intra-transaction `tx.incidentLinks` sees the earlier delete (effects applied inside `SAVEPOINT effects`, `:1205`). 9 distinct URLs and 2 Beads + 1 Link max live both hold. 32-op cap confirmed (`transaction-batch.ts:63`). Bounds confirmed unchanged: 5000 ms/request, 32768 body, 16384/65536 exact caps (installed`:259-284`), 80-response ceiling (`:317`), 90 s/120 s (`:158`, `:594`), 10 s launcher deadline (`scripts/transaction-installed-observation.mjs:30-31`). Per-scenario `observations` and `snapshot_${key++}` are `start()`-closure-scoped, so the two scenarios cannot splice counts or reuse keys.
+- **Five-file ceiling holds for existing fallout.** Repo-wide, `TransactionMinimumVisibilityGap`/`minimum-position-visibility` appear only in `transaction-read.ts`, `transaction-http.ts`, and **one** test assertion (`transaction-http.test.ts:1227`) — inside the owned set. Other minimum-bearing HTTP tests target present resources or receipt pages. `docs/specs/bdp.md` is byte-identical at aebf and b20, so the normative citations are pin-safe. C3's HTTP/service deltas (operations constant moved to `transaction-discovery.ts`; scope-mismatch guard) leave the readRoute, catch chain and gap mapping untouched.
+- **The seams the oracles depend on exist:** owner-entry interception with reentrancy assertions and *scoped* SQL counters (`transaction-read.test.ts:560-594`, including the present-target `{reason:"behind"}` expectation at `:588`), and the injectable `minimumReads.wait` counter (`http.test:1240-1249`).
+- **Scope-priority question resolved favourably.** The rulings audit's §"Next safe serving implementation" prefers *fresh Snapshot creation minimums* over this slice — but that work already landed as the plan's own parent (`aebf656`, PR #105 `vickie-tx-snapshot-minimum`), so this is the legitimate successor. Worth one disclosing sentence in the plan, since a reviewer reading the audit alone would flag it.

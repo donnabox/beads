@@ -1,0 +1,189 @@
+{
+  "source": "9b95df5dd866dbaf84150404c4db86ac8054b724",
+  "tree": "d6749c7da26a5eeb2debce8336af91acc279249a",
+  "parents": [
+    "fd07bf7ac177d5e53cabcd7666d9f2c77fba6e60",
+    "a53f4bbf573c64fe900de373b3fef75170002f7c"
+  ],
+  "clean": true,
+  "filesRelativeToFd07": {
+    "packages/server/src/transaction-discovery.test.ts": {
+      "bytes": 5655,
+      "sha256": "999a16263961c9a5e9e62f8d87029f6d8c8b8dccc00c54ec7ea590ff3edd893d"
+    },
+    "packages/server/src/transaction-read.test.ts": {
+      "bytes": 32333,
+      "sha256": "a59cc36adaeb2f75b579106a17d0d41146995545d3977974b0e6e4ef75e95bcf"
+    },
+    "packages/server/src/transaction-service.test.ts": {
+      "bytes": 52261,
+      "sha256": "afb5ed1825c2a29a6c889efeb4ab4d933a1e04a7c56c73b801313e226a56997d"
+    },
+    "packages/server/test-support/schema-graph-policy.json": {
+      "bytes": 7700,
+      "sha256": "02f566f0c38335c6b125d591d1e0319f75cf3064ebe4cadc1ac6d08b44eb7011"
+    }
+  },
+  "preservedA53PatchId": "a04ae8df10adbba280ea8e5a8507cb9b42425d04",
+  "productionDeltaFromFd07": false,
+  "claimEligible": false,
+  "testFiles": 7,
+  "testsPassed": 225,
+  "exits": {
+    "install": {
+      "exit": 0,
+      "expected": 0,
+      "seconds": 0.478,
+      "command": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "install",
+        "--frozen-lockfile"
+      ]
+    },
+    "clean": {
+      "exit": 0,
+      "expected": 0,
+      "seconds": 0.851,
+      "command": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "clean"
+      ]
+    },
+    "typecheck": {
+      "exit": 0,
+      "expected": 0,
+      "seconds": 0.808,
+      "command": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "typecheck"
+      ]
+    },
+    "build": {
+      "exit": 0,
+      "expected": 0,
+      "seconds": 0.798,
+      "command": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "build"
+      ]
+    },
+    "affected": {
+      "exit": 0,
+      "expected": 0,
+      "seconds": 3.572,
+      "command": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "exec",
+        "vitest",
+        "run",
+        "packages/server/src/installed-schema-graph.policy.test.ts",
+        "packages/server/src/transaction-service.test.ts",
+        "packages/server/src/transaction-discovery.test.ts",
+        "packages/server/src/transaction-read.test.ts",
+        "packages/server/src/transaction-http.test.ts",
+        "packages/protocol/src/transaction-discovery-values.test.ts",
+        "packages/server/src/transaction-installed-contracts.test.ts",
+        "--maxWorkers=2",
+        "--reporter=verbose",
+        "--reporter=json",
+        "--outputFile.json=/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-discovery-limits-integration/affected.json"
+      ]
+    },
+    "check-boundaries": {
+      "exit": 0,
+      "expected": 0,
+      "seconds": 0.51,
+      "command": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "check:boundaries"
+      ]
+    },
+    "format-check": {
+      "exit": 0,
+      "expected": 0,
+      "seconds": 1.316,
+      "command": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "format:check"
+      ]
+    },
+    "lint": {
+      "exit": 0,
+      "expected": 0,
+      "seconds": 0.416,
+      "command": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "lint"
+      ]
+    },
+    "evidence-verify": {
+      "exit": 0,
+      "expected": 0,
+      "seconds": 0.308,
+      "command": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "evidence:verify"
+      ]
+    },
+    "pack-protocol": {
+      "exit": 0,
+      "expected": 0,
+      "seconds": 0.244,
+      "command": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "pack",
+        "--out",
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-discovery-limits-integration/packs/protocol.tgz"
+      ]
+    },
+    "pack-server": {
+      "exit": 0,
+      "expected": 0,
+      "seconds": 0.254,
+      "command": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "pack",
+        "--out",
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-discovery-limits-integration/packs/server.tgz"
+      ]
+    }
+  },
+  "packages": {
+    "protocol": {
+      "baselineSource": "fd07bf7ac177d5e53cabcd7666d9f2c77fba6e60",
+      "baselineArchive": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-discovery-limits-implementation/packs/protocol.tgz",
+      "baselineArchiveSha256": "4683cb6c6333c332a4bcb7efc3e28f32d1d8d06a7264913f65c31d3a826d4227",
+      "integratedArchiveSha256": "4683cb6c6333c332a4bcb7efc3e28f32d1d8d06a7264913f65c31d3a826d4227",
+      "memberCount": 63,
+      "pathsAndBytesEqual": true
+    },
+    "server": {
+      "baselineSource": "fd07bf7ac177d5e53cabcd7666d9f2c77fba6e60",
+      "baselineArchive": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-discovery-limits-implementation/packs/server.tgz",
+      "baselineArchiveSha256": "2b25f7d284f47e7a9f7c7be1105cf8565b067d181cb7bdf19eaa3ee4b87a6d50",
+      "integratedArchiveSha256": "2b25f7d284f47e7a9f7c7be1105cf8565b067d181cb7bdf19eaa3ee4b87a6d50",
+      "memberCount": 246,
+      "pathsAndBytesEqual": true
+    }
+  },
+  "freshInstalledRun": false,
+  "installedEvidenceSource": "fd07bf7ac177d5e53cabcd7666d9f2c77fba6e60",
+  "remainingOwnedChildren": 0,
+  "guardedPush": {
+    "expectedSession": "2026-10-08T20:26:35Z-81e5",
+    "remote": "https://github.com/gastownhall/bdp.git",
+    "branch": "codex/vickie-discovery-limits-integration",
+    "verifiedHead": "9b95df5dd866dbaf84150404c4db86ac8054b724"
+  }
+}

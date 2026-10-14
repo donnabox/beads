@@ -22,3 +22,8 @@ External review completed successfully and independently verified original sourc
 2. Medium: receipt and Snapshot navigation currently have literal oracles without actual route witnesses. Add receipt lookup through the source handler using the existing real receipt and observed discovery URL, and Snapshot creation through the observed discovery URL. Rename the literal projection test accurately. Existing fixtures suffice; no transport or product behavior change.
 
 update_implementation owns a four-file test/policy successor in the existing repair checkout. Production bytes must remain identical to3f; preserve its fresh packed evidence at its original source rather than relabeling it. Run the policy and affected source tests, compare production identities, and obtain independent native closure. Root will advance PR106 ordinarily and require final-head green CI before merge. The known stale-pin3f head is not merge-ready. The independent limits lane may continue on3f and incorporate this successor ordinarily before promotion.
+
+
+## Final external repair closure at a53f4bb
+
+Root read the entire four-file successor and independent native closure. Both external findings are closed; all fourteen pins independently match, only index changed, actual same-principal receipt and Snapshot source-handler witnesses pass. The84-test focused run and static checks passed. Native independently compared63protocol/246server member bytes and whole archives equal3f. No production change and no installed-proof relabel. PR106 advanced ordinarily to a53f4bbf573c64fe900de373b3fef75170002f7c; exact CI38545418962 remains required. Council findings are dispositioned; readiness awaits CI and final remote scope/ancestry check.
