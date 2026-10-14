@@ -73,7 +73,7 @@ func (s *Store) RemoveDependency(ctx context.Context, request DependencyRemoveRe
 		// user-defined kinds. This familiar pair verb remains blocks-only;
 		// those Links are deleted explicitly by canonical Link ID.
 		if link.Properties["dep_type"] != string(types.DepBlocks) {
-			return nil
+			return fmt.Errorf("%w: pair-level dep removal supports only blocks; delete this Dependency by canonical Link ID", ErrCapabilityUnavailable)
 		}
 		removed, err := s.unlinkDependencyInTx(ctx, tx, path, link, LinkDeleteRequest{
 			Actor: request.Actor, ExpectedRevision: link.Revision, ExpectedSourceRevision: source.Revision,

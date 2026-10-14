@@ -153,6 +153,35 @@ func TestDependencyPairRemoveUsesNativeWriterAndNoop(t *testing.T) {
 	}
 }
 
+func TestDependencyPairRemoveRefusesNonBlockingKind(t *testing.T) {
+	for _, backend := range []string{"embedded", "server"} {
+		t.Run(backend, func(t *testing.T) {
+			f := setupDependencyUnlink(t, backend, 0)
+			added, err := f.store.AddDependency(f.ctx, DependencyRequest{
+				Path: "links/tracks", SourcePath: "beads/source", TargetPath: "beads/first",
+				Type: "tracks", Actor: "author", ExpectedSourceRevision: f.source.Revision,
+			})
+			if err != nil {
+				t.Fatal(err)
+			}
+			before := workflowState(t, f.ctx, f.store)
+			removed, err := f.store.RemoveDependency(f.ctx, DependencyRemoveRequest{
+				SourcePath: "beads/source", TargetPath: "beads/first", Actor: "remover",
+			})
+			if !errors.Is(err, ErrCapabilityUnavailable) || removed.Removed {
+				t.Fatalf("nonblocking pair removal did not refuse: %+v %v", removed, err)
+			}
+			if !reflect.DeepEqual(before, workflowState(t, f.ctx, f.store)) {
+				t.Fatal("refused pair removal changed state")
+			}
+			current, err := f.store.ShowLink(f.ctx, "links/tracks")
+			if err != nil || current.ID != added.Link.ID || current.Properties["dep_type"] != "tracks" {
+				t.Fatalf("refused pair removal lost Dependency: %+v %v", current, err)
+			}
+		})
+	}
+}
+
 func TestDependencyUnlinkLifecycle(t *testing.T) {
 	for _, backend := range []string{"embedded", "server"} {
 		t.Run(backend, func(t *testing.T) {
