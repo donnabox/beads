@@ -1,0 +1,739 @@
+--- a/apps/bdptest/src/installed-reference.test.ts
++++ b/apps/bdptest/src/installed-reference.test.ts
+@@ -565,7 +565,15 @@
+     headers: Record<string, string> = {},
+   ) {
+     expect(observations.length).toBeLessThan(6);
+-    const response = await helpers.requestInstalled(config, token, url, method, value, key, headers);
++    const response = await helpers.requestInstalled(
++      config,
++      token,
++      url,
++      method,
++      value,
++      key,
++      headers,
++    );
+     observations.push({ method, url, status: response.status });
+     expect(response.status).toBe(200);
+     expect(response.headers["x-bdp-development"]).toBe("non-attesting");
+@@ -608,9 +616,11 @@
+       );
+       if (carrier === "sequence") parseReadUpdateSequenceResponse(created);
+       else parseReadUpdateMutationResult(created);
+-      const resource = (carrier === "sequence"
+-        ? (created.results as Record<string, unknown>[])[0]?.resource
+-        : created.resource) as Record<string, unknown>;
++      const resource = (
++        carrier === "sequence"
++          ? (created.results as Record<string, unknown>[])[0]?.resource
++          : created.resource
++      ) as Record<string, unknown>;
+       expect(resource).toEqual({
+         id: `${config.scope}beads/${name}`,
+         type: `${config.scope}types/task`,
+@@ -625,11 +635,17 @@
+           : { outcome: "created", resource },
+       );
+       expect(await wire(`${config.scope}beads/${name}`)).toEqual(resource);
+-      const replay = await wire(target, "POST", request, carrier === "sequence" ? undefined : name, {
+-        "bdp-minimum-scope-position": "",
+-        "bdp-scope-epoch": "epoch-one, epoch-two",
+-        "bdp-authorization-view": "not a view!",
+-      });
++      const replay = await wire(
++        target,
++        "POST",
++        request,
++        carrier === "sequence" ? undefined : name,
++        {
++          "bdp-minimum-scope-position": "",
++          "bdp-scope-epoch": "epoch-one, epoch-two",
++          "bdp-authorization-view": "not a view!",
++        },
++      );
+       expect(replay).toEqual(created);
+     }
+     expect(observations).toHaveLength(6);
+--- a/apps/bdptest/src/transactional-collection-minimum-installed.test.ts
++++ b/apps/bdptest/src/transactional-collection-minimum-installed.test.ts
+@@ -1171,253 +1171,263 @@
+ }, 120000);
+ 
+ it("ignores command read controls while enforcing a later installed receipt minimum", async () => {
+-  await withInstalled(async (f) => {
+-    const collection = `${scope}beads/?limit=32`;
+-    const routes = new Set([
+-      collection,
+-      ...["create-bead", "update-bead", "batch", "sequence"].map((name) => `${scope}operations/${name}`),
+-      ...["a", "b", "c"].map((name) => `${scope}beads/${name}`),
+-    ]);
+-    const observedUrls = new Set<string>();
+-    let calls = 0;
+-    async function exchange(
+-      url: string,
+-      method: HttpMethod = "GET",
+-      headers: Record<string, string> = {},
+-      input?: unknown,
+-    ) {
+-      expect(routes.has(url), "command minimum exact route grant").toBe(true);
+-      expect(calls).toBeLessThan(18);
+-      calls++;
+-      observedUrls.add(url);
+-      return f.exchange(url, method, headers, input);
+-    }
+-    async function post(
+-      target: string,
+-      input: unknown,
+-      key: string | undefined,
+-      copied: Record<string, string>,
+-    ) {
+-      return exchange(
+-        `${scope}operations/${target}`,
+-        "POST",
+-        {
+-          "content-type": "application/json",
+-          ...(key === undefined ? {} : { "idempotency-key": key }),
+-          ...copied,
+-        },
+-        input,
+-      );
+-    }
+-    function pointContext(
+-      response: HttpExchangeResponse,
+-      expected: ReturnType<typeof minimum>,
+-      position: string,
+-    ) {
+-      expect(response.headers["bdp-scope-epoch"]).toBe(expected["bdp-scope-epoch"]);
+-      expect(response.headers["bdp-authorization-view"]).toBe(expected["bdp-authorization-view"]);
+-      expect(response.headers["bdp-scope-position"]).toBe(position);
+-      expect(response.headers.etag).toEqual(expect.any(String));
+-    }
+-    function receipt(response: HttpExchangeResponse, status = "completed") {
+-      const value = json<Record<string, unknown>>(response);
+-      expect(receiptSchema(value), JSON.stringify(receiptSchema.errors)).toBe(true);
+-      expect(value.status).toBe(status);
+-      expect(value.detail).toBe("available");
+-      expect(value.scopeEpoch).toBe(response.headers["bdp-scope-epoch"]);
+-      expect(value.authorizationView).toBe(response.headers["bdp-authorization-view"]);
+-      if (status === "completed") expect(value.next).toBeNull();
+-      return value;
+-    }
+-    function resource(value: unknown, name: string) {
+-      const row = value as Row;
+-      expect(row).toEqual({
+-        id: `${scope}beads/${name}`,
+-        type: beadType,
+-        properties: { title: name },
+-        metadata: {},
+-        revision: expect.any(String),
+-        ownedLinks: { [linkType]: [] },
+-      });
+-      expect(row.revision.length).toBeGreaterThan(0);
+-      return row;
+-    }
+-    function created(value: Record<string, unknown>, name: string) {
+-      const entries = value.results as Record<string, unknown>[];
+-      expect(entries).toHaveLength(1);
+-      const row = resource(entries[0]!.resource, name);
+-      expect(entries).toEqual([{ operationIndex: 0, outcome: "created", resource: row }]);
+-      return row;
+-    }
+-    const malformed = {
+-      "bdp-minimum-scope-position": "not a position!",
+-      "bdp-scope-epoch": "",
+-      "bdp-authorization-view": "view-one, view-two",
+-    };
+-    const foreign = {
+-      "bdp-minimum-scope-position": "pos-99",
+-      "bdp-scope-epoch": "foreign-epoch",
+-      "bdp-authorization-view": "foreign-view",
+-    };
+-    const empty = await exchange(collection);
+-    expect(json<Page>(empty)).toEqual({ items: [], next: null });
+-    const initial = minimum(empty);
+-    context(empty, initial, "pos-0");
+-    const aInput = { id: "beads/a", type: beadType, properties: { title: "a" } };
+-    const made = await post("create-bead", aInput, "minimum-a", malformed);
+-    const aReceipt = receipt(made);
+-    expect(aReceipt.idempotencyKey).toBe("minimum-a");
+-    expect(aReceipt.requiredPosition).toBe("pos-1");
+-    expect(aReceipt.effectPosition).toBe("pos-1");
+-    const a = created(aReceipt, "a");
+-    context(made, initial, "pos-1");
+-    const readA = await exchange(`${scope}beads/a`);
+-    expect(json(readA)).toEqual(a);
+-    pointContext(readA, initial, "pos-1");
+-    const replayA = await post("create-bead", aInput, "minimum-a", foreign);
+-    expect(receipt(replayA)).toEqual(aReceipt);
+-    context(replayA, initial, "pos-1");
+-    const bInput = {
+-      operations: [
+-        { operation: "createBead", id: "beads/b", type: beadType, properties: { title: "b" } },
+-      ],
+-    };
+-    const madeB = await post("batch", bInput, "minimum-b", { "bdp-scope-epoch": "partial" });
+-    const bReceipt = receipt(madeB);
+-    expect(bReceipt.idempotencyKey).toBe("minimum-b");
+-    expect(bReceipt.requiredPosition).toBe("pos-2");
+-    expect(bReceipt.effectPosition).toBe("pos-2");
+-    const b = created(bReceipt, "b");
+-    context(madeB, initial, "pos-2");
+-    const readB = await exchange(`${scope}beads/b`);
+-    expect(json(readB)).toEqual(b);
+-    pointContext(readB, initial, "pos-2");
+-    const replayB = await post("batch", bInput, "minimum-b", { "bdp-scope-epoch": "" });
+-    expect(receipt(replayB)).toEqual(bReceipt);
+-    context(replayB, initial, "pos-2");
+-    const sequenceInput = {
+-      operations: [
+-        {
+-          operation: "createBead",
+-          id: "beads/c",
++  await withInstalled(
++    async (f) => {
++      const collection = `${scope}beads/?limit=32`;
++      const routes = new Set([
++        collection,
++        ...["create-bead", "update-bead", "batch", "sequence"].map(
++          (name) => `${scope}operations/${name}`,
++        ),
++        ...["a", "b", "c"].map((name) => `${scope}beads/${name}`),
++      ]);
++      const observedUrls = new Set<string>();
++      let calls = 0;
++      async function exchange(
++        url: string,
++        method: HttpMethod = "GET",
++        headers: Record<string, string> = {},
++        input?: unknown,
++      ) {
++        expect(routes.has(url), "command minimum exact route grant").toBe(true);
++        expect(calls).toBeLessThan(18);
++        calls++;
++        observedUrls.add(url);
++        return f.exchange(url, method, headers, input);
++      }
++      async function post(
++        target: string,
++        input: unknown,
++        key: string | undefined,
++        copied: Record<string, string>,
++      ) {
++        return exchange(
++          `${scope}operations/${target}`,
++          "POST",
++          {
++            "content-type": "application/json",
++            ...(key === undefined ? {} : { "idempotency-key": key }),
++            ...copied,
++          },
++          input,
++        );
++      }
++      function pointContext(
++        response: HttpExchangeResponse,
++        expected: ReturnType<typeof minimum>,
++        position: string,
++      ) {
++        expect(response.headers["bdp-scope-epoch"]).toBe(expected["bdp-scope-epoch"]);
++        expect(response.headers["bdp-authorization-view"]).toBe(expected["bdp-authorization-view"]);
++        expect(response.headers["bdp-scope-position"]).toBe(position);
++        expect(response.headers.etag).toEqual(expect.any(String));
++      }
++      function receipt(response: HttpExchangeResponse, status = "completed") {
++        const value = json<Record<string, unknown>>(response);
++        expect(receiptSchema(value), JSON.stringify(receiptSchema.errors)).toBe(true);
++        expect(value.status).toBe(status);
++        expect(value.detail).toBe("available");
++        expect(value.scopeEpoch).toBe(response.headers["bdp-scope-epoch"]);
++        expect(value.authorizationView).toBe(response.headers["bdp-authorization-view"]);
++        if (status === "completed") expect(value.next).toBeNull();
++        return value;
++      }
++      function resource(value: unknown, name: string) {
++        const row = value as Row;
++        expect(row).toEqual({
++          id: `${scope}beads/${name}`,
+           type: beadType,
+-          properties: { title: "c" },
+-          idempotencyKey: "minimum-c",
+-        },
+-      ],
+-    };
+-    const madeC = await post("sequence", sequenceInput, undefined, minimum(madeB, "pos-99"));
+-    const sequence = json<Record<string, unknown>>(madeC);
+-    const validateSequence = ajv.compile({ $ref: `${bundle.$id}#/$defs/transactionalSequenceResponse` });
+-    expect(validateSequence(sequence), JSON.stringify(validateSequence.errors)).toBe(true);
+-    const c = created(sequence, "c");
+-    expect(sequence).toEqual({ results: [{ operationIndex: 0, outcome: "created", resource: c }] });
+-    context(madeC, initial, "pos-3");
+-    const readC = await exchange(`${scope}beads/c`);
+-    expect(json(readC)).toEqual(c);
+-    pointContext(readC, initial, "pos-3");
+-    const replayC = await post("sequence", sequenceInput, undefined, malformed);
+-    expect(json(replayC)).toEqual(sequence);
+-    context(replayC, initial, "pos-3");
+-    const conflict = await post(
+-      "batch",
+-      {
++          properties: { title: name },
++          metadata: {},
++          revision: expect.any(String),
++          ownedLinks: { [linkType]: [] },
++        });
++        expect(row.revision.length).toBeGreaterThan(0);
++        return row;
++      }
++      function created(value: Record<string, unknown>, name: string) {
++        const entries = value.results as Record<string, unknown>[];
++        expect(entries).toHaveLength(1);
++        const row = resource(entries[0]!.resource, name);
++        expect(entries).toEqual([{ operationIndex: 0, outcome: "created", resource: row }]);
++        return row;
++      }
++      const malformed = {
++        "bdp-minimum-scope-position": "not a position!",
++        "bdp-scope-epoch": "",
++        "bdp-authorization-view": "view-one, view-two",
++      };
++      const foreign = {
++        "bdp-minimum-scope-position": "pos-99",
++        "bdp-scope-epoch": "foreign-epoch",
++        "bdp-authorization-view": "foreign-view",
++      };
++      const empty = await exchange(collection);
++      expect(json<Page>(empty)).toEqual({ items: [], next: null });
++      const initial = minimum(empty);
++      context(empty, initial, "pos-0");
++      const aInput = { id: "beads/a", type: beadType, properties: { title: "a" } };
++      const made = await post("create-bead", aInput, "minimum-a", malformed);
++      const aReceipt = receipt(made);
++      expect(aReceipt.idempotencyKey).toBe("minimum-a");
++      expect(aReceipt.requiredPosition).toBe("pos-1");
++      expect(aReceipt.effectPosition).toBe("pos-1");
++      const a = created(aReceipt, "a");
++      context(made, initial, "pos-1");
++      const readA = await exchange(`${scope}beads/a`);
++      expect(json(readA)).toEqual(a);
++      pointContext(readA, initial, "pos-1");
++      const replayA = await post("create-bead", aInput, "minimum-a", foreign);
++      expect(receipt(replayA)).toEqual(aReceipt);
++      context(replayA, initial, "pos-1");
++      const bInput = {
++        operations: [
++          { operation: "createBead", id: "beads/b", type: beadType, properties: { title: "b" } },
++        ],
++      };
++      const madeB = await post("batch", bInput, "minimum-b", { "bdp-scope-epoch": "partial" });
++      const bReceipt = receipt(madeB);
++      expect(bReceipt.idempotencyKey).toBe("minimum-b");
++      expect(bReceipt.requiredPosition).toBe("pos-2");
++      expect(bReceipt.effectPosition).toBe("pos-2");
++      const b = created(bReceipt, "b");
++      context(madeB, initial, "pos-2");
++      const readB = await exchange(`${scope}beads/b`);
++      expect(json(readB)).toEqual(b);
++      pointContext(readB, initial, "pos-2");
++      const replayB = await post("batch", bInput, "minimum-b", { "bdp-scope-epoch": "" });
++      expect(receipt(replayB)).toEqual(bReceipt);
++      context(replayB, initial, "pos-2");
++      const sequenceInput = {
+         operations: [
+           {
+             operation: "createBead",
+-            id: "beads/conflict-extra",
++            id: "beads/c",
+             type: beadType,
+-            properties: { title: "conflict-extra" },
++            properties: { title: "c" },
++            idempotencyKey: "minimum-c",
+           },
+         ],
+-      },
+-      "minimum-b",
+-      foreign,
+-    );
+-    expect(json(conflict, 409)).toEqual({
+-      type: "https://github.com/gastownhall/bdp/problems/conflict",
+-      status: 409,
+-      code: "idempotency-conflict",
+-      retry: "never",
+-    });
+-    context(conflict, initial, "pos-3");
+-    const refused = await post(
+-      "update-bead",
+-      {
+-        bead: "beads/a",
+-        expectedRevision: "wrong",
+-        propertiesChange: [{ op: "replace", path: "/title", value: "not-admitted" }],
+-      },
+-      "minimum-stale",
+-      foreign,
+-    );
+-    const failed = receipt(refused, "failed");
+-    expect(failed.idempotencyKey).toBe("minimum-stale");
+-    expect(failed.requiredPosition).toBe("pos-3");
+-    expect(failed).not.toHaveProperty("effectPosition");
+-    expect(failed.problem).toEqual({
+-      type: "https://github.com/gastownhall/bdp/problems/conflict",
+-      status: 409,
+-      code: "revision-mismatch",
+-      retry: "after-state-change",
+-      operationIndex: 0,
+-    });
+-    context(refused, initial, "pos-3");
+-    const unchanged = await exchange(`${scope}beads/a`);
+-    expect(json(unchanged)).toEqual(a);
+-    pointContext(unchanged, initial, "pos-3");
+-    // Grant only the exact receipt root actually observed on the successful command.
+-    const target = aReceipt.id;
+-    expect(typeof target).toBe("string");
+-    if (typeof target !== "string" || target.length > 8192)
+-      throw new Error("invalid observed receipt root");
+-    const url = new URL(target);
+-    const prefix = `${scope}receipts/`;
+-    if (
+-      url.href !== target ||
+-      !target.startsWith(prefix) ||
+-      !/^[A-Za-z0-9_-]+$/.test(target.slice(prefix.length)) ||
+-      url.search ||
+-      url.hash ||
+-      url.username ||
+-      url.password
+-    )
+-      throw new Error("invalid observed receipt root");
+-    routes.add(target);
+-    const timeout = await exchange(target, "GET", minimum(madeC, "pos-99"));
+-    expect(json(timeout, 503)).toEqual({
+-      type: "https://github.com/gastownhall/bdp/problems/unavailable",
+-      status: 503,
+-      code: "catch-up-timeout",
+-      retry: "after-delay",
+-    });
+-    expect(timeout.headers["retry-after"]).toBe("1");
+-    context(timeout, initial, "pos-3");
+-    const otherView = await exchange(target, "GET", {
+-      ...minimum(madeC),
+-      "bdp-authorization-view": "foreign",
+-    });
+-    expect(json(otherView, 409)).toEqual({
+-      type: "https://github.com/gastownhall/bdp/problems/conflict",
+-      status: 409,
+-      code: "foreign-view",
+-      retry: "after-state-change",
+-    });
+-    context(otherView, initial, "pos-3");
+-    const compatible = await exchange(target, "GET", minimum(madeC));
+-    expect(receipt(compatible)).toEqual(aReceipt);
+-    context(compatible, initial, "pos-3");
+-    const head = await exchange(target, "HEAD", minimum(madeC, "pos-99"));
+-    expect(head.status).toBe(503);
+-    expect(head.bodyText).toBe("");
+-    expect(head.bodyOctets).toBe(0);
+-    expect(head.headers["retry-after"]).toBe("1");
+-    context(head, initial, "pos-3");
+-    const final = await exchange(collection);
+-    expect(json<Page>(final)).toEqual({ items: [a, b, c], next: null });
+-    context(final, initial, "pos-3");
+-    expect(calls).toBe(18);
+-    expect([...observedUrls].sort()).toEqual([...routes].sort());
+-    expect(routes.size).toBe(9);
+-  }, undefined, "private-installed-command-minimum");
++      };
++      const madeC = await post("sequence", sequenceInput, undefined, minimum(madeB, "pos-99"));
++      const sequence = json<Record<string, unknown>>(madeC);
++      const validateSequence = ajv.compile({
++        $ref: `${bundle.$id}#/$defs/transactionalSequenceResponse`,
++      });
++      expect(validateSequence(sequence), JSON.stringify(validateSequence.errors)).toBe(true);
++      const c = created(sequence, "c");
++      expect(sequence).toEqual({
++        results: [{ operationIndex: 0, outcome: "created", resource: c }],
++      });
++      context(madeC, initial, "pos-3");
++      const readC = await exchange(`${scope}beads/c`);
++      expect(json(readC)).toEqual(c);
++      pointContext(readC, initial, "pos-3");
++      const replayC = await post("sequence", sequenceInput, undefined, malformed);
++      expect(json(replayC)).toEqual(sequence);
++      context(replayC, initial, "pos-3");
++      const conflict = await post(
++        "batch",
++        {
++          operations: [
++            {
++              operation: "createBead",
++              id: "beads/conflict-extra",
++              type: beadType,
++              properties: { title: "conflict-extra" },
++            },
++          ],
++        },
++        "minimum-b",
++        foreign,
++      );
++      expect(json(conflict, 409)).toEqual({
++        type: "https://github.com/gastownhall/bdp/problems/conflict",
++        status: 409,
++        code: "idempotency-conflict",
++        retry: "never",
++      });
++      context(conflict, initial, "pos-3");
++      const refused = await post(
++        "update-bead",
++        {
++          bead: "beads/a",
++          expectedRevision: "wrong",
++          propertiesChange: [{ op: "replace", path: "/title", value: "not-admitted" }],
++        },
++        "minimum-stale",
++        foreign,
++      );
++      const failed = receipt(refused, "failed");
++      expect(failed.idempotencyKey).toBe("minimum-stale");
++      expect(failed.requiredPosition).toBe("pos-3");
++      expect(failed).not.toHaveProperty("effectPosition");
++      expect(failed.problem).toEqual({
++        type: "https://github.com/gastownhall/bdp/problems/conflict",
++        status: 409,
++        code: "revision-mismatch",
++        retry: "after-state-change",
++        operationIndex: 0,
++      });
++      context(refused, initial, "pos-3");
++      const unchanged = await exchange(`${scope}beads/a`);
++      expect(json(unchanged)).toEqual(a);
++      pointContext(unchanged, initial, "pos-3");
++      // Grant only the exact receipt root actually observed on the successful command.
++      const target = aReceipt.id;
++      expect(typeof target).toBe("string");
++      if (typeof target !== "string" || target.length > 8192)
++        throw new Error("invalid observed receipt root");
++      const url = new URL(target);
++      const prefix = `${scope}receipts/`;
++      if (
++        url.href !== target ||
++        !target.startsWith(prefix) ||
++        !/^[A-Za-z0-9_-]+$/.test(target.slice(prefix.length)) ||
++        url.search ||
++        url.hash ||
++        url.username ||
++        url.password
++      )
++        throw new Error("invalid observed receipt root");
++      routes.add(target);
++      const timeout = await exchange(target, "GET", minimum(madeC, "pos-99"));
++      expect(json(timeout, 503)).toEqual({
++        type: "https://github.com/gastownhall/bdp/problems/unavailable",
++        status: 503,
++        code: "catch-up-timeout",
++        retry: "after-delay",
++      });
++      expect(timeout.headers["retry-after"]).toBe("1");
++      context(timeout, initial, "pos-3");
++      const otherView = await exchange(target, "GET", {
++        ...minimum(madeC),
++        "bdp-authorization-view": "foreign",
++      });
++      expect(json(otherView, 409)).toEqual({
++        type: "https://github.com/gastownhall/bdp/problems/conflict",
++        status: 409,
++        code: "foreign-view",
++        retry: "after-state-change",
++      });
++      context(otherView, initial, "pos-3");
++      const compatible = await exchange(target, "GET", minimum(madeC));
++      expect(receipt(compatible)).toEqual(aReceipt);
++      context(compatible, initial, "pos-3");
++      const head = await exchange(target, "HEAD", minimum(madeC, "pos-99"));
++      expect(head.status).toBe(503);
++      expect(head.bodyText).toBe("");
++      expect(head.bodyOctets).toBe(0);
++      expect(head.headers["retry-after"]).toBe("1");
++      context(head, initial, "pos-3");
++      const final = await exchange(collection);
++      expect(json<Page>(final)).toEqual({ items: [a, b, c], next: null });
++      context(final, initial, "pos-3");
++      expect(calls).toBe(18);
++      expect([...observedUrls].sort()).toEqual([...routes].sort());
++      expect(routes.size).toBe(9);
++    },
++    undefined,
++    "private-installed-command-minimum",
++  );
+ }, 120000);
+--- a/docs/design/transaction-implementation-progress.md
++++ b/docs/design/transaction-implementation-progress.md
+@@ -577,10 +577,13 @@
+ 
+ This increment does not advertise Transactional discovery or a profile. Valid
+ unsupported set/depth/Resource-alias-sequence requests fail before key capture or
+-effects with a bodyless internal 500, labeled as a development gap. Minimum
+-context controls likewise cannot yield success or a conditional shortcut; their
+-bodyless internal failure is explicitly **not** a normative catch-up outcome.
+-Full minimum-position/epoch/view/expiry ordering remains required next work.
++effects with a bodyless internal 500, labeled as a development gap. At this
++increment, unsupported read-side minimum context controls likewise cannot yield
++success or a conditional shortcut; their bodyless internal failure is explicitly
++**not** a normative catch-up outcome. The historical command refusal is superseded
++by the later operator-approved rule: mutation POSTs ignore copied read minimum
++fields. Full read minimum-position/epoch/view/expiry ordering remains required
++next work for this increment.
+ Discovery, Directory, snapshot/changes/events, set operations, installed
+ contracts, Resource-alias sequence timing, variable authorization/erasure,
+ receipt pagination and complete executable qualification remain open. Public
+@@ -597,9 +600,11 @@
+ 
+ #### HTTP review follow-up boundaries
+ 
+-Unsupported minimum-context fields on commands also fail before any key binding
+-or effect; no command barrier semantics are inferred. Operation routing accepts
+-exact canonical target URLs. Unimplemented set/unknown targets, encoded alternate
++The historical refusal of minimum-context fields on commands is superseded by
++the later operator-approved ignore rule: mutation POSTs ignore those copied read
++fields; they add no command barrier or key-identity input. The original refusal
++observations remain evidence of their frozen sources, not the current command
++behavior. Operation routing accepts exact canonical target URLs. Unimplemented set/unknown targets, encoded alternate
+ spellings and query-bearing command URLs are not registered targets and return
+ 404, rather than advertising a Read method table. Sequence depth failures use the
+ same development-composition marker as batch depth failures; the alias marker is
+@@ -1728,11 +1733,10 @@
+ two refusals. Sequence carrier-key/malformed400,401,403,415 and the unsupported
+ composition development500 retain their existing context absences. The former
+ command-minimum development500 is superseded: copied read minimum fields no
+-longer refuse a mutation POST. These are retained
+-behaviors and remaining gaps, not normative exemptions or a ruling that
+-unauthenticated errors must disclose context. Discovery,
+-store format, parsing, read minimum controls and public profile advertisement are
+-unchanged. Unlike the successful post-runner response above, these refusals have
++longer refuse a mutation POST. These are retained behaviors and remaining gaps,
++not normative exemptions or a ruling that unauthenticated errors must disclose
++context. Discovery, store format, parsing, read minimum controls and public
++profile advertisement are unchanged. Unlike the successful post-runner response above, these refusals have
+ no committed members to recover by replay. An unexpected owner observation fault
+ can instead yield the existing sanitized bodyless500; no stale tuple is supplied
+ to preserve the nominal refusal. Normal runtime closing/not-ready503 remains
+--- a/packages/server/src/transaction-http.test.ts
++++ b/packages/server/src/transaction-http.test.ts
+@@ -1153,7 +1153,11 @@
+         carrier === "createBead"
+           ? JSON.stringify(singleton)
+           : batch([
+-              { operation, ...singleton, ...(carrier === "sequence" ? { idempotencyKey: key } : {}) },
++              {
++                operation,
++                ...singleton,
++                ...(carrier === "sequence" ? { idempotencyKey: key } : {}),
++              },
+             ]);
+       requests++;
+       const response = await f.post(text, carrier === "sequence" ? null : key, carrier, {
+@@ -1215,7 +1219,13 @@
+     batch([
+       create("a"),
+       create("b"),
+-      { operation: "createLink", id: "links/victim", type: link, source: "beads/a", target: "beads/b" },
++      {
++        operation: "createLink",
++        id: "links/victim",
++        type: link,
++        source: "beads/a",
++        target: "beads/b",
++      },
+     ]),
+     "all-seed",
+     "batch",
+@@ -1429,20 +1439,28 @@
+     code: "malformed-request",
+     retry: "never",
+   });
+-  const corrected = commandEntries(await commandResponse(await post(fresh, "good-key", "createBead")));
++  const corrected = commandEntries(
++    await commandResponse(await post(fresh, "good-key", "createBead")),
++  );
+   expect(corrected).toHaveLength(1);
+   const correctedResource = commandResource(corrected[0]!.resource, {
+     id: `${f.runtime.scope}beads/key-corrected`,
+     type: bead,
+     properties: { title: "key-corrected" },
+   });
+-  expect(corrected).toEqual([{ operationIndex: 0, outcome: "created", resource: correctedResource }]);
++  expect(corrected).toEqual([
++    { operationIndex: 0, outcome: "created", resource: correctedResource },
++  ]);
+   const stale = {
+     bead: "beads/a",
+     expectedRevision: "wrong",
+     propertiesChange: [{ op: "replace", path: "/title", value: "changed" }],
+   };
+-  const failed = await commandResponse(await post(stale, "guard-failed", "updateBead"), false, "failed");
++  const failed = await commandResponse(
++    await post(stale, "guard-failed", "updateBead"),
++    false,
++    "failed",
++  );
+   expect(failed.problem).toEqual({
+     type: "https://github.com/gastownhall/bdp/problems/conflict",
+     status: 409,
+@@ -1495,7 +1513,9 @@
+     code: "malformed-request",
+     retry: "never",
+   });
+-  const accepted = commandEntries(await commandResponse(await post(sequence, null, "sequence"), true));
++  const accepted = commandEntries(
++    await commandResponse(await post(sequence, null, "sequence"), true),
++  );
+   expect(accepted).toHaveLength(1);
+   const tail = commandResource(accepted[0]!.resource, {
+     id: `${f.runtime.scope}beads/sequence-corrected`,
+@@ -1508,7 +1528,9 @@
+ 
+ it("keeps receipt minimum enforcement after commands ignore copied controls", async () => {
+   let tick = 0;
+-  const f = await fixture({ minimumReads: { budgetMs: 2, now: () => tick++, wait: async () => {} } });
++  const f = await fixture({
++    minimumReads: { budgetMs: 2, now: () => tick++, wait: async () => {} },
++  });
+   const created = await f.post(batch(), "receipt-minimum", "batch", copiedMalformedMinimum);
+   const receipt = await commandResponse(created);
+   const rows = commandEntries(receipt);
+@@ -1522,7 +1544,12 @@
+   const actual = context(created);
+   for (const [headers, status, code, family] of [
+     [minimumHeaders(created, "pos-99"), 503, "catch-up-timeout", "unavailable"],
+-    [{ ...minimumHeaders(created), "bdp-authorization-view": "foreign" }, 409, "foreign-view", "conflict"],
++    [
++      { ...minimumHeaders(created), "bdp-authorization-view": "foreign" },
++      409,
++      "foreign-view",
++      "conflict",
++    ],
+     [{ ...minimumHeaders(created), "bdp-scope-epoch": "foreign" }, 410, "cursor-expired", "gone"],
+   ] as const) {
+     const response = await f.get(id(receipt), { headers });
+@@ -1548,7 +1575,10 @@
+   expect(compatible.status).toBe(200);
+   expect(context(compatible)).toEqual(actual);
+   expect(await body(compatible)).toEqual(receipt);
+-  const head = await f.get(id(receipt), { method: "HEAD", headers: minimumHeaders(created, "pos-99") });
++  const head = await f.get(id(receipt), {
++    method: "HEAD",
++    headers: minimumHeaders(created, "pos-99"),
++  });
+   expect(head.status).toBe(503);
+   expect(head.headers.get("retry-after")).toBe("1");
+   expect(context(head)).toEqual(actual);
+@@ -1763,7 +1793,11 @@
+         carrier === "createBead"
+           ? JSON.stringify(singleton)
+           : batch([
+-              { operation, ...singleton, ...(carrier === "sequence" ? { idempotencyKey: key } : {}) },
++              {
++                operation,
++                ...singleton,
++                ...(carrier === "sequence" ? { idempotencyKey: key } : {}),
++              },
+             ]);
+       const response = await f.post(text, carrier === "sequence" ? null : key, carrier, {
+         authorization,

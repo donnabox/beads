@@ -1,0 +1,50 @@
+{
+  "cause": "TS2367 after direct receipt narrows union; unsupported branch impossible",
+  "failedStage": "bypass-receipt-build",
+  "runtimeTestExecuted": false,
+  "productSourceChanged": false,
+  "ownedRuntimeProcessesRemaining": false,
+  "results": [
+    {
+      "file": "bypass-receipt-build.exit.json",
+      "exit": 1,
+      "supervisorExit": 1
+    },
+    {
+      "file": "bypass-receipt-prepare.exit.json",
+      "exit": 0,
+      "supervisorExit": 0
+    },
+    {
+      "file": "bypass-receipt-setup.exit.json",
+      "exit": 0,
+      "supervisorExit": 0
+    },
+    {
+      "file": "restore-command-build.exit.json",
+      "exit": 0,
+      "supervisorExit": 0
+    },
+    {
+      "file": "restore-command-prepare.exit.json",
+      "exit": 0,
+      "supervisorExit": 0
+    },
+    {
+      "file": "restore-command-review.exit.json",
+      "exit": 0,
+      "supervisorExit": 0
+    },
+    {
+      "file": "restore-command-setup.exit.json",
+      "exit": 0,
+      "supervisorExit": 0
+    },
+    {
+      "file": "restore-command-test.exit.json",
+      "exit": 1,
+      "supervisorExit": 1
+    }
+  ],
+  "next": "Correct disposable negative-only patch by removing now-unreachable unsupported check/comment; preserve original build failure and use new bounded successor attempt"
+}
