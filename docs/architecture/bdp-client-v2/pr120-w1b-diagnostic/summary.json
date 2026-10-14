@@ -1,0 +1,203 @@
+{
+  "status": "selected diagnostic passed; CI cause remains unresolved",
+  "executions": 1,
+  "retry": false,
+  "sourceHead": "70ac666002708202d2f93195eed90dfe8541300d",
+  "branch": "codex/vickie-pr120-w1b-diagnostic",
+  "instrumentationPatchSha256": "d2a453cd5fe5800d79d4368b1aad5a678b19a01db51daf1584d9cb259207a9c8",
+  "instrumentedTestSha256": "73a1e46ce836d4141226341057c850710810e8910329868939c727445e117d07",
+  "test": {
+    "ancestorTitles": [],
+    "fullName": "detects W1b link-metadata assertion-input corruption after actual HTTP",
+    "status": "passed",
+    "title": "detects W1b link-metadata assertion-input corruption after actual HTTP",
+    "duration": 697.4189999999999,
+    "failureMessages": [],
+    "meta": {},
+    "tags": []
+  },
+  "failedMatrixAssertions": [
+    {
+      "action": "owned-metadata",
+      "assertion": "metadata"
+    }
+  ],
+  "matrixState": "fail",
+  "counter": 1,
+  "counts": {
+    "directory": 1,
+    "launched": 2,
+    "child-exit": 2,
+    "raw-attempt": 6,
+    "client-attempt": 30,
+    "client-return": 30,
+    "client-observed": 30,
+    "returned-before-outer-cleanup": 1,
+    "cleaned": 1,
+    "returned-after-cleanup": 1,
+    "final-lifecycle": 1
+  },
+  "httpObserved": 36,
+  "clientObservationWriteComplete": true,
+  "setupHTTP": 0,
+  "nativeHTTP": 0,
+  "sessionCount": 1,
+  "actualBodySizes": [
+    0,
+    304,
+    0,
+    172,
+    0,
+    257,
+    0,
+    266,
+    0,
+    361,
+    0,
+    0,
+    172,
+    0,
+    172,
+    0,
+    0,
+    325,
+    0,
+    175,
+    0,
+    175,
+    0,
+    0,
+    172,
+    0,
+    172,
+    0,
+    0,
+    324
+  ],
+  "maximumActualClientBodyBytes": 361,
+  "actualRoutes": [
+    [
+      "GET",
+      "https://reference.invalid/acme/"
+    ],
+    [
+      "GET",
+      "https://reference.invalid/acme/bdp.json"
+    ],
+    [
+      "GET",
+      "https://reference.invalid/acme/beads/w1b-owner"
+    ],
+    [
+      "GET",
+      "https://reference.invalid/acme/beads/w1b-target"
+    ],
+    [
+      "GET",
+      "https://reference.invalid/acme/beads/w1b-unowned-source"
+    ],
+    [
+      "GET",
+      "https://reference.invalid/acme/links/w1b-owned"
+    ],
+    [
+      "GET",
+      "https://reference.invalid/acme/operations/"
+    ],
+    [
+      "GET",
+      "https://reference.invalid/acme/types/decision"
+    ],
+    [
+      "GET",
+      "https://reference.invalid/acme/types/relates"
+    ],
+    [
+      "GET",
+      "https://reference.invalid/acme/types/task"
+    ],
+    [
+      "POST",
+      "https://reference.invalid/acme/operations/create-bead"
+    ],
+    [
+      "POST",
+      "https://reference.invalid/acme/operations/create-link"
+    ],
+    [
+      "POST",
+      "https://reference.invalid/acme/operations/update-bead"
+    ],
+    [
+      "POST",
+      "https://reference.invalid/acme/operations/update-link"
+    ]
+  ],
+  "baselineReceipt": {
+    "event": "qualification.ready",
+    "scope": "https://reference.invalid/acme/",
+    "claimEligible": false,
+    "configurationIdentity": "1720b63b49a7be3299d4b2865de4db9fcbe47560f217a32eea6397db7ea54ca5",
+    "artifactIdentity": "development-schema5-48667497d6e13064316d0364cf8f49dfc247ab9189306985a357d7b558333dfe",
+    "payloadIdentity": "65f7f2f18afa2dc0a760e05162c96d0df08b6785b1530fcc89bec9727d618de6",
+    "policyIdentity": "dbe8dbd5430f26e19e754d38167cd8084a32d702c695550e2ee0063dc2912430",
+    "authenticationIdentity": "66941efc779f4f2431d65fdd5b2387b2af67bd7c1559e09dac032f82259ea16e",
+    "profile": "read-update",
+    "history": false
+  },
+  "configuration": {
+    "scope": "https://reference.invalid/acme/",
+    "profile": "read-update",
+    "history": false,
+    "sourceCommit": "70ac666002708202d2f93195eed90dfe8541300d",
+    "installedPayloadDigest": "65f7f2f18afa2dc0a760e05162c96d0df08b6785b1530fcc89bec9727d618de6",
+    "installedContractsDigest": "48667497d6e13064316d0364cf8f49dfc247ab9189306985a357d7b558333dfe",
+    "policyDigest": "dbe8dbd5430f26e19e754d38167cd8084a32d702c695550e2ee0063dc2912430",
+    "authenticationDigest": "66941efc779f4f2431d65fdd5b2387b2af67bd7c1559e09dac032f82259ea16e",
+    "fixtureDigest": "f89932d68e3bf5867d79eb3de680af4bc67b761b3c3bce5da127f6ca75e27765",
+    "fixtureId": "reference-read-update-schema-v1",
+    "capabilities": [
+      "installed-read-update-http"
+    ]
+  },
+  "reportBinding": {
+    "artifacts": {
+      "catalogDigest": "aa676a904f87a77b469244a5e89199c22e88a92e0002cb3191da9f53364afdb0",
+      "manifestDigest": "c86b33535f25a1d117ce021a3bb70164f5635bdaee50758e3428c130ccc3227f",
+      "fixtureDigest": "f89932d68e3bf5867d79eb3de680af4bc67b761b3c3bce5da127f6ca75e27765"
+    },
+    "exactConfigurationDigest": "3224c31c83988dc0606cb76ee1f4ba8e6394159bdf7daaccc301461316cc2477"
+  },
+  "targetEntry": "/Users/dbox/repos/wt/vickie/vickie-pr120-w1b-diagnostic/packages/server/dist/installed-reference-process.js",
+  "sourceDirty": true,
+  "cleanup": {
+    "checkedAt": "2026-10-14T18:50:40.629384+00:00",
+    "pids": [
+      {
+        "pid": 1923,
+        "exitCode": 0,
+        "signalCode": null,
+        "independentlyAbsent": true
+      },
+      {
+        "pid": 1924,
+        "exitCode": 0,
+        "signalCode": null,
+        "independentlyAbsent": true
+      }
+    ],
+    "directories": [
+      {
+        "path": "/var/folders/cc/hh74y1f16qj9gfbv8x4x2n6m0000gn/T/bdp-cumulative-ru-SfFoj6",
+        "independentlyAbsent": true,
+        "bootstrapAbsent": true,
+        "scenarioStoreAbsent": true
+      }
+    ],
+    "preCleanupSnapshot": false,
+    "postCleanupSnapshot": true,
+    "independentlyRemainingSupervisorGroupMembers": []
+  },
+  "diagnosticBytes": 256369,
+  "noCIInference": true
+}
