@@ -1,0 +1,7 @@
+# C3 code-review dispositions
+
+Native review confirmed a P2 compatibility regression in service pagination capture: freezing a shallow clone changes the receiver to which authority-read binds clock and token callbacks. The differential probe uses an actual owner/service and stateful clock method: prior service returns the collection and increments original ticks; b20 returns temporarily-unavailable503 and leaves original state unchanged. Root inspected original authority-read callback binding at395–397 and C3 capture delta.
+
+Accepted repair: capture the supplied pagination object and callbacks once; preserve original callback receivers while freezing scalar configuration. Retain ordinary validation and getter-capture semantics. Add actual stateful clock and token pagination tests plus current nested-limit mutation regressions. No C4 or callback policy redesign. Fresh frozen successor evidence is required because production emitted bytes change.
+
+Original author repairs isolated codex/vickie-tx-discovery-repair at /Users/dbox/repos/wt/vickie/vickie-tx-discovery-repair. Original b20 worktree stays frozen for external review, preserving source-bound evidence. Root owns PR106 advancement after reports and findings disposition. Do not infer readiness from b20 CI or historical installed12/1. External review remains active; additional findings will be dispositioned before integration.
