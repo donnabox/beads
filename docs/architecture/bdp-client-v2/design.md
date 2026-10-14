@@ -62,7 +62,7 @@ Original service-review lows: RU trusted callback capability narrowing and publi
 
 ### Live worker ledger
 
-Checkpoint 2026-10-14T06:00:12Z. **Autonomous completion ACTIVE; operator approved Transactional as the next usable product milestone after returning home.** Heartbeat ACTIVE and verified; prior flight/battery deadlines superseded. Existing session `2026-10-08T20:26:35Z-81e5` unchanged. PR102 merged and verified; current main581bad0. Prioritize actual serving gaps while keeping shared fixes and targeted Update checks. No public profile advertisement or release promotion until required evidence gates pass.
+Checkpoint 2026-10-14T06:08:57Z. **Autonomous completion ACTIVE; operator approved Transactional as the next usable product milestone after returning home.** Heartbeat ACTIVE and verified; prior flight/battery deadlines superseded. Existing session `2026-10-08T20:26:35Z-81e5` unchanged. PR102 merged and verified; current main581bad0. Prioritize actual serving gaps while keeping shared fixes and targeted Update checks. No public profile advertisement or release promotion until required evidence gates pass.
 
 ## Delivered and verified main
 
@@ -105,13 +105,13 @@ Completed-key-conflict evidence plan v2 remains ACCEPTED but is deferred behind 
 
 ## Active workers and priorities
 
-Both first plans are complete at main581bad0. Plan council is in progress; no implementation has started.
+Both external plan reviews completed normally with exit0; no reviewer processes remain. Implementation awaits bounded version2 plan repair/closure, not a new product decision on these two slices.
 
-- Initial Bead/Link collection minimum reads: [plan](transaction-cold-client-plan.md), SHA256 `9af57a36fcf3c2c672966ebae979b48572df4be84366ee96d327d4cf6f2f4e9c`. This closes commit-then-list read-after-write failure; discovery publication follows truthful serving support. [Native review](transaction-cold-client-native-plan-review.md) has no High/Medium blocker and two Low clarifications: separate deterministic owner retry from installed concurrency observations, and account for existing bounded disconnect drain or forward the signal with regression. External plan review is active, process79174/session16506; output transaction-cold-client-claude-plan-review.txt. No completion is inferred from an empty output file.
-- Turn-time sequence Resource aliases: [plan](transaction-sequence-alias-plan.md), SHA256 `72b247c74afd51b2a9842901345e9ea4d33a424b4ba5921016076bbad8b1a657`. [Native review](transaction-sequence-alias-native-plan-review.md) found a P2: candidate references reusing any original unresolved alias must preserve correlated symbolic holes across slots before live normalization; otherwise repointing work from A to B can cause a premature key conflict. Original plan preserved; author awaits combined review for one v2 repair. External plan review is active, process79175/session15065; output transaction-sequence-alias-claude-plan-review.txt. Private pending-format compatibility remains an implementation proof gate.
-- Both native reviewers and plan authors have completed. Root will read the actual external exits/reports, disposition findings, then authorize bounded implementation. Initial collection change takes priority; transaction-http overlap must be serialized or separately integrated. Source remains clean61ed, tree-equivalent to verified main581. Heartbeat remains active every ten minutes.
+- transaction_implementation ACTIVE: revise [initial collection plan](transaction-cold-client-plan.md), original SHA9af57a, into transaction-cold-client-plan-v2.md and dispositions. [Native](transaction-cold-client-native-plan-review.md) and [external](transaction-cold-client-claude-plan-review.txt) findings accepted: exact shared initial beads/links predicate; retain invalid-control errors and negative routes; distinguish deterministic direct tests from installed fixed-budget observations; forward request.signal with existing point regression; per-record revisions, no new collection ETag. This closes explicit minimum-control refusal, not stale ordinary reads. Prepared clean worktree /Users/dbox/repos/wt/vickie/vickie-tx-collection-minimum, branch vickie-tx-collection-minimum, main581bad0. No source edits yet.
+- update_implementation ACTIVE: revise [sequence alias plan](transaction-sequence-alias-plan.md), original SHA72b247, into transaction-sequence-alias-plan-v2.md and dispositions. [Native](transaction-sequence-alias-native-plan-review.md) and [external](transaction-sequence-alias-claude-plan-review.txt) require consistent deferral/normalization, alias templates always unresolved until turn, and symbolic original-locator reuse across candidate slots before live normalization. Prefer additive pending-only encoding with unchanged persistent identities and concrete recovery proof; terminal witnesses unchanged. No source edits; HTTP overlap will be serialized behind C1.
+- Event assessment complete: [metadata-only incident Link updates](transaction-metadata-event-assessment.md), SHAb42e4567356d997c6e911cd371a1169d3f068717558a7cb60af4d425fb18a72b. Specific projection law says properties only; general payload supports metadata. Operator question is pending: include metadata-only incident Link updates in endpoint Bead streams (recommended) or exclude them. No Event/spec edits until answered. Other work continues.
 
-Done-when: council findings dispositioned, bounded code/test scope accepted and ordinary main base assigned; then real runtime and installed evidence, independent code council and exact CI before merge. Supporting plans remain under this sole design.md. Completed-key-conflict evidence stays deferred behind actual serving blockers.
+Root will close v2 repairs, authorize bounded implementation, then require real runtime/installed evidence, independent code council and exact CI before merging. No public claim or release. Heartbeat remains active every ten minutes. Completed-key-conflict evidence stays deferred behind actual serving blockers.
 
 ## Resume order and coordination
 
@@ -121,7 +121,7 @@ Done-when: council findings dispositioned, bounded code/test scope accepted and 
 4. R whole-row promotion and completed-key-conflict evidence remain available when they advance the product milestone; no automatic flags or public claim.
 
 
-Read remote RULES and use saved bus cursor. Incremental bus from05:44:30Z contained only own status; no new action request. Local inbox path was absent. `guarded-action.py` checks remote session before writes. `checkpoint-ledger.py` publishes the sole fork plan and CAS-updates launch; preserve exact historical evidence. No Janet CLI/staging/playgrounds/shared DB or Trish Types changes.
+Read remote RULES and use saved bus cursor. Incremental bus from06:00:16Z contained only own status; no new action request. Local inbox path was absent. `guarded-action.py` checks remote session before writes. `checkpoint-ledger.py` publishes the sole fork plan and CAS-updates launch; preserve exact historical evidence. No Janet CLI/staging/playgrounds/shared DB or Trish Types changes.
 
 ## Current priority: BDP profile structure and implementation
 
