@@ -92,6 +92,9 @@ func (s *Store) requireRelationshipGenerationInTx(ctx context.Context, tx *sql.T
 	if s.options.TypeGeneration == 8 {
 		return nil
 	}
+	if s.options.TypeGeneration != 0 {
+		return fmt.Errorf("%w: parent-child relationship generation differs from the current installation", ErrInvalidStore)
+	}
 	if s.options.TypeGeneration == 0 {
 		var count int
 		if err := tx.QueryRowContext(ctx, `SELECT COUNT(*) FROM graph_preview_types`).Scan(&count); err != nil {
