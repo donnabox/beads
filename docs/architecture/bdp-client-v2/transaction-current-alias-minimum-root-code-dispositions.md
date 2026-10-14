@@ -13,3 +13,5 @@ External LOW1 accepted: stale progress-document claim of no HTTP alias routes mu
 External LOW2 accepted as a bounded regression addition: run unchanged ordinary transactional-alias-installed test against final actual pack, separately record36requests/2children. Source cancellation and disconnect evidence already passes, so no source/fixture/limit changes are warranted. This is not a new wire mutant or profile claim.
 
 No correctness defect was reported by external review; native P2 remains independently repaired/closed. Root requires final documentation and actual ordinary-alias regression verification before readiness.
+
+Final integration7171251 is independently closed by report4777e6d5, fully read by root. The exact doc-only change addresses externalLOW1, and fresh final ordinary-alias36/2 addresses LOW2; 63protocol+246server package files equal testedfc980. All accepted code/doc/regression findings are closed. Root separately verified currentmain89d+717 merge-tree equals final76931ff. Exact717CI remains the final merge gate.
