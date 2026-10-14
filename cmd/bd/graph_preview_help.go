@@ -153,7 +153,7 @@ metadata-only update uses the same Resource and owning-source guards.
 Generic updates accept the current state when --if-revision is omitted.
 Informational Links owned by a Memory may also use --if-source-revision TOKEN;
 without it, the current source is
-accepted. Blocking Dependency properties are not editable here. Issue scalar
+accepted. Native Dependency properties and metadata are not editable here. Issue scalar
 edits and standalone --claim are separate graph operations. Without an ID,
 interactive Issue update uses the last-touched Issue; scripts require an ID
 unless BD_LAST_TOUCHED_FALLBACK=1 explicitly enables the fallback.`},

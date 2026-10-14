@@ -160,7 +160,7 @@ func TestGraphPreviewLinkTypeFlags(t *testing.T) {
 	}
 }
 
-// --type belongs to the ordinary blocking Dependency route. Once --link-type
+// --type belongs to the native Dependency route. Once --link-type
 // selects an informational Type, the flag allow-list refuses --type before any
 // later check could see it, so the route needs no second refusal of its own.
 func TestGraphPreviewLinkTypeRouteRefusesTypeFlagFirst(t *testing.T) {
