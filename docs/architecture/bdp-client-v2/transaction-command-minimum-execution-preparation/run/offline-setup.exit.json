@@ -1,0 +1,52 @@
+{
+  "name": "offline-setup",
+  "argv": [
+    "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+    "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+    "install",
+    "--offline",
+    "--frozen-lockfile"
+  ],
+  "cwd": "/Users/dbox/repos/wt/vickie/vickie-command-minimum",
+  "started": "2026-10-14T21:54:24.717907+00:00",
+  "elapsedSeconds": 0.7547725001350045,
+  "exit": 0,
+  "supervisorExit": 0,
+  "timeout": false,
+  "forcedCleanup": false,
+  "errors": [],
+  "processGroup": 94790,
+  "remainingBeforeCleanup": [],
+  "remainingAfterCleanup": [],
+  "sampledPids": [
+    94790
+  ],
+  "sampledPidsStillPresent": {},
+  "sampledTempEntries": [
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-command-minimum-execution-preparation/run/offline-setup.tmp/node-compile-cache"
+  ],
+  "tempEntriesAfter": [
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-command-minimum-execution-preparation/run/offline-setup.tmp/node-compile-cache"
+  ],
+  "remainingTempEntriesForClassification": [
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-command-minimum-execution-preparation/run/offline-setup.tmp/node-compile-cache"
+  ],
+  "runtimeDirectoriesStillPresent": [],
+  "unclassifiedTempEntriesStillPresent": [
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-command-minimum-execution-preparation/run/offline-setup.tmp/node-compile-cache"
+  ],
+  "sourceUnchanged": true,
+  "sourceSha256After": {
+    "apps/bdptest/src/installed-reference.test.ts": "447a8b5fb3ee03ec4f2a894b02a1bb0fdb74ccdea0ad35576da78942373e0cae",
+    "apps/bdptest/src/transactional-collection-minimum-installed.test.ts": "5349dab51055d29d30bb80f286cb30e69947882bd07ed1eaa831b26fd0567174",
+    "docs/design/transaction-implementation-progress.md": "afa385d9d3694186044b1048554798a3d595451f28c3a313fe796fa3fb735f58",
+    "docs/specs/bdp.md": "c2bee88f7a29349f7e420f711d10f3acff1fb0559d012b0d111fd7ac21bd175d",
+    "packages/server/src/transaction-http.test.ts": "b4ed09796b4dc28a51d9cc73c04a677059434a606f09dddffa46eefaa432ad8e",
+    "packages/server/src/transaction-http.ts": "1339f32e0818aee5a44fc01a2034366a73e72c40027d6cde7041f26525aba366",
+    "packages/server/src/transaction-service.test.ts": "5e8dc095dcbe9c8fdfb28a5dea4db024ddc65e7e4f51175edeae5a90ea7125be"
+  },
+  "samplingSeconds": 0.05,
+  "samplingLimitation": "Short-lived or detached descendants may evade group sampling; helper counts and independent final checks remain separate.",
+  "tempClassification": "Only the selected fixture prefixes under this attempt TMPDIR are owned runtime roots; all other entries are preserved for review, not deleted or called leaks.",
+  "resultLimitation": "Exit0 is command completion, not independent oracle/claim/provenance adjudication."
+}
