@@ -18,7 +18,7 @@ Shared HTTP selection runs once. Only selected200 gets raw UTF8 and exact byte l
 
 ## Source footprint and preservation
 
-Normal formatted draft **1073 additions/5 deletions across nine paths**. `source.diff` SHA256 **dabf5835eb91610ee3c8c32411e56f5e98c0a7a0648cb2fb534e015b14a56d84**. `preflight-bounds.json` SHA256 **151e5b13108a46647686cc9cebb7b9a7db61c350c59f2d7c4edd5d98c993194a** contains all nine exact file byte lengths/hashes, parent hashes and diff line counts. Pure measurement assertions prove:
+Normal formatted draft **1089 additions/5 deletions across nine paths**. `source.diff` SHA256 **f2b2c8366c3b610ab9c6f3a780fc6af0ed6c42f4047e4c4ee8f3a370e851695e**. `preflight-bounds.json` SHA256 **87ac550bbae1df2f907cfce5a51915ee1540d1a4811141d8b76302c2e6e953bc** contains all nine exact file byte lengths/hashes, parent hashes and diff line counts. Pure measurement assertions prove:
 
 - transaction-http.ts changes only `export` on existing hasMinimumControls; body and handler unchanged.
 - Removing only the new schemaObserved block recreates exact previous service production bytes.
@@ -85,3 +85,17 @@ Exchange5s/cohort90s/outer120s/close10s; body65536/header16384/response131072/ta
 ## Remaining release
 
 Draft is static and unexecuted. No claim that TypeScript, compilation, fixture compatibility, source counters or installed tests pass yet. Root must inspect concrete ledger/diff, resolve parentCI disposition and authorize exact execution. No public qualification, full cold traversal, external/schema-ID alias hosting, minimum support, discovery, Event ruling, release or merge is claimed. No outward action taken.
+
+
+## Native preflight cleanup correction
+
+Initial preflight, bounds, complete diff, measure script and all five source control
+patches are preserved under initial-preflight/. Only the new adapter-test afterEach
+hook changed: it attempts every registered cleanup even when an earlier callback
+rejects, restores mocks in finally, and throws one AggregateError for cleanup causes.
+Vitest records any preexisting test failure separately; no body assertion or original
+test error is replaced inside this hook. No historical hook was refactored. The
+correction adds16 source lines, with no request, callback, fixture, control, production
+or budget changes. Independent PID absence remains a mandatory installed-postprocessor
+check; a logged child exit alone will not be treated as process absence. This is still
+an unexecuted static draft, awaiting root execution release.

@@ -62,7 +62,7 @@ Original service-review lows: RU trusted callback capability narrowing and publi
 
 ### Live worker ledger
 
-Checkpoint 2026-10-14T17:15:30Z. **ACTIVE: Transactional first**, with shared and targeted Update checks. Session `2026-10-08T20:26:35Z-81e5` is current. Public write profiles remain unadvertised. Profile-delivery predicates are not yet met.
+Checkpoint 2026-10-14T17:19:41Z. **ACTIVE: Transactional first**, with shared and targeted Update checks. Session `2026-10-08T20:26:35Z-81e5` is current. Public write profiles remain unadvertised. Profile-delivery predicates are not yet met.
 
 ### Verified main and completed work
 
@@ -130,6 +130,10 @@ Schema [external plan review](transaction-cold-schema-claude-plan-review.txt) co
 ### Schema measured preflight
 
 [Preflight](transaction-cold-schema-serving/preflight.md), SHA9c92b1ba, [bounds](transaction-cold-schema-serving/preflight-bounds.json), SHA151e5b13, and [root static audit](transaction-cold-schema-serving/root-preflight-audit.json) cover draft dabf5835,1073+/5-. Root read the complete diff and verified nine source hashes,14 request-body entries,9 exact routes and456 captured artifact bytes. [Packaging amendment](transaction-cold-schema-packaging-amendment.md) adds only four private emitted filenames to existing smoke inventory as ninth file, retaining generic private-import denial. Native independent measured-preflight review is active; author idle awaiting execution release. Source proposal10cases/38HTTP/7listeners+2owners and five bounded controls; installed14/1 plus parent3/1 expected,max28requests/twochildren. No tests/build/services/install or installed execution yet. Parent4aa remains the reviewed PR118 successor, not merged main. No profile qualification follows.
+
+### Schema execution release
+
+Native [preflight review](transaction-cold-schema-serving/native-preflight.md), SHAec9e0475, independently verifies counters, hashes, controls and lifecycle. Its Low new-test cleanup finding is fixed in [cleanup-only diff](transaction-cold-schema-serving/cleanup-only.diff), independently root-inspected; all cleanup callbacks are attempted and mocks restored finally, preserving failures. [Correction record](transaction-cold-schema-serving/cleanup-correction.json) binds updated preflightb6007591/bounds87ac550b/difff2b2c836 (1089+/5-,ninefiles), with initial-preflight immutable. Root reverified only new test hook changed and all production/control/budget fields identical. [Measured execution acceptance](transaction-cold-schema-serving/root-measured-acceptance.md) releases update_implementation for exact source/static/control workload then clean-source frozen installed14/1 positive+expected3/1 predecessor,hard28/two. Author ACTIVE; native cleanup closure underway. No tests are yet claimed passed. Final postprocessor must independently prove PID absence and actual source/package bindings. Parent PR118 unchanged retry attempt2/job115993441472 is still ACTIVE; [retry disposition](transaction-sequence-refusal-ci-retry-disposition.md) permits local validation without waiving its merge gate.
 
 ## Current priority: BDP profile structure and implementation
 

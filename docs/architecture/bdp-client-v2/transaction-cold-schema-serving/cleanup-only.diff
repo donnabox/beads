@@ -1,0 +1,29 @@
+--- initial/packages/server/src/transaction-schema-http.test.ts
++++ corrected/packages/server/src/transaction-schema-http.test.ts
+@@ -26,8 +26,24 @@
+ const authorized = { kind: "authenticated", principal: "p", canMutate: false } as const;
+ const cleanup: (() => void | Promise<void>)[] = [];
+ afterEach(async () => {
+-  for (const fn of cleanup.splice(0).reverse()) await fn();
+-  vi.restoreAllMocks();
++  const failures: unknown[] = [];
++  try {
++    for (const fn of cleanup.splice(0).reverse()) {
++      try {
++        await fn();
++      } catch (error) {
++        failures.push(error);
++      }
++    }
++  } finally {
++    try {
++      vi.restoreAllMocks();
++    } catch (error) {
++      failures.push(error);
++    }
++  }
++  // Vitest retains a prior test failure separately from this hook failure.
++  if (failures.length) throw new AggregateError(failures, "schema fixture cleanup failed");
+ });
+ function artifacts(
+   retrieval = root,
