@@ -62,11 +62,11 @@ Original service-review lows: RU trusted callback capability narrowing and publi
 
 ### Live worker ledger
 
-Checkpoint 2026-10-14T21:01:25Z. **ACTIVE: Transactional first**, with shared and targeted Update checks. Session `2026-10-08T20:26:35Z-81e5`. Public write profiles remain unadvertised; installed cumulative delivery predicates remain unmet. Ready main merges are operator-authorized after exact-head CI, native+Claude council, findings disposition, scope and ordinary ancestry checks, and actual merged-tree verification. Gemini excluded. No release/Preview2 or Janet CLI/staging/playgrounds/shared databases/Trish Type edits.
+Checkpoint 2026-10-14T21:10:03Z. **ACTIVE: Transactional first**, with shared and targeted Update checks. Session `2026-10-08T20:26:35Z-81e5`. Public write profiles remain unadvertised; installed cumulative delivery predicates remain unmet. Ready main merges are operator-authorized after exact-head CI, native+Claude council, findings disposition, scope and ordinary ancestry checks, and actual merged-tree verification. Gemini excluded. No release/Preview2 or Janet CLI/staging/playgrounds/shared databases/Trish Type edits.
 
 ### Verified main and completed serving work
 
-Current main **eff171839fe4f37638284a4c3346428979d26b5d**, tree **5c14bcc20ec7a72118bc07d2ed5896703211a660**, ordinary PR121 merge parents454e521+31e74290. PR120 and PR121 both have exact-head green CI, native+Claude findings disposition, and verified actual tested-tree equality. [PR121 merge verification](maintenance-fault-merge-verification.json). No release or profile activation.
+Current main **122800511ee6306e4105e1f73bf3658f35c90a14**, tree **088290751951c353797b984f690b7d9fd96deb80**, ordinary PR122 parents eff171839fe4f37638284a4c3346428979d26b5d+c02ccc3706f2e258d380805162a8c47dbb73f4e1. [Merge verification](transaction-cross-carrier-draft/merge-verification.json) confirms exact tested synthetic24792f27 tree equality. CI38635297329/job116096781032 green:9263passed/1expectedskip/172files,7preflight,smoke/Read gate; suite745.96s/job1018s within unchanged20m limit. Review findings dispositioned; no profile activation or release. PR120/121 remain verified ancestors; historical evidence remains bound to its source.
 
 Prior main **7e46cdc93b2fd02094ba7e15e57e743d2ef81daa**, tree **062a3ab7e24236417bd915b373a4b44ba9908647**, is ordinary PR119 merge, parents bff81e216595ca09dac36cd681b5fa4e6b1656f4 + c555fe01df5cd20454fb0d663431df816c1270aa. Captured local schemas serve exact GET/HEAD bytes/context in the private Transactional service. Schema-ID aliases, outside namespace and minimum-bearing cases remain limited. [Merge verification](transaction-cold-schema-merge-verification.json) and [CI tree binding](transaction-cold-schema-ci-tree-verification.json) verify reviewed candidate/actual main equality. Existing Update schema serving was audited separately.
 
@@ -96,17 +96,18 @@ Isolated successor `/Users/dbox/repos/wt/vickie/vickie-comparison-fault-typing-r
 
 ### Workers and next steps
 
-All nine installed cohorts completed and were individually adjudicated on frozen c02ccc37. [PR122](https://github.com/gastownhall/bdp/pull/122) is published draft at exact c02ccc37; CI38635297329/job116096781032 is running. [Final independent actual-evidence audit](transaction-cross-carrier-draft/native-actual-evidence-review.md), SHA8fc7bb22, is complete and fully root-read with no blocker.
+All nine installed cohorts completed and were individually adjudicated on frozen c02ccc37. [PR122](https://github.com/gastownhall/bdp/pull/122) is merged and tree-verified after exact c02ccc37 CI success. [Final independent actual-evidence audit](transaction-cross-carrier-draft/native-actual-evidence-review.md), SHA8fc7bb22, is complete and fully root-read with no blocker.
 | Worker | Scope | State / next |
 |---|---|---|
-| cross_carrier_plan_v2_review | Four-file cross-carrier evidence | Clean frozen c02ccc37; accepted source repairs complete |
-| update_implementation | Preparation and actual package audit | Preparation corrected/reviewed; actual313-file/eight-package audit complete; checkpoint proposal only |
-| cross_carrier_native_review | Independent measured/source/preparation closure | Source/preparation closures complete; final actual-evidence audit complete |
-| Root | Execution adjudication, publication and landing gates | Source/package checks passed;2/9 installed cohorts adjudicated, third in-flight at cut; no full CI or merge claim |
+| cross_carrier_plan_v2_review | Selector admission plan | Plan prepared; reanchoring current-main description before council; no authoring |
+| update_implementation | Command-minimum plan | Frozen00ffec1a; native+Claude council active, no authoring |
+| cross_carrier_native_review | Command-minimum native plan council | Active; completed PR122 actual-evidence review remains frozen |
+| External Claude | Command-minimum plan00ffec1a | Running since21:09:03Z; exec10853, wrapper67042/Claude67043; stdout/stderr/exit records in evidence root |
+| Root | Serving priority/integration | PR122 merged/tree-verified; coordinate two newly unblocked serving plans and serialize shared edits |
 
-### Cross-carrier source frozen; bounded installed execution underway
+### Cross-carrier evidence delivered in PR122
 
-Clean source **c02ccc3706f2e258d380805162a8c47dbb73f4e1**, tree **088290751951c353797b984f690b7d9fd96deb80**, is an ordinary single-parent child of actual main eff17183 in `/Users/dbox/repos/wt/vickie/vickie-cross-carrier-draft`, branch `codex/vickie-cross-carrier-draft`. [Final source](transaction-cross-carrier-draft/final-source.json) binds exactly four conformance/test files; production/fixture/catalog/schema/public paths unchanged. This adds one partial12-action retained cross-carrier row; all24 prior raw objects reconstruct exact parent documents. Canonical684206disk/695598normal bytes/18107nodes/199actions/2102assertions; coverage99245; whole flags and claimEligible remainfalse. No profile delivery/advertisement or release claim.
+Clean source **c02ccc3706f2e258d380805162a8c47dbb73f4e1**, tree **088290751951c353797b984f690b7d9fd96deb80**, is an ordinary single-parent child of then-current main eff17183 in `/Users/dbox/repos/wt/vickie/vickie-cross-carrier-draft`, branch `codex/vickie-cross-carrier-draft`. [Final source](transaction-cross-carrier-draft/final-source.json) binds exactly four conformance/test files; production/fixture/catalog/schema/public paths unchanged. This adds one partial12-action retained cross-carrier row; all24 prior raw objects reconstruct exact parent documents. Canonical684206disk/695598normal bytes/18107nodes/199actions/2102assertions; coverage99245; whole flags and claimEligible remainfalse. No profile delivery/advertisement or release claim.
 
 Claude reviewed the original draft, completed exit0 at20:33:12Z, stdout SHAa85ec7d1; its PIDs were reaped. [Review](transaction-cross-carrier-draft/claude-review.txt), [exit](transaction-cross-carrier-draft/claude-exit.json), [root dispositions](transaction-cross-carrier-draft/claude-root-dispositions.md) and [native assessment](transaction-cross-carrier-draft/claude-findings-native-assessment.md) preserve scope. Accepted guard/normal-form/full-report changes plus derivative schema/digest checks, presence filter, fixture message bounds and hook-tail sentinel were applied only to the two owned test files. Structural absence is redundancy; retained/removed descriptions are not independent oracles; a fourth index-corruption branch remains deferred. No assertion-count qualification credit.
 
@@ -128,7 +129,7 @@ Completed installed evidence on **c02ccc37**:
 
 An ancillary gate metadata hash was corrected20:45:59Z **after the first two cohorts and before cross-sequence**. [Correction](transaction-cross-carrier-draft/execution-preparation/ancillary-gate-correction.json) records the disposition-path digest mismatch. This unused descriptive field was not a source, runtime, command, acceptance or provenance gate; those actual bindings were valid. Original audit/history remains, no rerun or relabeling.
 
-Remaining gates: exact-head full CI and actual ordinary merged-tree verification. Main remains eff17183. No merge readiness is inferred from local partial execution.
+PR122 landing gates complete: exact-head CI, council findings disposition, scope/ancestry and actual merged-tree verification. Main is1228005; local evidence remains attributed to executed c02ccc37, not relabeled as main.
 
 ### Remaining delivery and product input
 
@@ -142,6 +143,8 @@ The [sequence member-transactions plan](transaction-sequence-member-plan.md) is 
 
 Sole plan: `/Users/dbox/repos/wt/vickie/bdp-client-design/checkout/docs/architecture/bdp-client-v2/design.md`, branch `codex/vickie-bdp-client-design`, remote donnabox/beads. Evidence root `/Users/dbox/repos/wt/vickie/bdp-integration-logs`. Node24.16.0/pnpm11.20.0; build before emitted tests. Guard remote session before outward mutations.
 
+
+[Command-minimum plan](transaction-command-minimum-implementation-plan.md) SHA00ffec1a is frozen against verifiedmain1228005 for native+Claude council. Six planned paths, sole production edit removes command-only refusal, distinct Update regression and fresh installed18/one-child plan; counts are proposed, no execution. [Selector plan](transaction-selector-admission-implementation-plan.md) follows with ordinary reanchor after command-minimum; no source-authoring release.
 
 ## Current priority: BDP profile structure and implementation
 
