@@ -62,7 +62,7 @@ Original service-review lows: RU trusted callback capability narrowing and publi
 
 ### Live worker ledger
 
-Checkpoint 2026-10-14T22:32:32Z. **ACTIVE: Transactional first**, with shared and targeted Update checks. Session `2026-10-08T20:26:35Z-81e5`. Public write profiles remain unadvertised; installed cumulative delivery predicates remain unmet. Ready main merges are operator-authorized after exact-head CI, native+Claude council, findings disposition, scope and ordinary ancestry checks, and actual merged-tree verification. Gemini excluded. No release/Preview2 or Janet CLI/staging/playgrounds/shared databases/Trish Type edits.
+Checkpoint 2026-10-14T22:47:35Z. **BLOCKED: Claude CLI authentication; Transactional first on resume**, with shared and targeted Update checks. Session `2026-10-08T20:26:35Z-81e5`. Public write profiles remain unadvertised; installed cumulative delivery predicates remain unmet. Ready main merges are operator-authorized after exact-head CI, native+Claude council, findings disposition, scope and ordinary ancestry checks, and actual merged-tree verification. Gemini excluded. No release/Preview2 or Janet CLI/staging/playgrounds/shared databases/Trish Type edits.
 
 ### Verified main and completed serving work
 
@@ -181,6 +181,15 @@ External [Claude attempt](transaction-command-minimum-ci-repair/claude.txt) fail
 [Selector v3](transaction-selector-admission-implementation-plan-v3.md)05fd6cf2 is a mechanical pre-repair reanchor only; mergedparent stillPENDING/authoringNOTRELEASED. Refresh specanchors against actual final predecessor before authoring. [Catalog followup](transaction-command-minimum-catalog-followup.md)0d6e8a0d confirms command-ignore MUST unmapped; smallest later mapping is oneRUrow inherited byTX, no historical credit. This does not displace Selector serving repair.
 
 Next independent action: inspect newCI outcome; if Claude access remains unavailable after CI/evidence checkpoint and no independent work remains, pause heartbeat/report explicit external-auth stop rather than loop or waive council. No release/publicqualification/Preview2.
+
+
+### Exact CI green; stop awaiting restored Claude CLI access
+
+CI38648263438/job116140423947 completed successfully22:44:21Z for727e919:9268passed/1expectedskip/172files,7preflight,installedsmoke and historicalRead verification allgreen. [CI/tree verification](transaction-command-minimum-ci-repair/ci-tree-verification.json) binds actual synthetic ac6652f2d235915d87db04b710f4afcff45a6080, parents1228005+727e919, tree734bf9. Alljobstepssuccessful; full logSHA b823305ca58f91dff21fbe0e508902a8ac24845bca04b0c381cd0a09544213ad. No main merge; PR123remainsdraft.
+
+Operator reported reauthentication. One separately retained [retry](transaction-command-minimum-ci-repair/claude-reauthenticated/exit.json) at22:46:06Z stillfailedexit1 before review with identical OAuth error, sourceunchanged. Exact /opt/homebrew/bin/claude auth status reports loggedIn:false/authMethod:none; no CLAUDE/ANTHROPIC env override, no alternate local CLI found. Asked operator to run that exact CLI auth login and confirm auth status. Both failed attempts preserved, no review invented. Allownedreview/testprocessesreaped; allworkerscompleted.
+
+No independent serving/integration work remains that can pass required council without restored access. Stopping autonomous execution and pausing heartbeat under operator stop condition after this checkpoint. Resume only after restored CLI access: run same frozen specdelta Claude review into a new attempt directory, read/disposition actual findings, recheck source/main/CI and ordinary ancestry, then markready/merge/verify actualtree. Selector remains next; finalspecanchors need refresh from actualmergedparent. Publicprofilesstillincomplete; norelease/Preview2.
 
 ## Current priority: BDP profile structure and implementation
 
