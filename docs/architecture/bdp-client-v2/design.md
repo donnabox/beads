@@ -62,7 +62,7 @@ Original service-review lows: RU trusted callback capability narrowing and publi
 
 ### Live worker ledger
 
-Checkpoint 2026-10-14T20:56:02Z. **ACTIVE: Transactional first**, with shared and targeted Update checks. Session `2026-10-08T20:26:35Z-81e5`. Public write profiles remain unadvertised; installed cumulative delivery predicates remain unmet. Ready main merges are operator-authorized after exact-head CI, native+Claude council, findings disposition, scope and ordinary ancestry checks, and actual merged-tree verification. Gemini excluded. No release/Preview2 or Janet CLI/staging/playgrounds/shared databases/Trish Type edits.
+Checkpoint 2026-10-14T21:01:25Z. **ACTIVE: Transactional first**, with shared and targeted Update checks. Session `2026-10-08T20:26:35Z-81e5`. Public write profiles remain unadvertised; installed cumulative delivery predicates remain unmet. Ready main merges are operator-authorized after exact-head CI, native+Claude council, findings disposition, scope and ordinary ancestry checks, and actual merged-tree verification. Gemini excluded. No release/Preview2 or Janet CLI/staging/playgrounds/shared databases/Trish Type edits.
 
 ### Verified main and completed serving work
 
@@ -132,13 +132,16 @@ Remaining gates: exact-head full CI and actual ordinary merged-tree verification
 
 ### Remaining delivery and product input
 
-Installed bdptest/SQLite remains initial target. Required cumulative Read+Update+Transactional contracts and truthful public admission/discovery remain unfinished. Internal discovery builder/accessor already exist; do not fabricate descriptor or activate partial profile. [Serving prerequisites](transaction-after-schema-serving-prerequisites.md). Optional History/YAGNI/Types/provenance remain separate.
+Installed bdptest/SQLite remains initial target. Required cumulative Read+Update+Transactional evidence and truthful public admission/discovery remain unfinished; optional History/YAGNI/Types/provenance stay separate.
 
-[Pending operator question](transaction-metadata-event-question-pending.md): should metadata-only Link changes appear in both endpoint Bead Event feeds? No answer yet; do not infer or repeatedly ask. Other independent work continues. Last-Event-ID override is already ruled and merged. [Serving audit](transaction-next-serving-blocker-audit.md) confirms both set operations already work for supported inputs; [Selector question](transaction-selector-question-pending.md) now asks direct400 grammar and fresh-key413 versus retained failure. [Consistency audit](transaction-next-consistency-decision-audit.md) confirms existing unanswered S1-Q1 for retained Snapshot minimum comparison (not reasked); [command applicability question](transaction-command-minimum-question-pending.md) asks whether read-minimum fields are ignored on mutation POSTs. Neither new async question has an answer. No semantics inferred.
+**New operator rulings:** [Selector admission and command minimum fields](transaction-selector-command-operator-rulings.md) resolve two former blockers. Invalid set Selector syntax gets400 before key lookup/no receipt; valid over-limit fresh requests get413 with key unused, equal retained retries/conflicting keys retain precedence. MutationPOSTs ignore the three read-minimum fields; receiptGETstillenforces. Global bounds/auth/key/revision rules remain. Implementation plans are active; root will serialize command minimum HTTP/spec work before Selector integration and exact ordinary reanchor. Native+Claude review remains required before authoring.
+
+Only two prior product questions remain pending: metadata-only Link changes in endpoint Bead Event feeds, and retained Snapshot/continuation minimum comparison S1-Q1. No repeated question or inferred answer. Saved Last-Event-ID override remains ruled/merged.
+
+The [sequence member-transactions plan](transaction-sequence-member-plan.md) is preserved **deferred**, with no authoring/review/execution release. Concrete newly unblocked serving fixes take priority. The audit shorthand resource-not-found retry never is corrected by the deferred plan to after-state-change; this is existing spec law, not a new ruling.
 
 Sole plan: `/Users/dbox/repos/wt/vickie/bdp-client-design/checkout/docs/architecture/bdp-client-v2/design.md`, branch `codex/vickie-bdp-client-design`, remote donnabox/beads. Evidence root `/Users/dbox/repos/wt/vickie/bdp-integration-logs`. Node24.16.0/pnpm11.20.0; build before emitted tests. Guard remote session before outward mutations.
 
-Next independent work: [serving audit](transaction-after-cross-carrier-next-audit.md) found no new safely independent serving fix in inspected surfaces. A bounded existing-contract sequence member-transactions evidence plan is being prepared for native+Claude review; any answered serving ruling takes priority. No authoring/execution is released by that recommendation.
 
 ## Current priority: BDP profile structure and implementation
 
