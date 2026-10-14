@@ -31,9 +31,7 @@ const relatedType = id('types/preview-related');
 const exampleFollowsType = id('types/example-follows');
 const exampleCitesType = id('types/example-cites');
 const installedTypeIDs = [memoryType, id('types/preview-issue'),
-  relatedType, id('types/preview-blocks'),
-  id('types/preview-parent-child'), id('types/preview-duplicates'),
-  id('types/preview-supersedes'), exampleFollowsType, exampleCitesType].sort();
+  relatedType, id('types/preview-dependency'), exampleFollowsType, exampleCitesType].sort();
 
 // Observational decoration only: delegates to native fetch without synthesizing
 // any status, body, routing, or discovery. It does not log credentials.
@@ -146,6 +144,7 @@ try {
   const targetBefore = await perform({ kind: 'resource', resource: 'bead', id: targetID });
   const dependencyBefore = await perform({ kind: 'resource', resource: 'link', id: dependencyID });
   assert.deepEqual(dependencyBefore.metadata, {});
+  assert.deepEqual(dependencyBefore.properties, { dep_type: 'blocks' });
   assert.equal(dependencyBefore.source, workID);
   assert.equal(dependencyBefore.target, targetID);
   assert.deepEqual(Object.values(workBefore.ownedLinks).flat(), [dependencyBefore]);
