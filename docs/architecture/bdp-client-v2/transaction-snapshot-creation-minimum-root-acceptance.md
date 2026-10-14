@@ -1,0 +1,7 @@
+# Fresh Snapshot creation minimum plan acceptance
+
+Root accepts v2 SHA2562fb0a12ea6061f40033f51a5f7c52a104248e3b65eef296d7bfbd090b42fa9d0, its per-finding dispositions83ca3b0e8b058849f28f539020956f0eedf8aa933a1b892da2c990d0d55e5b35, and independent native closurec03c9267400b66e497fba8c7b720cdfe91a41efc609cc5b7ab2ed6f74ff2cacb. Original external review is preserved; native/root closure covers the bounded corrections. Root inspected the current Snapshot owner/HTTP preflight and shared media/conditional code; the terminal-preflight choice preserves its current owner-before406 behavior without asserting new universal precedence.
+
+Accepted evidence budget expressly separates new33 requests/3 children (hard40/3) from existing page regression89/2 and unchanged capacity regression39/3. Named total161/8, upper168 with spare new calls; existing45s aggregate/60s outer/5s exchange/10s lifecycle retained. These are planned counts, not executed evidence. Minimum controls are immutable at service entry, owner revalidates each attempt, both paths wait with one finite deadline, and exact timeout/context/no-allocation checks distinguish neighboring503 results.
+
+Authoring waits for the reviewed ordinary alias HTTP successor to be supplied. That base must be recorded and symbols/counts reconciled before edits. No public discovery/profile admission, retained-anchor interpretation, malformed-control redesign or new mutation barrier is authorized. The accepted slice implements fresh Snapshot creation only; no caller or protocol semantics are inferred beyond existing law.
