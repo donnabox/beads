@@ -1,0 +1,34 @@
+{
+  "reason": "exactOptionalPropertyTypes static correction",
+  "before": {
+    "preflight.md": "aeefef2b264571a162b24809192734939e9b7b36399c4b95da4e93e76c904785",
+    "preflight-bounds.json": "68afc70753899701e4d570a65b4db5f527c1918f114bc084c40ae3c9c3b8d595",
+    "source.diff": "27fc1610da057443639bbd49012e73ec2e9f951f4fdfc20d8801435922809cbe",
+    "measure.py": "4b1b5d932a52fc77e50d288f7b1d18c05dd5b9c4c5c793a427a063834ce8206d"
+  },
+  "after": {
+    "preflight.md": "79aae00ec518107c72bc904abdd148c842036d3cdfdeafb640fdac859fc80252",
+    "preflight-bounds.json": "74200eb1f9d125a8a7856c2c1568ce4553ab198241b46402dac5fa7970e93054",
+    "source.diff": "97b5bd7840fb1101622fbedde0d037d7e40479b98316ddf5f2544967fb607b0e",
+    "measure.py": "f4a1e7fa6a6bcd197dbf5758f23865595b9847eb107b464b5b64ff0271271860"
+  },
+  "changedProductionPaths": [
+    "packages/server/src/transaction-comparison.ts"
+  ],
+  "productionChange": "Optional callback explicitly permits undefined; Omit and selected override unchanged.",
+  "controlChange": "Undefined runtime context explicitly cast in isolated submission mutant only.",
+  "unchangedMeasurementKeys": [
+    "sourceSelection",
+    "selectedCases",
+    "newCases",
+    "replacedCases",
+    "sourceHttp",
+    "requestLedger",
+    "maxRequestBody",
+    "totalRequestBody",
+    "responseEstimate",
+    "controlTotals",
+    "installedProposal"
+  ],
+  "executionOccurred": false
+}

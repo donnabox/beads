@@ -62,7 +62,7 @@ Original service-review lows: RU trusted callback capability narrowing and publi
 
 ### Live worker ledger
 
-Checkpoint 2026-10-14T17:44:35Z. **ACTIVE: Transactional first**, with shared and targeted Update checks. Session `2026-10-08T20:26:35Z-81e5` is current. Public write profiles remain unadvertised. Profile-delivery predicates are not yet met.
+Checkpoint 2026-10-14T17:54:01Z. **ACTIVE: Transactional first**, with shared and targeted Update checks. Session `2026-10-08T20:26:35Z-81e5` is current. Public write profiles remain unadvertised. Profile-delivery predicates are not yet met.
 
 ### Verified main and completed work
 
@@ -160,6 +160,12 @@ Native Low report-only attribution wording was corrected in [disposition](transa
 Exact c555 CI38606671302 attempt1/job115999221459 completed CANCELLED at its existing15-minute maximum. [Raw-log native diagnosis](transaction-cold-schema-ci-timeout-diagnosis.md), SHA297b0909, is complete and fully root-read. Main suite passed9245tests/172files/one skip; preflight printed7passes but its step was cancelled, so it is not a completed gate. Smoke/Read skipped. Full raw logs preserve synthetic checkout9d015ff. Same-test median duration1.579x and setup52seconds longer than green4aa support one unchanged retry, without asserting a CPU cause.
 
 [Root retry disposition](transaction-cold-schema-ci-retry-disposition.md) authorizes exactly one unchanged retry, now [attempt2](transaction-cold-schema-ci-retry-start.json) ACTIVE. No source/job/test/cohort timeout changed. Any second cancellation requires fresh diagnosis and reviewed headroom action, not automatic repeat. PR119 remains draft; all council findings are closed but exact green CI and merged-tree verification remain required. Comparison draft authoring continues independently; no execution released.
+
+### Comparison-timeout measured execution released
+
+[Measured preflight](transaction-comparison-timeout-context/preflight.md), SHA79aae00e, [bounds](transaction-comparison-timeout-context/preflight-bounds.json), SHA74200eb1, and source diff97b5bd78 cover exactly eight files552+/35− on c555. Root read the full diff and independently verified hashes/body arithmetic. [Native preflight](transaction-comparison-timeout-context/native-preflight.md), SHA830dcd7d, found one masked control; [correction](transaction-comparison-timeout-context/control-correction.json) moves it to the observed submission result boundary. [Held closure](transaction-comparison-timeout-context/control-native-closure.md), SHA295a5981, then confirms two exact-optional typing contradictions; [typing correction](transaction-comparison-timeout-context/typing-correction.json) changes only the private callback annotation and isolated mutant cast. Initial and intermediate artifacts are preserved. No compiler/test results are inferred from static review.
+
+[Final independent closure](transaction-comparison-timeout-context/final-preflight-closure.md), SHA18dc132e, is complete and fully root-read; all preflight blockers closed. [Root measured acceptance](transaction-comparison-timeout-context/root-measured-acceptance.md) releases update_implementation for exact18cases/16HTTP/two listeners, five built isolated controls expected12/max36HTTP, static/build checks, then ordinary local source freeze and existing installed direct14+sequence13=27requests/twochildren. No default installed timeout sensitivity claim or new app; no push/PR yet. Native reviewer idle. Actual source/control/packed outcomes remain pending.
 
 ## Current priority: BDP profile structure and implementation
 
