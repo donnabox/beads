@@ -1,0 +1,13 @@
+--- a/packages/server/src/transaction-http.ts
++++ b/packages/server/src/transaction-http.ts
+@@ -531,9 +531,7 @@
+           page.context,
+         );
+       }
+-      const result = hasMinimumControls(request)
+-        ? await service.receiptAtMinimum(access, url.href, minimum ?? "unsupported")
+-        : service.receipt(access, url.href);
++      const result = service.receipt(access, url.href);
+       if (result.kind === "refused") return transactionHttpProblem(result.code);
+       // Missing barrier support cannot disclose a foreign receipt, nor permit a
+       // conditional shortcut to serve an unchecked minimum checkpoint.
