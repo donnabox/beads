@@ -97,8 +97,8 @@ func runGraphPreviewEpicCloseEligible(cmd *cobra.Command) error {
 }
 
 func requireGraphPreviewRelationshipGeneration() error {
-	if graphPreviewTypeGeneration != 7 {
-		return graphFailure("capability_unavailable", "graph epic requires a fresh relationship workspace; this pinned workspace has no parent-child Link Type", 5)
+	if graphPreviewTypeGeneration != 8 {
+		return graphFailure("capability_unavailable", "graph epic requires the current graph Type installation", 5)
 	}
 	return nil
 }

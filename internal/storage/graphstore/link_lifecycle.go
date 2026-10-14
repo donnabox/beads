@@ -138,8 +138,8 @@ func (s *Store) validateLinkType(typ string, allowEmpty bool) error {
 	if (allowEmpty && typ == "") || IsInformationalTypeURL(s.ScopeURL(), typ) || typ == DependencyTypeURL(s.options.Binding.ScopeURL) {
 		return nil
 	}
-	if _, known := nativeRelationshipDependencyType(s.ScopeURL(), typ); known && s.options.TypeGeneration != 5 && s.options.TypeGeneration != 6 {
-		return nil // The transactional installed-Type check still guards old stores.
+	if _, known := nativeRelationshipDependencyType(s.ScopeURL(), typ); known {
+		return nil // The transaction also checks the installed Type.
 	}
 	return fmt.Errorf("%w: Link Type is not installed in this preview", storage.ErrValidation)
 }
@@ -412,9 +412,9 @@ func (s *Store) checkLinkMappingsInTx(ctx context.Context, tx *sql.Tx) error {
 	if invalidTypes != 0 {
 		return fmt.Errorf("%w: Link Type differs from its authority", ErrInvalidStore)
 	}
-	if issueType == RelationshipIssueTypeURL(s.ScopeURL()) {
-		// A v7 Link Type names exactly one native Dependency kind. Keep the
-		// legacy collection check's admission behavior unchanged.
+	if issueType == IssueTypeURL(s.ScopeURL()) {
+		// Each installed native Link Type names exactly one Dependency kind. Keep the
+		// collection's admission behavior unchanged.
 		pairs := make([]string, 0, len(dependencyTypes))
 		pairArgs := make([]any, 0, len(dependencyTypes)*2)
 		for _, linkType := range dependencyTypes {

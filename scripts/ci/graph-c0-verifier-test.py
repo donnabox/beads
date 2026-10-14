@@ -62,14 +62,14 @@ class MemoryCreationProjection(unittest.TestCase):
         scope = "https://example.invalid/ci-c0/embedded/"
         record = {
             "id": scope + "beads/plan",
-            "type": scope + "types/preview-memory-v2",
+            "type": scope + "types/preview-memory",
             "properties": {"title": "Plan", "body": "Durable C0 body — 記憶"},
             "owned": [],
             "revision": "opaque-token",
         }
         module.require_memory_creation(record, scope)
         for change in ({"revision": ""}, {"revision": None}, {"version": "duplicate-token"},
-                       {"owned": ["unexpected"]}, {"type": scope + "types/preview-issue-v2"},
+                       {"owned": ["unexpected"]}, {"type": scope + "types/preview-issue"},
                        {"properties": {"title": "Plan"}}):
             with self.subTest(change=change), self.assertRaisesRegex(RuntimeError, "incomplete/non-Memory creation"):
                 module.require_memory_creation(dict(record, **change), scope)

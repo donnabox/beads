@@ -274,27 +274,16 @@ func (s *Store) currentLinkInTx(ctx context.Context, tx *sql.Tx, path string) (L
 		Attribution: Attribution{Actor: actor, Status: status, RecordedAt: at.UTC().Format(time.RFC3339Nano)}}, nil
 }
 
-// A v7 native Dependency has one canonical Link Type per native kind. Legacy
-// stores retain their sole blocking mapping, and never admit the new Types.
+// Each supported native Dependency kind has one canonical Link Type.
 func nativeDependencyTypeURLForIssueType(scope, issueType string, native types.DependencyType) (string, bool) {
-	switch issueType {
-	case IssueTypeURL(scope):
-		if native == types.DepBlocks {
-			return DependencyTypeURL(scope), true
-		}
-	case RelationshipIssueTypeURL(scope):
+	if issueType == IssueTypeURL(scope) {
 		return relationshipDependencyTypeURL(scope, native)
 	}
 	return "", false
 }
 
 func nativeDependencyTypeForIssueType(scope, issueType, linkType string) (types.DependencyType, bool) {
-	switch issueType {
-	case IssueTypeURL(scope):
-		if linkType == DependencyTypeURL(scope) {
-			return types.DepBlocks, true
-		}
-	case RelationshipIssueTypeURL(scope):
+	if issueType == IssueTypeURL(scope) {
 		return nativeRelationshipDependencyType(scope, linkType)
 	}
 	return "", false
@@ -306,10 +295,7 @@ func isNativeDependencyLinkType(scope, issueType, linkType string) bool {
 }
 
 func dependencyLinkTypesForIssueType(scope, issueType string) []string {
-	if issueType == IssueTypeURL(scope) {
-		return []string{DependencyTypeURL(scope)}
-	}
-	if issueType != RelationshipIssueTypeURL(scope) {
+	if issueType != IssueTypeURL(scope) {
 		return nil
 	}
 	result := make([]string, 0, len(relationshipDependencyTypes))

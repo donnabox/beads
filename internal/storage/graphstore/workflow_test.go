@@ -115,8 +115,8 @@ func TestDependencyWorkflowDurableSequence(t *testing.T) {
 				t.Fatal(err)
 			}
 			blockingType, _ := relationshipDependencyTypeURL(o.Binding.ScopeURL, types.DepBlocks)
-			if source.Type != RelationshipIssueTypeURL(o.Binding.ScopeURL) || target.Type != source.Type || added.Link.Type != blockingType {
-				t.Fatalf("fresh v7 Issue/Dependency Types differ: source=%s target=%s link=%s", source.Type, target.Type, added.Link.Type)
+			if source.Type != IssueTypeURL(o.Binding.ScopeURL) || target.Type != source.Type || added.Link.Type != blockingType {
+				t.Fatalf("fresh Issue/Dependency Types differ: source=%s target=%s link=%s", source.Type, target.Type, added.Link.Type)
 			}
 			if !added.Changed || added.Link.Source != source.ID || added.Link.Target != target.ID || added.Source.Version == source.Version || len(added.Source.Owned) != 1 || len(added.Source.Properties.Dependencies) != 0 {
 				t.Fatalf("wrong Dependency result: %+v", added)

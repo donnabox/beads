@@ -9,14 +9,9 @@ import (
 	"github.com/steveyegge/beads/internal/storage/graphstore"
 )
 
-// graphPreviewGoldenTypes maps each marker generation that a fresh workspace can
-// be written with to the Type names a fresh init installs for it, in installation
-// order. link-preview-v5 has no entry: it is the legacy generation (four
-// installed Types, or six in a workspace made after the example Link Types were
-// added), no bd writes it any more, and admission accepts it as it stands.
+// graphPreviewGoldenTypes pins the Type names a fresh init installs, in order.
 var graphPreviewGoldenTypes = map[string][]string{
-	"link-preview-v6\n": {"memory", "issue", "dependency", "related", "example-follows", "example-cites"},
-	"link-preview-v7\n": {"memory", "issue", "dependency", "related", "example-follows", "example-cites", "issue-v3", "blocks-v2", "parent-child", "duplicates", "supersedes"},
+	"link-preview-v8\n": {"memory", "issue", "dependency", "related", "example-follows", "example-cites", "parent-child", "duplicates", "supersedes"},
 }
 
 // An older bd checks only the marker (and a schema version that names the
@@ -28,16 +23,12 @@ func TestGraphPreviewGenerationPinsFreshInstallTypes(t *testing.T) {
 	golden, ok := graphPreviewGoldenTypes[graphPreviewGeneration]
 	if !ok {
 		t.Fatalf("graphPreviewGeneration is %q but graphPreviewGoldenTypes has no entry for it. "+
-			"A new generation needs all three of: the new generation named in graphPreviewGeneration, "+
-			"the old generation kept in the accepted set (graphPreviewSupportedGenerations) beside it, "+
-			"and a golden entry here listing the Types it installs", graphPreviewGeneration)
+			"A new generation needs a marker, supported-set entry, and a golden Type list", graphPreviewGeneration)
 	}
 	if got := graphstore.FreshTypeNames(); !slices.Equal(got, golden) {
 		t.Fatalf("a fresh init now installs %v, but generation %q pins %v. "+
 			"Adding, removing or reordering an installed Type is a workspace format change: "+
-			"bump graphPreviewGeneration to the next number, add that generation to the accepted set "+
-			"(graphPreviewSupportedGenerations) while keeping the old one, and add a golden entry for it "+
-			"here. Do not edit this entry in place", got, graphPreviewGeneration, golden)
+			"bump graphPreviewGeneration, update the fresh-only accepted set, and add a golden entry", got, graphPreviewGeneration, golden)
 	}
 	if !graphPreviewGenerationSupported([]byte(graphPreviewGeneration)) {
 		t.Fatalf("the generation a fresh init writes (%q) is not in the accepted set, so every new "+

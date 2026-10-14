@@ -29,7 +29,7 @@ func TestGraphPreviewHelpDocumentsPlaytestCommands(t *testing.T) {
 		want []string
 	}{
 		{"remember", rememberCmd, []string{"Graph preview workspaces:", "bd remember 'Revised policy' --id policy", "bd remember 'Revised policy' --update policy", "--create-only", "--if-revision TOKEN", "--replace-properties", "--replace-metadata", "Omitted fields remain unchanged"}},
-		{"create", createCmd, []string{"Graph preview workspaces:", "--bead-type preview-memory-v2", "--id policy", "--properties JSON", "types/NAME", "--parent ID creates a dotted child ID", "Pinned v5/v6 workspaces still refuse --parent"}},
+		{"create", createCmd, []string{"Graph preview workspaces:", "--bead-type preview-memory", "--id policy", "--properties JSON", "types/NAME", "--parent ID creates a dotted child ID"}},
 		{"q", quickCmd, []string{"Graph preview workspaces:", "bd q -- -follow-up", "--parent is unavailable here", "Ordinary Issue workspaces:", "bd q \"Subtask\" --parent"}},
 		{"dep", depCmd, []string{"Graph preview workspaces:", "bd dep BLOCKER --blocks BLOCKED", "--no-cycle-check"}},
 		{"dep-remove", depRemoveCmd, []string{"Graph preview workspaces:", "bd dep remove issue blocker", "status not_found", "dependency_removed", "bd link delete ID --force"}},
@@ -38,7 +38,7 @@ func TestGraphPreviewHelpDocumentsPlaytestCommands(t *testing.T) {
 			// --link-type sits beside the ordinary -t/--type, so its own usage says it is graph-only.
 			"Installed Link Type: NAME, types/NAME, or full local URL (graph preview only)",
 			// Informational Links default to the current source; the blocking Type does not.
-			"The blocking Type types/preview-blocks-v2", "types/preview-blocks-v1 in pinned v5/v6", "unlike informational Types, one of",
+			"The blocking Type types/preview-blocks", "unlike informational Types, one of",
 			"--if-source-revision TOKEN or --unconditional-source.",
 		}},
 		{"show", showCmd, []string{"Graph preview workspaces:", "ordinary detail array", "--format graph-json"}},

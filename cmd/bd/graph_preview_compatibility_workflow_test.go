@@ -97,7 +97,7 @@ func TestGraphPreviewCompatibilityDefaultsWorkflow(t *testing.T) {
 				t.Fatal("guarded title edit lost omitted body")
 			}
 
-			related := scope + "types/preview-related-v2"
+			related := scope + "types/preview-related"
 			link := graphMixedResult[graphstore.LinkMutationResult](t, call("link", memory.ID, other.ID, "--resource-type", related))
 			if link.ReplacedSource == nil {
 				t.Fatal("default Link creation lost source predecessor")
@@ -135,7 +135,7 @@ func TestGraphPreviewCompatibilityDefaultsWorkflow(t *testing.T) {
 				t.Fatal("default informational Link changed or disclosed its Issue source")
 			}
 			human := graphPolicyCLI(t, bd, work, home, nil, "", "link", "list", "--incident-to", issue.ID)
-			if !strings.Contains(human, "types/preview-related-v2  "+strings.TrimPrefix(unowned.Link.ID, scope)+"  "+strings.TrimPrefix(issue.ID, scope)+" → "+strings.TrimPrefix(memory.ID, scope)) {
+			if !strings.Contains(human, "types/preview-related  "+strings.TrimPrefix(unowned.Link.ID, scope)+"  "+strings.TrimPrefix(issue.ID, scope)+" → "+strings.TrimPrefix(memory.ID, scope)) {
 				t.Fatalf("links omitted type-first local display: %q", human)
 			}
 			call("link", "delete", "--force", unowned.Link.ID, "--if-revision", unowned.Link.Revision)

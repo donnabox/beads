@@ -489,7 +489,7 @@ func TestIncidentMappingCorruptionRefuses(t *testing.T) {
 					"informational-type":    `UPDATE graph_preview_catalog SET type_url='https://wrong.example/type' WHERE path='links/test'`,
 					"dependency-catalog":    `DELETE FROM graph_preview_catalog WHERE path='links/test'`,
 					"dependency-payload":    `DELETE FROM dependencies`,
-					"dependency-type":       `UPDATE graph_preview_catalog SET type_url='` + o.Binding.ScopeURL + `types/preview-parent-child-v1' WHERE path='links/test'`,
+					"dependency-type":       `UPDATE graph_preview_catalog SET type_url='` + o.Binding.ScopeURL + `types/preview-parent-child' WHERE path='links/test'`,
 				}[corruption]
 				if _, err := s.db.ExecContext(ctx, query); err != nil {
 					t.Fatal(err)

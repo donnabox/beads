@@ -30,10 +30,9 @@ func TestFreshTypeNamesFollowPreviewTypeDefinitions(t *testing.T) {
 	}
 }
 
-// Direct Store callers may omit TypeGeneration. That zero value can describe a
-// fresh v7 installation or an older pinned one; only the installed, checked
-// descriptor set decides whether relationship journeys are available.
-func TestUnspecifiedStoreGenerationRequiresFullV7Relationships(t *testing.T) {
+// Direct Store callers may omit TypeGeneration. The checked installed set, not
+// an implied older generation, decides whether relationship journeys are safe.
+func TestUnspecifiedStoreGenerationRequiresCompleteFreshTypes(t *testing.T) {
 	ctx, options := issueExperimentOptions(t, "embedded")
 	if options.TypeGeneration != 0 {
 		t.Fatalf("direct Store fixture should omit TypeGeneration, got %d", options.TypeGeneration)
@@ -55,18 +54,17 @@ func TestUnspecifiedStoreGenerationRequiresFullV7Relationships(t *testing.T) {
 	}
 	request := EpicCloseRequest{Path: "beads/epic", ExpectedRevision: epic.Revision, Reason: "Done", Actor: "author"}
 	if _, err := store.ListChildren(ctx, "beads/epic"); err != nil {
-		t.Fatalf("fresh v7 children rejected with unspecified generation: %v", err)
+		t.Fatalf("fresh children rejected: %v", err)
 	}
 	if _, err := store.ListChildrenLegacy(ctx, "beads/epic"); err != nil {
-		t.Fatalf("fresh v7 counted children rejected with unspecified generation: %v", err)
+		t.Fatalf("fresh counted children rejected: %v", err)
 	}
 	if _, err := store.EpicStatuses(ctx); err != nil {
-		t.Fatalf("fresh v7 epic progress rejected with unspecified generation: %v", err)
+		t.Fatalf("fresh epic progress rejected: %v", err)
 	}
 	if _, err := store.CloseEligibleEpic(ctx, request); !errors.Is(err, ErrConflict) {
 		t.Fatalf("empty epic should reach eligibility check, got %v", err)
 	}
-
 	var fingerprint string
 	if err := store.db.QueryRowContext(ctx, `SELECT fingerprint FROM graph_preview_types WHERE name='parent-child'`).Scan(&fingerprint); err != nil {
 		t.Fatal(err)
@@ -75,35 +73,17 @@ func TestUnspecifiedStoreGenerationRequiresFullV7Relationships(t *testing.T) {
 		t.Fatal(err)
 	}
 	if _, err := store.EpicStatuses(ctx); !errors.Is(err, ErrInvalidStore) {
-		t.Fatalf("altered v7 fingerprint admitted: %v", err)
+		t.Fatalf("altered fingerprint admitted: %v", err)
 	}
 	if _, err := store.db.ExecContext(ctx, `UPDATE graph_preview_types SET fingerprint=? WHERE name='parent-child'`, fingerprint); err != nil {
 		t.Fatal(err)
 	}
-
-	checkRefused := func(generation string) {
-		t.Helper()
-		if _, err := store.ListChildren(ctx, "beads/epic"); !errors.Is(err, ErrCapabilityUnavailable) {
-			t.Fatalf("%s children admitted: %v", generation, err)
-		}
-		if _, err := store.ListChildrenLegacy(ctx, "beads/epic"); !errors.Is(err, ErrCapabilityUnavailable) {
-			t.Fatalf("%s counted children admitted: %v", generation, err)
-		}
-		if _, err := store.EpicStatuses(ctx); !errors.Is(err, ErrCapabilityUnavailable) {
-			t.Fatalf("%s epic progress admitted: %v", generation, err)
-		}
-		if _, err := store.CloseEligibleEpic(ctx, request); !errors.Is(err, ErrCapabilityUnavailable) {
-			t.Fatalf("%s epic close admitted: %v", generation, err)
-		}
-	}
-	if _, err := store.db.ExecContext(ctx, `DELETE FROM graph_preview_types WHERE name IN ('issue-v3','blocks-v2','parent-child','duplicates','supersedes')`); err != nil {
+	if _, err := store.db.ExecContext(ctx, `DELETE FROM graph_preview_types WHERE name='supersedes'`); err != nil {
 		t.Fatal(err)
 	}
-	checkRefused("six-Type")
-	if _, err := store.db.ExecContext(ctx, `DELETE FROM graph_preview_types WHERE name IN ('example-follows','example-cites')`); err != nil {
-		t.Fatal(err)
+	if _, err := store.ListChildren(ctx, "beads/epic"); !errors.Is(err, ErrInvalidStore) {
+		t.Fatalf("partial installation admitted: %v", err)
 	}
-	checkRefused("four-Type")
 }
 
 // The common-metadata columns change the preview storage layout and require
@@ -115,7 +95,7 @@ func TestUnspecifiedStoreGenerationRequiresFullV7Relationships(t *testing.T) {
 // engines, so only the embedded engine is exercised here.
 func TestPreviewSchemaVersionAndInstalledTypeCounts(t *testing.T) {
 	if SchemaVersion != 7 {
-		t.Fatalf("SchemaVersion is %d, want 7 for the common-metadata storage layout", SchemaVersion)
+		t.Fatalf("SchemaVersion is %d, want 7 for common metadata", SchemaVersion)
 	}
 	ctx, o := issueExperimentOptions(t, "embedded")
 	s, err := OpenExisting(ctx, o)
@@ -140,28 +120,13 @@ func TestPreviewSchemaVersionAndInstalledTypeCounts(t *testing.T) {
 		descriptors, err := installedPreviewTypes(ctx, tx, s.ScopeURL())
 		return len(descriptors), err
 	}
-	if count, err := installed(); err != nil || count != 11 {
-		t.Fatalf("fresh installation admitted %d Types with %v, want all 11", count, err)
+	if count, err := installed(); err != nil || count != 9 {
+		t.Fatalf("fresh installation has %d Types with %v; want 9", count, err)
 	}
-	// Ten Types is a partial relationship generation and must be refused.
 	if _, err := s.db.ExecContext(ctx, `DELETE FROM graph_preview_types WHERE name='supersedes'`); err != nil {
 		t.Fatal(err)
 	}
 	if count, err := installed(); !errors.Is(err, ErrInvalidStore) {
-		t.Fatalf("ten Types admitted: %d Types with %v, want ErrInvalidStore", count, err)
-	}
-	// Remove the rest of the v7 suffix to recover the exact six-Type set.
-	if _, err := s.db.ExecContext(ctx, `DELETE FROM graph_preview_types WHERE name IN ('issue-v3','blocks-v2','parent-child','duplicates')`); err != nil {
-		t.Fatal(err)
-	}
-	if count, err := installed(); err != nil || count != 6 {
-		t.Fatalf("prior installation admitted %d Types with %v, want 6", count, err)
-	}
-	// Removing both example rows leaves precisely the original four.
-	if _, err := s.db.ExecContext(ctx, `DELETE FROM graph_preview_types WHERE name IN ('example-follows','example-cites')`); err != nil {
-		t.Fatal(err)
-	}
-	if count, err := installed(); err != nil || count != 4 {
-		t.Fatalf("legacy installation admitted %d Types with %v, want the original 4", count, err)
+		t.Fatalf("eight-Type partial installation admitted: %d, %v", count, err)
 	}
 }

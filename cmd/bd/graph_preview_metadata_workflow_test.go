@@ -59,7 +59,7 @@ func TestGraphPreviewCommonMetadataInstalledWorkflow(t *testing.T) {
 			if !bytes.Equal(issue.Metadata, []byte(`{"team":"issues"}`)) || len(issue.Properties.Metadata) != 0 {
 				t.Fatalf("Issue metadata = %s, properties=%+v", issue.Metadata, issue.Properties)
 			}
-			link := graphMixedResult[graphstore.LinkMutationResult](t, call("link", memory.ID, issue.ID, "--id", "context", "--resource-type", scope+"types/preview-related-v2", "--metadata", `{"origin":"manual"}`, "--if-source-revision", memory.Revision))
+			link := graphMixedResult[graphstore.LinkMutationResult](t, call("link", memory.ID, issue.ID, "--id", "context", "--resource-type", scope+"types/preview-related", "--metadata", `{"origin":"manual"}`, "--if-source-revision", memory.Revision))
 			if !bytes.Equal(link.Link.Metadata, []byte(`{"origin":"manual"}`)) {
 				t.Fatalf("Link metadata = %s", link.Link.Metadata)
 			}

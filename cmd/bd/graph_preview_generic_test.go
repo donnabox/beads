@@ -81,7 +81,7 @@ func TestGraphPreviewGenericInput(t *testing.T) {
 		{name: "wrong-view", flags: []string{"--view=issue"}, args: []string{"beads/a"}, code: 5},
 		{name: "missing-root", flags: []string{"--view=generic"}, code: 2},
 		{name: "link-root", flags: []string{"--view=generic"}, args: []string{"links/a"}, code: 2},
-		{name: "type-root", flags: []string{"--view=generic"}, args: []string{genericTestScope + "types/preview-memory-v1"}, code: 2},
+		{name: "type-root", flags: []string{"--view=generic"}, args: []string{genericTestScope + "types/preview-memory"}, code: 2},
 		{name: "foreign-root", flags: []string{"--view=generic"}, args: []string{"https://foreign.test/beads/a"}, code: 2},
 		{name: "version-root", flags: []string{"--view=generic"}, args: []string{genericTestScope + "beads/a?version=old"}, code: 2},
 		{name: "unsupported-root", flags: []string{"--view=generic"}, args: []string{"alias/a"}, code: 2},

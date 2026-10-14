@@ -148,184 +148,69 @@ func TestGraphPreviewMarkerGenerationWorkflow(t *testing.T) {
 	graphPolicyCLI(t, bd, work, home, nil, "", "init", "--graph-mode", "link", "--scope-url", scope, "--skip-hooks", "--skip-agents", "--non-interactive")
 	beadsDir := filepath.Join(work, ".beads")
 	markerPath := filepath.Join(beadsDir, graphPreviewMarker)
-	dataDir := filepath.Join(beadsDir, "embeddeddolt")
-
-	loadConfig := func(t *testing.T) *configfile.Config {
-		t.Helper()
-		cfg, err := configfile.LoadForDiscovery(beadsDir)
-		if err != nil || cfg == nil {
-			t.Fatalf("read initialized binding: %v", err)
-		}
-		return cfg
+	marker, err := os.ReadFile(markerPath)
+	if err != nil || string(marker) != graphPreviewGeneration {
+		t.Fatalf("fresh marker = %q (%v), want %q", marker, err, graphPreviewGeneration)
 	}
-	// readTypes runs a read command against the workspace under the given marker
-	// and returns how many Bead and Link Types it reports installed.
-	readTypes := func(t *testing.T, marker string) (beadTypes, linkTypes int) {
+	cfg, err := configfile.LoadForDiscovery(beadsDir)
+	if err != nil || cfg == nil {
+		t.Fatalf("read initialized binding: %v", err)
+	}
+	if cfg.GraphSchemaVersion != 7 {
+		t.Fatalf("graph_schema_version = %d, want 7", cfg.GraphSchemaVersion)
+	}
+	if persisted := graphGenerationQueryInt(t, cfg, `SELECT schema_version FROM graph_preview_scope WHERE singleton = 1`); persisted != 7 {
+		t.Fatalf("persisted schema_version = %d, want 7", persisted)
+	}
+	var installed struct {
+		Result struct {
+			BeadTypes []json.RawMessage `json:"beadTypes"`
+			LinkTypes []json.RawMessage `json:"linkTypes"`
+		} `json:"result"`
+	}
+	out := graphPolicyCLI(t, bd, work, home, nil, "", "types", "--json")
+	if err := json.Unmarshal([]byte(out), &installed); err != nil {
+		t.Fatalf("read fresh Type inventory: %v\n%s", err, out)
+	}
+	if beads, links := len(installed.Result.BeadTypes), len(installed.Result.LinkTypes); beads != 2 || links != 7 {
+		t.Fatalf("fresh installed Types = %d Bead, %d Link; want 2 and 7", beads, links)
+	}
+
+	refuse := func(marker, want string) {
 		t.Helper()
 		writeFile(t, markerPath, []byte(marker))
-		var installed struct {
-			Result struct {
-				BeadTypes []json.RawMessage `json:"beadTypes"`
-				LinkTypes []json.RawMessage `json:"linkTypes"`
-			} `json:"result"`
-		}
-		out := graphPolicyCLI(t, bd, work, home, nil, "", "types", "--json")
-		if err := json.Unmarshal([]byte(out), &installed); err != nil {
-			t.Fatalf("types under marker %q: %v\n%s", marker, err, out)
-		}
-		return len(installed.Result.BeadTypes), len(installed.Result.LinkTypes)
-	}
-	// refuse asserts that a command is refused at admission under the marker, with
-	// exactly the wanted message, and that the refusal changed nothing on disk.
-	refuse := func(t *testing.T, marker, want string, args ...string) {
-		t.Helper()
-		writeFile(t, markerPath, []byte(marker))
 		before := legacyUpgradeTreeDigest(t, beadsDir)
-		if got := graphGenerationRefusal(t, bd, work, home, args...); got != want {
-			t.Fatalf("marker %q: refusal message\n got: %s\nwant: %s", marker, got, want)
+		if got := graphGenerationRefusal(t, bd, work, home, "types"); got != want {
+			t.Fatalf("marker %q: refusal = %q, want %q", marker, got, want)
 		}
 		if after := legacyUpgradeTreeDigest(t, beadsDir); after != before {
-			t.Fatalf("marker %q: refused command changed the workspace", marker)
+			t.Fatalf("marker %q: refused read changed workspace", marker)
 		}
 	}
-	newerRefusal := func(number string) string {
-		return "graph_mode workspace format link-preview-v" + number + " is newer than this bd supports (link-preview-v7); upgrade bd; no database was opened"
+	for _, old := range []string{"link-preview-v5\n", "link-preview-v6\n", "link-preview-v7\n"} {
+		refuse(old, graphGenerationFirstGateRefusal)
+	}
+	refuse("link-preview-v9\n", "graph_mode workspace format link-preview-v9 is newer than this bd supports (link-preview-v8); upgrade bd; no database was opened")
+	refuse("link-preview-v8", graphGenerationFirstGateRefusal)
+	refuse("link-preview-v8x\n", graphGenerationFirstGateRefusal)
+
+	if err := os.Remove(markerPath); err != nil {
+		t.Fatal(err)
+	}
+	before := legacyUpgradeTreeDigest(t, beadsDir)
+	if got := graphGenerationRefusal(t, bd, work, home, "types"); got != graphGenerationSecondGateRefusal {
+		t.Fatalf("missing marker: refusal = %q, want %q", got, graphGenerationSecondGateRefusal)
+	}
+	if after := legacyUpgradeTreeDigest(t, beadsDir); after != before {
+		t.Fatal("missing marker read changed workspace")
 	}
 
-	t.Run("fresh init writes the current generation", func(t *testing.T) {
-		marker, err := os.ReadFile(markerPath)
-		if err != nil || string(marker) != "link-preview-v7\n" {
-			t.Fatalf("fresh workspace marker = %q (%v), want link-preview-v7 and a newline", marker, err)
-		}
-		// Common metadata changes the storage layout independently of the
-		// installed Type generation.
-		if cfg := loadConfig(t); cfg.GraphSchemaVersion != 7 {
-			t.Fatalf("graph_schema_version = %d, want 7", cfg.GraphSchemaVersion)
-		}
-		if persisted := graphGenerationQueryInt(t, loadConfig(t), `SELECT schema_version FROM graph_preview_scope WHERE singleton = 1`); persisted != 7 {
-			t.Fatalf("persisted schema_version = %d, want 7", persisted)
-		}
-	})
-
-	t.Run("admits link-preview-v7 over eleven Types", func(t *testing.T) {
-		if beads, links := readTypes(t, "link-preview-v7\n"); beads != 3 || links != 8 {
-			t.Fatalf("installed Types = %d Bead, %d Link; want 3 and 8", beads, links)
-		}
-	})
-
-	// Recreate the exact preceding six-Type installation. The new binary reads
-	// it as v6 and v5 without inserting any v7 Type or changing old fingerprints.
-	graphGenerationExec(t, loadConfig(t), `DELETE FROM graph_preview_types WHERE name IN ('issue-v3','blocks-v2','parent-child','duplicates','supersedes')`)
-	t.Run("admits link-preview-v6 over six Types", func(t *testing.T) {
-		if beads, links := readTypes(t, "link-preview-v6\n"); beads != 2 || links != 4 {
-			t.Fatalf("installed Types = %d Bead, %d Link; want 2 and 4", beads, links)
-		}
-	})
-
-	t.Run("admits link-preview-v5 over six Types", func(t *testing.T) {
-		if beads, links := readTypes(t, "link-preview-v5\n"); beads != 2 || links != 4 {
-			t.Fatalf("installed Types = %d Bead, %d Link; want 2 and 4", beads, links)
-		}
-	})
-	t.Run("v7 marker does not adopt a v6 installation", func(t *testing.T) {
-		writeFile(t, markerPath, []byte("link-preview-v7\n"))
-		before := legacyUpgradeTreeDigest(t, beadsDir)
-		stdout, stderr, exit := graphGenerationRun(t, bd, work, home, "types", "--json")
-		if exit != 5 || stdout != "" || !strings.Contains(stderr, `"code":"invalid_store"`) ||
-			!strings.Contains(stderr, "marker and installed Type generation differ") {
-			t.Fatalf("v7 marker over six Types: exit=%d stdout=%q stderr=%q", exit, stdout, stderr)
-		}
-		if after := legacyUpgradeTreeDigest(t, beadsDir); after != before {
-			t.Fatal("generation mismatch read changed the workspace")
-		}
-	})
-
-	t.Run("refuses a newer generation at the first gate", func(t *testing.T) {
-		// 10 sorts before 7 as text and 18446744073709551616 overflows 64 bits;
-		// both are still newer, and the write is refused the same way as a read.
-		for _, number := range []string{"8", "10", "18446744073709551616"} {
-			refuse(t, "link-preview-v"+number+"\n", newerRefusal(number), "types")
-		}
-		refuse(t, "link-preview-v8\n", newerRefusal("8"), "remember", "Refused write", "--id", "beads/refused", "--title", "Refused")
-	})
-
-	t.Run("keeps the existing refusal for every other marker", func(t *testing.T) {
-		for _, tc := range []struct{ name, marker string }{
-			{"older generation", "link-preview-v4\n"},
-			{"empty file", ""},
-			{"current generation without a newline", "link-preview-v7"},
-			{"newer generation without a newline", "link-preview-v8"},
-			{"leading zero", "link-preview-v06\n"},
-			{"trailing text on the current generation", "link-preview-v7x\n"},
-			{"trailing text on a newer generation", "link-preview-v8x\n"},
-			{"no number", "link-preview-v"},
-			{"no number with a newline", "link-preview-v\n"},
-			{"newer generation with a second newline", "link-preview-v8\n\n"},
-		} {
-			t.Run(tc.name, func(t *testing.T) {
-				refuse(t, tc.marker, graphGenerationFirstGateRefusal, "types")
-			})
-		}
-	})
-
-	t.Run("a missing marker is refused at the second gate", func(t *testing.T) {
-		if err := os.Remove(markerPath); err != nil {
-			t.Fatal(err)
-		}
-		before := legacyUpgradeTreeDigest(t, beadsDir)
-		if got := graphGenerationRefusal(t, bd, work, home, "types"); got != graphGenerationSecondGateRefusal {
-			t.Fatalf("missing marker: refusal message\n got: %s\nwant: %s", got, graphGenerationSecondGateRefusal)
-		}
-		if after := legacyUpgradeTreeDigest(t, beadsDir); after != before {
-			t.Fatal("refused command changed the workspace")
-		}
-	})
-
-	t.Run("generation-specific routes refuse before the store is opened", func(t *testing.T) {
-		away := filepath.Join(beadsDir, "embeddeddolt.away")
-		if err := os.Rename(dataDir, away); err != nil {
-			t.Fatal(err)
-		}
-		t.Cleanup(func() {
-			if err := os.Rename(away, dataDir); err != nil {
-				t.Error(err)
-			}
-		})
-		// Control: with the store gone, a supported marker fails for some other
-		// reason, so the refusal below cannot come from looking at the store.
-		writeFile(t, markerPath, []byte("link-preview-v6\n"))
-		stdout, stderr, exit := graphGenerationRun(t, bd, work, home, "types", "--json")
-		if exit == 0 || stdout != "" {
-			t.Fatalf("a missing store was not noticed: exit %d stdout=%q stderr=%q", exit, stdout, stderr)
-		}
-		for _, marker := range []string{graphGenerationFirstGateRefusal, graphGenerationSecondGateRefusal, "newer than this bd supports"} {
-			if strings.Contains(stderr, marker) {
-				t.Fatalf("a supported marker was refused as a marker problem: %s", stderr)
-			}
-		}
-		refuse(t, "link-preview-v8\n", newerRefusal("8"), "types")
-		for _, marker := range []string{"link-preview-v5\n", "link-preview-v6\n"} {
-			writeFile(t, markerPath, []byte(marker))
-			for _, args := range [][]string{
-				{"create", "Child", "--parent", "parent", "--json"},
-				{"children", "beads/parent", "--json"},
-				{"epic", "status", "--json"},
-				{"epic", "close-eligible", "--dry-run", "--json"},
-				{"epic", "close-eligible", "--json"},
-			} {
-				graphPolicyCLI(t, bd, work, home, nil, "capability_unavailable", args...)
-			}
-		}
-	})
-
-	t.Run("admits link-preview-v5 over the legacy four Types", func(t *testing.T) {
-		// Removing the two unused example rows recreates the original four-Type
-		// installation, which this bd still opens and never upgrades.
-		graphGenerationExec(t, loadConfig(t), `DELETE FROM graph_preview_types WHERE name IN ('example-follows','example-cites')`)
-		if beads, links := readTypes(t, "link-preview-v5\n"); beads != 2 || links != 2 {
-			t.Fatalf("installed Types = %d Bead, %d Link; want the original 2 and 2", beads, links)
-		}
-	})
+	writeFile(t, markerPath, []byte(graphPreviewGeneration))
+	graphGenerationExec(t, cfg, `DELETE FROM graph_preview_types WHERE name='supersedes'`)
+	stdout, stderr, exit := graphGenerationRun(t, bd, work, home, "types", "--json")
+	if exit != 5 || stdout != "" || !strings.Contains(stderr, `"code":"invalid_store"`) {
+		t.Fatalf("partial installation admitted: exit=%d stdout=%q stderr=%q", exit, stdout, stderr)
+	}
 }
 
 // Inspect the same native rows the installed CLI must have written. Close the
@@ -392,11 +277,11 @@ func graphInstalledRelationship(t *testing.T, work, linkPath, sourceID, targetID
 	return state
 }
 
-func TestGraphPreviewInstalledV7TypedRelationshipsAndLegacyRefusal(t *testing.T) {
+func TestGraphPreviewInstalledFreshTypedRelationships(t *testing.T) {
 	bd := buildBDUnderTest(t)
 	const scope = "https://example.invalid/typed-relationships/"
 	for _, engine := range []string{"embedded", "server"} {
-		t.Run("v7-"+engine, func(t *testing.T) {
+		t.Run("v8-"+engine, func(t *testing.T) {
 			work, home := graphListWorkspace(t, bd, engine, scope)
 			call := func(args ...string) string {
 				t.Helper()
@@ -470,44 +355,4 @@ func TestGraphPreviewInstalledV7TypedRelationshipsAndLegacyRefusal(t *testing.T)
 		})
 	}
 
-	for _, generation := range []string{"v5", "v6"} {
-		t.Run(generation+"-pinned", func(t *testing.T) {
-			work, home := graphListWorkspace(t, bd, "embedded", scope)
-			beadsDir := filepath.Join(work, ".beads")
-			cfg, err := configfile.LoadForDiscovery(beadsDir)
-			if err != nil || cfg == nil {
-				t.Fatalf("load graph workspace binding: %v", err)
-			}
-			graphGenerationExec(t, cfg, `DELETE FROM graph_preview_types WHERE name IN ('issue-v3','blocks-v2','parent-child','duplicates','supersedes')`)
-			writeFile(t, filepath.Join(beadsDir, graphPreviewMarker), []byte("link-preview-"+generation+"\n"))
-			call := func(args ...string) string {
-				t.Helper()
-				return graphPolicyCLI(t, bd, work, home, nil, "", append(args, "--json")...)
-			}
-			call("create", "Source", "--id", "beads/source")
-			call("create", "Target", "--id", "beads/target")
-			before := call("show", "beads/source", "--format", "graph-json")
-			for _, args := range [][]string{
-				{"children", "beads/source", "--json"},
-				{"epic", "status", "--json"},
-				{"epic", "close-eligible", "--dry-run", "--json"},
-				{"epic", "close-eligible", "--json"},
-			} {
-				graphPolicyCLI(t, bd, work, home, nil, "capability_unavailable", args...)
-			}
-			for _, kind := range []types.DependencyType{types.DepParentChild, types.DepDuplicates, types.DepSupersedes} {
-				graphPolicyCLI(t, bd, work, home, nil, "capability_unavailable", "dep", "add", "beads/source", "beads/target", "--type", string(kind), "--json")
-				typeURL, _ := graphstore.RelationshipDependencyTypeURL(scope, kind)
-				graphPolicyCLI(t, bd, work, home, nil, "capability_unavailable", "link", "beads/source", "beads/target", "--link-type", typeURL, "--unconditional-source", "--json")
-			}
-			if after := call("show", "beads/source", "--format", "graph-json"); after != before || graphGenerationQueryInt(t, cfg, `SELECT COUNT(*) FROM dependencies`) != 0 ||
-				graphGenerationQueryInt(t, cfg, `SELECT COUNT(*) FROM graph_preview_types`) != 6 {
-				t.Fatal("pinned workspace changed after typed relationship refusals")
-			}
-			blocking := graphMixedResult[graphstore.DependencyResult](t, call("dep", "add", "beads/source", "beads/target"))
-			if blocking.Link.Type != graphstore.DependencyTypeURL(scope) {
-				t.Fatalf("pinned workspace lost its original blocking Type: %+v", blocking.Link)
-			}
-		})
-	}
 }
