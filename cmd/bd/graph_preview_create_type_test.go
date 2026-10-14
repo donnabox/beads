@@ -66,14 +66,14 @@ func TestGraphPreviewCreateBeadTypeSelection(t *testing.T) {
 	}{
 		{name: "default-issue", want: graphstore.IssueTypeURL(scope)},
 		{name: "classification-is-not-bead-type", flags: []string{"--type=bug"}, want: graphstore.IssueTypeURL(scope)},
-		{name: "short-issue", flags: []string{"--bead-type=preview-issue-v2"}, want: graphstore.IssueTypeURL(scope)},
-		{name: "relative-issue", flags: []string{"--bead-type=types/preview-issue-v2"}, want: graphstore.IssueTypeURL(scope)},
+		{name: "short-issue", flags: []string{"--bead-type=preview-issue"}, want: graphstore.IssueTypeURL(scope)},
+		{name: "relative-issue", flags: []string{"--bead-type=types/preview-issue"}, want: graphstore.IssueTypeURL(scope)},
 		{name: "canonical-issue", flags: []string{"--bead-type=" + graphstore.IssueTypeURL(scope)}, want: graphstore.IssueTypeURL(scope)},
-		{name: "short-memory", flags: []string{"--bead-type=preview-memory-v2"}, want: graphstore.MemoryTypeURL(scope)},
-		{name: "relative-memory", flags: []string{"--bead-type=types/preview-memory-v2"}, want: graphstore.MemoryTypeURL(scope)},
+		{name: "short-memory", flags: []string{"--bead-type=preview-memory"}, want: graphstore.MemoryTypeURL(scope)},
+		{name: "relative-memory", flags: []string{"--bead-type=types/preview-memory"}, want: graphstore.MemoryTypeURL(scope)},
 		{name: "canonical-memory", flags: []string{"--bead-type=" + graphstore.MemoryTypeURL(scope)}, want: graphstore.MemoryTypeURL(scope)},
 		{name: "empty", flags: []string{"--bead-type="}, code: 2},
-		{name: "foreign", flags: []string{"--bead-type=https://foreign.invalid/types/preview-memory-v2"}, code: 2},
+		{name: "foreign", flags: []string{"--bead-type=https://foreign.invalid/types/preview-memory"}, code: 2},
 		{name: "uninstalled", flags: []string{"--bead-type=types/custom"}, code: 5},
 	} {
 		t.Run(tc.name, func(t *testing.T) {
@@ -92,58 +92,36 @@ func TestGraphPreviewCreateBeadTypeSelection(t *testing.T) {
 	}
 }
 
-func TestGraphPreviewCreateBeadTypeFollowsWorkspaceGeneration(t *testing.T) {
+func TestGraphPreviewCreateBeadTypeUsesOneFreshIssueType(t *testing.T) {
 	const scope = "https://example.invalid/project/"
 	previous := graphPreviewTypeGeneration
+	graphPreviewTypeGeneration = 8
 	t.Cleanup(func() { graphPreviewTypeGeneration = previous })
-	for _, tc := range []struct {
-		generation int
-		issueType  string
-		blockType  string
-	}{
-		{5, graphstore.IssueTypeURL(scope), graphstore.DependencyTypeURL(scope)},
-		{6, graphstore.IssueTypeURL(scope), graphstore.DependencyTypeURL(scope)},
-		{7, graphstore.RelationshipIssueTypeURL(scope), graphstore.RelationshipBlockingTypeURL(scope)},
-	} {
-		graphPreviewTypeGeneration = tc.generation
-		if got := graphPreviewBlockingTypeURL(scope); got != tc.blockType {
-			t.Fatalf("generation %d blocking Type %q, want %q", tc.generation, got, tc.blockType)
+	if got := graphPreviewBlockingTypeURL(scope); got != graphstore.DependencyTypeURL(scope) {
+		t.Fatalf("blocking Type = %q", got)
+	}
+	for _, flags := range [][]string{nil, {"--bead-type=" + graphstore.IssueTypeURL(scope)}} {
+		if got, err := graphPreviewCreateBeadType(graphCreateTypeCommand(t, flags), scope); err != nil || got != graphstore.IssueTypeURL(scope) {
+			t.Fatalf("flags %v: Issue Type %q, err %v", flags, got, err)
 		}
-		for _, flags := range [][]string{nil, {"--bead-type=" + tc.issueType}} {
-			if got, err := graphPreviewCreateBeadType(graphCreateTypeCommand(t, flags), scope); err != nil || got != tc.issueType {
-				t.Fatalf("generation %d flags %v: Issue Type %q, err %v", tc.generation, flags, got, err)
-			}
-		}
-		other := graphstore.IssueTypeURL(scope)
-		if tc.generation != 7 {
-			other = graphstore.RelationshipIssueTypeURL(scope)
-		}
-		if got, err := graphPreviewCreateBeadType(graphCreateTypeCommand(t, []string{"--bead-type=" + other}), scope); got != "" || err == nil {
-			t.Fatalf("generation %d admitted other Issue Type %q: %q, %v", tc.generation, other, got, err)
-		}
+	}
+	if got, err := graphPreviewCreateBeadType(graphCreateTypeCommand(t, []string{"--bead-type=types/preview-issue-v3"}), scope); got != "" || err == nil {
+		t.Fatalf("admitted obsolete Issue Type: %q, %v", got, err)
 	}
 }
 
-func TestGraphPreviewNativeDependencySelectionFollowsWorkspaceGeneration(t *testing.T) {
+func TestGraphPreviewNativeDependencySelectionUsesFreshTypes(t *testing.T) {
 	const scope = "https://example.invalid/project/"
 	previous := graphPreviewTypeGeneration
+	graphPreviewTypeGeneration = 8
 	t.Cleanup(func() { graphPreviewTypeGeneration = previous })
-	for _, generation := range []int{5, 6, 7} {
-		graphPreviewTypeGeneration = generation
-		for _, native := range []types.DependencyType{types.DepBlocks, types.DepParentChild, types.DepDuplicates, types.DepSupersedes} {
-			url, admitted := graphPreviewDependencyTypeURL(scope, native)
-			if admitted != (native == types.DepBlocks || generation == 7) {
-				t.Fatalf("generation %d native %q admission = %t", generation, native, admitted)
-			}
-			if !admitted {
-				continue
-			}
-			if got, ok := graphPreviewNativeDependencyType(scope, url); !ok || got != native {
-				t.Fatalf("generation %d native %q URL %q maps back to %q, %t", generation, native, url, got, ok)
-			}
+	for _, native := range []types.DependencyType{types.DepBlocks, types.DepParentChild, types.DepDuplicates, types.DepSupersedes} {
+		url, admitted := graphPreviewDependencyTypeURL(scope, native)
+		if !admitted {
+			t.Fatalf("native %q refused", native)
 		}
-		if _, ok := graphPreviewNativeDependencyType(scope, graphstore.DependencyTypeURL(scope)); ok != (generation != 7) {
-			t.Fatalf("generation %d admitted the wrong blocking Type", generation)
+		if got, ok := graphPreviewNativeDependencyType(scope, url); !ok || got != native {
+			t.Fatalf("native %q URL %q maps back to %q, %t", native, url, got, ok)
 		}
 	}
 }
@@ -195,7 +173,7 @@ func TestGraphPreviewCreateMemoryInput(t *testing.T) {
 		{name: "issue-estimate", flags: []string{"--estimate=0"}, code: 5},
 	} {
 		t.Run(tc.name, func(t *testing.T) {
-			cmd := graphCreateTypeCommand(t, append([]string{"--bead-type=types/preview-memory-v2"}, tc.flags...))
+			cmd := graphCreateTypeCommand(t, append([]string{"--bead-type=types/preview-memory"}, tc.flags...))
 			probe := &selectedRememberInputProbe{}
 			cmd.SetIn(probe)
 			title, body, err := graphPreviewCreateMemoryInput(cmd, tc.args)

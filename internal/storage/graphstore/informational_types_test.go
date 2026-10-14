@@ -158,96 +158,13 @@ func TestExampleInformationalTypeLifecycle(t *testing.T) {
 				t.Fatalf("Issue query with examples: %+v %v", got, err)
 			}
 			inventory, err := s.CurrentSnapshot(ctx)
-			if err != nil || len(inventory.Types) != 11 {
-				t.Fatalf("eleven-Type inventory: %+v %v", inventory.Types, err)
+			if err != nil || len(inventory.Types) != 9 {
+				t.Fatalf("nine-Type inventory: %+v %v", inventory.Types, err)
 			}
 			for _, record := range inventory.Records {
 				if link, ok := record.(LinkRecord); ok && link.Type == RelatedTypeURL(s.ScopeURL()) {
 					t.Fatal("example silently became Related")
 				}
-			}
-		})
-	}
-}
-
-func TestExampleTypesLegacyInstallation(t *testing.T) {
-	for _, backend := range []string{"embedded", "server"} {
-		t.Run(backend, func(t *testing.T) {
-			ctx, o := issueExperimentOptions(t, backend)
-			s, err := OpenExisting(ctx, o)
-			if err != nil {
-				t.Fatal(err)
-			}
-			t.Cleanup(func() {
-				if err := s.Close(); err != nil {
-					t.Error(err)
-				}
-			})
-			// Removing unused v7 and example rows recreates precisely the prior four-row
-			// installation; its schema, original descriptors and record format match.
-			if _, err := s.db.ExecContext(ctx, `DELETE FROM graph_preview_types WHERE name IN ('example-follows','example-cites','issue-v3','blocks-v2','parent-child','duplicates','supersedes')`); err != nil {
-				t.Fatal(err)
-			}
-			source, err := s.Create(ctx, CreateRequest{Path: "beads/source", Body: "Original policy"})
-			if err != nil {
-				t.Fatal(err)
-			}
-			if _, err := s.CreateIssue(ctx, "beads/work", plainIssue("Work")); err != nil {
-				t.Fatal(err)
-			}
-			legacy, err := s.AddInformationalLink(ctx, LinkCreateRequest{Path: "links/legacy", SourcePath: "beads/source", TargetPath: "beads/work", ExpectedSourceRevision: source.Revision})
-			if err != nil || legacy.Link.Type != RelatedTypeURL(s.ScopeURL()) {
-				t.Fatalf("legacy default: %+v %v", legacy, err)
-			}
-			if err := s.Close(); err != nil {
-				t.Fatal(err)
-			}
-			s, err = OpenExisting(ctx, o)
-			if err != nil {
-				t.Fatal(err)
-			}
-			before := workflowState(t, ctx, s)
-			for _, typ := range []string{ExampleFollowsTypeURL(s.ScopeURL()), ExampleCitesTypeURL(s.ScopeURL())} {
-				if _, err := s.ReadType(ctx, strings.TrimPrefix(typ, s.ScopeURL())); !errors.Is(err, ErrNotFound) {
-					t.Fatalf("fabricated uninstalled Type: %v", err)
-				}
-				if _, err := s.AddInformationalLink(ctx, LinkCreateRequest{SourcePath: "beads/source", TargetPath: "beads/work", TypeURL: typ, UnconditionalSource: true}); !errors.Is(err, ErrCapabilityUnavailable) {
-					t.Fatalf("created uninstalled Type: %v", err)
-				}
-				if _, err := s.ListLinks(ctx, LinksRequest{BeadPath: "beads/source", TypeURL: typ}); !errors.Is(err, ErrCapabilityUnavailable) {
-					t.Fatalf("filtered uninstalled Type: %v", err)
-				}
-				if _, err := s.Unlink(ctx, LinkDeleteRequest{SourcePath: "beads/source", TargetPath: "beads/work", TypeURL: typ, Unconditional: true, UnconditionalSource: true}); !errors.Is(err, ErrCapabilityUnavailable) {
-					t.Fatalf("selected uninstalled Type: %v", err)
-				}
-			}
-			current, err := s.CurrentSnapshot(ctx)
-			if err != nil || len(current.Types) != 4 {
-				t.Fatalf("legacy inventory upgraded: %+v %v", current.Types, err)
-			}
-			for _, descriptor := range current.Types {
-				var want []byte
-				for _, definition := range previewTypeDefinitions()[:4] {
-					expected, err := definition.build(s.ScopeURL())
-					if err != nil {
-						t.Fatal(err)
-					}
-					if expected.ID() == descriptor.ID() {
-						want = expected.CanonicalJSON()
-					}
-				}
-				if string(want) != string(descriptor.CanonicalJSON()) {
-					t.Fatal("original descriptor changed")
-				}
-			}
-			for _, want := range []Record{source, legacy.Source.(Record)} {
-				got, err := s.ReadVersion(ctx, "beads/source", want.Version)
-				if err != nil || !reflect.DeepEqual(got, want) {
-					t.Fatalf("legacy retained snapshot changed: %v", err)
-				}
-			}
-			if !reflect.DeepEqual(before, workflowState(t, ctx, s)) {
-				t.Fatal("legacy reads/refusals changed state")
 			}
 		})
 	}

@@ -41,8 +41,8 @@ Examples:
 		parentID := args[0]
 		pretty, _ := cmd.Flags().GetBool("pretty")
 		if graphPreviewActive {
-			if graphPreviewTypeGeneration != 7 {
-				return graphFailure("capability_unavailable", "graph children requires a fresh relationship workspace; this pinned workspace has no parent-child Link Type", 5)
+			if graphPreviewTypeGeneration != 8 {
+				return graphFailure("capability_unavailable", "graph children requires the current graph Type installation", 5)
 			}
 			if err := graphPreviewFlags(cmd); err != nil {
 				return err

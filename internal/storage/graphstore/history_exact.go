@@ -239,10 +239,10 @@ func (s *Store) validateVersionOwned(ctx context.Context, tx *sql.Tx, source, ow
 	if owned == nil || len(owned) > PreviewOwnedLinkLimit {
 		return fmt.Errorf("%w: invalid retained owned set", ErrInvalidStore)
 	}
-	// A retained Issue owns only the native Dependency Link Types declared by
-	// its generation. Memory owns only informational Links.
+	// A retained Issue owns only installed native Dependency Link Types.
+	// Memory owns only informational Links.
 	memoryOwner := ownerType == MemoryTypeURL(s.ScopeURL())
-	if !memoryOwner && ownerType != IssueTypeURL(s.ScopeURL()) && ownerType != RelationshipIssueTypeURL(s.ScopeURL()) {
+	if !memoryOwner && ownerType != IssueTypeURL(s.ScopeURL()) {
 		return fmt.Errorf("%w: unsupported retained owner Type", ErrInvalidStore)
 	}
 	previous := ""

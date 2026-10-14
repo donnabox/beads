@@ -66,7 +66,7 @@ Ordinary Issue workspaces:
 Use bd q TITLE to create one Issue and print only its Scope-relative ID.
 Pass -- before a title beginning with '-', for example bd q -- -follow-up.
 --parent is unavailable here; the graph parent-child journey
-is available through bd create on fresh v7 workspaces.
+is available through bd create on fresh graph workspaces.
 
 Ordinary Issue workspaces:
 ` + quickCmd.Long
@@ -109,23 +109,22 @@ recall does not accept legacy keys or --json.`},
 Without --id, the canonical beads/ path uses the Issue ID allocated by the
 ordinary writer, including this workspace's configured prefix and ID mode.
 An explicit --id keeps exactly the requested canonical path.
-On a fresh v7 relationship workspace, --parent ID creates a dotted child ID
+On a fresh graph workspace, --parent ID creates a dotted child ID
 and its parent-child Link in one transaction. The parent must be a local Issue;
 the child inherits its labels unless --no-inherit-labels is set. --parent and
---id cannot be combined. Pinned v5/v6 workspaces still refuse --parent.
+--id cannot be combined.
 --metadata accepts one JSON object on Issue or Memory creation; omitted
 metadata is {}. Metadata is separate from Type-validated properties.
 --properties JSON initializes the selected Type's writable fields, such as
 Issue description or Memory body. It may accompany shorthand flags only when
 they supply different fields; duplicate fields refuse.
-Use --bead-type preview-memory-v2 to create a Memory instead:
-  bd create --bead-type preview-memory-v2 --id policy --body 'Code flow policy'
+Use --bead-type preview-memory to create a Memory instead:
+  bd create --bead-type preview-memory --id policy --body 'Code flow policy'
 Use bd types to see Bead Types installed in this workspace. A short NAME,
 types/NAME, or a full local Type URL works. --type remains the Issue classification
 (for example task or bug), not the Bead Type. Memory creation
 accepts body/description/message and an optional title; unsupported Issue-only
-fields refuse. Fresh v7 workspaces create types/preview-issue-v3 Issues;
-pinned v5/v6 workspaces continue to create types/preview-issue-v2 Issues.`},
+fields refuse. Fresh workspaces create types/preview-issue Issues.`},
 		{showCmd, `Use bd show ID (equivalent to beads/ID) for a current Memory or
 Issue; use bd show links/ID for a Link. --version TOKEN selects one exact
 retained record; this is not an ordered history listing. A current Issue's
@@ -199,8 +198,7 @@ Memory-owned Links accept the current source by default, or use
 --if-source-revision TOKEN to reject a stale source. --metadata JSON supplies
 an initial open metadata object for informational Links; blocking Dependencies
 do not accept it. --unconditional-source
-explicitly selects the default. The blocking Type types/preview-blocks-v2 in
-fresh v7 workspaces, or types/preview-blocks-v1 in pinned v5/v6 workspaces,
+explicitly selects the default. The blocking Type types/preview-blocks
 requires Issue endpoints and, unlike informational Types, one of
 --if-source-revision TOKEN or --unconditional-source.`},
 		{closeCmd, `Close one or more local Issues by ID or beads/ID. One --reason

@@ -139,9 +139,6 @@ func runGraphPreviewAddDependency(cmd *cobra.Command, args []string) error {
 		}
 		nativeType, ok := graphPreviewNativeDependencyType(graphPreviewConfig.GraphScopeURL, resourceType)
 		if !ok {
-			if graphPreviewTypeGeneration != 7 {
-				return graphFailure("capability_unavailable", "this preview accepts only the installed Type "+graphPreviewBlockingTypeURL(graphPreviewConfig.GraphScopeURL), 5)
-			}
 			return graphFailure("capability_unavailable", "this preview accepts only an installed Issue-owned native Dependency Link Type", 5)
 		}
 		selectedType, _ = graphPreviewDependencyTypeURL(graphPreviewConfig.GraphScopeURL, nativeType)
@@ -157,25 +154,15 @@ func runGraphPreviewAddDependency(cmd *cobra.Command, args []string) error {
 		var ok bool
 		selectedType, ok = graphPreviewDependencyTypeURL(graphPreviewConfig.GraphScopeURL, typ)
 		if !ok {
-			if graphPreviewTypeGeneration != 7 {
-				return graphFailure("capability_unavailable", "this preview supports only local blocking Dependencies", 5)
-			}
-			return graphFailure("capability_unavailable", "this workspace generation does not support that native Dependency Type", 5)
+			return graphFailure("capability_unavailable", "this preview does not support that native Dependency Type", 5)
 		}
 	}
 	return graphPreviewInsertDependency(paths[0], paths[1], selectedType, linkPath, sourceRevision, args[0], args[1])
 }
 
-// CLI admission follows the persisted generation; the store independently
-// checks the installed Type in the write transaction.
+// The store independently checks the installed Type in the write transaction.
 func graphPreviewDependencyTypeURL(scope string, native types.DependencyType) (string, bool) {
-	if graphPreviewTypeGeneration == 7 {
-		return graphstore.RelationshipDependencyTypeURL(scope, native)
-	}
-	if native == types.DepBlocks {
-		return graphstore.DependencyTypeURL(scope), true
-	}
-	return "", false
+	return graphstore.RelationshipDependencyTypeURL(scope, native)
 }
 
 func graphPreviewNativeDependencyType(scope, typeURL string) (types.DependencyType, bool) {
@@ -265,7 +252,7 @@ func graphPreviewInsertDependency(sourcePath, targetPath, typeURL, linkPath, sou
 				if typeURL != "" && typeURL != graphPreviewBlockingTypeURL(graphPreviewConfig.GraphScopeURL) {
 					kind = "native Dependency"
 				}
-				return nil, "", fmt.Errorf("%s Link Type requires two live Issues; use an informational Type such as types/preview-related-v2 for Memory endpoints: %w", kind, err)
+				return nil, "", fmt.Errorf("%s Link Type requires two live Issues; use an informational Type such as types/preview-related for Memory endpoints: %w", kind, err)
 			}
 			return nil, "", err
 		}

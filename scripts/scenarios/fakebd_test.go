@@ -97,7 +97,7 @@ func fakeBDMain(args []string, stdin io.Reader, stdout, stderr io.Writer) int {
 		data, _ := json.Marshal(args)
 		_ = os.WriteFile(filepath.Join(".beads", "init-argv"), data, 0o644)
 		if !cfg.Legacy {
-			_ = os.WriteFile(filepath.Join(".beads", "graph-preview-format"), []byte("link-preview-v5\n"), 0o644)
+			_ = os.WriteFile(filepath.Join(".beads", "graph-preview-format"), []byte("link-preview-v8\n"), 0o644)
 		}
 		fmt.Fprintln(stdout, "Initialized fake workspace")
 		return 0

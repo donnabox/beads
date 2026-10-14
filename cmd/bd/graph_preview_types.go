@@ -17,9 +17,8 @@ type graphTypeInventory struct {
 	LinkTypes []json.RawMessage `json:"linkTypes"`
 }
 
-// The source of this inventory is the selected workspace's persisted Type
-// installation. This binary admits the older four- and six-Type stores without
-// changing their descriptors or upgrading their data.
+// The source of this inventory is the selected workspace's checked, persisted
+// Type installation.
 func runGraphPreviewTypes(cmd *cobra.Command, args []string) error {
 	if err := graphPreviewFlags(cmd, "details"); err != nil {
 		return err

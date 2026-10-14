@@ -327,20 +327,15 @@ func (s *Store) showIssueInTx(ctx context.Context, tx *sql.Tx, path string) (Iss
 		Properties: issue, Metadata: metadata, Owned: owned, Attribution: Attribution{Actor: actor, Status: status, RecordedAt: at.UTC().Format(time.RFC3339Nano)}}, nil
 }
 
-// The installed Type set, already fingerprint-checked by checkBinding, selects
-// the Issue allocation identity. A fresh v7 store uses Issue v3; pinned v5/v6
-// stores continue to allocate and hydrate Issue v2 without an in-place upgrade.
+// The installed Type set, already fingerprint-checked by checkBinding, uses
+// one Issue allocation identity. Older preview stores require a fresh init.
 func installedIssueTypeURLInTx(ctx context.Context, tx *sql.Tx, scope string) (string, error) {
 	var count int
 	if err := tx.QueryRowContext(ctx, `SELECT COUNT(*) FROM graph_preview_types`).Scan(&count); err != nil {
 		return "", err
 	}
-	switch count {
-	case 4, 6:
-		return IssueTypeURL(scope), nil
-	case 11:
-		return RelationshipIssueTypeURL(scope), nil
-	default:
+	if count != len(previewTypeDefinitions()) {
 		return "", fmt.Errorf("%w: unsupported Type installation", ErrInvalidStore)
 	}
+	return IssueTypeURL(scope), nil
 }

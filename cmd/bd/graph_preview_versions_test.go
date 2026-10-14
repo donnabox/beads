@@ -69,7 +69,7 @@ func TestGraphPreviewRemovedLinkVersionsTwoEngines(t *testing.T) {
 			call(initArgs...)
 			call("create", "Source", "--id", "source")
 			call("create", "Target", "--id", "target")
-			call("link", "source", "target", "--id", "links/edge", "--resource-type", scope+"types/preview-related-v2")
+			call("link", "source", "target", "--id", "links/edge", "--resource-type", scope+"types/preview-related")
 			call("update", "links/edge", "--properties", `{"note":"changed"}`)
 			removed := graphMixedResult[graphstore.LinkDeleteResult](t, call("link", "delete", "--force", "links/edge"))
 			listed := call("versions", "links/edge")
@@ -265,7 +265,7 @@ func TestGraphPreviewVersionsCLI(t *testing.T) {
 		// The informational Link Type URL for this scope. `bd link` routes to
 		// dependency creation for any other value, so this constant decides
 		// which plane the Link fixture lands on.
-		relatedType = scope + "types/preview-related-v2"
+		relatedType = scope + "types/preview-related"
 		// An explicit actor keeps the human ACTOR column a single token, so the
 		// column regex can tell actor and attribution apart, and makes the
 		// Issue plane's derived attribution_status deterministic: a non-empty

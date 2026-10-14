@@ -134,9 +134,9 @@ func TestGraphPreviewListOrderAndCapWorkflow(t *testing.T) {
 			expect("after editing the oldest", beads, more, edited, false)
 			beads, more = structured(nil, "--limit", "2")
 			expect("--limit 2 keeps the two newest", beads, more, edited[:2], true)
-			beads, more = structured(nil, "--bead-type", "types/preview-memory-v2")
+			beads, more = structured(nil, "--bead-type", "types/preview-memory")
 			expect("Memory Type", beads, more, []string{"beads/first", "beads/third"}, false)
-			beads, more = structured(nil, "--bead-type", "types/preview-issue-v3")
+			beads, more = structured(nil, "--bead-type", "types/preview-issue")
 			expect("Issue Type", beads, more, []string{"beads/second"}, false)
 			if got := graphListHumanPaths(graphPolicyCLI(t, bd, work, home, nil, "", "list")); !slices.Equal(got, edited) {
 				t.Fatalf("human rows %v follow a different order than the structured list %v", got, edited)
