@@ -62,7 +62,7 @@ Original service-review lows: RU trusted callback capability narrowing and publi
 
 ### Live worker ledger
 
-Checkpoint 2026-10-14T20:48:50Z. **ACTIVE: Transactional first**, with shared and targeted Update checks. Session `2026-10-08T20:26:35Z-81e5`. Public write profiles remain unadvertised; installed cumulative delivery predicates remain unmet. Ready main merges are operator-authorized after exact-head CI, native+Claude council, findings disposition, scope and ordinary ancestry checks, and actual merged-tree verification. Gemini excluded. No release/Preview2 or Janet CLI/staging/playgrounds/shared databases/Trish Type edits.
+Checkpoint 2026-10-14T20:50:55Z. **ACTIVE: Transactional first**, with shared and targeted Update checks. Session `2026-10-08T20:26:35Z-81e5`. Public write profiles remain unadvertised; installed cumulative delivery predicates remain unmet. Ready main merges are operator-authorized after exact-head CI, native+Claude council, findings disposition, scope and ordinary ancestry checks, and actual merged-tree verification. Gemini excluded. No release/Preview2 or Janet CLI/staging/playgrounds/shared databases/Trish Type edits.
 
 ### Verified main and completed serving work
 
@@ -96,7 +96,7 @@ Isolated successor `/Users/dbox/repos/wt/vickie/vickie-comparison-fault-typing-r
 
 ### Workers and next steps
 
-All nine installed cohorts completed and were individually adjudicated on frozen c02ccc37. Final independent actual-evidence audit is active; publication and exact-head CI remain next.
+All nine installed cohorts completed and were individually adjudicated on frozen c02ccc37. [PR122](https://github.com/gastownhall/bdp/pull/122) is published draft at exact c02ccc37; CI38635297329/job116096781032 is running. Final independent actual-evidence audit is active.
 | Worker | Scope | State / next |
 |---|---|---|
 | cross_carrier_plan_v2_review | Four-file cross-carrier evidence | Clean frozen c02ccc37; accepted source repairs complete |
@@ -128,7 +128,7 @@ Completed installed evidence on **c02ccc37**:
 
 An ancillary gate metadata hash was corrected20:45:59Z **after the first two cohorts and before cross-sequence**. [Correction](transaction-cross-carrier-draft/execution-preparation/ancillary-gate-correction.json) records the disposition-path digest mismatch. This unused descriptive field was not a source, runtime, command, acceptance or provenance gate; those actual bindings were valid. Original audit/history remains, no rerun or relabeling.
 
-Remaining gates: final independent actual-evidence audit, guarded publication, exact-head full CI and actual ordinary merged-tree verification. Main remains eff17183. No merge readiness is inferred from local partial execution.
+Remaining gates: final independent actual-evidence audit, exact-head full CI and actual ordinary merged-tree verification. Main remains eff17183. No merge readiness is inferred from local partial execution.
 
 ### Remaining delivery and product input
 
