@@ -62,7 +62,7 @@ Original service-review lows: RU trusted callback capability narrowing and publi
 
 ### Live worker ledger
 
-Checkpoint 2026-10-14T05:44:27Z. **Autonomous completion ACTIVE; operator approved Transactional as the next usable product milestone after returning home.** Heartbeat ACTIVE and verified; prior flight/battery deadlines superseded. Existing session `2026-10-08T20:26:35Z-81e5` unchanged. PR102 merged and verified; current main581bad0. Prioritize actual serving gaps while keeping shared fixes and targeted Update checks. No public profile advertisement or release promotion until required evidence gates pass.
+Checkpoint 2026-10-14T06:00:12Z. **Autonomous completion ACTIVE; operator approved Transactional as the next usable product milestone after returning home.** Heartbeat ACTIVE and verified; prior flight/battery deadlines superseded. Existing session `2026-10-08T20:26:35Z-81e5` unchanged. PR102 merged and verified; current main581bad0. Prioritize actual serving gaps while keeping shared fixes and targeted Update checks. No public profile advertisement or release promotion until required evidence gates pass.
 
 ## Delivered and verified main
 
@@ -105,11 +105,13 @@ Completed-key-conflict evidence plan v2 remains ACCEPTED but is deferred behind 
 
 ## Active workers and priorities
 
-- transaction_implementation: ACTIVE plan for honest cold-client discovery and serving prerequisites atmain581bad0. Report `transaction-cold-client-plan.md`; inspect descriptor/Operation Directory completeness, current gaps and admission/qualification ordering. No fake descriptor, private invented profile or unsupported public claim. Plan review required before source edits.
-- update_implementation: ACTIVE independent plan for TX sequence Resource-alias operands with turn-time resolution, reusing shared RU machinery only where semantics agree. Report `transaction-sequence-alias-plan.md`; bounded runtime/HTTP/restart checks and file ownership. No pre-resolving references across separate member commits. Plan review before authoring.
-- Other native workers idle/complete. Both previous external reviews finished normally; no old reviewer processes. Root reviews plans, dispatches council, coordinates shared files and continues safe implementation. Heartbeat ACTIVE every10minutes.
+Both first plans are complete at main581bad0. Plan council is in progress; no implementation has started.
 
-Done-when for next planning slice: exact supported contract and dependencies identified, smallest serving change has bounded scope and executable acceptance, council findings dispositioned, ordinary base assigned. These supporting plans live under the sole design.md; no new tracker. Cold-client work and alias work may need serialization if they share transaction-http/batch files. The accepted conflict-evidence plan is a fallback, not the priority.
+- Initial Bead/Link collection minimum reads: [plan](transaction-cold-client-plan.md), SHA256 `9af57a36fcf3c2c672966ebae979b48572df4be84366ee96d327d4cf6f2f4e9c`. This closes commit-then-list read-after-write failure; discovery publication follows truthful serving support. [Native review](transaction-cold-client-native-plan-review.md) has no High/Medium blocker and two Low clarifications: separate deterministic owner retry from installed concurrency observations, and account for existing bounded disconnect drain or forward the signal with regression. External plan review is active, process79174/session16506; output transaction-cold-client-claude-plan-review.txt. No completion is inferred from an empty output file.
+- Turn-time sequence Resource aliases: [plan](transaction-sequence-alias-plan.md), SHA256 `72b247c74afd51b2a9842901345e9ea4d33a424b4ba5921016076bbad8b1a657`. [Native review](transaction-sequence-alias-native-plan-review.md) found a P2: candidate references reusing any original unresolved alias must preserve correlated symbolic holes across slots before live normalization; otherwise repointing work from A to B can cause a premature key conflict. Original plan preserved; author awaits combined review for one v2 repair. External plan review is active, process79175/session15065; output transaction-sequence-alias-claude-plan-review.txt. Private pending-format compatibility remains an implementation proof gate.
+- Both native reviewers and plan authors have completed. Root will read the actual external exits/reports, disposition findings, then authorize bounded implementation. Initial collection change takes priority; transaction-http overlap must be serialized or separately integrated. Source remains clean61ed, tree-equivalent to verified main581. Heartbeat remains active every ten minutes.
+
+Done-when: council findings dispositioned, bounded code/test scope accepted and ordinary main base assigned; then real runtime and installed evidence, independent code council and exact CI before merge. Supporting plans remain under this sole design.md. Completed-key-conflict evidence stays deferred behind actual serving blockers.
 
 ## Resume order and coordination
 
@@ -119,11 +121,11 @@ Done-when for next planning slice: exact supported contract and dependencies ide
 4. R whole-row promotion and completed-key-conflict evidence remain available when they advance the product milestone; no automatic flags or public claim.
 
 
-Read remote RULES and use saved bus cursor. Incremental bus through03:10:40Z contained only own status; no new action request. Local inbox path was absent. `guarded-action.py` checks remote session before writes. `checkpoint-ledger.py` publishes the sole fork plan and CAS-updates launch; preserve exact historical evidence. No Janet CLI/staging/playgrounds/shared DB or Trish Types changes.
+Read remote RULES and use saved bus cursor. Incremental bus from05:44:30Z contained only own status; no new action request. Local inbox path was absent. `guarded-action.py` checks remote session before writes. `checkpoint-ledger.py` publishes the sole fork plan and CAS-updates launch; preserve exact historical evidence. No Janet CLI/staging/playgrounds/shared DB or Trish Types changes.
 
 ## Current priority: BDP profile structure and implementation
 
-**Autonomous profile completion is active for the flight window.** The metadata/provenance/editorial delivery remains complete. Working Update and Transactional profiles remain the objective. Continue from verified main and the accepted next slice recorded in the live ledger, preserving exact evidence. No new product semantics are inferred. Optional History, YAGNI removals, Types and provenance proposals stay separate. No Preview2 promotion or edits to Janet’s CLI/staging/playgrounds/shared databases or Trish’s branches.
+**Autonomous profile completion is active at home, with Transactional prioritized.** The metadata/provenance/editorial delivery remains complete. Working Update and Transactional profiles remain the objective. Continue from verified main and the accepted next slice recorded in the live ledger, preserving exact evidence. No new product semantics are inferred. Optional History, YAGNI removals, Types and provenance proposals stay separate. No Preview2 promotion or edits to Janet’s CLI/staging/playgrounds/shared databases or Trish’s branches.
 
 BDP specification and executable profiles take priority over further V2 architecture design. Work is authorized in the BDP repository on normative prose, schemas, examples, validation, reference implementations and conformance. Donna retains product rulings; Vickie owns BDP integration and normative changes. Janet owns Beads CLI implementation and Preview 2 release integration; Trish owns Types for Preview 3. Donna authorizes choosing the landing timing for the approved bounded work after review and verification. PR78 remains the earlier client/journal design discussion; profile implementation belongs in separate reviewable BDP PRs.
 
