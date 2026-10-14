@@ -1,0 +1,1086 @@
+{
+  "source": "c555fe01df5cd20454fb0d663431df816c1270aa",
+  "tree": "062a3ab7e24236417bd915b373a4b44ba9908647",
+  "claimEligible": false,
+  "sourceTests": {
+    "passed": 10,
+    "failed": 0,
+    "filtered": 63,
+    "sourceHttpPathCount": 38,
+    "sourceHttpCountMethod": "deterministic selected path ledger; not individual retained wire records"
+  },
+  "controls": {
+    "total": 5,
+    "namedAdjudicationsPassed": 5,
+    "expectedTestExits": [
+      1,
+      1,
+      1,
+      1,
+      1
+    ],
+    "observed": {
+      "remove-handling": {
+        "expectedFailure": "known root status",
+        "actualFailure": [
+          "AssertionError: known root status: expected 404 to be 200 // Object.is equality\n    at /Users/dbox/repos/wt/vickie/vickie-local-schema-controls/packages/server/src/transaction-schema-http.test.ts:179:46\n    at processTicksAndRejections (node:internal/process/task_queues:104:5)\n    at file:///Users/dbox/repos/wt/vickie/vickie-local-schema-controls/node_modules/.pnpm/@vitest+runner@4.1.10/node_modules/@vitest/runner/dist/chunk-artifact.js:1903:20"
+        ],
+        "passed": true
+      },
+      "omit-transitive": {
+        "expectedFailure": "referenced document status",
+        "actualFailure": [
+          "AssertionError: referenced document status: expected undefined to be 200 // Object.is equality\n    at /Users/dbox/repos/wt/vickie/vickie-local-schema-controls/packages/server/src/transaction-schema-http.test.ts:158:7\n    at processTicksAndRejections (node:internal/process/task_queues:104:5)\n    at file:///Users/dbox/repos/wt/vickie/vickie-local-schema-controls/node_modules/.pnpm/@vitest+runner@4.1.10/node_modules/@vitest/runner/dist/chunk-artifact.js:1903:20"
+        ],
+        "passed": true
+      },
+      "minimum-bypass": {
+        "expectedFailure": "preserved minimum refusal",
+        "actualFailure": [
+          "AssertionError: preserved minimum refusal: expected 200 to be 500 // Object.is equality\n    at /Users/dbox/repos/wt/vickie/vickie-local-schema-controls/packages/server/src/transaction-schema-http.test.ts:249:58\n    at processTicksAndRejections (node:internal/process/task_queues:104:5)\n    at file:///Users/dbox/repos/wt/vickie/vickie-local-schema-controls/node_modules/.pnpm/@vitest+runner@4.1.10/node_modules/@vitest/runner/dist/chunk-artifact.js:1903:20"
+        ],
+        "passed": true
+      },
+      "reserialize": {
+        "expectedFailure": "exact captured schema bytes",
+        "actualFailure": [
+          "AssertionError: exact captured schema bytes: expected '{\"$id\":\"https://schema.invalid/acme/s\u2026' to be '{\\n \"$id\": \"https://schema.invalid/ac\u2026' // Object.is equality\n    at /Users/dbox/repos/wt/vickie/vickie-local-schema-controls/packages/server/src/transaction-schema-http.test.ts:159:58\n    at processTicksAndRejections (node:internal/process/task_queues:104:5)\n    at file:///Users/dbox/repos/wt/vickie/vickie-local-schema-controls/node_modules/.pnpm/@vitest+runner@4.1.10/node_modules/@vitest/runner/dist/chunk-artifact.js:1903:20"
+        ],
+        "passed": true
+      },
+      "stale-context": {
+        "expectedFailure": "current schema position",
+        "actualFailure": [
+          "AssertionError: current schema position: expected 'pos-0' to be 'pos-1' // Object.is equality\n    at /Users/dbox/repos/wt/vickie/vickie-local-schema-controls/packages/server/src/transaction-schema-http.test.ts:210:74\n    at processTicksAndRejections (node:internal/process/task_queues:104:5)\n    at file:///Users/dbox/repos/wt/vickie/vickie-local-schema-controls/node_modules/.pnpm/@vitest+runner@4.1.10/node_modules/@vitest/runner/dist/chunk-artifact.js:1903:20"
+        ],
+        "passed": true
+      }
+    }
+  },
+  "checks": {
+    "control-stale-context-test": {
+      "name": "control-stale-context-test",
+      "exit": 1,
+      "elapsed": 1.0126771670766175,
+      "started": "2026-10-14T17:20:34Z",
+      "ended": "2026-10-14T17:20:35Z",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-local-schema-controls",
+      "args": [
+        "node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "exec",
+        "vitest",
+        "run",
+        "packages/server/src/transaction-schema-http.test.ts",
+        "-t",
+        "applies selection once and retains exact byte length and current context",
+        "--maxWorkers=1",
+        "--reporter=verbose",
+        "--reporter=json",
+        "--outputFile.json=/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-cold-schema-serving/controls/stale-context/result.json"
+      ]
+    },
+    "service-1": {
+      "name": "service-1",
+      "exit": 0,
+      "elapsed": 1.0025750419590622,
+      "started": "2026-10-14T17:20:01Z",
+      "ended": "2026-10-14T17:20:02Z",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-local-schema-serving",
+      "args": [
+        "node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "exec",
+        "vitest",
+        "run",
+        "packages/server/src/transaction-service.test.ts",
+        "-t",
+        "nonexecuting local schema observation|preserves schema observation reentrancy",
+        "--maxWorkers=2",
+        "--reporter=verbose",
+        "--reporter=json",
+        "--outputFile.json=/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-cold-schema-serving/service-1.json"
+      ]
+    },
+    "control-minimum-bypass-test": {
+      "name": "control-minimum-bypass-test",
+      "exit": 1,
+      "elapsed": 1.0097719579935074,
+      "started": "2026-10-14T17:20:36Z",
+      "ended": "2026-10-14T17:20:37Z",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-local-schema-controls",
+      "args": [
+        "node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "exec",
+        "vitest",
+        "run",
+        "packages/server/src/transaction-schema-http.test.ts",
+        "-t",
+        "preserves minimum refusals before schema conditionals and never observes excluded requests",
+        "--maxWorkers=1",
+        "--reporter=verbose",
+        "--reporter=json",
+        "--outputFile.json=/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-cold-schema-serving/controls/minimum-bypass/result.json"
+      ]
+    },
+    "build-1": {
+      "name": "build-1",
+      "exit": 0,
+      "elapsed": 1.0101406248286366,
+      "started": "2026-10-14T17:19:39Z",
+      "ended": "2026-10-14T17:19:40Z",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-local-schema-serving",
+      "args": [
+        "node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "build"
+      ]
+    },
+    "install": {
+      "name": "install",
+      "exit": 0,
+      "elapsed": 1.006927541922778,
+      "started": "2026-10-14T17:19:26Z",
+      "ended": "2026-10-14T17:19:27Z",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-local-schema-serving",
+      "args": [
+        "node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "install",
+        "--offline",
+        "--frozen-lockfile"
+      ]
+    },
+    "typecheck-1": {
+      "name": "typecheck-1",
+      "exit": 0,
+      "elapsed": 2.01399429095909,
+      "started": "2026-10-14T17:19:27Z",
+      "ended": "2026-10-14T17:19:29Z",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-local-schema-serving",
+      "args": [
+        "node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "typecheck"
+      ]
+    },
+    "format": {
+      "name": "format",
+      "exit": 0,
+      "elapsed": 2.019652915885672,
+      "started": "2026-10-14T17:20:02Z",
+      "ended": "2026-10-14T17:20:04Z",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-local-schema-serving",
+      "args": [
+        "node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "format:check"
+      ]
+    },
+    "control-install": {
+      "name": "control-install",
+      "exit": 0,
+      "elapsed": 1.011982792057097,
+      "started": "2026-10-14T17:20:23Z",
+      "ended": "2026-10-14T17:20:24Z",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-local-schema-controls",
+      "args": [
+        "node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "install",
+        "--offline",
+        "--frozen-lockfile"
+      ]
+    },
+    "control-stale-context-build": {
+      "name": "control-stale-context-build",
+      "exit": 0,
+      "elapsed": 1.0040686670690775,
+      "started": "2026-10-14T17:20:33Z",
+      "ended": "2026-10-14T17:20:34Z",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-local-schema-controls",
+      "args": [
+        "node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "build"
+      ]
+    },
+    "control-remove-handling-build": {
+      "name": "control-remove-handling-build",
+      "exit": 0,
+      "elapsed": 2.014291124884039,
+      "started": "2026-10-14T17:20:24Z",
+      "ended": "2026-10-14T17:20:26Z",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-local-schema-controls",
+      "args": [
+        "node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "build"
+      ]
+    },
+    "read-seal": {
+      "name": "read-seal",
+      "exit": 0,
+      "elapsed": 1.002706167055294,
+      "started": "2026-10-14T17:20:06Z",
+      "ended": "2026-10-14T17:20:07Z",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-local-schema-serving",
+      "args": [
+        "node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "evidence:verify"
+      ]
+    },
+    "boundaries": {
+      "name": "boundaries",
+      "exit": 0,
+      "elapsed": 1.0094916669186205,
+      "started": "2026-10-14T17:20:05Z",
+      "ended": "2026-10-14T17:20:06Z",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-local-schema-serving",
+      "args": [
+        "node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "check:boundaries"
+      ]
+    },
+    "control-minimum-bypass-build": {
+      "name": "control-minimum-bypass-build",
+      "exit": 0,
+      "elapsed": 1.0111687500029802,
+      "started": "2026-10-14T17:20:35Z",
+      "ended": "2026-10-14T17:20:36Z",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-local-schema-controls",
+      "args": [
+        "node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "build"
+      ]
+    },
+    "control-omit-transitive-test": {
+      "name": "control-omit-transitive-test",
+      "exit": 1,
+      "elapsed": 1.01237174984999,
+      "started": "2026-10-14T17:20:32Z",
+      "ended": "2026-10-14T17:20:33Z",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-local-schema-controls",
+      "args": [
+        "node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "exec",
+        "vitest",
+        "run",
+        "packages/server/src/transaction-schema-http.test.ts",
+        "-t",
+        "serves exact captured root and transitive bytes without retaining mutable input",
+        "--maxWorkers=1",
+        "--reporter=verbose",
+        "--reporter=json",
+        "--outputFile.json=/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-cold-schema-serving/controls/omit-transitive/result.json"
+      ]
+    },
+    "control-omit-transitive-build": {
+      "name": "control-omit-transitive-build",
+      "exit": 0,
+      "elapsed": 1.003754333825782,
+      "started": "2026-10-14T17:20:31Z",
+      "ended": "2026-10-14T17:20:32Z",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-local-schema-controls",
+      "args": [
+        "node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "build"
+      ]
+    },
+    "lint": {
+      "name": "lint",
+      "exit": 0,
+      "elapsed": 1.0074336670804769,
+      "started": "2026-10-14T17:20:04Z",
+      "ended": "2026-10-14T17:20:05Z",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-local-schema-serving",
+      "args": [
+        "node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "lint"
+      ]
+    },
+    "control-remove-handling-test": {
+      "name": "control-remove-handling-test",
+      "exit": 1,
+      "elapsed": 2.0076148328371346,
+      "started": "2026-10-14T17:20:27Z",
+      "ended": "2026-10-14T17:20:29Z",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-local-schema-controls",
+      "args": [
+        "node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "exec",
+        "vitest",
+        "run",
+        "packages/server/src/transaction-schema-http.test.ts",
+        "-t",
+        "applies selection once and retains exact byte length and current context",
+        "--maxWorkers=1",
+        "--reporter=verbose",
+        "--reporter=json",
+        "--outputFile.json=/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-cold-schema-serving/controls/remove-handling/result.json"
+      ]
+    },
+    "control-reserialize-test": {
+      "name": "control-reserialize-test",
+      "exit": 1,
+      "elapsed": 1.0111712499056011,
+      "started": "2026-10-14T17:20:30Z",
+      "ended": "2026-10-14T17:20:31Z",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-local-schema-controls",
+      "args": [
+        "node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "exec",
+        "vitest",
+        "run",
+        "packages/server/src/transaction-schema-http.test.ts",
+        "-t",
+        "serves exact captured root and transitive bytes without retaining mutable input",
+        "--maxWorkers=1",
+        "--reporter=verbose",
+        "--reporter=json",
+        "--outputFile.json=/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-cold-schema-serving/controls/reserialize/result.json"
+      ]
+    },
+    "control-reserialize-build": {
+      "name": "control-reserialize-build",
+      "exit": 0,
+      "elapsed": 1.007873540977016,
+      "started": "2026-10-14T17:20:29Z",
+      "ended": "2026-10-14T17:20:30Z",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-local-schema-controls",
+      "args": [
+        "node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "build"
+      ]
+    },
+    "adapter-1": {
+      "name": "adapter-1",
+      "exit": 0,
+      "elapsed": 2.0067350829485804,
+      "started": "2026-10-14T17:19:40Z",
+      "ended": "2026-10-14T17:19:42Z",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-local-schema-serving",
+      "args": [
+        "node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "exec",
+        "vitest",
+        "run",
+        "packages/server/src/transaction-schema-http.test.ts",
+        "--maxWorkers=2",
+        "--reporter=verbose",
+        "--reporter=json",
+        "--outputFile.json=/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-cold-schema-serving/adapter-1.json"
+      ]
+    }
+  },
+  "installed": {
+    "totalRequests": 17,
+    "totalChildren": 2,
+    "hardRequestCeiling": 28,
+    "hardChildCeiling": 2,
+    "cohorts": {
+      "positive": {
+        "mode": "positive",
+        "source": "c555fe01df5cd20454fb0d663431df816c1270aa",
+        "tree": "062a3ab7e24236417bd915b373a4b44ba9908647",
+        "authorSource": "c555fe01df5cd20454fb0d663431df816c1270aa",
+        "clean": true,
+        "packs": {
+          "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-cold-schema-serving/packed-positive/packs/protocol.tgz": "4683cb6c6333c332a4bcb7efc3e28f32d1d8d06a7264913f65c31d3a826d4227",
+          "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-cold-schema-serving/packed-positive/packs/server.tgz": "f940337b0b94eaf5930b6174e11c056947307245f262ec9ba60c13f941d06370"
+        },
+        "entry": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-cold-schema-serving/packed-positive/install/node_modules/@bdp/server/dist/transaction-installed-process.js",
+        "entrySha256": "bcf153170f953f9e28c6c89f1153be907f64df289e64f3ad929cad4a4a54c47c",
+        "observation": {
+          "observation": "private-installed-local-schemas",
+          "declaredSourceCommit": "c555fe01df5cd20454fb0d663431df816c1270aa",
+          "workspaceDirty": false,
+          "entry": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-cold-schema-serving/packed-positive/install/node_modules/@bdp/server/dist/transaction-installed-process.js",
+          "entrySha256": "bcf153170f953f9e28c6c89f1153be907f64df289e64f3ad929cad4a4a54c47c",
+          "binding": {
+            "served": {
+              "scope": "https://reference.invalid/acme/",
+              "profile": "transactional",
+              "history": false,
+              "sourceCommit": "c555fe01df5cd20454fb0d663431df816c1270aa",
+              "installedPayloadDigest": "0431b66bb506d46c3414587cf34f6d8007472a3aeaf2ec1488b3e59ae56b1200",
+              "installedContractsDigest": "50a4fd1834fe1e5df637c523484460a2e1787ceac4afa6712a78cbed4432fb4f",
+              "policyDigest": "e68489f44cefd408e083810ee0b791ee2c2632d15f7926a86c1ba7161309ea9d",
+              "authenticationDigest": "b580ddb7700d45706f2b52e371bde995094c333aec077c7854924a99ae0288d8",
+              "fixtureDigest": "3a7899ced771d4880066d98b0000c53f801ece53458502cc4f3bc641146c9a85",
+              "fixtureId": "reference-transactional-v1",
+              "capabilities": [
+                "installed-transactional-http",
+                "transactional-receipt-observation"
+              ]
+            },
+            "operationTargets": {
+              "createBead": "https://reference.invalid/acme/operations/create-bead",
+              "updateBead": "https://reference.invalid/acme/operations/update-bead",
+              "deleteBead": "https://reference.invalid/acme/operations/delete-bead",
+              "createLink": "https://reference.invalid/acme/operations/create-link",
+              "updateLink": "https://reference.invalid/acme/operations/update-link",
+              "deleteLink": "https://reference.invalid/acme/operations/delete-link",
+              "putAlias": "https://reference.invalid/acme/operations/put-alias",
+              "deleteAlias": "https://reference.invalid/acme/operations/delete-alias",
+              "updateWhere": "https://reference.invalid/acme/operations/update-where",
+              "deleteWhere": "https://reference.invalid/acme/operations/delete-where",
+              "batch": "https://reference.invalid/acme/operations/batch",
+              "sequence": "https://reference.invalid/acme/operations/sequence"
+            },
+            "runtimeConfigurationIdentity": "f97c60132d66528a636dc8bb38e1f294b557e4328f7d5e554393888763448915",
+            "authorityMode": "canonical"
+          },
+          "routes": [
+            {
+              "method": "GET",
+              "url": "https://reference.invalid/acme/types/?limit=32"
+            },
+            {
+              "method": "HEAD",
+              "url": "https://reference.invalid/acme/schemas/root"
+            },
+            {
+              "method": "GET",
+              "url": "https://reference.invalid/acme/schemas/unknown"
+            },
+            {
+              "method": "POST",
+              "url": "https://reference.invalid/acme/schemas/root"
+            },
+            {
+              "method": "GET",
+              "url": "https://reference.invalid/acme/"
+            },
+            {
+              "method": "POST",
+              "url": "https://reference.invalid/acme/operations/create-bead"
+            }
+          ],
+          "observedGrants": [
+            "https://reference.invalid/acme/types/task",
+            "https://reference.invalid/acme/schemas/root",
+            "https://reference.invalid/acme/schemas/value"
+          ],
+          "artifactBytes": [
+            {
+              "uri": "https://reference.invalid/acme/schemas/root",
+              "bytes": 174,
+              "sha256": "b559e973c5ab7e0534e59064e8088442fee0d896d4399ed33e9924b19b800012"
+            },
+            {
+              "uri": "https://reference.invalid/acme/schemas/value",
+              "bytes": 118,
+              "sha256": "a9eb6111f30bf9e672dd5dbca44667e1783b20d944a1fe29608d48d9df32add6"
+            }
+          ],
+          "sessions": [
+            {
+              "pid": 60913,
+              "exit": 0,
+              "signal": null
+            }
+          ],
+          "attemptedRequests": 14,
+          "completedResponses": [
+            {
+              "label": "types",
+              "method": "GET",
+              "url": "https://reference.invalid/acme/types/?limit=32",
+              "status": 200,
+              "requestBodyBytes": 0,
+              "requestBodySha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+              "responseBodyBytes": 107,
+              "responseBodySha256": "5d53194a477a1557c13db5c495cde71c9055e4b257dd67434ebb0948e4822773",
+              "wireSha256": "5f122bed1de60021aff16c2c4d62786bc69a03248e44a7d3fa1810f84536c0db",
+              "context": {
+                "epoch": "97d5c5c5-5ae5-40c9-a85b-9bf842a54d55",
+                "view": "development-all-visible",
+                "position": "pos-0"
+              }
+            },
+            {
+              "label": "type",
+              "method": "GET",
+              "url": "https://reference.invalid/acme/types/task",
+              "status": 200,
+              "requestBodyBytes": 0,
+              "requestBodySha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+              "responseBodyBytes": 164,
+              "responseBodySha256": "a74db20c8417f17641b5bbb7948501a38e402970fce4164496cb82765b8fe108",
+              "wireSha256": "3c4e22b525e998ad36b50ccda95a1ca4b63f95d9556a2ce1867bcfad98914765",
+              "context": {
+                "epoch": "97d5c5c5-5ae5-40c9-a85b-9bf842a54d55",
+                "view": "development-all-visible",
+                "position": "pos-0"
+              }
+            },
+            {
+              "label": "root",
+              "method": "GET",
+              "url": "https://reference.invalid/acme/schemas/root",
+              "status": 200,
+              "requestBodyBytes": 0,
+              "requestBodySha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+              "responseBodyBytes": 174,
+              "responseBodySha256": "b559e973c5ab7e0534e59064e8088442fee0d896d4399ed33e9924b19b800012",
+              "wireSha256": "7d07d4b524481f87873ce1d9e8330191db08516b0b211c83b546ca5dfe79e2de",
+              "context": {
+                "epoch": "97d5c5c5-5ae5-40c9-a85b-9bf842a54d55",
+                "view": "development-all-visible",
+                "position": "pos-0"
+              }
+            },
+            {
+              "label": "referenced",
+              "method": "GET",
+              "url": "https://reference.invalid/acme/schemas/value",
+              "status": 200,
+              "requestBodyBytes": 0,
+              "requestBodySha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+              "responseBodyBytes": 118,
+              "responseBodySha256": "a9eb6111f30bf9e672dd5dbca44667e1783b20d944a1fe29608d48d9df32add6",
+              "wireSha256": "47d8f45da86b22a4c08881f9c44904901389f2900e833655bb74599a9d0acdec",
+              "context": {
+                "epoch": "97d5c5c5-5ae5-40c9-a85b-9bf842a54d55",
+                "view": "development-all-visible",
+                "position": "pos-0"
+              }
+            },
+            {
+              "label": "head",
+              "method": "HEAD",
+              "url": "https://reference.invalid/acme/schemas/root",
+              "status": 200,
+              "requestBodyBytes": 0,
+              "requestBodySha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+              "responseBodyBytes": 0,
+              "responseBodySha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+              "wireSha256": "fc6a5f805be7d61e1b30a84b778941326989ce0a8a33d5a4a5d4b146f2a812b4",
+              "context": {
+                "epoch": "97d5c5c5-5ae5-40c9-a85b-9bf842a54d55",
+                "view": "development-all-visible",
+                "position": "pos-0"
+              }
+            },
+            {
+              "label": "unacceptable",
+              "method": "GET",
+              "url": "https://reference.invalid/acme/schemas/root",
+              "status": 406,
+              "requestBodyBytes": 0,
+              "requestBodySha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+              "responseBodyBytes": 0,
+              "responseBodySha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+              "wireSha256": "b44ae0fb8f6d45393ac7b925df4ebd2b0ac4a077219ce728640666e5f95d69f6",
+              "context": {
+                "epoch": "97d5c5c5-5ae5-40c9-a85b-9bf842a54d55",
+                "view": "development-all-visible",
+                "position": "pos-0"
+              }
+            },
+            {
+              "label": "not-modified",
+              "method": "GET",
+              "url": "https://reference.invalid/acme/schemas/root",
+              "status": 304,
+              "requestBodyBytes": 0,
+              "requestBodySha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+              "responseBodyBytes": 0,
+              "responseBodySha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+              "wireSha256": "64aa6019d56f329d20d28be02a35695c62c07378310d5a19f9f5fe97ee718086",
+              "context": {
+                "epoch": "97d5c5c5-5ae5-40c9-a85b-9bf842a54d55",
+                "view": "development-all-visible",
+                "position": "pos-0"
+              }
+            },
+            {
+              "label": "precondition",
+              "method": "GET",
+              "url": "https://reference.invalid/acme/schemas/root",
+              "status": 412,
+              "requestBodyBytes": 0,
+              "requestBodySha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+              "responseBodyBytes": 0,
+              "responseBodySha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+              "wireSha256": "b5a58e63fafbe99039fa00d51bb87a268e014a9c5e864d7f2c44c3fec0688bd2",
+              "context": {
+                "epoch": "97d5c5c5-5ae5-40c9-a85b-9bf842a54d55",
+                "view": "development-all-visible",
+                "position": "pos-0"
+              }
+            },
+            {
+              "label": "unknown",
+              "method": "GET",
+              "url": "https://reference.invalid/acme/schemas/unknown",
+              "status": 404,
+              "requestBodyBytes": 0,
+              "requestBodySha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+              "responseBodyBytes": 134,
+              "responseBodySha256": "6eb3ea2339cd9acd8b41edf491f4cebb381ce54504bab8215d4a421f32d68ce1",
+              "wireSha256": "a344c605602073d06a8b676b88736282f125758ec6ecf2ce6d22e2a1e4a5e184",
+              "context": {}
+            },
+            {
+              "label": "unauthenticated",
+              "method": "GET",
+              "url": "https://reference.invalid/acme/schemas/root",
+              "status": 401,
+              "requestBodyBytes": 0,
+              "requestBodySha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+              "responseBodyBytes": 136,
+              "responseBodySha256": "9d3ea90197aca7525a1eb9d6c0f2845d5ad3656852c3d5ca1f4fd2df55b346c3",
+              "wireSha256": "b1deb0e1a1d2f841ea8174514c16cef1f76487efe4c5f7e29bbab5c0e985dc3d",
+              "context": {}
+            },
+            {
+              "label": "method",
+              "method": "POST",
+              "url": "https://reference.invalid/acme/schemas/root",
+              "status": 405,
+              "requestBodyBytes": 0,
+              "requestBodySha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+              "responseBodyBytes": 0,
+              "responseBodySha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+              "wireSha256": "647d294d3b815132a7dfdb9b9951b1a7f9207c4a98b972817cfa0cb632832f3c",
+              "context": {}
+            },
+            {
+              "label": "discovery",
+              "method": "GET",
+              "url": "https://reference.invalid/acme/",
+              "status": 500,
+              "requestBodyBytes": 0,
+              "requestBodySha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+              "responseBodyBytes": 0,
+              "responseBodySha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+              "wireSha256": "d74b1c7a768eafb314e48c1088b849393a3b7e42f4b0715df6f160683367bf9e",
+              "context": {}
+            },
+            {
+              "label": "create",
+              "method": "POST",
+              "url": "https://reference.invalid/acme/operations/create-bead",
+              "status": 200,
+              "requestBodyBytes": 98,
+              "requestBodySha256": "52806b6d59a1d8ad439cecf883c193556c6ef59414a86bc075dd4fbd15a4b282",
+              "responseBodyBytes": 671,
+              "responseBodySha256": "4d14f7305fe4819e422a7a4e4b4e27e40641d948ea2b5ba96b68e99fed6bd167",
+              "wireSha256": "37d93512553db6ca219ae2f65bc1a069eec64b428bf1b3ab73af08b84b66373b",
+              "context": {
+                "epoch": "97d5c5c5-5ae5-40c9-a85b-9bf842a54d55",
+                "view": "development-all-visible",
+                "position": "pos-1"
+              }
+            },
+            {
+              "label": "root-after",
+              "method": "GET",
+              "url": "https://reference.invalid/acme/schemas/root",
+              "status": 200,
+              "requestBodyBytes": 0,
+              "requestBodySha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+              "responseBodyBytes": 174,
+              "responseBodySha256": "b559e973c5ab7e0534e59064e8088442fee0d896d4399ed33e9924b19b800012",
+              "wireSha256": "d2cf1d60845fc5fbe87dee418e92d5636c6b30b6a75d0d06bd06eb8e2b36f65e",
+              "context": {
+                "epoch": "97d5c5c5-5ae5-40c9-a85b-9bf842a54d55",
+                "view": "development-all-visible",
+                "position": "pos-1"
+              }
+            }
+          ],
+          "directoryAbsent": true,
+          "outcome": "passed",
+          "claimEligible": false,
+          "evidenceRetention": "Response fingerprints/context only; full wire/body bytes are not retained"
+        },
+        "exits": {
+          "build": {
+            "exit": 0,
+            "seconds": 0.8421775829046965,
+            "started": "2026-10-14T17:21:05Z",
+            "ended": "2026-10-14T17:21:06Z",
+            "command": [
+              "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+              "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+              "build"
+            ],
+            "cwd": "/Users/dbox/repos/wt/vickie/vickie-local-schema-serving",
+            "pid": 60853
+          },
+          "pack-protocol": {
+            "exit": 0,
+            "seconds": 0.2440595831722021,
+            "started": "2026-10-14T17:21:06Z",
+            "ended": "2026-10-14T17:21:06Z",
+            "command": [
+              "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+              "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+              "pack",
+              "--out",
+              "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-cold-schema-serving/packed-positive/packs/protocol.tgz"
+            ],
+            "cwd": "/Users/dbox/repos/wt/vickie/vickie-local-schema-serving/packages/protocol",
+            "pid": 60893
+          },
+          "pack-server": {
+            "exit": 0,
+            "seconds": 0.290491791209206,
+            "started": "2026-10-14T17:21:06Z",
+            "ended": "2026-10-14T17:21:06Z",
+            "command": [
+              "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+              "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+              "pack",
+              "--out",
+              "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-cold-schema-serving/packed-positive/packs/server.tgz"
+            ],
+            "cwd": "/Users/dbox/repos/wt/vickie/vickie-local-schema-serving/packages/server",
+            "pid": 60894
+          },
+          "install": {
+            "exit": 0,
+            "seconds": 0.6792109578382224,
+            "started": "2026-10-14T17:21:06Z",
+            "ended": "2026-10-14T17:21:07Z",
+            "command": [
+              "npm",
+              "install",
+              "--offline",
+              "--ignore-scripts",
+              "--no-audit",
+              "--no-fund"
+            ],
+            "cwd": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-cold-schema-serving/packed-positive/install",
+            "pid": 60895
+          },
+          "installed": {
+            "exit": 0,
+            "seconds": 0.9316402091644704,
+            "started": "2026-10-14T17:21:07Z",
+            "ended": "2026-10-14T17:21:08Z",
+            "command": [
+              "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+              "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+              "exec",
+              "vitest",
+              "run",
+              "apps/bdptest/src/transactional-schema-installed.test.ts",
+              "--maxWorkers=1",
+              "--reporter=verbose",
+              "--reporter=json",
+              "--outputFile.json=/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-cold-schema-serving/packed-positive/installed.json"
+            ],
+            "cwd": "/Users/dbox/repos/wt/vickie/vickie-local-schema-serving",
+            "pid": 60897
+          }
+        },
+        "childPidsAbsent": [
+          60913
+        ]
+      },
+      "negative": {
+        "mode": "negative",
+        "source": "4aa2d0be950f157f3f0617278dd37c40f41ec035",
+        "tree": "5afa00950cb042b931450bb7545369c4274ef8ba",
+        "authorSource": "c555fe01df5cd20454fb0d663431df816c1270aa",
+        "clean": true,
+        "packs": {
+          "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-cold-schema-serving/packed-negative/packs/protocol.tgz": "4683cb6c6333c332a4bcb7efc3e28f32d1d8d06a7264913f65c31d3a826d4227",
+          "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-cold-schema-serving/packed-negative/packs/server.tgz": "97a227add3a3ef9588daf6a4037d692646947b8ba7f175e4e294a00100675bc5"
+        },
+        "entry": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-cold-schema-serving/packed-negative/install/node_modules/@bdp/server/dist/transaction-installed-process.js",
+        "entrySha256": "bcf153170f953f9e28c6c89f1153be907f64df289e64f3ad929cad4a4a54c47c",
+        "observation": {
+          "observation": "private-installed-local-schemas",
+          "declaredSourceCommit": "4aa2d0be950f157f3f0617278dd37c40f41ec035",
+          "workspaceDirty": false,
+          "entry": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-cold-schema-serving/packed-negative/install/node_modules/@bdp/server/dist/transaction-installed-process.js",
+          "entrySha256": "bcf153170f953f9e28c6c89f1153be907f64df289e64f3ad929cad4a4a54c47c",
+          "binding": {
+            "served": {
+              "scope": "https://reference.invalid/acme/",
+              "profile": "transactional",
+              "history": false,
+              "sourceCommit": "4aa2d0be950f157f3f0617278dd37c40f41ec035",
+              "installedPayloadDigest": "f1bc055701323b1a8adfb474b8b651a9522d06e91deaba53efeb5afab5520859",
+              "installedContractsDigest": "50a4fd1834fe1e5df637c523484460a2e1787ceac4afa6712a78cbed4432fb4f",
+              "policyDigest": "7dca0cbfd10f83dc4b3cc5c3517efb326aa44344c27bc58f82d814bfa892c519",
+              "authenticationDigest": "c33f09e9bbb5777bb5c1be3df87cc0f1de5c3b388413402d0b27da4e02892841",
+              "fixtureDigest": "3a7899ced771d4880066d98b0000c53f801ece53458502cc4f3bc641146c9a85",
+              "fixtureId": "reference-transactional-v1",
+              "capabilities": [
+                "installed-transactional-http",
+                "transactional-receipt-observation"
+              ]
+            },
+            "operationTargets": {
+              "createBead": "https://reference.invalid/acme/operations/create-bead",
+              "updateBead": "https://reference.invalid/acme/operations/update-bead",
+              "deleteBead": "https://reference.invalid/acme/operations/delete-bead",
+              "createLink": "https://reference.invalid/acme/operations/create-link",
+              "updateLink": "https://reference.invalid/acme/operations/update-link",
+              "deleteLink": "https://reference.invalid/acme/operations/delete-link",
+              "putAlias": "https://reference.invalid/acme/operations/put-alias",
+              "deleteAlias": "https://reference.invalid/acme/operations/delete-alias",
+              "updateWhere": "https://reference.invalid/acme/operations/update-where",
+              "deleteWhere": "https://reference.invalid/acme/operations/delete-where",
+              "batch": "https://reference.invalid/acme/operations/batch",
+              "sequence": "https://reference.invalid/acme/operations/sequence"
+            },
+            "runtimeConfigurationIdentity": "7e772ed29d96126fd401b45318f7c1a67e04dc0f3c063e74ea05a3ff7a2dbe57",
+            "authorityMode": "canonical"
+          },
+          "routes": [
+            {
+              "method": "GET",
+              "url": "https://reference.invalid/acme/types/?limit=32"
+            },
+            {
+              "method": "HEAD",
+              "url": "https://reference.invalid/acme/schemas/root"
+            },
+            {
+              "method": "GET",
+              "url": "https://reference.invalid/acme/schemas/unknown"
+            },
+            {
+              "method": "POST",
+              "url": "https://reference.invalid/acme/schemas/root"
+            },
+            {
+              "method": "GET",
+              "url": "https://reference.invalid/acme/"
+            },
+            {
+              "method": "POST",
+              "url": "https://reference.invalid/acme/operations/create-bead"
+            }
+          ],
+          "observedGrants": [
+            "https://reference.invalid/acme/types/task",
+            "https://reference.invalid/acme/schemas/root"
+          ],
+          "artifactBytes": [
+            {
+              "uri": "https://reference.invalid/acme/schemas/root",
+              "bytes": 174,
+              "sha256": "b559e973c5ab7e0534e59064e8088442fee0d896d4399ed33e9924b19b800012"
+            },
+            {
+              "uri": "https://reference.invalid/acme/schemas/value",
+              "bytes": 118,
+              "sha256": "a9eb6111f30bf9e672dd5dbca44667e1783b20d944a1fe29608d48d9df32add6"
+            }
+          ],
+          "sessions": [
+            {
+              "pid": 61977,
+              "exit": 0,
+              "signal": null
+            }
+          ],
+          "attemptedRequests": 3,
+          "completedResponses": [
+            {
+              "label": "types",
+              "method": "GET",
+              "url": "https://reference.invalid/acme/types/?limit=32",
+              "status": 200,
+              "requestBodyBytes": 0,
+              "requestBodySha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+              "responseBodyBytes": 107,
+              "responseBodySha256": "5d53194a477a1557c13db5c495cde71c9055e4b257dd67434ebb0948e4822773",
+              "wireSha256": "d0a9e2adc2384e0a9529c1007e069bb8a2187a4d422d05ae9b84220151de8ce8",
+              "context": {
+                "epoch": "cf6085bd-1b46-4167-b8c0-eb0a1702de71",
+                "view": "development-all-visible",
+                "position": "pos-0"
+              }
+            },
+            {
+              "label": "type",
+              "method": "GET",
+              "url": "https://reference.invalid/acme/types/task",
+              "status": 200,
+              "requestBodyBytes": 0,
+              "requestBodySha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+              "responseBodyBytes": 164,
+              "responseBodySha256": "a74db20c8417f17641b5bbb7948501a38e402970fce4164496cb82765b8fe108",
+              "wireSha256": "22d4fadb7628cc558f52e951b14d0f5805c476d3ca0e3186c2469e6f9bf139e4",
+              "context": {
+                "epoch": "cf6085bd-1b46-4167-b8c0-eb0a1702de71",
+                "view": "development-all-visible",
+                "position": "pos-0"
+              }
+            },
+            {
+              "label": "root",
+              "method": "GET",
+              "url": "https://reference.invalid/acme/schemas/root",
+              "status": 404,
+              "requestBodyBytes": 0,
+              "requestBodySha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+              "responseBodyBytes": 134,
+              "responseBodySha256": "6eb3ea2339cd9acd8b41edf491f4cebb381ce54504bab8215d4a421f32d68ce1",
+              "wireSha256": "362768cc36bcde5229bfccbd2a0e3eccefbb33f02863b0a3ad4cbdaeed5624cc",
+              "context": {}
+            }
+          ],
+          "directoryAbsent": true,
+          "outcome": "failed",
+          "claimEligible": false,
+          "evidenceRetention": "Response fingerprints/context only; full wire/body bytes are not retained"
+        },
+        "exits": {
+          "frozen-install": {
+            "exit": 0,
+            "seconds": 0.6195263338740915,
+            "started": "2026-10-14T17:23:04Z",
+            "ended": "2026-10-14T17:23:05Z",
+            "command": [
+              "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+              "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+              "install",
+              "--offline",
+              "--frozen-lockfile"
+            ],
+            "cwd": "/Users/dbox/repos/wt/vickie/vickie-local-schema-predecessor",
+            "pid": 61899
+          },
+          "build": {
+            "exit": 0,
+            "seconds": 1.5070475828833878,
+            "started": "2026-10-14T17:23:05Z",
+            "ended": "2026-10-14T17:23:06Z",
+            "command": [
+              "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+              "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+              "build"
+            ],
+            "cwd": "/Users/dbox/repos/wt/vickie/vickie-local-schema-predecessor",
+            "pid": 61915
+          },
+          "pack-protocol": {
+            "exit": 0,
+            "seconds": 0.24929725006222725,
+            "started": "2026-10-14T17:23:06Z",
+            "ended": "2026-10-14T17:23:06Z",
+            "command": [
+              "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+              "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+              "pack",
+              "--out",
+              "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-cold-schema-serving/packed-negative/packs/protocol.tgz"
+            ],
+            "cwd": "/Users/dbox/repos/wt/vickie/vickie-local-schema-predecessor/packages/protocol",
+            "pid": 61955
+          },
+          "pack-server": {
+            "exit": 0,
+            "seconds": 0.25930845900438726,
+            "started": "2026-10-14T17:23:06Z",
+            "ended": "2026-10-14T17:23:07Z",
+            "command": [
+              "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+              "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+              "pack",
+              "--out",
+              "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-cold-schema-serving/packed-negative/packs/server.tgz"
+            ],
+            "cwd": "/Users/dbox/repos/wt/vickie/vickie-local-schema-predecessor/packages/server",
+            "pid": 61956
+          },
+          "install": {
+            "exit": 0,
+            "seconds": 0.7406721671577543,
+            "started": "2026-10-14T17:23:07Z",
+            "ended": "2026-10-14T17:23:07Z",
+            "command": [
+              "npm",
+              "install",
+              "--offline",
+              "--ignore-scripts",
+              "--no-audit",
+              "--no-fund"
+            ],
+            "cwd": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-cold-schema-serving/packed-negative/install",
+            "pid": 61957
+          },
+          "installed": {
+            "exit": 1,
+            "seconds": 0.9474688749760389,
+            "started": "2026-10-14T17:23:07Z",
+            "ended": "2026-10-14T17:23:08Z",
+            "command": [
+              "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+              "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+              "exec",
+              "vitest",
+              "run",
+              "apps/bdptest/src/transactional-schema-installed.test.ts",
+              "--maxWorkers=1",
+              "--reporter=verbose",
+              "--reporter=json",
+              "--outputFile.json=/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-cold-schema-serving/packed-negative/installed.json"
+            ],
+            "cwd": "/Users/dbox/repos/wt/vickie/vickie-local-schema-serving",
+            "pid": 61960
+          }
+        },
+        "childPidsAbsent": [
+          61977
+        ]
+      }
+    },
+    "actualRoutesEqualPreflight": true,
+    "requestBodiesEqualPreflight": true,
+    "eligibleSchemaBytesEqualPreflight": true,
+    "routeSha256": "3a12834387c186457a8a857c7dc693bee45a7fdf44295ed9a65f3720531535e6"
+  },
+  "cleanup": [
+    {
+      "cohort": "positive",
+      "pid": 60913,
+      "exit": 0,
+      "signal": null,
+      "pidAbsent": true,
+      "directoryAbsent": true
+    },
+    {
+      "cohort": "negative",
+      "pid": 61977,
+      "exit": 0,
+      "signal": null,
+      "pidAbsent": true,
+      "directoryAbsent": true
+    }
+  ],
+  "evidenceRetention": "Response fingerprints and context only; complete wire/body bytes are not retained",
+  "notRun": [
+    "full workspace tests",
+    "unfiltered matrix",
+    "local executable smoke",
+    "public qualification"
+  ],
+  "limitations": [
+    "private exact local schemas without minimum controls only",
+    "discovery activation remains refused",
+    "out-of-namespace/query and canonical-id reachability gaps remain",
+    "no heap/RSS measurement or universal memory claim"
+  ]
+}

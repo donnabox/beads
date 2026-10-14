@@ -1,0 +1,59 @@
+{
+  "head": "c555fe01df5cd20454fb0d663431df816c1270aa",
+  "tree": "062a3ab7e24236417bd915b373a4b44ba9908647",
+  "parents": [
+    "4aa2d0be950f157f3f0617278dd37c40f41ec035"
+  ],
+  "branch": "codex/vickie-local-schema-serving",
+  "clean": true,
+  "files": [
+    {
+      "path": "packages/server/src/transaction-schema-http.ts",
+      "bytes": 2667,
+      "sha256": "1082e8483848794971eae3eb8dfb3b7006749fc4e3b9c17c2cca1adbd94a6130"
+    },
+    {
+      "path": "packages/server/src/transaction-schema-http.test.ts",
+      "bytes": 16377,
+      "sha256": "9c1b765e72b8be893486c32e4e10860dae422332008af8aa005ce30f0171ecc4"
+    },
+    {
+      "path": "packages/server/src/transaction-runtime.ts",
+      "bytes": 16173,
+      "sha256": "77954f0a85029d76443feac54cd53cda4339ffc126660ace5a9f5af92466c573"
+    },
+    {
+      "path": "packages/server/src/transaction-service.ts",
+      "bytes": 24814,
+      "sha256": "191767f53b7f95503e39d7579a16b4843b64d90b4c887257a22352c446058409"
+    },
+    {
+      "path": "packages/server/src/transaction-service.test.ts",
+      "bytes": 83539,
+      "sha256": "ad92c4d716f429136995f8974b397e31309f8678a82e1e99a0575be783faa5eb"
+    },
+    {
+      "path": "apps/bdptest/src/transactional-schema-installed.test.ts",
+      "bytes": 18360,
+      "sha256": "18840119f1ca270d35414f3cb0d44dfe988a44ff9cb1edaa4a405b25b6da4759"
+    },
+    {
+      "path": "docs/design/transaction-implementation-progress.md",
+      "bytes": 118462,
+      "sha256": "77452fe5804fd4ed19d0905d5346656f5d0f49307e32fa0b0be1b328a128f8bc"
+    },
+    {
+      "path": "packages/server/src/transaction-http.ts",
+      "bytes": 27017,
+      "sha256": "e771744e51440c6043dbe35fe490058bd8102ff1ad92fba3efa4738929f1429c"
+    },
+    {
+      "path": "scripts/smoke-executables.mjs",
+      "bytes": 42941,
+      "sha256": "cc355728bc5774e8e074bcb00fb1ba8a84f13e0dd56c40a9c3060156d24b74df"
+    }
+  ],
+  "acceptedPreflightBytesPreserved": true,
+  "acceptedBoundsSha256": "87ac550bbae1df2f907cfce5a51915ee1540d1a4811141d8b76302c2e6e953bc",
+  "commitTrailer": "Serve exact captured local Transactional schema bytes\n\nAgent-Signature: Vickie (Codex)"
+}
