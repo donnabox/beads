@@ -76,7 +76,7 @@ func runGraphPreviewAddDependency(cmd *cobra.Command, args []string) error {
 	if err := graphPreviewWritePolicy(); err != nil {
 		return err
 	}
-	if err := graphPreviewFlags(cmd, "type", "link-type", "resource-type", "source", "target", "id", "if-source-revision", "unconditional-source", "blocked-by", "depends-on", "no-cycle-check"); err != nil {
+	if err := graphPreviewFlags(cmd, "type", "source", "target", "id", "if-source-revision", "unconditional-source", "blocked-by", "depends-on", "no-cycle-check"); err != nil {
 		return err
 	}
 	// Keep the ordinary single-edge spellings. Native --blocked-by wins if both
@@ -116,9 +116,15 @@ func runGraphPreviewAddDependency(cmd *cobra.Command, args []string) error {
 	var sourceRevision string
 	var selectedType string
 	raw, _ := cmd.Flags().GetString("type")
+	if cmd.Flags().Changed("type") && graphPreviewNominalSelector(raw) {
+		if typ, err := graphPreviewTypeURL(graphPreviewConfig.GraphScopeURL, raw); err != nil || typ != graphstore.DependencyTypeURL(graphPreviewConfig.GraphScopeURL) {
+			return graphFailure("capability_unavailable", "Dependency creation requires the installed Dependency Type", 5)
+		}
+		raw = string(types.DepBlocks)
+	}
 	depType := canonicalDependencyType(types.DependencyType(raw))
-	if !depType.IsValid() {
-		return graphFailure("invalid_properties", fmt.Sprintf("dependency --type must be nonempty and at most %d bytes", types.MaxDependencyTypeLen), 2)
+	if !depType.IsWellKnown() {
+		return graphFailure("capability_unavailable", "Dependency type is not registered in this preview", 5)
 	}
 	linkPath := ""
 	if cmd.Flags().Changed("id") {
@@ -129,23 +135,18 @@ func runGraphPreviewAddDependency(cmd *cobra.Command, args []string) error {
 			return graphFailure("invalid_selector", err.Error(), 2)
 		}
 	}
-	if graphPreviewLinkTypeChanged(cmd) {
+	ownedCreate := cmd.Name() == "create" && cmd.Flags().Lookup("source") != nil
+	guardedShorthand := cmd.Name() == "link" && (cmd.Flags().Changed("if-source-revision") || cmd.Flags().Changed("unconditional-source"))
+	if ownedCreate || guardedShorthand {
 		sourceRevision, _ = cmd.Flags().GetString("if-source-revision")
 		unconditional, _ := cmd.Flags().GetBool("unconditional-source")
 		if cmd.Flags().Changed("if-source-revision") == cmd.Flags().Changed("unconditional-source") || (sourceRevision == "" && !unconditional) {
-			return graphFailure("invalid_selector", "generic owned Link creation requires either --if-source-revision REVISION or --unconditional-source", 2)
+			return graphFailure("invalid_selector", "owned Link creation requires either --if-source-revision REVISION or --unconditional-source", 2)
 		}
-		resourceType, err := graphPreviewLinkType(cmd)
-		if err != nil {
-			return err
-		}
-		if resourceType != graphstore.DependencyTypeURL(graphPreviewConfig.GraphScopeURL) {
-			return graphFailure("capability_unavailable", "this preview accepts only the installed native Dependency Link Type", 5)
-		}
-		selectedType = resourceType
+		selectedType = graphstore.DependencyTypeURL(graphPreviewConfig.GraphScopeURL)
 	} else {
 		if cmd.Flags().Changed("if-source-revision") || cmd.Flags().Changed("unconditional-source") {
-			return graphFailure("invalid_selector", "source guard options require --link-type", 2)
+			return graphFailure("invalid_selector", "source guard options require bd link create", 2)
 		}
 		var ok bool
 		selectedType, ok = graphPreviewDependencyTypeURL(graphPreviewConfig.GraphScopeURL, depType)

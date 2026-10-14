@@ -1,7 +1,6 @@
 package main
 
 import (
-	"errors"
 	"os"
 	"path/filepath"
 	"reflect"
@@ -140,10 +139,11 @@ func TestGraphPreviewLinkTypeFlags(t *testing.T) {
 		fail bool
 	}{
 		{nil, "", false},
-		{[]string{"--link-type", "types/preview-related"}, "https://example.invalid/demo/types/preview-related", false},
-		{[]string{"--resource-type", "types/preview-related"}, "https://example.invalid/demo/types/preview-related", false},
-		{[]string{"--link-type="}, "", true},
-		{[]string{"--link-type", "types/example-follows", "--resource-type", "types/example-follows"}, "", true},
+		{[]string{"--type", "types/preview-related"}, "https://example.invalid/demo/types/preview-related", false},
+		{[]string{"--type", "blocks"}, "https://example.invalid/demo/types/preview-dependency", false},
+		{[]string{"--type", "parent-child"}, "https://example.invalid/demo/types/preview-dependency", false},
+		{[]string{"--type", "random"}, "", true},
+		{[]string{"--type="}, "", true},
 	} {
 		cmd := &cobra.Command{}
 		registerGraphLinkTypeFlag(cmd)
@@ -154,41 +154,8 @@ func TestGraphPreviewLinkTypeFlags(t *testing.T) {
 		if (err != nil) != tc.fail || got != tc.want {
 			t.Fatalf("%v: got=%q err=%v", tc.args, got, err)
 		}
-		if !cmd.Flags().Lookup("resource-type").Hidden || cmd.Flags().Lookup("link-type").Hidden {
-			t.Fatal("preferred flag not exposed correctly")
+		if cmd.Flags().Lookup("type") == nil || cmd.Flags().Lookup("link-type") != nil || cmd.Flags().Lookup("resource-type") != nil {
+			t.Fatal("only the unified type flag should be registered")
 		}
-	}
-}
-
-// --type belongs to the native Dependency route. Once --link-type
-// selects an informational Type, the flag allow-list refuses --type before any
-// later check could see it, so the route needs no second refusal of its own.
-func TestGraphPreviewLinkTypeRouteRefusesTypeFlagFirst(t *testing.T) {
-	oldConfig, oldDir := graphPreviewConfig, graphPreviewDir
-	graphPreviewConfig = &configfile.Config{GraphScopeURL: "https://example.invalid/demo/"}
-	graphPreviewDir = filepath.Join(t.TempDir(), ".beads")
-	t.Cleanup(func() { graphPreviewConfig, graphPreviewDir = oldConfig, oldDir })
-	diagnostic := captureGraphFailures(t)
-
-	cmd := &cobra.Command{}
-	cmd.Flags().StringP("type", "t", "blocks", "")
-	registerGraphLinkTypeFlag(cmd)
-	cmd.Flags().String("id", "", "")
-	cmd.Flags().String("properties", "", "")
-	cmd.Flags().String("if-source-revision", "", "")
-	cmd.Flags().Bool("unconditional-source", false, "")
-	if err := cmd.ParseFlags([]string{"--type", "blocks", "--link-type", "types/preview-related", "--unconditional-source"}); err != nil {
-		t.Fatal(err)
-	}
-	if !cmd.Flags().Changed("type") || !graphPreviewLinkTypeChanged(cmd) {
-		t.Fatal("the combination under test was not parsed as set")
-	}
-	err := runGraphPreviewLink(cmd, []string{"policy", "work"})
-	var exit *exitError
-	if !errors.As(err, &exit) || exit.Code != 5 {
-		t.Fatalf("--type with --link-type was not refused with exit 5: %v", err)
-	}
-	if got, want := diagnostic.String(), "capability_unavailable: graph preview does not implement --type\n"; got != want {
-		t.Fatalf("refusal = %q, want %q", got, want)
 	}
 }

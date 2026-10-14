@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"io"
 	"os"
+	"slices"
 	"strings"
 	"unicode/utf8"
 
@@ -27,6 +28,8 @@ func runGraphPreviewList(cmd *cobra.Command) error {
 	// gatherListInput lowers the Changed state of the Issue filters once it has read
 	// them, so what the caller typed is read here, before anything gathers.
 	typed := graphIssueListTypedOptions(cmd)
+	selector, _ := cmd.Flags().GetString("type")
+	nominal := cmd.Flags().Changed("type") && graphPreviewNominalSelector(selector)
 	in, structured, err := graphIssueListInput(cmd, os.Args[1:])
 	if err != nil {
 		return err
@@ -34,16 +37,20 @@ func runGraphPreviewList(cmd *cobra.Command) error {
 	jsonFlag, _ := cmd.Flags().GetBool("json")
 	legacyJSON := !structured && (jsonOutput || jsonFlag)
 	selectedType := ""
-	if cmd.Flags().Changed("bead-type") {
-		selector, _ := cmd.Flags().GetString("bead-type")
+	if nominal {
 		selectedType, err = graphPreviewTypeURL(graphPreviewConfig.GraphScopeURL, selector)
 		if err != nil {
 			return graphFailure("invalid_selector", err.Error(), 2)
 		}
+		if selectedType != graphstore.IssueTypeURL(graphPreviewConfig.GraphScopeURL) && selectedType != graphstore.MemoryTypeURL(graphPreviewConfig.GraphScopeURL) {
+			return graphFailure("capability_unavailable", "bd list accepts only installed Bead Types", 5)
+		}
+		in.IssueType = ""
+		typed = slices.DeleteFunc(typed, func(option string) bool { return option == "type" })
 	}
 	plan := planGraphList(typed, graphIssueListConfigLabel(cmd, in), selectedType, graphPreviewIssueTypeURL(graphPreviewConfig.GraphScopeURL))
 	if plan.refuse {
-		return graphFailure("capability_unavailable", "Issue list filters cannot be combined with a non-Issue --bead-type", 5)
+		return graphFailure("capability_unavailable", "Issue list filters cannot be combined with a non-Issue --type", 5)
 	}
 	if legacyJSON {
 		if selectedType != "" && selectedType != graphstore.IssueTypeURL(graphPreviewConfig.GraphScopeURL) {
@@ -98,7 +105,7 @@ func graphIssueListInput(cmd *cobra.Command, argv []string) (listInput, bool, er
 	fail := func(code, message string, exit int) (listInput, bool, error) {
 		return listInput{}, false, graphFailure(code, message, exit)
 	}
-	if err := graphPreviewFlags(cmd, "flat", "format", "bead-type", "status", "state", "type", "all", "limit", "title", "title-contains", "priority", "priority-min", "priority-max", "label", "label-any", "exclude-label", "pinned", "no-pinned", "sort", "reverse", "assignee", "no-assignee", "due-before", "due-after", "overdue", "include-comments"); err != nil {
+	if err := graphPreviewFlags(cmd, "flat", "format", "status", "state", "type", "all", "limit", "title", "title-contains", "priority", "priority-min", "priority-max", "label", "label-any", "exclude-label", "pinned", "no-pinned", "sort", "reverse", "assignee", "no-assignee", "due-before", "due-after", "overdue", "include-comments"); err != nil {
 		return listInput{}, false, err
 	}
 	format, _ := cmd.Flags().GetString("format")
@@ -199,7 +206,7 @@ func graphIssueListRepeatedFilters(cmd *cobra.Command, argv []string) error {
 	if err := probe.Parse(argv); err != nil {
 		return fmt.Errorf("cannot validate graph list filter occurrences: %w", err)
 	}
-	for _, name := range []string{"status", "state", "type", "assignee", "bead-type"} {
+	for _, name := range []string{"status", "state", "type", "assignee"} {
 		if count := counts[name]; count != nil && count.n > 1 {
 			return fmt.Errorf("graph list does not yet support repeated --%s; supply one filter", name)
 		}

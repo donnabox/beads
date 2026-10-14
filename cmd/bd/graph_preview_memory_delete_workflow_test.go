@@ -108,8 +108,8 @@ func TestGraphPreviewMemoryDeleteWorkflow(t *testing.T) {
 			}
 			refuse("capability_unavailable", "forget", "beads/work", "--unconditional")
 			related := scope + "types/preview-related"
-			call("link", "beads/plan", "beads/other", "--id", "links/outgoing", "--resource-type", related, "--if-source-revision", plan.Revision)
-			call("link", "beads/work", "beads/plan", "--id", "links/incoming", "--resource-type", related)
+			call("link", "beads/plan", "beads/other", "--id", "links/outgoing", "--type", related, "--if-source-revision", plan.Revision)
+			call("link", "beads/work", "beads/plan", "--id", "links/incoming", "--type", related)
 			for _, path := range []string{"links/outgoing", "links/incoming"} {
 				before := call("show", "beads/plan")
 				linkBefore := call("show", path)

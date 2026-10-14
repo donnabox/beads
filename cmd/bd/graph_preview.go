@@ -98,10 +98,7 @@ func init() {
 	memoriesCmd.Flags().String("format", "table", "Graph Memory summaries: table or records-json (preview only)")
 	recallCmd.Flags().String("version", "", "Recall an exact retained Memory version token (graph preview only)")
 	showCmd.Flags().String("version", "", "Read an exact retained version token (graph preview only)")
-	registerGraphLinkTypeFlag(linkCmd)
-	createCmd.Flags().String("bead-type", "", "Installed Bead Type: NAME, types/NAME, or full local URL (graph preview only)")
 	createCmd.Flags().String("properties", "", "Initialize installed Bead Type properties from a JSON object, @file, or @- (graph preview only)")
-	listCmd.Flags().String("bead-type", "", "List only this installed Bead Type: NAME, types/NAME, or full local URL (graph preview only)")
 	linkCmd.Flags().String("id", "", "New informational Link ID or links/PATH (bare ID is shorthand for links/ID)")
 	linkCmd.Flags().String("properties", "", "Informational Link properties as JSON, @file, or @- (graph preview only)")
 	linkCmd.Flags().String("metadata", "", "Initial informational Link metadata as a JSON object or @file (graph preview only)")
@@ -309,8 +306,11 @@ func admitGraphPreview(cmd *cobra.Command) (handled bool, admissionErr error) {
 		if cmd == listCmd && format == "records-json" {
 			return true, graphFailure("capability_unavailable", "records-json listing requires an experimental graph workspace", 5)
 		}
-		if cmd == listCmd && cmd.Flags().Changed("bead-type") {
-			return true, graphFailure("capability_unavailable", "--bead-type requires a workspace initialized with graph_mode link", 5)
+		if cmd == listCmd && cmd.Flags().Changed("type") {
+			selector, _ := cmd.Flags().GetString("type")
+			if graphPreviewNominalSelector(selector) {
+				return true, graphFailure("capability_unavailable", "graph Bead Types require a workspace initialized with graph_mode link", 5)
+			}
 		}
 		// delete's --if-revision is upstream's compare-and-swap here, not a graph
 		// guard: only forget's, and --unconditional on both, are graph-only.
@@ -329,10 +329,10 @@ func admitGraphPreview(cmd *cobra.Command) (handled bool, admissionErr error) {
 		if cmd == graphCompareCmd || graphPreviewLinkNamespaceCommand(cmd) {
 			return true, graphFailure("capability_unavailable", "this command requires an experimental graph workspace", 5)
 		}
-		if cmd == createCmd && (cmd.Flags().Changed("bead-type") || cmd.Flags().Changed("properties")) {
+		if cmd == createCmd && (cmd.Flags().Changed("properties") || graphPreviewNominalTypeFlagChanged(cmd)) {
 			return true, graphFailure("capability_unavailable", "generic create options require a workspace initialized with graph_mode link", 5)
 		}
-		if cmd == linkCmd && (graphPreviewLinkTypeChanged(cmd) || cmd.Flags().Changed("id") || cmd.Flags().Changed("properties") || cmd.Flags().Changed("metadata") || cmd.Flags().Changed("if-source-revision") || cmd.Flags().Changed("unconditional-source")) {
+		if cmd == linkCmd && (cmd.Flags().Changed("id") || cmd.Flags().Changed("properties") || cmd.Flags().Changed("metadata") || cmd.Flags().Changed("if-source-revision") || cmd.Flags().Changed("unconditional-source")) {
 			return true, graphFailure("capability_unavailable", "generic Link options require a workspace initialized with graph_mode link", 5)
 		}
 		if cmd == depAddCmd && cmd.Flags().Changed("id") {

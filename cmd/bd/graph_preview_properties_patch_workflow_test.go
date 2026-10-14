@@ -212,7 +212,7 @@ func TestGraphPreviewPropertiesPatchWorkflow(t *testing.T) {
 			retain(memory.ID, memory.Revision, memory)
 			add := func(id, dest string, properties string) graphstore.LinkRecord {
 				t.Helper()
-				result := graphMixedResult[graphstore.LinkMutationResult](t, call("link", memory.ID, dest, "--id", id, "--resource-type", scope+"types/preview-related", "--properties", properties, "--if-source-revision", memory.Revision))
+				result := graphMixedResult[graphstore.LinkMutationResult](t, call("link", memory.ID, dest, "--id", id, "--type", scope+"types/preview-related", "--properties", properties, "--if-source-revision", memory.Revision))
 				memory = showMemory()
 				retain(memory.ID, memory.Revision, memory)
 				retain(result.Link.ID, result.Link.Revision, result.Link)
@@ -221,7 +221,7 @@ func TestGraphPreviewPropertiesPatchWorkflow(t *testing.T) {
 			link := add("links/owned", issue.ID, `{}`)
 			twin := add("links/twin", issue.ID, `{"note":"untouched twin"}`)
 			self := add("links/self", memory.ID, `{"note":"self"}`)
-			unowned := graphMixedResult[graphstore.LinkMutationResult](t, call("link", issue.ID, target.ID, "--id", "links/unowned", "--resource-type", scope+"types/preview-related")).Link
+			unowned := graphMixedResult[graphstore.LinkMutationResult](t, call("link", issue.ID, target.ID, "--id", "links/unowned", "--type", scope+"types/preview-related")).Link
 			retain(unowned.ID, unowned.Revision, unowned)
 			unchanged := func() {
 				t.Helper()

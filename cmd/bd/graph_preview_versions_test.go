@@ -69,7 +69,7 @@ func TestGraphPreviewRemovedLinkVersionsTwoEngines(t *testing.T) {
 			call(initArgs...)
 			call("create", "Source", "--id", "source")
 			call("create", "Target", "--id", "target")
-			call("link", "source", "target", "--id", "links/edge", "--resource-type", scope+"types/preview-related")
+			call("link", "source", "target", "--id", "links/edge", "--type", scope+"types/preview-related")
 			call("update", "links/edge", "--properties", `{"note":"changed"}`)
 			removed := graphMixedResult[graphstore.LinkDeleteResult](t, call("link", "delete", "--force", "links/edge"))
 			listed := call("versions", "links/edge")
@@ -294,7 +294,7 @@ func TestGraphPreviewVersionsCLI(t *testing.T) {
 	// Link plane: created, changed, then unlinked. The private deletion marker
 	// must not appear among the citable versions. An Issue source leaves this
 	// Link unowned, so these writes do not advance a second subject's history.
-	run(t, "link", "beads/issue", "beads/target", "--id", "links/related", "--resource-type", relatedType, "--actor", author, "--json")
+	run(t, "link", "beads/issue", "beads/target", "--id", "links/related", "--type", relatedType, "--actor", author, "--json")
 	run(t, "update", "links/related", "--properties", `{"note":"changed"}`, "--actor", author, "--json")
 	removedLink := graphMixedResult[graphstore.LinkDeleteResult](t, run(t, "link", "delete", "--force", "links/related", "--actor", author, "--json"))
 

@@ -52,7 +52,7 @@ func TestGraphPreviewRecordJSONWorkflow(t *testing.T) {
 				Link   json.RawMessage `json:"link"`
 				Source json.RawMessage `json:"source"`
 			}
-			if err := json.Unmarshal(call("link", "beads/plan", "beads/work", "--link-type", "types/preview-related", "--properties", `{"note":"user value"}`), &receipt); err != nil {
+			if err := json.Unmarshal(call("link", "beads/plan", "beads/work", "--type", "types/preview-related", "--properties", `{"note":"user value"}`), &receipt); err != nil {
 				t.Fatal(err)
 			}
 			graphAssertCompleteRecordRevisionOnly(t, receipt.Link)

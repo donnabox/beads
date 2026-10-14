@@ -9,6 +9,7 @@ import (
 	"github.com/spf13/cobra"
 	graph "github.com/steveyegge/beads/graphops"
 	"github.com/steveyegge/beads/internal/storage/graphstore"
+	"github.com/steveyegge/beads/internal/types"
 )
 
 var graphUnlinkCmd = &cobra.Command{
@@ -16,7 +17,7 @@ var graphUnlinkCmd = &cobra.Command{
 	Short: "Remove a Link in an experimental graph workspace",
 	Long: `Remove one informational Link or blocking Dependency by canonical Link ID.
 Informational Links also accept an unambiguous source/target pair selected with
---link-type; bare endpoint IDs mean beads/ID. Requires a Link revision guard. Source revision protection is
+--type; bare endpoint IDs mean beads/ID. Requires a Link revision guard. Source revision protection is
 optional for Memory-owned Links and required for blocking Dependencies. The ID
 stays reserved and prior snapshots remain retained. Blocking pair selection is
 not supported by unlink; use bd dep remove ISSUE BLOCKER for the native pair
@@ -40,9 +41,8 @@ var linkCreateCmd = &cobra.Command{
 	Use: "create", Short: "Create a Link in a graph workspace",
 	Args: cobra.NoArgs, SilenceUsage: true, SilenceErrors: true,
 	RunE: func(cmd *cobra.Command, _ []string) error {
-		typ, _ := cmd.Flags().GetString("link-type")
-		if typ == "" {
-			return graphFailure("invalid_selector", "link create requires --link-type", 2)
+		if !cmd.Flags().Changed("type") {
+			return graphFailure("invalid_selector", "link create requires --type", 2)
 		}
 		source, _ := cmd.Flags().GetString("source")
 		target, _ := cmd.Flags().GetString("target")
@@ -125,8 +125,7 @@ var linkCompareCmd = &cobra.Command{
 
 func init() {
 	linkCmd.AddCommand(linkCreateCmd, linkListCmd, linkShowCmd, linkUpdateCmd, linkDeleteCmd, linkVersionsCmd, linkCompareCmd, linkCountCmd)
-	registerGraphLinkTypeFlag(linkCreateCmd)
-	linkCreateCmd.Flags().String("type", "blocks", "Native Dependency kind (default blocks); requires --link-type preview-dependency")
+	linkCreateCmd.Flags().String("type", "", "Installed Link Type or built-in Dependency type")
 	for _, flag := range []string{"source", "target"} {
 		linkCreateCmd.Flags().String(flag, "", "Local Bead ID or beads/PATH")
 	}
@@ -183,7 +182,7 @@ func graphPreviewBeadSelector(selector string) (string, error) {
 }
 
 func runGraphPreviewLinks(cmd *cobra.Command, args []string) error {
-	if err := graphPreviewFlags(cmd, "direction", "link-type", "resource-type"); err != nil {
+	if err := graphPreviewFlags(cmd, "direction", "type"); err != nil {
 		return err
 	}
 	if len(args) != 1 {
@@ -206,6 +205,7 @@ func runGraphPreviewLinks(cmd *cobra.Command, args []string) error {
 		if err != nil {
 			return nil, "", err
 		}
+		result = graphPreviewFilterLinkKind(cmd, result)
 		var human strings.Builder
 		for _, link := range result {
 			fmt.Fprintf(&human, "%s  %s  %s → %s\n",
@@ -217,6 +217,24 @@ func runGraphPreviewLinks(cmd *cobra.Command, args []string) error {
 		}
 		return result, strings.TrimSuffix(human.String(), "\n"), nil
 	})
+}
+
+func graphPreviewFilterLinkKind(cmd *cobra.Command, links []graphstore.LinkRecord) []graphstore.LinkRecord {
+	if !cmd.Flags().Changed("type") {
+		return links
+	}
+	selector, _ := cmd.Flags().GetString("type")
+	if graphPreviewNominalSelector(selector) {
+		return links
+	}
+	kind := string(canonicalDependencyType(types.DependencyType(selector)))
+	matching := links[:0]
+	for _, link := range links {
+		if link.Properties["dep_type"] == kind {
+			matching = append(matching, link)
+		}
+	}
+	return matching
 }
 
 // Only the human view shortens URLs. JSON retains canonical IDs and foreign
@@ -233,7 +251,7 @@ func graphPreviewDisplayLocalURL(url string) string {
 
 func graphPreviewLinkCollectionRequest(cmd *cobra.Command) (graphstore.LinkCollectionRequest, error) {
 	var request graphstore.LinkCollectionRequest
-	if err := graphPreviewFlags(cmd, "link-type", "resource-type", "source", "target", "incident-to", "direction"); err != nil {
+	if err := graphPreviewFlags(cmd, "type", "source", "target", "incident-to", "direction"); err != nil {
 		return request, err
 	}
 	var err error
@@ -288,6 +306,7 @@ func runGraphPreviewLinkCollection(cmd *cobra.Command, _ []string) error {
 		if err != nil {
 			return nil, "", err
 		}
+		links = graphPreviewFilterLinkKind(cmd, links)
 		if cmd.Name() == "count" {
 			result := map[string]any{"count": len(links)}
 			return result, fmt.Sprintf("%d", len(links)), nil
@@ -385,7 +404,7 @@ func runGraphPreviewUnlink(cmd *cobra.Command, args []string) error {
 	if err := graphPreviewWritePolicy(); err != nil {
 		return err
 	}
-	if err := graphPreviewFlags(cmd, "link-type", "resource-type", "if-revision", "unconditional", "if-source-revision", "unconditional-source"); err != nil {
+	if err := graphPreviewFlags(cmd, "type", "if-revision", "unconditional", "if-source-revision", "unconditional-source"); err != nil {
 		return err
 	}
 	if len(args) != 1 && len(args) != 2 {
@@ -394,7 +413,7 @@ func runGraphPreviewUnlink(cmd *cobra.Command, args []string) error {
 	request := graphstore.LinkDeleteRequest{Actor: getActorWithGit()}
 	if len(args) == 1 {
 		if graphPreviewLinkTypeChanged(cmd) {
-			return graphFailure("invalid_selector", "--link-type is only used for pair selection", 2)
+			return graphFailure("invalid_selector", "--type is only used for pair selection", 2)
 		}
 		path, err := graphPreviewLinkPath(graphPreviewConfig.GraphScopeURL, args[0])
 		if err != nil {
@@ -419,7 +438,10 @@ func runGraphPreviewUnlink(cmd *cobra.Command, args []string) error {
 			return err
 		}
 		if request.TypeURL == "" {
-			return graphFailure("invalid_selector", "pair unlink requires --link-type", 2)
+			return graphFailure("invalid_selector", "pair unlink requires --type", 2)
+		}
+		if request.TypeURL == graphstore.DependencyTypeURL(graphPreviewConfig.GraphScopeURL) {
+			return graphFailure("capability_unavailable", "remove a Dependency by Link ID or use bd dep remove for a blocking pair", 5)
 		}
 	}
 	var err error

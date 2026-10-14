@@ -136,11 +136,11 @@ func TestGraphPreviewMixedCoreWorkflow(t *testing.T) {
 			}
 
 			related := scope + "types/preview-related"
-			first := graphMixedResult[graphstore.LinkMutationResult](t, call("link", "beads/plan", "beads/context", "--resource-type", related, "--id", "links/context", "--properties", `{"note":"first"}`, "--if-source-revision", replaced.Memory.Revision))
+			first := graphMixedResult[graphstore.LinkMutationResult](t, call("link", "beads/plan", "beads/context", "--type", related, "--id", "links/context", "--properties", `{"note":"first"}`, "--if-source-revision", replaced.Memory.Revision))
 			current := graphMixedResult[graphstore.Record](t, call("show", "beads/plan"))
-			call("link", "beads/plan", "beads/work", "--resource-type", related, "--id", "links/work", "--if-source-revision", current.Revision)
+			call("link", "beads/plan", "beads/work", "--type", related, "--id", "links/work", "--if-source-revision", current.Revision)
 			issueBefore := call("show", "beads/work")
-			call("link", "beads/work", "beads/context", "--resource-type", related, "--id", "links/unowned")
+			call("link", "beads/work", "beads/context", "--type", related, "--id", "links/unowned")
 			if call("show", "beads/work") != issueBefore || call("show", "beads/context") != other {
 				t.Fatal("unowned informational Link versioned an endpoint")
 			}
@@ -167,7 +167,7 @@ func TestGraphPreviewMixedCoreWorkflow(t *testing.T) {
 			const memoryEndpointHint = "blocking Link Type requires two live Issues; use an informational Type such as types/preview-related for Memory endpoints: "
 			planBefore, workBefore := call("show", "beads/plan"), call("show", "beads/work")
 			for _, endpoints := range [][2]string{{"beads/plan", "beads/work"}, {"beads/work", "beads/plan"}} {
-				stdout, stderr, exit := graphVersionsProcess(t, bd, work, home, "link", endpoints[0], endpoints[1], "--link-type", "types/preview-dependency", "--unconditional-source", "--json")
+				stdout, stderr, exit := graphVersionsProcess(t, bd, work, home, "link", endpoints[0], endpoints[1], "--type", "types/preview-dependency", "--unconditional-source", "--json")
 				var diagnostic struct {
 					Code      string `json:"code"`
 					Message   string `json:"message"`

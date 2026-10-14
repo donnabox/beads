@@ -118,11 +118,11 @@ metadata is {}. Metadata is separate from Type-validated properties.
 --properties JSON initializes the selected Type's writable fields, such as
 Issue description or Memory body. It may accompany shorthand flags only when
 they supply different fields; duplicate fields refuse.
-Use --bead-type preview-memory to create a Memory instead:
-  bd create --bead-type preview-memory --id policy --body 'Code flow policy'
+Use --type preview-memory to create a Memory instead:
+  bd create --type preview-memory --id policy --body 'Code flow policy'
 Use bd types to see Bead Types installed in this workspace. A short NAME,
-types/NAME, or a full local Type URL works. --type remains the Issue classification
-(for example task or bug), not the Bead Type. Memory creation
+types/NAME, or a full local Type URL works. --type also accepts an Issue
+classification (for example task or bug); the CLI selects preview-issue for it. Memory creation
 accepts body/description/message and an optional title; unsupported Issue-only
 fields refuse. Fresh workspaces create types/preview-issue Issues.`},
 		{showCmd, `Use bd show ID (equivalent to beads/ID) for a current Memory or
@@ -186,20 +186,20 @@ graph path is unambiguous; use explicit beads/PATH if a different Bead claims
 that bare name. For Link-ID removal use bd link delete ID --force.`},
 		{linkCmd, `The canonical graph Link namespace is bd link
 create/list/show/update/delete/versions/compare/count. Create requires
---link-type, --source and --target; list and count query complete current
+--type, --source and --target; list and count query complete current
 Link collections within the preview's advertised bounds. Delete previews
 by default and --force applies the checked mutation.
 
-Without --link-type, bd link SOURCE TARGET creates the ordinary
+Without --type, bd link SOURCE TARGET creates the ordinary
 blocking Dependency between two live Issues. To create any native Dependency
 kind through the canonical namespace, use
-  bd link create --link-type types/preview-dependency --type KIND --source ISSUE --target ISSUE
-The default KIND is blocks. The resulting Link has a dep_type property.
+  bd link create --type blocks --source ISSUE --target ISSUE
+Only built-in Dependency kinds are accepted. The resulting Link has a dep_type property.
 For a Memory or Issue endpoint,
 choose an installed informational Type, for example on a fresh workspace:
-  bd link policy work --link-type types/example-cites
-Use bd types to see Link Types installed in this workspace. --link-type
-accepts types/NAME or a full local Type URL. An optional --id
+  bd link policy work --type types/example-cites
+Use bd types to see Link Types installed in this workspace. --type
+accepts a built-in Dependency kind, types/NAME or a full local Type URL. An optional --id
 selects a bare Link ID or links/PATH; --properties supplies informational Link properties.
 Memory-owned Links accept the current source by default, or use
 --if-source-revision TOKEN to reject a stale source. --metadata JSON supplies
@@ -252,7 +252,7 @@ of all installed Bead Types and lists every Memory and every Issue the
 ordinary bd list would show, newest recorded change first. Closed and pinned
 Issues are hidden unless --all is given; --all also removes the row limit.
 Each human row shows the local ID and kind; an Issue row also shows its
-status and priority. Use --bead-type types/NAME to narrow by Bead Type.
+status and priority. Use --type types/NAME to narrow by Bead Type.
 --limit returns a prefix with hasMore, not a continuation cursor. A positive
 BEADS_MAX_ROWS refuses a page of more Beads than that.
 Issue-specific filters (--status, --type, --title, --title-contains,
@@ -262,7 +262,7 @@ Issue-specific filters (--status, --type, --title, --title-contains,
 directory label switch to the existing Issue query: Issues only, closed and
 pinned Issues omitted unless --all or a filter selects them, quoted rows
 with status and priority, and a line under the header saying Memories are
-not listed. A typed filter cannot be combined with a non-Issue --bead-type;
+not listed. An Issue filter cannot be combined with a non-Issue --type;
 a configured directory label alone does not refuse one, it is simply not
 applied to Memories. Tree output is unavailable. --json returns the ordinary
 Issue-only array; use --format records-json for generic Bead records.`},
@@ -301,9 +301,10 @@ Legacy visualization modes are unavailable.`},
 Use bd status --graph to inspect graph capabilities and limits.`},
 		{typesCmd, `Use bd types to list the Bead and Link Types actually installed
 in this workspace, grouped by category. The displayed types/NAME IDs are
-accepted by --bead-type and --link-type. Add --details to show each complete
+accepted by --type on the matching command. Add --details to show each complete
 persisted Type descriptor. --json returns the full descriptors as structured
-data. Legacy Issue classifications such as task and bug belong to --type;
+data. Built-in Issue and Dependency values such as task and blocks also work
+with --type, but are not separate installed graph Types in this preview;
 --sections is unavailable in graph preview workspaces.`},
 	} {
 		entry.cmd.Long += "\n\nGraph preview workspaces:\n" + entry.text

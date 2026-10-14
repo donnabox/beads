@@ -60,14 +60,14 @@ func TestGraphPreviewListNoticeWorkflow(t *testing.T) {
 			// Structured output carries no notice: it is byte-identical to the
 			// Issue Type route, which never prints one, and --quiet prints nothing.
 			typed := structured("--status", "open")
-			if narrowed := structured("--bead-type", "types/preview-issue", "--status", "open"); typed != narrowed || strings.Contains(typed, "not listed") {
+			if narrowed := structured("--type", "types/preview-issue", "--status", "open"); typed != narrowed || strings.Contains(typed, "not listed") {
 				t.Fatalf("structured output changed:\n got=%s\nwant=%s", typed, narrowed)
 			}
 			if quiet := graphPolicyCLI(t, bd, work, home, nil, "", "list", "--status", "open", "--quiet"); quiet != "" {
 				t.Fatalf("--quiet printed %q", quiet)
 			}
 			// Narrowing to the Issue Type already told the caller it is Issues only.
-			expect("Issue Type with a typed option", human("--bead-type", "types/preview-issue", "--status", "open"),
+			expect("Issue Type with a typed option", human("--type", "types/preview-issue", "--status", "open"),
 				"Issues (2; more: false; graph preview)", workRow, otherRow)
 
 			// A configured directory label for this directory selects the Issue
@@ -76,9 +76,9 @@ func TestGraphPreviewListNoticeWorkflow(t *testing.T) {
 			graphListConfig(t, work, "directory:\n  labels:\n    \""+filepath.Base(work)+"\": frontend\n")
 			label := `directory.labels "frontend"`
 			expect("configured label alone", human(), "Issues (1; more: false; graph preview)", issueQuery(label), workRow)
-			expect("configured label with the Issue Type", human("--bead-type", "types/preview-issue"), "Issues (1; more: false; graph preview)", workRow)
+			expect("configured label with the Issue Type", human("--type", "types/preview-issue"), "Issues (1; more: false; graph preview)", workRow)
 			// A Memory has no labels, so the label is not applied to one and nothing is refused.
-			expect("configured label with the Memory Type", human("--bead-type", "types/preview-memory"),
+			expect("configured label with the Memory Type", human("--type", "types/preview-memory"),
 				"Beads (1; more: false; graph preview)", label+" is not applied to this Bead Type.", "  beads/plan  Memory  Plan")
 			// A typed label replaces the configured one, and a typed option is named next to it.
 			expect("typed label", human("--label", "frontend"), "Issues (1; more: false; graph preview)", issueQuery("--label"), workRow)
@@ -87,7 +87,7 @@ func TestGraphPreviewListNoticeWorkflow(t *testing.T) {
 				t.Fatalf("structured list with the configured label: %s", out)
 			}
 			// A typed Issue option with a Memory Type is still refused.
-			graphPolicyCLI(t, bd, work, home, nil, "capability_unavailable", "list", "--bead-type", "types/preview-memory", "--status", "open", "--format", "records-json")
+			graphPolicyCLI(t, bd, work, home, nil, "capability_unavailable", "list", "--type", "types/preview-memory", "--status", "open", "--format", "records-json")
 		})
 	}
 }
@@ -113,6 +113,6 @@ func TestGraphPreviewListTypedOptionsSelectIssueQuery(t *testing.T) {
 		}
 	}
 	for _, option := range []string{"status", "state", "type", "assignee"} {
-		graphPolicyCLI(t, bd, work, home, nil, "capability_unavailable", "list", "--bead-type", "types/preview-memory", "--"+option+"=", "--format", "records-json")
+		graphPolicyCLI(t, bd, work, home, nil, "capability_unavailable", "list", "--type", "types/preview-memory", "--"+option+"=", "--format", "records-json")
 	}
 }
