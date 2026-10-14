@@ -30,7 +30,7 @@ func TestGraphEpicProgressAndEligibleClose(t *testing.T) {
 			if !ok {
 				t.Fatal("parent-child Type unavailable")
 			}
-			if _, err := store.AddDependency(ctx, DependencyRequest{Path: "links/epic-child", TypeURL: parentType,
+			if _, err := store.AddDependency(ctx, DependencyRequest{Path: "links/epic-child", Type: types.DepParentChild, TypeURL: parentType,
 				SourcePath: "beads/child", TargetPath: "beads/epic", Actor: "author"}); err != nil {
 				t.Fatal(err)
 			}

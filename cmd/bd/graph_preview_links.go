@@ -157,7 +157,7 @@ func runGraphPreviewLink(cmd *cobra.Command, args []string) error {
 	if err := graphPreviewWritePolicy(); err != nil {
 		return err
 	}
-	// --type is deliberately absent: it belongs to the blocking Dependency route
+	// --type is deliberately absent: it belongs to the native Dependency route
 	// above, so this list refuses it before anything below could.
 	if err := graphPreviewFlags(cmd, "link-type", "resource-type", "source", "target", "id", "properties", "metadata", "if-source-revision", "unconditional-source"); err != nil {
 		return err

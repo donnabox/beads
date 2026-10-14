@@ -126,6 +126,7 @@ var linkCompareCmd = &cobra.Command{
 func init() {
 	linkCmd.AddCommand(linkCreateCmd, linkListCmd, linkShowCmd, linkUpdateCmd, linkDeleteCmd, linkVersionsCmd, linkCompareCmd, linkCountCmd)
 	registerGraphLinkTypeFlag(linkCreateCmd)
+	linkCreateCmd.Flags().String("type", "blocks", "Native Dependency kind (default blocks); requires --link-type preview-dependency")
 	for _, flag := range []string{"source", "target"} {
 		linkCreateCmd.Flags().String(flag, "", "Local Bead ID or beads/PATH")
 	}

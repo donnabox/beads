@@ -158,8 +158,8 @@ func TestExampleInformationalTypeLifecycle(t *testing.T) {
 				t.Fatalf("Issue query with examples: %+v %v", got, err)
 			}
 			inventory, err := s.CurrentSnapshot(ctx)
-			if err != nil || len(inventory.Types) != 9 {
-				t.Fatalf("nine-Type inventory: %+v %v", inventory.Types, err)
+			if err != nil || len(inventory.Types) != 6 {
+				t.Fatalf("six-Type inventory: %+v %v", inventory.Types, err)
 			}
 			for _, record := range inventory.Records {
 				if link, ok := record.(LinkRecord); ok && link.Type == RelatedTypeURL(s.ScopeURL()) {

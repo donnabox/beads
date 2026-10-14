@@ -14,6 +14,7 @@ import (
 
 	graph "github.com/steveyegge/beads/graphops"
 	"github.com/steveyegge/beads/internal/storage"
+	"github.com/steveyegge/beads/internal/types"
 )
 
 var (
@@ -412,22 +413,15 @@ func (s *Store) checkLinkMappingsInTx(ctx context.Context, tx *sql.Tx) error {
 	if invalidTypes != 0 {
 		return fmt.Errorf("%w: Link Type differs from its authority", ErrInvalidStore)
 	}
-	if issueType == IssueTypeURL(s.ScopeURL()) {
-		// Each installed native Link Type names exactly one Dependency kind. Keep the
-		// collection's admission behavior unchanged.
-		pairs := make([]string, 0, len(dependencyTypes))
-		pairArgs := make([]any, 0, len(dependencyTypes)*2)
-		for _, linkType := range dependencyTypes {
-			native, _ := nativeDependencyTypeForIssueType(s.ScopeURL(), issueType, linkType)
-			pairs = append(pairs, "(d.type=? AND c.type_url=?)")
-			pairArgs = append(pairArgs, string(native), linkType)
-		}
-		if err := tx.QueryRowContext(ctx, `SELECT COUNT(*) FROM graph_preview_catalog c JOIN dependencies d ON d.id=c.backing_key WHERE c.backing='dependency' AND c.allocation_state='live' AND NOT (`+strings.Join(pairs, " OR ")+`)`, pairArgs...).Scan(&invalidTypes); err != nil {
-			return err
-		}
-		if invalidTypes != 0 {
-			return fmt.Errorf("%w: native Dependency kind and Link Type differ", ErrInvalidStore)
-		}
+	// The one Link Type cannot identify a native kind. Reject malformed native
+	// kinds here; currentLinkInTx also checks this before projecting dep_type.
+	if err := tx.QueryRowContext(ctx, `SELECT COUNT(*) FROM graph_preview_catalog c JOIN dependencies d ON d.id=c.backing_key
+ WHERE c.backing='dependency' AND c.allocation_state='live' AND (d.type='' OR OCTET_LENGTH(d.type)>?)`,
+		types.MaxDependencyTypeLen).Scan(&invalidTypes); err != nil {
+		return err
+	}
+	if invalidTypes != 0 {
+		return fmt.Errorf("%w: invalid native Dependency kind", ErrInvalidStore)
 	}
 	for _, query := range []string{
 		`SELECT COUNT(*) FROM graph_preview_catalog c LEFT JOIN graph_preview_links l ON l.path=c.path LEFT JOIN dependencies d ON d.id=c.backing_key

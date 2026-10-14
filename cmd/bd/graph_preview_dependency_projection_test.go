@@ -15,11 +15,14 @@ func TestGraphDependencyProjectionUsesMappedBlockingLinks(t *testing.T) {
 		return graphstore.IssueRecord{ID: scope + "beads/" + id, Properties: &types.Issue{ID: "native-" + id}}
 	}
 	link := func(id, source, target string) graphstore.LinkRecord {
-		return graphstore.LinkRecord{ID: scope + "links/" + id, Type: graphstore.DependencyTypeURL(scope), Source: scope + "beads/" + source, Target: scope + "beads/" + target}
+		return graphstore.LinkRecord{ID: scope + "links/" + id, Type: graphstore.DependencyTypeURL(scope), Source: scope + "beads/" + source, Target: scope + "beads/" + target, Properties: map[string]any{"dep_type": "blocks"}}
 	}
+	nonblocking := link("custom", "a", "d")
+	nonblocking.Properties = map[string]any{"dep_type": "tracks"}
 	snapshot := graphstore.Snapshot{Records: []any{
 		issue("d"), issue("c"), issue("a"), issue("b"),
 		link("a-b", "a", "b"), link("b-c", "b", "c"),
+		nonblocking,
 		graphstore.LinkRecord{ID: scope + "links/related", Type: graphstore.RelatedTypeURL(scope), Source: scope + "beads/a", Target: scope + "beads/d"},
 	}}
 	g, err := projectGraphDependencies(snapshot, scope)

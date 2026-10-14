@@ -41,7 +41,7 @@ func runGraphPreviewCreateIssue(cmd *cobra.Command, args []string) error {
 	if cmd.Flags().Changed("parent") && parentSelector == "" {
 		return graphFailure("invalid_selector", "--parent requires an Issue ID", 2)
 	}
-	if parentSelector != "" && graphPreviewTypeGeneration != 8 {
+	if parentSelector != "" && graphPreviewTypeGeneration != 9 {
 		return graphFailure("capability_unavailable", "create --parent requires a fresh graph workspace", 5)
 	}
 	if parentSelector != "" && cmd.Flags().Changed("id") {

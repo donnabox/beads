@@ -6,7 +6,6 @@ import (
 
 	graph "github.com/steveyegge/beads/graphops"
 	"github.com/steveyegge/beads/internal/storage/graphstore"
-	"github.com/steveyegge/beads/internal/types"
 )
 
 const graphGenericBound = 1000
@@ -78,11 +77,7 @@ func projectGraphGeneric(snapshot graphstore.Snapshot, scope string, in graphGen
 		return zero, fmt.Errorf("%w: current inventory exceeds %d Resources", graphstore.ErrLimitExceeded, graphstore.PreviewSnapshotLimit)
 	}
 	issueType := graphstore.IssueTypeURL(scope)
-	dependencyTypes := map[string]bool{}
-	for _, native := range []types.DependencyType{types.DepBlocks, types.DepParentChild, types.DepDuplicates, types.DepSupersedes} {
-		id, _ := graphstore.RelationshipDependencyTypeURL(scope, native)
-		dependencyTypes[id] = true
-	}
+	dependencyTypes := map[string]bool{graphstore.DependencyTypeURL(scope): true}
 	if len(snapshot.Types) != 0 {
 		if len(snapshot.Types) != len(graphstore.FreshTypeNames()) {
 			return invalid("unsupported Type installation")

@@ -95,7 +95,7 @@ func TestGraphPreviewCreateBeadTypeSelection(t *testing.T) {
 func TestGraphPreviewCreateBeadTypeUsesOneFreshIssueType(t *testing.T) {
 	const scope = "https://example.invalid/project/"
 	previous := graphPreviewTypeGeneration
-	graphPreviewTypeGeneration = 8
+	graphPreviewTypeGeneration = 9
 	t.Cleanup(func() { graphPreviewTypeGeneration = previous })
 	if got := graphPreviewBlockingTypeURL(scope); got != graphstore.DependencyTypeURL(scope) {
 		t.Fatalf("blocking Type = %q", got)
@@ -110,19 +110,19 @@ func TestGraphPreviewCreateBeadTypeUsesOneFreshIssueType(t *testing.T) {
 	}
 }
 
-func TestGraphPreviewNativeDependencySelectionUsesFreshTypes(t *testing.T) {
+func TestGraphPreviewNativeDependencySelectionUsesOneType(t *testing.T) {
 	const scope = "https://example.invalid/project/"
-	previous := graphPreviewTypeGeneration
-	graphPreviewTypeGeneration = 8
-	t.Cleanup(func() { graphPreviewTypeGeneration = previous })
-	for _, native := range []types.DependencyType{types.DepBlocks, types.DepParentChild, types.DepDuplicates, types.DepSupersedes} {
+	for _, native := range []types.DependencyType{types.DepBlocks, types.DepParentChild, types.DepDuplicates, types.DepSupersedes, "my-own-kind"} {
 		url, admitted := graphPreviewDependencyTypeURL(scope, native)
-		if !admitted {
-			t.Fatalf("native %q refused", native)
+		if !admitted || url != graphstore.DependencyTypeURL(scope) {
+			t.Fatalf("native %q maps to %q, %t; want single Dependency Type", native, url, admitted)
 		}
-		if got, ok := graphPreviewNativeDependencyType(scope, url); !ok || got != native {
-			t.Fatalf("native %q URL %q maps back to %q, %t", native, url, got, ok)
-		}
+	}
+	if _, ok := graphPreviewDependencyTypeURL(scope, "123456789012345678901234567890123"); ok {
+		t.Fatal("overlong native kind admitted")
+	}
+	if _, ok := graphPreviewNativeDependencyType(scope, graphstore.DependencyTypeURL(scope)); !ok {
+		t.Fatal("single native Dependency Type was not admitted")
 	}
 }
 

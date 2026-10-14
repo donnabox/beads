@@ -41,7 +41,7 @@ func TestGraphPreviewUsabilityWorkflow(t *testing.T) {
 					LinkTypes []json.RawMessage `json:"linkTypes"`
 				} `json:"result"`
 			}
-			if err := json.Unmarshal([]byte(call("types")), &installed); err != nil || len(installed.Result.BeadTypes) != 3 || len(installed.Result.LinkTypes) != 8 {
+			if err := json.Unmarshal([]byte(call("types")), &installed); err != nil || len(installed.Result.BeadTypes) != 2 || len(installed.Result.LinkTypes) != 4 {
 				t.Fatalf("installed graph Types unavailable: %+v %v", installed, err)
 			}
 			for _, item := range append(installed.Result.BeadTypes, installed.Result.LinkTypes...) {
@@ -73,7 +73,7 @@ func TestGraphPreviewUsabilityWorkflow(t *testing.T) {
 			refuse("invalid_selector", "link", memory.ID, other.ID, "--link-type", "types/example-follows", "--resource-type", "types/example-follows")
 			refuse("invalid_selector", "link", memory.ID, other.ID, "--link-type", "https://foreign.invalid/types/example-follows")
 			refuse("capability_unavailable", "link", memory.ID, other.ID, "--link-type", "types/missing")
-			refuse("invalid_properties", "link", memory.ID, other.ID, "--link-type", "types/preview-blocks", "--unconditional-source")
+			refuse("invalid_properties", "link", memory.ID, other.ID, "--link-type", "types/preview-dependency", "--unconditional-source")
 			human := graphPolicyCLI(t, bd, work, home, nil, "", "memories")
 			if !strings.Contains(human, "beads/policy") || !strings.Contains(human, "Code flow policy") || strings.Contains(human, scope) || strings.Contains(human, memory.Revision) {
 				t.Fatalf("noisy Memory list: %s", human)

@@ -12,6 +12,7 @@ import (
 	"unicode/utf8"
 
 	graph "github.com/steveyegge/beads/graphops"
+	"github.com/steveyegge/beads/internal/types"
 	publicops "github.com/steveyegge/beads/issueops"
 )
 
@@ -112,7 +113,7 @@ func (s *Store) readVersionInTx(ctx context.Context, tx *sql.Tx, path, version s
 		}
 		return s.readIssueVersionInTx(ctx, tx, path, version, head, key.String)
 	}
-	_, dependencyType := nativeDependencyTypeForIssueType(s.ScopeURL(), issueType, typ.String)
+	dependencyType := isNativeDependencyLinkType(s.ScopeURL(), issueType, typ.String)
 	if !((backing == "generic" && kind == "bead" && typ.String == MemoryTypeURL(s.ScopeURL())) ||
 		(backing == "informational" && kind == "link" && IsInformationalTypeURL(s.ScopeURL(), typ.String)) ||
 		(backing == "dependency" && kind == "link" && dependencyType)) {
@@ -223,7 +224,10 @@ func (s *Store) validateVersionLink(ctx context.Context, tx *sql.Tx, link LinkRe
 	if err != nil {
 		return err
 	}
-	if _, ok := nativeDependencyTypeForIssueType(s.ScopeURL(), issueType, link.Type); !ok || link.Properties == nil || len(link.Properties) != 0 {
+	depType, hasKind := link.Properties["dep_type"].(string)
+	if !isNativeDependencyLinkType(s.ScopeURL(), issueType, link.Type) ||
+		!hasKind || len(link.Properties) != 1 || !types.DependencyType(depType).IsValid() ||
+		!utf8.ValidString(depType) || !bytes.Equal(link.Metadata, []byte(`{}`)) {
 		return fmt.Errorf("%w: invalid retained Dependency", ErrInvalidStore)
 	}
 	for _, endpoint := range []string{link.Source, link.Target} {
@@ -251,7 +255,7 @@ func (s *Store) validateVersionOwned(ctx context.Context, tx *sql.Tx, source, ow
 		if json.Unmarshal(raw, &link) != nil {
 			return fmt.Errorf("%w: invalid retained owned membership", ErrInvalidStore)
 		}
-		_, nativeOwned := nativeDependencyTypeForIssueType(s.ScopeURL(), ownerType, link.Type)
+		nativeOwned := isNativeDependencyLinkType(s.ScopeURL(), ownerType, link.Type)
 		if link.Source != source ||
 			(memoryOwner && !IsInformationalTypeURL(s.ScopeURL(), link.Type)) || (!memoryOwner && !nativeOwned) ||
 			(previous != "" && graph.CompareCodeUnits(previous, link.ID) >= 0) {

@@ -93,7 +93,8 @@ func TestCreateChildIssueAtomicNativeParentLink(t *testing.T) {
 			if !strings.HasPrefix(created.Child.Properties.ID, parent.Properties.ID+".") ||
 				created.Child.ID != options.Binding.ScopeURL+"beads/"+created.Child.Properties.ID ||
 				created.Link.Source != created.Child.ID || created.Link.Target != parent.ID ||
-				created.Link.Type != options.Binding.ScopeURL+"types/preview-parent-child" ||
+				created.Link.Type != DependencyTypeURL(options.Binding.ScopeURL) ||
+				created.Link.Properties["dep_type"] != string(types.DepParentChild) ||
 				len(created.Child.Owned) != 1 {
 				t.Fatalf("child Issue and Link disagree: %+v", created)
 			}

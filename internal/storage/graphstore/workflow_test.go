@@ -19,28 +19,6 @@ import (
 	"github.com/steveyegge/beads/internal/types"
 )
 
-// The graph writer must never turn a caller's nonblocking native relationship
-// into the only currently installed Link Type (blocks). Until the Type-set
-// generation decision is made, even direct store callers are refused before
-// opening storage, with no apparent successful Link or Issue result.
-func TestDependencyTypeAdmissionBeforeStoreOpen(t *testing.T) {
-	for _, kind := range []types.DependencyType{types.DepParentChild, types.DepDuplicates, types.DepSupersedes, types.DepTracks, "custom"} {
-		t.Run(string(kind), func(t *testing.T) {
-			result, err := (&Store{}).AddDependency(context.Background(), DependencyRequest{
-				SourcePath: "beads/source", TargetPath: "beads/target", Type: kind, Actor: "author",
-			})
-			if !errors.Is(err, ErrCapabilityUnavailable) || !reflect.DeepEqual(result, DependencyResult{}) {
-				t.Fatalf("kind %q produced result %+v, err %v", kind, result, err)
-			}
-		})
-	}
-	for _, kind := range []types.DependencyType{"", types.DepBlocks} {
-		if resolved, err := previewDependencyType(kind); err != nil || resolved != types.DepBlocks {
-			t.Fatalf("kind %q resolved to %q, err %v", kind, resolved, err)
-		}
-	}
-}
-
 // This scenario exercises the real domain writers, retained source membership,
 // canonical allocation and scheduling query in one normal initialized database.
 // The process-level installed CLI boundary is covered separately by the harness.
@@ -115,8 +93,8 @@ func TestDependencyWorkflowDurableSequence(t *testing.T) {
 				t.Fatal(err)
 			}
 			blockingType, _ := relationshipDependencyTypeURL(o.Binding.ScopeURL, types.DepBlocks)
-			if source.Type != IssueTypeURL(o.Binding.ScopeURL) || target.Type != source.Type || added.Link.Type != blockingType {
-				t.Fatalf("fresh Issue/Dependency Types differ: source=%s target=%s link=%s", source.Type, target.Type, added.Link.Type)
+			if source.Type != IssueTypeURL(o.Binding.ScopeURL) || target.Type != source.Type || added.Link.Type != blockingType || added.Link.Properties["dep_type"] != "blocks" {
+				t.Fatalf("fresh Issue/Dependency Types differ: source=%s target=%s link=%s properties=%v", source.Type, target.Type, added.Link.Type, added.Link.Properties)
 			}
 			if !added.Changed || added.Link.Source != source.ID || added.Link.Target != target.ID || added.Source.Version == source.Version || len(added.Source.Owned) != 1 || len(added.Source.Properties.Dependencies) != 0 {
 				t.Fatalf("wrong Dependency result: %+v", added)
@@ -243,7 +221,7 @@ func TestDependencyWorkflowDurableSequence(t *testing.T) {
 	}
 }
 
-func TestV7NativeRelationshipAddAndCanonicalUnlink(t *testing.T) {
+func TestNativeDependencyKindsShareTypeAndCanonicalUnlink(t *testing.T) {
 	for _, backend := range []string{"embedded", "server"} {
 		t.Run(backend, func(t *testing.T) {
 			ctx, options := issueExperimentOptions(t, backend)
@@ -252,7 +230,7 @@ func TestV7NativeRelationshipAddAndCanonicalUnlink(t *testing.T) {
 				t.Fatal(err)
 			}
 			t.Cleanup(func() { _ = store.Close() })
-			for _, native := range []types.DependencyType{types.DepParentChild, types.DepDuplicates, types.DepSupersedes} {
+			for _, native := range []types.DependencyType{types.DepParentChild, types.DepDuplicates, types.DepSupersedes, "custom"} {
 				t.Run(string(native), func(t *testing.T) {
 					from, err := store.CreateIssue(ctx, "beads/from-"+string(native), plainIssue("Source"))
 					if err != nil {
@@ -263,9 +241,9 @@ func TestV7NativeRelationshipAddAndCanonicalUnlink(t *testing.T) {
 						t.Fatal(err)
 					}
 					typeURL, _ := relationshipDependencyTypeURL(options.Binding.ScopeURL, native)
-					request := DependencyRequest{SourcePath: "beads/from-" + string(native), TargetPath: "beads/to-" + string(native), TypeURL: typeURL, Actor: "author", ExpectedSourceRevision: from.Revision}
+					request := DependencyRequest{SourcePath: "beads/from-" + string(native), TargetPath: "beads/to-" + string(native), Type: native, TypeURL: typeURL, Actor: "author", ExpectedSourceRevision: from.Revision}
 					added, err := store.AddDependency(ctx, request)
-					if err != nil || !added.Changed || added.Link.Type != typeURL || added.Link.Source != from.ID || added.Link.Target != to.ID || len(added.Source.Owned) != 1 {
+					if err != nil || !added.Changed || added.Link.Type != typeURL || added.Link.Properties["dep_type"] != string(native) || added.Link.Source != from.ID || added.Link.Target != to.ID || len(added.Source.Owned) != 1 {
 						t.Fatalf("native relationship add: %+v, %v", added, err)
 					}
 					var nativeKind string
@@ -297,10 +275,11 @@ func TestV7NativeRelationshipAddAndCanonicalUnlink(t *testing.T) {
 					if n, g := countVersions(); n != 2 || g != 2 {
 						t.Fatalf("no-op recorded %d native and %d graph versions", n, g)
 					}
-					request.TypeURL = RelationshipBlockingTypeURL(options.Binding.ScopeURL)
+					request.Type = types.DepBlocks
 					if _, err := store.AddDependency(ctx, request); !errors.Is(err, storage.ErrValidation) {
-						t.Fatalf("same pair with another Type was admitted: %v", err)
+						t.Fatalf("same pair with another kind was admitted: %v", err)
 					}
+					request.Type = native
 					if _, err := store.Unlink(ctx, LinkDeleteRequest{Path: strings.TrimPrefix(added.Link.ID, options.Binding.ScopeURL), Actor: "remover", ExpectedRevision: added.Link.Revision, ExpectedSourceRevision: from.Revision}); !errors.Is(err, ErrConflict) {
 						t.Fatalf("stale unlink source guard was admitted: %v", err)
 					}

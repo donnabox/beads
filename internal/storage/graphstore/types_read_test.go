@@ -35,8 +35,6 @@ func TestReadInstalledTypes(t *testing.T) {
 				"memory": MemoryTypeURL(o.Binding.ScopeURL), "issue": IssueTypeURL(o.Binding.ScopeURL),
 				"dependency": DependencyTypeURL(o.Binding.ScopeURL), "related": RelatedTypeURL(o.Binding.ScopeURL),
 				"example-follows": ExampleFollowsTypeURL(o.Binding.ScopeURL), "example-cites": ExampleCitesTypeURL(o.Binding.ScopeURL),
-				"parent-child": o.Binding.ScopeURL + "types/preview-parent-child",
-				"duplicates":   o.Binding.ScopeURL + "types/preview-duplicates", "supersedes": o.Binding.ScopeURL + "types/preview-supersedes",
 			} {
 				got, err := s.ReadType(ctx, strings.TrimPrefix(id, o.Binding.ScopeURL))
 				if err != nil {
@@ -95,7 +93,7 @@ func TestListInstalledTypesReflectsPersistedInstallation(t *testing.T) {
 		t.Fatal(err)
 	}
 	installed, err := store.ListInstalledTypes(ctx)
-	if err != nil || len(installed) != 9 {
+	if err != nil || len(installed) != 6 {
 		t.Fatalf("fresh installed Types: %d %v", len(installed), err)
 	}
 	rows, err := store.db.QueryContext(ctx, `SELECT descriptor FROM graph_preview_types`)

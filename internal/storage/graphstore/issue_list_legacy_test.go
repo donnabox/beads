@@ -28,7 +28,7 @@ func TestGraphIssueLegacyListProjection(t *testing.T) {
 			if !ok {
 				t.Fatal("parent-child Type unavailable")
 			}
-			if _, err := store.AddDependency(ctx, DependencyRequest{Path: "links/parent", TypeURL: parentType, SourcePath: "beads/work", TargetPath: "beads/parent", Actor: "author"}); err != nil {
+			if _, err := store.AddDependency(ctx, DependencyRequest{Path: "links/parent", Type: types.DepParentChild, TypeURL: parentType, SourcePath: "beads/work", TargetPath: "beads/parent", Actor: "author"}); err != nil {
 				t.Fatal(err)
 			}
 			if err := store.AddIssueComment(ctx, "beads/work", "author", "why this exists"); err != nil {

@@ -15,7 +15,7 @@ import (
 )
 
 // RemoveDependency is the Issue pair form of the native dep remove verb. It
-// selects only the installed blocking Link in the same write transaction as
+// selects only a native blocks-kind Link in the same write transaction as
 // the canonical unlink/Issue writer. An absent pair is a true no-op: no event,
 // retained version, tombstone, or coordination write is produced. The generic
 // unlink command keeps its explicit canonical-Link-ID and guard contract.
@@ -67,7 +67,13 @@ func (s *Store) RemoveDependency(ctx context.Context, request DependencyRemoveRe
 			return err
 		}
 		if link.Type != blockingType {
-			return fmt.Errorf("%w: selected pair is not a blocking Dependency", ErrInvalidStore)
+			return fmt.Errorf("%w: selected pair is not a Dependency", ErrInvalidStore)
+		}
+		// The single nominal Dependency Type also includes parent-child and
+		// user-defined kinds. This familiar pair verb remains blocks-only;
+		// those Links are deleted explicitly by canonical Link ID.
+		if link.Properties["dep_type"] != string(types.DepBlocks) {
+			return nil
 		}
 		removed, err := s.unlinkDependencyInTx(ctx, tx, path, link, LinkDeleteRequest{
 			Actor: request.Actor, ExpectedRevision: link.Revision, ExpectedSourceRevision: source.Revision,

@@ -55,7 +55,7 @@ func validateOptions(o Options) error {
 	if o.Binding.SchemaVersion != SchemaVersion || !authorityID.MatchString(o.Binding.AuthorityID) {
 		return fmt.Errorf("%w: invalid preview version or authority ID", ErrInvalidStore)
 	}
-	if o.TypeGeneration != 0 && o.TypeGeneration != 8 {
+	if o.TypeGeneration != 0 && o.TypeGeneration != 9 {
 		return fmt.Errorf("%w: unsupported workspace Type generation", ErrInvalidStore)
 	}
 	if err := graph.ValidatePersistedScopeURL(o.Binding.ScopeURL); err != nil {
@@ -119,8 +119,8 @@ func Init(ctx context.Context, o Options) (err error) {
 	if err = validateOptions(o); err != nil {
 		return err
 	}
-	if o.TypeGeneration != 0 && o.TypeGeneration != 8 {
-		return fmt.Errorf("%w: fresh graph init writes only Type generation 8", ErrInvalidStore)
+	if o.TypeGeneration != 0 && o.TypeGeneration != 9 {
+		return fmt.Errorf("%w: fresh graph init writes only Type generation 9", ErrInvalidStore)
 	}
 	if o.Backend == "embedded" {
 		// Only the engine child directory is provisioned here; CLI owns the

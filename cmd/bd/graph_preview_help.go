@@ -166,8 +166,11 @@ incident Links prevent deletion; no cascade is performed.`},
 		{depCmd, `Use bd dep BLOCKER --blocks BLOCKED to create a blocking
 Dependency between two live Issues. Bare bd dep prints help; the ordinary
 --no-cycle-check option is unavailable in graph preview workspaces.`},
-		{depAddCmd, `Use bd dep add issue blocker for a blocking
+		{depAddCmd, `Use bd dep add issue blocker for a native
 Dependency between two live Issues, optionally with --id links/ID.
+--type KIND sets its dep_type property; the default is blocks. Any nonempty
+kind up to 32 bytes is accepted. Built-in blocks and parent-child retain
+their native scheduling or hierarchy behavior; unknown kinds do not block.
 The ordinary --blocked-by blocker and --depends-on blocker spellings replace
 the second positional argument. For a single edge, --no-cycle-check only
 suppresses a post-add warning; the domain writer still validates cycles.
@@ -188,7 +191,11 @@ Link collections within the preview's advertised bounds. Delete previews
 by default and --force applies the checked mutation.
 
 Without --link-type, bd link SOURCE TARGET creates the ordinary
-blocking Dependency between two live Issues. For a Memory or Issue endpoint,
+blocking Dependency between two live Issues. To create any native Dependency
+kind through the canonical namespace, use
+  bd link create --link-type types/preview-dependency --type KIND --source ISSUE --target ISSUE
+The default KIND is blocks. The resulting Link has a dep_type property.
+For a Memory or Issue endpoint,
 choose an installed informational Type, for example on a fresh workspace:
   bd link policy work --link-type types/example-cites
 Use bd types to see Link Types installed in this workspace. --link-type
@@ -196,9 +203,9 @@ accepts types/NAME or a full local Type URL. An optional --id
 selects a bare Link ID or links/PATH; --properties supplies informational Link properties.
 Memory-owned Links accept the current source by default, or use
 --if-source-revision TOKEN to reject a stale source. --metadata JSON supplies
-an initial open metadata object for informational Links; blocking Dependencies
+an initial open metadata object for informational Links; native Dependencies
 do not accept it. --unconditional-source
-explicitly selects the default. The blocking Type types/preview-blocks
+explicitly selects the default. The single Type types/preview-dependency
 requires Issue endpoints and, unlike informational Types, one of
 --if-source-revision TOKEN or --unconditional-source.`},
 		{closeCmd, `Close one or more local Issues by ID or beads/ID. One --reason

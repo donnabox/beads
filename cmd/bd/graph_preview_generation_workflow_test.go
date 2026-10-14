@@ -187,12 +187,12 @@ func TestGraphPreviewMarkerGenerationWorkflow(t *testing.T) {
 			t.Fatalf("marker %q: refused read changed workspace", marker)
 		}
 	}
-	for _, old := range []string{"link-preview-v5\n", "link-preview-v6\n", "link-preview-v7\n"} {
+	for _, old := range []string{"link-preview-v5\n", "link-preview-v6\n", "link-preview-v7\n", "link-preview-v8\n"} {
 		refuse(old, graphGenerationFirstGateRefusal)
 	}
-	refuse("link-preview-v9\n", "graph_mode workspace format link-preview-v9 is newer than this bd supports (link-preview-v8); upgrade bd; no database was opened")
-	refuse("link-preview-v8", graphGenerationFirstGateRefusal)
-	refuse("link-preview-v8x\n", graphGenerationFirstGateRefusal)
+	refuse("link-preview-v10\n", "graph_mode workspace format link-preview-v10 is newer than this bd supports (link-preview-v9); upgrade bd; no database was opened")
+	refuse("link-preview-v9", graphGenerationFirstGateRefusal)
+	refuse("link-preview-v9x\n", graphGenerationFirstGateRefusal)
 
 	if err := os.Remove(markerPath); err != nil {
 		t.Fatal(err)
@@ -206,7 +206,7 @@ func TestGraphPreviewMarkerGenerationWorkflow(t *testing.T) {
 	}
 
 	writeFile(t, markerPath, []byte(graphPreviewGeneration))
-	graphGenerationExec(t, cfg, `DELETE FROM graph_preview_types WHERE name='supersedes'`)
+	graphGenerationExec(t, cfg, `DELETE FROM graph_preview_types WHERE name='dependency'`)
 	stdout, stderr, exit := graphGenerationRun(t, bd, work, home, "types", "--json")
 	if exit != 5 || stdout != "" || !strings.Contains(stderr, `"code":"invalid_store"`) {
 		t.Fatalf("partial installation admitted: exit=%d stdout=%q stderr=%q", exit, stdout, stderr)
@@ -281,7 +281,7 @@ func TestGraphPreviewInstalledFreshTypedRelationships(t *testing.T) {
 	bd := buildBDUnderTest(t)
 	const scope = "https://example.invalid/typed-relationships/"
 	for _, engine := range []string{"embedded", "server"} {
-		t.Run("v8-"+engine, func(t *testing.T) {
+		t.Run("v9-"+engine, func(t *testing.T) {
 			work, home := graphListWorkspace(t, bd, engine, scope)
 			call := func(args ...string) string {
 				t.Helper()

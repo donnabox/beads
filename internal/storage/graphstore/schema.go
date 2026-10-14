@@ -71,8 +71,9 @@ func memoryDescriptor(scope string) (graph.TypeDescriptor, error) {
 // IssueTypeURL deliberately avoids settling the nominal Task/Bug discussion.
 func IssueTypeURL(scope string) string { return scope + "types/preview-issue" }
 
-// DependencyTypeURL is the registered native blocking Dependency Link Type.
-func DependencyTypeURL(scope string) string { return scope + "types/preview-blocks" }
+// DependencyTypeURL is the one native Dependency Link Type. The kind is stored
+// in the Link's dep_type property, not its nominal Type URL.
+func DependencyTypeURL(scope string) string { return scope + "types/preview-dependency" }
 
 func dependencyDescriptor(scope string) (graph.TypeDescriptor, error) {
 	endpoint, err := graph.NewEndpointConstraint([]string{IssueTypeURL(scope)}, graph.ExternalNone)
@@ -80,8 +81,8 @@ func dependencyDescriptor(scope string) (graph.TypeDescriptor, error) {
 		return graph.TypeDescriptor{}, err
 	}
 	return graph.NewTypeDescriptor(graph.TypeDescriptorSpec{
-		ID: DependencyTypeURL(scope), Name: "Preview Blocks", Describes: graph.KindLink,
-		Description: "Disposable Dependency adapter. Unpinned live local durable Issue endpoints; empty properties. The source depends on the target and owns this Link. Issue-domain pair uniqueness applies. No generic multiedge or production Dependency contract is established.",
+		ID: DependencyTypeURL(scope), Name: "Preview Dependency", Describes: graph.KindLink,
+		Description: "Issue-owned native Dependency with live unpinned local Issue endpoints. The required dep_type string property mirrors the native Dependency kind; no other properties or metadata edits are supported. One ordered Issue pair has at most one Dependency.",
 		Source:      &endpoint, Target: &endpoint,
 	})
 }
@@ -111,19 +112,15 @@ type relationshipDependencyType struct {
 	name        string
 }
 
-// Fresh workspaces install one unsuffixed Type for each supported native kind.
+// Kept temporarily for the old installer seam while the fresh generation's
+// Type catalog is consolidated. Every valid kind uses one nominal Type.
 var relationshipDependencyTypes = [...]relationshipDependencyType{
-	{types.DepBlocks, "dependency", "types/preview-blocks", "Preview Blocks"},
-	{types.DepParentChild, "parent-child", "types/preview-parent-child", "Preview Parent-Child"},
-	{types.DepDuplicates, "duplicates", "types/preview-duplicates", "Preview Duplicates"},
-	{types.DepSupersedes, "supersedes", "types/preview-supersedes", "Preview Supersedes"},
+	{types.DepBlocks, "dependency", "types/preview-dependency", "Preview Dependency"},
 }
 
 func relationshipDependencyTypeURL(scope string, native types.DependencyType) (string, bool) {
-	for _, relation := range relationshipDependencyTypes {
-		if relation.native == native {
-			return scope + relation.path, true
-		}
+	if native.IsValid() {
+		return DependencyTypeURL(scope), true
 	}
 	return "", false
 }
@@ -141,10 +138,10 @@ func RelationshipBlockingTypeURL(scope string) string {
 }
 
 func nativeRelationshipDependencyType(scope, id string) (types.DependencyType, bool) {
-	for _, relation := range relationshipDependencyTypes {
-		if id == scope+relation.path {
-			return relation.native, true
-		}
+	if id == DependencyTypeURL(scope) {
+		// The Type identifies a Dependency, while dependencies.type supplies
+		// its kind. Callers must not infer a kind from this return value.
+		return types.DepBlocks, true
 	}
 	return "", false
 }
@@ -159,22 +156,8 @@ func relationshipDependencyInstallName(scope, id string) (string, bool) {
 }
 
 func relationshipDependencyDescriptor(scope string, native types.DependencyType) (graph.TypeDescriptor, error) {
-	if native == types.DepBlocks {
+	if native.IsValid() {
 		return dependencyDescriptor(scope)
-	}
-	for _, relation := range relationshipDependencyTypes {
-		if relation.native != native {
-			continue
-		}
-		endpoint, err := graph.NewEndpointConstraint([]string{IssueTypeURL(scope)}, graph.ExternalNone)
-		if err != nil {
-			return graph.TypeDescriptor{}, err
-		}
-		return graph.NewTypeDescriptor(graph.TypeDescriptorSpec{
-			ID: scope + relation.path, Name: relation.name, Describes: graph.KindLink,
-			Description: "Disposable Issue-owned native " + string(native) + " Dependency. Both endpoints are live, unpinned local Issue Beads; properties are empty. Native Dependency pair uniqueness applies. This descriptor does not define Issue close behavior.",
-			Source:      &endpoint, Target: &endpoint,
-		})
 	}
 	return graph.TypeDescriptor{}, fmt.Errorf("unsupported native relationship Dependency %q", native)
 }

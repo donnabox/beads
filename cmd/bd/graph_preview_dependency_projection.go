@@ -31,7 +31,7 @@ func projectGraphDependencies(snapshot graphstore.Snapshot, scope string) (graph
 	}
 	for _, raw := range snapshot.Records {
 		link, ok := raw.(graphstore.LinkRecord)
-		if !ok || link.Type != blockingType {
+		if !ok || link.Type != blockingType || link.Properties["dep_type"] != "blocks" {
 			continue
 		}
 		if _, ok := g.issues[link.Source]; !ok {

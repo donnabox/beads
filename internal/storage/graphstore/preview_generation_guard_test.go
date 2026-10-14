@@ -66,19 +66,19 @@ func TestUnspecifiedStoreGenerationRequiresCompleteFreshTypes(t *testing.T) {
 		t.Fatalf("empty epic should reach eligibility check, got %v", err)
 	}
 	var fingerprint string
-	if err := store.db.QueryRowContext(ctx, `SELECT fingerprint FROM graph_preview_types WHERE name='parent-child'`).Scan(&fingerprint); err != nil {
+	if err := store.db.QueryRowContext(ctx, `SELECT fingerprint FROM graph_preview_types WHERE name='dependency'`).Scan(&fingerprint); err != nil {
 		t.Fatal(err)
 	}
-	if _, err := store.db.ExecContext(ctx, `UPDATE graph_preview_types SET fingerprint='wrong' WHERE name='parent-child'`); err != nil {
+	if _, err := store.db.ExecContext(ctx, `UPDATE graph_preview_types SET fingerprint='wrong' WHERE name='dependency'`); err != nil {
 		t.Fatal(err)
 	}
 	if _, err := store.EpicStatuses(ctx); !errors.Is(err, ErrInvalidStore) {
 		t.Fatalf("altered fingerprint admitted: %v", err)
 	}
-	if _, err := store.db.ExecContext(ctx, `UPDATE graph_preview_types SET fingerprint=? WHERE name='parent-child'`, fingerprint); err != nil {
+	if _, err := store.db.ExecContext(ctx, `UPDATE graph_preview_types SET fingerprint=? WHERE name='dependency'`, fingerprint); err != nil {
 		t.Fatal(err)
 	}
-	if _, err := store.db.ExecContext(ctx, `DELETE FROM graph_preview_types WHERE name='supersedes'`); err != nil {
+	if _, err := store.db.ExecContext(ctx, `DELETE FROM graph_preview_types WHERE name='dependency'`); err != nil {
 		t.Fatal(err)
 	}
 	if _, err := store.ListChildren(ctx, "beads/epic"); !errors.Is(err, ErrInvalidStore) {
@@ -120,13 +120,13 @@ func TestPreviewSchemaVersionAndInstalledTypeCounts(t *testing.T) {
 		descriptors, err := installedPreviewTypes(ctx, tx, s.ScopeURL())
 		return len(descriptors), err
 	}
-	if count, err := installed(); err != nil || count != 9 {
-		t.Fatalf("fresh installation has %d Types with %v; want 9", count, err)
+	if count, err := installed(); err != nil || count != 6 {
+		t.Fatalf("fresh installation has %d Types with %v; want 6", count, err)
 	}
-	if _, err := s.db.ExecContext(ctx, `DELETE FROM graph_preview_types WHERE name='supersedes'`); err != nil {
+	if _, err := s.db.ExecContext(ctx, `DELETE FROM graph_preview_types WHERE name='dependency'`); err != nil {
 		t.Fatal(err)
 	}
 	if count, err := installed(); !errors.Is(err, ErrInvalidStore) {
-		t.Fatalf("eight-Type partial installation admitted: %d, %v", count, err)
+		t.Fatalf("five-Type partial installation admitted: %d, %v", count, err)
 	}
 }

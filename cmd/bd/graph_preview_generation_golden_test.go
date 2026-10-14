@@ -11,7 +11,7 @@ import (
 
 // graphPreviewGoldenTypes pins the Type names a fresh init installs, in order.
 var graphPreviewGoldenTypes = map[string][]string{
-	"link-preview-v8\n": {"memory", "issue", "dependency", "related", "example-follows", "example-cites", "parent-child", "duplicates", "supersedes"},
+	"link-preview-v9\n": {"memory", "issue", "dependency", "related", "example-follows", "example-cites"},
 }
 
 // An older bd checks only the marker (and a schema version that names the
