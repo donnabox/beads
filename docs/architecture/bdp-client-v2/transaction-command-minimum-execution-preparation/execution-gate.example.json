@@ -1,0 +1,22 @@
+{
+  "released": false,
+  "authorizationKind": "measured-source-execution",
+  "rootAcceptancePath": null,
+  "rootAcceptanceSha256": null,
+  "preparationSha256": {
+    "commands.json": null,
+    "gate.py": null,
+    "supervise.py": null
+  },
+  "approvedCommandIds": [],
+  "sourceDiffSha256": null,
+  "sourceSha256": {
+    "docs/specs/bdp.md": null,
+    "packages/server/src/transaction-http.ts": null,
+    "packages/server/src/transaction-http.test.ts": null,
+    "packages/server/src/transaction-service.test.ts": null,
+    "apps/bdptest/src/transactional-collection-minimum-installed.test.ts": null,
+    "apps/bdptest/src/installed-reference.test.ts": null,
+    "docs/design/transaction-implementation-progress.md": null
+  }
+}
