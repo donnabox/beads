@@ -1,0 +1,3 @@
+# Root-authorized pnpm11 override location correction
+
+Pinned CLI dist/pnpm.mjs105550/106999 specifies pnpm-workspace.yaml overrides;150654 warns package.json pnpm field is ignored. Root approved consumer-v3 with original two tarball root dependencies, no ignored package pnpm field, and the same local protocol override in pnpm-workspace.yaml. Preserve v1/v2 failed attempts. One offline install, full source/tar/installed provenance, then still-unconsumed single14/1. No source or tar changes/repacking, no registry fallback. Installed supervisor changes only entry realpath confinement to consumer-v3. Stop unexpected outcomes.

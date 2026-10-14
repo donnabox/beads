@@ -1,0 +1,11 @@
+{
+  "status": "STOPPED_AT_VERIFIER_PATH_ASSERTION",
+  "installV4Exit": 0,
+  "validatedBeforeAssertion": "313 tar members match actual installed member bytes; source/tar hashes unchanged",
+  "assertion": "('ajv','fast-deep-equal',consumer-v4/node_modules/.pnpm/@bdp+protocol@file+..+packages+bdp-protocol-0.0.0.tgz/node_modules/fast-deep-equal/package.json)",
+  "cause": "Verifier walked dependencies from symlink-facing manifest path instead of resolving actual package manifest first",
+  "notEstablished": "Full installed production-edge graph not yet verified; no successful complete provenance artifact written",
+  "installedChildren": 0,
+  "httpRequests": 0,
+  "rootNotified": true
+}
