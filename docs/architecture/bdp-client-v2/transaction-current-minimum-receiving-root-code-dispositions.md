@@ -8,3 +8,7 @@ Source5d854a1da21a377f03c2d4cd523b10f1e7659cea/tree75a9db868de253a92fa4e08495d86
 4. **Defer test-helper deduplication.** Small local fixture duplication is real but harmless; the existing alias block is intentionally preserved and no owner limit changes are in scope. Shared extraction would expand the repair without improving its behavior oracle. Future changes to shared fixture capacity should update both blocks or extract then.
 
 Stale ignored dist symbols noted by Claude are not tracked source and not evidence against the separately built fresh5d854 packed payload. Test-only successor must not relabel that payload. Scope remains four original paths plus a successor edit to one of those test paths; no protocol, public advertisement, release, Preview2 or CLI/Type scope expansion.
+
+## Accepted F1 repair closed
+
+Root fully read c534fcab840ef2e3753ab179feae10d3ce6431e5 author report, actual test delta, mutant failure and independent native closure SHA25616b5d2c5173a4e88ef3a8d1269e9dafe5e8b3855979bd4c5f7407d45711badd3. The test-only successor closes F1; all other tracked paths are unchanged and historical5d854 installed evidence remains on5d854. F2/F3/F4 deferrals remain explicit. Council actionable findings are dispositioned. Exact c534 CI must be green and actual merged tree must match48537438975a4c56ee1a5bb6056013bbddd38e03 before claiming landing.
