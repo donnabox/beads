@@ -62,7 +62,7 @@ Original service-review lows: RU trusted callback capability narrowing and publi
 
 ### Live worker ledger
 
-Checkpoint 2026-10-14T19:59:53Z. **ACTIVE: Transactional first**, with shared and targeted Update checks. Session `2026-10-08T20:26:35Z-81e5`. Public write profiles remain unadvertised; installed cumulative delivery predicates remain unmet. Ready main merges are operator-authorized after exact-head CI, native+Claude council, findings disposition, scope and ordinary ancestry checks, and actual merged-tree verification. Gemini excluded. No release/Preview2 or Janet CLI/staging/playgrounds/shared databases/Trish Type edits.
+Checkpoint 2026-10-14T20:11:56Z. **ACTIVE: Transactional first**, with shared and targeted Update checks. Session `2026-10-08T20:26:35Z-81e5`. Public write profiles remain unadvertised; installed cumulative delivery predicates remain unmet. Ready main merges are operator-authorized after exact-head CI, native+Claude council, findings disposition, scope and ordinary ancestry checks, and actual merged-tree verification. Gemini excluded. No release/Preview2 or Janet CLI/staging/playgrounds/shared databases/Trish Type edits.
 
 ### Verified main and completed serving work
 
@@ -98,12 +98,18 @@ Isolated successor `/Users/dbox/repos/wt/vickie/vickie-comparison-fault-typing-r
 
 | Worker | Scope | State / next |
 |---|---|---|
-| cross_carrier_plan_v2_review | Maintenance guard source/tests/report, isolated typing-repair checkout | Cleanfc47frozen; source/installed reviews closed; Cross-carrier measurement-only draft assigned on actualmain eff17183; four files, no tests/guard increases |
-| update_implementation | Independent maintenance successor closure | Source/installed closure complete; CI literal/integration reviews complete; PR121 merge gate/base observation reviews complete; idle |
-| cross_carrier_native_review | PR120 CI timeout diagnosis/headroom plan | Headroomplanv3/dispositions complete; remaining consistency-decision audit complete; existing S1-Q1 still unanswered |
-| Root | Council, integration, CI, installed gate, coordination | Both merged/tree-verified; review next measured draft; preserve pending decisions |
+| cross_carrier_plan_v2_review | Four-file cross-carrier draft on eff17183 | Frozen measurement-only draft; author idle pending review/guard acceptance |
+| update_implementation | Bounded cross-carrier validation plan | Planning-only nine-cohort execution plan complete; idle |
+| cross_carrier_native_review | Frozen draft measurements and code | Independent preflight active; no execution |
+| Root | Council, measured guard acceptance, integration | External Claude review active; actual main eff17183 verified unchanged |
 
 [Cross-carrier plan v3](transaction-after-timeout-next-plan-v3.md) and [native closure](transaction-cross-carrier-v3-native-closure.md) remain the accepted partial12action retained-replay plan. Serving dependencies are now merged; [root assignment](transaction-cross-carrier-draft-acceptance.md) authorizes only its four-file measurement draft on actualmain eff17183. No tests, guard increases or qualification claim before measured acceptance. [Root acceptance](transaction-cross-carrier-v3-root-acceptance.md) preserves measured joint caps and full-suite headroom gate.
+
+### Cross-carrier draft frozen; council active
+
+[Measured report](transaction-cross-carrier-draft/measured-report.md), SHA570ab088, and [source binding](transaction-cross-carrier-draft/binding.json), SHA6cb16804, bind the four-file uncommitted draft on eff171839fe4f37638284a4c3346428979d26b5d in `/Users/dbox/repos/wt/vickie/vickie-cross-carrier-draft`. [Complete patch](transaction-cross-carrier-draft/draft.patch), SHA2c74b730; [measurements](transaction-cross-carrier-draft/measurements.json), SHA316923ef. Root independently matched canonical684206disk/695598stringify/18107nodes/199actions/2102assertions and coverage99245bytes. All24 old raw objects reconstruct exact parent documents;37 modeled derivatives max701716bytes/18263nodes. These are static measurements, not executable outcomes.
+
+Native independent preflight is active. External Claude review of the same frozen source is active in exec session14005, wrapperPID41248/ClaudePID41260; stdout `transaction-cross-carrier-draft/claude-review.txt`, stderr separate. Do not modify frozen files until findings are dispositioned. No tests/build/install/services have run. Existing smaller guards remain unchanged. Proposed measured guards for review: disk688302, canonical stringify699694/nodes18171, coverage100269, derivative stringify705812/nodes18327; root has not authorized edits or execution yet. [Execution plan](transaction-cross-carrier-draft/execution-plan.md), SHA375fec3d, prepares nine sequential one-case cohorts expected1641/max1728HTTP and189children using one fresh installed package set; final selectors/source bindings remain gates. No full profile claim.
 
 ### Remaining delivery and product input
 
