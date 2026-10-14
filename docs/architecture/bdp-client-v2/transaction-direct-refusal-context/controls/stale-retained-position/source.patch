@@ -1,0 +1,11 @@
+--- a/packages/server/src/transaction-http.ts
++++ b/packages/server/src/transaction-http.ts
+@@ -361,7 +361,7 @@
+               retry: "never",
+             }),
+           ),
+-          result.context,
++          { ...result.context, scopePosition: "pos-1" },
+         );
+       }
+       if (result.code === "limit-exceeded" && result.limit === "transaction.operations") {
