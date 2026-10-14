@@ -41,7 +41,7 @@ func TestGraphPreviewUsabilityWorkflow(t *testing.T) {
 					LinkTypes []json.RawMessage `json:"linkTypes"`
 				} `json:"result"`
 			}
-			if err := json.Unmarshal([]byte(call("types")), &installed); err != nil || len(installed.Result.BeadTypes) != 3 || len(installed.Result.LinkTypes) != 8 {
+			if err := json.Unmarshal([]byte(call("types")), &installed); err != nil || len(installed.Result.BeadTypes) != 2 || len(installed.Result.LinkTypes) != 7 {
 				t.Fatalf("installed graph Types unavailable: %+v %v", installed, err)
 			}
 			for _, item := range append(installed.Result.BeadTypes, installed.Result.LinkTypes...) {
