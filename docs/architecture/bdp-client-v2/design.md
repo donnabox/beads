@@ -62,7 +62,7 @@ Original service-review lows: RU trusted callback capability narrowing and publi
 
 ### Live worker ledger
 
-Checkpoint 2026-10-14T17:36:27Z. **ACTIVE: Transactional first**, with shared and targeted Update checks. Session `2026-10-08T20:26:35Z-81e5` is current. Public write profiles remain unadvertised. Profile-delivery predicates are not yet met.
+Checkpoint 2026-10-14T17:44:35Z. **ACTIVE: Transactional first**, with shared and targeted Update checks. Session `2026-10-08T20:26:35Z-81e5` is current. Public write profiles remain unadvertised. Profile-delivery predicates are not yet met.
 
 ### Verified main and completed work
 
@@ -152,6 +152,14 @@ Native Low report-only attribution wording was corrected in [disposition](transa
 [Comparison parent re-anchor](transaction-comparison-timeout-parent-reanchor.md), SHA8f1e7345, is accepted after full root read: no eight-file scope mismatch. update_implementation is assigned isolated draft plus measured preflight only at ordinary parent c555 in vickie-comparison-timeout-context, branch codex/vickie-comparison-timeout-context. No execution/commit/push yet. New callback must be omitted from inherited comparison configuration; no service/runtime/schema edits. Source counts, control patches and installed27/two proposal require measured review before release.
 
 [Update cross-profile schema audit](read-update-local-schema-cross-profile-audit.md), SHAd4e8269b, is complete and fully root-read. Existing Update already serves captured local retrieval-schema bytes behind actual owner/auth checks; no production rewrite is justified. Its existing installed test proves one root, not inherited/transitive cold traversal despite its broad title. Targeted preservation selectors are identified but no new executions claimed. Canonical-ID alias residual stays separate. Both reviewers are idle.
+
+[Draft authoring acceptance](transaction-comparison-timeout-root-authoring-acceptance.md) records the assigned parent and corrects a stage-0 proof assumption: changes pages contain one group, so the proposed complete final observation instead uses existing complete Scope events pages plus graph and receipt inventory. Exact identities/content/cardinalities and measured dispatches require independent preflight approval; no change-group pagination proof is claimed.
+
+### PR119 CI timeout and unchanged retry
+
+Exact c555 CI38606671302 attempt1/job115999221459 completed CANCELLED at its existing15-minute maximum. [Raw-log native diagnosis](transaction-cold-schema-ci-timeout-diagnosis.md), SHA297b0909, is complete and fully root-read. Main suite passed9245tests/172files/one skip; preflight printed7passes but its step was cancelled, so it is not a completed gate. Smoke/Read skipped. Full raw logs preserve synthetic checkout9d015ff. Same-test median duration1.579x and setup52seconds longer than green4aa support one unchanged retry, without asserting a CPU cause.
+
+[Root retry disposition](transaction-cold-schema-ci-retry-disposition.md) authorizes exactly one unchanged retry, now [attempt2](transaction-cold-schema-ci-retry-start.json) ACTIVE. No source/job/test/cohort timeout changed. Any second cancellation requires fresh diagnosis and reviewed headroom action, not automatic repeat. PR119 remains draft; all council findings are closed but exact green CI and merged-tree verification remain required. Comparison draft authoring continues independently; no execution released.
 
 ## Current priority: BDP profile structure and implementation
 
