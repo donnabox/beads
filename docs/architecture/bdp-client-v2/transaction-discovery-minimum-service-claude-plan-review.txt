@@ -1,0 +1,85 @@
+Verified against the live tree at `9b95df5` (clean, HEAD matches; `transaction-service.ts` SHA256 = `02b5278ab88a476bd98e0ae40d1f6cbfe7ed3f03208a59f57d133d0f75e341e3`, exactly as pinned in the plan).
+
+## Reviewed scope
+
+Read in full: `transaction-service.ts` (551 lines), `transaction-consistency.ts` (121), `transaction-discovery.ts` (70), the relevant regions of `transaction-store.ts` (`enter` 341–352, `readContext` 583–592, `withRead` 883–959, `readConfiguration` 1712), `transaction-read.ts:34–89`, `transaction-http.ts:520–580`, `transaction-runtime.ts:340–380`, and the test files `transaction-service.test.ts` (all 1321 lines), `transaction-consistency.test.ts`, `transaction-installed-contracts.test.ts:390–500`, `transaction-read.test.ts:795–840`, plus `docs/specs/bdp.md:5756–5775`, root `package.json`, `scripts/bd-baseline.mjs`, `scripts/read-cohort-evidence.mjs`, `.gitignore`, and the merge diffs `fd07bf7→9b95df5` / `a53f4bb→9b95df5`. No files written, no tests, builds, network, or repository mutation.
+
+**Core design verdict: sound.** The load-bearing premises hold against actual source. `withRead` (883–959) takes no SQLite transaction (`enter`, not `enter(() => atomic(...))`), and `enter` releases `busy` in a `finally` (349–351) while `withRead` clears `active` in its own `finally` (955–957) — so a `TransactionMinimumFailure` thrown from inside the synchronous callback propagates cleanly with no fence, no open BEGIN, and no leaked reader. `readContext()` (587–591) already returns a freshly frozen 3-field object identical to `TransactionReadContext` (79–83), so the error's `context` is immutable and the assembler's input needs no widening. `waitForTransactionMinimum` retries only `behind` (111) and re-raises `catch-up-timeout` carrying the last observed context (116–117); `assembleTransactionDiscovery` derives `headPosition` purely from the passed context (`transaction-discovery.ts:52`) and takes no second head, so prefix coherence is structural. The plan's three claimed mutants are all genuinely lethal — in particular mutant 3, because the existing parse-after-release oracle calls `f.owner.readConfiguration()` inside the assembly spy (`transaction-service.test.ts:1102`) and `readConfiguration` is `() => enter(() => readConfiguration)` (`transaction-store.ts:1712`), so it really does throw on reentry. The no-minimum timing requirement is also already defended: `transaction-service.test.ts:1131–1135` calls `discoveryObserved()` from inside an open `withRead` entry and demands refusal, which only passes if the entry stays synchronous. `dist/` is gitignored and untracked, and neither `bd-baseline.mjs` nor `read-cohort-evidence.mjs` pins server source hashes, so the three-file scope survives a build. HTTP has no caller (`discoveryObserved` appears only in the service and tests), so "no new HTTP precedence" is factually free.
+
+I found no high-severity correctness defect in the implementation contract. The findings below are inaccuracies and evidence/coverage gaps that would bite an implementer following the plan verbatim.
+
+---
+
+## Current defects
+
+**1. MEDIUM — The plan's run list has no test that pins the claim in done-when #3.**
+`transaction-discovery-minimum-service-plan.md:76` lists `transaction-service.test.ts`, `transaction-consistency.test.ts`, `transaction-discovery.test.ts`, `transaction-installed-contracts.test.ts`. Done-when #3 (line 82) asserts "wire discovery is still refused." The minimum-bearing discovery refusal — `developmentGap("minimum-position-route")` at `transaction-http.ts:535` — is asserted in exactly one place in the repository: `transaction-http.test.ts:1169`. That file is not in the run list. Separately, `transaction-read.test.ts:813` is a direct zero-argument consumer of `discoveryObserved()` and was itself touched by the `9b95` merge (+17 lines), and it is also absent.
+*Impact:* the signature change ships with its two most relevant regression oracles unrun; a reviewer reading done-when #3 would believe the refusal was re-proven when it was not.
+*Repair:* add `transaction-http.test.ts` and `transaction-read.test.ts` to line 76's focused run list.
+
+**2. MEDIUM — Line 64 overstates what the installed fixture observes.**
+The plan says "The actual HTTP route at transaction-http.ts533–549 refuses minimum-bearing discovery through the existing route gap and ordinary discovery through transactional-discovery. The12-request installed discovery fixture observes those refusals." The 12 requests are real — `discoveryBoundary()` at `transaction-installed-contracts.test.ts:404–417` is 3 relatives × 2 methods, invoked at lines 418 and 489 — but it sends only `authorization`, never a minimum header. `grep` for `bdp-minimum-scope-position` / `bdp-scope-epoch` in that file returns nothing. The fixture observes **only** the `transactional-discovery` refusal, 12 times.
+*Impact:* directly undercuts done-when #4 ("Direct emitted proof is labelled accurately"); the emitted regression is credited with covering the refusal nearest the new capability, which it does not.
+*Repair:* reword line 64 to "The 12-request installed discovery fixture observes the ordinary `transactional-discovery` refusal; the minimum-bearing route refusal is pinned only by source test `transaction-http.test.ts:1169`" — and pair it with finding 1.
+
+**3. MEDIUM — No test asserts the owner is still usable after an in-entry consistency throw.**
+This is the one genuinely new behavior: today `discoveryObserved` never throws from inside `withRead`, and the plan makes it do so (line 35). The release is real (verified: `enter`'s `finally`, `transaction-store.ts:349–351`), but nothing in the test table at lines 50–58 proves it. The "Foreign epoch/view" row (53) stops at "Exactly one entry, zero waits, zero assembly"; the "owner remains usable" assertion appears only in the "Invalid input/provider/parser" row (58), scoped to parser failure. The sensitivity-mutant list (60) does not cover it either.
+*Impact:* a future refactor that catches-and-rethrows around `withRead`, or moves the check outside `enter`'s protection, could strand `busy = true` and wedge the owner for the rest of the process with no red test.
+*Repair:* extend the "Foreign epoch/view" row to require that a subsequent zero-argument `discoveryObserved()` succeeds and returns the actual current context after the foreign/behind failure.
+
+**4. MEDIUM — The emitted-script bounds at line 68 contradict the script's own stated configuration.**
+Line 68 requires the script to use "the existing literal service fixture configuration," "at most10 owner observation attempts," and "all cases should complete without wall-clock waiting." The literal fixture (`transaction-service.test.ts:68–90`) supplies no `minimumReads`, so `waitForTransactionMinimum` falls back to `budgetMs: 1000` with real `performance.now` and real `node:timers/promises` sleeps capped at 5ms (`transaction-consistency.ts:90–92, 118`). The fixed-head `pos-1` timeout case would then make roughly 200 owner entries over a full second — violating both bounds at once.
+*Impact:* the implementer either reports a false bound violation or silently exceeds the stated evidence envelope.
+*Repair:* state explicitly that the script constructs the service with `minimumReads: { budgetMs: 2, now: () => tick++, wait: async () => {} }`, mirroring the established deterministic seam at `transaction-service.test.ts:791` and `:1013`; that yields exactly 2 attempts and 1 wait with zero wall-clock time. Also note the script must reattach `read.pagination.clock` / `generateOpaqueToken` as functions after any JSON round-trip, per the existing precedent at `transaction-service.test.ts:472–474`.
+
+**5. LOW–MEDIUM — The two-module import list cannot support "exact error class" assertions.**
+Line 68 restricts the script to `dist/transaction-service.js` and `dist/transaction-store.js` while requiring "exact error class/reason/context on negatives." `TransactionMinimumFailure` (`transaction-consistency.ts:56–63`) never sets `this.name`, so `error.name` is just `"Error"` — unlike `ScopeServerOperationAbortedError`, which does set it (`read-request.ts:138`) and is therefore assertable by name, as the existing test does at `transaction-service.test.ts:1025`.
+*Impact:* the negative assertions are unimplementable as written, or get silently weakened to a message substring.
+*Repair:* either permit importing `dist/transaction-consistency.js` for a true `instanceof` (still a private emitted module; adds no API and no repository file), or change line 68 to require `constructor.name === "TransactionMinimumFailure"` plus `reason` and `context` — and say which.
+
+**6. LOW–MEDIUM — The catch-up row leaves the deadline on the real clock, contradicting line 45.**
+Line 45 asserts "No elapsed-time races or sleeps are needed for direct tests," but the "Catch-up and immutable controls" row (51) injects only a held `wait` and pins a fake monotonic clock solely in the "Fixed-head timeout" row (54). With the default `budgetMs: 1000` and real `performance.now`, the held section — a caller mutation plus a full `service.submit` to head 2 — races the deadline and converts a success into `catch-up-timeout` on a slow runner. This mirrors a latent exposure already present at `transaction-service.test.ts:947–1000`, so it is not novel, but the plan should not inherit it while claiming otherwise.
+*Impact:* intermittent red on the test that is the sole oracle for mutant 2 (mutable-tuple reuse).
+*Repair:* require a controlled `now` in the catch-up row too — e.g. `now: () => tick` advanced by the test — so "exactly two attempts and one wait" is deterministic rather than probabilistic.
+
+**7. LOW — `checkTransactionMinimum` is not currently imported into `transaction-service.ts`.**
+Line 13 describes the in-scope file as "existing accessor and the existing **consistency-check import**." `transaction-service.ts:4–9` imports only `snapshotTransactionMinimum`, `waitForTransactionMinimum`, and the two types. `checkTransactionMinimum` is imported in `transaction-read.ts:6` and `transaction-store.ts:32`, not here; it must be added to the existing import statement.
+*Impact:* small, and typecheck catches it immediately — but it is a factual error in a plan whose discipline is exact seam pinning.
+*Repair:* reword to "the existing import statement from `transaction-consistency.js`, to which `checkTransactionMinimum` must be added."
+
+**8. LOW — Several named source anchors are off by 1–3 lines, and one points at the wrong statement.**
+Actual vs. plan: `discoveryObserved` 237–253 (plan 237–254); `run` 125–140 (plan 125–141); `close` 528–549 (plan 528–546, which stops inside the IIFE at line 545); `readAtMinimum` 289–304 (plan 289–305); `snapshot` 305–327 (plan 306–329); `withRead` 883–959 (plan 884–962, overrunning into `resource`); `startTransactionRuntime` return 350–379 (plan 350–378). Most are an end-exclusive convention applied inconsistently. The outlier is substantive: **`minimumReads` is at line 106, not 107** — line 107 is `const read = createTransactionReadPlane(owner, capturedRead)`. By contrast the spec citation is exact: `bdp.md:5758` is precisely where "Ordinary reads are strict by default" begins.
+*Impact:* an implementer anchoring on `107` lands on the read-plane construction. Mitigated by line 74's own instruction to "reanchor named seams" before editing.
+*Repair:* correct `107`→`106` and normalize the ranges to inclusive.
+
+**9. LOW — Line 7's inventory of `9b95` changes to preserve omits the additions made to the very suite being extended.**
+The plan names "the reviewed validation-limit literal" — accurate; `git diff a53f4bb 9b95df5` confirms `validation: { diagnostics: 16, diagnosticBytes: 524288 }` added at `transaction-service.test.ts:1299`. It does not mention the other half of the merge: `transaction-service.test.ts:1202–1209` added `createTransactionHttpHandler` receipt-route assertions **inside** the `internal discovery owner observation` describe that line 45 instructs the author to extend.
+*Impact:* a reader applying line 17 ("No HTTP ... changes") and line 53 ("Do not assert HTTP statuses here") could reasonably mistake those nine lines for out-of-scope drift and delete them, silently losing integrated reviewed work.
+*Repair:* add them to the preserve list at line 7 explicitly.
+(Also verified accurate at line 7: `transaction-service.ts` is byte-identical at `a53f4bb`, `fd07bf7`, and `9b95df5`; the selector-coherence/diagnostic projection in `transaction-discovery.ts:31–36, 62–65` came from the `fd07bf7` side.)
+
+**10. LOW — `service.test.ts` at line 74 names a file that does not exist.**
+The file is `packages/server/src/transaction-service.test.ts`. The plan already corrects this exact confusion for the source file at line 7 ("not service.ts"), so line 74 is residual shorthand.
+*Repair:* use the full name.
+
+---
+
+## Optional follow-up (not defects in this plan)
+
+**11.** The `signal` parameter is silently inert when `supplied` is undefined (line 33). This matches `snapshot` (`transaction-service.ts:310–312`) but contradicts `nextEvents` in the same object (`:387`), which does call `signal?.throwIfAborted()`. The plan documents and tests the limitation, which is the right call for a no-behavior-change slice — but the two conventions coexisting in one file is a real footgun for the future HTTP caller. Worth a one-line note in the progress doc rather than a code change here.
+
+**12.** Malformed-input-vs-closing precedence is genuinely undecided in the existing code, not just in the plan: `readAtMinimum` calls `check()` before `snapshotTransactionMinimum` (`:290–291`), while `snapshot` snapshots first (`:313`). Line 34 picks the Snapshot convention and declines to decide, which is defensible; the conflict is pre-existing and deserves its own ruling later.
+
+**13.** Per the plan's design, an `entry-refused` result on a *retry* attempt becomes a hard failure rather than a retry. I could not construct a reachable case: `busy` is set and cleared synchronously inside `enter`, so no `await` can span an entry, and no owner method re-enters user code. Safe today; worth one sentence in the plan acknowledging it rather than any code.
+
+---
+
+## Residual risk
+
+What I could **not** assess, because the task correctly forbade it: nothing here is empirically verified. I did not typecheck, build, or run a single test, so every "remains green" claim in the plan is unconfirmed by execution — including the mutant reds, whose lethality I established by reading the oracles rather than by running them. The `dist/` tree present in the worktree is stale relative to any future edit, and `build` is `pnpm clean && tsc -b`, which wipes it — so the plan's ordering at line 76 (build before emitted tests) is load-bearing and untested here.
+
+I did not review the ~109KB `docs/design/transaction-implementation-progress.md` for whether a "narrow internal-observation paragraph" can land without contradicting existing claims elsewhere in it; that is a real risk surface for done-when #1 and #4 that I left untouched. I also did not audit `scripts/check-dependency-boundaries.mjs` rules against the new import, though adding `checkTransactionMinimum` to an import statement that already exists cannot introduce a new edge.
+
+The emitted-script feasibility question the plan flags at line 68 ("If the existing build/import layout prevents this, report the concrete issue") I can answer affirmatively on inspection but not by execution: per-module `dist/transaction-service.js` and `dist/transaction-store.js` exist, and `transaction-service.test.ts:467–492` already spawns a Node child that imports both by absolute `file://` URL and resolves the bare `@bdp/protocol` specifier from the importing module's location. So the layout supports it, subject to findings 4 and 5.
+
+Finally, I accepted the plan's framing that HTTP discovery stays refused and no installed qualification is claimed, and reviewed only within it — I did not evaluate whether this internal slice is the right next increment, which is root's call.
