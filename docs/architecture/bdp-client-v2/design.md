@@ -62,7 +62,7 @@ Original service-review lows: RU trusted callback capability narrowing and publi
 
 ### Live worker ledger
 
-Checkpoint 2026-10-14T21:10:03Z. **ACTIVE: Transactional first**, with shared and targeted Update checks. Session `2026-10-08T20:26:35Z-81e5`. Public write profiles remain unadvertised; installed cumulative delivery predicates remain unmet. Ready main merges are operator-authorized after exact-head CI, native+Claude council, findings disposition, scope and ordinary ancestry checks, and actual merged-tree verification. Gemini excluded. No release/Preview2 or Janet CLI/staging/playgrounds/shared databases/Trish Type edits.
+Checkpoint 2026-10-14T21:13:54Z. **ACTIVE: Transactional first**, with shared and targeted Update checks. Session `2026-10-08T20:26:35Z-81e5`. Public write profiles remain unadvertised; installed cumulative delivery predicates remain unmet. Ready main merges are operator-authorized after exact-head CI, native+Claude council, findings disposition, scope and ordinary ancestry checks, and actual merged-tree verification. Gemini excluded. No release/Preview2 or Janet CLI/staging/playgrounds/shared databases/Trish Type edits.
 
 ### Verified main and completed serving work
 
@@ -99,9 +99,9 @@ Isolated successor `/Users/dbox/repos/wt/vickie/vickie-comparison-fault-typing-r
 All nine installed cohorts completed and were individually adjudicated on frozen c02ccc37. [PR122](https://github.com/gastownhall/bdp/pull/122) is merged and tree-verified after exact c02ccc37 CI success. [Final independent actual-evidence audit](transaction-cross-carrier-draft/native-actual-evidence-review.md), SHA8fc7bb22, is complete and fully root-read with no blocker.
 | Worker | Scope | State / next |
 |---|---|---|
-| cross_carrier_plan_v2_review | Selector admission plan | Plan prepared; reanchoring current-main description before council; no authoring |
-| update_implementation | Command-minimum plan | Frozen00ffec1a; native+Claude council active, no authoring |
-| cross_carrier_native_review | Command-minimum native plan council | Active; completed PR122 actual-evidence review remains frozen |
+| cross_carrier_plan_v2_review | Selector admission plan | Frozen0f6ab557 on verified main1228005; no authoring until command predecessor and council closure |
+| update_implementation | Selector native plan council | Active; identified Changes pagination and byte-before-depth test corrections; full report pending |
+| cross_carrier_native_review | Command-minimum native plan council | Complete [review](transaction-command-minimum-native-plan-review.md), SHA b8ae822d: no blocker; count RU port probe separately (14 owners/15 listeners). Claude pending |
 | External Claude | Command-minimum plan00ffec1a | Running since21:09:03Z; exec10853, wrapper67042/Claude67043; stdout/stderr/exit records in evidence root |
 | Root | Serving priority/integration | PR122 merged/tree-verified; coordinate two newly unblocked serving plans and serialize shared edits |
 
@@ -145,6 +145,8 @@ Sole plan: `/Users/dbox/repos/wt/vickie/bdp-client-design/checkout/docs/architec
 
 
 [Command-minimum plan](transaction-command-minimum-implementation-plan.md) SHA00ffec1a is frozen against verifiedmain1228005 for native+Claude council. Six planned paths, sole production edit removes command-only refusal, distinct Update regression and fresh installed18/one-child plan; counts are proposed, no execution. [Selector plan](transaction-selector-admission-implementation-plan.md) follows with ordinary reanchor after command-minimum; no source-authoring release.
+
+Selector external Claude plan review started21:10:37Z; exec83322, wrapper69200/Claude69201, frozen0f6ab557. [Process](transaction-selector-admission-claude-process.json) and [session](transaction-selector-admission-claude-session.json). Command external review10853 remains active. No authoring or execution released.
 
 ## Current priority: BDP profile structure and implementation
 
