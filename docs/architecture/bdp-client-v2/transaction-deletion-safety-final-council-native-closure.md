@@ -1,0 +1,24 @@
+# Deletion-safety final council — independent native disposition closure
+
+No actionable finding remains for this bounded candidate. The blocking schema reference and static resolver guard are fixed at the inspected source. Optional findings 3–5 are explicitly deferred or documented, not misrepresented as implemented fixes. This closure does not establish CI readiness, portable conformance, public admission, or full-contract qualification.
+
+## Exact sources
+
+- Clean candidate `39c160d0d35294003f400cef8d5ab5c6ec9aec9c`, tree `75e8fb97979e304bbe6fa24b7a570d9fa01efbbb`, parent `2e742307845f52c23c4a16e6150fcf2201713fb5`.
+- Checkout `/Users/dbox/repos/wt/vickie/vickie-deletion-safety-schema-repair` remained unchanged.
+- Full external review SHA256 `93b8ca4b27e291ea07070b660629eb11c4221ebd1a57b82605585baaaf9cfa30`.
+- Final council dispositions SHA256 `4bb8411260d227642849f982fa8b56249a77ceba46f8ce9539b612f1207e976a`.
+- Final author report SHA256 `55fd8a8305fd2dc0f3e702e605295ae662036e014a04484297d255caf9b64f93`.
+- Actual manifest: 620094 bytes, SHA256 `56318c56ee99bb981336e3f17560e7b079e88f2f85ef463874c1d556a066b2b2`.
+
+## Disposition verification
+
+1. **Blocking undefined schema reference — closed.** The exact parent-to-candidate diff changes the deleted-Bead assertion and independently authored expected literal to `#/$defs/readProblem`. That definition exists in the canonical schema; `packages/protocol/src/read-values.ts:41` selects it for Read Problems. The served 404/current-position oracle is retained. The four-byte measurement change is explicit, with unchanged numeric bounds and 4092 bytes remaining margin. Historical 2e742 audits are appropriately preserved rather than overwritten with successor measurements.
+2. **Static schema resolution guard — closed.** `transactional-cumulative.test.ts:2175` onward constructs the canonical validator and resolves every authored json-schema assertion, across every row/action. Its negative restores the precise undefined predecessor reference and requires the named resolution error. This detects the actual original bootstrap failure rather than merely checking the corrected literal. The report's 39 cumulative tests and exact-source installed positive plus six controls are supporting author evidence, not tests rerun by this closure.
+3. **Portable Problem-envelope tolerance — explicitly deferred.** Exact complete Problem equality remains in the approved private fixture oracle. Optional RFC Problem fields could make a different conforming authority fail that incidental equality; this is a real portability limit, not a runtime defect or a closed universal requirement. The dispositions explicitly reserve member-wise normative assertions for portable qualification. The current coverage row remains wholeContract:false, identifies private observations and unobserved configurations, and makes no public/profile claim. No portability fix is claimed.
+4. **Named installed page-limit logging — explicitly deferred.** The app's installed configuration supplies Scope, disposable directory, credentials and artifacts, without a receipt limit override. The actual source declares maximumOperations:32 in `transaction-batch.ts:63`; `transactionReceiptMaximum()` defaults to that constant, and runtime configuration consumes it for the receipt/page default. This supports the bounded source-defined fixture, not advertised limit attestation. The 15-Event/next:null result is an actual finite observation; the opaque runtime digest is not treated as independent disclosure of a named limit. The disposition accurately leaves improved named logging/configuration evidence open.
+5. **Continuation explanation — documented, source comment deferred.** next-present alone permits null. The required d-final-next capture instead passes through the existing absolute HTTP(S), same-Scope URL validator in `runner.ts:2470–2495`; successful row completion is the relevant discriminator. The final report describes the validated continuation and explicitly says its target was not fetched. The disposition does not pretend that a source comment was added or that presence alone proves a usable URL.
+
+The corrected source changes only the schema literal, its independent oracle, resolver regression and accurate budget commentary relative to 2e742. Coverage/app controls and their assertions remain unchanged. Whole-contract and claim eligibility remain false. Required schema/bootstrap correctness is resolved; the remaining optional items do not invalidate the explicitly limited private reference-fixture observations.
+
+This review inspected source, the exact repair diff, final author evidence and full council dispositions. It ran no tests, builds or network operations and edited no source; only this report was written. PR115 exact-head CI was still a separate pending gate in the assignment and was not queried or assumed successful. Root retains readiness and merge decisions.
