@@ -62,7 +62,7 @@ Original service-review lows: RU trusted callback capability narrowing and publi
 
 ### Live worker ledger
 
-Checkpoint 2026-10-14T18:05:30Z. **ACTIVE: Transactional first**, with shared and targeted Update checks. Session `2026-10-08T20:26:35Z-81e5`. Public write profiles remain unadvertised and profile-delivery predicates remain unmet. Operator has authorized ready main merges after exact-head CI, native+Claude council, findings dispositions, scope and ordinary ancestry checks. No release or Preview2 promotion.
+Checkpoint 2026-10-14T18:10:35Z. **ACTIVE: Transactional first**, with shared and targeted Update checks. Session `2026-10-08T20:26:35Z-81e5`. Public write profiles remain unadvertised and profile-delivery predicates remain unmet. Operator has authorized ready main merges after exact-head CI, native+Claude council, findings dispositions, scope and ordinary ancestry checks. No release or Preview2 promotion.
 
 ### Verified main
 
@@ -80,7 +80,9 @@ PR118 sequence413/406 context, PR117 direct409/413/406 context and PR116 saved L
 
 Fresh installed direct14 plus sequence13 regressions passed,27requests/twochildren, payload2c62c66724c2c48fcd1de19360abbb90a3d5bb7c37257a095af752ba9e0b322d. Root independently compared313 archive members, recomputed closure and checked PIDs82412/82445 absent. Supervisor source attribution is not child attestation; fingerprints/context are not complete wire transcripts. These ordinary regressions do not prove default installed timeout sensitivity or cumulative qualification.
 
-[Full native frozen code review](transaction-comparison-timeout-native-code-review.md), SHAb93f2032, is complete and fully root-read with no actionable findings. External Claude remains active in tool session86133, actual PID83384 (guard parent83371), output transaction-comparison-timeout-claude-code-review.txt. Exact-head CI38611890879/job116017056158 is running. Author and native reviewer are idle; no owned build/test/service remains. Root owns council disposition and merge only after exact green CI and actual-tree verification. Public write profiles remain unadvertised.
+[Full native frozen code review](transaction-comparison-timeout-native-code-review.md), SHAb93f2032, is complete and fully root-read. [External Claude review](transaction-comparison-timeout-claude-code-review.txt), SHAed886cf7e9df7adad9f2b068a3e0a45f1d3fff230bfde0fda07b3167fbc7301f, completed exit0/session86133 and is fully root-read. It found no production defect, but one Medium coverage gap: the closed+failed owner guard is untested. [Council dispositions](transaction-comparison-timeout-code-dispositions.md) accept that test repair, a cheap existing submission-double branch check and prose reflow. Original source30035 CI38611890879/job116017056158 is still running and remains historical.
+
+Author update_implementation is preparing a separate ordinary30035 successor in vickie-comparison-timeout-review-repair, owning only store.test/submission.test/progressdoc. Native cross_carrier_native_review checks its draft/preflight, control discrimination and cleanup before any execution release. No production change/new runtime seam/HTTP or installed workload is authorized. After supplemental evidence and production/package preservation, successor gets independent native closure and fresh exact-head CI before merge. Original27/two installed evidence will retain30035 attribution. External review process reaped; no owned build/test/service running. Public write profiles remain unadvertised.
 
 Read-only profile_runtime_inventory is preparing the next safe plan in transaction-after-timeout-next-plan.md, reassessing the held cross-carrier evidence slice now that direct/sequence/schema serving fixes are merged and timeout is pending. No implementation/execution released. Incident-Link metadata Event product question remains pending; no semantics inferred.
 

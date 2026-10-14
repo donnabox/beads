@@ -1,0 +1,81 @@
+## Findings
+
+Reviewed `30035b8` (tree `cdee4bc`) against base `c555fe0` — 8 files, +557/−35. Verified ancestry independently: `tree(7e46cdc) == tree(c555fe01) == 062a3ab7`, `merge-base(30035b8, 7e46cdc) == c555fe01`, and `git diff 7e46cdc 30035b8` is exactly the reviewed 8-file/557/35 diff. Author/committer is Donna Box on the single non-merge commit; landing preserves ancestry and attribution with no rebase needed. Read-only: nothing built, run, installed, or mutated.
+
+**No Critical or High findings. No actionable correctness, security, or regression defect found in the production change.** The four findings below are two coverage gaps and two cosmetic/documentation items.
+
+---
+
+### 1. Medium — `closed`-shortcut guard terms have no committed coverage, and a documented scoping claim rests on them
+
+**`packages/server/src/transaction-store.ts:1731-1732`**
+
+```ts
+if (closed && !ownerFailure && !maintenanceFailure)
+  return Object.freeze({ kind: "owner-stopped" });
+```
+
+**Issue.** The two negation terms are what keep the new operation from swallowing a fault: with `ownerFailure` or `maintenanceFailure` set, control must fall through to `enter()` so the fault throws. No committed test exercises either term. The three fault/stop tests cover disjoint states — `transaction-store.test.ts:3267` is closed *without* a failure, `:3289` fences with `closed === false` (`fence()` only sets `ownerFailure` and clears the timer), and `:3315` never closes.
+
+**Impact.** Simplifying the guard to `if (closed)` compiles, passes lint, and passes all eighteen selected cases, while converting a fenced or maintenance-failed owner into a benign `owner-stopped` → bare 503. That is precisely the masking the plan forbids adding (§46: *"no broad catch converts them to an owner-stopped outcome"*) and it would silently falsify the progress note at `docs/design/transaction-implementation-progress.md:1782-1784`, which scopes the masking to *"before final observation"* — i.e. asserts the fault is **not** masked inside this operation. Severity is held at Medium rather than High because the production comparison loop reads `comparisonEpoch()` first, which returns `undefined` for any closed owner and short-circuits to `comparison-owner-stopped` before `observeComparisonDeadline` is reached; the guard is defense-in-depth for direct store callers.
+
+**Fix** (both in-footprint, using facilities already in the file):
+- Extend `:3289` after the fence is confirmed: `f.store.close(); expect(() => f.store.observeComparisonDeadline(f.store.scopeEpoch)).toThrow(failure as Error);` — `close()` is reachable post-fence (`busy` is false, `db` is still open).
+- Add a maintenance case modelled on `transaction-store.test.ts:889-907` (`vi.useFakeTimers()`, `maintenanceIntervalMs: 25`, `fault("before-maintenance-commit")`, `advanceTimersByTime(25)`), then assert `observeComparisonDeadline` throws `"maintenance failed"` rather than returning `owner-stopped`. This also turns the doc's scoping sentence into a tested claim.
+
+---
+
+### 2. Low — two new branches are never executed by any committed test
+
+**`packages/server/src/transaction-comparison.ts:62`** (`observed.kind !== "observed"` at the deadline) and **`packages/server/src/transaction-http.ts:357`** (`if (result.reason === "owner-stopped") return response;`).
+
+**Issue.** The committed tests reach the store's final-epoch mismatch (`transaction-store.test.ts:3261`) and the *pre*-deadline epoch stop (`transaction-submission.test.ts:1066`), but never the composition: deadline reached **and** the in-`atomic` final check failing, nor the HTTP mapping of any `owner-stopped` result. Neither is reachable through the real runtime — there is no supported live epoch rotation, and service close drains submissions — and the plan forbids adding a seam for it.
+
+**Impact.** Small, and bounded by the type system. Deleting the `transaction-http.ts:357` early return makes `result.context` a compile error on the union, and returning a context-bearing shape from `transaction-comparison.ts:62` likewise fails typecheck. The one mutation that survives — returning `{ kind: "temporarily-unavailable" }` from line 62 instead of `comparison-owner-stopped` — is wire-indistinguishable (both reach `problem(readProblem("temporarily-unavailable"))` with no context headers), so there is no observable defect to detect.
+
+**Fix.** Optional. If coverage is wanted without a new seam, the submission-level double at `transaction-submission.test.ts:1070-1078` can be extended with an `observeComparisonDeadline` stub returning `{ kind: "owner-stopped" }` at a reached deadline, asserting the `comparison-refusal`/`owner-stopped` shape. The HTTP branch would need a stub `service`, which has no precedent in `transaction-http.test.ts` and is not worth introducing for this.
+
+---
+
+### 3. Low — ragged re-wrap in the new progress section
+
+**`docs/design/transaction-implementation-progress.md:1791`** is 123 characters against the section's ~78-column wrap, and `:1794` breaks early mid-clause — the signature of a hand edit that was not re-flowed. Not a lint failure (Biome's formatter does not cover Markdown here, and 19 pre-existing lines already exceed 100). **Fix:** re-wrap lines 1791-1795 to the surrounding width.
+
+---
+
+### 4. Low (informational) — doc measurement claims check out
+
+`docs/design/transaction-implementation-progress.md:1786-1789` claims eighteen selected cases, sixteen loopback requests across two fixtures, and five mutants. These are internally consistent with the committed source and the evidence runner's test selectors: 6 store + 5 submission + 2 HTTP + 3 dependency + 2 alias = 18; the new test asserts 12 dispatches/12 completions and the preserved neighbour at `transaction-http.test.ts:818` makes 4 requests on a second fixture = 16; the five control directories map one-to-one onto the five named assertions. No finding — recorded because the counts are the kind of claim that silently rots.
+
+---
+
+## Conformance against the stated contract
+
+Each item below was checked against the code, not against the author's report.
+
+| Requirement | Verdict |
+|---|---|
+| Captures *actual current* context at the healthy deadline | ✓ `readContext()` reads live `metadata("position")`; `transaction-http.test.ts:2758` asserts `pos-1 ≠ pos-0` pre-wait |
+| Synchronous owner entry + single atomic observation | ✓ `enter(() => atomic(...))`, the established `readReceipt` pattern; `transaction-store.test.ts:3236-3242` pins exactly `BEGIN IMMEDIATE`/`COMMIT` and two metadata SELECTs — no receipt or key access |
+| Preserves epoch-before-deadline ordering and the single deadline | ✓ the split `if`s keep the original short-circuit order; `deadline` is still computed once at `transaction-comparison.ts:49`; `transaction-submission.test.ts:449` (unobserved) still pins single-deadline-across-replacement |
+| Explicit observed opt-in; no method sniffing | ✓ `transaction-submission.ts:132` keys off the `observed` parameter only; `transaction-comparison.ts` never inspects the store for the method |
+| Callback excluded from inherited config; overrides untyped input | ✓ `Omit<…, "receiving" \| "observeDeadline">` at `transaction-submission.ts:74-77` propagates to `transaction-service.ts:61`; the explicit key is spread **last** at `:132`, and `transaction-submission.test.ts:1107` proves a structurally-supplied `observeDeadline` is never invoked |
+| Legacy unobserved shapes byte-identical | ✓ `toStrictEqual` at `transaction-submission.test.ts:1130` confirms no `context` key; dependency/alias callers pass the full store with no option and are unaffected |
+| Distinguishes stopped owner | ✓ typed `reason` discriminant; owner-stopped emits no tuple, per plan §34 |
+| HTTP requires the tuple | ✓ `transaction-http.ts:358` throws, and `transaction-runtime.ts:253-259` turns that into the sanitized bodyless 500 with `content-length: 0` — a contextless 503 is unreachable |
+| No transaction spans the wait | ✓ the observation is in the terminal branch with no intervening `await`; proven end-to-end by the real independent commit executing inside `wait` at `transaction-http.test.ts:2649` |
+| Canonical Problem / retry / Retry-After unchanged | ✓ `problem(readProblem(code))` is the same call the legacy path reaches at `transaction-http.ts:388`; `transaction-http.test.ts:2749` pins the exact body and `retry-after: 1` |
+| No receipt or effect from the timeout | ✓ exact-equality problem body, no `Location`, `beads/a` 404 at the refusal, graph/Event afterstate, and the read-only `retainedReceiptInventory()` showing exactly `creator`/`dependent`/`independent` |
+| Replay oracle | ✓ `resource(replay)` equals the sequence's original `edge`; `pos-3` on both the receipt and the response; no duplicate effect in either collection |
+| Control reachability and cleanup | ✓ `finally` flushes held callbacks before drain, preserves original **and** cleanup errors via `AggregateError`, and records dispatch/completion counts (12/12) |
+
+**Blast radius is contained.** `service.submit` has exactly one consumer (`transaction-http.ts:344`); none of `transaction-submission`, `transaction-comparison`, `transaction-service`, or `transaction-store` is re-exported from `packages/server/src/index.ts`, so the widened `DirectComparison` and `TransactionSubmissionResult` unions reach no public surface. The deadline tuple is emitted only after the 401/403 checks in `submitTransaction`, and carries nothing beyond the Scope head position and the fixed all-visible view already served on every read — no receipt id, key internals, or other principal's state.
+
+## Known accepted limitations (not defects)
+
+- **Epoch-stop and closed-owner 503s carry no context headers.** A deliberate disposition (plan §34) — a mismatched persisted epoch cannot yield a coherent tuple from owner-lifetime constants. It is a narrowing of spec `bdp.md:5768-5774` for a defensive path.
+- **The maintenance-failure closed shortcut still masks that fault** at `transaction-store.ts:1724`, before `observeComparisonDeadline` is ever reached. Correctly scoped in the doc and correctly *not* claimed as repaired. See finding 1 for the untested half of that scoping.
+- **Default installed timeout sensitivity is unobserved.** Named as such in the doc. I did not infer any result from the pending installed direct-14/1 and sequence-13/1 regressions, and treated the Event 0→1→5 finite-page substitution as the explicit substitution it is, not as change-group pagination proof.
+- **`atomic()` adds a new fencing surface on the timeout path** (a `BEGIN IMMEDIATE` failure fences the owner, where a pre-change timeout could not). Plan-directed (§33), identical in kind to every existing `atomic` read, and benign under single-connection exclusive ownership. Noted, not flagged.
+
+I did not reconcile the final execution evidence — the native reviewer owns that. My reading of the evidence folder was limited to confirming which cases the runner selected, in order to check the doc's arithmetic in finding 4.
