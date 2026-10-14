@@ -62,7 +62,7 @@ Original service-review lows: RU trusted callback capability narrowing and publi
 
 ### Live worker ledger
 
-Checkpoint 2026-10-14T02:38:01Z. Autonomous profile completion is **active for the operator’s one-hour inflight wifi window**, resumed2026-10-14T02:35Z (7:35p.m. Pacific October13). Existing session `2026-10-08T20:26:35Z-81e5` remains verified; no new claim. Heartbeat ACTIVE. Begin wind-down03:25Z; checkpoint, stop owned processes and pause heartbeat by03:30Z (8:30p.m. Pacific), unless extended. Full required delivery remains incomplete; public write admission closed and diagnostic counts are not qualification.
+Checkpoint 2026-10-14T03:03:06Z. Autonomous profile completion is **active for the operator’s one-hour inflight wifi window**, resumed2026-10-14T02:35Z (7:35p.m. Pacific October13). Existing session `2026-10-08T20:26:35Z-81e5` remains verified; no new claim. Heartbeat ACTIVE. Begin wind-down03:25Z; checkpoint, stop owned processes and pause heartbeat by03:30Z (8:30p.m. Pacific), unless extended. Full required delivery remains incomplete; public write admission closed and diagnostic counts are not qualification.
 
 ## Delivered and verified main
 
@@ -91,13 +91,22 @@ Add eight observations: for each Resource kind, schema-invalid PropertyChange wi
 
 On operator resume, verify remote session/current main, assign an exact ordinary parent and verify the plan basis before authoring the three scoped files. Do not invent the future parent or blindly refresh hashes. Preserve old84 action spans,20 comparator pairs, exact8-action partition and100/5546+66/3700 binding ledgers; run specified positive and four negative controls and fresh genuine54-row/129-required packing. R remains false,33 whole/96 not whole until separate execution and code/clause review. Any promotion to34 whole requires a separate evidence step. Raw correction response→GET opaque revision linkage remains unobserved. No unavoidable human product decision blocks this slice.
 
-## Active workers and current assignment
+## Current candidate and active review
 
-- update_implementation: assigned the accepted schema PropertyChange version2 on exact remote main627b560c0daf1a76b292615718c86670255ac9af. Isolated checkout `/Users/dbox/repos/wt/vickie/vickie-schema-property-change`, branch `codex/vickie-schema-property-change`. Must verify unchanged RU basis before authoring. Owns only continuation manifest, RU coverage and bdptest matrix tests; Rfalse. Freeze/checkpoint by03:15Z, stop children by03:25Z. Report `schema-property-change/report.md` under logs. Root handles pushes/PR and review; no other writer in these files.
-- transaction_implementation: read-only next required TX gap plan after PR101, exact same main; no tests/source/runtime work. Report `transaction-after-receipts-next-plan.md` by03:00Z. Exclude optional History/Types/YAGNI/provenance and Update scope.
-- profile_editorial_inventory and profile_runtime_inventory: idle, available for independent review.
+[PR102](https://github.com/gastownhall/bdp/pull/102) is DRAFT at remote-verified `c57f5a7a804b1b7ababf2d9195d7fdccbd37dee8`, tree `b7ffb7fb34ea5014ba824be945026a353eb94a70`, ordinary direct parent627b560c. Checkout `/Users/dbox/repos/wt/vickie/vickie-schema-property-change`, branch `codex/vickie-schema-property-change`, clean. Exactly three accepted files changed. R staysfalse/33whole/96notwhole, no public admission change. CI38503650795/job115656074590 started02:56:20Z and is running.
 
-Prior external reviewers and validation processes exited; new assigned processes must be checked rather than assumed. All source work remains isolated. Accepted R plan is now authorized for implementation under the operator’s resumed window, with exactly its three authoring amendments and no automatic promotion.
+Author validation complete:22 static,20 catalog and23 fresh installed tests pass, including genuine54-row/129-required aggregate, R/N positives, inherited controls and all4 new controls. Build/type/format/lint/boundaries/bothsmokes/Readseal pass. Aggregate18.452s; all children closed. Root independently checked all129 required row IDs/order/profiles/citations, both actual report/result hashes and manifest/fixture/coverage/index digests. Actual R43raw/53client/687assertions pass. [Report](schema-property-change-report.md), [summary](schema-property-change-summary.json), [source](schema-property-change-source.json), [preservation audit](schema-property-change-source-audit.json), [root audit](schema-property-change-root-audit.json).
+
+Preserved preparation failures: readonly negative-fixture assignment fixed using a mutable clone; raw-source hash guard corrected to read source before factory key-order normalization, preserving parent84-action hash; preliminary16-test logs reused by final20-test run and not claimed independently archived. Root audit initially added an extra # to already-prefixed catalog anchors; corrected concatenation, no report/source edits. [Audit preparation](schema-property-change-root-audit-preparation.md). Exact metrics899400B/23502nodes/712792coverage within accepted caps;44nodes spare. No source promotion.
+
+- update_implementation: COMPLETE atc57, no owned processes. Available for bounded review repairs.
+- profile_editorial_inventory: COMPLETE native review of exactc57, no actionable findings. [Review](schema-property-change-native-review.md), SHAe80ea06e3fa63bc3fb263596a66ea2e64e9597f801747c5f199ad2e3c906e3f8. Root read actual report; reviewer independently inspected preservation/budgets/controls and actual author evidence, did not rerun tests.
+- External code reviewer session40634: exactc57 review active since02:54Z; output `schema-property-change-claude-review.txt`.
+- transaction_implementation: COMPLETE read-only next plan c2a6a8e8, no implementation. Proposes12actions/5controls for partial completed-key conflict evidence using existing seams. [Proposal](transaction-after-receipts-next-plan.md), [report](transaction-after-receipts-next-report.md).
+- profile_runtime_inventory: COMPLETE native TX plan review; one Low four→five key presentations, no High/Medium. Explicit actual cap/preservation checklist retained. [Review](transaction-after-receipts-native-plan-review.md).
+- External plan reviewer session50939 active since02:51Z, output `transaction-after-receipts-claude-plan-review.txt`. Wait for actual complete output before accepting/revising the plan. No TX source work is assigned this flight.
+
+Both external reviewers are read-only; check actual process/exit, not quiet stdout. Freeze new work by03:15Z as needed; wind-down03:25Z and checkpoint/process-stop/heartbeat-pause by03:30Z. Root handles publication and integration.
 
 ## Coordination and gates
 

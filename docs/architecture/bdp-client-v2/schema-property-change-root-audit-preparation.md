@@ -1,0 +1,1 @@
+Root audit initially prefixed # to catalog anchors that already contain #, producing a false double-hash expected citation. Corrected concatenation to source+anchor after inspecting actual values. Original script retained. No source or report changed; no audit-success claim was made before correction.
