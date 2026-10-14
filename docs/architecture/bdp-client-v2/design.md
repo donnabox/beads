@@ -62,7 +62,7 @@ Original service-review lows: RU trusted callback capability narrowing and publi
 
 ### Live worker ledger
 
-Checkpoint 2026-10-14T21:18:48Z. **ACTIVE: Transactional first**, with shared and targeted Update checks. Session `2026-10-08T20:26:35Z-81e5`. Public write profiles remain unadvertised; installed cumulative delivery predicates remain unmet. Ready main merges are operator-authorized after exact-head CI, native+Claude council, findings disposition, scope and ordinary ancestry checks, and actual merged-tree verification. Gemini excluded. No release/Preview2 or Janet CLI/staging/playgrounds/shared databases/Trish Type edits.
+Checkpoint 2026-10-14T21:30:15Z. **ACTIVE: Transactional first**, with shared and targeted Update checks. Session `2026-10-08T20:26:35Z-81e5`. Public write profiles remain unadvertised; installed cumulative delivery predicates remain unmet. Ready main merges are operator-authorized after exact-head CI, native+Claude council, findings disposition, scope and ordinary ancestry checks, and actual merged-tree verification. Gemini excluded. No release/Preview2 or Janet CLI/staging/playgrounds/shared databases/Trish Type edits.
 
 ### Verified main and completed serving work
 
@@ -99,11 +99,11 @@ Isolated successor `/Users/dbox/repos/wt/vickie/vickie-comparison-fault-typing-r
 All nine installed cohorts completed and were individually adjudicated on frozen c02ccc37. [PR122](https://github.com/gastownhall/bdp/pull/122) is merged and tree-verified after exact c02ccc37 CI success. [Final independent actual-evidence audit](transaction-cross-carrier-draft/native-actual-evidence-review.md), SHA8fc7bb22, is complete and fully root-read with no blocker.
 | Worker | Scope | State / next |
 |---|---|---|
-| cross_carrier_plan_v2_review | Selector admission plan | Frozen0f6ab557 on verified main1228005; no authoring until command predecessor and council closure |
-| update_implementation | Selector native plan council | Complete [review](transaction-selector-admission-native-plan-review.md), SHA6d658c05: pagination/deep-specimen corrections and control maximum accounting; Claude pending |
-| cross_carrier_native_review | Command-minimum native plan council | Complete [review](transaction-command-minimum-native-plan-review.md), SHA b8ae822d: no blocker; count RU port probe separately (14 owners/15 listeners). Claude pending |
-| External Claude | Command-minimum plan00ffec1a | Running since21:09:03Z; exec10853, wrapper67042/Claude67043; stdout/stderr/exit records in evidence root |
-| Root | Serving priority/integration | PR122 merged/tree-verified; coordinate two newly unblocked serving plans and serialize shared edits |
+| update_implementation | Command-minimum seven-file draft | Authoring released on isolated main1228005 checkout; no execution yet |
+| cross_carrier_native_review | Command plan v2 closure | Complete ba286d43; F1–F9/N1 closed, draft review next |
+| cross_carrier_plan_v2_review | Selector plan v2 | Complete8adb89c3; independent closure518b7a4b complete; waits command predecessor ordinary reanchor |
+| External Claude | Both frozen original plans | Both completed exit0; command8b17956a and Selector58caf3ed fully read, findings dispositioned; PIDs reaped |
+| Root | Serving integration | PR122 verified main1228005; command draft first, Selector next; execution/CI/merge gates retained |
 
 ### Cross-carrier evidence delivered in PR122
 
@@ -144,11 +144,9 @@ The [sequence member-transactions plan](transaction-sequence-member-plan.md) is 
 Sole plan: `/Users/dbox/repos/wt/vickie/bdp-client-design/checkout/docs/architecture/bdp-client-v2/design.md`, branch `codex/vickie-bdp-client-design`, remote donnabox/beads. Evidence root `/Users/dbox/repos/wt/vickie/bdp-integration-logs`. Node24.16.0/pnpm11.20.0; build before emitted tests. Guard remote session before outward mutations.
 
 
-[Command-minimum plan](transaction-command-minimum-implementation-plan.md) SHA00ffec1a is frozen against verifiedmain1228005 for native+Claude council. Six planned paths, sole production edit removes command-only refusal, distinct Update regression and fresh installed18/one-child plan; counts are proposed, no execution. [Selector plan](transaction-selector-admission-implementation-plan.md) follows with ordinary reanchor after command-minimum; no source-authoring release.
+[Command-minimum corrected plan](transaction-command-minimum-implementation-plan-v2.md), SHA f8824197, and [dispositions](transaction-command-minimum-plan-v2-dispositions.md), SHA53af77f9, supersede preserved original00ff. External [review](transaction-command-minimum-claude-plan-review.txt), SHA8b17956a, completed21:22:21Z/exit0; actual source defects and fixture limits corrected. [Independent v2 closure](transaction-command-minimum-v2-native-closure.md), SHAba286d43, fully root-read; no remaining plan finding. The original native no-blocker report remains historical and does not erase missed defects. [Root draft acceptance](transaction-command-minimum-root-authoring-acceptance.md), SHA5815c7b2, authorizes exactly seven files in `/Users/dbox/repos/wt/vickie/vickie-command-minimum`, branch `codex/vickie-command-minimum`, parent1228005. Production change removes only the command refusal; singleton fixtures omit operation, collection limits32, six unaffected service table rows/citation checks retained. Prospective source/control10executions89expected/119maximumHTTP,15owners/15listenerlifetimes/9dirs/oneRUchild/6readonly; freshTX18/1 separate. Worker drafts source and measured report; no tests/build/install/pack/services/commit/push yet. Exact code council and measured execution release precede validation.
 
-Selector external Claude plan review started21:10:37Z; exec83322, wrapper69200/Claude69201, frozen0f6ab557. [Process](transaction-selector-admission-claude-process.json) and [session](transaction-selector-admission-claude-session.json). Command external review10853 remains active. No authoring or execution released.
-
-Prepared clean authoring checkout `/Users/dbox/repos/wt/vickie/vickie-command-minimum`, branch `codex/vickie-command-minimum`, exact main1228005 parent. No source changes or installations. At21:18Z external Claude67043/69201 alive, stdout empty; no restart. Native Selector findings: retain genuine one-group pagination or explicitly add observed continuation request; deep20,013-byte selector refuses bytes before depth; expected2 control requests permit maximum52. Preserve frozen plans until external reviews complete, combine findings into successors, close council, then release command draft before Selector.
+[Selector corrected plan](transaction-selector-admission-implementation-plan-v2.md), SHA8adb89c3, [dispositions](transaction-selector-admission-plan-v2-dispositions.md), SHA9098e162, and [independent closure](transaction-selector-admission-v2-native-closure.md), SHA518b7a4b, preserve original0f6. External [review](transaction-selector-admission-claude-plan-review.txt), SHA58caf3ed, completed21:23:09Z/exit0, fully root-read. Actual continuation request25 proves both groups; deep specimen reports bytes413. External arithmetic F2 rejected with [independent literal check](transaction-selector-node-byte-root-check.json): T6=828,N256=836,N257=838. Current parser/query mappings and sequence structural exclusion stay qualified. Prospective90positivecases94HTTP39owners; controls2expected/52maximumHTTP; combined96expected/146maxHTTP41owners requires measured acceptance of corrected inventory, not silent old40-fence expansion. Installed25/onechild. Native closure and dispositions root-read; full successor still to reanchor/review against actual command predecessor before source authoring. No Selector implementation/execution release yet.
 
 ## Current priority: BDP profile structure and implementation
 
