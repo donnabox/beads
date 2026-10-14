@@ -1,0 +1,58 @@
+{
+  "kind": "installed-tx-nine-partial-summary",
+  "sourceCommit": "0359f1cae3f36f600b1b375ea276ec7d60bf689b",
+  "elapsedMs": 3372.57675,
+  "actions": 139,
+  "sessions": 15,
+  "childLaunches": 16,
+  "closedChildren": 16,
+  "artifacts": {
+    "catalogDigest": "e26d3fc758a34ebb0b5028be15d28e3e09db87dc7984bba7bad6a00b26329aa0",
+    "manifestDigest": "5e0e4c688363a8d530ec2d5347522d0567755faf292a7ca313c8d5e5426f9571",
+    "fixtureDigest": "3a7899ced771d4880066d98b0000c53f801ece53458502cc4f3bc641146c9a85"
+  },
+  "baseline": {
+    "served": {
+      "scope": "https://reference.invalid/acme/",
+      "profile": "transactional",
+      "history": false,
+      "sourceCommit": "0359f1cae3f36f600b1b375ea276ec7d60bf689b",
+      "installedPayloadDigest": "1b12629fe54c39c8f7864dbb13bdba16bcbe4298b0a5bd420fa19daaa4fb7ec2",
+      "installedContractsDigest": "c67d12264b97e16c76bf68f850eaf394f61896bb72491e06603ef1d6debb335b",
+      "policyDigest": "e263a4b2a78fb2d450d19c9d727a3c0692884153b654430389cf89447e121eba",
+      "authenticationDigest": "76749f4ded05e4f30c39b8f22b5374165c9ae374de9373bc0075bbe0f8098d6e",
+      "fixtureDigest": "3a7899ced771d4880066d98b0000c53f801ece53458502cc4f3bc641146c9a85",
+      "fixtureId": "reference-transactional-v1",
+      "capabilities": [
+        "installed-transactional-http",
+        "transactional-receipt-observation"
+      ]
+    },
+    "operationTargets": {
+      "createBead": "https://reference.invalid/acme/operations/create-bead",
+      "updateBead": "https://reference.invalid/acme/operations/update-bead",
+      "deleteBead": "https://reference.invalid/acme/operations/delete-bead",
+      "createLink": "https://reference.invalid/acme/operations/create-link",
+      "updateLink": "https://reference.invalid/acme/operations/update-link",
+      "deleteLink": "https://reference.invalid/acme/operations/delete-link",
+      "putAlias": "https://reference.invalid/acme/operations/put-alias",
+      "deleteAlias": "https://reference.invalid/acme/operations/delete-alias",
+      "updateWhere": "https://reference.invalid/acme/operations/update-where",
+      "deleteWhere": "https://reference.invalid/acme/operations/delete-where",
+      "batch": "https://reference.invalid/acme/operations/batch",
+      "sequence": "https://reference.invalid/acme/operations/sequence"
+    },
+    "runtimeConfigurationIdentity": "e3f28f343b43dc938f95515ef96769e47aeca7dbbe1097f43028096d6627d999",
+    "authorityMode": "canonical"
+  },
+  "claimEligible": false,
+  "states": {
+    "harness-error": 246,
+    "pass": 9
+  },
+  "pagination": {
+    "state": "pass",
+    "maxRawBodyBytes": 5104,
+    "maxDecodedResponseBytes": 8985
+  }
+}

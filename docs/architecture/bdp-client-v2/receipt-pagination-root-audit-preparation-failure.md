@@ -1,0 +1,1 @@
+Root initially assumed RU-wrapper sourceDirty/cleanupComplete fields existed in the TX wrapper. They do not; the audit failed before any output/claim. Corrected source-clean association reads exact source.json head/clean instead. Actual mappings/citations/artifact checks remain unchanged. No source or observation data was modified.
