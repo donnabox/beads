@@ -116,3 +116,28 @@ func TestGraphPreviewListTypedOptionsSelectIssueQuery(t *testing.T) {
 		graphPolicyCLI(t, bd, work, home, nil, "capability_unavailable", "list", "--type", "types/preview-memory", "--"+option+"=", "--format", "records-json")
 	}
 }
+
+func TestGraphPreviewCustomIssueTypePrefixWorkflow(t *testing.T) {
+	bd := buildBDUnderTest(t)
+	for _, engine := range []string{"embedded", "server"} {
+		t.Run(engine, func(t *testing.T) {
+			work, home := graphListWorkspace(t, bd, engine, "https://example.invalid/custom-prefix/")
+			graphListConfig(t, work, "types.custom: \"preview-task,example-task\"\n")
+			for _, tc := range []struct{ kind, id string }{
+				{"preview-task", "beads/preview"},
+				{"example-task", "beads/example"},
+			} {
+				graphPolicyCLI(t, bd, work, home, nil, "", "create", tc.kind, "--id", tc.id, "--type", tc.kind, "--json")
+			}
+			for _, tc := range []struct{ kind, id, other string }{
+				{"preview-task", "beads/preview", "beads/example"},
+				{"example-task", "beads/example", "beads/preview"},
+			} {
+				listed := graphPolicyCLI(t, bd, work, home, nil, "", "list", "--type", tc.kind, "--format", "records-json")
+				if !strings.Contains(listed, tc.id) || strings.Contains(listed, tc.other) {
+					t.Fatalf("registered Issue type %q did not select only %q: %s", tc.kind, tc.id, listed)
+				}
+			}
+		})
+	}
+}
