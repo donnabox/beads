@@ -6,7 +6,7 @@ This Markdown document on `donnabox/beads:codex/vickie-bdp-client-design` is the
 
 ## Autonomous profile completion — active execution plan
 
-**Operator resumed for one hour of inflight wifi at2026-10-14T02:35Z.** Active work is bounded by03:25Z wind-down and03:30Z checkpoint/process-stop/heartbeat-pause. Current assignment and exact state are in the live ledger. Ready main merges remain authorized after exact-head CI, native Codex plus Claude council, disposition and ordinary ancestry. No release or Preview2 promotion.
+**Operator returned home; PR102 landing is complete.** Current main and evidence are in the live ledger. The operator is discussing capability gaps and TX-first sequencing; no new implementation or recurring heartbeat has been started. Ready merges remain authorized within the existing scope. No release or Preview2 promotion.
 
 Source: BDP main `caf5ca75a4e9b9c7865e61e97f849ab736c21e64`, normative `docs/specs/bdp.md`, mirrored schema/catalogs, completed review dispositions and preserved Update/Transactional work. Initial deployable target is the existing bdptest/SQLite reference implementation. The bdpbd adapter retains its independently qualified Read behavior; no Beads CLI implementation is required or edited to make bdptest progress. This is the sole plan; supporting audit/worker reports do not create competing authority.
 
@@ -62,11 +62,11 @@ Original service-review lows: RU trusted callback capability narrowing and publi
 
 ### Live worker ledger
 
-Checkpoint 2026-10-14T03:26:35Z. Autonomous profile completion is **PAUSED at the operator’s flight cutoff**. Heartbeat PAUSED and verified; no new implementation until operator resume. Existing session `2026-10-08T20:26:35Z-81e5` remains unchanged. All native workers and both external reviewers completed; no owned local test/service/review processes remain. Full required delivery is incomplete; public write admission remains closed. Main remains627b560c; PR102 successor is published for CI, not merged.
+Checkpoint 2026-10-14T05:41:50Z. Operator returned home and authorized PR102 landing plus an operational capability/sequencing assessment. **PR102 is merged and verified.** The bounded landing task is complete; broader implementation and heartbeat remain paused during this design discussion. Existing session `2026-10-08T20:26:35Z-81e5` unchanged. Read-only capability workers completed, no new implementation or test processes. Public write admission remains closed.
 
 ## Delivered and verified main
 
-Current verified main is `627b560c0daf1a76b292615718c86670255ac9af` (PR101); exact tested tree `6a5337cf9548cfe340593a3858213593e4aca1d9`.
+Current verified main is `581bad0de6f5eb098b920147f6a7e09809c553ea` (PR102); exact tested tree `22e448fe0f517c0d6300b732de55494bd70c7938`. PR101 remains an ordinary ancestor.
 
 - PR98 merged `77b683b`, exact reviewed/tested 1ecb tree and green CI38479477557. [Readiness](metadata-closure-merge-readiness.md), [verification](metadata-closure-merge-verification.json).
 - [PR99](https://github.com/gastownhall/bdp/pull/99) merged `055bd8653f5c4e1594dc5a84c305f2ecea99f958`, exact c958 tree/ordinary parents verified, CI38483730089 green. Adds partial set-effects and zero-match evidence plus safe retry diagnostics. [Readiness](effects-merge-readiness.md), [verification](effects-merge-verification.json). Original b604 CI failed before target action; its cause remains unexplained. Successor passes do not establish a transient failure or relabel its evidence. [Diagnosis](effects-metadata-repair-ci-diagnosis.md).
@@ -83,7 +83,7 @@ Exact0359 validation: 337 focused tests, static/build/Read seal and seven freshl
 
 Historical c872 integration had367 focused/TX6/RU24 passing; its evidence stays bound to c872, not relabeled0359. Helper552996 closed earlier two Low findings, f5e935 closed independent literal pin; all remain ordinary ancestors. [Integration](receipt-numeric-integration-report.md), [helper closure](receipt-page-helper-root-closure.md), [literal closure](receipt-pagination-literal-root-closure.md). Current collection32 tuples/order/schema are observed, but opaque current-collection revision/provenance continuity across reopen is explicitly unobserved. Receipts remain partial: matched/updated only, not all limits/outcomes/page chains/policy/lifecycle.
 
-## Update schema PropertyChange slice — implemented in PR102, review pending
+## Update schema PropertyChange slice — PR102 merged
 
 Version2 [schema PropertyChange plan](read-update-after-r-next-plan-v2.md), SHA256 `76fa65b2586ab0f5baa09523744e5dd27f4a3c22947d6364e8502aaad9f958ce`, now has all seven external findings dispositioned and independently closed. [Dispositions](read-update-after-r-next-plan-v2-dispositions.md), [native closure](read-update-after-r-v2-native-closure.md), [root acceptance](read-update-after-r-v2-root-acceptance.md), [budget ledger](read-update-after-r-schema-budget-v2.json). Earlier1bb/df80 proposals/reviews remain preserved and are not current accepted plans.
 
@@ -91,9 +91,11 @@ Add eight observations: for each Resource kind, schema-invalid PropertyChange wi
 
 The operator resumed and the assigned parent627b560c was verified against the accepted basis before authoring. The implementation and fresh evidence are in PR102 below. Do not invent the future parent or blindly refresh hashes. Preserve old84 action spans,20 comparator pairs, exact8-action partition and100/5546+66/3700 binding ledgers; run specified positive and four negative controls and fresh genuine54-row/129-required packing. R remains false,33 whole/96 not whole until separate execution and code/clause review. Any promotion to34 whole requires a separate evidence step. Raw correction response→GET opaque revision linkage remains unobserved. No unavoidable human product decision blocks this slice.
 
-## Current candidate and paused worker ledger
+## PR102 landed; capability assessment
 
-[PR102](https://github.com/gastownhall/bdp/pull/102) remains DRAFT. Published ordinary successor `61ed530ac6a460598e0e312f5d28ec0e6fa2a33d`, tree `22e448fe0f517c0d6300b732de55494bd70c7938`, direct parentc57f5a7a; c57's parent is main627b560c. Local clean checkout `/Users/dbox/repos/wt/vickie/vickie-schema-property-change` is on `codex/vickie-schema-guard-annotations`; remote PR branch remains `codex/vickie-schema-property-change`. Main unchanged. New exact-head CI must pass before ready/merge; c57 CI38503650795 success is historical, not successor CI.
+[PR102](https://github.com/gastownhall/bdp/pull/102) MERGED at2026-10-14T05:39:48Z as `581bad0de6f5eb098b920147f6a7e09809c553ea`. Exact head61ed530ac6a460598e0e312f5d28ec0e6fa2a33d passed CI38506125176/job115663930112. Actual merge parents627b560c and61ed530a and tree22e448fe0f517c0d6300b732de55494bd70c7938 verified against remote main and fetched commit. [Readiness](schema-property-change-merge-readiness.md), [actual merge verification](schema-property-change-merge-verification.json), [final CI](schema-property-change-final-ci.json). No release or Preview2 promotion. Checkout stays clean on local codex/vickie-schema-guard-annotations; no need to recreate or reimplement the merged patch.
+
+[Operational capabilities and sequencing assessment](profile-operational-capabilities-20261014.md) separates working private paths, genuine unavailable functionality and installed-evidence gaps. Both runtimes are substantial; public profile startup remains unavailable. TX additionally lacks cold discovery and several consistency/alias/projection paths. TX-first can prioritize a product milestone but does not automatically finish RU: shared evaluators already exist, while owner/response/retry/retention semantics differ. Recommendation: focus TX serving gaps, share semantic cases and retain targeted RU checks. No major redesign or quantified speedup adopted; await design discussion before new implementation.
 
 External Claude CODE review completed normally at03:21Z with two Low findings, both repaired in61ed and independently inspected by root. [External review](schema-property-change-claude-review.txt), [native c57 review](schema-property-change-native-review.md), [repair](schema-property-change-annotations-repair-report.md), [root disposition](schema-property-change-root-council-closure.md). Do not claim Claude independently reviewed61ed. Only six insertions/one deletion in a test file: explicit budget annotations and named policy ceiling; all artifacts/runtime unchanged. Three affected static tests and format pass; no installed rerun. Source-bound c57 installed23/static22/focused20 plus54-row aggregate and root129-row audit remain c57 evidence. [Report](schema-property-change-report.md), [summary](schema-property-change-summary.json), [root audit](schema-property-change-root-audit.json). R staysfalse,33whole/96notwhole,54authored/75omitted.
 
@@ -101,11 +103,11 @@ Independent [R selected-contract audit](schema-property-change-selected-contract
 
 Next Transactional plan v2 is ACCEPTED for the next resumed implementation slice, not started. [Plan](transaction-after-receipts-next-plan-v2.md) SHA77f6deb26eb19ad12f1642e237dcc6c589eecd65280329559fc757d1ea342dbb; [dispositions](transaction-after-receipts-next-plan-v2-dispositions.md), [native closure](transaction-after-receipts-v2-native-closure.md), [root acceptance](transaction-after-receipts-v2-root-acceptance.md). External original-plan review completed normally; seven numbered findings plus native five-presentation correction closed by native/root v2 review. Four TX files only,12actions/5controls for partial completed-key conflict across reopen. Explicit effective authoring ceilings410217manifest bytes/11282nodes/63067coverage bytes accepted; runtime/parser/wire/deadlines unchanged. Preserve nine old object spans by explicitly adding pagination pins. No implementation begins until a new verified ordinary base is assigned after resume.
 
-Workers update_implementation, transaction_implementation, profile_editorial_inventory, profile_runtime_inventory and profiles_integration_validation COMPLETE; no remaining worker process. External sessions40634/PID52261 and50939/PID46566 exited normally and PIDs absent. Heartbeat verified PAUSED. No additional human product decision is needed for the next bounded slice; only operator resumption after travel pause.
+Workers update_implementation, transaction_implementation, profile_editorial_inventory, profile_runtime_inventory and profiles_integration_validation COMPLETE; no remaining worker process. External sessions40634/PID52261 and50939/PID46566 exited normally and PIDs absent. Heartbeat verified PAUSED. The accepted next bounded TX slice remains ready; broader implementation is paused during the operator’s sequencing discussion.
 
 ## Resume order and coordination
 
-1. Verify session claim remotely, current PR102 head/CI/main and exact ancestry. If61ed green with unchanged scope, finish readiness and authorized ordinary merge; verify actual merged tree. No release/Preview2 promotion.
+1. PR102 is landed; do not repeat its merge. On resumed implementation verify remote session/current main, then use capability assessment to prioritize genuine TX serving gaps and shared requirements.
 2. Consider separate R whole-row promotion using the full selected-clause audit, accurate bounded reason and fresh source-bound execution/council; no automatic public claim.
 3. Start accepted TX completed-key conflict slice from a reconciled current main, preserving reviewed artifact spans and explicit caps. Continue unaffected required-profile implementation.
 
