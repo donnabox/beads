@@ -1,0 +1,37 @@
+## Verification first
+
+| Check | Result |
+|---|---|
+| `apps/bdptest/src/read-update-matrix.test.ts` SHA256 | `25559bac…c2941` — **matches** target |
+| `source.diff` SHA256 | `cee92317…6cfa` — **matches** |
+| Live `git diff 70ac666` vs saved `source.diff` | **byte-identical** |
+| HEAD | `70ac666…1300f` (diff is uncommitted working tree) |
+| Scope | 1 file, +4/−2, one hunk, all inside the W1b `it.each` body; no untracked files; no production file touched |
+| Helper + secrecy unit | **not in the diff** — `retainedRetryDiagnostic` (2213–2254) and its unit (2256–2396) are unchanged from `70ac666` |
+
+The "no assertion/input/control/timeout/helper change" claim holds literally: `toBe(1)`, `toBe("fail")`, `toEqual(assertionIds)`, the `run(undefined, [id], false, false, undefined, undefined, control)` argument list, and the `30000` timeout are all unchanged. The only edits are one new `const diagnostic` and a second argument on three existing `expect()` calls.
+
+## Findings
+
+**No actionable findings.** I could not substantiate a correctness, secrecy, scope, or failure-hiding defect in this diff.
+
+What I checked, and why each cleared:
+
+1. **Cannot throw and pre-empt the real assertion.** This was the main hiding risk, since the diagnostic is computed eagerly before expectation 1. `run()` has a single return shape (932–970) in which `result`, `observations`, and `cleanupComplete` are always present, so the helper's top-level accesses are safe. The two unguarded `.assertions.filter(...)` walks inside the helper (2231, 2238) are safe because `ObservedExchange.assertions` and `ObservedAction.assertions` are required in `packages/conformance/src/runner.ts:186,198` and are initialized to `[]` before `push` (1028, 1179). `row.exchanges`/`row.actions` are optional-chained; the nullish observation shapes are covered by the secrecy unit (2376–2395). `JSON.stringify` operates on a flat primitive projection — no cycles, no BigInt.
+
+2. **Does not suppress the failure.** chai 6.2.2 composes the message as `flagMsg + ": " + msg` (`chai/index.js:961`) — the custom string is a *prefix*; the standard message and `err.actual`/`err.expected` (hence Vitest's diff) survive. Vitest 4.1.10 has no `outputTruncateLength` option at all (absent from the whole package), and the two `truncateString` call sites are terminal-column/code-frame formatting, not error messages. So the diagnostic reaches CI logs intact and `expected 0 to be 1` is still printed.
+
+3. **Diagnostic projection is secrecy-safe.** The helper emits only ids, statuses, failed-assertion ids, error *categories* and `writeState` — never bodies, headers, error messages, or child output. `token` and `wrongToken` (lines 65–66) are the only credential values in the fixture (sole injection point is line 231), and both are `replaceAll`-redacted. Runner-side exchange URLs are already `redactUrl`'d upstream; the only unredacted-source field is `lastObservedRoute.url` from the raw exact client, which is exactly what the redaction targets, and the secrecy unit asserts it adversarially with `${scope}${token}/${wrongToken}` plus a blanket `not.toContain` over all three secrets.
+
+4. **Types and gates.** `Pick<RetryControl,"scenario"|"action">` is `{scenario: string; action: string}`; the `as const` tuple literals for `id`/`actionId` are assignable. The function declaration at 2213 is hoisted, so the 1642 call site is fine. Max changed-line width is 91 (unchanged line 1648 is 99) against biome `lineWidth: 100`, trailing comma matches the committed style — no `format:check` risk. The identical 2-arg `expect` form is already committed at 2415/2417/2423, so lint and typecheck precedent exists in the tree CI already runs.
+
+5. **Actionability against counter-0.** The W1b gate (871–876) keys on `w1bInput.method`, `idempotencyKey`, and `targetBinding`. On a repeat `counterfactualApplications === 0`, the diagnostic now discriminates the main branches: `category` (`deadline`/`aborted`/`not-run`/`observation-limit`) separates a CI-only timing truncation from a logic mismatch; `actions[].id` + `executionCategory` show whether the target action ran at all or errored first; `exchanges[]` gives the HTTP sequence with statuses and transport/harness fault categories; `observedScenarios` catches selection drift; `observedClientExchanges` + `lastObservedRoute`/`Status` confirm the exact client was engaged. That is a real improvement over the previous bare `expected 0 to be 1`.
+
+## Limits and residual observations (not defects, no scope change implied)
+
+- **Read-only review.** I ran no tests, build, typecheck, formatter, or install, per your constraint. Everything above is static inspection plus dependency-source reading; I am **not** asserting green CI, and nothing here speaks to the unresolved original CI cause.
+- **One cause remains un-pinpointed by design.** If the target action runs but with an unexpected `idempotencyKey`/`targetBinding`, the diagnostic narrows it (action present, assertions passing) but cannot name the mismatch — `ObservedAction` deliberately never reports action inputs, and the helper excludes inputs by contract. Closing that would require a helper/runner change, which this PR correctly declines to make.
+- **Only the last client observation is projected**, not the sequence; the runner-side `exchanges[]` list partly compensates by giving ids and statuses in order.
+- **Sibling tests remain uninstrumented** — `report.counterfactualApplications` is asserted bare at 1553, 1669, 1737, 1902, 1994, 2665, 2998, 3191. Consistent with the stated bounded scope; flagging only so the asymmetry is a known choice rather than an oversight.
+- **Dirty-worktree evidence stamp.** `run()` computes `sourceDirty` via `git status --porcelain` (947–949). It is never asserted — only recorded into evidence (1366) — so the uncommitted state will not fail the bounded run, but any artifact produced while this diff is unstaged carries `sourceDirty: true`.
+- Parent production/council surface: confirmed untouched by this diff; I did not review it.
