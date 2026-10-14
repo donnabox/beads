@@ -1,0 +1,89 @@
+{
+  "status": "STOPPED_AT_UNEXPECTED_TYPECHECK_FAILURE",
+  "sourcePatchSha256": "69c3c4fd2e60ff1ec069755efaac37920b55d51402d89f620f4eeb1faf17dd6c",
+  "sourceChangedSinceReview": false,
+  "commands": {
+    "setup": {
+      "name": "setup",
+      "command": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "install",
+        "--offline",
+        "--frozen-lockfile"
+      ],
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-comparison-fault-guard",
+      "started": "2026-10-14T19:07:02.695153+00:00",
+      "elapsedSeconds": 0.8421943748835474,
+      "exit": 0,
+      "timeout": false,
+      "processGroup": 18899,
+      "remainingProcessGroup": [],
+      "sampledTempEntries": [
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-comparison-fault-guard/setup.tmp/node-compile-cache"
+      ],
+      "tempEntriesAfter": [
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-comparison-fault-guard/setup.tmp/node-compile-cache"
+      ],
+      "samplingSeconds": 0.05
+    },
+    "build": {
+      "name": "build",
+      "command": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "build"
+      ],
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-comparison-fault-guard",
+      "started": "2026-10-14T19:07:15.579120+00:00",
+      "elapsedSeconds": 1.6894172499887645,
+      "exit": 0,
+      "timeout": false,
+      "processGroup": 18963,
+      "remainingProcessGroup": [],
+      "sampledTempEntries": [
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-comparison-fault-guard/build.tmp/node-compile-cache"
+      ],
+      "tempEntriesAfter": [
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-comparison-fault-guard/build.tmp/node-compile-cache"
+      ],
+      "samplingSeconds": 0.05
+    },
+    "typecheck": {
+      "name": "typecheck",
+      "command": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "typecheck"
+      ],
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-comparison-fault-guard",
+      "started": "2026-10-14T19:07:38.745950+00:00",
+      "elapsedSeconds": 0.9536998749244958,
+      "exit": 1,
+      "timeout": false,
+      "processGroup": 19221,
+      "remainingProcessGroup": [],
+      "sampledTempEntries": [
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-comparison-fault-guard/typecheck.tmp/node-compile-cache"
+      ],
+      "tempEntriesAfter": [
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-comparison-fault-guard/typecheck.tmp/node-compile-cache"
+      ],
+      "samplingSeconds": 0.05
+    }
+  },
+  "notRun": [
+    "format-check",
+    "lint",
+    "boundaries",
+    "read-evidence",
+    "14 positives",
+    "old-guard control",
+    "pack",
+    "install consumer",
+    "installed regression"
+  ],
+  "diagnostic": "TS2352 at transaction-submission.test.ts1132 and1181: direct Mock admit conversion cannot preserve overloaded owner signature",
+  "sourceRepairAuthorized": false,
+  "rootNotified": true
+}
