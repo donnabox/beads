@@ -1,0 +1,103 @@
+## Verdict
+
+**Accept the one-literal change** — `.github/workflows/ci.yml:19`, `jobs.verify.timeout-minutes: 15 → 20`, nothing else. It is correctly scoped, has no dependents anywhere in the tree, cannot relax any inner limit, and the need is better supported by the retained evidence than the plan itself argues.
+
+Four fixes to the plan's **evidence and arithmetic** (not its conclusion), of which F1 is a wrong number the plan relies on and F2 is a materially stronger uncited data point.
+
+Plan SHA256 matches `42c4ea11…a2c9`. Checkout verified clean at `427cfef6decbb422b393024e36218affc26007fa`, tree `9075897867d88344a8477e1f4a8e1a00a50f1228`, branch `codex/vickie-w1b-ci-observability`.
+
+---
+
+## Why exactly this diff is acceptable
+
+**The literal has no dependents.** `timeout-minutes` occurs exactly once in the entire tracked tree (`ci.yml:19`). No test, script, gate, or doc asserts its value, and no tracked doc states a 15-minute cap in prose (the only prose hits are an unrelated 120-second inner deadline and a local process-sample narrative). So the diff cannot silently invalidate a test or leave stale documentation — the plan's "no test edits accompany it" is verified, not assumed.
+
+**Required-check identity is preserved by construction.** `.github/workflows/ci.yml` is the only file in `.github/workflows`; `jobs` has exactly one key, `verify`; no `name:` override. Parsed: `job ids: ["verify"]`, `timeout-minutes: 15 (Integer)`, `name override: nil`, 21 steps, last step `pnpm evidence:verify || test $? -eq 2`. Optional-7 closes automatically.
+
+**Inner containment is real and untouched.** `pnpm test` is `vitest run --reporter=verbose` with no timeout flags; `vitest.config.ts` sets no `testTimeout`/`hookTimeout`, so unmarked tests keep the 5 s default. Explicit per-test deadlines top out at 138750 ms, with 10 at 120000 ms and 5 at 90000 ms — matching the documented "5-second exchange, 90-second cohort and 120-second outer deadlines". No step-level `timeout-minutes` exists, so the job cap is the only whole-job bound and the plan's disclosed cost (a wedged job holds a runner 5 more minutes) is exactly right.
+
+**The current run is not green, and the plan does not say it is.** Independently: 9255 passing rows, **0** failing rows, 1 skip (the named `demo-read` case, gate at `scripts/demo-read.test.mjs:48`), **no terminal Vitest summary**, log ends at `Cleaning up orphan processes`. Metadata: `conclusion: cancelled`, step 19 `cancelled` after 703 s, steps 20/21/22 `skipped`. Annotation: `"The job has exceeded the maximum execution time of 15m0s"`. Merge checkout `088fec94…` of 427 into main `7e46cdc9…` confirmed at raw log 419–422.
+
+**The unknown 70ac W1b cause remains open, as stated.** The 427 delta is 4 insertions / 2 deletions in `apps/bdptest/src/read-update-matrix.test.ts`, adding only `diagnostic` message arguments to three existing `expect`s inside the 30000 ms case. W1b link-metadata **passed** at 2630 ms (19:07:15.475Z), so no diagnostic text was emitted and the `counterfactualApplications` 0 cause is unobserved.
+
+**My own corroboration of the need is stronger than the plan's.** All **172/172** distinct test files reported at least one passing row in the cancelled log. Comparing row sets against 70ac, exactly **one** substantive case is missing — `transactional-matrix.test.ts > …against committed-prefix-state` (9.0 s at 70ac, 7.014 s at c555; its two siblings cost 12397 ms and 12411 ms in the current regime). The only other two row-set differences are dynamic titles with embedded timestamps. Suite-wide common-row duration ratios — current/70ac **1.440**, current/c555-green **1.671** — are slightly *below* the matrix-only 1.458/1.721 the plan used, so the matrix proxy is mildly conservative at suite scale (the plan asserts this but does not demonstrate it). And current/c555-**slow** = **1.011**: the cancelled run was drawing at the same speed as a run that completed the entire suite in 695.33 s.
+
+Worst-case composition from independently observed extremes: 249 s setup + ~720 s suite + ~9 s gates + ~2 s post ≈ **980 s** → **220 s (18 %) under 1200 s**, and **20 s over** a 16-minute cap. That is the number I would put in front of Root for "20, not 16".
+
+---
+
+## Findings
+
+### F1 [Medium] "Historical worst setup 231 s" is refuted by evidence in the same directory
+
+`transaction-direct-refusal-ci-success.json` / `-merge-readiness.json` — job **115959137774**, head ed3597d, **successful**, same `verify` job, 27 steps — measured **249 s setup with a 204 s Go install**. The plan (line 36) and the diagnosis (line 39) both call 231 s the "independently verified historical worst setup". Corrected dependents:
+
+| Plan figure | Stated | Corrected at 249 s |
+|---|---:|---:|
+| 1200 s − setup − 30 s reserve | 939 s | **921 s** |
+| Headroom over the 703 s consumed | 236 s | **218 s** |
+| 1200 s tolerance vs c555's 410 s | 2.29× | **2.25×** |
+| 900 s tolerance vs c555's 410 s | 1.56× | **1.51×** |
+| Cross-run estimate margin (line 40) | 231.6 s | **213.6 s** |
+
+Across the 18 retained `verify` jobs the real spreads are **setup 142–249 s** and **go install 103–204 s** (`setup-go` has `cache: false`, so it is a full source build every run), not the 142–231 s / 103–188 s band the plan and prior review state. The setup term alone varies by 107 s ≈ 12 % of the 900 s cap. Conclusion unaffected; but this is the same defect class as prior required finding 1 — a plan claim contradicted by an artifact sitting beside it.
+
+### F2 [Medium] The corpus's single best data point is uncited, and it is decisive
+
+Job **115999221459** (`transaction-cold-schema-ci-first.json` / `-raw.log`), head **c555fe0** — same head and tree as the green 116007773987:
+
+- `pnpm test` step **concluded `success` at 696 s**: `Test Files 172 passed (172)`, `Tests 9245 passed | 1 skipped (9246)`, `Duration 695.33s`.
+- `e2e:ready:preflight` then ran and printed `Tests 7 passed (7)` / `Duration 1.50s` before the step was cancelled at ~3 s; smoke and the Read gate `skipped`.
+- Setup 202 s. So the job needed ≈ **908 s** (202 + 696 + 3 + 5 + 1 + post) and had 900 s — **it missed green by single-digit seconds with the entire suite and the preflight already executed.**
+- Same-head, same-tree whole-suite wall ratio: **695.33 / 409.53 = 1.698×**.
+
+Three consequences for the plan:
+
+1. Its central variance claim rests on matrix case-sum ratios across *different* heads (1.458, 1.721, 1.817) while a same-head, same-tree, **whole-suite** 1.70× measurement is on disk. That is strictly better evidence for required findings 1 and 2 and removes the "matrix ≠ suite" caveat the plan has to carry.
+2. Line 34's "Current cancellation cannot supply a completed downstream measurement" is true of this run but incomplete at corpus level: the slow-regime downstream *is* measured (preflight 1.50 s Vitest / ~3 s step), corroborating the 30 s reserve as conservative against ~8–9 s of actual gate commands (green runs: 11 s and 12 s step-end→job-complete, verified).
+3. It is the only evidence that the 15-minute cap can cut a run whose suite **completed** — precisely the failure mode 20 minutes removes.
+
+Also uncited: **five of eighteen** retained `verify` jobs hit the 15 m cap — 39c160d/115911832057 (683 s), 8c78cba/115933355104 (697 s), 4aa2d0b/115984000843 (695 s), c555fe0/115999221459 (696 s), 427cfef/116044976221 (703 s). The plan quantifies two and alludes to "earlier retries". 28 % recurrence across one day of runs is a stronger recurrence argument than the one made.
+
+### F3 [Low] "Extends outside the observed band" needs the word *aggregate*
+
+Line 38 cites 1.817× and 1.721× as the observed episodes. The worst **aggregate** same-work ratio actually derivable is **1.838×** (current 56-case sum 658.206 s ÷ PR115-green same-56 358.064 s). More to the point, the prior review recorded a worst **single-case** ratio of 2.315×, which exceeds the corrected 2.25× tolerance at the worst observed setup. The aggregate claim holds (1.84× observed vs 2.25× tolerated); the sentence should say so explicitly rather than implying the whole band is cleared.
+
+### F4 [Low] `cancel-in-progress` and a 20 m cap produce the same `cancelled` conclusion
+
+`ci.yml:9-11` sets `cancel-in-progress: true` on `ci-${{ github.workflow }}-${{ github.ref }}`. A longer cap widens the window in which a concurrency cancel can land, and both surface as `conclusion: cancelled`. Gates 5/6 treat "cancellation" generically; they should require reading the annotation text (`"…maximum execution time of 20m0s"` vs its absence) to distinguish them, because the dispositions are opposite — diagnose/stop vs benign re-run. Attribution is sound for 427 (its annotation carries the 15m0s text); it is the *next* run that needs the rule.
+
+### F5 [Low] The sizing baselines have a ~5-day validity window
+
+The retained annotations carry: *"The ubuntu-latest label will migrate to Ubuntu 26 beginning October 19, 2026."* Every measurement in this corpus was taken Oct 13–14, 2026 on the pre-migration image, and the largest, most variable term — the uncached `go install` source build, 103–204 s — is exactly what a runner-image change moves. The plan correctly keeps `runs-on: ubuntu-latest` in scope-freeze, but the one subsequent exact-head attempt should land before the migration reaches this repo, and post-migration timings should be treated as a new baseline rather than compared to these.
+
+### F6 [Low] Gate 3's parser branch is satisfiable — name the parser
+
+In this worktree: no `yq`, no python `yaml` module, no `yaml`/`js-yaml` under `node_modules` (6 entries; workspace not installed). `/usr/bin/ruby` with Psych 3.1.0 **is** present and sufficient — `ruby -ryaml -e 'YAML.load_file(".github/workflows/ci.yml")'` resolves `jobs.verify.timeout-minutes` as a scalar Integer. Naming it keeps the author off the degraded text-inspection fallback without fetching a dependency. (I ran exactly this, read-only.)
+
+---
+
+## Prior dispositions and gates
+
+- **Required 1 (growth vs throughput)** — closed, and verified at suite scale: PR114→PR115 +21.502 s / 6.3 % on 53→57 cases; the 427 delta adds no cases; matrix file, `ci.yml`, `vitest.config.ts`, `package.json` byte-identical 39c160d → c555 → 70ac → 427 (empty `git diff`). F2 would make it airtight.
+- **Required 2 (variance band)** — closed in method; the multiplier bound is now computed as finding 2 asked. Numbers need F1; phrasing needs F3.
+- **Required 3 (both partition regimes)** — closed. Both regimes present and arithmetic exact (900 − 364.607 − 142 = 393.393; 900 − 662.639 − 211 = 26.361).
+- **Optional 4–7** — closed: consistent step/reserve accounting with the reserve disclosed as planning allowance; deliberate 7-case preflight repeat (confirmed in c555/PR115 logs as a second `Test Files 1 passed (1)` / `Tests 7 passed (7)`); named build-dependent skip at `scripts/demo-read.test.mjs:48`/`:107`; required-check preservation verified above.
+- **Coverage/final gates (gate 5)** — expected inventory is right: 70ac's official summary is `Test Files 172 passed`→`1 failed | 171 passed (172)`, `Tests 1 failed | 9255 passed | 1 skipped (9257)`, so all-pass is 9256 passed / 1 skipped over 172 files, plus the separate 7-case preflight. 172 files confirmed statically from `vitest.config.ts:66` (128 packages + 35 apps + 9 scripts). The requirement that a printed pass summary with a cancelled job is insufficient is correct and necessary — the current log has no summary at all.
+- **Bounded allowance / no escalation (gates 6)** — honored. The plan does not claim 20 min is minimal, does not claim the unfinished run would have passed, does not convert the 70ac failure into a timeout, and forbids automatic retry or further increase.
+
+One scope note: the obvious larger remedy — caching the 103–204 s Go build — is excluded only in the diagnosis (provenance: the identity check proves a source build). A one-line rationale in the plan itself would preempt the question from Root.
+
+---
+
+## Limitations
+
+- Read-only. No tests, builds, installs, services, network calls, git mutation, or file writes. The single `ruby -ryaml` parse, the SHA256 computations, and the log/metadata parsing are all read-only.
+- I reviewed the plan plus the stated one-literal change. The frozen diff does not exist yet and is not reviewed here; it still needs independent verification against this text.
+- All CI facts come from the retained artifacts in `bdp-integration-logs/`; I cannot verify anything runner-side beyond them. All six log hashes the plan cites resolve to real files, as do the three current-run hashes.
+- For the cancelled run, case counts are **row** counts under the plan's documented rule, not an official summary. Duplicate parameterized titles collapse (9255 rows → 9203 distinct `(file,title)` keys), so row-set comparison is approximate for duplicate-titled cases. My pass-row counts run 7 high on green runs because they include the preflight's re-executed 7 — subtracting those reproduces the plan's 9213 / 9245 exactly.
+- Per-row duration sums measure sequential work within a file and overlap across files; I used them only as **ratios**, never added to wall time.
+- Vitest `Duration` and step wall differ by ~1 s in these runs (409.53/410, 696.14/697); I treated them as interchangeable at ±2 s.
+- My ~715–720 s current-inventory estimate assumes the residual is the one missing case plus the summary. It does not prove per-file teardown or installed-child cleanup completed — that remains unobserved, as the diagnosis says, and no cleanup proof should be read out of the orphan-cleanup text.
+- The 249 s draw is from head ed3597d — a different head, identical workflow and job (verified: job name `verify`, 27 steps, same step names).
+- I did not re-execute or re-verify the PR114 53-case figures; they are retained in the earlier plan and review.
