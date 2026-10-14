@@ -1,0 +1,25 @@
+{
+  "head": "fc47fbfb5f1055766e2f680df40a1d729d39638d",
+  "tree": "11641e37dc87560c4e92928fed86c88b2b314412",
+  "parent": "427cfef6decbb422b393024e36218affc26007fa",
+  "clean": true,
+  "agentSignature": "Preserve maintenance faults before Transactional comparison\n\nKeep benign closure distinct from retained owner failures and verify the emitted HTTP fault path with a bounded counterfactual.\n\nAgent-Signature: Vickie; Codex; unknown-model; unknown-reasoning",
+  "gitSignatureStatus": "N",
+  "ownedSha256": {
+    "packages/server/src/transaction-store.ts": "54df6965f747e6610fe8ed95f8e2517cf3904f5812732831b78420edae2efbd0",
+    "packages/server/src/transaction-store.test.ts": "7cd155ddd959ec31a207adbe6f8eb0a26f0af968a144abb58915720436bf0774",
+    "packages/server/src/transaction-submission.test.ts": "d006a11aaf2f991388c2d1ae347cafa5a1827bdb5d784a793c6b672feb6e0c85",
+    "packages/server/src/transaction-http.test.ts": "289f188eb6dd94c32a75858d8d18084f760a2c0f592684a939fa44c52b82b46c",
+    "docs/design/transaction-implementation-progress.md": "260de9772305007267139a4908cdbef3a7bcdcc68be045522a4f9ef6294d105f"
+  },
+  "emittedRuntimeSha256": {
+    "packages/server/dist/transaction-store.js": "f149fe6f841355ec2828b4c20740a0a75e24f0c04c2a4bcc26388e514d037175",
+    "packages/server/dist/transaction-runtime.js": "b16df10012c986765c62e442839509aece3e8522ad0e721fab66b1b109b7742c",
+    "packages/server/dist/transaction-http.js": "07c36d8ed30e59f9716ec3359318c0989d4fafdab40bb65b61df48ae01dcbb23",
+    "packages/server/dist/transaction-submission.js": "0c60e248df68bd31c877cd0fd38b0f3f87289476b3c96179ef0b003f33680592"
+  },
+  "testedPreDocPatchSha256": "d0aea5727e692ae5e9e31e74b40dc640087c869d0749a3ee956fe9eb0c259b5b",
+  "postExecutionDocsDeltaSha256": "eff7cc38978f86a3121d9d12d2a6a197e021ce8461c62b9d0261e585e1978c88",
+  "readOnlyBindingFile": "source-binding.json",
+  "readOnlyBindingSha256": "55f4e1041c910877506927f3923ea9bfea4bf98d6229f60adb15abf15ae2f9f4"
+}
