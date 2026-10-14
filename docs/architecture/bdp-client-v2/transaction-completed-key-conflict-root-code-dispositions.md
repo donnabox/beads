@@ -1,0 +1,5 @@
+# Completed-key conflict code review dispositions
+
+Original source b13055049ed7c1bd09ad2d7af29e0a38a81001ea remains frozen. Native report bdf6d3a8a291945bc4a578a7b1cfa90b57ff36aa37e3d39167fc826d74377222 read in full. External council is still running on the same original source.
+
+Accept native P3: finish independently authored selected response-oracle pins and a weakening control in the cumulative test. Current manifest and actual evidence are coherent; this is regression protection and accepted-plan completeness, not a discovered target defect. Preserve all nine old objects and partial flags. Reorder only new-row context assertions and mirrored bindings if necessary to reuse presence-before-equality guards; if artifacts change, require fresh packed positive and five controls. If test-only, verify unchanged artifacts/runtime and do not claim a new packed execution. Assigned isolated successor to update_implementation; native author remains independent. No new requests, framework or runtime semantics. External findings must be explicitly dispositioned when received.

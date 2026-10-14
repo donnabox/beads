@@ -1,0 +1,96 @@
+{
+  "type": {
+    "source": "4f2e3797c889b74998dc555d2200d02cb5f59a8c",
+    "base": "dfafd82290fb6f06db1e01522a3684a21d9813a7",
+    "files": {
+      "apps/bdptest/src/transactional-collection-minimum-installed.test.ts": {
+        "donorSha256": "81a619fd9127694b36c9045b8adfc20de89926b7a41e55d2f667bc72e7af640f",
+        "mergedSha256": "81a619fd9127694b36c9045b8adfc20de89926b7a41e55d2f667bc72e7af640f",
+        "byteEqual": true,
+        "role": "production/test preserved",
+        "finalSha256": "81a619fd9127694b36c9045b8adfc20de89926b7a41e55d2f667bc72e7af640f",
+        "finalByteEqual": true
+      },
+      "docs/design/transaction-implementation-progress.md": {
+        "donorSha256": "06e5e160950d7b1452df7fdb9c1c0233c32db3c50a6b7fdb518ea2c4aeebf84b",
+        "mergedSha256": "eda699655cf1c025e4b9d566e775112715b8d78c55f1bc7698981345ec30b0c0",
+        "byteEqual": false,
+        "role": "doc combined",
+        "finalSha256": "fb532ba3e5dedbb6e81edac6ea6490ccf8209e23f3d46c84fd413b83aa6ac769",
+        "finalByteEqual": false
+      },
+      "packages/server/src/transaction-http.test.ts": {
+        "donorSha256": "43a622619eaac25a29d4866113310d9fdc5a6fa371dbe3b1c3d266605da04dbb",
+        "mergedSha256": "43a622619eaac25a29d4866113310d9fdc5a6fa371dbe3b1c3d266605da04dbb",
+        "byteEqual": true,
+        "role": "production/test preserved",
+        "finalSha256": "43a622619eaac25a29d4866113310d9fdc5a6fa371dbe3b1c3d266605da04dbb",
+        "finalByteEqual": true
+      },
+      "packages/server/src/transaction-http.ts": {
+        "donorSha256": "05612529881ee02f7ab7572be30598c3b95fff05b40fa4147845ce8b3ec1aa7d",
+        "mergedSha256": "05612529881ee02f7ab7572be30598c3b95fff05b40fa4147845ce8b3ec1aa7d",
+        "byteEqual": true,
+        "role": "production/test preserved",
+        "finalSha256": "05612529881ee02f7ab7572be30598c3b95fff05b40fa4147845ce8b3ec1aa7d",
+        "finalByteEqual": true
+      },
+      "packages/server/src/transaction-read.test.ts": {
+        "donorSha256": "6ac8240bc4e9d4b855bebb305955623b80360e7463416f0d20e3622409631294",
+        "mergedSha256": "6ac8240bc4e9d4b855bebb305955623b80360e7463416f0d20e3622409631294",
+        "byteEqual": true,
+        "role": "production/test preserved",
+        "finalSha256": "6ac8240bc4e9d4b855bebb305955623b80360e7463416f0d20e3622409631294",
+        "finalByteEqual": true
+      },
+      "packages/server/src/transaction-read.ts": {
+        "donorSha256": "96df09e5bace6950d512c5ea98757a8cecc821f412df1d1ce5c362eeee624513",
+        "mergedSha256": "96df09e5bace6950d512c5ea98757a8cecc821f412df1d1ce5c362eeee624513",
+        "byteEqual": true,
+        "role": "production/test preserved",
+        "finalSha256": "96df09e5bace6950d512c5ea98757a8cecc821f412df1d1ce5c362eeee624513",
+        "finalByteEqual": true
+      }
+    }
+  },
+  "service": {
+    "source": "5401e2fcd2abc414bfe83a2798101c02025153a2",
+    "base": "dfafd82290fb6f06db1e01522a3684a21d9813a7",
+    "files": {
+      "docs/design/transaction-implementation-progress.md": {
+        "donorSha256": "03edd6b2c58fde451300be3192be05488826c66d60743239391606736f34c069",
+        "mergedSha256": "eda699655cf1c025e4b9d566e775112715b8d78c55f1bc7698981345ec30b0c0",
+        "byteEqual": false,
+        "role": "doc combined",
+        "finalSha256": "fb532ba3e5dedbb6e81edac6ea6490ccf8209e23f3d46c84fd413b83aa6ac769",
+        "finalByteEqual": false
+      },
+      "packages/server/src/transaction-service.test.ts": {
+        "donorSha256": "6849d2a88ff068afb21404e894dbc84e8478483e51f8f5c2efa7cf299afbb069",
+        "mergedSha256": "6849d2a88ff068afb21404e894dbc84e8478483e51f8f5c2efa7cf299afbb069",
+        "byteEqual": true,
+        "role": "production/test preserved",
+        "finalSha256": "6849d2a88ff068afb21404e894dbc84e8478483e51f8f5c2efa7cf299afbb069",
+        "finalByteEqual": true
+      },
+      "packages/server/src/transaction-service.ts": {
+        "donorSha256": "44d7541635fad6c3d9be827b97df4b78b7d4a1ed3d7bf658676f9875e6ddfc22",
+        "mergedSha256": "44d7541635fad6c3d9be827b97df4b78b7d4a1ed3d7bf658676f9875e6ddfc22",
+        "byteEqual": true,
+        "role": "production/test preserved",
+        "finalSha256": "44d7541635fad6c3d9be827b97df4b78b7d4a1ed3d7bf658676f9875e6ddfc22",
+        "finalByteEqual": true
+      }
+    }
+  },
+  "integration": {
+    "resolvedMerge": "6da4116c40fed8cecebac01a0c227910d502413d",
+    "resolvedMergeTree": "138ef8413496a610c6756b91b54f8fcb830d6529",
+    "final": "2a78699d8e7c5d9f744d583776ee54ac9056b28d",
+    "finalTree": "78707366a5e4a14691fe0912a2805a5c2ce3c936",
+    "manualConflict": "docs/design/transaction-implementation-progress.md",
+    "finalSuccessorChangedFiles": [
+      "docs/design/transaction-implementation-progress.md"
+    ]
+  }
+}
