@@ -319,7 +319,7 @@ func TestGraphPreviewGenericCanonicalSpelling(t *testing.T) {
 	}
 }
 
-func TestGraphPreviewGenericProjectsV7NativeRelationshipTypes(t *testing.T) {
+func TestGraphPreviewGenericProjectsFreshNativeRelationshipTypes(t *testing.T) {
 	const scope = genericTestScope
 	endpoint, err := graph.NewEndpointConstraint(nil, graph.ExternalNone)
 	if err != nil {
@@ -328,16 +328,15 @@ func TestGraphPreviewGenericProjectsV7NativeRelationshipTypes(t *testing.T) {
 	ids := []string{
 		graphstore.MemoryTypeURL(scope), graphstore.IssueTypeURL(scope), graphstore.DependencyTypeURL(scope),
 		graphstore.RelatedTypeURL(scope), graphstore.ExampleFollowsTypeURL(scope), graphstore.ExampleCitesTypeURL(scope),
-		graphstore.RelationshipIssueTypeURL(scope),
 	}
-	for _, native := range []types.DependencyType{types.DepBlocks, types.DepParentChild, types.DepDuplicates, types.DepSupersedes} {
+	for _, native := range []types.DependencyType{types.DepParentChild, types.DepDuplicates, types.DepSupersedes} {
 		id, _ := graphstore.RelationshipDependencyTypeURL(scope, native)
 		ids = append(ids, id)
 	}
 	snapshot := graphstore.Snapshot{Types: make([]graph.TypeDescriptor, 0, len(ids))}
 	for index, id := range ids {
 		spec := graph.TypeDescriptorSpec{ID: id, Name: "Test Type", Describes: graph.KindLink, Source: &endpoint, Target: &endpoint}
-		if index == 0 || index == 1 || index == 6 {
+		if index == 0 || index == 1 {
 			spec.Describes, spec.Source, spec.Target = graph.KindBead, nil, nil
 		}
 		descriptor, err := graph.NewTypeDescriptor(spec)
@@ -346,17 +345,17 @@ func TestGraphPreviewGenericProjectsV7NativeRelationshipTypes(t *testing.T) {
 		}
 		snapshot.Types = append(snapshot.Types, descriptor)
 	}
-	source := graphstore.IssueRecord{ID: scope + "beads/work", Type: graphstore.RelationshipIssueTypeURL(scope), Version: "one", Properties: &types.Issue{Title: "Work"}}
+	source := graphstore.IssueRecord{ID: scope + "beads/work", Type: graphstore.IssueTypeURL(scope), Version: "one", Properties: &types.Issue{Title: "Work"}}
 	target := graphstore.IssueRecord{ID: scope + "beads/prereq", Type: source.Type, Version: "two", Properties: &types.Issue{Title: "Prerequisite"}}
-	blocking := graphstore.LinkRecord{ID: scope + "links/blocks", Type: graphstore.RelationshipBlockingTypeURL(scope), Source: source.ID, Target: target.ID, Version: "three"}
+	blocking := graphstore.LinkRecord{ID: scope + "links/blocks", Type: graphstore.DependencyTypeURL(scope), Source: source.ID, Target: target.ID, Version: "three"}
 	snapshot.Records = []any{source, target, blocking}
 	got, err := projectGraphGeneric(snapshot, scope, graphGenericInput{Root: source.ID, Direction: "out", Depth: 1, MaxNodes: 2, MaxLinks: 1})
 	if err != nil || len(got.Nodes) != 2 || len(got.Links) != 1 || got.Links[0].Type != blocking.Type {
-		t.Fatalf("v7 projection: %+v %v", got, err)
+		t.Fatalf("fresh projection: %+v %v", got, err)
 	}
-	blocking.Type = graphstore.DependencyTypeURL(scope)
+	blocking.Type = scope + "types/preview-blocks-v2"
 	snapshot.Records[2] = blocking
 	if _, err := projectGraphGeneric(snapshot, scope, graphGenericInput{Root: source.ID, Direction: "out", Depth: 1, MaxNodes: 2, MaxLinks: 1}); !errors.Is(err, graphstore.ErrInvalidStore) {
-		t.Fatalf("v7 projection accepted legacy blocking Type: %v", err)
+		t.Fatalf("fresh projection accepted uninstalled blocking Type: %v", err)
 	}
 }

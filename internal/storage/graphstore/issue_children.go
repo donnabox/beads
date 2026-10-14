@@ -89,8 +89,11 @@ func (s *Store) listChildrenInTx(ctx context.Context, tx *sql.Tx, parentPath str
 // installed descriptor bytes and fingerprints. Its validated set must also be
 // the complete fresh generation before a relationship journey is available.
 func (s *Store) requireRelationshipGenerationInTx(ctx context.Context, tx *sql.Tx) error {
-	if s.options.TypeGeneration == 7 {
+	if s.options.TypeGeneration == 8 {
 		return nil
+	}
+	if s.options.TypeGeneration != 0 {
+		return fmt.Errorf("%w: parent-child relationship generation differs from the current installation", ErrInvalidStore)
 	}
 	if s.options.TypeGeneration == 0 {
 		var count int
@@ -101,7 +104,7 @@ func (s *Store) requireRelationshipGenerationInTx(ctx context.Context, tx *sql.T
 			return nil
 		}
 	}
-	return fmt.Errorf("%w: parent-child relationships require a full v7 Type installation", ErrCapabilityUnavailable)
+	return fmt.Errorf("%w: parent-child relationships require the complete current Type installation", ErrCapabilityUnavailable)
 }
 
 // ListChildrenLegacy keeps bd children --json's ordinary counted Issue row

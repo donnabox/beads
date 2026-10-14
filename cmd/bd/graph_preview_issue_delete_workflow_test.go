@@ -42,7 +42,7 @@ func TestGraphPreviewIssueDeleteWorkflow(t *testing.T) {
 			refuse("revision_conflict", "delete", "work", "--force", "--if-revision", "stale")
 			refuse("capability_unavailable", "forget", "work", "--unconditional")
 			call("create", "Other", "--id", "beads/other")
-			call("link", "work", "other", "--link-type", "types/preview-related-v2", "--id", "links/relation")
+			call("link", "work", "other", "--link-type", "types/preview-related", "--id", "links/relation")
 			refuse("constraint_violation", "delete", "work")
 			refuse("constraint_violation", "delete", "work", "--force", "--if-revision", issue.Revision)
 			if got := graphMixedResult[graphstore.IssueRecord](t, call("show", "--format", "graph-json", "work")); !reflect.DeepEqual(got, issue) {

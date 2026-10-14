@@ -239,9 +239,8 @@ func (s *Store) versionsInTx(ctx context.Context, tx *sql.Tx, path string, bound
 	case backing == "informational" && kind == "link" && IsInformationalTypeURL(s.ScopeURL(), typ.String),
 		backing == "dependency" && kind == "link" && isNativeDependencyLinkType(s.ScopeURL(), issueType, typ.String):
 		// Every informational Type the binary knows is accepted here, but only
-		// one this store has INSTALLED is valid: a legacy four-Type installation
-		// never holds the example Types, so an allocation naming one is corrupt
-		// state. readVersionInTx makes the same check, so the list and the
+		// one this store has INSTALLED is valid. An allocation naming an absent
+		// Type is corrupt state. readVersionInTx makes the same check, so the list and the
 		// single read agree about which allocations are well formed.
 		if backing == "informational" {
 			if err := s.informationalTypeInTx(ctx, tx, typ.String); err != nil {

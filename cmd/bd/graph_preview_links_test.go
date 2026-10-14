@@ -100,7 +100,7 @@ func TestGraphPreviewEditRevisionGuardDefaultsToCurrent(t *testing.T) {
 
 func TestGraphPreviewLocalTypeSelectors(t *testing.T) {
 	const scope = "https://example.invalid/demo/"
-	for _, selector := range []string{"preview-related-v2", "types/preview-related-v2", scope + "types/preview-related-v2", "example-follows", "types/example-follows"} {
+	for _, selector := range []string{"preview-related", "types/preview-related", scope + "types/preview-related", "example-follows", "types/example-follows"} {
 		got, err := graphPreviewTypeURL(scope, selector)
 		want := scope + "types/" + strings.TrimPrefix(strings.TrimPrefix(selector, scope), "types/")
 		if err != nil || got != want {
@@ -119,10 +119,10 @@ func TestGraphPreviewLinkDisplayKeepsForeignURLs(t *testing.T) {
 	graphPreviewConfig = &configfile.Config{GraphScopeURL: "https://example.invalid/demo/"}
 	t.Cleanup(func() { graphPreviewConfig = old })
 	for input, want := range map[string]string{
-		"https://example.invalid/demo/types/preview-related-v2": "types/preview-related-v2",
-		"https://example.invalid/demo/links/edge":               "links/edge",
-		"https://example.invalid/demo/beads/work":               "beads/work",
-		"https://remote.invalid/beads/work":                     "https://remote.invalid/beads/work",
+		"https://example.invalid/demo/types/preview-related": "types/preview-related",
+		"https://example.invalid/demo/links/edge":            "links/edge",
+		"https://example.invalid/demo/beads/work":            "beads/work",
+		"https://remote.invalid/beads/work":                  "https://remote.invalid/beads/work",
 	} {
 		if got := graphPreviewDisplayLocalURL(input); got != want {
 			t.Errorf("%q displayed as %q, want %q", input, got, want)
@@ -140,8 +140,8 @@ func TestGraphPreviewLinkTypeFlags(t *testing.T) {
 		fail bool
 	}{
 		{nil, "", false},
-		{[]string{"--link-type", "types/preview-related-v2"}, "https://example.invalid/demo/types/preview-related-v2", false},
-		{[]string{"--resource-type", "types/preview-related-v2"}, "https://example.invalid/demo/types/preview-related-v2", false},
+		{[]string{"--link-type", "types/preview-related"}, "https://example.invalid/demo/types/preview-related", false},
+		{[]string{"--resource-type", "types/preview-related"}, "https://example.invalid/demo/types/preview-related", false},
 		{[]string{"--link-type="}, "", true},
 		{[]string{"--link-type", "types/example-follows", "--resource-type", "types/example-follows"}, "", true},
 	} {
@@ -177,7 +177,7 @@ func TestGraphPreviewLinkTypeRouteRefusesTypeFlagFirst(t *testing.T) {
 	cmd.Flags().String("properties", "", "")
 	cmd.Flags().String("if-source-revision", "", "")
 	cmd.Flags().Bool("unconditional-source", false, "")
-	if err := cmd.ParseFlags([]string{"--type", "blocks", "--link-type", "types/preview-related-v2", "--unconditional-source"}); err != nil {
+	if err := cmd.ParseFlags([]string{"--type", "blocks", "--link-type", "types/preview-related", "--unconditional-source"}); err != nil {
 		t.Fatal(err)
 	}
 	if !cmd.Flags().Changed("type") || !graphPreviewLinkTypeChanged(cmd) {

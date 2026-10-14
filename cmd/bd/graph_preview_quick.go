@@ -24,7 +24,7 @@ func runGraphPreviewQuick(cmd *cobra.Command, args []string) error {
 	}
 	parent, _ := cmd.Flags().GetString("parent")
 	if parent != "" {
-		return graphFailure("capability_unavailable", "graph quick capture does not yet support --parent; use bd create --parent PARENT in a fresh v7 relationship workspace", 5)
+		return graphFailure("capability_unavailable", "graph quick capture does not yet support --parent; use bd create --parent PARENT in a fresh graph workspace", 5)
 	}
 	// Ordinary q joins its positional arguments without create's flag-looking
 	// title check. Cobra's -- terminator permits titles beginning with '-'.

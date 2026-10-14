@@ -68,7 +68,7 @@ func TestListBeadsHidesWhatTheIssueListHides(t *testing.T) {
 			if got := listed(BeadListRequest{All: true}); !slices.Equal(got, everything) {
 				t.Fatalf("--all Bead list %v, want %v", got, everything)
 			}
-			if got := listed(BeadListRequest{TypeURL: RelationshipIssueTypeURL(s.ScopeURL())}); !slices.Equal(got, shownIssues) {
+			if got := listed(BeadListRequest{TypeURL: IssueTypeURL(s.ScopeURL())}); !slices.Equal(got, shownIssues) {
 				t.Fatalf("Issue Type list %v, want %v", got, shownIssues)
 			}
 			if got := listed(BeadListRequest{TypeURL: MemoryTypeURL(s.ScopeURL())}); !slices.Equal(got, []string{"beads/plan"}) {

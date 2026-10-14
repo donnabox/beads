@@ -35,9 +35,8 @@ func TestReadInstalledTypes(t *testing.T) {
 				"memory": MemoryTypeURL(o.Binding.ScopeURL), "issue": IssueTypeURL(o.Binding.ScopeURL),
 				"dependency": DependencyTypeURL(o.Binding.ScopeURL), "related": RelatedTypeURL(o.Binding.ScopeURL),
 				"example-follows": ExampleFollowsTypeURL(o.Binding.ScopeURL), "example-cites": ExampleCitesTypeURL(o.Binding.ScopeURL),
-				"issue-v3":  RelationshipIssueTypeURL(o.Binding.ScopeURL),
-				"blocks-v2": o.Binding.ScopeURL + "types/preview-blocks-v2", "parent-child": o.Binding.ScopeURL + "types/preview-parent-child-v1",
-				"duplicates": o.Binding.ScopeURL + "types/preview-duplicates-v1", "supersedes": o.Binding.ScopeURL + "types/preview-supersedes-v1",
+				"parent-child": o.Binding.ScopeURL + "types/preview-parent-child",
+				"duplicates":   o.Binding.ScopeURL + "types/preview-duplicates", "supersedes": o.Binding.ScopeURL + "types/preview-supersedes",
 			} {
 				got, err := s.ReadType(ctx, strings.TrimPrefix(id, o.Binding.ScopeURL))
 				if err != nil {
@@ -55,7 +54,7 @@ func TestReadInstalledTypes(t *testing.T) {
 			if _, err := s.ReadType(ctx, "types/not-installed"); !errors.Is(err, ErrNotFound) {
 				t.Fatalf("missing Type: %v", err)
 			}
-			for _, path := range []string{"beads/plan", "types/" + strings.Repeat("x", 1024), "types/", "types/../preview-memory-v2", "types//preview-memory-v2", "types/preview-memory-v2?version=old", o.Binding.ScopeURL + "types/preview-memory-v2"} {
+			for _, path := range []string{"beads/plan", "types/" + strings.Repeat("x", 1024), "types/", "types/../preview-memory", "types//preview-memory", "types/preview-memory?version=old", o.Binding.ScopeURL + "types/preview-memory"} {
 				if _, err := s.ReadType(ctx, path); !errors.Is(err, graph.ErrValidation) {
 					t.Fatalf("invalid selector %q: %v", path, err)
 				}
@@ -96,7 +95,7 @@ func TestListInstalledTypesReflectsPersistedInstallation(t *testing.T) {
 		t.Fatal(err)
 	}
 	installed, err := store.ListInstalledTypes(ctx)
-	if err != nil || len(installed) != 11 {
+	if err != nil || len(installed) != 9 {
 		t.Fatalf("fresh installed Types: %d %v", len(installed), err)
 	}
 	rows, err := store.db.QueryContext(ctx, `SELECT descriptor FROM graph_preview_types`)
@@ -126,17 +125,12 @@ func TestListInstalledTypesReflectsPersistedInstallation(t *testing.T) {
 			t.Fatalf("%s did not return its persisted descriptor", descriptor.ID())
 		}
 	}
-	if _, err := store.db.ExecContext(ctx, `DELETE FROM graph_preview_types WHERE name IN ('example-follows','example-cites','issue-v3','blocks-v2','parent-child','duplicates','supersedes')`); err != nil {
+	if _, err := store.db.ExecContext(ctx, `DELETE FROM graph_preview_types WHERE name='example-follows'`); err != nil {
 		t.Fatal(err)
 	}
 	installed, err = store.ListInstalledTypes(ctx)
-	if err != nil || len(installed) != 4 {
-		t.Fatalf("older four-Type installation: %d %v", len(installed), err)
-	}
-	for _, descriptor := range installed {
-		if strings.Contains(descriptor.ID(), "example-") {
-			t.Fatalf("uninstalled example advertised: %s", descriptor.ID())
-		}
+	if !errors.Is(err, ErrInvalidStore) || installed != nil {
+		t.Fatalf("partial Type installation admitted: %d %v", len(installed), err)
 	}
 	if err := store.db.QueryRowContext(ctx, `SELECT writer_token FROM graph_preview_scope WHERE singleton=1`).Scan(&tokenAfter); err != nil || tokenAfter != tokenBefore {
 		t.Fatalf("Type listing changed writer state: %q → %q, %v", tokenBefore, tokenAfter, err)

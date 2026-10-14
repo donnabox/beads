@@ -324,7 +324,7 @@ func TestGraphPreviewMemoryReadsWorkflow(t *testing.T) {
 				t.Fatal(err)
 			}
 			edited := graphMixedResult[graphstore.MemoryMutationResult](t, call("update", "beads/plan", "--properties", string(rawProperties), "--if-revision", original.Revision)).Memory
-			related := scope + "types/preview-related-v2"
+			related := scope + "types/preview-related"
 			firstLink := graphMixedResult[graphstore.LinkMutationResult](t, call("link", "beads/plan", "beads/context", "--id", "links/owned", "--resource-type", related, "--properties", `{"note":"first"}`, "--if-source-revision", edited.Revision)).Link
 			linked := graphMixedResult[graphstore.Record](t, call("show", "beads/plan"))
 			changedLink := graphMixedResult[graphstore.LinkMutationResult](t, call("update", "links/owned", "--properties", `{"note":"second"}`, "--if-revision", firstLink.Revision, "--if-source-revision", linked.Revision)).Link

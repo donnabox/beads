@@ -135,7 +135,7 @@ func TestGraphPreviewMixedCoreWorkflow(t *testing.T) {
 				t.Fatal("stale Memory update changed state")
 			}
 
-			related := scope + "types/preview-related-v2"
+			related := scope + "types/preview-related"
 			first := graphMixedResult[graphstore.LinkMutationResult](t, call("link", "beads/plan", "beads/context", "--resource-type", related, "--id", "links/context", "--properties", `{"note":"first"}`, "--if-source-revision", replaced.Memory.Revision))
 			current := graphMixedResult[graphstore.Record](t, call("show", "beads/plan"))
 			call("link", "beads/plan", "beads/work", "--resource-type", related, "--id", "links/work", "--if-source-revision", current.Revision)
@@ -164,10 +164,10 @@ func TestGraphPreviewMixedCoreWorkflow(t *testing.T) {
 			// Memory endpoint, as source or target, keeps the invalid_properties
 			// code and the store's cause, adds the hint naming an informational
 			// Type to use instead, and changes neither endpoint.
-			const memoryEndpointHint = "blocking Link Type requires two live Issues; use an informational Type such as types/preview-related-v2 for Memory endpoints: "
+			const memoryEndpointHint = "blocking Link Type requires two live Issues; use an informational Type such as types/preview-related for Memory endpoints: "
 			planBefore, workBefore := call("show", "beads/plan"), call("show", "beads/work")
 			for _, endpoints := range [][2]string{{"beads/plan", "beads/work"}, {"beads/work", "beads/plan"}} {
-				stdout, stderr, exit := graphVersionsProcess(t, bd, work, home, "link", endpoints[0], endpoints[1], "--link-type", "types/preview-blocks-v2", "--unconditional-source", "--json")
+				stdout, stderr, exit := graphVersionsProcess(t, bd, work, home, "link", endpoints[0], endpoints[1], "--link-type", "types/preview-blocks", "--unconditional-source", "--json")
 				var diagnostic struct {
 					Code      string `json:"code"`
 					Message   string `json:"message"`

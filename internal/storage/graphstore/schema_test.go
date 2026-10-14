@@ -1,6 +1,8 @@
 package graphstore
 
 import (
+	"slices"
+	"strings"
 	"testing"
 
 	graph "github.com/steveyegge/beads/graphops"
@@ -17,7 +19,7 @@ func TestInformationalDescriptorEndpointSemantics(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	if parsed.ID() != scope+"types/preview-related-v2" {
+	if parsed.ID() != scope+"types/preview-related" {
 		t.Fatal("corrected descriptor must have a fresh experimental identity")
 	}
 	source, hasSource := parsed.Source()
@@ -48,40 +50,24 @@ func TestInformationalDescriptorEndpointSemantics(t *testing.T) {
 	}
 }
 
-func TestRelationshipDescriptorsKeepLegacyIssueTypeImmutable(t *testing.T) {
+func TestFreshPreviewTypeIdentitiesAndOwnership(t *testing.T) {
 	const scope = "https://example.test/relationships/"
-	legacy, err := issueDescriptor(scope)
+	issue, err := issueDescriptor(scope)
 	if err != nil {
 		t.Fatal(err)
 	}
-	if legacy.ID() != IssueTypeURL(scope) || len(legacy.OwnsOutgoing()) != 1 {
-		t.Fatalf("legacy Issue descriptor changed: %s, %v", legacy.ID(), legacy.OwnsOutgoing())
+	if issue.ID() != scope+"types/preview-issue" || len(issue.OwnsOutgoing()) != 4 {
+		t.Fatalf("single Issue Type identity or ownership differs: %s, %v", issue.ID(), issue.OwnsOutgoing())
 	}
-	if _, ok := legacy.Owns(DependencyTypeURL(scope)); !ok {
-		t.Fatal("legacy Issue lost its blocking Link ownership")
-	}
-	newIssue, err := relationshipIssueDescriptor(scope)
-	if err != nil {
-		t.Fatal(err)
-	}
-	if newIssue.ID() == legacy.ID() || len(newIssue.OwnsOutgoing()) != len(relationshipDependencyTypes) {
-		t.Fatalf("relationship Issue needs a distinct identity and all native Links: %s, %v", newIssue.ID(), newIssue.OwnsOutgoing())
-	}
-	seen := make(map[string]types.DependencyType)
+	seen := map[string]bool{}
 	for _, native := range []types.DependencyType{types.DepBlocks, types.DepParentChild, types.DepDuplicates, types.DepSupersedes} {
 		id, ok := relationshipDependencyTypeURL(scope, native)
-		if !ok || id == DependencyTypeURL(scope) {
-			t.Fatalf("missing distinct Link Type for %q: %q", native, id)
+		if !ok || seen[id] || strings.Contains(id, "-v1") || strings.Contains(id, "-v2") || strings.Contains(id, "-v3") {
+			t.Fatalf("native %q lacks one unsuffixed Type: %q, %t", native, id, ok)
 		}
-		if got, ok := nativeRelationshipDependencyType(scope, id); !ok || got != native {
-			t.Fatalf("Link Type %q maps back to %q, %t; want %q", id, got, ok, native)
-		}
-		if previous, duplicate := seen[id]; duplicate {
-			t.Fatalf("native %q and %q share Link Type %q", previous, native, id)
-		}
-		seen[id] = native
-		if _, owns := newIssue.Owns(id); !owns {
-			t.Fatalf("Issue v3 does not own %q", id)
+		seen[id] = true
+		if _, owns := issue.Owns(id); !owns {
+			t.Fatalf("Issue does not own %q", id)
 		}
 		link, err := relationshipDependencyDescriptor(scope, native)
 		if err != nil {
@@ -92,66 +78,39 @@ func TestRelationshipDescriptorsKeepLegacyIssueTypeImmutable(t *testing.T) {
 		}
 		for _, endpoint := range []func() (graph.EndpointConstraint, bool){link.Source, link.Target} {
 			constraint, present := endpoint()
-			if !present || len(constraint.ConformsTo()) != 1 || constraint.ConformsTo()[0] != newIssue.ID() || constraint.EffectiveExternal() != graph.ExternalNone {
-				t.Fatalf("%q must require one live local Issue v3 endpoint", id)
+			if !present || len(constraint.ConformsTo()) != 1 || constraint.ConformsTo()[0] != issue.ID() || constraint.EffectiveExternal() != graph.ExternalNone {
+				t.Fatalf("%q must require one live local Issue endpoint", id)
 			}
 		}
 	}
-	if _, ok := relationshipDependencyTypeURL(scope, types.DepRelated); ok {
-		t.Fatal("informational native relationship acquired an Issue-owned Link Type")
+	if DependencyTypeURL(scope) != scope+"types/preview-blocks" ||
+		MemoryTypeURL(scope) != scope+"types/preview-memory" ||
+		RelatedTypeURL(scope) != scope+"types/preview-related" {
+		t.Fatal("a built-in Type retained a versioned identity")
 	}
-	if _, ok := nativeRelationshipDependencyType(scope, scope+"types/preview-related-v2"); ok {
-		t.Fatal("informational Link mapped to a native Dependency")
-	}
-	want := []string{"memory", "issue", "dependency", "related", "example-follows", "example-cites", "issue-v3", "blocks-v2", "parent-child", "duplicates", "supersedes"}
+	want := []string{"memory", "issue", "dependency", "related", "example-follows", "example-cites", "parent-child", "duplicates", "supersedes"}
 	fresh := FreshTypeNames()
-	if len(fresh) != len(want) {
-		t.Fatalf("fresh installation has %d Types, want %d", len(fresh), len(want))
-	}
-	for index, name := range want {
-		if fresh[index] != name {
-			t.Fatalf("Type %d is %q, want %q", index, fresh[index], name)
-		}
+	if !slices.Equal(fresh, want) {
+		t.Fatalf("fresh Type set = %v, want %v", fresh, want)
 	}
 }
 
 func TestInstalledIssueDependencyProjectionMapping(t *testing.T) {
 	const scope = "https://example.test/relationships/"
-	legacy := IssueTypeURL(scope)
-	newIssue := RelationshipIssueTypeURL(scope)
-	if got, ok := nativeDependencyTypeURLForIssueType(scope, legacy, types.DepBlocks); !ok || got != DependencyTypeURL(scope) {
-		t.Fatalf("legacy blocking Type = %q, %t", got, ok)
-	}
-	if got, ok := nativeDependencyTypeForIssueType(scope, legacy, DependencyTypeURL(scope)); !ok || got != types.DepBlocks {
-		t.Fatalf("legacy blocking reverse mapping = %q, %t", got, ok)
-	}
+	issue := IssueTypeURL(scope)
 	for _, native := range []types.DependencyType{types.DepBlocks, types.DepParentChild, types.DepDuplicates, types.DepSupersedes} {
 		want, _ := relationshipDependencyTypeURL(scope, native)
-		if got, ok := nativeDependencyTypeURLForIssueType(scope, newIssue, native); !ok || got != want {
-			t.Fatalf("v7 %s Type = %q, %t; want %q", native, got, ok, want)
+		if got, ok := nativeDependencyTypeURLForIssueType(scope, issue, native); !ok || got != want {
+			t.Fatalf("%s Type = %q, %t; want %q", native, got, ok, want)
 		}
-		if got, ok := nativeDependencyTypeForIssueType(scope, newIssue, want); !ok || got != native {
-			t.Fatalf("v7 %s reverse mapping = %q, %t", want, got, ok)
-		}
-	}
-	for _, tc := range []struct {
-		issueType string
-		native    types.DependencyType
-	}{
-		{legacy, types.DepParentChild},
-		{legacy, types.DepDuplicates},
-		{legacy, types.DepSupersedes},
-		{newIssue, types.DepRelated},
-		{scope + "types/uninstalled", types.DepBlocks},
-	} {
-		if got, ok := nativeDependencyTypeURLForIssueType(scope, tc.issueType, tc.native); ok || got != "" {
-			t.Fatalf("unsupported %s/%s mapped to %q, %t", tc.issueType, tc.native, got, ok)
+		if got, ok := nativeDependencyTypeForIssueType(scope, issue, want); !ok || got != native {
+			t.Fatalf("%s reverse mapping = %q, %t", want, got, ok)
 		}
 	}
-	if got, ok := nativeDependencyTypeForIssueType(scope, legacy, scope+"types/preview-parent-child-v1"); ok || got != "" {
-		t.Fatalf("legacy store admitted v7 Link Type %q, %t", got, ok)
+	if got, ok := nativeDependencyTypeURLForIssueType(scope, issue, types.DepRelated); ok || got != "" {
+		t.Fatalf("informational kind mapped as Dependency: %q, %t", got, ok)
 	}
-	if got, ok := nativeDependencyTypeForIssueType(scope, newIssue, DependencyTypeURL(scope)); ok || got != "" {
-		t.Fatalf("v7 store admitted legacy Link Type %q, %t", got, ok)
+	if got, ok := nativeDependencyTypeForIssueType(scope, issue, RelatedTypeURL(scope)); ok || got != "" {
+		t.Fatalf("informational Type mapped as Dependency: %q, %t", got, ok)
 	}
 }

@@ -36,21 +36,14 @@ import (
 
 const graphPreviewMarker = "graph-preview-format"
 
-// The marker records the format generation a workspace was created with.
-// graphPreviewGeneration is the only one this bd writes; admission accepts every
-// entry of graphPreviewSupportedGenerations. link-preview-v5 is the legacy
-// generation: four installed Types, or six in a workspace made after the example
-// Link Types were added and before link-preview-v6 existed. The v7 generation
-// appends a distinct Issue v3 and four Issue-owned native Dependency Link Types;
-// old descriptors and pinned playgrounds remain unchanged. Changing which Types a
-// fresh init installs is a new generation, which
-// TestGraphPreviewGenerationPinsFreshInstallTypes enforces.
+// The marker records the fresh workspace format. Earlier preview workspaces
+// are not upgraded in place. Changing installed Types changes this marker.
 const (
 	graphPreviewGenerationPrefix = "link-preview-v"
-	graphPreviewGeneration       = "link-preview-v7\n"
+	graphPreviewGeneration       = "link-preview-v8\n"
 )
 
-var graphPreviewSupportedGenerations = []string{"link-preview-v5\n", "link-preview-v6\n", graphPreviewGeneration}
+var graphPreviewSupportedGenerations = []string{graphPreviewGeneration}
 
 var graphPreviewActive bool
 var graphPreviewStructuredErrors bool
@@ -68,19 +61,11 @@ func graphPreviewLinkNamespaceCommand(cmd *cobra.Command) bool {
 }
 
 // Admission pins the installed Type generation before any graph command runs.
-// A zero value is used only by selector unit tests and retains the legacy
-// default; real fresh workspaces set generation 7 during admission.
 func graphPreviewIssueTypeURL(scope string) string {
-	if graphPreviewTypeGeneration == 7 {
-		return graphstore.RelationshipIssueTypeURL(scope)
-	}
 	return graphstore.IssueTypeURL(scope)
 }
 
 func graphPreviewBlockingTypeURL(scope string) string {
-	if graphPreviewTypeGeneration == 7 {
-		return graphstore.RelationshipBlockingTypeURL(scope)
-	}
 	return graphstore.DependencyTypeURL(scope)
 }
 
@@ -305,7 +290,7 @@ func admitGraphPreview(cmd *cobra.Command) (handled bool, admissionErr error) {
 		if _, err := os.Lstat(dir); !os.IsNotExist(err) {
 			return true, graphFailure("graph_not_initialized", "graph_mode link initialization requires a fresh .beads directory; existing or incomplete stores are never replaced", 5)
 		}
-		graphPreviewActive, graphPreviewDir, graphPreviewTypeGeneration = true, dir, 7
+		graphPreviewActive, graphPreviewDir, graphPreviewTypeGeneration = true, dir, 8
 		return true, configureGraphPreview(cmd)
 	}
 	if requested != "" && requested != mode {
@@ -392,14 +377,7 @@ func admitGraphPreview(cmd *cobra.Command) (handled bool, admissionErr error) {
 		return true, graphFailure("capability_unavailable", "this graph preview supports remember, memories, recall, versions (and history as its alias here), compare, create, q, show, update, edit, assign, priority, note, comment, comments add, todo, delete, forget, dep add/remove/list/tree/cycles and dep --blocks, link and link create/list/show/update/delete/versions/compare/count, close, reopen, unclaim, heartbeat, reclaim, merge-slot create/check/acquire/release, state read, defer, undefer, ready, list/--format records-json and Issue-only list --json, children, search, count, query, blocked, graph ISSUE, graph check and graph --view generic, types, status and status --graph, statuses, project-local setup claude, claude-hook stop and shared-server serve; this command has not opened the legacy store", 5)
 	}
 	graphPreviewActive, graphPreviewConfig, graphPreviewDir = true, cfg, dir
-	switch string(marker) {
-	case "link-preview-v5\n":
-		graphPreviewTypeGeneration = 5
-	case "link-preview-v6\n":
-		graphPreviewTypeGeneration = 6
-	case graphPreviewGeneration:
-		graphPreviewTypeGeneration = 7
-	}
+	graphPreviewTypeGeneration = 8
 	if err := configureGraphPreview(cmd); err != nil {
 		return true, err
 	}
@@ -803,7 +781,7 @@ func runGraphPreviewStatus(cmd *cobra.Command) error {
 					"issueListTree": false, "issueListLegacyJSON": true, "issueAssigneeFilter": true, "issueDueDate": true, "issueDueFilter": true, "issueClaim": true, "issueUnclaim": true, "issueTodo": true, "issueHeartbeat": true, "issueReclaim": true, "issueStateRead": true, "issueStateSet": false, "issueStatus": true, "issueGate": false, "issueMergeSlot": true, "issueWorkflows": false,
 					"blockingDependencyPairUnlink": false, "bdpRead": graphPreviewConfig.DoltMode == configfile.DoltModeServer, "historyExact": false, "versionList": true, "exactVersionRead": true, "exactVersionCompare": true,
 					"requestStatus": false, "backupContinuity": false}},
-			"Mixed graph preview: Memory create/read, typed Issue and Memory property initialization and shallow property merge with optional revision comparison and actual predecessor disclosure, unreferenced Memory and Issue deletion with read-only preview and retained identity/snapshots, Issue create/read including initial fields, notes, due date and ordinary creator/owner defaults, inline Issue title/description/design/acceptance, priority, estimate, external/spec references, due date and non-claim assignee edits with optional revision comparison, standalone Issue assign, priority and note shortcuts, native Issue comments, quick capture and editor-backed Issue edits, bounded Issue search/count/query with ordinary JSON, and task-Issue todo add/list/done, atomic Issue claims with five-minute leases, node-local history-free heartbeat, native stale-lease reclaim, native-policy unclaim (holder, force or conditional, with optional reason and multiple IDs), state-label read, durable Issue status summary and merge-slot create/check/acquire/release. Issue notes append, guarded replacement with explicit overwrite intent and deliberate clear, read-only comments, informational Links with shallow property merge and guarded unlink, blocking Dependencies with canonical-ID unlink or native pair-level dep remove, incident Links, and Issue close/reopen/defer/undefer/ready with dated wake are available. dep BLOCKER --blocks BLOCKED is available, and dep add accepts an explicit Link ID. Human blocking dep list/tree/cycles and graph ISSUE views plus flat graph check are available within their bounded snapshot and format guards. Bounded current all-Bead listing with nominal Bead Type filtering and Issue-only legacy list JSON are available; Issue-specific filters retain the native Issue query and due/assignee filters. Native immediate children has human and ordinary JSON views; tree formatting is not yet available. Fresh v7 workspaces admit atomic create --parent with a native dotted child ID and parent-child Link, plus epic status and close-eligible (including dry-run) from native parent-child Links. Complete dependency-blocked inspection and bounded current generic summary traversal are available. Memory discovery returns complete bounded title/body search summaries; current and exact retained body-only recall, show --version, explicit-version compare and ordered local bd versions/bd history listing are available; common metadata creation, optional-revision update, exact retained read and comparison are available for admitted Beads and informational Links. Ordered Issue, Memory and informational Link property patches are available with optional resource/source comparisons. Full Memory, linked Memory deletion, gate, set-state, duplicate/supersede journeys, HTTP History and recovery remain unavailable. BDP Read serving is available only on ordinary shared-server Dolt; embedded serving, HTTP writes and aliases remain unavailable.", nil
+			"Mixed graph preview: Memory create/read, typed Issue and Memory property initialization and shallow property merge with optional revision comparison and actual predecessor disclosure, unreferenced Memory and Issue deletion with read-only preview and retained identity/snapshots, Issue create/read including initial fields, notes, due date and ordinary creator/owner defaults, inline Issue title/description/design/acceptance, priority, estimate, external/spec references, due date and non-claim assignee edits with optional revision comparison, standalone Issue assign, priority and note shortcuts, native Issue comments, quick capture and editor-backed Issue edits, bounded Issue search/count/query with ordinary JSON, and task-Issue todo add/list/done, atomic Issue claims with five-minute leases, node-local history-free heartbeat, native stale-lease reclaim, native-policy unclaim (holder, force or conditional, with optional reason and multiple IDs), state-label read, durable Issue status summary and merge-slot create/check/acquire/release. Issue notes append, guarded replacement with explicit overwrite intent and deliberate clear, read-only comments, informational Links with shallow property merge and guarded unlink, blocking Dependencies with canonical-ID unlink or native pair-level dep remove, incident Links, and Issue close/reopen/defer/undefer/ready with dated wake are available. dep BLOCKER --blocks BLOCKED is available, and dep add accepts an explicit Link ID. Human blocking dep list/tree/cycles and graph ISSUE views plus flat graph check are available within their bounded snapshot and format guards. Bounded current all-Bead listing with nominal Bead Type filtering and Issue-only legacy list JSON are available; Issue-specific filters retain the native Issue query and due/assignee filters. Native immediate children has human and ordinary JSON views; tree formatting is not yet available. Fresh graph workspaces admit atomic create --parent with a native dotted child ID and parent-child Link, plus epic status and close-eligible (including dry-run) from native parent-child Links. Complete dependency-blocked inspection and bounded current generic summary traversal are available. Memory discovery returns complete bounded title/body search summaries; current and exact retained body-only recall, show --version, explicit-version compare and ordered local bd versions/bd history listing are available; common metadata creation, optional-revision update, exact retained read and comparison are available for admitted Beads and informational Links. Ordered Issue, Memory and informational Link property patches are available with optional resource/source comparisons. Full Memory, linked Memory deletion, gate, set-state, duplicate/supersede journeys, HTTP History and recovery remain unavailable. BDP Read serving is available only on ordinary shared-server Dolt; embedded serving, HTTP writes and aliases remain unavailable.", nil
 	})
 }
 

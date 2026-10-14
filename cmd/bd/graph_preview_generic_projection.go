@@ -78,26 +78,31 @@ func projectGraphGeneric(snapshot graphstore.Snapshot, scope string, in graphGen
 		return zero, fmt.Errorf("%w: current inventory exceeds %d Resources", graphstore.ErrLimitExceeded, graphstore.PreviewSnapshotLimit)
 	}
 	issueType := graphstore.IssueTypeURL(scope)
-	dependencyTypes := map[string]bool{graphstore.DependencyTypeURL(scope): true}
-	if len(snapshot.Types) == 11 {
+	dependencyTypes := map[string]bool{}
+	for _, native := range []types.DependencyType{types.DepBlocks, types.DepParentChild, types.DepDuplicates, types.DepSupersedes} {
+		id, _ := graphstore.RelationshipDependencyTypeURL(scope, native)
+		dependencyTypes[id] = true
+	}
+	if len(snapshot.Types) != 0 {
+		if len(snapshot.Types) != len(graphstore.FreshTypeNames()) {
+			return invalid("unsupported Type installation")
+		}
 		installed := map[string]bool{}
 		for _, descriptor := range snapshot.Types {
 			installed[descriptor.ID()] = true
 		}
-		if !installed[graphstore.RelationshipIssueTypeURL(scope)] || !installed[graphstore.RelationshipBlockingTypeURL(scope)] {
-			return invalid("incomplete v7 Type installation")
-		}
-		issueType = graphstore.RelationshipIssueTypeURL(scope)
-		dependencyTypes = map[string]bool{}
-		for _, native := range []types.DependencyType{types.DepBlocks, types.DepParentChild, types.DepDuplicates, types.DepSupersedes} {
-			id, _ := graphstore.RelationshipDependencyTypeURL(scope, native)
+		for _, id := range []string{graphstore.IssueTypeURL(scope), graphstore.MemoryTypeURL(scope),
+			graphstore.DependencyTypeURL(scope), graphstore.RelatedTypeURL(scope),
+			graphstore.ExampleFollowsTypeURL(scope), graphstore.ExampleCitesTypeURL(scope)} {
 			if !installed[id] {
-				return invalid("incomplete v7 relationship Type installation")
+				return invalid("incomplete Type installation")
 			}
-			dependencyTypes[id] = true
 		}
-	} else if len(snapshot.Types) != 0 && len(snapshot.Types) != 4 && len(snapshot.Types) != 6 {
-		return invalid("unsupported Type installation")
+		for id := range dependencyTypes {
+			if !installed[id] {
+				return invalid("incomplete native Dependency Type installation")
+			}
+		}
 	}
 	nodes := map[string]graphGenericNode{}
 	links := map[string]graphGenericLink{}
