@@ -117,7 +117,7 @@ func graphPreviewNominalSelector(selector string) bool {
 		return true
 	}
 	switch selector {
-	case "preview-issue", "preview-memory", "preview-dependency", "preview-related", "example-cites", "example-follows":
+	case "preview-issue", "preview-memory", "preview-dependency", "preview-related", "preview-related-memory", "example-cites", "example-follows":
 		return true
 	default:
 		return false
@@ -129,6 +129,9 @@ func graphPreviewTypeURL(scope, selector string) (string, error) {
 		selector = scope + "types/" + selector
 	} else if strings.HasPrefix(selector, "types/") {
 		selector = scope + selector
+	}
+	if selector == scope+"types/preview-related-memory" {
+		selector = graphstore.RelatedTypeURL(scope)
 	}
 	prefix := scope + "types/"
 	if !strings.HasPrefix(selector, prefix) {

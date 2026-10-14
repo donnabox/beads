@@ -10,6 +10,7 @@ import (
 	"github.com/spf13/cobra"
 	graph "github.com/steveyegge/beads/graphops"
 	"github.com/steveyegge/beads/internal/storage/graphstore"
+	"github.com/steveyegge/beads/internal/types"
 )
 
 type graphTypeInventory struct {
@@ -60,8 +61,59 @@ func runGraphPreviewTypes(cmd *cobra.Command, args []string) error {
 				}
 			}
 		}
-		human := fmt.Sprintf("Bead Types (%d):\n%s\nLink Types (%d):\n%s\nUse these Type names, types/NAME IDs, or full local URLs with --type. Built-in Issue and Dependency values also work with --type but are not separate installed graph Types.",
-			len(inventory.BeadTypes), beadText.String(), len(inventory.LinkTypes), linkText.String())
+		if !details {
+			customTypes, err := resolveWorkspaceCustomTypes(ctx)
+			if err != nil {
+				return nil, "", err
+			}
+			return inventory, graphPreviewEffectiveTypesText(customTypes), nil
+		}
+		human := fmt.Sprintf("Installed Bead Types (%d):\n%s\nInstalled Link Types (%d):\n%s", len(inventory.BeadTypes), beadText.String(), len(inventory.LinkTypes), linkText.String())
 		return inventory, human, nil
 	})
+}
+
+// The default human view lists usable --type selectors. Issue and Dependency
+// values share their respective installed graph Types; --json and --details
+// continue to expose the actual installed descriptors.
+func graphPreviewEffectiveTypesText(customTypes []string) string {
+	var beads, links strings.Builder
+	beadCount, linkCount := 0, 0
+	add := func(out *strings.Builder, count *int, name, description string) {
+		fmt.Fprintf(out, "  %-25s %s\n", name, description)
+		*count = *count + 1
+	}
+	add(&beads, &beadCount, "preview-memory", "Memory Preview")
+	for _, entry := range coreWorkTypes {
+		name := string(entry.Type)
+		add(&beads, &beadCount, name, graphPreviewTypeTitle(name)+" Issue")
+	}
+	for _, entry := range systemWorkTypes() {
+		add(&beads, &beadCount, entry.Name, graphPreviewTypeTitle(entry.Name)+" Issue")
+	}
+	for _, name := range customTypes {
+		add(&beads, &beadCount, name, graphPreviewTypeTitle(name)+" Issue")
+	}
+	add(&links, &linkCount, "preview-related-memory", "Related Memory Preview")
+	add(&links, &linkCount, "example-cites", "Example Cites")
+	add(&links, &linkCount, "example-follows", "Example Follows")
+	for _, kind := range types.WellKnownDependencyTypes() {
+		name := string(kind)
+		title := graphPreviewTypeTitle(name)
+		if kind == types.DepBlocks {
+			title = "Blocking"
+		} else if kind == types.DepParentChild {
+			title = "Parent/Child"
+		}
+		add(&links, &linkCount, name, title+" Dependency")
+	}
+	return fmt.Sprintf("Bead Types (%d):\n%s\nLink Types (%d):\n%s", beadCount, beads.String(), linkCount, links.String())
+}
+
+func graphPreviewTypeTitle(name string) string {
+	parts := strings.FieldsFunc(name, func(r rune) bool { return r == '-' || r == '_' })
+	for i, part := range parts {
+		parts[i] = strings.ToUpper(part[:1]) + part[1:]
+	}
+	return strings.Join(parts, " ")
 }

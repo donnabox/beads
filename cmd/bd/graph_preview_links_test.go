@@ -106,6 +106,12 @@ func TestGraphPreviewLocalTypeSelectors(t *testing.T) {
 			t.Fatalf("%q: %q, %v", selector, got, err)
 		}
 	}
+	for _, selector := range []string{"preview-related-memory", "types/preview-related-memory", scope + "types/preview-related-memory"} {
+		got, err := graphPreviewTypeURL(scope, selector)
+		if err != nil || got != scope+"types/preview-related" {
+			t.Fatalf("%q: %q, %v", selector, got, err)
+		}
+	}
 	for _, selector := range []string{"", "types/", "types/../x", "types/example%2Dfollows", "types/example?x=1", "types//x", "beads/foo", "https://other.invalid/types/example-follows", scope + "types/example-follows#x", "bad?type", "bad%2Ftype"} {
 		if _, err := graphPreviewTypeURL(scope, selector); err == nil {
 			t.Errorf("accepted %q", selector)

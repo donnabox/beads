@@ -51,7 +51,11 @@ func TestGraphPreviewUsabilityWorkflow(t *testing.T) {
 				}
 			}
 			visible := graphPolicyCLI(t, bd, work, home, nil, "", "types")
-			if !strings.Contains(visible, "Bead Types") || !strings.Contains(visible, "Link Types") || !strings.Contains(visible, "types/example-cites") {
+			if !strings.Contains(visible, "Bead Types (14):") || !strings.Contains(visible, "Link Types (22):") ||
+				!strings.Contains(visible, "task") || !strings.Contains(visible, "Task Issue") ||
+				!strings.Contains(visible, "blocks") || !strings.Contains(visible, "Blocking Dependency") ||
+				!strings.Contains(visible, "preview-related-memory") ||
+				strings.Contains(visible, "preview-issue") || strings.Contains(visible, "preview-dependency") {
 				t.Fatalf("Type selection help missing: %s", visible)
 			}
 			detailsText := graphPolicyCLI(t, bd, work, home, nil, "", "types", "--details")
@@ -126,6 +130,10 @@ func TestGraphPreviewUsabilityWorkflow(t *testing.T) {
 			}
 			// Legacy spelling remains accepted for existing scripts.
 			call("link", memory.ID, other.ID, "--type", "types/preview-related")
+			aliasLink := graphMixedResult[graphstore.LinkMutationResult](t, call("link", other.ID, memory.ID, "--type", "preview-related-memory"))
+			if aliasLink.Link.Type != graphstore.RelatedTypeURL(scope) {
+				t.Fatalf("listed related-memory selector stored %q", aliasLink.Link.Type)
+			}
 			sameIDBead := graphMixedResult[graphstore.Record](t, call("create", "Same local ID", "--type", "types/preview-memory", "--id", "edge"))
 			shortLink := graphMixedResult[graphstore.LinkMutationResult](t, call("link", memory.ID, other.ID, "--type", "types/example-follows", "--id", "edge"))
 			if sameIDBead.ID != scope+"beads/edge" || shortLink.Link.ID != scope+"links/edge" {

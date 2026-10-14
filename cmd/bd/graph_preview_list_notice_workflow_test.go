@@ -123,6 +123,10 @@ func TestGraphPreviewCustomIssueTypePrefixWorkflow(t *testing.T) {
 		t.Run(engine, func(t *testing.T) {
 			work, home := graphListWorkspace(t, bd, engine, "https://example.invalid/custom-prefix/")
 			graphListConfig(t, work, "types.custom: \"preview-task,example-task\"\n")
+			listedTypes := graphPolicyCLI(t, bd, work, home, nil, "", "types")
+			if !strings.Contains(listedTypes, "preview-task") || !strings.Contains(listedTypes, "example-task") || !strings.Contains(listedTypes, "Bead Types (16):") {
+				t.Fatalf("registered Issue types missing from human inventory: %s", listedTypes)
+			}
 			for _, tc := range []struct{ kind, id string }{
 				{"preview-task", "beads/preview"},
 				{"example-task", "beads/example"},
