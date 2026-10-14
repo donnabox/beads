@@ -295,6 +295,12 @@ func TestGraphPreviewC0DeferredCommandsRefuseBeforeLegacyOpen(t *testing.T) {
 			// refused by the graph writer without touching its workspace.
 			code = "invalid_properties"
 		}
+		if args[0] == "link" {
+			// Link creation is admitted. The default Dependency Type still
+			// requires live Issue endpoints, so this Memory selector fails
+			// validation before it can change the workspace.
+			code = "invalid_properties"
+		}
 		graphPolicyCLI(t, bd, work, home, nil, code, args...)
 		if after := legacyUpgradeTreeDigest(t, work); after != before {
 			t.Fatalf("refused %v changed workspace", args)
