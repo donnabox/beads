@@ -1,0 +1,60 @@
+{
+  "checks": {
+    "offline-setup": {
+      "exit": 0,
+      "elapsedSeconds": 0.7477098749950528,
+      "cleanup": "No remaining processes or runtime directories; retained Node compile cache only."
+    },
+    "typecheck": {
+      "exit": 0,
+      "elapsedSeconds": 3.594671166036278,
+      "cleanup": "No remaining processes or runtime directories; retained Node compile cache only."
+    },
+    "build": {
+      "exit": 0,
+      "elapsedSeconds": 1.1634867088869214,
+      "cleanup": "No remaining processes or runtime directories; retained Node compile cache only."
+    },
+    "format-check": {
+      "exit": 0,
+      "elapsedSeconds": 1.5897397079970688,
+      "cleanup": "No remaining processes or runtime directories; retained Node compile cache only."
+    },
+    "lint": {
+      "exit": 0,
+      "elapsedSeconds": 0.6319350420963019,
+      "cleanup": "No remaining processes or runtime directories; retained Node compile cache only."
+    },
+    "check-boundaries": {
+      "exit": 0,
+      "elapsedSeconds": 0.7177633328828961,
+      "cleanup": "No remaining processes or runtime directories; retained Node compile cache only."
+    },
+    "evidence-verify": {
+      "exit": 0,
+      "elapsedSeconds": 0.6281103750225157,
+      "cleanup": "No remaining processes or runtime directories; retained Node compile cache only."
+    },
+    "cumulative": {
+      "exit": 0,
+      "elapsedSeconds": 2.1880591670051217,
+      "cleanup": "No remaining processes or runtime directories; retained Node compile cache only.",
+      "passed": 39,
+      "filtered": 0
+    },
+    "app-static": {
+      "exit": 0,
+      "elapsedSeconds": 1.0258100829087198,
+      "cleanup": "No remaining processes or runtime directories; retained Node compile cache only.",
+      "passed": 2,
+      "filtered": 57
+    }
+  },
+  "sourceSha256": {
+    "packages/conformance/test-support/transactional/manifest-v1.json": "726fc623bbb115a0f39e0bb3aaa586ea37254522b254e55e555ea95587f14cb9",
+    "packages/conformance/test-support/transactional/coverage-v1.json": "a3a15b5143c118b24965698ec10289821664c90e935820b51c8cf76c05bdb1df",
+    "packages/conformance/src/transactional-cumulative.test.ts": "1c361acc6edc460f1a224331d1010da9555a3700066b1ace41f75842aadf7bc8",
+    "apps/bdptest/src/transactional-matrix.test.ts": "5420e0bad74cc3906c72af02027b2de58c698e24c209e2fd9f67d013c5ca5ed2"
+  },
+  "warningDisposition": "format: existing oversized Read+Update matrix warning. Lint exited0 with698warnings47infos; no fixes applied. Not warning-free. Source and lock hashes unchanged."
+}
