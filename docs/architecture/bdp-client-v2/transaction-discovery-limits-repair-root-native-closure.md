@@ -1,0 +1,12 @@
+# Limits repair — independent root native source closure
+
+Root reviewed the complete four-file diff26d6cd1b947db8c00e24015771506d26098a293e against9b95df5dd866dbaf84150404c4db86ac8054b724. The author is a separate worker. Original native source review plus externalfd07 review and all root dispositions remain preserved. No remaining source finding in this bounded repair; final evidence and CI remain separate gates.
+
+- Read-once closure: destructuring captures bytes/depth/nodes from selector once. Both fixed-set comparison and output literal use only those captured scalars. Getter regression independently changes each value after its first access, asserts exactly one read, expected4096/32/256 and frozen projection. This would fail the previous double-read implementation. No change to installed captured plain-object behavior or enforcement limits.
+- Installed default pin: actual TRANSACTION_RUNTIME_DEFAULTS.selector is compared to imported enforcing TRANSACTION_SELECTOR_LIMITS within the existing real captured runtime configuration test. Existing identity checks connect captured settings and Read options; new assertion closes the drift gap without a runtime-config change.
+- Partial validation groups: both missing scalar alternatives are successfully parsed as generic schema-valid candidates outside the rejection assertion and fail the owner output oracle. Generic protocol permissiveness is preserved.
+- Documentation: sequence/patch omissions added and paragraph wrapped; explicit internal/not-wire-ready and continued HTTP refusal remain. No new profile assertion.
+
+Scope is discovery.ts/test.ts, runtime-configuration.test.ts and progress doc. Fifth distinct original inventory file is explicitly approved; no new API/schema/config/store change. Source review used git diff and inspection only. Author reports250focusedtests/7files and static checks; root will inspect completed evidence before final readiness. Production emitted bytes change, so fresh packed proof must remain bound to26d6 rather than relabelingfd07. No tests/build run by root.
+
+Final evidence inspected: report/source/summary plus affected JSON. Root independently rehashed all four changed files and both fresh archives; all identities match26d6.250 tests/7files and16 exit0 stages, actual12 completed exchanges/child exit0 and separate targeted Update observations are correctly attributed. No remaining evidence finding. Exact-head CI and final ancestry/scope gates remain.
