@@ -62,7 +62,7 @@ Original service-review lows: RU trusted callback capability narrowing and publi
 
 ### Live worker ledger
 
-Checkpoint 2026-10-14T17:55:04Z. **ACTIVE: Transactional first**, with shared and targeted Update checks. Session `2026-10-08T20:26:35Z-81e5` is current. Public write profiles remain unadvertised. Profile-delivery predicates are not yet met.
+Checkpoint 2026-10-14T18:04:14Z. **ACTIVE: Transactional first**, with shared and targeted Update checks. Session `2026-10-08T20:26:35Z-81e5` is current. Public write profiles remain unadvertised. Profile-delivery predicates are not yet met.
 
 ### Verified main and completed work
 
@@ -172,6 +172,19 @@ Exact c555 CI38606671302 attempt1/job115999221459 completed CANCELLED at its exi
 [PR119](https://github.com/gastownhall/bdp/pull/119) merged at17:54:20Z as **7e46cdc93b2fd02094ba7e15e57e743d2ef81daa**, tree062a3ab7e24236417bd915b373a4b44ba9908647, ordinary parentsbff81e2+c555. Exact c555 CI38606671302 attempt2/job116007773987 succeeded with full tests, preflight, smoke and Read gate. [CI](transaction-cold-schema-ci-success.json), [synthetic checkout binding](transaction-cold-schema-ci-tree-verification.json), [readiness](transaction-cold-schema-merge-readiness.json), [actual tree verification](transaction-cold-schema-merge-verification.json) preserve exact identities; root confirmed the actual main tree equals reviewed candidate and CI checkout. Native+Claude findings were dispositioned before merge; original timeout remains recorded.
 
 Captured local schema retrieval URLs now serve original bytes with actual observed context in the private Transactional service. Minimum-field/schema-ID/configuration residuals remain explicit, and no public write profile or release is advertised. Comparison author continues the released bounded execution on c555, which has the same tree as merged main; no ancestry rewrite or evidence relabeling. Its execution outcomes are still pending.
+
+
+### PR120: comparison deadline context, frozen and published
+
+[PR120](https://github.com/gastownhall/bdp/pull/120) is draft at **30035b88380b7cbb3abd5359787db236b70345c7**, tree **cdee4bc7e31511cde094d17c045ea618163b6d7a**, ordinary parentc555 with the same tree as verified main7e46. [Publication record](transaction-comparison-timeout-draft-publication.json) verifies clean eight-file557+/35− scope and remote head. Current Scope context is captured in one metadata-only owner entry at a healthy finite comparison deadline, preserving retry, reservations and unobserved API shapes.
+
+[Final author report](transaction-comparison-timeout-context/report.md), SHAf79e1f54, [source](transaction-comparison-timeout-context/source.json), [summary](transaction-comparison-timeout-context/summary.json), SHA368397ba, [cleanup](transaction-comparison-timeout-context/cleanup.json), [root final audit](transaction-comparison-timeout-context/root-final-audit.json) and [root package audit](transaction-comparison-timeout-context/root-packed-audit.json) reconcile 18 selected source passes/287 filtered, five built derivatives failing at intended named assertions, and all build/static/Read checks. Lint warnings remain explicit. Original summary's inherited executed:false fields are preserved separately and corrected only to executed:true, without rerun or source changes.
+
+Fresh installed direct14 plus sequence13 regressions passed,27requests/twochildren, payload2c62c66724c2c48fcd1de19360abbb90a3d5bb7c37257a095af752ba9e0b322d. Root independently compared313 archive members, recomputed closure and checked PIDs82412/82445 absent. Supervisor source attribution is not child attestation; fingerprints/context are not complete wire transcripts. These ordinary regressions do not prove default installed timeout sensitivity or cumulative qualification.
+
+[Full native frozen code review](transaction-comparison-timeout-native-code-review.md), SHAb93f2032, is complete and fully root-read with no actionable findings. External Claude remains active in tool session86133, actual PID83384 (guard parent83371), output transaction-comparison-timeout-claude-code-review.txt. Exact-head CI38611890879/job116017056158 is running. Author and native reviewer are idle; no owned build/test/service remains. Root owns council disposition and merge only after exact green CI and actual-tree verification. Public write profiles remain unadvertised.
+
+Read-only profile_runtime_inventory is preparing the next safe plan in transaction-after-timeout-next-plan.md, reassessing the held cross-carrier evidence slice now that direct/sequence/schema serving fixes are merged and timeout is pending. No implementation/execution released. Incident-Link metadata Event product question remains pending; no semantics inferred.
 
 ## Current priority: BDP profile structure and implementation
 
