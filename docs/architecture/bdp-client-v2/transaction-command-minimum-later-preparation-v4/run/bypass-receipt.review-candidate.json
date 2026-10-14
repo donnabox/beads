@@ -1,0 +1,47 @@
+{
+  "candidateMatches": true,
+  "control": "bypass-receipt",
+  "selectedTitle": "keeps receipt minimum enforcement after commands ignore copied controls",
+  "diagnostic": {
+    "status": 200,
+    "context": {
+      "bdp-scope-epoch": "24a7a6c8-f48c-4547-9bf9-cac0c1e1b882",
+      "bdp-authorization-view": "development-all-visible",
+      "bdp-scope-position": "pos-1"
+    },
+    "body": {
+      "id": "http://127.0.0.1:58877/acme/receipts/5ef91e8c-3808-4885-bbd4-d6461643c00d",
+      "status": "completed",
+      "idempotencyKey": "receipt-minimum",
+      "scopeEpoch": "24a7a6c8-f48c-4547-9bf9-cac0c1e1b882",
+      "authorizationView": "development-all-visible",
+      "transaction": "b3145048-4649-46a9-8839-e2047e037060",
+      "detail": "available",
+      "requiredPosition": "pos-1",
+      "effectPosition": "pos-1",
+      "results": [
+        {
+          "operationIndex": 0,
+          "outcome": "created",
+          "resource": {
+            "id": "http://127.0.0.1:58877/acme/beads/a",
+            "type": "https://example.test/bead",
+            "revision": "a981ae86-2cf7-4f08-8023-4fe78e3cc29d",
+            "properties": {
+              "title": "a"
+            },
+            "metadata": {}
+          }
+        }
+      ],
+      "next": null,
+      "expiresAt": "1970-01-02T00:00:01.000Z"
+    }
+  },
+  "expectedPrefixHttp": 2,
+  "httpCountBasis": "Reached named oracle in exact reviewed source prefix; no independent request-counter instrumentation.",
+  "rootReviewRequired": true,
+  "limitation": "Inspect retained full log/failure messages for unrelated or cleanup failures; this is not acceptance.",
+  "resultsSha256": "b51417d5c30c9bb42808c05d503d764826f7dc64d56097da13bbb6b35b05781e",
+  "logSha256": "834948574935b3f63ba54a73c226b264e2307683efaf65248fc5acdd3bea2fa6"
+}
