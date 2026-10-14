@@ -1,0 +1,89 @@
+## Findings
+
+### 1. HIGH — The "no additional change group" oracle has no world-changing discriminator
+**Section:** plan line 34 ("Read this route only while the head is pos-1"), controls 1–3 (lines 102–104), line 114 (exclusion rationale)
+
+**Problem.** `changes/?after=genesis` is read only at head pos-1 (actions 3 and 9), so both reads are observationally identical by construction. The runner aborts a scenario at the first failing action (`runner.ts:637-664` rethrows out of the action loop), so controls 1 and 2 — which make the no-op effectful at action 4 — can never reach action 9. Control 3 only flips the expected tuple from `[["pos-1"]]` to `[["pos-1"],["pos-2"]]`, which proves the assertion is not dormant but not that the route reports a real extra group or advance. Net: nothing in the row shows the changefeed oracle is sensitive to an actual second group. The plan's own standard forbids this ("No 'no group' claim may rest only on a dormant assertion or receipt/Event proxy").
+
+The stated reason for excluding a pos-2 read is misapplied. One-group-per-page (`transaction-store.ts:1683-1710`) is a reason not to *expect* two groups; it is not a reason to skip the read. At head pos-2 with `after=genesis` the page is materially different: `transaction-store.ts:1689-1697` sets `next` non-null exactly when `row.position < head`, so the page returns one group at pos-1 **with a non-null continuation** and `observedHeadPosition: pos-2`.
+
+**Impact.** The row's central claim rests on a self-identical repeated read plus an expectation flip. An owner regression that stopped reporting new groups/continuations on this route would leave every assertion in the row green.
+
+**Fix.** Add one action after action 14 that re-reads the *same* allowlisted route `GET https://reference.invalid/acme/changes/?after=genesis` and asserts: exactly one group at pos-1 (same tuple as actions 3/9), `observedHeadPosition` = pos-2, `/groups/0/previousPosition` = pos-0, and `/next` with bare `exists:true` (no literal equality — the checkpoint is epoch/view-bound). This needs no new route, no continuation fetch, and makes no "two groups per page" claim, so the stated exclusion rationale no longer applies. Re-derive the ledger: 15 actions, 166 total, 159 exchanges, 12 raw HTTP (three POST / nine GET), and update the budget arithmetic accordingly.
+
+---
+
+### 2. HIGH — The proposed budgets are a planning envelope, not a measured guard
+**Section:** plan line 81 and the successor table, lines 83–88
+
+**Problem.** The comparator basis is exactly right (I recomputed all twenty raw slices with the test's own `objectSlices` algorithm): zero-match = **36055 B / 1028 nodes / 142 assertions over 17 actions**, and the two proposed new pin rows are byte- and hash-exact (manifest conflict 29772 / `ba93aea8…`, coverage conflict 5188 / `de9b758f…`). But the per-action extrapolation to 14 actions is ≈29.7 KB manifest, ≈846 nodes, ≈117 assertions, against proposed ceilings of 65536 B (**2.21×**), 2200 nodes (**2.60×**), 220 assertions (1.88×), and 16384 coverage bytes (≈2.5× zero-match's 6520 B coverage row, and above the largest existing coverage row — receipt.pagination at 13057 B).
+
+The prior slice was accepted tight: baseline 377449 + 32768 delta, actual landing at 407227 = **90.9% utilization**. The plan's only mitigation is "stop on overrun"; nothing requires the committed guard literals to be tightened to the measured candidate. The plan also inverts the order the operator's framing allows — it asks root to accept *unmeasured* ceilings up front, where root's existing authority covers accepting *reviewed measured* bounds.
+
+Internal consistency note: at zero-match's ratios (254 B and 7.24 nodes per assertion), 220 assertions imply ≈55.9 KB and ≈1593 nodes. So the byte and node caps can never bind; the assertion count is the only live fence. At receipt.pagination's density (17.2 assertions/action) a 14-action row reaches ≈241, so 220 may itself trigger the stop rule. Realistic range is ≈120–240.
+
+**Impact.** If the row lands near the extrapolation, the accepted guard permits a further ≈35 KB manifest / ≈1350 nodes of unreviewed growth against the same fence — the guard stops constraining the artifact it guards, which is the entire function of the live conjunctive guards.
+
+**Fix.** Split acceptance into two stated stages, both inside existing authority: (a) 64 KiB / 2200 nodes / 16 KiB / 220 assertions are accepted **only as the preflight stop threshold**; (b) the literals committed to `transactional-cumulative.test.ts:835-852` must be the **measured** candidate plus a declared margin reproducing prior utilization (e.g. ≤ 8 KiB manifest, ≤ 128 nodes, ≤ 2 KiB coverage, exact action and assertion counts), with measured values and margins recorded in the report. Say in the plan that the realistic assertion range is ≈120–240 so acceptance is not re-litigated mid-authoring.
+
+*On the operator's second question:* execution limits do **not** rise. Verified unchanged: 63000 ms positive (`transactional-matrix.test.ts:431`), 90000 ms cohort budget (110-111), 120000 ms outer (451), 5000 ms exchange (300), 10000 ms prepare/cleanup (298-299), 2048 request octets / 32768 decoded response bytes (412-421, 428), loader 1 MiB / depth 128 / 100000 nodes / 10000 container entries (`artifact-bundle.ts:17,20-22`) with the 4 MiB exception correctly scoped to `read-update` only (159-164). The 472763 B manifest ceiling stays well under the 1 MiB artifact bound. Per-cohort 19 children / 158 exchanges and 76 / 632 across four runs are arithmetically consistent.
+
+---
+
+### 3. MEDIUM — Stated allowlist insertion position for the new route is wrong
+**Section:** plan line 94
+
+**Problem.** `GET .../beads/new` first occurs in `transactional.batch.rollback`, which precedes the new row in catalog order (catalog index: rollback 6, no-op-entries 14, set.mutation 17 — the plan's insertion point is correct). So the new route's first occurrence is position **7**, after `beads/new`, not "after the existing `events/` route" (position 5). I replicated the matrix test's derivation (`transactional-matrix.test.ts:166-195`), which pins an ordered, independently authored array and feeds `exactMode.routes` order into `exactConfigurationDigest`.
+
+**Impact.** An author following the plan literally writes an 11-entry expected array in the wrong order and a wrong digest preimage. The test catches it, but the natural "fix" — reordering manifest rows or sorting the route list — would violate the plan's own catalog-order insertion rule and its byte-for-byte row preservation requirement.
+
+**Fix.** State the corrected position explicitly: insert `{ method: "GET", url: `${scope}changes/?after=genesis` }` at index 7, between `GET ${scope}beads/new` and `GET ${scope}beads/b`. Retain "recompute the digest from the actual canonical configuration; do not reuse `63421454…`."
+
+---
+
+### 4. MEDIUM — Two positive-run pins unenumerated, and the new row falls outside the wire-bound loop
+**Section:** plan line 70 (file 4 scope), line 94
+
+**Problem.** `transactional-matrix.test.ts` also pins `expect(observed.result.scenarios.filter((s) => s.state === "pass")).toHaveLength(10)` (line 338). The plan gives successors for sessions (18) and children (19) — both correct, since current state is 17 sessions + bootstrap = 18 children (line 340-341) — but never states pass count 10 → 11. Separately, the 2048/32768 per-exchange bound loop at lines 406-412 is scoped to `row.id === "transactional.set.mutation" || row.id === "transactional.set.zero-match"`, so the plan's "all new decoded responses <= 32768B" does not cover the new row unless that filter is extended.
+
+**Impact.** An unexplained failing pin at authoring time, and — more seriously — a wire bound the plan presents as an accepted control that would in fact never evaluate against the new row's exchanges.
+
+**Fix.** Add both to the file-4 change list: pass count 10 → 11, and extend the `newRows` filter (or add a parallel filter) to include `transactional.batch.no-op-entries` so the 2048-octet POST and 32768-byte response bounds actually cover its twelve (or, with finding 1, thirteen) exchanges.
+
+---
+
+### 5. LOW — Each proposed successor guard has one arithmetically dead conjunct
+**Section:** successor table, lines 86–88
+
+**Problem.** Every proposed pair sets the absolute cap to exactly baseline + delta (407227+65536=472763; 60069+16384=76453; 10891+2200=13091), so the second inequality can never fail when the first passes. The live guards keep the absolute cap independent (377449+32768=410217 vs 413696).
+
+**Impact.** The plan requires "both sides of each existing conjunctive guard must be reconciled visibly", but the reconciliation yields one informative inequality where two were intended.
+
+**Fix.** Either keep a distinct absolute ceiling with its own rationale, or state plainly that the absolute cap is retained as a redundant restatement — do not present it as a second control.
+
+---
+
+### 6. LOW — Citation drift, one of which understates the row's novelty
+**Section:** plan lines 22, 34, 57
+
+- `transaction-store.test.ts:507–539` → the test spans **507–538**, and it is titled "all-no-op **guarded** updates" and carries `expectedRevision` on the Bead update. The plan elsewhere insists the new row is "the unconditional no-op partition, not revision-guard coverage" — so the in-process precedent covers the *guarded* variant, and the unconditional all-no-op path has no in-process precedent. Fix line 22 to say so; it makes the row slightly more novel than claimed, not less.
+- `transaction-changefeed.ts:87–108` → `transactionChangefeedRequest` spans **87–106**.
+- `transaction-batch.ts:739–776` → the created/updated/linked emission block is **738–771**; 772–776 is the owned-source branch, unreachable for the unowned Relationship.
+
+---
+
+## What verified clean
+
+Everything else I checked holds against source. Catalog row `transactional.batch.no-op-entries` exists at `transactional-v1.json:246` with both `selectedText` strings byte-identical to the plan's quotes; spec sentences confirmed at `bdp.md:5652` and `5152-5156`, and the cited surrounding range 5141–5157 is accurate. Runtime: no-op suppression at `transaction-batch.ts:710-711`, group-insert/no-effect-receipt at `transaction-store.ts:1264-1281` (`effective = result.events.length > 0`; `requiredPosition` falls back to `pos-${previous}` and `effectPosition` is omitted), one-group-per-page and `next` logic at `1683-1710`, event item bound `receiptMaximumItems` defaulting to `TRANSACTION_MAXIMUM_OPERATIONS = 32`, per-transaction ordinals restarting at 0 (`transaction-batch.ts:642`), and `linked`/`unlinked` suppressed on `updated` (`:758`) — so the five-fact seed (created a/b/l, linked source/target), three-upsert group, and two added `updated` facts at ordinals 0/1 are all correct. `genesis` → position 0 (`transaction-changefeed.ts:57`), and `Accept: application/json` selects JSON (`read-http.ts:95-98`; JSON is also the no-Accept default, so the explicit header is belt-and-braces).
+
+DSL/wire: `metadata` accepted on `createBead`/`createLink`; `propertiesChange`/`metadataChange` both permitted on one update op; `jsonPointer` pattern admits `""`, so metadata-root replacement is wire-legal; `currentLinkRecord` requires `metadata`. All five named schema defs exist. `json-array-tuples` (29 existing uses) supports `ordered` + full-array `equals`; bare `exists:true` (137 uses) and `exists:false` (42 uses) are established; `notEqualsBinding` exists nowhere. The capture plan is proven precedent, not new grammar: raw captures are URL-only (`runner.ts:2467-2485`) and the plan uses `/id` for that, while `transactional.receipt-read` captures arbitrary JSON (`manifest-v1.json:157-190` captures `/body/results/N/resource` and revisions), and whole-record `equalsBinding` against both `GET links/l` and a `beads/?limit=32` item already exists. DSL pins at `executable-manifest.ts:1988-1992, 2534-2539` are exact. `response-metadata-equals` does fold status into the comparison, so the plan's "same-status 200 only" rule is the right mitigation.
+
+Measurements: manifest 407227 B / `7f556954…` / **10891 nodes** / 10 rows / 151 actions (68 raw GET + 33 raw POST + 43 receipt-client + 7 reopen = 144 exchanges); coverage 60069 B / `4c84318e…`; fixture 716 B / `3a7899ce…`. Residual headroom is exactly as stated: 2990 manifest bytes, 391 nodes, 2998 coverage bytes. The existing allowlist is exactly ten routes and already contains every route the new row reuses (`operations/batch`, `beads/?limit=32`, `links/l`, `events/`), so one new route is correct. 250/255 selection and 239 remaining required rows check out; the nine-object pin lists do omit the conflict row; exactly 13 post-reopen receipt observations exist. Parent drift is exactly as audited: `5d854a1` tree is `75a9db86…`, and `5d854a1..c534fca` is 72 added lines in `packages/server/src/transaction-service.test.ts` alone — no file the plan cites changed.
+
+Scope preservation holds: the only other consumers of `manifest-v1.json` are `transactional-binding.test.ts` (uses `scenarios[0]`, still atomic-commit after insertion at index 2) and `runner.test.ts` (substitutes its own `scenarios: [row]`), so "exactly four source files" survives apart from finding 4. The plan's disclaimers about discovery, public admission, whole-contract qualification, and the private configured target are accurate and consistently repeated; it does not overclaim closure of those gaps.
+
+## Exact source and limitations
+
+- Plan: `/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-next-conformance-plan.md`, SHA256 `1ce661b78ee37a2c22a27239af6ea318c1942149dbd828d0b9d64de6dcce4127` (confirmed), 114 lines.
+- Source: `/Users/dbox/repos/wt/vickie/vickie-current-minimum-receiving` at `c534fcab840ef2e3753ab179feae10d3ce6431e5`, tree `48537438975a4c56ee1a5bb6056013bbddd38e03`, clean (confirmed).
+- Review-only: no file written or modified; no test, build, install, service, network, credential, or Git mutation. The sole design plan at `bdp-client-design/.../design.md` U3/T4 was not opened — I assessed the slice against spec, catalog, runtime, DSL, and committed artifacts only, so U3/T4 lane conformance is unverified here. I did not consult the serving audit named at plan line 11. Byte and hash measurements used `node`/`shasum` over working-tree files, reproducing the tests' own `objectSlices` and node-count algorithms; the 220-assertion feasibility range is an extrapolation from existing row densities, not a measured candidate. PR110's 3.605 s positive runtime is external and unverifiable from this checkout. Note the ambient toolchain here is Node v26.0.0 / pnpm 11.25.0 while the repo pins Node 24.16.0 / pnpm 11.20.0 (`package.json`, `.nvmrc`) — the plan's pinned-version instruction is correct, but the authoring session must activate the pin explicitly. Gemini was not used.
