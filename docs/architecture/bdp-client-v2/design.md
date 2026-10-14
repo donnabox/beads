@@ -62,7 +62,7 @@ Original service-review lows: RU trusted callback capability narrowing and publi
 
 ### Live worker ledger
 
-Checkpoint 2026-10-14T18:28:56Z. **ACTIVE: Transactional first**, with shared and targeted Update checks. Session `2026-10-08T20:26:35Z-81e5`. Public write profiles remain unadvertised and profile-delivery predicates remain unmet. Operator has authorized ready main merges after exact-head CI, native+Claude council, findings dispositions, scope and ordinary ancestry checks. No release or Preview2 promotion.
+Checkpoint 2026-10-14T18:35:09Z. **ACTIVE: Transactional first**, with shared and targeted Update checks. Session `2026-10-08T20:26:35Z-81e5`. Public write profiles remain unadvertised and profile-delivery predicates remain unmet. Operator has authorized ready main merges after exact-head CI, native+Claude council, findings dispositions, scope and ordinary ancestry checks. No release or Preview2 promotion.
 
 ### Verified main
 
@@ -88,7 +88,13 @@ Test/doc-only successor **70ac666002708202d2f93195eed90dfe8541300d**, tree **135
 
 [Independent final native closure](transaction-comparison-timeout-repair-native-closure.md), SHA9268b54a54c44ad5ada51118a6a102dbc9de1d1fdd0b80fceccc1708c8df385c, and [final council dispositions](transaction-comparison-timeout-final-code-dispositions.md) are complete and fully root-read. Root independently audited the complete diff, all24 exit records, positive-result hashes and absent command PIDs. Production is unchanged from externally reviewed30035. Author and native worker are complete, no owned local test/build/service processes. Main remains7e46; exact70ac CI and actual merged-tree verification remain gates.
 
-[Next cross-carrier plan](transaction-after-timeout-next-plan.md), SHA750ed2b81f0f12d601e8131bcea66e688e117c883fc9c7daf26901b6d21706e9, remains frozen. [Native review](transaction-cross-carrier-v2-native-plan-review.md), SHAebcafecf45b5d1985c0b17c3fd78047ffd41fddff9cbd52a4aeca38499d7cf0e, completed: required propertiesChange request-field correction and explicit existing afterExchange hook/multiplicity clarification. External Claude session71511/PID87980 is still active, stdout unfinished; no verdict assumed. Plan revisions await council completion. No cross-carrier implementation/execution authorized; proposed52observe invocations/7342HTTP/908maximum children are static workload models, not observed qualification.
+[Next cross-carrier plan](transaction-after-timeout-next-plan.md), SHA750ed2b81f0f12d601e8131bcea66e688e117c883fc9c7daf26901b6d21706e9, remains frozen. [Native review](transaction-cross-carrier-v2-native-plan-review.md), SHAebcafecf45b5d1985c0b17c3fd78047ffd41fddff9cbd52a4aeca38499d7cf0e, completed: required propertiesChange request-field correction and explicit existing afterExchange hook/multiplicity clarification. External Claude session71511/PID87980 is still active, stdout unfinished; no verdict assumed. Plan revisions await council completion. Cross-carrier implementation is now additionally held behind the newly confirmed fault-serving repair below; proposed52observe invocations/7342HTTP/908maximum children are static workload models, not observed qualification.
+
+### Next serving repair: retained maintenance faults
+
+[Bounded read-only audit](transaction-comparison-fault-shortcut-audit.md) confirms a real deferred error-mapping defect: after background maintenance records a fault and closes the store, comparisonEpoch returns undefined before enter can surface the retained exception. A subsequent valid authorized direct POST therefore yields retryable503 instead of the explicit bodyless500 required by spec1956–1960/4588–4592. Root independently read the relevant source and law. This is not a new product decision, nor a reason to change the reviewed PR120 scope.
+
+update_implementation owns a plan-only follow-up using existing owner/service-handler fault facilities and minimal comparisonEpoch guard preservation; no source edits, tests or new installed injection seam authorized. Prioritize it before additional partial cross-carrier evidence. Native audit is complete; plan council remains required before authoring. Actual installed fault injection/reproduction is unobserved, not claimed from static reachability.
 
 ### Remaining delivery gates
 
