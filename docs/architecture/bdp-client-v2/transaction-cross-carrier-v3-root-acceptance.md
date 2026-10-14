@@ -1,0 +1,5 @@
+# Cross-carrier v3: accepted queued plan
+
+Root fully read the frozen v3 plan c021d366eb99b7e0f684a815a29e2ed7068dc12f07e33ea936bf0951fc80e072, revision map c205ec25fb189293f9ad379f41afc993aba4d0a0dc97f847cf26c15c0b29d1d9, and independent native closure 7eedc85c4286e146a2ee79c13da1614dbeaa211604f9f6f87e4e1e15fef2effd. Together with the preserved full external v2 review and explicit root v2 dispositions, these close the actionable plan findings. No new external review is inferred or claimed.
+
+The coherent v3 is accepted as a queued bounded evidence plan. Implementation remains held behind the maintenance-fault serving repair, PR120 integration/disposition, and root assignment of an ordinary verified parent. This acceptance authorizes no source change or execution. Proposed workload and byte/node budgets remain simultaneous preflight stops, not measured execution or a profile completion percentage. Full exact-candidate CI timing and margin remain a future landing gate. Public profiles remain unadvertised.
