@@ -62,7 +62,7 @@ Original service-review lows: RU trusted callback capability narrowing and publi
 
 ### Live worker ledger
 
-Checkpoint 2026-10-14T20:11:56Z. **ACTIVE: Transactional first**, with shared and targeted Update checks. Session `2026-10-08T20:26:35Z-81e5`. Public write profiles remain unadvertised; installed cumulative delivery predicates remain unmet. Ready main merges are operator-authorized after exact-head CI, native+Claude council, findings disposition, scope and ordinary ancestry checks, and actual merged-tree verification. Gemini excluded. No release/Preview2 or Janet CLI/staging/playgrounds/shared databases/Trish Type edits.
+Checkpoint 2026-10-14T20:26:55Z. **ACTIVE: Transactional first**, with shared and targeted Update checks. Session `2026-10-08T20:26:35Z-81e5`. Public write profiles remain unadvertised; installed cumulative delivery predicates remain unmet. Ready main merges are operator-authorized after exact-head CI, native+Claude council, findings disposition, scope and ordinary ancestry checks, and actual merged-tree verification. Gemini excluded. No release/Preview2 or Janet CLI/staging/playgrounds/shared databases/Trish Type edits.
 
 ### Verified main and completed serving work
 
@@ -98,18 +98,22 @@ Isolated successor `/Users/dbox/repos/wt/vickie/vickie-comparison-fault-typing-r
 
 | Worker | Scope | State / next |
 |---|---|---|
-| cross_carrier_plan_v2_review | Four-file cross-carrier draft on eff17183 | Frozen measurement-only draft; author idle pending review/guard acceptance |
-| update_implementation | Bounded cross-carrier validation plan | Planning-only nine-cohort execution plan complete; idle |
-| cross_carrier_native_review | Frozen draft measurements and code | Independent preflight active; no execution |
+| cross_carrier_plan_v2_review | Four-file cross-carrier draft on eff17183 | Frozen original draft; narrow guard/report amendment staged and independently reviewed |
+| update_implementation | Bounded cross-carrier validation plan | Concrete nine-cohort preparation updated for accepted report writer; no execution |
+| cross_carrier_native_review | Frozen draft measurements and code | Measured preflight and staged amendment closure complete; preparation review active |
 | Root | Council, measured guard acceptance, integration | External Claude review active; actual main eff17183 verified unchanged |
 
 [Cross-carrier plan v3](transaction-after-timeout-next-plan-v3.md) and [native closure](transaction-cross-carrier-v3-native-closure.md) remain the accepted partial12action retained-replay plan. Serving dependencies are now merged; [root assignment](transaction-cross-carrier-draft-acceptance.md) authorizes only its four-file measurement draft on actualmain eff17183. No tests, guard increases or qualification claim before measured acceptance. [Root acceptance](transaction-cross-carrier-v3-root-acceptance.md) preserves measured joint caps and full-suite headroom gate.
 
-### Cross-carrier draft frozen; council active
+### Cross-carrier measured review and validation preparation
 
-[Measured report](transaction-cross-carrier-draft/measured-report.md), SHA570ab088, and [source binding](transaction-cross-carrier-draft/binding.json), SHA6cb16804, bind the four-file uncommitted draft on eff171839fe4f37638284a4c3346428979d26b5d in `/Users/dbox/repos/wt/vickie/vickie-cross-carrier-draft`. [Complete patch](transaction-cross-carrier-draft/draft.patch), SHA2c74b730; [measurements](transaction-cross-carrier-draft/measurements.json), SHA316923ef. Root independently matched canonical684206disk/695598stringify/18107nodes/199actions/2102assertions and coverage99245bytes. All24 old raw objects reconstruct exact parent documents;37 modeled derivatives max701716bytes/18263nodes. These are static measurements, not executable outcomes.
+[Measured draft](transaction-cross-carrier-draft/measured-report.md), SHA570ab088, remains frozen on main eff171839fe4f37638284a4c3346428979d26b5d with [original binding](transaction-cross-carrier-draft/binding.json), SHA6cb16804. Original four-file patch2c74b730 is preserved. Canonical684206disk/695598normal bytes/18107nodes/199actions/2102assertions; coverage99245. All24 parent raw objects reconstruct exact prior documents. These are static measurements, not executable outcomes.
 
-Native independent preflight is active. External Claude review of the same frozen source is active in exec session14005, wrapperPID41248/ClaudePID41260; stdout `transaction-cross-carrier-draft/claude-review.txt`, stderr separate. Do not modify frozen files until findings are dispositioned. No tests/build/install/services have run. Existing smaller guards remain unchanged. Proposed measured guards for review: disk688302, canonical stringify699694/nodes18171, coverage100269, derivative stringify705812/nodes18327; root has not authorized edits or execution yet. [Execution plan](transaction-cross-carrier-draft/execution-plan.md), SHA375fec3d, prepares nine sequential one-case cohorts expected1641/max1728HTTP and189children using one fresh installed package set; final selectors/source bindings remain gates. No full profile claim.
+[Native preflight](transaction-cross-carrier-draft/native-measured-preflight.md), SHA118f4829, found no semantic, route, capture, control-oracle or joint-cap defect. N1 inventory omission is closed by the preserved-original [supplement](transaction-cross-carrier-draft/measurement-inventory-v2.md) and [corrected measurements](transaction-cross-carrier-draft/measurements-v2.json):38 mutated+14 unchanged invocations, including duplicate-binding rejection before launch. Maximum derivative701716normal bytes/18263nodes is unchanged. N2 requires retaining the two complete genuine control reports.
+
+[Root disposition](transaction-cross-carrier-draft/root-measured-disposition.md), SHAb28db1b7, accepts exact authoring ceilings: disk688302, normal699694/nodes18171, coverage100269, derivatives705812/nodes18327. [Staged amendment](transaction-cross-carrier-draft/guard-and-report-amendment.patch), SHA83cf3edd, adds those fences and the existing-pattern optional full-result writer. [Independent amendment closure](transaction-cross-carrier-draft/native-amendment-closure.md), SHA80e40220, has no findings. It closes N2 at source-design level only. Frozen source is still unchanged while external Claude session14005/PIDs41248/41260 reviews it; no tests, build, install, pack or services have run. Do not describe staged bytes as executed or as part of Claude's original review scope.
+
+[Execution plan](transaction-cross-carrier-draft/execution-plan.md) prepares bounded source checks, one fresh installed package set and nine serial one-case cohorts expected1641/max1728HTTP and189children. Concrete scripts are being checked before release, including the new report writer and a missing supervisor Path import caught before execution. Source/pack provenance and actual source commit, full reports, all assertion sets, request/child counts and cleanup remain gates. No automatic retries, full local workspace suite or profile claim.
 
 ### Remaining delivery and product input
 
