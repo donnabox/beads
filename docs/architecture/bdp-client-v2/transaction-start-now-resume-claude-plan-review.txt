@@ -1,0 +1,103 @@
+I read the plan, verified its repository basis, and traced every file and line it names. Findings below.
+
+---
+
+# Review: `transaction-start-now-resume-plan.md` (SHA256 `02cdb76e…`)
+
+Basis verified: `HEAD 8d66855ec4e26d3af0b3d7d22d621e1f37005294`, tree `a1ae75b822e1d7fadd739d818d09a25fb788e380`, `origin/main 5995f6b08ebd045e4343059c2da1cffd38b09b80` with the identical tree. No `AGENTS.md` in the repo or any ancestor. Node/pnpm pins (`.nvmrc`, `.node-version`, `engines.node` = 24.16.0; `packageManager` = pnpm@11.20.0) match the plan. The operator's precedence ruling is treated as settled and is not revisited.
+
+## Required corrections
+
+### 1. A second, equally obsolete gap statement is left outside the bounded doc edit — Medium
+**Location:** `docs/design/transaction-implementation-progress.md:1407–1410` (plan ownership table row 8 covers only `:1337–1343`, with "No broad historical cleanup").
+
+**Issue:** The plan treats `:1341–1342` ("The `start=now` plus reconnect-header combination remains an explicit private gap") as the single obsolete statement. The same maintained document repeats the claim 65 lines later: "The deferred `start=now` plus `Last-Event-ID` gap also blocks automatic EventSource reconnect after that initial stream has delivered an Event. **The private development refusal remains unchanged**; this slice makes no browser interoperability claim or new protocol ruling for that combination." I verified these are the only two occurrences — `start=now` appears in that file only at lines 1240, 1243, 1337, 1341, 1343, 1407, and `:1469` ("SSE reconnect accepts one `Last-Event-ID` in place of `after`") describes the `events/` route, which is unaffected and stays correct.
+
+**Impact:** After implementation the same document asserts both the new effective-checkpoint behavior and a still-active private refusal, and asserts that automatic EventSource reconnect is still blocked. A later reader or reviewer can cite `:1407` as current behavior. This is a factual contradiction introduced by the change, not historical narrative.
+
+**Concrete fix:** Extend the row-8 bounded edit to `:1407–1410` — the file is already owned, so no ownership expansion. Replace the "deferred gap / refusal remains unchanged" sentences with the consequence of the ruling (automatic EventSource reconnect on a `start=now` URL now resumes exclusively after the carried checkpoint), and keep the existing "no browser interoperability claim" caveat verbatim.
+
+---
+
+### 2. The spec clarification's placement is unpinned and can break an unrelated bound citation — Medium
+**Location:** plan §"Existing mechanism and normative edit" ("Near the initial intent list, clarify that `start=now` without a selected-SSE reconnect checkpoint observes future groups"), against `docs/specs/bdp.md:5965–5975`.
+
+**Issue:** The ownership table asserts the only catalog-text change is the first `selectedText` of `transactional.changefeed.sse-reconnect`. But `transactional.changefeed.explicit-start` binds the excerpt `Omitting both is an error. It never means “start at whatever history remains.”` (`packages/conformance/catalog/transactional-v1.json:1154`, mirrored at `docs/design/w1-transactional-packet.md:6260`), and that excerpt spans the wrap at `bdp.md:5974–5975`. `validateCatalogCitations` matches it as a **contiguous whitespace-normalized substring** of the anchored section (`packages/conformance/src/catalog.ts:175`). A clarification inserted between "Omitting both is an error." and "It never means…" silently fails `transactional-catalog.test.ts:62`. (The `start=now` bullet at `:5972` and the sentence "A client supplies exactly one explicit starting intent:" at `:5966` are bound by no citation — I checked all three strings repo-wide.)
+
+**Impact:** A plan whose stated invariant is "no other catalog text changes" can produce a citation-binding failure that, under the plan's own rule, must then be escalated for disposition rather than quietly repaired — avoidable churn on a decision that is already settled.
+
+**Concrete fix:** Pin the placement in the plan: append the clarification either to the `start=now` bullet at `bdp.md:5972` or as a new sentence after `…remains.”`, and state explicitly that `bdp.md:5974–5975` must remain byte-identical and contiguous.
+
+---
+
+### 3. The discrimination criterion "All newly passing start/header cases must fail on the old guard" is false for the plan's own finite-JSON case — Medium
+**Location:** plan §"Focused source regressions and discrimination", closing paragraph, versus the "URL grammar, auth and media" row ("Add one finite JSON start now request with malformed/repeated header: 200, captured current anchor, empty groups").
+
+**Issue:** The old refusal at `transaction-http.ts:438–439` is gated on `media === "sse"`. A finite-JSON `changes/?start=now` request carrying `Last-Event-ID` never reached it and returns 200 with the captured anchor on both the old and new source — `transaction-changefeed.test.ts:622–623` already asserts exactly that for a single `last-event-id: genesis`. The plan's new case adds only the malformed/repeated variants on top of that existing coverage, so it is a legitimate control, but it cannot satisfy the blanket criterion.
+
+**Impact:** The "Done when … all focused checks pass" gate is self-contradictory as written. An implementer or reviewer applying the criterion literally will either delete a useful control or report a false discrimination failure against the old guard.
+
+**Concrete fix:** Scope the criterion to the admitted path — "every newly admitted **selected-SSE** `start`+header case must have returned 500 under the old guard" — and label the finite-JSON case explicitly as an unchanged control that extends `transaction-changefeed.test.ts:622–623` with malformed/repeated values only.
+
+---
+
+## Optional improvements
+
+### 4. Line citations drift by 1–6 lines in five places — Low
+**Location:** plan §"Exact basis and ownership" and §"Focused source regressions and discrimination".
+
+**Issue:** Measured against this tree: `transaction-sse.test.ts` effective-cursor test is `579–611` (plan says `583–612`); the controlled-minimum-wait test is `351–376` (plan says `351–379`, which runs into the next test's opening line 377); the truncated-response test starts at `613` (plan says `620ff`, which lands inside the proxy body); `transaction-service.changes` is `366–389` (plan says `366–390`); the changefeed block in `transaction-http.ts` is `427–455` (plan says `428–456`). The refusal itself is correctly identified as exactly two lines, `438–439`, and `transactional-catalog.test.ts:68–98` is exact.
+
+**Impact:** None on behavior; all cites still locate the right construct. But the plan is a hand-off to a different author in a fresh checkout, where an off-by-four range can anchor an edit on the wrong test boundary.
+
+**Concrete fix:** Re-derive the five ranges against the frozen tree, or drop line numbers in favor of the `it(...)` titles, which are unique in the file.
+
+### 5. Adding `sse-reconnect` to `affectedIds` invalidates that test's title and docstring — Low
+**Location:** `packages/conformance/src/transactional-catalog.test.ts:17–27` and `:68`.
+
+**Issue:** The guarded set is named "the ruled T62/T65 and HTTP-gap catalog objects". `transactional.changefeed.sse-reconnect` is neither. (The packet row at `docs/design/w1-transactional-packet.md:6317–6338` is currently byte-equal to the canonical row, and appears exactly once in the packet, so the new lockstep assertion will pass once both first `selectedText` values are aligned.)
+
+**Impact:** Test name no longer describes what it guards; future maintainers lose the grouping rationale.
+
+**Concrete fix:** Include a title/docstring update in the same owned edit, e.g. "…and the ruled changefeed reconnect row".
+
+### 6. "Event Source `events/` and Resource `view=events` continue supporting after only" is ambiguous — Low
+**Location:** plan §"Existing mechanism and normative edit", final sentence.
+
+**Issue:** Read literally this is wrong: both Event routes accept a single `Last-Event-ID` in place of `after` (`transaction-http.ts:479–488`; covered by `transaction-event-sse.test.ts:341`, `:540`, `:548`; stated at progress doc `:1469`). What is true is that their **query grammar** admits only `after` — `transaction-events.ts:154` allows `["after"]` / `["view","after"]` and no `start`.
+
+**Impact:** An implementer could read the sentence as licence to "restore" Event-route behavior and regress existing passing tests.
+
+**Concrete fix:** Reword to "the Event routes continue to accept only the `after` starting query — there is no `start=now` form for them — and their existing `Last-Event-ID` handling is unchanged."
+
+### 7. The new installed scenario needs helpers that currently live inside the existing `it` body — Low
+**Location:** plan §"Fresh installed proof", against `apps/bdptest/src/transactional-sse-installed.test.ts:110–157`.
+
+**Issue:** `exchange()` and `create()` are declared inside the existing test, closing over `address`, `token`, `key` and `controller`. The plan requires reuse of "existing launcher, exact finite executor and raw recorder" with "no shared framework or recorder change" and "Keep existing 15-second idle scenario … intact", but does not say whether to hoist these to module scope (which edits the existing test's body) or duplicate ~45 lines.
+
+**Impact:** "Existing scenario intact" is not checkable as stated; two reviewers can reach different verdicts on the same diff.
+
+**Concrete fix:** State the intent — hoist to a module-level factory parameterized by `{address, token, controller}`, with the existing scenario's assertions and request sequence byte-identical — so the preservation claim is mechanically verifiable.
+
+### 8. Pin the toolchain check into the evidence record, not just the prose — Low
+**Location:** plan §"Validation, evidence and done-when" ("Use Node 24.16.0/pnpm 11.20.0").
+
+**Issue:** The versions named match the repo pins, but the ambient toolchain in this working tree is Node v26.0.0 and pnpm 11.25.0. The installed test records `node: process.version` only inside its success report (`transactional-sse-installed.test.ts:205`), i.e. after the run.
+
+**Impact:** An off-pin build/pack would produce installed evidence that looks clean and is only detectable post-hoc by reading the report field.
+
+**Concrete fix:** Add `node -v` and `pnpm -v` to the "Record exact commands/exits" list as a pre-build step, and require the recorded values to equal the `.nvmrc` / `packageManager` pins before packing.
+
+---
+
+## What I verified as correct (no finding)
+
+- **Mechanism.** The refusal is exactly `transaction-http.ts:438–439`; the gap name `start-now-last-event-id` has no other reference in the repo, so removal needs no registry or enum change. After removal, `start=now` + one header falls through to the retained `{after: fields[0]}` mapping; `service.changes` freezes it as `{after}` and never calls `captureChangesStart()` (`transaction-service.ts:373–382`), so the checkpoint survives minimum retries; `transaction-store.readChanges` replays from `start + 1`, exclusively, one group per page (`:1683`, `:1697–1708`). Headerless `start=now` is untouched.
+- **Error mapping.** Empty and malformed headers reach `parseCheckpoint` and surface as 400 `invalid-parameter`; repeated headers hit the pre-existing `fields.length > 1` throw at `:440–441` → 400; stale/foreign checkpoints raise `TransactionMinimumFailure` → 410/409 **before** `streamResponse`, so `If-None-Match: *` cannot turn them into 304; a future position (`start > head`) → 400. All match the plan's expectations.
+- **Grammar is still unrescuable by a header.** `transactionChangefeedRequest` throws on `changes/` with no query, on both `after` and `start`, and on unknown or repeated query members, all before the header is consulted.
+- **Test surface.** `transaction-sse.test.ts:274` is the only assertion of the obsolete 500 anywhere in the repo. `transaction-changefeed.test.ts:622` is the finite-JSON path and is unaffected by the guard removal.
+- **Catalog alignment.** The sentence exists in exactly three places (`bdp.md:6113`, catalog `:1219`, packet `:6325`) — the plan's "spec and both catalog occurrences" is exhaustive. The title is unchanged, so the `#### Transactional conformance rows` mirror (`bdp.md:6922`) and its ordering test stay green. The Transactional catalog is bound by no executable manifest (asserted at `transactional-catalog.test.ts:189–203`), `catalogDigests` are computed at load rather than pinned, and `packages/conformance/test-support/transactional/coverage-v1.json` contains no `changefeed` row — so no sealed or historical evidence can be disturbed, and there is no overlap with the deletion author's four files.
+- **Installed scenario feasibility.** `captureChangesStart()` returns `"genesis"` at `pos-0` on an empty Scope; `response.flushHeaders()` (`transaction-runtime.ts:191`) makes request 1 ready-observable with zero groups; `id:` is the group checkpoint (`transaction-sse.ts:40`), so the "id equals each data checkpoint" oracle holds; one group per finite page makes steps 3/6/8 exact; `maximumStreams: 1` is respected by the one-live-stream-at-a-time ordering; the 8-request count matches the table. `recordRawSse.until` rejects only on socket destruction, so the derivative's missing-G2 oracle resolves at the 25 s recorder deadline inside the existing 45 s cohort / 60 s outer bounds.
+- **Negative control.** The counterfactual (ignore the single header for `start=now`, keep after-header selection) reaches request 5 with 200 and anchors at the post-G2 head, so G2 is provably absent — strictly stronger than guard restoration, which yields 500. Inclusive replay is independently rejected by the positive run's "never G1" ordering check.
+- **Build-order caution is real.** `transaction-sse.test.ts:24–26` imports `../dist/transaction-runtime.js`, so the plan's "build first, a source-only run against stale dist is not evidence" is correct.
+- **Named artifacts exist.** `transaction-http.test.ts`, `transaction-event-sse.test.ts`, `profile-catalog-boundaries.test.ts` (plan says "profile-catalog-boundary"; its inventory-don't-guess rule covers this), `evidence:verify`, `check:boundaries`, and `bdp-integration-logs/changefeed-sse/packed-evidence.py`.

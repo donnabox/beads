@@ -1,0 +1,95 @@
+{
+  "source": "39c160d0d35294003f400cef8d5ab5c6ec9aec9c",
+  "verifiedSourceFiles": 4,
+  "verifiedTarballs": 2,
+  "verifiedReports": [
+    {
+      "file": "installed/positive-observation.json",
+      "http": 180,
+      "deletionState": "pass",
+      "last": "d-final-groups",
+      "lastStatus": 200,
+      "failed": []
+    },
+    {
+      "file": "installed/deletion-control-committed-prefix-state.json",
+      "http": 165,
+      "deletionState": "fail",
+      "last": "d-incoming-survives-beads",
+      "lastStatus": 200,
+      "failed": [
+        "serving-context",
+        "ordered-identities",
+        "complete-b"
+      ]
+    },
+    {
+      "file": "installed/deletion-control-incoming-order.json",
+      "http": 164,
+      "deletionState": "fail",
+      "last": "d-incoming-survives",
+      "lastStatus": 200,
+      "failed": [
+        "serving-context",
+        "disposition",
+        "required-position",
+        "no-effect",
+        "no-results",
+        "no-next",
+        "problem"
+      ]
+    },
+    {
+      "file": "installed/deletion-control-outgoing-order.json",
+      "http": 169,
+      "deletionState": "fail",
+      "last": "d-outgoing-survives",
+      "lastStatus": 200,
+      "failed": [
+        "serving-context",
+        "disposition",
+        "required-position",
+        "no-effect",
+        "no-results",
+        "no-next",
+        "problem"
+      ]
+    },
+    {
+      "file": "installed/noop-control-bead-property.json",
+      "http": 169,
+      "deletionState": "pass",
+      "last": "d-final-groups",
+      "lastStatus": 200,
+      "failed": []
+    },
+    {
+      "file": "installed/noop-control-group-inventory-and-head.json",
+      "http": 174,
+      "deletionState": "pass",
+      "last": "d-final-groups",
+      "lastStatus": 200,
+      "failed": []
+    },
+    {
+      "file": "installed/noop-control-link-metadata.json",
+      "http": 169,
+      "deletionState": "pass",
+      "last": "d-final-groups",
+      "lastStatus": 200,
+      "failed": []
+    }
+  ],
+  "totals": {
+    "successfulCohorts": 7,
+    "successfulChildrenClosed": 140,
+    "successfulHttp": 1190,
+    "priorFailedPreflightBootstrapInferred": 1,
+    "priorFailedPreflightHttp": 0,
+    "allAttemptChildrenIncludingInferred": 141,
+    "allAttemptHttp": 1190,
+    "authorizedChildrenCeiling": 141,
+    "authorizedHttpCeiling": 1260
+  },
+  "review": "Root inspected full author report and exact repair diff; installed outcome hashes/counts/final oracles independently read. Council and CI pending."
+}
