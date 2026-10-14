@@ -1,0 +1,21 @@
+[
+  {
+    "kind": "facet",
+    "source": "5d854a1da21a377f03c2d4cd523b10f1e7659cea",
+    "predecessor": "7171251d282769c1b9e2a39aed63e16f8b24ed96",
+    "patchSha256": "5465ed9f8309dd0c837492d680a28273c4e7d5b1a1533738d4ca663131098246",
+    "failedTests": [
+      "current minimum perform receiving preserves a direct non-enumerable pre-aborted signal before owner entry"
+    ]
+  },
+  {
+    "kind": "service",
+    "source": "5d854a1da21a377f03c2d4cd523b10f1e7659cea",
+    "predecessor": "7171251d282769c1b9e2a39aed63e16f8b24ed96",
+    "patchSha256": "dd2c3df1e9f3d3f80788722fd99961e84ff0d1830caf19959b1ba69a194661e8",
+    "failedTests": [
+      "current minimum perform receiving capture rejects a service delivery signal getter without invoking it or entering the owner",
+      "current minimum perform receiving capture keeps captured delivery options across a held wait (abort original: false)"
+    ]
+  }
+]
