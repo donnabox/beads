@@ -62,7 +62,7 @@ Original service-review lows: RU trusted callback capability narrowing and publi
 
 ### Live worker ledger
 
-Checkpoint 2026-10-14T20:50:55Z. **ACTIVE: Transactional first**, with shared and targeted Update checks. Session `2026-10-08T20:26:35Z-81e5`. Public write profiles remain unadvertised; installed cumulative delivery predicates remain unmet. Ready main merges are operator-authorized after exact-head CI, native+Claude council, findings disposition, scope and ordinary ancestry checks, and actual merged-tree verification. Gemini excluded. No release/Preview2 or Janet CLI/staging/playgrounds/shared databases/Trish Type edits.
+Checkpoint 2026-10-14T20:56:02Z. **ACTIVE: Transactional first**, with shared and targeted Update checks. Session `2026-10-08T20:26:35Z-81e5`. Public write profiles remain unadvertised; installed cumulative delivery predicates remain unmet. Ready main merges are operator-authorized after exact-head CI, native+Claude council, findings disposition, scope and ordinary ancestry checks, and actual merged-tree verification. Gemini excluded. No release/Preview2 or Janet CLI/staging/playgrounds/shared databases/Trish Type edits.
 
 ### Verified main and completed serving work
 
@@ -96,12 +96,12 @@ Isolated successor `/Users/dbox/repos/wt/vickie/vickie-comparison-fault-typing-r
 
 ### Workers and next steps
 
-All nine installed cohorts completed and were individually adjudicated on frozen c02ccc37. [PR122](https://github.com/gastownhall/bdp/pull/122) is published draft at exact c02ccc37; CI38635297329/job116096781032 is running. Final independent actual-evidence audit is active.
+All nine installed cohorts completed and were individually adjudicated on frozen c02ccc37. [PR122](https://github.com/gastownhall/bdp/pull/122) is published draft at exact c02ccc37; CI38635297329/job116096781032 is running. [Final independent actual-evidence audit](transaction-cross-carrier-draft/native-actual-evidence-review.md), SHA8fc7bb22, is complete and fully root-read with no blocker.
 | Worker | Scope | State / next |
 |---|---|---|
 | cross_carrier_plan_v2_review | Four-file cross-carrier evidence | Clean frozen c02ccc37; accepted source repairs complete |
 | update_implementation | Preparation and actual package audit | Preparation corrected/reviewed; actual313-file/eight-package audit complete; checkpoint proposal only |
-| cross_carrier_native_review | Independent measured/source/preparation closure | Source/preparation closures complete; final actual-evidence audit active |
+| cross_carrier_native_review | Independent measured/source/preparation closure | Source/preparation closures complete; final actual-evidence audit complete |
 | Root | Execution adjudication, publication and landing gates | Source/package checks passed;2/9 installed cohorts adjudicated, third in-flight at cut; no full CI or merge claim |
 
 ### Cross-carrier source frozen; bounded installed execution underway
@@ -128,7 +128,7 @@ Completed installed evidence on **c02ccc37**:
 
 An ancillary gate metadata hash was corrected20:45:59Z **after the first two cohorts and before cross-sequence**. [Correction](transaction-cross-carrier-draft/execution-preparation/ancillary-gate-correction.json) records the disposition-path digest mismatch. This unused descriptive field was not a source, runtime, command, acceptance or provenance gate; those actual bindings were valid. Original audit/history remains, no rerun or relabeling.
 
-Remaining gates: final independent actual-evidence audit, exact-head full CI and actual ordinary merged-tree verification. Main remains eff17183. No merge readiness is inferred from local partial execution.
+Remaining gates: exact-head full CI and actual ordinary merged-tree verification. Main remains eff17183. No merge readiness is inferred from local partial execution.
 
 ### Remaining delivery and product input
 
@@ -137,6 +137,8 @@ Installed bdptest/SQLite remains initial target. Required cumulative Read+Update
 [Pending operator question](transaction-metadata-event-question-pending.md): should metadata-only Link changes appear in both endpoint Bead Event feeds? No answer yet; do not infer or repeatedly ask. Other independent work continues. Last-Event-ID override is already ruled and merged. [Serving audit](transaction-next-serving-blocker-audit.md) confirms both set operations already work for supported inputs; [Selector question](transaction-selector-question-pending.md) now asks direct400 grammar and fresh-key413 versus retained failure. [Consistency audit](transaction-next-consistency-decision-audit.md) confirms existing unanswered S1-Q1 for retained Snapshot minimum comparison (not reasked); [command applicability question](transaction-command-minimum-question-pending.md) asks whether read-minimum fields are ignored on mutation POSTs. Neither new async question has an answer. No semantics inferred.
 
 Sole plan: `/Users/dbox/repos/wt/vickie/bdp-client-design/checkout/docs/architecture/bdp-client-v2/design.md`, branch `codex/vickie-bdp-client-design`, remote donnabox/beads. Evidence root `/Users/dbox/repos/wt/vickie/bdp-integration-logs`. Node24.16.0/pnpm11.20.0; build before emitted tests. Guard remote session before outward mutations.
+
+Next independent work: [serving audit](transaction-after-cross-carrier-next-audit.md) found no new safely independent serving fix in inspected surfaces. A bounded existing-contract sequence member-transactions evidence plan is being prepared for native+Claude review; any answered serving ruling takes priority. No authoring/execution is released by that recommendation.
 
 ## Current priority: BDP profile structure and implementation
 
