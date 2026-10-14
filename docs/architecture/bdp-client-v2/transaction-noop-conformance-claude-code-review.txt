@@ -1,0 +1,82 @@
+## Findings
+
+Verified `HEAD bec97a7a00b8df663a62004e1ee640303d8527fa` / `tree f173c70f0806b72fa75075b1cdb1ce35d0c14bf0`, clean, base `ea584103…`, diff exactly four files (3442 insertions / 20 deletions). **No correctness defect found.** One factual-accuracy defect and three optional maintenance items follow.
+
+---
+
+### 1. P3 — required (evidence accuracy): committed measured-guard comment records the superseded pre-correction measurements
+
+**Location:** `packages/conformance/src/transactional-cumulative.test.ts:848–850`
+
+**Problem:** The comment states `M488278/N13019/C70660/A223` and `Margins4096B/64nodes/1024B`. The artifacts it annotates measure **488280 B** (`0358cbf7416321bb911e990259236f89bc2720cbc29d037581f542080d9f32ab`) and **70662 B** (`8a770b4371689a3d9d5f84ecfc7a1d9b72715c81e617cf0ea5ae04e55c66098e`). 488278/70660 are the *candidate* figures (`a6b56b66…`/`eb0990d3…`) measured before the two mechanical ID corrections; I diffed candidate vs committed and the only delta is `a-metadataChange`→`a-metadata-change` and `l-metadataChange`→`l-metadata-change` (+1 byte per ID per file). Real headroom under the committed guards is therefore **4094 B manifest / 1022 B coverage**, not 4096/1024. `N13019` and `A223` are correct.
+
+**Impact:** Documentation only — I recomputed every committed guard and all six hold:
+`488280−407227 = 81053 ≤ 85147` (cap 492374), `488280 ≤ 499387`, `70662−60069 = 10593 ≤ 11615` (cap 71684), `70662 ≤ 76453`, `13019−10891 = 2128 ≤ 2192` (cap 13083), `13019 ≤ 13091`; and all six match `measured-budget-acceptance.md` line 7 exactly. But the comment is the only in-source reconciliation a future reader has, and root's acceptance condition is "any content change must be remeasured and reported." The corrected figures exist in `transaction-noop-conformance-review-start-disposition.md` and in the native code review (which already computed 4094/1022) — they just never reached the source.
+
+**Concrete fix:** line 848 → `// Root-reviewed measured amendment: M488280/N13019/C70662/A223.`; line 850 → `// guards, not parser/runtime cap changes. Margins4094B/64nodes/1022B.`
+
+---
+
+### 2. Optional (maintenance): absolute ceilings are non-binding here and the comment does not say so
+
+**Location:** `transactional-cumulative.test.ts:852, 854, 872`
+
+**Problem:** The delta guards bind at 492374 / 71684 / 13083; the absolute guards sit at 499387 / 76453 / 13091 — uniformly looser, so they cannot fail while the delta guards hold. v3 disposition F5 accepted exactly this redundancy *on condition* it "is explicitly described that way, not represented as a second independently binding inequality." The committed comment describes neither purpose.
+
+**Impact:** A later reader may read 499387 as live headroom and grow the manifest toward it. No runtime effect.
+
+**Concrete fix:** one clause in the 848–850 comment, e.g. `Absolute ceilings preserve the preflight envelope if a baseline is re-based; for this candidate the delta guards bind.`
+
+---
+
+### 3. Optional (maintenance): the context-presence-before-equality invariant test still excludes the new row
+
+**Location:** `transactional-cumulative.test.ts:890–894`
+
+**Problem:** `pins required context presence before equality in both new set rows` filters to `transactional.set.mutation` / `transactional.set.zero-match`. The no-op row satisfies the invariant (the `raw()` helper emits the three `present-bdp-*` header assertions before `serving-context`, and every `response-metadata-equals` names an earlier same-row action that itself carries them — I checked all 223), but it is guarded only by `assertMatchingNoopObservation`'s exact deep-equality.
+
+**Impact:** Strictly stronger today. The gap is circular-guard risk: an edit that reorders `serving-context` ahead of the presence assertions inside `raw()` changes the oracle and the manifest together and no structural test objects.
+
+**Concrete fix:** add `"transactional.batch.no-op-entries"` to the list on line 893.
+
+---
+
+### 4. Optional (maintenance): row-level setup/cleanup are not pinned by the new static oracle
+
+**Location:** `transactional-cumulative.test.ts:1332+` (`assertMatchingNoopObservation`)
+
+**Problem:** The oracle pins action IDs, all 223 assertions, all 15 capture lists, methods, targets, credentials, raw header lines, request bodies and idempotency keys — but not `requiredProfile`, `setup.fixture`, `setup.requires`, `applicability` or `cleanup.resetFixture`. I confirmed the row's metadata is byte-identical in shape to `transactional.batch.atomic-commit`, so it is correct today.
+
+**Impact:** Dropping `cleanup.resetFixture: true` would leave the static suite green and surface only as fixture pollution in the installed cohort.
+
+**Concrete fix:** one `expect({...row, actions: undefined})`-style equality in the new test.
+
+---
+
+## What I verified as closed / correct
+
+- **No-op law matches the spec and the installed implementation.** `docs/specs/bdp.md:5152–5156` (receipt: no-op update yields an `updated` entry at the retained revision; all-no-op transaction completes, produces no group, omits `effectPosition`), `:5652–5654` (no group, no new position, current `requiredPosition`), `:2213`/`:2263` (both-objects-unchanged under RFC 6902 §4.6 is a no-op), `:5610` (no `updated` Event). `transaction-store.ts:1263–1279` implements exactly this (`effective = result.events.length > 0`; group insert and position bump skipped; `requiredPosition: pos-${previous}`; `effectPosition` omitted; `results` still `updated`). The `n-noop` body (`replace /title` to the same value, `replace ""` with `{}`) is a genuine semantic no-op, unconditional and on an unowned link.
+- **Complete retained record/revision/result.** `bead-retained-record`/`link-retained-record` compare the whole `/results/N/resource` to captured pre-images (so revision retention is proved, not just properties); `n-noop-beads`/`n-noop-link` independently re-read full records including untouched bead `b`.
+- **No new position/effect/group/Event.** `requiredPosition` pos-1; `effectPosition` `exists:false`; `observedHeadPosition` pos-1; `group-inventory` one tuple; `group-envelope` `eventCount 5`; `/events` exactly five facts. `json-array-tuples` with `ordered:true` enforces exact array length (`runner.ts:2378–2381`), so these are genuine cardinality bounds. Serving-context equality to `n-seed` on all four post-no-op reads independently pins non-advance.
+- **Genuine effectful comparator.** `n-changed` pins different literal properties/metadata, head pos-2, seven facts with per-group ordinals `[0,1,2,3,4,0,1]` (matching the existing convention, e.g. `m-update-events` `[0,1,2,0,1]`), and `previousRevision`/`revision`/`change`/`metadataChange` bindings that match `transaction-batch.ts:746–754` field-for-field. Incidence payload `{endpoint, link:{id,type}, source, target}` matches `transaction-batch.ts:764–769`; `linked` facts are correctly absent from the update (`outcome.outcome !== "updated"` guard).
+- **Pagination / current head / non-null continuation.** `transaction-store.ts:1687–1706` returns at most one group per page and sets `next` non-null iff `row.position < head` — so the final GET at real head pos-2 legitimately returns the seed group at pos-1 with a non-null `/next`. `present("next-present","/next")` alone would accept null, but `captureValue` (`runner.ts:2468–2497`) runs **after** all assertions pass (`runner.ts:1465–1501`) and rejects non-string / non-HTTP(S) / out-of-scope, so the capture is the non-null proof. `transactional-observation.ts:174–197` returns early for this GET (`mutationSource` false), so it grants no receipt authority; the `/next` URL is not in the route allowlist and is never fetched.
+- **Independent oracle.** `assertMatchingNoopObservation` constructs all 223 expected assertions and 15 capture lists from literals, derives nothing from the candidate, and is exercised by four weakening cases. Per-action counts reconcile to `16,13,20,16,13,12,9,12,20,16,13,12,9,22,20 = 223`; coverage mirrors all 223 `action:assertion` IDs in exact order and they are unique.
+- **Preservation.** Independent raw-span walk: all ten manifest and all ten coverage original objects are **byte-identical** to base, and deleting the single inserted span plus its 6-byte separator reconstructs each base artifact byte-for-byte. All 20 hash/length pins in `originalObjectPins` match my independent computation. Fixture unchanged (716 B / `3a7899ce…`).
+- **Route and digest.** Recomputing first-occurrence order from the manifest puts `GET {scope}changes/?after=genesis` at index 6 (seventh, one-based), introduced by `n-seed-groups`, between `beads/new` and `beads/b`. I independently hashed the authored preimage → `906199051adc043408d64c0879a3d3f2cce32b06faa08b9458f4a270ce31a6ce`, and the base preimage minus that one route → `634214546089490d235fa404166dc868a0feb5dc2a8af2a566a6ad33664b4b1a`, confirming the configuration delta is exactly one route. `exactConfigurationDigest` (`runner.ts:1580`) covers only the five declared fields; credentials and ports are excluded.
+- **Ledger arithmetic.** 166 actions = 113 http + 46 `transactional.receipt-read` + 7 `reopen`; 113 + 46 = **159** exchanges, matching the new `toBe(159)`. 11 scenarios + 7 reopens = 18 sessions; +1 bootstrap = 19 children. `plan` unplanned 240→239 against 250 required.
+- **P2 closed.** `runner.ts:873–981` confirms the client receipt-read internally calls `runRequest` with `id: action.id`, so raw HTTP enters `exchanges` while only the three programmatic observations enter `actions`. `bec97` pins the two ID arrays separately and links each client to its exchange by ID, not index. The 32711→bec97 delta is one file, 31/7.
+- **Controls.** Three, all installed, all using the real manifest seam. The group control requires the **exact** failure set `{group-inventory, observed-head}`; the two body controls require their named retained-record failure while `schema` and `disposition` still pass. All assert `writeState: "complete"`, status 200, a changed manifest digest, `claimEligible: false`, closed children and the intended terminal exchange.
+- **Honest flags.** `claimEligible: false`, `status: "bounded-observation"`, `wholeContract: false` on all eleven rows; the new row's `reason` explicitly excludes failed mutations, other no-effect categories, guards/races, owned-link source revisions, mixed-effect transactions, policy/view changes, expiry and restart retention, and disclaims public admission and profile credit. No catalog/spec/schema/fixture/DSL/runtime file is touched; all five `$defs` used already exist.
+- **Prior findings.** F1 (non-null continuation via capture, not bare `exists`), F2 (measured guards, exact 223/1539 and 15/166), F3 (seventh route + authored 11-entry inventory + full preimage), F4 (10→11, row in the 2 KiB/32 KiB loop, 15 exchanges, 159/18/19), F5 (both old conjuncts replaced — no obsolete inequality survives), F6 (plan-only), native v2 #1 (third control changes both tuple and head) and #2 (`eventCount 5` on all three group reads) all remain closed.
+
+## Status update on the premise that installed runs are pending
+
+`transaction-noop-conformance/successor-validation/` now contains completed artifacts stamped `bec97a7a…`/`f173c70f…`, clean, with the four file hashes matching this working tree exactly. Its `exits.json` records all 17 steps at exit 0, including `packed-positive` (4.557 s) and `packed-three-controls` (12.013 s); `packed-positive.json` reports 1 passed / 52 skipped, `packed-three-controls.json` 3 passed / 50 skipped, `cumulative.json` 34/34, `app-static.json` 1 passed / 52 skipped. The emitted summaries show 166 actions, 18 sessions, 19 child launches all closed, matching manifest digest; controls recorded `bead-property` failures `[serving-context, required-position, no-effect, ordered-results, bead-retained-record]`, `link-metadata` the same shape with `link-retained-record`, and `group-inventory-and-head` exactly `[observed-head, group-inventory]`; exchanges 148/148/153; `remaining-processes.txt` empty. I read these files only — I ran nothing and executed no test. Whether this run is accepted evidence is root's call, not a relabeling I am making.
+
+## Exact scope and limitations
+
+Read-only. I inspected: `git rev-parse`/`log`/`status`/`diff` (no mutations); the complete four-file diff; both full artifacts; the new manifest row and coverage row in full; `runner.ts` (assertion evaluation, capture ordering, `captureValue`, `exactConfigurationDigest`, client receipt-read), `transactional-observation.ts` (register/resolve), `transaction-store.ts` (changefeed paging, commit/no-op path), `transaction-batch.ts` (event emission), `transaction-changefeed.ts`, `schemas/bdp-v0.schema.json` `$defs`, `docs/specs/bdp.md` no-op clauses and catalog line 6856; and all requested governance documents plus the native code review, repair closure, review-start disposition and root source review. Independent arithmetic (byte lengths, SHA-256, node/action/assertion counts, raw-span extraction and reconstruction, route first-occurrence derivation, digest preimages) was done with `node -e` reads — no files written, no tests, builds, installs, services, network, credentials, git mutations, agents or model changes, and no Gemini. No owned processes remain.
+
+I did not execute the conformance suite, the installed cohorts, or CI, so nothing here establishes runtime behavior beyond what the source and the author's recorded artifacts show. I did not re-review the 48 pre-existing installed tests in `transactional-matrix.test.ts` that were skipped in these cohorts; I did check them for count-sensitivity and found none that depends on scenario count past index 1 (they target `transactional.batch.atomic-commit` or assert 0/1/≥2 children), but exact-head CI remains the authority there. The no-op row inherits the existing 2 KiB request / 32 KiB response `newRows` bucket rather than the tighter 8 KiB bucket used for the conflict row; that is a deliberate bucket choice, not a finding.
+
+This review asserts no public Transactional support, no CLI parity, no profile qualification and no whole-contract claim. It proposes no new product semantics. Root owns final acceptance, PR #114 disposition and all external coordination.
