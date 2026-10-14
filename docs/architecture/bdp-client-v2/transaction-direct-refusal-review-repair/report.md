@@ -1,0 +1,40 @@
+# PR117 bounded direct-refusal test repair
+
+Frozen `ed3597da1179d4d333ef89c5f0b55adf230be654`, tree `7544b53aa8aa6d7edae94bd6bf0a4d157ee55985`, ordinary parent `6ce9cb4e30d4afa7ac26552490619358fb7044fe`. Checkout `/Users/dbox/repos/wt/vickie/vickie-direct-refusal-review-repair`, branch `codex/vickie-direct-refusal-review-repair`; clean and signed with `Agent-Signature: Vickie (Codex)`. Original6ce9 checkout and evidence remain untouched.
+
+Three authorized test files changed,85 added/5 removed lines (90 total, below200). Production, schemas, runtime configuration, fixture, catalog and public admission are unchanged. No push/PR/main/coordination operations occurred.
+
+## Findings and precise dispositions
+
+1. **Named absence oracle repaired.** The installed test uses `typeof response.headers[name]` equal to`"string"` with the original named predicate. The full tuple equality remains immediately afterward. Fresh original8c installed execution now fails with `AssertionError: direct refusal context presence: bdp-scope-epoch: expected 'undefined' to be 'string' // Object.is equality`; the separate postprocessor verifies that exact name and passes. Historical6ce9's numeric-matcher TypeError and failed label collector remain failed historical evidence, not relabeled.
+2. **Exclusion regression coverage added.** Real HTTP checks all three headers absent on direct400 malformed-request,401 unauthenticated,403 forbidden,413 request-too-large and415 unsupported-media-type. A separate deterministic pending sequence/finite comparison test checks503 temporarily-unavailable absence, then releases the scheduler and verifies normal successful replay atpos-2. The new fixture drains the queued sequence in `finally`, including under the deliberate mutant. These assertions preserve this repair's scope, not a new universal normative rule about error families. The existing HTTP file is preserved as a byte-identical prefix before the79 appended lines.
+3. **Historical unobserved control claim narrowed.** The executed original unobserved-context-leak derivative demonstrated retained406 and operation-limit413 exact-shape failures. The fresh406 assertion in that latter submission test was shadowed by its earlier413 failure. The positive owner test separately covers fresh406 unobserved shape. No unchanged old control was rerun, and the old preflight/results were not rewritten.
+4. **New owner assertion strengthened.** Only the added6ce9 unobserved result assertion changes from`toEqual` to`toStrictEqual`; explicit`context: undefined` can no longer masquerade as an absent field. Original predecessor assertions remain unchanged.
+5. **Payload attribution explicit.** Repaireded359 and historical6ce9 positive protocol and server archives are byte-identical (63+246 files and whole archive hashes). The unchanged installed entry module is not a distinct-payload proof. Against original8c, the server archive differs, while protocol archive and entry module are equal; distinct source worktrees/server archives plus actual behavior establish the old/new comparison. No self-reported digest alone is treated as source proof.
+6. **Typing artifact clarified.** Historical`successor-typing-correction.diff` is the cumulative post-correction six-file source snapshot, not a minimal typing delta. Actual correction was `const firstBinding: unknown = args[0]` before the string comparison, replacing direct`args[0] === "position"`. The original TS2367 (`Record<string, SQLInputValue>` versus`string`) failure remains in`typecheck-1.log`. Historical bytes were preserved.
+7. **Ancestry evidence corrected.** The external review compared a different role branch,`codex/vickie-current-minimum-receiving`, not actualorigin/main. Root's publication record reports verifiedmainf76bf119 with tree equal to8c after PR116 merge. This worker makes no new remote-main verification or merge claim; eventual main reconciliation/CI remain root-owned.
+
+## Verification
+
+Pinned Node24.16.0/pnpm11.20.0; offline frozen install; typecheck, build, format, lint, boundaries and Read seal all exit0. Lint exit0 does not imply warning-free. Git diff whitespace check passed. Seven explicit source suites passed364 tests; no full workspace/unfiltered matrix suite was run. All command arguments, timing and exit codes are recorded in the per-command JSON files.
+
+One isolated over-wrap derivative adds context to direct POST errors. It builds successfully, then both new selected tests fail by their named first-header absence assertions: unauthenticated401 and temporarily-unavailable503. These are intended exit1 test failures, not setup failures. The other four historical mutants were not rerun. `over-wrap.patch`, `control.json`, build/test logs and exit records preserve the derivative. No production change from that disposable checkout is in the commit.
+
+Production preservation independently compares76 protocol/server non-test source files bytewise with6ce9 (`production-preservation.json`); git's complete three-file diff also excludes all other files. Fresh package preservation checks all63 protocol and246 server archive files plus the archive bytes themselves (`package-preservation.json`).
+
+## Fresh frozen installed evidence
+
+Two newly authorized cohorts only, with fresh pack/install per exact source; unchanged5s exchange/90s cohort/120s outer limits,14-request cohort maximum, request65536/header16384/response131072 byte limits.
+
+- **Positiveed359:**14 requests/one child, pass. Status order200,200,409,409,406,406,413,200,200,200,200,200,200,200. Current refusal context remainspos-2; retained receipt and graph/Event afterstate assertions pass; refused fresh keys successfully commitpos-3/4. Started2026-10-14T16:00:01Z, ended2026-10-14T16:00:02Z.
+- **Original8c payload with repaireded359 harness:**3 requests/one child, intentional installed exit1 after valid200/200 seeds and a409 with absent context. Named assertion fires; separate postprocessor/cleanup validation exits0 (`PACKED COMPLETE negative`). Started2026-10-14T16:00:20Z, ended2026-10-14T16:00:21Z.
+
+The current consumption17/two is separate from the historical6ce9 consumption17/two. Combined34 requests/four children, below the prospectively amended45/four maximum. No failed bootstrap, replacement or third new child occurred. Largest positive request4616 bytes/aggregate5518 remains unchanged. Complete responses are asserted in memory; persisted reports retain body/wire fingerprints and context only, not raw byte transcripts.
+
+Positive server archive`03f1d0bd077e3a8e190a60b5e30a1e8e6fa949fd4be8bb5dd454be9293be6b25`; original server archive`e0dd60d3101768be2d1ddeb5b45fd49939aefb01769cba7c0b7ad48d33f04d97`. Positive payload`ced4ef93640ae2dcd67e88a5c7684bab802e9aa73eba974fab81d30ff3e56d19`; original payload`a4f4d446ff0e506a329fc19d8f0dbac9a81e325e80750a30936a31bb9e57f6b6`. Actual contract/configuration/fixture/auth/policy identities, package hashes, request-response fingerprints and source declarations are all captured in the separate packed summaries. Random per-run credentials are not retained. Source commit is launcher-asserted metadata; equality of production and package bytes is independently checked.
+
+## Cleanup and remaining gates
+
+New child PIDs12243/12456 exited0, were confirmed absent, and their disposable stores were removed. No owned test/build/service process remains. Source is clean. Evidence package directories and disposable control/predecessor worktrees remain for reproducibility, with no live service. Frozen original checkout remains6ce9 and unchanged.
+
+Independent repair closure, exact-head CI, root publication and eventual merge remain pending. No public Transactional advertisement or whole-profile qualification claim. Machine records: `source.json`, `summary.json`, `production-preservation.json`, `package-preservation.json`, `cleanup.json`, per-command exits, and both fresh `packed-*/summary.json`. Historical reports remain under`transaction-direct-refusal-context/` with their original identities.
