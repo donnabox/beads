@@ -1,0 +1,216 @@
+I verified the plan read-only against the frozen tree. Findings follow; the plan's quantitative core holds up unusually well, so the findings are narrow and concentrated in the source-budget section and one mechanism claim.
+
+---
+
+# Findings
+
+## Critical
+None. Nothing in the plan would produce false evidence, change production, or broaden the claim. The defects below cost a cycle or weaken a guard; they do not corrupt the slice.
+
+---
+
+## High
+
+### H1 — Source-budget byte basis is misstated, and the two guard families it must update measure different quantities
+**Location:** plan line 86 ("in normal two-space formatting plus terminal newline: new manifest growth **≤100000 bytes** … provisional absolute ceilings **720094 bytes**"); guard sites `packages/conformance/src/transactional-cumulative.test.ts:863–866` and `apps/bdptest/src/transactional-matrix.test.ts:1584,1593`.
+
+**Issue.** The measured parent `620094` is the **on-disk (Prettier) byte count**, not normal two-space form. Independent local measurement:
+
+| form | bytes |
+|---|---|
+| `manifest-v1.json` on disk | 620094 |
+| `JSON.stringify(manifest, null, 2) + "\n"` | 630676 |
+| difference | **10582** |
+
+Prettier collapses short arrays onto one line (e.g. `"requires": ["installed-transactional-http", "transactional-receipt-observation"]`, `"equals": [["updated"], ["b"]]`), which `JSON.stringify` expands. `coverage-v1.json` happens to match normal form exactly (88043 = 88043); `fixture-v1.json` does not (716 vs 728). So the plan's stated basis is wrong for the one artifact whose budget is at issue.
+
+The two guard families then measure different things against the *same literal* `650386`:
+- `transactional-cumulative.test.ts:863–864` measures `read("manifest").byteLength` → **disk** bytes (620094; headroom 30292).
+- `transactional-matrix.test.ts:1584,1593` measures `JSON.stringify(changed, null, 2) + "\n"` → **stringify** bytes (current derivative 636794; headroom 13592).
+
+**Impact.** `720094` is basis-ambiguous, so root cannot actually bound the stop it is being asked to accept. Written into both sites it yields asymmetric effective headroom (100000 on the canonical disk guard vs ~83300 on the derivative stringify guard). Conversely, a row authored to ≤100000 bytes of *Prettier* growth has strictly larger stringify growth — the format-check-enforced on-disk form and the guarded form drift apart.
+
+**Correction.** State the basis per guard explicitly: canonical delta/absolute guards are **on-disk Prettier bytes** (the form `format:check` enforces); the app derivative guard is **`JSON.stringify(…,null,2)+"\n"` bytes**. Publish both numbers for the candidate at preflight (disk and stringify), and set two separate absolute fences rather than one number reused in two bases. Drop "in normal two-space formatting plus terminal newline" from the manifest stop or change the baseline to 630676 consistently.
+
+---
+
+### H2 — "Every negative derivative must fit the same absolute byte/node ceilings" is arithmetically unsatisfiable
+**Location:** plan line 86, second half; measured against `apps/bdptest/src/transactional-matrix.test.ts:1497–1624` (`applyDeletionControl` derivative preflight).
+
+**Issue.** The proposed absolute ceilings (`720094` bytes / `18973` nodes) are derived from the **canonical** artifact (620094 + 100000; 16373 + 2600). The deletion derivatives are strictly larger than canonical. I reproduced `applyDeletionControl` locally against the c555 manifest:
+
+| derivative | stringify bytes | Δ vs canonical stringify | nodes | Δ vs canonical nodes |
+|---|---:|---:|---:|---:|
+| `incoming-order` | 636794 | +6118 | 16529 | +156 |
+| `outgoing-order` | 636794 | +6118 | 16529 | +156 |
+| `committed-prefix-state` | 633780 | +3104 | 16450 | +77 |
+
+With the new row consuming its stated stop, the worst derivative becomes:
+- nodes: 16373 + 2600 + 156 = **19129 > 18973** (over by 156)
+- bytes (stringify basis): 630676 + ≥100000 + 6118 = **≥736794 > 720094** (over by ≥16700)
+
+**Impact.** At preflight the implementer either halts for a new root disposition (plan line 88: "Overflow stops work for a new explicit disposition") on a condition the plan itself created, or silently sets the derivative guard above the ceiling root accepted. Note today's guards avoid this by setting one fence (`650386`/`17275`) above *both* canonical and derivative, with the derivative binding.
+
+**Correction.** Set the absolute derivative fences to canonical-ceiling **plus the measured derivative delta** (today +6118 bytes / +156 nodes, plus whatever the new row's own two wire controls add), or state two distinct ceilings — canonical and derivative — and say the derivative one is the binding fence. Require the preflight ledger (already produced at `:1599–1611`) to publish `normalBytes`/`nodes` for all three deletion derivatives **plus** the new row's derivatives before anchors are set.
+
+---
+
+### H3 — The revision-inequality mechanism does not exist where the plan places it
+**Location:** plan line 52 ("the owned app positive test **parses the actual responses at actions 1/5** and asserts their present string revisions differ"); F4 at line 126; done-when 5 at line 134. Report shape at `packages/conformance/src/runner.ts:168–175`.
+
+**Issue.** `ObservedExchange.response` exposes only `url`, `status`, `headers`, `decodedBodyBytes`, `wireBodyOctets`, `bodyKind`. **There is no response body in the report** the app test receives from `runCumulativeTransactionalMatrix`. `ObservedAction` is explicitly redacted ("Inputs, bindings, and output values are never reported"). So the positive test cannot "parse the actual responses" from `observed.result`. The predecessor Claude review's F4 fix text ("the owned matrix test … *can* read observed exchange bodies") carries the same error; the plan inherited it.
+
+The only available seam is the shared `observe()` exact-execute closure at `apps/bdptest/src/transactional-matrix.test.ts:260–284`, which does hold `HttpExchangeResponse.bodyText` — the same path `invalidReceiptCredentials` already uses at `:271–279`. That closure is inside the owned file, so the work is in scope, but it is **shared by all 52 observe invocations**, and the plan's owned-file description (line 72) does not mention it and forbids runner changes (lines 72, 132).
+
+By contrast the 409 derivative's cross-status epoch/view comparison (also plan line 52) **is** implementable from the report, since `response.headers` is present. That claim is fine.
+
+**Impact.** F4 and done-when 5 are unimplementable as described. An implementer may substitute a weaker proxy (`decodedBodyBytes`, an out-of-band re-fetch outside the exact-mode route boundary) and still report it as "actual observed", which is precisely what the plan's "not invented constants" clause is meant to prevent.
+
+**Correction.** Name the seam: add a narrow opt-in capture to `observe()`'s `exactExecution.execute` wrapper (`:260–284`) keyed to the two action IDs, defaulting off, and state that (a) it must not perturb any other invocation's prefix, exchange count or child ledger, (b) the 50 existing invocations' ledgers in the §cost table are asserted unchanged by it, and (c) the captured value is compared only against the Event-bound `equalsBinding` pointers so the app comparison and the manifest oracle corroborate rather than substitute. Correct line 52's wording from "parses the actual responses" to the actual mechanism.
+
+---
+
+## Medium
+
+### M1 — Recurring CI cost is quantified only in exchanges, never in seconds, against a job budget the slow regime already exceeded
+**Location:** plan lines 90–122, especially 116 ("7342 HTTP exchanges and at most 908 child launches") and 122 ("Scope does add recurring work; council/root must accept that disclosed cost").
+
+**Issue.** The plan converts the rejected `19×21` estimate into a rigorous exchange/child model (which verifies — see below), but never converts it to wall clock, even though it cites the per-case durations that permit it. From the raw logs it cites:
+
+- `transactional-matrix.test.ts` case-duration sum: **421.782 s / 57 cases** (90cc→5b98 success) and **651.397 s / 56 cases** (4aa→0cbee cancelled job).
+- Slow run: setup 218 s, test step 695 s until cancellation, 15 min (900 s) job limit.
+
+Marginal cost of the new row per observe invocation is one child launch + 12 exchanges + prepare/cleanup ≈ 12037 ms / 12 rows ≈ 0.8–1.0 s normal, ×1.589 (the diagnosis's median slow ratio) ≈ 1.3–1.6 s slow. Across 50 existing invocations plus two new controls at deletion-control cost (8.3–8.5 s normal / ~12.1 s slow):
+
+| regime | added | matrix file | test step | + setup |
+|---|---:|---:|---:|---:|
+| normal | ≈ +57 s | 421.8 → ≈479 s | — | ≈615 → ≈672 s of 900 |
+| slow | ≈ +89 s | 651.4 → ≈740 s | 695 → ≈784 s | ≈913 → ≈**1002 s** of 900 |
+
+(My estimate, not the plan's; order-of-magnitude.)
+
+**Impact.** The plan's only time stop is the positive's 63000 ms assertion, which is *not* the binding constraint — it has ~43.8 s of slack even in the slow run (19221.225 ms observed). The binding constraint is the 15-minute job, and the plan makes a known-marginal job deterministically ~12–14 % worse while deferring it entirely to "root's separate held CI plan". `transaction-sequence-refusal-ci-timeout-diagnosis.md:52` explicitly says "Do not automatically raise 15 to 20".
+
+**Correction.** Add the estimated added matrix-file seconds in both regimes and the resulting test-step/job totals, state that this is recurring and unconditional (it is not a scheduling episode), and make a measured full-job duration a named precondition in done-when 4 — not only the positive's 63 s. Say explicitly whether root must settle the held CI-headroom plan *before* this row lands, or accept a job that is expected to overrun in the slow regime.
+
+### M2 — The byte stop and the assertion stop are not jointly achievable at this corpus's density
+**Location:** plan line 86 ("new manifest growth **≤100000 bytes** … **≤300 new canonical assertions**").
+
+**Issue.** Measured bytes-per-assertion from the pinned on-disk row slices (`transactional-cumulative.test.ts:691–748`):
+
+| row | disk bytes | assertions | B/assertion |
+|---|---:|---:|---:|
+| `set.cardinality` | 28546 | 113 | 252.6 |
+| `set.mutation` | 71739 | 279 | 257.1 |
+| `receipt.readable` | 12545 | 44 | 285.1 |
+| `idempotency.conflict` | 29772 | 99 | 300.7 |
+| `batch.no-op-entries` | 81047 | 223 | 363.4 |
+| `receipt.pagination` | 138750 | 309 | 449.0 |
+
+At 300 assertions this is 75,800–108,900 bytes **before** the 12 action objects' raw request bodies, headers, captures and row scaffolding. The new row's character (10 raw bodies, `json-array-tuples` Event facts, full-record `equalsBinding` comparisons) is closest to the no-op row at 363 B/assertion → ≈109,000 bytes, i.e. **over** the 100000 stop.
+
+**Impact.** The two stops are presented as simultaneously available headroom. The byte stop is the binding one, and the overflow would be discovered at preflight after authoring.
+
+**Correction.** State that the byte stop governs and that it caps assertions at ≈270–350 depending on density; or derive the assertion stop from a per-assertion byte estimate for this row's character and publish both at preflight. (The likely actual count — 12 actions at the corpus's 8–17 assertions/action → ~150–220 — fits comfortably; the problem is only that the stated cap does not.)
+
+---
+
+## Low
+
+### L1 — The `response-metadata-equals` caution is necessary but not sufficient
+**Location:** plan line 52 ("`response-metadata-equals` also compares status: use it only on matching 200 responses").
+
+**Issue.** `runner.ts:2179–2197` compares `response.status === expected.status` **and** every named header. This row deliberately spans two positions: pos-1 at actions 1–4, pos-2 at actions 5–12. Actions 1 and 9/10 are all 200 but at different `bdp-scope-position` — the plan's own design (line 45: "Full old receipt/root equal action 2 while current serving position is pos-2"). The stated rule would admit that pairing and produce a spurious failure.
+
+**Impact.** A misapplication inside the row looks like a serving defect.
+
+**Correction.** Restate as: use `response-metadata-equals` only between responses with matching status **and** matching epoch/view/position, and name the pos-1 / pos-2 boundary (after action 5) as the dividing line. Note that `m-failed`'s existing `serving-context` against `m-seed` is the valid pattern (both 200, both pos-1 — a failed mutation does not advance position).
+
+### L2 — The slow-run matrix figure is attributed to 57 cases
+**Location:** plan line 122 ("the whole **57-case** matrix in those logs consumed 421.782s versus 651.397s").
+
+**Issue.** `transaction-sequence-refusal-ci-timeout-diagnosis.md:31–32` records 57 completed cases / 421.782 s for the parent but **56** completed cases / 651.397 s "still missing last case" for the cancelled job. I confirmed both sums directly from the raw logs.
+
+**Impact.** Understates the slow regime (the 57th case cost 8.474 s in the parent), in the direction that makes the added cost look safer.
+
+**Correction.** Write "421.782 s across 57 cases versus 651.397 s across 56 completed cases (the final `committed-prefix-state` control never completed)".
+
+### L3 — File-4 owned edits are not enumerated to the site level that F1/F2 required, including a stale evidence discriminator
+**Location:** plan line 72 ("positive counters, separate exchange/client ledgers"); cf. line 71, which does enumerate file-3 sites.
+
+**Issue.** File 3's description names its sites (187→199, 238→237, twelve→thirteen, pins 11→12). File 4's says only "positive counters". The unnamed sites are `apps/bdptest/src/transactional-matrix.test.ts:340` (`pass` 12→13), `:342` (`sessions` 19→20), `:343` (`children` 20→21 **and its comment** "Nineteen scenario/reopen sessions plus separate bootstrap"), `:510` (180→192), `:1350/:1352` and `:1677/:1679` (`≤20`/`≤180`), `:184–197` (12→15 inventory), `:1253–1275` (preimage + digest), `:1593/:1594` (caps). Separately, `:514` emits `kind: "installed-tx-twelve-partial-summary"` and `:331` is titled "observes **twelve** partial Transactional contracts" — F13 asked for titles/comments, but the plan scopes that sentence to file 3.
+
+**Impact.** F1 asked for "every duplicate guard listed" and F2 for "exact counters"; the file-4 half is under-delivered. The `:514` discriminator is a real dilemma the plan does not resolve: renaming it breaks grep continuity with the prior evidence logs I used in this review; keeping it makes the published ledger false.
+
+**Correction.** Enumerate the file-4 sites above, and decide `:514` explicitly — either keep `installed-tx-twelve-partial-summary` as a stable historical key with a thirteen-row comment, or introduce `installed-tx-thirteen-partial-summary` and record the predecessor key in a comment so prior logs stay findable.
+
+### L4 — Two citation ranges slip past their subject
+**Location:** plan lines 15 and 21.
+
+**Issue.** (a) `packages/conformance/catalog/transactional-v1.json:735–750`: the `cross-carrier` object spans **734–747** (`id` at 735, `retires` at 746); 748–750 is the opening of `transactional.idempotency.key-grammar` (`id` at 749). (b) `apps/bdptest/src/transactional-matrix.test.ts:52–78`: `artifacts()` spans 48–78, and `propertiesSchema` — the constant the claim rests on — is defined at line **51**, outside the cited range.
+
+**Impact.** Cosmetic. The plan's own convention ("anchor names remain authoritative if line numbers move") covers it.
+
+**Correction.** `:734–747` and `:48–78` (or `:51–77`).
+
+---
+
+# What verified
+
+Stated because it bounds the findings above. Everything here I confirmed independently.
+
+**Provenance.** Plan SHA-256 `750ed2b8…6e9` ✓. cwd clean at `c555fe01`, tree `062a3ab7` ✓; `7e46cdc9^{tree}` = `062a3ab7` ✓ (same tree as verified main). `30035b88`'s parent is `c555fe01` ✓. Original plan `transaction-after-deletion-next-plan.md` = `8191c7ce…289` ✓. Parent artifact hashes/bytes: manifest `56318c56…` / 620094 ✓, coverage `dafedd03…` / 88043 ✓, fixture `3a7899ce…` / 716 ✓.
+
+**Measurements.** 12 scenarios, 187 actions, 1872 assertions, 16373 nodes ✓. 250 required / 255 report scenarios ("Includes five optional catalog rows") ✓. `cross-carrier` at zero-based 46 / one-based 47, between `conflict` (44) and `failed-retained` (50) ✓. `originalObjectPins` = 11 per artifact with `deletion-safety` unpinned ✓. Existing effective ceilings 488280+135906=624186, 70662+18405=89067, 13019+3418=16437 ✓; headroom 4092 B / 1024 B / 64 nodes ✓ — the row genuinely cannot fit. Provisional ceilings 720094 / 18973 / 106043 / 2172 / 199 all add correctly ✓.
+
+**Route configuration.** All 12 existing unique routes first appear in rows 1, 2, 3, 5 — `failed-retained` introduces none, so inserting at position 12 of 13 does append the new routes at 13/14/15 ✓. I recomputed the digest preimage from scratch: 12 routes → `1ba7cbbf…0035` (matches `:348`/`:1274`) and 15 routes with `create-bead, sequence, update-bead` appended → **`a9a17908b6fa87674d5f573b584f4a1ce1d41d7909fadf48b65e9b05397ddfd4`**, exactly the plan's proposed digest ✓. `{binding:"scope", path:"operations/…"}` passes `isSafeRelativePath` and `validateScenarioBindingFlow`, so the fixture need not change ✓.
+
+**Observe accounting.** 19 lexical `observe()` sites at the exact lines tabulated; `it.each` expansion = **50** ✓; 57 test cases, 7 non-observe ✓; the permissions case is exactly 4 HTTP calls / 2 children ✓. 187 actions − 7 `transactional.reopen` actions = 180 exchanges (`:510`) ✓; 19 sessions = 12 rows + 7 reopens, 20 children = +bootstrap ✓.
+
+**Cost model — empirically confirmed.** `mustStopMatrixAfter` (`runner.ts:446–475`) returns false for category `undefined`, and both `ScenarioAssertionFailure` and `TransactionalHarnessError` yield category `undefined`, so an ordinary failure is a row stop and later rows (and their reopens) run ✓. I then checked the plan's prefix model against **actual CI-recorded ledgers** in `transaction-sequence-refusal-ci-original-success-raw.log`:
+
+| control | CI actual | my model (12 rows) | plan (13 rows) |
+|---|---:|---:|---:|
+| no-op bead-property / link-metadata | 169 / 20 | 180−11 = 169 | 181 / 21 ✓ |
+| no-op group-inventory-and-head | 174 / 20 | 180−6 = 174 | 186 / 21 ✓ |
+| deletion incoming-order | 164 / 20 | 180−16 = 164 | 176 / 21 ✓ |
+| deletion outgoing-order | 169 / 20 | 180−11 = 169 | 181 / 21 ✓ |
+| deletion committed-prefix-state | 165 / 20 | 180−15 = 165 | 177 / 21 ✓ |
+| conflict (children only) | 19,20,19,20,20 | 1+12+6 / 1+12+7 | 20,21,20,21,21 ✓ |
+
+Every prefix the plan names is correct (`set-update`6, `target-a-updated`9, `set-delete-facts`13, `m-updated-b`16, `m-rollback-a`9, `m-update`13, `m-update-events`18, `z-update`5, `z-update-events`8, `p-root-read`5, `p-update`4, `p-page-read`6, `p-page-retained`13, `c-conflict`3, `c-conflict-reopened`7, `c-state`4, `c-retry-reopened`8, `c-events-reopened`11, `n-noop`4, `n-noop-groups`9, `d-*`5/10/6, atomic prefix 3 vs 2 for the rest). The totals sum exactly: **7342 HTTP** and **908 children** across 52 invocations, and the coarse cap 52×192 / 52×21 is a valid bound. Author cohorts: 192+183+184 = 559 / 63; six affected controls 548+534 = 1082 / 126; nine invocations 1641 / 189; absolutes 1728 / 189 — all ✓.
+
+**Law and source.** Spec anchors all land: `3895–3922` (ends "them retrieves the receipt the others created", 3922), `3924–3935` (3929/3932), `3416` (`identity-taken` 409 `never`), `3477` (identity-reservation), `4050–4088` (4077 present-member projection). `transaction-http.ts:355–382` does require and forward observed context on conflict and operation-limit refusals — **native N1 is genuinely closed** ✓. `transaction-batch.ts:278–295` prepares each sequence member as a singleton carrier; `:408–485` `normalizeTransaction` hashes `{operation, input}` only, excluding `name`/carrier ✓. `transaction-sequence.ts:32–74` `project()` deletes `operationIndex`/`operationName` then supplies `turn.index` / `member.name` ✓ — the action 7/8 presentation discrimination is real. `admitKey`/`admitSequence` exist in `transaction-store.ts` ✓.
+
+**Feasibility details.** `operations/create-bead`, `operations/batch`, `operations/sequence` all served by the installed runtime (`transaction-installed-contracts.test.ts:452–486`), including a sequence POST with **no top-level `Idempotency-Key`** returning 200 ✓. `sequenceRequest.operations` has `minItems: 1`, so a one-member sequence is valid ✓. `sequenceUpdateBead` forbids `name` — the plan correctly specifies the update member as unnamed ✓. `transactionalSequenceResponse` is `{results}` with `additionalProperties:false`, so "no receipt member" is schema-enforced ✓. `metadata` defaults to `{}` on create (`resource-evaluator.ts:806–811`) ✓. A failed mutation does **not** advance position — pinned by the existing passing `m-failed` `serving-context` against `m-seed` — so control 2's pos-1 claim is grounded ✓. Client receipt-read actions already capture `/body/**/revision` (65 such captures) ✓. The incident-Link metadata gap (`transaction-events.ts:257–264`) requires a Bead-sourced incident-Link `updated` event with `metadataChange` and no `change`; this row has no links and no `metadataChange` — correctly avoided ✓. The schema resolver regression exists at `transactional-cumulative.test.ts:2176–2195` ✓. The coverage binding shape the plan quotes matches `:107–112` byte for byte ✓. No inequality form exists in the assertion DSL (kinds: header, json-array-tuples, json-pointer, json-schema, request-authored-body, request-authored-headers, response-metadata-equals, status) ✓.
+
+**Limits.** 63000 ms at `:511`, cohort default 90000 at `:110`, outer 120000 at `:531`, request 5000, prepare/cleanup 10000, 1 MiB loader, `ARTIFACT_MAX_JSON_NODES = 100_000` — all unchanged and correctly stated ✓. CI positives exact: `elapsedMs` 12035.375490999999 under `sourceCommit` 5b98fcce and 19221.22541 under 0cbee3a9 ✓; 63000 − those = 50.965 s / 43.779 s ✓.
+
+**Held-finding disposition** is faithful to `transaction-after-deletion-plan-held-disposition.md` and to the native/Claude reviews: F5's route order is corrected to the inventory order (and the digest now checks out), F8 gives both indices, F2 replaces the rejected `19×21` with a model that validates against real CI, F10/F11 name the uncontrolled carriers explicitly. Rejected-estimate arithmetic also checks: 19×21 = 399, not 189 ✓.
+
+---
+
+# Reviewed basis
+
+Read-only at `/Users/dbox/repos/wt/vickie/vickie-local-schema-serving`, clean `c555fe01df5cd20454fb0d663431df816c1270aa`, tree `062a3ab7e24236417bd915b373a4b44ba9908647`.
+
+- Plan `bdp-integration-logs/transaction-after-timeout-next-plan.md` (SHA-256 `750ed2b8…6e9`, confirmed).
+- Held sources: `transaction-after-deletion-next-plan.md` (`8191c7ce…289`), `transaction-after-deletion-plan-held-disposition.md` (`384028b6…4a`), `transaction-after-deletion-native-plan-review.md` (`18e6acf4…91`), `transaction-after-deletion-claude-plan-review.txt` (`9dcbe0dd…0b`), `transaction-after-schema-serving-prerequisites.md` (`33f2a8aa…98`), `transaction-sequence-refusal-ci-timeout-diagnosis.md`.
+- Artifacts: `packages/conformance/test-support/transactional/{manifest,coverage,fixture}-v1.json`; `packages/conformance/catalog/transactional-v1.json`; `schemas/bdp-v0.schema.json`.
+- Tests/guards: `packages/conformance/src/transactional-cumulative.test.ts` (full), `apps/bdptest/src/transactional-matrix.test.ts` (full), `apps/bdptest/test-support/transactional-execution-binding.ts`.
+- Runner/limits: `packages/conformance/src/runner.ts`, `executable-manifest.ts`, `artifact-bundle.ts`, `profile-contract-selection.ts`.
+- Server: `transaction-http.ts`, `transaction-batch.ts`, `transaction-sequence.ts`, `transaction-store.ts`, `transaction-discovery.ts`, `transaction-events.ts`, `resource-evaluator.ts`, `transaction-installed-contracts.test.ts`.
+- Spec `docs/specs/bdp.md` at the cited anchors.
+- CI evidence: `transaction-sequence-refusal-ci-original-success-raw.log` and `-first-raw.log` (filtering and arithmetic only).
+
+Analysis performed: local JSON parsing, byte/node/hash/duration arithmetic, SHA-256 of files and of a reconstructed digest preimage, in-memory reproduction of `applyDeletionControl` for derivative sizing, and extraction of recorded control ledgers from the raw CI logs. **No files written or modified; no tests, builds, installs, services, network, git mutations or product-code execution.** Three `git cat-file`/`rev-parse` reads only.
+
+# Review limitations
+
+- Analysis is local JSON/hash/count/duration arithmetic, **not executable conformance proof**. Nothing here is an observation of the proposed row.
+- I did not demand full-profile proof from this explicitly partial row, and I did not evaluate whether the row *should* be authorized. This is a planning review, **not authorization**.
+- The §cost model's **conflict-control exchange totals** (184/188/185/189/192) are model-derived: that test logs `childLaunches` but not `exchanges`, so only its children (19/20/19/20/20) are CI-confirmed. The no-op and deletion totals are CI-confirmed. The `metadata mismatch 542` ledger (0 / up to 14) and `receipt alteration 571` totals (187/188) have no CI ledger; I derived them from the action tables and verified the stop semantics in `runner.ts`.
+- M1's second-order wall-clock numbers are my estimate from the two cited runs, extrapolated by per-row marginal cost and the diagnosis's 1.589× median slow ratio. They are order-of-magnitude, not measurements.
+- I could not verify root's PR120 final SHA or completion, pending `30035b88` council/CI outcome, or `.github/workflows/ci.yml`'s current timeout beyond what the diagnosis document records. The plan correctly declines to invent these.
+- I did not audit uninspected serving contracts, the design fork's `design.md`, the consistency audit, or the sole plan's ledger; the plan's bounded-priority judgment rests partly on those and I take it as stated.
+- I did not verify that the 15 `exactMode.routes` pass installed `preflightExactPlans` against a running target — that requires execution.
