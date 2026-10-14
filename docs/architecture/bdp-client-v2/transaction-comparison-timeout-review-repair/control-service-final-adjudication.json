@@ -1,0 +1,15 @@
+{
+  "passed": true,
+  "failure": [
+    "AssertionError: observed service comparison deadline shape: expected { kind: 'comparison-refusal', \u2026(5) } to strictly equal { kind: 'refused', status: 503, \u2026(2) }\n    at /Users/dbox/repos/wt/vickie/vickie-comparison-timeout-review-controls/packages/server/src/transaction-service.test.ts:465:9\n    at processTicksAndRejections (node:internal/process/task_queues:104:5)\n    at file:///Users/dbox/repos/wt/vickie/vickie-comparison-timeout-review-controls/node_modules/.pnpm/@vitest+runner@4.1.10/node_modules/@vitest/runner/dist/chunk-artifact.js:1903:20"
+  ],
+  "cleanup": {
+    "kind": "comparison-service-deadline-cleanup",
+    "drained": true,
+    "closed": true,
+    "cleanupTurns": 2,
+    "pendingCallbacks": 0
+  },
+  "testExit": 1,
+  "buildExit": 0
+}

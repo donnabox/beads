@@ -1,0 +1,582 @@
+{
+  "source": "70ac666002708202d2f93195eed90dfe8541300d",
+  "tree": "1353e8f4fb0b1149b3f4ff158335804bf3f1cecc",
+  "claimEligible": false,
+  "positiveRuns": [
+    {
+      "name": "positive-1",
+      "passed": [
+        "preserves a fenced owner's comparison observation failure",
+        "preserves background maintenance failure in a closed comparison owner"
+      ],
+      "filtered": 138,
+      "sourceAttribution": "accepted uncommitted draft; unchanged store/submission file hashes equal final commit",
+      "resultSha256": "61bfa0c282a59e2e27256ba7a9cc23c380f37aae56754f4be6813f30fe16e5be",
+      "statuses": {
+        "skipped": 138,
+        "passed": 2
+      }
+    },
+    {
+      "name": "positive-2",
+      "passed": [
+        "distinguishes a stopped final observation at the reached comparison deadline"
+      ],
+      "filtered": 36,
+      "sourceAttribution": "accepted uncommitted draft; unchanged store/submission file hashes equal final commit",
+      "resultSha256": "fffa2087863af830f2277614904f1b39694a35a9b94cd631895a8f3edbdb0559",
+      "statuses": {
+        "skipped": 36,
+        "passed": 1
+      }
+    },
+    {
+      "name": "positive-3",
+      "passed": [
+        "uses the original finite comparison budget while an earlier sequence dependency is unresolved"
+      ],
+      "filtered": 64,
+      "sourceAttribution": "prelint draft service file, retained history",
+      "resultSha256": "74c98eb7a4ceec9e3d5a9bd2932a5baaf95909c437fe275a7760524c61e9f426",
+      "statuses": {
+        "skipped": 64,
+        "passed": 1
+      }
+    },
+    {
+      "name": "service-positive-final",
+      "passed": [
+        "uses the original finite comparison budget while an earlier sequence dependency is unresolved"
+      ],
+      "filtered": 64,
+      "sourceAttribution": "final corrected service file bytes committed unchanged",
+      "resultSha256": "7e1c0c11e16073cab5e04d80f33411a56192591daa278d68f369ba801aad48cc",
+      "statuses": {
+        "skipped": 64,
+        "passed": 1
+      }
+    }
+  ],
+  "distinctPositiveCases": 4,
+  "actualPositiveExecutions": 5,
+  "distinctControlCases": 3,
+  "actualControlledFailureExecutions": 4,
+  "controls": [
+    {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-comparison-timeout-review-repair/controls/closed-guard/1-adjudication.json",
+      "sha256": "4f295ae13cdf6ef884666aadbcf89fe976decb8face4dc81eb4aefda049f1e54",
+      "result": {
+        "passed": true,
+        "label": "closed fenced deadline preserves failure",
+        "failures": [
+          "AssertionError: closed fenced deadline preserves failure\n    at /Users/dbox/repos/wt/vickie/vickie-comparison-timeout-review-controls/packages/server/src/transaction-store.test.ts:3318:7\n    at file:///Users/dbox/repos/wt/vickie/vickie-comparison-timeout-review-controls/node_modules/.pnpm/@vitest+runner@4.1.10/node_modules/@vitest/runner/dist/chunk-artifact.js:302:11\n    at file:///Users/dbox/repos/wt/vickie/vickie-comparison-timeout-review-controls/node_modules/.pnpm/@vitest+runner@4.1.10/node_modules/@vitest/runner/dist/chunk-artifact.js:1903:26\n    at file:///Users/dbox/repos/wt/vickie/vickie-comparison-timeout-review-controls/node_modules/.pnpm/@vitest+runner@4.1.10/node_modules/@vitest/runner/dist/chunk-artifact.js:2326:20\n    at new Promise (<anonymous>)\n    at runWithCancel (file:///Users/dbox/repos/wt/vickie/vickie-comparison-timeout-review-controls/node_modules/.pnpm/@vitest+runner@4.1.10/node_modules/@vitest/runner/dist/chunk-artifact.js:2323:10)\n    at file:///Users/dbox/repos/wt/vickie/vickie-comparison-timeout-review-controls/node_modules/.pnpm/@vitest+runner@4.1.10/node_modules/@vitest/runner/dist/chunk-artifact.js:2305:20\n    at new Promise (<anonymous>)\n    at runWithTimeout (file:///Users/dbox/repos/wt/vickie/vickie-comparison-timeout-review-controls/node_modules/.pnpm/@vitest+runner@4.1.10/node_modules/@vitest/runner/dist/chunk-artifact.js:2272:10)\n    at file:///Users/dbox/repos/wt/vickie/vickie-comparison-timeout-review-controls/node_modules/.pnpm/@vitest+runner@4.1.10/node_modules/@vitest/runner/dist/chunk-artifact.js:2955:64"
+        ],
+        "testExit": 1,
+        "buildExit": 0
+      }
+    },
+    {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-comparison-timeout-review-repair/controls/closed-guard/2-adjudication.json",
+      "sha256": "813c264ce18819369042f8e321bf51587a3d3a5b514440ec34c2c66a75c566cd",
+      "result": {
+        "passed": true,
+        "label": "closed maintenance deadline preserves failure",
+        "failures": [
+          "AssertionError: closed maintenance deadline preserves failure: expected undefined to be an instance of Error\n    at Proxy.<anonymous> (file:///Users/dbox/repos/wt/vickie/vickie-comparison-timeout-review-controls/node_modules/.pnpm/@vitest+expect@4.1.10/node_modules/@vitest/expect/dist/index.js:1386:15)\n    at Proxy.<anonymous> (file:///Users/dbox/repos/wt/vickie/vickie-comparison-timeout-review-controls/node_modules/.pnpm/@vitest+expect@4.1.10/node_modules/@vitest/expect/dist/index.js:1156:15)\n    at Proxy.methodWrapper (file:///Users/dbox/repos/wt/vickie/vickie-comparison-timeout-review-controls/node_modules/.pnpm/chai@6.2.2/node_modules/chai/index.js:1700:25)\n    at /Users/dbox/repos/wt/vickie/vickie-comparison-timeout-review-controls/packages/server/src/transaction-store.test.ts:3343:72\n    at file:///Users/dbox/repos/wt/vickie/vickie-comparison-timeout-review-controls/node_modules/.pnpm/@vitest+runner@4.1.10/node_modules/@vitest/runner/dist/chunk-artifact.js:302:11\n    at file:///Users/dbox/repos/wt/vickie/vickie-comparison-timeout-review-controls/node_modules/.pnpm/@vitest+runner@4.1.10/node_modules/@vitest/runner/dist/chunk-artifact.js:1903:26\n    at file:///Users/dbox/repos/wt/vickie/vickie-comparison-timeout-review-controls/node_modules/.pnpm/@vitest+runner@4.1.10/node_modules/@vitest/runner/dist/chunk-artifact.js:2326:20\n    at new Promise (<anonymous>)\n    at runWithCancel (file:///Users/dbox/repos/wt/vickie/vickie-comparison-timeout-review-controls/node_modules/.pnpm/@vitest+runner@4.1.10/node_modules/@vitest/runner/dist/chunk-artifact.js:2323:10)\n    at file:///Users/dbox/repos/wt/vickie/vickie-comparison-timeout-review-controls/node_modules/.pnpm/@vitest+runner@4.1.10/node_modules/@vitest/runner/dist/chunk-artifact.js:2305:20"
+        ],
+        "testExit": 1,
+        "buildExit": 0
+      }
+    },
+    {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-comparison-timeout-review-repair/controls/old-service-shape/1-adjudication.json",
+      "sha256": "2c9ef3475fbe8fd65ac35848cd3eef119be92b0dbc47bbec146b4b05631a8c72",
+      "result": {
+        "passed": true,
+        "label": "observed service comparison deadline shape",
+        "failures": [
+          "AssertionError: observed service comparison deadline shape: expected { kind: 'comparison-refusal', \u2026(5) } to strictly equal { kind: 'refused', status: 503, \u2026(2) }\n    at /Users/dbox/repos/wt/vickie/vickie-comparison-timeout-review-controls/packages/server/src/transaction-service.test.ts:465:9\n    at processTicksAndRejections (node:internal/process/task_queues:104:5)\n    at file:///Users/dbox/repos/wt/vickie/vickie-comparison-timeout-review-controls/node_modules/.pnpm/@vitest+runner@4.1.10/node_modules/@vitest/runner/dist/chunk-artifact.js:1903:20"
+        ],
+        "testExit": 1,
+        "buildExit": 0,
+        "cleanup": {
+          "kind": "comparison-service-deadline-cleanup",
+          "drained": true,
+          "closed": true,
+          "cleanupTurns": 2,
+          "pendingCallbacks": 0
+        }
+      }
+    },
+    {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-comparison-timeout-review-repair/control-service-final-adjudication.json",
+      "sha256": "dea2d9bf24e99e9bab782cd5fef82c9c0f13abaa98f249e0e5909b78b34e6cb1",
+      "result": {
+        "passed": true,
+        "failure": [
+          "AssertionError: observed service comparison deadline shape: expected { kind: 'comparison-refusal', \u2026(5) } to strictly equal { kind: 'refused', status: 503, \u2026(2) }\n    at /Users/dbox/repos/wt/vickie/vickie-comparison-timeout-review-controls/packages/server/src/transaction-service.test.ts:465:9\n    at processTicksAndRejections (node:internal/process/task_queues:104:5)\n    at file:///Users/dbox/repos/wt/vickie/vickie-comparison-timeout-review-controls/node_modules/.pnpm/@vitest+runner@4.1.10/node_modules/@vitest/runner/dist/chunk-artifact.js:1903:20"
+        ],
+        "cleanup": {
+          "kind": "comparison-service-deadline-cleanup",
+          "drained": true,
+          "closed": true,
+          "cleanupTurns": 2,
+          "pendingCallbacks": 0
+        },
+        "testExit": 1,
+        "buildExit": 0
+      }
+    }
+  ],
+  "exits": {
+    "boundaries.exit.json": {
+      "name": "boundaries",
+      "pid": 92835,
+      "exit": 0,
+      "elapsed": 1.0048638749867678,
+      "started": "2026-10-14T18:22:34Z",
+      "ended": "2026-10-14T18:22:35Z",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-comparison-timeout-review-repair",
+      "args": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "check:boundaries"
+      ]
+    },
+    "build-final.exit.json": {
+      "name": "build-final",
+      "pid": 92712,
+      "exit": 0,
+      "elapsed": 1.007785625057295,
+      "started": "2026-10-14T18:22:30Z",
+      "ended": "2026-10-14T18:22:31Z",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-comparison-timeout-review-repair",
+      "args": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "build"
+      ]
+    },
+    "build.exit.json": {
+      "name": "build",
+      "pid": 91937,
+      "exit": 0,
+      "elapsed": 1.0071277909446508,
+      "started": "2026-10-14T18:20:02Z",
+      "ended": "2026-10-14T18:20:03Z",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-comparison-timeout-review-repair",
+      "args": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "build"
+      ]
+    },
+    "control-closed-guard-1.exit.json": {
+      "name": "control-closed-guard-1",
+      "pid": 92232,
+      "exit": 1,
+      "elapsed": 2.010559417074546,
+      "started": "2026-10-14T18:20:41Z",
+      "ended": "2026-10-14T18:20:43Z",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-comparison-timeout-review-controls",
+      "args": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "exec",
+        "vitest",
+        "run",
+        "packages/server/src/transaction-store.test.ts",
+        "-t",
+        "preserves\\ a\\ fenced\\ owner's\\ comparison\\ observation\\ failure",
+        "--maxWorkers=1",
+        "--reporter=verbose",
+        "--reporter=json",
+        "--outputFile.json=/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-comparison-timeout-review-repair/controls/closed-guard/1.json"
+      ]
+    },
+    "control-closed-guard-2.exit.json": {
+      "name": "control-closed-guard-2",
+      "pid": 92243,
+      "exit": 1,
+      "elapsed": 1.0130855420138687,
+      "started": "2026-10-14T18:20:43Z",
+      "ended": "2026-10-14T18:20:44Z",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-comparison-timeout-review-controls",
+      "args": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "exec",
+        "vitest",
+        "run",
+        "packages/server/src/transaction-store.test.ts",
+        "-t",
+        "preserves\\ background\\ maintenance\\ failure\\ in\\ a\\ closed\\ comparison\\ owner",
+        "--maxWorkers=1",
+        "--reporter=verbose",
+        "--reporter=json",
+        "--outputFile.json=/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-comparison-timeout-review-repair/controls/closed-guard/2.json"
+      ]
+    },
+    "control-closed-guard-build.exit.json": {
+      "name": "control-closed-guard-build",
+      "pid": 92146,
+      "exit": 0,
+      "elapsed": 3.026660457951948,
+      "started": "2026-10-14T18:20:38Z",
+      "ended": "2026-10-14T18:20:41Z",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-comparison-timeout-review-controls",
+      "args": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "build"
+      ]
+    },
+    "control-install.exit.json": {
+      "name": "control-install",
+      "pid": 92124,
+      "exit": 0,
+      "elapsed": 1.0096336249262094,
+      "started": "2026-10-14T18:20:37Z",
+      "ended": "2026-10-14T18:20:38Z",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-comparison-timeout-review-controls",
+      "args": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "install",
+        "--offline",
+        "--frozen-lockfile"
+      ]
+    },
+    "control-old-service-shape-1.exit.json": {
+      "name": "control-old-service-shape-1",
+      "pid": 92295,
+      "exit": 1,
+      "elapsed": 1.0157071249559522,
+      "started": "2026-10-14T18:20:45Z",
+      "ended": "2026-10-14T18:20:46Z",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-comparison-timeout-review-controls",
+      "args": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "exec",
+        "vitest",
+        "run",
+        "packages/server/src/transaction-service.test.ts",
+        "-t",
+        "uses\\ the\\ original\\ finite\\ comparison\\ budget\\ while\\ an\\ earlier\\ sequence\\ dependency\\ is\\ unresolved",
+        "--maxWorkers=1",
+        "--reporter=verbose",
+        "--reporter=json",
+        "--outputFile.json=/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-comparison-timeout-review-repair/controls/old-service-shape/1.json"
+      ]
+    },
+    "control-old-service-shape-build.exit.json": {
+      "name": "control-old-service-shape-build",
+      "pid": 92253,
+      "exit": 0,
+      "elapsed": 1.0114059161860496,
+      "started": "2026-10-14T18:20:44Z",
+      "ended": "2026-10-14T18:20:45Z",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-comparison-timeout-review-controls",
+      "args": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "build"
+      ]
+    },
+    "control-service-final-build.exit.json": {
+      "name": "control-service-final-build",
+      "pid": 92946,
+      "exit": 0,
+      "elapsed": 1.007129792124033,
+      "started": "2026-10-14T18:22:45Z",
+      "ended": "2026-10-14T18:22:46Z",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-comparison-timeout-review-controls",
+      "args": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "build"
+      ]
+    },
+    "control-service-final.exit.json": {
+      "name": "control-service-final",
+      "pid": 92989,
+      "exit": 1,
+      "elapsed": 1.0074204159900546,
+      "started": "2026-10-14T18:22:46Z",
+      "ended": "2026-10-14T18:22:47Z",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-comparison-timeout-review-controls",
+      "args": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "exec",
+        "vitest",
+        "run",
+        "packages/server/src/transaction-service.test.ts",
+        "-t",
+        "uses\\ the\\ original\\ finite\\ comparison\\ budget\\ while\\ an\\ earlier\\ sequence\\ dependency\\ is\\ unresolved",
+        "--maxWorkers=1",
+        "--reporter=verbose",
+        "--reporter=json",
+        "--outputFile.json=/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-comparison-timeout-review-repair/control-service-final.json"
+      ]
+    },
+    "format-final.exit.json": {
+      "name": "format-final",
+      "pid": 92792,
+      "exit": 0,
+      "elapsed": 1.0082503750454634,
+      "started": "2026-10-14T18:22:32Z",
+      "ended": "2026-10-14T18:22:33Z",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-comparison-timeout-review-repair",
+      "args": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "format:check"
+      ]
+    },
+    "format.exit.json": {
+      "name": "format",
+      "pid": 92143,
+      "exit": 0,
+      "elapsed": 2.014960458036512,
+      "started": "2026-10-14T18:20:37Z",
+      "ended": "2026-10-14T18:20:39Z",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-comparison-timeout-review-repair",
+      "args": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "format:check"
+      ]
+    },
+    "install.exit.json": {
+      "name": "install",
+      "pid": 91909,
+      "exit": 0,
+      "elapsed": 1.0089342088904232,
+      "started": "2026-10-14T18:19:59Z",
+      "ended": "2026-10-14T18:20:00Z",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-comparison-timeout-review-repair",
+      "args": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "install",
+        "--offline",
+        "--frozen-lockfile"
+      ]
+    },
+    "lint-diagnosis.exit.json": {
+      "name": "lint-diagnosis",
+      "pid": 92421,
+      "exit": 1,
+      "elapsed": 1.0122525410261005,
+      "started": "2026-10-14T18:21:09Z",
+      "ended": "2026-10-14T18:21:10Z",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-comparison-timeout-review-repair",
+      "args": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "exec",
+        "biome",
+        "lint",
+        "packages/server/src/transaction-store.test.ts",
+        "packages/server/src/transaction-submission.test.ts",
+        "packages/server/src/transaction-service.test.ts",
+        "--diagnostic-level=error"
+      ]
+    },
+    "lint-final.exit.json": {
+      "name": "lint-final",
+      "pid": 92811,
+      "exit": 0,
+      "elapsed": 1.0091951249632984,
+      "started": "2026-10-14T18:22:33Z",
+      "ended": "2026-10-14T18:22:34Z",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-comparison-timeout-review-repair",
+      "args": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "lint"
+      ]
+    },
+    "lint.exit.json": {
+      "name": "lint",
+      "pid": 92205,
+      "exit": 1,
+      "elapsed": 1.0069013750180602,
+      "started": "2026-10-14T18:20:40Z",
+      "ended": "2026-10-14T18:20:41Z",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-comparison-timeout-review-repair",
+      "args": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "lint"
+      ]
+    },
+    "positive-1.exit.json": {
+      "name": "positive-1",
+      "pid": 92006,
+      "exit": 0,
+      "elapsed": 2.0137794171459973,
+      "started": "2026-10-14T18:20:03Z",
+      "ended": "2026-10-14T18:20:05Z",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-comparison-timeout-review-repair",
+      "args": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "exec",
+        "vitest",
+        "run",
+        "packages/server/src/transaction-store.test.ts",
+        "-t",
+        "preserves\\ a\\ fenced\\ owner's\\ comparison\\ observation\\ failure|preserves\\ background\\ maintenance\\ failure\\ in\\ a\\ closed\\ comparison\\ owner",
+        "--maxWorkers=1",
+        "--reporter=verbose",
+        "--reporter=json",
+        "--outputFile.json=/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-comparison-timeout-review-repair/positive-1.json"
+      ]
+    },
+    "positive-2.exit.json": {
+      "name": "positive-2",
+      "pid": 92018,
+      "exit": 0,
+      "elapsed": 1.010418666061014,
+      "started": "2026-10-14T18:20:05Z",
+      "ended": "2026-10-14T18:20:06Z",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-comparison-timeout-review-repair",
+      "args": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "exec",
+        "vitest",
+        "run",
+        "packages/server/src/transaction-submission.test.ts",
+        "-t",
+        "distinguishes\\ a\\ stopped\\ final\\ observation\\ at\\ the\\ reached\\ comparison\\ deadline",
+        "--maxWorkers=1",
+        "--reporter=verbose",
+        "--reporter=json",
+        "--outputFile.json=/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-comparison-timeout-review-repair/positive-2.json"
+      ]
+    },
+    "positive-3.exit.json": {
+      "name": "positive-3",
+      "pid": 92027,
+      "exit": 0,
+      "elapsed": 1.0131822919938713,
+      "started": "2026-10-14T18:20:06Z",
+      "ended": "2026-10-14T18:20:07Z",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-comparison-timeout-review-repair",
+      "args": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "exec",
+        "vitest",
+        "run",
+        "packages/server/src/transaction-service.test.ts",
+        "-t",
+        "uses\\ the\\ original\\ finite\\ comparison\\ budget\\ while\\ an\\ earlier\\ sequence\\ dependency\\ is\\ unresolved",
+        "--maxWorkers=1",
+        "--reporter=verbose",
+        "--reporter=json",
+        "--outputFile.json=/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-comparison-timeout-review-repair/positive-3.json"
+      ]
+    },
+    "read-seal.exit.json": {
+      "name": "read-seal",
+      "pid": 92861,
+      "exit": 0,
+      "elapsed": 1.0095888329669833,
+      "started": "2026-10-14T18:22:35Z",
+      "ended": "2026-10-14T18:22:36Z",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-comparison-timeout-review-repair",
+      "args": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "evidence:verify"
+      ]
+    },
+    "service-positive-final.exit.json": {
+      "name": "service-positive-final",
+      "pid": 92783,
+      "exit": 0,
+      "elapsed": 1.0091542911250144,
+      "started": "2026-10-14T18:22:31Z",
+      "ended": "2026-10-14T18:22:32Z",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-comparison-timeout-review-repair",
+      "args": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "exec",
+        "vitest",
+        "run",
+        "packages/server/src/transaction-service.test.ts",
+        "-t",
+        "uses\\ the\\ original\\ finite\\ comparison\\ budget\\ while\\ an\\ earlier\\ sequence\\ dependency\\ is\\ unresolved",
+        "--maxWorkers=1",
+        "--reporter=verbose",
+        "--reporter=json",
+        "--outputFile.json=/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-comparison-timeout-review-repair/service-positive-final.json"
+      ]
+    },
+    "typecheck-final.exit.json": {
+      "name": "typecheck-final",
+      "pid": 92692,
+      "exit": 0,
+      "elapsed": 1.0066469998564571,
+      "started": "2026-10-14T18:22:29Z",
+      "ended": "2026-10-14T18:22:30Z",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-comparison-timeout-review-repair",
+      "args": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "typecheck"
+      ]
+    },
+    "typecheck.exit.json": {
+      "name": "typecheck",
+      "pid": 91918,
+      "exit": 0,
+      "elapsed": 2.0131422909907997,
+      "started": "2026-10-14T18:20:00Z",
+      "ended": "2026-10-14T18:20:02Z",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-comparison-timeout-review-repair",
+      "args": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "typecheck"
+      ]
+    }
+  },
+  "executionBounds": {
+    "actualCaseExecutions": 9,
+    "originalApprovedCases": 7,
+    "rootApprovedLintCorrectionRepeats": 2,
+    "temporaryStores": 9,
+    "inProcessServiceInstances": 4,
+    "httpRequests": 0,
+    "listeners": 0,
+    "installedChildren": 0,
+    "maxWorkers": 1,
+    "commandSupervisionSeconds": 120,
+    "innerDeadlinesUnchanged": true
+  },
+  "unexpectedFailure": {
+    "command": "lint",
+    "exit": 1,
+    "diagnosisExit": 1,
+    "rule": "noUnsafeFinally",
+    "disposition": "Root-authorized single-line equivalent accumulation repair; original logs retained; final lint exits0."
+  },
+  "historicalFailedCiLog": {
+    "path": "../transaction-comparison-timeout-ci-first-full.log",
+    "sha256": "e6850dab246f2bd6708f0b2f31000041a1ff5bf47346fe67fff17e973c0c00a7",
+    "outcome": "real stale observed-service expectation plus blocked afterEach cleanup; not retried or relabeled"
+  },
+  "historicalInstalledSource": "30035b88380b7cbb3abd5359787db236b70345c7",
+  "historicalInstalledRequests": 27,
+  "historicalInstalledChildren": 2,
+  "newInstalledExecution": false,
+  "cleanup": "cleanup.json",
+  "packagePreservation": "package-preservation.json"
+}
