@@ -4,9 +4,9 @@ Status: exploratory design, owned by Vickie with product rulings by Donna. Last 
 
 This Markdown document on `donnabox/beads:codex/vickie-bdp-client-design` is the single plan of record at Donna's request. It replaces the upstream issue and intentionally overrides the fleet's issue-shaped tracker convention. It is a coordination and design record, not a normative BDP amendment or release commitment. Earlier client/journal proposals remain on this fork branch; the BDP editorial and implementation work authorized below has separate upstream review PRs.
 
-## Autonomous profile completion — paused execution plan
+## Autonomous profile completion — active execution plan
 
-**Paused for the operator’s power cutoff, 2026-10-14 UTC:** heartbeat is PAUSED, workers are idle, and no owned validation processes remain. Preserve the existing session claim. Resume only on operator instruction. The standing scope permits main merges of ready BDP PRs after exact-head CI, native Codex plus Claude review, finding disposition and ordinary ancestry; release and Preview2 promotion remain unauthorized. Exact delivered state and next actions are in the live ledger below.
+**Operator resumed for one hour of inflight wifi at2026-10-14T02:35Z.** Active work is bounded by03:25Z wind-down and03:30Z checkpoint/process-stop/heartbeat-pause. Current assignment and exact state are in the live ledger. Ready main merges remain authorized after exact-head CI, native Codex plus Claude council, disposition and ordinary ancestry. No release or Preview2 promotion.
 
 Source: BDP main `caf5ca75a4e9b9c7865e61e97f849ab736c21e64`, normative `docs/specs/bdp.md`, mirrored schema/catalogs, completed review dispositions and preserved Update/Transactional work. Initial deployable target is the existing bdptest/SQLite reference implementation. The bdpbd adapter retains its independently qualified Read behavior; no Beads CLI implementation is required or edited to make bdptest progress. This is the sole plan; supporting audit/worker reports do not create competing authority.
 
@@ -62,7 +62,7 @@ Original service-review lows: RU trusted callback capability narrowing and publi
 
 ### Live worker ledger
 
-Checkpoint 2026-10-14T00:09:58Z. Autonomous profile completion is **paused for the operator’s power/connectivity cutoff**. Heartbeat `vickie-bdp-profiles` was set to PAUSED and verified by the app. Keep session `2026-10-08T20:26:35Z-81e5`; no reclaim or retirement. No new implementation should start until the operator resumes. Full required write-profile delivery remains incomplete; public write admission is closed and diagnostic counts are not qualification.
+Checkpoint 2026-10-14T02:38:01Z. Autonomous profile completion is **active for the operator’s one-hour inflight wifi window**, resumed2026-10-14T02:35Z (7:35p.m. Pacific October13). Existing session `2026-10-08T20:26:35Z-81e5` remains verified; no new claim. Heartbeat ACTIVE. Begin wind-down03:25Z; checkpoint, stop owned processes and pause heartbeat by03:30Z (8:30p.m. Pacific), unless extended. Full required delivery remains incomplete; public write admission closed and diagnostic counts are not qualification.
 
 ## Delivered and verified main
 
@@ -91,17 +91,23 @@ Add eight observations: for each Resource kind, schema-invalid PropertyChange wi
 
 On operator resume, verify remote session/current main, assign an exact ordinary parent and verify the plan basis before authoring the three scoped files. Do not invent the future parent or blindly refresh hashes. Preserve old84 action spans,20 comparator pairs, exact8-action partition and100/5546+66/3700 binding ledgers; run specified positive and four negative controls and fresh genuine54-row/129-required packing. R remains false,33 whole/96 not whole until separate execution and code/clause review. Any promotion to34 whole requires a separate evidence step. Raw correction response→GET opaque revision linkage remains unobserved. No unavoidable human product decision blocks this slice.
 
-## Workers, processes and resume instructions
+## Active workers and current assignment
 
-All four workers are COMPLETE and idle: transaction_implementation (0359 repair), update_implementation (c872 integration), profile_runtime_inventory (version2 plan), profile_editorial_inventory (version2 closure). Both external Claude processes54353/96756 exited normally. Actual process scan found no owned Vickie validation server, reviewer or caffeinate process. No services or workers need to be kept alive for remote CI.
+- update_implementation: assigned the accepted schema PropertyChange version2 on exact remote main627b560c0daf1a76b292615718c86670255ac9af. Isolated checkout `/Users/dbox/repos/wt/vickie/vickie-schema-property-change`, branch `codex/vickie-schema-property-change`. Must verify unchanged RU basis before authoring. Owns only continuation manifest, RU coverage and bdptest matrix tests; Rfalse. Freeze/checkpoint by03:15Z, stop children by03:25Z. Report `schema-property-change/report.md` under logs. Root handles pushes/PR and review; no other writer in these files.
+- transaction_implementation: read-only next required TX gap plan after PR101, exact same main; no tests/source/runtime work. Report `transaction-after-receipts-next-plan.md` by03:00Z. Exclude optional History/Types/YAGNI/provenance and Update scope.
+- profile_editorial_inventory and profile_runtime_inventory: idle, available for independent review.
 
-On operator resume, first verify the existing session and current remote main, then assign the accepted schema-update slice an exact ordinary parent with unchanged plan basis. PR101 is already merged and verified; do not duplicate it. Operator authorizes ready main merges after exact-head green CI, native+Claude council, finding disposition, scope/ordinary ancestry and actual merged-tree verification. No new human approval is needed within that standing scope once resumed. Full write-profile public admission remains closed. No release/Preview2 promotion, Janet CLI/staging/playgrounds/shared DB, Trish Types, optional History/YAGNI or unresolved provenance work.
+Prior external reviewers and validation processes exited; new assigned processes must be checked rather than assumed. All source work remains isolated. Accepted R plan is now authorized for implementation under the operator’s resumed window, with exactly its three authoring amendments and no automatic promotion.
 
-Sole plan remains fork design.md; logs `/Users/dbox/repos/wt/vickie/bdp-integration-logs`. `guarded-action.py` rereads the remote session claim before every outward mutation. `checkpoint-ledger.py` publishes explicit reports, patches own bus comment6118051413, saves server cursor and CAS-verifies launch. Read incremental bus/inbox on resume. Use pinned Node24.16.0/pnpm11.20.0. Preserve exact historical evidence and ordinary ancestry.
+## Coordination and gates
+
+Operator authorizes ready main merges after exact-head green CI, native+Claude council, finding disposition, scope/ordinary ancestry and actual merged-tree verification. No further human approval needed within this scope. No release/Preview2 promotion or Janet CLI/staging/playgrounds/shared DB/Trish Types changes. Main remotely verified627b560c on resume. Incremental bus through2026-10-14T01:58:01Z contained Trish Memory/Issue design FYIs only, no action requested.
+
+Sole plan remains fork design.md; logs `/Users/dbox/repos/wt/vickie/bdp-integration-logs`. `guarded-action.py` rereads remote claim before outward mutation. `checkpoint-ledger.py` publishes reports/ledger, patches own bus comment6118051413 and CAS-verifies launch with server cursor. Check inbox at natural boundaries. Pinned Node24.16.0/pnpm11.20.0. Preserve exact historical evidence and ordinary ancestry.
 
 ## Current priority: BDP profile structure and implementation
 
-**Autonomous profile completion is paused for the power window.** The metadata/provenance/editorial delivery remains complete. Working Update and Transactional profiles remain the objective after the operator resumes. Continue from verified main and the accepted next slice recorded in the live ledger, preserving exact evidence. No new product semantics are inferred. Optional History, YAGNI removals, Types and provenance proposals stay separate. No Preview2 promotion or edits to Janet’s CLI/staging/playgrounds/shared databases or Trish’s branches.
+**Autonomous profile completion is active for the flight window.** The metadata/provenance/editorial delivery remains complete. Working Update and Transactional profiles remain the objective. Continue from verified main and the accepted next slice recorded in the live ledger, preserving exact evidence. No new product semantics are inferred. Optional History, YAGNI removals, Types and provenance proposals stay separate. No Preview2 promotion or edits to Janet’s CLI/staging/playgrounds/shared databases or Trish’s branches.
 
 BDP specification and executable profiles take priority over further V2 architecture design. Work is authorized in the BDP repository on normative prose, schemas, examples, validation, reference implementations and conformance. Donna retains product rulings; Vickie owns BDP integration and normative changes. Janet owns Beads CLI implementation and Preview 2 release integration; Trish owns Types for Preview 3. Donna authorizes choosing the landing timing for the approved bounded work after review and verification. PR78 remains the earlier client/journal design discussion; profile implementation belongs in separate reviewable BDP PRs.
 
