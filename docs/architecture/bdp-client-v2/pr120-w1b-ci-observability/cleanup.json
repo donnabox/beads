@@ -1,0 +1,52 @@
+{
+  "checkedAt": "2026-10-14T18:54:34.316914+00:00",
+  "recordedPids": [
+    4308,
+    4309,
+    4365,
+    4366,
+    4405,
+    4406,
+    4421,
+    4423,
+    4439,
+    4650,
+    4651,
+    4652,
+    4654,
+    4655,
+    4657,
+    4670,
+    4678,
+    4679,
+    4693,
+    4694,
+    4903,
+    4904,
+    4921,
+    4955,
+    4965,
+    4967,
+    4971
+  ],
+  "recordedPidsStillPresent": [],
+  "groups": [
+    4366,
+    4655,
+    4657,
+    4904,
+    4309,
+    4651
+  ],
+  "remainingGroupProcesses": [],
+  "observedTemporaryRoots": [
+    "/var/folders/cc/hh74y1f16qj9gfbv8x4x2n6m0000gn/T/bdp-cumulative-ru-g2D56r"
+  ],
+  "rootsAbsent": true,
+  "finalMatchingTemporaryRoots": [],
+  "installedChildSamples": [
+    " 4967  4955  4904 102112       00:00 R    /Users/dbox/.nvm/versions/node/v24.16.0/bin/node /Users/dbox/repos/wt/vickie/vickie-w1b-ci-observability/packages/server/dist/installed-reference-process.js",
+    " 4971  4955  4904 103072       00:00 R    /Users/dbox/.nvm/versions/node/v24.16.0/bin/node /Users/dbox/repos/wt/vickie/vickie-w1b-ci-observability/packages/server/dist/installed-reference-process.js"
+  ],
+  "limit": "100ms process/root inventory sampling can miss short-lived processes; child-close assertions and finally root removal additionally exercised by passing test. No per-request report recorded."
+}
