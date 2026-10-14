@@ -1,0 +1,89 @@
+{
+  "source": "fc9803565d221e43ef230d4efa2c8a78f3a7028f",
+  "mainBasis": "0432d48db8f340016a000d633d799aebbd26db3f",
+  "parents": [
+    "3959a25e70bc6dc9d143abfead187ccaf84ca11e",
+    "8d23862a03e65fa378a246310d804f0408b73937"
+  ],
+  "expectedMergeTree": "0bd3bee8b2cd3c817c7b2d91a72170c89d2fab79",
+  "actualTree": "0bd3bee8b2cd3c817c7b2d91a72170c89d2fab79",
+  "automaticMerge": true,
+  "donors": {
+    "alias": {
+      "donor": "3959a25e70bc6dc9d143abfead187ccaf84ca11e",
+      "files": {
+        "apps/bdptest/src/transactional-collection-minimum-installed.test.ts": {
+          "actualBlob": "d6b2855a55438d9946929b286edf6ac8c231e743",
+          "donorBlob": "d6b2855a55438d9946929b286edf6ac8c231e743",
+          "equal": true
+        },
+        "docs/design/transaction-implementation-progress.md": {
+          "actualBlob": "c7e7bd46eeee63c9f9a228fe5eb51348c729a6e2",
+          "donorBlob": "c7e7bd46eeee63c9f9a228fe5eb51348c729a6e2",
+          "equal": true
+        },
+        "packages/server/src/transaction-http.test.ts": {
+          "actualBlob": "5462b4e6ac6b5f67d84c38547362ca3a79f52455",
+          "donorBlob": "5462b4e6ac6b5f67d84c38547362ca3a79f52455",
+          "equal": true
+        },
+        "packages/server/src/transaction-http.ts": {
+          "actualBlob": "8b042504a578d6baba722c523b7e9bbd6042d390",
+          "donorBlob": "8b042504a578d6baba722c523b7e9bbd6042d390",
+          "equal": true
+        },
+        "packages/server/src/transaction-read.test.ts": {
+          "actualBlob": "eedd409a9039733d83234ebf7518fae4d9dffa6b",
+          "donorBlob": "eedd409a9039733d83234ebf7518fae4d9dffa6b",
+          "equal": true
+        },
+        "packages/server/src/transaction-read.ts": {
+          "actualBlob": "88158c0ed801335082b0c973e06c625a78a4f705",
+          "donorBlob": "88158c0ed801335082b0c973e06c625a78a4f705",
+          "equal": true
+        },
+        "packages/server/src/transaction-service.ts": {
+          "actualBlob": "524661c67acd52821fc0d3547255b84adcc60164",
+          "donorBlob": "524661c67acd52821fc0d3547255b84adcc60164",
+          "equal": true
+        }
+      }
+    },
+    "completedKey": {
+      "donor": "8d23862a03e65fa378a246310d804f0408b73937",
+      "files": {
+        "apps/bdptest/src/transactional-matrix.test.ts": {
+          "actualBlob": "e08f24d96f1f1ace6b950824d87ce56935839fb2",
+          "donorBlob": "e08f24d96f1f1ace6b950824d87ce56935839fb2",
+          "equal": true
+        },
+        "packages/conformance/src/transactional-cumulative.test.ts": {
+          "actualBlob": "9e2ee0fb7cc4526a9727c56ce6200e218ac65c33",
+          "donorBlob": "9e2ee0fb7cc4526a9727c56ce6200e218ac65c33",
+          "equal": true
+        },
+        "packages/conformance/test-support/transactional/coverage-v1.json": {
+          "actualBlob": "3fe58aae463c2c4e32cc34b4d8e2c558faacd7e4",
+          "donorBlob": "3fe58aae463c2c4e32cc34b4d8e2c558faacd7e4",
+          "equal": true
+        },
+        "packages/conformance/test-support/transactional/manifest-v1.json": {
+          "actualBlob": "16650dd3c633a84b7fe9ce005d32246ac47850cc",
+          "donorBlob": "16650dd3c633a84b7fe9ce005d32246ac47850cc",
+          "equal": true
+        }
+      }
+    }
+  },
+  "allOtherTrackedFilesEqualMain": true,
+  "finalDocSuccessor": {
+    "source": "7171251d282769c1b9e2a39aed63e16f8b24ed96",
+    "tree": "76931ffeede5532cf11bd742d41dac9cdf5e7f01",
+    "onlyChangeFromMerge": "docs/design/transaction-implementation-progress.md",
+    "allProductionAndTestDonorBytesPreserved": true,
+    "protocolAndServerPackedFilesEqualMerge": {
+      "protocol": true,
+      "server": true
+    }
+  }
+}

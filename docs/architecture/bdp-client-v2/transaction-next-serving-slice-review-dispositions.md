@@ -1,0 +1,3 @@
+# Current minimum perform receiving plan dispositions
+
+Original plan d245c319 stays frozen for external review. Native P3 accepted in plan-v2: original-signal abort/no-next-entry alone also passes the old implementation, so the already-planned positive comparator now explicitly replaces caller signal with a pre-aborted signal while keeping the captured original active and committing to the required position. Successful retry then distinguishes immutable capture from rereading caller input. No extra installed request, new mechanism or protocol rule. External review remains pending; no authoring release.
