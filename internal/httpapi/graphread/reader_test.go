@@ -62,7 +62,7 @@ func TestAuthoritativeRecordsProjectToPublicWire(t *testing.T) {
 			})
 			r := New(s)
 			empty, err := r.Inventory(ctx)
-			if err != nil || len(empty.Beads) != 0 || len(empty.Links) != 0 || len(empty.Types) != 11 || empty.WriterToken == "" {
+			if err != nil || len(empty.Beads) != 0 || len(empty.Links) != 0 || len(empty.Types) != 6 || empty.WriterToken == "" {
 				t.Fatalf("empty installed inventory: %+v, %v", empty, err)
 			}
 			memory, err := s.Create(ctx, graphstore.CreateRequest{Path: "beads/plan", Title: "Memory — 記憶", Body: "", Actor: "human:Donna <unchanged>", Metadata: json.RawMessage(`{"reviewed":true}`)})
@@ -220,7 +220,7 @@ func checkInventory(t *testing.T, ctx context.Context, reader *Reader, beads, li
 	if err != nil {
 		t.Fatal(err)
 	}
-	if len(value.Beads) != beads || len(value.Links) != links || len(value.Types) != 11 {
+	if len(value.Beads) != beads || len(value.Links) != links || len(value.Types) != 6 {
 		t.Fatalf("incomplete inventory: %d Beads, %d Links, %d Types", len(value.Beads), len(value.Links), len(value.Types))
 	}
 	verify := func(id string, record any) {
