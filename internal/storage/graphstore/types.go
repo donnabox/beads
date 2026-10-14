@@ -32,8 +32,8 @@ type Options struct {
 	Branch   string
 	Binding  Binding
 	// TypeGeneration is the admitted workspace marker generation. Zero lets
-	// direct storage callers inspect any recognized persisted generation; the
-	// CLI supplies 5, 6, or 7 and requires that marker's installed Type count.
+	// direct storage callers inspect the checked fresh installation; the CLI
+	// supplies generation 9 and requires that marker's installed Type count.
 	TypeGeneration int
 	ServerHost     string
 	ServerPort     int
