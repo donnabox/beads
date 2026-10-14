@@ -1,0 +1,15 @@
+Scope: all 12 workspace projects
+✓ Lockfile passes supply-chain policies (verified 2d ago)
+Lockfile is up to date, resolution step is skipped
+Already up to date
+
+Done in 245ms using pnpm v11.20.0
+$ biome format .
+packages/conformance/matrices/read-update-v1.json format ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  ! The size of the file is 3.5 MiB, which exceeds the configured maximum of 1.0 MiB for this project.
+    Use the `files.maxSize` configuration to change the maximum size of files processed, or `files.includes` to ignore the file.
+  
+
+Checked 438 files in 79ms. No fixes applied.
+Found 1 warning.

@@ -62,7 +62,7 @@ Original service-review lows: RU trusted callback capability narrowing and publi
 
 ### Live worker ledger
 
-Checkpoint 2026-10-14T22:17:17Z. **ACTIVE: Transactional first**, with shared and targeted Update checks. Session `2026-10-08T20:26:35Z-81e5`. Public write profiles remain unadvertised; installed cumulative delivery predicates remain unmet. Ready main merges are operator-authorized after exact-head CI, native+Claude council, findings disposition, scope and ordinary ancestry checks, and actual merged-tree verification. Gemini excluded. No release/Preview2 or Janet CLI/staging/playgrounds/shared databases/Trish Type edits.
+Checkpoint 2026-10-14T22:32:32Z. **ACTIVE: Transactional first**, with shared and targeted Update checks. Session `2026-10-08T20:26:35Z-81e5`. Public write profiles remain unadvertised; installed cumulative delivery predicates remain unmet. Ready main merges are operator-authorized after exact-head CI, native+Claude council, findings disposition, scope and ordinary ancestry checks, and actual merged-tree verification. Gemini excluded. No release/Preview2 or Janet CLI/staging/playgrounds/shared databases/Trish Type edits.
 
 ### Verified main and completed serving work
 
@@ -99,11 +99,11 @@ Isolated successor `/Users/dbox/repos/wt/vickie/vickie-comparison-fault-typing-r
 All nine installed cohorts completed and were individually adjudicated on frozen c02ccc37. [PR122](https://github.com/gastownhall/bdp/pull/122) is merged and tree-verified after exact c02ccc37 CI success. [Final independent actual-evidence audit](transaction-cross-carrier-draft/native-actual-evidence-review.md), SHA8fc7bb22, is complete and fully root-read with no blocker.
 | Worker | Scope | State / next |
 |---|---|---|
-| update_implementation | PR123 landing preparation | Completed landing-check8d63c1e0; root reviewed; acceptance absent until actual green CI |
+| update_implementation | PR123 spec boundary repair | Completed one-file repair, ordinary727e919;95static passes/native clean; no runtime change |
 | cross_carrier_native_review | Actual installed evidence audit | Completedbe01d032,313members/eightpackages/18responses/child99866closed and absent; root-read |
 | cross_carrier_plan_v2_review | Native source/control and Selector reanchor | Source940913a7 and controls3ff2f2b5 clean/root-read; Selector interfaces unchanged, exact reanchor map recorded |
-| External Claude | Actual command code review | Completed22:01:04Z exit0/a98fc90f, source unchanged, reaped; actionable F1/F2 corrected |
-| Root | Serving integration | PR123 ready f2ac3f98; local/source/controls/installed evidence complete, exact CI38645926223 pending |
+| External Claude | Spec delta review blocked | OAuth expired22:30:16Z; exit1/no review. User reauthentication requested; no unchanged retry |
+| Root | Serving integration | PR123 draft727e919; fresh CI38648263438 running; merge held for Claude delta review and green CI |
 
 
 ### Cross-carrier evidence delivered in PR122
@@ -168,6 +168,19 @@ Restored-command control ran once, failed exactly the named accepted200 oracle w
 Fresh protocol/server packages from f2ac, complete313member source/archive/installed equality, exact eight-package closure, consumer lock and payload **53d3e65061c706d51b666d16e770db7bb0a8147decd15383d42851a16e0f5c68** verified. [Actual installed provenance](transaction-command-minimum-later-preparation-v4/run/installed-provenance.json), [root installed summary](transaction-command-minimum-final-draft/root-installed-summary.json)06d91c81 and [actual evidence audit](transaction-command-minimum-later-preparation-v4/native-actual-evidence-audit.md)be01d032 record one passing installedTX case,18actualresponses/9URLs/onechild99866exit0closed/absent, runtime root absent. Same raw serializer empty-header witness passed; receipt minima still503/409/200/HEAD503 as appropriate. Artifact auditor authored preparation and is labelled accordingly, not an additional independent code council. Retained report uses response fingerprints/full assertions in bound test, not reconstructed full wire bodies. All ten final stages passed with clean source and cleanup. No local owned service/review processes remain.
 
 [Selector reanchor audit](transaction-selector-pr123-reanchor-audit.md) reports no new semantic/interface blocker on f2ac; only HTTP/spec/test line drift. Preserve command-ignore code/tests and reanchor the accepted twelve-path Selector plan against actual verified PR123 merge before authoring. Next: finish CI/actual main merge, then Selector implementation. Public profiles remain unadvertised/incomplete; required cumulative command-minimum catalog mapping remains a follow-up before qualification. No release or Preview2 promotion.
+
+
+### PR123 spec repair published; Claude authentication required
+
+First CI38645926223 completed failure22:27:58Z:9266passes/2failed/1skip,171of172files passed,755.31s. Both failures are existing profile/Part boundary tests rejecting the new RU forward link to Transactional. Later preflight/smoke/Read stages were skipped. [Diagnosis](transaction-command-minimum-ci-first-diagnosis.md) records missed local boundary selection and council oversight; no flaky/timeout or unchanged retry claim. Full log retained locally SHA88b468b8c40f3ffa4ca451d56884dea03b52f208a73cf3d0b2b99eed4d55c237.
+
+[Spec-only repair](transaction-command-minimum-ci-repair/report.md) moves the exact shared MUST core into RU and links backward from TX, preserving receipt GET/HEAD minima, all guards and original runtime/testbytes. Clean ordinary successor **727e919c2893bd34d5e72ea4659302a999bc4a6f**, tree **734bf9daf40fd17d0fe2bf86b085598589122f2f**, parentf2ac3f98; [source](transaction-command-minimum-ci-repair/final-source.json). [Native delta](transaction-command-minimum-ci-repair/native-review.md)1c86875d clean/root-read. Root expanded validation to all four existing boundary/RUcatalog/TXcatalog/contractplan files;95passed/0failed/0skipped in2.93s,formatpassed withexistinglargefilewarning. [Summary](transaction-command-minimum-ci-repair/root-validation-summary.json). No runtime/installed rerun; original evidence attribution preserved.
+
+External [Claude attempt](transaction-command-minimum-ci-repair/claude.txt) failed before review with expired OAuth/could not refresh, exit1 at22:30:16Z; sourceunchanged,process11959 reaped. User asked to reauthenticate. **No Claude delta approval exists.** PR123 converted to draft and repaired head published; fresh exact CI **38648263438** running. No main merge/ready until actual Claude review+dispositions and exact greenCI. Original f2ac landing checker is historical and must not be used for727e; ordinary ancestry now1228→f2ac→727e, future synthetic/actualmerge musthaveparents1228+727e and tree734bf9.
+
+[Selector v3](transaction-selector-admission-implementation-plan-v3.md)05fd6cf2 is a mechanical pre-repair reanchor only; mergedparent stillPENDING/authoringNOTRELEASED. Refresh specanchors against actual final predecessor before authoring. [Catalog followup](transaction-command-minimum-catalog-followup.md)0d6e8a0d confirms command-ignore MUST unmapped; smallest later mapping is oneRUrow inherited byTX, no historical credit. This does not displace Selector serving repair.
+
+Next independent action: inspect newCI outcome; if Claude access remains unavailable after CI/evidence checkpoint and no independent work remains, pause heartbeat/report explicit external-auth stop rather than loop or waive council. No release/publicqualification/Preview2.
 
 ## Current priority: BDP profile structure and implementation
 
