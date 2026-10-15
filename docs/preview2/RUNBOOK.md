@@ -16,53 +16,72 @@ bd status --graph
 bd types
 ```
 
-Run the rest of the CLI examples in this directory. The optional BDP Read exercise near the end has its own setup, shown as terminal commands.
+This uses embedded Dolt storage. To try BDP, use the separate shared-server workspace in [Optional BDP Read exercise](#5-optional-bdp-read-exercise) *instead* of running the commands above. BDP requires a shared-server workspace.
 
-## Beads, Links, Types, and kinds
+## Beads, Links, and Types
 
-The system stores a graph: **Beads** are its nodes, and **Links** connect two Beads.
+The graph contains **Beads** (nodes) and **Links** (connections between Beads). Each has a Type. A Type identifies the sort of record and defines which properties and endpoints are allowed. Use `--type` to choose a Type when you create, search for, or filter a Bead or Link.
 
-Every Bead or Link has a Type that describes its expected properties. A Link Type also says which Beads it can connect.
+Run `bd types` to see the names accepted by `--type`. In a new Preview 2 workspace, its default display is:
 
-The installed Type catalog is fixed for this preview:
+Without `--type`, `bd create` makes a `task` Issue. `bd link create` requires `--type`; the shorter `bd link SOURCE TARGET` makes a `blocks` Dependency.
 
-| Bead Types | Link Types |
-| --- | --- |
-| `preview-issue` | `preview-dependency` |
-| `preview-memory` | `preview-related` |
-| | `example-cites` |
-| | `example-follows` |
+```text
+Bead Types (14):
+  preview-memory            Memory Preview
+  task                      Task Issue
+  bug                       Bug Issue
+  feature                   Feature Issue
+  chore                     Chore Issue
+  epic                      Epic Issue
+  decision                  Decision Issue
+  spike                     Spike Issue
+  story                     Story Issue
+  milestone                 Milestone Issue
+  message                   Message Issue
+  molecule                  Molecule Issue
+  gate                      Gate Issue
+  event                     Event Issue
 
-Run `bd types` to see these in your workspace, or `bd types --details` to inspect their fields. `--bead-type` selects a Bead Type when creating an Issue or Memory. `--link-type` selects a Link Type when connecting Beads.
+Link Types (22):
+  preview-related-memory    Related Memory Preview
+  example-cites             Example Cites
+  example-follows           Example Follows
+  blocks                    Blocking Dependency
+  parent-child              Parent/Child Dependency
+  conditional-blocks        Conditional Blocks Dependency
+  waits-for                 Waits For Dependency
+  related                   Related Dependency
+  discovered-from           Discovered From Dependency
+  replies-to                Replies To Dependency
+  relates-to                Relates To Dependency
+  duplicates                Duplicates Dependency
+  supersedes                Supersedes Dependency
+  authored-by               Authored By Dependency
+  assigned-to               Assigned To Dependency
+  approved-by               Approved By Dependency
+  attests                   Attests Dependency
+  tracks                    Tracks Dependency
+  until                     Until Dependency
+  caused-by                 Caused By Dependency
+  validates                 Validates Dependency
+  delegated-from            Delegated From Dependency
+```
+Bead types already require a registered type when you create a new bead.  Links don't have that requirement in the shipping product. We will soon close that hold and require both bead AND link types to be registered.
 
-The CLI checks these Type rules when it creates or updates a record. For example, `preview-dependency` connects Issues, while `preview-related` can connect Issues or Memories.
+We recently changed the design for the type interface and this preview has only implemented some of the changes.  If you see the names `preview-issue` or `preview-dependency` you found one of the seams. Preview 3 is focused on correctness, consistency, and completeness of the CLI, so those SHOULD disappear shortly.
 
-The separate `--type` flag sets an **Issue kind**, such as `task` or `epic`, or a **Dependency kind**, such as `blocks` or `parent-child`. Both kinds are text values on a single installed Type. A custom Dependency kind may be entered, but only well-known kinds have built-in behavior; an unknown kind does not block work.
+Look for a future blog post going over all the things related to bead and link types. For now, this should be all we need to know to use the product.
 
-These examples show how the two Type selectors and the separate kind field interact:
+## Working with Beads and Links
 
-| `--bead-type` | `--type` | Result |
-| --- | --- | --- |
-| Omitted | `task` (or omitted) | An Issue; the default kind is `task`. |
-| `preview-issue` | `epic` | An Issue with `issue_type=epic`. |
-| `preview-memory` | Omitted | A Memory. Issue kinds do not apply. |
-| `preview-issue` | `random-kind` | Refused unless that Issue kind has been configured in `types.custom`. |
-| `random-type` | Omitted | Refused because that Bead Type is not installed. |
+Beads and Links have much in common:
 
-| `--link-type` | `--type` | Result |
-| --- | --- | --- |
-| `preview-dependency` | `blocks` (or omitted) | A Dependency with `dep_type=blocks`. |
-| `preview-dependency` | `parent-child` | A Dependency with `dep_type=parent-child`. |
-| `preview-dependency` | `tracks` | A Dependency with a custom kind; it has no built-in blocking behavior. |
-| `preview-related` | Omitted | A Related Link; this is a placeholder Type for Preview 2. |
-| `random-type` | Omitted | Refused because that Link Type is not installed. |
+- Each has a unique ID. IDs can contain slashes, so you can organize them into paths.
+- Each has properties checked against its Type. Beads and Links also have separate metadata. Dependency Link metadata cannot be set in this preview; `preview-related-memory` and the example Link Types support it.
+- Each has saved versions that you can inspect and compare.
 
-An unconfigured random Issue kind is refused; an arbitrary nonempty Dependency kind of up to 32 bytes is accepted. This is a current CLI difference, not a difference between the installed Issue and Dependency Types.
-
-Beads and Links both have IDs, properties, metadata, and saved versions. Properties are checked against the record's Type. Metadata holds extra information that is not specific to its Type.
-
-
-The main commands operate on Beads, and a parallel `bd link` set operates on Links:
+The CLI uses top-level commands for Beads and the `bd link` namespace for Links:
 
 | Task | Beads | Links |
 | --- | --- | --- |
@@ -77,41 +96,46 @@ The main commands operate on Beads, and a parallel `bd link` set operates on Lin
 
 Several familiar commands provide narrower, convenient forms of these operations:
 
-| Command | Use |
-| --- | --- |
-| `bd remember`, `bd recall`, `bd forget`, `bd memories` | Create or update, read, delete, and list Memories. `recall` returns the body rather than the whole record. |
-| `bd dep add`, `bd dep remove` | Create a Dependency between two Issues, or remove a blocking Dependency by its Issue pair. The pair-removal limits are listed below. |
-| `bd history` | List saved versions of one record, like `bd versions`. |
-| `bd new`, `bd q` | Short ways to create an Issue. |
+| Shortcut | Closest general command | Difference |
+| --- | --- | --- |
+| `bd remember` | `bd create --type preview-memory` or `bd update` | `remember` takes the Memory body as a positional argument. |
+| `bd recall` | `bd show` | `recall` prints the body rather than the full record. |
+| `bd forget` | `bd delete --force` | `forget` deletes a Memory immediately. |
+| `bd memories` | `bd list --type preview-memory` | `memories` also searches Memory titles and bodies. |
+| `bd dep add` | `bd link create` | `dep add` accepts an Issue pair and a Dependency kind. |
+| `bd dep remove` | `bd link delete --force` | `dep remove` selects a blocking Dependency by Issue pair; `link delete` selects a Link ID. |
+| `bd history` | `bd versions` | Both list saved versions. |
+| `bd new`, `bd q` | `bd create` | Short Issue creation forms. |
 
 `bd link query` is not available in this preview.
 
 
-## 1. Beads, Issues and Memories
+## 1. Beads, Memories and Issues
 
+A **Memory** is a Bead that stores reusable information. Its properties are a title and a body; the body is Markdown text.
 
-A **Memory** is a Bead that stores reusable information. These four examples all hold policies. These examples move from the general `create` form to shorter field flags and then the Memory-specific `remember` command.
+The next four examples create Memories about release policies. They show the general `create` form, shorter field flags, and the Memory-specific `remember` command.
 
 ### Create
 
 Create the first Memory by supplying its Type-checked properties and separate metadata as JSON:
 
 ```sh
-bd create --bead-type preview-memory --id policy-a \
-  --properties '{"title":"Policy A","body":"Review before publishing."}' \
+bd create --type preview-memory --id policy-a \
+  --properties '{"title":"Policy A","body":"Review *before* publishing."}' \
   --metadata '{"origin":"manual test"}'
 ```
 
 Create the second with individual field flags:
 
 ```sh
-bd create --bead-type preview-memory --id policy-b --title 'Policy B' --body 'Retain the review evidence.'
+bd create --type preview-memory --id policy-b --title 'Policy B' --body 'Retain the review evidence.'
 ```
 
 The positional argument can also supply the title:
 
 ```sh
-bd create 'Policy C' --bead-type preview-memory --id policy-c --body 'Review policy changes before release.'
+bd create 'Policy C' --type preview-memory --id policy-c --body 'Review policy changes before release.'
 ```
 
 Finally, `remember` chooses the Memory Type for you and takes the body as its positional argument:
@@ -131,15 +155,15 @@ bd create 'Relationship parent' --id rel-parent --type epic
 
 ### List Beads
 
-The general `list` command can include all installed Bead Types. Narrow it to Memories with `--bead-type`, or use the Memory-specific `memories` command:
+The general `list` command can include Issues and Memories. Narrow it to Memories with `--type`, or use the Memory-specific `memories` command:
 
 ```sh
-bd list --format records-json --all
-bd list --format records-json --bead-type preview-memory --all
+bd list --format records-json
+bd list --format records-json --type preview-memory
 bd memories --all
 ```
 
-The ordinary `--json` output of `bd list` shows Issues only for compatibility, even without `--bead-type`. Use `--format records-json` when you want both Issues and Memories.
+`bd list --json` shows Issues only. Use `--format records-json` for both Bead Types. On `bd list`, `--all` includes closed and pinned Issues and removes the default row limit within Preview 2's bounds; it does **not** add Links. Use `bd link list` for Links.
 
 ```sh
 bd list --json --all
@@ -156,7 +180,9 @@ bd recall policy-a
 
 ### Edit and compare versions
 
-`update` changes only the named properties. `--replace-properties` replaces the entire writable properties object, so it must include every required field. `--patch` applies a list of changes. `remember --update` is another way to edit a Memory.
+`update --properties` changes only the named properties. `--replace-properties` replaces the entire writable properties object, so it must include every required field. `--patch` applies an ordered JSON Patch-style list of `add`, `replace`, or `remove` operations to properties.
+
+Here are all three ways to update properties:
 
 ```sh
 bd update policy-a --properties '{"body":"Review and qualify before publishing."}'
@@ -164,8 +190,11 @@ bd update policy-a --replace-properties '{"title":"Policy A","body":"Reviewed po
 bd update policy-a --patch '[{"op":"replace","path":"/body","value":"Qualified policy."}]'
 ```
 
+`remember --update ID` is a Memory-specific shortcut. A positional argument changes the body; `--title` changes the title. You can supply either or both. Omitted fields stay unchanged.
+
 ```sh
 bd remember 'Review before publishing and after any major change.' --update policy-a
+bd remember --update policy-a --title 'Policy A, revised'
 bd update policy-a --set-metadata team=docs
 bd update policy-a --set-metadata reviewed=true
 bd update policy-a --unset-metadata team
@@ -185,7 +214,7 @@ bd compare policy-a --from "$old_policy_revision" --to "$new_policy_revision" --
 
 ### Delete
 
-`delete` first previews a deletion. `forget` performs a guarded Memory deletion. It is the Memory-specific form of `delete --force --if-revision`. A Memory with a live Link cannot be deleted; the Link must be removed first. Keep `policy-a` and `policy-b` for the next section.
+`delete` first previews a deletion. `forget` performs a guarded Memory deletion. With `--if-revision`, it is the Memory-specific form of `delete --force --if-revision`. A Memory with a live Link cannot be deleted; the Link must be removed first. Keep `policy-a` and `policy-b` for the next section.
 
 ```sh
 bd delete policy-c
@@ -195,14 +224,14 @@ bd forget policy-c --if-revision "$policy_c_revision"
 
 ## 2. Connect Beads with Links
 
-The examples here use Related Links and Dependency Links. `preview-related` is a placeholder Link Type for this preview. The `bd link` commands select Links, so the examples use short Link IDs.
+The examples here create and manage Links. `bd link` is the general namespace for Links. `bd dep` is a shortcut for Dependencies between Issues.
 
 ### Related Links
 
-The first example connects `policy-a` to `policy-b` with a Related Link. Its optional `note` property is checked against the Link Type; metadata is separate. Editing this Link advances its source Memory's saved state but does not change the target Memory.
+The first example connects `policy-a` to `policy-b` with a `preview-related-memory` Link. This is different from the `related` Dependency between Issues. Its optional `note` property is checked against the Link Type; metadata is separate. Editing this Link advances its source Memory's saved state but does not change the target Memory.
 
 ```sh
-bd link create --source policy-a --target policy-b --link-type preview-related --id policy-related-b --properties '{"note":"supporting policy"}' --metadata '{"origin":"draft"}'
+bd link create --source policy-a --target policy-b --type preview-related-memory --id policy-related-b --properties '{"note":"supporting policy"}' --metadata '{"origin":"draft"}'
 ```
 
 Read the Link and the Links leaving `policy-a`:
@@ -241,12 +270,13 @@ bd link delete policy-related-b --force --if-revision "$related_revision"
 
 ### Blocking dependencies
 
-A **Dependency** is a Link between two Issues. In `dep add BLOCKED BLOCKER`, the first Issue waits for the second. The default kind is `blocks`; the examples below use `--type` to name other relationships.
-The general `bd link create` form makes the relationship directly. The `bd dep add` form is a shorter way to create a Dependency. An ordered Issue pair can have only one Dependency, regardless of kind, so remove the first one before trying the shorter form.
+A **Dependency** is a Link between two Issues. In `bd dep add BLOCKED BLOCKER`, the first Issue waits for the second when the Type is `blocks`. `bd link create` is the general way to make the same Link; `bd dep add` is a shorter form. An ordered Issue pair can have only one Dependency, regardless of Type, so remove the first one before trying the shorter form.
+
+The built-in Dependency choices shown by `bd types` are `blocks`, `parent-child`, `conditional-blocks`, `waits-for`, `related`, `discovered-from`, `replies-to`, `relates-to`, `duplicates`, `supersedes`, `authored-by`, `assigned-to`, `approved-by`, `attests`, `tracks`, `until`, `caused-by`, `validates`, and `delegated-from`. They all connect Issues, but have different meanings. `blocks`, `parent-child`, `conditional-blocks`, and `waits-for` can affect readiness; `parent-child` also defines the hierarchy. The other choices do not block work merely by existing.
 
 ```sh
 bd link create --source blocked-work --target blocker \
-  --link-type preview-dependency --type blocks --id typed-blocker --unconditional-source
+  --type blocks --id typed-blocker --unconditional-source
 bd link show typed-blocker --format graph-json
 bd dep list blocked-work
 bd dep tree blocked-work --direction both
@@ -288,21 +318,15 @@ bd dep add rel-supersede-source rel-supersede-target --type supersedes --id link
 bd link show links/rel-supersedes --format graph-json
 ```
 
-You can also give a Dependency a custom kind. It is still a `preview-dependency` Link, but `tracks` has no built-in blocking or parent-child behavior:
-
-```sh
-bd create 'Tracking source' --id rel-tracks-source --type task
-bd create 'Tracking target' --id rel-tracks-target --type task
-bd link create --source rel-tracks-source --target rel-tracks-target \
-  --link-type preview-dependency --type tracks --id links/rel-tracks --unconditional-source
-bd link show links/rel-tracks --format graph-json
-```
-
 The higher-level `duplicate` and `supersede` commands are unavailable. To remove one of these relationship Links, read its current revision and use guarded `bd link delete --force` with `--unconditional-source`.
 
-## 3. Work with Issues
+## 3. More ways to work with Issues
+
+This section follows the Link examples because its readiness exercise uses the `blocked-work` and `blocker` Issues from above.
 
 ### Create and find Issues
+
+
 
 `bd show ISSUE --json` returns an array of Issue details. `--format graph-json` instead returns the graph record, including its revision. `bd list --json` lists Issues only; `--format records-json` can list both Issues and Memories. `q` creates an Issue and prints its ID. You can also create several Issues from a Markdown file, as shown below.
 
@@ -506,7 +530,7 @@ When you finish, press Ctrl-C in terminals B and A to stop the BDP and Dolt serv
 
 **Preview 2 is experimental: data in a preview workspace may be lost, and preview-to-preview compatibility is not supported. There is currently no supported way to upgrade a workspace from one preview to the next. Use data you can recreate, and do not rely on this preview as your only copy of important work.** Start each preview in a new workspace.
 
-The Type catalog is fixed in this preview. Run `bd types` to see the installed Bead and Link Types; installing or editing Types is unavailable. Other unfinished areas include:
+Run `bd types` for usable CLI choices. Installing or editing graph Type descriptors is unavailable in this preview. Other unfinished areas include:
 
 - Import and export for migration, plus general backup and recovery.
 - HTTP writes and BDP History. The BDP service above provides Read only.
@@ -517,16 +541,20 @@ A stale revision or invalid Type causes a refusal. After a refusal, check that n
 
 This list covers only the forms described above. It does not promise every option from ordinary Beads.
 
-- Issue work: `assign`, `close`, `defer`, `undefer`, `edit`, `note`, `priority`, `reopen`, `comment`, `count`, `query`, `search`, `statuses`, and `todo`.
-- Coordination: `heartbeat`, `reclaim`, `unclaim`, and `merge-slot`.
-- Graph setup and reads: `init` for a new workspace, `compare`, `bd link create/list/show/count/versions/compare/delete` for the examples above, `types`, and `versions`.
+
+| Area | Commands covered here |
+| --- | --- |
+| Issue work | `bd assign`, `bd close`, `bd defer`, `bd undefer`, `bd edit`, `bd note`, `bd priority`, `bd reopen`, `bd comment`, `bd count`, `bd query`, `bd search`, `bd statuses`, `bd todo` |
+| Coordination | `bd heartbeat`, `bd reclaim`, `bd unclaim`, `bd merge-slot` |
+| Graph setup and reads | `bd init` in a new workspace, `bd types`, `bd versions`, `bd compare` |
+| Link operations | `bd link create`, `list`, `show`, `count`, `versions`, `compare`, and guarded `delete` as shown above |
 
 ### Commands with known limitations
 
 | Command | What does not work in Preview 2 |
 | --- | --- |
 | `create` | `--deps` cannot add ordinary dependencies during creation, and dependency sections in a Markdown input file refuse. |
-| `create` | Issue description and Memory body text cannot come from stdin or `--body-file`; use inline text. `--dry-run` is unavailable. `create --file` does accept a Markdown file of Issues. |
+| `create` | In `bd create`, Issue description and Memory body text cannot come from stdin or `--body-file`; use inline text. The Memory-specific `bd remember` does accept `--body-file` or `--stdin`. `create --dry-run` is unavailable; `create --file` accepts a Markdown file of Issues. |
 | `create --parent` | An explicit `--id` cannot be combined with `--parent`. The parent and new child must be Issues; the parent need not be an epic. |
 | `update` | Multi-record updates are unavailable. |
 | `update` | A native Dependency Link has no editable properties in this preview; its kind is fixed when created, and metadata editing is unavailable. Informational Links can be updated with `bd link update links/ID`, including metadata. |
@@ -539,7 +567,8 @@ This list covers only the forms described above. It does not promise every optio
 | `dep` | Pair removal and `list`, `tree`, and `cycles` views cover blocking Dependencies only; they do not cover parent-child, duplicates, or supersedes relationships. |
 | `dep` | `list/tree/cycles --json`, cross-scope Dependencies, and bulk operations are unavailable. |
 | `link` | Remote and version-pinned endpoints are unavailable. Both endpoints must be unpinned Beads in the same Scope. |
-| `link create` | Only installed Link Types work. With `--link-type preview-dependency`, `--type KIND` sets the Dependency kind; omitting it means `blocks`. Dependency Links require two local Issues, one Link per ordered Issue pair, an explicit source guard, and no custom properties or metadata. |
+| `link create` | Use `--type` with a displayed Link choice. For Dependencies, `--type blocks` and other built-in Dependency choices work; an unrecognized choice refuses. Without `--type`, the `bd link SOURCE TARGET` shortcut creates a blocking Dependency, but `bd link create` requires `--type`. Dependency Links require two local Issues, allow only one Link per ordered Issue pair, require an explicit source guard on `link create`, and accept no custom properties or metadata. |
+| `dep add` | Unlike `bd link create`, its legacy `--type` option still accepts arbitrary nonempty Dependency labels up to 32 bytes. Only built-in choices have their defined behavior. This guide uses built-in choices. |
 | `link update` | Informational Link properties and metadata can be edited. Native Dependency Links refuse property and metadata updates; their kind cannot be changed. |
 | `link list`, `link count` | The current Link collection is bounded and has no cursor paging. A workspace above the read limit is refused rather than partially counted or listed. |
 | `link` | Creating a duplicate or supersede Link does not close an Issue. |
