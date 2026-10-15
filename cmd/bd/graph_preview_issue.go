@@ -378,7 +378,7 @@ func graphPreviewCreateBeadType(cmd *cobra.Command, scope string) (string, error
 				return "", graphStorageError(err)
 			}
 			if !classification.IsValidWithCustom(customTypes) {
-				return "", graphFailure("capability_unavailable", "Issue type is not registered in this workspace: "+selector, 5)
+				return "", graphFailure("capability_unavailable", "Bead type is not registered in this workspace: "+selector, 5)
 			}
 		}
 		return issueType, nil

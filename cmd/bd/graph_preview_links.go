@@ -156,7 +156,7 @@ func graphPreviewLinkType(cmd *cobra.Command) (string, error) {
 		if kind := canonicalDependencyType(types.DependencyType(selector)); kind.IsWellKnown() {
 			return graphstore.DependencyTypeURL(scope), nil
 		}
-		return "", graphFailure("capability_unavailable", "Dependency type is not registered in this preview", 5)
+		return "", graphFailure("capability_unavailable", "Link type is not registered in this preview", 5)
 	}
 	typ, err := graphPreviewTypeURL(scope, selector)
 	if err != nil {
