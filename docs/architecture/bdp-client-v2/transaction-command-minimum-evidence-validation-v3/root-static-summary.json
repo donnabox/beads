@@ -1,0 +1,120 @@
+{
+  "at": "2026-10-15T07:51:27.688046+00:00",
+  "sourceDiffSha256": "06cf7eb8ca3d4e0a4caaeee81ee5688a9e44f24895809414b164833068d207bb",
+  "sourceSha256": {
+    "apps/bdptest/src/transactional-collection-minimum-installed.test.ts": "3d7b202d71ab0857629b5694a397dad03bba1d36122440ba003036c8f16ba63a",
+    "apps/bdptest/src/transactional-matrix.test.ts": "e319109ab0e9f7258e6918ae789ed7a5672eb7aabd0ec8725ae38e3634164e68",
+    "apps/bdptest/src/transactional-snapshot-installed.test.ts": "014a3b127a4be87f958e822df22fc24711bde92fa1c328e3e217e0991e5c22d2",
+    "packages/conformance/src/executable-manifest.test.ts": "ca570192d8763610b39a750d376df899b3f0f01a06b3c928e95bf3d83fd538af",
+    "packages/conformance/src/executable-manifest.ts": "65af0451cd046d57c10b0666e54efbaaecc2225551d3accc5cc1d032322913fa",
+    "packages/conformance/src/http-executor.test.ts": "13e289fe572f56f1bc15dc2a7f2ee3302c4196fc140ee2abc609871a4a5493c4",
+    "packages/conformance/src/http-executor.ts": "770a8405ae1532484b5a2658619c067832644947888f95e0c6575002376f1b5d",
+    "packages/conformance/src/profile-contract-plan.test.ts": "e5be4864e456431db74bd325ec64d785bf3c5301a6be5b230bfcc7351ade4fc4",
+    "packages/conformance/src/runner.test.ts": "ad7e756bad1f70ecc6285e19830bc001ebec01899ed868af3fb4b08e888aba86",
+    "packages/conformance/src/transactional-cumulative.test.ts": "0d1f87199222e2426b048eae1a5aadd11c20c04298d31e3198ca46897e5492d3",
+    "packages/conformance/test-support/transactional/coverage-v1.json": "4619813e9446e0e714a64c11eac184531950f57720e32c7ef414c7e3342121af",
+    "packages/conformance/test-support/transactional/manifest-v1.json": "29729151cf6da641545910ec3880f9609c13b319af7bbe99d3d2ad47833dab96"
+  },
+  "stages": [
+    {
+      "id": "offline-setup",
+      "seconds": 0.44870791700668633,
+      "exit": 0
+    },
+    {
+      "id": "typecheck",
+      "seconds": 1.1653403751552105,
+      "exit": 0
+    },
+    {
+      "id": "build",
+      "seconds": 1.1662886659614742,
+      "exit": 0
+    },
+    {
+      "id": "format-check",
+      "seconds": 0.5589668329339474,
+      "exit": 0
+    },
+    {
+      "id": "lint",
+      "seconds": 0.6593161248601973,
+      "exit": 0
+    },
+    {
+      "id": "boundaries",
+      "seconds": 0.7532580830156803,
+      "exit": 0
+    },
+    {
+      "id": "read-seal",
+      "seconds": 0.5556933749467134,
+      "exit": 0
+    },
+    {
+      "id": "static-cases",
+      "seconds": 1.8519386248663068,
+      "exit": 0
+    },
+    {
+      "id": "build-inventory",
+      "seconds": 0.23799866694025695,
+      "exit": 0
+    }
+  ],
+  "tests": {
+    "passed": 30,
+    "skipped": 601,
+    "failed": 0,
+    "selectionMatches": true
+  },
+  "formatWarnings": 1,
+  "lintWarnings": 765,
+  "lintInfos": 48,
+  "readSealRows": 89,
+  "sampledPidsIndependentlyAbsent": [
+    33582,
+    33616,
+    33640,
+    33683,
+    33710,
+    33713,
+    33745,
+    33749,
+    33759,
+    33939,
+    33963,
+    33969,
+    33998,
+    34022,
+    34028,
+    34060,
+    34084,
+    34118,
+    34143,
+    34169,
+    34227,
+    34231,
+    34239,
+    34257,
+    34261,
+    34263,
+    34265,
+    34268,
+    34307
+  ],
+  "retainedCompileCaches": [
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-command-minimum-evidence-validation-v3/run/boundaries.tmp/node-compile-cache",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-command-minimum-evidence-validation-v3/run/build.tmp/node-compile-cache",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-command-minimum-evidence-validation-v3/run/format-check.tmp/node-compile-cache",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-command-minimum-evidence-validation-v3/run/lint.tmp/node-compile-cache",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-command-minimum-evidence-validation-v3/run/offline-setup.tmp/node-compile-cache",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-command-minimum-evidence-validation-v3/run/read-seal.tmp/node-compile-cache",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-command-minimum-evidence-validation-v3/run/static-cases.tmp/node-compile-cache",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-command-minimum-evidence-validation-v3/run/typecheck.tmp/node-compile-cache"
+  ],
+  "buildInventorySha256": "7bde8c94657b1b48d7000e7c96bc71d9af11d34f1a93f0b55a9f7ef93ea9878d",
+  "claudeSupplementPending": true,
+  "installedRun": false,
+  "profileQualification": false
+}

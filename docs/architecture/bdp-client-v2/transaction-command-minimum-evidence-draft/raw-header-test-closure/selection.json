@@ -1,0 +1,165 @@
+{
+  "status": "UNEXECUTED_SOURCE_INVENTORY",
+  "focusedCount": 22,
+  "newExpandedCount": 7,
+  "retainedFocusedCount": 15,
+  "existingEvidenceCount": 8,
+  "total": 30,
+  "selectedCases": [
+    {
+      "path": "packages/conformance/src/executable-manifest.test.ts",
+      "fullName": "manifest v2 exact HTTP inputs admits literal authorization-view context through actions=false",
+      "kind": "new"
+    },
+    {
+      "path": "packages/conformance/src/executable-manifest.test.ts",
+      "fullName": "manifest v2 exact HTTP inputs admits literal authorization-view context through actions=true",
+      "kind": "new"
+    },
+    {
+      "path": "packages/conformance/src/executable-manifest.test.ts",
+      "fullName": "executable scenario manifest admits normalized authorization-view context without changing lowercase rules",
+      "kind": "new"
+    },
+    {
+      "path": "packages/conformance/src/http-executor.test.ts",
+      "fullName": "exact HTTP request execution writes authorization-view context separately from credentials",
+      "kind": "new"
+    },
+    {
+      "path": "packages/conformance/src/http-executor.test.ts",
+      "fullName": "exact HTTP request execution rejects authorization-view credential handles before resolution or dialing",
+      "kind": "new"
+    },
+    {
+      "path": "packages/conformance/src/http-executor.test.ts",
+      "fullName": "exact HTTP request execution keeps authorization-view lookalikes protected in parser and serializer",
+      "kind": "new"
+    },
+    {
+      "path": "packages/conformance/src/runner.test.ts",
+      "fullName": "version 2 exact HTTP receiving keeps admitted authorization-view values out of report projections",
+      "kind": "new"
+    },
+    {
+      "path": "packages/conformance/src/executable-manifest.test.ts",
+      "fullName": "executable scenario manifest rejects credentials and noncanonical header names",
+      "kind": "existing"
+    },
+    {
+      "path": "packages/conformance/src/executable-manifest.test.ts",
+      "fullName": "executable scenario manifest rejects authority-changing paths, secret-like headers, and control values",
+      "kind": "existing"
+    },
+    {
+      "path": "packages/conformance/src/executable-manifest.test.ts",
+      "fullName": "manifest v2 exact HTTP inputs rejects closed-form violations in actions=false",
+      "kind": "existing"
+    },
+    {
+      "path": "packages/conformance/src/executable-manifest.test.ts",
+      "fullName": "manifest v2 exact HTTP inputs rejects closed-form violations in actions=true",
+      "kind": "existing"
+    },
+    {
+      "path": "packages/conformance/src/http-executor.test.ts",
+      "fullName": "exact HTTP request execution rejects authored protected field Authorization before resolving credentials",
+      "kind": "existing"
+    },
+    {
+      "path": "packages/conformance/src/http-executor.test.ts",
+      "fullName": "exact HTTP request execution rejects authored protected field AUTHORIZATION before resolving credentials",
+      "kind": "existing"
+    },
+    {
+      "path": "packages/conformance/src/http-executor.test.ts",
+      "fullName": "exact HTTP request execution rejects authored protected field Cookie before resolving credentials",
+      "kind": "existing"
+    },
+    {
+      "path": "packages/conformance/src/http-executor.test.ts",
+      "fullName": "exact HTTP request execution rejects authored protected field X-Auth-Token before resolving credentials",
+      "kind": "existing"
+    },
+    {
+      "path": "packages/conformance/src/http-executor.test.ts",
+      "fullName": "exact HTTP request execution rejects authored protected field Host before resolving credentials",
+      "kind": "existing"
+    },
+    {
+      "path": "packages/conformance/src/http-executor.test.ts",
+      "fullName": "exact HTTP request execution rejects authored protected field Content-Length before resolving credentials",
+      "kind": "existing"
+    },
+    {
+      "path": "packages/conformance/src/http-executor.test.ts",
+      "fullName": "exact HTTP request execution rejects authored protected field Transfer-Encoding before resolving credentials",
+      "kind": "existing"
+    },
+    {
+      "path": "packages/conformance/src/http-executor.test.ts",
+      "fullName": "exact HTTP request execution rejects authored protected field Expect before resolving credentials",
+      "kind": "existing"
+    },
+    {
+      "path": "packages/conformance/src/http-executor.test.ts",
+      "fullName": "exact HTTP request execution rejects authored protected field Proxy-Connection before resolving credentials",
+      "kind": "existing"
+    },
+    {
+      "path": "packages/conformance/src/runner.test.ts",
+      "fullName": "version 2 exact HTTP receiving accepts registered credential decoration and authored defaults without resolving credentials again",
+      "kind": "existing"
+    },
+    {
+      "path": "packages/conformance/src/runner.test.ts",
+      "fullName": "black-box conformance runner does not reflect credential-shaped response header values or names",
+      "kind": "existing"
+    },
+    {
+      "path": "packages/conformance/src/transactional-cumulative.test.ts",
+      "fullName": "binds the canonical cumulative TX selection and exact source digests without qualification"
+    },
+    {
+      "path": "packages/conformance/src/transactional-cumulative.test.ts",
+      "fullName": "rejects noncanonical selections, History, wrong factories, retired and misprofiled rows"
+    },
+    {
+      "path": "packages/conformance/src/transactional-cumulative.test.ts",
+      "fullName": "copies source bytes before binding and exposes all missing obligations without executing them"
+    },
+    {
+      "path": "packages/conformance/src/transactional-cumulative.test.ts",
+      "fullName": "pins the inherited command-minimum manifest facts, read-header absence and all thirteen prior objects"
+    },
+    {
+      "path": "apps/bdptest/src/transactional-matrix.test.ts",
+      "fullName": "pins the matching no-op installed route digest and fifteen-action ledger"
+    },
+    {
+      "path": "apps/bdptest/src/transactional-matrix.test.ts",
+      "fullName": "pins deletion-safety derivative carriers, complete positives, and measured source bounds"
+    },
+    {
+      "path": "packages/conformance/src/profile-contract-plan.test.ts",
+      "fullName": "canonical cumulative profile contracts inherits partial TX command-minimum evidence while preserving RU omission"
+    },
+    {
+      "path": "packages/conformance/src/transactional-cumulative.test.ts",
+      "fullName": "preserves every original TX scenario and coverage object while adding one bounded partial cross-carrier row"
+    }
+  ],
+  "testNamePattern": "^(?:manifest\\ v2\\ exact\\ HTTP\\ inputs\\ admits\\ literal\\ authorization\\-view\\ context\\ through\\ actions=false|manifest\\ v2\\ exact\\ HTTP\\ inputs\\ admits\\ literal\\ authorization\\-view\\ context\\ through\\ actions=true|executable\\ scenario\\ manifest\\ admits\\ normalized\\ authorization\\-view\\ context\\ without\\ changing\\ lowercase\\ rules|exact\\ HTTP\\ request\\ execution\\ writes\\ authorization\\-view\\ context\\ separately\\ from\\ credentials|exact\\ HTTP\\ request\\ execution\\ rejects\\ authorization\\-view\\ credential\\ handles\\ before\\ resolution\\ or\\ dialing|exact\\ HTTP\\ request\\ execution\\ keeps\\ authorization\\-view\\ lookalikes\\ protected\\ in\\ parser\\ and\\ serializer|version\\ 2\\ exact\\ HTTP\\ receiving\\ keeps\\ admitted\\ authorization\\-view\\ values\\ out\\ of\\ report\\ projections|executable\\ scenario\\ manifest\\ rejects\\ credentials\\ and\\ noncanonical\\ header\\ names|executable\\ scenario\\ manifest\\ rejects\\ authority\\-changing\\ paths,\\ secret\\-like\\ headers,\\ and\\ control\\ values|manifest\\ v2\\ exact\\ HTTP\\ inputs\\ rejects\\ closed\\-form\\ violations\\ in\\ actions=false|manifest\\ v2\\ exact\\ HTTP\\ inputs\\ rejects\\ closed\\-form\\ violations\\ in\\ actions=true|exact\\ HTTP\\ request\\ execution\\ rejects\\ authored\\ protected\\ field\\ Authorization\\ before\\ resolving\\ credentials|exact\\ HTTP\\ request\\ execution\\ rejects\\ authored\\ protected\\ field\\ AUTHORIZATION\\ before\\ resolving\\ credentials|exact\\ HTTP\\ request\\ execution\\ rejects\\ authored\\ protected\\ field\\ Cookie\\ before\\ resolving\\ credentials|exact\\ HTTP\\ request\\ execution\\ rejects\\ authored\\ protected\\ field\\ X\\-Auth\\-Token\\ before\\ resolving\\ credentials|exact\\ HTTP\\ request\\ execution\\ rejects\\ authored\\ protected\\ field\\ Host\\ before\\ resolving\\ credentials|exact\\ HTTP\\ request\\ execution\\ rejects\\ authored\\ protected\\ field\\ Content\\-Length\\ before\\ resolving\\ credentials|exact\\ HTTP\\ request\\ execution\\ rejects\\ authored\\ protected\\ field\\ Transfer\\-Encoding\\ before\\ resolving\\ credentials|exact\\ HTTP\\ request\\ execution\\ rejects\\ authored\\ protected\\ field\\ Expect\\ before\\ resolving\\ credentials|exact\\ HTTP\\ request\\ execution\\ rejects\\ authored\\ protected\\ field\\ Proxy\\-Connection\\ before\\ resolving\\ credentials|version\\ 2\\ exact\\ HTTP\\ receiving\\ accepts\\ registered\\ credential\\ decoration\\ and\\ authored\\ defaults\\ without\\ resolving\\ credentials\\ again|black\\-box\\ conformance\\ runner\\ does\\ not\\ reflect\\ credential\\-shaped\\ response\\ header\\ values\\ or\\ names|binds\\ the\\ canonical\\ cumulative\\ TX\\ selection\\ and\\ exact\\ source\\ digests\\ without\\ qualification|rejects\\ noncanonical\\ selections,\\ History,\\ wrong\\ factories,\\ retired\\ and\\ misprofiled\\ rows|copies\\ source\\ bytes\\ before\\ binding\\ and\\ exposes\\ all\\ missing\\ obligations\\ without\\ executing\\ them|pins\\ the\\ inherited\\ command\\-minimum\\ manifest\\ facts,\\ read\\-header\\ absence\\ and\\ all\\ thirteen\\ prior\\ objects|pins\\ the\\ matching\\ no\\-op\\ installed\\ route\\ digest\\ and\\ fifteen\\-action\\ ledger|pins\\ deletion\\-safety\\ derivative\\ carriers,\\ complete\\ positives,\\ and\\ measured\\ source\\ bounds|canonical\\ cumulative\\ profile\\ contracts\\ inherits\\ partial\\ TX\\ command\\-minimum\\ evidence\\ while\\ preserving\\ RU\\ omission|preserves\\ every\\ original\\ TX\\ scenario\\ and\\ coverage\\ object\\ while\\ adding\\ one\\ bounded\\ partial\\ cross\\-carrier\\ row)$",
+  "workload": {
+    "http": 1,
+    "listeners": 1,
+    "storeOpens": 0,
+    "storeDirectories": 0,
+    "productChildren": 0,
+    "existingInstalledCohortsExpectedHTTP": 208,
+    "existingInstalledMaximumHTTP": 225,
+    "existingInstalledChildren": 26,
+    "combinedExpectedHTTP": 209
+  },
+  "note": "Only exact executor new wire callback opens a listener; denied cases reject before resolution/dial. Mock runner cases execute no actual HTTP. Existing eight static callbacks execute no product services."
+}

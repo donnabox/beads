@@ -1,0 +1,863 @@
+{
+  "status": "PREPARATION_ONLY_CLOSED_FINAL_GATE_AND_ROOT_ACCEPTANCE_REQUIRED",
+  "workspace": "/Users/dbox/repos/wt/vickie/vickie-command-minimum-evidence",
+  "parent": "453b6dab386746bb03aac2c0a293572b8a71c969",
+  "plan": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-command-minimum-evidence-next-plan-v4.md",
+    "sha256": "88dc1ce6e43a142ac27be1b4636425463b8be23fafe9ca7e115b5370df172ea7"
+  },
+  "ownedPaths": [
+    "apps/bdptest/src/transactional-collection-minimum-installed.test.ts",
+    "apps/bdptest/src/transactional-matrix.test.ts",
+    "apps/bdptest/src/transactional-snapshot-installed.test.ts",
+    "packages/conformance/src/executable-manifest.test.ts",
+    "packages/conformance/src/executable-manifest.ts",
+    "packages/conformance/src/http-executor.test.ts",
+    "packages/conformance/src/http-executor.ts",
+    "packages/conformance/src/profile-contract-plan.test.ts",
+    "packages/conformance/src/runner.test.ts",
+    "packages/conformance/src/transactional-cumulative.test.ts",
+    "packages/conformance/test-support/transactional/coverage-v1.json",
+    "packages/conformance/test-support/transactional/manifest-v1.json"
+  ],
+  "executionOrder": [
+    "offline-setup",
+    "typecheck",
+    "build",
+    "format-check",
+    "lint",
+    "boundaries",
+    "read-seal",
+    "static-cases",
+    "build-inventory",
+    "node-version",
+    "package-directory",
+    "pack-protocol",
+    "pack-server",
+    "verify-tar",
+    "prepare-consumer",
+    "consumer-install",
+    "verify-installed",
+    "installed-compatible-minimum",
+    "installed-compatible-minimum-review",
+    "installed-snapshot-wait",
+    "installed-snapshot-wait-review",
+    "installed-positive",
+    "installed-positive-review",
+    "installed-batch-control",
+    "installed-batch-control-review",
+    "installed-reader-control",
+    "installed-reader-control-review"
+  ],
+  "commands": {
+    "offline-setup": {
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-command-minimum-evidence",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "install",
+        "--offline",
+        "--frozen-lockfile"
+      ],
+      "supervisorSeconds": 120,
+      "requires": [],
+      "ownedTempPrefixes": [],
+      "phase": "static"
+    },
+    "typecheck": {
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-command-minimum-evidence",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "typecheck"
+      ],
+      "supervisorSeconds": 120,
+      "requires": [
+        {
+          "id": "offline-setup",
+          "exit": 0
+        }
+      ],
+      "ownedTempPrefixes": [],
+      "phase": "static"
+    },
+    "build": {
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-command-minimum-evidence",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "build"
+      ],
+      "supervisorSeconds": 120,
+      "requires": [
+        {
+          "id": "typecheck",
+          "exit": 0
+        }
+      ],
+      "ownedTempPrefixes": [],
+      "phase": "static"
+    },
+    "format-check": {
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-command-minimum-evidence",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "format:check"
+      ],
+      "supervisorSeconds": 120,
+      "requires": [
+        {
+          "id": "build",
+          "exit": 0
+        }
+      ],
+      "ownedTempPrefixes": [],
+      "phase": "static"
+    },
+    "lint": {
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-command-minimum-evidence",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "lint"
+      ],
+      "supervisorSeconds": 120,
+      "requires": [
+        {
+          "id": "format-check",
+          "exit": 0
+        }
+      ],
+      "ownedTempPrefixes": [],
+      "phase": "static"
+    },
+    "boundaries": {
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-command-minimum-evidence",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "check:boundaries"
+      ],
+      "supervisorSeconds": 120,
+      "requires": [
+        {
+          "id": "lint",
+          "exit": 0
+        }
+      ],
+      "ownedTempPrefixes": [],
+      "phase": "static"
+    },
+    "read-seal": {
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-command-minimum-evidence",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "evidence:verify"
+      ],
+      "supervisorSeconds": 120,
+      "requires": [
+        {
+          "id": "boundaries",
+          "exit": 0
+        }
+      ],
+      "ownedTempPrefixes": [],
+      "phase": "static"
+    },
+    "static-cases": {
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-command-minimum-evidence",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "exec",
+        "vitest",
+        "run",
+        "packages/conformance/src/executable-manifest.test.ts",
+        "packages/conformance/src/http-executor.test.ts",
+        "packages/conformance/src/runner.test.ts",
+        "packages/conformance/src/transactional-cumulative.test.ts",
+        "apps/bdptest/src/transactional-matrix.test.ts",
+        "packages/conformance/src/profile-contract-plan.test.ts",
+        "--testNamePattern",
+        "^(?:manifest\\ v2\\ exact\\ HTTP\\ inputs\\ admits\\ literal\\ authorization\\-view\\ context\\ through\\ actions=false|manifest\\ v2\\ exact\\ HTTP\\ inputs\\ admits\\ literal\\ authorization\\-view\\ context\\ through\\ actions=true|executable\\ scenario\\ manifest\\ admits\\ normalized\\ authorization\\-view\\ context\\ without\\ changing\\ lowercase\\ rules|exact\\ HTTP\\ request\\ execution\\ writes\\ authorization\\-view\\ context\\ separately\\ from\\ credentials|exact\\ HTTP\\ request\\ execution\\ rejects\\ authorization\\-view\\ credential\\ handles\\ before\\ resolution\\ or\\ dialing|exact\\ HTTP\\ request\\ execution\\ keeps\\ authorization\\-view\\ lookalikes\\ protected\\ in\\ parser\\ and\\ serializer|version\\ 2\\ exact\\ HTTP\\ receiving\\ keeps\\ admitted\\ authorization\\-view\\ values\\ out\\ of\\ report\\ projections|executable\\ scenario\\ manifest\\ rejects\\ credentials\\ and\\ noncanonical\\ header\\ names|executable\\ scenario\\ manifest\\ rejects\\ authority\\-changing\\ paths,\\ secret\\-like\\ headers,\\ and\\ control\\ values|manifest\\ v2\\ exact\\ HTTP\\ inputs\\ rejects\\ closed\\-form\\ violations\\ in\\ actions=false|manifest\\ v2\\ exact\\ HTTP\\ inputs\\ rejects\\ closed\\-form\\ violations\\ in\\ actions=true|exact\\ HTTP\\ request\\ execution\\ rejects\\ authored\\ protected\\ field\\ Authorization\\ before\\ resolving\\ credentials|exact\\ HTTP\\ request\\ execution\\ rejects\\ authored\\ protected\\ field\\ AUTHORIZATION\\ before\\ resolving\\ credentials|exact\\ HTTP\\ request\\ execution\\ rejects\\ authored\\ protected\\ field\\ Cookie\\ before\\ resolving\\ credentials|exact\\ HTTP\\ request\\ execution\\ rejects\\ authored\\ protected\\ field\\ X\\-Auth\\-Token\\ before\\ resolving\\ credentials|exact\\ HTTP\\ request\\ execution\\ rejects\\ authored\\ protected\\ field\\ Host\\ before\\ resolving\\ credentials|exact\\ HTTP\\ request\\ execution\\ rejects\\ authored\\ protected\\ field\\ Content\\-Length\\ before\\ resolving\\ credentials|exact\\ HTTP\\ request\\ execution\\ rejects\\ authored\\ protected\\ field\\ Transfer\\-Encoding\\ before\\ resolving\\ credentials|exact\\ HTTP\\ request\\ execution\\ rejects\\ authored\\ protected\\ field\\ Expect\\ before\\ resolving\\ credentials|exact\\ HTTP\\ request\\ execution\\ rejects\\ authored\\ protected\\ field\\ Proxy\\-Connection\\ before\\ resolving\\ credentials|version\\ 2\\ exact\\ HTTP\\ receiving\\ accepts\\ registered\\ credential\\ decoration\\ and\\ authored\\ defaults\\ without\\ resolving\\ credentials\\ again|black\\-box\\ conformance\\ runner\\ does\\ not\\ reflect\\ credential\\-shaped\\ response\\ header\\ values\\ or\\ names|binds\\ the\\ canonical\\ cumulative\\ TX\\ selection\\ and\\ exact\\ source\\ digests\\ without\\ qualification|rejects\\ noncanonical\\ selections,\\ History,\\ wrong\\ factories,\\ retired\\ and\\ misprofiled\\ rows|copies\\ source\\ bytes\\ before\\ binding\\ and\\ exposes\\ all\\ missing\\ obligations\\ without\\ executing\\ them|pins\\ the\\ inherited\\ command\\-minimum\\ manifest\\ facts,\\ read\\-header\\ absence\\ and\\ all\\ thirteen\\ prior\\ objects|pins\\ the\\ matching\\ no\\-op\\ installed\\ route\\ digest\\ and\\ fifteen\\-action\\ ledger|pins\\ deletion\\-safety\\ derivative\\ carriers,\\ complete\\ positives,\\ and\\ measured\\ source\\ bounds|canonical\\ cumulative\\ profile\\ contracts\\ inherits\\ partial\\ TX\\ command\\-minimum\\ evidence\\ while\\ preserving\\ RU\\ omission|preserves\\ every\\ original\\ TX\\ scenario\\ and\\ coverage\\ object\\ while\\ adding\\ one\\ bounded\\ partial\\ cross\\-carrier\\ row)$",
+        "--maxWorkers=1",
+        "--reporter=verbose",
+        "--reporter=json",
+        "--outputFile.json=/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-command-minimum-evidence-validation-v3/run/static-cases.results.json"
+      ],
+      "supervisorSeconds": 120,
+      "requires": [
+        {
+          "id": "read-seal",
+          "exit": 0
+        },
+        {
+          "id": "build",
+          "exit": 0
+        }
+      ],
+      "ownedTempPrefixes": [],
+      "selectedCases": [
+        {
+          "path": "packages/conformance/src/executable-manifest.test.ts",
+          "fullName": "manifest v2 exact HTTP inputs admits literal authorization-view context through actions=false"
+        },
+        {
+          "path": "packages/conformance/src/executable-manifest.test.ts",
+          "fullName": "manifest v2 exact HTTP inputs admits literal authorization-view context through actions=true"
+        },
+        {
+          "path": "packages/conformance/src/executable-manifest.test.ts",
+          "fullName": "executable scenario manifest admits normalized authorization-view context without changing lowercase rules"
+        },
+        {
+          "path": "packages/conformance/src/http-executor.test.ts",
+          "fullName": "exact HTTP request execution writes authorization-view context separately from credentials"
+        },
+        {
+          "path": "packages/conformance/src/http-executor.test.ts",
+          "fullName": "exact HTTP request execution rejects authorization-view credential handles before resolution or dialing"
+        },
+        {
+          "path": "packages/conformance/src/http-executor.test.ts",
+          "fullName": "exact HTTP request execution keeps authorization-view lookalikes protected in parser and serializer"
+        },
+        {
+          "path": "packages/conformance/src/runner.test.ts",
+          "fullName": "version 2 exact HTTP receiving keeps admitted authorization-view values out of report projections"
+        },
+        {
+          "path": "packages/conformance/src/executable-manifest.test.ts",
+          "fullName": "executable scenario manifest rejects credentials and noncanonical header names"
+        },
+        {
+          "path": "packages/conformance/src/executable-manifest.test.ts",
+          "fullName": "executable scenario manifest rejects authority-changing paths, secret-like headers, and control values"
+        },
+        {
+          "path": "packages/conformance/src/executable-manifest.test.ts",
+          "fullName": "manifest v2 exact HTTP inputs rejects closed-form violations in actions=false"
+        },
+        {
+          "path": "packages/conformance/src/executable-manifest.test.ts",
+          "fullName": "manifest v2 exact HTTP inputs rejects closed-form violations in actions=true"
+        },
+        {
+          "path": "packages/conformance/src/http-executor.test.ts",
+          "fullName": "exact HTTP request execution rejects authored protected field Authorization before resolving credentials"
+        },
+        {
+          "path": "packages/conformance/src/http-executor.test.ts",
+          "fullName": "exact HTTP request execution rejects authored protected field AUTHORIZATION before resolving credentials"
+        },
+        {
+          "path": "packages/conformance/src/http-executor.test.ts",
+          "fullName": "exact HTTP request execution rejects authored protected field Cookie before resolving credentials"
+        },
+        {
+          "path": "packages/conformance/src/http-executor.test.ts",
+          "fullName": "exact HTTP request execution rejects authored protected field X-Auth-Token before resolving credentials"
+        },
+        {
+          "path": "packages/conformance/src/http-executor.test.ts",
+          "fullName": "exact HTTP request execution rejects authored protected field Host before resolving credentials"
+        },
+        {
+          "path": "packages/conformance/src/http-executor.test.ts",
+          "fullName": "exact HTTP request execution rejects authored protected field Content-Length before resolving credentials"
+        },
+        {
+          "path": "packages/conformance/src/http-executor.test.ts",
+          "fullName": "exact HTTP request execution rejects authored protected field Transfer-Encoding before resolving credentials"
+        },
+        {
+          "path": "packages/conformance/src/http-executor.test.ts",
+          "fullName": "exact HTTP request execution rejects authored protected field Expect before resolving credentials"
+        },
+        {
+          "path": "packages/conformance/src/http-executor.test.ts",
+          "fullName": "exact HTTP request execution rejects authored protected field Proxy-Connection before resolving credentials"
+        },
+        {
+          "path": "packages/conformance/src/runner.test.ts",
+          "fullName": "version 2 exact HTTP receiving accepts registered credential decoration and authored defaults without resolving credentials again"
+        },
+        {
+          "path": "packages/conformance/src/runner.test.ts",
+          "fullName": "black-box conformance runner does not reflect credential-shaped response header values or names"
+        },
+        {
+          "path": "packages/conformance/src/transactional-cumulative.test.ts",
+          "fullName": "binds the canonical cumulative TX selection and exact source digests without qualification"
+        },
+        {
+          "path": "packages/conformance/src/transactional-cumulative.test.ts",
+          "fullName": "rejects noncanonical selections, History, wrong factories, retired and misprofiled rows"
+        },
+        {
+          "path": "packages/conformance/src/transactional-cumulative.test.ts",
+          "fullName": "copies source bytes before binding and exposes all missing obligations without executing them"
+        },
+        {
+          "path": "packages/conformance/src/transactional-cumulative.test.ts",
+          "fullName": "pins the inherited command-minimum manifest facts, read-header absence and all thirteen prior objects"
+        },
+        {
+          "path": "apps/bdptest/src/transactional-matrix.test.ts",
+          "fullName": "pins the matching no-op installed route digest and fifteen-action ledger"
+        },
+        {
+          "path": "apps/bdptest/src/transactional-matrix.test.ts",
+          "fullName": "pins deletion-safety derivative carriers, complete positives, and measured source bounds"
+        },
+        {
+          "path": "packages/conformance/src/profile-contract-plan.test.ts",
+          "fullName": "canonical cumulative profile contracts inherits partial TX command-minimum evidence while preserving RU omission"
+        },
+        {
+          "path": "packages/conformance/src/transactional-cumulative.test.ts",
+          "fullName": "preserves every original TX scenario and coverage object while adding one bounded partial cross-carrier row"
+        }
+      ],
+      "workload": {
+        "caseExecutions": 30,
+        "newClassifierCases": 7,
+        "existingClassifierCases": 15,
+        "existingEvidenceCases": 8,
+        "http": 1,
+        "httpMaximum": 1,
+        "listeners": 1,
+        "storeOpens": 0,
+        "storeDirectories": 0,
+        "productChildren": 0,
+        "workerAndBuildProcesses": "Separate supervised tool processes; no zero-OS-process claim.",
+        "cleanup": "Existing owned loopback fixture socket/listener close; no extra listener timeout;120s command supervisor unchanged."
+      },
+      "phase": "static"
+    },
+    "build-inventory": {
+      "phase": "static",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-command-minimum-evidence",
+      "argv": [
+        "python3",
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-command-minimum-evidence-validation-v3/build-inventory.py"
+      ],
+      "supervisorSeconds": 120,
+      "requires": [
+        {
+          "id": "static-cases",
+          "exit": 0
+        }
+      ],
+      "ownedTempPrefixes": []
+    },
+    "node-version": {
+      "phase": "package",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-command-minimum-evidence",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "--version"
+      ],
+      "supervisorSeconds": 120,
+      "requires": [
+        {
+          "id": "build-inventory",
+          "exit": 0
+        }
+      ],
+      "ownedTempPrefixes": []
+    },
+    "package-directory": {
+      "phase": "package",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-command-minimum-evidence",
+      "argv": [
+        "python3",
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-command-minimum-evidence-validation-v3/packages.py",
+        "directory"
+      ],
+      "supervisorSeconds": 120,
+      "requires": [
+        {
+          "id": "node-version",
+          "exit": 0
+        }
+      ],
+      "ownedTempPrefixes": []
+    },
+    "pack-protocol": {
+      "phase": "package",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-command-minimum-evidence",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "--filter",
+        "@bdp/protocol",
+        "pack",
+        "--pack-destination",
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-command-minimum-evidence-validation-v3/run/packages"
+      ],
+      "supervisorSeconds": 120,
+      "requires": [
+        {
+          "id": "package-directory",
+          "exit": 0
+        }
+      ],
+      "ownedTempPrefixes": []
+    },
+    "pack-server": {
+      "phase": "package",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-command-minimum-evidence",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "--filter",
+        "@bdp/server",
+        "pack",
+        "--pack-destination",
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-command-minimum-evidence-validation-v3/run/packages"
+      ],
+      "supervisorSeconds": 120,
+      "requires": [
+        {
+          "id": "pack-protocol",
+          "exit": 0
+        }
+      ],
+      "ownedTempPrefixes": []
+    },
+    "verify-tar": {
+      "phase": "package",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-command-minimum-evidence",
+      "argv": [
+        "python3",
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-command-minimum-evidence-validation-v3/packages.py",
+        "tar"
+      ],
+      "supervisorSeconds": 120,
+      "requires": [
+        {
+          "id": "pack-protocol",
+          "exit": 0
+        },
+        {
+          "id": "pack-server",
+          "exit": 0
+        }
+      ],
+      "ownedTempPrefixes": []
+    },
+    "prepare-consumer": {
+      "phase": "package",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-command-minimum-evidence",
+      "argv": [
+        "python3",
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-command-minimum-evidence-validation-v3/packages.py",
+        "consumer"
+      ],
+      "supervisorSeconds": 120,
+      "requires": [
+        {
+          "id": "verify-tar",
+          "exit": 0
+        }
+      ],
+      "ownedTempPrefixes": []
+    },
+    "consumer-install": {
+      "phase": "package",
+      "cwd": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-command-minimum-evidence-validation-v3/run/consumer",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "install",
+        "--offline",
+        "--ignore-scripts",
+        "--no-frozen-lockfile",
+        "--prod"
+      ],
+      "supervisorSeconds": 120,
+      "requires": [
+        {
+          "id": "prepare-consumer",
+          "exit": 0
+        }
+      ],
+      "ownedTempPrefixes": []
+    },
+    "verify-installed": {
+      "phase": "package",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-command-minimum-evidence",
+      "argv": [
+        "python3",
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-command-minimum-evidence-validation-v3/packages.py",
+        "installed"
+      ],
+      "supervisorSeconds": 120,
+      "requires": [
+        {
+          "id": "consumer-install",
+          "exit": 0
+        }
+      ],
+      "ownedTempPrefixes": []
+    },
+    "installed-positive": {
+      "phase": "installed",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-command-minimum-evidence",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/repos/wt/vickie/vickie-command-minimum-evidence/node_modules/vitest/vitest.mjs",
+        "run",
+        "apps/bdptest/src/transactional-matrix.test.ts",
+        "--testNamePattern",
+        "^observes\\ fourteen\\ partial\\ Transactional\\ contracts\\ through\\ packed\\-capable\\ actual\\ installed\\ HTTP$",
+        "--maxWorkers=1",
+        "--reporter=verbose",
+        "--reporter=json",
+        "--outputFile.json=/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-command-minimum-evidence-validation-v3/run/installed-positive.results.json"
+      ],
+      "supervisorSeconds": 120,
+      "requires": [
+        {
+          "id": "installed-snapshot-wait-review",
+          "exit": 0
+        }
+      ],
+      "ownedTempPrefixes": [
+        "bdp-tx-installed-"
+      ],
+      "selectedCases": [
+        {
+          "path": "apps/bdptest/src/transactional-matrix.test.ts",
+          "fullName": "observes fourteen partial Transactional contracts through packed-capable actual installed HTTP"
+        }
+      ],
+      "workload": {
+        "caseExecutions": 1,
+        "httpExpected": 203,
+        "httpMaximum": 203,
+        "children": 22,
+        "listeners": 22,
+        "owners": 22,
+        "storeDirectories": 15,
+        "bootstrapHttp": 0,
+        "requestTimeoutMs": 5000,
+        "cohortDeadlineMs": 90000,
+        "testTimeoutMs": 120000
+      }
+    },
+    "installed-positive-review": {
+      "phase": "review",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-command-minimum-evidence",
+      "argv": [
+        "python3",
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-command-minimum-evidence-validation-v3/adjudicate.py",
+        "installed-positive"
+      ],
+      "supervisorSeconds": 120,
+      "requires": [
+        {
+          "id": "installed-positive",
+          "exit": 0
+        }
+      ],
+      "ownedTempPrefixes": []
+    },
+    "installed-batch-control": {
+      "phase": "installed",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-command-minimum-evidence",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/repos/wt/vickie/vickie-command-minimum-evidence/node_modules/vitest/vitest.mjs",
+        "run",
+        "apps/bdptest/src/transactional-matrix.test.ts",
+        "--testNamePattern",
+        "^discriminates\\ command\\ minimum\\ evidence\\ against\\ minimum\\-batch\\-body\\-conflict$",
+        "--maxWorkers=1",
+        "--reporter=verbose",
+        "--reporter=json",
+        "--outputFile.json=/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-command-minimum-evidence-validation-v3/run/installed-batch-control.results.json"
+      ],
+      "supervisorSeconds": 120,
+      "requires": [
+        {
+          "id": "installed-positive-review",
+          "exit": 0
+        }
+      ],
+      "ownedTempPrefixes": [
+        "bdp-tx-installed-"
+      ],
+      "selectedCases": [
+        {
+          "path": "apps/bdptest/src/transactional-matrix.test.ts",
+          "fullName": "discriminates command minimum evidence against minimum-batch-body-conflict"
+        }
+      ],
+      "workload": {
+        "caseExecutions": 1,
+        "httpExpected": 4,
+        "httpMaximum": 11,
+        "children": 2,
+        "listeners": 2,
+        "owners": 2,
+        "storeDirectories": 2,
+        "bootstrapHttp": 0,
+        "requestTimeoutMs": 5000,
+        "cohortDeadlineMs": 90000,
+        "testTimeoutMs": 120000
+      }
+    },
+    "installed-batch-control-review": {
+      "phase": "review",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-command-minimum-evidence",
+      "argv": [
+        "python3",
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-command-minimum-evidence-validation-v3/adjudicate.py",
+        "installed-batch-control"
+      ],
+      "supervisorSeconds": 120,
+      "requires": [
+        {
+          "id": "installed-batch-control",
+          "exit": 0
+        }
+      ],
+      "ownedTempPrefixes": []
+    },
+    "installed-reader-control": {
+      "phase": "installed",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-command-minimum-evidence",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/repos/wt/vickie/vickie-command-minimum-evidence/node_modules/vitest/vitest.mjs",
+        "run",
+        "apps/bdptest/src/transactional-matrix.test.ts",
+        "--testNamePattern",
+        "^discriminates\\ command\\ minimum\\ evidence\\ against\\ minimum\\-readonly\\-credential$",
+        "--maxWorkers=1",
+        "--reporter=verbose",
+        "--reporter=json",
+        "--outputFile.json=/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-command-minimum-evidence-validation-v3/run/installed-reader-control.results.json"
+      ],
+      "supervisorSeconds": 120,
+      "requires": [
+        {
+          "id": "installed-batch-control-review",
+          "exit": 0
+        }
+      ],
+      "ownedTempPrefixes": [
+        "bdp-tx-installed-"
+      ],
+      "selectedCases": [
+        {
+          "path": "apps/bdptest/src/transactional-matrix.test.ts",
+          "fullName": "discriminates command minimum evidence against minimum-readonly-credential"
+        }
+      ],
+      "workload": {
+        "caseExecutions": 1,
+        "httpExpected": 1,
+        "httpMaximum": 11,
+        "children": 2,
+        "listeners": 2,
+        "owners": 2,
+        "storeDirectories": 2,
+        "bootstrapHttp": 0,
+        "requestTimeoutMs": 5000,
+        "cohortDeadlineMs": 90000,
+        "testTimeoutMs": 120000
+      }
+    },
+    "installed-reader-control-review": {
+      "phase": "review",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-command-minimum-evidence",
+      "argv": [
+        "python3",
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-command-minimum-evidence-validation-v3/adjudicate.py",
+        "installed-reader-control"
+      ],
+      "supervisorSeconds": 120,
+      "requires": [
+        {
+          "id": "installed-reader-control",
+          "exit": 0
+        }
+      ],
+      "ownedTempPrefixes": []
+    },
+    "installed-compatible-minimum": {
+      "phase": "installed",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-command-minimum-evidence",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/repos/wt/vickie/vickie-command-minimum-evidence/node_modules/vitest/vitest.mjs",
+        "run",
+        "apps/bdptest/src/transactional-collection-minimum-installed.test.ts",
+        "--testNamePattern",
+        "^observes\\ genuine\\ installed\\ compatible\\ missing\\ minimum404\\ and\\ preserved\\ behind\\ gap$",
+        "--maxWorkers=1",
+        "--reporter=verbose",
+        "--reporter=json",
+        "--outputFile.json=/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-command-minimum-evidence-validation-v3/run/installed-compatible-minimum.results.json"
+      ],
+      "supervisorSeconds": 120,
+      "requires": [
+        {
+          "id": "verify-installed",
+          "exit": 0
+        }
+      ],
+      "ownedTempPrefixes": [
+        "bdp-collection-minimum-installed-"
+      ],
+      "selectedCases": [
+        {
+          "path": "apps/bdptest/src/transactional-collection-minimum-installed.test.ts",
+          "fullName": "observes genuine installed compatible missing minimum404 and preserved behind gap"
+        }
+      ],
+      "workload": {
+        "caseExecutions": 1,
+        "httpExpected": 10,
+        "httpMaximum": 10,
+        "children": 1,
+        "listeners": 1,
+        "owners": 1,
+        "storeDirectories": 1,
+        "requestTimeoutMs": 5000,
+        "cohortDeadlineMs": 90000,
+        "testTimeoutMs": 120000,
+        "operatorOnly": true
+      },
+      "helperObservation": "private-installed-compatible-missing-minimum"
+    },
+    "installed-compatible-minimum-review": {
+      "phase": "review",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-command-minimum-evidence",
+      "argv": [
+        "python3",
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-command-minimum-evidence-validation-v3/helper-review.py",
+        "installed-compatible-minimum"
+      ],
+      "supervisorSeconds": 120,
+      "requires": [
+        {
+          "id": "installed-compatible-minimum",
+          "exit": 0
+        }
+      ],
+      "ownedTempPrefixes": []
+    },
+    "installed-snapshot-wait": {
+      "phase": "installed",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-command-minimum-evidence",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/repos/wt/vickie/vickie-command-minimum-evidence/node_modules/vitest/vitest.mjs",
+        "run",
+        "apps/bdptest/src/transactional-snapshot-installed.test.ts",
+        "--testNamePattern",
+        "^requires\\ a\\ real\\ fixed\\-head\\ Snapshot\\ wait\\ over\\ packed\\ bytes$",
+        "--maxWorkers=1",
+        "--reporter=verbose",
+        "--reporter=json",
+        "--outputFile.json=/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-command-minimum-evidence-validation-v3/run/installed-snapshot-wait.results.json"
+      ],
+      "supervisorSeconds": 120,
+      "requires": [
+        {
+          "id": "installed-compatible-minimum-review",
+          "exit": 0
+        }
+      ],
+      "ownedTempPrefixes": [
+        "bdp-snapshot-installed-"
+      ],
+      "selectedCases": [
+        {
+          "path": "apps/bdptest/src/transactional-snapshot-installed.test.ts",
+          "fullName": "requires a real fixed-head Snapshot wait over packed bytes"
+        }
+      ],
+      "workload": {
+        "caseExecutions": 1,
+        "httpExpected": 2,
+        "httpMaximum": 2,
+        "children": 1,
+        "listeners": 1,
+        "owners": 1,
+        "storeDirectories": 1,
+        "requestTimeoutMs": 5000,
+        "cohortDeadlineMs": 45000,
+        "testTimeoutMs": 60000,
+        "operatorOnly": true
+      },
+      "helperObservation": "private-installed-snapshot"
+    },
+    "installed-snapshot-wait-review": {
+      "phase": "review",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-command-minimum-evidence",
+      "argv": [
+        "python3",
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-command-minimum-evidence-validation-v3/helper-review.py",
+        "installed-snapshot-wait"
+      ],
+      "supervisorSeconds": 120,
+      "requires": [
+        {
+          "id": "installed-snapshot-wait",
+          "exit": 0
+        }
+      ],
+      "ownedTempPrefixes": []
+    }
+  },
+  "noAutomaticRetries": true,
+  "selectedCaseCount": 30,
+  "environment": "Supervisor removes all BDP_*, NODE_OPTIONS/NODE_PATH/debug overrides; gate supplies installed entry/source plus only the matching safe report-output path.",
+  "limits": {
+    "noAutomaticRetries": true,
+    "sourceStaticCases": 30,
+    "installedCases": 5,
+    "installedHttpExpected": 220,
+    "installedHttpMaximum": 237,
+    "installedChildrenMaximum": 28,
+    "otherCommandsProductHttp": 0,
+    "otherCommandsProductChildren": 0,
+    "claimEligible": false,
+    "sourceHttpExpected": 1,
+    "sourceHttpMaximum": 1,
+    "sourceListeners": 1,
+    "combinedHttpExpected": 221,
+    "combinedHttpMaximum": 238,
+    "installedMatrixCases": 3,
+    "installedMatrixHttpExpected": 208,
+    "installedMatrixHttpMaximum": 225,
+    "installedMatrixChildrenMaximum": 26,
+    "installedHelperCases": 2,
+    "installedHelperHttpExpected": 12,
+    "installedHelperHttpMaximum": 12,
+    "installedHelperChildrenMaximum": 2
+  },
+  "controlOracle": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-command-minimum-evidence-draft/event-id-repair/controls.json",
+    "sha256": "c13e9fd4c286a900f9ba46d2087957e98a9adfd419130f646fdc048b9203a093"
+  },
+  "repairPlan": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-command-minimum-evidence-draft/raw-header-admission-failure-plan.md",
+    "sha256": "db1599a1f1b38f437722b8abae8acda1847c1b1e4fd8bb2c983b118d32b2acb6"
+  },
+  "sourceBinding": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-command-minimum-evidence-draft/raw-header-test-closure/source-binding.json",
+    "sha256": "90ced9c641febb7e5cc5d494c7dc837aa55e16b2f538a852066b7b66c5491961"
+  },
+  "selectionBinding": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-command-minimum-evidence-draft/raw-header-test-closure/selection.json",
+    "sha256": "17859e4aff9ab0863077df90dab022dfeeef9a80f6625a113398d47b68ac8865"
+  }
+}
