@@ -1,0 +1,67 @@
+{
+  "status": "PROPOSED_SUCCESSOR_FROZEN_FOR_ROOT_NATIVE_REVIEW_NOT_AUTHORIZATION",
+  "originals": {
+    "plan.md": "077245675d7c0de0180348891d5b4bc262f39008888d1e229b9ccc6dde5cf4ee",
+    "ledger.json": "86502efeffc108f52f0ab524efc91315ec67a9f0d87aebdf6b34d4ab23a53a86",
+    "source-binding.json": "a974c376e6a6f4af73af1efbaa1bc3576ff4babcc93296cf783f8e751a0b72dd"
+  },
+  "actualReview": {
+    "stdoutSha256": "f417cf6eee49ae75eed080cce32eb7e45a4b01c95f8536892a4252b16c5f4f3a",
+    "exit": {
+      "exitCode": 0,
+      "timeout": false,
+      "forcedTermination": false,
+      "elapsedSeconds": 546.3845216250047,
+      "sourceAndPlanUnchanged": true,
+      "stdoutSha256": "f417cf6eee49ae75eed080cce32eb7e45a4b01c95f8536892a4252b16c5f4f3a",
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "cleanupSha256": "1472b907a6f6c435cf1caac973e9f367992caa3529fbf2c8bbd474db80f13d87",
+      "sourceAfterSha256": "47d4e8e7af29e580b33109aecff23569a271a9dd4e60e14443ee8595259f8290"
+    }
+  },
+  "preservedLedgerFields": [
+    "requests",
+    "routes",
+    "routePreimage",
+    "routeSha256",
+    "configuration",
+    "artifactMeasurements",
+    "cohorts",
+    "totals",
+    "prospectiveOwnedPaths",
+    "registration"
+  ],
+  "changes": "23 dispositions; honest read-view/buffer/retention scope; explicit safe report and role map; literal selector; required default and absent mode; verified schema/default/receipt/Event source; independent authoring vs final integration gates",
+  "authoringReleased": false,
+  "executionReleased": false,
+  "files": {
+    "plan.md": {
+      "sha256": "783f439e36218efba63820f6b6baf96cb00bcf022fba6665a44a2d64e81148c9",
+      "bytes": 24713
+    },
+    "ledger.json": {
+      "sha256": "aa556158f879892795b62ba984ffd1226f4b09344d1a28d2b9bd486cb9532d79",
+      "bytes": 18726
+    },
+    "source-binding.json": {
+      "sha256": "6609908b17b572a9d750d88ec11675f74f12f0cd9b4300685e808019d79e5def",
+      "bytes": 8249
+    },
+    "source-proof.json": {
+      "sha256": "2c0a275b81dde791214285d6d5a46629cafa6decb4e8b99dc3a0337b728744c5",
+      "bytes": 1914
+    },
+    "source-dispositions.md": {
+      "sha256": "90a0cc0b6d51e2a1b59a1c12a79fd22b9a7d99624971792fee0b7992e89813ec",
+      "bytes": 9588
+    },
+    "correction.patch": {
+      "sha256": "8f45256fb917a5b4030790eb48746153d63336fbb5b036f193557a3bd4e4a210",
+      "bytes": 55120
+    }
+  },
+  "nativeSourceAudit": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-principal-key-plan/source-findings-audit.md",
+    "sha256": "fd2440649d82b6230a4fce2193ccedad378354708e552e0b1e0cd7bf168f4a73"
+  }
+}

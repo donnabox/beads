@@ -1,0 +1,547 @@
+--- original/plan.md
++++ proposed-successor/plan.md
+@@ -1,12 +1,12 @@
+ # Principal-key isolation: bounded installed evidence plan
+ 
+-Status: supporting proposal only. Root has not released authoring or execution. Sole authority remains `/Users/dbox/repos/wt/vickie/bdp-client-design/checkout/docs/architecture/bdp-client-v2/design.md`, Autonomous profile completion T2/T4. This document does not replace that plan. Native and actual Claude plan council remain required.
++Status: supporting proposal only. Root has not released authoring or execution. Sole authority remains `/Users/dbox/repos/wt/vickie/bdp-client-design/checkout/docs/architecture/bdp-client-v2/design.md`, Autonomous profile completion T2/T4. This document does not replace that plan. This proposed successor incorporates the completed actual Claude review and root directions; root acceptance and independent findings closure remain required. No authoring or execution is released by this document.
+ 
+ ## Basis, value and exact scope
+ 
+-Planning source is committed `18104a03b850553641f24fe83e7318493fa102ca`, tree `10810a8016a451e241ea974487681dcddd63c2e4`. Inspecting checkout is `/Users/dbox/repos/wt/vickie/vickie-sequence-member-evidence`; its active sequence draft is not the parent of this proposal. Actual sequence merge, clean isolated authoring checkout and refreshed unchanged/dependent source pins are future gates. `source-binding.json` binds committed files, not dirty working bytes. This proposal does not obstruct current sequence work.
++Planning source remains committed `18104a03b850553641f24fe83e7318493fa102ca`, tree `10810a8016a451e241ea974487681dcddd63c2e4`. Root permits future independent authoring in a separate clean isolated worktree on that actual main base after findings disposition; this is not an authoring release. The inspected sequence checkout is now candidate `82f60a25da8799334381f6ebd810f32a3574cd2d`, not a claimed final integration parent. The two principal paths do not overlap the four sequence paths. Original committed dependency hashes are retained and compared to current source; they are not relabeled as future execution evidence. Final installed/publication/readiness gates require ordinary integration of actual sequence main, verifying unchanged reviewed dependencies and the two-owned-path diff, and rerunning any affected validation. No fake future commit or tree is supplied.
+ 
+-The accepted completed-key-conflict plan77f6deb was implemented by PR110 and is an ancestor of18104. Its partial row already covers one principal's different-key-body conflict, exact retained replay and restart. The new semantic value is that two authenticated writable principals may independently use the exact same key in one Scope/epoch, while a second credential of the first principal must recover the first principal's original receipt. Existing matrix credentials share one principal; PR128's distinct foreign principal is read-only. Owner test `refuses unsupported/malformed batches before admission and preserves principal separation` (transaction-store.test287–306) establishes ownership but does not execute the second mutation through a packed child. No current serving defect is alleged.
++The accepted completed-key-conflict plan77f6deb was implemented by PR110 and is an ancestor of18104. Its partial row already covers one principal's different-key-body conflict, exact retained replay and restart. The new semantic value is that two authenticated writable principals may independently use the exact same key in one Scope/epoch, while a second credential of the first principal must recover the first principal's original receipt. Existing matrix credentials share one principal; PR128's distinct foreign principal is read-only. Owner test `refuses unsupported/malformed batches before admission and preserves principal separation` (`transaction-store.test.ts`, committed planning source) establishes ownership but does not execute the second mutation through a packed child. No current serving defect is alleged.
+ 
+ Own exactly:
+ 
+@@ -19,31 +19,31 @@
+ 
+ Spec3905–3915 defines the canonical Scope/epoch/authenticated-principal key namespace. Spec3933–3946 requires equal replay without execution and different semantic requests in that same namespace to receive409 while the key is bound. Receipt current-context fields and retained receipt fields have different purposes (spec5116–5131; actual observed submission maps current context separately). The test must not compare a replay's current position header to its old receipt.requiredPosition.
+ 
+-Store218 and421–425 use the `(principal,key)` primary key and lookup;1059–1095 performs retained comparison. HTTP326/332–333 passes trusted authenticated principal. `transaction-runtime-configuration.ts227–248,321–330` captures unique credentials, maps token to principal/canMutate, and binds associations into authentication metadata. Duplicate principals are allowed; duplicate tokens are not. All three credentials are writable, with distinct random32-byte base64url tokens (43 ASCII characters): A and A-rotated map to `principal-a`; B maps to `principal-b`. No supplied revisionProvenance/actor is used as authentication. Tokens never enter logs/reports. Exact-mode credential handles are the three literal role IDs with headerNames=[authorization] only; the resolver maps each role explicitly to its fresh Bearer value and rejects unknown roles. No authorization-view value enters a credential handle. Authentication/runtime identities are actual ready-derived values, so the plan does not invent fixed future digests for random tokens/directories.
++`transaction-store.ts` schema/`row`/`admitKey` use `(principal,key)` and retained comparison; `transaction-http.ts` mutation submission passes the trusted authenticated principal. Symbol/source pins in source-binding.json are authoritative; line anchors are inspection aids and must be recomputed at the authoring parent. `transaction-runtime-configuration.ts227–248,321–330` captures unique credentials, maps token to principal/canMutate, and binds associations into authentication metadata. Duplicate principals are allowed; duplicate tokens are not. All three credentials are writable, with distinct random32-byte base64url tokens (43 ASCII characters): A and A-rotated map to `principal-a`; B maps to `principal-b`. No supplied revisionProvenance/actor is used as authentication. Tokens never enter logs/reports. Exact-mode credential handles are the three literal role IDs with headerNames=[authorization] only; the resolver maps each role explicitly to its fresh Bearer value and rejects unknown roles. No authorization-view value enters a credential handle. Authentication/runtime identities are actual ready-derived values, so the plan does not invent fixed future digests for random tokens/directories.
+ 
+-Use exact canonical scope `https://reference.invalid/acme/`, one fresh owned absolute directory, `create:true`, and ledger.json's Task descriptor/property schema. Both resources are unowned Task Beads with exactly `id,type,revision,properties,metadata`; no descriptor ownsOutgoing means no `ownedLinks` assumption. The closed installed configuration parser accepts these fields and supplies port0/canonical authority/artifact limits (transaction-installed-configuration.ts17–70). No source-only seams, clock injection or changed page limits. One child/SQLite owner/listener per cohort, no bootstrap child/reopen/database inspection.
++Use exact canonical scope `https://reference.invalid/acme/`, one fresh owned absolute directory, `create:true`, and ledger.json's Task descriptor/property schema. Both resources are unowned Task Beads with exactly `id,type,revision,properties,metadata`; no descriptor ownsOutgoing means no `ownedLinks` assumption. The closed installed configuration parser accepts these fields and supplies port0/canonical authority/artifact limits (transaction-installed-configuration.ts `captureInstalledTransactionConfiguration`). No source-only seam is installed in the product child, and no clock injection or page-limit change is proposed. Vitest still loads its existing non-emitted read-conformance admission mock in the harness process; it cannot alter the separately spawned packed child. All asserted serving facts must come from that child’s actual HTTP responses. One child/SQLite owner/listener per cohort, no bootstrap child/reopen/database inspection.
+ 
+-Actual policy is fixed all-visible: store251 and590–598, runtime metadata361–379. This explains why current A/B observed view values may coincide. The test must not infer a protocol rule that different principals imply different views, nor assert A and B views equal merely because they share an epoch. Bind A's current view to A's independently validated first response and A-rotated's response; bind B's to B's first response. Require one common Scope epoch because both are in this single authority instance. The A Event page must use A's observed serving view for **both** Event IDs, never B's receipt view. This is a fixed-policy test, not a view-change test.
++Actual policy is fixed all-visible: store251 and590–598, runtime metadata361–379. This explains why current A/B observed view values may coincide. The test must not infer a protocol rule that different principals imply different views, nor assert A and B views equal merely because they share an epoch. Bind A's current view to A's independently validated first response and A-rotated's response; bind B's to B's first response. Require one common Scope epoch because both are in this single authority instance. The Event page must use the serving context observed on the A-credentialed Event GET for **both** Event IDs, never B's receipt view. These are A-credentialed reads, not principal-scoped reads: the HTTP read facet receives anonymous principal and Events receive no principal argument after the valid-credential gate. Neither request proves principal-based read filtering. This is a fixed all-visible-policy test, not a view-change test.
+ 
+ ## Exact seven requests and independent oracles
+ 
+-`ledger.json` contains complete literal bodies, byte sizes/hashes, header lines, routes, role mapping and expected statuses. Every POST uses `Accept: application/json`, `Content-Type: application/json`, `Idempotency-Key: principal-shared`. GETs have Accept only plus resolved authorization; no body/key/minimum/conditional headers. The exact raw serializer supplies Host/content-length/framing. Three allowed routes: POST operations/batch, GET beads/?limit=32, GET events/. These are validated real configured targets/out-of-band private fixture addresses, not cold-client discovery claims.
++`ledger.json` contains complete literal bodies, byte sizes/hashes, header lines, routes, role mapping and expected statuses. Every POST uses `Accept: application/json`, `Content-Type: application/json`, `Idempotency-Key: principal-shared`. GETs have Accept only plus resolved authorization; no body/key/minimum/conditional headers. Omit raw request bodyBytes entirely for GET (do not supply an empty buffer); bodyPresent must be false, bodyOctets0, with no body digest. The exact raw serializer supplies Host/content-length/framing. Three allowed routes: POST operations/batch, GET beads/?limit=32, GET events/. These are validated real configured targets/out-of-band private fixture addresses, not cold-client discovery claims.
+ 
+-1. **a-create**, A: create explicit a, title a, metadata{}. Require200, actual mutationReceipt schema, completed/available/key principal-shared, requiredPosition=effectPosition=pos-1, exact one created result operationIndex0, next:null. Independently validate full five-field Resource against literal id/type/properties/metadata and schema-valid nonempty revision. Validate receipt URL canonical under scope receipts/, exactly one legal token, no query/fragment/userinfo, <=8192B; nonempty schema-valid transaction token and expiresAt. Receipt epoch/view equal A response headers, which must all be present. Only after those checks save the full parsed receipt and Resource.
+-2. **b-independent-create**, B: same key, valid create-b body. Require200 using named first status oracle `principal-key:b-independent-create:completed`, then independent full completed receipt/Resource facts as above, required/effect pos-2. Receipt ID and transaction differ from A. B's response view is independently observed, not presumed equal/different to A. All later current responses have pos-2.
++1. **a-create**, A: create explicit a, title a, metadata{}. Require200, actual mutationReceipt schema, completed/available/key principal-shared, requiredPosition=effectPosition=pos-1, exact one created result operationIndex0, next:null. Independently validate full five-field Resource against absolute id `https://reference.invalid/acme/beads/a`, type `https://reference.invalid/acme/types/task`, properties `{title:"a"}` and metadata `{}` and schema-valid nonempty revision. Validate receipt URL canonical under scope receipts/, exactly one legal token, no query/fragment/userinfo, <=8192B; nonempty schema-valid transaction token and expiresAt. Receipt epoch/view equal A response headers, which must all be present. Only after those checks save the full parsed receipt and Resource.
++2. **b-independent-create**, B: same key, valid create-b body. Require200 using named first status oracle `principal-key:b-independent-create:completed`, then independent full completed receipt/Resource facts as above, using absolute id `https://reference.invalid/acme/beads/b`, type `https://reference.invalid/acme/types/task`, properties `{title:"b"}`, metadata `{}`, required/effect pos-2. Receipt ID and transaction differ from A. B's response view is independently observed, not presumed equal/different to A. All later current responses have pos-2.
+ 3. **a-rotated-replay**, A-rotated: byte-identical A body and key;200, schema and **full parsed body strict equality** to saved A receipt, same receipt ID/transaction. Body remains historical pos-1 while current header is pos-2 and A view. A second execution would fail on existing a, so status/full retained equality discriminate it.
+ 4. **b-replay**, B: byte-identical B body/key;200 exact saved B body/root, current pos-2/B view.
+ 5. **a-conflict**, A: valid create-c body under same key;409 with exact transactionalProblem `{type: conflict problem URI, code: idempotency-conflict, status:409, retry:never}`. No receipt payload; current epoch/A view/pos-2; no retry-after/www-authenticate/development-limit. No claim that receipt rows were inspected internally.
+-6. **current-complete**, A: schema currentBeadCollection; exactly ordered a,b full records equal the independently validated original postimages, next:null; c absent. Current A context pos-2. No revision or provenance omitted from equality.
+-7. **events-complete**, A: schema eventPage; exact source scope events/, exactly two Events and next:null. Both `created`, ordered a then b, subjectType=Task, ordinal0 per separate transaction. Each data exactly `{revision,properties,metadata}` from its corresponding independent Resource. Event0.transaction=A receipt.transaction; Event1.transaction=B receipt.transaction. Validate time with actual event schema; strict object shape includes that schema-validated actual time (not fabricated equality to receipt expiration). Independently derive private projected IDs from JSON tuples `["epoch", A current epoch]`, `["view", A Event serving view]`, `["source", scope events/]`, SHA256 base64url, then pos-1/pos-2 and ordinal0. This private identity spelling is test evidence, not normative Event-ID format. Both events use A's current projection. Store readEvents1553–1630 scans finite groups to head and applies receiptMaximumItems (default32); two small created events fit. Require next:null rather than assuming completeness from count. This does not prove Changes pagination or Resource-source membership.
++6. **current-complete**, A: schema currentBeadCollection; exactly ordered a,b full records equal the independently validated original postimages, next:null; c absent. Serving context observed on this A-credentialed read has pos-2; no principal-scoped read semantics are inferred. No revision or provenance omitted from equality.
++7. **events-complete**, A: schema eventPage; exact source scope events/, exactly two Events and next:null. Both `created`, ordered a then b, subjectType=`https://reference.invalid/acme/types/task`, subjects respectively `https://reference.invalid/acme/beads/a` and `https://reference.invalid/acme/beads/b`, ordinal0 per separate transaction. Each data exactly `{revision,properties,metadata}` from its corresponding independent Resource. Event0.transaction=A receipt.transaction; Event1.transaction=B receipt.transaction. Validate time with actual event schema; strict object shape includes that schema-validated actual time (not fabricated equality to receipt expiration). Independently derive private projected IDs from JSON tuples `["epoch", Event GET current epoch]`, `["view", Event GET serving view]`, `["source", scope events/]`, SHA256 base64url, then exactly `ev_${hash("epoch", context.scopeEpoch)}_${hash("view", context.authorizationView)}_${hash("source", source)}_${checkpoint}_${ordinal}`, where hash is SHA256(JSON.stringify([tag,value])).digest("base64url"), source is `https://reference.invalid/acme/events/`, checkpoint is pos-1/pos-2, ordinal is 0. This deliberately pins the current private implementation spelling; no normative stability is claimed. This private identity spelling is test evidence, not normative Event-ID format. Both events use the serving projection observed on the A-credentialed Event GET. Store `readEvents` scans finite groups to head and applies receiptMaximumItems (default32); two small created events fit. Require next:null rather than assuming completeness from count. This does not prove Changes pagination or Resource-source membership.
+ 
+ All receipts use `#/$defs/mutationReceipt`, Problems `transactionalProblem`, postimages `beadRecord`, collection `currentBeadCollection`, Events `eventPage` from actual schema bundle. Ajv2020 + protocol URI/date-time formats exactly follow existing installed pattern. Response JSON is validated before use as a baseline. Require application/json for successes and application/problem+json for409, body octets match content-length, no validator headers on mutation receipts/direct refusal, Cache-Control private,no-store there, development marker non-attesting with no development-limit. Preserve required context headers; do not mistake bdp-authorization-view for a credential. Read representation cache/validator behavior is checked only where existing source law requires it, not blindly copied from POST.
+ 
+ ## Counterfactual: configuration sensitivity, not a product mutant
+ 
+-Register one top-level callback with full name `observes independent principal keys and same-principal credential rotation through installed HTTP`. It runs positive by default. A narrowly validated test-only environment mode `BDP_TRANSACTIONAL_PRINCIPAL_KEY_MODE=collapse-b-to-a` changes **only** configured B principal from principal-b to principal-a before launch. All tokens stay distinct, all canMutate true; requests and positive expectations are byte-identical. Reject unknown modes before child start. No source/emitted/runtime mutation, no alternative request oracle, no import of a fake service.
++Register one top-level callback with full name `observes independent principal keys and same-principal credential rotation through installed HTTP`. An absent mode variable or literal `positive` selects positive; any other value except `collapse-b-to-a` is rejected before child start. A narrowly validated test-only environment mode `BDP_TRANSACTIONAL_PRINCIPAL_KEY_MODE=collapse-b-to-a` changes **only** configured B principal from principal-b to principal-a before launch. All tokens stay distinct, all canMutate true; requests and positive expectations are byte-identical. Reject unknown modes before child start. No source/emitted/runtime mutation, no alternative request oracle, no import of a fake service.
+ 
+-In a fresh negative child, request1 succeeds. Request2 must actually return409 idempotency-conflict at pos-1/A view and the unchanged named expected200 assertion fails. Capture safe response evidence before this assertion: status, full schema-validated Problem fields when applicable, current context, content length/type, request body digest/route/credential role, exact writeState, wire/body fingerprints. No Authorization value is retained. Adjudicator requires exactly the one named failure, both complete actual responses, exact actual409 Problem/context, no transport/harness/unhandled/cleanup error and exactly2 attempts; generic exit1, a500, denial403 or incomplete wire never counts. Stop immediately; no requests3–7 in the intended negative. External control adjudication can pass while actual Vitest exit1 remains recorded as the intended failure.
++In a fresh negative child, request1 succeeds. Request2 must actually return409 idempotency-conflict at pos-1/A view and the unchanged named expected200 assertion fails. Capture safe response evidence before this assertion: status, full schema-validated Problem fields when applicable, current context, content length/type, request body digest/route/credential role, exact writeState, wire/body fingerprints. No Authorization value is retained. Credential comparisons must reduce to booleans with fixed safe assertion labels, avoiding secret-bearing expected/actual assertion diffs. Wire fingerprints refer to response wire, never credential-bearing request-wire material. Adjudicator requires exactly the one named failure, both complete actual responses, exact actual409 Problem/context, no transport/harness/unhandled/cleanup error and exactly2 attempts; generic exit1, a500, denial403 or incomplete wire never counts. Stop immediately; no requests3–7 in the intended negative. External control adjudication can pass while actual Vitest exit1 remains recorded as the intended failure.
+ 
+ This proves the test distinguishes collapsed-principal configuration, not that production was mutated or principal isolation is generally qualified. Fresh configuration/authentication/runtime identity is bound independently per cohort; do not demand positive and negative identity hashes equal. The same external packed payload is reused, with a fresh store per cohort. Tokens may be freshly generated in each run; the sole semantic mapping delta is B's principal.
+ 
+@@ -51,20 +51,32 @@
+ 
+ Positive7 HTTP (5POST+2GET), one child/owner/listener/directory. Negative expected2POST, hard cap7, one child/owner/listener/directory. Combined expected9, hard14HTTP and2children, no retries/reopens/replacement after failed start. Startup and schema loading issue zero HTTP. Source/type/static phases open no product child; only the two selected installed executions do. Exactly one new CI callback registration, default positive7HTTP/onechild; do not register the negative separately or run a broad installed matrix.
+ 
+-Use createRawHttpExchangeExecutor with5s request timeout,32768B response body ceiling enforced during receive,65536B response header ceiling, exact-mode request headers<=16384B/body<=65536B and URL<=8192B. No redirects/fetch fallback, hidden credential probes or dynamic receipt GETs. Increment attempt counter before every dispatch and enforce7 maximum; retain complete responses separately from attempts. Expected response bytes are unknown until actual run; hard positive body bound229376B, total two-cohort body bound458752B. Do not present these as measured response sizes or full heap limits. Each schema/parsed baseline/raw response is bounded; no unbounded accumulation beyond7 observations.
++Use createRawHttpExchangeExecutor with5s request timeout,32768B maximum accepted decoded response body,65536B response header ceiling, exact-mode request headers<=16384B/body<=65536B and URL<=8192B. No redirects/fetch fallback, hidden credential probes or dynamic receipt GETs. Before every dispatch, require exact next ledger index/method/URL/role/body identity and increment the attempt counter; enforce7 maximum, with no replayed or substituted ledger step; retain complete responses separately from attempts. Expected response bytes are unknown until actual run; maximum accepted decoded body totals229376B positive and458752B for both full schedules. Existing raw executor additionally bounds buffered wire bytes by body+2×header=163840B per exchange, and checks framed-body received bytes against body+header=98304B. The per-exchange socket buffer ceiling is enforced before copying the next chunk; the framed-body guard rejects excess after that bounded copy. Cumulative seven/fourteen-exchange ceilings are1146880/2293760 buffered-wire bytes and688128/1376256 framed-body bytes, not simultaneous heap bounds. Buffer growth temporarily retains old/new buffers, and parsed/copy objects coexist. Do not present any of these limits as measured response sizes or peak heap. Each schema/parsed baseline/raw response is bounded; no unbounded accumulation beyond7 observations.
+ 
+-45s work deadline starts before temporary directory/startup and is shared across ready/request work; launcher ready/close bound10s;10s cleanup;60s callback;120s external supervisor. Abort work then close once, catch cleanup failures individually, remove directory only after known process stop, record actual absence. Preserve primary assertion and cleanup errors together; emit safe full observation before throwing aggregate. Before ready, returned child PID may be null: launcher cleanup is not independently proven by null, so external process-group/PID snapshots must establish no owned descendant. Supervisor records TERM/KILL only for its group on deadline, all actual exit/signal fields, source before/after and temp snapshots. No unknown directory deletion. Retain all failed setup/package/run artifacts; no automatic retry.
++45s work deadline starts before temporary directory/startup and is shared across ready/request work; it is an independent abort ceiling, not a promise that startup10s plus seven individually maximal5s requests and CPU work can all complete. A deadline failure remains an unexpected failed attempt, never sensitivity success; no timer is increased or reduced by this correction.  launcher ready/close bound10s;10s cleanup;60s callback;120s external supervisor. Abort work then close once, catch cleanup failures individually, remove directory only after known process stop, record actual absence. Preserve primary assertion and cleanup errors together; emit safe full observation before throwing aggregate. Before ready, returned child PID may be null: launcher cleanup is not independently proven by null, so external process-group/PID snapshots must establish no owned descendant. Supervisor records TERM/KILL only for its group on deadline, all actual exit/signal fields, source before/after and temp snapshots. No unknown directory deletion. Retain all failed setup/package/run artifacts; no automatic retry.
+ 
+ ## Build/package/source attribution and future validation
+ 
+-No existing historical build/run is relabeled. Future root assigns actual merged sequence parent and ordinary source candidate after plan/code council. Preserve two-path diff, exact hashes, callback/title/ledger source checks and package inputs. Pinned Node24.16.0/pnpm11.20.0 PATH must apply to child scripts. Planned static commands and exact Vitest template are in ledger; paths are inspection-time templates pending actual isolated checkout reanchor, not executable release. Existing Read seal is required; no full suite demanded locally. One build before package; reuse is allowed only with an explicit actual input/output bridge across any commit, never an invented build success.
++No existing historical build/run is relabeled. After plan disposition root may assign a separate clean authoring checkout at18104; the ordinary final source candidate must then integrate actual sequence main under the final gates above.  Preserve two-path diff, exact hashes, callback/title/ledger source checks and package inputs. Pinned Node24.16.0/pnpm11.20.0 PATH must apply to child scripts. Planned static commands and exact Vitest template are in ledger; paths are inspection-time templates pending actual isolated checkout reanchor, not executable release. Existing Read seal is required; no full suite demanded locally. One build before package; reuse is allowed only with an explicit actual input/output bridge across any commit, never an invented build success.
+ 
+-Adapt existing reviewed package machinery: fresh protocol+server archives, every archive member/source equality (root LICENSE and documented server workspace dependency rewrite), fresh offline external consumer, pinned actual consumer lock, installed member equality, actual eight production packages/versions and dependency edges, independently reproduced recursive payload digest versus ready payload. Expected closure at18104: @bdp/protocol0.0.0, @bdp/server0.0.0, ajv8.17.1, ajv-formats3.0.1, fast-deep-equal3.1.3, fast-uri3.1.5, json-schema-traverse1.0.0, require-from-string2.0.2. Recheck after real parent; no silent version assumptions. Preserve configuration artifact bytes/retrieval identities and ready binding, actual routing, source clean head/tree, entry realpath/hash and installed package provenance. BDP_TRANSACTIONAL_INSTALLED_ENTRY must be an externally verified consumer entry for accepted runs, never workspace fallback.
++Adapt existing reviewed package machinery: fresh protocol+server archives, every archive member/source equality (root LICENSE and documented server workspace dependency rewrite), fresh offline external consumer, pinned actual consumer lock, installed member equality, actual eight production packages/versions and dependency edges, independently reproduced recursive payload digest versus ready payload. Expected closure at18104: @bdp/protocol0.0.0, @bdp/server0.0.0, ajv8.17.1, ajv-formats3.0.1, fast-deep-equal3.1.3, fast-uri3.1.5, json-schema-traverse1.0.0, require-from-string2.0.2. Recheck after real parent; no silent version assumptions. Preserve only nonsecret descriptor/schema artifact bytes/retrieval identities and ready configuration/authentication identity digests; never persist the credential-bearing runtime configuration, token map, Bearer values or whole launcher options. Preserve ready binding, actual routing, source clean head/tree, entry realpath/hash and installed package provenance. BDP_TRANSACTIONAL_INSTALLED_ENTRY must be an externally verified consumer entry for accepted runs, never workspace fallback.
+ 
+-`installedTransactionBinding` verifies ready metadata/targets/profile/history/claimEligible and adds caller source attribution; it does not make the child attest Git. State supervisor-verified clean-source attribution bound to actual packages. Record no profile eligibility. JSON report contains the full safe request/response ledger, validated negative Problem, comparison outcomes and lifecycle; full receipt/Resource/Event equality runs in memory before fingerprints. Do not claim persisted raw response bodies when only hashes are retained.
++`installedTransactionBinding` verifies ready metadata/targets/profile/history/claimEligible and adds caller source attribution; it does not make the child attest Git. State supervisor-verified clean-source attribution bound to actual packages. Record no profile eligibility. JSON report uses only the explicit retained-field allowlist in ledger.json, validated negative Problem, comparison outcomes and lifecycle; no whole exchange/configuration object is serialized; full receipt/Resource/Event equality runs in memory before fingerprints. Do not claim persisted raw response bodies when only hashes are retained.
+ 
+ ## Gates and limits of credit
+ 
+-Root review + independent native + actual Claude plan review precede authoring. Actual sequence merge/reanchor precedes final authoring base. Freeze normally formatted two-file draft and exact measurements, then native/Claude code review and separate finite execution release. Expected sensitivity failure must be adjudicated separately from positive pass; unexpected failure stops dependent work for disposition. All script execution remains closed now.
++Root review + independent native + actual Claude plan review precede authoring. Independent authoring can use root-assigned clean18104; actual sequence merge/reanchor precedes final installed validation/publication/readiness, with affected validations repeated if necessary. Freeze normally formatted two-file draft and exact measurements, then native/Claude code review and separate finite execution release. Expected sensitivity failure must be adjudicated separately from positive pass; unexpected failure stops dependent work for disposition. All script execution remains closed now.
+ 
+-Acceptance is both independent same-key transactions, correct rotated-credential replay, correct same-principal conflict, exact graph/Event transaction linkage and honest cleanup/provenance. No whole catalog credit, public discovery/profile claim, view-change policy, principal revocation, concurrent joins, failed/expired receipt transitions, restart/restore or secrecy proof. Existing foreign receipt access evidence is preserved and not repeated. Root retains sole-plan coordination. A newly established serving defect takes precedence over this evidence proposal.
++Acceptance is both independent same-key transactions through installed HTTP (owner-only admission already has evidence), correct rotated-credential replay, correct same-principal conflict, exact graph/Event transaction linkage and honest cleanup/provenance. No whole catalog credit, public discovery/profile claim, view-change policy, principal revocation, concurrent joins, failed/expired receipt transitions, restart/restore or secrecy proof. Existing foreign receipt access evidence is preserved and not repeated. Root retains sole-plan coordination. A newly established serving defect takes precedence over this evidence proposal.
++
++## Proposed successor clarifications bound to actual source
++
++The separate test role map binds a→credential index0/tokenA/principal-a, a-rotated→index1/tokenARotated/principal-a, b→index2/tokenB/principal-b. Runtime credential objects retain only token/principal/canMutate; adding a ref field would violate the closed parser. Resolve explicit request credentialRef through this map, require exactly the three mapped entries, and reject unknown roles synchronously. The exact executor requires defaultCredentialRef; set it to a, while every planned request still supplies its explicit role. Configuration collapse selects b through the role map and changes only its principal.
++
++Fixed request-body arithmetic is schedule-derived: each full cohort has five150B POST bodies and two bodyless GETs. Positive750B, intended negative300B, expected combined1050B, both complete schedules1500B. The1500B maximum requires the exact next-step ledger guard; it is not a multiplication of arbitrary14 dispatches by150B. No extra request is authorized.
++
++Reports/results must be absolute paths outside the removable owned store directory (prefer siblings under the supervisor evidence directory). Write the safe observation before throwing, then aggregate write failures with primary and cleanup failures; do not let an output error mask the original failure. Preserve independent process-group evidence for pre-ready failures. Never serialize arbitrary error causes that could retain raw request/configuration objects; retain bounded error classification/name/safe static message and named assertion IDs.
++
++Source-proof gaps from the actual review are closed by inspection, not new execution: `execute` passes core.transaction into `evaluateTransaction`, whose scopeEvent copies that transaction; the same core is retained in the completed receipt. `transactionReceiptMaximum()` defaults to TRANSACTION_MAXIMUM_OPERATIONS32; runtime readDefaultItems is2 and maxPageItems32, and read-request accepts limit. Event/default page maximum32 fits these two events; next:null still independently establishes completeness. Full local schema-reference traversal for the five validator roots is recorded in source-proof.json; required formats are uri/date-time, with no product import or Ajv execution claimed. `jsonResponse`, `problem`, `receiptResponse`, and parseReadUpdateShape snapshot/validate without injecting Problem title/detail. The unowned Task recipe has no links or ownedLinks; authority reading validates/reuses stored Resource records and pagination selects the same records rather than adding empty links. Receipt detail expiry is terminal time+86400000ms; normal45s execution is within that policy, but clock jumps/expiry remain unexpected failures, not a new expiry ruling. Symbols and committed hash pins, rather than stale lines, bind these findings.
++
++Independent source audit read and aligned: source-findings-audit.md SHA256 fd2440649d82b6230a4fce2193ccedad378354708e552e0b1e0cd7bf168f4a73. Its findings23 closure is independent of this author’s proposed successor. The plain regex is a simplification: pinned Vitest currently constructs RegExp without unicode flags, so the original escaping was not an established current execution defect.
+--- original/ledger.json
++++ proposed-successor/ledger.json
+@@ -1,5 +1,5 @@
+ {
+-  "status": "PROPOSED_NOT_AUTHORIZED",
++  "status": "PROPOSED_SUCCESSOR_AWAITING_ROOT_AND_NATIVE_CLOSURE",
+   "planningHead": "18104a03b850553641f24fe83e7318493fa102ca",
+   "planningTree": "10810a8016a451e241ea974487681dcddd63c2e4",
+   "actualAuthoringParent": null,
+@@ -56,7 +56,8 @@
+     "path": "credentials[2].principal",
+     "before": "principal-b",
+     "after": "principal-a",
+-    "otherChanges": []
++    "otherChanges": [],
++    "role": "b"
+   },
+   "artifactMeasurements": [
+     {
+@@ -263,7 +264,8 @@
+     "negativeExpected": 300,
+     "combinedExpected": 1050,
+     "perBodyMaximum": 150,
+-    "combinedMaximumAtSevenEach": 1500
++    "combinedMaximumAtSevenEach": 1500,
++    "maximumBasis": "two complete ordered schedules, each exactly five POST x150B plus two bodyless GET; guard next index/method/URL/role/body before every dispatch"
+   },
+   "cohorts": [
+     {
+@@ -322,7 +324,16 @@
+     "requestBodyBytes": 65536,
+     "urlBytes": 8192,
+     "maximumPositiveResponseBodyOctets": 229376,
+-    "maximumTwoCohortResponseBodyOctets": 458752
++    "maximumTwoCohortResponseBodyOctets": 458752,
++    "responseBodyInterpretation": "accepted decoded body limit, not receive or peak heap",
++    "receivedFramedBodyGuardBytes": 98304,
++    "wireBufferMaximumBytes": 163840,
++    "sevenExchangeFramedBodyGuardBytes": 688128,
++    "fourteenExchangeFramedBodyGuardBytes": 1376256,
++    "sevenExchangeWireBufferBytes": 1146880,
++    "fourteenExchangeWireBufferBytes": 2293760,
++    "heapPeakBound": null,
++    "deadlineInterpretation": "aggregate work ceiling; no sum-of-individual-maxima completion guarantee"
+   },
+   "tempPrefix": "bdp-principal-key-installed-",
+   "sourceCases": 0,
+@@ -382,14 +393,177 @@
+     "--reporter=json",
+     "--outputFile=<cohort-specific absolute results.json>",
+     "-t",
+-    "^observes\\ independent\\ principal\\ keys\\ and\\ same\\-principal\\ credential\\ rotation\\ through\\ installed\\ HTTP$"
++    "^observes independent principal keys and same-principal credential rotation through installed HTTP$"
+   ],
+   "environment": {
+     "PATH": "/Users/dbox/.nvm/versions/node/v24.16.0/bin:<existing PATH>",
+     "BDP_TRANSACTIONAL_INSTALLED_ENTRY": "<verified external consumer real entry; no workspace fallback in accepted runs>",
+     "BDP_TRANSACTIONAL_SOURCE_COMMIT": "<actual clean final source commit; not yet known>",
+-    "BDP_TRANSACTIONAL_PRINCIPAL_KEY_MODE": "positive | collapse-b-to-a",
++    "BDP_TRANSACTIONAL_PRINCIPAL_KEY_MODE": "absent or positive => positive; collapse-b-to-a => negative; all others reject",
+     "BDP_TRANSACTIONAL_PRINCIPAL_KEY_OUTPUT": "<cohort-specific full safe report JSON>",
+     "TMPDIR": "<cohort-specific supervisor-owned directory>"
++  },
++  "originalPacket": {
++    "plan.md": "077245675d7c0de0180348891d5b4bc262f39008888d1e229b9ccc6dde5cf4ee",
++    "ledger.json": "86502efeffc108f52f0ab524efc91315ec67a9f0d87aebdf6b34d4ab23a53a86",
++    "source-binding.json": "a974c376e6a6f4af73af1efbaa1bc3576ff4babcc93296cf783f8e751a0b72dd"
++  },
++  "inspectedCandidate": "82f60a25da8799334381f6ebd810f32a3574cd2d",
++  "authoringGate": {
++    "permittedBaseAfterRelease": "18104a03b850553641f24fe83e7318493fa102ca",
++    "separateCleanCheckoutRequired": true,
++    "released": false,
++    "finalIntegration": "ordinary integrate actual sequence main before final installed/publication/readiness; verify dependencies/two-path diff and repeat affected validation"
++  },
++  "credentialRoleMap": {
++    "a": {
++      "configurationIndex": 0,
++      "tokenVariable": "tokenA",
++      "principal": "principal-a"
++    },
++    "a-rotated": {
++      "configurationIndex": 1,
++      "tokenVariable": "tokenARotated",
++      "principal": "principal-a"
++    },
++    "b": {
++      "configurationIndex": 2,
++      "tokenVariable": "tokenB",
++      "principal": "principal-b"
++    }
++  },
++  "exactMode": {
++    "defaultCredentialRef": "a",
++    "explicitRoleRequiredOnEveryPlannedRequest": true,
++    "resolver": "synchronous role lookup; unknown role rejects; no ref field added to closed runtime credentials"
++  },
++  "modeSelection": {
++    "absent": "positive",
++    "positive": "positive",
++    "collapse-b-to-a": "collapse-b-to-a",
++    "other": "reject before child start"
++  },
++  "expectedResources": [
++    {
++      "id": "https://reference.invalid/acme/beads/a",
++      "type": "https://reference.invalid/acme/types/task",
++      "properties": {
++        "title": "a"
++      },
++      "metadata": {},
++      "revision": "schema-validated actual nonempty revision saved from initial receipt; all other fields exact; links and ownedLinks absent"
++    },
++    {
++      "id": "https://reference.invalid/acme/beads/b",
++      "type": "https://reference.invalid/acme/types/task",
++      "properties": {
++        "title": "b"
++      },
++      "metadata": {},
++      "revision": "schema-validated actual nonempty revision saved from initial receipt; all other fields exact; links and ownedLinks absent"
++    }
++  ],
++  "expectedEvents": {
++    "source": "https://reference.invalid/acme/events/",
++    "subjectType": "https://reference.invalid/acme/types/task",
++    "subjects": [
++      "https://reference.invalid/acme/beads/a",
++      "https://reference.invalid/acme/beads/b"
++    ],
++    "idTemplate": "ev_${hash(\"epoch\", context.scopeEpoch)}_${hash(\"view\", context.authorizationView)}_${hash(\"source\", source)}_${checkpoint}_${ordinal}",
++    "hash": "SHA256(JSON.stringify([tag,value])).digest(\"base64url\")",
++    "context": "actual serving context observed on A-credentialed Event GET; not principal-scoped read",
++    "checkpoint": [
++      "pos-1",
++      "pos-2"
++    ],
++    "ordinal": [
++      0,
++      0
++    ],
++    "transaction": "corresponding independently validated original receipt.transaction",
++    "formatIsPrivate": true
++  },
++  "sourceDefaults": {
++    "readDefaultItems": 2,
++    "receiptMaximumItems": 32,
++    "readMaximumPageItems": 32,
++    "receiptDetailMs": 86400000,
++    "expiryClockJump": "unexpected failure; no clock seam or retention change"
++  },
++  "retainedOutput": {
++    "observationFields": [
++      "index",
++      "label",
++      "method",
++      "url",
++      "credentialRef",
++      "requestBodyBytes",
++      "requestBodySha256",
++      "writeState",
++      "status",
++      "bodyOctets",
++      "bodySha256",
++      "responseWireSha256",
++      "scopeEpoch",
++      "authorizationView",
++      "scopePosition",
++      "contentType",
++      "contentLength",
++      "validatedNegativeProblem",
++      "comparisonOutcome"
++    ],
++    "bindingFields": [
++      "declaredSourceCommit",
++      "workspaceDirty",
++      "entry",
++      "entrySha256",
++      "readyDerivedBinding",
++      "artifactRetrievalUris",
++      "descriptorSchemaUtf8",
++      "configurationIdentity",
++      "authenticationIdentity",
++      "routeDigest",
++      "payloadDigest",
++      "claimEligible"
++    ],
++    "lifecycleFields": [
++      "attempts",
++      "completedResponses",
++      "childPid",
++      "exitCode",
++      "signalCode",
++      "closed",
++      "directoryAbsent",
++      "safeFailureClassifications",
++      "namedAssertionIds",
++      "elapsedMs"
++    ],
++    "forbidden": [
++      "effectiveRequest",
++      "exactRequest",
++      "headerLines",
++      "token",
++      "tokenMap",
++      "authorizationValues",
++      "runtimeConfiguration",
++      "launcherOptions",
++      "wholeExchange",
++      "arbitraryErrorCause",
++      "requestWire",
++      "secretBearingAssertionDiffs"
++    ],
++    "outputLocation": "absolute evidence/results paths outside store subtree; output-write failures aggregate with primary/cleanup errors"
++  },
++  "harnessSeam": "existing read-conformance-mock setup loads in test process only; cannot reach separately spawned packed child; no child admission bypass",
++  "rawGetEncoding": {
++    "bodyBytes": "omitted",
++    "expectedBodyPresent": false,
++    "expectedBodyOctets": 0,
++    "bodyDigest": "absent"
++  },
++  "nativeSourceAudit": {
++    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-principal-key-plan/source-findings-audit.md",
++    "sha256": "fd2440649d82b6230a4fce2193ccedad378354708e552e0b1e0cd7bf168f4a73"
+   }
+ }
+--- original/source-binding.json
++++ proposed-successor/source-binding.json
+@@ -1,119 +1,188 @@
+ {
+-  "status": "PLANNING_SOURCE_NOT_FUTURE_CANDIDATE",
++  "status": "PROPOSED_SUCCESSOR_ORIGINAL_COMMITTED_BASIS_NOT_EXECUTION",
+   "head": "18104a03b850553641f24fe83e7318493fa102ca",
+   "tree": "10810a8016a451e241ea974487681dcddd63c2e4",
+   "workspace": "/Users/dbox/repos/wt/vickie/vickie-sequence-member-evidence",
+   "files": {
+     "docs/specs/bdp.md": {
+       "sha256": "f036103ffdf5f89fa3a2033570e1e987c4cd203cd80b1c633cb44615123f892e",
+-      "bytes": 394427
++      "bytes": 394427,
++      "currentInspectionBytesEqualPlanningBase": true
+     },
+     "docs/design/transaction-implementation-progress.md": {
+       "sha256": "4046f8603ae260e14b62cdc17c7084a0e47194a7bd44f0aad93666209a4ba555",
+-      "bytes": 128645
++      "bytes": 128645,
++      "currentInspectionBytesEqualPlanningBase": true
+     },
+     "packages/server/src/transaction-store.ts": {
+       "sha256": "fcd6882b29e538db45867c894c06dfbaa6ca588db0c2e403ef1b7abb14f6c706",
+-      "bytes": 87238
++      "bytes": 87238,
++      "currentInspectionBytesEqualPlanningBase": true
+     },
+     "packages/server/src/transaction-http.ts": {
+       "sha256": "b51d02801e5924190aba77c377e538db0b8619149d6184e19cb56d440f40c2cf",
+-      "bytes": 27155
++      "bytes": 27155,
++      "currentInspectionBytesEqualPlanningBase": true
+     },
+     "packages/server/src/transaction-submission.ts": {
+       "sha256": "4336e45d7b4f90eec685b70c7ba059219954bb20271aa2c942ee9e140f0743af",
+-      "bytes": 7431
++      "bytes": 7431,
++      "currentInspectionBytesEqualPlanningBase": true
+     },
+     "packages/server/src/transaction-service.ts": {
+       "sha256": "53f655faf494209996aac2e0f93a4c2c785e471f66aac6af9ea41f92c9cfbe00",
+-      "bytes": 25130
++      "bytes": 25130,
++      "currentInspectionBytesEqualPlanningBase": true
+     },
+     "packages/server/src/transaction-runtime.ts": {
+       "sha256": "77954f0a85029d76443feac54cd53cda4339ffc126660ace5a9f5af92466c573",
+-      "bytes": 16173
++      "bytes": 16173,
++      "currentInspectionBytesEqualPlanningBase": true
+     },
+     "packages/server/src/transaction-runtime-configuration.ts": {
+       "sha256": "e594e930f845255cafc7e2f5b5b28149b7e95fe8a09052b187a492c96328f7ca",
+-      "bytes": 16165
++      "bytes": 16165,
++      "currentInspectionBytesEqualPlanningBase": true
+     },
+     "packages/server/src/transaction-installed-configuration.ts": {
+       "sha256": "e15cb54266848fdd4aa08b19b37f1b2eb080f4599d9414fad8d85b6f33f35d99",
+-      "bytes": 2942
++      "bytes": 2942,
++      "currentInspectionBytesEqualPlanningBase": true
+     },
+     "packages/server/src/transaction-installed-process.ts": {
+       "sha256": "6bd16f940f1f751189fc76419e3a18ca26cd5f54da3cfa3946b30c3956a2f8b7",
+-      "bytes": 2630
++      "bytes": 2630,
++      "currentInspectionBytesEqualPlanningBase": true
+     },
+     "packages/server/src/transaction-events.ts": {
+       "sha256": "c6052433662fcb2d0a202ad4e408a24d4c43f980313fa89659501b4475790db5",
+-      "bytes": 11755
++      "bytes": 11755,
++      "currentInspectionBytesEqualPlanningBase": true
+     },
+     "packages/server/src/transaction-batch.ts": {
+       "sha256": "70d941d416979edd54e250d51318cfb7e5d4ddb315ea6131de7ca5f56e98a014",
+-      "bytes": 46249
++      "bytes": 46249,
++      "currentInspectionBytesEqualPlanningBase": true
+     },
+     "packages/server/src/resource-evaluator.ts": {
+       "sha256": "89606787e455f4ed555b807d91c5331a376431807a9a581de1f94e538fcab4ff",
+-      "bytes": 46773
++      "bytes": 46773,
++      "currentInspectionBytesEqualPlanningBase": true
+     },
+     "packages/server/src/transaction-store.test.ts": {
+       "sha256": "7cd155ddd959ec31a207adbe6f8eb0a26f0af968a144abb58915720436bf0774",
+-      "bytes": 138540
++      "bytes": 138540,
++      "currentInspectionBytesEqualPlanningBase": true
+     },
+     "packages/server/src/transaction-http.test.ts": {
+       "sha256": "1c9cd7c7c85a5f6a58253f4178e40453a2443a218408eeba9abfddde4bf7948d",
+-      "bytes": 170960
++      "bytes": 170960,
++      "currentInspectionBytesEqualPlanningBase": true
+     },
+     "apps/bdptest/src/transactional-depth-key-order-installed.test.ts": {
+       "sha256": "48c6a84c84e470c7ce79f4d978bb09e2099daa5df4b4a6ef8629e1b7bf1b1700",
+-      "bytes": 29977
++      "bytes": 29977,
++      "currentInspectionBytesEqualPlanningBase": true
+     },
+     "apps/bdptest/src/transactional-receipt-missing-context-installed.test.ts": {
+       "sha256": "eaf1289ed0a8318ce949704ba4cd983755c6f5fd20ffe9d61712869894cb5064",
+-      "bytes": 19909
++      "bytes": 19909,
++      "currentInspectionBytesEqualPlanningBase": true
+     },
+     "apps/bdptest/test-support/transactional-execution-binding.ts": {
+       "sha256": "cde506c72a8710eafe58522900f6db70ed3701cf333560252dc8e7c5e706cf89",
+-      "bytes": 7378
++      "bytes": 7378,
++      "currentInspectionBytesEqualPlanningBase": true
+     },
+     "scripts/transaction-installed-observation.mjs": {
+       "sha256": "6f772f3776d3c3effa788676d853cc2932a6ee59ad63ac3338ad1b487408914b",
+-      "bytes": 3264
++      "bytes": 3264,
++      "currentInspectionBytesEqualPlanningBase": true
+     },
+     "schemas/bdp-v0.schema.json": {
+       "sha256": "0baa5d5ef67144f8e6513b4cde31168effc8df6d52ef3141b0f144b87f8dc227",
+-      "bytes": 133208
++      "bytes": 133208,
++      "currentInspectionBytesEqualPlanningBase": true
+     },
+     "packages/conformance/test-support/transactional/fixture-v1.json": {
+       "sha256": "3a7899ced771d4880066d98b0000c53f801ece53458502cc4f3bc641146c9a85",
+-      "bytes": 716
++      "bytes": 716,
++      "currentInspectionBytesEqualPlanningBase": true
+     },
+     "package.json": {
+       "sha256": "f081baa3202b4815663d360d3ad1608206efe1b023086a4c8feff4d7fb97d8d0",
+-      "bytes": 1337
++      "bytes": 1337,
++      "currentInspectionBytesEqualPlanningBase": true
+     },
+     "pnpm-lock.yaml": {
+       "sha256": "4150d8821c96dbc2cfec0b2762ff76b58318079f65fa4f5c8858ef2dd61f8d6d",
+-      "bytes": 38851
++      "bytes": 38851,
++      "currentInspectionBytesEqualPlanningBase": true
+     },
+     "vitest.config.ts": {
+       "sha256": "a84575ea9ef0b6e75b6484024a627fa89422aea2fdbeb26127e09714dba0641f",
+-      "bytes": 3207
++      "bytes": 3207,
++      "currentInspectionBytesEqualPlanningBase": true
+     },
+     "packages/conformance/src/raw-http-scenario-target.ts": {
+       "sha256": "d1afc4d70a066a674db40caa5c26e846d7b6f78c98743b8a504eb4b38d73a581",
+-      "bytes": 11514
++      "bytes": 11514,
++      "currentInspectionBytesEqualPlanningBase": true
+     },
+     "packages/conformance/src/http-executor.ts": {
+       "sha256": "770a8405ae1532484b5a2658619c067832644947888f95e0c6575002376f1b5d",
+-      "bytes": 50611
++      "bytes": 50611,
++      "currentInspectionBytesEqualPlanningBase": true
+     },
+     "packages/server/src/installed-payload.ts": {
+       "sha256": "d1095a8fa641c77ddef32b1d432273572f46b14499c526dbb0a85cfde82113f9",
+-      "bytes": 3594
++      "bytes": 3594,
++      "currentInspectionBytesEqualPlanningBase": true
++    },
++    "packages/server/src/read-http-routing.ts": {
++      "sha256": "d9344b87838f8c71381ccf9efe28b4f023df45503570beb8fb4293d553caca42",
++      "bytes": 2967,
++      "currentInspectionBytesEqualPlanningBase": true
++    },
++    "packages/server/src/read-request.ts": {
++      "sha256": "57675afc647df3e8ad1f26a40aef72584aa388ade6af4a465e3ffef16670f6a2",
++      "bytes": 36371,
++      "currentInspectionBytesEqualPlanningBase": true
++    },
++    "packages/server/src/authority-read.ts": {
++      "sha256": "fd6554c4ee0d08b997fb3622c2f21697f02d58b838f4ae0de10aca4707f67734",
++      "bytes": 44340,
++      "currentInspectionBytesEqualPlanningBase": true
++    },
++    "packages/server/src/index.ts": {
++      "sha256": "34f9d9de8b48852c64919e69ce93f149e9cdae5142c15c75e4c35f08f15efc44",
++      "bytes": 55615,
++      "currentInspectionBytesEqualPlanningBase": true
++    },
++    "packages/server/src/transaction-read.ts": {
++      "sha256": "c3b486baf6b9e48d4a716d36b4162c2ba1f0c7672a6f48988192e2591eda7910",
++      "bytes": 12615,
++      "currentInspectionBytesEqualPlanningBase": true
++    },
++    "packages/protocol/src/read-update-problems.ts": {
++      "sha256": "1a6315705b72fad1f1a287053c17858130c91317ed08c95f6d68a1ecc620a211",
++      "bytes": 1949,
++      "currentInspectionBytesEqualPlanningBase": true
++    },
++    "packages/protocol/src/read-update-values.ts": {
++      "sha256": "d1fdbc660d5e2c009275c152bdcebda46031700920aa03bfea89f39564c89de2",
++      "bytes": 19883,
++      "currentInspectionBytesEqualPlanningBase": true
++    },
++    "packages/server/test-support/read-conformance-mock.ts": {
++      "sha256": "dbfb86ac2325c684567ffce40f17105c6b12a63edfa54cc08f0601df8dc613f8",
++      "bytes": 1409,
++      "currentInspectionBytesEqualPlanningBase": true
+     }
+   },
+   "newPathAbsentAtBase": true,
+   "exhaustiveDependencyClosure": false,
+-  "note": "Meaningful source dependencies and existing local patterns; actual installed package closure is a future execution gate."
++  "note": "Meaningful source dependencies and existing local patterns; actual installed package closure is a future execution gate.",
++  "currentInspectionHead": "82f60a25da8799334381f6ebd810f32a3574cd2d",
++  "currentWorkingStatus": ""
+ }

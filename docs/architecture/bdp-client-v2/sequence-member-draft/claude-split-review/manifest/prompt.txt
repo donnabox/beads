@@ -1,0 +1,1592 @@
+
+
+===== Scope and accepted boundaries =====
+You are Claude reviewing actual frozen CODE in one of TWO complementary scopes. Do not write or modify any files. Output findings only in stdout. No tools, imports, tests, builds or network. Give concise actionable findings with severity, exact location, demonstrated defect/impact and smallest correction. Distinguish omitted context from proven defects. If clean say no actionable findings. Root aggregates both scopes; neither alone is a complete four-file council.
+Candidate82f60a25da8799334381f6ebd810f32a3574cd2d/tree3cd1da66ba3a6cbd0bbdaa2442d10002939d826b directly follows18104a03b850553641f24fe83e7318493fa102ca. Full four-file patch108093B SHA53c66bc9a5d07f53749e18628eaba32773458160ab506566ec1fb7960d13c313 is bound and retained externally. Complete changed TS means untruncated file-specific diff, including all changed code; unchanged whole files are not reproduced.
+This adds partial sequence evidence, not production changes or public qualification. wholeContract/claimEligible remain false. Pending Snapshot-minimum and incident-Link decisions are untouched. No assertion count is qualification.
+All ten actions and every assertion value appear in the complete compact manifest row below. Seven raw requests plus three original-wire receipt-helper GETs. Initial create-a/delete-missing/create-b yields outer200,pos2 and success/failure/success. Batch recovery keys are HTTP headers with keyless bodies; sequence member keys are body fields and no outer idempotency-key. Retained failure receipt index0 differs intentionally from sequence envelope index1. Only three scoped /id URL captures, never body/transaction/revision capture. Helper equality checks actual original receipt before report projection.
+Full envelope/Resource/Event equality stays mandatory. Private Event ID hashing is a source-specific oracle, not normative spelling. Successful deleted-resource projection has only id/type/revision. New negative changes only first middle delete missing→a, keeps replay/all assertions; runner evaluates all first-response assertions then stops. Expected exactly seven failures: serving-position,middle-type,middle-code,middle-status,middle-retry,middle-no-outcome,middle-no-deleted; other first-response checks pass, one HTTP/two children/zero helper actions.
+Old cross-carrier sentinel bypass is permitted only exact indexed initial/replay handoffs with URL/body digest/no key; old sentinel must finish before handoff and applies everywhere else. Minimum observer sees every ordinary response; helper GETs remain separately checked. Actual onObserved output precedes cleanup, whose failures still reject acceptance.
+Eight CPU static callbacks; four later cohorts213/1/204/205 expectedHTTP=623, max213/10/204/205=632, children23/2/23/23=71. observe90s, selected cohort/supervisor120s, positive elapsed63s, exchanges5s and prepare/cleanup10s unchanged. Runtime1MiB/100000nodes unchanged. These are bounds, not observed outcomes. Root's eight source stages passed historical dirty-parent exact same bytes; no new execution claimed here.
+Two previous supplied-context attempts timed out143 after895.605s and896.234s with empty stdout/stderr and unchanged inputs; neither is a verdict. No cause inferred. This split is preparation only pending root release; exactly one900s attempt per scope, no retry/model override. Missing supporting excerpts are limitations, not verified defects.
+
+ASSIGNED SCOPE: MANIFEST: full cumulative TS diff, complete new manifest+coverage objects, byte/semantic preservation and assertion/capture vocabulary. Wire scope separately reviews full app TS diff and lifecycle/sentinel/negative wire behavior.
+
+
+===== COMPLETE compact new manifest row (all ten actions and209assertions; no values omitted) =====
+{"id":"transactional.sequence.member-transactions","requiredProfile":"transactional","setup":{"fixture":"reference-transactional-v1","requires":["installed-transactional-http","transactional-receipt-observation"]},"applicability":{"requires":[]},"cleanup":{"resetFixture":true},"actions":[{"id":"s-sequence","family":"http","method":"POST","target":{"binding":"scope","path":"operations/sequence"},"credentialRef":"operator","raw":{"headerLines":[{"name":"accept","value":"application/json"},{"name":"content-type","value":"application/json"}],"body":{"encoding":"utf8","value":"{\"operations\":[{\"operation\":\"createBead\",\"id\":\"beads/a\",\"type\":\"https://reference.invalid/acme/types/task\",\"properties\":{\"title\":\"member-first\"},\"idempotencyKey\":\"member-a\"},{\"operation\":\"deleteBead\",\"bead\":\"beads/missing\",\"idempotencyKey\":\"member-fail\"},{\"operation\":\"createBead\",\"id\":\"beads/b\",\"type\":\"https://reference.invalid/acme/types/task\",\"properties\":{\"title\":\"member-last\"},\"idempotencyKey\":\"member-b\"}]}"}},"captures":[],"assertions":[{"id":"http-status","kind":"status","equals":200},{"id":"schema","kind":"json-schema","schema":"#/$defs/transactionalSequenceResponse"},{"id":"media","kind":"header","name":"content-type","equals":"application/json"},{"id":"request-headers","kind":"request-authored-headers"},{"id":"request-body","kind":"request-authored-body"},{"id":"present-bdp-scope-epoch","kind":"header","name":"bdp-scope-epoch","absent":false},{"id":"present-bdp-authorization-view","kind":"header","name":"bdp-authorization-view","absent":false},{"id":"present-bdp-scope-position","kind":"header","name":"bdp-scope-position","absent":false},{"id":"serving-position","kind":"header","name":"bdp-scope-position","equals":"pos-2"},{"id":"indices","kind":"json-array-tuples","pointer":"/results","ordered":true,"projections":[{"pointer":"/operationIndex"}],"equals":[[0],[1],[2]]},{"id":"first-outcome","kind":"json-pointer","pointer":"/results/0/outcome","exists":true,"equals":"created"},{"id":"first-no-name","kind":"json-pointer","pointer":"/results/0/operationName","exists":false},{"id":"first-id","kind":"json-pointer","pointer":"/results/0/resource/id","exists":true,"equals":"https://reference.invalid/acme/beads/a"},{"id":"first-type","kind":"json-pointer","pointer":"/results/0/resource/type","exists":true,"equals":"https://reference.invalid/acme/types/task"},{"id":"first-properties","kind":"json-pointer","pointer":"/results/0/resource/properties","exists":true,"equals":{"title":"member-first"}},{"id":"first-metadata","kind":"json-pointer","pointer":"/results/0/resource/metadata","exists":true,"equals":{}},{"id":"first-revision","kind":"json-pointer","pointer":"/results/0/resource/revision","exists":true},{"id":"first-no-owned","kind":"json-pointer","pointer":"/results/0/resource/ownedLinks","exists":false},{"id":"first-no-provenance","kind":"json-pointer","pointer":"/results/0/resource/revisionProvenance","exists":false},{"id":"last-outcome","kind":"json-pointer","pointer":"/results/2/outcome","exists":true,"equals":"created"},{"id":"last-no-name","kind":"json-pointer","pointer":"/results/2/operationName","exists":false},{"id":"last-id","kind":"json-pointer","pointer":"/results/2/resource/id","exists":true,"equals":"https://reference.invalid/acme/beads/b"},{"id":"last-type","kind":"json-pointer","pointer":"/results/2/resource/type","exists":true,"equals":"https://reference.invalid/acme/types/task"},{"id":"last-properties","kind":"json-pointer","pointer":"/results/2/resource/properties","exists":true,"equals":{"title":"member-last"}},{"id":"last-metadata","kind":"json-pointer","pointer":"/results/2/resource/metadata","exists":true,"equals":{}},{"id":"last-revision","kind":"json-pointer","pointer":"/results/2/resource/revision","exists":true},{"id":"last-no-owned","kind":"json-pointer","pointer":"/results/2/resource/ownedLinks","exists":false},{"id":"last-no-provenance","kind":"json-pointer","pointer":"/results/2/resource/revisionProvenance","exists":false},{"id":"middle-type","kind":"json-pointer","pointer":"/results/1/type","exists":true,"equals":"https://github.com/gastownhall/bdp/problems/not-found"},{"id":"middle-code","kind":"json-pointer","pointer":"/results/1/code","exists":true,"equals":"resource-not-found"},{"id":"middle-status","kind":"json-pointer","pointer":"/results/1/status","exists":true,"equals":404},{"id":"middle-retry","kind":"json-pointer","pointer":"/results/1/retry","exists":true,"equals":"after-state-change"},{"id":"middle-no-outcome","kind":"json-pointer","pointer":"/results/1/outcome","exists":false},{"id":"middle-no-deleted","kind":"json-pointer","pointer":"/results/1/deleted","exists":false},{"id":"middle-no-resource","kind":"json-pointer","pointer":"/results/1/resource","exists":false},{"id":"middle-no-name","kind":"json-pointer","pointer":"/results/1/operationName","exists":false},{"id":"no-receipt","kind":"json-pointer","pointer":"/receipt","exists":false},{"id":"no-id","kind":"json-pointer","pointer":"/id","exists":false}]},{"id":"s-first-receipt","family":"http","method":"POST","target":{"binding":"batch"},"credentialRef":"operator","raw":{"headerLines":[{"name":"accept","value":"application/json"},{"name":"content-type","value":"application/json"},{"name":"idempotency-key","value":"member-a"}],"body":{"encoding":"utf8","value":"{\"operations\":[{\"operation\":\"createBead\",\"id\":\"beads/a\",\"type\":\"https://reference.invalid/acme/types/task\",\"properties\":{\"title\":\"member-first\"}}]}"}},"captures":[{"binding":"s-first-root","from":{"kind":"json-pointer","pointer":"/id"}}],"assertions":[{"id":"http-status","kind":"status","equals":200},{"id":"schema","kind":"json-schema","schema":"#/$defs/mutationReceipt"},{"id":"media","kind":"header","name":"content-type","equals":"application/json"},{"id":"request-headers","kind":"request-authored-headers"},{"id":"request-body","kind":"request-authored-body"},{"id":"present-bdp-scope-epoch","kind":"header","name":"bdp-scope-epoch","absent":false},{"id":"present-bdp-authorization-view","kind":"header","name":"bdp-authorization-view","absent":false},{"id":"present-bdp-scope-position","kind":"header","name":"bdp-scope-position","absent":false},{"id":"serving-position","kind":"header","name":"bdp-scope-position","equals":"pos-2"},{"id":"disposition","kind":"json-pointer","pointer":"/status","exists":true,"equals":"completed"},{"id":"detail","kind":"json-pointer","pointer":"/detail","exists":true,"equals":"available"},{"id":"key","kind":"json-pointer","pointer":"/idempotencyKey","exists":true,"equals":"member-a"},{"id":"required-position","kind":"json-pointer","pointer":"/requiredPosition","exists":true,"equals":"pos-1"},{"id":"transaction","kind":"json-pointer","pointer":"/transaction","exists":true},{"id":"expiry","kind":"json-pointer","pointer":"/expiresAt","exists":true},{"id":"effect-position","kind":"json-pointer","pointer":"/effectPosition","exists":true,"equals":"pos-1"},{"id":"no-next","kind":"json-pointer","pointer":"/next","exists":true,"equals":null},{"id":"indices","kind":"json-array-tuples","pointer":"/results","ordered":true,"projections":[{"pointer":"/operationIndex"},{"pointer":"/outcome"}],"equals":[[0,"created"]]},{"id":"record-id","kind":"json-pointer","pointer":"/results/0/resource/id","exists":true,"equals":"https://reference.invalid/acme/beads/a"},{"id":"record-type","kind":"json-pointer","pointer":"/results/0/resource/type","exists":true,"equals":"https://reference.invalid/acme/types/task"},{"id":"record-properties","kind":"json-pointer","pointer":"/results/0/resource/properties","exists":true,"equals":{"title":"member-first"}},{"id":"record-metadata","kind":"json-pointer","pointer":"/results/0/resource/metadata","exists":true,"equals":{}},{"id":"record-revision","kind":"json-pointer","pointer":"/results/0/resource/revision","exists":true},{"id":"record-no-owned","kind":"json-pointer","pointer":"/results/0/resource/ownedLinks","exists":false},{"id":"record-no-provenance","kind":"json-pointer","pointer":"/results/0/resource/revisionProvenance","exists":false}]},{"id":"s-first-facts","family":"client","operation":"transactional.receipt-read","input":{"binding":"s-first-root","method":"GET"},"captures":[],"assertions":[{"id":"status","kind":"json-pointer","pointer":"/status","exists":true,"equals":200},{"id":"body-present","kind":"json-pointer","pointer":"/bodyPresent","exists":true,"equals":true},{"id":"present-bdp-scope-epoch","kind":"json-pointer","pointer":"/headers/bdp-scope-epoch","exists":true},{"id":"present-bdp-authorization-view","kind":"json-pointer","pointer":"/headers/bdp-authorization-view","exists":true},{"id":"present-bdp-scope-position","kind":"json-pointer","pointer":"/headers/bdp-scope-position","exists":true},{"id":"serving-position","kind":"json-pointer","pointer":"/headers/bdp-scope-position","exists":true,"equals":"pos-2"},{"id":"private-cache","kind":"json-pointer","pointer":"/headers/cache-control","exists":true,"equals":"private, no-store"},{"id":"disposition","kind":"json-pointer","pointer":"/body/status","exists":true,"equals":"completed"},{"id":"required-position","kind":"json-pointer","pointer":"/body/requiredPosition","exists":true,"equals":"pos-1"},{"id":"key","kind":"json-pointer","pointer":"/body/idempotencyKey","exists":true,"equals":"member-a"},{"id":"root","kind":"json-pointer","pointer":"/body/id","exists":true,"equalsBinding":"s-first-root"},{"id":"effect-position","kind":"json-pointer","pointer":"/body/effectPosition","exists":true,"equals":"pos-1"},{"id":"no-next","kind":"json-pointer","pointer":"/body/next","exists":true,"equals":null}]},{"id":"s-failed-receipt","family":"http","method":"POST","target":{"binding":"batch"},"credentialRef":"operator","raw":{"headerLines":[{"name":"accept","value":"application/json"},{"name":"content-type","value":"application/json"},{"name":"idempotency-key","value":"member-fail"}],"body":{"encoding":"utf8","value":"{\"operations\":[{\"operation\":\"deleteBead\",\"bead\":\"beads/missing\"}]}"}},"captures":[{"binding":"s-failed-root","from":{"kind":"json-pointer","pointer":"/id"}}],"assertions":[{"id":"http-status","kind":"status","equals":200},{"id":"schema","kind":"json-schema","schema":"#/$defs/mutationReceipt"},{"id":"media","kind":"header","name":"content-type","equals":"application/json"},{"id":"request-headers","kind":"request-authored-headers"},{"id":"request-body","kind":"request-authored-body"},{"id":"present-bdp-scope-epoch","kind":"header","name":"bdp-scope-epoch","absent":false},{"id":"present-bdp-authorization-view","kind":"header","name":"bdp-authorization-view","absent":false},{"id":"present-bdp-scope-position","kind":"header","name":"bdp-scope-position","absent":false},{"id":"serving-position","kind":"header","name":"bdp-scope-position","equals":"pos-2"},{"id":"disposition","kind":"json-pointer","pointer":"/status","exists":true,"equals":"failed"},{"id":"detail","kind":"json-pointer","pointer":"/detail","exists":true,"equals":"available"},{"id":"key","kind":"json-pointer","pointer":"/idempotencyKey","exists":true,"equals":"member-fail"},{"id":"required-position","kind":"json-pointer","pointer":"/requiredPosition","exists":true,"equals":"pos-1"},{"id":"transaction","kind":"json-pointer","pointer":"/transaction","exists":true},{"id":"expiry","kind":"json-pointer","pointer":"/expiresAt","exists":true},{"id":"problem","kind":"json-pointer","pointer":"/problem","exists":true,"equals":{"type":"https://github.com/gastownhall/bdp/problems/not-found","code":"resource-not-found","status":404,"retry":"after-state-change","operationIndex":0}},{"id":"no-effect","kind":"json-pointer","pointer":"/effectPosition","exists":false},{"id":"no-results","kind":"json-pointer","pointer":"/results","exists":false},{"id":"no-next","kind":"json-pointer","pointer":"/next","exists":false}]},{"id":"s-failed-facts","family":"client","operation":"transactional.receipt-read","input":{"binding":"s-failed-root","method":"GET"},"captures":[],"assertions":[{"id":"status","kind":"json-pointer","pointer":"/status","exists":true,"equals":200},{"id":"body-present","kind":"json-pointer","pointer":"/bodyPresent","exists":true,"equals":true},{"id":"present-bdp-scope-epoch","kind":"json-pointer","pointer":"/headers/bdp-scope-epoch","exists":true},{"id":"present-bdp-authorization-view","kind":"json-pointer","pointer":"/headers/bdp-authorization-view","exists":true},{"id":"present-bdp-scope-position","kind":"json-pointer","pointer":"/headers/bdp-scope-position","exists":true},{"id":"serving-position","kind":"json-pointer","pointer":"/headers/bdp-scope-position","exists":true,"equals":"pos-2"},{"id":"private-cache","kind":"json-pointer","pointer":"/headers/cache-control","exists":true,"equals":"private, no-store"},{"id":"disposition","kind":"json-pointer","pointer":"/body/status","exists":true,"equals":"failed"},{"id":"required-position","kind":"json-pointer","pointer":"/body/requiredPosition","exists":true,"equals":"pos-1"},{"id":"key","kind":"json-pointer","pointer":"/body/idempotencyKey","exists":true,"equals":"member-fail"},{"id":"root","kind":"json-pointer","pointer":"/body/id","exists":true,"equalsBinding":"s-failed-root"},{"id":"problem","kind":"json-pointer","pointer":"/body/problem","exists":true,"equals":{"type":"https://github.com/gastownhall/bdp/problems/not-found","code":"resource-not-found","status":404,"retry":"after-state-change","operationIndex":0}},{"id":"no-effect","kind":"json-pointer","pointer":"/body/effectPosition","exists":false},{"id":"no-results","kind":"json-pointer","pointer":"/body/results","exists":false},{"id":"no-next","kind":"json-pointer","pointer":"/body/next","exists":false}]},{"id":"s-last-receipt","family":"http","method":"POST","target":{"binding":"batch"},"credentialRef":"operator","raw":{"headerLines":[{"name":"accept","value":"application/json"},{"name":"content-type","value":"application/json"},{"name":"idempotency-key","value":"member-b"}],"body":{"encoding":"utf8","value":"{\"operations\":[{\"operation\":\"createBead\",\"id\":\"beads/b\",\"type\":\"https://reference.invalid/acme/types/task\",\"properties\":{\"title\":\"member-last\"}}]}"}},"captures":[{"binding":"s-last-root","from":{"kind":"json-pointer","pointer":"/id"}}],"assertions":[{"id":"http-status","kind":"status","equals":200},{"id":"schema","kind":"json-schema","schema":"#/$defs/mutationReceipt"},{"id":"media","kind":"header","name":"content-type","equals":"application/json"},{"id":"request-headers","kind":"request-authored-headers"},{"id":"request-body","kind":"request-authored-body"},{"id":"present-bdp-scope-epoch","kind":"header","name":"bdp-scope-epoch","absent":false},{"id":"present-bdp-authorization-view","kind":"header","name":"bdp-authorization-view","absent":false},{"id":"present-bdp-scope-position","kind":"header","name":"bdp-scope-position","absent":false},{"id":"serving-position","kind":"header","name":"bdp-scope-position","equals":"pos-2"},{"id":"disposition","kind":"json-pointer","pointer":"/status","exists":true,"equals":"completed"},{"id":"detail","kind":"json-pointer","pointer":"/detail","exists":true,"equals":"available"},{"id":"key","kind":"json-pointer","pointer":"/idempotencyKey","exists":true,"equals":"member-b"},{"id":"required-position","kind":"json-pointer","pointer":"/requiredPosition","exists":true,"equals":"pos-2"},{"id":"transaction","kind":"json-pointer","pointer":"/transaction","exists":true},{"id":"expiry","kind":"json-pointer","pointer":"/expiresAt","exists":true},{"id":"effect-position","kind":"json-pointer","pointer":"/effectPosition","exists":true,"equals":"pos-2"},{"id":"no-next","kind":"json-pointer","pointer":"/next","exists":true,"equals":null},{"id":"indices","kind":"json-array-tuples","pointer":"/results","ordered":true,"projections":[{"pointer":"/operationIndex"},{"pointer":"/outcome"}],"equals":[[0,"created"]]},{"id":"record-id","kind":"json-pointer","pointer":"/results/0/resource/id","exists":true,"equals":"https://reference.invalid/acme/beads/b"},{"id":"record-type","kind":"json-pointer","pointer":"/results/0/resource/type","exists":true,"equals":"https://reference.invalid/acme/types/task"},{"id":"record-properties","kind":"json-pointer","pointer":"/results/0/resource/properties","exists":true,"equals":{"title":"member-last"}},{"id":"record-metadata","kind":"json-pointer","pointer":"/results/0/resource/metadata","exists":true,"equals":{}},{"id":"record-revision","kind":"json-pointer","pointer":"/results/0/resource/revision","exists":true},{"id":"record-no-owned","kind":"json-pointer","pointer":"/results/0/resource/ownedLinks","exists":false},{"id":"record-no-provenance","kind":"json-pointer","pointer":"/results/0/resource/revisionProvenance","exists":false}]},{"id":"s-last-facts","family":"client","operation":"transactional.receipt-read","input":{"binding":"s-last-root","method":"GET"},"captures":[],"assertions":[{"id":"status","kind":"json-pointer","pointer":"/status","exists":true,"equals":200},{"id":"body-present","kind":"json-pointer","pointer":"/bodyPresent","exists":true,"equals":true},{"id":"present-bdp-scope-epoch","kind":"json-pointer","pointer":"/headers/bdp-scope-epoch","exists":true},{"id":"present-bdp-authorization-view","kind":"json-pointer","pointer":"/headers/bdp-authorization-view","exists":true},{"id":"present-bdp-scope-position","kind":"json-pointer","pointer":"/headers/bdp-scope-position","exists":true},{"id":"serving-position","kind":"json-pointer","pointer":"/headers/bdp-scope-position","exists":true,"equals":"pos-2"},{"id":"private-cache","kind":"json-pointer","pointer":"/headers/cache-control","exists":true,"equals":"private, no-store"},{"id":"disposition","kind":"json-pointer","pointer":"/body/status","exists":true,"equals":"completed"},{"id":"required-position","kind":"json-pointer","pointer":"/body/requiredPosition","exists":true,"equals":"pos-2"},{"id":"key","kind":"json-pointer","pointer":"/body/idempotencyKey","exists":true,"equals":"member-b"},{"id":"root","kind":"json-pointer","pointer":"/body/id","exists":true,"equalsBinding":"s-last-root"},{"id":"effect-position","kind":"json-pointer","pointer":"/body/effectPosition","exists":true,"equals":"pos-2"},{"id":"no-next","kind":"json-pointer","pointer":"/body/next","exists":true,"equals":null}]},{"id":"s-replay","family":"http","method":"POST","target":{"binding":"scope","path":"operations/sequence"},"credentialRef":"operator","raw":{"headerLines":[{"name":"accept","value":"application/json"},{"name":"content-type","value":"application/json"}],"body":{"encoding":"utf8","value":"{\"operations\":[{\"operation\":\"createBead\",\"id\":\"beads/a\",\"type\":\"https://reference.invalid/acme/types/task\",\"properties\":{\"title\":\"member-first\"},\"idempotencyKey\":\"member-a\"},{\"operation\":\"deleteBead\",\"bead\":\"beads/missing\",\"idempotencyKey\":\"member-fail\"},{\"operation\":\"createBead\",\"id\":\"beads/b\",\"type\":\"https://reference.invalid/acme/types/task\",\"properties\":{\"title\":\"member-last\"},\"idempotencyKey\":\"member-b\"}]}"}},"captures":[],"assertions":[{"id":"http-status","kind":"status","equals":200},{"id":"schema","kind":"json-schema","schema":"#/$defs/transactionalSequenceResponse"},{"id":"media","kind":"header","name":"content-type","equals":"application/json"},{"id":"request-headers","kind":"request-authored-headers"},{"id":"request-body","kind":"request-authored-body"},{"id":"present-bdp-scope-epoch","kind":"header","name":"bdp-scope-epoch","absent":false},{"id":"present-bdp-authorization-view","kind":"header","name":"bdp-authorization-view","absent":false},{"id":"present-bdp-scope-position","kind":"header","name":"bdp-scope-position","absent":false},{"id":"serving-position","kind":"header","name":"bdp-scope-position","equals":"pos-2"},{"id":"indices","kind":"json-array-tuples","pointer":"/results","ordered":true,"projections":[{"pointer":"/operationIndex"}],"equals":[[0],[1],[2]]},{"id":"first-outcome","kind":"json-pointer","pointer":"/results/0/outcome","exists":true,"equals":"created"},{"id":"first-no-name","kind":"json-pointer","pointer":"/results/0/operationName","exists":false},{"id":"first-id","kind":"json-pointer","pointer":"/results/0/resource/id","exists":true,"equals":"https://reference.invalid/acme/beads/a"},{"id":"first-type","kind":"json-pointer","pointer":"/results/0/resource/type","exists":true,"equals":"https://reference.invalid/acme/types/task"},{"id":"first-properties","kind":"json-pointer","pointer":"/results/0/resource/properties","exists":true,"equals":{"title":"member-first"}},{"id":"first-metadata","kind":"json-pointer","pointer":"/results/0/resource/metadata","exists":true,"equals":{}},{"id":"first-revision","kind":"json-pointer","pointer":"/results/0/resource/revision","exists":true},{"id":"first-no-owned","kind":"json-pointer","pointer":"/results/0/resource/ownedLinks","exists":false},{"id":"first-no-provenance","kind":"json-pointer","pointer":"/results/0/resource/revisionProvenance","exists":false},{"id":"last-outcome","kind":"json-pointer","pointer":"/results/2/outcome","exists":true,"equals":"created"},{"id":"last-no-name","kind":"json-pointer","pointer":"/results/2/operationName","exists":false},{"id":"last-id","kind":"json-pointer","pointer":"/results/2/resource/id","exists":true,"equals":"https://reference.invalid/acme/beads/b"},{"id":"last-type","kind":"json-pointer","pointer":"/results/2/resource/type","exists":true,"equals":"https://reference.invalid/acme/types/task"},{"id":"last-properties","kind":"json-pointer","pointer":"/results/2/resource/properties","exists":true,"equals":{"title":"member-last"}},{"id":"last-metadata","kind":"json-pointer","pointer":"/results/2/resource/metadata","exists":true,"equals":{}},{"id":"last-revision","kind":"json-pointer","pointer":"/results/2/resource/revision","exists":true},{"id":"last-no-owned","kind":"json-pointer","pointer":"/results/2/resource/ownedLinks","exists":false},{"id":"last-no-provenance","kind":"json-pointer","pointer":"/results/2/resource/revisionProvenance","exists":false},{"id":"middle-type","kind":"json-pointer","pointer":"/results/1/type","exists":true,"equals":"https://github.com/gastownhall/bdp/problems/not-found"},{"id":"middle-code","kind":"json-pointer","pointer":"/results/1/code","exists":true,"equals":"resource-not-found"},{"id":"middle-status","kind":"json-pointer","pointer":"/results/1/status","exists":true,"equals":404},{"id":"middle-retry","kind":"json-pointer","pointer":"/results/1/retry","exists":true,"equals":"after-state-change"},{"id":"middle-no-outcome","kind":"json-pointer","pointer":"/results/1/outcome","exists":false},{"id":"middle-no-deleted","kind":"json-pointer","pointer":"/results/1/deleted","exists":false},{"id":"middle-no-resource","kind":"json-pointer","pointer":"/results/1/resource","exists":false},{"id":"middle-no-name","kind":"json-pointer","pointer":"/results/1/operationName","exists":false},{"id":"no-receipt","kind":"json-pointer","pointer":"/receipt","exists":false},{"id":"no-id","kind":"json-pointer","pointer":"/id","exists":false}]},{"id":"s-current","family":"http","method":"GET","target":{"binding":"scope","path":"beads/","query":{"limit":"32"}},"credentialRef":"operator","raw":{"headerLines":[{"name":"accept","value":"application/json"}]},"captures":[],"assertions":[{"id":"http-status","kind":"status","equals":200},{"id":"schema","kind":"json-schema","schema":"#/$defs/currentBeadCollection"},{"id":"media","kind":"header","name":"content-type","equals":"application/json"},{"id":"request-headers","kind":"request-authored-headers"},{"id":"request-body","kind":"request-authored-body"},{"id":"present-bdp-scope-epoch","kind":"header","name":"bdp-scope-epoch","absent":false},{"id":"present-bdp-authorization-view","kind":"header","name":"bdp-authorization-view","absent":false},{"id":"present-bdp-scope-position","kind":"header","name":"bdp-scope-position","absent":false},{"id":"serving-position","kind":"header","name":"bdp-scope-position","equals":"pos-2"},{"id":"no-next","kind":"json-pointer","pointer":"/next","exists":true,"equals":null},{"id":"ordered-state","kind":"json-array-tuples","pointer":"/items","ordered":true,"projections":[{"pointer":"/id"},{"pointer":"/type"},{"pointer":"/properties"},{"pointer":"/metadata"}],"equals":[["https://reference.invalid/acme/beads/a","https://reference.invalid/acme/types/task",{"title":"member-first"},{}],["https://reference.invalid/acme/beads/b","https://reference.invalid/acme/types/task",{"title":"member-last"},{}]]}]},{"id":"s-events","family":"http","method":"GET","target":{"binding":"scope","path":"events/"},"credentialRef":"operator","raw":{"headerLines":[{"name":"accept","value":"application/json"}]},"captures":[],"assertions":[{"id":"http-status","kind":"status","equals":200},{"id":"schema","kind":"json-schema","schema":"#/$defs/eventPage"},{"id":"media","kind":"header","name":"content-type","equals":"application/json"},{"id":"request-headers","kind":"request-authored-headers"},{"id":"request-body","kind":"request-authored-body"},{"id":"present-bdp-scope-epoch","kind":"header","name":"bdp-scope-epoch","absent":false},{"id":"present-bdp-authorization-view","kind":"header","name":"bdp-authorization-view","absent":false},{"id":"present-bdp-scope-position","kind":"header","name":"bdp-scope-position","absent":false},{"id":"serving-position","kind":"header","name":"bdp-scope-position","equals":"pos-2"},{"id":"no-next","kind":"json-pointer","pointer":"/next","exists":true,"equals":null},{"id":"source","kind":"json-pointer","pointer":"/source","exists":true,"equals":"https://reference.invalid/acme/events/"},{"id":"ordered-facts","kind":"json-array-tuples","pointer":"/events","ordered":true,"projections":[{"pointer":"/source"},{"pointer":"/type"},{"pointer":"/subject"},{"pointer":"/subjectType"},{"pointer":"/ordinal"}],"equals":[["https://reference.invalid/acme/events/","created","https://reference.invalid/acme/beads/a","https://reference.invalid/acme/types/task",0],["https://reference.invalid/acme/events/","created","https://reference.invalid/acme/beads/b","https://reference.invalid/acme/types/task",0]]}]}]}
+
+
+===== Attributed independent preservation/measurement facts =====
+{"canonical":{"sha256":"a11a79f6d0f9ffa5933a680a3e4fed87987789c3deca50a38cda8563132d242e","diskBytes":790009,"normalBytes":802361,"normalSha256":"a4fbfff3c4dcc38e156ebe09d27b33a44a682b081820192ff8e58b60e4dbe1e1","compactBytes":392300,"nodes":20956,"actions":220,"assertions":2503},"coverage":{"sha256":"346e1edaa22af789f89017fdc2fef6bb01b7564ed72a65344e9fe5635887c74f","diskBytes":117702,"normalBytes":117702,"normalSha256":"346e1edaa22af789f89017fdc2fef6bb01b7564ed72a65344e9fe5635887c74f","compactBytes":83608,"nodes":2629},"delta":{"diskBytes":51385,"normalBytes":51931,"nodes":1386,"coverageDiskBytes":9563,"coverageNormalBytes":9563,"actions":10,"assertions":209},"maxDerivativeNormalBytes":808479,"maxDerivativeNodes":21112,"recommendedFences":{"manifestDisk":794105,"manifestNormal":806457,"manifestNodes":21020,"coverageBytes":118726,"derivativeNormal":812575,"derivativeNodes":21176},"simultaneousStops":{"newDisk":true,"newNormal":true,"newNodes":true,"newCoverage":true,"newAssertions":true,"canonicalDisk":true,"canonicalNormal":true,"canonicalNodes":true,"coverageDisk":true,"coverageNormal":true,"actions":true,"assertions":true,"derivativeNormal":true,"derivativeNodes":true},"attribution":"Independent prior native data-only audit of dirty draft exact same four bytes; not new execution or child attestation.","historicalPreservation":{"packages/conformance/test-support/transactional/manifest-v1.json":{"baseSha256":"29729151cf6da641545910ec3880f9609c13b319af7bbe99d3d2ad47833dab96","currentSha256":"a11a79f6d0f9ffa5933a680a3e4fed87987789c3deca50a38cda8563132d242e","oldObjectCount":14,"strippedCompleteObjectEqualsBase":true},"packages/conformance/test-support/transactional/coverage-v1.json":{"baseSha256":"4619813e9446e0e714a64c11eac184531950f57720e32c7ef414c7e3342121af","currentSha256":"346e1edaa22af789f89017fdc2fef6bb01b7564ed72a65344e9fe5635887c74f","oldObjectCount":14,"strippedCompleteObjectEqualsBase":true}},"derivativePreservation":"All40 historical specimen normal hashes were verified after removing only appended row against root-growth-retention; six named plus12inline transform source bodies unchanged.41st specimen only changes /scenarios/14/actions/0/raw/body/value parsed /operations/1/bead missing→a. Full manifests retained externally, not embedded."}
+
+
+===== COMPLETE cumulative TS diff =====
+diff --git a/packages/conformance/src/transactional-cumulative.test.ts b/packages/conformance/src/transactional-cumulative.test.ts
+index cbab6c0..4b6d35e 100644
+--- a/packages/conformance/src/transactional-cumulative.test.ts
++++ b/packages/conformance/src/transactional-cumulative.test.ts
+@@ -196,7 +196,7 @@ it("copies source bytes before binding and exposes all missing obligations witho
+   expect(
+     plan.requirements.filter((r) => r.readiness === "ready-unexecuted").map((r) => r.id),
+   ).toEqual(actual.manifest.scenarios.map((r) => r.id));
+-  expect(plan.requirements.filter((r) => r.readiness === "unplanned")).toHaveLength(237);
++  expect(plan.requirements.filter((r) => r.readiness === "unplanned")).toHaveLength(236);
+   expect(plan.unobservedIds).toEqual(selected.required.map((r) => r.id));
+   expect(plan.unobservedIds).toContain("read-update.http.command-minimum-fields");
+   expect(plan.manifestDigest).toBe(actual.digests.manifestDigest);
+@@ -833,7 +833,248 @@ function assertOriginalObjects(text: string, name: keyof typeof originalObjectPi
+     expect(createHash("sha256").update(raw).digest("hex"), id).toBe(hash);
+   }
+ }
++const sequenceMemberId = "transactional.sequence.member-transactions";
++const sequenceParentPins = {
++  manifest: [
++    [
++      "read-update.http.command-minimum-fields",
++      "f04c001617ccad14ef67a82586ea5f61ec918bc2545bb041fafc21dee07b5d7e",
++      54412,
++    ],
++    [
++      "transactional.batch.atomic-commit",
++      "0dfd3b9ed02d01f76ecac08c00b009b4bb9f03e57f7e15a2266eed82fc144747",
++      14936,
++    ],
++    [
++      "transactional.batch.rollback",
++      "be24067358af7b5acf7bc1beae2eb6534cbc0effa6f65406ab61b139310bfc37",
++      16319,
++    ],
++    [
++      "transactional.batch.deletion-safety",
++      "3e66e7c95aec963cc80e076249a5870b952765b2e98c1023ea148f8f628e6aeb",
++      131808,
++    ],
++    [
++      "transactional.batch.no-op-entries",
++      "9307b230eb053131e9127cbbb5e6285305b79d6794edd22f5432a07fc74d9faa",
++      81047,
++    ],
++    [
++      "transactional.set.mutation",
++      "6e7280a9ebbbc3faa1da989015cc802f82cd51b17a9cea11e7cc91392bef49d6",
++      71739,
++    ],
++    [
++      "transactional.set.zero-match",
++      "35aa23bd32539869ea3db41e1c9f3e81a3217e2eb983e764e860a6e00c9eb2c9",
++      36055,
++    ],
++    [
++      "transactional.set.cardinality",
++      "205af1c54d62efb09c9eadf20147a1730909e788c0d4763ce9718b8648f24ede",
++      28546,
++    ],
++    [
++      "transactional.set.singleton-targets",
++      "561b8ebc21106628918111332a9ab7b47be7350935925ed1e76a6cb5bed576b9",
++      40018,
++    ],
++    [
++      "transactional.receipt.readable",
++      "ddb97e450e233b941f7d905d49f48648d9965ed1b361dcdc5dee6f810038a1e0",
++      12545,
++    ],
++    [
++      "transactional.receipt.pagination",
++      "c531c260349347cdc3e54ba68282f1a266a5fa207d3775660615f836a4768782",
++      138750,
++    ],
++    [
++      "transactional.idempotency.conflict",
++      "ba93aea884ae462533d02695642f03a2ca854f5adabeb41867254216dabb2106",
++      29772,
++    ],
++    [
++      "transactional.idempotency.cross-carrier",
++      "4ad8c05fe5fbb4682809d4481c93e2684fe30fbbb8962b4da498590637f8f35b",
++      64106,
++    ],
++    [
++      "transactional.idempotency.failed-retained",
++      "a867694406dde07da71ac70197c60c478dd0fb3344cf2c8160795d1aa62d3378",
++      18404,
++    ],
++  ],
++  coverage: [
++    [
++      "read-update.http.command-minimum-fields",
++      "47914ed67c7b06e721e74134e0c633f3e1a7d461cb50ea200ff1874686885c2a",
++      8888,
++    ],
++    [
++      "transactional.batch.atomic-commit",
++      "ffd77a9d34ac41a6e1f960671bea6880eb5b2ab7b11b3af4ccf0177363d7f4d7",
++      2383,
++    ],
++    [
++      "transactional.batch.rollback",
++      "9e4f5cdb45f0133f1c6d23caa402701981db2e6f4198e23c667579622ace6769",
++      2857,
++    ],
++    [
++      "transactional.batch.deletion-safety",
++      "ac27a329a1cc013e6a0e24e0f5cad6b5b4af6c128ad65302d030422a3c7e3c0a",
++      17375,
++    ],
++    [
++      "transactional.batch.no-op-entries",
++      "383de4e0cb9b3bad310b9db7ff9009cb59fac55966f0309bc71c5d007bea6c1c",
++      10587,
++    ],
++    [
++      "transactional.set.mutation",
++      "058147f8194f091ee5a7ef3d4fd378f0324f6570049df777f993acb5f967d540",
++      11676,
++    ],
++    [
++      "transactional.set.zero-match",
++      "4e79e18a5e4c2735b5c686b9ad610dedc890386bfb06584f98268a421bbb832b",
++      6520,
++    ],
++    [
++      "transactional.set.cardinality",
++      "2a255ed4d364c435c9f985d7a770386bc7b20b2865887b9c8cc2d6cc5f0dd116",
++      5800,
++    ],
++    [
++      "transactional.set.singleton-targets",
++      "0c9008bac3e2c047d9aa8d47d343b7ed936c9c9352bb140c6422127c71b156b1",
++      7314,
++    ],
++    [
++      "transactional.receipt.readable",
++      "684eba200912ccb0932c0a8286e350a6e545262a205b3ea3df47a12fc6dd18ec",
++      2142,
++    ],
++    [
++      "transactional.receipt.pagination",
++      "0735edbca2fbf384f9f8147140a353dc084d9ad85facaddf2f5073f56a7256ee",
++      13057,
++    ],
++    [
++      "transactional.idempotency.conflict",
++      "de9b758f8ac4df7db5597b1eb2b402a116720becc30a41e7198f78f244358ec0",
++      5188,
++    ],
++    [
++      "transactional.idempotency.cross-carrier",
++      "c5e6076a2104c06f88fac88c77214522cab457faf925fe03881dff9778c35245",
++      11196,
++    ],
++    [
++      "transactional.idempotency.failed-retained",
++      "63918cbb495a504fd2043f52b60e7cd8ef1518b8022a96edb0d02660c7df1a8e",
++      2917,
++    ],
++  ],
++} as const;
++function withoutSequenceMemberRow(text: string, name: "manifest" | "coverage") {
++  const key = name === "manifest" ? "scenarios" : "rows";
++  const objects = objectSlices(text, key);
++  for (const [id, hash, bytes] of sequenceParentPins[name]) {
++    const raw = objects.get(id)!;
++    expect(Buffer.byteLength(raw), id).toBe(bytes);
++    expect(createHash("sha256").update(raw).digest("hex"), id).toBe(hash);
++  }
++  const raw = objects.get(sequenceMemberId)!;
++  expect(typeof raw).toBe("string");
++  const suffix = `,\n    ${raw}\n  ]\n}\n`;
++  expect(text.endsWith(suffix), "sequence-tail-position").toBe(true);
++  const parent = text.slice(0, -suffix.length) + "\n  ]\n}\n";
++  expect(createHash("sha256").update(parent).digest("hex"), "sequence-full-parent").toBe(
++    name === "manifest"
++      ? "29729151cf6da641545910ec3880f9609c13b319af7bbe99d3d2ad47833dab96"
++      : "4619813e9446e0e714a64c11eac184531950f57720e32c7ef414c7e3342121af",
++  );
++  return parent;
++}
++function assertSequenceMemberObservation(value: typeof manifest) {
++  const row = value.scenarios.find((r: { id: string }) => r.id === sequenceMemberId)!;
++  expect(
++    row.actions.map((a: { id: string }) => a.id),
++    "sequence-action-order",
++  ).toEqual([
++    "s-sequence",
++    "s-first-receipt",
++    "s-first-facts",
++    "s-failed-receipt",
++    "s-failed-facts",
++    "s-last-receipt",
++    "s-last-facts",
++    "s-replay",
++    "s-current",
++    "s-events",
++  ]);
++  const fact = (index: number, id: string) =>
++    row.actions[index].assertions.find((a: { id: string }) => a.id === id);
++  for (const index of [0, 7]) {
++    expect(fact(index, "middle-status"), "sequence-middle-status").toEqual({
++      id: "middle-status",
++      kind: "json-pointer",
++      pointer: "/results/1/status",
++      exists: true,
++      equals: 404,
++    });
++    expect(fact(index, "middle-retry"), "sequence-middle-retry").toEqual({
++      id: "middle-retry",
++      kind: "json-pointer",
++      pointer: "/results/1/retry",
++      exists: true,
++      equals: "after-state-change",
++    });
++  }
++  expect(fact(3, "problem"), "sequence-failed-internal-index").toEqual({
++    id: "problem",
++    kind: "json-pointer",
++    pointer: "/problem",
++    exists: true,
++    equals: {
++      type: "https://github.com/gastownhall/bdp/problems/not-found",
++      code: "resource-not-found",
++      status: 404,
++      retry: "after-state-change",
++      operationIndex: 0,
++    },
++  });
++  expect(row.actions.flatMap((a: { captures: unknown[] }) => a.captures)).toEqual([
++    { binding: "s-first-root", from: { kind: "json-pointer", pointer: "/id" } },
++    { binding: "s-failed-root", from: { kind: "json-pointer", pointer: "/id" } },
++    { binding: "s-last-root", from: { kind: "json-pointer", pointer: "/id" } },
++  ]);
++  expect(row.actions.flatMap((a: { assertions: unknown[] }) => a.assertions)).toHaveLength(209);
++  expect(
++    createHash("sha256").update(JSON.stringify(row)).digest("hex"),
++    "sequence-complete-independent-facts",
++  ).toBe("48e524596890fab7bf578cbbb653ed844178c33b568f8e0c033736d2745598ca");
++}
++
+ it("preserves every original TX scenario and coverage object while adding one bounded partial cross-carrier row", () => {
++  assertSequenceMemberObservation(manifest);
++  for (const [index, id] of [
++    [0, "middle-status"],
++    [3, "problem"],
++  ] as const) {
++    const weak = structuredClone(manifest);
++    const row = weak.scenarios.find((r: { id: string }) => r.id === sequenceMemberId)!;
++    row.actions[index].assertions = row.actions[index].assertions.filter(
++      (a: { id: string }) => a.id !== id,
++    );
++    expect(() => assertSequenceMemberObservation(weak)).toThrow(
++      index === 0 ? "sequence-middle-status" : "sequence-failed-internal-index",
++    );
++  }
+   assertCrossCarrierObservation(manifest);
+   for (const kind of ["retained-body", "presentation", "old-record"] as const) {
+     const weak = structuredClone(manifest);
+@@ -854,7 +1095,7 @@ it("preserves every original TX scenario and coverage object while adding one bo
+     expect(() => assertCrossCarrierObservation(weak)).toThrow(kind);
+   }
+   for (const name of ["manifest", "coverage"] as const) {
+-    const text = withoutMinimumRow(read(name).toString(), name);
++    const text = withoutMinimumRow(withoutSequenceMemberRow(read(name).toString(), name), name);
+     const raw = objectSlices(text, name === "manifest" ? "scenarios" : "rows").get(
+       "transactional.idempotency.cross-carrier",
+     )!;
+@@ -887,6 +1128,7 @@ it("preserves every original TX scenario and coverage object while adding one bo
+     "transactional.idempotency.conflict",
+     "transactional.idempotency.cross-carrier",
+     "transactional.idempotency.failed-retained",
++    "transactional.sequence.member-transactions",
+   ]);
+   const counts = new Map<string, number>();
+   for (const [id, expected] of [
+@@ -899,6 +1141,7 @@ it("preserves every original TX scenario and coverage object while adding one bo
+     ["transactional.idempotency.cross-carrier", 12],
+     ["transactional.batch.no-op-entries", 15],
+     ["transactional.batch.deletion-safety", 21],
++    ["transactional.sequence.member-transactions", 10],
+   ] as const) {
+     const rows = manifest.scenarios.filter((r: { id: string }) => r.id === id);
+     expect(rows, id).toHaveLength(1);
+@@ -912,7 +1155,7 @@ it("preserves every original TX scenario and coverage object while adding one bo
+   expect(
+     counts.get("transactional.set.mutation")! + counts.get("transactional.set.zero-match")!,
+   ).toBe(47);
+-  expect(manifest.scenarios.flatMap((r: { actions: unknown[] }) => r.actions)).toHaveLength(210);
++  expect(manifest.scenarios.flatMap((r: { actions: unknown[] }) => r.actions)).toHaveLength(220);
+   // Historical root-accepted deletion-safety measurement: M620094/N16373/C88043/A333.
+   // Schema-name repair uses4B of the accepted margin:4092B/64nodes/1024B.
+   // Historical measurement-only draft retained the smaller guards pending root acceptance.
+@@ -922,20 +1165,21 @@ it("preserves every original TX scenario and coverage object while adding one bo
+   // coverage18405delta/91848absolute, nodes3418delta/17275absolute.
+   // Root-accepted command-minimum: disk738783/normal750589/nodes19575/coverage108091.
+   // Preserve bases488280/13019/70662 and margins4096B/64nodes/1024B.
++  // Root-accepted sequence-member: disk790009/normal802361/nodes20956/coverage117702.
+   // These measured source authoring fences do not change runtime/parser limits.
+-  expect(read("manifest").byteLength - 488280).toBeLessThanOrEqual(254599);
+-  expect(read("manifest").byteLength).toBeLessThanOrEqual(742879);
+-  expect(Buffer.byteLength(JSON.stringify(manifest, null, 2) + "\n")).toBeLessThanOrEqual(754685);
+-  expect(read("coverage").byteLength - 70662).toBeLessThanOrEqual(38453);
+-  expect(read("coverage").byteLength).toBeLessThanOrEqual(109115);
++  expect(read("manifest").byteLength - 488280).toBeLessThanOrEqual(305825);
++  expect(read("manifest").byteLength).toBeLessThanOrEqual(794105);
++  expect(Buffer.byteLength(JSON.stringify(manifest, null, 2) + "\n")).toBeLessThanOrEqual(806457);
++  expect(read("coverage").byteLength - 70662).toBeLessThanOrEqual(48064);
++  expect(read("coverage").byteLength).toBeLessThanOrEqual(118726);
+   expect(
+     Buffer.byteLength(JSON.stringify(JSON.parse(read("coverage").toString()), null, 2) + "\n"),
+-  ).toBeLessThanOrEqual(109115);
++  ).toBeLessThanOrEqual(118726);
+   expect(
+     manifest.scenarios.flatMap((r: { actions: { assertions: unknown[] }[] }) =>
+       r.actions.flatMap((a) => a.assertions),
+     ),
+-  ).toHaveLength(2294);
++  ).toHaveLength(2503);
+   expect(read("fixture").byteLength).toBe(716);
+   expect(createHash("sha256").update(read("fixture")).digest("hex")).toBe(
+     "3a7899ced771d4880066d98b0000c53f801ece53458502cc4f3bc641146c9a85",
+@@ -947,8 +1191,8 @@ it("preserves every original TX scenario and coverage object while adding one bo
+     nodes++;
+     if (value && typeof value === "object") pending.push(...Object.values(value));
+   }
+-  expect(nodes - 13019).toBeLessThanOrEqual(6620);
+-  expect(nodes).toBeLessThanOrEqual(19639);
++  expect(nodes - 13019).toBeLessThanOrEqual(8001);
++  expect(nodes).toBeLessThanOrEqual(21020);
+   // Clause ownership is independent from the exhaustive mechanical assertion mirror.
+   const clauseMap = {
+     "transactional.receipt.pagination": [
+@@ -2728,7 +2972,7 @@ it("pins the inherited command-minimum manifest facts, read-header absence and a
+   ).toContain(minimumId);
+   expect(bundle().manifest.scenarios[0]?.id).toBe(minimumId);
+   for (const name of ["manifest", "coverage"] as const) {
+-    const original = withoutMinimumRow(read(name).toString(), name);
++    const original = withoutMinimumRow(withoutSequenceMemberRow(read(name).toString(), name), name);
+     expect(createHash("sha256").update(original).digest("hex")).toBe(
+       name === "manifest"
+         ? "726fc623bbb115a0f39e0bb3aaa586ea37254522b254e55e555ea95587f14cb9"
+
+
+
+===== COMPLETE compact new coverage row (all values) =====
+{"id":"transactional.sequence.member-transactions","wholeContract":false,"reason":"Bounded terminal success/failure/success sequence, independently retained member receipts and replay/no-effect observations. Manifest pins literals/context and three legal receipt URL captures; app validates full initial/replay/Resource/Event equality and helper validates full original receipt GET equality. Whole contract remains unqualified: no simultaneous pending admission, interleaving, crash recovery, expiry/erasure, complete Changes groups, discovery or public profile credit.","bindings":[{"scenario":"transactional.sequence.member-transactions","assertions":["s-sequence:http-status","s-sequence:schema","s-sequence:media","s-sequence:request-headers","s-sequence:request-body","s-sequence:present-bdp-scope-epoch","s-sequence:present-bdp-authorization-view","s-sequence:present-bdp-scope-position","s-sequence:serving-position","s-sequence:indices","s-sequence:first-outcome","s-sequence:first-no-name","s-sequence:first-id","s-sequence:first-type","s-sequence:first-properties","s-sequence:first-metadata","s-sequence:first-revision","s-sequence:first-no-owned","s-sequence:first-no-provenance","s-sequence:last-outcome","s-sequence:last-no-name","s-sequence:last-id","s-sequence:last-type","s-sequence:last-properties","s-sequence:last-metadata","s-sequence:last-revision","s-sequence:last-no-owned","s-sequence:last-no-provenance","s-sequence:middle-type","s-sequence:middle-code","s-sequence:middle-status","s-sequence:middle-retry","s-sequence:middle-no-outcome","s-sequence:middle-no-deleted","s-sequence:middle-no-resource","s-sequence:middle-no-name","s-sequence:no-receipt","s-sequence:no-id","s-first-receipt:http-status","s-first-receipt:schema","s-first-receipt:media","s-first-receipt:request-headers","s-first-receipt:request-body","s-first-receipt:present-bdp-scope-epoch","s-first-receipt:present-bdp-authorization-view","s-first-receipt:present-bdp-scope-position","s-first-receipt:serving-position","s-first-receipt:disposition","s-first-receipt:detail","s-first-receipt:key","s-first-receipt:required-position","s-first-receipt:transaction","s-first-receipt:expiry","s-first-receipt:effect-position","s-first-receipt:no-next","s-first-receipt:indices","s-first-receipt:record-id","s-first-receipt:record-type","s-first-receipt:record-properties","s-first-receipt:record-metadata","s-first-receipt:record-revision","s-first-receipt:record-no-owned","s-first-receipt:record-no-provenance","s-first-facts:status","s-first-facts:body-present","s-first-facts:present-bdp-scope-epoch","s-first-facts:present-bdp-authorization-view","s-first-facts:present-bdp-scope-position","s-first-facts:serving-position","s-first-facts:private-cache","s-first-facts:disposition","s-first-facts:required-position","s-first-facts:key","s-first-facts:root","s-first-facts:effect-position","s-first-facts:no-next","s-failed-receipt:http-status","s-failed-receipt:schema","s-failed-receipt:media","s-failed-receipt:request-headers","s-failed-receipt:request-body","s-failed-receipt:present-bdp-scope-epoch","s-failed-receipt:present-bdp-authorization-view","s-failed-receipt:present-bdp-scope-position","s-failed-receipt:serving-position","s-failed-receipt:disposition","s-failed-receipt:detail","s-failed-receipt:key","s-failed-receipt:required-position","s-failed-receipt:transaction","s-failed-receipt:expiry","s-failed-receipt:problem","s-failed-receipt:no-effect","s-failed-receipt:no-results","s-failed-receipt:no-next","s-failed-facts:status","s-failed-facts:body-present","s-failed-facts:present-bdp-scope-epoch","s-failed-facts:present-bdp-authorization-view","s-failed-facts:present-bdp-scope-position","s-failed-facts:serving-position","s-failed-facts:private-cache","s-failed-facts:disposition","s-failed-facts:required-position","s-failed-facts:key","s-failed-facts:root","s-failed-facts:problem","s-failed-facts:no-effect","s-failed-facts:no-results","s-failed-facts:no-next","s-last-receipt:http-status","s-last-receipt:schema","s-last-receipt:media","s-last-receipt:request-headers","s-last-receipt:request-body","s-last-receipt:present-bdp-scope-epoch","s-last-receipt:present-bdp-authorization-view","s-last-receipt:present-bdp-scope-position","s-last-receipt:serving-position","s-last-receipt:disposition","s-last-receipt:detail","s-last-receipt:key","s-last-receipt:required-position","s-last-receipt:transaction","s-last-receipt:expiry","s-last-receipt:effect-position","s-last-receipt:no-next","s-last-receipt:indices","s-last-receipt:record-id","s-last-receipt:record-type","s-last-receipt:record-properties","s-last-receipt:record-metadata","s-last-receipt:record-revision","s-last-receipt:record-no-owned","s-last-receipt:record-no-provenance","s-last-facts:status","s-last-facts:body-present","s-last-facts:present-bdp-scope-epoch","s-last-facts:present-bdp-authorization-view","s-last-facts:present-bdp-scope-position","s-last-facts:serving-position","s-last-facts:private-cache","s-last-facts:disposition","s-last-facts:required-position","s-last-facts:key","s-last-facts:root","s-last-facts:effect-position","s-last-facts:no-next","s-replay:http-status","s-replay:schema","s-replay:media","s-replay:request-headers","s-replay:request-body","s-replay:present-bdp-scope-epoch","s-replay:present-bdp-authorization-view","s-replay:present-bdp-scope-position","s-replay:serving-position","s-replay:indices","s-replay:first-outcome","s-replay:first-no-name","s-replay:first-id","s-replay:first-type","s-replay:first-properties","s-replay:first-metadata","s-replay:first-revision","s-replay:first-no-owned","s-replay:first-no-provenance","s-replay:last-outcome","s-replay:last-no-name","s-replay:last-id","s-replay:last-type","s-replay:last-properties","s-replay:last-metadata","s-replay:last-revision","s-replay:last-no-owned","s-replay:last-no-provenance","s-replay:middle-type","s-replay:middle-code","s-replay:middle-status","s-replay:middle-retry","s-replay:middle-no-outcome","s-replay:middle-no-deleted","s-replay:middle-no-resource","s-replay:middle-no-name","s-replay:no-receipt","s-replay:no-id","s-current:http-status","s-current:schema","s-current:media","s-current:request-headers","s-current:request-body","s-current:present-bdp-scope-epoch","s-current:present-bdp-authorization-view","s-current:present-bdp-scope-position","s-current:serving-position","s-current:no-next","s-current:ordered-state","s-events:http-status","s-events:schema","s-events:media","s-events:request-headers","s-events:request-body","s-events:present-bdp-scope-epoch","s-events:present-bdp-authorization-view","s-events:present-bdp-scope-position","s-events:serving-position","s-events:no-next","s-events:source","s-events:ordered-facts"]}]}
+
+
+===== packages/conformance/src/transactional-cumulative.test.ts: genuine excerpt lines 670-713 =====
+function objectSlices(text: string, key: "scenarios" | "rows") {
+  const start = text.indexOf("[", text.indexOf(JSON.stringify(key))) + 1;
+  const objects = new Map<string, string>();
+  let depth = 0,
+    begin = -1,
+    quoted = false,
+    escaped = false;
+  for (let i = start; i < text.length; i++) {
+    const char = text[i];
+    if (quoted) {
+      if (escaped) escaped = false;
+      else if (char === "\\") escaped = true;
+      else if (char === '"') quoted = false;
+      continue;
+    }
+    if (char === '"') {
+      quoted = true;
+      continue;
+    }
+    if (char === "{" || char === "[") {
+      if (depth === 0) begin = i;
+      depth++;
+    } else if (char === "}" || char === "]") {
+      if (depth === 0) break;
+      if (--depth === 0) {
+        const raw = text.slice(begin, i + 1);
+        objects.set((JSON.parse(raw) as { id: string }).id, raw);
+      }
+    }
+  }
+  return objects;
+}
+const originalObjectPins = {
+  manifest: [
+    [
+      "transactional.batch.deletion-safety",
+      "3e66e7c95aec963cc80e076249a5870b952765b2e98c1023ea148f8f628e6aeb",
+      131808,
+    ],
+    [
+      "transactional.idempotency.conflict",
+      "ba93aea884ae462533d02695642f03a2ca854f5adabeb41867254216dabb2106",
+      29772,
+    ],
+
+
+
+===== packages/conformance/src/transactional-cumulative.test.ts: genuine excerpt lines 828-835 =====
+function assertOriginalObjects(text: string, name: keyof typeof originalObjectPins) {
+  const objects = objectSlices(text, name === "manifest" ? "scenarios" : "rows");
+  for (const [id, hash, bytes] of originalObjectPins[name]) {
+    const raw = objects.get(id)!;
+    expect(Buffer.byteLength(raw), id).toBe(bytes);
+    expect(createHash("sha256").update(raw).digest("hex"), id).toBe(hash);
+  }
+}
+
+
+
+===== packages/conformance/src/transactional-cumulative.test.ts: genuine excerpt lines 2652-2700 =====
+function withoutMinimumRow(text: string, name: "manifest" | "coverage") {
+  const raw = objectSlices(text, name === "manifest" ? "scenarios" : "rows").get(minimumId);
+  expect(raw).toBeDefined();
+  const reconstructed = text.replace(`    ${raw},\n`, "");
+  expect(reconstructed).not.toBe(text);
+  return reconstructed;
+}
+/** Independent literal HTTP, schema, capture and finite-state contract. Replay
+ * full JSON and Resource/revision comparisons are explicitly app supplements;
+ * private receipt GET equality is enforced by the existing observed authority. */
+function assertMinimumObservation(candidate: typeof manifest) {
+  const row = candidate.scenarios.find((r: { id: string }) => r.id === minimumId);
+  expect(row).toBeDefined();
+  expect(row.requiredProfile).toBe("read-update");
+  expect(row.setup).toEqual({
+    fixture: "reference-transactional-v1",
+    requires: ["installed-transactional-http", "transactional-receipt-observation"],
+  });
+  expect(row.actions.map((a: { id: string }) => a.id)).toEqual([
+    "m-create-a",
+    "m-replay-a",
+    "m-create-b",
+    "m-replay-b",
+    "m-create-c",
+    "m-replay-c",
+    "m-body-conflict",
+    "m-stale-update",
+    "m-retained-a",
+    "m-current",
+    "m-events",
+  ]);
+  const scope = "https://reference.invalid/acme/";
+  const create = (id: string) => ({
+    id: `beads/${id}`,
+    type: `${scope}types/task`,
+    properties: { title: `minimum-${id}` },
+  });
+  const batch = { operations: [{ operation: "createBead", ...create("b") }] };
+  const sequence = {
+    operations: [{ operation: "createBead", ...create("c"), idempotencyKey: "minimum-c" }],
+  };
+  const bodies = [
+    create("a"),
+    create("a"),
+    batch,
+    batch,
+    sequence,
+    sequence,
+    {
+
+
+
+===== packages/conformance/src/runner.ts: genuine excerpt lines 832-1012 =====
+function scenarioActionSequence(scenario: ExecutableScenario): readonly ScenarioAction[] {
+  return scenario.actions ?? scenario.requests.map((request) => ({ ...request, family: "http" }));
+}
+
+async function runScenarioAction(
+  action: ScenarioAction,
+  bindings: Map<string, JsonValue>,
+  exchanges: ObservedExchange[],
+  actions: ObservedAction[],
+  execute: HttpExchangeExecutor,
+  actionExecutor: ScenarioActionExecutor | undefined,
+  schemaValidator: SchemaValidator | undefined,
+  fixture: ConformanceFixture,
+  scope: string,
+  runProfile: ScenarioRunOptions["profile"],
+  signal: AbortSignal,
+  timeoutMs: number,
+  settlement: ActionSettlement,
+  priorResponses: Map<string, ComparableResponse>,
+  options: ScenarioRunOptions,
+  transactional?: ReturnType<typeof createTransactionalObservations>,
+): Promise<void> {
+  if (action.family === "http") {
+    await runRequest(
+      action,
+      bindings,
+      exchanges,
+      execute,
+      schemaValidator,
+      fixture,
+      scope,
+      runProfile,
+      signal,
+      timeoutMs,
+      settlement,
+      priorResponses,
+      options,
+      transactional,
+    );
+    return;
+  }
+  if (action.family === "client" && action.operation.startsWith("transactional.")) {
+    if (!transactional)
+      throw new TransactionalHarnessError("private Transactional session required");
+    const privateExecute: ScenarioActionExecutor = async (execution) => {
+      if (action.operation === "transactional.reopen") {
+        if (Object.keys(execution.input as object).length)
+          throw new TransactionalHarnessError("reopen takes no input");
+        await transactional.reopen(execution.signal);
+        return { reopened: true };
+      }
+      if (action.operation !== "transactional.receipt-read")
+        throw new TransactionalHarnessError("unsupported private transaction action");
+      const input = execution.input as Record<string, unknown>;
+      if (
+        !input ||
+        typeof input !== "object" ||
+        Object.keys(input).some((k) => !["binding", "method"].includes(k)) ||
+        typeof input.binding !== "string" ||
+        !["GET", "HEAD"].includes(String(input.method))
+      )
+        throw new TransactionalHarnessError("invalid private receipt input");
+      const { source, target, active, validate } = transactional.resolve(
+        input.binding,
+        bindings.get(input.binding),
+      );
+      const original = options.exactExecution;
+      if (!original) throw new TransactionalHarnessError("exact transport required");
+      const mode = snapshotExactHttpMode({
+        ...original.configuration,
+        routes: [{ method: input.method as "GET" | "HEAD", url: target }],
+        resolveCredentials: active.resolveCredentials,
+      });
+      const { resolveCredentials: _resolver, ...configuration } = mode;
+      const raw = createRawHttpExchangeExecutor(active.dialRoute, {
+        exactMode: mode,
+        maximumHeaderBytes: active.binding.responseLimits.headerBytes,
+        maximumBodyBytes: active.binding.responseLimits.bodyBytes,
+        requestTimeoutMs: Math.min(timeoutMs, 5000),
+      });
+      const exactExecution: ExactScenarioExecution = {
+        configuration,
+        execute: (request) =>
+          active.register(
+            raw({ ...request, signal: AbortSignal.any([request.signal, active.signal]) }),
+          ),
+      };
+      let projection: JsonValue | undefined;
+
+      await runRequest(
+        {
+          id: action.id,
+          method: input.method as "GET" | "HEAD",
+          target: { binding: input.binding },
+          credentialRef: source.credentialRef,
+          raw: { headerLines: [] },
+          captures: [],
+          assertions: [
+            { id: "actual-status", kind: "status", equals: 200 },
+            { id: "actual-request", kind: "request-authored-headers" },
+            { id: "actual-body", kind: "request-authored-body" },
+          ],
+        },
+        bindings,
+        exchanges,
+        execute,
+        schemaValidator,
+        fixture,
+        scope,
+        runProfile,
+        execution.signal,
+        timeoutMs,
+        settlement,
+        priorResponses,
+        { ...options, exactExecution },
+        undefined,
+        (response) => {
+          validate(response, input.method as "GET" | "HEAD");
+          const body = response.bodyText ? JSON.parse(response.bodyText) : null;
+          if (input.method === "GET") {
+            if (!schemaValidator)
+              throw new TransactionalHarnessError("receipt validator unavailable");
+            if (
+              schemaValidator.validate(
+                source.pointer === "/next"
+                  ? "#/$defs/mutationReceiptPage"
+                  : "#/$defs/mutationReceipt",
+                body,
+              ).length ||
+              (source.pointer === "/next" ? body.receipt : body.id) !== source.receipt
+            )
+              throw new TransactionalReceiptFailure("retained receipt schema or identity mismatch");
+          }
+          projection = {
+            status: response.status,
+            headers: normalizeHeaders(response.headers),
+            body,
+            bodyPresent: response.bodyText.length > 0,
+            bodyOctets: response.bodyOctets ?? 0,
+          };
+        },
+        {
+          dynamicExactConfiguration: configuration,
+          dynamicExactConfigurationDigest: exactConfigurationDigest(exactExecution),
+          sourceReceiptObservation: source,
+          servedSession: active.binding,
+        },
+      );
+      if (!projection) throw new TransactionalHarnessError("missing actual receipt observation");
+      return projection;
+    };
+    await runProgrammaticAction(
+      action,
+      bindings,
+      actions,
+      privateExecute,
+      schemaValidator,
+      fixture,
+      scope,
+      runProfile,
+      signal,
+      action.operation === "transactional.reopen" ? (options.prepareTimeoutMs ?? 30000) : timeoutMs,
+      settlement,
+    );
+    return;
+  }
+  await runProgrammaticAction(
+    action,
+    bindings,
+    actions,
+    actionExecutor,
+    schemaValidator,
+    fixture,
+    scope,
+    runProfile,
+    signal,
+    timeoutMs,
+    settlement,
+  );
+}
+
+
+
+
+===== packages/conformance/src/runner.ts: genuine excerpt lines 1090-1134 =====
+        category: failure instanceof ScenarioDeadlineError ? "timeout" : "execution",
+        message: failure.message,
+      },
+    };
+    throw failure;
+  } finally {
+    deadline.clear();
+  }
+
+  const snapshot = snapshotActionOutput(output);
+  const next: ObservedAction = { ...observed, output: { kind: "json" } };
+  actions[actions.length - 1] = next;
+  const body: ObservedBody = { kind: "json", value: snapshot };
+  const outcomes = action.assertions.map((assertion) =>
+    evaluateAssertion(
+      assertion,
+      { url: scope, status: 200, headers: {}, bodyText: "" },
+      body,
+      schemaValidator,
+      fixture,
+      scope,
+      runProfile,
+      new Map(),
+      {},
+      undefined,
+      bindings,
+    ),
+  );
+  actions[actions.length - 1] = { ...next, assertions: outcomes };
+  if (outcomes.some(({ passed }) => !passed))
+    throw new ScenarioAssertionFailure(
+      outcomes
+        .filter(({ passed }) => !passed)
+        .map(({ message }) => message ?? "assertion failed")
+        .join("; "),
+    );
+  for (const capture of action.captures) {
+    const value = jsonPointer(snapshot, capture.from.pointer);
+    if (value === undefined)
+      throw new ScenarioObservationFailure(
+        `capture '${capture.binding}' JSON pointer did not resolve`,
+      );
+    bindings.set(capture.binding, cloneRuntimeJson(value as JsonValue));
+  }
+}
+
+
+
+===== packages/conformance/src/runner.ts: genuine excerpt lines 1438-1510 =====
+      ? exactCorsWitnessFailure(exactWitness)
+      : undefined;
+  const outcomes = request.assertions.map(
+    (assertion) =>
+      (assertion.kind.startsWith("request-")
+        ? evaluateExactAssertion(assertion, request, url, body, exactObservation, options)
+        : undefined) ??
+      wireOutcomes.get(assertion.id) ??
+      evaluateAssertion(
+        assertion,
+        assertionResponse,
+        bodyObservation,
+        schemaValidator,
+        fixture,
+        scope,
+        runProfile,
+        priorResponses,
+        headers,
+        exactWitness,
+        bindings,
+      ),
+  );
+  exchanges[exchanges.length - 1] = { ...next, assertions: outcomes };
+  if (exactFailure) throw new ExactHarnessError("exact-observation");
+  if (corsWitnessFailure !== undefined)
+    throw new ScenarioWireObservationUnavailableError(corsWitnessFailure);
+  if (outcomes.some(({ passed }) => !passed))
+    throw new ScenarioAssertionFailure(
+      outcomes
+        .filter(({ passed }) => !passed)
+        .map(({ message }) => message ?? "assertion failed")
+        .join("; "),
+    );
+  for (const capture of request.captures) {
+    if (transactional && served && options.exactExecution && exactObservation) {
+      if (
+        !exactHeadersMatch(
+          request,
+          url,
+          body,
+          exactObservation,
+          options.exactExecution.configuration,
+        ) ||
+        exactObservation.writeState !== "complete" ||
+        exactObservation.bodyPresent !== (body !== undefined) ||
+        exactObservation.bodyOctets !== (body?.length ?? 0) ||
+        exactObservation.bodyDigest !==
+          (body === undefined ? undefined : createHash("sha256").update(body).digest("hex"))
+      )
+        throw new ExactHarnessError("exact-observation");
+      transactional.register(
+        capture.binding,
+        capture.from.kind === "json-pointer" ? capture.from.pointer : "",
+        request.id,
+        { method: request.method, url },
+        response,
+        bodyObservation.kind === "json" ? bodyObservation.value : undefined,
+        options.exactExecution.configuration,
+        request.credentialRef,
+        schemaValidator,
+        served,
+      );
+    }
+    bindings.set(capture.binding, captureValue(capture, assertionResponse, bodyObservation, scope));
+  }
+  observe?.({ ...response, headers: responseHeaders });
+  priorResponses.set(request.id, {
+    status: response.status,
+    headers: responseHeaders,
+  });
+}
+
+interface ActionSettlement {
+
+
+
+===== packages/conformance/src/runner.ts: genuine excerpt lines 1900-1933 =====
+function evaluateExactAssertion(
+  assertion: ScenarioAssertion,
+  request: ScenarioRequest,
+  url: string,
+  body: Uint8Array | undefined,
+  observed: ExactRequestObservation | undefined,
+  options: ScenarioRunOptions,
+): AssertionOutcome | undefined {
+  if (
+    assertion.kind !== "request-authored-headers" &&
+    assertion.kind !== "request-authored-body" &&
+    assertion.kind !== "request-write-state"
+  )
+    return undefined;
+  if (observed === undefined)
+    return outcome(assertion.id, false, "Exact HTTP observation was unavailable");
+  if (assertion.kind === "request-write-state")
+    return outcome(
+      assertion.id,
+      assertion.equals === observed.writeState,
+      "Exact HTTP write state did not match",
+    );
+  if (observed.writeState !== "complete")
+    return outcome(assertion.id, false, "Exact HTTP request write completion was not established");
+  const matches =
+    assertion.kind === "request-authored-body"
+      ? observed.bodyPresent === (body !== undefined) &&
+        observed.bodyOctets === (body?.byteLength ?? 0) &&
+        observed.bodyDigest ===
+          (body === undefined ? undefined : createHash("sha256").update(body).digest("hex"))
+      : options.exactExecution !== undefined &&
+        exactHeadersMatch(request, url, body, observed, options.exactExecution.configuration);
+  return outcome(
+    assertion.id,
+
+
+
+===== packages/conformance/src/runner.ts: genuine excerpt lines 2014-2404 =====
+function evaluateAssertion(
+  assertion: ScenarioAssertion,
+  response: HttpExchangeResponse,
+  body: ObservedBody,
+  schemaValidator: SchemaValidator | undefined,
+  fixture: ConformanceFixture,
+  scope: string,
+  runProfile: ScenarioRunOptions["profile"],
+  priorResponses: ReadonlyMap<string, ComparableResponse>,
+  requestedHeaders: Readonly<Record<string, string>>,
+  exactWitness?: ExactHeaderWitness,
+  bindings: ReadonlyMap<string, JsonValue> = new Map(),
+): AssertionOutcome {
+  if (
+    assertion.kind === "request-authored-body" ||
+    assertion.kind === "request-authored-headers" ||
+    assertion.kind === "request-write-state"
+  )
+    return outcome(assertion.id, false, "exact HTTP observation required");
+  if (assertion.kind === "wire-not-contains")
+    throw new ConformanceRunnerError("raw-wire assertion was not evaluated before normalization");
+  if (assertion.kind === "status") {
+    const expected =
+      assertion.equals === undefined ? (assertion.oneOf as readonly number[]) : [assertion.equals];
+    return outcome(
+      assertion.id,
+      expected.includes(response.status),
+      `expected status ${expected.join(" or ")}, got ${response.status}`,
+    );
+  }
+  if (assertion.kind === "header") {
+    if (assertion.absent === true && assertion.name.startsWith("access-control-")) {
+      if (exactWitness !== undefined) {
+        const failure = exactCorsWitnessFailure(exactWitness);
+        if (failure !== undefined) return outcome(assertion.id, false, failure);
+      } else {
+        const requestedOrigin = requestedHeaders.origin;
+        if (requestedOrigin === undefined || requestedOrigin.length === 0)
+          throw new ScenarioWireObservationUnavailableError(
+            "CORS-header absence assertion requires matching nonempty Origin evidence",
+          );
+        if (response.effectiveRequest?.headersTransmitted !== true)
+          throw new ScenarioWireObservationUnavailableError(
+            "CORS-header absence assertion requires serialized wire-request evidence",
+          );
+        requireMatchingEffectiveHeader(
+          response.effectiveRequest.headers,
+          "origin",
+          requestedOrigin,
+        );
+        const requestedPreflightMethod = requestedHeaders["access-control-request-method"];
+        if (requestedPreflightMethod !== undefined)
+          requireMatchingEffectiveHeader(
+            response.effectiveRequest.headers,
+            "access-control-request-method",
+            requestedPreflightMethod,
+          );
+      }
+    }
+    const actual = response.headers[assertion.name.toLowerCase()];
+    if (assertion.absent !== undefined)
+      return outcome(
+        assertion.id,
+        assertion.absent === (actual === undefined),
+        `header '${assertion.name}' presence did not match`,
+      );
+    if (assertion.equals !== undefined)
+      return outcome(
+        assertion.id,
+        actual === assertion.equals,
+        `header '${assertion.name}' did not equal the expected value`,
+      );
+    if (assertion.equalsResponse !== undefined) {
+      const previous = priorResponses.get(assertion.equalsResponse);
+      if (previous === undefined)
+        throw new ConformanceRunnerError("ETag comparison requires an earlier response");
+      let expected: string;
+      try {
+        expected = observedEntityTag(previous.headers.etag);
+      } catch (error) {
+        if (error instanceof ObservedEntityTagError)
+          throw new ScenarioObservationFailure(error.message, { cause: error });
+        throw error;
+      }
+      return outcome(
+        assertion.id,
+        actual === expected,
+        "ETag did not equal the earlier response validator",
+      );
+    }
+    if (assertion.presentIfResponse !== undefined) {
+      const previous = priorResponses.get(assertion.presentIfResponse);
+      if (previous === undefined)
+        throw new ConformanceRunnerError("304 metadata comparison requires an earlier response");
+      return outcome(
+        assertion.id,
+        previous.status === 200 &&
+          response.status === 304 &&
+          (previous.headers[assertion.name] === undefined || actual !== undefined),
+        "304 must retain metadata supplied on the earlier successful response",
+      );
+    }
+    if (assertion.equalsBinding !== undefined) {
+      const bound = (fixture.bindings as Readonly<Record<string, unknown>>)[
+        assertion.equalsBinding
+      ];
+      if (typeof bound !== "string")
+        throw new ConformanceRunnerError(
+          `header assertion '${assertion.id}' references unknown binding '${assertion.equalsBinding}'`,
+        );
+      const expected = isHttpUrl(bound) ? new URL(bound).href : new URL(bound, scope).href;
+      assertConfinedToScope(expected, scope, `header assertion '${assertion.id}' binding`);
+      return outcome(
+        assertion.id,
+        actual === expected,
+        `header '${assertion.name}' did not equal the bound canonical URL`,
+      );
+    }
+    return outcome(
+      assertion.id,
+      actual?.includes(assertion.contains as string) === true,
+      `header '${assertion.name}' did not contain the expected value`,
+    );
+  }
+  if (assertion.kind === "header-tokens") {
+    const actual = response.headers[assertion.name.toLowerCase()];
+    const normalizeToken = (token: string): string =>
+      assertion.caseInsensitive === true ? token.toLowerCase() : token;
+    const tokens =
+      actual === undefined
+        ? []
+        : actual
+            .split(",")
+            .map((token) => token.trim())
+            .filter(Boolean)
+            .map(normalizeToken);
+    const expected = new Set(assertion.includes.map(normalizeToken));
+    const optional = new Set((assertion.optional ?? []).map(normalizeToken));
+    const observed = new Set(tokens);
+    const includesAll = [...expected].every((token) => observed.has(token));
+    const allowed = new Set([...expected, ...optional]);
+    const noAdditional =
+      assertion.allowsAdditional || [...observed].every((token) => allowed.has(token));
+    return outcome(
+      assertion.id,
+      includesAll && noAdditional,
+      `header '${assertion.name}' tokens did not match`,
+    );
+  }
+  if (assertion.kind === "media-type") {
+    const actual = response.headers["content-type"];
+    const mediaType = actual?.split(";", 1)[0]?.trim().toLowerCase();
+    return outcome(
+      assertion.id,
+      mediaType === assertion.equals,
+      `response media type did not equal '${assertion.equals}'`,
+    );
+  }
+  if (assertion.kind === "body-absent") {
+    if (response.bodyOctets === undefined)
+      throw new ScenarioWireObservationUnavailableError(
+        "body-absence assertion requires raw wire-body observation",
+      );
+    return outcome(assertion.id, response.bodyOctets === 0, "expected no response body octets");
+  }
+  if (assertion.kind === "response-metadata-equals") {
+    const expected = priorResponses.get(assertion.request);
+    if (expected === undefined)
+      throw new ConformanceRunnerError(
+        `response metadata assertion references unavailable request '${assertion.request}'`,
+      );
+    const headersMatch = assertion.headers.every((name) => {
+      const prior = expected.headers[name];
+      const current = response.headers[name];
+      return (
+        current === prior ||
+        (current === undefined && assertion.optionalHeaders?.includes(name) === true)
+      );
+    });
+    return outcome(
+      assertion.id,
+      response.status === expected.status && headersMatch,
+      `response metadata did not match request '${assertion.request}'`,
+    );
+  }
+  if (assertion.kind === "json-equals") {
+    if (body.kind !== "json") return outcome(assertion.id, false, observedBodyIssue(body));
+    const expected =
+      assertion.fixturePointer === undefined
+        ? assertion.value
+        : jsonPointer(fixture, assertion.fixturePointer);
+    if (expected === undefined)
+      throw new ConformanceRunnerError("fixture oracle pointer did not resolve");
+    if (
+      assertion.normalize === "iso-timestamps" &&
+      (!hasCanonicalIsoTimestamps(body.value, assertion.timestampPointers ?? []) ||
+        !hasCanonicalIsoTimestamps(expected, assertion.timestampPointers ?? []))
+    )
+      return outcome(
+        assertion.id,
+        false,
+        "declared timestamp pointer was absent or not a canonical ISO timestamp",
+      );
+    const actual =
+      assertion.normalize === "iso-timestamps"
+        ? normalizeIsoTimestampsAtPointers(body.value, assertion.timestampPointers ?? [])
+        : body.value;
+    const normalizedExpected =
+      assertion.normalize === "iso-timestamps"
+        ? normalizeIsoTimestampsAtPointers(expected, assertion.timestampPointers ?? [])
+        : expected;
+    return outcome(
+      assertion.id,
+      deepEqual(actual, normalizedExpected),
+      "JSON body did not equal the expected value",
+    );
+  }
+  if (assertion.kind === "json-pointer") {
+    if (body.kind !== "json") return outcome(assertion.id, false, observedBodyIssue(body));
+    const value = jsonPointer(body.value, assertion.pointer);
+    const exists = value !== undefined;
+    if (assertion.equalsBinding !== undefined) {
+      const expected = bindings.get(assertion.equalsBinding);
+      if (expected === undefined)
+        throw new ConformanceRunnerError("JSON assertion capture is unavailable");
+      return outcome(
+        assertion.id,
+        exists && deepEqual(value, expected),
+        "JSON pointer did not equal the earlier observed capture",
+      );
+    }
+    const fixtureExpected =
+      assertion.fixturePointer === undefined
+        ? undefined
+        : jsonPointer(fixture, assertion.fixturePointer);
+    if (assertion.fixturePointer !== undefined && fixtureExpected === undefined)
+      throw new ConformanceRunnerError("fixture oracle pointer did not resolve");
+    let normalizedValue = value;
+    let normalizedFixtureExpected = fixtureExpected;
+    let normalizedEquals = assertion.equals;
+    if (assertion.normalize === "scope-relative-url") {
+      try {
+        normalizedValue = scopeRelativeUrl(value, scope);
+      } catch {
+        normalizedValue = undefined;
+      }
+    } else if (assertion.normalize === "iso-timestamps") {
+      const pointers = assertion.timestampPointers ?? [];
+      const expected =
+        assertion.fixturePointer !== undefined ? normalizedFixtureExpected : assertion.equals;
+      if (
+        !hasCanonicalIsoTimestamps(value, pointers) ||
+        !hasCanonicalIsoTimestamps(expected, pointers)
+      )
+        return outcome(
+          assertion.id,
+          false,
+          "declared timestamp pointer was absent or not a canonical ISO timestamp",
+        );
+      normalizedValue = normalizeIsoTimestampsAtPointers(value, pointers);
+      normalizedFixtureExpected = normalizeIsoTimestampsAtPointers(fixtureExpected, pointers);
+      normalizedEquals = normalizeIsoTimestampsAtPointers(
+        assertion.equals,
+        pointers,
+      ) as typeof assertion.equals;
+    }
+    return assertion.exists
+      ? outcome(
+          assertion.id,
+          exists &&
+            (assertion.equalsRunProfile === true
+              ? normalizedValue === runProfile
+              : assertion.fixturePointer !== undefined
+                ? deepEqual(normalizedValue, normalizedFixtureExpected)
+                : normalizedEquals === undefined || deepEqual(normalizedValue, normalizedEquals)),
+          "JSON pointer was absent or mismatched",
+        )
+      : outcome(assertion.id, !exists, "JSON pointer unexpectedly existed");
+  }
+  if (assertion.kind === "json-array-set") {
+    if (body.kind !== "json") return outcome(assertion.id, false, observedBodyIssue(body));
+    const array = jsonPointer(body.value, assertion.pointer);
+    if (!Array.isArray(array)) return outcome(assertion.id, false, "JSON pointer was not an array");
+    const actual = array.map((item) => jsonPointer(item, assertion.itemPointer));
+    if (actual.some((item) => item === undefined))
+      return outcome(assertion.id, false, "array item projection was absent");
+    let normalized: unknown[] = actual;
+    if (assertion.normalize !== undefined) {
+      try {
+        normalized = actual.map((item) =>
+          assertion.normalize === "scope-relative-url"
+            ? scopeRelativeUrl(item, scope)
+            : scopeRelativeOrAbsoluteUri(item, scope),
+        );
+      } catch {
+        return outcome(assertion.id, false, "array item was not a valid URI for normalization");
+      }
+    }
+    let expected: readonly unknown[];
+    if (assertion.fixturePointer === undefined) expected = assertion.equals;
+    else {
+      const fixtureExpected = jsonPointer(fixture, assertion.fixturePointer);
+      if (!Array.isArray(fixtureExpected))
+        throw new ConformanceRunnerError("fixture oracle pointer did not resolve to an array");
+      expected = fixtureExpected;
+    }
+    const passed = multisetEquals(normalized, expected);
+    return outcome(assertion.id, passed, "array projection did not match the expected set");
+  }
+  if (assertion.kind === "json-array-tuples") {
+    if (body.kind !== "json") return outcome(assertion.id, false, observedBodyIssue(body));
+    const array = jsonPointer(body.value, assertion.pointer);
+    if (!Array.isArray(array)) return outcome(assertion.id, false, "JSON pointer was not an array");
+    let actual: unknown[][];
+    try {
+      actual = array.map((item) =>
+        assertion.projections.map((projection) => {
+          const value = jsonPointer(item, projection.pointer);
+          if (value === undefined) throw new Error("array tuple projection was absent");
+          if (projection.normalize === "scope-relative-url") return scopeRelativeUrl(value, scope);
+          if (projection.normalize === "scope-relative-or-absolute-uri")
+            return scopeRelativeOrAbsoluteUri(value, scope);
+          if (projection.normalize === "endpoint-uri") {
+            const isPin = typeof value === "object" && value !== null && !Array.isArray(value);
+            return scopeRelativeOrAbsoluteUri(
+              isPin ? (value as { readonly uri?: unknown }).uri : value,
+              scope,
+            );
+          }
+          if (projection.normalize === "endpoint-revision") {
+            if (typeof value === "string") return "";
+            const revision = (value as { readonly revision?: unknown }).revision;
+            if (typeof revision !== "string")
+              throw new Error("endpoint pin revision was not a string");
+            return revision;
+          }
+          return value;
+        }),
+      );
+    } catch (error) {
+      return outcome(
+        assertion.id,
+        false,
+        error instanceof Error ? error.message : "array tuple projection failed",
+      );
+    }
+    let expected: readonly unknown[];
+    if (assertion.fixturePointer === undefined) expected = assertion.equals;
+    else {
+      const fixtureExpected = jsonPointer(fixture, assertion.fixturePointer);
+      if (
+        !Array.isArray(fixtureExpected) ||
+        fixtureExpected.some(
+          (tuple) =>
+            !Array.isArray(tuple) ||
+            tuple.length !== assertion.projections.length ||
+            tuple.some(
+              (value, index) =>
+                assertion.projections[index]?.normalize !== undefined && typeof value !== "string",
+            ),
+        )
+      )
+        throw new ConformanceRunnerError("fixture oracle pointer did not resolve to valid tuples");
+      expected = fixtureExpected;
+    }
+    return outcome(
+      assertion.id,
+      assertion.ordered === true
+        ? actual.length === expected.length &&
+            actual.every((tuple, index) => tupleEquals(tuple, expected[index] as JsonValue[]))
+        : multisetEquals(actual, expected),
+      assertion.ordered === true
+        ? "array tuples did not match the expected sequence"
+        : "array tuples did not match the expected multiset",
+    );
+  }
+  if (body.kind !== "json") return outcome(assertion.id, false, observedBodyIssue(body));
+  if (schemaValidator === undefined)
+    throw new ConformanceRunnerError("schema assertion requires an offline schema validator");
+  const failures = schemaValidator.validate(assertion.schema, body.value);
+  return {
+    id: assertion.id,
+    passed: failures.length === 0,
+    ...(failures.length === 0
+      ? {}
+      : {
+          message: failures.map(({ message }) => `response body ${message}`).join("; "),
+        }),
+  };
+}
+
+
+
+
+===== packages/conformance/src/runner.ts: genuine excerpt lines 2468-2498 =====
+function captureValue(
+  capture: ScenarioCapture,
+  response: HttpExchangeResponse,
+  body: ObservedBody,
+  scope: string,
+): string {
+  let value: unknown;
+  if (capture.from.kind === "response-url") value = response.url;
+  else if (capture.from.kind === "header-link")
+    value = linkHeader(response.headers.link, capture.from.rel, response.url);
+  else {
+    if (body.kind !== "json") throw new ScenarioObservationFailure(observedBodyIssue(body));
+    value = jsonPointer(body.value, capture.from.pointer);
+  }
+  if (typeof value !== "string" || !isHttpUrl(value))
+    throw new ScenarioObservationFailure(
+      `capture '${capture.binding}' did not produce an absolute HTTP(S) URL`,
+    );
+  try {
+    assertConfinedToScope(value, scope, `capture '${capture.binding}'`);
+  } catch (error) {
+    if (capture.from.kind === "header-link")
+      throw new ScenarioOutOfScopeTargetError(
+        "discovered link target is outside the runner's safe fetch boundary",
+        { cause: error },
+      );
+    throw error;
+  }
+  return value;
+}
+
+
+
+
+===== packages/server/src/transaction-sequence.ts: genuine excerpt lines 32-75 =====
+function project(sequence: PreparedTransactionSequence, turn: TransactionSequenceTurn): Entry {
+  const member = sequence.members[turn.index];
+  if (!member) throw new Error("sequence turn outside carrier");
+  let entry: Record<string, unknown>;
+  if (turn.result.kind === "transient") entry = { ...problem("idempotency-in-progress") };
+  else if (turn.result.kind === "conflict") entry = { ...problem("idempotency-conflict") };
+  else {
+    const receipt = turn.result.receipt;
+    if (receipt.status === "pending") entry = { ...problem("idempotency-in-progress") };
+    else if (receipt.detail === "expired") {
+      if (receipt.status !== "completed") throw new Error("expired noncompleted receipt");
+      entry = { ...problem("idempotency-expired") };
+      if (member.operation === "createBead" || member.operation === "createLink") {
+        if (!Array.isArray(receipt.allocated) || receipt.allocated.length !== 1)
+          throw new Error("expired singleton creation lost its allocation");
+        const allocated = record(receipt.allocated[0]);
+        if (
+          allocated.operationIndex !== 0 ||
+          typeof allocated.id !== "string" ||
+          typeof allocated.type !== "string"
+        )
+          throw new Error("invalid expired singleton allocation");
+        entry.allocated = { id: allocated.id, type: allocated.type };
+      }
+    } else if (receipt.detail !== "available")
+      throw new Error("unsupported private receipt disclosure");
+    else if (receipt.status === "failed") entry = { ...record(receipt.problem) };
+    else {
+      if (!Array.isArray(receipt.results) || receipt.results.length !== 1 || receipt.next !== null)
+        throw new Error("singleton sequence receipt must have exactly one result");
+      entry = { ...record(receipt.results[0]) };
+    }
+  }
+  // The current presentation supplies the position and label. Retained result
+  // labels belong to the original carrier and are not semantic identity.
+  delete entry.operationIndex;
+  delete entry.operationName;
+  return Object.freeze({
+    ...entry,
+    operationIndex: turn.index,
+    ...(member.name === undefined ? {} : { operationName: member.name }),
+  });
+}
+/** Source-private stepping gives unrelated owner calls a turn between commits.
+
+
+
+===== packages/conformance/src/transactional-observation.ts: genuine excerpt lines 185-305 =====
+          "delete-link",
+          "put-alias",
+          "delete-alias",
+          "update-where",
+          "delete-where",
+          "batch",
+        ].includes(operation ?? "");
+      if ((pointer !== "/id" && pointer !== "/next") || !mutationSource) {
+        // Ordinary captures keep their normal meaning. Reusing a binding revokes
+        // its prior authority; only canonical mutation responses can grant it.
+        ledger.delete(binding);
+        return;
+      }
+      if (response.url !== request.url)
+        throw new TransactionalHarnessError("source receipt route mismatch");
+      if (
+        response.status !== 200 ||
+        !response.wireResponseBytes ||
+        response.wireResponseBytes.length > 2097152
+      )
+        throw new TransactionalHarnessError("source receipt wire unavailable");
+      validateReceiptWire(response, "GET");
+      if (!validator) throw new TransactionalHarnessError("source receipt validator unavailable");
+      if (validator.validate("#/$defs/mutationReceipt", value).length)
+        throw new TransactionalReceiptFailure("source receipt schema invalid");
+      const body = value as Record<string, unknown>;
+      if (body.status !== "completed" && body.status !== "failed")
+        throw new TransactionalHarnessError("source receipt disposition unavailable");
+      if (body.detail !== "available")
+        throw new TransactionalHarnessError("source receipt exceeds inline fixture");
+      let receipt: string;
+      try {
+        receipt = receiptUrl(body.id, scope);
+      } catch {
+        throw new TransactionalReceiptFailure("source receipt identity invalid");
+      }
+      if (!isDeepStrictEqual(body, JSON.parse(response.bodyText)))
+        throw new TransactionalHarnessError("source receipt body disagrees with wire");
+      let page: string | undefined;
+      if (body.status === "completed" && body.next !== null) {
+        try {
+          page = receiptPageUrl(body.next, receipt);
+        } catch {
+          throw new TransactionalReceiptFailure("source receipt page identity invalid");
+        }
+      }
+      if (pointer === "/next" && !page)
+        throw new TransactionalReceiptFailure("source receipt page unavailable");
+      if (ledger.has(binding) || ledger.size >= maximum)
+        throw new TransactionalHarnessError("receipt authority binding limit or reuse");
+      ledger.set(binding, {
+        reference: Object.freeze({
+          action,
+          ...(pointer === "/next" ? { pointer, page: page! } : { pointer }),
+          receipt,
+          responseDigest: createHash("sha256").update(response.wireResponseBytes).digest("hex"),
+          credentialRef: credential ?? config.defaultCredentialRef,
+          session: Object.freeze({ ...served }),
+        }),
+        body: JSON.parse(response.bodyText),
+        validator,
+      });
+    },
+    resolve(binding: unknown, value: unknown) {
+      const entry = typeof binding === "string" ? ledger.get(binding) : undefined;
+      if (!entry)
+        throw new TransactionalHarnessError("receipt not authorized by original wire observation");
+      const source = entry.reference;
+      const target = source.pointer === "/next" ? source.page : source.receipt;
+      if (
+        target !== value ||
+        (source.pointer === "/next"
+          ? receiptPageUrl(value, source.receipt)
+          : receiptUrl(value, scope)) !== target
+      )
+        throw new TransactionalHarnessError("receipt not authorized by original wire observation");
+      // The digest records original wire provenance. Later serving headers may
+      // change, so agreement compares retained JSON facts rather than wire bytes.
+      const active = session();
+      if (
+        active.binding.runtimeConfigurationIdentity !==
+          source.session.runtimeConfigurationIdentity ||
+        active.binding.configurationDigest !== source.session.configurationDigest
+      )
+        throw new TransactionalHarnessError("receipt session logical identity changed");
+      return {
+        source,
+        target,
+        active,
+        validate(response: HttpExchangeResponse, method: "GET" | "HEAD") {
+          validateReceiptWire(response, method);
+          if (method === "GET") {
+            let body: unknown;
+            try {
+              body = JSON.parse(response.bodyText);
+            } catch {
+              throw new TransactionalReceiptFailure("retained receipt JSON invalid");
+            }
+            if (source.pointer === "/next") {
+              const page = body as Record<string, unknown> | null;
+              if (
+                entry.validator.validate("#/$defs/mutationReceiptPage", body).length ||
+                page?.receipt !== source.receipt
+              )
+                throw new TransactionalReceiptFailure(
+                  "retained receipt page schema or identity mismatch",
+                );
+              // A HEAD never initializes this baseline. An invalid first GET does not either.
+              if (entry.pageBody === undefined) {
+                if (page.next !== null)
+                  throw new TransactionalHarnessError("receipt page exceeds single-page fixture");
+                entry.pageBody = body;
+              } else if (!isDeepStrictEqual(body, entry.pageBody))
+                throw new TransactionalReceiptFailure(
+                  "retained receipt page differs from original wire facts",
+                );
+              return;
+            }
+            if (!isDeepStrictEqual(body, entry.body))
+              throw new TransactionalReceiptFailure(
+                "retained receipt differs from original wire facts",
+
+
+
+===== apps/bdptest/src/transactional-matrix.test.ts: genuine excerpt lines 2926-2942 =====
+function memberHandoff(
+  index: number,
+  url: string,
+  digest: string | undefined,
+  key: string | undefined,
+  writeState: string | undefined,
+) {
+  return (
+    (index === 0 || index === 4) &&
+    url === `${scope}operations/sequence` &&
+    digest === "f3cde631127aaf530ea5349330e6c7bb46766b02b135f9c7c59acfcd2f2c71c7" &&
+    key === undefined &&
+    writeState === "complete"
+  );
+}
+/** Full actual values stay local to assertions. Reports retain only identities,
+ * digests and performed-pair inventory; receipt helper equality is separate. */
+
+
+
+===== apps/bdptest/src/transactional-matrix.test.ts: genuine excerpt lines 3152-3176 =====
+function composedMemberWire(
+  cross: ReturnType<typeof crossCarrierWire>,
+  minimum: ReturnType<typeof commandMinimumWire>,
+  member: ReturnType<typeof sequenceMemberWire>,
+) {
+  let handedOff = false;
+  return async (response: HttpExchangeResponse) => {
+    await minimum.afterExchange(response);
+    const request = response.exactRequest,
+      key = request?.headerLines.find((h) => h.name.toLowerCase() === "idempotency-key")?.value;
+    const exempt = memberHandoff(
+      member.count(),
+      response.url,
+      request?.bodyDigest,
+      key,
+      request?.writeState,
+    );
+    if (exempt && !handedOff) {
+      cross.finish();
+      handedOff = true;
+    }
+    if (!exempt) await cross.afterExchange(response);
+    if (handedOff) await member.afterExchange(response);
+  };
+}
+
+
+
+===== apps/bdptest/src/transactional-matrix.test.ts: genuine excerpt lines 3247-3341 =====
+function applyMemberControl(value: CrossCarrierManifest) {
+  const row = value.scenarios.find((r) => r.id === memberId)!;
+  (row.actions[0]!.raw as { body: { value: string } }).body.value = JSON.stringify(
+    memberRequests(true)[0]!.body,
+  );
+}
+function assertMemberControl() {
+  const value = JSON.parse(manifestSource.bytes.toString()) as CrossCarrierManifest,
+    original = structuredClone(value);
+  applyMemberControl(value);
+  expect(value.scenarios.find((r) => r.id === memberId)!.actions).toHaveLength(10);
+  const changed = value.scenarios.find((r) => r.id === memberId)!.actions[0]!;
+  expect((changed.raw as { body: { value: string } }).body.value).toBe(
+    JSON.stringify(memberRequests(true)[0]!.body),
+  );
+  (changed.raw as { body: { value: string } }).body.value = JSON.stringify(
+    memberRequests()[0]!.body,
+  );
+  expect(value).toEqual(original);
+  applyMemberControl(value);
+  expect(() =>
+    createCumulativeTransactionalArtifactBundle(loadProfileContractSelection("transactional"), {
+      manifest: { bytes: Buffer.from(JSON.stringify(value)) },
+      fixture: fixtureSource,
+    }),
+  ).not.toThrow();
+}
+it("discriminates sequence member transactions against a successful middle delete", async () => {
+  const children: ChildProcess[] = [],
+    wire = sequenceMemberWire(true);
+  const observed = await observe({
+    children,
+    scenarioSelection: [memberId],
+    manifest: applyMemberControl,
+    afterExchange: wire.afterExchange,
+    onObserved(observed) {
+      if (process.env.BDP_TRANSACTIONAL_SEQUENCE_MEMBER_CONTROL_OUTPUT)
+        writeFileSync(
+          process.env.BDP_TRANSACTIONAL_SEQUENCE_MEMBER_CONTROL_OUTPUT,
+          JSON.stringify(
+            { sourceCommit, entry, ...observed, supplemental: wire.summary() },
+            null,
+            2,
+          ) + "\n",
+        );
+    },
+  });
+  expect(observed.result.selectedScenarioIds).toEqual([memberId]);
+  expect(observed.result.claimEligible).toBe(false);
+  expect(observed.result.scenarios).toHaveLength(1);
+  const row = observed.result.scenarios[0]!,
+    exchange = row.exchanges[0]!;
+  expect(row.state).toBe("fail");
+  expect(row.cleanupError).toBeUndefined();
+  expect(row.prerequisiteFailure).toBeUndefined();
+  expect(row.actions ?? []).toHaveLength(0);
+  expect(row.exchanges).toHaveLength(1);
+  expect(exchange.request.id).toBe("s-sequence");
+  expect(exchange.request.method).toBe("POST");
+  expect(exchange.request.exact?.writeState).toBe("complete");
+  expect(exchange.response?.status).toBe(200);
+  expect(exchange.transportError).toBeUndefined();
+  expect(exchange.harnessError).toBeUndefined();
+  expect(exchange.assertions.map((a) => a.id)).toEqual(
+    bundle.manifest.scenarios
+      .find((r) => r.id === memberId)!
+      .actions![0]!.assertions.map((a) => a.id),
+  );
+  expect(exchange.assertions.filter((a) => !a.passed).map((a) => a.id)).toEqual(memberFailureIds);
+  for (const id of [
+    "http-status",
+    "schema",
+    "media",
+    "request-headers",
+    "request-body",
+    "middle-no-resource",
+  ])
+    expect(exchange.assertions.find((a) => a.id === id)?.passed).toBe(true);
+  wire.finish();
+  expect(observed.sessions).toHaveLength(1);
+  expect(children).toHaveLength(2);
+  expect(children.every((c) => c.exitCode !== null || c.signalCode !== null)).toBe(true);
+  console.log(
+    JSON.stringify({
+      kind: "installed-tx-sequence-member-control",
+      sourceCommit,
+      exchanges: 1,
+      childLaunches: children.length,
+      closedChildren: children.filter((c) => c.exitCode !== null || c.signalCode !== null).length,
+      failures: exchange.assertions.filter((a) => !a.passed).map((a) => a.id),
+      supplemental: wire.summary(),
+      claimEligible: observed.result.claimEligible,
+    }),
+  );
+}, 120000);
+
+
+
+===== Genuine targeted schema definitions; referenced closure omitted, not a complete schema =====
+{"transactionalSequenceResponse":{"title":"BDP Transactional sequence response","type":"object","required":["results"],"properties":{"results":{"type":"array","minItems":1,"items":{"oneOf":[{"$ref":"#/$defs/sequenceMemberResult"},{"$ref":"#/$defs/sequenceMemberAliasResult"},{"$ref":"#/$defs/transactionalSequenceMemberProblem"}]}}},"additionalProperties":false},"transactionalSequenceMemberProblem":{"title":"BDP Transactional sequence member problem","type":"object","allOf":[{"$ref":"#/$defs/sequenceMemberProblem"},{"if":{"properties":{"code":{"const":"idempotency-expired"}},"required":["code"]},"then":{"properties":{"allocated":{"$ref":"#/$defs/sequenceAllocatedIdentity"}}},"else":{"properties":{"allocated":false}}},{"if":{"properties":{"code":{"const":"resource-erased"}},"required":["code"]},"then":{"properties":{"pointer":false}}}]},"sequenceMemberResult":{"type":"object","allOf":[{"$ref":"#/$defs/mutationResultMembers"}],"properties":{"operationIndex":{"type":"integer","minimum":0},"operationName":{"$ref":"#/$defs/localName"}},"required":["operationIndex"],"unevaluatedProperties":false},"sequenceAllocatedIdentity":{"title":"BDP sequence expired-creation identity projection","oneOf":[{"type":"object","required":["id","type"],"properties":{"id":{"$ref":"#/$defs/absoluteHttpUrl"},"type":{"$ref":"#/$defs/absoluteHttpUrl"}},"additionalProperties":false},{"type":"object","required":["withheld"],"properties":{"withheld":{"const":true}},"additionalProperties":false}]},"receiptCore":{"type":"object","properties":{"id":{"$ref":"#/$defs/absoluteHttpUrl"},"status":{"$ref":"#/$defs/receiptStatus"},"detail":{"$ref":"#/$defs/receiptDetail"},"idempotencyKey":{"$ref":"#/$defs/idempotencyKey"},"scopeEpoch":{"$ref":"#/$defs/wireToken"},"authorizationView":{"$ref":"#/$defs/wireToken"},"transaction":{"$ref":"#/$defs/wireToken"},"requiredPosition":{"$ref":"#/$defs/wireToken"},"effectPosition":{"$ref":"#/$defs/wireToken"},"results":{"type":"array","items":{"$ref":"#/$defs/receiptResult"}},"next":{"oneOf":[{"$ref":"#/$defs/absoluteHttpUrl"},{"type":"null"}]},"allocated":{"type":"array","items":{"$ref":"#/$defs/allocatedIdentity"}},"problem":{"$ref":"#/$defs/receiptProblem"},"expiresAt":{"$ref":"#/$defs/dateTime"}},"allOf":[{"if":{"properties":{"status":{"const":"failed"}},"required":["status"]},"then":{"properties":{"effectPosition":false,"detail":{"const":"available"}}}}],"additionalProperties":false},"mutationReceipt":{"title":"BDP Mutation Receipt","type":"object","allOf":[{"$ref":"#/$defs/receiptCore"}],"oneOf":[{"type":"object","required":["id","status","idempotencyKey","scopeEpoch","authorizationView","transaction"],"properties":{"id":true,"status":{"const":"pending"},"idempotencyKey":true,"scopeEpoch":true,"authorizationView":true,"transaction":true,"detail":false,"requiredPosition":false,"effectPosition":false,"results":false,"next":false,"allocated":false,"problem":false,"expiresAt":false}},{"type":"object","required":["id","status","detail","idempotencyKey","scopeEpoch","authorizationView","transaction","requiredPosition","results","next","expiresAt"],"properties":{"id":true,"status":{"const":"completed"},"detail":{"const":"available"},"idempotencyKey":true,"scopeEpoch":true,"authorizationView":true,"transaction":true,"requiredPosition":true,"effectPosition":true,"results":true,"next":true,"expiresAt":true,"allocated":false,"problem":false},"allOf":[{"if":{"properties":{"next":{"type":"null"}},"required":["next"]},"then":{"properties":{"results":{"type":"array","minItems":1}}}}]},{"type":"object","required":["id","status","detail","idempotencyKey","scopeEpoch","authorizationView","transaction","requiredPosition","problem","expiresAt"],"properties":{"id":true,"status":{"const":"failed"},"detail":{"const":"available"},"idempotencyKey":true,"scopeEpoch":true,"authorizationView":true,"transaction":true,"requiredPosition":true,"problem":true,"expiresAt":true,"effectPosition":false,"results":false,"next":false,"allocated":false}},{"type":"object","required":["id","status","detail","idempotencyKey","scopeEpoch","authorizationView","transaction","requiredPosition","allocated"],"properties":{"id":true,"status":{"const":"completed"},"detail":{"const":"expired"},"idempotencyKey":true,"scopeEpoch":true,"authorizationView":true,"transaction":true,"requiredPosition":true,"effectPosition":true,"allocated":true,"results":false,"next":false,"problem":false,"expiresAt":false}},{"type":"object","required":["id","status","detail","idempotencyKey","scopeEpoch","authorizationView","transaction","requiredPosition"],"properties":{"id":true,"status":{"const":"completed"},"detail":{"const":"withheld"},"idempotencyKey":true,"scopeEpoch":true,"authorizationView":true,"transaction":true,"requiredPosition":true,"effectPosition":true,"results":false,"next":false,"allocated":false,"problem":false,"expiresAt":false}}]},"receiptResult":{"type":"object","required":["operationIndex","outcome"],"properties":{"operationIndex":{"type":"integer","minimum":0},"operationName":{"$ref":"#/$defs/localName"},"outcome":{"$ref":"#/$defs/receiptEntryOutcome"},"resource":{"oneOf":[{"allOf":[{"$ref":"#/$defs/beadRecord"},{"type":"object","properties":{"links":false}}]},{"$ref":"#/$defs/linkRecord"}]},"deleted":{"$ref":"#/$defs/deletedIdentity"},"erased":{"$ref":"#/$defs/resourceIdentity"},"source":{"$ref":"#/$defs/absoluteHttpUrl"},"sourceRevision":{"$ref":"#/$defs/revision"},"count":{"type":"integer","minimum":0},"alias":{"$ref":"#/$defs/absoluteHttpUrl"},"target":{"$ref":"#/$defs/absoluteHttpUrl"}},"allOf":[{"if":{"properties":{"outcome":{"enum":["created","updated"]}},"required":["outcome"],"not":{"properties":{"alias":true},"required":["alias"]}},"then":{"required":["resource"],"properties":{"resource":true,"deleted":false,"erased":false,"count":false}}},{"if":{"properties":{"outcome":{"const":"deleted"}},"required":["outcome"],"not":{"properties":{"alias":true},"required":["alias"]}},"then":{"required":["deleted"],"properties":{"deleted":true,"resource":false,"erased":false,"count":false}}},{"if":{"properties":{"outcome":{"const":"erased"}},"required":["outcome"]},"then":{"required":["erased"],"properties":{"erased":true,"resource":false,"deleted":false,"count":false}}},{"if":{"properties":{"outcome":{"const":"matched"}},"required":["outcome"]},"then":{"required":["count"],"properties":{"count":true,"operationName":false,"resource":false,"deleted":false,"erased":false,"source":false,"sourceRevision":false}}},{"if":{"properties":{"outcome":{"const":"withheld"}},"required":["outcome"]},"then":{"properties":{"resource":false,"deleted":false,"erased":false,"source":false,"sourceRevision":false,"count":false}}},{"if":{"required":["resource"],"properties":{"resource":{"$ref":"#/$defs/beadRecord"}}},"then":{"properties":{"source":false,"sourceRevision":false}}},{"if":{"required":["deleted"],"properties":{"deleted":{"type":"object","required":["resourceKind"],"properties":{"resourceKind":{"const":"bead"}}}}},"then":{"properties":{"source":false,"sourceRevision":false}}},{"if":{"required":["alias"]},"then":{"allOf":[{"$ref":"#/$defs/aliasResultMembers"}],"properties":{"operationIndex":{"const":0},"operationName":false,"resource":false,"deleted":false,"erased":false,"source":false,"sourceRevision":false,"count":false}},"else":{"properties":{"target":false}}}],"dependentRequired":{"source":["sourceRevision"],"sourceRevision":["source"]},"additionalProperties":false},"event":{"title":"BDP Event","type":"object","required":["id","ordinal","type","source","subject","subjectType","transaction","time","data"],"properties":{"id":{"$ref":"#/$defs/wireToken"},"ordinal":{"type":"integer","minimum":0},"type":{"$ref":"#/$defs/eventType"},"source":{"$ref":"#/$defs/absoluteHttpUrl"},"subject":{"$ref":"#/$defs/absoluteHttpUrl"},"subjectType":{"$ref":"#/$defs/absoluteHttpUrl"},"transaction":{"$ref":"#/$defs/wireToken"},"time":{"$ref":"#/$defs/dateTime"},"data":{"type":"object"}},"allOf":[{"if":{"properties":{"type":{"const":"created"}},"required":["type"]},"then":{"properties":{"data":{"$ref":"#/$defs/createdData"}}}},{"if":{"properties":{"type":{"const":"updated"}},"required":["type"]},"then":{"properties":{"data":{"$ref":"#/$defs/updatedData"}}}},{"if":{"properties":{"type":{"const":"deleted"}},"required":["type"]},"then":{"properties":{"data":{"$ref":"#/$defs/deletedData"}}}},{"if":{"properties":{"type":{"enum":["linked","unlinked"]}},"required":["type"]},"then":{"properties":{"data":{"$ref":"#/$defs/linkDeltaData"}}}}],"additionalProperties":false},"eventPage":{"title":"BDP Event Source page","type":"object","required":["source","events","next"],"properties":{"source":{"$ref":"#/$defs/absoluteHttpUrl"},"events":{"type":"array","items":{"$ref":"#/$defs/event"}},"next":{"oneOf":[{"$ref":"#/$defs/absoluteHttpUrl"},{"type":"null"}]}},"additionalProperties":false}}
