@@ -5,14 +5,15 @@
     "tree": "b2d9f2c18502e0778c51123be8b4564af052d803",
     "pendingEventBinding": "acf190e742dfb669fe5607085a3ac60c5ecb66f4f86b1f05025424a7873615b0",
     "pendingEventDiff": "e0c25b193ef1191d10916728c54eb6a894c5f29992e0da768bd585ef089e98e3",
-    "actualCheckoutHead": "3df82ac480f50c8f486b4e456336366e7acbdf87",
+    "actualCheckoutHead": "db5a4d6a41814e59704ebef60fda02a2d57e9ad2",
     "authoringBase": "PENDING_ACTUAL_MERGED_EVENT_SUCCESSOR_REANCHOR",
     "pendingReviewedEventCandidate": {
-      "head": "3df82ac480f50c8f486b4e456336366e7acbdf87",
-      "tree": "d5f02c936cf080666a8e73bb5f253e52086705f4",
+      "head": "db5a4d6a41814e59704ebef60fda02a2d57e9ad2",
+      "tree": "2e16329e195eb8214836de20340a5887236d78f0",
+      "parent": "3df82ac480f50c8f486b4e456336366e7acbdf87",
       "rootReportedPr": 127,
-      "rootReportedCi": 38728209051,
-      "state": "Event candidate and separate callback-timeout repair await exact CI/council and actual merge; source reanchor remains pending"
+      "rootReportedCi": 38731731790,
+      "state": "timeout-only successor of Event candidate; actual main88c unchanged, new exact CI/merge pending"
     }
   },
   "ownedPaths": [
@@ -560,7 +561,8 @@
     "actualClaudeOutputSha256": "84560b126c82859fed06f6d5b3923b224dd4f9c07a5c8a4f6d5fa595acb09878",
     "sourceDispositionsSha256": "9a8595132244550a273e23b48d6ce49cef586f438760942514b45b4682a2fcdf",
     "inputCorrectionSha256": "fb59c26e2814d92693f40703fea3d1d14011671033b16113681af250c387096d",
-    "change": "count-neutral plan corrections only; source seven existing hashes unchanged; new eighth path prospective"
+    "change": "count-neutral plan corrections only; source seven existing hashes unchanged; new eighth path prospective",
+    "rootDispositionsSha256": "32dd75f2837ce1440b6fc317691d735fc45227d56ae6367b6fbcc85d7b919d7d"
   },
   "sourceHttpTransport": {
     "owner": "reuse existing source fixture receiptMaximumItems2 and runtime targets, no shared fixture helper edit",
@@ -575,7 +577,17 @@
     "newStoreMissControls": "undefined, unsupported, current-epoch/view ahead pos99; three missing classes each",
     "newStoreVisibleLastCall": "exact foreign-view reason with current epoch and changed view",
     "newServiceMissControls": "ordinary, unsupported, current-epoch/view ahead pos99; root/page pairs; zero wait callback and one owner attempt",
-    "extraCasesOrCalls": 0
+    "extraCasesOrCalls": 0,
+    "exactWaitCounterMechanism": {
+      "minimumReads": {
+        "budgetMs": 2,
+        "now": "() => tick++ with local tick initially0",
+        "wait": "async () => { waits += 1; } with local waits initially0"
+      },
+      "tuple": "retain first observed current epoch/view; minimumPosition pos-99",
+      "observations": "before/after each existing nondisclosable supported minimum call, require waits unchanged; final waits0. vi.spyOn on actual owner readReceipt/readReceiptPage without mock implementation tracks exactly one additional delegated attempt for each such call. No extra service/owner invocation. Restore spies in finally.",
+      "purpose": "an incorrectly reordered behind check enters real wait loop, increments waits and eventually fails finite budget; no elapsed-speed inference, no held wait or extra timing seam"
+    }
   },
   "scopeClarifications": [
     "readContext invoked at each of exactly3 genuine missing return sites after existing integrity checks, never hoisted",

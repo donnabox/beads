@@ -1,0 +1,38 @@
+{
+  "status": "PLAN_SUCCESSOR_ONLY_PENDING_ROOT_ACCEPTANCE_AND_MERGED_PARENT",
+  "plan": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-receipt-missing-context-plan-v2.md",
+  "planSha256": "ae66a448eeb9677f0430139b7db385c0f9648f741df2167226721c33f93c4b7f",
+  "ledger": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-receipt-missing-context-plan-ledger-v2.json",
+  "ledgerSha256": "5a5e385e351dc73ea08190830f95b3439c69a18de4c6c805e694002787284a39",
+  "patchSha256": "ebb110ecf7ae2d4d3637ac902110775e2655cdc187848b625561aa6751a1d1bd",
+  "originalsUnchanged": true,
+  "sourceChanges": false,
+  "execution": false,
+  "countsUnchanged": {
+    "caseExecutions": 16,
+    "httpExpected": 95,
+    "httpMaximum": 95,
+    "ownerOpens": 18,
+    "directories": 16,
+    "listeners": 8,
+    "productChildren": 1,
+    "readonlyInventoryHandles": 2
+  },
+  "selectedSourceCallbacks": 14,
+  "sourceHttp": 68,
+  "controlHttp": 13,
+  "installedHttp": 14,
+  "bodyBytes": {
+    "old": 4009,
+    "new": 3999,
+    "maximumUnchanged": 3728
+  },
+  "sourceAuditSha256": "9a8595132244550a273e23b48d6ce49cef586f438760942514b45b4682a2fcdf",
+  "changes": "23 source-grounded dispositions; required change field; explicit branch-local context/fault classification; receipt unions/narrowing; typed provenance; ahead-only wait discriminator; local bounded source transport; exact hard/soft assertion partition; caps/attribution clarifications. No new paths/cases/requests/limits.",
+  "planningCandidate": "db5a4d6a41814e59704ebef60fda02a2d57e9ad2",
+  "planningTree": "2e16329e195eb8214836de20340a5887236d78f0",
+  "actualMain": "88c9408e908590ab1a4c64c9b9dee1a8b705999c",
+  "rootDispositionsSha256": "32dd75f2837ce1440b6fc317691d735fc45227d56ae6367b6fbcc85d7b919d7d",
+  "remainingGate": "root reads v2; exact reviewed Event successor CI/actualmerge and mechanical parent reanchor before authoring",
+  "extraChanges": "explicit finite wait-counter/delegating-spy mechanism within unchanged service calls; all7 sourcehashes verified against db5a"
+}
