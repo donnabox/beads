@@ -1,0 +1,68 @@
+# Review — F1/F7/F9 delta (supplied context only; no tools run, no files written)
+
+Five findings, all Low/Informational. No blocking defect and no functional regression found in the code portion of the delta.
+
+---
+
+### 1. Doc: "The unchanged draft was integrated onto f551171" is falsified by this same delta — Low
+
+**Location:** `docs/design/transaction-implementation-progress.md`, "Private installed principal-key isolation draft", new sentence: `The unchanged draft was integrated onto f5511718371a6935614eae6756e796cef71570c2;`
+
+The citation hashes themselves are correct and verifiable against supplied context: `18104a03b850553641f24fe83e7318493fa102ca` matches the stated original author commit, and `f5511718371a6935614eae6756e796cef71570c2` matches the stated dirty source parent and the `f551171` HEAD in `git status`. F9's substance is fixed (space restored, full hashes, original checkpoint attribution preserved, one blank line before the heading — not zero).
+
+The defect is the word **unchanged**. The same delta modifies the draft's test file in two places (argv output-path resolution, `as const` validator tuple), so the artifact sitting on `f551171` is the 18104 draft *plus review repairs*, not the unchanged draft. In a document whose stated purpose is provenance attribution, that is the one claim worth being exact about. Also, per `git status` the draft is still uncommitted (`M` doc, `??` test), so "was integrated" is asserted as completed fact about a working-tree state.
+
+**Smallest fix:** drop `unchanged`, e.g. `The draft was integrated onto f5511718371a6935614eae6756e796cef71570c2 with review repairs to the argv output-path guard and validator typing; reviewed validation remains a gate...`. While editing, refill the paragraph — the third line (`remains a gate before final publication/readiness. This draft`, 61 chars) is left unwrapped mid-paragraph against the file's ~78–82 char fill.
+
+---
+
+### 2. Doc: adjacent "no builds have executed" claim is now stale — Low
+
+**Location:** same section, unchanged context line: `No tests, builds, packages or installed runs have executed at this draft checkpoint.`
+
+Per supplied context, eight prior static stages passed the original bytes and eight fresh static/build/inventory stages passed the successor bytes; only runtime/installed validation is outstanding. The sentence therefore overstates the gap for *builds* and *inventory/packaging*, and it is temporally ambiguous now that the preceding sentences describe a later checkpoint (`f551171`) rather than the 18104 authoring checkpoint the phrase "this draft checkpoint" originally referred to.
+
+It is unchanged context, not an introduced line — but it was rendered inconsistent by the same edit that rewrote the provenance sentences around it, which puts it inside the "directly introduced" boundary.
+
+**Smallest fix:** `No tests or installed runs have executed at this draft checkpoint; static, build and inventory checks have passed.`
+
+---
+
+### 3. F7 residual: value typing restored, key typing not — Low (informational, no action required)
+
+**Location:** `apps/bdptest/src/transactional-principal-key-installed.test.ts:347–362`
+
+The `as const` is correct and sufficient for the reported defect. The callback now returns `readonly [string, ValidateFunction<unknown>]`, which selects the `fromEntries<T>(entries: Iterable<readonly [PropertyKey, T]>)` overload, so `validators` is `{ [k: string]: ValidateFunction<unknown> }` instead of `any`. `validators[schema]` is then `ValidateFunction<unknown> | undefined` under `noUncheckedIndexedAccess`, guarded by the `"unbound response schema"` throw at line 359; `validate(value)` is used in a non-narrowing argument position so the `data is T` predicate cannot widen `value`. `validators.beadRecord!(…)` elsewhere in the file still compiles, because `noPropertyAccessFromIndexSignature` is not set in `tsconfig.base.json` and the `!` discharges the index-access `undefined`. The file is in scope for `tsconfig.check.json` (`apps/*/src/**/*.ts`, with no `.test.ts` exclusion there), so this is actually checked.
+
+Residual gap: because the names array is not itself `as const` and `checked(text: string, schema: string)` takes a bare `string`, a mistyped schema name is still caught only at runtime. Cheapest hardening if ever wanted: hoist the five names to a `const … as const` array and type the parameter as `(typeof names)[number]`. Not required for F7 closure.
+
+---
+
+### 4. Containment compares the raw `mkdtemp` path, not its realpath — Informational (pre-existing)
+
+**Location:** `outsideStore` at lines 275–282, against `directory = mkdtempSync(path.join(tmpdir(), …))` at line 400
+
+`path.relative(directory, …)` uses the unresolved temp path. On darwin `tmpdir()` sits under the `/var` → `/private/var` symlink, so a path expressed in the realpath form of the store directory would produce an escaping `..` relative and be judged *outside* — a false negative in the containment guard, not a false failure. Unreachable for the argv case this delta touches (relative values resolve from the repo cwd, nowhere near the store) and unreachable in practice for the env case given the random `mkdtemp` suffix. Noted only because `realpathSync` is already imported in this file, so `outsideStore(path.resolve(filename), realpathSync(directory))` would be a one-token close if the guard is ever meant to be adversarial rather than hygienic.
+
+---
+
+### 5. Whether the argv scan sees the flags at all is still unvalidated — Informational
+
+**Location:** the `process.argv` loop, lines 403–413
+
+Under Vitest's `forks` pool (default) the test body runs in a tinypool child whose `process.argv` is `[execPath, workerEntry]`, and under `threads` the worker's `process.argv` likewise does not carry the CLI flags. If that holds for this repo's pool configuration (`vitest.config.ts` was not supplied, and no runtime validation has been performed yet), then neither the containment check nor the two new missing-value throws fire from inside the worker — which also means F1's original failure mode was never reachable. This does not affect the correctness of the repair either way; it is the cheapest thing to confirm during the pending runtime validation, since it determines whether the guard is doing any work. Worth settling before the "positive actual validation will use relative output path" step, because a passing run proves nothing if argv is empty.
+
+---
+
+## Checked and clean (no finding)
+
+- **No new throw path vs. the original bytes.** Old code passed `process.argv[i + 1] ?? ""` straight into `outsideStore`, so every input that now throws `"missing outputFile value"` previously threw `"must be absolute"`. The repair strictly removes failures; it adds none.
+- **Missing-value coverage is complete and consistent** for the forms in scope: `--outputFile` as final argv (`process.argv[++i]` → `undefined` → throw), `--outputFile` followed by another flag (`-` prefix → throw), `--outputFile=` with empty value (`slice(13)` → `""` → falsy → throw). `"--outputFile=".length === 13` is correct. The asymmetry whereby `--outputFile -x` throws but `--outputFile=-x` is accepted as a literal filename is correct, not a defect.
+- **`++i` consumption is safe and matches cac/Vitest arity.** The consumed value is skipped as a standalone argument with no loss of coverage, and the per-reporter dot form (`--outputFile.json <path>`) falls through both branches to `continue` rather than throwing — so the known, dispositioned gap in per-reporter/config-file discovery remains a gap and does not become a false failure.
+- **Environment evidence absoluteness preserved.** Line 401 still passes `output` unresolved, so a relative `BDP_TRANSACTIONAL_PRINCIPAL_KEY_OUTPUT` is rejected by both the module-scope check (lines 88–89) and `outsideStore`'s `isAbsolute` precondition. The `path.resolve` is confined to the argv branch, exactly as F1's disposition requires.
+- **Containment logic itself is sound** for the resolved-absolute input: same-path (`relative === ""`), inside (`a/b`), outside (`../…`), and cross-volume (absolute relative) are all classified correctly.
+- **Type soundness under the supplied configs.** `filename: string | undefined` absorbs `noUncheckedIndexedAccess` on `process.argv[++i]`; narrowing before `path.resolve(filename)` is valid; no `noUnusedLocals`/`noImplicitReturns`/`verbatimModuleSyntax` interaction.
+- **Formatting/lint.** Both new long lines are under the 100-char Biome width, and `++i` as a subexpression is an `UpdateExpression`, outside `suspicious/noAssignInExpressions`. Consistent with the reported passing format/static stages; no lint claim is made here.
+- **Doc prose vs. test.** "one seven-request installed HTTP witness" matches `expect(requests).toHaveLength(7)` at line 363 and the supplied seven-positive request count; the no-discovery / no-qualification / pending-rulings disclaimers are unchanged and accurate.
+
+**Out of scope as instructed, not re-raised:** per-reporter and config-file `outputFile` discovery; relative resolution against `process.cwd()` rather than the configured Vitest root (confirmed present, accepted as "same cwd/root W, no custom-root support"); F2–F6 and F8 dispositions.

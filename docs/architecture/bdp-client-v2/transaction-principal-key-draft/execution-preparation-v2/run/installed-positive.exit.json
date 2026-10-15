@@ -1,0 +1,77 @@
+{
+  "name": "installed-positive",
+  "argv": [
+    "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+    "/Users/dbox/repos/wt/vickie/vickie-principal-key-isolation/node_modules/.pnpm/vitest@4.1.10_@types+node@24.13.3_vite@8.2.1_@types+node@24.13.3_/node_modules/vitest/vitest.mjs",
+    "run",
+    "apps/bdptest/src/transactional-principal-key-installed.test.ts",
+    "--maxWorkers=1",
+    "--reporter=verbose",
+    "--reporter=json",
+    "--outputFile=../bdp-integration-logs/transaction-principal-key-draft/execution-preparation-v2/run/installed-positive.results.json",
+    "-t",
+    "^observes independent principal keys and same-principal credential rotation through installed HTTP$"
+  ],
+  "guardedArgv": [
+    "/opt/homebrew/opt/python@3.14/bin/python3.14",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/guarded-action.py",
+    "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+    "/Users/dbox/repos/wt/vickie/vickie-principal-key-isolation/node_modules/.pnpm/vitest@4.1.10_@types+node@24.13.3_vite@8.2.1_@types+node@24.13.3_/node_modules/vitest/vitest.mjs",
+    "run",
+    "apps/bdptest/src/transactional-principal-key-installed.test.ts",
+    "--maxWorkers=1",
+    "--reporter=verbose",
+    "--reporter=json",
+    "--outputFile=../bdp-integration-logs/transaction-principal-key-draft/execution-preparation-v2/run/installed-positive.results.json",
+    "-t",
+    "^observes independent principal keys and same-principal credential rotation through installed HTTP$"
+  ],
+  "cwd": "/Users/dbox/repos/wt/vickie/vickie-principal-key-isolation",
+  "started": "2026-10-15T18:51:50.022111+00:00",
+  "adjudication": {
+    "kind": "exact-source-selection",
+    "passedFullNames": [
+      "observes independent principal keys and same-principal credential rotation through installed HTTP"
+    ],
+    "skipped": 0,
+    "jsonSha256": "5c767df30bb0c2a7181408f84227aaa3d33067d1680e2c4427f563d93085e31b",
+    "limitation": "Static HTTP/owner model is not an independently observed network quota; raw logs and reported cleanup remain separately reviewed."
+  },
+  "elapsedSeconds": 2.6694698750507087,
+  "exit": 0,
+  "supervisorExit": 0,
+  "timeout": false,
+  "forcedCleanup": false,
+  "errors": [],
+  "processGroup": 32684,
+  "remainingBeforeCleanup": [],
+  "remainingAfterCleanup": [],
+  "sampledPids": [
+    32684,
+    32686,
+    32715,
+    32728,
+    32801
+  ],
+  "sampledPidsStillPresent": {},
+  "sampledTempEntries": [
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-principal-key-draft/execution-preparation-v2/run/installed-positive.tmp/aQ_bhTFxYXByZwr32bvXS",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-principal-key-draft/execution-preparation-v2/run/installed-positive.tmp/bdp-principal-key-installed-VXU18W"
+  ],
+  "tempEntriesAfter": [],
+  "remainingTempEntriesForClassification": [],
+  "runtimeDirectoriesStillPresent": [],
+  "unclassifiedTempEntriesStillPresent": [],
+  "sourceUnchanged": true,
+  "sourceSha256After": {
+    "apps/bdptest/src/transactional-principal-key-installed.test.ts": "0f941001445e001f96f8c432a7099a5eb29dc4b68bc4458d6d1dfae472a3ce20",
+    "docs/design/transaction-implementation-progress.md": "fd69135a88ee2802eb9ce55d2c2f3771d4a16228c0e306202c9a8778f0bdcb3f"
+  },
+  "samplingSeconds": 0.05,
+  "commandWindowSeconds": 115,
+  "groupHardDeadlineSeconds": 120,
+  "cleanupBound": "TERM at115s, KILL no later than120s; wait/reap after kill adds no product execution allowance",
+  "samplingLimitation": "Short-lived or detached descendants may evade group sampling; helper counts and independent final checks remain separate.",
+  "tempClassification": "Only the selected fixture prefixes under this attempt TMPDIR are owned runtime roots; all other entries are preserved for review, not deleted or called leaks.",
+  "resultLimitation": "Exit0 is command completion, not independent oracle/claim/provenance adjudication."
+}

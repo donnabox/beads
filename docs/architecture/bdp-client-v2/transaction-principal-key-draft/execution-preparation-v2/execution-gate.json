@@ -9,7 +9,19 @@
     "lint",
     "boundaries",
     "read-seal",
-    "build-inventory"
+    "build-inventory",
+    "node-version",
+    "package-directory",
+    "pack-protocol",
+    "pack-server",
+    "verify-tar",
+    "prepare-consumer",
+    "consumer-install",
+    "verify-installed",
+    "installed-positive",
+    "review-positive",
+    "installed-principal-collapse",
+    "review-principal-collapse"
   ],
   "node": "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
   "pnpm": "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
@@ -22,15 +34,15 @@
     "commands.json": "c1d63cd680a657eada8a611206ae3f8103cae4377386842265a69ab645ca0074"
   },
   "guardSha256": "fd81ba029cd4e7c7e60623df89e8292af91141d311d9ce789ed19e2152375e84",
-  "sourceHead": "f5511718371a6935614eae6756e796cef71570c2",
-  "sourceTree": "3cd1da66ba3a6cbd0bbdaa2442d10002939d826b",
-  "sourceStatus": " M docs/design/transaction-implementation-progress.md\n?? apps/bdptest/src/transactional-principal-key-installed.test.ts\n",
-  "sourceDiffSha256": "a74e915724535842c82daa39ac016455f7aeb889f19f37bbfd2db7da84d447f9",
-  "finalHead": null,
-  "finalTree": null,
-  "finalBase": null,
+  "sourceHead": "09bcaab75800cae89cf738ea88f012168ff733fc",
+  "sourceTree": "fde859381752d15c8caabcbc946d3c2e384b9cf6",
+  "sourceStatus": "",
+  "sourceDiffSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "finalHead": "09bcaab75800cae89cf738ea88f012168ff733fc",
+  "finalTree": "fde859381752d15c8caabcbc946d3c2e384b9cf6",
+  "finalBase": "f5511718371a6935614eae6756e796cef71570c2",
   "sourceLockSha256": "4150d8821c96dbc2cfec0b2762ff76b58318079f65fa4f5c8858ef2dd61f8d6d",
-  "consumerLockSha256": null,
+  "consumerLockSha256": "9aa8c8d4ff03ac9359a01fe82c151d838c489dac4f5933a36a549a074c820f0d",
   "expectedProductionVersions": {
     "@bdp/protocol": "0.0.0",
     "@bdp/server": "0.0.0",
@@ -50,31 +62,31 @@
     "sha256": "b7ad8b60d6794812b2081f6b024820965a0da32b4b234b885db47ecdeb90ea12"
   },
   "councilAcceptance": {
-    "path": null,
-    "sha256": null
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-principal-key-draft/root-final-council.json",
+    "sha256": "c13498fa6d66402130d23aeb9d6f4e6a09d8807b9cdc775ed5e07112a2a9a7f0"
   },
   "finalSource": {
-    "path": null,
-    "sha256": null
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-principal-key-draft/landing/final-source.json",
+    "sha256": "39ba2bc5cd749f4eab699abcb00e3bb9b4873cd3331d15d5c3ad39f9ba8664b8"
   },
   "finalIntegrationAcceptance": {
-    "path": null,
-    "sha256": null
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-principal-key-draft/landing/root-integration-acceptance.json",
+    "sha256": "39ba2bc5cd749f4eab699abcb00e3bb9b4873cd3331d15d5c3ad39f9ba8664b8"
   },
   "buildOutputInventory": {
-    "path": null,
-    "sha256": null
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-principal-key-draft/execution-preparation-v2/run/build-output-inventory.json",
+    "sha256": "b2d71520d16fe3cb17e72af2ec1a9bc2b1431b30ae23a875e6bba438b637c13e"
   },
   "buildBridge": {
-    "path": null,
-    "sha256": null
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-principal-key-draft/execution-preparation-v2/root-build-bridge.json",
+    "sha256": "f71a34182200c78ef7aa929a86d7b09ed00c98074543832f2fd4ed85b8004754"
   },
   "installedProvenance": {
-    "path": null,
-    "sha256": null
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-principal-key-draft/execution-preparation-v2/run/installed-provenance.json",
+    "sha256": "c84b6e4305f80ef17403e7fede66f7d942011a928d0daeda120df0d450f701a6"
   },
   "reportContract": {
-    "path": null,
-    "sha256": null
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-principal-key-draft/execution-preparation-v2/report-adapter-binding.json",
+    "sha256": "c75f6517763a2efb5527fda9fcf9ff7cd58418960efe8c0bf34132e6bf9af417"
   }
 }

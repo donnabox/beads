@@ -2,4 +2,4 @@ Adds an installed HTTP regression test for Transactional idempotency keys: two a
 
 A separate control maps both credentials to one principal and must fail at the second creation with the expected conflict. This adds private test coverage and a progress note; runtime behavior and public profile eligibility are unchanged.
 
-Validation: offline setup, typecheck, build, formatting, lint, boundaries, Read seal and build inventory passed on the reviewed successor. Fresh installed positive/control results, the focused Claude supplement and exact-head CI are pending; update this sentence from their actual outcomes before marking the PR ready.
+Validation: offline setup, typecheck, build, formatting, lint, boundaries and the unchanged Read seal passed. Fresh packages and an external consumer passed the seven-request positive case; the two-request principal-collapse control produced exactly the intended named conflict failure. Both child processes exited normally and their stores were removed. Native and actual Claude reviews are complete with findings dispositioned. Exact-head CI is pending.
