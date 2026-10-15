@@ -1,0 +1,25 @@
+--- proposed-successor/source-binding.json
++++ proposed-successor-v2/source-binding.json
+@@ -150,6 +150,10 @@
+     "packages/conformance/test-support/profile-contract-plan.ts": {
+       "sha256": "18c953443e6695cfa48f89677231fecffc349df02bd080f107a5c739db10b728",
+       "bytes": 15083
++    },
++    "packages/server/src/read-request.ts": {
++      "sha256": "57675afc647df3e8ad1f26a40aef72584aa388ade6af4a465e3ffef16670f6a2",
++      "bytes": 36371
+     }
+   },
+   "pendingSameKeyDraft": {
+@@ -160,5 +164,10 @@
+   "pinScope": "Meaningful review dependencies, not a complete executable package closure",
+   "futureReanchor": "Actual same-key merged parent and reviewed final helper pattern must be rechecked before authoring/execution; no future candidate claimed",
+   "supersedesPlanBinding": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-guarded-batch-plan/source-binding.json",
+-  "originalPlanBindingSha256": "079c2335889021aa8cebc0cf00d3d2c487d5e4d40e750605a98dc8730e95d71d"
++  "originalPlanBindingSha256": "079c2335889021aa8cebc0cf00d3d2c487d5e4d40e750605a98dc8730e95d71d",
++  "predecessorBinding": {
++    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-guarded-batch-plan/proposed-successor/source-binding.json",
++    "sha256": "d224ac7bb29a7e745725df7edb5d643a9a31c8be584f7cffc8ea96d3869028c1"
++  },
++  "note": "Planning source remains exact98c600. Additional read-request pin closes query/sort source uncertainty. Actual merged predecessor reanchor/authoring release remain pending."
+ }
