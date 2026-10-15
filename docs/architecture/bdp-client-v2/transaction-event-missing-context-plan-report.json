@@ -1,0 +1,36 @@
+{
+  "status": "FROZEN_PLAN_ONLY_ROOT_NATIVE_CLAUDE_REVIEW_PENDING",
+  "source": "88c9408e908590ab1a4c64c9b9dee1a8b705999c",
+  "tree": "b2d9f2c18502e0778c51123be8b4564af052d803",
+  "branch": "codex/vickie-event-missing-context",
+  "files": {
+    "transaction-event-missing-context-plan.md": {
+      "sha256": "cfeb672740e393b71376b4d7cf39989d7fd8ea75f097195279e2525844db8c9f",
+      "bytes": 14827
+    },
+    "transaction-event-missing-context-plan-ledger.json": {
+      "sha256": "457c0c33d0558cb92c4bbdd0ae060f81446656c6562ef59c5eb0e394b7f6ce18",
+      "bytes": 10906
+    },
+    "transaction-event-missing-context-plan-claude-prompt.txt": {
+      "sha256": "f95d8d8f283ccabea247c9a1860c0445c90a1140e583de262583c778b6adec15",
+      "bytes": 23717
+    }
+  },
+  "selectedSourceCases": 8,
+  "controlCases": 1,
+  "installedCases": 1,
+  "totalHttpExpectedAndMax": 33,
+  "installedHttp": 11,
+  "installedChildren": 1,
+  "seedBodyBytes": 152,
+  "corrections": [
+    "Resolved seed route operations/batch from actual target factory; pinned HTTP key/content-type/accept, no body key.",
+    "Verified runtime deliver87\u201394 computes HEAD representation length before suppressing body.",
+    "Owner missing anchors1565/1648; HTTP missing anchors498/512 against exact88c.",
+    "Prompt assembly first attempt had out-of-range excerpt IndexError; no prompt file/product execution resulted; corrected by bounded actual file endpoints.",
+    "Explicit GET full Problem versus HEAD empty-body distinction; condensed supplied-source prompt without product execution. Original larger prompt retained before-prompt-trim."
+  ],
+  "productSourceChanged": false,
+  "testsBuildsServicesClaudeExecuted": false
+}
