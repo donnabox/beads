@@ -1,0 +1,25 @@
+{
+  "basis": "73fc0daed2e5fa6843e581de9bf7a46e519562ab",
+  "sourceBindingSha256": "e6c49c1d689d7dc3b57cb1b4d602c0cd3a6a50e5ac5385a07f19461a62a66499",
+  "manifest": {
+    "sourcePath": "packages/conformance/matrices/read-update-v1.json",
+    "parentSha256": "c86b33535f25a1d117ce021a3bb70164f5635bdaee50758e3428c130ccc3227f",
+    "literalFile": "scenario.json",
+    "literalSha256": "a0d2a1e56a254ab6bfa13f9cb36ce3b30cb53efcd1fd6aa9c6caa35a68e66a20",
+    "algorithm": "Find exact JSON raw_decode span start of scenarios object id read-update.singleton.create-bead. Insert json.dumps(parsed scenario.json, indent=2).replace(newline,newline+four spaces) plus comma,newline,four spaces immediately before that start. Preserve every other source byte.",
+    "resultSha256": "fac793597b94113ad1a6d3b0b5842b2567d002bfb48b92ebece384dfcea649ff",
+    "resultBytes": 3670431,
+    "verifiedExact": true
+  },
+  "coverage": {
+    "sourcePath": "packages/conformance/test-support/read-update-coverage-v1.json",
+    "parentSha256": "f8f0b001928f8488292403b57c973bd918cba224ef9e00fe0691482bf5cfac0c",
+    "literalFile": "coverage-row.json",
+    "literalSha256": "0bc4b13572203e0608d9560c2aeed8f4530cf83a96afd7b677c9a70d1f87a72f",
+    "algorithm": "Replace only exact JSON raw_decode span of rows object id read-update.discovery.operation-directory with json.dumps(parsed coverage-row.json,indent=2).replace(newline,newline+four spaces). Preserve every other byte.",
+    "resultSha256": "1ddb93f7ed40b6736c9cfe5c462c4b4d8ba56469d72b347e6c35290a10bdd590",
+    "resultBytes": 718275,
+    "verifiedExact": true
+  },
+  "limitation": "Data-only reconstruction instructions, not execution or formatter output. Verify hashes after restore; committed Git object availability is required."
+}

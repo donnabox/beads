@@ -1,0 +1,7 @@
+A read that supplies an incomplete, repeated, or malformed minimum-position tuple now returns `400 malformed-request` before owner observation or target lookup. All three fields must contain exactly one valid token. Ordinary method/authentication checks run first; mutation POSTs continue to ignore copied read-minimum headers. Complete valid tuples retain existing consistency and receipt nondisclosure behavior.
+
+The specification and tests cover context-free error responses, raw duplicate fields, finite SSE errors, GET/HEAD metadata, receipt privacy, and affected Snapshot/schema/changefeed paths. This remains the private Transactional implementation; it does not advertise or qualify the full profile.
+
+Validation: thirteen targeted source stages passed (18 selected cases), with the original two test-fixture failures and corrections retained. An emitted-gate negative control reproduced the prior named 500 failure. After ordinary integration with main, a fresh clean build and fourteen external-package validation stages passed: three callbacks, 92 HTTP observations, six closed child processes. Existing unknown-position and retained-Snapshot gaps remain explicit.
+
+Draft while exact-head CI and final Codex + Claude review complete. The initial full Claude invocation timed out without findings; focused protocol and test/evidence reviews replace that inconclusive attempt. No merge gate is waived.

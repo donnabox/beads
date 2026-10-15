@@ -1,0 +1,2368 @@
+{
+  "basis": "Literal stdlib translation artifactRoutes20\u201375; URLSearchParams encoding mirrored using urlencode. Actual exactConfigurationDigest must be derived via existing pure configuration during authoring, not confused with this ordered JSON SHA.",
+  "baseline": [
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/operations/"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/beads/w1b-owner"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/beads/w1-a"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/beads/w1-b"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/links/w1b-unowned"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/links/w1-l"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/links/w1-local-pin"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/links/w1-external-pin"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/links/w1-missing"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/beads/w1b-target"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/beads/w1b-unowned-source"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/links/w1b-owned"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/beads/ak-source"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/beads/ak-target"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/beads/ak-update"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/beads/ak-delete"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/links/ak-update"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/links/ak-delete"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/beads/ak-route-create"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/links/ak-route-create"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/beads/ak-empty"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/beads/ak-long"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/beads/ak-quoted"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/beads/ak-space"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/beads/ak-tab"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/beads/ak-punctuation"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/beads/ak-comma"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/beads/ak-latin"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/beads/ak-seq-empty-prefix"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/beads/ak-seq-empty-member"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/beads/ak-seq-long-prefix"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/beads/ak-seq-long-member"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/beads/ak-seq-quoted-prefix"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/beads/ak-seq-quoted-member"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/beads/ak-seq-space-prefix"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/beads/ak-seq-space-member"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/beads/ak-seq-tab-prefix"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/beads/ak-seq-tab-member"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/beads/ak-seq-punctuation-prefix"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/beads/ak-seq-punctuation-member"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/beads/ak-seq-comma-prefix"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/beads/ak-seq-comma-member"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/beads/ak-seq-latin-prefix"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/beads/ak-seq-latin-member"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/beads/ak-repeat-same-0"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/beads/ak-repeat-same"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/beads/ak-repeat-distinct-0"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/beads/ak-repeat-distinct-1"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/beads/ak-repeat-distinct"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/beads/ak-repeat-mixed-0"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/beads/ak-repeat-mixed-1"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/beads/ak-repeat-mixed"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/beads/ak-valid-one"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/beads/ak-valid-maximum"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/beads/ak-valid-alphabet"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/beads/am-source"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/beads/am-target"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/beads/am-update"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/beads/am-delete"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/beads/am-alt-delete"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/links/am-update"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/links/am-delete"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/links/am-alt-delete"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/beads/am-route-create-alt"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/links/am-route-create-alt"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/beads/am-seq-0-corrected"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/beads/am-seq-1-corrected"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/beads/am-plain-corrected"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/beads/am-problem-corrected"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/beads/am-charset"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/beads/am-irrelevant"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/beads/ra-source"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/beads/ra-target"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/beads/ra-update"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/beads/ra-delete"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/links/ra-update"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/links/ra-delete"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/links/ra-create-link-source"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/links/ra-create-link-source-pin"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/links/ra-create-link-target"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/links/ra-create-link-target-pin"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/beads/ra-created-id"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/links/ra-created-id"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/beads/ra-metadata"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/beads/rb-source"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/beads/rb-target"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/links/rb-live"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/beads/rb-rb-sequence-alias-tail"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/beads/rb-rb-sequence-endpoint-tail"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/links/rb-endpoint-source"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/beads/w2-collision"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/beads/w2-prefix"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/beads/w2-missing"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/beads/w2-tail"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/beads/w2-bind-tail"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/beads/w2-alias-target"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/beads/w2-held"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/beads/w2-independent"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/links/w2-shape"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/beads/w2-count-0"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/beads/w2-count-1"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/beads/w2-count-2"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/beads/w2-count-3"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/beads/w2-count-4"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/beads/w2-count-5"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/beads/w2-count-6"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/beads/w2-count-7"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/beads/w2-count-8"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/beads/w2-count-9"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/beads/w2-count-10"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/beads/w2-count-11"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/beads/w2-count-12"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/beads/w2-count-13"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/beads/w2-count-14"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/beads/w2-count-15"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/beads/w2-count-16"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/beads/w2-count-17"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/beads/w2-count-18"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/beads/w2-count-19"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/beads/w2-count-20"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/beads/w2-count-21"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/beads/w2-count-22"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/beads/w2-count-23"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/beads/w2-count-24"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/beads/w2-count-25"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/beads/w2-count-26"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/beads/w2-count-27"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/beads/w2-count-28"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/beads/w2-count-29"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/beads/w2-count-30"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/beads/w2-count-31"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/beads/w2-count-32"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/beads/w2-duplicate-key-pre"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/beads/w2-duplicate-key-tail"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/beads/w2-duplicate-name-pre"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/beads/w2-duplicate-name-tail"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/beads/w2-invalid-key-pre"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/beads/w2-invalid-key-tail"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/beads/w2-invalid-name-pre"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/beads/w2-invalid-name-tail"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/beads/w2-name-update-pre"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/beads/w2-name-update-corrected-1"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/beads/w2-forward-pre"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/beads/w2-forward-tail"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/beads/w2-forward-corrected-0"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/beads/w2-unknown-pre"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/beads/w2-unknown-tail"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/beads/w2-unknown-corrected-1"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/beads/w2-self-pre"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/links/w2-self"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/beads/w2-self-tail"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/beads/w2-self-corrected-1"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/beads/w2-bead-as-link-pre"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/beads/w2-bead-as-link-tail"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/beads/w2-bead-as-link-corrected-1"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/beads/w2-link-as-bead-pre"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/links/w2-link-as-bead"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/beads/w2-link-as-bead-tail"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/beads/w2-link-as-bead-corrected-1"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/beads/w2-link-as-bead-corrected-2"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/beads/w2-link-as-endpoint-pre"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/links/w2-link-as-endpoint"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/links/w2-link-as-endpoint-ref"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/beads/w2-link-as-endpoint-tail"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/beads/w2-link-as-endpoint-corrected-1"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/beads/w2-link-as-endpoint-corrected-2"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/beads/w2-top-key-pre"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/beads/w2-top-key-tail"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/beads/w2-empty-pre"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/beads/w2-empty-tail"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/beads/w2-missing-pre"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/beads/w2-missing-tail"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/beads/w2-unknown-root-pre"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/beads/w2-unknown-root-tail"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/beads/w2-unknown-member-pre"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/beads/w2-unknown-member-tail"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/beads/w2-unknown-operation-pre"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/beads/w2-unknown-operation-corrected-1"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/beads/w2-malformed-json-pre"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/beads/w2-malformed-json-tail"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/beads/w2-duplicate-json-pre"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/beads/w2-duplicate-json-tail"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/beads/w2-surrogate-pre"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/beads/w2-surrogate-tail"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/beads/w2-anonymous-pre"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/beads/w2-anonymous-tail"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/beads/w2-media-pre"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/beads/w2-media-tail"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/beads/w2-body-size-pre"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/beads/w2-body-size-tail"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/beads/w2-bad-pointer-pre"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/beads/w2-bad-pointer-tail"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/beads/w2-bad-pointer-corrected-1"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/beads/retry-position-f"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/beads/retry-position-b"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/beads/retry-position-d"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/beads/retry-cross-a"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/beads/retry-cross-b"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/beads/retry-cross-f"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/beads/retry-cross-g"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/bdp.json"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/beads/read-a"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/links/read-a"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/beads/read-a?view=properties"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/links/read-a?view=properties"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/types/"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/types/blocks"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/types/bug"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/types/chore"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/types/cites"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/types/decision"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/types/dependency"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/types/epic"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/types/feature"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/types/relates"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/types/relationship"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/types/task"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/types/tracked-item"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/types/work-item"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/types/schema-bead-base"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/types/schema-bead-child"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/types/schema-link-base"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/types/schema-link-child"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/beads/"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/links/"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/beads/?unsupported=1"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/beads/?limit=1&limit=2"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/links/?selector=%24%5B%3F%40.id%5D&selector=%24%5B%3F%40.type%5D"
+    },
+    {
+      "method": "HEAD",
+      "url": "https://reference.invalid/acme/"
+    },
+    {
+      "method": "HEAD",
+      "url": "https://reference.invalid/acme/bdp.json"
+    },
+    {
+      "method": "HEAD",
+      "url": "https://reference.invalid/acme/beads/"
+    },
+    {
+      "method": "HEAD",
+      "url": "https://reference.invalid/acme/beads/read-a"
+    },
+    {
+      "method": "HEAD",
+      "url": "https://reference.invalid/acme/beads/read-a?view=properties"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/beads/read-a?view=links"
+    },
+    {
+      "method": "HEAD",
+      "url": "https://reference.invalid/acme/beads/read-a?view=links"
+    },
+    {
+      "method": "HEAD",
+      "url": "https://reference.invalid/acme/links/"
+    },
+    {
+      "method": "HEAD",
+      "url": "https://reference.invalid/acme/links/read-a"
+    },
+    {
+      "method": "HEAD",
+      "url": "https://reference.invalid/acme/links/read-a?view=properties"
+    },
+    {
+      "method": "HEAD",
+      "url": "https://reference.invalid/acme/types/"
+    },
+    {
+      "method": "HEAD",
+      "url": "https://reference.invalid/acme/types/task"
+    },
+    {
+      "method": "HEAD",
+      "url": "https://reference.invalid/acme/types/relates"
+    },
+    {
+      "method": "POST",
+      "url": "https://reference.invalid/acme/"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/beads/does-not-exist"
+    },
+    {
+      "method": "OPTIONS",
+      "url": "https://reference.invalid/acme/"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/beads/http-never-created"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/beads/?limit=0"
+    },
+    {
+      "method": "HEAD",
+      "url": "https://reference.invalid/acme/beads/http-never-created"
+    },
+    {
+      "method": "HEAD",
+      "url": "https://reference.invalid/acme/beads/?limit=0"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/schemas/schema-bead-base"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/schemas/schema-bead-child"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/schemas/schema-link-base"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/schemas/schema-link-child"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/alias/ak-locator-put"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/alias/ak-locator-delete"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/beads/?limit=100"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/links/?limit=100"
+    },
+    {
+      "method": "POST",
+      "url": "https://reference.invalid/acme/operations/create-bead"
+    },
+    {
+      "method": "POST",
+      "url": "https://reference.invalid/acme/operations/update-bead"
+    },
+    {
+      "method": "POST",
+      "url": "https://reference.invalid/acme/operations/delete-bead"
+    },
+    {
+      "method": "POST",
+      "url": "https://reference.invalid/acme/operations/create-link"
+    },
+    {
+      "method": "POST",
+      "url": "https://reference.invalid/acme/operations/update-link"
+    },
+    {
+      "method": "POST",
+      "url": "https://reference.invalid/acme/operations/delete-link"
+    },
+    {
+      "method": "POST",
+      "url": "https://reference.invalid/acme/operations/put-alias"
+    },
+    {
+      "method": "POST",
+      "url": "https://reference.invalid/acme/operations/delete-alias"
+    },
+    {
+      "method": "POST",
+      "url": "https://reference.invalid/acme/operations/sequence"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/alias/am-locator-put"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/alias/am-locator-delete"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/alias/am-locator-alt-delete"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/alias/ra-locator-put"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/alias/ra-locator-delete"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/alias/ra-locator-new"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/alias/w1-locator"
+    },
+    {
+      "method": "HEAD",
+      "url": "https://reference.invalid/acme/alias/w1-locator"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/alias/w1-unknown"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/alias/w1-locator?unexpected=1"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/alias/rb-locator-live"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/alias/rb-locator-alias-local"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/alias/rb-locator-alias-absolute"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/alias/rb-locator-link-local"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/alias/rb-locator-link-absolute"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/alias/rb-locator-external"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/alias/rb-locator-sequence"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/alias/w2-shape"
+    }
+  ],
+  "proposed": [
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/operations/"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/beads/w1b-owner"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/beads/w1-a"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/beads/w1-b"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/links/w1b-unowned"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/links/w1-l"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/links/w1-local-pin"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/links/w1-external-pin"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/links/w1-missing"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/beads/w1b-target"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/beads/w1b-unowned-source"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/links/w1b-owned"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/beads/ak-source"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/beads/ak-target"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/beads/ak-update"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/beads/ak-delete"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/links/ak-update"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/links/ak-delete"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/beads/ak-route-create"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/links/ak-route-create"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/beads/ak-empty"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/beads/ak-long"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/beads/ak-quoted"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/beads/ak-space"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/beads/ak-tab"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/beads/ak-punctuation"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/beads/ak-comma"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/beads/ak-latin"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/beads/ak-seq-empty-prefix"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/beads/ak-seq-empty-member"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/beads/ak-seq-long-prefix"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/beads/ak-seq-long-member"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/beads/ak-seq-quoted-prefix"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/beads/ak-seq-quoted-member"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/beads/ak-seq-space-prefix"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/beads/ak-seq-space-member"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/beads/ak-seq-tab-prefix"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/beads/ak-seq-tab-member"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/beads/ak-seq-punctuation-prefix"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/beads/ak-seq-punctuation-member"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/beads/ak-seq-comma-prefix"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/beads/ak-seq-comma-member"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/beads/ak-seq-latin-prefix"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/beads/ak-seq-latin-member"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/beads/ak-repeat-same-0"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/beads/ak-repeat-same"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/beads/ak-repeat-distinct-0"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/beads/ak-repeat-distinct-1"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/beads/ak-repeat-distinct"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/beads/ak-repeat-mixed-0"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/beads/ak-repeat-mixed-1"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/beads/ak-repeat-mixed"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/beads/ak-valid-one"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/beads/ak-valid-maximum"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/beads/ak-valid-alphabet"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/beads/am-source"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/beads/am-target"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/beads/am-update"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/beads/am-delete"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/beads/am-alt-delete"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/links/am-update"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/links/am-delete"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/links/am-alt-delete"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/beads/am-route-create-alt"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/links/am-route-create-alt"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/beads/am-seq-0-corrected"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/beads/am-seq-1-corrected"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/beads/am-plain-corrected"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/beads/am-problem-corrected"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/beads/am-charset"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/beads/am-irrelevant"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/beads/ra-source"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/beads/ra-target"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/beads/ra-update"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/beads/ra-delete"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/links/ra-update"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/links/ra-delete"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/links/ra-create-link-source"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/links/ra-create-link-source-pin"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/links/ra-create-link-target"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/links/ra-create-link-target-pin"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/beads/ra-created-id"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/links/ra-created-id"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/beads/ra-metadata"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/beads/rb-source"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/beads/rb-target"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/links/rb-live"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/beads/rb-rb-sequence-alias-tail"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/beads/rb-rb-sequence-endpoint-tail"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/links/rb-endpoint-source"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/beads/w2-collision"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/beads/w2-prefix"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/beads/w2-missing"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/beads/w2-tail"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/beads/w2-bind-tail"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/beads/w2-alias-target"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/beads/w2-held"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/beads/w2-independent"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/links/w2-shape"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/beads/w2-count-0"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/beads/w2-count-1"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/beads/w2-count-2"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/beads/w2-count-3"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/beads/w2-count-4"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/beads/w2-count-5"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/beads/w2-count-6"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/beads/w2-count-7"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/beads/w2-count-8"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/beads/w2-count-9"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/beads/w2-count-10"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/beads/w2-count-11"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/beads/w2-count-12"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/beads/w2-count-13"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/beads/w2-count-14"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/beads/w2-count-15"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/beads/w2-count-16"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/beads/w2-count-17"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/beads/w2-count-18"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/beads/w2-count-19"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/beads/w2-count-20"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/beads/w2-count-21"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/beads/w2-count-22"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/beads/w2-count-23"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/beads/w2-count-24"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/beads/w2-count-25"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/beads/w2-count-26"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/beads/w2-count-27"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/beads/w2-count-28"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/beads/w2-count-29"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/beads/w2-count-30"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/beads/w2-count-31"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/beads/w2-count-32"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/beads/w2-duplicate-key-pre"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/beads/w2-duplicate-key-tail"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/beads/w2-duplicate-name-pre"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/beads/w2-duplicate-name-tail"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/beads/w2-invalid-key-pre"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/beads/w2-invalid-key-tail"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/beads/w2-invalid-name-pre"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/beads/w2-invalid-name-tail"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/beads/w2-name-update-pre"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/beads/w2-name-update-corrected-1"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/beads/w2-forward-pre"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/beads/w2-forward-tail"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/beads/w2-forward-corrected-0"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/beads/w2-unknown-pre"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/beads/w2-unknown-tail"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/beads/w2-unknown-corrected-1"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/beads/w2-self-pre"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/links/w2-self"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/beads/w2-self-tail"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/beads/w2-self-corrected-1"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/beads/w2-bead-as-link-pre"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/beads/w2-bead-as-link-tail"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/beads/w2-bead-as-link-corrected-1"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/beads/w2-link-as-bead-pre"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/links/w2-link-as-bead"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/beads/w2-link-as-bead-tail"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/beads/w2-link-as-bead-corrected-1"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/beads/w2-link-as-bead-corrected-2"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/beads/w2-link-as-endpoint-pre"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/links/w2-link-as-endpoint"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/links/w2-link-as-endpoint-ref"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/beads/w2-link-as-endpoint-tail"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/beads/w2-link-as-endpoint-corrected-1"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/beads/w2-link-as-endpoint-corrected-2"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/beads/w2-top-key-pre"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/beads/w2-top-key-tail"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/beads/w2-empty-pre"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/beads/w2-empty-tail"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/beads/w2-missing-pre"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/beads/w2-missing-tail"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/beads/w2-unknown-root-pre"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/beads/w2-unknown-root-tail"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/beads/w2-unknown-member-pre"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/beads/w2-unknown-member-tail"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/beads/w2-unknown-operation-pre"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/beads/w2-unknown-operation-corrected-1"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/beads/w2-malformed-json-pre"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/beads/w2-malformed-json-tail"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/beads/w2-duplicate-json-pre"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/beads/w2-duplicate-json-tail"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/beads/w2-surrogate-pre"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/beads/w2-surrogate-tail"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/beads/w2-anonymous-pre"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/beads/w2-anonymous-tail"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/beads/w2-media-pre"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/beads/w2-media-tail"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/beads/w2-body-size-pre"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/beads/w2-body-size-tail"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/beads/w2-bad-pointer-pre"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/beads/w2-bad-pointer-tail"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/beads/w2-bad-pointer-corrected-1"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/beads/retry-position-f"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/beads/retry-position-b"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/beads/retry-position-d"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/beads/retry-cross-a"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/beads/retry-cross-b"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/beads/retry-cross-f"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/beads/retry-cross-g"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/bdp.json"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/beads/read-a"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/links/read-a"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/beads/read-a?view=properties"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/links/read-a?view=properties"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/types/"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/types/blocks"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/types/bug"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/types/chore"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/types/cites"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/types/decision"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/types/dependency"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/types/epic"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/types/feature"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/types/relates"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/types/relationship"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/types/task"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/types/tracked-item"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/types/work-item"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/types/schema-bead-base"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/types/schema-bead-child"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/types/schema-link-base"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/types/schema-link-child"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/beads/"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/links/"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/beads/?unsupported=1"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/beads/?limit=1&limit=2"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/links/?selector=%24%5B%3F%40.id%5D&selector=%24%5B%3F%40.type%5D"
+    },
+    {
+      "method": "HEAD",
+      "url": "https://reference.invalid/acme/"
+    },
+    {
+      "method": "HEAD",
+      "url": "https://reference.invalid/acme/bdp.json"
+    },
+    {
+      "method": "HEAD",
+      "url": "https://reference.invalid/acme/beads/"
+    },
+    {
+      "method": "HEAD",
+      "url": "https://reference.invalid/acme/beads/read-a"
+    },
+    {
+      "method": "HEAD",
+      "url": "https://reference.invalid/acme/beads/read-a?view=properties"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/beads/read-a?view=links"
+    },
+    {
+      "method": "HEAD",
+      "url": "https://reference.invalid/acme/beads/read-a?view=links"
+    },
+    {
+      "method": "HEAD",
+      "url": "https://reference.invalid/acme/links/"
+    },
+    {
+      "method": "HEAD",
+      "url": "https://reference.invalid/acme/links/read-a"
+    },
+    {
+      "method": "HEAD",
+      "url": "https://reference.invalid/acme/links/read-a?view=properties"
+    },
+    {
+      "method": "HEAD",
+      "url": "https://reference.invalid/acme/types/"
+    },
+    {
+      "method": "HEAD",
+      "url": "https://reference.invalid/acme/types/task"
+    },
+    {
+      "method": "HEAD",
+      "url": "https://reference.invalid/acme/types/relates"
+    },
+    {
+      "method": "POST",
+      "url": "https://reference.invalid/acme/"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/beads/does-not-exist"
+    },
+    {
+      "method": "OPTIONS",
+      "url": "https://reference.invalid/acme/"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/beads/http-never-created"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/beads/?limit=0"
+    },
+    {
+      "method": "HEAD",
+      "url": "https://reference.invalid/acme/beads/http-never-created"
+    },
+    {
+      "method": "HEAD",
+      "url": "https://reference.invalid/acme/beads/?limit=0"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/alias/w1-locator"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/schemas/schema-bead-base"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/schemas/schema-bead-child"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/schemas/schema-link-base"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/schemas/schema-link-child"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/alias/ak-locator-put"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/alias/ak-locator-delete"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/beads/?limit=100"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/links/?limit=100"
+    },
+    {
+      "method": "POST",
+      "url": "https://reference.invalid/acme/operations/create-bead"
+    },
+    {
+      "method": "POST",
+      "url": "https://reference.invalid/acme/operations/update-bead"
+    },
+    {
+      "method": "POST",
+      "url": "https://reference.invalid/acme/operations/delete-bead"
+    },
+    {
+      "method": "POST",
+      "url": "https://reference.invalid/acme/operations/create-link"
+    },
+    {
+      "method": "POST",
+      "url": "https://reference.invalid/acme/operations/update-link"
+    },
+    {
+      "method": "POST",
+      "url": "https://reference.invalid/acme/operations/delete-link"
+    },
+    {
+      "method": "POST",
+      "url": "https://reference.invalid/acme/operations/put-alias"
+    },
+    {
+      "method": "POST",
+      "url": "https://reference.invalid/acme/operations/delete-alias"
+    },
+    {
+      "method": "POST",
+      "url": "https://reference.invalid/acme/operations/sequence"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/alias/am-locator-put"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/alias/am-locator-delete"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/alias/am-locator-alt-delete"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/alias/ra-locator-put"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/alias/ra-locator-delete"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/alias/ra-locator-new"
+    },
+    {
+      "method": "HEAD",
+      "url": "https://reference.invalid/acme/alias/w1-locator"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/alias/w1-unknown"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/alias/w1-locator?unexpected=1"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/alias/rb-locator-live"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/alias/rb-locator-alias-local"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/alias/rb-locator-alias-absolute"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/alias/rb-locator-link-local"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/alias/rb-locator-link-absolute"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/alias/rb-locator-external"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/alias/rb-locator-sequence"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/alias/w2-shape"
+    }
+  ],
+  "routeSetUnchanged": true,
+  "orderUnchanged": false,
+  "count": 284,
+  "baselineOrderedCompactSha256": "007006fd449b511cd5c4cd47c44e8c17a5dbe9fe85b42ea6d430d354cd2f7c37",
+  "proposedOrderedCompactSha256": "664c7550f9fa5eb97b01f83da9cafbf1c2d9a4573869801e6a581d1daff7331c",
+  "newRowRoutes": [
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/operations/"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/bdp.json"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/types/task"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/types/relates"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/alias/w1-locator"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/links/w1-l"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/beads/w1-a"
+    },
+    {
+      "method": "GET",
+      "url": "https://reference.invalid/acme/beads/w1-b"
+    },
+    {
+      "method": "POST",
+      "url": "https://reference.invalid/acme/operations/sequence"
+    },
+    {
+      "method": "POST",
+      "url": "https://reference.invalid/acme/operations/create-bead"
+    },
+    {
+      "method": "POST",
+      "url": "https://reference.invalid/acme/operations/update-bead"
+    },
+    {
+      "method": "POST",
+      "url": "https://reference.invalid/acme/operations/delete-bead"
+    },
+    {
+      "method": "POST",
+      "url": "https://reference.invalid/acme/operations/create-link"
+    },
+    {
+      "method": "POST",
+      "url": "https://reference.invalid/acme/operations/update-link"
+    },
+    {
+      "method": "POST",
+      "url": "https://reference.invalid/acme/operations/delete-link"
+    },
+    {
+      "method": "POST",
+      "url": "https://reference.invalid/acme/operations/put-alias"
+    },
+    {
+      "method": "POST",
+      "url": "https://reference.invalid/acme/operations/delete-alias"
+    }
+  ],
+  "inspectionCorrection": "Earlier data-only inspection asserted order unchanged and stopped; no product executed. Canonical insertion legitimately reorders first-use allowlist; exactConfigurationDigest pin1263 must change after actual factory computation.",
+  "runnerProjectionPreimage": {
+    "scope": "https://reference.invalid/acme/",
+    "profile": "read-update",
+    "maximumRequestHeaderBytes": 16384,
+    "maximumRequestBodyBytes": 131072,
+    "routes": "baseline/proposed arrays above"
+  },
+  "baselineRunnerProjectionDigest": "3224c31c83988dc0606cb76ee1f4ba8e6394159bdf7daaccc301461316cc2477",
+  "proposedRunnerProjectionDigest": "26da5a286d9887bebbb0fcf73a92c5d09aa7b7fcfdcc9ed91f767f4db1578c69"
+}
