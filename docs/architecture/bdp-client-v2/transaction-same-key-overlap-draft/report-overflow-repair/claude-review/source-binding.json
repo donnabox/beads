@@ -1,8 +1,8 @@
 {
-  "head": "18f5428686dd84fb139c9dbbcbe39d5958012323",
-  "tree": "9c78087e1036dd26ca908e1d8feaa91263513717",
-  "parent": "98c600767e8e91a79e109cb741beb91e23b9bebe",
-  "status": " M apps/bdptest/src/transactional-same-key-overlap-installed.test.ts\n",
+  "head": "a18fa993703185a108df4ad75b6d142072ba8736",
+  "tree": "592c5e6e5c0c790b6e2690495b94ac48705b9069",
+  "parent": "18f5428686dd84fb139c9dbbcbe39d5958012323",
+  "status": "",
   "testBeforeSha256": "e6a52fa4d645ffef04e4b6e8ccd9bbcb7495624ae0e3f46536e0e9ac6b707974",
   "testAfterSha256": "b13688d6b02c5901e68251620ab6d7e00f9f675af4025319817f9e8cc6c9bca3",
   "repairPatchSha256": "18651f9db0489fb1ba60ce3f61433e3d7e6ca822d68c1ae45957f6fd0aa0b996",
@@ -16,5 +16,5 @@
     "scripts/transaction-installed-observation.mjs": "6f772f3776d3c3effa788676d853cc2932a6ee59ad63ac3338ad1b487408914b",
     "packages/conformance/test-support/transactional/fixture-v1.json": "3a7899ced771d4880066d98b0000c53f801ece53458502cc4f3bc641146c9a85"
   },
-  "scope": "working test-only repair on unchanged clean predecessor; no execution"
+  "scope": "clean ordinary test-only successor; original dirty preparation retained under before-focused"
 }

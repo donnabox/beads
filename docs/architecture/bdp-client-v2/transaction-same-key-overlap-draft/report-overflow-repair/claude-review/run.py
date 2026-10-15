@@ -10,7 +10,7 @@ def write(name,obj):
 def rows():
  return subprocess.check_output(["ps","-axo","pid=,ppid=,pgid=,etime=,state=,comm="],text=True).splitlines()
 def snap():
- return {"head":git("rev-parse","HEAD").decode().strip(),"tree":git("rev-parse","HEAD^{tree}").decode().strip(),"workingSourceHashes":{p:sha((W/p).read_bytes()) for p in binding["sourceHashes"]},"committedSourceHashes":{p:sha(git("show",binding["reviewHead"]+":"+p)) for p in binding["committedSourceHashes"]},"candidateDiffSha256":sha(git("diff","HEAD","--binary")),"status":git("status","--porcelain").decode(),"parents":git("rev-list","--parents","-n","1","HEAD").decode().split(),"promptSha256":sha((P/"prompt.txt").read_bytes()),"artifacts":{p:sha(Path(p).read_bytes()) for p in binding["artifacts"]},"contextSha256":sha((E/"committed-context.txt").read_bytes())}
+ return {"head":git("rev-parse","HEAD").decode().strip(),"tree":git("rev-parse","HEAD^{tree}").decode().strip(),"workingSourceHashes":{p:sha((W/p).read_bytes()) for p in binding["sourceHashes"]},"committedSourceHashes":{p:sha(git("show",binding["reviewHead"]+":"+p)) for p in binding["committedSourceHashes"]},"candidateDiffSha256":sha(git("diff",binding["parent"],"HEAD","--binary")),"status":git("status","--porcelain").decode(),"parents":git("rev-list","--parents","-n","1","HEAD").decode().split(),"promptSha256":sha((P/"prompt.txt").read_bytes()),"artifacts":{p:sha(Path(p).read_bytes()) for p in binding["artifacts"]},"contextSha256":sha((E/"committed-context.txt").read_bytes())}
 binding=json.loads((E/"final-launch-binding.json").read_text())
 release=json.loads((E/"root-release.json").read_text())
 assert binding.get("rootLaunchReleased") is True and release.get("released") is True
@@ -34,10 +34,10 @@ assert before["candidateDiffSha256"]==binding["candidateDiffSha256"]
 assert before["status"]==binding["expectedStatus"] and before["parents"]==[binding["reviewHead"],binding["parent"]]
 assert before["promptSha256"]==binding["promptSha256"] and before["artifacts"]==binding["artifacts"]
 assert before["contextSha256"]==binding["contextSha256"]
-changed=set(git("diff","HEAD","--name-only").decode().splitlines())
+changed=set(git("diff",binding["parent"],"HEAD","--name-only").decode().splitlines())
 assert changed==set(binding["repairPaths"]),changed
 write("source-before.json",before)
-write("head-before.json",{"head":before["head"],"tree":before["tree"],"status":git("status","--porcelain").decode(),"limitation":"Review binds exact dirty test repair on ordinary predecessor, both authored file hashes and exact HEAD-to-working diff. Commit/status chronology is pinned; root must explicitly reanchor before launch if changed."})
+write("head-before.json",{"head":before["head"],"tree":before["tree"],"status":git("status","--porcelain").decode(),"limitation":"Review binds clean ordinary repair child, both authored file hashes and exact parent-to-HEAD one-path diff. Historical dirty preparation remains preserved."})
 T.mkdir(exist_ok=False)
 args=["/opt/homebrew/bin/claude","--safe-mode","-p","--tools","","--no-session-persistence"]
 env=os.environ.copy();env["TMPDIR"]=str(T)
