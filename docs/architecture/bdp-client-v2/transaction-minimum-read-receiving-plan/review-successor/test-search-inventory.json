@@ -1,0 +1,676 @@
+{
+  "basis": "5d7fa3f049fa0b4db3aa8dae20e20d8e47fb3854",
+  "command": [
+    "git",
+    "grep",
+    "-n",
+    "-i",
+    "-E",
+    "bdp-minimum-scope-position|bdp-scope-epoch|bdp-authorization-view|minimum-position",
+    "5d7fa3f049fa0b4db3aa8dae20e20d8e47fb3854",
+    "--",
+    "*test.ts",
+    "*test.mjs"
+  ],
+  "rawSearchSha256": "34f307d5752dca0ec97bce43d73c6db3dfc4f574eee7cc83e0a536b1fbb2d629",
+  "occurrences": 390,
+  "files": {
+    "apps/bdptest/src/installed-reference.test.ts": {
+      "count": 8,
+      "lines": [
+        580,
+        593,
+        594,
+        595,
+        598,
+        644,
+        645,
+        646
+      ],
+      "committedSha256": "2c87160890b1c8aed2ada117a1aa293fe7fcfa85db794a3d9ef6514a39d199d1",
+      "disposition": "Unchanged ordinary Update POST-ignore and response-context absence; no Transactional read receiving gate."
+    },
+    "apps/bdptest/src/read-update-guarded-overlap-installed.test.ts": {
+      "count": 2,
+      "lines": [
+        83,
+        84
+      ],
+      "committedSha256": "767ed468ac29347100203dbb9ff5f435ca2dfaebcad98c61158e5ed59d63a1ed",
+      "disposition": "Unchanged: response metadata names/validators/report observations, not malformed read input; isolated full-context assignments are expected response values."
+    },
+    "apps/bdptest/src/transactional-alias-installed.test.ts": {
+      "count": 1,
+      "lines": [
+        235
+      ],
+      "committedSha256": "9775936200fa2ab69acfe436d7b6c77b9a42a37aae5cef96d88b94ab8fd68481",
+      "disposition": "Unchanged: response metadata names/validators/report observations, not malformed read input; isolated full-context assignments are expected response values."
+    },
+    "apps/bdptest/src/transactional-changefeed-refusal-context-installed.test.ts": {
+      "count": 1,
+      "lines": [
+        83
+      ],
+      "committedSha256": "c8ec6da3cab3850d69b2b8b8b650b17f159fa9179930eeecd3a287716aa946af",
+      "disposition": "Unchanged: response metadata names/validators/report observations, not malformed read input; isolated full-context assignments are expected response values."
+    },
+    "apps/bdptest/src/transactional-collection-minimum-installed.test.ts": {
+      "count": 45,
+      "lines": [
+        371,
+        372,
+        376,
+        377,
+        378,
+        384,
+        386,
+        387,
+        445,
+        489,
+        507,
+        508,
+        557,
+        584,
+        738,
+        739,
+        758,
+        762,
+        885,
+        902,
+        903,
+        904,
+        927,
+        954,
+        958,
+        1082,
+        1083,
+        1086,
+        1098,
+        1111,
+        1126,
+        1132,
+        1210,
+        1211,
+        1220,
+        1221,
+        1246,
+        1247,
+        1248,
+        1251,
+        1252,
+        1253,
+        1278,
+        1288,
+        1395
+      ],
+      "committedSha256": "3d7b202d71ab0857629b5694a397dad03bba1d36122440ba003036c8f16ba63a",
+      "disposition": "Unchanged: minimum() supplies all3; malformed/partial examples1246/1278/1288 are mutation POSTs; receipt complete tuples and visibility/continuation refusals retained."
+    },
+    "apps/bdptest/src/transactional-depth-key-order-installed.test.ts": {
+      "count": 1,
+      "lines": [
+        103
+      ],
+      "committedSha256": "48c6a84c84e470c7ce79f4d978bb09e2099daa5df4b4a6ef8629e1b7bf1b1700",
+      "disposition": "Unchanged: response metadata names/validators/report observations, not malformed read input; isolated full-context assignments are expected response values."
+    },
+    "apps/bdptest/src/transactional-direct-refusal-installed.test.ts": {
+      "count": 4,
+      "lines": [
+        207,
+        208,
+        295,
+        296
+      ],
+      "committedSha256": "c817729792a8bd97473b4b7ebe06474d4a0c27bcd5122e58268b997aa03408b0",
+      "disposition": "Unchanged: response metadata names/validators/report observations, not malformed read input; isolated full-context assignments are expected response values."
+    },
+    "apps/bdptest/src/transactional-discovery-installed.test.ts": {
+      "count": 3,
+      "lines": [
+        198,
+        229,
+        230
+      ],
+      "committedSha256": "7cf8822108489f3fb2f9c5ca1d97c6d7b832acca95a2f7d891c3413404d90c49",
+      "disposition": "Unchanged: response metadata names/validators/report observations, not malformed read input; isolated full-context assignments are expected response values."
+    },
+    "apps/bdptest/src/transactional-event-missing-context-installed.test.ts": {
+      "count": 1,
+      "lines": [
+        83
+      ],
+      "committedSha256": "828c05f358ae5863c992f93194da15a31df9a200e073e5e3525531ba39fe7d0d",
+      "disposition": "Unchanged: response metadata names/validators/report observations, not malformed read input; isolated full-context assignments are expected response values."
+    },
+    "apps/bdptest/src/transactional-event-sse-installed.test.ts": {
+      "count": 1,
+      "lines": [
+        225
+      ],
+      "committedSha256": "385bfa8fbe86b717450f89aec2f10ef5d2113170383c35236bd995fa285bda0a",
+      "disposition": "Unchanged: response metadata names/validators/report observations, not malformed read input; isolated full-context assignments are expected response values."
+    },
+    "apps/bdptest/src/transactional-guarded-batch-installed.test.ts": {
+      "count": 5,
+      "lines": [
+        107,
+        108,
+        601,
+        602,
+        869
+      ],
+      "committedSha256": "01e3ec2bf5f5af19dcd497fce5a37c8a9394723bca5760ceca53f8b8128626ab",
+      "disposition": "Unchanged: response metadata names/validators/report observations, not malformed read input; isolated full-context assignments are expected response values."
+    },
+    "apps/bdptest/src/transactional-matrix.test.ts": {
+      "count": 16,
+      "lines": [
+        444,
+        1603,
+        1604,
+        1977,
+        1978,
+        2223,
+        2224,
+        2306,
+        2312,
+        2454,
+        2457,
+        2458,
+        2721,
+        2722,
+        3007,
+        3008
+      ],
+      "committedSha256": "dcf0161723a6b77dd4235111a83a6aa1ce0cbb6a1a5d79e362f992742bc503de",
+      "disposition": "Unchanged committed basis: command-minimum raw POST ledger plus response presence/equality; principal draft is separate and ignored."
+    },
+    "apps/bdptest/src/transactional-principal-key-installed.test.ts": {
+      "count": 6,
+      "lines": [
+        90,
+        491,
+        492,
+        638,
+        648,
+        660
+      ],
+      "committedSha256": "0f941001445e001f96f8c432a7099a5eb29dc4b68bc4458d6d1dfae472a3ce20",
+      "disposition": "Unchanged: response metadata names/validators/report observations, not malformed read input; isolated full-context assignments are expected response values."
+    },
+    "apps/bdptest/src/transactional-receipt-missing-context-installed.test.ts": {
+      "count": 1,
+      "lines": [
+        83
+      ],
+      "committedSha256": "eaf1289ed0a8318ce949704ba4cd983755c6f5fd20ffe9d61712869894cb5064",
+      "disposition": "Unchanged: response metadata names/validators/report observations, not malformed read input; isolated full-context assignments are expected response values."
+    },
+    "apps/bdptest/src/transactional-same-key-overlap-installed.test.ts": {
+      "count": 5,
+      "lines": [
+        88,
+        89,
+        535,
+        536,
+        745
+      ],
+      "committedSha256": "b13688d6b02c5901e68251620ab6d7e00f9f675af4025319817f9e8cc6c9bca3",
+      "disposition": "Unchanged: response metadata names/validators/report observations, not malformed read input; isolated full-context assignments are expected response values."
+    },
+    "apps/bdptest/src/transactional-schema-installed.test.ts": {
+      "count": 6,
+      "lines": [
+        219,
+        220,
+        230,
+        231,
+        289,
+        290
+      ],
+      "committedSha256": "18840119f1ca270d35414f3cb0d44dfe988a44ff9cb1edaa4a405b25b6da4759",
+      "disposition": "Unchanged: response metadata names/validators/report observations, not malformed read input; isolated full-context assignments are expected response values."
+    },
+    "apps/bdptest/src/transactional-selector-admission-installed.test.ts": {
+      "count": 5,
+      "lines": [
+        244,
+        245,
+        248,
+        249,
+        252
+      ],
+      "committedSha256": "527baee6dec377680beaec1402f69039d044f45d2a36165f3b739e53a517b962",
+      "disposition": "Unchanged: response metadata names/validators/report observations, not malformed read input; isolated full-context assignments are expected response values."
+    },
+    "apps/bdptest/src/transactional-sequence-refusal-installed.test.ts": {
+      "count": 4,
+      "lines": [
+        273,
+        274,
+        361,
+        362
+      ],
+      "committedSha256": "7861e55113e3e3bbf6621e526f2836a638e2bbcffafd2b321cc98e40846f1ba2",
+      "disposition": "Unchanged: response metadata names/validators/report observations, not malformed read input; isolated full-context assignments are expected response values."
+    },
+    "apps/bdptest/src/transactional-set-installed.test.ts": {
+      "count": 1,
+      "lines": [
+        178
+      ],
+      "committedSha256": "4f6dc193069667fb37dcbc1a694010a5b45dbea2c09a1422aaa480a806affcf0",
+      "disposition": "Unchanged: response metadata names/validators/report observations, not malformed read input; isolated full-context assignments are expected response values."
+    },
+    "apps/bdptest/src/transactional-snapshot-installed.test.ts": {
+      "count": 26,
+      "lines": [
+        311,
+        314,
+        316,
+        472,
+        473,
+        474,
+        477,
+        629,
+        632,
+        755,
+        756,
+        759,
+        760,
+        761,
+        769,
+        770,
+        813,
+        872,
+        873,
+        895,
+        896,
+        898,
+        899,
+        900,
+        905,
+        909
+      ],
+      "committedSha256": "014a3b127a4be87f958e822df22fc24711bde92fa1c328e3e217e0991e5c22d2",
+      "disposition": "Owned: exact affected callbacks listed in plan; remaining occurrences are response context, complete tuples/patch merges, POST-ignore or internal semantic-parser checks. No broad replacement."
+    },
+    "apps/bdptest/src/transactional-sse-installed.test.ts": {
+      "count": 2,
+      "lines": [
+        197,
+        432
+      ],
+      "committedSha256": "0af05a745d5c3ee74fb84adff995c39c6bf1c1ed1891a30dd5e0902f8d859d19",
+      "disposition": "Unchanged: response metadata names/validators/report observations, not malformed read input; isolated full-context assignments are expected response values."
+    },
+    "packages/conformance/src/executable-manifest.test.ts": {
+      "count": 8,
+      "lines": [
+        611,
+        649,
+        859,
+        860,
+        1555,
+        1556,
+        1557,
+        1558
+      ],
+      "committedSha256": "ca570192d8763610b39a750d376df899b3f0f01a06b3c928e95bf3d83fd538af",
+      "disposition": "Unchanged harness/static artifacts: header classification/redaction/POST-ignore evidence, not HTTP adapter receiving-status expectations."
+    },
+    "packages/conformance/src/http-executor.test.ts": {
+      "count": 11,
+      "lines": [
+        733,
+        734,
+        735,
+        736,
+        792,
+        817,
+        818,
+        819,
+        820,
+        821,
+        822
+      ],
+      "committedSha256": "13e289fe572f56f1bc15dc2a7f2ee3302c4196fc140ee2abc609871a4a5493c4",
+      "disposition": "Unchanged harness/static artifacts: header classification/redaction/POST-ignore evidence, not HTTP adapter receiving-status expectations."
+    },
+    "packages/conformance/src/profile-contract-plan.test.ts": {
+      "count": 2,
+      "lines": [
+        227,
+        234
+      ],
+      "committedSha256": "e5be4864e456431db74bd325ec64d785bf3c5301a6be5b230bfcc7351ade4fc4",
+      "disposition": "Unchanged harness/static artifacts: header classification/redaction/POST-ignore evidence, not HTTP adapter receiving-status expectations."
+    },
+    "packages/conformance/src/runner.test.ts": {
+      "count": 8,
+      "lines": [
+        2838,
+        5577,
+        5578,
+        5596,
+        5602,
+        5619,
+        5629,
+        6015
+      ],
+      "committedSha256": "ad7e756bad1f70ecc6285e19830bc001ebec01899ed868af3fb4b08e888aba86",
+      "disposition": "Unchanged harness/static artifacts: header classification/redaction/POST-ignore evidence, not HTTP adapter receiving-status expectations."
+    },
+    "packages/conformance/src/transactional-cumulative.test.ts": {
+      "count": 12,
+      "lines": [
+        1214,
+        1329,
+        1417,
+        1666,
+        2043,
+        2609,
+        2610,
+        2714,
+        2727,
+        2855,
+        2989,
+        2995
+      ],
+      "committedSha256": "313e6a947b33a3893565ea5db2d9d4a962b46c2e926900598e9285e657a31bf2",
+      "disposition": "Unchanged harness/static artifacts: header classification/redaction/POST-ignore evidence, not HTTP adapter receiving-status expectations."
+    },
+    "packages/protocol/src/transactional-http-contracts.test.ts": {
+      "count": 14,
+      "lines": [
+        278,
+        279,
+        280,
+        281,
+        286,
+        287,
+        302,
+        409,
+        454,
+        546,
+        575,
+        587,
+        588,
+        594
+      ],
+      "committedSha256": "1a50a0289fffa1d8160252981120acca4d190aa2cebdb41590dba131f7a4981d",
+      "disposition": "Unchanged wire schema/contract checker evidence; no actual new HTTP adapter path."
+    },
+    "packages/protocol/src/transactional-wire.test.ts": {
+      "count": 6,
+      "lines": [
+        334,
+        335,
+        451,
+        452,
+        453,
+        463
+      ],
+      "committedSha256": "c6610c121bd41e542122e5deefbaef27fc9a9e2f09793b009c07ef3bba150851",
+      "disposition": "Unchanged wire schema/contract checker evidence; no actual new HTTP adapter path."
+    },
+    "packages/server/src/transaction-changefeed.test.ts": {
+      "count": 9,
+      "lines": [
+        695,
+        696,
+        697,
+        711,
+        712,
+        724,
+        727,
+        729,
+        745
+      ],
+      "committedSha256": "eb29103cf4f9c79a06eb49261d01da274de229dbc9f0ba169418048bf79adb28",
+      "disposition": "Owned: exact affected callbacks listed in plan; remaining occurrences are response context, complete tuples/patch merges, POST-ignore or internal semantic-parser checks. No broad replacement."
+    },
+    "packages/server/src/transaction-consistency.test.ts": {
+      "count": 4,
+      "lines": [
+        37,
+        38,
+        39,
+        45
+      ],
+      "committedSha256": "81b13c668c761c2e052b2dc65e7e5509f6208e72ec5d464ab6e3b062757b1145",
+      "disposition": "Owned: exact affected callbacks listed in plan; remaining occurrences are response context, complete tuples/patch merges, POST-ignore or internal semantic-parser checks. No broad replacement."
+    },
+    "packages/server/src/transaction-event-sse.test.ts": {
+      "count": 7,
+      "lines": [
+        286,
+        403,
+        404,
+        405,
+        793,
+        794,
+        795
+      ],
+      "committedSha256": "69f58153b93947f028c37aebce2f57b0a25f725aacb9a1891c7b276b1c9e44c0",
+      "disposition": "Unchanged: actual complete tuples (or internal minimum APIs), response context/patch merges; full unknown/visibility semantics retained."
+    },
+    "packages/server/src/transaction-events.test.ts": {
+      "count": 15,
+      "lines": [
+        456,
+        457,
+        460,
+        461,
+        462,
+        470,
+        477,
+        534,
+        1090,
+        1091,
+        1209,
+        1210,
+        1255,
+        1256,
+        1277
+      ],
+      "committedSha256": "0152561cdf096a48b0b01ec0e0d8bc81208a905bb5bf71dad411694387b58b27",
+      "disposition": "Unchanged: actual complete tuples (or internal minimum APIs), response context/patch merges; full unknown/visibility semantics retained."
+    },
+    "packages/server/src/transaction-http.test.ts": {
+      "count": 96,
+      "lines": [
+        180,
+        333,
+        334,
+        335,
+        366,
+        374,
+        949,
+        950,
+        1127,
+        1128,
+        1138,
+        1139,
+        1140,
+        1147,
+        1148,
+        1149,
+        1188,
+        1189,
+        1190,
+        1268,
+        1269,
+        1270,
+        1554,
+        1559,
+        1656,
+        1657,
+        1658,
+        1690,
+        1752,
+        1753,
+        1764,
+        1778,
+        1783,
+        1810,
+        1855,
+        1875,
+        1897,
+        1898,
+        1899,
+        1906,
+        1907,
+        1916,
+        2040,
+        2044,
+        2045,
+        2056,
+        2071,
+        2170,
+        2175,
+        2176,
+        2195,
+        2197,
+        2204,
+        2793,
+        2794,
+        2830,
+        2831,
+        2855,
+        2915,
+        2916,
+        2917,
+        2920,
+        2921,
+        2968,
+        2982,
+        2983,
+        2998,
+        3020,
+        3021,
+        3022,
+        3026,
+        3067,
+        3068,
+        3069,
+        3101,
+        3103,
+        3105,
+        3106,
+        3109,
+        3111,
+        3141,
+        3142,
+        3221,
+        3277,
+        3363,
+        3365,
+        3366,
+        3367,
+        3489,
+        3490,
+        3826,
+        4200,
+        4201,
+        4264,
+        4265,
+        4335
+      ],
+      "committedSha256": "1c9cd7c7c85a5f6a58253f4178e40453a2443a218408eeba9abfddde4bf7948d",
+      "disposition": "Owned: exact affected callbacks listed in plan; remaining occurrences are response context, complete tuples/patch merges, POST-ignore or internal semantic-parser checks. No broad replacement."
+    },
+    "packages/server/src/transaction-read.test.ts": {
+      "count": 9,
+      "lines": [
+        788,
+        789,
+        790,
+        1490,
+        1491,
+        1492,
+        1877,
+        1878,
+        1879
+      ],
+      "committedSha256": "9345c091e7ad31a94d5726dcb1ac525347dfe59204d2043203d29833ef1cd7b6",
+      "disposition": "Unchanged: actual complete tuples (or internal minimum APIs), response context/patch merges; full unknown/visibility semantics retained."
+    },
+    "packages/server/src/transaction-schema-http.test.ts": {
+      "count": 21,
+      "lines": [
+        211,
+        216,
+        217,
+        218,
+        219,
+        220,
+        221,
+        223,
+        224,
+        225,
+        227,
+        228,
+        229,
+        230,
+        252,
+        253,
+        254,
+        255,
+        256,
+        260,
+        422
+      ],
+      "committedSha256": "9c1b765e72b8be893486c32e4e10860dae422332008af8aa005ce30f0171ecc4",
+      "disposition": "Owned: exact affected callbacks listed in plan; remaining occurrences are response context, complete tuples/patch merges, POST-ignore or internal semantic-parser checks. No broad replacement."
+    },
+    "packages/server/src/transaction-service.test.ts": {
+      "count": 5,
+      "lines": [
+        1135,
+        1136,
+        1137,
+        2019,
+        2069
+      ],
+      "committedSha256": "c61ba7254ab1cf39abf85e6020e4f846ffb684740076de39f43fe12d509093b9",
+      "disposition": "Unchanged:1137 full tuple with actual epoch/view; other hits response context. No runtime/store test literal minimum hits."
+    },
+    "packages/server/src/transaction-snapshot-http.test.ts": {
+      "count": 8,
+      "lines": [
+        173,
+        398,
+        399,
+        400,
+        402,
+        403,
+        404,
+        426
+      ],
+      "committedSha256": "f96a010d826fb467a178172d0d6a754d7fe8d824140596a41996aaf230d01395",
+      "disposition": "Owned: exact affected callbacks listed in plan; remaining occurrences are response context, complete tuples/patch merges, POST-ignore or internal semantic-parser checks. No broad replacement."
+    },
+    "packages/server/src/transaction-sse.test.ts": {
+      "count": 11,
+      "lines": [
+        408,
+        409,
+        410,
+        603,
+        604,
+        605,
+        646,
+        647,
+        901,
+        902,
+        903
+      ],
+      "committedSha256": "7c8f45a2456c33a90b61b43388cf33d67784c47d0f63b95505f204b4ea1cd9b0",
+      "disposition": "Unchanged: actual complete tuples (or internal minimum APIs), response context/patch merges; full unknown/visibility semantics retained."
+    }
+  },
+  "limitation": "Literal committed-source occurrence inventory and targeted source inspection; not execution or proof against dynamically generated unknown header names. Existing affected callbacks remain whole selections at measured draft gate."
+}

@@ -1,0 +1,57 @@
+{
+  "name": "cross-batch-review",
+  "argv": [
+    "python3",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-principal-cumulative-draft/finalized-installed-preparation/review-installed.py",
+    "cross-batch"
+  ],
+  "guardedArgv": [
+    "/opt/homebrew/opt/python@3.14/bin/python3.14",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/guarded-action.py",
+    "python3",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-principal-cumulative-draft/finalized-installed-preparation/review-installed.py",
+    "cross-batch"
+  ],
+  "cwd": "/Users/dbox/repos/wt/vickie/vickie-guarded-batch",
+  "started": "2026-10-15T22:30:33.894234+00:00",
+  "adjudication": {
+    "kind": "command-only",
+    "testVerdict": "not-applicable"
+  },
+  "elapsedSeconds": 0.8320002090185881,
+  "exit": 0,
+  "supervisorExit": 0,
+  "timeout": false,
+  "forcedCleanup": false,
+  "errors": [],
+  "processGroup": 36787,
+  "remainingBeforeCleanup": [],
+  "remainingAfterCleanup": [],
+  "sampledPids": [
+    36787,
+    36789,
+    36795,
+    36804,
+    36816
+  ],
+  "sampledPidsStillPresent": {},
+  "sampledTempEntries": [],
+  "tempEntriesAfter": [],
+  "remainingTempEntriesForClassification": [],
+  "runtimeDirectoriesStillPresent": [],
+  "unclassifiedTempEntriesStillPresent": [],
+  "sourceUnchanged": true,
+  "sourceSha256After": {
+    "packages/conformance/test-support/transactional/manifest-v1.json": "cd90592e76cace65b115dbfedf5f604c9c4011ed2e1a0fad954c1edb12aca6cd",
+    "packages/conformance/test-support/transactional/coverage-v1.json": "0c991feb128a50625397e337464badcb17d22a0c31e1d57a6b66fa1032a92a51",
+    "packages/conformance/src/transactional-cumulative.test.ts": "ea51f2604e8ab75d86bcb6c7faddb868ebf7f66b46be52c1c2364c2abc6a09dc",
+    "apps/bdptest/src/transactional-matrix.test.ts": "762f84132bdfae18a730e07ac3a759da2a55289644a7b97888f314a55dffae4e"
+  },
+  "samplingSeconds": 0.05,
+  "commandWindowSeconds": 115,
+  "groupHardDeadlineSeconds": 120,
+  "cleanupBound": "TERM at115s, KILL no later than120s; wait/reap after kill adds no product execution allowance",
+  "samplingLimitation": "Short-lived or detached descendants may evade group sampling; helper counts and independent final checks remain separate.",
+  "tempClassification": "Only the selected fixture prefixes under this attempt TMPDIR are owned runtime roots; all other entries are preserved for review, not deleted or called leaks.",
+  "resultLimitation": "Exit0 is command completion, not independent oracle/claim/provenance adjudication."
+}

@@ -1,0 +1,105 @@
+{
+  "accepted": true,
+  "at": "2026-10-15T22:33:52.325690+00:00",
+  "head": "1f0cb9455361cef2cc793558793e4a190be6f4fe",
+  "tree": "22176e75848cfd6f0a54f799aeb1e62998206edb",
+  "actualHttp": 652,
+  "actualChildren": 76,
+  "actualBodyBytes": 54960,
+  "actualStages": 18,
+  "rootIndependentSampledPidAbsence": 147,
+  "ownedRuntimeRootsRemaining": [],
+  "nativeAudit": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-principal-cumulative-draft/finalized-installed-preparation/native-installed-outcome.md",
+    "sha256": "881acd00b9fbc8b7587cb5c362a03d24689fdccefeb1be1f0c7d570bd61c67c4"
+  },
+  "cohorts": [
+    {
+      "command": "cross-sequence",
+      "actualHttp": 212,
+      "actualRequestBodyBytes": 17754,
+      "reportedChildren": 24,
+      "reportedClosedChildren": 24,
+      "principalPerformed": [
+        "namespace-distinct",
+        "pk-a-rotated:pk-a-create:whole-json",
+        "pk-b-replay:pk-b-create:whole-json",
+        "validated-a-conflict",
+        "complete-current",
+        "complete-events"
+      ],
+      "reportSha256": "a0fcdf6678dea9a7bcf49f0e5af825c29a1a7708599249b8a7d190ec1892e5e4",
+      "resultsSha256": "cac9e56c6088b2490137e46f322c5a079131ef045654638a6528436b0e497b4f",
+      "claimEligible": false
+    },
+    {
+      "command": "full-positive",
+      "actualHttp": 220,
+      "actualRequestBodyBytes": 18606,
+      "reportedChildren": 24,
+      "reportedClosedChildren": 24,
+      "principalPerformed": [
+        "namespace-distinct",
+        "pk-a-rotated:pk-a-create:whole-json",
+        "pk-b-replay:pk-b-create:whole-json",
+        "validated-a-conflict",
+        "complete-current",
+        "complete-events"
+      ],
+      "reportSha256": "c0c12f0abec9b149500dfa063fa5b62120ed369f6b468b954cde1677a1a22043",
+      "resultsSha256": "2720d80434ab3cbaba11d1c4ca0ccdae385c84649b0e2b54fa7cd53d21cb8083",
+      "claimEligible": false
+    },
+    {
+      "command": "cross-batch",
+      "actualHttp": 211,
+      "actualRequestBodyBytes": 17550,
+      "reportedChildren": 24,
+      "reportedClosedChildren": 24,
+      "principalPerformed": [
+        "namespace-distinct",
+        "pk-a-rotated:pk-a-create:whole-json",
+        "pk-b-replay:pk-b-create:whole-json",
+        "validated-a-conflict",
+        "complete-current",
+        "complete-events"
+      ],
+      "reportSha256": "09c2936261221213e1b3a131f1031f0f89e836d769f14bfbf0df2b7675fc89c6",
+      "resultsSha256": "3b2baaf09f88f1fb75f934f2559322aed88e65457b4fffa19cc5ab47226a8301",
+      "claimEligible": false
+    },
+    {
+      "command": "principal-collapse",
+      "actualHttp": 2,
+      "actualRequestBodyBytes": 300,
+      "reportedChildren": 2,
+      "reportedClosedChildren": 2,
+      "principalPerformed": [
+        "validated-a-terminal",
+        "validated-b-conflict"
+      ],
+      "reportSha256": "ce3940c127089523ff1dd3bf6b7e5357346b76c15acaf601f845428bfc0b1a22",
+      "resultsSha256": "226f80c509100a655e3f70a8fa0db137c76627fb402c16038f569a6b58c058dd",
+      "claimEligible": false
+    },
+    {
+      "command": "principal-positive",
+      "actualHttp": 7,
+      "actualRequestBodyBytes": 750,
+      "reportedChildren": 2,
+      "reportedClosedChildren": 2,
+      "principalPerformed": [
+        "namespace-distinct",
+        "pk-a-rotated:pk-a-create:whole-json",
+        "pk-b-replay:pk-b-create:whole-json",
+        "validated-a-conflict",
+        "complete-current",
+        "complete-events"
+      ],
+      "reportSha256": "e3604633bfaf6e397cba979ad58b929cd09371de158a1dccafed0fe75bfcf7d3",
+      "resultsSha256": "c043a165375f7dcf089e4db990e66122ae45a893bed8ec8db26476361bdce8d3",
+      "claimEligible": false
+    }
+  ],
+  "limits": "Local source/archive/installed evidence only. No public profile qualification; code council and exact-head CI remain pending."
+}

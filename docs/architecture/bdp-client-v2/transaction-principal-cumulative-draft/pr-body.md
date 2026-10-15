@@ -1,0 +1,5 @@
+The cumulative Transactional tests now exercise idempotency keys scoped to authenticated principals. Two users can use the same key independently, rotating a credential preserves that principal’s saved outcome, and changing the retained request returns a conflict without extra effects.
+
+The new partial contract checks complete receipts, replayed results, current Resources and Events through installed HTTP. A separately configured negative control collapses the two principals and must produce the exact expected conflict failures. Existing contract objects and response/retry/atomicity checks are preserved. This adds evidence for existing behavior; it does not enable or advertise the public write profile.
+
+Validation: clean build, typecheck, formatting, lint, boundary and Read-evidence checks passed; nine targeted static tests and five freshly packaged installed cohorts passed (652 HTTP exchanges, 76 child starts, all closed). The initial one-expression formatting failure was repaired and its run retained. Native code review found no blocker. Actual Claude code review and exact-head CI are pending; this PR remains draft until findings are dispositioned.

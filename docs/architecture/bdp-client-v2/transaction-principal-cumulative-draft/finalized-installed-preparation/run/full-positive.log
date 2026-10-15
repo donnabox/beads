@@ -1,0 +1,77 @@
+
+ RUN  v4.1.10 /Users/dbox/repos/wt/vickie/vickie-guarded-batch
+
+stdout | apps/bdptest/src/transactional-matrix.test.ts > observes sixteen partial Transactional contracts through packed-capable actual installed HTTP
+{"kind":"installed-tx-sixteen-partial-summary","sourceCommit":"1f0cb9455361cef2cc793558793e4a190be6f4fe","elapsedMs":5369.418334,"actions":227,"sessions":23,"childLaunches":24,"closedChildren":24,"artifacts":{"catalogDigest":"c4a2ad576f3285ef9007f8bc69b094cf36e06716ed543ab195f4b8a53e9d3967","manifestDigest":"cd90592e76cace65b115dbfedf5f604c9c4011ed2e1a0fad954c1edb12aca6cd","fixtureDigest":"3a7899ced771d4880066d98b0000c53f801ece53458502cc4f3bc641146c9a85"},"baseline":{"served":{"scope":"https://reference.invalid/acme/","profile":"transactional","history":false,"sourceCommit":"1f0cb9455361cef2cc793558793e4a190be6f4fe","installedPayloadDigest":"c46a251cdf51f274ec9bf4f0f401cedadcbaa7748cfb059d3009de34186753b9","installedContractsDigest":"c67d12264b97e16c76bf68f850eaf394f61896bb72491e06603ef1d6debb335b","policyDigest":"a16a1f3e4c1999d5c4405ce7523c9aba957d97425f96f2b3f4efbf1b9431a8fe","authenticationDigest":"550aea807db32dd525ddd2c54b89a1cf70a693be10a4c22d80788fafb233910d","fixtureDigest":"3a7899ced771d4880066d98b0000c53f801ece53458502cc4f3bc641146c9a85","fixtureId":"reference-transactional-v1","capabilities":["installed-transactional-http","transactional-receipt-observation"]},"operationTargets":{"createBead":"https://reference.invalid/acme/operations/create-bead","updateBead":"https://reference.invalid/acme/operations/update-bead","deleteBead":"https://reference.invalid/acme/operations/delete-bead","createLink":"https://reference.invalid/acme/operations/create-link","updateLink":"https://reference.invalid/acme/operations/update-link","deleteLink":"https://reference.invalid/acme/operations/delete-link","putAlias":"https://reference.invalid/acme/operations/put-alias","deleteAlias":"https://reference.invalid/acme/operations/delete-alias","updateWhere":"https://reference.invalid/acme/operations/update-where","deleteWhere":"https://reference.invalid/acme/operations/delete-where","batch":"https://reference.invalid/acme/operations/batch","sequence":"https://reference.invalid/acme/operations/sequence"},"runtimeConfigurationIdentity":"26da64a9ceb02413a52fde56888a9520d2032bf59528f9e6d0dbba1352d57ef1","authorityMode":"canonical"},"claimEligible":false}
+
+ ✓ apps/bdptest/src/transactional-matrix.test.ts > observes sixteen partial Transactional contracts through packed-capable actual installed HTTP 5370ms
+ ↓ apps/bdptest/src/transactional-matrix.test.ts > refuses changed installed runtimeConfigurationIdentity before actions
+ ↓ apps/bdptest/src/transactional-matrix.test.ts > refuses changed installed artifactIdentity before actions
+ ↓ apps/bdptest/src/transactional-matrix.test.ts > refuses changed installed policyIdentity before actions
+ ↓ apps/bdptest/src/transactional-matrix.test.ts > refuses changed installed authenticationIdentity before actions
+ ↓ apps/bdptest/src/transactional-matrix.test.ts > refuses changed installed authorityMode before actions
+ ↓ apps/bdptest/src/transactional-matrix.test.ts > refuses missing metadata at bootstrap instead of accepting a nonattesting fixture
+ ↓ apps/bdptest/src/transactional-matrix.test.ts > refuses altered private receipt binding without manufacturing observations
+ ↓ apps/bdptest/src/transactional-matrix.test.ts > refuses altered private receipt method without manufacturing observations
+ ↓ apps/bdptest/src/transactional-matrix.test.ts > refuses altered private receipt credential without manufacturing observations
+ ↓ apps/bdptest/src/transactional-matrix.test.ts > refuses altered private receipt body-assertion without manufacturing observations
+ ↓ apps/bdptest/src/transactional-matrix.test.ts > observes per-handle authorization and separately bound permission-swapped configurations
+ ↓ apps/bdptest/src/transactional-matrix.test.ts > keeps the installed bootstrap inert on import and refuses missing IPC or invalid configuration
+ ↓ apps/bdptest/src/transactional-matrix.test.ts > drains on inherited IPC disconnect and releases the installed owner for reopen
+ ↓ apps/bdptest/src/transactional-matrix.test.ts > retains ordinary Resource /id capture without granting receipt authority
+ ↓ apps/bdptest/src/transactional-matrix.test.ts > does not follow an ordinary Resource /id through binding ordinary-resource-id
+ ↓ apps/bdptest/src/transactional-matrix.test.ts > aborts the actual cohort budget after real wire and drains all installed children
+ ↓ apps/bdptest/src/transactional-matrix.test.ts > refuses a pre-aborted cohort before starting an installed child
+ ↓ apps/bdptest/src/transactional-matrix.test.ts > cancels installed startup through its signal and never publishes a late ready
+ ↓ apps/bdptest/src/transactional-matrix.test.ts > rejects captured receipt binding reuse before installed preparation
+ ↓ apps/bdptest/src/transactional-matrix.test.ts > records dynamic source/session configuration even when actual receipt HTTP returns401
+ ↓ apps/bdptest/src/transactional-matrix.test.ts > retains original cohort abort alongside an actual failed child cleanup
+ ↓ apps/bdptest/src/transactional-matrix.test.ts > rejects the schema-valid wrong set matched expectation against actual installed results
+ ↓ apps/bdptest/src/transactional-matrix.test.ts > rejects the schema-valid wrong set order expectation against actual installed results
+ ↓ apps/bdptest/src/transactional-matrix.test.ts > rejects the schema-valid wrong set index expectation against actual installed results
+ ↓ apps/bdptest/src/transactional-matrix.test.ts > rejects the schema-valid wrong set poststate expectation against actual installed results
+ ↓ apps/bdptest/src/transactional-matrix.test.ts > allows a valid cross-wired set receipt binding but rejects its wrong result oracle
+ ↓ apps/bdptest/src/transactional-matrix.test.ts > refuses an omitted update-where route at exact plan preflight before scenario startup or any wire
+ ↓ apps/bdptest/src/transactional-matrix.test.ts > refuses an omitted delete-where route at exact plan preflight before scenario startup or any wire
+ ↓ apps/bdptest/src/transactional-matrix.test.ts > records the set-update source and exact failed dynamic request when its receipt credentials are denied
+ ↓ apps/bdptest/src/transactional-matrix.test.ts > records the set-delete source and exact failed dynamic request when its receipt credentials are denied
+ ↓ apps/bdptest/src/transactional-matrix.test.ts > discriminates actual set effects against wrong second postimage expectation
+ ↓ apps/bdptest/src/transactional-matrix.test.ts > discriminates actual set effects against wrong rollback metadata expectation
+ ↓ apps/bdptest/src/transactional-matrix.test.ts > discriminates actual set effects against wrong receipt order expectation
+ ↓ apps/bdptest/src/transactional-matrix.test.ts > discriminates actual set effects against wrong Event order expectation
+ ↓ apps/bdptest/src/transactional-matrix.test.ts > discriminates actual set effects against wrong zero results expectation
+ ↓ apps/bdptest/src/transactional-matrix.test.ts > discriminates actual set effects against wrong zero Events expectation
+ ↓ apps/bdptest/src/transactional-matrix.test.ts > discriminates actual set effects against wrong no effect expectation
+ ↓ apps/bdptest/src/transactional-matrix.test.ts > discriminates receipt pagination against wrong root next expectation
+ ↓ apps/bdptest/src/transactional-matrix.test.ts > discriminates receipt pagination against wrong inline boundary expectation
+ ↓ apps/bdptest/src/transactional-matrix.test.ts > discriminates receipt pagination against wrong page member expectation
+ ↓ apps/bdptest/src/transactional-matrix.test.ts > discriminates receipt pagination against wrong page parent expectation
+ ↓ apps/bdptest/src/transactional-matrix.test.ts > discriminates receipt pagination against wrong historical title expectation
+ ↓ apps/bdptest/src/transactional-matrix.test.ts > discriminates receipt pagination against wrong terminal next expectation
+ ↓ apps/bdptest/src/transactional-matrix.test.ts > discriminates completed-key conflict against wrong conflict code expectation
+ ↓ apps/bdptest/src/transactional-matrix.test.ts > discriminates completed-key conflict against wrong reopened conflict status expectation
+ ↓ apps/bdptest/src/transactional-matrix.test.ts > discriminates completed-key conflict against wrong current record expectation
+ ↓ apps/bdptest/src/transactional-matrix.test.ts > discriminates completed-key conflict against wrong retained replay body expectation
+ ↓ apps/bdptest/src/transactional-matrix.test.ts > discriminates completed-key conflict against wrong unchanged Event expectation
+ ↓ apps/bdptest/src/transactional-matrix.test.ts > pins the matching no-op installed route digest and fifteen-action ledger
+ ↓ apps/bdptest/src/transactional-matrix.test.ts > discriminates matching no-op evidence against bead-property
+ ↓ apps/bdptest/src/transactional-matrix.test.ts > discriminates matching no-op evidence against link-metadata
+ ↓ apps/bdptest/src/transactional-matrix.test.ts > discriminates matching no-op evidence against group-inventory-and-head
+ ↓ apps/bdptest/src/transactional-matrix.test.ts > pins deletion-safety derivative carriers, complete positives, and measured source bounds
+ ↓ apps/bdptest/src/transactional-matrix.test.ts > discriminates operation-time deletion evidence against incoming-order
+ ↓ apps/bdptest/src/transactional-matrix.test.ts > discriminates operation-time deletion evidence against outgoing-order
+ ↓ apps/bdptest/src/transactional-matrix.test.ts > discriminates operation-time deletion evidence against committed-prefix-state
+ ↓ apps/bdptest/src/transactional-matrix.test.ts > discriminates retained cross-carrier evidence against batch-semantic-conflict
+ ↓ apps/bdptest/src/transactional-matrix.test.ts > discriminates retained cross-carrier evidence against sequence-fresh-key
+ ↓ apps/bdptest/src/transactional-matrix.test.ts > discriminates command minimum evidence against minimum-batch-body-conflict
+ ↓ apps/bdptest/src/transactional-matrix.test.ts > discriminates command minimum evidence against minimum-readonly-credential
+ ↓ apps/bdptest/src/transactional-matrix.test.ts > discriminates sequence member transactions against a successful middle delete
+ ↓ apps/bdptest/src/transactional-matrix.test.ts > observes authenticated principal isolation and rotation through selected cumulative HTTP
+ ↓ apps/bdptest/src/transactional-matrix.test.ts > discriminates principal isolation against a separately bound collapsed namespace
+
+ Test Files  1 passed (1)
+      Tests  1 passed | 63 skipped (64)
+   Start at  15:30:20
+   Duration  5.69s (transform 184ms, setup 16ms, import 245ms, tests 5.37s, environment 0ms)
+
+JSON report written to /Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-principal-cumulative-draft/finalized-installed-preparation/run/full-positive.results.json
