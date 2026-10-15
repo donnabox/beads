@@ -4,11 +4,12 @@ Use this guide with the Preview 2 `bd` program in a new workspace. The examples 
 
 Some examples use `jq` to copy an ID or revision from a command result. Install `jq` if needed. If a value-capturing command prints nothing, stop and check the previous step before continuing.
 
-## Start a workspace
+## 1. Start a workspace
 
 Start in a new, empty directory outside any existing Beads workspace. The `--graph-mode link` flag selects the Preview 2 graph model. For now, `bd init` also requires a unique Scope URL even when you only use the CLI. **That is a temporary Preview 2 requirement.** The URL identifies your workspace; it does not contact or start a web service.
 
 ```sh
+# Create and initialize a new embedded graph workspace, then inspect its status and Types.
 mkdir beads-preview2-test
 cd beads-preview2-test
 bd init --graph-mode link --scope-url "https://example.invalid/preview2/$(date +%s)/"
@@ -16,15 +17,23 @@ bd status --graph
 bd types
 ```
 
-This uses embedded Dolt storage. To try BDP, use the separate shared-server workspace in [Optional BDP Read exercise](#5-optional-bdp-read-exercise) *instead* of running the commands above. BDP requires a shared-server workspace.
+This uses embedded Dolt storage. To try BDP, use the separate shared-server workspace in [Optional BDP Read exercise](#8-optional-bdp-read-exercise) *instead* of running the commands above. BDP requires a shared-server workspace.
 
-## Beads, Links, and Types
+## 2. Beads, Links, and Types
 
-The graph contains **Beads** (nodes) and **Links** (connections between Beads). Each has a Type. A Type identifies the sort of record and defines which properties and endpoints are allowed. Use `--type` to choose a Type when you create, search for, or filter a Bead or Link.
+One of the foundational building blocks of Beads is the graph.
+
+In the shipping product, the nodes are called **Issues**, and the edges are called **Dependencies**. Issues can be bugs, tasks, or features. Dependencies can be `blocks`, `parent-child`, and other kinds of relationships.
+
+That model fits work tracking for people and agents. To add other capabilities, we need records that do not carry all the behavior of an Issue or Dependency.
+
+Chris's Memory proposal prompted the generalization you can try in this preview.
+
+In the new generalized model, **Beads** are the nodes and **Links** are the edges connect Beads. Issues are specific types of Beads; Dependencies are specific types of Links. The familiar Issue and Dependency choices remain available.
+
+Use `--type` to choose a Bead or Link type when creating or filtering records. The two namespaces (`bd` and `bd link`) make clear which kind of record you mean.
 
 Run `bd types` to see the names accepted by `--type`. In a new Preview 2 workspace, its default display is:
-
-Without `--type`, `bd create` makes a `task` Issue. `bd link create` requires `--type`; the shorter `bd link SOURCE TARGET` makes a `blocks` Dependency.
 
 ```text
 Bead Types (14):
@@ -67,13 +76,22 @@ Link Types (22):
   validates                 Validates Dependency
   delegated-from            Delegated From Dependency
 ```
-Bead types already require a registered type when you create a new bead.  Links don't have that requirement in the shipping product. We will soon close that hold and require both bead AND link types to be registered.
 
-We recently changed the design for the type interface and this preview has only implemented some of the changes.  If you see the names `preview-issue` or `preview-dependency` you found one of the seams. Preview 3 is focused on correctness, consistency, and completeness of the CLI, so those SHOULD disappear shortly.
+This preview has several new Bead and Link types that are placeholders:
+
+* `preview-memory` is a placeholder type for a Memory Bead.
+* `preview-related-memory` is a placeholder type for a relation between a Memory and a Bead of any type.
+* `example-cites` and `example-follows` are example Link types for building graphs of memories.
+
+If you omit `--type`, `bd create` makes a `task` Issue. The shorter `bd link SOURCE TARGET` makes a `blocks` Dependency when you omit `--type`; `bd link create SOURCE TARGET` requires an explicit type.
+
+`bd create` and `bd link create` refuse an unrecognized `--type`. The choices displayed by `bd types` are fixed in this preview; users cannot register new graph Types here.
+
+> **Compatibility note:** The older `bd dep add --type` path still accepts an arbitrary nonempty Dependency label of up to 32 bytes. It does not register a new graph Type. Only built-in labels have their defined workflow behavior.
 
 Look for a future blog post going over all the things related to bead and link types. For now, this should be all we need to know to use the product.
 
-## Working with Beads and Links
+## 3. Working with Beads and Links
 
 Beads and Links have much in common:
 
@@ -81,7 +99,7 @@ Beads and Links have much in common:
 - Each has properties checked against its Type. Beads and Links also have separate metadata. Dependency Link metadata cannot be set in this preview; `preview-related-memory` and the example Link Types support it.
 - Each has saved versions that you can inspect and compare.
 
-The CLI uses top-level commands for Beads and the `bd link` namespace for Links:
+The common operations for Beads and Links follow two command paths: top-level `bd` commands for Beads, and `bd link` subcommands for Links. The limits for each command appear at the end of this guide.
 
 | Task | Beads | Links |
 | --- | --- | --- |
@@ -94,7 +112,7 @@ The CLI uses top-level commands for Beads and the `bd link` namespace for Links:
 | Compare versions | `bd compare` | `bd link compare` |
 | Count | `bd count` (Issues) | `bd link count` |
 
-Several familiar commands provide narrower, convenient forms of these operations:
+For familiarity and convenience, the CLI also has narrower shortcuts:
 
 | Shortcut | Closest general command | Difference |
 | --- | --- | --- |
@@ -109,18 +127,18 @@ Several familiar commands provide narrower, convenient forms of these operations
 
 `bd link query` is not available in this preview.
 
+## 4. Memory and Issue Beads
 
-## 1. Beads, Memories and Issues
-
-A **Memory** is a Bead that stores reusable information. Its properties are a title and a body; the body is Markdown text.
+Issue Beads have been part of the product from the beginning; Memory Beads are new in this preview. A **Memory** stores reusable information. It has a string `title` and a Markdown `body`.
 
 The next four examples create Memories about release policies. They show the general `create` form, shorter field flags, and the Memory-specific `remember` command.
 
-### Create
+### Creating Beads
 
 Create the first Memory by supplying its Type-checked properties and separate metadata as JSON:
 
 ```sh
+# Create a Memory with JSON properties and separate metadata.
 bd create --type preview-memory --id policy-a \
   --properties '{"title":"Policy A","body":"Review *before* publishing."}' \
   --metadata '{"origin":"manual test"}'
@@ -129,375 +147,408 @@ bd create --type preview-memory --id policy-a \
 Create the second with individual field flags:
 
 ```sh
+# Create a second Memory with the title and body flags.
 bd create --type preview-memory --id policy-b --title 'Policy B' --body 'Retain the review evidence.'
 ```
 
 The positional argument can also supply the title:
 
 ```sh
+# Create a Memory using the positional title.
 bd create 'Policy C' --type preview-memory --id policy-c --body 'Review policy changes before release.'
 ```
 
 Finally, `remember` chooses the Memory Type for you and takes the body as its positional argument:
 
 ```sh
+# Create a Memory with the remember shortcut.
 bd remember 'Keep the release checklist.' --id policy-d --title 'Policy D'
 ```
 
-Create two kinds of Issue, `task` and `epic`. The first pair will demonstrate a blocking Dependency; the child and parent will demonstrate a parent-child Dependency later.
+Create two task Issues for the Issue workflow example later in the guide:
 
 ```sh
+# Create a prerequisite and work that waits for it.
 bd create 'Blocking prerequisite' --id blocker --type task
 bd create 'Work waiting on prerequisite' --id blocked-work --type task
-bd create 'Relationship child' --id rel-child --type task
-bd create 'Relationship parent' --id rel-parent --type epic
 ```
 
-### List Beads
+These use the general `bd create` form. `bd remember` is specific to Memories.
 
-The general `list` command can include Issues and Memories. Narrow it to Memories with `--type`, or use the Memory-specific `memories` command:
+### Listing Beads
+
+The general `list` command supports all Bead types, including Issues and Memories. With no filter, it lists both:
 
 ```sh
+# List Beads as readable rows and as JSON records.
+bd list
 bd list --format records-json
-bd list --format records-json --type preview-memory
+```
+
+Use `--type` to see one choice at a time:
+
+```sh
+# Filter the Bead list to task Issues, then Memories.
+bd list --type task
+bd list --type preview-memory
+```
+
+The Memory-specific `bd memories` command is a convenient alternative and can search Memory titles and bodies:
+
+```sh
+# List all Memories with the Memory-specific shortcut.
 bd memories --all
 ```
 
-`bd list --json` shows Issues only. Use `--format records-json` for both Bead Types. On `bd list`, `--all` includes closed and pinned Issues and removes the default row limit within Preview 2's bounds; it does **not** add Links. Use `bd link list` for Links.
-
-```sh
-bd list --json --all
-```
+> **Known limitation:** `bd list --json` shows Issues only. Use `--format records-json` when you want JSON for both Issues and Memories. On `bd list`, `--all` includes closed and pinned Issues and removes the default row limit within Preview 2's bounds; it does not add Links. Use `bd link list` for Links.
 
 ### Read a Bead
 
-`show` returns the full record. The Memory-specific `recall` command returns only its body:
+`list` finds Beads that meet your criteria. Once you have an ID, `bd show` reads the full current record:
 
 ```sh
+# Show a Memory and an Issue as complete graph records.
 bd show policy-a --format graph-json
-bd recall policy-a
+bd show blocker --format graph-json
 ```
 
-### Edit and compare versions
-
-`update --properties` changes only the named properties. `--replace-properties` replaces the entire writable properties object, so it must include every required field. `--patch` applies an ordered JSON Patch-style list of `add`, `replace`, or `remove` operations to properties.
-
-Here are all three ways to update properties:
+The Memory-specific `recall` command displays only a Memory's body. It refuses an Issue ID:
 
 ```sh
+# Read a Memory body.
+bd recall policy-a
+
+# Expected refusal: recall takes a Memory ID, not an Issue ID.
+bd recall blocker
+```
+
+### Updating Beads
+
+The properties and metadata of a Bead (or Link) are separate JSON objects. You can update either or both with `bd update`.
+
+Three flags control property edits:
+
+| Flag | Effect |
+| --- | --- |
+| `--properties '{...}'` | Change only the named properties; leave the others alone. |
+| `--replace-properties '{...}'` | Replace all writable properties; include every required field. |
+| `--patch '[...]'` | Apply an ordered JSON Patch-style list of `add`, `replace`, or `remove` operations. |
+
+Here are these three forms in use:
+
+```sh
+# Merge, replace, and patch Memory properties in turn.
 bd update policy-a --properties '{"body":"Review and qualify before publishing."}'
 bd update policy-a --replace-properties '{"title":"Policy A","body":"Reviewed policy."}'
 bd update policy-a --patch '[{"op":"replace","path":"/body","value":"Qualified policy."}]'
 ```
 
-`remember --update ID` is a Memory-specific shortcut. A positional argument changes the body; `--title` changes the title. You can supply either or both. Omitted fields stay unchanged.
+Metadata has similar merge and replacement options. You can also set or remove one key at a time:
+
+| Flag | Effect |
+| --- | --- |
+| `--metadata '{...}'` | Merge the named keys, leaving other metadata alone. |
+| `--replace-metadata '{...}'` | Replace the entire metadata object. |
+| `--set-metadata KEY=VALUE` | Set one key to a typed JSON value. |
+| `--unset-metadata KEY` | Remove one key. |
 
 ```sh
-bd remember 'Review before publishing and after any major change.' --update policy-a
-bd remember --update policy-a --title 'Policy A, revised'
-bd update policy-a --set-metadata team=docs
+# Merge, set, unset, and replace Memory metadata in turn.
+bd update policy-a --metadata '{"team":"docs"}'
+bd update policy-a --set-metadata team=release
 bd update policy-a --set-metadata reviewed=true
 bd update policy-a --unset-metadata team
+bd update policy-a --replace-metadata '{"origin":"manual test","reviewed":true}'
 ```
 
-Every real edit saves a version. `versions` lists them; `history` is an alias for that list in this preview. A `revision` is an opaque value from a read that can guard the next write. If someone changed the record after your read, `--if-revision` rejects your edit.
+The general `bd update` forms work on any Bead type where the selected fields are writable. For a Memory, `bd remember --update ID` is a shortcut for changing its body or title. A positional argument changes the body; `--title` changes the title. You can supply either or both, and omitted fields stay unchanged:
 
 ```sh
-bd versions policy-a --json
-bd history policy-a
-old_policy_revision="$(bd show policy-a --format graph-json | jq -er '.result.revision')"
-bd update policy-a --set-metadata review=complete --if-revision "$old_policy_revision"
-new_policy_revision="$(bd show policy-a --format graph-json | jq -er '.result.revision')"
-bd show policy-a --version "$old_policy_revision" --format graph-json
-bd compare policy-a --from "$old_policy_revision" --to "$new_policy_revision" --json
+# Update the Memory body and title with the remember shortcut.
+bd remember 'Review before publishing and after any major change.' --update policy-a
+bd remember --update policy-a --title 'Policy A, revised'
 ```
 
-### Delete
+### Deleting Beads
 
-`delete` first previews a deletion; add `--force` to apply it. `forget` deletes one Memory immediately. Both commands accept an optional `--if-revision` token to reject a stale write. A Memory with a live Link cannot be deleted; remove the Link first. Keep `policy-a` and `policy-b` for the next section.
+`bd delete ID` previews the deletion without changing the Bead. Add `--force` to apply it. We delete `policy-c` and `policy-d` here; the next section builds a separate mixed graph.
 
 ```sh
+# Preview a Bead deletion; policy-c remains present.
 bd delete policy-c
-policy_c_revision="$(bd show policy-c --format graph-json | jq -er '.result.revision')"
-bd forget policy-c --if-revision "$policy_c_revision"
+
+# Apply the deletion with --force.
+bd delete policy-c --force
 ```
 
-## 2. Connect Beads with Links
-
-The examples here create and manage Links. `bd link` is the general namespace for Links. `bd dep` is a shortcut for Dependencies between Issues.
-
-### Related Links
-
-The first example connects `policy-a` to `policy-b` with a `preview-related-memory` Link. This is different from the `related` Dependency between Issues. Its optional `note` property is checked against the Link Type; metadata is separate. Editing this Link advances its source Memory's saved state but does not change the target Memory.
+The Memory-specific `bd forget` deletes immediately, like `bd delete --force`:
 
 ```sh
-bd link create policy-a policy-b --type preview-related-memory --id policy-related-b --properties '{"note":"supporting policy"}' --metadata '{"origin":"draft"}'
+# Delete an unlinked Memory with the forget shortcut.
+bd forget policy-d
 ```
 
-Read the Link and the Links leaving `policy-a`:
+### Versions and Revisions
+
+Like Git, Beads keeps earlier states so you can inspect how a record changed. Creating or changing a Bead or Link saves a version with an opaque **revision token**. A deletion retains earlier snapshots; it does not create a new live version.
+
+Create a Memory, then change its title twice:
 
 ```sh
-bd link show policy-related-b --format graph-json
-bd link list --source policy-a
-bd link count --source policy-a
-bd link versions policy-related-b --json
+# Create a Memory, then save two more title versions.
+bd create --id policy-e --properties '{ "title": "First" }' --type preview-memory
+bd update policy-e --properties '{ "title": "Second" }'
+bd update policy-e --properties '{ "title": "Third" }'
 ```
 
-Update its properties and metadata:
+Those commands create three versions. List them, newest first:
 
 ```sh
-initial_related_revision="$(bd link show policy-related-b --format graph-json | jq -er '.result.revision')"
-bd link update policy-related-b --properties '{"note":"reviewed relationship"}'
-bd link update policy-related-b --replace-properties '{"note":"final relationship"}'
-bd link update policy-related-b --patch '[{"op":"replace","path":"/note","value":"qualified relationship"}]'
+# List the three saved versions of the Memory.
+bd versions policy-e
 ```
 
+Use a revision token to read an exact saved version with `bd show ID --version TOKEN`, or compare two versions with `bd compare ID --from TOKEN --to TOKEN`. For example:
+
 ```sh
-bd link update policy-related-b --set-metadata origin=reviewed
-bd link show policy-related-b --format graph-json
-current_related_revision="$(bd link show policy-related-b --format graph-json | jq -er '.result.revision')"
-bd link compare policy-related-b --from "$initial_related_revision" --to "$current_related_revision" --json
-bd graph policy-a --view generic --direction out --depth 2 --json
+# capture the current revision of policy-e
+before_policy_revision="$(bd show policy-e --format graph-json | jq -er '.result.revision')"
+
+# make one more change and capture its revision
+bd update policy-e --set-metadata review=started
+after_policy_revision="$(bd show policy-e --format graph-json | jq -er '.result.revision')"
+
+# show both saved versions
+bd show policy-e --version "$before_policy_revision" --format graph-json
+bd show policy-e --version "$after_policy_revision" --format graph-json
+
+# compare them
+bd compare policy-e --from "$before_policy_revision" --to "$after_policy_revision" --json
 ```
 
-To remove the Link, copy its current revision. The source revision check is optional. `bd delete` removes an unlinked Bead; `bd link delete --force` removes a Link.
+
+
+
+
+Revisions also provide **optimistic concurrency control**. Think of Git's `--force-with-lease`: a change goes through only if the current state is still the one you saw. `bd update` and `bd delete` accept an optional `--if-revision TOKEN`. If another change advanced the record, your command is refused instead of overwriting it.
 
 ```sh
-related_revision="$(bd link show policy-related-b --format graph-json | jq -er '.result.revision')"
-bd link delete policy-related-b
-bd link delete policy-related-b --force --if-revision "$related_revision"
+# Update policy-e only if its revision still matches the one we just read.
+bd update policy-e --set-metadata review=complete --if-revision "$after_policy_revision"
+
+# Expected refusals: these tokens are stale after the successful update.
+bd update policy-e --set-metadata review=stale --if-revision "$after_policy_revision"
+bd delete policy-e --force --if-revision "$before_policy_revision"
 ```
 
-### Blocking dependencies
-
-A **Dependency** is a Link between two Issues. In `bd dep add BLOCKED BLOCKER`, the first Issue waits for the second when the Type is `blocks`. `bd link create` is the general way to make the same Link; `bd dep add` is a shorter form. An ordered Issue pair can have only one Dependency, regardless of Type, so remove the first one before trying the shorter form.
-
-The built-in Dependency choices shown by `bd types` are `blocks`, `parent-child`, `conditional-blocks`, `waits-for`, `related`, `discovered-from`, `replies-to`, `relates-to`, `duplicates`, `supersedes`, `authored-by`, `assigned-to`, `approved-by`, `attests`, `tracks`, `until`, `caused-by`, `validates`, and `delegated-from`. They all connect Issues, but have different meanings. `blocks`, `parent-child`, `conditional-blocks`, and `waits-for` can affect readiness; `parent-child` also defines the hierarchy. The other choices do not block work merely by existing.
+Read a fresh token before deleting `policy-e`. The earlier token is stale after the successful update:
 
 ```sh
-bd link create blocked-work blocker --type blocks --id typed-blocker
-bd link show typed-blocker --format graph-json
-bd dep list blocked-work
-bd dep tree blocked-work --direction both
-bd dep cycles
-bd graph blocked-work
-bd graph check --json
+# Read the new current revision after the successful update.
+latest_policy_revision="$(bd show policy-e --format graph-json | jq -er '.result.revision')"
+
+# Delete policy-e only if that revision still matches.
+bd delete policy-e --force --if-revision "$latest_policy_revision"
 ```
 
-Remove that Link by ID with its current revision, then recreate the same relationship with `bd dep add`. Here `blocked-work` depends on `blocker`. `bd dep remove` selects a blocking Dependency by its Issue pair.
+
+
+## 5. Connect Beads with Links
+
+The Bead operations you just tried have matching Link operations under `bd link`: create, list, show, update, delete, versions, and compare. A Link has its own stable ID, Type, properties, metadata, and saved versions. But most importanly, a link connects a *source* Bead to a *target* Bead. The 'source' and 'target' fields of a link are simply references to the beads they point to.
+
+This walkthrough uses `blocks` and `parent-child` for Issue relationships, and `preview-related-memory` for Memory-to-Memory and Memory-to-Issue relationships. The first two are Dependencies; the last is an informational Link.
+
+### Creating Links and a mixed graph
+
+Let's create a fresh group of Memory and Issue Beads in the same workspace. The explicit `--type` flags show which kind each Bead is:
 
 ```sh
-typed_blocker_revision="$(bd link show typed-blocker --format graph-json | jq -er '.result.revision')"
-bd link delete typed-blocker --force --if-revision "$typed_blocker_revision"
+# Create three Issues: work, its prerequisite, and its parent epic.
+bd create 'Ship Preview 2' --id walk-task --type task
+bd create 'Verify the CLI' --id walk-blocker --type task
+bd create 'Preview 2 release' --id walk-epic --type epic
+
+# Create two Memories, using the general and Memory-specific commands.
+bd create 'Testing note' --id walk-note-a --type preview-memory --body 'Record a manual CLI pass.'
+bd remember 'Keep the test evidence with the release.' --id walk-note-b --title 'Evidence note'
+```
+
+Connect the Issues, then the Memories, then a Memory to an Issue:
+
+```sh
+# walk-task waits for walk-blocker; this is a Dependency created with bd link.
+bd link create walk-task walk-blocker --type blocks --id walk-blocks
+
+# Make walk-task a child of walk-epic with the Dependency shortcut.
+bd dep add walk-task walk-epic --type parent-child --id walk-parent
+
+# Connect the two Memories with an informational Link.
+bd link create walk-note-a walk-note-b --type preview-related-memory --id walk-related \
+  --properties '{"note":"companion memory"}'
+
+# Connect a Memory to an Issue; metadata is separate from properties.
+bd link create walk-note-a walk-task --type preview-related-memory --id walk-context \
+  --properties '{"note":"context for release"}' --metadata '{"source":"manual test"}'
+```
+
+The arrows below point from each Link's source to its target. In the `blocks` relationship, that means `walk-task` waits for `walk-blocker`. The `parent-child` arrow points from child to parent.
+
+```mermaid
+flowchart LR
+  task["walk-task<br/>Issue: task"] -->|blocks| blocker["walk-blocker<br/>Issue: task"]
+  task -->|parent-child| epic["walk-epic<br/>Issue: epic"]
+  noteA["walk-note-a<br/>Memory"] -->|preview-related-memory| noteB["walk-note-b<br/>Memory"]
+  noteA -->|preview-related-memory| task
+```
+
+List or show Beads with top-level `bd` commands, and Links with `bd link` commands. The generic graph view can traverse both kinds of Bead and Link; plain `bd graph ISSUE` remains the Issue dependency view.
+
+```sh
+# List the Beads and Links in this workspace.
+bd list
+bd link list
+
+# Narrow the Link list to those leaving walk-note-a.
+bd link list --source walk-note-a
+bd link count --source walk-note-a
+
+# Read one Bead and one Link as graph records.
+bd show walk-note-a --format graph-json
+bd link show walk-context --format graph-json
+
+# Traverse the mixed graph, then see the familiar Issue dependency view.
+bd graph walk-note-a --view generic --direction out --depth 2 --json
+bd graph walk-task
+```
+
+### Updating Links
+
+`bd update` changes a Bead; `bd link update` changes an informational Link. Both support the property and metadata forms shown earlier. A Link's Type and endpoints cannot be edited. Native Dependency Links do not accept property or metadata updates in this preview.
+
+```sh
+# Save the Link revision so we can inspect this earlier version later.
+before_context_revision="$(bd link show walk-context --format graph-json | jq -er '.result.revision')"
+
+# Update a property, then set metadata without changing the Link's identity.
+bd link update walk-context --properties '{"note":"reviewed context"}'
+bd link update walk-context --set-metadata reviewed=true
+
+# Read the updated Link.
+bd link show walk-context --format graph-json
+```
+
+Note that Links can now be updated in place. This is in contrast to the current product, in which the only way to update a link was to first remove it and then (re)add it with the updated state.
+
+> **Compatibility Note:** Here be dragons. The way Links are identifed is by a unique ID independent fromt the source and target bead. In the current product, dependencies are identified by the unique source/target pair. This was possible because there could be at most one dependnecy between two specific beads. We have a bit of work in Preview 3 to fully reconcile this mismatch.
+
+### Deleting Links and Beads
+
+Graph deletion does not cascade. A Bead with any live incident Link cannot be deleted; remove the Link first. Deleting a Link does not delete either endpoint Bead.
+
+```sh
+# Expected refusal: walk-note-b still has an incoming Link.
+bd delete walk-note-b --force
+
+# Preview, then delete that Link.
+bd link delete walk-related
+bd link delete walk-related --force
+
+# Preview, then delete the now-unlinked Memory.
+bd delete walk-note-b
+bd delete walk-note-b --force
+```
+
+### Link versions and revision guards
+
+Link versions work like Bead versions. The earlier `walk-context` revision remains readable after the update, and a stale revision guard refuses a new write.
+
+```sh
+# List Link versions and capture its current revision.
+bd link versions walk-context --json
+after_context_revision="$(bd link show walk-context --format graph-json | jq -er '.result.revision')"
+
+# Read the earlier version and compare it with the current one.
+bd link show walk-context --version "$before_context_revision" --format graph-json
+bd link compare walk-context --from "$before_context_revision" --to "$after_context_revision" --json
+
+# Expected refusal: this revision was current before the Link edits.
+bd link update walk-context --set-metadata audit=stale --if-revision "$before_context_revision"
+
+# The current revision allows one more edit.
+bd link update walk-context --set-metadata audit=checked --if-revision "$after_context_revision"
+
+# A deleted Link also retains its earlier citable versions.
+bd link versions walk-related --json
+```
+
+## 6. Existing Issue workflows
+
+The graph model still supports familiar Issue commands. These examples use the Issues and Dependencies created above; they are a sample, not a full tour of the older CLI.
+
+```sh
+# Read the Dependency and hierarchy views of the mixed graph.
+bd dep list walk-task
+bd children walk-epic
+bd blocked --json
+
+# Add a separate blocking pair so the readiness change is easy to see.
 bd dep add blocked-work blocker
-bd dep list blocked-work
-bd dep remove blocked-work blocker
+bd ready --type task --limit 10 --json
+
+# Finish the prerequisite, inspect readiness again, then reopen it.
+bd close blocker --reason 'Prerequisite complete'
+bd ready --type task --limit 10 --json
+bd reopen blocker --reason 'Recheck prerequisite'
 ```
 
-### Other Issue relationships
-
-The next examples connect Issues with other relationship kinds. A parent-child Link points from child to parent. These Links describe relationships but do not themselves close Issues.
+The usual Issue creation, editing, and search commands also operate on Issue Beads:
 
 ```sh
-bd dep add rel-child rel-parent --type parent-child --id links/rel-parent-child
-bd link show links/rel-parent-child --format graph-json
-```
-
-```sh
-bd create 'Duplicate source' --id rel-duplicate-source --type task
-bd create 'Duplicate target' --id rel-duplicate-target --type task
-bd dep add rel-duplicate-source rel-duplicate-target --type duplicates --id links/rel-duplicates
-bd link show links/rel-duplicates --format graph-json
-```
-
-```sh
-bd create 'Supersede source' --id rel-supersede-source --type task
-bd create 'Supersede target' --id rel-supersede-target --type task
-bd dep add rel-supersede-source rel-supersede-target --type supersedes --id links/rel-supersedes
-bd link show links/rel-supersedes --format graph-json
-```
-
-The higher-level `duplicate` and `supersede` commands are unavailable. To remove one of these relationship Links, use `bd link delete LINK_ID --force`; add `--if-revision TOKEN` if you want to reject a stale deletion.
-
-## 3. More ways to work with Issues
-
-This section follows the Link examples because its readiness exercise uses the `blocked-work` and `blocker` Issues from above.
-
-### Create and find Issues
-
-
-
-`bd show ISSUE --json` returns an array of Issue details. `--format graph-json` instead returns the graph record, including its revision. `bd list --json` lists Issues only; `--format records-json` can list both Issues and Memories. `q` creates an Issue and prints its ID. You can also create several Issues from a Markdown file, as shown below.
-
-```sh
+# Create and edit an Issue using the established CLI forms.
 bd create 'Review the release' --id beads/review --type task --label release
-bd new 'Alias-created task' --id beads/alias-task --type task
-bd create 'Track the whole release' --id beads/release-work --type task
-bd q 'Quick follow-up'
-bd todo add 'Document a test' --description 'Record the expected result'
-bd todo list --all
-bd statuses --json
-bd status
-bd stats --json
-bd list --json --all
+bd priority review 1
+bd assign review alice
+bd note review 'Checklist started.'
+bd comment review 'Ready for review'
+
+# Read and search Issues; --json on bd list remains Issue-only.
 bd show review --json
-bd show review --format graph-json
+bd list --json --all
 bd search 'release' --json
 bd count --by-status --json
 bd query 'status=open AND priority<=2' --json
 ```
 
-Save the IDs printed by `q` and `todo add` if you want to use those Issues later. The next block makes a temporary Markdown file with two Issue headings and passes it to `create --file`. Initial labels can be set during creation, but the `label` and `tag` management commands are unavailable. `status` shows Issue statistics; `status --graph` describes graph capabilities; `statuses` lists possible Issue statuses.
+`bd q` and `bd todo` remain short Issue entry points. The optional commands later in this guide exercise Claude Code setup and BDP Read; neither changes the Bead/Link command split.
 
 ```sh
-batch_dir="$(mktemp -d "${TMPDIR:-/tmp}/preview2-batch.XXXXXX")"
-batch_file="$batch_dir/issues.md"
-cat > "$batch_file" <<'MARKDOWN'
-## Inspect the release notes
+# Create a quick follow-up Issue.
+bd q 'Quick follow-up'
 
-### Description
-Read the published examples.
-
-### Priority
-1
-
-## Verify the binary
-
-### Description
-Record its version and SHA-256.
-MARKDOWN
-bd create --file "$batch_file" --json
-rm "$batch_file"
-rmdir "$batch_dir"
-```
-
-### Edit fields and comments
-
-```sh
-bd priority review 1
-bd assign review alice
-bd note review 'Checklist started.'
-bd update review --append-notes 'Second note.'
-bd comment review 'Ready for review'
-bd comments add review 'Reviewer acknowledged' --author alice
-bd comments review --json
-bd versions review --json
-```
-
-Read the Issue's current revision before and after an edit. For one Issue, `--if-revision` can reject an edit if the Issue changed since your read. `--append-notes` adds text, `--notes ... --force` replaces nonempty notes, and `--clear-notes` erases them. `bd edit review` opens your configured text editor; saving without a change should add no version. Comments have their own feed and do not add an Issue version.
-
-```sh
-bd show review --format graph-json
-review_revision="$(bd show review --format graph-json | jq -er '.result.revision')"
-bd update review --notes 'Final review note.' --force --if-revision "$review_revision"
-bd show review --format graph-json
-review_revision="$(bd show review --format graph-json | jq -er '.result.revision')"
-bd update review --clear-notes --if-revision "$review_revision"
-bd show review --format graph-json
-```
-
-### Lifecycle, readiness, and coordination
-
-Add a blocking dependency and inspect `blocked`. After you close the prerequisite, `blocked-work` may appear in `ready`. Read the Issue again after each lifecycle change.
-
-```sh
-bd dep add blocked-work blocker
-bd blocked --json
-bd ready --type task --limit 10 --json
-bd close blocker --reason 'Prerequisite complete'
-bd ready --type task --limit 10 --json
-bd reopen blocker --reason 'Recheck prerequisite'
-bd defer alias-task --until tomorrow
-bd undefer alias-task
-```
-
-`close --suggest-next` and `--claim-next` apply to one Issue at a time; use a separate pair of Issues if you try them. Replace `ID` in `bd todo done ID` with an actual ID returned by `todo add`. Closing a prerequisite can unblock other Issues. Closing an already closed Issue again makes no change. A deferred Issue can become ready when its date passes.
-
-```sh
-bd create 'Claim-only walkthrough' --id beads/ready-claim-example --type task --label claim-demo
-bd ready --claim --label claim-demo --actor demo --json
-bd show ready-claim-example --json
+# Add a TODO Issue, then list TODOs.
+bd todo add 'Document a test' --description 'Record the expected result'
 bd todo list --all
-todo_id="$(bd todo list --all --json | jq -er '[.[] | select(.title=="Document a test") | .id] | first')"
-bd todo done "$todo_id" --reason 'Documented and verified'
 ```
 
-```sh
-bd create 'Lease example' --id beads/lease-example --type task
-bd update lease-example --claim --actor demo
-bd heartbeat lease-example --actor demo
-bd hb lease-example --actor demo
-bd unclaim lease-example --actor demo
-bd reclaim --older-than 0s --id lease-example --json
-bd state review patrol --json
-bd state list review --json
-bd merge-slot create
-bd merge-slot check --json
-bd merge-slot acquire --holder demo
-bd merge-slot check --json
-bd merge-slot release --holder demo
-```
-
-The `reclaim` command above should find nothing because the lease was just released. To test real recovery, you need a separate Issue with an **expired** lease. `ready --claim` claims one ready Issue in a single operation. `heartbeat` renews a lease without making an Issue version; `reclaim` changes an expired lease. `state` reads existing state labels and returns `null` when a requested state is unset. `set-state` is unavailable. Create the merge slot only once in a workspace.
-
-### Parent and child; epic progress
-
-
-You can make a parent-child relationship in two ways: create both Issues and connect them with `dep add --type parent-child`, or create a child directly with `create --parent`. The first example uses two separate Issues. `q --parent` is unavailable.
-
-```sh
-bd create 'Release epic' --id beads/epic-a --type epic
-bd create 'Publish package' --id beads/epic-child-a --type task
-bd create 'Similar dotted ID, no relationship' --id beads/epic-a.lookalike --type task
-bd dep add epic-child-a epic-a --type parent-child
-bd children epic-a
-bd children epic-a --json
-bd epic status
-bd epic status --eligible-only
-bd epic close-eligible --dry-run --reason 'All child work complete' --actor demo
-```
-
-`children` should show the actual child, even after it is closed. It should not treat the Issue with a similar dotted ID as a child. Close the real child, then inspect `children` and `epic status` again. Use `epic close-eligible --dry-run` to preview which epics can close. If `epic-a` is eligible, run the real command and read it again. An assigned, pinned, or blocked epic may still refuse to close. The command handles eligible epics one by one, so if any fail, check which ones succeeded before retrying.
-
-```sh
-bd close epic-child-a --reason 'Package published'
-bd children epic-a --json
-bd epic status --eligible-only
-bd epic close-eligible --dry-run --reason 'All child work complete' --actor demo
-bd epic close-eligible --reason 'All child work complete' --actor demo
-bd show epic-a --json
-bd versions epic-a --json
-```
-
-Now create a new epic and use `create --parent` to make its child. The command chooses a dotted child ID, copies the parent's labels unless told otherwise, and creates the parent-child Link in the same operation. Save the child and Link IDs returned in JSON; use those IDs for later `show`, `versions`, `history`, and `bd link list` commands. If the parent does not exist, the command should fail without creating either record.
-
-```sh
-bd create 'Parent for atomic child' --id beads/epic-b --type epic --labels inherited --json
-bd create 'Atomic child' --parent epic-b --type task --labels own --json
-bd children epic-b --json
-bd link list --incident-to epic-b --direction in
-bd show epic-b --format graph-json
-bd versions epic-b --json
-```
-
-The parent-child Link points **from the child to the parent**, so `bd link list --incident-to epic-b --direction in` finds it at the parent. Use the returned child ID to see the outgoing Link. A second child made with `--no-inherit-labels` keeps only the labels you give it. `create --parent` cannot be combined with an explicit `--id`. To delete an Issue, first remove every live Link connected to it with `bd link delete --force`, then preview `bd delete ISSUE`; add `--force` to apply the Bead deletion. Use `--if-revision TOKEN` on either delete command to reject stale state.
-
-## 4. Optional Claude Code setup
+## 7. Optional Claude Code setup
 
 If you use Claude Code with your own project, install its hook and check it. The hook's `stop` command is called by Claude with transcript input; do not invoke it as a standalone manual test.
 
 ```sh
+# Install and check the Claude Code project hook.
 bd setup claude --project
 bd setup claude --project --check
 ```
 
-## 5. Optional BDP Read exercise
+## 8. Optional BDP Read exercise
 
 BDP serves graph records over HTTP. It needs a Dolt shared server, so use a **separate new workspace** for this exercise. The earlier CLI workspace uses embedded Dolt and cannot serve BDP. You need `dolt` 2.1.8 and `curl` installed. Keep each service running in its own terminal. The commands below use local ports 13395 and 18795; choose unused ports if either is occupied.
 
 In **terminal A**, create a fresh directory and start Dolt:
 
 ```sh
+# Create an isolated shared-server workspace and start Dolt in terminal A.
 mkdir "$HOME/beads-preview2-bdp"
 mkdir "$HOME/beads-preview2-bdp/server-data" "$HOME/beads-preview2-bdp/workspace"
 cd "$HOME/beads-preview2-bdp"
@@ -507,9 +558,12 @@ dolt sql-server -H 127.0.0.1 -P 13395 --data-dir "$PWD/server-data"
 In **terminal B**, enter that workspace, initialize it against the running Dolt server, and create one Memory. Start the read-only BDP service in this terminal:
 
 ```sh
+# Initialize the BDP workspace against the Dolt server in terminal B.
 cd "$HOME/beads-preview2-bdp/workspace"
 bd init --graph-mode link --scope-url 'http://127.0.0.1:18795/graph/' \
   --server --external --server-host 127.0.0.1 --server-port 13395 --server-user root
+
+# Create a Memory and start the read-only BDP service.
 bd remember 'Review before publishing.' --id policy-bdp --title 'BDP policy'
 bd serve --readonly --addr 127.0.0.1:18795
 ```
@@ -517,7 +571,10 @@ bd serve --readonly --addr 127.0.0.1:18795
 In **terminal C**, request the service description and the Memory. The service description lists its Read capability and collection URLs:
 
 ```sh
+# Read the BDP service description in terminal C.
 curl --fail-with-body http://127.0.0.1:18795/graph/bdp.json
+
+# Read the Memory and the first page of the Bead collection.
 curl --fail-with-body http://127.0.0.1:18795/graph/beads/policy-bdp
 curl --fail-with-body 'http://127.0.0.1:18795/graph/beads/?limit=1'
 ```
@@ -543,10 +600,11 @@ This list covers only the forms described above. It does not promise every optio
 
 | Area | Commands covered here |
 | --- | --- |
-| Issue work | `bd assign`, `bd close`, `bd defer`, `bd undefer`, `bd edit`, `bd note`, `bd priority`, `bd reopen`, `bd comment`, `bd count`, `bd query`, `bd search`, `bd statuses`, `bd todo` |
-| Coordination | `bd heartbeat`, `bd reclaim`, `bd unclaim`, `bd merge-slot` |
-| Graph setup and reads | `bd init` in a new workspace, `bd types`, `bd versions`, `bd compare` |
-| Link operations | `bd link create`, `list`, `show`, `count`, `versions`, `compare`, and `delete` as shown above |
+| Workspace | `bd init` in a new workspace, `bd status --graph`, `bd types` |
+| Beads | `bd create`, `list`, `show`, `update`, `delete`, `versions`, and `compare` in the forms shown above |
+| Memories | `bd remember`, `recall`, `forget`, and `memories` |
+| Links | `bd link create`, `list`, `show`, `update`, `delete`, `versions`, `compare`, and `count` in the forms shown above |
+| Issue workflows | `bd dep add`, `bd dep list`, `bd children`, `bd blocked`, `bd ready`, `bd close`, `bd reopen`, `bd priority`, `bd assign`, `bd note`, `bd comment`, `bd search`, `bd count`, `bd query`, `bd q`, and `bd todo` |
 
 ### Commands with known limitations
 
