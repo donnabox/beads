@@ -1,0 +1,20 @@
+{
+  "pid": 54365,
+  "argv": [
+    "/opt/homebrew/bin/claude",
+    "--safe-mode",
+    "-p",
+    "--tools",
+    "Read,Grep,Glob",
+    "--allowedTools",
+    "Read,Grep,Glob",
+    "--disallowedTools",
+    "Bash,Edit,Write",
+    "--permission-prompts",
+    "none",
+    "--no-session-persistence",
+    "Read only package.json in the current directory and reply only with its name property value. Do not modify files or use any other tools."
+  ],
+  "start": "2026-10-15T09:17:42.194108+00:00",
+  "deadlineSeconds": 60
+}
