@@ -1,0 +1,183 @@
+{
+  "commit": "9bf601bfb570adae97ce8cdc99caf2cc7a2b34c1",
+  "excerpts": [
+    {
+      "path": "apps/bdptest/src/transactional-matrix.test.ts",
+      "firstLine": 93,
+      "lastLine": 352,
+      "label": "complete existing observation type/helper; configuration, exact route preflight, lifecycle, retention, cleanup",
+      "sha256": "9e27f612613ad83c32504c837c1059d67ccb6e59ddd743494d51fe2ec4014f88",
+      "bytes": 10831
+    },
+    {
+      "path": "apps/bdptest/src/transactional-principal-key-installed.test.ts",
+      "firstLine": 551,
+      "lastLine": 674,
+      "label": "existing independently validated context, complete initial receipt/Resource and seven-response postconditions",
+      "sha256": "6faf93ffbb574067224821e8f97549a1a43b4a72befbce4ff41c1b53d6af7930",
+      "bytes": 6016
+    },
+    {
+      "path": "packages/server/src/transaction-runtime-configuration.ts",
+      "firstLine": 226,
+      "lastLine": 254,
+      "label": "closed credential entries and actual authentication identity",
+      "sha256": "af5bb40ea1264e0b68b2f48666b231a499d9ed64b66f3db301c6201e4fd0ef95",
+      "bytes": 1425
+    },
+    {
+      "path": "packages/server/src/transaction-runtime-configuration.ts",
+      "firstLine": 321,
+      "lastLine": 332,
+      "label": "actual credential-to-principal lookup",
+      "sha256": "9ef2b0d046403b789c7dd464d823845bbf91dbf2ad483e8125c5e89e2012d457",
+      "bytes": 433
+    },
+    {
+      "path": "packages/server/src/transaction-runtime-configuration.ts",
+      "firstLine": 373,
+      "lastLine": 402,
+      "label": "actual served policy/runtime binding",
+      "sha256": "1e4acd99f5d6100c74efd4c4639ca125ecc3a9cc61705473ec7ad677f96887ca",
+      "bytes": 951
+    },
+    {
+      "path": "packages/server/src/transaction-store.ts",
+      "firstLine": 1050,
+      "lastLine": 1129,
+      "label": "actual retained key lookup, equality/conflict and fresh principal-owned receipt allocation",
+      "sha256": "80c00d8030211c68e9e093fd126b807f43d579f8310cef45a4419b0e4746fa7d",
+      "bytes": 3359
+    },
+    {
+      "path": "packages/server/src/transaction-http.ts",
+      "firstLine": 329,
+      "lastLine": 372,
+      "label": "actual mutation principal dispatch and conflict response/context",
+      "sha256": "0e71305ec427037253ff5f65e256035141b0d2cc064a434d5b8c0f9247345a79",
+      "bytes": 1985
+    },
+    {
+      "path": "packages/conformance/src/runner.ts",
+      "firstLine": 354,
+      "lastLine": 395,
+      "label": "canonical metadata and explicit scenario selection",
+      "sha256": "f92dcbb56d2e56d477bc6bc15a21e5a4a01701e43997e7165af2f2f87afd6f87",
+      "bytes": 2169
+    },
+    {
+      "path": "packages/conformance/src/runner.ts",
+      "firstLine": 1440,
+      "lastLine": 1471,
+      "label": "all assertion outcomes recorded before row failure and captures",
+      "sha256": "98eb2e6b7e7cbd92ece67fcf7ccb30fea3035e6c5135dc0ce8e5223ec5af34e0",
+      "bytes": 1061
+    },
+    {
+      "path": "packages/conformance/src/runner.ts",
+      "firstLine": 1660,
+      "lastLine": 1678,
+      "label": "exact ref membership and authored body materialization boundary",
+      "sha256": "3270a72486ef0a7059086a5d45113197eaf34f1aa992518a8d31c2098e865a97",
+      "bytes": 864
+    },
+    {
+      "path": "packages/conformance/src/runner.ts",
+      "firstLine": 2468,
+      "lastLine": 2500,
+      "label": "raw capture value restriction and confinement",
+      "sha256": "6f2706ba9ef20315bef599812acfb230e99d6ca45fa219239c3b8c9b5aee7365",
+      "bytes": 1095
+    },
+    {
+      "path": "apps/bdptest/test-support/transactional-execution-binding.ts",
+      "firstLine": 103,
+      "lastLine": 130,
+      "label": "scenario launch baseline identity comparison",
+      "sha256": "57f6af1313ce2994829afe9bf97586a8ccb596f40003614ff53c6330d0d0afa2",
+      "bytes": 1262
+    },
+    {
+      "path": "apps/bdptest/src/transactional-matrix.test.ts",
+      "firstLine": 1940,
+      "lastLine": 1964,
+      "label": "cross-carrier activation and postcompletion rejection guards; remainder omitted",
+      "sha256": "79c1b5c77a6f225b294d9cb81aba43b823958c73eacde7f09f5c1c09f9ffc45c",
+      "bytes": 1091
+    },
+    {
+      "path": "apps/bdptest/src/transactional-matrix.test.ts",
+      "firstLine": 2383,
+      "lastLine": 2408,
+      "label": "minimum observer activation and postcompletion key/body guards; other oracle branches omitted",
+      "sha256": "655fc306dd87f9f61e2a50e839c32d9f78db275b8f7a8003eab25b4b3ff232bd",
+      "bytes": 1136
+    },
+    {
+      "path": "apps/bdptest/src/transactional-matrix.test.ts",
+      "firstLine": 3152,
+      "lastLine": 3176,
+      "label": "complete current observer composition",
+      "sha256": "bfe56ceea97a1aab857f2b860eed6b2e346b7a04432774a5534592924f4972bb",
+      "bytes": 789
+    },
+    {
+      "path": "packages/conformance/src/transactional-cumulative.test.ts",
+      "firstLine": 983,
+      "lastLine": 1002,
+      "label": "complete historical sequence stripping/full-parent assertion",
+      "sha256": "e748b3882a65976814814d9c0ffbf30c16851611392a4213c9626bd4442895e1",
+      "bytes": 958
+    },
+    {
+      "path": "packages/conformance/src/transactional-cumulative.test.ts",
+      "firstLine": 2968,
+      "lastLine": 3002,
+      "label": "complete affected minimum callback and index-sensitive mutations",
+      "sha256": "f702b97c75b1cf3de17c451b0c5e821b95a72adfc2af181cb44166c3af3d8d50",
+      "bytes": 1833
+    },
+    {
+      "path": "docs/specs/bdp.md",
+      "firstLine": 3184,
+      "lastLine": 3205,
+      "label": "normative principal/rotation namespace; anonymous/actor clauses remain excluded",
+      "sha256": "7e9c9d5a8f69b1e8aa7c44c3c0f1b89683d43e8e7edbb05c4bf6a524511d26ec",
+      "bytes": 1476
+    },
+    {
+      "path": "docs/specs/bdp.md",
+      "firstLine": 3888,
+      "lastLine": 3918,
+      "label": "Transactional admission/epoch extension",
+      "sha256": "6592c5f596685dd1e04cc07eeadb843d3ede94d2d90cf28068670b3e8c864af7",
+      "bytes": 1946
+    },
+    {
+      "path": "docs/specs/bdp.md",
+      "firstLine": 3947,
+      "lastLine": 3975,
+      "label": "retained namespace/view and comparison law",
+      "sha256": "28e50d680e2da2dc952cedc62b893124f5aa861120f84f6077d6ff5b76090f78",
+      "bytes": 1904
+    },
+    {
+      "path": "packages/protocol/schemas/bdp-v0.schema.json",
+      "jsonPointers": [
+        "/$defs/receiptCore",
+        "/$defs/mutationReceipt",
+        "/$defs/beadRecord",
+        "/$defs/currentBeadRecord",
+        "/$defs/beadCollection",
+        "/$defs/currentBeadCollection",
+        "/$defs/eventPage",
+        "/$defs/event",
+        "/$defs/transactionalProblem"
+      ],
+      "projectionSha256": "401d457e8e3aa9952ce662116dcf722898940e149f14b488385baa325e809471",
+      "bytes": 7943,
+      "label": "Selected definitions complete; referenced scalar/result-entry definitions omitted explicitly below"
+    }
+  ],
+  "omittedContext": "\n## Supplied and omitted context / accountability\nThe complete plan, proposed seven-action row, coverage, requests, negative expected outcome, role/validation ledger, selections, canonical size measurements, all30 raw-parent identities, route preimage,55-site inventory and41 derivative metric summaries are supplied. Python data-only measurements are proposals, not executed schema/behavior evidence. The existing observe helper is complete; two observer excerpts are intentionally partial activation/completion gates, while complete current composition is supplied. Full old row objects (roughly790KB), full mutated manifests, remaining old observer body-oracle branches, generic runner execution/evaluator implementation beyond supplied boundaries, referenced scalar/result-entry schema definitions, full resource evaluator and full receipt/Event renderer are omitted for size. Their file hashes are pinned where part of source binding; omissions are not evidence they are absent. Schema objects supplied are complete objects, not selected fields, but their external $refs remain dependencies. The standalone principal oracle block supplies exact private Event projection and complete actual-response expectations as implementation precedent, not normative ID syntax or new execution evidence.\n\nReview this distinction: existing manifest assertions alone do not perform new dynamic full-receipt/revision equality; the planned in-memory app observer must validate initial facts before baselines, drive both whole-JSON comparisons from a literal ledger and prove completion. Ref-based auth is separately covered by the existing executor, and actual serving identity belongs to each newly bootstrapped credential configuration. No arbitrary capture/body report recovery is allowed. All old raw row hashes and immediate-parent reconstructions must remain exact. Costs are source models whose historical runtime estimate is not guaranteed remaining CI capacity. Do not assume the plan's conclusions merely because prior tests passed; identify any flaw in their use for this exact integration. Requests for a missing excerpt should name the relevant invariant rather than report an invented code defect.\n"
+}

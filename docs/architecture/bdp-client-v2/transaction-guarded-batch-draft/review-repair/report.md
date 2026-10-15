@@ -1,0 +1,11 @@
+# Guarded-batch F1/F2 successor — unvalidated
+
+Only the installed test changed on clean candidate9e5f040; the working tree now contains this uncommitted repair. Before bytes of both owned files and the complete original base-to-candidate patch are preserved under before/. Original source, code review, static and installed evidence remain attributed to the preceding frozen source.
+
+F1: register every pair rejection through the existing identity-deduplicating addFailure, then throw the original first rejection. The outer catch and later pending-request drain encounter the same original errors and cannot count a new AggregateError wrapper as an additional failure. Two distinct failures still count twice; the same Error shared by both requests counts once.
+
+F2: frozen-loser-replay-input now binds the selected completed contender's actual response index, sent key and request body byte/hash fields to the losing receipt and immutable replay inputs. After request4, the existing retained-failure-full-equality check additionally compares its actual completed-request key/body fingerprints to the losing completed request before full receipt equality. These fingerprints are produced from the send-local immutable body passed to req.end; they are not independent socket-byte attestation. This reduces self-comparisons without claiming a new transport guarantee.
+
+The two existing performed labels, report fields, seven/three schedules, all limits and documentation are unchanged. No F3–F7 changes, formatter, test, product import, build, service, package, commit or push was performed.
+
+Proposed targeted check (not executed): proposed-failure-dedupe-check.mjs pins the successor source hash, extracts the actual addFailure/pair-handler/drain statements, removes only the known TypeScript parameter annotation and evaluates those fragments with synthetic Error identities. One error, two distinct errors and one shared error must produce primary counts1/2/1 and cleanup increments0/0/0. This is a narrow accounting check, not transport/cleanup lifecycle execution or another product-test registration. Root must authorize execution; formatting/type and installed validation are separate gates. Source hash drift requires repinning rather than silently running different bytes.

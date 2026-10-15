@@ -1,0 +1,7 @@
+# Narrow N1 successor disposition
+
+Native finding N1 (native-plan-review.md a6ee63ee4a74397d4adf83d029015b8f5e9b3fc23440ca7685631430f714c296) is accepted. The original plan incorrectly required credentialRef on ObservedExchange.request. Genuine report projection runner1170–1179 omits it. Existing exact execute input runner1212–1224 / ExactHttpExchangeRequest23–34 supplies method/url/credentialRef, but also lacks id.
+
+Root's provisional suggestion to copy execute-input id was corrected after source inspection; root explicitly accepted capturing only local ordinal plus actual method/url/credentialRef before unchanged delegation, then joining to actual reported id/method/url. This proposal records that correction and labels each field's source. It does not invent a report field or alter public interfaces.
+
+Only plan.md mechanism prose and ledger.json dispatchProof are changed. Original plan355d336f/ledger5bd18df and all literal row/coverage/request/control objects remain immutable. All7requests/139assertions/18expected negative failures,4files,9static callbacks,5installed cohorts,652expected/657maxHTTP/76children and every original bound remain identical. Twenty-four committed source pins still apply because both inspected interfaces were already pinned. No code, tests, imports, build, services or review invocation occurred. This successor still needs root acceptance and actual plan council before authoring; it is not self-approved.
