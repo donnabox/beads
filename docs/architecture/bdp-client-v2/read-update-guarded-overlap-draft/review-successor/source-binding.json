@@ -1,0 +1,65 @@
+{
+  "status": "EXTERNAL_PREVIEW_NOT_REPO_APPLIED",
+  "workspaceBasis": "/Users/dbox/repos/wt/vickie/vickie-sequence-member-evidence",
+  "observedHead": "1a37f7209e3ff6f409f43491d670c881259406ba",
+  "authoritativeRuBasis": "015cac1aa4fa827cc4a2c647dff08454c6c8e6f8",
+  "anticipatedReceiptCandidate": "1a37f7209e3ff6f409f43491d670c881259406ba",
+  "actualMergedParent": "PENDING_ROOT_VERIFIED_RECEIPT_MERGE_REANCHOR",
+  "plan": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/read-update-guarded-overlap-plan-v2.md",
+    "sha256": "7de8ee2cb33d1cfd9d7d3c556cae3998838e68c58f5cca72d70cff7c84084cef"
+  },
+  "dispositions": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/read-update-guarded-overlap-claude-source-dispositions.md",
+    "sha256": "e6257a068aa142fa1bf614534f4741f4557d3459997802242544f79ae9e98539"
+  },
+  "rootPlanAcceptance": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/read-update-guarded-overlap-root-plan-acceptance.json",
+    "sha256": "798076754d4ad0c8748ad4de2cae334e9bcd2892815a62db027ef6ba28081d0d"
+  },
+  "files": {
+    "apps/bdptest/src/read-update-guarded-overlap-installed.test.ts": {
+      "previewPath": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/read-update-guarded-overlap-draft/review-successor/read-update-guarded-overlap-installed.test.ts",
+      "sha256": "c0d65166e9587311d101883727cbba8bdb5baa0c31bc240e87ed55a45e74d56c",
+      "bytes": 23411,
+      "new": true
+    },
+    "docs/design/update-implementation-progress.md": {
+      "previewPath": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/read-update-guarded-overlap-draft/review-successor/update-implementation-progress.md",
+      "sha256": "8c6caae7f8ba4ccb2a2492596cc09dee6fbbfd630a9595ac04f5446f4b150cde",
+      "bytes": 42438,
+      "new": false
+    }
+  },
+  "sourceHashes": {
+    "scripts/installed-reference-observation.mjs": "ca897f4a7659969df123037b5847d5765b357d9b8e1652f367bb204450db6278",
+    "packages/server/src/installed-reference.ts": "c311a724d5d81710264b443da6800e960f49402f10383889de59714949b9eec7",
+    "packages/server/src/installed-reference-process.ts": "149f98c04e096a9eab9a291bd4aac3f7db34ba57578e63cb4439e0e3e24fc654",
+    "packages/server/src/development-runtime.ts": "37e222682645e9d8f2d5fcf62de208640fb6216c9e9f2f279ab6017e8b9d6ca9",
+    "packages/server/src/development-composition.ts": "a7113a8a3164dc6f4b1f6b5bdcbf74cee811e5b8a0474d241ac30706997ee54f",
+    "packages/server/src/member-executor.ts": "cfce8e561f9315948c6b3b3def25893a7dfde78e2cc338fa142b859ae209771f",
+    "packages/server/src/resource-evaluator.ts": "89606787e455f4ed555b807d91c5331a376431807a9a581de1f94e538fcab4ff",
+    "packages/server/src/recovery-store.ts": "48b7901e48998fe29598168a527213ebfb49e1d6e5dc5c2eb6494c862b5de9f9",
+    "packages/protocol/src/index.ts": "92e547e807ec2d23223c47dbc4e04867d55db89ac9aab5fbd55f33349f92bdc6",
+    "docs/specs/bdp.md": "f036103ffdf5f89fa3a2033570e1e987c4cd203cd80b1c633cb44615123f892e",
+    "apps/bdptest/src/development-matrix.test.ts": "858e6f85bf40bde4327df52e34a2aceab235b8130e7539a816651ce19f71e1ac",
+    "packages/server/src/read-http-routing.ts": "d9344b87838f8c71381ccf9efe28b4f023df45503570beb8fb4293d553caca42",
+    "packages/server/src/read-request.ts": "57675afc647df3e8ad1f26a40aef72584aa388ade6af4a465e3ffef16670f6a2",
+    "packages/server/src/development-authority.ts": "d49f89da345234f7eaee83dd872a5c2d7a1a8d38ffc794e5e69d333976d22d49",
+    "packages/server/src/authority-read.ts": "fd6554c4ee0d08b997fb3622c2f21697f02d58b838f4ae0de10aca4707f67734",
+    "packages/protocol/src/read-values.ts": "6ff2cd2456a5487ded968bac6651164ed4a82ad665b8896986accfd662688482",
+    "packages/protocol/src/read-update-values.ts": "d1fdbc660d5e2c009275c152bdcebda46031700920aa03bfea89f39564c89de2",
+    "packages/protocol/src/read-update-problems.ts": "1a6315705b72fad1f1a287053c17858130c91317ed08c95f6d68a1ecc620a211",
+    "packages/protocol/src/json-values.ts": "9a1cd0b12ccd41913e2874673fdb2a24ae7925d7e4e880f50cecc717dadec591",
+    "packages/protocol/schemas/bdp-v0.schema.json": "0baa5d5ef67144f8e6513b4cde31168effc8df6d52ef3141b0f144b87f8dc227",
+    ".github/workflows/ci.yml": "fd0a08da61f74abe19c8db16d879bfff85d8090643bf4da326d3e597ae129be3"
+  },
+  "oldDocSha256": "208ba97d6948cf6214fbb5ca218ac92cbe716796cdaf365e49097bd661e301b1",
+  "diffSha256": "3f6f29facd7c8467583747c27a7aac408069f8360f1670a3f4be94ce22583d84",
+  "repositoryStatus": "",
+  "execution": false,
+  "predecessorBinding": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/read-update-guarded-overlap-draft/preview/source-binding.json",
+    "sha256": "c4534f14df45f9f5d2a2f5d212cbf21f788e58c0685566f148796f59da6d84be"
+  }
+}

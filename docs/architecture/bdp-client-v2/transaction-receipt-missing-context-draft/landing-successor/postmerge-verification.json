@@ -1,0 +1,32 @@
+{
+  "actualMerge": "9a42a4531def99e12fa9a1fba02e70558d643265",
+  "parents": [
+    "015cac1aa4fa827cc4a2c647dff08454c6c8e6f8",
+    "1a37f7209e3ff6f409f43491d670c881259406ba"
+  ],
+  "mergedAt": "2026-10-15T13:55:28Z",
+  "testedMerge": "062fd1086fda3af7098832a2ff2d6c72316d15b2",
+  "at": "2026-10-15T13:55:43.214809+00:00",
+  "mode": "postmerge",
+  "head": "1a37f7209e3ff6f409f43491d670c881259406ba",
+  "tree": "a9cca0e1e5c52ac8bbd06ce989a94ca6e4f2b272",
+  "base": "015cac1aa4fa827cc4a2c647dff08454c6c8e6f8",
+  "run": 38744089439,
+  "job": 116453031614,
+  "ciLogSha256": "67cc58ffc4af87abfad14cad46ee6459bb1ce10d6a45f915f3f73343be6c9ed0",
+  "pinsSha256": "c7bbf02c6a774a35a492a1b21d354bfff5cce7d4af6e5b685c06345d0b9defac",
+  "verifiedPaths": 9,
+  "requiredSteps": [
+    "Run pnpm install --frozen-lockfile",
+    "Run pnpm format:check",
+    "Run pnpm lint",
+    "Run pnpm check:boundaries",
+    "Run pnpm typecheck",
+    "Run pnpm build",
+    "Run pnpm test",
+    "Run pnpm e2e:ready:preflight",
+    "Run pnpm smoke",
+    "Read-cohort evidence gate"
+  ],
+  "profileQualification": false
+}

@@ -1,0 +1,55 @@
+{
+  "at": "2026-10-15T13:55:07.911744+00:00",
+  "head": "1a37f7209e3ff6f409f43491d670c881259406ba",
+  "tree": "a9cca0e1e5c52ac8bbd06ce989a94ca6e4f2b272",
+  "base": "015cac1aa4fa827cc4a2c647dff08454c6c8e6f8",
+  "decision": "accepted for exact-head landing checks",
+  "evidence": {
+    "finalSourceBinding": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-receipt-missing-context-draft/landing-successor/final-source.json",
+      "sha256": "49489335c1ced23475429475c547a25fb4731b969dfaf7fff8173735f6371be5"
+    },
+    "native": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-receipt-missing-context-draft/native-code-review.md",
+      "sha256": "eab2936928c979c66b77fa5cb2afd0bd66c6e1215dc373d543da33aa11643c57"
+    },
+    "claudeExit": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-receipt-missing-context-code-claude/exit.json",
+      "sha256": "b00bd1a21ad587a7e06ee7b568dd985540ed3c6750d48e37bbed0a431a671c3a"
+    },
+    "claudeStdout": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-receipt-missing-context-code-claude/stdout.txt",
+      "sha256": "96959814652b5360d014a6f67b162a1ff774aec8730cefe0da642371ddafb094"
+    },
+    "rootCouncil": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-receipt-missing-context-draft/ci-budget-repair/root-council-acceptance.json",
+      "sha256": "74acd93af9958ac22c7b262731855d1c3f12e2fe0bad6289e226f0632702be32"
+    },
+    "sourceAcceptance": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-receipt-missing-context-draft/root-source-positive-acceptance.json",
+      "sha256": "2ca51c6b6c6fb41e38fd25b07cd569a6c79496e73ce7d1b55f433985cd04d9f6"
+    },
+    "controlAcceptance": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-receipt-missing-context-draft/root-control-acceptance.json",
+      "sha256": "5dc8cb5b7ae9bb9841fcf030b8bcfb21963e653ee14fc1acc919467218fb9edb"
+    },
+    "installedAcceptance": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-receipt-missing-context-draft/root-installed-acceptance.json",
+      "sha256": "7f09c994a58ae471477d84c964016d37b27634aabacf7da1af08e8688c73d155"
+    }
+  },
+  "ci": {
+    "run": 38744089439,
+    "job": 116453031614,
+    "logSha256": "67cc58ffc4af87abfad14cad46ee6459bb1ce10d6a45f915f3f73343be6c9ed0",
+    "testsPassed": 9300,
+    "testsSkipped": 1,
+    "filesPassed": 175,
+    "suiteSeconds": 769.38,
+    "preflightPassed": 7,
+    "allRequiredJobSteps": "success",
+    "readEvidenceRows": 89
+  },
+  "scope": "eight receipt-context paths and one bounded test-helper cancellation repair; native and actual Claude findings dispositioned",
+  "attribution": "Fresh installed14-response receipt proof remains3968081; unchanged312packageoutputs/440emittedbytes verified separately. Original failedCI/control wrapper remain historical failures. No public profile qualification."
+}

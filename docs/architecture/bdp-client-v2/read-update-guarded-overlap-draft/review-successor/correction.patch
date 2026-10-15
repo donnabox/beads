@@ -1,0 +1,62 @@
+--- preview/read-update-guarded-overlap-installed.test.ts
++++ review-successor/read-update-guarded-overlap-installed.test.ts
+@@ -70,6 +70,7 @@
+   const failures: unknown[] = [];
+   const cleanupFailures: string[] = [];
+   let classification: Classification | null = null;
++  let startupPhase = true;
+   let namedOracle: string | null = null;
+   let directory: string | undefined;
+   let launched: Launched | undefined;
+@@ -105,8 +106,8 @@
+     if (!pair) return;
+     const key = `${pair}:${kind}`;
+     if (seen.has(key)) return;
++    if (milestones.length >= 32) { eventOverflow = true; droppedEvents++; return; }
+     seen.add(key);
+-    if (milestones.length >= 32) { eventOverflow = true; droppedEvents++; return; }
+     milestones.push({ ordinal: milestones.length + 1, request: pair, kind, ...(socket === undefined ? {} : { socket }) });
+   }
+   const granted = new Set<string>([scope]);
+@@ -116,7 +117,7 @@
+     if (!configuration || !granted.has(url) || grant(url) !== url || attempted >= 10)
+       throw new WitnessError("oracle", "overlap:dispatch-allowlist");
+     const bytes = body === undefined ? 0 : Buffer.byteLength(body);
+-    if (bytes > 65536 || (method === "POST") !== (body !== undefined && key !== undefined))
++    if (bytes > 65536 || (method === "POST") !== (body !== undefined) || (body !== undefined) !== (key !== undefined))
+       throw new WitnessError("oracle", "overlap:request-shape-bound");
+     const headers = { authorization: `Bearer ${token}`, accept: "application/json", connection: "close",
+       ...(body === undefined ? {} : { "content-type": "application/json", "content-length": String(bytes), "idempotency-key": key! }) };
+@@ -210,7 +211,8 @@
+     configuration = helpers.referenceConfiguration(directory, await helpers.availablePort(), token);
+     controller.signal.throwIfAborted();
+     try { launched = await helpers.launchInstalledReference(entry, configuration); }
+-    catch (error) { classification = "startup"; throw error; }
++    catch (error) { classification = workDeadline ? "work-deadline" : "startup"; throw error; }
++    startupPhase = false;
+     controller.signal.throwIfAborted();
+     const probe = await send(scope);
+     expect(probe.status).toBe(204); expect(probe.headers["x-bdp-development"]).toBe("non-attesting");
+@@ -283,10 +285,11 @@
+     expect(attempted).toBe(10); expect(bodyBytes).toBe(634 + 4 * revisionJsonBytes);
+   } catch (error) {
+     failures.push(error);
+-    classification ??= error instanceof WitnessError ? error.classification : workDeadline ? "work-deadline" : "oracle";
++    classification ??= error instanceof WitnessError ? error.classification : workDeadline ? "work-deadline" : startupPhase ? "startup" : "oracle";
+   } finally {
++    clearTimeout(timer);
++    controller.abort(new WitnessError("cleanup", "overlap:aborted"));
+     for (const req of active) req.destroy();
+-    clearTimeout(timer);
+     // Both teardown branches run even if the other fails; no additional runtime is started.
+     let drainTimer: ReturnType<typeof setTimeout> | undefined;
+     const drain = Promise.race([
+@@ -316,7 +319,7 @@
+       childExitCode: exit?.code ?? null, childSignalCode: exit?.signal ?? null, directory: directory ?? null,
+       directoryAbsent: directory === undefined ? null : !existsSync(directory),
+       startupLimitation: "Before readiness PID unavailable; inherited launcher may mask original startup failure. Only surfaced failure plus external process evidence retained.",
+-      retention: "Full schemas/replay/Resource assertions in memory; safe fingerprints and milestone ordinals retained. Client outstanding overlap only; no simultaneous admission/fairness claim. Losing replay equality cannot distinguish reevaluation. Source attribution externally verified, not child attested." };
++      retention: "Full schemas/replay/Resource assertions in memory; safe fingerprints and milestone ordinals retained. Client outstanding overlap only; no simultaneous admission/fairness claim. Losing replay equality cannot distinguish reevaluation. Source attribution externally verified, not child attested. Entry hash alone does not bind emitted bytes to sourceCommit." };
+     const output = process.env.BDP_RU_GUARDED_OVERLAP_OUTPUT;
+     if (output) { try { if (!path.isAbsolute(output)) throw new Error("overlap:absolute-output"); writeFileSync(output, `${JSON.stringify(record)}\n`, { flag: "wx" }); }
+       catch (error) { failures.push(error); record.outcome = "failed"; record.failureCount = failures.length;
