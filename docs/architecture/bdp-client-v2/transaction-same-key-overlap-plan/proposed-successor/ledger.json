@@ -1,5 +1,5 @@
 {
-  "status": "proposed successor; awaiting native source audit/root acceptance; authoring and execution closed",
+  "status": "proposed frozen successor; completed source-audit dispositions; exact native closure/root acceptance pending; authoring and execution closed",
   "head": "f5511718371a6935614eae6756e796cef71570c2",
   "tree": "3cd1da66ba3a6cbd0bbdaa2442d10002939d826b",
   "ownedPaths": [
@@ -271,7 +271,8 @@
       "retry-after",
       "vary"
     ],
-    "cleanupAttribution": "preserve actual surfaced errors; equal outer/launcher bounds can race; no deterministic attribution promise or timeout increase"
+    "cleanupAttribution": "preserve actual surfaced errors; equal outer/launcher bounds can race; no deterministic attribution promise or timeout increase",
+    "transportAllowlist": "only fixed collection /acme/beads/?limit=32 admits a query; preserve pathname+search; issued receipt root has no query; six-attempt cap; canonical Host reference.invalid"
   },
   "outcomes": {
     "success": {
@@ -298,7 +299,8 @@
       "tcp": 2,
       "namedOracle": "same-key-overlap:shared-receipt-id"
     },
-    "unexpected-503": "failed selected healthy witness; retain actual response, no retry or accepted-inconclusive conversion; not automatically universal conformance defect"
+    "unexpected-503": "failed selected healthy witness; retain actual response, no retry or accepted-inconclusive conversion; not automatically universal conformance defect",
+    "early-failure": "startup/transport/oracle failure retains actual counts, possibly below two; minimum2 is not imposed on failed attempts"
   },
   "runtimeWrites": {
     "store": "resolved realpathSync(os.tmpdir()) plus fresh bdp-same-key-overlap-installed- directory, outside worktree; remove only known stopped/no launch",

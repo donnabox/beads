@@ -167,6 +167,10 @@
     "packages/conformance/catalog/transactional-v1.json": {
       "sha256": "c9125f914129c71f01cefc5c54b32db80637d37b57e321571c96e81936c31eb4",
       "bytes": 94826
+    },
+    "packages/server/src/read-pagination.ts": {
+      "sha256": "ee2462c355aec5b5c4f5fbd7b323ca6d814591c0a46c809ebb4636596e4f52f8",
+      "bytes": 31971
     }
   },
   "completeness": "meaningful review dependencies, not exhaustive runtime/build closure",
@@ -183,5 +187,13 @@
     "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-same-key-overlap-plan/source-binding.json",
     "sha256": "f4be4a20691f9a23e0ba61f0ddc77369cde86cc7e412a5b2ec2f6388ec68caeb"
   },
-  "status": "proposed successor awaiting source-audit dispositions/root acceptance"
+  "status": "proposed frozen successor; exact native closure/root acceptance pending",
+  "sourceAudit": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-same-key-overlap-plan/claude-plan-review/native-findings-audit.md",
+    "sha256": "590385f9b2b36a62e70186ffc2e91aba2d8ac4f50169ba378d0d4b8ae9f62beb"
+  },
+  "actualClaudeReview": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-same-key-overlap-plan/claude-plan-review/stdout.txt",
+    "sha256": "1350878089c6a5adcf99682911ea0df63937b2be69fb12d2aa4ce8958b0f3fbe"
+  }
 }
