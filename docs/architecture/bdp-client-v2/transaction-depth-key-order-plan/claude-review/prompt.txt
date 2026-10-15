@@ -1,0 +1,3533 @@
+Review this IMPLEMENTATION PLAN, not an implemented patch, against the committed source supplied below. Do not write or modify any files. Output findings only in stdout. You have no tools; review the supplied context only. Do not assume omitted imports are absent: import/type sections are included where relevant. Do not invent test execution or runtime observations.
+
+Return a complete standalone findings-first review with consecutively numbered findings (severity, plan/source location, concrete issue, impact, minimal correction), or explicitly no actionable findings. Finish with brief unresolved context gaps, clearly distinguished from defects. Do not refer to findings omitted from your output. Prefer concrete correctness, scope, typing, test feasibility and bounded-work issues over optional redesign.
+
+Source is actual merged main 0d63cf59d447eca2e7ff8b2e0e6a5f31513b9a3a, tree80a6fe0605698e18f9504432407e7943e1f665b4, clean codex/vickie-depth-key-order checkout. All planned counts are prospective. Review is one bounded 900-second attempt. Focus on complete syntax/principal before retained key comparison; fresh-only private depth refusal without normalization/claim; prior alias/dependency identity, retries after reservation retraction, immutable private brand/fact, legacy no-controls and sequence type/behavior preservation; adequate real pending/terminal/fresh evidence and exact selectors/lifetimes; meaningful emitted negative import graph and named failure; real installed request shape/configuration/receipt/context/schema facts and cleanup. No public depth policy or arbitrary deep execution, no pending Snapshot/incident-Link ruling, no public admission.
+
+The source includes all three existing admitKey call sites and dependency comparison. Existing tests are selected excerpts with original line numbers, not proposed tests; new named callbacks do not exist yet. Unrelated surrounding callbacks are not selected by inclusion here. The whole ledger follows the whole short plan; exact request literals are retained once, not repeated summaries.
+
+## Frozen plan.md
+# Direct retained-key comparison before private depth refusal
+
+Plan only. Native/actual Claude review and root authoring release remain required. Reviewed candidate 1f9cb46c42fa69a09ac847f57e47bc96390aea6f is now merged as 0d63cf59d447eca2e7ff8b2e0e6a5f31513b9a3a, tree80a6fe0605698e18f9504432407e7943e1f665b4, ordered parents77f4b89+1f9cb46. The fetched merge object/tree was independently read; its source tree equals the reviewed candidate. Use actual merged0d63 as authoring parent. Future isolated author checkout: /Users/dbox/repos/wt/vickie/vickie-sequence-member-evidence, branch codex/vickie-depth-key-order at actual0d63; TX remains frozen1f9. No implementation, execution or public admission is released. ledger.json binds the eight proposed paths, unchanged references, exact selectors and request literals.
+
+## Behavior and authority
+
+A shallow direct create binds a key. A valid retry differing only by forty-deep metadata must reach authoritative comparison and return409 even with Accept:text/plain, leaving the original receipt, graph and position unchanged. Original equal replay keeps existing receipt negotiation. Fresh deep requests keep bodyless500/unsupported-transaction-composition and capture no key. This is neither a new depth policy nor arbitrary-depth execution support.
+
+Spec bdp.md4515–4565 orders syntax, principal, key equality/conflict, fresh controls, then negotiation. Metadata has no Type properties schema (2212–2217). Current batch175/212 throws private capacity after complete syntax; submission121 returns before comparison130; HTTP356 emits500. Owner1057–1085 already distinguishes retained conflict/existing correctly. The repair removes the pre-key obstruction, not the depth guard globally.
+
+## Three production files; one private branded capacity fact
+
+1. **transaction-batch.ts:** preserve PreparedTransaction's shape and brand. Add one module-private WeakMap keyed by the actual branded object, carrying an immutable depth-refusal message. Share complete syntax parsing between existing strict preparation and a new source-private receiving entry point for direct batch/singleton. Only receiving preparation records depth capacity after all shape/reference/label/Selector checks instead of throwing it. Reuse assertTransactionInputDepth, including singleton wrapper offset2 and set conventions. Catch only TransactionDevelopmentLimitError at the depth-check boundary, never unrelated parser/owner faults.
+
+   Existing prepareTransaction, prepareTransactionSetCore and prepareTransactionSingleton must still throw the same class/message on deep input. Do not add skipDepth to their signatures, runtime configuration, package exports or client fields. The new entry point accepts raw text and the existing direct-carrier discriminator, not arbitrary prepared objects. A module-internal exported read accessor validates the original brand and returns string/undefined; there is no exported setter. Clones/spreads cannot forge the fact. Intermediate Resource carriers and sequence members retain their current construction. Keep transaction-set.ts/class/depth algorithm unchanged.
+
+2. **transaction-store.ts:** extend TransactionReceivingAdmission only with the private result {kind:"development-limit",message:string}. Inside the existing owner/SQLite entry, retain lookup/expiry and the entire prior dependency-template branch. If and only if no prior row exists and the fact exists, return it before fresh normalization, controls, negotiation, receipt allocation or claims. This preserves old fresh-depth priority without extra fresh alias resolution. Retained ordinary keys still normalize against prior witnesses, then take the existing conflict/equal branches. No submission-side existence lookup or shortcut from key presence to equality.
+
+   Preserve the legacy no-controls admit return type: throw TransactionDevelopmentLimitError for private depth, analogous to existing operation/Selector handling at1410–1413. Sequence's internal no-controls admitKey path must remain unable to admit a deep fresh request; strict sequence preparation already rejects it, and defensive propagation must not leak the new receiving variant into TransactionAdmission. The private depth result remains contextless as before; existing observed conflicts/receipts/negotiation keep their current same-entry tuple. No extra context read.
+
+3. **transaction-submission.ts:** use receiving preparation, retaining byte bounds, complete syntax, key grammar and principal checks. Remove the pre-comparison depth return; map the new owner variant to the existing exact development-limit submission result. DirectComparison derives from TransactionReceivingAdmission (comparison.ts11–15), so its pass-through loop needs no edit. HTTP356–357 already maps the existing submission variant. Do not catch owner faults as capacity.
+
+If actual typing requires another production path, stop and present the delta. No spec/protocol/config/package/public API change is expected.
+
+## All producer/caller and pending-path implications
+
+Production search finds direct preparation callers only at submission94–95, strict sequence preparation at HTTP316, and internal batch helpers. Retained direct source tests/set-core calls must remain strict. prepareCarrier at batch310 brands intermediate/sequence objects; those may not be externally reannotated.
+
+Owner prior-key normalization uses saved alias witnesses, not fresh substitute identity. Dependency comparison (dependencies173–218) can prove differing metadata conflicts before creator resolution; possible equality remains comparison-pending. Alias-template masking220ff is unchanged. Preserve original comparison deadline, same-epoch retraction and every authoritative recheck: if an unresolved reservation disappears, the same prepared depth fact must stop fresh admission on that next iteration. Retained pending/terminal/failed/expired outcomes and Accept ordering remain intact.
+
+transactionInputText and lossless JSON parsing are iterative; normalizeTransaction uses iterative encodeSemanticValue (semantic-identity53ff) under the existing64KiB request bound. This supports comparison feasibility, not all deep execution paths. No naturally wire-issued deep equal receipt exists under today's refusal: do not seed fictitious installed state. Use genuine shallow equal outcomes as the preservation control.
+
+## Eight-path footprint
+
+Production: transaction-batch.ts, transaction-store.ts, transaction-submission.ts.
+Source tests: transaction-set.test.ts, transaction-submission.test.ts, transaction-http.test.ts.
+New installed test: apps/bdptest/src/transactional-depth-key-order-installed.test.ts.
+Documentation: docs/design/transaction-implementation-progress.md.
+All server paths above are under packages/server/src. No cumulative catalog/evidence/public claim changes; document the remaining fresh/sequence limitation.
+
+## Source oracles and selectors
+
+ledger.json lists17 expanded positive callbacks with exact full-title regexes. New callbacks must be top-level with the specified names.
+
+A, CPU/no store: strict legacy batch/set-core/singleton/sequence still throw original class/message; receiving batch/singleton carry capacity without identity alteration; shallow fact absent; forged/spread object rejected by brand accessor/assertion; malformed deep syntax still fails first. Existing20,000-level iterative serializer callback remains selected, with no deep mutation execution.
+
+B, one store: both direct carriers, six submissions each—shallow completed seed; deep mismatch with acceptsJson:false→409; exact replay→identical saved receipt; shallow equal acceptsJson:false→exact not-acceptable; fresh deep acceptsJson:false→exact development-limit; shallow fresh-key reuse→completed. Compare real owner state after every refusal and saved outcomes in full. Observed conflict tuples must come from the same entry; private refusal must have no extra fields. Additionally one no-controls store.admit on receiving-prepared fresh-deep input must throw the legacy class and create nothing. Twelve submit calls plus one direct admit, zero HTTP.
+
+C, one store: create a genuine shallow direct pending claim with a distinct id; deep metadata mismatch→409/no wait; exact pending retry with unacceptable negotiation→not-acceptable; execute original and exact replay→saved completion. Then existing dependencies() creates a genuine unresolved createLink reservation; deep metadata mismatch→409/no wait/no changed reservation; resolve both turns and exact replay→saved receipt. Five submit calls; internal setup/turns are not HTTP. Finally retract/cancel any surviving claims/attempt on early failure, then close one owner.
+
+Unchanged selected cases cover syntax/key/auth-before-owner, malformed Selector vs depth, negotiation, failed/expired reopen, unresolved waits/retraction, aliases across repointing, singleton/wrapped set depth, both20,000-deep syntax cases and whole-sequence refusal. Their real full titles/counts are in the ledger; no global timeout change.
+
+H, one emitted-runtime listener/store: same13 requests as installed below, but actual fixture Scope/type. Use a bounded request helper local to this callback (abort, redirect:error, streaming128KiB response cap), not a shared fixture rewrite. Immediate second-response assertion label depth-key:batch:conflict-before-depth checks status before schema/context. Retain sanitized real observations before cleanup. No SQLite inspection/reopen. Existing selected sequence case separately adds4HTTP through its older fixture reader; do not claim it inherits the new per-request bounds.
+
+## Installed thirteen-request proof
+
+One ordinary child with existing launcher/execution binding. Fixed Scope https://reference.invalid/acme/, aligned task Type and properties schema requiring title:string; no extra properties. Bind configuration, actual12 operation targets, fixture, resolved entry and source declaration before dispatch. Authorization alone is a credential handle. Raw headers carry Accept, Content-Type and Idempotency-Key. No discovery activation.
+
+For batch, then create-bead singleton, each with separate retained/fresh keys:
+1 seed200; 2 same-key deep metadata409 with text/plain; 3 exact replay200; 4 fresh deep500 with text/plain; 5 shallow fresh-key reuse200; 6 point GET of original200. Then13 GET beads/?limit=32. Exact body text/hash/bytes and header/route ledger are in ledger.json:10POST/3GET, five distinct method/URL bindings.
+
+Require full existing409 Problem {type:"https://github.com/gastownhall/bdp/problems/conflict",code:"idempotency-conflict",status:409,retry:"never"} plus transactionalProblem validation and current tuples pos1/pos3. Private500 is bodyless with unchanged marker, no invented Problem/context. Receipts validate mutationReceipt, exact completed/available/requiredPosition/effectPosition/next:null and one created full Resource; capture actual revision then require its reuse. Replays equal complete saved bodies. Point GETs equal the seed receipt Resource at current pos2/pos4. Final schema-valid collection equals exactly the four complete created Resources in canonical order, next:null, pos4. No guessed receipt routes, raw-body capture inference, hidden retries or discovery calls.
+
+## Single negative and bounded work
+
+After a clean accepted build/source run, copy verified emitted runtime/store graph plus test/config/setup. In emitted store only insert the same prepared-depth refusal before row lookup, restoring early-capacity ordering with unchanged test/input. Run only H once: expect actual second response500, exactly the named conflict-before-depth assertion failure and test exit1. Expected2HTTP, hard ceiling13. Import/build/timeout/cleanup/schema-before-status or no-dispatch failures do not qualify. No installed mutant. Use pinned Node directly to the bound Vitest CLI, avoiding pnpm-exec shim rewrites. Exact derivative patch/import resolution/body/source hashes are measured before root release.
+
+Fresh installed positive follows a clean ordinary commit and separate package gate: protocol/server archives, source/archive/consumer member equality, all eight production dependencies/full served payload, entry/config/fixture/declaration binding. One child and13requests; no parent run.
+
+New source H work25s/Vitest30s/cleanup5s; new installed work45s/Vitest60s/cleanup10s. Both request5s, request64KiB/header16KiB, response128KiB/header64KiB. Existing selected callbacks retain their existing limits. Each external command120s, no automatic retry. All ceilings dominate their enclosed work; actual overrun/cleanup failure remains failure. Exact source dynamic-Scope body sizes are measured after freeze, not asserted equal to fixed installed literals.
+
+Planned positive source17callbacks/17HTTP/16owner lifetimes/15directories/2listeners; failed/expired replay has one reopen. Negative adds1callback/2expected(max13)HTTP/1owner/dir/listener. Installed adds1callback/13HTTP/1owner/dir/listener/child. Total19callback executions,32expected/max43HTTP,18owners,17directories,4listeners,1product child,0read-only SQLite handles. Worker/build/git/supervisor processes are separate. These are plans, not observations.
+
+Scrub inherited BDP overrides except separately approved installed bindings/output. Record exact argv/source/elapsed/exits/PID groups/temp inventory. Enforce counters before dispatch. Abort on failure; preserve primary and cleanup errors; close/drain owners/listeners/child; only then remove owned stores and independently verify PID absence. Preserve safe records before cleanup, with no credentials/raw Authorization or child environment. Writer failure remains failure.
+
+## Release prerequisites and tradeoffs
+
+Freeze/recount actual eight-path diff, expanded selection, body ledger and negative import graph before execution. Pinned Node24.16.0/pnpm11.20.0 offline frozen setup, typecheck, clean build, targeted format, lint, boundaries and unchanged Read seal precede source runs. HTTP tests import ../dist runtime; installed top-level schema/git/entry setup also requires the current build even under exact title selection. No install/import/build/test occurred while preparing this plan.
+
+Native plus actual Claude plan/code review and exact-head full CI remain root gates. Actual0d63 parent is now known; any intervening merged-source drift must be reconciled before authoring. Tradeoff: private fact/result typing preserves one authoritative lookup and legacy behavior. Fresh/sequence500 remains explicitly private; a new public depth response or general deep execution would be separate work. Sequence v6 evidence remains subordinate, not cancelled.
+
+## Frozen ledger.json
+{"status":"PLAN_ONLY_NOT_AUTHORIZED","source":{"reviewedCandidate":"1f9cb46c42fa69a09ac847f57e47bc96390aea6f","authoringParent":"0d63cf59d447eca2e7ff8b2e0e6a5f31513b9a3a","tree":"80a6fe0605698e18f9504432407e7943e1f665b4","orderedMergeParents":["77f4b89c117e46f0e73476f69b4c8b377306452b","1f9cb46c42fa69a09ac847f57e47bc96390aea6f"],"reviewWorkspace":"/Users/dbox/repos/wt/vickie/vickie-changefeed-parameter-context","futureAuthorWorkspace":"/Users/dbox/repos/wt/vickie/vickie-sequence-member-evidence","futureAuthorBranch":"codex/vickie-depth-key-order","fileSha256":{"packages/server/src/transaction-batch.ts":"5fa7052d95942548727760625e368f3892e1dacced1654f022720af0b5ce899a","packages/server/src/transaction-store.ts":"c0d1ebcdef1b354aa0806b8106ac0a3b0b24e6c94f50ec49b550decdf36ccf89","packages/server/src/transaction-submission.ts":"795b45d87b6ee7f727a3727ace64c0e6569d0cfa7ad941e46740e285d04df942","packages/server/src/transaction-set.test.ts":"a47a5bcf0a9e754eb0446dbfe5a2055c9728b27bfc3d96b22781ca927c557fd3","packages/server/src/transaction-submission.test.ts":"24e7692bd99b2f5cea5d6fdc0b70e9165d99022dbbce1af6535e33615d1bb730","packages/server/src/transaction-http.test.ts":"37084d256def9c1f1cec33fc2c6a0d6e793dba3d29699a57bf105bda0cde68db","apps/bdptest/src/transactional-depth-key-order-installed.test.ts":null,"docs/design/transaction-implementation-progress.md":"a1cc5b84d79485855dfbf1793628af4dcdba1147bd7938721a9af5317f57b569","packages/server/src/transaction-set.ts":"03b1ca9427c6963f5b6ce712a7f70540501e081ed635c742015d2bc49cc9524a","packages/server/src/transaction-comparison.ts":"3c5f9025675f506e08a9977ab0d1551a3a996669fd11b99772b1c2a39209998d","packages/server/src/transaction-dependencies.ts":"ca79b4be097d221560157c5c4eaac4601dab343de54dda1be15d92c44b2b09ba","packages/server/src/transaction-http.ts":"b51d02801e5924190aba77c377e538db0b8619149d6184e19cb56d440f40c2cf","packages/server/src/semantic-identity.ts":"ab836972c8380cc21c1cca8e6d431faa743b5c31f4f9c578e15d340abec69224","packages/protocol/src/json-admission.ts":"fad4bd5159e7ff9a309d9c094c0c8beb950593a60d69f088971cb9bb6b84e76e","packages/protocol/src/read-update-preflight.ts":"e9cea06515c1b7b5ffbfc275b82e9759e9083daa29c5daaab4485c161970275f","packages/server/package.json":"110e00c403c667d8c848c6280b2e98c47f98f134158a621967d889914d44632e","docs/specs/bdp.md":"f036103ffdf5f89fa3a2033570e1e987c4cd203cd80b1c633cb44615123f892e","apps/bdptest/src/transactional-direct-refusal-installed.test.ts":"c817729792a8bd97473b4b7ebe06474d4a0c27bcd5122e58268b997aa03408b0","apps/bdptest/src/transactional-receipt-missing-context-installed.test.ts":"eaf1289ed0a8318ce949704ba4cd983755c6f5fd20ffe9d61712869894cb5064","apps/bdptest/test-support/transactional-execution-binding.ts":"cde506c72a8710eafe58522900f6db70ed3701cf333560252dc8e7c5e706cf89"}},"ownedPaths":["packages/server/src/transaction-batch.ts","packages/server/src/transaction-store.ts","packages/server/src/transaction-submission.ts","packages/server/src/transaction-set.test.ts","packages/server/src/transaction-submission.test.ts","packages/server/src/transaction-http.test.ts","apps/bdptest/src/transactional-depth-key-order-installed.test.ts","docs/design/transaction-implementation-progress.md"],"selections":[{"id":"A","path":"packages/server/src/transaction-set.test.ts","fullTitle":"keeps receiving depth facts private while legacy preparation still throws","new":true,"callbacks":1,"ownerLifetimes":0,"storeDirectories":0,"http":0,"titleRegex":"^keeps\\ receiving\\ depth\\ facts\\ private\\ while\\ legacy\\ preparation\\ still\\ throws$"},{"id":"B","path":"packages/server/src/transaction-submission.test.ts","fullTitle":"compares retained direct keys before private carrier depth without admitting fresh deep input","new":true,"callbacks":1,"ownerLifetimes":1,"storeDirectories":1,"http":0,"plannedSubmitCalls":12,"additionalDirectAdmitCalls":1,"titleRegex":"^compares\\ retained\\ direct\\ keys\\ before\\ private\\ carrier\\ depth\\ without\\ admitting\\ fresh\\ deep\\ input$"},{"id":"C","path":"packages/server/src/transaction-submission.test.ts","fullTitle":"compares deep metadata against genuine pending and dependent keys without changing saved outcomes","new":true,"callbacks":1,"ownerLifetimes":1,"storeDirectories":1,"http":0,"plannedSubmitCalls":5,"titleRegex":"^compares\\ deep\\ metadata\\ against\\ genuine\\ pending\\ and\\ dependent\\ keys\\ without\\ changing\\ saved\\ outcomes$"},{"id":"S1","path":"packages/server/src/transaction-submission.test.ts","fullTitle":"private direct Transactional receiving order checks byte bounds, syntax, key and authentication before key access","new":false,"callbacks":1,"ownerLifetimes":1,"storeDirectories":1,"http":0,"titleRegex":"^private\\ direct\\ Transactional\\ receiving\\ order\\ checks\\ byte\\ bounds,\\ syntax,\\ key\\ and\\ authentication\\ before\\ key\\ access$"},{"id":"S2","path":"packages/server/src/transaction-submission.test.ts","fullTitle":"private direct Transactional receiving order keeps invalid Selector grammar distinct from excessive private depth","new":false,"callbacks":1,"ownerLifetimes":1,"storeDirectories":1,"http":0,"titleRegex":"^private\\ direct\\ Transactional\\ receiving\\ order\\ keeps\\ invalid\\ Selector\\ grammar\\ distinct\\ from\\ excessive\\ private\\ depth$"},{"id":"S3","path":"packages/server/src/transaction-submission.test.ts","fullTitle":"private direct Transactional receiving order compares conflict before negotiation and negotiates exact pending/terminal replay without changing it","new":false,"callbacks":1,"ownerLifetimes":1,"storeDirectories":1,"http":0,"titleRegex":"^private\\ direct\\ Transactional\\ receiving\\ order\\ compares\\ conflict\\ before\\ negotiation\\ and\\ negotiates\\ exact\\ pending/terminal\\ replay\\ without\\ changing\\ it$"},{"id":"S4","path":"packages/server/src/transaction-submission.test.ts","fullTitle":"private direct Transactional receiving order preserves failed and expired duplicate dispositions and does not renew detail","new":false,"callbacks":1,"ownerLifetimes":2,"storeDirectories":1,"http":0,"titleRegex":"^private\\ direct\\ Transactional\\ receiving\\ order\\ preserves\\ failed\\ and\\ expired\\ duplicate\\ dispositions\\ and\\ does\\ not\\ renew\\ detail$"},{"id":"S5","path":"packages/server/src/transaction-submission.test.ts","fullTitle":"private direct Transactional receiving order keeps unresolved comparison ahead of negotiation, then snapshots immutable controls","new":false,"callbacks":1,"ownerLifetimes":1,"storeDirectories":1,"http":0,"titleRegex":"^private\\ direct\\ Transactional\\ receiving\\ order\\ keeps\\ unresolved\\ comparison\\ ahead\\ of\\ negotiation,\\ then\\ snapshots\\ immutable\\ controls$"},{"id":"S6","path":"packages/server/src/transaction-submission.test.ts","fullTitle":"private direct Transactional receiving order returns a provable unresolved conflict immediately and times out possible equality without disclosing a receipt","new":false,"callbacks":1,"ownerLifetimes":1,"storeDirectories":1,"http":0,"titleRegex":"^private\\ direct\\ Transactional\\ receiving\\ order\\ returns\\ a\\ provable\\ unresolved\\ conflict\\ immediately\\ and\\ times\\ out\\ possible\\ equality\\ without\\ disclosing\\ a\\ receipt$"},{"id":"S7","path":"packages/server/src/transaction-submission.test.ts","fullTitle":"private direct Transactional receiving order rechecks fresh negotiation after unresolved retraction without capturing a replacement key","new":false,"callbacks":1,"ownerLifetimes":1,"storeDirectories":1,"http":0,"titleRegex":"^private\\ direct\\ Transactional\\ receiving\\ order\\ rechecks\\ fresh\\ negotiation\\ after\\ unresolved\\ retraction\\ without\\ capturing\\ a\\ replacement\\ key$"},{"id":"S8","path":"packages/server/src/transaction-submission.test.ts","fullTitle":"private direct Transactional receiving order retains original alias witnesses across repointing and canonical retry","new":false,"callbacks":1,"ownerLifetimes":1,"storeDirectories":1,"http":0,"titleRegex":"^private\\ direct\\ Transactional\\ receiving\\ order\\ retains\\ original\\ alias\\ witnesses\\ across\\ repointing\\ and\\ canonical\\ retry$"},{"id":"S9","path":"packages/server/src/transaction-submission.test.ts","fullTitle":"private direct Transactional receiving order uses the same depth boundary for singleton and wrapped set content","new":false,"callbacks":1,"ownerLifetimes":1,"storeDirectories":1,"http":0,"titleRegex":"^private\\ direct\\ Transactional\\ receiving\\ order\\ uses\\ the\\ same\\ depth\\ boundary\\ for\\ singleton\\ and\\ wrapped\\ set\\ content$"},{"id":"syntax-batch","path":"packages/server/src/transaction-submission.test.ts","fullTitle":"finishes batch synthetic syntax before depth, including deeply nested received input","new":false,"callbacks":1,"ownerLifetimes":1,"storeDirectories":1,"http":0,"titleRegex":"^finishes\\ batch\\ synthetic\\ syntax\\ before\\ depth,\\ including\\ deeply\\ nested\\ received\\ input$"},{"id":"syntax-singleton","path":"packages/server/src/transaction-submission.test.ts","fullTitle":"finishes singleton synthetic syntax before depth, including deeply nested received input","new":false,"callbacks":1,"ownerLifetimes":1,"storeDirectories":1,"http":0,"titleRegex":"^finishes\\ singleton\\ synthetic\\ syntax\\ before\\ depth,\\ including\\ deeply\\ nested\\ received\\ input$"},{"id":"serializer","path":"packages/server/src/transaction-set.test.ts","fullTitle":"serializes byte-bounded deep syntax iteratively without changing number lexemes or key order","new":false,"callbacks":1,"ownerLifetimes":0,"storeDirectories":0,"http":0,"titleRegex":"^serializes\\ byte\\-bounded\\ deep\\ syntax\\ iteratively\\ without\\ changing\\ number\\ lexemes\\ or\\ key\\ order$"},{"id":"H","path":"packages/server/src/transaction-http.test.ts","fullTitle":"serves retained direct key conflicts before private depth and preserves fresh refusal","new":true,"callbacks":1,"ownerLifetimes":1,"storeDirectories":1,"http":13,"listenerLifetimes":1,"titleRegex":"^serves\\ retained\\ direct\\ key\\ conflicts\\ before\\ private\\ depth\\ and\\ preserves\\ fresh\\ refusal$"},{"id":"sequence","path":"packages/server/src/transaction-http.test.ts","fullTitle":"labels sequence depth gaps honestly and keeps sequence capacity distinct from direct transaction capacity","new":false,"callbacks":1,"ownerLifetimes":1,"storeDirectories":1,"http":4,"listenerLifetimes":1,"titleRegex":"^labels\\ sequence\\ depth\\ gaps\\ honestly\\ and\\ keeps\\ sequence\\ capacity\\ distinct\\ from\\ direct\\ transaction\\ capacity$"}],"positiveSource":{"callbacks":17,"httpExpected":17,"httpHardMaximum":17,"ownerLifetimes":16,"storeDirectories":15,"listenerLifetimes":2,"productChildren":0,"readOnlyDatabaseHandles":0},"control":{"kind":"one emitted store early-depth-refusal derivative","selectorId":"H","callbacks":1,"httpExpected":2,"httpHardMaximum":13,"ownerLifetimes":1,"listenerLifetimes":1,"storeDirectories":1,"productChildren":0,"requiredFailure":"depth-key:batch:conflict-before-depth","expectedActualStatus":500,"expectedTestExit":1,"forbiddenFailureSubstitutes":["import","compile","timeout","cleanup","schema-before-status","missing-dispatch"]},"installed":{"path":"apps/bdptest/src/transactional-depth-key-order-installed.test.ts","fullTitle":"observes installed retained key conflicts before private carrier depth","titleRegex":"^observes installed retained key conflicts before private carrier depth$","callbacks":1,"httpExpected":13,"httpHardMaximum":13,"ownerLifetimes":1,"listenerLifetimes":1,"storeDirectories":1,"productChildren":1,"scope":"https://reference.invalid/acme/","rows":[{"index":1,"label":"batch-seed","method":"POST","url":"https://reference.invalid/acme/operations/batch","key":"depth-b-retained","accept":"application/json","contentType":"application/json","body":"{\"operations\":[{\"operation\":\"createBead\",\"id\":\"beads/depth-b-a\",\"type\":\"https://reference.invalid/acme/types/task\",\"properties\":{\"title\":\"depth-b-a\"},\"metadata\":{}}]}","bodyBytes":166,"bodySha256":"b7be4a13a3dfe2ac7507f07248e4469d3e0bf8d13cc5bdd509c6ef375c043c54","status":200,"contextPosition":"pos-1"},{"index":2,"label":"batch-deep-conflict","method":"POST","url":"https://reference.invalid/acme/operations/batch","key":"depth-b-retained","accept":"text/plain","contentType":"application/json","body":"{\"operations\":[{\"operation\":\"createBead\",\"id\":\"beads/depth-b-a\",\"type\":\"https://reference.invalid/acme/types/task\",\"properties\":{\"title\":\"depth-b-a\"},\"metadata\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":\"leaf\"}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}]}","bodyBytes":621,"bodySha256":"6195d74e5bafdc5a9e30d5571f0d98d7711462541e1879aea37b8c20fb42db62","status":409,"contextPosition":"pos-1"},{"index":3,"label":"batch-equal-replay","method":"POST","url":"https://reference.invalid/acme/operations/batch","key":"depth-b-retained","accept":"application/json","contentType":"application/json","body":"{\"operations\":[{\"operation\":\"createBead\",\"id\":\"beads/depth-b-a\",\"type\":\"https://reference.invalid/acme/types/task\",\"properties\":{\"title\":\"depth-b-a\"},\"metadata\":{}}]}","bodyBytes":166,"bodySha256":"b7be4a13a3dfe2ac7507f07248e4469d3e0bf8d13cc5bdd509c6ef375c043c54","status":200,"contextPosition":"pos-1"},{"index":4,"label":"batch-fresh-depth","method":"POST","url":"https://reference.invalid/acme/operations/batch","key":"depth-b-fresh","accept":"text/plain","contentType":"application/json","body":"{\"operations\":[{\"operation\":\"createBead\",\"id\":\"beads/depth-b-b\",\"type\":\"https://reference.invalid/acme/types/task\",\"properties\":{\"title\":\"depth-b-b\"},\"metadata\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":\"leaf\"}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}]}","bodyBytes":621,"bodySha256":"a6116425a627b6949f395c388ec39aacf778683fc99f4118d0fd78e4d49c7f12","status":500,"contextPosition":null},{"index":5,"label":"batch-fresh-reuse","method":"POST","url":"https://reference.invalid/acme/operations/batch","key":"depth-b-fresh","accept":"application/json","contentType":"application/json","body":"{\"operations\":[{\"operation\":\"createBead\",\"id\":\"beads/depth-b-b\",\"type\":\"https://reference.invalid/acme/types/task\",\"properties\":{\"title\":\"depth-b-b\"},\"metadata\":{}}]}","bodyBytes":166,"bodySha256":"ae6c62f1c4ae74a2fb9ce1332d9c3d261bcf6cb0a53791579f2d6a6112a0db01","status":200,"contextPosition":"pos-2"},{"index":6,"label":"batch-point-unchanged","method":"GET","url":"https://reference.invalid/acme/beads/depth-b-a","key":null,"accept":"application/json","contentType":null,"body":null,"bodyBytes":0,"bodySha256":"e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855","status":200,"contextPosition":"pos-2"},{"index":7,"label":"singleton-seed","method":"POST","url":"https://reference.invalid/acme/operations/create-bead","key":"depth-s-retained","accept":"application/json","contentType":"application/json","body":"{\"id\":\"beads/depth-s-a\",\"type\":\"https://reference.invalid/acme/types/task\",\"properties\":{\"title\":\"depth-s-a\"},\"metadata\":{}}","bodyBytes":124,"bodySha256":"eeb6c0a0aea472198f3727781f249b29d4c84889c9ffceee594d7150376fe41f","status":200,"contextPosition":"pos-3"},{"index":8,"label":"singleton-deep-conflict","method":"POST","url":"https://reference.invalid/acme/operations/create-bead","key":"depth-s-retained","accept":"text/plain","contentType":"application/json","body":"{\"id\":\"beads/depth-s-a\",\"type\":\"https://reference.invalid/acme/types/task\",\"properties\":{\"title\":\"depth-s-a\"},\"metadata\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":\"leaf\"}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}","bodyBytes":579,"bodySha256":"614b03a62ce2d2107e5f1c391f9ebdcd7a7be349ad9e74b0f6a44763fb7bfb8b","status":409,"contextPosition":"pos-3"},{"index":9,"label":"singleton-equal-replay","method":"POST","url":"https://reference.invalid/acme/operations/create-bead","key":"depth-s-retained","accept":"application/json","contentType":"application/json","body":"{\"id\":\"beads/depth-s-a\",\"type\":\"https://reference.invalid/acme/types/task\",\"properties\":{\"title\":\"depth-s-a\"},\"metadata\":{}}","bodyBytes":124,"bodySha256":"eeb6c0a0aea472198f3727781f249b29d4c84889c9ffceee594d7150376fe41f","status":200,"contextPosition":"pos-3"},{"index":10,"label":"singleton-fresh-depth","method":"POST","url":"https://reference.invalid/acme/operations/create-bead","key":"depth-s-fresh","accept":"text/plain","contentType":"application/json","body":"{\"id\":\"beads/depth-s-b\",\"type\":\"https://reference.invalid/acme/types/task\",\"properties\":{\"title\":\"depth-s-b\"},\"metadata\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":{\"nested\":\"leaf\"}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}","bodyBytes":579,"bodySha256":"6d0e2cfadf5a0b4b5463aea20839d1b5b0346e1dd92470bc785a006c80082086","status":500,"contextPosition":null},{"index":11,"label":"singleton-fresh-reuse","method":"POST","url":"https://reference.invalid/acme/operations/create-bead","key":"depth-s-fresh","accept":"application/json","contentType":"application/json","body":"{\"id\":\"beads/depth-s-b\",\"type\":\"https://reference.invalid/acme/types/task\",\"properties\":{\"title\":\"depth-s-b\"},\"metadata\":{}}","bodyBytes":124,"bodySha256":"a1c0118b2e89a4f3697bdffae475794ea95ead3f7a5d67feb03ec19dd793e976","status":200,"contextPosition":"pos-4"},{"index":12,"label":"singleton-point-unchanged","method":"GET","url":"https://reference.invalid/acme/beads/depth-s-a","key":null,"accept":"application/json","contentType":null,"body":null,"bodyBytes":0,"bodySha256":"e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855","status":200,"contextPosition":"pos-4"},{"index":13,"label":"final-complete-collection","method":"GET","url":"https://reference.invalid/acme/beads/?limit=32","key":null,"accept":"application/json","contentType":null,"body":null,"bodyBytes":0,"bodySha256":"e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855","status":200,"contextPosition":"pos-4"}],"bodyBytesTotal":3270,"bodyBytesMaximum":621,"routeCount":5},"aggregatePlanned":{"callbacks":19,"httpExpected":32,"httpHardMaximum":43,"ownerLifetimes":18,"listenerLifetimes":4,"storeDirectories":17,"productChildren":1,"readOnlyDatabaseHandles":0},"bounds":{"supervisorSecondsPerCommand":120,"sourceNewHttpVitestMs":30000,"sourceNewHttpWorkMs":25000,"sourceNewHttpCleanupMs":5000,"installedVitestMs":60000,"installedWorkMs":45000,"installedCleanupMs":10000,"requestMs":5000,"requestBodyBytes":65536,"requestHeaderBytes":16384,"responseBodyBytes":131072,"responseHeaderBytes":65536,"automaticRetries":0},"measurementNotes":["All counts are planned, not observed; recount actual expanded titles before release.","Source H uses same thirteen recipes with actual loopback Scope and source fixture type; source body bytes/hashes must be measured on frozen draft. Installed body bytes above are exact proposed fixed-Scope literals.","Historical sequence callback uses four existing HTTP calls and its older fetch/cleanup, not new reader; no claim all source requests have new bounds.","Worker/build/git/helper processes separate from one product child.","No installed negative or parent run; one source emitted derivative only."]}
+
+## Actual source packages/server/src/transaction-batch.ts:1-320
+```
+1: /** Private Transactional evaluator. Bounded sets share singleton/batch syntax and admission. */
+2: import {
+3:   prepareSetShape,
+4:   assertTransactionInputDepth,
+5:   validateSetSelector,
+6:   type TransactionSetOperation,
+7:   transactionInputText as losslessText,
+8:   TRANSACTION_SELECTOR_LIMITS,
+9:   type PreparedTransactionSet,
+10: } from "./transaction-set.js";
+11: import { selectReadResources } from "./read-selector.js";
+12: import { snapshotReadUpdateRuntimeLimits } from "./read-update-runtime-limits.js";
+13: import { memberNumericDiagnosticBudget } from "./member-numeric-diagnostics.js";
+14: import {
+15:   JsonNumberLiteral,
+16:   admitJsonNumbers,
+17:   compareCanonicalIds,
+18:   parseCanonicalScope,
+19:   type UnadmittedReadUpdateOperation,
+20:   decodeJsonDocument,
+21:   prepareReadUpdateSequence,
+22:   prepareReadUpdateSingleton,
+23:   admitReadUpdateOperationNumbers,
+24:   referenceUri,
+25:   stringifyJsonValue,
+26:   parseCanonicalHttpUrl,
+27:   assertCanonicalPathSegments,
+28:   type LosslessJsonValue,
+29:   type ReadUpdateProblem,
+30:   type ReadUpdateOperation,
+31:   type PreparedReadUpdateCarrier,
+32: } from "@bdp/protocol";
+33: import {
+34:   encodeSemanticValue,
+35:   UNBOUND_SEMANTIC_REFERENCE,
+36:   type SemanticValue,
+37: } from "./semantic-identity.js";
+38: import {
+39:   evaluateAliasMutation,
+40:   type AliasMutation,
+41:   type AliasTransaction,
+42:   type AliasEvaluationOptions,
+43: } from "./alias-evaluator.js";
+44: import {
+45:   evaluateResourceMutation,
+46:   isResourceVisible,
+47:   readStoredResource,
+48:   type ResourceMutation,
+49:   type ResourceOperation,
+50:   type ResourceEvaluationOptions,
+51:   type ResourceTransaction,
+52:   type ResourceRecord,
+53: } from "./resource-evaluator.js";
+54: 
+55: export { TransactionDevelopmentLimitError } from "./transaction-set.js";
+56: 
+57: class EventExpansionLimit extends Error {}
+58: class MatchExpansionLimit extends Error {}
+59: 
+60: /** Private owner bounds. Check first-diagnostic feasibility against the same
+61:  * receiving/property caps, including pointer escaping. No profile advertisement. */
+62: export const TRANSACTION_RUNTIME_LIMITS = Object.freeze({
+63:   maximumOperations: 32,
+64:   inducedEvents: 256,
+65:   matchedResources: 32,
+66:   representationBytes: 256 * 1024,
+67:   scopeSourceBytes: 64 * 1024,
+68:   requestBodyBytes: 64 * 1024,
+69:   propertiesBytes: 64 * 1024,
+70:   diagnosticBytes: 512 * 1024,
+71:   diagnosticCount: 16,
+72: });
+73: export const TRANSACTION_MAXIMUM_OPERATIONS: number = TRANSACTION_RUNTIME_LIMITS.maximumOperations;
+74: snapshotReadUpdateRuntimeLimits(TRANSACTION_RUNTIME_LIMITS);
+75: 
+76: export type TransactionSingletonOperation = ReadUpdateOperation | TransactionSetOperation;
+77: 
+78: export interface PreparedTransaction {
+79:   readonly carrier: Omit<PreparedReadUpdateCarrier, "operations"> & {
+80:     readonly operations: readonly (UnadmittedReadUpdateOperation | PreparedTransactionSet)[];
+81:   };
+82: }
+83: const prepared = new WeakSet<object>();
+84: function assertResourceOperation(operation: unknown): asserts operation is ResourceOperation {
+85:   if (
+86:     typeof operation !== "string" ||
+87:     !["createBead", "createLink", "updateBead", "updateLink", "deleteBead", "deleteLink"].includes(
+88:       operation,
+89:     )
+90:   )
+91:     throw new TypeError("unsupported development transaction operation");
+92: }
+93: function object(value: LosslessJsonValue | undefined): Record<string, LosslessJsonValue> {
+94:   if (
+95:     !value ||
+96:     typeof value !== "object" ||
+97:     Array.isArray(value) ||
+98:     value instanceof JsonNumberLiteral
+99:   )
+100:     throw new TypeError("expected object");
+101:   return value as Record<string, LosslessJsonValue>;
+102: }
+103: /** Whole-carrier syntax/Scope checks happen before consulting any durable key.
+104:  * Reuses RU parsing, not RU admission or identity: synthetic member keys never
+105:  * enter storage. This layer parses only the six Resource operation kinds. */
+106: function prepareResourceBatch(scope: string, text: string): PreparedTransaction {
+107:   if (Buffer.byteLength(text) > TRANSACTION_RUNTIME_LIMITS.requestBodyBytes)
+108:     throw new RangeError("development batch byte limit");
+109:   const root = object(decodeJsonDocument(text));
+110:   if (
+111:     Object.keys(root).length !== 1 ||
+112:     !Array.isArray(root.operations) ||
+113:     root.operations.length < 1
+114:   )
+115:     throw new TypeError("expected nonempty batch operations");
+116:   const operations = root.operations.map((value, index) => {
+117:     const op = object(value);
+118:     assertResourceOperation(op.operation);
+119:     if (Object.hasOwn(op, "idempotencyKey")) throw new TypeError("batch members cannot carry keys");
+120:     return { ...op, idempotencyKey: `internal-${index}` };
+121:   });
+122:   return prepareCarrier(prepareReadUpdateSequence(scope, losslessText({ operations })));
+123: }
+124: /** One mixed carrier syntax path with complete bounded Selector grammar. */
+125: export function prepareTransaction(scope: string, text: string): PreparedTransaction {
+126:   return prepareTransactionSetCore(scope, text);
+127: }
+128: /** Retained source-private test seam uses the same mixed preparation. */
+129: export function prepareTransactionSetCore(
+130:   scope: string,
+131:   text: string,
+132:   singleton = false,
+133: ): PreparedTransaction {
+134:   if (Buffer.byteLength(text) > TRANSACTION_RUNTIME_LIMITS.requestBodyBytes)
+135:     throw new RangeError("development batch byte limit");
+136:   return prepareMixedTransaction(scope, object(decodeJsonDocument(text)), singleton);
+137: }
+138: function prepareMixedTransaction(
+139:   scope: string,
+140:   root: Record<string, LosslessJsonValue>,
+141:   singleton: boolean,
+142: ): PreparedTransaction {
+143:   if (Object.keys(root).length !== 1 || !Array.isArray(root.operations) || !root.operations.length)
+144:     throw new TypeError("expected nonempty batch operations");
+145:   if (singleton && root.operations.length !== 1) throw new TypeError("expected one core operation");
+146:   const canonicalScope = parseCanonicalScope(scope);
+147:   const raw = root.operations.map(object);
+148:   const resourceInputs = raw.filter(
+149:     (op) => op.operation !== "updateWhere" && op.operation !== "deleteWhere",
+150:   );
+151:   // Existing parser owns reference syntax, label order/kind/uniqueness and brands.
+152:   // Removing sets preserves relative Resource order; sets cannot declare labels.
+153:   const resources = resourceInputs.length
+154:     ? prepareResourceBatch(scope, losslessText({ operations: resourceInputs })).carrier.operations
+155:     : [];
+156:   let index = 0;
+157:   const operations = raw.map((op) => {
+158:     if (op.operation !== "updateWhere" && op.operation !== "deleteWhere") {
+159:       const resource = resources[index++];
+160:       if (!resource) throw new Error("missing prepared Resource operation");
+161:       return resource;
+162:     }
+163:     const { operation, ...input } = op;
+164:     return prepareSetShape(canonicalScope, operation, Object.freeze(input));
+165:   });
+166:   // Synthetic syntax parsers do not impose the execution depth bound. Finish
+167:   // every unambiguous shape/reference/label check before any private gap.
+168:   for (const [index, op] of operations.entries())
+169:     if (op.operation === "updateWhere" || op.operation === "deleteWhere")
+170:       validateSetSelector(
+171:         op,
+172:         singleton ? "/selector" : `/operations/${index}/selector`,
+173:         TRANSACTION_RUNTIME_LIMITS.requestBodyBytes,
+174:       );
+175:   assertTransactionInputDepth(root);
+176:   return prepareCarrier(
+177:     Object.freeze({
+178:       scope: canonicalScope,
+179:       kind: singleton ? "singleton" : "sequence",
+180:       operations: Object.freeze(operations),
+181:       keys: Object.freeze([]),
+182:     }),
+183:   );
+184: }
+185: /** A singleton is the same one-operation Transactional request, not a RU
+186:  * execution. Its raw record excludes the discriminator, label and body key.
+187:  * Synthetic parsing keys are never consulted or persisted by the owner. */
+188: export function prepareTransactionSingleton(
+189:   scope: string,
+190:   operation: TransactionSingletonOperation,
+191:   text: string,
+192: ): PreparedTransaction {
+193:   if (
+194:     operation !== "updateWhere" &&
+195:     operation !== "deleteWhere" &&
+196:     operation !== "putAlias" &&
+197:     operation !== "deleteAlias"
+198:   )
+199:     assertResourceOperation(operation);
+200:   if (Buffer.byteLength(text) > TRANSACTION_RUNTIME_LIMITS.requestBodyBytes)
+201:     throw new RangeError("development singleton byte limit");
+202:   // Apply the same operation-content depth bound as the batch wrapper.
+203:   const input = object(decodeJsonDocument(text));
+204:   if (operation === "updateWhere" || operation === "deleteWhere") {
+205:     // A raw discriminator must never replace the route. The single mixed pass
+206:     // below validates all remaining closed fields and the complete set shape.
+207:     if (Object.hasOwn(input, "operation")) throw new TypeError("singleton cannot carry operation");
+208:     // The byte cap applies to the submitted body, not a synthetic carrier.
+209:     return prepareMixedTransaction(scope, { operations: [{ operation, ...input }] }, true);
+210:   }
+211:   const carrier = prepareReadUpdateSingleton(scope, operation, text, "internal-singleton");
+212:   assertTransactionInputDepth(input, 2);
+213:   return prepareCarrier(carrier);
+214: }
+215: export interface PreparedTransactionSequence {
+216:   readonly scope: string;
+217:   readonly members: readonly {
+218:     readonly key: string;
+219:     readonly operation: ReadUpdateOperation;
+220:     readonly name?: string;
+221:     readonly request: PreparedTransaction;
+222:     readonly aliasOperands: readonly { readonly field: string; readonly locator: string }[];
+223:     readonly deferred: boolean;
+224:     readonly dependencies: readonly {
+225:       field: string;
+226:       creator: number;
+227:       resourceKind: "bead" | "link";
+228:       suppliedId?: string;
+229:     }[];
+230:   }[];
+231: }
+232: const sequences = new WeakSet<object>();
+233: /** First private sequence boundary. Full syntax/Scope checks precede all key
+234:  * effects; creator and alias operands retain deferred turn-time reservations. */
+235: export function prepareTransactionSequence(
+236:   scope: string,
+237:   text: string,
+238: ): PreparedTransactionSequence {
+239:   if (Buffer.byteLength(text) > TRANSACTION_RUNTIME_LIMITS.requestBodyBytes)
+240:     throw new RangeError("development sequence byte limit");
+241:   const carrier = prepareReadUpdateSequence(scope, text);
+242:   if (carrier.operations.length > TRANSACTION_MAXIMUM_OPERATIONS)
+243:     throw new RangeError("development sequence member limit");
+244:   assertTransactionInputDepth(object(decodeJsonDocument(text)));
+245:   const labels = new Map<string, number>();
+246:   const members = carrier.operations.map((op, index) => {
+247:     const aliasOperands: { readonly field: string; readonly locator: string }[] = [];
+248:     const dependencies: {
+249:       field: string;
+250:       creator: number;
+251:       resourceKind: "bead" | "link";
+252:       suppliedId?: string;
+253:     }[] = [];
+254:     for (const field of ["bead", "link", "source", "target"]) {
+255:       const ref = op.input[field];
+256:       if (ref === undefined) continue;
+257:       const uri = typeof ref === "string" ? ref : (ref as { uri: string }).uri;
+258:       if (uri.startsWith("@")) {
+259:         const creator = labels.get(uri.slice(1));
+260:         if (creator === undefined) throw new TypeError("unknown sequence creator");
+261:         const creation = carrier.operations[creator];
+262:         if (!creation) throw new Error("prepared sequence lost creator");
+263:         const supplied = creation.input.id as string | undefined;
+264:         dependencies.push({
+265:           field,
+266:           creator,
+267:           resourceKind: creation.operation === "createBead" ? "bead" : "link",
+268:           ...(supplied === undefined ? {} : { suppliedId: canonicalReference(scope, supplied) }),
+269:         });
+270:       }
+271:       if (
+272:         transactionAliasFields(op.operation).includes(field) &&
+273:         canonicalReference(scope, uri).startsWith(`${scope}alias/`)
+274:       )
+275:         aliasOperands.push(Object.freeze({ field, locator: canonicalReference(scope, uri) }));
+276:     }
+277:     // The whole carrier already validated backward labels and Resource kinds.
+278:     // Preserve its branded numeric operation without reparsing as a singleton,
+279:     // whose syntax correctly rejects @name outside a sequence.
+280:     const key = carrier.keys[index];
+281:     if (key === undefined) throw new Error("prepared sequence lost member key");
+282:     const request = prepareCarrier({
+283:       kind: "singleton",
+284:       scope: carrier.scope,
+285:       operations: [op],
+286:       keys: [key],
+287:     });
+288:     if (op.name) labels.set(op.name, index);
+289:     return Object.freeze({
+290:       key,
+291:       operation: op.operation,
+292:       ...(op.name === undefined ? {} : { name: op.name }),
+293:       request,
+294:       dependencies: Object.freeze(dependencies.map((dependency) => Object.freeze(dependency))),
+295:       aliasOperands: Object.freeze(aliasOperands),
+296:       deferred: dependencies.length > 0 || aliasOperands.length > 0,
+297:     });
+298:   });
+299:   const result = Object.freeze({ scope: carrier.scope, members: Object.freeze(members) });
+300:   sequences.add(result);
+301:   return result;
+302: }
+303: export function assertPreparedTransactionSequence(
+304:   sequence: PreparedTransactionSequence,
+305:   scope: string,
+306: ): void {
+307:   if (!sequences.has(sequence) || sequence.scope !== scope)
+308:     throw new TypeError("expected prepared transaction sequence for this Scope");
+309: }
+310: function prepareCarrier(carrier: PreparedTransaction["carrier"]): PreparedTransaction {
+311:   const result = Object.freeze({ carrier });
+312:   prepared.add(result);
+313:   return result;
+314: }
+315: export function assertPreparedTransaction(batch: PreparedTransaction, scope: string): void {
+316:   if (!prepared.has(batch) || batch.carrier.scope !== scope)
+317:     throw new TypeError("expected prepared transaction for this Scope");
+318: }
+319: /** Source-private permitted alias slots shared by preparation and pending validation. */
+320: export function transactionAliasFields(operation: string): readonly string[] {
+```
+
+## Actual source packages/server/src/transaction-batch.ts:400-492
+```
+400:   NormalizedTransaction,
+401:   {
+402:     readonly batch: PreparedTransaction;
+403:     readonly aliases: readonly ReadonlyMap<string, string | null>[];
+404:     readonly references: ReadonlyMap<string, string | typeof UNBOUND_SEMANTIC_REFERENCE>;
+405:   }
+406: >();
+407: /** Invoke under the owner's admission/comparison transaction after key lookup.
+408:  * Original per-operation locators win regardless of the retry reference slot.
+409:  * Fresh retry witnesses are comparison-only and never replace durable originals.
+410:  * Batch creator indices remain symbolic; the RU normalizer binds committed IDs
+411:  * and cannot supply that Transactional distinction. */
+412: export function normalizeTransaction(
+413:   batch: PreparedTransaction,
+414:   resolveAlias: (locator: string) => string | undefined,
+415:   priorWitnessesJson?: string,
+416:   references: ReadonlyMap<string, string | typeof UNBOUND_SEMANTIC_REFERENCE> = new Map(),
+417: ): NormalizedTransaction {
+418:   assertPreparedTransaction(batch, batch.carrier.scope);
+419:   const scope = batch.carrier.scope;
+420:   const prior =
+421:     priorWitnessesJson === undefined ? undefined : parseWitnesses(priorWitnessesJson, scope);
+422:   const creators = new Map<string, SemanticValue>();
+423:   const referenceIdentities = new Map<string, string>();
+424:   const identities: SemanticValue[] = [];
+425:   const witnesses: OperationWitnesses[] = [];
+426:   const captured: ReadonlyMap<string, string | null>[] = [];
+427:   const canonical = (uri: string): string => canonicalReference(scope, uri);
+428:   for (const [index, op] of batch.carrier.operations.entries()) {
+429:     const creating = op.operation === "createBead" || op.operation === "createLink";
+430:     const input: Record<string, SemanticValue> = {
+431:       ...op.input,
+432:       ...(creating
+433:         ? { properties: op.input.properties ?? {}, metadata: op.input.metadata ?? {} }
+434:         : {}),
+435:     };
+436:     // Empty context supplies no explicit states; null members remain distinct.
+437:     const context = input.revisionProvenance;
+438:     if (context !== null && typeof context === "object" && Object.keys(context).length === 0)
+439:       delete input.revisionProvenance;
+440:     const previous = prior?.[index];
+441:     const aliases = new Map<string, string | null>();
+442:     for (const field of ["id", "source", "target", "bead", "link", "alias"]) {
+443:       const value = input[field];
+444:       if (value === undefined) continue;
+445:       const uri = typeof value === "string" ? value : (value as { uri: string }).uri;
+446:       const locator = canonical(uri);
+447:       let normalized: SemanticValue | undefined;
+448:       if (index === 0 && references.has(field)) normalized = references.get(field);
+449:       else if (
+450:         transactionAliasFields(op.operation).includes(field) &&
+451:         locator.startsWith(`${scope}alias/`)
+452:       ) {
+453:         if (!aliases.has(locator)) {
+454:           const old =
+455:             previous?.operation === op.operation
+456:               ? previous.aliases.find((w) => w.locator === locator)
+457:               : undefined;
+458:           const target = old === undefined ? resolveAlias(locator) : old.target;
+459:           aliases.set(locator, target == null ? null : witnessedReference(scope, target, "beads"));
+460:         }
+461:         normalized = aliases.get(locator) ?? { unresolvedAlias: locator };
+462:       } else normalized = uri.startsWith("@") ? creators.get(uri.slice(1)) : locator;
+463:       if (normalized === undefined) throw new TypeError("unknown batch binding");
+464:       if (index === 0) referenceIdentities.set(field, encodeSemanticValue(normalized));
+465:       input[field] =
+466:         typeof value === "string"
+467:           ? normalized
+468:           : { uri: normalized, revision: (value as { revision: string }).revision };
+469:     }
+470:     identities.push({ operation: op.operation, input });
+471:     captured.push(aliases);
+472:     witnesses.push({
+473:       operation: op.operation,
+474:       aliases: [...aliases].map(([locator, target]) => ({ locator, target })),
+475:     });
+476:     if (creating && op.name)
+477:       creators.set(
+478:         op.name,
+479:         op.input.id === undefined
+480:           ? { creatorIndex: String(index) }
+481:           : canonical(op.input.id as string),
+482:       );
+483:   }
+484:   const result = Object.freeze({
+485:     identity: encodeSemanticValue(identities),
+486:     referenceIdentities,
+487:     witnessesJson: JSON.stringify({ format: witnessFormat, scope, operations: witnesses }),
+488:   });
+489:   normalizedState.set(result, { batch, aliases: captured, references });
+490:   return result;
+491: }
+492: export interface TransactionEvent {
+```
+
+## Actual source packages/server/src/transaction-set.ts:1-65
+```
+1: /** Private valid-set core. This is not a transport parser or admission policy. */
+2: import {
+3:   JsonNumberLiteral,
+4:   prepareReadUpdateSingleton,
+5:   type LosslessJsonValue,
+6: } from "@bdp/protocol";
+7: import { ReadSelectorError, analyzeSelectorGrammar } from "./read-selector.js";
+8: 
+9: export class TransactionDevelopmentLimitError extends Error {}
+10: export type TransactionSetOperation = "updateWhere" | "deleteWhere";
+11: export interface PreparedTransactionSet {
+12:   readonly operation: TransactionSetOperation;
+13:   readonly input: Readonly<Record<string, LosslessJsonValue>>;
+14:   readonly name?: never;
+15: }
+16: export const TRANSACTION_SELECTOR_LIMITS = Object.freeze({ bytes: 4096, depth: 32, nodes: 256 });
+17: /** Serialize already decoded, byte-bounded syntax without prematurely applying
+18:  * the executable depth limit. Preserve original numeric lexemes and key order. */
+19: export function transactionInputText(value: LosslessJsonValue): string {
+20:   const pending: (string | { value: LosslessJsonValue })[] = [{ value }];
+21:   const chunks: string[] = [];
+22:   while (pending.length) {
+23:     const task = pending.pop()!;
+24:     if (typeof task === "string") {
+25:       chunks.push(task);
+26:       continue;
+27:     }
+28:     const item = task.value;
+29:     if (item instanceof JsonNumberLiteral) chunks.push(item.literal);
+30:     else if (Array.isArray(item)) {
+31:       chunks.push("[");
+32:       pending.push("]");
+33:       for (let i = item.length - 1; i >= 0; i--) {
+34:         pending.push({ value: item[i]! });
+35:         if (i > 0) pending.push(",");
+36:       }
+37:     } else if (item && typeof item === "object") {
+38:       chunks.push("{");
+39:       pending.push("}");
+40:       const entries = Object.entries(item);
+41:       for (let i = entries.length - 1; i >= 0; i--) {
+42:         const [key, child] = entries[i]!;
+43:         pending.push({ value: child }, ":", JSON.stringify(key));
+44:         if (i > 0) pending.push(",");
+45:       }
+46:     } else chunks.push(JSON.stringify(item));
+47:   }
+48:   return chunks.join("");
+49: }
+50: /** Private execution capacity only, after complete known carrier syntax. The
+51:  * depth convention is unchanged: the batch root is 0, singleton input is 2. */
+52: export function assertTransactionInputDepth(value: LosslessJsonValue, depth = 0): void {
+53:   const pending = [{ value, depth }];
+54:   while (pending.length) {
+55:     const item = pending.pop()!;
+56:     if (item.depth > 32)
+57:       throw new TransactionDevelopmentLimitError("development batch depth limit");
+58:     if (item.value && typeof item.value === "object" && !(item.value instanceof JsonNumberLiteral))
+59:       for (const child of Object.values(item.value))
+60:         pending.push({ value: child, depth: item.depth + 1 });
+61:   }
+62: }
+63: function nonnegativeInteger(value: LosslessJsonValue): boolean {
+64:   if (!(value instanceof JsonNumberLiteral)) return false;
+65:   const match = /^(-?)(\d+)(?:\.(\d+))?(?:[eE]([+-]?\d+))?$/.exec(value.literal);
+```
+
+## Actual source packages/server/src/transaction-submission.ts:1-219
+```
+1: import {
+2:   TransactionSelectorSyntaxError,
+3:   type TransactionSelectorLimit,
+4: } from "./transaction-set.js";
+5: /** Private receiving/admission composition. No socket, export or profile claim. */
+6: import { JsonSyntaxError, ReadUpdateCarrierError } from "@bdp/protocol";
+7: import {
+8:   type TransactionSingletonOperation,
+9:   prepareTransaction,
+10:   prepareTransactionSingleton,
+11:   TransactionDevelopmentLimitError,
+12:   TRANSACTION_RUNTIME_LIMITS,
+13: } from "./transaction-batch.js";
+14: import { compareAndAdmitTransaction } from "./transaction-comparison.js";
+15: import {
+16:   snapshotTransactionReceivingControls,
+17:   type openTransactionStore,
+18:   type TransactionReceipt,
+19:   type TransactionReadContext,
+20:   type TransactionReceivingControls,
+21: } from "./transaction-store.js";
+22: 
+23: type Authorization =
+24:   | { readonly kind: "unauthenticated" }
+25:   | { readonly kind: "forbidden" }
+26:   | { readonly kind: "authorized"; readonly principal: string };
+27: export interface TransactionSubmission {
+28:   readonly carrier:
+29:     | { readonly kind: "batch" }
+30:     | { readonly kind: "singleton"; readonly operation: TransactionSingletonOperation };
+31:   readonly body: string;
+32:   readonly key: string;
+33:   /** Trusted authentication/Scope permission decision, not client attribution. */
+34:   readonly authorization: Authorization;
+35:   readonly receiving: TransactionReceivingControls;
+36: }
+37: type ObservedComparisonRefusal = {
+38:   readonly kind: "comparison-refusal";
+39:   readonly status: 503;
+40:   readonly code: "temporarily-unavailable";
+41:   readonly retry: "after-delay";
+42: } & (
+43:   | { readonly reason: "deadline"; readonly context: TransactionReadContext }
+44:   | { readonly reason: "owner-stopped" }
+45: );
+46: export type TransactionSubmissionResult =
+47:   | ObservedComparisonRefusal
+48:   | {
+49:       readonly kind: "receipt";
+50:       readonly receipt: TransactionReceipt;
+51:       readonly context?: TransactionReadContext;
+52:     }
+53:   | { readonly kind: "not-acceptable"; readonly context?: TransactionReadContext }
+54:   | { readonly kind: "development-limit"; readonly message: string }
+55:   | {
+56:       readonly kind: "refused";
+57:       readonly status: 400 | 401 | 403 | 409 | 413 | 503;
+58:       readonly code:
+59:         | "malformed-request"
+60:         | "unauthenticated"
+61:         | "forbidden"
+62:         | "idempotency-conflict"
+63:         | "request-too-large"
+64:         | "limit-exceeded"
+65:         | "temporarily-unavailable";
+66:       readonly limit?: "transaction.operations" | TransactionSelectorLimit;
+67:       readonly pointer?: string;
+68:       readonly retry?: "after-delay";
+69:       readonly context?: TransactionReadContext;
+70:     };
+71: 
+72: /** These are typed internal receiving results, not emitted HTTP Problem bodies.
+73:  * Raw headers/targets/media and receipt HTTP representation remain future work.
+74:  * Once admitted, this call owns execution independently of response consumption.
+75:  * Internal/fenced failures propagate intact; they are not permanent receipts. */
+76: export async function submitTransaction(
+77:   store: ReturnType<typeof openTransactionStore>,
+78:   submission: TransactionSubmission,
+79:   comparison: Omit<
+80:     NonNullable<Parameters<typeof compareAndAdmitTransaction>[4]>,
+81:     "receiving" | "observeDeadline"
+82:   > = {},
+83:   observed = false,
+84: ): Promise<TransactionSubmissionResult> {
+85:   const receiving = snapshotTransactionReceivingControls(submission.receiving);
+86:   const { body, key } = submission;
+87:   if (Buffer.byteLength(body) > TRANSACTION_RUNTIME_LIMITS.requestBodyBytes)
+88:     return { kind: "refused", status: 413, code: "request-too-large" };
+89:   let prepared: ReturnType<typeof prepareTransaction> | undefined;
+90:   let developmentLimit: TransactionDevelopmentLimitError | undefined;
+91:   try {
+92:     prepared =
+93:       submission.carrier.kind === "batch"
+94:         ? prepareTransaction(store.scope, body)
+95:         : prepareTransactionSingleton(store.scope, submission.carrier.operation, body);
+96:   } catch (error) {
+97:     if (error instanceof TransactionSelectorSyntaxError)
+98:       return { kind: "refused", status: 400, code: "malformed-request", pointer: error.pointer };
+99:     if (error instanceof TransactionDevelopmentLimitError) developmentLimit = error;
+100:     else if (
+101:       error instanceof JsonSyntaxError ||
+102:       error instanceof ReadUpdateCarrierError ||
+103:       error instanceof TypeError
+104:     )
+105:       return { kind: "refused", status: 400, code: "malformed-request" };
+106:     else throw error;
+107:   }
+108:   if (typeof key !== "string" || !/^[A-Za-z0-9_-]{1,256}$/.test(key))
+109:     return { kind: "refused", status: 400, code: "malformed-request" };
+110:   const authorization = submission.authorization;
+111:   if (authorization.kind === "unauthenticated")
+112:     return { kind: "refused", status: 401, code: "unauthenticated" };
+113:   if (authorization.kind === "forbidden")
+114:     return { kind: "refused", status: 403, code: "forbidden" };
+115:   if (
+116:     typeof authorization.principal !== "string" ||
+117:     authorization.principal.length === 0 ||
+118:     !authorization.principal.isWellFormed()
+119:   )
+120:     throw new TypeError("invalid trusted principal");
+121:   if (developmentLimit) return { kind: "development-limit", message: developmentLimit.message };
+122:   if (!prepared) throw new Error("missing prepared transaction");
+123:   const comparisonStore = observed
+124:     ? {
+125:         scopeEpoch: store.scopeEpoch,
+126:         comparisonEpoch: store.comparisonEpoch,
+127:         admit: store.admitObserved,
+128:       }
+129:     : store;
+130:   const result = await compareAndAdmitTransaction(
+131:     comparisonStore,
+132:     authorization.principal,
+133:     key,
+134:     prepared,
+135:     {
+136:       ...comparison,
+137:       receiving,
+138:       // Override even an untyped caller's extra field; only this owner supplies it.
+139:       observeDeadline: observed ? store.observeComparisonDeadline : undefined,
+140:     },
+141:   );
+142:   if (
+143:     observed &&
+144:     (result.kind === "conflict" ||
+145:       result.kind === "operation-limit" ||
+146:       result.kind === "selector-limit" ||
+147:       result.kind === "not-acceptable") &&
+148:     !result.context
+149:   )
+150:     throw new Error("admission refusal lost same-entry context");
+151:   switch (result.kind) {
+152:     case "conflict":
+153:       return {
+154:         kind: "refused",
+155:         status: 409,
+156:         code: "idempotency-conflict",
+157:         ...(result.context ? { context: result.context } : {}),
+158:       };
+159:     case "operation-limit":
+160:       return {
+161:         kind: "refused",
+162:         status: 413,
+163:         code: "limit-exceeded",
+164:         limit: "transaction.operations",
+165:         ...(result.context ? { context: result.context } : {}),
+166:       };
+167:     case "selector-limit":
+168:       return {
+169:         kind: "refused",
+170:         status: 413,
+171:         code: "limit-exceeded",
+172:         limit: result.limit,
+173:         pointer: result.pointer,
+174:         ...(result.context ? { context: result.context } : {}),
+175:       };
+176:     case "not-acceptable":
+177:       return result;
+178:     case "comparison-deadline":
+179:       return {
+180:         kind: "comparison-refusal",
+181:         reason: "deadline",
+182:         status: 503,
+183:         code: "temporarily-unavailable",
+184:         retry: "after-delay",
+185:         context: result.context,
+186:       };
+187:     case "comparison-owner-stopped":
+188:       return {
+189:         kind: "comparison-refusal",
+190:         reason: "owner-stopped",
+191:         status: 503,
+192:         code: "temporarily-unavailable",
+193:         retry: "after-delay",
+194:       };
+195:     case "temporarily-unavailable":
+196:       return {
+197:         kind: "refused",
+198:         status: 503,
+199:         code: "temporarily-unavailable",
+200:         retry: "after-delay",
+201:       };
+202:     case "existing":
+203:       if (observed && !result.context)
+204:         throw new Error("existing receipt lost same-entry context", {
+205:           cause: { id: result.receipt.id, key },
+206:         });
+207:       return observed
+208:         ? {
+209:             kind: "receipt",
+210:             receipt: result.receipt,
+211:             ...(result.context ? { context: result.context } : {}),
+212:           }
+213:         : { kind: "receipt", receipt: result.receipt };
+214:     case "owned":
+215:       return observed
+216:         ? { kind: "receipt", ...store.executeObserved(result.claim) }
+217:         : { kind: "receipt", receipt: store.execute(result.claim) };
+218:   }
+219: }
+```
+
+## Actual source packages/server/src/transaction-comparison.ts:1-73
+```
+1: /** Private direct-carrier comparison loop. All DB work is in short owner steps. */
+2: import { setTimeout as delay } from "node:timers/promises";
+3: import type { PreparedTransaction } from "./transaction-batch.js";
+4: import {
+5:   snapshotTransactionReceivingControls,
+6:   type openTransactionStore,
+7:   type TransactionReceivingAdmission,
+8:   type TransactionReceivingControls,
+9:   type TransactionReadContext,
+10: } from "./transaction-store.js";
+11: export type DirectComparison =
+12:   | Exclude<TransactionReceivingAdmission, { kind: "comparison-pending" }>
+13:   | { readonly kind: "temporarily-unavailable" }
+14:   | { readonly kind: "comparison-deadline"; readonly context: TransactionReadContext }
+15:   | { readonly kind: "comparison-owner-stopped" };
+16: /** The private default is finite and independent of transaction duration. Options
+17:  * are test seams, not protocol/discovery configuration or another key owner. */
+18: export async function compareAndAdmitTransaction(
+19:   store: Pick<ReturnType<typeof openTransactionStore>, "scopeEpoch" | "comparisonEpoch"> & {
+20:     admit(
+21:       principal: string,
+22:       key: string,
+23:       request: PreparedTransaction,
+24:       controls?: TransactionReceivingControls,
+25:     ): TransactionReceivingAdmission;
+26:   },
+27:   principal: string,
+28:   key: string,
+29:   request: PreparedTransaction,
+30:   options: {
+31:     readonly receiving?: TransactionReceivingControls;
+32:     readonly budgetMs?: number;
+33:     readonly now?: () => number;
+34:     readonly wait?: () => Promise<void>;
+35:     /** Bound by observed submission only; never runtime/caller configuration. */
+36:     readonly observeDeadline?:
+37:       | ReturnType<typeof openTransactionStore>["observeComparisonDeadline"]
+38:       | undefined;
+39:   } = {},
+40: ): Promise<DirectComparison> {
+41:   const receiving =
+42:     options.receiving === undefined
+43:       ? undefined
+44:       : snapshotTransactionReceivingControls(options.receiving);
+45:   const budget = options.budgetMs ?? 1000;
+46:   if (!Number.isSafeInteger(budget) || budget <= 0 || budget > 2147483647)
+47:     throw new TypeError("finite positive comparison budget required");
+48:   const now = options.now ?? (() => performance.now());
+49:   const deadline = now() + budget;
+50:   const epoch = store.scopeEpoch;
+51:   for (;;) {
+52:     if (store.comparisonEpoch() !== epoch)
+53:       return options.observeDeadline
+54:         ? { kind: "comparison-owner-stopped" }
+55:         : { kind: "temporarily-unavailable" };
+56:     if (now() >= deadline) {
+57:       if (!options.observeDeadline) return { kind: "temporarily-unavailable" };
+58:       // Synchronous final check + current tuple; never hold its owner entry over wait.
+59:       const observed = options.observeDeadline(epoch);
+60:       return observed.kind === "observed"
+61:         ? { kind: "comparison-deadline", context: observed.context }
+62:         : { kind: "comparison-owner-stopped" };
+63:     }
+64:     // Retraction may make this a fresh admission. Same original deadline and no
+65:     // inherited claim: admit consults the current authoritative key each time.
+66:     const result =
+67:       receiving === undefined
+68:         ? store.admit(principal, key, request)
+69:         : store.admit(principal, key, request, receiving);
+70:     if (result.kind !== "comparison-pending") return result;
+71:     await (options.wait ? options.wait() : delay(Math.min(5, Math.max(0, deadline - now()))));
+72:   }
+73: }
+```
+
+## Actual source packages/server/src/transaction-store.ts:1-165
+```
+1: import { transactionSelectorCapacity, type TransactionSelectorLimit } from "./transaction-set.js";
+2: import {
+3:   TRANSACTION_SNAPSHOT_LIMITS,
+4:   TRANSACTION_SNAPSHOT_TOKEN_POLICY,
+5:   transactionSnapshotSchema,
+6:   transactionSnapshotStorage,
+7:   TransactionSnapshotFailure,
+8:   type TransactionSnapshotRequest,
+9: } from "./transaction-snapshot.js";
+10: import {
+11:   checkpointPosition,
+12:   transactionCheckpoint,
+13:   TransactionChangefeedParameterError,
+14:   projectTransactionChangeGroup,
+15:   freezeChangefeedPage,
+16:   type TransactionChangefeedPage,
+17: } from "./transaction-changefeed.js";
+18: import {
+19:   TRANSACTION_EVENT_PAGE_BYTES,
+20:   TRANSACTION_EVENT_STREAM,
+21:   TRANSACTION_EVENT_GROUP_BYTES,
+22:   TransactionEventParameterError,
+23:   transactionEventRequest,
+24:   parseTransactionEventCursor,
+25:   checkTransactionEventCursor,
+26:   projectTransactionEventGroup,
+27:   eventContinuation,
+28:   freezeEventPage,
+29:   type TransactionEventPage,
+30:   type TransactionEventSource,
+31: } from "./transaction-events.js";
+32: import {
+33:   checkTransactionMinimum,
+34:   snapshotTransactionMinimum,
+35:   type TransactionMinimum,
+36: } from "./transaction-consistency.js";
+37: /** Independent private Transactional owner. Never open this format as a RU store. */
+38: import { randomUUID } from "node:crypto";
+39: import { closeSync, existsSync, openSync, unlinkSync } from "node:fs";
+40: import path from "node:path";
+41: import { isDeepStrictEqual } from "node:util";
+42: import { DatabaseSync } from "node:sqlite";
+43: import { parseCanonicalScope, parseTypeDescriptor, type TypeDescriptor } from "@bdp/protocol";
+44: import { assertDevelopmentContracts, type DevelopmentContracts } from "./development-contracts.js";
+45: import { CONTRACT_ARTIFACT_CEILINGS } from "./installed-contract-artifact.js";
+46: import type { AuthorityReadReader, OwnerReadEntryResult } from "./authority-read.js";
+47: import type { EvaluatorStoredResource } from "./resource-evaluator.js";
+48: import {
+49:   TransactionDevelopmentLimitError,
+50:   TRANSACTION_RUNTIME_LIMITS,
+51:   TRANSACTION_MAXIMUM_OPERATIONS,
+52:   assertPreparedTransaction,
+53:   assertPreparedTransactionSequence,
+54:   normalizeTransaction,
+55:   evaluateTransaction,
+56:   transactionStorageText as json,
+57:   type PreparedTransaction,
+58:   type PreparedTransactionSequence,
+59:   type NormalizedTransaction,
+60:   type TransactionMutationContext,
+61:   type TransactionEvent,
+62: } from "./transaction-batch.js";
+63: 
+64: import {
+65:   dependencyTemplate,
+66:   parseDependencyTemplate,
+67:   compareDependencyTemplate,
+68:   resolveDependencies,
+69:   type CreatorFact,
+70:   type DependencyTemplate,
+71:   type ReferenceBindings,
+72: } from "./transaction-dependencies.js";
+73: 
+74: // eventPacket structurally reads one group; changing the captured bound must
+75: // fail closed until that algorithm and its count evidence are deliberately revised.
+76: if (TRANSACTION_EVENT_STREAM.maximumGroupsPerObservation !== 1)
+77:   throw new Error("owner scan implements exactly one group per entry");
+78: 
+79: /** Actual fixed-view owner observation; not a receipt effect checkpoint. */
+80: export type TransactionReadContext = {
+81:   readonly scopeEpoch: string;
+82:   readonly authorizationView: string;
+83:   readonly scopePosition: string;
+84: };
+85: 
+86: /** Source-private immutable read continuation, authenticated by its owner. */
+87: declare const eventScanBrand: unique symbol;
+88: export interface TransactionEventScan {
+89:   readonly [eventScanBrand]: true;
+90: }
+91: export interface TransactionEventPacket {
+92:   readonly kind: "packet";
+93:   readonly context: TransactionReadContext;
+94:   readonly events: readonly TransactionEvent[];
+95:   readonly scan: TransactionEventScan;
+96:   readonly caughtUp: boolean;
+97: }
+98: interface EventScanState {
+99:   readonly source: TransactionEventSource;
+100:   readonly context: TransactionReadContext;
+101:   readonly at: number;
+102:   readonly ordinal: number;
+103:   readonly head: number;
+104: }
+105: 
+106: interface ReceiptCore {
+107:   readonly id: string;
+108:   readonly status: "pending" | "completed" | "failed";
+109:   readonly idempotencyKey: string;
+110:   readonly scopeEpoch: string;
+111:   readonly authorizationView: string;
+112:   readonly transaction: string;
+113: }
+114: export type TransactionReceipt = ReceiptCore & Readonly<Record<string, unknown>>;
+115: export interface TransactionReceiptObservation {
+116:   readonly receipt: TransactionReceipt;
+117:   readonly context: TransactionReadContext;
+118: }
+119: export interface TransactionClaim {
+120:   readonly receipt: TransactionReceipt;
+121: }
+122: export type TransactionAdmission =
+123:   | { readonly kind: "owned"; readonly claim: TransactionClaim }
+124:   | {
+125:       readonly kind: "existing";
+126:       readonly receipt: TransactionReceipt;
+127:       readonly context?: TransactionReadContext;
+128:     }
+129:   | { readonly kind: "conflict"; readonly context?: TransactionReadContext }
+130:   | { readonly kind: "comparison-pending" };
+131: /** Values supplied by the private receiving boundary, never callbacks in SQLite. */
+132: export interface TransactionReceivingControls {
+133:   readonly acceptsJson: boolean;
+134:   readonly maximumOperations: number;
+135: }
+136: export type TransactionReceivingAdmission =
+137:   | TransactionAdmission
+138:   | { readonly kind: "not-acceptable"; readonly context?: TransactionReadContext }
+139:   | { readonly kind: "operation-limit"; readonly context?: TransactionReadContext }
+140:   | {
+141:       readonly kind: "selector-limit";
+142:       readonly limit: TransactionSelectorLimit;
+143:       readonly pointer: string;
+144:       readonly context?: TransactionReadContext;
+145:     };
+146: export function snapshotTransactionReceivingControls(
+147:   controls: TransactionReceivingControls,
+148: ): TransactionReceivingControls {
+149:   const acceptsJson = controls.acceptsJson,
+150:     maximumOperations = controls.maximumOperations;
+151:   if (
+152:     typeof acceptsJson !== "boolean" ||
+153:     !Number.isSafeInteger(maximumOperations) ||
+154:     maximumOperations < 1 ||
+155:     maximumOperations > TRANSACTION_MAXIMUM_OPERATIONS
+156:   )
+157:     throw new TypeError("valid private receiving controls required");
+158:   return Object.freeze({ acceptsJson, maximumOperations });
+159: }
+160: export interface TransactionSequenceAdmission {
+161:   readonly memberCount: number;
+162: }
+163: export type TransactionSequenceTurn = {
+164:   readonly index: number;
+165:   readonly done: boolean;
+```
+
+## Actual source packages/server/src/transaction-store.ts:348-401
+```
+348:   function enter<T>(run: () => T): T {
+349:     if (ownerFailure) throw ownerFailure;
+350:     if (maintenanceFailure)
+351:       throw new Error("transaction maintenance failed; owner fenced", maintenanceFailure);
+352:     if (closed || busy) throw new Error("transaction store closed or reentrant");
+353:     busy = true;
+354:     try {
+355:       return run();
+356:     } finally {
+357:       busy = false;
+358:     }
+359:   }
+360:   function fence(cause: unknown): Error {
+361:     clearInterval(maintenanceTimer);
+362:     // Cleanup can add the original application error to an earlier storage
+363:     // failure. Replace the wrapper; mutating its cause would create a cycle.
+364:     ownerFailure = new Error("transaction storage failure; owner fenced; reopen before use", {
+365:       cause,
+366:     });
+367:     return ownerFailure;
+368:   }
+369:   function atomic<T>(run: () => T): T {
+370:     if (ownerFailure) throw ownerFailure;
+371:     let committing = false;
+372:     try {
+373:       db.exec("BEGIN IMMEDIATE");
+374:       const value = run();
+375:       committing = true;
+376:       db.exec("COMMIT");
+377:       return value;
+378:     } catch (error) {
+379:       let cleanRollback = false;
+380:       let cause: unknown = error;
+381:       try {
+382:         if (db.isTransaction) {
+383:           db.exec("ROLLBACK");
+384:           cleanRollback = !db.isTransaction;
+385:         }
+386:       } catch (rollback) {
+387:         cause = new AggregateError([error, rollback], "transaction and rollback failed");
+388:       }
+389:       const sqlite =
+390:         error instanceof Error && "code" in error && String(error.code).startsWith("ERR_SQLITE");
+391:       const constraint =
+392:         sqlite &&
+393:         "errcode" in error &&
+394:         typeof error.errcode === "number" &&
+395:         Number.isInteger(error.errcode) &&
+396:         (error.errcode & 0xff) === 19;
+397:       // Even a COMMIT that throws after taking effect has an uncertain outcome.
+398:       // Reopen determines its durable state; compensation must not guess at it.
+399:       if (committing || !cleanRollback || (sqlite && !constraint)) throw fence(cause);
+400:       throw error;
+401:     }
+```
+
+## Actual source packages/server/src/transaction-store.ts:590-598
+```
+590:   function readContext(): TransactionReadContext {
+591:     const position = metadata("position");
+592:     if (!/^(0|[1-9][0-9]*)$/.test(position) || !Number.isSafeInteger(Number(position)))
+593:       throw new Error("invalid transaction read position");
+594:     return Object.freeze({
+595:       scopeEpoch: epoch,
+596:       authorizationView: view,
+597:       scopePosition: `pos-${position}`,
+598:     });
+```
+
+## Actual source packages/server/src/transaction-store.ts:1028-1133
+```
+1028:   }
+1029:   /** Caller holds the one SQLite transaction. Sequence turns project foreign
+1030:    * pending ownership before comparison, unlike direct singleton/batch routes. */
+1031:   function admitKey(
+1032:     principal: string,
+1033:     key: string,
+1034:     batch: PreparedTransaction,
+1035:     pendingWins?: boolean,
+1036:     references?: ReferenceBindings,
+1037:     template?: DependencyTemplate,
+1038:   ): TransactionAdmission;
+1039:   function admitKey(
+1040:     principal: string,
+1041:     key: string,
+1042:     batch: PreparedTransaction,
+1043:     pendingWins: boolean,
+1044:     references: ReferenceBindings | undefined,
+1045:     template: DependencyTemplate | undefined,
+1046:     controls: TransactionReceivingControls | undefined,
+1047:   ): TransactionReceivingAdmission;
+1048:   function admitKey(
+1049:     principal: string,
+1050:     key: string,
+1051:     batch: PreparedTransaction,
+1052:     pendingWins = false,
+1053:     references?: ReferenceBindings,
+1054:     template?: DependencyTemplate,
+1055:     controls?: TransactionReceivingControls,
+1056:   ): TransactionReceivingAdmission {
+1057:     const stored = row(principal, key);
+1058:     const prior = stored ? expireRow(stored, instant()).row : undefined;
+1059:     if (pendingWins && prior?.owner !== null && prior !== undefined)
+1060:       return { kind: "existing", receipt: parseReceipt(prior.receipt) };
+1061:     if (prior?.dependency) {
+1062:       const template = parseDependencyTemplate(prior.dependency, scope);
+1063:       const comparison = compareDependencyTemplate(template, batch, resolveAlias, (index) => {
+1064:         const stored = db
+1065:           .prepare("SELECT fact FROM creator_facts WHERE attempt=? AND member=?")
+1066:           .get(template.attempt, index);
+1067:         if (!stored) throw new Error("unresolved receipt lost creator fact");
+1068:         return typeof stored.fact === "string"
+1069:           ? (JSON.parse(stored.fact) as CreatorFact)
+1070:           : undefined;
+1071:       });
+1072:       return comparison === "conflict"
+1073:         ? { kind: "conflict" }
+1074:         : comparison === "equal"
+1075:           ? { kind: "existing", receipt: parseReceipt(prior.receipt) }
+1076:           : { kind: "comparison-pending" };
+1077:     }
+1078:     const normalized = template
+1079:       ? undefined
+1080:       : normalizeTransaction(batch, resolveAlias, prior?.witnesses, references);
+1081:     if (prior) {
+1082:       if (!normalized) throw new Error("existing key cannot acquire a new unresolved template");
+1083:       return prior.identity !== normalized.identity
+1084:         ? { kind: "conflict" }
+1085:         : { kind: "existing", receipt: parseReceipt(prior.receipt) };
+1086:     }
+1087:     // Prior-key equality/conflict wins above. Only an unknown key pays fresh
+1088:     // admission controls, and no refusal ever inserts a receipt or owner.
+1089:     if (controls && batch.carrier.operations.length > controls.maximumOperations)
+1090:       return { kind: "operation-limit" };
+1091:     if (controls) {
+1092:       for (const [index, op] of batch.carrier.operations.entries()) {
+1093:         if (op.operation !== "updateWhere" && op.operation !== "deleteWhere") continue;
+1094:         const limit = transactionSelectorCapacity(op);
+1095:         if (limit)
+1096:           return {
+1097:             kind: "selector-limit",
+1098:             limit,
+1099:             pointer:
+1100:               batch.carrier.kind === "singleton" ? "/selector" : `/operations/${index}/selector`,
+1101:           };
+1102:       }
+1103:     }
+1104:     if (controls && !controls.acceptsJson) return { kind: "not-acceptable" };
+1105:     const receipt: TransactionReceipt = {
+1106:       id: `${scope}receipts/${randomUUID()}`,
+1107:       status: "pending",
+1108:       idempotencyKey: key,
+1109:       scopeEpoch: epoch,
+1110:       authorizationView: view,
+1111:       transaction: randomUUID(),
+1112:     };
+1113:     const owner = randomUUID(),
+1114:       claim = Object.freeze({ receipt });
+1115:     db.prepare("INSERT INTO receipts VALUES(?,?,?,?,?,?,?)").run(
+1116:       principal,
+1117:       key,
+1118:       normalized?.identity ?? "",
+1119:       normalized?.witnessesJson ?? "",
+1120:       owner,
+1121:       json(receipt),
+1122:       template ? json(template) : null,
+1123:     );
+1124:     claims.set(claim, { principal, key, owner, normalized });
+1125:     return { kind: "owned", claim };
+1126:   }
+1127:   function executeClaim(claim: TransactionClaim): TransactionReceipt;
+1128:   function executeClaim(claim: TransactionClaim, observed: true): TransactionReceiptObservation;
+1129:   function executeClaim(
+1130:     claim: TransactionClaim,
+1131:     observed = false,
+1132:   ): TransactionReceipt | TransactionReceiptObservation {
+1133:     return enter(() => {
+```
+
+## Actual source packages/server/src/transaction-store.ts:1379-1455
+```
+1379:   maintenanceTimer.unref();
+1380:   function admit(principal: string, key: string, batch: PreparedTransaction): TransactionAdmission;
+1381:   function admit(
+1382:     principal: string,
+1383:     key: string,
+1384:     batch: PreparedTransaction,
+1385:     controls: TransactionReceivingControls,
+1386:   ): TransactionReceivingAdmission;
+1387:   function admit(
+1388:     principal: string,
+1389:     key: string,
+1390:     batch: PreparedTransaction,
+1391:     controls: TransactionReceivingControls | undefined,
+1392:     observed: true,
+1393:   ): TransactionReceivingAdmission;
+1394:   function admit(
+1395:     principal: string,
+1396:     key: string,
+1397:     batch: PreparedTransaction,
+1398:     controls?: TransactionReceivingControls,
+1399:     observed = false,
+1400:   ): TransactionReceivingAdmission {
+1401:     const receiving = snapshotTransactionReceivingControls(
+1402:       controls ?? { acceptsJson: true, maximumOperations: TRANSACTION_MAXIMUM_OPERATIONS },
+1403:     );
+1404:     return enter(() => {
+1405:       assertPreparedTransaction(batch, scope);
+1406:       checkPrincipalKey(principal, key);
+1407:       const admission = atomic(() => {
+1408:         const result = admitKey(principal, key, batch, false, undefined, undefined, receiving);
+1409:         if (result.kind === "operation-limit" && controls === undefined)
+1410:           throw new TransactionDevelopmentLimitError("development transaction operation limit");
+1411:         if (result.kind === "selector-limit" && controls === undefined)
+1412:           throw new TransactionDevelopmentLimitError("development transaction Selector limit");
+1413:         if (result.kind === "existing") {
+1414:           if (!receiving.acceptsJson)
+1415:             return {
+1416:               kind: "not-acceptable" as const,
+1417:               ...(observed ? { context: readContext() } : {}),
+1418:             };
+1419:           if (observed) return { kind: "existing" as const, ...observeReceipt(result.receipt) };
+1420:         }
+1421:         if (
+1422:           observed &&
+1423:           (result.kind === "conflict" ||
+1424:             result.kind === "operation-limit" ||
+1425:             result.kind === "selector-limit" ||
+1426:             result.kind === "not-acceptable")
+1427:         )
+1428:           return { ...result, context: readContext() };
+1429:         return result;
+1430:       });
+1431:       if (admission.kind === "owned") {
+1432:         try {
+1433:           options.fault?.("after-admission");
+1434:         } catch (error) {
+1435:           const owned = claims.get(admission.claim);
+1436:           if (!owned) throw new Error("lost admitted claim", { cause: error });
+1437:           try {
+1438:             cleanupThenThrow(error, () => {
+1439:               atomic(() => {
+1440:                 db.prepare("DELETE FROM receipts WHERE principal=? AND key=? AND owner=?").run(
+1441:                   owned.principal,
+1442:                   owned.key,
+1443:                   owned.owner,
+1444:                 );
+1445:               });
+1446:             });
+1447:           } finally {
+1448:             claims.delete(admission.claim);
+1449:           }
+1450:         }
+1451:       }
+1452:       return admission;
+1453:     });
+1454:   }
+1455:   return Object.freeze({
+```
+
+## Actual source packages/server/src/transaction-store.ts:1770-1840
+```
+1770:       );
+1771:     },
+1772:     maintain,
+1773:     admit,
+1774:     admitObserved(
+1775:       principal: string,
+1776:       key: string,
+1777:       batch: PreparedTransaction,
+1778:       controls?: TransactionReceivingControls,
+1779:     ) {
+1780:       return admit(principal, key, batch, controls, true);
+1781:     },
+1782:     admitSequence(
+1783:       principal: string,
+1784:       sequence: PreparedTransactionSequence,
+1785:     ): TransactionSequenceAdmission {
+1786:       return enter(() => {
+1787:         assertPreparedTransactionSequence(sequence, scope);
+1788:         for (const member of sequence.members) checkPrincipalKey(principal, member.key);
+1789:         const owned = new Map<number, TransactionClaim>();
+1790:         const id = randomUUID();
+1791:         const attempt = Object.freeze({ memberCount: sequence.members.length });
+1792:         try {
+1793:           atomic(() => {
+1794:             for (const [index, member] of sequence.members.entries()) {
+1795:               if (member.operation === "createBead" || member.operation === "createLink")
+1796:                 db.prepare("INSERT INTO creator_facts VALUES(?,?,NULL)").run(id, index);
+1797:               // Existing keys are classified only at the eligible member turn.
+1798:               const existing = row(principal, member.key);
+1799:               if (existing && expireRow(existing, instant()).row) continue;
+1800:               const template = member.deferred ? dependencyTemplate(id, member) : undefined;
+1801:               const admitted = admitKey(
+1802:                 principal,
+1803:                 member.key,
+1804:                 member.request,
+1805:                 true,
+1806:                 undefined,
+1807:                 template,
+1808:               );
+1809:               if (admitted.kind === "owned") {
+1810:                 owned.set(index, admitted.claim);
+1811:                 const claim = ownedClaim(admitted.claim);
+1812:                 if (member.operation === "createBead" || member.operation === "createLink")
+1813:                   claim.creator = { attempt: id, member: index, operation: member.operation };
+1814:                 options.fault?.("after-sequence-reservation");
+1815:               }
+1816:             }
+1817:           });
+1818:           options.fault?.("after-sequence-admission");
+1819:         } catch (error) {
+1820:           // An admission callback can fail after the durable bulk step; cleanup
+1821:           // checks each exact owner and never retracts a competing reservation.
+1822:           try {
+1823:             cleanupThenThrow(error, () => {
+1824:               atomic(() => {
+1825:                 for (const claim of owned.values()) {
+1826:                   const owner = claims.get(claim);
+1827:                   if (owner)
+1828:                     db.prepare("DELETE FROM receipts WHERE principal=? AND key=? AND owner=?").run(
+1829:                       owner.principal,
+1830:                       owner.key,
+1831:                       owner.owner,
+1832:                     );
+1833:                 }
+1834:                 db.prepare("DELETE FROM creator_facts WHERE attempt=?").run(id);
+1835:               });
+1836:             });
+1837:           } finally {
+1838:             for (const claim of owned.values()) claims.delete(claim);
+1839:           }
+1840:         }
+```
+
+## Actual source packages/server/src/transaction-store.ts:1880-1960
+```
+1880:                 );
+1881:                 if (claim) claims.delete(claim);
+1882:               }),
+1883:             );
+1884:           result = { kind: "transient" };
+1885:         } else {
+1886:           if (claim)
+1887:             enter(() => {
+1888:               const owner = ownedClaim(claim);
+1889:               const current = row(owner.principal, owner.key);
+1890:               if (current?.owner !== owner.owner) throw new Error("dependent resolution fenced");
+1891:               if (current.dependency === null) {
+1892:                 if (template || !owner.normalized)
+1893:                   throw new Error("sequence deferral state differs");
+1894:                 return;
+1895:               }
+1896:               const persisted = parseDependencyTemplate(current.dependency, scope);
+1897:               atomic(() => {
+1898:                 if (!template || !isDeepStrictEqual(persisted, template))
+1899:                   throw new Error("sequence deferral template differs");
+1900:                 const normalized = normalizeTransaction(
+1901:                   member.request,
+1902:                   resolveAlias,
+1903:                   undefined,
+1904:                   references,
+1905:                 );
+1906:                 const changed = db
+1907:                   .prepare(
+1908:                     "UPDATE receipts SET identity=?,witnesses=?,dependency=NULL WHERE principal=? AND key=? AND owner=?",
+1909:                   )
+1910:                   .run(
+1911:                     normalized.identity,
+1912:                     normalized.witnessesJson,
+1913:                     owner.principal,
+1914:                     owner.key,
+1915:                     owner.owner,
+1916:                   );
+1917:                 if (changed.changes !== 1) throw new Error("dependent resolution fenced");
+1918:                 owner.normalized = normalized;
+1919:                 options.fault?.("after-dependency-resolution");
+1920:               });
+1921:             });
+1922:           if (!claim) {
+1923:             const admission = enter(() =>
+1924:               atomic(() => admitKey(state.principal, member.key, member.request, true, references)),
+1925:             );
+1926:             if (admission.kind === "owned") {
+1927:               claim = admission.claim;
+1928:               state.owned.set(index, claim);
+1929:               if (member.operation === "createBead" || member.operation === "createLink")
+1930:                 ownedClaim(claim).creator = {
+1931:                   attempt: state.id,
+1932:                   member: index,
+1933:                   operation: member.operation,
+1934:                 };
+1935:             } else {
+1936:               if (admission.kind === "comparison-pending")
+1937:                 throw new Error("sequence compared unresolved foreign owner");
+1938:               result =
+1939:                 admission.kind === "conflict"
+1940:                   ? admission
+1941:                   : { kind: "receipt", receipt: admission.receipt };
+1942:             }
+1943:           }
+1944:           if (claim) {
+1945:             result = { kind: "receipt", receipt: executeClaim(claim) };
+1946:             wroteCreator = member.operation === "createBead" || member.operation === "createLink";
+1947:           }
+1948:         }
+1949:         const completed = result;
+1950:         if (!completed) throw new Error("sequence turn lost its disposition");
+1951:         if (
+1952:           !wroteCreator &&
+1953:           (member.operation === "createBead" || member.operation === "createLink")
+1954:         )
+1955:           enter(() =>
+1956:             atomic(() =>
+1957:               writeFact(
+1958:                 state.id,
+1959:                 index,
+1960:                 completed.kind === "transient"
+```
+
+## Actual source packages/server/src/transaction-dependencies.ts:1-57
+```
+1: import { parseCanonicalHttpUrl, assertCanonicalPathSegments } from "@bdp/protocol";
+2: /** Private sequence facts and partial identity comparison; no key authority. */
+3: import {
+4:   normalizeTransaction,
+5:   transactionAliasOperands,
+6:   transactionAliasFields,
+7:   type PreparedTransaction,
+8:   type PreparedTransactionSequence,
+9: } from "./transaction-batch.js";
+10: import { encodeSemanticValue, UNBOUND_SEMANTIC_REFERENCE } from "./semantic-identity.js";
+11: import type { MemberCreatorBinding } from "./member-identity.js";
+12: export type CreatorFact = MemberCreatorBinding;
+13: export type ReferenceBindings = ReadonlyMap<string, string | typeof UNBOUND_SEMANTIC_REFERENCE>;
+14: interface CreatorDependencyTemplate {
+15:   readonly attempt: string;
+16:   readonly dependencies: readonly {
+17:     readonly field: string;
+18:     readonly creator: number;
+19:     readonly resourceKind: "bead" | "link";
+20:     readonly suppliedId?: string;
+21:     readonly operationSlot: 0;
+22:   }[];
+23:   readonly identity: string;
+24:   readonly operation: string;
+25: }
+26: interface AliasDependencyTemplate extends CreatorDependencyTemplate {
+27:   readonly form: "transaction-deferred-alias-1";
+28:   readonly aliases: PreparedTransactionSequence["members"][number]["aliasOperands"];
+29:   /** Fixed URI identities; deferred fields use private holes, never final witnesses. */
+30:   readonly referenceIdentities: Readonly<Record<string, string>>;
+31: }
+32: export type DependencyTemplate = CreatorDependencyTemplate | AliasDependencyTemplate;
+33: function aliasTemplate(template: DependencyTemplate): template is AliasDependencyTemplate {
+34:   return "form" in template;
+35: }
+36: /** Pending-only data is consumed by its exclusive owner. Startup retracts it. */
+37: export function parseDependencyTemplate(text: string, scope: string): DependencyTemplate {
+38:   const value = JSON.parse(text) as DependencyTemplate;
+39:   if (
+40:     !value ||
+41:     typeof value !== "object" ||
+42:     typeof value.attempt !== "string" ||
+43:     typeof value.identity !== "string" ||
+44:     typeof value.operation !== "string" ||
+45:     !Array.isArray(value.dependencies) ||
+46:     value.dependencies.length > 2 ||
+47:     value.dependencies.some(
+48:       (dependency) =>
+49:         !dependency ||
+50:         !["bead", "link", "source", "target"].includes(dependency.field) ||
+51:         !Number.isSafeInteger(dependency.creator) ||
+52:         dependency.creator < 0 ||
+53:         dependency.operationSlot !== 0 ||
+54:         (dependency.resourceKind !== "bead" && dependency.resourceKind !== "link") ||
+55:         (dependency.suppliedId !== undefined && typeof dependency.suppliedId !== "string"),
+56:     )
+57:   )
+```
+
+## Actual source packages/server/src/transaction-dependencies.ts:173-270
+```
+173: export function compareDependencyTemplate(
+174:   template: DependencyTemplate,
+175:   request: PreparedTransaction,
+176:   resolveAlias: (locator: string) => string | undefined,
+177:   fact: (creator: number) => CreatorFact | undefined,
+178: ): "conflict" | "equal" | "pending" {
+179:   if (
+180:     request.carrier.operations.length !== 1 ||
+181:     request.carrier.operations[0]?.operation !== template.operation
+182:   )
+183:     return "conflict";
+184:   if (aliasTemplate(template)) return compareAliasTemplate(template, request, resolveAlias, fact);
+185:   const candidate = normalizeTransaction(request, resolveAlias);
+186:   const byCreator = new Map<number, string>();
+187:   let unresolved = false;
+188:   for (const d of template.dependencies) {
+189:     const value = candidate.referenceIdentities.get(d.field);
+190:     if (value === undefined) return "conflict";
+191:     const encoded = JSON.parse(value) as [string, [string, string]];
+192:     if (
+193:       encoded[1][0] !== "string" ||
+194:       !encoded[1][1].startsWith(
+195:         `${request.carrier.scope}${d.resourceKind === "bead" ? "beads" : "links"}/`,
+196:       )
+197:     )
+198:       return "conflict";
+199:     if (d.suppliedId !== undefined && value !== encodeSemanticValue(d.suppliedId))
+200:       return "conflict";
+201:     const captured = fact(d.creator);
+202:     if (!captured || captured.kind === "transient") unresolved = true;
+203:     else if (captured.kind === "unbound" || value !== encodeSemanticValue(captured.id))
+204:       return "conflict";
+205:     const previous = byCreator.get(d.creator);
+206:     if (previous !== undefined && previous !== value) return "conflict";
+207:     byCreator.set(d.creator, value);
+208:   }
+209:   const different =
+210:     normalizeTransaction(
+211:       request,
+212:       resolveAlias,
+213:       undefined,
+214:       new Map(template.dependencies.map((d) => [d.field, UNBOUND_SEMANTIC_REFERENCE] as const)),
+215:     ).identity !== template.identity;
+216:   return different ? "conflict" : unresolved ? "pending" : "equal";
+217: }
+218: /** At most six reference slots. Symbols correlate by original locator/creator,
+219:  * never by slot; a candidate occurrence of an original alias is symbolic too. */
+220: function compareAliasTemplate(
+221:   template: AliasDependencyTemplate,
+222:   request: PreparedTransaction,
+223:   resolveAlias: (locator: string) => string | undefined,
+224:   fact: (creator: number) => CreatorFact | undefined,
+225: ): "conflict" | "pending" {
+226:   const locators = new Set(template.aliases.map((alias) => alias.locator));
+227:   const candidateAliases = transactionAliasOperands(request);
+228:   const symbolic = new Map(
+229:     candidateAliases
+230:       .filter((alias) => locators.has(alias.locator))
+231:       .map((alias) => [alias.field, alias.locator]),
+232:   );
+233:   const candidate = normalizeTransaction(
+234:     request,
+235:     (locator) => {
+236:       if (locators.has(locator)) throw new Error("unresolved original alias lookup");
+237:       return resolveAlias(locator);
+238:     },
+239:     undefined,
+240:     new Map([...symbolic.keys()].map((field) => [field, UNBOUND_SEMANTIC_REFERENCE] as const)),
+241:   );
+242:   const masked = new Map(
+243:     Object.keys(template.referenceIdentities).map(
+244:       (field) => [field, UNBOUND_SEMANTIC_REFERENCE] as const,
+245:     ),
+246:   );
+247:   // A symbol moved into a previously fixed slot must be masked there too. All
+248:   // original reference slots are masked; identity still pins shape and pins.
+249:   if (
+250:     normalizeTransaction(
+251:       request,
+252:       () => {
+253:         throw new Error("masked alias lookup");
+254:       },
+255:       undefined,
+256:       masked,
+257:     ).identity !== template.identity
+258:   )
+259:     return "conflict";
+260:   type Term = { symbol: string } | { fixed: string };
+261:   const parents = new Map<string, string>();
+262:   const values = new Map<string, string>();
+263:   const domains = new Map<string, ((value: string) => boolean)[]>();
+264:   const root = (symbol: string): string => {
+265:     const parent = parents.get(symbol);
+266:     return parent === undefined || parent === symbol ? symbol : root(parent);
+267:   };
+268:   const stringIdentity = (value: string): string | undefined => {
+269:     const encoded = JSON.parse(value) as [string, [string, unknown]];
+270:     return encoded[1]?.[0] === "string" && typeof encoded[1][1] === "string"
+```
+
+## Actual source packages/server/src/semantic-identity.ts:1-144
+```
+1: import { JsonNumberLiteral, isUnicodeScalarString } from "@bdp/protocol";
+2: 
+3: /** Internal sentinel only: no JSON value can manufacture this identity. */
+4: export const UNBOUND_SEMANTIC_REFERENCE = Symbol("unbound semantic reference");
+5: 
+6: /** S4 supplies a normalized record built from S1 lossless values. Defaults and
+7:  * semantic reference substitutions are explicit caller work, before encoding.
+8:  * Strings in properties (including URI/@ spellings) are never interpreted here.
+9:  * JS numbers are deliberately excluded: their source precision may already be lost.
+10:  */
+11: export type SemanticValue =
+12:   | null
+13:   | boolean
+14:   | string
+15:   | JsonNumberLiteral
+16:   | typeof UNBOUND_SEMANTIC_REFERENCE
+17:   | readonly SemanticValue[]
+18:   | { readonly [key: string]: SemanticValue };
+19: 
+20: /** Internal durable format, not wire JSON/JCS or a public request-hash algorithm.
+21:  * Persisted identities must retain this version; changing it needs an explicit
+22:  * compatibility/migration decision. S6 hashes these exact returned UTF-8 bytes.
+23:  */
+24: export const SEMANTIC_VALUE_FORMAT = "ru-semantic-value-1";
+25: const numberPattern = /^(-?)(0|[1-9][0-9]*)(?:\.([0-9]+))?(?:[eE]([+-]?[0-9]+))?$/;
+26: 
+27: function exactNumber(literal: string): readonly [string, string] {
+28:   const match = numberPattern.exec(literal);
+29:   if (!match || match[0] !== literal)
+30:     throw new TypeError("semantic number must be a JSON number literal");
+31:   const fraction = match[3] ?? "";
+32:   const digits = `${match[2]}${fraction}`.replace(/^0+/, "");
+33:   if (!digits) return ["0", "0"];
+34:   let trailing = 0;
+35:   while (digits.charCodeAt(digits.length - trailing - 1) === 48) trailing++;
+36:   const coefficient = `${match[1]}${digits.slice(0, digits.length - trailing)}`;
+37:   // BigInt represents the exponent's digits, never 10**exponent or an expanded
+38:   // mantissa. Allocation depends on input length, not the represented magnitude.
+39:   const exponent = BigInt(match[4] ?? "0") - BigInt(fraction.length) + BigInt(trailing);
+40:   return [coefficient, exponent.toString()];
+41: }
+42: 
+43: function string(value: string): string {
+44:   if (!isUnicodeScalarString(value)) throw new TypeError("semantic strings must be scalar Unicode");
+45:   return JSON.stringify(value);
+46: }
+47: 
+48: type Work =
+49:   | { readonly kind: "value"; readonly value: unknown }
+50:   | { readonly kind: "text"; readonly text: string }
+51:   | { readonly kind: "leave"; readonly value: object };
+52: 
+53: /** Deterministic exact JSON-value equality encoding, including refused numeric
+54:  * literals. Objects are unordered, arrays ordered, and every node is tagged so
+55:  * user objects/arrays cannot collide with number or private-unbound nodes.
+56:  * Input must be acyclic plain data with scalar strings. No hidden nesting limit;
+57:  * traversal and output serialization are iterative. Caller owns input byte limits.
+58:  */
+59: export function encodeSemanticValue(value: SemanticValue): string {
+60:   const output = [`[${JSON.stringify(SEMANTIC_VALUE_FORMAT)},`];
+61:   const pending: Work[] = [{ kind: "value", value }];
+62:   const ancestors = new WeakSet<object>();
+63:   while (pending.length) {
+64:     const work = pending.pop();
+65:     if (!work) break;
+66:     if (work.kind === "text") {
+67:       output.push(work.text);
+68:       continue;
+69:     }
+70:     if (work.kind === "leave") {
+71:       ancestors.delete(work.value);
+72:       continue;
+73:     }
+74:     const current = work.value;
+75:     if (current === null) output.push('["null"]');
+76:     else if (current === UNBOUND_SEMANTIC_REFERENCE) output.push('["unbound"]');
+77:     else if (typeof current === "boolean") output.push(`["boolean",${current}]`);
+78:     else if (typeof current === "string") output.push(`["string",${string(current)}]`);
+79:     else if (current instanceof JsonNumberLiteral) {
+80:       // Inspect data, not a getter on a forged/subclassed literal node.
+81:       const descriptors = Object.getOwnPropertyDescriptors(current);
+82:       const literal = descriptors.literal;
+83:       if (
+84:         Object.getPrototypeOf(current) !== JsonNumberLiteral.prototype ||
+85:         Reflect.ownKeys(descriptors).length !== 1 ||
+86:         !literal ||
+87:         !("value" in literal) ||
+88:         typeof literal.value !== "string"
+89:       )
+90:         throw new TypeError("semantic numeric node must contain only literal data");
+91:       const [coefficient, exponent] = exactNumber(literal.value);
+92:       output.push(`["number",${JSON.stringify(coefficient)},${JSON.stringify(exponent)}]`);
+93:     } else if (typeof current === "object") {
+94:       if (ancestors.has(current)) throw new TypeError("semantic values must be acyclic");
+95:       const array = Array.isArray(current);
+96:       const prototype = Object.getPrototypeOf(current);
+97:       if (!array && prototype !== null && prototype !== Object.prototype)
+98:         throw new TypeError("semantic objects must be plain data");
+99:       const descriptors = Object.getOwnPropertyDescriptors(current);
+100:       const keys = Reflect.ownKeys(descriptors);
+101:       for (const key of keys) {
+102:         const descriptor = descriptors[key as string];
+103:         if (
+104:           typeof key !== "string" ||
+105:           !descriptor ||
+106:           !("value" in descriptor) ||
+107:           (!descriptor.enumerable && !(array && key === "length"))
+108:         )
+109:           throw new TypeError("semantic containers must contain enumerable string-keyed data");
+110:       }
+111:       ancestors.add(current);
+112:       pending.push({ kind: "leave", value: current });
+113:       pending.push({ kind: "text", text: "]]" });
+114:       if (array) {
+115:         const length = descriptors.length?.value as number;
+116:         if (keys.length !== length + 1)
+117:           throw new TypeError("semantic arrays must be dense without extra fields");
+118:         output.push('["array",[');
+119:         for (let index = length - 1; index >= 0; index--) {
+120:           const descriptor = descriptors[String(index)];
+121:           if (!descriptor)
+122:             throw new TypeError("semantic arrays must be dense without extra fields");
+123:           pending.push({ kind: "value", value: descriptor.value });
+124:           if (index) pending.push({ kind: "text", text: "," });
+125:         }
+126:       } else {
+127:         const names = (keys as string[]).sort(); // Deterministic UTF-16 code-unit ordering.
+128:         output.push('["object",[');
+129:         for (let index = names.length - 1; index >= 0; index--) {
+130:           const name = names[index] as string;
+131:           pending.push({ kind: "text", text: "]" });
+132:           pending.push({ kind: "value", value: descriptors[name]?.value });
+133:           pending.push({ kind: "text", text: `[${string(name)},` });
+134:           if (index) pending.push({ kind: "text", text: "," });
+135:         }
+136:       }
+137:     } else
+138:       throw new TypeError(
+139:         "semantic values require lossless JSON data, not native numbers or other runtime values",
+140:       );
+141:   }
+142:   output.push("]");
+143:   return output.join("");
+144: }
+```
+
+## Actual source packages/server/src/transaction-http.ts:1-58
+```
+1: import type { TransactionEventPacket } from "./transaction-store.js";
+2: import type { TransactionSnapshotRequest } from "./transaction-snapshot.js";
+3: import {
+4:   transactionChangefeedRequest,
+5:   TransactionChangefeedParameterError,
+6:   type TransactionChangefeedPage,
+7: } from "./transaction-changefeed.js";
+8: import {
+9:   transactionEventRequest,
+10:   TransactionEventParameterError,
+11:   TransactionEventProjectionGap,
+12: } from "./transaction-events.js";
+13: import { transactionMinimumHeaders, TransactionMinimumFailure } from "./transaction-consistency.js";
+14: /** Source-private partial Transactional HTTP projection. No discovery/profile
+15:  * advertisement: discovery and complete consistency/Selector admission remain unqualified. */
+16: import {
+17:   isReadProblem,
+18:   JsonSyntaxError,
+19:   ReadUpdateCarrierError,
+20:   parseCanonicalScope,
+21:   parseReadUpdateProblem,
+22:   prepareReadUpdateSequence,
+23:   readProblem,
+24:   type ReadProblem,
+25:   type ReadProblemCode,
+26: } from "@bdp/protocol";
+27: import { createReadHttpRoute, jsonResponse, scopeDataResponse } from "./read-http-routing.js";
+28: import {
+29:   acceptsJson,
+30:   applyReadHttpSemantics,
+31:   selectChangefeedMedia,
+32:   conditionalReadStatus,
+33: } from "./read-http.js";
+34: import type { HttpResponse } from "./index.js";
+35: import {
+36:   type TransactionSingletonOperation,
+37:   prepareTransactionSequence,
+38:   TransactionDevelopmentLimitError,
+39:   TRANSACTION_RUNTIME_LIMITS,
+40:   TRANSACTION_MAXIMUM_OPERATIONS,
+41: } from "./transaction-batch.js";
+42: import type { createTransactionService } from "./transaction-service.js";
+43: import {
+44:   classifyAliasPath,
+45:   requestFromUrl,
+46:   ScopeServerOperationAbortedError,
+47: } from "./read-request.js";
+48: import {
+49:   TransactionMinimumVisibilityGap,
+50:   transactionReadContexts,
+51:   isCurrentTransactionMinimumRead,
+52: } from "./transaction-read.js";
+53: import type { TransactionReadContext } from "./transaction-store.js";
+54: import type { TransactionSubmission } from "./transaction-submission.js";
+55: 
+56: import { TRANSACTION_HTTP_OPERATIONS } from "./transaction-discovery.js";
+57: export type TransactionHttpAuthorization =
+58:   | { readonly kind: "unauthenticated" }
+```
+
+## Actual source packages/server/src/transaction-http.ts:274-385
+```
+274:         return transactionHttpProblem(received.failure);
+275:       if (
+276:         "text" in received &&
+277:         Buffer.byteLength(received.text) > TRANSACTION_RUNTIME_LIMITS.requestBodyBytes
+278:       )
+279:         return transactionHttpProblem("request-too-large");
+280:       if (
+281:         request.headers.get("content-type")?.split(";", 1)[0]?.trim().toLowerCase() !==
+282:           "application/json" ||
+283:         request.headers.has("content-encoding")
+284:       )
+285:         return problem(
+286:           parseReadUpdateProblem({
+287:             type: "https://github.com/gastownhall/bdp/problems/request",
+288:             code: "unsupported-media-type",
+289:             status: 415,
+290:             retry: "never",
+291:           }),
+292:         );
+293:       if ("failure" in received) return transactionHttpProblem(received.failure);
+294:       if (operation === "sequence") {
+295:         if (request.headers.has("idempotency-key"))
+296:           return transactionHttpProblem("malformed-request");
+297:         let carrier: ReturnType<typeof prepareReadUpdateSequence>;
+298:         try {
+299:           carrier = prepareReadUpdateSequence(scope, received.text);
+300:         } catch (error) {
+301:           if (syntax(error)) return transactionHttpProblem("malformed-request");
+302:           throw error;
+303:         }
+304:         if (authorization.kind === "unauthenticated")
+305:           return transactionHttpProblem("unauthenticated");
+306:         if (!authorization.canMutate) return transactionHttpProblem("forbidden");
+307:         if (carrier.operations.length > TRANSACTION_MAXIMUM_OPERATIONS) {
+308:           const observed = await service.sequenceRefusalObserved();
+309:           return context(
+310:             problem({ ...readProblem("limit-exceeded"), limit: "sequence.operations" }),
+311:             observed.context,
+312:           );
+313:         }
+314:         let prepared: ReturnType<typeof prepareTransactionSequence>;
+315:         try {
+316:           prepared = prepareTransactionSequence(scope, received.text);
+317:         } catch (error) {
+318:           if (error instanceof TransactionDevelopmentLimitError)
+319:             return developmentGap("unsupported-transaction-composition");
+320:           throw error;
+321:         }
+322:         if (!acceptsJson(request.headers.get("accept"))) {
+323:           const observed = await service.sequenceRefusalObserved();
+324:           return context(empty(406), observed.context);
+325:         }
+326:         const observed = await service.sequenceObserved(authorization.principal, prepared);
+327:         return context(jsonResponse(observed.body), observed.context);
+328:       }
+329:       const decision: TransactionSubmission["authorization"] =
+330:         authorization.kind === "unauthenticated"
+331:           ? authorization
+332:           : authorization.canMutate
+333:             ? { kind: "authorized", principal: authorization.principal }
+334:             : { kind: "forbidden" };
+335:       const result = await service.submit({
+336:         carrier:
+337:           operation === "batch"
+338:             ? { kind: "batch" }
+339:             : { kind: "singleton", operation: operation as TransactionSingletonOperation },
+340:         body: received.text,
+341:         key: request.headers.get("idempotency-key") ?? "",
+342:         authorization: decision,
+343:         receiving: { acceptsJson: acceptsJson(request.headers.get("accept")), maximumOperations },
+344:       });
+345:       if (result.kind === "receipt") return receiptResponse(result, true);
+346:       if (result.kind === "comparison-refusal") {
+347:         const response = problem(readProblem(result.code));
+348:         if (result.reason === "owner-stopped") return response;
+349:         if (!result.context) throw new Error("comparison deadline lost same-entry context");
+350:         return context(response, result.context);
+351:       }
+352:       if (result.kind === "not-acceptable") {
+353:         if (!result.context) throw new Error("negotiation refusal lost same-entry context");
+354:         return context(empty(406), result.context);
+355:       }
+356:       if (result.kind === "development-limit")
+357:         return developmentGap("unsupported-transaction-composition");
+358:       if (result.code === "idempotency-conflict") {
+359:         if (!result.context) throw new Error("conflict refusal lost same-entry context");
+360:         return context(
+361:           problem(
+362:             parseReadUpdateProblem({
+363:               type: "https://github.com/gastownhall/bdp/problems/conflict",
+364:               code: result.code,
+365:               status: 409,
+366:               retry: "never",
+367:             }),
+368:           ),
+369:           result.context,
+370:         );
+371:       }
+372:       if (result.code === "limit-exceeded" && result.limit !== undefined) {
+373:         if (!result.context) throw new Error("operation-limit refusal lost same-entry context");
+374:         return context(
+375:           problem({
+376:             ...readProblem(result.code),
+377:             limit: result.limit,
+378:             ...(result.pointer ? { pointer: result.pointer } : {}),
+379:           }),
+380:           result.context,
+381:         );
+382:       }
+383:       return problem({
+384:         ...readProblem(result.code),
+385:         ...(result.limit ? { limit: result.limit } : {}),
+```
+
+## Actual source packages/server/src/transaction-submission.test.ts:1-175
+```
+1: import { mkdtempSync, rmSync } from "node:fs";
+2: import { tmpdir } from "node:os";
+3: import path from "node:path";
+4: import { DatabaseSync } from "node:sqlite";
+5: import { afterEach, describe, expect, it, vi } from "vitest";
+6: import { parseTypeDescriptor } from "@bdp/protocol";
+7: import { openTransactionStore } from "./transaction-store.js";
+8: import { prepareTransaction, prepareTransactionSequence } from "./transaction-batch.js";
+9: import * as setCore from "./transaction-set.js";
+10: import { submitTransaction, type TransactionSubmission } from "./transaction-submission.js";
+11: const scope = "https://example.test/submission/",
+12:   bead = "https://example.test/bead",
+13:   link = "https://example.test/link";
+14: const cleanup: (() => void)[] = [];
+15: afterEach(() => {
+16:   vi.restoreAllMocks();
+17:   for (const close of cleanup.splice(0).reverse()) close();
+18: });
+19: function fixture(extra: Partial<Parameters<typeof openTransactionStore>[0]> = {}) {
+20:   const directory = mkdtempSync(path.join(tmpdir(), "bdp-tx-submission-"));
+21:   cleanup.push(() => rmSync(directory, { recursive: true, force: true }));
+22:   const options = {
+23:     file: path.join(directory, "store.sqlite"),
+24:     scope,
+25:     create: true,
+26:     types: [
+27:       parseTypeDescriptor({ id: bead, name: "Bead", describes: "bead", conformsTo: [] }),
+28:       parseTypeDescriptor({
+29:         id: link,
+30:         name: "Link",
+31:         describes: "link",
+32:         conformsTo: [],
+33:         source: { conformsTo: [bead], external: "none" },
+34:         target: { conformsTo: [bead], external: "none" },
+35:       }),
+36:     ],
+37:     ...extra,
+38:   };
+39:   let store = openTransactionStore(options);
+40:   cleanup.push(() => store.close());
+41:   return {
+42:     get store() {
+43:       return store;
+44:     },
+45:     reopen() {
+46:       store.close();
+47:       store = openTransactionStore({ ...options, create: false });
+48:       return store;
+49:     },
+50:   };
+51: }
+52: const create = (id = "a") => ({ operation: "createBead", id: `beads/${id}`, type: bead });
+53: function submission(operations: unknown[] = [create()], key = "key"): TransactionSubmission {
+54:   return {
+55:     carrier: { kind: "batch" },
+56:     body: JSON.stringify({ operations }),
+57:     key,
+58:     authorization: { kind: "authorized", principal: "p" },
+59:     receiving: { acceptsJson: true, maximumOperations: 32 },
+60:   };
+61: }
+62: function own(store: ReturnType<typeof openTransactionStore>, request = submission()) {
+63:   const result = store.admit("p", request.key, prepareTransaction(scope, request.body));
+64:   if (result.kind !== "owned") throw new Error("expected owned");
+65:   return result.claim;
+66: }
+67: function dependencies(store: ReturnType<typeof openTransactionStore>) {
+68:   return store.admitSequence(
+69:     "p",
+70:     prepareTransactionSequence(
+71:       scope,
+72:       JSON.stringify({
+73:         operations: [
+74:           { ...create(), name: "a", idempotencyKey: "creator" },
+75:           {
+76:             operation: "createLink",
+77:             type: link,
+78:             source: "@a",
+79:             target: "@a",
+80:             idempotencyKey: "dependent",
+81:           },
+82:         ],
+83:       }),
+84:     ),
+85:   );
+86: }
+87: const dependent = () =>
+88:   submission(
+89:     [{ operation: "createLink", type: link, source: "beads/a", target: "beads/a" }],
+90:     "dependent",
+91:   );
+92: 
+93: describe("private direct Transactional receiving order", () => {
+94:   it("checks byte bounds, syntax, key and authentication before key access", async () => {
+95:     const f = fixture();
+96:     let accessed = 0;
+97:     const boundary = {
+98:       ...f.store,
+99:       admit: ((...args: Parameters<typeof f.store.admit>) => {
+100:         accessed++;
+101:         return f.store.admit(...args);
+102:       }) as typeof f.store.admit,
+103:     };
+104:     for (const [patch, code] of [
+105:       [
+106:         { body: "x".repeat(65537), authorization: { kind: "unauthenticated" } },
+107:         "request-too-large",
+108:       ],
+109:       [{ body: "{", authorization: { kind: "unauthenticated" } }, "malformed-request"],
+110:       [
+111:         { body: '{"operations":[{"operation":"createBead","type":"x","type":"y"}]}' },
+112:         "malformed-request",
+113:       ],
+114:       [
+115:         {
+116:           body: JSON.stringify({
+117:             operations: [
+118:               { operation: "createLink", type: link, source: "@future", target: "@future" },
+119:               { ...create(), name: "future" },
+120:             ],
+121:           }),
+122:         },
+123:         "malformed-request",
+124:       ],
+125:       [{ key: "bad key", authorization: { kind: "forbidden" } }, "malformed-request"],
+126:       [{ authorization: { kind: "unauthenticated" } }, "unauthenticated"],
+127:       [{ authorization: { kind: "forbidden" } }, "forbidden"],
+128:     ] as const) {
+129:       expect(await submitTransaction(boundary, { ...submission(), ...patch })).toMatchObject({
+130:         kind: "refused",
+131:         code,
+132:       });
+133:     }
+134:     expect(accessed).toBe(0);
+135:     expect(f.store.inspect().resources).toEqual([]);
+136:     const claim = own(f.store);
+137:     expect(claim.receipt.status).toBe("pending");
+138:     f.store.retract(claim);
+139:   });
+140:   it("keeps invalid Selector grammar distinct from excessive private depth", async () => {
+141:     const f = fixture();
+142:     expect(
+143:       await submitTransaction(
+144:         f.store,
+145:         submission([{ operation: "deleteWhere", collection: "beads", selector: "$..*" }]),
+146:       ),
+147:     ).toMatchObject({
+148:       kind: "refused",
+149:       status: 400,
+150:       code: "malformed-request",
+151:       pointer: "/operations/0/selector",
+152:     });
+153:     let deep: unknown = 1;
+154:     for (let i = 0; i < 40; i++) deep = { deep };
+155:     expect(
+156:       await submitTransaction(f.store, submission([{ ...create(), properties: { deep } }])),
+157:     ).toMatchObject({ kind: "development-limit" });
+158:     expect(f.store.inspect().resources).toEqual([]);
+159:     f.store.retract(own(f.store));
+160:   });
+161:   it("compares conflict before negotiation and negotiates exact pending/terminal replay without changing it", async () => {
+162:     const f = fixture(),
+163:       request = submission(),
+164:       claim = own(f.store, request);
+165:     const noJson = { ...request, receiving: { acceptsJson: false, maximumOperations: 1 } };
+166:     expect(
+167:       await submitTransaction(f.store, { ...noJson, body: submission([create("other")]).body }),
+168:     ).toMatchObject({ code: "idempotency-conflict" });
+169:     expect(await submitTransaction(f.store, noJson)).toEqual({ kind: "not-acceptable" });
+170:     expect(f.store.receipt("p", claim.receipt.id)).toEqual(claim.receipt);
+171:     const completed = f.store.execute(claim);
+172:     expect(await submitTransaction(f.store, noJson)).toEqual({ kind: "not-acceptable" });
+173:     expect(f.store.receipt("p", claim.receipt.id)).toEqual(completed);
+174:     expect(f.store.inspect().groups).toHaveLength(1);
+175:   });
+```
+
+## Actual source packages/server/src/transaction-submission.test.ts:236-269
+```
+236:   it("preserves failed and expired duplicate dispositions and does not renew detail", async () => {
+237:     let now = 1000;
+238:     const f = fixture({ clock: () => now });
+239:     const failedRequest = submission(
+240:       [{ operation: "deleteBead", bead: "beads/missing" }],
+241:       "failed",
+242:     );
+243:     const failed = await submitTransaction(f.store, failedRequest);
+244:     expect(failed).toMatchObject({ kind: "receipt", receipt: { status: "failed" } });
+245:     expect(
+246:       await submitTransaction(f.store, {
+247:         ...failedRequest,
+248:         receiving: { acceptsJson: false, maximumOperations: 1 },
+249:       }),
+250:     ).toEqual({ kind: "not-acceptable" });
+251:     expect(await submitTransaction(f.store, failedRequest)).toEqual(failed);
+252:     const request = submission(),
+253:       completed = await submitTransaction(f.store, request);
+254:     if (completed.kind !== "receipt") throw new Error("expected receipt");
+255:     now = Date.parse(String(completed.receipt.expiresAt)) + 1;
+256:     const expired = f.store.receipt("p", completed.receipt.id);
+257:     expect(expired?.detail).toBe("expired");
+258:     expect(
+259:       await submitTransaction(f.store, {
+260:         ...request,
+261:         receiving: { acceptsJson: false, maximumOperations: 1 },
+262:       }),
+263:     ).toEqual({ kind: "not-acceptable" });
+264:     expect(f.store.receipt("p", completed.receipt.id)).toEqual(expired);
+265:     expect(await submitTransaction(f.reopen(), request)).toEqual({
+266:       kind: "receipt",
+267:       receipt: expired,
+268:     });
+269:   });
+```
+
+## Actual source packages/server/src/transaction-submission.test.ts:309-406
+```
+309:   it("keeps unresolved comparison ahead of negotiation, then snapshots immutable controls", async () => {
+310:     const f = fixture(),
+311:       attempt = dependencies(f.store),
+312:       controls = { acceptsJson: false, maximumOperations: 1 };
+313:     let now = 0,
+314:       waits = 0;
+315:     const result = await submitTransaction(
+316:       f.store,
+317:       { ...dependent(), receiving: controls },
+318:       {
+319:         budgetMs: 5,
+320:         now: () => now,
+321:         wait: async () => {
+322:           waits++;
+323:           now++;
+324:           controls.acceptsJson = true;
+325:           controls.maximumOperations = 100;
+326:           f.store.nextSequence(attempt);
+327:         },
+328:       },
+329:     );
+330:     expect(result).toEqual({ kind: "not-acceptable" });
+331:     expect(waits).toBe(1);
+332:     expect(f.store.inspect().resources).toHaveLength(1);
+333:     expect(f.store.nextSequence(attempt).result).toMatchObject({
+334:       kind: "receipt",
+335:       receipt: { status: "completed" },
+336:     });
+337:   });
+338:   it("returns a provable unresolved conflict immediately and times out possible equality without disclosing a receipt", async () => {
+339:     const f = fixture(),
+340:       attempt = dependencies(f.store);
+341:     const mismatch = dependent();
+342:     expect(
+343:       await submitTransaction(
+344:         f.store,
+345:         {
+346:           ...mismatch,
+347:           body: mismatch.body.replace('"type":', '"metadata":{"extra":1},"type":'),
+348:           receiving: { acceptsJson: false, maximumOperations: 1 },
+349:         },
+350:         {
+351:           wait: async () => {
+352:             throw new Error("must not wait");
+353:           },
+354:         },
+355:       ),
+356:     ).toMatchObject({ code: "idempotency-conflict" });
+357:     let now = 0;
+358:     expect(
+359:       await submitTransaction(
+360:         f.store,
+361:         { ...dependent(), receiving: { acceptsJson: false, maximumOperations: 1 } },
+362:         {
+363:           budgetMs: 2,
+364:           now: () => now,
+365:           wait: async () => {
+366:             now++;
+367:           },
+368:         },
+369:       ),
+370:     ).toEqual({
+371:       kind: "refused",
+372:       status: 503,
+373:       code: "temporarily-unavailable",
+374:       retry: "after-delay",
+375:     });
+376:     expect(f.store.inspect().resources).toEqual([]);
+377:     expect(f.store.nextSequence(attempt).result).toMatchObject({
+378:       receipt: { status: "completed" },
+379:     });
+380:     expect(f.store.nextSequence(attempt).result).toMatchObject({
+381:       receipt: { status: "completed" },
+382:     });
+383:   });
+384:   it("rechecks fresh negotiation after unresolved retraction without capturing a replacement key", async () => {
+385:     const f = fixture(),
+386:       attempt = dependencies(f.store);
+387:     let now = 0;
+388:     expect(
+389:       await submitTransaction(
+390:         f.store,
+391:         { ...dependent(), receiving: { acceptsJson: false, maximumOperations: 1 } },
+392:         {
+393:           budgetMs: 5,
+394:           now: () => now,
+395:           wait: async () => {
+396:             now++;
+397:             f.store.cancelSequence(attempt);
+398:           },
+399:         },
+400:       ),
+401:     ).toEqual({ kind: "not-acceptable" });
+402:     expect(f.store.inspect().resources).toEqual([]);
+403:     const claim = own(f.store, dependent());
+404:     expect(claim.receipt.status).toBe("pending");
+405:     f.store.retract(claim);
+406:   });
+```
+
+## Actual source packages/server/src/transaction-submission.test.ts:417-455
+```
+417:   it("retains original alias witnesses across repointing and canonical retry", async () => {
+418:     const f = fixture();
+419:     await submitTransaction(f.store, submission([create(), create("b")], "seed"));
+420:     const put = (target: string, key: string): TransactionSubmission => ({
+421:       ...submission([], key),
+422:       carrier: { kind: "singleton", operation: "putAlias" },
+423:       body: JSON.stringify({ alias: "alias/current", target }),
+424:     });
+425:     await submitTransaction(f.store, put("beads/a", "put"));
+426:     const update = submission(
+427:       [
+428:         {
+429:           operation: "updateBead",
+430:           bead: "alias/current",
+431:           propertiesChange: [{ op: "add", path: "/n", value: 1 }],
+432:         },
+433:       ],
+434:       "update",
+435:     );
+436:     const original = await submitTransaction(f.store, update);
+437:     expect(original).toMatchObject({ receipt: { status: "completed" } });
+438:     await submitTransaction(f.store, put("beads/b", "repoint"));
+439:     expect(await submitTransaction(f.store, update)).toEqual(original);
+440:     expect(
+441:       await submitTransaction(f.store, {
+442:         ...update,
+443:         body: update.body.replace("alias/current", "beads/a"),
+444:       }),
+445:     ).toEqual(original);
+446:     expect(
+447:       await submitTransaction(f.store, {
+448:         ...update,
+449:         body: update.body.replace("alias/current", "beads/b"),
+450:         receiving: { acceptsJson: false, maximumOperations: 1 },
+451:       }),
+452:     ).toMatchObject({ code: "idempotency-conflict" });
+453:     expect(f.store.aliasTarget("current")).toBe(`${scope}beads/b`);
+454:     expect(f.store.inspect().groups).toHaveLength(2);
+455:   });
+```
+
+## Actual source packages/server/src/transaction-submission.test.ts:698-724
+```
+698:   it("uses the same depth boundary for singleton and wrapped set content", async () => {
+699:     const f = fixture();
+700:     for (const [depth, kind] of [
+701:       [27, "receipt"],
+702:       [28, "development-limit"],
+703:     ] as const) {
+704:       let value: unknown = 0;
+705:       for (let i = 0; i < depth; i++) value = { nested: value };
+706:       const input = {
+707:         collection: "beads",
+708:         selector: "$[?@.id]",
+709:         change: [{ op: "add", path: "/deep", value }],
+710:       };
+711:       for (const singleton of [true, false]) {
+712:         const request: TransactionSubmission = {
+713:           ...submission([], `depth_${depth}_${singleton}`),
+714:           carrier: singleton ? { kind: "singleton", operation: "updateWhere" } : { kind: "batch" },
+715:           body: JSON.stringify(
+716:             singleton ? input : { operations: [{ operation: "updateWhere", ...input }] },
+717:           ),
+718:         };
+719:         expect(await submitTransaction(f.store, request)).toMatchObject({ kind });
+720:       }
+721:     }
+722:   });
+723: });
+724: 
+```
+
+## Actual source packages/server/src/transaction-submission.test.ts:838-875
+```
+838: it.each(["batch", "singleton"] as const)(
+839:   "finishes %s synthetic syntax before depth, including deeply nested received input",
+840:   async (kind) => {
+841:     const f = fixture();
+842:     const nested = `${"[".repeat(20000)}1e+30${"]".repeat(20000)}`;
+843:     const input = `{"collection":"beads","selector":"$[?@.id]","change":[{"op":"add","path":"/deep","value":${nested}}]}`;
+844:     const wrap = (text: string) =>
+845:       kind === "singleton" ? text : `{"operations":[{"operation":"updateWhere",${text.slice(1)}]}`;
+846:     const request: TransactionSubmission = {
+847:       ...submission([], "deep_key"),
+848:       carrier: kind === "singleton" ? { kind, operation: "updateWhere" } : { kind },
+849:       body: wrap(input),
+850:     };
+851:     const before = f.store.inspect();
+852:     expect(Buffer.byteLength(request.body)).toBeLessThan(65536);
+853:     expect(await submitTransaction(f.store, request)).toMatchObject({ kind: "development-limit" });
+854:     expect(await submitTransaction(f.store, { ...request, key: "bad key" })).toMatchObject({
+855:       kind: "refused",
+856:       status: 400,
+857:     });
+858:     for (const authorization of [{ kind: "unauthenticated" }, { kind: "forbidden" }] as const) {
+859:       expect(await submitTransaction(f.store, { ...request, authorization })).toMatchObject({
+860:         kind: "refused",
+861:         status: authorization.kind === "unauthenticated" ? 401 : 403,
+862:       });
+863:     }
+864:     const malformed = input.replace('"path":"/deep"', '"path":false');
+865:     expect(await submitTransaction(f.store, { ...request, body: wrap(malformed) })).toMatchObject({
+866:       kind: "refused",
+867:       status: 400,
+868:     });
+869:     expect(f.store.inspect()).toEqual(before);
+870:     expect(await submitTransaction(f.store, submission([create()], "deep_key"))).toMatchObject({
+871:       kind: "receipt",
+872:     });
+873:   },
+874: );
+875: 
+```
+
+## Actual source packages/server/src/transaction-set.test.ts:1-45
+```
+1: import { mkdtempSync, readFileSync, rmSync } from "node:fs";
+2: import { DatabaseSync } from "node:sqlite";
+3: import { tmpdir } from "node:os";
+4: import path from "node:path";
+5: import { afterEach, expect, expectTypeOf, it, vi } from "vitest";
+6: import { Ajv2020 } from "ajv/dist/2020.js";
+7: import {
+8:   decodeJsonDocument,
+9:   parseTypeDescriptor,
+10:   isJsonSchemaUri,
+11:   isJsonSchemaDateTime,
+12: } from "@bdp/protocol";
+13: import * as batch from "./transaction-batch.js";
+14: import {
+15:   transactionInputText,
+16:   assertTransactionInputDepth,
+17:   TransactionSelectorSyntaxError,
+18:   transactionSelectorCapacity,
+19: } from "./transaction-set.js";
+20: import * as evaluator from "./resource-evaluator.js";
+21: import { openTransactionStore } from "./transaction-store.js";
+22: const scope = "https://example.test/set/",
+23:   type = `${scope}types/bead`,
+24:   link = `${scope}types/link`;
+25: const types = [
+26:   parseTypeDescriptor({ id: type, name: "Bead", describes: "bead", conformsTo: [] }),
+27:   parseTypeDescriptor({
+28:     id: link,
+29:     name: "Link",
+30:     describes: "link",
+31:     conformsTo: [],
+32:     source: { conformsTo: [type], external: "none" },
+33:     target: { conformsTo: [type], external: "none" },
+34:   }),
+35: ];
+36: const cleanup: (() => void)[] = [];
+37: afterEach(() => {
+38:   vi.restoreAllMocks();
+39:   for (const fn of cleanup.splice(0).reverse()) fn();
+40: });
+41: const ajv = new Ajv2020({ strict: true, allErrors: true });
+42: ajv.addFormat("uri", { type: "string", validate: isJsonSchemaUri });
+43: ajv.addFormat("date-time", { type: "string", validate: isJsonSchemaDateTime });
+44: const bundle = JSON.parse(
+45:   readFileSync(new URL("../../../schemas/bdp-v0.schema.json", import.meta.url), "utf8"),
+```
+
+## Actual source packages/server/src/transaction-set.test.ts:1029-1035
+```
+1029: it("serializes byte-bounded deep syntax iteratively without changing number lexemes or key order", () => {
+1030:   const text = `{"z":[${"[".repeat(20000)}1e+30${"]".repeat(20000)}],"a":{"n":9007199254740993,"zero":-0,"escaped":"\\\""}}`;
+1031:   expect(Buffer.byteLength(text)).toBeLessThan(65536);
+1032:   const value = decodeJsonDocument(text);
+1033:   expect(transactionInputText(value)).toBe(text);
+1034:   expect(() => assertTransactionInputDepth(value)).toThrow("development batch depth limit");
+1035: });
+```
+
+## Actual source packages/server/src/transaction-http.test.ts:1-100
+```
+1: import { mkdtempSync, rmSync, readFileSync } from "node:fs";
+2: import { tmpdir } from "node:os";
+3: import path from "node:path";
+4: import { connect } from "node:net";
+5: import { DatabaseSync } from "node:sqlite";
+6: import { request as httpRequest } from "node:http";
+7: import { setImmediate } from "node:timers/promises";
+8: import { afterEach, describe, expect, it, vi } from "vitest";
+9: import { Ajv2020 } from "ajv/dist/2020.js";
+10: import { isJsonSchemaDateTime, isJsonSchemaUri, parseTypeDescriptor } from "@bdp/protocol";
+11: import type { TransactionRuntimeTestSeams } from "./transaction-runtime.js";
+12: const { startTransactionRuntime } = (await import(
+13:   new URL("../dist/transaction-runtime.js", import.meta.url).href
+14: )) as typeof import("./transaction-runtime.js");
+15: const ajv = new Ajv2020({ allErrors: true, strict: true });
+16: ajv.addFormat("uri", { type: "string", validate: isJsonSchemaUri });
+17: ajv.addFormat("date-time", { type: "string", validate: isJsonSchemaDateTime });
+18: const schema = JSON.parse(
+19:   readFileSync(new URL("../../../schemas/bdp-v0.schema.json", import.meta.url), "utf8"),
+20: );
+21: ajv.addSchema(schema);
+22: const validateTransactionalProblem = ajv.compile({
+23:   $ref: `${schema.$id}#/$defs/transactionalProblem`,
+24: });
+25: const validateSelectorReceipt = ajv.compile({ $ref: `${schema.$id}#/$defs/mutationReceipt` });
+26: const validateSequence = ajv.compile({
+27:   $ref: `${schema.$id}#/$defs/transactionalSequenceResponse`,
+28: });
+29: function checkedProblem(value: Record<string, unknown>) {
+30:   expect(
+31:     validateTransactionalProblem(value),
+32:     JSON.stringify(validateTransactionalProblem.errors),
+33:   ).toBe(true);
+34:   return value;
+35: }
+36: const token = "a".repeat(32),
+37:   otherToken = "b".repeat(32),
+38:   readToken = "c".repeat(32);
+39: const bead = "https://example.test/bead",
+40:   link = "https://example.test/link";
+41: const types = [
+42:   { id: bead, name: "Bead", describes: "bead", conformsTo: [] },
+43:   {
+44:     id: link,
+45:     name: "Link",
+46:     describes: "link",
+47:     conformsTo: [],
+48:     source: { conformsTo: [bead], external: "opaque" },
+49:     target: { conformsTo: [bead], external: "opaque" },
+50:   },
+51: ].map((value) => parseTypeDescriptor(value));
+52: const cleanup: (() => Promise<void> | void)[] = [];
+53: afterEach(async () => {
+54:   vi.restoreAllMocks();
+55:   for (const fn of cleanup.splice(0).reverse()) await fn();
+56: });
+57: function record(value: unknown): Record<string, unknown> {
+58:   if (!value || typeof value !== "object" || Array.isArray(value))
+59:     throw new Error("expected record");
+60:   return value as Record<string, unknown>;
+61: }
+62: function id(value: unknown): string {
+63:   const result = record(value).id;
+64:   if (typeof result !== "string") throw new Error("expected id");
+65:   return result;
+66: }
+67: async function body(response: Response) {
+68:   return record(await response.json());
+69: }
+70: const create = (name = "a") => ({
+71:   operation: "createBead",
+72:   id: `beads/${name}`,
+73:   type: bead,
+74:   properties: { title: name },
+75: });
+76: const batch = (operations: unknown[] = [create()]) => JSON.stringify({ operations });
+77: async function fixture(seams: TransactionRuntimeTestSeams = {}) {
+78:   const directory = mkdtempSync(path.join(tmpdir(), "bdp-tx-http-"));
+79:   cleanup.push(() => rmSync(directory, { recursive: true, force: true }));
+80:   let time = 1000;
+81:   const options = {
+82:     directory,
+83:     port: 0,
+84:     create: true,
+85:     types,
+86:     credentials: [
+87:       { token, principal: "p", canMutate: true },
+88:       { token: otherToken, principal: "other", canMutate: true },
+89:       { token: readToken, principal: "reader", canMutate: false },
+90:     ],
+91:   };
+92:   let runtime = await startTransactionRuntime(options, { clock: () => time, ...seams });
+93:   cleanup.push(() => runtime.close());
+94:   return {
+95:     get runtime() {
+96:       return runtime;
+97:     },
+98:     async retainedReceipts() {
+99:       await runtime.close();
+100:       const db = new DatabaseSync(path.join(directory, "transaction.sqlite"), { readOnly: true });
+```
+
+## Actual source packages/server/src/transaction-http.test.ts:130-189
+```
+130:       try {
+131:         return db.prepare("SELECT principal,key FROM receipts WHERE key=?").all(key);
+132:       } finally {
+133:         db.close();
+134:         runtime = await startTransactionRuntime(
+135:           { ...options, port, create: false },
+136:           { clock: () => time, ...seams },
+137:         );
+138:       }
+139:     },
+140:     setTime(value: number) {
+141:       time = value;
+142:     },
+143:     async get(url: string, init: RequestInit = {}) {
+144:       const headers = new Headers({
+145:         authorization: `Bearer ${token}`,
+146:         ...Object.fromEntries(new Headers(init.headers)),
+147:       });
+148:       return fetch(url, { ...init, headers, redirect: "manual" });
+149:     },
+150:     async post(
+151:       text = batch(),
+152:       key: string | null = "key",
+153:       target: keyof typeof runtime.targets = "batch",
+154:       headers: Record<string, string> = {},
+155:     ) {
+156:       return fetch(runtime.targets[target], {
+157:         method: "POST",
+158:         headers: {
+159:           authorization: `Bearer ${token}`,
+160:           "content-type": "application/json",
+161:           ...(key === null ? {} : { "idempotency-key": key }),
+162:           ...headers,
+163:         },
+164:         body: text,
+165:       });
+166:     },
+167:     async reopen(next: TransactionRuntimeTestSeams = seams) {
+168:       const port = Number(new URL(runtime.scope).port);
+169:       await runtime.close();
+170:       runtime = await startTransactionRuntime(
+171:         { ...options, port, create: false },
+172:         { clock: () => time, ...next },
+173:       );
+174:     },
+175:   };
+176: }
+177: function context(response: Response) {
+178:   return Object.fromEntries(
+179:     ["bdp-scope-epoch", "bdp-authorization-view", "bdp-scope-position"].map((name) => [
+180:       name,
+181:       response.headers.get(name),
+182:     ]),
+183:   );
+184: }
+185: 
+186: describe("source-private actual Transactional HTTP", () => {
+187:   it("serves canonical routes without advertising missing discovery or directory", async () => {
+188:     const f = await fixture();
+189:     expect(f.runtime.targets).toEqual(
+```
+
+## Actual source packages/server/src/transaction-http.test.ts:589-621
+```
+589:   it("rejects invalid set Selector grammar and preserves private depth refusal without key capture or partial effects", async () => {
+590:     const f = await fixture();
+591:     const set = await f.post(
+592:       batch([
+593:         {
+594:           operation: "deleteWhere",
+595:           collection: "beads",
+596:           selector: "$[*]",
+597:           cardinality: { min: 0, max: 1 },
+598:         },
+599:       ]),
+600:       "set",
+601:     );
+602:     expect(set.status).toBe(400);
+603:     expect(set.headers.has("x-bdp-development-limit")).toBe(false);
+604:     expect((await f.post(batch([create()]), "set")).status).toBe(200);
+605:     expect(checkedProblem(await body(set))).toMatchObject({
+606:       status: 400,
+607:       code: "malformed-request",
+608:       pointer: "/operations/0/selector",
+609:     });
+610:     let nested: unknown = "leaf";
+611:     for (let depth = 0; depth < 40; depth++) nested = { nested };
+612:     const depth = await f.post(batch([{ ...create("c"), properties: { nested } }]), "deep");
+613:     expect(depth.status).toBe(500);
+614:     expect(depth.headers.get("x-bdp-development-limit")).toBe(
+615:       "unsupported-transaction-composition",
+616:     );
+617:     expect(await depth.text()).toBe("");
+618:     expect((await f.get(`${f.runtime.scope}beads/c`)).status).toBe(404);
+619:     expect((await f.post(batch([create("c")]), "deep")).status).toBe(200);
+620:   });
+621:   it("preserves retained receipt identities across actual listener close/reopen and detail expiry", async () => {
+```
+
+## Actual source packages/server/src/transaction-http.test.ts:1620-1648
+```
+1620: it("labels sequence depth gaps honestly and keeps sequence capacity distinct from direct transaction capacity", async () => {
+1621:   const f = await fixture({ maximumOperations: 1 });
+1622:   let nested: unknown = "leaf";
+1623:   for (let depth = 0; depth < 40; depth++) nested = { nested };
+1624:   const refused = await f.post(
+1625:     batch([{ ...create(), properties: { nested }, idempotencyKey: "deep_sequence" }]),
+1626:     null,
+1627:     "sequence",
+1628:   );
+1629:   expect(refused.status).toBe(500);
+1630:   expect(refused.headers.get("x-bdp-development-limit")).toBe(
+1631:     "unsupported-transaction-composition",
+1632:   );
+1633:   expect(await refused.text()).toBe("");
+1634:   expect((await f.get(`${f.runtime.scope}beads/a`)).status).toBe(404);
+1635:   const sequence = await f.post(
+1636:     batch([
+1637:       { ...create("a"), idempotencyKey: "deep_sequence" },
+1638:       { ...create("b"), idempotencyKey: "second" },
+1639:     ]),
+1640:     null,
+1641:     "sequence",
+1642:   );
+1643:   expect(sequence.status).toBe(200);
+1644:   expect(sequence.headers.get("bdp-scope-position")).toBe("pos-2");
+1645:   const direct = await f.post(batch([create("c"), create("d")]), "direct");
+1646:   expect(direct.status).toBe(413);
+1647:   expect(await body(direct)).toMatchObject({ limit: "transaction.operations" });
+1648: });
+```
+
+## Actual source apps/bdptest/src/transactional-direct-refusal-installed.test.ts:1-135
+```
+1: /** Private installed refusal observations; no discovery or profile qualification. */
+2: import { execFileSync } from "node:child_process";
+3: import { createHash, randomBytes } from "node:crypto";
+4: import { existsSync, mkdtempSync, readFileSync, realpathSync, rmSync } from "node:fs";
+5: import { tmpdir } from "node:os";
+6: import path from "node:path";
+7: import { fileURLToPath } from "node:url";
+8: import { expect, it } from "vitest";
+9: import { Ajv2020 } from "ajv/dist/2020.js";
+10: import { isJsonSchemaDateTime, isJsonSchemaUri } from "@bdp/protocol";
+11: import { createRawHttpExchangeExecutor } from "@bdp/conformance";
+12: import { installedTransactionBinding } from "../test-support/transactional-execution-binding.js";
+13: const root = fileURLToPath(new URL("../../../", import.meta.url));
+14: const { launchInstalledTransaction } = (await import(
+15:   new URL("../../../scripts/transaction-installed-observation.mjs", import.meta.url).href
+16: )) as {
+17:   launchInstalledTransaction(
+18:     entry: string,
+19:     configuration: unknown,
+20:     signal: AbortSignal,
+21:   ): Promise<{
+22:     child: import("node:child_process").ChildProcess;
+23:     ready: Record<string, unknown>;
+24:     close(): Promise<void>;
+25:   }>;
+26: };
+27: const entry = realpathSync(
+28:   process.env.BDP_TRANSACTIONAL_INSTALLED_ENTRY ??
+29:     path.join(root, "packages/server/dist/transaction-installed-process.js"),
+30: );
+31: if (process.env.BDP_TRANSACTIONAL_INSTALLED_ENTRY && !process.env.BDP_TRANSACTIONAL_SOURCE_COMMIT)
+32:   throw new Error("installed refusal override requires explicit source commit");
+33: const declaredSourceCommit =
+34:   process.env.BDP_TRANSACTIONAL_SOURCE_COMMIT ??
+35:   execFileSync("git", ["rev-parse", "HEAD"], { cwd: root, encoding: "utf8" }).trim();
+36: if (!/^[a-f0-9]{40}$/.test(declaredSourceCommit)) throw new Error("invalid declared source commit");
+37: const workspaceDirty =
+38:   execFileSync("git", ["status", "--porcelain"], { cwd: root, encoding: "utf8" }).length > 0;
+39: const hash = (value: string | Uint8Array) => createHash("sha256").update(value).digest("hex");
+40: const entrySha256 = hash(readFileSync(entry));
+41: const scope = "https://reference.invalid/acme/",
+42:   task = `${scope}types/task`,
+43:   propertiesSchema = `${scope}schemas/title`;
+44: const fixture = {
+45:   bytes: readFileSync(
+46:     path.join(root, "packages/conformance/test-support/transactional/fixture-v1.json"),
+47:   ),
+48: };
+49: const artifacts = {
+50:   descriptors: [
+51:     {
+52:       retrievalUri: task,
+53:       utf8: JSON.stringify({
+54:         id: task,
+55:         name: "Task",
+56:         describes: "bead",
+57:         conformsTo: [],
+58:         propertiesSchema,
+59:       }),
+60:     },
+61:   ],
+62:   schemas: [
+63:     {
+64:       retrievalUri: propertiesSchema,
+65:       utf8: JSON.stringify({
+66:         $id: propertiesSchema,
+67:         type: "object",
+68:         properties: { title: { type: "string" } },
+69:         required: ["title"],
+70:         additionalProperties: false,
+71:       }),
+72:     },
+73:   ],
+74: };
+75: const ajv = new Ajv2020({ allErrors: true, strict: true });
+76: ajv.addFormat("uri", { type: "string", validate: isJsonSchemaUri });
+77: ajv.addFormat("date-time", { type: "string", validate: isJsonSchemaDateTime });
+78: const schema = JSON.parse(readFileSync(path.join(root, "schemas/bdp-v0.schema.json"), "utf8"));
+79: ajv.addSchema(schema);
+80: const validators = Object.fromEntries(
+81:   ["mutationReceipt", "transactionalProblem", "currentBeadCollection", "eventPage"].map((name) => [
+82:     name,
+83:     ajv.compile({ $ref: `${schema.$id}#/$defs/${name}` }),
+84:   ]),
+85: );
+86: function record(value: unknown): Record<string, unknown> {
+87:   if (!value || typeof value !== "object" || Array.isArray(value))
+88:     throw new Error("expected record");
+89:   return value as Record<string, unknown>;
+90: }
+91: function records(value: unknown): Record<string, unknown>[] {
+92:   if (!Array.isArray(value)) throw new Error("expected array");
+93:   return value.map(record);
+94: }
+95: function checked(text: string, name: string) {
+96:   const value = record(JSON.parse(text)),
+97:     validate = validators[name];
+98:   if (!validate) throw new Error("unbound response schema");
+99:   expect(validate(value), JSON.stringify(validate.errors)).toBe(true);
+100:   return value;
+101: }
+102: const create = (id: string) => ({ id: `beads/${id}`, type: task, properties: { title: id } });
+103: const batch = (ids: string[]) => ({
+104:   operations: ids.map((id) => ({ operation: "createBead", ...create(id) })),
+105: });
+106: 
+107: it("observes current context on installed direct refusals within14requests", async () => {
+108:   const controller = new AbortController();
+109:   const timer = setTimeout(
+110:     () => controller.abort(new Error("installed refusal cohort deadline")),
+111:     90000,
+112:   );
+113:   const directory = mkdtempSync(path.join(tmpdir(), "bdp-refusal-installed-"));
+114:   const token = randomBytes(32).toString("base64url");
+115:   const configuration = {
+116:     scope,
+117:     directory,
+118:     create: true,
+119:     artifacts,
+120:     credentials: [{ token, principal: "writer", canMutate: true }],
+121:   };
+122:   let child: Awaited<ReturnType<typeof launchInstalledTransaction>> | undefined;
+123:   let binding: ReturnType<typeof installedTransactionBinding> | undefined;
+124:   const failures: unknown[] = [];
+125:   const observations: Record<string, unknown>[] = [];
+126:   const sessions: { pid: number | undefined; exit: number | null; signal: string | null }[] = [];
+127:   const routes = [
+128:     { method: "POST", url: `${scope}operations/create-bead` },
+129:     { method: "POST", url: `${scope}operations/batch` },
+130:     { method: "GET", url: `${scope}beads/?limit=32` },
+131:     { method: "GET", url: `${scope}events/` },
+132:   ];
+133:   let receiptUrl: string | undefined;
+134:   let expectedContext: Record<string, string> | undefined;
+135:   let requests = 0;
+```
+
+## Actual source apps/bdptest/test-support/transactional-execution-binding.ts:1-92
+```
+1: import { isDeepStrictEqual } from "node:util";
+2: import { installedContractsDigest } from "./installed-contract-identity.js";
+3: /** Source-only installed binding. Runner retains sole receipt observation authority. */
+4: import { createHash } from "node:crypto";
+5: import {
+6:   createRawHttpScenarioTarget,
+7:   type ExactHttpModeOptions,
+8:   type ConformanceFixture,
+9:   type ExecutableScenario,
+10: } from "@bdp/conformance";
+11: import {
+12:   bindServedProfileConfiguration,
+13:   assertSameServedProfileConfiguration,
+14:   type TransactionalRunContext,
+15:   type TransactionalSession,
+16: } from "@bdp/conformance/testing";
+17: export interface InstalledTransactionChild {
+18:   readonly ready: Record<string, unknown>;
+19:   close(): Promise<unknown>;
+20: }
+21: export function installedTransactionBinding(
+22:   ready: Record<string, unknown>,
+23:   sourceCommit: string,
+24:   fixture: { bytes: Uint8Array },
+25: ) {
+26:   if (
+27:     ready.profile !== "transactional" ||
+28:     ready.history !== false ||
+29:     ready.claimEligible !== false ||
+30:     ready.authorityMode !== "canonical" ||
+31:     typeof ready.scope !== "string" ||
+32:     typeof ready.runtimeConfigurationIdentity !== "string" ||
+33:     !/^[a-f0-9]{64}$/.test(ready.runtimeConfigurationIdentity)
+34:   )
+35:     throw new Error("installed Transactional metadata unavailable");
+36:   if (typeof ready.listenUrl !== "string")
+37:     throw new Error("installed physical session unavailable");
+38:   const url = new URL(ready.listenUrl);
+39:   if (
+40:     url.protocol !== "http:" ||
+41:     url.hostname !== "127.0.0.1" ||
+42:     !url.port ||
+43:     url.username ||
+44:     url.password ||
+45:     url.pathname !== "/" ||
+46:     url.search ||
+47:     url.hash
+48:   )
+49:     throw new Error("invalid installed dial binding");
+50:   const targetNames = {
+51:     createBead: "create-bead",
+52:     updateBead: "update-bead",
+53:     deleteBead: "delete-bead",
+54:     createLink: "create-link",
+55:     updateLink: "update-link",
+56:     deleteLink: "delete-link",
+57:     putAlias: "put-alias",
+58:     deleteAlias: "delete-alias",
+59:     updateWhere: "update-where",
+60:     deleteWhere: "delete-where",
+61:     batch: "batch",
+62:     sequence: "sequence",
+63:   };
+64:   const operationTargets = Object.freeze(
+65:     Object.fromEntries(
+66:       Object.entries(targetNames).map(([name, suffix]) => [
+67:         name,
+68:         `${ready.scope}operations/${suffix}`,
+69:       ]),
+70:     ),
+71:   );
+72:   if (!isDeepStrictEqual(ready.targets, operationTargets))
+73:     throw new Error("installed operation target inventory mismatch");
+74:   const served = bindServedProfileConfiguration({
+75:     scope: ready.scope,
+76:     profile: "transactional",
+77:     history: false,
+78:     sourceCommit,
+79:     installedPayloadDigest: ready.payloadIdentity as string,
+80:     installedContractsDigest: installedContractsDigest(ready.artifactIdentity),
+81:     policyDigest: ready.policyIdentity as string,
+82:     authenticationDigest: ready.authenticationIdentity as string,
+83:     fixture,
+84:   });
+85:   return Object.freeze({
+86:     served,
+87:     operationTargets,
+88:     runtimeConfigurationIdentity: ready.runtimeConfigurationIdentity,
+89:     authorityMode: "canonical" as const,
+90:   });
+91: }
+92: export function createTransactionalExecutionBinding(options: {
+```
+
+## Actual source packages/server/src/transaction-installed-process.ts:1-77
+```
+1: /** Private installed qualification bootstrap. No package export, bin or CLI flag.
+2:  * No clock/store/outcome control. Configuration arrives only through inherited IPC.
+3:  */
+4: import process from "node:process";
+5: import { realpathSync } from "node:fs";
+6: import { fileURLToPath } from "node:url";
+7: import { administrativeData } from "./development-contracts.js";
+8: import { startInstalledTransactionCandidate } from "./transaction-installed.js";
+9: 
+10: async function main() {
+11:   if (!process.send || process.argv.length !== 2) throw new TypeError("inherited IPC required");
+12:   const send = process.send.bind(process);
+13:   const input = await new Promise<unknown>((resolve, reject) => {
+14:     const timer = setTimeout(() => reject(new Error("configuration deadline")), 10000);
+15:     process.once("disconnect", () => {
+16:       clearTimeout(timer);
+17:       reject(new Error("configuration disconnected"));
+18:     });
+19:     process.once("message", (message) => {
+20:       clearTimeout(timer);
+21:       resolve(message);
+22:     });
+23:   });
+24:   const { configuration } = administrativeData(input, ["configuration"]);
+25:   let stop!: () => void;
+26:   let stopping = false;
+27:   const stopped = new Promise<void>((resolve) => {
+28:     stop = () => {
+29:       stopping = true;
+30:       resolve();
+31:     };
+32:   });
+33:   process.once("SIGTERM", () => stop());
+34:   process.once("SIGINT", () => stop());
+35:   process.once("disconnect", () => stop());
+36:   process.on("message", (message) => {
+37:     try {
+38:       const value = administrativeData(message, ["command"]);
+39:       if (value.command !== "close") throw new TypeError("unsupported control");
+40:     } catch {
+41:       process.exitCode = 2;
+42:     }
+43:     stop();
+44:   });
+45:   if (!process.connected) stop();
+46:   const runtime = await startInstalledTransactionCandidate(configuration);
+47:   try {
+48:     if (process.connected && !stopping)
+49:       send({
+50:         event: "qualification.ready",
+51:         ...runtime.configurationMetadata,
+52:         listenUrl: runtime.listenUrl,
+53:         targets: runtime.targets,
+54:         payloadIdentity: runtime.payloadIdentity,
+55:       });
+56:     await stopped;
+57:   } finally {
+58:     await runtime.close();
+59:     if (process.connected) process.disconnect();
+60:   }
+61: }
+62: function isEntrypoint(): boolean {
+63:   const entry = process.argv[1];
+64:   if (entry === undefined) return false;
+65:   try {
+66:     return realpathSync(entry) === realpathSync(fileURLToPath(import.meta.url));
+67:   } catch {
+68:     return false;
+69:   }
+70: }
+71: if (isEntrypoint())
+72:   void main().catch(() => {
+73:     // Never echo credentials, input configuration or callback exceptions.
+74:     process.stderr.write("installed transaction qualification failed\n");
+75:     process.exitCode = 2;
+76:     if (process.connected) process.disconnect();
+77:   });
+```
+
+## Actual source packages/conformance/src/http-executor.ts:1-135
+```
+1: import { createHash } from "node:crypto";
+2: import { connect as connectPlain, type Socket } from "node:net";
+3: import { connect as connectTls } from "node:tls";
+4: 
+5: export type HttpMethod = "GET" | "HEAD" | "OPTIONS" | "POST" | "PUT" | "PATCH" | "DELETE";
+6: 
+7: export interface HttpExchangeRequest {
+8:   readonly method: HttpMethod;
+9:   readonly raw?: never;
+10:   readonly credentialRef?: never;
+11:   readonly url: string;
+12:   readonly headers: Readonly<Record<string, string>>;
+13:   readonly signal: AbortSignal;
+14:   /**
+15:    * Exact request-target octets for socket-level conformance probes. The semantic
+16:    * URL still supplies response identity and the Host header. Fetch executors do
+17:    * not support this field and reject requests that provide it.
+18:    */
+19:   readonly rawRequestTarget?: Uint8Array;
+20: }
+21: 
+22: /** Explicit, socket-only authored bytes. No JSON or Headers normalization is applied. */
+23: export interface ExactHttpExchangeRequest {
+24:   readonly method: HttpMethod;
+25:   readonly url: string;
+26:   readonly signal: AbortSignal;
+27:   readonly headers?: never;
+28:   readonly rawRequestTarget?: Uint8Array;
+29:   readonly credentialRef?: string;
+30:   readonly raw: {
+31:     readonly headerLines: readonly RawHeaderLine[];
+32:     readonly bodyBytes?: Uint8Array;
+33:   };
+34: }
+35: 
+36: export interface RawHeaderLine {
+37:   readonly name: string;
+38:   readonly value: string;
+39: }
+40: 
+41: export type RequestWriteState = "not-started" | "started-completion-unestablished" | "complete";
+42: 
+43: export interface ExactRequestObservation {
+44:   readonly source: "raw-http1-serializer";
+45:   /** Transient secret-bearing data, never safe to serialize directly into a report. */
+46:   readonly headerLines: readonly RawHeaderLine[];
+47:   /** Full authored entity metadata, not a claim about a transmitted prefix or server receipt. */
+48:   readonly bodyPresent: boolean;
+49:   readonly bodyOctets: number;
+50:   readonly bodyDigest?: string;
+51:   readonly writeState: RequestWriteState;
+52: }
+53: 
+54: /** Trusted harness configuration, not portable scenario data or target-supplied authority. */
+55: export interface ExactHttpModeOptions {
+56:   readonly scope: string;
+57:   readonly profile: "read" | "read-update" | "transactional";
+58:   readonly routes: readonly { readonly method: HttpMethod; readonly url: string }[];
+59:   readonly maximumRequestHeaderBytes: number;
+60:   readonly maximumRequestBodyBytes: number;
+61:   readonly defaultCredentialRef: string;
+62:   readonly credentialHandles: readonly {
+63:     readonly id: string;
+64:     /** Empty means a deliberately anonymous handle; names are lower-case. */
+65:     readonly headerNames: readonly string[];
+66:   }[];
+67:   /** Synchronous, trusted nonblocking lookup. Promises/thenables are rejected. */
+68:   readonly resolveCredentials: (
+69:     context: Readonly<{
+70:       scope: string;
+71:       url: string;
+72:       method: HttpMethod;
+73:       credentialRef: string;
+74:       signal: AbortSignal;
+75:     }>,
+76:   ) => Readonly<Record<string, string>>;
+77: }
+78: 
+79: export type RawHttpExchangeExecutor = (
+80:   request: HttpExchangeRequest | ExactHttpExchangeRequest,
+81: ) => Promise<HttpExchangeResponse>;
+82: 
+83: export interface HttpExchangeResponse {
+84:   readonly exactRequest?: ExactRequestObservation;
+85:   readonly url: string;
+86:   readonly status: number;
+87:   readonly headers: Readonly<Record<string, string>>;
+88:   readonly bodyText: string;
+89:   /** Decoded message-body octets observed below a method-aware HTTP client, when available. */
+90:   readonly bodyOctets?: number;
+91:   /**
+92:    * Exact bounded HTTP/1.x response bytes from status line through framed body.
+93:    * Only the socket-level executor can supply this pre-normalization evidence.
+94:    */
+95:   readonly wireResponseBytes?: Uint8Array;
+96:   /**
+97:    * Compatibility view after authorization/runtime decoration. In exact mode,
+98:    * repeated names retain their last value and this view has no wire-fidelity flag;
+99:    * only exactRequest.headerLines preserves authoritative ordered occurrences.
+100:    */
+101:   readonly effectiveRequest?: {
+102:     readonly url: string;
+103:     readonly headers: Readonly<Record<string, string>>;
+104:     /** Present only when the reported headers match bytes serialized onto the wire. */
+105:     readonly headersTransmitted?: true;
+106:   };
+107: }
+108: 
+109: export type HttpExchangeExecutor = (request: HttpExchangeRequest) => Promise<HttpExchangeResponse>;
+110: 
+111: export type RawHttpDialRoute =
+112:   | {
+113:       readonly transport: "plain";
+114:       readonly host: string;
+115:       readonly port: number;
+116:     }
+117:   | {
+118:       readonly transport: "tls";
+119:       readonly host: string;
+120:       readonly port: number;
+121:       readonly servername?: string;
+122:       readonly ca?: string;
+123:     };
+124: 
+125: export interface RawHttpExchangeExecutorOptions {
+126:   readonly exactMode?: ExactHttpModeOptions;
+127:   readonly authorize?: (request: HttpExchangeRequest) => Readonly<Record<string, string>>;
+128:   readonly maximumBodyBytes?: number;
+129:   readonly requestTimeoutMs?: number;
+130:   readonly maximumHeaderBytes?: number;
+131: }
+132: 
+133: export type HttpTransportErrorCategory =
+134:   | "abort"
+135:   | "configuration"
+```
+
+## Actual source packages/conformance/src/http-executor.ts:335-359
+```
+335: }
+336: 
+337: const HTTP_FIELD_NAME = /^[!#$%&'*+.^_`|~0-9A-Za-z-]+$/;
+338: const HTTP_FIELD_VALUE = /^[\t\x20-\x7e\x80-\xff]*$/;
+339: const HANDLE_ID = /^[a-z0-9]+(?:[.-][a-z0-9]+)*$/;
+340: const SECRET_FIELD =
+341:   /^(?:authorization|cookie|proxy-authorization|set-cookie|x-api-key|x-auth-token)$|(?:token|secret|password|credential|auth)/i;
+342: // Keep authored admission and credential-handle eligibility complementary.
+343: function isSecretHeaderName(name: string): boolean {
+344:   return name.toLowerCase() !== "bdp-authorization-view" && SECRET_FIELD.test(name);
+345: }
+346: const RESERVED_FIELDS = new Set([
+347:   "host",
+348:   "connection",
+349:   "content-length",
+350:   "transfer-encoding",
+351:   "trailer",
+352:   "expect",
+353:   "upgrade",
+354:   "proxy-connection",
+355:   "proxy-authorization",
+356:   "forwarded",
+357:   "via",
+358: ]);
+359: const METHODS: readonly string[] = ["GET", "HEAD", "OPTIONS", "POST", "PUT", "PATCH", "DELETE"];
+```
+
+## Actual source docs/specs/bdp.md:2200-2217
+```
+2200: 
+2201: A **Property Change** is an ordered
+2202: [RFC 6902 JSON Patch](https://www.rfc-editor.org/rfc/rfc6902.html) applied to
+2203: one JSON object. A Resource update can apply one to `properties`, one to
+2204: common `metadata`, or both atomically. Each path is a JSON Pointer relative
+2205: to its selected object. BDP v0 admits only `add`, `replace`, and
+2206: `remove`. Operations within each array
+2207: execute in order, with RFC 6902 object and array semantics. `replace` and
+2208: `remove` require their targets to exist. `move`, `copy`, and `test` are not
+2209: part of BDP v0.
+2210: 
+2211: Assigning JSON `null` and removing a member are distinct operations. The
+2212: patch must yield a JSON object. The authority validates the complete
+2213: `properties` result — not merely its changed members — against every effective
+2214: Type contract; `metadata` has no Type schema. An update that leaves both
+2215: objects unchanged is a no-op. Advertised limits bound the combined patch
+2216: operation count, the path size and depth, and the resulting representation
+2217: size.
+```
+
+## Actual source docs/specs/bdp.md:4513-4570
+```
+4513: Before admission, the authority decides the request's fate in this order,
+4514: and a request that fails one step never reaches the next:
+4515: 
+4516: 1. request bounds — a request target above `request.targetBytes` or a body
+4517:    above `request.bodyBytes` is rejected with `413` `request-too-large`
+4518:    before the body is parsed;
+4519: 2. carrier syntax — a body media type other than `application/json` is
+4520:    `415` `unsupported-media-type`; a body that is not well-formed JSON, a string or member name with an
+4521:    unpaired surrogate, duplicate member names after escape decoding, an absent, repeated, or invalid `Idempotency-Key`, a body outside
+4522:    `batchRequest`, a forward, unknown, or duplicate label, a label used
+4523:    where the other Resource kind is required, a noncanonical local ID
+4524:    spelling, or a supplied `id` beneath the wrong fixed root is `400`
+4525:    `malformed-request`. Invalid complete grammar of an embedded Selector is
+4526:    also `400` `malformed-request` before key lookup. Its problem carries the
+4527:    original Selector member's `pointer`; other syntax problems SHOULD carry
+4528:    `pointer`, an RFC 6901
+4529:    JSON Pointer into the request body naming the offending member;
+4530: 3. the principal — an unauthenticated request is `401` `unauthenticated`,
+4531:    and a principal that may not submit mutations to the Scope is `403`
+4532:    `forbidden`;
+4533: 4. the key — a key bound, for this Scope, epoch, and principal, to a
+4534:    different normalized request is `409` `idempotency-conflict`, and the
+4535:    earlier request's outcome is unaffected; a key bound to the same
+4536:    normalized request is answered with its receipt, pending or terminal,
+4537:    under [Mutation Transactions](#mutation-transactions), after successful
+4538:    response-media negotiation; unacceptable `Accept` instead yields the
+4539:    shared bodyless `406` without altering the receipt. Nothing below is
+4540:    evaluated for that duplicate. An unresolved reservation uses that
+4541:    section's bounded comparison and same-epoch retraction rules; unproven
+4542:    equality never returns a receipt or admits a second execution;
+4543: 5. admission controls for an unknown key — fixed embedded Selector source-byte,
+4544:    depth or node capacity is checked before execution and response-media
+4545:    negotiation. An excess is `413` `limit-exceeded`, with the original member
+4546:    `pointer` and dotted Selector `limit`, without a receipt or key binding.
+4547:    An `operations` count above
+4548:    `transaction.operations` is `413` `limit-exceeded` with `limit`
+4549:    `transaction.operations`, a rate limit is `429` `rate-limited`, and an
+4550:    authority that cannot admit is `503` `temporarily-unavailable`; and
+4551: 6. response negotiation for an otherwise acceptable new submission —
+4552:    unacceptable `Accept` yields the shared bodyless `406` before durable
+4553:    admission or key binding.
+4554: 
+4555: Every refusal above creates no receipt and binds no key. Apart from the
+4556: HTTP-native bodyless `406`, these are direct problems. A syntactically
+4557: invalid request therefore never consults key state, and a retained or
+4558: pending duplicate negotiates its receipt representation before limits and
+4559: rate limits are evaluated, so that a retry that only wants its outcome is
+4560: never refused for the capacity its original consumed.
+4561: 
+4562: A request is admitted when the authority has durably recorded, in one step,
+4563: the key, the normalized request identity, the `pending` Mutation Receipt
+4564: with its `transaction` identity, and its own ownership of the execution,
+4565: under [Mutation Transactions](#mutation-transactions). From that point
+4566: client disconnection, a transport failure, and a bodyless `500` decide
+4567: nothing: the transaction commits or fails on its own, the receipt records
+4568: which, and every successful representation returned to that request or to an
+4569: identical retry is a Mutation Receipt. The shared bodyless
+4570: response-negotiation refusal can suppress that representation without
+```
+
+## Actual source packages/server/package.json:1-27
+```
+1: {
+2:   "name": "@bdp/server",
+3:   "version": "0.0.0",
+4:   "license": "MIT",
+5:   "private": true,
+6:   "type": "module",
+7:   "files": [
+8:     "dist"
+9:   ],
+10:   "exports": {
+11:     ".": {
+12:       "types": "./dist/index.d.ts",
+13:       "default": "./dist/index.js"
+14:     },
+15:     "./development": {
+16:       "types": "./dist/development.d.ts",
+17:       "default": "./dist/development.js"
+18:     }
+19:   },
+20:   "dependencies": {
+21:     "@bdp/protocol": "workspace:*",
+22:     "fast-uri": "3.1.5"
+23:   },
+24:   "devDependencies": {
+25:     "vitest": "4.1.10"
+26:   }
+27: }
+```
+
+## Actual source package.json:1-38
+```
+1: {
+2:   "name": "@bdp/workspace",
+3:   "version": "0.0.0",
+4:   "license": "MIT",
+5:   "private": true,
+6:   "type": "module",
+7:   "packageManager": "pnpm@11.20.0",
+8:   "engines": {
+9:     "node": "24.16.0"
+10:   },
+11:   "scripts": {
+12:     "baseline:capture": "node scripts/bd-baseline.mjs capture",
+13:     "baseline:pin": "node scripts/bd-baseline.mjs pin",
+14:     "baseline:verify": "node scripts/bd-baseline.mjs verify",
+15:     "build": "pnpm clean && tsc -b",
+16:     "check:boundaries": "node scripts/check-dependency-boundaries.mjs",
+17:     "clean": "tsc -b --clean && node scripts/clean-build.mjs",
+18:     "format": "biome format --write .",
+19:     "format:check": "biome format .",
+20:     "lint": "biome lint .",
+21:     "smoke": "node scripts/smoke-executables.mjs",
+22:     "e2e:ready:preflight": "vitest run scripts/e2e-ready.test.mjs --reporter=verbose",
+23:     "e2e:ready": "node scripts/e2e-ready.mjs",
+24:     "evidence:generate": "vitest run --config vitest.evidence.config.ts",
+25:     "evidence:verify": "node scripts/read-cohort-evidence.mjs",
+26:     "test": "vitest run --reporter=verbose",
+27:     "typecheck": "tsc -p tsconfig.check.json",
+28:     "smoke:development": "node scripts/smoke-development.mjs"
+29:   },
+30:   "devDependencies": {
+31:     "@babel/parser": "8.0.4",
+32:     "@biomejs/biome": "2.5.7",
+33:     "@types/node": "24.13.3",
+34:     "ajv": "8.17.1",
+35:     "typescript": "7.0.2",
+36:     "vitest": "4.1.10"
+37:   }
+38: }
+```
+
+## Actual source vitest.config.ts:1-72
+```
+1: import { existsSync, readdirSync, readFileSync } from "node:fs";
+2: import path from "node:path";
+3: import { fileURLToPath } from "node:url";
+4: 
+5: import { defineConfig } from "vitest/config";
+6: 
+7: const workspaceRoot = path.dirname(fileURLToPath(import.meta.url));
+8: 
+9: /**
+10:  * Aliases every `@bdp/*` library package to its TypeScript source so `pnpm
+11:  * test` works from a clean checkout without a prior build. A package may also
+12:  * own a source-only `test-support/testing.ts` subpath for cross-package integration tests;
+13:  * it is deliberately absent from package exports and installed consumers.
+14:  * Each package's production `exports` map still points at `dist/index.js`.
+15:  *
+16:  * Only `packages/*` are scanned: those are the export-bearing libraries that
+17:  * tests import as `@bdp/*`. `apps/*` are CLI binaries with no `exports` and a
+18:  * `src/main.ts` entrypoint, so aliasing them would register a target that
+19:  * does not exist and mask a misconfigured import. The manifest is read
+20:  * directly — a missing or malformed `package.json` fails the Vitest config
+21:  * with the offending path instead of being silently skipped.
+22:  */
+23: function collectWorkspaceSourceAliases(): Record<string, string> {
+24:   const aliases: Record<string, string> = {};
+25:   const packagesDir = path.join(workspaceRoot, "packages");
+26:   for (const entry of readdirSync(packagesDir, { withFileTypes: true })) {
+27:     if (!entry.isDirectory()) continue;
+28:     const packageDir = path.join(packagesDir, entry.name);
+29:     const manifestPath = path.join(packageDir, "package.json");
+30:     let manifest: unknown;
+31:     try {
+32:       manifest = JSON.parse(readFileSync(manifestPath, "utf8"));
+33:     } catch (error) {
+34:       throw new Error(`${manifestPath}: failed to read or parse package.json`, {
+35:         cause: error,
+36:       });
+37:     }
+38:     if (!isPlainObject(manifest) || typeof manifest.name !== "string") {
+39:       throw new Error(`${manifestPath}: package.json must define a string "name"`);
+40:     }
+41:     const name = manifest.name;
+42:     if (!name.startsWith("@bdp/")) continue;
+43:     const sourceEntry = path.join(packageDir, "src", "index.ts");
+44:     if (!existsSync(sourceEntry)) {
+45:       throw new Error(
+46:         `${manifestPath}: workspace package ${name} is missing its source entrypoint at ${sourceEntry}`,
+47:       );
+48:     }
+49:     const testingEntry = path.join(packageDir, "test-support", "testing.ts");
+50:     if (existsSync(testingEntry)) aliases[`${name}/testing`] = testingEntry;
+51:     if (name === "@bdp/server")
+52:       aliases[`${name}/development`] = path.join(packageDir, "src/development.ts");
+53:     aliases[name] = sourceEntry;
+54:   }
+55:   return aliases;
+56: }
+57: 
+58: function isPlainObject(value: unknown): value is Record<string, unknown> {
+59:   return typeof value === "object" && value !== null && !Array.isArray(value);
+60: }
+61: 
+62: export default defineConfig({
+63:   resolve: { alias: collectWorkspaceSourceAliases() },
+64:   test: {
+65:     coverage: { enabled: false },
+66:     include: ["packages/**/*.test.ts", "apps/**/*.test.ts", "scripts/**/*.test.mjs"],
+67:     passWithNoTests: false,
+68:     // Install the non-emitted admission mock before cross-package test modules
+69:     // can instantiate @bdp/server through an adapter dependency.
+70:     setupFiles: ["./packages/server/test-support/read-conformance-mock.ts"],
+71:   },
+72: });
+```
+
+## Actual source tsconfig.base.json:1-26
+```
+1: {
+2:   "compilerOptions": {
+3:     "composite": true,
+4:     "declaration": true,
+5:     "declarationMap": true,
+6:     "exactOptionalPropertyTypes": true,
+7:     "forceConsistentCasingInFileNames": true,
+8:     "isolatedModules": true,
+9:     "lib": ["ES2024"],
+10:     "module": "NodeNext",
+11:     "moduleResolution": "NodeNext",
+12:     "noEmitOnError": true,
+13:     "noFallthroughCasesInSwitch": true,
+14:     "noImplicitOverride": true,
+15:     "noImplicitReturns": true,
+16:     "noUncheckedIndexedAccess": true,
+17:     "noUnusedLocals": true,
+18:     "noUnusedParameters": true,
+19:     "resolveJsonModule": true,
+20:     "sourceMap": true,
+21:     "strict": true,
+22:     "target": "ES2024",
+23:     "types": ["node"],
+24:     "verbatimModuleSyntax": true
+25:   }
+26: }
+```
+
+## Actual source tsconfig.check.json:1-32
+```
+1: {
+2:   "extends": "./tsconfig.base.json",
+3:   "compilerOptions": {
+4:     "composite": false,
+5:     "declaration": false,
+6:     "declarationMap": false,
+7:     "noEmit": true,
+8:     "rootDir": ".",
+9:     "paths": {
+10:       "@bdp/adapter-bd": ["./packages/adapter-bd/src/index.ts"],
+11:       "@bdp/adapter-in-memory": ["./packages/adapter-in-memory/src/index.ts"],
+12:       "@bdp/bd-domain": ["./packages/bd-domain/src/index.ts"],
+13:       "@bdp/client": ["./packages/client/src/index.ts"],
+14:       "@bdp/client/testing": ["./packages/client/test-support/testing.ts"],
+15:       "@bdp/config": ["./packages/config/src/index.ts"],
+16:       "@bdp/conformance": ["./packages/conformance/src/index.ts"],
+17:       "@bdp/conformance/testing": ["./packages/conformance/test-support/testing.ts"],
+18:       "@bdp/protocol": ["./packages/protocol/src/index.ts"],
+19:       "@bdp/server": ["./packages/server/src/index.ts"],
+20:       "@bdp/server/testing": ["./packages/server/test-support/testing.ts"],
+21:       "@bdp/server/development": ["./packages/server/src/development.ts"]
+22:     }
+23:   },
+24:   "include": [
+25:     "apps/*/src/**/*.ts",
+26:     "packages/*/src/**/*.ts",
+27:     "packages/*/test-support/**/*.ts",
+28:     "scripts/generate-read-cohort.mts",
+29:     "vitest.config.ts",
+30:     "vitest.evidence.config.ts"
+31:   ]
+32: }
+```
+
+## Read-only production caller inventory
+packages/server/src/transaction-store.ts:1031:  function admitKey(
+packages/server/src/transaction-store.ts:1039:  function admitKey(
+packages/server/src/transaction-store.ts:1048:  function admitKey(
+packages/server/src/transaction-store.ts:1408:        const result = admitKey(principal, key, batch, false, undefined, undefined, receiving);
+packages/server/src/transaction-store.ts:1801:              const admitted = admitKey(
+packages/server/src/transaction-store.ts:1924:              atomic(() => admitKey(state.principal, member.key, member.request, true, references)),
+packages/server/src/transaction-batch.ts:125:export function prepareTransaction(scope: string, text: string): PreparedTransaction {
+packages/server/src/transaction-batch.ts:126:  return prepareTransactionSetCore(scope, text);
+packages/server/src/transaction-batch.ts:129:export function prepareTransactionSetCore(
+packages/server/src/transaction-batch.ts:188:export function prepareTransactionSingleton(
+packages/server/src/transaction-submission.ts:94:        ? prepareTransaction(store.scope, body)
+packages/server/src/transaction-submission.ts:95:        : prepareTransactionSingleton(store.scope, submission.carrier.operation, body);
+
+## Actual source packages/server/test-support/read-conformance-mock.ts (complete setup)
+```
+1: import { afterAll, vi } from "vitest";
+2: 
+3: import type { ReadServerTarget } from "../src/read-conformance-capability.js";
+4: import {
+5:   type ReadConformanceMockState,
+6:   readConformanceMockStateSymbol,
+7: } from "./read-conformance-mock-state.js";
+8: 
+9: /** Minimal global setup: install the non-emitted admission mock without loading @bdp/server. */
+10: const conformance = vi.hoisted(() => ({
+11:   grants: new Map<ReadServerTarget, number>(),
+12:   installedMock: undefined as ((target: ReadServerTarget) => boolean) | undefined,
+13: })) satisfies ReadConformanceMockState;
+14: 
+15: Reflect.set(globalThis, readConformanceMockStateSymbol, conformance);
+16: 
+17: vi.mock("../src/read-conformance-capability.js", async (importOriginal) => {
+18:   const original = await importOriginal<typeof import("../src/read-conformance-capability.js")>();
+19:   const installedMock = (target: ReadServerTarget): boolean =>
+20:     (conformance.grants.get(target) ?? 0) > 0 || original.hasReadConformanceEvidence(target);
+21:   conformance.installedMock = installedMock;
+22:   return {
+23:     ...original,
+24:     hasReadConformanceEvidence: installedMock,
+25:   };
+26: });
+27: 
+28: afterAll(() => {
+29:   const leaked = [...conformance.grants.entries()].filter(([, count]) => count !== 0);
+30:   conformance.grants.clear();
+31:   if (leaked.length > 0)
+32:     throw new Error(
+33:       `test-only Read conformance grants leaked: ${leaked
+34:         .map(([target, count]) => `${target}=${count}`)
+35:         .join(", ")}`,
+36:     );
+37: });
+```
