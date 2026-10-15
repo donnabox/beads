@@ -1,0 +1,11 @@
+# Focused actual code review completed — findings require disposition
+
+One root-released invocation, PID/group85187, started2026-10-15T11:13:33.891547Z, completed exit0 after593.1138112908229seconds. No timeout/forced termination. Prompt16db92308f11992472e706127d299b7ca0d54208db97fe9cdaf0c9c9ccef8b41, release bindingccadd5cfec4842d03b5a26492fadf002f853ccaa9bcabdb4cc94355f4b61fcac. Original prior900s timeout remains separate and inconclusive; no historical relabelling.
+
+Complete stdout10526bytes SHAd919ca5452b07d65bd39e34c33b7c1b8ef1bc51ce7f2c960484af22c4fe16a36; stderr empty. Full output was read. Ten numbered findings address launcher close idempotence, possible caller/header fanout, historical progress wording, installed schema/import assumptions, dirty source attribution, emitted freshness, soft assertion reporting, table-title selector risk, corrupted metadata test and binding logging. These are reviewer claims, not independently established defects or authorization to change source. Root owns reconciliation. One immediately verified contrary source fact: scripts/transaction-installed-observation.mjs memoizes close with `closing ??=`, so finding1's nonmemoized premise is false. The focused contract summary omitted that detail; the original full-context packet included it. No new source changes or runtime tests from this worker.
+
+Review also reported no finding for same-entry timing, auth/privacy, HEAD framing, request/body bounds and nonvacuous context expectations. None of this establishes full-profile qualification or fresh installed execution.
+
+All protected source/prompt/plans unchanged; before/after SHA619eca5b54a7e2d23bb582e084ed2bc8208ecdacaba4dd218c9c535f664218a7. Wrapper terminal cleanup and independent later ps check found group85187/samplePID absent and temp empty. One-second sampling may miss detached/short-lived descendants.
+
+exit.json SHA58eded2b4b422cbae93b4a68b8d6859ebffae8685916fd53b7663a61b50f1f21; cleanup.json SHA2bf364d46c275e6f4949cb2dd1d44bc2fff71a5cf629d8c6d4ee6a761ca05c37; terminal-process-check.json SHA42dcc8a4129b2c6f2b71707ed41fa93167534e536c76fd1e6a2639ff20399a86. Actual streams, process sampling, source-before/after and release retained. No additional review was launched; sourceacf190e7 remains frozen. Root must disposition findings before integration/execution gates are considered satisfied.
