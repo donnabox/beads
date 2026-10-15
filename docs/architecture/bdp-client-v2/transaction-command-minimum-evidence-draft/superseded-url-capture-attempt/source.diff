@@ -1,0 +1,2061 @@
+diff --git a/packages/conformance/test-support/transactional/coverage-v1.json b/packages/conformance/test-support/transactional/coverage-v1.json
+index 63264b8..2f71528 100644
+--- a/packages/conformance/test-support/transactional/coverage-v1.json
++++ b/packages/conformance/test-support/transactional/coverage-v1.json
+@@ -4,6 +4,205 @@
+   "status": "bounded-observation",
+   "transportAdmission": "private-exact-available",
+   "rows": [
++    {
++      "id": "read-update.http.command-minimum-fields",
++      "wholeContract": false,
++      "reason": "Bounded actual Transactional singleton, batch and sequence observations of ignored literal copied minimum fields, retained identity, conflict, revision refusal and authorization control; complete three-Bead and Scope Event page. Whole contract remains unqualified: this row omits receipt/read minimum enforcement, coherent same-context future tuples, other singleton target/kind and carrier-validation/transport/bounds partitions, and actual Read+Update-profile execution. Historical private observations are not relabeled.",
++      "bindings": [
++        {
++          "scenario": "read-update.http.command-minimum-fields",
++          "assertions": [
++            "m-create-a:http-status",
++            "m-create-a:schema",
++            "m-create-a:media",
++            "m-create-a:present-bdp-scope-epoch",
++            "m-create-a:present-bdp-authorization-view",
++            "m-create-a:present-bdp-scope-position",
++            "m-create-a:serving-position",
++            "m-create-a:request-headers",
++            "m-create-a:request-body",
++            "m-create-a:disposition",
++            "m-create-a:detail",
++            "m-create-a:key",
++            "m-create-a:no-next",
++            "m-create-a:required-position",
++            "m-create-a:effect-position",
++            "m-create-a:literal-result",
++            "m-create-a:no-name",
++            "m-create-a:no-source",
++            "m-create-a:no-provenance",
++            "m-create-a:no-owned-links",
++            "m-replay-a:http-status",
++            "m-replay-a:schema",
++            "m-replay-a:media",
++            "m-replay-a:present-bdp-scope-epoch",
++            "m-replay-a:present-bdp-authorization-view",
++            "m-replay-a:present-bdp-scope-position",
++            "m-replay-a:serving-position",
++            "m-replay-a:request-headers",
++            "m-replay-a:request-body",
++            "m-replay-a:disposition",
++            "m-replay-a:detail",
++            "m-replay-a:key",
++            "m-replay-a:no-next",
++            "m-replay-a:required-position",
++            "m-replay-a:effect-position",
++            "m-replay-a:retained-body",
++            "m-replay-a:same-context",
++            "m-create-b:http-status",
++            "m-create-b:schema",
++            "m-create-b:media",
++            "m-create-b:present-bdp-scope-epoch",
++            "m-create-b:present-bdp-authorization-view",
++            "m-create-b:present-bdp-scope-position",
++            "m-create-b:serving-position",
++            "m-create-b:request-headers",
++            "m-create-b:request-body",
++            "m-create-b:disposition",
++            "m-create-b:detail",
++            "m-create-b:key",
++            "m-create-b:no-next",
++            "m-create-b:required-position",
++            "m-create-b:effect-position",
++            "m-create-b:literal-result",
++            "m-create-b:no-name",
++            "m-create-b:no-source",
++            "m-create-b:no-provenance",
++            "m-create-b:no-owned-links",
++            "m-replay-b:http-status",
++            "m-replay-b:schema",
++            "m-replay-b:media",
++            "m-replay-b:present-bdp-scope-epoch",
++            "m-replay-b:present-bdp-authorization-view",
++            "m-replay-b:present-bdp-scope-position",
++            "m-replay-b:serving-position",
++            "m-replay-b:request-headers",
++            "m-replay-b:request-body",
++            "m-replay-b:disposition",
++            "m-replay-b:detail",
++            "m-replay-b:key",
++            "m-replay-b:no-next",
++            "m-replay-b:required-position",
++            "m-replay-b:effect-position",
++            "m-replay-b:retained-body",
++            "m-replay-b:same-context",
++            "m-create-c:http-status",
++            "m-create-c:schema",
++            "m-create-c:media",
++            "m-create-c:present-bdp-scope-epoch",
++            "m-create-c:present-bdp-authorization-view",
++            "m-create-c:present-bdp-scope-position",
++            "m-create-c:serving-position",
++            "m-create-c:request-headers",
++            "m-create-c:request-body",
++            "m-create-c:literal-result",
++            "m-create-c:no-name",
++            "m-create-c:no-source",
++            "m-create-c:no-provenance",
++            "m-create-c:no-owned-links",
++            "m-create-c:no-receipt",
++            "m-create-c:no-id",
++            "m-create-c:no-problem",
++            "m-replay-c:http-status",
++            "m-replay-c:schema",
++            "m-replay-c:media",
++            "m-replay-c:present-bdp-scope-epoch",
++            "m-replay-c:present-bdp-authorization-view",
++            "m-replay-c:present-bdp-scope-position",
++            "m-replay-c:serving-position",
++            "m-replay-c:request-headers",
++            "m-replay-c:request-body",
++            "m-replay-c:retained-body",
++            "m-replay-c:same-context",
++            "m-body-conflict:http-status",
++            "m-body-conflict:schema",
++            "m-body-conflict:media",
++            "m-body-conflict:present-bdp-scope-epoch",
++            "m-body-conflict:present-bdp-authorization-view",
++            "m-body-conflict:present-bdp-scope-position",
++            "m-body-conflict:serving-position",
++            "m-body-conflict:request-headers",
++            "m-body-conflict:request-body",
++            "m-body-conflict:whole-problem",
++            "m-body-conflict:same-context",
++            "m-stale-update:http-status",
++            "m-stale-update:schema",
++            "m-stale-update:media",
++            "m-stale-update:present-bdp-scope-epoch",
++            "m-stale-update:present-bdp-authorization-view",
++            "m-stale-update:present-bdp-scope-position",
++            "m-stale-update:serving-position",
++            "m-stale-update:request-headers",
++            "m-stale-update:request-body",
++            "m-stale-update:disposition",
++            "m-stale-update:detail",
++            "m-stale-update:key",
++            "m-stale-update:required-position",
++            "m-stale-update:no-effect",
++            "m-stale-update:no-results",
++            "m-stale-update:no-next",
++            "m-stale-update:whole-problem",
++            "m-stale-update:same-context",
++            "m-retained-a:status",
++            "m-retained-a:body-present",
++            "m-retained-a:media",
++            "m-retained-a:present-bdp-scope-epoch",
++            "m-retained-a:present-bdp-authorization-view",
++            "m-retained-a:present-bdp-scope-position",
++            "m-retained-a:serving-position",
++            "m-retained-a:private-cache",
++            "m-retained-a:no-etag",
++            "m-retained-a:no-last-modified",
++            "m-retained-a:retained-body",
++            "m-retained-a:root",
++            "m-retained-a:required-position",
++            "m-retained-a:effect-position",
++            "m-retained-a:key",
++            "m-current:http-status",
++            "m-current:schema",
++            "m-current:media",
++            "m-current:present-bdp-scope-epoch",
++            "m-current:present-bdp-authorization-view",
++            "m-current:present-bdp-scope-position",
++            "m-current:serving-position",
++            "m-current:request-headers",
++            "m-current:request-body",
++            "m-current:no-next",
++            "m-current:ordered-state",
++            "m-current:a-full-record",
++            "m-current:b-full-record",
++            "m-current:c-full-record",
++            "m-current:same-context",
++            "m-events:http-status",
++            "m-events:schema",
++            "m-events:media",
++            "m-events:present-bdp-scope-epoch",
++            "m-events:present-bdp-authorization-view",
++            "m-events:present-bdp-scope-position",
++            "m-events:serving-position",
++            "m-events:request-headers",
++            "m-events:request-body",
++            "m-events:no-next",
++            "m-events:ordered-facts",
++            "m-events:a-properties",
++            "m-events:a-metadata",
++            "m-events:a-revision",
++            "m-events:a-no-provenance",
++            "m-events:a-transaction",
++            "m-events:b-properties",
++            "m-events:b-metadata",
++            "m-events:b-revision",
++            "m-events:b-no-provenance",
++            "m-events:b-transaction",
++            "m-events:c-properties",
++            "m-events:c-metadata",
++            "m-events:c-revision",
++            "m-events:c-no-provenance",
++            "m-events:same-context"
++          ]
++        }
++      ]
++    },
+     {
+       "id": "transactional.batch.atomic-commit",
+       "wholeContract": false,
+diff --git a/packages/conformance/test-support/transactional/manifest-v1.json b/packages/conformance/test-support/transactional/manifest-v1.json
+index 9cbc6de..6d2e3b3 100644
+--- a/packages/conformance/test-support/transactional/manifest-v1.json
++++ b/packages/conformance/test-support/transactional/manifest-v1.json
+@@ -2,6 +2,1846 @@
+   "manifestVersion": 2,
+   "catalogId": "transactional-v1",
+   "scenarios": [
++    {
++      "id": "read-update.http.command-minimum-fields",
++      "requiredProfile": "read-update",
++      "setup": {
++        "fixture": "reference-transactional-v1",
++        "requires": [
++          "installed-transactional-http",
++          "transactional-receipt-observation"
++        ]
++      },
++      "applicability": {
++        "requires": []
++      },
++      "cleanup": {
++        "resetFixture": true
++      },
++      "actions": [
++        {
++          "id": "m-create-a",
++          "family": "http",
++          "method": "POST",
++          "target": {
++            "binding": "scope",
++            "path": "operations/create-bead"
++          },
++          "credentialRef": "operator",
++          "raw": {
++            "headerLines": [
++              {
++                "name": "content-type",
++                "value": "application/json"
++              },
++              {
++                "name": "idempotency-key",
++                "value": "minimum-a"
++              },
++              {
++                "name": "accept",
++                "value": "application/json"
++              },
++              {
++                "name": "bdp-minimum-scope-position",
++                "value": "not a position!"
++              },
++              {
++                "name": "bdp-scope-epoch",
++                "value": ""
++              },
++              {
++                "name": "bdp-authorization-view",
++                "value": "view-one, view-two"
++              }
++            ],
++            "body": {
++              "encoding": "utf8",
++              "value": "{\"id\":\"beads/a\",\"type\":\"https://reference.invalid/acme/types/task\",\"properties\":{\"title\":\"minimum-a\"}}"
++            }
++          },
++          "captures": [
++            {
++              "binding": "minimum-a-body",
++              "from": {
++                "kind": "json-pointer",
++                "pointer": ""
++              }
++            },
++            {
++              "binding": "minimum-a-record",
++              "from": {
++                "kind": "json-pointer",
++                "pointer": "/results/0/resource"
++              }
++            },
++            {
++              "binding": "minimum-a-revision",
++              "from": {
++                "kind": "json-pointer",
++                "pointer": "/results/0/resource/revision"
++              }
++            },
++            {
++              "binding": "minimum-a-root",
++              "from": {
++                "kind": "json-pointer",
++                "pointer": "/id"
++              }
++            },
++            {
++              "binding": "minimum-a-transaction",
++              "from": {
++                "kind": "json-pointer",
++                "pointer": "/transaction"
++              }
++            }
++          ],
++          "assertions": [
++            {
++              "id": "http-status",
++              "kind": "status",
++              "equals": 200
++            },
++            {
++              "id": "schema",
++              "kind": "json-schema",
++              "schema": "#/$defs/mutationReceipt"
++            },
++            {
++              "id": "media",
++              "kind": "header",
++              "name": "content-type",
++              "equals": "application/json"
++            },
++            {
++              "id": "present-bdp-scope-epoch",
++              "kind": "header",
++              "name": "bdp-scope-epoch",
++              "absent": false
++            },
++            {
++              "id": "present-bdp-authorization-view",
++              "kind": "header",
++              "name": "bdp-authorization-view",
++              "absent": false
++            },
++            {
++              "id": "present-bdp-scope-position",
++              "kind": "header",
++              "name": "bdp-scope-position",
++              "absent": false
++            },
++            {
++              "id": "serving-position",
++              "kind": "header",
++              "name": "bdp-scope-position",
++              "equals": "pos-1"
++            },
++            {
++              "id": "request-headers",
++              "kind": "request-authored-headers"
++            },
++            {
++              "id": "request-body",
++              "kind": "request-authored-body"
++            },
++            {
++              "id": "disposition",
++              "kind": "json-pointer",
++              "pointer": "/status",
++              "exists": true,
++              "equals": "completed"
++            },
++            {
++              "id": "detail",
++              "kind": "json-pointer",
++              "pointer": "/detail",
++              "exists": true,
++              "equals": "available"
++            },
++            {
++              "id": "key",
++              "kind": "json-pointer",
++              "pointer": "/idempotencyKey",
++              "exists": true,
++              "equals": "minimum-a"
++            },
++            {
++              "id": "no-next",
++              "kind": "json-pointer",
++              "pointer": "/next",
++              "exists": true,
++              "equals": null
++            },
++            {
++              "id": "required-position",
++              "kind": "json-pointer",
++              "pointer": "/requiredPosition",
++              "exists": true,
++              "equals": "pos-1"
++            },
++            {
++              "id": "effect-position",
++              "kind": "json-pointer",
++              "pointer": "/effectPosition",
++              "exists": true,
++              "equals": "pos-1"
++            },
++            {
++              "id": "literal-result",
++              "kind": "json-array-tuples",
++              "pointer": "/results",
++              "ordered": true,
++              "projections": [
++                {
++                  "pointer": "/operationIndex"
++                },
++                {
++                  "pointer": "/outcome"
++                },
++                {
++                  "pointer": "/resource/id"
++                },
++                {
++                  "pointer": "/resource/type"
++                },
++                {
++                  "pointer": "/resource/properties"
++                },
++                {
++                  "pointer": "/resource/metadata"
++                }
++              ],
++              "equals": [
++                [
++                  0,
++                  "created",
++                  "https://reference.invalid/acme/beads/a",
++                  "https://reference.invalid/acme/types/task",
++                  {
++                    "title": "minimum-a"
++                  },
++                  {}
++                ]
++              ]
++            },
++            {
++              "id": "no-name",
++              "kind": "json-pointer",
++              "pointer": "/results/0/operationName",
++              "exists": false
++            },
++            {
++              "id": "no-source",
++              "kind": "json-pointer",
++              "pointer": "/results/0/source",
++              "exists": false
++            },
++            {
++              "id": "no-provenance",
++              "kind": "json-pointer",
++              "pointer": "/results/0/resource/revisionProvenance",
++              "exists": false
++            },
++            {
++              "id": "no-owned-links",
++              "kind": "json-pointer",
++              "pointer": "/results/0/resource/ownedLinks",
++              "exists": false
++            }
++          ]
++        },
++        {
++          "id": "m-replay-a",
++          "family": "http",
++          "method": "POST",
++          "target": {
++            "binding": "scope",
++            "path": "operations/create-bead"
++          },
++          "credentialRef": "operator",
++          "raw": {
++            "headerLines": [
++              {
++                "name": "content-type",
++                "value": "application/json"
++              },
++              {
++                "name": "idempotency-key",
++                "value": "minimum-a"
++              },
++              {
++                "name": "accept",
++                "value": "application/json"
++              }
++            ],
++            "body": {
++              "encoding": "utf8",
++              "value": "{\"id\":\"beads/a\",\"type\":\"https://reference.invalid/acme/types/task\",\"properties\":{\"title\":\"minimum-a\"}}"
++            }
++          },
++          "captures": [],
++          "assertions": [
++            {
++              "id": "http-status",
++              "kind": "status",
++              "equals": 200
++            },
++            {
++              "id": "schema",
++              "kind": "json-schema",
++              "schema": "#/$defs/mutationReceipt"
++            },
++            {
++              "id": "media",
++              "kind": "header",
++              "name": "content-type",
++              "equals": "application/json"
++            },
++            {
++              "id": "present-bdp-scope-epoch",
++              "kind": "header",
++              "name": "bdp-scope-epoch",
++              "absent": false
++            },
++            {
++              "id": "present-bdp-authorization-view",
++              "kind": "header",
++              "name": "bdp-authorization-view",
++              "absent": false
++            },
++            {
++              "id": "present-bdp-scope-position",
++              "kind": "header",
++              "name": "bdp-scope-position",
++              "absent": false
++            },
++            {
++              "id": "serving-position",
++              "kind": "header",
++              "name": "bdp-scope-position",
++              "equals": "pos-1"
++            },
++            {
++              "id": "request-headers",
++              "kind": "request-authored-headers"
++            },
++            {
++              "id": "request-body",
++              "kind": "request-authored-body"
++            },
++            {
++              "id": "disposition",
++              "kind": "json-pointer",
++              "pointer": "/status",
++              "exists": true,
++              "equals": "completed"
++            },
++            {
++              "id": "detail",
++              "kind": "json-pointer",
++              "pointer": "/detail",
++              "exists": true,
++              "equals": "available"
++            },
++            {
++              "id": "key",
++              "kind": "json-pointer",
++              "pointer": "/idempotencyKey",
++              "exists": true,
++              "equals": "minimum-a"
++            },
++            {
++              "id": "no-next",
++              "kind": "json-pointer",
++              "pointer": "/next",
++              "exists": true,
++              "equals": null
++            },
++            {
++              "id": "required-position",
++              "kind": "json-pointer",
++              "pointer": "/requiredPosition",
++              "exists": true,
++              "equals": "pos-1"
++            },
++            {
++              "id": "effect-position",
++              "kind": "json-pointer",
++              "pointer": "/effectPosition",
++              "exists": true,
++              "equals": "pos-1"
++            },
++            {
++              "id": "retained-body",
++              "kind": "json-pointer",
++              "pointer": "",
++              "exists": true,
++              "equalsBinding": "minimum-a-body"
++            },
++            {
++              "id": "same-context",
++              "kind": "response-metadata-equals",
++              "request": "m-create-a",
++              "headers": [
++                "bdp-scope-epoch",
++                "bdp-authorization-view",
++                "bdp-scope-position"
++              ]
++            }
++          ]
++        },
++        {
++          "id": "m-create-b",
++          "family": "http",
++          "method": "POST",
++          "target": {
++            "binding": "scope",
++            "path": "operations/batch"
++          },
++          "credentialRef": "operator",
++          "raw": {
++            "headerLines": [
++              {
++                "name": "content-type",
++                "value": "application/json"
++              },
++              {
++                "name": "idempotency-key",
++                "value": "minimum-b"
++              },
++              {
++                "name": "accept",
++                "value": "application/json"
++              },
++              {
++                "name": "bdp-scope-epoch",
++                "value": "foreign-epoch"
++              }
++            ],
++            "body": {
++              "encoding": "utf8",
++              "value": "{\"operations\":[{\"operation\":\"createBead\",\"id\":\"beads/b\",\"type\":\"https://reference.invalid/acme/types/task\",\"properties\":{\"title\":\"minimum-b\"}}]}"
++            }
++          },
++          "captures": [
++            {
++              "binding": "minimum-b-body",
++              "from": {
++                "kind": "json-pointer",
++                "pointer": ""
++              }
++            },
++            {
++              "binding": "minimum-b-record",
++              "from": {
++                "kind": "json-pointer",
++                "pointer": "/results/0/resource"
++              }
++            },
++            {
++              "binding": "minimum-b-revision",
++              "from": {
++                "kind": "json-pointer",
++                "pointer": "/results/0/resource/revision"
++              }
++            },
++            {
++              "binding": "minimum-b-root",
++              "from": {
++                "kind": "json-pointer",
++                "pointer": "/id"
++              }
++            },
++            {
++              "binding": "minimum-b-transaction",
++              "from": {
++                "kind": "json-pointer",
++                "pointer": "/transaction"
++              }
++            }
++          ],
++          "assertions": [
++            {
++              "id": "http-status",
++              "kind": "status",
++              "equals": 200
++            },
++            {
++              "id": "schema",
++              "kind": "json-schema",
++              "schema": "#/$defs/mutationReceipt"
++            },
++            {
++              "id": "media",
++              "kind": "header",
++              "name": "content-type",
++              "equals": "application/json"
++            },
++            {
++              "id": "present-bdp-scope-epoch",
++              "kind": "header",
++              "name": "bdp-scope-epoch",
++              "absent": false
++            },
++            {
++              "id": "present-bdp-authorization-view",
++              "kind": "header",
++              "name": "bdp-authorization-view",
++              "absent": false
++            },
++            {
++              "id": "present-bdp-scope-position",
++              "kind": "header",
++              "name": "bdp-scope-position",
++              "absent": false
++            },
++            {
++              "id": "serving-position",
++              "kind": "header",
++              "name": "bdp-scope-position",
++              "equals": "pos-2"
++            },
++            {
++              "id": "request-headers",
++              "kind": "request-authored-headers"
++            },
++            {
++              "id": "request-body",
++              "kind": "request-authored-body"
++            },
++            {
++              "id": "disposition",
++              "kind": "json-pointer",
++              "pointer": "/status",
++              "exists": true,
++              "equals": "completed"
++            },
++            {
++              "id": "detail",
++              "kind": "json-pointer",
++              "pointer": "/detail",
++              "exists": true,
++              "equals": "available"
++            },
++            {
++              "id": "key",
++              "kind": "json-pointer",
++              "pointer": "/idempotencyKey",
++              "exists": true,
++              "equals": "minimum-b"
++            },
++            {
++              "id": "no-next",
++              "kind": "json-pointer",
++              "pointer": "/next",
++              "exists": true,
++              "equals": null
++            },
++            {
++              "id": "required-position",
++              "kind": "json-pointer",
++              "pointer": "/requiredPosition",
++              "exists": true,
++              "equals": "pos-2"
++            },
++            {
++              "id": "effect-position",
++              "kind": "json-pointer",
++              "pointer": "/effectPosition",
++              "exists": true,
++              "equals": "pos-2"
++            },
++            {
++              "id": "literal-result",
++              "kind": "json-array-tuples",
++              "pointer": "/results",
++              "ordered": true,
++              "projections": [
++                {
++                  "pointer": "/operationIndex"
++                },
++                {
++                  "pointer": "/outcome"
++                },
++                {
++                  "pointer": "/resource/id"
++                },
++                {
++                  "pointer": "/resource/type"
++                },
++                {
++                  "pointer": "/resource/properties"
++                },
++                {
++                  "pointer": "/resource/metadata"
++                }
++              ],
++              "equals": [
++                [
++                  0,
++                  "created",
++                  "https://reference.invalid/acme/beads/b",
++                  "https://reference.invalid/acme/types/task",
++                  {
++                    "title": "minimum-b"
++                  },
++                  {}
++                ]
++              ]
++            },
++            {
++              "id": "no-name",
++              "kind": "json-pointer",
++              "pointer": "/results/0/operationName",
++              "exists": false
++            },
++            {
++              "id": "no-source",
++              "kind": "json-pointer",
++              "pointer": "/results/0/source",
++              "exists": false
++            },
++            {
++              "id": "no-provenance",
++              "kind": "json-pointer",
++              "pointer": "/results/0/resource/revisionProvenance",
++              "exists": false
++            },
++            {
++              "id": "no-owned-links",
++              "kind": "json-pointer",
++              "pointer": "/results/0/resource/ownedLinks",
++              "exists": false
++            }
++          ]
++        },
++        {
++          "id": "m-replay-b",
++          "family": "http",
++          "method": "POST",
++          "target": {
++            "binding": "scope",
++            "path": "operations/batch"
++          },
++          "credentialRef": "operator",
++          "raw": {
++            "headerLines": [
++              {
++                "name": "content-type",
++                "value": "application/json"
++              },
++              {
++                "name": "idempotency-key",
++                "value": "minimum-b"
++              },
++              {
++                "name": "accept",
++                "value": "application/json"
++              },
++              {
++                "name": "bdp-minimum-scope-position",
++                "value": ""
++              },
++              {
++                "name": "bdp-scope-epoch",
++                "value": ""
++              },
++              {
++                "name": "bdp-authorization-view",
++                "value": ""
++              }
++            ],
++            "body": {
++              "encoding": "utf8",
++              "value": "{\"operations\":[{\"operation\":\"createBead\",\"id\":\"beads/b\",\"type\":\"https://reference.invalid/acme/types/task\",\"properties\":{\"title\":\"minimum-b\"}}]}"
++            }
++          },
++          "captures": [],
++          "assertions": [
++            {
++              "id": "http-status",
++              "kind": "status",
++              "equals": 200
++            },
++            {
++              "id": "schema",
++              "kind": "json-schema",
++              "schema": "#/$defs/mutationReceipt"
++            },
++            {
++              "id": "media",
++              "kind": "header",
++              "name": "content-type",
++              "equals": "application/json"
++            },
++            {
++              "id": "present-bdp-scope-epoch",
++              "kind": "header",
++              "name": "bdp-scope-epoch",
++              "absent": false
++            },
++            {
++              "id": "present-bdp-authorization-view",
++              "kind": "header",
++              "name": "bdp-authorization-view",
++              "absent": false
++            },
++            {
++              "id": "present-bdp-scope-position",
++              "kind": "header",
++              "name": "bdp-scope-position",
++              "absent": false
++            },
++            {
++              "id": "serving-position",
++              "kind": "header",
++              "name": "bdp-scope-position",
++              "equals": "pos-2"
++            },
++            {
++              "id": "request-headers",
++              "kind": "request-authored-headers"
++            },
++            {
++              "id": "request-body",
++              "kind": "request-authored-body"
++            },
++            {
++              "id": "disposition",
++              "kind": "json-pointer",
++              "pointer": "/status",
++              "exists": true,
++              "equals": "completed"
++            },
++            {
++              "id": "detail",
++              "kind": "json-pointer",
++              "pointer": "/detail",
++              "exists": true,
++              "equals": "available"
++            },
++            {
++              "id": "key",
++              "kind": "json-pointer",
++              "pointer": "/idempotencyKey",
++              "exists": true,
++              "equals": "minimum-b"
++            },
++            {
++              "id": "no-next",
++              "kind": "json-pointer",
++              "pointer": "/next",
++              "exists": true,
++              "equals": null
++            },
++            {
++              "id": "required-position",
++              "kind": "json-pointer",
++              "pointer": "/requiredPosition",
++              "exists": true,
++              "equals": "pos-2"
++            },
++            {
++              "id": "effect-position",
++              "kind": "json-pointer",
++              "pointer": "/effectPosition",
++              "exists": true,
++              "equals": "pos-2"
++            },
++            {
++              "id": "retained-body",
++              "kind": "json-pointer",
++              "pointer": "",
++              "exists": true,
++              "equalsBinding": "minimum-b-body"
++            },
++            {
++              "id": "same-context",
++              "kind": "response-metadata-equals",
++              "request": "m-create-b",
++              "headers": [
++                "bdp-scope-epoch",
++                "bdp-authorization-view",
++                "bdp-scope-position"
++              ]
++            }
++          ]
++        },
++        {
++          "id": "m-create-c",
++          "family": "http",
++          "method": "POST",
++          "target": {
++            "binding": "scope",
++            "path": "operations/sequence"
++          },
++          "credentialRef": "operator",
++          "raw": {
++            "headerLines": [
++              {
++                "name": "content-type",
++                "value": "application/json"
++              },
++              {
++                "name": "accept",
++                "value": "application/json"
++              },
++              {
++                "name": "bdp-minimum-scope-position",
++                "value": "pos-99"
++              },
++              {
++                "name": "bdp-scope-epoch",
++                "value": "foreign-epoch"
++              },
++              {
++                "name": "bdp-authorization-view",
++                "value": "foreign-view"
++              }
++            ],
++            "body": {
++              "encoding": "utf8",
++              "value": "{\"operations\":[{\"operation\":\"createBead\",\"id\":\"beads/c\",\"type\":\"https://reference.invalid/acme/types/task\",\"properties\":{\"title\":\"minimum-c\"},\"idempotencyKey\":\"minimum-c\"}]}"
++            }
++          },
++          "captures": [
++            {
++              "binding": "minimum-c-body",
++              "from": {
++                "kind": "json-pointer",
++                "pointer": ""
++              }
++            },
++            {
++              "binding": "minimum-c-record",
++              "from": {
++                "kind": "json-pointer",
++                "pointer": "/results/0/resource"
++              }
++            },
++            {
++              "binding": "minimum-c-revision",
++              "from": {
++                "kind": "json-pointer",
++                "pointer": "/results/0/resource/revision"
++              }
++            }
++          ],
++          "assertions": [
++            {
++              "id": "http-status",
++              "kind": "status",
++              "equals": 200
++            },
++            {
++              "id": "schema",
++              "kind": "json-schema",
++              "schema": "#/$defs/transactionalSequenceResponse"
++            },
++            {
++              "id": "media",
++              "kind": "header",
++              "name": "content-type",
++              "equals": "application/json"
++            },
++            {
++              "id": "present-bdp-scope-epoch",
++              "kind": "header",
++              "name": "bdp-scope-epoch",
++              "absent": false
++            },
++            {
++              "id": "present-bdp-authorization-view",
++              "kind": "header",
++              "name": "bdp-authorization-view",
++              "absent": false
++            },
++            {
++              "id": "present-bdp-scope-position",
++              "kind": "header",
++              "name": "bdp-scope-position",
++              "absent": false
++            },
++            {
++              "id": "serving-position",
++              "kind": "header",
++              "name": "bdp-scope-position",
++              "equals": "pos-3"
++            },
++            {
++              "id": "request-headers",
++              "kind": "request-authored-headers"
++            },
++            {
++              "id": "request-body",
++              "kind": "request-authored-body"
++            },
++            {
++              "id": "literal-result",
++              "kind": "json-array-tuples",
++              "pointer": "/results",
++              "ordered": true,
++              "projections": [
++                {
++                  "pointer": "/operationIndex"
++                },
++                {
++                  "pointer": "/outcome"
++                },
++                {
++                  "pointer": "/resource/id"
++                },
++                {
++                  "pointer": "/resource/type"
++                },
++                {
++                  "pointer": "/resource/properties"
++                },
++                {
++                  "pointer": "/resource/metadata"
++                }
++              ],
++              "equals": [
++                [
++                  0,
++                  "created",
++                  "https://reference.invalid/acme/beads/c",
++                  "https://reference.invalid/acme/types/task",
++                  {
++                    "title": "minimum-c"
++                  },
++                  {}
++                ]
++              ]
++            },
++            {
++              "id": "no-name",
++              "kind": "json-pointer",
++              "pointer": "/results/0/operationName",
++              "exists": false
++            },
++            {
++              "id": "no-source",
++              "kind": "json-pointer",
++              "pointer": "/results/0/source",
++              "exists": false
++            },
++            {
++              "id": "no-provenance",
++              "kind": "json-pointer",
++              "pointer": "/results/0/resource/revisionProvenance",
++              "exists": false
++            },
++            {
++              "id": "no-owned-links",
++              "kind": "json-pointer",
++              "pointer": "/results/0/resource/ownedLinks",
++              "exists": false
++            },
++            {
++              "id": "no-receipt",
++              "kind": "json-pointer",
++              "pointer": "/receipt",
++              "exists": false
++            },
++            {
++              "id": "no-id",
++              "kind": "json-pointer",
++              "pointer": "/id",
++              "exists": false
++            },
++            {
++              "id": "no-problem",
++              "kind": "json-pointer",
++              "pointer": "/results/0/problem",
++              "exists": false
++            }
++          ]
++        },
++        {
++          "id": "m-replay-c",
++          "family": "http",
++          "method": "POST",
++          "target": {
++            "binding": "scope",
++            "path": "operations/sequence"
++          },
++          "credentialRef": "operator",
++          "raw": {
++            "headerLines": [
++              {
++                "name": "content-type",
++                "value": "application/json"
++              },
++              {
++                "name": "accept",
++                "value": "application/json"
++              },
++              {
++                "name": "bdp-minimum-scope-position",
++                "value": "not a position!"
++              },
++              {
++                "name": "bdp-scope-epoch",
++                "value": ""
++              },
++              {
++                "name": "bdp-authorization-view",
++                "value": "view-one, view-two"
++              }
++            ],
++            "body": {
++              "encoding": "utf8",
++              "value": "{\"operations\":[{\"operation\":\"createBead\",\"id\":\"beads/c\",\"type\":\"https://reference.invalid/acme/types/task\",\"properties\":{\"title\":\"minimum-c\"},\"idempotencyKey\":\"minimum-c\"}]}"
++            }
++          },
++          "captures": [],
++          "assertions": [
++            {
++              "id": "http-status",
++              "kind": "status",
++              "equals": 200
++            },
++            {
++              "id": "schema",
++              "kind": "json-schema",
++              "schema": "#/$defs/transactionalSequenceResponse"
++            },
++            {
++              "id": "media",
++              "kind": "header",
++              "name": "content-type",
++              "equals": "application/json"
++            },
++            {
++              "id": "present-bdp-scope-epoch",
++              "kind": "header",
++              "name": "bdp-scope-epoch",
++              "absent": false
++            },
++            {
++              "id": "present-bdp-authorization-view",
++              "kind": "header",
++              "name": "bdp-authorization-view",
++              "absent": false
++            },
++            {
++              "id": "present-bdp-scope-position",
++              "kind": "header",
++              "name": "bdp-scope-position",
++              "absent": false
++            },
++            {
++              "id": "serving-position",
++              "kind": "header",
++              "name": "bdp-scope-position",
++              "equals": "pos-3"
++            },
++            {
++              "id": "request-headers",
++              "kind": "request-authored-headers"
++            },
++            {
++              "id": "request-body",
++              "kind": "request-authored-body"
++            },
++            {
++              "id": "retained-body",
++              "kind": "json-pointer",
++              "pointer": "",
++              "exists": true,
++              "equalsBinding": "minimum-c-body"
++            },
++            {
++              "id": "same-context",
++              "kind": "response-metadata-equals",
++              "request": "m-create-c",
++              "headers": [
++                "bdp-scope-epoch",
++                "bdp-authorization-view",
++                "bdp-scope-position"
++              ]
++            }
++          ]
++        },
++        {
++          "id": "m-body-conflict",
++          "family": "http",
++          "method": "POST",
++          "target": {
++            "binding": "scope",
++            "path": "operations/batch"
++          },
++          "credentialRef": "operator",
++          "raw": {
++            "headerLines": [
++              {
++                "name": "content-type",
++                "value": "application/json"
++              },
++              {
++                "name": "idempotency-key",
++                "value": "minimum-b"
++              },
++              {
++                "name": "accept",
++                "value": "application/json"
++              },
++              {
++                "name": "bdp-minimum-scope-position",
++                "value": "pos-99"
++              },
++              {
++                "name": "bdp-scope-epoch",
++                "value": "foreign-epoch"
++              },
++              {
++                "name": "bdp-authorization-view",
++                "value": "foreign-view"
++              }
++            ],
++            "body": {
++              "encoding": "utf8",
++              "value": "{\"operations\":[{\"operation\":\"createBead\",\"id\":\"beads/b\",\"type\":\"https://reference.invalid/acme/types/task\",\"properties\":{\"title\":\"minimum-conflict\"}}]}"
++            }
++          },
++          "captures": [],
++          "assertions": [
++            {
++              "id": "http-status",
++              "kind": "status",
++              "equals": 409
++            },
++            {
++              "id": "schema",
++              "kind": "json-schema",
++              "schema": "#/$defs/transactionalProblem"
++            },
++            {
++              "id": "media",
++              "kind": "header",
++              "name": "content-type",
++              "equals": "application/problem+json"
++            },
++            {
++              "id": "present-bdp-scope-epoch",
++              "kind": "header",
++              "name": "bdp-scope-epoch",
++              "absent": false
++            },
++            {
++              "id": "present-bdp-authorization-view",
++              "kind": "header",
++              "name": "bdp-authorization-view",
++              "absent": false
++            },
++            {
++              "id": "present-bdp-scope-position",
++              "kind": "header",
++              "name": "bdp-scope-position",
++              "absent": false
++            },
++            {
++              "id": "serving-position",
++              "kind": "header",
++              "name": "bdp-scope-position",
++              "equals": "pos-3"
++            },
++            {
++              "id": "request-headers",
++              "kind": "request-authored-headers"
++            },
++            {
++              "id": "request-body",
++              "kind": "request-authored-body"
++            },
++            {
++              "id": "whole-problem",
++              "kind": "json-pointer",
++              "pointer": "",
++              "exists": true,
++              "equals": {
++                "type": "https://github.com/gastownhall/bdp/problems/conflict",
++                "code": "idempotency-conflict",
++                "status": 409,
++                "retry": "never"
++              }
++            },
++            {
++              "id": "same-context",
++              "kind": "response-metadata-equals",
++              "request": "m-create-c",
++              "headers": [
++                "bdp-scope-epoch",
++                "bdp-authorization-view",
++                "bdp-scope-position"
++              ]
++            }
++          ]
++        },
++        {
++          "id": "m-stale-update",
++          "family": "http",
++          "method": "POST",
++          "target": {
++            "binding": "scope",
++            "path": "operations/update-bead"
++          },
++          "credentialRef": "operator",
++          "raw": {
++            "headerLines": [
++              {
++                "name": "content-type",
++                "value": "application/json"
++              },
++              {
++                "name": "idempotency-key",
++                "value": "minimum-stale"
++              },
++              {
++                "name": "accept",
++                "value": "application/json"
++              },
++              {
++                "name": "bdp-minimum-scope-position",
++                "value": "not a position!"
++              },
++              {
++                "name": "bdp-scope-epoch",
++                "value": ""
++              },
++              {
++                "name": "bdp-authorization-view",
++                "value": "view-one, view-two"
++              }
++            ],
++            "body": {
++              "encoding": "utf8",
++              "value": "{\"bead\":\"beads/a\",\"expectedRevision\":\"minimum-wrong-revision\",\"propertiesChange\":[{\"op\":\"replace\",\"path\":\"/title\",\"value\":\"minimum-stale\"}]}"
++            }
++          },
++          "captures": [],
++          "assertions": [
++            {
++              "id": "http-status",
++              "kind": "status",
++              "equals": 200
++            },
++            {
++              "id": "schema",
++              "kind": "json-schema",
++              "schema": "#/$defs/mutationReceipt"
++            },
++            {
++              "id": "media",
++              "kind": "header",
++              "name": "content-type",
++              "equals": "application/json"
++            },
++            {
++              "id": "present-bdp-scope-epoch",
++              "kind": "header",
++              "name": "bdp-scope-epoch",
++              "absent": false
++            },
++            {
++              "id": "present-bdp-authorization-view",
++              "kind": "header",
++              "name": "bdp-authorization-view",
++              "absent": false
++            },
++            {
++              "id": "present-bdp-scope-position",
++              "kind": "header",
++              "name": "bdp-scope-position",
++              "absent": false
++            },
++            {
++              "id": "serving-position",
++              "kind": "header",
++              "name": "bdp-scope-position",
++              "equals": "pos-3"
++            },
++            {
++              "id": "request-headers",
++              "kind": "request-authored-headers"
++            },
++            {
++              "id": "request-body",
++              "kind": "request-authored-body"
++            },
++            {
++              "id": "disposition",
++              "kind": "json-pointer",
++              "pointer": "/status",
++              "exists": true,
++              "equals": "failed"
++            },
++            {
++              "id": "detail",
++              "kind": "json-pointer",
++              "pointer": "/detail",
++              "exists": true,
++              "equals": "available"
++            },
++            {
++              "id": "key",
++              "kind": "json-pointer",
++              "pointer": "/idempotencyKey",
++              "exists": true,
++              "equals": "minimum-stale"
++            },
++            {
++              "id": "required-position",
++              "kind": "json-pointer",
++              "pointer": "/requiredPosition",
++              "exists": true,
++              "equals": "pos-3"
++            },
++            {
++              "id": "no-effect",
++              "kind": "json-pointer",
++              "pointer": "/effectPosition",
++              "exists": false
++            },
++            {
++              "id": "no-results",
++              "kind": "json-pointer",
++              "pointer": "/results",
++              "exists": false
++            },
++            {
++              "id": "no-next",
++              "kind": "json-pointer",
++              "pointer": "/next",
++              "exists": false
++            },
++            {
++              "id": "whole-problem",
++              "kind": "json-pointer",
++              "pointer": "/problem",
++              "exists": true,
++              "equals": {
++                "type": "https://github.com/gastownhall/bdp/problems/conflict",
++                "code": "revision-mismatch",
++                "status": 409,
++                "retry": "after-state-change",
++                "operationIndex": 0
++              }
++            },
++            {
++              "id": "same-context",
++              "kind": "response-metadata-equals",
++              "request": "m-create-c",
++              "headers": [
++                "bdp-scope-epoch",
++                "bdp-authorization-view",
++                "bdp-scope-position"
++              ]
++            }
++          ]
++        },
++        {
++          "id": "m-retained-a",
++          "family": "client",
++          "operation": "transactional.receipt-read",
++          "input": {
++            "binding": "minimum-a-root",
++            "method": "GET"
++          },
++          "captures": [],
++          "assertions": [
++            {
++              "id": "status",
++              "kind": "json-pointer",
++              "pointer": "/status",
++              "exists": true,
++              "equals": 200
++            },
++            {
++              "id": "body-present",
++              "kind": "json-pointer",
++              "pointer": "/bodyPresent",
++              "exists": true,
++              "equals": true
++            },
++            {
++              "id": "media",
++              "kind": "json-pointer",
++              "pointer": "/headers/content-type",
++              "exists": true,
++              "equals": "application/json"
++            },
++            {
++              "id": "present-bdp-scope-epoch",
++              "kind": "json-pointer",
++              "pointer": "/headers/bdp-scope-epoch",
++              "exists": true
++            },
++            {
++              "id": "present-bdp-authorization-view",
++              "kind": "json-pointer",
++              "pointer": "/headers/bdp-authorization-view",
++              "exists": true
++            },
++            {
++              "id": "present-bdp-scope-position",
++              "kind": "json-pointer",
++              "pointer": "/headers/bdp-scope-position",
++              "exists": true
++            },
++            {
++              "id": "serving-position",
++              "kind": "json-pointer",
++              "pointer": "/headers/bdp-scope-position",
++              "exists": true,
++              "equals": "pos-3"
++            },
++            {
++              "id": "private-cache",
++              "kind": "json-pointer",
++              "pointer": "/headers/cache-control",
++              "exists": true,
++              "equals": "private, no-store"
++            },
++            {
++              "id": "no-etag",
++              "kind": "json-pointer",
++              "pointer": "/headers/etag",
++              "exists": false
++            },
++            {
++              "id": "no-last-modified",
++              "kind": "json-pointer",
++              "pointer": "/headers/last-modified",
++              "exists": false
++            },
++            {
++              "id": "retained-body",
++              "kind": "json-pointer",
++              "pointer": "/body",
++              "exists": true,
++              "equalsBinding": "minimum-a-body"
++            },
++            {
++              "id": "root",
++              "kind": "json-pointer",
++              "pointer": "/body/id",
++              "exists": true,
++              "equalsBinding": "minimum-a-root"
++            },
++            {
++              "id": "required-position",
++              "kind": "json-pointer",
++              "pointer": "/body/requiredPosition",
++              "exists": true,
++              "equals": "pos-1"
++            },
++            {
++              "id": "effect-position",
++              "kind": "json-pointer",
++              "pointer": "/body/effectPosition",
++              "exists": true,
++              "equals": "pos-1"
++            },
++            {
++              "id": "key",
++              "kind": "json-pointer",
++              "pointer": "/body/idempotencyKey",
++              "exists": true,
++              "equals": "minimum-a"
++            }
++          ]
++        },
++        {
++          "id": "m-current",
++          "family": "http",
++          "method": "GET",
++          "target": {
++            "binding": "scope",
++            "path": "beads/",
++            "query": {
++              "limit": "32"
++            }
++          },
++          "credentialRef": "operator",
++          "raw": {
++            "headerLines": []
++          },
++          "captures": [],
++          "assertions": [
++            {
++              "id": "http-status",
++              "kind": "status",
++              "equals": 200
++            },
++            {
++              "id": "schema",
++              "kind": "json-schema",
++              "schema": "#/$defs/currentBeadCollection"
++            },
++            {
++              "id": "media",
++              "kind": "header",
++              "name": "content-type",
++              "equals": "application/json"
++            },
++            {
++              "id": "present-bdp-scope-epoch",
++              "kind": "header",
++              "name": "bdp-scope-epoch",
++              "absent": false
++            },
++            {
++              "id": "present-bdp-authorization-view",
++              "kind": "header",
++              "name": "bdp-authorization-view",
++              "absent": false
++            },
++            {
++              "id": "present-bdp-scope-position",
++              "kind": "header",
++              "name": "bdp-scope-position",
++              "absent": false
++            },
++            {
++              "id": "serving-position",
++              "kind": "header",
++              "name": "bdp-scope-position",
++              "equals": "pos-3"
++            },
++            {
++              "id": "request-headers",
++              "kind": "request-authored-headers"
++            },
++            {
++              "id": "request-body",
++              "kind": "request-authored-body"
++            },
++            {
++              "id": "no-next",
++              "kind": "json-pointer",
++              "pointer": "/next",
++              "exists": true,
++              "equals": null
++            },
++            {
++              "id": "ordered-state",
++              "kind": "json-array-tuples",
++              "pointer": "/items",
++              "ordered": true,
++              "projections": [
++                {
++                  "pointer": "/id"
++                },
++                {
++                  "pointer": "/type"
++                },
++                {
++                  "pointer": "/properties"
++                },
++                {
++                  "pointer": "/metadata"
++                }
++              ],
++              "equals": [
++                [
++                  "https://reference.invalid/acme/beads/a",
++                  "https://reference.invalid/acme/types/task",
++                  {
++                    "title": "minimum-a"
++                  },
++                  {}
++                ],
++                [
++                  "https://reference.invalid/acme/beads/b",
++                  "https://reference.invalid/acme/types/task",
++                  {
++                    "title": "minimum-b"
++                  },
++                  {}
++                ],
++                [
++                  "https://reference.invalid/acme/beads/c",
++                  "https://reference.invalid/acme/types/task",
++                  {
++                    "title": "minimum-c"
++                  },
++                  {}
++                ]
++              ]
++            },
++            {
++              "id": "a-full-record",
++              "kind": "json-pointer",
++              "pointer": "/items/0",
++              "exists": true,
++              "equalsBinding": "minimum-a-record"
++            },
++            {
++              "id": "b-full-record",
++              "kind": "json-pointer",
++              "pointer": "/items/1",
++              "exists": true,
++              "equalsBinding": "minimum-b-record"
++            },
++            {
++              "id": "c-full-record",
++              "kind": "json-pointer",
++              "pointer": "/items/2",
++              "exists": true,
++              "equalsBinding": "minimum-c-record"
++            },
++            {
++              "id": "same-context",
++              "kind": "response-metadata-equals",
++              "request": "m-create-c",
++              "headers": [
++                "bdp-scope-epoch",
++                "bdp-authorization-view",
++                "bdp-scope-position"
++              ]
++            }
++          ]
++        },
++        {
++          "id": "m-events",
++          "family": "http",
++          "method": "GET",
++          "target": {
++            "binding": "scope",
++            "path": "events/"
++          },
++          "credentialRef": "operator",
++          "raw": {
++            "headerLines": []
++          },
++          "captures": [],
++          "assertions": [
++            {
++              "id": "http-status",
++              "kind": "status",
++              "equals": 200
++            },
++            {
++              "id": "schema",
++              "kind": "json-schema",
++              "schema": "#/$defs/eventPage"
++            },
++            {
++              "id": "media",
++              "kind": "header",
++              "name": "content-type",
++              "equals": "application/json"
++            },
++            {
++              "id": "present-bdp-scope-epoch",
++              "kind": "header",
++              "name": "bdp-scope-epoch",
++              "absent": false
++            },
++            {
++              "id": "present-bdp-authorization-view",
++              "kind": "header",
++              "name": "bdp-authorization-view",
++              "absent": false
++            },
++            {
++              "id": "present-bdp-scope-position",
++              "kind": "header",
++              "name": "bdp-scope-position",
++              "absent": false
++            },
++            {
++              "id": "serving-position",
++              "kind": "header",
++              "name": "bdp-scope-position",
++              "equals": "pos-3"
++            },
++            {
++              "id": "request-headers",
++              "kind": "request-authored-headers"
++            },
++            {
++              "id": "request-body",
++              "kind": "request-authored-body"
++            },
++            {
++              "id": "no-next",
++              "kind": "json-pointer",
++              "pointer": "/next",
++              "exists": true,
++              "equals": null
++            },
++            {
++              "id": "ordered-facts",
++              "kind": "json-array-tuples",
++              "pointer": "/events",
++              "ordered": true,
++              "projections": [
++                {
++                  "pointer": "/id"
++                },
++                {
++                  "pointer": "/source"
++                },
++                {
++                  "pointer": "/type"
++                },
++                {
++                  "pointer": "/subject"
++                },
++                {
++                  "pointer": "/subjectType"
++                },
++                {
++                  "pointer": "/ordinal"
++                }
++              ],
++              "equals": [
++                [
++                  "pos-1-0",
++                  "https://reference.invalid/acme/events/",
++                  "created",
++                  "https://reference.invalid/acme/beads/a",
++                  "https://reference.invalid/acme/types/task",
++                  0
++                ],
++                [
++                  "pos-2-0",
++                  "https://reference.invalid/acme/events/",
++                  "created",
++                  "https://reference.invalid/acme/beads/b",
++                  "https://reference.invalid/acme/types/task",
++                  0
++                ],
++                [
++                  "pos-3-0",
++                  "https://reference.invalid/acme/events/",
++                  "created",
++                  "https://reference.invalid/acme/beads/c",
++                  "https://reference.invalid/acme/types/task",
++                  0
++                ]
++              ]
++            },
++            {
++              "id": "a-properties",
++              "kind": "json-pointer",
++              "pointer": "/events/0/data/properties",
++              "exists": true,
++              "equals": {
++                "title": "minimum-a"
++              }
++            },
++            {
++              "id": "a-metadata",
++              "kind": "json-pointer",
++              "pointer": "/events/0/data/metadata",
++              "exists": true,
++              "equals": {}
++            },
++            {
++              "id": "a-revision",
++              "kind": "json-pointer",
++              "pointer": "/events/0/data/revision",
++              "exists": true,
++              "equalsBinding": "minimum-a-revision"
++            },
++            {
++              "id": "a-no-provenance",
++              "kind": "json-pointer",
++              "pointer": "/events/0/data/revisionProvenance",
++              "exists": false
++            },
++            {
++              "id": "a-transaction",
++              "kind": "json-pointer",
++              "pointer": "/events/0/transaction",
++              "exists": true,
++              "equalsBinding": "minimum-a-transaction"
++            },
++            {
++              "id": "b-properties",
++              "kind": "json-pointer",
++              "pointer": "/events/1/data/properties",
++              "exists": true,
++              "equals": {
++                "title": "minimum-b"
++              }
++            },
++            {
++              "id": "b-metadata",
++              "kind": "json-pointer",
++              "pointer": "/events/1/data/metadata",
++              "exists": true,
++              "equals": {}
++            },
++            {
++              "id": "b-revision",
++              "kind": "json-pointer",
++              "pointer": "/events/1/data/revision",
++              "exists": true,
++              "equalsBinding": "minimum-b-revision"
++            },
++            {
++              "id": "b-no-provenance",
++              "kind": "json-pointer",
++              "pointer": "/events/1/data/revisionProvenance",
++              "exists": false
++            },
++            {
++              "id": "b-transaction",
++              "kind": "json-pointer",
++              "pointer": "/events/1/transaction",
++              "exists": true,
++              "equalsBinding": "minimum-b-transaction"
++            },
++            {
++              "id": "c-properties",
++              "kind": "json-pointer",
++              "pointer": "/events/2/data/properties",
++              "exists": true,
++              "equals": {
++                "title": "minimum-c"
++              }
++            },
++            {
++              "id": "c-metadata",
++              "kind": "json-pointer",
++              "pointer": "/events/2/data/metadata",
++              "exists": true,
++              "equals": {}
++            },
++            {
++              "id": "c-revision",
++              "kind": "json-pointer",
++              "pointer": "/events/2/data/revision",
++              "exists": true,
++              "equalsBinding": "minimum-c-revision"
++            },
++            {
++              "id": "c-no-provenance",
++              "kind": "json-pointer",
++              "pointer": "/events/2/data/revisionProvenance",
++              "exists": false
++            },
++            {
++              "id": "same-context",
++              "kind": "response-metadata-equals",
++              "request": "m-create-c",
++              "headers": [
++                "bdp-scope-epoch",
++                "bdp-authorization-view",
++                "bdp-scope-position"
++              ]
++            }
++          ]
++        }
++      ]
++    },
+     {
+       "id": "transactional.batch.atomic-commit",
+       "requiredProfile": "transactional",

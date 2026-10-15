@@ -1,0 +1,743 @@
+Review only the proposed correction of raw-body capture and replay-equality proof in this plan. Do not re-review unrelated v4 decisions. Do not write or modify any files. Output findings only in stdout. No tools, tests, builds, services, installs, or API changes.
+
+The raw HTTP runner permits captured scoped absolute HTTP(S) URLs only. The correction must preserve eleven actions and use existing app afterExchange full-response checks for outer raw replay/inventory/Event comparisons, plus the existing private receipt authority's original-wire JSON equality for the dynamic receipt GET. Reports redact JSON bodies. Do not assume returned report body access or invent a new runner/helper API.
+
+Assess: (1) feasibility with supplied real interfaces and hook ordering; (2) independent literal/schema validation before saving an observed baseline; (3) exact route/request/ordinal/session/source binding; (4) complete replay and retained-root equality, with current serving context distinguished from historical receipt facts; (5) coverage attribution between manifest assertions, app wire oracles, and existing helper validation; (6) static replay-weakening guard that actually reaches the authored proof, without pretending a removed equalsBinding assertion executes. Identify where a future execution is needed, but do not label missing execution as a verified defect.
+
+Return concise actionable findings with severity, exact target location, impact, and smallest correction. Distinguish demonstrated contradictions from questions not decidable from supplied context. If clean, say so. This is a focused plan correction review, not implementation qualification.
+
+
+Native report below is an explicit qualifier: dynamic action9 raw-to-client epoch/view equality is NOT established. Known empty authored private headers plus passing request-authored-headers may prove absence; filtered report header list alone cannot. Check fields actually available, not hypothetical report bodies. Review only this correction, not the full v4 plan. No implementation or runtime validation is claimed.
+
+## FROZEN TARGET transaction-command-minimum-evidence-draft/capture-correction-proposal.md
+# Proposed existing-interface correction — pending root disposition
+
+The unexecuted first generated row is preserved under `superseded-url-capture-attempt/`. No tests, builds, service, package or installed execution occurred. Only the two JSON paths are dirty; TS files remain unchanged. The attempted arbitrary-JSON/revision HTTP captures cannot execute under runner.ts:2468–2487: raw captures require confined HTTP URLs. This is an authoring/plan-interface defect, not a runtime defect.
+
+Proposed eleven-action correction, with no runner/helper/export/fixture change:
+
+- Manifest captures only the legal receipt root `/id` from action1 (and B root if explicitly asserted useful). Keep every independent literal result/schema/key/disposition/position/Problem/current-inventory/Event-identity fact and raw request assertion.
+- In the existing app afterExchange closure, validate the originating A/B/C schema, complete independently expected result/member/resource facts and absence/provenance facts before storing an actual parsed clone. Verify exact input header/body/write-state and fixture route/ordinal first. Compare entire original A/B receipt on their replays and entire C sequence body on its replay. Compare every collection item to its corresponding independently validated full Resource and Event revisions/data/transaction facts against original creates. These are app wire oracles, not invented manifest captures or historical evidence.
+- Action9 remains the genuine private receipt GET. transactional-observation.ts:303 already requires deep equality of the retained root body with the original actual stored wire JSON before the client projection is returned; failure is `retained receipt differs from original wire facts`. Pin successful client assertions and its exchange/sourceReceiptObservation/session/source action/root/configuration binding. Explicitly disclose that returned reports omit the JSON body, so no post-run body extraction is claimed. Schema/fixture fields and current pos3 versus historical pos1 remain client assertions.
+- Coverage reason/mirror must distinguish authored manifest assertions from supplementary app wire and existing helper equality; no claim a removed equalsBinding still executes. The ledger weakening guard for replay equality must target the independently authored app oracle or equivalent frozen assertion contract, not a nonexistent raw capture. Root disposition needed before editing.
+
+Counts remain eleven actions, ten outer raw observations, one internal receipt exchange; no added wire or child. Full source/derivative measurements will be redone after approval. Existing stop and the unexecuted invalid draft remain preserved.
+
+
+## FROZEN TARGET transaction-command-minimum-evidence-next-v5-correction-addendum.md
+# Command-minimum evidence v5 correction addendum — pending correction council
+
+This is a bounded interface correction to accepted v4 SHA256 `88dc1ce6e43a142ac27be1b4636425463b8be23fafe9ca7e115b5370df172ea7`; v4 bytes remain unchanged. Parent remains actual merged main453b6dab/tree40782d97. Root/native accepted the viability of the following eleven-action placement; continuation awaits the requested actual Claude correction supplement and root disposition. No implementation validation or execution is claimed.
+
+## Preserved authoring failure
+
+The first unexecuted generated row tried to capture arbitrary JSON/revisions from raw HTTP actions. runner.ts:2468–2487 only permits scoped absolute HTTP(S) URL values for such captures. The source parser alone cannot establish those runtime capture values. This contradicts the planned capture placement; it is neither a production defect nor a failed installed run. The attempted two-file draft, generator, exact full diff and measurement are preserved in `transaction-command-minimum-evidence-draft/superseded-url-capture-attempt/`; all three owned TS files remain unchanged. No build/test/service/child/install/pack/commit ran. Do not count this invalid draft toward evidence.
+
+## Exact corrected oracle placement
+
+1. Keep all eleven action IDs/order, literal request bodies/header sets, credential choices, collection limit32, no extra GET and same15-route order. Raw captures retain only legal roots, in particular `m-create-a` `/id` -> `minimum-a-root`. Remove every arbitrary JSON/revision/transaction capture and every equalsBinding reference to those removed captures. A legal original-root equality may remain. Do not add an executor, export, fixture field or runner capability.
+2. **Manifest assertions:** preserve independent status/schema/media/context presence and positions, exact authored headers/body, receipt status/detail/key/required/effect positions, literal result index/outcome/identity/type/properties/metadata and absent optional provenance/owned fields appropriate to this actual unowned fixture; sequence schema/member facts; full known direct-conflict and revision-mismatch Problem objects; exact three-item collection inventory/next:null; exact created Event identity/source/type/subject/subjectType/ordinal/properties/metadata/next:null. The successful replay rows also pin their literal success facts. Preserve legal response-context equality comparisons. Remove misleading raw full-object/revision equalsBinding assertions rather than pretending they execute.
+3. **App supplemental actual-wire assertions:** in the existing ten-response hook, verify exact route/method progression, original authored headers/body bytes/write-state and independent schema/literal/context facts before cloning a baseline. On actions2/4 compare the entire actual receipt to the independently checked originalA/B; on6 compare entire actual sequence body to originalC. On10 compare every returned complete Resource to the corresponding checked A/B/C Resource (exact3/order/next:null). On11 compare revisions, data and transactions where observed to those checked creates, plus exact event identities/contents/count/next:null. Opaque revisions and receipt IDs are carried only after those initial facts pass. No response from a negative action supplies its own expected record. Hook checks are explicitly supplemental app assertions, not manifest assertion IDs or synthetic runner outcomes.
+4. **Action9 full retention:** the unchanged existing authority ledger stores original actual receipt JSON with the source observation (transactional-observation.ts:206–244); validate(GET) at303–307 deep-compares the later actual full JSON before runner.ts:950–969 produces the client projection. Pin successful action9 client assertions, sourceReceiptObservation.action exactly `m-create-a`, root/pointer/session/configuration binding, genuine dynamic GET/writeState and O header absence. Client projection pins currentpos3 while historical receipt fields remainpos1. Do not inspect nonexistent report body: ObservedAction records only output kind and assertion results. Existing helper equality, not a newly authored equalsBinding, supplies full retained equality; its failure remains `retained receipt differs from original wire facts`.
+
+## Independent weakening guard and control interpretation
+
+Within the existing app static callback (no extra registration), independently pin the three-entry replay-comparison ledger `m-replay-a -> m-create-a`, `m-replay-b -> m-create-b`, `m-replay-c -> m-create-c`, each requiring whole JSON equality. The actual hook consumes this ledger; validate it against independently authored literal tuples before any run. Clone/delete an entry or redirect an original and require named `minimum-replay-comparison-ledger` rejection. This replaces the impossible manifest-equalsBinding deletion test. It tests the declaration that drives actual comparisons, without checking its own source text or inventing an output oracle. The new cumulative ledger callback still tests deleted empty header and `minimum-read-header-absence` for actions10/11. Existing seven static registrations remain seven.
+
+The two selected actual controls retain their full expected success assertions in the manifest and receive independent positive actual409/403 app checks. Their known intended refusal branches do not run a successful-replay full-body comparison that would mask the manifest's named failures. Record exact failing/passing manifest assertion IDs after final corrected draft; the removed raw equalsBinding ID cannot be included. Batch control retains original200/receipt facts against actual409 atpos2; readonly retains original200/receipt facts against actual403 with absent context. All earlier selected exchanges must pass. Same two controls, same one full positive, no old52 control selection changes. Save genuine returned reports before app adjudication; supplemental actual-wire observations/comparison records are separately labeled safe app data, never fabricated ConformanceRunResult assertions.
+
+## Credit, measurement and unchanged bounds
+
+Coverage remains inherited requiredProfile read-update, wholeContract:false, with exact manifest assertion mirror and an explicit distinction between manifest observations and app/helper equality supplements. It does not claim standalone manifest execution proves full replay/state equality. All existing missing portions and RU omitted/false/empty status remain. Retain old26 raw objects byte-for-byte and all five source paths. Remeasure the corrected normal-form/disk/node/assertion counts before any source-authoring allowance amendment; preserve this attempted measurement separately.
+
+No scope or execution expansion: eleven actions/ten outer raw observations/one dynamic receipt, seven static callbacks, three installed cohorts expected203+4+1=208HTTP and22+2+2=26children, hard225HTTP/26children; unchanged90/120/5/10-second existing limits. Final derivative failure lists, output record shapes and root source gate still precede execution. There is no additional GET, new fixture, helper behavior, runtime/runner/schema/catalog/spec edit or whole-contract credit.
+
+## Attempt binding
+
+- `superseded-url-capture-attempt/manifest-v1.json` SHA256 `ba2ba2242677db4a7fcd36825e4c6f2c338ed454b0031c01acd44594d1aa14b9`.
+- `superseded-url-capture-attempt/coverage-v1.json` SHA256 `52c4453e404ccb72a199d880b124a82e32195c7d6d5451675899db29ef7f5de3`.
+- `superseded-url-capture-attempt/source.diff` SHA256 `9f101797d527d5524d0779df9be4f209f6f68c3b1dd7a8f031f58b2fe3c2dc33`.
+- `superseded-url-capture-attempt/measurement.json` SHA256 `7907fd33b62c728e4cbed401fd0df3eef03ba5ea493f37f3df3cb65e0826a172`.
+- `superseded-url-capture-attempt/author-row.py` SHA256 `3e8aaced7c2cad0a619e776cb2a8088c3d755e449e73e68dfaefafd417c0730d`.
+
+
+## FROZEN TARGET transaction-command-minimum-evidence-capture-correction-native.md
+# Native capture-correction disposition
+
+Recommend the unchanged **11-action / five-file** correction. An early twelfth GET is unnecessary for complete original-A/retained-A receipt-body equality: the existing private receipt authority already performs that exact comparison internally. Do not claim that client output or response bodies can be recovered from the returned report.
+
+Read-only basis: runner.ts and transactional-observation.ts in `/Users/dbox/repos/wt/vickie/vickie-command-minimum-evidence`, ordinary parent453b6dab/tree40782d97. The author-owned manifest/coverage are an unfrozen draft and are not approved by this report. No source changes, imports, tests, build, services or new review process were performed.
+
+## Actual interface limits
+
+1. `packages/conformance/src/runner.ts:2468–2496` captureValue requires an absolute HTTP(S) string confined to scope. Raw response object, revision string, epoch/view string captures fail. Keep only legitimate URL captures, principally A `/id` for receipt authority; ordinary URL captures remain ordinary and do not imply authority. Remove every dangling equalsBinding that relied on rejected raw capture forms.
+2. `runner.ts:189–198,1099–1101` exposes only programmable action output `{kind:"json"}`. `:1374–1383` reports response metadata/body kind/length, not bodyText; `:3306–3316` redacts/filters headers. `:1790–1810` also redacts raw header values and elides nonallowlisted headers. Therefore postrun comparisons cannot use report values as an unredacted client body, epoch/view or empty-header oracle. `/body` is available **inside** the private client action's manifest assertions, not in ObservedAction output.
+3. `runner.ts:1126–1133` permits programmatic JSON captures after assertions, but capturing action9 does not make its original raw A/B/C bodies available or expose captures to the app. No new capture-return seam is needed here.
+
+## Existing complete retained-root comparison
+
+`transactional-observation.ts:164–245` grants authority only for supported mutation POSTs, pointer `/id` or `/next`, actual200/raw wire, schema-valid receipt, matching wire/body and confined receipt identity. At registration it saves `body: JSON.parse(response.bodyText)` privately with source action, pointer, receipt, credential, source wire digest and session identity.
+
+For A's `/id` root, `:249–273` resolves that exact binding/target/session; `:274–305` validates real receipt wire and requires `isDeepStrictEqual(body, entry.body)` on GET, otherwise throws `retained receipt differs from original wire facts`. This compares the **entire parsed JSON body**, including extra fields, not only selected known facts. It is not a byte-for-byte serialization comparison. The `/next` first-page baseline has different behavior, so pin source pointer `/id` and never substitute page authority.
+
+`runner.ts:945–980` invokes this validate callback before projection completion, then independently validates receipt schema/id. A mismatch throws before a successful client action. Keep action9's known body/schema/root/key/position/header assertions; replace its impossible raw-capture `retained-body` equalsBinding with an honest body-presence/known-fact check as appropriate, with full retention explicitly attributed to this existing private validator. Postrun require:
+
+- action9 completed with output kind json, no executionError and every client assertion passing;
+- its actual exchange passed actual-status/actual-request/actual-body with complete write state;
+- sourceReceiptObservation.action exactly m-create-a, pointer `/id`, receipt equal the genuine A root, original source wire digest equal the raw A hook's digest, and expected credential/session/configuration binding;
+- dynamic route is the exact observed A root GET, correct actual served session, and the entire new row passes.
+
+The raw A hook may retain a safe root and original response-wire digest for these comparisons. Together these facts prove original-A→retained-A parsed-body equality without recovering the client body. Do not attribute this validator behavior to a newly authored manifest equality assertion, and do not count it as a newly added assertion ID.
+
+## Raw replay, state and revision comparisons
+
+Use the already permitted app afterExchange closure's actual response.bodyText/headers/exactRequest/wireResponseBytes for the ten raw actions. Keep exact row-specific activation, ordered route/body/key matching, duplicate/extra-traffic checks and original header sets. Independently validate complete schemas and literal semantic facts **before retaining** each baseline receipt/Resource/sequence result/revision. The outer hook runs before the runner's manifest assertions (app wrapper awaits hook before returning response), so merely assuming those later assertions have passed is invalid. Require their actual final pass too.
+
+Compare A replay to original A full parsed receipt, B replay to original B full receipt, C replay to original C full sequence JSON, final collection items to the validated original A/B/C Resource objects, and Event subjects/revisions/ordinals to independently validated creates. Pin exact item/Event cardinalities and no stale-update effect. In negative control mode validate the actual intended409/403 shape and retain evidence without throwing the success expectation inside the hook; the runner must reach and report the named failing manifest assertions. Success-path full-object replay equality is separately an app assertion, not returned runner credit.
+
+## Context and proof-boundary corrections
+
+Raw-hook context values are visible and can be compared across all ten raw actions. Dynamic action9 has real unredacted headers only within its client projection assertions: retain epoch/view presence and literal current position pos-3, root body required/effect pos-1 and ordinary read response facts. The existing receipt validator proves body retention and logical session/configuration continuity; it does **not** compare dynamic response epoch/view values to raw A's response header values. Do not say raw-to-client epoch/view header equality is proved, or infer values from redacted report fields. Record that specific comparison as outside this bounded row if the earlier broad context-equality wording implied it. No extra GET alone is necessary for the accepted core retention witness.
+
+Coverage bindings must mirror only real manifest assertion IDs. Full raw replay/resource/revision/state comparisons performed in the app are supplemental installed-test evidence; they must not be presented as runner assertion outcomes or synthetic report fields. Static guard/weakening descriptions must distinguish the manifest portion from app-owned equality checks: removing replay equality must be rejected by the actual app/independent source-ledger guard, not an equalsBinding that cannot execute. Keep wholeContract:false and existing missing partitions. The row's source-bound report must separately identify manifest checks, private receipt validator proof and app-hook checks. This is a truthful correction of evidence attribution, not permission to weaken complete equality in the app.
+
+## Counts and recommendation
+
+Retain11actions, positive203HTTP/22children, selected batch4/2, selected readonly1/2:208expected/225maximumHTTP and26children. CI increments remain454expected/473maximumHTTP,50maximumchildren; global invalid receipt mode still fails new action9, not2. The proposed12action arithmetic is internally plausible but unnecessary and should not be adopted. No runner/schema/API change, added request, export, capture interception or extra test registration. Root should record this source-backed plan correction, then review the actual five-file implementation/measurement changes before execution.
+
+The deferred transaction-sequence-member-plan.md also assumes raw full-body/revision captures and must explicitly recheck this restriction on resumption; it remains deferred and was not re-audited here.
+
+## EXACT READ-ONLY SOURCE EXCERPTS
+
+## packages/conformance/src/runner.ts:945–985
+945:         priorResponses,
+946:         { ...options, exactExecution },
+947:         undefined,
+948:         (response) => {
+949:           validate(response, input.method as "GET" | "HEAD");
+950:           const body = response.bodyText ? JSON.parse(response.bodyText) : null;
+951:           if (input.method === "GET") {
+952:             if (!schemaValidator)
+953:               throw new TransactionalHarnessError("receipt validator unavailable");
+954:             if (
+955:               schemaValidator.validate(
+956:                 source.pointer === "/next"
+957:                   ? "#/$defs/mutationReceiptPage"
+958:                   : "#/$defs/mutationReceipt",
+959:                 body,
+960:               ).length ||
+961:               (source.pointer === "/next" ? body.receipt : body.id) !== source.receipt
+962:             )
+963:               throw new TransactionalReceiptFailure("retained receipt schema or identity mismatch");
+964:           }
+965:           projection = {
+966:             status: response.status,
+967:             headers: normalizeHeaders(response.headers),
+968:             body,
+969:             bodyPresent: response.bodyText.length > 0,
+970:             bodyOctets: response.bodyOctets ?? 0,
+971:           };
+972:         },
+973:         {
+974:           dynamicExactConfiguration: configuration,
+975:           dynamicExactConfigurationDigest: exactConfigurationDigest(exactExecution),
+976:           sourceReceiptObservation: source,
+977:           servedSession: active.binding,
+978:         },
+979:       );
+980:       if (!projection) throw new TransactionalHarnessError("missing actual receipt observation");
+981:       return projection;
+982:     };
+983:     await runProgrammaticAction(
+984:       action,
+985:       bindings,
+
+## packages/conformance/src/runner.ts:1099–1134
+1099:   const snapshot = snapshotActionOutput(output);
+1100:   const next: ObservedAction = { ...observed, output: { kind: "json" } };
+1101:   actions[actions.length - 1] = next;
+1102:   const body: ObservedBody = { kind: "json", value: snapshot };
+1103:   const outcomes = action.assertions.map((assertion) =>
+1104:     evaluateAssertion(
+1105:       assertion,
+1106:       { url: scope, status: 200, headers: {}, bodyText: "" },
+1107:       body,
+1108:       schemaValidator,
+1109:       fixture,
+1110:       scope,
+1111:       runProfile,
+1112:       new Map(),
+1113:       {},
+1114:       undefined,
+1115:       bindings,
+1116:     ),
+1117:   );
+1118:   actions[actions.length - 1] = { ...next, assertions: outcomes };
+1119:   if (outcomes.some(({ passed }) => !passed))
+1120:     throw new ScenarioAssertionFailure(
+1121:       outcomes
+1122:         .filter(({ passed }) => !passed)
+1123:         .map(({ message }) => message ?? "assertion failed")
+1124:         .join("; "),
+1125:     );
+1126:   for (const capture of action.captures) {
+1127:     const value = jsonPointer(snapshot, capture.from.pointer);
+1128:     if (value === undefined)
+1129:       throw new ScenarioObservationFailure(
+1130:         `capture '${capture.binding}' JSON pointer did not resolve`,
+1131:       );
+1132:     bindings.set(capture.binding, cloneRuntimeJson(value as JsonValue));
+1133:   }
+1134: }
+
+## packages/conformance/src/runner.ts:2468–2500
+2468: function captureValue(
+2469:   capture: ScenarioCapture,
+2470:   response: HttpExchangeResponse,
+2471:   body: ObservedBody,
+2472:   scope: string,
+2473: ): string {
+2474:   let value: unknown;
+2475:   if (capture.from.kind === "response-url") value = response.url;
+2476:   else if (capture.from.kind === "header-link")
+2477:     value = linkHeader(response.headers.link, capture.from.rel, response.url);
+2478:   else {
+2479:     if (body.kind !== "json") throw new ScenarioObservationFailure(observedBodyIssue(body));
+2480:     value = jsonPointer(body.value, capture.from.pointer);
+2481:   }
+2482:   if (typeof value !== "string" || !isHttpUrl(value))
+2483:     throw new ScenarioObservationFailure(
+2484:       `capture '${capture.binding}' did not produce an absolute HTTP(S) URL`,
+2485:     );
+2486:   try {
+2487:     assertConfinedToScope(value, scope, `capture '${capture.binding}'`);
+2488:   } catch (error) {
+2489:     if (capture.from.kind === "header-link")
+2490:       throw new ScenarioOutOfScopeTargetError(
+2491:         "discovered link target is outside the runner's safe fetch boundary",
+2492:         { cause: error },
+2493:       );
+2494:     throw error;
+2495:   }
+2496:   return value;
+2497: }
+2498: 
+2499: function resolveTarget(
+2500:   request: ScenarioRequest,
+
+## packages/conformance/src/transactional-observation.ts:155–310
+155:         current.binding.runtimeConfigurationIdentity !== previous.runtimeConfigurationIdentity ||
+156:         current.binding.configurationDigest !== previous.configurationDigest
+157:       )
+158:         throw new TransactionalHarnessError("invalid reopened session");
+159:       accepted = Object.freeze({ ...current.binding });
+160:       session();
+161:     },
+162:     register(
+163:       binding: string,
+164:       pointer: string,
+165:       action: string,
+166:       request: { readonly method: string; readonly url: string },
+167:       response: HttpExchangeResponse,
+168:       value: unknown,
+169:       config: ExactHttpConfiguration,
+170:       credential: string | undefined,
+171:       validator: SchemaValidator | undefined,
+172:       served: TransactionalSessionBinding,
+173:     ) {
+174:       const operation = request.url.startsWith(`${scope}operations/`)
+175:         ? request.url.slice(`${scope}operations/`.length)
+176:         : undefined;
+177:       const mutationSource =
+178:         request.method === "POST" &&
+179:         [
+180:           "create-bead",
+181:           "update-bead",
+182:           "delete-bead",
+183:           "create-link",
+184:           "update-link",
+185:           "delete-link",
+186:           "put-alias",
+187:           "delete-alias",
+188:           "update-where",
+189:           "delete-where",
+190:           "batch",
+191:         ].includes(operation ?? "");
+192:       if ((pointer !== "/id" && pointer !== "/next") || !mutationSource) {
+193:         // Ordinary captures keep their normal meaning. Reusing a binding revokes
+194:         // its prior authority; only canonical mutation responses can grant it.
+195:         ledger.delete(binding);
+196:         return;
+197:       }
+198:       if (response.url !== request.url)
+199:         throw new TransactionalHarnessError("source receipt route mismatch");
+200:       if (
+201:         response.status !== 200 ||
+202:         !response.wireResponseBytes ||
+203:         response.wireResponseBytes.length > 2097152
+204:       )
+205:         throw new TransactionalHarnessError("source receipt wire unavailable");
+206:       validateReceiptWire(response, "GET");
+207:       if (!validator) throw new TransactionalHarnessError("source receipt validator unavailable");
+208:       if (validator.validate("#/$defs/mutationReceipt", value).length)
+209:         throw new TransactionalReceiptFailure("source receipt schema invalid");
+210:       const body = value as Record<string, unknown>;
+211:       if (body.status !== "completed" && body.status !== "failed")
+212:         throw new TransactionalHarnessError("source receipt disposition unavailable");
+213:       if (body.detail !== "available")
+214:         throw new TransactionalHarnessError("source receipt exceeds inline fixture");
+215:       let receipt: string;
+216:       try {
+217:         receipt = receiptUrl(body.id, scope);
+218:       } catch {
+219:         throw new TransactionalReceiptFailure("source receipt identity invalid");
+220:       }
+221:       if (!isDeepStrictEqual(body, JSON.parse(response.bodyText)))
+222:         throw new TransactionalHarnessError("source receipt body disagrees with wire");
+223:       let page: string | undefined;
+224:       if (body.status === "completed" && body.next !== null) {
+225:         try {
+226:           page = receiptPageUrl(body.next, receipt);
+227:         } catch {
+228:           throw new TransactionalReceiptFailure("source receipt page identity invalid");
+229:         }
+230:       }
+231:       if (pointer === "/next" && !page)
+232:         throw new TransactionalReceiptFailure("source receipt page unavailable");
+233:       if (ledger.has(binding) || ledger.size >= maximum)
+234:         throw new TransactionalHarnessError("receipt authority binding limit or reuse");
+235:       ledger.set(binding, {
+236:         reference: Object.freeze({
+237:           action,
+238:           ...(pointer === "/next" ? { pointer, page: page! } : { pointer }),
+239:           receipt,
+240:           responseDigest: createHash("sha256").update(response.wireResponseBytes).digest("hex"),
+241:           credentialRef: credential ?? config.defaultCredentialRef,
+242:           session: Object.freeze({ ...served }),
+243:         }),
+244:         body: JSON.parse(response.bodyText),
+245:         validator,
+246:       });
+247:     },
+248:     resolve(binding: unknown, value: unknown) {
+249:       const entry = typeof binding === "string" ? ledger.get(binding) : undefined;
+250:       if (!entry)
+251:         throw new TransactionalHarnessError("receipt not authorized by original wire observation");
+252:       const source = entry.reference;
+253:       const target = source.pointer === "/next" ? source.page : source.receipt;
+254:       if (
+255:         target !== value ||
+256:         (source.pointer === "/next"
+257:           ? receiptPageUrl(value, source.receipt)
+258:           : receiptUrl(value, scope)) !== target
+259:       )
+260:         throw new TransactionalHarnessError("receipt not authorized by original wire observation");
+261:       // The digest records original wire provenance. Later serving headers may
+262:       // change, so agreement compares retained JSON facts rather than wire bytes.
+263:       const active = session();
+264:       if (
+265:         active.binding.runtimeConfigurationIdentity !==
+266:           source.session.runtimeConfigurationIdentity ||
+267:         active.binding.configurationDigest !== source.session.configurationDigest
+268:       )
+269:         throw new TransactionalHarnessError("receipt session logical identity changed");
+270:       return {
+271:         source,
+272:         target,
+273:         active,
+274:         validate(response: HttpExchangeResponse, method: "GET" | "HEAD") {
+275:           validateReceiptWire(response, method);
+276:           if (method === "GET") {
+277:             let body: unknown;
+278:             try {
+279:               body = JSON.parse(response.bodyText);
+280:             } catch {
+281:               throw new TransactionalReceiptFailure("retained receipt JSON invalid");
+282:             }
+283:             if (source.pointer === "/next") {
+284:               const page = body as Record<string, unknown> | null;
+285:               if (
+286:                 entry.validator.validate("#/$defs/mutationReceiptPage", body).length ||
+287:                 page?.receipt !== source.receipt
+288:               )
+289:                 throw new TransactionalReceiptFailure(
+290:                   "retained receipt page schema or identity mismatch",
+291:                 );
+292:               // A HEAD never initializes this baseline. An invalid first GET does not either.
+293:               if (entry.pageBody === undefined) {
+294:                 if (page.next !== null)
+295:                   throw new TransactionalHarnessError("receipt page exceeds single-page fixture");
+296:                 entry.pageBody = body;
+297:               } else if (!isDeepStrictEqual(body, entry.pageBody))
+298:                 throw new TransactionalReceiptFailure(
+299:                   "retained receipt page differs from original wire facts",
+300:                 );
+301:               return;
+302:             }
+303:             if (!isDeepStrictEqual(body, entry.body))
+304:               throw new TransactionalReceiptFailure(
+305:                 "retained receipt differs from original wire facts",
+306:               );
+307:           }
+308:         },
+309:       };
+310:     },
+
+## apps/bdptest/src/transactional-matrix.test.ts:254–295
+254:       {
+255:         scope,
+256:         signal,
+257:         profile: "transactional",
+258:         seed: 0,
+259:         artifactBundle: runBundle,
+260:         execute: async () => {
+261:           throw new Error("generic HTTP executor forbidden");
+262:         },
+263:         exactExecution: {
+264:           execute: async (request) => {
+265:             const response = await target!.target.execute(request);
+266:             if (
+267:               typeof control?.invalidReceiptCredentials === "string" &&
+268:               response.status === 200 &&
+269:               [
+270:                 baseline.operationTargets.updateWhere,
+271:                 baseline.operationTargets.deleteWhere,
+272:               ].includes(response.url)
+273:             ) {
+274:               const receipt = JSON.parse(response.bodyText) as {
+275:                 id?: unknown;
+276:                 idempotencyKey?: unknown;
+277:               };
+278:               if (
+279:                 receipt.idempotencyKey === control.invalidReceiptCredentials &&
+280:                 typeof receipt.id === "string"
+281:               )
+282:                 deniedReceiptUrls.add(receipt.id);
+283:             }
+284:             await control?.afterExchange?.(response, signal);
+285:             signal.throwIfAborted();
+286:             return response;
+287:           },
+288:           configuration: target.target.exactConfiguration!,
+289:         },
+290:         harness: {
+291:           ...target.target.harness,
+292:           cleanup: async (...args) => {
+293:             try {
+294:               await target!.target.harness.cleanup(...args);
+295:             } catch (error) {
+
+## apps/bdptest/src/transactional-matrix.test.ts:1837–1925
+1837: /** Existing afterExchange observes only ordinary wire; client receipt GETs are
+1838:  * validated by the manifest. No report redaction is used as a value source. */
+1839: function crossCarrierWire(control?: CrossCarrierControl) {
+1840:   const requests = crossCarrierRequests(control);
+1841:   const maximum =
+1842:     control === "batch-semantic-conflict" ? 2 : control === "sequence-fresh-key" ? 3 : 10;
+1843:   const facts: { epoch: string; view: string; revision?: string }[] = [];
+1844:   let active = false;
+1845:   return {
+1846:     async afterExchange(response: HttpExchangeResponse) {
+1847:       const request = response.exactRequest;
+1848:       const key = request?.headerLines.find(
+1849:         (h) => h.name.toLowerCase() === "idempotency-key",
+1850:       )?.value;
+1851:       if (!active) {
+1852:         if (response.url !== `${scope}operations/create-bead` || key !== "carrier-create") return;
+1853:         active = true;
+1854:       }
+1855:       if (facts.length === maximum) {
+1856:         expect(key === "carrier-create" || key === "carrier-update").toBe(false);
+1857:         expect(
+1858:           ["create-bead", "sequence", "update-bead"].map((route) => `${scope}operations/${route}`),
+1859:         ).not.toContain(response.url);
+1860:         return;
+1861:       }
+1862:       const index = facts.length;
+1863:       const [route, body, expectedKey] = requests[index]!;
+1864:       expect(response.url).toBe(`${scope}${body === undefined ? "" : "operations/"}${route}`);
+1865:       expect(request).toBeDefined();
+1866:       expect(request!.writeState).toBe("complete");
+1867:       expect(key).toBe(expectedKey);
+1868:       expect(request!.bodyPresent).toBe(body !== undefined);
+1869:       if (body !== undefined)
+1870:         expect(request!.bodyDigest).toBe(
+1871:           createHash("sha256").update(JSON.stringify(body)).digest("hex"),
+1872:         );
+1873:       expect(response.status).toBe(
+1874:         control === "batch-semantic-conflict" && index === 1 ? 409 : 200,
+1875:       );
+1876:       const epoch = response.headers["bdp-scope-epoch"],
+1877:         view = response.headers["bdp-authorization-view"];
+1878:       expect(typeof epoch).toBe("string");
+1879:       expect(epoch?.length).toBeGreaterThan(0);
+1880:       expect(typeof view).toBe("string");
+1881:       expect(view?.length).toBeGreaterThan(0);
+1882:       expect(response.headers["bdp-scope-position"]).toBe(index < 3 ? "pos-1" : "pos-2");
+1883:       if (facts.length) {
+1884:         expect(epoch).toBe(facts[0]!.epoch);
+1885:         expect(view).toBe(facts[0]!.view);
+1886:       }
+1887:       let revision: string | undefined;
+1888:       if (index === 0 || index === 3) {
+1889:         const observed = JSON.parse(response.bodyText);
+1890:         expect(observed.idempotencyKey).toBe(index === 0 ? "carrier-create" : "carrier-update");
+1891:         expect(observed.status).toBe("completed");
+1892:         expect(observed.results).toHaveLength(1);
+1893:         expect(observed.results[0].resource).toMatchObject({
+1894:           id: `${scope}beads/a`,
+1895:           type: `${scope}types/task`,
+1896:           properties: { title: index === 0 ? "carrier-original" : "carrier-current" },
+1897:           metadata: {},
+1898:         });
+1899:         revision = observed.results[0].resource.revision;
+1900:         expect(typeof revision).toBe("string");
+1901:         expect(revision?.length).toBeGreaterThan(0);
+1902:       }
+1903:       facts.push({ epoch: epoch!, view: view!, ...(revision === undefined ? {} : { revision }) });
+1904:     },
+1905:     finish() {
+1906:       expect(active).toBe(true);
+1907:       expect(facts).toHaveLength(maximum);
+1908:       if (control === undefined) expect(facts[3]!.revision).not.toBe(facts[0]!.revision);
+1909:     },
+1910:   };
+1911: }
+1912: function applyCrossCarrierControl(value: CrossCarrierManifest, control: CrossCarrierControl) {
+1913:   const row = value.scenarios.find((r) => r.id === crossCarrierId)!;
+1914:   const actionId = control === "batch-semantic-conflict" ? "x-create-batch" : "x-create-sequence";
+1915:   const action = row.actions.find((a) => a.id === actionId)!;
+1916:   const raw = action.raw as { body: { value: string } };
+1917:   raw.body.value = JSON.stringify(
+1918:     crossCarrierRequests(control)[control === "batch-semantic-conflict" ? 1 : 2]![1],
+1919:   );
+1920:   const assertions = action.assertions as Record<string, unknown>[];
+1921:   const positive: Record<string, unknown>[] =
+1922:     control === "batch-semantic-conflict"
+1923:       ? [
+1924:           { id: "control-status", kind: "status", equals: 409 },
+1925:           { id: "control-schema", kind: "json-schema", schema: "#/$defs/transactionalProblem" },
+
+## packages/conformance/src/runner.ts:150–199
+150:   readonly writeState: RequestWriteState;
+151:   readonly headerProjection: "allowlisted-relative-order";
+152:   readonly headerLines: readonly { readonly name: string; readonly value: "<redacted>" }[];
+153:   readonly elidedHeaderLines: number;
+154:   readonly bodyPresent: boolean;
+155:   readonly bodyOctets: number;
+156:   readonly bodyDigest?: string;
+157: }
+158: 
+159: export interface ObservedExchange extends TransactionalExchangeFields {
+160:   readonly request: {
+161:     readonly id: string;
+162:     readonly method: ScenarioRequest["method"];
+163:     readonly url: string;
+164:     readonly headers: Readonly<Record<string, string>>;
+165:     readonly wireHeadersObserved?: true;
+166:     readonly exact?: ExactReportObservation;
+167:   };
+168:   readonly response?: {
+169:     readonly url: string;
+170:     readonly status: number;
+171:     readonly headers: Readonly<Record<string, string>>;
+172:     readonly decodedBodyBytes: number;
+173:     readonly wireBodyOctets?: number;
+174:     readonly bodyKind: "empty" | "json" | "invalid-json" | "unrepresentable-json";
+175:   };
+176:   readonly transportError?: {
+177:     readonly category: string;
+178:     readonly message: string;
+179:     readonly writeState?: RequestWriteState;
+180:   };
+181:   readonly harnessError?: {
+182:     readonly category: "exact-configuration" | "exact-observation";
+183:     readonly message: string;
+184:     readonly writeState?: RequestWriteState;
+185:   };
+186:   readonly assertions: readonly AssertionOutcome[];
+187: }
+188: 
+189: /** Redacted programmable-action evidence. Inputs, bindings, and output values are never reported. */
+190: export interface ObservedAction {
+191:   readonly action: {
+192:     readonly id: string;
+193:     readonly family: ScenarioProgrammaticAction["family"];
+194:     readonly operation: string;
+195:   };
+196:   readonly output?: { readonly kind: "json" };
+197:   readonly executionError?: { readonly category: string; readonly message: string };
+198:   readonly assertions: readonly AssertionOutcome[];
+199: }
+
+## packages/conformance/src/runner.ts:875–945
+875:       throw new TransactionalHarnessError("private Transactional session required");
+876:     const privateExecute: ScenarioActionExecutor = async (execution) => {
+877:       if (action.operation === "transactional.reopen") {
+878:         if (Object.keys(execution.input as object).length)
+879:           throw new TransactionalHarnessError("reopen takes no input");
+880:         await transactional.reopen(execution.signal);
+881:         return { reopened: true };
+882:       }
+883:       if (action.operation !== "transactional.receipt-read")
+884:         throw new TransactionalHarnessError("unsupported private transaction action");
+885:       const input = execution.input as Record<string, unknown>;
+886:       if (
+887:         !input ||
+888:         typeof input !== "object" ||
+889:         Object.keys(input).some((k) => !["binding", "method"].includes(k)) ||
+890:         typeof input.binding !== "string" ||
+891:         !["GET", "HEAD"].includes(String(input.method))
+892:       )
+893:         throw new TransactionalHarnessError("invalid private receipt input");
+894:       const { source, target, active, validate } = transactional.resolve(
+895:         input.binding,
+896:         bindings.get(input.binding),
+897:       );
+898:       const original = options.exactExecution;
+899:       if (!original) throw new TransactionalHarnessError("exact transport required");
+900:       const mode = snapshotExactHttpMode({
+901:         ...original.configuration,
+902:         routes: [{ method: input.method as "GET" | "HEAD", url: target }],
+903:         resolveCredentials: active.resolveCredentials,
+904:       });
+905:       const { resolveCredentials: _resolver, ...configuration } = mode;
+906:       const raw = createRawHttpExchangeExecutor(active.dialRoute, {
+907:         exactMode: mode,
+908:         maximumHeaderBytes: active.binding.responseLimits.headerBytes,
+909:         maximumBodyBytes: active.binding.responseLimits.bodyBytes,
+910:         requestTimeoutMs: Math.min(timeoutMs, 5000),
+911:       });
+912:       const exactExecution: ExactScenarioExecution = {
+913:         configuration,
+914:         execute: (request) =>
+915:           active.register(
+916:             raw({ ...request, signal: AbortSignal.any([request.signal, active.signal]) }),
+917:           ),
+918:       };
+919:       let projection: JsonValue | undefined;
+920: 
+921:       await runRequest(
+922:         {
+923:           id: action.id,
+924:           method: input.method as "GET" | "HEAD",
+925:           target: { binding: input.binding },
+926:           credentialRef: source.credentialRef,
+927:           raw: { headerLines: [] },
+928:           captures: [],
+929:           assertions: [
+930:             { id: "actual-status", kind: "status", equals: 200 },
+931:             { id: "actual-request", kind: "request-authored-headers" },
+932:             { id: "actual-body", kind: "request-authored-body" },
+933:           ],
+934:         },
+935:         bindings,
+936:         exchanges,
+937:         execute,
+938:         schemaValidator,
+939:         fixture,
+940:         scope,
+941:         runProfile,
+942:         execution.signal,
+943:         timeoutMs,
+944:         settlement,
+945:         priorResponses,
+
+## packages/conformance/src/runner.ts:1374–1384
+1374:     response: {
+1375:       url: redactUrl(response.url),
+1376:       status: response.status,
+1377:       headers: redactHeaders(responseHeaders, reportVersion),
+1378:       decodedBodyBytes: new TextEncoder().encode(response.bodyText).byteLength,
+1379:       ...(response.bodyOctets === undefined ? {} : { wireBodyOctets: response.bodyOctets }),
+1380:       bodyKind: bodyObservation.kind,
+1381:     },
+1382:   };
+1383:   exchanges[exchanges.length - 1] = next;
+1384:   if (bodyObservation.kind === "unrepresentable-json") {
+
+## packages/conformance/src/runner.ts:1790–1811
+1790: function projectExactObservation(
+1791:   observed: ExactRequestObservation,
+1792:   body: Uint8Array | undefined,
+1793:   options: ScenarioRunOptions,
+1794: ): ExactReportObservation {
+1795:   const headerLines = observed.headerLines
+1796:     .filter(({ name }) => EXACT_REPORT_HEADER_NAMES.has(name.toLowerCase()))
+1797:     .map(({ name }) => ({ name, value: "<redacted>" as const }));
+1798:   return {
+1799:     source: observed.source,
+1800:     writeState: observed.writeState,
+1801:     headerProjection: "allowlisted-relative-order",
+1802:     headerLines,
+1803:     elidedHeaderLines: observed.headerLines.length - headerLines.length,
+1804:     bodyPresent: observed.bodyPresent,
+1805:     bodyOctets: observed.bodyOctets,
+1806:     ...(options.exactExecution?.approvedSyntheticManifestDigest ===
+1807:       options.artifactBundle.digests.manifestDigest &&
+1808:     body !== undefined &&
+1809:     observed.bodyPresent &&
+1810:     observed.bodyOctets === body.byteLength &&
+1811:     observed.bodyDigest === createHash("sha256").update(body).digest("hex")
+
+## packages/conformance/src/runner.ts:3303–3318
+3303: 
+3304: const EXACT_REPORT_HEADER_NAMES = new Set([...REPORT_HEADER_NAMES, "idempotency-key"]);
+3305: 
+3306: function redactHeaders(
+3307:   headers: Readonly<Record<string, string>>,
+3308:   version: 3 | 4 = 3,
+3309: ): Readonly<Record<string, string>> {
+3310:   return Object.fromEntries(
+3311:     Object.keys(headers)
+3312:       .map((name) => name.toLowerCase())
+3313:       .filter((name) => (version === 4 ? EXACT_REPORT_HEADER_NAMES : REPORT_HEADER_NAMES).has(name))
+3314:       .map((name) => [name, "<redacted>"] as const)
+3315:       .sort(([left], [right]) => compareKeys(left, right)),
+3316:   );
+3317: }
+3318: 
+
+## packages/conformance/src/transactional-observation.ts:16–57
+16: export interface TransactionalSessionBinding {
+17:   readonly scenario: string;
+18:   readonly generation: number;
+19:   readonly listenUrl: string;
+20:   readonly runtimeConfigurationIdentity: string;
+21:   readonly configurationDigest: string;
+22:   readonly responseLimits: Readonly<{ headerBytes: 65536; bodyBytes: 1048576; wireBytes: 2097152 }>;
+23: }
+24: export interface TransactionalSession {
+25:   readonly binding: TransactionalSessionBinding;
+26:   readonly dialRoute: RawHttpDialRoute;
+27:   readonly signal: AbortSignal;
+28:   readonly resolveCredentials: ExactHttpModeOptions["resolveCredentials"];
+29:   /** Registers with the same session pending set drained before close/reopen. */
+30:   register<T>(operation: Promise<T>): Promise<T>;
+31: }
+32: export interface TransactionalRunContext {
+33:   current(scenario: string): TransactionalSession;
+34:   reopen(scenario: string, signal: AbortSignal): Promise<void>;
+35: }
+36: interface ReceiptObservationSource {
+37:   readonly action: string;
+38:   readonly receipt: string;
+39:   readonly responseDigest: string;
+40:   readonly credentialRef: string;
+41:   readonly session: TransactionalSessionBinding;
+42: }
+43: /** Old root references retain their exact shape; a page records its own target. */
+44: export type ReceiptObservationReference = ReceiptObservationSource &
+45:   ({ readonly pointer: "/id" } | { readonly pointer: "/next"; readonly page: string });
+46: export interface TransactionalExchangeFields {
+47:   readonly dynamicExactConfiguration?: ExactHttpConfiguration;
+48:   readonly dynamicExactConfigurationDigest?: string;
+49:   readonly sourceReceiptObservation?: ReceiptObservationReference;
+50:   readonly servedSession?: TransactionalSessionBinding;
+51: }
+52: export const TRANSACTIONAL_EXCHANGE_FIELDS = [
+53:   "dynamicExactConfiguration",
+54:   "dynamicExactConfigurationDigest",
+55:   "sourceReceiptObservation",
+56:   "servedSession",
+57: ] as const;
