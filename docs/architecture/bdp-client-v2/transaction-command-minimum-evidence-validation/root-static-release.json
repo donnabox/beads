@@ -1,0 +1,33 @@
+{
+  "at": "2026-10-15T07:02:09.614296+00:00",
+  "accepted": true,
+  "source": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-command-minimum-evidence-draft/event-final/source-binding.json",
+    "sha256": "ecc0ceea2ca3eed4f8acf2638dacc315b0c63235f7c266b2689f71dcc0962d47"
+  },
+  "council": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-command-minimum-evidence-draft/root-final-council-acceptance.json",
+    "sha256": "b8e7217fd18074a4c537b58e26e2fc42b583d7d030a9bf99181a18baf6c47c0f"
+  },
+  "preparation": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-command-minimum-evidence-validation/root-event-rebind-review.json",
+    "sha256": "23b3aa7836c0954991c16022dfaeb0c233303206d80ec2be7eec4e21dd4ee070"
+  },
+  "approvedCommandIds": [
+    "offline-setup",
+    "typecheck",
+    "build",
+    "format-check",
+    "lint",
+    "boundaries",
+    "read-seal",
+    "static-cases",
+    "build-inventory"
+  ],
+  "rules": [
+    "Sequential bounded commands only; inspect each outcome before dependent work.",
+    "No retry/limit increase/source change automatically on failure.",
+    "Package and installed stages remain closed until actual static results and ordinary commit."
+  ],
+  "installedCredit": false
+}
