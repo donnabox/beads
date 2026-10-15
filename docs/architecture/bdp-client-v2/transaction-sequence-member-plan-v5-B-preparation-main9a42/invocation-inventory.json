@@ -1,0 +1,182 @@
+{
+  "classification": "static expanded observe invocations, not runtime totals or whole test-file case count",
+  "rows": [
+    {
+      "group": "ordinary full positive",
+      "expandedInvocations": 1,
+      "mutated": 0,
+      "unchanged": 1,
+      "sourceLines": "353",
+      "historicalV5SourceLines": "340"
+    },
+    {
+      "group": "ready attestation mismatches",
+      "expandedInvocations": 5,
+      "mutated": 0,
+      "unchanged": 5,
+      "sourceLines": "603-628",
+      "historicalV5SourceLines": "590-615"
+    },
+    {
+      "group": "receipt reference controls",
+      "expandedInvocations": 4,
+      "mutated": 4,
+      "unchanged": 0,
+      "sourceLines": "638-682",
+      "historicalV5SourceLines": "625-669"
+    },
+    {
+      "group": "ordinary resource capture",
+      "expandedInvocations": 1,
+      "mutated": 1,
+      "unchanged": 0,
+      "sourceLines": "838-850",
+      "historicalV5SourceLines": "825-837"
+    },
+    {
+      "group": "illegal receipt from resource",
+      "expandedInvocations": 1,
+      "mutated": 1,
+      "unchanged": 0,
+      "sourceLines": "852-886",
+      "historicalV5SourceLines": "839-873"
+    },
+    {
+      "group": "budget abort",
+      "expandedInvocations": 1,
+      "mutated": 0,
+      "unchanged": 1,
+      "sourceLines": "888-925",
+      "historicalV5SourceLines": "875-911"
+    },
+    {
+      "group": "preaborted",
+      "expandedInvocations": 1,
+      "mutated": 0,
+      "unchanged": 1,
+      "sourceLines": "927-933",
+      "historicalV5SourceLines": "913-919"
+    },
+    {
+      "group": "duplicate receipt binding",
+      "expandedInvocations": 1,
+      "mutated": 1,
+      "unchanged": 0,
+      "sourceLines": "964-979",
+      "historicalV5SourceLines": "950-965"
+    },
+    {
+      "group": "global receipt denial",
+      "expandedInvocations": 1,
+      "mutated": 0,
+      "unchanged": 1,
+      "sourceLines": "980-996",
+      "historicalV5SourceLines": "966-982"
+    },
+    {
+      "group": "abort plus cleanup failure",
+      "expandedInvocations": 1,
+      "mutated": 0,
+      "unchanged": 1,
+      "sourceLines": "998-1024",
+      "historicalV5SourceLines": "984-1010"
+    },
+    {
+      "group": "set expectation controls",
+      "expandedInvocations": 4,
+      "mutated": 4,
+      "unchanged": 0,
+      "sourceLines": "1026-1063",
+      "historicalV5SourceLines": "1012-1049"
+    },
+    {
+      "group": "crosswired set receipt",
+      "expandedInvocations": 1,
+      "mutated": 1,
+      "unchanged": 0,
+      "sourceLines": "1065-1095",
+      "historicalV5SourceLines": "1051-1081"
+    },
+    {
+      "group": "omitted route",
+      "expandedInvocations": 2,
+      "mutated": 0,
+      "unchanged": 2,
+      "sourceLines": "1097-1120",
+      "historicalV5SourceLines": "1083-1106"
+    },
+    {
+      "group": "set receipt denial",
+      "expandedInvocations": 2,
+      "mutated": 0,
+      "unchanged": 2,
+      "sourceLines": "1122-1142",
+      "historicalV5SourceLines": "1108-1128"
+    },
+    {
+      "group": "set/zero expectation table",
+      "expandedInvocations": 7,
+      "mutated": 7,
+      "unchanged": 0,
+      "sourceLines": "1144-1215",
+      "historicalV5SourceLines": "1130-1201"
+    },
+    {
+      "group": "pagination table",
+      "expandedInvocations": 6,
+      "mutated": 6,
+      "unchanged": 0,
+      "sourceLines": "1218-1250",
+      "historicalV5SourceLines": "1204-1236"
+    },
+    {
+      "group": "conflict table",
+      "expandedInvocations": 5,
+      "mutated": 5,
+      "unchanged": 0,
+      "sourceLines": "1253-1318",
+      "historicalV5SourceLines": "1239-1304"
+    },
+    {
+      "group": "no-op controls",
+      "expandedInvocations": 3,
+      "mutated": 3,
+      "unchanged": 0,
+      "sourceLines": "1408-1489",
+      "historicalV5SourceLines": "1394-1475"
+    },
+    {
+      "group": "deletion controls",
+      "expandedInvocations": 3,
+      "mutated": 3,
+      "unchanged": 0,
+      "sourceLines": "1740-1826",
+      "historicalV5SourceLines": "1726-1812"
+    },
+    {
+      "group": "cross-carrier controls",
+      "expandedInvocations": 2,
+      "mutated": 2,
+      "unchanged": 0,
+      "sourceLines": "2151-2223",
+      "historicalV5SourceLines": "2137-2209"
+    },
+    {
+      "group": "selected minimum controls",
+      "expandedInvocations": 2,
+      "mutated": 2,
+      "unchanged": 0,
+      "sourceLines": "2736-2810",
+      "historicalV5SourceLines": "2722-2796"
+    }
+  ],
+  "total": 54,
+  "mutated": 40,
+  "unchanged": 14,
+  "newExpected": 55,
+  "newMutated": 41,
+  "newUnchanged": 14,
+  "excluded": "Non-observe permission/startup/IPC cases, static callbacks, other files and classifier exchange. Pre-aborted and rejected-before-preparation callbacks launch no child.",
+  "currentBase": "9a42a4531def99e12fa9a1fba02e70558d643265",
+  "reanchorReason": "Only existing abort helper/caller changed; no added observe invocation/row/child branch. Counts remain source models, not new executions."
+}

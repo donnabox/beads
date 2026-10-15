@@ -1,0 +1,13 @@
+--- positive/node_modules/.pnpm/@bdp+server@file+..+packages+bdp-server-0.0.0.tgz/node_modules/@bdp/server/dist/resource-evaluator.js
++++ derivative/node_modules/.pnpm/@bdp+server@file+..+packages+bdp-server-0.0.0.tgz/node_modules/@bdp/server/dist/resource-evaluator.js
+@@ -815,10 +815,6 @@
+         fail("forbidden");
+     if (source && sourceAfter && !options.policy.canWrite(source, sourceAfter))
+         fail("forbidden");
+-    if ("expectedRevision" in input &&
+-        input.expectedRevision !== undefined &&
+-        input.expectedRevision !== before?.revision)
+-        fail("revision-mismatch");
+     if (deleting && resourceKind === "bead" && tx.incidentLinks(id).length)
+         fail("incident-links-exist");
+     if ("propertiesChange" in input || "metadataChange" in input) {

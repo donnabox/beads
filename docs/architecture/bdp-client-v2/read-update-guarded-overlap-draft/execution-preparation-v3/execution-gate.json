@@ -1,0 +1,122 @@
+{
+  "released": true,
+  "session": "2026-10-08T20:26:35Z-81e5",
+  "approvedCommandIds": [
+    "offline-setup",
+    "typecheck",
+    "build",
+    "format-check",
+    "lint",
+    "boundaries",
+    "read-seal",
+    "build-inventory",
+    "node-version",
+    "package-directory",
+    "pack-protocol",
+    "pack-server",
+    "verify-tar",
+    "prepare-consumer",
+    "consumer-install",
+    "verify-installed",
+    "positive",
+    "positive-review",
+    "prepare-derivative",
+    "derivative-payload",
+    "negative",
+    "negative-review"
+  ],
+  "mergedParent": "9a42a4531def99e12fa9a1fba02e70558d643265",
+  "finalHead": "be0cc70d8a3174760c4877e8969728dbdec4ead5",
+  "finalTree": "93b2ea89d6db05512d4c0bc5bb3cf6083560e8da",
+  "node": "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+  "pnpm": "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+  "sourceLockSha256": "4150d8821c96dbc2cfec0b2762ff76b58318079f65fa4f5c8858ef2dd61f8d6d",
+  "consumerLockSha256": "bb4ee62d7d037237784d13af711eae2cfd3ba43362edd8798967b75efd98e4e6",
+  "reviewedRuHashes": {
+    "scripts/installed-reference-observation.mjs": "ca897f4a7659969df123037b5847d5765b357d9b8e1652f367bb204450db6278",
+    "packages/server/src/installed-reference.ts": "c311a724d5d81710264b443da6800e960f49402f10383889de59714949b9eec7",
+    "packages/server/src/installed-reference-process.ts": "149f98c04e096a9eab9a291bd4aac3f7db34ba57578e63cb4439e0e3e24fc654",
+    "packages/server/src/development-runtime.ts": "37e222682645e9d8f2d5fcf62de208640fb6216c9e9f2f279ab6017e8b9d6ca9",
+    "packages/server/src/development-composition.ts": "a7113a8a3164dc6f4b1f6b5bdcbf74cee811e5b8a0474d241ac30706997ee54f",
+    "packages/server/src/member-executor.ts": "cfce8e561f9315948c6b3b3def25893a7dfde78e2cc338fa142b859ae209771f",
+    "packages/server/src/resource-evaluator.ts": "89606787e455f4ed555b807d91c5331a376431807a9a581de1f94e538fcab4ff",
+    "packages/server/src/recovery-store.ts": "48b7901e48998fe29598168a527213ebfb49e1d6e5dc5c2eb6494c862b5de9f9",
+    "packages/protocol/src/index.ts": "92e547e807ec2d23223c47dbc4e04867d55db89ac9aab5fbd55f33349f92bdc6",
+    "docs/specs/bdp.md": "f036103ffdf5f89fa3a2033570e1e987c4cd203cd80b1c633cb44615123f892e",
+    "apps/bdptest/src/development-matrix.test.ts": "858e6f85bf40bde4327df52e34a2aceab235b8130e7539a816651ce19f71e1ac",
+    "packages/server/src/read-http-routing.ts": "d9344b87838f8c71381ccf9efe28b4f023df45503570beb8fb4293d553caca42",
+    "packages/server/src/read-request.ts": "57675afc647df3e8ad1f26a40aef72584aa388ade6af4a465e3ffef16670f6a2",
+    "packages/server/src/development-authority.ts": "d49f89da345234f7eaee83dd872a5c2d7a1a8d38ffc794e5e69d333976d22d49",
+    "packages/server/src/authority-read.ts": "fd6554c4ee0d08b997fb3622c2f21697f02d58b838f4ae0de10aca4707f67734",
+    "packages/protocol/src/read-values.ts": "6ff2cd2456a5487ded968bac6651164ed4a82ad665b8896986accfd662688482",
+    "packages/protocol/src/read-update-values.ts": "d1fdbc660d5e2c009275c152bdcebda46031700920aa03bfea89f39564c89de2",
+    "packages/protocol/src/read-update-problems.ts": "1a6315705b72fad1f1a287053c17858130c91317ed08c95f6d68a1ecc620a211",
+    "packages/protocol/src/json-values.ts": "9a1cd0b12ccd41913e2874673fdb2a24ae7925d7e4e880f50cecc717dadec591",
+    "packages/protocol/schemas/bdp-v0.schema.json": "0baa5d5ef67144f8e6513b4cde31168effc8df6d52ef3141b0f144b87f8dc227",
+    ".github/workflows/ci.yml": "fd0a08da61f74abe19c8db16d879bfff85d8090643bf4da326d3e597ae129be3"
+  },
+  "preparationSha256": {
+    "gate.py": "8654bdf02f6c7777601164cc3e6725b7efb024cf4c3cc27f969ac7a8c733a0d9",
+    "supervise.py": "6a67e588e01e319467ddc82fd2e84a2ae99441948dff1997f50dcaed65c94c4c",
+    "packages.py": "29d90c563efc6a072f0cbdb9ada74547afdb76153cedfa9635f063bbf503cc48",
+    "derivative.py": "77c3fc32cba5826614a7fcf7e9e6f87161d8ec9e8cac329ae18364bfad9394c2",
+    "derivative-payload.mjs": "6d6d0e999b8507835a411d25da60fee6cdb61a4ba56effaf3b7e6179ecdc46b4",
+    "review.py": "2cdbc04ed6a75b4e133e869bb5b9de390868b77f47b1b0976c08b04da5444117",
+    "inventory.py": "0fa979cd18f043396214787e20168c9c60df0af33a029a56daec8383eb680cdc",
+    "commands.json": "450c609ddfe4943b39fbad8883d1b91e9ef606688ae9e3116f496e388f826f47"
+  },
+  "expectedProductionVersions": {
+    "@bdp/protocol": "0.0.0",
+    "@bdp/server": "0.0.0",
+    "ajv": "8.17.1",
+    "ajv-formats": "3.0.1",
+    "fast-deep-equal": "3.1.3",
+    "fast-uri": "3.1.5",
+    "json-schema-traverse": "1.0.0",
+    "require-from-string": "2.0.2"
+  },
+  "rootAcceptance": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/read-update-guarded-overlap-draft/execution-preparation-v3/root-positive-release.json",
+    "sha256": "f79e1f0c8f7b666b41feab9ec602ae978d65460454b5334a465c1c47e4f1df1c"
+  },
+  "reanchorAcceptance": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/read-update-guarded-overlap-draft/execution-preparation-v3/root-reanchor-acceptance.json",
+    "sha256": "8223a52c971f18639eba70ae3d57e7e3e1f1fc7512527e80cf7994fae5b85b8e"
+  },
+  "sourceCouncil": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/read-update-guarded-overlap-draft/execution-preparation-v3/root-final-council.json",
+    "sha256": "a7efb23e528ed42e93f1358bc65633ff57065700770c9d1ae62d999724b0a6a7"
+  },
+  "sourceBinding": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/read-update-guarded-overlap-draft/lint-repair/source-binding.json",
+    "sha256": "792d7e813bc153a7bcf1d7bf4c5750522644873c831d8812b42301702b512f6e"
+  },
+  "finalSource": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/read-update-guarded-overlap-draft/execution-preparation-v3/final-source.json",
+    "sha256": "f2abae48356522650949f5627032a7d79cb84ee1ccf45c2bb9313cc9accc1761"
+  },
+  "buildOutputInventory": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/read-update-guarded-overlap-draft/execution-preparation-v3/run/build-output-inventory.json",
+    "sha256": "0433c78fb3e73696cbd478e4b8828db048858f6e0f5626307bb3982e441f4bed"
+  },
+  "installedProvenance": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/read-update-guarded-overlap-draft/execution-preparation-v3/run/installed-provenance.json",
+    "sha256": "a9a879a165f1d41d5a457c3218667147402c92565ba7585f74364739e161352f"
+  },
+  "positiveAcceptance": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/read-update-guarded-overlap-draft/execution-preparation-v3/root-positive-acceptance.json",
+    "sha256": "7b8b7946b80bec114e6f0eefa6e3ef68547585130ab0ac027b5394e50c8c7ba4"
+  },
+  "derivativeAcceptance": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/read-update-guarded-overlap-draft/execution-preparation-v3/root-derivative-acceptance.json",
+    "sha256": "92e7990a1ccd7d3a5518d89eb38ef093bad9553bbe9782a52b3f50cf3123b457"
+  },
+  "derivativeBinding": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/read-update-guarded-overlap-draft/execution-preparation-v3/run/derivative-binding.json",
+    "sha256": "fd646bed61591a89801175d53b1d79a95e1e760a19d87fc795ec66763b689f9a"
+  },
+  "derivativePayload": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/read-update-guarded-overlap-draft/execution-preparation-v3/run/derivative-payload.json",
+    "sha256": "1613807915a18785e231fd041c18603045d0502189a3be45f061d8061369365e"
+  }
+}

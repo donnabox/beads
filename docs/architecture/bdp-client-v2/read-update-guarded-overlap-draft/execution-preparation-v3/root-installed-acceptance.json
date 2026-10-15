@@ -1,0 +1,245 @@
+{
+  "accepted": true,
+  "head": "be0cc70d8a3174760c4877e8969728dbdec4ead5",
+  "tree": "93b2ea89d6db05512d4c0bc5bb3cf6083560e8da",
+  "sourceCouncil": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/read-update-guarded-overlap-draft/execution-preparation-v3/root-final-council.json",
+    "sha256": "a7efb23e528ed42e93f1358bc65633ff57065700770c9d1ae62d999724b0a6a7"
+  },
+  "sourceBinding": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/read-update-guarded-overlap-draft/lint-repair/source-binding.json",
+    "sha256": "792d7e813bc153a7bcf1d7bf4c5750522644873c831d8812b42301702b512f6e"
+  },
+  "positiveAcceptance": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/read-update-guarded-overlap-draft/execution-preparation-v3/root-positive-acceptance.json",
+    "sha256": "7b8b7946b80bec114e6f0eefa6e3ef68547585130ab0ac027b5394e50c8c7ba4"
+  },
+  "derivativeAcceptance": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/read-update-guarded-overlap-draft/execution-preparation-v3/root-derivative-acceptance.json",
+    "sha256": "92e7990a1ccd7d3a5518d89eb38ef093bad9553bbe9782a52b3f50cf3123b457"
+  },
+  "positive": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/read-update-guarded-overlap-draft/execution-preparation-v3/run/positive-observation.json",
+    "sha256": "b770e1039e59cf59cbaed8ce680a193a7fb99a2841b369be87f349c2de76c5ca"
+  },
+  "negative": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/read-update-guarded-overlap-draft/execution-preparation-v3/run/negative-observation.json",
+    "sha256": "0d48eb936237a99f3b56263c81b340ea1d9165c5d5ecc020dec502bca9a4c582"
+  },
+  "negativeRawFailure": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/read-update-guarded-overlap-draft/execution-preparation-v3/run/negative.json",
+    "sha256": "e79943dc1845ac5394d04741fcfa597320afee8514d27a3cc16dd489012c849b"
+  },
+  "negativeAdjudication": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/read-update-guarded-overlap-draft/execution-preparation-v3/run/negative-review.json",
+    "sha256": "ca321703b3ee7f8c97bb74e6ede5bd05baea2ca95c58684f8a414d8b4e6558bf"
+  },
+  "stages": [
+    {
+      "stage": "offline-setup",
+      "exit": 0,
+      "seconds": 0.7239708751440048,
+      "record": {
+        "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/read-update-guarded-overlap-draft/execution-preparation-v3/run/offline-setup.exit.json",
+        "sha256": "2bd120749915a4334b7da3069efe5ff3b185d356ffb31130d67cb147fe147454"
+      }
+    },
+    {
+      "stage": "typecheck",
+      "exit": 0,
+      "seconds": 1.3344834160525352,
+      "record": {
+        "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/read-update-guarded-overlap-draft/execution-preparation-v3/run/typecheck.exit.json",
+        "sha256": "590b7ee56b9a10e8b86de4a594345111bd7bc52ddb3fddcd4ce763a5d21b55dd"
+      }
+    },
+    {
+      "stage": "build",
+      "exit": 0,
+      "seconds": 1.4507339999545366,
+      "record": {
+        "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/read-update-guarded-overlap-draft/execution-preparation-v3/run/build.exit.json",
+        "sha256": "e438b3e0186dea60af277420372cf9ae4a56e925edf1655affc2162c9ace03cf"
+      }
+    },
+    {
+      "stage": "format-check",
+      "exit": 0,
+      "seconds": 0.7574423339683563,
+      "record": {
+        "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/read-update-guarded-overlap-draft/execution-preparation-v3/run/format-check.exit.json",
+        "sha256": "dd5fed21bf5a998c53391afdcec1edb14fd0c25b627cddf5e04a4822bbf5898b"
+      }
+    },
+    {
+      "stage": "lint",
+      "exit": 0,
+      "seconds": 0.9489277908578515,
+      "record": {
+        "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/read-update-guarded-overlap-draft/execution-preparation-v3/run/lint.exit.json",
+        "sha256": "2a785023c7dbf238bd6c0398a8efe0a0ae73af4ed1e4f55cd3ccf752a1be88c5"
+      }
+    },
+    {
+      "stage": "boundaries",
+      "exit": 0,
+      "seconds": 1.1048042080365121,
+      "record": {
+        "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/read-update-guarded-overlap-draft/execution-preparation-v3/run/boundaries.exit.json",
+        "sha256": "f2be690d2053fefae55dc406ed60f5ce763b29200574589918641d9cf441a55c"
+      }
+    },
+    {
+      "stage": "read-seal",
+      "exit": 0,
+      "seconds": 0.8405941659584641,
+      "record": {
+        "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/read-update-guarded-overlap-draft/execution-preparation-v3/run/read-seal.exit.json",
+        "sha256": "d1613464ca41e192b2798e73336e4b9d67c3dfd8e1b2d6c0e774991af81b4d17"
+      }
+    },
+    {
+      "stage": "build-inventory",
+      "exit": 0,
+      "seconds": 0.6352265411987901,
+      "record": {
+        "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/read-update-guarded-overlap-draft/execution-preparation-v3/run/build-inventory.exit.json",
+        "sha256": "a4d6b118c15134593c0f001370f3a1910623ac48c87177e8a74c8c9946010fc9"
+      }
+    },
+    {
+      "stage": "node-version",
+      "exit": 0,
+      "seconds": 0.5346855001989752,
+      "record": {
+        "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/read-update-guarded-overlap-draft/execution-preparation-v3/run/node-version.exit.json",
+        "sha256": "9a18497fa394797ade36acc7b5e7971bb9f1352f8c1e28449ab3b4988ca3c276"
+      }
+    },
+    {
+      "stage": "package-directory",
+      "exit": 0,
+      "seconds": 0.5983873328659683,
+      "record": {
+        "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/read-update-guarded-overlap-draft/execution-preparation-v3/run/package-directory.exit.json",
+        "sha256": "bfec0d01b160db9b752f9e656861ea14da52d2cd6df2922c25a93bb5d0449919"
+      }
+    },
+    {
+      "stage": "pack-protocol",
+      "exit": 0,
+      "seconds": 0.7175721249077469,
+      "record": {
+        "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/read-update-guarded-overlap-draft/execution-preparation-v3/run/pack-protocol.exit.json",
+        "sha256": "094b86bf14aaab348353b00cdf14d1bb5117b4c37db77da2dfda4467b6db0eac"
+      }
+    },
+    {
+      "stage": "pack-server",
+      "exit": 0,
+      "seconds": 0.8204946250189096,
+      "record": {
+        "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/read-update-guarded-overlap-draft/execution-preparation-v3/run/pack-server.exit.json",
+        "sha256": "9928831caa3f04595cf5f608553ea22eda08ac63b568056cb689800992eefc28"
+      }
+    },
+    {
+      "stage": "verify-tar",
+      "exit": 0,
+      "seconds": 0.6089491248130798,
+      "record": {
+        "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/read-update-guarded-overlap-draft/execution-preparation-v3/run/verify-tar.exit.json",
+        "sha256": "b2c18bb4db0867012c62a376faa0e744f728f4e6160ca54c452d38763a3d0d6d"
+      }
+    },
+    {
+      "stage": "prepare-consumer",
+      "exit": 0,
+      "seconds": 0.6262852500658482,
+      "record": {
+        "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/read-update-guarded-overlap-draft/execution-preparation-v3/run/prepare-consumer.exit.json",
+        "sha256": "0888c6e46b73feb35bfd32e89ccc3c02bdf098d1ad9dd1043ad65981fb631e2a"
+      }
+    },
+    {
+      "stage": "consumer-install",
+      "exit": 0,
+      "seconds": 0.930269000120461,
+      "record": {
+        "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/read-update-guarded-overlap-draft/execution-preparation-v3/run/consumer-install.exit.json",
+        "sha256": "6dd070c74dde7c86280000f78696241ae79b15be82cac4f64cdce813efa8eb89"
+      }
+    },
+    {
+      "stage": "verify-installed",
+      "exit": 0,
+      "seconds": 0.7132200000341982,
+      "record": {
+        "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/read-update-guarded-overlap-draft/execution-preparation-v3/run/verify-installed.exit.json",
+        "sha256": "e12711cbff755cc47cdd926c48e431ca7a38a52e08c9c3c6858244eadb3c7a90"
+      }
+    },
+    {
+      "stage": "positive",
+      "exit": 0,
+      "seconds": 1.0957573340274394,
+      "record": {
+        "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/read-update-guarded-overlap-draft/execution-preparation-v3/run/positive.exit.json",
+        "sha256": "f05738b6b31866d2b13c5041f0bc1df6eddbe0b1d6acd7b8f76da7087193f662"
+      }
+    },
+    {
+      "stage": "positive-review",
+      "exit": 0,
+      "seconds": 0.5195952909998596,
+      "record": {
+        "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/read-update-guarded-overlap-draft/execution-preparation-v3/run/positive-review.exit.json",
+        "sha256": "3115054e4a92a47df3a01dd93be1720b25e675b982ff45d3de7ff3a06150569e"
+      }
+    },
+    {
+      "stage": "prepare-derivative",
+      "exit": 0,
+      "seconds": 0.8175663750153035,
+      "record": {
+        "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/read-update-guarded-overlap-draft/execution-preparation-v3/run/prepare-derivative.exit.json",
+        "sha256": "09f7c328ffdb02c822e4a11cb5a6a0e1edd086b867aac3f301d450169eaf8d51"
+      }
+    },
+    {
+      "stage": "derivative-payload",
+      "exit": 0,
+      "seconds": 0.5298505001701415,
+      "record": {
+        "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/read-update-guarded-overlap-draft/execution-preparation-v3/run/derivative-payload.exit.json",
+        "sha256": "c60a1351ad62a1e37f6285b22f43e87aafd0b85720af1ca662b7c88e5d73f3bd"
+      }
+    },
+    {
+      "stage": "negative",
+      "exit": 1,
+      "seconds": 0.9995203330181539,
+      "record": {
+        "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/read-update-guarded-overlap-draft/execution-preparation-v3/run/negative.exit.json",
+        "sha256": "10eb9938f7984ce4d8e3db8a28415f594f8edc71412c37b10fe7e71199d9d8db"
+      }
+    },
+    {
+      "stage": "negative-review",
+      "exit": 0,
+      "seconds": 0.6218793750740588,
+      "record": {
+        "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/read-update-guarded-overlap-draft/execution-preparation-v3/run/negative-review.exit.json",
+        "sha256": "ce3d3c6d3ebe4cbc400502ddc781403fcfa499a4d7f814adc550d9e6a7a98ac1"
+      }
+    }
+  ],
+  "childPidsIndependentlyAbsent": [
+    41096,
+    41649
+  ],
+  "http": 16,
+  "productChildren": 2,
+  "rootRead": "Allactual response records and rawsinglefailure inspected. Positiveone200/one409 with retainedsame-key outcomes and stablepointread; emittedguardremoval produces twoschema-valid200 thenexactlyone overlap:exactly-one-winner assertionfailure after6responses. No deadlines/transport/schema/cleanup substitutes. Bothchildnormalexit0/storegone.",
+  "limitations": "Private installed behavioral evidence, not cumulativequalification/fairness/simultaneousadmission/sourceattestation. Losingreplay equality does not alone prove nonreevaluation. Originalfailedlint untouched."
+}

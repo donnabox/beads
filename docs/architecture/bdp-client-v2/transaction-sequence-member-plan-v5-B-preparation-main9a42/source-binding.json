@@ -1,0 +1,230 @@
+{
+  "status": "PREPARATION_ONLY_NO_INVOCATION_GATE",
+  "workspace": "/Users/dbox/repos/wt/vickie/vickie-changefeed-parameter-context",
+  "readMode": "git show committed object only; working-tree edits deliberately excluded",
+  "head": "9a42a4531def99e12fa9a1fba02e70558d643265",
+  "tree": "a9cca0e1e5c52ac8bbd06ce989a94ca6e4f2b272",
+  "parentForReview": "9a42a4531def99e12fa9a1fba02e70558d643265",
+  "postParameterAuthoringParent": null,
+  "ownedFiles": {
+    "packages/conformance/test-support/transactional/manifest-v1.json": {
+      "sha256": "29729151cf6da641545910ec3880f9609c13b319af7bbe99d3d2ad47833dab96",
+      "bytes": 738624,
+      "equalsV5": true
+    },
+    "packages/conformance/test-support/transactional/coverage-v1.json": {
+      "sha256": "4619813e9446e0e714a64c11eac184531950f57720e32c7ef414c7e3342121af",
+      "bytes": 108139,
+      "equalsV5": true
+    },
+    "packages/conformance/src/transactional-cumulative.test.ts": {
+      "sha256": "22a568820ab2abc187d37c27658fdcf6e5ad39e74e2172374e3658c180f7668e",
+      "bytes": 101554,
+      "equalsV5": true
+    },
+    "apps/bdptest/src/transactional-matrix.test.ts": {
+      "sha256": "6c0c240afef61831d0573775ea35b0c04b116a55da1d3fb40127b9ede68e939c",
+      "bytes": 111388,
+      "equalsV5": false
+    }
+  },
+  "contextFiles": {
+    "apps/bdptest/src/transactional-matrix.test.ts": {
+      "sha256": "6c0c240afef61831d0573775ea35b0c04b116a55da1d3fb40127b9ede68e939c",
+      "bytes": 111388,
+      "ranges": [
+        [
+          98,
+          351
+        ],
+        [
+          353,
+          381
+        ],
+        [
+          573,
+          628
+        ],
+        [
+          638,
+          658
+        ],
+        [
+          838,
+          866
+        ],
+        [
+          888,
+          934
+        ],
+        [
+          964,
+          1024
+        ],
+        [
+          1026,
+          1044
+        ],
+        [
+          1065,
+          1079
+        ],
+        [
+          1097,
+          1142
+        ],
+        [
+          1144,
+          1199
+        ],
+        [
+          1218,
+          1232
+        ],
+        [
+          1253,
+          1280
+        ],
+        [
+          1408,
+          1421
+        ],
+        [
+          1491,
+          1499
+        ],
+        [
+          1607,
+          1619
+        ],
+        [
+          1693,
+          1738
+        ],
+        [
+          1740,
+          1757
+        ],
+        [
+          1844,
+          1851
+        ],
+        [
+          1911,
+          1983
+        ],
+        [
+          2151,
+          2223
+        ],
+        [
+          2241,
+          2248
+        ],
+        [
+          2323,
+          2370
+        ],
+        [
+          2559,
+          2585
+        ],
+        [
+          2736,
+          2810
+        ]
+      ],
+      "equalsV5": false
+    },
+    "packages/conformance/src/transactional-cumulative.test.ts": {
+      "sha256": "22a568820ab2abc187d37c27658fdcf6e5ad39e74e2172374e3658c180f7668e",
+      "bytes": 101554,
+      "ranges": [
+        [
+          670,
+          710
+        ],
+        [
+          836,
+          958
+        ],
+        [
+          1007,
+          1021
+        ],
+        [
+          2724,
+          2758
+        ]
+      ],
+      "equalsV5": true
+    },
+    "packages/conformance/src/transactional-observation.ts": {
+      "sha256": "603fcc1240e43da3c477f42b8b942141c06c989a48a2a88099fd5d90e283159f",
+      "bytes": 14289,
+      "ranges": [
+        [
+          185,
+          311
+        ]
+      ],
+      "equalsV5": true
+    },
+    "packages/conformance/src/runner.ts": {
+      "sha256": "ac20c7fbfe15a5e42a6559e89cd3467562efe9bc74d462478414414ed3efede1",
+      "bytes": 133683,
+      "ranges": [
+        [
+          625,
+          675
+        ],
+        [
+          1455,
+          1476
+        ]
+      ],
+      "equalsV5": true
+    }
+  },
+  "oldPacket": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-sequence-member-plan-v5-B-preparation",
+  "oldBindingSha256": "c60f0b166bc0cd5dad73e89b8d753f7e47edd7766a180f098ae049f3c4379c7f",
+  "originalPlanSha256": "c058bfbf138e8a45e75c813ddafb846fe5effbcc271d9b7635ac5940e39dca7e",
+  "originalCompanionSha256": "45af1f02af14de13861ae3b4fa0e0e6a713c77696ae393c584f6636398770340",
+  "acceptedA": {
+    "stdoutSha256": "0b5a1ba0b62ba57893865a301f5f841cdeecf748862b71091e15264f77cb2533",
+    "nativeAuditSha256": "79aa548af10b7436b2ca443f76045c4a7f5e408da45eb340a8f6254c67e6bb3e",
+    "rootDispositionSha256": "ebe3688f91ec979e21e79bc52d92776e3d1abde27e021af2c09f8a78154836ef",
+    "all19Dispositioned": true
+  },
+  "previousB": {
+    "status": "INCONCLUSIVE_EMPTY_TIMEOUT_NO_VERDICT",
+    "exit": 143,
+    "elapsedSeconds": 900.9770699169021,
+    "actualExitSha256": "51868c31aadf0cc8dc22a4883dabf955f347affdac60721d54cba0c14171d1a7",
+    "newReviewReleased": false
+  },
+  "rootPostmergeEvidence": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-receipt-missing-context-draft/landing-successor/postmerge-verification.json",
+    "sha256": "e13fc6541528288803bdb93d1639a9e49e01451e49a81c46562b4b371e9f7d66"
+  },
+  "ciOutcome": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-receipt-missing-context-draft/landing-successor/ci-outcome.md",
+    "sha256": "74a00bdabec36bb9efde00d82c567a2032776ef565bf76a3ac9c1295ddd95b38",
+    "suiteSeconds": 769.38,
+    "jobSeconds": 999,
+    "observedMarginSeconds": 201
+  },
+  "proposedLocal": {
+    "cohorts": 4,
+    "expectedHttp": 623,
+    "maxHttp": 632,
+    "children": 71
+  },
+  "staticCallbacks": 8,
+  "promptSha256": "c623e013032374b2513ebda2755ab0638a7ce89ca5e238cf1b5bd1ee40e834e0",
+  "promptBytes": 88129,
+  "sourceContextSha256": "a31a6832da1de54a99d19e8d47f8ce13aca72cf7ab6ce9c18d31c5fab64937ae",
+  "claudeLaunched": false,
+  "productExecution": false,
+  "authoringReleased": false
+}
