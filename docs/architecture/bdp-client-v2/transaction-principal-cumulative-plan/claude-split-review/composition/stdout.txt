@@ -1,0 +1,104 @@
+# Findings — partition: default auth/bootstrap identity, observer composition/registration, 30-object/full-parent preservation, 41 derivatives/fences, selections/controls, source-modeled costs
+
+## A. Proven defects (derivable from the supplied evidence)
+
+**1. MEDIUM-HIGH — successor on-disk file digests are absent from the frozen measurement set.**
+Location: `measurements.json` `canonical` (`diskBytes:825413`, no `diskSha256`) and `coverage` (`diskBytes:124537`, no `diskSha256`), against `parent-preservation.json`, which pins *both* parents at disk granularity (`a11a79f6…`/790009, `346e1eda…`/117702).
+Issue/impact: disk form ≠ normal form here (825413 vs 837765; parent 790009 vs 802361), so the supplied `normalSha256`/`compactSha256` are not substitutes. The selection.json callback "binds the canonical cumulative TX selection and exact source digests without qualification" therefore has no pre-authoring value to bind, and anything computed after authoring violates this plan's own rule "do not validate only against a digest derived from the same candidate."
+Smallest correction: add `diskSha256` for both successor files to `measurements.json`, computed on formatter-canonical bytes before the static callback is authored.
+
+**2. MEDIUM-HIGH — "genuine distinct control binding" is a vacuous oracle.**
+Location: control paragraph ("It changes genuine configuration identity…") + `control.json` and the "Control test requires … genuine distinct control binding" clause, against `transaction-runtime-configuration.ts:226–254/373–402` and `transactional-matrix.test.ts:147–148`.
+Issue/impact: `authenticationIdentity`/`policyIdentity` digest `associations`, whose `tokenDigest` entries derive from five *freshly random* 32B tokens per `observe` invocation. Positive and control bindings are therefore distinct regardless of the collapse; the inequality proves nothing about mapping B's principal to `principal-a`.
+Smallest correction: retarget the oracle to (a) equality of the control's scenario identities to the control's *own* bootstrap (already enforced at `transactional-execution-binding.ts:122–126`, which is what proves the collapsed configuration reached every launch) plus (b) the literal submitted credentials array and the actual B 409 outcome.
+
+**3. MEDIUM-HIGH — the post-finish "key impersonation" rejection is unimplementable where the plan places it.**
+Location: plan lines 39–41: "records only a bounded ordinal and a frozen copy of actual method,url,credentialRef; it copies no raw headers…" vs "reject any later principal-role dispatch/key impersonation."
+Issue/impact: the pre-delegation projection (matrix 279, before `target.target.execute`) is the only hook with `credentialRef` (`http-executor.ts:22–34`) and deliberately holds no headers; the only hook with `idempotency-key` is the post-exchange path via `response.exactRequest.headerLines` (cf. 1944–1947, 2385–2388), which has no `credentialRef` (`runner.ts:1170–1179`). As written, one of the two rejections silently cannot fire.
+Smallest correction: split the obligation explicitly — pre-delegation gate rejects `credentialRef ∈ {principal-a, principal-a-rotated, principal-b}` after finish; `afterExchange` rejects `idempotency-key === "principal-shared"` after finish.
+
+**4. MEDIUM — the frozen performed inventory omits the retained-conflict fact.**
+Location: plan line 49 ("exactly namespace-distinct, the two replay pairs, complete-current, complete-events" … "all seven wire facts must exist; finish verifies counts, order and no unused comparison") vs `requests.json` action 5 `pk-a-conflict` and its 10 coverage IDs.
+Issue/impact: 7 wire facts against 5 inventory items; action 5 is either unverified by the inventory or trips the "no unused comparison" check at `finish()`.
+Smallest correction: add a sixth frozen item (`retained-conflict`) to the performed inventory.
+
+**5. MEDIUM — no seam is named for the control's collapsed configuration.**
+Location: `transactional-matrix.test.ts:149–158` (`configuration.credentials`), launch spread at 252–256; plan "maps B's token to principal-a before its own bootstrap and all scenario launches" + "no new generic configuration seam."
+Issue/impact: mechanism unspecified; a duplicated configuration object risks bootstrap/scenario divergence and a spurious "installed runtime identity mismatch" (execution-binding 122–126) instead of the intended 18-ID failure set.
+Smallest correction: one named boolean control option mutating only the `credentials` entry inside the single literal at 153–156 — the `...configuration` spread at 253 then propagates it to every scenario and explicit reopen unchanged.
+
+**6. MEDIUM — resolver fall-through is the only demonstrated behavior; no throw is specified.**
+Location: `transactional-matrix.test.ts:236–241` (`credentialRef === "operator" ? operator : reader`).
+Issue/impact: today every non-`anonymous` ref that is not `operator` resolves to the read-only `reader` token. A mistyped principal ref would execute as `reader` and surface as a server-looking 403/row failure, not a configuration error. The plan's "unknown refs cannot silently fall through to reader" has no authored enforcement point.
+Smallest correction: closed map that throws on an unresolved ref, with the `deniedReceiptUrls`/`invalidReceiptCredentials === true` url override applied *before* the lookup so the old controls' behavior is byte-identical.
+
+**7. MEDIUM — optional output spread can carry the five random tokens.**
+Location: plan line 49 `{sourceCommit,entry,...observed,principalSupplemental}`; `observed` is `InstalledObservation` (matrix 93–97 = `result` + `sessions` + `baseline`), and `sessions` entries are `{...child.ready, scenario, reopen}` (260).
+Issue/impact: the ready payload and `baseline` contents are not enumerated in this packet, so "Keep random credential values out of output" is unenforced for an operator-supplied absolute path and for the existing full/cross report paths that "append the same safe supplement."
+Smallest correction: before any write, assert the serialized payload contains none of the five generated token strings; reuse that assertion on the existing report paths.
+
+**8. MEDIUM — the static role-map check has no independent vantage point.**
+Location: plan "Fold literal role-map/unknown-ref assertions into the existing app static callbacks; no new generic configuration seam" + "do not validate only against a digest derived from the same candidate"; tokens are created inside `observe` at 147–148.
+Issue/impact: a CPU-only static callback cannot reach those values, so it either restates the literal it is meant to check or forces an ad-hoc seam at authoring time.
+Smallest correction: extract a module-local pure resolver `(ref, tokens) => headers` used by 236–241, and have the static callback exercise it over all six handles plus one unknown ref with synthetic tokens.
+
+**9. LOW-MEDIUM — control-hook timing and signature.**
+Location: plan "…then returns the genuine response" vs `afterExchange?: (response, signal) => Promise<void>` (matrix 114) and the pass-through at 301–303.
+Issue/impact: (a) the hook returns nothing — read as a signature change it would become an out-of-scope seam edit; (b) any inline `expect` failure rejects `exactExecution.execute` and replaces the required 18-ID failure set with an execution error.
+Smallest correction: state that the hook only records facts (response unchanged at 303) and that all control assertions run in `finish()` after the runner returns.
+
+**10. LOW — `requests.json` encodes absent GET bodies as `null`.**
+Location: `pk-current`/`pk-events` `"body":null,"bodySha256":null` vs the plan's "GETs … OMIT raw.body; do not encode null" and `runner.ts:1215` (`body === undefined ? {} : {bodyBytes}`).
+Issue/impact: mechanical transcription yields `raw.body: null` and a different serialized request than the one frozen.
+Smallest correction: annotate `null` as "absent/omit" in `requests.json`, or drop the two keys for GETs.
+
+**11. LOW — header-name case disagreement between prose and the freeze.**
+Location: prose "Accept / Content-Type / Idempotency-Key" vs `requests.json` lowercase `accept`/`content-type`/`idempotency-key`; house style is lowercase (cumulative 2988–2990 `bdp-scope-epoch`).
+Issue/impact: authored header bytes are load-bearing for the raw serializer and for the names-only prefix comparison.
+Smallest correction: declare `requests.json` authoritative and drop the capitalized prose.
+
+**12. LOW — the `220` collision is an auditability hazard.**
+Location: `selection.json` `full-positive.expectedHttp:220` vs `measurements.json` `canonical.actions:227` (parent = 220 actions).
+Issue/impact: the only consistent reading is parent 220 actions = 213 HTTP + 7 non-HTTP, successor 227 = 220 HTTP + 7 non-HTTP (confirmed by `invocation-inventory` line 353 `addedHttp:7` and totals 652/657/76). The packet never states the split, so 220 is easily misread as the pre-insertion action total.
+Smallest correction: record the HTTP/client/capture split of the 227 actions in `measurements.json`.
+
+**13. LOW — renaming the existing full-positive `it` couples outside the four owned paths.**
+Location: `selection.json` `cohorts[2].title` "observes sixteen partial Transactional contracts…", run as "one exact named test."
+Smallest correction: confirm no CI/doc reference to the current title, or keep the title and move the sixteen-row count into an in-test assertion.
+
+## B. Specifically omitted dependencies (not defects; must be rechecked before authoring)
+
+**14. MEDIUM-HIGH — `memberHandoff` is evaluated against the seven new exchanges and is not supplied.**
+Location: `transactional-matrix.test.ts:3152–3176`; `memberHandoff(member.count(), response.url, request?.bodyDigest, key, request?.writeState)` then `cross.finish()` on first `exempt`.
+Proven part: `minimum` (2383–2392) and `cross` (1946–1951) are inactive-safe — their sentinels are `create-bead`+`minimum-a` / `create-bead`+`carrier-create`, so all seven principal exchanges (`operations/batch`, `beads/?limit=32`, `events/`, key `principal-shared`) return early. Unproven: `memberHandoff` now runs with `member.count()===0` against three URLs the member row shares; a single `true` calls `cross.finish()` before `cross` ever activates and starts feeding `member`.
+Also: "Existing cross/minimum/member observers receive the same unmodified exchanges in their existing order" is ambiguous — passing the 7 new exchanges *adds* inputs they never saw; gating them out is what actually preserves the old stream.
+Smallest correction: name the composition (principal as outermost consumer returning before `minimum.afterExchange`/`memberHandoff` until `finish`), and assert `memberHandoff` is false for all seven principal dispatches.
+
+**15. MEDIUM — `redactUrl` is applied to the reported URL the join compares.**
+Location: `runner.ts:1174` `url: redactUrl(url)` vs plan lines 40–41 "require actual id/method/url to equal the literal ledger and captured method/url", with `pk-current` = `…/beads/?limit=32`.
+Issue/impact: if `redactUrl` rewrites query values, the join fails on the query-bearing route; the packet supplies no `redactUrl` evidence. Note existing observers compare the live `response.url` (2403–2404), not the redacted report field, so there is no precedent to lean on.
+Smallest correction: pin `redactUrl`'s behavior for the three literals in the new static check (or compare the report side to `redactUrl(literal)`), leaving the captured-side raw equality strict.
+
+**16. MEDIUM — old negative controls' first-exchange/first-receipt sensitivity.**
+Location: `invocation-inventory.json` groups 638 (4 altered private receipt), 838, 852, 888 (after-first-wire 10s/100ms), 998, against the new row becoming manifest-first with five `operations/batch` receipts before any old traffic.
+Proven safe: observe 283–300 captures receipts only for `operationTargets.updateWhere/deleteWhere`, which the new row never touches.
+Unproven: the per-group `afterExchange`/`ready` hook bodies are not supplied; any hook keyed on "first exchange", "first 200" or "first receipt id" now fires on principal traffic. The abort groups' `addedHttp:0/addedChildren:0` is consistent only because the first exchange is merely *substituted*, which is exactly the substitution that could change their recorded row/action evidence.
+Smallest correction: enumerate the 14 unchanged-manifest control hooks and assert each activation predicate is disjoint from `operations/batch` + `principal-shared`, as cross/minimum already are.
+
+**17. MEDIUM — positional scenario indices beyond the two cited sites.**
+Location: plan cites only cumulative 1255 (10→11) and 2973/2987–2995 (`scenarios[0]`), while asserting all 41 derivative mutators are unchanged.
+Issue/impact: any mutator or assertion using a fixed index now targets the principal row — most acutely `minimum-batch-body-conflict.json` (837772) and `minimum-readonly-credential.json` (837763), which act on the previously-first row; that would invalidate their frozen per-specimen normal/node outcomes.
+Smallest correction: make id-addressed targeting an explicit requirement for all 41 mutators plus a one-line guard that each resolves its target by id.
+
+**18. MEDIUM — the 18/7 control partition depends on oracle kinds held in the wire packet.**
+Location: `control.json` `failingAssertionIds` contains `no-next` while `passingAssertionIds` contains `no-owned-links`/`no-provenance`.
+Issue/impact: the counts reconcile exactly (18+7 = the 25 `pk-b-create` coverage IDs), but the partition is only correct if `no-next` is an explicit `next === null` equality while the other two are absence oracles that pass vacuously on a Problem body. If `no-next` is also an absence oracle, the control yields 17 failures and "requires exactly that failure set" fails.
+Smallest correction: record the per-ID oracle kind in `control.json` so the two partitions cross-check without re-deriving the manifest row.
+
+**19. LOW — `30s` per-callback headroom and the per-principal key namespace.**
+(a) Each of the 41 full-reach invocations gains 7 HTTP + 1 child; no current per-callback duration is supplied, only the aggregate 3f68208d sample (full positive 22188ms, job 1013s/suite 789.75s). The plan's own 50×(22.188/23)=48.2s ⇒ ~1061s is arithmetically sound and the 63s full-positive assertion stays satisfied at ~23.2s, but the binding risk is any old 30s callback already near its cap. Diagnostic only, as the plan states.
+(b) `expectedHttp:7` for the positive presumes principal-scoped idempotency keys; the only supplied support is `authenticate` returning `{principal, canMutate}` with no token downstream (321–332) and `read:"all-visible"` (373–402). If the namespace is absent, action 2 conflicts and the cohort stops at 2 HTTP — fails closed inside the 7-HTTP envelope, so this is a cost/diagnosis note, not a safety gap.
+
+## C. Verified consistent (no action)
+
+**20.** Recomputed independently and matching: route preimage compact serialization = **1228 B** exactly (15 routes, 5 top-level keys, no credential material — so adding three handles cannot move the execution digest); first-use route order in `route-preimage.json` is exactly what the new manifest order yields (batch, beads/?limit=32, events/, then create-bead…), and the 15 method/URL authorities are the same *set* as matrix 196–210; coverage-row assertion IDs recount to **139** (25+25+25+25+10+11+18) = `rowAssertions`, ≤160 fence; `pk-b-create` 18 failing + 7 passing = its 25 IDs; pagination is parent index **10** in `parent-preservation.json` order, so 10→11 at 1255 is right; raw-object byte sums (789836/790009 and 117457/117702) are consistent with a 14×6-byte separator layout and the `withoutSequenceMemberRow` tail form (983–1002); `invocation-inventory` sums to 287 HTTP/46 children/55 invocations and +296/+301/+50, totals 652/657/76 and payloads 54960/55410; fences are exactly old-max + envelope (843883−35404=808479, +40000=848479; 22064−952=21112, +1100=22212), derivative list is 41 entries with max 843883/22064 < 1 MiB/100000; growth vs row bytes is consistent for both files under one depth-2 reindentation model; and every cited line (149–158, 169–175, 248–261, 327, 353, 113–126) lands exactly where the plan says.

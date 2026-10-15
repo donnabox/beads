@@ -1,0 +1,9 @@
+# Principal cumulative plan: actual-parent reanchor
+
+Mechanical reanchor verified with no dependency mismatch. Actual merged parent5d7fa3f049fa0b4db3aa8dae20e20d8e47fb3854/tree057f879132074166f2c0f643a8b45bbd9dd47c6f has orderedparents[9bf601bfb570adae97ce8cdc99caf2cc7a2b34c1,8833c9242b7788e843e9eb97a2c99b2277fe75ef]. Read only immutable committed blobs from the fetched repository; no new fetch or product import.
+
+All24 original and current proposed-successor source pins match actual5d7 bytes, sizes and Git blob identities exactly against9bf. All four prospective owned paths are unchanged: transactional/manifest-v1.json, transactional/coverage-v1.json, transactional-cumulative.test.ts and transactional-matrix.test.ts. Independently decoded the array boundaries and hashed the original raw JSON slices, preserving order:15manifest scenarios+15coverage rows=30objects match every historical identity/hash/byte length. Both complete files also remain byte-identical (manifest790009B,coverage117702B), so surrounding formatting is preserved as well as objects. Full exact path/digest/object inventory is in actual-parent-binding.json.
+
+Only guarded-batch installed test addition and progress documentation changed from9bf to5d7; neither is among the24plan pins/four owned files. No principal semantics, fixtures, runner, schema, catalog or preparation interface changed. The reanchor introduces no need to repeat semantic plan review on its own. This does not close the actual split-review council or waive any forthcoming source-based disposition.
+
+Frozen original/proposed plans, ledgers and review evidence remain untouched. Authoring and execution are still closed until root accepts both actual-review dispositions and separately releases the bounded work. No tests/build/services/review launch, source edits, commits/push or coordination updates performed.

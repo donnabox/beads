@@ -1,0 +1,122 @@
+{
+  "configuration": {
+    "defaultCredentialRef": "operator",
+    "credentials": [
+      {
+        "ref": "operator",
+        "principal": "same",
+        "canMutate": true
+      },
+      {
+        "ref": "reader",
+        "principal": "same",
+        "canMutate": false
+      },
+      {
+        "ref": "principal-a",
+        "principal": "principal-a",
+        "canMutate": true
+      },
+      {
+        "ref": "principal-a-rotated",
+        "principal": "principal-a",
+        "canMutate": true
+      },
+      {
+        "ref": "principal-b",
+        "principal": "principal-b",
+        "canMutate": true
+      }
+    ],
+    "anonymousHandle": {
+      "ref": "anonymous",
+      "headerNames": []
+    },
+    "tokenPolicy": "Fresh independent randomBytes(32).base64url tokens, no credential values persisted; same configuration object spread to bootstrap and scenario launches.",
+    "controlChange": "principal-b principal becomes principal-a; fresh own bootstrap, actual authentication/runtime identity; no swap after bootstrap.",
+    "fixtureFileUnchanged": true,
+    "ordinaryUpdateFixtureUnchanged": true,
+    "collapseControlOption": {
+      "name": "collapsePrincipalB",
+      "type": "boolean",
+      "default": false,
+      "changes": "only B principal in single shared credentials array"
+    },
+    "staticSeam": "module-local pure credential-role builder and closed header resolver, used by observe and existing two static callbacks with synthetic tokens and independent literals; all6handles + unknown + collapsed role",
+    "resolverOrder": "anonymous returns {}; unknown ref throws; authenticated known refs retain invalidReceiptCredentials/deniedReceiptUrls override, otherwise exact mapped token",
+    "controlIdentityProof": "literal B\u2192A role mapping; each scenario identity equals own actual control bootstrap; actual B409; cross-run random-token inequality alone is not evidence"
+  },
+  "dispatchProof": {
+    "seam": "existing local observe exactExecution.execute before unchanged target.target.execute(request)",
+    "safeActualInputFields": [
+      "method",
+      "url",
+      "credentialRef"
+    ],
+    "localField": "ordinal",
+    "inputHasActionId": false,
+    "observedExchangeHasCredentialRef": false,
+    "actualPostrunFields": [
+      "id",
+      "method",
+      "url"
+    ],
+    "join": "fixed row order: actual report id/method equal independent ledger; actual input method/url/ref bound to ledger method/dispatchUrl/credentialRef; response.url equals dispatchUrl and writeState complete; report.url equals separate exact reportedUrl; never raw-versus-redacted equality",
+    "positiveDispatches": 7,
+    "controlDispatches": 2,
+    "noTokensOrHeaders": true,
+    "noRequestMutation": true,
+    "noExportedApiChange": true,
+    "safeJoinedFields": [
+      "id",
+      "method",
+      "dispatchUrl",
+      "reportedUrl",
+      "credentialRef",
+      "ordinal"
+    ],
+    "credentialRefMeaning": "actual authored ref forwarded to exact executor and resolved by the closed resolver; no retained or attested wire credential",
+    "responseOracle": "post-delegation HttpExchangeResponse.bodyText and exactRequest headerLines/bodyPresent/bodyOctets/bodyDigest/writeState; pre-dispatch callback remains safe projection only",
+    "postFinishGates": {
+      "preDelegation": "reject later principal-a/principal-a-rotated/principal-b credentialRef",
+      "afterExchange": "reject later exactRequest idempotency-key principal-shared",
+      "safeProjectionUnchanged": true
+    }
+  },
+  "replayLedger": [
+    [
+      "pk-a-rotated",
+      "pk-a-create",
+      "whole-json"
+    ],
+    [
+      "pk-b-replay",
+      "pk-b-create",
+      "whole-json"
+    ]
+  ],
+  "performedPositive": [
+    "namespace-distinct",
+    "pk-a-rotated:pk-a-create:whole-json",
+    "pk-b-replay:pk-b-create:whole-json",
+    "validated-a-conflict",
+    "complete-current",
+    "complete-events"
+  ],
+  "performedControl": [
+    "validated-a-terminal",
+    "validated-b-conflict"
+  ],
+  "readContext": {
+    "actions": [
+      "pk-current",
+      "pk-events"
+    ],
+    "scopeEpoch": "equals validated A receipt.scopeEpoch",
+    "scopePosition": "pos-2",
+    "authorizationView": "each GET own validated serving view; no A/B view equality"
+  },
+  "controlDispositionFailure": "Problem /status present numeric409 mismatches receipt completed; other missing receipt/result facts fail on absence",
+  "excludedEpochDistinctNamespaces": true,
+  "controlHook": "Promise<void>; validate expected actual control facts immediately; execute wrapper returns unchanged response. Malformed control fails closed, never fabricated18-ID evidence."
+}

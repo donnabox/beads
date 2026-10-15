@@ -1,0 +1,223 @@
+--- previous/plan.md
++++ wire-review-successor/plan.md
+@@ -1,12 +1,12 @@
+ # Principal namespaces through the cumulative Transactional runner
+ 
+-Status: proposed measured implementation/evidence plan, awaiting native/actual Claude council and root acceptance. No source authoring or execution is released. Basis is committed main9bf601bfb570adae97ce8cdc99caf2cc7a2b34c1/tree592c5e6e5c0c790b6e2690495b94ac48705b9069, read through git show. The concurrent guarded-batch draft was not read as committed source. Before authoring, root must supply actual ordinary main/parent/tree and recheck all four owned source hashes, all30 raw objects and the direct dependency interfaces. Preserve this packet if a reanchor is needed.
++Status: proposed measured implementation/evidence plan, awaiting native/actual Claude council and root acceptance. No source authoring or execution is released. Historical wire review basis is committed9bf601bfb570adae97ce8cdc99caf2cc7a2b34c1/tree592c5e6e5c0c790b6e2690495b94ac48705b9069. This count-neutral wire correction is mechanically anchored to actual merged parent5d7fa3f049fa0b4db3aa8dae20e20d8e47fb3854/tree057f879132074166f2c0f643a8b45bbd9dd47c6f using immutable git show blobs. All24 prior source pins/four owned files remain byte-identical; the existing actual-parent-reanchor preserves all30 original raw-object hashes. Composition review and root aggregate acceptance remain pending; this correction does not release authoring. Recheck actual ordinary parent/tree and these pins before any later root authoring release.
+ 
+ This delivers executable integration of the authenticated-principal subset of read-update.idempotency.principal-isolation under the same actual bound Transactional configuration as the existing matrix. It does not import PR133 success reports, qualify the entire obligation, implement cold discovery, or change ordinary Update. The sole design's T4/P activation predicates still require all applicable inherited obligations and actual serving/discovery admission; current transaction-http.ts195/227–228/570–577 refuses discovery and server/index.ts288–307 admits public Read only. This is one concrete prerequisite, not the next usable cold-client product by itself. A newly established serving defect takes priority over more evidence integration. Snapshot minimum and incident-Link metadata questions remain outside this slice.
+ 
+ ## Authority, files, and literal inputs
+ 
+-Own exactly these four paths: packages/conformance/test-support/transactional/{manifest-v1.json,coverage-v1.json}, packages/conformance/src/transactional-cumulative.test.ts, apps/bdptest/src/transactional-matrix.test.ts. No fixture/catalog/spec/production/runner/schema/API/export change. The existing standalone principal test and ordinary RU fixture/manifests remain byte-identical. No generic importer or concurrency DSL.
++Own exactly these four paths: packages/conformance/test-support/transactional/{manifest-v1.json,coverage-v1.json}, packages/conformance/src/transactional-cumulative.test.ts, apps/bdptest/src/transactional-matrix.test.ts. No fixture/catalog/spec/production/runner/schema/API/export change. The existing standalone principal test and ordinary RU fixture/manifests remain byte-identical. No generic importer or concurrency DSL. The named manifest-row.json, coverage-row.json, requests.json, route-preimage.json and control.json are external frozen planning artifacts, not five extra product paths. Insert row/coverage into the two owned canonical JSON files; incorporate independently authored request/control/route/proof literals into the owned tests. Do not derive the expected request ledger from the mutable row under test. This successor supplies its own requests.json and proof-interface.json; inherited-artifacts.json pins unchanged external artifacts.
+ 
+ The new canonical row is the frozen manifest-row.json; its exact coverage object is coverage-row.json. They contain7 raw HTTP actions/139 assertions, no client actions and no captures. The inherited requiredProfile is read-update, setup requires only existing installed-transactional-http, and resetFixture is true. Catalog read-update-v1 places principal-isolation before command-minimum, so prepend it; do not filter it from default observation to avoid fresh validation. Coverage is wholeContract:false and claimEligible remains false. The coverage binding mirrors all139 actual manifest IDs; full app comparisons are explicitly not manifest bindings.
+ 
+@@ -22,11 +22,11 @@
+ |6|pk-current / principal-a|GET beads/?limit=32; complete exact two-Resource page, next:null, current pos-2.|
+ |7|pk-events / principal-a|GET events/; complete exact two-created-Event page, next:null, current pos-2.|
+ 
+-No receipt GET or foreign-receipt test is implied. This proves terminal retained batch retry and credential rotation, not pending joins, internal concurrency, singleton/sequence namespaces, crash/expiry/reopen, anonymous namespace, carried actor independence or changed-view behavior. Full current state is a fixed serving-view Read, not principal-filtered visibility. Do not require A and B Authorization Views to differ or to equal.
++No receipt GET or foreign-receipt test is implied. This proves terminal retained batch retry and credential rotation, not pending joins, internal concurrency, singleton/sequence namespaces, crash/expiry/reopen, anonymous namespace, carried actor independence, changed-view behavior or epoch-distinct namespaces. Full current state is a fixed serving-view Read, not principal-filtered visibility. Do not require A and B Authorization Views to differ or to equal.
+ 
+ ## One truthful default configuration
+ 
+-Root selected a default bound configuration retaining operator→same/mutate and reader→same/read-only exactly, while adding principal-a and principal-a-rotated→principal-a/mutate and principal-b→principal-b/mutate. Generate five independent random32B tokens; expose exact handles operator,reader,anonymous,principal-a,principal-a-rotated,principal-b, with authorization as the only secret header and anonymous's header list empty. The closed resolver maps each exact ref to its token; unknown refs cannot silently fall through to reader. Preserve the existing invalidReceiptCredentials and deniedReceiptUrls behavior for old controls. Fold literal role-map/unknown-ref assertions into the existing app static callbacks; no new generic configuration seam.
++Root selected a default bound configuration retaining operator→same/mutate and reader→same/read-only exactly, while adding principal-a and principal-a-rotated→principal-a/mutate and principal-b→principal-b/mutate. Generate five independent random32B tokens; expose exact handles operator,reader,anonymous,principal-a,principal-a-rotated,principal-b, with authorization as the only secret header and anonymous's header list empty. The closed resolver maps each exact ref to its token; unknown refs cannot silently fall through to reader. Preserve the existing invalidReceiptCredentials and deniedReceiptUrls behavior for old controls. Fold literal role-map/unknown-ref assertions into the existing app static callbacks; no new generic configuration seam. Existing configuration parsing rejects duplicate tokens before readiness (transaction-runtime-configuration226–238), and HANDLE_ID permits the exact hyphenated refs (http-executor339). Retain actual closed resolver mapping; credentialRef evidence means the actual authored handle forwarded to that resolver, not a retained wire credential or secret.
+ 
+ Every observe invocation bootstraps this same actual configuration, then spreads it to each fresh scenario directory (and explicit old reopens), exactly as current matrix149–158/169–175/248–261. installedTransactionBinding and transactional-execution-binding113–126 must retain actual runtime/authentication/policy/artifact/payload identities and equality to that invocation's genuine bootstrap. These identities necessarily change from historical operator/reader-only runs. Do not invent, replace or reuse old identity hashes. Keep random credential values out of output. Exact execution digest is separately credentials-free: only the existing five fields enter it. The new first-use route preimage is frozen in route-preimage.json,1228B/SHA9a9404e74dd41fcb39b9c3bb5fc86917ff972dfdbc95faa5f53d13b35bb60bec; all15 old method/URL authorities remain identical as a set. Update both literal route order and digest pins; retain previous digest as historical.
+ 
+@@ -36,23 +36,23 @@
+ 
+ Use existing HttpExchangeResponse/exact request metadata, createJsonSchemaValidator(schema) and onObserved callback, with no new exported API. Schema-validate the actual parsed body and independently assert literal/context/absence facts before storing any baseline. Source reference is standalone principal test551–674, not its historical report. Raw captures only authorize confined HTTP URLs; do not invent raw-body, revision, transaction or credential captures. ObservedAction output is not a postrun recovery path for raw JSON.
+ 
+-Implement a local principal wire observer with an independently authored literal seven-request ledger. Match exact URL, writeState complete, authored ordered header prefix and raw body digest/bytes. Compare names-only prefix before values; do not expose generated Authorization values in failure diffs. Generated suffix must not supply protocol bdp-* fields; existing runner exact serialization remains the full framing/default oracle. The genuine ExactHttpExchangeRequest passed to the existing local exactExecution.execute wrapper has method,url,credentialRef but NO action id (http-executor23–34; runner1212–1224). Before unchanged target.target.execute(request) delegation, an optional module-local observer callback records only a bounded ordinal and a frozen copy of actual method,url,credentialRef; it copies no raw headers, credential values, signal, body or arbitrary request object. The original request object is delegated unchanged. All seven new requests require their explicit literal ref; undefined cannot be treated as observed A. Pair each captured dispatch in fixed sequential order with the genuine returned response/write-complete evidence, and finish requires exactly7 positive or2 control dispatches and responses. Do not treat an attempted dispatch as a completed exchange if execution fails. Once this row finishes, allow ordinary old dispatches but reject any later principal-role dispatch/key impersonation; do not consume shared old batch/collection/Event URLs as new principal evidence.
++Implement a local principal wire observer with an independently authored literal seven-request ledger. At the existing post-delegation onExchange(HttpExchangeResponse) hook, match exact response.url to dispatchUrl, response.exactRequest.writeState complete, actual serializer headerLines authored ordered prefix and bodyPresent/bodyOctets/bodyDigest. Parse actual response.bodyText for full body comparisons; no redacted report recovery. Compare names-only prefix before values; do not expose generated Authorization values in failure diffs. Generated suffix must not supply protocol bdp-* fields; existing runner exact serialization remains the full framing/default oracle. The genuine ExactHttpExchangeRequest passed to the existing local exactExecution.execute wrapper has method,url,credentialRef but NO action id (http-executor23–34; runner1212–1224). Before unchanged target.target.execute(request) delegation, an optional module-local observer callback records only a bounded ordinal and a frozen copy of actual method,url,credentialRef; it copies no raw headers, credential values, signal, body or arbitrary request object. The original request object is delegated unchanged. All seven new requests require their explicit literal ref; undefined cannot be treated as observed A. Pair each captured dispatch in fixed sequential order with the genuine returned response/write-complete evidence, and finish requires exactly7 positive or2 control dispatches and responses. Do not treat an attempted dispatch as a completed exchange if execution fails. Once this row finishes, allow ordinary old dispatches but reject any later principal-role dispatch/key impersonation; do not consume shared old batch/collection/Event URLs as new principal evidence.
+ 
+-ObservedExchange.request has actual id,method,url but NO credentialRef (runner1170–1179). After run, join that actual row's exchanges to the bounded dispatch list by fixed order and independently require actual id/method/url to equal the literal ledger and captured method/url. The final safe joined record's id is copied from ObservedExchange.request.id; its method/url are checked against both sources; its credentialRef comes solely from the pre-delegation dispatch projection; ordinal is local ordering evidence. Explicitly label this provenance in the supplemental output. Neither a nonexistent execute-input id nor a nonexistent report credentialRef may be fabricated. No global runner/API/export or HTTP/request change is necessary; only the existing observe helper and new local principal observer in the owned app test gain this callback/projection. Callback failures retain ordinary failure/cleanup accounting. The complete row still has zero captures. Request bodies are at most150B; use per-hook request<=2048B/response<=8192B checks, the existing cross-carrier margins, without altering executor caps.
++ObservedExchange.request has actual id,method,url but NO credentialRef (runner1170–1179). After run, join that actual row's exchanges to the bounded dispatch list by fixed order. Independently require actual report id/method to equal the literal ledger and captured method. Require captured input url and returned response.url to equal the exact frozen dispatchUrl; require ObservedExchange.request.url to equal the separate exact frozen reportedUrl. runner3319–3327 redacts every query, so pk-current dispatchUrl is https://reference.invalid/acme/beads/?limit=32 while reportedUrl is https://reference.invalid/acme/beads/?<redacted>; the other six pairs are equal. The existing requests.json url remains the unchanged routing literal and must equal dispatchUrl. No prefix/normalization fallback, query restoration, or three-way single-url equality is allowed. The final safe joined record copies id and reportedUrl from the report, dispatchUrl/method/credentialRef from actual dispatch projection (method cross-checked), and labels ordinal as local ordering. credentialRef means actual authored ref forwarded to the closed resolver, not observed Authorization bytes. Explicitly label this provenance in the supplemental output. Neither a nonexistent execute-input id nor a nonexistent report credentialRef may be fabricated. No global runner/API/export or HTTP/request change is necessary; only the existing observe helper and new local principal observer in the owned app test gain this callback/projection. Callback failures retain ordinary failure/cleanup accounting. The complete row still has zero captures. Request bodies are at most150B; use per-hook request<=2048B/response<=8192B checks, the existing cross-carrier margins, without altering executor caps.
+ 
+ For initial A and B validate mutationReceipt, exact current headers, all known literal fields and complete result tuple, then strict full receipt equality against the expected structure with only actual validated id, transaction, expiresAt, scopeEpoch, authorizationView and revision as dynamic values. Validate receipt URLs are canonical, confined to scope receipts/, contain one legal nonempty token and no credentials/query/fragment. Validate nonempty transaction/revision/epoch/view. Strict Resource equality is exactly id,type,revision,properties,metadata; no invented links, provenance or extra fields. Require same epoch, distinct actual receipt IDs and transaction IDs between A and B. Do not assert cross-principal view equality.
+ 
+-A sole independent replay ledger drives two successful whole-JSON comparisons: [pk-a-rotated,pk-a-create,whole-json] and [pk-b-replay,pk-b-create,whole-json]. Record performed comparisons only after actual success; finish requires their exact inventory. Static removal/redirection/mode-weakening controls must fail the ledger validator within the existing app static callbacks. Replay response context uses that principal's original epoch/view and current pos-2; receipt bodies retain their original positions. Action5 validates the entire exact transactional Problem plus A context/pos-2; never compare whole status-aware metadata equality between200 and409.
++A sole independent replay ledger drives two successful whole-JSON comparisons: [pk-a-rotated,pk-a-create,whole-json] and [pk-b-replay,pk-b-create,whole-json]. Record performed comparisons only after actual success; finish requires their exact inventory. Static removal/redirection/mode-weakening controls must fail the ledger validator within the existing app static callbacks. Replay response context uses that principal's original epoch/view and current pos-2; receipt bodies retain their original positions. Action5 validates the entire exact transactional Problem plus A context/pos-2 and records validated-a-conflict only after all checks succeed; never compare whole status-aware metadata equality between200 and409.
+ 
+-Collection schema is currentBeadCollection, with strict body {items:[Aresource,Bresource],next:null}; no partial subset comparison. Event schema is eventPage; strict body {source:literalScopeEvents,events:[exactA,exactB],next:null}. Each Event has created/type, source, subject, subjectType, ordinal0, corresponding actual receipt.transaction, actual schema-valid time, and data exactly {revision,properties,metadata} from that receipt Resource. Derive the private projected id independently as ev_<tagged epoch SHA256 base64url>_<tagged GET7 view SHA256 base64url>_<tagged literal source SHA256 base64url>_pos-N_0, with JSON.stringify([tag,value]) and N1/2. GET7 supplies its own validated serving view; do not substitute an A/B receipt view. This is an exact private fixture projection, not a normative Event-ID spelling. No production renderer import.
++Before both GET6 and GET7 body comparisons, require actual bdp-scope-epoch to equal A's validated receipt.scopeEpoch and current position to be pos-2. Keep each GET's actual validated serving view; no A/B view equality is added. Collection schema is currentBeadCollection, with strict body {items:[Aresource,Bresource],next:null}; no partial subset comparison. Event schema is eventPage; strict body {source:literalScopeEvents,events:[exactA,exactB],next:null}. Each Event has created/type, source, subject, subjectType, ordinal0, corresponding actual receipt.transaction, actual schema-valid time, and data exactly {revision,properties,metadata} from that receipt Resource. Derive the private projected id independently as ev_<tagged epoch SHA256 base64url>_<tagged GET7 view SHA256 base64url>_<tagged literal source SHA256 base64url>_pos-N_0, with JSON.stringify([tag,value]) and N1/2. GET7 supplies its own validated serving view; do not substitute an A/B receipt view. This is an exact private fixture projection, not a normative Event-ID spelling. No production renderer import.
+ 
+-The positive performed inventory is exactly namespace-distinct, the two replay pairs, complete-current, complete-events. Both receipt baselines and all seven wire facts must exist; finish verifies counts, order and no unused comparison. Safe summaries include IDs/hashes/booleans/context/positions and performed inventory, never token-bearing requests or full secret headers. Full body comparisons occur in memory; report digests do not themselves prove equality. For the two selected callbacks, an optional absolute BDP_TRANSACTIONAL_PRINCIPAL_CUMULATIVE_OUTPUT path may save {sourceCommit,entry,...observed,principalSupplemental}; existing full/cross report paths append the same safe supplement. Validate optional path before startup, and retain full genuine report only when runner actually returned. Write genuine returned observation plus safe supplement in onObserved before cleanup, following current327; preserve thrown original errors and cleanup aggregation, never fabricate a runner result when it throws early.
++The positive performed inventory is exactly namespace-distinct, the two replay pairs, validated-a-conflict, complete-current, complete-events, in that order. This six-entry supplemental inventory does not add manifest assertion credit. Both receipt baselines and all seven wire facts must exist; finish verifies counts, order and no unused comparison. Safe summaries include IDs/hashes/booleans/context/positions and performed inventory, never token-bearing requests or full secret headers. Full body comparisons occur in memory; report digests do not themselves prove equality. For the two selected callbacks, an optional absolute BDP_TRANSACTIONAL_PRINCIPAL_CUMULATIVE_OUTPUT path may save {sourceCommit,entry,...observed,principalSupplemental}; existing full/cross report paths append the same safe supplement. Validate optional path before startup, and retain full genuine report only when runner actually returned. Write genuine returned observation plus safe supplement in onObserved before cleanup, following current327; preserve thrown original errors and cleanup aggregation, never fabricate a runner result when it throws early.
+ 
+ ## Composition and the real negative
+ 
+ The new principal row is first. The principal observer consumes its seven responses before old rows, then rejects any later principal-shared key reappearance while allowing ordinary old traffic; it must not reject all later batch/collection/Event URLs because those are shared routes. Existing cross/minimum/member observers receive the same unmodified exchanges in their existing order. Their sentinels are disjoint: carrier-create/carrier-update, minimum-* and the member body/keys. Preserve their exact body/route/handoff/extra-traffic assertions. Add principal.finish/full positive proof to full-positive and both existing cross controls. Other old controls still run the new manifest assertions but do not manufacture supplemental full-body credit.
+ 
+-control.json freezes the exact expected two-response principal-collapse counterfactual and18 failing B assertion IDs in authored order. Its hook independently validates A terminal and actual B409 Problem/media/current A epoch/view/pos-1, then returns the genuine response; it must not throw the positive200 comparison before the runner records its complete failed assertion set. The manifest keeps all B positive expectations unchanged. Request assertions, three context-presence assertions and two absence assertions pass; status/schema/media/pos-2 and missing receipt/result facts fail. The row stops after action2; no later action or fabricated baseline. Control test requires exactly that failure set, actual write-complete, canonical manifest digest, genuine distinct control binding, claimEligible:false, one scenario plus bootstrap and cleanup. No raw response replacement, schema weakening, assertion deletion or hidden request change. The7HTTP ceiling is a conservative fail-closed envelope, not an allowance to continue after observed conflict or a promise that wrong outcomes will run7.
++control.json freezes the exact expected two-response principal-collapse counterfactual and18 failing B assertion IDs in authored order. Its hook independently validates A terminal and actual B409 Problem/media/current A epoch/view/pos-1, then returns the genuine response; it must not throw the positive200 comparison before the runner records its complete failed assertion set. The manifest keeps all B positive expectations unchanged. Request assertions, three context-presence assertions and two absence assertions pass; status/schema/media/pos-2 fail; disposition fails because /status is present as numeric409 instead of completed, and the remaining receipt/result facts fail on absence. The row stops after action2; no later action or fabricated baseline. Control test requires exactly that failure set, actual write-complete, canonical manifest digest, genuine distinct control binding, claimEligible:false, one scenario plus bootstrap and cleanup. No raw response replacement, schema weakening, assertion deletion or hidden request change. The7HTTP ceiling is a conservative fail-closed envelope, not an allowance to continue after observed conflict or a promise that wrong outcomes will run7.
+ 
+ ## Preservation, affected static checks, and drafting fences
+ 
+--- previous/ledger.json
++++ wire-review-successor/ledger.json
+@@ -1,6 +1,6 @@
+ {
+   "status": "PROPOSED_PLAN_NO_EXECUTION",
+-  "base": "9bf601bfb570adae97ce8cdc99caf2cc7a2b34c1",
++  "base": "5d7fa3f049fa0b4db3aa8dae20e20d8e47fb3854",
+   "scope": "https://reference.invalid/acme/",
+   "row": "read-update.idempotency.principal-isolation",
+   "ownedPaths": [
+@@ -48,8 +48,8 @@
+     "ordinaryUpdateFixtureUnchanged": true
+   },
+   "requestsFile": "requests.json",
+-  "controlFile": "control.json",
+-  "routesFile": "route-preimage.json",
++  "controlFile": "../control.json",
++  "routesFile": "../route-preimage.json",
+   "exactConfigurationDigest": "9a9404e74dd41fcb39b9c3bb5fc86917ff972dfdbc95faa5f53d13b35bb60bec",
+   "replayLedger": [
+     [
+@@ -67,6 +67,7 @@
+     "namespace-distinct",
+     "pk-a-rotated:pk-a-create:whole-json",
+     "pk-b-replay:pk-b-create:whole-json",
++    "validated-a-conflict",
+     "complete-current",
+     "complete-events"
+   ],
+@@ -158,7 +159,7 @@
+   },
+   "claimEligible": false,
+   "wholeContract": false,
+-  "actualAuthoringParent": null,
++  "actualAuthoringParent": "5d7fa3f049fa0b4db3aa8dae20e20d8e47fb3854",
+   "executionReleased": false,
+   "dispatchProof": {
+     "seam": "existing local observe exactExecution.execute before unchanged target.target.execute(request)",
+@@ -175,11 +176,35 @@
+       "method",
+       "url"
+     ],
+-    "join": "fixed row exchange order; actual id/method/url equal independent ledger, actual method/url equal captured dispatch; response writeState complete",
++    "join": "fixed row order: actual report id/method equal independent ledger; actual input method/url/ref bound to ledger method/dispatchUrl/credentialRef; response.url equals dispatchUrl and writeState complete; report.url equals separate exact reportedUrl; never raw-versus-redacted equality",
+     "positiveDispatches": 7,
+     "controlDispatches": 2,
+     "noTokensOrHeaders": true,
+     "noRequestMutation": true,
+-    "noExportedApiChange": true
+-  }
++    "noExportedApiChange": true,
++    "safeJoinedFields": [
++      "id",
++      "method",
++      "dispatchUrl",
++      "reportedUrl",
++      "credentialRef",
++      "ordinal"
++    ],
++    "credentialRefMeaning": "actual authored ref forwarded to exact executor and resolved by the closed resolver; no retained or attested wire credential",
++    "responseOracle": "post-delegation HttpExchangeResponse.bodyText and exactRequest headerLines/bodyPresent/bodyOctets/bodyDigest/writeState; pre-dispatch callback remains safe projection only"
++  },
++  "historicalReviewBase": "9bf601bfb570adae97ce8cdc99caf2cc7a2b34c1",
++  "actualAuthoringTree": "057f879132074166f2c0f643a8b45bbd9dd47c6f",
++  "authoringReleased": false,
++  "readContext": {
++    "actions": [
++      "pk-current",
++      "pk-events"
++    ],
++    "scopeEpoch": "equals validated A receipt.scopeEpoch",
++    "scopePosition": "pos-2",
++    "authorizationView": "each GET own validated serving view; no A/B view equality"
++  },
++  "controlDispositionFailure": "Problem /status present numeric409 mismatches receipt completed; other missing receipt/result facts fail on absence",
++  "excludedEpochDistinctNamespaces": true
+ }
+--- previous/requests.json
++++ wire-review-successor/requests.json
+@@ -22,7 +22,9 @@
+       "body": "{\"operations\":[{\"operation\":\"createBead\",\"id\":\"beads/a\",\"type\":\"https://reference.invalid/acme/types/task\",\"properties\":{\"title\":\"a\"},\"metadata\":{}}]}",
+       "bodyBytes": 150,
+       "bodySha256": "54f0fefb0965a8210bb22cf09601c18296ef450489eff1aef5a8bea8b99d83b8",
+-      "status": 200
++      "status": 200,
++      "dispatchUrl": "https://reference.invalid/acme/operations/batch",
++      "reportedUrl": "https://reference.invalid/acme/operations/batch"
+     },
+     {
+       "action": "pk-b-create",
+@@ -46,7 +48,9 @@
+       "body": "{\"operations\":[{\"operation\":\"createBead\",\"id\":\"beads/b\",\"type\":\"https://reference.invalid/acme/types/task\",\"properties\":{\"title\":\"b\"},\"metadata\":{}}]}",
+       "bodyBytes": 150,
+       "bodySha256": "b26bbe9a43f5cc9b54d7fe7778786b33e5e8d613bf30248de3af65f5eac0cdc8",
+-      "status": 200
++      "status": 200,
++      "dispatchUrl": "https://reference.invalid/acme/operations/batch",
++      "reportedUrl": "https://reference.invalid/acme/operations/batch"
+     },
+     {
+       "action": "pk-a-rotated",
+@@ -70,7 +74,9 @@
+       "body": "{\"operations\":[{\"operation\":\"createBead\",\"id\":\"beads/a\",\"type\":\"https://reference.invalid/acme/types/task\",\"properties\":{\"title\":\"a\"},\"metadata\":{}}]}",
+       "bodyBytes": 150,
+       "bodySha256": "54f0fefb0965a8210bb22cf09601c18296ef450489eff1aef5a8bea8b99d83b8",
+-      "status": 200
++      "status": 200,
++      "dispatchUrl": "https://reference.invalid/acme/operations/batch",
++      "reportedUrl": "https://reference.invalid/acme/operations/batch"
+     },
+     {
+       "action": "pk-b-replay",
+@@ -94,7 +100,9 @@
+       "body": "{\"operations\":[{\"operation\":\"createBead\",\"id\":\"beads/b\",\"type\":\"https://reference.invalid/acme/types/task\",\"properties\":{\"title\":\"b\"},\"metadata\":{}}]}",
+       "bodyBytes": 150,
+       "bodySha256": "b26bbe9a43f5cc9b54d7fe7778786b33e5e8d613bf30248de3af65f5eac0cdc8",
+-      "status": 200
++      "status": 200,
++      "dispatchUrl": "https://reference.invalid/acme/operations/batch",
++      "reportedUrl": "https://reference.invalid/acme/operations/batch"
+     },
+     {
+       "action": "pk-a-conflict",
+@@ -118,7 +126,9 @@
+       "body": "{\"operations\":[{\"operation\":\"createBead\",\"id\":\"beads/c\",\"type\":\"https://reference.invalid/acme/types/task\",\"properties\":{\"title\":\"c\"},\"metadata\":{}}]}",
+       "bodyBytes": 150,
+       "bodySha256": "3de2f9bb5fb4b4b0537d252ba722b05a3385414129cf35fc6ab0355720f9ff62",
+-      "status": 409
++      "status": 409,
++      "dispatchUrl": "https://reference.invalid/acme/operations/batch",
++      "reportedUrl": "https://reference.invalid/acme/operations/batch"
+     },
+     {
+       "action": "pk-current",
+@@ -134,7 +144,9 @@
+       "body": null,
+       "bodyBytes": 0,
+       "bodySha256": null,
+-      "status": 200
++      "status": 200,
++      "dispatchUrl": "https://reference.invalid/acme/beads/?limit=32",
++      "reportedUrl": "https://reference.invalid/acme/beads/?<redacted>"
+     },
+     {
+       "action": "pk-events",
+@@ -150,11 +162,14 @@
+       "body": null,
+       "bodyBytes": 0,
+       "bodySha256": null,
+-      "status": 200
++      "status": 200,
++      "dispatchUrl": "https://reference.invalid/acme/events/",
++      "reportedUrl": "https://reference.invalid/acme/events/"
+     }
+   ],
+   "totalBodyBytes": 750,
+   "maximumBodyBytes": 150,
+   "automaticRetries": 0,
+-  "retainedReplayRequests": 2
++  "retainedReplayRequests": 2,
++  "urlFieldMeaning": "url is unchanged actual routing literal and equals dispatchUrl; reportedUrl is independent exact expected redacted report spelling"
+ }
