@@ -1,0 +1,38 @@
+{
+  "status": "accepted-measured-source-fences",
+  "sourceBindingSha256": "52324cb9b78de3fda3cea613a1de1290274c4eca032579d427f6bb49102b0df1",
+  "initialBindingSha256": "b03f5faa4a6d96dfbd72c960b835a737248ee292184326246ffc9d321e87aa31",
+  "measurement": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-principal-cumulative-draft/source-author/measurements.json",
+    "sha256": "8f0b66cfee76c8af45883764383224f91d73ed3639b168edabb3fee7da8ebfa8"
+  },
+  "runtimeLimitsUnchanged": true,
+  "simultaneousGrowthStopsSatisfied": true,
+  "rootIndependentChecks": [
+    "approved manifest/coverage row equality",
+    "full committed parent byte reconstruction for both JSON files",
+    "normal837765 and21908nodes",
+    "all four frozen source hashes",
+    "full source diff inspected; validation and council still pending"
+  ],
+  "changes": {
+    "packages/conformance/src/transactional-cumulative.test.ts": {
+      "305825": 340865,
+      "794105": 829145,
+      "806457": 841861,
+      "48064": 54899,
+      "118726": 125561,
+      "8001": 8953,
+      "21020": 21972
+    },
+    "apps/bdptest/src/transactional-matrix.test.ts": {
+      "812575": 847979,
+      "21176": 22128
+    }
+  },
+  "margins": {
+    "bytes": 4096,
+    "nodes": 64,
+    "coverageBytes": 1024
+  }
+}

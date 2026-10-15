@@ -62,9 +62,16 @@ Original service-review lows: RU trusted callback capability narrowing and publi
 
 ### Live worker ledger
 
-Checkpoint 2026-10-15T22:04:06Z. **ACTIVE — Transactional first, with targeted ordinary Update work.** Session `2026-10-08T20:26:35Z-81e5`. Delivery predicates remain unmet. No public profile advertisement, release or Preview2 promotion; Janet CLI/staging/playgrounds/shared databases and Trish Types remain untouched.
+Checkpoint 2026-10-15T22:15:28Z. **ACTIVE — Transactional first, with targeted ordinary Update work.** Session `2026-10-08T20:26:35Z-81e5`. Delivery predicates remain unmet. No public profile advertisement, release or Preview2 promotion; Janet CLI/staging/playgrounds/shared databases and Trish Types remain untouched.
 
 ### Current verified main and active work
+
+
+**Serving plan and measured principal draft (2026-10-15T22:16Z):** Operator's all-three/single-valid minimum receiving ruling is frozen in [plan](transaction-minimum-read-receiving-plan/plan.md), SHA60d51ce4, with17 committed5d7 source pins independently checked. Native review found the exhaustive operations/receipt status table also needs400; this is accepted within the existing spec path and being added to the actual Claude packet. Two production files/eleven total paths remain proposed; no serving authoring yet. A separate clean worktree /Users/dbox/repos/wt/vickie/vickie-minimum-receiving on codex/vickie-minimum-receiving is prepared at5d7. Unknown-token identity and S1/G2 decisions remain separate.
+
+Principal four-file [draft](transaction-principal-cumulative-draft/report.md) is frozen, initialbindingb03f5faa/patch9763aa2b. Root independently verified both approved rows, full parent byte reconstruction and all41derivative specimens. Actual canonical disk825049/normal837765/nodes21908/coverage124537 and derivatives843883/22064 satisfy prior bounds. [Root fence amendment](transaction-principal-cumulative-draft/root-fence-amendment/acceptance.json), SHA5c9e36cc, applies only the exact measured source guards and measurement comment; successorbinding52324cb9/patchf92d4df6. Runtime limits unchanged. Source validation preparation is underway; no product tests/build/services, code council or publication yet. These are evidence improvements to existing principal isolation, not new serving functionality. Main remains verified5d7 and no owned PR is open.
+
+Workers: update_implementation prepares minimum-receiving actual Claude packet; cross_carrier_plan_v2_review performs independent native plan review; cross_carrier_native_review finalizes principal source validation preparation. Root reviews/validates and gives the concrete serving fix integration priority. Delivery predicates remain unmet; Preview2/protected lanes untouched.
 
 
 **Active authoring and new ruling (2026-10-15T22:04Z):** Donna explicitly answered the read-minimum question: **Require all three; return400 malformed-request.** [Operator ruling](transaction-minimum-read-receiving-plan/operator-ruling.json) preserves exact answer/provenance. New plan worker update_implementation owns the bounded lexical receiving serving fix: exactly one valid value per field when any is present, normal method/transport/auth first, uniform malformed400 before owner lookup. Valid/unknown-identity receipt/page semantics retain existing principal/epoch nondisclosure; uniform lexical400 reveals no existence. Unknown valid positions, incompatible missing targets and S1/G2 are not newly ruled. No repeat human question.
