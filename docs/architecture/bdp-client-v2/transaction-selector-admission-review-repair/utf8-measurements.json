@@ -1,0 +1,31 @@
+{
+  "method": "Independent Python UTF-8/JSON arithmetic only; not parser/preparation execution",
+  "scalars": {
+    "text": "$[?@.missing == \"é😀\"]",
+    "utf8Bytes": 25,
+    "sha256": "d7d6dbeff3e135e828be7cc773a7f109823bf777907b939f06f66ef63a27cf0f"
+  },
+  "padded": [
+    {
+      "target": 4096,
+      "utf8Bytes": 4096,
+      "sha256": "65b93f79f7dd49628e333a9d20eda7edb0129de7b35db36ac3e72c0ff6613947",
+      "asciiPadding": 4071
+    },
+    {
+      "target": 4097,
+      "utf8Bytes": 4097,
+      "sha256": "507a0501b858dd07cd88a3373d7d47dda44c058af5998e21474f0c8fe9b09095",
+      "asciiPadding": 4072
+    }
+  ],
+  "outerJSON": {
+    "rawScalarUtf8Bytes": 2,
+    "escapedScalarSourceBytes": 6,
+    "bodyByteDelta": 4,
+    "decodedObjectsEqual": true,
+    "identityTest": "Frozen source compares actual normalized identities and full normalized objects; assertion is not yet executed"
+  },
+  "caseCountUnchanged": true,
+  "httpOwnersUnchanged": true
+}

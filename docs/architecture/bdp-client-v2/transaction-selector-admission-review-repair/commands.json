@@ -1,0 +1,285 @@
+{
+  "status": "PROPOSED_NOT_EXECUTABLE_WITHOUT_ROOT_RELEASE",
+  "node": "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+  "pnpm": "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+  "commands": [
+    {
+      "id": "offline-setup",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-selector-review-repair",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "install",
+        "--offline",
+        "--frozen-lockfile"
+      ],
+      "outerTimeoutMs": 120000,
+      "executed": false
+    },
+    {
+      "id": "typecheck",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-selector-review-repair",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "typecheck"
+      ],
+      "outerTimeoutMs": 120000,
+      "executed": false
+    },
+    {
+      "id": "build",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-selector-review-repair",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "build"
+      ],
+      "outerTimeoutMs": 120000,
+      "executed": false
+    },
+    {
+      "id": "format-check",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-selector-review-repair",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "format:check"
+      ],
+      "outerTimeoutMs": 120000,
+      "executed": false
+    },
+    {
+      "id": "lint",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-selector-review-repair",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "lint"
+      ],
+      "outerTimeoutMs": 120000,
+      "executed": false
+    },
+    {
+      "id": "boundaries",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-selector-review-repair",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "check:boundaries"
+      ],
+      "outerTimeoutMs": 120000,
+      "executed": false
+    },
+    {
+      "id": "read-seal",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-selector-review-repair",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "evidence:verify"
+      ],
+      "outerTimeoutMs": 120000,
+      "executed": false
+    },
+    {
+      "id": "read-selector.test",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-selector-review-repair",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/repos/wt/vickie/vickie-selector-review-repair/node_modules/vitest/vitest.mjs",
+        "run",
+        "packages/server/src/read-selector.test.ts",
+        "--maxWorkers=1",
+        "--reporter=verbose",
+        "--reporter=json",
+        "--outputFile.json=/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-selector-admission-review-repair/run/read-selector.test.json",
+        "-t",
+        "^(?:Read\\ Selector\\ preserves\\ candidate\\ order\\ and\\ identities\\ without\\ mutating\\ records|Read\\ Selector\\ selects\\ bead\\ metadata\\ independently\\ of\\ colliding\\ properties|Read\\ Selector\\ selects\\ link\\ metadata\\ independently\\ of\\ colliding\\ properties|Read\\ Selector\\ applies\\ !,\\ \\&\\&,\\ \\|\\|,\\ and\\ parentheses\\ with\\ JSONPath\\ precedence|Read\\ Selector\\ supports\\ the\\ ==\\ operator|Read\\ Selector\\ supports\\ the\\ !=\\ operator|Read\\ Selector\\ supports\\ the\\ <\\ operator|Read\\ Selector\\ supports\\ the\\ <=\\ operator|Read\\ Selector\\ supports\\ the\\ >\\ operator|Read\\ Selector\\ supports\\ the\\ >=\\ operator|Read\\ Selector\\ supports\\ string\\ ordering\\ and\\ never\\ coerces\\ cross\\-type\\ ordering\\ or\\ equality|Read\\ Selector\\ treats\\ own\\ missing\\-path\\ status\\ as\\ existence,\\ including\\ null\\ and\\ undefined\\ values|Read\\ Selector\\ selects\\ Bead\\ identity/type\\ fields\\ and\\ Link\\ endpoint\\ IDs\\ without\\ normalization|Read\\ Selector\\ projects\\ response\\-only\\ revision\\ out\\ of\\ Selector\\ candidates|Read\\ Selector\\ parses\\ escaped\\ JSON\\ strings\\ and\\ numeric,\\ boolean,\\ and\\ null\\ literals|Read\\ Selector\\ supports\\ RFC\\ singular\\ bracket\\ names\\ and\\ canonical\\ array\\ indices|Read\\ Selector\\ supports\\ RFC\\ single\\-quoted\\ literals\\ and\\ quote\\-specific\\ escapes|Read\\ Selector\\ orders\\ strings\\ lexicographically\\ by\\ Unicode\\ scalar\\ value|Read\\ Selector\\ rejects\\ excluded\\ feature\\ \\$\\[\\?@\\.\\.properties\\.status\\ ==\\ \"open\"\\]|Read\\ Selector\\ rejects\\ excluded\\ feature\\ \\$\\[\\?@\\.\\*\\]|Read\\ Selector\\ rejects\\ excluded\\ feature\\ \\$\\[\\?length\\(@\\.properties\\)\\ ==\\ 1\\]|Read\\ Selector\\ rejects\\ excluded\\ feature\\ \\$\\[\\?@\\.properties\\.status\\ =\\~\\ \"open\"\\]|Read\\ Selector\\ rejects\\ excluded\\ feature\\ \\$\\[\\?@\\.properties\\[\\?@\\.status\\]\\]|Read\\ Selector\\ rejects\\ excluded\\ feature\\ \\$\\[\\?@\\.properties\\.left\\ ==\\ @\\.properties\\.right\\]|Read\\ Selector\\ rejects\\ excluded\\ feature\\ \\$\\[\\?@\\.properties\\.a,@\\.properties\\.b\\]|Read\\ Selector\\ rejects\\ excluded\\ feature\\ \\$\\[\\?@\\.properties\\.value\\ ==\\ \\[1\\]\\]|Read\\ Selector\\ rejects\\ excluded\\ feature\\ \\$\\[\\?@\\.properties\\.value\\ ==\\ \\{\"x\":1\\}\\]|Read\\ Selector\\ rejects\\ excluded\\ feature\\ \\$\\[\\?@\\.properties\\.status\\]\\.name|Read\\ Selector\\ rejects\\ excluded\\ feature\\ \\$\\[\\?\\$\\.properties\\.status\\]|Read\\ Selector\\ rejects\\ excluded\\ feature\\ \\$\\[\\?@\\.properties\\.rows\\[\\*\\]\\]|Read\\ Selector\\ rejects\\ excluded\\ feature\\ \\$\\[\\?@\\.properties\\.rows\\[0:2\\]\\]|Read\\ Selector\\ rejects\\ excluded\\ feature\\ \\$\\[\\?@\\.properties\\.rows\\[0,1\\]\\]|Read\\ Selector\\ rejects\\ malformed\\ Selector\\ |Read\\ Selector\\ rejects\\ malformed\\ Selector\\ \\$|Read\\ Selector\\ rejects\\ malformed\\ Selector\\ \\$\\[\\]|Read\\ Selector\\ rejects\\ malformed\\ Selector\\ \\$\\[\\?\\]|Read\\ Selector\\ rejects\\ malformed\\ Selector\\ \\$\\[\\?true\\]|Read\\ Selector\\ rejects\\ malformed\\ Selector\\ \\$\\[\\?@\\.properties\\.value\\ ==\\]|Read\\ Selector\\ rejects\\ malformed\\ Selector\\ \\$\\[\\?==\\ 1\\]|Read\\ Selector\\ rejects\\ malformed\\ Selector\\ \\$\\[\\?@\\.properties\\.value\\ =\\ 1\\]|Read\\ Selector\\ rejects\\ malformed\\ Selector\\ \\$\\[\\?@\\.properties\\.value\\ \\&\\&\\]|Read\\ Selector\\ rejects\\ malformed\\ Selector\\ \\$\\[\\?\\(@\\.properties\\.value\\]|Read\\ Selector\\ rejects\\ malformed\\ Selector\\ \\$\\[\\?@\\.properties\\.value\\)\\]|Read\\ Selector\\ rejects\\ malformed\\ Selector\\ \\$\\[\\?@\\.properties\\.value\\ ==\\ \"unterminated\\]\\ |Read\\ Selector\\ rejects\\ malformed\\ Selector\\ \\$\\[\\?@\\.properties\\.value\\ ==\\ 01\\]|Read\\ Selector\\ rejects\\ malformed\\ Selector\\ \\$\\[\\?@\\.properties\\.value\\ ==\\ NaN\\]|Read\\ Selector\\ rejects\\ malformed\\ Selector\\ \\$\\[\\?@\\.properties\\.value\\ ==\\ true\\ false\\]|Read\\ Selector\\ rejects\\ malformed\\ Selector\\ \\$\\[\\?!@\\.properties\\.value\\ ==\\ true\\]|Read\\ Selector\\ rejects\\ malformed\\ Selector\\ \\$\\[\\?!!@\\.properties\\.value\\]|Read\\ Selector\\ rejects\\ malformed\\ Selector\\ \\$\\[\\?!\\ !@\\.properties\\.value\\]|Read\\ Selector\\ rejects\\ malformed\\ Selector\\ \\$\\[\\?@\\.properties\\.rows\\[01\\]\\]|Read\\ Selector\\ rejects\\ malformed\\ Selector\\ \\$\\[\\?@\\.properties\\.rows\\[\\-0\\]\\]|Read\\ Selector\\ rejects\\ malformed\\ Selector\\ \\$\\[\\?@\\.properties\\.rows\\[\\-01\\]\\]|Read\\ Selector\\ rejects\\ malformed\\ Selector\\ \\$\\[\\?@\\.properties\\.rows\\[9007199254740992\\]\\]|Read\\ Selector\\ rejects\\ malformed\\ Selector\\ \\$\\[\\?@\\.properties\\.rows\\[\\-9007199254740992\\]\\]|Read\\ Selector\\ rejects\\ malformed\\ Selector\\ \\$\\[\\?@\\.properties\\.value\\ ==\\ \"\\\\uD800\"\\]|Read\\ Selector\\ rejects\\ malformed\\ Selector\\ \\$\\[\\?@\\.properties\\.value\\ ==\\ \"\\\\uDC00\"\\]|Read\\ Selector\\ rejects\\ malformed\\ Selector\\ \\$\\[\\?@\\.properties\\.value\\ ==\\ \"\\\\uD800\\\\uD800\"\\]|Read\\ Selector\\ enforces\\ exact\\ UTF\\-8\\ source\\-byte\\ boundaries,\\ including\\ Unicode|Read\\ Selector\\ enforces\\ exact\\ AST\\ depth\\ and\\ node\\ boundaries\\ without\\ truncation|Read\\ Selector\\ bounds\\ pathological\\ nesting,\\ negation,\\ and\\ expression\\ width\\ with\\ typed\\ failures|Read\\ Selector\\ ignores\\ inherited\\ and\\ accessor\\ members\\ without\\ invoking\\ hostile\\ getters|Read\\ Selector\\ requires\\ explicit\\ positive\\ safe\\-integer\\ limits\\ and\\ a\\ primitive\\ string|analyzes\\ complete\\ Selector\\ grammar\\ with\\ exact\\ uncapped\\ structural\\ metrics|does\\ not\\ hide\\ invalid\\ Selector\\ suffixes\\ behind\\ operational\\ capacity|analyzes\\ body\\-bounded\\ deep\\ Selectors\\ without\\ recursive\\ traversal|counts\\ decoded\\ Selector\\ UTF\\-8\\ without\\ URI\\ decoding\\ or\\ identity\\ rewriting)$"
+      ],
+      "outerTimeoutMs": 120000,
+      "executed": false,
+      "expectedCases": 67,
+      "gate": "Root measured execution release; build before any emitted consumer"
+    },
+    {
+      "id": "transaction-set.test",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-selector-review-repair",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/repos/wt/vickie/vickie-selector-review-repair/node_modules/vitest/vitest.mjs",
+        "run",
+        "packages/server/src/transaction-set.test.ts",
+        "--maxWorkers=1",
+        "--reporter=verbose",
+        "--reporter=json",
+        "--outputFile.json=/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-selector-admission-review-repair/run/transaction-set.test.json",
+        "-t",
+        "^(?:selects\\ staged\\ canonical\\ Resources\\ once,\\ retains\\ indices\\ and\\ expands\\ in\\ canonical\\ order|cardinality\\ is\\ inclusive,\\ rolls\\ back\\ the\\ whole\\ batch\\ and\\ retains\\ original\\ failed\\ disposition|late\\ selected\\ patch\\ failure\\ rolls\\ back\\ earlier\\ selected\\ mutations\\ and\\ batch\\ creation|rejects\\ invalid\\ set\\ Selector\\ grammar\\ while\\ valid\\ carriers\\ share\\ preparation\\ and\\ sequence\\ sets\\ remain\\ excluded|serializes\\ byte\\-bounded\\ deep\\ syntax\\ iteratively\\ without\\ changing\\ number\\ lexemes\\ or\\ key\\ order|preserves\\ literal\\ Selector\\ identity\\ and\\ original\\ mixed\\-carrier\\ diagnostic\\ pointers)$"
+      ],
+      "outerTimeoutMs": 120000,
+      "executed": false,
+      "expectedCases": 6,
+      "gate": "Root measured execution release; build before any emitted consumer"
+    },
+    {
+      "id": "transaction-submission.test",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-selector-review-repair",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/repos/wt/vickie/vickie-selector-review-repair/node_modules/vitest/vitest.mjs",
+        "run",
+        "packages/server/src/transaction-submission.test.ts",
+        "--maxWorkers=1",
+        "--reporter=verbose",
+        "--reporter=json",
+        "--outputFile.json=/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-selector-admission-review-repair/run/transaction-submission.test.json",
+        "-t",
+        "^(?:private\\ direct\\ Transactional\\ receiving\\ order\\ keeps\\ invalid\\ Selector\\ grammar\\ distinct\\ from\\ excessive\\ private\\ depth|private\\ direct\\ Transactional\\ receiving\\ order\\ compares\\ conflict\\ before\\ negotiation\\ and\\ negotiates\\ exact\\ pending/terminal\\ replay\\ without\\ changing\\ it|private\\ direct\\ Transactional\\ receiving\\ order\\ checks\\ fresh\\ capacity\\ before\\ negotiation\\ and\\ never\\ captures\\ a\\ refused\\ key|private\\ direct\\ Transactional\\ receiving\\ order\\ joins\\ overlapping\\ calls\\ through\\ one\\ pending\\ receipt\\ without\\ second\\ execution|valid\\ private\\ set\\ admission\\ checks\\ complete\\ batch\\ Selector\\ grammar\\ before\\ principal\\ while\\ preserving\\ key\\ reuse|valid\\ private\\ set\\ admission\\ checks\\ complete\\ singleton\\ Selector\\ grammar\\ before\\ principal\\ while\\ preserving\\ key\\ reuse|valid\\ private\\ set\\ admission\\ separates\\ cardinality\\ syntax,\\ numeric\\ admission\\ and\\ guarded\\ failure,\\ preserving\\ original\\ pointers\\ on\\ replay/reopen|valid\\ private\\ set\\ admission\\ maps\\ known\\ numeric\\ failure\\ at\\ the\\ original\\ outer\\ index\\ and\\ rolls\\ back\\ staged\\ work|valid\\ private\\ set\\ admission\\ uses\\ the\\ same\\ depth\\ boundary\\ for\\ singleton\\ and\\ wrapped\\ set\\ content|counts\\ every\\ outer\\ set\\ before\\ negotiation\\ while\\ retained\\ sets\\ bypass\\ fresh\\ operation\\ capacity|refuses\\ invalid\\ Selector\\ grammar\\ before\\ every\\ key\\ state\\ without\\ owner\\ admission|applies\\ fixed\\ Selector\\ capacity\\ only\\ to\\ fresh\\ valid\\ carriers\\ before\\ execution\\ and\\ negotiation|preserves\\ genuine\\ pending\\ completed\\ and\\ failed\\ receipts\\ before\\ Selector\\ capacity)$"
+      ],
+      "outerTimeoutMs": 120000,
+      "executed": false,
+      "expectedCases": 13,
+      "gate": "Root measured execution release; build before any emitted consumer"
+    },
+    {
+      "id": "transaction-http.test",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-selector-review-repair",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/repos/wt/vickie/vickie-selector-review-repair/node_modules/vitest/vitest.mjs",
+        "run",
+        "packages/server/src/transaction-http.test.ts",
+        "--maxWorkers=1",
+        "--reporter=verbose",
+        "--reporter=json",
+        "--outputFile.json=/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-selector-admission-review-repair/run/transaction-http.test.json",
+        "-t",
+        "^(?:source\\-private\\ actual\\ Transactional\\ HTTP\\ rejects\\ invalid\\ set\\ Selector\\ grammar\\ and\\ preserves\\ private\\ depth\\ refusal\\ without\\ key\\ capture\\ or\\ partial\\ effects|serves\\ both\\ set\\ targets\\ with\\ method/auth/shape\\ precedence\\ and\\ no\\ unsupported\\-key\\ capture|serves\\ exact\\ fixed\\ Selector\\ boundaries\\ and\\ leaves\\ refused\\ keys\\ unused|serves\\ Selector\\ syntax\\ and\\ prior\\-key\\ precedence\\ over\\ capacity)$"
+      ],
+      "outerTimeoutMs": 120000,
+      "executed": false,
+      "expectedCases": 4,
+      "gate": "Root measured execution release; build before any emitted consumer"
+    },
+    {
+      "id": "grammar-development",
+      "cwd": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-selector-admission-review-repair/run/controls/grammar-development/workspace",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-selector-admission-review-repair/run/controls/grammar-development/workspace/node_modules/vitest/vitest.mjs",
+        "run",
+        "packages/server/src/transaction-http.test.ts",
+        "--maxWorkers=1",
+        "--reporter=verbose",
+        "--reporter=json",
+        "--outputFile.json=/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-selector-admission-review-repair/run/grammar-development.json",
+        "-t",
+        "^serves\\ Selector\\ syntax\\ and\\ prior\\-key\\ precedence\\ over\\ capacity$"
+      ],
+      "outerTimeoutMs": 120000,
+      "executed": false,
+      "expectedCases": 1,
+      "expectedExit": 1,
+      "gate": "Root approval of actual emitted before/after patch and module-resolution binding after clean positive build; source proposal is not an emitted artifact."
+    },
+    {
+      "id": "omit-fresh-capacity",
+      "cwd": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-selector-admission-review-repair/run/controls/omit-fresh-capacity/workspace",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-selector-admission-review-repair/run/controls/omit-fresh-capacity/workspace/node_modules/vitest/vitest.mjs",
+        "run",
+        "packages/server/src/transaction-http.test.ts",
+        "--maxWorkers=1",
+        "--reporter=verbose",
+        "--reporter=json",
+        "--outputFile.json=/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-selector-admission-review-repair/run/omit-fresh-capacity.json",
+        "-t",
+        "^serves\\ exact\\ fixed\\ Selector\\ boundaries\\ and\\ leaves\\ refused\\ keys\\ unused$"
+      ],
+      "outerTimeoutMs": 120000,
+      "executed": false,
+      "expectedCases": 1,
+      "expectedExit": 1,
+      "gate": "Root approval of actual emitted before/after patch and module-resolution binding after clean positive build; source proposal is not an emitted artifact."
+    },
+    {
+      "id": "pack-protocol",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-selector-review-repair",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "--filter",
+        "@bdp/protocol",
+        "pack",
+        "--pack-destination",
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-selector-admission-review-repair/run/tars"
+      ],
+      "outerTimeoutMs": 120000,
+      "executed": false,
+      "gate": "Clean final signed commit/tree, fresh successful build and root packaging release"
+    },
+    {
+      "id": "pack-server",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-selector-review-repair",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "--filter",
+        "@bdp/server",
+        "pack",
+        "--pack-destination",
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-selector-admission-review-repair/run/tars"
+      ],
+      "outerTimeoutMs": 120000,
+      "executed": false,
+      "gate": "Same frozen source as protocol; actual output filenames and digests inspected"
+    },
+    {
+      "id": "install-consumer",
+      "cwd": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-selector-admission-review-repair/run/consumer",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "install",
+        "--offline",
+        "--ignore-scripts"
+      ],
+      "outerTimeoutMs": 120000,
+      "executed": false,
+      "gate": "Explicit file-tar dependencies and protocol override; fast-uri3.1.5; review actual generated consumer manifest and 8-dependency closure before invocation. Consumer does not exist yet."
+    },
+    {
+      "id": "installed-selector",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-selector-review-repair",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/repos/wt/vickie/vickie-selector-review-repair/node_modules/vitest/vitest.mjs",
+        "run",
+        "apps/bdptest/src/transactional-selector-admission-installed.test.ts",
+        "--maxWorkers=1",
+        "--reporter=verbose",
+        "--reporter=json",
+        "--outputFile.json=/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-selector-admission-review-repair/run/installed-selector.json",
+        "-t",
+        "^installed\\ Selector\\ grammar\\ and\\ fresh\\ capacity\\ preserve\\ keys\\ receipts\\ and\\ complete\\ effects$"
+      ],
+      "outerTimeoutMs": 120000,
+      "executed": false,
+      "expectedCases": 1,
+      "expectedHttp": 25,
+      "expectedChildren": 1,
+      "envRequired": {
+        "BDP_TRANSACTIONAL_INSTALLED_ENTRY": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-selector-admission-review-repair/run/consumer/node_modules/@bdp/server/dist/transaction-installed-process.js",
+        "BDP_TRANSACTIONAL_SOURCE_COMMIT": "REQUIRED_FROZEN_FINAL_SHA_NO_DEFAULT"
+      },
+      "gate": "Actual tar/source/consumer bytes and complete child payload/configuration binding audit; clean frozen source; no runtime substitution; one run only"
+    }
+  ],
+  "environment": {
+    "PATH": "prepend /Users/dbox/.nvm/versions/node/v24.16.0/bin to existing PATH",
+    "TMPDIR": "dedicated per-command owned temporary directory when supervisor is prepared"
+  },
+  "stop": "Any unexpected result/shape/control progression, deadline, source drift or owned resource leak stops dependent work; no automatic retry. Never execute this ledger as a broad suite."
+}

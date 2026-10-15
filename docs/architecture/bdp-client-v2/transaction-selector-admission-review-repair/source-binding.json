@@ -1,0 +1,98 @@
+{
+  "stage": "frozen unexecuted test-only repair of original draft",
+  "workspace": "/Users/dbox/repos/wt/vickie/vickie-selector-review-repair",
+  "branch": "codex/vickie-selector-review-repair",
+  "parent": "757aedc8008386745d59d5005498a9256d6ea76e",
+  "parentTree": "734bf9daf40fd17d0fe2bf86b085598589122f2f",
+  "files": [
+    {
+      "path": "packages/server/src/read-selector.ts",
+      "bytes": 32546,
+      "sha256": "5b50bd45211bbbaea1e8d8b257e2c9b6a53d4c848e8ef9b849eb228aa723b849",
+      "parentSha256": "cf7e82465a3cb40e1e0a09c88375d61bc8e22e66f461db16c02f8e356a5d4563",
+      "originalDraftSha256": "5b50bd45211bbbaea1e8d8b257e2c9b6a53d4c848e8ef9b849eb228aa723b849"
+    },
+    {
+      "path": "packages/server/src/transaction-set.ts",
+      "bytes": 6898,
+      "sha256": "03b1ca9427c6963f5b6ce712a7f70540501e081ed635c742015d2bc49cc9524a",
+      "parentSha256": "8929939059acdbfb87c1423ac9102917ac036b5591cc2e81d97099836f45f4e3",
+      "originalDraftSha256": "03b1ca9427c6963f5b6ce712a7f70540501e081ed635c742015d2bc49cc9524a"
+    },
+    {
+      "path": "packages/server/src/transaction-batch.ts",
+      "bytes": 44347,
+      "sha256": "5fa7052d95942548727760625e368f3892e1dacced1654f022720af0b5ce899a",
+      "parentSha256": "32aec23b0a701d8f481ee324b230e44e66b18cd6267f38c68246921234882b3e",
+      "originalDraftSha256": "5fa7052d95942548727760625e368f3892e1dacced1654f022720af0b5ce899a"
+    },
+    {
+      "path": "packages/server/src/transaction-store.ts",
+      "bytes": 86365,
+      "sha256": "0cda4b6488f589258eda46d1a00612e0278228172fc102305d889fe3c4364ad1",
+      "parentSha256": "54df6965f747e6610fe8ed95f8e2517cf3904f5812732831b78420edae2efbd0",
+      "originalDraftSha256": "0cda4b6488f589258eda46d1a00612e0278228172fc102305d889fe3c4364ad1"
+    },
+    {
+      "path": "packages/server/src/transaction-submission.ts",
+      "bytes": 7865,
+      "sha256": "795b45d87b6ee7f727a3727ace64c0e6569d0cfa7ad941e46740e285d04df942",
+      "parentSha256": "242839f8014eb6083d6f9d544c1461618561f8c511a53086eb45cd0fd3b75a37",
+      "originalDraftSha256": "795b45d87b6ee7f727a3727ace64c0e6569d0cfa7ad941e46740e285d04df942"
+    },
+    {
+      "path": "packages/server/src/transaction-http.ts",
+      "bytes": 26984,
+      "sha256": "4fd4758726c363c342e9a7b292e56e3f8b17dd1beb7b98d45554bd07a25dde83",
+      "parentSha256": "1339f32e0818aee5a44fc01a2034366a73e72c40027d6cde7041f26525aba366",
+      "originalDraftSha256": "4fd4758726c363c342e9a7b292e56e3f8b17dd1beb7b98d45554bd07a25dde83"
+    },
+    {
+      "path": "packages/server/src/read-selector.test.ts",
+      "bytes": 19869,
+      "sha256": "7392c19b5de8f032e7445452e5c56e9bea7f371351d096e1869481f1021f6a31",
+      "parentSha256": "b4d4a9bf087edf88e1d1a273b11b9a34a1dcdfad7dd5c15d37b842b0f8a06a9d",
+      "originalDraftSha256": "51344c2bd4f9219ee85a0b7d9125a397778eddf02acdf4bd711839c142a48a97"
+    },
+    {
+      "path": "packages/server/src/transaction-set.test.ts",
+      "bytes": 43706,
+      "sha256": "a47a5bcf0a9e754eb0446dbfe5a2055c9728b27bfc3d96b22781ca927c557fd3",
+      "parentSha256": "67a043837d06d040bcc5c3e632b03339eb614765dec5eb2fc9adf9bcfdb47bee",
+      "originalDraftSha256": "8b4d19f8f940eb51ed6ee6f1a4ff7e2c5458a790f8d88cd901f6b63b23451864"
+    },
+    {
+      "path": "packages/server/src/transaction-submission.test.ts",
+      "bytes": 56469,
+      "sha256": "24e7692bd99b2f5cea5d6fdc0b70e9165d99022dbbce1af6535e33615d1bb730",
+      "parentSha256": "d006a11aaf2f991388c2d1ae347cafa5a1827bdb5d784a793c6b672feb6e0c85",
+      "originalDraftSha256": "c670e410a83452637c4bcd0986a44da227a0fd162ce5b53d96787b4ecb0754c5"
+    },
+    {
+      "path": "packages/server/src/transaction-http.test.ts",
+      "bytes": 149053,
+      "sha256": "45ba9da34887b4daac1ed34cd9a623d7468f2448b5e8a744f52bebe23f33ef2a",
+      "parentSha256": "8f66df9f9cf891383a19a67fb50c85708eaae055c59a661777b7110060b0c56f",
+      "originalDraftSha256": "45ba9da34887b4daac1ed34cd9a623d7468f2448b5e8a744f52bebe23f33ef2a"
+    },
+    {
+      "path": "docs/specs/bdp.md",
+      "bytes": 394214,
+      "sha256": "13fae18c85e6ed240483fd1b7e1faaf8ec36e9383b017fa881ad3c2238797a6b",
+      "parentSha256": "287a0a64bea0c1c3be51b5bb50d528283185ef7886a9c7402b4d4b5a7d5a0941",
+      "originalDraftSha256": "13fae18c85e6ed240483fd1b7e1faaf8ec36e9383b017fa881ad3c2238797a6b"
+    },
+    {
+      "path": "apps/bdptest/src/transactional-selector-admission-installed.test.ts",
+      "bytes": 21290,
+      "sha256": "26b8dbc41cacccc7ad1f5157b1f65421e3eff6b3add65c0e122343a3db738e5b",
+      "parentSha256": null,
+      "originalDraftSha256": "26b8dbc41cacccc7ad1f5157b1f65421e3eff6b3add65c0e122343a3db738e5b"
+    }
+  ],
+  "diffSha256": "4837959bceec2e16358c46c11a6a2676d113bbaad49ba8b3d184ebd34a366b24",
+  "correctionSha256": "56305491aa6d8c9c57f3bf2ec880a508a595d88403fd73f531bd2c81c0326eca",
+  "originalBindingSha256": "dca25dfc3d64137519d9eb636442d6f2d1fefdcff0954b4a793065644d691685",
+  "executionReleased": false,
+  "sourceCommit": null
+}
