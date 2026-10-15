@@ -1,0 +1,31 @@
+{
+  "accepted": true,
+  "session": "2026-10-08T20:26:35Z-81e5",
+  "plan": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/read-update-guarded-overlap-plan-v2.md",
+    "sha256": "7de8ee2cb33d1cfd9d7d3c556cae3998838e68c58f5cca72d70cff7c84084cef"
+  },
+  "sourceCouncil": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/read-update-guarded-overlap-draft/execution-preparation-v2/root-source-council.json",
+    "sha256": "c4799d6a7316586c1c2cb61270d7dd4c0a317f8672c50c8896e276591728f40d"
+  },
+  "reanchorAcceptance": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/read-update-guarded-overlap-draft/execution-preparation-v2/root-reanchor-acceptance.json",
+    "sha256": "181f7a76731ea593769a1f585f89ebcffd44ca58d573ed56869c4b2d440fceac"
+  },
+  "scope": [
+    "apps/bdptest/src/read-update-guarded-overlap-installed.test.ts",
+    "docs/design/update-implementation-progress.md"
+  ],
+  "releasedStages": [
+    "offline-setup",
+    "typecheck",
+    "build",
+    "format-check",
+    "lint",
+    "boundaries",
+    "read-seal",
+    "build-inventory"
+  ],
+  "stopRule": "Stop at first nonzero, timeout, source drift or cleanup failure. No automatic retries. No package, service, positive/control, commit or publication under this initial release."
+}
