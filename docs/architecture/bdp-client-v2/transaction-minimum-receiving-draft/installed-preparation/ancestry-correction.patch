@@ -1,0 +1,16 @@
+--- before/gate.py
++++ after/gate.py
+@@ -88,8 +88,11 @@
+     require(git("rev-parse","HEAD").decode().strip()==g["finalHead"] and git("rev-parse","HEAD^{tree}").decode().strip()==g["finalTree"],"Final identity changed")
+     integration=document(g,"integrationAcceptance")
+     require(integration.get("accepted") is True and integration["authoringParent"]==AUTHORING_PARENT and integration["finalBase"]==g["finalBase"] and integration["sourceBindingSha256"]==binding_sha(),"Integrated parent/source not accepted")
+-    require(re.fullmatch("[0-9a-f]{40}",g["finalBase"]) is not None,"Actual integrated parent pending")
+-    require(git("show","-s","--format=%P","HEAD").decode().strip().split()==g["finalParents"] and g["finalParents"]==[g["finalBase"]],"Final ordered parents differ")
++    require(g["finalBase"]=="73fc0daed2e5fa6843e581de9bf7a46e519562ab","Wrong actual integration base")
++    author=integration.get("authorCandidate")
++    require(re.fullmatch("[0-9a-f]{40}",author or "") is not None,"Author candidate pending")
++    require(git("show","-s","--format=%P",author).decode().strip().split()==[AUTHORING_PARENT],"Author candidate must be ordinary direct child of original base")
++    require(git("show","-s","--format=%P","HEAD").decode().strip().split()==g["finalParents"] and g["finalParents"]==[author,g["finalBase"]],"Final ordered integration parents differ")
+     git("merge-base","--is-ancestor",AUTHORING_PARENT,g["finalBase"])
+     git("merge-base","--is-ancestor",g["finalBase"],g["finalHead"])
+     final=document(g,"finalSource")

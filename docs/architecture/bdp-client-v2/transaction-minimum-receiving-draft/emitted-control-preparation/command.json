@@ -1,0 +1,30 @@
+{
+  "id": "omit-receiving-gate",
+  "cwd": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-minimum-receiving-draft/emitted-control-preparation/mirror",
+  "argv": [
+    "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-minimum-receiving-draft/emitted-control-preparation/mirror/node_modules/.pnpm/vitest@4.1.10_@types+node@24.13.3_vite@8.2.1_@types+node@24.13.3_/node_modules/vitest/vitest.mjs",
+    "run",
+    "packages/server/src/transaction-http.test.ts",
+    "--maxWorkers=1",
+    "--reporter=verbose",
+    "--reporter=json",
+    "--outputFile=/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-minimum-receiving-draft/emitted-control-preparation/run/control.results.json",
+    "-t",
+    "^enforces\\ the\\ minimum\\-receiving\\-malformed\\-request\\ boundary\\ over\\ the\\ emitted\\ listener$"
+  ],
+  "selectedFullNames": [
+    "enforces the minimum-receiving-malformed-request boundary over the emitted listener"
+  ],
+  "cases": 1,
+  "http": 1,
+  "owners": 1,
+  "listeners": 1,
+  "directories": 1,
+  "productChildren": 0,
+  "ownedTempPrefixes": [
+    "bdp-tx-http-"
+  ],
+  "supervisorSeconds": 120,
+  "expectedRawTestExit": 1
+}

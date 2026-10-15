@@ -1,0 +1,11 @@
+# Closed focused wire/production review
+
+Prompt: 63465 bytes. Clean candidate `c18c71202c90fa2558f34107ad342befabf750fe`, tree `596abe870220fb61ce606f8382a9da52d554d063`, feature base `73fc0daed2e5fa6843e581de9bf7a46e519562ab`. All eleven feature hashes plus relevant dependency files match both committed and working bytes; worktree clean at assembly. Root controls launch. No product or review execution occurred.
+
+Coverage: both production files complete (32,799B), complete normative diff, existing mutation POST/token clauses; runtime Node raw headers, authentication resolution, Origin refusal, schema fallthrough and delivery; schema minimum exclusion; shared HEAD/conditional semantics; service receipt and owner receipt/page nondisclosure/minimum branches; precise direct no-owner/HEAD and raw-header test excerpts. Excerpt ranges and hashes are in excerpt-binding.json. The prompt exceeds the approximate55KB target slightly to retain both full production files and the complete normative delta. Unchanged service page forwarding is explicitly summarized; owner nondisclosure/minimum branches remain actual excerpts. It remains a single focused production target, far below the109,216B inconclusive packet.
+
+Excluded: installed harness/launcher review (separate target), full unrelated test bodies, bulk evaluator and lifecycle internals, generated dist. Every feature source hash is still bound, but bound-only files are not represented as reviewed by this scope. No complete council claim follows from this packet.
+
+Prior full review: actual exit143 after895.648785s, empty stdout/stderr, unchanged source. Original outputs and cleanup remain immutable, explicitly INCONCLUSIVE. The new prompt requests a complete standalone concise findings list, not reconstruction of nonexistent findings.
+
+Runner reuses the actual reviewed no-tools/safe-mode/no-session/no-model pattern with exclusive output files, pinned source/artifact before-after snapshots, process group sampling,895s TERM/900s KILL, stdout/stderr/exit/cleanup retained. Added clean candidate identity/ordered-parent checks and base-to-candidate diff binding. No actual root-release or runtime outputs exist here. CLI availability was read-only verified at /opt/homebrew/bin/claude.
