@@ -1,0 +1,159 @@
+{
+  "parent": "bd2178dd6f4b9f7c2d239624d7edaa3d961c3e26",
+  "tree": "062c32778217aeb702b2f7798dc82b0d985e9c67",
+  "branch": "codex/vickie-command-minimum-catalog",
+  "clean": true,
+  "v3Sha256": "49e8c68db78dc4fb422f73adf951d609262e69606ecccecc5fdee03525281b1e",
+  "v4Sha256": "50b58f50a34a2c19900634cf0f07e991c15e8868e4759589b29cb7c806e7a2e2",
+  "diffSha256": "9390881285b43188dc61f46dafc3bb02d60c1036946245721cb8a1e9339613a2",
+  "files": [
+    {
+      "path": "packages/conformance/catalog/read-update-v1.json",
+      "bytes": 84833,
+      "sha256": "0ad91810510dd7b688b291863d9b33949bba85fab69d6004ef1423b8c5e47039",
+      "sameAs727e": true,
+      "sameAsNativeReviewed22777": true
+    },
+    {
+      "path": "docs/specs/bdp.md",
+      "bytes": 394214,
+      "sha256": "13fae18c85e6ed240483fd1b7e1faaf8ec36e9383b017fa881ad3c2238797a6b",
+      "sameAs727e": false,
+      "sameAsNativeReviewed22777": true
+    },
+    {
+      "path": "docs/design/profile-contract-planning.md",
+      "bytes": 28234,
+      "sha256": "1a3b31f11180497f28e4bce69047e51ac7ad26a328c191740cef3b783cd8c75a",
+      "sameAs727e": true,
+      "sameAsNativeReviewed22777": true
+    },
+    {
+      "path": "packages/conformance/test-support/read-update-coverage-v1.json",
+      "bytes": 712792,
+      "sha256": "ee39ca50dc8f48dd062fa8f2e1364c1842aa3bb2d1f732152dd42646ffa154b1",
+      "sameAs727e": true,
+      "sameAsNativeReviewed22777": true
+    },
+    {
+      "path": "packages/conformance/src/profile-contract-plan.test.ts",
+      "bytes": 31931,
+      "sha256": "ca2f0b36bc0685782a2d692f7d5414c1be056df99dd447583db1bf3a96d95449",
+      "sameAs727e": true,
+      "sameAsNativeReviewed22777": true
+    },
+    {
+      "path": "packages/conformance/src/transactional-cumulative.test.ts",
+      "bytes": 89418,
+      "sha256": "1c361acc6edc460f1a224331d1010da9555a3700066b1ace41f75842aadf7bc8",
+      "sameAs727e": true,
+      "sameAsNativeReviewed22777": true
+    },
+    {
+      "path": "apps/bdptest/src/transactional-matrix.test.ts",
+      "bytes": 84322,
+      "sha256": "5420e0bad74cc3906c72af02027b2de58c698e24c209e2fd9f67d013c5ca5ed2",
+      "sameAs727e": true,
+      "sameAsNativeReviewed22777": true
+    },
+    {
+      "path": "apps/bdptest/src/read-update-matrix.test.ts",
+      "bytes": 203624,
+      "sha256": "25559baca1589865de4cde257de028b80385a502da543e754de19b899b7c2941",
+      "sameAs727e": true,
+      "sameAsNativeReviewed22777": true
+    },
+    {
+      "path": "packages/conformance/development/read-update-coverage-v1.json",
+      "bytes": 48952,
+      "sha256": "d4fdaf3411fbc358c92be6e0e1e148dca9c50c0f56a1d15c397821859348a6ce",
+      "sameAs727e": true,
+      "sameAsNativeReviewed22777": true
+    },
+    {
+      "path": "packages/conformance/src/development-read-update.test.ts",
+      "bytes": 4472,
+      "sha256": "5f882837bb75c2771549d75e5882275ab511aa3a4481fc49f946c0eeb8450f48",
+      "sameAs727e": true,
+      "sameAsNativeReviewed22777": true
+    },
+    {
+      "path": "packages/conformance/development/README.md",
+      "bytes": 16904,
+      "sha256": "286749f21f81245c6c96f3f998024f3c428adb02b86d0f6721c3a68b788bb3ca",
+      "sameAs727e": true,
+      "sameAsNativeReviewed22777": true
+    }
+  ],
+  "citations": [
+    {
+      "start": 3581,
+      "end": 3588,
+      "previousStart": 3579,
+      "previousEnd": 3586,
+      "text": "On mutation POSTs to operation command targets, authorities MUST ignore the\n`BDP-Minimum-Scope-Position`, `BDP-Scope-Epoch`, and\n`BDP-Authorization-View` request fields. Their presence, absence, completeness,\nand field values do not impose a minimum-position barrier or affect command\nidentity. Ordinary HTTP field syntax and transport, header, and body bounds\nstill apply, as do authorization, idempotency, carrier validation, and\n`expectedRevision`. This rule applies to mutation POSTs under this profile and\ncumulative profiles. It does not change conditions on reads.",
+      "sha256": "9260b06fa9c1b71c7fa63696183bbb270d00ab1ad02a4a682658f4a10fc63596",
+      "unchangedText": true
+    },
+    {
+      "start": 5818,
+      "end": 5822,
+      "previousStart": 5797,
+      "previousEnd": 5801,
+      "text": "Transactional mutation POSTs follow the shared\n[mutation command preconditions](#mutation-command-preconditions): copied read\nminimum fields impose no barrier or command-identity input. This does not change\nminimum controls on reads, including subsequent Mutation Receipt GET or HEAD\nrequests.",
+      "sha256": "4bcdae0dec55dd440429a5c0b2790ab4d930fc9b347a5863bf70abec175231cd",
+      "unchangedText": true
+    },
+    {
+      "start": 5853,
+      "end": 5855,
+      "previousStart": 5832,
+      "previousEnd": 5834,
+      "text": "The inherited [Mutation command preconditions](#mutation-command-preconditions)\nalso apply here: HTTP conditional fields on operation command targets do not\nguard newly produced receipts.",
+      "sha256": "d503844b42944f07a8d048cb8fe0888f696d12d4e9373b8d62ef4bab6a542f00",
+      "unchangedText": true
+    }
+  ],
+  "counts": {
+    "RUcatalog": 81,
+    "RUcoverage": 129,
+    "RUauthored": 54,
+    "RUomitted": 75,
+    "RUwhole": 33,
+    "RUuncovered": 96,
+    "development": 81,
+    "developmentBounded": 58,
+    "developmentOmitted": 23,
+    "TXrequiredSourcePin": 250,
+    "TXunplannedSourcePin": 237,
+    "TXreportSourcePin": 255,
+    "TXmanifestRows": 13,
+    "selectedProspectiveCases": 12
+  },
+  "coverageBytes": 712792,
+  "fences": [
+    {
+      "base": 648157,
+      "ceiling": 714717,
+      "remaining": 1925
+    },
+    {
+      "base": 698614,
+      "ceiling": 712950,
+      "remaining": 158
+    },
+    {
+      "base": 703415,
+      "ceiling": 713143,
+      "remaining": 351
+    },
+    {
+      "base": 703415,
+      "ceiling": 714369,
+      "remaining": 1577
+    }
+  ],
+  "execution": false,
+  "authoringReleased": false,
+  "instructionInventory": "No AGENTS.md in checkout or checked ancestors /, /Users, /Users/dbox, /Users/dbox/repos, /Users/dbox/repos/wt, /Users/dbox/repos/wt/vickie; no tracked AGENTS/CLAUDE instruction file. Session guard used for artifact writes."
+}
