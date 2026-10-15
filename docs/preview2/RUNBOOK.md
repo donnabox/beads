@@ -31,9 +31,7 @@ Chris's Memory proposal prompted the generalization you can try in this preview.
 
 In the new generalized model, **Beads** are the nodes and **Links** are the edges connect Beads. Issues are specific types of Beads; Dependencies are specific types of Links. The familiar Issue and Dependency choices remain available.
 
-Use `--type` to choose a Bead or Link type when creating or filtering records. The two namespaces (`bd` and `bd link`) make clear which kind of record you mean.
-
-Run `bd types` to see the names accepted by `--type`. In a new Preview 2 workspace, its default display is:
+Run `bd types` to see the names accepted by `--type`. In a new Preview 2 workspace, here are the registerd Bead and Link types you can use:
 
 ```text
 Bead Types (14):
@@ -129,7 +127,7 @@ For familiarity and convenience, the CLI also has narrower shortcuts:
 
 ## 4. Memory and Issue Beads
 
-Issue Beads have been part of the product from the beginning; Memory Beads are new in this preview. A **Memory** stores reusable information. It has a string `title` and a Markdown `body`.
+Issue Beads have been part of the product from the beginning; Memory Beads are new in this preview. A **Memory** stores reusable information. It has two properties: string `title` and a Markdown `body`.
 
 The next four examples create Memories about release policies. They show the general `create` form, shorter field flags, and the Memory-specific `remember` command.
 
