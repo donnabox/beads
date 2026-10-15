@@ -1,0 +1,55 @@
+## Verdict
+
+The core correction is sound and I found no demonstrated contradiction in its central claim. One High and five Medium items need wording or authoring changes before the plan is executable as written; several claims are attribution overreach rather than infeasibility.
+
+**Confirmed correct from the excerpts (do not re-litigate):**
+- Raw captures are URL-only — `runner.ts:2482–2487`. Removing arbitrary raw JSON/revision captures is required, and this is an authoring defect, not a runtime one.
+- Pinning `/id` and never `/next` is correct for a *different* reason worth keeping: the `/next` branch **initializes** `entry.pageBody` from the first GET (`transactional-observation.ts:293–296`) and only compares on later GETs, so `/next` would prove nothing about original wire. `/id` compares unconditionally at `:303`.
+- Hook-before-assertions is correct: `afterExchange` is awaited inside the executor (`transactional-matrix.test.ts:264–287`), so the hook must independently validate before retaining a baseline, and the manifest pass must additionally be required post-run.
+- Equality is parsed-JSON deep equality, not bytes (`:221`, `:303`, comment `:261–262`). Correctly stated.
+- A retained-body mismatch cannot yield a successful action9 under *either* propagation branch: `validate()` at `runner.ts:949` precedes the `projection` assignment at `:965`, and `:980` throws if `projection` was never set.
+- Raw-to-client epoch/view equality is not establishable — and the mechanism is stronger than the native report states: the dynamic GET is executed by `createRawHttpExchangeExecutor` at `runner.ts:906–918`, which **bypasses `options.exactExecution.execute`**, so the app hook never observes action9 at all. Keep the disclaimer; cite this bypass as the reason.
+
+## Findings
+
+**1. High — the only replay/state oracle can silently not run or be absorbed.**
+Target: addendum §3; native "Raw replay, state and revision comparisons".
+The ten-action hook is the sole evidence for replay/resource/revision equality, yet it runs *inside* the executor, so a thrown comparison almost certainly lands as `ObservedExchange.transportError`/`harnessError` (`runner.ts:176–185`) instead of failing the test; and an activation-gate miss or early return (pattern at `test:1851–1861`) makes comparisons silently not execute. Smallest correction: mirror the existing `finish()` (`test:1905–1909`) — assert `active === true`, assert performed-comparison count equals the per-mode expected count (controls truncate the sequence, cf. `maximum` at `test:1841–1842`), and post-run assert no transportError/harnessError on the ten raw exchanges.
+
+**2. Medium — "Remove every arbitrary JSON/revision/transaction capture" over-removes.**
+Target: addendum §1; native "Actual interface limits" item 3.
+`runner.ts:1126–1133` applies **no** `isHttpUrl`/scope check to programmatic-action captures and stores `cloneRuntimeJson`. Because `:303` already proves action9's body deep-equals original A, an action9 capture *does* make original-A facts available as a binding for authored `equalsBinding` on actions 10/11 — contradicting "capturing action9 does not make original bodies available" as applied to A. Smallest correction: scope the removal directive to raw captures (`:2468–2496`) and pick one explicitly: (a) author one action9 capture plus an action10 `equalsBinding` for the A resource, recording that captures run only after `:1119`, so invalid-receipt mode cascades into the dependent assertion IDs; or (b) keep app-only and reword to "no *raw* capture can carry JSON; programmatic captures exist and are deliberately unused."
+
+**3. Medium — several action9 pins rest on report fields not shown, and one conflicts with documented redaction.**
+Target: native retained-root bullet list ("dynamic route is the exact observed A root GET", "receipt equal the genuine A root", source digest); addendum §4.
+`runner.ts:1375` applies `redactUrl` to the reported response URL, and no excerpt shows how `TRANSACTIONAL_EXCHANGE_FIELDS` project into the report. Smallest correction: split the pins into (i) *already internally enforced* — route identity (`transactional-observation.ts:253–260` + `runner.ts:900–904`), credential (`:926`), logical session (`:263–269`), configuration (`:974–975`) — and (ii) *report-verified*, listing only fields confirmed unredacted. Drop pins in neither bucket.
+
+**4. Medium — in-hook schema validation "before cloning" is both unshown and stronger than the proof needs.**
+Target: addendum §3 first sentence; proposal bullet 2.
+No validator is shown as available in `apps/bdptest`, and the existing hook uses literal/`toMatchObject` checks (`test:1889–1901`). Smallest correction: state the pre-baseline gate as exhaustive literal/key-set/absence checks, and take schema validity from the row's own manifest `json-schema` assertion outcomes conjoined at post-run adjudication (already required). Reserve "before" for checks the hook actually branches on.
+
+**5. Medium — action9's three inner assertions and its header-absence are runner-internal, not authored.**
+Target: addendum §4 ("O header absence", "Pin successful action9 client assertions") and §Credit mirror.
+`runner.ts:927–933` hardcodes `raw.headerLines: []` and `actual-status`/`actual-request`/`actual-body`. Smallest correction: exclude those three IDs from the authored manifest mirror as runner-synthesized exchange assertions, and restate absence as derived from the hardcoded empty authored set plus the internal `request-authored-headers` outcome — explicitly flagged as dependent on that assertion kind's semantics, never on report headers (redacted at `:1377`, `:1795–1803`) and never on the hook (bypassed, F-list item above).
+
+**6. Medium — the weakening guard reaches the proof only if the ledger is the sole driver.**
+Target: addendum §"Independent weakening guard".
+The existing hook drives comparisons from index literals (`test:1862–1902`); a ledger that is consulted but not depended on makes clone/delete/redirect rejection tautological. Smallest correction: require each replay comparison to be obtained *only* by ledger lookup keyed on the observed action/route, plus the per-mode performed-count assertion from item 1 — so removing a call site fails even if the static guard is bypassed.
+
+**7. Low — do not pin the failure message string.** If `runRequest` absorbs callback throws, the observable failure becomes `missing actual receipt observation` (`:980`), not `retained receipt differs from original wire facts`. Keep the message as attribution prose only.
+
+**8. Low — qualify "session binding."** `:263–269` compares only `runtimeConfigurationIdentity` and `configurationDigest` (same as reopen, `:150–158`); `scenario`/`generation`/`listenUrl` are not compared. Say "logical configuration identity, not same-generation/same-listener serving."
+
+**9. Low — add the authority-eligibility constraints to §1.** `sequence` is absent from the mutation allowlist (`:179–191`), so a `/id` capture from the sequence response is **silently demoted** to an ordinary capture with no error (`:192–197`); binding reuse revokes authority (`:195`, `:233`); two roots need ledger `maximum ≥ 2` (`:233`); authority also needs 200 + wire ≤ 2 MiB + receipt schema + status completed|failed + `detail === "available"` (`:200–214`). Capture B's root only if its identity `equalsBinding` is actually authored.
+
+**10. Low — "route/method progression."** The shown `exactRequest` surface exposes no method, and the existing hook never checks one. Restate as url + authored key + body digest + writeState progression unless a method field exists.
+
+**11. Low — naming/count ambiguity.** "The new cumulative ledger callback" reads as an eighth registration against "no extra registration / seven remain seven." Call it the amended existing static callback.
+
+**12. Low — fixture-dependent literals.** `pos-3` current / `pos-1` historical and exact replay-body equality are fixture facts no excerpt establishes. Cross-check the position literal against the hook's observed `bdp-scope-position` progression and record it as a fixture dependency; note any volatile field in the POST-receipt/GET-receipt pair fails `:303` independently of this evidence claim.
+
+## Not decidable from supplied context (needs a source read or execution; not defects)
+
+`equalsBinding` deep-compare of non-string JSON and manifest-schema allowance for programmatic captures (gates item 2); report projection of `TRANSACTIONAL_EXCHANGE_FIELDS` and `redactUrl`'s path behavior (gates item 3); `request-authored-headers` semantics with an empty authored set (gates item 5); the call site and catch behavior for the observe callback in `runRequest` (gates items 1 and 7); ledger `maximum`; whether the two selected controls perturb action1 — if either does, the `/id` capture fails and the row aborts before action9, changing both HTTP counts and the expected failing-ID list; validator availability in `apps/bdptest`; whether `m-create-b` uses an allowlisted operation.
+
+Counts and measurement are internally consistent and unaffected by these corrections, except that adopting item 2(a) changes the expected failing assertion-ID list under invalid-receipt mode.
