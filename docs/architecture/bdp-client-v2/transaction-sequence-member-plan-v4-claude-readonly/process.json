@@ -1,0 +1,27 @@
+{
+  "argv": [
+    "/opt/homebrew/bin/claude",
+    "--safe-mode",
+    "-p",
+    "--tools",
+    "Read,Grep,Glob",
+    "--allowedTools",
+    "Read,Grep,Glob",
+    "--disallowedTools",
+    "Bash,Edit,Write",
+    "--permission-prompts",
+    "none",
+    "--no-session-persistence",
+    "--add-dir",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs"
+  ],
+  "cwd": "/Users/dbox/repos/wt/vickie/vickie-command-minimum-evidence",
+  "pid": 50435,
+  "processGroup": 50435,
+  "started": "2026-10-15T08:54:56.815856+00:00",
+  "timeoutSeconds": 900,
+  "promptSha256": "0466d57d528210971e1f5e1ee4ea31a1439a33078623c54ed9b6a6e72f086c82",
+  "sourceBeforeSha256": "3f39a24af079ee7afa3da4f63032b4e0c9d239994e3f543bf4a230e4f409f447",
+  "tempDirectory": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-sequence-member-plan-v4-claude-readonly/tmp",
+  "reviewKind": "read-only file inspection; Read/Grep/Glob only; no model override"
+}
