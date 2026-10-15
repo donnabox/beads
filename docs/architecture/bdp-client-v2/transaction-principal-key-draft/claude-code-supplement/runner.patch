@@ -1,0 +1,11 @@
+--- original/run.py
++++ supplement/run.py
+@@ -1,7 +1,7 @@
+ from pathlib import Path
+ import subprocess,json,hashlib,datetime,time,os,signal
+ W=Path("/Users/dbox/repos/wt/vickie/vickie-principal-key-isolation")
+-E=Path("/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-principal-key-draft/claude-code-review")
++E=Path("/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-principal-key-draft/claude-code-supplement")
+ P=E;T=P/"tmp"
+ sha=lambda b:hashlib.sha256(b).hexdigest()
+ def git(*a):return subprocess.check_output(["git",*a],cwd=W)

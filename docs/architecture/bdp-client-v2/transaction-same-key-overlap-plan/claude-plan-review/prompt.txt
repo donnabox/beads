@@ -1,0 +1,1553 @@
+Review this proposed installed Transactional same-key overlap witness. PLAN council only. Do not write or modify any files. Output findings only in stdout. No tools enabled. Source is committed f5511718371a6935614eae6756e796cef71570c2/tree3cd1da66ba3a6cbd0bbdaa2442d10002939d826b; concurrent dirty principal work is NOT an input.
+Return numbered findings with severity/location/impact/smallest correction. Separate defects, omitted-context dependencies and optional polish. Focus equal singleton/batch semantic requests, actual outstanding-client overlap versus unproved internal pending overlap, pending/terminal shapes/context, second-key control independent schema/own-key/position checks BEFORE shared-id failure, full Resource/Event/retry oracles, budgets, retained observability, credential safety and cleanup. Do not demand excluded internal pending-window, whole-contract, crash/recovery, multi-operation rollback or public-admission proof. No execution authorized.
+Complete frozen plan/ledger/binding follow. Exact committed excerpts have path/range headers (no added per-line numbering); compact schema definitions preserve JSON contents. Hashes identify omitted portions but do not supply them. Flag missing load-bearing context precisely rather than inventing it. Native verdict is not supplied. The Update helper is only a transport pattern, not the TX contract.
+
+
+=== COMPLETE plan.md SHA256 84bc96cb8d87692e61e51f5b1ba3c854dbea40906bc268f3f58c925591b14996 ===
+# Proposed installed same-key singleton/batch overlap witness
+
+Planning only. Native and actual Claude plan council, root authoring release, measured draft review and execution release remain required. This supporting plan implements no semantics and replaces no authority. The sole authority is `/Users/dbox/repos/wt/vickie/bdp-client-design/checkout/docs/architecture/bdp-client-v2/design.md`, Autonomous profile completion T2/T4 and current priority. The current source basis is committed `f5511718371a6935614eae6756e796cef71570c2` (PR132 merged), tree `3cd1da66ba3a6cbd0bbdaa2442d10002939d826b`. Reads use that commit's blobs; the concurrently reviewed dirty principal draft is untouched. Ordinary integration of actual principal-main and dependency recheck precede final validation/publication. No future candidate is asserted.
+
+## Purpose and scope
+
+The preceding audit identifies an installed evidence gap, not a proven runtime defect: two outstanding real clients submitting the same normalized one-operation creation through different carriers should share one receipt and one allocation. Existing `transaction-submission.test.ts:299–315` demonstrates overlapping source calls; sequential cross-carrier coverage does not observe real client overlap. The concurrent-join obligation is at spec3898–3901/3933–3940 and catalog `transactional.idempotency.concurrent-join`. Spec3910–3931 excludes carrier from identity and equates a singleton with its one-operation batch. Spec2130–2147 authorizes omitted IDs to be allocated by the authority. Retained replay preserves those allocations.
+
+Own exactly two prospective files: new `apps/bdptest/src/transactional-same-key-overlap-installed.test.ts` and a factual private-evidence paragraph in `docs/design/transaction-implementation-progress.md`. No runtime, shared helper, schema, fixture, catalog, manifest, public qualification, or Update edits. No new scheduler, concurrent DSL, fault injection, or pending-window seam. Snapshot/continuation and incident-Link metadata questions remain excluded, as do optional History, Types work and provenance redesign. No claim of cumulative qualification or cold discovery; ready targets are private installed configuration evidence.
+
+## Fixed inputs and six-request positive
+
+`ledger.json` contains exact compact singleton and batch bodies, byte counts, SHA256, methods, headers and artifacts. Both omit `id`. Singleton omits `operation`; batch contains one `createBead` operation, without name or body key. Both use the same type URL, title and metadata `{}`, one writable principal `writer`, the same ephemeral operator token, and `Idempotency-Key: same-key-overlap`. No aliases or preexisting Resources exist. The descriptor has no `ownsOutgoing`. Configuration uses exactly the existing launcher scope/directory/create/artifacts/credentials fields; token is ephemeral random base64url, never evidence. No unsupported credential `ref`, custom view or testSeams is added. Actual authorization view is observed and compared, not inferred from principal identity.
+
+1. Dispatch singleton POST to actual ready createBead target, independently pinned to `https://reference.invalid/acme/operations/create-bead`.
+2. Before awaiting either response, dispatch batch POST to actual ready batch target, independently pinned to `https://reference.invalid/acme/operations/batch`. Both promises immediately have rejection handlers; settle them with `Promise.allSettled`, preserving both errors. No sleeping or retry to force a pending window.
+3. GET the validated shared receipt.id under the same operator credential, only after both responses settle and identity checks pass. Validate exact canonical href under `scope + receipts/`, one nonempty `[A-Za-z0-9_-]+` suffix, no query/fragment/userinfo, <=8192 characters and UTF8 bytes. This is an issued receipt root, not constructed discovery or an invented receipt-page URL.
+4. GET `https://reference.invalid/acme/beads/?limit=32`; preserve query in the actual request target. Require a complete one-item collection and `next:null`.
+5. GET `https://reference.invalid/acme/events/`; require one full created Event, `next:null`, no pagination or stream.
+6. Repeat the exact batch body and original key; require the full retained terminal receipt unchanged and current position still pos-1.
+
+No bootstrap HTTP, authentication probe, initial collection, receipt polling, extra Resource GET or continuation fetch. The three GETs and three POSTs are all the work. If both pair responses are pending, retain their actual facts and stop as an inconclusive bounded witness; do not poll or call this a protocol violation. This small implementation is expected to produce a terminal response, but this plan does not impose that expectation on every conforming authority.
+
+## Receipt, Resource and Event oracles
+
+Use existing Ajv2020 plus actual URI/date-time validators over the current bundled schema: mutationReceipt, beadRecord, currentBeadCollection and eventPage. Validate schema before extracting baseline facts. Closed full-object equality follows independent literal assertions, rather than treating baseline equality as sufficient.
+
+Spec4589–4596/4627/4632 distinguishes mutation200 terminal versus202 pending and receipt GET200. Each initial response must be200/completed/available or202/pending, never a failed receipt. For202, current implementation requires Location equal receipt.id and Retry-After1 (the Location assertion is explicitly private implementation coverage, not an added normative MUST). Pending body is exactly the six core fields id/status/idempotencyKey/scopeEpoch/authorizationView/transaction, with no terminal fields. For200, require one exact result `{operationIndex:0,outcome:'created',resource:R}`, no operationName, results.next is not a field, receipt.next is null, requiredPosition=effectPosition=pos-1 after shared-identity validation. No problem/allocated/extra result fields. expiresAt is schema-valid date-time; do not invent a fixed timestamp or freshness interval.
+
+Both receipts must have the same id, transaction, epoch, recorded authorizationView and original key. When both terminal, compare their entire parsed receipt bodies. When one pending, compare all common identity fields and preserve which response was pending. The terminal Resource R has exactly id/type/revision/properties/metadata: absolute authority-allocated canonical Bead id with one legal opaque suffix, type=`https://reference.invalid/acme/types/task`, nonempty validated revision, properties exactly `{title:'same-key-overlap'}`, metadata exactly `{}`. No links, ownedLinks or revisionProvenance is added by this fixture. Validate the actual allocated suffix without claiming its UUID spelling is normative.
+
+Spec5263–5274 distinguishes historical receipt facts and serving context. Every response has all three current context headers. Initial pending context may be observed pos-0 or pos-1; never infer it from missing body positions. Terminal positive responses and reads must have pos-1. Epoch/view headers equal the recorded tuple for this unchanged configuration; compare them, do not invent values. GET3 receipt and POST6 replay equal the entire independently validated terminal baseline. GET4's one complete Resource equals R, not just its id/revision. Exact schema/content-type, private/no-store and non-attesting marker are checked; no redirect is accepted.
+
+GET5 page equals `{source:scope+'events/',events:[E],next:null}`. E has exactly the schema's full fields; ordinal0/type created, subject=R.id, subjectType=R.type, transaction=receipt.transaction, time schema-valid date-time, data exactly `{revision:R.revision,properties:R.properties,metadata:R.metadata}`. Independently compute the private Event ID `ev_${H('epoch',epoch)}_${H('view',servingView)}_${H('source',scope+'events/')}_pos-1_0`, where H is SHA256 of JSON.stringify([tag,value]) encoded base64url, matching `transaction-events.ts:75–101`. This is a pinned private fixture oracle, not an opaque-ID protocol promise. Source emitter is `transaction-batch.ts:692–707,790–798`; terminal commit/position is store1280–1312. One Resource, one complete Event page and retained receipt equality jointly establish one observable effect/allocation; they do not inspect internal execution count or durable crash recovery.
+
+## Real overlap and transport
+
+Adapt the small local Node `http.request` pattern in committed `read-update-guarded-overlap-installed.test.ts:200–518`, without changing that test/helper. Use agent:false and Connection:close, canonical Host, dial only validated ready loopback host/port, path=`pathname+search`, exact fixed headers/body Buffer/Content-Length. Node HTTP does not follow redirects. Reject unexpected status/redirect without another dispatch. This is real request construction and socket observation, not a raw conformance serializer exactRequest attestation.
+
+Record bounded ordinal milestones for pair A/B: invoked, end-called, socket-assigned, connected, finish, response-start/end, settled, request/response/socket-close, error/aborted. Deduplicate kinds, max32 events; overflow fails. Require both invoked/end-called before first settled response and different actual socket identities, with both successful response completions. Record whether both connections and writes finished before first response; do not require that stronger timing accident or claim server admission overlap. Two terminal responses therefore prove outstanding-client overlap plus retained equality, not observed pending join. Report `pendingObserved` only from actual202/pending response. No artificial delay, polling or rerun if the overlap prerequisite is not observed.
+
+Local streaming reader enforces32768 retained body bytes before appending each chunk; an oversize chunk triggers response/request destruction and awaited close/drain. Decode UTF8 fatally only after complete end; fail null/missing body, truncated/aborted/error responses. maxHeaderSize16384 bounds received header parsing, request header serialization also checked<=16384. Per-request5s includes connect/response; AbortSignal ties it to45s aggregate work including startup. Limits describe receive/retention, not full heap peak: concatenation, parsed JSON and assertions coexist. Twelve maximum retained bodies sum393216B; actual program can retain fewer. The maximum two outstanding requests are the pair; later requests sequential.
+
+## Exact second-key control
+
+Use the same installed bytes, configuration, one callback and fixed request schedule on a new empty store. Only request2's Idempotency-Key becomes `same-key-overlap-other`; body, method, route, token and other headers remain identical. This is an input-sensitivity control, not a production mutant or proof that a removed internal join guard was detected.
+
+Before the named shared assertion, validate each pair response independently: schema, successful completed shape when terminal, its own actual sent key, full created Resource facts, valid context, known isolated positions pos-1/pos-2. Do not demand common key or pos-1 before the intended equality. Then set named oracle `same-key-overlap:shared-receipt-id` and compare A.id===B.id. On the actual distinct-key implementation expect exactly two200 completed/available receipts with different receipt ids, transaction ids and allocated Resource ids, and unordered required/effect positions pos-1 and pos-2. The assertion must fail here, before GET3. Preserve these safe facts before throwing. Positive then applies common-key/all-pos-1 assertions described above.
+
+External adjudication requires that exact named inner assertion, both individually schema-valid successful responses, exact2 attempts/completions, distinct allocation/transaction/receipt evidence and actual overlap. No transport, deadline, startup, schema, report-write or cleanup failure is an acceptable control. Generic exit1 is insufficient. If the control unexpectedly passes pair identity, the same callback may run remaining fixed four requests, bounded6 total, but the control is not accepted and there is no replacement run. Failed receipts, both-pending, missing bodies or an earlier oracle are diagnosed honestly. This preserves expected2/max6 control requests, positive6, combined8 expected/max12 and exactly2 launched children including failed startup attempts.
+
+## Lifecycle and retained evidence
+
+One child/owner/listener/store directory per run, prefix `bdp-same-key-overlap-installed-`, no reopen. Positive6 and control2 expected TCP connections (agent:false), max12 combined, at most2 live at once. Timers remain45s work, inherited10s ready,5s per exchange,10s overall cleanup with5s request drain,60s test and120s supervisor. They are nested deadlines, not a guarantee that all individual maxima can be spent sequentially. No timeout increases or automatic retries. Stop dependent stages after unexpected failure.
+
+In finally abort work, destroy all active requests, drain all pending/close promises with individual error retention, and close returned child concurrently under cleanup bound. Aggregate original and cleanup/report failures. Track launchAttempted separately: if launcher never returned a child after an attempt, PID/stop remains unknown and preserve directory for external supervisor; do not equate undefined child with proven stop. Remove directory only before any launch or after actual known exit. Capture actual exit code/signal, independent PID and process-group absence and directory absence; kill only owned processes under supervisor. Report writes are outside the owned store, exclusive absolute paths, and happen even after failures/removal failures. Pre-ready launcher errors can expose only the inherited surfaced error plus external lifecycle evidence; no fabricated hidden PID or original cause.
+
+Retain source/package/config/artifact/policy/auth identity digests, actual declared source and entry binding, safe ready allowlist, mode, attempts, response status/content count/hash, selected safe response headers, literal body byte/hash ledger, pair milestone/socket ids, pending/overlap booleans, named oracle, actual receipt keys/ids/transactions/allocated Resource ids/revisions/positions, performed full-equality flags, failure class/count, cleanup facts. Allowlisted diagnostics must not serialize effectiveRequest, headerLines, authorization, token map, full runtime configuration or arbitrary Error objects. Full Resource/receipt/Event bodies are validated/compared in memory; report fingerprints are not retained full-wire evidence. Nonsecret descriptor/schema bytes may be preserved; credential-bearing configuration may not. Bound report65536B, fail closed on overflow, no arbitrary child stdout forwarding. Optional ordinary CI output; required external output path per cohort. Source provenance is supervisor-verified against built/archive/installed bytes, never child-attested merely because a caller supplied sourceCommit.
+
+## Validation and integration gates
+
+Exactly one new top-level callback is named in ledger; same anchored selector executed twice externally with mode absent/positive then second-key-distinct. Its ordinary full-CI default is the six-request positive only; the extra control is not another registered case. No new CPU mirroring tests or broad local suite. Proposed checks are pinned offline setup, typecheck, build, format/lint/boundaries and Read seal, then fresh protocol/server archives and external offline consumer. Exact argv/tool paths and all emitted/source inventories must be frozen at measured draft gate; no present execution authorization. Use direct pinned Node24.16.0 and actual Vitest.mjs with maxWorkers1, verbose plus JSON results, not a mutable pnpm-exec shim for tests. Repository pnpm11.20.0 remains appropriate for install/pack.
+
+Fresh package proof must compare source inputs/build outputs, archive members to consumer bytes, all eight production dependency package manifests/files and independently recomputed payload digest, actual launcher entry, consumer lock and config/artifact digests. Use the same verified fresh payload for both cohorts. No workspace fallback in external validation; ordinary CI workspace emitted mode is separately labeled. Existing Vitest aliases/setup affect the test harness but cannot attest or alter packed child admission. Preserve top-level launcher/schema imports as actual module work; build precedes selecting the emitted launcher consumer. No new public admission seam.
+
+Root must approve plan/native+Claude dispositions, isolated two-path ownership, ordinary real principal-main ancestry/reanchor, measured source/counterfactual packet and exact-head validation. A fresh build or an explicitly proven unchanged-input/output attribution bridge is required; no historical success relabeling. Final progress prose reports actual outcome/pendingObserved and limitations, not profile delivery percentages. An unexpected defect expands no scope automatically.
+
+
+=== COMPLETE ledger.json SHA256 2cb75de21509029ac9dd06006461fdfc524a04b4356dc9e1ffb78269c1633451 ===
+{
+  "status": "proposed; authoring/execution closed",
+  "head": "f5511718371a6935614eae6756e796cef71570c2",
+  "tree": "3cd1da66ba3a6cbd0bbdaa2442d10002939d826b",
+  "ownedPaths": [
+    "apps/bdptest/src/transactional-same-key-overlap-installed.test.ts",
+    "docs/design/transaction-implementation-progress.md"
+  ],
+  "registration": {
+    "title": "preserves one allocated effect and receipt across overlapping same-key singleton and batch requests",
+    "count": 1,
+    "selectedExecutions": 2,
+    "regex": "^preserves one allocated effect and receipt across overlapping same-key singleton and batch requests$"
+  },
+  "requests": [
+    {
+      "ordinal": 1,
+      "label": "singleton-pair-A",
+      "method": "POST",
+      "url": "https://reference.invalid/acme/operations/create-bead",
+      "headers": {
+        "host": "reference.invalid",
+        "accept": "application/json",
+        "connection": "close",
+        "content-type": "application/json",
+        "idempotency-key": "same-key-overlap",
+        "content-length": "108"
+      },
+      "credential": "operator: inject Bearer token in memory only",
+      "body": "{\"type\":\"https://reference.invalid/acme/types/task\",\"properties\":{\"title\":\"same-key-overlap\"},\"metadata\":{}}",
+      "bodyBytes": 108,
+      "bodySha256": "387ed98ffa4e2603db3358ac9a41a1acd815f64bf8e2dc3f233ef5c132328649"
+    },
+    {
+      "ordinal": 2,
+      "label": "batch-pair-B",
+      "method": "POST",
+      "url": "https://reference.invalid/acme/operations/batch",
+      "headers": {
+        "host": "reference.invalid",
+        "accept": "application/json",
+        "connection": "close",
+        "content-type": "application/json",
+        "idempotency-key": "same-key-overlap",
+        "content-length": "150"
+      },
+      "credential": "operator: inject Bearer token in memory only",
+      "body": "{\"operations\":[{\"operation\":\"createBead\",\"type\":\"https://reference.invalid/acme/types/task\",\"properties\":{\"title\":\"same-key-overlap\"},\"metadata\":{}}]}",
+      "bodyBytes": 150,
+      "bodySha256": "278716c3e493fbdee5adb3ef532fc296bf929111200bf85bfedf56fc6f6d012b"
+    },
+    {
+      "ordinal": 3,
+      "label": "issued-receipt-recovery",
+      "method": "GET",
+      "url": "validated shared receipt.id",
+      "headers": {
+        "host": "reference.invalid",
+        "accept": "application/json",
+        "connection": "close"
+      },
+      "credential": "operator: inject Bearer token in memory only",
+      "body": null,
+      "bodyBytes": 0,
+      "bodySha256": null
+    },
+    {
+      "ordinal": 4,
+      "label": "complete-current-beads",
+      "method": "GET",
+      "url": "https://reference.invalid/acme/beads/?limit=32",
+      "headers": {
+        "host": "reference.invalid",
+        "accept": "application/json",
+        "connection": "close"
+      },
+      "credential": "operator: inject Bearer token in memory only",
+      "body": null,
+      "bodyBytes": 0,
+      "bodySha256": null
+    },
+    {
+      "ordinal": 5,
+      "label": "complete-scope-events",
+      "method": "GET",
+      "url": "https://reference.invalid/acme/events/",
+      "headers": {
+        "host": "reference.invalid",
+        "accept": "application/json",
+        "connection": "close"
+      },
+      "credential": "operator: inject Bearer token in memory only",
+      "body": null,
+      "bodyBytes": 0,
+      "bodySha256": null
+    },
+    {
+      "ordinal": 6,
+      "label": "batch-terminal-replay",
+      "method": "POST",
+      "url": "https://reference.invalid/acme/operations/batch",
+      "headers": {
+        "host": "reference.invalid",
+        "accept": "application/json",
+        "connection": "close",
+        "content-type": "application/json",
+        "idempotency-key": "same-key-overlap",
+        "content-length": "150"
+      },
+      "credential": "operator: inject Bearer token in memory only",
+      "body": "{\"operations\":[{\"operation\":\"createBead\",\"type\":\"https://reference.invalid/acme/types/task\",\"properties\":{\"title\":\"same-key-overlap\"},\"metadata\":{}}]}",
+      "bodyBytes": 150,
+      "bodySha256": "278716c3e493fbdee5adb3ef532fc296bf929111200bf85bfedf56fc6f6d012b"
+    }
+  ],
+  "control": {
+    "mode": "second-key-distinct",
+    "onlyWireDifference": {
+      "ordinal": 2,
+      "header": "idempotency-key",
+      "before": "same-key-overlap",
+      "after": "same-key-overlap-other"
+    },
+    "namedFailure": "same-key-overlap:shared-receipt-id",
+    "expectedHttp": 2,
+    "maximumHttp": 6,
+    "expectedExit": 1,
+    "facts": "Both completed available receipts; different id/transaction/allocated Resource id; each own sent key; unordered required/effect positions pos-1,pos-2. Intended assertion before common-key/pos-1 equality; no third request. No transport/schema/cleanup failure accepted."
+  },
+  "counts": {
+    "positiveHttp": 6,
+    "negativeExpectedHttp": 2,
+    "negativeMaximumHttp": 6,
+    "combinedExpectedHttp": 8,
+    "combinedMaximumHttp": 12,
+    "children": 2,
+    "owners": 2,
+    "listeners": 2,
+    "storeDirectories": 2,
+    "expectedTcpConnections": 8,
+    "maximumTcpConnections": 12,
+    "maximumConcurrentRequests": 2,
+    "positivePostBodyBytes": 408,
+    "negativeExpectedPostBodyBytes": 258,
+    "combinedExpectedPostBodyBytes": 666,
+    "combinedMaximumScheduledPostBodyBytes": 816,
+    "largestBodyBytes": 150,
+    "sourceRuntimeTests": 0,
+    "bootstrapHttp": 0
+  },
+  "bounds": {
+    "workMs": 45000,
+    "readyMs": 10000,
+    "requestMs": 5000,
+    "cleanupMs": 10000,
+    "requestDrainMs": 5000,
+    "testMs": 60000,
+    "supervisorMs": 120000,
+    "requestBodyBytes": 65536,
+    "requestHeaderBytes": 16384,
+    "responseHeaderBytes": 16384,
+    "retainedResponseBodyBytes": 32768,
+    "targetUtf8Bytes": 8192,
+    "targetStringLength": 8192,
+    "pairMilestones": 32,
+    "reportBytes": 65536,
+    "launcherStdoutStderrCombinedBytes": 65536,
+    "retainedResponseBodiesMaximumBytes": 393216
+  },
+  "artifacts": [
+    {
+      "kind": "descriptor",
+      "retrievalUri": "https://reference.invalid/acme/types/task",
+      "utf8": "{\"id\":\"https://reference.invalid/acme/types/task\",\"name\":\"Task\",\"describes\":\"bead\",\"conformsTo\":[],\"propertiesSchema\":\"https://reference.invalid/acme/schemas/properties\"}",
+      "bytes": 170,
+      "sha256": "f448e126550b2809d01dc6b24811d1796e82b2599c35b438550ed3bec65a2a22"
+    },
+    {
+      "kind": "schema",
+      "retrievalUri": "https://reference.invalid/acme/schemas/properties",
+      "utf8": "{\"$id\":\"https://reference.invalid/acme/schemas/properties\",\"type\":\"object\",\"properties\":{\"title\":{\"type\":\"string\"}},\"required\":[\"title\"],\"additionalProperties\":false}",
+      "bytes": 166,
+      "sha256": "1ed8b24d90a8c278bc466fd48ba1e849afac01326c377e5c6985855e62373f95"
+    }
+  ],
+  "configuration": {
+    "scope": "https://reference.invalid/acme/",
+    "directory": "fresh bdp-same-key-overlap-installed- owned directory per cohort",
+    "create": true,
+    "artifacts": "exact descriptor/schema above",
+    "credentials": [
+      {
+        "token": "ephemeral randomBytes(24).toString(base64url), not persisted",
+        "principal": "writer",
+        "canMutate": true
+      }
+    ],
+    "authorityMode": "omitted",
+    "port": "omitted; actual dial endpoint from ready.listenUrl",
+    "testSeams": "none",
+    "history": false,
+    "claimEligible": false
+  },
+  "modes": {
+    "absent": "positive",
+    "allowed": [
+      "positive",
+      "second-key-distinct"
+    ],
+    "environment": "BDP_TRANSACTIONAL_SAME_KEY_OVERLAP_MODE",
+    "output": "BDP_TRANSACTIONAL_SAME_KEY_OVERLAP_OUTPUT"
+  },
+  "schemas": [
+    "mutationReceipt",
+    "beadRecord",
+    "currentBeadCollection",
+    "eventPage"
+  ]
+}
+
+
+=== COMPLETE source-binding.json SHA256 f4be4a20691f9a23e0ba61f0ddc77369cde86cc7e412a5b2ec2f6388ec68caeb ===
+{
+  "workspace": "/Users/dbox/repos/wt/vickie/vickie-principal-key-isolation",
+  "head": "f5511718371a6935614eae6756e796cef71570c2",
+  "tree": "3cd1da66ba3a6cbd0bbdaa2442d10002939d826b",
+  "readMethod": "git show exact commit:path; dirty principal source untouched",
+  "files": {
+    "docs/specs/bdp.md": {
+      "sha256": "f036103ffdf5f89fa3a2033570e1e987c4cd203cd80b1c633cb44615123f892e",
+      "bytes": 394427
+    },
+    "docs/design/transaction-implementation-progress.md": {
+      "sha256": "4046f8603ae260e14b62cdc17c7084a0e47194a7bd44f0aad93666209a4ba555",
+      "bytes": 128645
+    },
+    "schemas/bdp-v0.schema.json": {
+      "sha256": "0baa5d5ef67144f8e6513b4cde31168effc8df6d52ef3141b0f144b87f8dc227",
+      "bytes": 133208
+    },
+    "packages/protocol/schemas/bdp-v0.schema.json": {
+      "sha256": "0baa5d5ef67144f8e6513b4cde31168effc8df6d52ef3141b0f144b87f8dc227",
+      "bytes": 133208
+    },
+    "packages/protocol/src/read-update-preflight.ts": {
+      "sha256": "e9cea06515c1b7b5ffbfc275b82e9759e9083daa29c5daaab4485c161970275f",
+      "bytes": 7042
+    },
+    "packages/protocol/src/read-update-values.ts": {
+      "sha256": "d1fdbc660d5e2c009275c152bdcebda46031700920aa03bfea89f39564c89de2",
+      "bytes": 19883
+    },
+    "packages/server/src/transaction-http.ts": {
+      "sha256": "b51d02801e5924190aba77c377e538db0b8619149d6184e19cb56d440f40c2cf",
+      "bytes": 27155
+    },
+    "packages/server/src/transaction-submission.ts": {
+      "sha256": "4336e45d7b4f90eec685b70c7ba059219954bb20271aa2c942ee9e140f0743af",
+      "bytes": 7431
+    },
+    "packages/server/src/transaction-comparison.ts": {
+      "sha256": "3c5f9025675f506e08a9977ab0d1551a3a996669fd11b99772b1c2a39209998d",
+      "bytes": 3236
+    },
+    "packages/server/src/transaction-store.ts": {
+      "sha256": "fcd6882b29e538db45867c894c06dfbaa6ca588db0c2e403ef1b7abb14f6c706",
+      "bytes": 87238
+    },
+    "packages/server/src/transaction-batch.ts": {
+      "sha256": "70d941d416979edd54e250d51318cfb7e5d4ddb315ea6131de7ca5f56e98a014",
+      "bytes": 46249
+    },
+    "packages/server/src/resource-evaluator.ts": {
+      "sha256": "89606787e455f4ed555b807d91c5331a376431807a9a581de1f94e538fcab4ff",
+      "bytes": 46773
+    },
+    "packages/server/src/transaction-events.ts": {
+      "sha256": "c6052433662fcb2d0a202ad4e408a24d4c43f980313fa89659501b4475790db5",
+      "bytes": 11755
+    },
+    "packages/server/src/transaction-read.ts": {
+      "sha256": "c3b486baf6b9e48d4a716d36b4162c2ba1f0c7672a6f48988192e2591eda7910",
+      "bytes": 12615
+    },
+    "packages/server/src/transaction-runtime.ts": {
+      "sha256": "77954f0a85029d76443feac54cd53cda4339ffc126660ace5a9f5af92466c573",
+      "bytes": 16173
+    },
+    "packages/server/src/transaction-runtime-configuration.ts": {
+      "sha256": "e594e930f845255cafc7e2f5b5b28149b7e95fe8a09052b187a492c96328f7ca",
+      "bytes": 16165
+    },
+    "packages/server/src/transaction-installed-process.ts": {
+      "sha256": "6bd16f940f1f751189fc76419e3a18ca26cd5f54da3cfa3946b30c3956a2f8b7",
+      "bytes": 2630
+    },
+    "packages/server/src/transaction-submission.test.ts": {
+      "sha256": "86342bc18126965f380d0e09218481eceac4a8396afb4543dd7e11d464fd1976",
+      "bytes": 64555
+    },
+    "packages/server/src/transaction-events.test.ts": {
+      "sha256": "0152561cdf096a48b0b01ec0e0d8bc81208a905bb5bf71dad411694387b58b27",
+      "bytes": 50813
+    },
+    "scripts/transaction-installed-observation.mjs": {
+      "sha256": "6f772f3776d3c3effa788676d853cc2932a6ee59ad63ac3338ad1b487408914b",
+      "bytes": 3264
+    },
+    "apps/bdptest/test-support/transactional-execution-binding.ts": {
+      "sha256": "cde506c72a8710eafe58522900f6db70ed3701cf333560252dc8e7c5e706cf89",
+      "bytes": 7378
+    },
+    "apps/bdptest/src/read-update-guarded-overlap-installed.test.ts": {
+      "sha256": "767ed468ac29347100203dbb9ff5f435ca2dfaebcad98c61158e5ed59d63a1ed",
+      "bytes": 26201
+    },
+    "apps/bdptest/src/transactional-depth-key-order-installed.test.ts": {
+      "sha256": "48c6a84c84e470c7ce79f4d978bb09e2099daa5df4b4a6ef8629e1b7bf1b1700",
+      "bytes": 29977
+    },
+    "packages/conformance/test-support/transactional/fixture-v1.json": {
+      "sha256": "3a7899ced771d4880066d98b0000c53f801ece53458502cc4f3bc641146c9a85",
+      "bytes": 716
+    },
+    "packages/conformance/test-support/transactional/manifest-v1.json": {
+      "sha256": "a11a79f6d0f9ffa5933a680a3e4fed87987789c3deca50a38cda8563132d242e",
+      "bytes": 790009
+    },
+    "packages/conformance/test-support/transactional/coverage-v1.json": {
+      "sha256": "346e1edaa22af789f89017fdc2fef6bb01b7564ed72a65344e9fe5635887c74f",
+      "bytes": 117702
+    },
+    "pnpm-lock.yaml": {
+      "sha256": "4150d8821c96dbc2cfec0b2762ff76b58318079f65fa4f5c8858ef2dd61f8d6d",
+      "bytes": 38851
+    },
+    "vitest.config.ts": {
+      "sha256": "a84575ea9ef0b6e75b6484024a627fa89422aea2fdbeb26127e09714dba0641f",
+      "bytes": 3207
+    },
+    "packages/server/test-support/read-conformance-mock.ts": {
+      "sha256": "dbfb86ac2325c684567ffce40f17105c6b12a63edfa54cc08f0601df8dc613f8",
+      "bytes": 1409
+    },
+    "package.json": {
+      "sha256": "f081baa3202b4815663d360d3ad1608206efe1b023086a4c8feff4d7fb97d8d0",
+      "bytes": 1337
+    },
+    "biome.json": {
+      "sha256": "62beced4e0227b97fe9ade1a1a573bf53a2f8916af8da7ce70f94315fece39dc",
+      "bytes": 398
+    }
+  },
+  "completeness": "meaningful review dependencies, not exhaustive runtime/build closure",
+  "soleAuthority": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-client-design/checkout/docs/architecture/bdp-client-v2/design.md",
+    "sha256": "e59f7fc3b6024cb8a00376f4aeda9ce065f7d76e7487940269f64134fdc89355"
+  },
+  "inputAudit": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-after-principal-next-slice.md",
+    "sha256": "3d3f83a3cf8f63b4883347fcb9d32ad94365113deb3f3b3f29f473279113b1f2"
+  },
+  "futureGate": "Ordinary integrate actual principal-main before final validation/publication; no future candidate invented."
+}
+
+
+=== SOURCE docs/specs/bdp.md:3894-3940, full-file SHA256 f036103ffdf5f89fa3a2033570e1e987c4cd203cd80b1c633cb44615123f892e ===
+Concurrent requests with the same key and the same semantic request join one
+execution. A duplicate may wait for the terminal response or receive the same
+pending receipt. Either way, it never executes again. For direct carriers,
+handing a duplicate a receipt presupposes established semantic equality. A
+request that encounters an unresolved reservation follows the bounded
+comparison rules below. Reusing the key for a different semantic request is
+an idempotency conflict. Once a mutation is admitted, client disconnection
+does not decide the outcome. The authority commits or rolls back, and it
+records one terminal receipt. Retrying returns
+that same outcome, including authority-allocated IDs.
+
+An idempotency key is the token defined under
+[Idempotency keys](#idempotency-keys): the `Idempotency-Key` HTTP field of
+a batch or singleton request and the `idempotencyKey` member of a sequence
+member carry the same case-sensitive `[A-Za-z0-9_-]{1,256}` token, bare,
+compared byte-exactly; a request whose key is absent, repeated, or outside
+the grammar is malformed. On a Transactional Scope the key's namespace is
+the canonical Scope URL, the Scope epoch, and the authenticated principal —
+the Read+Update namespace with the epoch it lacks — and every mutation
+carrier feeds that one namespace: a singleton request, a `batch`, and each
+member of a `sequence` is a Mutation Transaction with its own durable
+Mutation Receipt, and the carrier is delivery metadata that the semantic
+comparison excludes.
+
+The semantic identity of a Mutation Transaction is the sequence, in
+declaration order, of its operations' semantic identities under [Idempotency
+keys](#idempotency-keys): each is the operation kind plus its normalized
+record — durable references canonicalized, protocol defaults expanded, array
+order preserved, member order ignored, `name` and the carrier excluded,
+`expectedRevision` and `revisionProvenance` included, opaque URIs and pins
+compared byte-exactly, and the records compared under RFC 6902 Section 4.6.
+In a batch, a `@label` reference is normalized to the creating operation's
+zero-based index when that operation supplies no `id`, and to the supplied
+identity's canonical URL when it does — never to the label's spelling, so
+renaming a label is not a semantic change, and never to an allocated
+identity, which does not exist before commit. In a sequence, a `@name`
+reference is normalized to the identity its creating member bound, as in
+Read+Update. A one-operation batch, the equivalent singleton request, and the
+equivalent sequence member therefore present one semantic request, and any of
+them retrieves the receipt the others created.
+
+Concurrent identical requests join one execution and receive the same
+receipt identity, pending or terminal. Read+Update refuses a concurrent
+duplicate with `idempotency-in-progress` because it has no durable receipt
+to hand the duplicate; the Transactional profile joins the duplicate to
+the one execution and hands it the pending receipt, which is the same
+exactly-once promise made with the profile's own vehicle. A later identical
+
+=== SOURCE docs/specs/bdp.md:4553-4584, full-file SHA256 f036103ffdf5f89fa3a2033570e1e987c4cd203cd80b1c633cb44615123f892e ===
+   admission or key binding.
+
+Every refusal above creates no receipt and binds no key. Apart from the
+HTTP-native bodyless `406`, these are direct problems. A syntactically
+invalid request therefore never consults key state, and a retained or
+pending duplicate negotiates its receipt representation before limits and
+rate limits are evaluated, so that a retry that only wants its outcome is
+never refused for the capacity its original consumed.
+
+A request is admitted when the authority has durably recorded, in one step,
+the key, the normalized request identity, the `pending` Mutation Receipt
+with its `transaction` identity, and its own ownership of the execution,
+under [Mutation Transactions](#mutation-transactions). From that point
+client disconnection, a transport failure, and a bodyless `500` decide
+nothing: the transaction commits or fails on its own, the receipt records
+which, and every successful representation returned to that request or to an
+identical retry is a Mutation Receipt. The shared bodyless
+response-negotiation refusal can suppress that representation without
+changing its outcome. The execution has one transient-abort exception. A
+transient abort after admission — a serialization conflict the authority
+does not retry, or a component it cannot reach — retracts the pending
+receipt and unbinds the key in one durable step and is answered, to the
+original request and to every joined duplicate, with a direct `503`
+`temporarily-unavailable` that SHOULD carry `Retry-After`; the retracted
+receipt's URL then answers the uniform `404`, and a retry under the same key
+executes as a new mutation. Every other execution failure after admission is
+permanent and is reported inside a `failed` receipt, never as a direct problem.
+
+The batch target's responses are:
+
+- `200 OK` with the terminal Mutation Receipt, whose `status` is `completed`
+  or `failed`. A failed transaction is a successful representation of its
+
+=== SOURCE docs/specs/bdp.md:5263-5277, full-file SHA256 f036103ffdf5f89fa3a2033570e1e987c4cd203cd80b1c633cb44615123f892e ===
+The three Transactional response fields on a receipt or page response are
+the serving request's own observation, never the body's history:
+`BDP-Scope-Epoch` and `BDP-Authorization-View` carry the current epoch and
+the caller's current view token, and `BDP-Scope-Position` carries the
+position the read observed — at or after `effectPosition` on a terminal
+receipt served synchronously, honoring `BDP-Minimum-Scope-Position` on a
+later read exactly as any read does, and the observed head on a `202`. The
+body's `scopeEpoch`, `authorizationView`, `requiredPosition`, and
+`effectPosition` are the execution's recorded facts and never change; after
+a view rotation the body still names the view under which the transaction
+executed, and the recorded `requiredPosition` remains evidence about that
+view rather than a checkpoint for the current one.
+
+A `failed` receipt's `problem` is a Problem Details object of the receipt
+form. It carries the code's `status` — the HTTP status the failure would
+
+=== SOURCE packages/server/src/transaction-submission.ts:1-212, full-file SHA256 4336e45d7b4f90eec685b70c7ba059219954bb20271aa2c942ee9e140f0743af ===
+import {
+  TransactionSelectorSyntaxError,
+  type TransactionSelectorLimit,
+} from "./transaction-set.js";
+/** Private receiving/admission composition. No socket, export or profile claim. */
+import { JsonSyntaxError, ReadUpdateCarrierError } from "@bdp/protocol";
+import {
+  type TransactionSingletonOperation,
+  prepareTransactionForReceiving,
+  TRANSACTION_RUNTIME_LIMITS,
+} from "./transaction-batch.js";
+import { compareAndAdmitTransaction } from "./transaction-comparison.js";
+import {
+  snapshotTransactionReceivingControls,
+  type openTransactionStore,
+  type TransactionReceipt,
+  type TransactionReadContext,
+  type TransactionReceivingControls,
+} from "./transaction-store.js";
+
+type Authorization =
+  | { readonly kind: "unauthenticated" }
+  | { readonly kind: "forbidden" }
+  | { readonly kind: "authorized"; readonly principal: string };
+export interface TransactionSubmission {
+  readonly carrier:
+    | { readonly kind: "batch" }
+    | { readonly kind: "singleton"; readonly operation: TransactionSingletonOperation };
+  readonly body: string;
+  readonly key: string;
+  /** Trusted authentication/Scope permission decision, not client attribution. */
+  readonly authorization: Authorization;
+  readonly receiving: TransactionReceivingControls;
+}
+type ObservedComparisonRefusal = {
+  readonly kind: "comparison-refusal";
+  readonly status: 503;
+  readonly code: "temporarily-unavailable";
+  readonly retry: "after-delay";
+} & (
+  | { readonly reason: "deadline"; readonly context: TransactionReadContext }
+  | { readonly reason: "owner-stopped" }
+);
+export type TransactionSubmissionResult =
+  | ObservedComparisonRefusal
+  | {
+      readonly kind: "receipt";
+      readonly receipt: TransactionReceipt;
+      readonly context?: TransactionReadContext;
+    }
+  | { readonly kind: "not-acceptable"; readonly context?: TransactionReadContext }
+  | { readonly kind: "development-limit"; readonly message: string }
+  | {
+      readonly kind: "refused";
+      readonly status: 400 | 401 | 403 | 409 | 413 | 503;
+      readonly code:
+        | "malformed-request"
+        | "unauthenticated"
+        | "forbidden"
+        | "idempotency-conflict"
+        | "request-too-large"
+        | "limit-exceeded"
+        | "temporarily-unavailable";
+      readonly limit?: "transaction.operations" | TransactionSelectorLimit;
+      readonly pointer?: string;
+      readonly retry?: "after-delay";
+      readonly context?: TransactionReadContext;
+    };
+
+/** These are typed internal receiving results, not emitted HTTP Problem bodies.
+ * Raw headers/targets/media and receipt HTTP representation remain future work.
+ * Once admitted, this call owns execution independently of response consumption.
+ * Internal/fenced failures propagate intact; they are not permanent receipts. */
+export async function submitTransaction(
+  store: ReturnType<typeof openTransactionStore>,
+  submission: TransactionSubmission,
+  comparison: Omit<
+    NonNullable<Parameters<typeof compareAndAdmitTransaction>[4]>,
+    "receiving" | "observeDeadline"
+  > = {},
+  observed = false,
+): Promise<TransactionSubmissionResult> {
+  const receiving = snapshotTransactionReceivingControls(submission.receiving);
+  const { body, key } = submission;
+  if (Buffer.byteLength(body) > TRANSACTION_RUNTIME_LIMITS.requestBodyBytes)
+    return { kind: "refused", status: 413, code: "request-too-large" };
+  let prepared: ReturnType<typeof prepareTransactionForReceiving>;
+  try {
+    prepared = prepareTransactionForReceiving(store.scope, submission.carrier, body);
+  } catch (error) {
+    if (error instanceof TransactionSelectorSyntaxError)
+      return { kind: "refused", status: 400, code: "malformed-request", pointer: error.pointer };
+    if (
+      error instanceof JsonSyntaxError ||
+      error instanceof ReadUpdateCarrierError ||
+      error instanceof TypeError
+    )
+      return { kind: "refused", status: 400, code: "malformed-request" };
+    else throw error;
+  }
+  if (typeof key !== "string" || !/^[A-Za-z0-9_-]{1,256}$/.test(key))
+    return { kind: "refused", status: 400, code: "malformed-request" };
+  const authorization = submission.authorization;
+  if (authorization.kind === "unauthenticated")
+    return { kind: "refused", status: 401, code: "unauthenticated" };
+  if (authorization.kind === "forbidden")
+    return { kind: "refused", status: 403, code: "forbidden" };
+  if (
+    typeof authorization.principal !== "string" ||
+    authorization.principal.length === 0 ||
+    !authorization.principal.isWellFormed()
+  )
+    throw new TypeError("invalid trusted principal");
+  const comparisonStore = observed
+    ? {
+        scopeEpoch: store.scopeEpoch,
+        comparisonEpoch: store.comparisonEpoch,
+        admit: store.admitObserved,
+      }
+    : store;
+  const result = await compareAndAdmitTransaction(
+    comparisonStore,
+    authorization.principal,
+    key,
+    prepared,
+    {
+      ...comparison,
+      receiving,
+      // Override even an untyped caller's extra field; only this owner supplies it.
+      observeDeadline: observed ? store.observeComparisonDeadline : undefined,
+    },
+  );
+  if (
+    observed &&
+    (result.kind === "conflict" ||
+      result.kind === "operation-limit" ||
+      result.kind === "selector-limit" ||
+      result.kind === "not-acceptable") &&
+    !result.context
+  )
+    throw new Error("admission refusal lost same-entry context");
+  switch (result.kind) {
+    case "development-limit":
+      return result;
+    case "conflict":
+      return {
+        kind: "refused",
+        status: 409,
+        code: "idempotency-conflict",
+        ...(result.context ? { context: result.context } : {}),
+      };
+    case "operation-limit":
+      return {
+        kind: "refused",
+        status: 413,
+        code: "limit-exceeded",
+        limit: "transaction.operations",
+        ...(result.context ? { context: result.context } : {}),
+      };
+    case "selector-limit":
+      return {
+        kind: "refused",
+        status: 413,
+        code: "limit-exceeded",
+        limit: result.limit,
+        pointer: result.pointer,
+        ...(result.context ? { context: result.context } : {}),
+      };
+    case "not-acceptable":
+      return result;
+    case "comparison-deadline":
+      return {
+        kind: "comparison-refusal",
+        reason: "deadline",
+        status: 503,
+        code: "temporarily-unavailable",
+        retry: "after-delay",
+        context: result.context,
+      };
+    case "comparison-owner-stopped":
+      return {
+        kind: "comparison-refusal",
+        reason: "owner-stopped",
+        status: 503,
+        code: "temporarily-unavailable",
+        retry: "after-delay",
+      };
+    case "temporarily-unavailable":
+      return {
+        kind: "refused",
+        status: 503,
+        code: "temporarily-unavailable",
+        retry: "after-delay",
+      };
+    case "existing":
+      if (observed && !result.context)
+        throw new Error("existing receipt lost same-entry context", {
+          cause: { id: result.receipt.id, key },
+        });
+      return observed
+        ? {
+            kind: "receipt",
+            receipt: result.receipt,
+            ...(result.context ? { context: result.context } : {}),
+          }
+        : { kind: "receipt", receipt: result.receipt };
+    case "owned":
+      return observed
+        ? { kind: "receipt", ...store.executeObserved(result.claim) }
+        : { kind: "receipt", receipt: store.execute(result.claim) };
+  }
+}
+
+=== SOURCE packages/server/src/transaction-http.ts:176-188, full-file SHA256 b51d02801e5924190aba77c377e538db0b8619149d6184e19cb56d440f40c2cf ===
+  function receiptResponse(
+    observed: {
+      readonly receipt: { readonly id: string; readonly status: string };
+      readonly context: TransactionReadContext;
+    },
+    mutation: boolean,
+  ): HttpResponse {
+    const response = context(jsonResponse(observed.receipt), observed.context);
+    if (mutation && observed.receipt.status === "pending") {
+      response.headers.set("location", observed.receipt.id);
+      response.headers.set("retry-after", "1");
+      return { ...response, status: 202 };
+    }
+
+=== SOURCE packages/server/src/transaction-http.ts:329-347, full-file SHA256 b51d02801e5924190aba77c377e538db0b8619149d6184e19cb56d440f40c2cf ===
+      const decision: TransactionSubmission["authorization"] =
+        authorization.kind === "unauthenticated"
+          ? authorization
+          : authorization.canMutate
+            ? { kind: "authorized", principal: authorization.principal }
+            : { kind: "forbidden" };
+      const result = await service.submit({
+        carrier:
+          operation === "batch"
+            ? { kind: "batch" }
+            : { kind: "singleton", operation: operation as TransactionSingletonOperation },
+        body: received.text,
+        key: request.headers.get("idempotency-key") ?? "",
+        authorization: decision,
+        receiving: { acceptsJson: acceptsJson(request.headers.get("accept")), maximumOperations },
+      });
+      if (result.kind === "receipt") return receiptResponse(result, true);
+      if (result.kind === "comparison-refusal") {
+        const response = problem(readProblem(result.code));
+
+=== SOURCE packages/server/src/transaction-http.ts:619-634, full-file SHA256 b51d02801e5924190aba77c377e538db0b8619149d6184e19cb56d440f40c2cf ===
+      response.headers.set("x-bdp-development", "non-attesting");
+      if (request.method === "POST") response.headers.set("vary", "Accept");
+      if (
+        "kind" in response &&
+        (response.kind === "changefeed-stream" || response.kind === "event-stream")
+      )
+        return response;
+      return {
+        ...(request.method === "GET" || request.method === "HEAD"
+          ? applyReadHttpSemantics(request, response)
+          : response),
+        kind: "finite",
+      };
+    },
+  });
+}
+
+=== SOURCE packages/server/src/transaction-store.ts:1050-1133, full-file SHA256 fcd6882b29e538db45867c894c06dfbaa6ca588db0c2e403ef1b7abb14f6c706 ===
+  function admitKey(
+    principal: string,
+    key: string,
+    batch: PreparedTransaction,
+    pendingWins = false,
+    references?: ReferenceBindings,
+    template?: DependencyTemplate,
+    controls?: TransactionReceivingControls,
+  ): TransactionReceivingAdmission {
+    const stored = row(principal, key);
+    const prior = stored ? expireRow(stored, instant()).row : undefined;
+    if (pendingWins && prior?.owner !== null && prior !== undefined)
+      return { kind: "existing", receipt: parseReceipt(prior.receipt) };
+    if (prior?.dependency) {
+      const template = parseDependencyTemplate(prior.dependency, scope);
+      const comparison = compareDependencyTemplate(template, batch, resolveAlias, (index) => {
+        const stored = db
+          .prepare("SELECT fact FROM creator_facts WHERE attempt=? AND member=?")
+          .get(template.attempt, index);
+        if (!stored) throw new Error("unresolved receipt lost creator fact");
+        return typeof stored.fact === "string"
+          ? (JSON.parse(stored.fact) as CreatorFact)
+          : undefined;
+      });
+      return comparison === "conflict"
+        ? { kind: "conflict" }
+        : comparison === "equal"
+          ? { kind: "existing", receipt: parseReceipt(prior.receipt) }
+          : { kind: "comparison-pending" };
+    }
+    const depthRefusal = transactionDepthRefusal(batch);
+    if (!prior && depthRefusal !== undefined) {
+      if (controls === undefined) throw new TransactionDevelopmentLimitError(depthRefusal);
+      return { kind: "development-limit", message: depthRefusal };
+    }
+    const normalized = template
+      ? undefined
+      : normalizeTransaction(batch, resolveAlias, prior?.witnesses, references);
+    if (prior) {
+      if (!normalized) throw new Error("existing key cannot acquire a new unresolved template");
+      return prior.identity !== normalized.identity
+        ? { kind: "conflict" }
+        : { kind: "existing", receipt: parseReceipt(prior.receipt) };
+    }
+    // Prior-key equality/conflict wins above. Only an unknown key pays fresh
+    // admission controls, and no refusal ever inserts a receipt or owner.
+    if (controls && batch.carrier.operations.length > controls.maximumOperations)
+      return { kind: "operation-limit" };
+    if (controls) {
+      for (const [index, op] of batch.carrier.operations.entries()) {
+        if (op.operation !== "updateWhere" && op.operation !== "deleteWhere") continue;
+        const limit = transactionSelectorCapacity(op);
+        if (limit)
+          return {
+            kind: "selector-limit",
+            limit,
+            pointer:
+              batch.carrier.kind === "singleton" ? "/selector" : `/operations/${index}/selector`,
+          };
+      }
+    }
+    if (controls && !controls.acceptsJson) return { kind: "not-acceptable" };
+    const receipt: TransactionReceipt = {
+      id: `${scope}receipts/${randomUUID()}`,
+      status: "pending",
+      idempotencyKey: key,
+      scopeEpoch: epoch,
+      authorizationView: view,
+      transaction: randomUUID(),
+    };
+    const owner = randomUUID(),
+      claim = Object.freeze({ receipt });
+    db.prepare("INSERT INTO receipts VALUES(?,?,?,?,?,?,?)").run(
+      principal,
+      key,
+      normalized?.identity ?? "",
+      normalized?.witnessesJson ?? "",
+      owner,
+      json(receipt),
+      template ? json(template) : null,
+    );
+    claims.set(claim, { principal, key, owner, normalized });
+    return { kind: "owned", claim };
+  }
+
+=== SOURCE packages/server/src/transaction-store.ts:1277-1314, full-file SHA256 fcd6882b29e538db45867c894c06dfbaa6ca588db0c2e403ef1b7abb14f6c706 ===
+            db.exec("RELEASE effects");
+            const group = {
+              scopeEpoch: epoch,
+              authorizationView: view,
+              checkpoint: position,
+              position,
+              previousPosition: `pos-${previous}`,
+              projectionAdvance: false,
+              transaction: core.transaction,
+              changes: result.changes,
+              erasures: [],
+              eventCount: result.events.length,
+              events: result.events,
+            };
+            const effective = result.events.length > 0;
+            if (effective) {
+              db.prepare("INSERT INTO groups VALUES(?,?)").run(previous + 1, json(group));
+              db.prepare("UPDATE metadata SET value=? WHERE name='position'").run(
+                String(previous + 1),
+              );
+            }
+            receipt = {
+              ...core,
+              status: "completed",
+              detail: "available",
+              requiredPosition: effective ? position : `pos-${previous}`,
+              ...(effective ? { effectPosition: position } : {}),
+              results: result.results,
+              next: null,
+              expiresAt,
+            };
+          }
+          const changed = db
+            .prepare(
+              "UPDATE receipts SET receipt=?,owner=NULL WHERE principal=? AND key=? AND owner=?",
+            )
+            .run(json(receipt), owned.principal, owned.key, owned.owner);
+          if (changed.changes !== 1) throw new Error("terminal ownership lost");
+
+=== SOURCE packages/server/src/resource-evaluator.ts:608-661, full-file SHA256 89606787e455f4ed555b807d91c5331a376431807a9a581de1f94e538fcab4ff ===
+  const scope = options.scope;
+  const { operation, input } = mutation;
+  const resolutions: ResourceReferenceResolution[] = [];
+  const creating = operation === "createBead" || operation === "createLink";
+  const deleting = operation === "deleteBead" || operation === "deleteLink";
+  const resourceKind: ResourceKind = operation.includes("Bead") ? "bead" : "link";
+  const allocatedText = (value: unknown, kind: "identity" | "revision"): string => {
+    if (typeof value !== "string" || value.length === 0)
+      throw new TypeError(`allocator must return a nonempty ${kind} string`);
+    return value;
+  };
+  const allocateRevision = (): string => {
+    const value = tx.allocateRevision();
+    // Only an established revision-allocation conflict has this wire meaning.
+    // Broken facade values and Resource-ID allocator faults remain internal.
+    if (typeof value === "object" && value !== null && value.kind === "allocation-unsafe")
+      fail("revision-allocation-unsafe");
+    return allocatedText(value, "revision");
+  };
+  const resolve = (spelling: string, expected: ResourceKind): string => {
+    const uri = canonical(scope, spelling);
+    const path = local(scope, uri);
+    if (expected === "bead" && path?.startsWith("alias/")) {
+      const target = tx.alias(path.slice(6));
+      if (!target) fail("resource-not-found");
+      return new URL(target, scope).href;
+    }
+    return uri;
+  };
+  const loadVisible = (uri: string, expected: ResourceKind): ResourceRecord => {
+    const id = resourcePath(scope, uri, expected);
+    const stored = id === undefined ? undefined : tx.resource(id);
+    if (!stored || stored.kind !== expected) fail("resource-not-found");
+    const record = storedRecord(stored, scope);
+    if (!isResourceVisible(tx, record, scope, options.policy)) fail("resource-not-found");
+    return record;
+  };
+  let id: string;
+  let before: ResourceRecord | undefined;
+  if (creating) {
+    const supplied = "id" in input ? input.id : undefined;
+    const spelling = supplied ?? allocatedText(tx.allocateResourceId(resourceKind), "identity");
+    const path = resourcePath(scope, canonical(scope, spelling), resourceKind);
+    if (path === undefined)
+      throw new TypeError("creation ID must already have canonical Resource grammar and kind");
+    if (supplied === undefined && path.indexOf("/", 6) !== -1)
+      throw new Error("allocator must return one opaque Resource identity segment");
+    id = path;
+    if (supplied !== undefined)
+      resolutions.push({
+        inputPointer: "/id",
+        original: supplied,
+        resolved: new URL(id, scope).href,
+      });
+
+=== SOURCE packages/server/src/transaction-batch.ts:692-707, full-file SHA256 70d941d416979edd54e250d51318cfb7e5d4ddb315ea6131de7ca5f56e98a014 ===
+  function scopeEvent(subject: ResourceRecord, type: TransactionEvent["type"], data: unknown) {
+    if (events.length >= eventMaximum) throw new EventExpansionLimit();
+    const ordinal = events.length;
+    events.push({
+      id: `${position}-${ordinal}`,
+      ordinal,
+      type,
+      // These are authority Scope-group facts, not Resource-source projections.
+      // The latter rewrite source to `${resource.id}?view=events` on read.
+      source: `${options.scope}events/`,
+      subject: subject.id,
+      subjectType: subject.type,
+      transaction,
+      time: new Date(now).toISOString(),
+      data,
+    });
+
+=== SOURCE packages/server/src/transaction-batch.ts:790-799, full-file SHA256 70d941d416979edd54e250d51318cfb7e5d4ddb315ea6131de7ca5f56e98a014 ===
+    if (outcome.outcome === "created") {
+      scopeEvent(subject, "created", {
+        revision: subject.revision,
+        properties: subject.properties,
+        metadata: subject.metadata ?? {},
+        ...(subject.revisionProvenance ? { revisionProvenance: subject.revisionProvenance } : {}),
+        ...("source" in subject ? { source: subject.source, target: subject.target } : {}),
+      });
+    } else if (outcome.outcome === "updated") {
+      if (!before) throw new Error("update lacks previous state");
+
+=== SOURCE packages/server/src/transaction-events.ts:75-101, full-file SHA256 c6052433662fcb2d0a202ad4e408a24d4c43f980313fa89659501b4475790db5 ===
+  /^ev_([A-Za-z0-9_-]{43})_([A-Za-z0-9_-]{43})_([A-Za-z0-9_-]{43})_(pos-(?:0|[1-9][0-9]*))_(0|[1-9][0-9]*)$/;
+const hash = (tag: string, value: string) =>
+  createHash("sha256")
+    .update(JSON.stringify([tag, value]))
+    .digest("base64url");
+
+/** Scope and Resource token spelling is deliberately private, not a fixture law. */
+export function renderTransactionEvent(
+  context: Pick<TransactionReadContext, "scopeEpoch" | "authorizationView">,
+  source: string,
+  checkpoint: string,
+  event: TransactionEvent,
+): TransactionEvent {
+  if (
+    !position.test(checkpoint) ||
+    !Number.isSafeInteger(Number(checkpoint.slice(4))) ||
+    Number(checkpoint.slice(4)) < 1 ||
+    !Number.isSafeInteger(event.ordinal) ||
+    event.ordinal < 0
+  )
+    throw new Error("invalid committed Event position");
+  return {
+    ...event,
+    source,
+    id: `ev_${hash("epoch", context.scopeEpoch)}_${hash("view", context.authorizationView)}_${hash("source", source)}_${checkpoint}_${event.ordinal}`,
+  };
+}
+
+=== SOURCE packages/server/src/transaction-installed-configuration.ts:1-67, full-file SHA256 e15cb54266848fdd4aa08b19b37f1b2eb080f4599d9414fad8d85b6f33f35d99 ===
+/** Private bounded launch data; compilation remains in the one runtime factory. */
+import path from "node:path";
+import { parseCanonicalScope } from "@bdp/protocol";
+import { administrativeArray, administrativeData } from "./development-contracts.js";
+import { CONTRACT_ARTIFACT_CEILINGS } from "./installed-contract-artifact.js";
+import type { TransactionRuntimeOptions } from "./transaction-runtime.js";
+function text(value: unknown, maximum: number): string {
+  if (
+    typeof value !== "string" ||
+    !value.length ||
+    !value.isWellFormed() ||
+    Buffer.byteLength(value) > maximum
+  )
+    throw new TypeError("bounded installed transaction string required");
+  return value;
+}
+export function captureInstalledTransactionConfiguration(
+  input: unknown,
+): TransactionRuntimeOptions {
+  const own = administrativeData(input, [
+    "scope",
+    "directory",
+    "create",
+    "credentials",
+    "artifacts",
+  ]);
+  const scope = parseCanonicalScope(text(own.scope, 8192));
+  const directory = text(own.directory, 16384);
+  if (!path.isAbsolute(directory) || typeof own.create !== "boolean")
+    throw new TypeError("explicit provisioning required");
+  const credentials = administrativeArray(own.credentials, 32).map((v) => {
+    const c = administrativeData(v, ["token", "principal", "canMutate"]);
+    const token = text(c.token, 256),
+      principal = text(c.principal, 16384);
+    if (!/^[A-Za-z0-9_-]{32,256}$/.test(token) || typeof c.canMutate !== "boolean")
+      throw new TypeError("invalid installed credential");
+    return Object.freeze({ token, principal, canMutate: c.canMutate });
+  });
+  if (!credentials.length || new Set(credentials.map((c) => c.token)).size !== credentials.length)
+    throw new TypeError("unique credentials required");
+  const supplied = administrativeData(own.artifacts, ["descriptors", "schemas"]);
+  let total = 0;
+  const artifacts = (value: unknown) =>
+    Object.freeze(
+      administrativeArray(value, CONTRACT_ARTIFACT_CEILINGS.submittedArtifacts).map((v) => {
+        const a = administrativeData(v, ["retrievalUri", "utf8"]);
+        const retrievalUri = text(a.retrievalUri, 16384),
+          utf8 = text(a.utf8, CONTRACT_ARTIFACT_CEILINGS.artifactBytes);
+        total += Buffer.byteLength(retrievalUri) + Buffer.byteLength(utf8);
+        if (total > CONTRACT_ARTIFACT_CEILINGS.totalBytes)
+          throw new TypeError("installed artifact capture bound");
+        return Object.freeze({ retrievalUri, utf8 });
+      }),
+    );
+  const descriptors = artifacts(supplied.descriptors),
+    schemas = artifacts(supplied.schemas);
+  if (!descriptors.length) throw new TypeError("compiled descriptor closure required");
+  return Object.freeze({
+    scope,
+    directory,
+    create: own.create,
+    port: 0,
+    authorityMode: "canonical",
+    credentials: Object.freeze(credentials),
+    artifacts: Object.freeze({ descriptors, schemas, limits: CONTRACT_ARTIFACT_CEILINGS }),
+  });
+}
+
+=== SOURCE packages/server/src/transaction-installed.ts:1-22, full-file SHA256 afddc6b0304fee4762c79e40ac6610a281ca8791928d8f779a900a7f6eac881a ===
+/** Private installed Transactional candidate; never a profile admission API. */
+import { captureInstalledTransactionConfiguration } from "./transaction-installed-configuration.js";
+import { installedPayloadIdentity } from "./installed-payload.js";
+import { startTransactionRuntime } from "./transaction-runtime.js";
+export async function startInstalledTransactionCandidate(input: unknown) {
+  const captured = captureInstalledTransactionConfiguration(input);
+  const payloadIdentity = await installedPayloadIdentity();
+  const runtime = await startTransactionRuntime(captured);
+  try {
+    const metadata = runtime.configurationMetadata;
+    if (!metadata || metadata.authorityMode !== "canonical" || metadata.scope !== captured.scope)
+      throw new TypeError("installed transaction metadata unavailable");
+    return Object.freeze({ ...runtime, configurationMetadata: metadata, payloadIdentity });
+  } catch (error) {
+    try {
+      await runtime.close();
+    } catch (cleanup) {
+      throw new AggregateError([error, cleanup], "installed transaction startup cleanup failed");
+    }
+    throw error;
+  }
+}
+
+=== SOURCE scripts/transaction-installed-observation.mjs:1-97, full-file SHA256 6f772f3776d3c3effa788676d853cc2932a6ee59ad63ac3338ad1b487408914b ===
+/** Bounded inherited-IPC launcher. No request or observation emulation. */
+import { spawn } from "node:child_process";
+import { mkdir } from "node:fs/promises";
+export async function launchInstalledTransaction(entry, configuration, signal) {
+  signal?.throwIfAborted();
+  // Explicit launcher-owned provisioning; reopen keeps the directory/create:false.
+  if (configuration.create) await mkdir(configuration.directory, { recursive: true, mode: 0o700 });
+  signal?.throwIfAborted();
+  const child = spawn(process.execPath, [entry], {
+    cwd: "/tmp",
+    stdio: ["ignore", "pipe", "pipe", "ipc"],
+  });
+  let bytes = 0;
+  for (const stream of [child.stdout, child.stderr])
+    stream.on("data", (chunk) => {
+      bytes += chunk.length;
+      if (bytes > 65536) child.kill("SIGKILL");
+    });
+  const exited = new Promise((resolve) =>
+    child.once("exit", (code, signal) => resolve({ code, signal })),
+  );
+  async function bounded(promise) {
+    let timer;
+    try {
+      return await Promise.race([
+        promise,
+        new Promise((_, reject) => {
+          timer = setTimeout(() => {
+            child.kill("SIGKILL");
+            reject(new Error("installed transaction process deadline"));
+          }, 10000);
+        }),
+      ]);
+    } finally {
+      clearTimeout(timer);
+    }
+  }
+  async function drainFailure(error) {
+    child.kill("SIGKILL");
+    try {
+      await bounded(exited);
+    } catch (cleanup) {
+      throw new AggregateError([error, cleanup], "installed transaction cleanup failed");
+    }
+    throw error;
+  }
+  let closing;
+  const close = () =>
+    (closing ??= (async () => {
+      try {
+        if (child.connected) child.send({ command: "close" });
+        const result = await bounded(exited);
+        if (result.code !== 0 || result.signal !== null)
+          throw new Error("installed transaction child did not close cleanly");
+      } catch (error) {
+        await drainFailure(error);
+      } finally {
+        signal?.removeEventListener("abort", onAbort);
+      }
+    })());
+  const onAbort = () => {
+    void close().catch(() => {});
+  };
+  signal?.addEventListener("abort", onAbort, { once: true });
+  if (signal?.aborted) onAbort();
+  let detachReadyAbort = () => {};
+  try {
+    const ready = await bounded(
+      new Promise((resolve, reject) => {
+        const abort = () => reject(signal.reason);
+        signal?.addEventListener("abort", abort, { once: true });
+        detachReadyAbort = () => signal?.removeEventListener("abort", abort);
+        if (signal?.aborted) {
+          abort();
+          return;
+        }
+        child.once("error", reject);
+        child.once("message", resolve);
+        void exited.then(() => reject(new Error("installed transaction exited before ready")));
+        child.send({ configuration });
+      }),
+    );
+    signal?.throwIfAborted();
+    if (!ready || ready.event !== "qualification.ready" || JSON.stringify(ready).length > 65536)
+      throw new Error("invalid installed ready message");
+    return { child, ready, close };
+  } catch (error) {
+    try {
+      await close();
+    } catch (cleanup) {
+      throw new AggregateError([error, cleanup], "installed transaction startup cleanup failed");
+    }
+    throw error;
+  } finally {
+    detachReadyAbort();
+  }
+}
+
+=== SOURCE packages/server/src/transaction-submission.test.ts:299-315, full-file SHA256 86342bc18126965f380d0e09218481eceac4a8396afb4543dd7e11d464fd1976 ===
+  it("joins overlapping calls through one pending receipt without second execution", async () => {
+    const f = fixture(),
+      request = submission();
+    const [a, b] = await Promise.all([
+      submitTransaction(f.store, request),
+      submitTransaction(f.store, request),
+    ]);
+    expect(a.kind).toBe("receipt");
+    expect(b.kind).toBe("receipt");
+    if (a.kind !== "receipt" || b.kind !== "receipt") throw new Error("expected receipt");
+    expect(a.receipt.id).toBe(b.receipt.id);
+    expect(f.store.inspect().groups).toHaveLength(1);
+    expect(await submitTransaction(f.store, request)).toMatchObject({
+      receipt: { id: a.receipt.id, status: "completed" },
+    });
+  });
+  it("keeps unresolved comparison ahead of negotiation, then snapshots immutable controls", async () => {
+
+=== SOURCE apps/bdptest/src/read-update-guarded-overlap-installed.test.ts:164-200, full-file SHA256 767ed468ac29347100203dbb9ff5f435ca2dfaebcad98c61158e5ed59d63a1ed ===
+  const records: {
+    number: number;
+    method: string;
+    url: string;
+    status: number;
+    bodyOctets: number;
+    bodySha256: string;
+    requestBodyOctets: number;
+    requestBodySha256: string | null;
+    headers: Record<string, string | null>;
+  }[] = [];
+  const active = new Set<ClientRequest>();
+  const pending: Promise<Response>[] = [];
+  const closing: Promise<void>[] = [];
+  const controller = new AbortController();
+  let workDeadline = false;
+  const timer = setTimeout(() => {
+    workDeadline = true;
+    controller.abort(new WitnessError("work-deadline", "overlap:work-deadline"));
+  }, 30000);
+  function mark(pair: Pair | undefined, kind: Kind, socket?: number): void {
+    if (!pair) return;
+    const key = `${pair}:${kind}`;
+    if (seen.has(key)) return;
+    if (milestones.length >= 32) {
+      eventOverflow = true;
+      droppedEvents++;
+      return;
+    }
+    seen.add(key);
+    milestones.push({
+      ordinal: milestones.length + 1,
+      request: pair,
+      kind,
+      ...(socket === undefined ? {} : { socket }),
+    });
+  }
+
+=== SOURCE apps/bdptest/src/read-update-guarded-overlap-installed.test.ts:203-374, full-file SHA256 767ed468ac29347100203dbb9ff5f435ca2dfaebcad98c61158e5ed59d63a1ed ===
+  function send(
+    url: string,
+    method: "GET" | "POST" = "GET",
+    body?: string,
+    key?: string,
+    pair?: Pair,
+  ): Promise<Response> {
+    controller.signal.throwIfAborted();
+    if (!configuration || !granted.has(url) || grant(url) !== url || attempted >= 10)
+      throw new WitnessError("oracle", "overlap:dispatch-allowlist");
+    const bytes = body === undefined ? 0 : Buffer.byteLength(body);
+    if (
+      bytes > 65536 ||
+      (method === "POST") !== (body !== undefined) ||
+      (body !== undefined) !== (key !== undefined)
+    )
+      throw new WitnessError("oracle", "overlap:request-shape-bound");
+    const headers = {
+      authorization: `Bearer ${token}`,
+      accept: "application/json",
+      connection: "close",
+      ...(body === undefined
+        ? {}
+        : {
+            "content-type": "application/json",
+            "content-length": String(bytes),
+            "idempotency-key": key!,
+          }),
+    };
+    if (Buffer.byteLength(JSON.stringify(headers)) > 16384)
+      throw new WitnessError("oracle", "overlap:request-header-bound");
+    const number = ++attempted;
+    bodyBytes += bytes;
+    mark(pair, "invoked");
+    let req: ClientRequest | undefined;
+    let incoming: IncomingMessage | undefined;
+    let settled = false;
+    let deadline: ReturnType<typeof setTimeout> | undefined;
+    let resolveClosed!: () => void;
+    const closed = new Promise<void>((resolve) => {
+      resolveClosed = resolve;
+    });
+    closing.push(closed);
+    const promise = new Promise<Response>((resolve, reject) => {
+      const finish = (error?: unknown, response?: Response) => {
+        if (settled) return;
+        settled = true;
+        if (deadline) clearTimeout(deadline);
+        controller.signal.removeEventListener("abort", abort);
+        mark(pair, "settled");
+        if (error !== undefined) reject(error);
+        else resolve(response!);
+      };
+      const fail = (error: WitnessError) => {
+        incoming?.destroy();
+        req?.destroy();
+        finish(error);
+      };
+      const abort = () =>
+        fail(new WitnessError(workDeadline ? "work-deadline" : "cleanup", "overlap:aborted"));
+      deadline = setTimeout(
+        () => fail(new WitnessError("exchange-deadline", "overlap:exchange-deadline")),
+        5000,
+      );
+      controller.signal.addEventListener("abort", abort, { once: true });
+      try {
+        const target = new URL(url);
+        req = request(
+          {
+            hostname: configuration!.listener.host,
+            port: configuration!.listener.port,
+            path: target.pathname,
+            method,
+            headers,
+            agent: false,
+            maxHeaderSize: 16384,
+          },
+          (response) => {
+            incoming = response;
+            mark(pair, "response-start");
+            const chunks: Buffer[] = [];
+            let received = 0;
+            response.on("data", (chunk: Buffer) => {
+              received += chunk.length;
+              if (received > 32768) {
+                fail(new WitnessError("transport", "overlap:response-body-bound"));
+                return;
+              }
+              if (!settled) chunks.push(chunk);
+            });
+            response.once("aborted", () => {
+              mark(pair, "aborted");
+              fail(new WitnessError("transport", "overlap:response-aborted"));
+            });
+            response.once("error", () => {
+              mark(pair, "error");
+              fail(new WitnessError("transport", "overlap:response-error"));
+            });
+            response.once("close", () => {
+              mark(pair, "response-close");
+              if (!response.complete)
+                fail(new WitnessError("transport", "overlap:premature-close"));
+            });
+            response.once("end", () => {
+              mark(pair, "response-end");
+              if (settled) return;
+              try {
+                const data = Buffer.concat(chunks);
+                const text = new TextDecoder("utf-8", { fatal: true }).decode(data);
+                const value: unknown = data.length ? JSON.parse(text) : undefined;
+                const status = response.statusCode ?? 0;
+                const safeHeaders = Object.fromEntries(
+                  [
+                    "content-type",
+                    "cache-control",
+                    "content-length",
+                    "x-bdp-development",
+                    ...absentMutationHeaders,
+                  ].map((name) => [
+                    name,
+                    typeof response.headers[name] === "string" ? response.headers[name] : null,
+                  ]),
+                );
+                records.push({
+                  number,
+                  method,
+                  url,
+                  status,
+                  bodyOctets: data.length,
+                  bodySha256: digest(data),
+                  requestBodyOctets: bytes,
+                  requestBodySha256: body === undefined ? null : digest(body),
+                  headers: safeHeaders,
+                });
+                finish(undefined, { status, headers: response.headers, body: value });
+              } catch {
+                fail(new WitnessError("transport", "overlap:response-json"));
+              }
+            });
+          },
+        );
+        active.add(req);
+        req.once("socket", (socket) => {
+          const id = ++socketSerial;
+          mark(pair, "socket-assigned", id);
+          socket.once("connect", () => mark(pair, "connected", id));
+          socket.once("close", () => mark(pair, "socket-close", id));
+        });
+        req.once("finish", () => mark(pair, "finish"));
+        req.once("error", () => {
+          mark(pair, "error");
+          finish(new WitnessError("transport", "overlap:request-error"));
+        });
+        req.once("close", () => {
+          mark(pair, "request-close");
+          active.delete(req!);
+          resolveClosed();
+        });
+        mark(pair, "end-called");
+        req.end(body);
+      } catch {
+        fail(new WitnessError("transport", "overlap:request-construction"));
+        if (!req) resolveClosed();
+      }
+    });
+    // Attach a rejection handler immediately, including A before constructing B.
+    void promise.catch(() => undefined);
+    pending.push(promise);
+    return promise;
+  }
+  try {
+    const defaultEntry = realpathSync(
+
+=== SOURCE apps/bdptest/src/read-update-guarded-overlap-installed.test.ts:532-574, full-file SHA256 767ed468ac29347100203dbb9ff5f435ca2dfaebcad98c61158e5ed59d63a1ed ===
+    expect(replayA.status).toBe(a.status);
+    expect(replayA.body).toStrictEqual(a.body);
+    const replayB = await send(update, "POST", bBody, "overlap-b");
+    mutation(replayB);
+    expect(replayB.status).toBe(b.status);
+    expect(replayB.body).toStrictEqual(b.body);
+    const final = await send(seed.id);
+    expect(final.status).toBe(200);
+    expect(parseBeadRecord(final.body)).toStrictEqual(winningResource);
+    expect(attempted).toBe(10);
+    expect(bodyBytes).toBe(634 + 4 * revisionJsonBytes);
+  } catch (error) {
+    failures.push(error);
+    classification ??=
+      error instanceof WitnessError
+        ? error.classification
+        : workDeadline
+          ? "work-deadline"
+          : startupPhase
+            ? "startup"
+            : "oracle";
+  } finally {
+    clearTimeout(timer);
+    controller.abort(new WitnessError("cleanup", "overlap:aborted"));
+    for (const req of active) req.destroy();
+    // Both teardown branches run even if the other fails; no additional runtime is started.
+    let drainTimer: ReturnType<typeof setTimeout> | undefined;
+    const drain = Promise.race([
+      Promise.all([Promise.allSettled(pending), Promise.all(closing)]),
+      new Promise<never>((_resolve, reject) => {
+        drainTimer = setTimeout(
+          () => reject(new WitnessError("cleanup", "overlap:request-drain-deadline")),
+          5000,
+        );
+      }),
+    ]).finally(() => {
+      if (drainTimer) clearTimeout(drainTimer);
+    });
+    const close = (async () => {
+      if (!launched) return;
+      exit = await launched.close();
+      if (exit.code !== 0 || exit.signal !== null)
+        throw new WitnessError("cleanup", "overlap:child-exit");
+
+=== EXACT JSON DEFINITION packages/protocol/schemas/bdp-v0.schema.json #/$defs/receiptCore (compact serialization only) ===
+{"type":"object","properties":{"id":{"$ref":"#/$defs/absoluteHttpUrl"},"status":{"$ref":"#/$defs/receiptStatus"},"detail":{"$ref":"#/$defs/receiptDetail"},"idempotencyKey":{"$ref":"#/$defs/idempotencyKey"},"scopeEpoch":{"$ref":"#/$defs/wireToken"},"authorizationView":{"$ref":"#/$defs/wireToken"},"transaction":{"$ref":"#/$defs/wireToken"},"requiredPosition":{"$ref":"#/$defs/wireToken"},"effectPosition":{"$ref":"#/$defs/wireToken"},"results":{"type":"array","items":{"$ref":"#/$defs/receiptResult"}},"next":{"oneOf":[{"$ref":"#/$defs/absoluteHttpUrl"},{"type":"null"}]},"allocated":{"type":"array","items":{"$ref":"#/$defs/allocatedIdentity"}},"problem":{"$ref":"#/$defs/receiptProblem"},"expiresAt":{"$ref":"#/$defs/dateTime"}},"allOf":[{"if":{"properties":{"status":{"const":"failed"}},"required":["status"]},"then":{"properties":{"effectPosition":false,"detail":{"const":"available"}}}}],"additionalProperties":false}
+
+=== EXACT JSON DEFINITION packages/protocol/schemas/bdp-v0.schema.json #/$defs/mutationReceipt (compact serialization only) ===
+{"title":"BDP Mutation Receipt","type":"object","allOf":[{"$ref":"#/$defs/receiptCore"}],"oneOf":[{"type":"object","required":["id","status","idempotencyKey","scopeEpoch","authorizationView","transaction"],"properties":{"id":true,"status":{"const":"pending"},"idempotencyKey":true,"scopeEpoch":true,"authorizationView":true,"transaction":true,"detail":false,"requiredPosition":false,"effectPosition":false,"results":false,"next":false,"allocated":false,"problem":false,"expiresAt":false}},{"type":"object","required":["id","status","detail","idempotencyKey","scopeEpoch","authorizationView","transaction","requiredPosition","results","next","expiresAt"],"properties":{"id":true,"status":{"const":"completed"},"detail":{"const":"available"},"idempotencyKey":true,"scopeEpoch":true,"authorizationView":true,"transaction":true,"requiredPosition":true,"effectPosition":true,"results":true,"next":true,"expiresAt":true,"allocated":false,"problem":false},"allOf":[{"if":{"properties":{"next":{"type":"null"}},"required":["next"]},"then":{"properties":{"results":{"type":"array","minItems":1}}}}]},{"type":"object","required":["id","status","detail","idempotencyKey","scopeEpoch","authorizationView","transaction","requiredPosition","problem","expiresAt"],"properties":{"id":true,"status":{"const":"failed"},"detail":{"const":"available"},"idempotencyKey":true,"scopeEpoch":true,"authorizationView":true,"transaction":true,"requiredPosition":true,"problem":true,"expiresAt":true,"effectPosition":false,"results":false,"next":false,"allocated":false}},{"type":"object","required":["id","status","detail","idempotencyKey","scopeEpoch","authorizationView","transaction","requiredPosition","allocated"],"properties":{"id":true,"status":{"const":"completed"},"detail":{"const":"expired"},"idempotencyKey":true,"scopeEpoch":true,"authorizationView":true,"transaction":true,"requiredPosition":true,"effectPosition":true,"allocated":true,"results":false,"next":false,"problem":false,"expiresAt":false}},{"type":"object","required":["id","status","detail","idempotencyKey","scopeEpoch","authorizationView","transaction","requiredPosition"],"properties":{"id":true,"status":{"const":"completed"},"detail":{"const":"withheld"},"idempotencyKey":true,"scopeEpoch":true,"authorizationView":true,"transaction":true,"requiredPosition":true,"effectPosition":true,"results":false,"next":false,"allocated":false,"problem":false,"expiresAt":false}}]}
+
+=== EXACT JSON DEFINITION packages/protocol/schemas/bdp-v0.schema.json #/$defs/receiptResult (compact serialization only) ===
+{"type":"object","required":["operationIndex","outcome"],"properties":{"operationIndex":{"type":"integer","minimum":0},"operationName":{"$ref":"#/$defs/localName"},"outcome":{"$ref":"#/$defs/receiptEntryOutcome"},"resource":{"oneOf":[{"allOf":[{"$ref":"#/$defs/beadRecord"},{"type":"object","properties":{"links":false}}]},{"$ref":"#/$defs/linkRecord"}]},"deleted":{"$ref":"#/$defs/deletedIdentity"},"erased":{"$ref":"#/$defs/resourceIdentity"},"source":{"$ref":"#/$defs/absoluteHttpUrl"},"sourceRevision":{"$ref":"#/$defs/revision"},"count":{"type":"integer","minimum":0},"alias":{"$ref":"#/$defs/absoluteHttpUrl"},"target":{"$ref":"#/$defs/absoluteHttpUrl"}},"allOf":[{"if":{"properties":{"outcome":{"enum":["created","updated"]}},"required":["outcome"],"not":{"properties":{"alias":true},"required":["alias"]}},"then":{"required":["resource"],"properties":{"resource":true,"deleted":false,"erased":false,"count":false}}},{"if":{"properties":{"outcome":{"const":"deleted"}},"required":["outcome"],"not":{"properties":{"alias":true},"required":["alias"]}},"then":{"required":["deleted"],"properties":{"deleted":true,"resource":false,"erased":false,"count":false}}},{"if":{"properties":{"outcome":{"const":"erased"}},"required":["outcome"]},"then":{"required":["erased"],"properties":{"erased":true,"resource":false,"deleted":false,"count":false}}},{"if":{"properties":{"outcome":{"const":"matched"}},"required":["outcome"]},"then":{"required":["count"],"properties":{"count":true,"operationName":false,"resource":false,"deleted":false,"erased":false,"source":false,"sourceRevision":false}}},{"if":{"properties":{"outcome":{"const":"withheld"}},"required":["outcome"]},"then":{"properties":{"resource":false,"deleted":false,"erased":false,"source":false,"sourceRevision":false,"count":false}}},{"if":{"required":["resource"],"properties":{"resource":{"$ref":"#/$defs/beadRecord"}}},"then":{"properties":{"source":false,"sourceRevision":false}}},{"if":{"required":["deleted"],"properties":{"deleted":{"type":"object","required":["resourceKind"],"properties":{"resourceKind":{"const":"bead"}}}}},"then":{"properties":{"source":false,"sourceRevision":false}}},{"if":{"required":["alias"]},"then":{"allOf":[{"$ref":"#/$defs/aliasResultMembers"}],"properties":{"operationIndex":{"const":0},"operationName":false,"resource":false,"deleted":false,"erased":false,"source":false,"sourceRevision":false,"count":false}},"else":{"properties":{"target":false}}}],"dependentRequired":{"source":["sourceRevision"],"sourceRevision":["source"]},"additionalProperties":false}
+
+=== EXACT JSON DEFINITION packages/protocol/schemas/bdp-v0.schema.json #/$defs/beadRecord (compact serialization only) ===
+{"type":"object","required":["id","type","revision","properties"],"properties":{"id":{"$ref":"#/$defs/absoluteHttpUrl"},"type":{"$ref":"#/$defs/absoluteHttpUrl"},"revision":{"type":"string","minLength":1},"properties":{"$ref":"#/$defs/properties"},"metadata":{"$ref":"#/$defs/metadata"},"links":{"$ref":"#/$defs/linkCollection"},"ownedLinks":{"type":"object","propertyNames":{"$ref":"#/$defs/absoluteHttpUrl"},"additionalProperties":{"type":"array","items":{"$ref":"#/$defs/linkRecord"}}},"revisionProvenance":{"$ref":"#/$defs/revisionProvenance"}},"additionalProperties":false}
+
+=== EXACT JSON DEFINITION packages/protocol/schemas/bdp-v0.schema.json #/$defs/currentBeadRecord (compact serialization only) ===
+{"allOf":[{"$ref":"#/$defs/beadRecord"},{"type":"object","required":["metadata"],"properties":{"metadata":{"$ref":"#/$defs/metadata"},"links":{"$ref":"#/$defs/currentLinkCollection"},"ownedLinks":{"type":"object","additionalProperties":{"type":"array","items":{"$ref":"#/$defs/currentLinkRecord"}}}}}]}
+
+=== EXACT JSON DEFINITION packages/protocol/schemas/bdp-v0.schema.json #/$defs/beadCollection (compact serialization only) ===
+{"type":"object","required":["items","next"],"properties":{"items":{"type":"array","items":{"$ref":"#/$defs/beadRecord"}},"next":{"oneOf":[{"$ref":"#/$defs/absoluteHttpUrl"},{"type":"null"}]}},"additionalProperties":false}
+
+=== EXACT JSON DEFINITION packages/protocol/schemas/bdp-v0.schema.json #/$defs/currentBeadCollection (compact serialization only) ===
+{"allOf":[{"$ref":"#/$defs/beadCollection"},{"type":"object","properties":{"items":{"type":"array","items":{"$ref":"#/$defs/currentBeadRecord"}}}}]}
+
+=== EXACT JSON DEFINITION packages/protocol/schemas/bdp-v0.schema.json #/$defs/eventPage (compact serialization only) ===
+{"title":"BDP Event Source page","type":"object","required":["source","events","next"],"properties":{"source":{"$ref":"#/$defs/absoluteHttpUrl"},"events":{"type":"array","items":{"$ref":"#/$defs/event"}},"next":{"oneOf":[{"$ref":"#/$defs/absoluteHttpUrl"},{"type":"null"}]}},"additionalProperties":false}
+
+=== EXACT JSON DEFINITION packages/protocol/schemas/bdp-v0.schema.json #/$defs/event (compact serialization only) ===
+{"title":"BDP Event","type":"object","required":["id","ordinal","type","source","subject","subjectType","transaction","time","data"],"properties":{"id":{"$ref":"#/$defs/wireToken"},"ordinal":{"type":"integer","minimum":0},"type":{"$ref":"#/$defs/eventType"},"source":{"$ref":"#/$defs/absoluteHttpUrl"},"subject":{"$ref":"#/$defs/absoluteHttpUrl"},"subjectType":{"$ref":"#/$defs/absoluteHttpUrl"},"transaction":{"$ref":"#/$defs/wireToken"},"time":{"$ref":"#/$defs/dateTime"},"data":{"type":"object"}},"allOf":[{"if":{"properties":{"type":{"const":"created"}},"required":["type"]},"then":{"properties":{"data":{"$ref":"#/$defs/createdData"}}}},{"if":{"properties":{"type":{"const":"updated"}},"required":["type"]},"then":{"properties":{"data":{"$ref":"#/$defs/updatedData"}}}},{"if":{"properties":{"type":{"const":"deleted"}},"required":["type"]},"then":{"properties":{"data":{"$ref":"#/$defs/deletedData"}}}},{"if":{"properties":{"type":{"enum":["linked","unlinked"]}},"required":["type"]},"then":{"properties":{"data":{"$ref":"#/$defs/linkDeltaData"}}}}],"additionalProperties":false}
+
+=== OMITTED CONTEXT ===
+- Full store/evaluator outside supplied admission, allocation and terminal commit excerpts; no runtime modification proposed. Unresolved comparison and failure/recovery machinery are excluded.
+- Runtime listener/request parser, IPC bootstrap and payload digest internals; closed installed-to-runtime configuration adapter/startup and complete inherited launcher supplied. Adapter adds port0/canonical authority, not caller input.
+- Other schema definitions, including scalar URI/date-time, nested links and mutationResultMembers; implementation must use complete actual schema. No schema widening.
+- Full catalogs/manifest/prior logs; this two-file witness grants no cumulative credit.
+- Remaining Update test setup/assertions/reporting/cleanup tail; send and cleanup are patterns, not copied profile oracles.
+- Future source/argv/build/archive/consumer inventory pending root gates; no invented future identity/success.
