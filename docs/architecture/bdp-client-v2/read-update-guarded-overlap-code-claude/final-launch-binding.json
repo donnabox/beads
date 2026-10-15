@@ -1,0 +1,124 @@
+{
+  "sourceHashes": {
+    "scripts/installed-reference-observation.mjs": "ca897f4a7659969df123037b5847d5765b357d9b8e1652f367bb204450db6278",
+    "packages/server/src/installed-reference.ts": "c311a724d5d81710264b443da6800e960f49402f10383889de59714949b9eec7",
+    "packages/server/src/installed-reference-process.ts": "149f98c04e096a9eab9a291bd4aac3f7db34ba57578e63cb4439e0e3e24fc654",
+    "packages/server/src/development-runtime.ts": "37e222682645e9d8f2d5fcf62de208640fb6216c9e9f2f279ab6017e8b9d6ca9",
+    "packages/server/src/development-composition.ts": "a7113a8a3164dc6f4b1f6b5bdcbf74cee811e5b8a0474d241ac30706997ee54f",
+    "packages/server/src/member-executor.ts": "cfce8e561f9315948c6b3b3def25893a7dfde78e2cc338fa142b859ae209771f",
+    "packages/server/src/resource-evaluator.ts": "89606787e455f4ed555b807d91c5331a376431807a9a581de1f94e538fcab4ff",
+    "packages/server/src/recovery-store.ts": "48b7901e48998fe29598168a527213ebfb49e1d6e5dc5c2eb6494c862b5de9f9",
+    "packages/protocol/src/index.ts": "92e547e807ec2d23223c47dbc4e04867d55db89ac9aab5fbd55f33349f92bdc6",
+    "docs/specs/bdp.md": "f036103ffdf5f89fa3a2033570e1e987c4cd203cd80b1c633cb44615123f892e",
+    "apps/bdptest/src/development-matrix.test.ts": "858e6f85bf40bde4327df52e34a2aceab235b8130e7539a816651ce19f71e1ac",
+    "packages/server/src/read-http-routing.ts": "d9344b87838f8c71381ccf9efe28b4f023df45503570beb8fb4293d553caca42",
+    "packages/protocol/src/read-values.ts": "6ff2cd2456a5487ded968bac6651164ed4a82ad665b8896986accfd662688482",
+    "packages/protocol/src/read-update-values.ts": "d1fdbc660d5e2c009275c152bdcebda46031700920aa03bfea89f39564c89de2",
+    "packages/protocol/src/read-update-problems.ts": "1a6315705b72fad1f1a287053c17858130c91317ed08c95f6d68a1ecc620a211"
+  },
+  "plans": {
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/read-update-guarded-overlap-draft/preview/read-update-guarded-overlap-installed.test.ts": "2a15f4d1a0d6392b4df3041fcd7cfaebcf6abefb9d886648f36917b64c0fb58b",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/read-update-guarded-overlap-draft/preview/update-implementation-progress.amendment.md": "5ddff7ec7231232109b8e9646cd9bb10e1b72fb38a45bf3ec6b591c0a570aa04",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/read-update-guarded-overlap-draft/preview/report.md": "e9d1c51b750aef2c6db243eb3c369158ce2c0b5b96d3b5db015b1d76c9dbfe06",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/read-update-guarded-overlap-draft/preview/source-binding.json": "c4534f14df45f9f5d2a2f5d212cbf21f788e58c0685566f148796f59da6d84be",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/read-update-guarded-overlap-draft/preview/requests.json": "60b7538af835c2b8bb23207b69b1dd5f541ebefa77af6ddd2b018f0bc0386dbb",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/read-update-guarded-overlap-draft/preview/selection.json": "bf810b05c8b0e8eef20ce32017b184a53a83688585e593d1a0a3629b3307f2ea",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/read-update-guarded-overlap-plan-v2.md": "7de8ee2cb33d1cfd9d7d3c556cae3998838e68c58f5cca72d70cff7c84084cef",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/read-update-guarded-overlap-draft/native-code-review.md": "e9f40a2485a8c874d3a1c7e04118e89a72a6af0f1279236e2ff40ec2f6ed7261"
+  },
+  "promptSha256": "c22e90b72ed534a80489801cd1d3a38f39f88fae482a254802c4e4a9ff8e7777",
+  "promptBytes": 109609,
+  "sourceRanges": {
+    "scripts/installed-reference-observation.mjs": [
+      [
+        1,
+        103
+      ]
+    ],
+    "packages/server/src/installed-reference.ts": [
+      [
+        1,
+        38
+      ]
+    ],
+    "packages/server/src/development-composition.ts": [
+      [
+        11,
+        83
+      ]
+    ],
+    "packages/server/src/read-http-routing.ts": [
+      [
+        1,
+        42
+      ]
+    ],
+    "packages/server/src/development-runtime.ts": [
+      [
+        100,
+        164
+      ],
+      [
+        399,
+        489
+      ]
+    ],
+    "packages/server/src/resource-evaluator.ts": [
+      [
+        134,
+        161
+      ],
+      [
+        1000,
+        1048
+      ]
+    ],
+    "packages/server/src/member-executor.ts": [
+      [
+        188,
+        210
+      ],
+      [
+        645,
+        685
+      ],
+      [
+        718,
+        780
+      ]
+    ],
+    "packages/server/src/recovery-store.ts": [
+      [
+        381,
+        393
+      ],
+      [
+        785,
+        806
+      ]
+    ],
+    "packages/protocol/src/read-values.ts": [
+      [
+        137,
+        218
+      ]
+    ],
+    "packages/protocol/src/read-update-values.ts": [
+      [
+        410,
+        453
+      ]
+    ],
+    "packages/protocol/src/read-update-problems.ts": [
+      [
+        1,
+        47
+      ]
+    ]
+  },
+  "workspaceHead": "3968081f8231566908e69045424b067c3c36dc40",
+  "workspaceStatus": " M apps/bdptest/src/transactional-matrix.test.ts\n",
+  "unrelatedDirtyMatrixSha256": "6c0c240afef61831d0573775ea35b0c04b116a55da1d3fb40127b9ede68e939c",
+  "scope": "one actual supplied-context code review of external RU preview,900s,no modeloverride/no tools",
+  "actualMergePending": true
+}

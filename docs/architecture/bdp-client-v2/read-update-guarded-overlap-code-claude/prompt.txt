@@ -1,0 +1,1622 @@
+Independent CODE review of the frozen external ordinary Read+Update guarded-overlap preview. Do not write or modify any files. Output findings only in stdout. No tools, commands, imports, tests, services, agents or network. No model override requested. The target is proposed code, not merely the prior plan; evaluate actual implementation. Native review below is context, not your verdict.
+
+Return concise numbered Critical/High/Medium/Low findings with exact source/preview lines, issue, concrete impact and smallest correction. Prioritize real correctness/privacy/cleanup/control-oracle defects over praise or hypothetical broadening. Distinguish verified defects from missing supplied context. If clean, say no actionable findings and state practical limits. Complete within900s.
+
+This external327line preview and progress amendment are immutable, not applied to the product checkout. Source basis015cac1's eleven RU files remain byte-identical in receipt candidate3968081; actual receipt merge is pending. The only unrelated dirty product file is transactional-matrix.test.ts with a separately reviewed deadline-test repair6c0c240a; it is not this RU target and is not included as a code change here. Do not classify that known separate dirt as review-target drift.
+
+Focus: real Node HTTP lifecycle and caught errors; authenticated genuine discovery/directory route use; complete schema/Resource/Problem oracles; client-outstanding milestone evidence without simultaneous-admission claims; exact ten-positive/six-negative workload; valid two200 emitted-guard control reaching the named assertion; streaming memory/header bounds; independent request/child cleanup; report privacy and source/mode/provenance limits. Existing launcher pre-ready error masking/PID limitation is explicitly accepted and must remain visible, not silently fixed through unrelated helper changes. Body/replay/state parsers normalize only their existing documented projections.
+
+The future control removes only actual emitted expectedRevision guard. No control or target has run. Requirement is two genuine complete schema-valid200 results before named exactly-one-winner fails at6; no extra reads7–10. Native/fullCI/install evidence is pending. Full consumer graph/payload/source binding belongs to future separately reviewed external execution; do not mistake declared mode or entry hash for child attestation. No public/cumulative qualification.
+
+Supplied full preview, accepted plan, ledger/amendment/native review and bounded critical unchanged source follow.
+
+TARGET read-update-guarded-overlap-draft/preview/read-update-guarded-overlap-installed.test.ts
+1: /** Private ordinary Read+Update witness; no cumulative or public qualification. */
+2: import { execFileSync, type ChildProcess } from "node:child_process";
+3: import { createHash, randomBytes } from "node:crypto";
+4: import { existsSync, mkdtempSync, readFileSync, realpathSync, rmSync, statSync, writeFileSync } from "node:fs";
+5: import { request, type ClientRequest, type IncomingMessage } from "node:http";
+6: import { tmpdir } from "node:os";
+7: import path from "node:path";
+8: import { fileURLToPath } from "node:url";
+9: import { isDeepStrictEqual } from "node:util";
+10: import { expect, it } from "vitest";
+11: import { parseBeadRecord, parseReadUpdateDiscovery, parseReadUpdateMutationResult,
+12:   parseReadUpdateOperationDirectory, parseReadUpdateProblem, type BeadRecord } from "@bdp/protocol";
+13: 
+14: const root = fileURLToPath(new URL("../../../", import.meta.url));
+15: const scope = "https://reference.invalid/acme/";
+16: const digest = (bytes: string | Uint8Array) => createHash("sha256").update(bytes).digest("hex");
+17: type Configuration = { scope: string; listener: { host: string; port: number } };
+18: type Exit = { code: number | null; signal: NodeJS.Signals | null };
+19: type Launched = { child: ChildProcess; ready: Record<string, unknown>; close(): Promise<Exit> };
+20: // Existing emitted launcher imports only when the selected test module is loaded, after build.
+21: const helpers = (await import(new URL("../../../scripts/installed-reference-observation.mjs", import.meta.url).href)) as {
+22:   availablePort(): Promise<number>;
+23:   referenceConfiguration(directory: string, port: number, token: string): Configuration;
+24:   launchInstalledReference(entry: string, configuration: Configuration): Promise<Launched>;
+25: };
+26: type Classification = "oracle" | "work-deadline" | "exchange-deadline" | "transport" | "startup" | "cleanup";
+27: class WitnessError extends Error {
+28:   constructor(readonly classification: Classification, readonly code: string) { super(code); }
+29: }
+30: type Kind = "invoked" | "end-called" | "socket-assigned" | "connected" | "finish" |
+31:   "response-start" | "response-end" | "error" | "aborted" | "request-close" |
+32:   "response-close" | "settled" | "socket-close";
+33: type Pair = "A" | "B";
+34: type Milestone = { ordinal: number; request: Pair; kind: Kind; socket?: number };
+35: type Response = { status: number; headers: IncomingMessage["headers"]; body: unknown };
+36: const expectedProblem = { type: "https://github.com/gastownhall/bdp/problems/conflict",
+37:   code: "revision-mismatch", status: 409, retry: "after-state-change" };
+38: const absentMutationHeaders = ["etag", "location", "bdp-scope-epoch", "bdp-authorization-view", "bdp-scope-position"];
+39: function grant(value: string): string {
+40:   const url = new URL(value);
+41:   if (url.href !== value || !value.startsWith(scope) || url.username || url.password || url.search || url.hash ||
+42:       value.length > 8192 || Buffer.byteLength(value) > 8192)
+43:     throw new WitnessError("oracle", "overlap:canonical-target");
+44:   return value;
+45: }
+46: function mutation(response: Response): void {
+47:   expect(response.headers["cache-control"]).toBe("private, no-store");
+48:   expect(response.headers["x-bdp-development"]).toBe("non-attesting");
+49:   expect(response.headers["content-type"]).toBe(response.status === 200 ? "application/json" : "application/problem+json");
+50:   for (const name of absentMutationHeaders) expect(response.headers[name]).toBeUndefined();
+51: }
+52: function completeUpdate(response: Response, seed: BeadRecord, n: number): BeadRecord | undefined {
+53:   if (response.status !== 200 && response.status !== 409)
+54:     throw new WitnessError("transport", "overlap:unexpected-mutation-status");
+55:   mutation(response);
+56:   if (response.status === 409) { parseReadUpdateProblem(response.body); return undefined; }
+57:   const result = parseReadUpdateMutationResult(response.body);
+58:   expect(result.outcome).toBe("updated");
+59:   const resource = parseBeadRecord(result.resource);
+60:   expect(resource.id).toBe(seed.id); expect(resource.type).toBe(seed.type);
+61:   expect(resource.properties).toStrictEqual({ n });
+62:   expect(resource.metadata).toStrictEqual(seed.metadata);
+63:   expect(resource.ownedLinks).toStrictEqual(seed.ownedLinks);
+64:   expect(resource.links).toStrictEqual(seed.links);
+65:   expect(resource.revision).not.toBe(seed.revision);
+66:   return resource;
+67: }
+68: 
+69: it("preserves one guarded winner and both retained dispositions across overlapping ordinary Read+Update requests", async () => {
+70:   const failures: unknown[] = [];
+71:   const cleanupFailures: string[] = [];
+72:   let classification: Classification | null = null;
+73:   let namedOracle: string | null = null;
+74:   let directory: string | undefined;
+75:   let launched: Launched | undefined;
+76:   let exit: Exit | undefined;
+77:   let entry: string | undefined;
+78:   let entrySha256: string | undefined;
+79:   let sourceCommit: string | undefined;
+80:   let workspaceDirty: boolean | undefined;
+81:   let mode: "default-emitted-CI" | "fresh-consumer-positive" | "emitted-derivative" | undefined;
+82:   let configuration: Configuration | undefined;
+83:   let attempted = 0;
+84:   let bodyBytes = 0;
+85:   let revisionJsonBytes: number | undefined;
+86:   let winner: Pair | null = null;
+87:   let pairSchemasValid = false;
+88:   let overlapObserved: boolean | null = null;
+89:   let connectionsBeforeResponse: boolean | null = null;
+90:   let finishesBeforeResponse: boolean | null = null;
+91:   let eventOverflow = false;
+92:   let droppedEvents = 0;
+93:   let socketSerial = 0;
+94:   const milestones: Milestone[] = [];
+95:   const seen = new Set<string>();
+96:   const records: { number: number; method: string; url: string; status: number; bodyOctets: number; bodySha256: string;
+97:     requestBodyOctets: number; requestBodySha256: string | null; headers: Record<string, string | null> }[] = [];
+98:   const active = new Set<ClientRequest>();
+99:   const pending: Promise<Response>[] = [];
+100:   const closing: Promise<void>[] = [];
+101:   const controller = new AbortController();
+102:   let workDeadline = false;
+103:   const timer = setTimeout(() => { workDeadline = true; controller.abort(new WitnessError("work-deadline", "overlap:work-deadline")); }, 30000);
+104:   function mark(pair: Pair | undefined, kind: Kind, socket?: number): void {
+105:     if (!pair) return;
+106:     const key = `${pair}:${kind}`;
+107:     if (seen.has(key)) return;
+108:     seen.add(key);
+109:     if (milestones.length >= 32) { eventOverflow = true; droppedEvents++; return; }
+110:     milestones.push({ ordinal: milestones.length + 1, request: pair, kind, ...(socket === undefined ? {} : { socket }) });
+111:   }
+112:   const granted = new Set<string>([scope]);
+113:   const token = randomBytes(32).toString("base64url");
+114:   function send(url: string, method: "GET" | "POST" = "GET", body?: string, key?: string, pair?: Pair): Promise<Response> {
+115:     controller.signal.throwIfAborted();
+116:     if (!configuration || !granted.has(url) || grant(url) !== url || attempted >= 10)
+117:       throw new WitnessError("oracle", "overlap:dispatch-allowlist");
+118:     const bytes = body === undefined ? 0 : Buffer.byteLength(body);
+119:     if (bytes > 65536 || (method === "POST") !== (body !== undefined && key !== undefined))
+120:       throw new WitnessError("oracle", "overlap:request-shape-bound");
+121:     const headers = { authorization: `Bearer ${token}`, accept: "application/json", connection: "close",
+122:       ...(body === undefined ? {} : { "content-type": "application/json", "content-length": String(bytes), "idempotency-key": key! }) };
+123:     if (Buffer.byteLength(JSON.stringify(headers)) > 16384)
+124:       throw new WitnessError("oracle", "overlap:request-header-bound");
+125:     const number = ++attempted; bodyBytes += bytes; mark(pair, "invoked");
+126:     let req: ClientRequest | undefined;
+127:     let incoming: IncomingMessage | undefined;
+128:     let settled = false;
+129:     let deadline: ReturnType<typeof setTimeout> | undefined;
+130:     let resolveClosed!: () => void;
+131:     const closed = new Promise<void>((resolve) => { resolveClosed = resolve; });
+132:     closing.push(closed);
+133:     const promise = new Promise<Response>((resolve, reject) => {
+134:       const finish = (error?: unknown, response?: Response) => {
+135:         if (settled) return;
+136:         settled = true;
+137:         if (deadline) clearTimeout(deadline);
+138:         controller.signal.removeEventListener("abort", abort);
+139:         mark(pair, "settled");
+140:         if (error !== undefined) reject(error); else resolve(response!);
+141:       };
+142:       const fail = (error: WitnessError) => { incoming?.destroy(); req?.destroy(); finish(error); };
+143:       const abort = () => fail(new WitnessError(workDeadline ? "work-deadline" : "cleanup", "overlap:aborted"));
+144:       deadline = setTimeout(() => fail(new WitnessError("exchange-deadline", "overlap:exchange-deadline")), 5000);
+145:       controller.signal.addEventListener("abort", abort, { once: true });
+146:       try {
+147:         const target = new URL(url);
+148:         req = request({ hostname: configuration!.listener.host, port: configuration!.listener.port,
+149:           path: target.pathname, method, headers, agent: false, maxHeaderSize: 16384 }, (response) => {
+150:           incoming = response; mark(pair, "response-start");
+151:           const chunks: Buffer[] = []; let received = 0;
+152:           response.on("data", (chunk: Buffer) => {
+153:             received += chunk.length;
+154:             if (received > 32768) { fail(new WitnessError("transport", "overlap:response-body-bound")); return; }
+155:             if (!settled) chunks.push(chunk);
+156:           });
+157:           response.once("aborted", () => { mark(pair, "aborted"); fail(new WitnessError("transport", "overlap:response-aborted")); });
+158:           response.once("error", () => { mark(pair, "error"); fail(new WitnessError("transport", "overlap:response-error")); });
+159:           response.once("close", () => {
+160:             mark(pair, "response-close");
+161:             if (!response.complete) fail(new WitnessError("transport", "overlap:premature-close"));
+162:           });
+163:           response.once("end", () => {
+164:             mark(pair, "response-end");
+165:             if (settled) return;
+166:             try {
+167:               const data = Buffer.concat(chunks); const text = new TextDecoder("utf-8", { fatal: true }).decode(data);
+168:               const value: unknown = data.length ? JSON.parse(text) : undefined;
+169:               const status = response.statusCode ?? 0;
+170:               const safeHeaders = Object.fromEntries(["content-type", "cache-control", "content-length", "x-bdp-development",
+171:                 ...absentMutationHeaders].map((name) => [name, typeof response.headers[name] === "string" ? response.headers[name] : null]));
+172:               records.push({ number, method, url, status, bodyOctets: data.length, bodySha256: digest(data),
+173:                 requestBodyOctets: bytes, requestBodySha256: body === undefined ? null : digest(body), headers: safeHeaders });
+174:               finish(undefined, { status, headers: response.headers, body: value });
+175:             } catch { fail(new WitnessError("transport", "overlap:response-json")); }
+176:           });
+177:         });
+178:         active.add(req);
+179:         req.once("socket", (socket) => {
+180:           const id = ++socketSerial; mark(pair, "socket-assigned", id);
+181:           socket.once("connect", () => mark(pair, "connected", id));
+182:           socket.once("close", () => mark(pair, "socket-close", id));
+183:         });
+184:         req.once("finish", () => mark(pair, "finish"));
+185:         req.once("error", () => { mark(pair, "error"); finish(new WitnessError("transport", "overlap:request-error")); });
+186:         req.once("close", () => { mark(pair, "request-close"); active.delete(req!); resolveClosed(); });
+187:         mark(pair, "end-called"); req.end(body);
+188:       } catch { fail(new WitnessError("transport", "overlap:request-construction")); if (!req) resolveClosed(); }
+189:     });
+190:     // Attach a rejection handler immediately, including A before constructing B.
+191:     void promise.catch(() => undefined); pending.push(promise); return promise;
+192:   }
+193:   try {
+194:     const defaultEntry = realpathSync(path.join(root, "packages/server/dist/installed-reference-process.js"));
+195:     const override = process.env.BDP_RU_GUARDED_OVERLAP_ENTRY;
+196:     if (override !== undefined && !path.isAbsolute(override)) throw new WitnessError("startup", "overlap:absolute-entry");
+197:     entry = realpathSync(override ?? defaultEntry);
+198:     if (!statSync(entry).isFile()) throw new WitnessError("startup", "overlap:regular-entry");
+199:     if (override === undefined) { expect(entry).toBe(defaultEntry); mode = "default-emitted-CI"; }
+200:     else {
+201:       const declaredMode = process.env.BDP_RU_GUARDED_OVERLAP_MODE;
+202:       if (declaredMode !== "fresh-consumer-positive" && declaredMode !== "emitted-derivative")
+203:         throw new WitnessError("startup", "overlap:external-entry-mode");
+204:       mode = declaredMode;
+205:     }
+206:     entrySha256 = digest(readFileSync(entry));
+207:     sourceCommit = execFileSync("git", ["rev-parse", "HEAD"], { cwd: root, encoding: "utf8", timeout: 5000 }).trim();
+208:     workspaceDirty = execFileSync("git", ["status", "--porcelain"], { cwd: root, encoding: "utf8", timeout: 5000 }).length !== 0;
+209:     directory = mkdtempSync(path.join(tmpdir(), "bdp-ru-guarded-overlap-"));
+210:     configuration = helpers.referenceConfiguration(directory, await helpers.availablePort(), token);
+211:     controller.signal.throwIfAborted();
+212:     try { launched = await helpers.launchInstalledReference(entry, configuration); }
+213:     catch (error) { classification = "startup"; throw error; }
+214:     controller.signal.throwIfAborted();
+215:     const probe = await send(scope);
+216:     expect(probe.status).toBe(204); expect(probe.headers["x-bdp-development"]).toBe("non-attesting");
+217:     const link = probe.headers.link;
+218:     if (typeof link !== "string") throw new WitnessError("oracle", "overlap:service-description");
+219:     const matched = /^<([^>]+)>; rel="service-desc"; type="application\/json"$/.exec(link);
+220:     if (!matched?.[1]) throw new WitnessError("oracle", "overlap:service-description");
+221:     const descriptor = grant(new URL(matched[1], scope).href); granted.add(descriptor);
+222:     const discoveryResponse = await send(descriptor); expect(discoveryResponse.status).toBe(200);
+223:     const discovery = parseReadUpdateDiscovery(discoveryResponse.body);
+224:     expect(discovery.scope).toBe(scope); expect(discovery.profile).toBe("read-update");
+225:     expect(discovery).not.toHaveProperty("historicalResolution");
+226:     expect(discovery.limits?.request).toStrictEqual({ bodyBytes: 65536 });
+227:     const directoryUrl = grant(discovery.operations); granted.add(directoryUrl);
+228:     const directoryResponse = await send(directoryUrl); expect(directoryResponse.status).toBe(200);
+229:     const operations = parseReadUpdateOperationDirectory(directoryResponse.body);
+230:     const create = grant(new URL(operations.createBead, directoryUrl).href);
+231:     const update = grant(new URL(operations.updateBead, directoryUrl).href);
+232:     granted.add(create); granted.add(update);
+233:     const seedBody = JSON.stringify({ id: "beads/overlap", type: `${scope}types/task`, properties: { n: 0 } });
+234:     expect(Buffer.byteLength(seedBody)).toBe(94);
+235:     const made = await send(create, "POST", seedBody, "overlap-seed");
+236:     expect(made.status).toBe(200); mutation(made);
+237:     const created = parseReadUpdateMutationResult(made.body); expect(created.outcome).toBe("created");
+238:     const seed = parseBeadRecord(created.resource);
+239:     expect(seed.id).toBe(`${scope}beads/overlap`); expect(seed.type).toBe(`${scope}types/task`);
+240:     expect(seed.properties).toStrictEqual({ n: 0 }); granted.add(grant(seed.id));
+241:     revisionJsonBytes = Buffer.byteLength(JSON.stringify(seed.revision));
+242:     const makeBody = (value: number) => JSON.stringify({ bead: seed.id, expectedRevision: seed.revision,
+243:       propertiesChange: [{ op: "replace", path: "/n", value }] });
+244:     const aBody = makeBody(1); const bBody = makeBody(2);
+245:     expect(Buffer.byteLength(aBody)).toBe(135 + revisionJsonBytes);
+246:     expect(Buffer.byteLength(bBody)).toBe(135 + revisionJsonBytes);
+247:     const aPending = send(update, "POST", aBody, "overlap-a", "A");
+248:     const bPending = send(update, "POST", bBody, "overlap-b", "B");
+249:     const pair = await Promise.allSettled([aPending, bPending]);
+250:     const rejected = pair.filter((value): value is PromiseRejectedResult => value.status === "rejected");
+251:     if (rejected.length) {
+252:       classification = workDeadline ? "work-deadline" : rejected.some((value) => value.reason instanceof WitnessError && value.reason.classification === "exchange-deadline") ? "exchange-deadline" : "transport";
+253:       throw new AggregateError(rejected.map((value) => value.reason), "overlap:pair-transport");
+254:     }
+255:     const a = (pair[0] as PromiseFulfilledResult<Response>).value;
+256:     const b = (pair[1] as PromiseFulfilledResult<Response>).value;
+257:     const firstSettle = Math.min(...milestones.filter((e) => e.kind === "settled").map((e) => e.ordinal));
+258:     const milestone = (id: Pair, kind: Kind) => milestones.find((e) => e.request === id && e.kind === kind);
+259:     const required = (["A", "B"] as const).every((id) => ["invoked", "end-called", "socket-assigned", "settled"].every((kind) => milestone(id, kind as Kind)));
+260:     overlapObserved = required ? !eventOverflow && (["A", "B"] as const).every((id) => milestone(id, "end-called")!.ordinal < firstSettle && milestone(id, "invoked")!.ordinal < firstSettle) &&
+261:       milestone("A", "socket-assigned")!.socket !== milestone("B", "socket-assigned")!.socket : null;
+262:     const firstResponse = Math.min(...milestones.filter((e) => e.kind === "response-start").map((e) => e.ordinal));
+263:     const beforeResponse = (kind: Kind) => (["A", "B"] as const).every((id) => milestone(id, kind)) ?
+264:       (["A", "B"] as const).every((id) => milestone(id, kind)!.ordinal < firstResponse) : null;
+265:     connectionsBeforeResponse = beforeResponse("connected"); finishesBeforeResponse = beforeResponse("finish");
+266:     if (overlapObserved !== true) throw new WitnessError("transport", "overlap:incomplete-observation");
+267:     const aResource = completeUpdate(a, seed, 1); const bResource = completeUpdate(b, seed, 2);
+268:     pairSchemasValid = true;
+269:     const valid = (a.status === 200 && b.status === 409 && isDeepStrictEqual(b.body, expectedProblem)) ||
+270:       (b.status === 200 && a.status === 409 && isDeepStrictEqual(a.body, expectedProblem));
+271:     namedOracle = "overlap:exactly-one-winner";
+272:     expect(valid, namedOracle).toBe(true);
+273:     namedOracle = null; winner = a.status === 200 ? "A" : "B";
+274:     const winningResource = winner === "A" ? aResource : bResource;
+275:     const current = await send(seed.id); expect(current.status).toBe(200);
+276:     expect(parseBeadRecord(current.body)).toStrictEqual(winningResource);
+277:     const replayA = await send(update, "POST", aBody, "overlap-a");
+278:     mutation(replayA); expect(replayA.status).toBe(a.status); expect(replayA.body).toStrictEqual(a.body);
+279:     const replayB = await send(update, "POST", bBody, "overlap-b");
+280:     mutation(replayB); expect(replayB.status).toBe(b.status); expect(replayB.body).toStrictEqual(b.body);
+281:     const final = await send(seed.id); expect(final.status).toBe(200);
+282:     expect(parseBeadRecord(final.body)).toStrictEqual(winningResource);
+283:     expect(attempted).toBe(10); expect(bodyBytes).toBe(634 + 4 * revisionJsonBytes);
+284:   } catch (error) {
+285:     failures.push(error);
+286:     classification ??= error instanceof WitnessError ? error.classification : workDeadline ? "work-deadline" : "oracle";
+287:   } finally {
+288:     for (const req of active) req.destroy();
+289:     clearTimeout(timer);
+290:     // Both teardown branches run even if the other fails; no additional runtime is started.
+291:     let drainTimer: ReturnType<typeof setTimeout> | undefined;
+292:     const drain = Promise.race([
+293:       Promise.all([Promise.allSettled(pending), Promise.all(closing)]),
+294:       new Promise<never>((_resolve, reject) => { drainTimer = setTimeout(() => reject(new WitnessError("cleanup", "overlap:request-drain-deadline")), 5000); }),
+295:     ]).finally(() => { if (drainTimer) clearTimeout(drainTimer); });
+296:     const close = (async () => {
+297:       if (!launched) return;
+298:       exit = await launched.close();
+299:       if (exit.code !== 0 || exit.signal !== null) throw new WitnessError("cleanup", "overlap:child-exit");
+300:     })();
+301:     const cleanup = await Promise.allSettled([drain, close]);
+302:     for (const [index, result] of cleanup.entries()) if (result.status === "rejected") {
+303:       failures.push(result.reason); cleanupFailures.push(index === 0 ? "request-drain" : "child-close");
+304:     }
+305:     if (directory) { try { rmSync(directory, { recursive: true, force: true }); }
+306:       catch (error) { failures.push(error); cleanupFailures.push("directory-remove"); } }
+307:     if (eventOverflow && classification === null) { failures.push(new WitnessError("transport", "overlap:event-overflow")); classification = "transport"; }
+308:     const record = { observation: "private-installed-read-update-guarded-overlap", claimEligible: false,
+309:       outcome: failures.length ? "failed" : "passed", mode: mode ?? null, entry: entry ?? null, entrySha256: entrySha256 ?? null,
+310:       sourceCommit: sourceCommit ?? null, workspaceDirty: workspaceDirty ?? null, ready: launched ? Object.fromEntries(["event", "scope", "profile", "history", "claimEligible", "configurationIdentity", "payloadIdentity", "artifactIdentity", "policyIdentity", "authenticationIdentity"].map((key) => [key, launched?.ready[key] ?? null])) : null,
+311:       attempted, completedResponses: records.sort((a, b) => a.number - b.number), bodyBytes, revisionJsonBytes: revisionJsonBytes ?? null,
+312:       pairSchemasValid, winner, overlapObserved, connectionsBeforeResponse, finishesBeforeResponse, eventOverflow, droppedEvents, milestones,
+313:       missingMilestones: (["A", "B"] as const).flatMap((id) => (["invoked", "end-called", "socket-assigned", "connected", "finish", "response-start", "response-end", "settled", "request-close", "response-close", "socket-close"] as const).filter((kind) => !seen.has(`${id}:${kind}`)).map((kind) => `${id}:${kind}`)),
+314:       terminationClass: classification ?? (cleanupFailures.length ? "cleanup" : null), namedOracle,
+315:       cleanupFailures, failureCount: failures.length, workDeadline, childPid: launched?.child.pid ?? null,
+316:       childExitCode: exit?.code ?? null, childSignalCode: exit?.signal ?? null, directory: directory ?? null,
+317:       directoryAbsent: directory === undefined ? null : !existsSync(directory),
+318:       startupLimitation: "Before readiness PID unavailable; inherited launcher may mask original startup failure. Only surfaced failure plus external process evidence retained.",
+319:       retention: "Full schemas/replay/Resource assertions in memory; safe fingerprints and milestone ordinals retained. Client outstanding overlap only; no simultaneous admission/fairness claim. Losing replay equality cannot distinguish reevaluation. Source attribution externally verified, not child attested." };
+320:     const output = process.env.BDP_RU_GUARDED_OVERLAP_OUTPUT;
+321:     if (output) { try { if (!path.isAbsolute(output)) throw new Error("overlap:absolute-output"); writeFileSync(output, `${JSON.stringify(record)}\n`, { flag: "wx" }); }
+322:       catch (error) { failures.push(error); record.outcome = "failed"; record.failureCount = failures.length;
+323:         record.cleanupFailures.push("report-write"); record.terminationClass ??= "cleanup"; } }
+324:     console.log(JSON.stringify(record));
+325:   }
+326:   if (failures.length) throw new AggregateError(failures, "ordinary Read+Update guarded overlap witness failed");
+327: }, 45000);
+
+TARGET read-update-guarded-overlap-draft/preview/update-implementation-progress.amendment.md
+
+## Private installed guarded-overlap witness (draft; not executed)
+
+The proposed ordinary Read+Update witness uses one installed owner, two distinct
+keys and one current revision. It checks two outstanding client calls, one
+updated Resource and one exact revision-mismatch Problem, key-specific replay
+response equality and complete final state. The winning replay checks retained
+non-re-execution; the losing Problem equality alone cannot distinguish a replay
+from reevaluation. No simultaneous server admission, fairness or schedule
+diversity is claimed.
+
+The planned fresh-consumer positive has ten requests; one isolated emitted
+expectedRevision-guard removal must fail the same named oracle after six
+requests with two schema-valid successes. Source metadata, actual package bytes,
+response fingerprints and cleanup need separately bound execution records.
+This preview has not run. It does not change the omitted cumulative race row,
+public admission, or whole-contract qualification. Existing historical results
+remain attributed to their original sources.
+
+
+TARGET read-update-guarded-overlap-draft/preview/report.md
+# Ordinary Read+Update guarded overlap — external preview
+
+This is a reviewable preview only, not repository authoring or an executed witness. Two intended paths: the new installed test and an appended amendment to the existing Update progress document. Product checkout remains untouched; current receipt candidate3968081 is not labeled merged. The eleven RU sources equal accepted015cac and the frozen review basis. Actual merged receipt reanchor remains mandatory before applying/freezing this draft.
+
+One top-level callback, exact escaped Vitest selector in selection.json. Ten positive calls and the same callback's six-call emitted negative prefix; two product runtimes/owners/stores, four listeners including port reservations, maximum two outstanding exchanges. No additional source-built positive, hidden discovery/Type GET, polling, restart or control was added. Input/body/header/lifecycle arithmetic is in requests.json; seed94B, updates135+actual quoted revision UTF8. This measurement uses a labeled synthetic revision only to check the fixed arithmetic, not fabricated actual request evidence.
+
+The implementation follows genuine service-desc/discovery/directory URLs; exact authenticated POST headers; current seed revision; immediate separate ClientRequest/end calls with rejection observation before awaiting; Promise.allSettled; independently schema-valid pair postimages before the combined named oracle; either winner; full key-specific response equality and complete final Resource. Losing409 equality alone does not prove non-re-execution. Runtime schemas/parsers remain existing protocol exports.
+
+Reader: native response-header16384 cap, before-retention32768B body ceiling, fatal UTF8/JSON parse in caught callback, five-second absolute exchange timer, no redirect/retry/Agent reuse, request-count ceiling10. Pair trace has26possible request/kind slots,32retention cap, actual socket IDs, no wall-clock/server-admission inference. Work30s dominates; incomplete overlap/transport/deadline remains a failed/inconclusive witness, never accepted control.
+
+Cleanup owns request handles immediately, destroys/drains them and closes the existing child independently, collecting each failure before store removal. Request drain5s and child close10s execute concurrently within existing cleanup allowance; no added product lifetime. NativeL1 startup masking remains explicit and pre-ready PID is null. Final report excludes credentials/raw exceptions/configuration; whitelist ready metadata, response fingerprints, selected safe response headers and milestone ordinals are retained. Full schema/body assertions remain in memory. Optional output is exclusively created; report-write failure changes logged outcome to failed.
+
+Prospective BDP override allowlist: ENTRY, MODE, OUTPUT under BDP_RU_GUARDED_OVERLAP_. MODE is explicit harness metadata required for an external entry, preventing path/success-based inference of derivative versus fresh consumer; it is not source attestation. Root must review this concrete metadata binding with the preparation packet. Two local Git inspections are tooling processes, separate from the product child.
+
+No formatter/typecheck/import/build/test/service/archive/install or actual Claude invocation ran. This preview deliberately records no validation pass. New source has been text-reviewed for the exact service-desc header's type parameter, full parser shape, request cardinality and cleanup. Actual formatting/type validation, emitted graph/counterfactual preparation, fresh package/consumer provenance and positive/control remain future gates. Progress amendment explicitly says draft/not executed; original historical documentation remains byte-identical as its prefix.
+
+
+TARGET read-update-guarded-overlap-draft/preview/source-binding.json
+{
+  "status": "EXTERNAL_PREVIEW_NOT_REPO_APPLIED",
+  "workspaceBasis": "/Users/dbox/repos/wt/vickie/vickie-sequence-member-evidence",
+  "observedHead": "3968081f8231566908e69045424b067c3c36dc40",
+  "authoritativeRuBasis": "015cac1aa4fa827cc4a2c647dff08454c6c8e6f8",
+  "anticipatedReceiptCandidate": "3968081f8231566908e69045424b067c3c36dc40",
+  "actualMergedParent": "PENDING_ROOT_VERIFIED_RECEIPT_MERGE_REANCHOR",
+  "plan": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/read-update-guarded-overlap-plan-v2.md",
+    "sha256": "7de8ee2cb33d1cfd9d7d3c556cae3998838e68c58f5cca72d70cff7c84084cef"
+  },
+  "dispositions": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/read-update-guarded-overlap-claude-source-dispositions.md",
+    "sha256": "e6257a068aa142fa1bf614534f4741f4557d3459997802242544f79ae9e98539"
+  },
+  "rootPlanAcceptance": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/read-update-guarded-overlap-root-plan-acceptance.json",
+    "sha256": "798076754d4ad0c8748ad4de2cae334e9bcd2892815a62db027ef6ba28081d0d"
+  },
+  "files": {
+    "apps/bdptest/src/read-update-guarded-overlap-installed.test.ts": {
+      "previewPath": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/read-update-guarded-overlap-draft/preview/read-update-guarded-overlap-installed.test.ts",
+      "sha256": "2a15f4d1a0d6392b4df3041fcd7cfaebcf6abefb9d886648f36917b64c0fb58b",
+      "bytes": 23139,
+      "new": true
+    },
+    "docs/design/update-implementation-progress.md": {
+      "previewPath": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/read-update-guarded-overlap-draft/preview/update-implementation-progress.md",
+      "sha256": "8c6caae7f8ba4ccb2a2492596cc09dee6fbbfd630a9595ac04f5446f4b150cde",
+      "bytes": 42438,
+      "new": false
+    }
+  },
+  "sourceHashes": {
+    "scripts/installed-reference-observation.mjs": "ca897f4a7659969df123037b5847d5765b357d9b8e1652f367bb204450db6278",
+    "packages/server/src/installed-reference.ts": "c311a724d5d81710264b443da6800e960f49402f10383889de59714949b9eec7",
+    "packages/server/src/installed-reference-process.ts": "149f98c04e096a9eab9a291bd4aac3f7db34ba57578e63cb4439e0e3e24fc654",
+    "packages/server/src/development-runtime.ts": "37e222682645e9d8f2d5fcf62de208640fb6216c9e9f2f279ab6017e8b9d6ca9",
+    "packages/server/src/development-composition.ts": "a7113a8a3164dc6f4b1f6b5bdcbf74cee811e5b8a0474d241ac30706997ee54f",
+    "packages/server/src/member-executor.ts": "cfce8e561f9315948c6b3b3def25893a7dfde78e2cc338fa142b859ae209771f",
+    "packages/server/src/resource-evaluator.ts": "89606787e455f4ed555b807d91c5331a376431807a9a581de1f94e538fcab4ff",
+    "packages/server/src/recovery-store.ts": "48b7901e48998fe29598168a527213ebfb49e1d6e5dc5c2eb6494c862b5de9f9",
+    "packages/protocol/src/index.ts": "92e547e807ec2d23223c47dbc4e04867d55db89ac9aab5fbd55f33349f92bdc6",
+    "docs/specs/bdp.md": "f036103ffdf5f89fa3a2033570e1e987c4cd203cd80b1c633cb44615123f892e",
+    "apps/bdptest/src/development-matrix.test.ts": "858e6f85bf40bde4327df52e34a2aceab235b8130e7539a816651ce19f71e1ac"
+  },
+  "oldDocSha256": "208ba97d6948cf6214fbb5ca218ac92cbe716796cdaf365e49097bd661e301b1",
+  "diffSha256": "5a91ab31083216e797aed362e131061b99436dfcf83efdaf23852bb8898065d3",
+  "repositoryStatus": "",
+  "execution": false
+}
+
+
+TARGET read-update-guarded-overlap-draft/preview/requests.json
+{
+  "status": "PROPOSED_UNEXECUTED_EXTERNAL_PREVIEW",
+  "calls": [
+    {
+      "n": 1,
+      "method": "GET",
+      "targetSource": "configured Scope",
+      "body": null,
+      "key": null
+    },
+    {
+      "n": 2,
+      "method": "GET",
+      "targetSource": "actual service-desc Link",
+      "body": null,
+      "key": null
+    },
+    {
+      "n": 3,
+      "method": "GET",
+      "targetSource": "parsed discovery.operations",
+      "body": null,
+      "key": null
+    },
+    {
+      "n": 4,
+      "method": "POST",
+      "targetSource": "parsed directory.createBead",
+      "body": "{\"id\":\"beads/overlap\",\"type\":\"https://reference.invalid/acme/types/task\",\"properties\":{\"n\":0}}",
+      "key": "overlap-seed"
+    },
+    {
+      "n": 5,
+      "method": "POST",
+      "targetSource": "parsed directory.updateBead",
+      "body": "materialized A=135+L",
+      "key": "overlap-a"
+    },
+    {
+      "n": 6,
+      "method": "POST",
+      "targetSource": "same discovered update target",
+      "body": "materialized B=135+L",
+      "key": "overlap-b"
+    },
+    {
+      "n": 7,
+      "method": "GET",
+      "targetSource": "actual seed Resource.id",
+      "body": null,
+      "key": null
+    },
+    {
+      "n": 8,
+      "method": "POST",
+      "targetSource": "same update target",
+      "body": "exact materialized A",
+      "key": "overlap-a"
+    },
+    {
+      "n": 9,
+      "method": "POST",
+      "targetSource": "same update target",
+      "body": "exact materialized B",
+      "key": "overlap-b"
+    },
+    {
+      "n": 10,
+      "method": "GET",
+      "targetSource": "actual seed Resource.id",
+      "body": null,
+      "key": null
+    }
+  ],
+  "headers": {
+    "all": [
+      "Authorization: Bearer <local random token>",
+      "Accept: application/json",
+      "Connection: close"
+    ],
+    "postOnly": [
+      "Content-Type: application/json",
+      "idempotency-key: <literal per ledger>",
+      "Content-Length: <actual UTF8 body bytes>"
+    ],
+    "getForbidden": [
+      "body",
+      "content-type",
+      "idempotency-key"
+    ],
+    "never": [
+      "content-encoding",
+      "duplicate authored headers"
+    ]
+  },
+  "seedBytes": 94,
+  "seedSha256": "b76738409399066a7a7e9a05124d345773db6618130b419a2eb8261e57b8927e",
+  "updateFixedBytesExcludingJsonRevision": 135,
+  "positiveBodyBytes": "634+4L",
+  "negativeBodyBytes": "364+2Lnegative",
+  "requestBodyCeiling": 65536,
+  "requestHeaderCeiling": 16384,
+  "positiveConservativeBodyBytes": 262238,
+  "negativeConservativeBodyBytes": 131166,
+  "combinedConservativeBodyBytes": 393404,
+  "responseBodyCeilingPerRequest": 32768,
+  "combinedResponseBodyCeiling": 524288,
+  "positive": {
+    "cases": 1,
+    "http": 10,
+    "productChildren": 1,
+    "owners": 1,
+    "directories": 1,
+    "productListeners": 1,
+    "portReservationListeners": 1
+  },
+  "negative": {
+    "cases": 1,
+    "http": 6,
+    "productChildren": 1,
+    "owners": 1,
+    "directories": 1,
+    "productListeners": 1,
+    "portReservationListeners": 1
+  },
+  "concurrencyMaximum": 2,
+  "milestones": {
+    "possibleSlots": 26,
+    "maximumRetained": 32,
+    "deduplicatedBy": "pair request/kind",
+    "overflow": "recorded and witness fails/inconclusive"
+  },
+  "timingMs": {
+    "work": 30000,
+    "exchange": 5000,
+    "requestDrain": 5000,
+    "launcherReady": 10000,
+    "launcherClose": 10000,
+    "test": 45000,
+    "supervisor": 120000
+  },
+  "cleanup": "Destroy active requests; request draining (max5s) and existing child close(max10s) run concurrently after work ends, then remove own directory; aggregate separate failures. Does not add runtime/deadline allowance.",
+  "toolingPerCallback": [
+    "two git execFileSync calls with5s deadlines",
+    "Vitest and supervisor processes externally inventoried"
+  ],
+  "derivativeTooling": "One separately authorized derivative installed-payload helper invocation; no product child",
+  "negativeOracle": "overlap:exactly-one-winner, after both schema-valid200s; exact status/body conjunction false at6, before7-10. No transport/schema/cleanup failure accepted as control.",
+  "derivativePreparation": "No derivative created. Copy actual fresh consumer closure externally after positive success, bind graph/member/symlink resolutions, delete sole emitted expectedRevision guard, preserve before/after; root-owned retention/disposal."
+}
+
+
+TARGET read-update-guarded-overlap-draft/preview/selection.json
+{
+  "title": "preserves one guarded winner and both retained dispositions across overlapping ordinary Read+Update requests",
+  "topLevel": true,
+  "callbacks": 1,
+  "path": "apps/bdptest/src/read-update-guarded-overlap-installed.test.ts",
+  "regex": "^preserves one guarded winner and both retained dispositions across overlapping ordinary Read\\+Update requests$",
+  "prospectiveArgv": [
+    "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+    "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+    "exec",
+    "vitest",
+    "run",
+    "apps/bdptest/src/read-update-guarded-overlap-installed.test.ts",
+    "--maxWorkers=1",
+    "--reporter=verbose",
+    "--reporter=json",
+    "--outputFile=PENDING_APPROVED_OUTPUT",
+    "-t",
+    "^preserves one guarded winner and both retained dispositions across overlapping ordinary Read\\+Update requests$"
+  ],
+  "gate": "NOT EXECUTABLE until actual merged-parent reanchor, repository application/freeze/council and root execution release",
+  "environments": [
+    "BDP_RU_GUARDED_OVERLAP_ENTRY",
+    "BDP_RU_GUARDED_OVERLAP_MODE",
+    "BDP_RU_GUARDED_OVERLAP_OUTPUT"
+  ],
+  "modeContract": "Without entry default-emitted-CI; with absolute existing regular-file entry require fresh-consumer-positive or emitted-derivative. Mode is declared harness metadata, not attestation."
+}
+
+
+TARGET read-update-guarded-overlap-plan-v2.md
+# Read+Update guarded overlap — bounded private witness plan v2
+
+Proposed follow-up only; receipt-context serving remains first. This adds a private observation of ordinary Read+Update guarded requests, without changing the owner, Transactional execution, public admission or cumulative qualification. No implementation, tests, builds or new external review are authorized by this plan.
+
+## Basis and purpose
+
+Source basis is accepted main015cac1aa4fa827cc4a2c647dff08454c6c8e6f8/tree2e16329e195eb8214836de20340a5887236d78f0. The eleven serving/spec/helper files bound in the completed Claude review remain byte-identical to that source; the separate receipt candidate3968081 does not change them. This is not a claim that the receipt candidate is merged or CI-green. Reanchor to the actual accepted merged parent after the higher-priority receipt lane before authoring. Preserve the original plan4ed2467f and actual Claude reviewff7d1f3f as historical inputs; source dispositions e6257a06 and nativeL1 govern the corrections here.
+
+Predecessor: read-update-guarded-overlap-feasibility.md. Existing normative basis: docs/specs/bdp.md2091–2114 (singleton body/key/direct-result/replay/cache rules),3498–3499 (stale expectedRevision), and6774–6777 (guarded race, stale guard and idempotent retry obligations). The catalog already contains read-update.singleton.expected-revision-race at packages/conformance/catalog/read-update-v1.json395. Its cumulative test-support coverage entry4134 remains omitted/wholeContract:false. The separate development coverage209–217 and development.race adapter at apps/bdptest/src/development-matrix.test.ts139–144 already exercise a Promise.all development route; that is not an installed canonical-wire or cumulative qualification grant. Preserve all those records unchanged.
+
+Concrete value: demonstrate that two outstanding client requests against the actual ordinary installed RU owner, with distinct keys and one shared current revision, produce exactly one committed update and a retained revision-mismatch refusal. Then verify each key's replay and the complete final Resource. This can supply a future narrowly attributed evidence input; it does not itself retire the cumulative omitted requirement.
+
+Actual owner path: installed-reference-process.ts → installed-reference.ts19–29 → development-runtime.ts457–477 → principalAuthority.mutate → member-executor.ts593/its evaluator call → recovery-store.ts799–801. The synchronous transaction wrapper381–390 surrounds evaluation and commit; resource-evaluator.ts1023–1027 checks expectedRevision against the current Resource. No Transactional service/receipt/sequence replacement or server scheduling hook is proposed.
+
+## Two owned paths, one new callback
+
+1. New apps/bdptest/src/read-update-guarded-overlap-installed.test.ts: one literal callback, small file-local bounded HTTP observer, schema/body/state/replay assertions, safe report and cleanup.
+2. Existing docs/design/update-implementation-progress.md: amend this document with the partial private witness and its eventual actual source/evidence, preserving cumulative/public gates; do not create a second progress authority.
+
+No catalog, coverage, manifest, runner, source helper, launcher, package, workflow, runtime, owner or evaluator edit. The emitted counterfactual lives only in an external disposable dependency-copy directory. No other case is registered. Exact new title:
+
+`preserves one guarded winner and both retained dispositions across overlapping ordinary Read+Update requests`
+
+Declare the callback at top level without a describe prefix. Exact Vitest selection is the new file, --maxWorkers=1, verbose plus JSON reporter and -t '^preserves one guarded winner and both retained dispositions across overlapping ordinary Read\+Update requests$'. Final JSON must contain exactly that one executed full title; zero cases is not success. The retained title refers to source-grounded retention; the wire proof is limited as described below. All inherited BDP overrides are cleared except explicitly approved test-local entry/output bindings. Optional BDP_RU_GUARDED_OVERLAP_ENTRY must be an absolute existing regular-file entry whose realpath/hash is externally bound to the accepted fresh consumer or derivative; when unset require the resolved committed default packages/server/dist/installed-reference-process.js. Record default-emitted-CI, fresh-consumer-positive or emitted-derivative mode. External runs are not relabeled default full-CI evidence. Read actual local Git state and entry bytes; a supplied source label is not attestation. Git/helper/test-worker processes are tooling processes, separately inventoried from the one product child.
+
+Reuse availablePort, referenceConfiguration and launchInstalledReference from scripts/installed-reference-observation.mjs17–102 unchanged. Do not call its large observeInstalledReference scenario. Use the factory's actual read-update/no-History ready binding and provisioned reference task Type; no Type inventory traversal claim. The temporary availablePort reservation is one additional short-lived TCP listener lifetime per invocation, not HTTP or a second product owner.
+
+## Exactly what overlap is observed
+
+Use two independent Node ClientRequest objects with agent:false and Connection:close for requests A/B. Construct and end A, attach its rejection/fulfillment observation immediately; construct and end B in the same JavaScript turn and attach its observation before awaiting either. Await both through Promise.allSettled, not early-rejecting Promise.all. The request helper must return immediately; it must contain no await/queue before constructing the request.
+
+Record bounded monotonic event ordinals, not wall-clock simultaneity. The complete recordable kinds are invoked, end-called, socket-assigned, connected, finish, response-start, response-end, error, aborted, request-close, response-close, settled and socket-close: at most one slot per request/kind (26 possible entries), with bounded error classification rather than raw exceptions. Enforce maximum32 retained entries for the pair; record overflow and missing milestones, and never accept overlap evidence after dropping required observations. Assign local socket IDs without dumping socket/header objects. Require both invoked/end-called milestones before either settlement callback, separate request identities and separate actually assigned socket identities. Same-turn construction is designed to establish outstanding calls; observed true/false/unknown and completeness still come from the trace. Missing required facts or overflow makes this witness inconclusive, not a product guard failure. This proves overlapping client-outstanding calls, not simultaneous server admission.
+
+Record the actual milestone order and derive whether both connection or finish events preceded the first response only when both events were observed. If not, record false/unknown as appropriate; do not fail a correct owner merely because the OS/Node schedule serializes the wire. ClientRequest finish means handed to the local transport, not server receipt or admission. No sleep, artificial server barrier, automatic repetition, quota increase or claim of concurrent synchronous owner evaluation is permitted. A stronger requirement for both requests admitted before either response is a different experiment needing separate review; this plan does not promise it.
+
+Either request may win; record the actual winner and never pin A or B. The synchronous owner serializes turns, but a stable observed winner is not proof of socket-arrival ordering, fairness or schedule diversity. This single schedule does not prove all possible races, distributed writers, crash/reopen durability, or Link/owned-Link behavior.
+
+## Ten-request positive ledger
+
+Scope is https://reference.invalid/acme/. Resolve genuine service-desc and discovery.operations through the existing RU parsers. Resolve each relative operation-directory value against the actual discovery.operations URL, including its trailing slash, as scripts/installed-reference-observation.mjs178 does; never resolve create-bead directly against Scope. Guard resulting URLs to the exact canonical Scope/discovered identities with no userinfo/query/fragment and measured length/byte limits. Do not generate a path and call it discovered. read-http-routing.ts28–38 proves the204 service-desc projection; development-composition.ts16–42 proves bdp.json/operations/; authority-read.ts738–749 omits historicalResolution. Discovery no-History means that member is absent, separately from ready.history=false.
+
+Mint one test-local random bearer token (existing randomBytes(32).toString("base64url") convention) and pass it to referenceConfiguration. Every request sends exactly one Authorization: Bearer token, Accept: application/json and Connection: close; agent:false and the known loopback listener supply ordinary Host. Every POST additionally sends exactly one Content-Type: application/json, one idempotency-key from the ledger and Content-Length equal to actual UTF8 body bytes. GETs send no body/content-type/key. Send no Content-Encoding and no duplicate authored fields. Credentials and header values are excluded from retained logs.
+
+| # | Request | Key and oracle |
+|---|---|---|
+|1|GET configured Scope|204, actual service-desc Link, non-attesting marker|
+|2|GET that descriptor|200, parseReadUpdateDiscovery; exact Scope/read-update, absent historicalResolution, observed limits.request exactly{bodyBytes:65536}|
+|3|GET discovery.operations|200, parseReadUpdateOperationDirectory; retain create/update targets|
+|4|POST discovered createBead|key overlap-seed; create beads/overlap of locally provisioned types/task with properties n:0;200, full RU mutation schema, outcome created; retain actual Resource/revision R|
+|5|POST discovered updateBead, invocation A|key overlap-a; same Resource and expectedRevision R; replace /n with1|
+|6|POST same update target, invocation B|key overlap-b; same Resource and expectedRevision R; replace /n with2|
+|7|GET actual seed Resource id|200; full parsed Resource equals winner postimage|
+|8|Replay request A exactly|same key/body; status and complete parsed response equal original A|
+|9|Replay request B exactly|same key/body; status and complete parsed response equal original B|
+|10|GET same Resource|200; complete Resource still equals winner, including revision/provenance|
+
+For5/6 first validate bounded transport completion, acceptable200/409 status class, media/cache/marker and the corresponding full RU mutation-result/Problem schema. Every200 must have outcome updated, the exact requested n and seed id/type/metadata/owned-Link plane, an actual revision different from R, and a valid complete postimage. Do not require the new revisionProvenance to equal the seed's previous-version provenance. Both requests use effectful distinct values, not semantic no-ops.
+
+Then assert named `overlap:exactly-one-winner` as the conjunction of exactly one schema-valid updated200 postimage and one exact revision-mismatch409 Problem. Validate each200 postimage before this assertion. The two200 mutant must reach this named conjunction rather than throwing while indexing a nonexistent loser. The positive loser must equal the current source's four-field direct Problem:
+type https://github.com/gastownhall/bdp/problems/conflict, code revision-mismatch, status409, retry after-state-change. resource-evaluator.ts139–160 constructs these fields; member-executor.ts196–201 rejects positional fields in stored dispositions. Do not add sequence operationIndex/name or Transactional receipt/Scope fields. Successful singleton envelope is the complete parsed RU mutation result, with no receipt wrapper. Both mutation dispositions require private,no-store and non-attesting marker;200 media is application/json and409 media application/problem+json. Require absent ETag, Location, bdp-scope-epoch, bdp-authorization-view and bdp-scope-position. Do not freeze an exact complete header set or automatic Date/Connection values. Replays compare complete original bodies in memory, not regenerated expected opaque tokens. Reads7/10 compare the full winner Resource, not only n. A positive response outside200/409 is retained as a failed witness with receiving/transport classification and stops for root diagnosis; it cannot count as guard proof or an accepted negative. Key A and B replays must each equal their own original response. Whichever key won, its identical200/revision despite the now-stale guard supplies non-re-execution evidence, complemented by final Resource equality. The losing key's equal four-field409 is response-equality evidence only: re-evaluation could produce the same Problem. Actual retention is independently source-grounded by member-executor645–682/718–780, not proved solely by the losing replay.
+
+The seed literal is94UTF8 bytes, SHA-256 b76738409399066a7a7e9a05124d345773db6618130b419a2eb8261e57b8927e:
+`{"id":"beads/overlap","type":"https://reference.invalid/acme/types/task","properties":{"n":0}}`.
+
+Each compact update body is135 bytes plus L, the actual UTF8 length of JSON.stringify(R), using the retained canonical subject and property order bead/expectedRevision/propertiesChange. A/B differ only in value1/2. Record actual materialized byte counts and hashes after R is observed; never fabricate a fixed revision-length body hash. Positive total request-body bytes634+4L. Each request remains within the existing65536-byte request ceiling, fixed by development-authority.ts40–45 and enforced by runtime150/157. Assert discovery bodyBytes==65536 and check every materialized body before dispatch; a changed advertisement stops rather than enlarging the cap. RU discovery does not require targetBytes. Header ceiling16384. This gives a conservative positive body allowance262238bytes including both replays, without assuming an opaque token size. The fixture's actual lengths should be much smaller, but that is not execution evidence.
+
+## Minimal bounded observer and teardown
+
+Do not use requestInstalled's unbounded response-text accumulation. The new file-local node:http reader uses known loopback listener host/port with exact granted URL path, the explicit authenticated header contract above, no redirects/retries and no Agent reuse. Count dispatch before end(body). Enforce5s absolute exchange deadline from invocation (destroy request/response on expiry), native ClientRequest maxHeaderSize16384 and32768-byte streaming body bound before appending; a postbuffer header-size assertion is not the bound. Attach error/aborted/premature-close handling, one-shot settlement, and clear timers in every terminal path. Retain request handles so outer cleanup can destroy both outstanding requests and await their settled promises. Parsing is after complete bounded bytes, with parsing errors rejecting rather than escaping an event callback.
+
+Use a dominating30s test-local work deadline covering startup/requests, followed by existing bounded10s launcher close; callback timeout45s reserves cleanup room. Exchange5s limits are maxima, not additive reservations; completion may be aborted by the overall bound first. Retain termination classification oracle, work-deadline, exchange-deadline, transport, startup or cleanup, with primary and cleanup results separately when both occur. Work deadline/incomplete overlap is inconclusive for the witness, never guard counterevidence; retain the actual failed test outcome. The unchanged launcher readiness is independently10s bounded and does not accept the callback abort signal. Do not increase readiness/close/product timeouts. External command supervisor remains120s. These are proposed bounds to freeze against the measured draft, not established timings or permission to grow them.
+
+Preserve callback-owned primary and cleanup failures subject to the inherited startup limitation below. Finally destroy/drain active requests, await any outstanding pair, close/reap the child even on schema/assertion failure, then remove the owned bdp-ru-guarded-overlap- directory. Register handles immediately after acquisition and reuse existing failed-start cleanup; do not invoke the launcher again. Preserve nativeL1: launcher catch81–85 can mask the original startup error if its awaited bounded exit also fails, and the caller has no PID/child handle before readiness. Callback-owned failures are aggregated, but unavailable pre-ready fields must be null/unknown and only the surfaced launcher error plus external process evidence may be claimed. No helper edit or fabricated original error is allowed. Emit a safe bounded record after teardown even when assertions fail: exact entry realpath/hash, genuine ready identity fields, actual local source/dirty state, request count/ordered association, status and body fingerprints, named oracle failure, pair event order, child PID/exit/signal and directory presence. No bearer credential, raw configuration, arbitrary exception object, socket object or request-header values are logged. Full schema/replay/state comparisons run in memory; fingerprints alone are not claimed to prove those bodies. External review checks actual selected result and final PID/temp absence.
+
+## One emitted guard control; sixteen total local requests
+
+After the positive succeeds, copy its exact external consumer's server/protocol and complete production dependency closure into one owned external derivative directory outside the worktree/test globs, retaining source and positive bytes. Prefer in-process filesystem copy. Bind copied regular files and actual symlink/dependency resolutions to the accepted consumer; do not install or run pnpm in the copy. Resolve package dependency edges from the actual copied package roots and require containment in the copied closure (Node built-ins are separate); stop on unexplained escapes. Pin the entry→installed-reference→development-runtime/member-executor→resource-evaluator relative chain and actual patched evaluator realpath/hash. Retain the derivative directory through root review, then root owns its explicit disposal; it is retained evidence, not a runtime-store leak. The source test remains in its unchanged checkout with only child entry redirected.
+
+At the emitted resource-evaluator.js equivalent of1023–1027, omit only the expectedRevision mismatch guard. Exact before/after bytes and a one-site patch count are required; no TypeScript mutation/rebuild, new runtime hook, scheduler change or source binding override. Verify the child's actual relative module chain reaches that file and bare dependencies resolve through the copied unchanged graph. installed-payload.ts8–66 computes actual closure bytes without a committed-digest self-check. After separate preparation release, obtain the expected digest by one Node tooling invocation importing the derivative's own emitted installed-payload.js, and compare genuine ready payload to it. Retain member/graph inventory as the complementary independent byte binding; using the same helper twice is not independent algorithm verification. Never demand that the mutated payload equal the positive one. No product import occurs during planning.
+
+Run the same single callback once. The first six requests are identical in structure; both updates should be200 complete valid updated postimages. The unchanged named exactly-one-valid200-and-exact-revision-mismatch409 conjunction must fail there, before reads/replays7–10. Both pair requests must be settled and recorded before this assertion. Accept only one failed callback with that precise oracle and the two genuine200/schema-valid update results; transport errors, wrong media, generic timeout or cleanup failure are not a successful control. No second mutant or retry is authorized.
+
+Local dynamic ledger: positive10HTTP/1child + negative6HTTP/1child =16HTTP,2callback executions,2ordinary RU owners/store directories,2product listener lifetimes plus2short-lived port-reservation listener lifetimes (4TCP listeners total). At most2HTTP exchanges outstanding per invocation. Product-child counts exclude Git inspection, one derivative payload helper invocation, Vitest workers and command supervisors; their concrete argv/process inventory must be recorded separately in measured preparation and checked after execution. No additional product runtime, in-process server fixture, hidden request, reopen or polling. Negative body bytes364+2Lnegative, where its independently seeded revision may differ. Combined conservative body allowance393404bytes; total response-body allowance16×32768=524288bytes. Actual measurement must record materialized body counts and milestone completeness separately from these maxima.
+
+Avoid an additional source-built positive just for duplication: after static checks and review, root may freeze an ordinary candidate and run the one fresh packaged positive then the emitted derivative. The new callback will also execute once against emitted workspace bytes in full exact-head CI (10HTTP/1child); that CI execution is separately attributed. If root instead requires a precommit source-built positive, amend the local ledger explicitly to26HTTP/3children before release; it is not implicit permission.
+
+## Installation, review and acceptance boundaries
+
+Before executing: actual merged-parent reanchor, two-path frozen draft, exact selection/body/cleanup packet, source review and actual Claude review, then root release. PinnedNode24.16.0/pnpm11.20.0 and required offline setup/type/build/format/lint/boundary/Read checks remain unchanged. Build before importing emitted launcher/configuration dependencies. No test imports during measurement-only planning.
+
+Fresh protocol/server archives and isolated offline consumer must bind exact clean source, archive contents and installed members with only accepted publication normalization, existing eight-package production closure, entry and recursively hashed payload. Preserve actual configuration/artifact/policy/authentication ready identities. A configuration or caller source label is not child source attestation. The default emitted full-CI run is not called a fresh consumer install.
+
+Done when the exact10-request positive establishes complete client-call overlap evidence, one guarded winner without pinning A/B, exact direct loser, both key-specific response equalities, winner-replay non-re-execution evidence and complete unchanged final state; the one emitted derivative produces precisely the named two-success rejection at request6; both invocations are cleaned up and independently bound to their genuine bytes. Any extra callback/request/child, wrong input shape, insufficient reader bound or ambiguous dependency resolution stops for root disposition.
+
+Keep claimEligible:false and cumulative expected-revision-race omitted/wholeContract:false. This witness can inform a later evidence-mapping decision, but no new conformance vocabulary, profile admission bypass or whole-contract/public qualification is part of this plan. It does not displace the accepted receipt serving fix.
+
+
+TARGET read-update-guarded-overlap-draft/native-code-review.md
+# Native review — ordinary RU guarded-overlap external preview
+
+No blocking or actionable correctness finding in the frozen preview. This is a static code review, not a compiler/test pass or authorization to apply or execute it. Actual merged receipt-parent reanchor, final formatting/type/static validation, actual Claude council and separate execution/provenance gates remain required.
+
+Reviewed all327 test lines, complete appended progress amendment, report, binding, request ledger, selector and accepted plan v2. Test SHA2562a15f4d1a0d6392b4df3041fcd7cfaebcf6abefb9d886648f36917b64c0fb58b; combined preview patch5a91ab31083216e797aed362e131061b99436dfcf83efdaf23852bb8898065d3; bindingc4534f14df45f9f5d2a2f5d212cbf21f788e58c0685566f148796f59da6d84be; reporte9d1c51b750aef2c6db243eb3c369158ce2c0b5b96d3b5db015b1d76c9dbfe06. Source remains clean3968081f8231566908e69045424b067c3c36dc40, explicitly an unmerged candidate in this review. Both preview hashes and all11 declared serving/spec/helper hashes matched before and after review. Existing progress bytes are the exact prefix of the proposed document; draft/not-executed wording does not claim new evidence.
+
+## Concrete source checks
+
+- Discovery/auth: preview200–228 uses the existing actual service-desc projection, parses genuine descriptor and operation-directory responses, resolves relative operation names against discovery.operations and grants only canonical scoped URLs without query/fragment/userinfo. read-http-routing.ts28–38 emits the exact Link syntax; development-composition.ts16–42 constructs the descriptor/directory including its trailing slash. Every send has a single local bearer, Accept and Connection:close; POST adds exact content type/key/UTF8 content length. request uses the known loopback host/port and only a granted canonical path; no redirect/retry or hidden traversal. The helper configuration supplies the token and ordinary RU policy, not a Transactional substitute.
+- Schema/state oracle: preview51–66 and229–276 use existing complete RU result/Problem and Bead parsers. Each200 has outcome updated, exact requested n, seed identity/type/metadata/owned-Link plane and a revision differing from the seed. Both response schemas/postimages are validated before the combined named assertion. Its409 branch must equal the actual four-field conflict/revision-mismatch409/after-state-change Problem produced by resource-evaluator.ts139–160. GETs compare the complete parsed winner Resource, including its provenance; each replay compares the whole original key-specific response body and status. parseBeadRecord intentionally normalizes legacy absent metadata (read-values.ts137–168); the plan asks for parsed Resource equality, not stronger raw-byte equality. Losing409 replay equality is correctly limited and never presented as independent non-re-execution proof.
+- Counterfactual viability: removing only resource-evaluator.ts1023–1027 expectedRevision refusal leaves both effectful updates free to return complete200 postimages. Both are validated without selecting/indexing a nonexistent loser. preview263–266 then leaves namedOracle='overlap:exactly-one-winner' on the expected assertion failure. Reads/replays7–10 follow that assertion, so the intended derivative prefix is exactly six dispatched requests. Wrong status/media/schema/transport/overlap or cleanup failures are distinct and cannot count as accepted counterevidence. This is source feasibility, not a claim that the mutant has run or will meet timing.
+- Workload: one literal top-level callback matches the escaped selector. Positive calls are probe,descriptor,directory,create,A,B,current,replayA,replayB,final=10. Negative stops after the same first6. Exactly one launch per callback; no restart/reopen/source-built extra positive is present. Ten+six means two product children/owners/store roots, plus two short-lived port reservations: four listener lifetimes, not four product owners. Two Git inspections per callback are separate bounded tooling processes. Seed94B; four positive update bodies135+L give634+4L; negative364+2Lnegative. These remain source-derived bounds until actual execution.
+- Native HTTP lifecycle: preview112–188 constructs/ends both separate agent:false requests before the pair awaits, attaches rejection handling immediately, collects both outcomes with allSettled, owns requests immediately, bounds headers natively16384 and streaming body32768 before retention, catches fatal UTF8/JSON errors, and has absolute5s exchange timers. Error/abort/premature-close paths settle once and clear timers. Same-turn outstanding-call evidence uses actual milestones; socket/connection/finish timing is not promoted to server admission or fairness. At most26 deduplicated pair/kind entries fit32; incomplete required evidence or overflow prevents successful witness.
+- Teardown/report: preview278–325 destroys outstanding request handles; request settlement/close drain5s and existing child close10s run independently and concurrently, then directory removal and safe record occur even after assertions fail. Callback-owned primary and cleanup errors are aggregated. Existing launcher10s readiness/close and nativeL1 pre-ready PID/error masking are unchanged and explicitly retained. The30s work/45s callback bounds are not enlarged. Record contains safe selected headers, fingerprints and milestone ordinals, not bearer/config/raw exception/socket dumps; report-write failure changes the logged outcome to failure. Exclusive output creation prevents silent overwrite. Final external PID/directory checks are still required; callback exit fields are not independent absence proof.
+- Attribution: default mode resolves the emitted workspace entry; an external absolute realpath requires explicit fresh-consumer-positive or emitted-derivative mode. Actual local HEAD/dirty state and entry bytes are read, while ready identity fields remain nonattesting metadata. Full archive/member/eight-package closure/config/payload binding is deliberately outside this test and still must be provided by the approved external preparation. The code does not claim that path/mode/entry hash alone proves source or full payload.
+
+## Limits and disposition
+
+No product imports, formatting, typecheck, tests, services, copying, packaging, Claude invocation or repository edits were performed. No future exact-head CI success inferred, and no public/cumulative credit changes. NativeL1 startup masking remains an accepted visible limitation: before readiness the caller cannot independently capture the child PID or guarantee preservation of an earlier launcher failure. The planned external supervisor must retain those actual process facts. Request/child counts, cleanup feasibility and named-control reachability above are static conclusions only.
+
+The two-file preview can proceed to root's existing final reanchor/application/review process without a correction from this native review; this report itself releases no execution.
+
+
+SOURCE scripts/installed-reference-observation.mjs:1-103
+```ts
+1: /** Same bounded real-process observations for emitted and packed/installed bytes.
+2:  * No store mutation or scheduler/control API. Not a conformance artifact. */
+3: import assert from "node:assert/strict";
+4: import { spawn } from "node:child_process";
+5: import { randomBytes } from "node:crypto";
+6: import { createServer, createConnection } from "node:net";
+7: import { request } from "node:http";
+8: import { once } from "node:events";
+9: import path from "node:path";
+10: export async function availablePort() {
+11:   const server = createServer();
+12:   server.listen(0, "127.0.0.1");
+13:   await once(server, "listening");
+14:   const port = server.address().port;
+15:   await new Promise((resolve, reject) => server.close((e) => (e ? reject(e) : resolve())));
+16:   return port;
+17: }
+18: export async function launchInstalledReference(entry, configuration) {
+19:   const child = spawn(process.execPath, [entry], {
+20:     cwd: "/tmp",
+21:     stdio: ["ignore", "pipe", "pipe", "ipc"],
+22:   });
+23:   let stdout = "",
+24:     stderr = "";
+25:   child.stdout.on("data", (b) => {
+26:     stdout += b;
+27:     if (stdout.length > 65536) child.kill("SIGKILL");
+28:   });
+29:   child.stderr.on("data", (b) => {
+30:     stderr += b;
+31:     if (stderr.length > 65536) child.kill("SIGKILL");
+32:   });
+33:   const exited = new Promise((resolve) =>
+34:     child.once("exit", (code, signal) => resolve({ code, signal })),
+35:   );
+36:   const bounded = async (promise) => {
+37:     let timer;
+38:     try {
+39:       return await Promise.race([
+40:         promise,
+41:         new Promise((_, reject) => {
+42:           timer = setTimeout(() => {
+43:             child.kill("SIGKILL");
+44:             reject(Error("installed child deadline"));
+45:           }, 10000);
+46:         }),
+47:       ]);
+48:     } finally {
+49:       clearTimeout(timer);
+50:     }
+51:   };
+52:   try {
+53:     const ready = await bounded(
+54:       new Promise((resolve, reject) => {
+55:         child.once("error", reject);
+56:         child.once("message", resolve);
+57:         void exited.then(() => reject(Error(`installed child exited: ${stderr}`)));
+58:         child.send({ configuration });
+59:       }),
+60:     );
+61:     assert.equal(ready.event, "qualification.ready");
+62:     assert.equal(ready.claimEligible, false);
+63:     assert.match(ready.configurationIdentity, /^[a-f0-9]{64}$/);
+64:     assert.match(ready.payloadIdentity, /^[a-f0-9]{64}$/);
+65:     assert.match(ready.artifactIdentity, /^development-schema5-[a-f0-9]{64}$/);
+66:     assert.match(ready.policyIdentity, /^[a-f0-9]{64}$/);
+67:     assert.match(ready.authenticationIdentity, /^[a-f0-9]{64}$/);
+68:     assert.equal(ready.profile, "read-update");
+69:     assert.equal(ready.history, false);
+70:     return {
+71:       child,
+72:       ready,
+73:       exited,
+74:       wait: () => bounded(exited),
+75:       output: () => ({ stdout, stderr }),
+76:       close: async () => {
+77:         if (child.exitCode === null && child.signalCode === null) child.kill("SIGTERM");
+78:         return bounded(exited);
+79:       },
+80:     };
+81:   } catch (error) {
+82:     child.kill("SIGKILL");
+83:     await bounded(exited);
+84:     throw error;
+85:   }
+86: }
+87: export function referenceConfiguration(
+88:   directory,
+89:   port,
+90:   token,
+91:   scope = "https://reference.invalid/acme/",
+92: ) {
+93:   return {
+94:     scope,
+95:     listener: { host: "127.0.0.1", port },
+96:     directory,
+97:     create: true,
+98:     credentials: [{ token, principal: "operator" }],
+99:     policies: { operator: { create: true, write: true, hidden: [], readOnly: [] } },
+100:     contracts: { descriptors: [], schemas: [] },
+101:     maximumEndpointMultiplicity: [],
+102:   };
+103: }
+```
+
+SOURCE packages/server/src/installed-reference.ts:1-33
+```ts
+1: /** Exact installed candidate factory. Public startup may call this only behind
+2:  * independently verified profile evidence; P1a provides no such admission. */
+3: import { installedPayloadIdentity } from "./installed-payload.js";
+4: import { startDevelopmentReferenceRuntime } from "./development-runtime.js";
+5: import { createDevelopmentComposition } from "./development-composition.js";
+6: import { captureInstalledReferenceConfiguration } from "./installed-reference-configuration.js";
+7: 
+8: export async function startInstalledReferenceCandidate(input: unknown) {
+9:   const config = captureInstalledReferenceConfiguration(input);
+10:   const payloadIdentity = await installedPayloadIdentity();
+11:   const composition = createDevelopmentComposition(new URL(config.scope).pathname);
+12:   const first = config.credentials[0];
+13:   if (first === undefined) throw new TypeError("credential required");
+14:   const runtime = await startDevelopmentReferenceRuntime(
+15:     { directory: config.directory, port: config.port, create: config.create, token: first.token },
+16:     undefined,
+17:     undefined,
+18:     composition,
+19:     { configuration: config.configuration, credentials: config.credentials },
+20:     { scope: config.scope, host: config.host, schemas: config.schemas },
+21:   );
+22:   return Object.freeze({
+23:     ...runtime,
+24:     configurationIdentity: config.identity,
+25:     artifactIdentity: config.artifactIdentity,
+26:     payloadIdentity,
+27:     policyIdentity: config.policyIdentity,
+28:     authenticationIdentity: config.authenticationIdentity,
+29:     profile: config.profile,
+30:     history: config.history,
+31:     claimEligible: false as const,
+32:   });
+33: }
+```
+
+SOURCE packages/server/src/development-composition.ts:11-83
+```ts
+11: export function createDevelopmentComposition(scopePath: string): DevelopmentHttpComposition {
+12:   return Object.freeze<DevelopmentHttpComposition>({
+13:     scopePath,
+14:     createReadRoute(authority, directory) {
+15:       const { scope } = authority;
+16:       const serviceDescription = new URL("bdp.json", scope).href;
+17:       const operations = new URL("operations/", scope).href;
+18:       function problem(value: ReadProblem) {
+19:         const response = routing.jsonResponse(value);
+20:         response.headers.set("content-type", "application/problem+json");
+21:         return { ...response, status: value.status ?? 500 };
+22:       }
+23:       async function discovery() {
+24:         const result = await authority.discover();
+25:         if (result.kind === "problem") return problem(result.problem);
+26:         const { limits, ...data } = result.data;
+27:         return routing.jsonResponse(
+28:           parseReadUpdateDiscovery({
+29:             ...data,
+30:             bdpVersion: "0",
+31:             profile: "read-update",
+32:             operations,
+33:             limits: {
+34:               page: limits.page,
+35:               selector: limits.selector,
+36:               request: { bodyBytes: authority.limits.requestBodyBytes },
+37:               sequence: { operations: authority.limits.sequenceOperations },
+38:               validation: {
+39:                 diagnostics: authority.limits.diagnosticCount,
+40:                 diagnosticBytes: authority.limits.diagnosticBytes,
+41:               },
+42:             },
+43:           }),
+44:         );
+45:       }
+46:       const route = routing.createReadHttpRoute({
+47:         scope,
+48:         probe: async () => ({ serviceDescription }),
+49:         problem,
+50:         discover: discovery,
+51:         async alias(suffix, request) {
+52:           if (isReadProblem(suffix)) return problem(suffix);
+53:           const result = await authority.resolveAlias(request.url);
+54:           return result.kind === "problem"
+55:             ? problem(result.problem)
+56:             : {
+57:                 status: 307,
+58:                 headers: new Headers({
+59:                   location: result.target,
+60:                   "content-length": "0",
+61:                   "cache-control": "private, no-store",
+62:                 }),
+63:               };
+64:         },
+65:         async perform(parsed) {
+66:           const result = await authority.perform(parsed);
+67:           return result.kind === "problem"
+68:             ? problem(result.problem)
+69:             : result.kind === "success"
+70:               ? routing.scopeDataResponse(
+71:                   parsed,
+72:                   result.body,
+73:                   "resourceRevision" in result.observation
+74:                     ? result.observation.resourceRevision
+75:                     : undefined,
+76:                 )
+77:               : problem(readProblem("resource-not-found"));
+78:         },
+79:       });
+80:       return async (request) => {
+81:         // Gate every route through the current owner; no pre-auth/static directory escape.
+82:         const gate = await authority.discover();
+83:         if (gate.kind === "problem") return problem(gate.problem);
+```
+
+SOURCE packages/server/src/read-http-routing.ts:1-42
+```ts
+1: /** Internal Read HTTP projection shared by admitted and source-only test compositions. */
+2: import {
+3:   isReadProblem,
+4:   type AbsoluteHttpUrl,
+5:   type ReadProblem,
+6:   type ReadRequest,
+7: } from "@bdp/protocol";
+8: import type { HttpHandler, HttpResponse } from "./index.js";
+9: import { classifyAliasPath, notFound, requestFromUrl } from "./read-request.js";
+10: import { resourceRevisionEtag } from "./read-http.js";
+11: 
+12: interface ReadHttpRoutes {
+13:   readonly scope: AbsoluteHttpUrl;
+14:   probe(request: Request): Promise<{ readonly serviceDescription: string }>;
+15:   problem(problem: ReadProblem): HttpResponse;
+16:   discover(request: Request): Promise<HttpResponse>;
+17:   alias(path: string | ReadProblem, request: Request): Promise<HttpResponse>;
+18:   perform(parsed: ReadRequest, request: Request): Promise<HttpResponse>;
+19: }
+20: /** Raw projection only; the caller applies Read HTTP semantics exactly once. */
+21: export function createReadHttpRoute(routes: ReadHttpRoutes): HttpHandler {
+22:   return async (request) => {
+23:     if (request.method !== "GET" && request.method !== "HEAD")
+24:       return { status: 405, headers: new Headers({ allow: "GET, HEAD", "content-length": "0" }) };
+25:     const url = new URL(request.url);
+26:     const scopeUrl = new URL(routes.scope);
+27:     if (url.origin !== scopeUrl.origin) return routes.problem(notFound());
+28:     const probe = await routes.probe(request);
+29:     const aliasPath = classifyAliasPath(url, routes.scope);
+30:     if (aliasPath !== undefined) return routes.alias(aliasPath, request);
+31:     if (url.pathname === scopeUrl.pathname)
+32:       return {
+33:         status: 204,
+34:         headers: new Headers({
+35:           link: `<${probe.serviceDescription}>; rel="service-desc"; type="application/json"`,
+36:         }),
+37:       };
+38:     if (url.href === probe.serviceDescription) return routes.discover(request);
+39:     const parsed = requestFromUrl(url, routes.scope);
+40:     return isReadProblem(parsed) ? routes.problem(parsed) : routes.perform(parsed, request);
+41:   };
+42: }
+```
+
+SOURCE packages/server/src/development-runtime.ts:100-164
+```ts
+100:   const problem =
+101:     code === "unsupported-media-type"
+102:       ? parseReadUpdateProblem({
+103:           type: "https://github.com/gastownhall/bdp/problems/request",
+104:           code,
+105:           status: 415,
+106:           retry: "never",
+107:         })
+108:       : readProblem(code);
+109:   json(response, problem.status ?? 500, problem, true);
+110: }
+111: function empty(response: ServerResponse, status: number, allow?: string): void {
+112:   if (response.destroyed) return;
+113:   response.writeHead(status, {
+114:     "cache-control": "private, no-store",
+115:     "content-length": "0",
+116:     "x-bdp-development": "non-attesting",
+117:     ...(allow === undefined ? {} : { allow }),
+118:   });
+119:   response.end();
+120: }
+121: function readJson(
+122:   request: IncomingMessage,
+123:   response: ServerResponse,
+124:   url: URL,
+125:   value: unknown,
+126:   revision?: string,
+127: ): void {
+128:   const headers = new Headers({
+129:     "content-type": "application/json",
+130:     "cache-control": "private, no-store",
+131:     "x-bdp-development": "non-attesting",
+132:   });
+133:   if (revision !== undefined) headers.set("etag", resourceRevisionEtag(revision));
+134:   const incomingHeaders = new Headers();
+135:   for (let i = 0; i < request.rawHeaders.length; i += 2)
+136:     incomingHeaders.append(request.rawHeaders[i] ?? "", request.rawHeaders[i + 1] ?? "");
+137:   const selected: HttpResponse = applyReadHttpSemantics(
+138:     new Request(url, { method: request.method ?? "GET", headers: incomingHeaders }),
+139:     { status: 200, headers, body: value },
+140:   );
+141:   const bytes = selected.body === undefined ? undefined : stringifyJsonValue(selected.body);
+142:   if (bytes !== undefined) selected.headers.set("content-length", String(Buffer.byteLength(bytes)));
+143:   response.writeHead(selected.status, Object.fromEntries(selected.headers));
+144:   response.end(bytes);
+145: }
+146: async function body(request: IncomingMessage): Promise<string> {
+147:   const length = header(request, "content-length");
+148:   if (
+149:     length !== undefined &&
+150:     (!/^\d+$/.test(length) || Number(length) > DEVELOPMENT_LIMITS.requestBodyBytes)
+151:   )
+152:     throw new ReceivingError("request-too-large");
+153:   const chunks: Buffer[] = [];
+154:   let bytes = 0;
+155:   for await (const chunk of request.iterator({ destroyOnReturn: false })) {
+156:     bytes += chunk.length;
+157:     if (bytes > DEVELOPMENT_LIMITS.requestBodyBytes) throw new ReceivingError("request-too-large");
+158:     chunks.push(chunk);
+159:   }
+160:   try {
+161:     return new TextDecoder("utf-8", { fatal: true }).decode(Buffer.concat(chunks));
+162:   } catch {
+163:     throw new ReceivingError("malformed-request");
+164:   }
+```
+
+SOURCE packages/server/src/development-runtime.ts:399-489
+```ts
+399:         return;
+400:       }
+401:       if (request.method === "GET" || request.method === "HEAD") {
+402:         if (rawUrl === "/") {
+403:           readJson(request, response, url, {
+404:             development: true,
+405:             claimEligible: false,
+406:             scope,
+407:             operations: [...Object.keys(operations), "sequence"].map(
+408:               (name) => `${scope}development/${name}`,
+409:             ),
+410:           });
+411:           return;
+412:         }
+413:         // No service-desc or BDP discovery profile. Reads use the same authority
+414:         // as writes and reuse the qualified Read HTTP projection helpers.
+415:         const result = await principalAuthority.read(url);
+416:         if (result.kind === "problem")
+417:           json(response, result.problem.status ?? 500, result.problem, true);
+418:         else if (result.kind === "success") {
+419:           const resource = result.request.kind === "resource" && result.request.resource !== "type";
+420:           const value = result.body;
+421:           const revision =
+422:             resource &&
+423:             typeof value === "object" &&
+424:             value !== null &&
+425:             "revision" in value &&
+426:             typeof value.revision === "string"
+427:               ? value.revision
+428:               : undefined;
+429:           readJson(request, response, url, value, revision);
+430:         } else if (result.kind === "target") {
+431:           response.writeHead(307, {
+432:             location: result.target,
+433:             "cache-control": "private, no-store",
+434:             "x-bdp-development": "non-attesting",
+435:           });
+436:           response.end();
+437:         } else refused(response, "resource-not-found");
+438:         return;
+439:       }
+440:       if (request.method !== "POST" || !mutationTarget) {
+441:         empty(response, 405, "GET, HEAD");
+442:         return;
+443:       }
+444:       if (
+445:         header(request, "content-type")?.split(";", 1)[0]?.trim().toLowerCase() !==
+446:         "application/json"
+447:       )
+448:         throw new ReceivingError("unsupported-media-type");
+449:       if (header(request, "content-encoding") !== undefined)
+450:         throw new ReceivingError("unsupported-media-type");
+451:       const key = header(request, "idempotency-key");
+452:       if (name === "sequence" ? key !== undefined : key === undefined)
+453:         throw new ReceivingError("malformed-request");
+454:       const text = await body(request);
+455:       if (response.destroyed || closing) throw new ReceivingError("temporarily-unavailable");
+456:       // After admission, delivery is only an observer. Disconnect never cancels
+457:       // committed/admitted work; an exact-key retry retrieves its disposition.
+458:       const result =
+459:         operation !== undefined && key !== undefined
+460:           ? await principalAuthority.mutate(
+461:               operation,
+462:               text,
+463:               key,
+464:               acceptsJson(request.headers.accept ?? null),
+465:             )
+466:           : await principalAuthority.sequence(text, acceptsJson(request.headers.accept ?? null));
+467:       if ("kind" in result && result.kind === "not-acceptable") {
+468:         response.setHeader("vary", "Accept");
+469:         empty(response, 406);
+470:         return;
+471:       }
+472:       response.setHeader("vary", "Accept");
+473:       const problem = "code" in result;
+474:       json(response, problem ? (result.status ?? 500) : 200, result, problem);
+475:     } catch (error) {
+476:       if (error instanceof ReceivingError) refused(response, error.code);
+477:       else if (error instanceof ReadUpdateCarrierError || error instanceof JsonSyntaxError)
+478:         refused(response, "malformed-request");
+479:       else empty(response, 500);
+480:     }
+481:   };
+482:   const server = createServer({ maxHeaderSize: 16 * 1024 }, (request, response) => {
+483:     const task = handle(request, response);
+484:     pending.add(task);
+485:     void task.finally(() => pending.delete(task));
+486:   });
+487:   if (transport !== undefined)
+488:     server.on("connect", (_request, socket) => {
+489:       socket.on("error", () => undefined);
+```
+
+SOURCE packages/server/src/resource-evaluator.ts:134-161
+```ts
+134: class Failure extends Error {
+135:   constructor(readonly problem: ReadUpdateProblem) {
+136:     super(problem.code);
+137:   }
+138: }
+139: const failures = {
+140:   "resource-not-found": ["not-found", 404, "after-state-change"],
+141:   forbidden: ["authorization", 403, "after-state-change"],
+142:   "identity-taken": ["conflict", 409, "never"],
+143:   "alias-path-taken": ["conflict", 409, "after-state-change"],
+144:   "type-not-installed": ["validation", 422, "after-state-change"],
+145:   "revision-mismatch": ["conflict", 409, "after-state-change"],
+146:   "incident-links-exist": ["conflict", 409, "after-state-change"],
+147:   "aggregate-constraint-violation": ["conflict", 409, "after-state-change"],
+148:   "limit-exceeded": ["size", 413, "never"],
+149:   "revision-allocation-unsafe": ["conflict", 409, "after-state-change"],
+150: } as const;
+151: function fail(code: keyof typeof failures): never {
+152:   const [family, status, retry] = failures[code];
+153:   throw new Failure(
+154:     parseReadUpdateProblem({
+155:       type: `https://github.com/gastownhall/bdp/problems/${family}`,
+156:       code,
+157:       status,
+158:       retry,
+159:     }),
+160:   );
+161: }
+```
+
+SOURCE packages/server/src/resource-evaluator.ts:1000-1048
+```ts
+1000:   // single-connection, synchronous, immutable-snapshot contract. Final checks
+1001:   // below may still refuse; only the outer S6 COMMIT permits a success to escape.
+1002:   // Adding concurrent readers/WAL, async or reentrant owners reopens this proof.
+1003:   const context =
+1004:     subjectRecipe?.metadata.context.kind === "native" ||
+1005:     sourceRecipe?.metadata.context.kind === "native"
+1006:       ? makeContext(contextInput, observeCommitTime(options.observeCommitTime))
+1007:       : undefined;
+1008:   const materialized = new Map<VersionRecipe, ResourceRecord>();
+1009:   const after = subjectRecipe
+1010:     ? materializeVersion(subjectRecipe, context, materialized)
+1011:     : undefined;
+1012:   const sourceAfter = sourceRecipe
+1013:     ? (materializeVersion(sourceRecipe, context, materialized) as BeadRecord)
+1014:     : undefined;
+1015:   if (
+1016:     creating
+1017:       ? !after || !options.policy.canCreate(after)
+1018:       : !before || !options.policy.canWrite(before, after)
+1019:   )
+1020:     fail("forbidden");
+1021:   if (source && sourceAfter && !options.policy.canWrite(source, sourceAfter)) fail("forbidden");
+1022:   if (
+1023:     "expectedRevision" in input &&
+1024:     input.expectedRevision !== undefined &&
+1025:     input.expectedRevision !== before?.revision
+1026:   )
+1027:     fail("revision-mismatch");
+1028:   if (deleting && resourceKind === "bead" && tx.incidentLinks(id).length)
+1029:     fail("incident-links-exist");
+1030:   if ("propertiesChange" in input || "metadataChange" in input) {
+1031:     const limits = options.limits;
+1032:     const changes = [
+1033:       ...("propertiesChange" in input ? (input.propertiesChange ?? []) : []),
+1034:       ...("metadataChange" in input ? (input.metadataChange ?? []) : []),
+1035:     ];
+1036:     if (limits.patchOperations !== undefined && changes.length > limits.patchOperations)
+1037:       fail("limit-exceeded");
+1038:     for (const change of changes)
+1039:       if (
+1040:         (limits.patchPathBytes !== undefined &&
+1041:           Buffer.byteLength(change.path) > limits.patchPathBytes) ||
+1042:         (limits.patchPathDepth !== undefined &&
+1043:           (change.path === "" ? 0 : change.path.split("/").length - 1) > limits.patchPathDepth)
+1044:       )
+1045:         fail("limit-exceeded");
+1046:   }
+1047:   const writes: EvaluatorStoredResource[] = [];
+1048:   for (const record of [after, sourceAfter]) {
+```
+
+SOURCE packages/server/src/member-executor.ts:188-210
+```ts
+188:   return result.outcome;
+189: }
+190: function parseDisposition(
+191:   value: unknown,
+192:   operation: ReadUpdateOperation,
+193:   scope: string,
+194: ): MemberDisposition {
+195:   const body = record(value);
+196:   if (Object.hasOwn(body, "operationIndex") || Object.hasOwn(body, "operationName"))
+197:     throw new MemberIntegrityError("stored disposition must be unpositioned");
+198:   if (Object.hasOwn(body, "code")) {
+199:     if (Object.hasOwn(body, "outcome"))
+200:       throw new MemberIntegrityError("stored Problem must be positionable without outcome");
+201:     return parseReadUpdateProblem(body);
+202:   }
+203:   const alias = operation === "putAlias" || operation === "deleteAlias";
+204:   if (alias) {
+205:     const result = parseReadUpdateAliasResult(body);
+206:     aliasId(scope, result.alias);
+207:     if ((operation === "deleteAlias") !== (result.outcome === "deleted"))
+208:       throw new MemberIntegrityError("alias result differs from operation");
+209:     if (result.outcome !== "deleted") rootId(scope, result.target, "bead");
+210:     return result;
+```
+
+SOURCE packages/server/src/member-executor.ts:645-685
+```ts
+645:     disposition = parseDisposition(disposition, operation, options.scope);
+646:     if ("code" in disposition && disposition.retry === "after-delay") {
+647:       staged = { disposition };
+648:       return { kind: "release" };
+649:     }
+650:     const effect = "code" in disposition ? "failure" : "success";
+651:     const resolutionsJson = serializeMemberMetadata(
+652:       member,
+653:       effect === "success" && creation(operation)
+654:         ? (disposition as ReadUpdateMutationResult)
+655:         : undefined,
+656:     );
+657:     const metadata = parseMemberMetadata(resolutionsJson, options.scope);
+658:     const outcomeJson = stringifyJsonValue({ format: envelopeFormat, operation, disposition });
+659:     const envelope = parseEnvelope(outcomeJson, effect, options.scope);
+660:     coherent(metadata, envelope);
+661:     const completedAt = terminal(options.clock);
+662:     const retainUntil = completedAt + options.retentionMs;
+663:     epoch(retainUntil);
+664:     staged = {
+665:       disposition: envelope.disposition,
+666:       outcomeJson,
+667:       ...(metadata.creation ? { creator: metadata.creation } : {}),
+668:     };
+669:     return {
+670:       kind: "retain",
+671:       semanticIdentityJson: member.identityJson,
+672:       resolutionsJson,
+673:       outcomeJson,
+674:       effect,
+675:       completedAt,
+676:       retainUntil,
+677:     };
+678:   });
+679:   if (completion.kind === "completed") {
+680:     if (!staged || staged.outcomeJson !== completion.outcomeJson)
+681:       throw new MemberIntegrityError("completed member differs from its staged envelope");
+682:     return turn(staged.disposition, "retained", operation, staged.creator);
+683:   }
+684:   if (completion.kind === "released") {
+685:     if (
+```
+
+SOURCE packages/server/src/member-executor.ts:718-780
+```ts
+718: /** Pure retained-key comparison/disclosure; shared by replay and pre-admission
+719:  * media refusal. Never claims keys, evaluates mutations or renews retention. */
+720: function compareExistingMember(
+721:   reader: StoreReader,
+722:   state: Extract<KeyState, { kind: "retained" | "expired" }>,
+723:   principal: StablePrincipal,
+724:   principalId: string,
+725:   carrier: PreparedReadUpdateCarrier,
+726:   index: number,
+727:   operation: ReadUpdateOperation,
+728:   prepared: PreparedMemberDependencies,
+729:   options: MemberExecutorOptions,
+730: ): MemberTurn {
+731:   const metadata = parseMemberMetadata(state.resolutionsJson, options.scope);
+732:   let envelope: Envelope | undefined;
+733:   if (state.kind === "retained") {
+734:     envelope = parseEnvelope(state.outcomeJson, state.effect, options.scope);
+735:     coherent(metadata, envelope);
+736:     identityOperation(state.semanticIdentityJson, metadata, envelope);
+737:     if (recoveryIdentityFingerprint(state.semanticIdentityJson) !== state.fingerprint)
+738:       throw new MemberIntegrityError("retained fingerprint differs from exact identity");
+739:   } else {
+740:     assertSuccessfulWitnesses(metadata);
+741:     if (creation(metadata.operation) && !metadata.creation)
+742:       throw new MemberIntegrityError("expired creator has no successful creation fact");
+743:   }
+744:   const context = capture(options, reader, principal, principalId);
+745:   if (metadata.operation !== operation)
+746:     return turn(problem("idempotency-conflict"), "conflict", operation);
+747:   // Only this callable and Scope enter retry normalization. Its witnesses are
+748:   // comparison input; no retry identity reaches executable preparation.
+749:   const scope = options.scope;
+750:   const readAlias = reader.alias.bind(reader);
+751:   const identityJson = normalizePreparedMemberIdentity(
+752:     carrier,
+753:     index,
+754:     {
+755:       scope,
+756:       prior: metadata,
+757:       resolveAlias(locator) {
+758:         const target = readAlias(locator.slice(scope.length + 6));
+759:         return target === undefined ? undefined : `${scope}${target}`;
+760:       },
+761:     },
+762:     prepared,
+763:   ).identityJson;
+764:   const equal =
+765:     state.kind === "retained"
+766:       ? identityJson === state.semanticIdentityJson
+767:       : recoveryIdentityFingerprint(identityJson) === state.fingerprint;
+768:   if (!equal) return turn(problem("idempotency-conflict"), "conflict", operation);
+769:   if (state.kind === "expired")
+770:     return turn(problem("idempotency-expired"), "expired", operation, metadata.creation);
+771:   if (!envelope) throw new MemberIntegrityError("lost retained envelope");
+772:   const result = envelope.disposition;
+773:   const disposition =
+774:     !("code" in result) &&
+775:     "resource" in result &&
+776:     result.resource &&
+777:     !mayDiscloseRetainedResource(reader, result.resource, options.scope, context.policy)
+778:       ? problem("forbidden")
+779:       : result;
+780:   return turn(disposition, "replayed", operation, metadata.creation);
+```
+
+SOURCE packages/server/src/recovery-store.ts:381-393
+```ts
+381:   const transaction = <T>(callback: () => T): T => {
+382:     available();
+383:     active = true;
+384:     let committing = false;
+385:     try {
+386:       db.exec("BEGIN IMMEDIATE");
+387:       const result = callback();
+388:       rejectAsync(result);
+389:       committing = true;
+390:       db.exec("COMMIT");
+391:       return result;
+392:     } catch (error) {
+393:       let cleanRollback = false;
+```
+
+SOURCE packages/server/src/recovery-store.ts:785-806
+```ts
+785:               principal,
+786:               carrierKeys[index] as string,
+787:               attemptId,
+788:             );
+789:         const admission = Object.freeze({
+790:           attemptId,
+791:           principal,
+792:           keys: carrierKeys,
+793:           states,
+794:         });
+795:         admissions.add(admission);
+796:         return admission;
+797:       });
+798:     },
+799:     executeMember(admission, key, evaluate) {
+800:       checkAdmission(admission, key);
+801:       return transaction(() => {
+802:         const current = keyState(admission.principal, key);
+803:         if (current.kind === "unknown")
+804:           run(
+805:             "INSERT INTO key_state(principal,key,state,owner) VALUES (?,?,'claimed',?)",
+806:             admission.principal,
+```
+
+SOURCE packages/protocol/src/read-values.ts:137-218
+```ts
+137: 
+138: function projectLegacyBeadMetadata(value: unknown, path: string): Record<string, unknown> {
+139:   const record = readRecord(value, path);
+140:   const owned = record.ownedLinks;
+141:   const ownedLinks =
+142:     owned === undefined
+143:       ? undefined
+144:       : Object.fromEntries(
+145:           Object.entries(readRecord(owned, `${path}.ownedLinks`)).map(([type, links]) => [
+146:             type,
+147:             Array.isArray(links)
+148:               ? links.map((link, index) =>
+149:                   projectLegacyLinkMetadata(
+150:                     link,
+151:                     `${path}.ownedLinks[${JSON.stringify(type)}][${index}]`,
+152:                   ),
+153:                 )
+154:               : links,
+155:           ]),
+156:         );
+157:   return {
+158:     ...record,
+159:     ...(Object.hasOwn(record, "metadata") ? {} : { metadata: Object.freeze({}) }),
+160:     ...(ownedLinks === undefined ? {} : { ownedLinks }),
+161:     ...(record.links === undefined
+162:       ? {}
+163:       : { links: projectLegacyLinkPageMetadata(record.links, `${path}.links`) }),
+164:   };
+165: }
+166: 
+167: /** Parse and deeply snapshot one Bead record. */
+168: export function parseBeadRecord(value: unknown, path = "Bead record"): BeadRecord {
+169:   const record = projectLegacyBeadMetadata(snapshotProtocolRecord(value, path), path);
+170:   validateFromSchema(getProtocolValueValidators().beadRecord, record, path);
+171:   parseCanonicalTypeId(record.id, `${path}.id`);
+172:   parseResourceTypeId(record.type, `${path}.type`);
+173:   const ownedLinks =
+174:     record.ownedLinks === undefined
+175:       ? undefined
+176:       : Object.fromEntries(
+177:           Object.entries(record.ownedLinks as Readonly<Record<string, readonly unknown[]>>).map(
+178:             ([key, owned]) => {
+179:               parseResourceTypeId(key, `${path}.ownedLinks key`);
+180:               let previousId: string | undefined;
+181:               const projected = owned.map((item, index) => {
+182:                 const itemPath = `${path}.ownedLinks[${JSON.stringify(key)}][${index}]`;
+183:                 const owned_ = parseLinkRecord(item, itemPath);
+184:                 if (owned_.type !== key)
+185:                   throw new ProtocolArtifactValidationError(
+186:                     `${itemPath}.type must equal its entry's Link Type key`,
+187:                   );
+188:                 if (referenceUri(owned_.source) !== record.id)
+189:                   throw new ProtocolArtifactValidationError(
+190:                     `${itemPath}.source must be the containing Bead`,
+191:                   );
+192:                 if (previousId !== undefined && compareCanonicalIds(previousId, owned_.id) >= 0)
+193:                   throw new ProtocolArtifactValidationError(
+194:                     `${itemPath}.id must ascend in code-unit order within its entry`,
+195:                   );
+196:                 previousId = owned_.id;
+197:                 return owned_;
+198:               });
+199:               return [key, Object.freeze(projected)] as const;
+200:             },
+201:           ),
+202:         );
+203:   const links =
+204:     record.links === undefined ? undefined : parseLinkCollection(record.links, `${path}.links`);
+205:   return Object.freeze({
+206:     ...record,
+207:     metadata: record.metadata ?? Object.freeze({}),
+208:     ...(ownedLinks === undefined ? {} : { ownedLinks: Object.freeze(ownedLinks) }),
+209:     ...(links === undefined ? {} : { links }),
+210:   }) as unknown as BeadRecord;
+211: }
+212: 
+213: /** Parse and deeply snapshot one Link record. */
+214: export function parseLinkRecord(value: unknown, path = "Link record"): LinkRecord {
+215:   const record = projectLegacyLinkMetadata(snapshotProtocolRecord(value, path), path);
+216:   validateFromSchema(getProtocolValueValidators().linkRecord, record, path);
+217:   parseCanonicalTypeId(record.id, `${path}.id`);
+218:   parseResourceTypeId(record.type, `${path}.type`);
+```
+
+SOURCE packages/protocol/src/read-update-values.ts:410-453
+```ts
+410: export function parseReadUpdateDiscovery(value: unknown): ReadUpdateDiscovery {
+411:   const result = parseReadUpdateShape(value, "discovery");
+412:   for (const name of ["scope", "beads", "links", "types", "operations", "aliases"])
+413:     parseCanonicalHttpUrl(result[name], name);
+414:   for (const policy of (result.maximumEndpointMultiplicity as readonly {
+415:     linkConformsTo: string;
+416:   }[]) ?? [])
+417:     parseCanonicalTypeId(policy.linkConformsTo);
+418:   return result as unknown as ReadUpdateDiscovery;
+419: }
+420: export function parseReadUpdateOperationDirectory(value: unknown): ReadUpdateOperationDirectory {
+421:   return parseReadUpdateShape(
+422:     value,
+423:     "operationDirectory",
+424:   ) as unknown as ReadUpdateOperationDirectory;
+425: }
+426: function validateResultResource(
+427:   result: Readonly<Record<string, unknown>>,
+428: ): BeadRecord | LinkRecord | undefined {
+429:   let projected: BeadRecord | LinkRecord | undefined;
+430:   if (result.resource !== undefined) {
+431:     const resource = result.resource as Record<string, unknown>;
+432:     projected = "source" in resource ? parseLinkRecord(resource) : parseBeadRecord(resource);
+433:   }
+434:   if (result.source !== undefined) parseCanonicalHttpUrl(result.source);
+435:   if (result.deleted !== undefined) {
+436:     const deleted = result.deleted as { resource: { id: string; type: string } };
+437:     parseCanonicalHttpUrl(deleted.resource.id);
+438:     parseCanonicalTypeId(deleted.resource.type);
+439:   }
+440:   if (result.alias !== undefined) parseCanonicalHttpUrl(result.alias);
+441:   if (result.target !== undefined) parseCanonicalHttpUrl(result.target);
+442:   return projected;
+443: }
+444: export function parseReadUpdateMutationResult(value: unknown): ReadUpdateMutationResult {
+445:   const result = parseReadUpdateShape(value, "mutationResult");
+446:   const resource = validateResultResource(result);
+447:   return Object.freeze({
+448:     ...result,
+449:     ...(resource === undefined ? {} : { resource }),
+450:   }) as unknown as ReadUpdateMutationResult;
+451: }
+452: export function parseReadUpdateAliasResult(value: unknown): ReadUpdateAliasResult {
+453:   const result = parseReadUpdateShape(value, "aliasResult");
+```
+
+SOURCE packages/protocol/src/read-update-problems.ts:1-47
+```ts
+1: import type { ReadProblem, ReadProblemCode, RetryDisposition } from "./index.js";
+2: import { parseReadUpdateShape } from "./read-update-values.js";
+3: 
+4: export type ReadUpdateProblemCode =
+5:   | ReadProblemCode
+6:   | "unsupported-media-type"
+7:   | "binding-unavailable"
+8:   | "validation-failed"
+9:   | "type-not-installed"
+10:   | "identity-taken"
+11:   | "alias-path-taken"
+12:   | "revision-mismatch"
+13:   | "incident-links-exist"
+14:   | "aggregate-constraint-violation"
+15:   | "idempotency-conflict"
+16:   | "idempotency-in-progress"
+17:   | "idempotency-expired"
+18:   | "revision-allocation-unsafe";
+19: export interface ValidationDiagnostic {
+20:   readonly message: string;
+21:   readonly type?: string;
+22:   readonly schemaLocation?: string;
+23:   readonly instanceLocation?: string;
+24:   /** Omission selects properties; metadata diagnostics identify their document. */
+25:   readonly document?: "properties" | "metadata";
+26: }
+27: /** RFC9457 extensions remain open; the owning schema constrains known codes
+28:  * and their conditionally legal fields (including erased-pointer prohibition).
+29:  */
+30: export interface ReadUpdateProblem extends Omit<ReadProblem, "code" | "status" | "retry"> {
+31:   readonly type: ReadProblem["type"];
+32:   readonly code: ReadUpdateProblemCode;
+33:   readonly status?: number;
+34:   readonly retry: RetryDisposition;
+35:   readonly retryAfter?: number;
+36:   readonly diagnostics?: readonly ValidationDiagnostic[];
+37:   readonly diagnosticsTruncated?: boolean;
+38: }
+39: export function parseReadUpdateProblem(value: unknown): ReadUpdateProblem {
+40:   return parseReadUpdateShape(value, "problem") as unknown as ReadUpdateProblem;
+41: }
+42: export type ReadUpdateSequenceMemberProblem = ReadUpdateProblem & {
+43:   readonly status: number;
+44:   readonly operationIndex: number;
+45:   readonly operationName?: string;
+46: };
+47: export function parseReadUpdateSequenceMemberProblem(
+```
