@@ -11,6 +11,7 @@ import (
 	"github.com/spf13/cobra"
 	graph "github.com/steveyegge/beads/graphops"
 	"github.com/steveyegge/beads/internal/storage/graphstore"
+	"github.com/steveyegge/beads/internal/types"
 )
 
 // A disposable CLI input budget, advertised by status --graph. It is not a
@@ -62,23 +63,21 @@ func graphPreviewPropertiesJSON(input string, stdin io.Reader) (json.RawMessage,
 	return canonical, nil
 }
 
-func graphPreviewRevisionGuard(cmd *cobra.Command, source, required bool) (string, bool, error) {
-	revisionFlag, unconditionalFlag := "if-revision", "unconditional"
+func graphPreviewRevisionGuard(cmd *cobra.Command, source bool) (string, bool, error) {
+	revisionFlag := "if-revision"
 	if source {
-		revisionFlag, unconditionalFlag = "if-source-revision", "unconditional-source"
+		revisionFlag = "if-source-revision"
 	}
-	hasRevision, hasUnconditional := cmd.Flags().Changed(revisionFlag), cmd.Flags().Changed(unconditionalFlag)
-	if !hasRevision && !hasUnconditional && !required {
-		// Source guards are opt-in at the CLI; the writer still validates
-		// every supplied token and atomically accepts the actual predecessor.
-		return "", source, nil
+	if !cmd.Flags().Changed(revisionFlag) {
+		// A missing comparison accepts the current predecessor. Keep the
+		// writer's explicit choice internal to the CLI adapter.
+		return "", true, nil
 	}
 	revision, _ := cmd.Flags().GetString(revisionFlag)
-	unconditional, _ := cmd.Flags().GetBool(unconditionalFlag)
-	if hasRevision == hasUnconditional || (hasRevision && revision == "") || (hasUnconditional && !unconditional) {
-		return "", false, graphFailure("invalid_selector", "choose either --"+revisionFlag+" REVISION or --"+unconditionalFlag, 2)
+	if revision == "" {
+		return "", false, graphFailure("invalid_selector", "--"+revisionFlag+" requires a nonempty revision token", 2)
 	}
-	return revision, unconditional, nil
+	return revision, false, nil
 }
 
 // Ordinary edits use the current predecessor when no comparison was asked for.
@@ -95,15 +94,32 @@ func graphPreviewEditRevisionGuard(cmd *cobra.Command) (string, bool, error) {
 	return revision, false, nil
 }
 
-// The old name remains a hidden compatibility alias for existing scripts.
 func registerGraphLinkTypeFlag(cmd *cobra.Command) {
-	cmd.Flags().String("link-type", "", "Installed Link Type: NAME, types/NAME, or full local URL (graph preview only)")
-	cmd.Flags().String("resource-type", "", "Compatibility alias for --link-type")
-	_ = cmd.Flags().MarkHidden("resource-type")
+	cmd.Flags().String("type", "", "Installed Link Type or built-in Dependency type (graph preview only)")
 }
 
 func graphPreviewLinkTypeChanged(cmd *cobra.Command) bool {
-	return cmd.Flags().Changed("link-type") || cmd.Flags().Changed("resource-type")
+	return cmd.Flags().Changed("type")
+}
+
+func graphPreviewNominalTypeFlagChanged(cmd *cobra.Command) bool {
+	if !cmd.Flags().Changed("type") {
+		return false
+	}
+	selector, _ := cmd.Flags().GetString("type")
+	return graphPreviewNominalSelector(selector)
+}
+
+func graphPreviewNominalSelector(selector string) bool {
+	if strings.HasPrefix(selector, "types/") || strings.Contains(selector, "://") {
+		return true
+	}
+	switch selector {
+	case "preview-issue", "preview-memory", "preview-dependency", "preview-related", "preview-related-memory", "example-cites", "example-follows":
+		return true
+	default:
+		return false
+	}
 }
 
 func graphPreviewTypeURL(scope, selector string) (string, error) {
@@ -111,6 +127,9 @@ func graphPreviewTypeURL(scope, selector string) (string, error) {
 		selector = scope + "types/" + selector
 	} else if strings.HasPrefix(selector, "types/") {
 		selector = scope + selector
+	}
+	if selector == scope+"types/preview-related-memory" {
+		selector = graphstore.RelatedTypeURL(scope)
 	}
 	prefix := scope + "types/"
 	if !strings.HasPrefix(selector, prefix) {
@@ -128,20 +147,23 @@ func graphPreviewTypeURL(scope, selector string) (string, error) {
 }
 
 func graphPreviewLinkType(cmd *cobra.Command) (string, error) {
-	if cmd.Flags().Changed("link-type") && cmd.Flags().Changed("resource-type") {
-		return "", graphFailure("invalid_selector", "choose --link-type once; do not combine it with --resource-type", 2)
-	}
 	if !graphPreviewLinkTypeChanged(cmd) {
 		return "", nil
 	}
-	flag := "link-type"
-	if cmd.Flags().Changed("resource-type") {
-		flag = "resource-type"
+	selector, _ := cmd.Flags().GetString("type")
+	scope := graphPreviewConfig.GraphScopeURL
+	if !graphPreviewNominalSelector(selector) {
+		if kind := canonicalDependencyType(types.DependencyType(selector)); kind.IsWellKnown() {
+			return graphstore.DependencyTypeURL(scope), nil
+		}
+		return "", graphFailure("capability_unavailable", "Dependency type is not registered in this preview", 5)
 	}
-	selector, _ := cmd.Flags().GetString(flag)
-	typ, err := graphPreviewTypeURL(graphPreviewConfig.GraphScopeURL, selector)
+	typ, err := graphPreviewTypeURL(scope, selector)
 	if err != nil {
 		return "", graphFailure("invalid_selector", err.Error(), 2)
+	}
+	if typ != graphstore.DependencyTypeURL(scope) && !graphstore.IsInformationalTypeURL(scope, typ) {
+		return "", graphFailure("capability_unavailable", "Link Type is not installed in this preview", 5)
 	}
 	return typ, nil
 }
@@ -157,9 +179,7 @@ func runGraphPreviewLink(cmd *cobra.Command, args []string) error {
 	if err := graphPreviewWritePolicy(); err != nil {
 		return err
 	}
-	// --type is deliberately absent: it belongs to the native Dependency route
-	// above, so this list refuses it before anything below could.
-	if err := graphPreviewFlags(cmd, "link-type", "resource-type", "source", "target", "id", "properties", "metadata", "if-source-revision", "unconditional-source"); err != nil {
+	if err := graphPreviewFlags(cmd, "type", "source", "target", "id", "properties", "metadata", "if-source-revision"); err != nil {
 		return err
 	}
 	if !graphstore.IsInformationalTypeURL(graphPreviewConfig.GraphScopeURL, typ) {
@@ -186,7 +206,7 @@ func runGraphPreviewLink(cmd *cobra.Command, args []string) error {
 			return graphFailure("invalid_selector", err.Error(), 2)
 		}
 	}
-	revision, unconditional, err := graphPreviewRevisionGuard(cmd, true, false)
+	revision, unconditional, err := graphPreviewRevisionGuard(cmd, true)
 	if err != nil {
 		return err
 	}
@@ -215,7 +235,7 @@ func runGraphPreviewUpdateLink(cmd *cobra.Command, args []string) error {
 	if err := graphPreviewWritePolicy(); err != nil {
 		return err
 	}
-	if err := graphPreviewFlags(cmd, "properties", "metadata", "replace-metadata", "set-metadata", "unset-metadata", "if-revision", "if-source-revision", "unconditional-source"); err != nil {
+	if err := graphPreviewFlags(cmd, "properties", "metadata", "replace-metadata", "set-metadata", "unset-metadata", "if-revision", "if-source-revision"); err != nil {
 		return err
 	}
 	if len(args) != 1 {
@@ -235,7 +255,7 @@ func runGraphPreviewUpdateLink(cmd *cobra.Command, args []string) error {
 	if err != nil {
 		return err
 	}
-	sourceRevision, unconditionalSource, err := graphPreviewRevisionGuard(cmd, true, false)
+	sourceRevision, unconditionalSource, err := graphPreviewRevisionGuard(cmd, true)
 	if err != nil {
 		return err
 	}

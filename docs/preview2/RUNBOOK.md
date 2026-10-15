@@ -214,7 +214,7 @@ bd compare policy-a --from "$old_policy_revision" --to "$new_policy_revision" --
 
 ### Delete
 
-`delete` first previews a deletion. `forget` performs a guarded Memory deletion. With `--if-revision`, it is the Memory-specific form of `delete --force --if-revision`. A Memory with a live Link cannot be deleted; the Link must be removed first. Keep `policy-a` and `policy-b` for the next section.
+`delete` first previews a deletion; add `--force` to apply it. `forget` deletes one Memory immediately. Both commands accept an optional `--if-revision` token to reject a stale write. A Memory with a live Link cannot be deleted; remove the Link first. Keep `policy-a` and `policy-b` for the next section.
 
 ```sh
 bd delete policy-c
@@ -231,7 +231,7 @@ The examples here create and manage Links. `bd link` is the general namespace fo
 The first example connects `policy-a` to `policy-b` with a `preview-related-memory` Link. This is different from the `related` Dependency between Issues. Its optional `note` property is checked against the Link Type; metadata is separate. Editing this Link advances its source Memory's saved state but does not change the target Memory.
 
 ```sh
-bd link create --source policy-a --target policy-b --type preview-related-memory --id policy-related-b --properties '{"note":"supporting policy"}' --metadata '{"origin":"draft"}'
+bd link create policy-a policy-b --type preview-related-memory --id policy-related-b --properties '{"note":"supporting policy"}' --metadata '{"origin":"draft"}'
 ```
 
 Read the Link and the Links leaving `policy-a`:
@@ -275,8 +275,7 @@ A **Dependency** is a Link between two Issues. In `bd dep add BLOCKED BLOCKER`, 
 The built-in Dependency choices shown by `bd types` are `blocks`, `parent-child`, `conditional-blocks`, `waits-for`, `related`, `discovered-from`, `replies-to`, `relates-to`, `duplicates`, `supersedes`, `authored-by`, `assigned-to`, `approved-by`, `attests`, `tracks`, `until`, `caused-by`, `validates`, and `delegated-from`. They all connect Issues, but have different meanings. `blocks`, `parent-child`, `conditional-blocks`, and `waits-for` can affect readiness; `parent-child` also defines the hierarchy. The other choices do not block work merely by existing.
 
 ```sh
-bd link create --source blocked-work --target blocker \
-  --type blocks --id typed-blocker --unconditional-source
+bd link create blocked-work blocker --type blocks --id typed-blocker
 bd link show typed-blocker --format graph-json
 bd dep list blocked-work
 bd dep tree blocked-work --direction both
@@ -289,7 +288,7 @@ Remove that Link by ID with its current revision, then recreate the same relatio
 
 ```sh
 typed_blocker_revision="$(bd link show typed-blocker --format graph-json | jq -er '.result.revision')"
-bd link delete typed-blocker --force --if-revision "$typed_blocker_revision" --unconditional-source
+bd link delete typed-blocker --force --if-revision "$typed_blocker_revision"
 bd dep add blocked-work blocker
 bd dep list blocked-work
 bd dep remove blocked-work blocker
@@ -318,7 +317,7 @@ bd dep add rel-supersede-source rel-supersede-target --type supersedes --id link
 bd link show links/rel-supersedes --format graph-json
 ```
 
-The higher-level `duplicate` and `supersede` commands are unavailable. To remove one of these relationship Links, read its current revision and use guarded `bd link delete --force` with `--unconditional-source`.
+The higher-level `duplicate` and `supersede` commands are unavailable. To remove one of these relationship Links, use `bd link delete LINK_ID --force`; add `--if-revision TOKEN` if you want to reject a stale deletion.
 
 ## 3. More ways to work with Issues
 
@@ -481,7 +480,7 @@ bd show epic-b --format graph-json
 bd versions epic-b --json
 ```
 
-The parent-child Link points **from the child to the parent**, so `bd link list --incident-to epic-b --direction in` finds it at the parent. Use the returned child ID to see the outgoing Link. A second child made with `--no-inherit-labels` keeps only the labels you give it. `create --parent` cannot be combined with an explicit `--id`. To delete an Issue, first remove every live Link connected to it with `bd link delete --force`, then preview `bd delete ISSUE`; the real Bead deletion needs `--force` and a current revision or an explicit unconditional guard.
+The parent-child Link points **from the child to the parent**, so `bd link list --incident-to epic-b --direction in` finds it at the parent. Use the returned child ID to see the outgoing Link. A second child made with `--no-inherit-labels` keeps only the labels you give it. `create --parent` cannot be combined with an explicit `--id`. To delete an Issue, first remove every live Link connected to it with `bd link delete --force`, then preview `bd delete ISSUE`; add `--force` to apply the Bead deletion. Use `--if-revision TOKEN` on either delete command to reject stale state.
 
 ## 4. Optional Claude Code setup
 
@@ -547,7 +546,7 @@ This list covers only the forms described above. It does not promise every optio
 | Issue work | `bd assign`, `bd close`, `bd defer`, `bd undefer`, `bd edit`, `bd note`, `bd priority`, `bd reopen`, `bd comment`, `bd count`, `bd query`, `bd search`, `bd statuses`, `bd todo` |
 | Coordination | `bd heartbeat`, `bd reclaim`, `bd unclaim`, `bd merge-slot` |
 | Graph setup and reads | `bd init` in a new workspace, `bd types`, `bd versions`, `bd compare` |
-| Link operations | `bd link create`, `list`, `show`, `count`, `versions`, `compare`, and guarded `delete` as shown above |
+| Link operations | `bd link create`, `list`, `show`, `count`, `versions`, `compare`, and `delete` as shown above |
 
 ### Commands with known limitations
 
@@ -560,14 +559,14 @@ This list covers only the forms described above. It does not promise every optio
 | `update` | A native Dependency Link has no editable properties in this preview; its kind is fixed when created, and metadata editing is unavailable. Informational Links can be updated with `bd link update links/ID`, including metadata. |
 | `update` | Issue labels, status, and category cannot be edited through `update`. Use the supported lifecycle commands for status changes. Issue text fields cannot be read from file/stdin flags; use inline text. JSON property input has its own `@FILE` and `@-` forms. |
 | `delete` | A Bead with any live Link cannot be deleted. Use `bd link delete --force` on each Link first. Deletion does not cascade to Links. |
-| `delete` | Batch deletion and `--from-file` are unavailable. To actually delete one Bead, use `--force` with either `--if-revision TOKEN` or `--unconditional`; plain `bd delete ID` only previews. |
+| `delete` | Batch deletion and `--from-file` are unavailable. Plain `bd delete ID` only previews; `--force` applies one deletion. `--if-revision TOKEN` is optional and rejects stale state. |
 | `show` | Multiple Beads or Links cannot be read in one call. Current Issue `--json` uses the ordinary Issue array; Memory, Link, and older-version reads use a graph record. |
 | `list` | There is no Link/Bead/both selector: `list` covers Beads, not Links. `--json` covers Issues only; use `--format records-json` for multiple Bead Types and `bd link list --incident-to BEAD` for incident Links. |
 | `list` | Tree output, cursor paging, and some ordinary filters and sort orders are unavailable. Output is flat and bounded. |
 | `dep` | Pair removal and `list`, `tree`, and `cycles` views cover blocking Dependencies only; they do not cover parent-child, duplicates, or supersedes relationships. |
 | `dep` | `list/tree/cycles --json`, cross-scope Dependencies, and bulk operations are unavailable. |
 | `link` | Remote and version-pinned endpoints are unavailable. Both endpoints must be unpinned Beads in the same Scope. |
-| `link create` | Use `--type` with a displayed Link choice. For Dependencies, `--type blocks` and other built-in Dependency choices work; an unrecognized choice refuses. Without `--type`, the `bd link SOURCE TARGET` shortcut creates a blocking Dependency, but `bd link create` requires `--type`. Dependency Links require two local Issues, allow only one Link per ordered Issue pair, require an explicit source guard on `link create`, and accept no custom properties or metadata. |
+| `link create` | Use `--type` with a displayed Link choice and either positional `SOURCE TARGET` or `--source SOURCE --target TARGET`. For Dependencies, `--type blocks` and other built-in Dependency choices work; an unrecognized choice refuses. Without `--type`, the `bd link SOURCE TARGET` shortcut creates a blocking Dependency, but `bd link create` requires `--type`. Dependency Links require two local Issues, allow only one Link per ordered Issue pair, and accept no custom properties or metadata. `--if-source-revision TOKEN` is optional. |
 | `dep add` | Unlike `bd link create`, its legacy `--type` option still accepts arbitrary nonempty Dependency labels up to 32 bytes. Only built-in choices have their defined behavior. This guide uses built-in choices. |
 | `link update` | Informational Link properties and metadata can be edited. Native Dependency Links refuse property and metadata updates; their kind cannot be changed. |
 | `link list`, `link count` | The current Link collection is bounded and has no cursor paging. A workspace above the read limit is refused rather than partially counted or listed. |
@@ -581,7 +580,7 @@ This list covers only the forms described above. It does not promise every optio
 | `state` | Setting state labels is unavailable; `state` reads them. |
 | `ready`, `blocked`, `status` | Some ordinary options are unavailable. In particular, `blocked --parent` is unavailable. `status --graph` describes graph capabilities, not Issue statuses. |
 | `memories` | `memories --json` is unavailable. |
-| `forget` | A Memory with a live Link cannot be deleted until the Link is removed. |
+| `forget` | A Memory with a live Link cannot be deleted until the Link is removed. Its `--help` text still mentions the removed `--unconditional` flag; the command does not accept that flag. `--if-revision` is optional. |
 
 ### Commands outside this preview
 

@@ -34,7 +34,7 @@ func runGraphPreviewCreateIssue(cmd *cobra.Command, args []string) error {
 	if beadType == graphstore.MemoryTypeURL(graphPreviewConfig.GraphScopeURL) {
 		return runGraphPreviewCreateMemory(cmd, args)
 	}
-	if err := graphPreviewFlags(cmd, "bead-type", "id", "parent", "no-inherit-labels", "title", "description", "body", "message", "type", "priority", "labels", "label", "design", "acceptance", "assignee", "estimate", "external-ref", "spec-id", "notes", "due", "metadata", "properties"); err != nil {
+	if err := graphPreviewFlags(cmd, "id", "parent", "no-inherit-labels", "title", "description", "body", "message", "type", "priority", "labels", "label", "design", "acceptance", "assignee", "estimate", "external-ref", "spec-id", "notes", "due", "metadata", "properties"); err != nil {
 		return err
 	}
 	parentSelector, _ := cmd.Flags().GetString("parent")
@@ -124,8 +124,12 @@ func runGraphPreviewCreateIssue(cmd *cobra.Command, args []string) error {
 		return graphFailure("invalid_properties", err.Error(), 2)
 	}
 	classification, _ := cmd.Flags().GetString("type")
+	nominalIssue := cmd.Flags().Changed("type") && graphPreviewNominalSelector(classification)
+	if nominalIssue {
+		classification = "task"
+	}
 	if value, ok := properties["issue_type"]; ok {
-		if cmd.Flags().Changed("type") {
+		if cmd.Flags().Changed("type") && !nominalIssue {
 			return graphFailure("invalid_properties", "Issue type was supplied by both --properties and --type", 2)
 		}
 		text, ok := value.(string)
@@ -357,14 +361,28 @@ func graphPreviewApplyIssueCreateProperties(cmd *cobra.Command, issue *types.Iss
 	return nil
 }
 
-// Nominal bead type is separate from the Issue classification selected by -t.
-// The Issue writer selects the descriptor installed for this workspace.
 func graphPreviewCreateBeadType(cmd *cobra.Command, scope string) (string, error) {
 	issueType := graphPreviewIssueTypeURL(scope)
-	if !cmd.Flags().Changed("bead-type") {
+	if !cmd.Flags().Changed("type") {
 		return issueType, nil
 	}
-	selector, _ := cmd.Flags().GetString("bead-type")
+	selector, _ := cmd.Flags().GetString("type")
+	if selector == "" {
+		return "", graphFailure("invalid_selector", "--type requires a value", 2)
+	}
+	if !graphPreviewNominalSelector(selector) {
+		classification := types.IssueType(selector).Normalize()
+		if !classification.IsBuiltIn() {
+			customTypes, err := resolveWorkspaceCustomTypes(getRootContext())
+			if err != nil {
+				return "", graphStorageError(err)
+			}
+			if !classification.IsValidWithCustom(customTypes) {
+				return "", graphFailure("capability_unavailable", "Issue type is not registered in this workspace: "+selector, 5)
+			}
+		}
+		return issueType, nil
+	}
 	typeURL, err := graphPreviewTypeURL(scope, selector)
 	if err != nil {
 		return "", graphFailure("invalid_selector", err.Error(), 2)
@@ -412,7 +430,7 @@ func runGraphPreviewCreateMemory(cmd *cobra.Command, args []string) error {
 // Inline text only: validate aliases and explicit presence before the ordinary
 // description helper can read stdin. Issue-only flags cannot be silently lost.
 func graphPreviewCreateMemoryInput(cmd *cobra.Command, args []string) (string, string, error) {
-	if err := graphPreviewFlags(cmd, "bead-type", "id", "title", "description", "body", "message", "metadata", "properties"); err != nil {
+	if err := graphPreviewFlags(cmd, "type", "id", "title", "description", "body", "message", "metadata", "properties"); err != nil {
 		return "", "", err
 	}
 	properties, err := graphPreviewCreateProperties(cmd)

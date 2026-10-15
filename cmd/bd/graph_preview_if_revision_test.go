@@ -75,8 +75,7 @@ func graphIfRevisionRefused(t *testing.T, bd, work, home string, wantExit int, w
 
 // Who owns --if-revision on each verb is part of the CLI contract, visible in
 // --help: upstream's definition on the four verbs it owns, the preview's own
-// on the three it does not. Only destructive preview verbs retain an explicit
-// --unconditional choice.
+// on the three it does not. Missing guards accept the current revision.
 func TestGraphPreviewIfRevisionFlagOwnership(t *testing.T) {
 	for _, cmd := range []*cobra.Command{updateCmd, deleteCmd, closeCmd, assignCmd} {
 		flag := cmd.Flags().Lookup("if-revision")
@@ -98,15 +97,9 @@ func TestGraphPreviewIfRevisionFlagOwnership(t *testing.T) {
 			t.Errorf("bd %s --if-revision claims upstream's decimal compare-and-swap meaning; usage = %q", cmd.Name(), flag.Usage)
 		}
 	}
-	for _, tc := range []struct {
-		cmd  *cobra.Command
-		want bool
-	}{
-		{updateCmd, false}, {deleteCmd, true}, {forgetCmd, true}, {rememberCmd, false}, {linkDeleteCmd, false},
-		{closeCmd, false}, {assignCmd, false},
-	} {
-		if has := tc.cmd.Flags().Lookup("unconditional") != nil; has != tc.want {
-			t.Errorf("bd %s has --unconditional = %t, want %t (fork-only flag)", tc.cmd.Name(), has, tc.want)
+	for _, command := range []*cobra.Command{updateCmd, deleteCmd, forgetCmd, rememberCmd, linkCmd, linkCreateCmd, linkUpdateCmd, linkDeleteCmd, deferCmd, undeferCmd, closeCmd, assignCmd} {
+		if command.Flags().Lookup("unconditional") != nil || command.Flags().Lookup("unconditional-source") != nil {
+			t.Errorf("bd %s still exposes a removed unconditional guard", command.Name())
 		}
 	}
 }
@@ -114,7 +107,7 @@ func TestGraphPreviewIfRevisionFlagOwnership(t *testing.T) {
 // Outside link mode the preview must stay out of the way: a stale decimal token
 // on update or delete is upstream's compare-and-swap (exit 13, nothing written),
 // not a graph-only flag refused with capability_unavailable (exit 5). What stays
-// graph-only is --unconditional and, on forget, --if-revision.
+// graph-only on forget is --if-revision.
 func TestGraphPreviewIfRevisionOutsideLinkModeIsUpstreamCAS(t *testing.T) {
 	bd := buildBDUnderTest(t)
 	work, home := t.TempDir(), t.TempDir()
@@ -176,8 +169,6 @@ func TestGraphPreviewIfRevisionOutsideLinkModeIsUpstreamCAS(t *testing.T) {
 	}
 
 	for _, args := range [][]string{
-		{"delete", id, "--force", "--unconditional"},
-		{"forget", "ifrev-key", "--unconditional"},
 		{"forget", "ifrev-key", "--if-revision", "1"},
 	} {
 		graphIfRevisionRefused(t, bd, work, home, 5, "capability_unavailable", args...)

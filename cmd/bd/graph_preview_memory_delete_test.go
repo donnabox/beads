@@ -18,7 +18,7 @@ func memoryDeleteCommand(t *testing.T, flags []string) *cobra.Command {
 	for _, name := range []string{"if-revision", "from-file"} {
 		cmd.Flags().String(name, "", "")
 	}
-	for _, name := range []string{"unconditional", "force", "dry-run", "cascade", "erase"} {
+	for _, name := range []string{"force", "dry-run", "cascade", "erase"} {
 		cmd.Flags().Bool(name, false, "")
 	}
 	if err := cmd.ParseFlags(flags); err != nil {
@@ -45,14 +45,10 @@ func TestGraphPreviewMemoryDeleteAdmission(t *testing.T) {
 		{"explicit-preview", "beads/plan", []string{"--force=false"}, false, true, 0},
 		{"guarded-preview", "beads/plan", []string{"--if-revision=observed"}, false, true, 0},
 		{"guarded-apply", "https://example.invalid/delete/beads/plan", []string{"--force", "--if-revision=observed"}, false, false, 0},
-		{"unconditional-apply", "beads/plan", []string{"--force", "--unconditional"}, false, false, 0},
 		{"forget", "beads/plan", []string{"--if-revision=observed"}, true, false, 0},
-		{"forget-unconditional", "beads/plan", []string{"--unconditional"}, true, false, 0},
-		{"missing-apply-guard", "beads/plan", []string{"--force"}, false, false, 2},
-		{"missing-forget-guard", "beads/plan", nil, true, false, 2},
-		{"both-guards", "beads/plan", []string{"--if-revision=observed", "--unconditional"}, false, false, 2},
+		{"missing-apply-guard", "beads/plan", []string{"--force"}, false, false, 0},
+		{"missing-forget-guard", "beads/plan", nil, true, false, 0},
 		{"empty-guard", "beads/plan", []string{"--if-revision="}, false, false, 2},
-		{"false-unconditional", "beads/plan", []string{"--unconditional=false"}, false, false, 2},
 		{"invalid-guard", "beads/plan", []string{"--if-revision=\xff"}, false, false, 2},
 		{"oversized-guard", "beads/plan", []string{"--if-revision=" + strings.Repeat("x", graphstore.PreviewVersionTokenLimit+1)}, false, false, 2},
 		{"foreign", "https://foreign.invalid/beads/plan", nil, false, false, 2},
@@ -63,7 +59,7 @@ func TestGraphPreviewMemoryDeleteAdmission(t *testing.T) {
 		{"file", "beads/plan", []string{"--from-file=/unread/deletions"}, false, false, 5},
 		{"dry-run", "beads/plan", []string{"--dry-run"}, false, false, 5},
 		{"erase", "beads/plan", []string{"--erase"}, false, false, 5},
-		{"forget-force", "beads/plan", []string{"--force", "--unconditional"}, true, false, 5},
+		{"forget-force", "beads/plan", []string{"--force"}, true, false, 5},
 	} {
 		t.Run(tc.name, func(t *testing.T) {
 			got, err := graphPreviewMemoryDeleteInput(memoryDeleteCommand(t, tc.flags), []string{tc.selector}, tc.forget)
@@ -92,7 +88,7 @@ func TestGraphPreviewMemoryDeleteReadonlyBeforeOpening(t *testing.T) {
 	graphPreviewConfig = &configfile.Config{GraphScopeURL: "https://example.invalid/delete/"}
 	readonlyMode, jsonOutput = true, true
 	for _, forget := range []bool{false, true} {
-		flags := []string{"--unconditional"}
+		var flags []string
 		if !forget {
 			flags = append(flags, "--force")
 		}

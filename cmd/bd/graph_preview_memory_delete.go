@@ -54,7 +54,7 @@ func runGraphPreviewDeleteMemory(cmd *cobra.Command, args []string, forget bool)
 }
 
 func graphPreviewMemoryDeleteInput(cmd *cobra.Command, args []string, forget bool) (graphstore.MemoryDeleteRequest, error) {
-	allowed := []string{"if-revision", "unconditional"}
+	allowed := []string{"if-revision"}
 	if !forget {
 		allowed = append(allowed, "force")
 	}
@@ -70,7 +70,7 @@ func graphPreviewMemoryDeleteInput(cmd *cobra.Command, args []string, forget boo
 	}
 	force, _ := cmd.Flags().GetBool("force")
 	preview := !forget && !force
-	revision, unconditional, err := graphPreviewRevisionGuard(cmd, false, !preview)
+	revision, unconditional, err := graphPreviewRevisionGuard(cmd, false)
 	if err != nil {
 		return graphstore.MemoryDeleteRequest{}, err
 	}

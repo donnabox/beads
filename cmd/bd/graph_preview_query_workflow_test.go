@@ -37,7 +37,7 @@ func TestGraphPreviewQueryWorkflow(t *testing.T) {
 			}
 			list := func(extra ...string) graphstore.IssueListPage {
 				t.Helper()
-				args := append([]string{"list", "--format", "records-json", "--bead-type", "types/preview-issue"}, extra...)
+				args := append([]string{"list", "--format", "records-json", "--type", "types/preview-issue"}, extra...)
 				return graphMixedResult[graphstore.IssueListPage](t, graphPolicyCLI(t, bd, work, home, nil, "", args...))
 			}
 			beads := func(extra ...string) ([]graphListedBead, bool) {
@@ -63,7 +63,7 @@ func TestGraphPreviewQueryWorkflow(t *testing.T) {
 			call("create", "Gate", "--id", "beads/gate", "--priority", "2")
 			related := scope + "types/preview-related"
 			for _, edge := range [][3]string{{"plan", "context", "context"}, {"plan", "work", "work"}, {"context", "gate", "gate"}} {
-				call("link", "beads/"+edge[0], "beads/"+edge[1], "--id", "links/"+edge[2], "--resource-type", related, "--unconditional-source")
+				call("link", "beads/"+edge[0], "beads/"+edge[1], "--id", "links/"+edge[2], "--type", related)
 			}
 			dep := graphMixedResult[graphstore.DependencyResult](t, call("dep", "add", "beads/work", "beads/gate"))
 			graphPolicyCLI(t, bd, work, home, nil, "invalid_properties", "ready", "--label=", "--json")
@@ -161,16 +161,16 @@ func TestGraphPreviewQueryWorkflow(t *testing.T) {
 			if !more || !reflect.DeepEqual(firstPage, allBeads[:2]) {
 				t.Fatalf("bounded mixed Bead inventory: %+v more=%t", firstPage, more)
 			}
-			memories, more := beads("--bead-type", "types/preview-memory", "--all")
+			memories, more := beads("--type", "types/preview-memory", "--all")
 			if more || len(memories) != 2 || !graphListNewestFirst(t, memories) || !slices.Equal(sortedIDs(memories), []string{scope + "beads/context", scope + "beads/plan"}) {
 				t.Fatalf("Memory Type filter: %+v more=%t", memories, more)
 			}
 			if got := graphPolicyCLI(t, bd, work, home, nil, "", "list", "--all"); !strings.Contains(got, "Beads (4;") || !strings.Contains(got, "Memory") || !strings.Contains(got, "Issue") || strings.Contains(got, "private-memory-body") {
 				t.Fatalf("mixed human inventory omitted kind or leaked Memory body: %s", got)
 			}
-			graphPolicyCLI(t, bd, work, home, nil, "capability_unavailable", "list", "--bead-type", "types/preview-related", "--format", "records-json")
-			graphPolicyCLI(t, bd, work, home, nil, "capability_unavailable", "list", "--bead-type", "types/uninstalled", "--format", "records-json")
-			graphPolicyCLI(t, bd, work, home, nil, "capability_unavailable", "list", "--bead-type", "types/preview-memory", "--status", "open", "--format", "records-json")
+			graphPolicyCLI(t, bd, work, home, nil, "capability_unavailable", "list", "--type", "types/preview-related", "--format", "records-json")
+			graphPolicyCLI(t, bd, work, home, nil, "capability_unavailable", "list", "--type", "types/uninstalled", "--format", "records-json")
+			graphPolicyCLI(t, bd, work, home, nil, "capability_unavailable", "list", "--type", "types/preview-memory", "--status", "open", "--format", "records-json")
 
 			page := list("--limit", "1", "--sort", "priority")
 			if len(page.Items) != 1 || page.Items[0].ID != scope+"beads/work" || !page.HasMore {
