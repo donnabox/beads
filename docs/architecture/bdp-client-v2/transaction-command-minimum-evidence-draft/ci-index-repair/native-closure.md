@@ -11,3 +11,13 @@ Full cumulative source audit found no other stale absolute row-index expectation
 The original CI failure remains retained and cannot be called green: exact a912 run38702665285/job116314371322 concludedfailure after974s, with9289pass/1fail/1skip and768.20s suite. The single failure was the corrected stale index, not a timeout; preflight, smoke and Read seal CI steps were skipped. All other cases passing in that run does not prove successor CI success. Raw log SHA4a00cff967662d5d21d630feb217439d58719b1f8642adf4b1f885aba83212ca. Full diagnosis at ../landing/ci-outcome.md SHAa14b91982d91e72d65b4ea2a122ec41202db733fe95a92dc36dd853d52d1b6ce.
 
 Required next evidence remains the focused actual four-case repair validation, actual supplemental review, ordinary successor identity and successful exact-head CI. No unchanged retry or budget increase is justified.
+
+## Actual focused validation addendum
+
+Read the completed root validation records and verified their log hashes, exact selected path/fullNames and actual result JSON. Typecheck exit0/1.721s, format-check exit0/0.605s, four-static exit0/0.444s; no timeout and no reported remaining group. Exactly the four proposed callbacks passed,36 skipped, no unhandled errors. Results SHA18471aee494122fbe8cd6779286949c46c27c1ec90d327ecc7accfea38cbed83; validation summary SHA7b04b77871d7143db606beca3ffa275274701d8e06b5fdee621d1399a6e1c40b. Actual failed-index successor callback now reaches and passes its later content assertions.
+
+Independent ps check at2026-10-15T08:21:38.181518Z found no process or process group39944,39981,40012. Only node-compile-cache remains in validation tmp. This supervisor retains group absence rather than exhaustive short-lived descendant history; do not overclaim.
+
+Reverified eleven unchanged original path hashes and that the sole working diff is the reviewed test line. Conformance build tsconfig excludes src/**/*.test.ts. No package/build configuration or production input changed; independently rehashed all312 retained V3 build inventory files unchanged. Original installed evidence remains attributed to a912c23f and its actual payload; no new installed execution occurred and no new source commit is fabricated for it. New successor full CI and actual supplemental review are still required.
+
+Future sequence-row planning must explicitly include this pagination-order callback in its static selection (the prior seven-case plan becomes eight if the new row shifts it), and review all ordering expectations against the actual merged parent. This is planning guidance, not authorization or an automatic plan-file edit.

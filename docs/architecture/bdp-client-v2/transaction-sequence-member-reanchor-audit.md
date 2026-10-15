@@ -48,3 +48,13 @@ Evidence root installed summary: `/Users/dbox/repos/wt/vickie/bdp-integration-lo
 Evidence fanout source audit: `/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-command-minimum-evidence-draft/claude-context-header-source-audit.md`, SHA256 `baaa0d54553c840472e5d86c73cff847f590d6475c0a0b4a9ff62a35c48ac5f3`.
 
 Root follow-up during this audit explicitly accepts the ten-action narrowing: independent receipts/effect positions plus Events prove terminal independence; no Changes-group enumeration. This settles that planning choice without expanding scope/bounds or releasing authoring. Actual merge/CI pins and Claude review remain pending.
+
+## Subsequent PR126 CI-index correction — reanchor remains paused
+
+After the audit above, actual PR126 CI38702665285 failed one existing cumulative callback: `pins the one-page matched-plus-updated witness without advertised-limit or other-outcome credit`, line1011 expected index9 but current canonical order places receipt.pagination at10. Root applied exactly9→10, cumulative source SHA22a568820ab2abc187d37c27658fdcf6e5ad39e74e2172374e3658c180f7668e, patchfdd1944a044a091ebe0bf0c81a88376e7c0dfc56b163064a9f6999333164d647 against a912. All other eleven paths remain unchanged. The earlier actual installed220HTTP/28children remains attributed to a912, not a new run on the correction.
+
+Actual focused Claude supplement completed exit0/source unchanged in36.70s, stdout87caa5bc6cbde8e46cbe7b01932875d68c2747a36163f2feb9fd723bfdae5de5, no blocking finding. It independently confirms zero-based index10 and retained order/action/hash/semantic checks. Root's four static callbacks and any successor CI/merge outcome are not inferred by this note.
+
+The earlier four-file-equality statement was correct for a912 but must not be copied unchanged to a successor: cumulative now differs by that one index pin. Preserve the original audit as transaction-sequence-member-reanchor-audit-before-ci-index.md. Await actual successor commit/tree, exact-head CI and merged parent before v4 reanchor.
+
+Readiness selection correction: include this existing pagination callback as the eighth static callback for the next row-insertion slice if its index is shifted; explicitly re-evaluate its canonical position even if the new sequence row sorts later. This is one CPU-only existing callback, no additional wire/listener/child and no assertion weakening. The v3 seven-callback selection and closure75975009 remain historical; proposed v4 must identify this bounded selection addition, without altering ten actions, negative oracle, four installed cohorts or any runtime limit.
