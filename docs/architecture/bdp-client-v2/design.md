@@ -62,9 +62,19 @@ Original service-review lows: RU trusted callback capability narrowing and publi
 
 ### Live worker ledger
 
-Checkpoint 2026-10-15T08:25:30Z. **ACTIVE — Transactional first, with shared and targeted Read+Update work.** Session `2026-10-08T20:26:35Z-81e5`. The operator resumed at home; earlier travel/battery/budget pauses are superseded. Claude access is restored. Heartbeat remains active. Public write profiles are not advertised and cumulative delivery predicates remain unmet.
+Checkpoint 2026-10-15T08:43:10Z. **ACTIVE — Transactional first, with shared and targeted Read+Update work.** Session `2026-10-08T20:26:35Z-81e5`. The operator resumed at home; earlier travel/battery/budget pauses are superseded. Claude access is restored. Heartbeat remains active. Public write profiles are not advertised and cumulative delivery predicates remain unmet.
 
 Main merges are authorized after exact-head green CI, native Codex plus actual Claude review, disposition of actionable findings, scope/ordinary ancestry checks and actual merged-tree verification. Gemini is excluded. No release or Preview2 promotion; do not edit Janet CLI/staging/playgrounds/shared databases or Trish Type work. The active completion plan above remains authoritative; this ledger records execution state.
+
+### Current verified main and active next slice
+
+**PR126 is merged and tree-verified at main88c9408e908590ab1a4c64c9b9dee1a8b705999c**, treeb2d9f2c18502e0778c51123be8b4564af052d803, ordered parents453b6dab+01a247b2. [Actual merge verification](transaction-command-minimum-evidence-draft/landing-successor/postmerge-verification.json) agrees with the fetched Git commit and exact tested tree. [Root landing acceptance](transaction-command-minimum-evidence-draft/landing-successor/root-landing-acceptance.json) binds scope, native/actual Claude review dispositions, preserved installed evidence and exact green CI. No release or profile activation.
+
+Exact successor CI38705226698/job116322877081 passed9290tests/1skip/173files,7preflight, installed smoke and unchanged89-row Read gate. [Complete CI report](transaction-command-minimum-evidence-draft/landing-successor/ci-outcome.md), SHA261f66cc, binds rawlogf187f3c3 and syntheticd8431542. Suite771.73s; job987s with observed213s margin under unchanged1200s. This is observed margin, not a future throughput guarantee. Originala912 failedCI remains failure; earlierfreshinstalled220HTTP/28children remains attributeda912 with unchanged product/build bytes. The successor repair changes only the stale pagination index9to10.
+
+Next: [sequence-member plan v4](transaction-sequence-member-plan-v4.md), SHA45acc3ab, narrows to ten actual actions proving success/failure/success, three retained receipt GETs and no-effect replay; no complete Changes-group claim. Root read the full plan and companion. [Native v4 review](transaction-sequence-member-plan-v4-native-review.md), SHAe748a785, finds no blocker and discloses earlier v2/v3 planning overlap. Actual Claude conditional-plan review is running since08:35:11Z PID42615 with900s deadline; exact review source01a247b2 and frozen v4 remain unchanged. Worker cross_carrier_plan_v2_review owns only this review/reanchor; cross_carrier_native_review prepares actual merged-parent28raw-object/hash evidence; update_implementation is idle after native review. Authoring remains unreleased until full actual review disposition, merged-parent reanchor and measured bounds. Existing eight staticcallbacks/fourcohorts623expected632maxHTTP71children remain planned, not executed. Public profiles remain unsupported/unadvertised.
+
+The following sections preserve the predecessor chronology. Their pending statements are historical and superseded by the current state above.
 
 ### Previous verified main: PR124
 
