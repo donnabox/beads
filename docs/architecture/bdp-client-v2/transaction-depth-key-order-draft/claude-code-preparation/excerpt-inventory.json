@@ -1,0 +1,209 @@
+[
+  {
+    "path": "packages/server/src/transaction-batch.ts",
+    "startLine": 1,
+    "endLine": 237,
+    "purpose": "Imports, brand, Resource parser and all direct strict/receiving preparation functions",
+    "sourceSha256": "70d941d416979edd54e250d51318cfb7e5d4ddb315ea6131de7ca5f56e98a014",
+    "excerptSha256": "47a54f25b47d16e6d7c175ed1d35448e886d9474f3a4da603656c55d1c025fcc",
+    "bytes": 9562
+  },
+  {
+    "path": "packages/server/src/transaction-batch.ts",
+    "startLine": 259,
+    "endLine": 274,
+    "purpose": "Unchanged strict sequence entry: complete syntax and depth gate before member construction; remainder summarized below",
+    "sourceSha256": "70d941d416979edd54e250d51318cfb7e5d4ddb315ea6131de7ca5f56e98a014",
+    "excerptSha256": "636f424a141eef5a8c3a9990c6e7276fd5aba38fab4113f6a3e0594153048229",
+    "bytes": 758
+  },
+  {
+    "path": "packages/server/src/transaction-batch.ts",
+    "startLine": 442,
+    "endLine": 539,
+    "purpose": "NormalizedTransaction state and complete retained normalizer",
+    "sourceSha256": "70d941d416979edd54e250d51318cfb7e5d4ddb315ea6131de7ca5f56e98a014",
+    "excerptSha256": "02d3c83392761dd00ecce0645eabe2ef13af1fcb3f99cf72e007551f0d4d7bcd",
+    "bytes": 4494
+  },
+  {
+    "path": "packages/server/src/transaction-set.ts",
+    "startLine": 1,
+    "endLine": 63,
+    "purpose": "Complete existing iterative serializer and depth checker",
+    "sourceSha256": "03b1ca9427c6963f5b6ce712a7f70540501e081ed635c742015d2bc49cc9524a",
+    "excerptSha256": "ab828016611fe4f59f46f2b5ed4d48ed9779b31004f9d9a9dc7d8425b99e8cf3",
+    "bytes": 2661
+  },
+  {
+    "path": "packages/server/src/transaction-store.ts",
+    "startLine": 123,
+    "endLine": 161,
+    "purpose": "Complete admission/receiving unions and controls snapshot; changed depth import is in patch",
+    "sourceSha256": "fcd6882b29e538db45867c894c06dfbaa6ca588db0c2e403ef1b7abb14f6c706",
+    "excerptSha256": "276d3ed28a74206cb0a733d70f4b575a69b423755f095cdc3a2ae7dbe498efa4",
+    "bytes": 1593
+  },
+  {
+    "path": "packages/server/src/transaction-store.ts",
+    "startLine": 416,
+    "endLine": 504,
+    "purpose": "Complete metadata/row/receipt/expiry helpers",
+    "sourceSha256": "fcd6882b29e538db45867c894c06dfbaa6ca588db0c2e403ef1b7abb14f6c706",
+    "excerptSha256": "08cfd0b8d31b426dc9a09f5ac4dd4ae83b96926ffd424ec6a9fa85261b39d759",
+    "bytes": 4056
+  },
+  {
+    "path": "packages/server/src/transaction-store.ts",
+    "startLine": 592,
+    "endLine": 603,
+    "purpose": "Complete same-entry readContext",
+    "sourceSha256": "fcd6882b29e538db45867c894c06dfbaa6ca588db0c2e403ef1b7abb14f6c706",
+    "excerptSha256": "4d3a48638a40e1174834d09b5688d9ea18c3acb00ecc220c42fe54e87ed1c497",
+    "bytes": 534
+  },
+  {
+    "path": "packages/server/src/transaction-store.ts",
+    "startLine": 1031,
+    "endLine": 1133,
+    "purpose": "Complete internal admitKey overloads and implementation",
+    "sourceSha256": "fcd6882b29e538db45867c894c06dfbaa6ca588db0c2e403ef1b7abb14f6c706",
+    "excerptSha256": "3212f32db9c198613c76d8e5e06541b83986cbe25715aac862b2ea0867097c84",
+    "bytes": 4152
+  },
+  {
+    "path": "packages/server/src/transaction-store.ts",
+    "startLine": 1387,
+    "endLine": 1463,
+    "purpose": "Complete public admit overloads and implementation",
+    "sourceSha256": "fcd6882b29e538db45867c894c06dfbaa6ca588db0c2e403ef1b7abb14f6c706",
+    "excerptSha256": "c4ecc87992855c9fde4accd28739276feee2f6416e8531b6230d44376a8bd427",
+    "bytes": 2931
+  },
+  {
+    "path": "packages/server/src/transaction-store.ts",
+    "startLine": 1997,
+    "endLine": 2011,
+    "purpose": "Complete retract method",
+    "sourceSha256": "fcd6882b29e538db45867c894c06dfbaa6ca588db0c2e403ef1b7abb14f6c706",
+    "excerptSha256": "000af37e4821fd7942bc9e8a7db0bd69c1e33566aaf17ef1bbd7fb8096401e1c",
+    "bytes": 512
+  },
+  {
+    "path": "packages/server/src/transaction-comparison.ts",
+    "startLine": 1,
+    "endLine": 73,
+    "purpose": "Complete comparison loop/derived union",
+    "sourceSha256": "3c5f9025675f506e08a9977ab0d1551a3a996669fd11b99772b1c2a39209998d",
+    "excerptSha256": "3c5f9025675f506e08a9977ab0d1551a3a996669fd11b99772b1c2a39209998d",
+    "bytes": 3236
+  },
+  {
+    "path": "packages/server/src/transaction-submission.ts",
+    "startLine": 1,
+    "endLine": 212,
+    "purpose": "Complete final submission imports/types/function",
+    "sourceSha256": "4336e45d7b4f90eec685b70c7ba059219954bb20271aa2c942ee9e140f0743af",
+    "excerptSha256": "4336e45d7b4f90eec685b70c7ba059219954bb20271aa2c942ee9e140f0743af",
+    "bytes": 7431
+  },
+  {
+    "path": "packages/server/src/transaction-http.ts",
+    "startLine": 79,
+    "endLine": 87,
+    "purpose": "Complete empty response helper",
+    "sourceSha256": "b51d02801e5924190aba77c377e538db0b8619149d6184e19cb56d440f40c2cf",
+    "excerptSha256": "6148be2ce57383f70bd92dcf080d60658ef56cb9b21c467b869e2cf962304f90",
+    "bytes": 234
+  },
+  {
+    "path": "packages/server/src/transaction-http.ts",
+    "startLine": 139,
+    "endLine": 143,
+    "purpose": "Complete developmentGap response helper",
+    "sourceSha256": "b51d02801e5924190aba77c377e538db0b8619149d6184e19cb56d440f40c2cf",
+    "excerptSha256": "91892057f2bfcced21197996f7e271297d06172d0a203ca316c98a9a9f8d29e7",
+    "bytes": 169
+  },
+  {
+    "path": "packages/server/src/transaction-http.ts",
+    "startLine": 335,
+    "endLine": 361,
+    "purpose": "Contextual direct observed submission and exact development-result mapping",
+    "sourceSha256": "b51d02801e5924190aba77c377e538db0b8619149d6184e19cb56d440f40c2cf",
+    "excerptSha256": "9aee40f224225e72eafdf1f76b2f426715eef059557f16ecb83ee0e4f8c0a0f6",
+    "bytes": 1348
+  },
+  {
+    "path": "packages/server/src/transaction-service.ts",
+    "startLine": 514,
+    "endLine": 533,
+    "purpose": "Complete observed service submit method",
+    "sourceSha256": "53f655faf494209996aac2e0f93a4c2c785e471f66aac6af9ea41f92c9cfbe00",
+    "excerptSha256": "9baeebb5256e36b538e49c7f148be1e1a3f4c128659b40af14f211bd009a5ac8",
+    "bytes": 967
+  },
+  {
+    "path": "packages/server/src/transaction-submission.test.ts",
+    "startLine": 1,
+    "endLine": 106,
+    "purpose": "Complete source B/C fixture, input and dependency helpers",
+    "sourceSha256": "86342bc18126965f380d0e09218481eceac4a8396afb4543dd7e11d464fd1976",
+    "excerptSha256": "2c719c909ddf8c4640c5e90f6cd5f378aa68899653a6ac0c03f66b1f0b390725",
+    "bytes": 3556
+  },
+  {
+    "path": "packages/server/src/transaction-http.test.ts",
+    "startLine": 1,
+    "endLine": 177,
+    "purpose": "Complete source H imports/validators/fixture/cleanup contract; no full test-file repetition",
+    "sourceSha256": "1c9cd7c7c85a5f6a58253f4178e40453a2443a218408eeba9abfddde4bf7948d",
+    "excerptSha256": "49a580fbf924a673597e9716d12e8e5938cbda827d9478c8022c7975e89038e7",
+    "bytes": 6220
+  },
+  {
+    "path": "apps/bdptest/test-support/transactional-execution-binding.ts",
+    "startLine": 1,
+    "endLine": 91,
+    "purpose": "Complete installedTransactionBinding imports/function",
+    "sourceSha256": "cde506c72a8710eafe58522900f6db70ed3701cf333560252dc8e7c5e706cf89",
+    "excerptSha256": "23390a4ee0460703e809d54794ce759a67d7d0864af34ad2b762cbab908987dd",
+    "bytes": 2956
+  },
+  {
+    "path": "scripts/transaction-installed-observation.mjs",
+    "startLine": 1,
+    "endLine": 97,
+    "purpose": "Complete installed child launcher and cleanup",
+    "sourceSha256": "6f772f3776d3c3effa788676d853cc2932a6ee59ad63ac3338ad1b487408914b",
+    "excerptSha256": "6f772f3776d3c3effa788676d853cc2932a6ee59ad63ac3338ad1b487408914b",
+    "bytes": 3264
+  },
+  {
+    "path": "docs/specs/bdp.md",
+    "startLine": 4515,
+    "endLine": 4565,
+    "purpose": "Normative ordered transactional receiving requirements",
+    "sourceSha256": "f036103ffdf5f89fa3a2033570e1e987c4cd203cd80b1c633cb44615123f892e",
+    "excerptSha256": "061390aa076b0a7df78fdac256ecc3fe142b4741e813c0bf43235e6b2daa8eb8",
+    "bytes": 3337
+  },
+  {
+    "path": "docs/specs/bdp.md",
+    "startLine": 2212,
+    "endLine": 2217,
+    "purpose": "Metadata schema constraint",
+    "sourceSha256": "f036103ffdf5f89fa3a2033570e1e987c4cd203cd80b1c633cb44615123f892e",
+    "excerptSha256": "59916b8d83e9107c04824ba4136b9879d736305cd08fe5d52d766aa06bb1d4fb",
+    "bytes": 379
+  },
+  {
+    "path": "packages/server/package.json",
+    "startLine": 1,
+    "endLine": 27,
+    "purpose": "Actual server package exports",
+    "sourceSha256": "110e00c403c667d8c848c6280b2e98c47f98f134158a621967d889914d44632e",
+    "excerptSha256": "110e00c403c667d8c848c6280b2e98c47f98f134158a621967d889914d44632e",
+    "bytes": 495
+  }
+]
