@@ -1,0 +1,55 @@
+{
+  "status": "PROSPECTIVE",
+  "sourcePositive": {
+    "cases": 14,
+    "http": 68,
+    "ownerOpens": 16,
+    "directories": 14,
+    "listeners": 6,
+    "readonlyInventoryHandles": 2
+  },
+  "combined": {
+    "caseExecutions": 16,
+    "httpExpected": 95,
+    "httpMaximum": 95,
+    "ownerOpens": 18,
+    "directories": 16,
+    "listeners": 8,
+    "productChildren": 1,
+    "readonlyInventoryHandles": 2
+  },
+  "fixtures": {
+    "pages": {
+      "prefix": "bdp-page-owner-",
+      "path": "packages/server/src/transaction-receipt-pages.test.ts",
+      "existingAfterEach": "reverse cleanup; owner close callback catches close errors historically; no new cleanup-proof claim"
+    },
+    "service": {
+      "prefix": "bdp-tx-service-",
+      "path": "packages/server/src/transaction-service.test.ts",
+      "newFacade": "one real owner; one service.close registered after creation; existing fixture owner.close also idempotent; no extra open"
+    },
+    "http": {
+      "prefix": "bdp-tx-http-",
+      "path": "packages/server/src/transaction-http.test.ts",
+      "newLocal": "cleanup.length captured before startup; finally splice only new callbacks/reverse/drain each with individual catch; aggregate with primary; shared hook sees no new callbacks",
+      "existingCallbacks": "existing shared hook not rewritten; source fixture expected lifetime count is model, supervisor must verify process/temp absence"
+    },
+    "installed": {
+      "prefix": "bdp-receipt-missing-context-installed-",
+      "child": 1,
+      "close": "await child.close with separate catch; attempt rm even after close error; existsSync directory absence recorded; independently check PID absence"
+    }
+  },
+  "timers": {
+    "newHttpAndInstalledCohortMs": 45000,
+    "perExchangeMs": 5000,
+    "testMs": 60000,
+    "supervisorMs": 120000,
+    "launcherReadyMs": 10000,
+    "launcherCloseMs": 10000,
+    "noAdditiveDeadlineGuarantee": true
+  },
+  "existingBoundsUnchanged": true,
+  "noRuntimeExecution": true
+}

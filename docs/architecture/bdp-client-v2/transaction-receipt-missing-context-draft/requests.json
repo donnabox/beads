@@ -1,0 +1,403 @@
+{
+  "status": "SOURCE_DERIVED_PROSPECTIVE_NOT_EXECUTED",
+  "sourceHttp": {
+    "requests": [
+      {
+        "ordinal": 1,
+        "method": "POST",
+        "url": "$runtime.targets.batch",
+        "credential": "writer",
+        "expectedStatus": 200,
+        "body": "{\"operations\":[{\"operation\":\"createBead\",\"id\":\"beads/a\",\"type\":\"https://example.test/bead\",\"properties\":{\"title\":\"a\"}},{\"operation\":\"createBead\",\"id\":\"beads/b\",\"type\":\"https://example.test/bead\",\"properties\":{\"title\":\"b\"}},{\"operation\":\"createBead\",\"id\":\"beads/c\",\"type\":\"https://example.test/bead\",\"properties\":{\"title\":\"c\"}}]}",
+        "bodyBytes": 328,
+        "bodySha256": "4e9256ce53649e8860263e8c5a2d1e0fa8d86979a8ecccb1d053fbc4b841b480"
+      },
+      {
+        "ordinal": 2,
+        "method": "GET",
+        "url": "$receipt.next",
+        "credential": "writer",
+        "expectedStatus": 200,
+        "body": null,
+        "bodyBytes": 0,
+        "bodySha256": null
+      },
+      {
+        "ordinal": 3,
+        "method": "GET",
+        "url": "$unknownRoot",
+        "credential": "writer",
+        "expectedStatus": 404,
+        "body": null,
+        "bodyBytes": 0,
+        "bodySha256": null
+      },
+      {
+        "ordinal": 4,
+        "method": "HEAD",
+        "url": "$unknownRoot",
+        "credential": "writer",
+        "expectedStatus": 404,
+        "body": null,
+        "bodyBytes": 0,
+        "bodySha256": null
+      },
+      {
+        "ordinal": 5,
+        "method": "GET",
+        "url": "$receipt.id",
+        "credential": "other",
+        "expectedStatus": 404,
+        "body": null,
+        "bodyBytes": 0,
+        "bodySha256": null
+      },
+      {
+        "ordinal": 6,
+        "method": "HEAD",
+        "url": "$receipt.id",
+        "credential": "other",
+        "expectedStatus": 404,
+        "body": null,
+        "bodyBytes": 0,
+        "bodySha256": null
+      },
+      {
+        "ordinal": 7,
+        "method": "GET",
+        "url": "$receipt.next",
+        "credential": "other",
+        "expectedStatus": 404,
+        "body": null,
+        "bodyBytes": 0,
+        "bodySha256": null
+      },
+      {
+        "ordinal": 8,
+        "method": "HEAD",
+        "url": "$receipt.next",
+        "credential": "other",
+        "expectedStatus": 404,
+        "body": null,
+        "bodyBytes": 0,
+        "bodySha256": null
+      },
+      {
+        "ordinal": 9,
+        "method": "POST",
+        "url": "$runtime.targets.createBead",
+        "credential": "writer",
+        "expectedStatus": 200,
+        "body": "{\"id\":\"beads/later\",\"type\":\"https://example.test/bead\",\"properties\":{\"title\":\"later\"}}",
+        "bodyBytes": 86,
+        "bodySha256": "985559ccf21995ee5dacbaf7d14f9a55b6078181f3f4f258b668c5ba5191e4c6"
+      },
+      {
+        "ordinal": 10,
+        "method": "GET",
+        "url": "$receipt.id",
+        "credential": "other",
+        "expectedStatus": 404,
+        "body": null,
+        "bodyBytes": 0,
+        "bodySha256": null
+      },
+      {
+        "ordinal": 11,
+        "method": "GET",
+        "url": "$receipt.next",
+        "credential": "other",
+        "expectedStatus": 404,
+        "body": null,
+        "bodyBytes": 0,
+        "bodySha256": null
+      },
+      {
+        "ordinal": 12,
+        "method": "GET",
+        "url": "$receipt.id",
+        "credential": "anonymous",
+        "expectedStatus": 401,
+        "body": null,
+        "bodyBytes": 0,
+        "bodySha256": null
+      },
+      {
+        "ordinal": 13,
+        "method": "HEAD",
+        "url": "$receipt.next",
+        "credential": "anonymous",
+        "expectedStatus": 401,
+        "body": null,
+        "bodyBytes": 0,
+        "bodySha256": null
+      }
+    ],
+    "totalRequestBodyBytes": 414,
+    "maximumRequestBodyBytes": 328,
+    "responseBodyCap": 32768,
+    "redirect": "error"
+  },
+  "installed": {
+    "path": "apps/bdptest/src/transactional-receipt-missing-context-installed.test.ts",
+    "fullName": "observes genuine installed receipt root and page absence context at current heads",
+    "requests": [
+      {
+        "ordinal": 1,
+        "method": "POST",
+        "url": "https://reference.invalid/acme/operations/batch",
+        "expectedStatus": 200,
+        "credential": "writer",
+        "accept": "application/json",
+        "expectedContext": "pos-1",
+        "urlAuthority": "literal owned canonical operation/diagnostic root",
+        "body": "{\"operations\":[{\"operation\":\"createBead\",\"id\":\"beads/r00\",\"type\":\"https://reference.invalid/acme/types/task\",\"properties\":{\"n\":0}},{\"operation\":\"createBead\",\"id\":\"beads/r01\",\"type\":\"https://reference.invalid/acme/types/task\",\"properties\":{\"n\":0}},{\"operation\":\"createBead\",\"id\":\"beads/r02\",\"type\":\"https://reference.invalid/acme/types/task\",\"properties\":{\"n\":0}},{\"operation\":\"createBead\",\"id\":\"beads/r03\",\"type\":\"https://reference.invalid/acme/types/task\",\"properties\":{\"n\":0}},{\"operation\":\"createBead\",\"id\":\"beads/r04\",\"type\":\"https://reference.invalid/acme/types/task\",\"properties\":{\"n\":0}},{\"operation\":\"createBead\",\"id\":\"beads/r05\",\"type\":\"https://reference.invalid/acme/types/task\",\"properties\":{\"n\":0}},{\"operation\":\"createBead\",\"id\":\"beads/r06\",\"type\":\"https://reference.invalid/acme/types/task\",\"properties\":{\"n\":0}},{\"operation\":\"createBead\",\"id\":\"beads/r07\",\"type\":\"https://reference.invalid/acme/types/task\",\"properties\":{\"n\":0}},{\"operation\":\"createBead\",\"id\":\"beads/r08\",\"type\":\"https://reference.invalid/acme/types/task\",\"properties\":{\"n\":0}},{\"operation\":\"createBead\",\"id\":\"beads/r09\",\"type\":\"https://reference.invalid/acme/types/task\",\"properties\":{\"n\":0}},{\"operation\":\"createBead\",\"id\":\"beads/r10\",\"type\":\"https://reference.invalid/acme/types/task\",\"properties\":{\"n\":0}},{\"operation\":\"createBead\",\"id\":\"beads/r11\",\"type\":\"https://reference.invalid/acme/types/task\",\"properties\":{\"n\":0}},{\"operation\":\"createBead\",\"id\":\"beads/r12\",\"type\":\"https://reference.invalid/acme/types/task\",\"properties\":{\"n\":0}},{\"operation\":\"createBead\",\"id\":\"beads/r13\",\"type\":\"https://reference.invalid/acme/types/task\",\"properties\":{\"n\":0}},{\"operation\":\"createBead\",\"id\":\"beads/r14\",\"type\":\"https://reference.invalid/acme/types/task\",\"properties\":{\"n\":0}},{\"operation\":\"createBead\",\"id\":\"beads/r15\",\"type\":\"https://reference.invalid/acme/types/task\",\"properties\":{\"n\":0}},{\"operation\":\"createBead\",\"id\":\"beads/r16\",\"type\":\"https://reference.invalid/acme/types/task\",\"properties\":{\"n\":0}},{\"operation\":\"createBead\",\"id\":\"beads/r17\",\"type\":\"https://reference.invalid/acme/types/task\",\"properties\":{\"n\":0}},{\"operation\":\"createBead\",\"id\":\"beads/r18\",\"type\":\"https://reference.invalid/acme/types/task\",\"properties\":{\"n\":0}},{\"operation\":\"createBead\",\"id\":\"beads/r19\",\"type\":\"https://reference.invalid/acme/types/task\",\"properties\":{\"n\":0}},{\"operation\":\"createBead\",\"id\":\"beads/r20\",\"type\":\"https://reference.invalid/acme/types/task\",\"properties\":{\"n\":0}},{\"operation\":\"createBead\",\"id\":\"beads/r21\",\"type\":\"https://reference.invalid/acme/types/task\",\"properties\":{\"n\":0}},{\"operation\":\"createBead\",\"id\":\"beads/r22\",\"type\":\"https://reference.invalid/acme/types/task\",\"properties\":{\"n\":0}},{\"operation\":\"createBead\",\"id\":\"beads/r23\",\"type\":\"https://reference.invalid/acme/types/task\",\"properties\":{\"n\":0}},{\"operation\":\"createBead\",\"id\":\"beads/r24\",\"type\":\"https://reference.invalid/acme/types/task\",\"properties\":{\"n\":0}},{\"operation\":\"createBead\",\"id\":\"beads/r25\",\"type\":\"https://reference.invalid/acme/types/task\",\"properties\":{\"n\":0}},{\"operation\":\"createBead\",\"id\":\"beads/r26\",\"type\":\"https://reference.invalid/acme/types/task\",\"properties\":{\"n\":0}},{\"operation\":\"createBead\",\"id\":\"beads/r27\",\"type\":\"https://reference.invalid/acme/types/task\",\"properties\":{\"n\":0}},{\"operation\":\"createBead\",\"id\":\"beads/r28\",\"type\":\"https://reference.invalid/acme/types/task\",\"properties\":{\"n\":0}},{\"operation\":\"createBead\",\"id\":\"beads/r29\",\"type\":\"https://reference.invalid/acme/types/task\",\"properties\":{\"n\":0}},{\"operation\":\"createBead\",\"id\":\"beads/r30\",\"type\":\"https://reference.invalid/acme/types/task\",\"properties\":{\"n\":0}},{\"operation\":\"createBead\",\"id\":\"beads/r31\",\"type\":\"https://reference.invalid/acme/types/task\",\"properties\":{\"n\":0}}]}",
+        "bodyBytes": 3728,
+        "bodySha256": "aea2842b2d004b0483dd756a9e6f97c829883956b56e7f508295572392c9a3b6",
+        "idempotencyKey": "receipt-context-seed",
+        "contentType": "application/json"
+      },
+      {
+        "ordinal": 2,
+        "method": "POST",
+        "url": "https://reference.invalid/acme/operations/update-where",
+        "expectedStatus": 200,
+        "credential": "writer",
+        "accept": "application/json",
+        "expectedContext": "pos-2",
+        "urlAuthority": "literal owned canonical operation/diagnostic root",
+        "body": "{\"collection\":\"beads\",\"selector\":\"$[?@.type == \\\"https://reference.invalid/acme/types/task\\\"]\",\"cardinality\":{\"min\":32,\"max\":32},\"change\":[{\"op\":\"replace\",\"path\":\"/n\",\"value\":1}]}",
+        "bodyBytes": 179,
+        "bodySha256": "ba388a9fdbed4eae2e5221a425aa476720d2307d22553870faccf5403648cb2d",
+        "idempotencyKey": "receipt-context-paged",
+        "contentType": "application/json"
+      },
+      {
+        "ordinal": 3,
+        "method": "GET",
+        "url": "$page",
+        "expectedStatus": 200,
+        "credential": "writer",
+        "accept": "application/json",
+        "expectedContext": "pos-2",
+        "urlAuthority": "exact nonnull schema-validated response2.next; response3 is successful GET of this exact URL",
+        "bodyBytes": 0
+      },
+      {
+        "ordinal": 4,
+        "method": "GET",
+        "url": "$unknownRoot",
+        "expectedStatus": 404,
+        "credential": "writer",
+        "accept": "application/json",
+        "expectedContext": "pos-2",
+        "urlAuthority": "negative sibling derived from validated response2.id parent; not an authority-issued/discovered receipt",
+        "bodyBytes": 0
+      },
+      {
+        "ordinal": 5,
+        "method": "HEAD",
+        "url": "$unknownRoot",
+        "expectedStatus": 404,
+        "credential": "writer",
+        "accept": "application/json",
+        "expectedContext": "pos-2",
+        "urlAuthority": "negative sibling derived from validated response2.id parent; not an authority-issued/discovered receipt",
+        "bodyBytes": 0
+      },
+      {
+        "ordinal": 6,
+        "method": "GET",
+        "url": "$root",
+        "expectedStatus": 404,
+        "credential": "other",
+        "accept": "application/json",
+        "expectedContext": "pos-2",
+        "urlAuthority": "exact schema-validated response2.id, independently equal to response3.receipt",
+        "bodyBytes": 0
+      },
+      {
+        "ordinal": 7,
+        "method": "HEAD",
+        "url": "$root",
+        "expectedStatus": 404,
+        "credential": "other",
+        "accept": "application/json",
+        "expectedContext": "pos-2",
+        "urlAuthority": "exact schema-validated response2.id, independently equal to response3.receipt",
+        "bodyBytes": 0
+      },
+      {
+        "ordinal": 8,
+        "method": "GET",
+        "url": "$page",
+        "expectedStatus": 404,
+        "credential": "other",
+        "accept": "application/json",
+        "expectedContext": "pos-2",
+        "urlAuthority": "exact nonnull schema-validated response2.next; response3 is successful GET of this exact URL",
+        "bodyBytes": 0
+      },
+      {
+        "ordinal": 9,
+        "method": "HEAD",
+        "url": "$page",
+        "expectedStatus": 404,
+        "credential": "other",
+        "accept": "application/json",
+        "expectedContext": "pos-2",
+        "urlAuthority": "exact nonnull schema-validated response2.next; response3 is successful GET of this exact URL",
+        "bodyBytes": 0
+      },
+      {
+        "ordinal": 10,
+        "method": "POST",
+        "url": "https://reference.invalid/acme/operations/create-bead",
+        "expectedStatus": 200,
+        "credential": "writer",
+        "accept": "application/json",
+        "expectedContext": "pos-3",
+        "urlAuthority": "literal owned canonical operation/diagnostic root",
+        "body": "{\"id\":\"beads/later\",\"type\":\"https://reference.invalid/acme/types/task\",\"properties\":{\"n\":0}}",
+        "bodyBytes": 92,
+        "bodySha256": "fac1bc29f477a84f582884b6e83a7b7227ff02514fe2ff3bad46c969792cf1e2",
+        "idempotencyKey": "receipt-context-advance",
+        "contentType": "application/json"
+      },
+      {
+        "ordinal": 11,
+        "method": "GET",
+        "url": "$root",
+        "expectedStatus": 404,
+        "credential": "other",
+        "accept": "application/json",
+        "expectedContext": "pos-3",
+        "urlAuthority": "exact schema-validated response2.id, independently equal to response3.receipt",
+        "bodyBytes": 0
+      },
+      {
+        "ordinal": 12,
+        "method": "GET",
+        "url": "$page",
+        "expectedStatus": 404,
+        "credential": "other",
+        "accept": "application/json",
+        "expectedContext": "pos-3",
+        "urlAuthority": "exact nonnull schema-validated response2.next; response3 is successful GET of this exact URL",
+        "bodyBytes": 0
+      },
+      {
+        "ordinal": 13,
+        "method": "GET",
+        "url": "$root",
+        "expectedStatus": 401,
+        "credential": "anonymous",
+        "accept": "application/json",
+        "expectedContext": "absent",
+        "urlAuthority": "exact schema-validated response2.id, independently equal to response3.receipt",
+        "bodyBytes": 0
+      },
+      {
+        "ordinal": 14,
+        "method": "HEAD",
+        "url": "$page",
+        "expectedStatus": 401,
+        "credential": "anonymous",
+        "accept": "application/json",
+        "expectedContext": "absent",
+        "urlAuthority": "exact nonnull schema-validated response2.next; response3 is successful GET of this exact URL",
+        "bodyBytes": 0
+      }
+    ],
+    "http": 14,
+    "children": 1,
+    "owners": 1,
+    "directories": 1,
+    "listeners": 1,
+    "artifacts": {
+      "descriptors": [
+        {
+          "retrievalUri": "https://reference.invalid/acme/types/task",
+          "utf8": "{\"id\":\"https://reference.invalid/acme/types/task\",\"name\":\"Task\",\"describes\":\"bead\",\"conformsTo\":[],\"propertiesSchema\":\"https://reference.invalid/acme/schemas/properties\"}"
+        }
+      ],
+      "schemas": [
+        {
+          "retrievalUri": "https://reference.invalid/acme/schemas/properties",
+          "utf8": "{\"$id\":\"https://reference.invalid/acme/schemas/properties\",\"type\":\"object\",\"properties\":{\"n\":{\"type\":\"number\"}},\"required\":[\"n\"],\"additionalProperties\":false}"
+        }
+      ]
+    },
+    "artifactUtf8Bytes": 328,
+    "totalRequestBodyBytes": 3999,
+    "maximumRequestBodyBytes": 3728,
+    "responseBodyCap": 32768,
+    "requestHeaderCap": 16384,
+    "requestBodyCap": 65536,
+    "deadlineMs": 45000,
+    "testTimeoutMs": 60000,
+    "perRequestMs": 5000,
+    "readyAndCloseEachMs": 10000,
+    "credentials": [
+      {
+        "reference": "writer",
+        "principal": "writer",
+        "canMutate": true,
+        "token": "independently generated secret, not retained"
+      },
+      {
+        "reference": "other",
+        "principal": "other",
+        "canMutate": false,
+        "token": "distinct independently generated secret, not retained"
+      },
+      {
+        "reference": "anonymous",
+        "authenticated": false
+      }
+    ],
+    "provisioning": {
+      "create": true,
+      "directory": "new owned temporary directory; no existing transaction.sqlite",
+      "source": "transaction-installed-configuration.ts30\u201340; transaction-store.ts310,529\u2013536",
+      "initialPosition": "pos-0",
+      "initialResourceRows": 0
+    },
+    "urlBindings": {
+      "root": "exact schema-validated response2.id",
+      "page": "exact nonnull schema-validated response2.next",
+      "pageRootEquality": "response3.receipt === root; response3.next === null and one tail result",
+      "unknownRoot": "replace only the validated root final path token with literal unknown; require same canonical receipts parent/no query/fragment/userinfo; explicitly negative raw diagnostic, not authority-issued receipt"
+    },
+    "executorOptionMapping": {
+      "requestTimeoutMs": 5000,
+      "maximumBodyBytes": 32768,
+      "maximumHeaderBytes": 65536,
+      "exactMode.maximumRequestHeaderBytes": 16384,
+      "exactMode.maximumRequestBodyBytes": 65536,
+      "derivedResponseWireLimit": 163840,
+      "derivedResponseWireLimitSource": "http-executor.ts898: maximumBodyBytes + maximumHeaderBytes *2"
+    },
+    "timingSemantics": "45s binding cohort abort; 5s exchange and10s ready/close caps do not add to a promise of45s completion; bounded cleanup grace within60s test/120s supervisor, actual elapsed/failures recorded",
+    "responseMeasurement": "Record actual response byte lengths for ordinals1/2/3 and all other responses; estimate alone is not evidence; cap32768 checked during consumption"
+  },
+  "combined": {
+    "caseExecutions": 16,
+    "httpExpected": 95,
+    "httpMaximum": 95,
+    "ownerOpens": 18,
+    "directories": 16,
+    "listeners": 8,
+    "productChildren": 1,
+    "readonlyInventoryHandles": 2
+  },
+  "sourcePositiveTotals": {
+    "cases": 14,
+    "http": 68,
+    "ownerOpens": 16,
+    "directories": 14,
+    "listeners": 6,
+    "readonlyInventoryHandles": 2
+  },
+  "bodyMeasurementMethod": "Independent Python compact UTF8 serialization of literal source structures; no source/module execution; actual response bytes remain future evidence"
+}

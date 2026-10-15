@@ -1,0 +1,69 @@
+--- /Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-event-missing-context-draft/execution-preparation/run-source.py
++++ /Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-receipt-missing-context-draft/execution-preparation/run-source.py
+@@ -1,4 +1,4 @@
+-"""Closed one-command source supervisor, adapted from reviewed v4 supervisor.
++"""Closed one-command source supervisor, adapted from reviewed Event source supervisor.
+ Root supplies execution-gate.json; this file does not create/release that gate.
+ Usage: python3 run-source.py COMMAND_ID. Never retries or invokes controls/packages.
+ """
+@@ -18,16 +18,17 @@
+ E = D / "run"
+ L = Path("/Users/dbox/repos/wt/vickie/bdp-integration-logs")
+ GUARD = L / "guarded-action.py"
+-BINDING = D / "redirect-repair/source-binding.json"
+-COMMANDS = D / "commands.json"
+-BINDING_SHA = "acf190e742dfb669fe5607085a3ac60c5ecb66f4f86b1f05025424a7873615b0"
+-COMMANDS_SHA = "7f2d7dfb8ec33809c27bcf85be759a42365f7d76e7c299666979b5d82bf19291"
++BINDING = D / "source-binding.json"
++COMMANDS = P / "commands.json"
++BINDING_SHA = None  # Actual frozen manifest must be pinned by root gate, never guessed.
++COMMANDS_SHA = '8bde314c7544b625345cdac474af9a5b4ee77da97012a5e10ae468e3d084f752'
+ GUARD_SHA = "fd81ba029cd4e7c7e60623df89e8292af91141d311d9ce789ed19e2152375e84"
+-HEAD = "88c9408e908590ab1a4c64c9b9dee1a8b705999c"
+-TREE = "b2d9f2c18502e0778c51123be8b4564af052d803"
++HEAD = "015cac1aa4fa827cc4a2c647dff08454c6c8e6f8"
++TREE = "2e16329e195eb8214836de20340a5887236d78f0"
+ SESSION = "2026-10-08T20:26:35Z-81e5"
+ ORDER = ["offline-setup", "typecheck", "build", "format-check", "lint", "boundaries",
+-         "read-seal", "events-positive", "sse-regression"]
++         "read-seal", "receipt-pages-positive", "receipt-service-positive", "receipt-http-positive"]
++OWNED_PATHS = ['packages/server/src/transaction-store.ts', 'packages/server/src/transaction-service.ts', 'packages/server/src/transaction-http.ts', 'packages/server/src/transaction-receipt-pages.test.ts', 'packages/server/src/transaction-service.test.ts', 'packages/server/src/transaction-http.test.ts', 'apps/bdptest/src/transactional-receipt-missing-context-installed.test.ts', 'docs/design/transaction-implementation-progress.md']
+ 
+ def require(ok, message):
+     if not ok:
+@@ -42,6 +43,10 @@
+ def source_hashes():
+     require(sha(BINDING.read_bytes()) == BINDING_SHA, "Successor source binding changed")
+     binding = json.loads(BINDING.read_text())
++    require(set(binding["files"]) == set(OWNED_PATHS), "Expected exactly eight receipt paths")
++    require(binding["head"] == HEAD and binding["tree"] == TREE, "Manifest base mismatch")
++    require(binding["branch"] == "codex/vickie-receipt-missing-context", "Unexpected draft branch")
++    require(binding["workspace"] == str(W), "Manifest workspace mismatch")
+     require(git("rev-parse", "HEAD").decode().strip() == HEAD, "HEAD changed")
+     require(git("rev-parse", "HEAD^{tree}").decode().strip() == TREE, "Base tree changed")
+     require(git("branch", "--show-current").decode().strip() == binding["branch"], "Branch changed")
+@@ -67,9 +72,12 @@
+     return sha(patch)
+ 
+ def load_gate(name):
++    global BINDING_SHA
+     require(name in ORDER, "Control, package and installed stages are separately closed")
+     gate = json.loads((P / "execution-gate.json").read_text())
+     require(gate["status"] == "released" and gate["session"] == SESSION, "Root source gate closed")
++    BINDING_SHA = gate["sourceBindingSha256"]
++    require(isinstance(BINDING_SHA, str) and len(BINDING_SHA) == 64 and all(c in "0123456789abcdef" for c in BINDING_SHA), "Actual frozen source manifest is not bound")
+     require(gate["controlGate"] == "closed" and gate["installedGate"] == "closed", "Unexpected broader release")
+     require(gate["supervisorSha256"] == sha(Path(__file__).read_bytes()), "Supervisor binding changed")
+     require(gate["sourceBindingSha256"] == BINDING_SHA and gate["commandsSha256"] == COMMANDS_SHA, "Gate binding mismatch")
+@@ -93,8 +101,9 @@
+     require(spec["cwd"] == str(W) and spec["supervisorSeconds"] == 120, "Unexpected cwd/bound")
+     require(spec["argv"][:2] == ["/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+                                  "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs"], "Toolchain changed")
+-    spec["ownedTempPrefixes"] = ["bdp-event-finite-", "bdp-events-http-", "bdp-event-http-"]
+-    spec["workload"] = {key: spec[key] for key in ["cases", "http", "owners", "directories", "listeners", "productChildren"] if key in spec}
++    require(not spec.get("validatedBdpOverrides"), "Source phase must not inherit installed/control overrides")
++    spec.setdefault("ownedTempPrefixes", [])
++    spec["workload"] = {key: spec[key] for key in ["cases", "http", "owners", "directories", "listeners", "productChildren", "readonlyInventoryHandles"] if key in spec}
+     for argument in spec["argv"]:
+         if argument.startswith("--outputFile="):
+             require(not Path(argument.split("=", 1)[1]).exists(), "Test result already exists; no retry")
