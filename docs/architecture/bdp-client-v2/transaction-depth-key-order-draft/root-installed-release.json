@@ -1,0 +1,25 @@
+{
+  "status": "root-released-fresh-package-and-consumer-prefix",
+  "checkedAt": "2026-10-15T16:20:20.680319+00:00",
+  "finalSource": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-depth-key-order-draft/final-source.json",
+    "sha256": "b5a5ecfff73cfa349e4e3ff1b2c9014edb2a75a8f16065be9b9c265d804fb579"
+  },
+  "sourceAcceptance": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-depth-key-order-draft/root-source-acceptance.json",
+    "sha256": "32a3df157395c2b4d84783c19f6338389ec7e621c3c310522e509f9379181e38"
+  },
+  "controlAcceptance": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-depth-key-order-draft/root-control-acceptance.json",
+    "sha256": "f05bbba3c7930711be29783d3dc125fbb2eef46203ed392229e369be9069bf0d"
+  },
+  "councilAcceptance": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-depth-key-order-draft/root-final-council.json",
+    "sha256": "8e45b8ba7ca913528e9b5d231dee6b7780fb9e4e8754786d7cfd51550ebc1485"
+  },
+  "preparationAcceptance": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-depth-key-order-draft/installed-preparation-v2/root-preparation-acceptance.json",
+    "sha256": "cc17eec7d3646957df56f41d479b9a3c6d0da5d7c7be372bac732a30a4a4c833"
+  },
+  "scope": "Ten reviewed sequential stages; prefix through consumer-install initially. Root pins fresh lock and actual installed provenance before dependent stages. No automatic retry; no public qualification."
+}

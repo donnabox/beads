@@ -1,0 +1,111 @@
+--- before/gate.py
++++ after/gate.py
+@@ -14,7 +14,7 @@
+ BINDING_SHA="5fbe5c9b0c57f2c253fb16d114675ccb4929a9e4e18b21a1efbf1ca18385d778"
+ def binding_sha():return BINDING_SHA
+ COMMANDS=P/"commands.json"
+-COMMANDS_SHA="3eec6efd6b989fb14ccf8e3442ebedf31b131ae921139b04c8e6de7017bb236e"
++COMMANDS_SHA="ca35819eae510e11344afca5fa844daed33ca474965d1417b59d9f8c69ab6352"
+ GUARD_SHA="fd81ba029cd4e7c7e60623df89e8292af91141d311d9ce789ed19e2152375e84"
+ sha=lambda b:hashlib.sha256(b).hexdigest()
+ def require(ok,message):
+@@ -57,7 +57,7 @@
+     inventory=document(g,"buildOutputInventory")
+     require(Path(g["buildOutputInventory"]["path"])==P/"build-attribution-bridge.json","Wrong reuse inventory")
+     require(inventory["status"]=="ACTUAL_SUCCESSFUL_DIRTY_SOURCE_BUILD_PRESERVED_CANDIDATE_PENDING","Historical attribution changed")
+-    for key in ("sourceBinding","buildStart","buildExit","buildLog","controlBuildManifest","controlCopyManifest","rootControlAcceptance"):
++    for key in ("sourceBinding","buildStart","buildExit","buildLog","controlBuildManifest","controlCopyManifest","rootControlAcceptance","controlMutation","controlMutationPatch","controlPacket"):
+         d=inventory[key];require(sha(Path(d["path"]).read_bytes())==d["sha256"],"Historical evidence changed: "+key)
+     require(inventory["sourceBinding"]["path"]==str(BINDING) and inventory["sourceBinding"]["sha256"]==BINDING_SHA,"Wrong historical source")
+     start=json.loads(Path(inventory["buildStart"]["path"]).read_text())
+@@ -73,7 +73,20 @@
+     require(bm["files"]==inventory["emittedFiles"] and bm["buildExit"]["sha256"]==inventory["buildExit"]["sha256"],"Build manifest mismatch")
+     require(cm["sourceBindingSha256"]==BINDING_SHA and cm["buildManifestSha256"]==inventory["controlBuildManifest"]["sha256"],"Copy manifest basis mismatch")
+     allfiles={**inventory["inputFiles"],**inventory["emittedFiles"]}
+-    require(set(allfiles)==set(cm["files"]) and all(cm["files"][n]["positiveSha256"]==cm["files"][n]["copySha256"]==h for n,h in allfiles.items()),"Post-build copy/source equality differs")
++    require(set(allfiles)==set(cm["files"]) and all(cm["files"][n]["positiveSha256"]==h for n,h in allfiles.items()),"Post-build positive/source equality differs")
++    mutation=json.loads(Path(inventory["controlMutation"]["path"]).read_text())
++    packet=json.loads(Path(inventory["controlPacket"]["path"]).read_text())
++    accepted=json.loads(Path(inventory["rootControlAcceptance"]["path"]).read_text())
++    require(accepted["status"]=="accepted-single-early-depth-control" and accepted["sourceBindingSha256"]==BINDING_SHA and accepted["graphVerifiedAgain"]["packetSha256"]==inventory["controlPacket"]["sha256"],"Control acceptance binding differs")
++    for filename,key in (("copy-manifest.json","controlCopyManifest"),("build-manifest.json","controlBuildManifest"),("mutation.json","controlMutation"),("mutation.patch","controlMutationPatch")):
++        require(packet["files"][filename]==inventory[key]["sha256"],"Control packet differs: "+filename)
++    target="packages/server/dist/transaction-store.js"
++    require(mutation["path"]==target and mutation["patchSha256"]==inventory["controlMutationPatch"]["sha256"],"Wrong negative mutation")
++    different={n for n,v in cm["files"].items() if v["copySha256"]!=v["positiveSha256"]}
++    require(different=={target},"Unexpected negative copy divergence")
++    positive=(W/target).read_bytes();before=mutation["exactBeforeText"].encode();after=mutation["exactAfterText"].encode()
++    require(sha(positive)==mutation["positiveSha256"]==allfiles[target] and positive.count(before)==mutation["occurrencesRequired"]==1,"Mutation positive basis differs")
++    require(sha(positive.replace(before,after,1))==mutation["derivativeSha256"]==cm["files"][target]["copySha256"],"Negative copy is not exact accepted mutation")
+ def load_gate(name):
+     require(__debug__,"Python assertions required")
+     g=json.loads((P/"execution-gate.json").read_text())
+--- before/commands.json
++++ after/commands.json
+@@ -250,6 +250,6 @@
+   "finalCommit": "PENDING_ROOT_ORDINARY_CLEAN_COMMIT",
+   "buildAttributionBridge": {
+     "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-depth-key-order-draft/installed-preparation-v2/build-attribution-bridge.json",
+-    "sha256": "ae4a2c98226d9e7f3ef196dd046ec835b5458dc709ac727904c78ebd13b86f86"
++    "sha256": "724171236be784095ddd6a52e5aa485a29b607a383d2822c5c96dcd5fb64c74d"
+   }
+ }
+--- before/build-attribution-bridge.json
++++ after/build-attribution-bridge.json
+@@ -1498,5 +1498,18 @@
+   },
+   "candidateHead": null,
+   "candidateTree": null,
+-  "basis": "Inputs captured now after successful clean-build command; all equal post-build source/copy inventory. Not a pre-build whole-input snapshot. Historical build remains attributed to dirty0d63 plus exact8 source hashes. Future clean commit must preserve every input/output byte; no rebuild or future success claimed."
++  "basis": "Inputs captured now after successful clean-build command; all equal post-build source/copy inventory. Not a pre-build whole-input snapshot. Historical build remains attributed to dirty0d63 plus exact8 source hashes. Future clean commit must preserve every input/output byte; no rebuild or future success claimed.",
++  "controlMutation": {
++    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-depth-key-order-draft/control-preparation/mutation.json",
++    "sha256": "279253ec6dedd117c2992025599fee7e2acff57b6bb674f629abbddf70b1f8d4"
++  },
++  "controlMutationPatch": {
++    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-depth-key-order-draft/control-preparation/mutation.patch",
++    "sha256": "798775cffa60cc5509c1c9ab7e8283ee81ecb8aa1e3b9ad52aebc38514a21614"
++  },
++  "controlPacket": {
++    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-depth-key-order-draft/control-preparation/preparation-manifests.json",
++    "sha256": "2a5d92822153b08235f2dc8f246d6db96c942a1fed6b6f20373a29f16267a70c"
++  },
++  "derivativeDistinction": "All1133 positive hashes equal candidate inputs/emitted outputs. Exactly one copied emitted store differs; bound early-depth mutation reconstructs its derivative SHA. Negative-copy bytes are never package input."
+ }
+--- before/execution-gate.example.json
++++ after/execution-gate.example.json
+@@ -9,14 +9,14 @@
+   "sourceLockSha256": "4150d8821c96dbc2cfec0b2762ff76b58318079f65fa4f5c8858ef2dd61f8d6d",
+   "buildOutputInventory": {
+     "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-depth-key-order-draft/installed-preparation-v2/build-attribution-bridge.json",
+-    "sha256": "ae4a2c98226d9e7f3ef196dd046ec835b5458dc709ac727904c78ebd13b86f86"
++    "sha256": "724171236be784095ddd6a52e5aa485a29b607a383d2822c5c96dcd5fb64c74d"
+   },
+   "preparationSha256": {
+-    "gate.py": "0e13dbe8fadf428a545f1489fc9a8174d6cd59f46369ec0c536c7966ca4bca3b",
++    "gate.py": "86274428f74d1ea6c3da06ebc203dd266b7f0f89d4b9bb019a388ce378c8e611",
+     "supervise.py": "1764ff4ec582f9ffc8d71b084745383feba2e965006d64ab20fb3c988a180c4a",
+     "packages.py": "40fba4f17352258adaa4a2b0e26ac1adedcce36d979ed733c47e63834f15c61f",
+     "review-installed.py": "557066a6548f4410abfe706bb4f1ea91b72b256821b50141527692a971025392",
+-    "commands.json": "3eec6efd6b989fb14ccf8e3442ebedf31b131ae921139b04c8e6de7017bb236e"
++    "commands.json": "ca35819eae510e11344afca5fa844daed33ca474965d1417b59d9f8c69ab6352"
+   },
+   "expectedProductionVersions": {
+     "@bdp/protocol": "0.0.0",
+--- before/report.md
++++ after/report.md
+@@ -2,7 +2,7 @@
+ 
+ No execution. Original installed-preparation and all successful/failed source/control records remain unchanged. This successor retains exactly ten package/consumer/test stages: node-version, package-directory, pack-protocol, pack-server, verify-tar, prepare-consumer, consumer-install, verify-installed, installed-positive, installed-review. There is no build command, inventory execution stage, retry, copied product tree or live gate.
+ 
+-The actual V2 build started2026-10-15T15:59:46.310176+00:00 on dirty0d63 with frozen eight-path binding5fbe5c9b. Exit0/supervisor0 in1.380s; its log records pnpm clean && tsc -b. All original build outcome/cleanup fields remain historical. Current exact input snapshot captures669 source/config/fixture files (tracked plus the new installed file),312 package output members and464 emitted files across apps/packages. All inputs equal the post-build control copy-manifest's positive/copy hashes; all emitted bytes equal its build-manifest. Their union exactly equals1133 copied members. No whole-input pre-build snapshot is claimed: this is a current snapshot verified against the post-build inventory and exact source binding before/after the successful build.
++The actual V2 build started2026-10-15T15:59:46.310176+00:00 on dirty0d63 with frozen eight-path binding5fbe5c9b. Exit0/supervisor0 in1.380s; its log records pnpm clean && tsc -b. All original build outcome/cleanup fields remain historical. Current exact input snapshot captures669 source/config/fixture files (tracked plus the new installed file),312 package output members and464 emitted files across apps/packages. All source inputs equal the post-build control copy-manifest's positive/copy hashes; all emitted positive bytes equal its build-manifest. The copied emitted store alone intentionally differs by the accepted negative mutation; no copied derivative is used for packaging. Their union exactly equals1133 copied members. No whole-input pre-build snapshot is claimed: this is a current snapshot verified against the post-build inventory and exact source binding before/after the successful build.
+ 
+ `build-attribution-bridge.json` pins original build start/exit/log, both control manifests, root-control acceptance f05bbba3, frozen source binding and all current input/output hashes. At every later stage gate.py will require the eventual clean candidate to contain exactly those669 tracked inputs, unchanged312 package files and all464 emitted files. The final ordinary commit must have sole parent0d63, exact eight changed paths, the fixed installed48c6a84c file, and empty working diff. A commit cannot substitute new bytes or be credited with having executed the historical build. Commit identity is independently recorded in finalSource and eventual archive/consumer provenance.
+ 
+@@ -13,3 +13,5 @@
+ Root must supply actual clean candidate finalHead/finalTree/finalParents and finalSource(head,tree,base,parents,sourceBindingSha256), root execution/council acceptance path/hash pairs, then create execution-gate.json with released:true and a sequential approved prefix. Existing controlAcceptance and actual buildOutputInventory bridge are already pinned in the closed example; they are not release authority. Root pins actual consumerLockSha256 after consumer-install, then installedProvenance after verify-installed before the final two stages. Candidate/build source equality gates fail closed if any tracked input/output differs. Any legitimate new source edit requires review/rebind and a justified build, never a hidden exception.
+ 
+ Only external files were written under this new directory via session guard. No product source change, imports, tests, builds, archives, installations, service starts, commit or publication occurred. Python AST parsing checked syntax only.
++
++Correction: the initial closed gate incorrectly required all emitted copy hashes to equal positive hashes. Root caught this before execution. history/pre-copy-divergence preserves that packet. The successor requires every positive hash to equal the candidate, allows exactly the emitted store divergence, and reconstructs its exact bound one-occurrence early-depth insertion to match the derivative SHA. Root control acceptance binds preparation-manifests, which binds copy/build/mutation/patch hashes. No gate or package stage was launched.
