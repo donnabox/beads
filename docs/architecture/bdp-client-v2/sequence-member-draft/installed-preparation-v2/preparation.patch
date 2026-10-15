@@ -1,0 +1,256 @@
+--- /Users/dbox/repos/wt/vickie/bdp-integration-logs/sequence-member-draft/installed-preparation/gate.py
++++ /Users/dbox/repos/wt/vickie/bdp-integration-logs/sequence-member-draft/installed-preparation-v2/gate.py
+@@ -13,7 +13,7 @@
+     return document(g,"sourceBinding")
+ def binding_sha():return json.loads((P/"execution-gate.json").read_text())["sourceBinding"]["sha256"]
+ COMMANDS=P/"commands.json"
+-COMMANDS_SHA="3f2ae9835f33e695c7f10289cb0ea9370c68e223ed60ea212812d055359c6df7"
++COMMANDS_SHA="2e48d492684c210fa5f25d3c1b23d9dd353d284fd8fa98158ff758d5444eb2e1"
+ GUARD_SHA="fd81ba029cd4e7c7e60623df89e8292af91141d311d9ce789ed19e2152375e84"
+ sha=lambda b:hashlib.sha256(b).hexdigest()
+ def require(ok,message):
+@@ -69,8 +69,11 @@
+     require(__debug__,"Python assertions required")
+     g=json.loads((P/"execution-gate.json").read_text())
+     require(g.get("released") is True and g["session"]=="2026-10-08T20:26:35Z-81e5","Root gate closed")
+-    for key in ("rootAcceptance","councilAcceptance","sourceValidationAcceptance","finalSource"):
++    for key in ("rootAcceptance","councilState","sourceValidationAcceptance","finalSource"):
+         document(g,key)
++    council=document(g,"councilState")
++    require(council["status"]=="pending-actual-claude","Expected truthful pending actual Claude state")
++    require(document(g,"rootAcceptance").get("validationOnlyWhileCouncilPending") is True,"Root validation-only exception absent")
+     names={"gate.py","supervise.py","packages.py","review-installed.py","commands.json"}
+     require(set(g["preparationSha256"])==names,"Incomplete preparation pins")
+     for n,h in g["preparationSha256"].items():require(sha((P/n).read_bytes())==h,"Preparation changed: "+n)
+--- /Users/dbox/repos/wt/vickie/bdp-integration-logs/sequence-member-draft/installed-preparation/commands.json
++++ /Users/dbox/repos/wt/vickie/bdp-integration-logs/sequence-member-draft/installed-preparation-v2/commands.json
+@@ -42,7 +42,7 @@
+       "cwd": "/Users/dbox/repos/wt/vickie/vickie-sequence-member-evidence",
+       "argv": [
+         "python3",
+-        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/sequence-member-draft/installed-preparation/packages.py",
++        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/sequence-member-draft/installed-preparation-v2/packages.py",
+         "directory"
+       ],
+       "supervisorSeconds": 120,
+@@ -64,7 +64,7 @@
+         "@bdp/protocol",
+         "pack",
+         "--pack-destination",
+-        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/sequence-member-draft/installed-preparation/run/packages"
++        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/sequence-member-draft/installed-preparation-v2/run/packages"
+       ],
+       "supervisorSeconds": 120,
+       "requires": [
+@@ -85,7 +85,7 @@
+         "@bdp/server",
+         "pack",
+         "--pack-destination",
+-        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/sequence-member-draft/installed-preparation/run/packages"
++        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/sequence-member-draft/installed-preparation-v2/run/packages"
+       ],
+       "supervisorSeconds": 120,
+       "requires": [
+@@ -101,7 +101,7 @@
+       "cwd": "/Users/dbox/repos/wt/vickie/vickie-sequence-member-evidence",
+       "argv": [
+         "python3",
+-        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/sequence-member-draft/installed-preparation/packages.py",
++        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/sequence-member-draft/installed-preparation-v2/packages.py",
+         "tar"
+       ],
+       "supervisorSeconds": 120,
+@@ -118,7 +118,7 @@
+       "cwd": "/Users/dbox/repos/wt/vickie/vickie-sequence-member-evidence",
+       "argv": [
+         "python3",
+-        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/sequence-member-draft/installed-preparation/packages.py",
++        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/sequence-member-draft/installed-preparation-v2/packages.py",
+         "consumer"
+       ],
+       "supervisorSeconds": 120,
+@@ -132,7 +132,7 @@
+     },
+     "consumer-install": {
+       "phase": "package",
+-      "cwd": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/sequence-member-draft/installed-preparation/run/consumer",
++      "cwd": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/sequence-member-draft/installed-preparation-v2/run/consumer",
+       "argv": [
+         "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+         "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+@@ -156,7 +156,7 @@
+       "cwd": "/Users/dbox/repos/wt/vickie/vickie-sequence-member-evidence",
+       "argv": [
+         "python3",
+-        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/sequence-member-draft/installed-preparation/packages.py",
++        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/sequence-member-draft/installed-preparation-v2/packages.py",
+         "installed"
+       ],
+       "supervisorSeconds": 120,
+@@ -179,7 +179,7 @@
+         "--maxWorkers=1",
+         "--reporter=verbose",
+         "--reporter=json",
+-        "--outputFile=/Users/dbox/repos/wt/vickie/bdp-integration-logs/sequence-member-draft/installed-preparation/run/positive-fifteen.results.json",
++        "--outputFile=/Users/dbox/repos/wt/vickie/bdp-integration-logs/sequence-member-draft/installed-preparation-v2/run/positive-fifteen.results.json",
+         "-t",
+         "^observes\\ fifteen\\ partial\\ Transactional\\ contracts\\ through\\ packed\\-capable\\ actual\\ installed\\ HTTP$"
+       ],
+@@ -197,9 +197,9 @@
+         }
+       ],
+       "reportOverrides": {
+-        "BDP_TRANSACTIONAL_OBSERVATION_OUTPUT": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/sequence-member-draft/installed-preparation/run/positive-fifteen.observation.json"
++        "BDP_TRANSACTIONAL_OBSERVATION_OUTPUT": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/sequence-member-draft/installed-preparation-v2/run/positive-fifteen.observation.json"
+       },
+-      "observationPath": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/sequence-member-draft/installed-preparation/run/positive-fifteen.observation.json",
++      "observationPath": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/sequence-member-draft/installed-preparation-v2/run/positive-fifteen.observation.json",
+       "workload": {
+         "cases": 1,
+         "httpExpected": 213,
+@@ -217,7 +217,7 @@
+       "cwd": "/Users/dbox/repos/wt/vickie/vickie-sequence-member-evidence",
+       "argv": [
+         "python3",
+-        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/sequence-member-draft/installed-preparation/review-installed.py",
++        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/sequence-member-draft/installed-preparation-v2/review-installed.py",
+         "positive-fifteen"
+       ],
+       "supervisorSeconds": 120,
+@@ -240,7 +240,7 @@
+         "--maxWorkers=1",
+         "--reporter=verbose",
+         "--reporter=json",
+-        "--outputFile=/Users/dbox/repos/wt/vickie/bdp-integration-logs/sequence-member-draft/installed-preparation/run/selected-sequence-delete-control.results.json",
++        "--outputFile=/Users/dbox/repos/wt/vickie/bdp-integration-logs/sequence-member-draft/installed-preparation-v2/run/selected-sequence-delete-control.results.json",
+         "-t",
+         "^discriminates\\ sequence\\ member\\ transactions\\ against\\ a\\ successful\\ middle\\ delete$"
+       ],
+@@ -258,9 +258,9 @@
+         }
+       ],
+       "reportOverrides": {
+-        "BDP_TRANSACTIONAL_SEQUENCE_MEMBER_CONTROL_OUTPUT": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/sequence-member-draft/installed-preparation/run/selected-sequence-delete-control.observation.json"
++        "BDP_TRANSACTIONAL_SEQUENCE_MEMBER_CONTROL_OUTPUT": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/sequence-member-draft/installed-preparation-v2/run/selected-sequence-delete-control.observation.json"
+       },
+-      "observationPath": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/sequence-member-draft/installed-preparation/run/selected-sequence-delete-control.observation.json",
++      "observationPath": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/sequence-member-draft/installed-preparation-v2/run/selected-sequence-delete-control.observation.json",
+       "workload": {
+         "cases": 1,
+         "httpExpected": 1,
+@@ -278,7 +278,7 @@
+       "cwd": "/Users/dbox/repos/wt/vickie/vickie-sequence-member-evidence",
+       "argv": [
+         "python3",
+-        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/sequence-member-draft/installed-preparation/review-installed.py",
++        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/sequence-member-draft/installed-preparation-v2/review-installed.py",
+         "selected-sequence-delete-control"
+       ],
+       "supervisorSeconds": 120,
+@@ -301,7 +301,7 @@
+         "--maxWorkers=1",
+         "--reporter=verbose",
+         "--reporter=json",
+-        "--outputFile=/Users/dbox/repos/wt/vickie/bdp-integration-logs/sequence-member-draft/installed-preparation/run/cross-batch-control.results.json",
++        "--outputFile=/Users/dbox/repos/wt/vickie/bdp-integration-logs/sequence-member-draft/installed-preparation-v2/run/cross-batch-control.results.json",
+         "-t",
+         "^discriminates\\ retained\\ cross\\-carrier\\ evidence\\ against\\ batch\\-semantic\\-conflict$"
+       ],
+@@ -319,9 +319,9 @@
+         }
+       ],
+       "reportOverrides": {
+-        "BDP_TRANSACTIONAL_CROSS_CARRIER_CONTROL_OUTPUT": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/sequence-member-draft/installed-preparation/run/cross-batch-control.observation"
++        "BDP_TRANSACTIONAL_CROSS_CARRIER_CONTROL_OUTPUT": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/sequence-member-draft/installed-preparation-v2/run/cross-batch-control.observation"
+       },
+-      "observationPath": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/sequence-member-draft/installed-preparation/run/cross-batch-control.observation-batch-semantic-conflict.json",
++      "observationPath": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/sequence-member-draft/installed-preparation-v2/run/cross-batch-control.observation-batch-semantic-conflict.json",
+       "workload": {
+         "cases": 1,
+         "httpExpected": 204,
+@@ -339,7 +339,7 @@
+       "cwd": "/Users/dbox/repos/wt/vickie/vickie-sequence-member-evidence",
+       "argv": [
+         "python3",
+-        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/sequence-member-draft/installed-preparation/review-installed.py",
++        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/sequence-member-draft/installed-preparation-v2/review-installed.py",
+         "cross-batch-control"
+       ],
+       "supervisorSeconds": 120,
+@@ -362,7 +362,7 @@
+         "--maxWorkers=1",
+         "--reporter=verbose",
+         "--reporter=json",
+-        "--outputFile=/Users/dbox/repos/wt/vickie/bdp-integration-logs/sequence-member-draft/installed-preparation/run/cross-sequence-control.results.json",
++        "--outputFile=/Users/dbox/repos/wt/vickie/bdp-integration-logs/sequence-member-draft/installed-preparation-v2/run/cross-sequence-control.results.json",
+         "-t",
+         "^discriminates\\ retained\\ cross\\-carrier\\ evidence\\ against\\ sequence\\-fresh\\-key$"
+       ],
+@@ -380,9 +380,9 @@
+         }
+       ],
+       "reportOverrides": {
+-        "BDP_TRANSACTIONAL_CROSS_CARRIER_CONTROL_OUTPUT": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/sequence-member-draft/installed-preparation/run/cross-sequence-control.observation"
++        "BDP_TRANSACTIONAL_CROSS_CARRIER_CONTROL_OUTPUT": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/sequence-member-draft/installed-preparation-v2/run/cross-sequence-control.observation"
+       },
+-      "observationPath": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/sequence-member-draft/installed-preparation/run/cross-sequence-control.observation-sequence-fresh-key.json",
++      "observationPath": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/sequence-member-draft/installed-preparation-v2/run/cross-sequence-control.observation-sequence-fresh-key.json",
+       "workload": {
+         "cases": 1,
+         "httpExpected": 205,
+@@ -400,7 +400,7 @@
+       "cwd": "/Users/dbox/repos/wt/vickie/vickie-sequence-member-evidence",
+       "argv": [
+         "python3",
+-        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/sequence-member-draft/installed-preparation/review-installed.py",
++        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/sequence-member-draft/installed-preparation-v2/review-installed.py",
+         "cross-sequence-control"
+       ],
+       "supervisorSeconds": 120,
+--- /Users/dbox/repos/wt/vickie/bdp-integration-logs/sequence-member-draft/installed-preparation/execution-gate.example.json
++++ /Users/dbox/repos/wt/vickie/bdp-integration-logs/sequence-member-draft/installed-preparation-v2/execution-gate.example.json
+@@ -8,15 +8,15 @@
+   "pnpm": "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+   "sourceLockSha256": "4150d8821c96dbc2cfec0b2762ff76b58318079f65fa4f5c8858ef2dd61f8d6d",
+   "buildOutputInventory": {
+-    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/sequence-member-draft/installed-preparation/run/build-output-inventory.json",
+-    "sha256": "PENDING_ACTUAL_BUILD_INVENTORY"
++    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/sequence-member-draft/installed-preparation/build-output-inventory.json",
++    "sha256": "2a2fc1ef6aa4a5160365e8303aa754f92363ba4e119bc7c4e248af3afdb48b88"
+   },
+   "preparationSha256": {
+-    "gate.py": "1d93071dd45a92c0b6d8f841e5e39e0bddd4f7619fc03123f03a8dabaa4bc7e5",
++    "gate.py": "c3c197e51b22f618caade5bd008f424c525242925aa83c48e725a7ff7e4f8a4e",
+     "supervise.py": "1764ff4ec582f9ffc8d71b084745383feba2e965006d64ab20fb3c988a180c4a",
+     "packages.py": "5a61e9d49174c8dca41a4f3dca4b96eaf44618f4b1e7d46a3016f911a14eed3a",
+     "review-installed.py": "d36df2428fa86be82aae7fe3669e191b10b296d8a3b275fec909df7f20b6bbec",
+-    "commands.json": "3f2ae9835f33e695c7f10289cb0ea9370c68e223ed60ea212812d055359c6df7"
++    "commands.json": "2e48d492684c210fa5f25d3c1b23d9dd353d284fd8fa98158ff758d5444eb2e1"
+   },
+   "expectedProductionVersions": {
+     "@bdp/protocol": "0.0.0",
+@@ -30,12 +30,8 @@
+   },
+   "consumerLockSha256": "PENDING_ACTUAL_FRESH_CONSUMER_ROOT_ACCEPTANCE",
+   "rootAcceptance": {
+-    "path": "PENDING_ROOT_rootAcceptance",
+-    "sha256": "PENDING"
+-  },
+-  "councilAcceptance": {
+-    "path": "PENDING_ROOT_councilAcceptance",
+-    "sha256": "PENDING"
++    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/sequence-member-draft/installed-preparation-v2/root-validation-acceptance.json",
++    "sha256": "PENDING_ROOT_EXPLICIT_VALIDATION_ONLY_RELEASE"
+   },
+   "finalSource": {
+     "path": "PENDING_ROOT_finalSource",
+@@ -58,5 +54,9 @@
+   "rootBuildAcceptance": {
+     "path": "PENDING_ROOT_BUILD_ACCEPTANCE",
+     "sha256": "PENDING"
++  },
++  "councilState": {
++    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/sequence-member-draft/installed-preparation-v2/council-state.json",
++    "sha256": "PENDING_ROOT_TRUTHFUL_COUNCIL_STATE"
+   }
+ }
