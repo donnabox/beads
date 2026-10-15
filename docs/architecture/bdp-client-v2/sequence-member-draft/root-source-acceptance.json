@@ -1,0 +1,106 @@
+{
+  "status": "accepted-source-validation",
+  "at": "2026-10-15T17:11:32.713277+00:00",
+  "sourceBindingSha256": "a6eb425d2616279fed28132c2b59258b7503b186224ba538179704b6364c9e2a",
+  "sourceParent": "18104a03b850553641f24fe83e7318493fa102ca",
+  "dirtySource": true,
+  "stages": {
+    "offline-setup": {
+      "sha256": "d71bd8921d69a686369a969621db8a204fdcd2ce55a5007a71a0a57f67a76ef5",
+      "elapsedSeconds": 0.7563764171209186
+    },
+    "typecheck": {
+      "sha256": "d05b24a34509d6a903b2a288fa91b0b4bfacc03f2372e6403b88436cf485f712",
+      "elapsedSeconds": 1.560556499985978
+    },
+    "build": {
+      "sha256": "9313c23c41aa5c91dcd4310ab2a8d12b99750f12eb1ce2f4a900d463071a0bd5",
+      "elapsedSeconds": 1.4831038748379797
+    },
+    "format-check": {
+      "sha256": "ce8b90fbe641f757cbb832aaf26579ccd917f0af5e6ffe8754a97b5991626389",
+      "elapsedSeconds": 0.9010497080162168
+    },
+    "lint": {
+      "sha256": "dc853a31dad742be92b1d93757797ff0c00478d7a32dded45ff2b2d6fdaf3fda",
+      "elapsedSeconds": 1.0550254578702152
+    },
+    "boundaries": {
+      "sha256": "bac49639a3effb95cac1d30f813cea6eb9d72af932ba859f565bf245b137864c",
+      "elapsedSeconds": 1.1678417089860886
+    },
+    "read-seal": {
+      "sha256": "144b80560b5417cb6edaad5102a95d1e569da7da50cec1d4203c5e2900cec93b",
+      "elapsedSeconds": 0.8550047921016812
+    },
+    "source-positive": {
+      "sha256": "b3fb6f374f12d79ca4617b6bd389f62bd866cda5ecb56160d439e5ce9d855bc1",
+      "elapsedSeconds": 1.5608481250237674
+    }
+  },
+  "selectedCases": [
+    "pins the matching no-op installed route digest and fifteen-action ledger",
+    "pins deletion-safety derivative carriers, complete positives, and measured source bounds",
+    "binds the canonical cumulative TX selection and exact source digests without qualification",
+    "rejects noncanonical selections, History, wrong factories, retired and misprofiled rows",
+    "copies source bytes before binding and exposes all missing obligations without executing them",
+    "preserves every original TX scenario and coverage object while adding one bounded partial cross-carrier row",
+    "pins the one-page matched-plus-updated witness without advertised-limit or other-outcome credit",
+    "pins the inherited command-minimum manifest facts, read-header absence and all thirteen prior objects"
+  ],
+  "skippedCases": 94,
+  "sampledPidsIndependentlyAbsent": [
+    96010,
+    96012,
+    96017,
+    96045,
+    96047,
+    96053,
+    96076,
+    96110,
+    96112,
+    96117,
+    96141,
+    96142,
+    96168,
+    96169,
+    96177,
+    96226,
+    96228,
+    96233,
+    96256,
+    96262,
+    96285,
+    96287,
+    96292,
+    96316,
+    96322,
+    96348,
+    96350,
+    96357,
+    96381,
+    96406,
+    96408,
+    96414,
+    96438,
+    96513,
+    96515,
+    96521,
+    96523,
+    96540
+  ],
+  "retainedNodeCompileCacheDirectories": [
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/sequence-member-draft/execution-preparation-v2/run/offline-setup.tmp/node-compile-cache",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/sequence-member-draft/execution-preparation-v2/run/typecheck.tmp/node-compile-cache",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/sequence-member-draft/execution-preparation-v2/run/build.tmp/node-compile-cache",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/sequence-member-draft/execution-preparation-v2/run/format-check.tmp/node-compile-cache",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/sequence-member-draft/execution-preparation-v2/run/lint.tmp/node-compile-cache",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/sequence-member-draft/execution-preparation-v2/run/boundaries.tmp/node-compile-cache",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/sequence-member-draft/execution-preparation-v2/run/read-seal.tmp/node-compile-cache"
+  ],
+  "readEvidenceRows": 89,
+  "historicalReadEvidenceNotReattributed": true,
+  "previousFormatFailure": "execution-preparation/run/format-check.exit.json",
+  "rootAuditCorrection": "Initial acceptance assertion assumed all unclassified temp paths absent; actual seven Node compile-cache directories classified and retained. No product rerun.",
+  "limitation": "Eight selected static callbacks; no installed HTTP validation or profile qualification. Lint warnings are non-fatal."
+}

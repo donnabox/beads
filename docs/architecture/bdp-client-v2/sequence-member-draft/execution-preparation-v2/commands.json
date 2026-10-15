@@ -1,0 +1,136 @@
+{
+  "status": "CLOSED_PREPARATION_FUTURE_DRAFT_UNKNOWN",
+  "sourceDependentBindings": "Future four-path draft, derivative specimens, measured fence acceptance, build and source hashes unavailable. All live gates absent.",
+  "pathPrefix": "/Users/dbox/.nvm/versions/node/v24.16.0/bin",
+  "commands": [
+    {
+      "id": "offline-setup",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-sequence-member-evidence",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "install",
+        "--offline",
+        "--frozen-lockfile"
+      ],
+      "timeoutSeconds": 120,
+      "supervisorSeconds": 120,
+      "released": false
+    },
+    {
+      "id": "typecheck",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-sequence-member-evidence",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "typecheck"
+      ],
+      "timeoutSeconds": 120,
+      "supervisorSeconds": 120,
+      "released": false
+    },
+    {
+      "id": "build",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-sequence-member-evidence",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "build"
+      ],
+      "timeoutSeconds": 120,
+      "supervisorSeconds": 120,
+      "released": false
+    },
+    {
+      "id": "format-check",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-sequence-member-evidence",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "format:check"
+      ],
+      "timeoutSeconds": 120,
+      "supervisorSeconds": 120,
+      "released": false
+    },
+    {
+      "id": "lint",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-sequence-member-evidence",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "lint"
+      ],
+      "timeoutSeconds": 120,
+      "supervisorSeconds": 120,
+      "released": false
+    },
+    {
+      "id": "boundaries",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-sequence-member-evidence",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "check:boundaries"
+      ],
+      "timeoutSeconds": 120,
+      "supervisorSeconds": 120,
+      "released": false
+    },
+    {
+      "id": "read-seal",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-sequence-member-evidence",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "evidence:verify"
+      ],
+      "timeoutSeconds": 120,
+      "supervisorSeconds": 120,
+      "released": false
+    },
+    {
+      "id": "source-positive",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-sequence-member-evidence",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/repos/wt/vickie/vickie-sequence-member-evidence/node_modules/.pnpm/vitest@4.1.10_@types+node@24.13.3_vite@8.2.1_@types+node@24.13.3_/node_modules/vitest/vitest.mjs",
+        "run",
+        "packages/conformance/src/transactional-cumulative.test.ts",
+        "apps/bdptest/src/transactional-matrix.test.ts",
+        "--maxWorkers=1",
+        "--reporter=verbose",
+        "--reporter=json",
+        "--outputFile=/Users/dbox/repos/wt/vickie/bdp-integration-logs/sequence-member-draft/execution-preparation-v2/run/source.json",
+        "-t",
+        "^(?:binds\\ the\\ canonical\\ cumulative\\ TX\\ selection\\ and\\ exact\\ source\\ digests\\ without\\ qualification|rejects\\ noncanonical\\ selections,\\ History,\\ wrong\\ factories,\\ retired\\ and\\ misprofiled\\ rows|copies\\ source\\ bytes\\ before\\ binding\\ and\\ exposes\\ all\\ missing\\ obligations\\ without\\ executing\\ them|pins\\ the\\ inherited\\ command\\-minimum\\ manifest\\ facts,\\ read\\-header\\ absence\\ and\\ all\\ thirteen\\ prior\\ objects|preserves\\ every\\ original\\ TX\\ scenario\\ and\\ coverage\\ object\\ while\\ adding\\ one\\ bounded\\ partial\\ cross\\-carrier\\ row|pins\\ the\\ one\\-page\\ matched\\-plus\\-updated\\ witness\\ without\\ advertised\\-limit\\ or\\ other\\-outcome\\ credit|pins\\ the\\ matching\\ no\\-op\\ installed\\ route\\ digest\\ and\\ fifteen\\-action\\ ledger|pins\\ deletion\\-safety\\ derivative\\ carriers,\\ complete\\ positives,\\ and\\ measured\\ source\\ bounds)$"
+      ],
+      "timeoutSeconds": 120,
+      "supervisorSeconds": 120,
+      "released": false,
+      "expectedCases": 8,
+      "expectedExit": 0,
+      "selectedFullNames": [
+        "binds the canonical cumulative TX selection and exact source digests without qualification",
+        "rejects noncanonical selections, History, wrong factories, retired and misprofiled rows",
+        "copies source bytes before binding and exposes all missing obligations without executing them",
+        "pins the inherited command-minimum manifest facts, read-header absence and all thirteen prior objects",
+        "preserves every original TX scenario and coverage object while adding one bounded partial cross-carrier row",
+        "pins the one-page matched-plus-updated witness without advertised-limit or other-outcome credit",
+        "pins the matching no-op installed route digest and fifteen-action ledger",
+        "pins deletion-safety derivative carriers, complete positives, and measured source bounds"
+      ],
+      "cases": 8,
+      "http": 0,
+      "owners": 0,
+      "directories": 0,
+      "listeners": 0,
+      "productChildren": 0,
+      "readonlyInventoryHandles": 0,
+      "ownedTempPrefixes": []
+    }
+  ],
+  "noAutomaticRetry": true,
+  "controlGate": "Closed: manifest derivatives execute only later inside separately released packed installed cohorts; no emitted runtime mutant or source control is authorized.",
+  "installedGate": "Closed: clean ordinary source, fresh build/archive/consumer/eight dependency closure and four exact frozen selectors/reports required; no workspace fallback."
+}

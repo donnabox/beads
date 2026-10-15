@@ -62,11 +62,23 @@ Original service-review lows: RU trusted callback capability narrowing and publi
 
 ### Live worker ledger
 
-Checkpoint 2026-10-15T16:49:10Z. **ACTIVE — Transactional first, with targeted ordinary Update work.** Session `2026-10-08T20:26:35Z-81e5`. Operator resume supersedes earlier travel/battery/budget pauses. Claude access restored. Delivery predicates remain unmet; no public profile advertisement, release or Preview2 promotion.
+Checkpoint 2026-10-15T17:12:32Z. **ACTIVE — Transactional first, with targeted ordinary Update work.** Session `2026-10-08T20:26:35Z-81e5`. Operator resume supersedes earlier travel/battery/budget pauses. Claude access restored. Delivery predicates remain unmet; no public profile advertisement, release or Preview2 promotion.
 
 Main merges require exact-head green CI, native plus actual Claude council dispositions, scope and ordinary ancestry checks, then actual merged-tree verification. Janet CLI/staging/playgrounds/shared databases and Trish Types remain untouched.
 
 ### Current verified main and active work
+
+**Current main is PR131 merge18104a03b850553641f24fe83e7318493fa102ca**, tree10810a8016a451e241ea974487681dcddd63c2e4, exact candidate/CI/ordinary ancestry/actual tree verified. Its depth/key ordering repair is delivered; earlier PR128–130 pending wording below is historical. No release/public profile qualification.
+
+**Sequence member evidence is authored and statically validated.** Four-path [source binding](sequence-member-draft/source-binding.json), SHAa6eb425d, and fullpatch53c66bc9 append a ten-action partial witness: success/failure/success, three retained receipt GETs, complete replay, current records and two linked Events. [Author report](sequence-member-draft/source-author/report.md) preserves the initial target correction. [Independent native review](sequence-member-draft/native-code-review.md), SHA6a36c3cb, has no actionable findings and closes the mechanical formatting successor. [Measurement audit](sequence-member-draft/source-author/root-measurement-audit.md) verifies all41 changed specimens and all28 old raw objects; final disk790009/normal802361/nodes20956/coverage117702, derivative maximum808479/21112. Measured source fences retain original margins and runtime limits.
+
+[Root source acceptance](sequence-member-draft/root-source-acceptance.json), SHA15e91b6a, binds all eight sequential stages and eight exact static callbacks passing, unchanged Read89 evidence and38 sampled PIDs independently absent. Seven Node compile-cache directories are classified and retained; no product stores remain. Initial format-check failure is preserved separately; only new-row wrapping and disk-fence/comment changed. No installed HTTP evidence is credited yet. Actual Claude code-review packet is being assembled; launch and installed execution remain separately gated. The closed fresh-package scaffold preserves four cohorts623 expected/632 maximumHTTP and71 children. These are workload bounds, not completion metrics.
+
+[Bounded ordinary Update audit](update-after-pr131-audit.md), SHA235e59a0, found no new serving defect in copied Read headers, retained identity/disclosure ordering or revision guards; existing ordinary Update evidence remains distinct. Snapshot/continuation minimum and incident-Link metadata Event questions remain pending; independent work continues.
+
+Workers: update_implementation finished source and closed installed scaffold; cross_carrier_plan_v2_review finished native code review; cross_carrier_native_review is completing measured formatting closure and text-only Claude assembly. Root owns actual council launch, installed validation, publication and next slice. All work stays in the owned sequence worktree; no Janet/Trish/shared-state changes.
+
+### Preserved earlier evidence and chronology
 
 **[PR129](https://github.com/gastownhall/bdp/pull/129) is merged and tree-verified at predecessor77f4b89c117e46f0e73476f69b4c8b377306452b**, tree93b2ea89d6db05512d4c0bc5bb3cf6083560e8da, ordered parents9a42+be0cc. [Postmerge verification](read-update-guarded-overlap-draft/landing/postmerge-verification.json) and fetched Git object match tested synthetic11ecd3b9. [Root landing acceptance](read-update-guarded-overlap-draft/landing/root-landing-acceptance.json), SHA64a0dbd4, binds exact two-path scope, ordinary ancestry, complete native/actual Claude council and installed positive/negative proof. Exact CI38750269222/job116474544354 passed all27steps,9301tests/1skip/176files,7preflight/smoke/Read89. Suite691.57s/job914s; rawlog0b51a7c1. The new CI witness passed1193ms with10responses and normal child/store cleanup. [CI outcome](read-update-guarded-overlap-draft/landing/ci-outcome.md), SHAb0006317. No release/public profile qualification.
 

@@ -1,0 +1,27 @@
+{
+  "status": "PENDING_ACTUAL_BUILD_NO_INVENTORY_CAPTURED",
+  "buildHead": null,
+  "buildWorkspaceDirty": null,
+  "sourceSha256": null,
+  "inputFiles": null,
+  "packageFiles": null,
+  "emittedFiles": null,
+  "buildStart": {
+    "path": null,
+    "sha256": null
+  },
+  "buildExit": {
+    "path": null,
+    "sha256": null
+  },
+  "buildLog": {
+    "path": null,
+    "sha256": null
+  },
+  "rootAcceptanceSchema": {
+    "accepted": false,
+    "inventorySha256": null,
+    "finalHead": null
+  },
+  "instruction": "Root must bind actual successful build start/exit/log and complete tracked input, protocol/server package-member and all packages/apps emitted-output inventories. Dirty-source build reuse requires exact unchanged input/output mapping to clean candidate; chronology stays actual. No build claimed or run by preparation."
+}

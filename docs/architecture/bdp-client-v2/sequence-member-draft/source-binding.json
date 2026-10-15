@@ -1,0 +1,31 @@
+{
+  "workspace": "/Users/dbox/repos/wt/vickie/vickie-sequence-member-evidence",
+  "branch": "codex/vickie-sequence-member-transactions",
+  "head": "18104a03b850553641f24fe83e7318493fa102ca",
+  "tree": "10810a8016a451e241ea974487681dcddd63c2e4",
+  "diffSha256": "53c66bc9a5d07f53749e18628eaba32773458160ab506566ec1fb7960d13c313",
+  "files": {
+    "packages/conformance/test-support/transactional/manifest-v1.json": {
+      "sha256": "a11a79f6d0f9ffa5933a680a3e4fed87987789c3deca50a38cda8563132d242e",
+      "new": false
+    },
+    "packages/conformance/test-support/transactional/coverage-v1.json": {
+      "sha256": "346e1edaa22af789f89017fdc2fef6bb01b7564ed72a65344e9fe5635887c74f",
+      "new": false
+    },
+    "packages/conformance/src/transactional-cumulative.test.ts": {
+      "sha256": "313e6a947b33a3893565ea5db2d9d4a962b46c2e926900598e9285e657a31bf2",
+      "new": false
+    },
+    "apps/bdptest/src/transactional-matrix.test.ts": {
+      "sha256": "dcf0161723a6b77dd4235111a83a6aa1ce0cbb6a1a5d79e362f992742bc503de",
+      "new": false
+    }
+  },
+  "status": "FROZEN_FORMAT_REPAIR_NOT_EXECUTED",
+  "planSha256": "57c662f5e65fae5a4e1d103f1953a2754bbcf9a9d0e8ebb15f418805bab26f74",
+  "releaseSha256": "11265470e896b968baf86a6a55cab68a96323e15e819603ecbd5ad71ef99b7d7",
+  "supersedesInitialBindingSha256": "f2fddbf5916b8b69f3e5faa8fdb2779d44e34da60d63a6f6641a7e36828fbf5c",
+  "preFenceBindingSha256": "6dc92a67f17acdac93c4b2d6c27ec832d67ad6614c7a70a00ff7ebe407fda71c",
+  "preFormatBindingSha256": "d9b68985603f168061e341ad4445b0881ac225449e9b93475b1541a4310dae79"
+}

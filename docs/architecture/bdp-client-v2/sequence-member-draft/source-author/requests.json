@@ -1,0 +1,269 @@
+{
+  "positivePostBodies": [
+    {
+      "action": "s-sequence",
+      "body": "{\"operations\":[{\"operation\":\"createBead\",\"id\":\"beads/a\",\"type\":\"https://reference.invalid/acme/types/task\",\"properties\":{\"title\":\"member-first\"},\"idempotencyKey\":\"member-a\"},{\"operation\":\"deleteBead\",\"bead\":\"beads/missing\",\"idempotencyKey\":\"member-fail\"},{\"operation\":\"createBead\",\"id\":\"beads/b\",\"type\":\"https://reference.invalid/acme/types/task\",\"properties\":{\"title\":\"member-last\"},\"idempotencyKey\":\"member-b\"}]}",
+      "bytes": 414,
+      "sha256": "f3cde631127aaf530ea5349330e6c7bb46766b02b135f9c7c59acfcd2f2c71c7"
+    },
+    {
+      "action": "s-first-receipt",
+      "body": "{\"operations\":[{\"operation\":\"createBead\",\"id\":\"beads/a\",\"type\":\"https://reference.invalid/acme/types/task\",\"properties\":{\"title\":\"member-first\"}}]}",
+      "bytes": 147,
+      "sha256": "b3f8ec9abecce7f6de336c869281e69c2568798a9a44dccb6612a6c5fa44d775"
+    },
+    {
+      "action": "s-failed-receipt",
+      "body": "{\"operations\":[{\"operation\":\"deleteBead\",\"bead\":\"beads/missing\"}]}",
+      "bytes": 66,
+      "sha256": "47a4fd554c40bd307a50c37f422a945fae35091ac7fc206a7bb59274cb00a4ec"
+    },
+    {
+      "action": "s-last-receipt",
+      "body": "{\"operations\":[{\"operation\":\"createBead\",\"id\":\"beads/b\",\"type\":\"https://reference.invalid/acme/types/task\",\"properties\":{\"title\":\"member-last\"}}]}",
+      "bytes": 146,
+      "sha256": "6e27825f68db2ff5572688966faad2e924d2e2bdee4870d9339e56ee1db2c837"
+    },
+    {
+      "action": "s-replay",
+      "body": "{\"operations\":[{\"operation\":\"createBead\",\"id\":\"beads/a\",\"type\":\"https://reference.invalid/acme/types/task\",\"properties\":{\"title\":\"member-first\"},\"idempotencyKey\":\"member-a\"},{\"operation\":\"deleteBead\",\"bead\":\"beads/missing\",\"idempotencyKey\":\"member-fail\"},{\"operation\":\"createBead\",\"id\":\"beads/b\",\"type\":\"https://reference.invalid/acme/types/task\",\"properties\":{\"title\":\"member-last\"},\"idempotencyKey\":\"member-b\"}]}",
+      "bytes": 414,
+      "sha256": "f3cde631127aaf530ea5349330e6c7bb46766b02b135f9c7c59acfcd2f2c71c7"
+    }
+  ],
+  "totalPostBytes": 1187,
+  "maximumPostBytes": 414,
+  "negativePostBody": {
+    "action": "s-sequence",
+    "body": "{\"operations\":[{\"operation\":\"createBead\",\"id\":\"beads/a\",\"type\":\"https://reference.invalid/acme/types/task\",\"properties\":{\"title\":\"member-first\"},\"idempotencyKey\":\"member-a\"},{\"operation\":\"deleteBead\",\"bead\":\"beads/a\",\"idempotencyKey\":\"member-fail\"},{\"operation\":\"createBead\",\"id\":\"beads/b\",\"type\":\"https://reference.invalid/acme/types/task\",\"properties\":{\"title\":\"member-last\"},\"idempotencyKey\":\"member-b\"}]}",
+    "bytes": 408,
+    "sha256": "cc96f5caf3ee16a216a73ccbe6028aacecf2c1a8ff1dc1315025fbc175217c06"
+  },
+  "rawHeaderLedger": [
+    {
+      "action": "s-sequence",
+      "authoredHeaderLines": [
+        {
+          "name": "accept",
+          "value": "application/json"
+        },
+        {
+          "name": "content-type",
+          "value": "application/json"
+        }
+      ],
+      "credentialRef": "operator",
+      "outerIdempotencyKey": null,
+      "minimumHeadersAbsent": true
+    },
+    {
+      "action": "s-first-receipt",
+      "authoredHeaderLines": [
+        {
+          "name": "accept",
+          "value": "application/json"
+        },
+        {
+          "name": "content-type",
+          "value": "application/json"
+        },
+        {
+          "name": "idempotency-key",
+          "value": "member-a"
+        }
+      ],
+      "credentialRef": "operator",
+      "outerIdempotencyKey": "member-a",
+      "minimumHeadersAbsent": true
+    },
+    {
+      "action": "s-failed-receipt",
+      "authoredHeaderLines": [
+        {
+          "name": "accept",
+          "value": "application/json"
+        },
+        {
+          "name": "content-type",
+          "value": "application/json"
+        },
+        {
+          "name": "idempotency-key",
+          "value": "member-fail"
+        }
+      ],
+      "credentialRef": "operator",
+      "outerIdempotencyKey": "member-fail",
+      "minimumHeadersAbsent": true
+    },
+    {
+      "action": "s-last-receipt",
+      "authoredHeaderLines": [
+        {
+          "name": "accept",
+          "value": "application/json"
+        },
+        {
+          "name": "content-type",
+          "value": "application/json"
+        },
+        {
+          "name": "idempotency-key",
+          "value": "member-b"
+        }
+      ],
+      "credentialRef": "operator",
+      "outerIdempotencyKey": "member-b",
+      "minimumHeadersAbsent": true
+    },
+    {
+      "action": "s-replay",
+      "authoredHeaderLines": [
+        {
+          "name": "accept",
+          "value": "application/json"
+        },
+        {
+          "name": "content-type",
+          "value": "application/json"
+        }
+      ],
+      "credentialRef": "operator",
+      "outerIdempotencyKey": null,
+      "minimumHeadersAbsent": true
+    },
+    {
+      "action": "s-current",
+      "authoredHeaderLines": [
+        {
+          "name": "accept",
+          "value": "application/json"
+        }
+      ],
+      "credentialRef": "operator",
+      "outerIdempotencyKey": null,
+      "minimumHeadersAbsent": true
+    },
+    {
+      "action": "s-events",
+      "authoredHeaderLines": [
+        {
+          "name": "accept",
+          "value": "application/json"
+        }
+      ],
+      "credentialRef": "operator",
+      "outerIdempotencyKey": null,
+      "minimumHeadersAbsent": true
+    }
+  ],
+  "rawPositions": [
+    1,
+    2,
+    4,
+    6,
+    8,
+    9,
+    10
+  ],
+  "helperAuthority": "Existing original-wire receipt binding, not prefix; exact three roots/client positions and body equality; current contextpos2",
+  "negativeExpectedFailures": [
+    "serving-position",
+    "middle-type",
+    "middle-code",
+    "middle-status",
+    "middle-retry",
+    "middle-no-outcome",
+    "middle-no-deleted"
+  ],
+  "claims": {
+    "rawFullValues": "app-local assertions only",
+    "reportBodies": "redacted; not reconstructed",
+    "receiptHelper": "actual sourceReceiptObservation plus original-wire full equality before projection"
+  },
+  "requests": 10,
+  "captures": 3,
+  "targets": [
+    {
+      "action": "s-sequence",
+      "target": {
+        "binding": "scope",
+        "path": "operations/sequence"
+      },
+      "clientInput": null
+    },
+    {
+      "action": "s-first-receipt",
+      "target": {
+        "binding": "batch"
+      },
+      "clientInput": null
+    },
+    {
+      "action": "s-first-facts",
+      "target": null,
+      "clientInput": {
+        "binding": "s-first-root",
+        "method": "GET"
+      }
+    },
+    {
+      "action": "s-failed-receipt",
+      "target": {
+        "binding": "batch"
+      },
+      "clientInput": null
+    },
+    {
+      "action": "s-failed-facts",
+      "target": null,
+      "clientInput": {
+        "binding": "s-failed-root",
+        "method": "GET"
+      }
+    },
+    {
+      "action": "s-last-receipt",
+      "target": {
+        "binding": "batch"
+      },
+      "clientInput": null
+    },
+    {
+      "action": "s-last-facts",
+      "target": null,
+      "clientInput": {
+        "binding": "s-last-root",
+        "method": "GET"
+      }
+    },
+    {
+      "action": "s-replay",
+      "target": {
+        "binding": "scope",
+        "path": "operations/sequence"
+      },
+      "clientInput": null
+    },
+    {
+      "action": "s-current",
+      "target": {
+        "binding": "scope",
+        "path": "beads/",
+        "query": {
+          "limit": "32"
+        }
+      },
+      "clientInput": null
+    },
+    {
+      "action": "s-events",
+      "target": {
+        "binding": "scope",
+        "path": "events/"
+      },
+      "clientInput": null
+    }
+  ],
+  "configurationDigest": "02dd7d9f35e7482c07ce1550a6572232cc48ba6858cd66f8dfc8f5384f3628be"
+}

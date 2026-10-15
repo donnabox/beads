@@ -1,0 +1,16 @@
+{
+  "status": "released-static-source-validation",
+  "sourceBindingSha256": "d9b68985603f168061e341ad4445b0881ac225449e9b93475b1541a4310dae79",
+  "measuredFenceAcceptanceSha256": "56dca36023cd59cc4eb231678bdaa0794e9c4a445972a4f1c61ea432c27f4fdf",
+  "scope": "Eight sequential stages and eight exact CPU-only callbacks. No installed runtime or publication. Native and actual Claude reviews remain required before publication.",
+  "authorizedStages": [
+    "offline-setup",
+    "typecheck",
+    "build",
+    "format-check",
+    "lint",
+    "boundaries",
+    "read-seal",
+    "source-positive"
+  ]
+}

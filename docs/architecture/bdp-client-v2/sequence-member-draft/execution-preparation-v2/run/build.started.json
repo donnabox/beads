@@ -1,0 +1,33 @@
+{
+  "name": "build",
+  "argv": [
+    "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+    "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+    "build"
+  ],
+  "cwd": "/Users/dbox/repos/wt/vickie/vickie-sequence-member-evidence",
+  "started": "2026-10-15T17:10:30.234048+00:00",
+  "head": "18104a03b850553641f24fe83e7318493fa102ca",
+  "workspaceDirty": true,
+  "sourceSha256": {
+    "packages/conformance/test-support/transactional/manifest-v1.json": "a11a79f6d0f9ffa5933a680a3e4fed87987789c3deca50a38cda8563132d242e",
+    "packages/conformance/test-support/transactional/coverage-v1.json": "346e1edaa22af789f89017fdc2fef6bb01b7564ed72a65344e9fe5635887c74f",
+    "packages/conformance/src/transactional-cumulative.test.ts": "313e6a947b33a3893565ea5db2d9d4a962b46c2e926900598e9285e657a31bf2",
+    "apps/bdptest/src/transactional-matrix.test.ts": "dcf0161723a6b77dd4235111a83a6aa1ce0cbb6a1a5d79e362f992742bc503de"
+  },
+  "sourceDiffSha256": "53c66bc9a5d07f53749e18628eaba32773458160ab506566ec1fb7960d13c313",
+  "rootAcceptanceSha256": "d7ef141f443200147c6dcb4e0db4ac2b54fe8ccc9a01f9d4ade473386f89fb4a",
+  "preparationSha256": "38cbc8b85d1c4acdfe4065410fdd2c19b0f9a841d57f3129f70676da5d95f773",
+  "bdpOverrides": {},
+  "guardedArgv": [
+    "/opt/homebrew/opt/python@3.14/bin/python3.14",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/guarded-action.py",
+    "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+    "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+    "build"
+  ],
+  "nodePathPrefix": "/Users/dbox/.nvm/versions/node/v24.16.0/bin",
+  "sourceAttribution": "Externally bound source snapshot or frozen package; not child-attested Git identity",
+  "plannedWorkload": {},
+  "derivativeBinding": null
+}
