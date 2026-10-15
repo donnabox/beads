@@ -1,0 +1,36 @@
+{
+  "controlTitle": "serves contextual missing Event responses for Bead and Link JSON and SSE GET and HEAD",
+  "namedFailures": [
+    "missing-event-context:Bead:JSON:GET",
+    "missing-event-context:Bead:JSON:HEAD",
+    "missing-event-context:Bead:SSE:GET",
+    "missing-event-context:Bead:SSE:HEAD",
+    "missing-event-context:Link:JSON:GET",
+    "missing-event-context:Link:JSON:HEAD",
+    "missing-event-context:Link:SSE:GET",
+    "missing-event-context:Link:SSE:HEAD"
+  ],
+  "statuses": [
+    200,
+    200,
+    404,
+    404,
+    404,
+    404,
+    404,
+    404,
+    404,
+    404,
+    401
+  ],
+  "attempts": 11,
+  "closed": true,
+  "directoryAbsent": true,
+  "deadlineExceeded": false,
+  "originalSupervisorVerdict": {
+    "verdict": "CONTROL_NOT_ACCEPTED",
+    "actualSupervisorExit": 1,
+    "reason": "Dependency bytes changed"
+  },
+  "limitation": "Raw expected control failure is distinct from the failed dependency postcheck. Independent final disposition pending at packet assembly."
+}

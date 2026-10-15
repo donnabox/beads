@@ -1,0 +1,15 @@
+{
+  "at": "2026-10-15T11:13:19.496910+00:00",
+  "decision": "Accept intended emitted regression-control evidence via separate tooling-drift disposition; original supervisor and adjudication remain failed.",
+  "scope": "One executed test, exactly8named null-context assertion failures,11completedresponses. No rerun.",
+  "review": "Root read actual JSON failures/observations and native complete audit; independently reconstructed all9original shim hashes by exact C-to-W substitutions and checked all1105source/build/copy files again. Effective dependency targets unchanged; copied workspace links unchanged. AllsampledPIDs now absent.",
+  "sourceBindingSha256": "acf190e742dfb669fe5607085a3ac60c5ecb66f4f86b1f05025424a7873615b0",
+  "audit": {
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-event-missing-context-draft/control/post-run-audit/report.md": "4891075b73b157e24e6093b814921298026c19ef6d481b83e159f60eb5de3cd4",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-event-missing-context-draft/control/post-run-audit/disposition.json": "2995acf71a88512ddca727dbde1227c46229b89e1b8892f16fd875a3ac177ec6"
+  },
+  "originalSupervisorExit": 1,
+  "originalSourceUnchangedFlag": false,
+  "flagExplanation": "Graph-inclusive verification threw on generated dependency shims before returning product-source hashes; direct independent comparison proves product bytes unchanged.",
+  "limitations": "Dependency regeneration cause consistent with pnpm, not independently traced; process sampling limitations; source-consumer control only, not installed/public qualification."
+}
