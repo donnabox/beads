@@ -1,0 +1,193 @@
+I read the plan and traced it against the code. Findings below; line refs are from this worktree at the pin `76fde9c9c`.
+
+---
+
+# Review: `engdocs/design/graph-export-milestone.md`
+
+## What I verified as sound (no action)
+
+- **Isolation (ancestry).** `76fde9c9cb0865d430bf12d76fc473490f51128a` is exactly the merge-base of this branch and `codex/iris-legacy-import-export`; HEAD is *not* an ancestor of that branch, and that branch's 16 commits (`internal/legacyimport/`, `graphstore/legacy_import.go`) are absent here. The no-PR86-ancestry claim holds.
+- **No new attribution states from PR86.** `legacy_import.go:174` writes `Attribution{Actor: actor, Status: "claimed", …}` — the same shape ordinary writes produce. An exporter qualified on the pin will not meet an unseen attribution state from legacy import.
+- **History disclosure.** "current state alone cannot claim to be a history backup" is correct and well-aimed: `historyExact` is `false` in `graph_preview.go:711`, and `VersionRow` ordinals are explicitly store-local (`version_history.go:30-35`).
+- **Precedent for refuse-not-truncate.** `PreviewVersionListLimit`'s comment (`version_history.go:59-62`) states the exact principle acceptance item 1 asserts.
+
+---
+
+## Critical / High
+
+### H1 — Inventory omits the three existing whole-inventory read surfaces
+**§"Inventory and contract work", §"First implementation slices"**
+
+The plan names `cmd/bd/export.go` and `cmd/bd/graph_export.go` and then says "graph snapshot" generically. Three concrete surfaces already do most of this job:
+
+- `graphstore.CurrentSnapshot` — `collection_read.go:29`, complete bounded live inventory + Types + WriterToken in one read transaction.
+- `graphstore.ListBeads` — `bead_list.go:39`, "complete canonical Memory and Issue records" in one read transaction, **already user-reachable** as `bd list --format records-json --all`.
+- `graphread.Inventory` — `inventory.go:28`, same snapshot projected onto `bdpwire` records.
+
+**Impact:** §"First implementation slices" tells the implementer to start with a pure serializer over synthetic fixtures and add a reader "only if the inventory proves the existing boundary insufficient." Starting from synthetic fixtures with these three unnamed is the fastest route to a fourth, divergent projection of the same records.
+
+**Fix:** add one inventory row per surface with its file reference, and state the chosen read (`CurrentSnapshot`) up front, with `ListBeads` and `graphread.Inventory` named as the two projections the export must stay consistent with.
+
+### H2 — Three incompatible projections of the same record exist; "consistency" names none
+**§"Inventory and contract work" bullet 3, acceptance item 2**
+
+| Projection | `version` | attribution |
+|---|---|---|
+| `graphstore` record JSON (`types.go:61-92`) | present | `actor` / `status` / `recordedAt` |
+| CLI `graphProjectCompleteRecords` (`graph_preview_record_json.go:38`, `:121-130`) | **deleted** | `actor` / `basis` / `recordedAt` |
+| `graphread`→`bdpwire` (`reader.go:173-192`) | absent | `principal` / `basis` — **`recordedAt` dropped entirely** |
+
+**Impact:** whichever the export picks, it silently disagrees with the other two. If it picks the `bdpwire` projection — the most natural choice, since that is what `graphread.Inventory` returns — acceptance item 2's "exact … metadata" is violated by construction, because `projectAttribution` discards `RecordedAt` and returns `nil` for an unattributed record.
+
+**Fix:** name the chosen projection, enumerate those three divergences as deliberate in the format doc, and require a guard test pinning the export projection against its chosen source.
+
+### H3 — Attribution, revision/version, and tombstones are missing from the field-family enumeration
+**§"Inventory and contract work" bullet 3** ("explicit inclusion, exclusion or refusal for every field family")
+
+The enumerated families are "retained Issue fields, metadata, comments, Memory keys/values, Links, Types and configuration." Not enumerated, but present on every record:
+
+- `Attribution{Actor, Status, RecordedAt}` (`types.go:74-78`), with validation laws (`actor==""` ⇒ status must be `unknown`; `actor!=""` ⇒ `claimed`, enforced at `records.go:200-203` and `issues.go:237`).
+- `Revision` and `Version` as separate members that are currently always equal.
+- `Owned` link sets.
+- Deleted allocations / `LinkTombstone` (see H4).
+- Scope binding: `ScopeURL`, `AuthorityID`, `WorkspaceID`, `SchemaVersion = 7` (`types.go:14-23`).
+- `config.issue_prefix` — the only config row the bounds charge (`collection_read_bounds.go:35`).
+
+**Fix:** replace the prose list with a per-member table over the four record structs in `graphstore/types.go` plus the binding, each with inclusion / exclusion / refusal.
+
+### H4 — Live-only snapshot cannot preserve the never-reuse guarantee
+**Acceptance item 1** ("never emit a deceptively complete archive")
+
+`currentSnapshotInTx` selects `WHERE allocation_state='live'` (`collection_read.go:70`). Paths are never reused (`ErrAlreadyExists`, `types.go:96`), and a deleted Link retains a final `LinkTombstone` carrying `PreviousVersion` (`types.go:205-213`). An export of live records alone contains no evidence that a path was ever allocated and retired.
+
+**Failure mode:** a later graph import reads an absent path as allocatable and re-mints an identity the source authority had retired — the exact deception acceptance item 1 forbids, reached through an omission the plan never names.
+
+**Fix:** either add a tombstone section (path, type, revision, previousVersion, state, attribution), or make the omission an explicit envelope disclosure line plus a stated constraint that a future graph import must not treat an absent path as free.
+
+### H5 — "Memory keys/values" describes a plane the graph store does not have
+**§"Inventory and contract work" bullet 2, acceptance item 2**
+
+Graph Memory is a path-addressed Bead whose entire payload is `Properties{Title, Body}` (`types.go:53-57`). The key/value memory records in classic export are a different plane: `kv.memory.*` rows out of the config table, emitted as `{"_type":"memory","key":…,"value":…}` (`export.go:278-294`).
+
+**Impact:** an acceptance criterion written against a nonexistent shape cannot be verified, and the real question — are classic `kv.memory.*` rows in scope for a *graph* export? — goes unasked.
+
+**Fix:** rewrite the family as graph Memory (path, type URL, title, body, metadata, owned, attribution, revision), and add an explicit in/out ruling for classic `kv.memory.*`.
+
+### H6 — The classic privacy default inverts silently in the graph plane
+**§"Inventory" bullet 3, acceptance item 3**
+
+`bd export` excludes memories by default *because they may contain sensitive agent context* (`export.go:38-41`, GH#3650) and publishes at `0o644` (`export.go:119`). A graph export has no equivalent lever: Memories are first-class Beads in the same catalog, so every graph export carries memory bodies — at world-readable permissions if it copies the classic call.
+
+**Fix:** rule explicitly on (a) whether Memory bodies are included by default and (b) the file mode — `0o600` is the defensible default for a file that always carries memory bodies — and document the divergence from `bd export` in the same PR.
+
+### H7 — Comments cannot be read inside the snapshot transaction; three acceptance items depend on it
+**Acceptance items 1, 2, 4**
+
+Comments are deliberately outside `durable_state` and its retained version (`issues.go:215-217`, `issue_comments.go:16`), `CurrentSnapshot` returns none, and `IssueComments` opens **its own** `withTx` per path (`issue_comments.go:22`). So "admitted comments … through a read-only storage operation" consistently is N+1 transactions with no cross-transaction consistency, and item 4's "prove source state unchanged … including comments" has no snapshot-level comment read to compare against.
+
+This is the one case where §"First implementation slices"' conditional — "add a consistent storage reader *only if* the inventory proves the existing boundary insufficient" — is already answered: for comments, it is insufficient.
+
+**Fix:** pick one and write it down. Either scope comments out of the first export with an envelope disclosure (and drop them from item 2), or make a snapshot-level comment reader a *required* slice rather than a conditional one.
+
+### H8 — "Preserve exact IDs" does not say which of the two ID systems, nor record the scope that qualifies them
+**Acceptance item 2**
+
+Every graph record ID is `graph.CanonicalURL(scopeURL, path)` (`records.go:44`, `issues.go:259`) — absolute and scope-qualified — while each Issue *also* carries its native domain ID inside `properties.id`, a duality `reader.go:147-149` calls out explicitly. The scope is bound to the workspace's canonical filesystem path and enforced as authority (`graph_preview.go:331-334`: "copied/moved workspaces cannot claim this authority").
+
+**Impact:** "disclose any identity remapping explicitly" is unverifiable without knowing whether the exported IDs are absolute, and a consumer cannot tell whether importing elsewhere would rebind scope — which *is* identity remapping.
+
+**Fix:** require the envelope to carry `scopeURL`, `authorityID`, graph `schemaVersion` (7) and `issue_prefix`; state that record IDs are absolute and scope-qualified; and name scope rebinding as a reportable remapping.
+
+---
+
+## Medium
+
+### M1 — Dual-mode acceptance collides with the server-only BDP gate
+**Acceptance item 4.** `bdpRead` is `graphPreviewConfig.DoltMode == configfile.DoltModeServer` (`graph_preview.go:711`), and the status text says BDP Read serving is server-only. `CurrentSnapshot` is mode-independent. If the export is layered on `graphread`/`bdpwire`, "embedded and shared-server with no required skips" is unreachable by construction.
+**Fix:** state that the export reads through `graphstore.CurrentSnapshot` and is explicitly not gated on `bdpRead` — or move item 4 to a documented server-only gate.
+
+### M2 — "ordinary shared-server modes" is ambiguous against the code's own refusals
+**Acceptance item 4.** `validateGraphPreviewRoute` *refuses* `dolt.shared-server` and `BEADS_DOLT_PROXIED_SERVER=1` (`graph_preview_config.go:68-72`) while admitting `DoltMode == DoltModeServer`. A gate phrased as "shared-server" can be declared passed under the easier reading.
+**Fix:** write it as "`dolt.mode=server` with static credentials; `dolt.shared-server` and proxied-server remain refused."
+
+### M3 — Three CLI-wiring gates unnamed, one of which panics when omitted
+**§"First implementation slices"** ("Add CLI routing … next"). Concretely required:
+1. A `capability_registry.go` row, or `TestProxyCapabilityRegistryCoversCommandTree` fails. Graph commands use `refusedPath(…, "generic graph CLI: gastownhall/beads#6703")` (`capability_registry.go:457-461`).
+2. An entry in the graph admission allowlist at `graph_preview.go:335` **together with** an early `if graphPreviewActive` dispatch — the COUPLING note at `:336-341` says admitting a command without its dispatch "makes it panic on a nil store rather than refuse."
+3. A `graphPreviewFlags` allowlist that *refuses* every inherited-but-unimplemented flag. If the export reuses `bd export`, `--all`, `--scrub`, `--include-memories` and `--exclude-owner` have no graph analog; silently ignoring any of them is acceptance item 1's "deceptively complete archive" in its most literal form.
+
+**Fix:** add these three as explicit checklist items on the CLI slice.
+
+### M4 — "Never silently truncate a bound" needs a stated disposition for the existing bounds
+**Acceptance item 1.** `PreviewSnapshotLimit = 1000` is self-described as "an operational preview limit, not BDP pagination" (`collection_read.go:14-16`); `PreviewCurrentReadByteLimit = 16 MiB` (`collection_read_bounds.go:21`). Both surface as `ErrLimitExceeded`, which the CLI renders under `capability_unavailable` — a collision `version_history.go:107-109` already flags. And `ListBeads` carries `Limit`/`MaxRows`/`HasMore`, so layering export on it with a nonzero default limit would page, not refuse.
+**Fix:** state that export sets `Limit=0`/`MaxRows=0` (mirroring `export.go:135-139`), that a bound breach is a refusal naming the bound, and whether the documented maximum workspace size for export is the 1000-resource preview limit.
+
+### M5 — "Validate and serialize before publication" names no oracle, and the obvious serializer is non-canonical
+**Acceptance item 3.** "Validate" is undefined, and `graphops.CanonicalizeJSON` (`graphops/laws.go:408`) — an RFC 8785-style canonicalizer with sorted members, minimal string escaping and exact-decimal number rules — is never mentioned. The existing CLI envelope uses `json.NewEncoder` (`graph_preview.go:727`), which HTML-escapes `<`, `>`, `&` and is not canonical.
+**Fix:** serialize through `graphops.CanonicalizeJSON`; define validation as re-decoding the serialized bytes with a strict decoder and comparing structurally against the in-memory snapshot *before* publication.
+
+### M6 — Owned links are double-represented and the plan never rules on it
+A live Link is both a top-level Resource and a member of its source's `Owned` set — `collection_read_bounds.go:45` charges it twice for exactly that reason, and `reader.go:93-129` projects owned groups with their own ordering and bounds.
+**Fix:** rule explicitly: both representations (and the invariant that their revisions agree) or top-level only with ownership expressed by reference.
+
+### M7 — Leases get "document" where the plan's own rule demands a disposition
+**§"Inventory" bullet 3 vs. the same bullet's general rule.** `types.Issue` serializes `lease_expires_at`, `heartbeat_at`, `lease_granted_node` (`internal/types/types.go:63-73`) and `LeaseJoin` is an unfiltered `LEFT JOIN` (`sqlbuild.go:99-101`), so a claimed Issue's exported properties carry node-local, TTL-expiring claim state. Stripping them is *not* free: `showIssueInTx` requires byte equality between the hydrated issue and the retained `durable_state` (`issues.go:236`), which is the natural fidelity oracle for this export.
+**Fix:** give leases the same include/exclude/refuse treatment as every other family, and note that excluding them forfeits the `durable_state` equality oracle.
+
+### M8 — `schemaVersion: 1` is already taken
+**§"Inventory" bullet 3** ("Propose a versioned format"). `graphPrintTo` already emits `{"schemaVersion":1,"preview":true,"result":…}` (`graph_preview.go:727`).
+**Fix:** either use a distinct member (`formatVersion`) or state that the export extends that same `schemaVersion` line — and say which.
+
+### M9 — Atomic publication claims more than `atomicfile` delivers, with no graph-side precedent
+**Acceptance item 3.** `atomicfile.Writer.Close()` fsyncs the temp file and renames, but never fsyncs the parent directory (`atomicfile.go:69-99`): publication is atomic for readers, not durable across power loss, and an abort or crash leaves `.~<base>.*` residue in the destination directory. Meanwhile `bd graph --dot/--html` has no `-o` at all (`graph.go:366-371`), so the only precedent is classic export's *streaming* `atomicfile.Writer` (`export.go:117-130`) — write-as-you-go, the opposite of "validate and serialize before publication."
+**Fix:** since the 16 MiB read bound makes full buffering safe, specify `atomicfile.WriteFile(path, buf, 0o600)` after validation; state the directory-fsync limitation and temp-residue behavior as disclosures rather than implying durability.
+
+### M10 — Whole-store validity is an undisclosed precondition of export
+`currentSnapshotInTx` runs `checkCollectionMappingsInTx` first (`collection_read.go:49`), which validates *deleted* allocations via `deletedMemoryInTx` and `validateDeletedIssueInTx` (`:166-191`). Corruption in a tombstone the export would never emit refuses the entire export with `ErrInvalidStore`.
+**Fix:** disclose this as deliberate — export succeeds only on a wholly valid store — so it is a stated property rather than a surprise during installed qualification.
+
+### M11 — "Independent release gates" asserts the conclusion without naming the mechanism
+**§"Isolation" / preamble.** The strongest available argument is unstated: the graph plane is already fully gated behind `graph_mode link` workspace admission plus a generation marker and an explicit command allowlist (`graph_preview.go:325-341`), so a graph export ships dark to every non-graph user by construction. That also identifies the only real cross-cutting release risk: a slice editing a *shared, non-graph* file.
+**Fix:** state the gate explicitly and add "no slice edits a shared non-graph file" as the isolation invariant that makes the independent release decision real.
+
+### M12 — Determinism is undefined against two known clocks
+`Attribution.RecordedAt` is an observed wall clock (`types.go:72-73`), and `insertPreviewVersionInTx` stamps a **second** clock, `change_at`, which the code's own KNOWN note measures as disagreeing by milliseconds for the same write (`records.go:269-284`).
+**Fix:** define determinism as "same store state ⇒ same bytes" (not "same logical content ⇒ same bytes"), and state which clock, if either, appears in the export.
+
+---
+
+## Low
+
+### L1 — Shared-file merge surface with PR86 is unstated
+PR86 edits two files an export slice would plausibly touch: `graphstore/records.go` (the `insertPreviewVersionInTx` caller-list comment) and `graphstore/dependencies.go` (a same-prefix validation). Both edits are small, so the risk is a comment conflict, not a semantic one.
+**Fix:** add a line naming the overlap and requiring export slices not to edit those two files, keeping merge order free.
+
+### L2 — Factual inventory error: `graph_export.go` renders DOT and HTML, not Mermaid
+`renderGraphDOT` at `graph_export.go:15` and `renderGraphHTML` (self-contained D3, CDN `<script>`) at `:161`. Mermaid lives in `cmd/bd/dep.go:1381` under `bd dep tree`. The correction matters because the HTML path — not Mermaid — is the one a reader might mistake for an exporter.
+
+### L3 — The 30-second graph timeout covers the read
+`withGraphStoreOutput` wraps every graph operation in `context.WithTimeout(…, 30*time.Second)` (`graph_preview.go:540`).
+**Fix:** state whether serialization and publication run inside or outside that context, and add a timing check at the bound.
+
+---
+
+## Intentionally-open questions (correctly deferred — not flaws)
+
+These are called out by the plan and should not be read as gaps:
+
+- Format version scheme, Type/config ownership, bounds and CLI flag semantics — routed to Janet and the BDP contract owner (§"Inventory" bullet 4).
+- Whether a new consistent storage reader is needed (§"First implementation slices") — though see **H7**: for comments this is already answered.
+- The final format shape itself; "proposals until coordinated and reviewed" (Status line).
+- Council review before the format is settled, Gemini excluded (§"Inventory" bullet 5).
+- Integration pin selection (Janet) and the cutline (Donna) (§"Isolation").
+- Graph-format import timing and semantic round trips (preamble, closing paragraph).
+
+One caveat on the BDP routing item: `graphread.Inventory`'s own doc says **"Never serialize this structure as a BDP response"** (`inventory.go:15`), and `bdpwire` is pinned by sha to an upstream bundle covering the **Read** profile only — 42 of 153 definitions, with "no write DTO admission" (`bdpwire/doc.go`). So the risk the plan flags abstractly has two concrete edges worth handing to the contract owner: serializing Read envelopes to a file makes a pinned wire shape into a file format consumers will depend on, and the pinned profile has no write DTOs for a future graph importer to decode with.
+
+---
+
+## Recommended minimum edits before this plan is treated as settled
+
+1. H1–H8 — they are all edits to the inventory and acceptance text, not new work.
+2. M3 — the CLI-wiring gates, because one omission panics rather than refuses.
+3. M5 + M9 — name the serializer and the validation oracle; they are what make items 2 and 3 testable.
