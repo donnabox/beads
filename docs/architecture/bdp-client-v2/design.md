@@ -62,7 +62,11 @@ Original service-review lows: RU trusted callback capability narrowing and publi
 
 ### Live worker ledger
 
-Checkpoint 2026-10-14T22:47:35Z. **BLOCKED: Claude CLI authentication; Transactional first on resume**, with shared and targeted Update checks. Session `2026-10-08T20:26:35Z-81e5`. Public write profiles remain unadvertised; installed cumulative delivery predicates remain unmet. Ready main merges are operator-authorized after exact-head CI, native+Claude council, findings disposition, scope and ordinary ancestry checks, and actual merged-tree verification. Gemini excluded. No release/Preview2 or Janet CLI/staging/playgrounds/shared databases/Trish Type edits.
+Checkpoint 2026-10-15T02:06:55Z. **BLOCKED: required Claude reviewer weekly usage limit; Transactional first on resume**, with shared and targeted Update checks. Session `2026-10-08T20:26:35Z-81e5`. Public write profiles remain unadvertised; installed cumulative delivery predicates remain unmet. Ready main merges are operator-authorized after exact-head CI, native+Claude council, findings disposition, scope and ordinary ancestry checks, and actual merged-tree verification. Gemini excluded. No release/Preview2 or Janet CLI/staging/playgrounds/shared databases/Trish Type edits.
+
+### Current blocker after keychain recovery
+
+At 2026-10-15T02:05Z, exact CLI auth status confirmed loggedIn true. A single actual spec-delta review attempt then exited 1 before reviewing: “You've hit your weekly limit · resets Oct 18 at 3am (America/Los_Angeles)”. Authentication is resolved; do not ask for another login. [Attempt output](transaction-command-minimum-ci-repair/claude-keychain-recovered/review.txt) and [exit/source binding](transaction-command-minimum-ci-repair/claude-keychain-recovered/exit.json) preserve this distinct failure. Source unchanged. PR123 remains draft at727e919, exact-head verify still SUCCESS, base/main1228005 unchanged. Heartbeat briefly resumed after authentication check, then paused again because required review is unavailable. No merge, qualification or release. No owned review process remains. Resume actual Claude delta review once review capacity is available, then recheck all merge gates and verify actual merged tree before releasing Selector authoring. Earlier authentication-blocked entries below are historical.
 
 ### Verified main and completed serving work
 
@@ -102,8 +106,8 @@ All nine installed cohorts completed and were individually adjudicated on frozen
 | update_implementation | PR123 spec boundary repair | Completed one-file repair, ordinary727e919;95static passes/native clean; no runtime change |
 | cross_carrier_native_review | Actual installed evidence audit | Completedbe01d032,313members/eightpackages/18responses/child99866closed and absent; root-read |
 | cross_carrier_plan_v2_review | Native source/control and Selector reanchor | Source940913a7 and controls3ff2f2b5 clean/root-read; Selector interfaces unchanged, exact reanchor map recorded |
-| External Claude | Spec delta review blocked | OAuth expired22:30:16Z; exit1/no review. User reauthentication requested; no unchanged retry |
-| Root | Serving integration | PR123 draft727e919; fresh CI38648263438 running; merge held for Claude delta review and green CI |
+| External Claude | Spec delta review blocked | Login restored; latest actual attempt hit weekly usage limit before review; reset reported October18 03:00 Pacific |
+| Root | Serving integration | PR123 draft727e919; CI38648263438 green; merge held for Claude delta review; heartbeat paused |
 
 
 ### Cross-carrier evidence delivered in PR122
