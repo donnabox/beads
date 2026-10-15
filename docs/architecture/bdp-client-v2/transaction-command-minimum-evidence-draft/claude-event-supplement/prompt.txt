@@ -1,0 +1,1565 @@
+Review this bounded successor to earlier actual Claude code/header reviews. Do not write or modify any files. Output findings only in stdout. No tools/model override; actual source excerpts follow. Report concrete actionable defects with severity/location/impact/fix, distinguish unverified assumptions from demonstrated failures. If no actionable findings remain say so. This is static review, no execution proof.
+Original full code review e036271d found generated-default header mismatch. Header supplement deeaaaef confirmed that fix but requested defensive names-first comparison and raised extra count/read/casing concerns. Root dispositions included below, verify them against full actual serializer and runner excerpts. Names-first exact-case guard now precedes full authored-value comparison. Existing runner full exact header assertion retains full suffix/count verification; no new normalization or duplicate count oracle.
+Independent source audit found actual GETevents renders opaque projected IDs rather than stored pos-N-0 IDs. New correction removes only impossible ID column from one manifest tuple, retaining192manifest assertions/11actions, and independently computes exact private source-bound IDs in app from validated headers, literal source and checkpoints. No production renderer import or returned ID feeds its own expected value. This spelling is explicitly not normative. A/B transactions remain receipt-correlated; C only schema-validated. All other full Resource/Event-data/replay comparisons unchanged.
+Only four of the existing five draft paths change relative to reviewed header snapshot; mapping unchanged. Parent main453b6dab. Complete original13row objects and fixture preserved, guards/runtime/CI/requests/time unchanged. Current full diff ea04e6ba. Seven static callbacks and three fresh installed cohorts remain pending. No profile qualification or release.
+Review scope is the supplied successor delta and dispositions. No new protocol semantics, broad redesign or test expansion requested.
+
+
+SUCCESSOR DELTA
+--- a/packages/conformance/test-support/transactional/manifest-v1.json
++++ b/packages/conformance/test-support/transactional/manifest-v1.json
+@@ -1718,9 +1718,6 @@
+               "ordered": true,
+               "projections": [
+                 {
+-                  "pointer": "/id"
+-                },
+-                {
+                   "pointer": "/source"
+                 },
+                 {
+@@ -1738,7 +1735,6 @@
+               ],
+               "equals": [
+                 [
+-                  "pos-1-0",
+                   "https://reference.invalid/acme/events/",
+                   "created",
+                   "https://reference.invalid/acme/beads/a",
+@@ -1746,7 +1742,6 @@
+                   0
+                 ],
+                 [
+-                  "pos-2-0",
+                   "https://reference.invalid/acme/events/",
+                   "created",
+                   "https://reference.invalid/acme/beads/b",
+@@ -1754,7 +1749,6 @@
+                   0
+                 ],
+                 [
+-                  "pos-3-0",
+                   "https://reference.invalid/acme/events/",
+                   "created",
+                   "https://reference.invalid/acme/beads/c",
+--- a/packages/conformance/test-support/transactional/coverage-v1.json
++++ b/packages/conformance/test-support/transactional/coverage-v1.json
+@@ -7,7 +7,7 @@
+     {
+       "id": "read-update.http.command-minimum-fields",
+       "wholeContract": false,
+-      "reason": "Bounded Transactional singleton/batch/sequence manifest facts for ignored literal copied minimum fields, identity conflict, revision refusal, three-Bead and complete Scope Event inventory. App actual-wire supplements compare full replay bodies, complete Resources and Event revisions after independent initial facts; existing private receipt helper enforces original-A body equality. These supplements are not manifest assertion bindings. Whole contract remains unqualified: receipt/read minimum enforcement, coherent same-context future tuples, other singleton target/kind and carrier-validation/transport/bounds partitions, and actual Read+Update-profile execution are omitted; historical private evidence is not relabeled.",
++      "reason": "Bounded Transactional singleton/batch/sequence manifest facts for ignored literal copied minimum fields, identity conflict, revision refusal, three-Bead and complete Scope Event inventory. App actual-wire supplements compare full replay bodies, complete Resources, Event revisions and exact private source-bound projected Event IDs after independent initial facts; existing private receipt helper enforces original-A body equality. These supplements are not manifest assertion bindings. Whole contract remains unqualified: receipt/read minimum enforcement, coherent same-context future tuples, other singleton target/kind and carrier-validation/transport/bounds partitions, and actual Read+Update-profile execution are omitted; historical private evidence is not relabeled.",
+       "bindings": [
+         {
+           "scenario": "read-update.http.command-minimum-fields",
+--- a/packages/conformance/src/transactional-cumulative.test.ts
++++ b/packages/conformance/src/transactional-cumulative.test.ts
+@@ -2696,11 +2696,10 @@
+     kind: "json-array-tuples",
+     pointer: "/events",
+     ordered: true,
+-    projections: ["/id", "/source", "/type", "/subject", "/subjectType", "/ordinal"].map(
++    projections: ["/source", "/type", "/subject", "/subjectType", "/ordinal"].map(
+       (pointer) => ({ pointer }),
+     ),
+-    equals: ["a", "b", "c"].map((k, i) => [
+-      `pos-${i + 1}-0`,
++    equals: ["a", "b", "c"].map((k) => [
+       `${scope}events/`,
+       "created",
+       `${scope}beads/${k}`,
+@@ -2720,7 +2719,7 @@
+   expect(
+     createHash("sha256").update(JSON.stringify(row)).digest("hex"),
+     "complete minimum manifest facts",
+-  ).toBe("5164c21057c76c2f4dc96634bf441eea45fbffa261e4c091dc3b9c3647be62cd");
++  ).toBe("4344f3701bc99031485bc4f7e327f738bc138084ff10e43c1623cdfa57d068b6");
+ }
+ it("pins the inherited command-minimum manifest facts, read-header absence and all thirteen prior objects", () => {
+   assertMinimumObservation(manifest);
+--- a/apps/bdptest/src/transactional-matrix.test.ts
++++ b/apps/bdptest/src/transactional-matrix.test.ts
+@@ -2361,6 +2361,9 @@
+       expect(request!.bodyPresent).toBe(expected.body !== undefined);
+       // Credentials and generated framing are checked by the runner's exact
+       // request assertions; never retain or serialize their secret values.
++      expect(
++        request!.headerLines.slice(0, expected.headers.length).map((header) => header.name),
++      ).toEqual(expected.headers.map((header) => header.name));
+       expect(request!.headerLines.slice(0, expected.headers.length)).toEqual(expected.headers);
+       expect(
+         request!.headerLines
+@@ -2503,11 +2506,21 @@
+         } else {
+           expect(body.events).toHaveLength(3);
+           expect(body.next).toBeNull();
++          // Private installed-fixture identity spelling, not a normative Event-ID format.
++          const projectedIdentity = [
++            ["epoch", currentEpoch],
++            ["view", currentView],
++            ["source", `${scope}events/`],
++          ]
++            .map((tagged) =>
++              createHash("sha256").update(JSON.stringify(tagged)).digest("base64url"),
++            )
++            .join("_");
+           for (const [i, name] of ["a", "b", "c"].entries()) {
+             const event = body.events[i],
+               resource = resources[i]!;
+             expect(event).toMatchObject({
+-              id: `pos-${i + 1}-0`,
++              id: `ev_${projectedIdentity}_${["pos-1", "pos-2", "pos-3"][i]}_0`,
+               source: `${scope}events/`,
+               type: "created",
+               subject: `${scope}beads/${name}`,
+
+
+FORMATTING ONLY: cumulative projection map arrow was subsequently formatted by pinned Biome2.5.7; current exact source below.
+
+ROOT HEADER DISPOSITIONS
+{
+  "at": "2026-10-15T06:43:24.436399+00:00",
+  "review": {
+    "exitCode": 0,
+    "timeout": false,
+    "forcedTermination": false,
+    "elapsedSeconds": 337.4015824170783,
+    "sourceAndPlanUnchanged": true,
+    "stdoutSha256": "deeaaaefe345ef6e052b786bc1cc56e38cd8f5547f981ed46d35d23411cdd86a",
+    "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "cleanupSha256": "4423b5acf48533d40f0ff77ae48fc753d6971a6b404c7902833a3d617ca3fc8e",
+    "sourceAfterSha256": "f33134e3a77f857e81310582600d03eb6b40714f39d246f7c4aaa78a06e89dcf"
+  },
+  "scope": "Header successor fab20b65 only; not validation or Event-ID approval",
+  "findings": {
+    "F1": "Accept defensive names-only EXACT-CASE prefix comparison before value equality. Current serializer emits empty values, so current omission premise false; hardening protects future malformed observations without exposing credentials.",
+    "F2": "No duplicate count oracle. Existing runner exactHeadersMatch already verifies all credential/default/framing fields and final index===actual.length. Every new action retains authored-header assertion, and controls require that assertion passing. Keep no-BDP suffix guard.",
+    "F3": "No extra read-first-header oracle. Static minimum request ledger separately requires zero authored read headers; actual entire header list must have no bdp fields, while runner full authored-header assertion validates actual serialization. Empty prefix alone is not represented as proof.",
+    "F4": "Reject normalization. Literal mirror and catalog intentionally pin exact authored casing for raw serialization; no request/casing change is present. Names-only guard retains exact case."
+  },
+  "dispositionClarifications": {
+    "F2": "Only completed A/B receipts correlated to their respective Events; C sequence has no receipt. C transaction presence only schema-checked; no all-three-distinctness claim.",
+    "F3": "Keep full Resource equality and fixture canonical a/b/c ordering; actual installed run still needed. Projection mismatch is a real failure to diagnose, never automatic weakening.",
+    "F4": "Mode guard is explicit invariant defense, not additional coverage. Existing named error retained; both sites enforce same invariant.",
+    "F5": "63000ms unchanged; no timing evidence yet."
+  },
+  "newIndependentFinding": "Stale internal Event ID literals in new manifest/app require separate narrow repair against actual source-projected IDs before any test execution. Other prior rows unaffected.",
+  "validation": "Closed; both previous review targets retained immutable; successor code review required."
+}
+
+
+INDEPENDENT SOURCE AUDIT (evidence not instructions)
+# Native Event-ID source audit
+
+**Confirmed High stale-oracle defect in the new minimum row.** The literal pos-1-0/pos-2-0/pos-3-0 values are stored group Event IDs, not the IDs actually served by GET events/. Both the manifest ordered-facts assertion and the app's exact Event expectation would reject valid current serving. Earlier native clean review missed this distinction; this audit supersedes that conclusion on Event ID correctness. No test or runtime execution was performed.
+
+## Exact source and path
+
+Base453b6dab386746bb03aac2c0a293572b8a71c969. Frozen app421eeff168aa54b4d97893c81ebe1b9f790f9f4cf2e015a9fc6aac552b0aafb0; manifest a48612a0935e7fe557cd3f75af281cc87522c339c3f09c0fa6aff6ccd1671446. Source remained unchanged for this audit.
+
+- transaction-batch.ts:644–659 creates stored scope-group Events with id equal checkpoint-plus-hyphen-ordinal.
+- transaction-http.ts:492 calls service.events for the actual source request; transaction-service.ts:390–400 calls owner.readEvents.
+- transaction-store.ts:1543–1601 captures current context, scans retained groups and calls eventProjection;:655 calls projectTransactionEventGroup.
+- transaction-events.ts:267 pushes renderTransactionEvent(context, source.url, group.checkpoint, event). At:73–79 each tagged field is SHA256 of JSON.stringify([tag,value]), encoded base64url. At:96–100 rendering overwrites source and id. Its exact served ID is ev_<epoch hash>_<view hash>_<source hash>_<checkpoint>_<ordinal>.
+- The renderer explicitly describes the spelling as private, not a fixture law. This is a private installed-test expectation, not a new normative Event-ID format.
+- schemas/bdp-v0.schema.json event:3075 requires id and uses wireToken. Both spellings can pass that syntax; schema validation does not establish the correct served identity.
+- New m-events ordered-facts projects /id against three stored-form literals. cumulative:2694–2709 independently pins the same wrong literals. App:2510 repeats them before completing the actual Event observation. The hook throws first; the runner's named manifest mismatch is not reached with a complete positive observation.
+- Inspection of every existing /events tuple assertion found this literal /id column only in the new minimum row. Do not rewrite historical26 objects or broaden this repair to unrelated prior Event witnesses.
+
+## Narrow existing-vocabulary repair
+
+1. Keep the existing m-events ordered-facts assertion ID and exact three ordered tuples, but remove only its /id projection and the corresponding stored-form values. Retain source/type/subject/subjectType/ordinal plus all existing properties/metadata/provenance/next checks. The schema still requires IDs. The runner's existing ordered tuple evaluation at2360–2386 enforces exact cardinality/order.
+2. In the actual app hook, independently compute each complete expected served ID from the already checked epoch/view, the literal Scope events URL, literal pos-1/pos-2/pos-3 checkpoints and ordinal0, with explicit tag strings epoch/view/source and SHA256(JSON.stringify([tag,value])).digest(base64url). Compare actual event.id exactly to that independently constructed string. Do not import the production renderer, derive expected checkpoint/ordinal/source from the Event under test, or use returned event.id as its own expectation. Existing createHash is sufficient.
+3. Preserve complete Event.data/revision and transaction correlation to independently validated A/B receipts, all Resource/replay equality, exact Event identities/source/type/subject/subjectType/ordinal/count, and next:null. No raw-body or opaque revision capture is introduced.
+4. Update the cumulative independently authored tuple ledger and terminal row digest to match. Keep coverage's exact manifest assertion mirror; it can remain192 IDs because the existing assertion is adjusted rather than added/removed. Clarify coverage/report attribution: exact served Event IDs are app-supplemental private source-bound checks, while manifest tuples establish literal semantic inventory. Do not pretend manifest alone now proves those exact opaque IDs.
+5. Remeasure all affected canonical/derivative bytes/nodes/hash bindings before root accepts a final successor. Preserve the failed unexecuted snapshot and historical bases. No extra GET/action/static registration/runner API/runtime change. The local11actions/208expected225maximumHTTP/26children and time limits need not expand.
+
+The existing hook context comparisons permit this without exposing report bodies: the same actual raw responses provide epoch/view, validated against earlier raw observations. This does not add raw-to-client action9 context equality or alter any unresolved Event membership ruling.
+
+## Recommendation
+
+Stop validation release until this bounded source correction and its exact revised measurements/code review are accepted. The current actual header supplement remains a review of its immutable header-repair snapshot; do not relabel it as review of a later Event correction. Root owns authoring/review disposition. No source edits, builds, imports, services or new reviewer launch occurred here.
+
+
+## Actual header supplement: four findings and retained qualifications
+
+Read D/claude-header-supplement/stdout.txt in full. It reports actual exit0/337s on its immutable header-repair target; it does not review a future Event-ID successor. The header-default F1 fix is affirmed. Source-backed dispositions:
+
+1. **Accept defensive names-only prefix check before value equality.** Compare prefix.map(h => h.name) with expected.headers.map(h => h.name) first, using exact case. A mismatched prefix then fails without printing values. Only after names agree compare the complete authored name/value prefix. This prevents a future omitted/misordered authored line from shifting the authorization credential into a value-array diff. It is hardening against a malformed observation, not a demonstrated current empty-header drop: http-executor.ts:338 HTTP_FIELD_VALUE uses a star repetition and allows empty strings;:654–672 unconditionally appends every validated authored name/value, including empty values, with no truthiness filter. Source confirms M/Z empty fields are emitted.
+2. **No extra total-count assertion needed.** Existing runner request-authored-headers calls exactHeadersMatch, which checks each authored line, credential lines, generated defaults/framing and final index===actual.length at1817–1869. Positive and selected-control adjudication require that assertion to pass. The supplemental suffix Boolean preserves the no-BDP claim without dumping credential values. An additional duplicate count formula would not repair a missing property in the combined proof.
+3. **Read O absence is established by the combined checks.** The cumulative static ledger pins both read raw.headerLines to[]; the app suffix scan then covers every actual line and rejects bdp-*; the unchanged exact request assertion checks complete authored/default/credential/framing shape. Prefix[] equality is not claimed to prove more than that. No new first-credential convention is needed.
+4. **Keep exact authored casing.** This private raw fixture deliberately pins the exact catalog spelling and order; runner exactHeadersMatch itself preserves exact-case authored names. The defensive names-only precheck should also use exact names, not lowercase away a catalog/source difference. Case-insensitive HTTP semantics do not make this an invalid byte-level authored-request oracle.
+
+Receipt/Event transaction correlation is specifically A/B only. Both are schema-valid completed receipts with nonempty transaction fields; C's sequence response has no receipt baseline. C Event transaction is schema-checked but not correlated to a nonexistent receipt. No assertion or report claims the three transaction tokens are distinct.
+
+Keep full Resource/Event equality. Further source beyond the supplement's excerpts confirms collection paging snapshots/copies items without adding representation fields (read-pagination.ts:383–398); authority graph.accept reads the stored ResourceRecord (authority-read.ts:590–601). Mutation outcome uses materialized after (resource-evaluator.ts:1008–1012,1086–1094), persisted only after validation. Canonical a/b/c order coincides with this fixture's creation order, and observe launches a separate create:true scenario directory; these remain fixture-specific dependencies, not general collection-order laws. Actual execution must still establish the resulting wire shape; any mismatch is triaged before weakening.
+
+The explicit whole-json guard is presently implied by the earlier independent ledger validation. It is defensive at the point of use, not an additional test result or new coverage credit. Its shared label is not an execution ambiguity relevant to the two intended controls; no additional registration or naming refactor is necessary. Preserve63000ms and report actual elapsed/headroom once an authorized positive run occurs.
+
+No source changes were made. Current validation remains closed for the confirmed Event-ID correction and the small names-only privacy hardening. Root assigns authoring and owns final review/release.
+
+
+
+ACTUAL SOURCE apps/bdptest/src/transactional-matrix.test.ts
+2200:         claimEligible: false,
+2201:       }),
+2202:     );
+2203:     if (process.env.BDP_TRANSACTIONAL_CROSS_CARRIER_CONTROL_OUTPUT)
+2204:       writeFileSync(
+2205:         `${process.env.BDP_TRANSACTIONAL_CROSS_CARRIER_CONTROL_OUTPUT}-${control}.json`,
+2206:         JSON.stringify({ sourceCommit, entry, ...observed }, null, 2) + "\n",
+2207:       );
+2208:   },
+2209:   120000,
+2210: );
+2211: 
+2212: const commandMinimumId = "read-update.http.command-minimum-fields";
+2213: const minimumActionIds = [
+2214:   "m-create-a",
+2215:   "m-replay-a",
+2216:   "m-create-b",
+2217:   "m-replay-b",
+2218:   "m-create-c",
+2219:   "m-replay-c",
+2220:   "m-body-conflict",
+2221:   "m-stale-update",
+2222:   "m-retained-a",
+2223:   "m-current",
+2224:   "m-events",
+2225: ];
+2226: const minimumRawIds = minimumActionIds.filter((id) => id !== "m-retained-a");
+2227: const minimumControls = ["minimum-batch-body-conflict", "minimum-readonly-credential"] as const;
+2228: type MinimumControl = (typeof minimumControls)[number];
+2229: const minimumReplayLedger: readonly (readonly string[])[] = [
+2230:   ["m-replay-a", "m-create-a", "whole-json"],
+2231:   ["m-replay-b", "m-create-b", "whole-json"],
+2232:   ["m-replay-c", "m-create-c", "whole-json"],
+2233: ];
+2234: function assertMinimumReplayLedger(ledger: readonly (readonly string[])[]) {
+2235:   if (
+2236:     JSON.stringify(ledger) !==
+2237:     JSON.stringify([
+2238:       ["m-replay-a", "m-create-a", "whole-json"],
+2239:       ["m-replay-b", "m-create-b", "whole-json"],
+2240:       ["m-replay-c", "m-create-c", "whole-json"],
+2241:     ])
+2242:   )
+2243:     throw new Error("minimum-replay-comparison-ledger");
+2244: }
+2245: function minimumRequests(control?: MinimumControl) {
+2246:   const create = (name: string) => ({
+2247:     id: `beads/${name}`,
+2248:     type: `${scope}types/task`,
+2249:     properties: { title: `minimum-${name}` },
+2250:   });
+2251:   const batch = (title: string) => ({
+2252:     operations: [{ operation: "createBead", ...create("b"), properties: { title } }],
+2253:   });
+2254:   const sequence = {
+2255:     operations: [{ operation: "createBead", ...create("c"), idempotencyKey: "minimum-c" }],
+2256:   };
+2257:   const minimumNames = ["bdp-minimum-scope-position", "bdp-scope-epoch", "bdp-authorization-view"];
+2258:   const fields = (values: readonly string[]) =>
+2259:     values.map((value, i) => ({ name: minimumNames[i]!, value }));
+2260:   const M = fields(["not a position!", "", "view-one, view-two"]),
+2261:     F = fields(["pos-99", "foreign-epoch", "foreign-view"]),
+2262:     Z = fields(["", "", ""]),
+2263:     P = [{ name: "bdp-scope-epoch", value: "foreign-epoch" }],
+2264:     O: { name: string; value: string }[] = [];
+2265:   const post = (
+2266:     route: string,
+2267:     body: unknown,
+2268:     key: string | undefined,
+2269:     extra: { name: string; value: string }[],
+2270:   ) => ({
+2271:     url: `${scope}operations/${route}`,
+2272:     body,
+2273:     headers: [
+2274:       { name: "content-type", value: "application/json" },
+2275:       ...(key === undefined ? [] : [{ name: "idempotency-key", value: key }]),
+2276:       { name: "accept", value: "application/json" },
+2277:       ...extra,
+2278:     ],
+2279:   });
+2280:   return [
+2281:     post("create-bead", create("a"), "minimum-a", M),
+2282:     post("create-bead", create("a"), "minimum-a", O),
+2283:     post("batch", batch("minimum-b"), "minimum-b", P),
+2284:     post(
+2285:       "batch",
+2286:       batch(control === "minimum-batch-body-conflict" ? "minimum-conflict" : "minimum-b"),
+2287:       "minimum-b",
+2288:       Z,
+2289:     ),
+2290:     post("sequence", sequence, undefined, F),
+2291:     post("sequence", sequence, undefined, M),
+2292:     post("batch", batch("minimum-conflict"), "minimum-b", F),
+2293:     post(
+2294:       "update-bead",
+2295:       {
+2296:         bead: "beads/a",
+2297:         expectedRevision: "minimum-wrong-revision",
+2298:         propertiesChange: [{ op: "replace", path: "/title", value: "minimum-stale" }],
+2299:       },
+2300:       "minimum-stale",
+2301:       M,
+2302:     ),
+2303:     { url: `${scope}beads/?limit=32`, body: undefined, headers: O },
+2304:     { url: `${scope}events/`, body: undefined, headers: O },
+2305:   ];
+2306: }
+2307: /** Supplemental assertions on actual unredacted wire. The ledger alone drives
+2308:  * replay equality; no arbitrary JSON capture or report-body recovery is used. */
+2309: function commandMinimumWire(control?: MinimumControl) {
+2310:   assertMinimumReplayLedger(minimumReplayLedger);
+2311:   const requests = minimumRequests(control),
+2312:     validator = createJsonSchemaValidator(schema);
+2313:   const maximum =
+2314:     control === "minimum-readonly-credential"
+2315:       ? 1
+2316:       : control === "minimum-batch-body-conflict"
+2317:         ? 4
+2318:         : 10;
+2319:   const observedIds: string[] = [],
+2320:     performed: string[][] = [],
+2321:     baselines = new Map<string, Record<string, unknown>>(),
+2322:     resources: Record<string, unknown>[] = [];
+2323:   let active = false,
+2324:     epoch: string | undefined,
+2325:     view: string | undefined,
+2326:     originalRoot: string | undefined,
+2327:     originalResponseDigest: string | undefined;
+2328:   const problem = (code: string, retry = "never") => ({
+2329:     type: "https://github.com/gastownhall/bdp/problems/conflict",
+2330:     code,
+2331:     status: 409,
+2332:     retry,
+2333:   });
+2334:   return {
+2335:     async afterExchange(response: HttpExchangeResponse) {
+2336:       const request = response.exactRequest;
+2337:       const key = request?.headerLines.find(
+2338:         (h) => h.name.toLowerCase() === "idempotency-key",
+2339:       )?.value;
+2340:       if (!active) {
+2341:         if (response.url !== `${scope}operations/create-bead` || key !== "minimum-a") return;
+2342:         active = true;
+2343:       }
+2344:       if (observedIds.length === maximum) {
+2345:         expect(key?.startsWith("minimum-") ?? false).toBe(false);
+2346:         // Other rows may legitimately use these routes; a repeated minimum
+2347:         // sequence is discriminated by its exact authored body, not its URL.
+2348:         if (response.url === `${scope}operations/sequence`)
+2349:           expect(request?.bodyDigest).not.toBe(
+2350:             createHash("sha256").update(JSON.stringify(requests[4]!.body)).digest("hex"),
+2351:           );
+2352:         return;
+2353:       }
+2354:       const index = observedIds.length,
+2355:         id = minimumRawIds[index]!,
+2356:         expected = requests[index]!;
+2357:       expect(response.url).toBe(expected.url);
+2358:       expect(request).toBeDefined();
+2359:       expect(request!.source).toBe("raw-http1-serializer");
+2360:       expect(request!.writeState).toBe("complete");
+2361:       expect(request!.bodyPresent).toBe(expected.body !== undefined);
+2362:       // Credentials and generated framing are checked by the runner's exact
+2363:       // request assertions; never retain or serialize their secret values.
+2364:       expect(
+2365:         request!.headerLines.slice(0, expected.headers.length).map((header) => header.name),
+2366:       ).toEqual(expected.headers.map((header) => header.name));
+2367:       expect(request!.headerLines.slice(0, expected.headers.length)).toEqual(expected.headers);
+2368:       expect(
+2369:         request!.headerLines
+2370:           .slice(expected.headers.length)
+2371:           .some((header) => header.name.toLowerCase().startsWith("bdp-")),
+2372:       ).toBe(false);
+2373:       expect(request!.bodyDigest).toBe(
+2374:         expected.body === undefined
+2375:           ? undefined
+2376:           : createHash("sha256").update(JSON.stringify(expected.body)).digest("hex"),
+2377:       );
+2378:       const body = JSON.parse(response.bodyText);
+2379:       const readonlyRefusal = control === "minimum-readonly-credential";
+2380:       const conflict =
+2381:         id === "m-body-conflict" ||
+2382:         (control === "minimum-batch-body-conflict" && id === "m-replay-b");
+2383:       const schemaRef =
+2384:         readonlyRefusal || conflict
+2385:           ? "transactionalProblem"
+2386:           : index < 4 || id === "m-stale-update"
+2387:             ? "mutationReceipt"
+2388:             : index < 6
+2389:               ? "transactionalSequenceResponse"
+2390:               : id === "m-current"
+2391:                 ? "currentBeadCollection"
+2392:                 : "eventPage";
+2393:       expect(validator.validate(`#/$defs/${schemaRef}`, body)).toEqual([]);
+2394:       expect(response.status).toBe(readonlyRefusal ? 403 : conflict ? 409 : 200);
+2395:       expect(response.headers["content-type"]).toBe(
+2396:         readonlyRefusal || conflict ? "application/problem+json" : "application/json",
+2397:       );
+2398:       if (readonlyRefusal) {
+2399:         expect(body).toEqual({
+2400:           type: "https://github.com/gastownhall/bdp/problems/authorization",
+2401:           code: "forbidden",
+2402:           status: 403,
+2403:           retry: "after-state-change",
+2404:         });
+2405:         for (const name of ["bdp-scope-epoch", "bdp-authorization-view", "bdp-scope-position"])
+2406:           expect(response.headers[name]).toBeUndefined();
+2407:       } else {
+2408:         const currentEpoch = response.headers["bdp-scope-epoch"],
+2409:           currentView = response.headers["bdp-authorization-view"];
+2410:         expect(typeof currentEpoch).toBe("string");
+2411:         expect(currentEpoch?.length).toBeGreaterThan(0);
+2412:         expect(typeof currentView).toBe("string");
+2413:         expect(currentView?.length).toBeGreaterThan(0);
+2414:         expect(response.headers["bdp-scope-position"]).toBe(
+2415:           index < 2 ? "pos-1" : index < 4 ? "pos-2" : "pos-3",
+2416:         );
+2417:         if (epoch !== undefined) {
+2418:           expect(currentEpoch).toBe(epoch);
+2419:           expect(currentView).toBe(view);
+2420:         }
+2421:         if (conflict) expect(body).toEqual(problem("idempotency-conflict"));
+2422:         else if (index < 6) {
+2423:           const name = index < 2 ? "a" : index < 4 ? "b" : "c",
+2424:             position = `pos-${Math.floor(index / 2) + 1}`;
+2425:           expect(body.results).toHaveLength(1);
+2426:           const result = body.results[0],
+2427:             resource = result.resource;
+2428:           expect(result).toEqual({
+2429:             operationIndex: 0,
+2430:             outcome: "created",
+2431:             resource,
+2432:           });
+2433:           expect(resource).toMatchObject({
+2434:             id: `${scope}beads/${name}`,
+2435:             type: `${scope}types/task`,
+2436:             properties: { title: `minimum-${name}` },
+2437:             metadata: {},
+2438:           });
+2439:           expect(resource.properties).toEqual({ title: `minimum-${name}` });
+2440:           expect(resource.metadata).toEqual({});
+2441:           expect(typeof resource.revision).toBe("string");
+2442:           expect(resource.revision.length).toBeGreaterThan(0);
+2443:           expect(resource).not.toHaveProperty("revisionProvenance");
+2444:           expect(resource).not.toHaveProperty("ownedLinks");
+2445:           if (index < 4) {
+2446:             expect(body).toMatchObject({
+2447:               status: "completed",
+2448:               detail: "available",
+2449:               idempotencyKey: `minimum-${name}`,
+2450:               scopeEpoch: currentEpoch,
+2451:               authorizationView: currentView,
+2452:               requiredPosition: position,
+2453:               effectPosition: position,
+2454:               next: null,
+2455:             });
+2456:             expect(typeof body.id).toBe("string");
+2457:             expect(body.id.startsWith(`${scope}receipts/`)).toBe(true);
+2458:             expect(body.id.slice(`${scope}receipts/`.length)).toMatch(/^[A-Za-z0-9_-]+$/);
+2459:           } else {
+2460:             expect(body).not.toHaveProperty("id");
+2461:             expect(body).not.toHaveProperty("receipt");
+2462:             expect(result).not.toHaveProperty("problem");
+2463:           }
+2464:           const pair = minimumReplayLedger.find(([replay]) => replay === id);
+2465:           if (pair) {
+2466:             if (pair[2] !== "whole-json") throw new Error("minimum-replay-comparison-ledger");
+2467:             expect(baselines.has(pair[1]!)).toBe(true);
+2468:             expect(body).toEqual(baselines.get(pair[1]!));
+2469:             performed.push([...pair]);
+2470:           } else {
+2471:             // No baseline exists until all independent schema/literal/absence
+2472:             // checks above have passed.
+2473:             baselines.set(id, structuredClone(body));
+2474:             resources.push(structuredClone(resource));
+2475:           }
+2476:           if (id === "m-create-a") {
+2477:             originalRoot = body.id;
+2478:             expect(response.wireResponseBytes).toBeDefined();
+2479:             originalResponseDigest = createHash("sha256")
+2480:               .update(response.wireResponseBytes!)
+2481:               .digest("hex");
+2482:           }
+2483:         } else if (id === "m-stale-update") {
+2484:           expect(body).toMatchObject({
+2485:             status: "failed",
+2486:             detail: "available",
+2487:             idempotencyKey: "minimum-stale",
+2488:             requiredPosition: "pos-3",
+2489:             scopeEpoch: currentEpoch,
+2490:             authorizationView: currentView,
+2491:             problem: {
+2492:               ...problem("revision-mismatch", "after-state-change"),
+2493:               operationIndex: 0,
+2494:             },
+2495:           });
+2496:           expect(body.problem).toEqual({
+2497:             ...problem("revision-mismatch", "after-state-change"),
+2498:             operationIndex: 0,
+2499:           });
+2500:           for (const field of ["effectPosition", "results", "next"])
+2501:             expect(body).not.toHaveProperty(field);
+2502:         } else if (id === "m-current") {
+2503:           expect(body.items).toEqual(resources);
+2504:           expect(body.items).toHaveLength(3);
+2505:           expect(body.next).toBeNull();
+2506:         } else {
+2507:           expect(body.events).toHaveLength(3);
+2508:           expect(body.next).toBeNull();
+2509:           // Private installed-fixture identity spelling, not a normative Event-ID format.
+2510:           const projectedIdentity = [
+2511:             ["epoch", currentEpoch],
+2512:             ["view", currentView],
+2513:             ["source", `${scope}events/`],
+2514:           ]
+2515:             .map((tagged) =>
+2516:               createHash("sha256").update(JSON.stringify(tagged)).digest("base64url"),
+2517:             )
+2518:             .join("_");
+2519:           for (const [i, name] of ["a", "b", "c"].entries()) {
+2520:             const event = body.events[i],
+2521:               resource = resources[i]!;
+2522:             expect(event).toMatchObject({
+2523:               id: `ev_${projectedIdentity}_${["pos-1", "pos-2", "pos-3"][i]}_0`,
+2524:               source: `${scope}events/`,
+2525:               type: "created",
+2526:               subject: `${scope}beads/${name}`,
+2527:               subjectType: `${scope}types/task`,
+2528:               ordinal: 0,
+2529:             });
+2530:             expect(event.data).toEqual({
+2531:               revision: resource.revision,
+2532:               properties: resource.properties,
+2533:               metadata: resource.metadata,
+2534:             });
+2535:             if (i < 2)
+2536:               expect(event.transaction).toBe(baselines.get(`m-create-${name}`)!.transaction);
+2537:           }
+2538:         }
+2539:         epoch = currentEpoch;
+2540:         view = currentView;
+2541:       }
+2542:       observedIds.push(id);
+2543:     },
+2544:     summary() {
+2545:       return {
+2546:         kind: "command-minimum-wire-supplement",
+2547:         control: control ?? "positive",
+2548:         active,
+2549:         observedIds: [...observedIds],
+2550:         performedComparisons: performed.map((pair) => [...pair]),
+2551:         originalRoot,
+2552:         originalResponseDigest,
+2553:       };
+2554:     },
+2555:     finish() {
+2556:       expect(active).toBe(true);
+2557:       expect(observedIds).toEqual(minimumRawIds.slice(0, maximum));
+2558:       expect(performed).toEqual(
+2559:         minimumReplayLedger.slice(
+2560:           0,
+2561:           control === "minimum-readonly-credential"
+2562:             ? 0
+2563:             : control === "minimum-batch-body-conflict"
+2564:               ? 1
+2565:               : 3,
+2566:         ),
+2567:       );
+2568:     },
+2569:   };
+2570: }
+2571: function assertCommandMinimumPositive(
+2572:   observed: Awaited<ReturnType<typeof observe>>,
+2573:   wire: ReturnType<typeof commandMinimumWire>,
+2574: ) {
+2575:   const row = observed.result.scenarios.find((r) => r.id === commandMinimumId)!;
+2576:   const declared = bundle.manifest.scenarios.find((r) => r.id === commandMinimumId)!;
+2577:   expect(row.state).toBe("pass");
+2578:   expect(row.exchanges.map((e) => e.request.id)).toEqual(minimumActionIds);
+2579:   expect(row.exchanges.map((e) => e.request.method)).toEqual([
+2580:     "POST",
+2581:     "POST",
+2582:     "POST",
+2583:     "POST",
+2584:     "POST",
+2585:     "POST",
+2586:     "POST",
+2587:     "POST",
+2588:     "GET",
+2589:     "GET",
+2590:     "GET",
+2591:   ]);
+2592:   expect(row.actions!.map((a) => a.action.id)).toEqual(["m-retained-a"]);
+2593:   for (const exchange of row.exchanges) {
+2594:     expect(exchange.transportError).toBeUndefined();
+2595:     expect(exchange.harnessError).toBeUndefined();
+2596:     expect(exchange.assertions.every((a) => a.passed)).toBe(true);
+2597:     if (exchange.request.id !== "m-retained-a")
+2598:       expect(exchange.assertions.map((a) => a.id)).toEqual(
+2599:         declared.actions!.find((a) => a.id === exchange.request.id)!.assertions.map((a) => a.id),
+2600:       );
+2601:     expect(exchange.request.exact?.writeState).toBe("complete");
+2602:     expect(exchange.request.exact!.bodyOctets).toBeLessThanOrEqual(2048);
+2603:     expect(exchange.response!.decodedBodyBytes).toBeLessThanOrEqual(8192);
+2604:   }
+2605:   const action = row.actions![0]!,
+2606:     dynamic = row.exchanges[8]!,
+2607:     facts = wire.summary();
+2608:   expect(action.assertions.every((a) => a.passed)).toBe(true);
+2609:   expect(action.assertions.map((a) => a.id)).toEqual(
+2610:     declared.actions!.find((a) => a.id === "m-retained-a")!.assertions.map((a) => a.id),
+2611:   );
+2612:   expect(action.executionError).toBeUndefined();
+2613:   expect(row.cleanupError).toBeUndefined();
+2614:   expect(row.prerequisiteFailure).toBeUndefined();
+2615:   expect(action.output).toEqual({ kind: "json" });
+2616:   expect(dynamic.sourceReceiptObservation).toMatchObject({
+2617:     action: "m-create-a",
+2618:     pointer: "/id",
+2619:     receipt: facts.originalRoot,
+2620:     responseDigest: facts.originalResponseDigest,
+2621:     credentialRef: "operator",
+2622:   });
+2623:   expect(dynamic.request.url).toBe(facts.originalRoot);
+2624:   expect(dynamic.request.exact?.bodyPresent).toBe(false);
+2625:   expect(dynamic.dynamicExactConfiguration).toMatchObject({
+2626:     scope,
+2627:     profile: "transactional",
+2628:     routes: [{ method: "GET", url: facts.originalRoot }],
+2629:   });
+2630:   // This fixture never reopens: equality here is an observed same-session fact,
+2631:   // not a universal requirement on retained receipt identity.
+2632:   expect(dynamic.servedSession).toEqual(dynamic.sourceReceiptObservation!.session);
+2633:   // Existing private validate(GET) compared complete original/current bodies
+2634:   // before client projection. Internal exact request assertion proves O headers.
+2635:   expect(dynamic.assertions.map((a) => [a.id, a.passed])).toEqual([
+2636:     ["actual-status", true],
+2637:     ["actual-request", true],
+2638:     ["actual-body", true],
+2639:   ]);
+2640:   wire.finish();
+2641: }
+2642: function applyCommandMinimumControl(value: CrossCarrierManifest, control: MinimumControl) {
+2643:   const row = value.scenarios.find((r) => r.id === commandMinimumId)!;
+2644:   const actionId = control === "minimum-batch-body-conflict" ? "m-replay-b" : "m-create-a";
+2645:   const action = row.actions.find((a) => a.id === actionId)!;
+2646:   if (control === "minimum-batch-body-conflict")
+2647:     (action.raw as { body: { value: string } }).body.value = JSON.stringify(
+2648:       minimumRequests(control)[3]!.body,
+2649:     );
+2650:   else action.credentialRef = "reader";
+2651:   return {
+2652:     actionId,
+2653:     failingIds:
+2654:       control === "minimum-batch-body-conflict"
+2655:         ? [
+2656:             "http-status",
+2657:             "schema",
+2658:             "media",
+2659:             "disposition",
+2660:             "detail",
+2661:             "key",
+2662:             "no-next",
+2663:             "required-position",
+2664:             "effect-position",
+2665:             "same-context",
+2666:             "literal-result",
+2667:           ]
+2668:         : [
+2669:             "http-status",
+2670:             "schema",
+2671:             "media",
+2672:             "present-bdp-scope-epoch",
+2673:             "present-bdp-authorization-view",
+2674:             "present-bdp-scope-position",
+2675:             "serving-position",
+2676:             "disposition",
+2677:             "detail",
+2678:             "key",
+2679:             "no-next",
+2680:             "required-position",
+2681:             "effect-position",
+2682:             "literal-result",
+2683:           ],
+2684:   };
+2685: }
+2686: function assertCommandMinimumControls() {
+2687:   const canonical = JSON.parse(manifestSource.bytes.toString()),
+2688:     validator = createJsonSchemaValidator(schema);
+2689:   const digests: string[] = [];
+2690:   for (const control of minimumControls) {
+2691:     const changed = structuredClone(canonical),
+2692:       description = applyCommandMinimumControl(changed, control);
+2693:     const original = canonical.scenarios.find((r: { id: string }) => r.id === commandMinimumId),
+2694:       row = changed.scenarios.find((r: { id: string }) => r.id === commandMinimumId);
+2695:     expect(row.actions.map((a: { id: string }) => a.id)).toEqual(minimumActionIds);
+2696:     for (const [i, action] of row.actions.entries())
+2697:       expect(action.assertions).toEqual(original.actions[i].assertions);
+2698:     expect(changed.scenarios.filter((r: { id: string }) => r.id !== commandMinimumId)).toEqual(
+2699:       canonical.scenarios.filter((r: { id: string }) => r.id !== commandMinimumId),
+2700:     );
+2701:     const target = row.actions.find((a: { id: string }) => a.id === description.actionId);
+2702:     for (const id of description.failingIds)
+2703:       expect(target.assertions.some((a: { id: string }) => a.id === id)).toBe(true);
+2704:     const loaded = createCumulativeTransactionalArtifactBundle(
+2705:       loadProfileContractSelection("transactional"),
+2706:       {
+2707:         fixture: fixtureSource,
+2708:         manifest: { bytes: Buffer.from(JSON.stringify(changed)) },
+2709:       },
+2710:     );
+2711:     for (const scenario of loaded.manifest.scenarios)
+2712:       for (const action of scenario.actions ?? [])
+2713:         for (const assertion of action.assertions)
+2714:           if (assertion.kind === "json-schema") validator.resolve(assertion.schema);
+2715:     expect(loaded.digests.manifestDigest).not.toBe(
+2716:       createHash("sha256").update(JSON.stringify(canonical)).digest("hex"),
+2717:     );
+2718:     digests.push(loaded.digests.manifestDigest);
+2719:   }
+2720:   expect(new Set(digests).size).toBe(2);
+2721: }
+2722: it.each(minimumControls)(
+2723:   "discriminates command minimum evidence against %s",
+2724:   async (control) => {
+2725:     const children: ChildProcess[] = [],
+2726:       wire = commandMinimumWire(control);
+2727:     let description: ReturnType<typeof applyCommandMinimumControl> | undefined;
+2728:     const observed = await observe({
+2729:       children,
+2730:       scenarioSelection: [commandMinimumId],
+2731:       afterExchange: wire.afterExchange,
+2732:       manifest(value) {
+2733:         description = applyCommandMinimumControl(value, control);
+2734:       },
+2735:       onObserved(observed) {
+2736:         if (process.env.BDP_TRANSACTIONAL_MINIMUM_CONTROL_OUTPUT)
+2737:           writeFileSync(
+2738:             `${process.env.BDP_TRANSACTIONAL_MINIMUM_CONTROL_OUTPUT}-${control}.json`,
+2739:             JSON.stringify(
+2740:               { sourceCommit, entry, ...observed, supplemental: wire.summary() },
+2741:               null,
+2742:               2,
+2743:             ) + "\n",
+2744:           );
+2745:       },
+2746:     });
+2747:     expect(description).toBeDefined();
+2748:     expect(observed.result.selectedScenarioIds).toEqual([commandMinimumId]);
+2749:     expect(observed.result.scenarios).toHaveLength(1);
+2750:     expect(observed.result.claimEligible).toBe(false);
+2751:     const row = observed.result.scenarios[0]!,
+2752:       count = control === "minimum-batch-body-conflict" ? 4 : 1;
+2753:     expect(row.state).toBe("fail");
+2754:     expect(row.cleanupError).toBeUndefined();
+2755:     expect(row.prerequisiteFailure).toBeUndefined();
+2756:     expect(row.exchanges.map((e) => e.request.id)).toEqual(minimumActionIds.slice(0, count));
+2757:     expect(row.exchanges.every((e) => e.request.method === "POST")).toBe(true);
+2758:     expect(row.actions ?? []).toHaveLength(0);
+2759:     for (const exchange of row.exchanges) {
+2760:       expect(exchange.transportError).toBeUndefined();
+2761:       expect(exchange.harnessError).toBeUndefined();
+2762:       expect(exchange.request.exact?.writeState).toBe("complete");
+2763:     }
+2764:     for (const exchange of row.exchanges.slice(0, -1))
+2765:       expect(exchange.assertions.every((a) => a.passed)).toBe(true);
+2766:     const last = row.exchanges.at(-1)!;
+2767:     expect(last.assertions.map((a) => a.id)).toEqual(
+2768:       bundle.manifest.scenarios
+2769:         .find((r) => r.id === commandMinimumId)!
+2770:         .actions!.find((a) => a.id === description!.actionId)!
+2771:         .assertions.map((a) => a.id),
+2772:     );
+2773:     expect(last.request.id).toBe(description!.actionId);
+2774:     expect(last.response?.status).toBe(control === "minimum-batch-body-conflict" ? 409 : 403);
+2775:     expect(last.assertions.filter((a) => !a.passed).map((a) => a.id)).toEqual(
+2776:       description!.failingIds,
+2777:     );
+2778:     for (const id of ["request-headers", "request-body"])
+2779:       expect(last.assertions.find((a) => a.id === id)?.passed).toBe(true);
+2780:     wire.finish();
+2781:     expect(observed.sessions).toHaveLength(1);
+2782:     expect(children).toHaveLength(2);
+2783:     expect(children.every((c) => c.exitCode !== null || c.signalCode !== null)).toBe(true);
+2784:     console.log(
+2785:       JSON.stringify({
+2786:         kind: "installed-tx-command-minimum-control",
+2787:         control,
+2788:         sourceCommit,
+2789:         exchanges: row.exchanges.length,
+2790:         childLaunches: children.length,
+2791:         supplemental: wire.summary(),
+2792:         claimEligible: false,
+2793:       }),
+2794:     );
+2795:   },
+2796:   120000,
+2797: );
+
+
+ACTUAL SOURCE packages/conformance/src/transactional-cumulative.test.ts
+2670:         pointer,
+2671:         exists: true,
+2672:         equals: value,
+2673:       });
+2674:   }
+2675:   expect(fact(7, "no-effect")).toEqual({
+2676:     id: "no-effect",
+2677:     kind: "json-pointer",
+2678:     pointer: "/effectPosition",
+2679:     exists: false,
+2680:   });
+2681:   expect(fact(9, "ordered-state")).toEqual({
+2682:     id: "ordered-state",
+2683:     kind: "json-array-tuples",
+2684:     pointer: "/items",
+2685:     ordered: true,
+2686:     projections: ["/id", "/type", "/properties", "/metadata"].map((pointer) => ({ pointer })),
+2687:     equals: ["a", "b", "c"].map((k) => [
+2688:       `${scope}beads/${k}`,
+2689:       `${scope}types/task`,
+2690:       { title: `minimum-${k}` },
+2691:       {},
+2692:     ]),
+2693:   });
+2694:   expect(fact(10, "ordered-facts")).toEqual({
+2695:     id: "ordered-facts",
+2696:     kind: "json-array-tuples",
+2697:     pointer: "/events",
+2698:     ordered: true,
+2699:     projections: ["/source", "/type", "/subject", "/subjectType", "/ordinal"].map((pointer) => ({
+2700:       pointer,
+2701:     })),
+2702:     equals: ["a", "b", "c"].map((k) => [
+2703:       `${scope}events/`,
+2704:       "created",
+2705:       `${scope}beads/${k}`,
+2706:       `${scope}types/task`,
+2707:       0,
+2708:     ]),
+2709:   });
+2710:   for (const index of [9, 10])
+2711:     expect(fact(index, "no-next")).toEqual({
+2712:       id: "no-next",
+2713:       kind: "json-pointer",
+2714:       pointer: "/next",
+2715:       exists: true,
+2716:       equals: null,
+2717:     });
+2718:   expect(row.actions.flatMap((a: { assertions: unknown[] }) => a.assertions)).toHaveLength(192);
+2719:   expect(
+2720:     createHash("sha256").update(JSON.stringify(row)).digest("hex"),
+2721:     "complete minimum manifest facts",
+2722:   ).toBe("4344f3701bc99031485bc4f7e327f738bc138084ff10e43c1623cdfa57d068b6");
+2723: }
+2724: it("pins the inherited command-minimum manifest facts, read-header absence and all thirteen prior objects", () => {
+2725:   assertMinimumObservation(manifest);
+2726:   expect(
+2727:     selectApplicableScenariosForProfile(selected.catalog, "transactional").map((r) => r.id),
+2728:   ).toContain(minimumId);
+2729:   expect(bundle().manifest.scenarios[0]?.id).toBe(minimumId);
+2730:   for (const name of ["manifest", "coverage"] as const) {
+2731:     const original = withoutMinimumRow(read(name).toString(), name);
+2732:     expect(createHash("sha256").update(original).digest("hex")).toBe(
+2733:       name === "manifest"
+2734:         ? "726fc623bbb115a0f39e0bb3aaa586ea37254522b254e55e555ea95587f14cb9"
+2735:         : "a3a15b5143c118b24965698ec10289821664c90e935820b51c8cf76c05bdb1df",
+2736:     );
+2737:     const before = objectSlices(original, name === "manifest" ? "scenarios" : "rows"),
+2738:       after = objectSlices(read(name).toString(), name === "manifest" ? "scenarios" : "rows");
+2739:     expect(before.size).toBe(13);
+2740:     for (const [id, raw] of before) expect(after.get(id), id).toBe(raw);
+
+
+ACTUAL SOURCE packages/conformance/src/http-executor.ts
+330:       };
+331:     } finally {
+332:       deadline.clear();
+333:     }
+334:   };
+335: }
+336: 
+337: const HTTP_FIELD_NAME = /^[!#$%&'*+.^_`|~0-9A-Za-z-]+$/;
+338: const HTTP_FIELD_VALUE = /^[\t\x20-\x7e\x80-\xff]*$/;
+339: const HANDLE_ID = /^[a-z0-9]+(?:[.-][a-z0-9]+)*$/;
+340: const SECRET_FIELD =
+341:   /^(?:authorization|cookie|proxy-authorization|set-cookie|x-api-key|x-auth-token)$|(?:token|secret|password|credential|auth)/i;
+342: const RESERVED_FIELDS = new Set([
+343:   "host",
+344:   "connection",
+345:   "content-length",
+
+
+ACTUAL SOURCE packages/conformance/src/http-executor.ts
+630:     requestDeadline(signal, deadline);
+631:     const url = canonicalHttpUrl(request.url);
+632:     const raw = dataRecord(request.raw, ["headerLines", "bodyBytes"]);
+633:     if (
+634:       request.rawRequestTarget === undefined &&
+635:       url.pathname.length + url.search.length > mode.maximumRequestHeaderBytes
+636:     )
+637:       return configuration();
+638:     const target =
+639:       request.rawRequestTarget === undefined
+640:         ? encodeRequestTarget(undefined, url)
+641:         : encodeRequestTarget(
+642:             copyBoundedBytes(
+643:               request.rawRequestTarget,
+644:               Math.min(MAXIMUM_RAW_REQUEST_TARGET_BYTES, mode.maximumRequestHeaderBytes),
+645:             ),
+646:             url,
+647:           );
+648:     const body =
+649:       raw.bodyBytes === undefined
+650:         ? undefined
+651:         : copyBoundedBytes(raw.bodyBytes, mode.maximumRequestBodyBytes);
+652:     if (mode.profile === "read" && body !== undefined) return configuration();
+653:     const lines: RawHeaderLine[] = [];
+654:     let headBytes = Buffer.byteLength(`${request.method} `) + target.length + 13;
+655:     const append = (name: string, value: string): void => {
+656:       headBytes += name.length + value.length + 4;
+657:       if (headBytes > mode.maximumRequestHeaderBytes) configuration();
+658:       lines.push(Object.freeze({ name, value }));
+659:     };
+660:     const sourceLines = arrayItems(raw.headerLines);
+661:     for (let i = 0; i < sourceLines.length; i++) {
+662:       const entry = dataRecord(arrayItem(sourceLines, i), ["name", "value"]);
+663:       if (
+664:         typeof entry.name !== "string" ||
+665:         typeof entry.value !== "string" ||
+666:         !HTTP_FIELD_NAME.test(entry.name) ||
+667:         !HTTP_FIELD_VALUE.test(entry.value)
+668:       )
+669:         return configuration();
+670:       const name = entry.name.toLowerCase();
+671:       if (SECRET_FIELD.test(name) || RESERVED_FIELDS.has(name)) return configuration();
+672:       append(entry.name, entry.value);
+673:     }
+674:     if (headBytes > mode.maximumRequestHeaderBytes) return configuration();
+675:     validateExactRunConfiguration(mode, url.href, request.method);
+676:     const ref = request.credentialRef ?? mode.defaultCredentialRef;
+677:     if (typeof ref !== "string" || !HANDLE_ID.test(ref) || ref.length > 128) return configuration();
+678:     const handle = mode.credentialHandles.find(({ id }) => id === ref);
+679:     if (
+680:       handle === undefined ||
+681:       (handle.headerNames.length > 0 && !safeCredentialTarget(target, url))
+682:     )
+683:       return configuration();
+684:     requestDeadline(signal, deadline);
+685:     const credentials = dataRecord(
+686:       mode.resolveCredentials(
+687:         Object.freeze({
+688:           scope: mode.scope,
+689:           url: url.href,
+690:           method: request.method,
+691:           credentialRef: ref,
+692:           signal,
+693:         }),
+694:       ),
+695:     );
+696:     requestDeadline(signal, deadline);
+697:     const seen = new Set<string>();
+698:     for (const [name, value] of Object.entries(credentials)) {
+699:       const normalized = name.toLowerCase();
+700:       if (
+701:         !handle.headerNames.includes(normalized) ||
+702:         seen.has(normalized) ||
+703:         typeof value !== "string" ||
+704:         !HTTP_FIELD_VALUE.test(value) ||
+705:         !HTTP_FIELD_NAME.test(name)
+706:       )
+707:         return configuration();
+708:       seen.add(normalized);
+709:       append(name, value);
+710:     }
+711:     if (seen.size !== handle.headerNames.length) return configuration();
+712:     for (const [name, value] of [
+713:       ["Accept", "*/*"],
+714:       ["Accept-Language", "*"],
+715:       ["Accept-Encoding", "identity"],
+716:       ["User-Agent", "bdp-conformance/0"],
+717:     ] as const)
+718:       if (!lines.some((line) => line.name.toLowerCase() === name.toLowerCase()))
+719:         append(name, value);
+720:     append("Host", url.host);
+721:     append("Connection", "close");
+722:     if (body !== undefined) append("Content-Length", String(body.length));
+723:     const head = Buffer.concat([
+724:       Buffer.from(`${request.method} `, "ascii"),
+725:       target,
+726:       Buffer.from(
+727:         ` HTTP/1.1\r\n${lines.map(({ name, value }) => `${name}: ${value}`).join("\r\n")}\r\n\r\n`,
+728:         "latin1",
+729:       ),
+730:     ]);
+731:     const exchanged = await exchangeRawBytes(
+732:       route,
+733:       head,
+734:       request.method,
+735:       signal,
+
+
+ACTUAL SOURCE packages/conformance/src/runner.ts
+1810:     observed.bodyOctets === body.byteLength &&
+1811:     observed.bodyDigest === createHash("sha256").update(body).digest("hex")
+1812:       ? { bodyDigest: observed.bodyDigest }
+1813:       : {}),
+1814:   };
+1815: }
+1816: 
+1817: function exactHeadersMatch(
+1818:   request: ScenarioRequest,
+1819:   url: string,
+1820:   body: Uint8Array | undefined,
+1821:   observed: ExactRequestObservation,
+1822:   config: ExactHttpConfiguration,
+1823: ): boolean {
+1824:   const authored = request.raw?.headerLines;
+1825:   if (authored === undefined) return false;
+1826:   const actual = observed.headerLines;
+1827:   for (const [index, line] of authored.entries())
+1828:     if (actual[index]?.name !== line.name || actual[index]?.value !== line.value) return false;
+1829:   let index = authored.length;
+1830:   const handle = config.credentialHandles.find(
+1831:     ({ id }) => id === (request.credentialRef ?? config.defaultCredentialRef),
+1832:   );
+1833:   if (handle === undefined) return false;
+1834:   const names = new Set<string>();
+1835:   for (let n = 0; n < handle.headerNames.length; n++) {
+1836:     const line = actual[index++];
+1837:     if (
+1838:       line === undefined ||
+1839:       !handle.headerNames.includes(line.name.toLowerCase()) ||
+1840:       names.has(line.name.toLowerCase())
+1841:     )
+1842:       return false;
+1843:     names.add(line.name.toLowerCase());
+1844:   }
+1845:   const expected = (
+1846:     [
+1847:       ["Accept", "*/*"],
+1848:       ["Accept-Language", "*"],
+1849:       ["Accept-Encoding", "identity"],
+1850:       ["User-Agent", "bdp-conformance/0"],
+1851:     ] as const
+1852:   ).filter(
+1853:     ([name]) =>
+1854:       !authored.some((line) => line.name.toLowerCase() === name.toLowerCase()) &&
+1855:       !names.has(name.toLowerCase()),
+1856:   );
+1857:   const generated: readonly (readonly [string, string])[] = [
+1858:     ...expected,
+1859:     ["Host", new URL(url).host],
+1860:     ["Connection", "close"],
+1861:     ...(body === undefined ? [] : [["Content-Length", String(body.byteLength)] as const]),
+1862:   ];
+1863:   for (const [name, value] of generated) {
+1864:     const line = actual[index++];
+1865:     if (line?.name !== name || line.value !== value) return false;
+1866:   }
+1867:   return index === actual.length;
+1868: }
+1869: 
+1870: interface ExactHeaderWitness {
+1871:   readonly request: ScenarioRequest;
+1872:   readonly url: string;
+1873:   readonly body: Uint8Array | undefined;
+1874:   readonly observation: ExactRequestObservation | undefined;
+1875:   readonly configuration: ExactHttpConfiguration | undefined;
+
+
+ACTUAL SOURCE packages/conformance/src/runner.ts
+2350:           return value;
+2351:         }),
+2352:       );
+2353:     } catch (error) {
+2354:       return outcome(
+2355:         assertion.id,
+2356:         false,
+2357:         error instanceof Error ? error.message : "array tuple projection failed",
+2358:       );
+2359:     }
+2360:     let expected: readonly unknown[];
+2361:     if (assertion.fixturePointer === undefined) expected = assertion.equals;
+2362:     else {
+2363:       const fixtureExpected = jsonPointer(fixture, assertion.fixturePointer);
+2364:       if (
+2365:         !Array.isArray(fixtureExpected) ||
+2366:         fixtureExpected.some(
+2367:           (tuple) =>
+2368:             !Array.isArray(tuple) ||
+2369:             tuple.length !== assertion.projections.length ||
+2370:             tuple.some(
+2371:               (value, index) =>
+2372:                 assertion.projections[index]?.normalize !== undefined && typeof value !== "string",
+2373:             ),
+2374:         )
+2375:       )
+2376:         throw new ConformanceRunnerError("fixture oracle pointer did not resolve to valid tuples");
+2377:       expected = fixtureExpected;
+2378:     }
+2379:     return outcome(
+2380:       assertion.id,
+2381:       assertion.ordered === true
+2382:         ? actual.length === expected.length &&
+2383:             actual.every((tuple, index) => tupleEquals(tuple, expected[index] as JsonValue[]))
+2384:         : multisetEquals(actual, expected),
+2385:       assertion.ordered === true
+2386:         ? "array tuples did not match the expected sequence"
+2387:         : "array tuples did not match the expected multiset",
+2388:     );
+2389:   }
+2390:   if (body.kind !== "json") return outcome(assertion.id, false, observedBodyIssue(body));
+2391:   if (schemaValidator === undefined)
+2392:     throw new ConformanceRunnerError("schema assertion requires an offline schema validator");
+2393:   const failures = schemaValidator.validate(assertion.schema, body.value);
+2394:   return {
+2395:     id: assertion.id,
+
+
+ACTUAL SOURCE packages/server/src/transaction-events.ts
+70:   readonly next: string | null;
+71: }
+72: const ordinal = /^(0|[1-9][0-9]*)$/;
+73: const position = /^pos-(0|[1-9][0-9]*)$/;
+74: const cursor =
+75:   /^ev_([A-Za-z0-9_-]{43})_([A-Za-z0-9_-]{43})_([A-Za-z0-9_-]{43})_(pos-(?:0|[1-9][0-9]*))_(0|[1-9][0-9]*)$/;
+76: const hash = (tag: string, value: string) =>
+77:   createHash("sha256")
+78:     .update(JSON.stringify([tag, value]))
+79:     .digest("base64url");
+80: 
+81: /** Scope and Resource token spelling is deliberately private, not a fixture law. */
+82: export function renderTransactionEvent(
+83:   context: Pick<TransactionReadContext, "scopeEpoch" | "authorizationView">,
+84:   source: string,
+85:   checkpoint: string,
+86:   event: TransactionEvent,
+87: ): TransactionEvent {
+88:   if (
+89:     !position.test(checkpoint) ||
+90:     !Number.isSafeInteger(Number(checkpoint.slice(4))) ||
+91:     Number(checkpoint.slice(4)) < 1 ||
+92:     !Number.isSafeInteger(event.ordinal) ||
+93:     event.ordinal < 0
+94:   )
+95:     throw new Error("invalid committed Event position");
+96:   return {
+97:     ...event,
+98:     source,
+99:     id: `ev_${hash("epoch", context.scopeEpoch)}_${hash("view", context.authorizationView)}_${hash("source", source)}_${checkpoint}_${event.ordinal}`,
+100:   };
+101: }
+102: export function parseTransactionEventCursor(
+103:   value: string,
+104:   context?: TransactionReadContext,
+105: ): {
+
+
+ACTUAL SOURCE packages/server/src/transaction-events.ts
+190: export function projectTransactionEventGroup(
+191:   value: unknown,
+192:   context: TransactionReadContext,
+193:   source: TransactionEventSource,
+194:   scope: string,
+195:   expectedPosition: number,
+196: ): readonly TransactionEvent[] {
+197:   if (!value || typeof value !== "object") throw new Error("invalid retained Event group");
+198:   const group = value as TransactionEventGroup;
+199:   if (
+200:     group.scopeEpoch !== context.scopeEpoch ||
+201:     group.authorizationView !== context.authorizationView ||
+202:     group.position !== `pos-${expectedPosition}` ||
+203:     group.checkpoint !== group.position ||
+204:     !Array.isArray(group.events) ||
+205:     group.eventCount !== group.events.length ||
+206:     !Array.isArray(group.changes) ||
+207:     typeof group.transaction !== "string"
+208:   )
+209:     throw new Error("retained Event group context mismatch");
+210:   const endpoints = new Map<string, readonly [unknown, unknown]>();
+211:   const linkIds = new Set<string>();
+212:   const remember = (id: string, from: unknown, to: unknown) => {
+213:     reference(from);
+214:     reference(to);
+215:     const old = endpoints.get(id),
+216:       next = [from, to] as const;
+217:     if (old && stringifyJsonValue(old) !== stringifyJsonValue(next))
+218:       throw new Error("inconsistent retained Link endpoints");
+219:     endpoints.set(id, next);
+220:   };
+221:   for (const change of group.changes) {
+222:     if (change.resourceKind === "link") {
+223:       linkIds.add(change.resource.id);
+224:       if (change.operation === "upsert" && "source" in change.resource)
+225:         remember(change.resource.id, change.resource.source, change.resource.target);
+226:     }
+227:   }
+228:   for (const event of group.events) {
+229:     const data = event.data as Record<string, unknown>;
+230:     if (!data || typeof data !== "object") throw new Error("invalid retained Event data");
+231:     if (
+232:       event.type === "linked" ||
+233:       event.type === "unlinked" ||
+234:       (event.type === "created" && linkIds.has(event.subject))
+235:     )
+236:       remember(event.subject, data.source, data.target);
+237:   }
+238:   const result: TransactionEvent[] = [];
+239:   for (const [index, event] of group.events.entries()) {
+240:     if (
+241:       event.ordinal !== index ||
+242:       event.source !== `${scope}events/` ||
+243:       event.transaction !== group.transaction ||
+244:       !["created", "updated", "deleted", "linked", "unlinked"].includes(event.type)
+245:     )
+246:       throw new Error("invalid retained Event framing");
+247:     const data = event.data as Record<string, unknown>;
+248:     let include = source.kind === "scope";
+249:     if (source.kind !== "scope") {
+250:       include =
+251:         event.subject === source.subject && ["created", "updated", "deleted"].includes(event.type);
+252:       if (source.kind === "bead" && (event.type === "linked" || event.type === "unlinked")) {
+253:         if (data.endpoint !== "source" && data.endpoint !== "target")
+254:           throw new Error("invalid endpoint fact");
+255:         include = reference(data[data.endpoint]) === source.subject;
+256:       }
+257:       if (source.kind === "bead" && event.type === "updated" && linkIds.has(event.subject)) {
+258:         const pair = endpoints.get(event.subject);
+259:         if (!pair) throw new Error("incident Link update lacks same-group endpoints");
+260:         include = pair.some((endpoint) => reference(endpoint) === source.subject);
+261:         // Literal incident rule currently mentions properties only. Do not silently
+262:         // decide metadata-only membership while the spec disposition is pending.
+263:         if (include && data.change === undefined && data.metadataChange !== undefined)
+264:           throw new TransactionEventProjectionGap("incident-link-metadata");
+265:       }
+266:     }
+267:     if (include) result.push(renderTransactionEvent(context, source.url, group.checkpoint, event));
+268:   }
+269:   return result;
+270: }
+271: export function eventContinuation(source: string, id: string): string {
+272:   const next = new URL(source);
+
+
+ACTUAL SOURCE packages/server/src/transaction-store.ts
+645:       pageBytes:
+646:         envelopeBytes + eventBytes + Buffer.byteLength(json(eventContinuation(source, event.id))),
+647:     };
+648:   }
+649:   function eventProjection(
+650:     row: { position: number; value: unknown },
+651:     context: TransactionReadContext,
+652:     source: TransactionEventSource,
+653:     cursor?: { position: number; ordinal: number; id: string },
+654:   ) {
+655:     const projected = projectTransactionEventGroup(row.value, context, source, scope, row.position);
+656:     if (
+657:       cursor &&
+658:       (row.position !== cursor.position ||
+659:         !projected.some((event) => event.ordinal === cursor.ordinal && event.id === cursor.id))
+660:     )
+661:       throw new TransactionEventParameterError(undefined, context);
+662:     return projected;
+663:   }
+664:   /** Called only inside enter. One group, no iterator or group body in its token. */
+665:   function eventPacket(
+
+
+ACTUAL SOURCE packages/server/src/transaction-store.ts
+1540:     },
+1541:     /** Fixed-view finite Event observation. Group rows are consumed one at a time;
+1542:      * no reader/SQLite iterator or mutable capability escapes this owner entry. */
+1543:     readEvents(
+1544:       sourceUrl: string,
+1545:       after?: string,
+1546:       supplied?: TransactionMinimum | "unsupported",
+1547:     ):
+1548:       | {
+1549:           readonly kind: "page";
+1550:           readonly page: TransactionEventPage;
+1551:           readonly context: TransactionReadContext;
+1552:         }
+1553:       | { readonly kind: "missing" }
+1554:       | { readonly kind: "unsupported" } {
+1555:       if (typeof sourceUrl !== "string" || (after !== undefined && typeof after !== "string"))
+1556:         throw new TypeError("Event source and cursor must be strings");
+1557:       const source = eventSource(sourceUrl);
+1558:       const minimum =
+1559:         supplied === undefined || supplied === "unsupported"
+1560:           ? supplied
+1561:           : snapshotTransactionMinimum(supplied);
+1562:       return enter(() => {
+1563:         // Reference convention: unknown sources are nondisclosing before minimum
+1564:         // checks. A retained identity remains a source after Resource deletion.
+1565:         if (!eventSourceKnown(source)) return Object.freeze({ kind: "missing" as const });
+1566:         if (minimum === "unsupported") return Object.freeze({ kind: "unsupported" as const });
+1567:         const context = readContext(),
+1568:           head = Number(context.scopePosition.slice(4));
+1569:         // This owner entry cannot advance while scanning. Refuse/wait before any
+1570:         // group read rather than repeating projection work on every wait attempt.
+1571:         if (minimum !== undefined) checkTransactionMinimum(minimum, context);
+1572:         const start = after === undefined ? undefined : parseTransactionEventCursor(after, context);
+1573:         if (start) checkTransactionEventCursor(start, context, source.url);
+1574:         let cursorMatched = start === undefined;
+1575:         const events: import("./transaction-batch.js").TransactionEvent[] = [];
+1576:         // Keep brackets/envelope once and replace the literal null with each
+1577:         // candidate continuation string. Each Event is serialized exactly once.
+1578:         const envelopeBytes =
+1579:           Buffer.byteLength(json({ source: source.url, events: [], next: null })) - 4;
+1580:         let eventBytes = 0;
+1581:         let next: string | null = null;
+1582:         const retainedGroupAtOrAfter = retainedGroupReader();
+1583:         let at = start?.position ?? 1;
+1584:         for (;;) {
+1585:           const row = retainedGroupAtOrAfter(at, head);
+1586:           if (!row) {
+1587:             if (cursorMatched && at <= head) throw new Error("missing retained Event group");
+1588:             break;
+1589:           }
+1590:           const p = row.position;
+1591:           if (cursorMatched && p !== at) throw new Error("missing retained Event group");
+1592:           const projected = eventProjection(
+1593:             row,
+1594:             context,
+1595:             source,
+1596:             !cursorMatched && start && after !== undefined ? { ...start, id: after } : undefined,
+1597:           );
+1598:           cursorMatched = true;
+1599:           for (const event of projected) {
+1600:             if (start && p === start.position && event.ordinal <= start.ordinal) continue;
+1601:             // Reserve the exact continuation even if this Event is currently last.
+1602:             const { eventBytes: candidateBytes, pageBytes: bytes } = eventCandidateBytes(
+1603:               envelopeBytes,
+1604:               source.url,
+1605:               event,
+1606:               eventBytes,
+1607:               events.length,
+1608:             );
+1609:             if (events.length + 1 > receiptMaximumItems || bytes > TRANSACTION_EVENT_PAGE_BYTES) {
+1610:               const last = events.at(-1);
+1611:               if (!last) throw new Error("finite Event page cannot hold first retained Event");
+1612:               next = eventContinuation(source.url, last.id);
+1613:               break;
+1614:             }
+1615:             events.push(event);
+1616:             eventBytes = candidateBytes;
+1617:           }
+1618:           if (next !== null) break;
+1619:           at = p + 1;
+1620:         }
+1621:         if (!cursorMatched) throw new TransactionEventParameterError(undefined, context);
+1622:         return Object.freeze({
+1623:           kind: "page" as const,
+1624:           context,
+1625:           page: freezeEventPage({ source: source.url, events, next }),
+1626:         });
+1627:       });
+1628:     },
+1629:     /** Initial source/minimum/cursor observation, never a wire or durable cursor. */
+1630:     beginEventScan(
+1631:       sourceUrl: string,
+1632:       after?: string,
+1633:       supplied?: TransactionMinimum | "unsupported",
+1634:       invalidReconnect = false,
+1635:     ): TransactionEventPacket | { readonly kind: "missing" } | { readonly kind: "unsupported" } {
+
+
+ACTUAL SOURCE packages/server/src/transaction-service.ts
+382:         const after = "after" in copied ? copied.after : owner.captureChangesStart();
+383:         return waitForTransactionMinimum(
+384:           () => owner.readChanges(after, minimum),
+385:           minimumReads,
+386:           signal,
+387:         );
+388:       });
+389:     },
+390:     events(
+391:       source: string,
+392:       after?: string,
+393:       supplied?: TransactionMinimum | "unsupported",
+394:       signal?: AbortSignal,
+395:     ) {
+396:       return run(() =>
+397:         waitForTransactionMinimum(
+398:           () => owner.readEvents(source, after, supplied),
+399:           minimumReads,
+400:           signal,
+401:         ),
+402:       );
+403:     },
+404:     beginEvents(
+405:       source: string,
+
+
+ACTUAL SOURCE packages/server/src/transaction-http.ts
+475:             page: observed.page,
+476:             context: observed.context,
+477:           };
+478:     }
+479:     // Alias query refusals and receipt identity checks own these routes, even
+480:     // when a query happens to spell view=events. Do not reclassify them as Events.
+481:     const alias = classifyAliasPath(url, scope);
+482:     if (alias !== undefined && typeof alias !== "string") return problem(alias);
+483:     const receiptRoute =
+484:       url.pathname.startsWith(`${scopeUrl.pathname}receipts/`) ||
+485:       url.pathname === `${scopeUrl.pathname}receipts`;
+486:     const eventRequest = receiptRoute ? undefined : transactionEventRequest(url, scope);
+487:     if (eventRequest) {
+488:       const minimum = hasMinimumControls(request)
+489:         ? (transactionMinimumHeaders(request.headers) ?? "unsupported")
+490:         : undefined;
+491:       if (selectChangefeedMedia(request.headers.get("accept")) !== "sse") {
+492:         const observed = await service.events(
+493:           eventRequest.source.url,
+494:           eventRequest.after,
+495:           minimum,
+496:           request.signal,
+497:         );
+498:         if (observed.kind === "missing") return transactionHttpProblem("resource-not-found");
+499:         if (observed.kind === "unsupported") return developmentGap("minimum-position");
+500:         return context(jsonResponse(observed.page), observed.context);
+501:       }
+502:       const fields =
+
+
+ACTUAL SOURCE packages/server/src/read-pagination.ts
+378:           value === null ||
+379:           typeof value !== "object" ||
+380:           Array.isArray(value) ||
+381:           Object.values(value).some((entry) => typeof entry !== "string")
+382:         )
+383:           throw localError("invalid-snapshot", "source context must be a string record");
+384:         capturedContext = value as ReadSourceContext;
+385:       }
+386:       const copied = snapshotItems(
+387:         input.items,
+388:         byteCapacity - (contextCopy?.retainedBytes ?? 0),
+389:         nodeCapacity - (contextCopy?.retainedNodes ?? 0),
+390:       );
+391:       const retainedBytes = copied.retainedBytes + (contextCopy?.retainedBytes ?? 0);
+392:       const retainedNodes = copied.retainedNodes + (contextCopy?.retainedNodes ?? 0);
+393:       const { items } = copied;
+394: 
+395:       if (items.length <= limit) {
+396:         const page = Object.freeze({ items: Object.freeze(items.slice()), next: null });
+397:         pageContexts.set(page, capturedContext);
+398:         return page;
+399:       }
+400: 
+401:       // Reserve every future cursor/page position atomically, but mint tokens lazily. This makes
+
+
+ACTUAL SOURCE docs/specs/bdp.md
+5382: > **Transactional contract.**
+5383: >
+5384: > The complete Event ordering, transaction framing, and Event Source guarantees
+5385: > below are required only by the Transactional profile. Read and Read+Update do
+5386: > not publish or expose BDP Events.
+5387: 
+5388: An **Event** is an immutable authority-generated record of a committed fact.
+5389: Each Event has an immutable ID that is unique within exactly one **Event
+5390: Source**. An Event is not required to be an independently addressable
+5391: Resource, but its Event Source is a Resource.
+5392: 
+5393: Every Bead and Link is an Event **subject** and has an associated
+5394: Resource-scoped Event Source. The subject and the Event Source have distinct
+5395: identities, and they may have different lifetimes. An Event Source may remain
+5396: observable after its subject is deleted, subject to retention policy.
+5397: 
+5398: Resource-scoped Event Sources are not independently committed logs. They are
+5399: deterministic projections of the semantic Events inside the Scope's committed
+5400: change groups. Each Event has a stable ordinal within its change group. Its
+5401: source-local opaque ID and cursor are stable functions of the group
+5402: checkpoint, the ordinal, and the projection. An implementation may
+5403: materialize or index a projection without changing its contents or order.
+5404: 
+5405: The model defines five domain-independent Event Types:
+
+MEASURED COUNTS
+{
+  "manifest": {
+    "diskBytes": 738624,
+    "normalBytes": 750430,
+    "compactBytes": 366116,
+    "canonicalBytes": 366116,
+    "nodes": 19570,
+    "sha256": "29729151cf6da641545910ec3880f9609c13b319af7bbe99d3d2ad47833dab96",
+    "normalSha256": "570016630bd7d4f761aa6fa561e243fd4a33cbb9496f0b59f2285f32cddc182f",
+    "compactSha256": "ee2d0759f69368684bdc7df2146c5735a18f9b4d89d80413191f25c8741f9bcd",
+    "canonicalSha256": "2d01b3bc7d79c2fff88c249b57aacff5f4164cfcfdeb0d92db67a67e721d6b30",
+    "delta": {
+      "diskBytes": 54418,
+      "normalBytes": 54832,
+      "nodes": 1463
+    }
+  },
+  "coverage": {
+    "diskBytes": 108139,
+    "normalBytes": 108139,
+    "compactBytes": 76864,
+    "canonicalBytes": 76864,
+    "nodes": 2412,
+    "sha256": "4619813e9446e0e714a64c11eac184531950f57720e32c7ef414c7e3342121af",
+    "normalSha256": "4619813e9446e0e714a64c11eac184531950f57720e32c7ef414c7e3342121af",
+    "compactSha256": "5cbee0bca26977c1c5b34322687156b84a5feb0dc419ddcf5c714966422f826b",
+    "canonicalSha256": "c4a0eb91f8e95d3a46c5f34bad354c6781e508f723beef56511ae7e9d0332467",
+    "delta": {
+      "diskBytes": 8894,
+      "normalBytes": 8894,
+      "nodes": 200
+    }
+  },
+  "newActions": 11,
+  "totalActions": 210,
+  "newAssertions": 192,
+  "totalAssertions": 2294,
+  "newCaptures": 1,
+  "newRowCompactSha256": "4344f3701bc99031485bc4f7e327f738bc138084ff10e43c1623cdfa57d068b6",
+  "fixture": {
+    "path": "packages/conformance/test-support/transactional/fixture-v1.json",
+    "bytes": 716,
+    "sha256": "3a7899ced771d4880066d98b0000c53f801ece53458502cc4f3bc641146c9a85"
+  },
+  "planningLimits": {
+    "manifestAdditionalBytes": 122880,
+    "nodesAdditional": 3000,
+    "coverageAdditionalBytes": 24576,
+    "newAssertions": 260
+  },
+  "executed": false,
+  "proposedCanonicalFences": {
+    "manifestDisk": {
+      "oldAbsolute": 688302,
+      "newAbsolute": 742720,
+      "oldDeltaFrom488280": 200022,
+      "newDeltaFrom488280": 254440,
+      "margin": 4096
+    },
+    "manifestNormal": {
+      "oldAbsolute": 699694,
+      "newAbsolute": 754526,
+      "margin": 4096
+    },
+    "nodes": {
+      "oldAbsolute": 18171,
+      "newAbsolute": 19634,
+      "oldDeltaFrom13019": 5152,
+      "newDeltaFrom13019": 6615,
+      "margin": 64
+    },
+    "coverage": {
+      "oldAbsolute": 100269,
+      "newAbsolute": 109163,
+      "oldDeltaFrom70662": 29607,
+      "newDeltaFrom70662": 38501,
+      "margin": 1024
+    }
+  }
+}
+

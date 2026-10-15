@@ -1,0 +1,85 @@
+--- historical-header-only/prepared-source.json
++++ prepared-source.json
+@@ -3,12 +3,12 @@
+   "sourceHead": "453b6dab386746bb03aac2c0a293572b8a71c969",
+   "sourceTree": "40782d97c9764bc19ae78c46d1d39475e3db317a",
+   "sourceSha256": {
+-    "packages/conformance/test-support/transactional/manifest-v1.json": "a48612a0935e7fe557cd3f75af281cc87522c339c3f09c0fa6aff6ccd1671446",
+-    "packages/conformance/test-support/transactional/coverage-v1.json": "edfa30e2bc58b7b067a3b941da896d0ed991dcf3173467e348407904f054162a",
+-    "packages/conformance/src/transactional-cumulative.test.ts": "f755f427ce59b59f43e42d3ec6ddd09a69985b98f59929a524324890d6c0af18",
++    "packages/conformance/test-support/transactional/manifest-v1.json": "29729151cf6da641545910ec3880f9609c13b319af7bbe99d3d2ad47833dab96",
++    "packages/conformance/test-support/transactional/coverage-v1.json": "4619813e9446e0e714a64c11eac184531950f57720e32c7ef414c7e3342121af",
++    "packages/conformance/src/transactional-cumulative.test.ts": "0d1f87199222e2426b048eae1a5aadd11c20c04298d31e3198ca46897e5492d3",
+     "packages/conformance/src/profile-contract-plan.test.ts": "e5be4864e456431db74bd325ec64d785bf3c5301a6be5b230bfcc7351ade4fc4",
+-    "apps/bdptest/src/transactional-matrix.test.ts": "421eeff168aa54b4d97893c81ebe1b9f790f9f4cf2e015a9fc6aac552b0aafb0"
++    "apps/bdptest/src/transactional-matrix.test.ts": "e319109ab0e9f7258e6918ae789ed7a5672eb7aabd0ec8725ae38e3634164e68"
+   },
+-  "sourceDiffSha256": "fab20b6534f645fbc705b4b9b7800394eca71eee59e8c53ccd6db5c320d7699d",
++  "sourceDiffSha256": "ea04e6ba34c9e1d9b724348f32407c6fd6bd78b795cad0481e7f4093b0f21762",
+   "sourceLockSha256": "4150d8821c96dbc2cfec0b2762ff76b58318079f65fa4f5c8858ef2dd61f8d6d"
+ }
+--- historical-header-only/execution-gate.example.json
++++ execution-gate.example.json
+@@ -23,18 +23,18 @@
+     "packages.py": "e5cde5e8943eca879257c744e108e6a401272d6926d265c2927f8bdd3ee23655",
+     "build-inventory.py": "979c2aaba88b1085712fe95d79ce61549b53c2d0f1247ca05907a1282db6dc1a",
+     "adjudicate.py": "cb206b6ad9983018dcc1903f1f5907324894474bdf4d38660fce896a33880d16",
+-    "commands.json": "8d6d61fab25df20fddc22e3804469f22428fd3fd61fcf00cc5820a5a8c7c7767"
++    "commands.json": "45439af274022c6b3c668043af35bc2d68e6d0be5d86a29e6bc8975a6ba0a514"
+   },
+   "sourceHead": "453b6dab386746bb03aac2c0a293572b8a71c969",
+   "sourceTree": "40782d97c9764bc19ae78c46d1d39475e3db317a",
+   "sourceSha256": {
+-    "packages/conformance/test-support/transactional/manifest-v1.json": "a48612a0935e7fe557cd3f75af281cc87522c339c3f09c0fa6aff6ccd1671446",
+-    "packages/conformance/test-support/transactional/coverage-v1.json": "edfa30e2bc58b7b067a3b941da896d0ed991dcf3173467e348407904f054162a",
+-    "packages/conformance/src/transactional-cumulative.test.ts": "f755f427ce59b59f43e42d3ec6ddd09a69985b98f59929a524324890d6c0af18",
++    "packages/conformance/test-support/transactional/manifest-v1.json": "29729151cf6da641545910ec3880f9609c13b319af7bbe99d3d2ad47833dab96",
++    "packages/conformance/test-support/transactional/coverage-v1.json": "4619813e9446e0e714a64c11eac184531950f57720e32c7ef414c7e3342121af",
++    "packages/conformance/src/transactional-cumulative.test.ts": "0d1f87199222e2426b048eae1a5aadd11c20c04298d31e3198ca46897e5492d3",
+     "packages/conformance/src/profile-contract-plan.test.ts": "e5be4864e456431db74bd325ec64d785bf3c5301a6be5b230bfcc7351ade4fc4",
+-    "apps/bdptest/src/transactional-matrix.test.ts": "421eeff168aa54b4d97893c81ebe1b9f790f9f4cf2e015a9fc6aac552b0aafb0"
++    "apps/bdptest/src/transactional-matrix.test.ts": "e319109ab0e9f7258e6918ae789ed7a5672eb7aabd0ec8725ae38e3634164e68"
+   },
+-  "sourceDiffSha256": "fab20b6534f645fbc705b4b9b7800394eca71eee59e8c53ccd6db5c320d7699d",
++  "sourceDiffSha256": "ea04e6ba34c9e1d9b724348f32407c6fd6bd78b795cad0481e7f4093b0f21762",
+   "sourceLockSha256": "4150d8821c96dbc2cfec0b2762ff76b58318079f65fa4f5c8858ef2dd61f8d6d",
+   "node": "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+   "pnpm": "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+--- historical-header-only/commands.json
++++ commands.json
+@@ -595,7 +595,7 @@
+     "claimEligible": false
+   },
+   "controlOracle": {
+-    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-command-minimum-evidence-draft/app/controls.json",
+-    "sha256": "2659a11a4207b2dde48408eb650b191ce5186f44a478948081db0a0576d4e09d"
++    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-command-minimum-evidence-draft/event-id-repair/controls.json",
++    "sha256": "c13e9fd4c286a900f9ba46d2087957e98a9adfd419130f646fdc048b9203a093"
+   }
+ }
+--- historical-header-only/preparation-report.md
++++ preparation-report.md
+@@ -4,7 +4,7 @@
+ 
+ ## Source/static stage
+ 
+-Prepared-source.json records actual five final owned source hashes including approved source-authoring fences, N1 report-retention repair, and the narrow authored-header-prefix/replay-mode successor (app421eeff1; full diff fab20b65). The original packet and its native review remain under historical-pre-header-repair; the successor Claude supplement is pending and no execution is released. Parent453b6dab/tree40782d97 remains a dirty review workspace, not an installed source attribution. Gate checks exact five-file footprint/hashes, HEAD/tree/diff/lock and absent untracked files before each stage. Root may validate the dirty snapshot, then create an ordinary clean child and rebind sourceHead/sourceTree/sourceDiffSha256 plus finalHead/finalTree before packaging. Existing build start/source hashes must match all five final file bytes; fixed parent and exact five-path footprint constrain all remaining tracked inputs. Gate refuses packaging or installed work on the dirty parent. Do not relabel prior start records.
++Prepared-source.json records actual five final owned source hashes including approved source-authoring fences, N1 report-retention repair, authored-header-prefix/replay-mode repair, exact-case names-only privacy check, and private projected Event-ID correction. The final frozen source has app e319109a, cumulative 0d1f8719 and full diff ea04e6ba. Original and header-only packets remain under historical-pre-header-repair and historical-header-only respectively; prior reviews are historical. Actual successor Claude review is pending and no execution is released. commands.json changes only controlOracle to event-id-repair/controls.json with corrected derivative hashes and unchanged failure/pass ID shape. Parent453b6dab/tree40782d97 remains a dirty review workspace, not an installed source attribution. Gate checks exact five-file footprint/hashes, HEAD/tree/diff/lock and absent untracked files before each stage. Root may validate the dirty snapshot, then create an ordinary clean child and rebind sourceHead/sourceTree/sourceDiffSha256 plus finalHead/finalTree before packaging. Existing build start/source hashes must match all five final file bytes; fixed parent and exact five-path footprint constrain all remaining tracked inputs. Gate refuses packaging or installed work on the dirty parent. Do not relabel prior start records.
+ 
+ Eight source commands: offline frozen setup; typecheck; fresh clean build; format; lint; dependency boundaries; unchanged Read seal; exact seven static callbacks. A ninth CPU-only build-inventory command checks exact seven passing fullName/path pairs,0failed/no unhandled, and snapshots fresh protocol/server outputs. Static imports evaluate actual conformance modules and app fixture/import setup; selected callbacks start no listeners/stores/product children. Worker/compiler processes remain real OS processes. Existing bound predicates may fail; no auto retries.
+ 
+--- historical-header-only/preparation-hashes.json
++++ preparation-hashes.json
+@@ -4,8 +4,8 @@
+   "packages.py": "e5cde5e8943eca879257c744e108e6a401272d6926d265c2927f8bdd3ee23655",
+   "build-inventory.py": "979c2aaba88b1085712fe95d79ce61549b53c2d0f1247ca05907a1282db6dc1a",
+   "adjudicate.py": "cb206b6ad9983018dcc1903f1f5907324894474bdf4d38660fce896a33880d16",
+-  "commands.json": "8d6d61fab25df20fddc22e3804469f22428fd3fd61fcf00cc5820a5a8c7c7767",
+-  "prepared-source.json": "71e05a2cdc08ffe41e26ce3c5d64f0269817e8dc03f64e8ba3a7fa8657e2f3a9",
+-  "execution-gate.example.json": "3e15a61f519ff02f57436d5246ee7fca36ee7f680f8a3b12110ef0903a3f468c",
+-  "preparation-report.md": "0c813db71dffdc737a7430bb5dbdc1ddeb3e8ad302e8abb5df73b72435fc6af9"
++  "commands.json": "45439af274022c6b3c668043af35bc2d68e6d0be5d86a29e6bc8975a6ba0a514",
++  "prepared-source.json": "809250e7360aa9acf5739987d09244111ff09aa03f1907652a44ea96cac35806",
++  "execution-gate.example.json": "d21a558648a5292e421f71b8e29b5b8cb4b6875450d94c05619f6ccaff100b48",
++  "preparation-report.md": "73cba3437a78693189ac1da7cd9906e6bc713ca5617f8ddb7af24b01aa1e18a6"
+ }

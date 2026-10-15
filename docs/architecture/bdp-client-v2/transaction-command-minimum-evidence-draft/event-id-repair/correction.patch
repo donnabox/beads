@@ -1,0 +1,107 @@
+--- a/packages/conformance/test-support/transactional/manifest-v1.json
++++ b/packages/conformance/test-support/transactional/manifest-v1.json
+@@ -1718,9 +1718,6 @@
+               "ordered": true,
+               "projections": [
+                 {
+-                  "pointer": "/id"
+-                },
+-                {
+                   "pointer": "/source"
+                 },
+                 {
+@@ -1738,7 +1735,6 @@
+               ],
+               "equals": [
+                 [
+-                  "pos-1-0",
+                   "https://reference.invalid/acme/events/",
+                   "created",
+                   "https://reference.invalid/acme/beads/a",
+@@ -1746,7 +1742,6 @@
+                   0
+                 ],
+                 [
+-                  "pos-2-0",
+                   "https://reference.invalid/acme/events/",
+                   "created",
+                   "https://reference.invalid/acme/beads/b",
+@@ -1754,7 +1749,6 @@
+                   0
+                 ],
+                 [
+-                  "pos-3-0",
+                   "https://reference.invalid/acme/events/",
+                   "created",
+                   "https://reference.invalid/acme/beads/c",
+--- a/packages/conformance/test-support/transactional/coverage-v1.json
++++ b/packages/conformance/test-support/transactional/coverage-v1.json
+@@ -7,7 +7,7 @@
+     {
+       "id": "read-update.http.command-minimum-fields",
+       "wholeContract": false,
+-      "reason": "Bounded Transactional singleton/batch/sequence manifest facts for ignored literal copied minimum fields, identity conflict, revision refusal, three-Bead and complete Scope Event inventory. App actual-wire supplements compare full replay bodies, complete Resources and Event revisions after independent initial facts; existing private receipt helper enforces original-A body equality. These supplements are not manifest assertion bindings. Whole contract remains unqualified: receipt/read minimum enforcement, coherent same-context future tuples, other singleton target/kind and carrier-validation/transport/bounds partitions, and actual Read+Update-profile execution are omitted; historical private evidence is not relabeled.",
++      "reason": "Bounded Transactional singleton/batch/sequence manifest facts for ignored literal copied minimum fields, identity conflict, revision refusal, three-Bead and complete Scope Event inventory. App actual-wire supplements compare full replay bodies, complete Resources, Event revisions and exact private source-bound projected Event IDs after independent initial facts; existing private receipt helper enforces original-A body equality. These supplements are not manifest assertion bindings. Whole contract remains unqualified: receipt/read minimum enforcement, coherent same-context future tuples, other singleton target/kind and carrier-validation/transport/bounds partitions, and actual Read+Update-profile execution are omitted; historical private evidence is not relabeled.",
+       "bindings": [
+         {
+           "scenario": "read-update.http.command-minimum-fields",
+--- a/packages/conformance/src/transactional-cumulative.test.ts
++++ b/packages/conformance/src/transactional-cumulative.test.ts
+@@ -2696,11 +2696,10 @@
+     kind: "json-array-tuples",
+     pointer: "/events",
+     ordered: true,
+-    projections: ["/id", "/source", "/type", "/subject", "/subjectType", "/ordinal"].map(
++    projections: ["/source", "/type", "/subject", "/subjectType", "/ordinal"].map(
+       (pointer) => ({ pointer }),
+     ),
+-    equals: ["a", "b", "c"].map((k, i) => [
+-      `pos-${i + 1}-0`,
++    equals: ["a", "b", "c"].map((k) => [
+       `${scope}events/`,
+       "created",
+       `${scope}beads/${k}`,
+@@ -2720,7 +2719,7 @@
+   expect(
+     createHash("sha256").update(JSON.stringify(row)).digest("hex"),
+     "complete minimum manifest facts",
+-  ).toBe("5164c21057c76c2f4dc96634bf441eea45fbffa261e4c091dc3b9c3647be62cd");
++  ).toBe("4344f3701bc99031485bc4f7e327f738bc138084ff10e43c1623cdfa57d068b6");
+ }
+ it("pins the inherited command-minimum manifest facts, read-header absence and all thirteen prior objects", () => {
+   assertMinimumObservation(manifest);
+--- a/apps/bdptest/src/transactional-matrix.test.ts
++++ b/apps/bdptest/src/transactional-matrix.test.ts
+@@ -2361,6 +2361,9 @@
+       expect(request!.bodyPresent).toBe(expected.body !== undefined);
+       // Credentials and generated framing are checked by the runner's exact
+       // request assertions; never retain or serialize their secret values.
++      expect(
++        request!.headerLines.slice(0, expected.headers.length).map((header) => header.name),
++      ).toEqual(expected.headers.map((header) => header.name));
+       expect(request!.headerLines.slice(0, expected.headers.length)).toEqual(expected.headers);
+       expect(
+         request!.headerLines
+@@ -2503,11 +2506,21 @@
+         } else {
+           expect(body.events).toHaveLength(3);
+           expect(body.next).toBeNull();
++          // Private installed-fixture identity spelling, not a normative Event-ID format.
++          const projectedIdentity = [
++            ["epoch", currentEpoch],
++            ["view", currentView],
++            ["source", `${scope}events/`],
++          ]
++            .map((tagged) =>
++              createHash("sha256").update(JSON.stringify(tagged)).digest("base64url"),
++            )
++            .join("_");
+           for (const [i, name] of ["a", "b", "c"].entries()) {
+             const event = body.events[i],
+               resource = resources[i]!;
+             expect(event).toMatchObject({
+-              id: `pos-${i + 1}-0`,
++              id: `ev_${projectedIdentity}_${["pos-1", "pos-2", "pos-3"][i]}_0`,
+               source: `${scope}events/`,
+               type: "created",
+               subject: `${scope}beads/${name}`,
