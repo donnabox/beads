@@ -1,0 +1,15 @@
+{
+  "released": true,
+  "createdAt": "2026-10-15T19:40:19.241475+00:00",
+  "bindingSha256": "5f389e10657e686f6388e45d874b97cbb2b548e73f272452b2fa80ab27f30a4d",
+  "runnerSha256": "fc375b71b53c7a15d796c84c1b86ae6fccee9ee0445ce484e884ec9df4a2ae94",
+  "promptSha256": "8892c411b624f61903e4673115b92f1532bfe3467e86e6de8eaf6865c96fbf59",
+  "reviewHead": "98c600767e8e91a79e109cb741beb91e23b9bebe",
+  "reviewTree": "fde859381752d15c8caabcbc946d3c2e384b9cf6",
+  "nativeReviewSha256": "e2a334e9e0bce277996a6f3307b43b02955eeab3afceeec7aeb579b868018e1c",
+  "rootReview": "Complete original plan/ledger and actual native review read;34committed pins and5literal bodies independently checked,343+r body arithmetic correct. Store savepoint rollback/retained failure and Event projection inspected. Both guards omitted discriminates independently of ordering. Base64url and automatic-retry vs retained replay clarified explicitly without mutating original. Full plan and source context verified in prompt.",
+  "authoringReleased": false,
+  "oneAttempt": true,
+  "timeoutSeconds": 900,
+  "modelOverride": false
+}
