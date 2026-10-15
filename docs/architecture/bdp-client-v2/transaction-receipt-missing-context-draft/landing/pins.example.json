@@ -1,11 +1,11 @@
 {
   "rootAccepted": false,
   "base": "015cac1aa4fa827cc4a2c647dff08454c6c8e6f8",
-  "head": null,
-  "tree": null,
+  "head": "3968081f8231566908e69045424b067c3c36dc40",
+  "tree": "a597518b819941e3f579dd7838e247b010a072a1",
   "ordinaryChain": [
     "015cac1aa4fa827cc4a2c647dff08454c6c8e6f8",
-    null
+    "3968081f8231566908e69045424b067c3c36dc40"
   ],
   "pr": null,
   "run": null,
@@ -18,14 +18,14 @@
     "packages/server/src/transaction-http.ts": "0e42f034c3aada6fd0a7696897200b336d2b0c547d69497e46500f6da4c2267a",
     "packages/server/src/transaction-receipt-pages.test.ts": "e944bd61590f78a510b427b0f5d6eb7856f6b3715f9f0e5dc590bf8d4724c6a1",
     "packages/server/src/transaction-service.test.ts": "c61ba7254ab1cf39abf85e6020e4f846ffb684740076de39f43fe12d509093b9",
-    "packages/server/src/transaction-http.test.ts": "3fc5c6750a00968021d2ecc78049535ebbe9a3d2d7684108f2807e8b2276e899",
+    "packages/server/src/transaction-http.test.ts": "37084d256def9c1f1cec33fc2c6a0d6e793dba3d29699a57bf105bda0cde68db",
     "apps/bdptest/src/transactional-receipt-missing-context-installed.test.ts": "eaf1289ed0a8318ce949704ba4cd983755c6f5fd20ffe9d61712869894cb5064",
     "docs/design/transaction-implementation-progress.md": "28b30246931ccf39588a0dd654715aa7f00eda95893a9b5ed8ec10ffe7fdf6fc"
   },
   "evidence": {
     "finalSourceBinding": {
-      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-receipt-missing-context-draft/source-binding.json",
-      "sha256": "edc5c98c8e5c82f2073e1bf35aa84098efe9552c7dbc74537784de75788cca5a"
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-receipt-missing-context-draft/final-source.json",
+      "sha256": "f0d3ebf85e994ce4f41f9dd52ab41be6e7feb6c9a4041b83f3eefff6b18ed982"
     },
     "native": {
       "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-receipt-missing-context-draft/native-code-review.md",
@@ -40,8 +40,8 @@
       "sha256": "96959814652b5360d014a6f67b162a1ff774aec8730cefe0da642371ddafb094"
     },
     "rootCouncil": {
-      "path": null,
-      "sha256": null
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-receipt-missing-context-draft/root-council-acceptance.json",
+      "sha256": "4fccd7a71bc9fe5c04c9be74ae0c81840dc5e5a6145f45e1528c8c213136e5e0"
     },
     "sourceAcceptance": {
       "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-receipt-missing-context-draft/root-source-positive-acceptance.json",
@@ -52,7 +52,7 @@
       "sha256": "5dc8cb5b7ae9bb9841fcf030b8bcfb21963e653ee14fc1acc919467218fb9edb"
     },
     "installedAcceptance": {
-      "path": null,
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-receipt-missing-context-draft/root-installed-acceptance.json",
       "sha256": null
     },
     "rootLandingAcceptance": {
@@ -60,5 +60,6 @@
       "sha256": null
     }
   },
-  "note": "Examples only. Current8hashes are historical draft; root must rebind final ordinary source incl any accepted factual-doc change. No actual pins.json supplied."
+  "note": "Closed candidate example only. Final committed eight bytes are pinned; PR/CI/synthetic, installed acceptance and final landing acceptance remain pending. Original full Claude exit/stdout and original source/control execution keep historical attribution. Root council transitively binds the one-line successor source validation and focused Claude supplement; root-stale-assertion acceptance is a prior checkpoint whose supplementPending field is historical.",
+  "installedPreparationPath": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-receipt-missing-context-draft/installed-preparation-successor"
 }

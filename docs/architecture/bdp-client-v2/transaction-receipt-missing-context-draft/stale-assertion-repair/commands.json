@@ -1,0 +1,59 @@
+{
+  "status": "authorized-by-parent-message",
+  "noAutomaticRetry": true,
+  "commands": [
+    {
+      "id": "typecheck",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-sequence-member-evidence",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "typecheck"
+      ],
+      "supervisorSeconds": 120
+    },
+    {
+      "id": "format-check",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-sequence-member-evidence",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "exec",
+        "biome",
+        "format",
+        "packages/server/src/transaction-http.test.ts"
+      ],
+      "supervisorSeconds": 120
+    },
+    {
+      "id": "affected-case",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-sequence-member-evidence",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/repos/wt/vickie/vickie-sequence-member-evidence/node_modules/.pnpm/vitest@4.1.10_@types+node@24.13.3_vite@8.2.1_@types+node@24.13.3_/node_modules/vitest/vitest.mjs",
+        "run",
+        "packages/server/src/transaction-http.test.ts",
+        "--maxWorkers=1",
+        "--reporter=verbose",
+        "--reporter=json",
+        "--outputFile=/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-receipt-missing-context-draft/stale-assertion-repair/run/affected-case.json",
+        "-t",
+        "^uses\\ actual\\ epoch/view\\ decisions\\ and\\ an\\ exhausted\\ wait\\ before\\ conditional\\ or\\ timeout\\ responses$"
+      ],
+      "supervisorSeconds": 120,
+      "selectedFullNames": [
+        "uses actual epoch/view decisions and an exhausted wait before conditional or timeout responses"
+      ],
+      "cases": 1,
+      "http": 14,
+      "owners": 1,
+      "directories": 1,
+      "listeners": 1,
+      "productChildren": 0,
+      "readonlyInventoryHandles": 0,
+      "ownedTempPrefixes": [
+        "bdp-tx-http-"
+      ]
+    }
+  ]
+}

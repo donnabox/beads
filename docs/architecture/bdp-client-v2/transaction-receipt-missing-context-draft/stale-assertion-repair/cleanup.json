@@ -1,0 +1,36 @@
+{
+  "at": "2026-10-15T12:57:18.117312+00:00",
+  "sampledPidsIndependentlyAbsent": [
+    16693,
+    16695,
+    16711,
+    16714,
+    16745,
+    16861,
+    16863,
+    16867,
+    16871,
+    16879,
+    16942,
+    16944,
+    16953,
+    16961
+  ],
+  "groupsIndependentlyAbsent": [
+    16693,
+    16861,
+    16942
+  ],
+  "remainingOwnedProcessRows": [],
+  "actualTempEntries": {
+    "typecheck": [
+      "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-receipt-missing-context-draft/stale-assertion-repair/run/typecheck.tmp/node-compile-cache"
+    ],
+    "format-check": [
+      "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-receipt-missing-context-draft/stale-assertion-repair/run/format-check.tmp/node-compile-cache"
+    ],
+    "affected-case": []
+  },
+  "runtimeRootsPresent": [],
+  "limitation": "50ms process sampling may miss short-lived or detached processes; no per-request instrumentation added."
+}

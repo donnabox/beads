@@ -1,0 +1,48 @@
+{
+  "at": "2026-10-15T12:57:18.117312+00:00",
+  "sourceBindingSha256": "e96f012c8502285454eb3867f8b7b35c82c483ae3ceb3f7fc21eaa31127d0cf3",
+  "fullPatchSha256": "d0afee38fdab6f78bbebe6b131066204a58580c7bf0bbfce3cead43e36a73809",
+  "changedPath": "packages/server/src/transaction-http.test.ts",
+  "changedSha256": "37084d256def9c1f1cec33fc2c6a0d6e793dba3d29699a57bf105bda0cde68db",
+  "stages": {
+    "typecheck": {
+      "exit": 0,
+      "supervisorExit": 0,
+      "elapsedSeconds": 2.654632959049195,
+      "exitSha256": "d04ba868f615dc4ebbb20db5d8d6ebb04fc73a91acbca546577645c1a8f8c7c2"
+    },
+    "format-check": {
+      "exit": 0,
+      "supervisorExit": 0,
+      "elapsedSeconds": 1.7735345419496298,
+      "exitSha256": "ebb4e379710eb8ea7fbe08833d107739a28c5ebf3d8b986915b7befaa531b86d"
+    },
+    "affected-case": {
+      "exit": 0,
+      "supervisorExit": 0,
+      "elapsedSeconds": 1.67284895805642,
+      "exitSha256": "c7d486db7106a65bf5c2ddf867f62853d045bff50cd255c8a7c911fe6177a47c"
+    }
+  },
+  "actualPassedCases": [
+    {
+      "name": "uses actual epoch/view decisions and an exhausted wait before conditional or timeout responses",
+      "durationMs": 72.01266700000002
+    }
+  ],
+  "actualSkippedCases": 76,
+  "plannedSourceDerivedWorkload": {
+    "http": 14,
+    "owners": 1,
+    "listeners": 1,
+    "directories": 1,
+    "productChildren": 0
+  },
+  "actualHttpCount": "not independently instrumented",
+  "originalSelected14Rerun": false,
+  "rebuild": false,
+  "installedRun": false,
+  "fullCi": "required and not performed here",
+  "unchangedOtherFiles": 1105,
+  "unchangedEmittedFiles": 440
+}
