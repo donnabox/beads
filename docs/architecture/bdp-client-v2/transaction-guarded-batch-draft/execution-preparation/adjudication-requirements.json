@@ -1,0 +1,246 @@
+{
+  "status": "PLANNED_ONLY_ADAPTER_PENDING",
+  "plan": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-guarded-batch-plan/proposed-successor-v2/plan.md",
+    "sha256": "c2c4642c4fb8d5f7266c00a3b3e2cb4af198e34c93c468165d3ccbdc865a0415"
+  },
+  "ledger": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-guarded-batch-plan/proposed-successor-v2/ledger.json",
+    "sha256": "5aa8f75096d1f9eb3b1dc8ab3244dd012d64bf5e843f7738e820dc621f77a1e0"
+  },
+  "positive": {
+    "requests": 7,
+    "statuses": [
+      200,
+      200,
+      200,
+      200,
+      200,
+      200,
+      200
+    ],
+    "rawExit": 0,
+    "caseStatus": "passed",
+    "failureCount": 0,
+    "required": "complete seed, winner/loser receipts, exact failed replay/root equality including expiry, ordered full two-Resource collection and exact three-Event page; all schemas/literals/context/byte oracles"
+  },
+  "control": {
+    "requests": 3,
+    "statuses": [
+      200,
+      200,
+      200
+    ],
+    "rawExit": 1,
+    "caseStatus": "failed",
+    "soleNamedFailure": "guarded-batch:one-retained-revision-failure",
+    "completedContenderCount": 2,
+    "failedContenderCount": 0,
+    "primaryFailures": 1,
+    "cleanupFailures": 0,
+    "reportFailures": 0,
+    "prerequisites": [
+      "seed completed pos-1",
+      "both contenders schema-valid completed/available with exact two results",
+      "distinct receipt and transaction IDs; marker ids fixed a/b",
+      "unordered contender effects {pos-2,pos-3}, own required=effect",
+      "both updated seed revisions differ from seed and each other; each title matches own input",
+      "response current context epoch/view consistent; own effect<=serving position<=pos-3",
+      "dispatch/socket prerequisites pass"
+    ],
+    "onlyBodyChange": "Both updateBead operations[1].expectedRevision omitted; no other member changes",
+    "noExtraRequests": true
+  },
+  "shared": {
+    "exactOneSelectedCase": "preserves one guarded batch winner and rolls back the losing marker through installed HTTP",
+    "genericExit1Rejected": true,
+    "schemaLiteralFullEqualityRequired": true,
+    "requireRawExitAndVitestAndCompleteReports": true,
+    "bodyEncoding": {
+      "referenceValue": "00000000-0000-4000-8000-000000000000",
+      "referenceIsNeverSent": "reference-only arithmetic specimen; actual r comes from independently validated seed receipt Resource",
+      "sourceExpectedJsonStringBytes": 38,
+      "hardJsonStringBytes": 128,
+      "positiveBodyFormula": "343 + r bytes per contender/replay where r=UTF8 bytes of JSON.stringify(actual seed revision)",
+      "maximumPositiveBodyBytes": 471,
+      "revisionSemantics": "opaque nonempty string; no normative UUID assumption; record exact captured encoding/body hashes at execution"
+    },
+    "bodyTotals": {
+      "seedBytes": 172,
+      "referencePositiveContenderBytes": 381,
+      "fixedControlContenderBytes": 323,
+      "referencePositiveTotal": 1315,
+      "maximumPositiveTotal": 1585,
+      "fixedControlTotal": 818,
+      "referenceCombinedTotal": 2133,
+      "maximumCombinedTotal": 2403
+    },
+    "requests": [
+      {
+        "index": 1,
+        "label": "seed",
+        "method": "POST",
+        "url": "https://reference.invalid/acme/operations/batch",
+        "key": "guarded-seed",
+        "bodySource": "seed",
+        "headers": {
+          "Host": "reference.invalid",
+          "Accept": "application/json",
+          "Connection": "close",
+          "Authorization": "in-memory Bearer token; excluded from evidence",
+          "Content-Type": "application/json",
+          "Idempotency-Key": "guarded-seed",
+          "Content-Length": "actual UTF8 body byte length"
+        },
+        "expectedStatus": 200
+      },
+      {
+        "index": 2,
+        "label": "contender-a",
+        "method": "POST",
+        "url": "https://reference.invalid/acme/operations/batch",
+        "key": "guarded-a",
+        "bodySource": "a(actualSeedRevision)",
+        "headers": {
+          "Host": "reference.invalid",
+          "Accept": "application/json",
+          "Connection": "close",
+          "Authorization": "in-memory Bearer token; excluded from evidence",
+          "Content-Type": "application/json",
+          "Idempotency-Key": "guarded-a",
+          "Content-Length": "actual UTF8 body byte length"
+        },
+        "expectedStatus": 200
+      },
+      {
+        "index": 3,
+        "label": "contender-b",
+        "method": "POST",
+        "url": "https://reference.invalid/acme/operations/batch",
+        "key": "guarded-b",
+        "bodySource": "b(actualSeedRevision)",
+        "headers": {
+          "Host": "reference.invalid",
+          "Accept": "application/json",
+          "Connection": "close",
+          "Authorization": "in-memory Bearer token; excluded from evidence",
+          "Content-Type": "application/json",
+          "Idempotency-Key": "guarded-b",
+          "Content-Length": "actual UTF8 body byte length"
+        },
+        "expectedStatus": 200
+      },
+      {
+        "index": 4,
+        "label": "loser-retained-replay",
+        "method": "POST",
+        "url": "https://reference.invalid/acme/operations/batch",
+        "key": "exact actual losing key",
+        "bodySource": "exact original losing body bytes",
+        "headers": {
+          "Host": "reference.invalid",
+          "Accept": "application/json",
+          "Connection": "close",
+          "Authorization": "in-memory Bearer token; excluded from evidence",
+          "Content-Type": "application/json",
+          "Idempotency-Key": "exact actual losing key",
+          "Content-Length": "actual UTF8 body byte length"
+        },
+        "expectedStatus": 200
+      },
+      {
+        "index": 5,
+        "label": "issued-loser-receipt",
+        "method": "GET",
+        "url": "validated actual losing receipt.id",
+        "key": null,
+        "bodySource": null,
+        "headers": {
+          "Host": "reference.invalid",
+          "Accept": "application/json",
+          "Connection": "close",
+          "Authorization": "in-memory Bearer token; excluded from evidence"
+        },
+        "expectedStatus": 200
+      },
+      {
+        "index": 6,
+        "label": "complete-current-beads",
+        "method": "GET",
+        "url": "https://reference.invalid/acme/beads/?limit=32",
+        "key": null,
+        "bodySource": null,
+        "headers": {
+          "Host": "reference.invalid",
+          "Accept": "application/json",
+          "Connection": "close",
+          "Authorization": "in-memory Bearer token; excluded from evidence"
+        },
+        "expectedStatus": 200
+      },
+      {
+        "index": 7,
+        "label": "complete-scope-events",
+        "method": "GET",
+        "url": "https://reference.invalid/acme/events/",
+        "key": null,
+        "bodySource": null,
+        "headers": {
+          "Host": "reference.invalid",
+          "Accept": "application/json",
+          "Connection": "close",
+          "Authorization": "in-memory Bearer token; excluded from evidence"
+        },
+        "expectedStatus": 200
+      }
+    ],
+    "reports": {
+      "environment": "BDP_TRANSACTIONAL_GUARDED_BATCH_OUTPUT",
+      "cohortPaths": {
+        "positive": "<external-run>/positive-observation.json",
+        "unguarded-contenders": "<external-run>/unguarded-observation.json"
+      },
+      "vitestPaths": {
+        "positive": "<external-run>/positive-vitest.json",
+        "unguarded-contenders": "<external-run>/unguarded-vitest.json"
+      },
+      "exclusive": true,
+      "absolute": true,
+      "outsideWorktreeAndStore": true,
+      "requiredSafeFields": [
+        "mode",
+        "namedAssertion",
+        "failedPhase",
+        "failureCount",
+        "primaryFailureCount",
+        "cleanupFailureCount",
+        "reportWriteFailed",
+        "prerequisites",
+        "completedContenderCount",
+        "failedContenderCount",
+        "attempts",
+        "completedResponses",
+        "validatedReceiptFacts",
+        "performedEqualities",
+        "sourceEntryAndServedIdentityDigests",
+        "boundedMilestones",
+        "cleanupFacts"
+      ],
+      "negativeRequired": {
+        "namedAssertion": "guarded-batch:one-retained-revision-failure",
+        "completedContenderCount": 2,
+        "failedContenderCount": 0,
+        "attempts": 3,
+        "completedResponses": 3,
+        "failureCount": 1,
+        "cleanupFailureCount": 0,
+        "reportWriteFailed": false,
+        "prerequisites": "all independent successful fixture/control facts true before named throw"
+      },
+      "actualOutputPaths": "resolve and pin at measured execution gate; no file exists or run occurred now"
+    },
+    "cleanup": "actual clean child stop/close and absent store; independent sampled/returned PID absence; hard10s local race, late completion handled; unknown pre-ready stop preserves store and fails",
+    "sourceAttribution": "actual caller candidate/build/archive/consumer closure; no child Git attestation",
+    "boundaries": "no fabricated full-body retention, physical concurrency proof, public qualification or catalog credit"
+  }
+}

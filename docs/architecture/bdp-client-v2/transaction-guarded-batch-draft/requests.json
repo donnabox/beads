@@ -1,0 +1,266 @@
+{
+  "status": "prospective exact schedule; dynamic revision/hash is captured only at future execution",
+  "planningLedgerSha256": "5aa8f75096d1f9eb3b1dc8ab3244dd012d64bf5e843f7738e820dc621f77a1e0",
+  "actualBase": "9bf601bfb570adae97ce8cdc99caf2cc7a2b34c1",
+  "requests": [
+    {
+      "index": 1,
+      "label": "seed",
+      "method": "POST",
+      "url": "https://reference.invalid/acme/operations/batch",
+      "key": "guarded-seed",
+      "bodySource": "seed",
+      "headers": {
+        "Host": "reference.invalid",
+        "Accept": "application/json",
+        "Connection": "close",
+        "Authorization": "in-memory Bearer token; excluded from evidence",
+        "Content-Type": "application/json",
+        "Idempotency-Key": "guarded-seed",
+        "Content-Length": "actual UTF8 body byte length"
+      },
+      "expectedStatus": 200
+    },
+    {
+      "index": 2,
+      "label": "contender-a",
+      "method": "POST",
+      "url": "https://reference.invalid/acme/operations/batch",
+      "key": "guarded-a",
+      "bodySource": "a(actualSeedRevision)",
+      "headers": {
+        "Host": "reference.invalid",
+        "Accept": "application/json",
+        "Connection": "close",
+        "Authorization": "in-memory Bearer token; excluded from evidence",
+        "Content-Type": "application/json",
+        "Idempotency-Key": "guarded-a",
+        "Content-Length": "actual UTF8 body byte length"
+      },
+      "expectedStatus": 200
+    },
+    {
+      "index": 3,
+      "label": "contender-b",
+      "method": "POST",
+      "url": "https://reference.invalid/acme/operations/batch",
+      "key": "guarded-b",
+      "bodySource": "b(actualSeedRevision)",
+      "headers": {
+        "Host": "reference.invalid",
+        "Accept": "application/json",
+        "Connection": "close",
+        "Authorization": "in-memory Bearer token; excluded from evidence",
+        "Content-Type": "application/json",
+        "Idempotency-Key": "guarded-b",
+        "Content-Length": "actual UTF8 body byte length"
+      },
+      "expectedStatus": 200
+    },
+    {
+      "index": 4,
+      "label": "loser-retained-replay",
+      "method": "POST",
+      "url": "https://reference.invalid/acme/operations/batch",
+      "key": "exact actual losing key",
+      "bodySource": "exact original losing body bytes",
+      "headers": {
+        "Host": "reference.invalid",
+        "Accept": "application/json",
+        "Connection": "close",
+        "Authorization": "in-memory Bearer token; excluded from evidence",
+        "Content-Type": "application/json",
+        "Idempotency-Key": "exact actual losing key",
+        "Content-Length": "actual UTF8 body byte length"
+      },
+      "expectedStatus": 200
+    },
+    {
+      "index": 5,
+      "label": "issued-loser-receipt",
+      "method": "GET",
+      "url": "validated actual losing receipt.id",
+      "key": null,
+      "bodySource": null,
+      "headers": {
+        "Host": "reference.invalid",
+        "Accept": "application/json",
+        "Connection": "close",
+        "Authorization": "in-memory Bearer token; excluded from evidence"
+      },
+      "expectedStatus": 200
+    },
+    {
+      "index": 6,
+      "label": "complete-current-beads",
+      "method": "GET",
+      "url": "https://reference.invalid/acme/beads/?limit=32",
+      "key": null,
+      "bodySource": null,
+      "headers": {
+        "Host": "reference.invalid",
+        "Accept": "application/json",
+        "Connection": "close",
+        "Authorization": "in-memory Bearer token; excluded from evidence"
+      },
+      "expectedStatus": 200
+    },
+    {
+      "index": 7,
+      "label": "complete-scope-events",
+      "method": "GET",
+      "url": "https://reference.invalid/acme/events/",
+      "key": null,
+      "bodySource": null,
+      "headers": {
+        "Host": "reference.invalid",
+        "Accept": "application/json",
+        "Connection": "close",
+        "Authorization": "in-memory Bearer token; excluded from evidence"
+      },
+      "expectedStatus": 200
+    }
+  ],
+  "inputs": {
+    "seed": {
+      "body": "{\"operations\":[{\"operation\":\"createBead\",\"id\":\"beads/guarded-seed\",\"type\":\"https://reference.invalid/acme/types/task\",\"properties\":{\"title\":\"guarded-seed\"},\"metadata\":{}}]}",
+      "bytes": 172,
+      "sha256": "a1937453b366087694cc040cc81534d1d073fed0e0bcc09b0fc6de39304ef3f0"
+    },
+    "aReferenceGuard": {
+      "body": "{\"operations\":[{\"operation\":\"createBead\",\"id\":\"beads/marker-a\",\"type\":\"https://reference.invalid/acme/types/task\",\"properties\":{\"title\":\"marker-a\"},\"metadata\":{}},{\"operation\":\"updateBead\",\"bead\":\"https://reference.invalid/acme/beads/guarded-seed\",\"expectedRevision\":\"00000000-0000-4000-8000-000000000000\",\"propertiesChange\":[{\"op\":\"replace\",\"path\":\"/title\",\"value\":\"winner-a\"}]}]}",
+      "bytes": 381,
+      "sha256": "386fc744c79e39fe4428c6a77c4d7b7b885dc18b41e2b90f1acdf0e0df5fb226",
+      "isActualRuntimeRequest": false
+    },
+    "aControl": {
+      "body": "{\"operations\":[{\"operation\":\"createBead\",\"id\":\"beads/marker-a\",\"type\":\"https://reference.invalid/acme/types/task\",\"properties\":{\"title\":\"marker-a\"},\"metadata\":{}},{\"operation\":\"updateBead\",\"bead\":\"https://reference.invalid/acme/beads/guarded-seed\",\"propertiesChange\":[{\"op\":\"replace\",\"path\":\"/title\",\"value\":\"winner-a\"}]}]}",
+      "bytes": 323,
+      "sha256": "f707e87dc9ec95f6f564940d3fc097b6880aeeeda9ac493981d9a4344bb5a91d",
+      "isActualRuntimeRequest": false
+    },
+    "bReferenceGuard": {
+      "body": "{\"operations\":[{\"operation\":\"createBead\",\"id\":\"beads/marker-b\",\"type\":\"https://reference.invalid/acme/types/task\",\"properties\":{\"title\":\"marker-b\"},\"metadata\":{}},{\"operation\":\"updateBead\",\"bead\":\"https://reference.invalid/acme/beads/guarded-seed\",\"expectedRevision\":\"00000000-0000-4000-8000-000000000000\",\"propertiesChange\":[{\"op\":\"replace\",\"path\":\"/title\",\"value\":\"winner-b\"}]}]}",
+      "bytes": 381,
+      "sha256": "59f91799860c3fa0957c4e93fe3bd57fd94621b992da4772b67307329bde0e70",
+      "isActualRuntimeRequest": false
+    },
+    "bControl": {
+      "body": "{\"operations\":[{\"operation\":\"createBead\",\"id\":\"beads/marker-b\",\"type\":\"https://reference.invalid/acme/types/task\",\"properties\":{\"title\":\"marker-b\"},\"metadata\":{}},{\"operation\":\"updateBead\",\"bead\":\"https://reference.invalid/acme/beads/guarded-seed\",\"propertiesChange\":[{\"op\":\"replace\",\"path\":\"/title\",\"value\":\"winner-b\"}]}]}",
+      "bytes": 323,
+      "sha256": "bbc04ffd826ba2519b86b4a22e47eff5566d2bb5ec90f45fe6ecb8779f6148a5",
+      "isActualRuntimeRequest": false
+    }
+  },
+  "dynamicRevision": {
+    "referenceValue": "00000000-0000-4000-8000-000000000000",
+    "referenceIsNeverSent": "reference-only arithmetic specimen; actual r comes from independently validated seed receipt Resource",
+    "sourceExpectedJsonStringBytes": 38,
+    "hardJsonStringBytes": 128,
+    "positiveBodyFormula": "343 + r bytes per contender/replay where r=UTF8 bytes of JSON.stringify(actual seed revision)",
+    "maximumPositiveBodyBytes": 471,
+    "revisionSemantics": "opaque nonempty string; no normative UUID assumption; record exact captured encoding/body hashes at execution"
+  },
+  "bodyTotals": {
+    "seedBytes": 172,
+    "referencePositiveContenderBytes": 381,
+    "fixedControlContenderBytes": 323,
+    "referencePositiveTotal": 1315,
+    "maximumPositiveTotal": 1585,
+    "fixedControlTotal": 818,
+    "referenceCombinedTotal": 2133,
+    "maximumCombinedTotal": 2403
+  },
+  "controlOnlyDifferences": {
+    "a": {
+      "onlyRemovedPointer": "/operations/1/expectedRevision",
+      "allOtherValuesEqual": true
+    },
+    "b": {
+      "onlyRemovedPointer": "/operations/1/expectedRevision",
+      "allOtherValuesEqual": true
+    }
+  },
+  "artifacts": {
+    "descriptors": [
+      {
+        "retrievalUri": "https://reference.invalid/acme/types/task",
+        "utf8": "{\"id\":\"https://reference.invalid/acme/types/task\",\"name\":\"Task\",\"describes\":\"bead\",\"conformsTo\":[],\"propertiesSchema\":\"https://reference.invalid/acme/schemas/properties\"}"
+      }
+    ],
+    "schemas": [
+      {
+        "retrievalUri": "https://reference.invalid/acme/schemas/properties",
+        "utf8": "{\"$id\":\"https://reference.invalid/acme/schemas/properties\",\"type\":\"object\",\"properties\":{\"title\":{\"type\":\"string\"}},\"required\":[\"title\"],\"additionalProperties\":false}"
+      }
+    ]
+  },
+  "artifactMeasures": {
+    "descriptors": [
+      {
+        "bytes": 170,
+        "sha256": "f448e126550b2809d01dc6b24811d1796e82b2599c35b438550ed3bec65a2a22"
+      }
+    ],
+    "schemas": [
+      {
+        "bytes": 166,
+        "sha256": "1ed8b24d90a8c278bc466fd48ba1e849afac01326c377e5c6985855e62373f95"
+      }
+    ]
+  },
+  "workload": {
+    "positiveHttp": 7,
+    "positiveMaximumHttp": 7,
+    "controlHttp": 3,
+    "controlMaximumHttp": 3,
+    "combinedExpectedHttp": 10,
+    "combinedMaximumHttp": 10,
+    "positivePost": 4,
+    "positiveGet": 3,
+    "controlPost": 3,
+    "controlGet": 0,
+    "registeredCallbacks": 1,
+    "externalCaseExecutions": 2,
+    "ordinaryFullCiAddedCallbacks": 1,
+    "ordinaryFullCiAddedHttp": 7,
+    "scheduledLaunchAttempts": 2,
+    "maximumProductChildren": 2,
+    "owners": 2,
+    "listeners": 2,
+    "storeDirectories": 2,
+    "expectedTcpConnections": 10,
+    "maximumTcpConnections": 10,
+    "maximumOutstandingRequestsPerCohort": 2,
+    "maximumLiveSocketsPerCohort": 2,
+    "sourceRuntimeCallbacks": 0,
+    "bootstrapRequests": 0,
+    "retry": 0,
+    "reopen": 0,
+    "continuationFetch": 0,
+    "retryMeaning": "automatic retries only",
+    "retainedReplay": 1
+  },
+  "limits": {
+    "workMs": 45000,
+    "readyMs": 10000,
+    "exchangeMs": 5000,
+    "cleanupMs": 10000,
+    "requestDrainMs": 5000,
+    "testMs": 60000,
+    "commandMs": 120000,
+    "requestBodyBytes": 65536,
+    "requestHeaderBytes": 16384,
+    "responseBodyRetainedBytes": 32768,
+    "responseHeaderBytes": 16384,
+    "reportBytesIncludingNewline": 65536,
+    "pairMilestones": 32,
+    "receiptUrlBytesAndCharacters": 8192,
+    "positiveRetainedBodySumCeiling": 229376,
+    "controlRetainedBodySumCeiling": 98304,
+    "combinedRetainedBodySumCeiling": 327680,
+    "workBudgetPolicy": "45000ms is sole binding aggregate work deadline; ready/exchange caps cannot all be spent independently",
+    "cleanupBudgetPolicy": "Hard10000ms local pass/failure and await race; helper can nest a second10000ms wait after failure. No extra allowance; late rejection handled, unknown process/store retained for external cleanup; timeout is nonpassing."
+  },
+  "executed": false
+}

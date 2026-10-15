@@ -1,0 +1,52 @@
+{
+  "path": "apps/bdptest/src/transactional-guarded-batch-installed.test.ts",
+  "title": "preserves one guarded batch winner and rolls back the losing marker through installed HTTP",
+  "count": 1,
+  "defaultMode": "positive",
+  "modeEnvironment": "BDP_TRANSACTIONAL_GUARDED_BATCH_MODE",
+  "outputEnvironment": "BDP_TRANSACTIONAL_GUARDED_BATCH_OUTPUT",
+  "modes": [
+    "positive",
+    "unguarded-contenders"
+  ],
+  "selectionRegex": "^preserves one guarded batch winner and rolls back the losing marker through installed HTTP$",
+  "actualExtractedTitles": [
+    "preserves one guarded batch winner and rolls back the losing marker through installed HTTP"
+  ],
+  "actualNamedChecks": [
+    "literal-inputs",
+    "ready-targets",
+    "captured-revision-and-bodies",
+    "dispatch-discipline",
+    "pair-identities",
+    "control-prerequisites",
+    "one-retained-revision-failure",
+    "frozen-loser-replay-input",
+    "retained-failure-full-equality",
+    "issued-failure-full-equality",
+    "complete-rollback-resource-collection",
+    "complete-rollback-event-linkage",
+    "complete-fixed-schedule"
+  ],
+  "executionsProposed": [
+    {
+      "mode": "positive",
+      "expectedHttp": 7,
+      "maximumHttp": 7,
+      "children": 1,
+      "expectedExit": 0
+    },
+    {
+      "mode": "unguarded-contenders",
+      "expectedHttp": 3,
+      "maximumHttp": 3,
+      "children": 1,
+      "expectedExit": 1,
+      "expectedNamedFailure": "guarded-batch:one-retained-revision-failure",
+      "expectedFailureCount": 1
+    }
+  ],
+  "ordinaryCiAddedCallbacks": 1,
+  "ordinaryCiAddedHttp": 7,
+  "executed": false
+}

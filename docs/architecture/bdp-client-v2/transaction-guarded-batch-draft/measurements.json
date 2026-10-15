@@ -1,0 +1,71 @@
+{
+  "source": {
+    "apps/bdptest/src/transactional-guarded-batch-installed.test.ts": {
+      "sha256": "f716b51eb31226beafaba80a049063d758ed803388e0ac0439ee0298e0d5019b",
+      "bytes": 43176,
+      "new": true
+    },
+    "docs/design/transaction-implementation-progress.md": {
+      "sha256": "90c370e47d9f2dbff040f757c6b8bb89f6a6eda7b540961ea377f161d5a09152",
+      "bytes": 131802,
+      "new": false
+    }
+  },
+  "sourceLines": 1095,
+  "registeredCallbacks": 1,
+  "namedCheckSites": 13,
+  "actualStatuses": null,
+  "sourceRuntimeExecuted": false,
+  "proposedPositiveHttp": 7,
+  "proposedControlHttp": 3,
+  "combinedMaximumHttp": 10,
+  "scheduledChildren": 2,
+  "owners": 2,
+  "listeners": 2,
+  "storeDirectories": 2,
+  "bootstrapRequests": 0,
+  "automaticRetries": 0,
+  "positiveRetainedReplay": 1,
+  "requestBody": {
+    "seedBytes": 172,
+    "referencePositiveContenderBytes": 381,
+    "fixedControlContenderBytes": 323,
+    "referencePositiveTotal": 1315,
+    "maximumPositiveTotal": 1585,
+    "fixedControlTotal": 818,
+    "referenceCombinedTotal": 2133,
+    "maximumCombinedTotal": 2403
+  },
+  "artifactBytes": 336,
+  "responseRetainedSumCeiling": 327680,
+  "responseRetentionIsNotHeapPeak": true,
+  "fullReceiptResourceEventComparisons": "in memory; response report stores fingerprints, safe identity facts, named equality completion",
+  "format": {
+    "argv": [
+      "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+      "/Users/dbox/repos/wt/vickie/vickie-command-minimum-catalog/node_modules/@biomejs/biome/bin/biome",
+      "format",
+      "--write",
+      "apps/bdptest/src/transactional-guarded-batch-installed.test.ts"
+    ],
+    "cwd": "/Users/dbox/repos/wt/vickie/vickie-guarded-batch",
+    "exitCode": 0,
+    "elapsedSeconds": 0.08357645780779421,
+    "beforeSha256": "2c535c593213d17e412fd4d085b02acf49d425128bb42c93da3ea8f237ca53e5",
+    "afterSha256": "f716b51eb31226beafaba80a049063d758ed803388e0ac0439ee0298e0d5019b",
+    "scope": "Formatting only one owned new TypeScript file; no product import or test execution"
+  },
+  "proposedFixtureCleanup": {
+    "prefix": "bdp-guarded-batch-installed-",
+    "root": "realpath(tmpdir()) outside worktree",
+    "beforeLaunchRemovalPermitted": true,
+    "unknownPreReadyPreservesDirectory": true,
+    "returnedChildRemovalRequiresActualStop": true,
+    "cleanupMs": 10000,
+    "requestDrainMs": 5000,
+    "primaryAndSurfacedCleanupErrorsAggregated": true,
+    "bothReportSerializationOverflowBranchesFail": true
+  },
+  "staticBodyMeasurement": "Python standard-library JSON construction matched all five accepted body specimens; reference revision never dispatched",
+  "dependencyPinsVerified": 38
+}
