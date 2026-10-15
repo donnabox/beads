@@ -1,0 +1,15 @@
+{
+  "status": "closed; emitted bytes/import graph unresolved until actual build",
+  "sourceBindingSha256": "8c2912ad963de93eac28ecf9a6b162b02e0b18b7b956f77ed51ff0eaf4b826ca",
+  "positiveFixture": "packages/server/src/transaction-http.test.ts dynamic ../dist/transaction-runtime.js import",
+  "emittedTarget": "packages/server/dist/transaction-http.js",
+  "soleDeletion": "if (malformedTransactionMinimumHeaders(request.headers)) return transactionHttpProblem(\"malformed-request\");",
+  "sourceIllustrationOnly": true,
+  "expectedRequests": 1,
+  "expectedStatus": 500,
+  "expectedMarker": "minimum-position",
+  "namedFailure": "minimum-receiving-malformed-request",
+  "expectedRawExit": 1,
+  "required": "actual status/marker record, exact named failed assertion, no unexpected failure or hook error, complete positive/copy import closure, independent process/store absence",
+  "newBuildOrInstalledControl": false
+}

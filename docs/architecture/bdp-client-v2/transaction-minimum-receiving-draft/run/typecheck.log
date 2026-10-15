@@ -1,0 +1,12 @@
+$ tsc -p tsconfig.check.json
+packages/server/src/transaction-http.test.ts(4471,9): error TS2322: Type '{ scope: string; defaultPageItems: number; maxPageItems: number; cursorTtlMs: number; retainedStateCapacity: number; maxRetainedCursorPositionsPerSnapshot: number; retainedSnapshotByteCapacity: number; retainedSnapshotNodeCapacity: number; maxOpaqueTokenLength: number; tokenGenerationAttempts: number; idleCleanup: "...' is not assignable to type 'ReadPaginationOptions & { readonly idleCleanup: "on-demand" | "timer"; }'.
+  Property 'clock' is missing in type '{ scope: string; defaultPageItems: number; maxPageItems: number; cursorTtlMs: number; retainedStateCapacity: number; maxRetainedCursorPositionsPerSnapshot: number; retainedSnapshotByteCapacity: number; retainedSnapshotNodeCapacity: number; maxOpaqueTokenLength: number; tokenGenerationAttempts: number; idleCleanup: "...' but required in type 'ReadPaginationOptions'.
+[ELIFECYCLE] Command failed with exit code 1.
+Traceback (most recent call last):
+  File "/Users/dbox/repos/wt/vickie/bdp-integration-logs/guarded-action.py", line 5, in <module>
+    subprocess.run(sys.argv[1:],check=True)
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/homebrew/Cellar/python@3.14/3.14.5/Frameworks/Python.framework/Versions/3.14/lib/python3.14/subprocess.py", line 578, in run
+    raise CalledProcessError(retcode, process.args,
+                             output=stdout, stderr=stderr)
+subprocess.CalledProcessError: Command '['/Users/dbox/.nvm/versions/node/v24.16.0/bin/node', '/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs', 'run', 'typecheck']' returned non-zero exit status 1.

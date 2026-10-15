@@ -1,0 +1,2009 @@
+{
+  "status": "read-only lexical search; original grouped390hit38file audit retained in accepted plan; current exact inventory is not execution",
+  "pattern": "bdp-minimum-scope-position|bdp-scope-epoch|bdp-authorization-view",
+  "hits": [
+    {
+      "path": "apps/bdptest/src/installed-reference.test.ts",
+      "line": 580,
+      "text": "    for (const name of [\"bdp-scope-epoch\", \"bdp-authorization-view\", \"bdp-scope-position\"])"
+    },
+    {
+      "path": "apps/bdptest/src/installed-reference.test.ts",
+      "line": 593,
+      "text": "          \"bdp-minimum-scope-position\": \"pos-999\","
+    },
+    {
+      "path": "apps/bdptest/src/installed-reference.test.ts",
+      "line": 594,
+      "text": "          \"bdp-scope-epoch\": \"foreign-epoch\","
+    },
+    {
+      "path": "apps/bdptest/src/installed-reference.test.ts",
+      "line": 595,
+      "text": "          \"bdp-authorization-view\": \"foreign-view\","
+    },
+    {
+      "path": "apps/bdptest/src/installed-reference.test.ts",
+      "line": 598,
+      "text": "      [\"sequence\", \"copied-sequence\", { \"bdp-minimum-scope-position\": \"not a token!\" }],"
+    },
+    {
+      "path": "apps/bdptest/src/installed-reference.test.ts",
+      "line": 644,
+      "text": "          \"bdp-minimum-scope-position\": \"\","
+    },
+    {
+      "path": "apps/bdptest/src/installed-reference.test.ts",
+      "line": 645,
+      "text": "          \"bdp-scope-epoch\": \"epoch-one, epoch-two\","
+    },
+    {
+      "path": "apps/bdptest/src/installed-reference.test.ts",
+      "line": 646,
+      "text": "          \"bdp-authorization-view\": \"not a view!\","
+    },
+    {
+      "path": "apps/bdptest/src/read-update-guarded-overlap-installed.test.ts",
+      "line": 83,
+      "text": "  \"bdp-scope-epoch\","
+    },
+    {
+      "path": "apps/bdptest/src/read-update-guarded-overlap-installed.test.ts",
+      "line": 84,
+      "text": "  \"bdp-authorization-view\","
+    },
+    {
+      "path": "apps/bdptest/src/transactional-alias-installed.test.ts",
+      "line": 235,
+      "text": "      for (const name of [\"bdp-scope-epoch\", \"bdp-authorization-view\", \"bdp-scope-position\"])"
+    },
+    {
+      "path": "apps/bdptest/src/transactional-changefeed-refusal-context-installed.test.ts",
+      "line": 83,
+      "text": "const contextNames = [\"bdp-scope-epoch\", \"bdp-authorization-view\", \"bdp-scope-position\"] as const;"
+    },
+    {
+      "path": "apps/bdptest/src/transactional-collection-minimum-installed.test.ts",
+      "line": 371,
+      "text": "  const epoch = response.headers[\"bdp-scope-epoch\"],"
+    },
+    {
+      "path": "apps/bdptest/src/transactional-collection-minimum-installed.test.ts",
+      "line": 372,
+      "text": "    view = response.headers[\"bdp-authorization-view\"];"
+    },
+    {
+      "path": "apps/bdptest/src/transactional-collection-minimum-installed.test.ts",
+      "line": 376,
+      "text": "    \"bdp-scope-epoch\": epoch,"
+    },
+    {
+      "path": "apps/bdptest/src/transactional-collection-minimum-installed.test.ts",
+      "line": 377,
+      "text": "    \"bdp-authorization-view\": view,"
+    },
+    {
+      "path": "apps/bdptest/src/transactional-collection-minimum-installed.test.ts",
+      "line": 378,
+      "text": "    \"bdp-minimum-scope-position\": position,"
+    },
+    {
+      "path": "apps/bdptest/src/transactional-collection-minimum-installed.test.ts",
+      "line": 384,
+      "text": "  position = expected[\"bdp-minimum-scope-position\"],"
+    },
+    {
+      "path": "apps/bdptest/src/transactional-collection-minimum-installed.test.ts",
+      "line": 386,
+      "text": "  expect(response.headers[\"bdp-scope-epoch\"]).toBe(expected[\"bdp-scope-epoch\"]);"
+    },
+    {
+      "path": "apps/bdptest/src/transactional-collection-minimum-installed.test.ts",
+      "line": 387,
+      "text": "  expect(response.headers[\"bdp-authorization-view\"]).toBe(expected[\"bdp-authorization-view\"]);"
+    },
+    {
+      "path": "apps/bdptest/src/transactional-collection-minimum-installed.test.ts",
+      "line": 445,
+      "text": "      expect(response.headers[\"bdp-scope-position\"]).toBe(headers[\"bdp-minimum-scope-position\"]);"
+    },
+    {
+      "path": "apps/bdptest/src/transactional-collection-minimum-installed.test.ts",
+      "line": 489,
+      "text": "        expect(timeout.headers[\"bdp-scope-position\"]).toBe(headers[\"bdp-minimum-scope-position\"]);"
+    },
+    {
+      "path": "apps/bdptest/src/transactional-collection-minimum-installed.test.ts",
+      "line": 507,
+      "text": "        [\"bdp-authorization-view\", \"foreign\", 409, \"foreign-view\"],"
+    },
+    {
+      "path": "apps/bdptest/src/transactional-collection-minimum-installed.test.ts",
+      "line": 508,
+      "text": "        [\"bdp-scope-epoch\", \"foreign\", 410, \"cursor-expired\"],"
+    },
+    {
+      "path": "apps/bdptest/src/transactional-collection-minimum-installed.test.ts",
+      "line": 557,
+      "text": "    for (const h of [\"bdp-scope-epoch\", \"bdp-authorization-view\", \"bdp-scope-position\"])"
+    },
+    {
+      "path": "apps/bdptest/src/transactional-collection-minimum-installed.test.ts",
+      "line": 739,
+      "text": "      for (const name of [\"bdp-scope-position\", \"bdp-scope-epoch\", \"bdp-authorization-view\"])"
+    },
+    {
+      "path": "apps/bdptest/src/transactional-collection-minimum-installed.test.ts",
+      "line": 758,
+      "text": "        const expected = args[2]?.[\"bdp-authorization-view\"];"
+    },
+    {
+      "path": "apps/bdptest/src/transactional-collection-minimum-installed.test.ts",
+      "line": 762,
+      "text": "              (h) => h.name.toLowerCase() === \"bdp-authorization-view\","
+    },
+    {
+      "path": "apps/bdptest/src/transactional-collection-minimum-installed.test.ts",
+      "line": 885,
+      "text": "          \"bdp-minimum-scope-position\": \"pos-2\","
+    },
+    {
+      "path": "apps/bdptest/src/transactional-collection-minimum-installed.test.ts",
+      "line": 902,
+      "text": "        [0, \"GET\", \"bdp-scope-epoch\", 410, \"cursor-expired\"],"
+    },
+    {
+      "path": "apps/bdptest/src/transactional-collection-minimum-installed.test.ts",
+      "line": 903,
+      "text": "        [1, \"GET\", \"bdp-authorization-view\", 409, \"foreign-view\"],"
+    },
+    {
+      "path": "apps/bdptest/src/transactional-collection-minimum-installed.test.ts",
+      "line": 904,
+      "text": "        [2, \"HEAD\", \"bdp-scope-epoch\", 410, \"cursor-expired\"],"
+    },
+    {
+      "path": "apps/bdptest/src/transactional-collection-minimum-installed.test.ts",
+      "line": 927,
+      "text": "      for (const name of [\"bdp-scope-epoch\", \"bdp-authorization-view\", \"bdp-scope-position\"])"
+    },
+    {
+      "path": "apps/bdptest/src/transactional-collection-minimum-installed.test.ts",
+      "line": 954,
+      "text": "        const view = args[2]?.[\"bdp-authorization-view\"];"
+    },
+    {
+      "path": "apps/bdptest/src/transactional-collection-minimum-installed.test.ts",
+      "line": 958,
+      "text": "              (h) => h.name.toLowerCase() === \"bdp-authorization-view\","
+    },
+    {
+      "path": "apps/bdptest/src/transactional-collection-minimum-installed.test.ts",
+      "line": 1082,
+      "text": "      expect(followed.headers[\"bdp-scope-epoch\"]).toBe(headers[\"bdp-scope-epoch\"]);"
+    },
+    {
+      "path": "apps/bdptest/src/transactional-collection-minimum-installed.test.ts",
+      "line": 1083,
+      "text": "      expect(followed.headers[\"bdp-authorization-view\"]).toBe(headers[\"bdp-authorization-view\"]);"
+    },
+    {
+      "path": "apps/bdptest/src/transactional-collection-minimum-installed.test.ts",
+      "line": 1086,
+      "text": "      const future = { ...headers, \"bdp-minimum-scope-position\": \"pos-2\" };"
+    },
+    {
+      "path": "apps/bdptest/src/transactional-collection-minimum-installed.test.ts",
+      "line": 1098,
+      "text": "        \"bdp-authorization-view\": \"foreign\","
+    },
+    {
+      "path": "apps/bdptest/src/transactional-collection-minimum-installed.test.ts",
+      "line": 1111,
+      "text": "        \"bdp-scope-epoch\": \"foreign\","
+    },
+    {
+      "path": "apps/bdptest/src/transactional-collection-minimum-installed.test.ts",
+      "line": 1126,
+      "text": "        for (const h of [\"bdp-scope-epoch\", \"bdp-authorization-view\", \"bdp-scope-position\"])"
+    },
+    {
+      "path": "apps/bdptest/src/transactional-collection-minimum-installed.test.ts",
+      "line": 1210,
+      "text": "        expect(response.headers[\"bdp-scope-epoch\"]).toBe(expected[\"bdp-scope-epoch\"]);"
+    },
+    {
+      "path": "apps/bdptest/src/transactional-collection-minimum-installed.test.ts",
+      "line": 1211,
+      "text": "        expect(response.headers[\"bdp-authorization-view\"]).toBe(expected[\"bdp-authorization-view\"]);"
+    },
+    {
+      "path": "apps/bdptest/src/transactional-collection-minimum-installed.test.ts",
+      "line": 1220,
+      "text": "        expect(value.scopeEpoch).toBe(response.headers[\"bdp-scope-epoch\"]);"
+    },
+    {
+      "path": "apps/bdptest/src/transactional-collection-minimum-installed.test.ts",
+      "line": 1221,
+      "text": "        expect(value.authorizationView).toBe(response.headers[\"bdp-authorization-view\"]);"
+    },
+    {
+      "path": "apps/bdptest/src/transactional-collection-minimum-installed.test.ts",
+      "line": 1246,
+      "text": "        \"bdp-minimum-scope-position\": \"not a position!\","
+    },
+    {
+      "path": "apps/bdptest/src/transactional-collection-minimum-installed.test.ts",
+      "line": 1247,
+      "text": "        \"bdp-scope-epoch\": \"\","
+    },
+    {
+      "path": "apps/bdptest/src/transactional-collection-minimum-installed.test.ts",
+      "line": 1248,
+      "text": "        \"bdp-authorization-view\": \"view-one, view-two\","
+    },
+    {
+      "path": "apps/bdptest/src/transactional-collection-minimum-installed.test.ts",
+      "line": 1251,
+      "text": "        \"bdp-minimum-scope-position\": \"pos-99\","
+    },
+    {
+      "path": "apps/bdptest/src/transactional-collection-minimum-installed.test.ts",
+      "line": 1252,
+      "text": "        \"bdp-scope-epoch\": \"foreign-epoch\","
+    },
+    {
+      "path": "apps/bdptest/src/transactional-collection-minimum-installed.test.ts",
+      "line": 1253,
+      "text": "        \"bdp-authorization-view\": \"foreign-view\","
+    },
+    {
+      "path": "apps/bdptest/src/transactional-collection-minimum-installed.test.ts",
+      "line": 1278,
+      "text": "      const madeB = await post(\"batch\", bInput, \"minimum-b\", { \"bdp-scope-epoch\": \"partial\" });"
+    },
+    {
+      "path": "apps/bdptest/src/transactional-collection-minimum-installed.test.ts",
+      "line": 1288,
+      "text": "      const replayB = await post(\"batch\", bInput, \"minimum-b\", { \"bdp-scope-epoch\": \"\" });"
+    },
+    {
+      "path": "apps/bdptest/src/transactional-collection-minimum-installed.test.ts",
+      "line": 1395,
+      "text": "        \"bdp-authorization-view\": \"foreign\","
+    },
+    {
+      "path": "apps/bdptest/src/transactional-depth-key-order-installed.test.ts",
+      "line": 103,
+      "text": "const contextNames = [\"bdp-scope-epoch\", \"bdp-authorization-view\", \"bdp-scope-position\"] as const;"
+    },
+    {
+      "path": "apps/bdptest/src/transactional-direct-refusal-installed.test.ts",
+      "line": 207,
+      "text": "        epoch: response.headers[\"bdp-scope-epoch\"],"
+    },
+    {
+      "path": "apps/bdptest/src/transactional-direct-refusal-installed.test.ts",
+      "line": 208,
+      "text": "        view: response.headers[\"bdp-authorization-view\"],"
+    },
+    {
+      "path": "apps/bdptest/src/transactional-direct-refusal-installed.test.ts",
+      "line": 295,
+      "text": "      \"bdp-scope-epoch\": seed.scopeEpoch as string,"
+    },
+    {
+      "path": "apps/bdptest/src/transactional-direct-refusal-installed.test.ts",
+      "line": 296,
+      "text": "      \"bdp-authorization-view\": seed.authorizationView as string,"
+    },
+    {
+      "path": "apps/bdptest/src/transactional-discovery-installed.test.ts",
+      "line": 198,
+      "text": "      for (const name of [\"bdp-scope-epoch\", \"bdp-authorization-view\", \"bdp-scope-position\"])"
+    },
+    {
+      "path": "apps/bdptest/src/transactional-discovery-installed.test.ts",
+      "line": 229,
+      "text": "      expect(response.headers[\"bdp-scope-epoch\"]).toMatch(/\\S+/);"
+    },
+    {
+      "path": "apps/bdptest/src/transactional-discovery-installed.test.ts",
+      "line": 230,
+      "text": "      expect(response.headers[\"bdp-authorization-view\"]).toMatch(/\\S+/);"
+    },
+    {
+      "path": "apps/bdptest/src/transactional-event-missing-context-installed.test.ts",
+      "line": 83,
+      "text": "const contextNames = [\"bdp-scope-epoch\", \"bdp-authorization-view\", \"bdp-scope-position\"] as const;"
+    },
+    {
+      "path": "apps/bdptest/src/transactional-event-sse-installed.test.ts",
+      "line": 225,
+      "text": "      for (const name of [\"bdp-scope-epoch\", \"bdp-authorization-view\", \"bdp-scope-position\"])"
+    },
+    {
+      "path": "apps/bdptest/src/transactional-guarded-batch-installed.test.ts",
+      "line": 107,
+      "text": "  \"bdp-scope-epoch\","
+    },
+    {
+      "path": "apps/bdptest/src/transactional-guarded-batch-installed.test.ts",
+      "line": 108,
+      "text": "  \"bdp-authorization-view\","
+    },
+    {
+      "path": "apps/bdptest/src/transactional-guarded-batch-installed.test.ts",
+      "line": 601,
+      "text": "      const e = header(wire, \"bdp-scope-epoch\"),"
+    },
+    {
+      "path": "apps/bdptest/src/transactional-guarded-batch-installed.test.ts",
+      "line": 602,
+      "text": "        v = header(wire, \"bdp-authorization-view\");"
+    },
+    {
+      "path": "apps/bdptest/src/transactional-guarded-batch-installed.test.ts",
+      "line": 869,
+      "text": "        `ev_${hash(\"epoch\", header(eventWire, \"bdp-scope-epoch\"))}_${hash(\"view\", header(eventWire, \"bdp-authorization-view\"))}_${hash(\"source\", source)}_pos-${p}_${ordinal}`;"
+    },
+    {
+      "path": "apps/bdptest/src/transactional-matrix.test.ts",
+      "line": 444,
+      "text": "    for (const name of [\"bdp-scope-epoch\", \"bdp-authorization-view\", \"bdp-scope-position\"]) {"
+    },
+    {
+      "path": "apps/bdptest/src/transactional-matrix.test.ts",
+      "line": 1603,
+      "text": "    \"present-bdp-scope-epoch\","
+    },
+    {
+      "path": "apps/bdptest/src/transactional-matrix.test.ts",
+      "line": 1604,
+      "text": "    \"present-bdp-authorization-view\","
+    },
+    {
+      "path": "apps/bdptest/src/transactional-matrix.test.ts",
+      "line": 1977,
+      "text": "      const epoch = response.headers[\"bdp-scope-epoch\"],"
+    },
+    {
+      "path": "apps/bdptest/src/transactional-matrix.test.ts",
+      "line": 1978,
+      "text": "        view = response.headers[\"bdp-authorization-view\"];"
+    },
+    {
+      "path": "apps/bdptest/src/transactional-matrix.test.ts",
+      "line": 2223,
+      "text": "      \"present-bdp-scope-epoch\","
+    },
+    {
+      "path": "apps/bdptest/src/transactional-matrix.test.ts",
+      "line": 2224,
+      "text": "      \"present-bdp-authorization-view\","
+    },
+    {
+      "path": "apps/bdptest/src/transactional-matrix.test.ts",
+      "line": 2306,
+      "text": "  const minimumNames = [\"bdp-minimum-scope-position\", \"bdp-scope-epoch\", \"bdp-authorization-view\"];"
+    },
+    {
+      "path": "apps/bdptest/src/transactional-matrix.test.ts",
+      "line": 2312,
+      "text": "    P = [{ name: \"bdp-scope-epoch\", value: \"foreign-epoch\" }],"
+    },
+    {
+      "path": "apps/bdptest/src/transactional-matrix.test.ts",
+      "line": 2454,
+      "text": "        for (const name of [\"bdp-scope-epoch\", \"bdp-authorization-view\", \"bdp-scope-position\"])"
+    },
+    {
+      "path": "apps/bdptest/src/transactional-matrix.test.ts",
+      "line": 2457,
+      "text": "        const currentEpoch = response.headers[\"bdp-scope-epoch\"],"
+    },
+    {
+      "path": "apps/bdptest/src/transactional-matrix.test.ts",
+      "line": 2458,
+      "text": "          currentView = response.headers[\"bdp-authorization-view\"];"
+    },
+    {
+      "path": "apps/bdptest/src/transactional-matrix.test.ts",
+      "line": 2721,
+      "text": "            \"present-bdp-scope-epoch\","
+    },
+    {
+      "path": "apps/bdptest/src/transactional-matrix.test.ts",
+      "line": 2722,
+      "text": "            \"present-bdp-authorization-view\","
+    },
+    {
+      "path": "apps/bdptest/src/transactional-matrix.test.ts",
+      "line": 3007,
+      "text": "      const actualEpoch = response.headers[\"bdp-scope-epoch\"],"
+    },
+    {
+      "path": "apps/bdptest/src/transactional-matrix.test.ts",
+      "line": 3008,
+      "text": "        actualView = response.headers[\"bdp-authorization-view\"];"
+    },
+    {
+      "path": "apps/bdptest/src/transactional-principal-key-installed.test.ts",
+      "line": 90,
+      "text": "const contextNames = [\"bdp-scope-epoch\", \"bdp-authorization-view\", \"bdp-scope-position\"] as const;"
+    },
+    {
+      "path": "apps/bdptest/src/transactional-principal-key-installed.test.ts",
+      "line": 491,
+      "text": "        scopeEpoch: response.headers[\"bdp-scope-epoch\"] ?? null,"
+    },
+    {
+      "path": "apps/bdptest/src/transactional-principal-key-installed.test.ts",
+      "line": 492,
+      "text": "        authorizationView: response.headers[\"bdp-authorization-view\"] ?? null,"
+    },
+    {
+      "path": "apps/bdptest/src/transactional-principal-key-installed.test.ts",
+      "line": 638,
+      "text": "    expect(collectionWire.headers[\"bdp-scope-epoch\"]).toBe(a.receipt.scopeEpoch);"
+    },
+    {
+      "path": "apps/bdptest/src/transactional-principal-key-installed.test.ts",
+      "line": 648,
+      "text": "    expect(eventsWire.headers[\"bdp-scope-epoch\"]).toBe(a.receipt.scopeEpoch);"
+    },
+    {
+      "path": "apps/bdptest/src/transactional-principal-key-installed.test.ts",
+      "line": 660,
+      "text": "      id: `ev_${hash(\"epoch\", eventsWire.headers[\"bdp-scope-epoch\"]!)}_${hash(\"view\", eventsWire.headers[\"bdp-authorization-view\"]!)}_${hash(\"source\", eventSource)}_pos-${index + 1}_0`,"
+    },
+    {
+      "path": "apps/bdptest/src/transactional-receipt-missing-context-installed.test.ts",
+      "line": 83,
+      "text": "const contextNames = [\"bdp-scope-epoch\", \"bdp-authorization-view\", \"bdp-scope-position\"] as const;"
+    },
+    {
+      "path": "apps/bdptest/src/transactional-same-key-overlap-installed.test.ts",
+      "line": 88,
+      "text": "  \"bdp-scope-epoch\","
+    },
+    {
+      "path": "apps/bdptest/src/transactional-same-key-overlap-installed.test.ts",
+      "line": 89,
+      "text": "  \"bdp-authorization-view\","
+    },
+    {
+      "path": "apps/bdptest/src/transactional-same-key-overlap-installed.test.ts",
+      "line": 535,
+      "text": "      const e = header(wire, \"bdp-scope-epoch\"),"
+    },
+    {
+      "path": "apps/bdptest/src/transactional-same-key-overlap-installed.test.ts",
+      "line": 536,
+      "text": "        v = header(wire, \"bdp-authorization-view\");"
+    },
+    {
+      "path": "apps/bdptest/src/transactional-same-key-overlap-installed.test.ts",
+      "line": 745,
+      "text": "      const id = `ev_${hash(\"epoch\", header(r5, \"bdp-scope-epoch\"))}_${hash(\"view\", header(r5, \"bdp-authorization-view\"))}_${hash(\"source\", text(page.source))}_pos-1_0`;"
+    },
+    {
+      "path": "apps/bdptest/src/transactional-schema-installed.test.ts",
+      "line": 219,
+      "text": "        epoch: response.headers[\"bdp-scope-epoch\"],"
+    },
+    {
+      "path": "apps/bdptest/src/transactional-schema-installed.test.ts",
+      "line": 220,
+      "text": "        view: response.headers[\"bdp-authorization-view\"],"
+    },
+    {
+      "path": "apps/bdptest/src/transactional-schema-installed.test.ts",
+      "line": 230,
+      "text": "      \"bdp-scope-epoch\": epoch,"
+    },
+    {
+      "path": "apps/bdptest/src/transactional-schema-installed.test.ts",
+      "line": 231,
+      "text": "      \"bdp-authorization-view\": view,"
+    },
+    {
+      "path": "apps/bdptest/src/transactional-schema-installed.test.ts",
+      "line": 289,
+      "text": "    epoch = schemaResponse.headers[\"bdp-scope-epoch\"];"
+    },
+    {
+      "path": "apps/bdptest/src/transactional-schema-installed.test.ts",
+      "line": 290,
+      "text": "    view = schemaResponse.headers[\"bdp-authorization-view\"];"
+    },
+    {
+      "path": "apps/bdptest/src/transactional-selector-admission-installed.test.ts",
+      "line": 244,
+      "text": "        epoch ??= response.headers[\"bdp-scope-epoch\"];"
+    },
+    {
+      "path": "apps/bdptest/src/transactional-selector-admission-installed.test.ts",
+      "line": 245,
+      "text": "        view ??= response.headers[\"bdp-authorization-view\"];"
+    },
+    {
+      "path": "apps/bdptest/src/transactional-selector-admission-installed.test.ts",
+      "line": 248,
+      "text": "        expect(response.headers[\"bdp-scope-epoch\"]).toBe(epoch);"
+    },
+    {
+      "path": "apps/bdptest/src/transactional-selector-admission-installed.test.ts",
+      "line": 249,
+      "text": "        expect(response.headers[\"bdp-authorization-view\"]).toBe(view);"
+    },
+    {
+      "path": "apps/bdptest/src/transactional-selector-admission-installed.test.ts",
+      "line": 252,
+      "text": "        for (const name of [\"bdp-scope-epoch\", \"bdp-authorization-view\", \"bdp-scope-position\"])"
+    },
+    {
+      "path": "apps/bdptest/src/transactional-sequence-refusal-installed.test.ts",
+      "line": 273,
+      "text": "        epoch: response.headers[\"bdp-scope-epoch\"],"
+    },
+    {
+      "path": "apps/bdptest/src/transactional-sequence-refusal-installed.test.ts",
+      "line": 274,
+      "text": "        view: response.headers[\"bdp-authorization-view\"],"
+    },
+    {
+      "path": "apps/bdptest/src/transactional-sequence-refusal-installed.test.ts",
+      "line": 361,
+      "text": "      \"bdp-scope-epoch\": seed.scopeEpoch as string,"
+    },
+    {
+      "path": "apps/bdptest/src/transactional-sequence-refusal-installed.test.ts",
+      "line": 362,
+      "text": "      \"bdp-authorization-view\": seed.authorizationView as string,"
+    },
+    {
+      "path": "apps/bdptest/src/transactional-set-installed.test.ts",
+      "line": 178,
+      "text": "        for (const header of [\"bdp-scope-epoch\", \"bdp-authorization-view\", \"bdp-scope-position\"])"
+    },
+    {
+      "path": "apps/bdptest/src/transactional-snapshot-installed.test.ts",
+      "line": 311,
+      "text": "    if (headers[\"bdp-authorization-view\"] !== undefined)"
+    },
+    {
+      "path": "apps/bdptest/src/transactional-snapshot-installed.test.ts",
+      "line": 314,
+      "text": "          (h) => h.name.toLowerCase() === \"bdp-authorization-view\","
+    },
+    {
+      "path": "apps/bdptest/src/transactional-snapshot-installed.test.ts",
+      "line": 316,
+      "text": "      ).toBe(headers[\"bdp-authorization-view\"]);"
+    },
+    {
+      "path": "apps/bdptest/src/transactional-snapshot-installed.test.ts",
+      "line": 472,
+      "text": "      \"bdp-scope-epoch\": snapshot.scopeEpoch,"
+    },
+    {
+      "path": "apps/bdptest/src/transactional-snapshot-installed.test.ts",
+      "line": 473,
+      "text": "      \"bdp-authorization-view\": snapshot.authorizationView,"
+    },
+    {
+      "path": "apps/bdptest/src/transactional-snapshot-installed.test.ts",
+      "line": 474,
+      "text": "      \"bdp-minimum-scope-position\": \"pos-4\","
+    },
+    {
+      "path": "apps/bdptest/src/transactional-snapshot-installed.test.ts",
+      "line": 629,
+      "text": "        \"bdp-minimum-scope-position\": \"genesis\","
+    },
+    {
+      "path": "apps/bdptest/src/transactional-snapshot-installed.test.ts",
+      "line": 755,
+      "text": "  const epoch = context.headers[\"bdp-scope-epoch\"],"
+    },
+    {
+      "path": "apps/bdptest/src/transactional-snapshot-installed.test.ts",
+      "line": 756,
+      "text": "    view = context.headers[\"bdp-authorization-view\"];"
+    },
+    {
+      "path": "apps/bdptest/src/transactional-snapshot-installed.test.ts",
+      "line": 759,
+      "text": "    \"bdp-scope-epoch\": epoch,"
+    },
+    {
+      "path": "apps/bdptest/src/transactional-snapshot-installed.test.ts",
+      "line": 760,
+      "text": "    \"bdp-authorization-view\": view,"
+    },
+    {
+      "path": "apps/bdptest/src/transactional-snapshot-installed.test.ts",
+      "line": 761,
+      "text": "    \"bdp-minimum-scope-position\": minimumPosition,"
+    },
+    {
+      "path": "apps/bdptest/src/transactional-snapshot-installed.test.ts",
+      "line": 769,
+      "text": "  expect(response.headers[\"bdp-scope-epoch\"]).toBe(actual.headers[\"bdp-scope-epoch\"]);"
+    },
+    {
+      "path": "apps/bdptest/src/transactional-snapshot-installed.test.ts",
+      "line": 770,
+      "text": "  expect(response.headers[\"bdp-authorization-view\"]).toBe(actual.headers[\"bdp-authorization-view\"]);"
+    },
+    {
+      "path": "apps/bdptest/src/transactional-snapshot-installed.test.ts",
+      "line": 813,
+      "text": "    for (const name of [\"bdp-scope-epoch\", \"bdp-authorization-view\", \"bdp-scope-position\"])"
+    },
+    {
+      "path": "apps/bdptest/src/transactional-snapshot-installed.test.ts",
+      "line": 872,
+      "text": "      [\"bdp-scope-epoch\", 410, \"cursor-expired\", \"gone\"],"
+    },
+    {
+      "path": "apps/bdptest/src/transactional-snapshot-installed.test.ts",
+      "line": 873,
+      "text": "      [\"bdp-authorization-view\", 409, \"foreign-view\", \"conflict\"],"
+    },
+    {
+      "path": "apps/bdptest/src/transactional-snapshot-installed.test.ts",
+      "line": 895,
+      "text": "      { ...current, \"bdp-minimum-scope-position\": \"unknown\" },"
+    },
+    {
+      "path": "apps/bdptest/src/transactional-snapshot-installed.test.ts",
+      "line": 896,
+      "text": "      { \"bdp-minimum-scope-position\": \"pos-1\" },"
+    },
+    {
+      "path": "apps/bdptest/src/transactional-snapshot-installed.test.ts",
+      "line": 898,
+      "text": "        \"bdp-scope-epoch\": current[\"bdp-scope-epoch\"],"
+    },
+    {
+      "path": "apps/bdptest/src/transactional-snapshot-installed.test.ts",
+      "line": 899,
+      "text": "        \"bdp-authorization-view\": current[\"bdp-authorization-view\"],"
+    },
+    {
+      "path": "apps/bdptest/src/transactional-snapshot-installed.test.ts",
+      "line": 900,
+      "text": "        \"bdp-minimum-scope-positions\": \"pos-1\","
+    },
+    {
+      "path": "apps/bdptest/src/transactional-snapshot-installed.test.ts",
+      "line": 904,
+      "text": "      if (headers[\"bdp-minimum-scope-position\"] === \"unknown\") {"
+    },
+    {
+      "path": "apps/bdptest/src/transactional-snapshot-installed.test.ts",
+      "line": 910,
+      "text": "        for (const name of [\"bdp-scope-epoch\", \"bdp-authorization-view\", \"bdp-scope-position\"])"
+    },
+    {
+      "path": "apps/bdptest/src/transactional-sse-installed.test.ts",
+      "line": 197,
+      "text": "    for (const name of [\"bdp-scope-epoch\", \"bdp-authorization-view\", \"bdp-scope-position\"])"
+    },
+    {
+      "path": "apps/bdptest/src/transactional-sse-installed.test.ts",
+      "line": 432,
+      "text": "      for (const name of [\"bdp-scope-epoch\", \"bdp-authorization-view\", \"bdp-scope-position\"])"
+    },
+    {
+      "path": "packages/conformance/src/executable-manifest.test.ts",
+      "line": 611,
+      "text": "          for (const name of [\"bdp-authorization-view\", \"BDP-Authorization-View\"]) {"
+    },
+    {
+      "path": "packages/conformance/src/executable-manifest.test.ts",
+      "line": 649,
+      "text": "                headers: { \"bdp-authorization-view\": value },"
+    },
+    {
+      "path": "packages/conformance/src/executable-manifest.test.ts",
+      "line": 859,
+      "text": "        \"bdp-scope-epoch\","
+    },
+    {
+      "path": "packages/conformance/src/executable-manifest.test.ts",
+      "line": 860,
+      "text": "        \"bdp-authorization-view\","
+    },
+    {
+      "path": "packages/conformance/src/executable-manifest.test.ts",
+      "line": 1555,
+      "text": "        { name: \"bdp-minimum-scope-position\", value: \"not a position!\" },"
+    },
+    {
+      "path": "packages/conformance/src/executable-manifest.test.ts",
+      "line": 1556,
+      "text": "        { name: \"bdp-scope-epoch\", value: \"\" },"
+    },
+    {
+      "path": "packages/conformance/src/executable-manifest.test.ts",
+      "line": 1557,
+      "text": "        { name: \"bdp-authorization-view\", value: \"\" },"
+    },
+    {
+      "path": "packages/conformance/src/executable-manifest.test.ts",
+      "line": 1558,
+      "text": "        { name: \"BDP-Authorization-View\", value: \"view-one, view-two\" },"
+    },
+    {
+      "path": "packages/conformance/src/http-executor.test.ts",
+      "line": 733,
+      "text": "      { name: \"bdp-minimum-scope-position\", value: \"not a position!\" },"
+    },
+    {
+      "path": "packages/conformance/src/http-executor.test.ts",
+      "line": 734,
+      "text": "      { name: \"bdp-scope-epoch\", value: \"\" },"
+    },
+    {
+      "path": "packages/conformance/src/http-executor.test.ts",
+      "line": 735,
+      "text": "      { name: \"bdp-authorization-view\", value: \"\" },"
+    },
+    {
+      "path": "packages/conformance/src/http-executor.test.ts",
+      "line": 736,
+      "text": "      { name: \"BDP-Authorization-View\", value: \"view-one, view-two\" },"
+    },
+    {
+      "path": "packages/conformance/src/http-executor.test.ts",
+      "line": 792,
+      "text": "    for (const name of [\"bdp-authorization-view\", \"BDP-Authorization-View\", \"x-ordinary\"]) {"
+    },
+    {
+      "path": "packages/conformance/src/http-executor.test.ts",
+      "line": 817,
+      "text": "      \"X-Bdp-Authorization-View\","
+    },
+    {
+      "path": "packages/conformance/src/http-executor.test.ts",
+      "line": 818,
+      "text": "      \"bdp-authorization-view-extra\","
+    },
+    {
+      "path": "packages/conformance/src/http-executor.test.ts",
+      "line": 819,
+      "text": "      \"bdp-authorization-view-token\","
+    },
+    {
+      "path": "packages/conformance/src/http-executor.test.ts",
+      "line": 820,
+      "text": "      \"bdp-authorization-view-secret\","
+    },
+    {
+      "path": "packages/conformance/src/http-executor.test.ts",
+      "line": 821,
+      "text": "      \"bdp-authorization-view-password\","
+    },
+    {
+      "path": "packages/conformance/src/http-executor.test.ts",
+      "line": 822,
+      "text": "      \"bdp-authorization-view-credential\","
+    },
+    {
+      "path": "packages/conformance/src/profile-contract-plan.test.ts",
+      "line": 227,
+      "text": "      \"On mutation POSTs to operation command targets, authorities MUST ignore the `BDP-Minimum-Scope-Position`, `BDP-Scope-Epoch`, and `BDP-Authorization-View` request fields. Their presence, absence, completeness, and field values do not impose a minimum-position barrier or affect command identity. Ordinary HTTP field syntax and transport, header, and body bounds still apply, as do authorization, idempotency, carrier validation, and `expectedRevision`. This rule applies to mutation POSTs under this profile and cumulative profiles. It does not change conditions on reads.\";"
+    },
+    {
+      "path": "packages/conformance/src/runner.test.ts",
+      "line": 2838,
+      "text": "  it.each([\"content-length\", \"bdp-scope-epoch\", \"bdp-authorization-view\", \"bdp-scope-position\"])("
+    },
+    {
+      "path": "packages/conformance/src/runner.test.ts",
+      "line": 5577,
+      "text": "      { name: \"bdp-authorization-view\", value: \"CONTEXT-SENTINEL\" },"
+    },
+    {
+      "path": "packages/conformance/src/runner.test.ts",
+      "line": 5578,
+      "text": "      { name: \"BDP-Authorization-View\", value: \"\" },"
+    },
+    {
+      "path": "packages/conformance/src/runner.test.ts",
+      "line": 5596,
+      "text": "          \"bdp-authorization-view\": \"CONTEXT-SENTINEL\","
+    },
+    {
+      "path": "packages/conformance/src/runner.test.ts",
+      "line": 5602,
+      "text": "            \"bdp-authorization-view\": \"CONTEXT-SENTINEL\","
+    },
+    {
+      "path": "packages/conformance/src/runner.test.ts",
+      "line": 5619,
+      "text": "        ({ name }) => name.toLowerCase() === \"bdp-authorization-view\","
+    },
+    {
+      "path": "packages/conformance/src/runner.test.ts",
+      "line": 5629,
+      "text": "    expect(exchange?.response?.headers).not.toHaveProperty(\"bdp-authorization-view\");"
+    },
+    {
+      "path": "packages/conformance/src/runner.test.ts",
+      "line": 6015,
+      "text": "it.each([\"bdp-scope-epoch\", \"bdp-authorization-view\", \"bdp-scope-position\"])("
+    },
+    {
+      "path": "packages/conformance/src/transactional-cumulative.test.ts",
+      "line": 1214,
+      "text": "  const headers = [\"bdp-scope-epoch\", \"bdp-authorization-view\", \"bdp-scope-position\"];"
+    },
+    {
+      "path": "packages/conformance/src/transactional-cumulative.test.ts",
+      "line": 1329,
+      "text": "    for (const name of [\"bdp-scope-epoch\", \"bdp-authorization-view\", \"bdp-scope-position\"])"
+    },
+    {
+      "path": "packages/conformance/src/transactional-cumulative.test.ts",
+      "line": 1417,
+      "text": "  const headers = [\"bdp-scope-epoch\", \"bdp-authorization-view\", \"bdp-scope-position\"];"
+    },
+    {
+      "path": "packages/conformance/src/transactional-cumulative.test.ts",
+      "line": 1666,
+      "text": "  const headers = [\"bdp-scope-epoch\", \"bdp-authorization-view\", \"bdp-scope-position\"];"
+    },
+    {
+      "path": "packages/conformance/src/transactional-cumulative.test.ts",
+      "line": 2043,
+      "text": "  const headers = [\"bdp-scope-epoch\", \"bdp-authorization-view\", \"bdp-scope-position\"];"
+    },
+    {
+      "path": "packages/conformance/src/transactional-cumulative.test.ts",
+      "line": 2609,
+      "text": "        \"present-bdp-scope-epoch\","
+    },
+    {
+      "path": "packages/conformance/src/transactional-cumulative.test.ts",
+      "line": 2610,
+      "text": "        \"present-bdp-authorization-view\","
+    },
+    {
+      "path": "packages/conformance/src/transactional-cumulative.test.ts",
+      "line": 2714,
+      "text": "  const fields = [\"bdp-minimum-scope-position\", \"bdp-scope-epoch\", \"bdp-authorization-view\"];"
+    },
+    {
+      "path": "packages/conformance/src/transactional-cumulative.test.ts",
+      "line": 2727,
+      "text": "    [{ name: \"bdp-scope-epoch\", value: \"foreign-epoch\" }],"
+    },
+    {
+      "path": "packages/conformance/src/transactional-cumulative.test.ts",
+      "line": 2855,
+      "text": "    for (const name of [\"bdp-scope-epoch\", \"bdp-authorization-view\", \"bdp-scope-position\"])"
+    },
+    {
+      "path": "packages/conformance/src/transactional-cumulative.test.ts",
+      "line": 2989,
+      "text": "      (h: { name: string }) => h.name !== \"bdp-scope-epoch\","
+    },
+    {
+      "path": "packages/conformance/src/transactional-cumulative.test.ts",
+      "line": 2995,
+      "text": "      name: \"bdp-minimum-scope-position\","
+    },
+    {
+      "path": "packages/protocol/src/transactional-http-contracts.test.ts",
+      "line": 278,
+      "text": "    expect(context.receiptIdentityEpoch).toBe(response.headers[\"BDP-Scope-Epoch\"]);"
+    },
+    {
+      "path": "packages/protocol/src/transactional-http-contracts.test.ts",
+      "line": 279,
+      "text": "    const epoch = header(request.headers, \"BDP-Scope-Epoch\");"
+    },
+    {
+      "path": "packages/protocol/src/transactional-http-contracts.test.ts",
+      "line": 280,
+      "text": "    const view = header(request.headers, \"BDP-Authorization-View\");"
+    },
+    {
+      "path": "packages/protocol/src/transactional-http-contracts.test.ts",
+      "line": 281,
+      "text": "    const minimum = header(request.headers, \"BDP-Minimum-Scope-Position\");"
+    },
+    {
+      "path": "packages/protocol/src/transactional-http-contracts.test.ts",
+      "line": 286,
+      "text": "      expect(view).not.toBe(response.headers[\"BDP-Authorization-View\"]);"
+    },
+    {
+      "path": "packages/protocol/src/transactional-http-contracts.test.ts",
+      "line": 287,
+      "text": "    else expect(view).toBe(response.headers[\"BDP-Authorization-View\"]);"
+    },
+    {
+      "path": "packages/protocol/src/transactional-http-contracts.test.ts",
+      "line": 302,
+      "text": "    expect(context.receiptIdentityEpoch).not.toBe(response.headers[\"BDP-Scope-Epoch\"]);"
+    },
+    {
+      "path": "packages/protocol/src/transactional-http-contracts.test.ts",
+      "line": 409,
+      "text": "    for (const name of [\"BDP-Scope-Epoch\", \"BDP-Authorization-View\", \"BDP-Scope-Position\"]) {"
+    },
+    {
+      "path": "packages/protocol/src/transactional-http-contracts.test.ts",
+      "line": 454,
+      "text": "    expect(response.headers[\"BDP-Scope-Epoch\"]).toBe(original.headers[\"bdp-scope-epoch\"]);"
+    },
+    {
+      "path": "packages/protocol/src/transactional-http-contracts.test.ts",
+      "line": 546,
+      "text": "        for (const field of [\"bdp-scope-epoch\", \"bdp-authorization-view\", \"bdp-scope-position\"]) {"
+    },
+    {
+      "path": "packages/protocol/src/transactional-http-contracts.test.ts",
+      "line": 575,
+      "text": "  it.each([\"BDP-Scope-Epoch\", \"BDP-Authorization-View\", \"BDP-Minimum-Scope-Position\"])("
+    },
+    {
+      "path": "packages/protocol/src/transactional-http-contracts.test.ts",
+      "line": 587,
+      "text": "    row.request.headers[\"BDP-Authorization-View\"] = row.response.headers["
+    },
+    {
+      "path": "packages/protocol/src/transactional-http-contracts.test.ts",
+      "line": 588,
+      "text": "      \"BDP-Authorization-View\""
+    },
+    {
+      "path": "packages/protocol/src/transactional-http-contracts.test.ts",
+      "line": 594,
+      "text": "    row.context.receiptIdentityEpoch = row.request.headers[\"BDP-Scope-Epoch\"] as string;"
+    },
+    {
+      "path": "packages/protocol/src/transactional-wire.test.ts",
+      "line": 334,
+      "text": "              \"bdp-scope-epoch\","
+    },
+    {
+      "path": "packages/protocol/src/transactional-wire.test.ts",
+      "line": 335,
+      "text": "              \"bdp-authorization-view\","
+    },
+    {
+      "path": "packages/protocol/src/transactional-wire.test.ts",
+      "line": 451,
+      "text": "      expect(response.headers[\"bdp-authorization-view\"]).toBeDefined();"
+    },
+    {
+      "path": "packages/protocol/src/transactional-wire.test.ts",
+      "line": 452,
+      "text": "      expect(response.headers[\"bdp-authorization-view\"]).not.toBe("
+    },
+    {
+      "path": "packages/protocol/src/transactional-wire.test.ts",
+      "line": 453,
+      "text": "        original.response.headers[\"bdp-authorization-view\"],"
+    },
+    {
+      "path": "packages/protocol/src/transactional-wire.test.ts",
+      "line": 463,
+      "text": "          \"bdp-authorization-view\": original.response.headers[\"bdp-authorization-view\"] as string,"
+    },
+    {
+      "path": "packages/server/src/transaction-changefeed.test.ts",
+      "line": 695,
+      "text": "    \"bdp-scope-epoch\": config.scopeEpoch,"
+    },
+    {
+      "path": "packages/server/src/transaction-changefeed.test.ts",
+      "line": 696,
+      "text": "    \"bdp-authorization-view\": config.authorizationView,"
+    },
+    {
+      "path": "packages/server/src/transaction-changefeed.test.ts",
+      "line": 697,
+      "text": "    \"bdp-minimum-scope-position\": \"pos-1\","
+    },
+    {
+      "path": "packages/server/src/transaction-changefeed.test.ts",
+      "line": 711,
+      "text": "    [\"bdp-scope-epoch\", \"cursor-expired\", 410],"
+    },
+    {
+      "path": "packages/server/src/transaction-changefeed.test.ts",
+      "line": 712,
+      "text": "    [\"bdp-authorization-view\", \"foreign-view\", 409],"
+    },
+    {
+      "path": "packages/server/src/transaction-changefeed.test.ts",
+      "line": 724,
+      "text": "    headers: { \"bdp-minimum-scope-position\": \"pos-0\" },"
+    },
+    {
+      "path": "packages/server/src/transaction-changefeed.test.ts",
+      "line": 733,
+      "text": "  for (const name of [\"bdp-scope-epoch\", \"bdp-authorization-view\", \"bdp-scope-position\"])"
+    },
+    {
+      "path": "packages/server/src/transaction-changefeed.test.ts",
+      "line": 736,
+      "text": "    headers: { ...headers, \"bdp-minimum-scope-position\": \"genesis\" },"
+    },
+    {
+      "path": "packages/server/src/transaction-changefeed.test.ts",
+      "line": 752,
+      "text": "  const names = [\"bdp-scope-epoch\", \"bdp-authorization-view\", \"bdp-scope-position\"] as const;"
+    },
+    {
+      "path": "packages/server/src/transaction-consistency.test.ts",
+      "line": 38,
+      "text": "            \"bdp-scope-epoch\": \"epoch\","
+    },
+    {
+      "path": "packages/server/src/transaction-consistency.test.ts",
+      "line": 39,
+      "text": "            \"bdp-authorization-view\": \"view\","
+    },
+    {
+      "path": "packages/server/src/transaction-consistency.test.ts",
+      "line": 40,
+      "text": "            \"bdp-minimum-scope-position\": value,"
+    },
+    {
+      "path": "packages/server/src/transaction-consistency.test.ts",
+      "line": 46,
+      "text": "      transactionMinimumHeaders(new Headers({ \"bdp-minimum-scope-position\": \"pos-1\" })),"
+    },
+    {
+      "path": "packages/server/src/transaction-consistency.test.ts",
+      "line": 86,
+      "text": "  const names = [\"bdp-minimum-scope-position\", \"bdp-scope-epoch\", \"bdp-authorization-view\"];"
+    },
+    {
+      "path": "packages/server/src/transaction-consistency.test.ts",
+      "line": 88,
+      "text": "    \"bdp-minimum-scope-position\": \"pos-1\","
+    },
+    {
+      "path": "packages/server/src/transaction-consistency.test.ts",
+      "line": 89,
+      "text": "    \"bdp-scope-epoch\": \"epoch\","
+    },
+    {
+      "path": "packages/server/src/transaction-consistency.test.ts",
+      "line": 90,
+      "text": "    \"bdp-authorization-view\": \"view\","
+    },
+    {
+      "path": "packages/server/src/transaction-consistency.test.ts",
+      "line": 124,
+      "text": "    const headers = new Headers({ ...complete, \"bdp-minimum-scope-position\": value });"
+    },
+    {
+      "path": "packages/server/src/transaction-event-sse.test.ts",
+      "line": 286,
+      "text": "  for (const key of [\"bdp-scope-epoch\", \"bdp-authorization-view\", \"bdp-scope-position\"])"
+    },
+    {
+      "path": "packages/server/src/transaction-event-sse.test.ts",
+      "line": 403,
+      "text": "        [\"BDP-Scope-Epoch\", first.headers[\"bdp-scope-epoch\"]!],"
+    },
+    {
+      "path": "packages/server/src/transaction-event-sse.test.ts",
+      "line": 404,
+      "text": "        [\"BDP-Authorization-View\", first.headers[\"bdp-authorization-view\"]!],"
+    },
+    {
+      "path": "packages/server/src/transaction-event-sse.test.ts",
+      "line": 405,
+      "text": "        [\"BDP-Minimum-Scope-Position\", \"pos-9\"],"
+    },
+    {
+      "path": "packages/server/src/transaction-event-sse.test.ts",
+      "line": 793,
+      "text": "    [\"BDP-Scope-Epoch\", head.headers[\"bdp-scope-epoch\"]!],"
+    },
+    {
+      "path": "packages/server/src/transaction-event-sse.test.ts",
+      "line": 794,
+      "text": "    [\"BDP-Authorization-View\", head.headers[\"bdp-authorization-view\"]!],"
+    },
+    {
+      "path": "packages/server/src/transaction-event-sse.test.ts",
+      "line": 795,
+      "text": "    [\"BDP-Minimum-Scope-Position\", \"pos-99\"],"
+    },
+    {
+      "path": "packages/server/src/transaction-events.test.ts",
+      "line": 456,
+      "text": "    const epoch = response.headers.get(\"bdp-scope-epoch\"),"
+    },
+    {
+      "path": "packages/server/src/transaction-events.test.ts",
+      "line": 457,
+      "text": "      view = response.headers.get(\"bdp-authorization-view\");"
+    },
+    {
+      "path": "packages/server/src/transaction-events.test.ts",
+      "line": 460,
+      "text": "      \"bdp-scope-epoch\": epoch,"
+    },
+    {
+      "path": "packages/server/src/transaction-events.test.ts",
+      "line": 461,
+      "text": "      \"bdp-authorization-view\": view,"
+    },
+    {
+      "path": "packages/server/src/transaction-events.test.ts",
+      "line": 462,
+      "text": "      \"bdp-minimum-scope-position\": \"pos-2\","
+    },
+    {
+      "path": "packages/server/src/transaction-events.test.ts",
+      "line": 470,
+      "text": "      \"bdp-minimum-scope-position\": \"pos-99\","
+    },
+    {
+      "path": "packages/server/src/transaction-events.test.ts",
+      "line": 477,
+      "text": "      \"bdp-minimum-scope-position\": \"pos-99\","
+    },
+    {
+      "path": "packages/server/src/transaction-events.test.ts",
+      "line": 534,
+      "text": "            { ...headers, \"bdp-minimum-scope-position\": minimum },"
+    },
+    {
+      "path": "packages/server/src/transaction-events.test.ts",
+      "line": 1090,
+      "text": "    \"bdp-scope-epoch\","
+    },
+    {
+      "path": "packages/server/src/transaction-events.test.ts",
+      "line": 1091,
+      "text": "    \"bdp-authorization-view\","
+    },
+    {
+      "path": "packages/server/src/transaction-events.test.ts",
+      "line": 1209,
+      "text": "      known.headers[\"bdp-scope-epoch\"],"
+    },
+    {
+      "path": "packages/server/src/transaction-events.test.ts",
+      "line": 1210,
+      "text": "      known.headers[\"bdp-authorization-view\"],"
+    },
+    {
+      "path": "packages/server/src/transaction-events.test.ts",
+      "line": 1255,
+      "text": "                response.headers[\"bdp-scope-epoch\"],"
+    },
+    {
+      "path": "packages/server/src/transaction-events.test.ts",
+      "line": 1256,
+      "text": "                response.headers[\"bdp-authorization-view\"],"
+    },
+    {
+      "path": "packages/server/src/transaction-events.test.ts",
+      "line": 1277,
+      "text": "    for (const name of [\"bdp-scope-epoch\", \"bdp-authorization-view\", \"bdp-scope-position\"])"
+    },
+    {
+      "path": "packages/server/src/transaction-http.test.ts",
+      "line": 183,
+      "text": "    [\"bdp-scope-epoch\", \"bdp-authorization-view\", \"bdp-scope-position\"].map((name) => ["
+    },
+    {
+      "path": "packages/server/src/transaction-http.test.ts",
+      "line": 336,
+      "text": "      \"bdp-minimum-scope-position\": \"pos-999\","
+    },
+    {
+      "path": "packages/server/src/transaction-http.test.ts",
+      "line": 337,
+      "text": "      \"bdp-scope-epoch\": \"old\","
+    },
+    {
+      "path": "packages/server/src/transaction-http.test.ts",
+      "line": 338,
+      "text": "      \"bdp-authorization-view\": \"other\","
+    },
+    {
+      "path": "packages/server/src/transaction-http.test.ts",
+      "line": 369,
+      "text": "    const headers = { \"bdp-minimum-scope-position\": \"pos-1\", \"if-none-match\": \"*\" };"
+    },
+    {
+      "path": "packages/server/src/transaction-http.test.ts",
+      "line": 953,
+      "text": "      \"bdp-scope-epoch\","
+    },
+    {
+      "path": "packages/server/src/transaction-http.test.ts",
+      "line": 954,
+      "text": "      \"bdp-authorization-view\","
+    },
+    {
+      "path": "packages/server/src/transaction-http.test.ts",
+      "line": 1131,
+      "text": "    expect(value.scopeEpoch).toBe(response.headers.get(\"bdp-scope-epoch\"));"
+    },
+    {
+      "path": "packages/server/src/transaction-http.test.ts",
+      "line": 1132,
+      "text": "    expect(value.authorizationView).toBe(response.headers.get(\"bdp-authorization-view\"));"
+    },
+    {
+      "path": "packages/server/src/transaction-http.test.ts",
+      "line": 1142,
+      "text": "  \"bdp-minimum-scope-position\": \"not a position!\","
+    },
+    {
+      "path": "packages/server/src/transaction-http.test.ts",
+      "line": 1143,
+      "text": "  \"bdp-scope-epoch\": \"\","
+    },
+    {
+      "path": "packages/server/src/transaction-http.test.ts",
+      "line": 1144,
+      "text": "  \"bdp-authorization-view\": \"view-one, view-two\","
+    },
+    {
+      "path": "packages/server/src/transaction-http.test.ts",
+      "line": 1151,
+      "text": "    \"bdp-minimum-scope-position\","
+    },
+    {
+      "path": "packages/server/src/transaction-http.test.ts",
+      "line": 1152,
+      "text": "    \"bdp-scope-epoch\","
+    },
+    {
+      "path": "packages/server/src/transaction-http.test.ts",
+      "line": 1153,
+      "text": "    \"bdp-authorization-view\","
+    },
+    {
+      "path": "packages/server/src/transaction-http.test.ts",
+      "line": 1192,
+      "text": "        \"bdp-minimum-scope-position\": \"pos-999\","
+    },
+    {
+      "path": "packages/server/src/transaction-http.test.ts",
+      "line": 1193,
+      "text": "        \"bdp-scope-epoch\": \"foreign-epoch\","
+    },
+    {
+      "path": "packages/server/src/transaction-http.test.ts",
+      "line": 1194,
+      "text": "        \"bdp-authorization-view\": \"foreign-view\","
+    },
+    {
+      "path": "packages/server/src/transaction-http.test.ts",
+      "line": 1272,
+      "text": "            \"bdp-minimum-scope-position\": \"pos-999\","
+    },
+    {
+      "path": "packages/server/src/transaction-http.test.ts",
+      "line": 1273,
+      "text": "            \"bdp-scope-epoch\": \"foreign-epoch\","
+    },
+    {
+      "path": "packages/server/src/transaction-http.test.ts",
+      "line": 1274,
+      "text": "            \"bdp-authorization-view\": \"foreign-view\","
+    },
+    {
+      "path": "packages/server/src/transaction-http.test.ts",
+      "line": 1558,
+      "text": "      { ...minimumHeaders(created), \"bdp-authorization-view\": \"foreign\" },"
+    },
+    {
+      "path": "packages/server/src/transaction-http.test.ts",
+      "line": 1563,
+      "text": "    [{ ...minimumHeaders(created), \"bdp-scope-epoch\": \"foreign\" }, 410, \"cursor-expired\", \"gone\"],"
+    },
+    {
+      "path": "packages/server/src/transaction-http.test.ts",
+      "line": 1660,
+      "text": "    \"bdp-scope-epoch\": response.headers.get(\"bdp-scope-epoch\") ?? \"missing\","
+    },
+    {
+      "path": "packages/server/src/transaction-http.test.ts",
+      "line": 1661,
+      "text": "    \"bdp-authorization-view\": response.headers.get(\"bdp-authorization-view\") ?? \"missing\","
+    },
+    {
+      "path": "packages/server/src/transaction-http.test.ts",
+      "line": 1662,
+      "text": "    \"bdp-minimum-scope-position\": position,"
+    },
+    {
+      "path": "packages/server/src/transaction-http.test.ts",
+      "line": 1694,
+      "text": "        expect(result.headers.get(\"bdp-scope-epoch\")).toBe(headers[\"bdp-scope-epoch\"]);"
+    },
+    {
+      "path": "packages/server/src/transaction-http.test.ts",
+      "line": 1756,
+      "text": "      [\"bdp-scope-epoch\", \"cursor-expired\", 410],"
+    },
+    {
+      "path": "packages/server/src/transaction-http.test.ts",
+      "line": 1757,
+      "text": "      [\"bdp-authorization-view\", \"foreign-view\", 409],"
+    },
+    {
+      "path": "packages/server/src/transaction-http.test.ts",
+      "line": 1768,
+      "text": "    headers: { ...headers, authorization: `Bearer ${otherToken}`, \"bdp-scope-epoch\": \"foreign\" },"
+    },
+    {
+      "path": "packages/server/src/transaction-http.test.ts",
+      "line": 1787,
+      "text": "        headers: { ...headers, \"bdp-minimum-scope-position\": \"opaque-unknown\" },"
+    },
+    {
+      "path": "packages/server/src/transaction-http.test.ts",
+      "line": 1814,
+      "text": "        \"bdp-minimum-scope-position\": \"pos-999\","
+    },
+    {
+      "path": "packages/server/src/transaction-http.test.ts",
+      "line": 1859,
+      "text": "          for (const name of [\"bdp-scope-epoch\", \"bdp-authorization-view\"])"
+    },
+    {
+      "path": "packages/server/src/transaction-http.test.ts",
+      "line": 1879,
+      "text": "    for (const name of [\"bdp-scope-position\", \"bdp-scope-epoch\", \"bdp-authorization-view\"])"
+    },
+    {
+      "path": "packages/server/src/transaction-http.test.ts",
+      "line": 1901,
+      "text": "        { \"bdp-scope-epoch\": \"foreign\" },"
+    },
+    {
+      "path": "packages/server/src/transaction-http.test.ts",
+      "line": 1902,
+      "text": "        { \"bdp-authorization-view\": \"foreign\" },"
+    },
+    {
+      "path": "packages/server/src/transaction-http.test.ts",
+      "line": 1903,
+      "text": "        { \"bdp-minimum-scope-position\": \"pos-99\" },"
+    },
+    {
+      "path": "packages/server/src/transaction-http.test.ts",
+      "line": 1911,
+      "text": "        for (const name of [\"bdp-scope-position\", \"bdp-scope-epoch\", \"bdp-authorization-view\"])"
+    },
+    {
+      "path": "packages/server/src/transaction-http.test.ts",
+      "line": 2044,
+      "text": "      headers: { authorization: `Bearer ${principal}`, \"bdp-minimum-scope-position\": \"pos-99\" },"
+    },
+    {
+      "path": "packages/server/src/transaction-http.test.ts",
+      "line": 2049,
+      "text": "    for (const header of [\"bdp-scope-epoch\", \"bdp-authorization-view\", \"bdp-scope-position\"])"
+    },
+    {
+      "path": "packages/server/src/transaction-http.test.ts",
+      "line": 2060,
+      "text": "        headers: { ...headers, authorization: auth, \"bdp-scope-epoch\": \"foreign\" },"
+    },
+    {
+      "path": "packages/server/src/transaction-http.test.ts",
+      "line": 2075,
+      "text": "      headers: { ...headers, \"bdp-authorization-view\": \"foreign\" },"
+    },
+    {
+      "path": "packages/server/src/transaction-http.test.ts",
+      "line": 2174,
+      "text": "            \"bdp-minimum-scope-position\": \"unknown\","
+    },
+    {
+      "path": "packages/server/src/transaction-http.test.ts",
+      "line": 2175,
+      "text": "            \"bdp-scope-epoch\": String(receipt.scopeEpoch),"
+    },
+    {
+      "path": "packages/server/src/transaction-http.test.ts",
+      "line": 2176,
+      "text": "            \"bdp-authorization-view\": String(receipt.authorizationView),"
+    },
+    {
+      "path": "packages/server/src/transaction-http.test.ts",
+      "line": 2182,
+      "text": "        for (const header of [\"bdp-scope-epoch\", \"bdp-authorization-view\", \"bdp-scope-position\"])"
+    },
+    {
+      "path": "packages/server/src/transaction-http.test.ts",
+      "line": 2203,
+      "text": "        { ...minimumHeaders(created), \"bdp-authorization-view\": \"foreign\" },"
+    },
+    {
+      "path": "packages/server/src/transaction-http.test.ts",
+      "line": 2210,
+      "text": "        for (const header of [\"bdp-scope-epoch\", \"bdp-authorization-view\", \"bdp-scope-position\"])"
+    },
+    {
+      "path": "packages/server/src/transaction-http.test.ts",
+      "line": 2799,
+      "text": "    \"bdp-scope-epoch\": seed.headers.get(\"bdp-scope-epoch\"),"
+    },
+    {
+      "path": "packages/server/src/transaction-http.test.ts",
+      "line": 2800,
+      "text": "    \"bdp-authorization-view\": seed.headers.get(\"bdp-authorization-view\"),"
+    },
+    {
+      "path": "packages/server/src/transaction-http.test.ts",
+      "line": 2836,
+      "text": "    [\"bdp-scope-epoch\", 410, \"cursor-expired\", \"gone\"],"
+    },
+    {
+      "path": "packages/server/src/transaction-http.test.ts",
+      "line": 2837,
+      "text": "    [\"bdp-authorization-view\", 409, \"foreign-view\", \"conflict\"],"
+    },
+    {
+      "path": "packages/server/src/transaction-http.test.ts",
+      "line": 2921,
+      "text": "    \"bdp-scope-epoch\": seeded.headers.get(\"bdp-scope-epoch\")!,"
+    },
+    {
+      "path": "packages/server/src/transaction-http.test.ts",
+      "line": 2922,
+      "text": "    \"bdp-authorization-view\": seeded.headers.get(\"bdp-authorization-view\")!,"
+    },
+    {
+      "path": "packages/server/src/transaction-http.test.ts",
+      "line": 2923,
+      "text": "    \"bdp-minimum-scope-position\": \"pos-1\","
+    },
+    {
+      "path": "packages/server/src/transaction-http.test.ts",
+      "line": 2926,
+      "text": "    expect(response.headers.get(\"bdp-scope-epoch\")).toBe(headers[\"bdp-scope-epoch\"]);"
+    },
+    {
+      "path": "packages/server/src/transaction-http.test.ts",
+      "line": 2927,
+      "text": "    expect(response.headers.get(\"bdp-authorization-view\")).toBe(headers[\"bdp-authorization-view\"]);"
+    },
+    {
+      "path": "packages/server/src/transaction-http.test.ts",
+      "line": 2974,
+      "text": "          { ...headers, ...conditional, \"bdp-minimum-scope-position\": \"pos-2\" },"
+    },
+    {
+      "path": "packages/server/src/transaction-http.test.ts",
+      "line": 2988,
+      "text": "        [\"bdp-scope-epoch\", \"cursor-expired\", 410],"
+    },
+    {
+      "path": "packages/server/src/transaction-http.test.ts",
+      "line": 2989,
+      "text": "        [\"bdp-authorization-view\", \"foreign-view\", 409],"
+    },
+    {
+      "path": "packages/server/src/transaction-http.test.ts",
+      "line": 3004,
+      "text": "    const refused = await send(suffix, { ...headers, \"bdp-minimum-scope-position\": \"pos-2\" });"
+    },
+    {
+      "path": "packages/server/src/transaction-http.test.ts",
+      "line": 3026,
+      "text": "      { \"bdp-minimum-scope-position\": \"pos-2\" },"
+    },
+    {
+      "path": "packages/server/src/transaction-http.test.ts",
+      "line": 3027,
+      "text": "      { \"bdp-scope-epoch\": \"foreign\" },"
+    },
+    {
+      "path": "packages/server/src/transaction-http.test.ts",
+      "line": 3028,
+      "text": "      { \"bdp-authorization-view\": \"foreign\" },"
+    },
+    {
+      "path": "packages/server/src/transaction-http.test.ts",
+      "line": 3073,
+      "text": "    [{ \"bdp-minimum-scope-position\": \"pos-2\" }, 503, \"catch-up-timeout\"],"
+    },
+    {
+      "path": "packages/server/src/transaction-http.test.ts",
+      "line": 3074,
+      "text": "    [{ \"bdp-authorization-view\": \"foreign\" }, 409, \"foreign-view\"],"
+    },
+    {
+      "path": "packages/server/src/transaction-http.test.ts",
+      "line": 3075,
+      "text": "    [{ \"bdp-scope-epoch\": \"foreign\" }, 410, \"cursor-expired\"],"
+    },
+    {
+      "path": "packages/server/src/transaction-http.test.ts",
+      "line": 3107,
+      "text": "      { ...headers, \"bdp-minimum-scope-position\": \"pos-2\" },"
+    },
+    {
+      "path": "packages/server/src/transaction-http.test.ts",
+      "line": 3111,
+      "text": "    [\"alias/work?invalid=1\", { ...headers, \"bdp-minimum-scope-position\": \"pos-2\" }, 404, null],"
+    },
+    {
+      "path": "packages/server/src/transaction-http.test.ts",
+      "line": 3112,
+      "text": "    [\"alias/work\", { \"bdp-minimum-scope-position\": \"pos-1\" }, 400, null],"
+    },
+    {
+      "path": "packages/server/src/transaction-http.test.ts",
+      "line": 3115,
+      "text": "      { ...headers, \"bdp-minimum-scope-position\": \"unknown\" },"
+    },
+    {
+      "path": "packages/server/src/transaction-http.test.ts",
+      "line": 3153,
+      "text": "    \"bdp-scope-epoch\": seed.scopeEpoch,"
+    },
+    {
+      "path": "packages/server/src/transaction-http.test.ts",
+      "line": 3154,
+      "text": "    \"bdp-authorization-view\": seed.authorizationView,"
+    },
+    {
+      "path": "packages/server/src/transaction-http.test.ts",
+      "line": 3233,
+      "text": "    for (const name of [\"bdp-scope-epoch\", \"bdp-authorization-view\", \"bdp-scope-position\"])"
+    },
+    {
+      "path": "packages/server/src/transaction-http.test.ts",
+      "line": 3289,
+      "text": "  for (const name of [\"bdp-scope-epoch\", \"bdp-authorization-view\"])"
+    },
+    {
+      "path": "packages/server/src/transaction-http.test.ts",
+      "line": 3375,
+      "text": "    for (const name of [\"bdp-scope-epoch\", \"bdp-authorization-view\", \"bdp-scope-position\"])"
+    },
+    {
+      "path": "packages/server/src/transaction-http.test.ts",
+      "line": 3377,
+      "text": "    expect(response.headers.get(\"bdp-scope-epoch\")).toBe(before.headers.get(\"bdp-scope-epoch\"));"
+    },
+    {
+      "path": "packages/server/src/transaction-http.test.ts",
+      "line": 3378,
+      "text": "    expect(response.headers.get(\"bdp-authorization-view\")).toBe("
+    },
+    {
+      "path": "packages/server/src/transaction-http.test.ts",
+      "line": 3379,
+      "text": "      before.headers.get(\"bdp-authorization-view\"),"
+    },
+    {
+      "path": "packages/server/src/transaction-http.test.ts",
+      "line": 3501,
+      "text": "        \"bdp-scope-epoch\": seeds[0]!.scopeEpoch,"
+    },
+    {
+      "path": "packages/server/src/transaction-http.test.ts",
+      "line": 3502,
+      "text": "        \"bdp-authorization-view\": seeds[0]!.authorizationView,"
+    },
+    {
+      "path": "packages/server/src/transaction-http.test.ts",
+      "line": 3838,
+      "text": "  const names = [\"bdp-scope-epoch\", \"bdp-authorization-view\", \"bdp-scope-position\"] as const;"
+    },
+    {
+      "path": "packages/server/src/transaction-http.test.ts",
+      "line": 4212,
+      "text": "            \"bdp-scope-epoch\","
+    },
+    {
+      "path": "packages/server/src/transaction-http.test.ts",
+      "line": 4213,
+      "text": "            \"bdp-authorization-view\","
+    },
+    {
+      "path": "packages/server/src/transaction-http.test.ts",
+      "line": 4276,
+      "text": "        \"bdp-scope-epoch\": String(value.scopeEpoch),"
+    },
+    {
+      "path": "packages/server/src/transaction-http.test.ts",
+      "line": 4277,
+      "text": "        \"bdp-authorization-view\": String(value.authorizationView),"
+    },
+    {
+      "path": "packages/server/src/transaction-http.test.ts",
+      "line": 4347,
+      "text": "      for (const name of [\"bdp-scope-epoch\", \"bdp-authorization-view\", \"bdp-scope-position\"])"
+    },
+    {
+      "path": "packages/server/src/transaction-http.test.ts",
+      "line": 4514,
+      "text": "              \"bdp-minimum-scope-position\": \"genesis\","
+    },
+    {
+      "path": "packages/server/src/transaction-http.test.ts",
+      "line": 4533,
+      "text": "          \"bdp-scope-epoch\","
+    },
+    {
+      "path": "packages/server/src/transaction-http.test.ts",
+      "line": 4534,
+      "text": "          \"bdp-authorization-view\","
+    },
+    {
+      "path": "packages/server/src/transaction-http.test.ts",
+      "line": 4551,
+      "text": "          headers: minimum ? { \"bdp-minimum-scope-position\": \"genesis\" } : {},"
+    },
+    {
+      "path": "packages/server/src/transaction-http.test.ts",
+      "line": 4693,
+      "text": "      \"BDP-Minimum-Scope-Position\","
+    },
+    {
+      "path": "packages/server/src/transaction-http.test.ts",
+      "line": 4695,
+      "text": "      \"BDP-Scope-Epoch\","
+    },
+    {
+      "path": "packages/server/src/transaction-http.test.ts",
+      "line": 4697,
+      "text": "      \"BDP-Authorization-View\","
+    },
+    {
+      "path": "packages/server/src/transaction-http.test.ts",
+      "line": 4710,
+      "text": "                \"BDP-Minimum-Scope-Position\","
+    },
+    {
+      "path": "packages/server/src/transaction-http.test.ts",
+      "line": 4738,
+      "text": "        \"bdp-scope-epoch\","
+    },
+    {
+      "path": "packages/server/src/transaction-http.test.ts",
+      "line": 4739,
+      "text": "        \"bdp-authorization-view\","
+    },
+    {
+      "path": "packages/server/src/transaction-http.test.ts",
+      "line": 4765,
+      "text": "      [\"BDP-Minimum-Scope-Position\", \"genesis\"],"
+    },
+    {
+      "path": "packages/server/src/transaction-read.test.ts",
+      "line": 788,
+      "text": "          \"bdp-scope-epoch\": f.store.scopeEpoch,"
+    },
+    {
+      "path": "packages/server/src/transaction-read.test.ts",
+      "line": 789,
+      "text": "          \"bdp-authorization-view\": \"development-all-visible\","
+    },
+    {
+      "path": "packages/server/src/transaction-read.test.ts",
+      "line": 790,
+      "text": "          \"bdp-minimum-scope-position\": \"pos-2\","
+    },
+    {
+      "path": "packages/server/src/transaction-read.test.ts",
+      "line": 1490,
+      "text": "              \"bdp-scope-epoch\": f.store.scopeEpoch,"
+    },
+    {
+      "path": "packages/server/src/transaction-read.test.ts",
+      "line": 1491,
+      "text": "              \"bdp-authorization-view\": \"development-all-visible\","
+    },
+    {
+      "path": "packages/server/src/transaction-read.test.ts",
+      "line": 1492,
+      "text": "              \"bdp-minimum-scope-position\": \"pos-2\","
+    },
+    {
+      "path": "packages/server/src/transaction-read.test.ts",
+      "line": 1877,
+      "text": "        \"bdp-scope-epoch\": f.store.scopeEpoch,"
+    },
+    {
+      "path": "packages/server/src/transaction-read.test.ts",
+      "line": 1878,
+      "text": "        \"bdp-authorization-view\": \"development-all-visible\","
+    },
+    {
+      "path": "packages/server/src/transaction-read.test.ts",
+      "line": 1879,
+      "text": "        \"bdp-minimum-scope-position\": \"pos-2\","
+    },
+    {
+      "path": "packages/server/src/transaction-schema-http.test.ts",
+      "line": 211,
+      "text": "  expect(after.headers[\"bdp-scope-epoch\"]).toBe(before.headers[\"bdp-scope-epoch\"]);"
+    },
+    {
+      "path": "packages/server/src/transaction-schema-http.test.ts",
+      "line": 216,
+      "text": "  { \"bdp-minimum-scope-position\": \"pos-0\" },"
+    },
+    {
+      "path": "packages/server/src/transaction-schema-http.test.ts",
+      "line": 217,
+      "text": "  { \"bdp-scope-epoch\": \"epoch\" },"
+    },
+    {
+      "path": "packages/server/src/transaction-schema-http.test.ts",
+      "line": 218,
+      "text": "  { \"bdp-authorization-view\": \"view\" },"
+    },
+    {
+      "path": "packages/server/src/transaction-schema-http.test.ts",
+      "line": 219,
+      "text": "  { \"bdp-minimum-scope-position\": \"\" },"
+    },
+    {
+      "path": "packages/server/src/transaction-schema-http.test.ts",
+      "line": 220,
+      "text": "  { \"bdp-scope-epoch\": \"\" },"
+    },
+    {
+      "path": "packages/server/src/transaction-schema-http.test.ts",
+      "line": 221,
+      "text": "  { \"bdp-authorization-view\": \"\" },"
+    },
+    {
+      "path": "packages/server/src/transaction-schema-http.test.ts",
+      "line": 223,
+      "text": "    \"bdp-minimum-scope-position\": \"pos-0\","
+    },
+    {
+      "path": "packages/server/src/transaction-schema-http.test.ts",
+      "line": 224,
+      "text": "    \"bdp-scope-epoch\": \"epoch\","
+    },
+    {
+      "path": "packages/server/src/transaction-schema-http.test.ts",
+      "line": 225,
+      "text": "    \"bdp-authorization-view\": \"view\","
+    },
+    {
+      "path": "packages/server/src/transaction-schema-http.test.ts",
+      "line": 227,
+      "text": "  { \"bdp-minimum-scope-position\": \"bad\", \"bdp-scope-epoch\": \"epoch\" },"
+    },
+    {
+      "path": "packages/server/src/transaction-schema-http.test.ts",
+      "line": 228,
+      "text": "  { \"bdp-minimum-scope-position\": \"pos-0, pos-1\" },"
+    },
+    {
+      "path": "packages/server/src/transaction-schema-http.test.ts",
+      "line": 229,
+      "text": "  { \"bdp-minimum-scope-position\": \"\", \"if-none-match\": \"*\" },"
+    },
+    {
+      "path": "packages/server/src/transaction-schema-http.test.ts",
+      "line": 230,
+      "text": "  { \"bdp-scope-epoch\": \"bad\", \"if-match\": '\"missing\"' },"
+    },
+    {
+      "path": "packages/server/src/transaction-schema-http.test.ts",
+      "line": 250,
+      "text": "      headers[\"bdp-minimum-scope-position\"] === \"pos-0\" &&"
+    },
+    {
+      "path": "packages/server/src/transaction-schema-http.test.ts",
+      "line": 251,
+      "text": "      headers[\"bdp-scope-epoch\"] === \"epoch\" &&"
+    },
+    {
+      "path": "packages/server/src/transaction-schema-http.test.ts",
+      "line": 252,
+      "text": "      headers[\"bdp-authorization-view\"] === \"view\";"
+    },
+    {
+      "path": "packages/server/src/transaction-schema-http.test.ts",
+      "line": 266,
+      "text": "    for (const name of [\"bdp-scope-epoch\", \"bdp-authorization-view\", \"bdp-scope-position\"])"
+    },
+    {
+      "path": "packages/server/src/transaction-schema-http.test.ts",
+      "line": 428,
+      "text": "  for (const name of [\"bdp-scope-epoch\", \"bdp-authorization-view\", \"bdp-scope-position\"])"
+    },
+    {
+      "path": "packages/server/src/transaction-service.test.ts",
+      "line": 1135,
+      "text": "              \"bdp-scope-epoch\": initial.context.scopeEpoch,"
+    },
+    {
+      "path": "packages/server/src/transaction-service.test.ts",
+      "line": 1136,
+      "text": "              \"bdp-authorization-view\": initial.context.authorizationView,"
+    },
+    {
+      "path": "packages/server/src/transaction-service.test.ts",
+      "line": 1137,
+      "text": "              \"bdp-minimum-scope-position\": minimumPosition,"
+    },
+    {
+      "path": "packages/server/src/transaction-service.test.ts",
+      "line": 2019,
+      "text": "      for (const name of [\"bdp-scope-epoch\", \"bdp-authorization-view\", \"bdp-scope-position\"])"
+    },
+    {
+      "path": "packages/server/src/transaction-service.test.ts",
+      "line": 2069,
+      "text": "      for (const name of [\"bdp-scope-epoch\", \"bdp-authorization-view\", \"bdp-scope-position\"])"
+    },
+    {
+      "path": "packages/server/src/transaction-snapshot-http.test.ts",
+      "line": 173,
+      "text": "    [\"bdp-scope-epoch\", \"bdp-authorization-view\", \"bdp-scope-position\"].map((key) => ["
+    },
+    {
+      "path": "packages/server/src/transaction-snapshot-http.test.ts",
+      "line": 398,
+      "text": "    { \"bdp-scope-epoch\": \"epoch\" },"
+    },
+    {
+      "path": "packages/server/src/transaction-snapshot-http.test.ts",
+      "line": 399,
+      "text": "    { \"bdp-authorization-view\": \"view\" },"
+    },
+    {
+      "path": "packages/server/src/transaction-snapshot-http.test.ts",
+      "line": 400,
+      "text": "    { \"bdp-minimum-scope-position\": \"pos-0\" },"
+    },
+    {
+      "path": "packages/server/src/transaction-snapshot-http.test.ts",
+      "line": 402,
+      "text": "      \"bdp-scope-epoch\": \"epoch\","
+    },
+    {
+      "path": "packages/server/src/transaction-snapshot-http.test.ts",
+      "line": 403,
+      "text": "      \"bdp-authorization-view\": \"view\","
+    },
+    {
+      "path": "packages/server/src/transaction-snapshot-http.test.ts",
+      "line": 404,
+      "text": "      \"bdp-minimum-scope-position\": \"pos-0\","
+    },
+    {
+      "path": "packages/server/src/transaction-sse.test.ts",
+      "line": 408,
+      "text": "    [\"BDP-Minimum-Scope-Position\", \"pos-1\"],"
+    },
+    {
+      "path": "packages/server/src/transaction-sse.test.ts",
+      "line": 409,
+      "text": "    [\"BDP-Scope-Epoch\", initial.scopeEpoch],"
+    },
+    {
+      "path": "packages/server/src/transaction-sse.test.ts",
+      "line": 410,
+      "text": "    [\"BDP-Authorization-View\", initial.authorizationView],"
+    },
+    {
+      "path": "packages/server/src/transaction-sse.test.ts",
+      "line": 603,
+      "text": "    [\"BDP-Minimum-Scope-Position\", \"pos-99\"],"
+    },
+    {
+      "path": "packages/server/src/transaction-sse.test.ts",
+      "line": 604,
+      "text": "    [\"BDP-Scope-Epoch\", initial.scopeEpoch],"
+    },
+    {
+      "path": "packages/server/src/transaction-sse.test.ts",
+      "line": 605,
+      "text": "    [\"BDP-Authorization-View\", initial.authorizationView],"
+    },
+    {
+      "path": "packages/server/src/transaction-sse.test.ts",
+      "line": 646,
+      "text": "        expect(r.headers[\"bdp-scope-epoch\"]).toBe(page.scopeEpoch);"
+    },
+    {
+      "path": "packages/server/src/transaction-sse.test.ts",
+      "line": 647,
+      "text": "        expect(r.headers[\"bdp-authorization-view\"]).toBe(page.authorizationView);"
+    },
+    {
+      "path": "packages/server/src/transaction-sse.test.ts",
+      "line": 901,
+      "text": "    [\"BDP-Minimum-Scope-Position\", \"pos-3\"],"
+    },
+    {
+      "path": "packages/server/src/transaction-sse.test.ts",
+      "line": 902,
+      "text": "    [\"BDP-Scope-Epoch\", initial.scopeEpoch],"
+    },
+    {
+      "path": "packages/server/src/transaction-sse.test.ts",
+      "line": 903,
+      "text": "    [\"BDP-Authorization-View\", initial.authorizationView],"
+    },
+    {
+      "path": "apps/bdptest/src/transactional-minimum-receiving-installed.test.ts",
+      "line": 85,
+      "text": "const contextNames = [\"bdp-scope-epoch\", \"bdp-authorization-view\", \"bdp-scope-position\"] as const;"
+    },
+    {
+      "path": "apps/bdptest/src/transactional-minimum-receiving-installed.test.ts",
+      "line": 293,
+      "text": "        \"bdp-minimum-scope-position\","
+    },
+    {
+      "path": "apps/bdptest/src/transactional-minimum-receiving-installed.test.ts",
+      "line": 294,
+      "text": "        \"bdp-scope-epoch\","
+    },
+    {
+      "path": "apps/bdptest/src/transactional-minimum-receiving-installed.test.ts",
+      "line": 295,
+      "text": "        \"bdp-authorization-view\","
+    },
+    {
+      "path": "apps/bdptest/src/transactional-minimum-receiving-installed.test.ts",
+      "line": 353,
+      "text": "      [\"BDP-Minimum-Scope-Position\", \"invalid,invalid\"],"
+    },
+    {
+      "path": "apps/bdptest/src/transactional-minimum-receiving-installed.test.ts",
+      "line": 395,
+      "text": "      \"BDP-Minimum-Scope-Position\","
+    },
+    {
+      "path": "apps/bdptest/src/transactional-minimum-receiving-installed.test.ts",
+      "line": 397,
+      "text": "      \"BDP-Scope-Epoch\","
+    },
+    {
+      "path": "apps/bdptest/src/transactional-minimum-receiving-installed.test.ts",
+      "line": 399,
+      "text": "      \"BDP-Authorization-View\","
+    },
+    {
+      "path": "apps/bdptest/src/transactional-minimum-receiving-installed.test.ts",
+      "line": 443,
+      "text": "    malformed(await exchange(\"missing-two\", \"GET\", point, [\"BDP-Minimum-Scope-Position\", \"pos-2\"]));"
+    },
+    {
+      "path": "apps/bdptest/src/transactional-minimum-receiving-installed.test.ts",
+      "line": 446,
+      "text": "        \"BDP-Minimum-Scope-Position\","
+    },
+    {
+      "path": "apps/bdptest/src/transactional-minimum-receiving-installed.test.ts",
+      "line": 448,
+      "text": "        \"BDP-Authorization-View\","
+    },
+    {
+      "path": "apps/bdptest/src/transactional-minimum-receiving-installed.test.ts",
+      "line": 477,
+      "text": "            [\"BDP-Minimum-Scope-Position\", \"pos-2\"],"
+    }
+  ],
+  "fileCount": 39,
+  "hitCount": 400,
+  "disposition": "Changed expectation/input sites are selected in selection.json. Other hits are complete tuples, command POST ignore, context assertions, direct internal owner tests or deliberate unknown semantic identities. No additional source paths authorized."
+}

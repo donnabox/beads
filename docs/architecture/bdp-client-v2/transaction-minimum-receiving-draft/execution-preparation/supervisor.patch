@@ -1,0 +1,64 @@
+--- /Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-receipt-missing-context-draft/execution-preparation/run-source.py
++++ /Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-minimum-receiving-draft/execution-preparation/run-source.py
+@@ -1,4 +1,4 @@
+-"""Closed one-command source supervisor, adapted from reviewed Event source supervisor.
++"""Closed one-command minimum-receiving supervisor, adapted from reviewed receipt source supervisor.
+ Root supplies execution-gate.json; this file does not create/release that gate.
+ Usage: python3 run-source.py COMMAND_ID. Never retries or invokes controls/packages.
+ """
+@@ -14,21 +14,20 @@
+ 
+ P = Path(__file__).resolve().parent
+ D = P.parent
+-W = Path("/Users/dbox/repos/wt/vickie/vickie-sequence-member-evidence")
++W = Path("/Users/dbox/repos/wt/vickie/vickie-minimum-receiving")
+ E = D / "run"
+ L = Path("/Users/dbox/repos/wt/vickie/bdp-integration-logs")
+ GUARD = L / "guarded-action.py"
+ BINDING = D / "source-binding.json"
+ COMMANDS = P / "commands.json"
+ BINDING_SHA = None  # Actual frozen manifest must be pinned by root gate, never guessed.
+-COMMANDS_SHA = '8bde314c7544b625345cdac474af9a5b4ee77da97012a5e10ae468e3d084f752'
+-GUARD_SHA = "fd81ba029cd4e7c7e60623df89e8292af91141d311d9ce789ed19e2152375e84"
+-HEAD = "015cac1aa4fa827cc4a2c647dff08454c6c8e6f8"
+-TREE = "2e16329e195eb8214836de20340a5887236d78f0"
++COMMANDS_SHA = '157ca54b41a5bcec0c14bd4e1b0d6a6c6f66d885782b2bcdbe636f198e2ac9ab'
++GUARD_SHA = 'fd81ba029cd4e7c7e60623df89e8292af91141d311d9ce789ed19e2152375e84'
++HEAD = '5d7fa3f049fa0b4db3aa8dae20e20d8e47fb3854'
++TREE = '057f879132074166f2c0f643a8b45bbd9dd47c6f'
+ SESSION = "2026-10-08T20:26:35Z-81e5"
+-ORDER = ["offline-setup", "typecheck", "build", "format-check", "lint", "boundaries",
+-         "read-seal", "receipt-pages-positive", "receipt-service-positive", "receipt-http-positive"]
+-OWNED_PATHS = ['packages/server/src/transaction-store.ts', 'packages/server/src/transaction-service.ts', 'packages/server/src/transaction-http.ts', 'packages/server/src/transaction-receipt-pages.test.ts', 'packages/server/src/transaction-service.test.ts', 'packages/server/src/transaction-http.test.ts', 'apps/bdptest/src/transactional-receipt-missing-context-installed.test.ts', 'docs/design/transaction-implementation-progress.md']
++ORDER = ['offline-setup', 'typecheck', 'build', 'format-check', 'lint', 'boundaries', 'read-seal', 'consistency-positive', 'http-positive', 'snapshot-positive', 'schema-positive', 'changefeed-positive', 'spec-static']
++OWNED_PATHS = ['docs/specs/bdp.md', 'packages/server/src/transaction-consistency.ts', 'packages/server/src/transaction-http.ts', 'packages/server/src/transaction-consistency.test.ts', 'packages/server/src/transaction-http.test.ts', 'packages/server/src/transaction-snapshot-http.test.ts', 'packages/server/src/transaction-schema-http.test.ts', 'packages/server/src/transaction-changefeed.test.ts', 'apps/bdptest/src/transactional-snapshot-installed.test.ts', 'apps/bdptest/src/transactional-minimum-receiving-installed.test.ts', 'docs/design/transaction-implementation-progress.md']
+ 
+ def require(ok, message):
+     if not ok:
+@@ -43,9 +42,9 @@
+ def source_hashes():
+     require(sha(BINDING.read_bytes()) == BINDING_SHA, "Successor source binding changed")
+     binding = json.loads(BINDING.read_text())
+-    require(set(binding["files"]) == set(OWNED_PATHS), "Expected exactly eight receipt paths")
++    require(set(binding["files"]) == set(OWNED_PATHS), "Expected exactly eleven minimum receiving paths")
+     require(binding["head"] == HEAD and binding["tree"] == TREE, "Manifest base mismatch")
+-    require(binding["branch"] == "codex/vickie-receipt-missing-context", "Unexpected draft branch")
++    require(binding["branch"] == "codex/vickie-minimum-receiving", "Unexpected draft branch")
+     require(binding["workspace"] == str(W), "Manifest workspace mismatch")
+     require(git("rev-parse", "HEAD").decode().strip() == HEAD, "HEAD changed")
+     require(git("rev-parse", "HEAD^{tree}").decode().strip() == TREE, "Base tree changed")
+@@ -99,11 +98,11 @@
+     require(len(matches) == 1, "Command identity ambiguous")
+     spec = dict(matches[0])
+     require(spec["cwd"] == str(W) and spec["supervisorSeconds"] == 120, "Unexpected cwd/bound")
+-    require(spec["argv"][:2] == ["/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+-                                 "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs"], "Toolchain changed")
++    expected_tool = str(W / "node_modules/vitest/vitest.mjs") if "selectedFullNames" in spec else "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs"
++    require(spec["argv"][:2] == ["/Users/dbox/.nvm/versions/node/v24.16.0/bin/node", expected_tool], "Toolchain changed")
+     require(not spec.get("validatedBdpOverrides"), "Source phase must not inherit installed/control overrides")
+     spec.setdefault("ownedTempPrefixes", [])
+-    spec["workload"] = {key: spec[key] for key in ["cases", "http", "owners", "directories", "listeners", "productChildren", "readonlyInventoryHandles"] if key in spec}
++    spec["workload"] = {key: spec[key] for key in ["cases", "http", "owners", "directories", "listeners", "productChildren", "readonlyInventoryHandles", "otherInventoryHandles"] if key in spec}
+     for argument in spec["argv"]:
+         if argument.startswith("--outputFile="):
+             require(not Path(argument.split("=", 1)[1]).exists(), "Test result already exists; no retry")

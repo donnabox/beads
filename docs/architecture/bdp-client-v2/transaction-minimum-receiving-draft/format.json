@@ -1,0 +1,42 @@
+{
+  "argv": [
+    "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+    "/Users/dbox/repos/wt/vickie/vickie-guarded-batch/node_modules/@biomejs/biome/bin/biome",
+    "format",
+    "--write",
+    "packages/server/src/transaction-consistency.ts",
+    "packages/server/src/transaction-http.ts",
+    "packages/server/src/transaction-consistency.test.ts",
+    "packages/server/src/transaction-http.test.ts",
+    "packages/server/src/transaction-snapshot-http.test.ts",
+    "packages/server/src/transaction-schema-http.test.ts",
+    "packages/server/src/transaction-changefeed.test.ts",
+    "apps/bdptest/src/transactional-snapshot-installed.test.ts",
+    "apps/bdptest/src/transactional-minimum-receiving-installed.test.ts"
+  ],
+  "cwd": "/Users/dbox/repos/wt/vickie/vickie-minimum-receiving",
+  "exitCode": 0,
+  "before": {
+    "packages/server/src/transaction-consistency.ts": "5c3537d4ae5618a02398e57eff61077620c1bfa081fb4693ea6174b815fc3ff9",
+    "packages/server/src/transaction-http.ts": "24ada8537c255aef77680106649b7e7e447df0c40997cbdfd92d47174b84f2db",
+    "packages/server/src/transaction-consistency.test.ts": "aa6fec74f4ebf0bafc97f159ac00a55f29bb0dffa695bd9691dacc4e0349f029",
+    "packages/server/src/transaction-http.test.ts": "bb3c6214e391cb881e2c5c71c4b550f502c19c0df546d065d4b5ab2ad18ef450",
+    "packages/server/src/transaction-snapshot-http.test.ts": "61023b5f24396fe484c7820c706b560cb87abd7a3e16670f5a0944fbefd44d8a",
+    "packages/server/src/transaction-schema-http.test.ts": "505453e501c42c8865b3d846e70d42268beb8c1484032da99ed786970cf0cde4",
+    "packages/server/src/transaction-changefeed.test.ts": "3ae344db49968524d98b3f0085287c2adb9a1e49eaa73ba943b4084cd8136da1",
+    "apps/bdptest/src/transactional-snapshot-installed.test.ts": "58f4ad828861ea332de7bf4413f48eb4646f32237b76d3a4db310e081b99ffe9",
+    "apps/bdptest/src/transactional-minimum-receiving-installed.test.ts": "01490a6383cacc33cf4db39106d0dd314bd7f64907ee48dd3ae4c14623056895"
+  },
+  "after": {
+    "packages/server/src/transaction-consistency.ts": "00a420c3e9f5dcb1b8814a6476d5ce52edfb7adbbd1c64ab082833f17322a336",
+    "packages/server/src/transaction-http.ts": "ebb3550110bd6fda638572966e5faa05c15f062f37a10947f6e442fc7d4570f4",
+    "packages/server/src/transaction-consistency.test.ts": "4d45ba52c028c3081188a6f76498889d7170cceaaad114004458b86331191bc9",
+    "packages/server/src/transaction-http.test.ts": "deff30da550143396131747ed19564c4d0676d59e5ae61b8649d08a59a745fbb",
+    "packages/server/src/transaction-snapshot-http.test.ts": "61023b5f24396fe484c7820c706b560cb87abd7a3e16670f5a0944fbefd44d8a",
+    "packages/server/src/transaction-schema-http.test.ts": "eee33a0948c9a0981a2a963cec5a8f16102ae5bab32128f83c39956abe0a952b",
+    "packages/server/src/transaction-changefeed.test.ts": "97c3f8604ccbb7f3141a22e5c3d338f51929b308b80614309a7e837801b12043",
+    "apps/bdptest/src/transactional-snapshot-installed.test.ts": "58f4ad828861ea332de7bf4413f48eb4646f32237b76d3a4db310e081b99ffe9",
+    "apps/bdptest/src/transactional-minimum-receiving-installed.test.ts": "cefde296b07d6be86a83d13892a603588c9054bdd54196048a855e74f9e9b7f9"
+  },
+  "purpose": "formatting only; no tests/product import/build"
+}
