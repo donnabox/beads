@@ -1,0 +1,122 @@
+## Verdict
+
+Not clean. One **proven Critical defect** makes six of the ten actions (2–7) unachievable as literally specified; the remaining findings are mostly missing-supplied-proof gaps plus two robustness defects in how position tokens and the negative's scope are pinned. After Finding 1 is repaired, the narrowed claim set (terminal success/failure/success, independently retained receipts, no-effect replay, member-index-vs-internal-index, current-vs-historical context, deleted identity) is semantically feasible within the literal requests, with no runner/API/fixture widening.
+
+---
+
+## Critical
+
+**1. Companion singleton bodies for s-first-receipt / s-failed-receipt / s-last-receipt carry no idempotency key, so they cannot return the retained member receipts.**
+- Location: `COMPANION positivePostBodies[1]` (bytes 147), `[2]` (bytes 66), `[3]` (bytes 146) vs `PLAN ten actions` rows 2, 4, 6 ("POST batch equivalent create a/**member-a**", "missing delete/**member-fail**", "create b/**member-b**").
+- Status: **proven defect** from supplied source.
+- Why the required results are only reachable by keyed replay: `transaction-store.ts:1258-1310` assigns a successful group `position = previous+1` and sets `requiredPosition/effectPosition` to that position; a failed member gets `requiredPosition: pos-${previous}`. After action 1 the Scope is at pos2. Therefore:
+  - Row 2 asks for `completed`, `required/effect pos1`. A fresh (keyless) transaction cannot be assigned an already-committed earlier position, so `effectPosition pos1` is impossible regardless of how a duplicate create of the existing `beads/a` is dispositioned.
+  - Row 4 asks for `required pos1`. A fresh keyless failing delete yields `requiredPosition: pos-2` (previous = 2), not pos1.
+  - Row 6 asks for `required/effect pos2`; impossible for the same reason as row 2.
+  - Rows 2/4/6 also require retained *internal* framing (`internal index 0`, `next null`, retained problem) that only exists on the member's own singleton receipt.
+  - Rows 3/5/7 depend on the `/id` captures from rows 2/4/6, so they fall with them.
+- Supplied evidence that keyed replay *does* reach the member receipts: receipts are keyed by `(principal, key)` with no carrier discriminator (`transaction-store.ts:1104-1125` INSERT), and member keys are the sequence body's `idempotencyKey` values (`transaction-batch.ts:277-309` uses `carrier.keys[index]` for the derived singleton).
+- Smallest correction: add the member key to each of the three singleton bodies, matching the sequence members' own construction — `,"idempotencyKey":"member-a"` → bytes 175; `,"idempotencyKey":"member-fail"` → bytes 97; `,"idempotencyKey":"member-b"` → bytes 174 (byte deltas 28/31/28 computed from the supplied literals); digests must be recomputed. Prefer the body field over a header (see Finding 10).
+
+---
+
+## High
+
+**2. Every position fact is pinned as a private literal (`pos1`/`pos2`) against an unobserved baseline.**
+- Location: `PLAN ten actions` rows 1,2,3,4,6,7,8,9,10 ("current pos2", "required/effect pos1", "required pos1", "required/effect pos2"); spelling source `transaction-store.ts:1258` / `:1272-1296`; `transaction-events.ts:74-75` grammar.
+- Status: literals are *consistent* with source **only if** the Scope is at pos0 when action 1 runs; the plan never pins the starting position as an actual observation, and its own caveat says "Literal fixture positions are not inferred semantics for opaque tokens."
+- Impact: if the Scope is not fresh at pos0 (shared-scope execution, any preceding baseline write), all ten rows' position literals are wrong and the run fails for a non-semantic reason; the literals also re-pin a private token spelling.
+- Smallest correction: assert positions **relationally** from captured actual tokens — `failedReceipt.requiredPosition == firstReceipt.effectPosition`, `lastReceipt.effectPosition == servedCurrentPosition`, `firstReceipt.effectPosition != servedCurrentPosition`, plus a one-time baseline capture of the pre-action-1 position with `firstReceipt.effectPosition` as its successor. This is a strictly stronger discrimination claim and survives any spelling/baseline change.
+
+**3. Independent `ev_` derivation needs `scopeEpoch` and `authorizationView` as actual captured inputs; the plan does not name their capture source, and wire observability is not supplied.**
+- Location: `PLAN ten actions` row 10 and the Event-ID paragraph ("independently derive the fixture ev_ epoch/view/source hash … from captured actual context"); `transaction-events.ts:74-104`.
+- Status: **missing supplied proof**, with a concrete feasible source available: the retained receipt record includes `scopeEpoch` and `authorizationView` (`transaction-store.ts:1104-1112`), and rows 2–7 already read those receipts. Whether the receipt wire projection retains those two fields is not in supplied source.
+- Impact: without a named, observable source for epoch/view the row-10 ID assertions cannot be constructed without widening.
+- Smallest correction: state in row 10 that epoch/view are taken from the first/last receipt bodies, and that the fixture recomputes `sha256(JSON.stringify([tag,value]))` → unpadded base64url (43 chars, per the `{43}` cursor grammar) with tags exactly `"epoch"`, `"view"`, `"source"`, the checkpoint segment taken from the corresponding receipt's `effectPosition`, and ordinal `0`. Supply the receipt serializer excerpt as the proof that both fields are served.
+
+**4. `GET beads/?limit=32` uses an unproven query parameter — the same error class the plan already rejected for Changes.**
+- Location: `PLAN ten actions` row 9; compare the plan's own s-groups paragraph ("Finite Changes accepts only after/start … so invented limit32 is also invalid").
+- Status: **missing supplied proof** — no collection reader excerpt is supplied; `limit` may be rejected or ignored.
+- Impact: row 9 could fail on parameter admission rather than on semantics; `limit` is not load-bearing because the row already asserts exactly `a`/`b` and `next null`.
+- Smallest correction: drop `?limit=32` and keep the exact-collection + `next null` assertions, or supply the collection reader's accepted parameter set.
+
+**5. The middle member's Problem field set (`type`/`code`/`status`/`retry`/"after-state-change") is not provable from supplied source, and member-level vs sequence-level after-state-change is genuinely ambiguous.**
+- Location: `PLAN ten actions` rows 1 and 4 ("known404Problem", "known404/after-state-change Problem"); `PLAN real control` baseline IDs `middle-type`, `middle-code`, `middle-status`, `middle-retry`; spec reference "spec 1901" is cited but not supplied verbatim.
+- Status: **missing supplied proof**. The retained problem is produced by the member's *own* one-operation transaction (`transaction-store.ts:1258-1266`), in which nothing had committed; the state change (member a) belongs to the enclosing sequence. If an after-state-change marker is computed per transaction, it would be absent on the retained member problem while present at sequence level — or vice versa.
+- Impact: four pinned positive assertions in row 1/4 (and therefore four of the seven negative failure IDs) rest on an unsupplied builder; a mismatch fails the positive run.
+- Smallest correction: supply `docs/specs/bdp.md:1901` verbatim and the resource-not-found problem construction; until then pin only fields proven elsewhere (status/type plus internal `operationIndex` 0 and the absence facts) and mark the remaining three as actual-shape assertions.
+
+---
+
+## Medium
+
+**6. The seven-ID negative set is only correct if the negative is a single-action, one-exchange scenario; inheriting the ten actions would produce a much larger failure set.**
+- Location: `PLAN real control` ("One new registered negative selects ONLY this row… Keep exact seven baseline failing IDs"; "Demand one exchange/no client action").
+- Status: consistent as written ("one exchange"), but **under-specified**; the cascade is proven if the negative replays the scenario: current position becomes pos3 (breaks the pos2 assertions in rows 3,7,8,9,10), key `member-fail` is now bound to `delete beads/a` so row 4's body is an identity mismatch → `idempotency-conflict` instead of a retained failure, row 5's `/id` capture then has nothing to capture → harness/transport error (violating "no transport, harness, execution or cleanup errors"), row 9's collection no longer contains `a`, and row 10 sees three Events.
+- Smallest correction: state explicitly that the negative row is a standalone single-action (`s-sequence`-only) scenario in a fresh Scope, and that the seven-ID set is scoped to that one action's assertions.
+- Confirmed-passing claim checks out: the deleted branch at `resource-evaluator.ts:1073-1084` emits no top-level `resource` (it nests under `deleted.resource`), so `middle-no-resource` does keep passing; `project` at `transaction-sequence.ts:32-74` deletes only `operationIndex`/`operationName`, so `outcome`/`deleted` survive and the index assertions keep passing.
+
+**7. Row 8's "full parsed body equals … initial envelope" is unproven at envelope level.**
+- Location: `PLAN ten actions` row 8; `transaction-sequence.ts:32-74` (member entries only); spec `4057-4080` ("The envelope projects each member's receipt into one entry, and it adds no receipt member").
+- Status: **missing supplied proof** — the `TransactionSequenceResponse` construction (non-member envelope fields) is not supplied. Member-entry equality *is* proven: all three keys are known and terminal/available, so each turn re-projects the same retained receipt. If the envelope carries any per-request field, whole-body equality fails.
+- Smallest correction: supply the envelope constructor, or scope row 8 to the members array plus an enumerated envelope field list with a "no additional keys" absence assertion.
+
+**8. Event `transaction` ↔ member receipt `transaction` correspondence is not supplied.**
+- Location: `PLAN ten actions` row 10 ("corresponding receipt transactions"); `transaction-batch.ts:644-660` (`transaction` from the execution closure) vs `transaction-store.ts:1104-1111` (`transaction: randomUUID()` at claim).
+- Status: **missing supplied proof**, strongly indicated: the committed group records `transaction: core.transaction` (`transaction-store.ts:1272-1283`), so the group and the receipt agree; the wiring of that same value into `scopeEvent` is not shown.
+- Smallest correction: supply the executor call that passes the receipt's transaction into batch options, or state row 10's claim as the proven pairing (group/receipt) plus an actual assertion on the Event field.
+
+**9. "Exactly 2 / next null" in one Event page depends on unsupplied bounds.**
+- Location: `PLAN ten actions` row 10 and the Event paragraph; `transaction-store.ts:1543-1634` (`events.length + 1 > receiptMaximumItems || bytes > TRANSACTION_EVENT_PAGE_BYTES`).
+- Status: **missing supplied proof** — neither constant's value is supplied, and the plan itself cites a sibling bound fixed at 1 (`maximumGroupsPerObservation=1`). The multi-*group* scan is proven fine (the finite loop advances `at = p + 1` with no group cap), so only the item/byte caps are at issue.
+- Smallest correction: supply the two constants' values.
+
+**10. How a singleton batch receives its key, and whether the key is excluded from normalized identity, is not supplied — this is the proof that Finding 1's repair works.**
+- Location: `transaction-batch.ts:277-309` (keys separate from `op.input`), `:410-491` (`identity = encodeSemanticValue([{operation, input}])`); `prepareCarrier` and the route's key extraction are not supplied.
+- Status: **missing supplied proof**. Identity equality holds if the key is extracted to `keys` on both paths (or kept in `input` on both). It breaks only if the member keeps the key in `input` while a direct POST supplies it via header — which is why the body-field repair is the safer one.
+- Smallest correction: supply `prepareCarrier`'s key handling; keep the repaired key in the body so both paths construct the member singleton identically.
+
+**11. Pinning a derived `ev_` id re-implements a deliberately private token spelling.**
+- Location: Event-ID paragraph; `transaction-events.ts:81` ("Scope and Resource token spelling is deliberately private, not a fixture law").
+- Status: root-chosen trade-off, flagged for completeness; oracle independence (no production renderer import) is the correct half.
+- Smallest correction, if brittleness is unacceptable: assert the public/semantic invariants instead — the `ev_` grammar from `transaction-events.ts:74-75`, identical first three segments across both Events (same epoch/view/source), tail segments equal to each Event's own receipt `effectPosition` + `_0`, pairwise distinctness, and (optionally) round-trip usability as an `after=` cursor.
+
+---
+
+## Low
+
+**12.** Scope-source inclusion branch of `eventProjection` is not supplied (`transaction-events.ts:250-269` begins inside the bead/link branch), so "exactly 2 created Events" rests on an actual assertion rather than derivation — which the plan already states. No correction needed beyond leaving it as actual.
+
+**13.** Volatile retained fields are not enumerated: receipt `id`/`transaction` UUIDs (`transaction-store.ts:1104-1111`), `expiresAt` (`:1264`, `:1300`), and Event `time` (`transaction-batch.ts:654`) must be captured-actual, never pinned. Rows 5/7 ("complete original failure retained", "full checked originalB retained") and row 10 ("full Resource data") should say so explicitly; the helper deep-equal at `transactional-observation.ts:296-311` handles cross-GET stability.
+
+**14.** Absence of `source`/`sourceRevision` on the deleted outcome is asserted from `resource-evaluator.ts:1084` (`...(sourceAfter ? …)`), but `sourceAfter`'s derivation for an unowned Bead is not supplied — minor proof gap behind "No source/sourceRevision fields arise for this unowned Bead."
+
+**15.** Negative-run isolation (fresh Scope, fresh `(principal,key)` namespace) is not supplied; it is implied by the asserted `current pos3`, which only holds from pos0. Worth stating in the negative paragraph.
+
+**16.** The retained problem's internal `operationIndex: 0` is strongly implied (`project` at `transaction-sequence.ts:69-70` deletes `operationIndex` before rewriting, which is only meaningful if the retained entry carries one) but the problem builder is not supplied.
+
+**17.** Row 2's "Resource equals initial a" is a tautology under keyed replay: the envelope entry *is* the spread of `receipt.results[0]` (`transaction-sequence.ts:60-64`). The independent content of rows 2/4/6 is the retained framing (status/detail/positions/`next`/internal index/distinct receipt roots and transaction strings), not the Resource body. Worth re-labelling so the evidence claim is not overstated.
+
+**18.** Sequence POST "no outer key" (row 1) admissibility is not supplied; it is required for row 8's member-key-only replay semantics to be the operative path.
+
+**19.** Accounting cross-check is internally consistent: 14 + 237 = 15 + 236 = 251 required; report 256 and the negative registration's unit cost are B's.
+
+---
+
+## Cross-boundary dependencies A must flag to B
+
+1. **Static request schema must admit the repaired body.** If Finding 1 is fixed in the body, the singleton batch request schema (B's "static derivative bundle/schema/mutation checks precede execution") must permit a per-operation `idempotencyKey` outside a sequence; `transaction-batch.ts:281-285`'s comment notes singleton syntax rejects `@name` outside a sequence, so key admission needs B's confirmation.
+2. **Observer ledger capacity and registration ordering.** Rows 2–7 need three simultaneous receipt bindings and three `resolve()` validations; `transactional-observation.ts:233-234` enforces `ledger.size >= maximum` and no reuse, and `resolve` additionally requires unchanged `runtimeConfigurationIdentity`/`configurationDigest`.
+3. **In-app comparison surface for the negative.** Comparing `deleted.resource.revision` to the first creation's revision, and the "full raw equality in app afterExchange", depend on B's helper/report integration exposing the same response to the app hook.
+4. **28-object preservation.** The deleted identity passthrough A relies on (`transaction-batch.ts:712-719`) is B's preservation territory; A only verified the sequence-side spread/freeze at `transaction-sequence.ts:57-76`.
+5. **Execution accounting** for the one-exchange negative ("one exchange/no client action", genuine report saved before cleanup) and the 14→15 / 237→236 arithmetic.
+
+---
+
+## Limitations of this review
+
+- No tools, commands, file reads, or agents were used; every judgment is confined to the supplied excerpts. The two prior 900s timeouts remain unexplained and are not addressed here.
+- I could not verify the companion `sha256` digests (no execution). I did verify all supplied byte counts by hand from the literal strings: 414 / 147 / 66 / 146 / 414 / 408 all check out; the repaired counts in Finding 1 (175 / 97 / 174) are arithmetic from the same literals.
+- Chronology/identity claims (frozen 45acc3ab, companion ddd5e5a2, parent 88c9408e…, tree b2d9f2c1…, source 01a247b2…, reanchor e553b4ea) could not be verified; the supplied source commit matches the session's reported `HEAD` label only.
+- Unsupplied code paths relied on by the plan and therefore un-adjudicated here: `prepareCarrier` key extraction, the resource-not-found problem builder and `docs/specs/bdp.md:1901`, the `TransactionSequenceResponse` envelope constructor, the receipt wire serializer, the Bead collection reader, `readChanges:1691-1742` / `retainedGroupReader:604`, the Scope-source branch of `eventProjection`, `receiptMaximumItems` / `TRANSACTION_EVENT_PAGE_BYTES`, and scenario/Scope isolation for registered negatives.
+- Per partition, this covers Target A only (literal ten-action semantics, normalization/receipt retention, Event projection, real-wire negative oracle). It does not certify B's half, and a single clean A result would not be whole-plan council acceptance. Production scope was not broadened and no full-profile proof was required of this explicitly partial witness.
