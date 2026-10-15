@@ -1,0 +1,138 @@
+# Focused PLAN review B — supplied frozen context (base 9a42a45 / tree a9cca0e)
+
+Scope honored: B1/B2/B3 only; A19 semantics not reopened; no tools, no files written, no execution. Findings below are plan-text/source-consistency defects against the supplied excerpts. Where a claim depends on evidence not supplied, it is listed as residual, not as a defect.
+
+**Verdict: not clean.** 3 blockers (B1-1, B1-2, B2-1), 6 material, 6 minor. Nothing found that invalidates the four-cohort or recurring arithmetic.
+
+---
+
+## B1 — observer handoff, sentinel, raw/helper split, retention
+
+**B1-1 [BLOCKER] The replay recognition predicate is unsatisfiable as written, and the replay oracle depends on unstated key placement.**
+Location: plan B §"Composition and one real control" ("narrowly recognize the exact new **first** sequence URL+bodydigest+**no outerkey**+completewrite" … "Recognize the identical replay only at its exact later ledger position"); detector `transactional-matrix.test.ts:1920-1922`, `:1936-1944`.
+Evidence: the body companion makes sequence and replay byte-identical (`414B`/`414B`), so URL and `bodyDigest` collide; the only other wire discriminator the detector reads is the `idempotency-key` **header** (`:1920`). If the sequence truly carries no header key, first and replay are wire-indistinguishable. Separately, the minimum precedent pairs replays with **keyed** originals (activation `key === "minimum-a"`, `:2355`; ledger `:2243-2247`), i.e. whole-JSON replay equality there rests on idempotent replay, which a keyless POST cannot provide (new receipt `/id`, new revisions).
+Impact: either the detector cannot implement "first vs later ledger position" (it will reject the second occurrence at `:1928-1931`), or the `s-replay→s-sequence` whole-JSON equality oracle is not achievable. Blocks authoring of both the member ledger and the recognition clause.
+Smallest fix: state explicitly whether "omits outer key" means the HTTP `idempotency-key` header or a body field. If header-present: recognition becomes `(url, key, bodyDigest, ordinal)` and the oracle stands. If header-absent: drop the replay-equality pair and replace with an independently authored non-equality oracle. Either way add an explicit occurrence counter to the recognition clause — digest alone cannot carry it.
+
+**B1-2 [BLOCKER] `cross.finish()` cannot gate the handoff; finish() only runs after `observe()` resolves.**
+Location: `:582` (positive) and `:2195` (cross controls) vs the hook call sites `:360-363` and `:2159`.
+Evidence: `afterExchange` executes inside `observe()` (`:301`); `crossWire.finish()`/`wire.finish()` are called after `await observe(...)` returns. The requirement "require cross.finish() before handing it to the new seven-raw-response ledger" is therefore unsatisfiable at the moment of the sequence exchange.
+Impact: implementer must either move/duplicate `finish()` into the hook (double-asserting `:1977-1981` and destroying its end-of-run semantics) or ignore the clause.
+Smallest fix: restate the gate as "cross prefix complete" — expose a `completed()` predicate (`facts.length === maximum`) and require it true before the member ledger accepts the sequence; leave `finish()` at `:582`/`:2195` unchanged.
+
+**B1-3 [MATERIAL] "Handoff/forwarding" framing contradicts the file's flat hook composition, and is unreachable if the new row precedes cross-carrier.**
+Location: `:360-363` (positive composes hooks flatly), `:2159` (`afterExchange: wire.afterExchange` passes the function reference directly), detector activation `:1923-1926`, forbid branch `:1927-1933`.
+Evidence: no detector in this file forwards to another; each sees every response. Also, the detector is inert until the `carrier-create` POST, so if the new row is inserted **before** `transactional.idempotency.cross-carrier` (position still unmeasured per B2), the mandated recognition code can never execute in any of the three cohorts.
+Impact: prescribed edits to three cohorts that may be dead code; `:2159` must change to a lambda purely to support a handoff that is not needed.
+Smallest fix (also the smallest fix for the forbid-branch conflict): leave `crossCarrierWire` structurally alone and change `:1930-1931` from blanket URL exclusion to the **body-digest** exclusion this file already uses for exactly this situation — `commandMinimumWire:2362-2365` tolerates later `operations/sequence` URLs and discriminates by `requests[4].body` digest. Then add the member wire as a third independent hook, and make any crossCarrierWire change conditional on the measured insertion position.
+
+**B1-4 [MATERIAL] The "minimum sentinel finishes unchanged" claim has an unstated precondition.**
+Location: `:2362-2365`.
+Evidence: that assertion fails if a later sequence POST's `bodyDigest` equals the minimum row's own sequence body digest. The plan pins the new sequence body size (414B) but never pins its distinctness from the minimum row's `requests[4].body`.
+Impact: silent failure of the full-positive cohort at the sentinel, attributed to the wrong cause.
+Smallest fix: add to an existing app static callback a data-only assertion that the authored new sequence body digest ≠ the minimum sequence body digest, and that the new row's keys neither start with `minimum-` (`:2359`) nor equal `carrier-create`/`carrier-update` (`:1928`).
+
+**B1-5 [MATERIAL] The 7-vs-3 split is asserted but not closed.**
+Location: plan "Member finish checks all 7 ordinary responses, not the 3 internal GETs"; contrast `commandMinimumWire:2358`, `:2571` (strict ordered `observedIds` against literal ids).
+Evidence: all 10 of the new row's exchanges pass through `afterExchange` (`:278-304`); the 3 receipt reads are dynamic-URL actions (cf. `:988-990`, `:1133-1135`), so a literal ledger must skip them by URL prefix. Nothing in the plan pins how many were skipped.
+Impact: a missing, extra or misordered receipt GET is invisible to the member hook; only the aggregate 213 count would catch it, and only in one cohort.
+Smallest fix: have the member `finish()` assert `skipped === 3` and that each skipped URL started with `${scope}receipts/`, so 7+3=10 is pinned at the hook.
+
+**B1-6 [MINOR] "Known-control hook must … return the unchanged response" is not expressible.**
+Location: `:114` (`afterExchange: (response, signal) => Promise<void>`), `:301` (return value discarded).
+Impact: wording invites a non-existent seam; the structural guarantee the plan wants already exists.
+Fix: restate as "observe-and-assert only; the void `afterExchange` contract at `:114` makes replacement impossible".
+
+**B1-7 [MINOR] Report retention as specified buys nothing for the new negative.**
+Location: `:326-327` (snapshot + `onObserved`) vs `:344-348` (cleanup failure throws `AggregateError` before any caller post-check).
+Evidence: if cleanup fails, `await observe(...)` rejects and the negative's post-checks never run, retained snapshot or not.
+Impact: "Save genuine returned report before cleanup/postchecks" reads as a guarantee it does not provide.
+Fix: either capture via `onObserved` into a local and assert in `try/finally` (then a cleanup `AggregateError` still surfaces row evidence), or drop the retention claim and keep only "no cleanup error".
+
+---
+
+## B2 — preservation layering, routes/catalog, static selection, growth stop
+
+**B2-1 [BLOCKER] Last-position insertion breaks the removal layer.**
+Location: `:858-862` (`text.replace(`    ${raw},\n`, "")`).
+Evidence: the pattern only matches a non-final array element. If the new row is appended after `transactional.idempotency.failed-retained` (index 14), its raw slice ends `\n` with no trailing comma, and the preceding row gains one — so a layer written in this shape no-ops. `:862`'s `.not.toBe(text)` guard exists only for the cross-carrier layer, so the new layer would fail later and opaquely at the historical hash (`56318c…`/`dafedd…`).
+Impact: either a false hash failure or, worse, a layer that appears to run and does not.
+Smallest fix: one shared removal helper accepting both `    ${raw},\n` and `,\n    ${raw}` forms, with a per-layer `expect(after).not.toBe(before)` guard; apply it for the new row first, then `withoutMinimumRow`, then cross-carrier (order as planned).
+
+**B2-2 [MATERIAL] `assertOriginalObjects` tolerance is unspecified.**
+Location: `:869-870` (runs on the **full** text, which will contain the new row), `:872-874`.
+Evidence: `:872-874` only shows it is content-sensitive for a known id; nothing shows whether it is id-keyed (tolerant of an extra object) or set-equality (intolerant).
+Impact: if set-equality, adding a row fails `:869-870` and the plan's preservation story has no stated remedy; the risk is that the remedy chosen under pressure is weakening the helper.
+Fix: pin the helper's contract in the plan; if set-equality, extend its expected id set and keep the content comparison, explicitly not weakened. (The independent 28-object proof does not substitute, as the plan already notes.)
+
+**B2-3 [MATERIAL] Two operative route constraints can conflict, with no stated remedy.**
+Location: `:177-211` (15-route **first-use** order, independently authored) and the pinned digest `02dd7d9f…` in the app static callback (`:1321`); plan: "Use catalog-compatible order" + "Preserve first-use 15 route set/order/digest".
+Evidence: the array is built by first occurrence in manifest scenario order (`:177-193`). Entries 7-13 (`beads/a`, `links/l`, `beads/new`, `changes/?after=genesis`, `links/?limit=32`, `beads/b`, `beads/c`) are first used by rows after index 0; a new row inserted before any of those first users and reading the same target reorders the array and changes the digest.
+Impact: an apparently non-negotiable pin collides with an unmeasured insertion position; `POST operations/sequence` already exists at `:198`, so no new route is needed, but order is not automatically safe.
+Fix: add the explicit remedy ordering — (a) prefer restricting the new row's reads to routes whose first use precedes the insertion point; (b) if order must change, recompute order/digest in the same commit and additionally assert set-equality (same 15 method+url pairs) so the weaker lookup is never the only check.
+
+**B2-4 [MATERIAL] Growth envelope and the 260-assertion ceiling are mutually consistent only at the lower of the two documented densities.**
+Location: plan envelope (`≤80000` new disk and normal bytes / `2200` nodes / `15000` coverage / `260` assertions) vs the plan's own precedents and `:916-924`.
+Evidence (derived only from supplied numbers): command-minimum row = +11 actions / +192 assertions / +54,418B disk / +1,463 nodes / +8,894B coverage → ~283B and ~7.6 nodes per assertion → a 260-assertion row ≈ 73.7kB / 1,982 nodes (fits, ~8% byte headroom). Deletion-safety per `:921` = +135,906B / +3,418 nodes for 333 assertions → ~408B and ~10.3 nodes per assertion → 260 assertions ≈ 106kB / 2,670 nodes (both stops exceeded; implied ceiling ~196-215 assertions).
+Impact: the stop may bind at authoring time with no declared fallback, which is exactly when pressure to minify or drop oracles appears.
+Fix: state the density assumption ("new row is authored at command-minimum density"), and make the 260 ceiling conditional on a measured first-three-action draft; if density tracks deletion-safety, the ceiling is ~196, not 260. This is a planning gap, not a demonstrated overrun.
+
+**B2-5 [MINOR] Identity strings encoding "fourteen" are outside the stated edit list.**
+Location: `:353` test title, `:589` `kind: "installed-tx-fourteen-partial-summary"`, `:588` predecessor comment (which demonstrably tracks twelve→thirteen→fourteen).
+Impact: the file's own convention is left unsatisfied by the plan's four-path scope; review churn later.
+Fix: add these three to the measured-draft edit list (title/kind → "fifteen", append the fourteen note at `:588`).
+
+**B2-6 [MINOR] "Update … in that selected callback only" is inaccurate.**
+Location: fences/order/action counts live at `:875-890`, `:915`, `:926-951` (callback `:836`), but the pagination index pin is at `:1011` in callback `:1007`, and the new row must also be added to the per-row action-count map at `:892-907`.
+Fix: enumerate both callbacks and `:892-907` explicitly; the plan already handles `:1011` separately, so this is only a wording collision.
+
+---
+
+## B3 — cohorts, failfast, deadlines, capacity
+
+**B3-1 [MATERIAL] The 30-second cohort is the real deadline exposure and is not covered by the plan's timing sentence.**
+Location: `:996` (`}, 30000` on the global receipt-denial cohort) vs the plan's "Unchanged 90s cohort / 120s test-supervisor / positive 63s elapsed".
+Evidence: the plan adds a full scenario session (+1 child launch, prepare/cleanup) and +3 exchanges to this cohort; every other recurring full-traversal cohort is at `120000` (`:1119`, `:1141`, `:2223`, `:2810`, `:601`). The plan simultaneously forbids any timeout increase.
+Impact: a CI failure in the one cohort whose margin is unknown, with no sanctioned remedy.
+Fix: read this cohort's current duration from the retained PR128 run before freezing; if margin is thin, request the single explicit 30000→120000 exception up front rather than discovering it post-merge. Do not instead narrow the cohort's selection — that would silently weaken a global-denial control.
+
+**B3-2 [MATERIAL] The positive cohort's internal 63s bound is frozen without using the datum that already exists.**
+Location: `:585` (`expect(performance.now() - started).toBeLessThanOrEqual(63000)`), `:591` (`elapsedMs` logged in the summary).
+Evidence: +10 exchanges (~5%) and +1 child land under a fixed 63s assertion; the pre-change elapsed is already printed by the existing log in the retained successful run.
+Impact: avoidable risk, and an avoidable "new measurement" request.
+Fix: take `elapsedMs` from the retained PR128 `installed-tx-fourteen-partial-summary` and record it in the plan as the margin basis; only then freeze 63000.
+
+**B3-3 [MINOR] "global receipt denial reaches new action 3" is an unstated authoring constraint.**
+Evidence: the 3-HTTP/420-max figures assume the new row's **first** receipt GET sits at action index 3; the plan constrains action 1 (sequence POST, via the negative's 1-exchange failfast) but never action 3.
+Impact: if the measured draft places the first receipt read at action 4, expected becomes 405/421 and the published model is wrong.
+Fix: either declare "first receipt read is action 3" as an authoring constraint, or mark the 3 as measured-at-draft.
+
+**B3-4 [MINOR] The two "40/14" axes are different sets with identical cardinalities — a live misreading trap.**
+Evidence: the inventory's `mutated: 40 / unchanged: 14` is a *manifest-mutation* axis (ordinary full positive is `unchanged`, `:353`); the recurring model's "40 existing full traversals / 14 non-traversals" is a *reachability* axis. They reconcile (40+5+1+2+6+1 = 55) but share no membership: the positive and both set-receipt-denial cohorts are `unchanged` yet traversing, while the four receipt-reference controls are `mutated` and the duplicate-receipt-binding control (`:964-978`, 0 children) is non-traversing.
+Impact: any reviewer or implementer who equates them will mis-derive the HTTP/child increment.
+Fix: rename the recurring buckets (e.g. "full-traversal / truncated / selected / pre-wire") and state explicitly that they are orthogonal to mutated/unchanged.
+
+**B3-5 [MINOR] No go/no-go threshold for the job-time budget.**
+Evidence: 201s observed headroom under 1200s; the dominant new cost is ~48 extra child launches plus 404 exchanges, and the plan correctly disclaims any throughput guarantee but then forbids any runtime-cap increase without saying what happens if the margin is consumed.
+Fix: state one decision rule (e.g. "stop and report to root if post-change job time exceeds ~1100s") so the no-increase rule has an exit other than improvisation.
+
+---
+
+## Verified consistent against the supplied excerpts (no action)
+
+- Failfast mechanics exactly as claimed: `runner:1460` records all first-exchange assertion outcomes, `:1461-1470` throws, `:1471` captures are never reached — supports "1 exchange / no client action / no captures".
+- Cohort HTTP arithmetic: 203 (`:584`) + 10 = **213**; 194/195 (`:2199`) + 10 = **204/205**; totals 623 expected / 632 max / 71 children all add up.
+- Children: 22 (`:2196`) + 1 = **23**; selected negative **2** matches the selected-minimum precedent (`:2796`) and exceeds the preflight-only case (`:1116`).
+- Recurring model: 400+0+3+0+1 = **404** expected; +7 (global denial 3→10) +9 (negative 1→10) = **420** max; 40+5+1+2 = **48** children; 7796+404 = 8200, 958+48 = 1006, 7815+420 = 8235 — all internally exact.
+- Negative body 408B = 414B − 6 (`"missing"`→`"a"`), bodies 414+147+66+146+414 = 1187, largest 414 ✓; all well under `maximumRequestBodyBytes: 65536` (`:229`), and the cross-row-only size checks at `:576-577` do not bind the new row.
+- Route **set** needs no change: `POST ${scope}operations/sequence` already present at `:198`.
+- Preservation layering order (new row first, then minimum/cross) is what `:2730-2741` (`before.size === 13`) and `:856-868` require; `:2729` (`scenarios[0] === minimumId`) correctly forbids index-0 insertion.
+- Hook/method claim is right: detectors never read a method (`:1936-1944`), and post-run binding is available (`:2771`).
+- No response-replacement seam exists by construction (`:114`, `:301`); `onObserved` precedes cleanup (`:326-327` before `:339-347`); both timers clear in `finally` (`:339-340`) and `clearTimeout(undefined)` is safe.
+- Ready-failure cohorts stay at 0 exchanges (`:625`) and gain exactly 1 child each, since `control.ready` is applied per scenario launch (`:261`) and not to the bootstrap baseline (`:173`).
+- The eight static selectors are 6+2 as listed, and both file digests in `static-selections.json` match the plan's `22a56882…` / `6c0c240a…`.
+- Committed app delta is confined to the cancellation repair: one optional field, one validation branch, one deferred timer, one clear — no added observe invocation, HTTP action or product branch.
+
+## Residual — not verifiable from supplied context (not defects)
+
+Traversal classification for inventory groups `638-682`, `838-850`, `852-886`, `1026-1063`, `1065-1095`, `1408-1489`, `1740-1826` (the 40/14 split rests on unshown source); the positive cohort's children assertion and any explicit "fourteen" count assertion in `:353-601`; `withoutMinimumRow` / `objectSlices` / `assertOriginalObjects` implementations; `crossCarrierRequests` / `minimumRequests` contents (so B1-4's collision is a precondition, not an observed collision); the new row's measured insertion index, assertion count, byte/node growth, and the four cohorts' actual runtimes.
