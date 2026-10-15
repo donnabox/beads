@@ -1,0 +1,16 @@
+{
+  "status": "candidate-reanchor-reviewed-authoring-still-closed",
+  "checkedAt": "2026-10-15T16:29:19.947014+00:00",
+  "planSha256": "a05c4a7fc15eb3c89aeabd2734360d4692fee3c00694eeb6e271ecc125a58f5f",
+  "companionSha256": "2d2c341cda07ce15a189aa6d5fd0103b0c41750779dbfab51c0b40340b564a73",
+  "patchSha256": "625e6fc18d57e450f06fa257e50d3b4ef2513713d7571ea476e94814e93a14c3",
+  "fourFileHashesVerifiedAgainstReviewedCurrentCandidate": {
+    "packages/conformance/test-support/transactional/manifest-v1.json": "29729151cf6da641545910ec3880f9609c13b319af7bbe99d3d2ad47833dab96",
+    "packages/conformance/test-support/transactional/coverage-v1.json": "4619813e9446e0e714a64c11eac184531950f57720e32c7ef414c7e3342121af",
+    "packages/conformance/src/transactional-cumulative.test.ts": "22a568820ab2abc187d37c27658fdcf6e5ad39e74e2172374e3658c180f7668e",
+    "apps/bdptest/src/transactional-matrix.test.ts": "6c0c240afef61831d0573775ea35b0c04b116a55da1d3fb40127b9ede68e939c"
+  },
+  "review": "Root read full mechanical plan/companion diffs and report; unchanged laws, limits, bodies, capture/oracle contract, historical attribution; current candidate citations explicitly distinguished from future actual parent.",
+  "authoringReleased": false,
+  "remaining": "Verify actual PR131 green CI/ordinary merge/tree; bind actual authoring parent and repeat preservation before release."
+}
