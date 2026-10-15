@@ -62,7 +62,7 @@ Original service-review lows: RU trusted callback capability narrowing and publi
 
 ### Live worker ledger
 
-Checkpoint 2026-10-15T02:31:13Z. **ACTIVE: PR123 merged and verified; Transactional first, Selector admission next**, with shared and targeted Update checks. Session `2026-10-08T20:26:35Z-81e5`. Public write profiles remain unadvertised; installed cumulative delivery predicates remain unmet. Ready main merges are operator-authorized after exact-head CI, native+Claude council, findings disposition, scope and ordinary ancestry checks, and actual merged-tree verification. Gemini excluded. No release/Preview2 or Janet CLI/staging/playgrounds/shared databases/Trish Type edits.
+Checkpoint 2026-10-15T02:42:38Z. **ACTIVE: PR123 merged and verified; Transactional first, Selector admission next**, with shared and targeted Update checks. Session `2026-10-08T20:26:35Z-81e5`. Public write profiles remain unadvertised; installed cumulative delivery predicates remain unmet. Ready main merges are operator-authorized after exact-head CI, native+Claude council, findings disposition, scope and ordinary ancestry checks, and actual merged-tree verification. Gemini excluded. No release/Preview2 or Janet CLI/staging/playgrounds/shared databases/Trish Type edits.
 
 ### Current PR123 completion and next slice
 
@@ -70,7 +70,7 @@ Operator switched the reviewer account; actual Claude delta review completed exi
 
 [PR123](https://github.com/gastownhall/bdp/pull/123) merged as **757aedc8008386745d59d5005498a9256d6ea76e**, tree **734bf9daf40fd17d0fe2bf86b085598589122f2f**, ordinary ordered parents122800511ee6306e4105e1f73bf3658f35c90a14 +727e919c2893bd34d5e72ea4659302a999bc4a6f. [Actual merge verification](transaction-command-minimum-ci-repair/merge-verification.json) checks the real merged tree equals exact green CI syntheticac6652f2. CI38648263438/job116140423947:9268passed/1expectedskip/172files,7preflight,installedsmoke,pinnedRead. Historical runtime/installed18 evidence stays onf2ac; full newCI belongs to727e. [Landing acceptance](transaction-command-minimum-ci-repair/root-landing-acceptance.json) binds the complete review/evidence chain; original checker defects were fixed and [closed](transaction-command-minimum-ci-repair/native-landing-check-closure.md). No release or profile qualification.
 
-Heartbeat resumed ACTIVE. Next worktree `/Users/dbox/repos/wt/vickie/vickie-selector-admission`, branch `codex/vickie-selector-admission`, clean at verified757aedc. update_implementation is preparing mechanical Selector planv4 on actual merged parent; preserve acceptedv2 semantics and90-case/94HTTP/41combined-owner proposal. Authoring NOT YET RELEASED until root reads reanchor and confirms inventory. No test/build/service dispatched. Native checker worker complete; external reviewer process reaped. Next: accept exact mechanical reanchor, release bounded12-path draft authoring, then measured execution gates/council/CI and ordinary merge. Public delivery predicates still unmet.
+Heartbeat resumed ACTIVE. Next worktree `/Users/dbox/repos/wt/vickie/vickie-selector-admission`, branch `codex/vickie-selector-admission`, clean at verified757aedc. Root accepted exact mechanical Selector planv4 SHA55f240fd and independently verified unchanged substantive text plus four spec anchors. [Authoring release](transaction-selector-root-authoring-acceptance.md) grants update_implementation exclusive12-path draft authoring at actual merged757aedc. Author is active. No test/build/service/installed execution released; measured draft must preserve acceptedv2 semantics and90-case/94HTTP/41combined-owner proposal. A separate read-only worker is planning the missing shared command-minimum catalog mapping; no source overlap. Native checker worker complete; external reviewer process reaped. Next: inspect frozen draft/measurement, start native+Claude code review and release bounded validation; then exact-head CI and ordinary merge. Public delivery predicates still unmet.
 
 ### Verified main and completed serving work
 
@@ -107,8 +107,8 @@ Isolated successor `/Users/dbox/repos/wt/vickie/vickie-comparison-fault-typing-r
 All nine installed cohorts completed and were individually adjudicated on frozen c02ccc37. [PR122](https://github.com/gastownhall/bdp/pull/122) is merged and tree-verified after exact c02ccc37 CI success. [Final independent actual-evidence audit](transaction-cross-carrier-draft/native-actual-evidence-review.md), SHA8fc7bb22, is complete and fully root-read with no blocker.
 | Worker | Scope | State / next |
 |---|---|---|
-| update_implementation | Selector plan v4 reanchor | Active planning only on actual merged757aedc; root authoring release pending |
-| cross_carrier_native_review | Actual installed evidence audit | Completedbe01d032,313members/eightpackages/18responses/child99866closed and absent; root-read |
+| update_implementation | Selector admission draft | Active exclusive12-path authoring under v4/root release; no execution yet |
+| cross_carrier_native_review | Command-minimum cumulative mapping plan | Active read-only follow-up planning; no source overlap or qualification |
 | cross_carrier_plan_v2_review | Native source/control and Selector reanchor | Source940913a7 and controls3ff2f2b5 clean/root-read; Selector interfaces unchanged, exact reanchor map recorded |
 | External Claude | PR123 spec delta review | Completed exit0 after account switch; four editorial suggestions dispositioned; process reaped |
 | Root | Serving integration | PR123 merged757aedc and actual tree verified; heartbeat active; Selector next |
