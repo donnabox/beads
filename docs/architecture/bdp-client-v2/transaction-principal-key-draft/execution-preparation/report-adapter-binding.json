@@ -1,0 +1,27 @@
+{
+  "ready": true,
+  "status": "PREPARED_NOT_ACTIVATED",
+  "sourceBindingSha256": "3c227b20d066ea97684ebdd0f2876734a537d61d53f1c9b3b2c4cdf263f46110",
+  "reviewerSha256": "87f7895e3458ec082cecd342b785a1093c5caa8466dcdc4938992bb5acd6f46b",
+  "testSha256": "e6af6263f164032ea4ae97167740412b9ad2a23af98e2a92729cd85dfa6d9b32",
+  "reportContract": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-principal-key-draft/report-contract.json",
+    "sha256": "600d21b4b1d8cfff91a16ebca1053db9d55c2d7c9ec1e91df031bb9572b3d7c0"
+  },
+  "ledger": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-principal-key-plan/proposed-successor/ledger.json",
+    "sha256": "aa556158f879892795b62ba984ffd1226f4b09344d1a28d2b9bd486cb9532d79"
+  },
+  "selection": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-principal-key-draft/selection.json",
+    "sha256": "96ea454acb431384cce17d32b92f0b1dc272d3f5f2627698399febec9d8e076e"
+  },
+  "integrationSource": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-principal-key-draft/integration-source.json",
+    "sha256": "65081d918c480eb22b1a636bf3ffc8e738087bf96d3fc611962e3ef0712fc671"
+  },
+  "actualIntegratedParent": "f5511718371a6935614eae6756e796cef71570c2",
+  "candidateCommit": null,
+  "executed": false,
+  "activation": "Root must preserve old placeholder, install exact pending bytes at review-cohort.py and this binding at report-adapter-binding.json; rebind gate hashes only after active static stages finish."
+}

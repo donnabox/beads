@@ -13,3 +13,10 @@ review-cohort.py is intentionally a throwing placeholder until author freezes ge
 Supervisor clears inherited BDP_* and Node diagnostics, admits only verified entry/source/mode/output overrides, records logs/results/exit/source/process group/TMP inventory, refuses repeated attempts and preserves all failures. Only bdp-principal-key-installed- roots under its owned TMPDIR are runtime roots; other caches remain classified separately. Unknown directories are never deleted. Sampling limitations and independent final PID checks remain explicit.
 
 The20 command inventory and pinned helper scripts are reviewable now. Pending source hashes, final source/base, lock/build bridge, package/consumer provenance and actual report adapter are intentional closed gates—not execution permission or new review layers. Root owns release and reporting; scope remains private diagnostic, not public qualification.
+
+
+## Report adapter successor
+
+The placeholder was replaced after root reported and the preparer read all eight static/inventory exit records as successful and clean. Exact pending adapter/binding bytes are now operative. The historical scaffold is preserved in adapter-before; report-adapter.pending.md describes the concrete adjudication and limits. Its binding status remains the originally frozen preparation label, not an execution release. Original source binding retains18104 attribution; integration-source.json separately binds actual f551 parent and identical draft bytes. Final candidate remains unknown.
+
+No product source or active root execution gate was changed. Root must update the reviewer/report-contract hashes before any subsequent stage; prior static records retain their original preparation pins. The concrete adapter has only been parsed as Python syntax, never imported or invoked. Original report-review-requirements.json remains unchanged.
