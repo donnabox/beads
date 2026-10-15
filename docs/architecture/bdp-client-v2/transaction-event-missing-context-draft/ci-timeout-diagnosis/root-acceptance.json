@@ -1,0 +1,23 @@
+{
+  "at": "2026-10-15T12:02:46.452570+00:00",
+  "base": "3df82ac480f50c8f486b4e456336366e7acbdf87",
+  "patchSHA256": "4c355708c6f300d75824e6ac57eaa0e1acb2aa37691c1c59956993b9225d59ac",
+  "nativeSHA256": "0ad948473f736dcf863adbf257c827d4659e9452ec4bb319b15a4b4acd98b0ca",
+  "actualClaudeSHA256": "07245a3bd06d89c0bdf2e50e5a1d7913d11d624997c47eba5889a25c61d91919",
+  "dispositions": {
+    "1": "Measurements remain in immutable diagnosis artifacts and PR explanation; concise source comment retained.",
+    "2": "Vitest4.1.10 and numeric third argument verified by actual selected successor execution; existing style compatible.",
+    "3": "Existing cleanup limitation retained, successful selected run left only compile caches; no stronger cancellation claim.",
+    "4": "No performance oracle removed; fullCI required and original failure preserved."
+  },
+  "validation": {
+    "selectedPassed": 1,
+    "notSelected": 14,
+    "callbackMilliseconds": 806,
+    "format": "passed",
+    "diffCheck": "passed",
+    "productionOutputs": "312 unchanged per native review",
+    "originalInstalledAttribution": "3df82ac4 retained"
+  },
+  "decision": "accept bounded successor for ordinary commit and fresh CI; merge not yet authorized by gates"
+}
