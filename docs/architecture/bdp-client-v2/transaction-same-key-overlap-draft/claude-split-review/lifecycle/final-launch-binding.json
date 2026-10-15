@@ -1,5 +1,5 @@
 {
-  "status": "CLOSED distinct focused code review; root release required",
+  "status": "ROOT_RELEASED_FOCUSED_LIFECYCLE_REVIEW",
   "reviewHead": "18f5428686dd84fb139c9dbbcbe39d5958012323",
   "reviewTree": "9c78087e1036dd26ca908e1d8feaa91263513717",
   "parent": "98c600767e8e91a79e109cb741beb91e23b9bebe",
@@ -41,7 +41,7 @@
     "apps/bdptest/src/transactional-same-key-overlap-installed.test.ts",
     "docs/design/transaction-implementation-progress.md"
   ],
-  "rootLaunchReleased": false,
+  "rootLaunchReleased": true,
   "scope": "lifecycle",
   "candidateDiffSha256": "a4d740d866598f9e56a8c1a9f611d459eee607b5a9117a0fc7a52cbd9f9901b1"
 }

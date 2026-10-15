@@ -1,0 +1,279 @@
+--- historical-EP/commands.json
++++ closed-EP2/commands.json
+@@ -1,5 +1,5 @@
+ {
+-  "status": "CLOSED_FROZEN_SOURCE_STATIC_PREFIX_READY",
++  "status": "CLOSED_FROZEN_REPORT_OVERFLOW_SUCCESSOR",
+   "workspace": "/Users/dbox/repos/wt/vickie/vickie-same-key-dispatch",
+   "ownedPaths": [
+     "apps/bdptest/src/transactional-same-key-overlap-installed.test.ts",
+@@ -199,7 +199,7 @@
+       "cwd": "/Users/dbox/repos/wt/vickie/vickie-same-key-dispatch",
+       "argv": [
+         "python3",
+-        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-same-key-overlap-draft/execution-preparation/inventory.py"
++        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-same-key-overlap-draft/execution-preparation-v2/inventory.py"
+       ],
+       "supervisorSeconds": 120,
+       "expectedExit": 0,
+@@ -233,7 +233,7 @@
+       "cwd": "/Users/dbox/repos/wt/vickie/vickie-same-key-dispatch",
+       "argv": [
+         "python3",
+-        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-same-key-overlap-draft/execution-preparation/packages.py",
++        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-same-key-overlap-draft/execution-preparation-v2/packages.py",
+         "directory"
+       ],
+       "supervisorSeconds": 120,
+@@ -256,7 +256,7 @@
+         "@bdp/protocol",
+         "pack",
+         "--pack-destination",
+-        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-same-key-overlap-draft/execution-preparation/run/packages"
++        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-same-key-overlap-draft/execution-preparation-v2/run/packages"
+       ],
+       "supervisorSeconds": 120,
+       "expectedExit": 0,
+@@ -278,7 +278,7 @@
+         "@bdp/server",
+         "pack",
+         "--pack-destination",
+-        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-same-key-overlap-draft/execution-preparation/run/packages"
++        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-same-key-overlap-draft/execution-preparation-v2/run/packages"
+       ],
+       "supervisorSeconds": 120,
+       "expectedExit": 0,
+@@ -295,7 +295,7 @@
+       "cwd": "/Users/dbox/repos/wt/vickie/vickie-same-key-dispatch",
+       "argv": [
+         "python3",
+-        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-same-key-overlap-draft/execution-preparation/packages.py",
++        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-same-key-overlap-draft/execution-preparation-v2/packages.py",
+         "tar"
+       ],
+       "supervisorSeconds": 120,
+@@ -313,7 +313,7 @@
+       "cwd": "/Users/dbox/repos/wt/vickie/vickie-same-key-dispatch",
+       "argv": [
+         "python3",
+-        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-same-key-overlap-draft/execution-preparation/packages.py",
++        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-same-key-overlap-draft/execution-preparation-v2/packages.py",
+         "consumer"
+       ],
+       "supervisorSeconds": 120,
+@@ -328,7 +328,7 @@
+     },
+     "consumer-install": {
+       "phase": "package",
+-      "cwd": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-same-key-overlap-draft/execution-preparation/run/consumer",
++      "cwd": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-same-key-overlap-draft/execution-preparation-v2/run/consumer",
+       "argv": [
+         "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+         "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+@@ -353,7 +353,7 @@
+       "cwd": "/Users/dbox/repos/wt/vickie/vickie-same-key-dispatch",
+       "argv": [
+         "python3",
+-        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-same-key-overlap-draft/execution-preparation/packages.py",
++        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-same-key-overlap-draft/execution-preparation-v2/packages.py",
+         "installed"
+       ],
+       "supervisorSeconds": 120,
+@@ -424,7 +424,7 @@
+         "--maxWorkers=1",
+         "--reporter=verbose",
+         "--reporter=json",
+-        "--outputFile=/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-same-key-overlap-draft/execution-preparation/run/installed-positive.results.json",
++        "--outputFile=/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-same-key-overlap-draft/execution-preparation-v2/run/installed-positive.results.json",
+         "-t",
+         "^preserves one allocated effect and receipt across same-key singleton and batch requests dispatched without awaiting$"
+       ],
+@@ -436,7 +436,7 @@
+       "cwd": "/Users/dbox/repos/wt/vickie/vickie-same-key-dispatch",
+       "argv": [
+         "python3",
+-        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-same-key-overlap-draft/execution-preparation/review-cohort.py",
++        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-same-key-overlap-draft/execution-preparation-v2/review-cohort.py",
+         "positive"
+       ],
+       "supervisorSeconds": 120,
+@@ -508,7 +508,7 @@
+         "--maxWorkers=1",
+         "--reporter=verbose",
+         "--reporter=json",
+-        "--outputFile=/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-same-key-overlap-draft/execution-preparation/run/installed-second-key-distinct.results.json",
++        "--outputFile=/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-same-key-overlap-draft/execution-preparation-v2/run/installed-second-key-distinct.results.json",
+         "-t",
+         "^preserves one allocated effect and receipt across same-key singleton and batch requests dispatched without awaiting$"
+       ],
+@@ -520,7 +520,7 @@
+       "cwd": "/Users/dbox/repos/wt/vickie/vickie-same-key-dispatch",
+       "argv": [
+         "python3",
+-        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-same-key-overlap-draft/execution-preparation/review-cohort.py",
++        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-same-key-overlap-draft/execution-preparation-v2/review-cohort.py",
+         "second-key-distinct"
+       ],
+       "supervisorSeconds": 120,
+@@ -535,10 +535,10 @@
+     }
+   },
+   "sourceBinding": {
+-    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-same-key-overlap-draft/source-binding.json",
+-    "sha256": "ad840a73fe10f830e58959dcc7642b35ec91f0a2cea4db4f4fb9912f940df0d0"
+-  },
+-  "finalParent": "98c600767e8e91a79e109cb741beb91e23b9bebe",
++    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-same-key-overlap-draft/execution-preparation-v2/source-binding.json",
++    "sha256": "1b768f1e13191e972b8c818991ac1af2bf28c9ead2f579322de2ce109122cb27"
++  },
++  "finalParent": "18f5428686dd84fb139c9dbbcbe39d5958012323",
+   "finalCommit": null,
+   "limits": {
+     "expectedHttp": 8,
+@@ -603,17 +603,16 @@
+     "regex": "^preserves one allocated effect and receipt across same-key singleton and batch requests dispatched without awaiting$"
+   },
+   "missingBindings": [
+-    "post-setup Vitest CLI identity",
+-    "exact safe-field adapter acceptance",
+-    "root execution acceptance",
+-    "actual build inventory",
+-    "clean final candidate and ordinary parent",
+-    "council acceptance",
+-    "archive/consumer graph and lock",
++    "root execution acceptance and prefix release",
++    "fresh successor build/inventory",
++    "ordinary clean repair candidate and final source record",
++    "actual review/council/integration acceptance",
++    "fresh archive/consumer graph and lock",
+     "actual entry/payload provenance"
+   ],
+   "toolFiles": {
+     "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node": "1ee75375e33b94fc34b3b19aede049e11dae90efb63b374dc96d6bdace70c4b8",
+     "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs": "67b035e322203961795e8e34ca63a08c37a4386eda94107fb3d28f3246d882ad"
+-  }
++  },
++  "footprintBase": "98c600767e8e91a79e109cb741beb91e23b9bebe"
+ }
+--- historical-EP/gate.py
++++ closed-EP2/gate.py
+@@ -3,7 +3,7 @@
+ import hashlib,json,re,subprocess
+ P=Path(__file__).resolve().parent;D=P.parent;L=D.parent;E=P/"run"
+ W=Path("/Users/dbox/repos/wt/vickie/vickie-same-key-dispatch")
+-GUARD=L/"guarded-action.py";COMMANDS=P/"commands.json";COMMANDS_SHA="b90d0ba721198e7de4834b7e34e7227d36b013b2d60df17d75817b968076edd4"
++GUARD=L/"guarded-action.py";COMMANDS=P/"commands.json";COMMANDS_SHA="4c91b6d1b73f85248e9f73a28a6a41b4382ff6f99b922ba82fc335b66f6206d3"
+ sha=lambda b:hashlib.sha256(b).hexdigest()
+ def require(ok,message):
+  if not ok:raise RuntimeError(message)
+@@ -67,7 +67,9 @@
+   require(re.fullmatch("[0-9a-f]{40}",g.get("finalHead") or "") is not None and not git("status","--porcelain").strip(),"Clean final candidate required")
+   require(g["finalHead"]==g["sourceHead"] and g["finalTree"]==g["sourceTree"],"Final source mismatch")
+   require(git("show","-s","--format=%P","HEAD").decode().strip()==g["finalBase"],"Ordinary final-parent reanchor required")
+-  require(set(git("diff","--name-only",g["finalBase"],g["finalHead"]).decode().splitlines())==set(source),"Final scope differs")
++  require(g["footprintBase"]=="98c600767e8e91a79e109cb741beb91e23b9bebe" and git("merge-base",g["footprintBase"],g["finalBase"]).decode().strip()==g["footprintBase"],"Feature footprint ancestry differs")
++  require(set(git("diff","--name-only",g["footprintBase"],g["finalHead"]).decode().splitlines())==set(source),"Final feature scope differs")
++  require(g["finalBase"]=="18f5428686dd84fb139c9dbbcbe39d5958012323" and git("diff","--name-only",g["finalBase"],g["finalHead"]).decode().splitlines()==["apps/bdptest/src/transactional-same-key-overlap-installed.test.ts"],"Ordinary one-file repair scope differs")
+   final=document(g,"finalSource");integration=document(g,"finalIntegrationAcceptance");review=document(g,"codeReviewState");require(review["validationAllowed"] is True,"Local validation not released")
+   require(final["head"]==integration["head"]==g["finalHead"] and final["tree"]==integration["tree"]==g["finalTree"] and final["base"]==integration["base"]==g["finalBase"] and integration["accepted"] is True,"Final integration not accepted")
+   require(sha((W/"pnpm-lock.yaml").read_bytes())==g["sourceLockSha256"],"Lock changed")
+--- historical-EP/report-adapter-binding.json
++++ closed-EP2/report-adapter-binding.json
+@@ -1,9 +1,9 @@
+ {
+   "ready": true,
+-  "sourceBindingSha256": "ad840a73fe10f830e58959dcc7642b35ec91f0a2cea4db4f4fb9912f940df0d0",
++  "sourceBindingSha256": "1b768f1e13191e972b8c818991ac1af2bf28c9ead2f579322de2ce109122cb27",
+   "sourceBinding": {
+-    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-same-key-overlap-draft/source-binding.json",
+-    "sha256": "ad840a73fe10f830e58959dcc7642b35ec91f0a2cea4db4f4fb9912f940df0d0"
++    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-same-key-overlap-draft/execution-preparation-v2/source-binding.json",
++    "sha256": "1b768f1e13191e972b8c818991ac1af2bf28c9ead2f579322de2ce109122cb27"
+   },
+   "reportContract": {
+     "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-same-key-overlap-draft/report-contract.json",
+@@ -21,7 +21,7 @@
+     "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-same-key-overlap-plan/proposed-successor/ledger.json",
+     "sha256": "fb6ba0315c982ee174d7e25ab2f2a4c6cad4bfae2a202410daa319d54577ae8f"
+   },
+-  "testSha256": "e6a52fa4d645ffef04e4b6e8ccd9bbcb7495624ae0e3f46536e0e9ac6b707974",
++  "testSha256": "b13688d6b02c5901e68251620ab6d7e00f9f675af4025319817f9e8cc6c9bca3",
+   "referenceSourceSha256": {
+     "scripts/transaction-installed-observation.mjs": "6f772f3776d3c3effa788676d853cc2932a6ee59ad63ac3338ad1b487408914b",
+     "apps/bdptest/test-support/transactional-execution-binding.ts": "cde506c72a8710eafe58522900f6db70ed3701cf333560252dc8e7c5e706cf89",
+@@ -32,5 +32,10 @@
+   },
+   "reviewerSha256": "b06628e1adb111ceed4604615b54db4227b0977ce6cfb625db3e05f78fed48e5",
+   "executionAuthorization": false,
+-  "actualAdapterRuns": 0
++  "actualAdapterRuns": 0,
++  "historicalAdapterBinding": {
++    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-same-key-overlap-draft/execution-preparation/report-adapter-binding.json",
++    "sha256": "077ca6f9e79554e69a77507fdd878ad1d457c4af8100fdad64581bfc01ba39c3"
++  },
++  "attribution": "Same report schema/oracle with exact three-line overflow rejection repair; fresh successor outcomes pending"
+ }
+--- historical-EP/execution-gate.example.json
++++ closed-EP2/execution-gate.example.json
+@@ -6,28 +6,28 @@
+   "pnpm": "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+   "guardSha256": "fd81ba029cd4e7c7e60623df89e8292af91141d311d9ce789ed19e2152375e84",
+   "sourceBinding": {
+-    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-same-key-overlap-draft/source-binding.json",
+-    "sha256": "ad840a73fe10f830e58959dcc7642b35ec91f0a2cea4db4f4fb9912f940df0d0"
++    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-same-key-overlap-draft/execution-preparation-v2/source-binding.json",
++    "sha256": "1b768f1e13191e972b8c818991ac1af2bf28c9ead2f579322de2ce109122cb27"
+   },
+-  "sourceHead": null,
+-  "sourceTree": null,
+-  "sourceStatus": null,
+-  "sourceDiffSha256": null,
++  "sourceHead": "18f5428686dd84fb139c9dbbcbe39d5958012323",
++  "sourceTree": "9c78087e1036dd26ca908e1d8feaa91263513717",
++  "sourceStatus": " M apps/bdptest/src/transactional-same-key-overlap-installed.test.ts\n",
++  "sourceDiffSha256": "18651f9db0489fb1ba60ce3f61433e3d7e6ca822d68c1ae45957f6fd0aa0b996",
+   "rootAcceptance": null,
+   "finalHead": null,
+   "finalTree": null,
+-  "finalBase": "98c600767e8e91a79e109cb741beb91e23b9bebe",
++  "finalBase": "18f5428686dd84fb139c9dbbcbe39d5958012323",
+   "finalSource": null,
+   "finalIntegrationAcceptance": null,
+   "councilAcceptance": null,
+   "buildOutputInventory": null,
+   "buildBridge": null,
+-  "sourceLockSha256": null,
++  "sourceLockSha256": "4150d8821c96dbc2cfec0b2762ff76b58318079f65fa4f5c8858ef2dd61f8d6d",
+   "consumerLockSha256": null,
+   "installedProvenance": null,
+   "reportContract": {
+-    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-same-key-overlap-draft/execution-preparation/report-adapter-binding.json",
+-    "sha256": "077ca6f9e79554e69a77507fdd878ad1d457c4af8100fdad64581bfc01ba39c3"
++    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-same-key-overlap-draft/execution-preparation-v2/report-adapter-binding.json",
++    "sha256": "ca266d1162bf463a7a9cc59ca9c1060f4d9b65fe9ade50663e9263d9c5ea81d4"
+   },
+   "expectedProductionVersions": {
+     "@bdp/protocol": "0.0.0",
+@@ -40,16 +40,18 @@
+     "require-from-string": "2.0.2"
+   },
+   "preparationSha256": {
+-    "gate.py": "fed548af486605046680245bcaad4d5c65b9e0f3df38228ad2ec45525f27dae4",
++    "gate.py": "5d7fa8da2438c95406a156c1b382f3686e4e0a3b11bbbea9e8017ae6cad95265",
+     "supervise.py": "da74971257c3cc804b404dbc2d72759e301431e04d2474c692a658ed43b18f9a",
+     "packages.py": "3d7f1e3b8b7d74a41d672f9c1bf4297a6031fd2f79d2226873a874dbb711f38e",
+     "inventory.py": "f01a170801c8e259ea52696eb3c53402cc0e92ade8da797d5cec9e3f4c78127d",
+     "review-cohort.py": "b06628e1adb111ceed4604615b54db4227b0977ce6cfb625db3e05f78fed48e5",
+-    "commands.json": "b90d0ba721198e7de4834b7e34e7227d36b013b2d60df17d75817b968076edd4"
++    "commands.json": "4c91b6d1b73f85248e9f73a28a6a41b4382ff6f99b922ba82fc335b66f6206d3"
+   },
+-  "note": "Example remains closed. Actual root execution-gate/run prefix is separately root-owned; no authorization supplied here. Source final candidate, build bridge/council and consumer/package provenance remain required.",
++  "note": "CLOSED successor: root must release fresh20stage prefix, then supply ordinary repair child, build bridge and fresh provenance. Original EP outcomes remain historical.",
+   "installedTestTool": {
+     "path": "/Users/dbox/repos/wt/vickie/vickie-same-key-dispatch/node_modules/.pnpm/vitest@4.1.10_@types+node@24.13.3_vite@8.2.1_@types+node@24.13.3_/node_modules/vitest/vitest.mjs",
+     "sha256": "39db22f579acf5639bbb17a261408debbde03f4692c0c439e77e7f13aeba74d6"
+-  }
++  },
++  "footprintBase": "98c600767e8e91a79e109cb741beb91e23b9bebe",
++  "codeReviewState": null
+ }
