@@ -1,0 +1,29 @@
+--- /Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-same-key-overlap-draft/claude-code-preparation/run.py
++++ /Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-guarded-batch-draft/claude-code-preparation/run.py
+@@ -1,7 +1,7 @@
+ from pathlib import Path
+ import subprocess,json,hashlib,datetime,time,os,signal
+-W=Path("/Users/dbox/repos/wt/vickie/vickie-same-key-dispatch")
+-E=Path("/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-same-key-overlap-draft/claude-code-preparation")
++W=Path("/Users/dbox/repos/wt/vickie/vickie-guarded-batch")
++E=Path("/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-guarded-batch-draft/claude-code-preparation")
+ P=E;T=P/"tmp"
+ sha=lambda b:hashlib.sha256(b).hexdigest()
+ def git(*a):return subprocess.check_output(["git",*a],cwd=W)
+@@ -10,7 +10,7 @@
+ def rows():
+  return subprocess.check_output(["ps","-axo","pid=,ppid=,pgid=,etime=,state=,comm="],text=True).splitlines()
+ def snap():
+- return {"head":git("rev-parse","HEAD").decode().strip(),"tree":git("rev-parse","HEAD^{tree}").decode().strip(),"workingSourceHashes":{p:sha((W/p).read_bytes()) for p in binding["sourceHashes"]},"committedSourceHashes":{p:sha(git("show",binding["parent"]+":"+p)) for p in binding["committedSourceHashes"]},"trackedDiffSha256":sha(git("diff","HEAD","--binary")),"promptSha256":sha((P/"prompt.txt").read_bytes()),"artifacts":{p:sha(Path(p).read_bytes()) for p in binding["artifacts"]},"contextSha256":sha((E/"committed-context.txt").read_bytes())}
++ return {"head":git("rev-parse","HEAD").decode().strip(),"tree":git("rev-parse","HEAD^{tree}").decode().strip(),"workingSourceHashes":{p:sha((W/p).read_bytes()) for p in binding["sourceHashes"]},"committedSourceHashes":{p:sha(git("show",binding["parent"]+":"+p)) for p in binding["committedSourceHashes"]},"dependencyWorkingSourceHashes":{p:sha((W/p).read_bytes()) for p in binding["dependencyWorkingSourceHashes"]},"trackedDiffSha256":sha(git("diff","HEAD","--binary")),"promptSha256":sha((P/"prompt.txt").read_bytes()),"artifacts":{p:sha(Path(p).read_bytes()) for p in binding["artifacts"]},"contextSha256":sha((E/"committed-context.txt").read_bytes())}
+ binding=json.loads((E/"final-launch-binding.json").read_text())
+ release=json.loads((E/"root-release.json").read_text())
+ assert binding.get("rootLaunchReleased") is True and release.get("released") is True
+@@ -30,6 +30,7 @@
+ assert before["head"]==binding["reviewHead"] and before["tree"]==binding["reviewTree"]
+ assert before["workingSourceHashes"]==binding["sourceHashes"]
+ assert before["committedSourceHashes"]==binding["committedSourceHashes"]
++assert before["dependencyWorkingSourceHashes"]==binding["dependencyWorkingSourceHashes"]
+ assert before["trackedDiffSha256"]==binding["trackedDiffSha256"]
+ assert before["promptSha256"]==binding["promptSha256"] and before["artifacts"]==binding["artifacts"]
+ assert before["contextSha256"]==binding["contextSha256"]

@@ -7,27 +7,39 @@
   "guardSha256": "fd81ba029cd4e7c7e60623df89e8292af91141d311d9ce789ed19e2152375e84",
   "sourceBinding": {
     "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-guarded-batch-draft/source-binding.json",
-    "sha256": null
+    "sha256": "1ec4f7a37f765d086be85deb47441ec9c6ca82400507e78c0f1ce0202592cf87"
   },
-  "sourceHead": null,
-  "sourceTree": null,
-  "sourceStatus": null,
-  "sourceDiffSha256": null,
+  "sourceHead": "9e5f040edab88be364f683098ead72f595f0ab55",
+  "sourceTree": "81c6786a3075f1869f54460880cac1234c27fb77",
+  "sourceStatus": "",
+  "sourceDiffSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
   "rootAcceptance": null,
-  "finalHead": null,
-  "finalTree": null,
+  "finalHead": "9e5f040edab88be364f683098ead72f595f0ab55",
+  "finalTree": "81c6786a3075f1869f54460880cac1234c27fb77",
   "finalBase": "9bf601bfb570adae97ce8cdc99caf2cc7a2b34c1",
-  "finalSource": null,
-  "finalIntegrationAcceptance": null,
+  "finalSource": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-guarded-batch-draft/final-source.json",
+    "sha256": "48d329eaf7c0f71ffd7c7b59880994b13a037a938b13af5a5a3aa4e61249e794"
+  },
+  "finalIntegrationAcceptance": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-guarded-batch-draft/root-integration-acceptance.json",
+    "sha256": "a48417f83c497ce574d28183f048831b72b991c22f578957bce6a0466330c048"
+  },
   "councilAcceptance": null,
-  "buildOutputInventory": null,
-  "buildBridge": null,
-  "sourceLockSha256": null,
+  "buildOutputInventory": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-guarded-batch-draft/execution-preparation/run/build-output-inventory.json",
+    "sha256": "6bf78b1db8afac594ca9f519aee81a12794d3dc5d8038484ef769e24e75145e0"
+  },
+  "buildBridge": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-guarded-batch-draft/execution-preparation/run/root-build-bridge.json",
+    "sha256": "710ebd803c9ccc38ec6b27aaa094bfe0509c6f40af6a54de9e31f87a99b539b3"
+  },
+  "sourceLockSha256": "4150d8821c96dbc2cfec0b2762ff76b58318079f65fa4f5c8858ef2dd61f8d6d",
   "consumerLockSha256": null,
   "installedProvenance": null,
   "reportContract": {
     "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-guarded-batch-draft/execution-preparation/report-adapter-binding.json",
-    "sha256": "6c178a1bae171fd790c242d2c256a57829cfbdd8a696b5a327498d20283bff6b"
+    "sha256": "345100a95c5ee304cc1079029886c4a23908eaa64f244ac4201dc9f750ab6cea"
   },
   "expectedProductionVersions": {
     "@bdp/protocol": "0.0.0",
@@ -40,18 +52,21 @@
     "require-from-string": "2.0.2"
   },
   "preparationSha256": {
-    "gate.py": "e258148197fcf3328e753949e377b0c8593491c54f942bee551058a4f73ec259",
+    "gate.py": "b09f0258f13bb52cbc6ca0be447bc590c00404a408b1292039daca34bef2baec",
     "supervise.py": "da74971257c3cc804b404dbc2d72759e301431e04d2474c692a658ed43b18f9a",
     "packages.py": "933f924ba37a686257f251aef1a6ae1af09307f6a80562524882aa5325698ba3",
     "inventory.py": "f01a170801c8e259ea52696eb3c53402cc0e92ade8da797d5cec9e3f4c78127d",
-    "review-cohort.py": "cc8d43e47142d7c3060bf64905d181a9dc1dd45c8a2ca92c0db4adbc4beb44d7",
-    "commands.json": "9df8a6b9babd010afdc710935d408439f9954159c244e70b44287bb2489e68f5"
+    "review-cohort.py": "f64f54196300a1479854b6d0ee2d985fa788dac84dd3e5d86681fee93fb43c88",
+    "commands.json": "571dc56f4befca28e637816eaace5439e3569bc42843ab73aea146d0d7824893"
   },
-  "note": "CLOSED example only; no execution-gate.json exists. Actual measured source and all stage releases pending.",
+  "note": "CLOSED successor example only. Actual static-only execution-gate and historical runs preserved. Root must provide release and actual archive/consumer provenance before installed cohorts; no automatic approval.",
   "installedTestTool": {
     "path": "/Users/dbox/repos/wt/vickie/vickie-guarded-batch/node_modules/.pnpm/vitest@4.1.10_@types+node@24.13.3_vite@8.2.1_@types+node@24.13.3_/node_modules/vitest/vitest.mjs",
-    "sha256": null
+    "sha256": "39db22f579acf5639bbb17a261408debbde03f4692c0c439e77e7f13aeba74d6"
   },
   "footprintBase": "9bf601bfb570adae97ce8cdc99caf2cc7a2b34c1",
-  "codeReviewState": null
+  "codeReviewState": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-guarded-batch-draft/code-review-state.json",
+    "sha256": "d063e3a3d4a1043ce36e596506abac2e7284f559e79fb735261b0444af9e4e1f"
+  }
 }

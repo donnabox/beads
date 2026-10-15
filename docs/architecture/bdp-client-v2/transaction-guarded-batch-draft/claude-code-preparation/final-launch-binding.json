@@ -1,14 +1,14 @@
 {
-  "status": "CLOSED; explicit root release required before one launch",
-  "reviewHead": "9bf601bfb570adae97ce8cdc99caf2cc7a2b34c1",
-  "reviewTree": "592c5e6e5c0c790b6e2690495b94ac48705b9069",
+  "status": "CLOSED clean candidate code review; root explicit launch release required",
+  "reviewHead": "9e5f040edab88be364f683098ead72f595f0ab55",
+  "reviewTree": "81c6786a3075f1869f54460880cac1234c27fb77",
   "parent": "9bf601bfb570adae97ce8cdc99caf2cc7a2b34c1",
   "sourceHashes": {
     "apps/bdptest/src/transactional-guarded-batch-installed.test.ts": "f716b51eb31226beafaba80a049063d758ed803388e0ac0439ee0298e0d5019b",
     "docs/design/transaction-implementation-progress.md": "90c370e47d9f2dbff040f757c6b8bb89f6a6eda7b540961ea377f161d5a09152"
   },
-  "trackedDiffSha256": "ff385e01feb84b7b43110ca5e01efb2eb4a3358c3af7468066fcfe9a95d110b4",
-  "promptSha256": "a4fcc58e141ff2521d28f143f82717698f6ce939e9d3c07736459d2d9ca9aae2",
+  "trackedDiffSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "promptSha256": "1706668ca8e3211595d10b9d9147688002e9b84cf4db4f22c7c56d592b62dd6f",
   "artifacts": {
     "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-guarded-batch-plan/proposed-successor-v2/plan.md": "c2c4642c4fb8d5f7266c00a3b3e2cb4af198e34c93c468165d3ccbdc865a0415",
     "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-guarded-batch-plan/proposed-successor-v2/ledger.json": "5aa8f75096d1f9eb3b1dc8ab3244dd012d64bf5e843f7738e820dc621f77a1e0",
@@ -21,7 +21,13 @@
     "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-guarded-batch-draft/report-contract.json": "33a9a7183cb2d309eec3a57257e634cdb744829de14400d163f5ba8788d1482c",
     "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-guarded-batch-draft/selection.json": "6cfa676d0a7ce7c3da779e8e9de3403a0e3e34ed4d06dd6d3e2aa4f6d907be1a",
     "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-guarded-batch-draft/requests.json": "4b0cebcec5b56eecbd2a32ebabfe1e18863b2e30ca014fa7d2d46a877a4b1126",
-    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-guarded-batch-draft/claude-code-preparation/context-inventory.json": "10bf38ddebc606b6731c12a35d345f444d90e70417e49b956da8cbcf014bf8ad"
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-guarded-batch-draft/claude-code-preparation/context-inventory.json": "02f5f77320e6f63815b77fd899e5be6aeb222ee97221aa19eb07736507fbb4c0",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-guarded-batch-draft/final-source.json": "48d329eaf7c0f71ffd7c7b59880994b13a037a938b13af5a5a3aa4e61249e794",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-guarded-batch-draft/root-integration-acceptance.json": "a48417f83c497ce574d28183f048831b72b991c22f578957bce6a0466330c048",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-guarded-batch-draft/root-static-acceptance.json": "1097620c17e5d8631b1e461e55bd23b7112c1b4138a4830ca125b960fb604ce8",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-guarded-batch-draft/native-code-review.md": "84f8ea0292c4b1f5235e35733be9af1985fd6464e8903d2932d95c5fb4daeae3",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-guarded-batch-draft/execution-preparation/run/root-build-bridge.json": "710ebd803c9ccc38ec6b27aaa094bfe0509c6f40af6a54de9e31f87a99b539b3",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-guarded-batch-draft/claude-code-preparation/candidate.patch": "baa7be39ac7d4fb6635287126194362633b555d921be7a821550e36fbe506d71"
   },
   "committedSourceHashes": {
     "docs/specs/bdp.md": "f036103ffdf5f89fa3a2033570e1e987c4cd203cd80b1c633cb44615123f892e",
@@ -106,16 +112,19 @@
     "packages/server/src/transaction-installed.ts": "afddc6b0304fee4762c79e40ac6610a281ca8791928d8f779a900a7f6eac881a",
     "tsconfig.json": "1e4a2b08cfff43cafe0999eb97a9f8de961926c9a289d0221b96ce7f53719e1a"
   },
-  "contextSha256": "f967d87811171b91aab4cd47af8c107c9f984352108f036219c09c43e28931f9",
+  "contextSha256": "9aac6e945b89acb2235ecd7206103a14b415f2b7a4ab50eda2658d9460c0444a",
   "ownedPaths": [
     "apps/bdptest/src/transactional-guarded-batch-installed.test.ts",
     "docs/design/transaction-implementation-progress.md"
   ],
-  "rootLaunchReleased": false,
+  "rootLaunchReleased": true,
   "sourceBindingPath": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-guarded-batch-draft/source-binding.json",
   "sourceBindingSha256": "1ec4f7a37f765d086be85deb47441ec9c6ca82400507e78c0f1ce0202592cf87",
   "fullPatchPath": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-guarded-batch-draft/draft.patch",
   "fullPatchSha256": "88eeab067e096b565c6cd372c44e1a56a23acabd1fb813a8e1bc234939665e6c",
   "authorReportPath": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-guarded-batch-draft/report.md",
-  "authorReportSha256": "85a1d1353ab0305ad2554bb54e8162d588c2e9fd4aaa5a07e2cde1dbf2011e3e"
+  "authorReportSha256": "85a1d1353ab0305ad2554bb54e8162d588c2e9fd4aaa5a07e2cde1dbf2011e3e",
+  "candidateDiffSha256": "baa7be39ac7d4fb6635287126194362633b555d921be7a821550e36fbe506d71",
+  "sourceSemantics": "Clean ordinary candidate; identical source hashes to historical dirty9bf authoring/static build. Candidate diff contains exactly two owned paths.",
+  "candidateDiffPath": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-guarded-batch-draft/claude-code-preparation/candidate.patch"
 }
