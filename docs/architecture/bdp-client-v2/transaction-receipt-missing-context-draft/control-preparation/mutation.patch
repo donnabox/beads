@@ -1,0 +1,20 @@
+--- positive/transaction-http.js
++++ control/transaction-http.js
+@@ -395,7 +395,7 @@
+             if (url.pathname.slice(`${scopeUrl.pathname}receipts/`.length).includes("/pages/")) {
+                 const page = await service.receiptPage(access, url.href, minimum ?? (hasMinimumControls(request) ? "unsupported" : undefined));
+                 if (page.kind === "refused")
+-                    return transactionHttpProblem(page.code, page.code === "resource-not-found" ? page.context : undefined);
++                    return transactionHttpProblem(page.code);
+                 if (page.kind === "unsupported")
+                     return developmentGap("minimum-position");
+                 return context(page.kind === "expired"
+@@ -406,7 +406,7 @@
+                 ? await service.receiptAtMinimum(access, url.href, minimum ?? "unsupported")
+                 : service.receipt(access, url.href);
+             if (result.kind === "refused")
+-                return transactionHttpProblem(result.code, result.code === "resource-not-found" ? result.context : undefined);
++                return transactionHttpProblem(result.code);
+             // Missing barrier support cannot disclose a foreign receipt, nor permit a
+             // conditional shortcut to serve an unchecked minimum checkpoint.
+             if (result.kind === "unsupported")

@@ -1,0 +1,2 @@
+First external audit attempt stopped before recording members because its path regex also matched absent optional node.exe. Corrected audit uses strict resolution only for changed ../ targets; no control/test was rerun and no artifact or dependency restored.
+Second external audit stopped at additional changed local tooling shims. Final audit includes these five physical shims (nine logical W/C views). These were diagnosis script checks, not test executions; no current wrapper/manifest was loosened.

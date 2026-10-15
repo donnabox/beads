@@ -1,0 +1,65 @@
+## Receipt missing-context review — frozen 8-path diff @ `codex/vickie-receipt-missing-context` (parent `015cac1`)
+
+I traced the three production paths against the supplied pinned source and arithmetic-checked the fixture claims. **No blocking finding.** The repair is internally consistent: the three genuine page-missing branches capture `readContext()` at each return after the pre-existing integrity checks, the two namespace defenses are byte-identical, the root path is untouched, both entrypoint 404s are reachable only with a context in hand, and 401 stays contextless at `transaction-http.ts:389` / service `check()` before any owner access.
+
+### High
+
+**1. Only 14 selected callbacks were run, while the change alters an exported union member and the header shape of every receipt/page 404.**
+- Location: `packages/server/src/transaction-service.ts:50-58` (required `context` on the 404 member); `transaction-http.ts:532,544`.
+- Issue: the three modified existing HTTP callbacks and the service `hidden` case are covered by the accepted positives, but the remainder of `transaction-http.test.ts`, `transaction-service.test.ts`, `transaction-receipt-pages.test.ts` and every untouched suite were not executed. Two concrete regression shapes exist: deep-equality on the old three-field `{kind:"refused",status:404,code:"resource-not-found"}` (now four fields), and `expect(...headers.has("bdp-scope-*")).toBe(false)` on a receipt/page 404 (now present).
+- Impact: a silent assertion break lands in CI rather than here; the type change is also compile-breaking for any other *producer* of that union member.
+- Smallest correction: run those three files in full (not selected cases) and grep for the two patterns — `code: "resource-not-found"` object literals and `bdp-scope-` header assertions near `404`. No profile/control/installed evidence required for this.
+
+### Medium
+
+**2. Doc section asserts no execution, which the accepted source positives contradict.**
+- Location: `docs/design/transaction-implementation-progress.md`, new section: "At this draft checkpoint no new tests, build, control or installed execution has run."
+- Issue: build, typecheck, lint, format-check, read-seal, boundaries and three positive test stages ran (14 cases / 13 HTTP / 8 tuples). The sentence now understates the record in the file this repo uses for evidence attribution.
+- Impact: a later reader cannot tell which stages were executed; the surrounding paragraph's "control/installed outstanding" claim is correct and gets tainted by the overbroad sentence.
+- Smallest correction: replace that one sentence with "selected source owner/service/HTTP cases, build, typecheck and lint have run and passed; control and installed execution remain outstanding." Leave the rest of the section as written.
+
+**3. Installed witness hardcodes two of three operation targets instead of binding them.**
+- Location: `apps/bdptest/src/transactional-receipt-missing-context-installed.test.ts`, initial `routes` list (`operations/update-where`, `operations/create-bead`); only `binding.operationTargets.batch` is asserted.
+- Issue: `binding` is already constructed before `routes` is declared, so the exact spellings are available but unused. A spelling mismatch surfaces as an opaque `404 resource-not-found` from `transaction-http.ts:243-258` on the first or second POST.
+- Impact: burns the single authorized installed run on an avoidable route-label mismatch, with a failure mode that looks like a product 404 rather than a harness error.
+- Smallest correction: derive the three route URLs from `binding.operationTargets` (`batch`/`updateWhere`/`createBead`), or add two `expect(binding.operationTargets.*).toBe(...)` lines before the first dispatch.
+
+**4. Four HEAD exchanges go through the raw exact executor, whose HEAD body framing is not evidenced here.**
+- Location: same installed file — `missing(..., "HEAD", ...)` ×3 plus the anonymous `HEAD pageUrl` 401.
+- Issue: the test asserts HEAD carries the GET's `content-length` (server behaviour already proven by the executed source case), which is exactly the input that breaks a reader that frames a response body by `content-length` without the HEAD exception. The supplied `createRawHttpExchangeExecutor` summary covers route cloning and request-side facts only, not HEAD framing.
+- Impact: if mis-framed, each HEAD stalls to `requestTimeoutMs: 5000` and the cohort dies at the 45 s abort — on the one authorized installed run. Not a demonstrated defect; a proof gap on an unexecuted path.
+- Smallest correction: confirm the executor's HEAD handling (one existing installed HEAD precedent, or one throwaway HEAD through the same executor against the source runtime) before spending the installed run.
+
+### Low
+
+**5. The one HTTP-reachable contextless-404 shape stays unpinned.**
+- Location: `packages/server/src/transaction-http.test.ts` ≈2054, `expect((await f.get(`${id(receipt)}/pages`)).status).toBe(404)` (status only).
+- Issue: whether `receipts/{token}/pages` lands on the root read (404 **with** context) or on the page `marker < 0` defense (404 **without** context) is now observable in headers and asserted nowhere.
+- Impact: the only wire-visible discriminator between the required-context and optional-context union members can flip on a future routing edit without any test noticing.
+- Smallest correction: one added assertion on that existing request recording whichever header presence the current code actually produces.
+
+**6. Three of the five updated existing assertions derive header presence from status/principal.**
+- Location: `transaction-http.test.ts` ≈344 (`status !== 401`), ≈2046 (`principal !== token`), ≈2058 (`status === 404`), ≈2176 (`status === 404`).
+- Issue: the predicates are correct for today's tables, but they are computed from the row rather than declared by it.
+- Impact: adding a 409/410/429/500 row or a third credential to those tables silently changes what is asserted instead of failing loudly.
+- Smallest correction: carry expected context presence as an extra element in each tuple row and compare against it.
+
+**7. New source observation summary does not reflect soft-tuple outcomes.**
+- Location: new `transaction-http.test.ts` case, `finally` log: `primaryOrCleanupFailureCount: failures.length`, `tupleChecks` (an attempt counter).
+- Issue: in the planned emitted control — which omits exactly the two projections — all 8 soft tuples fail while `failures` stays empty, so the summary line reads identically to a pass. The retained per-response `headers` entries do discriminate (nulls vs `pos-1`/`pos-2`), so the evidence is recoverable from `responses[]`, but not from the summary.
+- Impact: control/treatment comparison depends on reading 13 nested header records rather than one field.
+- Smallest correction: compute the tuple comparison into a boolean, log a matched/mismatched count, and keep the soft assertion unchanged.
+
+**8. Unknown-sibling guard present in installed, absent in source.**
+- Location: new source case `const unknownRoot = ...` (no inequality guard); installed case has `expect(unknownRoot).not.toBe(receiptRoot)`.
+- Impact: nil in practice (ids are random), but were an id ever `unknown`, the "unknown-root" case would read the real receipt as its owner and fail on status instead of on a meaningful assertion.
+- Smallest correction: one `expect(unknownRoot).not.toBe(root)` line.
+
+### Verified, not findings
+
+- **No new existence oracle.** Unknown token, foreign root and foreign page all yield the identical uniform Problem *and* the identical current tuple; the 404/410 split for bogus minimums predates this change and still fires only for receipts already disclosable to the caller. Under the documented all-visible owner policy, epoch/view/position were already obtainable by any authenticated principal, so the new 404 headers add no cross-principal disclosure.
+- **No extra owner observation or wait.** `readContext()` runs inside the same `enter`/`atomic` entry (`metadata("position")` SELECT only, no retention, no `expireRow`), the page path never calls `readReceipt` to synthesize context, and all three missing returns precede `checkTransactionMinimum`, so an ahead minimum is a genuine zero-wait 404 — load-bearing in the existing case where the same ahead controls give 503 on `next` and 404 + `pos-1` on `/pages/unknown`.
+- **Metadata limitation is accurately stated and narrower than it reads.** Only the three page-missing branches newly reach `readContext()`; root misses already evaluated it before the `!stored` return. A plain throw after clean rollback correctly bypasses `fence` (`atomic:369-401`), so "nonsticky, repeatable error" is right.
+- **Fixture arithmetic.** Installed bodies are exactly 3728 / 179 / 92 = 3999 bytes; `update-where` uses `change` and satisfies `prepareSetShape`; 32 selected updates yield 33 results, hence root `results.length === 32` plus a real 1-result tail page under the unchanged default `receiptMaximumItems` 32; `pos-1/pos-2/pos-3` sequencing and distinct idempotency keys are consistent.
+- **Dispatch bounds.** Source: 13 exchanges / 8 tuples, matching the counters and the accepted positives. Installed: 14 exchanges with the asserted method/url sequence matching the actual execution order; the `executor()` factory correctly re-clones the route list after the issued root/page routes are appended, and all 9 routes exist before first use.
+- **Control viability.** Reverting only the two `transaction-http.ts:532/544` second arguments is type-valid and leaves every hard assertion passing, so the control yields exactly the 8 discriminating soft failures at 13 HTTP — subject to finding 7 on how that outcome is recorded.

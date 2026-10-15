@@ -1,0 +1,64 @@
+{
+  "rootAccepted": false,
+  "base": "015cac1aa4fa827cc4a2c647dff08454c6c8e6f8",
+  "head": null,
+  "tree": null,
+  "ordinaryChain": [
+    "015cac1aa4fa827cc4a2c647dff08454c6c8e6f8",
+    null
+  ],
+  "pr": null,
+  "run": null,
+  "job": null,
+  "synthetic": null,
+  "ciLogSha256": null,
+  "files": {
+    "packages/server/src/transaction-store.ts": "eec0f4723c8fcfb2245d2e80d77b2de014235cdb208101d523c0ab83fde78eed",
+    "packages/server/src/transaction-service.ts": "53f655faf494209996aac2e0f93a4c2c785e471f66aac6af9ea41f92c9cfbe00",
+    "packages/server/src/transaction-http.ts": "0e42f034c3aada6fd0a7696897200b336d2b0c547d69497e46500f6da4c2267a",
+    "packages/server/src/transaction-receipt-pages.test.ts": "e944bd61590f78a510b427b0f5d6eb7856f6b3715f9f0e5dc590bf8d4724c6a1",
+    "packages/server/src/transaction-service.test.ts": "c61ba7254ab1cf39abf85e6020e4f846ffb684740076de39f43fe12d509093b9",
+    "packages/server/src/transaction-http.test.ts": "3fc5c6750a00968021d2ecc78049535ebbe9a3d2d7684108f2807e8b2276e899",
+    "apps/bdptest/src/transactional-receipt-missing-context-installed.test.ts": "eaf1289ed0a8318ce949704ba4cd983755c6f5fd20ffe9d61712869894cb5064",
+    "docs/design/transaction-implementation-progress.md": "28b30246931ccf39588a0dd654715aa7f00eda95893a9b5ed8ec10ffe7fdf6fc"
+  },
+  "evidence": {
+    "finalSourceBinding": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-receipt-missing-context-draft/source-binding.json",
+      "sha256": "edc5c98c8e5c82f2073e1bf35aa84098efe9552c7dbc74537784de75788cca5a"
+    },
+    "native": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-receipt-missing-context-draft/native-code-review.md",
+      "sha256": "eab2936928c979c66b77fa5cb2afd0bd66c6e1215dc373d543da33aa11643c57"
+    },
+    "claudeExit": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-receipt-missing-context-code-claude/exit.json",
+      "sha256": "b00bd1a21ad587a7e06ee7b568dd985540ed3c6750d48e37bbed0a431a671c3a"
+    },
+    "claudeStdout": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-receipt-missing-context-code-claude/stdout.txt",
+      "sha256": "96959814652b5360d014a6f67b162a1ff774aec8730cefe0da642371ddafb094"
+    },
+    "rootCouncil": {
+      "path": null,
+      "sha256": null
+    },
+    "sourceAcceptance": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-receipt-missing-context-draft/root-source-positive-acceptance.json",
+      "sha256": "2ca51c6b6c6fb41e38fd25b07cd569a6c79496e73ce7d1b55f433985cd04d9f6"
+    },
+    "controlAcceptance": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-receipt-missing-context-draft/root-control-acceptance.json",
+      "sha256": "5dc8cb5b7ae9bb9841fcf030b8bcfb21963e653ee14fc1acc919467218fb9edb"
+    },
+    "installedAcceptance": {
+      "path": null,
+      "sha256": null
+    },
+    "rootLandingAcceptance": {
+      "path": null,
+      "sha256": null
+    }
+  },
+  "note": "Examples only. Current8hashes are historical draft; root must rebind final ordinary source incl any accepted factual-doc change. No actual pins.json supplied."
+}

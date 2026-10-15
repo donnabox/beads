@@ -1,0 +1,30 @@
+--- before//Users/dbox/repos/wt/vickie/vickie-sequence-member-evidence/node_modules/.pnpm/vite@8.2.1_@types+node@24.13.3/node_modules/vite/node_modules/.bin/rolldown
++++ after//Users/dbox/repos/wt/vickie/vickie-sequence-member-evidence/node_modules/.pnpm/vite@8.2.1_@types+node@24.13.3/node_modules/vite/node_modules/.bin/rolldown
+@@ -25,19 +25,19 @@
+ esac
+ 
+ if [ -z "$NODE_PATH" ]; then
+-  export NODE_PATH="/Users/dbox/repos/wt/vickie/vickie-sequence-member-evidence/node_modules/.pnpm/rolldown@1.2.3/node_modules/rolldown/node_modules:/Users/dbox/repos/wt/vickie/vickie-sequence-member-evidence/node_modules/.pnpm/rolldown@1.2.3/node_modules:/Users/dbox/repos/wt/vickie/vickie-sequence-member-evidence/node_modules/.pnpm/node_modules"
++  export NODE_PATH="/Users/dbox/repos/wt/vickie/vickie-sequence-member-evidence/node_modules/.pnpm/rolldown@1.2.3/node_modules/rolldown/node_modules:/Users/dbox/repos/wt/vickie/vickie-sequence-member-evidence/node_modules/.pnpm/rolldown@1.2.3/node_modules:/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-receipt-missing-context-draft/control-preparation/copy/node_modules/.pnpm/node_modules"
+ else
+-  export NODE_PATH="/Users/dbox/repos/wt/vickie/vickie-sequence-member-evidence/node_modules/.pnpm/rolldown@1.2.3/node_modules/rolldown/node_modules:/Users/dbox/repos/wt/vickie/vickie-sequence-member-evidence/node_modules/.pnpm/rolldown@1.2.3/node_modules:/Users/dbox/repos/wt/vickie/vickie-sequence-member-evidence/node_modules/.pnpm/node_modules:$NODE_PATH"
++  export NODE_PATH="/Users/dbox/repos/wt/vickie/vickie-sequence-member-evidence/node_modules/.pnpm/rolldown@1.2.3/node_modules/rolldown/node_modules:/Users/dbox/repos/wt/vickie/vickie-sequence-member-evidence/node_modules/.pnpm/rolldown@1.2.3/node_modules:/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-receipt-missing-context-draft/control-preparation/copy/node_modules/.pnpm/node_modules:$NODE_PATH"
+ fi
+ if [ -n "$exe" ] && [ -x "$basedir/node.exe" ]; then
+-  exec "$basedir/node.exe"  "$basedir_win/../../../rolldown/bin/cli.mjs" "$@"
++  exec "$basedir/node.exe"  "$basedir_win/../../../../../rolldown@1.2.3/node_modules/rolldown/bin/cli.mjs" "$@"
+ elif [ -x "$basedir/node" ]; then
+-  exec "$basedir/node"  "$basedir/../../../rolldown/bin/cli.mjs" "$@"
++  exec "$basedir/node"  "$basedir/../../../../../rolldown@1.2.3/node_modules/rolldown/bin/cli.mjs" "$@"
+ elif command -v node >/dev/null 2>&1; then
+-  exec node  "$basedir/../../../rolldown/bin/cli.mjs" "$@"
++  exec node  "$basedir/../../../../../rolldown@1.2.3/node_modules/rolldown/bin/cli.mjs" "$@"
+ elif [ -n "$exe" ] && command -v node.exe >/dev/null 2>&1; then
+-  exec node.exe  "$basedir_win/../../../rolldown/bin/cli.mjs" "$@"
++  exec node.exe  "$basedir_win/../../../../../rolldown@1.2.3/node_modules/rolldown/bin/cli.mjs" "$@"
+ else
+-  exec node  "$basedir/../../../rolldown/bin/cli.mjs" "$@"
++  exec node  "$basedir/../../../../../rolldown@1.2.3/node_modules/rolldown/bin/cli.mjs" "$@"
+ fi
+-# cmd-shim-target=/Users/dbox/repos/wt/vickie/vickie-sequence-member-evidence/node_modules/.pnpm/vite@8.2.1_@types+node@24.13.3/node_modules/rolldown/bin/cli.mjs
++# cmd-shim-target=/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-receipt-missing-context-draft/control-preparation/copy/node_modules/.pnpm/rolldown@1.2.3/node_modules/rolldown/bin/cli.mjs

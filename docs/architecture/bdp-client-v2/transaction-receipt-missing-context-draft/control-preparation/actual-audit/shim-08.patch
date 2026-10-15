@@ -1,0 +1,20 @@
+--- before//Users/dbox/repos/wt/vickie/vickie-sequence-member-evidence/node_modules/.pnpm/node_modules/.bin/why-is-node-running
++++ after//Users/dbox/repos/wt/vickie/vickie-sequence-member-evidence/node_modules/.pnpm/node_modules/.bin/why-is-node-running
+@@ -25,9 +25,9 @@
+ esac
+ 
+ if [ -z "$NODE_PATH" ]; then
+-  export NODE_PATH="/Users/dbox/repos/wt/vickie/vickie-sequence-member-evidence/node_modules/.pnpm/why-is-node-running@2.3.0/node_modules/why-is-node-running/node_modules:/Users/dbox/repos/wt/vickie/vickie-sequence-member-evidence/node_modules/.pnpm/why-is-node-running@2.3.0/node_modules:/Users/dbox/repos/wt/vickie/vickie-sequence-member-evidence/node_modules/.pnpm/node_modules"
++  export NODE_PATH="/Users/dbox/repos/wt/vickie/vickie-sequence-member-evidence/node_modules/.pnpm/why-is-node-running@2.3.0/node_modules/why-is-node-running/node_modules:/Users/dbox/repos/wt/vickie/vickie-sequence-member-evidence/node_modules/.pnpm/why-is-node-running@2.3.0/node_modules:/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-receipt-missing-context-draft/control-preparation/copy/node_modules/.pnpm/node_modules"
+ else
+-  export NODE_PATH="/Users/dbox/repos/wt/vickie/vickie-sequence-member-evidence/node_modules/.pnpm/why-is-node-running@2.3.0/node_modules/why-is-node-running/node_modules:/Users/dbox/repos/wt/vickie/vickie-sequence-member-evidence/node_modules/.pnpm/why-is-node-running@2.3.0/node_modules:/Users/dbox/repos/wt/vickie/vickie-sequence-member-evidence/node_modules/.pnpm/node_modules:$NODE_PATH"
++  export NODE_PATH="/Users/dbox/repos/wt/vickie/vickie-sequence-member-evidence/node_modules/.pnpm/why-is-node-running@2.3.0/node_modules/why-is-node-running/node_modules:/Users/dbox/repos/wt/vickie/vickie-sequence-member-evidence/node_modules/.pnpm/why-is-node-running@2.3.0/node_modules:/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-receipt-missing-context-draft/control-preparation/copy/node_modules/.pnpm/node_modules:$NODE_PATH"
+ fi
+ if [ -n "$exe" ] && [ -x "$basedir/node.exe" ]; then
+   exec "$basedir/node.exe"  "$basedir_win/../why-is-node-running/cli.js" "$@"
+@@ -40,4 +40,4 @@
+ else
+   exec node  "$basedir/../why-is-node-running/cli.js" "$@"
+ fi
+-# cmd-shim-target=/Users/dbox/repos/wt/vickie/vickie-sequence-member-evidence/node_modules/.pnpm/node_modules/why-is-node-running/cli.js
++# cmd-shim-target=/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-receipt-missing-context-draft/control-preparation/copy/node_modules/.pnpm/node_modules/why-is-node-running/cli.js
