@@ -1,0 +1,24 @@
+{
+  "cwd": "/Users/dbox/repos/wt/vickie/vickie-sequence-member-evidence",
+  "argv": [
+    "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+    "/Users/dbox/repos/wt/vickie/vickie-command-minimum-evidence/node_modules/@biomejs/biome/bin/biome",
+    "format",
+    "--write",
+    "packages/server/src/transaction-store.ts",
+    "packages/server/src/transaction-http.ts",
+    "packages/server/src/transaction-events.test.ts",
+    "packages/server/src/transaction-event-sse.test.ts",
+    "apps/bdptest/src/transactional-event-missing-context-installed.test.ts",
+    "docs/design/transaction-implementation-progress.md"
+  ],
+  "timeoutSeconds": 120,
+  "before": {
+    "packages/server/src/transaction-store.ts": "e2889b1bd624cb92b92a5cbad1e76177f18a3fe58d524417e7e4d3aa46f11be7",
+    "packages/server/src/transaction-http.ts": "9db33008a4c3a66214e2bf523b0b90f79c216c1f3f304c6df0491a0d1904439a",
+    "packages/server/src/transaction-events.test.ts": "e3dcdefdfafea35e984f0172f0d7945a8211ebbb981aff35724734b81ce95ae5",
+    "packages/server/src/transaction-event-sse.test.ts": "69f58153b93947f028c37aebce2f57b0a25f725aacb9a1891c7b276b1c9e44c0",
+    "apps/bdptest/src/transactional-event-missing-context-installed.test.ts": "d13e6093bec25c1795de242816b3595bca0003671eab62fb515d7c930f84af6f",
+    "docs/design/transaction-implementation-progress.md": "c31d464b9d7928639c54acf827844d3ae62691d026ee9557ed6f7b921643b278"
+  }
+}
