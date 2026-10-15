@@ -1,0 +1,618 @@
+Read-only supplied-context PLAN review. Do not write or modify any files. Output findings only in stdout. No tools, commands, tests, services or agents. Return concrete numbered Critical/High/Medium/Low findings with exact plan/source location, impact and smallest correction. Distinguish a proven defect from missing supplied proof. If clean, state no actionable finding and concrete limitations. Do not broaden production or require full-profile proof from this explicitly partial witness. Complete within900s.
+
+Frozen plan45acc3ab and companionddd5e5a2 remain unchanged. Actual parent is merged88c9408e908590ab1a4c64c9b9dee1a8b705999c/treeb2d9f2c18502e0778c51123be8b4564af052d803; supplied source is clean01a247b2283f70890c8c35ec65a43aa3c3ab0542 with that identical tree. Pending-merge wording in frozen excerpts is historical, covered by identity-only root reanchor e553b4ea. Authoring is not released. Two prior900s reviews timed out with empty output and are inconclusive. Small no-tools and Read probes subsequently passed, which does not establish the timeouts' cause. No model override.
+
+Partition: A owns literal ten-action semantics, normalization/receipt retention, Event projection and precise real-wire negative oracle. B owns observer handoff/composition, helper/report integration,28-object preservation, exact static selection, source/draft/derivative fences, local cohorts and recurring CI arithmetic/provenance. Each must flag a concrete cross-boundary dependency, but does not certify the other half. Together they cover every operative v4 section; chronology/identity is shared. No single clean result is whole-plan council acceptance. Native75975009 only closed N1 deleted identity and N2 preservation, not a substitute for this review. Known unresolved product decisions stay excluded.
+
+TARGET A: Semantic feasibility and real-wire discrimination. Verify the literal requests can generate all promised independent facts without widening runner/API/fixtures. Check member index1 versus singleton index0, failed receipt position/shape, current versus historical context, replay identity, private Event ID/source and deleted negative shape. Body captures are scoped URLs only; full raw equality belongs in app afterExchange, actual client retained equality in the existing helper. B separately reviews observer composition and execution accounting.
+
+PLAN law/scope (operative semantic paragraphs)
+
+Spec docs/specs/bdp.md2720–2765 requires ordered, separately atomic, partially committing members, continuation after failure and outer200;4057–4080 gives each member its own transaction/pending and terminal receipt/group. Catalog transactional-v1.json866–876 owns transactional.sequence.member-transactions. Store1777ff admits claims,1848ff executes turns,1258–1295 retains failed receipts at previous position and commits successful groups separately. Sequence projection32–76 rewrites operationIndex/name for the current envelope. Resource-not-found remains404/after-state-change (spec1901), including a terminal retained failed key.
+
+Prove terminal success/failure/success, independently retained receipts and no-effect replay. Do not claim simultaneous initial pending admission, interleaving/exclusive ownership, crash recovery, expiry/erasure, all operation kinds or whole clause coverage. wholeContract:false and claimEligible:false remain. Required251/unobserved251/report256 remain; anticipated authored14→15 and unplanned237→236.
+
+
+PLAN ten actions, full section
+
+The old s-groups claim was impossible in one GET: readChanges1691–1742 retrieves start+1, emits one group and a next link when head is later. retainedGroupReader uses SQL LIMIT1 at604; event scan maximumGroupsPerObservation=1 is fixed at transaction-events.ts20–23/store76. Finite Changes accepts only after/start (transaction-changefeed.ts91–112), so invented limit32 is also invalid. Drop only s-groups, rather than adding a continuation/route or claiming both groups/next:null. Distinct receipt transactions/effect positions and complete Events support terminal independence, but do not enumerate both Changes groups. Root explicitly accepts this narrower terminal-independence credit; no Changes-group enumeration is claimed.
+
+|#|Action|Required actual result|
+|---:|---|---|
+|1|s-sequence|POSTsequence, no outer key: createa/member-a; deletemissing/member-fail; createb/member-b.200 sequence schema, exact indices0/1/2 and created/known404Problem/created, currentpos2. Independently validate complete fixed Resource fields, absence facts, Problem and context before baseline.|
+|2|s-first-receipt|POSTbatch equivalent createa/member-a.200 completed/available, required/effectpos1,nextnull, internalindex0, Resource equals initiala. Capture only actual/id to s-first-root.|
+|3|s-first-facts|Real client receipt GET, currentpos2/historicalreceiptpos1; helper full-original equality and actual source/session/authority bindings.|
+|4|s-failed-receipt|POSTbatch equivalent missingdelete/member-fail.200 failed/available, requiredpos1,noeffect/results/next; known404/after-state-change Problem has internalindex0 rather than sequenceindex1. Capture only/id to s-failed-root.|
+|5|s-failed-facts|Real receipt GET with complete original failure retained and successful actual client/internal assertions.|
+|6|s-last-receipt|POSTbatch equivalent createb/member-b.200 completed/available, required/effectpos2,nextnull, internalindex0 and initialb Resource. Capture only/id to s-last-root.|
+|7|s-last-facts|Real receipt GET, full checked originalB retained/currentpos2.|
+|8|s-replay|POST identical sequence, full parsed body equals independently checked initial envelope/currentpos2.|
+|9|s-current|GETbeads/?limit=32, exacta/b ordered collection/full original records/nextnull/currentpos2.|
+|10|s-events|GETevents/, exactly2created Events with ordinal0, correct subjects/types, full Resource data/revisions and corresponding receipt transactions, nextnull/currentpos2; no failed-member Event.|
+
+Scope https://reference.invalid/acme/, Type types/task, titles member-first/member-last, empty metadata, no names/owned/provenance input. All three minimum headers absent. Literal fixture positions are not inferred semantics for opaque tokens. Receipt roots and transaction strings must each be pairwise distinct actual values. Initial and replay full bodies must have independently pinned known fields and absences, not schema validity alone.
+
+Event IDs must use the actual served projection: independently derive the fixture ev_ epoch/view/source hash plus pos1/pos2/ordinal0 from captured actual context, never import production renderer as its own oracle or use stored pos-N-0. Full Event data/transaction must match the checked create/receipt. Finite Event read scans groups under its existing item/byte bounds (store1543–1635); exactly2/nextnull remains an actual assertion. No complete Changes claim remains.
+
+PLAN real control, full paragraph
+One new registered negative selects ONLY this row. Change middle delete missing→a. Actual200 then has three successes/currentpos3. Keep exact seven baseline failing IDs: serving-position,middle-type,middle-code,middle-status,middle-retry,middle-no-outcome,middle-no-deleted. Keep middle-no-resource, first/last literals, indices/schema/media/request checks passing. Add independent actual-success assertions pos3 and exact deleted shape {resourceKind:"bead",resource:{id,type,revision}}. Assert properties/metadata absent from deleted.resource and compare its revision to the independently validated first creation revision in the app. The first and last successful Resource records retain full properties/metadata checks. resource-evaluator.ts:1073–1084 emits only this deleted identity; transaction-batch.ts:712–719 and transaction-sequence.ts:57–76 preserve it. No source/sourceRevision fields arise for this unowned Bead. Do not require deleted Resource fields that the serving projection omits. Known-control hook must not mask manifest failures. Demand oneexchange/no clientaction/exact named failure set/all independent positive assertions/no transport,harness,execution or cleanup errors. Save genuine returned report before cleanup/postchecks. Static derivative bundle/schema/mutation checks precede execution. No response replacement or runtime seam.
+
+COMPANION exact request bodies and negative failure IDs
+{"positivePostBodies":[{"action":"s-sequence","body":"{\"operations\":[{\"operation\":\"createBead\",\"id\":\"beads/a\",\"type\":\"https://reference.invalid/acme/types/task\",\"properties\":{\"title\":\"member-first\"},\"idempotencyKey\":\"member-a\"},{\"operation\":\"deleteBead\",\"bead\":\"beads/missing\",\"idempotencyKey\":\"member-fail\"},{\"operation\":\"createBead\",\"id\":\"beads/b\",\"type\":\"https://reference.invalid/acme/types/task\",\"properties\":{\"title\":\"member-last\"},\"idempotencyKey\":\"member-b\"}]}","bytes":414,"sha256":"f3cde631127aaf530ea5349330e6c7bb46766b02b135f9c7c59acfcd2f2c71c7"},{"action":"s-first-receipt","body":"{\"operations\":[{\"operation\":\"createBead\",\"id\":\"beads/a\",\"type\":\"https://reference.invalid/acme/types/task\",\"properties\":{\"title\":\"member-first\"}}]}","bytes":147,"sha256":"b3f8ec9abecce7f6de336c869281e69c2568798a9a44dccb6612a6c5fa44d775"},{"action":"s-failed-receipt","body":"{\"operations\":[{\"operation\":\"deleteBead\",\"bead\":\"beads/missing\"}]}","bytes":66,"sha256":"47a4fd554c40bd307a50c37f422a945fae35091ac7fc206a7bb59274cb00a4ec"},{"action":"s-last-receipt","body":"{\"operations\":[{\"operation\":\"createBead\",\"id\":\"beads/b\",\"type\":\"https://reference.invalid/acme/types/task\",\"properties\":{\"title\":\"member-last\"}}]}","bytes":146,"sha256":"6e27825f68db2ff5572688966faad2e924d2e2bdee4870d9339e56ee1db2c837"},{"action":"s-replay","body":"{\"operations\":[{\"operation\":\"createBead\",\"id\":\"beads/a\",\"type\":\"https://reference.invalid/acme/types/task\",\"properties\":{\"title\":\"member-first\"},\"idempotencyKey\":\"member-a\"},{\"operation\":\"deleteBead\",\"bead\":\"beads/missing\",\"idempotencyKey\":\"member-fail\"},{\"operation\":\"createBead\",\"id\":\"beads/b\",\"type\":\"https://reference.invalid/acme/types/task\",\"properties\":{\"title\":\"member-last\"},\"idempotencyKey\":\"member-b\"}]}","bytes":414,"sha256":"f3cde631127aaf530ea5349330e6c7bb46766b02b135f9c7c59acfcd2f2c71c7"}],"negativePostBody":{"action":"s-sequence","body":"{\"operations\":[{\"operation\":\"createBead\",\"id\":\"beads/a\",\"type\":\"https://reference.invalid/acme/types/task\",\"properties\":{\"title\":\"member-first\"},\"idempotencyKey\":\"member-a\"},{\"operation\":\"deleteBead\",\"bead\":\"beads/a\",\"idempotencyKey\":\"member-fail\"},{\"operation\":\"createBead\",\"id\":\"beads/b\",\"type\":\"https://reference.invalid/acme/types/task\",\"properties\":{\"title\":\"member-last\"},\"idempotencyKey\":\"member-b\"}]}","bytes":408,"sha256":"cc96f5caf3ee16a216a73ccbe6028aacecf2c1a8ff1dc1315025fbc175217c06"},"negativeDeletedShape":{"resourceKind":"bead","resource":{"id":"https://reference.invalid/acme/beads/a","type":"https://reference.invalid/acme/types/task","revision":"ACTUAL_VALIDATED_FIRST_RESOURCE_REVISION"}},"negativeDeletedAbsentFields":["resource.properties","resource.metadata"],"negativeExpectedFailureIds":["serving-position","middle-type","middle-code","middle-status","middle-retry","middle-no-outcome","middle-no-deleted"]}
+
+SOURCE docs/specs/bdp.md:4057-4080 (verbatim section)
+```
+On a Transactional Scope the `sequence` target is the carrier defined under
+[Read+Update sequence target](#readupdate-sequence-target), and it keeps
+its envelope, its member records, its declaration order, its separate
+commitment, its lack of isolation, and its `@name` rules unchanged; what
+the profile changes is what a member's disposition is. Each member is a
+one-operation Mutation Transaction: the sequence's admission admits every
+member whose key is unknown, in declaration order, recording a pending
+receipt for each — the profile's form of claiming a key — and the members
+then execute in order, each committing its own state, change group, and
+terminal receipt. The envelope projects each member's receipt into one
+entry, and it adds no receipt member. The bundle's
+`transactionalSequenceResponse` specializes the shared envelope with
+`transactionalSequenceMemberProblem`: its `allocated` extension, permitted
+only on `idempotency-expired`, is `sequenceAllocatedIdentity`: exactly
+`{ id, type }` when the identity is disclosed or `{ withheld: true }` when
+it is withheld, distinct from a receipt's indexed `allocated` array.
+A completed Resource creation's expired projection MUST carry exactly one of
+these forms; every other operation's expired projection MUST omit `allocated`. Here a Resource creation is an operation that
+allocated a Resource identity. An alias put is not one even when its alias
+result says `created`; its expired sequence projection omits `allocated`.
+`resource-erased` member problems reject
+`pointer` just as direct problems do.
+A member newly admitted by this carrier executes under its own pending
+receipt and exclusive ownership; the in-flight projection below applies only
+```
+
+SOURCE packages/server/src/transaction-sequence.ts:32-74 (verbatim section)
+```
+function project(sequence: PreparedTransactionSequence, turn: TransactionSequenceTurn): Entry {
+  const member = sequence.members[turn.index];
+  if (!member) throw new Error("sequence turn outside carrier");
+  let entry: Record<string, unknown>;
+  if (turn.result.kind === "transient") entry = { ...problem("idempotency-in-progress") };
+  else if (turn.result.kind === "conflict") entry = { ...problem("idempotency-conflict") };
+  else {
+    const receipt = turn.result.receipt;
+    if (receipt.status === "pending") entry = { ...problem("idempotency-in-progress") };
+    else if (receipt.detail === "expired") {
+      if (receipt.status !== "completed") throw new Error("expired noncompleted receipt");
+      entry = { ...problem("idempotency-expired") };
+      if (member.operation === "createBead" || member.operation === "createLink") {
+        if (!Array.isArray(receipt.allocated) || receipt.allocated.length !== 1)
+          throw new Error("expired singleton creation lost its allocation");
+        const allocated = record(receipt.allocated[0]);
+        if (
+          allocated.operationIndex !== 0 ||
+          typeof allocated.id !== "string" ||
+          typeof allocated.type !== "string"
+        )
+          throw new Error("invalid expired singleton allocation");
+        entry.allocated = { id: allocated.id, type: allocated.type };
+      }
+    } else if (receipt.detail !== "available")
+      throw new Error("unsupported private receipt disclosure");
+    else if (receipt.status === "failed") entry = { ...record(receipt.problem) };
+    else {
+      if (!Array.isArray(receipt.results) || receipt.results.length !== 1 || receipt.next !== null)
+        throw new Error("singleton sequence receipt must have exactly one result");
+      entry = { ...record(receipt.results[0]) };
+    }
+  }
+  // The current presentation supplies the position and label. Retained result
+  // labels belong to the original carrier and are not semantic identity.
+  delete entry.operationIndex;
+  delete entry.operationName;
+  return Object.freeze({
+    ...entry,
+    operationIndex: turn.index,
+    ...(member.name === undefined ? {} : { operationName: member.name }),
+  });
+}
+```
+
+SOURCE packages/server/src/transaction-sequence.ts:123-137 (verbatim section)
+```
+export async function runTransactionSequence(
+  store: ReturnType<typeof openTransactionStore>,
+  principal: string,
+  sequence: PreparedTransactionSequence,
+): Promise<TransactionSequenceResponse> {
+  const stepper = createTransactionSequenceStepper(store, principal, sequence);
+  for (;;) {
+    await setImmediate();
+    const step = stepper.step();
+    if (step.done) {
+      if (!step.response) throw new Error("completed sequence lost response");
+      return step.response;
+    }
+  }
+}
+```
+
+SOURCE packages/server/src/transaction-batch.ts:277-309 (verbatim section)
+```
+    // The whole carrier already validated backward labels and Resource kinds.
+    // Preserve its branded numeric operation without reparsing as a singleton,
+    // whose syntax correctly rejects @name outside a sequence.
+    const key = carrier.keys[index];
+    if (key === undefined) throw new Error("prepared sequence lost member key");
+    const request = prepareCarrier({
+      kind: "singleton",
+      scope: carrier.scope,
+      operations: [op],
+      keys: [key],
+    });
+    if (op.name) labels.set(op.name, index);
+    return Object.freeze({
+      key,
+      operation: op.operation,
+      ...(op.name === undefined ? {} : { name: op.name }),
+      request,
+      dependencies: Object.freeze(dependencies.map((dependency) => Object.freeze(dependency))),
+      aliasOperands: Object.freeze(aliasOperands),
+      deferred: dependencies.length > 0 || aliasOperands.length > 0,
+    });
+  });
+  const result = Object.freeze({ scope: carrier.scope, members: Object.freeze(members) });
+  sequences.add(result);
+  return result;
+}
+export function assertPreparedTransactionSequence(
+  sequence: PreparedTransactionSequence,
+  scope: string,
+): void {
+  if (!sequences.has(sequence) || sequence.scope !== scope)
+    throw new TypeError("expected prepared transaction sequence for this Scope");
+}
+```
+
+SOURCE packages/server/src/transaction-batch.ts:410-491 (verbatim section)
+```
+ * Batch creator indices remain symbolic; the RU normalizer binds committed IDs
+ * and cannot supply that Transactional distinction. */
+export function normalizeTransaction(
+  batch: PreparedTransaction,
+  resolveAlias: (locator: string) => string | undefined,
+  priorWitnessesJson?: string,
+  references: ReadonlyMap<string, string | typeof UNBOUND_SEMANTIC_REFERENCE> = new Map(),
+): NormalizedTransaction {
+  assertPreparedTransaction(batch, batch.carrier.scope);
+  const scope = batch.carrier.scope;
+  const prior =
+    priorWitnessesJson === undefined ? undefined : parseWitnesses(priorWitnessesJson, scope);
+  const creators = new Map<string, SemanticValue>();
+  const referenceIdentities = new Map<string, string>();
+  const identities: SemanticValue[] = [];
+  const witnesses: OperationWitnesses[] = [];
+  const captured: ReadonlyMap<string, string | null>[] = [];
+  const canonical = (uri: string): string => canonicalReference(scope, uri);
+  for (const [index, op] of batch.carrier.operations.entries()) {
+    const creating = op.operation === "createBead" || op.operation === "createLink";
+    const input: Record<string, SemanticValue> = {
+      ...op.input,
+      ...(creating
+        ? { properties: op.input.properties ?? {}, metadata: op.input.metadata ?? {} }
+        : {}),
+    };
+    // Empty context supplies no explicit states; null members remain distinct.
+    const context = input.revisionProvenance;
+    if (context !== null && typeof context === "object" && Object.keys(context).length === 0)
+      delete input.revisionProvenance;
+    const previous = prior?.[index];
+    const aliases = new Map<string, string | null>();
+    for (const field of ["id", "source", "target", "bead", "link", "alias"]) {
+      const value = input[field];
+      if (value === undefined) continue;
+      const uri = typeof value === "string" ? value : (value as { uri: string }).uri;
+      const locator = canonical(uri);
+      let normalized: SemanticValue | undefined;
+      if (index === 0 && references.has(field)) normalized = references.get(field);
+      else if (
+        transactionAliasFields(op.operation).includes(field) &&
+        locator.startsWith(`${scope}alias/`)
+      ) {
+        if (!aliases.has(locator)) {
+          const old =
+            previous?.operation === op.operation
+              ? previous.aliases.find((w) => w.locator === locator)
+              : undefined;
+          const target = old === undefined ? resolveAlias(locator) : old.target;
+          aliases.set(locator, target == null ? null : witnessedReference(scope, target, "beads"));
+        }
+        normalized = aliases.get(locator) ?? { unresolvedAlias: locator };
+      } else normalized = uri.startsWith("@") ? creators.get(uri.slice(1)) : locator;
+      if (normalized === undefined) throw new TypeError("unknown batch binding");
+      if (index === 0) referenceIdentities.set(field, encodeSemanticValue(normalized));
+      input[field] =
+        typeof value === "string"
+          ? normalized
+          : { uri: normalized, revision: (value as { revision: string }).revision };
+    }
+    identities.push({ operation: op.operation, input });
+    captured.push(aliases);
+    witnesses.push({
+      operation: op.operation,
+      aliases: [...aliases].map(([locator, target]) => ({ locator, target })),
+    });
+    if (creating && op.name)
+      creators.set(
+        op.name,
+        op.input.id === undefined
+          ? { creatorIndex: String(index) }
+          : canonical(op.input.id as string),
+      );
+  }
+  const result = Object.freeze({
+    identity: encodeSemanticValue(identities),
+    referenceIdentities,
+    witnessesJson: JSON.stringify({ format: witnessFormat, scope, operations: witnesses }),
+  });
+  normalizedState.set(result, { batch, aliases: captured, references });
+  return result;
+}
+```
+
+SOURCE packages/server/src/transaction-store.ts:1258-1310 (verbatim section)
+```
+          let receipt: TransactionReceipt;
+          if (!result.ok) {
+            db.exec("ROLLBACK TO effects; RELEASE effects");
+            receipt = {
+              ...core,
+              status: "failed",
+              detail: "available",
+              requiredPosition: `pos-${previous}`,
+              problem: result.problem,
+              expiresAt,
+            };
+          } else {
+            db.exec("RELEASE effects");
+            const group = {
+              scopeEpoch: epoch,
+              authorizationView: view,
+              checkpoint: position,
+              position,
+              previousPosition: `pos-${previous}`,
+              projectionAdvance: false,
+              transaction: core.transaction,
+              changes: result.changes,
+              erasures: [],
+              eventCount: result.events.length,
+              events: result.events,
+            };
+            const effective = result.events.length > 0;
+            if (effective) {
+              db.prepare("INSERT INTO groups VALUES(?,?)").run(previous + 1, json(group));
+              db.prepare("UPDATE metadata SET value=? WHERE name='position'").run(
+                String(previous + 1),
+              );
+            }
+            receipt = {
+              ...core,
+              status: "completed",
+              detail: "available",
+              requiredPosition: effective ? position : `pos-${previous}`,
+              ...(effective ? { effectPosition: position } : {}),
+              results: result.results,
+              next: null,
+              expiresAt,
+            };
+          }
+          const changed = db
+            .prepare(
+              "UPDATE receipts SET receipt=?,owner=NULL WHERE principal=? AND key=? AND owner=?",
+            )
+            .run(json(receipt), owned.principal, owned.key, owned.owner);
+          if (changed.changes !== 1) throw new Error("terminal ownership lost");
+          if (owned.creator)
+            writeFact(
+              owned.creator.attempt,
+```
+
+SOURCE packages/server/src/transaction-store.ts:1543-1634 (verbatim section)
+```
+    readEvents(
+      sourceUrl: string,
+      after?: string,
+      supplied?: TransactionMinimum | "unsupported",
+    ):
+      | {
+          readonly kind: "page";
+          readonly page: TransactionEventPage;
+          readonly context: TransactionReadContext;
+        }
+      | { readonly kind: "missing" }
+      | { readonly kind: "unsupported" } {
+      if (typeof sourceUrl !== "string" || (after !== undefined && typeof after !== "string"))
+        throw new TypeError("Event source and cursor must be strings");
+      const source = eventSource(sourceUrl);
+      const minimum =
+        supplied === undefined || supplied === "unsupported"
+          ? supplied
+          : snapshotTransactionMinimum(supplied);
+      return enter(() => {
+        // Reference convention: unknown sources are nondisclosing before minimum
+        // checks. A retained identity remains a source after Resource deletion.
+        if (!eventSourceKnown(source)) return Object.freeze({ kind: "missing" as const });
+        if (minimum === "unsupported") return Object.freeze({ kind: "unsupported" as const });
+        const context = readContext(),
+          head = Number(context.scopePosition.slice(4));
+        // This owner entry cannot advance while scanning. Refuse/wait before any
+        // group read rather than repeating projection work on every wait attempt.
+        if (minimum !== undefined) checkTransactionMinimum(minimum, context);
+        const start = after === undefined ? undefined : parseTransactionEventCursor(after, context);
+        if (start) checkTransactionEventCursor(start, context, source.url);
+        let cursorMatched = start === undefined;
+        const events: import("./transaction-batch.js").TransactionEvent[] = [];
+        // Keep brackets/envelope once and replace the literal null with each
+        // candidate continuation string. Each Event is serialized exactly once.
+        const envelopeBytes =
+          Buffer.byteLength(json({ source: source.url, events: [], next: null })) - 4;
+        let eventBytes = 0;
+        let next: string | null = null;
+        const retainedGroupAtOrAfter = retainedGroupReader();
+        let at = start?.position ?? 1;
+        for (;;) {
+          const row = retainedGroupAtOrAfter(at, head);
+          if (!row) {
+            if (cursorMatched && at <= head) throw new Error("missing retained Event group");
+            break;
+          }
+          const p = row.position;
+          if (cursorMatched && p !== at) throw new Error("missing retained Event group");
+          const projected = eventProjection(
+            row,
+            context,
+            source,
+            !cursorMatched && start && after !== undefined ? { ...start, id: after } : undefined,
+          );
+          cursorMatched = true;
+          for (const event of projected) {
+            if (start && p === start.position && event.ordinal <= start.ordinal) continue;
+            // Reserve the exact continuation even if this Event is currently last.
+            const { eventBytes: candidateBytes, pageBytes: bytes } = eventCandidateBytes(
+              envelopeBytes,
+              source.url,
+              event,
+              eventBytes,
+              events.length,
+            );
+            if (events.length + 1 > receiptMaximumItems || bytes > TRANSACTION_EVENT_PAGE_BYTES) {
+              const last = events.at(-1);
+              if (!last) throw new Error("finite Event page cannot hold first retained Event");
+              next = eventContinuation(source.url, last.id);
+              break;
+            }
+            events.push(event);
+            eventBytes = candidateBytes;
+          }
+          if (next !== null) break;
+          at = p + 1;
+        }
+        if (!cursorMatched) throw new TransactionEventParameterError(undefined, context);
+        return Object.freeze({
+          kind: "page" as const,
+          context,
+          page: freezeEventPage({ source: source.url, events, next }),
+        });
+      });
+    },
+    /** Initial source/minimum/cursor observation, never a wire or durable cursor. */
+    beginEventScan(
+      sourceUrl: string,
+      after?: string,
+      supplied?: TransactionMinimum | "unsupported",
+      invalidReconnect = false,
+```
+
+SOURCE packages/server/src/resource-evaluator.ts:1073-1093 (verbatim section)
+```
+  const outcome: ReadUpdateMutationResult = deleting
+    ? {
+        outcome: "deleted",
+        deleted: {
+          resourceKind,
+          resource: {
+            id: before?.id as string,
+            type: before?.type as string,
+            revision: before?.revision as string,
+          },
+        },
+        ...(sourceAfter ? { source: sourceAfter.id, sourceRevision: sourceAfter.revision } : {}),
+      }
+    : {
+        outcome: creating ? "created" : "updated",
+        resource: after as ResourceRecord,
+        ...(sourceAfter ? { source: sourceAfter.id, sourceRevision: sourceAfter.revision } : {}),
+      };
+  // No Resource write happens until every validation/policy/CAS/limit check passes.
+  fault.check();
+  for (const write of writes) tx.putResource(write);
+```
+
+SOURCE packages/server/src/transaction-events.ts:74-104 (verbatim section)
+```
+const cursor =
+  /^ev_([A-Za-z0-9_-]{43})_([A-Za-z0-9_-]{43})_([A-Za-z0-9_-]{43})_(pos-(?:0|[1-9][0-9]*))_(0|[1-9][0-9]*)$/;
+const hash = (tag: string, value: string) =>
+  createHash("sha256")
+    .update(JSON.stringify([tag, value]))
+    .digest("base64url");
+
+/** Scope and Resource token spelling is deliberately private, not a fixture law. */
+export function renderTransactionEvent(
+  context: Pick<TransactionReadContext, "scopeEpoch" | "authorizationView">,
+  source: string,
+  checkpoint: string,
+  event: TransactionEvent,
+): TransactionEvent {
+  if (
+    !position.test(checkpoint) ||
+    !Number.isSafeInteger(Number(checkpoint.slice(4))) ||
+    Number(checkpoint.slice(4)) < 1 ||
+    !Number.isSafeInteger(event.ordinal) ||
+    event.ordinal < 0
+  )
+    throw new Error("invalid committed Event position");
+  return {
+    ...event,
+    source,
+    id: `ev_${hash("epoch", context.scopeEpoch)}_${hash("view", context.authorizationView)}_${hash("source", source)}_${checkpoint}_${event.ordinal}`,
+  };
+}
+export function parseTransactionEventCursor(
+  value: string,
+  context?: TransactionReadContext,
+```
+
+SOURCE packages/server/src/transaction-events.ts:250-269 (verbatim section)
+```
+      include =
+        event.subject === source.subject && ["created", "updated", "deleted"].includes(event.type);
+      if (source.kind === "bead" && (event.type === "linked" || event.type === "unlinked")) {
+        if (data.endpoint !== "source" && data.endpoint !== "target")
+          throw new Error("invalid endpoint fact");
+        include = reference(data[data.endpoint]) === source.subject;
+      }
+      if (source.kind === "bead" && event.type === "updated" && linkIds.has(event.subject)) {
+        const pair = endpoints.get(event.subject);
+        if (!pair) throw new Error("incident Link update lacks same-group endpoints");
+        include = pair.some((endpoint) => reference(endpoint) === source.subject);
+        // Literal incident rule currently mentions properties only. Do not silently
+        // decide metadata-only membership while the spec disposition is pending.
+        if (include && data.change === undefined && data.metadataChange !== undefined)
+          throw new TransactionEventProjectionGap("incident-link-metadata");
+      }
+    }
+    if (include) result.push(renderTransactionEvent(context, source.url, group.checkpoint, event));
+  }
+  return result;
+```
+
+SOURCE packages/conformance/src/transactional-observation.ts:228-312 (verbatim section)
+```
+          throw new TransactionalReceiptFailure("source receipt page identity invalid");
+        }
+      }
+      if (pointer === "/next" && !page)
+        throw new TransactionalReceiptFailure("source receipt page unavailable");
+      if (ledger.has(binding) || ledger.size >= maximum)
+        throw new TransactionalHarnessError("receipt authority binding limit or reuse");
+      ledger.set(binding, {
+        reference: Object.freeze({
+          action,
+          ...(pointer === "/next" ? { pointer, page: page! } : { pointer }),
+          receipt,
+          responseDigest: createHash("sha256").update(response.wireResponseBytes).digest("hex"),
+          credentialRef: credential ?? config.defaultCredentialRef,
+          session: Object.freeze({ ...served }),
+        }),
+        body: JSON.parse(response.bodyText),
+        validator,
+      });
+    },
+    resolve(binding: unknown, value: unknown) {
+      const entry = typeof binding === "string" ? ledger.get(binding) : undefined;
+      if (!entry)
+        throw new TransactionalHarnessError("receipt not authorized by original wire observation");
+      const source = entry.reference;
+      const target = source.pointer === "/next" ? source.page : source.receipt;
+      if (
+        target !== value ||
+        (source.pointer === "/next"
+          ? receiptPageUrl(value, source.receipt)
+          : receiptUrl(value, scope)) !== target
+      )
+        throw new TransactionalHarnessError("receipt not authorized by original wire observation");
+      // The digest records original wire provenance. Later serving headers may
+      // change, so agreement compares retained JSON facts rather than wire bytes.
+      const active = session();
+      if (
+        active.binding.runtimeConfigurationIdentity !==
+          source.session.runtimeConfigurationIdentity ||
+        active.binding.configurationDigest !== source.session.configurationDigest
+      )
+        throw new TransactionalHarnessError("receipt session logical identity changed");
+      return {
+        source,
+        target,
+        active,
+        validate(response: HttpExchangeResponse, method: "GET" | "HEAD") {
+          validateReceiptWire(response, method);
+          if (method === "GET") {
+            let body: unknown;
+            try {
+              body = JSON.parse(response.bodyText);
+            } catch {
+              throw new TransactionalReceiptFailure("retained receipt JSON invalid");
+            }
+            if (source.pointer === "/next") {
+              const page = body as Record<string, unknown> | null;
+              if (
+                entry.validator.validate("#/$defs/mutationReceiptPage", body).length ||
+                page?.receipt !== source.receipt
+              )
+                throw new TransactionalReceiptFailure(
+                  "retained receipt page schema or identity mismatch",
+                );
+              // A HEAD never initializes this baseline. An invalid first GET does not either.
+              if (entry.pageBody === undefined) {
+                if (page.next !== null)
+                  throw new TransactionalHarnessError("receipt page exceeds single-page fixture");
+                entry.pageBody = body;
+              } else if (!isDeepStrictEqual(body, entry.pageBody))
+                throw new TransactionalReceiptFailure(
+                  "retained receipt page differs from original wire facts",
+                );
+              return;
+            }
+            if (!isDeepStrictEqual(body, entry.body))
+              throw new TransactionalReceiptFailure(
+                "retained receipt differs from original wire facts",
+              );
+          }
+        },
+      };
+    },
+  };
+}
+```
+
+SOURCE packages/conformance/src/runner.ts:2468-2495 (verbatim section)
+```
+function captureValue(
+  capture: ScenarioCapture,
+  response: HttpExchangeResponse,
+  body: ObservedBody,
+  scope: string,
+): string {
+  let value: unknown;
+  if (capture.from.kind === "response-url") value = response.url;
+  else if (capture.from.kind === "header-link")
+    value = linkHeader(response.headers.link, capture.from.rel, response.url);
+  else {
+    if (body.kind !== "json") throw new ScenarioObservationFailure(observedBodyIssue(body));
+    value = jsonPointer(body.value, capture.from.pointer);
+  }
+  if (typeof value !== "string" || !isHttpUrl(value))
+    throw new ScenarioObservationFailure(
+      `capture '${capture.binding}' did not produce an absolute HTTP(S) URL`,
+    );
+  try {
+    assertConfinedToScope(value, scope, `capture '${capture.binding}'`);
+  } catch (error) {
+    if (capture.from.kind === "header-link")
+      throw new ScenarioOutOfScopeTargetError(
+        "discovered link target is outside the runner's safe fetch boundary",
+        { cause: error },
+      );
+    throw error;
+  }
+```
+
+Source boundaries: supplied preparation section is the exact member-to-singleton construction; the earlier loop handles references/dependencies that these literal unowned direct Bead requests do not use. Sequence stepper calls store.nextSequence one turn at a time, projects each turn and continues until done; claim execution failures become retained failed receipts in the supplied finalization section. B receives helper execution ordering and full raw/helper plan contract. Event source for Scope events is the literal https://reference.invalid/acme/events/; the router passes that canonical source into the shown projection. Do not infer extra captures or proof from these summaries. Flag any necessary missing exact source as a specific proof gap.

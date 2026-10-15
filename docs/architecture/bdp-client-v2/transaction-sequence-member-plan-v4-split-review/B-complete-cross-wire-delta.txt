@@ -1,0 +1,42 @@
+
+COMPLETE CROSS-CARRIER WIRE GATE CONTINUATION (joins prior lines1897-1932; function closes at1969, before applyCrossCarrierControl):
+SOURCE apps/bdptest/src/transactional-matrix.test.ts:1933-1969 (verbatim section)
+```
+      );
+      const epoch = response.headers["bdp-scope-epoch"],
+        view = response.headers["bdp-authorization-view"];
+      expect(typeof epoch).toBe("string");
+      expect(epoch?.length).toBeGreaterThan(0);
+      expect(typeof view).toBe("string");
+      expect(view?.length).toBeGreaterThan(0);
+      expect(response.headers["bdp-scope-position"]).toBe(index < 3 ? "pos-1" : "pos-2");
+      if (facts.length) {
+        expect(epoch).toBe(facts[0]!.epoch);
+        expect(view).toBe(facts[0]!.view);
+      }
+      let revision: string | undefined;
+      if (index === 0 || index === 3) {
+        const observed = JSON.parse(response.bodyText);
+        expect(observed.idempotencyKey).toBe(index === 0 ? "carrier-create" : "carrier-update");
+        expect(observed.status).toBe("completed");
+        expect(observed.results).toHaveLength(1);
+        expect(observed.results[0].resource).toMatchObject({
+          id: `${scope}beads/a`,
+          type: `${scope}types/task`,
+          properties: { title: index === 0 ? "carrier-original" : "carrier-current" },
+          metadata: {},
+        });
+        revision = observed.results[0].resource.revision;
+        expect(typeof revision).toBe("string");
+        expect(revision?.length).toBeGreaterThan(0);
+      }
+      facts.push({ epoch: epoch!, view: view!, ...(revision === undefined ? {} : { revision }) });
+    },
+    finish() {
+      expect(active).toBe(true);
+      expect(facts).toHaveLength(maximum);
+      if (control === undefined) expect(facts[3]!.revision).not.toBe(facts[0]!.revision);
+    },
+  };
+}
+```
