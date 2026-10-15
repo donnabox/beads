@@ -1,0 +1,158 @@
+{
+  "status": "CLOSED_PROPOSED_COMMANDS",
+  "sourceDependentBindings": "Unavailable until actual eight-path draft freeze and root acceptance; no execution-gate.json exists.",
+  "pathPrefix": "/Users/dbox/.nvm/versions/node/v24.16.0/bin",
+  "commands": [
+    {
+      "id": "offline-setup",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-sequence-member-evidence",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "install",
+        "--offline",
+        "--frozen-lockfile"
+      ],
+      "timeoutSeconds": 120,
+      "supervisorSeconds": 120,
+      "released": false
+    },
+    {
+      "id": "typecheck",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-sequence-member-evidence",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "typecheck"
+      ],
+      "timeoutSeconds": 120,
+      "supervisorSeconds": 120,
+      "released": false
+    },
+    {
+      "id": "build",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-sequence-member-evidence",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "build"
+      ],
+      "timeoutSeconds": 120,
+      "supervisorSeconds": 120,
+      "released": false
+    },
+    {
+      "id": "format-check",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-sequence-member-evidence",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "exec",
+        "biome",
+        "format",
+        "packages/server/src/transaction-batch.ts",
+        "packages/server/src/transaction-store.ts",
+        "packages/server/src/transaction-submission.ts",
+        "packages/server/src/transaction-set.test.ts",
+        "packages/server/src/transaction-submission.test.ts",
+        "packages/server/src/transaction-http.test.ts",
+        "apps/bdptest/src/transactional-depth-key-order-installed.test.ts"
+      ],
+      "timeoutSeconds": 120,
+      "supervisorSeconds": 120,
+      "released": false
+    },
+    {
+      "id": "lint",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-sequence-member-evidence",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "lint"
+      ],
+      "timeoutSeconds": 120,
+      "supervisorSeconds": 120,
+      "released": false
+    },
+    {
+      "id": "boundaries",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-sequence-member-evidence",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "check:boundaries"
+      ],
+      "timeoutSeconds": 120,
+      "supervisorSeconds": 120,
+      "released": false
+    },
+    {
+      "id": "read-seal",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-sequence-member-evidence",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "evidence:verify"
+      ],
+      "timeoutSeconds": 120,
+      "supervisorSeconds": 120,
+      "released": false
+    },
+    {
+      "id": "source-positive",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-sequence-member-evidence",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/repos/wt/vickie/vickie-sequence-member-evidence/node_modules/.pnpm/vitest@4.1.10_@types+node@24.13.3_vite@8.2.1_@types+node@24.13.3_/node_modules/vitest/vitest.mjs",
+        "run",
+        "packages/server/src/transaction-set.test.ts",
+        "packages/server/src/transaction-submission.test.ts",
+        "packages/server/src/transaction-http.test.ts",
+        "--maxWorkers=1",
+        "--reporter=verbose",
+        "--reporter=json",
+        "--outputFile=/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-depth-key-order-draft/execution-preparation-v2/run/source.json",
+        "-t",
+        "^(?:keeps\\ receiving\\ depth\\ facts\\ private\\ while\\ legacy\\ preparation\\ still\\ throws|compares\\ retained\\ direct\\ keys\\ before\\ private\\ carrier\\ depth\\ without\\ admitting\\ fresh\\ deep\\ input|compares\\ deep\\ metadata\\ against\\ genuine\\ pending\\ and\\ dependent\\ keys\\ without\\ changing\\ saved\\ outcomes|private\\ direct\\ Transactional\\ receiving\\ order\\ checks\\ byte\\ bounds,\\ syntax,\\ key\\ and\\ authentication\\ before\\ key\\ access|private\\ direct\\ Transactional\\ receiving\\ order\\ keeps\\ invalid\\ Selector\\ grammar\\ distinct\\ from\\ excessive\\ private\\ depth|private\\ direct\\ Transactional\\ receiving\\ order\\ compares\\ conflict\\ before\\ negotiation\\ and\\ negotiates\\ exact\\ pending/terminal\\ replay\\ without\\ changing\\ it|private\\ direct\\ Transactional\\ receiving\\ order\\ preserves\\ failed\\ and\\ expired\\ duplicate\\ dispositions\\ and\\ does\\ not\\ renew\\ detail|private\\ direct\\ Transactional\\ receiving\\ order\\ keeps\\ unresolved\\ comparison\\ ahead\\ of\\ negotiation,\\ then\\ snapshots\\ immutable\\ controls|private\\ direct\\ Transactional\\ receiving\\ order\\ returns\\ a\\ provable\\ unresolved\\ conflict\\ immediately\\ and\\ times\\ out\\ possible\\ equality\\ without\\ disclosing\\ a\\ receipt|private\\ direct\\ Transactional\\ receiving\\ order\\ rechecks\\ fresh\\ negotiation\\ after\\ unresolved\\ retraction\\ without\\ capturing\\ a\\ replacement\\ key|private\\ direct\\ Transactional\\ receiving\\ order\\ retains\\ original\\ alias\\ witnesses\\ across\\ repointing\\ and\\ canonical\\ retry|private\\ direct\\ Transactional\\ receiving\\ order\\ uses\\ the\\ same\\ depth\\ boundary\\ for\\ singleton\\ and\\ wrapped\\ set\\ content|finishes\\ batch\\ synthetic\\ syntax\\ before\\ depth,\\ including\\ deeply\\ nested\\ received\\ input|finishes\\ singleton\\ synthetic\\ syntax\\ before\\ depth,\\ including\\ deeply\\ nested\\ received\\ input|serializes\\ byte\\-bounded\\ deep\\ syntax\\ iteratively\\ without\\ changing\\ number\\ lexemes\\ or\\ key\\ order|serves\\ retained\\ direct\\ key\\ conflicts\\ before\\ private\\ depth\\ and\\ preserves\\ fresh\\ refusal|labels\\ sequence\\ depth\\ gaps\\ honestly\\ and\\ keeps\\ sequence\\ capacity\\ distinct\\ from\\ direct\\ transaction\\ capacity)$"
+      ],
+      "timeoutSeconds": 120,
+      "supervisorSeconds": 120,
+      "released": false,
+      "expectedCases": 17,
+      "expectedExit": 0,
+      "selectedFullNames": [
+        "keeps receiving depth facts private while legacy preparation still throws",
+        "compares retained direct keys before private carrier depth without admitting fresh deep input",
+        "compares deep metadata against genuine pending and dependent keys without changing saved outcomes",
+        "private direct Transactional receiving order checks byte bounds, syntax, key and authentication before key access",
+        "private direct Transactional receiving order keeps invalid Selector grammar distinct from excessive private depth",
+        "private direct Transactional receiving order compares conflict before negotiation and negotiates exact pending/terminal replay without changing it",
+        "private direct Transactional receiving order preserves failed and expired duplicate dispositions and does not renew detail",
+        "private direct Transactional receiving order keeps unresolved comparison ahead of negotiation, then snapshots immutable controls",
+        "private direct Transactional receiving order returns a provable unresolved conflict immediately and times out possible equality without disclosing a receipt",
+        "private direct Transactional receiving order rechecks fresh negotiation after unresolved retraction without capturing a replacement key",
+        "private direct Transactional receiving order retains original alias witnesses across repointing and canonical retry",
+        "private direct Transactional receiving order uses the same depth boundary for singleton and wrapped set content",
+        "finishes batch synthetic syntax before depth, including deeply nested received input",
+        "finishes singleton synthetic syntax before depth, including deeply nested received input",
+        "serializes byte-bounded deep syntax iteratively without changing number lexemes or key order",
+        "serves retained direct key conflicts before private depth and preserves fresh refusal",
+        "labels sequence depth gaps honestly and keeps sequence capacity distinct from direct transaction capacity"
+      ],
+      "cases": 17,
+      "http": 17,
+      "owners": 16,
+      "directories": 15,
+      "listeners": 2,
+      "productChildren": 0,
+      "readonlyInventoryHandles": 0,
+      "ownedTempPrefixes": [
+        "bdp-tx-submission-",
+        "bdp-tx-http-"
+      ]
+    }
+  ],
+  "noAutomaticRetry": true,
+  "controlGate": "Closed/unavailable: actual positive emitted build graph, capacity accessor and exact derivative do not yet exist. No control command is accepted here.",
+  "installedGate": "Closed/unavailable: clean ordinary candidate, archives/consumer/eight-dependency closure/source payload unavailable. No packaging/installed command is accepted here."
+}

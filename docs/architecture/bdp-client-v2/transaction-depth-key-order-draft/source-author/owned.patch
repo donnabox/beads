@@ -1,0 +1,895 @@
+diff --git a/docs/design/transaction-implementation-progress.md b/docs/design/transaction-implementation-progress.md
+index f852a5c..64f4d0e 100644
+--- a/docs/design/transaction-implementation-progress.md
++++ b/docs/design/transaction-implementation-progress.md
+@@ -1900,3 +1900,24 @@ exchanges retain their existing reader/deadlines without a new aggregate byte-ca
+ claim. Earlier evidence remains attributed to its original source. This is not
+ public discovery activation, profile qualification or a ruling on retained
+ Snapshot minimums or metadata-only incident-Link Event membership.
++
++
++### Retained direct keys before private carrier-depth refusal
++
++This draft records a private depth-capacity fact only after complete direct
++carrier syntax preparation, then lets the authoritative owner compare retained
++keys before refusing a fresh over-depth carrier. A different normalized request
++under a retained key returns the existing conflict; equal retained requests keep
++their saved outcome and existing negotiation behavior. A fresh deep request still
++receives the private bodyless500 development refusal without acquiring a key or
++receipt. Strict preparation helpers, no-controls owner calls and sequence depth
++preparation retain their existing development-limit exception behavior.
++
++The bounded draft adds four source cases and one thirteen-request private installed
++witness. Source cases include strict helper compatibility, genuine retained and
++pending/dependent keys, a raw twenty-thousand-array metadata retry, and a thirteen-
++request HTTP witness. No tests, builds, controls or installed execution have run
++at this draft checkpoint. The proposed early-refusal control and fresh installed
++witness remain separate gates; earlier evidence retains its original source
++attribution. This changes neither public discovery eligibility nor the pending
++Snapshot minimum or incident-Link Event membership rulings.
+diff --git a/packages/server/src/transaction-batch.ts b/packages/server/src/transaction-batch.ts
+index 472a4a6..ce8f400 100644
+--- a/packages/server/src/transaction-batch.ts
++++ b/packages/server/src/transaction-batch.ts
+@@ -2,6 +2,7 @@
+ import {
+   prepareSetShape,
+   assertTransactionInputDepth,
++  TransactionDevelopmentLimitError,
+   validateSetSelector,
+   type TransactionSetOperation,
+   transactionInputText as losslessText,
+@@ -81,6 +82,7 @@ export interface PreparedTransaction {
+   };
+ }
+ const prepared = new WeakSet<object>();
++const depthRefusals = new WeakMap<object, string>();
+ function assertResourceOperation(operation: unknown): asserts operation is ResourceOperation {
+   if (
+     typeof operation !== "string" ||
+@@ -133,7 +135,9 @@ export function prepareTransactionSetCore(
+ ): PreparedTransaction {
+   if (Buffer.byteLength(text) > TRANSACTION_RUNTIME_LIMITS.requestBodyBytes)
+     throw new RangeError("development batch byte limit");
+-  return prepareMixedTransaction(scope, object(decodeJsonDocument(text)), singleton);
++  return requireTransactionDepth(
++    prepareMixedTransaction(scope, object(decodeJsonDocument(text)), singleton),
++  );
+ }
+ function prepareMixedTransaction(
+   scope: string,
+@@ -172,14 +176,14 @@ function prepareMixedTransaction(
+         singleton ? "/selector" : `/operations/${index}/selector`,
+         TRANSACTION_RUNTIME_LIMITS.requestBodyBytes,
+       );
+-  assertTransactionInputDepth(root);
+-  return prepareCarrier(
++  return prepareDepthCarrier(
+     Object.freeze({
+       scope: canonicalScope,
+       kind: singleton ? "singleton" : "sequence",
+       operations: Object.freeze(operations),
+       keys: Object.freeze([]),
+     }),
++    root,
+   );
+ }
+ /** A singleton is the same one-operation Transactional request, not a RU
+@@ -189,6 +193,27 @@ export function prepareTransactionSingleton(
+   scope: string,
+   operation: TransactionSingletonOperation,
+   text: string,
++): PreparedTransaction {
++  return requireTransactionDepth(prepareSingletonForReceiving(scope, operation, text));
++}
++/** Private receiving syntax only; the owner decides capacity after retained-key comparison. */
++export function prepareTransactionForReceiving(
++  scope: string,
++  carrier:
++    | { readonly kind: "batch" }
++    | { readonly kind: "singleton"; readonly operation: TransactionSingletonOperation },
++  text: string,
++): PreparedTransaction {
++  if (carrier.kind === "singleton")
++    return prepareSingletonForReceiving(scope, carrier.operation, text);
++  if (Buffer.byteLength(text) > TRANSACTION_RUNTIME_LIMITS.requestBodyBytes)
++    throw new RangeError("development batch byte limit");
++  return prepareMixedTransaction(scope, object(decodeJsonDocument(text)), false);
++}
++function prepareSingletonForReceiving(
++  scope: string,
++  operation: TransactionSingletonOperation,
++  text: string,
+ ): PreparedTransaction {
+   if (
+     operation !== "updateWhere" &&
+@@ -209,8 +234,7 @@ export function prepareTransactionSingleton(
+     return prepareMixedTransaction(scope, { operations: [{ operation, ...input }] }, true);
+   }
+   const carrier = prepareReadUpdateSingleton(scope, operation, text, "internal-singleton");
+-  assertTransactionInputDepth(input, 2);
+-  return prepareCarrier(carrier);
++  return prepareDepthCarrier(carrier, input, 2);
+ }
+ export interface PreparedTransactionSequence {
+   readonly scope: string;
+@@ -312,6 +336,30 @@ function prepareCarrier(carrier: PreparedTransaction["carrier"]): PreparedTransa
+   prepared.add(result);
+   return result;
+ }
++function prepareDepthCarrier(
++  carrier: PreparedTransaction["carrier"],
++  input: LosslessJsonValue,
++  depth = 0,
++): PreparedTransaction {
++  const result = prepareCarrier(carrier);
++  try {
++    assertTransactionInputDepth(input, depth);
++  } catch (error) {
++    if (!(error instanceof TransactionDevelopmentLimitError)) throw error;
++    depthRefusals.set(result, error.message);
++  }
++  return result;
++}
++/** Source-private, read-only fact; only this module can create or annotate its brand. */
++export function transactionDepthRefusal(batch: PreparedTransaction): string | undefined {
++  if (!prepared.has(batch)) throw new TypeError("expected prepared transaction");
++  return depthRefusals.get(batch);
++}
++function requireTransactionDepth(batch: PreparedTransaction): PreparedTransaction {
++  const message = transactionDepthRefusal(batch);
++  if (message !== undefined) throw new TransactionDevelopmentLimitError(message);
++  return batch;
++}
+ export function assertPreparedTransaction(batch: PreparedTransaction, scope: string): void {
+   if (!prepared.has(batch) || batch.carrier.scope !== scope)
+     throw new TypeError("expected prepared transaction for this Scope");
+diff --git a/packages/server/src/transaction-http.test.ts b/packages/server/src/transaction-http.test.ts
+index 290e933..73427a7 100644
+--- a/packages/server/src/transaction-http.test.ts
++++ b/packages/server/src/transaction-http.test.ts
+@@ -1,3 +1,4 @@
++import { createHash } from "node:crypto";
+ import { mkdtempSync, rmSync, readFileSync } from "node:fs";
+ import { tmpdir } from "node:os";
+ import path from "node:path";
+@@ -4085,3 +4086,333 @@ it("serves current missing receipt root and page context without changing nondis
+   if (failures.length > 1)
+     throw new AggregateError(failures, "receipt context observation and cleanup failed");
+ }, 60000);
++
++it("serves retained direct key conflicts before private depth and preserves fresh refusal", async () => {
++  const controller = new AbortController();
++  const deadline = setTimeout(() => controller.abort(new Error("depth-key work deadline")), 25000);
++  const cleanupStart = cleanup.length;
++  const failures: unknown[] = [];
++  const observations: Record<string, unknown>[] = [];
++  const receipts: Record<string, unknown>[] = [];
++  const resources: Record<string, unknown>[] = [];
++  let f: Awaited<ReturnType<typeof fixture>> | undefined;
++  let attempts = 0;
++  let cleanupCompleted = false;
++  let expectedContext: Record<string, string> | undefined;
++  const validCollection = ajv.compile({ $ref: `${schema.$id}#/$defs/currentBeadCollection` });
++  const validBead = ajv.compile({ $ref: `${schema.$id}#/$defs/currentBeadRecord` });
++  type Observed = { status: number; headers: Headers; text: string };
++  const checkedContext = (response: Observed, position: string) => {
++    if (!expectedContext) throw new Error("depth-key seed context missing");
++    expect(
++      Object.fromEntries([
++        ...Object.entries(expectedContext).map(([name]) => [name, response.headers.get(name)]),
++        ["bdp-scope-position", response.headers.get("bdp-scope-position")],
++      ]),
++    ).toEqual({ ...expectedContext, "bdp-scope-position": position });
++  };
++  async function exchange(
++    label: string,
++    url: string,
++    text?: string,
++    key?: string,
++    accept = "application/json",
++  ): Promise<Observed> {
++    if (!f) throw new Error("depth-key listener missing");
++    controller.signal.throwIfAborted();
++    expect(++attempts, "depth-key source request bound").toBeLessThanOrEqual(13);
++    const method = text === undefined ? "GET" : "POST";
++    const routes = [
++      ["POST", f.runtime.targets.batch],
++      ["POST", f.runtime.targets.createBead],
++      ["GET", `${f.runtime.scope}beads/depth-b-a`],
++      ["GET", `${f.runtime.scope}beads/depth-s-a`],
++      ["GET", `${f.runtime.scope}beads/?limit=32`],
++    ];
++    expect(
++      routes.some(([m, target]) => m === method && target === url),
++      "depth-key route binding",
++    ).toBe(true);
++    const headers = {
++      authorization: `Bearer ${token}`,
++      accept,
++      ...(text === undefined
++        ? {}
++        : { "content-type": "application/json", "idempotency-key": key ?? "" }),
++    };
++    expect(Buffer.byteLength(text ?? "")).toBeLessThanOrEqual(65536);
++    expect(
++      Object.entries(headers).reduce(
++        (sum, [name, value]) => sum + Buffer.byteLength(name + value) + 4,
++        0,
++      ),
++    ).toBeLessThanOrEqual(16384);
++    const request = new AbortController();
++    const timer = setTimeout(() => request.abort(new Error("depth-key request deadline")), 5000);
++    let reader: ReadableStreamDefaultReader<Uint8Array> | undefined;
++    let bodyComplete = false;
++    try {
++      const response = await fetch(url, {
++        method,
++        headers,
++        ...(text === undefined ? {} : { body: text }),
++        redirect: "error",
++        signal: AbortSignal.any([controller.signal, request.signal]),
++      });
++      expect(
++        [...response.headers].reduce(
++          (sum, [name, value]) => sum + Buffer.byteLength(name + value) + 4,
++          0,
++        ),
++      ).toBeLessThanOrEqual(65536);
++      const chunks: Uint8Array[] = [];
++      let bytes = 0;
++      reader = response.body?.getReader();
++      if (reader) {
++        for (;;) {
++          const chunk = await reader.read();
++          if (chunk.done) break;
++          bytes += chunk.value.byteLength;
++          if (bytes > 131072) throw new Error("depth-key response body ceiling");
++          chunks.push(chunk.value);
++        }
++      }
++      bodyComplete = true;
++      const result = {
++        status: response.status,
++        headers: response.headers,
++        text: Buffer.concat(chunks).toString("utf8"),
++      };
++      observations.push({
++        label,
++        method,
++        url,
++        accept,
++        status: result.status,
++        requestBodyBytes: Buffer.byteLength(text ?? ""),
++        requestBodySha256: createHash("sha256")
++          .update(text ?? "")
++          .digest("hex"),
++        responseBodyBytes: bytes,
++        responseBodySha256: createHash("sha256").update(result.text).digest("hex"),
++        headers: Object.fromEntries(
++          [
++            "bdp-scope-epoch",
++            "bdp-authorization-view",
++            "bdp-scope-position",
++            "x-bdp-development",
++            "x-bdp-development-limit",
++            "content-type",
++            "content-length",
++          ].map((name) => [name, result.headers.get(name)]),
++        ),
++      });
++      expect(result.headers.get("x-bdp-development")).toBe("non-attesting");
++      return result;
++    } finally {
++      clearTimeout(timer);
++      request.abort();
++      if (reader) {
++        try {
++          if (!bodyComplete) await reader.cancel();
++        } catch (error) {
++          failures.push(error);
++        } finally {
++          try {
++            reader.releaseLock();
++          } catch (error) {
++            failures.push(error);
++          }
++        }
++      }
++    }
++  }
++  function completed(response: Observed, name: string, key: string, position: string) {
++    expect(response.status).toBe(200);
++    const value = record(JSON.parse(response.text));
++    expect(validateSelectorReceipt(value), JSON.stringify(validateSelectorReceipt.errors)).toBe(
++      true,
++    );
++    expect(value).toMatchObject({
++      idempotencyKey: key,
++      status: "completed",
++      detail: "available",
++      requiredPosition: position,
++      effectPosition: position,
++      next: null,
++    });
++    const results = value.results;
++    expect(Array.isArray(results)).toBe(true);
++    if (!Array.isArray(results)) throw new Error("depth-key results missing");
++    expect(results).toHaveLength(1);
++    const result = record(results[0]);
++    const resource = record(result.resource);
++    expect(result).toEqual({ operationIndex: 0, outcome: "created", resource });
++    expect(typeof resource.revision).toBe("string");
++    expect(resource.revision).not.toBe("");
++    expect(resource).toEqual({
++      id: `${f?.runtime.scope}beads/${name}`,
++      type: bead,
++      properties: { title: name },
++      metadata: {},
++      revision: resource.revision,
++    });
++    if (!expectedContext) {
++      expect(typeof value.scopeEpoch).toBe("string");
++      expect(typeof value.authorizationView).toBe("string");
++      expectedContext = {
++        "bdp-scope-epoch": String(value.scopeEpoch),
++        "bdp-authorization-view": String(value.authorizationView),
++      };
++    }
++    checkedContext(response, position);
++    receipts.push(value);
++    resources.push(resource);
++    return value;
++  }
++  try {
++    f = await fixture();
++    controller.signal.throwIfAborted();
++    let nested: unknown = "leaf";
++    for (let i = 0; i < 40; i++) nested = { nested };
++    for (const [kind, stem, position] of [
++      ["batch", "depth-b", 1],
++      ["singleton", "depth-s", 3],
++    ] as const) {
++      const target = kind === "batch" ? f.runtime.targets.batch : f.runtime.targets.createBead;
++      const a = `${stem}-a`,
++        b = `${stem}-b`;
++      const key = `${stem}-retained`,
++        fresh = `${stem}-fresh`;
++      const input = (name: string, deep = false) => {
++        const value = {
++          id: `beads/${name}`,
++          type: bead,
++          properties: { title: name },
++          metadata: deep ? { nested } : {},
++        };
++        return JSON.stringify(
++          kind === "batch" ? { operations: [{ operation: "createBead", ...value }] } : value,
++        );
++      };
++      const seed = completed(
++        await exchange(`${kind}-seed`, target, input(a), key),
++        a,
++        key,
++        `pos-${position}`,
++      );
++      const conflict = await exchange(
++        `${kind}-deep-conflict`,
++        target,
++        input(a, true),
++        key,
++        "text/plain",
++      );
++      expect(conflict.status, `depth-key:${kind}:conflict-before-depth`).toBe(409);
++      expect(checkedProblem(record(JSON.parse(conflict.text)))).toEqual({
++        type: "https://github.com/gastownhall/bdp/problems/conflict",
++        code: "idempotency-conflict",
++        status: 409,
++        retry: "never",
++      });
++      checkedContext(conflict, `pos-${position}`);
++      const replay = await exchange(`${kind}-equal-replay`, target, input(a), key);
++      expect(replay.status).toBe(200);
++      expect(JSON.parse(replay.text)).toEqual(seed);
++      checkedContext(replay, `pos-${position}`);
++      const refused = await exchange(
++        `${kind}-fresh-depth`,
++        target,
++        input(b, true),
++        fresh,
++        "text/plain",
++      );
++      expect(refused.status).toBe(500);
++      expect(refused.text).toBe("");
++      expect(refused.headers.get("x-bdp-development-limit")).toBe(
++        "unsupported-transaction-composition",
++      );
++      for (const name of ["bdp-scope-epoch", "bdp-authorization-view", "bdp-scope-position"])
++        expect(refused.headers.get(name)).toBeNull();
++      completed(
++        await exchange(`${kind}-fresh-reuse`, target, input(b), fresh),
++        b,
++        fresh,
++        `pos-${position + 1}`,
++      );
++      const point = await exchange(`${kind}-point-unchanged`, `${f.runtime.scope}beads/${a}`);
++      expect(point.status).toBe(200);
++      const pointBody: unknown = JSON.parse(point.text);
++      expect(validBead(pointBody), JSON.stringify(validBead.errors)).toBe(true);
++      expect(pointBody).toEqual(record((seed.results as unknown[])[0]).resource);
++      checkedContext(point, `pos-${position + 1}`);
++    }
++    const collection = await exchange(
++      "final-complete-collection",
++      `${f.runtime.scope}beads/?limit=32`,
++    );
++    expect(collection.status).toBe(200);
++    const collectionBody: unknown = JSON.parse(collection.text);
++    expect(validCollection(collectionBody), JSON.stringify(validCollection.errors)).toBe(true);
++    expect(collectionBody).toEqual({ items: resources, next: null });
++    checkedContext(collection, "pos-4");
++    expect(attempts).toBe(13);
++    expect(receipts).toHaveLength(4);
++  } catch (error) {
++    failures.push(error);
++  } finally {
++    clearTimeout(deadline);
++    controller.abort();
++    try {
++      console.log(
++        "depth-key-source-observation " +
++          JSON.stringify({
++            attempts,
++            responses: observations,
++            primaryFailureCount: failures.length,
++          }),
++      );
++    } catch (error) {
++      failures.push(error);
++    }
++    const actions = cleanup.splice(cleanupStart).reverse();
++    const end = performance.now() + 5000;
++    let cleanupActionsCompleted = 0;
++    for (const action of actions) {
++      let timer: ReturnType<typeof setTimeout> | undefined;
++      try {
++        const remaining = end - performance.now();
++        if (remaining <= 0) throw new Error("depth-key cleanup deadline");
++        await Promise.race([
++          Promise.resolve().then(action),
++          new Promise<never>((_resolve, reject) => {
++            timer = setTimeout(() => reject(new Error("depth-key cleanup deadline")), remaining);
++          }),
++        ]);
++        cleanupActionsCompleted++;
++      } catch (error) {
++        failures.push(error);
++        break;
++      } finally {
++        if (timer) clearTimeout(timer);
++      }
++    }
++    cleanupCompleted = cleanupActionsCompleted === actions.length;
++    try {
++      console.log(
++        "depth-key-source-cleanup " +
++          JSON.stringify({
++            cleanupActions: actions.length,
++            cleanupActionsCompleted,
++            cleanupCompleted,
++            primaryOrCleanupFailureCount: failures.length,
++          }),
++      );
++    } catch (error) {
++      failures.push(error);
++    }
++  }
++  if (failures.length === 1) throw failures[0];
++  if (failures.length > 1)
++    throw new AggregateError(failures, "depth-key HTTP assertions or cleanup failed");
++}, 30000);
+diff --git a/packages/server/src/transaction-set.test.ts b/packages/server/src/transaction-set.test.ts
+index 6c91f14..5df6b8b 100644
+--- a/packages/server/src/transaction-set.test.ts
++++ b/packages/server/src/transaction-set.test.ts
+@@ -1118,3 +1118,85 @@ it("preserves literal Selector identity and original mixed-carrier diagnostic po
+     ),
+   ).toThrow("prepared set lost Selector grammar analysis");
+ });
++
++it("keeps receiving depth facts private while legacy preparation still throws", () => {
++  let nested: unknown = "leaf";
++  for (let i = 0; i < 40; i++) nested = { nested };
++  const input = { id: "beads/a", type, metadata: { nested } };
++  const text = JSON.stringify(input);
++  const mixed = JSON.stringify({ operations: [{ operation: "createBead", ...input }] });
++  for (const prepare of [
++    () => batch.prepareTransaction(scope, mixed),
++    () => batch.prepareTransactionSetCore(scope, mixed),
++    () => batch.prepareTransactionSingleton(scope, "createBead", text),
++    () =>
++      batch.prepareTransactionSequence(
++        scope,
++        JSON.stringify({
++          operations: [{ operation: "createBead", ...input, idempotencyKey: "deep" }],
++        }),
++      ),
++  ]) {
++    let caught: unknown;
++    try {
++      prepare();
++    } catch (error) {
++      caught = error;
++    }
++    expect(caught).toBeInstanceOf(batch.TransactionDevelopmentLimitError);
++    expect(caught).toMatchObject({ message: "development batch depth limit" });
++  }
++  const singleton = batch.prepareTransactionForReceiving(
++    scope,
++    { kind: "singleton", operation: "createBead" },
++    text,
++  );
++  const wrapped = batch.prepareTransactionForReceiving(scope, { kind: "batch" }, mixed);
++  for (const prepared of [singleton, wrapped]) {
++    expect(batch.transactionDepthRefusal(prepared)).toBe("development batch depth limit");
++    expect(Object.keys(prepared)).toEqual(["carrier"]);
++    expect(Object.isFrozen(prepared)).toBe(true);
++    expect(() => batch.transactionDepthRefusal({ ...prepared })).toThrow(TypeError);
++    expect(() => batch.assertPreparedTransaction({ ...prepared }, scope)).toThrow(TypeError);
++  }
++  expect(batch.normalizeTransaction(singleton, () => undefined).identity).toBe(
++    batch.normalizeTransaction(wrapped, () => undefined).identity,
++  );
++  const shallow = JSON.stringify({ id: "beads/a", type });
++  for (const prepared of [
++    batch.prepareTransactionForReceiving(
++      scope,
++      { kind: "singleton", operation: "createBead" },
++      shallow,
++    ),
++    batch.prepareTransactionForReceiving(
++      scope,
++      { kind: "batch" },
++      JSON.stringify({ operations: [{ operation: "createBead", id: "beads/a", type }] }),
++    ),
++  ])
++    expect(batch.transactionDepthRefusal(prepared)).toBeUndefined();
++  for (const prepare of [
++    () =>
++      batch.prepareTransactionForReceiving(
++        scope,
++        { kind: "singleton", operation: "createBead" },
++        JSON.stringify({ ...input, extra: true }),
++      ),
++    () =>
++      batch.prepareTransactionForReceiving(
++        scope,
++        { kind: "batch" },
++        JSON.stringify({ operations: [{ operation: "createBead", ...input, extra: true }] }),
++      ),
++  ]) {
++    let caught: unknown;
++    try {
++      prepare();
++    } catch (error) {
++      caught = error;
++    }
++    expect(caught).toBeInstanceOf(Error);
++    expect(caught).not.toBeInstanceOf(batch.TransactionDevelopmentLimitError);
++  }
++});
+diff --git a/packages/server/src/transaction-store.ts b/packages/server/src/transaction-store.ts
+index 91fdb85..0c7a94d 100644
+--- a/packages/server/src/transaction-store.ts
++++ b/packages/server/src/transaction-store.ts
+@@ -50,6 +50,7 @@ import {
+   TRANSACTION_RUNTIME_LIMITS,
+   TRANSACTION_MAXIMUM_OPERATIONS,
+   assertPreparedTransaction,
++  transactionDepthRefusal,
+   assertPreparedTransactionSequence,
+   normalizeTransaction,
+   evaluateTransaction,
+@@ -135,6 +136,7 @@ export interface TransactionReceivingControls {
+ }
+ export type TransactionReceivingAdmission =
+   | TransactionAdmission
++  | { readonly kind: "development-limit"; readonly message: string }
+   | { readonly kind: "not-acceptable"; readonly context?: TransactionReadContext }
+   | { readonly kind: "operation-limit"; readonly context?: TransactionReadContext }
+   | {
+@@ -1075,6 +1077,11 @@ export function openTransactionStore(options: TransactionStoreOptions) {
+           ? { kind: "existing", receipt: parseReceipt(prior.receipt) }
+           : { kind: "comparison-pending" };
+     }
++    const depthRefusal = transactionDepthRefusal(batch);
++    if (!prior && depthRefusal !== undefined) {
++      if (controls === undefined) throw new TransactionDevelopmentLimitError(depthRefusal);
++      return { kind: "development-limit", message: depthRefusal };
++    }
+     const normalized = template
+       ? undefined
+       : normalizeTransaction(batch, resolveAlias, prior?.witnesses, references);
+@@ -1406,6 +1413,8 @@ export function openTransactionStore(options: TransactionStoreOptions) {
+       checkPrincipalKey(principal, key);
+       const admission = atomic(() => {
+         const result = admitKey(principal, key, batch, false, undefined, undefined, receiving);
++        if (result.kind === "development-limit" && controls === undefined)
++          throw new TransactionDevelopmentLimitError(result.message);
+         if (result.kind === "operation-limit" && controls === undefined)
+           throw new TransactionDevelopmentLimitError("development transaction operation limit");
+         if (result.kind === "selector-limit" && controls === undefined)
+diff --git a/packages/server/src/transaction-submission.test.ts b/packages/server/src/transaction-submission.test.ts
+index 0c4e3cb..a0308ba 100644
+--- a/packages/server/src/transaction-submission.test.ts
++++ b/packages/server/src/transaction-submission.test.ts
+@@ -1,3 +1,4 @@
++import { createHash } from "node:crypto";
+ import { mkdtempSync, rmSync } from "node:fs";
+ import { tmpdir } from "node:os";
+ import path from "node:path";
+@@ -5,7 +6,12 @@ import { DatabaseSync } from "node:sqlite";
+ import { afterEach, describe, expect, it, vi } from "vitest";
+ import { parseTypeDescriptor } from "@bdp/protocol";
+ import { openTransactionStore } from "./transaction-store.js";
+-import { prepareTransaction, prepareTransactionSequence } from "./transaction-batch.js";
++import {
++  prepareTransaction,
++  prepareTransactionSequence,
++  prepareTransactionForReceiving,
++  TransactionDevelopmentLimitError,
++} from "./transaction-batch.js";
+ import * as setCore from "./transaction-set.js";
+ import { submitTransaction, type TransactionSubmission } from "./transaction-submission.js";
+ const scope = "https://example.test/submission/",
+@@ -1537,3 +1543,196 @@ it("preserves genuine pending completed and failed receipts before Selector capa
+   expect(capacity).toHaveBeenCalledTimes(1);
+   expect(f.store.inspect()).toEqual(before);
+ });
++
++it("compares retained direct keys before private carrier depth without admitting fresh deep input", async () => {
++  const f = fixture();
++  let nested: unknown = "leaf";
++  for (let i = 0; i < 40; i++) nested = { nested };
++  const request = (
++    kind: "batch" | "singleton",
++    id: string,
++    key: string,
++    deep = false,
++  ): TransactionSubmission => {
++    const input = { id: `beads/${id}`, type: bead, ...(deep ? { metadata: { nested } } : {}) };
++    return {
++      ...submission([], key),
++      carrier: kind === "batch" ? { kind } : { kind, operation: "createBead" },
++      body: JSON.stringify(
++        kind === "batch" ? { operations: [{ operation: "createBead", ...input }] } : input,
++      ),
++    };
++  };
++  const context = () => ({
++    scopeEpoch: f.store.scopeEpoch,
++    authorizationView: f.store.readConfiguration().authorizationView,
++    scopePosition: `pos-${f.store.inspect().position}`,
++  });
++  let calls = 0;
++  const submit = (input: TransactionSubmission) => {
++    calls++;
++    return submitTransaction(f.store, input, {}, true);
++  };
++  let batchReceipt: ReturnType<typeof f.store.receipt>;
++  for (const [kind, originalId, freshId] of [
++    ["batch", "a", "b"],
++    ["singleton", "c", "d"],
++  ] as const) {
++    const key = `depth_${kind}`;
++    const original = request(kind, originalId, key);
++    const result = await submit(original);
++    expect(result.kind).toBe("receipt");
++    if (result.kind !== "receipt") throw new Error("expected genuine shallow receipt");
++    expect(result.receipt.status).toBe("completed");
++    expect(result.context).toEqual(context());
++    if (kind === "batch") batchReceipt = result.receipt;
++    const before = f.store.inspect();
++    const conflicting = request(kind, originalId, key, true);
++    expect(
++      await submit({ ...conflicting, receiving: { acceptsJson: false, maximumOperations: 32 } }),
++    ).toEqual({ kind: "refused", status: 409, code: "idempotency-conflict", context: context() });
++    expect(f.store.inspect()).toEqual(before);
++    expect(f.store.receipt("p", result.receipt.id)).toEqual(result.receipt);
++    const replay = await submit(original);
++    expect(replay).toEqual({ kind: "receipt", receipt: result.receipt, context: context() });
++    expect(
++      await submit({ ...original, receiving: { acceptsJson: false, maximumOperations: 32 } }),
++    ).toEqual({ kind: "not-acceptable", context: context() });
++    expect(f.store.inspect()).toEqual(before);
++    expect(f.store.receipt("p", result.receipt.id)).toEqual(result.receipt);
++    const freshKey = `depth_fresh_${kind}`;
++    expect(
++      await submit({
++        ...request(kind, freshId, freshKey, true),
++        receiving: { acceptsJson: false, maximumOperations: 32 },
++      }),
++    ).toEqual({ kind: "development-limit", message: "development batch depth limit" });
++    expect(f.store.inspect()).toEqual(before);
++    const reused = await submit(request(kind, freshId, freshKey));
++    expect(reused.kind).toBe("receipt");
++    if (reused.kind !== "receipt") throw new Error("fresh refused key was not reusable");
++    expect(reused.receipt.status).toBe("completed");
++    expect(reused.context).toEqual(context());
++    expect(f.store.inspect().resources).toHaveLength(kind === "batch" ? 2 : 4);
++  }
++  const beforeLegacy = f.store.inspect();
++  const legacy = request("batch", "legacy", "legacy", true);
++  const prepared = prepareTransactionForReceiving(scope, legacy.carrier, legacy.body);
++  let caught: unknown;
++  try {
++    f.store.admit("p", legacy.key, prepared);
++  } catch (error) {
++    caught = error;
++  }
++  expect(caught).toBeInstanceOf(TransactionDevelopmentLimitError);
++  expect(caught).toMatchObject({ message: "development batch depth limit" });
++  expect(f.store.inspect()).toEqual(beforeLegacy);
++  const stressBody = `{"operations":[{"operation":"createBead","id":"beads/a","type":"https://example.test/bead","metadata":{"deep":${"[".repeat(20000)}1e+30${"]".repeat(20000)}}}]}`;
++  expect(Buffer.byteLength(stressBody)).toBe(40119);
++  expect(createHash("sha256").update(stressBody).digest("hex")).toBe(
++    "ddd7741aa0824790181015ee940057c7c497437d2ae998b023b61742ed61fe66",
++  );
++  expect(Buffer.byteLength(stressBody)).toBeLessThan(65536);
++  expect(await submit({ ...request("batch", "a", "depth_batch"), body: stressBody })).toEqual({
++    kind: "refused",
++    status: 409,
++    code: "idempotency-conflict",
++    context: context(),
++  });
++  expect(f.store.inspect()).toEqual(beforeLegacy);
++  if (!batchReceipt) throw new Error("missing saved shallow receipt");
++  expect(f.store.receipt("p", batchReceipt.id)).toEqual(batchReceipt);
++  expect(calls).toBe(13);
++});
++
++it("compares deep metadata against genuine pending and dependent keys without changing saved outcomes", async () => {
++  const f = fixture();
++  const failures: unknown[] = [];
++  let pending: ReturnType<typeof own> | undefined;
++  let attempt: ReturnType<typeof dependencies> | undefined;
++  let calls = 0;
++  const submit = (input: TransactionSubmission) => {
++    calls++;
++    return submitTransaction(f.store, input, {
++      wait: async () => {
++        throw new Error("provable conflict or saved replay must not wait");
++      },
++    });
++  };
++  let nested: unknown = "leaf";
++  for (let i = 0; i < 40; i++) nested = { nested };
++  try {
++    const original = submission([create("pending")], "pending_direct");
++    pending = own(f.store, original);
++    const pendingBefore = f.store.inspect();
++    expect(
++      await submit({
++        ...submission([{ ...create("pending"), metadata: { nested } }], original.key),
++        receiving: { acceptsJson: false, maximumOperations: 32 },
++      }),
++    ).toEqual({ kind: "refused", status: 409, code: "idempotency-conflict" });
++    expect(f.store.inspect()).toEqual(pendingBefore);
++    expect(f.store.receipt("p", pending.receipt.id)).toEqual(pending.receipt);
++    expect(
++      await submit({ ...original, receiving: { acceptsJson: false, maximumOperations: 32 } }),
++    ).toEqual({ kind: "not-acceptable" });
++    expect(f.store.receipt("p", pending.receipt.id)).toEqual(pending.receipt);
++    const completed = f.store.execute(pending);
++    pending = undefined;
++    expect(await submit(original)).toEqual({ kind: "receipt", receipt: completed });
++    attempt = dependencies(f.store);
++    const dependentRequest = dependent();
++    const unresolved = f.store.inspect();
++    const first = f.store.receipt("p", completed.id);
++    expect(
++      await submit({
++        ...dependentRequest,
++        body: JSON.stringify({
++          operations: [
++            {
++              operation: "createLink",
++              type: link,
++              source: "beads/a",
++              target: "beads/a",
++              metadata: { nested },
++            },
++          ],
++        }),
++        receiving: { acceptsJson: false, maximumOperations: 32 },
++      }),
++    ).toEqual({ kind: "refused", status: 409, code: "idempotency-conflict" });
++    expect(f.store.inspect()).toEqual(unresolved);
++    expect(f.store.receipt("p", completed.id)).toEqual(first);
++    expect(f.store.nextSequence(attempt).result).toMatchObject({
++      kind: "receipt",
++      receipt: { status: "completed" },
++    });
++    const dependentResult = f.store.nextSequence(attempt).result;
++    expect(dependentResult).toMatchObject({ kind: "receipt", receipt: { status: "completed" } });
++    if (dependentResult.kind !== "receipt") throw new Error("dependent outcome missing");
++    expect(await submit(dependentRequest)).toEqual({
++      kind: "receipt",
++      receipt: dependentResult.receipt,
++    });
++    expect(calls).toBe(5);
++  } catch (error) {
++    failures.push(error);
++  } finally {
++    for (const finish of [
++      () => {
++        if (attempt) f.store.cancelSequence(attempt);
++      },
++      () => {
++        if (pending) f.store.retract(pending);
++      },
++    ]) {
++      try {
++        finish();
++      } catch (error) {
++        failures.push(error);
++      }
++    }
++  }
++  if (failures.length)
++    throw new AggregateError(failures, "depth-key pending ownership or cleanup failed");
++});
+diff --git a/packages/server/src/transaction-submission.ts b/packages/server/src/transaction-submission.ts
+index 9363b4b..d032a58 100644
+--- a/packages/server/src/transaction-submission.ts
++++ b/packages/server/src/transaction-submission.ts
+@@ -6,9 +6,7 @@ import {
+ import { JsonSyntaxError, ReadUpdateCarrierError } from "@bdp/protocol";
+ import {
+   type TransactionSingletonOperation,
+-  prepareTransaction,
+-  prepareTransactionSingleton,
+-  TransactionDevelopmentLimitError,
++  prepareTransactionForReceiving,
+   TRANSACTION_RUNTIME_LIMITS,
+ } from "./transaction-batch.js";
+ import { compareAndAdmitTransaction } from "./transaction-comparison.js";
+@@ -86,18 +84,13 @@ export async function submitTransaction(
+   const { body, key } = submission;
+   if (Buffer.byteLength(body) > TRANSACTION_RUNTIME_LIMITS.requestBodyBytes)
+     return { kind: "refused", status: 413, code: "request-too-large" };
+-  let prepared: ReturnType<typeof prepareTransaction> | undefined;
+-  let developmentLimit: TransactionDevelopmentLimitError | undefined;
++  let prepared: ReturnType<typeof prepareTransactionForReceiving>;
+   try {
+-    prepared =
+-      submission.carrier.kind === "batch"
+-        ? prepareTransaction(store.scope, body)
+-        : prepareTransactionSingleton(store.scope, submission.carrier.operation, body);
++    prepared = prepareTransactionForReceiving(store.scope, submission.carrier, body);
+   } catch (error) {
+     if (error instanceof TransactionSelectorSyntaxError)
+       return { kind: "refused", status: 400, code: "malformed-request", pointer: error.pointer };
+-    if (error instanceof TransactionDevelopmentLimitError) developmentLimit = error;
+-    else if (
++    if (
+       error instanceof JsonSyntaxError ||
+       error instanceof ReadUpdateCarrierError ||
+       error instanceof TypeError
+@@ -118,8 +111,6 @@ export async function submitTransaction(
+     !authorization.principal.isWellFormed()
+   )
+     throw new TypeError("invalid trusted principal");
+-  if (developmentLimit) return { kind: "development-limit", message: developmentLimit.message };
+-  if (!prepared) throw new Error("missing prepared transaction");
+   const comparisonStore = observed
+     ? {
+         scopeEpoch: store.scopeEpoch,
+@@ -149,6 +140,8 @@ export async function submitTransaction(
+   )
+     throw new Error("admission refusal lost same-entry context");
+   switch (result.kind) {
++    case "development-limit":
++      return result;
+     case "conflict":
+       return {
+         kind: "refused",

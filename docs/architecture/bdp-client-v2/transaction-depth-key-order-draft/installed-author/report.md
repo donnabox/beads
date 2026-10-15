@@ -1,0 +1,13 @@
+# Installed depth/key draft — authoring only
+
+Frozen single owned path `apps/bdptest/src/transactional-depth-key-order-installed.test.ts`: SHA256 `48c6a84c84e470c7ce79f4d978bb09e2099daa5df4b4a6ef8629e1b7bf1b1700`, 29977 bytes. Parent `0d63cf59d447eca2e7ff8b2e0e6a5f31513b9a3a`, tree `80a6fe0605698e18f9504432407e7943e1f665b4`. Concurrent other-path edits belong to the source author; no whole-worktree clean/freeze claim.
+
+One exact callback: `observes installed retained key conflicts before private carrier depth`. The extracted13 literal rows exactly equal accepted ledger-v2: ten POSTs/three GETs, five method/URL routes,3270 total body bytes,621 maximum. Four deep bodies each contain41 nested metadata objects. Descriptor/schema bytes total336. measurements.json retains all literals, hashes and bounds.
+
+Both carriers assert retained-key409 before depth/Accept refusal, full retained receipt replay, fresh-depth bodyless500 with private marker and absent context, successful shallow reuse of the refused fresh key, and unchanged original full Resource at advanced current position. Final complete collection pins four full Resources and next:null. Receipt/resource schemas precede comparisons; configured Task Resources have id/type/revision/properties/metadata, with no invented ownedLinks. Opaque receipt/revision identifiers are learned then pinned by equality.
+
+Raw serializer URL/body digest/octet count/public headers and boolean credential equality are checked. Safe response status/headers/fingerprints are retained before response assertions. Full receipt/resource comparisons run in memory; fingerprint retention is not retained full-body evidence. No raw Authorization is logged. Declared Git identity is supervisor attribution, not child-attested provenance; fresh archives/consumer and independent process checks remain future requirements.
+
+Prospective one child/owner/listener/directory,13 requests, no retry. Work45s/cleanup10s/test60s/request5s. Raw executor bounds64KiB request body/16KiB request headers and128KiB response body/64KiB response headers. Cleanup accumulates primary/close/removal/log errors; kills only returned child on deadline and removes own directory after stop. Before-ready failure exposes no caller PID; launcher cleanup plus independent supervisor evidence remains necessary.
+
+One authorized pinned Node24.16.0/Biome2.5.7 format invocation exited0; originals and argv/output are retained. Initial external arithmetic assertion failure and correction are recorded separately. No setup, product imports, tests, builds, archives, services, commits or publication ran. This is an unexecuted measured draft.

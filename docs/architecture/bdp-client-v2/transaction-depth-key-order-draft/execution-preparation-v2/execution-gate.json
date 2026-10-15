@@ -1,0 +1,25 @@
+{
+  "status": "released",
+  "session": "2026-10-08T20:26:35Z-81e5",
+  "sourceBindingSha256": "5fbe5c9b0c57f2c253fb16d114675ccb4929a9e4e18b21a1efbf1ca18385d778",
+  "commandsSha256": "defa7c0f209f85ba797ad4f2392f7d8c1b599ca939583294fa0e5dcf0f3ba873",
+  "supervisorSha256": "aa3e67299832a01df819a66df23273e2c65d62bec5aa37bbff2b5d80046369b4",
+  "expectedHead": "0d63cf59d447eca2e7ff8b2e0e6a5f31513b9a3a",
+  "expectedTree": "80a6fe0605698e18f9504432407e7943e1f665b4",
+  "authorizedStages": [
+    "offline-setup",
+    "typecheck",
+    "build",
+    "format-check",
+    "lint",
+    "boundaries",
+    "read-seal",
+    "source-positive"
+  ],
+  "rootAcceptance": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-depth-key-order-draft/lint-repair/root-repair-acceptance.json",
+    "sha256": "9db79780d636afe4e19cbb20c722775c6d24dcf1ba6ec6239dc27daf81168994"
+  },
+  "controlGate": "closed",
+  "installedGate": "closed"
+}
