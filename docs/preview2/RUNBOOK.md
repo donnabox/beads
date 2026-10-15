@@ -85,7 +85,7 @@ If you omit `--type`, `bd create` makes a `task` Issue. The shorter `bd link SOU
 
 `bd create` and `bd link create` refuse an unrecognized `--type`. The choices displayed by `bd types` are fixed in this preview; users cannot register new graph Types here.
 
-> **Compatibility note:** The older `bd dep add --type` path still accepts an arbitrary nonempty Dependency label of up to 32 bytes. It does not register a new graph Type. Only built-in labels have their defined workflow behavior.
+> **Compatibility note:** The published `bd` 1.0.5 accepts custom Dependency labels through both `bd dep add --type` and `bd link --type`. A Preview 2 graph workspace instead requires a built-in Dependency choice shown by `bd types` on both paths. An unrecognized choice is refused; users cannot register a new graph Type here.
 
 Look for a future blog post going over all the things related to bead and link types. For now, this should be all we need to know to use the product.
 
@@ -123,7 +123,7 @@ For familiarity and convenience, the CLI also has narrower shortcuts:
 | `bd history` | `bd versions` | Both list saved versions. |
 | `bd new`, `bd q` | `bd create` | Short Issue creation forms. |
 
-`bd link query` is not available in this preview.
+There is no `bd link query` subcommand in this preview. Do not try `bd link query ID`: `bd link` treats two positional arguments as a request to create a Dependency. Use `bd link list` to inspect Links.
 
 ## 4. Memory and Issue Beads
 
@@ -623,7 +623,7 @@ This list covers only the forms described above. It does not promise every optio
 | `dep` | `list/tree/cycles --json`, cross-scope Dependencies, and bulk operations are unavailable. |
 | `link` | Remote and version-pinned endpoints are unavailable. Both endpoints must be unpinned Beads in the same Scope. |
 | `link create` | Use `--type` with a displayed Link choice and either positional `SOURCE TARGET` or `--source SOURCE --target TARGET`. For Dependencies, `--type blocks` and other built-in Dependency choices work; an unrecognized choice refuses. Without `--type`, the `bd link SOURCE TARGET` shortcut creates a blocking Dependency, but `bd link create` requires `--type`. Dependency Links require two local Issues, allow only one Link per ordered Issue pair, and accept no custom properties or metadata. `--if-source-revision TOKEN` is optional. |
-| `dep add` | Unlike `bd link create`, its legacy `--type` option still accepts arbitrary nonempty Dependency labels up to 32 bytes. Only built-in choices have their defined behavior. This guide uses built-in choices. |
+| `dep add` | In a graph workspace, its `--type` option accepts built-in Dependency choices only. An unrecognized choice is refused, even though published `bd` 1.0.5 accepts custom labels in ordinary workspaces. |
 | `link update` | Informational Link properties and metadata can be edited. Native Dependency Links refuse property and metadata updates; their kind cannot be changed. |
 | `link list`, `link count` | The current Link collection is bounded and has no cursor paging. A workspace above the read limit is refused rather than partially counted or listed. |
 | `link` | Creating a duplicate or supersede Link does not close an Issue. |
@@ -644,7 +644,7 @@ This list covers only the forms described above. It does not promise every optio
 | --- | --- |
 | High-level Issue and state operations | `duplicate`, `supersede`, `gate`, `set-state`, `label`, `tag` |
 | Other graph and analysis commands | `create-form`, `promote`, `provenance`, `diff`, `find-duplicates`, `duplicates`, `lint`, `stale`, `swarm` |
-| Link query | `bd link query` is unavailable. |
+| Link query | There is no `bd link query` subcommand. Do not run `bd link query ID`: the two-ID `bd link` shortcut can create a Dependency. Use `bd link list` instead. |
 | Optional version display inside a graph workspace | `bd version` refuses inside a graph workspace. It is not needed to use the commands in this guide. |
 
 `new`, `hb`, and `stats` are aliases for `create`, `heartbeat`, and `status`. Each alias has the same limits as its main command.

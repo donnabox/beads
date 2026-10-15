@@ -36,9 +36,10 @@ makes a Memory. Omitting `--type` from `bd create` makes a `task` Issue.
 `bd link create SOURCE TARGET --type blocks` makes a Dependency. It also
 accepts `--source SOURCE --target TARGET`; it requires `--type`. The shorter
 `bd link SOURCE TARGET` makes a blocking Dependency. An unrecognized `--type`
-is refused by `bd create` and `bd link create`. The legacy `bd dep add --type`
-still accepts an arbitrary nonempty Dependency label up to 32 bytes; only
-built-in choices have their defined workflow behavior.
+is refused by `bd create` and `bd link create`. In a graph workspace,
+`bd dep add --type` and the shorter `bd link --type` also require a built-in
+Dependency choice; they do not register new graph Types. This differs from
+published `bd` 1.0.5, where both commands accept a custom Dependency label.
 
 A Dependency connects two local Issues in one Scope. Only one native
 Dependency may exist for an ordered source–target pair. `blocks` affects
@@ -65,7 +66,9 @@ Type-checked properties and metadata.
 Use `bd link` for all installed Link Types, including Dependencies. The
 `bd dep` convenience commands address Issue Dependencies; their list, tree,
 cycles, and pair-removal forms cover blocking Dependencies only. They are not
-general Link commands. `bd link query` is unavailable.
+general Link commands. There is no `bd link query` subcommand. Do not run
+`bd link query ID`: the two-ID `bd link` shortcut can create a Dependency.
+Use `bd link list` to inspect Links.
 
 `bd remember`, `bd recall`, `bd memories`, and `bd forget` are Memory-focused
 conveniences. `bd history` lists saved graph record versions rather than the
