@@ -1,0 +1,64 @@
+{
+  "status": "frozen-code-review",
+  "base": "18104a03b850553641f24fe83e7318493fa102ca",
+  "head": "82f60a25da8799334381f6ebd810f32a3574cd2d",
+  "tree": "3cd1da66ba3a6cbd0bbdaa2442d10002939d826b",
+  "statusPorcelain": "",
+  "trackedDiffSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "untrackedFiles": [],
+  "sourceHashes": {
+    "packages/conformance/test-support/transactional/manifest-v1.json": "a11a79f6d0f9ffa5933a680a3e4fed87987789c3deca50a38cda8563132d242e",
+    "packages/conformance/test-support/transactional/coverage-v1.json": "346e1edaa22af789f89017fdc2fef6bb01b7564ed72a65344e9fe5635887c74f",
+    "packages/conformance/src/transactional-cumulative.test.ts": "313e6a947b33a3893565ea5db2d9d4a962b46c2e926900598e9285e657a31bf2",
+    "apps/bdptest/src/transactional-matrix.test.ts": "dcf0161723a6b77dd4235111a83a6aa1ce0cbb6a1a5d79e362f992742bc503de",
+    "packages/conformance/src/transactional-observation.ts": "603fcc1240e43da3c477f42b8b942141c06c989a48a2a88099fd5d90e283159f",
+    "packages/server/src/transaction-sequence.ts": "019e02f2f392047d568d7464b1c5af0482d6d743ed09a6d0aa4edab151607cbe",
+    "packages/server/src/transaction-events.ts": "c6052433662fcb2d0a202ad4e408a24d4c43f980313fa89659501b4475790db5",
+    "packages/server/src/transaction-batch.ts": "70d941d416979edd54e250d51318cfb7e5d4ddb315ea6131de7ca5f56e98a014",
+    "packages/server/src/resource-evaluator.ts": "89606787e455f4ed555b807d91c5331a376431807a9a581de1f94e538fcab4ff",
+    "packages/conformance/src/runner.ts": "ac20c7fbfe15a5e42a6559e89cd3467562efe9bc74d462478414414ed3efede1",
+    "docs/specs/bdp.md": "f036103ffdf5f89fa3a2033570e1e987c4cd203cd80b1c633cb44615123f892e",
+    "schemas/bdp-v0.schema.json": "0baa5d5ef67144f8e6513b4cde31168effc8df6d52ef3141b0f144b87f8dc227"
+  },
+  "plans": {
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/sequence-member-draft/final-source.json": "522627a955933cad325e08b7557ad45b7eacc399d926b1e2af9a07190867957f",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/sequence-member-draft/source-binding.json": "a6eb425d2616279fed28132c2b59258b7503b186224ba538179704b6364c9e2a",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/sequence-member-draft/draft.patch": "53c66bc9a5d07f53749e18628eaba32773458160ab506566ec1fb7960d13c313",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/sequence-member-draft/root-source-acceptance.json": "15e91b6ab40beda200189a569d9475eaedc6ffc09cb7d0154c4ca9bececbdf39",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/sequence-member-draft/root-fence-acceptance.json": "8c992e7a9b16d59bdd18610be89e96d2028d130dfdcaa112fc796120af63a646",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/sequence-member-draft/native-code-review.md": "6a36c3cb150517fdc0fe2c3f215f06052ddbdcc94a85036aa5473a1b167bdb25",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/sequence-member-draft/format-repair/native-measurement-closure.json": "3c52365337603a9e43829830aa460b69fc62c1b6349fd9e7759c35dce9e100bf",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/sequence-member-draft/format-repair/native-measurement-closure.md": "4a6b16e52246b48b24835a06212ee2d933d6669ff9e4139c54bb96ea81689fc6",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/sequence-v8-preparation/transaction-sequence-member-plan-v8.md": "57c662f5e65fae5a4e1d103f1953a2754bbcf9a9d0e8ebb15f418805bab26f74",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/sequence-v8-preparation/companion.json": "3853547b6baa1d50cc6309ad213806c8418a89fc36970c4744faafb35384fdeb",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/sequence-member-draft/claude-preparation/exit.json": "b0239a486ca505a58b20d468fa8911fcd5822ad37d1e8ff64425a09ca587b754",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/sequence-member-draft/claude-preparation/cleanup.json": "8d072af900e0d6e8c2bccb800effe1a298e80447e5d3ffe1534487882e9f2939",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/sequence-member-draft/claude-preparation/stdout.txt": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/sequence-member-draft/claude-preparation/stderr.txt": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/sequence-member-draft/claude-focused-review/context-inventory.json": "f07dbf1f3e470fbfeafa78670d56e2f9c377fafb14751949e9e543ef5ddb1183"
+  },
+  "ownedPaths": [
+    "packages/conformance/test-support/transactional/manifest-v1.json",
+    "packages/conformance/test-support/transactional/coverage-v1.json",
+    "packages/conformance/src/transactional-cumulative.test.ts",
+    "apps/bdptest/src/transactional-matrix.test.ts"
+  ],
+  "expectedOwnedPaths": [
+    "packages/conformance/test-support/transactional/manifest-v1.json",
+    "packages/conformance/test-support/transactional/coverage-v1.json",
+    "packages/conformance/src/transactional-cumulative.test.ts",
+    "apps/bdptest/src/transactional-matrix.test.ts"
+  ],
+  "frozenSourceManifest": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/sequence-member-draft/source-binding.json",
+  "frozenSourceManifestSha256": "a6eb425d2616279fed28132c2b59258b7503b186224ba538179704b6364c9e2a",
+  "fullPatch": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/sequence-member-draft/draft.patch",
+  "fullPatchSha256": "53c66bc9a5d07f53749e18628eaba32773458160ab506566ec1fb7960d13c313",
+  "promptSha256": "9b27a423a6b2c53f724dd7e09a2be2b44539bfeba65426720d298336d890316c",
+  "promptBytes": 218125,
+  "launchReleased": false,
+  "historicalDraftSourceBinding": "a6eb425d2616279fed28132c2b59258b7503b186224ba538179704b6364c9e2a",
+  "cleanCandidateBinding": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/sequence-member-draft/final-source.json",
+    "sha256": "522627a955933cad325e08b7557ad45b7eacc399d926b1e2af9a07190867957f"
+  }
+}

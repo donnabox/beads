@@ -1,0 +1,286 @@
+{
+  "status": "independent-package-audit-passed",
+  "findings": [],
+  "at": "2026-10-15T17:35:31.199750+00:00",
+  "head": "82f60a25da8799334381f6ebd810f32a3574cd2d",
+  "tree": "3cd1da66ba3a6cbd0bbdaa2442d10002939d826b",
+  "parent": "18104a03b850553641f24fe83e7318493fa102ca",
+  "clean": true,
+  "buildBridge": {
+    "originalHead": "18104a03b850553641f24fe83e7318493fa102ca",
+    "originalWorkspaceDirty": true,
+    "inputFiles": 669,
+    "packageOutputs": 312,
+    "emittedOutputs": 464,
+    "allCurrentHashesEqual": true,
+    "buildStarted": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/sequence-member-draft/execution-preparation-v2/run/build.started.json",
+      "sha256": "996531f9bde7f622d8aa54454b2719927956401cee28ce4426df70ffceb80989"
+    },
+    "buildExit": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/sequence-member-draft/execution-preparation-v2/run/build.exit.json",
+      "sha256": "9313c23c41aa5c91dcd4310ab2a8d12b99750f12eb1ce2f4a900d463071a0bd5"
+    },
+    "buildLog": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/sequence-member-draft/execution-preparation-v2/run/build.log",
+      "sha256": "232dac5e840e45b3bb06e6e04249b5241f2e1b4f6c797a22c046d916302ac208"
+    }
+  },
+  "archives": {
+    "protocol": {
+      "sha256": "4683cb6c6333c332a4bcb7efc3e28f32d1d8d06a7264913f65c31d3a826d4227",
+      "members": 63,
+      "installedRoot": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/sequence-member-draft/installed-preparation-v2/run/consumer/node_modules/.pnpm/@bdp+protocol@file+..+packages+bdp-protocol-0.0.0.tgz/node_modules/@bdp/protocol",
+      "sha512Integrity": "sha512-HpTr68a+E6G42/6B7SUFPIL/jy4lbEaZ1JSXvwD0eAWylDrofDwmAac3EqzCp9FHay9XMp5TRM5yofSQJA9Ksw=="
+    },
+    "server": {
+      "sha256": "6ca3ee46dbd61c130ed3b69d0c6a3b4242d356d4e72de4eb7eb0282843285303",
+      "members": 250,
+      "installedRoot": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/sequence-member-draft/installed-preparation-v2/run/consumer/node_modules/.pnpm/@bdp+server@file+..+packages+bdp-server-0.0.0.tgz/node_modules/@bdp/server",
+      "sha512Integrity": "sha512-yM7ZXQEqbkxGr34AINz6sDciz+A4jHMynuC+rr6a9YW+cQP9228SnlSYtXnm+uLeiiEMNa2TkmE1sljIfnKg1A=="
+    }
+  },
+  "versions": {
+    "@bdp/protocol": "0.0.0",
+    "@bdp/server": "0.0.0",
+    "ajv": "8.17.1",
+    "ajv-formats": "3.0.1",
+    "fast-deep-equal": "3.1.3",
+    "fast-uri": "3.1.5",
+    "json-schema-traverse": "1.0.0",
+    "require-from-string": "2.0.2"
+  },
+  "dependencyEdges": {
+    "ajv": {
+      "fast-deep-equal": "3.1.3",
+      "fast-uri": "3.1.5",
+      "json-schema-traverse": "1.0.0",
+      "require-from-string": "2.0.2"
+    },
+    "@bdp/protocol": {
+      "ajv": "8.17.1",
+      "ajv-formats": "3.0.1"
+    },
+    "ajv-formats": {
+      "ajv": "8.17.1"
+    },
+    "fast-uri": {},
+    "json-schema-traverse": {},
+    "require-from-string": {},
+    "@bdp/server": {
+      "@bdp/protocol": "0.0.0",
+      "fast-uri": "3.1.5"
+    },
+    "fast-deep-equal": {}
+  },
+  "entry": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/sequence-member-draft/installed-preparation-v2/run/consumer/node_modules/.pnpm/@bdp+server@file+..+packages+bdp-server-0.0.0.tgz/node_modules/@bdp/server/dist/transaction-installed-process.js",
+  "entrySha256": "bcf153170f953f9e28c6c89f1153be907f64df289e64f3ad929cad4a4a54c47c",
+  "payloadIdentity": "c46a251cdf51f274ec9bf4f0f401cedadcbaa7748cfb059d3009de34186753b9",
+  "recursiveVisits": 14,
+  "payloadFileVisits": 473,
+  "stages": [
+    {
+      "name": "node-version",
+      "started": "2026-10-15T17:30:35.799480+00:00",
+      "seconds": 0.5439012499991804,
+      "exit": 0,
+      "pids": [
+        4239,
+        4241,
+        4246
+      ],
+      "processGroup": 4239,
+      "retainedCompileCache": []
+    },
+    {
+      "name": "package-directory",
+      "started": "2026-10-15T17:30:42.614253+00:00",
+      "seconds": 0.6278607919812202,
+      "exit": 0,
+      "pids": [
+        4270,
+        4272,
+        4277,
+        4284
+      ],
+      "processGroup": 4270,
+      "retainedCompileCache": []
+    },
+    {
+      "name": "pack-protocol",
+      "started": "2026-10-15T17:30:51.537427+00:00",
+      "seconds": 0.8130729168187827,
+      "exit": 0,
+      "pids": [
+        4318,
+        4320,
+        4325
+      ],
+      "processGroup": 4318,
+      "retainedCompileCache": [
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/sequence-member-draft/installed-preparation-v2/run/pack-protocol.tmp/node-compile-cache"
+      ]
+    },
+    {
+      "name": "pack-server",
+      "started": "2026-10-15T17:30:52.840606+00:00",
+      "seconds": 0.8265082919970155,
+      "exit": 0,
+      "pids": [
+        4356,
+        4361,
+        4377
+      ],
+      "processGroup": 4356,
+      "retainedCompileCache": [
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/sequence-member-draft/installed-preparation-v2/run/pack-server.tmp/node-compile-cache"
+      ]
+    },
+    {
+      "name": "verify-tar",
+      "started": "2026-10-15T17:30:54.182621+00:00",
+      "seconds": 1.0273436249699444,
+      "exit": 0,
+      "pids": [
+        4412,
+        4414,
+        4487,
+        4494,
+        4500
+      ],
+      "processGroup": 4412,
+      "retainedCompileCache": []
+    },
+    {
+      "name": "prepare-consumer",
+      "started": "2026-10-15T17:30:55.717367+00:00",
+      "seconds": 0.7426508329808712,
+      "exit": 0,
+      "pids": [
+        4534,
+        4536,
+        4541,
+        4546,
+        4553
+      ],
+      "processGroup": 4534,
+      "retainedCompileCache": []
+    },
+    {
+      "name": "consumer-install",
+      "started": "2026-10-15T17:30:56.971805+00:00",
+      "seconds": 0.9234544590581208,
+      "exit": 0,
+      "pids": [
+        4619,
+        4621,
+        4626
+      ],
+      "processGroup": 4619,
+      "retainedCompileCache": [
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/sequence-member-draft/installed-preparation-v2/run/consumer-install.tmp/node-compile-cache"
+      ]
+    },
+    {
+      "name": "verify-installed",
+      "started": "2026-10-15T17:31:13.885383+00:00",
+      "seconds": 0.8184785419143736,
+      "exit": 0,
+      "pids": [
+        4692,
+        4694,
+        4698
+      ],
+      "processGroup": 4692,
+      "retainedCompileCache": []
+    }
+  ],
+  "sampledPids": [
+    4239,
+    4241,
+    4246,
+    4270,
+    4272,
+    4277,
+    4284,
+    4318,
+    4320,
+    4325,
+    4356,
+    4361,
+    4377,
+    4412,
+    4414,
+    4487,
+    4494,
+    4500,
+    4534,
+    4536,
+    4541,
+    4546,
+    4553,
+    4619,
+    4621,
+    4626,
+    4692,
+    4694,
+    4698
+  ],
+  "sampledPidsCount": 29,
+  "processGroups": [
+    4239,
+    4270,
+    4318,
+    4356,
+    4412,
+    4534,
+    4619,
+    4692
+  ],
+  "independentPsMatches": [],
+  "retainedCompileCacheDirectories": [
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/sequence-member-draft/installed-preparation-v2/run/pack-protocol.tmp/node-compile-cache",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/sequence-member-draft/installed-preparation-v2/run/pack-server.tmp/node-compile-cache",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/sequence-member-draft/installed-preparation-v2/run/consumer-install.tmp/node-compile-cache"
+  ],
+  "evidenceHashes": {
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/sequence-member-draft/installed-preparation-v2/run/node-version.started.json": "1a0ad57c6a452eb64defcc5f51b6dec7ac7bce065dedc4033b8b4160d33e7cb5",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/sequence-member-draft/installed-preparation-v2/run/node-version.exit.json": "7322eb52d3e2cc5ae4313984b3b70ddcc0fbadc1fc970ae21940bfbcefdb362e",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/sequence-member-draft/installed-preparation-v2/run/node-version.log": "a8f8f7ba69d43285857a0ea34017ef8dadd3ba012404bb7dd188fc773cf63ee2",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/sequence-member-draft/installed-preparation-v2/run/package-directory.started.json": "3e1ec994902789ff48cb3b951d1640ef909da8cbe546f727217bf9cda9abfd63",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/sequence-member-draft/installed-preparation-v2/run/package-directory.exit.json": "cd056655af268cb575d1eb4d6c6188502d1c0c6936cc3b880953da70f6c6acd8",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/sequence-member-draft/installed-preparation-v2/run/package-directory.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/sequence-member-draft/installed-preparation-v2/run/pack-protocol.started.json": "1b3789fc82086a6da80944732c13b54124ee10fd6377323606e8a01fc00eb7e0",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/sequence-member-draft/installed-preparation-v2/run/pack-protocol.exit.json": "1713608828967a9ead79d67e6e63c2a741ede6d2484f0c94def5ace24e0dc4ed",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/sequence-member-draft/installed-preparation-v2/run/pack-protocol.log": "c6a436975cf73c64c6ec4194b8d742c5e82ba87a29666b81cc3e76a03a6d679a",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/sequence-member-draft/installed-preparation-v2/run/pack-server.started.json": "53487263cef650710fc18e5246d13f305ddc76814254a49f4bc9b7d099f4bcf6",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/sequence-member-draft/installed-preparation-v2/run/pack-server.exit.json": "8553bcb006e59725e15be3d4acb438c6ffc94ea7abc87fc1972e0903276574e3",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/sequence-member-draft/installed-preparation-v2/run/pack-server.log": "f41779f96815bdbad48df8d46c253431427122458c542653a667c30be5532eea",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/sequence-member-draft/installed-preparation-v2/run/verify-tar.started.json": "e00176314be5be57604d60d55aedeb10310bd0bbb0bf3567b02afa2abf079a4f",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/sequence-member-draft/installed-preparation-v2/run/verify-tar.exit.json": "47d4b92df875a5fffc99a6c87cdee47225ac165c49cef5b755d6504eb8c769e7",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/sequence-member-draft/installed-preparation-v2/run/verify-tar.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/sequence-member-draft/installed-preparation-v2/run/prepare-consumer.started.json": "ab94e9118c5444f21318348b2e10a97fe61cc01807215b2fe1ada3fdd9a1d6c9",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/sequence-member-draft/installed-preparation-v2/run/prepare-consumer.exit.json": "d4e9869225f2269319bd5ace60665d356188cba8f6cfdcbe086ae581007225e3",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/sequence-member-draft/installed-preparation-v2/run/prepare-consumer.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/sequence-member-draft/installed-preparation-v2/run/consumer-install.started.json": "e8a7150cf7a29455963629fc9368988930b9a05d7811ed9f6048fb881bb6e37d",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/sequence-member-draft/installed-preparation-v2/run/consumer-install.exit.json": "7747b3163e0a16e537f3668e8e54b0aa289d7592b8bf7cf4f1f91c95b0bd4fa3",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/sequence-member-draft/installed-preparation-v2/run/consumer-install.log": "fce1990ee34910b17c033e821bd1df42b6a171ea1c4d2cc101de6032ebface3d",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/sequence-member-draft/installed-preparation-v2/run/verify-installed.started.json": "e3476a6ac7d06be56aeb0b26b8c70de70c5cb4aa815570d0301dd23829488d07",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/sequence-member-draft/installed-preparation-v2/run/verify-installed.exit.json": "7ec25932265438265242910be125e3d2755af6a062a2c7992919c3fcb7c169ed",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/sequence-member-draft/installed-preparation-v2/run/verify-installed.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/sequence-member-draft/final-source.json": "522627a955933cad325e08b7557ad45b7eacc399d926b1e2af9a07190867957f",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/sequence-member-draft/root-build-acceptance.json": "baddc5a20910645ae8f28da736237986defda825d67418c7263e94d8bb6badac",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/sequence-member-draft/installed-preparation/build-output-inventory.json": "2a2fc1ef6aa4a5160365e8303aa754f92363ba4e119bc7c4e248af3afdb48b88",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/sequence-member-draft/installed-preparation-v2/commands.json": "2e48d492684c210fa5f25d3c1b23d9dd353d284fd8fa98158ff758d5444eb2e1",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/sequence-member-draft/installed-preparation-v2/run/installed-provenance.json": "a93521f9257f8e01104c973a102147cfe3da2502bab1519181aa9a235d7fff31",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/sequence-member-draft/installed-preparation-v2/run/tar-source-provenance.json": "d972d34c241b46e5a2f9681792e194910f93c1efbcf153819bd6fcfb2b6ef889",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/sequence-member-draft/installed-preparation-v2/run/consumer/pnpm-lock.yaml": "55b29432adf81b98b487e9515217db971ebd7439ec01b1ab501e45cda9c9b271"
+  },
+  "limits": [
+    "Only first eight package stages audited; four actual cohorts are root-owned and excluded from this report.",
+    "Historical build remains dirty18104 attribution; clean82f60 commit did not rerun that build.",
+    "PID sampling cannot prove absence of every short-lived or detached descendant; independent current ps checked every recorded PID and process group.",
+    "Recursive payload identity and source/archive binding are not child-attested Git identity or full-profile qualification.",
+    "No product imports, tests, builds, package/install commands, services, gate edits or source edits were performed by this audit."
+  ]
+}

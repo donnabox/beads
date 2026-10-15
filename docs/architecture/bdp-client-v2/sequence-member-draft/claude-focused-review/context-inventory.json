@@ -1,0 +1,276 @@
+{
+  "source": "82f60a25da8799334381f6ebd810f32a3574cd2d",
+  "base": "18104a03b850553641f24fe83e7318493fa102ca",
+  "completeDiffBytes": 108093,
+  "completeDiffSha256": "53c66bc9a5d07f53749e18628eaba32773458160ab506566ec1fb7960d13c313",
+  "context": [
+    {
+      "path": "packages/conformance/src/transactional-observation.ts",
+      "sha256": "603fcc1240e43da3c477f42b8b942141c06c989a48a2a88099fd5d90e283159f",
+      "complete": true
+    },
+    {
+      "path": "packages/server/src/transaction-sequence.ts",
+      "sha256": "019e02f2f392047d568d7464b1c5af0482d6d743ed09a6d0aa4edab151607cbe",
+      "complete": true
+    },
+    {
+      "path": "packages/server/src/transaction-events.ts",
+      "sha256": "c6052433662fcb2d0a202ad4e408a24d4c43f980313fa89659501b4475790db5",
+      "lineRanges": [
+        [
+          73,
+          101
+        ],
+        [
+          190,
+          270
+        ]
+      ]
+    },
+    {
+      "path": "packages/server/src/transaction-batch.ts",
+      "sha256": "70d941d416979edd54e250d51318cfb7e5d4ddb315ea6131de7ca5f56e98a014",
+      "lineRanges": [
+        [
+          692,
+          709
+        ],
+        [
+          775,
+          801
+        ]
+      ]
+    },
+    {
+      "path": "packages/server/src/resource-evaluator.ts",
+      "sha256": "89606787e455f4ed555b807d91c5331a376431807a9a581de1f94e538fcab4ff",
+      "lineRanges": [
+        [
+          1058,
+          1105
+        ]
+      ]
+    },
+    {
+      "path": "packages/conformance/src/runner.ts",
+      "sha256": "ac20c7fbfe15a5e42a6559e89cd3467562efe9bc74d462478414414ed3efede1",
+      "lineRanges": [
+        [
+          832,
+          1012
+        ],
+        [
+          1090,
+          1134
+        ],
+        [
+          1438,
+          1510
+        ],
+        [
+          1900,
+          1933
+        ],
+        [
+          2014,
+          2404
+        ],
+        [
+          2468,
+          2498
+        ],
+        [
+          3272,
+          3318
+        ]
+      ]
+    },
+    {
+      "path": "apps/bdptest/src/transactional-matrix.test.ts",
+      "sha256": "dcf0161723a6b77dd4235111a83a6aa1ce0cbb6a1a5d79e362f992742bc503de",
+      "lineRanges": [
+        [
+          98,
+          349
+        ],
+        [
+          1885,
+          2012
+        ],
+        [
+          2358,
+          2414
+        ],
+        [
+          2591,
+          2619
+        ]
+      ]
+    },
+    {
+      "path": "packages/conformance/src/transactional-cumulative.test.ts",
+      "sha256": "313e6a947b33a3893565ea5db2d9d4a962b46c2e926900598e9285e657a31bf2",
+      "lineRanges": [
+        [
+          670,
+          713
+        ],
+        [
+          828,
+          835
+        ],
+        [
+          2652,
+          2700
+        ]
+      ]
+    },
+    {
+      "path": "docs/specs/bdp.md",
+      "sha256": "f036103ffdf5f89fa3a2033570e1e987c4cd203cd80b1c633cb44615123f892e",
+      "lineRanges": [
+        [
+          2700,
+          2737
+        ],
+        [
+          4045,
+          4072
+        ]
+      ]
+    },
+    {
+      "path": "schemas/bdp-v0.schema.json",
+      "sha256": "0baa5d5ef67144f8e6513b4cde31168effc8df6d52ef3141b0f144b87f8dc227",
+      "selectedDefinitions": [
+        "transactionalSequenceResponse",
+        "transactionalSequenceMemberProblem",
+        "sequenceMemberResult",
+        "sequenceAllocatedIdentity",
+        "receiptCore",
+        "mutationReceipt",
+        "receiptResult",
+        "event",
+        "eventPage"
+      ],
+      "closure": false
+    }
+  ],
+  "sections": [
+    {
+      "name": "Review scope and accepted boundaries",
+      "bytes": 4047
+    },
+    {
+      "name": "Exact clean candidate and historical validation attribution",
+      "bytes": 1280
+    },
+    {
+      "name": "COMPLETE FOUR-FILE DIFF SHA256 53c66bc9a5d07f53749e18628eaba32773458160ab506566ec1fb7960d13c313",
+      "bytes": 108203
+    },
+    {
+      "name": "Attributed measurement/preservation facts only",
+      "bytes": 2982
+    },
+    {
+      "name": "packages/conformance/src/transactional-observation.ts COMPLETE FILE SHA256 603fcc1240e43da3c477f42b8b942141c06c989a48a2a88099fd5d90e283159f",
+      "bytes": 14443
+    },
+    {
+      "name": "packages/server/src/transaction-sequence.ts COMPLETE FILE SHA256 019e02f2f392047d568d7464b1c5af0482d6d743ed09a6d0aa4edab151607cbe",
+      "bytes": 5692
+    },
+    {
+      "name": "packages/server/src/transaction-events.ts genuine EXCERPT lines73-101 whole-file SHA256 c6052433662fcb2d0a202ad4e408a24d4c43f980313fa89659501b4475790db5",
+      "bytes": 1222
+    },
+    {
+      "name": "packages/server/src/transaction-events.ts genuine EXCERPT lines190-270 whole-file SHA256 c6052433662fcb2d0a202ad4e408a24d4c43f980313fa89659501b4475790db5",
+      "bytes": 3790
+    },
+    {
+      "name": "packages/server/src/transaction-batch.ts genuine EXCERPT lines692-709 whole-file SHA256 70d941d416979edd54e250d51318cfb7e5d4ddb315ea6131de7ca5f56e98a014",
+      "bytes": 819
+    },
+    {
+      "name": "packages/server/src/transaction-batch.ts genuine EXCERPT lines775-801 whole-file SHA256 70d941d416979edd54e250d51318cfb7e5d4ddb315ea6131de7ca5f56e98a014",
+      "bytes": 1293
+    },
+    {
+      "name": "packages/server/src/resource-evaluator.ts genuine EXCERPT lines1058-1105 whole-file SHA256 89606787e455f4ed555b807d91c5331a376431807a9a581de1f94e538fcab4ff",
+      "bytes": 1813
+    },
+    {
+      "name": "packages/conformance/src/runner.ts genuine EXCERPT lines832-1012 whole-file SHA256 ac20c7fbfe15a5e42a6559e89cd3467562efe9bc74d462478414414ed3efede1",
+      "bytes": 6307
+    },
+    {
+      "name": "packages/conformance/src/runner.ts genuine EXCERPT lines1090-1134 whole-file SHA256 ac20c7fbfe15a5e42a6559e89cd3467562efe9bc74d462478414414ed3efede1",
+      "bytes": 1529
+    },
+    {
+      "name": "packages/conformance/src/runner.ts genuine EXCERPT lines1438-1510 whole-file SHA256 ac20c7fbfe15a5e42a6559e89cd3467562efe9bc74d462478414414ed3efede1",
+      "bytes": 2640
+    },
+    {
+      "name": "packages/conformance/src/runner.ts genuine EXCERPT lines1900-1933 whole-file SHA256 ac20c7fbfe15a5e42a6559e89cd3467562efe9bc74d462478414414ed3efede1",
+      "bytes": 1527
+    },
+    {
+      "name": "packages/conformance/src/runner.ts genuine EXCERPT lines2014-2404 whole-file SHA256 ac20c7fbfe15a5e42a6559e89cd3467562efe9bc74d462478414414ed3efede1",
+      "bytes": 16545
+    },
+    {
+      "name": "packages/conformance/src/runner.ts genuine EXCERPT lines2468-2498 whole-file SHA256 ac20c7fbfe15a5e42a6559e89cd3467562efe9bc74d462478414414ed3efede1",
+      "bytes": 1206
+    },
+    {
+      "name": "packages/conformance/src/runner.ts genuine EXCERPT lines3272-3318 whole-file SHA256 ac20c7fbfe15a5e42a6559e89cd3467562efe9bc74d462478414414ed3efede1",
+      "bytes": 1312
+    },
+    {
+      "name": "apps/bdptest/src/transactional-matrix.test.ts genuine EXCERPT lines98-349 whole-file SHA256 dcf0161723a6b77dd4235111a83a6aa1ce0cbb6a1a5d79e362f992742bc503de",
+      "bytes": 10710
+    },
+    {
+      "name": "apps/bdptest/src/transactional-matrix.test.ts genuine EXCERPT lines1885-2012 whole-file SHA256 dcf0161723a6b77dd4235111a83a6aa1ce0cbb6a1a5d79e362f992742bc503de",
+      "bytes": 5041
+    },
+    {
+      "name": "apps/bdptest/src/transactional-matrix.test.ts genuine EXCERPT lines2358-2414 whole-file SHA256 dcf0161723a6b77dd4235111a83a6aa1ce0cbb6a1a5d79e362f992742bc503de",
+      "bytes": 2554
+    },
+    {
+      "name": "apps/bdptest/src/transactional-matrix.test.ts genuine EXCERPT lines2591-2619 whole-file SHA256 dcf0161723a6b77dd4235111a83a6aa1ce0cbb6a1a5d79e362f992742bc503de",
+      "bytes": 912
+    },
+    {
+      "name": "packages/conformance/src/transactional-cumulative.test.ts genuine EXCERPT lines670-713 whole-file SHA256 313e6a947b33a3893565ea5db2d9d4a962b46c2e926900598e9285e657a31bf2",
+      "bytes": 1424
+    },
+    {
+      "name": "packages/conformance/src/transactional-cumulative.test.ts genuine EXCERPT lines828-835 whole-file SHA256 313e6a947b33a3893565ea5db2d9d4a962b46c2e926900598e9285e657a31bf2",
+      "bytes": 581
+    },
+    {
+      "name": "packages/conformance/src/transactional-cumulative.test.ts genuine EXCERPT lines2652-2700 whole-file SHA256 313e6a947b33a3893565ea5db2d9d4a962b46c2e926900598e9285e657a31bf2",
+      "bytes": 1915
+    },
+    {
+      "name": "docs/specs/bdp.md genuine EXCERPT lines2700-2737 whole-file SHA256 f036103ffdf5f89fa3a2033570e1e987c4cd203cd80b1c633cb44615123f892e",
+      "bytes": 2119
+    },
+    {
+      "name": "docs/specs/bdp.md genuine EXCERPT lines4045-4072 whole-file SHA256 f036103ffdf5f89fa3a2033570e1e987c4cd203cd80b1c633cb44615123f892e",
+      "bytes": 2016
+    },
+    {
+      "name": "Targeted genuine schema definitions; referenced definitions omitted (not a complete closure); sourceSHA 0baa5d5ef67144f8e6513b4cde31168effc8df6d52ef3141b0f144b87f8dc227",
+      "bytes": 14203
+    }
+  ],
+  "promptBytes": 218125,
+  "omissions": "No complete unchanged manifest/coverage, measurement41 dumps, full schema closure or historical reviews; accepted facts attributed above."
+}
