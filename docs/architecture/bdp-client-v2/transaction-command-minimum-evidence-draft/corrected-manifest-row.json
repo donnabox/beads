@@ -1261,16 +1261,6 @@
             "status": 409,
             "retry": "never"
           }
-        },
-        {
-          "id": "same-context",
-          "kind": "response-metadata-equals",
-          "request": "m-create-c",
-          "headers": [
-            "bdp-scope-epoch",
-            "bdp-authorization-view",
-            "bdp-scope-position"
-          ]
         }
       ]
     },

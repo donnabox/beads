@@ -1,0 +1,5 @@
+# Provisional measurement correction
+
+The author's intermediate message inferred a478-byte Python Unicode-escaping difference from a tentative disk/normal calculation. That inference was wrong. Direct read-only recalculation of the actual JSON shows the parent is695598 normal-form bytes with either ensure_ascii setting, the superseded raw-capture attempt is749999 in both, and the current corrected row draft is750589 in both. There is no historical Unicode escape difference in these artifacts. Scripts use ensure_ascii=False explicitly to match UTF-8 JSON.stringify convention, but that choice changes zero bytes here.
+
+The provisional750422 normal-form number was not a measurement; it incorrectly carried the parent's disk-to-normal gap unchanged through newly formatted content. The corrected measurement script serializes the full actual source. Current disk738783 differs from current normal750589 by11806; parent disk684206 differs from parent normal695598 by11392. This formatting distinction is retained, not compressed to fit. Original invalid attempt and formatter logs remain unchanged. No test, runtime, package or installed result was involved.
