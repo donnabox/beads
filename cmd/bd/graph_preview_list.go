@@ -29,7 +29,8 @@ func runGraphPreviewList(cmd *cobra.Command) error {
 	// them, so what the caller typed is read here, before anything gathers.
 	typed := graphIssueListTypedOptions(cmd)
 	selector, _ := cmd.Flags().GetString("type")
-	nominal := cmd.Flags().Changed("type") && graphPreviewNominalSelector(selector)
+	typeSelected := cmd.Flags().Changed("type")
+	nominal := typeSelected && graphPreviewNominalSelector(selector)
 	in, structured, err := graphIssueListInput(cmd, os.Args[1:])
 	if err != nil {
 		return err
@@ -47,6 +48,10 @@ func runGraphPreviewList(cmd *cobra.Command) error {
 		}
 		in.IssueType = ""
 		typed = slices.DeleteFunc(typed, func(option string) bool { return option == "type" })
+	} else if typeSelected && selector != "" {
+		// A named Issue classification already says which Beads to list.
+		// Avoid a redundant warning that the query did not include Memories.
+		selectedType = graphstore.IssueTypeURL(graphPreviewConfig.GraphScopeURL)
 	}
 	plan := planGraphList(typed, graphIssueListConfigLabel(cmd, in), selectedType, graphPreviewIssueTypeURL(graphPreviewConfig.GraphScopeURL))
 	if plan.refuse {

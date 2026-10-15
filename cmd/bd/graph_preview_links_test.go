@@ -41,29 +41,23 @@ func TestGraphPreviewPropertiesAdmission(t *testing.T) {
 
 func TestGraphPreviewRevisionGuardIsExplicit(t *testing.T) {
 	for _, tc := range []struct {
-		name     string
-		args     []string
-		required bool
-		wantErr  bool
+		name, wantRevision   string
+		args                 []string
+		wantCurrent, wantErr bool
 	}{
-		{"optional absent", nil, false, false},
-		{"required absent", nil, true, true},
-		{"observed", []string{"--if-revision=observed"}, true, false},
-		{"empty", []string{"--if-revision="}, true, true},
-		{"unconditional", []string{"--unconditional"}, true, false},
-		{"false is not permission", []string{"--unconditional=false"}, false, true},
-		{"both", []string{"--if-revision=observed", "--unconditional"}, true, true},
+		{"absent accepts current", "", nil, true, false},
+		{"observed", "observed", []string{"--if-revision=observed"}, false, false},
+		{"empty", "", []string{"--if-revision="}, false, true},
 	} {
 		t.Run(tc.name, func(t *testing.T) {
 			cmd := &cobra.Command{}
 			cmd.Flags().String("if-revision", "", "")
-			cmd.Flags().Bool("unconditional", false, "")
 			if err := cmd.ParseFlags(tc.args); err != nil {
 				t.Fatal(err)
 			}
-			_, _, err := graphPreviewRevisionGuard(cmd, false, tc.required)
-			if (err != nil) != tc.wantErr {
-				t.Fatalf("err=%v, wantErr=%v", err, tc.wantErr)
+			revision, current, err := graphPreviewRevisionGuard(cmd, false)
+			if revision != tc.wantRevision || current != tc.wantCurrent || (err != nil) != tc.wantErr {
+				t.Fatalf("revision=%q current=%t err=%v", revision, current, err)
 			}
 		})
 	}

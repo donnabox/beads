@@ -32,7 +32,7 @@ func runGraphPreviewLinkPropertiesPatch(cmd *cobra.Command, path string) error {
 
 func graphPreviewLinkPropertiesPatchRequest(cmd *cobra.Command, path string) (graphstore.LinkPropertiesPatchRequest, error) {
 	var request graphstore.LinkPropertiesPatchRequest
-	if err := graphPreviewFlags(cmd, "patch", "replace-properties", "metadata", "replace-metadata", "set-metadata", "unset-metadata", "if-revision", "if-source-revision", "unconditional-source"); err != nil {
+	if err := graphPreviewFlags(cmd, "patch", "replace-properties", "metadata", "replace-metadata", "set-metadata", "unset-metadata", "if-revision", "if-source-revision"); err != nil {
 		return request, err
 	}
 	if err := graph.ValidateLinkPath(path); err != nil {
@@ -45,7 +45,7 @@ func graphPreviewLinkPropertiesPatchRequest(cmd *cobra.Command, path string) (gr
 	if err != nil {
 		return request, err
 	}
-	sourceRevision, unconditionalSource, err := graphPreviewRevisionGuard(cmd, true, false)
+	sourceRevision, unconditionalSource, err := graphPreviewRevisionGuard(cmd, true)
 	if err != nil {
 		return request, err
 	}

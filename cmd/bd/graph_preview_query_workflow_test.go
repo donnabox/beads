@@ -63,7 +63,7 @@ func TestGraphPreviewQueryWorkflow(t *testing.T) {
 			call("create", "Gate", "--id", "beads/gate", "--priority", "2")
 			related := scope + "types/preview-related"
 			for _, edge := range [][3]string{{"plan", "context", "context"}, {"plan", "work", "work"}, {"context", "gate", "gate"}} {
-				call("link", "beads/"+edge[0], "beads/"+edge[1], "--id", "links/"+edge[2], "--type", related, "--unconditional-source")
+				call("link", "beads/"+edge[0], "beads/"+edge[1], "--id", "links/"+edge[2], "--type", related)
 			}
 			dep := graphMixedResult[graphstore.DependencyResult](t, call("dep", "add", "beads/work", "beads/gate"))
 			graphPolicyCLI(t, bd, work, home, nil, "invalid_properties", "ready", "--label=", "--json")

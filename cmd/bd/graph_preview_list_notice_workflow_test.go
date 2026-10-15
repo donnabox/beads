@@ -108,8 +108,16 @@ func TestGraphPreviewListTypedOptionsSelectIssueQuery(t *testing.T) {
 		arg := "--" + tc.option + "=" + tc.value
 		out := graphPolicyCLI(t, bd, work, home, nil, "", "list", arg)
 		lines := strings.Split(strings.TrimSuffix(out, "\n"), "\n")
-		if len(lines) < 2 || !strings.HasPrefix(lines[0], "Issues (") || lines[1] != "Memories are not listed (Issue query selected by: --"+tc.option+")." {
+		if len(lines) < 2 || !strings.HasPrefix(lines[0], "Issues (") {
 			t.Errorf("%s did not select the Issue query: %q", arg, lines)
+			continue
+		}
+		if tc.option == "type" && tc.value == "task" {
+			if strings.Contains(out, "Memories are not listed") {
+				t.Errorf("%s printed a redundant Memory notice: %q", arg, lines)
+			}
+		} else if lines[1] != "Memories are not listed (Issue query selected by: --"+tc.option+")." {
+			t.Errorf("%s lost the Issue query notice: %q", arg, lines)
 		}
 	}
 	for _, option := range []string{"status", "state", "type", "assignee"} {

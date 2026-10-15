@@ -63,23 +63,21 @@ func graphPreviewPropertiesJSON(input string, stdin io.Reader) (json.RawMessage,
 	return canonical, nil
 }
 
-func graphPreviewRevisionGuard(cmd *cobra.Command, source, required bool) (string, bool, error) {
-	revisionFlag, unconditionalFlag := "if-revision", "unconditional"
+func graphPreviewRevisionGuard(cmd *cobra.Command, source bool) (string, bool, error) {
+	revisionFlag := "if-revision"
 	if source {
-		revisionFlag, unconditionalFlag = "if-source-revision", "unconditional-source"
+		revisionFlag = "if-source-revision"
 	}
-	hasRevision, hasUnconditional := cmd.Flags().Changed(revisionFlag), cmd.Flags().Changed(unconditionalFlag)
-	if !hasRevision && !hasUnconditional && !required {
-		// Source guards are opt-in at the CLI; the writer still validates
-		// every supplied token and atomically accepts the actual predecessor.
-		return "", source, nil
+	if !cmd.Flags().Changed(revisionFlag) {
+		// A missing comparison accepts the current predecessor. Keep the
+		// writer's explicit choice internal to the CLI adapter.
+		return "", true, nil
 	}
 	revision, _ := cmd.Flags().GetString(revisionFlag)
-	unconditional, _ := cmd.Flags().GetBool(unconditionalFlag)
-	if hasRevision == hasUnconditional || (hasRevision && revision == "") || (hasUnconditional && !unconditional) {
-		return "", false, graphFailure("invalid_selector", "choose either --"+revisionFlag+" REVISION or --"+unconditionalFlag, 2)
+	if revision == "" {
+		return "", false, graphFailure("invalid_selector", "--"+revisionFlag+" requires a nonempty revision token", 2)
 	}
-	return revision, unconditional, nil
+	return revision, false, nil
 }
 
 // Ordinary edits use the current predecessor when no comparison was asked for.
@@ -181,7 +179,7 @@ func runGraphPreviewLink(cmd *cobra.Command, args []string) error {
 	if err := graphPreviewWritePolicy(); err != nil {
 		return err
 	}
-	if err := graphPreviewFlags(cmd, "type", "source", "target", "id", "properties", "metadata", "if-source-revision", "unconditional-source"); err != nil {
+	if err := graphPreviewFlags(cmd, "type", "source", "target", "id", "properties", "metadata", "if-source-revision"); err != nil {
 		return err
 	}
 	if !graphstore.IsInformationalTypeURL(graphPreviewConfig.GraphScopeURL, typ) {
@@ -208,7 +206,7 @@ func runGraphPreviewLink(cmd *cobra.Command, args []string) error {
 			return graphFailure("invalid_selector", err.Error(), 2)
 		}
 	}
-	revision, unconditional, err := graphPreviewRevisionGuard(cmd, true, false)
+	revision, unconditional, err := graphPreviewRevisionGuard(cmd, true)
 	if err != nil {
 		return err
 	}
@@ -237,7 +235,7 @@ func runGraphPreviewUpdateLink(cmd *cobra.Command, args []string) error {
 	if err := graphPreviewWritePolicy(); err != nil {
 		return err
 	}
-	if err := graphPreviewFlags(cmd, "properties", "metadata", "replace-metadata", "set-metadata", "unset-metadata", "if-revision", "if-source-revision", "unconditional-source"); err != nil {
+	if err := graphPreviewFlags(cmd, "properties", "metadata", "replace-metadata", "set-metadata", "unset-metadata", "if-revision", "if-source-revision"); err != nil {
 		return err
 	}
 	if len(args) != 1 {
@@ -257,7 +255,7 @@ func runGraphPreviewUpdateLink(cmd *cobra.Command, args []string) error {
 	if err != nil {
 		return err
 	}
-	sourceRevision, unconditionalSource, err := graphPreviewRevisionGuard(cmd, true, false)
+	sourceRevision, unconditionalSource, err := graphPreviewRevisionGuard(cmd, true)
 	if err != nil {
 		return err
 	}

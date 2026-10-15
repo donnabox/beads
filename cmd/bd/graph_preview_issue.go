@@ -371,6 +371,16 @@ func graphPreviewCreateBeadType(cmd *cobra.Command, scope string) (string, error
 		return "", graphFailure("invalid_selector", "--type requires a value", 2)
 	}
 	if !graphPreviewNominalSelector(selector) {
+		classification := types.IssueType(selector).Normalize()
+		if !classification.IsBuiltIn() {
+			customTypes, err := resolveWorkspaceCustomTypes(getRootContext())
+			if err != nil {
+				return "", graphStorageError(err)
+			}
+			if !classification.IsValidWithCustom(customTypes) {
+				return "", graphFailure("capability_unavailable", "Issue type is not registered in this workspace: "+selector, 5)
+			}
+		}
 		return issueType, nil
 	}
 	typeURL, err := graphPreviewTypeURL(scope, selector)

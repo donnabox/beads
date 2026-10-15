@@ -366,10 +366,7 @@ func TestGraphPreviewGenericFlagsRefuseLegacyOpening(t *testing.T) {
 		// TestGraphPreviewIfRevisionOutsideLinkModeIsUpstreamCAS).
 		// New graph-only source guards still refuse before legacy opening.
 		{"update", "demo-one", "--if-source-revision", "observed"},
-		{"delete", "beads/plan", "--unconditional"},
-		{"delete", "beads/plan", "--unconditional=false"},
 		{"forget", "beads/plan", "--if-revision="},
-		{"forget", "beads/plan", "--unconditional"},
 		{"show", "beads/plan", "--version=observed"},
 		{"recall", "beads/plan", "--version="},
 		{"compare", "beads/plan", "--from=observed", "--to=observed"},

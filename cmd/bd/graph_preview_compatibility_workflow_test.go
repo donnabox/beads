@@ -104,8 +104,7 @@ func TestGraphPreviewCompatibilityDefaultsWorkflow(t *testing.T) {
 			}
 			before := call("show", memory.ID)
 			refuse("revision_conflict", "link", memory.ID, issue.ID, "--type", related, "--if-source-revision", titled.Memory.Revision)
-			refuse("invalid_selector", "link", memory.ID, issue.ID, "--type", related, "--if-source-revision", titled.Memory.Revision, "--unconditional-source")
-			refuse("invalid_selector", "link", memory.ID, issue.ID, "--type", related, "--unconditional-source=false")
+			refuse("invalid_selector", "link", memory.ID, issue.ID, "--type", related, "--if-source-revision=")
 			if call("show", memory.ID) != before {
 				t.Fatal("stale/conflicting source guards changed Memory")
 			}
@@ -148,8 +147,7 @@ func TestGraphPreviewCompatibilityDefaultsWorkflow(t *testing.T) {
 			if call("show", issue.ID) != issueBefore {
 				t.Fatal("default informational unlink changed its Issue source")
 			}
-			// Destructive operations retain their explicit revision choice.
-			refuse("invalid_selector", "delete", memory.ID, "--force")
+			// Destructive operations accept the current revision when no guard is supplied.
 			updatedIssue := graphMixedResult[graphstore.IssueMutationResult](t, call("update", issue.ID, "--title", "Issue edits accept current"))
 			if updatedIssue.Issue.Properties.Title != "Issue edits accept current" {
 				t.Fatal("ordinary Issue update did not accept the current predecessor")

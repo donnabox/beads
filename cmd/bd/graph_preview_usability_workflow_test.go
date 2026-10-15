@@ -77,7 +77,10 @@ func TestGraphPreviewUsabilityWorkflow(t *testing.T) {
 			refuse("capability_unavailable", "link", memory.ID, other.ID, "--type", "unregistered-dependency")
 			refuse("invalid_selector", "link", memory.ID, other.ID, "--type", "https://foreign.invalid/types/example-follows")
 			refuse("capability_unavailable", "link", memory.ID, other.ID, "--type", "types/missing")
-			refuse("invalid_properties", "link", memory.ID, other.ID, "--type", "types/preview-dependency", "--unconditional-source")
+			refuse("capability_unavailable", "create", "--type", "memory-preview", "--properties", `{"title":"One","body":"One is the loneliest number."}`)
+			refuse("capability_unavailable", "link", "create", "policy", "work", "--type", "types/missing", "--properties", `{"note":"test"}`)
+			refuse("invalid_selector", "link", "create", "policy", "work", "--source", "policy", "--type", "example-cites")
+			refuse("invalid_properties", "link", memory.ID, other.ID, "--type", "types/preview-dependency")
 			human := graphPolicyCLI(t, bd, work, home, nil, "", "memories")
 			if !strings.Contains(human, "beads/policy") || !strings.Contains(human, "Code flow policy") || strings.Contains(human, scope) || strings.Contains(human, memory.Revision) {
 				t.Fatalf("noisy Memory list: %s", human)
@@ -86,8 +89,12 @@ func TestGraphPreviewUsabilityWorkflow(t *testing.T) {
 			if !strings.Contains(details, memory.Revision) {
 				t.Fatal("details omitted exact version")
 			}
-			for _, spec := range []struct{ typ, target string }{{"types/example-follows", other.ID}, {"types/example-cites", issue.ID}} {
-				link := graphMixedResult[graphstore.LinkMutationResult](t, call("link", "create", "--source", "policy", "--target", strings.TrimPrefix(spec.target, scope+"beads/"), "--type", spec.typ, "--properties", `{"note":"code flow"}`))
+			for index, spec := range []struct{ typ, target string }{{"types/example-follows", other.ID}, {"types/example-cites", issue.ID}} {
+				args := []string{"link", "create", "policy", strings.TrimPrefix(spec.target, scope+"beads/"), "--type", spec.typ, "--properties", `{"note":"code flow"}`}
+				if index == 1 {
+					args = []string{"link", "create", "--source", "policy", "--target", strings.TrimPrefix(spec.target, scope+"beads/"), "--type", spec.typ, "--properties", `{"note":"code flow"}`}
+				}
+				link := graphMixedResult[graphstore.LinkMutationResult](t, call(args...))
 				if link.Link.Type != scope+spec.typ || link.Link.Source != memory.ID || link.Link.Target != spec.target || link.ReplacedSource == nil {
 					t.Fatal("informational Link lost Type/endpoints/ownership")
 				}

@@ -36,9 +36,7 @@ func TestGraphPreviewHelpDocumentsPlaytestCommands(t *testing.T) {
 		{"link", linkCmd, []string{
 			"Graph preview workspaces:", "bd link", "create/list/show/update/delete/versions/compare/count", "--type types/example-cites", "Memory or Issue",
 			"accepts a built-in Dependency kind, types/NAME or a full local Type URL",
-			// Informational Links default to the current source; the blocking Type does not.
-			"The single Type types/preview-dependency", "unlike informational Types, one of",
-			"--if-source-revision TOKEN or --unconditional-source.",
+			"The single Type types/preview-dependency", "--if-source-revision TOKEN to reject a stale source.",
 		}},
 		{"show", showCmd, []string{"Graph preview workspaces:", "ordinary detail array", "--format graph-json"}},
 		{"update", updateCmd, []string{"Graph preview workspaces:", "--properties", "--replace-properties", "--replace-metadata", "--if-revision TOKEN"}},
@@ -48,8 +46,8 @@ func TestGraphPreviewHelpDocumentsPlaytestCommands(t *testing.T) {
 		{"types", typesCmd, []string{"Graph preview workspaces:", "types/NAME", "--details", "--type"}},
 		{"versions", versionsCmd, []string{"Graph preview workspaces:", "Use bd versions ID to list one Memory, Issue or Link's retained versions newest", "Bare ID means beads/ID; use links/PATH for a Link.", "--version TOKEN or bd compare ID --from TOKEN --to TOKEN", "BDP HTTP History", "Ordinary Issue workspaces:", "List the versions recorded for a bead by versioned history."}},
 		{"history", historyCmd, []string{"Graph preview workspaces:", "bd history ID is an alias for bd versions ID.", "--limit and --events are not supported by the graph alias.", "BDP HTTP History", "Ordinary Issue workspaces:", "Show the complete version history of an issue"}},
-		{"defer", deferCmd, []string{"Graph preview workspaces:", "bd defer ID...", "--unconditional", "--until", "bd ready wakes", "Ordinary Issue workspaces:"}},
-		{"undefer", undeferCmd, []string{"Graph preview workspaces:", "bd undefer ID...", "--unconditional", "clears a stale defer date", "Ordinary Issue workspaces:"}},
+		{"defer", deferCmd, []string{"Graph preview workspaces:", "bd defer ID...", "current revision is accepted", "--until", "bd ready wakes", "Ordinary Issue workspaces:"}},
+		{"undefer", undeferCmd, []string{"Graph preview workspaces:", "bd undefer ID...", "current revision is accepted", "clears a stale defer date", "Ordinary Issue workspaces:"}},
 	} {
 		t.Run(tc.name, func(t *testing.T) {
 			out := captureStdout(t, tc.cmd.Help)

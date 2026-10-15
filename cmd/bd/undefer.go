@@ -123,7 +123,6 @@ Examples:
 
 func init() {
 	undeferCmd.Flags().String("if-revision", "", "Graph mode: compare this observed Issue revision (one Issue only)")
-	undeferCmd.Flags().Bool("unconditional", false, "Graph mode: update without a revision comparison (the default)")
 	undeferCmd.ValidArgsFunction = issueIDCompletion
 	rootCmd.AddCommand(undeferCmd)
 }

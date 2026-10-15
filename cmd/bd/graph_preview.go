@@ -89,9 +89,6 @@ func init() {
 	// assign), which link mode reads through cmd.Flags(); registering it again
 	// panics at init. forget has no upstream flag, so it keeps the preview's own.
 	forgetCmd.Flags().String("if-revision", "", "Require this observed Memory revision (graph preview only)")
-	for _, cmd := range []*cobra.Command{deleteCmd, forgetCmd} {
-		cmd.Flags().Bool("unconditional", false, "Explicitly accept the current Memory for deletion (graph preview only)")
-	}
 	statusCmd.Flags().Bool("graph", false, "Report graph preview capabilities")
 	memoriesCmd.Flags().Bool("all", false, "Return all matching graph Memory summaries within preview bounds")
 	memoriesCmd.Flags().Bool("details", false, "Include Memory versions, attribution and owned-Link counts")
@@ -109,9 +106,7 @@ func init() {
 	// update.go registers upstream's --if-revision (the decimal compare-and-swap
 	// outside link mode); link mode reads that same flag as a graph token.
 	updateCmd.Flags().String("if-source-revision", "", "Require this observed source revision for an experimental owned Link")
-	updateCmd.Flags().Bool("unconditional-source", false, "Accept the current source state (default without --if-source-revision)")
 	linkCmd.Flags().String("if-source-revision", "", "Require this observed source revision for an experimental owned Link")
-	linkCmd.Flags().Bool("unconditional-source", false, "Accept the current source state (default without --if-source-revision)")
 }
 
 // No home-directory or other repository fallback: an incomplete local graph
@@ -297,7 +292,7 @@ func admitGraphPreview(cmd *cobra.Command) (handled bool, admissionErr error) {
 		if cmd == doneTodoCmd && cmd.Flags().Changed("if-revision") {
 			return true, graphFailure("capability_unavailable", "todo done --if-revision requires an experimental graph workspace", 5)
 		}
-		if (cmd == deferCmd || cmd == undeferCmd) && (cmd.Flags().Changed("if-revision") || cmd.Flags().Changed("unconditional")) {
+		if (cmd == deferCmd || cmd == undeferCmd) && cmd.Flags().Changed("if-revision") {
 			return true, graphFailure("capability_unavailable", "graph deferral guards require a workspace initialized with graph_mode link", 5)
 		}
 		if cmd == graphCmd && graphGenericFlagsChanged(cmd) {
@@ -313,8 +308,8 @@ func admitGraphPreview(cmd *cobra.Command) (handled bool, admissionErr error) {
 			}
 		}
 		// delete's --if-revision is upstream's compare-and-swap here, not a graph
-		// guard: only forget's, and --unconditional on both, are graph-only.
-		if (cmd == deleteCmd || cmd == forgetCmd) && (cmd.Flags().Changed("unconditional") || (cmd == forgetCmd && cmd.Flags().Changed("if-revision"))) {
+		// guard: only forget's --if-revision is graph-only.
+		if cmd == forgetCmd && cmd.Flags().Changed("if-revision") {
 			return true, graphFailure("capability_unavailable", "Memory deletion guards require a workspace initialized with graph_mode link", 5)
 		}
 		if cmd == memoriesCmd && (cmd.Flags().Changed("all") || cmd.Flags().Changed("details") || (cmd.Flags().Changed("format") && !strings.EqualFold(format, "json"))) {
@@ -332,7 +327,7 @@ func admitGraphPreview(cmd *cobra.Command) (handled bool, admissionErr error) {
 		if cmd == createCmd && (cmd.Flags().Changed("properties") || graphPreviewNominalTypeFlagChanged(cmd)) {
 			return true, graphFailure("capability_unavailable", "generic create options require a workspace initialized with graph_mode link", 5)
 		}
-		if cmd == linkCmd && (cmd.Flags().Changed("id") || cmd.Flags().Changed("properties") || cmd.Flags().Changed("metadata") || cmd.Flags().Changed("if-source-revision") || cmd.Flags().Changed("unconditional-source")) {
+		if cmd == linkCmd && (cmd.Flags().Changed("id") || cmd.Flags().Changed("properties") || cmd.Flags().Changed("metadata") || cmd.Flags().Changed("if-source-revision")) {
 			return true, graphFailure("capability_unavailable", "generic Link options require a workspace initialized with graph_mode link", 5)
 		}
 		if cmd == depAddCmd && cmd.Flags().Changed("id") {
@@ -340,7 +335,7 @@ func admitGraphPreview(cmd *cobra.Command) (handled bool, admissionErr error) {
 		}
 		// --if-revision is absent on purpose: outside link mode it is upstream's
 		// compare-and-swap on a decimal bead revision, not a graph option.
-		if cmd == updateCmd && (cmd.Flags().Changed("patch") || cmd.Flags().Changed("properties") || cmd.Flags().Changed("if-source-revision") || cmd.Flags().Changed("unconditional-source")) {
+		if cmd == updateCmd && (cmd.Flags().Changed("patch") || cmd.Flags().Changed("properties") || cmd.Flags().Changed("if-source-revision")) {
 			return true, graphFailure("capability_unavailable", "generic update options require a workspace initialized with graph_mode link", 5)
 		}
 		if (cmd == rememberCmd && rememberGraphFlagsChanged(cmd)) || (cmd == initCmd && cmd.Flags().Changed("scope-url")) || (cmd == statusCmd && cmd.Flags().Changed("graph")) {

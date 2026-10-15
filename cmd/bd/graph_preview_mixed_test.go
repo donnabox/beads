@@ -155,7 +155,7 @@ func TestGraphPreviewMixedCoreWorkflow(t *testing.T) {
 			}
 			before = call("show", "beads/plan")
 			linkBefore := call("show", "links/context")
-			refuse("revision_conflict", "update", "links/context", "--properties", `{"note":"stale"}`, "--if-revision", first.Link.Revision, "--unconditional-source")
+			refuse("revision_conflict", "update", "links/context", "--properties", `{"note":"stale"}`, "--if-revision", first.Link.Revision)
 			if call("show", "beads/plan") != before || call("show", "links/context") != linkBefore {
 				t.Fatal("stale Link update changed Link or owning Memory")
 			}
@@ -167,7 +167,7 @@ func TestGraphPreviewMixedCoreWorkflow(t *testing.T) {
 			const memoryEndpointHint = "blocking Link Type requires two live Issues; use an informational Type such as types/preview-related for Memory endpoints: "
 			planBefore, workBefore := call("show", "beads/plan"), call("show", "beads/work")
 			for _, endpoints := range [][2]string{{"beads/plan", "beads/work"}, {"beads/work", "beads/plan"}} {
-				stdout, stderr, exit := graphVersionsProcess(t, bd, work, home, "link", endpoints[0], endpoints[1], "--type", "types/preview-dependency", "--unconditional-source", "--json")
+				stdout, stderr, exit := graphVersionsProcess(t, bd, work, home, "link", endpoints[0], endpoints[1], "--type", "types/preview-dependency", "--json")
 				var diagnostic struct {
 					Code      string `json:"code"`
 					Message   string `json:"message"`

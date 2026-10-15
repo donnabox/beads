@@ -264,9 +264,7 @@ func TestGraphPreviewPropertiesPatchWorkflow(t *testing.T) {
 				if !unconditional {
 					args = append(args, "--if-revision", link.Revision)
 				}
-				if sourceUnconditional {
-					args = append(args, "--unconditional-source")
-				} else {
+				if !sourceUnconditional {
 					args = append(args, "--if-source-revision", memory.Revision)
 				}
 				result := graphMixedResult[graphstore.LinkMutationResult](t, graphPatchProcess(t, bd, work, home, stdin, "", 90*time.Second, args...))
@@ -357,7 +355,7 @@ func TestGraphPreviewPropertiesPatchWorkflow(t *testing.T) {
 				`[{"op":"replace","path":"/note","value":"must rollback"},{"op":"remove","path":"/missing"}]`,
 				`[{"op":"replace","path":"/note","value":"must rollback"},{"op":"replace","path":"/note","value":null}]`,
 			} {
-				refuse("invalid_properties", "update", link.ID, "--patch", bad, "--unconditional-source")
+				refuse("invalid_properties", "update", link.ID, "--patch", bad)
 			}
 			tooMany := "[" + strings.TrimSuffix(strings.Repeat(`{"op":"replace","path":"/title","value":"x"},`, 257), ",") + "]"
 			refuse("invalid_properties", "update", memory.ID, "--patch", tooMany)
@@ -381,12 +379,12 @@ func TestGraphPreviewPropertiesPatchWorkflow(t *testing.T) {
 			early("invalid_selector", memory.ID, "--if-revision", string([]byte{255}))
 			early("invalid_selector", "beads/")
 			early("capability_unavailable", memory.ID, "--properties", "{}")
-			early("invalid_selector", link.ID, "--if-source-revision", memory.Revision, "--unconditional-source")
+			early("invalid_selector", link.ID, "--if-source-revision", "")
 			early("permission_denied", memory.ID, "--readonly")
 			writeFile(t, filepath.Join(work, "mayor", "town.json"), []byte("{}\n"))
 			freeze := filepath.Join(work, "MIGRATION-FREEZE")
 			writeFile(t, freeze, []byte("patch\t2026-09-28T00:00:00Z\tpolicy\n"))
-			early("permission_denied", link.ID, "--unconditional-source")
+			early("permission_denied", link.ID)
 			if err := os.Remove(freeze); err != nil {
 				t.Fatal(err)
 			}
@@ -569,7 +567,7 @@ func TestGraphPreviewPropertiesPatchWorkflow(t *testing.T) {
 			final := memory
 			call("delete", memory.ID, "--force", "--if-revision", memory.Revision)
 			refuse("gone", "update", memory.ID, "--patch", patch("replace", "/title", "no resurrection"))
-			refuse("gone", "update", link.ID, "--patch", patch("add", "/note", "no resurrection"), "--unconditional-source")
+			refuse("gone", "update", link.ID, "--patch", patch("add", "/note", "no resurrection"))
 			graphPolicyCLI(t, bd, work, home, nil, "identity_reserved", "remember", "no reuse", "--id", "beads/plan", "--title", "Reserved", "--json")
 			for key, value := range saved {
 				index := strings.LastIndex(key, "@")

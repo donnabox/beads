@@ -38,23 +38,21 @@ not paginate, read historical state, or resolve remote targets.`,
 }
 
 var linkCreateCmd = &cobra.Command{
-	Use: "create", Short: "Create a Link in a graph workspace",
-	Args: cobra.NoArgs, SilenceUsage: true, SilenceErrors: true,
-	RunE: func(cmd *cobra.Command, _ []string) error {
+	Use: "create [SOURCE TARGET]", Short: "Create a Link in a graph workspace",
+	Args: cobra.MaximumNArgs(2), SilenceUsage: true, SilenceErrors: true,
+	RunE: func(cmd *cobra.Command, args []string) error {
 		if !cmd.Flags().Changed("type") {
 			return graphFailure("invalid_selector", "link create requires --type", 2)
 		}
 		source, _ := cmd.Flags().GetString("source")
 		target, _ := cmd.Flags().GetString("target")
-		if source == "" || target == "" {
-			return graphFailure("invalid_selector", "link create requires --source and --target", 2)
-		}
-		if !cmd.Flags().Changed("if-source-revision") && !cmd.Flags().Changed("unconditional-source") {
-			// The namespace accepts the current owning source by default. The
-			// existing native writer still requires an explicit choice internally.
-			if err := cmd.Flags().Set("unconditional-source", "true"); err != nil {
-				return err
+		if len(args) == 2 {
+			if cmd.Flags().Changed("source") || cmd.Flags().Changed("target") {
+				return graphFailure("invalid_selector", "choose positional SOURCE TARGET or --source and --target", 2)
 			}
+			source, target = args[0], args[1]
+		} else if len(args) != 0 || source == "" || target == "" {
+			return graphFailure("invalid_selector", "link create requires SOURCE TARGET or --source and --target", 2)
 		}
 		return runGraphPreviewLink(cmd, []string{source, target})
 	},
@@ -133,7 +131,6 @@ func init() {
 	linkCreateCmd.Flags().String("properties", "", "Initial informational Link properties as JSON, @file, or @-")
 	linkCreateCmd.Flags().String("metadata", "", "Initial informational Link metadata as JSON or @file")
 	linkCreateCmd.Flags().String("if-source-revision", "", "Require the owning Bead revision")
-	linkCreateCmd.Flags().Bool("unconditional-source", false, "Accept the current owning Bead revision")
 	for _, command := range []*cobra.Command{linkListCmd, linkCountCmd} {
 		registerGraphLinkTypeFlag(command)
 		command.Flags().String("source", "", "Select Links with this local source Bead")
@@ -153,19 +150,15 @@ func init() {
 		command.Flags().StringArray("unset-metadata", nil, "Unset a Link metadata key")
 		command.Flags().String("if-revision", "", "Require the Link revision")
 		command.Flags().String("if-source-revision", "", "Require the owning Bead revision")
-		command.Flags().Bool("unconditional-source", false, "Accept the current owning Bead revision")
 	}
 	linkDeleteCmd.Flags().Bool("force", false, "Apply deletion after preview")
 	linkDeleteCmd.Flags().String("if-revision", "", "Require the Link revision")
 	linkDeleteCmd.Flags().String("if-source-revision", "", "Require the owning Bead revision")
-	linkDeleteCmd.Flags().Bool("unconditional-source", false, "Accept the current owning Bead revision")
 	linkCompareCmd.Flags().String("from", "", "Exact retained source version token")
 	linkCompareCmd.Flags().String("to", "", "Exact retained destination version token")
 	registerGraphLinkTypeFlag(graphUnlinkCmd)
 	graphUnlinkCmd.Flags().String("if-revision", "", "Require this observed Link revision")
-	graphUnlinkCmd.Flags().Bool("unconditional", false, "Explicitly accept the current Link revision")
 	graphUnlinkCmd.Flags().String("if-source-revision", "", "Require this observed owning-source revision")
-	graphUnlinkCmd.Flags().Bool("unconditional-source", false, "Accept the current owning-source revision (default without --if-source-revision)")
 	graphLinksCmd.Flags().String("direction", "both", "Incident direction: in, out, or both")
 	registerGraphLinkTypeFlag(graphLinksCmd)
 }
@@ -327,7 +320,7 @@ func runGraphPreviewLinkCollection(cmd *cobra.Command, _ []string) error {
 // The default is an informational preview. --force enters the existing
 // transactional Unlink writer, which checks both Link and source revisions.
 func runGraphPreviewLinkDelete(cmd *cobra.Command, args []string) error {
-	if err := graphPreviewFlags(cmd, "force", "if-revision", "if-source-revision", "unconditional-source"); err != nil {
+	if err := graphPreviewFlags(cmd, "force", "if-revision", "if-source-revision"); err != nil {
 		return err
 	}
 	path, err := graphPreviewLinkPath(graphPreviewConfig.GraphScopeURL, args[0])
@@ -336,12 +329,8 @@ func runGraphPreviewLinkDelete(cmd *cobra.Command, args []string) error {
 	}
 	revision, _ := cmd.Flags().GetString("if-revision")
 	sourceRevision, _ := cmd.Flags().GetString("if-source-revision")
-	unconditionalSource, _ := cmd.Flags().GetBool("unconditional-source")
-	if cmd.Flags().Changed("if-source-revision") && (sourceRevision == "" || cmd.Flags().Changed("unconditional-source")) {
-		return graphFailure("invalid_selector", "choose one source revision mode", 2)
-	}
-	if cmd.Flags().Changed("unconditional-source") && !unconditionalSource {
-		return graphFailure("invalid_selector", "--unconditional-source must be true when supplied", 2)
+	if cmd.Flags().Changed("if-source-revision") && sourceRevision == "" {
+		return graphFailure("invalid_selector", "--if-source-revision requires a token", 2)
 	}
 	if cmd.Flags().Changed("if-revision") && revision == "" {
 		return graphFailure("invalid_selector", "--if-revision requires a token", 2)
@@ -404,7 +393,7 @@ func runGraphPreviewUnlink(cmd *cobra.Command, args []string) error {
 	if err := graphPreviewWritePolicy(); err != nil {
 		return err
 	}
-	if err := graphPreviewFlags(cmd, "type", "if-revision", "unconditional", "if-source-revision", "unconditional-source"); err != nil {
+	if err := graphPreviewFlags(cmd, "type", "if-revision", "if-source-revision"); err != nil {
 		return err
 	}
 	if len(args) != 1 && len(args) != 2 {
@@ -445,15 +434,15 @@ func runGraphPreviewUnlink(cmd *cobra.Command, args []string) error {
 		}
 	}
 	var err error
-	request.ExpectedRevision, request.Unconditional, err = graphPreviewRevisionGuard(cmd, false, true)
+	request.ExpectedRevision, request.Unconditional, err = graphPreviewRevisionGuard(cmd, false)
 	if err != nil {
 		return err
 	}
-	request.ExpectedSourceRevision, request.UnconditionalSource, err = graphPreviewRevisionGuard(cmd, true, false)
+	request.ExpectedSourceRevision, request.UnconditionalSource, err = graphPreviewRevisionGuard(cmd, true)
 	if err != nil {
 		return err
 	}
-	if !cmd.Flags().Changed("if-source-revision") && !cmd.Flags().Changed("unconditional-source") {
+	if !cmd.Flags().Changed("if-source-revision") {
 		request.UnconditionalSource = false
 		request.DefaultInformationalSource = true
 	}

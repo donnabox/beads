@@ -76,7 +76,7 @@ func runGraphPreviewAddDependency(cmd *cobra.Command, args []string) error {
 	if err := graphPreviewWritePolicy(); err != nil {
 		return err
 	}
-	if err := graphPreviewFlags(cmd, "type", "source", "target", "id", "if-source-revision", "unconditional-source", "blocked-by", "depends-on", "no-cycle-check"); err != nil {
+	if err := graphPreviewFlags(cmd, "type", "source", "target", "id", "if-source-revision", "blocked-by", "depends-on", "no-cycle-check"); err != nil {
 		return err
 	}
 	// Keep the ordinary single-edge spellings. Native --blocked-by wins if both
@@ -136,18 +136,14 @@ func runGraphPreviewAddDependency(cmd *cobra.Command, args []string) error {
 		}
 	}
 	ownedCreate := cmd.Name() == "create" && cmd.Flags().Lookup("source") != nil
-	guardedShorthand := cmd.Name() == "link" && (cmd.Flags().Changed("if-source-revision") || cmd.Flags().Changed("unconditional-source"))
+	guardedShorthand := cmd.Name() == "link" && cmd.Flags().Changed("if-source-revision")
 	if ownedCreate || guardedShorthand {
 		sourceRevision, _ = cmd.Flags().GetString("if-source-revision")
-		unconditional, _ := cmd.Flags().GetBool("unconditional-source")
-		if cmd.Flags().Changed("if-source-revision") == cmd.Flags().Changed("unconditional-source") || (sourceRevision == "" && !unconditional) {
-			return graphFailure("invalid_selector", "owned Link creation requires either --if-source-revision REVISION or --unconditional-source", 2)
+		if cmd.Flags().Changed("if-source-revision") && sourceRevision == "" {
+			return graphFailure("invalid_selector", "--if-source-revision requires a token", 2)
 		}
 		selectedType = graphstore.DependencyTypeURL(graphPreviewConfig.GraphScopeURL)
 	} else {
-		if cmd.Flags().Changed("if-source-revision") || cmd.Flags().Changed("unconditional-source") {
-			return graphFailure("invalid_selector", "source guard options require bd link create", 2)
-		}
 		var ok bool
 		selectedType, ok = graphPreviewDependencyTypeURL(graphPreviewConfig.GraphScopeURL, depType)
 		if !ok {
@@ -294,7 +290,7 @@ func runGraphPreviewClose(cmd *cobra.Command, args []string) error {
 	if len(targets) == 0 {
 		return graphFailure("invalid_selector", "graph close requires at least one Bead ID or beads/PATH", 2)
 	}
-	revision, _, err := graphPreviewRevisionGuard(cmd, false, false)
+	revision, _, err := graphPreviewRevisionGuard(cmd, false)
 	if err != nil {
 		return err
 	}
@@ -468,7 +464,7 @@ func runGraphPreviewDeferral(cmd *cobra.Command, args []string, deferred bool) e
 	if err := graphPreviewWritePolicy(); err != nil {
 		return err
 	}
-	allowed := []string{"if-revision", "unconditional"}
+	allowed := []string{"if-revision"}
 	if deferred {
 		allowed = append(allowed, "until", "reason")
 	}
@@ -492,7 +488,7 @@ func runGraphPreviewDeferral(cmd *cobra.Command, args []string, deferred bool) e
 		}
 		paths[i] = path
 	}
-	revision, unconditional, err := graphPreviewRevisionGuard(cmd, false, false)
+	revision, unconditional, err := graphPreviewRevisionGuard(cmd, false)
 	if err != nil {
 		return err
 	}

@@ -50,7 +50,7 @@ date and relative-time forms; an undated defer stays deferred until restored.
 --reason appends to Issue notes. A later bd ready wakes due Issues, recording
 one native and graph version per changed Issue. A repeated dateless defer is a
 no-op when neither date nor notes change. Use --if-revision TOKEN for a
-single-Issue stale-write check or --unconditional to spell out the default.
+single-Issue stale-write check. Without it, the current revision is accepted.
 
 Ordinary Issue workspaces:
 ` + deferCmd.Long
@@ -58,7 +58,7 @@ Ordinary Issue workspaces:
 Use bd undefer ID... to restore one or more deferred Issues to open. It also
 clears a stale defer date on a non-deferred Issue. A repeated undefer is a
 no-op if nothing changes. Use --if-revision TOKEN for a single-Issue
-stale-write check or --unconditional to spell out the default.
+stale-write check. Without it, the current revision is accepted.
 
 Ordinary Issue workspaces:
 ` + undeferCmd.Long
@@ -158,10 +158,10 @@ edits and standalone --claim are separate graph operations. Without an ID,
 interactive Issue update uses the last-touched Issue; scripts require an ID
 unless BD_LAST_TOUCHED_FALLBACK=1 explicitly enables the fallback.`},
 		{deleteCmd, `For an unreferenced Memory, bd delete ID previews the
-deletion without writing. Apply with --force and either --if-revision TOKEN or
---unconditional. Referenced Memories refuse; graph deletion does not cascade.`},
+deletion without writing. Apply with --force; --if-revision TOKEN optionally
+rejects stale state. Referenced Memories refuse; graph deletion does not cascade.`},
 		{forgetCmd, `Use bd forget ID to delete one unreferenced Memory now.
-Supply --if-revision TOKEN or --unconditional. Canonical IDs are retained and
+Add --if-revision TOKEN to reject stale state. Canonical IDs are retained and
 incident Links prevent deletion; no cascade is performed.`},
 		{depCmd, `Use bd dep BLOCKER --blocks BLOCKED to create a blocking
 Dependency between two live Issues. Bare bd dep prints help; the ordinary
@@ -186,7 +186,7 @@ graph path is unambiguous; use explicit beads/PATH if a different Bead claims
 that bare name. For Link-ID removal use bd link delete ID --force.`},
 		{linkCmd, `The canonical graph Link namespace is bd link
 create/list/show/update/delete/versions/compare/count. Create requires
---type, --source and --target; list and count query complete current
+--type and SOURCE TARGET (or --source and --target); list and count query complete current
 Link collections within the preview's advertised bounds. Delete previews
 by default and --force applies the checked mutation.
 
@@ -204,10 +204,8 @@ selects a bare Link ID or links/PATH; --properties supplies informational Link p
 Memory-owned Links accept the current source by default, or use
 --if-source-revision TOKEN to reject a stale source. --metadata JSON supplies
 an initial open metadata object for informational Links; native Dependencies
-do not accept it. --unconditional-source
-explicitly selects the default. The single Type types/preview-dependency
-requires Issue endpoints and, unlike informational Types, one of
---if-source-revision TOKEN or --unconditional-source.`},
+do not accept it. The single Type types/preview-dependency
+requires Issue endpoints. Add --if-source-revision TOKEN to reject a stale source.`},
 		{closeCmd, `Close one or more local Issues by ID or beads/ID. One --reason
 applies to all IDs; repeat it once per ID for positional reasons, or use
 --reason-file PATH for literal file content. The done alias accepts a trailing

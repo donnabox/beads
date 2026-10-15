@@ -58,16 +58,15 @@ func TestGraphPreviewMemoryDeleteWorkflow(t *testing.T) {
 				refuse("revision_conflict", args...)
 			}
 			for _, args := range [][]string{
-				{"delete", "beads/empty", "--force"}, {"forget", "beads/empty"},
-				{"delete", "beads/empty", "--if-revision", updated.Revision, "--unconditional"},
+				{"delete", "beads/empty", "--if-revision="},
 				{"delete", "beads/empty", "beads/other"}, {"delete", "links/context"},
 				{"delete", "https://foreign.invalid/beads/empty"},
 			} {
 				refuse("invalid_selector", args...)
 			}
 			for _, args := range [][]string{
-				{"delete", "beads/empty", "--force", "--unconditional", "--readonly"},
-				{"forget", "beads/empty", "--unconditional", "--readonly"},
+				{"delete", "beads/empty", "--force", "--readonly"},
+				{"forget", "beads/empty", "--readonly"},
 			} {
 				refuse("permission_denied", args...)
 			}
@@ -77,13 +76,13 @@ func TestGraphPreviewMemoryDeleteWorkflow(t *testing.T) {
 			refuse("not_found", "delete", "beads/missing")
 			// The graph adapter must honor bound read-only policy and migration
 			// freezes while leaving its default preview available as a read.
-			graphPolicyCLI(t, bd, work, home, []string{"BD_READONLY=true"}, "permission_denied", "delete", "beads/empty", "--force", "--unconditional", "--json")
+			graphPolicyCLI(t, bd, work, home, []string{"BD_READONLY=true"}, "permission_denied", "delete", "beads/empty", "--force", "--json")
 			writeFile(t, filepath.Join(work, "mayor", "town.json"), []byte("{}\n"))
 			freezePath := filepath.Join(work, "MIGRATION-FREEZE")
 			writeFile(t, freezePath, []byte("memory-delete-test\t2026-09-28T00:00:00Z\tdeletion policy control\n"))
 			call("delete", "beads/empty")
-			refuse("permission_denied", "delete", "beads/empty", "--force", "--unconditional")
-			refuse("permission_denied", "forget", "beads/empty", "--unconditional")
+			refuse("permission_denied", "delete", "beads/empty", "--force")
+			refuse("permission_denied", "forget", "beads/empty")
 			if err := os.Remove(freezePath); err != nil {
 				t.Fatal(err)
 			}
@@ -96,8 +95,14 @@ func TestGraphPreviewMemoryDeleteWorkflow(t *testing.T) {
 			}
 			refuse("gone", "show", updated.ID)
 			refuse("gone", "delete", "beads/empty")
-			refuse("gone", "forget", "beads/empty", "--unconditional")
+			refuse("gone", "forget", "beads/empty")
 			refuse("identity_reserved", "remember", "replacement", "--id", "beads/empty", "--title", "Cannot reuse")
+			unguarded := graphMixedResult[graphstore.Record](t, call("remember", "Disposable", "--id", "beads/unguarded", "--title", "Unguarded"))
+			applied := graphMixedResult[graphstore.MemoryDeleteResult](t, call("delete", "beads/unguarded", "--force"))
+			if !applied.Deleted || applied.Preview || !reflect.DeepEqual(applied.Memory, unguarded) {
+				t.Fatal("unguarded --force did not delete the current Memory")
+			}
+			refuse("gone", "show", "beads/unguarded")
 
 			plan := graphMixedResult[graphstore.Record](t, call("remember", "Plan", "--id", "beads/plan", "--title", "Plan"))
 			other := call("remember", "Context", "--id", "beads/other", "--title", "Context")
@@ -106,7 +111,7 @@ func TestGraphPreviewMemoryDeleteWorkflow(t *testing.T) {
 			if !issuePreview.Preview || issuePreview.Deleted || issuePreview.Issue.ID != scope+"beads/work" {
 				t.Fatal("Issue deletion preview did not preserve live Issue")
 			}
-			refuse("capability_unavailable", "forget", "beads/work", "--unconditional")
+			refuse("capability_unavailable", "forget", "beads/work")
 			related := scope + "types/preview-related"
 			call("link", "beads/plan", "beads/other", "--id", "links/outgoing", "--type", related, "--if-source-revision", plan.Revision)
 			call("link", "beads/work", "beads/plan", "--id", "links/incoming", "--type", related)
@@ -116,7 +121,7 @@ func TestGraphPreviewMemoryDeleteWorkflow(t *testing.T) {
 				current := graphMixedResult[graphstore.Record](t, before)
 				refuse("constraint_violation", "delete", "beads/plan")
 				refuse("constraint_violation", "delete", "beads/plan", "--force", "--if-revision", current.Revision)
-				refuse("constraint_violation", "forget", "beads/plan", "--unconditional")
+				refuse("constraint_violation", "forget", "beads/plan")
 				if call("show", "beads/plan") != before || call("show", path) != linkBefore || call("show", "beads/other") != other || call("show", "beads/work", "--format", "graph-json") != issue {
 					t.Fatal("incident-Link refusal changed Memory, Link or another endpoint")
 				}
@@ -128,7 +133,7 @@ func TestGraphPreviewMemoryDeleteWorkflow(t *testing.T) {
 				call(args...)
 			}
 			final := graphMixedResult[graphstore.Record](t, call("show", "beads/plan"))
-			forgotten := graphMixedResult[graphstore.MemoryDeleteResult](t, call("forget", final.ID, "--unconditional"))
+			forgotten := graphMixedResult[graphstore.MemoryDeleteResult](t, call("forget", final.ID))
 			if !forgotten.Deleted || forgotten.Preview || !reflect.DeepEqual(forgotten.Memory, final) || len(final.Owned) != 0 {
 				t.Fatal("forget after explicit unlink lost final predecessor or invented a live version")
 			}
