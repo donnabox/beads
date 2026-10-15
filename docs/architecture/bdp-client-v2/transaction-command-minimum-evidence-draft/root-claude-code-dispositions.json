@@ -1,0 +1,16 @@
+{
+  "at": "2026-10-15T06:32:03.873793+00:00",
+  "reviewedDiffSha256": "16c0465a581a9fd3504e7667488481f94cde49be17c3a0aa9ed2ac609363246e",
+  "actualClaudeOutputSha256": "e036271dd45f7dc37e713f86194849adf46d51b55b2f66b2fb7f7a0e43789bd5",
+  "nativeSourceAuditSha256": "655fdb68672d1e7b6b1d770d98f1973c11aa873af10a2fd5ee5a4f705a8138cc",
+  "findings": {
+    "F1": "Accepted High. Authored-prefix exact comparison plus no bdp- suffix repair assigned. Preserve runner full serializer comparison. Blocks validation.",
+    "F2": "Vacuity disproved: schema validation before baselines/comparison requires nonempty wireToken transaction on both receipts and Events. Keep transaction comparison unchanged.",
+    "F3": "Reject weakening full Resource/Event comparisons: accepted v5 requires them and actual constructors/schema support current exact shapes.",
+    "F4": "Accept optional explicit whole-json mode guard at use, retaining independent literal ledger assertion.",
+    "F5": "Retain 63000ms; measure exact authorized positive run. No factual failed timing evidence supports widening."
+  },
+  "absentContext": "All seven resolved by actual source audit; typecheck and installed observations remain required. No source audit is represented as runtime proof.",
+  "validation": "Closed. No live gate, tests/build/package/install/service run. Successor native closure and actual Claude supplement required.",
+  "priorReview": "Earlier clean native final review superseded on missed F1; original output remains immutable."
+}
