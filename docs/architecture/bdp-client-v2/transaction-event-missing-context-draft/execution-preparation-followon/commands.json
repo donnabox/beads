@@ -1,0 +1,89 @@
+{
+  "status": "CLOSED_PREPARATION_ONLY",
+  "sourceBinding": "acf190e742dfb669fe5607085a3ac60c5ecb66f4f86b1f05025424a7873615b0",
+  "commands": [
+    {
+      "id": "owners-followon",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-sequence-member-evidence",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "exec",
+        "vitest",
+        "run",
+        "packages/server/src/transaction-events.test.ts",
+        "--maxWorkers=1",
+        "--reporter=verbose",
+        "--reporter=json",
+        "--outputFile=/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-event-missing-context-draft/run-followon/owners-followon.json",
+        "-t",
+        "^(?:captures\\ immutable\\ current\\ context\\ for\\ missing\\ 'finite'\\ 'Bead'\\ Event\\ source|captures\\ immutable\\ current\\ context\\ for\\ missing\\ 'finite'\\ 'Link'\\ Event\\ source|captures\\ immutable\\ current\\ context\\ for\\ missing\\ 'SSE'\\ 'Bead'\\ Event\\ source|captures\\ immutable\\ current\\ context\\ for\\ missing\\ 'SSE'\\ 'Link'\\ Event\\ source)$"
+      ],
+      "selectedFullNames": [
+        "captures immutable current context for missing 'finite' 'Bead' Event source",
+        "captures immutable current context for missing 'finite' 'Link' Event source",
+        "captures immutable current context for missing 'SSE' 'Bead' Event source",
+        "captures immutable current context for missing 'SSE' 'Link' Event source"
+      ],
+      "supervisorSeconds": 120,
+      "cases": 4,
+      "http": 0,
+      "owners": 4,
+      "directories": 4,
+      "listeners": 0,
+      "productChildren": 0
+    },
+    {
+      "id": "sse-regression",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-sequence-member-evidence",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "exec",
+        "vitest",
+        "run",
+        "packages/server/src/transaction-event-sse.test.ts",
+        "--maxWorkers=1",
+        "--reporter=verbose",
+        "--reporter=json",
+        "--outputFile=/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-event-missing-context-draft/run-followon/sse-regression.json",
+        "-t",
+        "^(?:Event\\ reconnect\\ syntax,\\ minimum\\ ordering\\ and\\ exact\\ context\\ codes\\ are\\ preserved\\ over\\ HTTP)$"
+      ],
+      "selectedFullNames": [
+        "Event reconnect syntax, minimum ordering and exact context codes are preserved over HTTP"
+      ],
+      "supervisorSeconds": 120,
+      "cases": 1,
+      "http": 28,
+      "owners": 1,
+      "directories": 1,
+      "listeners": 1,
+      "productChildren": 0
+    }
+  ],
+  "noAutomaticRetry": true,
+  "creditedHistoricalPasses": [
+    "preserves endpoint pins, omits external sources and does not mutate Beads for incidence",
+    "keeps unknown sources nondisclosing before minimum and refuses older success/fenced owner",
+    "scan initial identity and minimum precede reconnect validity; contextual errors preserve the observed entry",
+    "serves contextual missing Event responses for Bead and Link JSON and SSE GET and HEAD"
+  ],
+  "historicalSupervisorVerdict": "failed exact-count adjudication, not changed",
+  "prospectiveFollowon": {
+    "cases": 5,
+    "http": 28,
+    "owners": 5,
+    "directories": 5,
+    "listeners": 1,
+    "productChildren": 0
+  },
+  "combinedUniquePositives": {
+    "cases": 9,
+    "http": 39,
+    "owners": 9,
+    "directories": 9,
+    "listeners": 2,
+    "productChildren": 0
+  }
+}

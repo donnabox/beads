@@ -1,0 +1,44 @@
+{
+  "files": {
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-event-missing-context-draft/run/offline-setup.exit.json": "35b9daa24a9a1d81d168411da8088a67b9a6c629ab28dfd3e2b51b32deb02fe4",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-event-missing-context-draft/run/typecheck.exit.json": "193f0029ae50318e2323c0a1242c78556c1299e3bdf021279fc6d6c05d811bee",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-event-missing-context-draft/run/build.exit.json": "eeed7ffee7f58e00d2fc1a0796daebc0f31ad730f1ed812d4b2e9b3fbbce6174",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-event-missing-context-draft/run/format-check.exit.json": "126b7a52ba313dd363778ac10ae9d55b418691b4eb9c5677ee05dc3df3a9bc06",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-event-missing-context-draft/run/lint.exit.json": "fd3c2a22db650980e1f1c5f27a90580f1b88cd0357f64d9d1245c39334189129",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-event-missing-context-draft/run/boundaries.exit.json": "9f8cd952d05078de264dc428c4f059fddd2d58740d3c12b5e43b24562adf1c99",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-event-missing-context-draft/run/read-seal.exit.json": "5666c42b55caa44509ff37fba98077ef200ddad445e92c8ec7e3f0ea8bc5268a",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-event-missing-context-draft/run/events-positive.exit.json": "d1587b24bb73b0ae5958dcf558d3dd4aa9b016277c02519a6e5df8ea6b50ca26",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-event-missing-context-draft/run/events-positive.json": "d1a2fe2096dea032a8dce5b548a7ebb87f714cab90d1188f74931582f2444b65",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-event-missing-context-draft/run/events-positive.log": "becce5e317735ece4a28588269663a21345275ba68446611a5ff080455410c2a",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-event-missing-context-draft/run/source-attempt-outcome.json": "55bcd63ba52ab172e47d43f8b6c391921ff81833e9f6c06f098005eb04b972e1"
+  },
+  "staticStages": [
+    "offline-setup",
+    "typecheck",
+    "build",
+    "format-check",
+    "lint",
+    "boundaries",
+    "read-seal"
+  ],
+  "actualPassed": [
+    "preserves endpoint pins, omits external sources and does not mutate Beads for incidence",
+    "keeps unknown sources nondisclosing before minimum and refuses older success/fenced owner",
+    "scan initial identity and minimum precede reconnect validity; contextual errors preserve the observed entry",
+    "serves contextual missing Event responses for Bead and Link JSON and SSE GET and HEAD"
+  ],
+  "actualSkippedOwners": [
+    "captures immutable current context for missing 'finite' 'Bead' Event source",
+    "captures immutable current context for missing 'finite' 'Link' Event source",
+    "captures immutable current context for missing 'SSE' 'Bead' Event source",
+    "captures immutable current context for missing 'SSE' 'Link' Event source"
+  ],
+  "sourceAfter": {
+    "packages/server/src/transaction-store.ts": "b2a444f7997ba4e2b34bd57ed2a8119f0999e6146305b5aae4fc8735ff78bc7c",
+    "packages/server/src/transaction-http.ts": "9db33008a4c3a66214e2bf523b0b90f79c216c1f3f304c6df0491a0d1904439a",
+    "packages/server/src/transaction-events.test.ts": "0152561cdf096a48b0b01ec0e0d8bc81208a905bb5bf71dad411694387b58b27",
+    "apps/bdptest/src/transactional-event-missing-context-installed.test.ts": "828c05f358ae5863c992f93194da15a31df9a200e073e5e3525531ba39fe7d0d",
+    "docs/design/transaction-implementation-progress.md": "c31d464b9d7928639c54acf827844d3ae62691d026ee9557ed6f7b921643b278",
+    "packages/server/src/transaction-event-sse.test.ts": "69f58153b93947f028c37aebce2f57b0a25f725aacb9a1891c7b276b1c9e44c0"
+  }
+}

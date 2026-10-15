@@ -1,0 +1,212 @@
+{
+  "at": "2026-10-15T10:54:37.490392+00:00",
+  "status": "stopped-on-selection-adjudication-failure",
+  "sourceBindingSha256": "acf190e742dfb669fe5607085a3ac60c5ecb66f4f86b1f05025424a7873615b0",
+  "stages": {
+    "build": {
+      "exit": 0,
+      "supervisorExit": 0,
+      "elapsedSeconds": 1.4944842499680817,
+      "sourceUnchanged": true,
+      "timeout": false,
+      "forcedCleanup": false,
+      "errors": []
+    },
+    "typecheck": {
+      "exit": 0,
+      "supervisorExit": 0,
+      "elapsedSeconds": 1.9633999168872833,
+      "sourceUnchanged": true,
+      "timeout": false,
+      "forcedCleanup": false,
+      "errors": []
+    },
+    "events-positive": {
+      "exit": 0,
+      "supervisorExit": 1,
+      "elapsedSeconds": 2.1399474579375237,
+      "sourceUnchanged": true,
+      "timeout": false,
+      "forcedCleanup": false,
+      "errors": [
+        "result-adjudication:RuntimeError"
+      ]
+    },
+    "read-seal": {
+      "exit": 0,
+      "supervisorExit": 0,
+      "elapsedSeconds": 0.867958249989897,
+      "sourceUnchanged": true,
+      "timeout": false,
+      "forcedCleanup": false,
+      "errors": []
+    },
+    "boundaries": {
+      "exit": 0,
+      "supervisorExit": 0,
+      "elapsedSeconds": 1.0697484579868615,
+      "sourceUnchanged": true,
+      "timeout": false,
+      "forcedCleanup": false,
+      "errors": []
+    },
+    "format-check": {
+      "exit": 0,
+      "supervisorExit": 0,
+      "elapsedSeconds": 1.9770904590841383,
+      "sourceUnchanged": true,
+      "timeout": false,
+      "forcedCleanup": false,
+      "errors": []
+    },
+    "lint": {
+      "exit": 0,
+      "supervisorExit": 0,
+      "elapsedSeconds": 0.9609116250649095,
+      "sourceUnchanged": true,
+      "timeout": false,
+      "forcedCleanup": false,
+      "errors": []
+    },
+    "offline-setup": {
+      "exit": 0,
+      "supervisorExit": 0,
+      "elapsedSeconds": 1.2028566249646246,
+      "sourceUnchanged": true,
+      "timeout": false,
+      "forcedCleanup": false,
+      "errors": []
+    }
+  },
+  "actualPassed": [
+    "preserves endpoint pins, omits external sources and does not mutate Beads for incidence",
+    "keeps unknown sources nondisclosing before minimum and refuses older success/fenced owner",
+    "scan initial identity and minimum precede reconnect validity; contextual errors preserve the observed entry",
+    "serves contextual missing Event responses for Bead and Link JSON and SSE GET and HEAD"
+  ],
+  "omittedIntendedCases": [
+    "captures immutable current context for missing 'finite' 'Bead' Event source",
+    "captures immutable current context for missing 'finite' 'Link' Event source",
+    "captures immutable current context for missing 'SSE' 'Bead' Event source",
+    "captures immutable current context for missing 'SSE' 'Link' Event source"
+  ],
+  "actualSourceHttp": {
+    "attempts": 11,
+    "completedResponses": 11,
+    "closed": true,
+    "directoryAbsent": true,
+    "failureCount": 0,
+    "deadlineExceeded": false
+  },
+  "cleanup": {
+    "independentlyCheckedSampledPids": [
+      80088,
+      80090,
+      80096,
+      80224,
+      80226,
+      80230,
+      80244,
+      80300,
+      80302,
+      80308,
+      80321,
+      80324,
+      80340,
+      80341,
+      80349,
+      80466,
+      80468,
+      80474,
+      80477,
+      80489,
+      80585,
+      80587,
+      80592,
+      80605,
+      80611,
+      80652,
+      80654,
+      80659,
+      80673,
+      80735,
+      80737,
+      80741,
+      80756,
+      80768,
+      80818,
+      80820,
+      80825,
+      80828,
+      80844
+    ],
+    "stillPresent": [],
+    "sourceHttpDirectoryExists": false,
+    "remainingTemps": {
+      "build": [
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-event-missing-context-draft/run/build.tmp/node-compile-cache"
+      ],
+      "typecheck": [
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-event-missing-context-draft/run/typecheck.tmp/node-compile-cache"
+      ],
+      "events-positive": [
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-event-missing-context-draft/run/events-positive.tmp/node-compile-cache"
+      ],
+      "read-seal": [
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-event-missing-context-draft/run/read-seal.tmp/node-compile-cache"
+      ],
+      "boundaries": [
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-event-missing-context-draft/run/boundaries.tmp/node-compile-cache"
+      ],
+      "format-check": [
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-event-missing-context-draft/run/format-check.tmp/node-compile-cache"
+      ],
+      "lint": [
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-event-missing-context-draft/run/lint.tmp/node-compile-cache"
+      ],
+      "offline-setup": [
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-event-missing-context-draft/run/offline-setup.tmp/node-compile-cache"
+      ]
+    }
+  },
+  "notRun": [
+    "sse-regression",
+    "emitted-control",
+    "installed-package-cohort"
+  ],
+  "artifactSha256": {
+    "build.exit.json": "eeed7ffee7f58e00d2fc1a0796daebc0f31ad730f1ed812d4b2e9b3fbbce6174",
+    "events-positive.log": "becce5e317735ece4a28588269663a21345275ba68446611a5ff080455410c2a",
+    "offline-setup.processes.jsonl": "726ddbd230ffb72136b4db71ad58ec90bf3da10144c0525ce822cb277a4d7b01",
+    "typecheck.started.json": "83d55b66e9bb0b48e1255d8d4c4e78d7b9e6a51a736170323499c4ecc59e47ef",
+    "format-check.log": "31289202270e72d0259d84e3c74c9a6dbb8f2c26c2f68cd6e0079b5ca06de2a7",
+    "build.started.json": "c1ca5846c23b3de01d9f21a77a244926d84806a0341702c61ffb4d5deef432e7",
+    "lint.log": "d2ee71fb8248db54b9f01e0bc6b2a43ccb60385844532e94b6cdcb3a73785b56",
+    "boundaries.processes.jsonl": "ee4a18c35fefb7e1f1ec0f520d410ca44f769b99b3258b27ffab15d781182b02",
+    "typecheck.exit.json": "193f0029ae50318e2323c0a1242c78556c1299e3bdf021279fc6d6c05d811bee",
+    "build.processes.jsonl": "8ce5d15cd20014050d9cc671fe5cb67610af77d8a328e659c4a5957ba98a8056",
+    "typecheck.log": "91d54ffbee73a3ac72294d090e58d77745f8b93edbf94b862807698273a6505a",
+    "events-positive.exit.json": "d1587b24bb73b0ae5958dcf558d3dd4aa9b016277c02519a6e5df8ea6b50ca26",
+    "read-seal.processes.jsonl": "dcfe891fc142eabc80cc0328bf69698224dbe7979c4d28b9354953570d3aa70e",
+    "boundaries.log": "53f4cd856bde25513486a59799c5a05e0650fbb756bf1580fb07e56c2fdeeef3",
+    "format-check.processes.jsonl": "68d7bcf2145b90e93651c7e80a6175391876e5364a71a3c4df8d4534109e0891",
+    "boundaries.started.json": "fa65ff008972cb00b36af4e3cbb3118fdde424c865e4aa515a15914c05d15e84",
+    "read-seal.exit.json": "5666c42b55caa44509ff37fba98077ef200ddad445e92c8ec7e3f0ea8bc5268a",
+    "boundaries.exit.json": "9f8cd952d05078de264dc428c4f059fddd2d58740d3c12b5e43b24562adf1c99",
+    "read-seal.started.json": "29cc81e5683e085dc1a5bd0a2abe7c5c6c7228d8a6bd1661858450068e40170b",
+    "offline-setup.started.json": "7eff127a56b78776e52083e95c2f45f3c901e1b8fab73fdabbb6e6126afcaf73",
+    "format-check.exit.json": "126b7a52ba313dd363778ac10ae9d55b418691b4eb9c5677ee05dc3df3a9bc06",
+    "lint.started.json": "ad21ef98d92d4c8ad5fcc70a9943920c0bf3f02d00251d681cf5b4e30147c535",
+    "read-seal.log": "79749014f712bd5d838b93088c70fef4cca1ae63d7738a613716ab37fa1295ba",
+    "events-positive.processes.jsonl": "91db16522df635e8027ffefd90d6b0c107df9c9e761676bcf8bd69d6d1f97ae8",
+    "lint.exit.json": "fd3c2a22db650980e1f1c5f27a90580f1b88cd0357f64d9d1245c39334189129",
+    "typecheck.processes.jsonl": "41a38b550cadfad6fc6adf7a9578d7687c0f666afd6574a4a7eef8af01cba158",
+    "events-positive.started.json": "cb50b4d575cd060b0e26504c2e94d34fb0e17f92e8202452f27ff4bfca3626ca",
+    "lint.processes.jsonl": "a2c6a586f3f6b137901300ac1d8fc126d713c56d5a628587018513fd1bbb610f",
+    "offline-setup.exit.json": "35b9daa24a9a1d81d168411da8088a67b9a6c629ab28dfd3e2b51b32deb02fe4",
+    "offline-setup.log": "347d48a487b6bf1eb37a784e6b982e8b112813532c1a38afbad7b02cff1ba6ca",
+    "format-check.started.json": "79229f3de70f57be29e14dd60abc78f3574e7bd6fd2a2d57c872a597005befac",
+    "events-positive.json": "d1a2fe2096dea032a8dce5b548a7ebb87f714cab90d1188f74931582f2444b65",
+    "build.log": "232dac5e840e45b3bb06e6e04249b5241f2e1b4f6c797a22c046d916302ac208"
+  }
+}

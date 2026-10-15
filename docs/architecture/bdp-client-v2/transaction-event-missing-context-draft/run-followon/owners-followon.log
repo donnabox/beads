@@ -1,0 +1,43 @@
+
+ RUN  v4.1.10 /Users/dbox/repos/wt/vickie/vickie-sequence-member-evidence
+
+ ↓ packages/server/src/transaction-events.test.ts > projects Scope, Link and Bead facts through deletion/restart (owned=false)
+ ↓ packages/server/src/transaction-events.test.ts > projects Scope, Link and Bead facts through deletion/restart (owned=true)
+ ↓ packages/server/src/transaction-events.test.ts > uses same-group endpoints for create/update/delete and self-Link incidences (owned=false)
+ ↓ packages/server/src/transaction-events.test.ts > uses same-group endpoints for create/update/delete and self-Link incidences (owned=true)
+ ↓ packages/server/src/transaction-events.test.ts > preserves endpoint pins, omits external sources and does not mutate Beads for incidence
+ ↓ packages/server/src/transaction-events.test.ts > pages within groups, continues exclusively after end and rejects unrelated/fabricated cursors
+ ↓ packages/server/src/transaction-events.test.ts > keeps unknown sources nondisclosing before minimum and refuses older success/fenced owner
+ ↓ packages/server/src/transaction-events.test.ts > does not emit failed/no-op transactions and does not expire Events with receipt detail
+ ↓ packages/server/src/transaction-events.test.ts > isolates unresolved metadata-only incident membership while Scope/Link sources remain available
+ ↓ packages/server/src/transaction-events.test.ts > bounds actual finite page bytes with long canonical sources and emits no partial Event
+ ↓ packages/server/src/transaction-events.test.ts > keeps Event route/query validation private and closed
+ ↓ packages/server/src/transaction-events.test.ts > serves finite Event HTTP with current context, conditionals, HEAD and bounded minimum waits
+ ↓ packages/server/src/transaction-events.test.ts > checks the admitted group byte length before selecting its body and proves first-page feasibility
+ ↓ packages/server/src/transaction-events.test.ts > checks minimum position before any retained group scan or body materialization
+ ↓ packages/server/src/transaction-events.test.ts > continues a Resource cursor across groups with zero contributions and observes the true end
+ ↓ packages/server/src/transaction-events.test.ts > refuses retained group missing corruption without changing the valid owner
+ ↓ packages/server/src/transaction-events.test.ts > refuses retained group body-type corruption without changing the valid owner
+ ↓ packages/server/src/transaction-events.test.ts > refuses retained group context corruption without changing the valid owner
+ ↓ packages/server/src/transaction-events.test.ts > refuses retained group ordinal corruption without changing the valid owner
+ ↓ packages/server/src/transaction-events.test.ts > refuses a retained positional hole after a matched cursor rather than skipping the group
+ ↓ packages/server/src/transaction-events.test.ts > accounts exact UTF8 and escaped Event bytes once rather than repeatedly serializing a growing page
+ ↓ packages/server/src/transaction-events.test.ts > private one-group scans preserve self-Link ordinals, partial packets and immutable replay
+ ↓ packages/server/src/transaction-events.test.ts > idle scan advances do not construct group readers or reread unrelated historical bodies
+ ↓ packages/server/src/transaction-events.test.ts > scan handles cannot be fabricated, moved between owners or reused across reopen/close
+ ↓ packages/server/src/transaction-events.test.ts > scan initial identity and minimum precede reconnect validity; contextual errors preserve the observed entry
+ ↓ packages/server/src/transaction-events.test.ts > byte-bound scan packets preserve the exact finite reservation and within-group suffix
+ ↓ packages/server/src/transaction-events.test.ts > scan refuses a regressed captured head and a sticky fenced owner
+ ↓ packages/server/src/transaction-events.test.ts > refuses configuration whose group step differs from the structural owner implementation
+ ✓ packages/server/src/transaction-events.test.ts > captures immutable current context for missing 'finite' 'Bead' Event source 70ms
+ ✓ packages/server/src/transaction-events.test.ts > captures immutable current context for missing 'finite' 'Link' Event source 4ms
+ ✓ packages/server/src/transaction-events.test.ts > captures immutable current context for missing 'SSE' 'Bead' Event source 3ms
+ ✓ packages/server/src/transaction-events.test.ts > captures immutable current context for missing 'SSE' 'Link' Event source 3ms
+ ↓ packages/server/src/transaction-events.test.ts > serves contextual missing Event responses for Bead and Link JSON and SSE GET and HEAD
+
+ Test Files  1 passed (1)
+      Tests  4 passed | 29 skipped (33)
+   Start at  03:59:56
+   Duration  378ms (transform 174ms, setup 15ms, import 230ms, tests 80ms, environment 0ms)
+
+JSON report written to /Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-event-missing-context-draft/run-followon/owners-followon.json
