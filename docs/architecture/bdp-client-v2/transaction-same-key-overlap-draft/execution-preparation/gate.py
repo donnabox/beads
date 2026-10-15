@@ -68,7 +68,7 @@ def load_gate(name):
   require(g["finalHead"]==g["sourceHead"] and g["finalTree"]==g["sourceTree"],"Final source mismatch")
   require(git("show","-s","--format=%P","HEAD").decode().strip()==g["finalBase"],"Ordinary final-parent reanchor required")
   require(set(git("diff","--name-only",g["finalBase"],g["finalHead"]).decode().splitlines())==set(source),"Final scope differs")
-  final=document(g,"finalSource");integration=document(g,"finalIntegrationAcceptance");document(g,"councilAcceptance")
+  final=document(g,"finalSource");integration=document(g,"finalIntegrationAcceptance");review=document(g,"codeReviewState");require(review["validationAllowed"] is True,"Local validation not released")
   require(final["head"]==integration["head"]==g["finalHead"] and final["tree"]==integration["tree"]==g["finalTree"] and final["base"]==integration["base"]==g["finalBase"] and integration["accepted"] is True,"Final integration not accepted")
   require(sha((W/"pnpm-lock.yaml").read_bytes())==g["sourceLockSha256"],"Lock changed")
   verify_build(g)

@@ -1,0 +1,232 @@
+{
+  "accepted": true,
+  "checkedAt": "2026-10-15T19:56:42.509165+00:00",
+  "head": "18f5428686dd84fb139c9dbbcbe39d5958012323",
+  "tree": "9c78087e1036dd26ca908e1d8feaa91263513717",
+  "stages": {
+    "setup": {
+      "exit": 0,
+      "elapsedSeconds": 1.0244913748465478,
+      "terminalSha256": "a3735d88f7522798b10e57bbd311368c7716b97d53d21877c11096fcc85f9faf"
+    },
+    "typecheck": {
+      "exit": 0,
+      "elapsedSeconds": 2.0062215831130743,
+      "terminalSha256": "92e238b285ca99030a61cde498187ed6085703381a57dae067787b003608bc64"
+    },
+    "build": {
+      "exit": 0,
+      "elapsedSeconds": 1.4623713330365717,
+      "terminalSha256": "2f31eada4cd20eafbdfa90988222ceda0a82526a0f5b17a6402ea08bda3e5016"
+    },
+    "format-check": {
+      "exit": 0,
+      "elapsedSeconds": 1.9406800828874111,
+      "terminalSha256": "c67f7a322b12eb64e8bbdc851a8c3df0a16b594e66b6ace9fb6206b314fd63a1"
+    },
+    "lint": {
+      "exit": 0,
+      "elapsedSeconds": 1.0230954999569803,
+      "terminalSha256": "dc64e0d9e513766123e3860d83e10bbe49d921751dab34e91426c174fe2ed5f9"
+    },
+    "boundaries": {
+      "exit": 0,
+      "elapsedSeconds": 1.1085569998249412,
+      "terminalSha256": "4c2a7a5e5c8e6677c6c4f906a8ff7c22af580cd030808dd989127c2c611af4d9"
+    },
+    "read-seal": {
+      "exit": 0,
+      "elapsedSeconds": 0.9122815420851111,
+      "terminalSha256": "2aaf5e6d472d956896f531025c0c6359f783a0835a705cd9547c66a979b53cb0"
+    },
+    "build-inventory": {
+      "exit": 0,
+      "elapsedSeconds": 0.6188578330911696,
+      "terminalSha256": "50c1e6f2cb3898bbb03244aa325568e27f145b7ce3d99b06dcea563948d53bd2"
+    },
+    "node-version": {
+      "exit": 0,
+      "elapsedSeconds": 0.5460355000104755,
+      "terminalSha256": "a6d99b45365e0e7a26075a4d8ccd6fe84e2fc7261345c09b5c31e1048c3dde77"
+    },
+    "package-directory": {
+      "exit": 0,
+      "elapsedSeconds": 0.7458576250355691,
+      "terminalSha256": "66e81b62c830cd39b3a879fdb29dff8c77d6ed02f94a38ca012c5eddfa6c67ba"
+    },
+    "pack-protocol": {
+      "exit": 0,
+      "elapsedSeconds": 0.8400647498201579,
+      "terminalSha256": "2583717168d53b68c9f067a8e3304885dac54da845fc2c9eb65091defe130594"
+    },
+    "pack-server": {
+      "exit": 0,
+      "elapsedSeconds": 0.833422375144437,
+      "terminalSha256": "369a44a392e7a4c329b412a8b8a21089d22492c45309aafe73579317936bfc43"
+    },
+    "verify-tar": {
+      "exit": 0,
+      "elapsedSeconds": 0.7260662917979062,
+      "terminalSha256": "de264fc86d0e5a0d53b2221c3b93bd08eb4f686899a93b2061e6e06aca1fcb62"
+    },
+    "prepare-consumer": {
+      "exit": 0,
+      "elapsedSeconds": 0.7303056248929352,
+      "terminalSha256": "f9fbe925314f93e0b43c391f96ccee8fafb4d2ed2ed6b02ac4dbfb35ea732d5b"
+    },
+    "consumer-install": {
+      "exit": 0,
+      "elapsedSeconds": 0.9517912920564413,
+      "terminalSha256": "9203d0930f354f7c9c172c27a0ff764ba9053f2a6f751485472ce8f685736042"
+    },
+    "verify-installed": {
+      "exit": 0,
+      "elapsedSeconds": 1.1220088750123978,
+      "terminalSha256": "9fdaec9f45c4322567cbcbbfcc3fa0b8f0e6dba0937ab42edaeaf5f38182a8fa"
+    },
+    "installed-positive": {
+      "exit": 0,
+      "elapsedSeconds": 2.0051035000942647,
+      "terminalSha256": "718693c7d43deaeeba372ca5451df65ff63176392a71997b96b58198c2f11609"
+    },
+    "review-positive": {
+      "exit": 0,
+      "elapsedSeconds": 0.7166325419675559,
+      "terminalSha256": "aab8323159cbb2fb462791a52a860721588dc3dde7da360c993a7f1f7c708c37"
+    },
+    "installed-second-key-distinct": {
+      "exit": 1,
+      "elapsedSeconds": 1.1998874170240015,
+      "terminalSha256": "69f70872bc349bcbb1d4ae53a734093a940bf96f26c78cba4ccca93401241c2e"
+    },
+    "review-second-key-distinct": {
+      "exit": 0,
+      "elapsedSeconds": 0.7235185001045465,
+      "terminalSha256": "a0bc0eb0a710c5f75382100e0b1855a4a6f22339f720b4975b64a4e8a2f79cf8"
+    }
+  },
+  "observations": {
+    "installed-positive": {
+      "observationSha256": "4c5885527eb753386c2259108ed6358021e990e1bc35bac2c04d34987413cf1d",
+      "http": 6,
+      "childPid": 58489,
+      "outcome": "passed",
+      "failedAssertion": null
+    },
+    "installed-second-key-distinct": {
+      "observationSha256": "b65e909899c2a966a41e7365695e4e3c033204ff5de41c76c7c72af2a40ec7f2",
+      "http": 2,
+      "childPid": 59018,
+      "outcome": "failed",
+      "failedAssertion": "same-key-overlap:shared-receipt-id"
+    }
+  },
+  "totalHttp": 8,
+  "childrenClosed": 2,
+  "independentlyAbsentPids": [
+    44235,
+    44237,
+    44243,
+    44299,
+    44301,
+    44308,
+    44331,
+    44544,
+    44546,
+    44559,
+    44582,
+    44583,
+    44618,
+    44619,
+    44673,
+    44675,
+    44680,
+    44705,
+    44709,
+    44710,
+    44712,
+    44714,
+    44737,
+    44739,
+    44744,
+    44768,
+    44774,
+    44791,
+    44793,
+    44797,
+    44821,
+    44839,
+    44841,
+    44846,
+    44869,
+    44940,
+    44942,
+    44947,
+    44951,
+    55499,
+    55501,
+    55527,
+    55529,
+    55534,
+    55543,
+    55565,
+    55567,
+    55572,
+    55594,
+    55596,
+    55601,
+    55623,
+    55625,
+    55630,
+    55632,
+    55641,
+    55665,
+    55667,
+    55674,
+    55708,
+    55710,
+    55716,
+    58228,
+    58230,
+    58238,
+    58429,
+    58431,
+    58444,
+    58467,
+    58489,
+    58893,
+    58896,
+    58911,
+    58993,
+    58995,
+    59001,
+    59004,
+    59018,
+    59280,
+    59282,
+    59287
+  ],
+  "installedProvenance": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-same-key-overlap-draft/execution-preparation/run/installed-provenance.json",
+    "sha256": "f017b438df13d2b8bfe594aaa31b674b00e58b2008179b4afc79f2c57f6404c8"
+  },
+  "buildBridge": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-same-key-overlap-draft/execution-preparation/root-build-bridge.json",
+    "sha256": "d82d6a94e17591e360b3e22f1500d4237de862c0f134b5327ba502ce583aea34"
+  },
+  "localValidationRelease": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-same-key-overlap-draft/execution-preparation/root-local-validation-release.json",
+    "sha256": "81ee776371f924f500553ca49cc304d439d6ae2fa67226089c48004fa7bf28a3"
+  },
+  "councilComplete": false,
+  "publicationAllowed": false,
+  "mergeAllowed": false,
+  "claimEligible": false,
+  "limitations": [
+    "Actual build remains attributed to dirty98c600; independently verified unchanged input/output bridge to clean18f5428.",
+    "Full schema/body/Resource/Event comparisons run in memory; retained fingerprints are not full-wire evidence.",
+    "Client dispatch overlap and actual no-pending responses do not prove internal server overlap or pending joining.",
+    "Process sampling may miss short-lived descendants; returned child PIDs separately absent.",
+    "This accepts local validation only; required actual code-council dispositions and exact CI remain pending."
+  ]
+}

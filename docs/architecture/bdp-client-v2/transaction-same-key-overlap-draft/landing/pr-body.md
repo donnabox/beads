@@ -1,0 +1,5 @@
+Adds an installed Transactional test for equivalent singleton and one-operation batch creates dispatched without awaiting either response. The same-key case must retain one receipt, allocated Resource and linked Event, including receipt GET and batch replay. A distinct-key control must produce two valid effects and fail only the shared-receipt assertion.
+
+Validation: typecheck, build, format, lint, boundaries and existing Read evidence checks passed. Fresh package installation verified313 archive members and eight production dependencies; the positive made six successful requests, and the control made two successful requests before its expected named failure. Both children exited normally and their stores were removed. Existing format/lint warnings remain.
+
+Draft while two focused Claude code reviews and exact-head CI run. Native full-source review found no actionable issue. The original full Claude attempt timed out without a verdict and remains inconclusive. This test observes client dispatch discipline; it does not establish server-side overlap or pending joining, qualify a profile, or enable public advertisement.
