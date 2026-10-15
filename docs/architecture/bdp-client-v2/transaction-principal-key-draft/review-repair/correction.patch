@@ -1,0 +1,49 @@
+--- a/apps/bdptest/src/transactional-principal-key-installed.test.ts
++++ b/apps/bdptest/src/transactional-principal-key-installed.test.ts
+@@ -351,7 +351,7 @@
+         "beadRecord",
+         "currentBeadCollection",
+         "eventPage",
+-      ].map((name) => [name, ajv.compile({ $ref: `${bundle.$id}#/$defs/${name}` })]),
++      ].map((name) => [name, ajv.compile({ $ref: `${bundle.$id}#/$defs/${name}` })] as const),
+     );
+     function checked(text: string, schema: string) {
+       const value = record(JSON.parse(text)),
+@@ -402,8 +402,14 @@
+     // Vitest owns result emission; keep its configured paths outside the removable store too.
+     for (let i = 0; i < process.argv.length; i++) {
+       const argument = process.argv[i]!;
+-      if (argument === "--outputFile") outsideStore(process.argv[i + 1] ?? "", directory);
+-      else if (argument.startsWith("--outputFile=")) outsideStore(argument.slice(13), directory);
++      let filename: string | undefined;
++      if (argument === "--outputFile") {
++        filename = process.argv[++i];
++        if (filename?.startsWith("-")) throw new Error("principal-key missing outputFile value");
++      } else if (argument.startsWith("--outputFile=")) filename = argument.slice(13);
++      else continue;
++      if (!filename) throw new Error("principal-key missing outputFile value");
++      outsideStore(path.resolve(filename), directory);
+     }
+     controller.signal.throwIfAborted();
+     launchAttempted = true;
+--- a/docs/design/transaction-implementation-progress.md
++++ b/docs/design/transaction-implementation-progress.md
+@@ -1922,7 +1922,6 @@
+ attribution. This changes neither public discovery eligibility nor the pending
+ Snapshot minimum or incident-Link Event membership rulings.
+ 
+-
+ ### Private installed principal-key isolation draft
+ 
+ The unexecuted draft adds one seven-request installed HTTP witness for two writable
+@@ -1933,7 +1932,8 @@
+ reads observe the existing serving view and do not establish principal-scoped
+ read semantics. No tests, builds, packages or installed runs have executed at this
+ draft checkpoint. Earlier evidence retains its original source attribution.
+-Authoring is based on18104; ordinary integration of actual sequence main and
+-reviewed validation remain gates before final publication/readiness. This draft
++Authoring is based on 18104a03b850553641f24fe83e7318493fa102ca. The unchanged draft
++was integrated onto f5511718371a6935614eae6756e796cef71570c2; reviewed validation
++remains a gate before final publication/readiness. This draft
+ does not activate discovery, qualify a profile or settle the pending Snapshot or
+ incident-Link metadata decisions.

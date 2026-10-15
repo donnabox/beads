@@ -1,0 +1,113 @@
+# Review — `codex/vickie-principal-key-isolation` draft (2 files)
+
+Reviewed against the supplied excerpts only; no files read, written, or executed.
+
+---
+
+## Findings
+
+### 1. Relative `--outputFile` makes the run fail — Medium (proven)
+**Location:** `apps/bdptest/src/transactional-principal-key-installed.test.ts` — the `process.argv` scan (`if (argument === "--outputFile") … argument.startsWith("--outputFile=")`) calling `outsideStore`.
+
+`outsideStore` begins with `if (!path.isAbsolute(filename)) throw new Error("principal-key evidence path must be absolute")`. That precondition is right for `BDP_TRANSACTIONAL_PRINCIPAL_KEY_OUTPUT` (which is separately validated at module scope and documented as absolute), but Vitest's `--outputFile` is normally **relative** (`--outputFile=results.json`). A relative value is resolved against `cwd`, which can never be inside a just-created `mkdtemp` directory, yet the guard rejects it. Impact: an ordinary CI invocation (`vitest run --reporter=json --outputFile=results.json`) fails inside the `try`, pushes the error into `failures`, skips the launch (`launchAttempted` stays false), and reports `outcome: "failed"` for a reason unrelated to the observation.
+
+**Smallest fix:** in the argv branch only, pass `path.resolve(value)` and skip the absoluteness throw — e.g. split the containment check out of `outsideStore` and call it as `outsideStore(path.resolve(value), directory)` after confirming `value !== ""`.
+
+Secondary (same loop, informational): Vitest also accepts the per-reporter form `--outputFile.json=<path>`, which neither branch matches, and a config-file `outputFile` is not seen at all. The residual risk is near-zero (the store path is a random `mkdtemp` name nobody can target), so this is a completeness note on the guard, not a defect with impact.
+
+### 2. `binding` is serialized wholesale into the report — Low
+**Location:** same file, `report()` → `binding: binding ?? null`.
+
+The retained-field allowlist is applied carefully to `responses` (no `effectiveRequest`, no `exactRequest.headerLines`, no request wire, no roles), but `binding` is emitted in full. From `apps/bdptest/test-support/transactional-execution-binding.ts` the object is `{served, operationTargets, runtimeConfigurationIdentity, authorityMode}`, and `served` is whatever `bindServedProfileConfiguration` returns — its shape is **not** in the supplied excerpts. Impact: (a) the allowlist's "no runtime config" property is asserted rather than demonstrated for `served`; (b) if `served` ever carries a non-JSON value or a cycle, `JSON.stringify(report())` throws in the `finally` and converts a passing run into a failure with a confusing error. The credential digests reachable through `served` (`authenticationDigest`) are not a practical disclosure here — tokens are 32 random bytes — but `transaction-runtime-configuration.ts:227–248` explicitly says digests are not secrecy guarantees.
+
+**Smallest fix:** project explicitly — `binding: binding ? { operationTargets: binding.operationTargets, runtimeConfigurationIdentity: binding.runtimeConfigurationIdentity, authorityMode: binding.authorityMode } : null` (add named `served` digest fields if they are wanted).
+
+### 3. `workspaceDirty` is unconditional and does not describe the entry it is reported beside — Low
+**Location:** same file, module scope: `const workspaceDirty = execFileSync("git", ["status","--porcelain"], …)`.
+
+Two problems. First, the git call is unconditional even when both `BDP_TRANSACTIONAL_INSTALLED_ENTRY` and `BDP_TRANSACTIONAL_SOURCE_COMMIT` are supplied — the declared-commit override exists precisely so provenance need not come from the checkout, yet a non-git checkout (source tarball) still kills module load. Second, when the entry is overridden the flag describes the *harness* tree, not the packed artifact, and the report never records that an override was in effect, so `workspaceDirty: false` can be read as a cleanliness claim about `entry`/`entrySha256` that it does not make.
+
+**Smallest fix:** compute it defensively and label the mode — wrap in `try { … } catch { /* unknown */ }` yielding `boolean | null`, and add `entryOverridden: process.env.BDP_TRANSACTIONAL_INSTALLED_ENTRY !== undefined` to `report()`.
+
+### 4. Module-scope rejections emit no report at all — Low
+**Location:** same file, module scope: the entry-override throw, the `sourceCommit` regex throw, the mode throw, the `output`-absolute throw, plus `realpathSync(entry)` / `readFileSync(fixture)` / the git call.
+
+The ledger's `modeSelection` requires `"other" → reject before child start`, which these satisfy. But a rejection here is a Vitest **collection** error: no `console.log` report line, no `output` file, non-zero exit. A supervisor that keys off the report cannot distinguish this from the `collapse-b-to-a` cohort's expected exit 1 except by the report's absence, and `realpathSync` failure (no `packages/server/dist/…`) surfaces as a bare ENOENT rather than a diagnosable message.
+
+**Smallest fix (choose one):** state in the ledger/supervisor contract that a missing report line is a hard error distinct from either cohort; or move the `mode`/`output`/entry-override validations into the `it` body ahead of `mkdtempSync` so the `finally` still emits the allowlisted report.
+
+### 5. Report triage fidelity — Low
+**Location:** same file, `status()` / `currentAssertion` / `report()`.
+
+- `currentAssertion` is only updated by `exchange()` (`…:wire`) and `status()`. A failure in any of the many intervening assertions (receipt `toStrictEqual`, resource shape, Event page equality) leaves `currentAssertion` pointing at the last checkpoint that **passed** and is also present in `passedAssertions`. The two can be disambiguated by membership, but nothing in the report says so.
+- `report()` records `failureCount` only — no failure identity. For the negative cohort this still works (`currentAssertion = principal-key:b-independent-create:completed`, not in `passedAssertions`, `completedResponses[1].status = 409` with `validatedNegativeProblem` set), so **negative specificity is adequate**; it is general triage that is weak.
+- `report()` is invoked twice (file, then stdout), so `elapsedMs` differs between the two artifacts.
+
+**Smallest fix:** in the `catch` block add `failedAssertion = currentAssertion` plus a bounded `String(error).slice(0, 512)` (credential comparisons are already boolean, so no token can appear in a diff), and build the report object once into a `const` reused by both sinks.
+
+### 6. Schema failures report no Ajv errors — Low
+**Location:** same file, `checked()` → `expect(validate(value), \`principal-key:schema:${schema}\`).toBe(true)`; likewise `expect(validators.beadRecord!(resource), "principal-key:resource-schema").toBe(true)`.
+
+A validation failure yields only "expected false to be true" with a label. With five compiled validators over a 61-definition bundle, that is close to undiagnosable.
+
+**Smallest fix:** `expect(validate(value), \`${schema}:${JSON.stringify(validate.errors)}\`).toBe(true)`.
+
+### 7. `validators` collapses to `any` — Low
+**Location:** same file, `const validators = Object.fromEntries([...].map((name) => [name, ajv.compile(...)]))`.
+
+The callback returns `(string | ValidateFunction<unknown>)[]`, not a 2-tuple, so the first `Object.fromEntries` overload does not apply and the result is `any`. Consequence: `validators[schema]`, `validate(value)` and `validators.beadRecord!(…)` are all unchecked; a mistyped schema name is caught only by the runtime `"unbound response schema"` guard, and the file will trip `@typescript-eslint/no-unsafe-call` / `no-unsafe-member-access` if the repo runs type-aware lint (that gate is closed, so unverified).
+
+**Smallest fix:** `.map((name) => [name, ajv.compile({ $ref: … })] as const)`.
+
+### 8. Collapse mode never asserts the configuration it actually submits — Low
+**Location:** same file, `expect(roleNames.map((r) => roles[r].principal)).toStrictEqual(["principal-a","principal-a","principal-b"])` followed by `if (mode === "collapse-b-to-a") roles.b.principal = "principal-a"`.
+
+The inventory assertion deliberately runs pre-mutation (keeping the named expected-200 assertion unchanged, per the accepted design), but the mapping actually sent to the child is then asserted nowhere. A mis-targeted collapse (e.g. `a-rotated` instead of `b`) is still detected — it would fail at `principal-key:a-rotated-replay:completed` instead — so this is defence in depth, not a hole.
+
+**Smallest fix:** after the mutation, add `expect(roleNames.map((r) => roles[r].principal)).toStrictEqual(mode === "collapse-b-to-a" ? ["principal-a","principal-a","principal-a"] : ["principal-a","principal-a","principal-b"])`.
+
+### 9. Doc: malformed provenance citation and stray blank line — Low
+**Location:** `docs/design/transaction-implementation-progress.md`, new section "Private installed principal-key isolation draft".
+
+`Authoring is based on18104;` is missing a space and cites a truncated hash; the merge commit is `18104a0`, and the actual review parent is `f551171`. In a progress document whose purpose is provenance attribution, a truncated/ambiguous hash is the one thing worth getting exact. Separately, the hunk inserts **two** blank lines before `### Private installed…`, which the markdown formatter would collapse — a signal the formatting gate was not applied to this file.
+
+**Smallest fix:** `Authoring is based on 18104a0;` (or the review parent `f551171`, whichever is intended), and drop one blank line before the heading.
+
+The rest of the prose is accurate against the test: one seven-request witness, two writable principals on one key, rotation replay, the collapse control described as sensitivity evidence, A-credentialed reads explicitly not establishing principal-scoped read semantics (which matches `transaction-http.ts:218–223` reading as `{kind:"anonymous"}`), and no execution/qualification claims.
+
+---
+
+## Verified correct (no action)
+
+Checked and consistent with the supplied source, worth recording because they are where this test would most plausibly be wrong:
+
+- **Idempotency namespace.** `(scope, epoch, principal)` per `bdp.md:3905–3946` and `receipts PRIMARY KEY(principal,key)`: B's same-key create admits, the rotated-A credential replays A's retained receipt, and `beads/c` under A's bound key refuses `409 idempotency-conflict`. The collection therefore holds exactly two beads and the Event page exactly two Events.
+- **Event ID projection.** The test's `hash(tag,value) = sha256(JSON.stringify([tag,value])).base64url` and `ev_<epoch>_<view>_<source>_pos-N_0` reproduce `transaction-events.ts:75–101` exactly, with checkpoints `pos-1`/`pos-2` and ordinal `0` matching `transaction-batch.ts:692–708`; both hashes are taken from the actual Event GET serving context.
+- **Receipt shape.** The 12-key `toStrictEqual` matches the composition at `transaction-store.ts:1114` + `1280–1313` (`requiredPosition === effectPosition === position` with one Event), and the `mutationReceipt` `oneOf` completed/available branch.
+- **Negative Problem.** `{type, code, status:409, retry:"never"}` matches `transaction-http.ts:358–371`; `www-authenticate`/`retry-after` are correctly asserted absent for that code/retry per `transaction-http.ts:89–118`.
+- **Byte literals.** `bodyBytes: 150` ×5 (= 750) and the artifact lengths `170` / `166` all recompute correctly; the sha256 literals are self-checked in-test (a wrong literal fails fast — tautological, but a valid edit tripwire).
+- **Credential handling.** Config keys match the closed parser's allowlist (`token/principal/canMutate`, no `ref`); 43-char base64url tokens satisfy `^[A-Za-z0-9_-]{32,256}$`; three distinct tokens; comparisons are boolean so no token reaches a diff; `exactRequest.headerLines` is never retained.
+- **Cleanup/stop semantics.** `stopped`/`stopState` implement the corrected rule — an attempted launch with no returned child yields `unknown-pre-ready`, keeps the store, and pushes both "stop is unproven" and "directory remains"; `!launchAttempted` correctly still removes the directory. `outsideStore`'s containment logic itself is correct for `""`, inside, `..`-prefixed and other-root cases. Nested timers, `clearTimeout` in the inner `finally`, and the memoized launcher `close()` (abort handler's `.catch` does not swallow the awaited rejection) all behave.
+- **Budgets.** Executor bounds reproduce the ledger: wire buffer `32768 + 65536*2 = 163840`, framed rejection `32768 + 65536 = 98304`; work 45 s + cleanup 10 s fits under the 60 s `it` timeout (thin, but the ledger explicitly declines sum-of-maxima entitlement).
+
+---
+
+## Not proven — rests on context not supplied
+
+These are assumptions the draft makes that **cannot** be settled from the excerpts. None is evidence of a bug; listing them so they are not mistaken for verified.
+
+1. `currentBeadCollection` → `beadCollection` is among the explicitly inventoried **omitted** definitions, so the exact `{items, next}` envelope (no `limits`/`source` member) is unverified against both the schema and the collection serializer.
+2. `?limit=32` is assumed ≤ the advertised page maximum. `read-request.ts:258` only validates the integer form, and `receiptMaximumItems = transactionReceiptMaximum()` defaults to `TRANSACTION_MAXIMUM_OPERATIONS`, which the `transaction-batch.ts:64` excerpt suggests but does not prove is 32. With two items any maximum ≥ 2 and any clamping behaviour yields the asserted result; only a hard rejection of `limit > max` would break it.
+3. `items: [a.resource, b.resource]` pins an ordering; the `ORDER BY` behind `authority-read.ts:823` is not shown. Creation order and lexical id order coincide here, so every plausible deterministic ordering agrees.
+4. `HANDLE_ID` (`http-executor.ts:680`) is assumed to accept the single-character handles `"a"`/`"b"`.
+5. `readUpdateProblem` / `directProblemCode` are omitted, so the `transactionalProblem` conditional branch for `idempotency-conflict` is inferred from the server constructing the same value through `parseReadUpdateProblem`.
+6. Ajv under `strict: true` is assumed to compile the bundle cleanly; per the stated constraints no Ajv execution is claimed and only `uri`/`date-time` formats exist, both registered.
+7. The hand-written type for the untyped `.mjs` launcher is an unchecked assertion; it matches `scripts/transaction-installed-observation.mjs:1–97` as supplied.
+
+---
+
+## Nits (no fix required)
+
+`clearTimeout(deadline)` runs twice in the `finally`; the 409 body is validated twice for request 5 (inside `exchange` and again at `a-conflict`); `routeSha256` is a self-check with no external referent; `expect(child.ready.claimEligible/history)` duplicates checks already made by `installedTransactionBinding`.
+
+No other actionable findings.
