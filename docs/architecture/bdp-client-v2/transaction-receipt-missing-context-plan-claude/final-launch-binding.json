@@ -1,0 +1,46 @@
+{
+  "status": "ROOT_AUTHORIZED_SINGLE_PLAN_REVIEW",
+  "rootLaunchReleased": true,
+  "workspace": "/Users/dbox/repos/wt/vickie/vickie-sequence-member-evidence",
+  "branch": "codex/vickie-event-missing-context",
+  "head": "3df82ac480f50c8f486b4e456336366e7acbdf87",
+  "tree": "d5f02c936cf080666a8e73bb5f253e52086705f4",
+  "hashes": {},
+  "reviewedSourceHashes": {
+    "packages/server/src/transaction-store.ts": "b2a444f7997ba4e2b34bd57ed2a8119f0999e6146305b5aae4fc8735ff78bc7c",
+    "packages/server/src/transaction-service.ts": "191767f53b7f95503e39d7579a16b4843b64d90b4c887257a22352c446058409",
+    "packages/server/src/transaction-consistency.ts": "1507f760c790c7232f4e200faa45fdcd3c508a3fbd02909c4c1caaba7a70b6c7",
+    "packages/server/src/transaction-http.ts": "9db33008a4c3a66214e2bf523b0b90f79c216c1f3f304c6df0491a0d1904439a",
+    "packages/server/src/read-http.ts": "31934105eff6fff8ded8ce2ca9e3c19028991ca7c3d5f51b848004177e8c9268",
+    "packages/server/src/transaction-runtime.ts": "77954f0a85029d76443feac54cd53cda4339ffc126660ace5a9f5af92466c573",
+    "packages/server/src/transaction-batch.ts": "5fa7052d95942548727760625e368f3892e1dacced1654f022720af0b5ce899a",
+    "apps/bdptest/src/transactional-set-installed.test.ts": "4f6dc193069667fb37dcbc1a694010a5b45dbea2c09a1422aaa480a806affcf0",
+    "packages/server/src/transaction-receipt-pages.test.ts": "e7bfb2a9d0a5f39a0033a13d59bfaee0d55263749b2cd3a4991237156b9da559",
+    "packages/server/src/transaction-http.test.ts": "45ba9da34887b4daac1ed34cd9a623d7468f2448b5e8a744f52bebe23f33ef2a",
+    "scripts/transaction-installed-observation.mjs": "6f772f3776d3c3effa788676d853cc2932a6ee59ad63ac3338ad1b487408914b",
+    "docs/specs/bdp.md": "f036103ffdf5f89fa3a2033570e1e987c4cd203cd80b1c633cb44615123f892e",
+    "packages/server/src/transaction-service.test.ts": "5e8dc095dcbe9c8fdfb28a5dea4db024ddc65e7e4f51175edeae5a90ea7125be",
+    "schemas/bdp-v0.schema.json": "0baa5d5ef67144f8e6513b4cde31168effc8df6d52ef3141b0f144b87f8dc227",
+    "packages/conformance/src/http-executor.ts": "770a8405ae1532484b5a2658619c067832644947888f95e0c6575002376f1b5d",
+    "apps/bdptest/test-support/transactional-execution-binding.ts": "cde506c72a8710eafe58522900f6db70ed3701cf333560252dc8e7c5e706cf89"
+  },
+  "diffSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "promptSha256": "6bb629cb9ce9add0f9a10f0045ee40ad1f3bb50fb0872cb9087ed1bd617b8d63",
+  "supervisorSha256": "1bc30fff1e22069a86cc60af7fa3e67b7509eadcda39538c52f9d230be666cf0",
+  "plans": {
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-receipt-missing-context-plan.md": "618e69a22bf6f0d5acc01dbbee6001dbd63b17d16fee4529c18e000bfcf47d18",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-receipt-missing-context-plan-ledger.json": "133d93f01d6fb85bf111b016a49a0467470ce09694b8dff7dd1b40b591f5ce9d",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-receipt-missing-context-plan-claude/compact-ledger.json": "dcfe156a9e201ff618d25fa929b1d3cfe17575d535d5fab05e1205cf4c9557f1",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-receipt-missing-context-plan-claude/source-context.txt": "ccb17859b87b3fad0c37d1c18a1931241abc1e5b77fe44652305473cb3eef92c"
+  },
+  "timeoutSeconds": 900,
+  "argv": [
+    "/opt/homebrew/bin/claude",
+    "--safe-mode",
+    "-p",
+    "--tools",
+    "",
+    "--no-session-persistence"
+  ],
+  "authorization": "Root delegated one actual bounded plan review after source/plan pin verification. No additional approval gate; no source authoring/execution."
+}
