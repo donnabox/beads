@@ -1,0 +1,296 @@
+{
+  "status": "PREPARATION_ONLY_NOT_RELEASED",
+  "workspace": "/Users/dbox/repos/wt/vickie/vickie-sequence-member-evidence",
+  "head": "3968081f8231566908e69045424b067c3c36dc40",
+  "tree": "a597518b819941e3f579dd7838e247b010a072a1",
+  "directParent": "015cac1aa4fa827cc4a2c647dff08454c6c8e6f8",
+  "clean": true,
+  "actualMergedParent": null,
+  "actualMergedTree": null,
+  "rootSuppliedCurrentMain": "015cac1aa4fa827cc4a2c647dff08454c6c8e6f8",
+  "ownedFiles": {
+    "packages/conformance/test-support/transactional/manifest-v1.json": "29729151cf6da641545910ec3880f9609c13b319af7bbe99d3d2ad47833dab96",
+    "packages/conformance/test-support/transactional/coverage-v1.json": "4619813e9446e0e714a64c11eac184531950f57720e32c7ef414c7e3342121af",
+    "packages/conformance/src/transactional-cumulative.test.ts": "22a568820ab2abc187d37c27658fdcf6e5ad39e74e2172374e3658c180f7668e",
+    "apps/bdptest/src/transactional-matrix.test.ts": "e319109ab0e9f7258e6918ae789ed7a5672eb7aabd0ec8725ae38e3634164e68"
+  },
+  "contextFiles": {
+    "apps/bdptest/src/transactional-matrix.test.ts": {
+      "sha256": "e319109ab0e9f7258e6918ae789ed7a5672eb7aabd0ec8725ae38e3634164e68",
+      "bytes": 110529,
+      "ranges": [
+        [
+          98,
+          338
+        ],
+        [
+          340,
+          368
+        ],
+        [
+          560,
+          615
+        ],
+        [
+          625,
+          645
+        ],
+        [
+          825,
+          853
+        ],
+        [
+          875,
+          920
+        ],
+        [
+          950,
+          1010
+        ],
+        [
+          1012,
+          1030
+        ],
+        [
+          1051,
+          1065
+        ],
+        [
+          1083,
+          1128
+        ],
+        [
+          1130,
+          1185
+        ],
+        [
+          1204,
+          1218
+        ],
+        [
+          1239,
+          1266
+        ],
+        [
+          1394,
+          1407
+        ],
+        [
+          1477,
+          1485
+        ],
+        [
+          1593,
+          1605
+        ],
+        [
+          1679,
+          1724
+        ],
+        [
+          1726,
+          1743
+        ],
+        [
+          1830,
+          1837
+        ],
+        [
+          1897,
+          1969
+        ],
+        [
+          2137,
+          2209
+        ],
+        [
+          2227,
+          2234
+        ],
+        [
+          2309,
+          2356
+        ],
+        [
+          2545,
+          2571
+        ],
+        [
+          2722,
+          2796
+        ]
+      ]
+    },
+    "packages/conformance/src/transactional-cumulative.test.ts": {
+      "sha256": "22a568820ab2abc187d37c27658fdcf6e5ad39e74e2172374e3658c180f7668e",
+      "bytes": 101554,
+      "ranges": [
+        [
+          670,
+          710
+        ],
+        [
+          836,
+          958
+        ],
+        [
+          1007,
+          1021
+        ],
+        [
+          2724,
+          2758
+        ]
+      ]
+    },
+    "packages/conformance/src/transactional-observation.ts": {
+      "sha256": "603fcc1240e43da3c477f42b8b942141c06c989a48a2a88099fd5d90e283159f",
+      "bytes": 14289,
+      "ranges": [
+        [
+          185,
+          311
+        ]
+      ]
+    },
+    "packages/conformance/src/runner.ts": {
+      "sha256": "ac20c7fbfe15a5e42a6559e89cd3467562efe9bc74d462478414414ed3efede1",
+      "bytes": 133683,
+      "ranges": [
+        [
+          625,
+          675
+        ],
+        [
+          1455,
+          1476
+        ]
+      ]
+    }
+  },
+  "planSha256": "c058bfbf138e8a45e75c813ddafb846fe5effbcc271d9b7635ac5940e39dca7e",
+  "companionSha256": "45af1f02af14de13861ae3b4fa0e0e6a713c77696ae393c584f6636398770340",
+  "promptSha256": "54e41c44d161cc0108aa7a83237ca468fdea06081403d13e1b7c512dc425e146",
+  "sourceContextSha256": "91967544e6ba575a2256b835b4c6d70ac9a276478b6681a78157db5c9fd03e86",
+  "inventorySha256": "4ed63c05db50fb2a15bdd4bab7dbd87350d1f0f995e180e6cd7593cab0e4850f",
+  "acceptedA": {
+    "stdoutSha256": "0b5a1ba0b62ba57893865a301f5f841cdeecf748862b71091e15264f77cb2533",
+    "nativeAuditSha256": "79aa548af10b7436b2ca443f76045c4a7f5e408da45eb340a8f6254c67e6bb3e",
+    "rootDispositionSha256": "ebe3688f91ec979e21e79bc52d92776e3d1abde27e021af2c09f8a78154836ef",
+    "all19Dispositioned": true
+  },
+  "previousB": {
+    "status": "INCONCLUSIVE_EMPTY_TIMEOUT_NO_VERDICT",
+    "exit": 143,
+    "elapsedSeconds": 900.9770699169021,
+    "actualExitSha256": "51868c31aadf0cc8dc22a4883dabf955f347affdac60721d54cba0c14171d1a7",
+    "newReviewReleased": false
+  },
+  "pendingMechanicalReanchor": "Actual PR128 merged parent/tree and successful CI, then root release of one review.",
+  "executed": false,
+  "claudeLaunched": false,
+  "promptBytes": 80758,
+  "promptSourceRanges": {
+    "apps/bdptest/src/transactional-matrix.test.ts": [
+      [
+        98,
+        338
+      ],
+      [
+        340,
+        368
+      ],
+      [
+        560,
+        615
+      ],
+      [
+        950,
+        983
+      ],
+      [
+        1083,
+        1128
+      ],
+      [
+        1130,
+        1185
+      ],
+      [
+        1204,
+        1218
+      ],
+      [
+        1239,
+        1266
+      ],
+      [
+        1477,
+        1485
+      ],
+      [
+        1679,
+        1724
+      ],
+      [
+        1830,
+        1837
+      ],
+      [
+        1897,
+        1969
+      ],
+      [
+        2137,
+        2209
+      ],
+      [
+        2227,
+        2234
+      ],
+      [
+        2309,
+        2356
+      ],
+      [
+        2545,
+        2571
+      ],
+      [
+        2722,
+        2796
+      ]
+    ],
+    "packages/conformance/src/transactional-cumulative.test.ts": [
+      [
+        836,
+        958
+      ],
+      [
+        1007,
+        1021
+      ],
+      [
+        2724,
+        2758
+      ]
+    ],
+    "packages/conformance/src/transactional-observation.ts": [
+      [
+        185,
+        311
+      ]
+    ],
+    "packages/conformance/src/runner.ts": [
+      [
+        625,
+        675
+      ],
+      [
+        1455,
+        1476
+      ]
+    ]
+  },
+  "fullContextRetainedSeparately": true
+}

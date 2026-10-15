@@ -4,6 +4,6 @@ Owner, service and HTTP tests cover current context after a later commit, hidden
 
 Validation: build, typecheck, format, lint, boundaries and the unchanged Read evidence check passed. Fifteen distinct selected source cases passed across the original draft and its one-assertion correction. Native and actual Claude reviews are complete with findings dispositioned. The emitted omission control produced exactly eight expected tuple failures; its original wrapper postcheck failure is preserved alongside the separately accepted dependency-shim audit.
 
-Fresh installed validation and exact-head CI are pending. No profile advertisement or release.
+Fresh installed validation passed one case with 14 HTTP responses; the child exited normally and its temporary store is gone. An independent audit verified package contents, installed dependencies, response contexts and cleanup. Exact-head CI is running. No profile advertisement or release.
 
 [Review and validation records](https://github.com/donnabox/beads/blob/codex/vickie-bdp-client-design/docs/architecture/bdp-client-v2/design.md)

@@ -1,0 +1,150 @@
+{
+  "status": "PROPOSED_UNEXECUTED_EXTERNAL_PREVIEW",
+  "calls": [
+    {
+      "n": 1,
+      "method": "GET",
+      "targetSource": "configured Scope",
+      "body": null,
+      "key": null
+    },
+    {
+      "n": 2,
+      "method": "GET",
+      "targetSource": "actual service-desc Link",
+      "body": null,
+      "key": null
+    },
+    {
+      "n": 3,
+      "method": "GET",
+      "targetSource": "parsed discovery.operations",
+      "body": null,
+      "key": null
+    },
+    {
+      "n": 4,
+      "method": "POST",
+      "targetSource": "parsed directory.createBead",
+      "body": "{\"id\":\"beads/overlap\",\"type\":\"https://reference.invalid/acme/types/task\",\"properties\":{\"n\":0}}",
+      "key": "overlap-seed"
+    },
+    {
+      "n": 5,
+      "method": "POST",
+      "targetSource": "parsed directory.updateBead",
+      "body": "materialized A=135+L",
+      "key": "overlap-a"
+    },
+    {
+      "n": 6,
+      "method": "POST",
+      "targetSource": "same discovered update target",
+      "body": "materialized B=135+L",
+      "key": "overlap-b"
+    },
+    {
+      "n": 7,
+      "method": "GET",
+      "targetSource": "actual seed Resource.id",
+      "body": null,
+      "key": null
+    },
+    {
+      "n": 8,
+      "method": "POST",
+      "targetSource": "same update target",
+      "body": "exact materialized A",
+      "key": "overlap-a"
+    },
+    {
+      "n": 9,
+      "method": "POST",
+      "targetSource": "same update target",
+      "body": "exact materialized B",
+      "key": "overlap-b"
+    },
+    {
+      "n": 10,
+      "method": "GET",
+      "targetSource": "actual seed Resource.id",
+      "body": null,
+      "key": null
+    }
+  ],
+  "headers": {
+    "all": [
+      "Authorization: Bearer <local random token>",
+      "Accept: application/json",
+      "Connection: close"
+    ],
+    "postOnly": [
+      "Content-Type: application/json",
+      "idempotency-key: <literal per ledger>",
+      "Content-Length: <actual UTF8 body bytes>"
+    ],
+    "getForbidden": [
+      "body",
+      "content-type",
+      "idempotency-key"
+    ],
+    "never": [
+      "content-encoding",
+      "duplicate authored headers"
+    ]
+  },
+  "seedBytes": 94,
+  "seedSha256": "b76738409399066a7a7e9a05124d345773db6618130b419a2eb8261e57b8927e",
+  "updateFixedBytesExcludingJsonRevision": 135,
+  "positiveBodyBytes": "634+4L",
+  "negativeBodyBytes": "364+2Lnegative",
+  "requestBodyCeiling": 65536,
+  "requestHeaderCeiling": 16384,
+  "positiveConservativeBodyBytes": 262238,
+  "negativeConservativeBodyBytes": 131166,
+  "combinedConservativeBodyBytes": 393404,
+  "responseBodyCeilingPerRequest": 32768,
+  "combinedResponseBodyCeiling": 524288,
+  "positive": {
+    "cases": 1,
+    "http": 10,
+    "productChildren": 1,
+    "owners": 1,
+    "directories": 1,
+    "productListeners": 1,
+    "portReservationListeners": 1
+  },
+  "negative": {
+    "cases": 1,
+    "http": 6,
+    "productChildren": 1,
+    "owners": 1,
+    "directories": 1,
+    "productListeners": 1,
+    "portReservationListeners": 1
+  },
+  "concurrencyMaximum": 2,
+  "milestones": {
+    "possibleSlots": 26,
+    "maximumRetained": 32,
+    "deduplicatedBy": "pair request/kind",
+    "overflow": "recorded and witness fails/inconclusive"
+  },
+  "timingMs": {
+    "work": 30000,
+    "exchange": 5000,
+    "requestDrain": 5000,
+    "launcherReady": 10000,
+    "launcherClose": 10000,
+    "test": 45000,
+    "supervisor": 120000
+  },
+  "cleanup": "Destroy active requests; request draining (max5s) and existing child close(max10s) run concurrently after work ends, then remove own directory; aggregate separate failures. Does not add runtime/deadline allowance.",
+  "toolingPerCallback": [
+    "two git execFileSync calls with5s deadlines",
+    "Vitest and supervisor processes externally inventoried"
+  ],
+  "derivativeTooling": "One separately authorized derivative installed-payload helper invocation; no product child",
+  "negativeOracle": "overlap:exactly-one-winner, after both schema-valid200s; exact status/body conjunction false at6, before7-10. No transport/schema/cleanup failure accepted as control.",
+  "derivativePreparation": "No derivative created. Copy actual fresh consumer closure externally after positive success, bind graph/member/symlink resolutions, delete sole emitted expectedRevision guard, preserve before/after; root-owned retention/disposal."
+}
