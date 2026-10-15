@@ -78,7 +78,7 @@ If you omit `--type`, `bd create` makes a `task` Issue. The shorter `bd link SOU
 
 `bd create` and `bd link create` refuse an unrecognized `--type`. The choices displayed by `bd types` are fixed in this preview; users cannot register new graph Types here.
 
-> **Compatibility note:** The older `bd dep add --type` path still accepts an arbitrary nonempty Dependency label of up to 32 bytes. It does not register a new graph Type. Only built-in labels have their defined workflow behavior.
+> **Compatibility note:** The published `bd` 1.0.5 accepts custom Dependency labels through both `bd dep add --type` and `bd link --type`. A Preview 2 graph workspace instead requires a built-in Dependency choice shown by `bd types` on both paths. An unrecognized choice is refused; users cannot register a new graph Type here.
 
 ## Beads
 
@@ -114,7 +114,7 @@ For familiarity and convenience, the CLI also has narrower shortcuts:
 | `bd history` | `bd versions` | Both list saved versions. |
 | `bd new`, `bd q` | `bd create` | Short Issue creation forms. |
 
-`bd link query` is not available in this preview.
+There is no `bd link query` subcommand in this preview. Do not try `bd link query ID`: `bd link` treats two positional arguments as a request to create a Dependency. Use `bd link list` to inspect Links.
 
 Issue Beads have been part of the product from the beginning. A **Memory** holds reusable information. It has two properties: a string `title` and a Markdown `body`.
 
