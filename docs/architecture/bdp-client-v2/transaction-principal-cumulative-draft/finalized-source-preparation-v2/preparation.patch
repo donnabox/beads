@@ -1,0 +1,109 @@
+--- predecessor/commands.json
++++ successor/commands.json
+@@ -2,8 +2,8 @@
+   "status": "closed-source-only",
+   "workspace": "/Users/dbox/repos/wt/vickie/vickie-guarded-batch",
+   "sourceBinding": {
+-    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-principal-cumulative-draft/root-fence-amendment/source-binding.json",
+-    "sha256": "52324cb9b78de3fda3cea613a1de1290274c4eca032579d427f6bb49102b0df1"
++    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-principal-cumulative-draft/format-repair/source-binding.json",
++    "sha256": "0dbae7cb6139263cbfd3931e80d8dec2c628d7e982deecdd6c8242573a35c6e2"
+   },
+   "finalCommit": null,
+   "executionOrder": [
+@@ -171,7 +171,7 @@
+         "--maxWorkers=1",
+         "--reporter=verbose",
+         "--reporter=json",
+-        "--outputFile=/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-principal-cumulative-draft/finalized-source-preparation/run/static-cases.results.json",
++        "--outputFile=/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-principal-cumulative-draft/finalized-source-preparation-v2/run/static-cases.results.json",
+         "-t",
+         "^(?:binds\\ the\\ canonical\\ cumulative\\ TX\\ selection\\ and\\ exact\\ source\\ digests\\ without\\ qualification|rejects\\ noncanonical\\ selections,\\ History,\\ wrong\\ factories,\\ retired\\ and\\ misprofiled\\ rows|copies\\ source\\ bytes\\ before\\ binding\\ and\\ exposes\\ all\\ missing\\ obligations\\ without\\ executing\\ them|pins\\ the\\ inherited\\ command\\-minimum\\ manifest\\ facts,\\ read\\-header\\ absence\\ and\\ all\\ thirteen\\ prior\\ objects|preserves\\ every\\ original\\ TX\\ scenario\\ and\\ coverage\\ object\\ while\\ adding\\ one\\ bounded\\ partial\\ cross\\-carrier\\ row|pins\\ the\\ one\\-page\\ matched\\-plus\\-updated\\ witness\\ without\\ advertised\\-limit\\ or\\ other\\-outcome\\ credit|pins\\ the\\ partial\\ principal\\ namespace\\ row,\\ full\\ parent\\ and\\ exact\\ credential\\ roles|pins\\ the\\ matching\\ no\\-op\\ installed\\ route\\ digest\\ and\\ fifteen\\-action\\ ledger|pins\\ deletion\\-safety\\ derivative\\ carriers,\\ complete\\ positives,\\ and\\ measured\\ source\\ bounds)$"
+       ],
+@@ -255,7 +255,7 @@
+       "cwd": "/Users/dbox/repos/wt/vickie/vickie-guarded-batch",
+       "argv": [
+         "python3",
+-        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-principal-cumulative-draft/finalized-source-preparation/inventory.py"
++        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-principal-cumulative-draft/finalized-source-preparation-v2/inventory.py"
+       ],
+       "supervisorSeconds": 120,
+       "released": false,
+--- predecessor/run-source.py
++++ successor/run-source.py
+@@ -18,10 +18,10 @@
+ E = P / "run"
+ L = Path("/Users/dbox/repos/wt/vickie/bdp-integration-logs")
+ GUARD = L / "guarded-action.py"
+-BINDING = D / "root-fence-amendment/source-binding.json"
++BINDING = D / "format-repair/source-binding.json"
+ COMMANDS = P / "commands.json"
+-BINDING_SHA = '52324cb9b78de3fda3cea613a1de1290274c4eca032579d427f6bb49102b0df1'
+-COMMANDS_SHA = '0ff7492cf518aacfa54b3382128df32156e455e94c5fafa9cc6e79bbfbe63dce'
++BINDING_SHA = '0dbae7cb6139263cbfd3931e80d8dec2c628d7e982deecdd6c8242573a35c6e2'
++COMMANDS_SHA = 'fd995b53ae9c7e9f1da5bc31256b66a404c69fddc7e45ddc6aa22135344a9931'
+ GUARD_SHA = "fd81ba029cd4e7c7e60623df89e8292af91141d311d9ce789ed19e2152375e84"
+ HEAD = '5d7fa3f049fa0b4db3aa8dae20e20d8e47fb3854'
+ TREE = '057f879132074166f2c0f643a8b45bbd9dd47c6f'
+@@ -91,7 +91,7 @@
+     require(authority.is_relative_to(L) and sha(authority.read_bytes()) == acceptance["sha256"], "Root acceptance missing or changed")
+     # No stage may bypass measured draft stop; this scaffold cannot amend guards.
+     growth = gate["measuredFenceAcceptance"]
+-    require(growth == {'path': '/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-principal-cumulative-draft/root-fence-amendment/acceptance.json', 'sha256': '5c9e36ccf1bc5c9d3a432ebc5ede1f98e51c0448d8156e25b8b3c862abb235b9'}, "Wrong fence acceptance")
++    require(growth == {'path': '/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-principal-cumulative-draft/format-repair/fence-acceptance.json', 'sha256': '0a635636a4a55b34584a80a39a59cc8719d0cbd31c62fc93807bdee460c72afc'}, "Wrong fence acceptance")
+     authority = Path(growth["path"])
+     require(authority.is_relative_to(D) and sha(authority.read_bytes()) == growth["sha256"], "Measured fence acceptance missing/changed")
+     measured = json.loads(authority.read_text())
+--- predecessor/inventory.py
++++ successor/inventory.py
+@@ -8,7 +8,7 @@
+ def require(ok,message):
+     if not ok:raise RuntimeError(message)
+ def git(*args):return subprocess.check_output(["git",*args],cwd=W,timeout=15)
+-b=json.loads((P.parent/"root-fence-amendment/source-binding.json").read_text())
++b=json.loads((P.parent/"format-repair/source-binding.json").read_text())
+ start=json.loads((E/"build.started.json").read_text())
+ finish=json.loads((E/"build.exit.json").read_text())
+ require(finish["exit"]==finish["supervisorExit"]==0 and finish["sourceUnchanged"],"Build did not pass")
+--- predecessor/execution-gate.example.json
++++ successor/execution-gate.example.json
+@@ -1,17 +1,17 @@
+ {
+   "status": "closed",
+   "session": "2026-10-08T20:26:35Z-81e5",
+-  "sourceBindingSha256": "52324cb9b78de3fda3cea613a1de1290274c4eca032579d427f6bb49102b0df1",
+-  "commandsSha256": "0ff7492cf518aacfa54b3382128df32156e455e94c5fafa9cc6e79bbfbe63dce",
+-  "supervisorSha256": "99b3e89b3c7e59a2e075d3309e59ecfca260299be0fc10338f99cdf3510769a3",
+-  "inventorySha256": "dee913cee574b93672abd61481c88a5b8b9f618c483b9455dc18e2913ab087bf",
++  "sourceBindingSha256": "0dbae7cb6139263cbfd3931e80d8dec2c628d7e982deecdd6c8242573a35c6e2",
++  "commandsSha256": "fd995b53ae9c7e9f1da5bc31256b66a404c69fddc7e45ddc6aa22135344a9931",
++  "supervisorSha256": "4db47dd0b485d36eaebb9718b83aeee233208aa93ab6502c97c48be3d7973d13",
++  "inventorySha256": "f1e32f57e3c1cb78e06805501e47fae5fd41199813c219e2514ffaefa807f50c",
+   "expectedHead": "5d7fa3f049fa0b4db3aa8dae20e20d8e47fb3854",
+   "expectedTree": "057f879132074166f2c0f643a8b45bbd9dd47c6f",
+   "authorizedStages": [],
+   "rootAcceptance": null,
+   "measuredFenceAcceptance": {
+-    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-principal-cumulative-draft/root-fence-amendment/acceptance.json",
+-    "sha256": "5c9e36ccf1bc5c9d3a432ebc5ede1f98e51c0448d8156e25b8b3c862abb235b9"
++    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-principal-cumulative-draft/format-repair/fence-acceptance.json",
++    "sha256": "0a635636a4a55b34584a80a39a59cc8719d0cbd31c62fc93807bdee460c72afc"
+   },
+   "controlGate": "closed",
+   "installedGate": "closed"
+--- predecessor/README.md
++++ successor/README.md
+@@ -1,6 +1,6 @@
+ # Closed principal cumulative source preparation
+ 
+-This packet binds the accepted four-file dirty draft at base 5d7fa3f049fa0b4db3aa8dae20e20d8e47fb3854. The original execution-preparation scaffold remains unchanged. No stage was run while preparing this packet; execution-gate.json is absent.
++This v2 packet binds the format-only successor of the accepted four-file dirty draft at base 5d7fa3f049fa0b4db3aa8dae20e20d8e47fb3854. The original execution-preparation scaffold remains unchanged. No stage was run while preparing this packet; execution-gate.json is absent.
+ 
+ Nine stages, in order: offline frozen install, typecheck, build, format check, lint, boundaries, Read seal, exactly nine static callbacks, and build inventory. commands.json pins exact paths/full names, Node 24.16.0, pnpm 11.20.0 and Vitest 4.1.10 bytes. The selected callbacks are CPU-only: zero planned HTTP, product children, store owners and listeners. Tool/build/worker processes are separate and sampled.
+ 
+@@ -11,3 +11,5 @@
+ Build start records all tracked input hashes and dirty status. Inventory compares those inputs and records protocol/server package-member candidates plus all package dist files. This is actual dirty-build attribution, not a clean-candidate, archive, consumer, installed, or public qualification claim. Those phases remain separately closed.
+ 
+ Preparation verification was data-only: source/tool hashes, exact test registration strings, Python AST parsing and JSON construction. No prepared script, product module, test, build, installation or service was executed.
++
++The predecessor finalized-source-preparation and its actual failed format-check remain unchanged. This successor changes source/acceptance bindings and output directory only. All nine commands, exact selections, timeouts, cleanup policy and runtime bounds are unchanged. The format bridge retains the original measured-fence decision; it is not a fresh execution release.

@@ -1,0 +1,713 @@
+{
+  "status": "CLOSED_UNTIL_ROOT_BINDS_ACTUAL_CLEAN_SOURCE_AND_BUILD",
+  "workspace": "/Users/dbox/repos/wt/vickie/vickie-guarded-batch",
+  "node": "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+  "pnpm": "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+  "ownedPaths": [
+    "packages/conformance/test-support/transactional/manifest-v1.json",
+    "packages/conformance/test-support/transactional/coverage-v1.json",
+    "packages/conformance/src/transactional-cumulative.test.ts",
+    "apps/bdptest/src/transactional-matrix.test.ts"
+  ],
+  "executionOrder": [
+    "node-version",
+    "package-directory",
+    "pack-protocol",
+    "pack-server",
+    "verify-tar",
+    "prepare-consumer",
+    "consumer-install",
+    "verify-installed",
+    "principal-positive",
+    "principal-positive-review",
+    "principal-collapse",
+    "principal-collapse-review",
+    "full-positive",
+    "full-positive-review",
+    "cross-batch",
+    "cross-batch-review",
+    "cross-sequence",
+    "cross-sequence-review"
+  ],
+  "commands": {
+    "node-version": {
+      "phase": "package",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-guarded-batch",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "--version"
+      ],
+      "supervisorSeconds": 120,
+      "requires": [],
+      "ownedTempPrefixes": []
+    },
+    "package-directory": {
+      "phase": "package",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-guarded-batch",
+      "argv": [
+        "python3",
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-principal-cumulative-draft/finalized-installed-preparation/packages.py",
+        "directory"
+      ],
+      "supervisorSeconds": 120,
+      "requires": [
+        {
+          "id": "node-version",
+          "supervisorExit": 0
+        }
+      ],
+      "ownedTempPrefixes": []
+    },
+    "pack-protocol": {
+      "phase": "package",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-guarded-batch",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "--filter",
+        "@bdp/protocol",
+        "pack",
+        "--pack-destination",
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-principal-cumulative-draft/finalized-installed-preparation/run/packages"
+      ],
+      "supervisorSeconds": 120,
+      "requires": [
+        {
+          "id": "package-directory",
+          "supervisorExit": 0
+        }
+      ],
+      "ownedTempPrefixes": []
+    },
+    "pack-server": {
+      "phase": "package",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-guarded-batch",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "--filter",
+        "@bdp/server",
+        "pack",
+        "--pack-destination",
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-principal-cumulative-draft/finalized-installed-preparation/run/packages"
+      ],
+      "supervisorSeconds": 120,
+      "requires": [
+        {
+          "id": "pack-protocol",
+          "supervisorExit": 0
+        }
+      ],
+      "ownedTempPrefixes": []
+    },
+    "verify-tar": {
+      "phase": "package",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-guarded-batch",
+      "argv": [
+        "python3",
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-principal-cumulative-draft/finalized-installed-preparation/packages.py",
+        "tar"
+      ],
+      "supervisorSeconds": 120,
+      "requires": [
+        {
+          "id": "pack-server",
+          "supervisorExit": 0
+        }
+      ],
+      "ownedTempPrefixes": []
+    },
+    "prepare-consumer": {
+      "phase": "package",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-guarded-batch",
+      "argv": [
+        "python3",
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-principal-cumulative-draft/finalized-installed-preparation/packages.py",
+        "consumer"
+      ],
+      "supervisorSeconds": 120,
+      "requires": [
+        {
+          "id": "verify-tar",
+          "supervisorExit": 0
+        }
+      ],
+      "ownedTempPrefixes": []
+    },
+    "consumer-install": {
+      "phase": "package",
+      "cwd": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-principal-cumulative-draft/finalized-installed-preparation/run/consumer",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "install",
+        "--offline",
+        "--ignore-scripts",
+        "--no-frozen-lockfile",
+        "--prod"
+      ],
+      "supervisorSeconds": 120,
+      "requires": [
+        {
+          "id": "prepare-consumer",
+          "supervisorExit": 0
+        }
+      ],
+      "ownedTempPrefixes": []
+    },
+    "verify-installed": {
+      "phase": "package",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-guarded-batch",
+      "argv": [
+        "python3",
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-principal-cumulative-draft/finalized-installed-preparation/packages.py",
+        "installed"
+      ],
+      "supervisorSeconds": 120,
+      "requires": [
+        {
+          "id": "consumer-install",
+          "supervisorExit": 0
+        }
+      ],
+      "ownedTempPrefixes": []
+    },
+    "principal-positive": {
+      "phase": "installed",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-guarded-batch",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/repos/wt/vickie/vickie-guarded-batch/node_modules/.pnpm/vitest@4.1.10_@types+node@24.13.3_vite@8.2.1_@types+node@24.13.3_/node_modules/vitest/vitest.mjs",
+        "run",
+        "apps/bdptest/src/transactional-matrix.test.ts",
+        "--maxWorkers=1",
+        "--reporter=verbose",
+        "--reporter=json",
+        "--outputFile=/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-principal-cumulative-draft/finalized-installed-preparation/run/principal-positive.results.json",
+        "-t",
+        "^observes\\ authenticated\\ principal\\ isolation\\ and\\ rotation\\ through\\ selected\\ cumulative\\ HTTP$"
+      ],
+      "supervisorSeconds": 120,
+      "requires": [
+        {
+          "id": "verify-installed",
+          "supervisorExit": 0
+        }
+      ],
+      "ownedTempPrefixes": [
+        "bdp-tx-installed-"
+      ],
+      "selectedFullNames": [
+        "observes authenticated principal isolation and rotation through selected cumulative HTTP"
+      ],
+      "selectedPathNames": [
+        {
+          "file": "apps/bdptest/src/transactional-matrix.test.ts",
+          "fullName": "observes authenticated principal isolation and rotation through selected cumulative HTTP"
+        }
+      ],
+      "expectedCases": 1,
+      "expectedExit": 0,
+      "reportOverrides": {
+        "BDP_TRANSACTIONAL_PRINCIPAL_CUMULATIVE_OUTPUT": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-principal-cumulative-draft/finalized-installed-preparation/run/principal-positive.observation.json"
+      },
+      "observationPath": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-principal-cumulative-draft/finalized-installed-preparation/run/principal-positive.observation.json",
+      "workload": {
+        "httpExpected": 7,
+        "httpMaximum": 7,
+        "children": 2,
+        "requestBodyBytes": 750,
+        "maximumRequestBodyBytes": 750,
+        "cohortMs": 90000,
+        "requestMs": 5000,
+        "prepareMs": 10000,
+        "cleanupMs": 10000,
+        "externalMs": 120000
+      }
+    },
+    "principal-positive-review": {
+      "phase": "review",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-guarded-batch",
+      "argv": [
+        "python3",
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-principal-cumulative-draft/finalized-installed-preparation/review-installed.py",
+        "principal-positive"
+      ],
+      "supervisorSeconds": 120,
+      "requires": [
+        {
+          "id": "principal-positive",
+          "supervisorExit": 0
+        }
+      ],
+      "ownedTempPrefixes": []
+    },
+    "principal-collapse": {
+      "phase": "installed",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-guarded-batch",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/repos/wt/vickie/vickie-guarded-batch/node_modules/.pnpm/vitest@4.1.10_@types+node@24.13.3_vite@8.2.1_@types+node@24.13.3_/node_modules/vitest/vitest.mjs",
+        "run",
+        "apps/bdptest/src/transactional-matrix.test.ts",
+        "--maxWorkers=1",
+        "--reporter=verbose",
+        "--reporter=json",
+        "--outputFile=/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-principal-cumulative-draft/finalized-installed-preparation/run/principal-collapse.results.json",
+        "-t",
+        "^discriminates\\ principal\\ isolation\\ against\\ a\\ separately\\ bound\\ collapsed\\ namespace$"
+      ],
+      "supervisorSeconds": 120,
+      "requires": [
+        {
+          "id": "principal-positive-review",
+          "supervisorExit": 0
+        }
+      ],
+      "ownedTempPrefixes": [
+        "bdp-tx-installed-"
+      ],
+      "selectedFullNames": [
+        "discriminates principal isolation against a separately bound collapsed namespace"
+      ],
+      "selectedPathNames": [
+        {
+          "file": "apps/bdptest/src/transactional-matrix.test.ts",
+          "fullName": "discriminates principal isolation against a separately bound collapsed namespace"
+        }
+      ],
+      "expectedCases": 1,
+      "expectedExit": 0,
+      "reportOverrides": {
+        "BDP_TRANSACTIONAL_PRINCIPAL_CUMULATIVE_OUTPUT": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-principal-cumulative-draft/finalized-installed-preparation/run/principal-collapse.observation.json"
+      },
+      "observationPath": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-principal-cumulative-draft/finalized-installed-preparation/run/principal-collapse.observation.json",
+      "workload": {
+        "httpExpected": 2,
+        "httpMaximum": 7,
+        "children": 2,
+        "requestBodyBytes": 300,
+        "maximumRequestBodyBytes": 750,
+        "cohortMs": 90000,
+        "requestMs": 5000,
+        "prepareMs": 10000,
+        "cleanupMs": 10000,
+        "externalMs": 120000
+      }
+    },
+    "principal-collapse-review": {
+      "phase": "review",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-guarded-batch",
+      "argv": [
+        "python3",
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-principal-cumulative-draft/finalized-installed-preparation/review-installed.py",
+        "principal-collapse"
+      ],
+      "supervisorSeconds": 120,
+      "requires": [
+        {
+          "id": "principal-collapse",
+          "supervisorExit": 0
+        }
+      ],
+      "ownedTempPrefixes": []
+    },
+    "full-positive": {
+      "phase": "installed",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-guarded-batch",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/repos/wt/vickie/vickie-guarded-batch/node_modules/.pnpm/vitest@4.1.10_@types+node@24.13.3_vite@8.2.1_@types+node@24.13.3_/node_modules/vitest/vitest.mjs",
+        "run",
+        "apps/bdptest/src/transactional-matrix.test.ts",
+        "--maxWorkers=1",
+        "--reporter=verbose",
+        "--reporter=json",
+        "--outputFile=/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-principal-cumulative-draft/finalized-installed-preparation/run/full-positive.results.json",
+        "-t",
+        "^observes\\ sixteen\\ partial\\ Transactional\\ contracts\\ through\\ packed\\-capable\\ actual\\ installed\\ HTTP$"
+      ],
+      "supervisorSeconds": 120,
+      "requires": [
+        {
+          "id": "principal-collapse-review",
+          "supervisorExit": 0
+        }
+      ],
+      "ownedTempPrefixes": [
+        "bdp-tx-installed-"
+      ],
+      "selectedFullNames": [
+        "observes sixteen partial Transactional contracts through packed-capable actual installed HTTP"
+      ],
+      "selectedPathNames": [
+        {
+          "file": "apps/bdptest/src/transactional-matrix.test.ts",
+          "fullName": "observes sixteen partial Transactional contracts through packed-capable actual installed HTTP"
+        }
+      ],
+      "expectedCases": 1,
+      "expectedExit": 0,
+      "reportOverrides": {
+        "BDP_TRANSACTIONAL_OBSERVATION_OUTPUT": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-principal-cumulative-draft/finalized-installed-preparation/run/full-positive.observation.json"
+      },
+      "observationPath": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-principal-cumulative-draft/finalized-installed-preparation/run/full-positive.observation.json",
+      "workload": {
+        "httpExpected": 220,
+        "httpMaximum": 220,
+        "children": 24,
+        "requestBodyBytes": 18606,
+        "maximumRequestBodyBytes": 18606,
+        "cohortMs": 90000,
+        "requestMs": 5000,
+        "prepareMs": 10000,
+        "cleanupMs": 10000,
+        "externalMs": 120000,
+        "fullPositiveElapsedMs": 63000
+      }
+    },
+    "full-positive-review": {
+      "phase": "review",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-guarded-batch",
+      "argv": [
+        "python3",
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-principal-cumulative-draft/finalized-installed-preparation/review-installed.py",
+        "full-positive"
+      ],
+      "supervisorSeconds": 120,
+      "requires": [
+        {
+          "id": "full-positive",
+          "supervisorExit": 0
+        }
+      ],
+      "ownedTempPrefixes": []
+    },
+    "cross-batch": {
+      "phase": "installed",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-guarded-batch",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/repos/wt/vickie/vickie-guarded-batch/node_modules/.pnpm/vitest@4.1.10_@types+node@24.13.3_vite@8.2.1_@types+node@24.13.3_/node_modules/vitest/vitest.mjs",
+        "run",
+        "apps/bdptest/src/transactional-matrix.test.ts",
+        "--maxWorkers=1",
+        "--reporter=verbose",
+        "--reporter=json",
+        "--outputFile=/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-principal-cumulative-draft/finalized-installed-preparation/run/cross-batch.results.json",
+        "-t",
+        "^discriminates\\ retained\\ cross\\-carrier\\ evidence\\ against\\ batch\\-semantic\\-conflict$"
+      ],
+      "supervisorSeconds": 120,
+      "requires": [
+        {
+          "id": "full-positive-review",
+          "supervisorExit": 0
+        }
+      ],
+      "ownedTempPrefixes": [
+        "bdp-tx-installed-"
+      ],
+      "selectedFullNames": [
+        "discriminates retained cross-carrier evidence against batch-semantic-conflict"
+      ],
+      "selectedPathNames": [
+        {
+          "file": "apps/bdptest/src/transactional-matrix.test.ts",
+          "fullName": "discriminates retained cross-carrier evidence against batch-semantic-conflict"
+        }
+      ],
+      "expectedCases": 1,
+      "expectedExit": 0,
+      "reportOverrides": {
+        "BDP_TRANSACTIONAL_CROSS_CARRIER_CONTROL_OUTPUT": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-principal-cumulative-draft/finalized-installed-preparation/run/cross-batch.observation"
+      },
+      "observationPath": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-principal-cumulative-draft/finalized-installed-preparation/run/cross-batch.observation-batch-semantic-conflict.json",
+      "workload": {
+        "httpExpected": 211,
+        "httpMaximum": 211,
+        "children": 24,
+        "requestBodyBytes": 17550,
+        "maximumRequestBodyBytes": 17550,
+        "cohortMs": 90000,
+        "requestMs": 5000,
+        "prepareMs": 10000,
+        "cleanupMs": 10000,
+        "externalMs": 120000
+      }
+    },
+    "cross-batch-review": {
+      "phase": "review",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-guarded-batch",
+      "argv": [
+        "python3",
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-principal-cumulative-draft/finalized-installed-preparation/review-installed.py",
+        "cross-batch"
+      ],
+      "supervisorSeconds": 120,
+      "requires": [
+        {
+          "id": "cross-batch",
+          "supervisorExit": 0
+        }
+      ],
+      "ownedTempPrefixes": []
+    },
+    "cross-sequence": {
+      "phase": "installed",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-guarded-batch",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/repos/wt/vickie/vickie-guarded-batch/node_modules/.pnpm/vitest@4.1.10_@types+node@24.13.3_vite@8.2.1_@types+node@24.13.3_/node_modules/vitest/vitest.mjs",
+        "run",
+        "apps/bdptest/src/transactional-matrix.test.ts",
+        "--maxWorkers=1",
+        "--reporter=verbose",
+        "--reporter=json",
+        "--outputFile=/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-principal-cumulative-draft/finalized-installed-preparation/run/cross-sequence.results.json",
+        "-t",
+        "^discriminates\\ retained\\ cross\\-carrier\\ evidence\\ against\\ sequence\\-fresh\\-key$"
+      ],
+      "supervisorSeconds": 120,
+      "requires": [
+        {
+          "id": "cross-batch-review",
+          "supervisorExit": 0
+        }
+      ],
+      "ownedTempPrefixes": [
+        "bdp-tx-installed-"
+      ],
+      "selectedFullNames": [
+        "discriminates retained cross-carrier evidence against sequence-fresh-key"
+      ],
+      "selectedPathNames": [
+        {
+          "file": "apps/bdptest/src/transactional-matrix.test.ts",
+          "fullName": "discriminates retained cross-carrier evidence against sequence-fresh-key"
+        }
+      ],
+      "expectedCases": 1,
+      "expectedExit": 0,
+      "reportOverrides": {
+        "BDP_TRANSACTIONAL_CROSS_CARRIER_CONTROL_OUTPUT": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-principal-cumulative-draft/finalized-installed-preparation/run/cross-sequence.observation"
+      },
+      "observationPath": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-principal-cumulative-draft/finalized-installed-preparation/run/cross-sequence.observation-sequence-fresh-key.json",
+      "workload": {
+        "httpExpected": 212,
+        "httpMaximum": 212,
+        "children": 24,
+        "requestBodyBytes": 17754,
+        "maximumRequestBodyBytes": 17754,
+        "cohortMs": 90000,
+        "requestMs": 5000,
+        "prepareMs": 10000,
+        "cleanupMs": 10000,
+        "externalMs": 120000
+      }
+    },
+    "cross-sequence-review": {
+      "phase": "review",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-guarded-batch",
+      "argv": [
+        "python3",
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-principal-cumulative-draft/finalized-installed-preparation/review-installed.py",
+        "cross-sequence"
+      ],
+      "supervisorSeconds": 120,
+      "requires": [
+        {
+          "id": "cross-sequence",
+          "supervisorExit": 0
+        }
+      ],
+      "ownedTempPrefixes": []
+    }
+  },
+  "oracles": {
+    "cross-batch": {
+      "scenario": "transactional.idempotency.cross-carrier",
+      "action": "x-create-batch",
+      "prefix": [
+        "x-create",
+        "x-created-facts",
+        "x-create-batch"
+      ],
+      "failedIds": [
+        "http-status",
+        "schema",
+        "media",
+        "serving-context",
+        "disposition",
+        "detail",
+        "key",
+        "no-next",
+        "required-position",
+        "effect-position",
+        "literal-result",
+        "retained-root",
+        "retained-body"
+      ],
+      "status": 409,
+      "specimen": "cross-batch-semantic-conflict.json",
+      "specimenPath": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-principal-cumulative-draft/source-author/derivatives/cross-batch-semantic-conflict.json",
+      "specimenSha256": "160fee8489631aa20b90ea376a6a6b758e6b28c8086c465d38c954a8ad20c6ab",
+      "compactSha256": "21f0ffbd8bcd3d561e2daa32373048c779c21473fa9726b6036663a22b855b24",
+      "allAssertionIds": [
+        "http-status",
+        "schema",
+        "media",
+        "present-bdp-scope-epoch",
+        "present-bdp-authorization-view",
+        "present-bdp-scope-position",
+        "serving-position",
+        "serving-context",
+        "request-headers",
+        "request-body",
+        "disposition",
+        "detail",
+        "key",
+        "no-next",
+        "required-position",
+        "effect-position",
+        "literal-result",
+        "no-name",
+        "no-source",
+        "retained-root",
+        "retained-body",
+        "control-status",
+        "control-schema",
+        "control-media",
+        "control-type",
+        "control-code",
+        "control-problem-status",
+        "control-retry"
+      ]
+    },
+    "cross-sequence": {
+      "scenario": "transactional.idempotency.cross-carrier",
+      "action": "x-create-sequence",
+      "prefix": [
+        "x-create",
+        "x-created-facts",
+        "x-create-batch",
+        "x-create-sequence"
+      ],
+      "failedIds": [
+        "presentation",
+        "created-record"
+      ],
+      "status": 200,
+      "specimen": "cross-sequence-fresh-key.json",
+      "specimenPath": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-principal-cumulative-draft/source-author/derivatives/cross-sequence-fresh-key.json",
+      "specimenSha256": "1d503a8da250404ce498851d2c1d52a0647c7863d0e545becb2f1eb73da2fd23",
+      "compactSha256": "d6b9b40f997719ef0ec8e8834e7808af7712bdb940ac4077442f875897b7131b",
+      "allAssertionIds": [
+        "http-status",
+        "schema",
+        "media",
+        "present-bdp-scope-epoch",
+        "present-bdp-authorization-view",
+        "present-bdp-scope-position",
+        "serving-position",
+        "serving-context",
+        "request-headers",
+        "request-body",
+        "presentation",
+        "present-name",
+        "created-record",
+        "no-receipt",
+        "no-root",
+        "no-problem",
+        "control-member",
+        "control-no-resource",
+        "control-no-outcome"
+      ]
+    },
+    "principal-collapse": {
+      "source": {
+        "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-principal-cumulative-plan/control.json",
+        "sha256": "62f9c52cd6ac0eb01edb260756cd46cd83f783570fd9a270987561479174eb42"
+      },
+      "contract": {
+        "mode": "collapse-principal-b-to-a",
+        "change": "Only principal-b token principal string becomes principal-a before bootstrap and every scenario launch; token/ref stays distinct.",
+        "manifestUnchanged": true,
+        "selected": [
+          "read-update.idempotency.principal-isolation"
+        ],
+        "actualStatuses": [
+          200,
+          409
+        ],
+        "expectedHttp": 2,
+        "conservativeMaxHttp": 7,
+        "children": 2,
+        "bodyBytes": 300,
+        "finalAction": "pk-b-create",
+        "failingAssertionIds": [
+          "http-status",
+          "schema",
+          "media",
+          "serving-position",
+          "disposition",
+          "detail",
+          "key",
+          "receipt-id",
+          "transaction",
+          "required-position",
+          "effect-position",
+          "no-next",
+          "result-indices",
+          "resource-id",
+          "resource-type",
+          "resource-revision",
+          "resource-properties",
+          "resource-metadata"
+        ],
+        "passingAssertionIds": [
+          "present-bdp-scope-epoch",
+          "present-bdp-authorization-view",
+          "present-bdp-scope-position",
+          "request-headers",
+          "request-body",
+          "no-owned-links",
+          "no-provenance"
+        ],
+        "actualProblem": {
+          "type": "https://github.com/gastownhall/bdp/problems/conflict",
+          "code": "idempotency-conflict",
+          "status": 409,
+          "retry": "never"
+        },
+        "actualContext": {
+          "epoch": "validated A epoch",
+          "view": "validated A view",
+          "position": "pos-1"
+        },
+        "laterActions": 0,
+        "claimEligible": false
+      },
+      "manifestDigest": "same actual canonical manifest disk hash; control changes configuration only",
+      "prefix": [
+        "pk-a-create",
+        "pk-b-create"
+      ],
+      "scenarioState": "fail",
+      "testExit": 0,
+      "failureSemantics": "named test passes only when genuine second response409 yields exactly18 listed failed assertion IDs in authored order and7 pass; no execution/cleanup/prerequisite error; no later actions",
+      "bindingProof": "independent literal B\u2192A role map, exact own-bootstrap/scenario identity equality and actual409. Random-token cross-run inequality has no discriminating credit."
+    }
+  },
+  "limits": {
+    "staticCases": 9,
+    "installedCases": 5,
+    "httpExpected": 652,
+    "httpMaximum": 657,
+    "childrenMaximum": 76,
+    "requestBodyBytes": 54960,
+    "maximumRequestBodyBytes": 55410,
+    "noAutomaticRetry": true,
+    "maximumWorkers": 1
+  }
+}

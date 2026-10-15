@@ -1,0 +1,3 @@
+# Root-authorized receiving table addendum
+
+This supplements the unchanged frozen plan60d51ce4 and ledger9ca6d29e. Root explicitly accepted the native finding during packet preparation: committed spec4618–4621 declares the status table exhaustive, while operations/ and receipt root/page GET/HEAD rows4630–4635 omit the newly required400. The planned spec edit must add400 to those affected rows within the already-owned docs/specs/bdp.md, alongside the receiving prose and receipt phase clarification. Do not loosen exhaustive status tables globally. This adds no source path, request, test registration, runtime semantics or execution authorization. Original plan/ruling/ledger remain preserved. Actual draft must independently verify precise row scope.

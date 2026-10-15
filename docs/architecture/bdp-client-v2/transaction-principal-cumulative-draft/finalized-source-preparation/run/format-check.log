@@ -1,0 +1,52 @@
+$ biome format .
+packages/conformance/matrices/read-update-v1.json format ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  ! The size of the file is 3.5 MiB, which exceeds the configured maximum of 1.0 MiB for this project.
+    Use the `files.maxSize` configuration to change the maximum size of files processed, or `files.includes` to ignore the file.
+  
+
+apps/bdptest/src/transactional-matrix.test.ts format ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  × Formatter would have printed the following content:
+  
+    3971 3971 │         expect(row.exchanges).toHaveLength(maximum);
+    3972 3972 │         expect(joined(observed)).toEqual(
+    3973      │ - ········principalRequests
+    3974      │ - ··········.slice(0,·maximum)
+    3975      │ - ··········.map((literal,·ordinal)·=>·({
+    3976      │ - ············id:·literal.action,
+    3977      │ - ············method:·literal.method,
+    3978      │ - ············dispatchUrl:·literal.dispatchUrl,
+    3979      │ - ············reportedUrl:·literal.reportedUrl,
+    3980      │ - ············credentialRef:·literal.credentialRef,
+    3981      │ - ············ordinal,
+    3982      │ - ··········})),
+         3973 │ + ········principalRequests.slice(0,·maximum).map((literal,·ordinal)·=>·({
+         3974 │ + ··········id:·literal.action,
+         3975 │ + ··········method:·literal.method,
+         3976 │ + ··········dispatchUrl:·literal.dispatchUrl,
+         3977 │ + ··········reportedUrl:·literal.reportedUrl,
+         3978 │ + ··········credentialRef:·literal.credentialRef,
+         3979 │ + ··········ordinal,
+         3980 │ + ········})),
+    3983 3981 │         );
+    3984 3982 │         for (const [i, exchange] of row.exchanges.entries()) {
+  
+
+Checked 447 files in 71ms. No fixes applied.
+Found 1 error.
+Found 1 warning.
+format ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  × Some errors were emitted while running checks.
+  
+
+[ELIFECYCLE] Command failed with exit code 1.
+Traceback (most recent call last):
+  File "/Users/dbox/repos/wt/vickie/bdp-integration-logs/guarded-action.py", line 5, in <module>
+    subprocess.run(sys.argv[1:],check=True)
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/homebrew/Cellar/python@3.14/3.14.5/Frameworks/Python.framework/Versions/3.14/lib/python3.14/subprocess.py", line 578, in run
+    raise CalledProcessError(retcode, process.args,
+                             output=stdout, stderr=stderr)
+subprocess.CalledProcessError: Command '['/Users/dbox/.nvm/versions/node/v24.16.0/bin/node', '/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs', 'format:check']' returned non-zero exit status 1.

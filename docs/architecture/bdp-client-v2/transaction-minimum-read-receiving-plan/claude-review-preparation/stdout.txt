@@ -1,0 +1,80 @@
+# Review: read-minimum receiving plan (basis 5d7fa3f)
+
+**Verdict: not clear to author as written. Three blockers (1–3), all scope/spec-enumeration defects fixable before the draft gate; none requires reopening the operator ruling or changing valid/unknown semantics.** The core design — one lexical classifier in `transaction-consistency.ts` plus one gate in `transaction-http.ts` immediately after line 389 — is correct and I verified it against the supplied source for every route class (see "Verified correct" below).
+
+---
+
+## Findings
+
+### 1. Owned-path set cannot host the mandated raw-header proof or the emitted control — BLOCKER
+**Location:** plan §"Exact eleven owned paths" / `ledger.ownedPaths`; obligations at §"Two production files" ("Prove the real path using Node raw header arrays, not only Fetch Headers", citing `transaction-runtime.ts:145-148`) and §"Test design" ("New raw HTTP callback…", "one-request source oracle", `emittedControl: requests 1 / owners 1 / listeners 1 / installedChildren 0`).
+**Failure:** The duplicate-field proof targets the `rawHeaders` append loop in `transaction-runtime.ts`, and the control oracle needs an in-process listener with zero installed children. No runtime-level test file is owned (`transaction-runtime.test.ts` is absent from both the plan list and the ledger). Authoring then either silently edits an unowned file or lands a Node-server callback in `transaction-http.test.ts`, where no listener harness is shown to exist.
+**Smallest correction:** Name the host file explicitly. If the raw callback and the control listener are source-level, add `packages/server/src/transaction-runtime.test.ts` to both the plan list and `ledger.ownedPaths` (twelve paths, still zero new production paths). If instead they are discharged by the installed witness, say so and delete the "source oracle"/"listeners 1" language.
+
+### 2. Addendum row range is wrong at both ends — BLOCKER
+**Location:** ACCEPTED ROOT ADDENDUM ("receipt root/page GET/HEAD rows4630–4635"); spec `docs/specs/bdp.md:4630-4635`.
+**Failure:** The stated range includes 4631 and 4634, which are the `405`, `Allow: …` any-other-method rows. Those must **not** gain `400`: `transaction-http.ts:244-256` resolves `methodResponse` at line 270, before the gate at 389, so a POST/PUT with malformed fields is `405` with no Problem body (the witness's own step 21 asserts this). Conversely, row **4635** (`the receipts root`) *is* affected and is never named: `transaction-http.ts:485` folds `pathname === ".../receipts"` into `receiptRoute`, which sits after the gate, so `GET receipts` + malformed tuple becomes `400`, not the row's declared `404 resource-not-found`. The plan's route table row covers only "receipts/pages523–557", and no test case touches the receipts root.
+**Smallest correction:** Replace the range with the explicit set {4630, 4632, 4633, 4635} for `GET`/`HEAD` only, add a one-line exclusion for 4631/4634, and add one source callback asserting `GET`/`HEAD` on the receipts root with a malformed tuple returns `400` (not `404`).
+
+### 3. Only one exhaustive status table was audited — BLOCKER
+**Location:** plan §"Route inventory and preserved precedence", last paragraph ("Spec: add closed receiving paragraph … add adjacent receiving-phase clarification before receipt/page ordering4648").
+**Failure:** The 4618–4621 exhaustiveness clause governs the *mutation* surface. The gate also newly produces `400` on Resource/collection reads, `changes/`, `events/`, `snapshot`, alias targets, schema URLs and the discovery root (`transaction-http.ts:390-578`). If any sibling table in `bdp.md` declares exhaustive statuses for those read targets, the spec edit is incomplete in exactly the way the native finding caught for 4630–4635 — and the fact that it was caught late is evidence the audit was not systematic. Nothing in the supplied excerpts rules this out.
+**Smallest correction:** Make "enumerate every exhaustive per-target status table in `docs/specs/bdp.md` whose rows cover a `GET`/`HEAD` target reachable past `transaction-http.ts:389`" an explicit draft-gate deliverable, with the resulting row list frozen alongside the diff. If any affected row lives outside `bdp.md`, report as scope expansion rather than editing.
+
+### 4. POST-ignore rests on an unproven invariant — High
+**Location:** plan §"Two production files" item 2 ("The command branch completes earlier; preserve this placement"); `transaction-http.ts:379-389`; spec 3581-3593.
+**Failure:** Only the tail of the command branch (379-388) is supplied. If any `POST` path — a carrier-validation fallthrough, a pending-key path, an alias or set target — reaches 389, the gate returns `400` for a mutation POST carrying copied malformed fields, directly violating the POST-ignore law. The witness covers only `batch` (step 1).
+**Smallest correction:** Add `request.method !== "POST"` as the gate's first conjunct (zero new seam, one token), *or* add a source callback asserting a non-`batch` command target (`sequence` plus one set/alias target) with malformed and duplicated fields still returns its ordinary 200/202 receipt. The guard is cheaper and self-documenting; I'd take it.
+
+### 5. Spec prose omits the no-context and precedence clauses — Medium
+**Location:** planned paragraph under "Transactional HTTP consistency" (`bdp.md:5796-5822`); interaction with 5829-5831 and 5841-5843.
+**Failure:** (a) 5829-5831 says every Scope-bounded read reports epoch/view/position, and 5843 requires context on 304/412. The new `400` carries none (the gate calls `transactionHttpProblem("malformed-request")` with no observation). Without explicit wording a conformance reader can demand context on the receiving 400, contradicting the witness's "no context" assertions. (b) "after normal transport/method/authentication" understates the real order: target-shape `404`/`405` from `methodResponse` (`transaction-http.ts:245-255`, e.g. `operations/foo` → 404, POST to a read target → 405) and the fixture's Origin `403` (`transaction-runtime.ts:163`) all precede the gate.
+**Smallest correction:** In the same paragraph, state the order as host/target-shape resolution → authentication → receiving validation → everything else, and add one sentence: the receiving `400` reports no Scope epoch, view or position, matching existing `invalid-parameter` receiving refusals.
+
+### 6. Fallout enumeration has no shown search basis — Medium
+**Location:** plan §"Test design and existing fallout" ("Review of other hits found complete tuples/patch merges, command POST cases, or direct internal owner tests").
+**Failure:** Ten callbacks are listed, but the files most likely to assert the *current* `500` + `x-bdp-development-limit: minimum-position` for a partial tuple — `transaction-runtime.test.ts`, `transaction-service.test.ts`, `transaction-store.test.ts`, and the conformance/bdptest matrices — are unowned and unexamined in the supplied material. A single such assertion turns the eleven-path scope false after authoring begins.
+**Smallest correction:** Before authoring, freeze an enumerated occurrence list of `bdp-minimum-scope-position` / `bdp-scope-epoch` / `bdp-authorization-view` / `minimum-position` across all test paths in the repo, with a per-hit disposition (unaffected / repaired / scope expansion), and include it in the draft-gate packet.
+
+### 7. Installed steps 5–7 may not prove what they claim — Medium-Low
+**Location:** proposed witness steps 5–7 ("Duplicate position, epoch, view respectively").
+**Failure:** If the bdptest client uses `fetch`/undici, duplicate header entries are folded client-side into one comma-joined value before the wire. The server then never sees two field lines, so `transaction-runtime.ts:146-147` is not exercised and the step degenerates into a restatement of step 8 (comma token). The outcome assertion (`400`) still passes, which makes the gap silent.
+**Smallest correction:** Either specify raw socket writes for 5–7, or restate them as "comma-folded duplicate → 400" and place the genuine two-field-line proof in the source raw-header callback (which Finding 1 must give a home).
+
+### 8. Two presence predicates will coexist and can drift — Low-Medium
+**Location:** `transaction-http.ts:144-148` (`hasMinimumControls`, consumed by `transaction-schema-http.ts:6,45`) versus the new classifier in `transaction-consistency.ts`.
+**Failure:** The gate's "absent" branch and the schema interceptor's decline condition are then two independent definitions of presence. They agree today (`Headers.has` ⇔ `get() !== null`), but any later refinement of one — e.g. treating whitespace-only as absent — desynchronizes the interceptor from the gate and lets a minimum-bearing schema request be served without validation.
+**Smallest correction:** Redefine `hasMinimumControls(request)` as `classify(request.headers) !== "absent"`; `transaction-http.ts` already imports `transaction-consistency.ts`, so this adds no seam and makes the "single gate" claim structural rather than conventional.
+
+### 9. Pin the intended divergence from the semantic parser — Low
+**Location:** plan §"Test design", classifier callback; `transaction-consistency.ts:13-19,40`.
+**Failure:** The gate and `snapshotTransactionMinimum` must differ in exactly one place — the `position(minimumPosition) === undefined` check at line 40. Nothing in the plan asserts there is no *second* divergence, which is the only way the gate could silently reclassify a currently-500 case as 400.
+**Smallest correction:** One table-driven source assertion: for each of `genesis` and every `preservedUnknownExamples` entry, gate = "complete" while `transactionMinimumHeaders` is `undefined` for the non-`pos-N` ones and *defined* for `genesis` (`position("genesis") === 0`, line 15). Note `genesis` is valid to both and should not be read as an unknown identity.
+
+### 10. "No public export change" is unverified — Low
+**Location:** plan §"Two production files" item 1.
+**Failure:** The classifier must be exported from `transaction-consistency.ts` to reach `transaction-http.ts`. If `packages/server/src/index.ts` re-exports that module with `export *`, the claim is false and the package surface grows.
+**Smallest correction:** Confirm the barrel at the draft gate; if it re-exports broadly, keep the classifier unexported and co-locate it, or add an explicit non-re-export assertion to the existing boundary static case.
+
+### 11. Child-count decomposition is ambiguous — Low
+**Location:** `ledger.installedExpected` / plan §"Validation and cleanup" ("39 = first fixture10 + second29 … three sequential children").
+**Failure:** 21+39+31 = 91 and 1+3+2 = 6 both check out, but "two fixtures, three children" only reconciles if the reopen counts as a child start; a counter assertion written against the other reading fails spuriously.
+**Smallest correction:** State "second fixture start + reopen = 2 child starts" inline in the ledger note.
+
+---
+
+## Verified correct (no action)
+
+Checked against the supplied source, these plan claims hold and need no change: gate placement at 389 is after the `unauthenticated` return and before all seven read branches; `empty(405, "GET, HEAD")` yields no Problem body (witness step 21); `applyReadHttpSemantics` cannot convert a `400` into `304`/`412`/`406` because it only rewrites 200-JSON and 204, while its HEAD branch produces the bodyless 400 with GET-equal `content-length` (step 4); comma-joined duplicates and whitespace-only values both fail `/^[A-Za-z0-9_-]{1,256}$/`, and Fetch value normalization makes surrounding OWS harmless; the schema interceptor declines on `hasMinimumControls` before `await observe()`, so malformed schema reads reach the gate with zero adapter observations and complete valid tuples still fall to `minimum-position-route`; `malformed-request` already exists in the Read closed table at 1897, so no new code is needed. Witness steps 13–16 are exactly right: foreign receipt/page with a complete unknown tuple returns 404-with-context via `transaction-store.ts:883` and `:2051-2057`, while the owner's own receipt/page returns the `unsupported` 500 via `:880` and `:2068` — nondisclosure genuinely precedes the unknown-token gap. The control oracle is sound: `beads/` with only `BDP-Minimum-Scope-Position` falls to `transaction-http.ts:561` and yields `500` + `minimum-position` once the gate is removed.
+
+---
+
+## Missing context
+
+**Excerpt omissions — acceptable, do not block:** `transaction-http.ts:89-106` (`problem()`/`readProblem` shape and cache fields on the 400), `classifyAliasPath`, `requestFromUrl`, `isCurrentTransactionMinimumRead`, test bodies and expanded titles, installed launcher/package internals, the hash-pinned protocol schema. None of these can change the gate's placement or outcome set.
+
+**Genuinely necessary before authoring:** (a) the full inventory of exhaustive status tables in `bdp.md` covering GET/HEAD read targets (Finding 3); (b) the enumerated occurrence list of the three field names across *all* test files, owned and unowned (Finding 6); (c) the bdptest client's header-emission transport (Finding 7); (d) `transaction-http.ts:270-388`, solely to establish that no POST reaches line 389 (Finding 4).
+
+**Demonstrated defects, visible from the supplied material alone — not omissions:** Finding 2 (4631/4634 wrongly inside the stated row range; 4635 reachable via `transaction-http.ts:485` and unnamed anywhere in the plan), Finding 1 (`ownedPaths` cannot host an obligation the plan itself imposes), Finding 8 (duplicate presence predicate), Finding 11 (ambiguous decomposition). Finding 4 is an omission that the plan converts into a defect by asserting the invariant without evidence; the one-token guard removes the dependency entirely.
+
+No part of this review re-opens the settled ruling, and none of the corrections adds a production seam or alters valid/unknown semantics.

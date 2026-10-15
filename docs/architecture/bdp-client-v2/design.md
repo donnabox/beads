@@ -62,9 +62,15 @@ Original service-review lows: RU trusted callback capability narrowing and publi
 
 ### Live worker ledger
 
-Checkpoint 2026-10-15T22:15:28Z. **ACTIVE — Transactional first, with targeted ordinary Update work.** Session `2026-10-08T20:26:35Z-81e5`. Delivery predicates remain unmet. No public profile advertisement, release or Preview2 promotion; Janet CLI/staging/playgrounds/shared databases and Trish Types remain untouched.
+Checkpoint 2026-10-15T22:26:37Z. **ACTIVE — Transactional first, with targeted ordinary Update work.** Session `2026-10-08T20:26:35Z-81e5`. Delivery predicates remain unmet. No public profile advertisement, release or Preview2 promotion; Janet CLI/staging/playgrounds/shared databases and Trish Types remain untouched.
 
 ### Current verified main and active work
+
+
+**2026-10-15T22:27Z — source checks pass; serving plan findings under disposition.** Principal cumulative native code review found no blocker. Initial clean build/typecheck passed, then format failed on one expression layout; that actual failure is preserved. The exact cosmetic successor [binding](transaction-principal-cumulative-draft/format-repair/source-binding.json)0dbae7cb/patch471e354a leaves all JSON, measurements and runtime limits unchanged. All nine [source validation stages](transaction-principal-cumulative-draft/finalized-source-preparation-v2/README.md) now pass, including nine selected static callbacks; this is source evidence, not installed qualification. Actual Claude code reviews are running in complementary wire/composition packets on that frozen source. Installed preparation remains closed pending clean-source/build/package binding; no PR/commit/merge yet.
+
+Actual minimum-receiving Claude plan review completed exit0/366s, [full findings](transaction-minimum-read-receiving-plan/claude-review-preparation/stdout.txt)261184ad, source unchanged and process/temp absent. Core two-file serving design confirmed. Root read all eleven findings; native/source audits and bounded plan corrections are underway for exact status-table applicability, receipts-root coverage, raw-header test host and no-context receiving wording. Full command branch proves POST already returns before gate; no redundant speculative production guard. No new human decision required. update_implementation owns plan successor then serving authoring after acceptance; cross_carrier_plan_v2_review independently audits; cross_carrier_native_review audits actual source validation. Main remains5d7; delivery predicates unmet, no advertised write profile or Preview2/protected-lane work.
+
 
 
 **Serving plan and measured principal draft (2026-10-15T22:16Z):** Operator's all-three/single-valid minimum receiving ruling is frozen in [plan](transaction-minimum-read-receiving-plan/plan.md), SHA60d51ce4, with17 committed5d7 source pins independently checked. Native review found the exhaustive operations/receipt status table also needs400; this is accepted within the existing spec path and being added to the actual Claude packet. Two production files/eleven total paths remain proposed; no serving authoring yet. A separate clean worktree /Users/dbox/repos/wt/vickie/vickie-minimum-receiving on codex/vickie-minimum-receiving is prepared at5d7. Unknown-token identity and S1/G2 decisions remain separate.
