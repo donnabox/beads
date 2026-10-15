@@ -62,7 +62,7 @@ Original service-review lows: RU trusted callback capability narrowing and publi
 
 ### Live worker ledger
 
-Checkpoint 2026-10-15T04:04:41Z. **ACTIVE — Transactional first, with shared and targeted Read+Update work.** Session `2026-10-08T20:26:35Z-81e5`. The operator resumed at home; earlier travel/battery/budget pauses are superseded. Claude access is restored. Heartbeat remains active. Public write profiles are not advertised and cumulative delivery predicates remain unmet.
+Checkpoint 2026-10-15T04:14:30Z. **ACTIVE — Transactional first, with shared and targeted Read+Update work.** Session `2026-10-08T20:26:35Z-81e5`. The operator resumed at home; earlier travel/battery/budget pauses are superseded. Claude access is restored. Heartbeat remains active. Public write profiles are not advertised and cumulative delivery predicates remain unmet.
 
 Main merges are authorized after exact-head green CI, native Codex plus actual Claude review, disposition of actionable findings, scope/ordinary ancestry checks and actual merged-tree verification. Gemini is excluded. No release or Preview2 promotion; do not edit Janet CLI/staging/playgrounds/shared databases or Trish Type work. The active completion plan above remains authoritative; this ledger records execution state.
 
@@ -96,7 +96,7 @@ No owned local service/reviewer processes remain. The frozen landing checker ran
 
 ### Workers and unresolved decisions
 
-Root owns integration, outward coordination and exact evidence. `/root/update_implementation` is authoring the bounded eleven-file catalog draft in `/Users/dbox/repos/wt/vickie/vickie-command-minimum-catalog`, branch `codex/vickie-command-minimum-catalog`, basebd2178d. Must stop after frozen draft/four-fence growth measurement, before tests or allowance amendments. Prior Selector work is complete. `/root/cross_carrier_native_review` is preparing a closed static-validation command manifest (twelve exact cases and pinned build/static prerequisites), with no execution/source edits. `/root/cross_carrier_plan_v2_review` completed independent correction review and read-only landing checker; idle. Catalog author alone owns its eleven planned files, including the released shared spec conformance table; no runtime paths are assigned.
+Root owns integration, outward coordination and exact evidence. The eleven-file catalog draft is frozen in `/Users/dbox/repos/wt/vickie/vickie-command-minimum-catalog` at basebd2178d, diff6c0e6f47. [Draft measurement report](transaction-command-minimum-catalog-draft/report.md) measures401 bytes of coverage growth, preserves291 prior JSON objects and proposes only two authoring allowances14336→14579 and9728→9778; neither is applied. `/root/cross_carrier_plan_v2_review` independently reviews the native draft. `/root/cross_carrier_native_review` drives actual Claude reviewPID65951 and completed the closed twelve-case validation preparation; root reviewed that preparation, no execution released. `/root/update_implementation` is preparing a bounded next executable-evidence plan only while the draft stays frozen. No runtime paths or semantics changes are assigned.
 
 Only prior product questions remain: metadata-only Link changes in endpoint Bead Event feeds, and retained Snapshot/continuation minimum comparison S1-Q1. Do not infer answers or repeat asks. Other work continues. Saved Last-Event-ID overrides start=now is ruled and merged in PR116; Selector/key admission and command minimum applicability are also ruled and implemented by current candidates/main respectively.
 
