@@ -1,0 +1,33 @@
+{
+  "at": "2026-10-15T07:14:56.224774+00:00",
+  "authoringAccepted": true,
+  "plan": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-command-minimum-evidence-draft/raw-header-admission-failure-plan.md",
+    "sha256": "db1599a1f1b38f437722b8abae8acda1847c1b1e4fd8bb2c983b118d32b2acb6"
+  },
+  "nativePlan": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-command-minimum-evidence-draft/raw-header-admission-native-plan-review.md",
+    "sha256": "585a26893b3099a8c44f6f95ce7bdd56edf42823a7bbe5f6ff18472dc71a0881"
+  },
+  "existingFrozenSource": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-command-minimum-evidence-draft/event-final/source-binding.json",
+    "sha256": "ecc0ceea2ca3eed4f8acf2638dacc315b0c63235f7c266b2689f71dcc0962d47"
+  },
+  "additionalPaths": [
+    "packages/conformance/src/executable-manifest.ts",
+    "packages/conformance/src/http-executor.ts",
+    "packages/conformance/src/executable-manifest.test.ts",
+    "packages/conformance/src/http-executor.test.ts",
+    "packages/conformance/src/runner.test.ts"
+  ],
+  "conditions": [
+    "Keep original5paths byte-identical",
+    "Exact normalized name exemption only; symmetriccredential exclusion; existingprivacy/framing/authorizationchecks unchanged",
+    "Actual TCP test mustcollectcompletehead/body; privacysuccess notvacuous",
+    "Sourcefreeze/nativecodecheck and root measured validation release before execution; actualClaude finalcodereview before merge",
+    "Original firststatic failure and allreviewhistory preserved"
+  ],
+  "sourceOnly": true,
+  "executionReleased": false,
+  "preparationOwner": "/root/update_implementation; externalV2packetonly"
+}

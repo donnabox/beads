@@ -1,0 +1,2871 @@
+Review ONLY the five-file classifier correction below, not the previously reviewed original five-file command-minimum evidence slice. You are an independent actual Claude reviewer. Do not write or modify any files. Output findings only in stdout. Tools are disabled: review the complete supplied correction and source context; label any missing context rather than invent facts. No model override is requested.
+
+Return numbered findings with Critical/High/Medium/Low severity, exact file/line, concrete problem, consequence and correction. Prioritize real bugs/security regressions/test validity. Distinguish optional maintenance suggestions and bounded proof limitations. No praise, no broad redesign, no requirement to qualify a complete profile. Identify whether any blocker remains before root-authorized validation. No tests/build/install/service or file access commands.
+
+Problem: the actual first static run failed before any service because two independent broad secret-name checks classify the standard nonsecret bdp-authorization-view context header as authentication material. Current new row is intentionally raw, with repeated/empty/malformed copied minimum values. The fix is exact normalized-name only, applied symmetrically to manifest raw/normalized admission, exact raw serialization, and inverse credential-handle eligibility. Existing true credential protections/framing/value/cap checks and all report redaction production logic must remain unchanged. Do not suggest a bdp-* or auth substring exemption, credential injection workaround, dropping view cases, or a public-admission bypass.
+
+The accepted bounded source scope is executable-manifest.ts/http-executor.ts and their two tests plus runner.test.ts. Seven new expanded callbacks and15 existing focused plus8 existing evidence callbacks=30; only one real loopback exchange/listener, zero DBs/productchildren. No runtime test has run on this candidate. Existing source gates and failed run remain historical. Original five source hashes are preserved. Current complete ten-path diff fc4fd747379917531c4d64d3fe52603337e72ec3f78e09aedcab8e9a8cc0b4b7; correction4b7a84fb; source-binding612cbb47.
+
+Focus on exact exception boundaries; both parser arms; preserving actual Authorization/Cookie protection; rejecting context as credential registration; resolver membership; exact raw mixed-case/repeated/empty bytes; source fixture/type feasibility; full TCP request accumulation; cleanup on assertions; genuine privacy-test pass before absence; and exact callback/workload accounting. The constructor rejects invalid handles before any executor returns; requestWriteState is not fabricated for registration failures. For request-time protected names, require configuration/not-started before resolver/dial.
+
+
+## COMPLETE NEW FIVE-FILE CORRECTION
+diff --git a/packages/conformance/src/executable-manifest.test.ts b/packages/conformance/src/executable-manifest.test.ts
+index 5471454..fc60100 100644
+--- a/packages/conformance/src/executable-manifest.test.ts
++++ b/packages/conformance/src/executable-manifest.test.ts
+@@ -604,6 +604,42 @@ describe("executable scenario manifest", () => {
+     );
+   });
+ 
++  it("admits normalized authorization-view context without changing lowercase rules", () => {
++    for (const version of [1, 2]) {
++      for (const actions of [false, true]) {
++        for (const value of ["", "view-one, view-two"]) {
++          for (const name of ["bdp-authorization-view", "BDP-Authorization-View"]) {
++            const base = manifest();
++            const { requests, ...scenario } = base.scenarios[0]!;
++            const request = { ...requests[0]!, headers: { [name]: value } };
++            const source = {
++              ...base,
++              manifestVersion: version,
++              scenarios: [
++                {
++                  ...scenario,
++                  ...(actions
++                    ? { actions: [{ family: "http", ...request }] }
++                    : { requests: [request] }),
++                },
++              ],
++            };
++            if (name !== name.toLowerCase()) {
++              expect(() => parseExecutableScenarioManifest(source)).toThrow(
++                ManifestValidationError,
++              );
++            } else {
++              const parsed = parseExecutableScenarioManifest(source).scenarios[0]!;
++              expect(parsed.requests?.[0] ?? parsed.actions?.[0]).toMatchObject({
++                headers: { "bdp-authorization-view": value },
++              });
++            }
++          }
++        }
++      }
++    }
++  });
++
+   it("rejects credentials and noncanonical header names", () => {
+     const base = manifest();
+     const scenario = base.scenarios.at(0);
+@@ -1497,6 +1533,24 @@ describe("manifest v2 exact HTTP inputs", () => {
+       expect(loadExecutableScenarioManifestJson(JSON.stringify(source))).toEqual(parsed);
+     },
+   );
++  it.each([false, true])(
++    "admits literal authorization-view context through actions=%s",
++    (actions) => {
++      const headerLines = [
++        { name: "bdp-minimum-scope-position", value: "not a position!" },
++        { name: "bdp-scope-epoch", value: "" },
++        { name: "bdp-authorization-view", value: "" },
++        { name: "BDP-Authorization-View", value: "view-one, view-two" },
++      ];
++      const source = exactManifest({ raw: { headerLines } }, actions);
++      const parsed = parseExecutableScenarioManifest(source);
++      const scenario = parsed.scenarios[0]!;
++      expect(scenario.requests?.[0] ?? scenario.actions?.[0]).toMatchObject({
++        raw: { headerLines },
++      });
++      expect(loadExecutableScenarioManifestJson(JSON.stringify(source))).toEqual(parsed);
++    },
++  );
+   const bad: readonly Record<string, unknown>[] = [
+     { headers: {}, raw: { headerLines: [] } },
+     { credentialRef: "anonymous" },
+diff --git a/packages/conformance/src/executable-manifest.ts b/packages/conformance/src/executable-manifest.ts
+index 5fd8e39..f2b80bb 100644
+--- a/packages/conformance/src/executable-manifest.ts
++++ b/packages/conformance/src/executable-manifest.ts
+@@ -418,6 +418,15 @@ const ID_PATTERN = /^[a-z0-9]+(?:[.-][a-z0-9]+)*$/;
+ const HEADER_PATTERN = /^[!#$%&'*+.^_`|~0-9A-Za-z-]+$/;
+ const SECRET_HEADER_PATTERN =
+   /^(?:authorization|cookie|proxy-authorization|set-cookie|x-api-key|x-auth-token)$/;
++// This protocol context field is authored input, never a credential field.
++function isSecretHeaderName(name: string): boolean {
++  const normalized = name.toLowerCase();
++  return (
++    normalized !== "bdp-authorization-view" &&
++    (SECRET_HEADER_PATTERN.test(normalized) ||
++      /(?:token|secret|password|credential|auth)/i.test(normalized))
++  );
++}
+ const HTTP_FIELD_VALUE_PATTERN = /^[\t\x20-\x7e\x80-\xff]*$/;
+ const MAXIMUM_RAW_REQUEST_TARGET_BYTES = 8_192;
+ const STABLE_RESPONSE_METADATA_HEADERS = new Set([
+@@ -972,11 +981,7 @@ function parseRequestInput(
+         continue;
+       }
+       const normalized = name.toLowerCase();
+-      if (
+-        SECRET_HEADER_PATTERN.test(normalized) ||
+-        /(?:token|secret|password|credential|auth)/i.test(normalized) ||
+-        EXACT_RESERVED_FIELDS.has(normalized)
+-      )
++      if (isSecretHeaderName(normalized) || EXACT_RESERVED_FIELDS.has(normalized))
+         issues.push({ path, message: "raw source header is secret or executor-owned" });
+       headerLines.push({ name, value });
+     }
+@@ -1469,10 +1474,7 @@ function parseHeaders(
+     const fieldPath = `${path}.${name}`;
+     if (!HEADER_PATTERN.test(name) || name !== name.toLowerCase())
+       issues.push({ path: fieldPath, message: "must be a lowercase HTTP field name" });
+-    if (
+-      name === name.toLowerCase() &&
+-      (SECRET_HEADER_PATTERN.test(name) || /(?:token|secret|password|credential|auth)/i.test(name))
+-    )
++    if (name === name.toLowerCase() && isSecretHeaderName(name))
+       issues.push({ path: fieldPath, message: "secret headers are not allowed in a scenario" });
+     if (typeof field === "string") {
+       if (!HTTP_FIELD_VALUE_PATTERN.test(field))
+diff --git a/packages/conformance/src/http-executor.test.ts b/packages/conformance/src/http-executor.test.ts
+index 633dcaa..3ed3059 100644
+--- a/packages/conformance/src/http-executor.test.ts
++++ b/packages/conformance/src/http-executor.test.ts
+@@ -3,7 +3,7 @@ import { createServer as createHttpServer } from "node:http";
+ import { createServer, type Server, Socket } from "node:net";
+ 
+ import { afterEach, describe, expect, it, vi } from "vitest";
+-import { parseExecutableScenarioManifest } from "./executable-manifest.js";
++import { ManifestValidationError, parseExecutableScenarioManifest } from "./executable-manifest.js";
+ import {
+   createFetchHttpExchangeExecutor,
+   createRawHttpExchangeExecutor,
+@@ -727,6 +727,140 @@ describe("exact HTTP request execution", () => {
+     },
+   );
+ 
++  it("writes authorization-view context separately from credentials", async () => {
++    const headerLines = [
++      { name: "bdp-minimum-scope-position", value: "not a position!" },
++      { name: "bdp-scope-epoch", value: "" },
++      { name: "bdp-authorization-view", value: "" },
++      { name: "BDP-Authorization-View", value: "view-one, view-two" },
++    ];
++    let wire = Buffer.alloc(0);
++    let received = 0;
++    const route = await bind(
++      createServer((socket) => {
++        let complete = false;
++        socket.on("data", (chunk: Buffer) => {
++          wire = Buffer.concat([wire, chunk]);
++          const boundary = wire.indexOf("\r\n\r\n");
++          if (!complete && boundary !== -1 && wire.length >= boundary + 4 + 2) {
++            complete = true;
++            received++;
++            socket.end(responseText);
++          }
++        });
++      }),
++    );
++    const resolve = vi.fn(() => ({ Authorization: "Bearer credential-sentinel" }));
++    const legacy = vi.fn(() => ({ Authorization: "wrong-legacy" }));
++    const result = await createRawHttpExchangeExecutor(route, {
++      authorize: legacy,
++      exactMode: mode({
++        maximumRequestHeaderBytes: 1024,
++        defaultCredentialRef: "writer",
++        credentialHandles: [{ id: "writer", headerNames: ["authorization"] }],
++        resolveCredentials: resolve,
++      }),
++    })({ ...exact(), raw: { headerLines, bodyBytes: Buffer.from("{}") } });
++    expect(received).toBe(1);
++    expect(wire.subarray(0, wire.indexOf("\r\n\r\n")).toString("latin1")).toBe(
++      [
++        "POST /acme/operations/create-bead HTTP/1.1",
++        ...headerLines.map(({ name, value }) => `${name}: ${value}`),
++        "Authorization: Bearer credential-sentinel",
++        "Accept: */*",
++        "Accept-Language: *",
++        "Accept-Encoding: identity",
++        "User-Agent: bdp-conformance/0",
++        "Host: scope.example",
++        "Connection: close",
++        "Content-Length: 2",
++      ].join("\r\n"),
++    );
++    expect(wire.subarray(wire.indexOf("\r\n\r\n") + 4)).toEqual(Buffer.from("{}"));
++    expect(result.exactRequest?.headerLines.slice(0, headerLines.length)).toEqual(headerLines);
++    expect(result.exactRequest?.headerLines[headerLines.length]).toEqual({
++      name: "Authorization",
++      value: "Bearer credential-sentinel",
++    });
++    expect(result.exactRequest?.writeState).toBe("complete");
++    expect(resolve).toHaveBeenCalledOnce();
++    expect(legacy).not.toHaveBeenCalled();
++  });
++
++  it("rejects authorization-view credential handles before resolution or dialing", () => {
++    for (const name of ["bdp-authorization-view", "BDP-Authorization-View", "x-ordinary"]) {
++      const resolve = vi.fn(() => ({ [name]: "sentinel" }));
++      expect(() =>
++        createRawHttpExchangeExecutor(deadRoute(), {
++          exactMode: mode({
++            defaultCredentialRef: "writer",
++            credentialHandles: [{ id: "writer", headerNames: [name] }],
++            resolveCredentials: resolve,
++          }),
++        }),
++      ).toThrow("exact HTTP request configuration is invalid");
++      expect(resolve).not.toHaveBeenCalled();
++    }
++  });
++
++  it("keeps authorization-view lookalikes protected in parser and serializer", async () => {
++    for (const name of [
++      "X-Bdp-Authorization-View",
++      "bdp-authorization-view-extra",
++      "bdp-authorization-view-token",
++      "bdp-authorization-view-secret",
++      "bdp-authorization-view-password",
++      "bdp-authorization-view-credential",
++    ]) {
++      const raw = { headerLines: [{ name, value: "sentinel" }] };
++      for (const actions of [false, true]) {
++        const request = {
++          id: "post",
++          method: "POST",
++          target: { binding: "scope" },
++          raw,
++          captures: [],
++          assertions: [{ id: "status", kind: "status", equals: 200 }],
++        };
++        let issues: readonly { message: string }[] = [];
++        try {
++          parseExecutableScenarioManifest({
++            manifestVersion: 2,
++            catalogId: "read-v1",
++            scenarios: [
++              {
++                id: "raw.probe",
++                requiredProfile: "read-update",
++                setup: { fixture: "reference-read-v1", requires: [] },
++                applicability: { requires: [] },
++                cleanup: { resetFixture: true },
++                ...(actions
++                  ? { actions: [{ family: "http", ...request }] }
++                  : { requests: [request] }),
++              },
++            ],
++          });
++        } catch (error) {
++          if (!(error instanceof ManifestValidationError)) throw error;
++          issues = error.issues;
++        }
++        expect(
++          issues.some(({ message }) => message === "raw source header is secret or executor-owned"),
++        ).toBe(true);
++      }
++      const resolve = vi.fn(() => ({}));
++      await expect(
++        createRawHttpExchangeExecutor(deadRoute(), {
++          exactMode: mode({ resolveCredentials: resolve }),
++        })({ ...exact(), raw }),
++      ).rejects.toMatchObject({
++        category: "configuration",
++        requestWriteState: "not-started",
++      });
++      expect(resolve).not.toHaveBeenCalled();
++    }
++  });
++
+   it("preserves padded field bytes and copies Buffer subarrays before the resolver can mutate them", async () => {
+     const source = Buffer.from("!before!");
+     const body = source.subarray(1, 7);
+diff --git a/packages/conformance/src/http-executor.ts b/packages/conformance/src/http-executor.ts
+index e1ceafa..3a55bf6 100644
+--- a/packages/conformance/src/http-executor.ts
++++ b/packages/conformance/src/http-executor.ts
+@@ -339,6 +339,10 @@ const HTTP_FIELD_VALUE = /^[\t\x20-\x7e\x80-\xff]*$/;
+ const HANDLE_ID = /^[a-z0-9]+(?:[.-][a-z0-9]+)*$/;
+ const SECRET_FIELD =
+   /^(?:authorization|cookie|proxy-authorization|set-cookie|x-api-key|x-auth-token)$|(?:token|secret|password|credential|auth)/i;
++// Keep authored admission and credential-handle eligibility complementary.
++function isSecretHeaderName(name: string): boolean {
++  return name.toLowerCase() !== "bdp-authorization-view" && SECRET_FIELD.test(name);
++}
+ const RESERVED_FIELDS = new Set([
+   "host",
+   "connection",
+@@ -472,7 +476,7 @@ export function snapshotExactHttpMode(value: ExactHttpModeOptions): ExactHttpMod
+         typeof name !== "string" ||
+         !HTTP_FIELD_NAME.test(name) ||
+         name !== name.toLowerCase() ||
+-        !SECRET_FIELD.test(name) ||
++        !isSecretHeaderName(name) ||
+         RESERVED_FIELDS.has(name) ||
+         names.includes(name)
+       )
+@@ -668,7 +672,7 @@ async function executeExact(
+       )
+         return configuration();
+       const name = entry.name.toLowerCase();
+-      if (SECRET_FIELD.test(name) || RESERVED_FIELDS.has(name)) return configuration();
++      if (isSecretHeaderName(name) || RESERVED_FIELDS.has(name)) return configuration();
+       append(entry.name, entry.value);
+     }
+     if (headBytes > mode.maximumRequestHeaderBytes) return configuration();
+diff --git a/packages/conformance/src/runner.test.ts b/packages/conformance/src/runner.test.ts
+index 48b1f28..c3a1077 100644
+--- a/packages/conformance/src/runner.test.ts
++++ b/packages/conformance/src/runner.test.ts
+@@ -5572,6 +5572,52 @@ describe("version 2 exact HTTP receiving", () => {
+       expect(report.scenarios[0]?.exchanges[0]?.response?.status).toBe(401);
+     },
+   );
++  it("keeps admitted authorization-view values out of report projections", async () => {
++    const headerLines = [
++      { name: "bdp-authorization-view", value: "CONTEXT-SENTINEL" },
++      { name: "BDP-Authorization-View", value: "" },
++    ];
++    const options = setup({ raw: { headerLines } });
++    const configuration = {
++      ...options.exactExecution.configuration,
++      defaultCredentialRef: "writer",
++      credentialHandles: [{ id: "writer", headerNames: ["authorization"] }],
++    };
++    const good = options.exactExecution.execute.getMockImplementation();
++    options.exactExecution.execute.mockImplementation(async (request) => {
++      if (good === undefined) throw new Error();
++      const response = await good(request);
++      if (response.exactRequest === undefined) throw new Error();
++      const lines = [...response.exactRequest.headerLines];
++      lines.splice(headerLines.length, 0, { name: "Authorization", value: "CREDENTIAL-SENTINEL" });
++      return {
++        ...response,
++        headers: { "bdp-authorization-view": "CONTEXT-SENTINEL" },
++        exactRequest: { ...response.exactRequest, headerLines: lines },
++      };
++    });
++    const report = await runConformanceMatrix({
++      ...options,
++      exactExecution: { ...options.exactExecution, configuration },
++    });
++    expect(report.scenarios[0]?.state).toBe("pass");
++    const exchange = report.scenarios[0]?.exchanges[0];
++    expect(exchange?.assertions.find(({ id }) => id === "authored-head")?.passed).toBe(true);
++    expect(exchange?.request.exact?.elidedHeaderLines).toBe(4);
++    expect(
++      exchange?.request.exact?.headerLines.some(
++        ({ name }) => name.toLowerCase() === "bdp-authorization-view",
++      ),
++    ).toBe(false);
++    expect(exchange?.request.headers).not.toHaveProperty("bdp-authorization-view");
++    expect(exchange?.response?.headers).not.toHaveProperty("bdp-authorization-view");
++    const text = serializeConformanceReport(report);
++    expect(text).not.toContain("CONTEXT-SENTINEL");
++    expect(text).not.toContain("CREDENTIAL-SENTINEL");
++    expect(options.execute).not.toHaveBeenCalled();
++    expect(options.exactExecution.execute).toHaveBeenCalledOnce();
++  });
++
+   it("accepts registered credential decoration and authored defaults without resolving credentials again", async () => {
+     const options = setup({
+       raw: { headerLines: [{ name: "aCcEpT", value: "application/json" }] },
+
+
+## FROZEN TEN-PATH SOURCE BINDING
+{
+  "head": "453b6dab386746bb03aac2c0a293572b8a71c969",
+  "tree": "40782d97c9764bc19ae78c46d1d39475e3db317a",
+  "worktree": "/Users/dbox/repos/wt/vickie/vickie-command-minimum-evidence",
+  "hashes": {
+    "packages/conformance/test-support/transactional/manifest-v1.json": "29729151cf6da641545910ec3880f9609c13b319af7bbe99d3d2ad47833dab96",
+    "packages/conformance/test-support/transactional/coverage-v1.json": "4619813e9446e0e714a64c11eac184531950f57720e32c7ef414c7e3342121af",
+    "packages/conformance/src/transactional-cumulative.test.ts": "0d1f87199222e2426b048eae1a5aadd11c20c04298d31e3198ca46897e5492d3",
+    "apps/bdptest/src/transactional-matrix.test.ts": "e319109ab0e9f7258e6918ae789ed7a5672eb7aabd0ec8725ae38e3634164e68",
+    "packages/conformance/src/profile-contract-plan.test.ts": "e5be4864e456431db74bd325ec64d785bf3c5301a6be5b230bfcc7351ade4fc4",
+    "packages/conformance/src/executable-manifest.ts": "65af0451cd046d57c10b0666e54efbaaecc2225551d3accc5cc1d032322913fa",
+    "packages/conformance/src/http-executor.ts": "770a8405ae1532484b5a2658619c067832644947888f95e0c6575002376f1b5d",
+    "packages/conformance/src/executable-manifest.test.ts": "2e548c9e7ef8ff01e4933ce33f48bd97e91e277aebdd70c658c350c081e9ba7c",
+    "packages/conformance/src/http-executor.test.ts": "4255422c6b7c5b0a0cadd71c73a045a3a2ae12b5e17708c14afc2607b6007aee",
+    "packages/conformance/src/runner.test.ts": "3933d97fcdae91efeb23e24af468791d8917588b159f228433fceaa1ae317485"
+  },
+  "preservedFiveHashes": {
+    "packages/conformance/test-support/transactional/manifest-v1.json": "29729151cf6da641545910ec3880f9609c13b319af7bbe99d3d2ad47833dab96",
+    "packages/conformance/test-support/transactional/coverage-v1.json": "4619813e9446e0e714a64c11eac184531950f57720e32c7ef414c7e3342121af",
+    "packages/conformance/src/transactional-cumulative.test.ts": "0d1f87199222e2426b048eae1a5aadd11c20c04298d31e3198ca46897e5492d3",
+    "apps/bdptest/src/transactional-matrix.test.ts": "e319109ab0e9f7258e6918ae789ed7a5672eb7aabd0ec8725ae38e3634164e68",
+    "packages/conformance/src/profile-contract-plan.test.ts": "e5be4864e456431db74bd325ec64d785bf3c5301a6be5b230bfcc7351ade4fc4"
+  },
+  "preservedFiveDiffSha256": "ea04e6ba34c9e1d9b724348f32407c6fd6bd78b795cad0481e7f4093b0f21762",
+  "correctionSha256": "4b7a84fb9910a686a6c154b86eb6bf1addc932787ca47c9c11598132215209be",
+  "diffSha256": "fc4fd747379917531c4d64d3fe52603337e72ec3f78e09aedcab8e9a8cc0b4b7",
+  "productExecution": false
+}
+
+
+## AUTHOR REPORT
+# Exact authorization-view header classification candidate — frozen, unexecuted
+
+The candidate adds a module-private exact-name exception only for normalized bdp-authorization-view in executable-manifest.ts and http-executor.ts. Both manifest arms and raw authored serialization use it; inverse credential-handle eligibility uses the same executor predicate, so the public context field cannot be injected as a credential. Existing actual authentication-name patterns, framing sets, lower-case normalized input rule, value validation, resolver membership/cardinality, bounds and report privacy production code are unchanged. No new exported helper or public profile admission.
+
+Only the five authorized additional paths changed (2 production and3 tests),252insertions/12deletions after targeted formatting. The original five evidence files are byte-identical to event-final/ea04 and their failed static logs remain untouched. Five original additional-file snapshots are preserved at this directory root; pre-format.patch/log and exact argv are retained. Pinned Biome2.5.7 formatted only those five files, exit0; no tests/build/typecheck/product imports/install/service/pack/commit/push ran.
+
+Seven new expanded callbacks and15 existing focused callbacks plus8 existing evidence callbacks give30 selected cases; exact names/paths and anchored regex are in selection.json. One new actual loopback exchange/listener,2-byte body and1024-byte configured request-header bound; zero stores/installed/product children. TCP data accumulates through complete head plus2-byte body before response. Existing owned socket/listener afterEach cleanup remains responsible. Configuration denials create no listener and reject before resolver/dial; lookalike request failures explicitly require configuration/not-started. The credential registration rejection occurs synchronously before an executor is returned, so no request/write-state is fabricated.
+
+The mock runner privacy case requires scenario pass and authored-header pass first, then tests exact/compatibility/response projections for absence and secret-sentinel non-disclosure. The expected four elisions are two context lines plus Host/Connection; Authorization remains allowlisted with redacted value. No privacy assertions pass merely because admission failed. Canonical raw parser covers repeated mixed-case/empty view lines and the other minimum fields; normalized parser covers versions1/2 and requests/actions with fresh per-name sources.
+
+Native plan review585a2689's three cautions are incorporated: complete TCP accumulation, nonvacuous privacy success, and pre-resolution denial. Root/native actual-code review and actual Claude are pending. Validation-v2 must bind all10paths and this exact source before root release; existing installed208expected/225maximumHTTP/26children remains separately unchanged (209expectedHTTP including the one focused regression). No failed test was rerun.
+
+
+## EXACT SELECTION INVENTORY
+{
+  "status": "UNEXECUTED_SOURCE_INVENTORY",
+  "focusedCount": 22,
+  "newExpandedCount": 7,
+  "retainedFocusedCount": 15,
+  "existingEvidenceCount": 8,
+  "total": 30,
+  "selectedCases": [
+    {
+      "path": "packages/conformance/src/executable-manifest.test.ts",
+      "fullName": "manifest v2 exact HTTP inputs admits literal authorization-view context through actions=false",
+      "kind": "new"
+    },
+    {
+      "path": "packages/conformance/src/executable-manifest.test.ts",
+      "fullName": "manifest v2 exact HTTP inputs admits literal authorization-view context through actions=true",
+      "kind": "new"
+    },
+    {
+      "path": "packages/conformance/src/executable-manifest.test.ts",
+      "fullName": "executable scenario manifest admits normalized authorization-view context without changing lowercase rules",
+      "kind": "new"
+    },
+    {
+      "path": "packages/conformance/src/http-executor.test.ts",
+      "fullName": "exact HTTP request execution writes authorization-view context separately from credentials",
+      "kind": "new"
+    },
+    {
+      "path": "packages/conformance/src/http-executor.test.ts",
+      "fullName": "exact HTTP request execution rejects authorization-view credential handles before resolution or dialing",
+      "kind": "new"
+    },
+    {
+      "path": "packages/conformance/src/http-executor.test.ts",
+      "fullName": "exact HTTP request execution keeps authorization-view lookalikes protected in parser and serializer",
+      "kind": "new"
+    },
+    {
+      "path": "packages/conformance/src/runner.test.ts",
+      "fullName": "version 2 exact HTTP receiving keeps admitted authorization-view values out of report projections",
+      "kind": "new"
+    },
+    {
+      "path": "packages/conformance/src/executable-manifest.test.ts",
+      "fullName": "executable scenario manifest rejects credentials and noncanonical header names",
+      "kind": "existing"
+    },
+    {
+      "path": "packages/conformance/src/executable-manifest.test.ts",
+      "fullName": "executable scenario manifest rejects authority-changing paths, secret-like headers, and control values",
+      "kind": "existing"
+    },
+    {
+      "path": "packages/conformance/src/executable-manifest.test.ts",
+      "fullName": "manifest v2 exact HTTP inputs rejects closed-form violations in actions=false",
+      "kind": "existing"
+    },
+    {
+      "path": "packages/conformance/src/executable-manifest.test.ts",
+      "fullName": "manifest v2 exact HTTP inputs rejects closed-form violations in actions=true",
+      "kind": "existing"
+    },
+    {
+      "path": "packages/conformance/src/http-executor.test.ts",
+      "fullName": "exact HTTP request execution rejects authored protected field Authorization before resolving credentials",
+      "kind": "existing"
+    },
+    {
+      "path": "packages/conformance/src/http-executor.test.ts",
+      "fullName": "exact HTTP request execution rejects authored protected field AUTHORIZATION before resolving credentials",
+      "kind": "existing"
+    },
+    {
+      "path": "packages/conformance/src/http-executor.test.ts",
+      "fullName": "exact HTTP request execution rejects authored protected field Cookie before resolving credentials",
+      "kind": "existing"
+    },
+    {
+      "path": "packages/conformance/src/http-executor.test.ts",
+      "fullName": "exact HTTP request execution rejects authored protected field X-Auth-Token before resolving credentials",
+      "kind": "existing"
+    },
+    {
+      "path": "packages/conformance/src/http-executor.test.ts",
+      "fullName": "exact HTTP request execution rejects authored protected field Host before resolving credentials",
+      "kind": "existing"
+    },
+    {
+      "path": "packages/conformance/src/http-executor.test.ts",
+      "fullName": "exact HTTP request execution rejects authored protected field Content-Length before resolving credentials",
+      "kind": "existing"
+    },
+    {
+      "path": "packages/conformance/src/http-executor.test.ts",
+      "fullName": "exact HTTP request execution rejects authored protected field Transfer-Encoding before resolving credentials",
+      "kind": "existing"
+    },
+    {
+      "path": "packages/conformance/src/http-executor.test.ts",
+      "fullName": "exact HTTP request execution rejects authored protected field Expect before resolving credentials",
+      "kind": "existing"
+    },
+    {
+      "path": "packages/conformance/src/http-executor.test.ts",
+      "fullName": "exact HTTP request execution rejects authored protected field Proxy-Connection before resolving credentials",
+      "kind": "existing"
+    },
+    {
+      "path": "packages/conformance/src/runner.test.ts",
+      "fullName": "version 2 exact HTTP receiving accepts registered credential decoration and authored defaults without resolving credentials again",
+      "kind": "existing"
+    },
+    {
+      "path": "packages/conformance/src/runner.test.ts",
+      "fullName": "black-box conformance runner does not reflect credential-shaped response header values or names",
+      "kind": "existing"
+    },
+    {
+      "path": "packages/conformance/src/transactional-cumulative.test.ts",
+      "fullName": "binds the canonical cumulative TX selection and exact source digests without qualification"
+    },
+    {
+      "path": "packages/conformance/src/transactional-cumulative.test.ts",
+      "fullName": "rejects noncanonical selections, History, wrong factories, retired and misprofiled rows"
+    },
+    {
+      "path": "packages/conformance/src/transactional-cumulative.test.ts",
+      "fullName": "copies source bytes before binding and exposes all missing obligations without executing them"
+    },
+    {
+      "path": "packages/conformance/src/transactional-cumulative.test.ts",
+      "fullName": "pins the inherited command-minimum manifest facts, read-header absence and all thirteen prior objects"
+    },
+    {
+      "path": "apps/bdptest/src/transactional-matrix.test.ts",
+      "fullName": "pins the matching no-op installed route digest and fifteen-action ledger"
+    },
+    {
+      "path": "apps/bdptest/src/transactional-matrix.test.ts",
+      "fullName": "pins deletion-safety derivative carriers, complete positives, and measured source bounds"
+    },
+    {
+      "path": "packages/conformance/src/profile-contract-plan.test.ts",
+      "fullName": "canonical cumulative profile contracts inherits partial TX command-minimum evidence while preserving RU omission"
+    },
+    {
+      "path": "packages/conformance/src/transactional-cumulative.test.ts",
+      "fullName": "preserves every original TX scenario and coverage object while adding one bounded partial cross-carrier row"
+    }
+  ],
+  "testNamePattern": "^(?:manifest\\ v2\\ exact\\ HTTP\\ inputs\\ admits\\ literal\\ authorization\\-view\\ context\\ through\\ actions=false|manifest\\ v2\\ exact\\ HTTP\\ inputs\\ admits\\ literal\\ authorization\\-view\\ context\\ through\\ actions=true|executable\\ scenario\\ manifest\\ admits\\ normalized\\ authorization\\-view\\ context\\ without\\ changing\\ lowercase\\ rules|exact\\ HTTP\\ request\\ execution\\ writes\\ authorization\\-view\\ context\\ separately\\ from\\ credentials|exact\\ HTTP\\ request\\ execution\\ rejects\\ authorization\\-view\\ credential\\ handles\\ before\\ resolution\\ or\\ dialing|exact\\ HTTP\\ request\\ execution\\ keeps\\ authorization\\-view\\ lookalikes\\ protected\\ in\\ parser\\ and\\ serializer|version\\ 2\\ exact\\ HTTP\\ receiving\\ keeps\\ admitted\\ authorization\\-view\\ values\\ out\\ of\\ report\\ projections|executable\\ scenario\\ manifest\\ rejects\\ credentials\\ and\\ noncanonical\\ header\\ names|executable\\ scenario\\ manifest\\ rejects\\ authority\\-changing\\ paths,\\ secret\\-like\\ headers,\\ and\\ control\\ values|manifest\\ v2\\ exact\\ HTTP\\ inputs\\ rejects\\ closed\\-form\\ violations\\ in\\ actions=false|manifest\\ v2\\ exact\\ HTTP\\ inputs\\ rejects\\ closed\\-form\\ violations\\ in\\ actions=true|exact\\ HTTP\\ request\\ execution\\ rejects\\ authored\\ protected\\ field\\ Authorization\\ before\\ resolving\\ credentials|exact\\ HTTP\\ request\\ execution\\ rejects\\ authored\\ protected\\ field\\ AUTHORIZATION\\ before\\ resolving\\ credentials|exact\\ HTTP\\ request\\ execution\\ rejects\\ authored\\ protected\\ field\\ Cookie\\ before\\ resolving\\ credentials|exact\\ HTTP\\ request\\ execution\\ rejects\\ authored\\ protected\\ field\\ X\\-Auth\\-Token\\ before\\ resolving\\ credentials|exact\\ HTTP\\ request\\ execution\\ rejects\\ authored\\ protected\\ field\\ Host\\ before\\ resolving\\ credentials|exact\\ HTTP\\ request\\ execution\\ rejects\\ authored\\ protected\\ field\\ Content\\-Length\\ before\\ resolving\\ credentials|exact\\ HTTP\\ request\\ execution\\ rejects\\ authored\\ protected\\ field\\ Transfer\\-Encoding\\ before\\ resolving\\ credentials|exact\\ HTTP\\ request\\ execution\\ rejects\\ authored\\ protected\\ field\\ Expect\\ before\\ resolving\\ credentials|exact\\ HTTP\\ request\\ execution\\ rejects\\ authored\\ protected\\ field\\ Proxy\\-Connection\\ before\\ resolving\\ credentials|version\\ 2\\ exact\\ HTTP\\ receiving\\ accepts\\ registered\\ credential\\ decoration\\ and\\ authored\\ defaults\\ without\\ resolving\\ credentials\\ again|black\\-box\\ conformance\\ runner\\ does\\ not\\ reflect\\ credential\\-shaped\\ response\\ header\\ values\\ or\\ names|binds\\ the\\ canonical\\ cumulative\\ TX\\ selection\\ and\\ exact\\ source\\ digests\\ without\\ qualification|rejects\\ noncanonical\\ selections,\\ History,\\ wrong\\ factories,\\ retired\\ and\\ misprofiled\\ rows|copies\\ source\\ bytes\\ before\\ binding\\ and\\ exposes\\ all\\ missing\\ obligations\\ without\\ executing\\ them|pins\\ the\\ inherited\\ command\\-minimum\\ manifest\\ facts,\\ read\\-header\\ absence\\ and\\ all\\ thirteen\\ prior\\ objects|pins\\ the\\ matching\\ no\\-op\\ installed\\ route\\ digest\\ and\\ fifteen\\-action\\ ledger|pins\\ deletion\\-safety\\ derivative\\ carriers,\\ complete\\ positives,\\ and\\ measured\\ source\\ bounds|canonical\\ cumulative\\ profile\\ contracts\\ inherits\\ partial\\ TX\\ command\\-minimum\\ evidence\\ while\\ preserving\\ RU\\ omission|preserves\\ every\\ original\\ TX\\ scenario\\ and\\ coverage\\ object\\ while\\ adding\\ one\\ bounded\\ partial\\ cross\\-carrier\\ row)$",
+  "workload": {
+    "http": 1,
+    "listeners": 1,
+    "storeOpens": 0,
+    "storeDirectories": 0,
+    "productChildren": 0,
+    "existingInstalledCohortsExpectedHTTP": 208,
+    "existingInstalledMaximumHTTP": 225,
+    "existingInstalledChildren": 26,
+    "combinedExpectedHTTP": 209
+  },
+  "note": "Only exact executor new wire callback opens a listener; denied cases reject before resolution/dial. Mock runner cases execute no actual HTTP. Existing eight static callbacks execute no product services."
+}
+
+
+## ACCEPTED REPAIR PLAN
+# Raw context-header admission failure — bounded repair plan, not execution release
+
+## Actual failure and exact cause
+
+Preserve current five-file draft ea04e6ba34c9e1d9b724348f32407c6fd6bd78b795cad0481e7f4093b0f21762 and all V/run artifacts. All five hashes still match event-final/source-binding.json. Actual static-cases.exit.json reports exit1, no timeout/forced cleanup, source unchanged, sampled PIDs absent, no runtime directory; only compile cache remains. Actual JSON:1pass/4failed/94skipped; app suite has0registered results because its top-level bundle construction fails. Thus two selected app callbacks never ran. This is a conformance-input admission failure before service, not a server failure or a seven-case pass.
+
+executable-manifest.ts:975–980 lowercases raw names then rejects SECRET_HEADER_PATTERN, broad /token|secret|password|credential|auth/i, or executor-owned fields. The exact legitimate name bdp-authorization-view matches auth. New row actions0,3,4,5,6,7 contain that field and produce the six actual issues. Values (empty, malformed, foreign) are irrelevant to the name collision. Parser-only repair would encounter the same independent rejection in http-executor.ts:671 before credential resolution/dial. No amount of retry fixes this.
+
+Existing law/source already establishes this field as protocol context: docs/specs/bdp.md:3583 explicitly includes it among the three ignored mutation-POST read controls;:5265 defines epoch/view context. transaction-http.test.ts:1136–1197 directly constructs malformed/empty/multi-valued copies in each carrier. Those direct Request tests never traverse the conformance manifest parser or exact serializer. executable-manifest.ts:423–437 and its metadata-comparison test:795–824 already recognize this as response metadata; runner tests:2838 and5953 likewise test response context, not authored admission. No new protocol ruling is needed.
+
+## Complete relevant path inventory
+
+| Path | Present behavior | Repair/disposition |
+| --- | --- | --- |
+| executable-manifest.ts:975–980 raw v2 input | Exact-name and broad-secret rejection plus framing set | Use exact-name-aware private secret predicate; preserve reserved-field, syntax, value, own-data and cap checks |
+| executable-manifest.ts:1469–1476 normalized headers | Same broad false positive; requires lowercase names | Use same module-private predicate; lowercase rule remains. Fix both arms consistently, with no new carrier |
+| http-executor.ts:340–341,671 exact authored input | Broad SECRET_FIELD rejects view | Same exact-name-aware private predicate; append keeps exact authored case/order/repeats/empty bytes |
+| http-executor.ts:465–478 credential handle registration | Requires SECRET_FIELD to match, so currently incorrectly accepts view as a credential name | Use the same corrected predicate negatively: exact view is NOT a credential field, registration rejects it before resolver/dial |
+| http-executor.ts:686–711 resolver result | Keys must exactly correspond to registered handle names, no duplicates, valid values, exact cardinality | Unchanged; normal Authorization/Cookie remain credential-only, arbitrary extra context keys cannot arrive through resolver |
+| raw-http-scenario-target.ts:62 and runner.ts:1551 | Both capture via snapshotExactHttpMode | Inherit corrected credential classification; no separate bypass or exported API |
+| runner.ts:900–918 private receipt exact configuration | Reuses same mode snapshot and independent private raw executor | Inherits validation; no receipt helper change |
+| http-executor.ts:192ff ordinary compatibility path | Decorates ordinary Headers, not an alternate raw authored observer | No change; bypassing admission through this path would lose the exact byte oracle |
+| runner.ts:1817–1869 | Exact authored/credential/default/framing order/value/count | Unchanged; this is the full independent serializer oracle |
+| runner.ts:1790–1803,3268–3316 | Report allowlists omit all bdp context names, and redact every retained value | Unchanged: admission is not permission to disclose values in reports |
+| cohort-artifact.ts:691–735 | Independent allowlist of names; never reads raw values/response bodies | Unchanged, no broadened privacy projection |
+| app commandMinimumWire names-first prefix/suffix checks | Authored exact names before value diff; no bdp in suffix | Unchanged; correcting handle classification also prevents context being credential-injected |
+
+## Narrow source changes (five additional owned paths, subject to root authoring release)
+
+1. packages/conformance/src/executable-manifest.ts: add a module-private predicate that lowercases the name and returns false ONLY for normalized name === "bdp-authorization-view"; for all other names preserve the existing explicit sensitive-name and broad token/secret/password/credential/auth matches. Use it in raw and normalized authored checks. Do not export it or widen admission by prefix, substring, bdp-* family, profile, or action ID.
+2. packages/conformance/src/http-executor.ts: same exact-name-aware private predicate around existing SECRET_FIELD. Use it for authored rejection AND credential-handle eligibility. Prefer this short two-module change over a new shared public seam. Keep reserved/framing fields and all existing regex patterns otherwise unchanged. Header-case normalization is classification only; emitted names/values are unchanged.
+3. executable-manifest.test.ts, http-executor.test.ts, runner.test.ts: the narrowly enumerated regressions below using existing helpers. No runtime/server/client/spec/catalog/manifest/coverage mutation. The failed evidence snapshot stays frozen; root chooses an ordinary successor checkout/commit and explicitly expands validation source binding from5to10 paths. No silent gate bypass.
+
+The safe alternative is not a different carrier: normalized manifest headers have the same rejection, Fetch/Headers folds repeated fields, and credentials would turn public context into credential-only decoration outside authored order/empty-value cases. Removing required view cases or injecting them after admission defeats the requirement. Retain M/F/P/Z/O and all eleven actions.
+
+## Exact proposed regression callbacks and bounded workload
+
+Add seven expanded callbacks across the three existing test modules (literal titles below). This is a proposal to be source-measured before execution, not permission to run.
+
+- executable-manifest.test.ts, describe "manifest v2 exact HTTP inputs": it.each([false,true]) title "admits literal authorization-view context through actions=%s" (2 callbacks). Raw lines include lowercase and mixed-case exact view, repeated view values including empty and comma-separated malformed text, plus the two other minimum fields. Verify parsed and JSON-loaded values preserve the entire literal sequence. This isolates admission from protocol semantic validation.
+- Same file, describe "executable scenario manifest": "admits normalized authorization-view context without changing lowercase rules" (1). Loop existing supported versions1/2 and requests/actions forms with GET/body absent; admit only lowercase exact name, preserve empty/nonempty strings; mixed-case normalized arm remains rejected. No network.
+- http-executor.test.ts, describe "exact HTTP request execution": "writes authorization-view context separately from credentials" (1). One existing owned loopback listener, one actual HTTP request, at most1KiB authored head and2-byte body. Include repeated mixed-case/lowercase view lines with empty and comma-containing values and both other minimum fields; writer handle supplies genuine Authorization. Check actual received raw head/order/empty bytes and exactRequest observation, credential resolver once, no legacy resolver. Existing afterEach closes tracked socket/listener. No database or installed child.
+- Same describe: "rejects authorization-view credential handles before resolution or dialing" (1). Loop exact lowercase view, mixed-case view and ordinary nonsecret name registrations; configuration refusal, no resolver calls, no listener/dial. Positive Authorization registration remains covered by the wire test and retained existing credential test.
+- Same describe: "keeps authorization-view lookalikes protected in parser and serializer" (1). Loop exactly six names: X-Bdp-Authorization-View, bdp-authorization-view-extra, bdp-authorization-view-token, bdp-authorization-view-secret, bdp-authorization-view-password, bdp-authorization-view-credential. For each use existing parser raw requests/actions fixtures and direct exact serializer with deadRoute: refusal before resolver/dial. No blanket auth/BDP exception. Parser fixture construction can use the already established local manifest input shape; no new reusable exported helper.
+- runner.test.ts, describe "version 2 exact HTTP receiving": "keeps admitted authorization-view values out of report projections" (1). Existing setup mocked exact transport, authored repeated view with a unique context sentinel and a genuine credential sentinel; pass independent authored-header assertion, require both sentinels absent from serialized report and context name absent from projected exact header lines/compatibility map, with proper elided count. The report remains redacted even though the input is admitted. No sockets.
+
+Also select these existing callbacks without edits to their logic: executable manifest "rejects credentials and noncanonical header names" (1), "rejects authority-changing paths, secret-like headers, and control values" (1), v2 "rejects closed-form violations in actions=%s" (2); exact executor "rejects authored protected field %s before resolving credentials" (9 existing names Authorization, AUTHORIZATION, Cookie, X-Auth-Token, Host, Content-Length, Transfer-Encoding, Expect, Proxy-Connection); runner "accepts registered credential decoration and authored defaults without resolving credentials again" (1) and "does not reflect credential-shaped response header values or names" (1). Total15 existing +7 new =22 callbacks, one actual loopback HTTP exchange/listener, zero service/installed children/databases. Run the original seven static callbacks plus the already affected cumulative callback "preserves every original TX scenario and coverage object while adding one bounded partial cross-carrier row" on the repaired source afterward. These eight existing CPU-only callbacks include the canonical fence/history check, adding no HTTP. Total22 focused +8 existing static =30 selected callbacks, combined or in two exact-name invocations. Preserve the original failed seven-selection attempt; do not reproduce the unchanged failure. No unrelated runtime suite selection.
+
+Retain existing timeouts, maxWorkers1 and120s external supervision; no cap increases. Resolve exact full-name regex/path list from the frozen author draft before execution, particularly describe prefixes. Typecheck/fresh build/format/lint/boundaries/Read seal must reflect the new production source. Preserve the failed static run and use a new run directory, never overwrite or relabel it. Stop on unexpected failures. This plan introduces no automatic retries or execution.
+
+The three previously approved installed cohorts remain necessary after this shared conformance fix:203+4+1=208 expectedHTTP/225maximum and26children. They are not expanded by this plan. The one loopback regression exchange is separately accounted, making209 expected totalHTTP if both targeted regressions and installed cohorts are released. No installed fault qualification/new probes. Rebuild/repack current source before fresh installed evidence; do not reuse a stale pre-repair compiled conformance app. Source attribution remains root-owned ordinary commit before packaging.
+
+## Acceptance and residuals
+
+Exact-name positive tests must fail with old classifiers and pass with the new classification; protected/lookalike and credential tests must retain refusals before resolution/dial. No need for another counterfactual service cohort: these direct regressions discriminate the blocker. Privacy test must prove no report allowlist widening. Then the real canonical bundle and its two app callbacks must actually execute, not merely JSON-parse. Public Transactional admission/claimEligible behavior remains unchanged; public profile support is still incomplete.
+
+Root requested planning only. No candidate source edits, product imports, tests, formatting, build, installs or services ran during this audit. Native plan review and actual Claude final-code review remain required before root execution release/merge.
+
+
+## INDEPENDENT NATIVE PLAN REVIEW
+# Native plan review — exact authorization-view header admission
+
+No blocking finding in the frozen narrow repair plan. The proposed exact normalized-name exception, coupled to credential-handle rejection and unchanged report projection, addresses the actual conformance-input defect without bypassing protocol authorization or deciding new semantics.
+
+Plan: raw-header-admission-failure-plan.md SHA256 db1599a1f1b38f437722b8abae8acda1847c1b1e4fd8bb2c983b118d32b2acb6.
+Reviewed worktree: /Users/dbox/repos/wt/vickie/vickie-command-minimum-evidence, base453b6dab386746bb03aac2c0a293572b8a71c969; existing five-file diff ea04e6ba34c9e1d9b724348f32407c6fd6bd78b795cad0481e7f4093b0f21762 remained unchanged at review. This is a plan/source review, not the required successor code review or execution release.
+
+## Actual defect confirmed
+
+Read the retained validation static-cases.exit.json and results.json. The attempt exited1 in1.836 seconds without timeout/forced cleanup, with1pass/4fail/94skipped. The app suite registered no results because bundle construction failed with six manifest issues; its two selected callbacks did not run. The cumulative failures include the expected-error assertion being masked by the same parser error. The retained supervisor records source unchanged, no remaining sampled PIDs and no owned runtime directories; those records are not independent new process observations.
+
+At executable-manifest.ts:975–980, the broad auth classifier rejects legitimate bdp-authorization-view raw source lines. The normalized-header path at1472–1476 has the same defect. http-executor.ts:670–672 independently rejects the same authored field before credentials/dial, so parser-only repair is insufficient. The field is settled protocol context under docs/specs/bdp.md:3581–3588 and5263–5273. The repair does not relax field syntax, command authorization or minimum semantics.
+
+## Security and boundary checks
+
+1. The exact normalized comparison must exempt only bdp-authorization-view. Keeping the existing sensitive-name and token/secret/password/credential/auth patterns for every other name preserves credentials and lookalike refusals. Keep reserved/framing checks outside that exemption. Normalized manifest input still requires lowercase names; raw classification may lowercase for comparison while retaining original names/order/repeats/empty values.
+2. Credential handle registration at http-executor.ts:469–477 currently accepts the field because of the same broad classifier. Using the corrected predicate negatively makes the exact field unavailable as a credential handle. This complementary restriction is necessary. Resolver membership/cardinality checks at698–713 then refuse unauthorized extra context keys without an added injection path.
+3. No changes to report projection are needed or proposed. runner.ts:1791–1803 emits only allowlisted redacted exact-header names, while3306–3316 redacts compatibility maps. Current allowlists omit the context field. Admitting a source field does not entitle its value or name to enter reports.
+4. The names-first app assertion, whole exact-request runner checks, own-data validation, field-value grammar, framing/route/body bounds and source/session binding remain. Two short module-private predicates are proportionate; an exported shared abstraction or runner API is unnecessary.
+5. The normalized path repair is a consistent correction of the same existing capability, not permission to replace raw fixtures with Headers or credentials. Keeping the original five draft files byte-identical preserves the evidence target.
+
+## Proposed regression feasibility and count
+
+The seven new expanded callbacks are2 raw parser forms +1 normalized parser loop +1 genuine loopback serializer exchange +1 credential-registration loop +1 six-lookalike parser/serializer loop +1 mocked-transport report-privacy case. Both requests/actions and v1/v2 ordinary-header forms exist in the parser; raw remains v2-only. The existing runner setup at4687ff exposes exactRequest and report serialization for a no-socket privacy regression, and its credential-decoration test at5575ff demonstrates insertion at the authored-prefix/credential boundary.
+
+The fifteen retained callbacks are1 normalized credential/noncanonical +1 authority/secret/control +2 raw closed-form +9 protected serializer names +1 registered credential decoration +1 credential-shaped response-report test. These titles and the nine-name protected-field expansion exist. Together:22 focused callbacks. The original seven selected static callbacks plus the historical preservation/fence callback at transactional-cumulative.test.ts:836 make8 further callbacks. Total30, not30 newly registered tests. Expected actual network workload is one loopback request/listener; zero product children, installed children or stores. Vitest/build worker processes remain separate.
+
+Implementation details to preserve during measured draft/code review:
+- The real wire test should collect a complete request rather than assume the first TCP data chunk contains the full head/body. Use the existing tracked socket/listener cleanup and bounded test/command deadlines.
+- The mocked privacy case must assert scenario/assertion success as well as sentinel absence; otherwise rejected admission could make a redaction test vacuously pass. The proposed independent authored-header assertion and success requirement address this.
+- Credential and lookalike negatives must fail as configuration/not-started before resolver calls. The parser and executor arms should both be exercised; positive wire coverage must still include genuine Authorization via its registered handle.
+- Use exact describe-prefixed titles/parameter expansions from the final source in the command manifest, rather than a broad file run. Existing selected titles are source-verifiable, but final new titles cannot be certified before implementation.
+- Preserve the original failed attempt and use new output directories. Rebuild the emitted consumers after conformance production changes before repacking/installed execution.
+
+The existing planned installed208 expected/225maximum HTTP and26children are unchanged. The separate regression wire makes209 expected HTTP if both stages are released; it must not be counted as installed evidence. No extra installed diagnostic cohort is needed.
+
+## Scope and conclusion
+
+The plan expands ownership by exactly five source paths: executable-manifest.ts, http-executor.ts and their two test files plus runner.test.ts, for ten total changed paths with the original five frozen. Before-code hashes of these five additional paths:
+- executable-manifest.ts: c450ae3c39fd8a8c82d83b58eb2a527fbff942dcc965ac018a01289d9f0d5c36
+- http-executor.ts: faf4b4622db4a9105ac49f38f0c8eef116866d1306f8dbae83176e3e6e06c285
+- executable-manifest.test.ts: ef54d9332e7965ce8c0d815680a6bddba5ab00bb57117b99c78c2ae70cc43512
+- http-executor.test.ts: 83fd213b9f1897dab3b26022cce8b7cc2df2134176c1ed8ee5e05bd00c19cc9c
+- runner.test.ts: fec61f2617ed060527d0e95e3f481a9b392f1485e700c01235b8bb1930d771ad
+
+No source change, test, build, import, service, package, install or actual Claude invocation was performed for this review. The proposed repair is suitable for root-authorized implementation and subsequent frozen-code review. Root retains execution/publication gates; exact-head CI and actual Claude final-code review remain separate requirements. No public Transactional qualification or claim eligibility is inferred.
+
+
+## ACTUAL FAILED STATIC OUTCOME
+{
+  "name": "static-cases",
+  "argv": [
+    "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+    "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+    "exec",
+    "vitest",
+    "run",
+    "packages/conformance/src/transactional-cumulative.test.ts",
+    "apps/bdptest/src/transactional-matrix.test.ts",
+    "packages/conformance/src/profile-contract-plan.test.ts",
+    "--testNamePattern",
+    "^(?:binds\\ the\\ canonical\\ cumulative\\ TX\\ selection\\ and\\ exact\\ source\\ digests\\ without\\ qualification|rejects\\ noncanonical\\ selections,\\ History,\\ wrong\\ factories,\\ retired\\ and\\ misprofiled\\ rows|copies\\ source\\ bytes\\ before\\ binding\\ and\\ exposes\\ all\\ missing\\ obligations\\ without\\ executing\\ them|pins\\ the\\ inherited\\ command\\-minimum\\ manifest\\ facts,\\ read\\-header\\ absence\\ and\\ all\\ thirteen\\ prior\\ objects|pins\\ the\\ matching\\ no\\-op\\ installed\\ route\\ digest\\ and\\ fifteen\\-action\\ ledger|pins\\ deletion\\-safety\\ derivative\\ carriers,\\ complete\\ positives,\\ and\\ measured\\ source\\ bounds|canonical\\ cumulative\\ profile\\ contracts\\ inherits\\ partial\\ TX\\ command\\-minimum\\ evidence\\ while\\ preserving\\ RU\\ omission)$",
+    "--maxWorkers=1",
+    "--reporter=verbose",
+    "--reporter=json",
+    "--outputFile.json=/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-command-minimum-evidence-validation/run/static-cases.results.json"
+  ],
+  "cwd": "/Users/dbox/repos/wt/vickie/vickie-command-minimum-evidence",
+  "started": "2026-10-15T07:03:58.887375+00:00",
+  "elapsedSeconds": 1.83628920908086,
+  "exit": 1,
+  "supervisorExit": 1,
+  "timeout": false,
+  "forcedCleanup": false,
+  "errors": [],
+  "processGroup": 20209,
+  "remainingBeforeCleanup": [],
+  "remainingAfterCleanup": [],
+  "sampledPids": [
+    20209,
+    20213,
+    20227,
+    20231,
+    20234
+  ],
+  "sampledPidsStillPresent": {},
+  "sampledTempEntries": [
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-command-minimum-evidence-validation/run/static-cases.tmp/aMmuOWKeNvMV6fPLaEhpX",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-command-minimum-evidence-validation/run/static-cases.tmp/node-compile-cache"
+  ],
+  "tempEntriesAfter": [
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-command-minimum-evidence-validation/run/static-cases.tmp/node-compile-cache"
+  ],
+  "remainingTempEntriesForClassification": [
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-command-minimum-evidence-validation/run/static-cases.tmp/node-compile-cache"
+  ],
+  "runtimeDirectoriesStillPresent": [],
+  "unclassifiedTempEntriesStillPresent": [
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-command-minimum-evidence-validation/run/static-cases.tmp/node-compile-cache"
+  ],
+  "sourceUnchanged": true,
+  "sourceSha256After": {
+    "packages/conformance/test-support/transactional/manifest-v1.json": "29729151cf6da641545910ec3880f9609c13b319af7bbe99d3d2ad47833dab96",
+    "packages/conformance/test-support/transactional/coverage-v1.json": "4619813e9446e0e714a64c11eac184531950f57720e32c7ef414c7e3342121af",
+    "packages/conformance/src/transactional-cumulative.test.ts": "0d1f87199222e2426b048eae1a5aadd11c20c04298d31e3198ca46897e5492d3",
+    "packages/conformance/src/profile-contract-plan.test.ts": "e5be4864e456431db74bd325ec64d785bf3c5301a6be5b230bfcc7351ade4fc4",
+    "apps/bdptest/src/transactional-matrix.test.ts": "e319109ab0e9f7258e6918ae789ed7a5672eb7aabd0ec8725ae38e3634164e68"
+  },
+  "samplingSeconds": 0.05,
+  "samplingLimitation": "Short-lived or detached descendants may evade group sampling; helper counts and independent final checks remain separate.",
+  "tempClassification": "Only the selected fixture prefixes under this attempt TMPDIR are owned runtime roots; all other entries are preserved for review, not deleted or called leaks.",
+  "resultLimitation": "Exit0 is command completion, not independent oracle/claim/provenance adjudication."
+}
+
+
+## Actual failed output excerpt (original candidate before classifier repair)
+⎯⎯⎯⎯⎯⎯ Failed Suites 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  apps/bdptest/src/transactional-matrix.test.ts [ apps/bdptest/src/transactional-matrix.test.ts ]
+ManifestValidationError: scenario manifest: validation failed (6 issue(s))
+ ❯ parseExecutableScenarioManifest packages/conformance/src/executable-manifest.ts:495:32
+    493|     }
+    494|   }
+    495|   if (issues.length > 0) throw new ManifestValidationError(issues, sou…
+       |                                ^
+    496|   return {
+    497|     manifestVersion: version as ExecutableManifestVersion,
+ ❯ createBoundArtifactBundle packages/conformance/src/artifact-bundle.ts:170:20
+ ❯ createCumulativeTransactionalArtifactBundle packages/conformance/src/artifact-bundle.ts:136:18
+ ❯ apps/bdptest/src/transactional-matrix.test.ts:44:16
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯
+Serialized Error: { issues: [ { path: '$.scenarios[0].actions[0]', message: 'raw source header is secret or executor-owned' }, { path: '$.scenarios[0].actions[3]', message: 'raw source header is secret or executor-owned' }, { path: '$.scenarios[0].actions[4]', message: 'raw source header is secret or executor-owned' }, { path: '$.scenarios[0].actions[5]', message: 'raw source header is secret or executor-owned' }, { path: '$.scenarios[0].actions[6]', message: 'raw source header is secret or executor-owned' }, { path: '$.scenarios[0].actions[7]', message: 'raw source header is secret or executor-owned' } ] }
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/5]⎯
+
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 4 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  packages/conformance/src/transactional-cumulative.test.ts > binds the canonical cumulative TX selection and exact source digests without qualification
+ManifestValidationError: scenario manifest: validation failed (6 issue(s))
+ ❯ parseExecutableScenarioManifest packages/conformance/src/executable-manifest.ts:495:32
+    493|     }
+    494|   }
+    495|   if (issues.length > 0) throw new ManifestValidationError(issues, sou…
+       |                                ^
+    496|   return {
+    497|     manifestVersion: version as ExecutableManifestVersion,
+ ❯ createBoundArtifactBundle packages/conformance/src/artifact-bundle.ts:170:20
+ ❯ createCumulativeTransactionalArtifactBundle packages/conformance/src/artifact-bundle.ts:136:18
+ ❯ bundle packages/conformance/src/transactional-cumulative.test.ts:43:22
+ ❯ packages/conformance/src/transactional-cumulative.test.ts:83:18
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯
+Serialized Error: { issues: [ { path: '$.scenarios[0].actions[0]', message: 'raw source header is secret or executor-owned' }, { path: '$.scenarios[0].actions[3]', message: 'raw source header is secret or executor-owned' }, { path: '$.scenarios[0].actions[4]', message: 'raw source header is secret or executor-owned' }, { path: '$.scenarios[0].actions[5]', message: 'raw source header is secret or executor-owned' }, { path: '$.scenarios[0].actions[6]', message: 'raw source header is secret or executor-owned' }, { path: '$.scenarios[0].actions[7]', message: 'raw source header is secret or executor-owned' } ] }
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/5]⎯
+
+ FAIL  packages/conformance/src/transactional-cumulative.test.ts > rejects noncanonical selections, History, wrong factories, retired and misprofiled rows
+AssertionError: expected [Function] to throw error including 'catalogId' but got 'scenario manifest: validation failed …'
+
+Expected: "catalogId"
+Received: "scenario manifest: validation failed (6 issue(s))"
+
+ ❯ packages/conformance/src/transactional-cumulative.test.ts:143:58
+    141|   );
+    142|   const sources = { ...inputs(), catalog: source(selected.catalog) };
+    143|   expect(() => createConformanceArtifactBundle(sources)).toThrow("cata…
+       |                                                          ^
+    144|   expect(() => createDevelopmentReadUpdateArtifactBundle(sources)).toT…
+    145|   for (const patch of [
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/5]⎯
+
+ FAIL  packages/conformance/src/transactional-cumulative.test.ts > copies source bytes before binding and exposes all missing obligations without executing them
+ManifestValidationError: scenario manifest: validation failed (6 issue(s))
+ ❯ parseExecutableScenarioManifest packages/conformance/src/executable-manifest.ts:495:32
+    493|     }
+    494|   }
+    495|   if (issues.length > 0) throw new ManifestValidationError(issues, sou…
+       |                                ^
+    496|   return {
+    497|     manifestVersion: version as ExecutableManifestVersion,
+ ❯ createBoundArtifactBundle packages/conformance/src/artifact-bundle.ts:170:20
+ ❯ createCumulativeTransactionalArtifactBundle packages/conformance/src/artifact-bundle.ts:136:18
+ ❯ packages/conformance/src/transactional-cumulative.test.ts:185:18
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯
+Serialized Error: { issues: [ { path: '$.scenarios[0].actions[0]', message: 'raw source header is secret or executor-owned' }, { path: '$.scenarios[0].actions[3]', message: 'raw source header is secret or executor-owned' }, { path: '$.scenarios[0].actions[4]', message: 'raw source header is secret or executor-owned' }, { path: '$.scenarios[0].actions[5]', message: 'raw source header is secret or executor-owned' }, { path: '$.scenarios[0].actions[6]', message: 'raw source header is secret or executor-owned' }, { path: '$.scenarios[0].actions[7]', message: 'raw source header is secret or executor-owned' } ] }
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/5]⎯
+
+ FAIL  packages/conformance/src/transactional-cumulative.test.ts > pins the inherited command-minimum manifest facts, read-header absence and all thirteen prior objects
+ManifestValidationError: scenario manifest: validation failed (6 issue(s))
+ ❯ parseExecutableScenarioManifest packages/conformance/src/executable-manifest.ts:495:32
+    493|     }
+    494|   }
+    495|   if (issues.length > 0) throw new ManifestValidationError(issues, sou…
+       |                                ^
+    496|   return {
+    497|     manifestVersion: version as ExecutableManifestVersion,
+ ❯ createBoundArtifactBundle packages/conformance/src/artifact-bundle.ts:170:20
+ ❯ createCumulativeTransactionalArtifactBundle packages/conformance/src/artifact-bundle.ts:136:18
+ ❯ bundle packages/conformance/src/transactional-cumulative.test.ts:43:22
+ ❯ packages/conformance/src/transactional-cumulative.test.ts:2729:10
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯
+Serialized Error: { issues: [ { path: '$.scenarios[0].actions[0]', message: 'raw source header is secret or executor-owned' }, { path: '$.scenarios[0].actions[3]', message: 'raw source header is secret or executor-owned' }, { path: '$.scenarios[0].actions[4]', message: 'raw source header is secret or executor-owned' }, { path: '$.scenarios[0].actions[5]', message: 'raw source header is secret or executor-owned' }, { path: '$.scenarios[0].actions[6]', message: 'raw source header is secret or executor-owned' }, { path: '$.scenarios[0].actions[7]', message: 'raw source header is secret or executor-owned' } ] }
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/5]⎯
+
+
+ Test Files  2 failed | 1 passed (3)
+      Tests  4 failed | 1 passed | 94 skipped (99)
+   Start at  00:03:59
+   Duration  560ms (transform 180ms, setup 24ms, import 94ms, tests 67ms, environment 0ms)
+
+JSON report written to /Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-command-minimum-evidence-validation/run/static-cases.results.json
+
+
+## CURRENT SOURCE packages/conformance/src/executable-manifest.ts:275-295
+275: 
+276: export interface ManifestIssue {
+277:   readonly path: string;
+278:   readonly message: string;
+279: }
+280: 
+281: export class ManifestValidationError extends Error {
+282:   readonly issues: readonly ManifestIssue[];
+283: 
+284:   constructor(issues: readonly ManifestIssue[], sourceLabel?: string) {
+285:     super(
+286:       `${sourceLabel === undefined ? "scenario manifest" : sourceLabel}: validation failed (${issues.length} issue(s))`,
+287:     );
+288:     this.name = "ManifestValidationError";
+289:     this.issues = issues;
+290:   }
+291: }
+292: 
+293: const ROOT_KEYS = new Set(["manifestVersion", "catalogId", "scenarios"]);
+294: const SCENARIO_KEYS = new Set([
+295:   "id",
+
+## CURRENT SOURCE packages/conformance/src/executable-manifest.ts:408-447
+408:   "pointer",
+409:   "ordered",
+410:   "projections",
+411:   "equals",
+412:   "fixturePointer",
+413: ]);
+414: const JSON_TUPLE_PROJECTION_KEYS = new Set(["pointer", "normalize"]);
+415: const JSON_SCHEMA_ASSERTION_KEYS = new Set(["id", "kind", "schema"]);
+416: const CLEANUP_KEYS = new Set(["resetFixture"]);
+417: const ID_PATTERN = /^[a-z0-9]+(?:[.-][a-z0-9]+)*$/;
+418: const HEADER_PATTERN = /^[!#$%&'*+.^_`|~0-9A-Za-z-]+$/;
+419: const SECRET_HEADER_PATTERN =
+420:   /^(?:authorization|cookie|proxy-authorization|set-cookie|x-api-key|x-auth-token)$/;
+421: // This protocol context field is authored input, never a credential field.
+422: function isSecretHeaderName(name: string): boolean {
+423:   const normalized = name.toLowerCase();
+424:   return (
+425:     normalized !== "bdp-authorization-view" &&
+426:     (SECRET_HEADER_PATTERN.test(normalized) ||
+427:       /(?:token|secret|password|credential|auth)/i.test(normalized))
+428:   );
+429: }
+430: const HTTP_FIELD_VALUE_PATTERN = /^[\t\x20-\x7e\x80-\xff]*$/;
+431: const MAXIMUM_RAW_REQUEST_TARGET_BYTES = 8_192;
+432: const STABLE_RESPONSE_METADATA_HEADERS = new Set([
+433:   "bdp-scope-epoch",
+434:   "bdp-authorization-view",
+435:   "bdp-scope-position",
+436:   "cache-control",
+437:   "content-language",
+438:   "content-length",
+439:   "content-location",
+440:   "content-type",
+441:   "etag",
+442:   "last-modified",
+443:   "link",
+444:   "vary",
+445: ]);
+446: 
+447: export function loadExecutableScenarioManifestJson(
+
+## CURRENT SOURCE packages/conformance/src/executable-manifest.ts:900-1060
+900:     captures,
+901:     assertions,
+902:   };
+903: }
+904: 
+905: const EXACT_RESERVED_FIELDS = new Set([
+906:   "host",
+907:   "connection",
+908:   "content-length",
+909:   "transfer-encoding",
+910:   "trailer",
+911:   "expect",
+912:   "upgrade",
+913:   "proxy-connection",
+914:   "proxy-authorization",
+915:   "forwarded",
+916:   "via",
+917: ]);
+918: 
+919: function parseRequestInput(
+920:   candidate: Record<string, unknown>,
+921:   path: string,
+922:   issues: ManifestIssue[],
+923:   prior: ReadonlySet<string>,
+924:   version: ExecutableManifestVersion,
+925:   profile: ProtocolProfile | undefined,
+926: ): ScenarioRequestInput | undefined {
+927:   if (version === 2)
+928:     reportExactUnknownKeys(candidate, new Set([...REQUEST_KEYS, "family"]), path, issues);
+929:   const hasRaw = Object.hasOwn(candidate, "raw");
+930:   if (version !== 2 && (hasRaw || Object.hasOwn(candidate, "credentialRef")))
+931:     issues.push({ path, message: "raw inputs require manifest version 2" });
+932:   if (!hasRaw) {
+933:     if (Object.hasOwn(candidate, "credentialRef"))
+934:       issues.push({ path, message: "credentialRef requires raw input" });
+935:     const headers = parseHeaders(
+936:       version === 1 ? ownValue(candidate, "headers") : ownDataValue(candidate, "headers"),
+937:       `${path}.headers`,
+938:       issues,
+939:       prior,
+940:     );
+941:     return headers === undefined ? undefined : { headers };
+942:   }
+943:   if (Object.hasOwn(candidate, "headers"))
+944:     issues.push({ path, message: "raw input excludes headers" });
+945:   const raw = ownDataValue(candidate, "raw");
+946:   if (!isPlainRecord(raw)) {
+947:     issues.push({ path, message: "raw must be a plain record" });
+948:     return undefined;
+949:   }
+950:   reportExactUnknownKeys(raw, new Set(["headerLines", "body"]), `${path}.raw`, issues);
+951:   const lines = ownDataValue(raw, "headerLines");
+952:   const headerLines: { name: string; value: string }[] = [];
+953:   if (!Array.isArray(lines)) issues.push({ path, message: "headerLines must be an array" });
+954:   else {
+955:     for (const key of Reflect.ownKeys(lines))
+956:       if (
+957:         key !== "length" &&
+958:         (typeof key !== "string" || !/^(?:0|[1-9]\d*)$/.test(key) || Number(key) >= lines.length)
+959:       )
+960:         issues.push({ path, message: "headerLines must contain only indexed lines" });
+961:     for (let i = 0; i < lines.length; i++) {
+962:       const descriptor = Object.getOwnPropertyDescriptor(lines, String(i));
+963:       const line =
+964:         descriptor !== undefined && "value" in descriptor && descriptor.enumerable
+965:           ? descriptor.value
+966:           : undefined;
+967:       if (!isPlainRecord(line)) {
+968:         issues.push({ path, message: "line must be own data" });
+969:         continue;
+970:       }
+971:       reportExactUnknownKeys(line, new Set(["name", "value"]), path, issues);
+972:       const name = ownDataValue(line, "name"),
+973:         value = ownDataValue(line, "value");
+974:       if (
+975:         typeof name !== "string" ||
+976:         !HEADER_PATTERN.test(name) ||
+977:         typeof value !== "string" ||
+978:         !/^[\t\x20-\x7e\x80-\xff]*$/.test(value)
+979:       ) {
+980:         issues.push({ path, message: "invalid raw header line" });
+981:         continue;
+982:       }
+983:       const normalized = name.toLowerCase();
+984:       if (isSecretHeaderName(normalized) || EXACT_RESERVED_FIELDS.has(normalized))
+985:         issues.push({ path, message: "raw source header is secret or executor-owned" });
+986:       headerLines.push({ name, value });
+987:     }
+988:   }
+989:   let body: ScenarioBody | undefined;
+990:   if (Object.hasOwn(raw, "body")) {
+991:     const value = ownDataValue(raw, "body");
+992:     if (!isPlainRecord(value)) issues.push({ path, message: "body must be a plain record" });
+993:     else {
+994:       reportExactUnknownKeys(value, new Set(["encoding", "value"]), path, issues);
+995:       const encoding = ownDataValue(value, "encoding"),
+996:         text = ownDataValue(value, "value");
+997:       if (typeof text !== "string" || (encoding !== "utf8" && encoding !== "base64"))
+998:         issues.push({ path, message: "invalid body encoding" });
+999:       else if (encoding === "utf8" ? !text.isWellFormed() : !isCanonicalBodyBase64(text))
+1000:         issues.push({ path, message: "body must be scalar UTF-8 or canonical base64" });
+1001:       else body = { encoding, value: text };
+1002:     }
+1003:     if (profile === "read")
+1004:       issues.push({ path, message: "Read scenarios cannot carry an exact body" });
+1005:   }
+1006:   const ref = ownDataValue(candidate, "credentialRef");
+1007:   const credentialRef =
+1008:     ref === undefined ? undefined : readId(ref, `${path}.credentialRef`, issues);
+1009:   return {
+1010:     raw: { headerLines, ...(body === undefined ? {} : { body }) },
+1011:     ...(credentialRef === undefined ? {} : { credentialRef }),
+1012:   };
+1013: }
+1014: 
+1015: function isCanonicalBodyBase64(text: string): boolean {
+1016:   if (!/^(?:[A-Za-z0-9+/]{4})*(?:[A-Za-z0-9+/]{2}==|[A-Za-z0-9+/]{3}=)?$/.test(text)) return false;
+1017:   // Check unused padding bits without allocating a decoded buffer.
+1018:   const alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
+1019:   return text.endsWith("==")
+1020:     ? (alphabet.indexOf(text.at(-3) ?? "") & 15) === 0
+1021:     : text.endsWith("=")
+1022:       ? (alphabet.indexOf(text.at(-2) ?? "") & 3) === 0
+1023:       : true;
+1024: }
+1025: 
+1026: /** Source bytes, not interpreted JSON. Check the configured byte bound before allocation. */
+1027: export function materializeScenarioBody(body: ScenarioBody, maximumBytes: number): Uint8Array {
+1028:   if ((body.encoding !== "utf8" && body.encoding !== "base64") || typeof body.value !== "string")
+1029:     throw new TypeError("invalid source body encoding");
+1030:   const count =
+1031:     body.encoding === "utf8"
+1032:       ? Buffer.byteLength(body.value, "utf8")
+1033:       : (body.value.length / 4) * 3 -
+1034:         (body.value.endsWith("==") ? 2 : body.value.endsWith("=") ? 1 : 0);
+1035:   if (!Number.isSafeInteger(maximumBytes) || maximumBytes < 0 || count > maximumBytes)
+1036:     throw new TypeError("source body exceeds configured limit");
+1037:   if (body.encoding === "utf8" ? !body.value.isWellFormed() : !isCanonicalBodyBase64(body.value))
+1038:     throw new TypeError("invalid source body encoding");
+1039:   return body.encoding === "utf8"
+1040:     ? new TextEncoder().encode(body.value)
+1041:     : Uint8Array.from(Buffer.from(body.value, "base64"));
+1042: }
+1043: 
+1044: function validateRequestAssertions(
+1045:   assertions: readonly ScenarioAssertion[] | undefined,
+1046:   input: ScenarioRequestInput | undefined,
+1047:   path: string,
+1048:   issues: ManifestIssue[],
+1049: ): void {
+1050:   if (input?.raw === undefined && assertions?.some(({ kind }) => kind.startsWith("request-")))
+1051:     issues.push({ path, message: "request assertions require exact HTTP input" });
+1052: }
+1053: 
+1054: function parseRawRequestTarget(
+1055:   value: unknown,
+1056:   path: string,
+1057:   issues: ManifestIssue[],
+1058: ): ScenarioRawRequestTarget | undefined {
+1059:   if (value === undefined) return undefined;
+1060:   if (!isPlainRecord(value)) {
+
+## CURRENT SOURCE packages/conformance/src/executable-manifest.ts:1450-1528
+1450:           : assertion.kind === "header" && assertion.presentIfResponse !== undefined
+1451:             ? { field: "presentIfResponse", id: assertion.presentIfResponse }
+1452:             : undefined;
+1453:     if (reference !== undefined && !priorIds.has(reference.id))
+1454:       issues.push({
+1455:         path: `${path}[${index}].${reference.field}`,
+1456:         message: "must name an earlier HTTP response in this scenario",
+1457:       });
+1458:   }
+1459: }
+1460: 
+1461: function parseHeaders(
+1462:   value: unknown,
+1463:   path: string,
+1464:   issues: ManifestIssue[],
+1465:   priorRequestIds: ReadonlySet<string>,
+1466: ): Readonly<Record<string, string | ScenarioConditionalHeader>> | undefined {
+1467:   if (value === undefined) return {};
+1468:   if (!isPlainRecord(value)) {
+1469:     issues.push({ path, message: "must be a plain record" });
+1470:     return undefined;
+1471:   }
+1472:   const headers = Object.create(null) as Record<string, string | ScenarioConditionalHeader>;
+1473:   for (const [name, field] of Object.entries(value)) {
+1474:     const fieldPath = `${path}.${name}`;
+1475:     if (!HEADER_PATTERN.test(name) || name !== name.toLowerCase())
+1476:       issues.push({ path: fieldPath, message: "must be a lowercase HTTP field name" });
+1477:     if (name === name.toLowerCase() && isSecretHeaderName(name))
+1478:       issues.push({ path: fieldPath, message: "secret headers are not allowed in a scenario" });
+1479:     if (typeof field === "string") {
+1480:       if (!HTTP_FIELD_VALUE_PATTERN.test(field))
+1481:         issues.push({ path: fieldPath, message: "must be a valid HTTP field value" });
+1482:       headers[name] = field;
+1483:     } else if (isPlainRecord(field)) {
+1484:       reportUnknownKeys(field, new Set(["etagFrom", "form"]), fieldPath, issues);
+1485:       if (name !== "if-match" && name !== "if-none-match")
+1486:         issues.push({
+1487:           path: fieldPath,
+1488:           message: "ETag reuse is only allowed for if-match and if-none-match",
+1489:         });
+1490:       const etagFrom = readId(field.etagFrom, `${fieldPath}.etagFrom`, issues);
+1491:       if (etagFrom !== undefined && !priorRequestIds.has(etagFrom))
+1492:         issues.push({
+1493:           path: `${fieldPath}.etagFrom`,
+1494:           message: "must name an earlier HTTP response in this scenario",
+1495:         });
+1496:       if (typeof field.form !== "string" || !CONDITIONAL_HEADER_FORMS.has(field.form))
+1497:         issues.push({ path: `${fieldPath}.form`, message: "must be a supported ETag form" });
+1498:       else if (etagFrom !== undefined)
+1499:         headers[name] = { etagFrom, form: field.form as ScenarioConditionalHeader["form"] };
+1500:     } else
+1501:       issues.push({
+1502:         path: fieldPath,
+1503:         message: "must be a field value or an observed ETag reference",
+1504:       });
+1505:   }
+1506:   return headers;
+1507: }
+1508: 
+1509: function parseCaptures(
+1510:   value: unknown,
+1511:   path: string,
+1512:   issues: ManifestIssue[],
+1513: ): readonly ScenarioCapture[] | undefined {
+1514:   if (!Array.isArray(value)) {
+1515:     issues.push({ path, message: "must be an array" });
+1516:     return undefined;
+1517:   }
+1518:   const captures: ScenarioCapture[] = [];
+1519:   const ids = new Set<string>();
+1520:   for (const [index, candidate] of value.entries()) {
+1521:     const capturePath = `${path}[${index}]`;
+1522:     if (!isPlainRecord(candidate)) {
+1523:       issues.push({ path: capturePath, message: "must be a plain record" });
+1524:       continue;
+1525:     }
+1526:     reportUnknownKeys(candidate, CAPTURE_KEYS, capturePath, issues);
+1527:     const binding = readId(ownValue(candidate, "binding"), `${capturePath}.binding`, issues);
+1528:     const from = ownValue(candidate, "from");
+
+## CURRENT SOURCE packages/conformance/src/http-executor.ts:35-110
+35: 
+36: export interface RawHeaderLine {
+37:   readonly name: string;
+38:   readonly value: string;
+39: }
+40: 
+41: export type RequestWriteState = "not-started" | "started-completion-unestablished" | "complete";
+42: 
+43: export interface ExactRequestObservation {
+44:   readonly source: "raw-http1-serializer";
+45:   /** Transient secret-bearing data, never safe to serialize directly into a report. */
+46:   readonly headerLines: readonly RawHeaderLine[];
+47:   /** Full authored entity metadata, not a claim about a transmitted prefix or server receipt. */
+48:   readonly bodyPresent: boolean;
+49:   readonly bodyOctets: number;
+50:   readonly bodyDigest?: string;
+51:   readonly writeState: RequestWriteState;
+52: }
+53: 
+54: /** Trusted harness configuration, not portable scenario data or target-supplied authority. */
+55: export interface ExactHttpModeOptions {
+56:   readonly scope: string;
+57:   readonly profile: "read" | "read-update" | "transactional";
+58:   readonly routes: readonly { readonly method: HttpMethod; readonly url: string }[];
+59:   readonly maximumRequestHeaderBytes: number;
+60:   readonly maximumRequestBodyBytes: number;
+61:   readonly defaultCredentialRef: string;
+62:   readonly credentialHandles: readonly {
+63:     readonly id: string;
+64:     /** Empty means a deliberately anonymous handle; names are lower-case. */
+65:     readonly headerNames: readonly string[];
+66:   }[];
+67:   /** Synchronous, trusted nonblocking lookup. Promises/thenables are rejected. */
+68:   readonly resolveCredentials: (
+69:     context: Readonly<{
+70:       scope: string;
+71:       url: string;
+72:       method: HttpMethod;
+73:       credentialRef: string;
+74:       signal: AbortSignal;
+75:     }>,
+76:   ) => Readonly<Record<string, string>>;
+77: }
+78: 
+79: export type RawHttpExchangeExecutor = (
+80:   request: HttpExchangeRequest | ExactHttpExchangeRequest,
+81: ) => Promise<HttpExchangeResponse>;
+82: 
+83: export interface HttpExchangeResponse {
+84:   readonly exactRequest?: ExactRequestObservation;
+85:   readonly url: string;
+86:   readonly status: number;
+87:   readonly headers: Readonly<Record<string, string>>;
+88:   readonly bodyText: string;
+89:   /** Decoded message-body octets observed below a method-aware HTTP client, when available. */
+90:   readonly bodyOctets?: number;
+91:   /**
+92:    * Exact bounded HTTP/1.x response bytes from status line through framed body.
+93:    * Only the socket-level executor can supply this pre-normalization evidence.
+94:    */
+95:   readonly wireResponseBytes?: Uint8Array;
+96:   /**
+97:    * Compatibility view after authorization/runtime decoration. In exact mode,
+98:    * repeated names retain their last value and this view has no wire-fidelity flag;
+99:    * only exactRequest.headerLines preserves authoritative ordered occurrences.
+100:    */
+101:   readonly effectiveRequest?: {
+102:     readonly url: string;
+103:     readonly headers: Readonly<Record<string, string>>;
+104:     /** Present only when the reported headers match bytes serialized onto the wire. */
+105:     readonly headersTransmitted?: true;
+106:   };
+107: }
+108: 
+109: export type HttpExchangeExecutor = (request: HttpExchangeRequest) => Promise<HttpExchangeResponse>;
+110: 
+
+## CURRENT SOURCE packages/conformance/src/http-executor.ts:155-215
+155: const MAX_TIMER_DELAY_MS = 2_147_483_647;
+156: const DEFAULT_MAXIMUM_HEADER_BYTES = 65_536;
+157: const MAXIMUM_RAW_REQUEST_TARGET_BYTES = 8_192;
+158: 
+159: /**
+160:  * Socket-level executor for evidence that a method-aware Fetch/HTTP client would erase.
+161:  * The semantic request URL remains canonical while the explicit route selects only the
+162:  * network peer used to observe it.
+163:  */
+164: export function createRawHttpExchangeExecutor(
+165:   dialRoute: RawHttpDialRoute,
+166:   options: RawHttpExchangeExecutorOptions = {},
+167: ): RawHttpExchangeExecutor {
+168:   const route = snapshotDialRoute(dialRoute);
+169:   const exactMode =
+170:     options.exactMode === undefined ? undefined : snapshotExactHttpMode(options.exactMode);
+171:   const {
+172:     authorize,
+173:     maximumBodyBytes = 1_048_576,
+174:     requestTimeoutMs = 30_000,
+175:     maximumHeaderBytes = DEFAULT_MAXIMUM_HEADER_BYTES,
+176:   } = Object.freeze({ ...options });
+177:   if (authorize !== undefined && typeof authorize !== "function")
+178:     throw new TypeError("authorize must be a function when present");
+179:   requirePositiveBound(maximumBodyBytes, "maximumBodyBytes");
+180:   requireTimerBound(requestTimeoutMs);
+181:   requirePositiveBound(maximumHeaderBytes, "maximumHeaderBytes");
+182:   return async (request) => {
+183:     if (isExactRequest(request))
+184:       return executeExact(
+185:         request,
+186:         route,
+187:         exactMode,
+188:         requestTimeoutMs,
+189:         maximumHeaderBytes,
+190:         maximumBodyBytes,
+191:       );
+192:     if (request.headers === undefined || request.credentialRef !== undefined)
+193:       throw new HttpTransportError("configuration", "ordinary HTTP request headers are required");
+194:     const ordinary = request;
+195:     const url = parseExecutorUrl(request.url);
+196:     const requestTarget = encodeRequestTarget(request.rawRequestTarget, url);
+197:     const headers = effectiveHeaders(ordinary, authorize);
+198:     headers.set("host", url.host);
+199:     headers.set("connection", "close");
+200:     const requestHead = Buffer.concat([
+201:       Buffer.from(`${request.method} `, "ascii"),
+202:       requestTarget,
+203:       Buffer.from(
+204:         ` HTTP/1.1\r\n${[...headers.entries()]
+205:           .map(([name, value]) => `${canonicalHeaderName(name)}: ${value}`)
+206:           .join("\r\n")}\r\n\r\n`,
+207:         "latin1",
+208:       ),
+209:     ]);
+210:     const rawResponse = await exchangeRawBytes(
+211:       route,
+212:       requestHead,
+213:       request.method,
+214:       request.signal,
+215:       requestTimeoutMs,
+
+## CURRENT SOURCE packages/conformance/src/http-executor.ts:330-512
+330:       };
+331:     } finally {
+332:       deadline.clear();
+333:     }
+334:   };
+335: }
+336: 
+337: const HTTP_FIELD_NAME = /^[!#$%&'*+.^_`|~0-9A-Za-z-]+$/;
+338: const HTTP_FIELD_VALUE = /^[\t\x20-\x7e\x80-\xff]*$/;
+339: const HANDLE_ID = /^[a-z0-9]+(?:[.-][a-z0-9]+)*$/;
+340: const SECRET_FIELD =
+341:   /^(?:authorization|cookie|proxy-authorization|set-cookie|x-api-key|x-auth-token)$|(?:token|secret|password|credential|auth)/i;
+342: // Keep authored admission and credential-handle eligibility complementary.
+343: function isSecretHeaderName(name: string): boolean {
+344:   return name.toLowerCase() !== "bdp-authorization-view" && SECRET_FIELD.test(name);
+345: }
+346: const RESERVED_FIELDS = new Set([
+347:   "host",
+348:   "connection",
+349:   "content-length",
+350:   "transfer-encoding",
+351:   "trailer",
+352:   "expect",
+353:   "upgrade",
+354:   "proxy-connection",
+355:   "proxy-authorization",
+356:   "forwarded",
+357:   "via",
+358: ]);
+359: const METHODS: readonly string[] = ["GET", "HEAD", "OPTIONS", "POST", "PUT", "PATCH", "DELETE"];
+360: const TYPED_ARRAY = Object.getPrototypeOf(Uint8Array.prototype);
+361: const BYTE_LENGTH = Object.getOwnPropertyDescriptor(TYPED_ARRAY, "byteLength")?.get;
+362: const BYTE_BUFFER = Object.getOwnPropertyDescriptor(TYPED_ARRAY, "buffer")?.get;
+363: const SET_BYTES = Uint8Array.prototype.set;
+364: 
+365: function configuration(): never {
+366:   throw new HttpTransportError("configuration", "exact HTTP request configuration is invalid");
+367: }
+368: 
+369: /** Capture data descriptors without invoking caller accessors. */
+370: function dataRecord(value: unknown, allowed?: readonly string[]): Record<string, unknown> {
+371:   try {
+372:     if (typeof value !== "object" || value === null) return configuration();
+373:     const prototype = Object.getPrototypeOf(value);
+374:     if (prototype !== Object.prototype && prototype !== null) return configuration();
+375:     const result: Record<string, unknown> = Object.create(null);
+376:     for (const key of Reflect.ownKeys(value)) {
+377:       if (typeof key !== "string" || (allowed !== undefined && !allowed.includes(key)))
+378:         return configuration();
+379:       const descriptor = Object.getOwnPropertyDescriptor(value, key);
+380:       if (descriptor === undefined || !("value" in descriptor) || !descriptor.enumerable)
+381:         return configuration();
+382:       result[key] = descriptor.value;
+383:     }
+384:     return result;
+385:   } catch {
+386:     return configuration();
+387:   }
+388: }
+389: 
+390: function arrayItems(value: unknown): readonly unknown[] {
+391:   if (!Array.isArray(value) || Object.getPrototypeOf(value) !== Array.prototype)
+392:     return configuration();
+393:   return value;
+394: }
+395: 
+396: function arrayItem(values: readonly unknown[], index: number): unknown {
+397:   const descriptor = Object.getOwnPropertyDescriptor(values, String(index));
+398:   if (descriptor === undefined || !("value" in descriptor)) return configuration();
+399:   return descriptor.value;
+400: }
+401: 
+402: function canonicalHttpUrl(value: unknown): URL {
+403:   if (typeof value !== "string" || !value.isWellFormed()) return configuration();
+404:   const url = parseExecutorUrl(value);
+405:   if (url.href !== value || value.includes("#")) return configuration();
+406:   // Check decoded path segments too: URL normalization alone accepts malformed % and encoded separators.
+407:   try {
+408:     const segments = url.pathname.split("/");
+409:     for (const [index, segment] of segments.entries()) {
+410:       if (segment === "" && index !== 0 && index !== segments.length - 1) return configuration();
+411:       for (const match of segment.matchAll(/%([0-9A-Fa-f]{2})/g)) {
+412:         const encoded = match[1];
+413:         if (
+414:           encoded === undefined ||
+415:           encoded !== encoded.toUpperCase() ||
+416:           /^[A-Za-z0-9._~-]$/.test(String.fromCharCode(Number.parseInt(encoded, 16)))
+417:         )
+418:           return configuration();
+419:       }
+420:       const decoded = decodeURIComponent(segment);
+421:       if (decoded === "." || decoded === ".." || decoded.includes("/") || decoded.includes("\\"))
+422:         return configuration();
+423:       for (const character of decoded) {
+424:         const point = character.codePointAt(0);
+425:         if (point !== undefined && (point <= 31 || point === 127)) return configuration();
+426:       }
+427:     }
+428:   } catch {
+429:     return configuration();
+430:   }
+431:   return url;
+432: }
+433: 
+434: /** Shared by the session wrapper and executor; only closed trusted configuration is accepted. */
+435: export function snapshotExactHttpMode(value: ExactHttpModeOptions): ExactHttpModeOptions {
+436:   const fields = dataRecord(value, [
+437:     "scope",
+438:     "profile",
+439:     "routes",
+440:     "maximumRequestHeaderBytes",
+441:     "maximumRequestBodyBytes",
+442:     "defaultCredentialRef",
+443:     "credentialHandles",
+444:     "resolveCredentials",
+445:   ]);
+446:   const { scope, routes } = snapshotExactRoutes(fields.scope, fields.routes);
+447:   if (
+448:     fields.profile !== "read" &&
+449:     fields.profile !== "read-update" &&
+450:     fields.profile !== "transactional"
+451:   )
+452:     return configuration();
+453:   if (
+454:     typeof fields.maximumRequestHeaderBytes !== "number" ||
+455:     typeof fields.maximumRequestBodyBytes !== "number"
+456:   )
+457:     return configuration();
+458:   requirePositiveBound(fields.maximumRequestHeaderBytes, "maximumRequestHeaderBytes");
+459:   requirePositiveBound(fields.maximumRequestBodyBytes, "maximumRequestBodyBytes");
+460:   const handles: { id: string; headerNames: readonly string[] }[] = [];
+461:   const sourceHandles = arrayItems(fields.credentialHandles);
+462:   for (let i = 0; i < sourceHandles.length; i++) {
+463:     const entry = dataRecord(arrayItem(sourceHandles, i), ["id", "headerNames"]);
+464:     if (
+465:       typeof entry.id !== "string" ||
+466:       !HANDLE_ID.test(entry.id) ||
+467:       entry.id.length > 128 ||
+468:       handles.some(({ id }) => id === entry.id)
+469:     )
+470:       return configuration();
+471:     const names: string[] = [];
+472:     const sourceNames = arrayItems(entry.headerNames);
+473:     for (let j = 0; j < sourceNames.length; j++) {
+474:       const name = arrayItem(sourceNames, j);
+475:       if (
+476:         typeof name !== "string" ||
+477:         !HTTP_FIELD_NAME.test(name) ||
+478:         name !== name.toLowerCase() ||
+479:         !isSecretHeaderName(name) ||
+480:         RESERVED_FIELDS.has(name) ||
+481:         names.includes(name)
+482:       )
+483:         return configuration();
+484:       names.push(name);
+485:     }
+486:     handles.push(Object.freeze({ id: entry.id, headerNames: Object.freeze(names) }));
+487:   }
+488:   if (
+489:     typeof fields.defaultCredentialRef !== "string" ||
+490:     !handles.some(({ id }) => id === fields.defaultCredentialRef) ||
+491:     typeof fields.resolveCredentials !== "function"
+492:   )
+493:     return configuration();
+494:   // Keep the callback identity, not mutable caller configuration surrounding it.
+495:   const resolve = fields.resolveCredentials;
+496:   return Object.freeze({
+497:     scope: scope.href,
+498:     profile: fields.profile,
+499:     routes: Object.freeze(routes),
+500:     credentialHandles: Object.freeze(handles),
+501:     maximumRequestHeaderBytes: fields.maximumRequestHeaderBytes,
+502:     maximumRequestBodyBytes: fields.maximumRequestBodyBytes,
+503:     defaultCredentialRef: fields.defaultCredentialRef,
+504:     resolveCredentials: (context: Parameters<ExactHttpModeOptions["resolveCredentials"]>[0]) =>
+505:       resolve(context),
+506:   });
+507: }
+508: 
+509: function isHttpMethod(value: unknown): value is HttpMethod {
+510:   return typeof value === "string" && METHODS.includes(value);
+511: }
+512: 
+
+## CURRENT SOURCE packages/conformance/src/http-executor.ts:605-802
+605:     );
+606:   } catch {
+607:     return false;
+608:   }
+609: }
+610: 
+611: async function executeExact(
+612:   input: ExactHttpExchangeRequest,
+613:   route: RawHttpDialRoute,
+614:   mode: ExactHttpModeOptions | undefined,
+615:   timeoutMs: number,
+616:   maximumHeaderBytes: number,
+617:   maximumBodyBytes: number,
+618: ): Promise<HttpExchangeResponse> {
+619:   const deadline = performance.now() + timeoutMs;
+620:   let state: RequestWriteState = "not-started";
+621:   try {
+622:     if (mode === undefined) return configuration();
+623:     const request = dataRecord(input, [
+624:       "method",
+625:       "url",
+626:       "signal",
+627:       "rawRequestTarget",
+628:       "credentialRef",
+629:       "raw",
+630:     ]);
+631:     if (!isHttpMethod(request.method) || !(request.signal instanceof AbortSignal))
+632:       return configuration();
+633:     const signal = request.signal;
+634:     requestDeadline(signal, deadline);
+635:     const url = canonicalHttpUrl(request.url);
+636:     const raw = dataRecord(request.raw, ["headerLines", "bodyBytes"]);
+637:     if (
+638:       request.rawRequestTarget === undefined &&
+639:       url.pathname.length + url.search.length > mode.maximumRequestHeaderBytes
+640:     )
+641:       return configuration();
+642:     const target =
+643:       request.rawRequestTarget === undefined
+644:         ? encodeRequestTarget(undefined, url)
+645:         : encodeRequestTarget(
+646:             copyBoundedBytes(
+647:               request.rawRequestTarget,
+648:               Math.min(MAXIMUM_RAW_REQUEST_TARGET_BYTES, mode.maximumRequestHeaderBytes),
+649:             ),
+650:             url,
+651:           );
+652:     const body =
+653:       raw.bodyBytes === undefined
+654:         ? undefined
+655:         : copyBoundedBytes(raw.bodyBytes, mode.maximumRequestBodyBytes);
+656:     if (mode.profile === "read" && body !== undefined) return configuration();
+657:     const lines: RawHeaderLine[] = [];
+658:     let headBytes = Buffer.byteLength(`${request.method} `) + target.length + 13;
+659:     const append = (name: string, value: string): void => {
+660:       headBytes += name.length + value.length + 4;
+661:       if (headBytes > mode.maximumRequestHeaderBytes) configuration();
+662:       lines.push(Object.freeze({ name, value }));
+663:     };
+664:     const sourceLines = arrayItems(raw.headerLines);
+665:     for (let i = 0; i < sourceLines.length; i++) {
+666:       const entry = dataRecord(arrayItem(sourceLines, i), ["name", "value"]);
+667:       if (
+668:         typeof entry.name !== "string" ||
+669:         typeof entry.value !== "string" ||
+670:         !HTTP_FIELD_NAME.test(entry.name) ||
+671:         !HTTP_FIELD_VALUE.test(entry.value)
+672:       )
+673:         return configuration();
+674:       const name = entry.name.toLowerCase();
+675:       if (isSecretHeaderName(name) || RESERVED_FIELDS.has(name)) return configuration();
+676:       append(entry.name, entry.value);
+677:     }
+678:     if (headBytes > mode.maximumRequestHeaderBytes) return configuration();
+679:     validateExactRunConfiguration(mode, url.href, request.method);
+680:     const ref = request.credentialRef ?? mode.defaultCredentialRef;
+681:     if (typeof ref !== "string" || !HANDLE_ID.test(ref) || ref.length > 128) return configuration();
+682:     const handle = mode.credentialHandles.find(({ id }) => id === ref);
+683:     if (
+684:       handle === undefined ||
+685:       (handle.headerNames.length > 0 && !safeCredentialTarget(target, url))
+686:     )
+687:       return configuration();
+688:     requestDeadline(signal, deadline);
+689:     const credentials = dataRecord(
+690:       mode.resolveCredentials(
+691:         Object.freeze({
+692:           scope: mode.scope,
+693:           url: url.href,
+694:           method: request.method,
+695:           credentialRef: ref,
+696:           signal,
+697:         }),
+698:       ),
+699:     );
+700:     requestDeadline(signal, deadline);
+701:     const seen = new Set<string>();
+702:     for (const [name, value] of Object.entries(credentials)) {
+703:       const normalized = name.toLowerCase();
+704:       if (
+705:         !handle.headerNames.includes(normalized) ||
+706:         seen.has(normalized) ||
+707:         typeof value !== "string" ||
+708:         !HTTP_FIELD_VALUE.test(value) ||
+709:         !HTTP_FIELD_NAME.test(name)
+710:       )
+711:         return configuration();
+712:       seen.add(normalized);
+713:       append(name, value);
+714:     }
+715:     if (seen.size !== handle.headerNames.length) return configuration();
+716:     for (const [name, value] of [
+717:       ["Accept", "*/*"],
+718:       ["Accept-Language", "*"],
+719:       ["Accept-Encoding", "identity"],
+720:       ["User-Agent", "bdp-conformance/0"],
+721:     ] as const)
+722:       if (!lines.some((line) => line.name.toLowerCase() === name.toLowerCase()))
+723:         append(name, value);
+724:     append("Host", url.host);
+725:     append("Connection", "close");
+726:     if (body !== undefined) append("Content-Length", String(body.length));
+727:     const head = Buffer.concat([
+728:       Buffer.from(`${request.method} `, "ascii"),
+729:       target,
+730:       Buffer.from(
+731:         ` HTTP/1.1\r\n${lines.map(({ name, value }) => `${name}: ${value}`).join("\r\n")}\r\n\r\n`,
+732:         "latin1",
+733:       ),
+734:     ]);
+735:     const exchanged = await exchangeRawBytes(
+736:       route,
+737:       head,
+738:       request.method,
+739:       signal,
+740:       requestDeadline(signal, deadline),
+741:       maximumHeaderBytes,
+742:       maximumBodyBytes,
+743:       body,
+744:       (next) => {
+745:         state = next;
+746:       },
+747:     );
+748:     state = exchanged.writeState;
+749:     requestDeadline(signal, deadline);
+750:     const parsed = parseRawResponse(
+751:       exchanged.bytes,
+752:       request.method,
+753:       maximumHeaderBytes,
+754:       maximumBodyBytes,
+755:     );
+756:     const exactRequest = Object.freeze({
+757:       source: "raw-http1-serializer" as const,
+758:       headerLines: Object.freeze(lines),
+759:       bodyPresent: body !== undefined,
+760:       bodyOctets: body?.length ?? 0,
+761:       ...(body === undefined
+762:         ? {}
+763:         : { bodyDigest: createHash("sha256").update(body).digest("hex") }),
+764:       writeState: exchanged.writeState,
+765:     });
+766:     const response = {
+767:       url: url.href,
+768:       ...parsed,
+769:       wireResponseBytes: Uint8Array.from(exchanged.bytes),
+770:       exactRequest,
+771:       effectiveRequest: {
+772:         url: url.href,
+773:         // Deliberately lossy last-occurrence compatibility view, never exact wire evidence.
+774:         // Ordered exactRequest.headerLines is authoritative for every occurrence.
+775:         headers: Object.freeze(
+776:           Object.fromEntries(lines.map(({ name, value }) => [name.toLowerCase(), value])),
+777:         ),
+778:       },
+779:     };
+780:     requestDeadline(signal, deadline);
+781:     return response;
+782:   } catch (error) {
+783:     if (error instanceof HttpTransportError)
+784:       throw new HttpTransportError(error.category, error.message, {}, state);
+785:     throw new HttpTransportError(
+786:       "configuration",
+787:       "exact HTTP request configuration is invalid",
+788:       {},
+789:       state,
+790:     );
+791:   }
+792: }
+793: 
+794: function snapshotDialRoute(route: RawHttpDialRoute): RawHttpDialRoute {
+795:   if (route.transport !== "plain" && route.transport !== "tls")
+796:     throw new TypeError("dialRoute.transport must be 'plain' or 'tls'");
+797:   if (typeof route.host !== "string" || route.host.length === 0)
+798:     throw new TypeError("dialRoute.host must be a non-empty string");
+799:   if (!Number.isSafeInteger(route.port) || route.port < 1 || route.port > 65_535)
+800:     throw new RangeError("dialRoute.port must be an integer from 1 to 65535");
+801:   if (route.transport === "plain") return Object.freeze({ ...route });
+802:   if (
+
+## CURRENT SOURCE packages/conformance/src/http-executor.ts:845-885
+845:     throw new HttpTransportError(
+846:       "configuration",
+847:       "exact raw request target contained SP, CR, or LF",
+848:     );
+849:   return Buffer.from(rawRequestTarget);
+850: }
+851: 
+852: function effectiveHeaders(
+853:   request: HttpExchangeRequest,
+854:   authorize: ((request: HttpExchangeRequest) => Readonly<Record<string, string>>) | undefined,
+855: ): Headers {
+856:   try {
+857:     const headers = new Headers(request.headers);
+858:     for (const [name, value] of new Headers(authorize?.(request)).entries())
+859:       headers.set(name, value);
+860:     if (!headers.has("accept")) headers.set("accept", "*/*");
+861:     if (!headers.has("accept-language")) headers.set("accept-language", "*");
+862:     if (!headers.has("accept-encoding")) headers.set("accept-encoding", "identity");
+863:     if (!headers.has("user-agent")) headers.set("user-agent", "bdp-conformance/0");
+864:     return headers;
+865:   } catch (error) {
+866:     throw new HttpTransportError("configuration", "HTTP request headers were invalid", {
+867:       cause: error,
+868:     });
+869:   }
+870: }
+871: 
+872: function canonicalHeaderName(name: string): string {
+873:   return name
+874:     .split("-")
+875:     .map((part) => `${part.slice(0, 1).toUpperCase()}${part.slice(1)}`)
+876:     .join("-");
+877: }
+878: 
+879: function exchangeRawBytes(
+880:   route: RawHttpDialRoute,
+881:   requestHead: Uint8Array,
+882:   method: HttpMethod,
+883:   signal: AbortSignal,
+884:   requestTimeoutMs: number,
+885:   maximumHeaderBytes: number,
+
+## CURRENT SOURCE packages/conformance/src/runner.ts:1750-1874
+1750:   if (
+1751:     observed.bodyPresent
+1752:       ? typeof observed.bodyDigest !== "string" || !/^[a-f0-9]{64}$/.test(observed.bodyDigest)
+1753:       : observed.bodyOctets !== 0 || Object.hasOwn(observed, "bodyDigest")
+1754:   )
+1755:     throw new ExactHarnessError("exact-observation");
+1756:   const lines = observed.headerLines;
+1757:   if (!Array.isArray(lines) || lines.length > config.maximumRequestHeaderBytes / 4)
+1758:     throw new ExactHarnessError("exact-observation");
+1759:   if (Reflect.ownKeys(lines).length !== lines.length + 1)
+1760:     throw new ExactHarnessError("exact-observation");
+1761:   const headerLines: { readonly name: string; readonly value: string }[] = [];
+1762:   let count = 2;
+1763:   for (let index = 0; index < lines.length; index++) {
+1764:     const entry = Object.getOwnPropertyDescriptor(lines, String(index));
+1765:     const line = exactData(
+1766:       entry !== undefined && "value" in entry && entry.enumerable ? entry.value : undefined,
+1767:       ["name", "value"],
+1768:     );
+1769:     if (typeof line.name !== "string" || typeof line.value !== "string")
+1770:       throw new ExactHarnessError("exact-observation");
+1771:     count += line.name.length + line.value.length + 4;
+1772:     if (
+1773:       count > config.maximumRequestHeaderBytes ||
+1774:       !/^[!#$%&'*+.^_`|~0-9A-Za-z-]+$/.test(line.name) ||
+1775:       !/^[\t\x20-\x7e\x80-\xff]*$/.test(line.value)
+1776:     )
+1777:       throw new ExactHarnessError("exact-observation");
+1778:     headerLines.push(Object.freeze({ name: line.name, value: line.value }));
+1779:   }
+1780:   return Object.freeze({
+1781:     source: "raw-http1-serializer",
+1782:     writeState: observed.writeState,
+1783:     headerLines: Object.freeze(headerLines),
+1784:     bodyPresent: observed.bodyPresent,
+1785:     bodyOctets: observed.bodyOctets,
+1786:     ...(observed.bodyPresent ? { bodyDigest: observed.bodyDigest as string } : {}),
+1787:   });
+1788: }
+1789: 
+1790: function projectExactObservation(
+1791:   observed: ExactRequestObservation,
+1792:   body: Uint8Array | undefined,
+1793:   options: ScenarioRunOptions,
+1794: ): ExactReportObservation {
+1795:   const headerLines = observed.headerLines
+1796:     .filter(({ name }) => EXACT_REPORT_HEADER_NAMES.has(name.toLowerCase()))
+1797:     .map(({ name }) => ({ name, value: "<redacted>" as const }));
+1798:   return {
+1799:     source: observed.source,
+1800:     writeState: observed.writeState,
+1801:     headerProjection: "allowlisted-relative-order",
+1802:     headerLines,
+1803:     elidedHeaderLines: observed.headerLines.length - headerLines.length,
+1804:     bodyPresent: observed.bodyPresent,
+1805:     bodyOctets: observed.bodyOctets,
+1806:     ...(options.exactExecution?.approvedSyntheticManifestDigest ===
+1807:       options.artifactBundle.digests.manifestDigest &&
+1808:     body !== undefined &&
+1809:     observed.bodyPresent &&
+1810:     observed.bodyOctets === body.byteLength &&
+1811:     observed.bodyDigest === createHash("sha256").update(body).digest("hex")
+1812:       ? { bodyDigest: observed.bodyDigest }
+1813:       : {}),
+1814:   };
+1815: }
+1816: 
+1817: function exactHeadersMatch(
+1818:   request: ScenarioRequest,
+1819:   url: string,
+1820:   body: Uint8Array | undefined,
+1821:   observed: ExactRequestObservation,
+1822:   config: ExactHttpConfiguration,
+1823: ): boolean {
+1824:   const authored = request.raw?.headerLines;
+1825:   if (authored === undefined) return false;
+1826:   const actual = observed.headerLines;
+1827:   for (const [index, line] of authored.entries())
+1828:     if (actual[index]?.name !== line.name || actual[index]?.value !== line.value) return false;
+1829:   let index = authored.length;
+1830:   const handle = config.credentialHandles.find(
+1831:     ({ id }) => id === (request.credentialRef ?? config.defaultCredentialRef),
+1832:   );
+1833:   if (handle === undefined) return false;
+1834:   const names = new Set<string>();
+1835:   for (let n = 0; n < handle.headerNames.length; n++) {
+1836:     const line = actual[index++];
+1837:     if (
+1838:       line === undefined ||
+1839:       !handle.headerNames.includes(line.name.toLowerCase()) ||
+1840:       names.has(line.name.toLowerCase())
+1841:     )
+1842:       return false;
+1843:     names.add(line.name.toLowerCase());
+1844:   }
+1845:   const expected = (
+1846:     [
+1847:       ["Accept", "*/*"],
+1848:       ["Accept-Language", "*"],
+1849:       ["Accept-Encoding", "identity"],
+1850:       ["User-Agent", "bdp-conformance/0"],
+1851:     ] as const
+1852:   ).filter(
+1853:     ([name]) =>
+1854:       !authored.some((line) => line.name.toLowerCase() === name.toLowerCase()) &&
+1855:       !names.has(name.toLowerCase()),
+1856:   );
+1857:   const generated: readonly (readonly [string, string])[] = [
+1858:     ...expected,
+1859:     ["Host", new URL(url).host],
+1860:     ["Connection", "close"],
+1861:     ...(body === undefined ? [] : [["Content-Length", String(body.byteLength)] as const]),
+1862:   ];
+1863:   for (const [name, value] of generated) {
+1864:     const line = actual[index++];
+1865:     if (line?.name !== name || line.value !== value) return false;
+1866:   }
+1867:   return index === actual.length;
+1868: }
+1869: 
+1870: interface ExactHeaderWitness {
+1871:   readonly request: ScenarioRequest;
+1872:   readonly url: string;
+1873:   readonly body: Uint8Array | undefined;
+1874:   readonly observation: ExactRequestObservation | undefined;
+
+## CURRENT SOURCE packages/conformance/src/runner.ts:3265-3338
+3265:       parsed.password === ""
+3266:     );
+3267:   } catch {
+3268:     return false;
+3269:   }
+3270: }
+3271: 
+3272: const REPORT_HEADER_NAMES = new Set([
+3273:   "accept",
+3274:   "if-match",
+3275:   "if-none-match",
+3276:   "accept-encoding",
+3277:   "accept-language",
+3278:   "access-control-allow-credentials",
+3279:   "access-control-allow-headers",
+3280:   "access-control-allow-methods",
+3281:   "access-control-allow-origin",
+3282:   "access-control-expose-headers",
+3283:   "access-control-max-age",
+3284:   "allow",
+3285:   "authorization",
+3286:   "cache-control",
+3287:   "content-encoding",
+3288:   "content-length",
+3289:   "content-location",
+3290:   "content-type",
+3291:   "cookie",
+3292:   "etag",
+3293:   "expires",
+3294:   "link",
+3295:   "location",
+3296:   "origin",
+3297:   "retry-after",
+3298:   "set-cookie",
+3299:   "user-agent",
+3300:   "vary",
+3301:   "www-authenticate",
+3302: ]);
+3303: 
+3304: const EXACT_REPORT_HEADER_NAMES = new Set([...REPORT_HEADER_NAMES, "idempotency-key"]);
+3305: 
+3306: function redactHeaders(
+3307:   headers: Readonly<Record<string, string>>,
+3308:   version: 3 | 4 = 3,
+3309: ): Readonly<Record<string, string>> {
+3310:   return Object.fromEntries(
+3311:     Object.keys(headers)
+3312:       .map((name) => name.toLowerCase())
+3313:       .filter((name) => (version === 4 ? EXACT_REPORT_HEADER_NAMES : REPORT_HEADER_NAMES).has(name))
+3314:       .map((name) => [name, "<redacted>"] as const)
+3315:       .sort(([left], [right]) => compareKeys(left, right)),
+3316:   );
+3317: }
+3318: 
+3319: function redactUrl(value: string): string {
+3320:   const url = new URL(value);
+3321:   const hadQuery = url.search !== "";
+3322:   url.username = "";
+3323:   url.password = "";
+3324:   url.hash = "";
+3325:   url.search = "";
+3326:   return `${url.href}${hadQuery ? "?<redacted>" : ""}`;
+3327: }
+3328: 
+3329: function normalizeHeaders(
+3330:   headers: Readonly<Record<string, string>>,
+3331: ): Readonly<Record<string, string>> {
+3332:   const normalized: Record<string, string> = {};
+3333:   for (const [name, value] of Object.entries(headers)) normalized[name.toLowerCase()] = value;
+3334:   return normalized;
+3335: }
+3336: 
+3337: function sortJsonValue(value: unknown): unknown {
+3338:   if (Array.isArray(value)) return value.map(sortJsonValue);
+
+## CURRENT SOURCE packages/conformance/src/executable-manifest.test.ts:1-66
+1: import { describe, expect, it } from "vitest";
+2: 
+3: import {
+4:   loadExecutableScenarioManifestJson,
+5:   ManifestValidationError,
+6:   materializeScenarioRawRequestTarget,
+7:   parseExecutableScenarioManifest,
+8: } from "./index.js";
+9: 
+10: function manifest() {
+11:   return {
+12:     manifestVersion: 1,
+13:     catalogId: "read-v1",
+14:     scenarios: [
+15:       {
+16:         id: "read.discovery",
+17:         requiredProfile: "read",
+18:         setup: { fixture: "reference-read-v1", requires: ["public-http"] },
+19:         applicability: { requires: [] },
+20:         requests: [
+21:           {
+22:             id: "scope",
+23:             method: "GET",
+24:             target: { binding: "scope", query: {} },
+25:             headers: { accept: "application/json" },
+26:             captures: [
+27:               { binding: "service-desc", from: { kind: "header-link", rel: "service-desc" } },
+28:             ],
+29:             assertions: [
+30:               { id: "status", kind: "status", equals: 204 },
+31:               { id: "empty", kind: "body-absent" },
+32:             ],
+33:           },
+34:         ],
+35:         cleanup: { resetFixture: true },
+36:       },
+37:     ],
+38:   };
+39: }
+40: 
+41: function actionManifest() {
+42:   const source = manifest();
+43:   const scenario = source.scenarios[0];
+44:   if (scenario === undefined) throw new Error("test manifest unexpectedly empty");
+45:   const { requests: _requests, ...base } = scenario;
+46:   return {
+47:     ...source,
+48:     scenarios: [
+49:       {
+50:         ...base,
+51:         actions: [
+52:           {
+53:             id: "list",
+54:             family: "client",
+55:             operation: "list",
+56:             input: { selector: "open" },
+57:             captures: [{ binding: "cursor", from: { kind: "json-pointer", pointer: "/next" } }],
+58:             assertions: [{ id: "items", kind: "json-pointer", pointer: "/items", exists: true }],
+59:           },
+60:         ],
+61:       },
+62:     ],
+63:   };
+64: }
+65: 
+66: describe("executable scenario manifest", () => {
+
+## CURRENT SOURCE packages/conformance/src/executable-manifest.test.ts:600-692
+600:       [
+601:         "$.scenarios[0].requests[0].captures[0].binding",
+602:         "$.scenarios[0].requests[1].captures[0].binding",
+603:       ],
+604:     );
+605:   });
+606: 
+607:   it("admits normalized authorization-view context without changing lowercase rules", () => {
+608:     for (const version of [1, 2]) {
+609:       for (const actions of [false, true]) {
+610:         for (const value of ["", "view-one, view-two"]) {
+611:           for (const name of ["bdp-authorization-view", "BDP-Authorization-View"]) {
+612:             const base = manifest();
+613:             const { requests, ...scenario } = base.scenarios[0]!;
+614:             const request = { ...requests[0]!, headers: { [name]: value } };
+615:             const source = {
+616:               ...base,
+617:               manifestVersion: version,
+618:               scenarios: [
+619:                 {
+620:                   ...scenario,
+621:                   ...(actions
+622:                     ? { actions: [{ family: "http", ...request }] }
+623:                     : { requests: [request] }),
+624:                 },
+625:               ],
+626:             };
+627:             if (name !== name.toLowerCase()) {
+628:               expect(() => parseExecutableScenarioManifest(source)).toThrow(
+629:                 ManifestValidationError,
+630:               );
+631:             } else {
+632:               const parsed = parseExecutableScenarioManifest(source).scenarios[0]!;
+633:               expect(parsed.requests?.[0] ?? parsed.actions?.[0]).toMatchObject({
+634:                 headers: { "bdp-authorization-view": value },
+635:               });
+636:             }
+637:           }
+638:         }
+639:       }
+640:     }
+641:   });
+642: 
+643:   it("rejects credentials and noncanonical header names", () => {
+644:     const base = manifest();
+645:     const scenario = base.scenarios.at(0);
+646:     if (scenario === undefined) throw new Error("test manifest unexpectedly empty");
+647:     const request = scenario.requests.at(0);
+648:     if (request === undefined) throw new Error("test scenario unexpectedly empty");
+649:     const source = {
+650:       ...base,
+651:       scenarios: [
+652:         {
+653:           ...scenario,
+654:           requests: [{ ...request, headers: { Authorization: "secret", cookie: "secret" } }],
+655:         },
+656:       ],
+657:     };
+658:     expectIssues(source, [
+659:       "$.scenarios[0].requests[0].headers.Authorization",
+660:       "$.scenarios[0].requests[0].headers.cookie",
+661:     ]);
+662:   });
+663: 
+664:   it("rejects authority-changing paths, secret-like headers, and control values", () => {
+665:     const base = manifest();
+666:     const scenario = base.scenarios.at(0);
+667:     if (scenario === undefined) throw new Error("test manifest unexpectedly empty");
+668:     const request = scenario.requests.at(0);
+669:     if (request === undefined) throw new Error("test scenario unexpectedly empty");
+670:     expectIssues(
+671:       {
+672:         ...base,
+673:         scenarios: [
+674:           {
+675:             ...scenario,
+676:             requests: [
+677:               {
+678:                 ...request,
+679:                 target: { binding: "scope", path: "//foreign.example/" },
+680:                 headers: { "x-api-key": "secret", accept: "application/json\r\nsmuggled" },
+681:               },
+682:             ],
+683:           },
+684:         ],
+685:       },
+686:       [
+687:         "$.scenarios[0].requests[0].target.path",
+688:         "$.scenarios[0].requests[0].headers.x-api-key",
+689:         "$.scenarios[0].requests[0].headers.accept",
+690:       ],
+691:     );
+692:   });
+
+## CURRENT SOURCE packages/conformance/src/executable-manifest.test.ts:1462-1630
+1462:         else expect(() => parseExecutableScenarioManifest(source)).toThrow(ManifestValidationError);
+1463:       },
+1464:     );
+1465:   }
+1466: });
+1467: 
+1468: describe("manifest v2 exact HTTP inputs", () => {
+1469:   function exactManifest(
+1470:     input: Record<string, unknown>,
+1471:     actions = false,
+1472:     version = 2,
+1473:     profile = "read-update",
+1474:   ) {
+1475:     const request = {
+1476:       id: "exact",
+1477:       method: "POST",
+1478:       target: { binding: "scope" },
+1479:       captures: [],
+1480:       assertions: [{ id: "status", kind: "status", equals: 401 }],
+1481:       ...input,
+1482:     };
+1483:     return {
+1484:       manifestVersion: version,
+1485:       catalogId: "read-v1",
+1486:       scenarios: [
+1487:         {
+1488:           id: "raw.probe",
+1489:           requiredProfile: profile,
+1490:           setup: { fixture: "reference-read-v1", requires: [] },
+1491:           applicability: { requires: [] },
+1492:           ...(actions ? { actions: [{ family: "http", ...request }] } : { requests: [request] }),
+1493:           cleanup: { resetFixture: true },
+1494:         },
+1495:       ],
+1496:     };
+1497:   }
+1498:   it.each([false, true])(
+1499:     "preserves literal bytes, repeats and exclusive shape through actions=%s",
+1500:     (actions) => {
+1501:       const source = exactManifest(
+1502:         {
+1503:           raw: {
+1504:             headerLines: [
+1505:               { name: "Idempotency-Key", value: " a, b " },
+1506:               { name: "iDeMpOtEnCy-KeY", value: "" },
+1507:             ],
+1508:             body: { encoding: "utf8", value: '{"x":1,"x":9007199254740993,"e":1e9999}\\uD800' },
+1509:           },
+1510:           credentialRef: "anonymous",
+1511:           rawRequestTarget: { encoding: "base64", value: "AA==" },
+1512:           assertions: [
+1513:             { id: "body", kind: "request-authored-body" },
+1514:             { id: "head", kind: "request-authored-headers" },
+1515:             { id: "state", kind: "request-write-state", equals: "complete" },
+1516:           ],
+1517:         },
+1518:         actions,
+1519:       );
+1520:       const parsed = parseExecutableScenarioManifest(source);
+1521:       const scenario = parsed.scenarios[0];
+1522:       const request = scenario?.requests?.[0] ?? scenario?.actions?.[0];
+1523:       expect(Object.hasOwn(request ?? {}, "headers")).toBe(false);
+1524:       expect(request).toMatchObject({
+1525:         raw: {
+1526:           headerLines: [
+1527:             { name: "Idempotency-Key", value: " a, b " },
+1528:             { name: "iDeMpOtEnCy-KeY", value: "" },
+1529:           ],
+1530:         },
+1531:         credentialRef: "anonymous",
+1532:       });
+1533:       expect(loadExecutableScenarioManifestJson(JSON.stringify(source))).toEqual(parsed);
+1534:     },
+1535:   );
+1536:   it.each([false, true])(
+1537:     "admits literal authorization-view context through actions=%s",
+1538:     (actions) => {
+1539:       const headerLines = [
+1540:         { name: "bdp-minimum-scope-position", value: "not a position!" },
+1541:         { name: "bdp-scope-epoch", value: "" },
+1542:         { name: "bdp-authorization-view", value: "" },
+1543:         { name: "BDP-Authorization-View", value: "view-one, view-two" },
+1544:       ];
+1545:       const source = exactManifest({ raw: { headerLines } }, actions);
+1546:       const parsed = parseExecutableScenarioManifest(source);
+1547:       const scenario = parsed.scenarios[0]!;
+1548:       expect(scenario.requests?.[0] ?? scenario.actions?.[0]).toMatchObject({
+1549:         raw: { headerLines },
+1550:       });
+1551:       expect(loadExecutableScenarioManifestJson(JSON.stringify(source))).toEqual(parsed);
+1552:     },
+1553:   );
+1554:   const bad: readonly Record<string, unknown>[] = [
+1555:     { headers: {}, raw: { headerLines: [] } },
+1556:     { credentialRef: "anonymous" },
+1557:     { raw: {} },
+1558:     { raw: { headerLines: [], extra: true } },
+1559:     ...[
+1560:       "Authorization",
+1561:       "CoOkIe",
+1562:       "X-aUtH-token",
+1563:       "Host",
+1564:       "Content-Length",
+1565:       "Transfer-Encoding",
+1566:       "Expect",
+1567:     ].map((name) => ({ raw: { headerLines: [{ name, value: "sentinel" }] } })),
+1568:     ...["YQ=", "YR==", "YWJ=", "YQ==\n"].map((value) => ({
+1569:       raw: { headerLines: [], body: { encoding: "base64", value } },
+1570:     })),
+1571:     { raw: { headerLines: [], body: { encoding: "utf8", value: "\ud800" } } },
+1572:     { raw: { headerLines: [], body: { encoding: "file", value: "secret" } } },
+1573:     { raw: { headerLines: [{ name: "x-ok", value: "\r\n" }] } },
+1574:     { assertions: [{ id: "bad", kind: "request-write-state", equals: "complete" }] },
+1575:     {
+1576:       raw: { headerLines: [] },
+1577:       assertions: [{ id: "bad", kind: "request-authored-body", expected: "target-oracle" }],
+1578:     },
+1579:   ];
+1580:   it.each([false, true])("rejects closed-form violations in actions=%s", (actions) => {
+1581:     for (const input of bad)
+1582:       expect(() => parseExecutableScenarioManifest(exactManifest(input, actions))).toThrow(
+1583:         ManifestValidationError,
+1584:       );
+1585:   });
+1586:   it.each([false, true])("keeps version and Read body guards in actions=%s", (actions) => {
+1587:     expect(() =>
+1588:       parseExecutableScenarioManifest(exactManifest({ raw: { headerLines: [] } }, actions, 1)),
+1589:     ).toThrow();
+1590:     expect(() =>
+1591:       parseExecutableScenarioManifest(
+1592:         exactManifest(
+1593:           {
+1594:             negativeMethodProbe: true,
+1595:             raw: { headerLines: [], body: { encoding: "utf8", value: "" } },
+1596:           },
+1597:           actions,
+1598:           2,
+1599:           "read",
+1600:         ),
+1601:       ),
+1602:     ).toThrow();
+1603:     expect(() =>
+1604:       parseExecutableScenarioManifest(
+1605:         exactManifest({ method: "GET", raw: { headerLines: [] } }, actions, 2, "read"),
+1606:       ),
+1607:     ).not.toThrow();
+1608:   });
+1609:   it("rejects raw holes/accessors without invoking them", () => {
+1610:     let calls = 0;
+1611:     const lines = [
+1612:       Object.defineProperty({ name: "x-ok" }, "value", {
+1613:         enumerable: true,
+1614:         get() {
+1615:           calls++;
+1616:           return "secret";
+1617:         },
+1618:       }),
+1619:     ];
+1620:     for (const headerLines of [
+1621:       lines,
+1622:       new Array(1),
+1623:       Object.defineProperty([], "0", {
+1624:         enumerable: true,
+1625:         get() {
+1626:           calls++;
+1627:           return {};
+1628:         },
+1629:       }),
+1630:     ])
+
+## CURRENT SOURCE packages/conformance/src/http-executor.test.ts:1-15
+1: import { createHash } from "node:crypto";
+2: import { createServer as createHttpServer } from "node:http";
+3: import { createServer, type Server, Socket } from "node:net";
+4: 
+5: import { afterEach, describe, expect, it, vi } from "vitest";
+6: import { ManifestValidationError, parseExecutableScenarioManifest } from "./executable-manifest.js";
+7: import {
+8:   createFetchHttpExchangeExecutor,
+9:   createRawHttpExchangeExecutor,
+10:   type RawHttpDialRoute,
+11:   snapshotExactHttpMode,
+12:   validateExactRunConfiguration,
+13: } from "./http-executor.js";
+14: 
+15: describe("raw HTTP exchange executor", () => {
+
+## CURRENT SOURCE packages/conformance/src/http-executor.test.ts:623-910
+623: 
+624: describe("exact HTTP request execution", () => {
+625:   const servers = new Set<Server>();
+626:   const sockets = new Set<Socket>();
+627:   const scope = "https://scope.example/acme/";
+628:   const url = `${scope}operations/create-bead`;
+629:   const responseText = "HTTP/1.1 200 OK\r\nContent-Length: 2\r\nConnection: close\r\n\r\n{}";
+630: 
+631:   afterEach(async () => {
+632:     vi.restoreAllMocks();
+633:     for (const socket of sockets) socket.destroy();
+634:     sockets.clear();
+635:     await Promise.all(
+636:       [...servers].map((server) => new Promise<void>((resolve) => server.close(() => resolve()))),
+637:     );
+638:     servers.clear();
+639:   });
+640: 
+641:   function mode(
+642:     overrides: Partial<import("./http-executor.js").ExactHttpModeOptions> = {},
+643:   ): import("./http-executor.js").ExactHttpModeOptions {
+644:     return {
+645:       scope,
+646:       profile: "read-update",
+647:       routes: [{ method: "POST", url }],
+648:       maximumRequestHeaderBytes: 4096,
+649:       maximumRequestBodyBytes: 1024,
+650:       defaultCredentialRef: "anonymous",
+651:       credentialHandles: [{ id: "anonymous", headerNames: [] }],
+652:       resolveCredentials: () => ({}),
+653:       ...overrides,
+654:     };
+655:   }
+656:   function exact(
+657:     bodyBytes: Uint8Array = Buffer.from("{}"),
+658:   ): import("./http-executor.js").ExactHttpExchangeRequest {
+659:     return {
+660:       method: "POST",
+661:       url,
+662:       signal: new AbortController().signal,
+663:       raw: {
+664:         headerLines: [
+665:           { name: "Content-Type", value: "application/json" },
+666:           { name: "Idempotency-Key", value: "same" },
+667:           { name: "iDeMpOtEnCy-KeY", value: "same" },
+668:         ],
+669:         bodyBytes,
+670:       },
+671:     };
+672:   }
+673:   async function bind(server: Server): Promise<RawHttpDialRoute> {
+674:     servers.add(server);
+675:     server.on("connection", (socket: Socket) => {
+676:       sockets.add(socket);
+677:       socket.on("close", () => sockets.delete(socket));
+678:     });
+679:     await new Promise<void>((resolve) => server.listen(0, "127.0.0.1", resolve));
+680:     const address = server.address();
+681:     if (address === null || typeof address === "string") throw new Error("missing address");
+682:     return { transport: "plain", host: "127.0.0.1", port: address.port };
+683:   }
+684:   function deadRoute(): RawHttpDialRoute {
+685:     return { transport: "plain", host: "127.0.0.1", port: 1 };
+686:   }
+687: 
+688:   it.each([
+689:     Buffer.from('{"a":1,"\\u0061":2,"number":9007199254740993,"x":1e99999}'),
+690:     Buffer.from('{"x":"\\uD800"}'),
+691:     Buffer.from([0xc0, 0xaf, 0xff]),
+692:     Buffer.alloc(0),
+693:   ])(
+694:     "preserves exact entity bytes and repeated fields at an actual Node HTTP receiver: %j",
+695:     async (body) => {
+696:       let received = Buffer.alloc(0);
+697:       let rawHeaders: string[] = [];
+698:       const route = await bind(
+699:         createHttpServer((request, response) => {
+700:           rawHeaders = request.rawHeaders;
+701:           const chunks: Buffer[] = [];
+702:           request.on("data", (chunk: Buffer) => chunks.push(chunk));
+703:           request.on("end", () => {
+704:             received = Buffer.concat(chunks);
+705:             response.end("{}");
+706:           });
+707:         }),
+708:       );
+709:       const result = await createRawHttpExchangeExecutor(route, { exactMode: mode() })(exact(body));
+710:       expect(received).toEqual(body);
+711:       expect(rawHeaders.slice(0, 6)).toEqual([
+712:         "Content-Type",
+713:         "application/json",
+714:         "Idempotency-Key",
+715:         "same",
+716:         "iDeMpOtEnCy-KeY",
+717:         "same",
+718:       ]);
+719:       expect(result.exactRequest).toMatchObject({
+720:         source: "raw-http1-serializer",
+721:         bodyPresent: true,
+722:         bodyOctets: body.length,
+723:         writeState: "complete",
+724:       });
+725:       expect(result.exactRequest?.bodyDigest).toBe(createHashForTest(body));
+726:       expect(result.effectiveRequest).not.toHaveProperty("headersTransmitted");
+727:     },
+728:   );
+729: 
+730:   it("writes authorization-view context separately from credentials", async () => {
+731:     const headerLines = [
+732:       { name: "bdp-minimum-scope-position", value: "not a position!" },
+733:       { name: "bdp-scope-epoch", value: "" },
+734:       { name: "bdp-authorization-view", value: "" },
+735:       { name: "BDP-Authorization-View", value: "view-one, view-two" },
+736:     ];
+737:     let wire = Buffer.alloc(0);
+738:     let received = 0;
+739:     const route = await bind(
+740:       createServer((socket) => {
+741:         let complete = false;
+742:         socket.on("data", (chunk: Buffer) => {
+743:           wire = Buffer.concat([wire, chunk]);
+744:           const boundary = wire.indexOf("\r\n\r\n");
+745:           if (!complete && boundary !== -1 && wire.length >= boundary + 4 + 2) {
+746:             complete = true;
+747:             received++;
+748:             socket.end(responseText);
+749:           }
+750:         });
+751:       }),
+752:     );
+753:     const resolve = vi.fn(() => ({ Authorization: "Bearer credential-sentinel" }));
+754:     const legacy = vi.fn(() => ({ Authorization: "wrong-legacy" }));
+755:     const result = await createRawHttpExchangeExecutor(route, {
+756:       authorize: legacy,
+757:       exactMode: mode({
+758:         maximumRequestHeaderBytes: 1024,
+759:         defaultCredentialRef: "writer",
+760:         credentialHandles: [{ id: "writer", headerNames: ["authorization"] }],
+761:         resolveCredentials: resolve,
+762:       }),
+763:     })({ ...exact(), raw: { headerLines, bodyBytes: Buffer.from("{}") } });
+764:     expect(received).toBe(1);
+765:     expect(wire.subarray(0, wire.indexOf("\r\n\r\n")).toString("latin1")).toBe(
+766:       [
+767:         "POST /acme/operations/create-bead HTTP/1.1",
+768:         ...headerLines.map(({ name, value }) => `${name}: ${value}`),
+769:         "Authorization: Bearer credential-sentinel",
+770:         "Accept: */*",
+771:         "Accept-Language: *",
+772:         "Accept-Encoding: identity",
+773:         "User-Agent: bdp-conformance/0",
+774:         "Host: scope.example",
+775:         "Connection: close",
+776:         "Content-Length: 2",
+777:       ].join("\r\n"),
+778:     );
+779:     expect(wire.subarray(wire.indexOf("\r\n\r\n") + 4)).toEqual(Buffer.from("{}"));
+780:     expect(result.exactRequest?.headerLines.slice(0, headerLines.length)).toEqual(headerLines);
+781:     expect(result.exactRequest?.headerLines[headerLines.length]).toEqual({
+782:       name: "Authorization",
+783:       value: "Bearer credential-sentinel",
+784:     });
+785:     expect(result.exactRequest?.writeState).toBe("complete");
+786:     expect(resolve).toHaveBeenCalledOnce();
+787:     expect(legacy).not.toHaveBeenCalled();
+788:   });
+789: 
+790:   it("rejects authorization-view credential handles before resolution or dialing", () => {
+791:     for (const name of ["bdp-authorization-view", "BDP-Authorization-View", "x-ordinary"]) {
+792:       const resolve = vi.fn(() => ({ [name]: "sentinel" }));
+793:       expect(() =>
+794:         createRawHttpExchangeExecutor(deadRoute(), {
+795:           exactMode: mode({
+796:             defaultCredentialRef: "writer",
+797:             credentialHandles: [{ id: "writer", headerNames: [name] }],
+798:             resolveCredentials: resolve,
+799:           }),
+800:         }),
+801:       ).toThrow("exact HTTP request configuration is invalid");
+802:       expect(resolve).not.toHaveBeenCalled();
+803:     }
+804:   });
+805: 
+806:   it("keeps authorization-view lookalikes protected in parser and serializer", async () => {
+807:     for (const name of [
+808:       "X-Bdp-Authorization-View",
+809:       "bdp-authorization-view-extra",
+810:       "bdp-authorization-view-token",
+811:       "bdp-authorization-view-secret",
+812:       "bdp-authorization-view-password",
+813:       "bdp-authorization-view-credential",
+814:     ]) {
+815:       const raw = { headerLines: [{ name, value: "sentinel" }] };
+816:       for (const actions of [false, true]) {
+817:         const request = {
+818:           id: "post",
+819:           method: "POST",
+820:           target: { binding: "scope" },
+821:           raw,
+822:           captures: [],
+823:           assertions: [{ id: "status", kind: "status", equals: 200 }],
+824:         };
+825:         let issues: readonly { message: string }[] = [];
+826:         try {
+827:           parseExecutableScenarioManifest({
+828:             manifestVersion: 2,
+829:             catalogId: "read-v1",
+830:             scenarios: [
+831:               {
+832:                 id: "raw.probe",
+833:                 requiredProfile: "read-update",
+834:                 setup: { fixture: "reference-read-v1", requires: [] },
+835:                 applicability: { requires: [] },
+836:                 cleanup: { resetFixture: true },
+837:                 ...(actions
+838:                   ? { actions: [{ family: "http", ...request }] }
+839:                   : { requests: [request] }),
+840:               },
+841:             ],
+842:           });
+843:         } catch (error) {
+844:           if (!(error instanceof ManifestValidationError)) throw error;
+845:           issues = error.issues;
+846:         }
+847:         expect(
+848:           issues.some(({ message }) => message === "raw source header is secret or executor-owned"),
+849:         ).toBe(true);
+850:       }
+851:       const resolve = vi.fn(() => ({}));
+852:       await expect(
+853:         createRawHttpExchangeExecutor(deadRoute(), {
+854:           exactMode: mode({ resolveCredentials: resolve }),
+855:         })({ ...exact(), raw }),
+856:       ).rejects.toMatchObject({
+857:         category: "configuration",
+858:         requestWriteState: "not-started",
+859:       });
+860:       expect(resolve).not.toHaveBeenCalled();
+861:     }
+862:   });
+863: 
+864:   it("preserves padded field bytes and copies Buffer subarrays before the resolver can mutate them", async () => {
+865:     const source = Buffer.from("!before!");
+866:     const body = source.subarray(1, 7);
+867:     const firstLine = { name: "Idempotency-Key", value: " \tkey,other " };
+868:     const lines = [firstLine];
+869:     let wire = Buffer.alloc(0);
+870:     const route = await bind(
+871:       createServer((socket) =>
+872:         socket.on("data", (chunk: Buffer) => {
+873:           wire = Buffer.concat([wire, chunk]);
+874:           if (wire.includes(Buffer.from("before"))) socket.end(responseText);
+875:         }),
+876:       ),
+877:     );
+878:     const resolve = vi.fn(() => {
+879:       source.fill(120);
+880:       firstLine.value = "changed";
+881:       return { Authorization: "Bearer sentinel-secret" };
+882:     });
+883:     const ordinary = vi.fn(() => ({ Authorization: "wrong-legacy" }));
+884:     const result = await createRawHttpExchangeExecutor(route, {
+885:       authorize: ordinary,
+886:       exactMode: mode({
+887:         defaultCredentialRef: "writer",
+888:         credentialHandles: [{ id: "writer", headerNames: ["authorization"] }],
+889:         resolveCredentials: resolve,
+890:       }),
+891:     })({ ...exact(body), raw: { headerLines: lines, bodyBytes: body } });
+892:     expect(wire.toString("latin1")).toContain("Idempotency-Key:  \tkey,other \r\n");
+893:     expect(wire.subarray(-6).toString()).toBe("before");
+894:     expect(wire.toString()).toContain("Authorization: Bearer sentinel-secret");
+895:     expect(resolve).toHaveBeenCalledOnce();
+896:     expect(ordinary).not.toHaveBeenCalled();
+897:     expect(Object.isFrozen(result.exactRequest?.headerLines)).toBe(true);
+898:     expect(result.exactRequest?.headerLines[0]?.value).toBe(" \tkey,other ");
+899:   });
+900: 
+901:   it.each([
+902:     "Authorization",
+903:     "AUTHORIZATION",
+904:     "Cookie",
+905:     "X-Auth-Token",
+906:     "Host",
+907:     "Content-Length",
+908:     "Transfer-Encoding",
+909:     "Expect",
+910:     "Proxy-Connection",
+
+## CURRENT SOURCE packages/conformance/src/runner.test.ts:4687-4800
+4687: describe("version 2 exact HTTP receiving", () => {
+4688:   const scope = "https://scope.example/";
+4689:   const url = `${scope}operations/create-bead`;
+4690:   const stateAssertions = [
+4691:     { id: "status", kind: "status", equals: 401 },
+4692:     { id: "authored-head", kind: "request-authored-headers" },
+4693:     { id: "authored-body", kind: "request-authored-body" },
+4694:     { id: "write", kind: "request-write-state", equals: "complete" },
+4695:   ];
+4696:   function source(input: Record<string, unknown> = {}, twice = false) {
+4697:     const request = {
+4698:       id: "post",
+4699:       method: "POST",
+4700:       target: { binding: "scope", path: "operations/create-bead" },
+4701:       raw: {
+4702:         headerLines: [
+4703:           { name: "Idempotency-Key", value: "KEY-SENTINEL" },
+4704:           { name: "iDeMpOtEnCy-KeY", value: "SECOND-KEY-SENTINEL" },
+4705:           { name: "x-PRIVATE-NAME-SENTINEL", value: "VALUE-SENTINEL" },
+4706:         ],
+4707:         body: { encoding: "utf8", value: '{"x":1,"x":9007199254740993,"n":1e9999}' },
+4708:       },
+4709:       captures: [],
+4710:       assertions: stateAssertions,
+4711:       ...input,
+4712:     };
+4713:     return {
+4714:       manifestVersion: 2,
+4715:       catalogId: "read-v1",
+4716:       scenarios: (twice ? ["raw.first", "raw.second"] : ["raw.first"]).map((id) => ({
+4717:         id,
+4718:         requiredProfile: "read-update",
+4719:         setup: { fixture: testFixture.id, requires: [] },
+4720:         applicability: { requires: [] },
+4721:         requests: [request],
+4722:         cleanup: { resetFixture: true },
+4723:       })),
+4724:     };
+4725:   }
+4726:   function setup(input: Record<string, unknown> = {}, twice = false) {
+4727:     const manifest = parseExecutableScenarioManifest(source(input, twice));
+4728:     const catalog = parseScenarioCatalog({
+4729:       catalogVersion: 1,
+4730:       scenarios: manifest.scenarios.map(({ id }) => ({
+4731:         id,
+4732:         title: "Synthetic receiving probe",
+4733:         kind: "normative",
+4734:         requiredProfile: "read-update",
+4735:         requirements: [citation],
+4736:       })),
+4737:     });
+4738:     const artifactBundle = bindArtifacts(catalog, manifest, testFixture);
+4739:     const configuration: import("./raw-http-scenario-target.js").ExactHttpConfiguration = {
+4740:       scope,
+4741:       profile: "read-update",
+4742:       routes: [{ method: "POST", url }],
+4743:       maximumRequestHeaderBytes: 4096,
+4744:       maximumRequestBodyBytes: 4096,
+4745:       defaultCredentialRef: "anonymous",
+4746:       credentialHandles: [{ id: "anonymous", headerNames: [] }],
+4747:     };
+4748:     const ordinary = vi.fn(async () => ({ url, status: 401, headers: {}, bodyText: "" }));
+4749:     const execute = vi.fn<import("./http-executor.js").RawHttpExchangeExecutor>(async (request) => {
+4750:       if (!("raw" in request) || request.raw === undefined) throw new Error("expected raw arm");
+4751:       const bytes = request.raw.bodyBytes;
+4752:       return {
+4753:         url: request.url,
+4754:         status: 401,
+4755:         headers: { "Idempotency-Key": "ECHO-SENTINEL" },
+4756:         bodyText: "",
+4757:         exactRequest: {
+4758:           source: "raw-http1-serializer",
+4759:           writeState: "complete",
+4760:           headerLines: [
+4761:             ...request.raw.headerLines,
+4762:             { name: "Accept", value: "*/*" },
+4763:             { name: "Accept-Language", value: "*" },
+4764:             { name: "Accept-Encoding", value: "identity" },
+4765:             { name: "User-Agent", value: "bdp-conformance/0" },
+4766:             { name: "Host", value: "scope.example" },
+4767:             { name: "Connection", value: "close" },
+4768:             ...(bytes === undefined
+4769:               ? []
+4770:               : [{ name: "Content-Length", value: String(bytes.byteLength) }]),
+4771:           ],
+4772:           bodyPresent: bytes !== undefined,
+4773:           bodyOctets: bytes?.byteLength ?? 0,
+4774:           ...(bytes === undefined
+4775:             ? {}
+4776:             : { bodyDigest: createHash("sha256").update(bytes).digest("hex") }),
+4777:         },
+4778:       };
+4779:     });
+4780:     const harness: ScenarioHarness = {
+4781:       prepare: vi.fn(async () => ({ capabilities: ["public-http"] })),
+4782:       cleanup: vi.fn(async () => undefined),
+4783:     };
+4784:     return {
+4785:       scope,
+4786:       profile: "read-update" as const,
+4787:       seed: 0,
+4788:       artifactBundle,
+4789:       execute: ordinary,
+4790:       exactExecution: { configuration, execute },
+4791:       harness,
+4792:       declaredTargetLabel: "synthetic",
+4793:       requestTimeoutMs: 200,
+4794:       cleanupTimeoutMs: 100,
+4795:     };
+4796:   }
+4797:   it("compares independent owned bytes and projects repeated redacted names without an unapproved hash", async () => {
+4798:     const options = setup();
+4799:     const report = await runConformanceMatrix(options);
+4800:     expect(report.reportVersion).toBe(4);
+
+## CURRENT SOURCE packages/conformance/src/runner.test.ts:5570-5668
+5570:         ["write", false],
+5571:       ]);
+5572:       expect(report.scenarios[0]?.exchanges[0]?.response?.status).toBe(401);
+5573:     },
+5574:   );
+5575:   it("keeps admitted authorization-view values out of report projections", async () => {
+5576:     const headerLines = [
+5577:       { name: "bdp-authorization-view", value: "CONTEXT-SENTINEL" },
+5578:       { name: "BDP-Authorization-View", value: "" },
+5579:     ];
+5580:     const options = setup({ raw: { headerLines } });
+5581:     const configuration = {
+5582:       ...options.exactExecution.configuration,
+5583:       defaultCredentialRef: "writer",
+5584:       credentialHandles: [{ id: "writer", headerNames: ["authorization"] }],
+5585:     };
+5586:     const good = options.exactExecution.execute.getMockImplementation();
+5587:     options.exactExecution.execute.mockImplementation(async (request) => {
+5588:       if (good === undefined) throw new Error();
+5589:       const response = await good(request);
+5590:       if (response.exactRequest === undefined) throw new Error();
+5591:       const lines = [...response.exactRequest.headerLines];
+5592:       lines.splice(headerLines.length, 0, { name: "Authorization", value: "CREDENTIAL-SENTINEL" });
+5593:       return {
+5594:         ...response,
+5595:         headers: { "bdp-authorization-view": "CONTEXT-SENTINEL" },
+5596:         exactRequest: { ...response.exactRequest, headerLines: lines },
+5597:       };
+5598:     });
+5599:     const report = await runConformanceMatrix({
+5600:       ...options,
+5601:       exactExecution: { ...options.exactExecution, configuration },
+5602:     });
+5603:     expect(report.scenarios[0]?.state).toBe("pass");
+5604:     const exchange = report.scenarios[0]?.exchanges[0];
+5605:     expect(exchange?.assertions.find(({ id }) => id === "authored-head")?.passed).toBe(true);
+5606:     expect(exchange?.request.exact?.elidedHeaderLines).toBe(4);
+5607:     expect(
+5608:       exchange?.request.exact?.headerLines.some(
+5609:         ({ name }) => name.toLowerCase() === "bdp-authorization-view",
+5610:       ),
+5611:     ).toBe(false);
+5612:     expect(exchange?.request.headers).not.toHaveProperty("bdp-authorization-view");
+5613:     expect(exchange?.response?.headers).not.toHaveProperty("bdp-authorization-view");
+5614:     const text = serializeConformanceReport(report);
+5615:     expect(text).not.toContain("CONTEXT-SENTINEL");
+5616:     expect(text).not.toContain("CREDENTIAL-SENTINEL");
+5617:     expect(options.execute).not.toHaveBeenCalled();
+5618:     expect(options.exactExecution.execute).toHaveBeenCalledOnce();
+5619:   });
+5620: 
+5621:   it("accepts registered credential decoration and authored defaults without resolving credentials again", async () => {
+5622:     const options = setup({
+5623:       raw: { headerLines: [{ name: "aCcEpT", value: "application/json" }] },
+5624:     });
+5625:     const configuration = {
+5626:       ...options.exactExecution.configuration,
+5627:       defaultCredentialRef: "private",
+5628:       credentialHandles: [{ id: "private", headerNames: ["authorization", "cookie"] }],
+5629:     };
+5630:     const good = options.exactExecution.execute.getMockImplementation();
+5631:     options.exactExecution.execute.mockImplementation(async (request) => {
+5632:       if (good === undefined) throw new Error();
+5633:       const response = await good(request);
+5634:       if (response.exactRequest === undefined) throw new Error();
+5635:       const lines = response.exactRequest.headerLines.filter(({ name }) => name !== "Accept");
+5636:       lines.splice(
+5637:         1,
+5638:         0,
+5639:         { name: "Cookie", value: "COOKIE-SENTINEL" },
+5640:         { name: "Authorization", value: "AUTH-SENTINEL" },
+5641:       );
+5642:       return { ...response, exactRequest: { ...response.exactRequest, headerLines: lines } };
+5643:     });
+5644:     const report = await runConformanceMatrix({
+5645:       ...options,
+5646:       exactExecution: { ...options.exactExecution, configuration },
+5647:     });
+5648:     expect(report.scenarios[0]?.state).toBe("pass");
+5649:     expect(serializeConformanceReport(report)).not.toContain("SENTINEL");
+5650:   });
+5651:   it.each(["utf8", "base64"] as const)(
+5652:     "enforces positive source body caps at N and N+1 for %s",
+5653:     async (encoding) => {
+5654:       for (const oversized of [false, true]) {
+5655:         const bytes = Buffer.from(`é🙂${oversized ? "!" : ""}`);
+5656:         const options = setup({
+5657:           raw: {
+5658:             headerLines: [],
+5659:             body: {
+5660:               encoding,
+5661:               value: encoding === "utf8" ? bytes.toString("utf8") : bytes.toString("base64"),
+5662:             },
+5663:           },
+5664:         });
+5665:         const attempt = {
+5666:           ...options,
+5667:           exactExecution: {
+5668:             ...options.exactExecution,
+
+## CURRENT SOURCE docs/specs/bdp.md:3574-3598
+3574: HTTP conditional fields on these commands do not guard payload-named
+3575: Resources or aliases. `expectedRevision` remains
+3576: the explicit Resource revision guard. This assigns no blanket exemption for
+3577: unsafe HTTP methods and does not change conditions on canonical Resource
+3578: GET or HEAD requests. A read-side `412 Precondition Failed` is not the
+3579: write-side `409 revision-mismatch`.
+3580: 
+3581: On mutation POSTs to operation command targets, authorities MUST ignore the
+3582: `BDP-Minimum-Scope-Position`, `BDP-Scope-Epoch`, and
+3583: `BDP-Authorization-View` request fields. Their presence, absence, completeness,
+3584: and field values do not impose a minimum-position barrier or affect command
+3585: identity. Ordinary HTTP field syntax and transport, header, and body bounds
+3586: still apply, as do authorization, idempotency, carrier validation, and
+3587: `expectedRevision`. This rule applies to mutation POSTs under this profile and
+3588: cumulative profiles. It does not change conditions on reads.
+3589: 
+3590: ### Read+Update HTTP field support
+3591: 
+3592: When cross-origin access is enabled, the CORS policy MUST allow the
+3593: `Idempotency-Key` request field. Mutation responses expose applicable Read
+3594: response fields, including `Retry-After`, under the inherited CORS rules.
+3595: 
+3596: ### Mutation response media negotiation
+3597: 
+3598: The inherited bodyless `406 Not Acceptable` response applies before durable
+
+## CURRENT SOURCE docs/specs/bdp.md:5258-5273
+5258: present, `erased`, the version's lineage marker `{ id, type, revision }`,
+5259: and `source` and `sourceRevision` when the operation was on an owned Link.
+5260: To every other caller it is the uniform `withheld` entry, so that a receipt
+5261: is no more an erasure oracle than a read is.
+5262: 
+5263: The three Transactional response fields on a receipt or page response are
+5264: the serving request's own observation, never the body's history:
+5265: `BDP-Scope-Epoch` and `BDP-Authorization-View` carry the current epoch and
+5266: the caller's current view token, and `BDP-Scope-Position` carries the
+5267: position the read observed — at or after `effectPosition` on a terminal
+5268: receipt served synchronously, honoring `BDP-Minimum-Scope-Position` on a
+5269: later read exactly as any read does, and the observed head on a `202`. The
+5270: body's `scopeEpoch`, `authorizationView`, `requiredPosition`, and
+5271: `effectPosition` are the execution's recorded facts and never change; after
+5272: a view rotation the body still names the view under which the transaction
+5273: executed, and the recorded `requiredPosition` remains evidence about that
+
+## CURRENT SOURCE packages/conformance/src/raw-http-scenario-target.ts:48-68
+48: /**
+49:  * Composes a sequential scenario harness with the raw HTTP executor without
+50:  * letting target identity, fixture preparation, or the socket dial route leak
+51:  * into the semantic request URL.
+52:  */
+53: export function createRawHttpScenarioTarget(
+54:   start: StartRawHttpScenarioSession,
+55:   options: RawHttpScenarioTargetOptions = {},
+56: ): RawHttpScenarioTarget {
+57:   if (typeof start !== "function") throw new TypeError("start must be a function");
+58:   const snapshot = Object.freeze({
+59:     ...options,
+60:     ...(options.exactMode === undefined
+61:       ? {}
+62:       : { exactMode: snapshotExactHttpMode(options.exactMode) }),
+63:   });
+64:   if (
+65:     snapshot.requestTimeoutMs !== undefined &&
+66:     (!Number.isSafeInteger(snapshot.requestTimeoutMs) ||
+67:       snapshot.requestTimeoutMs <= 0 ||
+68:       snapshot.requestTimeoutMs > 2_147_483_647)
