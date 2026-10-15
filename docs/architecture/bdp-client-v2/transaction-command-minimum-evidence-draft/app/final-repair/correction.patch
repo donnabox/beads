@@ -1,0 +1,137 @@
+--- a/apps/bdptest/src/transactional-matrix.test.ts
++++ b/apps/bdptest/src/transactional-matrix.test.ts
+@@ -90,9 +90,16 @@
+   visit(error);
+   return seen;
+ }
++type InstalledObservation = {
++  result: Awaited<ReturnType<typeof runCumulativeTransactionalMatrix>>;
++  sessions: Record<string, unknown>[];
++  baseline: ReturnType<typeof installedTransactionBinding>;
++};
+ async function observe(control?: {
+   readonly budgetMs?: number;
+   readonly scenarioSelection?: readonly string[];
++  /** Retain genuine returned evidence before cleanup can fail; never replace it. */
++  readonly onObserved?: (observed: InstalledObservation) => void;
+   readonly invalidReceiptCredentials?: boolean | "set-update" | "set-delete";
+   /** Negative-only removal of one already declared canonical set route. */
+   readonly omitRoute?: {
+@@ -146,13 +153,7 @@
+     () => controller.abort(new Error("installed cohort deadline")),
+     budgetMs,
+   );
+-  let observed:
+-    | {
+-        result: Awaited<ReturnType<typeof runCumulativeTransactionalMatrix>>;
+-        sessions: Record<string, unknown>[];
+-        baseline: ReturnType<typeof installedTransactionBinding>;
+-      }
+-    | undefined;
++  let observed: InstalledObservation | undefined;
+   let failure: unknown;
+   const cleanupFailures: unknown[] = [];
+   try {
+@@ -311,6 +312,7 @@
+       target.context,
+     );
+     observed = { result, sessions, baseline };
++    control?.onObserved?.(observed);
+   } catch (error) {
+     failure = error;
+   } finally {
+@@ -346,22 +348,23 @@
+       await minimumWire.afterExchange(response);
+       await crossWire.afterExchange(response);
+     },
++    onObserved(observed) {
++      if (process.env.BDP_TRANSACTIONAL_OBSERVATION_OUTPUT)
++        writeFileSync(
++          process.env.BDP_TRANSACTIONAL_OBSERVATION_OUTPUT,
++          JSON.stringify(
++            {
++              sourceCommit,
++              entry,
++              ...observed,
++              supplemental: minimumWire.summary(),
++            },
++            null,
++            2,
++          ) + "\n",
++        );
++    },
+   });
+-  // Preserve the genuine runner report before supplemental app adjudication.
+-  if (process.env.BDP_TRANSACTIONAL_OBSERVATION_OUTPUT)
+-    writeFileSync(
+-      process.env.BDP_TRANSACTIONAL_OBSERVATION_OUTPUT,
+-      JSON.stringify(
+-        {
+-          sourceCommit,
+-          entry,
+-          ...observed,
+-          supplemental: minimumWire.summary(),
+-        },
+-        null,
+-        2,
+-      ) + "\n",
+-    );
+   const implemented = new Set(bundle.manifest.scenarios.map((s) => s.id));
+   expect(loadProfileContractSelection("transactional").required).toHaveLength(251);
+   expect(observed.result.scenarios).toHaveLength(256); // Includes five optional catalog rows.
+@@ -1685,9 +1688,10 @@
+       nodes++;
+       if (value && typeof value === "object") pending.push(...Object.values(value));
+     }
+-    // Root-accepted derivative maximum701716B/18263nodes plus4096B/64nodes.
+-    expect(Buffer.byteLength(normal)).toBeLessThanOrEqual(705812);
+-    expect(nodes).toBeLessThanOrEqual(18327);
++    // Historical root-accepted maximum701716B/18263nodes plus4096B/64nodes.
++    // Command-minimum measured maximum756707B/19731nodes plus4096B/64nodes.
++    expect(Buffer.byteLength(normal)).toBeLessThanOrEqual(760803);
++    expect(nodes).toBeLessThanOrEqual(19795);
+     const loaded = createCumulativeTransactionalArtifactBundle(
+       loadProfileContractSelection("transactional"),
+       { fixture: fixtureSource, manifest: { bytes: Buffer.from(wire) } },
+@@ -2095,9 +2099,10 @@
+       if (value && typeof value === "object") pending.push(...Object.values(value));
+     }
+     // Historical measurement-only derivative guards were650386B/17275nodes.
+-    // Root-accepted derivative maximum701716B/18263nodes plus4096B/64nodes.
+-    expect(Buffer.byteLength(normal)).toBeLessThanOrEqual(705812);
+-    expect(nodes).toBeLessThanOrEqual(18327);
++    // Historical root-accepted maximum701716B/18263nodes plus4096B/64nodes.
++    // Command-minimum measured maximum756707B/19731nodes plus4096B/64nodes.
++    expect(Buffer.byteLength(normal)).toBeLessThanOrEqual(760803);
++    expect(nodes).toBeLessThanOrEqual(19795);
+     const loaded = createCumulativeTransactionalArtifactBundle(
+       loadProfileContractSelection("transactional"),
+       { fixture: fixtureSource, manifest: { bytes: Buffer.from(JSON.stringify(changed)) } },
+@@ -2715,16 +2720,18 @@
+       manifest(value) {
+         description = applyCommandMinimumControl(value, control);
+       },
++      onObserved(observed) {
++        if (process.env.BDP_TRANSACTIONAL_MINIMUM_CONTROL_OUTPUT)
++          writeFileSync(
++            `${process.env.BDP_TRANSACTIONAL_MINIMUM_CONTROL_OUTPUT}-${control}.json`,
++            JSON.stringify(
++              { sourceCommit, entry, ...observed, supplemental: wire.summary() },
++              null,
++              2,
++            ) + "\n",
++          );
++      },
+     });
+-    if (process.env.BDP_TRANSACTIONAL_MINIMUM_CONTROL_OUTPUT)
+-      writeFileSync(
+-        `${process.env.BDP_TRANSACTIONAL_MINIMUM_CONTROL_OUTPUT}-${control}.json`,
+-        JSON.stringify(
+-          { sourceCommit, entry, ...observed, supplemental: wire.summary() },
+-          null,
+-          2,
+-        ) + "\n",
+-      );
+     expect(description).toBeDefined();
+     expect(observed.result.selectedScenarioIds).toEqual([commandMinimumId]);
+     expect(observed.result.scenarios).toHaveLength(1);

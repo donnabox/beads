@@ -1,0 +1,37 @@
+--- a/packages/conformance/src/transactional-cumulative.test.ts
++++ b/packages/conformance/src/transactional-cumulative.test.ts
+@@ -920,14 +920,17 @@
+   // Disk and normal-form fences are separate; margins are4096B/64nodes/1024B.
+   // Historical deletion guards: manifest135906delta/650386absolute,
+   // coverage18405delta/91848absolute, nodes3418delta/17275absolute.
+-  expect(read("manifest").byteLength - 488280).toBeLessThanOrEqual(200022);
+-  expect(read("manifest").byteLength).toBeLessThanOrEqual(688302);
+-  expect(Buffer.byteLength(JSON.stringify(manifest, null, 2) + "\n")).toBeLessThanOrEqual(699694);
+-  expect(read("coverage").byteLength - 70662).toBeLessThanOrEqual(29607);
+-  expect(read("coverage").byteLength).toBeLessThanOrEqual(100269);
++  // Root-accepted command-minimum: disk738783/normal750589/nodes19575/coverage108091.
++  // Preserve bases488280/13019/70662 and margins4096B/64nodes/1024B.
++  // These measured source authoring fences do not change runtime/parser limits.
++  expect(read("manifest").byteLength - 488280).toBeLessThanOrEqual(254599);
++  expect(read("manifest").byteLength).toBeLessThanOrEqual(742879);
++  expect(Buffer.byteLength(JSON.stringify(manifest, null, 2) + "\n")).toBeLessThanOrEqual(754685);
++  expect(read("coverage").byteLength - 70662).toBeLessThanOrEqual(38453);
++  expect(read("coverage").byteLength).toBeLessThanOrEqual(109115);
+   expect(
+     Buffer.byteLength(JSON.stringify(JSON.parse(read("coverage").toString()), null, 2) + "\n"),
+-  ).toBeLessThanOrEqual(100269);
++  ).toBeLessThanOrEqual(109115);
+   expect(
+     manifest.scenarios.flatMap((r: { actions: { assertions: unknown[] }[] }) =>
+       r.actions.flatMap((a) => a.assertions),
+@@ -944,8 +947,8 @@
+     nodes++;
+     if (value && typeof value === "object") pending.push(...Object.values(value));
+   }
+-  expect(nodes - 13019).toBeLessThanOrEqual(5152);
+-  expect(nodes).toBeLessThanOrEqual(18171);
++  expect(nodes - 13019).toBeLessThanOrEqual(6620);
++  expect(nodes).toBeLessThanOrEqual(19639);
+   // Clause ownership is independent from the exhaustive mechanical assertion mirror.
+   const clauseMap = {
+     "transactional.receipt.pagination": [
