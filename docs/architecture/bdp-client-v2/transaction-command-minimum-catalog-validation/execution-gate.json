@@ -1,0 +1,48 @@
+{
+  "released": true,
+  "authorizationKind": "catalog12-static-validation",
+  "approvedCommandIds": [
+    "offline-setup",
+    "typecheck",
+    "build",
+    "format-check",
+    "lint",
+    "boundaries",
+    "read-seal",
+    "static-cases"
+  ],
+  "rootAcceptance": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-command-minimum-catalog-validation/root-execution-acceptance.json",
+    "sha256": "ba0cd82f4a9de364d1f9a8cdf8725f894447982dc30372e60ba63870c43a18b7"
+  },
+  "growthAcceptance": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-command-minimum-catalog-draft/review-repair/root-growth-acceptance.json",
+    "sha256": "e8e6ceb32b3419148a0540d8a64183b6a54f35561a908bfedc7eb541348688a8"
+  },
+  "sourceManifest": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-command-minimum-catalog-draft/review-repair/source-binding.json",
+    "sha256": "e6a3147f6a76028c5ca98726f5ba0bce62f431955bf359c90eaed7bffdba3270"
+  },
+  "sourceHead": "bd2178dd6f4b9f7c2d239624d7edaa3d961c3e26",
+  "sourceTree": "062c32778217aeb702b2f7798dc82b0d985e9c67",
+  "sourceSha256": {
+    "packages/conformance/catalog/read-update-v1.json": "73d215813df034a2be0cd15d0caff7cf2c8823a067f271b9140c9cbb90e859c3",
+    "docs/specs/bdp.md": "f036103ffdf5f89fa3a2033570e1e987c4cd203cd80b1c633cb44615123f892e",
+    "docs/design/profile-contract-planning.md": "0424f68424ad5c8f23aa76af25a92bf5d64282ce3a81ef220bc5d22139381fd3",
+    "packages/conformance/test-support/read-update-coverage-v1.json": "f8f0b001928f8488292403b57c973bd918cba224ef9e00fe0691482bf5cfac0c",
+    "packages/conformance/src/profile-contract-plan.test.ts": "1b962ac149e43727836afe8ac2fe3ccdc48e4cae02ffd7e5da28b9b6446b840d",
+    "packages/conformance/src/transactional-cumulative.test.ts": "1ee47d4c56b3de03bd81d1fab7f43c9a676cca503a18911864b0e023ed83b367",
+    "apps/bdptest/src/transactional-matrix.test.ts": "4c8e246f881c93178741bf4c263d615ddff8ec544dbd8aeb3141cf336c4444f9",
+    "apps/bdptest/src/read-update-matrix.test.ts": "3ba256dbcee025836eac04ec1122a484734748c0eb22ad203c49a0d95debb3e5",
+    "packages/conformance/development/read-update-coverage-v1.json": "221c06dba56142db37194f51e41c2dc71edf7f9926d94f0f7d18e63b33d73baf",
+    "packages/conformance/src/development-read-update.test.ts": "821d2ad5b388b7cc14f112c1c74d86baba4b57e0a03eb988d34452f89f409c1d",
+    "packages/conformance/development/README.md": "3540bd5fa9ab11a6dfa5c613bf714e666e8ba1d171334875eeef9da639329667"
+  },
+  "sourceDiffSha256": "b9abce1c55b865ba389ed53d7c7b86f9bc854287cfec373158d54b9440dea489",
+  "sourceLockSha256": "4150d8821c96dbc2cfec0b2762ff76b58318079f65fa4f5c8858ef2dd61f8d6d",
+  "preparationSha256": {
+    "gate.py": "4008e6cfffccad032ebf535230b9afcaf9fb74d288acb81e3bb9a2b9e58a4160",
+    "supervise.py": "304c538d9f501c1b11c95f721a367ce990b4322bfe155ced022073f496252942",
+    "commands.json": "0795e89b8fa78ac68d84c07040ca362f5a53a9a16aa0539466f4de9e3ff36bf1"
+  }
+}

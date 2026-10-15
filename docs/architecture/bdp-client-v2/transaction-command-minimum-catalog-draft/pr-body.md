@@ -1,0 +1,5 @@
+The mutation-POST rule for copied read minimum-position headers was implemented in PR123 but missing from the required-contract catalog. Add `read-update.http.command-minimum-fields` to Read+Update and inherit it once in Transactional, bound to the existing normative paragraph.
+
+Keep the new row explicitly omitted from executable coverage and update inventory assertions and documentation accordingly. Preserve existing scenario/coverage objects and historical evidence. Two test-only source-growth allowances increase by the exact measured excess (243 and 50 bytes); runtime and CI limits are unchanged.
+
+Native Codex and actual Claude review findings are dispositioned. Local offline setup, typecheck, build, format, lint, boundaries, Read evidence seal and twelve selected static cases pass. The initial two-line formatting failure is preserved separately from the passing successor. Full exact-head CI remains required for the affected installed-matrix assertions before merge. This catalog change adds no public profile claim or release.

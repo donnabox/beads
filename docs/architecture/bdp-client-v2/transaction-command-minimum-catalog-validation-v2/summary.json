@@ -1,0 +1,121 @@
+{
+  "acceptedSelectedOutcome": true,
+  "sourceHead": "bd2178dd6f4b9f7c2d239624d7edaa3d961c3e26",
+  "sourceTree": "062c32778217aeb702b2f7798dc82b0d985e9c67",
+  "sourceBinding": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-command-minimum-catalog-draft/format-repair/source-binding.json",
+    "sha256": "55c1492aa3302dadf743fe050ae39b1387a068b3df31a74ccadedbc337bccc16"
+  },
+  "sourceDiffSha256": "6dd175cd419c947d96c5e333dd7dcc5598c6807af55969ad40c409416dbf8469",
+  "sourceUnchanged": true,
+  "commands": [
+    {
+      "id": "offline-setup",
+      "exit": 0,
+      "elapsedSeconds": 0.4252767919097096,
+      "exitSha256": "691240e65f5bb00050c211bec4b999b51526eecdf55f611ac22fa168bb9a07ee"
+    },
+    {
+      "id": "typecheck",
+      "exit": 0,
+      "elapsedSeconds": 1.1342933340929449,
+      "exitSha256": "243677567c3ab92a026fb1ec2fab33709d399ccef239312815879cc35eb96cc9"
+    },
+    {
+      "id": "build",
+      "exit": 0,
+      "elapsedSeconds": 1.1524268751963973,
+      "exitSha256": "9fb11068f37b6d7d95d4ced791ade4a903d7b41cb9be05d53fc05ac6f1006041"
+    },
+    {
+      "id": "format-check",
+      "exit": 0,
+      "elapsedSeconds": 0.5697067908477038,
+      "exitSha256": "7dd9d24f30c2cadf84b1e1875dba58a39b21f4866dd16863f2ab86d46d29400a"
+    },
+    {
+      "id": "lint",
+      "exit": 0,
+      "elapsedSeconds": 0.6411912499461323,
+      "exitSha256": "c4c8207dd7c113c8cad6b6e38dd7321319a70ba58db9c525e6af02ed6d6e583b"
+    },
+    {
+      "id": "boundaries",
+      "exit": 0,
+      "elapsedSeconds": 0.8228794168680906,
+      "exitSha256": "31e231d0593af562239a9ebc3231348860981db685ca7e7c497536fcf126faae"
+    },
+    {
+      "id": "read-seal",
+      "exit": 0,
+      "elapsedSeconds": 0.5293724169023335,
+      "exitSha256": "ac9a60611b6c40706ad6b9b5109d792eafbcb12e8987a1cabc75205e4ac19821"
+    },
+    {
+      "id": "static-cases",
+      "exit": 0,
+      "elapsedSeconds": 2.939729708014056,
+      "exitSha256": "27510eb198802b460560fc8f37bc2780afd94131a66cd6de4c9f406400f1a4f0"
+    }
+  ],
+  "passed": [
+    {
+      "path": "apps/bdptest/src/read-update-matrix.test.ts",
+      "fullName": "pins numeric admission source growth, old blocks and independent row ledgers"
+    },
+    {
+      "path": "apps/bdptest/src/read-update-matrix.test.ts",
+      "fullName": "pins metadata closure growth, old B actions and final N preservation"
+    },
+    {
+      "path": "apps/bdptest/src/read-update-matrix.test.ts",
+      "fullName": "pins bounded R closure source, changed-action ledger and unchanged companions"
+    },
+    {
+      "path": "packages/conformance/src/cumulative-artifact.test.ts",
+      "fullName": "pins cumulative source digest map, catalog order and every coverage binding"
+    },
+    {
+      "path": "packages/conformance/src/development-read-update.test.ts",
+      "fullName": "development Read+Update evidence inventory inventories all 82 normative rows once, with executable assertion bindings or explicit omissions"
+    },
+    {
+      "path": "packages/conformance/src/profile-contract-plan.test.ts",
+      "fullName": "canonical cumulative profile contracts inherits the command minimum-field exception without executable credit"
+    },
+    {
+      "path": "packages/conformance/src/profile-contract-plan.test.ts",
+      "fullName": "canonical cumulative profile contracts locks every inheritance-audit row and replacement to the catalogs"
+    },
+    {
+      "path": "packages/conformance/src/read-update-catalog.test.ts",
+      "fullName": "draft Read+Update catalog strictly parses and binds every citation to the current specification text"
+    },
+    {
+      "path": "packages/conformance/src/read-update-catalog.test.ts",
+      "fullName": "draft Read+Update catalog scopes every row to the Read+Update profile with the profile's id prefix"
+    },
+    {
+      "path": "packages/conformance/src/read-update-catalog.test.ts",
+      "fullName": "draft Read+Update catalog mirrors the specification's Read+Update conformance rows exactly and in order"
+    },
+    {
+      "path": "packages/conformance/src/transactional-cumulative.test.ts",
+      "fullName": "binds the canonical cumulative TX selection and exact source digests without qualification"
+    },
+    {
+      "path": "packages/conformance/src/transactional-cumulative.test.ts",
+      "fullName": "copies source bytes before binding and exposes all missing obligations without executing them"
+    }
+  ],
+  "passedCases": 12,
+  "skippedCases": 308,
+  "testFiles": 6,
+  "failedCases": 0,
+  "unexpectedExecutedCases": [],
+  "unhandledErrorsDetected": false,
+  "jsonSha256": "c0be0cec1416beb4e059da2ffd611047cdd71f129ffc48d34508b298aaadd3cb",
+  "logSha256": "1260e4387053b0254d5846384733868acb88ff7aa4b1c50d43c88049a5823dcb",
+  "claimEligible": false,
+  "scope": "Static metadata/coverage/count validation only; no installed matrix, pack or product serving proof"
+}
