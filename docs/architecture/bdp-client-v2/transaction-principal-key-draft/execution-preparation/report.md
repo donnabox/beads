@@ -1,0 +1,11 @@
+# Principal validation preparation
+
+Closed scaffold prepared under execution-preparation only. Seven static argv arrays exactly equal accepted ledgeraa556158. Total20stages include artifact inventory/provenance and two separate cohort adjudications; product executions remain only positive7HTTP/one child and collapse expected2/max7HTTP/one child. Combined9expected/14max/two children, no source callbacks or extra registration. All120s supervisor and existing45/60/10/5s runtime limits unchanged.
+
+Reused PR131 supervisor byte-for-byte except fresh-build→build input-inventory stage ID, and package/provenance helper except external consumer name. The phase gate is adapted to two source paths and unknown final integration. All scripts were parsed as text and command/dependency/hash consistency checked, never executed. Observable-test-runs discipline is retained: progress, raw terminal outcomes, owned process/TMP classification, source before/after, no retry, honest negative exit1 separate from acceptance.
+
+No source/final parent hashes are invented. Static source snapshot can be dirty only when root explicitly binds it; fresh packages require an actual clean ordinary integrated candidate and exact input/output proof, with an explicit retained dirty-build bridge when applicable. Entry comes only from independently verified external consumer provenance. The eight production dependency/version assumptions must be rechecked at final parent.
+
+Actual report shape is not available yet. review-cohort.py intentionally throws; reportContract cannot be ready until the author freezes source and a concrete safe-field-only adjudicator is bound. report-review-requirements.json specifies exact positive/negative request evidence and named failure, genuine config/entry/payload, separate caller source attribution, cleanup and privacy. This is a pending source-dependent binding, not a new test or council layer.
+
+No execution-gate.json/run exists, and example release is false. No install/build/test/import/package/service/review/network-write/product edit occurred. Required guard performed external artifact writes. Root owns final release, failures/dispositions and publication; this preparation asserts no profile qualification.

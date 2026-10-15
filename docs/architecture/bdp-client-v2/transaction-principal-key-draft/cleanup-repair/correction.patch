@@ -1,0 +1,46 @@
+--- initial-freeze/apps/bdptest/src/transactional-principal-key-installed.test.ts
++++ cleanup-repair/apps/bdptest/src/transactional-principal-key-installed.test.ts
+@@ -302,6 +302,7 @@
+   let child: Awaited<ReturnType<typeof launchInstalledTransaction>> | undefined;
+   let binding: ReturnType<typeof installedTransactionBinding> | undefined;
+   let closed = false;
++  let launchAttempted = false;
+   let cleanupExceeded = false;
+   let attempted = 0;
+   let currentAssertion = "principal-key:setup";
+@@ -405,6 +406,7 @@
+       else if (argument.startsWith("--outputFile=")) outsideStore(argument.slice(13), directory);
+     }
+     controller.signal.throwIfAborted();
++    launchAttempted = true;
+     child = await launchInstalledTransaction(
+       entry,
+       {
+@@ -709,8 +711,16 @@
+       clearTimeout(cleanupTimer);
+     }
+     const stopped =
+-      child === undefined || child.child.exitCode !== null || child.child.signalCode !== null;
+-    if (!stopped) failures.push(new Error("installed principal-key child remains active"));
++      !launchAttempted ||
++      (child !== undefined && (child.child.exitCode !== null || child.child.signalCode !== null));
++    const stopState = !launchAttempted
++      ? "not-started"
++      : child === undefined
++        ? "unknown-pre-ready"
++        : stopped
++          ? "stopped"
++          : "active";
++    if (!stopped) failures.push(new Error("installed principal-key child stop is unproven"));
+     try {
+       if (directory && stopped) rmSync(directory, { recursive: true, force: true });
+     } catch (error) {
+@@ -742,6 +752,8 @@
+       deadlineExceeded,
+       cleanupExceeded,
+       closed,
++      launchAttempted,
++      stopState,
+       startupCompleted: child !== undefined,
+       childPid: child?.child.pid ?? null,
+       childExitCode: child?.child.exitCode ?? null,
