@@ -1,0 +1,41 @@
+{
+  "status": "FROZEN_DRAFT_NOT_VALIDATED",
+  "workspace": "/Users/dbox/repos/wt/vickie/vickie-changefeed-parameter-context",
+  "branch": "codex/vickie-changefeed-parameter-context",
+  "head": "9a42a4531def99e12fa9a1fba02e70558d643265",
+  "tree": "a9cca0e1e5c52ac8bbd06ce989a94ca6e4f2b272",
+  "files": {
+    "packages/server/src/transaction-changefeed.ts": {
+      "sha256": "fb5bc6f035db8faa351d019e7d2ae53dbb7785214f2168d931fa74e77ed14bf8",
+      "new": false,
+      "bytes": 6785
+    },
+    "packages/server/src/transaction-store.ts": {
+      "sha256": "c0d1ebcdef1b354aa0806b8106ac0a3b0b24e6c94f50ec49b550decdf36ccf89",
+      "new": false,
+      "bytes": 86727
+    },
+    "packages/server/src/transaction-http.ts": {
+      "sha256": "b51d02801e5924190aba77c377e538db0b8619149d6184e19cb56d440f40c2cf",
+      "new": false,
+      "bytes": 27155
+    },
+    "packages/server/src/transaction-changefeed.test.ts": {
+      "sha256": "eb29103cf4f9c79a06eb49261d01da274de229dbc9f0ba169418048bf79adb28",
+      "new": false,
+      "bytes": 39286
+    },
+    "apps/bdptest/src/transactional-changefeed-refusal-context-installed.test.ts": {
+      "sha256": "c8ec6da3cab3850d69b2b8b8b650b17f159fa9179930eeecd3a287716aa946af",
+      "new": true,
+      "bytes": 17847
+    },
+    "docs/design/transaction-implementation-progress.md": {
+      "sha256": "a1cc5b84d79485855dfbf1793628af4dcdba1147bd7938721a9af5317f57b569",
+      "new": false,
+      "bytes": 127324
+    }
+  },
+  "diffSha256": "581eb3a0fcfe74b68d01a6a10b125cf00b7d6d5e7aa158645fa29bd3eee12375",
+  "authoringReleaseSha256": "df5b4dbd0e2d64a9443126c9b85e349eaca6939311b460684b3ed02da8ecc548"
+}

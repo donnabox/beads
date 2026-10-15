@@ -1,0 +1,29 @@
+{
+  "id": "omit-context-control",
+  "argv": [
+    "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-changefeed-parameter-context-draft/control-preparation/mirror/node_modules/.pnpm/vitest@4.1.10_@types+node@24.13.3_vite@8.2.1_@types+node@24.13.3_/node_modules/vitest/vitest.mjs",
+    "run",
+    "packages/server/src/transaction-changefeed.test.ts",
+    "--maxWorkers=1",
+    "--reporter=verbose",
+    "--reporter=json",
+    "--outputFile=/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-changefeed-parameter-context-draft/control-preparation/run/control.results.json",
+    "-t",
+    "^(?:preserves\\ current\\ context\\ on\\ owner\\-observed\\ changefeed\\ parameter\\ refusals\\ over\\ HTTP)$"
+  ],
+  "cwd": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-changefeed-parameter-context-draft/control-preparation/mirror",
+  "supervisorSeconds": 120,
+  "cases": 1,
+  "http": 12,
+  "owners": 1,
+  "directories": 1,
+  "listeners": 1,
+  "productChildren": 0,
+  "selectedFullNames": [
+    "preserves current context on owner-observed changefeed parameter refusals over HTTP"
+  ],
+  "ownedTempPrefixes": [
+    "bdp-feed-http-"
+  ]
+}

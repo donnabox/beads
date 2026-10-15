@@ -1,0 +1,40 @@
+{
+  "pr": 129,
+  "run": 38750269222,
+  "job": 116474544354,
+  "base": "9a42a4531def99e12fa9a1fba02e70558d643265",
+  "head": "be0cc70d8a3174760c4877e8969728dbdec4ead5",
+  "tree": "93b2ea89d6db05512d4c0bc5bb3cf6083560e8da",
+  "synthetic": "11ecd3b9bbcdb028213977898db246d2acadf99f",
+  "conclusion": "success",
+  "jobSeconds": 914.0,
+  "suiteSeconds": 691.57,
+  "testsPassed": 9301,
+  "testsSkipped": 1,
+  "filesPassed": 176,
+  "preflightPassed": 7,
+  "readSealRows": 89,
+  "allStepsPassed": 27,
+  "failedOrSkippedSteps": [],
+  "ciRawLogSha256": "0b51a7c1cbb3333e2c8447b221a815eff0ece96270ec618e0432a362ba2bbf94",
+  "rawLogBytes": 3343988,
+  "runSha256": "9ab54827ea66c169a7ac9cf0d12a185cf6c4f488f68f7941bb9446894d1e3c22",
+  "jobSha256": "b423f1a21c087002cb8d0854504791a3273e3fa8258c2f6dda0cadb462c93889",
+  "prSha256": "76cad21fbea1182f281a6ba2cb1fac1b4378a0cc90b1007ad44568f1ad0d7910",
+  "syntheticOrderedParents": [
+    "9a42a4531def99e12fa9a1fba02e70558d643265",
+    "be0cc70d8a3174760c4877e8969728dbdec4ead5"
+  ],
+  "syntheticTreeEqualsCandidate": true,
+  "ruWitness": {
+    "mode": "default-emitted-CI",
+    "passed": true,
+    "HTTP": 10,
+    "childPid": 22051,
+    "childExitCode": 0,
+    "directoryAbsent": true,
+    "claimEligible": false,
+    "overlapObserved": true
+  },
+  "limits": "CI default emitted witness, not external installed consumer qualification; no release or profile completion claim. No rerun/cancel/merge performed."
+}

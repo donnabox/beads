@@ -1,0 +1,13 @@
+2026-10-15T14:19:05.2773008Z HEAD is now at 11ecd3b Merge be0cc70d8a3174760c4877e8969728dbdec4ead5 into 9a42a4531def99e12fa9a1fba02e70558d643265
+2026-10-15T14:26:33.9197784Z stdout | apps/bdptest/src/read-update-guarded-overlap-installed.test.ts > preserves one guarded winner and both retained dispositions across overlapping ordinary Read+Update requests
+2026-10-15T14:26:33.9353019Z  ✓ apps/bdptest/src/read-update-guarded-overlap-installed.test.ts > preserves one guarded winner and both retained dispositions across overlapping ordinary Read+Update requests 1193ms
+2026-10-15T14:33:59.4428796Z  Test Files  176 passed (176)
+2026-10-15T14:33:59.4475373Z       Tests  9301 passed | 1 skipped (9302)
+2026-10-15T14:33:59.4483655Z    Duration  691.57s (transform 7.76s, setup 2.84s, import 40.55s, tests 1562.12s, environment 21ms)
+2026-10-15T14:34:01.7049066Z  Test Files  1 passed (1)
+2026-10-15T14:34:01.7049738Z       Tests  7 passed (7)
+2026-10-15T14:34:01.7051027Z    Duration  1.43s (transform 257ms, setup 46ms, import 319ms, tests 939ms, environment 0ms)
+2026-10-15T14:34:05.9898875Z bdp: installed clean lifecycle passed
+2026-10-15T14:34:06.0882192Z bdptest: installed clean lifecycle passed
+2026-10-15T14:34:06.1882584Z bdpbd: installed clean lifecycle passed
+2026-10-15T14:34:10.2241783Z {"level":"info","event":"evidence.verified","executable":"read-cohort-evidence","artifact":"docs/design/evidence/read-cohort/read-v1.json","constant":"674982be2123b9b7aae630bf79c3f774122900cd","runHead":"e5f7d0c43c151426350ceededdc77fe7e372db9b","evidenceCommit":"dbaf63a24219e1ea3f80394746853598b0d4464a","schemaReadProjection":"bd7da0fc3f8082e0bfb6f4969c04409f2a610e12408dbc6a0bd14b4b351127cc","schemaReadProjectionDefinitions":47,"schemaReadProjectionReachable":46,"rows":89}

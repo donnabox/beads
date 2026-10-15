@@ -1,0 +1,10 @@
+{
+  "file": "packages/server/dist/transaction-http.js",
+  "positiveSha256": "4d2afa08788305abf0d801bff14731fabda2033ef1dfd47aa8b394ffec4441a0",
+  "copySha256": "71e4a41978f975b8424b4be5cb835aa2545d4a03d006ee27b4b7ccea971bc6de",
+  "patchSha256": "168a22584482adc4326e6201fba4b5da5153fe10720dd474a1931b1a77285c92",
+  "old": "transactionHttpProblem(\"invalid-parameter\", error.context)",
+  "new": "transactionHttpProblem(\"invalid-parameter\", error instanceof TransactionEventParameterError ? error.context : undefined)",
+  "occurrences": 1,
+  "emittedOnly": true
+}

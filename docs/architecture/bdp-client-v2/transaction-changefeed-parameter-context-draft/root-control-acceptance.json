@@ -1,0 +1,30 @@
+{
+  "accepted": true,
+  "attribution": "Exact frozen draft0abed777; emitted-only isolated HTTP forwarding omission",
+  "actualTestExit": 1,
+  "namedFailures": [
+    "changefeed-context:3",
+    "changefeed-context:4",
+    "changefeed-context:5",
+    "changefeed-context:6",
+    "changefeed-context:7",
+    "changefeed-context:8",
+    "changefeed-context:12"
+  ],
+  "responseCount": 12,
+  "rootReadCompleteResponses": true,
+  "rootCheckedActualFailureMessages": true,
+  "sampledPidsIndependentlyAbsent": [
+    46492,
+    46494,
+    46499,
+    46507
+  ],
+  "sourceBindingSha256": "0abed77764ff7763e5e5a6f9b5a767090423fed01b21ea01b162a17b3b743e70",
+  "controlAdjudicationSha256": "f7feeb40f134d27c281e5d07f00ac8031be09a4088587b78c06d7ca8490c731f",
+  "resultSha256": "28034c17a71f9c4b7e82323f25a75062d9832f2357baba5b98d989effa3485c6",
+  "rootReleaseSha256": "f79690ca74fca9577bfbd4edd65cf1852caa5aee5018cfcb64f2d8b759d377de",
+  "claimEligible": false,
+  "claudeReview": "pending",
+  "installed": "not-run"
+}
