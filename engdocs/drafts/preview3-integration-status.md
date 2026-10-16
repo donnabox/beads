@@ -1,6 +1,6 @@
 # Preview 3 planning and execution
 
-Last checked: October 15, 2026, 21:12 PDT. This is a milestone snapshot, updated when the state changes; it is not a live CI dashboard.
+Last checked: October 15, 2026, 21:19 PDT. This is a milestone snapshot, updated when the state changes; it is not a live CI dashboard.
 
 This tracker covers the release plan and its execution. The active first phase is establishing a qualified Preview 3 integration branch. The integration-base milestones below are only what we need to begin producing Preview 3 builds; they are not the complete release plan. Proposed workstreams will be added to the release cutline only after their scope and qualification are decided.
 
@@ -23,12 +23,12 @@ These are planning lanes, not promises that all their changes will ship in Previ
 | --- | --- | --- |
 | Type system, metatype, Issue/Dependency definitions | Trish owns design and BDP/CLI contract; her separate implementation agent is working on the runtime. Review the implementable Type draft and qualify an exact source slice. | Boundary to decide |
 | Memory Bead/Link Type definitions | Melinda prepares a requirements/dependency map read-only. After the Type foundation is ready, Donna and Trish make the design decisions; Melinda drives the separate workstream. | To decide |
-| Memory proposal gap audit | Janet and Donna compare each requirement and scenario with verified Preview 2 behavior, then classify gaps and choose a release cutline. | Audit first; inclusion to decide |
+| Memory proposal gap audit | Janet is auditing all 32 requirements and 16 scenarios against exact final Preview 2 behavior; Donna will review the classified gaps and help choose a release cutline. | Audit underway; inclusion to decide |
 | Provenance V2 | Finish design and qualify at least the revision-provenance slice; activity provenance is a separate scope choice. | Likely required slice; boundary to decide |
 | Import/export | Iris owns data movement, initially to avoid in-place upgrades; evaluate installable Bead/Link/Type packages as a second use. | To decide |
 | BDP spec and reference implementation | Vickie is finishing the Write profile implementation and validation suite, then completing BDP spec/reference cleanup. This work proceeds independently of the release train and gates what `bd` can implement. | Experimental or deferred in `bd` |
-| Bead/Link CLI surface | Unassigned. Inventory commands and existing harnesses, decide semantics and acceptance cases, then delegate implementation and run the broader harnesses. | To decide |
-| Remaining CLI surface | Unassigned. Inventory separately after the Bead/Link cutline, resolve compatibility choices, then delegate implementation. | To decide |
+| Bead/Link CLI surface | Janet has started a read-only background inventory of commands and existing harnesses. Decide semantics and acceptance cases with Donna before delegating implementation or running broader harnesses. | Inventory underway; inclusion to decide |
+| Remaining CLI surface | Janet has started a separate read-only background inventory. Resolve compatibility choices before delegating implementation. | Inventory underway; inclusion to decide |
 | Integration and vendoring | Janet owns the fork/upstream merge, exact-source qualification and a reproducible `bd`/BDP dependency path. | Required infrastructure |
 
 ## Current state
