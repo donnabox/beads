@@ -1,6 +1,6 @@
 # Preview 3 planning and execution
 
-Last checked: October 15, 2026, 20:44 PDT. This is a milestone snapshot, updated when the state changes; it is not a live CI dashboard.
+Last checked: October 15, 2026, 20:48 PDT. This is a milestone snapshot, updated when the state changes; it is not a live CI dashboard.
 
 This tracker covers the release plan and its execution. The active first phase is establishing a qualified Preview 3 integration branch. The integration-base milestones below are only what we need to begin producing Preview 3 builds; they are not the complete release plan. Proposed workstreams will be added to the release cutline only after their scope and qualification are decided.
 
@@ -13,7 +13,7 @@ Each preview should make progress toward one or both goals:
 
 Memory functionality is intended to merge into fork `main` when qualified. BDP should remain explicitly experimental until there is a stable protocol to support: a Preview 3 build may expose it behind an opt-in switch or omit it. This policy does not yet decide which Memory features or BDP profiles are in the Preview 3 cutline.
 
-Preview 2 already demonstrates end-to-end Memory workflows. Donna identified two likely gaps for the next feature cutline: intentional Memory Bead and Link Type definitions, likely requiring a bounded part of the new [Types proposal](https://github.com/gastownhall/beads/issues/7590), and at least the revision-provenance part of [Provenance V2](https://github.com/gastownhall/beads/issues/7510). Donna considers pre-installed Memory Types an acceptable path for Preview 3; user authoring of Type definitions is a separate product decision. Trish is working on the Type-system design, its BDP specification, the Memory Type specifications, and descriptions of the existing Issue and Dependency Types. The Types and Provenance proposals are not completed implementation. Exact Preview 3 slices and a fresh gap audit against the [Memory proposal](https://github.com/gastownhall/beads/issues/5877) remain to decide.
+Preview 2 already demonstrates end-to-end Memory workflows. Donna identified two likely gaps for the next feature cutline: intentional Memory Bead and Link Type definitions, likely requiring a bounded part of the new [Types proposal](https://github.com/gastownhall/beads/issues/7590), and at least the revision-provenance part of [Provenance V2](https://github.com/gastownhall/beads/issues/7510). Donna considers pre-installed Memory Types an acceptable path for Preview 3; user authoring of Type definitions is a separate product decision. Trish's type-system design is nearing completion, a separate agent is implementing it, and the BDP Types specification needs a few more design turns before it can be called a fully implementable draft. Once that foundation lands, Donna and Trish plan a focused design pass for the Memory Bead and Link Types. Trish is also describing the existing Issue and Dependency Types. Neither the Type implementation nor the Memory definitions are accepted into the Preview 3 cutline yet. Exact slices and a fresh gap audit against the [Memory proposal](https://github.com/gastownhall/beads/issues/5877) remain to decide.
 
 ## Parallel workstreams to assess
 
@@ -21,9 +21,9 @@ These are planning lanes, not promises that all their changes will ship in Previ
 
 | Lane | Direction | Preview 3 inclusion |
 | --- | --- | --- |
-| Memory beads and links | Audit the Memory proposal against Preview 2 and define the remaining Memory behavior and relationships. | To decide |
+| Memory beads and links | After the Type-system foundation lands, Donna and Trish will intentionally define the Memory Bead and Link Types; audit other Memory proposal gaps against Preview 2. | To decide |
 | Issue and Dependency model | Trish is specifying the existing Issue and Dependency Types for completeness. | To decide |
-| Types | Trish is designing the Type system and BDP Types profile plus the Memory Type definitions; choose the bounded runtime slice and its migration/CLI effects. User Type authoring is a separate decision. | Likely required slice; boundary to decide |
+| Types | Trish's Type-system design is nearing completion; a separate agent is implementing it, and the BDP Types specification still needs review before it is a fully implementable draft. Choose the bounded runtime slice and its migration/CLI effects. User Type authoring is a separate decision. | Likely required slice; boundary to decide |
 | Provenance V2 | Land at least revision provenance, subject to design decisions and qualification; activity provenance is a separate scope choice. | Likely required slice; boundary to decide |
 | BDP core and profiles | Advance the read protocol and optional profiles without claiming a stable protocol. | Experimental or deferred |
 | Import/export | Resume data movement work after Preview 2. | To decide |
@@ -49,7 +49,8 @@ The earlier local merge rehearsal combines final Preview 2 with upstream `b911ed
 
 ## Release planning and delivery
 
-- [ ] Define the Memory Types and revision-provenance acceptance slice; audit the rest of the Memory proposal for Preview 3 candidates or deferrals.
+- [ ] Review and land the Type-system foundation and an implementable BDP Types draft; qualify the product implementation separately.
+- [ ] Donna and Trish define the Memory Bead and Link Types against that foundation; set the revision-provenance acceptance slice and audit other Memory proposal gaps for candidates or deferrals.
 - [ ] Choose the Preview 3 target date/window.
 - [ ] Agree the Preview 3 cutline; record included, experimental, and deferred work explicitly.
 - [ ] Work back from the target date to set feature freeze, integration, RC, manual-test, documentation, and release decision checkpoints.
