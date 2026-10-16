@@ -1,6 +1,6 @@
 # Preview 3 planning and execution
 
-Last checked: October 15, 2026, 23:07 PDT. This is a milestone snapshot, updated when the state changes; it is not a live CI dashboard.
+Last checked: October 15, 2026, 23:18 PDT. This is a milestone snapshot, updated when the state changes; it is not a live CI dashboard.
 
 This tracker covers the release plan and its execution. The active first phase is establishing a qualified Preview 3 integration branch. The integration-base milestones below are only what we need to begin producing Preview 3 builds; they are not the complete release plan. The selected Memory target below is a requirement commitment, not a qualification claim; other workstreams enter the cutline only by explicit decision.
 
@@ -55,6 +55,8 @@ These are planning lanes, not promises that all their changes will ship in Previ
 | Bead/Link CLI surface | A read-only exact-release inventory is complete. It maps namespace behavior, Dependency Link limits, and black-box harness gaps; settle semantics and acceptance cases with Donna before implementation. | Inventory complete; inclusion to decide |
 | Remaining CLI surface | A separate read-only exact-release inventory is complete. It maps graph-admitted commands, refused families, and existing compatibility harnesses; resolve semantics before implementation. | Inventory complete; inclusion to decide |
 | Integration and vendoring | Janet owns the fork/upstream merge, exact-source qualification and a reproducible `bd`/BDP dependency path. | Required infrastructure |
+
+The two CLI inventories are source-only audits. The [draft CLI validation and implementation waves](preview3-cli-validation-and-waves.md) specify how to verify final Preview 2 behavior with its exact installed binary, compare against a pinned shipping-product baseline, record intentional exceptions, and batch changes by command family. This plan awaits Donna's semantic review; its waves are not all Preview 3 release commitments.
 
 ## Current state
 
