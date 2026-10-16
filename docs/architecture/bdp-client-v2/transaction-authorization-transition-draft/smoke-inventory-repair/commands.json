@@ -1,0 +1,41 @@
+{
+  "commands": [
+    {
+      "id": "syntax",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-authorization-transition",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "--check",
+        "scripts/smoke-executables.mjs"
+      ],
+      "ownedTempPrefixes": []
+    },
+    {
+      "id": "format-check",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-authorization-transition",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/repos/wt/vickie/vickie-authorization-transition/node_modules/@biomejs/biome/bin/biome",
+        "format",
+        "scripts/smoke-executables.mjs"
+      ],
+      "ownedTempPrefixes": []
+    },
+    {
+      "id": "smoke",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-authorization-transition",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "run",
+        "smoke"
+      ],
+      "ownedTempPrefixes": [
+        "bdp-smoke-"
+      ]
+    }
+  ],
+  "boundSeconds": 120,
+  "noAutomaticRetry": true,
+  "internalExistingStartupRetries": "Unchanged fetchWithRetry at most20 attempts,50ms delay, within existing5s child bound; no stage retry."
+}

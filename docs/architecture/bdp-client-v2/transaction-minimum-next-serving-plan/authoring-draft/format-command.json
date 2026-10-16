@@ -1,0 +1,30 @@
+{
+  "argv": [
+    "/Users/dbox/repos/wt/vickie/vickie-authorization-transition/node_modules/.pnpm/@biomejs+cli-darwin-arm64@2.5.7/node_modules/@biomejs/cli-darwin-arm64/biome",
+    "format",
+    "--write",
+    "--config-path",
+    "/Users/dbox/repos/wt/vickie/vickie-minimum-current-resource/biome.json",
+    "packages/server/src/transaction-consistency.ts",
+    "packages/server/src/transaction-read.ts",
+    "packages/server/src/transaction-service.ts",
+    "packages/server/src/transaction-http.ts",
+    "packages/server/src/transaction-consistency.test.ts",
+    "packages/server/src/transaction-read.test.ts",
+    "packages/server/src/transaction-http.test.ts",
+    "apps/bdptest/src/transactional-minimum-current-resource-installed.test.ts"
+  ],
+  "cwd": "/Users/dbox/repos/wt/vickie/vickie-minimum-current-resource",
+  "version": "2.5.7",
+  "before": {
+    "packages/server/src/transaction-consistency.ts": "c6a04490b27aa306fc7fb885b1261869c678751bfd3fc2ddca338f946d12aac3",
+    "packages/server/src/transaction-read.ts": "7acb5889403afd4488c6b733d513cbd9bd682887b3a8d37caec9043c3e708bd0",
+    "packages/server/src/transaction-service.ts": "fd024b333277424ce8d7f70b662460abc2ec8c5cd566927c065c41da9f1c43be",
+    "packages/server/src/transaction-http.ts": "e59e687bcdbb5e48d0dd20757e3b0efbcdd2e519bdcd9354e21fc72a117dc176",
+    "packages/server/src/transaction-consistency.test.ts": "a4e9ee4baacb97b05d606fb4a148a778699c8671efd7f4336d884cc46469d3da",
+    "packages/server/src/transaction-read.test.ts": "cb909195a956ef6f362d45dd2d37405885b870d23cb4fb977b276201a8d48254",
+    "packages/server/src/transaction-http.test.ts": "1cc14d310d301541d9e14b1af0c48fffcccdac3e775c92dce497493d914b6f4f",
+    "apps/bdptest/src/transactional-minimum-current-resource-installed.test.ts": "00ead908264a04056f1bcaf5996d22e7f22d403cf2b335294be1f73d65e3519d"
+  },
+  "noRuntime": true
+}

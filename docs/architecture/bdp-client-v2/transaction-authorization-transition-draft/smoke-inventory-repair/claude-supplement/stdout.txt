@@ -1,0 +1,47 @@
+## Verdict
+
+No actionable defects. The patch is the minimal, correct repair for the reported mismatch; I found nothing requiring a change. Findings below are confirmations and two clarifications, with no execution claimed.
+
+---
+
+### 1. INFO — `scripts/smoke-executables.mjs:260-263` — Repair is arithmetically and semantically exact
+The guard at 389-400 is a two-part set-equality test (`length !== size`, then `some(!has)`). Adding exactly the four reported `unexpected` names:
+- grows `expectedServerOutput.size` by 4 only if none were already present. Scanning 134-388, the `transaction-*` entries are `-installed-configuration`, `-installed`, `-installed-process`, `-set`, `-batch`, `-comparison`, `-dependencies`, `-sse`, `-changefeed`, `-events`, `-snapshot`, `-read`, `-sequence`, `-store`, `-schema-http`, `-http`, `-runtime-configuration`, `-runtime`, `-consistency`, `-discovery`, `-service`, `-submission`. No pre-existing `transaction-authorization` entry, so no silent `Set` dedup and no length/size skew.
+- matches the reported failure exactly (`missing=[]`, those four `unexpected`), so both branches of the comparison are satisfied for this build.
+
+**Fix:** none.
+
+### 2. INFO — `tsconfig.base.json:3-5,20` vs. `:260-263` — Four artifacts is the complete emission set
+`declaration`, `declarationMap`, and `sourceMap` are all on, with `outDir: dist` / `rootDir: src` and `exclude: ["src/**/*.test.ts"]` (`packages/server/tsconfig.json:4-8`). One non-test `src` module therefore emits exactly `.js`, `.js.map`, `.d.ts`, `.d.ts.map` — the four added names, matching the shape of every other module in the inventory. `transaction-store.ts:1-11` imports `./transaction-authorization.js`, confirming the module is real and inside the emitted graph rather than an orphan. No fifth artifact (e.g. a `.tsbuildinfo` landing in `dist`) is implied, and the observed run's `unexpected` list independently rules one out.
+
+**Fix:** none.
+
+### 3. INFO — `:505-516` — Private-subpath coverage for the new module is automatic; no companion edit needed
+That loop derives its subjects from `installedServerOutput`, filtering `transaction-*.js`, so `transaction-authorization.js` is asserted non-resolvable as `@bdp/server/dist/...` the moment it ships — independent of this patch. `assertServerExports` (`smoke-safety.mjs:5-14`) pins `manifest.exports` by `isDeepStrictEqual` to `"."` and `"./development"` only, with no `./dist/*` pattern, which is what makes `ERR_PACKAGE_PATH_NOT_EXPORTED` the correct expected error. This confirms your assessment: adding a bare-subpath case to the list at 518-556 is redundancy, not a requirement.
+
+**Fix:** none; I'd leave 518-556 untouched to keep the diff four lines.
+
+### 4. INFO — No second strict inventory requires a lockstep update
+Within the supplied source, `@bdp/server/dist` is the only strict (set-equality) artifact inventory. `assertBuildOutput` (73-92) is a `.test.`-substring scan across all `packages/*/dist` and `apps/*/dist` — satisfied because the tsconfig excludes test sources. The conformance check (565-570) is presence-only for `transactional-observation*`, not exhaustive. So no other guard in this file silently drifts from the new module.
+
+**Fix:** none.
+
+### 5. CLARIFICATION (low) — `:441-456` vs. `smoke-safety.mjs:5-14` — Whitelist is subpath-level, not symbol-level
+Your framing describes `assertServerExports` as rejecting "any unexpected public exports." Precisely, it whitelists *export subpaths* in the manifest. The runtime *symbol* surface of the public root is guarded separately by the hardcoded `in publicServer` denylist at 441-456 plus the pagination key-string assertion at 474-476. A denylist does not cover symbols it doesn't name, so if `index.ts` were to re-export, say, `parseTransactionAuthorization` or `TransactionAuthorizationFailure` (names visible in `transaction-store.ts:1-11`), this smoke would not flag it.
+
+This patch neither weakens nor strengthens that property — it is unchanged by the four added lines, and the root export surface falls under the already-reviewed production change, outside this review's scope. Recording it only so the guard's actual shape isn't over-credited when judging "privacy guards intact."
+
+**Fix:** none in this patch. If you later want symbol-level strictness, that is a separate change to 441-456 (denylist → exact-key whitelist), not a repair of this mismatch.
+
+---
+
+## Missing context (not treated as defects)
+
+- `packages/server/src/index.ts` and `development.ts` — cannot verify whether the root or development facade re-exports any `transaction-authorization` symbol (bears only on finding 5).
+- `scripts/smoke-executables.mjs:614-end` — the remainder after `run()` is unseen; if any later stage re-derives or re-asserts a dist inventory, I could not check it for the same omission.
+- `scripts/installed-reference-observation.mjs` and `smoke-safety.mjs:36+` — not supplied.
+- The `packages/server/src` directory listing — I rely on the reported `unexpected` set rather than direct enumeration to conclude the authorization work added exactly one module.
+
+## Validation status
+
+Unverified. The three prepared stages (pinned `node --check`, targeted Biome format check, full `pnpm` smoke) have not run; the four added lines are string literals at matching 6-space indentation with trailing commas, so I expect both static stages to be clean, but correctness of the inventory is only established by an actual smoke run at this commit. No smoke or CI success is claimed.

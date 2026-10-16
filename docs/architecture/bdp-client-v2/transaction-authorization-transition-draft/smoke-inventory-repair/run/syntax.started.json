@@ -1,0 +1,30 @@
+{
+  "name": "syntax",
+  "argv": [
+    "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+    "--check",
+    "scripts/smoke-executables.mjs"
+  ],
+  "cwd": "/Users/dbox/repos/wt/vickie/vickie-authorization-transition",
+  "started": "2026-10-16T02:54:31.688129+00:00",
+  "head": "87911dce8146339ccf42d35fac55daec52760843",
+  "workspaceDirty": true,
+  "sourceSha256": {
+    "scripts/smoke-executables.mjs": "96701a2e4a7535e44ad4490a109d8e4c93925b4702b5453f3c55abe689a88060"
+  },
+  "sourceDiffSha256": "5920d52bd180373fcf2c830aeed75afac56f8ad14ba51c9ab4c09671726246d0",
+  "rootAcceptanceSha256": "6b8c3505c552d93394b22b3ed509ff5098c83de8ab5bc854a563e760ae08c2f6",
+  "preparationSha256": "985408a6490f462e211e9ab211b5c48d5b962e8b7ec429ddcf67e3feda466ccd",
+  "bdpOverrides": {},
+  "guardedArgv": [
+    "/opt/homebrew/opt/python@3.14/bin/python3.14",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/guarded-action.py",
+    "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+    "--check",
+    "scripts/smoke-executables.mjs"
+  ],
+  "nodePathPrefix": "/Users/dbox/.nvm/versions/node/v24.16.0/bin",
+  "sourceAttribution": "Externally bound source snapshot or frozen package; not child-attested Git identity",
+  "plannedWorkload": {},
+  "derivativeBinding": null
+}

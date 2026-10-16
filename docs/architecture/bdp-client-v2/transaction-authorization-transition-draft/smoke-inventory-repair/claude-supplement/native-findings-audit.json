@@ -1,0 +1,22 @@
+{
+  "at": "2026-10-16T02:59:08.867649+00:00",
+  "reviewExitSha256": "84cbdae486f17b36fe7d017c355beee847d410413132bb264dfcdfd749591c4c",
+  "stdoutSha256": "d4c3f5aec391d44c8950f8b860d478e381b90af01087e0fd7d4acf939147706d",
+  "auditSha256": "77b5954e446b0df1caf5e6888593d8c78008f908f848bdb1f12edea720991b55",
+  "findings": 5,
+  "actionableRepairs": 0,
+  "acceptedClarification": "subpath whitelist is not exhaustive runtime symbol whitelist",
+  "sourceUnchanged": true,
+  "pidAbsent": 43295,
+  "tmpEmpty": true,
+  "rootValidationSha256": "7bed07a5e963b657a9e3aecdbe60b7d5a8ccf27d6f9e4c5f5807e2df68a6c3d4",
+  "sourcePins": {
+    "scripts/smoke-executables.mjs": "96701a2e4a7535e44ad4490a109d8e4c93925b4702b5453f3c55abe689a88060",
+    "scripts/smoke-safety.mjs": "8aa35543d3236187aa377ad01d2255ecc6abcab3a81665aa6498baff2bf73803",
+    "scripts/installed-reference-observation.mjs": "ca897f4a7659969df123037b5847d5765b357d9b8e1652f367bb204450db6278",
+    "packages/server/src/index.ts": "34f9d9de8b48852c64919e69ce93f149e9cdae5142c15c75e4c35f08f15efc44",
+    "packages/server/src/development.ts": "a3f994bd610f17821c7d51189104308abef6196bb12b565b268a0ffc96b04f39"
+  },
+  "authorOverlap": true,
+  "mergeAuthorized": false
+}
