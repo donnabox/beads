@@ -1,8 +1,32 @@
 # Preview 3 planning and execution
 
-Last checked: October 15, 2026, 20:15 PDT. This is a milestone snapshot, updated when the state changes; it is not a live CI dashboard.
+Last checked: October 15, 2026, 20:25 PDT. This is a milestone snapshot, updated when the state changes; it is not a live CI dashboard.
 
-This tracker covers the release plan and its execution. The active first phase is establishing a qualified Preview 3 integration branch. Proposed workstreams will be added to the release cutline only after their scope and qualification are decided; listing a workstream here will not itself commit it to Preview 3.
+This tracker covers the release plan and its execution. The active first phase is establishing a qualified Preview 3 integration branch. The integration-base milestones below are only what we need to begin producing Preview 3 builds; they are not the complete release plan. Proposed workstreams will be added to the release cutline only after their scope and qualification are decided.
+
+## Why we are releasing previews
+
+Each preview should make progress toward one or both goals:
+
+1. Satisfy the requirements of [Chris's Memory proposal](https://github.com/gastownhall/beads/issues/5877). This has somewhat more time pressure.
+2. Develop the Beads Data Protocol (BDP) specification toward a version that could be submitted to a consortium. AAIF is a possible home, not a committed destination.
+
+Memory functionality is intended to merge into fork `main` when qualified. BDP should remain explicitly experimental until there is a stable protocol to support: a Preview 3 build may expose it behind an opt-in switch or omit it. This policy does not yet decide which Memory features or BDP profiles are in the Preview 3 cutline.
+
+## Parallel workstreams to assess
+
+These are planning lanes, not promises that all their changes will ship in Preview 3. Each lane needs a concrete proposal, acceptance scenarios, dependencies, an owner, and a qualified source PR before it enters the cutline.
+
+| Lane | Direction | Preview 3 inclusion |
+| --- | --- | --- |
+| Memory beads and links | Define and implement the Memory behavior and relationships needed by the proposal. | To decide |
+| Issue and Dependency model | Define the issue and dependency profile, including link semantics. | To decide |
+| Types | Revisit the type model and its bead/link representation; assess migration and CLI effects. | To decide |
+| Provenance V2 | Settle attribution and source semantics across writes and history. | To decide |
+| BDP core and profiles | Advance the read protocol and optional profiles without claiming a stable protocol. | Experimental or deferred |
+| Import/export | Resume data movement work after Preview 2. | To decide |
+| CLI completeness | Extend the bead/link command surface and usability, while preserving the qualified release line. | To decide |
+| Integration and vendoring | Keep bd and BDP dependencies, qualification, and the fork/upstream merge reproducible. | Required infrastructure |
 
 ## Current state
 
@@ -23,7 +47,9 @@ A local, uncommitted merge rehearsal combines final Preview 2 with earlier upstr
 
 ## Release planning and delivery
 
-- [ ] Agree the Preview 3 cutline and record which parallel workstreams are included or deferred.
+- [ ] Choose the minimum user-visible Memory release bar and the Preview 3 target date/window.
+- [ ] Agree the Preview 3 cutline; record included, experimental, and deferred work explicitly.
+- [ ] Work back from the target date to set feature freeze, integration, RC, manual-test, documentation, and release decision checkpoints.
 - [ ] Integrate and qualify each accepted change on the Preview 3 branch.
 - [ ] Prepare a candidate runbook and manual playground for review.
 - [ ] Freeze a verified release candidate, complete review, and publish the final release after Donna's sign-off.
