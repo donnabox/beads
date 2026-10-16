@@ -1,0 +1,388 @@
+diff --git a/packages/server/src/resource-evaluator.ts b/packages/server/src/resource-evaluator.ts
+index 8c175a9..7388ea7 100644
+--- a/packages/server/src/resource-evaluator.ts
++++ b/packages/server/src/resource-evaluator.ts
+@@ -1,3 +1,4 @@
++import { jsonValueEqual } from "./json-value-equality.js";
+ import {
+   type RevisionActor,
+   type BeadRecord,
+@@ -379,33 +380,6 @@ function storedRecord(stored: EvaluatorStoredResource, scope: string): ResourceR
+   return record;
+ }
+ 
+-/** An iterative RFC6902 value comparison over already-admitted numbers. */
+-function equal(left: unknown, right: unknown): boolean {
+-  const pending: Array<readonly [unknown, unknown]> = [[left, right]];
+-  while (pending.length) {
+-    const pair = pending.pop();
+-    if (!pair) break;
+-    const [a, b] = pair;
+-    if (a === b) continue;
+-    if (
+-      !a ||
+-      !b ||
+-      typeof a !== "object" ||
+-      typeof b !== "object" ||
+-      Array.isArray(a) !== Array.isArray(b)
+-    )
+-      return false;
+-    const aa = a as Record<string, unknown>;
+-    const bb = b as Record<string, unknown>;
+-    const keys = Object.keys(aa);
+-    if (keys.length !== Object.keys(bb).length) return false;
+-    for (const key of keys) {
+-      if (!Object.hasOwn(bb, key)) return false;
+-      pending.push([aa[key], bb[key]]);
+-    }
+-  }
+-  return true;
+-}
+ function copy(value: unknown): unknown {
+   if (value === null || typeof value !== "object") return value;
+   const result: unknown[] | Record<string, unknown> = Array.isArray(value)
+@@ -862,8 +836,8 @@ function evaluate(
+   const noOp =
+     !creating &&
+     !deleting &&
+-    equal(properties, before?.properties) &&
+-    equal(commonMetadata, before?.metadata ?? {});
++    jsonValueEqual(properties, before?.properties) &&
++    jsonValueEqual(commonMetadata, before?.metadata ?? {});
+   const contextInput = "revisionProvenance" in input ? input.revisionProvenance : undefined;
+   // Protocol defaults: omitted and {} both carry only undetermined states.
+   const needsContext =
+diff --git a/packages/server/src/transaction-batch.ts b/packages/server/src/transaction-batch.ts
+index c175e04..4c2b995 100644
+--- a/packages/server/src/transaction-batch.ts
++++ b/packages/server/src/transaction-batch.ts
+@@ -1,8 +1,6 @@
+ /** Private Transactional evaluator. Bounded sets share singleton/batch syntax and admission. */
+ import {
+   prepareSetShape,
+-  assertTransactionInputDepth,
+-  TransactionDevelopmentLimitError,
+   validateSetSelector,
+   type TransactionSetOperation,
+   transactionInputText as losslessText,
+@@ -82,7 +80,6 @@ export interface PreparedTransaction {
+   };
+ }
+ const prepared = new WeakSet<object>();
+-const depthRefusals = new WeakMap<object, string>();
+ function assertResourceOperation(operation: unknown): asserts operation is ResourceOperation {
+   if (
+     typeof operation !== "string" ||
+@@ -135,9 +132,7 @@ export function prepareTransactionSetCore(
+ ): PreparedTransaction {
+   if (Buffer.byteLength(text) > TRANSACTION_RUNTIME_LIMITS.requestBodyBytes)
+     throw new RangeError("development batch byte limit");
+-  return requireTransactionDepth(
+-    prepareMixedTransaction(scope, object(decodeJsonDocument(text)), singleton),
+-  );
++  return prepareMixedTransaction(scope, object(decodeJsonDocument(text)), singleton);
+ }
+ function prepareMixedTransaction(
+   scope: string,
+@@ -167,8 +162,7 @@ function prepareMixedTransaction(
+     const { operation, ...input } = op;
+     return prepareSetShape(canonicalScope, operation, Object.freeze(input));
+   });
+-  // Synthetic syntax parsers do not impose the execution depth bound. Finish
+-  // every unambiguous shape/reference/label check before any private gap.
++  // Finish every shape/reference/label and Selector grammar check before admission.
+   for (const [index, op] of operations.entries())
+     if (op.operation === "updateWhere" || op.operation === "deleteWhere")
+       validateSetSelector(
+@@ -176,14 +170,13 @@ function prepareMixedTransaction(
+         singleton ? "/selector" : `/operations/${index}/selector`,
+         TRANSACTION_RUNTIME_LIMITS.requestBodyBytes,
+       );
+-  return prepareDepthCarrier(
++  return prepareCarrier(
+     Object.freeze({
+       scope: canonicalScope,
+       kind: singleton ? "singleton" : "sequence",
+       operations: Object.freeze(operations),
+       keys: Object.freeze([]),
+     }),
+-    root,
+   );
+ }
+ /** A singleton is the same one-operation Transactional request, not a RU
+@@ -194,7 +187,7 @@ export function prepareTransactionSingleton(
+   operation: TransactionSingletonOperation,
+   text: string,
+ ): PreparedTransaction {
+-  return requireTransactionDepth(prepareSingletonForReceiving(scope, operation, text));
++  return prepareSingletonForReceiving(scope, operation, text);
+ }
+ /** Private receiving syntax only; the owner decides capacity after retained-key comparison. */
+ export function prepareTransactionForReceiving(
+@@ -224,7 +217,7 @@ function prepareSingletonForReceiving(
+     assertResourceOperation(operation);
+   if (Buffer.byteLength(text) > TRANSACTION_RUNTIME_LIMITS.requestBodyBytes)
+     throw new RangeError("development singleton byte limit");
+-  // Apply the same operation-content depth bound as the batch wrapper.
++  // Preserve complete lossless root validation before choosing the singleton parser.
+   const input = object(decodeJsonDocument(text));
+   if (operation === "updateWhere" || operation === "deleteWhere") {
+     // A raw discriminator must never replace the route. The single mixed pass
+@@ -234,7 +227,7 @@ function prepareSingletonForReceiving(
+     return prepareMixedTransaction(scope, { operations: [{ operation, ...input }] }, true);
+   }
+   const carrier = prepareReadUpdateSingleton(scope, operation, text, "internal-singleton");
+-  return prepareDepthCarrier(carrier, input, 2);
++  return prepareCarrier(carrier);
+ }
+ export interface PreparedTransactionSequence {
+   readonly scope: string;
+@@ -260,9 +253,7 @@ export function prepareTransactionSequence(
+   scope: string,
+   text: string,
+ ): PreparedTransactionSequence {
+-  const sequence = prepareSequence(scope, text);
+-  for (const member of sequence.members) requireTransactionDepth(member.request);
+-  return sequence;
++  return prepareSequence(scope, text);
+ }
+ /** Private receiving syntax; retained member identity precedes fresh capacity. */
+ export function prepareTransactionSequenceForReceiving(
+@@ -277,8 +268,6 @@ function prepareSequence(scope: string, text: string): PreparedTransactionSequen
+   const carrier = prepareReadUpdateSequence(scope, text);
+   if (carrier.operations.length > TRANSACTION_MAXIMUM_OPERATIONS)
+     throw new RangeError("development sequence member limit");
+-  const raw = object(decodeJsonDocument(text)).operations;
+-  if (!Array.isArray(raw)) throw new Error("parsed sequence lost operations");
+   const labels = new Map<string, number>();
+   const members = carrier.operations.map((op, index) => {
+     const aliasOperands: { readonly field: string; readonly locator: string }[] = [];
+@@ -316,17 +305,14 @@ function prepareSequence(scope: string, text: string): PreparedTransactionSequen
+     // whose syntax correctly rejects @name outside a sequence.
+     const key = carrier.keys[index];
+     if (key === undefined) throw new Error("prepared sequence lost member key");
+-    // Original raw member depth2 equals root0 / operations array1 / member2.
+     // The complete carrier parser already validated every label and reference.
+-    const request = prepareDepthCarrier(
++    const request = prepareCarrier(
+       Object.freeze({
+         kind: "singleton",
+         scope: carrier.scope,
+         operations: Object.freeze([op]),
+         keys: Object.freeze([key]),
+       }),
+-      object(raw[index]),
+-      2,
+     );
+     if (op.name) labels.set(op.name, index);
+     return Object.freeze({
+@@ -355,30 +341,6 @@ function prepareCarrier(carrier: PreparedTransaction["carrier"]): PreparedTransa
+   prepared.add(result);
+   return result;
+ }
+-function prepareDepthCarrier(
+-  carrier: PreparedTransaction["carrier"],
+-  input: LosslessJsonValue,
+-  depth = 0,
+-): PreparedTransaction {
+-  const result = prepareCarrier(carrier);
+-  try {
+-    assertTransactionInputDepth(input, depth);
+-  } catch (error) {
+-    if (!(error instanceof TransactionDevelopmentLimitError)) throw error;
+-    depthRefusals.set(result, error.message);
+-  }
+-  return result;
+-}
+-/** Source-private, read-only fact; only this module can create or annotate its brand. */
+-export function transactionDepthRefusal(batch: PreparedTransaction): string | undefined {
+-  if (!prepared.has(batch)) throw new TypeError("expected prepared transaction");
+-  return depthRefusals.get(batch);
+-}
+-function requireTransactionDepth(batch: PreparedTransaction): PreparedTransaction {
+-  const message = transactionDepthRefusal(batch);
+-  if (message !== undefined) throw new TransactionDevelopmentLimitError(message);
+-  return batch;
+-}
+ export function assertPreparedTransaction(batch: PreparedTransaction, scope: string): void {
+   if (!prepared.has(batch) || batch.carrier.scope !== scope)
+     throw new TypeError("expected prepared transaction for this Scope");
+diff --git a/packages/server/src/transaction-http.ts b/packages/server/src/transaction-http.ts
+index c0f9dd1..cf88045 100644
+--- a/packages/server/src/transaction-http.ts
++++ b/packages/server/src/transaction-http.ts
+@@ -369,8 +369,6 @@ export function createTransactionHttpHandler(
+         if (!result.context) throw new Error("negotiation refusal lost same-entry context");
+         return context(empty(406), result.context);
+       }
+-      if (result.kind === "development-limit")
+-        return developmentGap("unsupported-transaction-composition");
+       if (result.code === "idempotency-conflict") {
+         if (!result.context) throw new Error("conflict refusal lost same-entry context");
+         return context(
+diff --git a/packages/server/src/transaction-set.ts b/packages/server/src/transaction-set.ts
+index d2a0751..b076866 100644
+--- a/packages/server/src/transaction-set.ts
++++ b/packages/server/src/transaction-set.ts
+@@ -14,8 +14,7 @@ export interface PreparedTransactionSet {
+   readonly name?: never;
+ }
+ export const TRANSACTION_SELECTOR_LIMITS = Object.freeze({ bytes: 4096, depth: 32, nodes: 256 });
+-/** Serialize already decoded, byte-bounded syntax without prematurely applying
+- * the executable depth limit. Preserve original numeric lexemes and key order. */
++/** Serialize already decoded, byte-bounded syntax iteratively. Preserve original numeric lexemes and key order. */
+ export function transactionInputText(value: LosslessJsonValue): string {
+   const pending: (string | { value: LosslessJsonValue })[] = [{ value }];
+   const chunks: string[] = [];
+@@ -47,19 +46,6 @@ export function transactionInputText(value: LosslessJsonValue): string {
+   }
+   return chunks.join("");
+ }
+-/** Private execution capacity only, after complete known carrier syntax. The
+- * depth convention is unchanged: the batch root is 0, singleton input is 2. */
+-export function assertTransactionInputDepth(value: LosslessJsonValue, depth = 0): void {
+-  const pending = [{ value, depth }];
+-  while (pending.length) {
+-    const item = pending.pop()!;
+-    if (item.depth > 32)
+-      throw new TransactionDevelopmentLimitError("development batch depth limit");
+-    if (item.value && typeof item.value === "object" && !(item.value instanceof JsonNumberLiteral))
+-      for (const child of Object.values(item.value))
+-        pending.push({ value: child, depth: item.depth + 1 });
+-  }
+-}
+ function nonnegativeInteger(value: LosslessJsonValue): boolean {
+   if (!(value instanceof JsonNumberLiteral)) return false;
+   const match = /^(-?)(\d+)(?:\.(\d+))?(?:[eE]([+-]?\d+))?$/.exec(value.literal);
+diff --git a/packages/server/src/transaction-snapshot.ts b/packages/server/src/transaction-snapshot.ts
+index 559a2e7..75c4989 100644
+--- a/packages/server/src/transaction-snapshot.ts
++++ b/packages/server/src/transaction-snapshot.ts
+@@ -1,3 +1,4 @@
++import { jsonValueEqual } from "./json-value-equality.js";
+ import { INITIAL_TRANSACTION_VIEW } from "./transaction-authorization.js";
+ /** Source-private durable Snapshot owner support. No HTTP route or admission claim. */
+ import { createHash, createHmac, randomBytes, randomUUID, timingSafeEqual } from "node:crypto";
+@@ -404,7 +405,7 @@ export function transactionSnapshotStorage(
+           );
+           for (const link of inline)
+             integrity(
+-              isDeepStrictEqual(link, records.get(link.id.slice(scope.length))?.value) &&
++              jsonValueEqual(link, records.get(link.id.slice(scope.length))?.value) &&
+                 referenceUri(link.source) === bead.id,
+               "owned Link differs from first-class record",
+             );
+diff --git a/packages/server/src/transaction-store.ts b/packages/server/src/transaction-store.ts
+index 82aee6c..b3675fb 100644
+--- a/packages/server/src/transaction-store.ts
++++ b/packages/server/src/transaction-store.ts
+@@ -61,7 +61,6 @@ import {
+   TRANSACTION_RUNTIME_LIMITS,
+   TRANSACTION_MAXIMUM_OPERATIONS,
+   assertPreparedTransaction,
+-  transactionDepthRefusal,
+   assertPreparedTransactionSequence,
+   normalizeTransaction,
+   evaluateTransaction,
+@@ -147,7 +146,6 @@ export interface TransactionReceivingControls {
+ }
+ export type TransactionReceivingAdmission =
+   | TransactionAdmission
+-  | { readonly kind: "development-limit"; readonly message: string }
+   | { readonly kind: "not-acceptable"; readonly context?: TransactionReadContext }
+   | { readonly kind: "operation-limit"; readonly context?: TransactionReadContext }
+   | {
+@@ -547,13 +545,12 @@ export function openTransactionStore(options: TransactionStoreOptions) {
+   function sweep(now: number) {
+     snapshots.expire(now, readContext());
+     const counts = { completedExpired: 0, failedForgotten: 0 };
+-    // This private composition has no population/workload qualification. Keep
+-    // only rows whose detail can expire in the scan; compact receipts stay bound.
++    // SQLite JSON functions reject valid deep receipt text. Filter using the
++    // same JS decoder as expiry; compact receipts remain bound and unchanged.
+     for (const stored of db
+-      .prepare(
+-        "SELECT * FROM receipts WHERE owner IS NULL AND json_extract(receipt,'$.detail')='available'",
+-      )
++      .prepare("SELECT * FROM receipts WHERE owner IS NULL")
+       .all() as unknown as Row[]) {
++      if (parseReceipt(stored.receipt).detail !== "available") continue;
+       const result = expireRow(stored, now);
+       if (result.change) counts[result.change]++;
+     }
+@@ -1160,11 +1157,6 @@ export function openTransactionStore(options: TransactionStoreOptions) {
+           ? { kind: "existing", receipt: parseReceipt(prior.receipt) }
+           : { kind: "comparison-pending" };
+     }
+-    const depthRefusal = transactionDepthRefusal(batch);
+-    if (!prior && depthRefusal !== undefined) {
+-      if (controls === undefined) throw new TransactionDevelopmentLimitError(depthRefusal);
+-      return { kind: "development-limit", message: depthRefusal };
+-    }
+     const normalized = template
+       ? undefined
+       : normalizeTransaction(batch, resolveAlias, prior?.witnesses, references);
+@@ -1502,8 +1494,6 @@ export function openTransactionStore(options: TransactionStoreOptions) {
+         throw new TransactionAuthorizationFailure("forbidden", readContext());
+       const admission = atomic(() => {
+         const result = admitKey(principal, key, batch, false, undefined, undefined, receiving);
+-        if (result.kind === "development-limit" && controls === undefined)
+-          throw new TransactionDevelopmentLimitError(result.message);
+         if (result.kind === "operation-limit" && controls === undefined)
+           throw new TransactionDevelopmentLimitError("development transaction operation limit");
+         if (result.kind === "selector-limit" && controls === undefined)
+diff --git a/packages/server/src/transaction-submission.ts b/packages/server/src/transaction-submission.ts
+index d032a58..8b9e345 100644
+--- a/packages/server/src/transaction-submission.ts
++++ b/packages/server/src/transaction-submission.ts
+@@ -49,7 +49,6 @@ export type TransactionSubmissionResult =
+       readonly context?: TransactionReadContext;
+     }
+   | { readonly kind: "not-acceptable"; readonly context?: TransactionReadContext }
+-  | { readonly kind: "development-limit"; readonly message: string }
+   | {
+       readonly kind: "refused";
+       readonly status: 400 | 401 | 403 | 409 | 413 | 503;
+@@ -140,8 +139,6 @@ export async function submitTransaction(
+   )
+     throw new Error("admission refusal lost same-entry context");
+   switch (result.kind) {
+-    case "development-limit":
+-      return result;
+     case "conflict":
+       return {
+         kind: "refused",
+diff --git a/packages/server/src/json-value-equality.ts b/packages/server/src/json-value-equality.ts
+new file mode 100644
+index 0000000..fc40b26
+--- /dev/null
++++ b/packages/server/src/json-value-equality.ts
+@@ -0,0 +1,28 @@
++/** Iterative semantic equality for admitted dense JSON/plain records with finite
++ * native numbers. Not a validator for cycles, accessors or arbitrary JS values. */
++export function jsonValueEqual(left: unknown, right: unknown): boolean {
++  const pending: Array<readonly [unknown, unknown]> = [[left, right]];
++  while (pending.length) {
++    const pair = pending.pop();
++    if (!pair) break;
++    const [a, b] = pair;
++    if (a === b) continue;
++    if (
++      !a ||
++      !b ||
++      typeof a !== "object" ||
++      typeof b !== "object" ||
++      Array.isArray(a) !== Array.isArray(b)
++    )
++      return false;
++    const aa = a as Record<string, unknown>;
++    const bb = b as Record<string, unknown>;
++    const keys = Object.keys(aa);
++    if (keys.length !== Object.keys(bb).length) return false;
++    for (const key of keys) {
++      if (!Object.hasOwn(bb, key)) return false;
++      pending.push([aa[key], bb[key]]);
++    }
++  }
++  return true;
++}
