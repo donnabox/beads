@@ -1,0 +1,5 @@
+# Closed one-hash supplement
+
+Prompt 21988bytes SHAf99caf1bfb93535dd6787382029cc1b4c8bb9d16961f10dec79c6bc7bb5c4ab7. Runner SHA05e091a340c678c2479b28ccdcc35225b133d2a7578b162ef6543caac8a99768. Binding SHA9c4bb2ab8f69c258dfb01d0b7dc4164bdb1cae51d6ae6352a276442a9e91c26d. Full affected callback and independent historic parent callback supplied; exact excerpt inventory included. Original full council is historical, not reused as successor approval.
+
+Command after root review/release only: python3 guarded-action.py python3 /Users/dbox/repos/wt/vickie/bdp-integration-logs/read-update-cold-directory-draft/ci-pin-repair/claude-supplement/run.py. CLI argv: /opt/homebrew/bin/claude --safe-mode -p --tools '' --no-session-persistence. No model override.900s envelope, TERM895, final cleanup/source/output capture. Root must set rootLaunchReleased=true and provide root-release.json matching final prompt/binding/runner/head/tree. No release file exists and no process was launched. Existing reviewed runner is adapted only for new artifact path and exactly one dirty bound test file. Source comparisons include committed originals and working successor separately.

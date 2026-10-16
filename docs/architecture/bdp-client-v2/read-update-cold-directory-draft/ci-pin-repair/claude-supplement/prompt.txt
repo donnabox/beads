@@ -1,0 +1,447 @@
+Review ONLY the one-hash CPU test correction below, not a new whole-feature review. Do not write or modify any files. Output numbered findings only in stdout, each with severity, exact location, concrete impact and smallest fix. Report no blocker explicitly if none. Distinguish real lost preservation from a stale current-file hash. No tools, product execution, network, model override or speculative refactor is requested.
+
+Original clean candidate bb9600f1b8b6f623e753543ed5792005eb9aacee already received full native and actual Claude code council (exit0,786.288s); installed positive21, assertion-input control3 and aggregate2303 exchanges passed under that source. Exact-head full CI then found this one stale CPU hash:9322passed/1failed/1skip,182files,835.48s. This repair updates only the current-baseline digest; original runtime outcomes remain historical. The root separately runs the affected CPU callback; do not assume that or successor CI passed. This packet assembler authored the original implementation; root and this actual supplement supply separate review. No publication approval is implied.
+
+
+## Exact patch
+diff --git a/apps/bdptest/src/read-update-matrix.test.ts b/apps/bdptest/src/read-update-matrix.test.ts
+index 41118f1..b89159f 100644
+--- a/apps/bdptest/src/read-update-matrix.test.ts
++++ b/apps/bdptest/src/read-update-matrix.test.ts
+@@ -4671,7 +4671,7 @@ it("pins attribution/numeric action ledgers, raw literals and prior scenario byt
+     createHash("sha256")
+       .update(source("packages/conformance/matrices/read-update-v1.json").bytes)
+       .digest("hex"),
+-  ).toBe("c86b33535f25a1d117ce021a3bb70164f5635bdaee50758e3428c130ccc3227f");
++  ).toBe("80f74625b6074892b707365859572f8bc0b8c10478d36ac307370ef6027f5fc3");
+   const text = bytes.toString();
+   const start = text.lastIndexOf(
+     "    {",
+
+
+## Native source reconstruction
+# Native CI pin repair closure
+
+No blocker in the exact one-hash repair. The affected callback hashes the entire *current* baseline file via source(...).bytes; it does not hash a reconstructed historical parent. Its old c86b3353 value is exactly the pre-cold-directory67a baseline. The unchanged current bb9600 baseline hashes80f74625, so updating this current-file expectation is required after adding the cold row.
+
+Independently verified actual working diff equals frozen correction bfc7dfd4a13aec6a84f9d9e5bb50ea5b736d9a85d6e5ede5f92ff2cca5c42c07 and consists of exactly one replacement in apps/bdptest/src/read-update-matrix.test.ts:4674. The original independent unknown-subject raw span digest39eb2fe2, all numeric/action/budget checks, and all other callback bytes remain unchanged. The separate corpus-split callback still reconstructs and checks historic c86b3353; independently removed only the cold-directory object/separator and obtained byte-for-byte original67a baseline. Current manifest, coverage and other four authored files match the clean bb9600 six-file freeze (five unaffected paths total).
+
+Original native/code council and installed evidence remain attributed to bb9600. This test-only correction is not a production or runtime change and does not justify relabelling original failed CI as passing. Root is running bounded source validation separately; this reviewer ran no test/import/build/service. I authored the original cold-directory code and therefore disclose implementation overlap; root independently reviews this repair and actual Claude supplement remains closed until root release.
+
+Before app3009ce7fe3085b140b23f8062358ba2d342bd491fde3f3b6c19f75f618e87c7b; after appb9a2fedbb8fc7c94b32b600553353e5aff4b7b2f53d05e919ba993be559e69f9. Original candidatebb9600f1b8b6f623e753543ed5792005eb9aacee/treeaa8f7af9c4cdfafbd80547449ec2369f92071ab7. Working hash and all five other files verified before/after report generation.
+
+
+## Original council context (historical)
+{
+  "accepted": true,
+  "head": "bb9600f1b8b6f623e753543ed5792005eb9aacee",
+  "tree": "aa8f7af9c4cdfafbd80547449ec2369f92071ab7",
+  "sourceBindingSha256": "89b6169c920a207acf64d31b326041cfcdd6e177d025f580b539b36ff8f65938",
+  "nativeReviewSha256": "9e7c56abf8f5bd345f98cc5ec926251c7397a222cdbc6808a8fb265cd82858fb",
+  "claudeOutputSha256": "99ffb2924fadd1bf1d2c8186b37862f6f6d8e654f607f0f88082ebbd75a9c447",
+  "findingsAuditSha256": "585ad673f7151db00ac11919f4d09bb82e5596c88eff77427c32b2e8768c9542",
+  "claudeExit": {
+    "exitCode": 0,
+    "timeout": false,
+    "forcedTermination": false,
+    "elapsedSeconds": 786.287777208956,
+    "sourceAndPlanUnchanged": true,
+    "stdoutSha256": "99ffb2924fadd1bf1d2c8186b37862f6f6d8e654f607f0f88082ebbd75a9c447",
+    "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "cleanupSha256": "c052792d96f9ab23e0fd719e0dcd189ab916489423f6ffc680ee08452c583dca",
+    "sourceAfterSha256": "53d5026fb266a4eea5907c0b24518a1cdb05e40d72614223244e4c9b73d87786"
+  },
+  "rootIndependentInspection": [
+    "complete Claude stdout and23-item audit",
+    "runner raw-wire vs assertion input separation",
+    "manifest-derived routes and sequence header law",
+    "complete changed oracle/control/report code",
+    "six-case numeric-fence bridge and source digest inputs",
+    "actual installed reports/counts/cleanup"
+  ],
+  "disposition": "No mandatory correction. F1 is deliberate assertion-input-only control; keep genuine wire facts. F2-6 diagnostic/report hygiene limitations recorded, current distinct paths and0600 outputs verified. All execution-blocking omitted dependencies resolved with source and completed installed observations. F18 bookkeeping is not independent coverage. Optional refactors/pins deferred.",
+  "sourceChangedAfterReview": false,
+  "publicQualification": false,
+  "ciRequired": true,
+  "mergeReleased": false,
+  "checkedAt": "2026-10-16T00:47:02.774202+00:00"
+}
+
+
+## Complete affected callback: apps/bdptest/src/read-update-matrix.test.ts:4667–4794
+```typescript
+it("pins attribution/numeric action ledgers, raw literals and prior scenario bytes", () => {
+  const bytes = source(continuationSource).bytes;
+  const manifest = JSON.parse(bytes.toString());
+  expect(
+    createHash("sha256")
+      .update(source("packages/conformance/matrices/read-update-v1.json").bytes)
+      .digest("hex"),
+  ).toBe("80f74625b6074892b707365859572f8bc0b8c10478d36ac307370ef6027f5fc3");
+  const text = bytes.toString();
+  const start = text.lastIndexOf(
+    "    {",
+    text.indexOf('      "id": "read-update.alias.unknown-subject"'),
+  );
+  const end = text.indexOf("\n    },\n    {", start) + "\n    }".length;
+  expect(createHash("sha256").update(text.slice(start, end)).digest("hex")).toBe(
+    "39eb2fe22d25eada2c43490f37b6cb5d66950bd90042af1ae954036426e07f2a",
+  );
+  const set = installedArtifactSet();
+  expect(set.shards[1]!.scenarioIds).toEqual([
+    attributionId,
+    continuationId,
+    numericId,
+    numericRoundTripId,
+    numericNestedId,
+  ]);
+  const attribution = set.shards[1]!.bundle.manifest.scenarios.find((r) => r.id === attributionId)!;
+  for (const [readId, guardId] of [
+    ["att-subject-after-noop", "att-subject-retained-guard"],
+    ["att-unowned-context-noop-read", "att-unowned-retained-guard"],
+    ["att-owned-noop-link", "att-owned-retained-guard"],
+  ]) {
+    const index = attribution.actions!.findIndex((action) => action.id === readId);
+    const read = attribution.actions![index]!;
+    const guard = attribution.actions![index + 1]!;
+    const after = attribution.actions![index + 2]!;
+    expect(guard.id).toBe(guardId);
+    expect(after.id).toBe(`${guardId}-read`);
+    expect(read.captures).toContainEqual({
+      binding: `${readId}-retained-rev`,
+      from: { kind: "json-pointer", pointer: "/body/revision" },
+    });
+    if (guard.family !== "client") throw Error("guard requires client action");
+    expect(guard.input).toMatchObject({
+      method: "POST",
+      idempotencyKey: guardId,
+      bodyBindings: { expectedRevision: `${readId}-retained-rev` },
+    });
+    // Both reads use the pre-no-op complete, independently pinned Resource as oracle.
+    expect(after.assertions).toEqual(read.assertions);
+  }
+  const keys: string[] = [];
+  let totalActions = 0;
+  for (const [id, count, ceiling, ids] of [
+    [
+      attributionId,
+      75,
+      75,
+      [
+        "beads/att-subject",
+        "beads/att-owner",
+        "beads/att-target",
+        "links/att-unowned",
+        "links/att-owned",
+      ],
+    ],
+    [numericId, 81, 81, ["beads/num-subject", "beads/num-target", "links/num-link"]],
+  ] as const) {
+    const row = set.shards[1]!.bundle.manifest.scenarios.find((r) => r.id === id)!;
+    expect(row.actions).toHaveLength(count);
+    expect(row.actions!.length).toBeLessThanOrEqual(ceiling);
+    totalActions += row.actions!.length;
+    const created: unknown[] = [];
+    for (const action of row.actions!) {
+      if (action.family === "client") {
+        const input = action.input as {
+          method: string;
+          idempotencyKey?: string;
+          body?: { id?: string };
+          targetBinding: string;
+        };
+        if (input.method === "POST") {
+          keys.push(input.idempotencyKey!);
+          expect(Buffer.byteLength(JSON.stringify(input.body))).toBeLessThan(4096);
+          if (input.targetBinding.startsWith("create-")) created.push(input.body!.id);
+        }
+      } else if (action.family === "http" && action.method === "POST") {
+        keys.push(
+          action.raw!.headerLines.find((h) => h.name.toLowerCase() === "idempotency-key")!.value,
+        );
+        expect(action.raw!.body!.encoding).toBe("utf8");
+        expect(Buffer.byteLength(action.raw!.body!.value)).toBeLessThan(4096);
+        expect(action.assertions.filter((a) => a.kind === "request-authored-body")).toHaveLength(1);
+        expect(action.assertions).toContainEqual({
+          id: "complete-write",
+          kind: "request-write-state",
+          equals: "complete",
+        });
+      }
+    }
+    expect(created).toEqual(ids);
+    const coverage = set.coverage.rows.find((r) => r.id === id)!;
+    expect(coverage.wholeContract).toBe(true);
+    expect(coverage.bindings).toEqual([
+      {
+        scenario: id,
+        assertions: row.actions!.flatMap((a) => a.assertions.map((q) => `${a.id}.${q.id}`)),
+      },
+    ]);
+  }
+  expect(totalActions).toBeLessThanOrEqual(156);
+  expect(new Set(keys).size).toBe(keys.length);
+  const numeric = manifest.scenarios.find((r: { id: string }) => r.id === numericId);
+  for (const name of ["subject", "link"]) {
+    const raw = (id: string) =>
+      numeric.actions.find((a: { id: string }) => a.id === `num-${name}-${id}`).raw.body
+        .value as string;
+    expect(raw("decimal")).toContain('"one":1.0');
+    expect(raw("decimal")).toContain('"large":1E300');
+    expect(raw("decimal")).toContain('"zero":-0.0');
+    expect(raw("exponent")).toContain('"one":1e0');
+    expect(raw("exponent")).toContain('"large":1' + "0".repeat(300));
+    expect(raw("inadmissible")).toContain('"bad":9007199254740993');
+  }
+  expect(
+    attributionNumericControls.length + attributionNumericRawControls.length,
+  ).toBeLessThanOrEqual(16);
+});
+
+```
+
+
+## Actual source byte reader: apps/bdptest/src/read-update-matrix.test.ts:60–75
+```typescript
+) {
+  await child.close();
+  // A settled exit alone is insufficient: the helper also observes forced SIGKILL exits.
+  expect(child.child.exitCode === 0 || child.child.signalCode === "SIGTERM").toBe(true);
+}
+const token = "cumulative_fixture_operator_0123456789";
+const wrongToken = "cumulative_unknown_operator_0123456789";
+const scope = "https://reference.invalid/acme/";
+const source = (relative: string) => ({ bytes: readFileSync(path.join(root, relative)) });
+const defaultEntry = path.join(root, "packages/server/dist/installed-reference-process.js");
+const entry = process.env.BDP_CUMULATIVE_INSTALLED_ENTRY ?? defaultEntry;
+const configModule = (await import(
+  pathToFileURL(path.join(path.dirname(entry), "installed-reference-configuration.js")).href
+)) as {
+  referenceTypeArtifacts(scope: string): import("@bdp/protocol").TypeDescriptor[];
+  captureInstalledReferenceConfiguration(input: unknown): {
+```
+
+
+## Actual artifact set input paths: apps/bdptest/src/read-update-matrix.test.ts:1713–1730
+```typescript
+function installedArtifactSet() {
+  const selection = loadProfileContractSelection("read-update");
+  const base = "packages/conformance/";
+  return createReadUpdateArtifactSet(selection, {
+    index: source(`${base}test-support/read-update-artifact-set-v1.json`),
+    fixture: source(`${base}fixtures/read-update-reference-v1.json`),
+    coverage: source(`${base}test-support/read-update-coverage-v1.json`),
+    manifests: {
+      "matrices/read-update-v1.json": source(`${base}matrices/read-update-v1.json`),
+      "matrices/read-update-reference-continuation-v1.json": source(
+        `${base}matrices/read-update-reference-continuation-v1.json`,
+      ),
+    },
+  });
+}
+async function runShard(
+  set: ReadUpdateArtifactSet,
+  index: number,
+```
+
+
+## Existing cold row pin callback: apps/bdptest/src/read-update-matrix.test.ts:1793–1849
+```typescript
+it("pins cold RU directory literals, actual target bindings and parent preservation", () => {
+  const set = installedArtifactSet();
+  const manifest = JSON.parse(
+    source("packages/conformance/matrices/read-update-v1.json").bytes.toString(),
+  );
+  const row = manifest.scenarios.find((r: { id: string }) => r.id === coldDirectoryId);
+  expect(createHash("sha256").update(JSON.stringify(row)).digest("hex")).toBe(
+    "7930b51eea68914b24ece231d9b30479e14936572bcd67d18351ffc6562efeff",
+  );
+  expect(
+    row.actions.map((a: { id: string; family: string }) => ({ id: a.id, family: a.family })),
+  ).toEqual(coldDirectoryRequests.map(({ id, family }) => ({ id, family })));
+  expect(row.actions).toHaveLength(21);
+  expect(coldDirectoryRequests.filter((r) => r.method === "POST")).toHaveLength(10);
+  const validator = createJsonSchemaValidator(installedObservationSchema);
+  for (const action of row.actions) {
+    for (const assertion of action.assertions)
+      if (assertion.kind === "json-schema") validator.resolve(assertion.schema);
+    if (action.family === "client") {
+      const binding =
+        coldDirectoryClientBindings[action.id as keyof typeof coldDirectoryClientBindings];
+      expect(action.input.targetBinding).toBe(binding.targetBinding);
+      expect(action.input.bodyBindings ?? {}).toEqual(binding.bodyBindings);
+      if (action.input.method === "POST") expect(action.input.targetBaseBinding).toBe("operations");
+    }
+  }
+  expect(row.actions[3].assertions).toContainEqual({
+    id: "directory-members",
+    kind: "json-pointer",
+    pointer: "/body",
+    exists: true,
+    equals: coldDirectory,
+  });
+  expect(row.actions[3].captures.map((c: { binding: string }) => c.binding)).toEqual(
+    Object.values(coldDirectory),
+  );
+  const coverage = set.coverage.rows.find((r) => r.id === coldDirectoryId);
+  expect(coverage?.wholeContract).toBe(true);
+  expect(coverage?.bindings).toEqual([
+    {
+      scenario: coldDirectoryId,
+      assertions: row.actions.flatMap((a: { id: string; assertions: { id: string }[] }) =>
+        a.assertions.map((q) => `${a.id}.${q.id}`),
+      ),
+    },
+  ]);
+  expect(coverage?.bindings[0]?.assertions).toHaveLength(134);
+  expect(set.shards.map((s) => s.scenarioIds.length)).toEqual([50, 5]);
+  expect(set.claimEligible).toBe(false);
+  expect(Buffer.byteLength(JSON.stringify(manifest))).toBeLessThanOrEqual(4194304);
+  const countNodes = (value: unknown): number =>
+    1 +
+    (value && typeof value === "object"
+      ? Object.values(value).reduce<number>((n, child) => n + countNodes(child), 0)
+      : 0);
+  expect(countNodes(manifest)).toBeLessThanOrEqual(100000);
+});
+```
+
+
+## Complete raw span helper: packages/conformance/src/read-update-artifact-set.test.ts:154–186
+```typescript
+function coldDirectorySpan(text: string, key: "scenarios" | "rows") {
+  const start = text.indexOf("[", text.indexOf(JSON.stringify(key))) + 1;
+  let depth = 0,
+    begin = -1,
+    quoted = false,
+    escaped = false;
+  for (let i = start; i < text.length; i++) {
+    const char = text[i];
+    if (quoted) {
+      if (escaped) escaped = false;
+      else if (char === "\\") escaped = true;
+      else if (char === '"') quoted = false;
+      continue;
+    }
+    if (char === '"') {
+      quoted = true;
+      continue;
+    }
+    if (char === "{" || char === "[") {
+      if (depth === 0) begin = i;
+      depth++;
+    } else if (char === "}" || char === "]") {
+      if (depth === 0) break;
+      if (
+        --depth === 0 &&
+        JSON.parse(text.slice(begin, i + 1)).id === "read-update.discovery.operation-directory"
+      )
+        return { start: begin, end: i + 1 };
+    }
+  }
+  throw Error("missing cold directory object");
+}
+
+```
+
+
+## Complete historic parent-preservation callback: packages/conformance/src/read-update-artifact-set.test.ts:215–307
+```typescript
+  it("accepts the actual current corpus split with unchanged prerequisite groups and coverage", () => {
+    const read = (name: string) => ({
+      bytes: readFileSync(new URL(`../${name}`, import.meta.url)),
+    });
+    const manifest = decode(read("matrices/read-update-v1.json"));
+    const manifestText = Buffer.from(read("matrices/read-update-v1.json").bytes).toString();
+    const span = coldDirectorySpan(manifestText, "scenarios");
+    expect(manifestText.slice(span.end, span.end + 6)).toBe(",\n    ");
+    const parent = manifestText.slice(0, span.start) + manifestText.slice(span.end + 6);
+    expect(createHash("sha256").update(parent).digest("hex")).toBe(
+      "c86b33535f25a1d117ce021a3bb70164f5635bdaee50758e3428c130ccc3227f",
+    );
+    expect(JSON.parse(parent).scenarios).toHaveLength(49);
+    expect(
+      createHash("sha256")
+        .update(read("matrices/read-update-reference-continuation-v1.json").bytes)
+        .digest("hex"),
+    ).toBe("24d754618b51f255b5885d83c53ccf9a06593031e1812739a4f2b504c4a1df8d");
+    const coverageText = Buffer.from(
+      read("test-support/read-update-coverage-v1.json").bytes,
+    ).toString();
+    const coverageSpan = coldDirectorySpan(coverageText, "rows");
+    const previous =
+      '{\n      "id": "read-update.discovery.operation-directory",\n      "status": "omitted",\n      "wholeContract": false,\n      "reason": "No row-local scenario in this slice; cross-row observations do not award this required ID whole-contract credit.",\n      "bindings": []\n    }';
+    expect(
+      createHash("sha256")
+        .update(
+          coverageText.slice(0, coverageSpan.start) +
+            previous +
+            coverageText.slice(coverageSpan.end),
+        )
+        .digest("hex"),
+    ).toBe("f8f0b001928f8488292403b57c973bd918cba224ef9e00fe0691482bf5cfac0c");
+    const cold = manifest.scenarios.find(
+      (row: { id: string }) => row.id === "read-update.discovery.operation-directory",
+    );
+    expect(manifest.scenarios.indexOf(cold)).toBe(18);
+    expect(cold.actions).toHaveLength(21);
+    expect(cold.actions.flatMap((a: { assertions: unknown[] }) => a.assertions)).toHaveLength(134);
+    expect(createHash("sha256").update(JSON.stringify(cold)).digest("hex")).toBe(
+      "7930b51eea68914b24ece231d9b30479e14936572bcd67d18351ffc6562efeff",
+    );
+    const last = manifest.scenarios.at(-1);
+    expect(
+      (last.actions ?? last.requests).every(
+        (a: { prerequisiteScenario?: string }) => a.prerequisiteScenario === undefined,
+      ),
+    ).toBe(true);
+    const input = sources();
+    const set = createReadUpdateArtifactSet(selection, {
+      ...input,
+      fixture: read("fixtures/read-update-reference-v1.json"),
+      coverage: bytes({
+        ...decode(read("test-support/read-update-coverage-v1.json")),
+        rows: decode(read("test-support/read-update-coverage-v1.json")).rows.map(
+          (r: { id: string }) =>
+            manifest.scenarios.some((s: { id: string }) => s.id === r.id)
+              ? r
+              : { ...r, status: "omitted", wholeContract: false, bindings: [] },
+        ),
+      }),
+      manifests: {
+        [names[0]]: bytes({ ...manifest, scenarios: manifest.scenarios.slice(0, -1) }),
+        [names[1]]: bytes({ ...manifest, scenarios: [last] }),
+      },
+    });
+    expect(set.shards.flatMap((s) => s.scenarioIds)).toEqual(
+      manifest.scenarios.map((s: { id: string }) => s.id),
+    );
+    expect(
+      set.coverage.rows.filter((r) => r.status === "bounded-observation").map((r) => r.id),
+    ).toEqual(manifest.scenarios.map((s: { id: string }) => s.id));
+    expect(set.claimEligible).toBe(false);
+  });
+  it.each(["index", "fixture", "coverage", ...names] as const)(
+    "attributes safely captured %s failures",
+    (field) => {
+      const original = sources();
+      const role = field.startsWith("matrices/")
+        ? `shard-${names.indexOf(field as (typeof names)[number])} (${field})`
+        : `artifact-set ${field}`;
+      for (const body of [
+        Buffer.from("!"),
+        Buffer.alloc(field === "index" ? 16385 : field.startsWith("matrices/") ? 4194305 : 1048577),
+      ]) {
+        const bad = { bytes: body, label: "caller label is not the attribution authority" };
+        const input = field.startsWith("matrices/")
+          ? { ...original, manifests: { ...original.manifests, [field]: bad } }
+          : { ...original, [field]: bad };
+        expect(() => createReadUpdateArtifactSet(selection, input)).toThrow(role);
+      }
+    },
+  );
+```
+
+
+## Deliberately omitted context
+The multi-megabyte unchanged corpus, full runtime lifecycle, installed logs and previous23-item full review are omitted because the sole changed token is a CPU digest. The supplied complete callback and separate raw-parent reconstruction code expose the preservation authority. The fixture/catalog/production and remaining five authored files are unchanged and hash-bound. Independent stdlib reconstruction verified all old raw baseline bytes by exact parent equality. No future merged identity or CI success is invented.

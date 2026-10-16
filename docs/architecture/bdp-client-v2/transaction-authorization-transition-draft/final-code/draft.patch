@@ -1,0 +1,2662 @@
+diff --git a/packages/server/src/transaction-changefeed.test.ts b/packages/server/src/transaction-changefeed.test.ts
+index ff3198c..0b58e02 100644
+--- a/packages/server/src/transaction-changefeed.test.ts
++++ b/packages/server/src/transaction-changefeed.test.ts
+@@ -216,7 +216,15 @@ it("replica refuses partial publication, gaps, conflicts and owned upsert/tombst
+     config = f.owner.readConfiguration();
+   const client = replica({ ...config, scopePosition: "pos-0" });
+   const [seed, created, deleted] = groups;
+-  if (!seed || !created || !deleted) throw Error("groups");
++  if (
++    !seed ||
++    !created ||
++    !deleted ||
++    seed.projectionAdvance ||
++    created.projectionAdvance ||
++    deleted.projectionAdvance
++  )
++    throw Error("visible groups");
+   expect(() => client.apply(seed, true)).toThrow("publication failed");
+   expect(client.state()).toEqual({ graph: new Map(), checkpoint: "genesis", position: "pos-0" });
+   client.apply(page(f.owner, client.state().checkpoint).groups[0]!);
+diff --git a/packages/server/src/transaction-changefeed.ts b/packages/server/src/transaction-changefeed.ts
+index d811a14..f7e567c 100644
+--- a/packages/server/src/transaction-changefeed.ts
++++ b/packages/server/src/transaction-changefeed.ts
+@@ -35,7 +35,7 @@ export class TransactionChangefeedParameterError extends Error {
+   }
+ }
+ export type TransactionChangefeedIntent = { readonly after: string } | { readonly start: "now" };
+-export interface TransactionChangeGroup {
++interface TransactionVisibleChangeGroup {
+   readonly scopeEpoch: string;
+   readonly authorizationView: string;
+   readonly checkpoint: string;
+@@ -48,6 +48,20 @@ export interface TransactionChangeGroup {
+   readonly eventCount: number;
+   readonly events: readonly TransactionEvent[];
+ }
++export type TransactionChangeGroup =
++  | TransactionVisibleChangeGroup
++  | {
++      readonly scopeEpoch: string;
++      readonly authorizationView: string;
++      readonly checkpoint: string;
++      readonly position: string;
++      readonly previousPosition: string;
++      readonly projectionAdvance: true;
++      readonly changes: readonly never[];
++      readonly erasures: readonly never[];
++      readonly eventCount: 0;
++      readonly events: readonly never[];
++    };
+ export interface TransactionChangefeedPage {
+   readonly scope: string;
+   readonly scopeEpoch: string;
+@@ -116,6 +130,7 @@ export function projectTransactionChangeGroup(
+   scope: string,
+   context: TransactionReadContext,
+   position: number,
++  visible = true,
+ ): TransactionChangeGroup {
+   if (!value || typeof value !== "object") throw new Error("invalid retained change group");
+   const group = value as TransactionChangeGroup;
+@@ -148,7 +163,21 @@ export function projectTransactionChangeGroup(
+     { kind: "scope", url: `${scope}events/` },
+     scope,
+     position,
++    visible,
+   );
++  if (!visible)
++    return {
++      scopeEpoch: context.scopeEpoch,
++      authorizationView: context.authorizationView,
++      checkpoint: transactionCheckpoint(scope, context, position),
++      position: group.position,
++      previousPosition: group.previousPosition,
++      projectionAdvance: true,
++      changes: [],
++      erasures: [],
++      eventCount: 0,
++      events: [],
++    };
+   return {
+     scopeEpoch: group.scopeEpoch,
+     authorizationView: group.authorizationView,
+diff --git a/packages/server/src/transaction-event-sse.test.ts b/packages/server/src/transaction-event-sse.test.ts
+index 87618d3..957ee76 100644
+--- a/packages/server/src/transaction-event-sse.test.ts
++++ b/packages/server/src/transaction-event-sse.test.ts
+@@ -910,3 +910,84 @@ it("Event delivery receives the shared captured cadence object, separate from ow
+   expect(received).toEqual({ pollMilliseconds: 17, heartbeatMilliseconds: 31, maximumStreams: 1 });
+   await live.close();
+ });
++
++it("publication cancels a queued Event frame before its drain permits another write", async () => {
++  const boundary = cleanups.length,
++    failures: unknown[] = [];
++  let lease:
++    | ReturnType<ReturnType<typeof openTransactionStore>["acquireAuthorizationLease"]>
++    | undefined;
++  let observed: Promise<unknown> | undefined;
++  try {
++    const f = ownerFixture(32);
++    f.run([create("a"), create("b")]);
++    const initial = f.owner.beginEventScan(`${scope}events/`);
++    if (initial.kind !== "packet") throw Error("actual initial Event packet required");
++    expect(initial.events).toHaveLength(2);
++    lease = f.owner.acquireAuthorizationLease(initial.context);
++    const firstWrite = Promise.withResolvers<void>();
++    class BlockedSink extends Sink {
++      override write(text: string) {
++        this.chunks.push(text);
++        firstWrite.resolve();
++        return false;
++      }
++    }
++    const sink = new BlockedSink();
++    let pulls = 0;
++    const pumping = pumpTransactionEvents(
++      sink,
++      initial,
++      async (scan) => {
++        pulls++;
++        return f.owner.advanceEventScan(scan);
++      },
++      lease.signal,
++    );
++    observed = pumping.then(
++      () => ({ completed: true }),
++      (error: unknown) => error,
++    );
++    await Promise.race([
++      firstWrite.promise,
++      observed.then(() => {
++        throw Error("Event pump ended before first-write barrier");
++      }),
++    ]);
++    expect(sink.chunks).toEqual([transactionEventFrame(initial.events[0]!)]);
++    expect(pulls).toBe(0);
++    const policy = f.owner.replaceAuthorizationPolicy();
++    expect(policy.generation).toBe(1);
++    expect(lease.signal.aborted).toBe(true);
++    sink.emit("drain");
++    expect(await observed).toBe(lease.signal.reason);
++    expect(sink.chunks).toEqual([transactionEventFrame(initial.events[0]!)]);
++    expect(pulls).toBe(0);
++    expect([
++      sink.listenerCount("drain"),
++      sink.listenerCount("close"),
++      sink.listenerCount("error"),
++    ]).toEqual([0, 0, 0]);
++  } catch (error) {
++    failures.push(error);
++  } finally {
++    // Closing the real owner aborts a pump if a pre-publication assertion failed.
++    for (const close of cleanups.splice(boundary).reverse()) {
++      try {
++        await close();
++      } catch (error) {
++        failures.push(error);
++      }
++    }
++    lease?.release();
++    if (observed) {
++      try {
++        await observed;
++      } catch (error) {
++        failures.push(error);
++      }
++    }
++  }
++  if (failures.length)
++    throw new AggregateError(failures, "queued Event publication witness cleanup");
++}, 5000);
+diff --git a/packages/server/src/transaction-events.ts b/packages/server/src/transaction-events.ts
+index 29d94a7..0b24bb1 100644
+--- a/packages/server/src/transaction-events.ts
++++ b/packages/server/src/transaction-events.ts
+@@ -1,3 +1,4 @@
++import { INITIAL_TRANSACTION_VIEW } from "./transaction-authorization.js";
+ /** Private finite projection of committed facts. No pruning, mutable views,
+  * SSE, replication bootstrap or public profile admission. */
+ import { createHash } from "node:crypto";
+@@ -193,12 +194,13 @@ export function projectTransactionEventGroup(
+   source: TransactionEventSource,
+   scope: string,
+   expectedPosition: number,
++  visible = true,
+ ): readonly TransactionEvent[] {
+   if (!value || typeof value !== "object") throw new Error("invalid retained Event group");
+   const group = value as TransactionEventGroup;
+   if (
+     group.scopeEpoch !== context.scopeEpoch ||
+-    group.authorizationView !== context.authorizationView ||
++    group.authorizationView !== (visible ? context.authorizationView : INITIAL_TRANSACTION_VIEW) ||
+     group.position !== `pos-${expectedPosition}` ||
+     group.checkpoint !== group.position ||
+     !Array.isArray(group.events) ||
+@@ -246,7 +248,7 @@ export function projectTransactionEventGroup(
+       throw new Error("invalid retained Event framing");
+     const data = event.data as Record<string, unknown>;
+     let include = source.kind === "scope";
+-    if (source.kind !== "scope") {
++    if (visible && source.kind !== "scope") {
+       include =
+         event.subject === source.subject && ["created", "updated", "deleted"].includes(event.type);
+       if (source.kind === "bead" && (event.type === "linked" || event.type === "unlinked")) {
+@@ -264,7 +266,8 @@ export function projectTransactionEventGroup(
+           throw new TransactionEventProjectionGap("incident-link-metadata");
+       }
+     }
+-    if (include) result.push(renderTransactionEvent(context, source.url, group.checkpoint, event));
++    if (visible && include)
++      result.push(renderTransactionEvent(context, source.url, group.checkpoint, event));
+   }
+   return result;
+ }
+diff --git a/packages/server/src/transaction-http.ts b/packages/server/src/transaction-http.ts
+index 33e1e71..8a519ba 100644
+--- a/packages/server/src/transaction-http.ts
++++ b/packages/server/src/transaction-http.ts
+@@ -1,3 +1,4 @@
++import { TransactionAuthorizationFailure } from "./transaction-authorization.js";
+ import type { TransactionEventPacket } from "./transaction-store.js";
+ import type { TransactionSnapshotRequest } from "./transaction-snapshot.js";
+ import {
+@@ -192,6 +193,15 @@ export function createTransactionHttpHandler(
+     }
+     return response;
+   }
++  const readPrincipals = new WeakMap<
++    Request,
++    { readonly kind: "authenticated"; readonly principal: { readonly id: string } }
++  >();
++  const readPrincipal = (request: Request) => {
++    const principal = readPrincipals.get(request);
++    if (!principal) throw new Error("missing authenticated Read principal");
++    return principal;
++  };
+   const readRoute = createReadHttpRoute({
+     scope,
+     probe: async () => ({ serviceDescription: new URL("bdp.json", scope).href }),
+@@ -201,8 +211,8 @@ export function createTransactionHttpHandler(
+       if (isReadProblem(suffix)) return problem(suffix);
+       const minimum = transactionMinimumHeaders(request.headers);
+       const facet = minimum
+-        ? service.readAtMinimum({ kind: "anonymous" }, minimum)
+-        : service.readFor({ kind: "anonymous" });
++        ? service.readAtMinimum(readPrincipal(request), minimum)
++        : service.readFor(readPrincipal(request));
+       const result = await facet.resolveAlias(request.url, { signal: request.signal });
+       const response =
+         result.kind === "problem"
+@@ -222,8 +232,8 @@ export function createTransactionHttpHandler(
+     async perform(parsed, request) {
+       const minimum = transactionMinimumHeaders(request.headers);
+       const facet = minimum
+-        ? service.readAtMinimum({ kind: "anonymous" }, minimum)
+-        : service.readFor({ kind: "anonymous" });
++        ? service.readAtMinimum(readPrincipal(request), minimum)
++        : service.readFor(readPrincipal(request));
+       const result = await facet.perform(parsed, { signal: request.signal });
+       const response =
+         result.kind === "problem"
+@@ -594,6 +604,14 @@ export function createTransactionHttpHandler(
+     ): Promise<TransactionHttpResult> {
+       let response: HttpResponse | ChangefeedStream | EventStream;
+       try {
++        if (authorization.kind === "authenticated")
++          readPrincipals.set(
++            request,
++            Object.freeze({
++              kind: "authenticated",
++              principal: Object.freeze({ id: authorization.principal }),
++            }),
++          );
+         response = await route(request, authorization, received, lastEventIds);
+       } catch (error) {
+         if (error instanceof ScopeServerOperationAbortedError) throw error;
+@@ -611,7 +629,9 @@ export function createTransactionHttpHandler(
+             ),
+             error.context,
+           );
+-        } else if (
++        } else if (error instanceof TransactionAuthorizationFailure)
++          response = transactionHttpProblem(error.code, error.context);
++        else if (
+           error instanceof TransactionEventParameterError ||
+           error instanceof TransactionChangefeedParameterError
+         )
+@@ -621,6 +641,8 @@ export function createTransactionHttpHandler(
+         else if (error instanceof TransactionMinimumVisibilityGap)
+           response = developmentGap("minimum-position-visibility");
+         else response = empty(500);
++      } finally {
++        readPrincipals.delete(request);
+       }
+       response.headers.set("x-bdp-development", "non-attesting");
+       if (request.method === "POST") response.headers.set("vary", "Accept");
+diff --git a/packages/server/src/transaction-read.ts b/packages/server/src/transaction-read.ts
+index 1aff2ed..93ce6e6 100644
+--- a/packages/server/src/transaction-read.ts
++++ b/packages/server/src/transaction-read.ts
+@@ -130,7 +130,13 @@ export function createTransactionReadPlane(
+     entry: owner,
+     scopeEpoch: configuration.scopeEpoch,
+     installedTypes: configuration.installedTypes,
+-    scopeConfiguration: { capture: () => configuration.scopeConfiguration },
++    scopeConfiguration: {
++      capture: (reader) => ({
++        ...configuration.scopeConfiguration,
++        policyIdentity: owner.captureReadAuthorization(reader, { kind: "anonymous" })
++          .authorizationView,
++      }),
++    },
+     selectorLimits: options.selectorLimits,
+     pagination: options.pagination,
+     advertisedLimits: options.advertisedLimits,
+@@ -160,15 +166,18 @@ export function createTransactionReadPlane(
+       }
+       checkTransactionMinimum(minimum, current);
+     },
+-    captureReadAuthorization: () => ({
+-      kind: "authorized",
+-      authorization: {
+-        scopeEpoch: configuration.scopeEpoch,
+-        authorizationView: configuration.authorizationView,
+-        policy: { canRead: () => true },
+-        canReadType: () => true,
+-      },
+-    }),
++    captureReadAuthorization: (reader, principal) => {
++      const policy = owner.captureReadAuthorization(reader, principal);
++      return {
++        kind: "authorized",
++        authorization: {
++          scopeEpoch: configuration.scopeEpoch,
++          authorizationView: policy.authorizationView,
++          policy: { canRead: () => policy.readPolicy === "all-visible" },
++          canReadType: () => policy.readPolicy === "all-visible",
++        },
++      };
++    },
+   });
+   const checked = <Result extends AuthorityReadResult<ReadRequest> | AuthorityAliasResult>(
+     result: Result,
+diff --git a/packages/server/src/transaction-runtime-configuration.ts b/packages/server/src/transaction-runtime-configuration.ts
+index 8491049..43bd32e 100644
+--- a/packages/server/src/transaction-runtime-configuration.ts
++++ b/packages/server/src/transaction-runtime-configuration.ts
+@@ -359,7 +359,7 @@ export function captureTransactionRuntimeConfiguration(
+       if (!isDeepStrictEqual(actual.scopeSnapshot, settings.scopeSnapshot))
+         throw new Error("live transaction Snapshot configuration mismatch");
+       if (
+-        actual.authorizationView !== "development-all-visible" ||
++        actual.authorizationView !== actual.authorization.authorizationView ||
+         actual.scopeConfiguration.policyIdentity !== actual.authorizationView ||
+         actual.scopeConfiguration.maximumEndpointMultiplicity.length !== 0
+       )
+@@ -373,7 +373,7 @@ export function captureTransactionRuntimeConfiguration(
+       const policyIdentity = transactionRuntimeDigest({
+         revision: "transaction-policy-1",
+         view: actual.authorizationView,
+-        read: "all-visible",
++        read: actual.authorization.readPolicy,
+         aggregate: actual.scopeConfiguration.maximumEndpointMultiplicity,
+         associations,
+       });
+diff --git a/packages/server/src/transaction-runtime.test.ts b/packages/server/src/transaction-runtime.test.ts
+index f627103..3c05550 100644
+--- a/packages/server/src/transaction-runtime.test.ts
++++ b/packages/server/src/transaction-runtime.test.ts
+@@ -1,6 +1,11 @@
++import { createHash } from "node:crypto";
++import { request as authorizationHttpRequest } from "node:http";
++import { Ajv2020 } from "ajv/dist/2020.js";
++import { isJsonSchemaUri, isJsonSchemaDateTime, parseTypeDescriptor } from "@bdp/protocol";
++import { recordRawSse } from "../test-support/raw-sse-recorder.js";
+ import { spawn } from "node:child_process";
+ import { once } from "node:events";
+-import { mkdtempSync, rmSync } from "node:fs";
++import { existsSync, mkdtempSync, readFileSync, rmSync } from "node:fs";
+ import { tmpdir } from "node:os";
+ import path from "node:path";
+ import { createInterface } from "node:readline";
+@@ -188,3 +193,579 @@ it.each([
+   },
+   15000,
+ );
++
++// Private trusted administration exercised through a real listener; no wire admin route.
++const authorizationScope = "https://event-sse.invalid/acme/";
++const authorizationType = `${authorizationScope}types/task`;
++const authorizationSeed = (ids: readonly string[]) =>
++  JSON.stringify({
++    operations: ids.map((id) => ({
++      operation: "createBead",
++      id: `beads/${id}`,
++      type: authorizationType,
++      properties: { n: 0 },
++    })),
++  });
++const authorizationValidators = (() => {
++  const schema = JSON.parse(
++    readFileSync(new URL("../../../schemas/bdp-v0.schema.json", import.meta.url), "utf8"),
++  );
++  const ajv = new Ajv2020({ strict: true, allErrors: true });
++  ajv.addFormat("uri", { type: "string", validate: isJsonSchemaUri });
++  ajv.addFormat("date-time", { type: "string", validate: isJsonSchemaDateTime });
++  ajv.addSchema(schema);
++  return Object.fromEntries(
++    [
++      "mutationReceipt",
++      "currentBeadRecord",
++      "currentBeadCollection",
++      "snapshotManifest",
++      "eventPage",
++      "transactionalProblem",
++    ].map((name) => [name, ajv.compile({ $ref: `${schema.$id}#/$defs/${name}` })]),
++  );
++})();
++function authorizationObject(value: unknown): Record<string, unknown> {
++  if (!value || typeof value !== "object" || Array.isArray(value))
++    throw Error("expected observed object");
++  return value as Record<string, unknown>;
++}
++function authorizationText(value: unknown): string {
++  if (typeof value !== "string" || !value) throw Error("expected issued nonempty identity");
++  return value;
++}
++function authorizationRows(value: unknown): Record<string, unknown>[] {
++  if (!Array.isArray(value)) throw Error("expected observed array");
++  return value.map(authorizationObject);
++}
++async function authorizationBound<T>(
++  promise: Promise<T>,
++  label: string,
++  milliseconds = 5000,
++): Promise<T> {
++  let timer: ReturnType<typeof setTimeout> | undefined;
++  try {
++    return await Promise.race([
++      promise,
++      new Promise<never>((_resolve, reject) => {
++        timer = setTimeout(() => reject(Error(label)), milliseconds);
++      }),
++    ]);
++  } finally {
++    clearTimeout(timer);
++  }
++}
++type AuthorizationResponse = {
++  status: number;
++  headers: Record<string, string>;
++  body: Record<string, unknown>;
++};
++function authorizationContext(headers: Record<string, string>) {
++  return {
++    scopeEpoch: authorizationText(headers["bdp-scope-epoch"]),
++    authorizationView: authorizationText(headers["bdp-authorization-view"]),
++    scopePosition: authorizationText(headers["bdp-scope-position"]),
++  };
++}
++function authorizationChecked(response: AuthorizationResponse, status: number, schema: string) {
++  expect(response.status, `authorization-transition:status ${schema}`).toBe(status);
++  const validate = authorizationValidators[schema]!;
++  expect(
++    validate(response.body),
++    `authorization-transition:schema ${schema} ${JSON.stringify(validate.errors)}`,
++  ).toBe(true);
++  return response.body;
++}
++function authorizationReceipt(
++  response: AuthorizationResponse,
++  key: string,
++  ids: readonly string[],
++  position: string,
++) {
++  const receipt = authorizationChecked(response, 200, "mutationReceipt");
++  expect(receipt).toMatchObject({
++    status: "completed",
++    detail: "available",
++    idempotencyKey: key,
++    requiredPosition: position,
++    effectPosition: position,
++    next: null,
++  });
++  const context = authorizationContext(response.headers);
++  expect(receipt.scopeEpoch).toBe(context.scopeEpoch);
++  expect(receipt.authorizationView).toBe(context.authorizationView);
++  expect(context.scopePosition).toBe(position);
++  const results = authorizationRows(receipt.results);
++  expect(results).toHaveLength(ids.length);
++  const resources = results.map((entry, index) => {
++    expect(entry).toMatchObject({ operationIndex: index, outcome: "created" });
++    const resource = authorizationObject(entry.resource);
++    expect(resource).toEqual({
++      id: `${authorizationScope}beads/${ids[index]}`,
++      type: authorizationType,
++      revision: authorizationText(resource.revision),
++      properties: { n: 0 },
++      metadata: {},
++    });
++    return resource;
++  });
++  return { receipt, resources, context };
++}
++function authorizationEvents(
++  page: Record<string, unknown>,
++  receipt: Record<string, unknown>,
++  resources: readonly Record<string, unknown>[],
++) {
++  expect(page.source).toBe(`${authorizationScope}events/`);
++  const events = authorizationRows(page.events);
++  expect(events).toHaveLength(resources.length);
++  for (const [index, event] of events.entries()) {
++    expect(event).toEqual({
++      id: authorizationText(event.id),
++      ordinal: index,
++      type: "created",
++      source: `${authorizationScope}events/`,
++      subject: resources[index]!.id,
++      subjectType: authorizationType,
++      transaction: receipt.transaction,
++      time: authorizationText(event.time),
++      data: { revision: resources[index]!.revision, properties: { n: 0 }, metadata: {} },
++    });
++  }
++  return events;
++}
++async function withAuthorizationRuntime(
++  name: string,
++  maximumRequests: number,
++  use: (fixture: {
++    runtime: Awaited<
++      ReturnType<typeof import("./transaction-runtime.js")["startTransactionRuntime"]>
++    >;
++    request: (
++      target: string,
++      method?: "GET" | "POST",
++      body?: string,
++      key?: string,
++    ) => Promise<AuthorizationResponse>;
++    stream: (target: string, headers?: [string, string][]) => ReturnType<typeof recordRawSse>;
++    observations: Record<string, unknown>[];
++  }) => Promise<void>,
++) {
++  const directory = mkdtempSync(path.join(tmpdir(), "bdp-authorization-http-"));
++  const observations: Record<string, unknown>[] = [],
++    failures: unknown[] = [];
++  const streams: ReturnType<typeof recordRawSse>[] = [];
++  const controllers: AbortController[] = [];
++  let runtime:
++    | Awaited<ReturnType<typeof import("./transaction-runtime.js")["startTransactionRuntime"]>>
++    | undefined;
++  let attempts = 0,
++    closed = false;
++  const reserve = () => {
++    if (++attempts > maximumRequests) throw Error("authorization HTTP request bound");
++  };
++  try {
++    const module = (await import(
++      new URL("../dist/transaction-runtime.js", import.meta.url).href
++    )) as typeof import("./transaction-runtime.js");
++    runtime = await module.startTransactionRuntime(
++      {
++        directory,
++        create: true,
++        port: 0,
++        scope: authorizationScope,
++        types: [
++          parseTypeDescriptor({
++            id: authorizationType,
++            name: "Task",
++            describes: "bead",
++            conformsTo: [],
++          }),
++        ],
++        credentials: [{ token, principal: "p", canMutate: true }],
++      },
++      { clock: () => 1000000, maintenanceIntervalMs: 2147483647 },
++    );
++    const active = runtime;
++    const request = async (
++      target: string,
++      method: "GET" | "POST" = "GET",
++      body?: string,
++      key?: string,
++    ): Promise<AuthorizationResponse> => {
++      reserve();
++      const canonical = new URL(target, authorizationScope);
++      expect(canonical.origin).toBe(new URL(authorizationScope).origin);
++      const dial = new URL(canonical.pathname + canonical.search, active.listenUrl);
++      const received = Promise.withResolvers<AuthorizationResponse>();
++      void received.promise.catch(() => {});
++      const req = authorizationHttpRequest(
++        dial,
++        {
++          method,
++          headers: {
++            authorization: `Bearer ${token}`,
++            accept: "application/json, application/problem+json",
++            connection: "close",
++            ...(body === undefined
++              ? {}
++              : {
++                  "content-type": "application/json",
++                  "content-length": String(Buffer.byteLength(body)),
++                  "idempotency-key": key!,
++                }),
++          },
++        },
++        (res) => {
++          const chunks: Buffer[] = [];
++          let bytes = 0;
++          res.on("data", (chunk: Buffer) => {
++            bytes += chunk.length;
++            if (bytes > 32768) {
++              res.destroy(Error("authorization response byte bound"));
++              req.destroy();
++              return;
++            }
++            chunks.push(Buffer.from(chunk));
++          });
++          res.once("error", received.reject);
++          res.once("aborted", () => received.reject(Error("authorization response aborted")));
++          res.once("end", () => {
++            try {
++              const text = Buffer.concat(chunks).toString("utf8");
++              const headers = Object.fromEntries(
++                Object.entries(res.headers).map(([k, v]) => [
++                  k,
++                  Array.isArray(v) ? v.join(", ") : (v ?? ""),
++                ]),
++              );
++              const value = authorizationObject(JSON.parse(text));
++              observations.push({
++                index: attempts,
++                method,
++                target: canonical.pathname + canonical.search,
++                status: res.statusCode,
++                bodyBytes: bytes,
++                bodySha256: createHash("sha256").update(text).digest("hex"),
++                requestBodyBytes: body === undefined ? 0 : Buffer.byteLength(body),
++                ...(body === undefined
++                  ? {}
++                  : { requestBodySha256: createHash("sha256").update(body).digest("hex") }),
++                context: [
++                  headers["bdp-scope-epoch"],
++                  headers["bdp-authorization-view"],
++                  headers["bdp-scope-position"],
++                ],
++              });
++              received.resolve({ status: res.statusCode!, headers, body: value });
++            } catch (error) {
++              received.reject(error);
++            }
++          });
++        },
++      );
++      req.once("error", received.reject);
++      const socketClosed = new Promise<void>((resolve) =>
++        req.once("close", () => {
++          received.reject(Error("authorization request closed before complete response"));
++          resolve();
++        }),
++      );
++      const timer = setTimeout(
++        () => req.destroy(Error("authorization finite request timeout")),
++        5000,
++      );
++      req.end(body);
++      try {
++        return await received.promise;
++      } finally {
++        clearTimeout(timer);
++        req.destroy();
++        await authorizationBound(socketClosed, "authorization finite close timeout");
++      }
++    };
++    const stream = (target: string, headers: [string, string][] = []) => {
++      reserve();
++      const controller = new AbortController();
++      controllers.push(controller);
++      const canonical = new URL(target, authorizationScope);
++      const result = recordRawSse({
++        dial: active.listenUrl,
++        host: new URL(active.listenUrl).host,
++        target: canonical.pathname + canonical.search,
++        signal: controller.signal,
++        timeoutMs: 5000,
++        headers: [
++          ["Authorization", `Bearer ${token}`],
++          ["Accept", "text/event-stream"],
++          ...headers,
++        ],
++      });
++      streams.push(result);
++      const observation: Record<string, unknown> = {
++        index: attempts,
++        method: "GET",
++        target: canonical.pathname + canonical.search,
++        stream: true,
++      };
++      observations.push(observation);
++      void result.ready.then(
++        () => {
++          observation.status = result.status;
++          observation.context = [
++            result.headers["bdp-scope-epoch"],
++            result.headers["bdp-authorization-view"],
++            result.headers["bdp-scope-position"],
++          ];
++        },
++        () => {
++          observation.failedBeforeHeaders = true;
++        },
++      );
++      void result.closed.then(() => {
++        observation.closed = true;
++        observation.clientAbortedBeforeClose = controller.signal.aborted;
++        observation.wireBytes = result.wireBytes.length;
++        observation.completeFrames = result.frames.length;
++      });
++      return result;
++    };
++    await use({ runtime: active, request, stream, observations });
++    expect(attempts).toBe(maximumRequests);
++  } catch (error) {
++    failures.push(error);
++  } finally {
++    console.info(
++      JSON.stringify({
++        label: "authorization-transition-before-cleanup",
++        name,
++        attempts,
++        observations,
++        failures: failures.length,
++      }),
++    );
++    for (const controller of controllers) controller.abort(Error("authorization fixture cleanup"));
++    for (const stream of streams) {
++      try {
++        await authorizationBound(stream.close(), "authorization stream close timeout");
++      } catch (error) {
++        failures.push(error);
++      }
++    }
++    if (runtime) {
++      try {
++        await authorizationBound(runtime.close(), "authorization runtime close timeout");
++        closed = true;
++      } catch (error) {
++        failures.push(error);
++      }
++    }
++    if (closed) {
++      try {
++        rmSync(directory, { recursive: true, force: true });
++      } catch (error) {
++        failures.push(error);
++      }
++    }
++    console.info(
++      JSON.stringify({
++        label: "authorization-transition-cleanup",
++        name,
++        attempts,
++        runtimeReturned: runtime !== undefined,
++        closed,
++        directory,
++        directoryRemoved: !existsSync(directory),
++        failures: failures.length,
++        claimEligible: false,
++      }),
++    );
++  }
++  if (failures.length)
++    throw new AggregateError(failures, "authorization transport witness and cleanup");
++}
++
++it("narrows current Transactional visibility and fences issued handles after policy publication", async () => {
++  await withAuthorizationRuntime("visibility-handles", 17, async (f) => {
++    const ids = Array.from({ length: 32 }, (_, index) => `b${String(index).padStart(2, "0")}`);
++    const firstBody = authorizationSeed(ids);
++    const first = authorizationReceipt(
++      await f.request(f.runtime.targets.batch, "POST", firstBody, "auth-transition-seed-32"),
++      "auth-transition-seed-32",
++      ids,
++      "pos-1",
++    );
++    const second = authorizationReceipt(
++      await f.request(
++        f.runtime.targets.batch,
++        "POST",
++        authorizationSeed(["b32"]),
++        "auth-transition-seed-1",
++      ),
++      "auth-transition-seed-1",
++      ["b32"],
++      "pos-2",
++    );
++    expect(second.context).toEqual({ ...first.context, scopePosition: "pos-2" });
++    expect(authorizationChecked(await f.request("beads/b00"), 200, "currentBeadRecord")).toEqual(
++      first.resources[0],
++    );
++    const collection = authorizationChecked(
++      await f.request("beads/?limit=1"),
++      200,
++      "currentBeadCollection",
++    );
++    expect(collection.items).toEqual([first.resources[0]]);
++    const collectionNext = authorizationText(collection.next);
++    const snapshot = authorizationChecked(await f.request("snapshot"), 200, "snapshotManifest");
++    expect(snapshot).toMatchObject({
++      scope: authorizationScope,
++      scopeEpoch: second.context.scopeEpoch,
++      authorizationView: second.context.authorizationView,
++      scopePosition: "pos-2",
++      erasures: [],
++      links: { items: [], next: null },
++    });
++    expect(authorizationObject(snapshot.beads).items).toEqual(first.resources);
++    const snapshotNext = authorizationText(authorizationObject(snapshot.beads).next);
++    const checkpoint = authorizationText(snapshot.checkpoint);
++    expect(checkpoint).not.toBe("genesis");
++    const page = authorizationChecked(await f.request("events/"), 200, "eventPage");
++    const events = authorizationEvents(page, first.receipt, first.resources);
++    authorizationText(page.next);
++    const stream = f.stream("changes/?start=now");
++    await stream.ready;
++    expect(stream.status).toBe(200);
++    expect(stream.headers["content-type"]).toBe("text/event-stream");
++    expect(authorizationContext(stream.headers)).toEqual(second.context);
++    let streamClosed = false;
++    void stream.closed.then(() => {
++      streamClosed = true;
++    });
++    const policy = await f.runtime.replaceAuthorizationPolicy({ timeoutMs: 1000 });
++    f.observations.push({ publication: { ...policy }, oldStreamClosedAtPublication: streamClosed });
++    expect(
++      {
++        generation: policy.generation,
++        readPolicy: policy.readPolicy,
++        canMutate: policy.canMutate,
++        viewChanged: policy.authorizationView !== second.context.authorizationView,
++      },
++      "authorization-transition:generation-and-lease",
++    ).toEqual({ generation: 1, readPolicy: "empty", canMutate: false, viewChanged: true });
++    await authorizationBound(stream.closed, "authorization-transition:generation-and-lease", 1000);
++    expect(streamClosed, "authorization-transition:generation-and-lease").toBe(true);
++    const current = { ...second.context, authorizationView: policy.authorizationView };
++    const problem = async (target: string, status: number, code: string) => {
++      const response = await f.request(target);
++      const value = authorizationChecked(response, status, "transactionalProblem");
++      expect(value).toMatchObject({ status, code });
++      expect(authorizationContext(response.headers)).toEqual(current);
++      return value;
++    };
++    await problem("beads/b00", 404, "resource-not-found");
++    const empty = await f.request("beads/?limit=1");
++    expect(authorizationChecked(empty, 200, "currentBeadCollection")).toEqual({
++      items: [],
++      next: null,
++    });
++    expect(authorizationContext(empty.headers)).toEqual(current);
++    const fresh = await f.request("snapshot");
++    const emptySnapshot = authorizationChecked(fresh, 200, "snapshotManifest");
++    expect(emptySnapshot).toMatchObject({
++      scopeEpoch: current.scopeEpoch,
++      authorizationView: current.authorizationView,
++      scopePosition: "pos-2",
++      beads: { items: [], next: null },
++      links: { items: [], next: null },
++      erasures: [],
++    });
++    expect(emptySnapshot.id).not.toBe(snapshot.id);
++    expect(authorizationContext(fresh.headers)).toEqual(current);
++    await problem(authorizationText(snapshot.id), 409, "foreign-view");
++    await problem(snapshotNext, 409, "foreign-view");
++    await problem(collectionNext, 409, "foreign-view");
++    const reconnect = f.stream("changes/?start=now", [["Last-Event-ID", checkpoint]]);
++    await reconnect.ready;
++    await reconnect.closed;
++    expect(reconnect.status).toBe(409);
++    expect(reconnect.frames.filter((frame) => frame.startsWith("id:"))).toEqual([]);
++    const reconnectProblem = authorizationObject(JSON.parse(reconnect.body));
++    authorizationChecked(
++      { status: reconnect.status, headers: reconnect.headers, body: reconnectProblem },
++      409,
++      "transactionalProblem",
++    );
++    expect(reconnectProblem.code).toBe("foreign-view");
++    expect(authorizationContext(reconnect.headers)).toEqual(current);
++    await problem(
++      `events/?after=${encodeURIComponent(authorizationText(events.at(-1)!.id))}`,
++      409,
++      "foreign-view",
++    );
++    const receiptResponse = await f.request(authorizationText(first.receipt.id));
++    const retained = authorizationChecked(receiptResponse, 200, "mutationReceipt");
++    const projected: Record<string, unknown> = { ...first.receipt, detail: "withheld" };
++    delete projected.results;
++    delete projected.next;
++    delete projected.allocated;
++    expect(retained).toEqual(projected);
++    expect(authorizationContext(receiptResponse.headers)).toEqual(current);
++    const replay = await f.request(
++      f.runtime.targets.batch,
++      "POST",
++      firstBody,
++      "auth-transition-seed-32",
++    );
++    expect(authorizationChecked(replay, 403, "transactionalProblem")).toMatchObject({
++      status: 403,
++      code: "forbidden",
++    });
++    expect(authorizationContext(replay.headers)).toEqual(current);
++  });
++}, 30000);
++
++it("cancels an active Event stream after policy publication", async () => {
++  await withAuthorizationRuntime("active-event", 4, async (f) => {
++    const created = authorizationReceipt(
++      await f.request(
++        f.runtime.targets.batch,
++        "POST",
++        authorizationSeed(["a", "b"]),
++        "auth-transition-event-seed",
++      ),
++      "auth-transition-event-seed",
++      ["a", "b"],
++      "pos-1",
++    );
++    const finite = authorizationChecked(await f.request("events/"), 200, "eventPage");
++    const events = authorizationEvents(finite, created.receipt, created.resources);
++    expect(finite.next).toBeNull();
++    const stream = f.stream("events/");
++    await stream.until(() => stream.frames.filter((frame) => frame.startsWith("id:")).length === 2);
++    expect(stream.status).toBe(200);
++    expect(authorizationContext(stream.headers)).toEqual(created.context);
++    const actual = stream.frames
++      .filter((frame) => frame.startsWith("id:"))
++      .map((frame) => JSON.parse(frame.split("\ndata: ")[1]!));
++    expect(actual).toEqual(events);
++    const policy = await f.runtime.replaceAuthorizationPolicy({ timeoutMs: 1000 });
++    expect(policy.generation).toBe(1);
++    await authorizationBound(stream.closed, "authorization Event stream not cancelled", 1000);
++    const after = await f.request("events/");
++    expect(authorizationChecked(after, 200, "eventPage")).toEqual({
++      source: `${authorizationScope}events/`,
++      events: [],
++      next: null,
++    });
++    expect(authorizationContext(after.headers)).toEqual({
++      ...created.context,
++      authorizationView: policy.authorizationView,
++    });
++    f.observations.push({
++      deliveredFrames: actual.length,
++      publishedView: policy.authorizationView,
++      oldStreamClosed: stream.destroyed,
++    });
++  });
++}, 30000);
+diff --git a/packages/server/src/transaction-runtime.ts b/packages/server/src/transaction-runtime.ts
+index c400ffd..96f7a89 100644
+--- a/packages/server/src/transaction-runtime.ts
++++ b/packages/server/src/transaction-runtime.ts
+@@ -1,3 +1,4 @@
++import { TransactionAuthorizationFailure } from "./transaction-authorization.js";
+ /** Source-private loopback fixture. Never selected by installed config/profile
+  * admission. It exposes actual routes, not an incomplete BDP discovery claim. */
+ import { createTransactionSchemaHttp } from "./transaction-schema-http.js";
+@@ -190,56 +191,60 @@ export async function startTransactionRuntime(
+         }
+         const activeService = service!;
+         streamContext = selected.context;
+-        await activeService.stream(async (streamSignal) => {
+-          try {
+-            streamSignal.throwIfAborted();
+-            if (!selected || selected.kind === "finite")
+-              throw new Error("missing stream selection");
+-            response.writeHead(selected.status, Object.fromEntries(selected.headers));
+-            response.flushHeaders();
+-            const pumping =
+-              selected.kind === "changefeed-stream"
+-                ? pumpTransactionChanges(
+-                    response,
+-                    selected.page,
+-                    async (after, nextSignal) => {
+-                      const observed = await activeService.changes(
+-                        { after },
+-                        undefined,
+-                        nextSignal,
+-                      );
+-                      if (observed.kind !== "page")
+-                        throw new Error("changefeed stream lost serving entry");
+-                      return observed.page;
+-                    },
+-                    streamSignal,
+-                    settings.changefeedStream,
+-                  )
+-                : pumpTransactionEvents(
+-                    response,
+-                    selected.packet,
+-                    (scan, nextSignal) => activeService.nextEvents(scan, nextSignal),
+-                    streamSignal,
+-                    settings.changefeedStream,
+-                  );
+-            // Transfer the initial packet into the pump; do not retain the HTTP
+-            // result/group body for the lifetime of the live stream.
+-            selected = undefined;
+-            await pumping;
+-          } catch (error) {
+-            // Capture before destroy() turns a genuine fault into a disconnect.
+-            if (
+-              response.headersSent &&
+-              !streamSignal.aborted &&
+-              !response.destroyed &&
+-              !firstStreamFault
+-            )
+-              firstStreamFault = { cause: error };
+-            throw error;
+-          } finally {
+-            response.destroy();
+-          }
+-        }, signal);
++        await activeService.stream(
++          async (streamSignal) => {
++            try {
++              streamSignal.throwIfAborted();
++              if (!selected || selected.kind === "finite")
++                throw new Error("missing stream selection");
++              response.writeHead(selected.status, Object.fromEntries(selected.headers));
++              response.flushHeaders();
++              const pumping =
++                selected.kind === "changefeed-stream"
++                  ? pumpTransactionChanges(
++                      response,
++                      selected.page,
++                      async (after, nextSignal) => {
++                        const observed = await activeService.changes(
++                          { after },
++                          undefined,
++                          nextSignal,
++                        );
++                        if (observed.kind !== "page")
++                          throw new Error("changefeed stream lost serving entry");
++                        return observed.page;
++                      },
++                      streamSignal,
++                      settings.changefeedStream,
++                    )
++                  : pumpTransactionEvents(
++                      response,
++                      selected.packet,
++                      (scan, nextSignal) => activeService.nextEvents(scan, nextSignal),
++                      streamSignal,
++                      settings.changefeedStream,
++                    );
++              // Transfer the initial packet into the pump; do not retain the HTTP
++              // result/group body for the lifetime of the live stream.
++              selected = undefined;
++              await pumping;
++            } catch (error) {
++              // Capture before destroy() turns a genuine fault into a disconnect.
++              if (
++                response.headersSent &&
++                !streamSignal.aborted &&
++                !response.destroyed &&
++                !firstStreamFault
++              )
++                firstStreamFault = { cause: error };
++              throw error;
++            } finally {
++              response.destroy();
++            }
++          },
++          signal,
++          streamContext,
++        );
+       }
+     } catch (error) {
+       if (
+@@ -248,6 +253,8 @@ export async function startTransactionRuntime(
+         error instanceof ScopeServerOperationAbortedError
+       ) {
+         response.destroy();
++      } else if (error instanceof TransactionAuthorizationFailure) {
++        deliver(response, transactionHttpProblem(error.code, error.context));
+       } else if (error instanceof TransactionStreamCapacityError) {
+         deliver(response, transactionHttpProblem("temporarily-unavailable", streamContext));
+       } else if (!response.destroyed) {
+@@ -360,6 +367,10 @@ export async function startTransactionRuntime(
+     scope,
+     listenUrl,
+     configurationMetadata,
++    replaceAuthorizationPolicy: (options: {
++      readonly timeoutMs: number;
++      readonly signal?: AbortSignal;
++    }) => service!.replaceAuthorizationPolicy(options),
+     /** Test-only inventory, not an HTTP Operation Directory. */ targets: handler.targets,
+     close(): Promise<void> {
+       if (!completion) {
+diff --git a/packages/server/src/transaction-service.test.ts b/packages/server/src/transaction-service.test.ts
+index 81a3d55..be97c68 100644
+--- a/packages/server/src/transaction-service.test.ts
++++ b/packages/server/src/transaction-service.test.ts
+@@ -2305,3 +2305,109 @@ it("preserves current receipt absence context across ordinary and minimum servic
+   }
+   expect(waits).toBe(0);
+ });
++
++it("rejects an old selected Event packet before stream registration and accepts a current lease", async () => {
++  const boundary = cleanup.length,
++    failures: unknown[] = [];
++  const caller = new AbortController();
++  let observed: Promise<unknown> | undefined;
++  let ownerReady = false;
++  let callbacks = 0,
++    writes = 0,
++    pulls = 0;
++  try {
++    const f = fixture();
++    ownerReady = true;
++    const service = f.open();
++    const receipt = f.owner.execute(owned(f.owner, batch([create("a"), create("b")])));
++    expect(receipt.status).toBe("completed");
++    const selected = f.owner.beginEventScan(`${scope}events/`);
++    if (selected.kind !== "packet") throw Error("actual selected packet required");
++    expect(selected.events).toHaveLength(2);
++    const policy = await service.replaceAuthorizationPolicy({ timeoutMs: 1000 });
++    expect(policy.generation).toBe(1);
++    // Handler selection occurred before publication; actual service acquisition occurs after.
++    const stale = Promise.resolve().then(() =>
++      service.stream(
++        async () => {
++          callbacks++;
++          writes += selected.events.length;
++          pulls++;
++          f.owner.advanceEventScan(selected.scan);
++        },
++        caller.signal,
++        selected.context,
++      ),
++    );
++    const staleResult = await stale.then(
++      () => ({ accepted: true }),
++      (error: unknown) => error,
++    );
++    expect(staleResult).toMatchObject({ code: "foreign-view" });
++    expect([callbacks, writes, pulls]).toEqual([0, 0, 0]);
++    const current = f.owner.beginEventScan(`${scope}events/`);
++    if (current.kind !== "packet") throw Error("actual current packet required");
++    expect(current.context).toEqual({
++      ...selected.context,
++      authorizationView: policy.authorizationView,
++    });
++    expect(current.events).toEqual([]);
++    const registered = Promise.withResolvers<void>();
++    const fresh = service.stream(
++      async (signal) => {
++        callbacks++;
++        registered.resolve();
++        await new Promise<never>((_resolve, reject) => {
++          const aborted = () => {
++            signal.removeEventListener("abort", aborted);
++            reject(signal.reason);
++          };
++          signal.addEventListener("abort", aborted, { once: true });
++          if (signal.aborted) aborted();
++          // No nextpull or wire callback: this case isolates registration.
++        });
++      },
++      caller.signal,
++      current.context,
++    );
++    observed = fresh.then(
++      () => ({ completed: true }),
++      (error: unknown) => error,
++    );
++    await registered.promise;
++    expect([callbacks, writes, pulls]).toEqual([1, 0, 0]);
++    const reason = Error("current lease test complete");
++    caller.abort(reason);
++    expect(await observed).toBe(reason);
++  } catch (error) {
++    failures.push(error);
++  } finally {
++    caller.abort(Error("stale lease fixture cleanup"));
++    if (observed) {
++      try {
++        await observed;
++      } catch (error) {
++        failures.push(error);
++      }
++    }
++    const added = cleanup.splice(boundary),
++      removeDirectory = added.shift();
++    let stopped = ownerReady;
++    for (const close of added.reverse()) {
++      try {
++        await close();
++      } catch (error) {
++        stopped = false;
++        failures.push(error);
++      }
++    }
++    if (stopped && removeDirectory) {
++      try {
++        await removeDirectory();
++      } catch (error) {
++        failures.push(error);
++      }
++    }
++  }
++  if (failures.length) throw new AggregateError(failures, "stale Event lease witness cleanup");
++}, 5000);
+diff --git a/packages/server/src/transaction-service.ts b/packages/server/src/transaction-service.ts
+index 00c3048..335e221 100644
+--- a/packages/server/src/transaction-service.ts
++++ b/packages/server/src/transaction-service.ts
+@@ -1,3 +1,4 @@
++import { projectTransactionEntry } from "./transaction-authorization.js";
+ import { assembleTransactionDiscovery } from "./transaction-discovery.js";
+ import type { TransactionSnapshotRequest } from "./transaction-snapshot.js";
+ import type { TransactionChangefeedIntent } from "./transaction-changefeed.js";
+@@ -11,7 +12,7 @@ import {
+ /** Source-private same-owner lifecycle. No HTTP receiver, directory or profile
+  * advertisement. Passing ownerLifetime:"service" transfers owner shutdown to
+  * this service after successful construction; callers must stop using the owner.
+- * Only the existing fixed all-visible installation policy applies. */
++ * Trusted policy publication drains finite mutations before revoking delivery. */
+ import { createNodeLifecycleScheduler, type LifecycleScheduler } from "./sequence-executor.js";
+ import type { PreparedTransactionSequence } from "./transaction-batch.js";
+ import {
+@@ -116,6 +117,7 @@ export function createTransactionService(owner: Owner, options: TransactionServi
+   const minimumReads = Object.freeze({ ...options.minimumReads });
+   const read = createTransactionReadPlane(owner, capturedRead);
+   const active = new Set<Promise<unknown>>();
++  const mutations = new Set<Promise<unknown>>();
+   const maximumStreams = options.maximumStreams ?? 1;
+   if (!Number.isSafeInteger(maximumStreams) || maximumStreams < 1)
+     throw new TypeError("invalid private stream capacity");
+@@ -148,6 +150,15 @@ export function createTransactionService(owner: Owner, options: TransactionServi
+     }
+     return task.promise;
+   }
++  function mutate<T>(start: () => Promise<T>): Promise<T> {
++    const task = run(start);
++    mutations.add(task);
++    void task.then(
++      () => mutations.delete(task),
++      () => mutations.delete(task),
++    );
++    return task;
++  }
+   function nextTurn(): Promise<void> {
+     return new Promise((resolve, reject) => {
+       let scheduling = true,
+@@ -279,12 +290,23 @@ export function createTransactionService(owner: Owner, options: TransactionServi
+     },
+     /** Separate cancellable lifetime, never an infinite finite-work drain. The
+      * callback starts only after capacity registration and abort wiring. */
+-    stream(start: (signal: AbortSignal) => Promise<void>, supplied: AbortSignal): Promise<void> {
++    stream(
++      start: (signal: AbortSignal) => Promise<void>,
++      supplied: AbortSignal,
++      expected?: TransactionReadContext,
++    ): Promise<void> {
+       check();
+       if (supplied.aborted) return Promise.reject(supplied.reason);
+       if (streams.size >= maximumStreams)
+         throw new TransactionStreamCapacityError("private live stream capacity reached");
++      const selected = expected ?? owner.withRead((_reader, context) => context);
++      const context =
++        "kind" in selected ? (selected.kind === "read" ? selected.value : undefined) : selected;
++      if (!context) throw new Error("stream context observation refused");
++      const lease = owner.acquireAuthorizationLease(context);
+       const controller = new AbortController();
++      const revoke = () => controller.abort(lease.signal.reason);
++      lease.signal.addEventListener("abort", revoke, { once: true });
+       const abort = () => controller.abort(supplied.reason);
+       supplied.addEventListener("abort", abort, { once: true });
+       const task = Promise.withResolvers<void>();
+@@ -292,6 +314,8 @@ export function createTransactionService(owner: Owner, options: TransactionServi
+       const finish = () => {
+         supplied.removeEventListener("abort", abort);
+         streams.delete(controller);
++        lease.signal.removeEventListener("abort", revoke);
++        lease.release();
+       };
+       void task.promise.then(finish, finish);
+       try {
+@@ -301,6 +325,47 @@ export function createTransactionService(owner: Owner, options: TransactionServi
+       }
+       return task.promise;
+     },
++    /** Trusted administration, never HTTP. Cancellation stops waiting, not writes. */
++    replaceAuthorizationPolicy(options: {
++      readonly timeoutMs: number;
++      readonly signal?: AbortSignal;
++    }) {
++      const timeoutMs = options.timeoutMs,
++        signal = options.signal;
++      if (!Number.isSafeInteger(timeoutMs) || timeoutMs < 1 || timeoutMs > 2147483647)
++        throw new TypeError("finite administrative timeout required");
++      check();
++      signal?.throwIfAborted();
++      const deadline = performance.now() + timeoutMs;
++      const resume = owner.pauseMutationAdmission();
++      return run(async () => {
++        let abort: (() => void) | undefined;
++        let timer: ReturnType<typeof setTimeout> | undefined;
++        try {
++          const cancelled = new Promise<never>((_resolve, reject) => {
++            abort = () => reject(signal?.reason);
++            signal?.addEventListener("abort", abort, { once: true });
++            timer = setTimeout(() => reject(new Error("authorization drain deadline")), timeoutMs);
++            if (signal?.aborted) abort();
++          });
++          const settled = await Promise.race([Promise.allSettled([...mutations]), cancelled]);
++          signal?.throwIfAborted();
++          if (performance.now() >= deadline) throw new Error("authorization drain deadline");
++          check();
++          const failed = settled.filter((result) => result.status === "rejected");
++          if (failed.length)
++            throw new AggregateError(
++              failed.map((result) => result.reason),
++              "authorization drain failed",
++            );
++          return owner.replaceAuthorizationPolicy();
++        } finally {
++          clearTimeout(timer);
++          if (abort) signal?.removeEventListener("abort", abort);
++          resume();
++        }
++      });
++    },
+     closed: completion.promise,
+     /** Actual fixed-owner Read configuration; no Transactional discovery claims. */
+     readFor(principal: Parameters<typeof read.readFor>[0]) {
+@@ -512,7 +577,7 @@ export function createTransactionService(owner: Owner, options: TransactionServi
+       });
+     },
+     submit(request: TransactionSubmission): Promise<TransactionServiceSubmissionResult> {
+-      return run(async () => {
++      return mutate(async () => {
+         const authorization = Object.freeze({ ...request.authorization });
+         const result = await submitTransaction(
+           owner,
+@@ -535,7 +600,7 @@ export function createTransactionService(owner: Owner, options: TransactionServi
+       principal: string,
+       sequence: PreparedTransactionSequence,
+     ): Promise<TransactionSequenceResponse> {
+-      return run(() => executeSequence(principal, sequence));
++      return mutate(() => executeSequence(principal, sequence));
+     },
+     /** Authenticated exact local schema response; no mutation or minimum wait. */
+     schemaObserved() {
+@@ -558,21 +623,29 @@ export function createTransactionService(owner: Owner, options: TransactionServi
+         return observed.value;
+       });
+     },
+-    /** The fixed all-visible owner projects stable member execution facts and
+-     * captures the current serving context together, after ordered execution.
+-     * This does not project mutable grants or erasure; those remain unsupported. */
++    /** Project stable member execution facts in the current serving entry after
++     * ordered execution. Version erasure remains outside this private policy. */
+     sequenceObserved(principal: string, sequence: PreparedTransactionSequence) {
+-      return run(async () => {
++      return mutate(async () => {
+         const response = await executeSequence(principal, sequence);
+-        const observed = owner.withRead((_reader, context) => {
++        const observed = owner.withRead((reader, context) => {
++          const policy = owner.captureReadAuthorization(reader, {
++            kind: "authenticated",
++            principal: { id: principal },
++          });
++          const body = {
++            results: response.results.map((entry) =>
++              projectTransactionEntry(entry, policy.readPolicy === "all-visible"),
++            ),
++          };
+           const freeze = (value: unknown): void => {
+             if (value !== null && typeof value === "object") {
+               for (const child of Object.values(value)) freeze(child);
+               Object.freeze(value);
+             }
+           };
+-          freeze(response);
+-          return Object.freeze({ body: response, context });
++          freeze(body);
++          return Object.freeze({ body, context });
+         });
+         if (observed.kind === "entry-refused")
+           throw new Error("transaction sequence observation refused", { cause: observed.cause });
+@@ -580,7 +653,7 @@ export function createTransactionService(owner: Owner, options: TransactionServi
+       });
+     },
+     /** Authentication is transport-supplied, never inferred from actor or URL.
+-     * Current owner policy is all-visible; principal binding still denies foreign
++     * Current owner policy projects contents; principal binding denies foreign
+      * receipts uniformly. No key lookup, receipt listing or fabricated page URL. */
+     receipt(
+       access:
+diff --git a/packages/server/src/transaction-snapshot.ts b/packages/server/src/transaction-snapshot.ts
+index a52a19b..559a2e7 100644
+--- a/packages/server/src/transaction-snapshot.ts
++++ b/packages/server/src/transaction-snapshot.ts
+@@ -1,3 +1,4 @@
++import { INITIAL_TRANSACTION_VIEW } from "./transaction-authorization.js";
+ /** Source-private durable Snapshot owner support. No HTTP route or admission claim. */
+ import { createHash, createHmac, randomBytes, randomUUID, timingSafeEqual } from "node:crypto";
+ import { isDeepStrictEqual } from "node:util";
+@@ -87,6 +88,7 @@ export class TransactionSnapshotFailure extends Error {
+     readonly code:
+       | "resource-not-found"
+       | "cursor-expired"
++      | "foreign-view"
+       | "limit-exceeded"
+       | "temporarily-unavailable",
+     readonly retryAfter?: number,
+@@ -95,6 +97,7 @@ export class TransactionSnapshotFailure extends Error {
+     const [family, status, retry] = {
+       "resource-not-found": ["not-found", 404, "after-state-change"],
+       "cursor-expired": ["gone", 410, "after-state-change"],
++      "foreign-view": ["conflict", 409, "after-state-change"],
+       "limit-exceeded": ["size", 413, "never"],
+       "temporarily-unavailable": ["unavailable", 503, "after-delay"],
+     }[code];
+@@ -155,6 +158,7 @@ export function transactionSnapshotStorage(
+   db: DatabaseSync,
+   canonicalScope: string,
+   types: readonly TypeDescriptor[],
++  visible: () => boolean = () => true,
+ ) {
+   const scope = parseCanonicalScope(canonicalScope),
+     limits = TRANSACTION_SNAPSHOT_LIMITS;
+@@ -203,7 +207,8 @@ export function transactionSnapshotStorage(
+       "issued page counts",
+     );
+     integrity(
+-      d.epoch === context.scopeEpoch && d.view === context.authorizationView,
++      d.epoch === context.scopeEpoch &&
++        (d.view === context.authorizationView || d.view === INITIAL_TRANSACTION_VIEW),
+       "persisted context mismatch",
+     );
+     integrity(
+@@ -570,6 +575,9 @@ export function transactionSnapshotStorage(
+       )
+         throw new TransactionSnapshotFailure("resource-not-found");
+     }
++    // Qualified witnesses separate unexpired foreign-view and same-view expiry.
++    // The simultaneous foreign+expired collision is not an admission claim.
++    if (d.view !== context.authorizationView) throw new TransactionSnapshotFailure("foreign-view");
+     if (d.expired || now > d.expires) throw new TransactionSnapshotFailure("cursor-expired");
+     return { d, ranges: plan(id, d) };
+   }
+@@ -613,9 +621,11 @@ export function transactionSnapshotStorage(
+     if (ledgerBounds() >= limits.issuedHandles)
+       throw new TransactionSnapshotFailure("limit-exceeded");
+     const live = liveLedger(now, context);
+-    const totals = statement(
+-      "SELECT count(*) AS count,coalesce(sum(length(CAST(body AS BLOB))),0) AS bytes,coalesce(sum(length(CAST(id AS BLOB))),0) AS idBytes FROM resources",
+-    ).get()!;
++    const totals = !visible()
++      ? { count: 0, bytes: 0, idBytes: 0 }
++      : statement(
++          "SELECT count(*) AS count,coalesce(sum(length(CAST(body AS BLOB))),0) AS bytes,coalesce(sum(length(CAST(id AS BLOB))),0) AS idBytes FROM resources",
++        ).get()!;
+     if (Number(totals.count) > limits.resources || Number(totals.bytes) > limits.recordBytes)
+       throw new TransactionSnapshotFailure("limit-exceeded");
+     // Empty-live pressure cannot occur with the current recordBytes < liveRecordBytes
+@@ -633,7 +643,9 @@ export function transactionSnapshotStorage(
+     }
+     integrity(Number(totals.idBytes) <= limits.recordBytes, "authority identity bytes");
+     // Count/byte checks precede bounded identity enumeration and every body load.
+-    const ids = statement("SELECT id,kind FROM resources LIMIT ?").all(limits.resources + 1);
++    const ids = visible()
++      ? statement("SELECT id,kind FROM resources LIMIT ?").all(limits.resources + 1)
++      : [];
+     integrity(ids.length === Number(totals.count), "authority inventory changed inside owner");
+     ids.sort((a, b) => compareCanonicalIds(String(a.id), String(b.id)));
+     // The nonallocating path uses fixed-width layout witnesses, never an issued
+diff --git a/packages/server/src/transaction-store.ts b/packages/server/src/transaction-store.ts
+index 0c7a94d..82aee6c 100644
+--- a/packages/server/src/transaction-store.ts
++++ b/packages/server/src/transaction-store.ts
+@@ -1,3 +1,14 @@
++import {
++  INITIAL_TRANSACTION_VIEW,
++  initialTransactionAuthorization,
++  emptyTransactionAuthorization,
++  parseTransactionAuthorization,
++  projectTransactionReceipt,
++  projectTransactionEntry,
++  TransactionAuthorizationFailure,
++  type TransactionAuthorizationSnapshot,
++  type TransactionAuthorizationLease,
++} from "./transaction-authorization.js";
+ import { transactionSelectorCapacity, type TransactionSelectorLimit } from "./transaction-set.js";
+ import {
+   TRANSACTION_SNAPSHOT_LIMITS,
+@@ -43,7 +54,7 @@ import { DatabaseSync } from "node:sqlite";
+ import { parseCanonicalScope, parseTypeDescriptor, type TypeDescriptor } from "@bdp/protocol";
+ import { assertDevelopmentContracts, type DevelopmentContracts } from "./development-contracts.js";
+ import { CONTRACT_ARTIFACT_CEILINGS } from "./installed-contract-artifact.js";
+-import type { AuthorityReadReader, OwnerReadEntryResult } from "./authority-read.js";
++import type { AuthorityReadReader, OwnerReadEntryResult, ReadPrincipal } from "./authority-read.js";
+ import type { EvaluatorStoredResource } from "./resource-evaluator.js";
+ import {
+   TransactionDevelopmentLimitError,
+@@ -192,7 +203,9 @@ export interface TransactionStoreOptions {
+       | "after-sequence-admission"
+       | "after-dependency-resolution"
+       | "after-snapshot-copy"
+-      | "after-snapshot-commit",
++      | "after-snapshot-commit"
++      | "before-policy-commit"
++      | "after-policy-commit",
+   ) => void;
+ }
+ interface Row {
+@@ -206,7 +219,7 @@ interface Row {
+ }
+ const day = 86400000;
+ export const TRANSACTION_RECEIPT_DETAIL_MS = day;
+-const format = "bdp-private-transaction-snapshot-10";
++const format = "bdp-private-transaction-snapshot-11";
+ // Identity equality changed without changing the value codec. Retained keys
+ // require both the current identity policy and the alias-aware store format.
+ const identityPolicy = "transaction-revision-provenance-4";
+@@ -245,10 +258,19 @@ interface ReceiptPagePlan {
+ /** Owns a single SQLite connection under persistent EXCLUSIVE locking. Admission
+  * is durable separately; graph/positions/group/terminal receipt are one commit.
+  * Startup retracts abandoned pending receipts instead of running requests itself.
+- * Fixed all-visible private policy only; this is not an authentication boundary. */
++ * Private Scope policy; this is not an authentication boundary. */
+ export function openTransactionStore(options: TransactionStoreOptions) {
+   const scope = parseCanonicalScope(options.scope);
+-  const view = "development-all-visible";
++  const view = INITIAL_TRANSACTION_VIEW;
++  let authorization: TransactionAuthorizationSnapshot = initialTransactionAuthorization();
++  const leases = new Set<AbortController>();
++  const readAuthorizations = new WeakMap<AuthorityReadReader, TransactionAuthorizationSnapshot>();
++  const activeSequences = new Set<TransactionSequenceAdmission>();
++  let mutationPause: object | undefined;
++  const revokeLeases = () => {
++    for (const lease of leases) lease.abort(new Error("authorization lease ended"));
++    leases.clear();
++  };
+   if (Buffer.byteLength(json(`${scope}events/`)) > TRANSACTION_RUNTIME_LIMITS.scopeSourceBytes)
+     throw new TypeError("transaction Scope exceeds private materialization bound");
+   if (!path.isAbsolute(options.file))
+@@ -286,13 +308,27 @@ export function openTransactionStore(options: TransactionStoreOptions) {
+     receiptMaximumItems,
+     snapshotLimits: TRANSACTION_SNAPSHOT_LIMITS,
+     snapshotTokenPolicy: TRANSACTION_SNAPSHOT_TOKEN_POLICY,
+-    authorizationView: view,
++    initialAuthorizationView: view,
++    policyStorageRevision: 1,
+     identityPolicy,
+     contractIdentity: compiled?.identity ?? null,
+     runtimeLimits: TRANSACTION_RUNTIME_LIMITS,
+     scope,
+     types: [...installed].sort(([a], [b]) => (a < b ? -1 : a > b ? 1 : 0)),
+   });
++  // Preserve the exact format-10 property ordering, not a permissive JSON comparison.
++  const legacyObject = JSON.parse(configuration) as Record<string, unknown>;
++  const legacyEntries = Object.entries(legacyObject).flatMap(([key, value]) =>
++    key === "policyStorageRevision"
++      ? []
++      : [
++          [
++            key === "initialAuthorizationView" ? "authorizationView" : key,
++            key === "format" ? "bdp-private-transaction-snapshot-10" : value,
++          ],
++        ],
++  );
++  const legacyBytes = json(Object.fromEntries(legacyEntries));
+   const clock = options.clock ?? Date.now;
+   const maintenanceInterval = options.maintenanceIntervalMs ?? 1000;
+   if (
+@@ -361,6 +397,7 @@ export function openTransactionStore(options: TransactionStoreOptions) {
+   }
+   function fence(cause: unknown): Error {
+     clearInterval(maintenanceTimer);
++    revokeLeases();
+     // Cleanup can add the original application error to an earlier storage
+     // failure. Replace the wrapper; mutating its cause would create a cycle.
+     ownerFailure = new Error("transaction storage failure; owner fenced; reopen before use", {
+@@ -501,7 +538,12 @@ export function openTransactionStore(options: TransactionStoreOptions) {
+     );
+     return { row: { ...stored, receipt: receiptText }, change: "completedExpired" };
+   }
+-  const snapshots = transactionSnapshotStorage(db, scope, descriptors);
++  const snapshots = transactionSnapshotStorage(
++    db,
++    scope,
++    descriptors,
++    () => authorization.readPolicy === "all-visible",
++  );
+   function sweep(now: number) {
+     snapshots.expire(now, readContext());
+     const counts = { completedExpired: 0, failedForgotten: 0 };
+@@ -536,13 +578,14 @@ export function openTransactionStore(options: TransactionStoreOptions) {
+         put.run("contractCapture", capture);
+         put.run("epoch", randomUUID());
+         put.run("position", "0");
++        put.run("authorizationPolicy", json(authorization));
+       } else {
+         const storedConfiguration = metadata("configuration");
+         if (JSON.parse(storedConfiguration).identityPolicy !== identityPolicy)
+           throw new Error(
+             "transaction identity policy mismatch; explicit new-store provisioning required",
+           );
+-        if (storedConfiguration !== configuration)
++        if (storedConfiguration !== configuration && storedConfiguration !== legacyBytes)
+           throw new Error("transaction installation mismatch");
+         // Exact bytes validate retained capture, including constant witnesses, even
+         // if the stored claimed identity was left unchanged by corruption.
+@@ -557,6 +600,22 @@ export function openTransactionStore(options: TransactionStoreOptions) {
+           metadata("contractCapture") !== capture
+         )
+           throw new Error("transaction contract capture mismatch");
++        if (storedConfiguration === legacyBytes) {
++          if (db.prepare("SELECT 1 FROM metadata WHERE name='authorizationPolicy'").get())
++            throw new Error("unexpected legacy authorization policy");
++          db.prepare("INSERT INTO metadata VALUES('authorizationPolicy',?)").run(
++            json(authorization),
++          );
++          db.prepare("UPDATE metadata SET value=? WHERE name='configuration'").run(configuration);
++        }
++        const policyLength = db
++          .prepare(
++            "SELECT length(CAST(value AS BLOB)) AS bytes FROM metadata WHERE name='authorizationPolicy'",
++          )
++          .get();
++        if (!policyLength || Number(policyLength.bytes) > 4096)
++          throw new Error("invalid stored authorization policy");
++        authorization = parseTransactionAuthorization(metadata("authorizationPolicy"));
+       }
+       // Immutable for this exclusive owner; establish it before the first sweep.
+       epoch = metadata("epoch");
+@@ -573,7 +632,7 @@ export function openTransactionStore(options: TransactionStoreOptions) {
+     throw error;
+   }
+   // Immutable installation facts are the same ones used by mutation evaluation.
+-  // No named policy registry exists in this fixed all-visible development owner.
++  // Current authorization is captured separately inside each serialized entry.
+   const readConfiguration = Object.freeze({
+     scopeEpoch: epoch,
+     authorizationView: view,
+@@ -595,7 +654,7 @@ export function openTransactionStore(options: TransactionStoreOptions) {
+       throw new Error("invalid transaction read position");
+     return Object.freeze({
+       scopeEpoch: epoch,
+-      authorizationView: view,
++      authorizationView: authorization.authorizationView,
+       scopePosition: `pos-${position}`,
+     });
+   }
+@@ -623,9 +682,12 @@ export function openTransactionStore(options: TransactionStoreOptions) {
+   function eventSourceKnown(source: TransactionEventSource): boolean {
+     return (
+       !source.subject ||
+-      Boolean(
+-        db.prepare("SELECT id FROM identities WHERE id=?").get(source.subject.slice(scope.length)),
+-      )
++      (authorization.readPolicy === "all-visible" &&
++        Boolean(
++          db
++            .prepare("SELECT id FROM identities WHERE id=?")
++            .get(source.subject.slice(scope.length)),
++        ))
+     );
+   }
+   function eventSource(sourceUrl: string): TransactionEventSource {
+@@ -654,7 +716,14 @@ export function openTransactionStore(options: TransactionStoreOptions) {
+     source: TransactionEventSource,
+     cursor?: { position: number; ordinal: number; id: string },
+   ) {
+-    const projected = projectTransactionEventGroup(row.value, context, source, scope, row.position);
++    const projected = projectTransactionEventGroup(
++      row.value,
++      context,
++      source,
++      scope,
++      row.position,
++      authorization.readPolicy === "all-visible",
++    );
+     if (
+       cursor &&
+       (row.position !== cursor.position ||
+@@ -802,7 +871,7 @@ export function openTransactionStore(options: TransactionStoreOptions) {
+       next: plan.pages[0] ? pageUrl(receipt.id, plan.pages[0].token) : null,
+     };
+   }
+-  // Fixed all-visible projection and current position are captured before this
++  // Current projection and position are captured before this
+   // authoritative transaction releases. No second clock/retention observation.
+   function observeReceipt(
+     receipt: TransactionReceipt,
+@@ -832,12 +901,24 @@ export function openTransactionStore(options: TransactionStoreOptions) {
+         Object.freeze(value);
+       }
+     };
+-    const projected = receiptPrefix(receipt);
++    const prefix = receiptPrefix(receipt); // Validate retained page plan even when every entry is withheld.
++    const projection = projectTransactionReceipt(
++      receipt,
++      authorization.readPolicy === "all-visible",
++    );
++    const projected =
++      projection.detail === "available" && Array.isArray(projection.results)
++        ? {
++            ...projection,
++            results: projection.results.slice(0, receiptMaximumItems),
++            next: prefix.next,
++          }
++        : projection;
+     freeze(projected);
+     return Object.freeze({ receipt: projected, context });
+   }
+-  // Called only inside the guarded owner's transaction. The fixed all-visible
+-  // policy projects retained facts, including postimages since updated/deleted.
++  // Called only inside the guarded owner's transaction. Principal binding is
++  // distinct from current-view projection of retained execution facts.
+   function disclosedReceipt(principal: string, id: string): Row | undefined {
+     for (const stored of db
+       .prepare("SELECT * FROM receipts WHERE principal=?")
+@@ -948,6 +1029,7 @@ export function openTransactionStore(options: TransactionStoreOptions) {
+           return undefined;
+         },
+       });
++      readAuthorizations.set(reader, authorization);
+       try {
+         const value = callback(reader, readContext());
+         if (
+@@ -963,6 +1045,7 @@ export function openTransactionStore(options: TransactionStoreOptions) {
+         return Object.freeze({ kind: "read", value });
+       } finally {
+         active = false;
++        readAuthorizations.delete(reader);
+       }
+     });
+   }
+@@ -1361,6 +1444,7 @@ export function openTransactionStore(options: TransactionStoreOptions) {
+       }),
+     );
+     state.cancelled = true;
++    activeSequences.delete(attempt);
+     for (const claim of state.owned.values()) claims.delete(claim);
+     return released;
+   }
+@@ -1370,6 +1454,7 @@ export function openTransactionStore(options: TransactionStoreOptions) {
+     } catch (cause) {
+       // Background failure is sticky and observable on the next owner entry;
+       // stop the timer and release the database instead of silently continuing.
++      revokeLeases();
+       maintenanceFailure = { cause };
+       clearInterval(maintenanceTimer);
+       try {
+@@ -1411,6 +1496,10 @@ export function openTransactionStore(options: TransactionStoreOptions) {
+     return enter(() => {
+       assertPreparedTransaction(batch, scope);
+       checkPrincipalKey(principal, key);
++      if (mutationPause)
++        throw new TransactionAuthorizationFailure("temporarily-unavailable", readContext());
++      if (!authorization.canMutate)
++        throw new TransactionAuthorizationFailure("forbidden", readContext());
+       const admission = atomic(() => {
+         const result = admitKey(principal, key, batch, false, undefined, undefined, receiving);
+         if (result.kind === "development-limit" && controls === undefined)
+@@ -1732,7 +1821,13 @@ export function openTransactionStore(options: TransactionStoreOptions) {
+         if ((!row && start < head) || (row && row.position !== start + 1))
+           throw new Error("missing retained change group");
+         const group = row
+-          ? projectTransactionChangeGroup(row.value, scope, context, row.position)
++          ? projectTransactionChangeGroup(
++              row.value,
++              scope,
++              context,
++              row.position,
++              authorization.readPolicy === "all-visible",
++            )
+           : undefined;
+         let next: string | null = null;
+         if (group && row && row.position < head) {
+@@ -1757,7 +1852,79 @@ export function openTransactionStore(options: TransactionStoreOptions) {
+         });
+       });
+     },
+-    readConfiguration: () => enter(() => readConfiguration),
++    readConfiguration: () =>
++      enter(() =>
++        Object.freeze({
++          ...readConfiguration,
++          authorizationView: authorization.authorizationView,
++          authorization,
++          scopeConfiguration: Object.freeze({
++            ...readConfiguration.scopeConfiguration,
++            policyIdentity: authorization.authorizationView,
++          }),
++        }),
++      ),
++    captureReadAuthorization(reader: AuthorityReadReader, principal: ReadPrincipal) {
++      // The reader is a capability for this exact live serialized entry.
++      const snapshot = readAuthorizations.get(reader);
++      if (!snapshot || !principal || typeof principal !== "object")
++        throw new Error("authorization capture outside owner entry");
++      return snapshot;
++    },
++    authorizationSnapshot: () => enter(() => authorization),
++    acquireAuthorizationLease(expected: TransactionReadContext): TransactionAuthorizationLease {
++      return enter(() => {
++        if (
++          expected.scopeEpoch !== epoch ||
++          expected.authorizationView !== authorization.authorizationView
++        )
++          throw new TransactionAuthorizationFailure("foreign-view", readContext());
++        const controller = new AbortController();
++        leases.add(controller);
++        return Object.freeze({
++          signal: controller.signal,
++          release: () => {
++            leases.delete(controller);
++          },
++        });
++      });
++    },
++    pauseMutationAdmission() {
++      return enter(() => {
++        if (mutationPause)
++          throw new TransactionAuthorizationFailure("temporarily-unavailable", readContext());
++        const token = Object.freeze({});
++        mutationPause = token;
++        return () => {
++          if (mutationPause === token) mutationPause = undefined;
++        };
++      });
++    },
++    replaceAuthorizationPolicy() {
++      return enter(() => {
++        if (
++          activeSequences.size ||
++          db.prepare("SELECT 1 FROM receipts WHERE owner IS NOT NULL LIMIT 1").get()
++        )
++          throw new TransactionAuthorizationFailure("temporarily-unavailable", readContext());
++        if (authorization.generation === 1) return authorization;
++        const next = emptyTransactionAuthorization();
++        atomic(() => {
++          db.prepare("UPDATE metadata SET value=? WHERE name='authorizationPolicy'").run(
++            json(next),
++          );
++          options.fault?.("before-policy-commit");
++        });
++        try {
++          options.fault?.("after-policy-commit");
++          authorization = next;
++          revokeLeases();
++        } catch (error) {
++          throw fence(error);
++        }
++        return authorization;
++      });
++    },
+     comparisonEpoch: () => {
+       if (closed && !ownerFailure && !maintenanceFailure) return undefined;
+       return enter(() => metadata("epoch"));
+@@ -1794,6 +1961,10 @@ export function openTransactionStore(options: TransactionStoreOptions) {
+     ): TransactionSequenceAdmission {
+       return enter(() => {
+         assertPreparedTransactionSequence(sequence, scope);
++        if (mutationPause)
++          throw new TransactionAuthorizationFailure("temporarily-unavailable", readContext());
++        if (!authorization.canMutate)
++          throw new TransactionAuthorizationFailure("forbidden", readContext());
+         for (const member of sequence.members) checkPrincipalKey(principal, member.key);
+         const owned = new Map<number, TransactionClaim>();
+         const id = randomUUID();
+@@ -1847,6 +2018,7 @@ export function openTransactionStore(options: TransactionStoreOptions) {
+             for (const claim of owned.values()) claims.delete(claim);
+           }
+         }
++        activeSequences.add(attempt);
+         sequenceAdmissions.set(attempt, {
+           principal,
+           id,
+@@ -1977,6 +2149,7 @@ export function openTransactionStore(options: TransactionStoreOptions) {
+           );
+         state.next++;
+         const done = state.next === state.sequence.members.length;
++        if (done) activeSequences.delete(attempt);
+         if (done)
+           enter(() =>
+             atomic(() => db.prepare("DELETE FROM creator_facts WHERE attempt=?").run(state.id)),
+@@ -2009,7 +2182,14 @@ export function openTransactionStore(options: TransactionStoreOptions) {
+       });
+     },
+     receipt(principal: string, id: string): TransactionReceipt | undefined {
+-      return enter(() => atomic(() => retainedReceipt(principal, id)));
++      return enter(() =>
++        atomic(() => {
++          const value = retainedReceipt(principal, id);
++          return (
++            value && projectTransactionReceipt(value, authorization.readPolicy === "all-visible")
++          );
++        }),
++      );
+     },
+     /** Trusted authenticated principal, never actor/provenance. Lookup, retention
+      * cleanup, fixed current projection and source context share one owner entry.
+@@ -2076,10 +2256,11 @@ export function openTransactionStore(options: TransactionStoreOptions) {
+           observeReceipt(receipt, context); // same projection/integrity policy, no second clock
+           const boundary = plan.pages[index];
+           if (!boundary) throw new Error("receipt page boundary missing");
+-          const results = (receipt.results as readonly unknown[]).slice(
+-            boundary.start,
+-            boundary.end,
+-          );
++          const results = (receipt.results as readonly unknown[])
++            .slice(boundary.start, boundary.end)
++            .map((entry) =>
++              projectTransactionEntry(entry, authorization.readPolicy === "all-visible"),
++            );
+           // Freeze the selected page entries before they escape the owner entry.
+           const freeze = (value: unknown): void => {
+             if (value && typeof value === "object") {
+@@ -2126,6 +2307,7 @@ export function openTransactionStore(options: TransactionStoreOptions) {
+     close() {
+       if (busy) throw new Error("transaction store reentrant close");
+       clearInterval(maintenanceTimer);
++      revokeLeases();
+       if (!closed) {
+         db.close();
+         closed = true;
+diff --git a/packages/server/src/transaction-authorization.test.ts b/packages/server/src/transaction-authorization.test.ts
+new file mode 100644
+index 0000000..f1ffc35
+--- /dev/null
++++ b/packages/server/src/transaction-authorization.test.ts
+@@ -0,0 +1,590 @@
++import { copyFileSync, mkdtempSync, rmSync } from "node:fs";
++import { tmpdir } from "node:os";
++import path from "node:path";
++import { DatabaseSync } from "node:sqlite";
++import { afterEach, expect, it } from "vitest";
++import { isReadProblem, parseTypeDescriptor } from "@bdp/protocol";
++import { prepareTransaction, prepareTransactionSequence } from "./transaction-batch.js";
++import { openTransactionStore, type TransactionStoreOptions } from "./transaction-store.js";
++import { createTransactionService, type TransactionServiceOptions } from "./transaction-service.js";
++import {
++  INITIAL_TRANSACTION_VIEW,
++  projectTransactionReceipt,
++} from "./transaction-authorization.js";
++import { TRANSACTION_SNAPSHOT_LIMITS } from "./transaction-snapshot.js";
++import { requestFromUrl } from "./read-request.js";
++
++const scope = "https://example.test/authorization/";
++const type = scope + "types/bead";
++const types = [parseTypeDescriptor({ id: type, name: "Bead", describes: "bead", conformsTo: [] })];
++const cleanup: (() => void | Promise<void>)[] = [];
++afterEach(async () => {
++  const failures: unknown[] = [];
++  for (const close of cleanup.splice(0).reverse()) {
++    try {
++      await close();
++    } catch (error) {
++      failures.push(error);
++    }
++  }
++  if (failures.length) throw new AggregateError(failures, "authorization fixture cleanup");
++});
++const create = (id: string) => ({
++  operation: "createBead",
++  id: "beads/" + id,
++  type,
++  properties: { n: 0 },
++});
++function fixture(extra: Partial<TransactionStoreOptions> = {}) {
++  const directory = mkdtempSync(path.join(tmpdir(), "bdp-tx-authorization-"));
++  let now = 1000;
++  const options = {
++    file: path.join(directory, "store.sqlite"),
++    scope,
++    types,
++    create: true,
++    clock: () => now,
++    ...extra,
++  };
++  let owner: ReturnType<typeof openTransactionStore>;
++  const rawConnections = new Set<DatabaseSync>();
++  cleanup.push(() => {
++    const failures: unknown[] = [];
++    if (!owner) throw new Error("authorization startup failed; directory retained");
++    try {
++      owner.close();
++    } catch (error) {
++      failures.push(error);
++    }
++    for (const db of rawConnections) {
++      try {
++        db.close();
++      } catch (error) {
++        failures.push(error);
++      }
++    }
++    if (failures.length)
++      throw new AggregateError(failures, "authorization owner cleanup; directory retained");
++    rmSync(directory, { recursive: true, force: true });
++  });
++  owner = openTransactionStore(options);
++  return {
++    options,
++    get owner() {
++      return owner;
++    },
++    setTime(value: number) {
++      now = value;
++    },
++    reopen() {
++      owner.close();
++      owner = openTransactionStore({ ...options, create: false });
++      return owner;
++    },
++    execute(operations: unknown[], key: string, principal = "p") {
++      const admitted = owner.admit(
++        principal,
++        key,
++        prepareTransaction(scope, JSON.stringify({ operations })),
++      );
++      if (admitted.kind !== "owned") throw new Error("fixture requires fresh owned admission");
++      return owner.execute(admitted.claim);
++    },
++    raw<T>(run: (db: DatabaseSync) => T): T {
++      owner.close();
++      const db = new DatabaseSync(options.file);
++      rawConnections.add(db);
++      try {
++        return run(db);
++      } finally {
++        db.close();
++        rawConnections.delete(db);
++      }
++    },
++  };
++}
++function context(owner: ReturnType<typeof openTransactionStore>) {
++  const observed = owner.withRead((_reader, value) => value);
++  if (observed.kind !== "read") throw new Error("expected owner observation");
++  return observed.value;
++}
++function readOptions(): TransactionServiceOptions["read"] {
++  let token = 0;
++  return {
++    selectorLimits: { bytes: 4096, depth: 32, nodes: 256 },
++    advertisedLimits: {
++      page: { defaultItems: 2, maximumItems: 32 },
++      selector: { bytes: 4096, depth: 32, nodes: 256 },
++      cursorTtlMilliseconds: 1000,
++    },
++    pagination: {
++      scope,
++      defaultPageItems: 2,
++      maxPageItems: 32,
++      cursorTtlMs: 1000,
++      retainedStateCapacity: 100,
++      maxRetainedCursorPositionsPerSnapshot: 20,
++      retainedSnapshotByteCapacity: 100000,
++      retainedSnapshotNodeCapacity: 10000,
++      maxOpaqueTokenLength: 64,
++      tokenGenerationAttempts: 3,
++      idleCleanup: "on-demand",
++      clock: () => 1000,
++      generateOpaqueToken: () => "cursor_" + ++token,
++    },
++  };
++}
++// Exact old ordered recipe from committed 67a2842 transaction-store.ts:284–297.
++// Independent literal: no transformation of the new configuration under test.
++const legacyConfiguration =
++  '{"format":"bdp-private-transaction-snapshot-10","receiptMaximumItems":32,"snapshotLimits":{"lifetimeMs":300000,"resources":4096,"recordBytes":33554432,"liveHandles":8,"liveRecordBytes":67108864,"issuedHandles":65536,"dispositionBytes":1024,"snapshotPageItems":32,"pageBytes":4194304,"manifestBytes":10485760},"snapshotTokenPolicy":"hmac-sha256-ordinal-1","authorizationView":"development-all-visible","identityPolicy":"transaction-revision-provenance-4","contractIdentity":null,"runtimeLimits":{"maximumOperations":32,"inducedEvents":256,"matchedResources":32,"representationBytes":262144,"scopeSourceBytes":65536,"requestBodyBytes":65536,"propertiesBytes":65536,"diagnosticBytes":524288,"diagnosticCount":16},"scope":"https://example.test/authorization/","types":[["https://example.test/authorization/types/bead","{\\"id\\":\\"https://example.test/authorization/types/bead\\",\\"name\\":\\"Bead\\",\\"describes\\":\\"bead\\",\\"conformsTo\\":[]}"]]}';
++function retained(db: DatabaseSync) {
++  const tables = [
++    "resources",
++    "identities",
++    "aliases",
++    "receipts",
++    "receipt_pages",
++    "receipt_page_ranges",
++    "creator_facts",
++    "groups",
++    "snapshots",
++    "snapshot_pages",
++    "snapshot_records",
++  ];
++  const existing = new Set(
++    db
++      .prepare("SELECT name FROM sqlite_schema WHERE type='table'")
++      .all()
++      .map((r) => String(r.name)),
++  );
++  return Object.fromEntries(
++    tables
++      .filter((name) => existing.has(name))
++      .map((name) => [name, db.prepare("SELECT * FROM " + name + " ORDER BY rowid").all()]),
++  );
++}
++
++it("migrates exact legacy authorization facts and preserves a no-op policy across reopen", () => {
++  const f = fixture();
++  const receipt = f.execute([create("a")], "seed");
++  const original = context(f.owner);
++  f.owner.captureSnapshot();
++  let current = "";
++  const before = f.raw((db) => {
++    current = String(
++      db.prepare("SELECT value FROM metadata WHERE name='configuration'").get()?.value,
++    );
++    db.prepare("UPDATE metadata SET value=? WHERE name='configuration'").run(legacyConfiguration);
++    db.exec("DELETE FROM metadata WHERE name='authorizationPolicy'");
++    return retained(db);
++  });
++  const rejected = (edit: (db: DatabaseSync) => void, message: string) => {
++    const dir = mkdtempSync(path.join(tmpdir(), "bdp-tx-authorization-rejected-"));
++    const file = path.join(dir, "store.sqlite");
++    let opened: ReturnType<typeof openTransactionStore> | undefined;
++    let db: DatabaseSync | undefined;
++    const failures: unknown[] = [];
++    try {
++      copyFileSync(f.options.file, file);
++      db = new DatabaseSync(file);
++      edit(db);
++      db.close();
++      db = undefined;
++      expect(() => {
++        opened = openTransactionStore({ ...f.options, file, create: false });
++      }).toThrow(message);
++    } catch (error) {
++      failures.push(error);
++    }
++    const primaryFailureCount = failures.length;
++    {
++      try {
++        opened?.close();
++      } catch (error) {
++        failures.push(error);
++      }
++      try {
++        db?.close();
++      } catch (error) {
++        failures.push(error);
++      }
++      if (failures.length === primaryFailureCount) {
++        try {
++          rmSync(dir, { recursive: true, force: true });
++        } catch (error) {
++          failures.push(error);
++        }
++      }
++    }
++    if (failures.length) {
++      throw new AggregateError(failures, "rejected-open assertion or cleanup failed");
++    }
++  };
++  rejected(
++    (db) =>
++      db
++        .prepare("UPDATE metadata SET value=? WHERE name='configuration'")
++        .run(legacyConfiguration.replace("snapshot-10", "snapshot-9")),
++    "installation mismatch",
++  );
++  rejected(
++    (db) =>
++      db
++        .prepare("UPDATE metadata SET value=? WHERE name='configuration'")
++        .run(legacyConfiguration.replace('"receiptMaximumItems":32', '"receiptMaximumItems":31')),
++    "installation mismatch",
++  );
++  f.reopen();
++  expect(context(f.owner)).toEqual(original);
++  expect(f.owner.receipt("p", receipt.id)).toEqual(receipt);
++  const next = f.owner.replaceAuthorizationPolicy();
++  expect(next.generation).toBe(1);
++  expect(f.owner.replaceAuthorizationPolicy()).toBe(next);
++  const after = f.raw((db) => {
++    expect(
++      String(db.prepare("SELECT value FROM metadata WHERE name='configuration'").get()?.value),
++    ).toBe(current);
++    expect(
++      JSON.parse(
++        String(
++          db.prepare("SELECT value FROM metadata WHERE name='authorizationPolicy'").get()?.value,
++        ),
++      ),
++    ).toEqual(next);
++    return retained(db);
++  });
++  expect(after).toEqual(before);
++  rejected(
++    (db) => db.exec("DELETE FROM metadata WHERE name='authorizationPolicy'"),
++    "authorization policy",
++  );
++  rejected(
++    (db) =>
++      db
++        .prepare("UPDATE metadata SET value=? WHERE name='authorizationPolicy'")
++        .run('{"revision":1}'),
++    "authorization policy",
++  );
++  rejected(
++    (db) =>
++      db
++        .prepare("UPDATE metadata SET value=? WHERE name='authorizationPolicy'")
++        .run(JSON.stringify({ ...next, authorizationView: [next.authorizationView] })),
++    "authorization policy",
++  );
++  f.reopen();
++  expect(f.owner.authorizationSnapshot()).toEqual(next);
++  expect(context(f.owner)).toEqual({ ...original, authorizationView: next.authorizationView });
++  expect(f.owner.inspect().position).toBe("1");
++});
++
++it("preserves policy and delivery leases after confirmed policy rollback", () => {
++  const failure = new Error("before policy commit");
++  const f = fixture({
++    fault: (phase) => {
++      if (phase === "before-policy-commit") throw failure;
++    },
++  });
++  const before = f.owner.authorizationSnapshot();
++  const lease = f.owner.acquireAuthorizationLease(context(f.owner));
++  try {
++    expect(() => f.owner.replaceAuthorizationPolicy()).toThrow(failure);
++    expect(f.owner.authorizationSnapshot()).toBe(before);
++    expect(lease.signal.aborted).toBe(false);
++    expect(f.execute([create("still-authorized")], "after-rollback").status).toBe("completed");
++  } finally {
++    lease.release();
++  }
++});
++
++it("fences publication failure and recovers the committed empty policy", () => {
++  let fail = true;
++  const f = fixture({
++    fault: (phase) => {
++      if (phase === "after-policy-commit" && fail) throw new Error("after policy commit");
++    },
++  });
++  const receipt = f.execute([create("a")], "seed");
++  const before = context(f.owner);
++  const lease = f.owner.acquireAuthorizationLease(before);
++  expect(() => f.owner.replaceAuthorizationPolicy()).toThrow("owner fenced");
++  expect(lease.signal.aborted).toBe(true);
++  expect(() => f.owner.authorizationSnapshot()).toThrow("owner fenced");
++  fail = false;
++  f.reopen();
++  const policy = f.owner.authorizationSnapshot();
++  expect(policy).toMatchObject({ generation: 1, readPolicy: "empty", canMutate: false });
++  expect(context(f.owner)).toEqual({ ...before, authorizationView: policy.authorizationView });
++  expect(f.owner.receipt("p", receipt.id)).toEqual({
++    ...Object.fromEntries(
++      Object.entries(receipt).filter(([key]) => !["results", "next", "allocated"].includes(key)),
++    ),
++    detail: "withheld",
++  });
++  lease.release();
++});
++
++it("separates Snapshot view fences from durable maintenance and actual expiry", () => {
++  const f = fixture();
++  f.execute(
++    Array.from({ length: 32 }, (_, n) => create("b" + n)),
++    "first",
++  );
++  f.execute([create("b32")], "second");
++  const old = f.owner.captureSnapshot().manifest;
++  const id = new URL(old.id).searchParams.get("snapshot");
++  const page = old.beads.next && new URL(old.beads.next);
++  if (!id || !page) throw new Error("real Snapshot continuation required");
++  const token = page.searchParams.get("page");
++  if (!token) throw new Error("actual Snapshot token required");
++  f.owner.replaceAuthorizationPolicy();
++  expect(f.owner.observeSnapshot({ kind: "manifest", id })).toMatchObject({
++    kind: "problem",
++    code: "foreign-view",
++  });
++  expect(f.owner.observeSnapshot({ kind: "page", id, stream: "bead", token })).toMatchObject({
++    kind: "problem",
++    code: "foreign-view",
++  });
++  expect(
++    f.owner.observeSnapshot({ kind: "manifest", id: "00000000-0000-4000-8000-000000000000" }),
++  ).toMatchObject({ kind: "problem", code: "resource-not-found" });
++  expect(f.owner.observeSnapshot({ kind: "page", id, stream: "bead", token: "bad" })).toMatchObject(
++    { kind: "problem", code: "resource-not-found" },
++  );
++  const empty = f.owner.captureSnapshot().manifest;
++  expect(empty.beads.items).toEqual([]);
++  expect(empty.links.items).toEqual([]);
++  expect(empty.beads.next).toBeNull();
++  const emptyId = new URL(empty.id).searchParams.get("snapshot");
++  if (!emptyId) throw new Error("empty Snapshot identity required");
++  f.setTime(1001 + TRANSACTION_SNAPSHOT_LIMITS.lifetimeMs);
++  f.owner.maintain();
++  expect(f.owner.observeSnapshot({ kind: "manifest", id: emptyId })).toMatchObject({
++    kind: "problem",
++    code: "cursor-expired",
++  });
++  expect(f.owner.inspect().resources).toHaveLength(33);
++});
++
++it("projects receipt records and allocations without changing non-record execution facts", () => {
++  const f = fixture({ receiptMaximumItems: 2 });
++  const mixed = f.execute(
++    [create("a"), { operation: "deleteBead", bead: "beads/a" }, create("b")],
++    "mixed",
++  );
++  const failed = f.execute([{ operation: "deleteBead", bead: "beads/missing" }], "failed");
++  expect(failed.status).toBe("failed");
++  const full = mixed.results;
++  if (!Array.isArray(full)) throw new Error("completed full receipt");
++  const before = f.owner.readReceipt("p", mixed.id).receipt;
++  if (!before || typeof before.next !== "string") throw new Error("real issued receipt page");
++  const firstPage = f.owner.readReceiptPage("p", before.next);
++  if (firstPage.kind !== "page") throw new Error("issued page unavailable");
++  expect(full[2]).toMatchObject({
++    operationIndex: 2,
++    outcome: "created",
++    resource: { id: scope + "beads/b", type },
++  });
++  expect(firstPage.page.results).toEqual([full[2]]);
++  const old = context(f.owner);
++  f.owner.replaceAuthorizationPolicy();
++  const observed = f.owner.readReceipt("p", mixed.id);
++  expect(observed.receipt).toEqual({
++    ...before,
++    results: [{ operationIndex: 0, outcome: "withheld" }, full[1]],
++  });
++  expect(observed.context).toEqual({
++    ...old,
++    authorizationView: f.owner.authorizationSnapshot().authorizationView,
++  });
++  const afterPage = f.owner.readReceiptPage("p", before.next);
++  expect(afterPage).toEqual({
++    ...firstPage,
++    page: {
++      ...firstPage.page,
++      results: [{ operationIndex: 2, outcome: "withheld" }],
++    },
++    context: observed.context,
++  });
++  expect(f.owner.readReceipt("p", failed.id).receipt).toEqual(failed);
++  // Exercise real compact allocations after ordinary retention, not fabricated receipts.
++  f.setTime(1001 + 86400000);
++  const expired = f.owner.readReceipt("p", mixed.id).receipt;
++  expect(expired).toMatchObject({
++    status: "completed",
++    detail: "expired",
++    allocated: [
++      { operationIndex: 0, withheld: true },
++      { operationIndex: 2, withheld: true },
++    ],
++  });
++  // Empty/non-record results must not be promoted by vacuous every().
++  expect(projectTransactionReceipt({ ...mixed, results: [] }, false).detail).toBe("available");
++});
++
++it("bounds administrative drain without cancelling admitted sequence work", async () => {
++  const f = fixture();
++  const callbacks: (() => void)[] = [];
++  const scheduler = {
++    turn(callback: () => void) {
++      callbacks.push(callback);
++      return () => {
++        const index = callbacks.indexOf(callback);
++        if (index >= 0) callbacks.splice(index, 1);
++      };
++    },
++  };
++  const service = createTransactionService(f.owner, {
++    ownerLifetime: "service",
++    read: readOptions(),
++    scheduler,
++  });
++  cleanup.push(() => service.close());
++  const sequence = prepareTransactionSequence(
++    scope,
++    JSON.stringify({
++      operations: [create("a"), create("b")].map((op, i) => ({
++        ...op,
++        idempotencyKey: "member_" + i,
++      })),
++    }),
++  );
++  const pending = service.sequenceObserved("p", sequence);
++  void pending.catch(() => {});
++  const tick = async () => {
++    const callback = callbacks.shift();
++    if (!callback) throw new Error("scheduled sequence turn required");
++    callback();
++    await Promise.resolve();
++    await Promise.resolve();
++  };
++  try {
++    expect(() => f.owner.replaceAuthorizationPolicy()).toThrow("authorization admission refused");
++    const cancelled = new AbortController();
++    const first = service.replaceAuthorizationPolicy({ timeoutMs: 1000, signal: cancelled.signal });
++    const observedFirst = first.then(
++      () => {
++        throw new Error("cancelled publication");
++      },
++      (error: unknown) => error,
++    );
++    expect(() =>
++      f.owner.admit(
++        "p",
++        "paused",
++        prepareTransaction(scope, JSON.stringify({ operations: [create("paused")] })),
++      ),
++    ).toThrow("authorization admission refused");
++    const reason = new Error("administrative cancellation");
++    cancelled.abort(reason);
++    expect(await observedFirst).toBe(reason);
++    expect(f.owner.authorizationSnapshot().generation).toBe(0);
++    // Scheduler deliberately delivers no turn during this finite administrative wait.
++    await expect(service.replaceAuthorizationPolicy({ timeoutMs: 10 })).rejects.toThrow(
++      "authorization drain deadline",
++    );
++    expect(f.owner.inspect().position).toBe("0");
++    expect(f.owner.authorizationSnapshot().generation).toBe(0);
++    await tick();
++    expect(f.owner.inspect().position).toBe("1");
++    const firstMember = sequence.members[0];
++    if (!firstMember) throw new Error("first member required");
++    const retained = f.owner.admit("p", "member_0", firstMember.request);
++    if (retained.kind !== "existing") throw new Error("committed prefix receipt required");
++    const publishing = service.replaceAuthorizationPolicy({ timeoutMs: 1000 });
++    void publishing.catch(() => {});
++    expect(f.owner.authorizationSnapshot().generation).toBe(0);
++    await tick();
++    const response = await pending;
++    expect(response.body.results).toHaveLength(2);
++    expect(response.context.authorizationView).toBe(INITIAL_TRANSACTION_VIEW);
++    const policy = await publishing;
++    expect(policy.generation).toBe(1);
++    expect(f.owner.inspect().position).toBe("2");
++    expect(f.owner.inspect().groups).toHaveLength(2);
++    expect(f.owner.inspect().resources).toHaveLength(2);
++    const projected = f.owner.readReceipt("p", retained.receipt.id);
++    expect(projected.receipt).toEqual({
++      ...Object.fromEntries(
++        Object.entries(retained.receipt).filter(
++          ([key]) => !["results", "next", "allocated"].includes(key),
++        ),
++      ),
++      detail: "withheld",
++    });
++    expect(projected.context.authorizationView).toBe(policy.authorizationView);
++    expect(f.owner.readEvents(scope + "events/")).toMatchObject({
++      kind: "page",
++      page: { events: [], next: null },
++    });
++  } finally {
++    // Deliver every outstanding ordinary turn even if an assertion failed.
++    while (callbacks.length) await tick();
++    await Promise.allSettled([pending]);
++    await service.close();
++  }
++});
++
++it("captures one Scope policy for distinct principals and renders empty historical advances", async () => {
++  const f = fixture();
++  const receipt = f.execute([create("a")], "seed", "alice");
++  const service = createTransactionService(f.owner, {
++    ownerLifetime: "service",
++    read: readOptions(),
++  });
++  cleanup.push(() => service.close());
++  const request = requestFromUrl(new URL(scope + "beads/a"), scope);
++  if (isReadProblem(request)) throw new Error("valid Resource read required");
++  const alice = service.readFor({ kind: "authenticated", principal: { id: "alice" } });
++  const bob = service.readFor({ kind: "authenticated", principal: { id: "bob" } });
++  expect(await alice.perform(request)).toMatchObject({ kind: "resource" });
++  expect(await bob.perform(request)).toMatchObject({ kind: "resource" });
++  const readonly = {
++    carrier: { kind: "batch" as const },
++    body: JSON.stringify({ operations: [create("denied")] }),
++    key: "readonly",
++    authorization: { kind: "forbidden" as const },
++    receiving: { acceptsJson: true, maximumOperations: 32 },
++  };
++  expect(await service.submit(readonly)).toMatchObject({ kind: "refused", status: 403 });
++  const policy = await service.replaceAuthorizationPolicy({ timeoutMs: 1000 });
++  for (const facet of [alice, bob]) {
++    const result = await facet.perform(request);
++    expect(result).toMatchObject({
++      kind: "problem",
++      problem: { code: "resource-not-found" },
++      observation: { authorizationView: policy.authorizationView },
++    });
++  }
++  expect(await service.submit(readonly)).toMatchObject({ kind: "refused", status: 403 });
++  expect(() =>
++    f.owner.admit(
++      "alice",
++      "seed",
++      prepareTransaction(scope, JSON.stringify({ operations: [create("a")] })),
++    ),
++  ).toThrow("authorization admission refused");
++  expect(f.owner.readReceipt("bob", receipt.id).receipt).toBeUndefined();
++  expect(f.owner.readReceipt("alice", receipt.id).receipt?.detail).toBe("withheld");
++  const page = f.owner.readChanges("genesis");
++  if (page.kind !== "page") throw new Error("historical change page required");
++  expect(page.page.groups).toEqual([
++    {
++      scopeEpoch: f.owner.scopeEpoch,
++      authorizationView: policy.authorizationView,
++      checkpoint: page.page.groups[0]?.checkpoint,
++      position: "pos-1",
++      previousPosition: "pos-0",
++      projectionAdvance: true,
++      changes: [],
++      erasures: [],
++      eventCount: 0,
++      events: [],
++    },
++  ]);
++  expect(page.page.groups[0]?.checkpoint).not.toBe("genesis");
++  expect(f.owner.inspect().resources).toHaveLength(1);
++  await service.close();
++});
+diff --git a/packages/server/src/transaction-authorization.ts b/packages/server/src/transaction-authorization.ts
+new file mode 100644
+index 0000000..6b47a03
+--- /dev/null
++++ b/packages/server/src/transaction-authorization.ts
+@@ -0,0 +1,121 @@
++/** Private Scope policy. Installation facts and retained execution facts are separate. */
++import { randomUUID } from "node:crypto";
++import type { TransactionReceipt, TransactionReadContext } from "./transaction-store.js";
++
++export const INITIAL_TRANSACTION_VIEW = "development-all-visible";
++export interface TransactionAuthorizationLease {
++  readonly signal: AbortSignal;
++  release(): void;
++}
++export interface TransactionAuthorizationSnapshot {
++  readonly revision: 1;
++  readonly bindingKind: "scope";
++  readonly generation: 0 | 1;
++  readonly authorizationView: string;
++  readonly readPolicy: "all-visible" | "empty";
++  readonly canMutate: boolean;
++}
++export function initialTransactionAuthorization(): TransactionAuthorizationSnapshot {
++  return Object.freeze({
++    revision: 1,
++    bindingKind: "scope",
++    generation: 0,
++    authorizationView: INITIAL_TRANSACTION_VIEW,
++    readPolicy: "all-visible",
++    canMutate: true,
++  });
++}
++export function emptyTransactionAuthorization(): TransactionAuthorizationSnapshot {
++  return Object.freeze({
++    revision: 1,
++    bindingKind: "scope",
++    generation: 1,
++    authorizationView: randomUUID(),
++    readPolicy: "empty",
++    canMutate: false,
++  });
++}
++export function parseTransactionAuthorization(text: string): TransactionAuthorizationSnapshot {
++  if (Buffer.byteLength(text) > 4096) throw new Error("authorization policy exceeds storage bound");
++  const v: unknown = JSON.parse(text);
++  if (
++    !v ||
++    typeof v !== "object" ||
++    Array.isArray(v) ||
++    Object.keys(v).sort().join(",") !==
++      "authorizationView,bindingKind,canMutate,generation,readPolicy,revision"
++  )
++    throw new Error("invalid authorization policy fields");
++  const p = v as TransactionAuthorizationSnapshot;
++  if (
++    p.revision !== 1 ||
++    p.bindingKind !== "scope" ||
++    !(
++      (p.generation === 0 &&
++        p.authorizationView === INITIAL_TRANSACTION_VIEW &&
++        p.readPolicy === "all-visible" &&
++        p.canMutate === true) ||
++      (p.generation === 1 &&
++        typeof p.authorizationView === "string" &&
++        /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/.test(
++          p.authorizationView,
++        ) &&
++        p.readPolicy === "empty" &&
++        p.canMutate === false)
++    )
++  )
++    throw new Error("invalid authorization policy");
++  return Object.freeze(p);
++}
++export class TransactionAuthorizationFailure extends Error {
++  constructor(
++    readonly code: "forbidden" | "temporarily-unavailable" | "foreign-view",
++    readonly context?: TransactionReadContext,
++  ) {
++    super("private authorization admission refused");
++  }
++}
++/** Execution identities survive; only Resource-bearing entries are withheld. */
++export function projectTransactionEntry(value: unknown, visible: boolean): unknown {
++  if (visible || !value || typeof value !== "object" || Array.isArray(value)) return value;
++  const entry = value as Record<string, unknown>;
++  if ((entry.outcome !== "created" && entry.outcome !== "updated") || entry.resource === undefined)
++    return value;
++  return {
++    operationIndex: entry.operationIndex,
++    ...(entry.operationName === undefined ? {} : { operationName: entry.operationName }),
++    outcome: "withheld",
++  };
++}
++export function projectTransactionReceipt(
++  receipt: TransactionReceipt,
++  visible: boolean,
++): TransactionReceipt {
++  if (visible) return receipt;
++  const projected = { ...receipt };
++  if (Array.isArray(receipt.allocated))
++    projected.allocated = receipt.allocated.map((entry: Record<string, unknown>) => ({
++      operationIndex: entry.operationIndex,
++      ...(entry.operationName === undefined ? {} : { operationName: entry.operationName }),
++      withheld: true,
++    }));
++  if (
++    receipt.status === "completed" &&
++    receipt.detail === "available" &&
++    Array.isArray(receipt.results)
++  ) {
++    projected.results = receipt.results.map((entry) => projectTransactionEntry(entry, false));
++    if (
++      receipt.results.length > 0 &&
++      (projected.results as Record<string, unknown>[]).every(
++        (entry) => entry.outcome === "withheld",
++      )
++    ) {
++      projected.detail = "withheld";
++      delete projected.results;
++      delete projected.next;
++      delete projected.allocated;
++    }
++  }
++  return projected;
++}

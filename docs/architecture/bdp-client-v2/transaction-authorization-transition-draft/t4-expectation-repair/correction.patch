@@ -1,0 +1,11 @@
+--- a/packages/server/src/transaction-service.test.ts
++++ b/packages/server/src/transaction-service.test.ts
+@@ -2343,7 +2343,7 @@
+       () => ({ accepted: true }),
+       (error: unknown) => error,
+     );
+-    expect(staleResult).toMatchObject({ code: "forbidden" });
++    expect(staleResult).toMatchObject({ code: "foreign-view" });
+     expect([callbacks, writes, pulls]).toEqual([0, 0, 0]);
+     const current = f.owner.beginEventScan(`${scope}events/`);
+     if (current.kind !== "packet") throw Error("actual current packet required");
