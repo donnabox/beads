@@ -8,11 +8,11 @@ We tried VERY hard to keep the existing CLI entry points working; compatibility 
 
 One other significant change in this preview is that we've *mostly* normalized how types work, both for existing Dependency Links and for new Links that don't fit the Dependency model. That is, `--type` now works as expected. The old `--bead-type` and `--link-type` flags are gone; long live `--type`. I say *mostly* because the CLI's Type selections and displayed records are not fully aligned yet. This will get cleaned up in the next preview.
 
-It would be singularly awesome if you would [install the Preview 2 build](https://github.com/donnabox/beads/pull/102) and let us know about any gaps you find. The runbook has the list of known limitations; if you find an unknown one, please file an issue and we'll add it to the queue.
+It would be singularly awesome if you would [install the Preview 2 build](https://github.com/donnabox/beads/releases/tag/graph-preview2) and let us know about any gaps you find. The runbook has the list of known limitations; if you find an unknown one, please file an issue and we'll add it to the queue.
 
 ## Types
 
-The examples below are adapted from the [Preview 2 runbook](https://github.com/donnabox/beads/blob/3ff52710582096fbc694901fa52bac00487eec3b/docs/preview2/RUNBOOK.md). They build on one another in a fresh graph workspace initialized as the runbook describes; some use `jq`. Use practice data you can recreate.
+The examples below are adapted from the [Preview 2 runbook](https://github.com/donnabox/beads/blob/dce2c89b8cecb482038f8780f02eee55af578243/docs/preview2/RUNBOOK.md). They build on one another in a fresh graph workspace initialized as the runbook describes; some use `jq`. Use practice data you can recreate.
 
 One of the foundational building blocks of Beads is the graph.
 
