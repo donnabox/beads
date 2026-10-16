@@ -1,0 +1,12 @@
+{
+  "node": "v24.16.0",
+  "depth": 12000,
+  "bytes": 24007,
+  "errorName": "RangeError",
+  "errorMessage": "Maximum call stack size exceeded",
+  "elapsedMs": 1.329625,
+  "processExit": 0,
+  "scope": "isolated Node util.isDeepStrictEqual diagnostic, two JSON.parse values; no product imports, store, server or profile execution",
+  "inputConstruction": "{\"v\": + 12000 opening array brackets + 1 + 12000 closing brackets + }",
+  "conclusion": "The general comparator overflows at this particular bounded input. This is not a measured universal threshold or end-to-end Transactional reproduction."
+}

@@ -1,0 +1,28 @@
+
+ RUN  v4.1.10 /Users/dbox/repos/wt/vickie/vickie-sequence-depth-retained
+
+ ✓ packages/server/src/transaction-sequence.test.ts > private Transactional sequence slice > runs all eight explicit operation kinds as separate commits with locator-only aliases 128ms
+ ✓ packages/server/src/transaction-sequence.test.ts > private Transactional sequence slice > reserves all unknown keys together, commits a prefix, continues past failure and permits interleaving 40ms
+ ✓ packages/server/src/transaction-sequence.test.ts > private Transactional sequence slice > joins overlapping presentations without running a completed member twice and projects current labels 36ms
+ ✓ packages/server/src/transaction-sequence.test.ts > private Transactional sequence slice > projects another owner's pending receipt before immutable mismatch and never retracts that owner 49ms
+ ✓ packages/server/src/transaction-sequence.test.ts > private Transactional sequence slice > projects mixed retained, conflicting, failed and unknown keys in declaration order 68ms
+ ✓ packages/server/src/transaction-sequence.test.ts > private Transactional sequence slice > shares singleton and one-operation batch identity, preserving exact numbers and creation defaults 18ms
+ ↓ packages/server/src/transaction-sequence.test.ts > private Transactional sequence slice > projects expired Resource allocations without receipt indices and omits alias allocations
+ ✓ packages/server/src/transaction-sequence.test.ts > private Transactional sequence slice > leaves no partial bulk admission on after-sequence-reservation failure 22ms
+ ✓ packages/server/src/transaction-sequence.test.ts > private Transactional sequence slice > leaves no partial bulk admission on after-sequence-admission failure 50ms
+ ↓ packages/server/src/transaction-sequence.test.ts > private Transactional sequence slice > preserves committed prefix and another owner while retracting this attempt's tail on an internal fault
+ ↓ packages/server/src/transaction-sequence.test.ts > private Transactional sequence slice > continues async admitted work without awaiting or consuming its response
+ ✓ packages/server/src/transaction-sequence.test.ts > private Transactional sequence slice > rejects duplicate keys and invalid dependency edges before any key effects 42ms
+ ↓ packages/server/src/transaction-sequence.test.ts > private Transactional sequence slice > recovers a crashed sequence prefix without resuming abandoned tail receipts
+ ↓ packages/server/src/transaction-sequence.test.ts > private Transactional sequence slice > fences an aborted carrier after a replacement sequence owns its released tail
+ ✓ packages/server/src/transaction-sequence.test.ts > private Transactional sequence slice > classifies foreign key state at its turn after failed detail is forgotten 59ms
+ ✓ packages/server/src/transaction-sequence.test.ts > private Transactional sequence slice > compares retained deep sequence members without executing them or replacing their receipts 56ms
+ ✓ packages/server/src/transaction-sequence.test.ts > private Transactional sequence slice > rolls back every new reservation when a fresh deep sequence member is refused 74ms
+ ✓ packages/server/src/transaction-sequence.test.ts > private Transactional sequence slice > refuses fresh depth after a retained failed member expires between sequence turns 77ms
+
+ Test Files  1 passed (1)
+      Tests  13 passed | 5 skipped (18)
+   Start at  21:52:21
+   Duration  1.42s (transform 458ms, setup 38ms, import 588ms, tests 719ms, environment 0ms)
+
+JSON report written to /Users/dbox/repos/wt/vickie/bdp-integration-logs/sequence-depth-retained-member-draft/source-validation-lint-successor/run/sequence-positive.vitest.json

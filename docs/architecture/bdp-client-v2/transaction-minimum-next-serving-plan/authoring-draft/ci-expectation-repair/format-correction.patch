@@ -1,0 +1,13 @@
+--- a/apps/bdptest/src/transactional-collection-minimum-installed.test.ts
++++ b/apps/bdptest/src/transactional-collection-minimum-installed.test.ts
+@@ -1139,9 +1139,7 @@
+       expect(collision.status).toBe(404);
+       expect(collision.bodyText).toBe("");
+       expect(collision.bodyOctets).toBe(0);
+-      expect(collision.headers["content-type"]?.split(";", 1)[0]).toBe(
+-        "application/problem+json",
+-      );
++      expect(collision.headers["content-type"]?.split(";", 1)[0]).toBe("application/problem+json");
+       expect(collision.headers["content-length"]).toBe(
+         String(
+           Buffer.byteLength(
