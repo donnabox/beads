@@ -1,0 +1,11 @@
+--- /Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-conditional-reads-draft/review-monitored/run.py
++++ /Users/dbox/repos/wt/vickie/bdp-integration-logs/initial-collection-unknown-review/run.py
+@@ -1,7 +1,7 @@
+ from pathlib import Path
+ import subprocess,time,json,hashlib,os,signal,datetime,runpy
+ p=Path(__file__).parent
+-w=Path("/Users/dbox/repos/wt/vickie/vickie-transaction-conditional-reads")
++w=Path("/Users/dbox/repos/wt/vickie/vickie-fresh-depth-serving")
+ b=json.loads((p/"binding.json").read_text());sha=lambda x:hashlib.sha256(x).hexdigest()
+ def guard(): subprocess.run(["python3","/Users/dbox/repos/wt/vickie/bdp-integration-logs/guarded-action.py","/usr/bin/true"],check=True)
+ assert b["rootLaunchReleased"] is True, "Closed: root must release this one review"
