@@ -28,6 +28,8 @@ scripts/scenarios TestREADMEDocumentsTheContract skip  # reads the scenario file
 # //scripts:scripts_test's runfiles, so they skip there (be-sudqo0, R8 and R9).
 scripts TestForkLegacyProxiedLaneTimeoutBudget skip  # reads .github/scripts/proxied-test-shard.sh, not in the runfiles; runs under go test
 scripts TestForkLegacyProxiedBlockCoversEveryTest skip  # runs scripts/ci/gen_proxied_shard_manifest.py --check over cmd/bd, not in the runfiles; runs under go test
+scripts TestForkProxiedShardManifestGeneratorNotStale skip  # runs the generator over cmd/bd Go sources absent from scripts_test runfiles; required scripts-go-checks runs it under go test
+scripts TestForkShardScriptsListOnlyRealTests skip  # scans cmd/bd and storage Go test sources absent from scripts_test runfiles; required scripts-go-checks runs it under go test
 
 # The in-test `go build` of bd that this test guards does not happen under
 # Bazel (bd comes in through BEADS_TEST_BD_BINARY); go test still runs it.
@@ -55,6 +57,7 @@ scripts TestReleaseFormula* skip  # .beads/ is in .bazelignore, so the formula c
 # here, they turned nightly.yml's skip-parity check red (2026-10-02).
 # scripts TestBazelOnlySkipsAreAllowlisted keeps this list complete.
 scripts TestBazelGatedLanesNeverRetryFlakyTests skip  # reads every BUILD and .bzl file in the checkout; runs under go test
+scripts TestBazelCommittedRCFilesAreLimited skip  # git ls-files needs a checkout; required scripts-go-checks runs it under go test
 scripts TestCheckShardCoverageScript skip  # runs tools/bazel/check_shard_coverage.py, not in the runfiles; runs under go test
 scripts TestShardScriptsListOnlyRealTests skip  # runs the real .github/scripts shard scripts over the source tree; runs under go test
 scripts TestProxiedShardManifestGeneratorNotStale skip  # runs scripts/ci/gen_proxied_shard_manifest.py --check, not in the runfiles; runs under go test

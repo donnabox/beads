@@ -71,11 +71,11 @@ Examples:
 		defer result.Close()
 
 		issueStore := result.Store
-		if err := issueStore.HeartbeatIssue(ctx, result.ResolvedID, actor); err != nil {
+		if err := issueStore.HeartbeatIssue(ctx, result.ResolvedID, currentActor()); err != nil {
 			return HandleErrorRespectJSON("heartbeat %s: %v", result.ResolvedID, err)
 		}
 
-		if err := commitPendingIfEmbedded(ctx, issueStore, actor, doltAutoCommitParams{
+		if err := commitPendingIfEmbedded(ctx, issueStore, currentActor(), doltAutoCommitParams{
 			Command:  "heartbeat",
 			IssueIDs: []string{result.ResolvedID},
 		}); err != nil {
@@ -97,7 +97,7 @@ func renderHeartbeatSuccess(id, title string) error {
 		return outputJSON(map[string]string{
 			"id":     id,
 			"status": "heartbeat",
-			"owner":  actor,
+			"owner":  currentActor(),
 		})
 	}
 	fmt.Printf("%s Heartbeat %s (lease refreshed)\n", ui.RenderPass("✓"), formatFeedbackID(id, title))

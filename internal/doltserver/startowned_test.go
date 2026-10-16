@@ -111,7 +111,7 @@ func TestAwaitOwnedListener_ForeignListenerIsNotReady(t *testing.T) {
 	} {
 		t.Run(tc.name, func(t *testing.T) {
 			if tc.owner == nil && runtime.GOOS != "linux" && runtime.GOOS != "darwin" {
-				t.Skip("listener ownership is only provable on linux or darwin")
+				t.Skip("listener ownership is only provable on linux and darwin")
 			}
 			port := foreignGreeter(t)
 			logPath := filepath.Join(t.TempDir(), "dolt-server.log")
@@ -207,7 +207,7 @@ func TestAwaitOwnedListener_ChildExitIsReported(t *testing.T) {
 // movable port into a hard failure); it returns ErrPortInUse straight away.
 func TestAwaitOwnedListener_ProvenForeignEndsWaitAtOnce(t *testing.T) {
 	if runtime.GOOS != "linux" && runtime.GOOS != "darwin" {
-		t.Skip("listener ownership is only provable on linux or darwin")
+		t.Skip("listener ownership is only provable on linux and darwin")
 	}
 	port := foreignGreeter(t)
 	logPath := filepath.Join(t.TempDir(), "dolt-server.log")
@@ -378,15 +378,15 @@ func TestStart_RecoversWhenEphemeralPortIsTaken(t *testing.T) {
 	if got := calls.Load(); got != 2 {
 		t.Errorf("allocateEphemeralPort called %d times, want 2 (the taken port, then a fresh one)", got)
 	}
-	// On Linux the first child can be killed before it records its launch:
-	// /proc proves the port foreign as soon as the greeting arrives.
+	// On Linux and darwin the first child can be killed before it records its launch:
+	// the process tree proves the port foreign as soon as the greeting arrives.
 	if got := launchedPorts(t, launches); len(got) == 0 || got[len(got)-1] != fmt.Sprint(state.Port) {
 		t.Errorf("launches = %v, want the last one on the final port %d", got, state.Port)
 	}
 	if got := readPortFile(beadsDir); got != state.Port {
 		t.Errorf("port file = %d, want %d", got, state.Port)
 	}
-	if runtime.GOOS == "linux" {
+	if runtime.GOOS == "linux" || runtime.GOOS == "darwin" {
 		if owned, known := listenerOwnership(state.PID, state.Port); !owned || !known {
 			t.Errorf("listener on %d is not owned by the started server (PID %d)", state.Port, state.PID)
 		}

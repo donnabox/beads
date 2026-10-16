@@ -34,13 +34,13 @@ env:
   BAZEL_RETIRES_LEGACY_EMBEDDED: "true"
   # Step 2: the proxied-server and server-Dolt storage test jobs (Bazel
   # `proxied-server tier` and `server-Dolt storage tier`).
-  BAZEL_RETIRES_LEGACY_DOLT_SERVER_TIERS: "true"
+  BAZEL_RETIRES_LEGACY_DOLT_SERVER_TIERS: "false"
   # Step 3: pr.yml's own legacy jobs whose Bazel lanes run in the same pr.yml
   # run: PR Core, build-artifacts, the pure-Go/js-wasm check, domain+uow and
   # contract corpus (Bazel `test`, `pure-Go and js/wasm`, `dolt-server
   # lane`). pr-risk.yml retires nothing for it; its copy only keeps the
   # shared bazel-coverage job identical.
-  BAZEL_RETIRES_LEGACY_PR_LANES: "true"
+  BAZEL_RETIRES_LEGACY_PR_LANES: "false"
   # F4 side-by-side rollout: "false" keeps the native windows-latest jobs
   # (test-windows-liveness, worktree-remove-windows) as the required pair and
   # their Linux-cross-built "-prebuilt" twins (test-windows-liveness-prebuilt,
@@ -2442,8 +2442,16 @@ jobs:
   # SHA256SUMS comparison and for debugging.
   bazel:
     name: Bazel
+    # GitHub validates every called job's requested permissions at startup,
+    # including jobs whose event guard skips them. bazel.yml's rrc-seed needs
+    # OIDC only on main pushes; rrc-verify needs issue write only on nightly
+    # or dispatch. The PR call runs neither, and bazel.yml defaults its other
+    # jobs to contents: read. Preserve this exact permission ceiling so the
+    # reusable workflow can start without widening ordinary Bazel lane jobs.
     permissions:
       contents: read
+      id-token: write
+      issues: write
     uses: ./.github/workflows/bazel.yml
     secrets:
       RBE_WEST_EXECUTOR: ${{ secrets.RBE_WEST_EXECUTOR }}
@@ -2617,6 +2625,7 @@ jobs:
             BAZEL
             BAZEL_TEST
             BAZEL_PURE
+            BAZEL_RELEASE_CROSS
             BAZEL_EMBEDDED
             BAZEL_INTEGRATION
             BAZEL_DOLTSERVER
@@ -2676,6 +2685,7 @@ jobs:
           # skipped, which passes only in the modes bazel-gate.sh allows.
           BAZEL_TEST: ${{ needs.bazel.outputs.bazel-test || 'skipped' }}
           BAZEL_PURE: ${{ needs.bazel.outputs.bazel-pure || 'skipped' }}
+          BAZEL_RELEASE_CROSS: ${{ needs.bazel.outputs.bazel-release-cross || 'skipped' }}
           BAZEL_EMBEDDED: ${{ needs.bazel.outputs.bazel-embedded || 'skipped' }}
           BAZEL_INTEGRATION: ${{ needs.bazel.outputs.bazel-integration || 'skipped' }}
           BAZEL_DOLTSERVER: ${{ needs.bazel.outputs.bazel-doltserver || 'skipped' }}

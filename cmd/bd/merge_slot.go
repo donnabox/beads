@@ -129,7 +129,7 @@ func runMergeSlotCreate(cmd *cobra.Command, args []string) error {
 		}
 	}()
 
-	issue, err := store.MergeSlotCreate(rootCtx, actor)
+	issue, err := store.MergeSlotCreate(rootCtx, currentActor())
 	if err != nil {
 		return HandleErrorRespectJSON("%v", err)
 	}
@@ -231,13 +231,13 @@ func runMergeSlotAcquire(cmd *cobra.Command, args []string) error {
 
 	holder := mergeSlotHolder
 	if holder == "" {
-		holder = actor
+		holder = currentActor()
 	}
 	if holder == "" {
 		return HandleError("no holder specified; use --holder or set BEADS_ACTOR env var")
 	}
 
-	result, err := store.MergeSlotAcquire(rootCtx, holder, actor, mergeSlotAddWaiter)
+	result, err := store.MergeSlotAcquire(rootCtx, holder, currentActor(), mergeSlotAddWaiter)
 	if err != nil {
 		return HandleErrorRespectJSON("%v", err)
 	}
@@ -317,7 +317,7 @@ func runMergeSlotRelease(cmd *cobra.Command, args []string) error {
 		}
 	}()
 
-	if err := store.MergeSlotRelease(rootCtx, mergeSlotHolder, actor); err != nil {
+	if err := store.MergeSlotRelease(rootCtx, mergeSlotHolder, currentActor()); err != nil {
 		return HandleErrorRespectJSON("%v", err)
 	}
 

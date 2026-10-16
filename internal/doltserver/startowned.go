@@ -143,8 +143,8 @@ const (
 // own startup, which under load takes longer than any fixed grace period, so
 // a greeting only counts once the listener is shown to be the child's: by
 // dolt's ready line in the child's output when its log level emits one, or
-// else by the listening socket belonging to the child's process tree (Linux,
-// via /proc). When the socket is shown to belong to someone else the wait
+// else by the listening socket belonging to the child's process tree (Linux
+// via /proc, Darwin via lsof and ps). When the socket is shown to belong to someone else the wait
 // ends at once with ErrPortInUse. On Darwin a greeting without a known
 // listener owner is not enough; on other platforms where neither proof is
 // available the greeting decides, unless the log level promises a ready line.

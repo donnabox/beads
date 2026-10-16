@@ -31,13 +31,13 @@ env:
   BAZEL_RETIRES_LEGACY_EMBEDDED: "true"
   # Step 2: the proxied-server and server-Dolt storage test jobs (Bazel
   # `proxied-server tier` and `server-Dolt storage tier`).
-  BAZEL_RETIRES_LEGACY_DOLT_SERVER_TIERS: "true"
+  BAZEL_RETIRES_LEGACY_DOLT_SERVER_TIERS: "false"
   # Step 3: pr.yml's own legacy jobs whose Bazel lanes run in the same pr.yml
   # run: PR Core, build-artifacts, the pure-Go/js-wasm check, domain+uow and
   # contract corpus (Bazel `test`, `pure-Go and js/wasm`, `dolt-server
   # lane`). pr-risk.yml retires nothing for it; its copy only keeps the
   # shared bazel-coverage job identical.
-  BAZEL_RETIRES_LEGACY_PR_LANES: "true"
+  BAZEL_RETIRES_LEGACY_PR_LANES: "false"
   # Fork and Dependabot PRs: "true" covers them like same-repo PRs (the
   # flags above then retire their legacy tiers too): rbe-west's mint
   # (rbe-fork) gives their Bazel lanes remote execution, instance oss-fork
@@ -80,8 +80,8 @@ jobs:
       - name: Decide embedded Dolt coverage
         id: tier
         env:
-          PR_BASE_SHA: ${{ github.event.pull_request.base.sha }}
-          PR_HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+          PR_BASE_SHA: ${{ github.event.pull_request.base.sha || github.event.merge_group.base_sha }}
+          PR_HEAD_SHA: ${{ github.event.pull_request.head.sha || github.event.merge_group.head_sha }}
         run: bash .github/scripts/ci-embedded-tier.sh
 
       - name: Shadow CI capability selector
@@ -89,8 +89,8 @@ jobs:
         continue-on-error: true
         env:
           GITHUB_EVENT_NAME: ${{ github.event_name }}
-          PR_BASE_SHA: ${{ github.event.pull_request.base.sha }}
-          PR_HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+          PR_BASE_SHA: ${{ github.event.pull_request.base.sha || github.event.merge_group.base_sha }}
+          PR_HEAD_SHA: ${{ github.event.pull_request.head.sha || github.event.merge_group.head_sha }}
         run: |
           set -o pipefail
           selection="$(bash .github/scripts/ci-capability-selector.sh)"

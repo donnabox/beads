@@ -28,11 +28,9 @@ const sharedServerDeleteIfRevisionRacers = 10
 // --force`) must behave like every other --if-revision-guarded write
 // (TestSharedServerIfRevisionSingleWinner's update/close/assign coverage,
 // which deliberately excludes delete and names this test as its
-// companion) — exactly one concurrent racer wins. A loser that reached its
-// guarded writer exits ExitGuardMismatch (13) classified "precondition
-// failed", never a raw, unclassified backend error. If delete wins before
-// close/update resolves the ID, that loser may instead report the existing
-// not-found result for that exact ID.
+// companion) — exactly one concurrent racer wins, every loser exits
+// ExitGuardMismatch (13) classified "precondition failed", never a raw,
+// unclassified backend error.
 //
 // Before the fix, Dolt's commit-time merge treated two concurrent
 // transactions that each delete the SAME row as identical diffs and landed
@@ -42,8 +40,15 @@ const sharedServerDeleteIfRevisionRacers = 10
 // reconcile against the delete), but internal/storage/dolt/deleter.go used
 // withWriteTx (no retry) instead of withRetryTx, so the loser surfaced a raw
 // Error 1213 rather than being retried and reclassified as a version
-// mismatch. This test pins the single-winner outcome for all three pairings
-// while distinguishing a pre-read not-found from a storage conflict.
+// mismatch. This test pins the single-winner, precondition_failed outcome
+// for all three pairings.
+//
+// A close/update loser can observe a winning delete at either of two points:
+// inside its guarded write (the delete commits after it resolved the id) or
+// at its pre-flight resolution (the delete commits first, so the racers never
+// overlap at the storage layer). Both are the same lost race and both must
+// report precondition_failed / exit 13 — whichever point the scheduler
+// happens to pick (ga-vnycm2.10; reportIfRevisionTargetGone).
 func TestSharedServerDeleteIfRevisionSingleWinner(t *testing.T) {
 	if runtime.GOOS == "windows" {
 		t.Skip("not supported on Windows")
@@ -209,26 +214,6 @@ func TestSharedServerDeleteIfRevisionSingleWinner(t *testing.T) {
 		}
 	}
 
-	// Close and update resolve an ID before entering their guarded writer.
-	// When delete finishes first, that pre-read can report not-found instead
-	// of reaching the writer's revision check. Permit only that exact result
-	// for the deleted ID; every other loser must still report a classified
-	// precondition failure, never a raw storage conflict.
-	assertDeleteVersusWrite := func(t *testing.T, id string, codes []int, outputs []string) int {
-		t.Helper()
-		if codes[0] == 0 && codes[1] == 1 {
-			missing := "no issue found matching \"" + id + "\""
-			if (!strings.Contains(outputs[1], missing) && !strings.Contains(outputs[1], "Issue "+id+" not found")) ||
-				strings.Contains(outputs[1], "Error 1213") {
-				t.Fatalf("delete won but losing writer did not report the deleted ID as missing:\ncodes: %v\noutputs: %v", codes, outputs)
-			}
-			return 0
-		}
-		winner := assertSingleWinner(t, codes, outputs)
-		assertLosersPreconditionFailed(t, outputs, winner)
-		return winner
-	}
-
 	t.Run("same_token", func(t *testing.T) {
 		out, err := ssExec(ctx, bdBinary, projectDir, baseEnv, "create", "Shared-server delete race (same token)", "--json")
 		if err != nil {
@@ -268,7 +253,8 @@ func TestSharedServerDeleteIfRevisionSingleWinner(t *testing.T) {
 			{"delete", id, "--if-revision", rev0, "--force"},
 			{"close", id, "--if-revision", rev0, "--reason", "race"},
 		})
-		winner := assertDeleteVersusWrite(t, id, codes, outputs)
+		winner := assertSingleWinner(t, codes, outputs)
+		assertLosersPreconditionFailed(t, outputs, winner)
 
 		gone := ssRowGone(t, id)
 		if winner == 0 && !gone {
@@ -294,7 +280,8 @@ func TestSharedServerDeleteIfRevisionSingleWinner(t *testing.T) {
 			{"delete", id, "--if-revision", rev0, "--force"},
 			{"update", id, "--if-revision", rev0, "--spec-id", "race"},
 		})
-		winner := assertDeleteVersusWrite(t, id, codes, outputs)
+		winner := assertSingleWinner(t, codes, outputs)
+		assertLosersPreconditionFailed(t, outputs, winner)
 
 		gone := ssRowGone(t, id)
 		if winner == 0 && !gone {
