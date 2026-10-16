@@ -1,0 +1,1 @@
+Root inspected bounded prompt, exact correction, independent native byte reversal and all context/artifact hashes. Release one actual Claude focused review, default model/read-only. Static validation separately gated; no runtime approval implied.

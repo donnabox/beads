@@ -1,0 +1,93 @@
+{
+  "status": "SEVEN_PACKAGE_STAGES_PASS",
+  "head": "8ee4d86cadc9a1c79a9656cc8b106f34712b3ade",
+  "sourceInputsUnchanged": 679,
+  "stages": [
+    {
+      "stage": "node-version",
+      "elapsedSeconds": 0.585750250145793,
+      "exitRecordSha256": "846087320e2da696c3b6869cc8b713193a8b5ae9e73e766576ec4b0aa4856056"
+    },
+    {
+      "stage": "package-directory",
+      "elapsedSeconds": 1.1613881250377744,
+      "exitRecordSha256": "e210f4b217897c9b5808745f19e91bd8e87b1d4620c6d5fbc6685580777fee01"
+    },
+    {
+      "stage": "pack-protocol",
+      "elapsedSeconds": 0.8001099999528378,
+      "exitRecordSha256": "04bd51dabccc5eb2879f620c18bdcb8ec4b2c1f703099c06416f1dd27d70185f"
+    },
+    {
+      "stage": "pack-server",
+      "elapsedSeconds": 0.7737720420118421,
+      "exitRecordSha256": "f001b59272e57a29218bbfe07772c22b5c2fc5e23d6ee4314ba878ee2384afbb"
+    },
+    {
+      "stage": "verify-tar",
+      "elapsedSeconds": 1.5499792501796037,
+      "exitRecordSha256": "c2413742338dd7a66d68a56d2b93637b12b724107048b9dda5e41e9a356406e4"
+    },
+    {
+      "stage": "prepare-consumer",
+      "elapsedSeconds": 1.447595207951963,
+      "exitRecordSha256": "46bab9e763a9505abba8258ac7930e908e50d360283c84d295410d3504fbdac7"
+    },
+    {
+      "stage": "consumer-install",
+      "elapsedSeconds": 0.9994939588941634,
+      "exitRecordSha256": "4330726b9710b61bc684bca6cfff9f7654b282ad2ba5cede4b676d45f67aa805"
+    }
+  ],
+  "tarProvenanceSha256": "05e29b25d524677b5e80acf7e5a3c4804d1f3c9063ae17f299d33fc1c63c51fa",
+  "archives": {
+    "protocol": {
+      "sha256": "4683cb6c6333c332a4bcb7efc3e28f32d1d8d06a7264913f65c31d3a826d4227",
+      "members": 63
+    },
+    "server": {
+      "sha256": "20158dfb4704a6dabcadb540e53ce76a1c603fdaf997ade45f9e1884d04b6712",
+      "members": 258
+    }
+  },
+  "consumerLockSha256": "4928e18b4f6196434c6790c7da4fffc6f9cd7dc389f423f02cedf3cfc661c3e2",
+  "sampledPidsIndependentlyAbsent": [
+    50859,
+    50861,
+    50968,
+    50970,
+    50974,
+    50977,
+    50988,
+    51004,
+    51016,
+    51041,
+    51157,
+    51159,
+    51164,
+    51285,
+    51287,
+    51291,
+    51415,
+    51417,
+    51421,
+    51447,
+    51475,
+    51490,
+    51511,
+    51696,
+    51698,
+    51703,
+    51739,
+    51769,
+    51784,
+    51952,
+    51954,
+    51959
+  ],
+  "temporaryContent": "Only node-compile-cache in pack-protocol,pack-server,consumer-install attempt directories; intended packages/consumer retained.",
+  "installObserved": "pnpm11.20.0 reused8 downloaded0.",
+  "scope": "Worker stopped afterconsumer-install. Root subsequently accepted lock and independently ranverify-installed; excluded from this seven-stage report. First audit write aborted before writing because root had already advanced; no stage retried.",
+  "retries": 0,
+  "sourceEdits": false
+}

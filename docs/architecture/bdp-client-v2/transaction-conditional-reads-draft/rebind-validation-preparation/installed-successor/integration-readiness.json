@@ -1,0 +1,91 @@
+{
+  "status": "SCOPE_AND_ORDINARY_ANCESTRY_PASS_CI_PENDING",
+  "checkedAt": "2026-10-16T21:01:15.982679+00:00",
+  "pr": {
+    "baseRefName": "codex/vickie-sequence-depth-retained",
+    "baseRefOid": "2dfd2c6cc84a28b1dd336f4184c1a5f910ce8a96",
+    "files": [
+      {
+        "path": "apps/bdptest/src/transactional-matrix.test.ts",
+        "additions": 594,
+        "deletions": 38,
+        "changeType": "MODIFIED"
+      },
+      {
+        "path": "packages/conformance/src/transactional-cumulative.test.ts",
+        "additions": 298,
+        "deletions": 12,
+        "changeType": "MODIFIED"
+      },
+      {
+        "path": "packages/conformance/test-support/transactional/coverage-v1.json",
+        "additions": 198,
+        "deletions": 0,
+        "changeType": "MODIFIED"
+      },
+      {
+        "path": "packages/conformance/test-support/transactional/manifest-v1.json",
+        "additions": 1500,
+        "deletions": 0,
+        "changeType": "MODIFIED"
+      }
+    ],
+    "headRefName": "codex/vickie-transaction-conditional-reads",
+    "headRefOid": "8ee4d86cadc9a1c79a9656cc8b106f34712b3ade",
+    "isDraft": false,
+    "mergeStateStatus": "UNSTABLE",
+    "mergeable": "MERGEABLE",
+    "number": 148,
+    "state": "OPEN",
+    "url": "https://github.com/gastownhall/bdp/pull/148"
+  },
+  "remoteRefs": {
+    "refs/heads/codex/vickie-sequence-depth-retained": "2dfd2c6cc84a28b1dd336f4184c1a5f910ce8a96",
+    "refs/heads/codex/vickie-transaction-conditional-reads": "8ee4d86cadc9a1c79a9656cc8b106f34712b3ade"
+  },
+  "ancestry": {
+    "base": "2dfd2c6cc84a28b1dd336f4184c1a5f910ce8a96",
+    "head": "8ee4d86cadc9a1c79a9656cc8b106f34712b3ade",
+    "orderedParents": [
+      "2dfd2c6cc84a28b1dd336f4184c1a5f910ce8a96"
+    ],
+    "commitCountAboveBase": 1,
+    "ordinaryFastForwardPossibleAtSnapshot": true
+  },
+  "scope": {
+    "exactFourFiles": [
+      "apps/bdptest/src/transactional-matrix.test.ts",
+      "packages/conformance/src/transactional-cumulative.test.ts",
+      "packages/conformance/test-support/transactional/coverage-v1.json",
+      "packages/conformance/test-support/transactional/manifest-v1.json"
+    ],
+    "fullPatchSha256": "cf8e895dea0d37d0bbf504a584cf5f213ab811089d4cc9aa32cba5368b910423",
+    "localClean": true,
+    "specUnchanged": true,
+    "specSha256": "67772742d7d08f48c12196e9789f1859ad2d0e19f133ea65e197b049361f84f8",
+    "noProductionRuntimeCatalogPublicExportOrWorkflowEdits": true,
+    "coverageWholeContract": false,
+    "mainUnchangedByThisAudit": true,
+    "newMainNotFetched": true
+  },
+  "ciSnapshot": {
+    "runId": 38966223164,
+    "headSha": "8ee4d86cadc9a1c79a9656cc8b106f34712b3ade",
+    "headBranch": "codex/vickie-transaction-conditional-reads",
+    "status": "in_progress",
+    "conclusion": "",
+    "url": "https://github.com/gastownhall/bdp/actions/runs/38966223164",
+    "snapshotCount": 1,
+    "runningSteps": [
+      "Run go install github.com/steveyegge/beads/cmd/bd@v1.0.5"
+    ],
+    "limitation": "One read-only snapshot; in-progress is not green. No later poll or inferred completion."
+  },
+  "readiness": "Not ready to integrate until root independently verifies exact-head green CI and final disposition. Scope/ordinary ancestry pass at this snapshot.",
+  "actions": {
+    "merge": false,
+    "push": false,
+    "sourceEdits": false,
+    "pollingLoop": false
+  }
+}

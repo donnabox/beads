@@ -1,0 +1,57 @@
+{
+  "name": "conditional-positive",
+  "argv": [
+    "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+    "/Users/dbox/repos/wt/vickie/vickie-transaction-conditional-reads/node_modules/vitest/vitest.mjs",
+    "run",
+    "apps/bdptest/src/transactional-matrix.test.ts",
+    "--maxWorkers=1",
+    "--reporter=verbose",
+    "--reporter=json",
+    "--outputFile=/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-conditional-reads-draft/rebind-validation-preparation/installed-successor/run/conditional-positive.results.json",
+    "--testNamePattern",
+    "^(?:observes\\ partial\\ Transactional\\ conditional\\ reads\\ and\\ HEAD\\ after\\ mutation\\ \\(control\\ false\\))$"
+  ],
+  "cwd": "/Users/dbox/repos/wt/vickie/vickie-transaction-conditional-reads",
+  "started": "2026-10-16T20:56:44.445933+00:00",
+  "head": "8ee4d86cadc9a1c79a9656cc8b106f34712b3ade",
+  "workspaceDirty": false,
+  "sourceSha256": {
+    "packages/conformance/test-support/transactional/manifest-v1.json": "bbb7def1bf11e1d14efbcb369e6a7fae6eb5aff01f483f8e99f7443ce9a6ee73",
+    "packages/conformance/test-support/transactional/coverage-v1.json": "a2c620ce489257f4cd425207195af89b4e2aac238333cf6e7d21ce629d98a238",
+    "packages/conformance/src/transactional-cumulative.test.ts": "5ecfa916baca16b24c9c57b5f52e6c2cb5fa771d8cc6b5ea412ba570ba796993",
+    "apps/bdptest/src/transactional-matrix.test.ts": "95e07ead41f9cb39087a155e87cad22998d92cd3967cb9c3c446568ff6139bc8"
+  },
+  "sourceDiffSha256": "cf8e895dea0d37d0bbf504a584cf5f213ab811089d4cc9aa32cba5368b910423",
+  "rootAcceptanceSha256": "93026608920db7f24c8e8a47d9f5911b9f8adf8099c749476a4a2c915a7d8c27",
+  "preparationSha256": "c9b524743c8b71c4487e55f5719713985a1665b6e61ec32d2d99534796ff9194",
+  "bdpOverrides": {
+    "BDP_TRANSACTIONAL_INSTALLED_ENTRY": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-conditional-reads-draft/rebind-validation-preparation/installed-successor/run/consumer/node_modules/.pnpm/@bdp+server@file+..+packages+bdp-server-0.0.0.tgz/node_modules/@bdp/server/dist/transaction-installed-process.js",
+    "BDP_TRANSACTIONAL_SOURCE_COMMIT": "8ee4d86cadc9a1c79a9656cc8b106f34712b3ade",
+    "BDP_TRANSACTIONAL_CONDITIONAL_OUTPUT": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-conditional-reads-draft/rebind-validation-preparation/installed-successor/run/conditional-positive.observation.json"
+  },
+  "guardedArgv": [
+    "/opt/homebrew/opt/python@3.14/bin/python3.14",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/guarded-action.py",
+    "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+    "/Users/dbox/repos/wt/vickie/vickie-transaction-conditional-reads/node_modules/vitest/vitest.mjs",
+    "run",
+    "apps/bdptest/src/transactional-matrix.test.ts",
+    "--maxWorkers=1",
+    "--reporter=verbose",
+    "--reporter=json",
+    "--outputFile=/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-conditional-reads-draft/rebind-validation-preparation/installed-successor/run/conditional-positive.results.json",
+    "--testNamePattern",
+    "^(?:observes\\ partial\\ Transactional\\ conditional\\ reads\\ and\\ HEAD\\ after\\ mutation\\ \\(control\\ false\\))$"
+  ],
+  "nodePathPrefix": "/Users/dbox/.nvm/versions/node/v24.16.0/bin",
+  "sourceAttribution": "Externally bound source snapshot or frozen package; not child-attested Git identity",
+  "plannedWorkload": {
+    "httpExpected": 14,
+    "httpMaximum": 14,
+    "children": 2,
+    "requestBodyBytes": 271,
+    "maximumRequestBodyBytes": 271
+  },
+  "derivativeBinding": null
+}

@@ -1,0 +1,704 @@
+{
+  "status": "CLOSED clean-commit successor; actual candidate identity pending; fresh56-case source prerequisite retained separately",
+  "executionOrder": [
+    "fresh-build",
+    "read-seal",
+    "build-inventory",
+    "node-version",
+    "package-directory",
+    "pack-protocol",
+    "pack-server",
+    "verify-tar",
+    "prepare-consumer",
+    "consumer-install",
+    "verify-installed",
+    "conditional-positive",
+    "conditional-positive-review",
+    "conditional-control",
+    "conditional-control-review",
+    "principal-positive",
+    "principal-positive-review",
+    "principal-collapse",
+    "principal-collapse-review",
+    "full-positive",
+    "full-positive-review",
+    "cross-batch",
+    "cross-batch-review",
+    "cross-sequence",
+    "cross-sequence-review"
+  ],
+  "commands": {
+    "fresh-build": {
+      "id": "fresh-build",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-transaction-conditional-reads",
+      "supervisorSeconds": 120,
+      "automaticRetries": 0,
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "run",
+        "build"
+      ],
+      "cases": 0,
+      "http": 0,
+      "owners": 0,
+      "listeners": 0,
+      "directories": 0,
+      "productChildren": 0,
+      "ownedTempPrefixes": [],
+      "phase": "source"
+    },
+    "read-seal": {
+      "id": "read-seal",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-transaction-conditional-reads",
+      "supervisorSeconds": 120,
+      "automaticRetries": 0,
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "run",
+        "evidence:verify"
+      ],
+      "cases": 0,
+      "http": 0,
+      "owners": 0,
+      "listeners": 0,
+      "directories": 0,
+      "productChildren": 0,
+      "ownedTempPrefixes": [],
+      "phase": "source"
+    },
+    "build-inventory": {
+      "id": "build-inventory",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-transaction-conditional-reads",
+      "supervisorSeconds": 120,
+      "automaticRetries": 0,
+      "argv": [
+        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-conditional-reads-draft/rebind-validation-preparation/installed-successor/inventory.py"
+      ],
+      "phase": "source"
+    },
+    "node-version": {
+      "id": "node-version",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-transaction-conditional-reads",
+      "supervisorSeconds": 120,
+      "automaticRetries": 0,
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "--version"
+      ],
+      "phase": "package"
+    },
+    "package-directory": {
+      "id": "package-directory",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-transaction-conditional-reads",
+      "supervisorSeconds": 120,
+      "automaticRetries": 0,
+      "argv": [
+        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-conditional-reads-draft/rebind-validation-preparation/installed-successor/packages.py",
+        "directory"
+      ],
+      "phase": "package"
+    },
+    "pack-protocol": {
+      "id": "pack-protocol",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-transaction-conditional-reads",
+      "supervisorSeconds": 120,
+      "automaticRetries": 0,
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "--filter",
+        "@bdp/protocol",
+        "pack",
+        "--pack-destination",
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-conditional-reads-draft/rebind-validation-preparation/installed-successor/run/packages"
+      ],
+      "phase": "package"
+    },
+    "pack-server": {
+      "id": "pack-server",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-transaction-conditional-reads",
+      "supervisorSeconds": 120,
+      "automaticRetries": 0,
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "--filter",
+        "@bdp/server",
+        "pack",
+        "--pack-destination",
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-conditional-reads-draft/rebind-validation-preparation/installed-successor/run/packages"
+      ],
+      "phase": "package"
+    },
+    "verify-tar": {
+      "id": "verify-tar",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-transaction-conditional-reads",
+      "supervisorSeconds": 120,
+      "automaticRetries": 0,
+      "argv": [
+        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-conditional-reads-draft/rebind-validation-preparation/installed-successor/packages.py",
+        "tar"
+      ],
+      "phase": "package"
+    },
+    "prepare-consumer": {
+      "id": "prepare-consumer",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-transaction-conditional-reads",
+      "supervisorSeconds": 120,
+      "automaticRetries": 0,
+      "argv": [
+        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-conditional-reads-draft/rebind-validation-preparation/installed-successor/packages.py",
+        "consumer"
+      ],
+      "phase": "package"
+    },
+    "consumer-install": {
+      "id": "consumer-install",
+      "cwd": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-conditional-reads-draft/rebind-validation-preparation/installed-successor/run/consumer",
+      "supervisorSeconds": 120,
+      "automaticRetries": 0,
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "install",
+        "--offline",
+        "--ignore-scripts",
+        "--no-frozen-lockfile",
+        "--prod"
+      ],
+      "phase": "package"
+    },
+    "verify-installed": {
+      "id": "verify-installed",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-transaction-conditional-reads",
+      "supervisorSeconds": 120,
+      "automaticRetries": 0,
+      "argv": [
+        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-conditional-reads-draft/rebind-validation-preparation/installed-successor/packages.py",
+        "installed"
+      ],
+      "phase": "package"
+    },
+    "conditional-positive": {
+      "id": "conditional-positive",
+      "phase": "installed",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-transaction-conditional-reads",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/repos/wt/vickie/vickie-transaction-conditional-reads/node_modules/vitest/vitest.mjs",
+        "run",
+        "apps/bdptest/src/transactional-matrix.test.ts",
+        "--maxWorkers=1",
+        "--reporter=verbose",
+        "--reporter=json",
+        "--outputFile=/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-conditional-reads-draft/rebind-validation-preparation/installed-successor/run/conditional-positive.results.json",
+        "--testNamePattern",
+        "^(?:observes\\ partial\\ Transactional\\ conditional\\ reads\\ and\\ HEAD\\ after\\ mutation\\ \\(control\\ false\\))$"
+      ],
+      "selectedFullNames": [
+        "observes partial Transactional conditional reads and HEAD after mutation (control false)"
+      ],
+      "cases": 1,
+      "http": 14,
+      "expectedHTTP": 14,
+      "maxHTTP": 14,
+      "owners": 2,
+      "directories": 1,
+      "listeners": 2,
+      "productChildren": 2,
+      "ownedTempPrefixes": [
+        "bdp-tx-installed-"
+      ],
+      "supervisorSeconds": 120,
+      "automaticRetries": 0,
+      "workload": {
+        "httpExpected": 14,
+        "httpMaximum": 14,
+        "children": 2,
+        "requestBodyBytes": 271,
+        "maximumRequestBodyBytes": 271
+      },
+      "reportOverrides": {
+        "BDP_TRANSACTIONAL_CONDITIONAL_OUTPUT": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-conditional-reads-draft/rebind-validation-preparation/installed-successor/run/conditional-positive.observation.json"
+      },
+      "observationPath": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-conditional-reads-draft/rebind-validation-preparation/installed-successor/run/conditional-positive.observation.json"
+    },
+    "conditional-positive-review": {
+      "id": "conditional-positive-review",
+      "phase": "adjudication",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-transaction-conditional-reads",
+      "argv": [
+        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-conditional-reads-draft/rebind-validation-preparation/installed-successor/review-cohort.py",
+        "conditional-positive"
+      ],
+      "supervisorSeconds": 120,
+      "automaticRetries": 0
+    },
+    "conditional-control": {
+      "id": "conditional-control",
+      "phase": "installed",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-transaction-conditional-reads",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/repos/wt/vickie/vickie-transaction-conditional-reads/node_modules/vitest/vitest.mjs",
+        "run",
+        "apps/bdptest/src/transactional-matrix.test.ts",
+        "--maxWorkers=1",
+        "--reporter=verbose",
+        "--reporter=json",
+        "--outputFile=/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-conditional-reads-draft/rebind-validation-preparation/installed-successor/run/conditional-control.results.json",
+        "--testNamePattern",
+        "^(?:observes\\ partial\\ Transactional\\ conditional\\ reads\\ and\\ HEAD\\ after\\ mutation\\ \\(control\\ true\\))$"
+      ],
+      "selectedFullNames": [
+        "observes partial Transactional conditional reads and HEAD after mutation (control true)"
+      ],
+      "cases": 1,
+      "http": 4,
+      "expectedHTTP": 4,
+      "maxHTTP": 14,
+      "owners": 2,
+      "directories": 1,
+      "listeners": 2,
+      "productChildren": 2,
+      "ownedTempPrefixes": [
+        "bdp-tx-installed-"
+      ],
+      "supervisorSeconds": 120,
+      "automaticRetries": 0,
+      "workload": {
+        "httpExpected": 4,
+        "httpMaximum": 14,
+        "children": 2,
+        "requestBodyBytes": 141,
+        "maximumRequestBodyBytes": 271
+      },
+      "reportOverrides": {
+        "BDP_TRANSACTIONAL_CONDITIONAL_OUTPUT": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-conditional-reads-draft/rebind-validation-preparation/installed-successor/run/conditional-control.observation.json"
+      },
+      "observationPath": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-conditional-reads-draft/rebind-validation-preparation/installed-successor/run/conditional-control.observation.json"
+    },
+    "conditional-control-review": {
+      "id": "conditional-control-review",
+      "phase": "adjudication",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-transaction-conditional-reads",
+      "argv": [
+        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-conditional-reads-draft/rebind-validation-preparation/installed-successor/review-cohort.py",
+        "conditional-control"
+      ],
+      "supervisorSeconds": 120,
+      "automaticRetries": 0
+    },
+    "full-positive": {
+      "id": "full-positive",
+      "phase": "installed",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-transaction-conditional-reads",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/repos/wt/vickie/vickie-transaction-conditional-reads/node_modules/vitest/vitest.mjs",
+        "run",
+        "apps/bdptest/src/transactional-matrix.test.ts",
+        "--maxWorkers=1",
+        "--reporter=verbose",
+        "--reporter=json",
+        "--outputFile=/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-conditional-reads-draft/rebind-validation-preparation/installed-successor/run/full-positive.results.json",
+        "--testNamePattern",
+        "^(?:observes\\ seventeen\\ partial\\ Transactional\\ contracts\\ through\\ packed\\-capable\\ actual\\ installed\\ HTTP)$"
+      ],
+      "selectedFullNames": [
+        "observes seventeen partial Transactional contracts through packed-capable actual installed HTTP"
+      ],
+      "cases": 1,
+      "http": 234,
+      "expectedHTTP": 234,
+      "maxHTTP": 234,
+      "owners": 25,
+      "directories": 1,
+      "listeners": 25,
+      "productChildren": 25,
+      "ownedTempPrefixes": [
+        "bdp-tx-installed-"
+      ],
+      "supervisorSeconds": 120,
+      "automaticRetries": 0,
+      "workload": {
+        "httpExpected": 234,
+        "httpMaximum": 234,
+        "children": 25,
+        "requestBodyBytes": 18877,
+        "maximumRequestBodyBytes": 18877
+      },
+      "reportOverrides": {
+        "BDP_TRANSACTIONAL_OBSERVATION_OUTPUT": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-conditional-reads-draft/rebind-validation-preparation/installed-successor/run/full-positive.observation.json"
+      },
+      "observationPath": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-conditional-reads-draft/rebind-validation-preparation/installed-successor/run/full-positive.observation.json"
+    },
+    "full-positive-review": {
+      "id": "full-positive-review",
+      "phase": "adjudication",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-transaction-conditional-reads",
+      "argv": [
+        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-conditional-reads-draft/rebind-validation-preparation/installed-successor/review-cohort.py",
+        "full-positive"
+      ],
+      "supervisorSeconds": 120,
+      "automaticRetries": 0
+    },
+    "cross-batch": {
+      "id": "cross-batch",
+      "phase": "installed",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-transaction-conditional-reads",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/repos/wt/vickie/vickie-transaction-conditional-reads/node_modules/vitest/vitest.mjs",
+        "run",
+        "apps/bdptest/src/transactional-matrix.test.ts",
+        "--maxWorkers=1",
+        "--reporter=verbose",
+        "--reporter=json",
+        "--outputFile=/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-conditional-reads-draft/rebind-validation-preparation/installed-successor/run/cross-batch.results.json",
+        "--testNamePattern",
+        "^(?:discriminates\\ retained\\ cross\\-carrier\\ evidence\\ against\\ batch\\-semantic\\-conflict)$"
+      ],
+      "selectedFullNames": [
+        "discriminates retained cross-carrier evidence against batch-semantic-conflict"
+      ],
+      "cases": 1,
+      "http": 225,
+      "expectedHTTP": 225,
+      "maxHTTP": 225,
+      "owners": 25,
+      "directories": 1,
+      "listeners": 25,
+      "productChildren": 25,
+      "ownedTempPrefixes": [
+        "bdp-tx-installed-"
+      ],
+      "supervisorSeconds": 120,
+      "automaticRetries": 0,
+      "workload": {
+        "httpExpected": 225,
+        "httpMaximum": 225,
+        "children": 25,
+        "requestBodyBytes": 17821,
+        "maximumRequestBodyBytes": 17821
+      },
+      "reportOverrides": {
+        "BDP_TRANSACTIONAL_CROSS_CARRIER_CONTROL_OUTPUT": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-conditional-reads-draft/rebind-validation-preparation/installed-successor/run/cross-batch.observation"
+      },
+      "observationPath": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-conditional-reads-draft/rebind-validation-preparation/installed-successor/run/cross-batch.observation-batch-semantic-conflict.json"
+    },
+    "cross-batch-review": {
+      "id": "cross-batch-review",
+      "phase": "adjudication",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-transaction-conditional-reads",
+      "argv": [
+        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-conditional-reads-draft/rebind-validation-preparation/installed-successor/review-cohort.py",
+        "cross-batch"
+      ],
+      "supervisorSeconds": 120,
+      "automaticRetries": 0
+    },
+    "cross-sequence": {
+      "id": "cross-sequence",
+      "phase": "installed",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-transaction-conditional-reads",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/repos/wt/vickie/vickie-transaction-conditional-reads/node_modules/vitest/vitest.mjs",
+        "run",
+        "apps/bdptest/src/transactional-matrix.test.ts",
+        "--maxWorkers=1",
+        "--reporter=verbose",
+        "--reporter=json",
+        "--outputFile=/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-conditional-reads-draft/rebind-validation-preparation/installed-successor/run/cross-sequence.results.json",
+        "--testNamePattern",
+        "^(?:discriminates\\ retained\\ cross\\-carrier\\ evidence\\ against\\ sequence\\-fresh\\-key)$"
+      ],
+      "selectedFullNames": [
+        "discriminates retained cross-carrier evidence against sequence-fresh-key"
+      ],
+      "cases": 1,
+      "http": 226,
+      "expectedHTTP": 226,
+      "maxHTTP": 226,
+      "owners": 25,
+      "directories": 1,
+      "listeners": 25,
+      "productChildren": 25,
+      "ownedTempPrefixes": [
+        "bdp-tx-installed-"
+      ],
+      "supervisorSeconds": 120,
+      "automaticRetries": 0,
+      "workload": {
+        "httpExpected": 226,
+        "httpMaximum": 226,
+        "children": 25,
+        "requestBodyBytes": 18025,
+        "maximumRequestBodyBytes": 18025
+      },
+      "reportOverrides": {
+        "BDP_TRANSACTIONAL_CROSS_CARRIER_CONTROL_OUTPUT": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-conditional-reads-draft/rebind-validation-preparation/installed-successor/run/cross-sequence.observation"
+      },
+      "observationPath": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-conditional-reads-draft/rebind-validation-preparation/installed-successor/run/cross-sequence.observation-sequence-fresh-key.json"
+    },
+    "cross-sequence-review": {
+      "id": "cross-sequence-review",
+      "phase": "adjudication",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-transaction-conditional-reads",
+      "argv": [
+        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-conditional-reads-draft/rebind-validation-preparation/installed-successor/review-cohort.py",
+        "cross-sequence"
+      ],
+      "supervisorSeconds": 120,
+      "automaticRetries": 0
+    },
+    "principal-positive": {
+      "id": "principal-positive",
+      "phase": "installed",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-transaction-conditional-reads",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/repos/wt/vickie/vickie-transaction-conditional-reads/node_modules/vitest/vitest.mjs",
+        "run",
+        "apps/bdptest/src/transactional-matrix.test.ts",
+        "--maxWorkers=1",
+        "--reporter=verbose",
+        "--reporter=json",
+        "--outputFile=/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-conditional-reads-draft/rebind-validation-preparation/installed-successor/run/principal-positive.results.json",
+        "--testNamePattern",
+        "^(?:observes\\ authenticated\\ principal\\ isolation\\ and\\ rotation\\ through\\ selected\\ cumulative\\ HTTP)$"
+      ],
+      "selectedFullNames": [
+        "observes authenticated principal isolation and rotation through selected cumulative HTTP"
+      ],
+      "cases": 1,
+      "http": 7,
+      "expectedHTTP": 7,
+      "maxHTTP": 7,
+      "owners": 2,
+      "directories": 1,
+      "listeners": 2,
+      "productChildren": 2,
+      "ownedTempPrefixes": [
+        "bdp-tx-installed-"
+      ],
+      "supervisorSeconds": 120,
+      "automaticRetries": 0,
+      "workload": {
+        "httpExpected": 7,
+        "httpMaximum": 7,
+        "children": 2,
+        "requestBodyBytes": 750,
+        "maximumRequestBodyBytes": 750
+      },
+      "observationPath": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-conditional-reads-draft/rebind-validation-preparation/installed-successor/run/principal-positive.observation.json",
+      "reportOverrides": {
+        "BDP_TRANSACTIONAL_PRINCIPAL_CUMULATIVE_OUTPUT": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-conditional-reads-draft/rebind-validation-preparation/installed-successor/run/principal-positive.observation.json"
+      }
+    },
+    "principal-positive-review": {
+      "id": "principal-positive-review",
+      "phase": "adjudication",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-transaction-conditional-reads",
+      "argv": [
+        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-conditional-reads-draft/rebind-validation-preparation/installed-successor/review-cohort.py",
+        "principal-positive"
+      ],
+      "supervisorSeconds": 120,
+      "automaticRetries": 0
+    },
+    "principal-collapse": {
+      "id": "principal-collapse",
+      "phase": "installed",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-transaction-conditional-reads",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/repos/wt/vickie/vickie-transaction-conditional-reads/node_modules/vitest/vitest.mjs",
+        "run",
+        "apps/bdptest/src/transactional-matrix.test.ts",
+        "--maxWorkers=1",
+        "--reporter=verbose",
+        "--reporter=json",
+        "--outputFile=/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-conditional-reads-draft/rebind-validation-preparation/installed-successor/run/principal-collapse.results.json",
+        "--testNamePattern",
+        "^(?:discriminates\\ principal\\ isolation\\ against\\ a\\ separately\\ bound\\ collapsed\\ namespace)$"
+      ],
+      "selectedFullNames": [
+        "discriminates principal isolation against a separately bound collapsed namespace"
+      ],
+      "cases": 1,
+      "http": 2,
+      "expectedHTTP": 2,
+      "maxHTTP": 7,
+      "owners": 2,
+      "directories": 1,
+      "listeners": 2,
+      "productChildren": 2,
+      "ownedTempPrefixes": [
+        "bdp-tx-installed-"
+      ],
+      "supervisorSeconds": 120,
+      "automaticRetries": 0,
+      "workload": {
+        "httpExpected": 2,
+        "httpMaximum": 7,
+        "children": 2,
+        "requestBodyBytes": 300,
+        "maximumRequestBodyBytes": 750
+      },
+      "observationPath": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-conditional-reads-draft/rebind-validation-preparation/installed-successor/run/principal-collapse.observation.json",
+      "reportOverrides": {
+        "BDP_TRANSACTIONAL_PRINCIPAL_CUMULATIVE_OUTPUT": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-conditional-reads-draft/rebind-validation-preparation/installed-successor/run/principal-collapse.observation.json"
+      }
+    },
+    "principal-collapse-review": {
+      "id": "principal-collapse-review",
+      "phase": "adjudication",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-transaction-conditional-reads",
+      "argv": [
+        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-conditional-reads-draft/rebind-validation-preparation/installed-successor/review-cohort.py",
+        "principal-collapse"
+      ],
+      "supervisorSeconds": 120,
+      "automaticRetries": 0
+    }
+  },
+  "oracles": {
+    "cross-batch": {
+      "scenario": "transactional.idempotency.cross-carrier",
+      "action": "x-create-batch",
+      "prefix": [
+        "x-create",
+        "x-created-facts",
+        "x-create-batch"
+      ],
+      "failedIds": [
+        "http-status",
+        "schema",
+        "media",
+        "serving-context",
+        "disposition",
+        "detail",
+        "key",
+        "no-next",
+        "required-position",
+        "effect-position",
+        "literal-result",
+        "retained-root",
+        "retained-body"
+      ],
+      "status": 409,
+      "specimen": "cross-batch-semantic-conflict.json",
+      "specimenPath": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-conditional-reads-draft/rebind-author/successor/derivatives/cross-batch-semantic-conflict.json",
+      "specimenSha256": "b74a745c8a79b5fecb4d025ff54ecc7c7b16417e3b6dab9b417333350bf6be70",
+      "compactSha256": "24aff99b3670034d77b0ad60ea169b33b7f14848b250888be60b3c2e1559912e",
+      "allAssertionIds": [
+        "http-status",
+        "schema",
+        "media",
+        "present-bdp-scope-epoch",
+        "present-bdp-authorization-view",
+        "present-bdp-scope-position",
+        "serving-position",
+        "serving-context",
+        "request-headers",
+        "request-body",
+        "disposition",
+        "detail",
+        "key",
+        "no-next",
+        "required-position",
+        "effect-position",
+        "literal-result",
+        "no-name",
+        "no-source",
+        "retained-root",
+        "retained-body",
+        "control-status",
+        "control-schema",
+        "control-media",
+        "control-type",
+        "control-code",
+        "control-problem-status",
+        "control-retry"
+      ]
+    },
+    "cross-sequence": {
+      "scenario": "transactional.idempotency.cross-carrier",
+      "action": "x-create-sequence",
+      "prefix": [
+        "x-create",
+        "x-created-facts",
+        "x-create-batch",
+        "x-create-sequence"
+      ],
+      "failedIds": [
+        "presentation",
+        "created-record"
+      ],
+      "status": 200,
+      "specimen": "cross-sequence-fresh-key.json",
+      "specimenPath": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-conditional-reads-draft/rebind-author/successor/derivatives/cross-sequence-fresh-key.json",
+      "specimenSha256": "46e325803d0f3111a79e6c1a53ec3f29e2303bedb165356434dea8b24c65d31e",
+      "compactSha256": "4d267985f5cecece787ba26f5983b2f189d542d113f06ebd569c0c75ee50e940",
+      "allAssertionIds": [
+        "http-status",
+        "schema",
+        "media",
+        "present-bdp-scope-epoch",
+        "present-bdp-authorization-view",
+        "present-bdp-scope-position",
+        "serving-position",
+        "serving-context",
+        "request-headers",
+        "request-body",
+        "presentation",
+        "present-name",
+        "created-record",
+        "no-receipt",
+        "no-root",
+        "no-problem",
+        "control-member",
+        "control-no-resource",
+        "control-no-outcome"
+      ]
+    }
+  },
+  "workload": {
+    "reusedSourceCases": 56,
+    "newSourceCases": 0,
+    "installedCases": 7,
+    "installedExpectedHTTP": 712,
+    "installedMaxHTTP": 727,
+    "installedChildren": 83,
+    "installedOwnerDirectories": 7,
+    "installedExpectedBodyBytes": 56185,
+    "installedMaximumBodyBytes": 56765,
+    "automaticRetries": 0,
+    "limitation": "Source56-case results remain attributed to diagnostic2dfd predecessor; no duplicate source execution. Installed counts are prospective until measured."
+  },
+  "timers": {
+    "cohortMs": 90000,
+    "prepareMs": 10000,
+    "requestMs": 5000,
+    "cleanupMs": 10000,
+    "testMs": 120000,
+    "fullPositiveElapsedAssertionMs": 63000
+  }
+}
