@@ -6,7 +6,19 @@
   "mode": "final",
   "approvedStages": [
     "fresh-build",
-    "bind-fresh-build"
+    "bind-fresh-build",
+    "focused-source",
+    "review-focused-source",
+    "node-version",
+    "prepare-package-directory",
+    "pack-protocol",
+    "pack-server",
+    "verify-archives",
+    "prepare-consumer",
+    "consumer-install",
+    "verify-installed-consumer",
+    "collection-external",
+    "review-collection-external"
   ],
   "staticValidationAuthorized": false,
   "actualClaudeReviewDisposed": true,
@@ -20,10 +32,16 @@
     "sha256": "e0b8c1aac946408388abf0befe194b1f9a95d07cca5d4588c9b7ebf499d1bc33"
   },
   "rootDisposition": {
-    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/initial-collection-unknown-validation-successor-2/root-disposition.json",
-    "sha256": "d48d2f6d957f3f5f0e1462b4185978d0cf3b84ef21237dbf22f5b4ee85576a86"
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/initial-collection-unknown-validation-successor-2/root-package-disposition.json",
+    "sha256": "045f375f41654fd3e21a0e2968af93372968de28a638ce459d6c234d36be064e"
   },
-  "consumerLockSha256": null,
-  "installedProvenance": null,
-  "consumerInventory": null
+  "consumerLockSha256": "9b4f28a200ed2b7d74c3e39f926b7726ffb0a09c809c2c17276f9a8162609083",
+  "installedProvenance": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/initial-collection-unknown-validation-successor-2/run/installed-provenance.json",
+    "sha256": "630c81cc3ba2ebd81e6c12db972177d172b5b46fea5e4b522e1656f698493860"
+  },
+  "consumerInventory": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/initial-collection-unknown-validation-successor-2/run/installed-consumer-inventory.json",
+    "sha256": "193c2fc17e156bf9dfc424ad674883e31dca0270ad08b4a482b8ceaf93c65b52"
+  }
 }

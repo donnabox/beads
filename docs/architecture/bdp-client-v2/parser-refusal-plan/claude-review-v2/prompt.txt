@@ -1,0 +1,16 @@
+Review the concrete bounded implementation and verification PLAN at /Users/dbox/repos/wt/vickie/bdp-integration-logs/parser-refusal-plan/plan-v2.md against immutable source/spec snapshots at /Users/dbox/repos/wt/vickie/bdp-integration-logs/parser-refusal-plan/snapshot. Do not write or modify any files. Output findings only in stdout. This is plan review, not code approval or permission to execute tests. No implementation exists for this slice yet.
+
+Use only the pinned e34a06d source for this review, not main or a live worktree. Snapshot-binding.json records origin and hashes. Start with:
+- plan-v2.md in full; its narrow proposed move is transaction-http.ts:578–590 existing parsed.status400 return before unknown-token guard.
+- snapshot/packages/server/src/transaction-http.ts:95–125,190–270,395–410,565–600,615–670.
+- snapshot/packages/server/src/read-request.ts:142–336; read-http-routing.ts and read-http.ts for ordinary parser error and conditional/HEAD/error handling.
+- snapshot/docs/specs/bdp.md:1535–1555,1935–1961,1965–2010,5819–5845.
+- snapshot/packages/server/src/transaction-http.test.ts:1980–1997,3020–3045,4459–4610,4819–4882 for syntax, owner facade and old excluded-route coverage.
+- snapshot/apps/bdptest/src/transactional-collection-minimum-installed.test.ts:140–410 for actual installed lifecycle, credentials/raw transport/context helpers. Also scripts/transaction-installed-observation.mjs and apps/bdptest/test-support/transactional-execution-binding.ts if provenance/cleanup needs checking.
+Broader reads within snapshot are permitted as needed. collection-predecessor.patch is the separate active collection waiting draft; consult only its two parser500 sentinels and boundary with this proposed successor. No historical review/validation paperwork is necessary.
+
+Prioritize: whether receiving/URL-parser400 precedence is justified; all incidental effects on parser-rejected noncollection/Type/incident/retained-shaped routes; missing/hidden query refusal and authentication/lexical precedence; parser404 and valid excluded routes remaining unchanged; exact source callback67 and installed25 workload arithmetic and genuine process/store/context topology; whether tests distinguish old500 and forbid unintended owner/wait/allocation; narrow three-file scope and ordering after active draft. Do not infer S1/G2/foreign-context policy or propose public activation/bypasses. Distinguish normative claims from reference-only context absence. Flag unjustified normative oracles, impossible counters, overbroad behavior or insufficient tests with concrete corrections.
+
+Return numbered findings first, each severity, location, issue, impact and minimal correction. Say explicitly if no blocking findings. Separate optional improvements. A completed review is not automatic approval; root owns disposition.
+
+Native review corrections to verify independently: C uses strict types/task instead of a missing incident-Link anchor, preserving67 calls/no-owner. Fresh exact-candidate build plus emitted inventory verification is mandatory before HTTP suite collection because its explicit dist runtime import bypasses aliases. See findings-disposition-v2.md and native-plan-review.md only for these concise findings; no historical validation paperwork is needed.
