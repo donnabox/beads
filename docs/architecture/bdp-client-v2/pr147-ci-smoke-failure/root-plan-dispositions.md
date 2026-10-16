@@ -1,0 +1,5 @@
+# Smoke repair council disposition
+
+Native plan review56f147ac and actual Claude plan review (exit0/149.004s, unchanged inputs, no survivors; stdout30d8a0aa) approve four exact inventory additions. Accept placement next to resource-evaluator, its actual importer. Accept explicit clean-build attribution: package.json build already executes pnpm clean (tsc -b --clean and scripts/clean-build.mjs) then tsc -b; validation must retain that invocation/log before smoke. No separate bypass or stale output reuse.
+
+Optional private subpath probes deferred: strict exports-map equality plus existing no-public-import test already fences the private helper, and the bounded repair is exactly four literals. Importer evidence, not broad TypeScript inclusion alone, establishes intended shipping dependency. Full failed CI preserved. No assertion relaxation, runtime, dependency or export change. Root now authors exactly this four-line delta; independent exact diff review and bounded validation precede commit/push/CI. Main integration remains prohibited.
