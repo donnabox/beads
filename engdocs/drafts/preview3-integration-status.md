@@ -1,6 +1,6 @@
 # Preview 3 planning and execution
 
-Last checked: October 15, 2026, 20:25 PDT. This is a milestone snapshot, updated when the state changes; it is not a live CI dashboard.
+Last checked: October 15, 2026, 20:29 PDT. This is a milestone snapshot, updated when the state changes; it is not a live CI dashboard.
 
 This tracker covers the release plan and its execution. The active first phase is establishing a qualified Preview 3 integration branch. The integration-base milestones below are only what we need to begin producing Preview 3 builds; they are not the complete release plan. Proposed workstreams will be added to the release cutline only after their scope and qualification are decided.
 
@@ -13,16 +13,18 @@ Each preview should make progress toward one or both goals:
 
 Memory functionality is intended to merge into fork `main` when qualified. BDP should remain explicitly experimental until there is a stable protocol to support: a Preview 3 build may expose it behind an opt-in switch or omit it. This policy does not yet decide which Memory features or BDP profiles are in the Preview 3 cutline.
 
+Preview 2 already demonstrates end-to-end Memory workflows. Donna identified two likely gaps for the next feature cutline: intentional Memory Bead and Link Type definitions, likely requiring a bounded part of the new [Types proposal](https://github.com/gastownhall/beads/issues/7590), and at least the revision-provenance part of [Provenance V2](https://github.com/gastownhall/beads/issues/7510). The Types proposal is a design for discussion, not implemented Type-Bead support; Provenance V2 is also a proposal, not an adopted protocol or completed implementation. Exact Preview 3 slices and a fresh gap audit against the [Memory proposal](https://github.com/gastownhall/beads/issues/5877) remain to decide.
+
 ## Parallel workstreams to assess
 
 These are planning lanes, not promises that all their changes will ship in Preview 3. Each lane needs a concrete proposal, acceptance scenarios, dependencies, an owner, and a qualified source PR before it enters the cutline.
 
 | Lane | Direction | Preview 3 inclusion |
 | --- | --- | --- |
-| Memory beads and links | Define and implement the Memory behavior and relationships needed by the proposal. | To decide |
+| Memory beads and links | Audit the Memory proposal against Preview 2 and define the remaining Memory behavior and relationships. | To decide |
 | Issue and Dependency model | Define the issue and dependency profile, including link semantics. | To decide |
-| Types | Revisit the type model and its bead/link representation; assess migration and CLI effects. | To decide |
-| Provenance V2 | Settle attribution and source semantics across writes and history. | To decide |
+| Types | Intentionally define Memory Bead and Link Types; choose the bounded part of the proposed Type model and its migration/CLI effects. | Likely required slice; boundary to decide |
+| Provenance V2 | Land at least revision provenance, subject to design decisions and qualification; activity provenance is a separate scope choice. | Likely required slice; boundary to decide |
 | BDP core and profiles | Advance the read protocol and optional profiles without claiming a stable protocol. | Experimental or deferred |
 | Import/export | Resume data movement work after Preview 2. | To decide |
 | CLI completeness | Extend the bead/link command surface and usability, while preserving the qualified release line. | To decide |
@@ -47,7 +49,8 @@ A local, uncommitted merge rehearsal combines final Preview 2 with earlier upstr
 
 ## Release planning and delivery
 
-- [ ] Choose the minimum user-visible Memory release bar and the Preview 3 target date/window.
+- [ ] Define the Memory Types and revision-provenance acceptance slice; audit the rest of the Memory proposal for Preview 3 candidates or deferrals.
+- [ ] Choose the Preview 3 target date/window.
 - [ ] Agree the Preview 3 cutline; record included, experimental, and deferred work explicitly.
 - [ ] Work back from the target date to set feature freeze, integration, RC, manual-test, documentation, and release decision checkpoints.
 - [ ] Integrate and qualify each accepted change on the Preview 3 branch.
