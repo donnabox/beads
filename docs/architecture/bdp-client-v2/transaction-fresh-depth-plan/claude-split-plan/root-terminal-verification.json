@@ -1,0 +1,32 @@
+{
+  "reviews": {
+    "production": {
+      "exitCode": 0,
+      "timeout": false,
+      "forcedTermination": false,
+      "elapsedSeconds": 758.9562635840848,
+      "sourceAndPlanUnchanged": true,
+      "checkoutUnchanged": true,
+      "stdoutSha256": "b70442558261b7a15a301c1b9ba5883bfeb331da6e55bae257ee27b02ced7d63",
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "cleanupSha256": "002f3a68eb7dc8c34f90e33670b454e3c1be14d315612f9041747d5de1404491",
+      "sourceAfterSha256": "5384eeb9c84c84942732a9fed1db5ec1e135f5fe6059e12f94ecc34f51b754f1"
+    },
+    "evidence": {
+      "exitCode": 0,
+      "timeout": false,
+      "forcedTermination": false,
+      "elapsedSeconds": 800.195060665952,
+      "sourceAndPlanUnchanged": true,
+      "checkoutUnchanged": true,
+      "stdoutSha256": "817ba620455d4a59265be6101accfd0990e4b89a5ed7340a02905da4ff6f9aa4",
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "cleanupSha256": "195bbe97a7481955d6ca2edaee82cd8545e7a167d964828348c0f76bef1d51be",
+      "sourceAfterSha256": "6816a472ff6a61d6aebd5d2bbd4edf63049c20c54118d97a09d5b1d590243eff"
+    }
+  },
+  "rootReadCompleteOutputs": true,
+  "acceptedAsPlanVerdicts": true,
+  "codeAuthoringReleased": false,
+  "reason": "Blocking SQLite maintenance and evidence-inventory/oracle corrections require disposition; original timeout remains inconclusive."
+}

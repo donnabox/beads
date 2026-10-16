@@ -27,3 +27,16 @@ Minimum child13392 exited0 without signal. launchAttempted/startupCompleted/clos
 - run/minimum-installed.exit.json: e02133c0cce4ef9f60f625dbaa041e125180665200f523c2496148eb701c63ec
 - run/review-minimum-installed.log: 72e8ac023b0dbd7097f1621c425c35f5711f53b1014f6d09eb3d14a2feffa372
 - run/review-minimum-installed.exit.json: 26ca664dbb545fda80ad260f7dfa39c27fbfd5b9fe867cd41185010ea1916334
+
+
+## Terminal closure — minimum ledger recovery
+
+The separate minimum-ledger recovery has now completed raw/supervisor exit0 in4.459s. Its verification is accepted:true, originalInputsUnchanged:true, newHTTP0 and newProductChildren0. The unchanged review-minimum.py read the corrected requestsPath and accepted the same32-response observation; no HTTP or product replay occurred.
+
+I independently verified all19 recovery input hashes and all verification links to runner, release, alternate exit and adjudication. The successor ledger retains all32 rows and all other fields exactly, apart from the approved source-derived seed literal/610-byte length/hash, corresponding Descriptor URI substitutions, and an explicit factual provenance note. Its seed equals the frozen source literal byte for byte. The original ledger, checker, minimum-installed log/result/exit and failed review-minimum-installed log/exit remain unchanged. The initial failure above is historical and is not relabelled as success.
+
+The alternate exit reports clean source, no timeout, forced cleanup, errors, remaining processes or runtime directories. All21 sampled recovery PIDs were independently absent; child13392 remains absent and its store remains removed. The adjudication independently binds the existing raw test/result/log, unchanged payload provenance and32 observed HTTP responses. No archive re-review was needed.
+
+Exact closure pins: minimum-ledger-recovery/verification.json 1e04d9a715e0f8ca0e90a5b847aceb31947b332c4638954bbeed7c39842c051a; alternate exit53f96e8bc0bfba64a53989addb4cd643c94a7ce369454c308de4b6afa468226d; minimum-installed.adjudication.json9cf267c6fe236ae8292496b01ee39dbe3bb7c849d1563c113c2f32974ecb5013. Root-final-validation.json a93fa61938f415af5fa202a367bc118b4b9a4b908e8b81e78dc02897bc8446c2 accepts source23, strict control2 and installed40 HTTP/two children while preserving both failed adapter attempts and their separate recoveries.
+
+This closes the previously pending local installed adjudication for exact11742645/tree66b0. Root reports draft PR144 published for that working branch; this audit performed no remote query or publication and does not claim a main merge, fresh combined full-suite result or public profile qualification.
