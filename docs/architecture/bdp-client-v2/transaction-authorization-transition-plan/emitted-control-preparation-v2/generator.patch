@@ -1,0 +1,36 @@
+--- historical/prepare.py
++++ v2/prepare.py
+@@ -9,11 +9,11 @@
+ C=P/"mirror"
+ B=None
+ B_SHA=None
+-BUILD=D/"source-validation/run/build.exit.json"
+-GRAPH=P/"provisional-graph.json"
+-GRAPH_SHA='ff781dda50fb4e79073f7d102bc50779ec4ebe94dfad92a2000abd950b40085c'
++BUILD=D/"source-validation-v4/run/build.exit.json"
++GRAPH=P/"positive-graph.json"
++GRAPH_SHA='6b461f78fb1fa5c0834a7ba94225dff8ad8f2cd0aca43d87bdd17d2ea1b06a6f'
+ MUTATION=P/"mutation-specification.json"
+-MUTATION_SHA='1655a30c5eb1ccb68413df413d24b94d6d83cb0c6f595907cfd492680e95746f'
++MUTATION_SHA='cdcaab6b55731c27efa6090297f6d50ceb29506a56c3bde69f05be38019ad38c'
+ def require(ok,message):
+  if not ok: raise RuntimeError(message)
+ def sha(p):return hashlib.sha256(p.read_bytes()).hexdigest()
+@@ -46,12 +46,11 @@
+    r=subprocess.run(["git","diff","--no-index","--","/dev/null",n],cwd=W,capture_output=True)
+    require(r.returncode==1,"New-file diff failed");patch+=r.stdout
+  require(hashlib.sha256(patch).hexdigest()==b["diffSha256"],"Combined full patch changed")
+- # A test-only successor may differ from the observed historical build inputs.
+- # Every other tracked input and every emitted/tool byte must remain exact.
+- allowed_test_changes=gate["repairedTestPaths"]
+- require(isinstance(allowed_test_changes,list) and all(n.endswith(".test.ts") and n in b["files"] for n in allowed_test_changes),"Invalid test-only bridge")
+- actual_input_changes=[n for n,i in graph["sourceInputs"].items() if sha(W/n)!=i["sha256"]]
+- require(sorted(actual_input_changes)==sorted(allowed_test_changes),"Unexpected input changes since build inventory")
++ # Only the declared T11 test differs from the actual v4 build; current capture is exact.
++ require(sha(B)==graph["currentSourceBinding"]["sha256"],"Current source binding differs from inventory")
++ actual_input_changes=[n for n,i in b["files"].items() if i["sha256"]!=build["sourceSha256After"][n]]
++ require(actual_input_changes==graph["testOnlyBuildBridge"]==gate["repairedTestPaths"]==["packages/server/src/transaction-authorization.test.ts"],"Actual build test-only bridge differs")
++ for n,i in graph["sourceInputs"].items():require(sha(W/n)==i["sha256"],"Current captured input changed: "+n)
+  for n,i in graph["emitted"].items():require(sha(W/n)==i["sha256"],"Positive emitted bytes changed: "+n)
+  for n,i in graph["dependencyFiles"].items():require(sha(W/n)==i["sha256"],"Tool dependency changed: "+n)
+  for n,i in graph["dependencyLinks"].items():require((W/n).is_symlink() and os.readlink(W/n)==i["link"] and str((W/n).resolve(strict=True).relative_to(W))==i["resolvedRelative"],"Dependency link changed: "+n)

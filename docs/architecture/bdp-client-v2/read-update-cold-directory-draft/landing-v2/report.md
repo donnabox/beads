@@ -1,0 +1,9 @@
+# Closed PR138 successor landing inspection
+
+Exact actual successor 012d5c0cfcbb74b28d13538bacb10b4db98573aa, treea49cb4b2cfc3a7ad9f66d0d790a7e1e4dbad168a, direct parentbb9600f1b8b6f623e753543ed5792005eb9aacee, original base67a2842e3f1918e70978f745587cf11eaf0df5a8. Read-only local Git verified clean source, six hashes, ordinary two-commit ancestry and exact one-file repair patch. Failed original run38831498794 and original landing/inspection remain untouched.
+
+Adaptation is limited to new input hash, actual run/job-required guard, and original candidate -> one-hash repair ancestry/scope verification. Existing exact PR/main identity, completed green run/job/all steps, live check-runs, raw job-log checkout extraction, tested synthetic orderedparents[base,head]/tree/workflow, final head/base/source/council rechecks and no-merge behavior are unchanged.
+
+Actual exact-head run38834194166/job116759486337 was read-only observed in_progress, conclusion null; no root-inspection-release.json exists. Root must provide final exact-successor council acceptance (accepted/head/tree/sourceBindingSha256), and release with exact script/input/council hashes. Source binding refers to ci-pin-repair/published-successor.json. No original runtime evidence is relabelled. Invocation after root release only: python3 guarded-action.py python3 /Users/dbox/repos/wt/vickie/bdp-integration-logs/read-update-cold-directory-draft/landing-v2/landing-check.py. It is one shot, requires terminal CI, never polls/reruns/fetches/merges. Root retains actual-merge verification and fresh pre-merge checks.
+
+InputSHA73273cb2ae1486bc848b79f6042ae6825088073814010fae025480f0b84a195c; scriptSHAe4fb2da1abdc8b02b12f689c4cae63a9ebfd24f819d33599448a2b7a13ebc0cd. Only the authorized read-only CI run/job identity queries occurred; no inspection, product execution, source edit or publication occurred.

@@ -1,0 +1,213 @@
+{
+  "status": "PROPOSED_NOT_EXECUTABLE",
+  "note": "Algorithms/bootstrap/observer are not authored by this plan. No execution-gate exists. Candidate/build/package bindings remain null; root must review concrete scripts and release before any invocation.",
+  "node": "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+  "pnpm": "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+  "executionOrder": [
+    "node-version",
+    "package-directory",
+    "pack-protocol",
+    "pack-server",
+    "verify-tar",
+    "prepare-consumer",
+    "consumer-install",
+    "verify-installed",
+    "visibility-handles",
+    "review-visibility-handles",
+    "active-event",
+    "review-active-event"
+  ],
+  "commands": {
+    "node-version": {
+      "phase": "package",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "--version"
+      ],
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-authorization-transition",
+      "supervisorSeconds": 120,
+      "automaticRetries": 0,
+      "requires": [],
+      "released": false
+    },
+    "package-directory": {
+      "phase": "package",
+      "argv": [
+        "python3",
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-authorization-transition-draft/installed-validation-plan/packages.py",
+        "directory"
+      ],
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-authorization-transition",
+      "supervisorSeconds": 120,
+      "automaticRetries": 0,
+      "requires": [
+        "node-version"
+      ],
+      "released": false
+    },
+    "pack-protocol": {
+      "phase": "package",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "--filter",
+        "@bdp/protocol",
+        "pack",
+        "--pack-destination",
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-authorization-transition-draft/installed-validation-plan/run/packages"
+      ],
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-authorization-transition",
+      "supervisorSeconds": 120,
+      "automaticRetries": 0,
+      "requires": [
+        "package-directory"
+      ],
+      "released": false
+    },
+    "pack-server": {
+      "phase": "package",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "--filter",
+        "@bdp/server",
+        "pack",
+        "--pack-destination",
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-authorization-transition-draft/installed-validation-plan/run/packages"
+      ],
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-authorization-transition",
+      "supervisorSeconds": 120,
+      "automaticRetries": 0,
+      "requires": [
+        "pack-protocol"
+      ],
+      "released": false
+    },
+    "verify-tar": {
+      "phase": "package",
+      "argv": [
+        "python3",
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-authorization-transition-draft/installed-validation-plan/packages.py",
+        "tar"
+      ],
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-authorization-transition",
+      "supervisorSeconds": 120,
+      "automaticRetries": 0,
+      "requires": [
+        "pack-server"
+      ],
+      "released": false
+    },
+    "prepare-consumer": {
+      "phase": "package",
+      "argv": [
+        "python3",
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-authorization-transition-draft/installed-validation-plan/packages.py",
+        "consumer"
+      ],
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-authorization-transition",
+      "supervisorSeconds": 120,
+      "automaticRetries": 0,
+      "requires": [
+        "verify-tar"
+      ],
+      "released": false
+    },
+    "consumer-install": {
+      "phase": "package",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "install",
+        "--offline",
+        "--ignore-scripts",
+        "--no-frozen-lockfile",
+        "--prod"
+      ],
+      "cwd": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-authorization-transition-draft/installed-validation-plan/run/consumer",
+      "supervisorSeconds": 120,
+      "automaticRetries": 0,
+      "requires": [
+        "prepare-consumer"
+      ],
+      "released": false
+    },
+    "verify-installed": {
+      "phase": "package",
+      "argv": [
+        "python3",
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-authorization-transition-draft/installed-validation-plan/packages.py",
+        "installed"
+      ],
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-authorization-transition",
+      "supervisorSeconds": 120,
+      "automaticRetries": 0,
+      "requires": [
+        "consumer-install"
+      ],
+      "released": false
+    },
+    "visibility-handles": {
+      "phase": "installed",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-authorization-transition-draft/installed-validation-plan/observe-installed.mjs",
+        "visibility-handles",
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-authorization-transition-draft/installed-validation-plan/run/visibility-handles.json"
+      ],
+      "cwd": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-authorization-transition-draft/installed-validation-plan/run/consumer",
+      "supervisorSeconds": 120,
+      "automaticRetries": 0,
+      "requires": [
+        "verify-installed"
+      ],
+      "released": false
+    },
+    "review-visibility-handles": {
+      "phase": "review",
+      "argv": [
+        "python3",
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-authorization-transition-draft/installed-validation-plan/review-installed.py",
+        "visibility-handles"
+      ],
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-authorization-transition",
+      "supervisorSeconds": 120,
+      "automaticRetries": 0,
+      "requires": [
+        "visibility-handles"
+      ],
+      "released": false
+    },
+    "active-event": {
+      "phase": "installed",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-authorization-transition-draft/installed-validation-plan/observe-installed.mjs",
+        "active-event",
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-authorization-transition-draft/installed-validation-plan/run/active-event.json"
+      ],
+      "cwd": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-authorization-transition-draft/installed-validation-plan/run/consumer",
+      "supervisorSeconds": 120,
+      "automaticRetries": 0,
+      "requires": [
+        "review-visibility-handles"
+      ],
+      "released": false
+    },
+    "review-active-event": {
+      "phase": "review",
+      "argv": [
+        "python3",
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-authorization-transition-draft/installed-validation-plan/review-installed.py",
+        "active-event"
+      ],
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-authorization-transition",
+      "supervisorSeconds": 120,
+      "automaticRetries": 0,
+      "requires": [
+        "active-event"
+      ],
+      "released": false
+    }
+  }
+}

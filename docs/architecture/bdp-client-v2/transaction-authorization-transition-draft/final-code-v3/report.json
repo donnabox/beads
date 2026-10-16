@@ -1,0 +1,65 @@
+{
+  "status": "frozen production projection successor; no runtime validation",
+  "sourceBindingSha256": "a4f2da6e6f209eb79b25f14f213dd9cf40d79a8c6777f8955a8bc042c6d1878b",
+  "fullPatchSha256": "84d8dfca808f7bb2f0083019750b83486454f79ea9cb9fe798b315925b5020c8",
+  "correctionSha256": "89a01bd9fc67f5a3685fd8a8d231f6533e1f8879bb94ac46040e64a3613dc579",
+  "predecessorSourceBindingSha256": "e0bbb4bf08afbc39b86fc04440ac91c1651f1bbed813d544c1d391de4b707491",
+  "changedPaths": [
+    "packages/server/src/transaction-authorization.test.ts",
+    "packages/server/src/transaction-authorization.ts",
+    "packages/server/src/transaction-runtime.test.ts"
+  ],
+  "unchangedPredecessorPaths": 12,
+  "historicalEvidence": {
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-authorization-transition-plan/source-validation-v3/run/transport.exit.json": "4243be9b8f7d42d7e91626cbe8e4aea67539ea3448db43954390fd9e56444f1e",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-authorization-transition-plan/source-validation-v3/run/transport.results.json": "436074562781bf83a7d0501fca65368c1b8b31e6da5101752b00b387da38af27",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-authorization-transition-plan/source-validation-v3/run/transport.log": "85b1f72020130643414fc39369da1020c507d6d3b02038d8b00e119fd0c69f71",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-authorization-transition-plan/source-validation-v3/run/transport.stderr.log": "11713f50040c42fbcda96b29a12f21d6b274bcd978cf1541b35664ae18d09cc7"
+  },
+  "historicalTransport": {
+    "passed": 1,
+    "failed": 1,
+    "notSelected": 3,
+    "http": 20,
+    "cleanup": [
+      {
+        "label": "authorization-transition-cleanup",
+        "name": "visibility-handles",
+        "attempts": 16,
+        "runtimeReturned": true,
+        "closed": true,
+        "directory": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-authorization-transition-plan/source-validation-v3/run/transport.tmp/bdp-authorization-http-AxcRkO",
+        "directoryRemoved": true,
+        "failures": 1,
+        "claimEligible": false
+      },
+      {
+        "label": "authorization-transition-cleanup",
+        "name": "active-event",
+        "attempts": 4,
+        "runtimeReturned": true,
+        "closed": true,
+        "directory": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-authorization-transition-plan/source-validation-v3/run/transport.tmp/bdp-authorization-http-rGyA2s",
+        "directoryRemoved": true,
+        "failures": 0,
+        "claimEligible": false
+      }
+    ]
+  },
+  "workload": {
+    "callbacks": 11,
+    "http": 21,
+    "successfulOwnerOpens": 14,
+    "normalDirectories": 11,
+    "rejectedOpenCopyDirectories": 5,
+    "listeners": 2,
+    "productChildren": 0
+  },
+  "static": {
+    "formatOnlyExit": 0,
+    "buildTypecheckTestsRun": false
+  },
+  "schemaSpecChanged": false,
+  "runtimeCapsChanged": false,
+  "claude": "closed pending root source/runtime disposition"
+}

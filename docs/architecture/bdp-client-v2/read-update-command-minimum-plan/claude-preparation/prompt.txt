@@ -1,0 +1,1412 @@
+Provide an independent technical PLAN review for ordinary Update cumulative command-minimum evidence integration. Do not write or modify any files. Output numbered findings only in stdout with severity, exact source/plan location, concrete issue, impact and smallest correction. Distinguish mandatory defects, missing supplied proof and optional enhancements. End by stating whether the complete assigned plan review is finished; if incomplete, list what remains. No tools, test execution, product edits, model override or publication authority.
+
+This packet's author wrote the plan; root has separately reviewed its literal row and constraints. Review the complete frozen plan plus additive clarification, full literal scenario/coverage/ledger, measured constraints and genuine source below. Basis was bb9600; exact candidate012d5c0 changes only a stale CPU baseline digest. Actual merged authoring parent remains null. Pending merge is an explicit release prerequisite, not by itself a plan defect. This is evidence integration for existing ordinary Update behavior, not a new production implementation, Transactional rewrite, public advertisement or whole-profile admission. Keep pending product questions separate.
+
+Focus on exact11 actions/47 assertions and genuine raw duplicate/empty fields; same-key/revision/auth/carrier precedence; full live Resource/replay equality; safe dispatch-to-report provenance; negative is assertion-input-only after verified realwire response and must fail exactly1 with7pass; all50baseline+5continuation objects and129 other coverage objects preserved; six-file scope; unchanged parser/runtime/time caps; exact expected/max workload and real child/cleanup attribution. Do not demand unrelated exhaustive protocol coverage or convert optional diagnostics into semantic scope.
+
+
+## Complete plan.md SHA173b3658a01edaec6f3d66c70697231ed617f6100b16b745fe83cbd96d805d27
+# Ordinary Update command-minimum cumulative plan — proposed, not released
+
+Basis: clean candidate `bb9600f1b8b6f623e753543ed5792005eb9aacee`, tree `aa8f7af9c4cdfafbd80547449ec2369f92071ab7`. This candidate is not treated as merged. Actual authoring parent remains null; ordinary reanchor and unchanged-source comparison are required after landing. No product changes, tests, service starts, or review launches were performed for this plan.
+
+## Purpose and authority
+
+Bind existing ordinary Update behavior to required cumulative obligation `read-update.http.command-minimum-fields`. This is executable evidence integration toward the sole design's cumulative qualification prerequisite, not a new serving fix or public activation. `docs/specs/bdp.md:3581–3588`, the exact catalog requirement, and the operator ruling require mutation POSTs to ignore the three read-minimum fields while preserving ordinary authentication, keys, carrier validation and expectedRevision. Read controls and Transactional rules remain separate. No pending Snapshot, incident-Link, opaque-token or collision decision is inferred.
+
+The existing six-request installed witness at `apps/bdptest/src/installed-reference.test.ts:552–684` already proves singleton/sequence creation, equal retained replay under changed ignored fields, and exact current Resources. It lacks same-row authentication, missing-key, key-conflict, revision-conflict and malformed-carrier discriminators. Reuse its semantics and existing installed composition; do not rewrite Update through TX or add helper APIs.
+
+## Literal row and exact oracles
+
+`scenario.json` freezes 11 raw HTTP actions and 47 assertions; `ledger.json` freezes every actual URL, ordered header line, body byte count/digest and expected status. `coverage-row.json` replaces only this omitted coverage row. Proposed wholeContract credit is finite authored evidence subject to council and actual execution; it grants no public qualification or automatic TX coverage. The unchanged TX partial row must remain partial.
+
+|Order|Action|Expected|
+|---|---|---|
+|1|singleton-create, full foreign tuple|200 created|
+|2|equal singleton replay, empty minimum/duplicate mixed-case epoch/malformed view|200, exact original result|
+|3|same key, changed body, partial malformed minimum|409 idempotency-conflict / never|
+|4|missing singleton key, malformed tuple|400 malformed-request / never|
+|5|unknown credential, full tuple|401 unauthenticated / after-state-change|
+|6|stale expectedRevision, malformed tuple|409 revision-mismatch / after-state-change|
+|7|invalid JSON carrier, partial malformed minimum|400 malformed-request / never|
+|8|singleton point GET|200, original complete Resource unchanged|
+|9|sequence create, partial malformed minimum, member key only|200 one created result|
+|10|equal sequence replay, malformed tuple|200, exact original sequence result|
+|11|sequence point GET|200, original complete Resource|
+
+Use existing fixture IDs w1-a/w1-b, isolated per-row installed state, existing operator/unknown credential handles and the same configuration/bootstrap machinery. No dynamic capture or new target binding is needed. GETs omit bodies. Nine POST bodies total 1,112 bytes, maximum190 bytes (derive exact totals from ledger during review). The fields remain raw ordered lines; do not collapse genuine duplicate epoch lines into a header map.
+
+A module-local raw exchange ledger inside existing `executeExact` records actual ordinal/method/url/credentialRef and complete-write/body facts before unchanged delegation; retain full actual response bodies privately. The executor input has no action ID. Join actual returned `ObservedExchange.request.id/method/url` by fixed order afterward; never invent ID or credentials in that type. Assert exactly11 exchanges, no client/setup/native-read traffic, and complete writes matching literal body hashes/lengths. Validate original response schema before storing baselines. A stale-revision dispatch must first establish the literal differs from the actual original revision. Compare complete created/replayed/current Resource and result objects, not a lossy projection; require metadata{}, nonempty revision and exact fixture properties, sequence index0, and absence of TX receipt/context fields. Refusals must leave singleton state unchanged. Source-backed ordinary response retry vocabulary is frozen in the row. Existing transport/header/body limits remain in force; this row does not independently exhaust every transport-boundary case.
+
+Run this oracle in the selected positive and full aggregate. Safe optional report contains counts, request IDs/methods/URLs, write facts, outcomes and equality booleans; no credentials, raw authorization or full bodies. Retain genuine returned runner evidence before cleanup, including expected negative results; propagate oracle/report/cleanup failures. Reuse existing lifecycle and supervisor patterns.
+
+## One small negative
+
+New local option `replay-outcome` applies only to this row's second real response. First validate genuine wire200/schema/full replay equality, then change only assertion-input `outcome` from created to updated and recompute bodyText/bodyOctets. Preserve original wire facts/body and mark the projection as deliberate. This schema-valid counterfactual must yield exactly one failed assertion: scenario `read-update.http.command-minimum-fields`, exchange `singleton-replay`, assertion `outcome` (display join `singleton-replay:outcome`). Four first-action assertions and three remaining second-action assertions pass: 7 passed / 1 failed; runner stops after2 HTTP. Unexpected wire failures must not be relabeled as that expected failure. This is assertion sensitivity, not a production mutation or proof of every possible defect.
+
+## Six owned paths and preservation
+
+1. `packages/conformance/matrices/read-update-v1.json`: append the new row at its actual catalog position after all existing executable baseline IDs.
+2. `packages/conformance/test-support/read-update-coverage-v1.json`: replace only the existing omitted row.
+3. `apps/bdptest/src/read-update-matrix.test.ts`: local ledger/oracle/control, one CPU pin callback, two selected runtime callbacks, affected global data counts and four measured source-growth allowances.
+4. `packages/conformance/src/read-update-artifact-set.test.ts`: corpus split/count/preservation expectations.
+5. `packages/conformance/src/cumulative-artifact.test.ts`: exact reviewed whole-ID whitelist in catalog order and current data counts.
+6. `packages/conformance/src/profile-contract-plan.test.ts`: replace the obsolete RU-omission expectation with the new RU evidence mapping, retaining exact catalog inheritance/Read exclusion and unchanged partial TX mapping.
+
+Preserve all50 baseline and5 continuation scenario raw objects, all129 other coverage raw objects, fixture/catalog/index/production/API bytes. Removing only the appended row/comma reconstructs the complete parent manifest; restoring the single original omitted span reconstructs complete parent coverage. Existing cold-directory row and all old controls retain their semantics. Baseline51+continuation5; authored56, whole35, omitted74, uncovered95, required130. Never convert unimplemented or unsupported rows to success. The historical cold-parent reconstruction must explicitly remove both successor additions when it refers to its earlier ancestor; additionally pin reconstruction of immediate bb9600 parent.
+
+## Measurements and immutable budgets
+
+`measurements.json` is data-only arithmetic on committed bytes and literal row. Proposed new-span indent2 formatting: manifest3,689,599 disk /1,912,642 compact bytes /98,836 nodes; coverage720,396 bytes. Final formatting must remeasure without reformatting old spans. All36 old derivative recipes act on unchanged rows; exact additive delta is9,462 compact bytes/507 nodes. Their combined envelope becomes1,913,753 bytes/98,871 nodes, leaving1,129 nodes beneath the unchanged100,000 parser cap. New response-only control adds no manifest derivative. Preserve the prior exhaustive inventory and reproduce every changed recipe if implementation alters more than this append.
+
+Proposed exact historical data allowances are72,239 /21,782 /16,981 /7,735, retaining historic bases and explaining only2,089 coverage-byte growth. These are review proposals, not execution/runtime cap changes. No4MiB/1MiB/parser/HTTP/time increase. Ordered route set/order stays284 and the existing configuration digest stays26da5a286d9887bebbb0fcf73a92c5d09aa7b7fcfdcc9ed91f767f4db1578c69; independently derive with the existing pure configuration path during authoring. stdlib route projection equality is recorded separately, not presented as an actual installed identity.
+
+|Cohort|Expected HTTP|Maximum HTTP|Children|
+|---|---:|---:|---:|
+|New selected positive|11|11|2|
+|New selected negative|2|11|2|
+|Existing full aggregate|2314|2314|58|
+|Total|2327|2336|62|
+
+Aggregate includes2270 authored +44 setup/client requests; no hidden directory or bootstrap wire is excluded. Retained replay is explicitly two row actions; automatic transport retries0. Default helper still starts a bootstrap child plus the selected row's child. The aggregate adds one child and11 requests over bb9600. Full-CI incremental expected load is24 HTTP/5 children including the two new selected callbacks; unchanged old explicitly selected controls and smallExecutionSet cohorts exclude this row. Verify source invocation inventory at freeze. Selected30s, aggregate90s cooperative, request5000ms and external120s limits remain unchanged. Previous timings do not guarantee headroom: timeout stops work and requires diagnosis, never automatic limit growth.
+
+## Finite validation and release path
+
+Native and actual Claude plan review precede source authoring. After ordinary actual-main reanchor, author only these six paths and freeze final formatted raw preservation/measurements/all affected derivative inventory. Reuse pinned Node24.16/pnpm11.20 and existing setup/build/type/format/lint/boundaries/Read-seal checks. No installed execution until concrete source and commands are reviewed/released.
+
+CPU selection: the current cold-directory seven callbacks, with the obsolete profile-contract title changed to `inherits partial TX command-minimum evidence alongside observed ordinary Update coverage`, plus new `pins command minimum literals, ordinary admission and parent preservation` (8 total). Existing seven are precisely those in cold-directory-draft/commands.json: corpus split; cumulative digest/catalog/bindings; profile mapping; cold directory pins; numeric growth; metadata closure; bounded R closure. Final commands must match literal actual registration names, not guessed regex expansion.
+
+New selected titles: `observes ignored command minimum fields with ordinary Update admission` and `rejects a changed retained outcome in command minimum assertion input`. Third selected runtime callback is unchanged `executes the partial cumulative RU matrix against actual installed factory HTTP and afterstate`. Fresh clean-commit build/archive/source/installed payload verification and external eight-package consumer remain required; use existing installed workflow, no workspace fallback. Verify actual response counts, exact negative7pass/1fail, full aggregate required/uncovered states and genuine child/store cleanup, then complete exact-head fullCI before landing. No new framework or public advertisement is authorized by this plan.
+
+
+## Complete report-clarifications.md SHA5353fa3d20756a030eb49d70aa3deacc895f449e3154c50c97eb688fb440adf6
+# Additive safe-report clarification and arithmetic check
+
+This addendum leaves frozen plan173b3658/scenarioee3977cf/ledgerdfb1653b unchanged. It clarifies the planned local reporter, not current cold-directory source. No authoring/execution/review launch is released.
+
+The new report must explicitly name the applied control (`replay-outcome`) and label it `assertion-input-only`, separating projected runner outcomes from unchanged original wire observations. For a run where this row is absent, omit its supplement or mark it explicitly not-run; never present empty ledgers as a failed or successful execution. Use a distinct absolute per-invocation output path. Initial exclusive creation (`wx`,0600), followed only by same-invocation rewrites, prevents silent replacement of another run. Reuse the local writer/lifecycle pattern; no generic filesystem framework or shared API. Report errors remain failures. Do not rewrite real wire content-length/bytes or invent executor action IDs/credential fields; the explicit provenance join in the plan remains binding.
+
+Recomputed from all nine exact UTF-8 POST bodies:113+113+103+113+113+176+1+190+190 = **1,112 bytes**, maximum190. Both GETs have no body. The earlier1,102 impression is incorrect. Every ledger body/digest/length matches scenario.json. Count remains11 actions/47 assertions.
+
+An independent second in-memory reconstruction of committed bb9600 plus the literal row/replacement reproduced all frozen measurement hashes: manifest3,689,599 disk /1,912,642 compact bytes /98,836 nodes; coverage720,396 bytes. All36 disjoint derivative recipes retain the additive9,462-byte/507-node delta, maximum1,913,753/98,871. Proposed four data allowances72,239/21,782/16,981/7,735 remain arithmetic proposals; parser/time/runtime bounds remain unchanged. No future merged parent is invented and final formatted implementation must be remeasured.
+
+
+## Root native review context
+Root independently read full plan/literals and found no mandatory finding. Reporting constraints were root-contributed. Actual Claude review is still outstanding; no authoring/public qualification is granted. Full native review is hash-bound separately, not substituted for this review.
+
+## Complete compact scenario.json (JSON data unchanged), file SHAee3977cf85f7f2e5f4f0e0ee6371a701d28e285b068b442a7e5155ce0993d542
+{"id":"read-update.http.command-minimum-fields","requiredProfile":"read-update","setup":{"fixture":"reference-read-update-schema-v1","requires":["installed-read-update-http"]},"applicability":{"requires":[]},"actions":[{"id":"singleton-create","family":"http","method":"POST","target":{"binding":"scope","path":"operations/create-bead"},"credentialRef":"operator","raw":{"headerLines":[{"name":"content-type","value":"application/json"},{"name":"idempotency-key","value":"minimum-singleton"},{"name":"bdp-minimum-scope-position","value":"pos-999"},{"name":"bdp-scope-epoch","value":"foreign-epoch"},{"name":"bdp-authorization-view","value":"foreign-view"}],"body":{"encoding":"utf8","value":"{\"id\":\"beads/w1-a\",\"type\":\"https://reference.invalid/acme/types/task\",\"properties\":{\"title\":\"minimum-singleton\"}}"}},"captures":[],"assertions":[{"id":"status","kind":"status","equals":200},{"id":"media","kind":"media-type","equals":"application/json"},{"id":"schema","kind":"json-schema","schema":"#/$defs/mutationResult"},{"id":"outcome","kind":"json-pointer","pointer":"/outcome","exists":true,"equals":"created"}]},{"id":"singleton-replay","family":"http","method":"POST","target":{"binding":"scope","path":"operations/create-bead"},"credentialRef":"operator","raw":{"headerLines":[{"name":"content-type","value":"application/json"},{"name":"idempotency-key","value":"minimum-singleton"},{"name":"bdp-minimum-scope-position","value":""},{"name":"bdp-scope-epoch","value":"epoch-one"},{"name":"BDP-Scope-Epoch","value":"epoch-two"},{"name":"bdp-authorization-view","value":"not a view!"}],"body":{"encoding":"utf8","value":"{\"id\":\"beads/w1-a\",\"type\":\"https://reference.invalid/acme/types/task\",\"properties\":{\"title\":\"minimum-singleton\"}}"}},"captures":[],"assertions":[{"id":"status","kind":"status","equals":200},{"id":"media","kind":"media-type","equals":"application/json"},{"id":"schema","kind":"json-schema","schema":"#/$defs/mutationResult"},{"id":"outcome","kind":"json-pointer","pointer":"/outcome","exists":true,"equals":"created"}]},{"id":"singleton-conflict","family":"http","method":"POST","target":{"binding":"scope","path":"operations/create-bead"},"credentialRef":"operator","raw":{"headerLines":[{"name":"content-type","value":"application/json"},{"name":"idempotency-key","value":"minimum-singleton"},{"name":"bdp-minimum-scope-position","value":"not a token!"}],"body":{"encoding":"utf8","value":"{\"id\":\"beads/w1-a\",\"type\":\"https://reference.invalid/acme/types/task\",\"properties\":{\"title\":\"changed\"}}"}},"captures":[],"assertions":[{"id":"status","kind":"status","equals":409},{"id":"media","kind":"media-type","equals":"application/problem+json"},{"id":"schema","kind":"json-schema","schema":"#/$defs/readUpdateProblem"},{"id":"code","kind":"json-pointer","pointer":"/code","exists":true,"equals":"idempotency-conflict"},{"id":"retry","kind":"json-pointer","pointer":"/retry","exists":true,"equals":"never"}]},{"id":"missing-key","family":"http","method":"POST","target":{"binding":"scope","path":"operations/create-bead"},"credentialRef":"operator","raw":{"headerLines":[{"name":"content-type","value":"application/json"},{"name":"bdp-minimum-scope-position","value":""},{"name":"bdp-scope-epoch","value":"epoch-one"},{"name":"BDP-Scope-Epoch","value":"epoch-two"},{"name":"bdp-authorization-view","value":"not a view!"}],"body":{"encoding":"utf8","value":"{\"id\":\"beads/w1-a\",\"type\":\"https://reference.invalid/acme/types/task\",\"properties\":{\"title\":\"minimum-singleton\"}}"}},"captures":[],"assertions":[{"id":"status","kind":"status","equals":400},{"id":"media","kind":"media-type","equals":"application/problem+json"},{"id":"schema","kind":"json-schema","schema":"#/$defs/readUpdateProblem"},{"id":"code","kind":"json-pointer","pointer":"/code","exists":true,"equals":"malformed-request"},{"id":"retry","kind":"json-pointer","pointer":"/retry","exists":true,"equals":"never"}]},{"id":"unauthenticated","family":"http","method":"POST","target":{"binding":"scope","path":"operations/create-bead"},"credentialRef":"unknown","raw":{"headerLines":[{"name":"content-type","value":"application/json"},{"name":"idempotency-key","value":"minimum-unauthenticated"},{"name":"bdp-minimum-scope-position","value":"pos-999"},{"name":"bdp-scope-epoch","value":"foreign-epoch"},{"name":"bdp-authorization-view","value":"foreign-view"}],"body":{"encoding":"utf8","value":"{\"id\":\"beads/w1-a\",\"type\":\"https://reference.invalid/acme/types/task\",\"properties\":{\"title\":\"minimum-singleton\"}}"}},"captures":[],"assertions":[{"id":"status","kind":"status","equals":401},{"id":"media","kind":"media-type","equals":"application/problem+json"},{"id":"schema","kind":"json-schema","schema":"#/$defs/readUpdateProblem"},{"id":"code","kind":"json-pointer","pointer":"/code","exists":true,"equals":"unauthenticated"},{"id":"retry","kind":"json-pointer","pointer":"/retry","exists":true,"equals":"after-state-change"}]},{"id":"stale-revision","family":"http","method":"POST","target":{"binding":"scope","path":"operations/update-bead"},"credentialRef":"operator","raw":{"headerLines":[{"name":"content-type","value":"application/json"},{"name":"idempotency-key","value":"minimum-stale"},{"name":"bdp-minimum-scope-position","value":""},{"name":"bdp-scope-epoch","value":"epoch-one"},{"name":"BDP-Scope-Epoch","value":"epoch-two"},{"name":"bdp-authorization-view","value":"not a view!"}],"body":{"encoding":"utf8","value":"{\"bead\":\"https://reference.invalid/acme/beads/w1-a\",\"expectedRevision\":\"minimum-stale-revision\",\"propertiesChange\":[{\"op\":\"replace\",\"path\":\"/title\",\"value\":\"must-not-commit\"}]}"}},"captures":[],"assertions":[{"id":"status","kind":"status","equals":409},{"id":"media","kind":"media-type","equals":"application/problem+json"},{"id":"schema","kind":"json-schema","schema":"#/$defs/readUpdateProblem"},{"id":"code","kind":"json-pointer","pointer":"/code","exists":true,"equals":"revision-mismatch"},{"id":"retry","kind":"json-pointer","pointer":"/retry","exists":true,"equals":"after-state-change"}]},{"id":"invalid-carrier","family":"http","method":"POST","target":{"binding":"scope","path":"operations/create-bead"},"credentialRef":"operator","raw":{"headerLines":[{"name":"content-type","value":"application/json"},{"name":"idempotency-key","value":"minimum-invalid"},{"name":"bdp-minimum-scope-position","value":"not a token!"}],"body":{"encoding":"utf8","value":"{"}},"captures":[],"assertions":[{"id":"status","kind":"status","equals":400},{"id":"media","kind":"media-type","equals":"application/problem+json"},{"id":"schema","kind":"json-schema","schema":"#/$defs/readUpdateProblem"},{"id":"code","kind":"json-pointer","pointer":"/code","exists":true,"equals":"malformed-request"},{"id":"retry","kind":"json-pointer","pointer":"/retry","exists":true,"equals":"never"}]},{"id":"singleton-point","family":"http","method":"GET","target":{"binding":"scope","path":"beads/w1-a"},"credentialRef":"operator","raw":{"headerLines":[]},"captures":[],"assertions":[{"id":"status","kind":"status","equals":200},{"id":"media","kind":"media-type","equals":"application/json"},{"id":"schema","kind":"json-schema","schema":"#/$defs/currentBeadRecord"}]},{"id":"sequence-create","family":"http","method":"POST","target":{"binding":"scope","path":"operations/sequence"},"credentialRef":"operator","raw":{"headerLines":[{"name":"content-type","value":"application/json"},{"name":"bdp-minimum-scope-position","value":"not a token!"}],"body":{"encoding":"utf8","value":"{\"operations\":[{\"operation\":\"createBead\",\"id\":\"beads/w1-b\",\"type\":\"https://reference.invalid/acme/types/task\",\"properties\":{\"title\":\"minimum-sequence\"},\"idempotencyKey\":\"minimum-sequence\"}]}"}},"captures":[],"assertions":[{"id":"status","kind":"status","equals":200},{"id":"media","kind":"media-type","equals":"application/json"},{"id":"schema","kind":"json-schema","schema":"#/$defs/sequenceResponse"},{"id":"outcome","kind":"json-pointer","pointer":"/results/0/outcome","exists":true,"equals":"created"}]},{"id":"sequence-replay","family":"http","method":"POST","target":{"binding":"scope","path":"operations/sequence"},"credentialRef":"operator","raw":{"headerLines":[{"name":"content-type","value":"application/json"},{"name":"bdp-minimum-scope-position","value":""},{"name":"bdp-scope-epoch","value":"epoch-one"},{"name":"BDP-Scope-Epoch","value":"epoch-two"},{"name":"bdp-authorization-view","value":"not a view!"}],"body":{"encoding":"utf8","value":"{\"operations\":[{\"operation\":\"createBead\",\"id\":\"beads/w1-b\",\"type\":\"https://reference.invalid/acme/types/task\",\"properties\":{\"title\":\"minimum-sequence\"},\"idempotencyKey\":\"minimum-sequence\"}]}"}},"captures":[],"assertions":[{"id":"status","kind":"status","equals":200},{"id":"media","kind":"media-type","equals":"application/json"},{"id":"schema","kind":"json-schema","schema":"#/$defs/sequenceResponse"},{"id":"outcome","kind":"json-pointer","pointer":"/results/0/outcome","exists":true,"equals":"created"}]},{"id":"sequence-point","family":"http","method":"GET","target":{"binding":"scope","path":"beads/w1-b"},"credentialRef":"operator","raw":{"headerLines":[]},"captures":[],"assertions":[{"id":"status","kind":"status","equals":200},{"id":"media","kind":"media-type","equals":"application/json"},{"id":"schema","kind":"json-schema","schema":"#/$defs/currentBeadRecord"}]}],"cleanup":{"resetFixture":true}}
+
+## Complete compact coverage-row.json (JSON data unchanged), file SHA9826319398744342d3c386c4ba9b634ff56952967ec854500103296a2a88083f
+{"id":"read-update.http.command-minimum-fields","status":"bounded-observation","wholeContract":true,"reason":"Installed ordinary Update singleton and sequence commands ignore copied minimum fields, retain exact outcomes across changed ignored headers, and preserve authentication, required keys, key conflict, carrier validation and revision refusal. Independent row-local raw observations compare full original/replay/current Resource bodies; read minima and Transactional behavior remain separate. Public qualification remains false.","bindings":[{"scenario":"read-update.http.command-minimum-fields","assertions":["singleton-create.status","singleton-create.media","singleton-create.schema","singleton-create.outcome","singleton-replay.status","singleton-replay.media","singleton-replay.schema","singleton-replay.outcome","singleton-conflict.status","singleton-conflict.media","singleton-conflict.schema","singleton-conflict.code","singleton-conflict.retry","missing-key.status","missing-key.media","missing-key.schema","missing-key.code","missing-key.retry","unauthenticated.status","unauthenticated.media","unauthenticated.schema","unauthenticated.code","unauthenticated.retry","stale-revision.status","stale-revision.media","stale-revision.schema","stale-revision.code","stale-revision.retry","invalid-carrier.status","invalid-carrier.media","invalid-carrier.schema","invalid-carrier.code","invalid-carrier.retry","singleton-point.status","singleton-point.media","singleton-point.schema","sequence-create.status","sequence-create.media","sequence-create.schema","sequence-create.outcome","sequence-replay.status","sequence-replay.media","sequence-replay.schema","sequence-replay.outcome","sequence-point.status","sequence-point.media","sequence-point.schema"]}]}
+
+## Complete compact ledger.json (JSON data unchanged), file SHAdfb1653b2fcd9157a22dbed64c2737ff63a4b63f86dbd5f4d7b9a8e79d11540b
+[{"ordinal":1,"id":"singleton-create","method":"POST","url":"https://reference.invalid/acme/operations/create-bead","credentialRef":"operator","status":200,"bodyUtf8":"{\"id\":\"beads/w1-a\",\"type\":\"https://reference.invalid/acme/types/task\",\"properties\":{\"title\":\"minimum-singleton\"}}","bodyBytes":113,"bodySha256":"3b0ac96a63000ddbc456bc622996b2d29a709a94ddb0022c4d7bdd1bbd792541","headers":[{"name":"content-type","value":"application/json"},{"name":"idempotency-key","value":"minimum-singleton"},{"name":"bdp-minimum-scope-position","value":"pos-999"},{"name":"bdp-scope-epoch","value":"foreign-epoch"},{"name":"bdp-authorization-view","value":"foreign-view"}]},{"ordinal":2,"id":"singleton-replay","method":"POST","url":"https://reference.invalid/acme/operations/create-bead","credentialRef":"operator","status":200,"bodyUtf8":"{\"id\":\"beads/w1-a\",\"type\":\"https://reference.invalid/acme/types/task\",\"properties\":{\"title\":\"minimum-singleton\"}}","bodyBytes":113,"bodySha256":"3b0ac96a63000ddbc456bc622996b2d29a709a94ddb0022c4d7bdd1bbd792541","headers":[{"name":"content-type","value":"application/json"},{"name":"idempotency-key","value":"minimum-singleton"},{"name":"bdp-minimum-scope-position","value":""},{"name":"bdp-scope-epoch","value":"epoch-one"},{"name":"BDP-Scope-Epoch","value":"epoch-two"},{"name":"bdp-authorization-view","value":"not a view!"}]},{"ordinal":3,"id":"singleton-conflict","method":"POST","url":"https://reference.invalid/acme/operations/create-bead","credentialRef":"operator","status":409,"bodyUtf8":"{\"id\":\"beads/w1-a\",\"type\":\"https://reference.invalid/acme/types/task\",\"properties\":{\"title\":\"changed\"}}","bodyBytes":103,"bodySha256":"553c7e4b63db182cbe9b18d7a2911e71f2b5f40b1ff9436438ccc9b81410e5a3","headers":[{"name":"content-type","value":"application/json"},{"name":"idempotency-key","value":"minimum-singleton"},{"name":"bdp-minimum-scope-position","value":"not a token!"}]},{"ordinal":4,"id":"missing-key","method":"POST","url":"https://reference.invalid/acme/operations/create-bead","credentialRef":"operator","status":400,"bodyUtf8":"{\"id\":\"beads/w1-a\",\"type\":\"https://reference.invalid/acme/types/task\",\"properties\":{\"title\":\"minimum-singleton\"}}","bodyBytes":113,"bodySha256":"3b0ac96a63000ddbc456bc622996b2d29a709a94ddb0022c4d7bdd1bbd792541","headers":[{"name":"content-type","value":"application/json"},{"name":"bdp-minimum-scope-position","value":""},{"name":"bdp-scope-epoch","value":"epoch-one"},{"name":"BDP-Scope-Epoch","value":"epoch-two"},{"name":"bdp-authorization-view","value":"not a view!"}]},{"ordinal":5,"id":"unauthenticated","method":"POST","url":"https://reference.invalid/acme/operations/create-bead","credentialRef":"unknown","status":401,"bodyUtf8":"{\"id\":\"beads/w1-a\",\"type\":\"https://reference.invalid/acme/types/task\",\"properties\":{\"title\":\"minimum-singleton\"}}","bodyBytes":113,"bodySha256":"3b0ac96a63000ddbc456bc622996b2d29a709a94ddb0022c4d7bdd1bbd792541","headers":[{"name":"content-type","value":"application/json"},{"name":"idempotency-key","value":"minimum-unauthenticated"},{"name":"bdp-minimum-scope-position","value":"pos-999"},{"name":"bdp-scope-epoch","value":"foreign-epoch"},{"name":"bdp-authorization-view","value":"foreign-view"}]},{"ordinal":6,"id":"stale-revision","method":"POST","url":"https://reference.invalid/acme/operations/update-bead","credentialRef":"operator","status":409,"bodyUtf8":"{\"bead\":\"https://reference.invalid/acme/beads/w1-a\",\"expectedRevision\":\"minimum-stale-revision\",\"propertiesChange\":[{\"op\":\"replace\",\"path\":\"/title\",\"value\":\"must-not-commit\"}]}","bodyBytes":176,"bodySha256":"e0ae796e8a992c27102711f854d8cdf7db1dc83ca1b0d0d0b3c5859c261728c2","headers":[{"name":"content-type","value":"application/json"},{"name":"idempotency-key","value":"minimum-stale"},{"name":"bdp-minimum-scope-position","value":""},{"name":"bdp-scope-epoch","value":"epoch-one"},{"name":"BDP-Scope-Epoch","value":"epoch-two"},{"name":"bdp-authorization-view","value":"not a view!"}]},{"ordinal":7,"id":"invalid-carrier","method":"POST","url":"https://reference.invalid/acme/operations/create-bead","credentialRef":"operator","status":400,"bodyUtf8":"{","bodyBytes":1,"bodySha256":"021fb596db81e6d02bf3d2586ee3981fe519f275c0ac9ca76bbcf2ebb4097d96","headers":[{"name":"content-type","value":"application/json"},{"name":"idempotency-key","value":"minimum-invalid"},{"name":"bdp-minimum-scope-position","value":"not a token!"}]},{"ordinal":8,"id":"singleton-point","method":"GET","url":"https://reference.invalid/acme/beads/w1-a","credentialRef":"operator","status":200,"bodyUtf8":null,"bodyBytes":0,"bodySha256":null,"headers":[]},{"ordinal":9,"id":"sequence-create","method":"POST","url":"https://reference.invalid/acme/operations/sequence","credentialRef":"operator","status":200,"bodyUtf8":"{\"operations\":[{\"operation\":\"createBead\",\"id\":\"beads/w1-b\",\"type\":\"https://reference.invalid/acme/types/task\",\"properties\":{\"title\":\"minimum-sequence\"},\"idempotencyKey\":\"minimum-sequence\"}]}","bodyBytes":190,"bodySha256":"76bd4c1c05ceb414c5da1c4f31892dbe55c0f41bdf3796532341f00f7785163f","headers":[{"name":"content-type","value":"application/json"},{"name":"bdp-minimum-scope-position","value":"not a token!"}]},{"ordinal":10,"id":"sequence-replay","method":"POST","url":"https://reference.invalid/acme/operations/sequence","credentialRef":"operator","status":200,"bodyUtf8":"{\"operations\":[{\"operation\":\"createBead\",\"id\":\"beads/w1-b\",\"type\":\"https://reference.invalid/acme/types/task\",\"properties\":{\"title\":\"minimum-sequence\"},\"idempotencyKey\":\"minimum-sequence\"}]}","bodyBytes":190,"bodySha256":"76bd4c1c05ceb414c5da1c4f31892dbe55c0f41bdf3796532341f00f7785163f","headers":[{"name":"content-type","value":"application/json"},{"name":"bdp-minimum-scope-position","value":""},{"name":"bdp-scope-epoch","value":"epoch-one"},{"name":"BDP-Scope-Epoch","value":"epoch-two"},{"name":"bdp-authorization-view","value":"not a view!"}]},{"ordinal":11,"id":"sequence-point","method":"GET","url":"https://reference.invalid/acme/beads/w1-b","credentialRef":"operator","status":200,"bodyUtf8":null,"bodyBytes":0,"bodySha256":null,"headers":[]}]
+
+## Complete compact measurements.json (JSON data unchanged), file SHAbccb167b3a8c65c191efbe06ebd1aadfb324738022efba61a52e926b635d0f2a
+{"candidateBase":"bb9600f1b8b6f623e753543ed5792005eb9aacee","actualMergedParent":null,"draftFormatting":"JSON indent2 new span only; final formatter must remeasure","actions":11,"assertions":47,"oldBaselineObjects":50,"oldContinuationObjects":5,"otherCoverageObjects":129,"manifest":{"diskBytes":3689599,"compactBytes":1912642,"nodes":98836,"growthCompact":9462,"growthNodes":507,"compactSha256":"96b2596bdb801f76d2dfabcd270e493da729f4f4f5e0805b52df23858ee7b401","diskSha256":"354a4a9b3705fbb25f2ab361bbf85fe189441d122c1511b6d4186c845342e917"},"coverage":{"diskBytes":720396,"growth":2089,"nodes":14819,"diskSha256":"4a7d8a2c922d17b2e5492f363c87015de74521b492f4e032718c93e35b31fc6a"},"oldDerivativeEnvelope":{"bytes":1904291,"nodes":98364},"proposedDerivativeEnvelope":{"bytes":1913753,"nodes":98871,"basis":"Same disjoint append-only row for all36 old transformations; new response-only control changes no manifest. Old row recipes and order unchanged."},"proposedHistoricalDataAllowances":[72239,21782,16981,7735],"reconstruction":{"parentManifestSha256":"80f74625b6074892b707365859572f8bc0b8c10478d36ac307370ef6027f5fc3","parentCoverageSha256":"85b717f1817d8ea295d0a7c51f8914bdfb942d1786d414924d3d5f80be7cd10a","manifestWholeParentExact":true,"coverageWholeParentExact":true,"oldRawScenarioSpansExact":true,"coverageOnlyReplacedId":"read-update.http.command-minimum-fields"},"wire":{"positive":{"http":11,"children":2},"negative":{"expectedHttp":2,"maximumHttp":11,"children":2},"aggregate":{"http":2314,"children":58,"authoredHttp":2270,"setupHttp":44},"combined":{"expectedHttp":2327,"maximumHttp":2336,"children":62},"incrementalFullCi":{"expectedHttp":24,"children":5,"basis":"Only full aggregate grows11/1; two new selected callbacks add11+2HTTP/4children. All old run() invocations explicitly select existing IDs; other runShard invocations use smallExecutionSet that removes newrow."}},"headroom":{"manifestDiskTo4MiB":504705,"maxDerivativeNodesTo100000":1129,"coverageTo1MiB":328180},"routes":{"orderedCount":284,"unchanged":true,"orderedCompactSha256":"664c7550f9fa5eb97b01f83da9cafbf1c2d9a4573869801e6a581d1daff7331c","existingExactConfigurationDigest":"26da5a286d9887bebbb0fcf73a92c5d09aa7b7fcfdcc9ed91f767f4db1578c69","basis":"stdlib translation of artifactRoutes; unchanged ordered routes plus unchanged all remaining config inputs preserves existing configuration digest; authoring must verify existing exact assertion"}}
+
+## Candidate-only reanchor
+{"status":"Candidate-only mechanical reanchor; authoring and execution closed","frozenPlanBasis":"bb9600f1b8b6f623e753543ed5792005eb9aacee","reviewCandidate":"012d5c0cfcbb74b28d13538bacb10b4db98573aa","reviewTree":"a49cb4b2cfc3a7ad9f66d0d790a7e1e4dbad168a","actualMergedAuthoringParent":null,"sourceReadMethod":"git show fixed commit:path only","onlyChangedPinnedSource":"apps/bdptest/src/read-update-matrix.test.ts","delta":"One current baseline hash pin corrected c86b3353 ->80f74625 at4674; all remaining20 pinned files unchanged. No line displacement, no behavior/budget/literal change.","recheckRequired":"After actual PR138 merge, verify ordinary ancestry/tree, all source pins and affected callbacks before authoring. No merge or CI result inferred."}
+
+## Normative command receiving, revision and ignored minimum rule: docs/specs/bdp.md:3554–3590 at012d5c0cfcbb74b28d13538bacb10b4db98573aa
+```
+declared one, its `operationName`. Sequence-member `status` is required
+because the enclosing HTTP status is `200 OK`. The member status locates the
+failed operation's ordinary direct response. This locates the failure without
+creating a separate sequence-only taxonomy.
+
+### Read+Update consistency
+
+Read+Update has no durable Mutation Receipts and no BDP Events.
+
+Read+Update returns an authoritative mutation postimage, but it does not
+promise that a later request routed to another replica observes it. It adds
+no exposed Scope epoch, Authorization View token or Scope position.
+
+### Mutation command preconditions
+
+BDP mutation POSTs address operation command targets, not selected Resource
+representations: no selected representation of the operation target is read
+or modified by executing the command. Under the method and
+selected-representation boundary in
+[RFC 9110 section 13.2.1](https://www.rfc-editor.org/rfc/rfc9110.html#section-13.2.1),
+HTTP conditional fields on these commands do not guard payload-named
+Resources or aliases. `expectedRevision` remains
+the explicit Resource revision guard. This assigns no blanket exemption for
+unsafe HTTP methods and does not change conditions on canonical Resource
+GET or HEAD requests. A read-side `412 Precondition Failed` is not the
+write-side `409 revision-mismatch`.
+
+On mutation POSTs to operation command targets, authorities MUST ignore the
+`BDP-Minimum-Scope-Position`, `BDP-Scope-Epoch`, and
+`BDP-Authorization-View` request fields. Their presence, absence, completeness,
+and field values do not impose a minimum-position barrier or affect command
+identity. Ordinary HTTP field syntax and transport, header, and body bounds
+still apply, as do authorization, idempotency, carrier validation, and
+`expectedRevision`. This rule applies to mutation POSTs under this profile and
+cumulative profiles. It does not change conditions on reads.
+
+### Read+Update HTTP field support
+```
+
+## Complete existing six-request installed witness: apps/bdptest/src/installed-reference.test.ts:552–684 at012d5c0cfcbb74b28d13538bacb10b4db98573aa
+```
+it("ignores copied read minimum fields on Update singleton and sequence commands", async () => {
+  const dir = directory();
+  const config = helpers.referenceConfiguration(dir, await helpers.availablePort(), token);
+  const running = await helpers.launchInstalledReference(entry, config);
+  children.push(running);
+  const failures: unknown[] = [];
+  const observations: { method: string; url: string; status: number }[] = [];
+  let childClosed = false;
+  async function wire(
+    url: string,
+    method = "GET",
+    value?: unknown,
+    key?: string,
+    headers: Record<string, string> = {},
+  ) {
+    expect(observations.length).toBeLessThan(6);
+    const response = await helpers.requestInstalled(
+      config,
+      token,
+      url,
+      method,
+      value,
+      key,
+      headers,
+    );
+    observations.push({ method, url, status: response.status });
+    expect(response.status).toBe(200);
+    expect(response.headers["x-bdp-development"]).toBe("non-attesting");
+    for (const name of ["bdp-scope-epoch", "bdp-authorization-view", "bdp-scope-position"])
+      expect(response.headers[name]).toBeUndefined();
+    for (const name of ["transaction", "requiredPosition", "effectPosition", "idempotencyKey"])
+      expect(response.value).not.toHaveProperty(name);
+    return response.value;
+  }
+  try {
+    expect(running.ready.claimEligible).toBe(false);
+    for (const [carrier, name, copied] of [
+      [
+        "create-bead",
+        "copied-singleton",
+        {
+          "bdp-minimum-scope-position": "pos-999",
+          "bdp-scope-epoch": "foreign-epoch",
+          "bdp-authorization-view": "foreign-view",
+        },
+      ],
+      ["sequence", "copied-sequence", { "bdp-minimum-scope-position": "not a token!" }],
+    ] as const) {
+      const input = {
+        id: `beads/${name}`,
+        type: `${config.scope}types/task`,
+        properties: { title: name },
+      };
+      const request =
+        carrier === "sequence"
+          ? { operations: [{ operation: "createBead", ...input, idempotencyKey: name }] }
+          : input;
+      const target = `${config.scope}operations/${carrier}`;
+      const created = await wire(
+        target,
+        "POST",
+        request,
+        carrier === "sequence" ? undefined : name,
+        copied,
+      );
+      if (carrier === "sequence") parseReadUpdateSequenceResponse(created);
+      else parseReadUpdateMutationResult(created);
+      const resource = (
+        carrier === "sequence"
+          ? (created.results as Record<string, unknown>[])[0]?.resource
+          : created.resource
+      ) as Record<string, unknown>;
+      expect(resource).toEqual({
+        id: `${config.scope}beads/${name}`,
+        type: `${config.scope}types/task`,
+        properties: { title: name },
+        metadata: {},
+        revision: expect.any(String),
+      });
+      expect(String(resource.revision).length).toBeGreaterThan(0);
+      expect(created).toEqual(
+        carrier === "sequence"
+          ? { results: [{ operationIndex: 0, outcome: "created", resource }] }
+          : { outcome: "created", resource },
+      );
+      expect(await wire(`${config.scope}beads/${name}`)).toEqual(resource);
+      const replay = await wire(
+        target,
+        "POST",
+        request,
+        carrier === "sequence" ? undefined : name,
+        {
+          "bdp-minimum-scope-position": "",
+          "bdp-scope-epoch": "epoch-one, epoch-two",
+          "bdp-authorization-view": "not a view!",
+        },
+      );
+      expect(replay).toEqual(created);
+    }
+    expect(observations).toHaveLength(6);
+  } catch (error) {
+    failures.push(error);
+  } finally {
+    children.splice(children.indexOf(running), 1);
+    dirs.splice(dirs.indexOf(dir), 1);
+    try {
+      expect(await running.close()).toEqual({ code: 0, signal: null });
+      childClosed = true;
+    } catch (error) {
+      failures.push(error);
+    }
+    try {
+      rmSync(dir, { recursive: true, force: true });
+    } catch (error) {
+      failures.push(error);
+    }
+    console.log(
+      JSON.stringify({
+        observation: "private-update-command-minimum",
+        outcome: failures.length ? "failed" : "passed",
+        childPid: running.child.pid,
+        childExitCode: running.child.exitCode,
+        childClosed,
+        directoryAbsent: !existsSync(dir),
+        directory: dir,
+        completedResponses: observations,
+        claimEligible: false,
+      }),
+    );
+  }
+  if (failures.length)
+    throw new AggregateError(failures, "Update command minimum observation and cleanup");
+}, 30000);
+```
+
+## Exact request/response and genuine serializer observation types: packages/conformance/src/http-executor.ts:1–100 at012d5c0cfcbb74b28d13538bacb10b4db98573aa
+```
+import { createHash } from "node:crypto";
+import { connect as connectPlain, type Socket } from "node:net";
+import { connect as connectTls } from "node:tls";
+
+export type HttpMethod = "GET" | "HEAD" | "OPTIONS" | "POST" | "PUT" | "PATCH" | "DELETE";
+
+export interface HttpExchangeRequest {
+  readonly method: HttpMethod;
+  readonly raw?: never;
+  readonly credentialRef?: never;
+  readonly url: string;
+  readonly headers: Readonly<Record<string, string>>;
+  readonly signal: AbortSignal;
+  /**
+   * Exact request-target octets for socket-level conformance probes. The semantic
+   * URL still supplies response identity and the Host header. Fetch executors do
+   * not support this field and reject requests that provide it.
+   */
+  readonly rawRequestTarget?: Uint8Array;
+}
+
+/** Explicit, socket-only authored bytes. No JSON or Headers normalization is applied. */
+export interface ExactHttpExchangeRequest {
+  readonly method: HttpMethod;
+  readonly url: string;
+  readonly signal: AbortSignal;
+  readonly headers?: never;
+  readonly rawRequestTarget?: Uint8Array;
+  readonly credentialRef?: string;
+  readonly raw: {
+    readonly headerLines: readonly RawHeaderLine[];
+    readonly bodyBytes?: Uint8Array;
+  };
+}
+
+export interface RawHeaderLine {
+  readonly name: string;
+  readonly value: string;
+}
+
+export type RequestWriteState = "not-started" | "started-completion-unestablished" | "complete";
+
+export interface ExactRequestObservation {
+  readonly source: "raw-http1-serializer";
+  /** Transient secret-bearing data, never safe to serialize directly into a report. */
+  readonly headerLines: readonly RawHeaderLine[];
+  /** Full authored entity metadata, not a claim about a transmitted prefix or server receipt. */
+  readonly bodyPresent: boolean;
+  readonly bodyOctets: number;
+  readonly bodyDigest?: string;
+  readonly writeState: RequestWriteState;
+}
+
+/** Trusted harness configuration, not portable scenario data or target-supplied authority. */
+export interface ExactHttpModeOptions {
+  readonly scope: string;
+  readonly profile: "read" | "read-update" | "transactional";
+  readonly routes: readonly { readonly method: HttpMethod; readonly url: string }[];
+  readonly maximumRequestHeaderBytes: number;
+  readonly maximumRequestBodyBytes: number;
+  readonly defaultCredentialRef: string;
+  readonly credentialHandles: readonly {
+    readonly id: string;
+    /** Empty means a deliberately anonymous handle; names are lower-case. */
+    readonly headerNames: readonly string[];
+  }[];
+  /** Synchronous, trusted nonblocking lookup. Promises/thenables are rejected. */
+  readonly resolveCredentials: (
+    context: Readonly<{
+      scope: string;
+      url: string;
+      method: HttpMethod;
+      credentialRef: string;
+      signal: AbortSignal;
+    }>,
+  ) => Readonly<Record<string, string>>;
+}
+
+export type RawHttpExchangeExecutor = (
+  request: HttpExchangeRequest | ExactHttpExchangeRequest,
+) => Promise<HttpExchangeResponse>;
+
+export interface HttpExchangeResponse {
+  readonly exactRequest?: ExactRequestObservation;
+  readonly url: string;
+  readonly status: number;
+  readonly headers: Readonly<Record<string, string>>;
+  readonly bodyText: string;
+  /** Decoded message-body octets observed below a method-aware HTTP client, when available. */
+  readonly bodyOctets?: number;
+  /**
+   * Exact bounded HTTP/1.x response bytes from status line through framed body.
+   * Only the socket-level executor can supply this pre-normalization evidence.
+   */
+  readonly wireResponseBytes?: Uint8Array;
+  /**
+   * Compatibility view after authorization/runtime decoration. In exact mode,
+   * repeated names retain their last value and this view has no wire-fidelity flag;
+   * only exactRequest.headerLines preserves authoritative ordered occurrences.
+   */
+```
+
+## Actual execute input and observed action-id origin: packages/conformance/src/runner.ts:1170–1260 at012d5c0cfcbb74b28d13538bacb10b4db98573aa
+```
+  const observed: ObservedExchange = {
+    ...dynamic,
+    ...(served ? { servedSession: served } : {}),
+    request: {
+      id: request.id,
+      method: request.method,
+      url: redactUrl(url),
+      headers: redactHeaders(headers, reportVersion),
+    },
+    assertions: [],
+  };
+  exchanges.push(observed);
+  let rawRequestTarget: Uint8Array | undefined;
+  if (request.rawRequestTarget !== undefined) {
+    try {
+      rawRequestTarget = materializeScenarioRawRequestTarget(request.rawRequestTarget, url);
+    } catch (error) {
+      throw new ConformanceRunnerError("raw request-target materialization failed", {
+        cause: error,
+      });
+    }
+  }
+  let response: HttpExchangeResponse;
+  const requestEndsAt = performance.now() + requestTimeoutMs;
+  const requestDeadline = createDeadlineSignal(requestTimeoutMs);
+  const requestSignal = AbortSignal.any([signal, requestDeadline.signal]);
+  let terminalWitness: Promise<RequestWriteState | undefined> | undefined;
+  let capturedExact: ExactRequestObservation | undefined;
+  try {
+    if (exact) body = prepareExactRequest(request, options, url);
+    else if (reportVersion === 4 && runProfile !== "read") {
+      try {
+        if (options.exactExecution === undefined) throw new Error();
+        validateExactRunConfiguration(options.exactExecution.configuration, url, request.method);
+      } catch {
+        throw new ExactHarnessError("exact-configuration");
+      }
+    }
+    settlement.settled = false;
+    const executionOperation = Promise.resolve()
+      .then(() =>
+        exact && request.raw !== undefined && options.exactExecution !== undefined
+          ? options.exactExecution.execute({
+              method: request.method,
+              url,
+              signal: requestSignal,
+              raw: {
+                headerLines: request.raw.headerLines,
+                ...(body === undefined ? {} : { bodyBytes: Uint8Array.from(body) }),
+              },
+              ...(request.credentialRef === undefined
+                ? {}
+                : { credentialRef: request.credentialRef }),
+              ...(rawRequestTarget === undefined ? {} : { rawRequestTarget }),
+            })
+          : execute({
+              method: request.method,
+              url,
+              headers,
+              signal: requestSignal,
+              ...(rawRequestTarget === undefined ? {} : { rawRequestTarget }),
+            }),
+      )
+      .then(
+        (value) => {
+          settlement.settled = true;
+          return value;
+        },
+        (error: unknown) => {
+          settlement.settled = true;
+          throw error;
+        },
+      );
+    if (exact)
+      terminalWitness = executionOperation.then(
+        (value) => {
+          try {
+            capturedExact = snapshotExactObservation(value, options.exactExecution?.configuration);
+            return capturedExact.writeState;
+          } catch {
+            return undefined;
+          }
+        },
+        (error: unknown) => observedErrorWriteState(error),
+      );
+    response = await enforceDeadline(executionOperation, requestSignal, () =>
+      signal.aborted
+        ? new HttpTransportError("abort", "HTTP exchange was aborted")
+        : new HttpTransportError("timeout", "HTTP exchange timed out"),
+    );
+    if (exact && performance.now() >= requestEndsAt) {
+```
+
+## Complete assertion iteration and fail-fast before later actions: packages/conformance/src/runner.ts:1430–1472 at012d5c0cfcbb74b28d13538bacb10b4db98573aa
+```
+  const corsWitnessFailure =
+    exactWitness !== undefined &&
+    request.assertions.some(
+      (assertion) =>
+        assertion.kind === "header" &&
+        assertion.absent === true &&
+        assertion.name.startsWith("access-control-"),
+    )
+      ? exactCorsWitnessFailure(exactWitness)
+      : undefined;
+  const outcomes = request.assertions.map(
+    (assertion) =>
+      (assertion.kind.startsWith("request-")
+        ? evaluateExactAssertion(assertion, request, url, body, exactObservation, options)
+        : undefined) ??
+      wireOutcomes.get(assertion.id) ??
+      evaluateAssertion(
+        assertion,
+        assertionResponse,
+        bodyObservation,
+        schemaValidator,
+        fixture,
+        scope,
+        runProfile,
+        priorResponses,
+        headers,
+        exactWitness,
+        bindings,
+      ),
+  );
+  exchanges[exchanges.length - 1] = { ...next, assertions: outcomes };
+  if (exactFailure) throw new ExactHarnessError("exact-observation");
+  if (corsWitnessFailure !== undefined)
+    throw new ScenarioWireObservationUnavailableError(corsWitnessFailure);
+  if (outcomes.some(({ passed }) => !passed))
+    throw new ScenarioAssertionFailure(
+      outcomes
+        .filter(({ passed }) => !passed)
+        .map(({ message }) => message ?? "assertion failed")
+        .join("; "),
+    );
+  for (const capture of request.captures) {
+    if (transactional && served && options.exactExecution && exactObservation) {
+```
+
+## Exact raw header/body witness matching: packages/conformance/src/runner.ts:1817–1895 at012d5c0cfcbb74b28d13538bacb10b4db98573aa
+```
+function exactHeadersMatch(
+  request: ScenarioRequest,
+  url: string,
+  body: Uint8Array | undefined,
+  observed: ExactRequestObservation,
+  config: ExactHttpConfiguration,
+): boolean {
+  const authored = request.raw?.headerLines;
+  if (authored === undefined) return false;
+  const actual = observed.headerLines;
+  for (const [index, line] of authored.entries())
+    if (actual[index]?.name !== line.name || actual[index]?.value !== line.value) return false;
+  let index = authored.length;
+  const handle = config.credentialHandles.find(
+    ({ id }) => id === (request.credentialRef ?? config.defaultCredentialRef),
+  );
+  if (handle === undefined) return false;
+  const names = new Set<string>();
+  for (let n = 0; n < handle.headerNames.length; n++) {
+    const line = actual[index++];
+    if (
+      line === undefined ||
+      !handle.headerNames.includes(line.name.toLowerCase()) ||
+      names.has(line.name.toLowerCase())
+    )
+      return false;
+    names.add(line.name.toLowerCase());
+  }
+  const expected = (
+    [
+      ["Accept", "*/*"],
+      ["Accept-Language", "*"],
+      ["Accept-Encoding", "identity"],
+      ["User-Agent", "bdp-conformance/0"],
+    ] as const
+  ).filter(
+    ([name]) =>
+      !authored.some((line) => line.name.toLowerCase() === name.toLowerCase()) &&
+      !names.has(name.toLowerCase()),
+  );
+  const generated: readonly (readonly [string, string])[] = [
+    ...expected,
+    ["Host", new URL(url).host],
+    ["Connection", "close"],
+    ...(body === undefined ? [] : [["Content-Length", String(body.byteLength)] as const]),
+  ];
+  for (const [name, value] of generated) {
+    const line = actual[index++];
+    if (line?.name !== name || line.value !== value) return false;
+  }
+  return index === actual.length;
+}
+
+interface ExactHeaderWitness {
+  readonly request: ScenarioRequest;
+  readonly url: string;
+  readonly body: Uint8Array | undefined;
+  readonly observation: ExactRequestObservation | undefined;
+  readonly configuration: ExactHttpConfiguration | undefined;
+}
+
+/** CORS absence needs an actual, complete request with unambiguous source fields. */
+function exactCorsWitnessFailure(witness: ExactHeaderWitness): string | undefined {
+  const { request, url, body, observation, configuration } = witness;
+  if (
+    observation?.writeState !== "complete" ||
+    configuration === undefined ||
+    !exactHeadersMatch(request, url, body, observation, configuration)
+  )
+    return "CORS-header absence assertion requires complete matching exact request headers";
+  const origins =
+    request.raw?.headerLines.filter(({ name }) => name.toLowerCase() === "origin") ?? [];
+  if (origins.length !== 1 || origins[0]?.value.length === 0)
+    return "CORS-header absence assertion requires matching nonempty Origin evidence";
+  const methods =
+    request.raw?.headerLines.filter(
+      ({ name }) => name.toLowerCase() === "access-control-request-method",
+    ) ?? [];
+  if (methods.length > 1 || methods[0]?.value.length === 0)
+```
+
+## Complete JSON-pointer equality branch: packages/conformance/src/runner.ts:2231–2292 at012d5c0cfcbb74b28d13538bacb10b4db98573aa
+```
+  if (assertion.kind === "json-pointer") {
+    if (body.kind !== "json") return outcome(assertion.id, false, observedBodyIssue(body));
+    const value = jsonPointer(body.value, assertion.pointer);
+    const exists = value !== undefined;
+    if (assertion.equalsBinding !== undefined) {
+      const expected = bindings.get(assertion.equalsBinding);
+      if (expected === undefined)
+        throw new ConformanceRunnerError("JSON assertion capture is unavailable");
+      return outcome(
+        assertion.id,
+        exists && deepEqual(value, expected),
+        "JSON pointer did not equal the earlier observed capture",
+      );
+    }
+    const fixtureExpected =
+      assertion.fixturePointer === undefined
+        ? undefined
+        : jsonPointer(fixture, assertion.fixturePointer);
+    if (assertion.fixturePointer !== undefined && fixtureExpected === undefined)
+      throw new ConformanceRunnerError("fixture oracle pointer did not resolve");
+    let normalizedValue = value;
+    let normalizedFixtureExpected = fixtureExpected;
+    let normalizedEquals = assertion.equals;
+    if (assertion.normalize === "scope-relative-url") {
+      try {
+        normalizedValue = scopeRelativeUrl(value, scope);
+      } catch {
+        normalizedValue = undefined;
+      }
+    } else if (assertion.normalize === "iso-timestamps") {
+      const pointers = assertion.timestampPointers ?? [];
+      const expected =
+        assertion.fixturePointer !== undefined ? normalizedFixtureExpected : assertion.equals;
+      if (
+        !hasCanonicalIsoTimestamps(value, pointers) ||
+        !hasCanonicalIsoTimestamps(expected, pointers)
+      )
+        return outcome(
+          assertion.id,
+          false,
+          "declared timestamp pointer was absent or not a canonical ISO timestamp",
+        );
+      normalizedValue = normalizeIsoTimestampsAtPointers(value, pointers);
+      normalizedFixtureExpected = normalizeIsoTimestampsAtPointers(fixtureExpected, pointers);
+      normalizedEquals = normalizeIsoTimestampsAtPointers(
+        assertion.equals,
+        pointers,
+      ) as typeof assertion.equals;
+    }
+    return assertion.exists
+      ? outcome(
+          assertion.id,
+          exists &&
+            (assertion.equalsRunProfile === true
+              ? normalizedValue === runProfile
+              : assertion.fixturePointer !== undefined
+                ? deepEqual(normalizedValue, normalizedFixtureExpected)
+                : normalizedEquals === undefined || deepEqual(normalizedValue, normalizedEquals)),
+          "JSON pointer was absent or mismatched",
+        )
+      : outcome(assertion.id, !exists, "JSON pointer unexpectedly existed");
+  }
+```
+
+## Actual response schema assertion evaluation: packages/conformance/src/runner.ts:2840–2890 at012d5c0cfcbb74b28d13538bacb10b4db98573aa
+```
+        );
+      const actionKind = action.family === "http" ? "request" : "action";
+      if (action.prerequisiteScenario !== undefined && !catalogIds.has(action.prerequisiteScenario))
+        throw new ConformanceRunnerError(
+          `${actionKind} '${action.id}' references unknown prerequisite scenario '${action.prerequisiteScenario}'`,
+        );
+      if (action.prerequisiteScenario === scenario.id)
+        throw new ConformanceRunnerError(
+          `${actionKind} '${action.id}' cannot use its own scenario as a prerequisite`,
+        );
+      if (
+        action.prerequisiteScenario !== undefined &&
+        catalogPositions.has(scenario.id) &&
+        (catalogPositions.get(action.prerequisiteScenario) ?? Number.POSITIVE_INFINITY) >=
+          (catalogPositions.get(scenario.id) as number)
+      )
+        throw new ConformanceRunnerError(
+          `scenario '${scenario.id}' prerequisite '${action.prerequisiteScenario}' must appear earlier in catalog order`,
+        );
+      for (const assertion of action.assertions)
+        if (assertion.kind === "json-schema") {
+          if (options.schemaValidator === undefined)
+            throw new ConformanceRunnerError(
+              "schema assertion requires an offline schema validator",
+            );
+          options.schemaValidator.resolve(assertion.schema);
+        }
+    }
+  if (options.scenarioFilter !== undefined) {
+    const selectedIds = new Set(
+      selectApplicableScenariosForProfile(options.artifactBundle.catalog, options.profile)
+        .filter(({ id }) => id.includes(options.scenarioFilter as string))
+        .map(({ id }) => id),
+    );
+    for (const scenario of options.artifactBundle.manifest.scenarios) {
+      if (!selectedIds.has(scenario.id)) continue;
+      const prerequisites = new Set(
+        scenarioActionSequence(scenario).flatMap((action) =>
+          action.prerequisiteScenario === undefined ? [] : [action.prerequisiteScenario],
+        ),
+      );
+      for (const prerequisite of prerequisites)
+        if (!selectedIds.has(prerequisite))
+          throw new ConformanceRunnerError(
+            `scenarioFilter selects dependent scenario '${scenario.id}' but excludes prerequisite '${prerequisite}'`,
+          );
+    }
+  }
+}
+
+function snapshotFixturePreparation(value: FixturePreparation): FixturePreparation {
+```
+
+## Actual HTTP JSON/problem formatting and retry source: packages/server/src/development-runtime.ts:78–110 at012d5c0cfcbb74b28d13538bacb10b4db98573aa
+```
+function header(request: IncomingMessage, name: string): string | undefined {
+  const values: string[] = [];
+  for (let i = 0; i < request.rawHeaders.length; i += 2)
+    if (request.rawHeaders[i]?.toLowerCase() === name) values.push(request.rawHeaders[i + 1] ?? "");
+  if (values.length > 1) throw new ReceivingError("malformed-request");
+  return values[0];
+}
+function json(response: ServerResponse, status: number, body: unknown, problem = false): void {
+  if (response.destroyed) return;
+  const bytes = stringifyJsonValue(body);
+  response.writeHead(status, {
+    "content-type": problem ? "application/problem+json" : "application/json",
+    "cache-control": "private, no-store",
+    "content-length": Buffer.byteLength(bytes),
+    "x-bdp-development": "non-attesting",
+  });
+  response.end(response.req.method === "HEAD" ? undefined : bytes);
+}
+function refused(response: ServerResponse, code: ReceivingError["code"]): void {
+  response.setHeader("connection", "close");
+  if (code === "unauthenticated")
+    response.setHeader("www-authenticate", 'Bearer realm="bdptest-development"');
+  const problem =
+    code === "unsupported-media-type"
+      ? parseReadUpdateProblem({
+          type: "https://github.com/gastownhall/bdp/problems/request",
+          code,
+          status: 415,
+          retry: "never",
+        })
+      : readProblem(code);
+  json(response, problem.status ?? 500, problem, true);
+}
+```
+
+## Actual credential/host/origin receiving gates: packages/server/src/development-runtime.ts:302–327 at012d5c0cfcbb74b28d13538bacb10b4db98573aa
+```
+  const handle = async (request: IncomingMessage, response: ServerResponse): Promise<void> => {
+    try {
+      if (!serving || closing || !authority) throw new ReceivingError("temporarily-unavailable");
+      const authorization = Buffer.from(header(request, "authorization") ?? "");
+      const authenticated = credentials.find(
+        ({ credential }) =>
+          authorization.length === credential.length && timingSafeEqual(authorization, credential),
+      );
+      if (!authenticated) throw new ReceivingError("unauthenticated");
+      const principal = Object.freeze({ id: authenticated.principal });
+      const principalAuthority = principalViews.get(principal.id);
+      if (!principalAuthority) throw new ReceivingError("unauthenticated");
+      const composedRead = composedReads.get(principal.id);
+      const host = header(request, "host");
+      if (
+        host === undefined ||
+        normalizationSafeRawRequestPath(`http://${host}/`) !== "/" ||
+        (transport === undefined && host !== new URL(scope).host)
+      )
+        throw new ReceivingError("malformed-request");
+      const origin = header(request, "origin");
+      if (transport === undefined && origin !== undefined) throw new ReceivingError("forbidden");
+      const rawUrl = request.url ?? "";
+      const pathAndQuery = normalizationSafeRawRequestPath(rawUrl);
+      if (
+        pathAndQuery === undefined ||
+```
+
+## Mutation route and method selection: packages/server/src/development-runtime.ts:366–382 at012d5c0cfcbb74b28d13538bacb10b4db98573aa
+```
+      }
+      const targetRoot = composition === undefined ? "/development/" : `${scopePath}operations/`;
+      const name = pathAndQuery.startsWith(targetRoot) ? pathAndQuery.slice(targetRoot.length) : "";
+      const operation = Object.hasOwn(operations, name) ? operations[name] : undefined;
+      const mutationTarget = operation !== undefined || name === "sequence";
+      if (
+        pathAndQuery.startsWith(targetRoot) &&
+        (composition === undefined || pathAndQuery !== targetRoot) &&
+        !mutationTarget
+      )
+        throw new ReceivingError("resource-not-found");
+      if (request.method !== "POST" && mutationTarget) {
+        empty(response, 405, "POST");
+        return;
+      }
+      if (composedRead && !mutationTarget) {
+        // The trusted receiver's credential, Origin and raw-target gates already ran.
+```
+
+## Actual mutation POST field/body/key and dispatch gates: packages/server/src/development-runtime.ts:440–484 at012d5c0cfcbb74b28d13538bacb10b4db98573aa
+```
+      if (request.method !== "POST" || !mutationTarget) {
+        empty(response, 405, "GET, HEAD");
+        return;
+      }
+      if (
+        header(request, "content-type")?.split(";", 1)[0]?.trim().toLowerCase() !==
+        "application/json"
+      )
+        throw new ReceivingError("unsupported-media-type");
+      if (header(request, "content-encoding") !== undefined)
+        throw new ReceivingError("unsupported-media-type");
+      const key = header(request, "idempotency-key");
+      if (name === "sequence" ? key !== undefined : key === undefined)
+        throw new ReceivingError("malformed-request");
+      const text = await body(request);
+      if (response.destroyed || closing) throw new ReceivingError("temporarily-unavailable");
+      // After admission, delivery is only an observer. Disconnect never cancels
+      // committed/admitted work; an exact-key retry retrieves its disposition.
+      const result =
+        operation !== undefined && key !== undefined
+          ? await principalAuthority.mutate(
+              operation,
+              text,
+              key,
+              acceptsJson(request.headers.accept ?? null),
+            )
+          : await principalAuthority.sequence(text, acceptsJson(request.headers.accept ?? null));
+      if ("kind" in result && result.kind === "not-acceptable") {
+        response.setHeader("vary", "Accept");
+        empty(response, 406);
+        return;
+      }
+      response.setHeader("vary", "Accept");
+      const problem = "code" in result;
+      json(response, problem ? (result.status ?? 500) : 200, result, problem);
+    } catch (error) {
+      if (error instanceof ReceivingError) refused(response, error.code);
+      else if (error instanceof ReadUpdateCarrierError || error instanceof JsonSyntaxError)
+        refused(response, "malformed-request");
+      else empty(response, 500);
+    }
+  };
+  const server = createServer({ maxHeaderSize: 16 * 1024 }, (request, response) => {
+    const task = handle(request, response);
+    pending.add(task);
+```
+Unchanged schema-serving and GET/HEAD projection branches between these ranges are omitted; the mutation command path is selected before those read-only branches and does not read the3minimum fields.
+
+## Member failure code/status/retry table: packages/server/src/member-executor.ts:100–133 at012d5c0cfcbb74b28d13538bacb10b4db98573aa
+```
+  "updateBead",
+  "deleteBead",
+  "createLink",
+  "updateLink",
+  "deleteLink",
+  "putAlias",
+  "deleteAlias",
+];
+const memberProblems = {
+  "binding-unavailable": ["request", 400, "never"],
+  "validation-failed": ["validation", 422, "never"],
+  "idempotency-conflict": ["conflict", 409, "never"],
+  "idempotency-in-progress": ["conflict", 409, "after-delay"],
+  "idempotency-expired": ["gone", 410, "never"],
+  forbidden: ["authorization", 403, "after-state-change"],
+} as const;
+function problem(
+  code: keyof typeof memberProblems,
+  diagnostics?: Extract<ReturnType<typeof prepareMemberExecution>["admission"], { ok: false }>,
+): ReadUpdateProblem {
+  const [family, status, retry] = memberProblems[code];
+  return parseReadUpdateProblem({
+    type: `https://github.com/gastownhall/bdp/problems/${family}`,
+    code,
+    status,
+    retry,
+    ...(diagnostics
+      ? {
+          diagnostics: diagnostics.diagnostics,
+          ...(diagnostics.diagnosticsTruncated ? { diagnosticsTruncated: true } : {}),
+        }
+      : {}),
+  });
+}
+```
+
+## Member execution boundary (omitted module body)
+The unchanged runMember executes the admitted normalized operation with captured current policy and stores its disposition. Exact guard logic and retained comparison supplied separately. This plan changes no member executor; full committed source is pinned.
+
+## Complete retained retry identity and disclosure comparison: packages/server/src/member-executor.ts:720–781 at012d5c0cfcbb74b28d13538bacb10b4db98573aa
+```
+function compareExistingMember(
+  reader: StoreReader,
+  state: Extract<KeyState, { kind: "retained" | "expired" }>,
+  principal: StablePrincipal,
+  principalId: string,
+  carrier: PreparedReadUpdateCarrier,
+  index: number,
+  operation: ReadUpdateOperation,
+  prepared: PreparedMemberDependencies,
+  options: MemberExecutorOptions,
+): MemberTurn {
+  const metadata = parseMemberMetadata(state.resolutionsJson, options.scope);
+  let envelope: Envelope | undefined;
+  if (state.kind === "retained") {
+    envelope = parseEnvelope(state.outcomeJson, state.effect, options.scope);
+    coherent(metadata, envelope);
+    identityOperation(state.semanticIdentityJson, metadata, envelope);
+    if (recoveryIdentityFingerprint(state.semanticIdentityJson) !== state.fingerprint)
+      throw new MemberIntegrityError("retained fingerprint differs from exact identity");
+  } else {
+    assertSuccessfulWitnesses(metadata);
+    if (creation(metadata.operation) && !metadata.creation)
+      throw new MemberIntegrityError("expired creator has no successful creation fact");
+  }
+  const context = capture(options, reader, principal, principalId);
+  if (metadata.operation !== operation)
+    return turn(problem("idempotency-conflict"), "conflict", operation);
+  // Only this callable and Scope enter retry normalization. Its witnesses are
+  // comparison input; no retry identity reaches executable preparation.
+  const scope = options.scope;
+  const readAlias = reader.alias.bind(reader);
+  const identityJson = normalizePreparedMemberIdentity(
+    carrier,
+    index,
+    {
+      scope,
+      prior: metadata,
+      resolveAlias(locator) {
+        const target = readAlias(locator.slice(scope.length + 6));
+        return target === undefined ? undefined : `${scope}${target}`;
+      },
+    },
+    prepared,
+  ).identityJson;
+  const equal =
+    state.kind === "retained"
+      ? identityJson === state.semanticIdentityJson
+      : recoveryIdentityFingerprint(identityJson) === state.fingerprint;
+  if (!equal) return turn(problem("idempotency-conflict"), "conflict", operation);
+  if (state.kind === "expired")
+    return turn(problem("idempotency-expired"), "expired", operation, metadata.creation);
+  if (!envelope) throw new MemberIntegrityError("lost retained envelope");
+  const result = envelope.disposition;
+  const disposition =
+    !("code" in result) &&
+    "resource" in result &&
+    result.resource &&
+    !mayDiscloseRetainedResource(reader, result.resource, options.scope, context.policy)
+      ? problem("forbidden")
+      : result;
+  return turn(disposition, "replayed", operation, metadata.creation);
+}
+```
+
+## Retained Resource disclosure helper: packages/server/src/retained-disclosure.ts:1–46 at012d5c0cfcbb74b28d13538bacb10b4db98573aa
+```
+import {
+  parseBeadRecord,
+  parseCanonicalScope,
+  parseLinkRecord,
+  resolveCanonicalLocalResourceId,
+  stringifyJsonValue,
+} from "@bdp/protocol";
+import {
+  isResourceVisible,
+  type ResourceMutationPolicy,
+  type ResourceRecord,
+  type ResourceTransaction,
+} from "./resource-evaluator.js";
+
+/** Current-view disclosure of an already guarded retained postimage. This is
+ * not History permission or a live-subject existence check. The same immutable
+ * member-turn policy and synchronous reader must cover the entire traversal. */
+export function mayDiscloseRetainedResource(
+  reader: Pick<ResourceTransaction, "resource">,
+  record: ResourceRecord,
+  scope: string,
+  policy: Pick<ResourceMutationPolicy, "canRead">,
+): boolean {
+  const canonicalScope = parseCanonicalScope(scope);
+  const kind = "source" in record ? "link" : "bead";
+  const retained = kind === "link" ? parseLinkRecord(record) : parseBeadRecord(record);
+  if (!retained.id.startsWith(scope)) throw new TypeError("retained Resource escaped its Scope");
+  const id = retained.id.slice(scope.length);
+  if (resolveCanonicalLocalResourceId(canonicalScope, kind, id) !== retained.id)
+    throw new TypeError("retained Resource has a noncanonical identity");
+  // Closure can return to the subject through its own inline Link. Return that
+  // exact retained Bead, including its old owned collection, even after deletion.
+  const retainedBead =
+    kind === "bead"
+      ? Object.freeze({ kind: "bead" as const, id, bodyJson: stringifyJsonValue(retained) })
+      : undefined;
+  const overlay =
+    retainedBead !== undefined
+      ? {
+          resource(key: string) {
+            return key === id ? retainedBead : reader.resource(key);
+          },
+        }
+      : reader;
+  return isResourceVisible(overlay, retained, scope, policy);
+}
+```
+
+## Existing raw attempt/actual-response/projection seam: apps/bdptest/src/read-update-matrix.test.ts:1027–1066 at012d5c0cfcbb74b28d13538bacb10b4db98573aa
+```
+    const cold = currentScenario === coldDirectoryId;
+    if (cold) {
+      if (coldAttempts.length >= 10) throw Error("extra cold directory raw attempt");
+      coldAttempts.push({ ordinal: coldAttempts.length, method: sent.method, url: sent.url });
+    }
+    const actual = await target.execute(sent);
+    if (cold) {
+      const fact: ColdFact = {
+        family: "http",
+        ordinal: coldAttempts.length - 1,
+        method: sent.method,
+        url: actual.url,
+        status: actual.status,
+        ...coldWrite(actual.exactRequest),
+      };
+      const body = actual.bodyText === "" ? undefined : JSON.parse(actual.bodyText);
+      coldRaw.push({ fact, ...(body === undefined ? {} : { body }) });
+      coldMixed.push(fact);
+      if (sent.url === `${scope}alias/w1-locator` && actual.status === 404) {
+        validateCold("#/$defs/readProblem", body);
+        expect(coldObject(body).code).toBe("resource-not-found");
+        expect(coldObject(body).retry).toBe("after-state-change");
+        coldAliasRetryPassed = true;
+      }
+      if (sent.method === "GET" && sent.url === `${scope}operations/`) {
+        expect(actual.status).toBe(200);
+        validateCold("#/$defs/readUpdateOperationDirectory", body);
+        expect(body).toEqual(coldDirectory);
+        if (directoryControl === "missing-update-link") {
+          expect(coldControlApplications).toBe(0);
+          const changed = { ...coldObject(body) };
+          delete changed.updateLink;
+          const bodyText = JSON.stringify(changed);
+          counterfactualApplications++;
+          coldControlApplications++;
+          return { ...actual, bodyText, bodyOctets: Buffer.byteLength(bodyText) };
+        }
+      }
+    }
+    if (admissionHit) {
+```
+The local executeExact signature receives request, delegates to target.execute(sent), and returns actual by default. Unrelated old numeric/admission control branches are omitted; the new row must delegate unchanged and isolate its own control option.
+
+## Actual scenario execution and observations composition: apps/bdptest/src/read-update-matrix.test.ts:1119–1175 at012d5c0cfcbb74b28d13538bacb10b4db98573aa
+```
+  async function observe() {
+    if (!target.exactConfiguration) throw Error("exact target configuration missing");
+    const executeClient = createInstalledExactClient(exactMode, dialRoute, (observation) => {
+      observations.push({ scenario: currentScenario, observation });
+      if (currentScenario === coldDirectoryId) {
+        if (coldClients.length >= 11) throw Error("extra cold directory client observation");
+        const actual = coldClient(observation);
+        const ordinal = coldClients.length;
+        coldClients.push(actual);
+        coldMixed.push({
+          family: "client",
+          ordinal,
+          method: coldString(actual.request.method),
+          url: coldString(actual.request.url),
+          status: actual.status,
+          ...actual.observation,
+        });
+      }
+    });
+    const result = await runConformanceMatrix({
+      ...(signal === undefined ? {} : { signal }),
+      scope,
+      profile: "read-update",
+      seed: 0,
+      artifactBundle: bundle,
+      ...(selectedIds === undefined ? {} : { scenarioSelection: selectedIds }),
+      execute: exactNativeReadAdapter(target.execute, (observation) =>
+        nativeReadObservations.push({ scenario: currentScenario, observation }),
+      ),
+      exactExecution: { execute: executeExact, configuration: target.exactConfiguration },
+      actionExecutor: async (execution) => {
+        const actual = await executeClient(execution);
+        lifecycle?.observed?.();
+        const clientAction = bundle.manifest.scenarios
+          .find((row) => row.id === currentScenario)
+          ?.actions?.filter((action) => action.family === "client")[retryClientIndex++];
+        if (
+          (numericControl === "refusal-success" || numericControl === "metadata-refusal-success") &&
+          currentScenario === "read-update.numeric-model.same-value-no-op" &&
+          clientAction?.id ===
+            (numericControl === "metadata-refusal-success"
+              ? "num-subject-distinct-read"
+              : "num-subject-restored-read")
+        ) {
+          if (clientAction.family !== "client") throw Error("control requires client action");
+          expect(clientAction.input).toEqual(execution.input);
+          const record = structuredClone((actual as { body: unknown }).body);
+          if (numericControl === "metadata-refusal-success") {
+            // Repeated GET inputs cannot identify the preimage on their own.
+            // Check the actual clone before retaining it for the refusal control.
+            expect(record, "metadata control captured distinct preimage").toMatchObject({
+              id: `${scope}beads/num-subject`,
+              type: `${scope}types/task`,
+              properties: { one: 9007199254740994 },
+              revisionProvenance: {
+                actor: { id: "writer:num-distinct", basis: "writer-supplied" },
+              },
+```
+
+## Complete ordered route derivation: apps/bdptest/test-support/read-update-artifact-execution.ts:20–76 at012d5c0cfcbb74b28d13538bacb10b4db98573aa
+```
+export function artifactRoutes(bundle: Bundle, scope: string) {
+  const known: Record<string, string> = {
+    ...Object.fromEntries(
+      Object.entries(bundle.fixture.bindings).map(([key, value]) => [
+        key,
+        new URL(value, scope).href,
+      ]),
+    ),
+    scope,
+    "service-desc": `${scope}bdp.json`,
+    beads: `${scope}beads/`,
+    links: `${scope}links/`,
+    types: `${scope}types/`,
+    operations: `${scope}operations/`,
+  };
+  const reads = bundle.manifest.scenarios.flatMap((row) =>
+    (row.actions ?? row.requests).flatMap((action) => {
+      if ("family" in action && action.family !== "http") return [];
+      const base = known[action.target.binding];
+      if (!base) throw Error("Read target binding is not in the fixed fixture");
+      const url = new URL(action.target.path ?? "", base);
+      for (const [key, input] of Object.entries(action.target.query ?? {}))
+        for (const value of Array.isArray(input) ? input : [input]) {
+          if (typeof value !== "string") throw Error("Read fixture query requires literal strings");
+          url.searchParams.append(key, value);
+        }
+      return [{ method: action.method, url: url.href }];
+    }),
+  );
+  const clients = bundle.manifest.scenarios.flatMap((row) =>
+    (row.actions ?? []).flatMap((action) => {
+      if (action.family !== "client" || action.operation !== "installed.exact-request") return [];
+      const input = action.input as Record<string, unknown>;
+      if (input.method !== "GET" || typeof input.targetBinding !== "string") return [];
+      const url = known[input.targetBinding];
+      return url === undefined ? [] : [{ method: "GET" as const, url }];
+    }),
+  );
+  const routes = [
+    ...clients,
+    ...reads,
+    ...[
+      "sequence",
+      "create-bead",
+      "update-bead",
+      "delete-bead",
+      "create-link",
+      "update-link",
+      "delete-link",
+      "put-alias",
+      "delete-alias",
+    ].map((suffix) => ({ method: "POST" as const, url: `${scope}operations/${suffix}` })),
+  ];
+  return routes.filter(
+    (r, n) => routes.findIndex((other) => r.method === other.method && r.url === other.url) === n,
+  );
+}
+```
+
+## Actual returned report and local oracle timing: apps/bdptest/src/read-update-matrix.test.ts:1560–1646 at012d5c0cfcbb74b28d13538bacb10b4db98573aa
+```
+    const report = {
+      claimEligible: false,
+      cleanupComplete: false,
+      exactConfiguration: target.exactConfiguration,
+      counterfactualApplications,
+      sourceCommit,
+      configuration: baseline,
+      baselineReceipt,
+      reportBinding: {
+        artifacts: result.artifacts,
+        exactConfigurationDigest:
+          "exactConfigurationDigest" in result.declarations
+            ? result.declarations.exactConfigurationDigest
+            : undefined,
+      },
+      sourceDirty:
+        execFileSync("git", ["status", "--porcelain"], { cwd: root, encoding: "utf8" }).trim()
+          .length > 0,
+      targetEntry: entry,
+      catalogSources: selection.catalogDigests,
+      plannedManifestDigest: executionPlan.manifestDigest,
+      requiredIds: selection.required.map((row) => row.id),
+      plannedIds: bundle.manifest.scenarios.map((row) => row.id),
+      uncoveredIds: selection.required
+        .map((row) => row.id)
+        .filter(
+          (id) =>
+            !(artifact?.set.coverage ?? coverage).rows.find((row) => row.id === id)?.wholeContract,
+        ),
+      sessions,
+      observations,
+      setupObservations,
+      nativeReadObservations,
+      coldDirectory: {
+        attempts: coldAttempts,
+        rawCompletions: coldRaw.map((r) => r.fact),
+        completions: coldMixed,
+        aliasRetryPassed: coldAliasRetryPassed,
+        checksPassed: false,
+        controlApplications: coldControlApplications,
+      },
+      result,
+    };
+    // The runner's genuine partial/failed result must survive post-return aborts,
+    // assertion failures and target cleanup failures.
+    lifecycle?.returned?.(report);
+    if (coldAttempts.length) {
+      saveColdDirectoryReport(report);
+      assertColdDirectory(
+        result,
+        coldAttempts,
+        coldRaw,
+        coldClients,
+        coldMixed,
+        directoryControl !== undefined,
+      );
+      expect(setupObservations.filter((r) => coldObject(r).scenario === coldDirectoryId)).toEqual(
+        [],
+      );
+      expect(
+        nativeReadObservations.filter((r) => coldObject(r).scenario === coldDirectoryId),
+      ).toEqual([]);
+      expect(coldControlApplications).toBe(directoryControl ? 1 : 0);
+      expect(coldAliasRetryPassed).toBe(!directoryControl);
+      report.coldDirectory.checksPassed = true;
+      saveColdDirectoryReport(report);
+    }
+    return report;
+  }
+  const execution = await observe().then(
+    (report) => ({ ok: true as const, report }),
+    (error: unknown) => ({ ok: false as const, error }),
+  );
+  const cleanupErrors: unknown[] = [];
+  try {
+    await target.close();
+    lifecycle?.afterClose?.();
+  } catch (error) {
+    cleanupErrors.push(error);
+  }
+  try {
+    rmSync(directory, { recursive: true, force: true });
+  } catch (error) {
+    cleanupErrors.push(error);
+  }
+  const cleanupComplete =
+    cleanupErrors.length === 0 &&
+```
+
+## Actual failure cleanup/optional report path pattern: apps/bdptest/src/read-update-matrix.test.ts:1647–1711 at012d5c0cfcbb74b28d13538bacb10b4db98573aa
+```
+    (!execution.ok ||
+      execution.report.result.scenarios.every((row) => row.cleanupError === undefined));
+  if (execution.ok) execution.report.cleanupComplete = cleanupComplete;
+  if (execution.ok && coldAttempts.length) {
+    try {
+      saveColdDirectoryReport(execution.report);
+    } catch (error) {
+      cleanupErrors.push(error);
+    }
+  }
+  try {
+    lifecycle?.cleaned?.(cleanupComplete ? "complete" : "failed");
+  } catch (error) {
+    cleanupErrors.push(error);
+  }
+  if (
+    cleanupErrors.length ||
+    (!execution.ok && signal?.aborted && execution.error !== signal.reason)
+  ) {
+    const prior = signal?.aborted ? signal.reason : !execution.ok ? execution.error : undefined;
+    throw new AggregateError(
+      [
+        ...new Set([
+          ...(signal?.aborted ? [signal.reason] : []),
+          ...(!execution.ok ? [execution.error] : []),
+          ...cleanupErrors,
+        ]),
+      ],
+      "artifact execution or cleanup failed",
+      { cause: prior ?? cleanupErrors[0] },
+    );
+  }
+  if (!execution.ok) throw execution.error;
+  return execution.report;
+}
+
+function saveColdDirectoryReport(report: Awaited<ReturnType<typeof run>>) {
+  const filename = process.env.BDP_COLD_DIRECTORY_REPORT_PATH;
+  if (!filename) return;
+  if (!path.isAbsolute(filename)) throw Error("cold directory report path must be absolute");
+  const safe = JSON.stringify(
+    {
+      sourceCommit: report.sourceCommit,
+      sourceDirty: report.sourceDirty,
+      targetEntry: report.targetEntry,
+      configuration: report.configuration,
+      baselineReceipt: report.baselineReceipt,
+      reportBinding: report.reportBinding,
+      sessions: report.sessions.filter((r) => r.scenario === coldDirectoryId),
+      claimEligible: false,
+      cleanupComplete: report.cleanupComplete,
+      counterfactualApplications: report.counterfactualApplications,
+      coldDirectory: report.coldDirectory,
+      clientObservations: report.observations.filter(
+        (r) => coldObject(r).scenario === coldDirectoryId,
+      ),
+      result: report.result.scenarios.find((r) => r.id === coldDirectoryId),
+    },
+    null,
+    2,
+  );
+  if (Buffer.byteLength(safe) > 262144 || safe.includes(token) || safe.includes(wrongToken))
+    throw Error("unsafe or oversized cold directory report");
+  writeFileSync(filename, safe, { mode: 0o600 });
+}
+```
+
+## Complete relevant protocol schema definition closure
+Exact objects from schemas/bdp-v0.schema.json; roots currentBeadRecord,mutationResult,readUpdateProblem,sequenceResponse. All local referenced definitions recursively included, no schema normalization.
+{"$schema":"https://json-schema.org/draft/2020-12/schema","$defs":{"absoluteHttpUrl":{"type":"string","format":"uri","pattern":"^https?://.+"},"absoluteUri":{"type":"string","format":"uri","pattern":"^[A-Za-z][A-Za-z0-9+.-]*:"},"aliasResultMembers":{"type":"object","required":["outcome","alias"],"properties":{"outcome":{"$ref":"#/$defs/mutationOutcome"},"alias":{"$ref":"#/$defs/absoluteHttpUrl"},"target":{"$ref":"#/$defs/absoluteHttpUrl"}},"allOf":[{"if":{"properties":{"outcome":{"const":"deleted"}},"required":["outcome"]},"then":{"properties":{"target":false}},"else":{"required":["target"]}}]},"beadRecord":{"type":"object","required":["id","type","revision","properties"],"properties":{"id":{"$ref":"#/$defs/absoluteHttpUrl"},"type":{"$ref":"#/$defs/absoluteHttpUrl"},"revision":{"type":"string","minLength":1},"properties":{"$ref":"#/$defs/properties"},"metadata":{"$ref":"#/$defs/metadata"},"links":{"$ref":"#/$defs/linkCollection"},"ownedLinks":{"type":"object","propertyNames":{"$ref":"#/$defs/absoluteHttpUrl"},"additionalProperties":{"type":"array","items":{"$ref":"#/$defs/linkRecord"}}},"revisionProvenance":{"$ref":"#/$defs/revisionProvenance"}},"additionalProperties":false},"contextMessage":{"oneOf":[{"type":"object","properties":{"state":{"const":"present"},"value":{"type":"string"}},"required":["state","value"],"additionalProperties":false},{"type":"object","properties":{"state":{"enum":["absent","undetermined"]}},"required":["state"],"additionalProperties":false}]},"contextString":{"oneOf":[{"type":"object","properties":{"state":{"const":"present"},"value":{"type":"string","minLength":1}},"required":["state","value"],"additionalProperties":false},{"type":"object","properties":{"state":{"enum":["absent","undetermined"]}},"required":["state"],"additionalProperties":false}]},"contextTime":{"oneOf":[{"type":"object","properties":{"state":{"const":"present"},"value":{"$ref":"#/$defs/dateTime"}},"required":["state","value"],"additionalProperties":false},{"type":"object","properties":{"state":{"enum":["undetermined"]}},"required":["state"],"additionalProperties":false}]},"currentBeadRecord":{"allOf":[{"$ref":"#/$defs/beadRecord"},{"type":"object","required":["metadata"],"properties":{"metadata":{"$ref":"#/$defs/metadata"},"links":{"$ref":"#/$defs/currentLinkCollection"},"ownedLinks":{"type":"object","additionalProperties":{"type":"array","items":{"$ref":"#/$defs/currentLinkRecord"}}}}}]},"currentLinkCollection":{"allOf":[{"$ref":"#/$defs/linkCollection"},{"type":"object","properties":{"items":{"type":"array","items":{"$ref":"#/$defs/currentLinkRecord"}}}}]},"currentLinkRecord":{"allOf":[{"$ref":"#/$defs/linkRecord"},{"type":"object","required":["metadata"],"properties":{"metadata":{"$ref":"#/$defs/metadata"}}}]},"dateTime":{"type":"string","format":"date-time"},"deletedIdentity":{"type":"object","required":["resourceKind","resource"],"properties":{"resourceKind":{"$ref":"#/$defs/resourceKind"},"resource":{"$ref":"#/$defs/resourceIdentity"}},"additionalProperties":false},"historyMissing":{"type":"object","properties":{"complete":{"type":"boolean"},"items":{"type":"array","items":{"$ref":"#/$defs/historyMissingItem"},"maxItems":64,"uniqueItems":true}},"required":["complete","items"],"additionalProperties":false,"allOf":[{"if":{"properties":{"complete":{"const":true}},"required":["complete"]},"then":{"properties":{"items":{"type":"array","minItems":1}}}}]},"historyMissingItem":{"oneOf":[{"type":"object","properties":{"kind":{"const":"record"}},"required":["kind"],"additionalProperties":false},{"type":"object","properties":{"kind":{"const":"property"},"pointer":{"allOf":[{"$ref":"#/$defs/jsonPointer"},{"type":"string","pattern":"^/(properties(?:/|$)|ownedLinks/([^/~]|~[01])+/(0|[1-9][0-9]*)/properties(?:/|$))"}]}},"required":["kind","pointer"],"additionalProperties":false},{"type":"object","properties":{"kind":{"const":"owned-links"},"type":{"$ref":"#/$defs/absoluteHttpUrl"}},"required":["kind"],"additionalProperties":false}]},"jsonPointer":{"type":"string","pattern":"^(/([^/~]|~[01])*)*$"},"linkCollection":{"type":"object","required":["items","next"],"properties":{"items":{"type":"array","items":{"$ref":"#/$defs/linkRecord"}},"next":{"oneOf":[{"$ref":"#/$defs/absoluteHttpUrl"},{"type":"null"}]}},"additionalProperties":false},"linkRecord":{"type":"object","required":["id","type","revision","source","target","properties"],"properties":{"id":{"$ref":"#/$defs/absoluteHttpUrl"},"type":{"$ref":"#/$defs/absoluteHttpUrl"},"revision":{"type":"string","minLength":1},"source":{"$ref":"#/$defs/reference"},"target":{"$ref":"#/$defs/reference"},"properties":{"$ref":"#/$defs/properties"},"metadata":{"$ref":"#/$defs/metadata"},"revisionProvenance":{"$ref":"#/$defs/revisionProvenance"}},"additionalProperties":false},"localName":{"type":"string","pattern":"^[A-Za-z][A-Za-z0-9_-]*$"},"metadata":{"type":"object","additionalProperties":true},"mutationOutcome":{"enum":["created","updated","deleted"]},"mutationResult":{"title":"BDP Read+Update mutation result","type":"object","allOf":[{"$ref":"#/$defs/mutationResultMembers"}],"unevaluatedProperties":false},"mutationResultMembers":{"type":"object","required":["outcome"],"properties":{"outcome":{"$ref":"#/$defs/mutationOutcome"},"resource":{"oneOf":[{"$ref":"#/$defs/beadRecord"},{"$ref":"#/$defs/linkRecord"}]},"deleted":{"$ref":"#/$defs/deletedIdentity"},"source":{"$ref":"#/$defs/absoluteHttpUrl"},"sourceRevision":{"type":"string","minLength":1}},"allOf":[{"if":{"properties":{"outcome":{"const":"deleted"}},"required":["outcome"]},"then":{"required":["deleted"],"properties":{"deleted":{"$ref":"#/$defs/deletedIdentity"},"resource":false}},"else":{"required":["resource"],"properties":{"resource":{"oneOf":[{"$ref":"#/$defs/beadRecord"},{"$ref":"#/$defs/linkRecord"}]},"deleted":false}}},{"if":{"required":["resource"],"properties":{"resource":{"$ref":"#/$defs/beadRecord"}}},"then":{"properties":{"source":false,"sourceRevision":false}}},{"if":{"required":["deleted"],"properties":{"deleted":{"type":"object","required":["resourceKind"],"properties":{"resourceKind":{"const":"bead"}}}}},"then":{"properties":{"source":false,"sourceRevision":false}}}],"dependentRequired":{"source":["sourceRevision"],"sourceRevision":["source"]}},"pinnedReference":{"type":"object","required":["uri","revision"],"properties":{"uri":{"$ref":"#/$defs/absoluteUri"},"revision":{"type":"string","minLength":1}},"additionalProperties":false},"properties":{"type":"object","additionalProperties":true},"readProblem":{"title":"BDP Read Problem Details","type":"object","required":["type","code","retry"],"properties":{"type":{"$ref":"#/$defs/absoluteHttpUrl"},"title":{"type":"string"},"status":{"type":"integer","enum":[400,401,403,404,409,410,413,429,503]},"detail":{"type":"string"},"instance":{"$ref":"#/$defs/absoluteUri"},"code":{"$ref":"#/$defs/readProblemCode"},"retry":{"$ref":"#/$defs/retryDisposition"}},"allOf":[{"if":{"properties":{"code":{"const":"malformed-request"}},"required":["code"]},"then":{"properties":{"type":{"const":"https://github.com/gastownhall/bdp/problems/request"},"status":{"const":400},"retry":{"const":"never"}}}},{"if":{"properties":{"code":{"const":"invalid-parameter"}},"required":["code"]},"then":{"properties":{"type":{"const":"https://github.com/gastownhall/bdp/problems/request"},"status":{"const":400},"retry":{"const":"never"}}}},{"if":{"properties":{"code":{"const":"unauthenticated"}},"required":["code"]},"then":{"properties":{"type":{"const":"https://github.com/gastownhall/bdp/problems/authentication"},"status":{"const":401},"retry":{"const":"after-state-change"}}}},{"if":{"properties":{"code":{"const":"forbidden"}},"required":["code"]},"then":{"properties":{"type":{"const":"https://github.com/gastownhall/bdp/problems/authorization"},"status":{"const":403},"retry":{"const":"after-state-change"}}}},{"if":{"properties":{"code":{"const":"resource-not-found"}},"required":["code"]},"then":{"properties":{"type":{"const":"https://github.com/gastownhall/bdp/problems/not-found"},"status":{"const":404},"retry":{"const":"after-state-change"}}}},{"if":{"properties":{"code":{"const":"foreign-view"}},"required":["code"]},"then":{"properties":{"type":{"const":"https://github.com/gastownhall/bdp/problems/conflict"},"status":{"const":409},"retry":{"const":"after-state-change"}}}},{"if":{"properties":{"code":{"const":"cursor-expired"}},"required":["code"]},"then":{"properties":{"type":{"const":"https://github.com/gastownhall/bdp/problems/gone"},"status":{"const":410},"retry":{"const":"after-state-change"}}}},{"if":{"properties":{"code":{"const":"request-too-large"}},"required":["code"]},"then":{"properties":{"type":{"const":"https://github.com/gastownhall/bdp/problems/size"},"status":{"const":413},"retry":{"const":"never"}}}},{"if":{"properties":{"code":{"const":"limit-exceeded"}},"required":["code"]},"then":{"properties":{"type":{"const":"https://github.com/gastownhall/bdp/problems/size"},"status":{"const":413},"retry":{"const":"never"}}}},{"if":{"properties":{"code":{"const":"rate-limited"}},"required":["code"]},"then":{"properties":{"type":{"const":"https://github.com/gastownhall/bdp/problems/rate-limit"},"status":{"const":429},"retry":{"const":"after-delay"}}}},{"if":{"properties":{"code":{"const":"temporarily-unavailable"}},"required":["code"]},"then":{"properties":{"type":{"const":"https://github.com/gastownhall/bdp/problems/unavailable"},"status":{"const":503},"retry":{"const":"after-delay"}}}},{"if":{"properties":{"code":{"const":"resource-pruned"}},"required":["code"]},"then":{"properties":{"type":{"const":"https://github.com/gastownhall/bdp/problems/gone"},"status":{"const":410},"retry":{"const":"never"}}}},{"if":{"properties":{"code":{"const":"resource-erased"}},"required":["code"]},"then":{"properties":{"type":{"const":"https://github.com/gastownhall/bdp/problems/gone"},"status":{"const":410},"retry":{"const":"never"}}}},{"if":{"properties":{"code":{"const":"revision-unknown"}},"required":["code"]},"then":{"properties":{"type":{"const":"https://github.com/gastownhall/bdp/problems/not-found"},"status":{"const":404},"retry":{"const":"after-state-change"}}}},{"if":{"properties":{"code":{"const":"revision-unretained"}},"required":["code"]},"then":{"properties":{"type":{"const":"https://github.com/gastownhall/bdp/problems/conflict"},"status":{"const":409},"retry":{"const":"after-state-change"}}}},{"if":{"properties":{"code":{"const":"revision-reorganized"}},"required":["code"]},"then":{"properties":{"type":{"const":"https://github.com/gastownhall/bdp/problems/gone"},"status":{"const":410},"retry":{"const":"after-state-change"}}}},{"if":{"properties":{"code":{"const":"revision-not-tracked"}},"required":["code"]},"then":{"properties":{"type":{"const":"https://github.com/gastownhall/bdp/problems/conflict"},"status":{"const":409},"retry":{"const":"after-state-change"}}}},{"if":{"properties":{"code":{"const":"revision-unrepresentable"}},"required":["code"]},"then":{"properties":{"type":{"const":"https://github.com/gastownhall/bdp/problems/conflict"},"status":{"const":409},"retry":{"const":"after-state-change"}}}},{"if":{"properties":{"code":{"const":"resource-pruned"}},"required":["code"]},"then":{"properties":{"archivedAt":{"$ref":"#/$defs/reference"}}}},{"if":{"not":{"properties":{"code":{"const":"resource-pruned"}},"required":["code"]}},"then":{"properties":{"archivedAt":false}}},{"if":{"properties":{"code":{"const":"resource-erased"}},"required":["code"]},"then":{"properties":{"pointer":false}}},{"if":{"properties":{"code":{"const":"revision-unretained"}},"required":["code"]},"then":{"required":["missing"],"properties":{"missing":{"$ref":"#/$defs/historyMissing"}}},"else":{"properties":{"missing":false}}},{"if":{"properties":{"code":{"enum":["revision-unknown","revision-unretained","revision-reorganized","revision-not-tracked","revision-unrepresentable"]}},"required":["code"]},"then":{"properties":{"window":false,"mayChangeAfterSync":false,"resource":false,"properties":false,"ownedLinks":false,"archivedAt":false,"pointer":false,"revisionProvenance":false}}}]},"readProblemCode":{"enum":["malformed-request","invalid-parameter","unauthenticated","forbidden","resource-not-found","resource-pruned","resource-erased","foreign-view","cursor-expired","request-too-large","limit-exceeded","rate-limited","temporarily-unavailable","revision-unknown","revision-unretained","revision-reorganized","revision-not-tracked","revision-unrepresentable"]},"readUpdateProblem":{"title":"BDP Read+Update Problem Details","type":"object","required":["type","code","retry"],"properties":{"type":{"$ref":"#/$defs/absoluteHttpUrl"},"title":{"type":"string"},"status":{"type":"integer","enum":[400,401,403,404,409,410,413,415,422,429,503]},"detail":{"type":"string"},"instance":{"$ref":"#/$defs/absoluteUri"},"code":{"$ref":"#/$defs/readUpdateProblemCode"},"retry":{"$ref":"#/$defs/retryDisposition"},"retryAfter":{"type":"integer","minimum":0},"diagnostics":{"$ref":"#/$defs/validationDiagnostics"},"diagnosticsTruncated":{"type":"boolean"}},"allOf":[{"if":{"properties":{"code":{"$ref":"#/$defs/readProblemCode"}},"required":["code"]},"then":{"$ref":"#/$defs/readProblem"}},{"if":{"properties":{"code":{"const":"unsupported-media-type"}},"required":["code"]},"then":{"properties":{"type":{"const":"https://github.com/gastownhall/bdp/problems/request"},"status":{"const":415},"retry":{"const":"never"}}}},{"if":{"properties":{"code":{"const":"binding-unavailable"}},"required":["code"]},"then":{"properties":{"type":{"const":"https://github.com/gastownhall/bdp/problems/request"},"status":{"const":400},"retry":{"const":"never"}}}},{"if":{"properties":{"code":{"const":"validation-failed"}},"required":["code"]},"then":{"properties":{"type":{"const":"https://github.com/gastownhall/bdp/problems/validation"},"status":{"const":422},"retry":{"const":"never"}}}},{"if":{"properties":{"code":{"const":"type-not-installed"}},"required":["code"]},"then":{"properties":{"type":{"const":"https://github.com/gastownhall/bdp/problems/validation"},"status":{"const":422},"retry":{"const":"after-state-change"}}}},{"if":{"properties":{"code":{"const":"identity-taken"}},"required":["code"]},"then":{"properties":{"type":{"const":"https://github.com/gastownhall/bdp/problems/conflict"},"status":{"const":409},"retry":{"const":"never"}}}},{"if":{"properties":{"code":{"const":"alias-path-taken"}},"required":["code"]},"then":{"properties":{"type":{"const":"https://github.com/gastownhall/bdp/problems/conflict"},"status":{"const":409},"retry":{"const":"after-state-change"}}}},{"if":{"properties":{"code":{"const":"revision-mismatch"}},"required":["code"]},"then":{"properties":{"type":{"const":"https://github.com/gastownhall/bdp/problems/conflict"},"status":{"const":409},"retry":{"const":"after-state-change"}}}},{"if":{"properties":{"code":{"const":"incident-links-exist"}},"required":["code"]},"then":{"properties":{"type":{"const":"https://github.com/gastownhall/bdp/problems/conflict"},"status":{"const":409},"retry":{"const":"after-state-change"}}}},{"if":{"properties":{"code":{"const":"aggregate-constraint-violation"}},"required":["code"]},"then":{"properties":{"type":{"const":"https://github.com/gastownhall/bdp/problems/conflict"},"status":{"const":409},"retry":{"const":"after-state-change"}}}},{"if":{"properties":{"code":{"const":"idempotency-conflict"}},"required":["code"]},"then":{"properties":{"type":{"const":"https://github.com/gastownhall/bdp/problems/conflict"},"status":{"const":409},"retry":{"const":"never"}}}},{"if":{"properties":{"code":{"const":"idempotency-in-progress"}},"required":["code"]},"then":{"properties":{"type":{"const":"https://github.com/gastownhall/bdp/problems/conflict"},"status":{"const":409},"retry":{"const":"after-delay"}}}},{"if":{"properties":{"code":{"const":"idempotency-expired"}},"required":["code"]},"then":{"properties":{"type":{"const":"https://github.com/gastownhall/bdp/problems/gone"},"status":{"const":410},"retry":{"const":"never"}}}},{"if":{"properties":{"code":{"const":"revision-allocation-unsafe"}},"required":["code"]},"then":{"properties":{"type":{"const":"https://github.com/gastownhall/bdp/problems/conflict"},"status":{"const":409},"retry":{"const":"after-state-change"}}}},{"if":{"properties":{"code":{"const":"validation-failed"}},"required":["code"]},"then":{"required":["diagnostics"],"properties":{"diagnostics":{"$ref":"#/$defs/validationDiagnostics"}}}},{"if":{"not":{"properties":{"code":{"const":"validation-failed"}},"required":["code"]}},"then":{"properties":{"diagnostics":false,"diagnosticsTruncated":false}}},{"if":{"not":{"properties":{"code":{"const":"resource-pruned"}},"required":["code"]}},"then":{"properties":{"archivedAt":false}}},{"if":{"properties":{"retry":{"const":"after-delay"}},"required":["retry"]},"else":{"properties":{"retryAfter":false}}},{"if":{"properties":{"code":{"const":"revision-allocation-unsafe"}},"required":["code"]},"then":{"properties":{"missing":false,"window":false,"resource":false,"properties":false,"ownedLinks":false,"pointer":false,"identity":false,"revision":false,"revisionProvenance":false}}},{"if":{"not":{"properties":{"code":{"const":"revision-unretained"}},"required":["code"]}},"then":{"properties":{"missing":false}}}]},"readUpdateProblemCode":{"enum":["malformed-request","invalid-parameter","unauthenticated","forbidden","resource-not-found","resource-pruned","resource-erased","foreign-view","cursor-expired","request-too-large","limit-exceeded","rate-limited","temporarily-unavailable","revision-unknown","revision-unretained","revision-reorganized","revision-not-tracked","revision-unrepresentable","unsupported-media-type","binding-unavailable","validation-failed","type-not-installed","identity-taken","alias-path-taken","revision-mismatch","incident-links-exist","aggregate-constraint-violation","idempotency-conflict","idempotency-in-progress","idempotency-expired","revision-allocation-unsafe"]},"reference":{"oneOf":[{"$ref":"#/$defs/absoluteUri"},{"$ref":"#/$defs/pinnedReference"}]},"resourceIdentity":{"type":"object","required":["id","type","revision"],"properties":{"id":{"$ref":"#/$defs/absoluteHttpUrl"},"type":{"$ref":"#/$defs/absoluteHttpUrl"},"revision":{"type":"string","minLength":1}},"additionalProperties":false},"resourceKind":{"enum":["bead","link"]},"retryDisposition":{"enum":["never","after-state-change","after-delay"]},"revisionActor":{"type":"object","required":["id","basis"],"properties":{"basis":{"type":"string","enum":["writer-supplied","unknown"]},"id":{"type":"string","minLength":1}},"additionalProperties":false},"revisionProvenance":{"type":"object","minProperties":1,"properties":{"actor":{"$ref":"#/$defs/revisionActor"},"committedAt":{"$ref":"#/$defs/contextTime"},"agent":{"$ref":"#/$defs/contextString"},"message":{"$ref":"#/$defs/contextMessage"}},"additionalProperties":false,"dependentRequired":{"committedAt":["agent","message"],"agent":["committedAt","message"],"message":["committedAt","agent"]}},"sequenceMemberAliasResult":{"type":"object","allOf":[{"$ref":"#/$defs/aliasResultMembers"}],"properties":{"operationIndex":{"type":"integer","minimum":0}},"required":["operationIndex"],"unevaluatedProperties":false},"sequenceMemberProblem":{"type":"object","allOf":[{"$ref":"#/$defs/readUpdateProblem"},{"properties":{"code":{"not":{"enum":["revision-unknown","revision-unretained","revision-reorganized","revision-not-tracked","revision-unrepresentable"]}}}}],"required":["status","operationIndex"],"properties":{"status":{"type":"integer"},"operationIndex":{"type":"integer","minimum":0},"operationName":{"$ref":"#/$defs/localName"},"outcome":false}},"sequenceMemberResult":{"type":"object","allOf":[{"$ref":"#/$defs/mutationResultMembers"}],"properties":{"operationIndex":{"type":"integer","minimum":0},"operationName":{"$ref":"#/$defs/localName"}},"required":["operationIndex"],"unevaluatedProperties":false},"sequenceResponse":{"title":"BDP Read+Update sequence response","type":"object","required":["results"],"properties":{"results":{"type":"array","minItems":1,"items":{"oneOf":[{"$ref":"#/$defs/sequenceMemberResult"},{"$ref":"#/$defs/sequenceMemberAliasResult"},{"$ref":"#/$defs/sequenceMemberProblem"}]}}},"additionalProperties":false},"validationDiagnostic":{"type":"object","required":["message"],"properties":{"type":{"$ref":"#/$defs/absoluteHttpUrl"},"schemaLocation":{"$ref":"#/$defs/absoluteUri"},"document":{"enum":["properties","metadata"]},"instanceLocation":{"$ref":"#/$defs/jsonPointer"},"message":{"type":"string","minLength":1}},"additionalProperties":false,"dependentRequired":{"type":["schemaLocation"],"schemaLocation":["type"]}},"validationDiagnostics":{"type":"array","minItems":1,"items":{"$ref":"#/$defs/validationDiagnostic"}}}}
+
+## Exact catalog obligation
+{"id":"read-update.http.command-minimum-fields","title":"Mutation POSTs ignore the three read-consistency fields without a minimum-position barrier or command-identity effect, preserving ordinary admission and read minima","kind":"normative","requiredProfile":"read-update","requirements":[{"source":"docs/specs/bdp.md","anchor":"#mutation-command-preconditions","selectedText":"On mutation POSTs to operation command targets, authorities MUST ignore the `BDP-Minimum-Scope-Position`, `BDP-Scope-Epoch`, and `BDP-Authorization-View` request fields. Their presence, absence, completeness, and field values do not impose a minimum-position barrier or affect command identity. Ordinary HTTP field syntax and transport, header, and body bounds still apply, as do authorization, idempotency, carrier validation, and `expectedRevision`. This rule applies to mutation POSTs under this profile and cumulative profiles. It does not change conditions on reads."}]}
+
+## Relevant exact fixture values
+{"fixtureVersion":1,"id":"reference-read-update-schema-v1","seed":0,"capabilities":["installed-read-update-http"]}
+{"bindings":{"w1.a":"beads/w1-a","w1.b":"beads/w1-b"}}
+Other fixture bindings and readSeed inputs are unrelated to these11raw actions and omitted. Fixed scope is supplied by the actual installed composition; all requests are full literal paths in the complete row/ledger.
+
+## Actual current policy and expectedRevision guard: packages/server/src/resource-evaluator.ts:1001–1033 at012d5c0cfcbb74b28d13538bacb10b4db98573aa
+```
+  // below may still refuse; only the outer S6 COMMIT permits a success to escape.
+  // Adding concurrent readers/WAL, async or reentrant owners reopens this proof.
+  const context =
+    subjectRecipe?.metadata.context.kind === "native" ||
+    sourceRecipe?.metadata.context.kind === "native"
+      ? makeContext(contextInput, observeCommitTime(options.observeCommitTime))
+      : undefined;
+  const materialized = new Map<VersionRecipe, ResourceRecord>();
+  const after = subjectRecipe
+    ? materializeVersion(subjectRecipe, context, materialized)
+    : undefined;
+  const sourceAfter = sourceRecipe
+    ? (materializeVersion(sourceRecipe, context, materialized) as BeadRecord)
+    : undefined;
+  if (
+    creating
+      ? !after || !options.policy.canCreate(after)
+      : !before || !options.policy.canWrite(before, after)
+  )
+    fail("forbidden");
+  if (source && sourceAfter && !options.policy.canWrite(source, sourceAfter)) fail("forbidden");
+  if (
+    "expectedRevision" in input &&
+    input.expectedRevision !== undefined &&
+    input.expectedRevision !== before?.revision
+  )
+    fail("revision-mismatch");
+  if (deleting && resourceKind === "bead" && tx.incidentLinks(id).length)
+    fail("incident-links-exist");
+  if ("propertiesChange" in input || "metadataChange" in input) {
+    const limits = options.limits;
+    const changes = [
+      ...("propertiesChange" in input ? (input.propertiesChange ?? []) : []),
+```
+
+## Explicit omitted-context inventory and future proof boundaries
+{"notSuppliedInFull":["Unchanged multi-megabyte baseline and continuation: exact committed hashes and reconstruction/derivative arithmetic supplied; row/control changes no old object","Full generated archives/installed logs: no new witness execution exists yet; future fresh consumer verification remains required","Unrelated production types/history/Snapshot and all old numeric control bodies","Whole module bodies outside explicitly mapped excerpts; excerpt boundaries are not claimed as complete modules","Unrelated fixture binding map and other fixture oracles; relevant w1 IDs and exact row literals retained","Unchanged member runMember full body, unrelated numeric control branches, schema serving and normal GET/HEAD branch; relevant receiving/guard/retained-disclosure branches supplied"],"mandatoryImplementationChecks":["All47 schema/assertion references and exact negative7pass1fail with realwire verification","Complete afterstate replay/Resource comparisons in planned module-local oracle","Fresh measured parser/source fences and unchanged284 ordered routes/config digest","Scope-specific raw attempts and genuine returned response/write facts, with no invented execute-input action ID","Actual full aggregate2314 including44setup/client; positive11/control2expected11max;62children","Runtime lifecycle/cleanup unchanged but selected future invocations still require full actual evidence"],"schemaDefinitions":["absoluteHttpUrl","absoluteUri","aliasResultMembers","beadRecord","contextMessage","contextString","contextTime","currentBeadRecord","currentLinkCollection","currentLinkRecord","dateTime","deletedIdentity","historyMissing","historyMissingItem","jsonPointer","linkCollection","linkRecord","localName","metadata","mutationOutcome","mutationResult","mutationResultMembers","pinnedReference","properties","readProblem","readProblemCode","readUpdateProblem","readUpdateProblemCode","reference","resourceIdentity","resourceKind","retryDisposition","revisionActor","revisionProvenance","sequenceMemberAliasResult","sequenceMemberProblem","sequenceMemberResult","sequenceResponse","validationDiagnostic","validationDiagnostics"]}
