@@ -1,0 +1,23 @@
+{
+  "accepted": true,
+  "at": "2026-10-16T02:26:20.756761+00:00",
+  "sourceBindingSha256": "61afa5ea5adbdaddece495c3983bbe20723c09d687f89f86f4804d55fef3ad1f",
+  "correctionSha256": "a7e62900feae145482227a89bad8366d8ebf4e374002411339fce9addea34d11",
+  "head": "1647c5df37a82e1364d281ac46beb60a94ab6c76",
+  "scope": "Two test files only: preserve live owner capability through fault facade and update exact durable configuration field. Production unchanged. Root independently inspected actual diff and owner Read/config sources.",
+  "actualValidation": "typecheck, formatting, both entire files: 114 passed, zero failed/skipped",
+  "sampledPidsCheckedAbsent": [
+    32181,
+    32183,
+    32188,
+    32212,
+    32297,
+    32299,
+    32408,
+    32410,
+    32415,
+    32418,
+    32426
+  ],
+  "limitations": "Original exact-head CI failed three cases and remains preserved. Full CI and actual Claude focused repair review are still required. Earlier installed payload evidence remains attributed to1647."
+}

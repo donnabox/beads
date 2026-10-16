@@ -1,0 +1,47 @@
+## Verdict
+
+No defect found in the patch itself. Both edits are correct, test-local, and do not weaken production. All eight findings below are coverage gaps, fidelity losses, or latent hazards the delta leaves standing — ordered by materiality.
+
+---
+
+### 1. The accepted legacy-open path is untested, and this delta removed the last visible reference to its key — HIGH
+
+`transaction-store.ts:603-610` is a **durable, irreversible on-disk rewrite performed during `openTransactionStore`**: when stored bytes equal `legacyBytes`, it inserts `authorizationPolicy` and `UPDATE`s `configuration` to v11, inside the same `atomic()` as pending-receipt retraction (`:622-627`). Nothing in the two-file delta exercises it. Specifically uncovered:
+
+- stored `=== legacyBytes` → open succeeds, configuration rewritten, policy row inserted;
+- stored `=== legacyBytes` **and** an `authorizationPolicy` row already present → `"unexpected legacy authorization policy"` (`:604-605`);
+- the commit-atomicity mirror of what `transaction-snapshot.test.ts:922-930` already asserts for the refusal path (file bytes unchanged / `receipts` count preserved) — on the *accept* path the rewrite and the retraction must land together or not at all.
+
+The repair renamed `authorizationView` → `initialAuthorizationView` in the only two places these files mentioned it, so the v10 key name now appears nowhere in the visible test bytes. Cheap companion using the existing helper: `f.offline(db => { write v10 bytes; DELETE FROM metadata WHERE name='authorizationPolicy' })`, then reopen and assert the rewrite + `recoveredPending`. If the 15-path feature council set already added this, confirm it; it is not in the bytes provided here.
+
+### 2. `legacyBytes` is derived, not frozen — future config keys silently brick real v10 stores — HIGH
+
+`transaction-store.ts:319-331` builds the legacy comparand by transforming the *current* `configuration` object (drop `policyStorageRevision`, rename `initialAuthorizationView`, force format-10). That is byte-accurate only while the v10↔v11 difference is exactly that rename plus that one dropped key. Add any field to `configuration` in a later change and `legacyBytes` gains it too — so it stops matching bytes actually on disk in v10 stores, which then fail `:588` with `"transaction installation mismatch"` and become unopenable. There is no golden byte-string fixture pinning the v10 encoding. Recommend a companion asserting a frozen literal v10 string is accepted; that is the only construction that catches this class.
+
+### 3. The reader remap launders a non-live capability — fidelity loss, bounded — MEDIUM
+
+`transaction-read.test.ts:1923-1924` installs a translation layer that converts a reader which `transaction-store.ts:1869` would legitimately reject back into one it accepts. Correct as a test double, but the alias-fault case no longer exercises the real capability check at all, and would keep passing if production ever started handing a *derived* reader to `captureReadAuthorization`. An identity-preserving injection is strictly stronger: the read fixture's `extra` is `Partial<Parameters<typeof openTransactionStore>[0]>` (`transaction-read.test.ts:47`), so if `TransactionStoreOptions["fault"]` has a vocabulary term for a malformed alias target, faulting at store level avoids cloning the reader entirely; failing that, an offline bad-row write like the snapshot fixture's `offline()` helper. Not a blocker — just the shape I'd prefer.
+
+### 4. Capability lifetime is handled correctly; the `finally` is not load-bearing
+
+Worth recording explicitly since it was the question: the remap does **not** extend the capability. The clone retains the original's `check()` closures for every data method (`transaction-store.ts:991-1031`), so data access still expires at `active = false`; the store deletes its own WeakMap entry at `:1048`, so a post-entry capture through the remap would resolve to the original and still throw. The `originalReaders.delete(exposed)` in `finally` is therefore defensively redundant (it also prevents the clone→original strong edge outliving the entry), which means **the test does not prove expiry — it only avoids breaking it**. Delegating as `f.store.captureReadAuthorization(...)` rather than through the spread copy is also right: it preserves receiver binding and re-reads the property if the fixture ever reopens the store. Setting `exposed === reader` into the map on the non-target faults is a harmless identity no-op.
+
+### 5. `"persists the actual view"` no longer describes what the test pivots on — MEDIUM-LOW
+
+Post-change, `configuration.initialAuthorizationView` is the *provisioning-time* view; the durable *current* view lives in the separate `authorizationPolicy` row (`transaction-store.ts:581`). So the test now asserts that tampering with the recorded initial view is refused, and says nothing about tampering with the actual current policy. Note the asymmetry it exposes: `configuration` is compared **byte-exact** (`:588`), while `authorizationPolicy` is only length-bounded and parsed (`:611-618`). Whether a parseable-but-swapped view survives open depends on `parseTransactionAuthorization`, which is not in the provided bytes — confirm its strictness, and rename the test to `"persists the initial view"`.
+
+### 6. `policyStorageRevision` tripwire is in the wrong test — LOW
+
+`transaction-snapshot.test.ts:908` pins the durable revision to `1`. Pinning it is correct and valuable (it is exactly the key `legacyBytes` strips), but a future bump to `2` will fail inside a test named for refusing `different-view`/`prior-format-9`, pointing the next reader at the wrong thing. Better placed in a dedicated format/encoding test alongside the golden bytes from finding 2.
+
+### 7. Substring assertion can match the wrong throw site — LOW, pre-existing
+
+`transaction-read.test.ts:1944-1946` matches `"invalid Transactional Read context"`, which is also a substring of `"missing or invalid Transactional Read context"` (`transaction-read.ts:287`). The injected `{...captured, scopePosition: "pos-02"}` currently has exactly 3 own keys so it reaches the intended branch at `:305`, but a shape change to the context type would silently relocate the assertion to the arity check. Anchor it or assert on an error field.
+
+### 8. Validation evidence is scoped to affected-files only
+
+The attached run is `affected-files` (114 cases, 65 + 49, exit 0) plus typecheck/format — not a full suite, and `priorCIRemainsFailed: true` / `buildInstalledNotRerun: true` are consistent with that. So this delta's *sufficiency* for CI green is unproven by construction, as you noted. The relevant forward risk: the clone-breaks-identity-keyed-capability hazard is a repo-wide fixture pattern, not a property of this one test — `transaction-read.test.ts:1966-1970` builds a second `{...f.store, withRead}` double whose body is outside the provided bytes, and other files were not swept. I cannot verify `sourceBindingSha256` / `correctionSha256` or read `preparation-first-failure.json` here (no tools available); those are taken as reported. `productionAndOtherTrackedUnchanged: 673` / `emittedUnchanged: 444` support the no-production-change claim to the extent those counts are of files verified byte-identical.
+
+---
+
+**Bottom line:** ship the two-file correction as-is. Findings 1 and 2 are the ones I would want closed before the full-CI candidate — both are companion tests against already-merged production behavior, neither requires touching the patch under review.

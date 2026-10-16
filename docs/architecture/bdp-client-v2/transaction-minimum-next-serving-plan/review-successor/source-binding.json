@@ -30,7 +30,9 @@
     "schemas/bdp-v0.schema.json": "0baa5d5ef67144f8e6513b4cde31168effc8df6d52ef3141b0f144b87f8dc227",
     "packages/server/src/index.ts": "34f9d9de8b48852c64919e69ce93f149e9cdae5142c15c75e4c35f08f15efc44",
     "packages/server/package.json": "110e00c403c667d8c848c6280b2e98c47f98f134158a621967d889914d44632e",
-    "packages/server/src/transaction-batch.ts": "70d941d416979edd54e250d51318cfb7e5d4ddb315ea6131de7ca5f56e98a014"
+    "packages/server/src/transaction-batch.ts": "70d941d416979edd54e250d51318cfb7e5d4ddb315ea6131de7ca5f56e98a014",
+    "packages/protocol/src/read-update-preflight.ts": "e9cea06515c1b7b5ffbfc275b82e9759e9083daa29c5daaab4485c161970275f",
+    "packages/server/src/transaction-sequence.ts": "019e02f2f392047d568d7464b1c5af0482d6d743ed09a6d0aa4edab151607cbe"
   },
   "originalSourcePins": {
     "packages/server/src/transaction-consistency.ts": "00a420c3e9f5dcb1b8814a6476d5ce52edfb7adbbd1c64ab082833f17322a336",
@@ -55,5 +57,8 @@
   "actualMergedAuthoringParent": null,
   "actualMergeRequired": true,
   "authoringReleased": false,
-  "sourceSnapshotKind": "committed Git objects, not dynamic imports"
+  "sourceSnapshotKind": "committed Git objects, not dynamic imports",
+  "actualMergeRequiredBeforeFinalValidation": true,
+  "isolatedCandidateAuthoringPermittedAfterRootRelease": true,
+  "actualMergeRequiredMeaning": "final validation/main integration; not a prohibition on root-released isolated candidate authoring"
 }

@@ -1,0 +1,124 @@
+
+ RUN  v4.1.10 /Users/dbox/repos/wt/vickie/vickie-authorization-transition
+
+ ✓ packages/server/src/transaction-read.test.ts > private same-owner Transactional Read > uses actual installed configuration and immutable descriptors, without RU key or serving-position claims 63ms
+ ✓ packages/server/src/transaction-read.test.ts > private same-owner Transactional Read > reads only complete commits, canonical bodies, revisions, incident Links, selectors and properties 10ms
+ ✓ packages/server/src/transaction-read.test.ts > private same-owner Transactional Read > resolves live aliases through the owner across repoint, reopen, dangling target and deletion 8ms
+ ✓ packages/server/src/transaction-read.test.ts > private same-owner Transactional Read > retains pagination rows and revisions across commits and explicitly expires cursors after close/reopen 7ms
+ ✓ packages/server/src/transaction-read.test.ts > private same-owner Transactional Read > refuses reentrant reads from a mutation callback before tentative effects can escape 3ms
+ ✓ packages/server/src/transaction-read.test.ts > private same-owner Transactional Read > refuses reads after injected before-COMMIT uncertainty, preserving its cause and recovery 4ms
+ ✓ packages/server/src/transaction-read.test.ts > private same-owner Transactional Read > refuses reads after injected after-COMMIT uncertainty, preserving its cause and recovery 3ms
+ ✓ packages/server/src/transaction-read.test.ts > Transactional same-entry source context > captures zero/committed positions with rows before asynchronous delivery or a later unrelated commit 4ms
+ ✓ packages/server/src/transaction-read.test.ts > Transactional same-entry source context > pairs original page rows/revisions/context with a new serving observation on each continuation 5ms
+ ✓ packages/server/src/transaction-read.test.ts > Transactional same-entry source context > does not advance observed position for pending admission, no-op, alias change or failed batch 5ms
+ ✓ packages/server/src/transaction-read.test.ts > Transactional same-entry source context > captures immutable owner context under the same reentrancy guard as the row facade 3ms
+ ✓ packages/server/src/transaction-read.test.ts > Transactional same-entry source context > refuses absent context at the Transactional interpretation boundary 0ms
+ ✓ packages/server/src/transaction-read.test.ts > Transactional same-entry source context > refuses extra context at the Transactional interpretation boundary 0ms
+ ✓ packages/server/src/transaction-read.test.ts > Transactional same-entry source context > refuses foreign-epoch context at the Transactional interpretation boundary 0ms
+ ✓ packages/server/src/transaction-read.test.ts > Transactional same-entry source context > refuses foreign-view context at the Transactional interpretation boundary 0ms
+ ✓ packages/server/src/transaction-read.test.ts > Transactional same-entry source context > refuses invalid-position context at the Transactional interpretation boundary 0ms
+ ✓ packages/server/src/transaction-read.test.ts > Transactional same-entry source context > refuses unsafe-position context at the Transactional interpretation boundary 0ms
+ ✓ packages/server/src/transaction-read.test.ts > Transactional same-entry source context > refuses future-snapshot context at the Transactional interpretation boundary 0ms
+ ✓ packages/server/src/transaction-read.test.ts > refuses accessor/proxy context at the TX boundary without executing it 0ms
+ ✓ packages/server/src/transaction-read.test.ts > checks visible point rows and their minimum in the same entry and leaves the owner reusable 3ms
+ ✓ packages/server/src/transaction-read.test.ts > initial collection minimums > preserves behind-minimum control refusals without allocating retained state 3ms
+ ✓ packages/server/src/transaction-read.test.ts > initial collection minimums > checks a minimum even for an empty beads collection 1ms
+ ✓ packages/server/src/transaction-read.test.ts > initial collection minimums > checks a minimum even for an empty links collection 1ms
+ ✓ packages/server/src/transaction-read.test.ts > initial collection minimums > applies accepted endpoint filters and minima independently 3ms
+ ✓ packages/server/src/transaction-read.test.ts > initial collection minimums > does not retain failed attempts and preserves successful page rows versus current context 4ms
+ ✓ packages/server/src/transaction-read.test.ts > initial collection minimums > rejects a pre-aborted server Request for beads/ before any owner SQL 10ms
+ ✓ packages/server/src/transaction-read.test.ts > initial collection minimums > rejects a pre-aborted server Request for beads/a before any owner SQL 2ms
+ ✓ packages/server/src/transaction-read.test.ts > binds the private HTTP directory to the service owner's exact non-root Scope 16ms
+ ✓ packages/server/src/transaction-read.test.ts > compatible missing Resource minimum > returns same-entry observed404 across absent/deleted kinds, views and satisfied bounds 5ms
+ ✓ packages/server/src/transaction-read.test.ts > compatible missing Resource minimum > preserves missing behind and foreign collisions as visibility gaps 2ms
+ ✓ packages/server/src/transaction-read.test.ts > compatible missing Resource minimum > propagates invalid string context and provider errors rather than masking integrity 3ms
+ ✓ packages/server/src/transaction-read.test.ts > compatible missing Resource minimum > ignores ordinary sourceCondition while preserving signals and minimumFor enforcement 3ms
+ ✓ packages/server/src/transaction-read.test.ts > compatible missing Resource minimum > preserves ordinary perform delivery validation without invoking caller accessors or proxies 4ms
+ ✓ packages/server/src/transaction-read.test.ts > compatible missing Resource minimum > preserves ordinary resolveAlias delivery validation without invoking caller accessors or proxies 3ms
+ ✓ packages/server/src/transaction-read.test.ts > current Type and incident-Link minimums > rejects malformed Type ID omitted through a Promise without invoking caller data 3ms
+ ✓ packages/server/src/transaction-read.test.ts > current Type and incident-Link minimums > rejects malformed Type ID undefined through a Promise without invoking caller data 3ms
+ ✓ packages/server/src/transaction-read.test.ts > current Type and incident-Link minimums > rejects malformed Type ID null through a Promise without invoking caller data 3ms
+ ✓ packages/server/src/transaction-read.test.ts > current Type and incident-Link minimums > rejects malformed Type ID number through a Promise without invoking caller data 3ms
+ ✓ packages/server/src/transaction-read.test.ts > current Type and incident-Link minimums > rejects malformed Type ID false through a Promise without invoking caller data 3ms
+ ✓ packages/server/src/transaction-read.test.ts > current Type and incident-Link minimums > rejects malformed Type ID empty through a Promise without invoking caller data 3ms
+ ✓ packages/server/src/transaction-read.test.ts > current Type and incident-Link minimums > rejects malformed Type ID method through a Promise without invoking caller data 3ms
+ ✓ packages/server/src/transaction-read.test.ts > current Type and incident-Link minimums > rejects malformed Type ID accessor through a Promise without invoking caller data 3ms
+ ✓ packages/server/src/transaction-read.test.ts > current Type and incident-Link minimums > rejects malformed Type ID inherited through a Promise without invoking caller data 3ms
+ ✓ packages/server/src/transaction-read.test.ts > current Type and incident-Link minimums > rejects malformed Type ID proxy through a Promise without invoking caller data 3ms
+ ✓ packages/server/src/transaction-read.test.ts > current Type and incident-Link minimums > rejects malformed Type ID revoked through a Promise without invoking caller data 3ms
+ ✓ packages/server/src/transaction-read.test.ts > current Type and incident-Link minimums > projects immutable current Types and exact incident directions including self-Link deduplication 8ms
+ ✓ packages/server/src/transaction-read.test.ts > current Type and incident-Link minimums > keeps types limits, allocation and retained continuation boundaries distinct 4ms
+ ✓ packages/server/src/transaction-read.test.ts > current Type and incident-Link minimums > keeps incident limits, allocation and retained continuation boundaries distinct 5ms
+ ✓ packages/server/src/transaction-read.test.ts > current Type and incident-Link minimums > waits and cancels current surface 0 without retaining an owner entry 3ms
+ ✓ packages/server/src/transaction-read.test.ts > current Type and incident-Link minimums > waits and cancels current surface 1 without retaining an owner entry 4ms
+ ✓ packages/server/src/transaction-read.test.ts > current Type and incident-Link minimums > waits and cancels current surface 2 without retaining an owner entry 5ms
+ ✓ packages/server/src/transaction-read.test.ts > current Type and incident-Link minimums > pre-aborts, drains and releases a waiting current surface 0 3ms
+ ✓ packages/server/src/transaction-read.test.ts > current Type and incident-Link minimums > pre-aborts, drains and releases a waiting current surface 1 3ms
+ ✓ packages/server/src/transaction-read.test.ts > current Type and incident-Link minimums > pre-aborts, drains and releases a waiting current surface 2 3ms
+ ✓ packages/server/src/transaction-read.test.ts > current Type and incident-Link minimums > keeps compatible missing Types and absent/deleted incident anchors separate from collisions 5ms
+ ✓ packages/server/src/transaction-read.test.ts > current alias minimum subset > preserves direct minimum alias receiving validation, cancellation and lifecycle precedence 4ms
+ ✓ packages/server/src/transaction-read.test.ts > current alias minimum subset > preserves service minimum alias receiving validation, cancellation and lifecycle precedence 3ms
+ ✓ packages/server/src/transaction-read.test.ts > current alias minimum subset > conditions alias mapping and context in one entry without revising either target 3ms
+ ✓ packages/server/src/transaction-read.test.ts > current alias minimum subset > rechecks a repointed alias after waiting for a real Resource effect 3ms
+ ✓ packages/server/src/transaction-read.test.ts > current alias minimum subset > keeps live alias context failures and compatible absent/deleted/dangling observations distinct 5ms
+ ✓ packages/server/src/transaction-read.test.ts > current alias minimum subset > forwards ordinary and minimum Request aborts before SQL and drains an admitted alias wait 3ms
+ ✓ packages/server/src/transaction-read.test.ts > current alias minimum subset > does not relabel alias provider or malformed context failures as missing 3ms
+ ✓ packages/server/src/transaction-read.test.ts > current minimum perform receiving > preserves a direct non-enumerable pre-aborted signal before owner entry 2ms
+ ✓ packages/server/src/transaction-read.test.ts > current minimum perform receiving > preserves direct minimum perform receiving validation, cancellation and lifecycle precedence 3ms
+ ✓ packages/server/src/transaction-read.test.ts > current minimum perform receiving > preserves service minimum perform receiving validation, cancellation and lifecycle precedence 3ms
+ ✓ packages/server/src/transaction-snapshot.test.ts > captures a schema-valid frozen empty genesis without changing graph, receipts or position 8ms
+ ✓ packages/server/src/transaction-snapshot.test.ts > captures complete canonical streams larger than a page and transaction, survives mutation and reopen, then rendezvous with feed 572ms
+ ✓ packages/server/src/transaction-snapshot.test.ts > expiry is fixed, inclusive at the promised instant, reclaims in entry and permanently distinguishes issued from unknown 10ms
+ ✓ packages/server/src/transaction-snapshot.test.ts > after-snapshot-copy preserves the appropriate durable disposition without graph effects 6ms
+ ✓ packages/server/src/transaction-snapshot.test.ts > after-snapshot-commit preserves the appropriate durable disposition without graph effects 4ms
+ ✓ packages/server/src/transaction-snapshot.test.ts > refuses retained corruption: missing-record rather than rebuilding current graph 5ms
+ ✓ packages/server/src/transaction-snapshot.test.ts > refuses retained corruption: changed-record rather than rebuilding current graph 5ms
+ ✓ packages/server/src/transaction-snapshot.test.ts > refuses retained corruption: oversized-record rather than rebuilding current graph 5ms
+ ✓ packages/server/src/transaction-snapshot.test.ts > refuses retained corruption: missing-range rather than rebuilding current graph 4ms
+ ✓ packages/server/src/transaction-snapshot.test.ts > refuses retained corruption: wrong-kind rather than rebuilding current graph 4ms
+ ✓ packages/server/src/transaction-snapshot.test.ts > refuses retained corruption: wrong-context rather than rebuilding current graph 4ms
+ ✓ packages/server/src/transaction-snapshot.test.ts > refuses retained corruption: wrong-anchor rather than rebuilding current graph 4ms
+ ✓ packages/server/src/transaction-snapshot.test.ts > refuses retained corruption: wrong-expiry rather than rebuilding current graph 4ms
+ ✓ packages/server/src/transaction-snapshot.test.ts > page token is bound through its Snapshot and stream and cannot be borrowed 9ms
+ ✓ packages/server/src/transaction-snapshot.test.ts > refuses missing owned or endpoint data before issuing a capture 4ms
+ ✓ packages/server/src/transaction-snapshot.test.ts > refuses prior format before maintenance and preserves actual file bytes; changed current configuration is also refused 170ms
+ ✓ packages/server/src/transaction-snapshot.test.ts > checks total authority count and byte bounds before loading malformed bodies 46ms
+ ✓ packages/server/src/transaction-snapshot.test.ts > fences uncertain before-COMMIT, then recovery determines whether a capture was issued 5ms
+ ✓ packages/server/src/transaction-snapshot.test.ts > fences uncertain after-COMMIT, then recovery determines whether a capture was issued 6ms
+ ✓ packages/server/src/transaction-snapshot.test.ts > failed Snapshot rollback fences tentative pages until reopen 3ms
+ ✓ packages/server/src/transaction-snapshot.test.ts > an abrupt exit during capture leaves no issued tentative handle after reopen 100ms
+ ✓ packages/server/src/transaction-snapshot.test.ts > accepts the 4096-resource boundary and canonical identity order, refuses one more 314ms
+ ✓ packages/server/src/transaction-snapshot.test.ts > actual complete R-sized records bind 32MiB capture, 4MiB pages and 64MiB aggregate before handle count 688ms
+ ✓ packages/server/src/transaction-snapshot.test.ts > permanent 65536 issued-identity bound refuses new issuance even after all detail expired 2602ms
+ ✓ packages/server/src/transaction-snapshot.test.ts > independent expected inventory rejects coherent omissions and early termination even when individual wire records remain valid 9ms
+ ✓ packages/server/src/transaction-snapshot.test.ts > new private Snapshot entry points do not escape package public exports 0ms
+ ✓ packages/server/src/transaction-snapshot.test.ts > retains bounded recognition of issued page tokens after expiry/reopen, while unknown or borrowed continuations stay 404 12ms
+ ✓ packages/server/src/transaction-snapshot.test.ts > packs below the byte cap when successor token grows at page 9 135ms
+ ✓ packages/server/src/transaction-snapshot.test.ts > packs below the byte cap when successor token grows at page 99 561ms
+ ✓ packages/server/src/transaction-snapshot.test.ts > shares one validated authority-record pass across owned topology and reuses hot SQL 4ms
+ ✓ packages/server/src/transaction-snapshot.test.ts > orders canonical percent-encoded BMP and supplementary identities with matching owned streams 8ms
+ ✓ packages/server/src/transaction-snapshot.test.ts > persists the actual view and refuses different-view before retracting a pending claim 78ms
+ ✓ packages/server/src/transaction-snapshot.test.ts > persists the actual view and refuses prior-format-9 before retracting a pending claim 75ms
+ ✓ packages/server/src/transaction-snapshot.test.ts > startup sweep validates the same canonical position as reads and rolls back pending recovery on refusal 75ms
+ ✓ packages/server/src/transaction-snapshot.test.ts > decodes only the bounded live subset when compact expired history grows 17ms
+ ✓ packages/server/src/transaction-snapshot.test.ts > refuses forged-expired classification before pending recovery and preserves the file 78ms
+ ✓ packages/server/src/transaction-snapshot.test.ts > refuses missing-expired classification before pending recovery and preserves the file 78ms
+ ✓ packages/server/src/transaction-snapshot.test.ts > refuses nonboolean-expired classification before pending recovery and preserves the file 87ms
+ ✓ packages/server/src/transaction-snapshot.test.ts > refuses malformed-json classification before pending recovery and preserves the file 82ms
+ ✓ packages/server/src/transaction-snapshot.test.ts > validates a cold expired commitment on lookup without decoding all cold history during capture 4ms
+ ✓ packages/server/src/transaction-snapshot.test.ts > rejects orphaned records during startup recovery with rollback and no file mutation 80ms
+ ✓ packages/server/src/transaction-snapshot.test.ts > rejects orphaned pages during startup recovery with rollback and no file mutation 76ms
+ ✓ packages/server/src/transaction-snapshot.test.ts > asserts the internal expiry-before-capture precondition instead of ignoring retained expired detail 4ms
+ ✓ packages/server/src/transaction-snapshot.test.ts > continues to refuse impossible excess live handles as integrity corruption 5ms
+ ✓ packages/server/src/transaction-snapshot.test.ts > pairs expected preflight and retained failures inside the same entry after atomic rollback 6ms
+ ✓ packages/server/src/transaction-snapshot.test.ts > paired observation preserves unexpected after-snapshot-copy failure and its committed disposition 3ms
+ ✓ packages/server/src/transaction-snapshot.test.ts > paired observation preserves unexpected after-snapshot-commit failure and its committed disposition 2ms
+ ✓ packages/server/src/transaction-snapshot.test.ts > checks each fresh Snapshot minimum before any handle, record, page or expiry work 5ms
+ ✓ packages/server/src/transaction-snapshot.test.ts > does not expire retained Snapshot details on an ineligible fresh attempt 3ms
+
+ Test Files  2 passed (2)
+      Tests  114 passed (114)
+   Start at  19:25:16
+   Duration  6.90s (transform 215ms, setup 22ms, import 413ms, tests 6.36s, environment 0ms)
+
+JSON report written to /Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-authorization-transition-draft/ci-fixture-repair/run/affected-files.results.json
