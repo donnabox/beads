@@ -1,0 +1,334 @@
+diff --git a/apps/bdptest/src/transactional-collection-minimum-installed.test.ts b/apps/bdptest/src/transactional-collection-minimum-installed.test.ts
+index 34179b2..84ae824 100644
+--- a/apps/bdptest/src/transactional-collection-minimum-installed.test.ts
++++ b/apps/bdptest/src/transactional-collection-minimum-installed.test.ts
+@@ -503,6 +503,44 @@ it("observes genuine installed initial collection minimums, fixed-budget failure
+           }),
+         );
+       }
++      let opaqueGetBody = "";
++      for (const method of ["GET", "HEAD"] as const) {
++        const started = performance.now();
++        const timeout = await f.exchange(target, method, {
++          ...minimum(seeded, "opaque"),
++          ...(method === "GET" ? { "if-none-match": "*" } : { "if-match": '"wrong"' }),
++        });
++        const elapsedMs = performance.now() - started;
++        expect(elapsedMs).toBeGreaterThanOrEqual(1000);
++        expect(elapsedMs).toBeLessThan(5000);
++        expect(timeout.status).toBe(503);
++        context(timeout, headers);
++        expect(timeout.headers["content-type"]).toBe("application/problem+json");
++        expect(timeout.headers["retry-after"]).toBe("1");
++        expect(timeout.headers["x-bdp-development-limit"]).toBeUndefined();
++        if (method === "GET") {
++          opaqueGetBody = timeout.bodyText;
++          expect(json<Record<string, unknown>>(timeout, 503)).toEqual({
++            type: "https://github.com/gastownhall/bdp/problems/unavailable",
++            status: 503,
++            code: "catch-up-timeout",
++            retry: "after-delay",
++          });
++        } else {
++          expect(timeout.bodyOctets).toBe(0);
++          expect(timeout.bodyText).toBe("");
++        }
++        expect(timeout.headers["content-length"]).toBe(String(Buffer.byteLength(opaqueGetBody)));
++        console.log(
++          JSON.stringify({
++            observation: "installed-unknown-collection-minimum-timeout",
++            collection,
++            method,
++            elapsedMs,
++            claimEligible: false,
++          }),
++        );
++      }
+       for (const [field, value, status, code] of [
+         ["bdp-authorization-view", "foreign", 409, "foreign-view"],
+         ["bdp-scope-epoch", "foreign", 410, "cursor-expired"],
+diff --git a/packages/server/src/transaction-http.test.ts b/packages/server/src/transaction-http.test.ts
+index 26a0ac5..2898e91 100644
+--- a/packages/server/src/transaction-http.test.ts
++++ b/packages/server/src/transaction-http.test.ts
+@@ -4816,7 +4816,7 @@ it("enforces the minimum-receiving-malformed-request boundary over the emitted l
+   });
+ }, 20000);
+ 
+-it("waits only for existing current Resource unknown minima and keeps unsupported route labels", async () => {
++it("waits for current Resources and initial collections with unknown minima and preserves residual refusals", async () => {
+   let tick = 0,
+     waits = 0;
+   const f = await fixture({
+@@ -4852,14 +4852,77 @@ it("waits only for existing current Resource unknown minima and keeps unsupporte
+     expect(response.headers.get("retry-after")).toBe("1");
+     expect(response.headers.get("bdp-scope-position")).toBe("pos-1");
+   }
+-  expect(waits).toBe(2);
+-  for (const suffix of ["beads/?limit=1", "types/", "beads/a?view=links"]) {
++  const timeoutProblem = {
++    type: "https://github.com/gastownhall/bdp/problems/unavailable",
++    status: 503,
++    code: "catch-up-timeout",
++    retry: "after-delay",
++  };
++  for (const collection of ["beads", "links"]) {
++    let getBody = "";
++    for (const method of ["GET", "HEAD"] as const) {
++      const response = await f.get(`${f.runtime.scope}${collection}/?limit=1`, {
++        method,
++        headers: {
++          ...tuple,
++          ...(method === "GET" ? { "if-none-match": "*" } : { "if-match": '"wrong"' }),
++        },
++      });
++      expect(response.status).toBe(503);
++      expect(response.headers.get("content-type")).toBe("application/problem+json");
++      expect(response.headers.get("retry-after")).toBe("1");
++      expect(response.headers.get("bdp-scope-epoch")).toBe(tuple["bdp-scope-epoch"]);
++      expect(response.headers.get("bdp-authorization-view")).toBe(tuple["bdp-authorization-view"]);
++      expect(response.headers.get("bdp-scope-position")).toBe("pos-1");
++      expect(response.headers.has("x-bdp-development-limit")).toBe(false);
++      const text = await response.text();
++      if (method === "GET") {
++        getBody = text;
++        expect(checkedProblem(record(JSON.parse(text)))).toEqual(timeoutProblem);
++      } else expect(text).toBe("");
++      expect(response.headers.get("content-length")).toBe(String(Buffer.byteLength(getBody)));
++    }
++  }
++  for (const token of ["pos-01", "pos-9007199254740992"]) {
++    const response = await f.get(`${f.runtime.scope}beads/?limit=1`, {
++      headers: { ...minimumHeaders(seed, token), "if-none-match": "*" },
++    });
++    expect(response.status).toBe(503);
++    expect(checkedProblem(await body(response))).toEqual(timeoutProblem);
++    expect(response.headers.get("retry-after")).toBe("1");
++    expect(response.headers.get("bdp-scope-position")).toBe("pos-1");
++    expect(response.headers.get("bdp-scope-epoch")).toBe(tuple["bdp-scope-epoch"]);
++    expect(response.headers.get("bdp-authorization-view")).toBe(tuple["bdp-authorization-view"]);
++    expect(response.headers.has("x-bdp-development-limit")).toBe(false);
++  }
++  expect(waits).toBe(8);
++  // Excluded residuals: strict/parser-rejected routes stop at the early unknown-token gap;
++  // the incident-Link route is refused after classification. Both retain the private label.
++  for (const suffix of [
++    "types/",
++    "beads/a?view=links",
++    "beads/?limit=0",
++    "beads/?limit=1&limit=2",
++  ]) {
+     const response = await f.get(f.runtime.scope + suffix, { headers: tuple });
+     expect(response.status).toBe(500);
+     expect(response.headers.get("x-bdp-development-limit")).toBe("minimum-position");
+     expect(response.headers.has("bdp-scope-position")).toBe(false);
+     expect(await response.text()).toBe("");
+   }
++  for (const [query, status, code] of [
++    ["limit=33", 413, "limit-exceeded"],
++    [`selector=${encodeURIComponent("$[?")}`, 400, "invalid-parameter"],
++  ] as const) {
++    const response = await f.get(`${f.runtime.scope}beads/?${query}`, { headers: tuple });
++    expect(response.status).toBe(status);
++    expect(checkedProblem(await body(response))).toMatchObject({ status, code, retry: "never" });
++    expect(response.headers.get("bdp-scope-epoch")).toBe(tuple["bdp-scope-epoch"]);
++    expect(response.headers.get("bdp-authorization-view")).toBe(tuple["bdp-authorization-view"]);
++    expect(response.headers.get("bdp-scope-position")).toBe("pos-1");
++    expect(response.headers.has("x-bdp-development-limit")).toBe(false);
++  }
++  expect(waits).toBe(8);
+   const published = await f.runtime.replaceAuthorizationPolicy({ timeoutMs: 1000 });
+   let expectedBody: unknown;
+   for (const suffix of ["beads/a", "beads/missing", "beads/a?view=links"]) {
+@@ -4876,7 +4939,7 @@ it("waits only for existing current Resource unknown minima and keeps unsupporte
+     expect(response.headers.get("bdp-authorization-view")).toBe(published.authorizationView);
+     expect(response.headers.get("bdp-scope-position")).toBe("pos-1");
+   }
+-  expect(waits).toBe(2);
++  expect(waits).toBe(8);
+ });
+ 
+ it("compares retained sequence members and accepts deep input while preserving receiving failures", async () => {
+diff --git a/packages/server/src/transaction-read.test.ts b/packages/server/src/transaction-read.test.ts
+index dbc5d31..ff68e43 100644
+--- a/packages/server/src/transaction-read.test.ts
++++ b/packages/server/src/transaction-read.test.ts
+@@ -611,6 +611,122 @@ it("checks visible point rows and their minimum in the same entry and leaves the
+ });
+ 
+ describe("initial collection minimums", () => {
++  it("bounds unrecognized initial collection minima without retaining state or holding the owner", async () => {
++    const f = fixture();
++    const seeded = f.write([
++      ...seed,
++      {
++        operation: "createLink",
++        id: "links/out",
++        type: link,
++        source: "beads/a",
++        target: "beads/b",
++      },
++    ]);
++    expect(seeded.status).toBe("completed");
++    let entries = 0,
++      allocations = 0,
++      tick = 0,
++      ownerChecks = 0;
++    const waits: number[] = [];
++    let abortDuringWait: AbortController | undefined;
++    const owner: typeof f.store = {
++      ...f.store,
++      withRead: (callback) => {
++        entries++;
++        return f.store.withRead(callback);
++      },
++    };
++    const service = createTransactionService(owner, {
++      ownerLifetime: "service",
++      read: {
++        ...f.readOptions,
++        advertisedLimits: {
++          ...f.readOptions.advertisedLimits,
++          page: { defaultItems: 2, maximumItems: 32 },
++        },
++        pagination: {
++          ...f.readOptions.pagination,
++          maxPageItems: 32,
++          generateOpaqueToken: () => `unknown_minimum_${++allocations}`,
++        },
++      },
++      minimumReads: {
++        budgetMs: 7,
++        now: () => tick,
++        wait: async (ms) => {
++          waits.push(ms);
++          tick += ms;
++          // Bypass the attempt counter: an actual raw owner entry must work between attempts.
++          expect(f.store.withRead((_reader, context) => context.scopePosition)).toEqual({
++            kind: "read",
++            value: "pos-1",
++          });
++          ownerChecks++;
++          abortDuringWait?.abort();
++        },
++      },
++    });
++    const principal = { kind: "authenticated" as const, principal: { id: "principal" } };
++    const minimum = {
++      scopeEpoch: f.store.scopeEpoch,
++      authorizationView: "development-all-visible",
++      minimumPosition: "opaque",
++    };
++    try {
++      const initialEntries = entries;
++      for (const collection of ["beads", "links"] as const) {
++        for (const token of ["opaque", "pos-01", "pos-9007199254740992"]) {
++          const beforeEntries = entries,
++            beforeWaits = waits.length,
++            beforeTick = tick,
++            beforeOwnerChecks = ownerChecks;
++          await expect(
++            service
++              .readAtMinimum(principal, { ...minimum, minimumPosition: token })
++              .perform({ kind: "collection", collection, limit: 1 }),
++          ).rejects.toMatchObject({
++            reason: "catch-up-timeout",
++            context: {
++              scopeEpoch: minimum.scopeEpoch,
++              authorizationView: minimum.authorizationView,
++              scopePosition: "pos-1",
++            },
++          });
++          expect(entries - beforeEntries).toBe(3);
++          expect(waits.slice(beforeWaits)).toEqual([5, 2]);
++          expect(tick - beforeTick).toBe(7);
++          expect(ownerChecks - beforeOwnerChecks).toBe(2);
++          expect(allocations).toBe(0);
++        }
++      }
++      expect(entries - initialEntries).toBe(18);
++      expect(waits).toHaveLength(12);
++      const request = { kind: "collection", collection: "beads", limit: 1 } as const;
++      const preabort = new AbortController();
++      preabort.abort();
++      const beforeAbortEntries = entries,
++        beforeAbortWaits = waits.length;
++      await expect(
++        service.readAtMinimum(principal, minimum).perform(request, { signal: preabort.signal }),
++      ).rejects.toThrow("abort");
++      expect(entries).toBe(beforeAbortEntries);
++      expect(waits).toHaveLength(beforeAbortWaits);
++      abortDuringWait = new AbortController();
++      await expect(
++        service
++          .readAtMinimum(principal, minimum)
++          .perform(request, { signal: abortDuringWait.signal }),
++      ).rejects.toThrow("abort");
++      expect(entries - beforeAbortEntries).toBe(1);
++      expect(waits.slice(beforeAbortWaits)).toEqual([5]);
++      expect(ownerChecks).toBe(13);
++      expect(allocations).toBe(0);
++    } finally {
++      await service.close();
++    }
++  });
++
+   it("preserves behind-minimum control refusals without allocating retained state", async () => {
+     const f = fixture();
+     f.write(seed);
+diff --git a/packages/server/src/transaction-read.ts b/packages/server/src/transaction-read.ts
+index 9e88fca..df0707c 100644
+--- a/packages/server/src/transaction-read.ts
++++ b/packages/server/src/transaction-read.ts
+@@ -83,7 +83,9 @@ function dataOnlyReadRequest(request: ReadRequest): boolean {
+ }
+ 
+ /** Classify only own data fields. Authority receiving still validates the full request. */
+-export function currentReadMinimumKind(request: ReadRequest): "resource" | "missing" | "strict" {
++export function currentReadMinimumKind(
++  request: ReadRequest,
++): "resource" | "missing" | "initial-collection" | "strict" {
+   if (isProxy(request) || !request || typeof request !== "object") return "strict";
+   const fields = Object.getOwnPropertyDescriptors(request);
+   const data = (key: string): unknown => {
+@@ -96,11 +98,17 @@ export function currentReadMinimumKind(request: ReadRequest): "resource" | "miss
+   )
+     return "resource";
+   if (data("kind") === "bead-links" && data("continuation") === undefined) return "missing";
++  if (
++    data("kind") === "collection" &&
++    (data("collection") === "beads" || data("collection") === "links") &&
++    data("continuation") === undefined
++  )
++    return "initial-collection";
+   return "strict";
+ }
+ type MinimumCondition = Readonly<{
+   minimum: TransactionMinimum;
+-  kind: "resource" | "missing" | "strict";
++  kind: ReturnType<typeof currentReadMinimumKind>;
+ }>;
+ const minimumConditions = new WeakSet<object>();
+ function minimumCondition(
+@@ -205,7 +213,7 @@ export function createTransactionReadPlane(
+       const { minimum, kind } = capturedCondition(condition);
+       const current = transactionReadContexts(observation).current;
+       if (refusal?.code === "resource-not-found") {
+-        if (kind !== "strict") return;
++        if (kind === "resource" || kind === "missing") return;
+         try {
+           checkCurrentReadMinimum(minimum, current, false);
+           return;
+@@ -223,7 +231,11 @@ export function createTransactionReadPlane(
+           throw error;
+         }
+       }
+-      checkCurrentReadMinimum(minimum, current, kind === "resource");
++      checkCurrentReadMinimum(
++        minimum,
++        current,
++        kind === "resource" || kind === "initial-collection",
++      );
+     },
+     captureReadAuthorization: (reader, principal) => {
+       const policy = owner.captureReadAuthorization(reader, principal);

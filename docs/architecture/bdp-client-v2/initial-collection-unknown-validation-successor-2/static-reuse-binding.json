@@ -1,0 +1,37 @@
+{
+  "status": "VERIFIED_PREPARATION_ONLY_ROOT_ACCEPTANCE_REQUIRED",
+  "directory": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/initial-collection-unknown-validation-successor-1/run",
+  "stages": [
+    "typecheck",
+    "format-check",
+    "lint"
+  ],
+  "sourceIdentity": "897300116c07b9fcaf55ccc6755572b94973d0ce26b0198736108bb0410cbd77",
+  "sourceBinding": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/initial-collection-unknown-validation-successor-2/source-binding.json",
+    "sha256": "295488943bcd070fa5a6e3abfabfdf0d19230821dd438049310564cbcc953de3"
+  },
+  "tools": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/initial-collection-unknown-validation-successor-2/tools.json",
+    "sha256": "e0b8c1aac946408388abf0befe194b1f9a95d07cca5d4588c9b7ebf499d1bc33"
+  },
+  "records": {
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/initial-collection-unknown-validation-successor-1/run/typecheck.started.json": "adfb9f2cf56a53af6b264dd4590f86bdf4acf81e147813fe81915a91bd37f73e",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/initial-collection-unknown-validation-successor-1/run/typecheck.exit.json": "fafd27d2110c77a20c006252023e226dc60251deaacb84034370abbd8a7ce045",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/initial-collection-unknown-validation-successor-1/run/typecheck.log": "91d54ffbee73a3ac72294d090e58d77745f8b93edbf94b862807698273a6505a",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/initial-collection-unknown-validation-successor-1/run/typecheck.processes.jsonl": "1980b2a2d3fe899eda651299dc89747fb673d61dba24e3bf7f2497a11931ad01",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/initial-collection-unknown-validation-successor-1/run/format-check.started.json": "04ac30f21a45f751d797a9ba17ba6d9b8516518bd8e5903b900e14adcd6e37cc",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/initial-collection-unknown-validation-successor-1/run/format-check.exit.json": "9ac7b9534699f984809a58f0023f027d678e20f5e0ae20bfe5f402cfc28ef2ac",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/initial-collection-unknown-validation-successor-1/run/format-check.log": "2053baeaa6f9e89efc24bd1b360430bd34fa2829cd9f8e0f7db1d2e89b0eee3b",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/initial-collection-unknown-validation-successor-1/run/format-check.processes.jsonl": "99409de930fd0f1983b234a4f3144a1f9ca3f1336acc46c54999efa88731face",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/initial-collection-unknown-validation-successor-1/run/lint.started.json": "2d4c04825fe563ecd171f14514959ef19de0e607de4e2d5b89ad14788f35b533",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/initial-collection-unknown-validation-successor-1/run/lint.exit.json": "1d65dbad012eeed60c8f8ae220e1e63b24c440ea5258b2ac60d0713fd7c088ac",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/initial-collection-unknown-validation-successor-1/run/lint.log": "0ff637653a3ff6655a9de6073c064adf54eab4d13c37aef757cc063ff48a0674",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/initial-collection-unknown-validation-successor-1/run/lint.processes.jsonl": "4a896ef6ef1150ee0459954fd18e35de6297ce0ff3bfdae3a72c0ccae62a1234"
+  },
+  "rootStaticDisposition": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/initial-collection-unknown-validation-successor-1/root-disposition.json",
+    "sha256": "45337db81436a6ab6289a509dfbd77c634e1f0f0a4fe2d1faaf2ce48c8fd25bb"
+  },
+  "limits": "Three actual passed static stages from successor1 on exact unchanged source/tools; not rerun or relabeled. Interrupted focused-source is excluded."
+}

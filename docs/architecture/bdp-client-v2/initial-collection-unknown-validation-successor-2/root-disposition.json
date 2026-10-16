@@ -1,0 +1,16 @@
+{
+  "accepted": true,
+  "sourceBindingSha256": "295488943bcd070fa5a6e3abfabfdf0d19230821dd438049310564cbcc953de3",
+  "staticValidationAuthorized": true,
+  "runtimeValidationAuthorized": true,
+  "actualClaudeReviewDisposition": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/initial-collection-unknown-review/root-disposition.md",
+    "sha256": "6757a57dfa1e05a817d9e5a6e50197f1e069ef398642323c99705fe57f9b5d45"
+  },
+  "staticEvidenceReuseAccepted": true,
+  "staticReuseBinding": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/initial-collection-unknown-validation-successor-2/static-reuse-binding.json",
+    "sha256": "f6044b8ee86b96253c81d831bd0a4d1a7afd83df4b8b4ec8431031d7c257ff89"
+  },
+  "note": "Root inspected build-before-source correction, complete changed gates/supervisor and exact static reuse binding. Original interrupted attempt remains invalid. Release fresh-build and bind-fresh-build only; source tests await independent preparation closure. No static rerun."
+}
