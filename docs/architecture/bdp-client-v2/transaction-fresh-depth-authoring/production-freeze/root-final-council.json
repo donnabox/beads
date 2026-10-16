@@ -1,0 +1,20 @@
+{
+  "productionBinding": "4b240cbedf60075c024e589ef0bdce4b2dc842c8192dc2d6c6efe930d8337b3d",
+  "patch": "debcb1ba570c4ca6c603aabbd0da1922467650ae9fce10fd9914e23c773865cd",
+  "nativeReport": "10c61109487e587c437b3c443da9bbd63682146c12e89add7d2860dc66d0932b",
+  "claudeReport": "13071537627685c163916ff4ffaf07d3332360618fb7f56860f617c1af8acc67",
+  "claudeExit": {
+    "exitCode": 0,
+    "timeout": false,
+    "elapsedSeconds": 742.448288124986,
+    "inputsUnchanged": true,
+    "remainingGroup": [],
+    "stdoutSha256": "13071537627685c163916ff4ffaf07d3332360618fb7f56860f617c1af8acc67",
+    "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "scope": "eight frozen production files only; concurrent disjoint test authoring is excluded"
+  },
+  "fencingDisposition": "d11c3942c7f077f7c6131ffaa31073c62913b21218b6b94bdf9321c3cede61ab",
+  "rootDecision": "Accept all eight production files; low malformed-persisted-receipt explicit-maintain error-class difference disclosed, no normative sticky quarantine requirement. Transaction uncertainty fencing and atomic rollback preserved. Parsed JSON excludes sparse-array comparator case. Constant-factor doubleparse/materialization accepted, no population/performance claim.",
+  "productionChangesRequired": false,
+  "testsReviewAndExecutionStillRequired": true
+}
