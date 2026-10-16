@@ -1,0 +1,25 @@
+packages/server/src/transaction-read.test.ts format ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  × Formatter would have printed the following content:
+  
+     616  616 │       const seeded = f.write([
+     617  617 │         ...seed,
+     618      │ - ······{·operation:·"createLink",·id:·"links/out",·type:·link,·source:·"beads/a",·target:·"beads/b"·},
+          618 │ + ······{
+          619 │ + ········operation:·"createLink",
+          620 │ + ········id:·"links/out",
+          621 │ + ········type:·link,
+          622 │ + ········source:·"beads/a",
+          623 │ + ········target:·"beads/b",
+          624 │ + ······},
+     619  625 │       ]);
+     620  626 │       expect(seeded.status).toBe("completed");
+  
+
+Checked 4 files in 50ms. No fixes applied.
+Found 1 error.
+format ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  × Some errors were emitted while running checks.
+  
+

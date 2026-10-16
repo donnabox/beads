@@ -1,0 +1,43 @@
+{
+  "stages": {
+    "typecheck": {
+      "exit": 0,
+      "accepted": true,
+      "sourceIdentity": "bf8f3ee637bdca8734370fb0c4b607147b27d7c52ab4eac811d54eb53a5192b7",
+      "sourceUnchanged": true,
+      "elapsedSeconds": 10.596824083011597,
+      "forcedCleanup": false,
+      "errors": [],
+      "sampledPids": [
+        32285,
+        32310
+      ],
+      "remainingProcesses": [],
+      "runtimeDirectoriesStillPresent": [],
+      "logSha256": "91d54ffbee73a3ac72294d090e58d77745f8b93edbf94b862807698273a6505a"
+    },
+    "format-check": {
+      "exit": 1,
+      "accepted": false,
+      "sourceIdentity": "bf8f3ee637bdca8734370fb0c4b607147b27d7c52ab4eac811d54eb53a5192b7",
+      "sourceUnchanged": true,
+      "elapsedSeconds": 12.129507709061727,
+      "forcedCleanup": false,
+      "errors": [],
+      "sampledPids": [
+        34171
+      ],
+      "remainingProcesses": [],
+      "runtimeDirectoriesStillPresent": [],
+      "logSha256": "d2f2135f781c70af3b3d6516d618f129182ce4eb8493cd0a71bc525b7306292d"
+    }
+  },
+  "allSourceInputsUnchanged": true,
+  "sampledPidsAbsent": [
+    32285,
+    32310,
+    34171
+  ],
+  "stoppedBeforeLintAndRuntime": true,
+  "failure": "One test createLink object requires multiline formatting; compiler passed. Exact frozen draft remains unchanged while actual Claude review runs. No retry."
+}
