@@ -1,12 +1,12 @@
 # Preview 3 planning and execution
 
-Last checked: October 15, 2026, 20:13 PDT. This is a milestone snapshot, updated when the state changes; it is not a live CI dashboard.
+Last checked: October 15, 2026, 20:15 PDT. This is a milestone snapshot, updated when the state changes; it is not a live CI dashboard.
 
 This tracker covers the release plan and its execution. The active first phase is establishing a qualified Preview 3 integration branch. Proposed workstreams will be added to the release cutline only after their scope and qualification are decided; listing a workstream here will not itself commit it to Preview 3.
 
 ## Current state
 
-The final Preview 2 source is frozen at [`graph-preview2`](https://github.com/donnabox/beads/releases/tag/graph-preview2), commit `703bb13e91aa2cab2092443319139006d74242c8`. Fork `main` is still `40b3232456dfcbe621ea66ee55d635ac56634a1e`; upstream `main` is `773b537c75c3fdf7c38371d5da5cd3d98b615e71`. There is no published Preview 3 integration branch or PR yet.
+The final Preview 2 source is frozen at [`graph-preview2`](https://github.com/donnabox/beads/releases/tag/graph-preview2), commit `703bb13e91aa2cab2092443319139006d74242c8`. Fork `main` is still `40b3232456dfcbe621ea66ee55d635ac56634a1e`; upstream `main` is `773b537c75c3fdf7c38371d5da5cd3d98b615e71`. This draft PR tracks planning and execution; there is no published Preview 3 integration branch or source catch-up PR yet.
 
 A local, uncommitted merge rehearsal combines final Preview 2 with earlier upstream commit `b911ed28cd47da47e167484f32db586e7ad8a279`. All 30 recorded conflicts have provisional resolutions, but the merged source has not passed build or test qualification. Upstream has since advanced by one commit affecting 15 files, which the successor must include.
 
