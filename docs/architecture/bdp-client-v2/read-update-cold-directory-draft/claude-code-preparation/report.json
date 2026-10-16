@@ -1,0 +1,29 @@
+{
+  "closed": true,
+  "head": "bb9600f1b8b6f623e753543ed5792005eb9aacee",
+  "tree": "aa8f7af9c4cdfafbd80547449ec2369f92071ab7",
+  "promptBytes": 112601,
+  "promptSha256": "cff8e9b8cac026fa2c8fc0761fc0347d519551251db35702aacf1a9e230d0124",
+  "bindingSha256": "d6696e2d55539e0fc4368ea951aa0b1d23b33dded70e9ad27a89e8b68515c8b1",
+  "runnerSha256": "eaf646b0a313fe1b61e79c782fbc35e7fbd7b1f4287f6d49cab1155e27708ab0",
+  "excerptCount": 17,
+  "sourceCount": 16,
+  "argv": [
+    "/opt/homebrew/bin/claude",
+    "--safe-mode",
+    "-p",
+    "--tools",
+    "",
+    "--no-session-persistence"
+  ],
+  "timeoutSeconds": 900,
+  "termAtSeconds": 895,
+  "rootReleaseFile": "absent; root must independently set binding release true and create root-release.json",
+  "omissions": [
+    "unchanged historical matrix corpus and controls",
+    "shared writer internals",
+    "unrelated schema branches and validation format internals",
+    "earlier plan/review chronology",
+    "unchanged bootstrap/full aggregate bodies and serializer implementation summarized with explicit dependency boundary"
+  ]
+}

@@ -4,4 +4,4 @@ A negative control validates the real directory, then removes only updateLink fr
 
 Validation: pinned build/typecheck/format passed. Six selected CPU callbacks passed initially; the seventh exposed a historical coverage-size allowance. After correcting that data-only allowance, the affected callback passed. The original failure is retained. Actual Claude code review is running.
 
-Installed validation pending: selected positive 21 HTTP / 2 children; negative expected 3 / maximum 21 HTTP / 2 children; full two-shard aggregate 2,303 HTTP / 57 children including 44 setup POSTs. Combined 2,327 expected / 2,345 maximum HTTP / 61 children. No installed result or complete profile qualification is claimed yet.
+Fresh installed validation passed on clean bb9600f1: cold-navigation positive, expected schema-failure control, and both cumulative shards. Actual total 2,327 HTTP requests and 61 child lifetimes; exact external package/dependency/payload bindings verified, all sampled processes and runtime directories absent after cleanup. This validates the new row and existing cumulative subset, not the complete profile.
