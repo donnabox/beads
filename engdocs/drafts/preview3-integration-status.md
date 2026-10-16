@@ -1,6 +1,6 @@
 # Preview 3 planning and execution
 
-Last checked: October 15, 2026, 22:00 PDT. This is a milestone snapshot, updated when the state changes; it is not a live CI dashboard.
+Last checked: October 15, 2026, 22:37 PDT. This is a milestone snapshot, updated when the state changes; it is not a live CI dashboard.
 
 This tracker covers the release plan and its execution. The active first phase is establishing a qualified Preview 3 integration branch. The integration-base milestones below are only what we need to begin producing Preview 3 builds; they are not the complete release plan. The selected Memory target below is a requirement commitment, not a qualification claim; other workstreams enter the cutline only by explicit decision.
 
@@ -28,6 +28,8 @@ These are target outcomes, not claims about current code. The owners should turn
 
 Acceptance must cover the corresponding [Memory proposal](https://github.com/gastownhall/beads/issues/5877) requirements and whole scenarios, including S1–S3, S5, S7–S10, and S15–S16, on the exact installed candidate in embedded and ordinary shared-server modes. Any scenario still excluded at the Preview 3 cutline needs an explicit Donna-approved deferral; a partial journey does not count as a pass.
 
+Polly completed a **planning handoff** for the shared History/Provenance slice, covering Memory R12–R16 and S3/S7/S15–S16 against frozen Preview 2 source and Jim's current History work. Its provisional source order is: (1) attributable accepted revisions and complete exact reads/versions/compare; (2) a shared ordered project History producer, feed and truthful removal evidence; (3) guarded same-ID restore using that ordered producer. The first step alone does not complete the selected slice. Donna must settle terminal deletion semantics before implementation; a product direction does not by itself amend BDP schemas, examples, receipts, Events or conformance. The packet also requires an accepted cross-kind writer/output coverage matrix, canonical Memory comparison fields with Melinda/Trish, time-to-position and cursor rules, current admission checks on restore, Jim's native mint/participation fences, and real removal producers. These are entry gates, not additional completed features. Codex and Claude reviewed the plan and their findings were folded in; Gemini review was unavailable due quota. No source PR, test result, or protocol adoption is claimed from this planning review.
+
 ## Parallel workstreams to assess
 
 These are planning lanes, not promises that all their changes will ship in Preview 3. Each lane needs a concrete proposal, acceptance scenarios, dependencies, an owner, and a qualified source PR before it enters the cutline.
@@ -36,7 +38,7 @@ These are planning lanes, not promises that all their changes will ship in Previ
 | --- | --- | --- |
 | Type system, metatype, Issue/Dependency definitions | Trish owns design and BDP/CLI contract; her separate implementation agent is working on the runtime. Review the implementable Type draft and qualify the foundation Memory Types require. | Required foundation for selected Memory Types; broader revamp boundary to decide |
 | Memory Bead/Link Type definitions and record identity | Melinda works directly with Donna; coordinate with Trish's Type foundation and the selected requirements above. | Selected target; design and qualification pending |
-| Memory History and Provenance V2 | Polly owns the selected shared History/revision-provenance outcomes; first reconcile boundaries with Jim's existing History work and Donna's pending provenance design. | Selected target; design and qualification pending |
+| Memory History and Provenance V2 | Polly's reviewed planning packet names three provisional source partitions and cross-owner entry gates. Reconcile Jim's History mint/participation seams, Donna's pending deletion/provenance rulings, Melinda's record shape, Trish's Link rules and Vickie's BDP contract before source work. | Selected target; planning handoff complete, semantics and qualification pending |
 | Link References and lifecycle | Trish extends her Link-constraint work to the selected Reference, deletion, and structured-record outcomes, with Melinda/Polly dependencies explicit. | Selected target; design and qualification pending |
 | Memory proposal gap audit | Janet has completed a source-level draft covering all 32 requirements and 16 scenarios against exact final Preview 2. Donna and Janet will edit it together before commenting on the proposal; the assessment is not a new scenario test pass or Preview 3 cutline. | Draft complete; edit pass pending |
 | Additional Provenance V2 beyond selected Memory revision behavior | Finish the broader design separately; activity provenance and unrelated domains are separate scope choices. | To decide |
@@ -69,7 +71,7 @@ The source-level Memory report card draft now assesses all 32 requirements and 1
 
 - [ ] Review and land the Type-system foundation and an implementable BDP Types draft; qualify the product implementation separately.
 - [ ] Melinda and Donna define the selected Memory Bead/Link Types and complete record/identity contract on the reviewed Type foundation; qualify the resulting implementation.
-- [ ] Polly reconciles Jim's History work and the Provenance V2 design, then lands and qualifies the selected shared Memory History/revision-provenance outcomes.
+- [ ] Settle Polly's reviewed History/Provenance entry gates with Donna and the named owners, then implement and qualify the provisional accepted-revision → ordered-feed/removal → guarded-restore partitions. The planning packet is complete; no source partition has landed.
 - [ ] Trish reconciles Link constraints, Memory Types, and retained-version rules, then lands and qualifies the selected Link Reference/lifecycle outcomes.
 - [ ] Janet and Donna audit each Memory proposal requirement and scenario against verified behavior, then name Preview 3 candidates and explicit deferrals.
 - [ ] Convert the selected Memory requirements into exact CLI/BDP acceptance cases and an explicit dependency order; record any Donna-approved deferrals.
