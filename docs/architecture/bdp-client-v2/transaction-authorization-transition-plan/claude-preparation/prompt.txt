@@ -1,0 +1,1091 @@
+Review this concrete private authorization-transition implementation PLAN, not code already authored. Do not write or modify files. Output findings only in stdout. Tools disabled; use supplied exact source only, identify any necessary missing context. No model override. Give one complete standalone numbered findings-first answer (severity/location/issue/concrete remedy), then concise missing-context list and verdict. Keep answer bounded, approximately <=2500 words, and do not reference omitted findings or a previous review. Do not infer that pending product decisions are settled. Root wants safe, useful incremental architecture rather than a throwaway reset-only API. Explicitly assess scope-wide all→empty versus a reusable bounded principal→immutable policy snapshot seam; empty is the first test policy, not a claim of partial projection completeness. Analyze durable writer-view fact coupling, expected retained-handle refusal, atomic publication and queued SSE delivery, receipt escape paths, create authorization and fail-closed reopen. Do not demand arbitrary limits increases or a new remote admin API. This is a new target, no prior Claude verdict. Evidence counts are proposed and not executed.
+
+# Private authorization transition — concrete plan-review candidate
+
+Planning only. Basis actual merged67a2842e3f1918e70978f745587cf11eaf0df5a8/tree596abe870220fb61ce606f8382a9da52d554d063. Existing checkout HEADc18c has that identical tree; it is not relabeled the merge. No authoring/execution/advertisement authorization. Supporting the sole Autonomous profile completion U2/T3 plan. Read the source audit76df46e for the established gap; this candidate corrects/qualifies its preliminary witness and narrows the architectural review question.
+
+## Deliverable and architecture question
+
+Implement a trusted in-process owner policy transition that demonstrably removes actual Resource visibility, rotates a durable Authorization View and fences old handles/streams. No remote administration endpoint, test-only IPC, new bearer/config grammar, public export or installed qualification claim. Preserve the public Read-only admission gate. The first policy fixture is all-visible → empty with mutation permission explicitly disabled as part of the same administrative choice. This is not a protocol inference that read-none always prohibits create.
+
+Prefer a reusable immutable authorization-snapshot boundary (trusted principal, current view identity, read policy and mutation permission captured atomically), rather than boolean switches scattered through endpoint code. The first implementation may provide only the two bounded built-in policies. A proposed private owner operation replaces the policy snapshot; HTTP cannot name policies or invoke it. The council must explicitly assess whether the smallest secure initial ownership is one Scope-wide binding or a bounded principal→snapshot map using the already trusted principal. Do not approve a throwaway all→empty-only storage/API design if adding per-principal partial policy later would require rewriting retained facts. Root chooses this routine architecture after review; it is not a new operator question. There is no claim that the first empty projection proves partial ACL/owned closure completeness.
+
+## Required behavior and storage constraints
+
+1. Capture immutable authorization+current epoch/position in the same guarded owner observation. All current reads and active delivery leases use that snapshot. No independent second policy read that can race the observed Resource data. Repeat same policy is a no-op; an actual projection change allocates a new stable opaque view. No artificial Scope transaction/position/revision is minted for policy administration.
+2. Persist policy generation/view atomically before publishing replacement/cancellation. Failed commit leaves old snapshot/leases active. Reopen retains the replacement identity. Proposed compatibility strategy: an explicit private policy-storage revision in the installation configuration and bounded durable metadata record, initialized in the same open transaction. Migrate only the exact supported old configuration to the new revision, preserving all graph/group/receipt bytes, epoch/position and initial development-all-visible view. Old binaries must reject the new configuration rather than ignore a revocation. No reset-on-reopen or missing-record fallback to all-visible. A corrupt/incomplete policy record remains a fault. Exact format/version literal and compatible configuration preimage must be measured before authoring release.
+3. Retained groups are authority facts, not current-view rendered facts. Preserve original group.authorizatonView bytes and validate retained epoch/position/ordinal/framing independently of current serving projection. Never simply delete the current equality check. For empty view, render no Resource Events and identifier-free projection-advance Changes groups (no transaction/resource IDs, empty arrays/eventCount0). Fresh empty Snapshot/collection is empty; Resource GET is404. This bounds historical reprojection: old-view cursors fail; new empty view requires no arbitrary pre/post filtering. Partial-view and grant/regrant projections remain followups.
+4. Keep principal ownership of receipts; current same-principal receipt GET retains disposition/positions but withholds every record/allocation as normative. A policy that explicitly disables mutation uses the existing forbidden authorization path for new POSTs, including create; no admission/effect/revision/group. In this prototype exact replay POST is also403 because Scope mutation permission was deliberately revoked, while receipt GET remains available. This replaces the preliminary audit's replay-withheld POST oracle; it does not change protocol retry identity or re-execute anything. The runtime must resolve current mutation permission from the same trusted snapshot rather than leaving immutable credential.canMutate as a bypass. Direct owner mutation entry must enforce the selected private restriction as well.
+5. Valid old-view collection, Snapshot, Event and Changes tokens cannot return old data. For an issued, unexpired, same authenticated Scope-visible Snapshot handle/continuation, use409 foreign-view (shared code table1904, authorization fences3714–3718, Snapshot ordinary epoch/view failures5973); unknown/bad/undisclosable tokens remain404 and actual expiration410. View mismatch is recognized after issued-token legitimacy/nondisclosure but before old representation materialization; corruption still faults. New code must separate expected view mismatch from snapshot.disposition's current integrity check. No minimum fields, so retained Snapshot/minimum and missing-target/minimum precedence are untouched.
+6. Preserve no-new-old-view-frame admission after the serialized transition. Abort old-view stream leases synchronously when publishing the new snapshot; check the lease before each frame and subsequent owner pull. Already accepted writes/queued network bytes are not recalled. No promise of instantaneous client silence. Closing a stream already at200 emits no second HTTP response or invented protocol Event. Reconnect with actual old checkpoint fails409 even when start=now is still present. Fresh current-view start is valid and does not replay old identities.
+
+## Concrete finite witnesses
+
+Main real-runtime callback: one owner/store/listener, one authenticated principal, one active Changes SSE stream; exactly16 HTTP. (1) one batch creates33 small Beads; (2) GET visible Bead; (3) GET collection limit1/save actual next; (4) GET Snapshot/save manifest/checkpoint/beads.next; (5) finite Scope Events/save last actual id; (6) Changes SSE start=now/await headers+lease registration. Perform trusted in-process transition (zeroHTTP). (7) Bead404; (8) collection empty200; (9) fresh Snapshot empty200/new view; (10) old manifest409; (11) old actual Snapshot next409; (12) old collection next409; (13) Changes start=now+Last-Event-ID from request4's **Snapshot checkpoint**,409; (14) Scope Events old Event id409; (15) original seed receipt200 withheld with original disposition/positions; (16) exact seed POST replay403 due explicit mutation-permission revocation, no second effect. Validate full schema/body, status/context and no old IDs before fingerprints. No generic200 or response digest substitutes for projection assertions.
+
+Snapshot traversal was checked: transaction-snapshot.ts580–602 constructs manifest with page(...,bead/link); page531–542 returns items and next. With33 small rows and snapshotPageItems32, request4 includes the real first32 and actual next directly. **No extra first-page GET is necessary.** Pin that schema/shape; never guess the page URL. Seed metadata/body bounds and literal bytes remain a pre-authoring measurement task, not falsely completed evidence.
+
+A second active Event SSE source callback uses4 HTTP: seed2 Beads; finite Events/save id; live SSE **without after**, so both initial Events are eligible; after transition fresh finite Events200 empty. HTTP milestone proves real registered stream cancellation; it alone is not deterministic queued-frame proof. Add one zero-HTTP owner/pump test using existing Sink backpressure pattern: materialize at least2 actual Events, accept first write(false), perform real policy transition while blocked, emit drain, require no second write/no owner pull and cancellation/listener cleanup. No fabricated read results. This directly tests a pending packet, unlike a caught-up saved-id stream. One separate owner/directory, no listener, no child. Actual source HTTPsubtotal20 across2 owners/listeners; pump adds1 owner/directory.
+
+Sensitivity: one emitted or copied-source control suppresses only transition publication/cancellation, runs the main callback, and must fail the named generation-and-lease oracle after its first6 HTTP (max16 under stop-first callback). Retain actual unchanged view/lease facts and original failure. This is negative sensitivity, not a successful ordinary invocation. Additional owner CPU cases pin durable reopen/no-op/atomic rollback, no Resource/fact mutation, unknown-token nondisclosure versus known foreign handles, and fresh empty Changes projection. Exact title/call/owner accounting must be finalized from the authored source before execution; do not present this proposal as a measured complete command ledger.
+
+Use existing120s supervisor; no increases to runtime frame/page/item/stream limits. Use bounded raw readers, explicit no redirects, deterministic lease/write milestones, individually drained cleanup callbacks and primary+cleanup error retention. Keep unknown launch/stop directories. No auto retries. Fresh installed proof is a later binding of an actual supported administration mechanism, not a fake test-only control channel.
+
+## Scope and review gates
+
+Likely production seam ownership: transaction-store; transaction-read; transaction-events/changefeed; transaction-snapshot; transaction-service/runtime/SSE; runtime-configuration actual metadata/mutation permission. Reuse authority-read capture/visibility and existing stream/pagination helpers. No whole-schema/spec rewrite: existing law supplies behavior; any private interface documentation belongs in progress/source docs. Exact caller/type fanout and supported stored-format migration must be frozen before authoring, not delegated to a broad cleanup. This packet asks whether that scope can be narrowed safely to a reusable principal snapshot foundation while still exercising real empty projection/fences. A narrower foundation may ship under admission hold only if blocked dependent routes fail safely and no claim of complete read authorization is made.
+
+Native plus one actual supplied-context Claude plan review precede root authoring release. No new S1/G2/unknown-minimum ruling, Type/schema applicability work, public discovery, protected product inspection or external coordination. The original Slack feedback is a review prompt, not authority.
+
+# Exact relevant committed context
+
+## docs/specs/bdp.md:1573-1584
+1573: pagination, but only within the request's Authorization View. A cursor
+1574: continues one logical projected snapshot: every page belongs to the same
+1575: selected set, authorization projection, and Resource revisions as the initial
+1576: request. The server-generated `next` URL is authoritative. It carries the
+1577: opaque cursor plus any parameters needed to continue that snapshot. `next` is
+1578: `null` after its final page. In Read and Read+Update, the opaque cursor itself
+1579: carries or indexes the authorization-projection fence. Clients neither inspect
+1580: it nor need a separate Authorization View field. If the authority can no
+1581: longer continue the snapshot, or if the request no longer belongs to that
+1582: projection, it returns an expired- or foreign-view-cursor problem rather than
+1583: silently restarting against newer state.
+1584: 
+## docs/specs/bdp.md:1900-1905
+1900: | `forbidden` | `authorization` | 403 | `after-state-change` |
+1901: | `resource-not-found` | `not-found` | 404 | `after-state-change` |
+1902: | `resource-pruned` | `gone` | 410 | `never` |
+1903: | `resource-erased` | `gone` | 410 | `never` |
+1904: | `foreign-view` | `conflict` | 409 | `after-state-change` |
+1905: | `cursor-expired` | `gone` | 410 | `after-state-change` |
+## docs/specs/bdp.md:3707-3718
+3707: ### Authorization fences
+3708: 
+3709: Each view has an opaque, equality-only **Authorization View token**. The
+3710: token remains stable across restarts and failover that preserve the same
+3711: projection. It changes whenever a grant, revocation, policy replacement, or
+3712: other authority change may alter that projection. Snapshot handles, read and
+3713: Event cursors, changefeed checkpoints, minimum-read barriers, and cached
+3714: representations are bound to both the Scope epoch and the Authorization View
+3715: token. A token change requires a fresh snapshot. BDP v0 does not require
+3716: incremental authorization-policy Events. The token is not a credential, and
+3717: possessing or replaying it does not grant access to that view.
+3718: 
+## docs/specs/bdp.md:5234-5253
+5234: receipt as retained projected under the serving request's current
+5235: Authorization View. An entry that carries a Resource record — `created`
+5236: or `updated` — is served only when the current view projects that record
+5237: as retained, whether or not the Resource still exists or is at that
+5238: revision, and the view's closure over owned Links applies: hiding a Bead
+5239: hides the entries of every Bead that owns a Link to it and of those Links.
+5240: An entry the view does not project is served as `withheld`, carrying only
+5241: `operationIndex` and, when present, `operationName`; an `allocated` entry
+5242: is re-authorized the same way and carries `withheld` `true` in place of its
+5243: identity. Entries that carry no record — `matched` counts, `deleted` and
+5244: `erased` identities, and `withheld` entries — and a `failed` receipt's
+5245: `problem` are the transaction's own execution facts, disclosed to the
+5246: principal when it executed, and are served as retained. Alias result entries
+5247: are non-Resource execution facts under this same rule.
+5248: When a `completed`
+5249: receipt's every entry is withheld, the receipt carries `detail` `withheld`
+5250: and neither `results`, `next`, nor `allocated`; a `failed` receipt is never
+5251: `withheld`. The disposition, `requiredPosition`, and `effectPosition` are
+5252: never withheld. Withholding is authorization, never deletion: an entry
+5253: whose Resource was since deleted is served like any other when the view
+## docs/specs/bdp.md:5957-5985
+5957: remains valid. GET retrieves the same manifest, including its identity,
+5958: anchor, checkpoint, expiry, erasure ledger, and initial stream pages; it MUST
+5959: NOT create a replacement snapshot or extend `expiresAt`. The authority retains
+5960: or reconstructs that manifest. Existing epoch/view validity and erasure fences
+5961: apply. An authorized expired or no-longer-available snapshot handle returns
+5962: `410 cursor-expired`; an unknown or undisclosable target retains uniform
+5963: `404 resource-not-found`. Actual service inability before the promised expiry
+5964: is a service failure, not an expiration diagnosis.
+5965: 
+5966: The following snapshot table summarizes the existing scoped response laws
+5967: and shared HTTP failures. It does not exclude ordinary applicable failures,
+5968: including authentication and rate limiting.
+5969: 
+5970: | Snapshot target | Method | Response |
+5971: | --- | --- | --- |
+5972: | discovered creation target | GET, HEAD | `200` snapshot manifest metadata/body as appropriate; ordinary authentication, authorization, request, consistency, and service failures |
+5973: | manifest `id` or supplied stream continuation | GET, HEAD | `200` the retained manifest or stream page; `404 resource-not-found` for an unknown/undisclosable target; `410 cursor-expired` for an authorized expired/unavailable handle, including timed or erasure expiry; ordinary epoch/view, minimum-position, and service failures |
+5974: | either target | other methods | `405`, `Allow: GET, HEAD`, with CORS `OPTIONS` handled under the shared rules |
+5975: 
+5976: The shared native `406`, conditional `304`/`412`, and bodyless `500` rules
+5977: apply. No conditional shortcut bypasses a snapshot fence. HEAD has the
+5978: lifecycle and body rules under [Conditional reads and HEAD](#conditional-reads-and-head).
+5979: 
+5980: Each non-null `next` is an absolute URL that the server generates. That URL is
+5981: bound to the snapshot identity, the stream kind, the Scope epoch, the
+5982: Authorization View, the position, and the expiry. Bead and Link streams may be
+5983: paged independently, but they never move to a newer anchor. The authority
+5984: keeps the snapshot continuable through `expiresAt`. If the authority cannot
+5985: serve a page before then, that is a service failure, not an expired-cursor
+## docs/specs/bdp.md:6105-6117
+6105: advance the Authorization View, and identity-bearing tombstones for Resources
+6106: that leave it. For an underlying deletion, a tombstone contains
+6107: `resourceKind`, the absolute `id`, the immutable `type`, and the final live
+6108: `revision`. For any other projection removal within a stable view, the
+6109: tombstone contains the last values visible in that view and does not assert
+6110: underlying deletion. A grant or revocation instead changes the view token and
+6111: requires a fresh snapshot. At most one normalized `changes` entry exists per
+6112: affected Resource.
+6113: `events` retains its visible semantic operation order and every Event's
+6114: zero-based authority-group `ordinal`, including gaps left by hidden facts.
+6115: Consumers do not derive application Events from postimages.
+6116: 
+6117: On the wire, a change group carries `scopeEpoch`, `authorizationView`,
+## docs/specs/bdp.md:6135-6161
+6135: as the group is served. A finite read's `after` is the exclusive checkpoint
+6136: the page continues from: the requested `after`, or, for `start=now`, the
+6137: head checkpoint the authority observed when it admitted the request. The
+6138: bundle defines `changeGroup`, `stateChange`, `erasureRecord`, and the
+6139: finite read's page as `changefeedPage`.
+6140: 
+6141: When a transaction has no visible effect, the group is instead a projection
+6142: advance that carries no identifiers:
+6143: 
+6144: ```json
+6145: {
+6146:   "scopeEpoch": "opaque-scope-epoch",
+6147:   "authorizationView": "opaque-authorization-view",
+6148:   "checkpoint": "opaque-checkpoint-44",
+6149:   "position": "opaque-position-44",
+6150:   "previousPosition": "opaque-position-43",
+6151:   "projectionAdvance": true,
+6152:   "eventCount": 0,
+6153:   "changes": [],
+6154:   "erasures": [],
+6155:   "events": []
+6156: }
+6157: ```
+6158: 
+6159: It omits `transaction` and all Resource-derived values. It deliberately
+6160: reveals that an authority transaction occupied the position, but nothing about
+6161: its identity or contents.
+## docs/specs/bdp.md:6170-6186
+6170: per SSE message. The SSE `id` is the group's checkpoint, `event` is
+6171: `change-group`, and `data` is the complete JSON group. On automatic reconnect,
+6172: `Last-Event-ID` overrides the original `after` value or `start=now` intent;
+6173: replay begins exclusively after that checkpoint. A checkpoint supplied
+6174: for changefeed reconnect, whether through `Last-Event-ID` or `after`, MUST
+6175: be the client's durable checkpoint under the atomic-application rule above.
+6176: An SSE implementation's remembered last-event ID records transport progress,
+6177: not durable application; the client MUST NOT let an unapplied last-event ID
+6178: override its durable checkpoint on reconnect. One conforming implementation
+6179: uses an SSE reader with client-controlled reconnects: it disables automatic
+6180: reconnection and opens each fresh request with its durable checkpoint in
+6181: `after` and no `Last-Event-ID` header. This is an implementation example,
+6182: not a separate transport requirement. A stale, unavailable,
+6183: foreign-epoch, or foreign-view checkpoint fails explicitly and requires a new
+6184: snapshot. The authority never advances it silently to
+6185: `minimumReplayPosition`. Existing caught-up streams cross an erasure
+6186: publication only under [Version erasure](#version-erasure);
+## docs/specs/bdp.md:6198-6209
+6198: The discovered `events/` Resource is the application-facing Scope Event
+6199: Source. A Resource-scoped Event Source is selected with `view=events` directly
+6200: on the Bead or Link URL. These are deterministic projections of Events already
+6201: committed inside Scope change groups. They are not independent logs, and they
+6202: are not the lossless replication changefeed. An Event is visible only when its
+6203: fact is part of the projected transition: `created` and `linked` references
+6204: are visible in the post-state, `deleted` and `unlinked` references were
+6205: visible in the pre-state, and `updated` references are visible in both. Its
+6206: cursor is bound to that view. A changed view token requires a new snapshot or
+6207: Event-Source start, according to the source's retention contract. A finite
+6208: read returns Events in source order:
+6209: 
+## packages/server/src/transaction-store.ts:245-253
+245: /** Owns a single SQLite connection under persistent EXCLUSIVE locking. Admission
+246:  * is durable separately; graph/positions/group/terminal receipt are one commit.
+247:  * Startup retracts abandoned pending receipts instead of running requests itself.
+248:  * Fixed all-visible private policy only; this is not an authentication boundary. */
+249: export function openTransactionStore(options: TransactionStoreOptions) {
+250:   const scope = parseCanonicalScope(options.scope);
+251:   const view = "development-all-visible";
+252:   if (Buffer.byteLength(json(`${scope}events/`)) > TRANSACTION_RUNTIME_LIMITS.scopeSourceBytes)
+253:     throw new TypeError("transaction Scope exceeds private materialization bound");
+## packages/server/src/transaction-store.ts:284-297
+284:   const configuration = json({
+285:     format,
+286:     receiptMaximumItems,
+287:     snapshotLimits: TRANSACTION_SNAPSHOT_LIMITS,
+288:     snapshotTokenPolicy: TRANSACTION_SNAPSHOT_TOKEN_POLICY,
+289:     authorizationView: view,
+290:     identityPolicy,
+291:     contractIdentity: compiled?.identity ?? null,
+292:     runtimeLimits: TRANSACTION_RUNTIME_LIMITS,
+293:     scope,
+294:     types: [...installed].sort(([a], [b]) => (a < b ? -1 : a > b ? 1 : 0)),
+295:   });
+296:   const clock = options.clock ?? Date.now;
+297:   const maintenanceInterval = options.maintenanceIntervalMs ?? 1000;
+## packages/server/src/transaction-store.ts:348-399
+348:     return value;
+349:   }
+350:   function enter<T>(run: () => T): T {
+351:     if (ownerFailure) throw ownerFailure;
+352:     if (maintenanceFailure)
+353:       throw new Error("transaction maintenance failed; owner fenced", maintenanceFailure);
+354:     if (closed || busy) throw new Error("transaction store closed or reentrant");
+355:     busy = true;
+356:     try {
+357:       return run();
+358:     } finally {
+359:       busy = false;
+360:     }
+361:   }
+362:   function fence(cause: unknown): Error {
+363:     clearInterval(maintenanceTimer);
+364:     // Cleanup can add the original application error to an earlier storage
+365:     // failure. Replace the wrapper; mutating its cause would create a cycle.
+366:     ownerFailure = new Error("transaction storage failure; owner fenced; reopen before use", {
+367:       cause,
+368:     });
+369:     return ownerFailure;
+370:   }
+371:   function atomic<T>(run: () => T): T {
+372:     if (ownerFailure) throw ownerFailure;
+373:     let committing = false;
+374:     try {
+375:       db.exec("BEGIN IMMEDIATE");
+376:       const value = run();
+377:       committing = true;
+378:       db.exec("COMMIT");
+379:       return value;
+380:     } catch (error) {
+381:       let cleanRollback = false;
+382:       let cause: unknown = error;
+383:       try {
+384:         if (db.isTransaction) {
+385:           db.exec("ROLLBACK");
+386:           cleanRollback = !db.isTransaction;
+387:         }
+388:       } catch (rollback) {
+389:         cause = new AggregateError([error, rollback], "transaction and rollback failed");
+390:       }
+391:       const sqlite =
+392:         error instanceof Error && "code" in error && String(error.code).startsWith("ERR_SQLITE");
+393:       const constraint =
+394:         sqlite &&
+395:         "errcode" in error &&
+396:         typeof error.errcode === "number" &&
+397:         Number.isInteger(error.errcode) &&
+398:         (error.errcode & 0xff) === 19;
+399:       // Even a COMMIT that throws after taking effect has an uncertain outcome.
+## packages/server/src/transaction-store.ts:527-550
+527:   try {
+528:     db.exec(
+529:       "PRAGMA journal_mode=DELETE; PRAGMA synchronous=FULL; PRAGMA locking_mode=EXCLUSIVE; PRAGMA busy_timeout=0",
+530:     );
+531:     recoveredPending = atomic(() => {
+532:       if (options.create) {
+533:         db.exec(schema);
+534:         const put = db.prepare("INSERT INTO metadata VALUES(?,?)");
+535:         put.run("configuration", configuration);
+536:         put.run("contractCapture", capture);
+537:         put.run("epoch", randomUUID());
+538:         put.run("position", "0");
+539:       } else {
+540:         const storedConfiguration = metadata("configuration");
+541:         if (JSON.parse(storedConfiguration).identityPolicy !== identityPolicy)
+542:           throw new Error(
+543:             "transaction identity policy mismatch; explicit new-store provisioning required",
+544:           );
+545:         if (storedConfiguration !== configuration)
+546:           throw new Error("transaction installation mismatch");
+547:         // Exact bytes validate retained capture, including constant witnesses, even
+548:         // if the stored claimed identity was left unchanged by corruption.
+549:         const captureLength = db
+550:           .prepare(
+## packages/server/src/transaction-store.ts:576-599
+576:   // No named policy registry exists in this fixed all-visible development owner.
+577:   const readConfiguration = Object.freeze({
+578:     scopeEpoch: epoch,
+579:     authorizationView: view,
+580:     receiptMaximumItems,
+581:     scopeSnapshot: Object.freeze({
+582:       limits: TRANSACTION_SNAPSHOT_LIMITS,
+583:       tokenPolicy: TRANSACTION_SNAPSHOT_TOKEN_POLICY,
+584:     }),
+585:     installedTypes: Object.freeze(descriptors),
+586:     scopeConfiguration: Object.freeze({
+587:       policyIdentity: view,
+588:       configurationIdentity: configuration,
+589:       maximumEndpointMultiplicity: Object.freeze([]),
+590:     }),
+591:   });
+592:   function readContext(): TransactionReadContext {
+593:     const position = metadata("position");
+594:     if (!/^(0|[1-9][0-9]*)$/.test(position) || !Number.isSafeInteger(Number(position)))
+595:       throw new Error("invalid transaction read position");
+596:     return Object.freeze({
+597:       scopeEpoch: epoch,
+598:       authorizationView: view,
+599:       scopePosition: `pos-${position}`,
+## packages/server/src/transaction-store.ts:800-846
+800:       ...receipt,
+801:       results: (receipt.results as readonly unknown[]).slice(0, plan.maximum),
+802:       next: plan.pages[0] ? pageUrl(receipt.id, plan.pages[0].token) : null,
+803:     };
+804:   }
+805:   // Fixed all-visible projection and current position are captured before this
+806:   // authoritative transaction releases. No second clock/retention observation.
+807:   function observeReceipt(
+808:     receipt: TransactionReceipt,
+809:     context = readContext(),
+810:   ): TransactionReceiptObservation {
+811:     if (receipt.scopeEpoch !== context.scopeEpoch)
+812:       throw new Error("receipt epoch differs from serving owner", {
+813:         cause: { id: receipt.id, key: receipt.idempotencyKey },
+814:       });
+815:     for (const field of ["requiredPosition", "effectPosition"] as const) {
+816:       const value = receipt[field];
+817:       if (value === undefined && (field === "effectPosition" || receipt.status === "pending"))
+818:         continue;
+819:       if (
+820:         typeof value !== "string" ||
+821:         !/^pos-(0|[1-9][0-9]*)$/.test(value) ||
+822:         !Number.isSafeInteger(Number(value.slice(4))) ||
+823:         Number(value.slice(4)) > Number(context.scopePosition.slice(4))
+824:       )
+825:         throw new Error("receipt position exceeds serving owner", {
+826:           cause: { id: receipt.id, key: receipt.idempotencyKey, field },
+827:         });
+828:     }
+829:     const freeze = (value: unknown): void => {
+830:       if (value !== null && typeof value === "object") {
+831:         for (const child of Object.values(value)) freeze(child);
+832:         Object.freeze(value);
+833:       }
+834:     };
+835:     const projected = receiptPrefix(receipt);
+836:     freeze(projected);
+837:     return Object.freeze({ receipt: projected, context });
+838:   }
+839:   // Called only inside the guarded owner's transaction. The fixed all-visible
+840:   // policy projects retained facts, including postimages since updated/deleted.
+841:   function disclosedReceipt(principal: string, id: string): Row | undefined {
+842:     for (const stored of db
+843:       .prepare("SELECT * FROM receipts WHERE principal=?")
+844:       .all(principal) as unknown as Row[]) {
+845:       const value = parseReceipt(stored.receipt);
+846:       if (value.id === id) return value.scopeEpoch === epoch ? stored : undefined;
+## packages/server/src/transaction-store.ts:1239-1250
+1239:                   scope,
+1240:                   contracts: compiled?.registry ?? {
+1241:                     get(id, bytes) {
+1242:                       const descriptor = descriptors.find((d) => d.id === id);
+1243:                       return descriptor && installed.get(id) === bytes ? { descriptor } : undefined;
+1244:                     },
+1245:                   },
+1246:                   aliasPolicy: { canRead: () => true, canWriteBead: () => true },
+1247:                   policy: { canRead: () => true, canCreate: () => true, canWrite: () => true },
+1248:                   maximumEndpointMultiplicity: [],
+1249:                   observeCommitTime: instant,
+1250:                   recordChangeContext: false,
+## packages/server/src/transaction-store.ts:1530-1553
+1530:         options.fault?.("after-snapshot-commit");
+1531:         return captured;
+1532:       });
+1533:     },
+1534:     readSnapshot(id: string) {
+1535:       return enter(() => {
+1536:         const now = instant(),
+1537:           context = readContext();
+1538:         atomic(() => snapshots.expire(now, context));
+1539:         return Object.freeze({ manifest: snapshots.manifest(id, now, context), context });
+1540:       });
+1541:     },
+1542:     readSnapshotPage(id: string, kind: "bead" | "link", token: string) {
+1543:       return enter(() => {
+1544:         const now = instant(),
+1545:           context = readContext();
+1546:         atomic(() => snapshots.expire(now, context));
+1547:         return Object.freeze({ page: snapshots.page(id, kind, token, now, context), context });
+1548:       });
+1549:     },
+1550:     /** Fixed-view finite Event observation. Group rows are consumed one at a time;
+1551:      * no reader/SQLite iterator or mutable capability escapes this owner entry. */
+1552:     readEvents(
+1553:       sourceUrl: string,
+## packages/server/src/transaction-store.ts:1680-1699
+1680:         );
+1681:       });
+1682:     },
+1683:     advanceEventScan(scan: TransactionEventScan): TransactionEventPacket {
+1684:       return enter(() => {
+1685:         const state = eventScans.get(scan);
+1686:         if (!state) throw new TypeError("foreign or fabricated Event scan");
+1687:         if (!eventSourceKnown(state.source)) throw new Error("retained Event source identity lost");
+1688:         const context = readContext();
+1689:         if (
+1690:           context.scopeEpoch !== state.context.scopeEpoch ||
+1691:           context.authorizationView !== state.context.authorizationView ||
+1692:           Number(context.scopePosition.slice(4)) < state.head
+1693:         )
+1694:           throw new Error("Event scan context changed or head regressed");
+1695:         return eventPacket(state, context);
+1696:       });
+1697:     },
+1698:     /** Request intent anchor only; the eventual page captures its own current context. */
+1699:     captureChangesStart(): string {
+## packages/server/src/transaction-store.ts:1710-1758
+1710:           readonly kind: "page";
+1711:           readonly page: TransactionChangefeedPage;
+1712:           readonly context: TransactionReadContext;
+1713:         }
+1714:       | { readonly kind: "unsupported" } {
+1715:       if (typeof after !== "string") throw new TypeError("changefeed checkpoint must be a string");
+1716:       const minimum =
+1717:         supplied === undefined || supplied === "unsupported"
+1718:           ? supplied
+1719:           : snapshotTransactionMinimum(supplied);
+1720:       return enter(() => {
+1721:         if (minimum === "unsupported") return Object.freeze({ kind: "unsupported" as const });
+1722:         const context = readContext(),
+1723:           head = Number(context.scopePosition.slice(4)),
+1724:           start = checkpointPosition(scope, context, after);
+1725:         if (start > head) throw new TransactionChangefeedParameterError(undefined, context);
+1726:         // Under this no-pruning owner every positive position through head was
+1727:         // committed. Its absent row is corruption, not a never-issued cursor.
+1728:         if (start > 0 && !db.prepare("SELECT position FROM groups WHERE position=?").get(start))
+1729:           throw new Error("missing retained change group");
+1730:         if (minimum !== undefined) checkTransactionMinimum(minimum, context);
+1731:         const row = retainedGroupReader()(start + 1, head);
+1732:         if ((!row && start < head) || (row && row.position !== start + 1))
+1733:           throw new Error("missing retained change group");
+1734:         const group = row
+1735:           ? projectTransactionChangeGroup(row.value, scope, context, row.position)
+1736:           : undefined;
+1737:         let next: string | null = null;
+1738:         if (group && row && row.position < head) {
+1739:           if (!db.prepare("SELECT position FROM groups WHERE position=?").get(row.position + 1))
+1740:             throw new Error("missing retained change group");
+1741:           const url = new URL("changes/", scope);
+1742:           url.searchParams.set("after", group.checkpoint);
+1743:           next = url.href;
+1744:         }
+1745:         return Object.freeze({
+1746:           kind: "page" as const,
+1747:           context,
+1748:           page: freezeChangefeedPage({
+1749:             scope,
+1750:             scopeEpoch: context.scopeEpoch,
+1751:             authorizationView: context.authorizationView,
+1752:             after,
+1753:             observedHeadPosition: context.scopePosition,
+1754:             groups: group ? [group] : [],
+1755:             next,
+1756:           }),
+1757:         });
+1758:       });
+## packages/server/src/transaction-runtime-configuration.ts:226-240
+226:   const credentials = administrativeArray(own.credentials, 32).map((value) => {
+227:     const entry = administrativeData(value, ["token", "principal", "canMutate"]);
+228:     const token = boundedString(entry.token, 256),
+229:       principal = boundedString(entry.principal, 16384);
+230:     if (!/^[A-Za-z0-9_-]{32,256}$/.test(token) || typeof entry.canMutate !== "boolean")
+231:       throw new TypeError("invalid private transaction credential");
+232:     return { token, principal, canMutate: entry.canMutate };
+233:   });
+234:   if (!credentials.length || new Set(credentials.map((c) => c.token)).size !== credentials.length)
+235:     throw new TypeError("unique private transaction credentials required");
+236:   const secrets = credentials.map(({ token, ...rest }) => ({
+237:     ...rest,
+238:     credential: Buffer.from(`Bearer ${token}`),
+239:   }));
+240:   const associations = freeze(
+## packages/server/src/transaction-runtime-configuration.ts:321-330
+321:     authenticate(supplied: Buffer): TransactionHttpAuthorization {
+322:       const credential = secrets.find(
+323:         (c) => c.credential.length === supplied.length && timingSafeEqual(c.credential, supplied),
+324:       );
+325:       return credential
+326:         ? {
+327:             kind: "authenticated",
+328:             principal: credential.principal,
+329:             canMutate: credential.canMutate,
+330:           }
+## packages/server/src/transaction-runtime-configuration.ts:357-377
+357:       if (configuredScope !== undefined && scope !== configuredScope)
+358:         throw new Error("live transaction Scope mismatch");
+359:       if (!isDeepStrictEqual(actual.scopeSnapshot, settings.scopeSnapshot))
+360:         throw new Error("live transaction Snapshot configuration mismatch");
+361:       if (
+362:         actual.authorizationView !== "development-all-visible" ||
+363:         actual.scopeConfiguration.policyIdentity !== actual.authorizationView ||
+364:         actual.scopeConfiguration.maximumEndpointMultiplicity.length !== 0
+365:       )
+366:         throw new Error("unexpected live transaction policy");
+367:       const sorted = (values: readonly unknown[]) =>
+368:         values.map((v) => stringifyJsonValue(v)).sort();
+369:       if (JSON.stringify(sorted(actual.installedTypes)) !== JSON.stringify(sorted(types)))
+370:         throw new Error("live transaction descriptor closure mismatch");
+371:       if (seamCapture.supplied || configuredScope === undefined || contracts === undefined)
+372:         return undefined;
+373:       const policyIdentity = transactionRuntimeDigest({
+374:         revision: "transaction-policy-1",
+375:         view: actual.authorizationView,
+376:         read: "all-visible",
+377:         aggregate: actual.scopeConfiguration.maximumEndpointMultiplicity,
+## packages/server/src/transaction-read.ts:161-173
+161:       checkTransactionMinimum(minimum, current);
+162:     },
+163:     captureReadAuthorization: () => ({
+164:       kind: "authorized",
+165:       authorization: {
+166:         scopeEpoch: configuration.scopeEpoch,
+167:         authorizationView: configuration.authorizationView,
+168:         policy: { canRead: () => true },
+169:         canReadType: () => true,
+170:       },
+171:     }),
+172:   });
+173:   const checked = <Result extends AuthorityReadResult<ReadRequest> | AuthorityAliasResult>(
+## packages/server/src/transaction-events.ts:82-101
+82: export function renderTransactionEvent(
+83:   context: Pick<TransactionReadContext, "scopeEpoch" | "authorizationView">,
+84:   source: string,
+85:   checkpoint: string,
+86:   event: TransactionEvent,
+87: ): TransactionEvent {
+88:   if (
+89:     !position.test(checkpoint) ||
+90:     !Number.isSafeInteger(Number(checkpoint.slice(4))) ||
+91:     Number(checkpoint.slice(4)) < 1 ||
+92:     !Number.isSafeInteger(event.ordinal) ||
+93:     event.ordinal < 0
+94:   )
+95:     throw new Error("invalid committed Event position");
+96:   return {
+97:     ...event,
+98:     source,
+99:     id: `ev_${hash("epoch", context.scopeEpoch)}_${hash("view", context.authorizationView)}_${hash("source", source)}_${checkpoint}_${event.ordinal}`,
+100:   };
+101: }
+## packages/server/src/transaction-events.ts:127-139
+127: export function checkTransactionEventCursor(
+128:   value: ReturnType<typeof parseTransactionEventCursor>,
+129:   context: TransactionReadContext,
+130:   source: string,
+131: ): void {
+132:   // Opaque context tags diagnose incompatible context; they are not credentials
+133:   // or proof of prior issuance. Matching context still requires source membership.
+134:   if (value.epoch !== hash("epoch", context.scopeEpoch))
+135:     throw new TransactionMinimumFailure("cursor-expired", context);
+136:   if (value.view !== hash("view", context.authorizationView))
+137:     throw new TransactionMinimumFailure("foreign-view", context);
+138:   if (value.source !== hash("source", source))
+139:     throw new TransactionEventParameterError(undefined, context);
+## packages/server/src/transaction-events.ts:190-215
+190: export function projectTransactionEventGroup(
+191:   value: unknown,
+192:   context: TransactionReadContext,
+193:   source: TransactionEventSource,
+194:   scope: string,
+195:   expectedPosition: number,
+196: ): readonly TransactionEvent[] {
+197:   if (!value || typeof value !== "object") throw new Error("invalid retained Event group");
+198:   const group = value as TransactionEventGroup;
+199:   if (
+200:     group.scopeEpoch !== context.scopeEpoch ||
+201:     group.authorizationView !== context.authorizationView ||
+202:     group.position !== `pos-${expectedPosition}` ||
+203:     group.checkpoint !== group.position ||
+204:     !Array.isArray(group.events) ||
+205:     group.eventCount !== group.events.length ||
+206:     !Array.isArray(group.changes) ||
+207:     typeof group.transaction !== "string"
+208:   )
+209:     throw new Error("retained Event group context mismatch");
+210:   const endpoints = new Map<string, readonly [unknown, unknown]>();
+211:   const linkIds = new Set<string>();
+212:   const remember = (id: string, from: unknown, to: unknown) => {
+213:     reference(from);
+214:     reference(to);
+215:     const old = endpoints.get(id),
+## packages/server/src/transaction-changefeed.ts:38-51
+38: export interface TransactionChangeGroup {
+39:   readonly scopeEpoch: string;
+40:   readonly authorizationView: string;
+41:   readonly checkpoint: string;
+42:   readonly position: string;
+43:   readonly previousPosition: string;
+44:   readonly projectionAdvance: false;
+45:   readonly transaction: string;
+46:   readonly changes: readonly TransactionStateChange[];
+47:   readonly erasures: readonly never[];
+48:   readonly eventCount: number;
+49:   readonly events: readonly TransactionEvent[];
+50: }
+51: export interface TransactionChangefeedPage {
+## packages/server/src/transaction-changefeed.ts:79-103
+79:     : `cg_${tag("epoch", scope, context.scopeEpoch)}_${tag("view", scope, context.scopeEpoch, context.authorizationView)}_${position}`;
+80: }
+81: export function checkpointPosition(
+82:   scope: string,
+83:   context: TransactionReadContext,
+84:   value: string,
+85: ): number {
+86:   const parsed = parseCheckpoint(value, context);
+87:   if (parsed.position === 0) return 0;
+88:   if (parsed.epoch !== tag("epoch", scope, context.scopeEpoch))
+89:     throw new TransactionMinimumFailure("cursor-expired", context);
+90:   if (parsed.view !== tag("view", scope, context.scopeEpoch, context.authorizationView))
+91:     throw new TransactionMinimumFailure("foreign-view", context);
+92:   return parsed.position;
+93: }
+94: export function transactionChangefeedRequest(
+95:   url: URL,
+96:   canonicalScope: string,
+97: ): TransactionChangefeedIntent | undefined {
+98:   const scope = parseCanonicalScope(canonicalScope);
+99:   if (url.origin + url.pathname !== `${scope}changes/`) return undefined;
+100:   if (url.hash) throw new TransactionChangefeedParameterError();
+101:   for (const key of url.searchParams.keys())
+102:     if (!["after", "start"].includes(key) || url.searchParams.getAll(key).length !== 1)
+103:       throw new TransactionChangefeedParameterError();
+## packages/server/src/transaction-changefeed.ts:144-170
+144:   // gives exactly the Scope Event Source's fact representation and IDs.
+145:   const events = projectTransactionEventGroup(
+146:     value,
+147:     context,
+148:     { kind: "scope", url: `${scope}events/` },
+149:     scope,
+150:     position,
+151:   );
+152:   return {
+153:     scopeEpoch: group.scopeEpoch,
+154:     authorizationView: group.authorizationView,
+155:     checkpoint: transactionCheckpoint(scope, context, position),
+156:     position: group.position,
+157:     previousPosition: group.previousPosition,
+158:     projectionAdvance: false,
+159:     transaction: group.transaction,
+160:     changes: group.changes,
+161:     erasures: [],
+162:     eventCount: events.length,
+163:     events,
+164:   };
+165: }
+166: export function freezeChangefeedPage(page: TransactionChangefeedPage): TransactionChangefeedPage {
+167:   const pending: unknown[] = [page];
+168:   while (pending.length) {
+169:     const value = pending.pop();
+170:     if (value && typeof value === "object" && !Object.isFrozen(value)) {
+## packages/server/src/transaction-snapshot.ts:18-30
+18: import { TRANSACTION_RUNTIME_LIMITS } from "./transaction-batch.js";
+19: import type { TransactionReadContext } from "./transaction-store.js";
+20: 
+21: export const TRANSACTION_SNAPSHOT_LIMITS = Object.freeze({
+22:   lifetimeMs: 5 * 60 * 1000,
+23:   resources: 4096,
+24:   recordBytes: 32 * 1024 * 1024,
+25:   liveHandles: 8,
+26:   liveRecordBytes: 64 * 1024 * 1024,
+27:   issuedHandles: 65536,
+28:   dispositionBytes: 1024,
+29:   snapshotPageItems: 32,
+30:   pageBytes: 4 * 1024 * 1024,
+## packages/server/src/transaction-snapshot.ts:200-210
+200:         d.pageCounts.every(
+201:           (count) => Number.isSafeInteger(count) && count >= 1 && count <= limits.resources,
+202:         ),
+203:       "issued page counts",
+204:     );
+205:     integrity(
+206:       d.epoch === context.scopeEpoch && d.view === context.authorizationView,
+207:       "persisted context mismatch",
+208:     );
+209:     integrity(
+210:       Number.isSafeInteger(d.position) &&
+## packages/server/src/transaction-snapshot.ts:534-542
+534:     integrity(
+535:       hash(bodies.map((row) => row.body).join("\n")) === range.digest,
+536:       "captured body commitment",
+537:     );
+538:     const next = stream[range.ordinal + 1];
+539:     const result = {
+540:       items: bodies.map((row) => row.value),
+541:       next: next ? transactionSnapshotUrl(scope, id, kind, next.token) : null,
+542:     };
+## packages/server/src/transaction-snapshot.ts:545-582
+545:   }
+546:   function resolve(
+547:     id: string,
+548:     now: number,
+549:     context: TransactionReadContext,
+550:     kind?: Kind,
+551:     token?: string,
+552:   ) {
+553:     if (typeof id !== "string" || !idPattern.test(id))
+554:       throw new TransactionSnapshotFailure("resource-not-found");
+555:     const d = disposition(id, context);
+556:     if (!d) throw new TransactionSnapshotFailure("resource-not-found");
+557:     // Recognize an actually issued continuation before expiry diagnosis. Retain
+558:     // only bounded counts and a secret seed, not every expired page/range. The
+559:     // authenticated ordinal is an opaque token component, not a client cursor.
+560:     if (kind !== undefined) {
+561:       const match =
+562:         typeof token === "string" && token.length <= 52
+563:           ? /^sp_(0|[1-9][0-9]{0,3})_([A-Za-z0-9_-]{43})$/.exec(token)
+564:           : null;
+565:       const ordinal = Number(match?.[1]);
+566:       if (
+567:         !match ||
+568:         ordinal >= d.pageCounts[kind === "bead" ? 0 : 1] ||
+569:         !timingSafeEqual(Buffer.from(token!), Buffer.from(pageToken(d.seed, id, kind, ordinal)))
+570:       )
+571:         throw new TransactionSnapshotFailure("resource-not-found");
+572:     }
+573:     if (d.expired || now > d.expires) throw new TransactionSnapshotFailure("cursor-expired");
+574:     return { d, ranges: plan(id, d) };
+575:   }
+576: 
+577:   function manifest(
+578:     id: string,
+579:     now: number,
+580:     context: TransactionReadContext,
+581:   ): TransactionSnapshotManifest {
+582:     const { d, ranges } = resolve(id, now, context);
+## packages/server/src/transaction-snapshot.ts:590-605
+590:     links: TransactionSnapshotPage,
+591:   ): TransactionSnapshotManifest {
+592:     const result: TransactionSnapshotManifest = {
+593:       id: transactionSnapshotUrl(scope, id),
+594:       scope,
+595:       scopeEpoch: d.epoch,
+596:       authorizationView: d.view,
+597:       scopePosition: `pos-${d.position}`,
+598:       checkpoint: transactionCheckpoint(scope, context, d.position),
+599:       expiresAt: new Date(d.expires).toISOString(),
+600:       erasures: [],
+601:       beads,
+602:       links,
+603:     };
+604:     integrity(bytes(text(result)) <= limits.manifestBytes, "serialized manifest bound");
+605:     return freeze(result);
+## packages/server/src/transaction-sse.ts:63-100
+63:   await new Promise<void>((resolve, reject) => {
+64:     const clean = () => {
+65:       sink.removeListener("drain", drained);
+66:       sink.removeListener("error", failed);
+67:       sink.removeListener("close", closed);
+68:       signal.removeEventListener("abort", aborted);
+69:     };
+70:     const drained = () => {
+71:       clean();
+72:       resolve();
+73:     };
+74:     const failed = (error: unknown) => {
+75:       clean();
+76:       reject(error);
+77:     };
+78:     const closed = () => failed(new Error("stream transport closed"));
+79:     const aborted = () => failed(signal.reason);
+80:     sink.once("drain", drained);
+81:     sink.once("error", failed);
+82:     sink.once("close", closed);
+83:     signal.addEventListener("abort", aborted, { once: true });
+84:     if (signal.aborted) aborted();
+85:     else if (sink.destroyed) closed();
+86:   });
+87: }
+88: 
+89: interface Packet<Item, Cursor> {
+90:   readonly items: readonly Item[];
+91:   readonly continuation: Cursor;
+92:   readonly caughtUp: boolean;
+93: }
+94: type Timers = { readonly pollMilliseconds: number; readonly heartbeatMilliseconds: number };
+95: /** One private delivery loop. It retains only the current packet; continuations
+96:  * advance after its final drain, never on a speculative owner pull. */
+97: async function pump<Item, Cursor>(
+98:   sink: Sink,
+99:   initial: Packet<Item, Cursor> | undefined,
+100:   next: (cursor: Cursor, signal: AbortSignal) => Promise<Packet<Item, Cursor>>,
+## packages/server/src/transaction-sse.ts:105-138
+105:   validateTransactionStreamTimers(settings);
+106:   let packet = initial;
+107:   initial = undefined;
+108:   let lastWrite = performance.now();
+109:   while (packet && !signal.aborted) {
+110:     for (const item of packet.items) {
+111:       await write(sink, frame(item), signal);
+112:       lastWrite = performance.now();
+113:     }
+114:     const continuation = packet.continuation,
+115:       caughtUp = packet.caughtUp;
+116:     packet = undefined;
+117:     // Empty historical packets must keep this check active too. Comments obey
+118:     // the same write/drain barrier; no timer queues independent writes.
+119:     if (performance.now() - lastWrite >= settings.heartbeatMilliseconds) {
+120:       await write(sink, ": heartbeat\n\n", signal);
+121:       lastWrite = performance.now();
+122:     }
+123:     if (caughtUp) await delay(settings.pollMilliseconds, undefined, { signal });
+124:     else await yieldTurn(undefined, { signal });
+125:     signal.throwIfAborted();
+126:     packet = await next(continuation, signal);
+127:   }
+128: }
+129: function changePacket(page: TransactionChangefeedPage) {
+130:   return {
+131:     items: page.groups,
+132:     continuation: page.groups.at(-1)?.checkpoint ?? page.after,
+133:     caughtUp: page.groups.length === 0,
+134:   };
+135: }
+136: function eventPacket(packet: TransactionEventPacket) {
+137:   return { items: packet.events, continuation: packet.scan, caughtUp: packet.caughtUp };
+138: }
+## packages/server/src/transaction-runtime.ts:148-175
+148:       const supplied = Buffer.from(headers.get("authorization") ?? "");
+149:       const authorization = captured.authenticate(supplied);
+150:       signal = createNodeHttpDisconnectSignal(request, response);
+151:       const input = new Request(url, { method: request.method ?? "GET", headers, signal });
+152:       const lastEventIds: string[] = [];
+153:       for (let i = 0; i < request.rawHeaders.length; i += 2)
+154:         if (request.rawHeaders[i]?.toLowerCase() === "last-event-id")
+155:           lastEventIds.push(request.rawHeaders[i + 1] ?? "");
+156:       const body = request.method === "POST" ? await receive(request) : { text: "" };
+157:       if (closing || response.destroyed) {
+158:         deliver(response, transactionHttpProblem("temporarily-unavailable"));
+159:         return;
+160:       }
+161:       // This fixture has no CORS policy. Origin is a transport refusal, not a
+162:       // mutation permission synthesized from carried provenance.
+163:       if (headers.has("origin")) {
+164:         deliver(response, transactionHttpProblem("forbidden"));
+165:         return;
+166:       }
+167:       if ("failure" in body) response.setHeader("connection", "close");
+168:       const schema = await schemas?.(input, authorization);
+169:       if (schema) {
+170:         deliver(response, schema.response, schema.raw);
+171:         return;
+172:       }
+173:       let selected: TransactionHttpResult | undefined = await handler.handle(
+174:         input,
+175:         authorization,
+## packages/server/src/transaction-runtime.ts:195-246
+195:             streamSignal.throwIfAborted();
+196:             if (!selected || selected.kind === "finite")
+197:               throw new Error("missing stream selection");
+198:             response.writeHead(selected.status, Object.fromEntries(selected.headers));
+199:             response.flushHeaders();
+200:             const pumping =
+201:               selected.kind === "changefeed-stream"
+202:                 ? pumpTransactionChanges(
+203:                     response,
+204:                     selected.page,
+205:                     async (after, nextSignal) => {
+206:                       const observed = await activeService.changes(
+207:                         { after },
+208:                         undefined,
+209:                         nextSignal,
+210:                       );
+211:                       if (observed.kind !== "page")
+212:                         throw new Error("changefeed stream lost serving entry");
+213:                       return observed.page;
+214:                     },
+215:                     streamSignal,
+216:                     settings.changefeedStream,
+217:                   )
+218:                 : pumpTransactionEvents(
+219:                     response,
+220:                     selected.packet,
+221:                     (scan, nextSignal) => activeService.nextEvents(scan, nextSignal),
+222:                     streamSignal,
+223:                     settings.changefeedStream,
+224:                   );
+225:             // Transfer the initial packet into the pump; do not retain the HTTP
+226:             // result/group body for the lifetime of the live stream.
+227:             selected = undefined;
+228:             await pumping;
+229:           } catch (error) {
+230:             // Capture before destroy() turns a genuine fault into a disconnect.
+231:             if (
+232:               response.headersSent &&
+233:               !streamSignal.aborted &&
+234:               !response.destroyed &&
+235:               !firstStreamFault
+236:             )
+237:               firstStreamFault = { cause: error };
+238:             throw error;
+239:           } finally {
+240:             response.destroy();
+241:           }
+242:         }, signal);
+243:       }
+244:     } catch (error) {
+245:       if (
+246:         signal?.aborted ||
+## packages/server/src/transaction-http.ts:306-312
+306:           throw error;
+307:         }
+308:         if (authorization.kind === "unauthenticated")
+309:           return transactionHttpProblem("unauthenticated");
+310:         if (!authorization.canMutate) return transactionHttpProblem("forbidden");
+311:         if (carrier.operations.length > TRANSACTION_MAXIMUM_OPERATIONS) {
+312:           const observed = await service.sequenceRefusalObserved();
+## packages/server/src/transaction-http.ts:333-342
+333:       const decision: TransactionSubmission["authorization"] =
+334:         authorization.kind === "unauthenticated"
+335:           ? authorization
+336:           : authorization.canMutate
+337:             ? { kind: "authorized", principal: authorization.principal }
+338:             : { kind: "forbidden" };
+339:       const result = await service.submit({
+340:         carrier:
+341:           operation === "batch"
+342:             ? { kind: "batch" }
+## packages/server/src/transaction-service.ts:390-412
+390:           : snapshotTransactionMinimum(supplied);
+391:       return run(() => {
+392:         const after = "after" in copied ? copied.after : owner.captureChangesStart();
+393:         return waitForTransactionMinimum(
+394:           () => owner.readChanges(after, minimum),
+395:           minimumReads,
+396:           signal,
+397:         );
+398:       });
+399:     },
+400:     events(
+401:       source: string,
+402:       after?: string,
+403:       supplied?: TransactionMinimum | "unsupported",
+404:       signal?: AbortSignal,
+405:     ) {
+406:       return run(() =>
+407:         waitForTransactionMinimum(
+408:           () => owner.readEvents(source, after, supplied),
+409:           minimumReads,
+410:           signal,
+411:         ),
+412:       );
+## packages/server/src/authority-read.ts:78-89
+78:   capture(reader: AuthorityReadReader): ScopeReadConfiguration;
+79: }
+80: export interface CapturedReadAuthorization {
+81:   readonly authorizationView: string;
+82:   readonly scopeEpoch: string;
+83:   readonly policy: Pick<ResourceMutationPolicy, "canRead">;
+84:   readonly canReadType: (descriptor: TypeDescriptor) => boolean;
+85: }
+86: export type ReadIntent = ReadRequest | { readonly kind: "alias"; readonly url: string };
+87: export type ReadAuthorizationDecision =
+88:   | { readonly kind: "authorized"; readonly authorization: CapturedReadAuthorization }
+89:   | { readonly kind: "problem"; readonly problem: ReadProblem };
+## packages/server/src/authority-read.ts:474-503
+474:     throw new AuthorityReadError("configuration", "invalid Read authorization decision");
+475:   const authorization = synchronous(decision.authorization);
+476:   const { authorizationView, scopeEpoch, policy, canReadType } = authorization;
+477:   const canRead = policy.canRead;
+478:   if (typeof canRead !== "function" || typeof canReadType !== "function")
+479:     throw new AuthorityReadError("configuration", "complete captured Read policy required");
+480:   const view = identity(authorizationView, "Authorization View");
+481:   if (identity(scopeEpoch, "captured Scope epoch") !== prepared.scopeEpoch)
+482:     throw new AuthorityReadError(
+483:       "configuration",
+484:       "captured Scope epoch changed during plane lifetime",
+485:     );
+486:   const configuration = synchronous(prepared.configuration(reader));
+487:   const { policyIdentity, configurationIdentity, maximumEndpointMultiplicity } = configuration;
+488:   const observation = Object.freeze({
+489:     authorizationView: view,
+490:     scopeEpoch,
+491:     policyIdentity: identity(policyIdentity, "policy identity"),
+492:     configurationIdentity: identity(configurationIdentity, "configuration identity"),
+493:     ...(capturedSource === undefined ? {} : { sourceContext: capturedSource as ReadSourceContext }),
+494:   });
+495:   return Object.freeze({
+496:     observation,
+497:     aggregate: aggregateSnapshot(maximumEndpointMultiplicity),
+498:     policy: Object.freeze({
+499:       canRead: (record: ResourceRecord) => boolean(canRead.call(policy, record)),
+500:     }),
+501:     canReadType: (descriptor: TypeDescriptor) =>
+502:       boolean(canReadType.call(authorization, descriptor)),
+503:   });
+## packages/server/src/transaction-event-sse.test.ts:72-119
+72: });
+73: class Sink extends EventEmitter {
+74:   destroyed = false;
+75:   chunks: string[] = [];
+76:   writable = false;
+77:   write(text: string) {
+78:     this.chunks.push(text);
+79:     return this.writable;
+80:   }
+81: }
+82: it("Event pump adopts only delivered successors and never reads through a blocked frame", async () => {
+83:   const f = ownerFixture();
+84:   f.run([create("a"), create("b")]);
+85:   const initial = f.owner.beginEventScan(`${scope}events/`);
+86:   if (initial.kind !== "packet") throw new Error(initial.kind);
+87:   const sink = new Sink(),
+88:     controller = new AbortController();
+89:   const scans: unknown[] = [];
+90:   const task = pumpTransactionEvents(
+91:     sink,
+92:     initial,
+93:     async (scan) => {
+94:       scans.push(scan);
+95:       return f.owner.advanceEventScan(scan);
+96:     },
+97:     controller.signal,
+98:     { pollMilliseconds: 1, heartbeatMilliseconds: 2 },
+99:   );
+100:   const observed = task.catch((error) => error);
+101:   cleanups.push(async () => {
+102:     controller.abort(new Error("test cleanup"));
+103:     await observed;
+104:   });
+105:   await delay(10);
+106:   expect(scans).toEqual([]);
+107:   expect(sink.chunks).toEqual([transactionEventFrame(initial.events[0]!)]);
+108:   // The SQLite owner remains free while network delivery is backpressured.
+109:   f.run([create("c")]);
+110:   sink.emit("drain");
+111:   await delay(10);
+112:   expect(scans).toEqual([initial.scan]);
+113:   expect(sink.chunks.filter((s) => s.startsWith("id:"))).toHaveLength(2);
+114:   const reason = new Error("end controlled stream");
+115:   controller.abort(reason);
+116:   expect(await observed).toBe(reason);
+117:   expect(
+118:     sink.listenerCount("drain") + sink.listenerCount("close") + sink.listenerCount("error"),
+119:   ).toBe(0);
+## packages/server/src/transaction-runtime-configuration.test.ts:238-266
+238:   const swapped = await start({
+239:     ...options,
+240:     create: false,
+241:     credentials: options.credentials.map((c) => ({ ...c, canMutate: !c.canMutate })),
+242:   });
+243:   const changed = present(swapped.configurationMetadata);
+244:   for (const field of [
+245:     "runtimeConfigurationIdentity",
+246:     "policyIdentity",
+247:     "authenticationIdentity",
+248:   ] as const)
+249:     expect(changed[field]).not.toBe(metadata[field]);
+250:   expect(changed.artifactIdentity).toBe(metadata.artifactIdentity);
+251:   expect(
+252:     (
+253:       await wire(swapped.listenUrl, "canonical.test", "/acme/operations/batch", {
+254:         method: "POST",
+255:         body: createBody(scope, "beads/b"),
+256:         key: "new",
+257:       })
+258:     ).status,
+259:   ).toBe(403);
+260:   expect(
+261:     (
+262:       await wire(swapped.listenUrl, "canonical.test", "/acme/operations/batch", {
+263:         method: "POST",
+264:         body: createBody(scope, "beads/b"),
+265:         key: "new",
+266:         credential: readToken,
