@@ -1,0 +1,43 @@
+# Independent native review: installed Event restart plan
+
+Disposition: **ready for bounded one-file authoring after the root records the two implementation conditions below**. No protocol decision, production change, additional HTTP request, or additional process lifetime is required. This is plan approval, not executed evidence or code approval. Root owns actual Claude council and release.
+
+Reviewed plan SHA256: `061a57d9db704af7ac8c8778ded998e4a64481f861eabaa79ec9a33c229313ec`.
+Source HEAD: `b0213805e4b15bb7bac4e09da5fdddb236cf6ea5`. Workspace contains exactly the root's two known frozen CI-repair files, transaction-set.test.ts and transaction-submission.test.ts; neither was edited or used to establish this Event conclusion.
+
+## Required implementation conditions
+
+1. **Check stream health before intentional close.** `recordRawSse.until` returns immediately when its predicate already holds, even if a transport failure has since destroyed the socket; `close` resolves the close promise without exposing stored failure. Explicitly await `ready`, assert status 200 and expected SSE media/context, await the required frame, then synchronously check the shared signal is not aborted and `destroyed === false` immediately before calling close (no intervening await). Drain close and only then assert the complete recorded id-bearing frame list is exactly [E1], with field and complete JSON equality. These checks are needed in addition to frame presence, not replaced by it. Do not turn timeout/early EOF into negative evidence. The recorder's 2 MiB bound and finite timer provide bounded failure; choose and pin the reader timeout rather than inherit an unexplained default. No shared-helper edit is necessary for this bounded witness.
+
+2. **Implement the cleanup bound; do not merely report it.** Existing launcher close can wait 10 seconds, then enter another 10-second kill/drain path. Thus directly awaiting it does not itself establish the proposed total 10-second cleanup budget. Keep an explicit local total cleanup deadline for stream and child draining; observe late promise rejection and retain the original failure together with cleanup failure. Record clean child exit only after actual exitCode 0/signalCode null. Preserve the store whenever startup failed before a child handle was returned or a close timed out/left stop unknown. Do not lose the previous handle in a finally block before capturing its exit facts. Reopen only after the first child has positively exited. The outer 120-second supervisor must retain PID/process-group evidence and own final cleanup of any unknown survivor; a timed-out callback is a failed observation, never a success. This can remain test-local and does not require changing the launcher or its historical callers.
+
+## Semantic and feasibility findings
+
+- The five-request topology is sufficient: two-create POST, initial finite Scope Events, post-restart finite suffix, post-restart SSE with conflicting query/header, and wrong-source finite request. No discovery request or public profile admission is being added. IPC ready/close traffic is not HTTP and must not be counted as extra HTTP.
+- The pinned spec at 6212–6222, 6262–6273 and 6350–6361 directly establishes source projections, exclusive source-local stable IDs and Last-Event-ID precedence. Two small created Events in one committed group fit the existing finite page and one-group stream packet without paging. Require the initial exact two ordered records, ordinals 0/1, distinct opaque observed IDs, same transaction and the full created data. Bind initial revisions to the two independently expected receipt Resources; do not derive all expectations from the Event records themselves.
+- The HTTP branch passes the single Last-Event-ID to beginEvents ahead of query after. E0 header with E1 query is discriminating: header handling must replay E1 while query-only handling has reached end. Encode each actual observed ID as a URL query value, do not reconstruct cursor spellings. Compare full Event values after restart, including time and data, and repeat id/type equality for the SSE fields.
+- `transaction-events.ts` checks source identity; `transaction-store.ts` verifies actual retained group membership and source Event ordinal. An observed Scope E0 sent to existing Bead A's source therefore exercises contextual invalid-parameter 400, not missing-resource precedence. Validate full transactionalProblem schema and current epoch/view/position equal to the saved current context. This involves neither S1 retained Snapshot minima nor G2 incident-Link metadata.
+- `installedTransactionBinding` includes payload, artifact/contracts, principal policy/authentication and runtime identities while excluding ephemeral listen address. Compare both returned bindings and canonical Scope, allowing only create true→false and actual ephemeral listener change; use the same store and byte-identical artifacts/credentials. Capture both distinct child PIDs, their clean exits and actual bound listen URLs privately. Same-port reuse is possible and should not be forbidden. No mutation occurs after initial creation, so pre/post current Scope position must remain equal.
+- Existing JSON schema definitions include mutationReceipt, event, eventPage and transactionalProblem. Add only local validator setup needed by this callback; no schema changes or producer imports to manufacture expected Events. The historical callback's response helper hardcodes status 200 and drops headers, so a small callback-local finite helper must retain response headers and accept explicit expected status for the fifth request. Its SSE opener also needs the actual reconnect header. Neither change requires rewriting the historical callback.
+- A bounded 45-second work / 10-second cleanup / 60-second callback and 120-second external envelope is plausible for five tiny requests and two sequential starts, provided the explicit cleanup condition above is implemented. Four finite HTTP requests use five-second limits; the stream is separately bounded. No 15-second idle assertion, retry, extra mutation, artificial transport completion or indefinite no-event claim belongs here.
+- Installed attribution still needs the planned fresh archives, verified external consumer, explicit installed entry/source override, pinned fixture/artifacts and source/payload identities. Local fallback is not fresh installed evidence. Keep claimEligible false and retain only allowlisted facts, safe Event data and fingerprints; do not log bearer tokens or full configuration. Preserve trace on semantic failure and scope any production repair separately.
+
+## Scope of this review
+
+Read-only native review; no tests, imports, build, services, main inspection, source edits, or network publication. The remote role guard ran before this sole report write. No delegation. Read relevant source ranges, helper implementations and pinned spec text; schema names were verified textually, not executed. The report is independent of the authoring worker's audit and supplements its partial earlier native pass. No runtime defect or qualification result is claimed.
+
+## Read source identity (SHA256)
+
+- `apps/bdptest/src/transactional-event-sse-installed.test.ts`: `385bfa8fbe86b717450f89aec2f10ef5d2113170383c35236bd995fa285bda0a`
+- `apps/bdptest/src/transactional-alias-installed.test.ts`: `9775936200fa2ab69acfe436d7b6c77b9a42a37aae5cef96d88b94ab8fd68481`
+- `apps/bdptest/test-support/transactional-execution-binding.ts`: `cde506c72a8710eafe58522900f6db70ed3701cf333560252dc8e7c5e706cf89`
+- `packages/server/test-support/raw-sse-recorder.ts`: `09ff8343ac1a5dbad77eaf24fc2745cc28ea870ada6b05dc4ea1644c0ad5ef81`
+- `scripts/transaction-installed-observation.mjs`: `6f772f3776d3c3effa788676d853cc2932a6ee59ad63ac3338ad1b487408914b`
+- `packages/server/src/transaction-events.ts`: `6c5ab4482f0b00110a71a96b16d44ca5fe713cb5f397ff78778cc6646f632a3a`
+- `packages/server/src/transaction-events.test.ts`: `0152561cdf096a48b0b01ec0e0d8bc81208a905bb5bf71dad411694387b58b27`
+- `packages/server/src/transaction-store.ts`: `f7fe71da918c135eb43cb4659f186df6cd442aed9c42c2835e95cde05c782a9e`
+- `packages/server/src/transaction-http.ts`: `81c130dd18f604ab1d13c03a2f52a98e11a6988f45d62af98b4b8c7499d14529`
+- `packages/server/src/transaction-runtime.ts`: `48cb5411407c456d7b3f301a4b67970061be9f51c94201de832ba5deff6ea2d4`
+- `packages/server/src/transaction-installed-process.ts`: `6bd16f940f1f751189fc76419e3a18ca26cd5f54da3cfa3946b30c3956a2f8b7`
+- `schemas/bdp-v0.schema.json`: `0baa5d5ef67144f8e6513b4cde31168effc8df6d52ef3141b0f144b87f8dc227`
+- `docs/specs/bdp.md`: `67772742d7d08f48c12196e9789f1859ad2d0e19f133ea65e197b049361f84f8`

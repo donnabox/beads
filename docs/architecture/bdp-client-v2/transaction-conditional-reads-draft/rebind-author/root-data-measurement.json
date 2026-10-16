@@ -1,0 +1,53 @@
+{
+  "dataOnly": true,
+  "productExecution": false,
+  "dataFiles": [
+    {
+      "file": "packages/conformance/test-support/transactional/manifest-v1.json",
+      "parentSha256": "cd90592e76cace65b115dbfedf5f604c9c4011ed2e1a0fad954c1edb12aca6cd",
+      "currentSha256": "60c527f6a5673161eacf022c0015d09bea2743d153b8b0d0c86160b76fafeb68",
+      "rawOldRows": 16,
+      "fullParentRecovered": true
+    },
+    {
+      "file": "packages/conformance/test-support/transactional/coverage-v1.json",
+      "parentSha256": "0c991feb128a50625397e337464badcb17d22a0c31e1d57a6b66fa1032a92a51",
+      "currentSha256": "33032fe07eb06d2a8968fcd8e5a3cf93cb4637c551868c22da9ea0c4edd587a3",
+      "rawOldRows": 16,
+      "fullParentRecovered": true
+    }
+  ],
+  "actual": {
+    "normalBytes": 882556,
+    "normalSha256": "101f70d3f2d6c4a75e41f878938fde18262f1933cf198013f30523f2b265c449",
+    "compactBytes": 431284,
+    "compactSha256": "97c0c5e1732e335913b9c7db4215ad2d2b64f6a3499e8d69db26306fae1eda93",
+    "nodes": 23166,
+    "actions": 241,
+    "assertions": 2836,
+    "diskBytes": 869264,
+    "diskSha256": "60c527f6a5673161eacf022c0015d09bea2743d153b8b0d0c86160b76fafeb68",
+    "coverageBytes": 133568,
+    "coverageNormalBytes": 133568,
+    "coverageSha256": "33032fe07eb06d2a8968fcd8e5a3cf93cb4637c551868c22da9ea0c4edd587a3",
+    "newAssertions": 194
+  },
+  "derivativesIndependentlyReconstructed": 42,
+  "acceptedMeasuredFences": {
+    "canonicalDisk": 873360,
+    "canonicalDiskDeltaFrom488280": 385080,
+    "canonicalNormal": 886652,
+    "canonicalNodes": 23230,
+    "canonicalNodesDeltaFrom13019": 10211,
+    "coverageDiskAndNormal": 134592,
+    "coverageDeltaFrom70662": 63930,
+    "derivativeNormal": 892770,
+    "derivativeNodes": 23386
+  },
+  "margins": {
+    "bytes": 4096,
+    "nodes": 64,
+    "coverage": 1024
+  },
+  "scope": "Fixture data measurement only. Known principal observer code blocker prevents execution; successor app code must be independently reviewed."
+}

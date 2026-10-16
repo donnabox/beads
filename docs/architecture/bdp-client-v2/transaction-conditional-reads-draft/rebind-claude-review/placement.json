@@ -1,0 +1,52 @@
+{
+  "packages/conformance/test-support/transactional/manifest-v1.json": {
+    "oldIndex": 0,
+    "newIndex": 16,
+    "currentFirstRow": "read-update.idempotency.principal-isolation",
+    "currentOrderedIds": [
+      "read-update.idempotency.principal-isolation",
+      "read-update.http.command-minimum-fields",
+      "transactional.batch.atomic-commit",
+      "transactional.batch.rollback",
+      "transactional.batch.deletion-safety",
+      "transactional.batch.no-op-entries",
+      "transactional.set.mutation",
+      "transactional.set.zero-match",
+      "transactional.set.cardinality",
+      "transactional.set.singleton-targets",
+      "transactional.receipt.readable",
+      "transactional.receipt.pagination",
+      "transactional.idempotency.conflict",
+      "transactional.idempotency.cross-carrier",
+      "transactional.idempotency.failed-retained",
+      "transactional.sequence.member-transactions",
+      "transactional.http.conditional-reads"
+    ],
+    "other16ObjectsAndRelativeOrderUnchanged": true
+  },
+  "packages/conformance/test-support/transactional/coverage-v1.json": {
+    "oldIndex": 0,
+    "newIndex": 16,
+    "currentFirstRow": "read-update.idempotency.principal-isolation",
+    "currentOrderedIds": [
+      "read-update.idempotency.principal-isolation",
+      "read-update.http.command-minimum-fields",
+      "transactional.batch.atomic-commit",
+      "transactional.batch.rollback",
+      "transactional.batch.deletion-safety",
+      "transactional.batch.no-op-entries",
+      "transactional.set.mutation",
+      "transactional.set.zero-match",
+      "transactional.set.cardinality",
+      "transactional.set.singleton-targets",
+      "transactional.receipt.readable",
+      "transactional.receipt.pagination",
+      "transactional.idempotency.conflict",
+      "transactional.idempotency.cross-carrier",
+      "transactional.idempotency.failed-retained",
+      "transactional.sequence.member-transactions",
+      "transactional.http.conditional-reads"
+    ],
+    "other16ObjectsAndRelativeOrderUnchanged": true
+  }
+}

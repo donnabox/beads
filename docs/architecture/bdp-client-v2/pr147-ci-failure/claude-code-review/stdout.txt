@@ -1,0 +1,60 @@
+## Verdict
+
+**No blockers.** Both hunks are consistent with production at HEAD `b021380`, type‑safe under the repo's strict/`noUncheckedIndexedAccess` settings, and preserve the deadline/cleanup structure. Findings below are strengthenings, ordered by severity.
+
+### Verified against source (read‑only)
+
+- **Stale throw removal is correct.** No document‑depth refusal exists in the preparation path; `TransactionDevelopmentLimitError` is only raised by the store (`packages/server/src/transaction-store.ts:1504`, `:1506`), never by `prepareTransaction`. So HEAD's `expect(() => batch.prepareTransaction(...)).toThrow(batch.TransactionDevelopmentLimitError)` could not pass, and 40‑wrap carriers are legitimately accepted (`transaction-set.test.ts:1106` already requires the deep sibling to survive shape checks before selector grammar fails).
+- **The replacement bind is non‑vacuous.** `transactionSelectorCapacity` (`transaction-set.ts:151-159`) reads a `WeakMap` keyed on the exact frozen op object, so `toBeUndefined()` at `transaction-set.test.ts:1117` proves `validateSetSelector` (`transaction-batch.ts:166-172`) ran on the op reachable from the prepared carrier; `undefined` (not a limit) is right for `$[?@.properties.n == 0]` against `{bytes:4096,depth:32,nodes:256}`. Forged‑capability rejection at `:1118-1125` is untouched. Narrowing via `operation !== "updateWhere"` does discriminate, since `"updateWhere" ∉ ReadUpdateOperation` (`protocol/src/read-update-values.ts:47-55`), so `PreparedTransactionSet` (with `name?: never`) is what reaches `transactionSelectorCapacity` — it compiles.
+- **Oracle semantics unchanged.** The new explicit checks are equivalent to HEAD's `toBe`/`toEqual` on both match and mismatch (length + element‑wise vs `toEqual` on sorted string arrays); matchers still run before each guaranteed throw.
+- **Runtime story is coherent.** The 18 existing `assertDeepSubmissionValue` call sites are all intact (1871, 1878, 1907, 1928, 1939, 1951, 1956, 1958, 2008, 2009, 2020, 2021, 2023, 2024, 2026, 2031, 2032, 2035); none removed, lowered, or relabeled, and 12000 depth is kept. Those sites traverse well over 10⁵ nodes (five `inspect()` walks over resources holding ~6×12000‑element arrays), which at HEAD cost two Vitest matcher calls per node — the plausible source of the 20 s breach. This is analysis, not measurement (no run permitted).
+- **Deadlines/cleanup preserved:** 20 s work check inside the `try` (`:2066`), `cleaning` 5 s cleanup check (`:2081`), `AggregateError` (`:2082`), `}, 30000)` (`:2083`), `started` still captured before `mkdtempSync`. New test is top‑level (the `describe` at `:1056` closes at `:1318`), opens no store, pushes nothing to `cleanup`, and runs before the deep test without touching its clock. No production comparator imported; Biome (lineWidth 100) formatting and the single‑quote `'{"a":1}'` are consistent.
+
+## Findings
+
+1. **Medium — `transaction-submission.test.ts:1773`: the deep‑rejection control can pass vacuously.** The `JSON.parse(nested("1"))` call sits *inside* the `toThrow` callback with a bare `toThrow()`, so a `RangeError` from the parse (or any future early throw) satisfies the only control that exercises leaf mismatch at depth 12000. Smallest correction: hoist and pin —
+   ```ts
+   const differing: unknown = JSON.parse(nested("1"));
+   expect(() => assertDeepSubmissionValue(left, differing)).toThrow("deep submission primitive mismatch");
+   ```
+
+2. **Low–Medium — the retained matcher diagnostics (F2) are unverified.** All five rejection controls use bare `.toThrow()`, which is satisfied equally by the matcher's diff and by the guaranteed plain `Error`. Deleting `expect(Array.isArray(a)).toBe(...)` (`:1755`) or `expect(keys).toEqual(expectedKeys)` (`:1761`) leaves every control green, silently losing the only reason those lines exist. Smallest correction: one extra line per branch that fails if the matcher stops firing first —
+   ```ts
+   expect(() => assertDeepSubmissionValue([], {})).not.toThrow("deep submission array-kind mismatch");
+   expect(() => assertDeepSubmissionValue({ a: 1 }, { b: 1 })).not.toThrow("deep submission keys mismatch");
+   ```
+   (stronger alternative: capture the error and assert it carries the matcher diff, `expect(keyError).toMatchObject({ expected: ["b"] })`).
+
+3. **Low — array `length` is not compared.** Keys‑only comparison treats a dense array and a hole‑extended one as equal (`[1]` vs `const x=[1]; x.length=2`). Current call sites build `results` by `map`/`slice` (`transaction-store.ts:879`, `:916`), so this is latent, not live. Smallest correction: in the array branch after the kind check, `if (a.length !== (b as unknown[]).length) { expect(a.length).toBe((b as unknown[]).length); throw new Error("deep submission array-length mismatch"); }` plus one control. No per‑node matcher cost.
+
+4. **Low — exotic objects compare equal vacuously.** Any two objects with equal own enumerable keys are accepted regardless of class, so `new Date(0)` vs `new Date(1)`, two `Map`s, etc. pass. I confirmed today's inputs are JSON‑parsed or primitive‑valued (`inspect()` at `transaction-store.ts:2280-2295`; `expiresAt` asserted as an ISO string at `:1886`), so this is latent — but if a receipt field ever becomes non‑plain, all 18 sites go silently vacuous. Smallest correction (keeps the adopted null‑prototype control green):
+   ```ts
+   const plain = (v: object) => { const p = Object.getPrototypeOf(v); return p === null || p === Object.prototype; };
+   // object branch: if (!Array.isArray(a) && (!plain(a) || !plain(b))) throw new Error("deep submission exotic value");
+   ```
+   plus `expect(() => assertDeepSubmissionValue(new Date(0), new Date(1))).toThrow("deep submission exotic value")`. Optional hardening — confirm with a run that no live call site carries a non‑plain value.
+
+5. **Low — `transaction-set.test.ts:1113`: the deep sibling is only checked for presence.** `toHaveLength(2)` proves preparation accepted the 40‑wrap carrier but binds nothing about it, so the replacement leans entirely on the set op. Smallest correction, using the already‑imported helper:
+   ```ts
+   expect(JSON.parse(transactionInputText(preparedDeep.carrier.operations[0]!.input)).properties).toEqual({ nested });
+   ```
+   Adjacent one‑liner if you want the title's pointer claim covered for the deep carrier too: assert `{ pointer: "/operations/1/selector" }` on the error at `:1106-1108` (pre‑existing gap, unchanged by this patch).
+
+6. **Low — `assertDeepReceiptFrozen` still has no independent control**, although it is the witness for HEAD's own "freeze deep sequence observations without recursion" change and is used at six sites. Inverting `!Object.isFrozen(node)` (`:1791`) would keep all of them green. Smallest correction: fold three assertions into the new test rather than adding a fourth `it` (keeps the 105 total / 3 executed counts from F5/F9); the helper is declared at `:1786` but hoists, so calling it from `:1768` is fine —
+   ```ts
+   expect(() => assertDeepReceiptFrozen(Object.freeze({ a: Object.freeze([]) }))).not.toThrow();
+   expect(() => assertDeepReceiptFrozen(Object.freeze({ a: {} }))).toThrow("mutable nested receipt value");
+   expect(() => assertDeepReceiptFrozen(undefined)).not.toThrow();
+   ```
+
+7. **Low — the store's selector development‑limit branch is uncovered in either authorized file.** `transaction-store.ts:1505-1506` ("development transaction Selector limit") has no test; only the operation variant does (`transaction-submission.test.ts:230`). The capacity test at `:1399` always goes through `submitTransaction`, which supplies receiving controls. This is pre‑existing (the removed assertion never reached it), but it is the nearest real home for what that line gestured at. Smallest correction — insert before `:1510`, inside the existing test so counts are unchanged:
+   ```ts
+   expect(() =>
+     f.store.admit("p", "trusted_selector", prepareTransaction(scope, submission([deletion(selectorBodyNodes(3))]).body)),
+   ).toThrow("development transaction Selector limit");
+   ```
+   A refusal inserts no receipt/owner (`transaction-store.ts:1175-1176`), so `admissions`/`inspect()` assertions at `:1510-1511` still hold.
+
+## Review limitations
+
+Read‑only, as instructed: no `vitest`, `tsc`, or Biome run, so type‑checking, formatting, the 20 s remedy, and test counts are reasoned from source, not executed. I confirmed both hunks are present verbatim at `transaction-set.test.ts:1109-1117` and `transaction-submission.test.ts:1754-1785`, but without commands I could not diff the remainder of the two modified files, so I am taking "production files unchanged / these are the only edits" from your statement. Suggested corrections in findings 3–4 touch the oracle's hot path shape; they add no matcher calls but should be re‑timed against the 20 s budget before landing.

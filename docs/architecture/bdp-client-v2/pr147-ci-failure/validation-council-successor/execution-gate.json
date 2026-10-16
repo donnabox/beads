@@ -1,0 +1,35 @@
+{
+  "released": true,
+  "rootCouncilAccepted": true,
+  "head": "b0213805e4b15bb7bac4e09da5fdddb236cf6ea5",
+  "files": {
+    "packages/server/src/transaction-set.test.ts": "86642f122eb0ab8d0ba1b5c454d4bd76fb31a7b1c485e6bbe05284c4ccd9b85f",
+    "packages/server/src/transaction-submission.test.ts": "5447984e5884105523ae7c04916258749773a7aba8d13b4a349eea3d82b121cf"
+  },
+  "helperTitle": "preserves independent deep submission oracle equality and rejection",
+  "approvedStages": [
+    "typecheck",
+    "format-check",
+    "lint",
+    "focused-three",
+    "full-two-files"
+  ],
+  "preparationHashes": {
+    "baseline-source.json": "9bf1c01e73543b1b2ce7eb81fbf32afde0b263af3cc9de22984794b200d17915",
+    "commands.json": "cc968212ccd1c12a5ae5270031df7ed16c09036549bacf299c4c066182210f1d",
+    "execution-gate.example.json": "c7f012def9b2bc43155b0d36455af2b37f429b181bd7c4fc94f425cf4fd798fb",
+    "original-full-selection.json": "1328d526fb6cf50c2f7244d6de8735de2029bdec331975f75fa8dab18529caaf",
+    "payload-bridge.json": "5f203278c59f030f394311a4a31b58492c0c63adcf82c2d243c494ad746ac64e",
+    "report.md": "632472d2b2f4b7d0c1f590a2cac3b5a323427e39d480a7b75ccd28ec5a86807c",
+    "run.py": "c7a1b63e16484d1cf484148d1ab4355c25a376daa94ab5d5eeff1867af42feb6"
+  },
+  "toolHashes": {
+    "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node": "1ee75375e33b94fc34b3b19aede049e11dae90efb63b374dc96d6bdace70c4b8",
+    "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs": "67b035e322203961795e8e34ca63a08c37a4386eda94107fb3d28f3246d882ad",
+    "/Users/dbox/repos/wt/vickie/vickie-fresh-depth-serving/node_modules/vitest/vitest.mjs": "39db22f579acf5639bbb17a261408debbde03f4692c0c439e77e7f13aeba74d6",
+    "/Users/dbox/repos/wt/vickie/vickie-fresh-depth-serving/node_modules/@biomejs/biome/bin/biome": "7ffb4d217e5ddefcc19ca6afe76bb982f5eb36c9a124448105195fbcfc84bd77",
+    "/opt/homebrew/opt/python@3.14/bin/python3.14": "2477b47fa3ae65b9574eb18a15edb364e96948eaa1875ad3f1c80d780efc9c12",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/guarded-action.py": "fd81ba029cd4e7c7e60623df89e8292af91141d311d9ce789ed19e2152375e84"
+  },
+  "note": "Root accepted native and actual Claude plan with root-plan-dispositions.md; exact two-test successor frozen."
+}

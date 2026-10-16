@@ -1,0 +1,14 @@
+{
+  "status": "Historical build/archive/provenance references only; source bridge must pass before/after every stage",
+  "priorArtifacts": {
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-fresh-depth-authoring/validation-service-successor/run/build-output-inventory.json": "6452f93a890d8a2b44a40df53b2ada146075f16aa6732d5873c4abde725cd0bf",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-fresh-depth-authoring/validation-service-successor/run/tar-source-provenance.json": "127ad775ad02a0c9f53393460db4b45b303ee523c670947d7ef9ec69ecd4b9be",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-fresh-depth-authoring/validation-service-successor/run/installed-provenance.json": "568d577a2242caedda34ed02c004bf61b129526681ff467d94b8939e55fb7dfe"
+  },
+  "baselineSourceSha256": "9bf1c01e73543b1b2ce7eb81fbf32afde0b263af3cc9de22984794b200d17915",
+  "unchangedExcept": [
+    "packages/server/src/transaction-set.test.ts",
+    "packages/server/src/transaction-submission.test.ts"
+  ],
+  "limitations": "No reattribution of prior build to repaired tests. All production/config/lock inputs must remain byte-identical; no installed behavior rerun requested for test-only repair."
+}
