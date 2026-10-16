@@ -1,0 +1,5 @@
+# Closed actual-Claude diagnostic code review
+
+Review only the exact one-file diagnostic patch on HEAD 8ee4d86. Reuse the successful monitored safe-mode runner and parser byte-for-byte, with default model, empty MCP and only Read/Glob/Grep. Stream raw records to stream.jsonl and safe structural progress to progress.jsonl; emit final-review.txt only after exactly one valid successful terminal result, CLI exit 0, unchanged bound inputs and clean process completion. Completion is not approval. Preserve timeout/errors/partial records without retry. Bound remains 3600 seconds with termination initiated at 3595. Source and packet snapshots precede/follow execution; the live session guard protects output writes. No tests or product execution.
+
+The source allowlist is one dirty file; context is pinned runner types and immutable diagnosis/author evidence. No live design-plan read is needed. rootLaunchReleased is false. Root must inspect and deliberately release binding.json before invoking run.py. Existing failure evidence remains immutable and no isolated pass is treated as an explanation of the CI failure.
