@@ -1,0 +1,2909 @@
+Review the four-file conditional Read conformance change against the pinned monolithic BDP spec, docs/specs/bdp.md, especially lines1980–2008 and5871–5889. Do not write or modify any files. Output findings only in stdout. You may use Read/Glob/Grep for repository context. Do not execute tests or commands. Prioritize concrete correctness, false-positive or false-negative evidence, security/privacy, runner integration regressions, and missing critical tests; give numbered findings with severity, file/line, impact and fix. Do not propose unrelated redesign or widening scope.
+
+Scope: adds one partial inherited read.http.conditional-reads row to the existing Transactional manifest/coverage, preserves all32 prior raw objects/full parent bytes, adds full actual-wire assertions and conditional prefix routing to full installed cohorts. No runtime or spec production change; no whole-contract qualification/public admission. New14request positive and4request input-control through actual installed service, fourchildren acrossselected runs. Control only changes request4 If-None-Match:* to a validated nonmatching tag, must yield actual200/body and exactly two failed manifest assertions, then stop. Other10requests unobserved in control.
+
+Accepted plan correction: HTTP captures in runner.ts accept URLs only, not Resource objects. Two object captures/equalsBinding assertions were removed. Full dynamic receipt-to-currentResource equality is an independent app wire oracle; canonical manifest schema/literal assertions and coverage expressly do not claim portable dynamic equality. Assertions198. Review this attribution honestly, do not assume object captures exist.
+
+Root and independent reviewer verified measured fixture-only fences: disk870122/normal883414/nodes23196/coverage133517;42derivatives max889532/23352. New thresholds retain original4096bytes/64nodes/1024coverage margins. No runtime/parser/time limits raised. Original16scenario and16coverage objects remain exact; wholeContract:false.
+
+Required validation is still prospective, not a passing result: cumulative full42 +appstatic3 +unownedbinding3 source cases; five installed cohorts new14+4 and materially affected full234+cross225/226 =703HTTP79children expected. Existing time limits unchanged. Full tree is frozen during review; main is explicitly excluded and Types/editorial changes are separate. Focus code correctness, not missing validation that is already scheduled. Read supplied complete four-file diff below and inspect related source as needed.
+
+Complete diff follows:
+diff --git a/apps/bdptest/src/transactional-matrix.test.ts b/apps/bdptest/src/transactional-matrix.test.ts
+index cdbdf40..1a1ee49 100644
+--- a/apps/bdptest/src/transactional-matrix.test.ts
++++ b/apps/bdptest/src/transactional-matrix.test.ts
+@@ -199,12 +199,15 @@ async function observe(control?: {
+     // Independently authored route inventory, not a second derivation from the manifest.
+     expect(uniqueRoutes).toEqual([
+       { method: "POST", url: `${scope}operations/batch` },
++      { method: "GET", url: `${scope}beads/a` },
++      { method: "HEAD", url: `${scope}beads/a` },
++      { method: "GET", url: `${scope}beads/missing` },
++      { method: "HEAD", url: `${scope}beads/missing` },
+       { method: "GET", url: `${scope}beads/?limit=32` },
+       { method: "GET", url: `${scope}events/` },
+       { method: "POST", url: `${scope}operations/create-bead` },
+       { method: "POST", url: `${scope}operations/sequence` },
+       { method: "POST", url: `${scope}operations/update-bead` },
+-      { method: "GET", url: `${scope}beads/a` },
+       { method: "GET", url: `${scope}links/l` },
+       { method: "GET", url: `${scope}beads/new` },
+       { method: "GET", url: `${scope}changes/?after=genesis` },
+@@ -362,20 +365,22 @@ async function observe(control?: {
+   if (!observed) throw new Error("missing installed observation");
+   return observed;
+ }
+-it("observes sixteen partial Transactional contracts through packed-capable actual installed HTTP", async () => {
++it("observes seventeen partial Transactional contracts through packed-capable actual installed HTTP", async () => {
+   const started = performance.now(),
+     children: ChildProcess[] = [];
+   const crossWire = crossCarrierWire(),
+     minimumWire = commandMinimumWire(),
+     memberWire = sequenceMemberWire(),
+-    principalWire = principalNamespaceWire();
++    principalWire = principalNamespaceWire(),
++    conditionalWire = conditionalReadWire();
++  const prefix = conditionalPrefix(
++    conditionalWire,
++    principalWire.onDispatch,
++    withPrincipalWire(principalWire, composedMemberWire(crossWire, minimumWire, memberWire)),
++  );
+   const observed = await observe({
+     children,
+-    onDispatch: principalWire.onDispatch,
+-    afterExchange: withPrincipalWire(
+-      principalWire,
+-      composedMemberWire(crossWire, minimumWire, memberWire),
+-    ),
++    ...prefix,
+     onObserved(observed) {
+       if (process.env.BDP_TRANSACTIONAL_OBSERVATION_OUTPUT)
+         writeFileSync(
+@@ -388,6 +393,7 @@ it("observes sixteen partial Transactional contracts through packed-capable actu
+               supplemental: minimumWire.summary(),
+               sequenceMemberSupplemental: memberWire.summary(),
+               principalSupplemental: principalWire.summary(observed),
++              conditionalSupplemental: conditionalWire.summary(),
+             },
+             null,
+             2,
+@@ -400,15 +406,15 @@ it("observes sixteen partial Transactional contracts through packed-capable actu
+   expect(observed.result.scenarios).toHaveLength(256); // Includes five optional catalog rows.
+   for (const row of observed.result.scenarios.filter((s) => implemented.has(s.id)))
+     expect(row, JSON.stringify(row, null, 2)).toMatchObject({ state: "pass" });
+-  expect(observed.result.scenarios.filter((s) => s.state === "pass")).toHaveLength(16);
++  expect(observed.result.scenarios.filter((s) => s.state === "pass")).toHaveLength(17);
+   expect(observed.result.claimEligible).toBe(false);
+-  expect(observed.sessions).toHaveLength(23);
+-  expect(children).toHaveLength(24); // Twenty-three scenario/reopen sessions plus separate bootstrap.
++  expect(observed.sessions).toHaveLength(24);
++  expect(children).toHaveLength(25); // Twenty-four scenario/reopen sessions plus separate bootstrap.
+   expect(children.every((child) => child.exitCode !== null || child.signalCode !== null)).toBe(
+     true,
+   );
+   expect(observed.result.declarations).toMatchObject({
+-    exactConfigurationDigest: "9a9404e74dd41fcb39b9c3bb5fc86917ff972dfdbc95faa5f53d13b35bb60bec",
++    exactConfigurationDigest: "dba06191b37fd2deea15f876512321dae7695bdc792b7c02468b0b586b8954e4",
+   });
+   const dynamic = observed.result.scenarios
+     .flatMap((s) => s.exchanges)
+@@ -600,12 +606,13 @@ it("observes sixteen partial Transactional contracts through packed-capable actu
+   assertCommandMinimumPositive(observed, minimumWire);
+   assertMemberPositive(observed, memberWire);
+   assertPrincipalPositive(observed, principalWire);
+-  expect(observed.result.scenarios.reduce((n, row) => n + row.exchanges.length, 0)).toBe(220);
++  conditionalWire.finish(observed);
++  expect(observed.result.scenarios.reduce((n, row) => n + row.exchanges.length, 0)).toBe(234);
+   expect(performance.now() - started).toBeLessThanOrEqual(63000);
+   console.log(
+     JSON.stringify({
+-      // Predecessor logs retain installed-tx-twelve/thirteen/fourteen-partial-summary.
+-      kind: "installed-tx-sixteen-partial-summary",
++      // Predecessor logs retain installed-tx-twelve/thirteen/fourteen/sixteen-partial-summary.
++      kind: "installed-tx-seventeen-partial-summary",
+       sourceCommit,
+       elapsedMs: performance.now() - started,
+       actions: bundle.manifest.scenarios.reduce((n, s) => n + (s.actions?.length ?? 0), 0),
+@@ -1374,6 +1381,7 @@ it("pins the matching no-op installed route digest and fifteen-action ledger", (
+   const redirected = minimumReplayLedger.map((pair) => [...pair]);
+   redirected[0]![1] = "m-create-b";
+   expect(() => assertMinimumReplayLedger(redirected)).toThrow("minimum-replay-comparison-ledger");
++  // Previous principal route digest: 9a9404e74dd41fcb39b9c3bb5fc86917ff972dfdbc95faa5f53d13b35bb60bec.
+   // Previous command-minimum route order: 02dd7d9f35e7482c07ce1550a6572232cc48ba6858cd66f8dfc8f5384f3628be.
+   // Previous fifteen-route order: a9a17908b6fa87674d5f573b584f4a1ce1d41d7909fadf48b65e9b05397ddfd4.
+   // Previous twelve-route digest: 1ba7cbbffc4fb40df2c3f12640bc636e70076cfa25bdd6952b83ec1bb1fe0035.
+@@ -1385,12 +1393,15 @@ it("pins the matching no-op installed route digest and fifteen-action ledger", (
+     profile: "transactional",
+     routes: [
+       { method: "POST", url: `${scope}operations/batch` },
++      { method: "GET", url: `${scope}beads/a` },
++      { method: "HEAD", url: `${scope}beads/a` },
++      { method: "GET", url: `${scope}beads/missing` },
++      { method: "HEAD", url: `${scope}beads/missing` },
+       { method: "GET", url: `${scope}beads/?limit=32` },
+       { method: "GET", url: `${scope}events/` },
+       { method: "POST", url: `${scope}operations/create-bead` },
+       { method: "POST", url: `${scope}operations/sequence` },
+       { method: "POST", url: `${scope}operations/update-bead` },
+-      { method: "GET", url: `${scope}beads/a` },
+       { method: "GET", url: `${scope}links/l` },
+       { method: "GET", url: `${scope}beads/new` },
+       { method: "GET", url: `${scope}changes/?after=genesis` },
+@@ -1403,10 +1414,10 @@ it("pins the matching no-op installed route digest and fifteen-action ledger", (
+     scope,
+   });
+   expect(createHash("sha256").update(preimage).digest("hex")).toBe(
+-    "9a9404e74dd41fcb39b9c3bb5fc86917ff972dfdbc95faa5f53d13b35bb60bec",
++    "dba06191b37fd2deea15f876512321dae7695bdc792b7c02468b0b586b8954e4",
+   );
+-  expect(Buffer.byteLength(preimage)).toBe(1228);
+-  // The reordered first use must not grant or remove any old route authority.
++  expect(Buffer.byteLength(preimage)).toBe(1434);
++  // Preserve every old route and grant only the three explicitly authored new pairs.
+   const oldRoutes = [
+     { method: "GET", url: `${scope}beads/a` },
+     { method: "POST", url: `${scope}operations/batch` },
+@@ -1427,7 +1438,16 @@ it("pins the matching no-op installed route digest and fifteen-action ledger", (
+   const routeKey = (route: { method: string; url: string }) => `${route.method} ${route.url}`;
+   expect(
+     (JSON.parse(preimage).routes as { method: string; url: string }[]).map(routeKey).sort(),
+-  ).toEqual(oldRoutes.map(routeKey).sort());
++  ).toEqual(
++    [
++      ...oldRoutes,
++      { method: "HEAD", url: `${scope}beads/a` },
++      { method: "GET", url: `${scope}beads/missing` },
++      { method: "HEAD", url: `${scope}beads/missing` },
++    ]
++      .map(routeKey)
++      .sort(),
++  );
+   const row = bundle.manifest.scenarios.find((r) => r.id === "transactional.batch.no-op-entries")!;
+   expect(row.actions!.map((a) => a.id)).toEqual([
+     "n-seed",
+@@ -1502,9 +1522,9 @@ it.each(["bead-property", "link-metadata", "group-inventory-and-head"] as const)
+       expect([...failed].sort()).toEqual([...intended].sort());
+     expect(row.exchanges.at(-1)!.request.id).toBe(actionId);
+     expect(children.every((c) => c.exitCode !== null || c.signalCode !== null)).toBe(true);
+-    expect(children.length).toBeLessThanOrEqual(24);
++    expect(children.length).toBeLessThanOrEqual(25);
+     const exchanges = observed.result.scenarios.reduce((n, r) => n + r.exchanges.length, 0);
+-    expect(exchanges).toBeLessThanOrEqual(control === "group-inventory-and-head" ? 214 : 209);
++    expect(exchanges).toBeLessThanOrEqual(control === "group-inventory-and-head" ? 228 : 223);
+     for (const later of observed.result.scenarios.filter(
+       (r) => bundle.manifest.scenarios.some((p) => p.id === r.id) && r.id !== row.id,
+     ))
+@@ -1755,8 +1775,8 @@ it("pins deletion-safety derivative carriers, complete positives, and measured s
+     }
+     // Historical root-accepted maximum701716B/18263nodes plus4096B/64nodes.
+     // Command-minimum measured maximum756707B/19731nodes plus4096B/64nodes.
+-    expect(Buffer.byteLength(normal)).toBeLessThanOrEqual(847979);
+-    expect(nodes).toBeLessThanOrEqual(22128);
++    expect(Buffer.byteLength(normal)).toBeLessThanOrEqual(893628);
++    expect(nodes).toBeLessThanOrEqual(23416);
+     const loaded = createCumulativeTransactionalArtifactBundle(
+       loadProfileContractSelection("transactional"),
+       { fixture: fixtureSource, manifest: { bytes: Buffer.from(wire) } },
+@@ -1839,10 +1859,10 @@ it.each(deletionControlNames)(
+       );
+     }
+     expect(children.every((c) => c.exitCode !== null || c.signalCode !== null)).toBe(true);
+-    expect(children.length).toBeLessThanOrEqual(24);
++    expect(children.length).toBeLessThanOrEqual(25);
+     const exchanges = observed.result.scenarios.reduce((n, r) => n + r.exchanges.length, 0);
+     expect(exchanges).toBeLessThanOrEqual(
+-      control === "incoming-order" ? 204 : control === "outgoing-order" ? 209 : 205,
++      control === "incoming-order" ? 218 : control === "outgoing-order" ? 223 : 219,
+     );
+     for (const later of observed.result.scenarios.filter(
+       (r) => bundle.manifest.scenarios.some((p) => p.id === r.id) && r.id !== row.id,
+@@ -2166,8 +2186,8 @@ function assertCrossCarrierControls() {
+     // Historical measurement-only derivative guards were650386B/17275nodes.
+     // Historical root-accepted maximum701716B/18263nodes plus4096B/64nodes.
+     // Command-minimum measured maximum756707B/19731nodes plus4096B/64nodes.
+-    expect(Buffer.byteLength(normal)).toBeLessThanOrEqual(847979);
+-    expect(nodes).toBeLessThanOrEqual(22128);
++    expect(Buffer.byteLength(normal)).toBeLessThanOrEqual(893628);
++    expect(nodes).toBeLessThanOrEqual(23416);
+     const loaded = createCumulativeTransactionalArtifactBundle(
+       loadProfileContractSelection("transactional"),
+       { fixture: fixtureSource, manifest: { bytes: Buffer.from(JSON.stringify(changed)) } },
+@@ -2206,15 +2226,17 @@ it.each(crossCarrierControls)(
+       wire = crossCarrierWire(control),
+       minimumWire = commandMinimumWire(),
+       memberWire = sequenceMemberWire(),
+-      principalWire = principalNamespaceWire();
++      principalWire = principalNamespaceWire(),
++      conditionalWire = conditionalReadWire();
++    const prefixWire = conditionalPrefix(
++      conditionalWire,
++      principalWire.onDispatch,
++      withPrincipalWire(principalWire, composedMemberWire(wire, minimumWire, memberWire)),
++    );
+     let description: ReturnType<typeof applyCrossCarrierControl> | undefined;
+     const observed = await observe({
+       children,
+-      onDispatch: principalWire.onDispatch,
+-      afterExchange: withPrincipalWire(
+-        principalWire,
+-        composedMemberWire(wire, minimumWire, memberWire),
+-      ),
++      ...prefixWire,
+       onObserved(observed) {
+         if (process.env.BDP_TRANSACTIONAL_CROSS_CARRIER_CONTROL_OUTPUT)
+           writeFileSync(
+@@ -2225,6 +2247,7 @@ it.each(crossCarrierControls)(
+                 entry,
+                 ...observed,
+                 principalSupplemental: principalWire.summary(observed),
++                conditionalSupplemental: conditionalWire.summary(),
+               },
+               null,
+               2,
+@@ -2270,10 +2293,11 @@ it.each(crossCarrierControls)(
+     assertCommandMinimumPositive(observed, minimumWire);
+     assertMemberPositive(observed, memberWire);
+     assertPrincipalPositive(observed, principalWire);
+-    expect(children).toHaveLength(24);
++    conditionalWire.finish(observed);
++    expect(children).toHaveLength(25);
+     expect(children.every((c) => c.exitCode !== null || c.signalCode !== null)).toBe(true);
+     const exchanges = observed.result.scenarios.reduce((n, r) => n + r.exchanges.length, 0);
+-    expect(exchanges).toBe(control === "batch-semantic-conflict" ? 211 : 212);
++    expect(exchanges).toBe(control === "batch-semantic-conflict" ? 225 : 226);
+     console.log(
+       JSON.stringify({
+         kind: "installed-tx-cross-carrier-control",
+@@ -4133,3 +4157,451 @@ it("discriminates principal isolation against a separately bound collapsed names
+     }),
+   );
+ }, 120000);
++
++const conditionalId = "read.http.conditional-reads";
++const conditionalFalseTag = '"conditional-no-match"';
++const conditionalSeed =
++  '{"operations":[{"operation":"createBead","id":"beads/a","type":"https://reference.invalid/acme/types/task","properties":{"title":"before"}}]}';
++const conditionalUpdate =
++  '{"operations":[{"operation":"updateBead","bead":"beads/a","propertiesChange":[{"op":"replace","path":"/title","value":"after"}]}]}';
++const conditionalActionIds = [
++  "seed",
++  "initial-get",
++  "initial-head",
++  "conditional-get",
++  "conditional-head",
++  "mismatch-get",
++  "mismatch-head",
++  "anonymous-get",
++  "anonymous-head",
++  "missing-get",
++  "missing-head",
++  "update",
++  "current-get",
++  "current-head",
++] as const;
++function conditionalRequests(control = false) {
++  const statuses = [
++    200,
++    200,
++    200,
++    control ? 200 : 304,
++    304,
++    412,
++    412,
++    401,
++    401,
++    404,
++    404,
++    200,
++    200,
++    200,
++  ];
++  return conditionalActionIds.map((action, i) => {
++    const post = i === 0 || i === 11;
++    const body = i === 0 ? conditionalSeed : i === 11 ? conditionalUpdate : undefined;
++    const headerLines = [{ name: "accept", value: "application/json" }];
++    if (post)
++      headerLines.push(
++        { name: "content-type", value: "application/json" },
++        { name: "idempotency-key", value: i === 0 ? "conditional-seed" : "conditional-update" },
++      );
++    if ([3, 4, 7, 8, 9, 10].includes(i))
++      headerLines.push({
++        name: "if-none-match",
++        value: control && i === 3 ? conditionalFalseTag : "*",
++      });
++    if (i === 5 || i === 6) headerLines.push({ name: "if-match", value: conditionalFalseTag });
++    return {
++      action,
++      method: post
++        ? ("POST" as const)
++        : action.endsWith("head")
++          ? ("HEAD" as const)
++          : ("GET" as const),
++      url: `${scope}${post ? "operations/batch" : i === 9 || i === 10 ? "beads/missing" : "beads/a"}`,
++      credentialRef: i === 7 || i === 8 ? "anonymous" : "operator",
++      headerLines,
++      body,
++      status: statuses[i]!,
++      bodyBytes: body === undefined ? 0 : Buffer.byteLength(body),
++      bodyDigest: body === undefined ? undefined : createHash("sha256").update(body).digest("hex"),
++    };
++  });
++}
++const conditionalMetadata = [
++  "bdp-scope-epoch",
++  "bdp-authorization-view",
++  "bdp-scope-position",
++  "cache-control",
++  "etag",
++  "content-type",
++  "content-length",
++  "vary",
++] as const;
++/** Independent shallow full-body oracle, with original serialized request evidence.
++ * Neither effectiveRequest nor credential-bearing runtime configuration is retained. */
++function conditionalReadWire(control = false) {
++  const literals = conditionalRequests(control),
++    maximum = control ? 4 : 14;
++  const dispatches: PrincipalDispatchInput[] = [];
++  const responses: {
++    action: string;
++    status: number;
++    bodyBytes: number;
++    bodyDigest: string;
++    headers: Record<string, string>;
++    requestBodyBytes: number;
++    requestBodyDigest: string | undefined;
++    writeState: "complete";
++  }[] = [];
++  const resources: Record<string, unknown>[] = [],
++    receipts: Record<string, unknown>[] = [];
++  const validator = createJsonSchemaValidator(schema);
++  let epoch: string | undefined, view: string | undefined, initialTag: string | undefined;
++  function record(value: unknown): Record<string, unknown> {
++    expect(value).not.toBeNull();
++    expect(typeof value).toBe("object");
++    expect(Array.isArray(value)).toBe(false);
++    return value as Record<string, unknown>;
++  }
++  function nonempty(value: unknown): string {
++    expect(typeof value).toBe("string");
++    expect(value).not.toBe("");
++    return value as string;
++  }
++  return {
++    count: () => responses.length,
++    onDispatch(input: PrincipalDispatchInput) {
++      expect(dispatches.length).toBeLessThan(maximum);
++      expect(dispatches.length).toBe(responses.length);
++      const literal = literals[dispatches.length]!;
++      expect(input).toEqual({
++        method: literal.method,
++        url: literal.url,
++        credentialRef: literal.credentialRef,
++      });
++      dispatches.push(
++        Object.freeze({ method: input.method, url: input.url, credentialRef: input.credentialRef }),
++      );
++    },
++    async afterExchange(response: HttpExchangeResponse) {
++      const i = responses.length,
++        literal = literals[i]!;
++      expect(i).toBeLessThan(maximum);
++      expect(dispatches).toHaveLength(i + 1);
++      const exact = response.exactRequest;
++      expect(response.url).toBe(literal.url);
++      expect(exact?.source).toBe("raw-http1-serializer");
++      expect(exact?.writeState).toBe("complete");
++      expect(exact!.headerLines.slice(0, literal.headerLines.length)).toEqual(literal.headerLines);
++      expect(
++        exact!.headerLines
++          .slice(literal.headerLines.length)
++          .some((h) => h.name.toLowerCase().startsWith("bdp-")),
++      ).toBe(false);
++      expect(exact!.bodyPresent).toBe(literal.body !== undefined);
++      expect(exact!.bodyOctets).toBe(literal.bodyBytes);
++      expect(exact!.bodyDigest).toBe(literal.bodyDigest);
++      expect(response.status).toBe(literal.status);
++      const bytes = Buffer.byteLength(response.bodyText);
++      expect(response.bodyOctets).toBe(bytes);
++      expect(bytes).toBeLessThanOrEqual(8192);
++      expect(response.wireResponseBytes).toBeDefined();
++      expect(response.headers["cache-control"]).toBe("private, no-store");
++      const anonymous = i === 7 || i === 8;
++      const position = i >= 11 ? "pos-2" : "pos-1";
++      for (const name of ["bdp-scope-epoch", "bdp-authorization-view", "bdp-scope-position"])
++        if (anonymous) expect(response.headers[name]).toBeUndefined();
++        else nonempty(response.headers[name]);
++      if (!anonymous) {
++        if (i === 0) {
++          epoch = response.headers["bdp-scope-epoch"];
++          view = response.headers["bdp-authorization-view"];
++        }
++        expect(response.headers["bdp-scope-epoch"]).toBe(epoch);
++        expect(response.headers["bdp-authorization-view"]).toBe(view);
++        expect(response.headers["bdp-scope-position"]).toBe(position);
++      }
++      if (literal.method === "HEAD") {
++        expect(response.bodyText).toBe("");
++        const get = responses[i - 1]!;
++        expect(response.status).toBe(get.status);
++        for (const name of conditionalMetadata) {
++          const actual = response.headers[name];
++          if (actual === undefined && ["content-length", "content-type", "vary"].includes(name))
++            continue;
++          expect(actual, `${literal.action}:${name}`).toBe(get.headers[name]);
++        }
++        if (
++          response.headers["content-length"] !== undefined &&
++          ![304, 412].includes(response.status)
++        )
++          expect(response.headers["content-length"]).toBe(String(get.bodyBytes));
++      } else if (response.status === 304 || response.status === 412) {
++        expect(response.bodyText).toBe("");
++        expect(response.headers["content-type"]).toBeUndefined();
++        if (response.status === 412) expect(response.headers["content-length"]).toBe("0");
++      } else if (i === 0 || i === 11) {
++        expect(response.headers["content-type"]).toBe("application/json");
++        const body = record(JSON.parse(response.bodyText));
++        expect(validator.validate("#/$defs/mutationReceipt", body)).toEqual([]);
++        expect(Array.isArray(body.results)).toBe(true);
++        const results = body.results as unknown[];
++        expect(results).toHaveLength(1);
++        const resource = record(record(results[0]).resource);
++        const revision = nonempty(resource.revision);
++        expect(validator.validate("#/$defs/beadRecord", resource)).toEqual([]);
++        expect(resource).toStrictEqual({
++          id: `${scope}beads/a`,
++          type: `${scope}types/task`,
++          revision,
++          properties: { title: i === 0 ? "before" : "after" },
++          metadata: {},
++        });
++        expect(results).toStrictEqual([
++          { operationIndex: 0, outcome: i === 0 ? "created" : "updated", resource },
++        ]);
++        const id = nonempty(body.id),
++          parsed = new URL(id),
++          prefix = `${scope}receipts/`;
++        expect(parsed.href).toBe(id);
++        expect([parsed.username, parsed.password, parsed.search, parsed.hash]).toEqual([
++          "",
++          "",
++          "",
++          "",
++        ]);
++        expect(id.startsWith(prefix)).toBe(true);
++        expect(/^[A-Za-z0-9_-]+$/.test(id.slice(prefix.length))).toBe(true);
++        nonempty(body.transaction);
++        nonempty(body.expiresAt);
++        expect(Number.isFinite(Date.parse(body.expiresAt as string))).toBe(true);
++        expect(body).toStrictEqual({
++          id,
++          status: "completed",
++          detail: "available",
++          idempotencyKey: i === 0 ? "conditional-seed" : "conditional-update",
++          scopeEpoch: epoch,
++          authorizationView: view,
++          transaction: body.transaction,
++          requiredPosition: position,
++          effectPosition: position,
++          results,
++          next: null,
++          expiresAt: body.expiresAt,
++        });
++        if (i === 11) {
++          expect(resource.revision).not.toBe(resources[0]!.revision);
++          expect(body.transaction).not.toBe(receipts[0]!.transaction);
++          expect(body.id).not.toBe(receipts[0]!.id);
++        }
++        resources.push(resource);
++        receipts.push(body);
++      } else if (response.status === 200) {
++        expect(response.headers["content-type"]).toBe("application/json");
++        const body = record(JSON.parse(response.bodyText));
++        expect(validator.validate("#/$defs/currentBeadRecord", body)).toEqual([]);
++        expect(body).toStrictEqual(resources[i === 12 ? 1 : 0]);
++        const revision = nonempty(body.revision);
++        // This fixture's generated revisions are ASCII opaque tokens. Assert the
++        // domain before independently requiring the corresponding quoted ETag.
++        expect(/^[A-Za-z0-9_-]+$/.test(revision)).toBe(true);
++        expect(response.headers.etag).toBe(`"${revision}"`);
++        if (i === 1) {
++          initialTag = response.headers.etag;
++          expect(initialTag).not.toBe(conditionalFalseTag);
++        }
++        if (i === 12) expect(response.headers.etag).not.toBe(initialTag);
++      } else {
++        expect([7, 9]).toContain(i);
++        expect(response.headers["content-type"]).toBe("application/problem+json");
++        const body = record(JSON.parse(response.bodyText));
++        expect(validator.validate("#/$defs/readProblem", body)).toEqual([]);
++        expect(body).toStrictEqual({
++          type: `https://github.com/gastownhall/bdp/problems/${anonymous ? "authentication" : "not-found"}`,
++          code: anonymous ? "unauthenticated" : "resource-not-found",
++          status: anonymous ? 401 : 404,
++          retry: "after-state-change",
++        });
++      }
++      if (anonymous)
++        expect(response.headers["www-authenticate"]).toBe(
++          'Bearer realm="bdp-transaction-development"',
++        );
++      if (i >= 2 && i <= 6) expect(response.headers.etag).toBe(initialTag);
++      if (i === 3) expect(initialTag).not.toBe(conditionalFalseTag);
++      const headers: Record<string, string> = {};
++      for (const name of [...conditionalMetadata, "www-authenticate"])
++        if (response.headers[name] !== undefined) headers[name] = response.headers[name]!;
++      responses.push({
++        action: literal.action,
++        status: response.status,
++        bodyBytes: bytes,
++        bodyDigest: createHash("sha256").update(response.bodyText).digest("hex"),
++        headers,
++        requestBodyBytes: exact!.bodyOctets,
++        requestBodyDigest: exact!.bodyDigest,
++        writeState: "complete",
++      });
++    },
++    finish(observed: InstalledObservation) {
++      expect(dispatches).toHaveLength(maximum);
++      expect(responses).toHaveLength(maximum);
++      const row = observed.result.scenarios.find((r) => r.id === conditionalId)!;
++      expect(row.prerequisiteFailure).toBeUndefined();
++      expect(row.cleanupError).toBeUndefined();
++      expect(row.actions ?? []).toHaveLength(0);
++      expect(row.exchanges.map((e) => e.request.id)).toEqual(
++        conditionalActionIds.slice(0, maximum),
++      );
++      const failures: string[] = [];
++      for (const [i, exchange] of row.exchanges.entries()) {
++        expect(exchange.transportError).toBeUndefined();
++        expect(exchange.harnessError).toBeUndefined();
++        expect(exchange.request.method).toBe(literals[i]!.method);
++        expect(exchange.request.url).toBe(literals[i]!.url);
++        expect(exchange.request.exact?.writeState).toBe("complete");
++        expect(exchange.response?.status).toBe(responses[i]!.status);
++        expect(exchange.assertions.map((a) => a.id)).toEqual(
++          bundle.manifest.scenarios
++            .find((r) => r.id === conditionalId)!
++            .actions![i]!.assertions.map((a) => a.id),
++        );
++        failures.push(
++          ...exchange.assertions
++            .filter((a) => !a.passed)
++            .map((a) => `${exchange.request.id}:${a.id}`),
++        );
++      }
++      expect(row.state).toBe(control ? "fail" : "pass");
++      expect(failures).toEqual(
++        control ? ["conditional-get:status", "conditional-get:body-absent"] : [],
++      );
++    },
++    summary() {
++      return {
++        mode: control ? "nonmatching-if-none-match" : "positive",
++        dispatches,
++        responses,
++        expectedExchanges: maximum,
++        provenance:
++          "authored credential handles and actual completed raw request fingerprints; safe response metadata and body digests; full report joined by action order; no wire credential attestation",
++      };
++    },
++  };
++}
++/** The new canonical prefix is consumed exactly once. It cannot reach the old
++ * principal/cross/minimum/member observers, and late repeated mutation keys fail. */
++function conditionalPrefix(
++  conditional: ReturnType<typeof conditionalReadWire>,
++  oldDispatch: (request: PrincipalDispatchInput) => void,
++  oldAfterExchange: (response: HttpExchangeResponse) => Promise<void>,
++) {
++  return {
++    onDispatch(input: PrincipalDispatchInput) {
++      if (conditional.count() < 14) conditional.onDispatch(input);
++      else oldDispatch(input);
++    },
++    async afterExchange(response: HttpExchangeResponse) {
++      if (conditional.count() < 14) await conditional.afterExchange(response);
++      else {
++        const key = response.exactRequest?.headerLines.find(
++          (h) => h.name.toLowerCase() === "idempotency-key",
++        )?.value;
++        expect(key).not.toBe("conditional-seed");
++        expect(key).not.toBe("conditional-update");
++        await oldAfterExchange(response);
++      }
++    },
++  };
++}
++function applyConditionalControl(value: {
++  scenarios: { id: string; actions: Record<string, unknown>[] }[];
++}) {
++  const row = value.scenarios.find((r) => r.id === conditionalId)!;
++  const action = row.actions.find((a) => a.id === "conditional-get")!;
++  const raw = action.raw as { headerLines: { name: string; value: string }[] };
++  const matches = raw.headerLines.filter((h) => h.name === "if-none-match");
++  expect(matches).toHaveLength(1);
++  expect(matches[0]!.value).toBe("*");
++  matches[0]!.value = conditionalFalseTag;
++}
++it("pins conditional raw literals, request order and the sole header control", () => {
++  const literals = conditionalRequests();
++  expect(literals.map((r) => r.bodyBytes)).toEqual([141, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 130, 0, 0]);
++  expect([literals[0]!.bodyDigest, literals[11]!.bodyDigest]).toEqual([
++    "d63bac5f6ec230f2b2420b3c0b64ff21dd4fc6d9a8bdf616353d48e35a91d7ae",
++    "c86a262f896fd4b357050b2b952e8d9992aa5b98f4a5d60f1f6f793040770e20",
++  ]);
++  const canonical = JSON.parse(manifestSource.bytes.toString());
++  const row = canonical.scenarios[0];
++  expect(row.id).toBe(conditionalId);
++  for (const [i, action] of row.actions.entries()) {
++    const literal = literals[i]!;
++    expect(action.id).toBe(literal.action);
++    expect(action.method).toBe(literal.method);
++    expect(action.credentialRef).toBe(literal.credentialRef);
++    expect(action.raw).toEqual({
++      headerLines: literal.headerLines,
++      ...(literal.body === undefined ? {} : { body: { encoding: "utf8", value: literal.body } }),
++    });
++  }
++  const changed = structuredClone(canonical);
++  applyConditionalControl(changed);
++  const changedHeader = changed.scenarios[0].actions[3].raw.headerLines.at(-1);
++  expect(changedHeader).toEqual({ name: "if-none-match", value: conditionalFalseTag });
++  changedHeader.value = "*";
++  expect(changed).toEqual(canonical);
++});
++it.each([false, true])(
++  "observes inherited conditional Read and HEAD after mutation (control %s)",
++  async (control) => {
++    const output = process.env.BDP_TRANSACTIONAL_CONDITIONAL_OUTPUT;
++    if (output !== undefined && (!path.isAbsolute(output) || output.length > 4096))
++      throw new Error("absolute conditional observation output required");
++    const children: ChildProcess[] = [],
++      wire = conditionalReadWire(control);
++    const observed = await observe({
++      children,
++      scenarioSelection: [conditionalId],
++      onDispatch: wire.onDispatch,
++      afterExchange: wire.afterExchange,
++      ...(control ? { manifest: applyConditionalControl } : {}),
++      onObserved(observed) {
++        if (output)
++          writeFileSync(
++            output,
++            JSON.stringify(
++              { sourceCommit, entry, ...observed, conditionalSupplemental: wire.summary() },
++              null,
++              2,
++            ) + "\n",
++          );
++      },
++    });
++    expect(observed.result.selectedScenarioIds).toEqual([conditionalId]);
++    expect(observed.result.scenarios).toHaveLength(1);
++    expect(observed.result.claimEligible).toBe(false);
++    wire.finish(observed);
++    expect(observed.sessions).toHaveLength(1);
++    expect(children).toHaveLength(2);
++    expect(children.every((c) => c.exitCode !== null || c.signalCode !== null)).toBe(true);
++    if (control)
++      expect(observed.result.artifacts.manifestDigest).not.toBe(bundle.digests.manifestDigest);
++    else expect(observed.result.artifacts.manifestDigest).toBe(bundle.digests.manifestDigest);
++    console.log(
++      JSON.stringify({
++        kind: "installed-tx-conditional",
++        sourceCommit,
++        control,
++        exchanges: control ? 4 : 14,
++        childLaunches: children.length,
++        closedChildren: children.filter((c) => c.exitCode !== null || c.signalCode !== null).length,
++        conditionalSupplemental: wire.summary(),
++        claimEligible: false,
++      }),
++    );
++  },
++  120000,
++);
+diff --git a/packages/conformance/src/transactional-cumulative.test.ts b/packages/conformance/src/transactional-cumulative.test.ts
+index cb6231f..e4f5ad0 100644
+--- a/packages/conformance/src/transactional-cumulative.test.ts
++++ b/packages/conformance/src/transactional-cumulative.test.ts
+@@ -196,7 +196,7 @@ it("copies source bytes before binding and exposes all missing obligations witho
+   expect(
+     plan.requirements.filter((r) => r.readiness === "ready-unexecuted").map((r) => r.id),
+   ).toEqual(actual.manifest.scenarios.map((r) => r.id));
+-  expect(plan.requirements.filter((r) => r.readiness === "unplanned")).toHaveLength(235);
++  expect(plan.requirements.filter((r) => r.readiness === "unplanned")).toHaveLength(234);
+   expect(plan.unobservedIds).toEqual(selected.required.map((r) => r.id));
+   expect(plan.unobservedIds).toContain("read-update.http.command-minimum-fields");
+   expect(plan.manifestDigest).toBe(actual.digests.manifestDigest);
+@@ -1112,11 +1112,20 @@ it("preserves every original TX scenario and coverage object while adding one bo
+   }
+   for (const name of ["manifest", "coverage"] as const)
+     assertOriginalObjects(read(name).toString(), name);
+-  const changed = read("manifest").toString().replace('"equals": 401', '"equals": 402');
++  const originalText = read("manifest").toString();
++  const atomicRaw = objectSlices(originalText, "scenarios").get(
++    "transactional.batch.atomic-commit",
++  )!;
++  expect(atomicRaw.match(/"equals": 401/g)).toHaveLength(1);
++  const changed = originalText.replace(
++    atomicRaw,
++    atomicRaw.replace('"equals": 401', '"equals": 402'),
++  );
+   expect(() => assertOriginalObjects(changed, "manifest")).toThrow(
+     "transactional.batch.atomic-commit",
+   );
+   expect(manifest.scenarios.map((r: { id: string }) => r.id)).toEqual([
++    "read.http.conditional-reads",
+     "read-update.idempotency.principal-isolation",
+     "read-update.http.command-minimum-fields",
+     "transactional.batch.atomic-commit",
+@@ -1136,6 +1145,7 @@ it("preserves every original TX scenario and coverage object while adding one bo
+   ]);
+   const counts = new Map<string, number>();
+   for (const [id, expected] of [
++    ["read.http.conditional-reads", 14],
+     ["transactional.set.cardinality", 16],
+     ["transactional.set.singleton-targets", 22],
+     ["transactional.set.mutation", 30],
+@@ -1159,7 +1169,7 @@ it("preserves every original TX scenario and coverage object while adding one bo
+   expect(
+     counts.get("transactional.set.mutation")! + counts.get("transactional.set.zero-match")!,
+   ).toBe(47);
+-  expect(manifest.scenarios.flatMap((r: { actions: unknown[] }) => r.actions)).toHaveLength(227);
++  expect(manifest.scenarios.flatMap((r: { actions: unknown[] }) => r.actions)).toHaveLength(241);
+   // Historical root-accepted deletion-safety measurement: M620094/N16373/C88043/A333.
+   // Schema-name repair uses4B of the accepted margin:4092B/64nodes/1024B.
+   // Historical measurement-only draft retained the smaller guards pending root acceptance.
+@@ -1171,20 +1181,21 @@ it("preserves every original TX scenario and coverage object while adding one bo
+   // Preserve bases488280/13019/70662 and margins4096B/64nodes/1024B.
+   // Root-accepted sequence-member: disk790009/normal802361/nodes20956/coverage117702.
+   // Root-accepted principal: disk825049/normal837765/nodes21908/coverage124537.
++  // Root-accepted conditional Read: disk870122/normal883414/nodes23196/coverage133517.
+   // These measured source authoring fences do not change runtime/parser limits.
+-  expect(read("manifest").byteLength - 488280).toBeLessThanOrEqual(340865);
+-  expect(read("manifest").byteLength).toBeLessThanOrEqual(829145);
+-  expect(Buffer.byteLength(JSON.stringify(manifest, null, 2) + "\n")).toBeLessThanOrEqual(841861);
+-  expect(read("coverage").byteLength - 70662).toBeLessThanOrEqual(54899);
+-  expect(read("coverage").byteLength).toBeLessThanOrEqual(125561);
++  expect(read("manifest").byteLength - 488280).toBeLessThanOrEqual(385938);
++  expect(read("manifest").byteLength).toBeLessThanOrEqual(874218);
++  expect(Buffer.byteLength(JSON.stringify(manifest, null, 2) + "\n")).toBeLessThanOrEqual(887510);
++  expect(read("coverage").byteLength - 70662).toBeLessThanOrEqual(63879);
++  expect(read("coverage").byteLength).toBeLessThanOrEqual(134541);
+   expect(
+     Buffer.byteLength(JSON.stringify(JSON.parse(read("coverage").toString()), null, 2) + "\n"),
+-  ).toBeLessThanOrEqual(125561);
++  ).toBeLessThanOrEqual(134541);
+   expect(
+     manifest.scenarios.flatMap((r: { actions: { assertions: unknown[] }[] }) =>
+       r.actions.flatMap((a) => a.assertions),
+     ),
+-  ).toHaveLength(2642);
++  ).toHaveLength(2840);
+   expect(read("fixture").byteLength).toBe(716);
+   expect(createHash("sha256").update(read("fixture")).digest("hex")).toBe(
+     "3a7899ced771d4880066d98b0000c53f801ece53458502cc4f3bc641146c9a85",
+@@ -1196,8 +1207,8 @@ it("preserves every original TX scenario and coverage object while adding one bo
+     nodes++;
+     if (value && typeof value === "object") pending.push(...Object.values(value));
+   }
+-  expect(nodes - 13019).toBeLessThanOrEqual(8953);
+-  expect(nodes).toBeLessThanOrEqual(21972);
++  expect(nodes - 13019).toBeLessThanOrEqual(10241);
++  expect(nodes).toBeLessThanOrEqual(23260);
+   // Clause ownership is independent from the exhaustive mechanical assertion mirror.
+   const clauseMap = {
+     "transactional.receipt.pagination": [
+@@ -1258,7 +1269,7 @@ it("pins the one-page matched-plus-updated witness without advertised-limit or o
+   const row = manifest.scenarios.find(
+     (r: { id: string }) => r.id === "transactional.receipt.pagination",
+   );
+-  expect(manifest.scenarios.indexOf(row)).toBe(11);
++  expect(manifest.scenarios.indexOf(row)).toBe(12);
+   expect(row.actions).toHaveLength(18);
+   const later = row.actions.find((a: { id: string }) => a.id === "p-later-state");
+   expect(later.captures).toEqual([]); // HTTP capture is URL-only; no unimplemented array capture.
+@@ -3170,6 +3181,7 @@ const principalParentPins = {
+   ],
+ } as const;
+ function withoutPrincipalRow(text: string, name: "manifest" | "coverage") {
++  text = withoutConditionalRow(text, name);
+   const objects = objectSlices(text, name === "manifest" ? "scenarios" : "rows");
+   for (const [id, hash, bytes] of principalParentPins[name]) {
+     const raw = objects.get(id)!;
+@@ -3191,7 +3203,7 @@ function withoutPrincipalRow(text: string, name: "manifest" | "coverage") {
+ }
+ it("pins the partial principal namespace row, full parent and exact credential roles", () => {
+   const row = manifest.scenarios.find((r: { id: string }) => r.id === principalId)!;
+-  expect(manifest.scenarios[0]).toBe(row);
++  expect(manifest.scenarios[1]).toBe(row);
+   expect(row.requiredProfile).toBe("read-update");
+   expect(row.actions.flatMap((a: { captures: unknown[] }) => a.captures)).toEqual([]);
+   expect(row.actions.map((a: { id: string }) => a.id)).toEqual([
+@@ -3539,3 +3551,267 @@ it("pins the partial principal namespace row, full parent and exact credential r
+   for (const name of ["manifest", "coverage"] as const)
+     withoutPrincipalRow(read(name).toString(), name);
+ });
++
++const conditionalId = "read.http.conditional-reads";
++const conditionalParentPins = {
++  manifest: [
++    [
++      "read-update.idempotency.principal-isolation",
++      "154e599e9c3fd3fc050af199f4ab6158c8633bfe66cb39fd15e099fb85a7b1e5",
++      35034,
++    ],
++    [
++      "read-update.http.command-minimum-fields",
++      "f04c001617ccad14ef67a82586ea5f61ec918bc2545bb041fafc21dee07b5d7e",
++      54412,
++    ],
++    [
++      "transactional.batch.atomic-commit",
++      "0dfd3b9ed02d01f76ecac08c00b009b4bb9f03e57f7e15a2266eed82fc144747",
++      14936,
++    ],
++    [
++      "transactional.batch.rollback",
++      "be24067358af7b5acf7bc1beae2eb6534cbc0effa6f65406ab61b139310bfc37",
++      16319,
++    ],
++    [
++      "transactional.batch.deletion-safety",
++      "3e66e7c95aec963cc80e076249a5870b952765b2e98c1023ea148f8f628e6aeb",
++      131808,
++    ],
++    [
++      "transactional.batch.no-op-entries",
++      "9307b230eb053131e9127cbbb5e6285305b79d6794edd22f5432a07fc74d9faa",
++      81047,
++    ],
++    [
++      "transactional.set.mutation",
++      "6e7280a9ebbbc3faa1da989015cc802f82cd51b17a9cea11e7cc91392bef49d6",
++      71739,
++    ],
++    [
++      "transactional.set.zero-match",
++      "35aa23bd32539869ea3db41e1c9f3e81a3217e2eb983e764e860a6e00c9eb2c9",
++      36055,
++    ],
++    [
++      "transactional.set.cardinality",
++      "205af1c54d62efb09c9eadf20147a1730909e788c0d4763ce9718b8648f24ede",
++      28546,
++    ],
++    [
++      "transactional.set.singleton-targets",
++      "561b8ebc21106628918111332a9ab7b47be7350935925ed1e76a6cb5bed576b9",
++      40018,
++    ],
++    [
++      "transactional.receipt.readable",
++      "ddb97e450e233b941f7d905d49f48648d9965ed1b361dcdc5dee6f810038a1e0",
++      12545,
++    ],
++    [
++      "transactional.receipt.pagination",
++      "c531c260349347cdc3e54ba68282f1a266a5fa207d3775660615f836a4768782",
++      138750,
++    ],
++    [
++      "transactional.idempotency.conflict",
++      "ba93aea884ae462533d02695642f03a2ca854f5adabeb41867254216dabb2106",
++      29772,
++    ],
++    [
++      "transactional.idempotency.cross-carrier",
++      "4ad8c05fe5fbb4682809d4481c93e2684fe30fbbb8962b4da498590637f8f35b",
++      64106,
++    ],
++    [
++      "transactional.idempotency.failed-retained",
++      "a867694406dde07da71ac70197c60c478dd0fb3344cf2c8160795d1aa62d3378",
++      18404,
++    ],
++    [
++      "transactional.sequence.member-transactions",
++      "c46b34914118dd34ea1e5f12304124550b9d3c4bfcd9671b99995d6af44a2e1b",
++      51379,
++    ],
++  ],
++  coverage: [
++    [
++      "read-update.idempotency.principal-isolation",
++      "6bbf6691e1c89ab2ef32ecd9f16868943af85414f6b4a689cf6e41cc5a3e27e7",
++      6829,
++    ],
++    [
++      "read-update.http.command-minimum-fields",
++      "47914ed67c7b06e721e74134e0c633f3e1a7d461cb50ea200ff1874686885c2a",
++      8888,
++    ],
++    [
++      "transactional.batch.atomic-commit",
++      "ffd77a9d34ac41a6e1f960671bea6880eb5b2ab7b11b3af4ccf0177363d7f4d7",
++      2383,
++    ],
++    [
++      "transactional.batch.rollback",
++      "9e4f5cdb45f0133f1c6d23caa402701981db2e6f4198e23c667579622ace6769",
++      2857,
++    ],
++    [
++      "transactional.batch.deletion-safety",
++      "ac27a329a1cc013e6a0e24e0f5cad6b5b4af6c128ad65302d030422a3c7e3c0a",
++      17375,
++    ],
++    [
++      "transactional.batch.no-op-entries",
++      "383de4e0cb9b3bad310b9db7ff9009cb59fac55966f0309bc71c5d007bea6c1c",
++      10587,
++    ],
++    [
++      "transactional.set.mutation",
++      "058147f8194f091ee5a7ef3d4fd378f0324f6570049df777f993acb5f967d540",
++      11676,
++    ],
++    [
++      "transactional.set.zero-match",
++      "4e79e18a5e4c2735b5c686b9ad610dedc890386bfb06584f98268a421bbb832b",
++      6520,
++    ],
++    [
++      "transactional.set.cardinality",
++      "2a255ed4d364c435c9f985d7a770386bc7b20b2865887b9c8cc2d6cc5f0dd116",
++      5800,
++    ],
++    [
++      "transactional.set.singleton-targets",
++      "0c9008bac3e2c047d9aa8d47d343b7ed936c9c9352bb140c6422127c71b156b1",
++      7314,
++    ],
++    [
++      "transactional.receipt.readable",
++      "684eba200912ccb0932c0a8286e350a6e545262a205b3ea3df47a12fc6dd18ec",
++      2142,
++    ],
++    [
++      "transactional.receipt.pagination",
++      "0735edbca2fbf384f9f8147140a353dc084d9ad85facaddf2f5073f56a7256ee",
++      13057,
++    ],
++    [
++      "transactional.idempotency.conflict",
++      "de9b758f8ac4df7db5597b1eb2b402a116720becc30a41e7198f78f244358ec0",
++      5188,
++    ],
++    [
++      "transactional.idempotency.cross-carrier",
++      "c5e6076a2104c06f88fac88c77214522cab457faf925fe03881dff9778c35245",
++      11196,
++    ],
++    [
++      "transactional.idempotency.failed-retained",
++      "63918cbb495a504fd2043f52b60e7cd8ef1518b8022a96edb0d02660c7df1a8e",
++      2917,
++    ],
++    [
++      "transactional.sequence.member-transactions",
++      "aea606d1456549f6dd9dc1903e42568282154a61a9fbef50dab3526202eb4045",
++      9557,
++    ],
++  ],
++} as const;
++/** Removing only the new first object recovers the complete byte-exact parent. */
++function withoutConditionalRow(text: string, name: "manifest" | "coverage") {
++  const key = name === "manifest" ? "scenarios" : "rows";
++  const objects = objectSlices(text, key);
++  for (const [id, hash, bytes] of conditionalParentPins[name]) {
++    const raw = objects.get(id)!;
++    expect(Buffer.byteLength(raw), id).toBe(bytes);
++    expect(createHash("sha256").update(raw).digest("hex"), id).toBe(hash);
++  }
++  const raw = objects.get(conditionalId)!;
++  expect(typeof raw).toBe("string");
++  const prefix = `"${key}": [\n    ${raw},\n`;
++  expect(text.includes(prefix), "conditional-first-object").toBe(true);
++  const parent = text.replace(prefix, `"${key}": [\n`);
++  expect(createHash("sha256").update(parent).digest("hex"), "conditional-full-parent").toBe(
++    name === "manifest"
++      ? "cd90592e76cace65b115dbfedf5f604c9c4011ed2e1a0fad954c1edb12aca6cd"
++      : "0c991feb128a50625397e337464badcb17d22a0c31e1d57a6b66fa1032a92a51",
++  );
++  return parent;
++}
++it("pins inherited conditional Read actions, full parent bytes and the two-failure control", () => {
++  const row = manifest.scenarios[0];
++  expect(row.id).toBe(conditionalId);
++  expect(row.requiredProfile).toBe("read");
++  expect(row.setup).toEqual({
++    fixture: "reference-transactional-v1",
++    requires: ["installed-transactional-http"],
++  });
++  expect(row.applicability).toEqual({ requires: [] });
++  expect(row.cleanup).toEqual({ resetFixture: true });
++  expect(row.actions.map((a: { id: string }) => a.id)).toEqual([
++    "seed",
++    "initial-get",
++    "initial-head",
++    "conditional-get",
++    "conditional-head",
++    "mismatch-get",
++    "mismatch-head",
++    "anonymous-get",
++    "anonymous-head",
++    "missing-get",
++    "missing-head",
++    "update",
++    "current-get",
++    "current-head",
++  ]);
++  expect(row.actions.flatMap((a: { assertions: unknown[] }) => a.assertions)).toHaveLength(198);
++  expect(
++    createHash("sha256").update(JSON.stringify(row)).digest("hex"),
++    "conditional-complete-oracle",
++  ).toBe("6def26abb023c472e59cf90e3d1e2e9310f92fdcb1d34184b807eb29e2ded3e2");
++  // HTTP captureValue accepts URL strings only; full dynamic receipt/postimage
++  // equality is enforced independently by the app's original-wire observer.
++  expect(row.actions.flatMap((a: { captures: unknown[] }) => a.captures)).toEqual([]);
++  for (const name of ["manifest", "coverage"] as const)
++    withoutConditionalRow(read(name).toString(), name);
++  const coverage = JSON.parse(read("coverage").toString()).rows[0];
++  expect(Object.keys(coverage)).toEqual(["id", "wholeContract", "reason", "bindings"]);
++  expect(coverage.id).toBe(conditionalId);
++  expect(coverage.wholeContract).toBe(false);
++  expect(coverage.reason).toContain("Whole contract remains unqualified");
++  expect(coverage.bindings).toEqual([
++    {
++      scenario: conditionalId,
++      assertions: row.actions.flatMap((a: { id: string; assertions: { id: string }[] }) =>
++        a.assertions.map((s) => `${a.id}:${s.id}`),
++      ),
++    },
++  ]);
++  const control = structuredClone(row);
++  const header = control.actions[3].raw.headerLines.find(
++    (h: { name: string }) => h.name === "if-none-match",
++  );
++  expect(header.value).toBe("*");
++  header.value = '"conditional-no-match"';
++  expect(
++    control.actions[3].assertions
++      .filter((a: { kind: string }) => ["status", "body-absent"].includes(a.kind))
++      .map((a: { id: string }) => a.id),
++  ).toEqual(["status", "body-absent"]);
++  header.value = "*";
++  expect(control).toEqual(row);
++  // Existing route pairs remain declared; only these three method/URL pairs are new.
++  const routes = row.actions.map(
++    (a: { method: string; target: { binding: string; path?: string } }) =>
++      `${a.method} ${a.target.binding}:${a.target.path ?? ""}`,
++  );
++  expect([...new Set(routes)]).toEqual([
++    "POST batch:",
++    "GET scope:beads/a",
++    "HEAD scope:beads/a",
++    "GET scope:beads/missing",
++    "HEAD scope:beads/missing",
++  ]);
++});
+diff --git a/packages/conformance/test-support/transactional/coverage-v1.json b/packages/conformance/test-support/transactional/coverage-v1.json
+index d48fdbf..dd333c7 100644
+--- a/packages/conformance/test-support/transactional/coverage-v1.json
++++ b/packages/conformance/test-support/transactional/coverage-v1.json
+@@ -4,6 +4,216 @@
+   "status": "bounded-observation",
+   "transportAdmission": "private-exact-available",
+   "rows": [
++    {
++      "id": "read.http.conditional-reads",
++      "wholeContract": false,
++      "reason": "Bounded inherited Read conditional GET/HEAD and ordinary 401/404 precedence on the same actual mutable Transactional configuration; complete current Resources equal captured receipt postimages and independent wire oracles check validators, revision changes and HEAD metadata. HEAD parity is supporting prose, not a second coverage binding. Whole contract remains unqualified: cold discovery, date/validator combinations, other Read surfaces, policy transitions, S1/G2 and full-profile admission remain omitted. Full dynamic receipt/postimage equality is an independent app wire oracle, not a canonical manifest assertion. HTTP captures are URL-only; no body capture capability is claimed.",
++      "bindings": [
++        {
++          "scenario": "read.http.conditional-reads",
++          "assertions": [
++            "seed:status",
++            "seed:request-headers",
++            "seed:request-body",
++            "seed:cache",
++            "seed:present-bdp-scope-epoch",
++            "seed:present-bdp-authorization-view",
++            "seed:present-bdp-scope-position",
++            "seed:position",
++            "seed:media",
++            "seed:schema",
++            "seed:completed",
++            "seed:available",
++            "seed:key",
++            "seed:required",
++            "seed:effect",
++            "seed:no-next",
++            "seed:receipt-id",
++            "seed:transaction",
++            "seed:result",
++            "seed:resource-id",
++            "seed:resource-type",
++            "seed:resource-revision",
++            "seed:resource-properties",
++            "seed:resource-metadata",
++            "seed:no-owned-links",
++            "seed:no-provenance",
++            "initial-get:status",
++            "initial-get:request-headers",
++            "initial-get:request-body",
++            "initial-get:cache",
++            "initial-get:present-bdp-scope-epoch",
++            "initial-get:present-bdp-authorization-view",
++            "initial-get:present-bdp-scope-position",
++            "initial-get:position",
++            "initial-get:etag",
++            "initial-get:media",
++            "initial-get:schema",
++            "initial-get:resource-id",
++            "initial-get:resource-type",
++            "initial-get:resource-revision",
++            "initial-get:resource-properties",
++            "initial-get:resource-metadata",
++            "initial-get:no-owned-links",
++            "initial-get:no-provenance",
++            "initial-head:status",
++            "initial-head:request-headers",
++            "initial-head:request-body",
++            "initial-head:cache",
++            "initial-head:present-bdp-scope-epoch",
++            "initial-head:present-bdp-authorization-view",
++            "initial-head:present-bdp-scope-position",
++            "initial-head:position",
++            "initial-head:etag",
++            "initial-head:body-absent",
++            "initial-head:get-metadata",
++            "conditional-get:status",
++            "conditional-get:request-headers",
++            "conditional-get:request-body",
++            "conditional-get:cache",
++            "conditional-get:present-bdp-scope-epoch",
++            "conditional-get:present-bdp-authorization-view",
++            "conditional-get:present-bdp-scope-position",
++            "conditional-get:position",
++            "conditional-get:etag",
++            "conditional-get:body-absent",
++            "conditional-head:status",
++            "conditional-head:request-headers",
++            "conditional-head:request-body",
++            "conditional-head:cache",
++            "conditional-head:present-bdp-scope-epoch",
++            "conditional-head:present-bdp-authorization-view",
++            "conditional-head:present-bdp-scope-position",
++            "conditional-head:position",
++            "conditional-head:etag",
++            "conditional-head:body-absent",
++            "conditional-head:get-metadata",
++            "mismatch-get:status",
++            "mismatch-get:request-headers",
++            "mismatch-get:request-body",
++            "mismatch-get:cache",
++            "mismatch-get:present-bdp-scope-epoch",
++            "mismatch-get:present-bdp-authorization-view",
++            "mismatch-get:present-bdp-scope-position",
++            "mismatch-get:position",
++            "mismatch-get:etag",
++            "mismatch-get:body-absent",
++            "mismatch-get:no-media",
++            "mismatch-head:status",
++            "mismatch-head:request-headers",
++            "mismatch-head:request-body",
++            "mismatch-head:cache",
++            "mismatch-head:present-bdp-scope-epoch",
++            "mismatch-head:present-bdp-authorization-view",
++            "mismatch-head:present-bdp-scope-position",
++            "mismatch-head:position",
++            "mismatch-head:etag",
++            "mismatch-head:body-absent",
++            "mismatch-head:no-media",
++            "mismatch-head:get-metadata",
++            "anonymous-get:status",
++            "anonymous-get:request-headers",
++            "anonymous-get:request-body",
++            "anonymous-get:cache",
++            "anonymous-get:absent-bdp-scope-epoch",
++            "anonymous-get:absent-bdp-authorization-view",
++            "anonymous-get:absent-bdp-scope-position",
++            "anonymous-get:media",
++            "anonymous-get:challenge",
++            "anonymous-get:schema",
++            "anonymous-get:problem",
++            "anonymous-head:status",
++            "anonymous-head:request-headers",
++            "anonymous-head:request-body",
++            "anonymous-head:cache",
++            "anonymous-head:absent-bdp-scope-epoch",
++            "anonymous-head:absent-bdp-authorization-view",
++            "anonymous-head:absent-bdp-scope-position",
++            "anonymous-head:body-absent",
++            "anonymous-head:media",
++            "anonymous-head:challenge",
++            "anonymous-head:get-metadata",
++            "missing-get:status",
++            "missing-get:request-headers",
++            "missing-get:request-body",
++            "missing-get:cache",
++            "missing-get:present-bdp-scope-epoch",
++            "missing-get:present-bdp-authorization-view",
++            "missing-get:present-bdp-scope-position",
++            "missing-get:position",
++            "missing-get:media",
++            "missing-get:schema",
++            "missing-get:problem",
++            "missing-head:status",
++            "missing-head:request-headers",
++            "missing-head:request-body",
++            "missing-head:cache",
++            "missing-head:present-bdp-scope-epoch",
++            "missing-head:present-bdp-authorization-view",
++            "missing-head:present-bdp-scope-position",
++            "missing-head:position",
++            "missing-head:body-absent",
++            "missing-head:media",
++            "missing-head:get-metadata",
++            "update:status",
++            "update:request-headers",
++            "update:request-body",
++            "update:cache",
++            "update:present-bdp-scope-epoch",
++            "update:present-bdp-authorization-view",
++            "update:present-bdp-scope-position",
++            "update:position",
++            "update:media",
++            "update:schema",
++            "update:completed",
++            "update:available",
++            "update:key",
++            "update:required",
++            "update:effect",
++            "update:no-next",
++            "update:receipt-id",
++            "update:transaction",
++            "update:result",
++            "update:resource-id",
++            "update:resource-type",
++            "update:resource-revision",
++            "update:resource-properties",
++            "update:resource-metadata",
++            "update:no-owned-links",
++            "update:no-provenance",
++            "current-get:status",
++            "current-get:request-headers",
++            "current-get:request-body",
++            "current-get:cache",
++            "current-get:present-bdp-scope-epoch",
++            "current-get:present-bdp-authorization-view",
++            "current-get:present-bdp-scope-position",
++            "current-get:position",
++            "current-get:etag",
++            "current-get:media",
++            "current-get:schema",
++            "current-get:resource-id",
++            "current-get:resource-type",
++            "current-get:resource-revision",
++            "current-get:resource-properties",
++            "current-get:resource-metadata",
++            "current-get:no-owned-links",
++            "current-get:no-provenance",
++            "current-head:status",
++            "current-head:request-headers",
++            "current-head:request-body",
++            "current-head:cache",
++            "current-head:present-bdp-scope-epoch",
++            "current-head:present-bdp-authorization-view",
++            "current-head:present-bdp-scope-position",
++            "current-head:position",
++            "current-head:etag",
++            "current-head:body-absent",
++            "current-head:get-metadata"
++          ]
++        }
++      ]
++    },
+     {
+       "id": "read-update.idempotency.principal-isolation",
+       "wholeContract": false,
+diff --git a/packages/conformance/test-support/transactional/manifest-v1.json b/packages/conformance/test-support/transactional/manifest-v1.json
+index 336a16d..66980fd 100644
+--- a/packages/conformance/test-support/transactional/manifest-v1.json
++++ b/packages/conformance/test-support/transactional/manifest-v1.json
+@@ -2,6 +2,1588 @@
+   "manifestVersion": 2,
+   "catalogId": "transactional-v1",
+   "scenarios": [
++    {
++      "id": "read.http.conditional-reads",
++      "requiredProfile": "read",
++      "setup": {
++        "fixture": "reference-transactional-v1",
++        "requires": ["installed-transactional-http"]
++      },
++      "applicability": {
++        "requires": []
++      },
++      "cleanup": {
++        "resetFixture": true
++      },
++      "actions": [
++        {
++          "id": "seed",
++          "family": "http",
++          "method": "POST",
++          "target": {
++            "binding": "batch"
++          },
++          "credentialRef": "operator",
++          "raw": {
++            "headerLines": [
++              {
++                "name": "accept",
++                "value": "application/json"
++              },
++              {
++                "name": "content-type",
++                "value": "application/json"
++              },
++              {
++                "name": "idempotency-key",
++                "value": "conditional-seed"
++              }
++            ],
++            "body": {
++              "encoding": "utf8",
++              "value": "{\"operations\":[{\"operation\":\"createBead\",\"id\":\"beads/a\",\"type\":\"https://reference.invalid/acme/types/task\",\"properties\":{\"title\":\"before\"}}]}"
++            }
++          },
++          "captures": [],
++          "assertions": [
++            {
++              "id": "status",
++              "kind": "status",
++              "equals": 200
++            },
++            {
++              "id": "request-headers",
++              "kind": "request-authored-headers"
++            },
++            {
++              "id": "request-body",
++              "kind": "request-authored-body"
++            },
++            {
++              "id": "cache",
++              "kind": "header",
++              "name": "cache-control",
++              "equals": "private, no-store"
++            },
++            {
++              "id": "present-bdp-scope-epoch",
++              "kind": "header",
++              "name": "bdp-scope-epoch",
++              "absent": false
++            },
++            {
++              "id": "present-bdp-authorization-view",
++              "kind": "header",
++              "name": "bdp-authorization-view",
++              "absent": false
++            },
++            {
++              "id": "present-bdp-scope-position",
++              "kind": "header",
++              "name": "bdp-scope-position",
++              "absent": false
++            },
++            {
++              "id": "position",
++              "kind": "header",
++              "name": "bdp-scope-position",
++              "equals": "pos-1"
++            },
++            {
++              "id": "media",
++              "kind": "header",
++              "name": "content-type",
++              "equals": "application/json"
++            },
++            {
++              "id": "schema",
++              "kind": "json-schema",
++              "schema": "#/$defs/mutationReceipt"
++            },
++            {
++              "id": "completed",
++              "kind": "json-pointer",
++              "pointer": "/status",
++              "equals": "completed",
++              "exists": true
++            },
++            {
++              "id": "available",
++              "kind": "json-pointer",
++              "pointer": "/detail",
++              "equals": "available",
++              "exists": true
++            },
++            {
++              "id": "key",
++              "kind": "json-pointer",
++              "pointer": "/idempotencyKey",
++              "equals": "conditional-seed",
++              "exists": true
++            },
++            {
++              "id": "required",
++              "kind": "json-pointer",
++              "pointer": "/requiredPosition",
++              "equals": "pos-1",
++              "exists": true
++            },
++            {
++              "id": "effect",
++              "kind": "json-pointer",
++              "pointer": "/effectPosition",
++              "equals": "pos-1",
++              "exists": true
++            },
++            {
++              "id": "no-next",
++              "kind": "json-pointer",
++              "pointer": "/next",
++              "exists": true,
++              "equals": null
++            },
++            {
++              "id": "receipt-id",
++              "kind": "json-pointer",
++              "pointer": "/id",
++              "exists": true
++            },
++            {
++              "id": "transaction",
++              "kind": "json-pointer",
++              "pointer": "/transaction",
++              "exists": true
++            },
++            {
++              "id": "result",
++              "kind": "json-array-tuples",
++              "pointer": "/results",
++              "ordered": true,
++              "projections": [
++                {
++                  "pointer": "/operationIndex"
++                },
++                {
++                  "pointer": "/outcome"
++                }
++              ],
++              "equals": [[0, "created"]]
++            },
++            {
++              "id": "resource-id",
++              "kind": "json-pointer",
++              "pointer": "/results/0/resource/id",
++              "equals": "https://reference.invalid/acme/beads/a",
++              "exists": true
++            },
++            {
++              "id": "resource-type",
++              "kind": "json-pointer",
++              "pointer": "/results/0/resource/type",
++              "equals": "https://reference.invalid/acme/types/task",
++              "exists": true
++            },
++            {
++              "id": "resource-revision",
++              "kind": "json-pointer",
++              "pointer": "/results/0/resource/revision",
++              "exists": true
++            },
++            {
++              "id": "resource-properties",
++              "kind": "json-pointer",
++              "pointer": "/results/0/resource/properties",
++              "equals": {
++                "title": "before"
++              },
++              "exists": true
++            },
++            {
++              "id": "resource-metadata",
++              "kind": "json-pointer",
++              "pointer": "/results/0/resource/metadata",
++              "equals": {},
++              "exists": true
++            },
++            {
++              "id": "no-owned-links",
++              "kind": "json-pointer",
++              "pointer": "/results/0/resource/ownedLinks",
++              "exists": false
++            },
++            {
++              "id": "no-provenance",
++              "kind": "json-pointer",
++              "pointer": "/results/0/resource/revisionProvenance",
++              "exists": false
++            }
++          ]
++        },
++        {
++          "id": "initial-get",
++          "family": "http",
++          "method": "GET",
++          "target": {
++            "binding": "scope",
++            "path": "beads/a"
++          },
++          "credentialRef": "operator",
++          "raw": {
++            "headerLines": [
++              {
++                "name": "accept",
++                "value": "application/json"
++              }
++            ]
++          },
++          "captures": [],
++          "assertions": [
++            {
++              "id": "status",
++              "kind": "status",
++              "equals": 200
++            },
++            {
++              "id": "request-headers",
++              "kind": "request-authored-headers"
++            },
++            {
++              "id": "request-body",
++              "kind": "request-authored-body"
++            },
++            {
++              "id": "cache",
++              "kind": "header",
++              "name": "cache-control",
++              "equals": "private, no-store"
++            },
++            {
++              "id": "present-bdp-scope-epoch",
++              "kind": "header",
++              "name": "bdp-scope-epoch",
++              "absent": false
++            },
++            {
++              "id": "present-bdp-authorization-view",
++              "kind": "header",
++              "name": "bdp-authorization-view",
++              "absent": false
++            },
++            {
++              "id": "present-bdp-scope-position",
++              "kind": "header",
++              "name": "bdp-scope-position",
++              "absent": false
++            },
++            {
++              "id": "position",
++              "kind": "header",
++              "name": "bdp-scope-position",
++              "equals": "pos-1"
++            },
++            {
++              "id": "etag",
++              "kind": "header",
++              "name": "etag",
++              "absent": false
++            },
++            {
++              "id": "media",
++              "kind": "header",
++              "name": "content-type",
++              "equals": "application/json"
++            },
++            {
++              "id": "schema",
++              "kind": "json-schema",
++              "schema": "#/$defs/currentBeadRecord"
++            },
++            {
++              "id": "resource-id",
++              "kind": "json-pointer",
++              "pointer": "/id",
++              "equals": "https://reference.invalid/acme/beads/a",
++              "exists": true
++            },
++            {
++              "id": "resource-type",
++              "kind": "json-pointer",
++              "pointer": "/type",
++              "equals": "https://reference.invalid/acme/types/task",
++              "exists": true
++            },
++            {
++              "id": "resource-revision",
++              "kind": "json-pointer",
++              "pointer": "/revision",
++              "exists": true
++            },
++            {
++              "id": "resource-properties",
++              "kind": "json-pointer",
++              "pointer": "/properties",
++              "equals": {
++                "title": "before"
++              },
++              "exists": true
++            },
++            {
++              "id": "resource-metadata",
++              "kind": "json-pointer",
++              "pointer": "/metadata",
++              "equals": {},
++              "exists": true
++            },
++            {
++              "id": "no-owned-links",
++              "kind": "json-pointer",
++              "pointer": "/ownedLinks",
++              "exists": false
++            },
++            {
++              "id": "no-provenance",
++              "kind": "json-pointer",
++              "pointer": "/revisionProvenance",
++              "exists": false
++            }
++          ]
++        },
++        {
++          "id": "initial-head",
++          "family": "http",
++          "method": "HEAD",
++          "target": {
++            "binding": "scope",
++            "path": "beads/a"
++          },
++          "credentialRef": "operator",
++          "raw": {
++            "headerLines": [
++              {
++                "name": "accept",
++                "value": "application/json"
++              }
++            ]
++          },
++          "captures": [],
++          "assertions": [
++            {
++              "id": "status",
++              "kind": "status",
++              "equals": 200
++            },
++            {
++              "id": "request-headers",
++              "kind": "request-authored-headers"
++            },
++            {
++              "id": "request-body",
++              "kind": "request-authored-body"
++            },
++            {
++              "id": "cache",
++              "kind": "header",
++              "name": "cache-control",
++              "equals": "private, no-store"
++            },
++            {
++              "id": "present-bdp-scope-epoch",
++              "kind": "header",
++              "name": "bdp-scope-epoch",
++              "absent": false
++            },
++            {
++              "id": "present-bdp-authorization-view",
++              "kind": "header",
++              "name": "bdp-authorization-view",
++              "absent": false
++            },
++            {
++              "id": "present-bdp-scope-position",
++              "kind": "header",
++              "name": "bdp-scope-position",
++              "absent": false
++            },
++            {
++              "id": "position",
++              "kind": "header",
++              "name": "bdp-scope-position",
++              "equals": "pos-1"
++            },
++            {
++              "id": "etag",
++              "kind": "header",
++              "name": "etag",
++              "absent": false
++            },
++            {
++              "id": "body-absent",
++              "kind": "body-absent"
++            },
++            {
++              "id": "get-metadata",
++              "kind": "response-metadata-equals",
++              "request": "initial-get",
++              "headers": [
++                "bdp-scope-epoch",
++                "bdp-authorization-view",
++                "bdp-scope-position",
++                "cache-control",
++                "etag",
++                "content-type",
++                "content-length",
++                "vary"
++              ],
++              "optionalHeaders": ["content-length", "content-type", "vary"]
++            }
++          ]
++        },
++        {
++          "id": "conditional-get",
++          "family": "http",
++          "method": "GET",
++          "target": {
++            "binding": "scope",
++            "path": "beads/a"
++          },
++          "credentialRef": "operator",
++          "raw": {
++            "headerLines": [
++              {
++                "name": "accept",
++                "value": "application/json"
++              },
++              {
++                "name": "if-none-match",
++                "value": "*"
++              }
++            ]
++          },
++          "captures": [],
++          "assertions": [
++            {
++              "id": "status",
++              "kind": "status",
++              "equals": 304
++            },
++            {
++              "id": "request-headers",
++              "kind": "request-authored-headers"
++            },
++            {
++              "id": "request-body",
++              "kind": "request-authored-body"
++            },
++            {
++              "id": "cache",
++              "kind": "header",
++              "name": "cache-control",
++              "equals": "private, no-store"
++            },
++            {
++              "id": "present-bdp-scope-epoch",
++              "kind": "header",
++              "name": "bdp-scope-epoch",
++              "absent": false
++            },
++            {
++              "id": "present-bdp-authorization-view",
++              "kind": "header",
++              "name": "bdp-authorization-view",
++              "absent": false
++            },
++            {
++              "id": "present-bdp-scope-position",
++              "kind": "header",
++              "name": "bdp-scope-position",
++              "absent": false
++            },
++            {
++              "id": "position",
++              "kind": "header",
++              "name": "bdp-scope-position",
++              "equals": "pos-1"
++            },
++            {
++              "id": "etag",
++              "kind": "header",
++              "name": "etag",
++              "absent": false
++            },
++            {
++              "id": "body-absent",
++              "kind": "body-absent"
++            }
++          ]
++        },
++        {
++          "id": "conditional-head",
++          "family": "http",
++          "method": "HEAD",
++          "target": {
++            "binding": "scope",
++            "path": "beads/a"
++          },
++          "credentialRef": "operator",
++          "raw": {
++            "headerLines": [
++              {
++                "name": "accept",
++                "value": "application/json"
++              },
++              {
++                "name": "if-none-match",
++                "value": "*"
++              }
++            ]
++          },
++          "captures": [],
++          "assertions": [
++            {
++              "id": "status",
++              "kind": "status",
++              "equals": 304
++            },
++            {
++              "id": "request-headers",
++              "kind": "request-authored-headers"
++            },
++            {
++              "id": "request-body",
++              "kind": "request-authored-body"
++            },
++            {
++              "id": "cache",
++              "kind": "header",
++              "name": "cache-control",
++              "equals": "private, no-store"
++            },
++            {
++              "id": "present-bdp-scope-epoch",
++              "kind": "header",
++              "name": "bdp-scope-epoch",
++              "absent": false
++            },
++            {
++              "id": "present-bdp-authorization-view",
++              "kind": "header",
++              "name": "bdp-authorization-view",
++              "absent": false
++            },
++            {
++              "id": "present-bdp-scope-position",
++              "kind": "header",
++              "name": "bdp-scope-position",
++              "absent": false
++            },
++            {
++              "id": "position",
++              "kind": "header",
++              "name": "bdp-scope-position",
++              "equals": "pos-1"
++            },
++            {
++              "id": "etag",
++              "kind": "header",
++              "name": "etag",
++              "absent": false
++            },
++            {
++              "id": "body-absent",
++              "kind": "body-absent"
++            },
++            {
++              "id": "get-metadata",
++              "kind": "response-metadata-equals",
++              "request": "conditional-get",
++              "headers": [
++                "bdp-scope-epoch",
++                "bdp-authorization-view",
++                "bdp-scope-position",
++                "cache-control",
++                "etag",
++                "content-type",
++                "content-length",
++                "vary"
++              ],
++              "optionalHeaders": ["content-length", "content-type", "vary"]
++            }
++          ]
++        },
++        {
++          "id": "mismatch-get",
++          "family": "http",
++          "method": "GET",
++          "target": {
++            "binding": "scope",
++            "path": "beads/a"
++          },
++          "credentialRef": "operator",
++          "raw": {
++            "headerLines": [
++              {
++                "name": "accept",
++                "value": "application/json"
++              },
++              {
++                "name": "if-match",
++                "value": "\"conditional-no-match\""
++              }
++            ]
++          },
++          "captures": [],
++          "assertions": [
++            {
++              "id": "status",
++              "kind": "status",
++              "equals": 412
++            },
++            {
++              "id": "request-headers",
++              "kind": "request-authored-headers"
++            },
++            {
++              "id": "request-body",
++              "kind": "request-authored-body"
++            },
++            {
++              "id": "cache",
++              "kind": "header",
++              "name": "cache-control",
++              "equals": "private, no-store"
++            },
++            {
++              "id": "present-bdp-scope-epoch",
++              "kind": "header",
++              "name": "bdp-scope-epoch",
++              "absent": false
++            },
++            {
++              "id": "present-bdp-authorization-view",
++              "kind": "header",
++              "name": "bdp-authorization-view",
++              "absent": false
++            },
++            {
++              "id": "present-bdp-scope-position",
++              "kind": "header",
++              "name": "bdp-scope-position",
++              "absent": false
++            },
++            {
++              "id": "position",
++              "kind": "header",
++              "name": "bdp-scope-position",
++              "equals": "pos-1"
++            },
++            {
++              "id": "etag",
++              "kind": "header",
++              "name": "etag",
++              "absent": false
++            },
++            {
++              "id": "body-absent",
++              "kind": "body-absent"
++            },
++            {
++              "id": "no-media",
++              "kind": "header",
++              "name": "content-type",
++              "absent": true
++            }
++          ]
++        },
++        {
++          "id": "mismatch-head",
++          "family": "http",
++          "method": "HEAD",
++          "target": {
++            "binding": "scope",
++            "path": "beads/a"
++          },
++          "credentialRef": "operator",
++          "raw": {
++            "headerLines": [
++              {
++                "name": "accept",
++                "value": "application/json"
++              },
++              {
++                "name": "if-match",
++                "value": "\"conditional-no-match\""
++              }
++            ]
++          },
++          "captures": [],
++          "assertions": [
++            {
++              "id": "status",
++              "kind": "status",
++              "equals": 412
++            },
++            {
++              "id": "request-headers",
++              "kind": "request-authored-headers"
++            },
++            {
++              "id": "request-body",
++              "kind": "request-authored-body"
++            },
++            {
++              "id": "cache",
++              "kind": "header",
++              "name": "cache-control",
++              "equals": "private, no-store"
++            },
++            {
++              "id": "present-bdp-scope-epoch",
++              "kind": "header",
++              "name": "bdp-scope-epoch",
++              "absent": false
++            },
++            {
++              "id": "present-bdp-authorization-view",
++              "kind": "header",
++              "name": "bdp-authorization-view",
++              "absent": false
++            },
++            {
++              "id": "present-bdp-scope-position",
++              "kind": "header",
++              "name": "bdp-scope-position",
++              "absent": false
++            },
++            {
++              "id": "position",
++              "kind": "header",
++              "name": "bdp-scope-position",
++              "equals": "pos-1"
++            },
++            {
++              "id": "etag",
++              "kind": "header",
++              "name": "etag",
++              "absent": false
++            },
++            {
++              "id": "body-absent",
++              "kind": "body-absent"
++            },
++            {
++              "id": "no-media",
++              "kind": "header",
++              "name": "content-type",
++              "absent": true
++            },
++            {
++              "id": "get-metadata",
++              "kind": "response-metadata-equals",
++              "request": "mismatch-get",
++              "headers": [
++                "bdp-scope-epoch",
++                "bdp-authorization-view",
++                "bdp-scope-position",
++                "cache-control",
++                "etag",
++                "content-type",
++                "content-length",
++                "vary"
++              ],
++              "optionalHeaders": ["content-length", "content-type", "vary"]
++            }
++          ]
++        },
++        {
++          "id": "anonymous-get",
++          "family": "http",
++          "method": "GET",
++          "target": {
++            "binding": "scope",
++            "path": "beads/a"
++          },
++          "credentialRef": "anonymous",
++          "raw": {
++            "headerLines": [
++              {
++                "name": "accept",
++                "value": "application/json"
++              },
++              {
++                "name": "if-none-match",
++                "value": "*"
++              }
++            ]
++          },
++          "captures": [],
++          "assertions": [
++            {
++              "id": "status",
++              "kind": "status",
++              "equals": 401
++            },
++            {
++              "id": "request-headers",
++              "kind": "request-authored-headers"
++            },
++            {
++              "id": "request-body",
++              "kind": "request-authored-body"
++            },
++            {
++              "id": "cache",
++              "kind": "header",
++              "name": "cache-control",
++              "equals": "private, no-store"
++            },
++            {
++              "id": "absent-bdp-scope-epoch",
++              "kind": "header",
++              "name": "bdp-scope-epoch",
++              "absent": true
++            },
++            {
++              "id": "absent-bdp-authorization-view",
++              "kind": "header",
++              "name": "bdp-authorization-view",
++              "absent": true
++            },
++            {
++              "id": "absent-bdp-scope-position",
++              "kind": "header",
++              "name": "bdp-scope-position",
++              "absent": true
++            },
++            {
++              "id": "media",
++              "kind": "header",
++              "name": "content-type",
++              "equals": "application/problem+json"
++            },
++            {
++              "id": "challenge",
++              "kind": "header",
++              "name": "www-authenticate",
++              "equals": "Bearer realm=\"bdp-transaction-development\""
++            },
++            {
++              "id": "schema",
++              "kind": "json-schema",
++              "schema": "#/$defs/readProblem"
++            },
++            {
++              "id": "problem",
++              "kind": "json-equals",
++              "value": {
++                "type": "https://github.com/gastownhall/bdp/problems/authentication",
++                "code": "unauthenticated",
++                "retry": "after-state-change",
++                "status": 401
++              }
++            }
++          ]
++        },
++        {
++          "id": "anonymous-head",
++          "family": "http",
++          "method": "HEAD",
++          "target": {
++            "binding": "scope",
++            "path": "beads/a"
++          },
++          "credentialRef": "anonymous",
++          "raw": {
++            "headerLines": [
++              {
++                "name": "accept",
++                "value": "application/json"
++              },
++              {
++                "name": "if-none-match",
++                "value": "*"
++              }
++            ]
++          },
++          "captures": [],
++          "assertions": [
++            {
++              "id": "status",
++              "kind": "status",
++              "equals": 401
++            },
++            {
++              "id": "request-headers",
++              "kind": "request-authored-headers"
++            },
++            {
++              "id": "request-body",
++              "kind": "request-authored-body"
++            },
++            {
++              "id": "cache",
++              "kind": "header",
++              "name": "cache-control",
++              "equals": "private, no-store"
++            },
++            {
++              "id": "absent-bdp-scope-epoch",
++              "kind": "header",
++              "name": "bdp-scope-epoch",
++              "absent": true
++            },
++            {
++              "id": "absent-bdp-authorization-view",
++              "kind": "header",
++              "name": "bdp-authorization-view",
++              "absent": true
++            },
++            {
++              "id": "absent-bdp-scope-position",
++              "kind": "header",
++              "name": "bdp-scope-position",
++              "absent": true
++            },
++            {
++              "id": "body-absent",
++              "kind": "body-absent"
++            },
++            {
++              "id": "media",
++              "kind": "header",
++              "name": "content-type",
++              "equals": "application/problem+json"
++            },
++            {
++              "id": "challenge",
++              "kind": "header",
++              "name": "www-authenticate",
++              "equals": "Bearer realm=\"bdp-transaction-development\""
++            },
++            {
++              "id": "get-metadata",
++              "kind": "response-metadata-equals",
++              "request": "anonymous-get",
++              "headers": [
++                "bdp-scope-epoch",
++                "bdp-authorization-view",
++                "bdp-scope-position",
++                "cache-control",
++                "etag",
++                "content-type",
++                "content-length",
++                "vary"
++              ],
++              "optionalHeaders": ["content-length", "content-type", "vary"]
++            }
++          ]
++        },
++        {
++          "id": "missing-get",
++          "family": "http",
++          "method": "GET",
++          "target": {
++            "binding": "scope",
++            "path": "beads/missing"
++          },
++          "credentialRef": "operator",
++          "raw": {
++            "headerLines": [
++              {
++                "name": "accept",
++                "value": "application/json"
++              },
++              {
++                "name": "if-none-match",
++                "value": "*"
++              }
++            ]
++          },
++          "captures": [],
++          "assertions": [
++            {
++              "id": "status",
++              "kind": "status",
++              "equals": 404
++            },
++            {
++              "id": "request-headers",
++              "kind": "request-authored-headers"
++            },
++            {
++              "id": "request-body",
++              "kind": "request-authored-body"
++            },
++            {
++              "id": "cache",
++              "kind": "header",
++              "name": "cache-control",
++              "equals": "private, no-store"
++            },
++            {
++              "id": "present-bdp-scope-epoch",
++              "kind": "header",
++              "name": "bdp-scope-epoch",
++              "absent": false
++            },
++            {
++              "id": "present-bdp-authorization-view",
++              "kind": "header",
++              "name": "bdp-authorization-view",
++              "absent": false
++            },
++            {
++              "id": "present-bdp-scope-position",
++              "kind": "header",
++              "name": "bdp-scope-position",
++              "absent": false
++            },
++            {
++              "id": "position",
++              "kind": "header",
++              "name": "bdp-scope-position",
++              "equals": "pos-1"
++            },
++            {
++              "id": "media",
++              "kind": "header",
++              "name": "content-type",
++              "equals": "application/problem+json"
++            },
++            {
++              "id": "schema",
++              "kind": "json-schema",
++              "schema": "#/$defs/readProblem"
++            },
++            {
++              "id": "problem",
++              "kind": "json-equals",
++              "value": {
++                "type": "https://github.com/gastownhall/bdp/problems/not-found",
++                "code": "resource-not-found",
++                "retry": "after-state-change",
++                "status": 404
++              }
++            }
++          ]
++        },
++        {
++          "id": "missing-head",
++          "family": "http",
++          "method": "HEAD",
++          "target": {
++            "binding": "scope",
++            "path": "beads/missing"
++          },
++          "credentialRef": "operator",
++          "raw": {
++            "headerLines": [
++              {
++                "name": "accept",
++                "value": "application/json"
++              },
++              {
++                "name": "if-none-match",
++                "value": "*"
++              }
++            ]
++          },
++          "captures": [],
++          "assertions": [
++            {
++              "id": "status",
++              "kind": "status",
++              "equals": 404
++            },
++            {
++              "id": "request-headers",
++              "kind": "request-authored-headers"
++            },
++            {
++              "id": "request-body",
++              "kind": "request-authored-body"
++            },
++            {
++              "id": "cache",
++              "kind": "header",
++              "name": "cache-control",
++              "equals": "private, no-store"
++            },
++            {
++              "id": "present-bdp-scope-epoch",
++              "kind": "header",
++              "name": "bdp-scope-epoch",
++              "absent": false
++            },
++            {
++              "id": "present-bdp-authorization-view",
++              "kind": "header",
++              "name": "bdp-authorization-view",
++              "absent": false
++            },
++            {
++              "id": "present-bdp-scope-position",
++              "kind": "header",
++              "name": "bdp-scope-position",
++              "absent": false
++            },
++            {
++              "id": "position",
++              "kind": "header",
++              "name": "bdp-scope-position",
++              "equals": "pos-1"
++            },
++            {
++              "id": "body-absent",
++              "kind": "body-absent"
++            },
++            {
++              "id": "media",
++              "kind": "header",
++              "name": "content-type",
++              "equals": "application/problem+json"
++            },
++            {
++              "id": "get-metadata",
++              "kind": "response-metadata-equals",
++              "request": "missing-get",
++              "headers": [
++                "bdp-scope-epoch",
++                "bdp-authorization-view",
++                "bdp-scope-position",
++                "cache-control",
++                "etag",
++                "content-type",
++                "content-length",
++                "vary"
++              ],
++              "optionalHeaders": ["content-length", "content-type", "vary"]
++            }
++          ]
++        },
++        {
++          "id": "update",
++          "family": "http",
++          "method": "POST",
++          "target": {
++            "binding": "batch"
++          },
++          "credentialRef": "operator",
++          "raw": {
++            "headerLines": [
++              {
++                "name": "accept",
++                "value": "application/json"
++              },
++              {
++                "name": "content-type",
++                "value": "application/json"
++              },
++              {
++                "name": "idempotency-key",
++                "value": "conditional-update"
++              }
++            ],
++            "body": {
++              "encoding": "utf8",
++              "value": "{\"operations\":[{\"operation\":\"updateBead\",\"bead\":\"beads/a\",\"propertiesChange\":[{\"op\":\"replace\",\"path\":\"/title\",\"value\":\"after\"}]}]}"
++            }
++          },
++          "captures": [],
++          "assertions": [
++            {
++              "id": "status",
++              "kind": "status",
++              "equals": 200
++            },
++            {
++              "id": "request-headers",
++              "kind": "request-authored-headers"
++            },
++            {
++              "id": "request-body",
++              "kind": "request-authored-body"
++            },
++            {
++              "id": "cache",
++              "kind": "header",
++              "name": "cache-control",
++              "equals": "private, no-store"
++            },
++            {
++              "id": "present-bdp-scope-epoch",
++              "kind": "header",
++              "name": "bdp-scope-epoch",
++              "absent": false
++            },
++            {
++              "id": "present-bdp-authorization-view",
++              "kind": "header",
++              "name": "bdp-authorization-view",
++              "absent": false
++            },
++            {
++              "id": "present-bdp-scope-position",
++              "kind": "header",
++              "name": "bdp-scope-position",
++              "absent": false
++            },
++            {
++              "id": "position",
++              "kind": "header",
++              "name": "bdp-scope-position",
++              "equals": "pos-2"
++            },
++            {
++              "id": "media",
++              "kind": "header",
++              "name": "content-type",
++              "equals": "application/json"
++            },
++            {
++              "id": "schema",
++              "kind": "json-schema",
++              "schema": "#/$defs/mutationReceipt"
++            },
++            {
++              "id": "completed",
++              "kind": "json-pointer",
++              "pointer": "/status",
++              "equals": "completed",
++              "exists": true
++            },
++            {
++              "id": "available",
++              "kind": "json-pointer",
++              "pointer": "/detail",
++              "equals": "available",
++              "exists": true
++            },
++            {
++              "id": "key",
++              "kind": "json-pointer",
++              "pointer": "/idempotencyKey",
++              "equals": "conditional-update",
++              "exists": true
++            },
++            {
++              "id": "required",
++              "kind": "json-pointer",
++              "pointer": "/requiredPosition",
++              "equals": "pos-2",
++              "exists": true
++            },
++            {
++              "id": "effect",
++              "kind": "json-pointer",
++              "pointer": "/effectPosition",
++              "equals": "pos-2",
++              "exists": true
++            },
++            {
++              "id": "no-next",
++              "kind": "json-pointer",
++              "pointer": "/next",
++              "exists": true,
++              "equals": null
++            },
++            {
++              "id": "receipt-id",
++              "kind": "json-pointer",
++              "pointer": "/id",
++              "exists": true
++            },
++            {
++              "id": "transaction",
++              "kind": "json-pointer",
++              "pointer": "/transaction",
++              "exists": true
++            },
++            {
++              "id": "result",
++              "kind": "json-array-tuples",
++              "pointer": "/results",
++              "ordered": true,
++              "projections": [
++                {
++                  "pointer": "/operationIndex"
++                },
++                {
++                  "pointer": "/outcome"
++                }
++              ],
++              "equals": [[0, "updated"]]
++            },
++            {
++              "id": "resource-id",
++              "kind": "json-pointer",
++              "pointer": "/results/0/resource/id",
++              "equals": "https://reference.invalid/acme/beads/a",
++              "exists": true
++            },
++            {
++              "id": "resource-type",
++              "kind": "json-pointer",
++              "pointer": "/results/0/resource/type",
++              "equals": "https://reference.invalid/acme/types/task",
++              "exists": true
++            },
++            {
++              "id": "resource-revision",
++              "kind": "json-pointer",
++              "pointer": "/results/0/resource/revision",
++              "exists": true
++            },
++            {
++              "id": "resource-properties",
++              "kind": "json-pointer",
++              "pointer": "/results/0/resource/properties",
++              "equals": {
++                "title": "after"
++              },
++              "exists": true
++            },
++            {
++              "id": "resource-metadata",
++              "kind": "json-pointer",
++              "pointer": "/results/0/resource/metadata",
++              "equals": {},
++              "exists": true
++            },
++            {
++              "id": "no-owned-links",
++              "kind": "json-pointer",
++              "pointer": "/results/0/resource/ownedLinks",
++              "exists": false
++            },
++            {
++              "id": "no-provenance",
++              "kind": "json-pointer",
++              "pointer": "/results/0/resource/revisionProvenance",
++              "exists": false
++            }
++          ]
++        },
++        {
++          "id": "current-get",
++          "family": "http",
++          "method": "GET",
++          "target": {
++            "binding": "scope",
++            "path": "beads/a"
++          },
++          "credentialRef": "operator",
++          "raw": {
++            "headerLines": [
++              {
++                "name": "accept",
++                "value": "application/json"
++              }
++            ]
++          },
++          "captures": [],
++          "assertions": [
++            {
++              "id": "status",
++              "kind": "status",
++              "equals": 200
++            },
++            {
++              "id": "request-headers",
++              "kind": "request-authored-headers"
++            },
++            {
++              "id": "request-body",
++              "kind": "request-authored-body"
++            },
++            {
++              "id": "cache",
++              "kind": "header",
++              "name": "cache-control",
++              "equals": "private, no-store"
++            },
++            {
++              "id": "present-bdp-scope-epoch",
++              "kind": "header",
++              "name": "bdp-scope-epoch",
++              "absent": false
++            },
++            {
++              "id": "present-bdp-authorization-view",
++              "kind": "header",
++              "name": "bdp-authorization-view",
++              "absent": false
++            },
++            {
++              "id": "present-bdp-scope-position",
++              "kind": "header",
++              "name": "bdp-scope-position",
++              "absent": false
++            },
++            {
++              "id": "position",
++              "kind": "header",
++              "name": "bdp-scope-position",
++              "equals": "pos-2"
++            },
++            {
++              "id": "etag",
++              "kind": "header",
++              "name": "etag",
++              "absent": false
++            },
++            {
++              "id": "media",
++              "kind": "header",
++              "name": "content-type",
++              "equals": "application/json"
++            },
++            {
++              "id": "schema",
++              "kind": "json-schema",
++              "schema": "#/$defs/currentBeadRecord"
++            },
++            {
++              "id": "resource-id",
++              "kind": "json-pointer",
++              "pointer": "/id",
++              "equals": "https://reference.invalid/acme/beads/a",
++              "exists": true
++            },
++            {
++              "id": "resource-type",
++              "kind": "json-pointer",
++              "pointer": "/type",
++              "equals": "https://reference.invalid/acme/types/task",
++              "exists": true
++            },
++            {
++              "id": "resource-revision",
++              "kind": "json-pointer",
++              "pointer": "/revision",
++              "exists": true
++            },
++            {
++              "id": "resource-properties",
++              "kind": "json-pointer",
++              "pointer": "/properties",
++              "equals": {
++                "title": "after"
++              },
++              "exists": true
++            },
++            {
++              "id": "resource-metadata",
++              "kind": "json-pointer",
++              "pointer": "/metadata",
++              "equals": {},
++              "exists": true
++            },
++            {
++              "id": "no-owned-links",
++              "kind": "json-pointer",
++              "pointer": "/ownedLinks",
++              "exists": false
++            },
++            {
++              "id": "no-provenance",
++              "kind": "json-pointer",
++              "pointer": "/revisionProvenance",
++              "exists": false
++            }
++          ]
++        },
++        {
++          "id": "current-head",
++          "family": "http",
++          "method": "HEAD",
++          "target": {
++            "binding": "scope",
++            "path": "beads/a"
++          },
++          "credentialRef": "operator",
++          "raw": {
++            "headerLines": [
++              {
++                "name": "accept",
++                "value": "application/json"
++              }
++            ]
++          },
++          "captures": [],
++          "assertions": [
++            {
++              "id": "status",
++              "kind": "status",
++              "equals": 200
++            },
++            {
++              "id": "request-headers",
++              "kind": "request-authored-headers"
++            },
++            {
++              "id": "request-body",
++              "kind": "request-authored-body"
++            },
++            {
++              "id": "cache",
++              "kind": "header",
++              "name": "cache-control",
++              "equals": "private, no-store"
++            },
++            {
++              "id": "present-bdp-scope-epoch",
++              "kind": "header",
++              "name": "bdp-scope-epoch",
++              "absent": false
++            },
++            {
++              "id": "present-bdp-authorization-view",
++              "kind": "header",
++              "name": "bdp-authorization-view",
++              "absent": false
++            },
++            {
++              "id": "present-bdp-scope-position",
++              "kind": "header",
++              "name": "bdp-scope-position",
++              "absent": false
++            },
++            {
++              "id": "position",
++              "kind": "header",
++              "name": "bdp-scope-position",
++              "equals": "pos-2"
++            },
++            {
++              "id": "etag",
++              "kind": "header",
++              "name": "etag",
++              "absent": false
++            },
++            {
++              "id": "body-absent",
++              "kind": "body-absent"
++            },
++            {
++              "id": "get-metadata",
++              "kind": "response-metadata-equals",
++              "request": "current-get",
++              "headers": [
++                "bdp-scope-epoch",
++                "bdp-authorization-view",
++                "bdp-scope-position",
++                "cache-control",
++                "etag",
++                "content-type",
++                "content-length",
++                "vary"
++              ],
++              "optionalHeaders": ["content-length", "content-type", "vary"]
++            }
++          ]
++        }
++      ]
++    },
+     {
+       "id": "read-update.idempotency.principal-isolation",
+       "requiredProfile": "read-update",

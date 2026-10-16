@@ -1,0 +1,150 @@
+{
+  "status": "PROPOSED_NOT_RELEASED",
+  "sourceBindingSha256": "3fae19fb7509b5265a5620a424bcedf2adead23bd1bcc4ffab6df24b8341eb41",
+  "static": [
+    {
+      "file": "packages/conformance/src/transactional-cumulative.test.ts",
+      "names": [
+        "binds the canonical cumulative TX selection and exact source digests without qualification",
+        "rejects noncanonical selections, History, wrong factories, retired and misprofiled rows",
+        "copies source bytes before binding and exposes all missing obligations without executing them",
+        "pins the inherited command-minimum manifest facts, read-header absence and all thirteen prior objects",
+        "preserves every original TX scenario and coverage object while adding one bounded partial cross-carrier row",
+        "pins the one-page matched-plus-updated witness without advertised-limit or other-outcome credit",
+        "pins the partial principal namespace row, full parent and exact credential roles",
+        "resolves every authored TX schema and rejects the undefined deleted-point reference",
+        "pins inherited conditional Read actions, full parent bytes and the two-failure control"
+      ],
+      "regex": "^(?:binds\\ the\\ canonical\\ cumulative\\ TX\\ selection\\ and\\ exact\\ source\\ digests\\ without\\ qualification|rejects\\ noncanonical\\ selections,\\ History,\\ wrong\\ factories,\\ retired\\ and\\ misprofiled\\ rows|copies\\ source\\ bytes\\ before\\ binding\\ and\\ exposes\\ all\\ missing\\ obligations\\ without\\ executing\\ them|pins\\ the\\ inherited\\ command\\-minimum\\ manifest\\ facts,\\ read\\-header\\ absence\\ and\\ all\\ thirteen\\ prior\\ objects|preserves\\ every\\ original\\ TX\\ scenario\\ and\\ coverage\\ object\\ while\\ adding\\ one\\ bounded\\ partial\\ cross\\-carrier\\ row|pins\\ the\\ one\\-page\\ matched\\-plus\\-updated\\ witness\\ without\\ advertised\\-limit\\ or\\ other\\-outcome\\ credit|pins\\ the\\ partial\\ principal\\ namespace\\ row,\\ full\\ parent\\ and\\ exact\\ credential\\ roles|resolves\\ every\\ authored\\ TX\\ schema\\ and\\ rejects\\ the\\ undefined\\ deleted\\-point\\ reference|pins\\ inherited\\ conditional\\ Read\\ actions,\\ full\\ parent\\ bytes\\ and\\ the\\ two\\-failure\\ control)$",
+      "expectedCases": 9
+    },
+    {
+      "file": "apps/bdptest/src/transactional-matrix.test.ts",
+      "names": [
+        "pins the matching no-op installed route digest and fifteen-action ledger",
+        "pins deletion-safety derivative carriers, complete positives, and measured source bounds",
+        "pins conditional raw literals, request order and the sole header control"
+      ],
+      "regex": "^(?:pins\\ the\\ matching\\ no\\-op\\ installed\\ route\\ digest\\ and\\ fifteen\\-action\\ ledger|pins\\ deletion\\-safety\\ derivative\\ carriers,\\ complete\\ positives,\\ and\\ measured\\ source\\ bounds|pins\\ conditional\\ raw\\ literals,\\ request\\ order\\ and\\ the\\ sole\\ header\\ control)$",
+      "expectedCases": 3
+    }
+  ],
+  "staticCases": 12,
+  "unownedBindingVerification": {
+    "file": "apps/bdptest/src/transactional-binding.test.ts",
+    "names": [
+      "aborts and drains a real registered dynamic socket via close",
+      "aborts and drains a real registered dynamic socket via cohort",
+      "rebinds ordinary raw requests to the new validated physical session while base mode stays fixed"
+    ],
+    "expectedCases": 3,
+    "regex": "^(?:aborts\\ and\\ drains\\ a\\ real\\ registered\\ dynamic\\ socket\\ via\\ close|aborts\\ and\\ drains\\ a\\ real\\ registered\\ dynamic\\ socket\\ via\\ cohort|rebinds\\ ordinary\\ raw\\ requests\\ to\\ the\\ new\\ validated\\ physical\\ session\\ while\\ base\\ mode\\ stays\\ fixed)$",
+    "http": 4,
+    "listeners": 4,
+    "productChildren": 0,
+    "ownerStores": 0,
+    "attribution": "synthetic session/socket tests, not installed evidence; scenario index0 used only for preparation/reopen, no action execution"
+  },
+  "newInstalledCohorts": [
+    {
+      "id": "conditional-positive",
+      "title": "observes inherited conditional Read and HEAD after mutation (control false)",
+      "expectedHttp": 14,
+      "maxHttp": 14,
+      "children": 2,
+      "runtimeStores": 2,
+      "scenarioSessions": 1,
+      "requestBodyBytes": 271,
+      "maximumRequestBodyBytes": 271
+    },
+    {
+      "id": "conditional-control",
+      "title": "observes inherited conditional Read and HEAD after mutation (control true)",
+      "expectedHttp": 4,
+      "maxHttp": 14,
+      "children": 2,
+      "runtimeStores": 2,
+      "scenarioSessions": 1,
+      "requestBodyBytes": 141,
+      "maximumRequestBodyBytes": 271,
+      "expectedFailureIds": [
+        "conditional-get:status",
+        "conditional-get:body-absent"
+      ]
+    }
+  ],
+  "newInstalledTotals": {
+    "expectedHttp": 18,
+    "maximumNondiscriminatingDiagnosticHttp": 28,
+    "children": 4,
+    "runtimeStoreLifetimes": 4,
+    "ownedTopDirectories": 2,
+    "listeners": 4,
+    "requestBodyBytesExpected": 412,
+    "requestBodyBytesDiagnosticMaximum": 542
+  },
+  "affectedExistingCohorts": [
+    {
+      "id": "principal-positive",
+      "title": "observes authenticated principal isolation and rotation through selected cumulative HTTP",
+      "expectedHttp": 7,
+      "maxHttp": 7,
+      "children": 2,
+      "requestBodyBytes": 750,
+      "maximumRequestBodyBytes": 750
+    },
+    {
+      "id": "principal-collapse",
+      "title": "discriminates principal isolation against a separately bound collapsed namespace",
+      "expectedHttp": 2,
+      "maxHttp": 7,
+      "children": 2,
+      "requestBodyBytes": 300,
+      "maximumRequestBodyBytes": 750
+    },
+    {
+      "id": "full-positive",
+      "title": "observes seventeen partial Transactional contracts through packed-capable actual installed HTTP",
+      "expectedHttp": 234,
+      "maxHttp": 234,
+      "children": 25,
+      "requestBodyBytes": 18877,
+      "maximumRequestBodyBytes": 18877
+    },
+    {
+      "id": "cross-batch",
+      "title": "discriminates retained cross-carrier evidence against batch-semantic-conflict",
+      "expectedHttp": 225,
+      "maxHttp": 225,
+      "children": 25,
+      "requestBodyBytes": 17821,
+      "maximumRequestBodyBytes": 17821
+    },
+    {
+      "id": "cross-sequence",
+      "title": "discriminates retained cross-carrier evidence against sequence-fresh-key",
+      "expectedHttp": 226,
+      "maxHttp": 226,
+      "children": 25,
+      "requestBodyBytes": 18025,
+      "maximumRequestBodyBytes": 18025
+    }
+  ],
+  "ifAllFiveExistingPlusTwoNewSelected": {
+    "expectedHttp": 712,
+    "maxHttp": 727,
+    "children": 83,
+    "requestBodyBytesExpected": 56185,
+    "requestBodyBytesDiagnosticMaximum": 56765
+  },
+  "timersUnchanged": {
+    "cohortMs": 90000,
+    "prepareMs": 10000,
+    "requestMs": 5000,
+    "cleanupMs": 10000,
+    "testMs": 120000,
+    "fullPositiveElapsedAssertionMs": 63000
+  },
+  "executionAuthorized": false,
+  "productCasesExecuted": 0
+}

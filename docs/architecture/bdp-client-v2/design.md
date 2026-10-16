@@ -62,7 +62,7 @@ Original service-review lows: RU trusted callback capability narrowing and publi
 
 ### Live worker ledger
 
-Checkpoint 2026-10-16T07:44:21Z. **ACTIVE — Transactional first; ordinary Update retained.** Session `2026-10-08T20:26:35Z-81e5`. Work stays on current branches against the pinned monolithic specification; no newer main integration or main merge. Editor owns editorial/Types reconciliation. No release, Preview2 promotion or public write-profile activation. Janet/Trish surfaces remain untouched. Profile-delivery predicates are unmet; independent work continues.
+Checkpoint 2026-10-16T07:54:52Z. **ACTIVE — Transactional first; ordinary Update retained.** Session `2026-10-08T20:26:35Z-81e5`. Work stays on current branches against the pinned monolithic specification; no newer main integration or main merge. Editor owns editorial/Types reconciliation. No release, Preview2 promotion or public write-profile activation. Janet/Trish surfaces remain untouched. Profile-delivery predicates are unmet; independent work continues.
 
 ### Current verified source and validation
 
@@ -77,14 +77,16 @@ Checkpoint 2026-10-16T07:44:21Z. **ACTIVE — Transactional first; ordinary Upda
 
 | Worker | Current assignment | Completion boundary |
 |---|---|---|
-| Root | PR147 exact-head CI, conditional slice measured authoring gate and review | Preserve reviewed source/ancestry; require exact-head green before branch integration; continue next safe slice |
-| Native reviewer | Prefix and final installed audits complete | Final audit c45e3b91; available for next independent code review |
-| Validation preparer | Successor validation preparation completed | Original43source/control/installed34 actually passed under root; no retry or limit increase |
-| Conditional worker | Four-file inherited GET/HEAD scenario in isolated `codex/vickie-transaction-conditional-reads` from1ba | Formatting-only allowed; report actual footprint/assertions before numeric authoring-fence edits/tests. No commit/push/runtime changes |
+| Root | PR147 exact-head CI; frozen conditional slice actual Claude review and validation preparation | Preserve reviewed source/ancestry; require exact-head green before branch integration; continue next safe slice |
+| Native reviewer | Frozen four-file conditional code review | Findings against binding b630e46d; read-only, no execution |
+| Validation preparer | Conditional validation preparation, no execution |48source cases,18syntheticHTTP16listeners; five installed cohorts703expectedHTTP79children; unchanged time limits and fresh package/consumer proof |
+| Conditional worker | Four-file draft frozen; next independent serving-gap audit read-only | No source edits during council; Event/view/consistency/alias or targeted ordinary Update; no S1/G2 inference |
 
 ### Next bounded delivery and unresolved decisions
 
 [Reviewed conditional plan](transaction-fresh-depth-authoring/next-delivery-review-successor/plan-v2.md) and [dispositions](transaction-fresh-depth-authoring/next-delivery-review-successor/dispositions.md) incorporate all ten council corrections. Prove actual conditional GET/HEAD, ordinary401/404 precedence and changed current Resource/validator after mutation. Expected14positive+4control HTTP/fourchildren; no new runtime defect established. Preserve every parent scenario byte, canonical index0 read requirement, exact two control failures and claimEligible:false. Existing ordinary Update evidence remains separate. During authoring, source inspection found HTTP captures accept URL strings only; root approved removing the two proposed object captures/equalsBinding assertions while retaining full actual receipt/postimage equality in the app wire oracle, manifest schema/literal facts, and wholeContract:false. No runner capability change or extra HTTP; assertion count is remeasured, not silently retained.
+
+Conditional four-file draft is frozen in `vickie-transaction-conditional-reads` from1ba65f2, binding **b630e46d04a67edc5d59b511c8489a680d6275cd14ece3c65aa49a8b48299999**, patch **98517459597d71bfe5ce4e49382613d3ab8d3f977899133d2e9815cfa0d145c3**. [Author successor](transaction-conditional-reads-draft/fence-amendment/report.md), [independent measurements](transaction-conditional-reads-draft/measurement-review/report.md), [root acceptance](transaction-conditional-reads-draft/root-measurement-acceptance.json). Fourteen actions/198assertions; all32old raw objects/full parent bytes and42derivatives preserved. Root accepted actual measured fixture-only thresholds retaining4096B/64nodes/1024coverage margins, with no runtime/parser/time expansion. Formatting passed; no product execution yet. Native code review and actual external Claude review are active; Claude session29253, bounded900s, packet32112e78. Source remains frozen. Validation now includes full cumulative42 +appstatic3 +binding3 =48cases, then new14/4 plus materially affected full234/cross225/cross226 =703expectedHTTP79children with separate exact control failures. These are prospective selections, not results. Ordinary b021 branch integration waits for CI/review; no main dependency.
 
 S1 retained Snapshot/continuation minimum and G2 incident-Link metadata Event membership await already-asked operator rulings. Do not infer or reask. Current cold discovery/public admission remains deliberately closed pending complete same-target functionality and fresh write-profile evidence; no private-admission bypass or Read evidence relabeling. Delivery requires installed Read+Update/Transactional selectable, truthful cold navigation, required semantics and cumulative actual evidence on that configuration. Component/test counts are not completion percentages.
 

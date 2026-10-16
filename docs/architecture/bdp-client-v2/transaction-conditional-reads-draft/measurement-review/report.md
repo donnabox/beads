@@ -1,0 +1,11 @@
+# Independent conditional fixture measurement decision
+
+No measurement blocker found. Recomputed actual disk870122, normalized883414, compact431642 and23196nodes; coverage disk/normal133517. The new row has14actions and198unique assertion bindings exactly mirrored in coverage; canonical totals241actions/2840assertions.
+
+Both full committed parents reconstructed byte-for-byte after removing only the new first object and its separator. All16old manifest objects and16old coverage objects are raw-byte identical. Checked actual source hashes before/after against the frozen source-author binding. Independently reconstructed all41historical derivative specimens by prepending the exact new row and the42nd sole-header control; all stored bytes, normalized/compact hashes/counts match. Maxima889532normalized bytes/23352nodes reproduce exactly. Named historical source mutator bodies remain verbatim.
+
+Proposed data fences are correct: canonical disk874218/normal887510/nodes23260, coverage134541, derivative normal893628/nodes23416. These retain4096-byte/64-node/1024-coverage margins and historical bases488280/13019/70662. They are fixture-authoring expect(...).toBeLessThanOrEqual assertions in transactional-cumulative.test.ts1172–1205 and transactional-matrix.test.ts1778–1779,2189–2190. They do not change parser/runtime/config/request/response/time limits. Those old assertion values are still present pending root acceptance; this is a verified proposal, not a passing source-test claim. No product or semantic limit amendment is needed by these measurements.
+
+Accepted capture correction is source-backed: runner.ts2468–2495 requires scoped URL strings for HTTP captures, so arbitrary Resource capture was unavailable. The row now has no captures/equalsBinding; the independent app observer keeps actual POST Resources and performs strict full GET equality plus currentBeadRecord validation at transactional-matrix.test.ts4396–4405. This preserves dynamic equality as explicitly local supplemental evidence, not a portable manifest claim. No helper/runner API expansion. Numerical review does not replace later full code/council/schema/runtime validation.
+
+All work used JSON parsing/counting/hashing and committed Git reads only. No imports, tests/build, source edit or product execution. Raw independent results are in independent-measurements.json.
