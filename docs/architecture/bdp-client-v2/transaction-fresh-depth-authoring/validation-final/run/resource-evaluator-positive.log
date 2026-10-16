@@ -1,0 +1,177 @@
+
+ RUN  v4.1.10 /Users/dbox/repos/wt/vickie/vickie-fresh-depth-serving
+
+ ↓ packages/server/src/resource-evaluator.test.ts > pure member Resource evaluation > merges, replaces, clears and rejects two-document bead updates atomically
+ ↓ packages/server/src/resource-evaluator.test.ts > pure member Resource evaluation > merges, replaces, clears and rejects two-document link updates atomically
+ ↓ packages/server/src/resource-evaluator.test.ts > pure member Resource evaluation > updates properties and metadata atomically, clears to empty, and preserves a no-op revision
+ ↓ packages/server/src/resource-evaluator.test.ts > pure member Resource evaluation > projects legacy missing metadata without rewriting retained bytes
+ ↓ packages/server/src/resource-evaluator.test.ts > pure member Resource evaluation > versions an owned Link and its source once for a metadata-only update
+ ↓ packages/server/src/resource-evaluator.test.ts > pure member Resource evaluation > creates, patches and deletes both kinds, returning schema-valid final identities
+ ✓ packages/server/src/resource-evaluator.test.ts > pure member Resource evaluation > normalizes accepted numeric spellings and preserves revisions and metadata on semantic no-ops 110ms
+ ↓ packages/server/src/resource-evaluator.test.ts > pure member Resource evaluation > checks authorization before CAS and keeps failed validation from staging any Resource writes
+ ↓ packages/server/src/resource-evaluator.test.ts > pure member Resource evaluation > does not reveal hidden subjects or endpoints through write permission or diagnostics
+ ↓ packages/server/src/resource-evaluator.test.ts > pure member Resource evaluation > withholds incident Link identity while refusing deletion, and respects earlier member effects
+ ↓ packages/server/src/resource-evaluator.test.ts > pure member Resource evaluation > keeps supplied identity/alias collision precedence and treats aliases as current locators
+ ↓ packages/server/src/resource-evaluator.test.ts > pure member Resource evaluation > distinguishes wrong-kind subjects, wrong-category endpoints and unavailable contract closure
+ ↓ packages/server/src/resource-evaluator.test.ts > pure member Resource evaluation > enforces every installed properties contract once and refuses missing precompiled schema validators
+ ↓ packages/server/src/resource-evaluator.test.ts > pure member Resource evaluation > confirmed property-diagnostic receiving contract > accounts actual wire bytes including Type across schemas, without false exact-bound truncation
+ ↓ packages/server/src/resource-evaluator.test.ts > pure member Resource evaluation > confirmed property-diagnostic receiving contract > does not call a valid later schema an omission when the exact budget is full
+ ↓ packages/server/src/resource-evaluator.test.ts > pure member Resource evaluation > confirmed property-diagnostic receiving contract > stops a producing validator only on confirmed omission and does not visit later Types
+ ↓ packages/server/src/resource-evaluator.test.ts > pure member Resource evaluation > confirmed property-diagnostic receiving contract > admits a valid result without speculative diagnostics escaping
+ ↓ packages/server/src/resource-evaluator.test.ts > pure member Resource evaluation > confirmed property-diagnostic receiving contract > snapshots caller limits before lookup and snapshots emitted wire fields
+ ↓ packages/server/src/resource-evaluator.test.ts > pure member Resource evaluation > confirmed property-diagnostic receiving contract > includes Type bytes in first-entry feasibility and does not let the validator swallow its error
+ ↓ packages/server/src/resource-evaluator.test.ts > pure member Resource evaluation > confirmed property-diagnostic receiving contract > rejects a broken validator contract: success after confirmed failure
+ ↓ packages/server/src/resource-evaluator.test.ts > pure member Resource evaluation > confirmed property-diagnostic receiving contract > rejects a broken validator contract: failure without a diagnostic
+ ↓ packages/server/src/resource-evaluator.test.ts > pure member Resource evaluation > confirmed property-diagnostic receiving contract > rejects a broken validator contract: unproved truncation
+ ↓ packages/server/src/resource-evaluator.test.ts > pure member Resource evaluation > confirmed property-diagnostic receiving contract > rejects a broken validator contract: omission reported complete
+ ↓ packages/server/src/resource-evaluator.test.ts > pure member Resource evaluation > confirmed property-diagnostic receiving contract > rejects a broken validator contract: emission after stop
+ ↓ packages/server/src/resource-evaluator.test.ts > pure member Resource evaluation > confirmed property-diagnostic receiving contract > rejects a broken validator contract: swallowed emission-after-stop
+ ↓ packages/server/src/resource-evaluator.test.ts > pure member Resource evaluation > confirmed property-diagnostic receiving contract > keeps swallowed closed-emitter faults sticky through result getters (valid=true)
+ ↓ packages/server/src/resource-evaluator.test.ts > pure member Resource evaluation > confirmed property-diagnostic receiving contract > keeps swallowed closed-emitter faults sticky through result getters (valid=false)
+ ↓ packages/server/src/resource-evaluator.test.ts > pure member Resource evaluation > confirmed property-diagnostic receiving contract > keeps a prior Type's emitter fault sticky through a later Type (valid=true)
+ ↓ packages/server/src/resource-evaluator.test.ts > pure member Resource evaluation > confirmed property-diagnostic receiving contract > keeps a prior Type's emitter fault sticky through a later Type (valid=false)
+ ↓ packages/server/src/resource-evaluator.test.ts > pure member Resource evaluation > confirmed property-diagnostic receiving contract > keeps emitter faults sticky through later policy success/refusal (true)
+ ↓ packages/server/src/resource-evaluator.test.ts > pure member Resource evaluation > confirmed property-diagnostic receiving contract > keeps emitter faults sticky through later policy success/refusal (false)
+ ↓ packages/server/src/resource-evaluator.test.ts > pure member Resource evaluation > confirmed property-diagnostic receiving contract > checks the sticky fault before returning after a storage callback and rolls back staged effects
+ ↓ packages/server/src/resource-evaluator.test.ts > pure member Resource evaluation > confirmed property-diagnostic receiving contract > captures each diagnostic getter exactly once, including instanceLocation
+ ↓ packages/server/src/resource-evaluator.test.ts > pure member Resource evaluation > confirmed property-diagnostic receiving contract > rejects an omitted properties location internally, while retaining the empty root pointer
+ ↓ packages/server/src/resource-evaluator.test.ts > pure member Resource evaluation > confirmed property-diagnostic receiving contract > rejects nonstring properties locations internally: null
+ ↓ packages/server/src/resource-evaluator.test.ts > pure member Resource evaluation > confirmed property-diagnostic receiving contract > rejects nonstring properties locations internally: 42
+ ↓ packages/server/src/resource-evaluator.test.ts > pure member Resource evaluation > confirmed property-diagnostic receiving contract > preserves the first swallowed emitter error when a result getter causes another
+ ↓ packages/server/src/resource-evaluator.test.ts > pure member Resource evaluation > confirmed property-diagnostic receiving contract > closes each emitter when its synchronous invocation returns
+ ↓ packages/server/src/resource-evaluator.test.ts > pure member Resource evaluation > requires effective endpoint conformance and preserves opaque external URIs
+ ↓ packages/server/src/resource-evaluator.test.ts > pure member Resource evaluation > applies inherited external constraints as an intersection and never dereferences an external pin
+ ↓ packages/server/src/resource-evaluator.test.ts > pure member Resource evaluation > refuses broken installed ancestry instead of silently treating it as a no-schema contract
+ ↓ packages/server/src/resource-evaluator.test.ts > pure member Resource evaluation > supports all three patch operations, escaped names and arrays without prototype mutation
+ ↓ packages/server/src/resource-evaluator.test.ts > pure member Resource evaluation > checks service limits at their member position and emits inherited 413
+ ↓ packages/server/src/resource-evaluator.test.ts > pure member Resource evaluation > keeps reference visibility ahead of unavailable Type diagnostics
+ ↓ packages/server/src/resource-evaluator.test.ts > pure member Resource evaluation > returns exact same-turn reference resolutions for S4 without putting them on the wire
+ ↓ packages/server/src/resource-evaluator.test.ts > pure member Resource evaluation > permits omitted external policy as opaque and refuses explicit none
+ ↓ packages/server/src/resource-evaluator.test.ts > pure member Resource evaluation > gives one current-revision winner and observes deletion versus Link creation in member order
+ ↓ packages/server/src/resource-evaluator.test.ts > pure member Resource evaluation > preserves revisionProvenance on no-ops and removes it on a new unattributed version
+ ↓ packages/server/src/resource-evaluator.test.ts > pure member Resource evaluation > records native context defaults only on actual minted versions
+ ↓ packages/server/src/resource-evaluator.test.ts > pure member Resource evaluation > distinguishes positive unsafe allocation from unknown storage faults and rolls counters back on failure
+ ↓ packages/server/src/resource-evaluator.test.ts > owned Link and Scope aggregate effects > updates only the source revision, fans out context, preserves no-ops and versions owned deletion
+ ↓ packages/server/src/resource-evaluator.test.ts > owned Link and Scope aggregate effects > uses wildcard whole-set bounds including explicit keys and leaves no staged Link on overflow
+ ↓ packages/server/src/resource-evaluator.test.ts > owned Link and Scope aggregate effects > sorts same-type owned Links by canonical ID and handles a self-Link once
+ ↓ packages/server/src/resource-evaluator.test.ts > owned Link and Scope aggregate effects > withholds a source whose owned closure contains a hidden target before any write-policy diagnostics
+ ↓ packages/server/src/resource-evaluator.test.ts > owned Link and Scope aggregate effects > requires write authority for the owned source and rolls back both Resource effects
+ ↓ packages/server/src/resource-evaluator.test.ts > owned Link and Scope aggregate effects > counts subtype Links and all current member state for endpoint maxima without revealing Link identity
+ ↓ packages/server/src/resource-evaluator.test.ts > deep admitted Resource round trips > commits and reopens an admitted depth-12000 S2 postimage through actual S6
+ ↓ packages/server/src/resource-evaluator.test.ts > deep admitted Resource round trips > creates, reads, preserves no-ops and patches at depth 256
+ ↓ packages/server/src/resource-evaluator.test.ts > deep admitted Resource round trips > creates, reads, preserves no-ops and patches at depth 12000
+ ↓ packages/server/src/resource-evaluator.test.ts > deep admitted Resource round trips > keeps deep first-class and inline owned Link bodies equal across read/update/delete
+ ↓ packages/server/src/resource-evaluator.test.ts > native S2 council corrections > requires at least one local endpoint with either direction allowed
+ ↓ packages/server/src/resource-evaluator.test.ts > native S2 council corrections > tracks root existence independently of JSON null 0
+ ↓ packages/server/src/resource-evaluator.test.ts > native S2 council corrections > tracks root existence independently of JSON null 1
+ ↓ packages/server/src/resource-evaluator.test.ts > native S2 council corrections > tracks root existence independently of JSON null 2
+ ↓ packages/server/src/resource-evaluator.test.ts > native S2 council corrections > tracks root existence independently of JSON null 3
+ ↓ packages/server/src/resource-evaluator.test.ts > native S2 council corrections > tracks root existence independently of JSON null 4
+ ↓ packages/server/src/resource-evaluator.test.ts > native S2 council corrections > tracks root existence independently of JSON null 5
+ ↓ packages/server/src/resource-evaluator.test.ts > native S2 council corrections > locates a nonobject properties result at the root and accounts its exact diagnostic bytes 0
+ ↓ packages/server/src/resource-evaluator.test.ts > native S2 council corrections > locates a nonobject properties result at the root and accounts its exact diagnostic bytes 1
+ ↓ packages/server/src/resource-evaluator.test.ts > native S2 council corrections > locates a nonobject properties result at the root and accounts its exact diagnostic bytes 2
+ ↓ packages/server/src/resource-evaluator.test.ts > native S2 council corrections > locates a nonobject properties result at the root and accounts its exact diagnostic bytes 3
+ ↓ packages/server/src/resource-evaluator.test.ts > native S2 council corrections > locates a nonobject properties result at the root and accounts its exact diagnostic bytes 4
+ ↓ packages/server/src/resource-evaluator.test.ts > native S2 council corrections > locates a nonobject properties result at the root and accounts its exact diagnostic bytes 5
+ ↓ packages/server/src/resource-evaluator.test.ts > allocator faults inside the durable owned-member boundary > rolls back effects and allocations for committed-id and preserves the correct disposition
+ ↓ packages/server/src/resource-evaluator.test.ts > allocator faults inside the durable owned-member boundary > rolls back effects and allocations for alias-id and preserves the correct disposition
+ ↓ packages/server/src/resource-evaluator.test.ts > allocator faults inside the durable owned-member boundary > rolls back effects and allocations for empty-id and preserves the correct disposition
+ ↓ packages/server/src/resource-evaluator.test.ts > allocator faults inside the durable owned-member boundary > rolls back effects and allocations for hierarchical-id and preserves the correct disposition
+ ↓ packages/server/src/resource-evaluator.test.ts > allocator faults inside the durable owned-member boundary > rolls back effects and allocations for unsafe-id-tag and preserves the correct disposition
+ ↓ packages/server/src/resource-evaluator.test.ts > allocator faults inside the durable owned-member boundary > rolls back effects and allocations for nonstring-id and preserves the correct disposition
+ ↓ packages/server/src/resource-evaluator.test.ts > allocator faults inside the durable owned-member boundary > rolls back effects and allocations for empty-revision and preserves the correct disposition
+ ↓ packages/server/src/resource-evaluator.test.ts > allocator faults inside the durable owned-member boundary > rolls back effects and allocations for null-revision and preserves the correct disposition
+ ↓ packages/server/src/resource-evaluator.test.ts > allocator faults inside the durable owned-member boundary > rolls back effects and allocations for unknown-revision-tag and preserves the correct disposition
+ ↓ packages/server/src/resource-evaluator.test.ts > allocator faults inside the durable owned-member boundary > rolls back effects and allocations for nonstring-revision and preserves the correct disposition
+ ↓ packages/server/src/resource-evaluator.test.ts > allocator faults inside the durable owned-member boundary > rolls back effects and allocations for established-revision-conflict and preserves the correct disposition
+ ↓ packages/server/src/resource-evaluator.test.ts > allocator faults inside the durable owned-member boundary > refuses allocated hierarchy but preserves supplied hierarchy for createBead
+ ↓ packages/server/src/resource-evaluator.test.ts > allocator faults inside the durable owned-member boundary > refuses allocated hierarchy but preserves supplied hierarchy for createLink
+ ↓ packages/server/src/resource-evaluator.test.ts > allocator faults inside the durable owned-member boundary > keeps supplied-ID conflict meanings without invoking allocation
+ ↓ packages/server/src/resource-evaluator.test.ts > late native context materialization > captures and validates the clock callable at entry without observing it
+ ↓ packages/server/src/resource-evaluator.test.ts > late native context materialization > observes after schema, owned inventory and aggregate preparation, before exact subject/source policy
+ ↓ packages/server/src/resource-evaluator.test.ts > late native context materialization > does not observe or authorize after schema preparation refuses
+ ↓ packages/server/src/resource-evaluator.test.ts > late native context materialization > does not observe or authorize after owned preparation refuses
+ ↓ packages/server/src/resource-evaluator.test.ts > late native context materialization > does not observe or authorize after aggregate preparation refuses
+ ↓ packages/server/src/resource-evaluator.test.ts > late native context materialization > keeps final policy/CAS/patch/byte refusal order 0
+ ↓ packages/server/src/resource-evaluator.test.ts > late native context materialization > keeps final policy/CAS/patch/byte refusal order 1
+ ↓ packages/server/src/resource-evaluator.test.ts > late native context materialization > keeps final policy/CAS/patch/byte refusal order 2
+ ↓ packages/server/src/resource-evaluator.test.ts > late native context materialization > keeps final policy/CAS/patch/byte refusal order 3
+ ↓ packages/server/src/resource-evaluator.test.ts > late native context materialization > keeps final policy/CAS/patch/byte refusal order 4
+ ↓ packages/server/src/resource-evaluator.test.ts > late native context materialization > measures exact final owned-source bytes including escaped context
+ ↓ packages/server/src/resource-evaluator.test.ts > late native context materialization > preserves old inline versions, no-ops and context-free deletions with recording false
+ ↓ packages/server/src/resource-evaluator.test.ts > late native context materialization > preserves old inline versions, no-ops and context-free deletions with recording true
+ ↓ packages/server/src/resource-evaluator.test.ts > native context inside actual durable members > commits identical default-context bytes through actual S4/S6 for createBead (recording false, case 0)
+ ↓ packages/server/src/resource-evaluator.test.ts > native context inside actual durable members > commits identical default-context bytes through actual S4/S6 for updateBead (recording false, case 1)
+ ↓ packages/server/src/resource-evaluator.test.ts > native context inside actual durable members > commits identical default-context bytes through actual S4/S6 for updateBead (recording false, case 2)
+ ↓ packages/server/src/resource-evaluator.test.ts > native context inside actual durable members > commits identical default-context bytes through actual S4/S6 for createLink (recording false, case 3)
+ ↓ packages/server/src/resource-evaluator.test.ts > native context inside actual durable members > commits identical default-context bytes through actual S4/S6 for updateLink (recording false, case 4)
+ ↓ packages/server/src/resource-evaluator.test.ts > native context inside actual durable members > commits identical default-context bytes through actual S4/S6 for updateLink (recording false, case 5)
+ ↓ packages/server/src/resource-evaluator.test.ts > native context inside actual durable members > commits identical default-context bytes through actual S4/S6 for deleteLink (recording false, case 6)
+ ↓ packages/server/src/resource-evaluator.test.ts > native context inside actual durable members > commits identical default-context bytes through actual S4/S6 for createLink (recording false, case 7)
+ ↓ packages/server/src/resource-evaluator.test.ts > native context inside actual durable members > commits identical default-context bytes through actual S4/S6 for updateLink (recording false, case 8)
+ ↓ packages/server/src/resource-evaluator.test.ts > native context inside actual durable members > commits identical default-context bytes through actual S4/S6 for updateLink (recording false, case 9)
+ ↓ packages/server/src/resource-evaluator.test.ts > native context inside actual durable members > commits identical default-context bytes through actual S4/S6 for deleteLink (recording false, case 10)
+ ↓ packages/server/src/resource-evaluator.test.ts > native context inside actual durable members > commits identical default-context bytes through actual S4/S6 for deleteBead (recording false, case 11)
+ ↓ packages/server/src/resource-evaluator.test.ts > native context inside actual durable members > commits identical default-context bytes through actual S4/S6 for createBead (recording true, case 0)
+ ↓ packages/server/src/resource-evaluator.test.ts > native context inside actual durable members > commits identical default-context bytes through actual S4/S6 for updateBead (recording true, case 1)
+ ↓ packages/server/src/resource-evaluator.test.ts > native context inside actual durable members > commits identical default-context bytes through actual S4/S6 for updateBead (recording true, case 2)
+ ↓ packages/server/src/resource-evaluator.test.ts > native context inside actual durable members > commits identical default-context bytes through actual S4/S6 for createLink (recording true, case 3)
+ ↓ packages/server/src/resource-evaluator.test.ts > native context inside actual durable members > commits identical default-context bytes through actual S4/S6 for updateLink (recording true, case 4)
+ ↓ packages/server/src/resource-evaluator.test.ts > native context inside actual durable members > commits identical default-context bytes through actual S4/S6 for updateLink (recording true, case 5)
+ ↓ packages/server/src/resource-evaluator.test.ts > native context inside actual durable members > commits identical default-context bytes through actual S4/S6 for deleteLink (recording true, case 6)
+ ↓ packages/server/src/resource-evaluator.test.ts > native context inside actual durable members > commits identical default-context bytes through actual S4/S6 for createLink (recording true, case 7)
+ ↓ packages/server/src/resource-evaluator.test.ts > native context inside actual durable members > commits identical default-context bytes through actual S4/S6 for updateLink (recording true, case 8)
+ ↓ packages/server/src/resource-evaluator.test.ts > native context inside actual durable members > commits identical default-context bytes through actual S4/S6 for updateLink (recording true, case 9)
+ ↓ packages/server/src/resource-evaluator.test.ts > native context inside actual durable members > commits identical default-context bytes through actual S4/S6 for deleteLink (recording true, case 10)
+ ↓ packages/server/src/resource-evaluator.test.ts > native context inside actual durable members > commits identical default-context bytes through actual S4/S6 for deleteBead (recording true, case 11)
+ ↓ packages/server/src/resource-evaluator.test.ts > native context inside actual durable members > uses one late context for actual owned writes and a separate terminal retention observation
+ ↓ packages/server/src/resource-evaluator.test.ts > native context inside actual durable members > rolls back real allocated identities/revisions and staged effects for throw
+ ↓ packages/server/src/resource-evaluator.test.ts > native context inside actual durable members > rolls back real allocated identities/revisions and staged effects for promise
+ ↓ packages/server/src/resource-evaluator.test.ts > native context inside actual durable members > rolls back real allocated identities/revisions and staged effects for rejected-promise
+ ↓ packages/server/src/resource-evaluator.test.ts > native context inside actual durable members > rolls back real allocated identities/revisions and staged effects for thenable
+ ↓ packages/server/src/resource-evaluator.test.ts > native context inside actual durable members > rolls back real allocated identities/revisions and staged effects for nan
+ ↓ packages/server/src/resource-evaluator.test.ts > native context inside actual durable members > rolls back real allocated identities/revisions and staged effects for infinity
+ ↓ packages/server/src/resource-evaluator.test.ts > native context inside actual durable members > rolls back real allocated identities/revisions and staged effects for fraction
+ ↓ packages/server/src/resource-evaluator.test.ts > native context inside actual durable members > rolls back real allocated identities/revisions and staged effects for negative
+ ↓ packages/server/src/resource-evaluator.test.ts > native context inside actual durable members > rolls back real allocated identities/revisions and staged effects for unsafe
+ ↓ packages/server/src/resource-evaluator.test.ts > native context inside actual durable members > rolls back real allocated identities/revisions and staged effects for date-overflow
+ ↓ packages/server/src/resource-evaluator.test.ts > native context inside actual durable members > rolls back real allocated identities/revisions and staged effects for extended-year
+ ↓ packages/server/src/resource-evaluator.test.ts > native context inside actual durable members > rolls back real allocated identities/revisions and staged effects for nested-clock
+ ↓ packages/server/src/resource-evaluator.test.ts > native context inside actual durable members > rolls back real allocated identities/revisions and staged effects for nested-policy
+ ↓ packages/server/src/resource-evaluator.test.ts > native context inside actual durable members > rolls back real allocated identities/revisions and staged effects for post-policy
+ ↓ packages/server/src/resource-evaluator.test.ts > native context inside actual durable members > rolls back real allocated identities/revisions and staged effects for post-write
+ ↓ packages/server/src/resource-evaluator.test.ts > staged properties before endpoint constraints > selects properties over a fully installed target constraint failure
+ ↓ packages/server/src/resource-evaluator.test.ts > staged properties before endpoint constraints > orders source constraints (inherited=false) with independent valid neighbors
+ ↓ packages/server/src/resource-evaluator.test.ts > staged properties before endpoint constraints > orders target constraints (inherited=false) with independent valid neighbors
+ ↓ packages/server/src/resource-evaluator.test.ts > staged properties before endpoint constraints > orders source constraints (inherited=true) with independent valid neighbors
+ ↓ packages/server/src/resource-evaluator.test.ts > staged properties before endpoint constraints > orders target constraints (inherited=true) with independent valid neighbors
+ ↓ packages/server/src/resource-evaluator.test.ts > staged properties before endpoint constraints > keeps hidden and absent endpoints indistinguishable before properties or permission callbacks
+ ↓ packages/server/src/resource-evaluator.test.ts > staged properties before endpoint constraints > retains generic endpoint failure before properties: beads/a / links/wrong
+ ↓ packages/server/src/resource-evaluator.test.ts > staged properties before endpoint constraints > retains generic endpoint failure before properties: urn:source / urn:target
+ ↓ packages/server/src/resource-evaluator.test.ts > staged properties before endpoint constraints > retains unavailable required closure before property validation: missing
+ ↓ packages/server/src/resource-evaluator.test.ts > staged properties before endpoint constraints > retains unavailable required closure before property validation: missing-validator
+ ↓ packages/server/src/resource-evaluator.test.ts > staged properties before endpoint constraints > retains unavailable required closure before property validation: wrong-category
+ ↓ packages/server/src/resource-evaluator.test.ts > staged properties before endpoint constraints > keeps an unavailable local endpoint Type ahead of property diagnostics
+ ↓ packages/server/src/resource-evaluator.test.ts > staged properties before endpoint constraints > keeps a later unavailable endpoint closure ahead of an earlier source constraint mismatch
+ ↓ packages/server/src/resource-evaluator.test.ts > staged properties before endpoint constraints > validates properties before the existing external policy without dereferencing the URI
+ ↓ packages/server/src/resource-evaluator.test.ts > staged properties before endpoint constraints > orders property patches on an explicitly inconsistent stored Link and preserves ordinary update/noop/delete
+ ↓ packages/server/src/resource-evaluator.test.ts > staged properties before endpoint constraints > reaches aggregate constraints only after properties and endpoint constraints pass
+ ↓ packages/server/src/resource-evaluator.test.ts > staged properties before endpoint constraints > retains the ordered failure through actual S6 close/reopen without graph changes
+ ↓ packages/server/src/resource-evaluator.test.ts > metadata patch diagnostic document and atomicity > bead distinguishes metadata failure and rolls back both documents 0
+ ↓ packages/server/src/resource-evaluator.test.ts > metadata patch diagnostic document and atomicity > bead distinguishes metadata failure and rolls back both documents 1
+ ↓ packages/server/src/resource-evaluator.test.ts > metadata patch diagnostic document and atomicity > bead distinguishes metadata failure and rolls back both documents 2
+ ↓ packages/server/src/resource-evaluator.test.ts > metadata patch diagnostic document and atomicity > bead distinguishes metadata failure and rolls back both documents 3
+ ↓ packages/server/src/resource-evaluator.test.ts > metadata patch diagnostic document and atomicity > bead distinguishes metadata failure and rolls back both documents 4
+ ↓ packages/server/src/resource-evaluator.test.ts > metadata patch diagnostic document and atomicity > link distinguishes metadata failure and rolls back both documents 0
+ ↓ packages/server/src/resource-evaluator.test.ts > metadata patch diagnostic document and atomicity > link distinguishes metadata failure and rolls back both documents 1
+ ↓ packages/server/src/resource-evaluator.test.ts > metadata patch diagnostic document and atomicity > link distinguishes metadata failure and rolls back both documents 2
+ ↓ packages/server/src/resource-evaluator.test.ts > metadata patch diagnostic document and atomicity > link distinguishes metadata failure and rolls back both documents 3
+ ↓ packages/server/src/resource-evaluator.test.ts > metadata patch diagnostic document and atomicity > link distinguishes metadata failure and rolls back both documents 4
+
+ Test Files  1 passed (1)
+      Tests  1 passed | 166 skipped (167)
+   Start at  00:11:52
+   Duration  277ms (transform 83ms, setup 15ms, import 100ms, tests 111ms, environment 0ms)
+
+JSON report written to /Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-fresh-depth-authoring/validation-final/run/resource-evaluator-positive.results.json

@@ -1,0 +1,348 @@
+--- prior/commands.json
++++ final/commands.json
+@@ -1,5 +1,5 @@
+ {
+-  "status": "CLOSED; actual clean a17af9bc source bound; root release pending",
++  "status": "Final reviewed candidate 1ba65f2f192cc84e44eb09ef89b9693ec6cdaf05; root phases explicitly gated",
+   "executionOrder": [
+     "typecheck",
+     "fresh-build",
+@@ -170,7 +170,7 @@
+         "^(?:serializes\\ byte\\-bounded\\ deep\\ syntax\\ iteratively\\ without\\ changing\\ number\\ lexemes\\ or\\ key\\ order|keeps\\ receiving\\ and\\ legacy\\ preparation\\ branded\\ while\\ accepting\\ byte\\-bounded\\ deep\\ input|prepares\\ deep\\ sequence\\ members\\ after\\ complete\\ carrier\\ syntax\\ with\\ strict\\ brands\\ and\\ frozen\\ wrappers)$",
+         "--reporter=verbose",
+         "--reporter=json",
+-        "--outputFile=/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-fresh-depth-authoring/validation-source-recovery/run/transaction-set-positive.results.json"
++        "--outputFile=/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-fresh-depth-authoring/validation-final/run/transaction-set-positive.results.json"
+       ],
+       "selectedFullNames": [
+         "serializes byte-bounded deep syntax iteratively without changing number lexemes or key order",
+@@ -202,7 +202,7 @@
+         "^(?:private\\ direct\\ Transactional\\ receiving\\ order\\ keeps\\ invalid\\ Selector\\ grammar\\ distinct\\ from\\ valid\\ deep\\ input|valid\\ private\\ set\\ admission\\ accepts\\ byte\\-bounded\\ singleton\\ and\\ wrapped\\ set\\ content\\ across\\ the\\ former\\ depth\\ boundary|finishes\\ batch\\ synthetic\\ syntax\\ before\\ admission,\\ including\\ deeply\\ nested\\ received\\ input|finishes\\ singleton\\ synthetic\\ syntax\\ before\\ admission,\\ including\\ deeply\\ nested\\ received\\ input|compares\\ retained\\ direct\\ keys\\ before\\ negotiation\\ and\\ admits\\ valid\\ fresh\\ deep\\ input|compares\\ deep\\ metadata\\ against\\ genuine\\ pending\\ and\\ dependent\\ keys\\ without\\ changing\\ saved\\ outcomes|executes\\ deep\\ values\\ through\\ set\\ and\\ dependent\\ sequence\\ with\\ durable\\ receipt\\ recovery)$",
+         "--reporter=verbose",
+         "--reporter=json",
+-        "--outputFile=/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-fresh-depth-authoring/validation-source-recovery/run/transaction-submission-positive.results.json"
++        "--outputFile=/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-fresh-depth-authoring/validation-final/run/transaction-submission-positive.results.json"
+       ],
+       "selectedFullNames": [
+         "private direct Transactional receiving order keeps invalid Selector grammar distinct from valid deep input",
+@@ -241,7 +241,7 @@
+         "^(?:private\\ Transactional\\ sequence\\ slice\\ runs\\ all\\ eight\\ explicit\\ operation\\ kinds\\ as\\ separate\\ commits\\ with\\ locator\\-only\\ aliases|private\\ Transactional\\ sequence\\ slice\\ reserves\\ all\\ unknown\\ keys\\ together,\\ commits\\ a\\ prefix,\\ continues\\ past\\ failure\\ and\\ permits\\ interleaving|private\\ Transactional\\ sequence\\ slice\\ joins\\ overlapping\\ presentations\\ without\\ running\\ a\\ completed\\ member\\ twice\\ and\\ projects\\ current\\ labels|private\\ Transactional\\ sequence\\ slice\\ projects\\ another\\ owner's\\ pending\\ receipt\\ before\\ immutable\\ mismatch\\ and\\ never\\ retracts\\ that\\ owner|private\\ Transactional\\ sequence\\ slice\\ shares\\ singleton\\ and\\ one\\-operation\\ batch\\ identity,\\ preserving\\ exact\\ numbers\\ and\\ creation\\ defaults|private\\ Transactional\\ sequence\\ slice\\ leaves\\ no\\ partial\\ bulk\\ admission\\ on\\ after\\-sequence\\-reservation\\ failure|private\\ Transactional\\ sequence\\ slice\\ leaves\\ no\\ partial\\ bulk\\ admission\\ on\\ after\\-sequence\\-admission\\ failure|private\\ Transactional\\ sequence\\ slice\\ classifies\\ foreign\\ key\\ state\\ at\\ its\\ turn\\ after\\ failed\\ detail\\ is\\ forgotten|private\\ Transactional\\ sequence\\ slice\\ compares\\ retained\\ deep\\ sequence\\ members\\ without\\ executing\\ them\\ or\\ replacing\\ their\\ receipts|private\\ Transactional\\ sequence\\ slice\\ admits\\ fresh\\ deep\\ sequence\\ members\\ without\\ changing\\ atomic\\ reservation\\ behavior|private\\ Transactional\\ sequence\\ slice\\ executes\\ fresh\\ deep\\ input\\ after\\ a\\ retained\\ failed\\ member\\ expires\\ between\\ sequence\\ turns|private\\ Transactional\\ sequence\\ slice\\ rejects\\ duplicate\\ keys\\ and\\ invalid\\ dependency\\ edges\\ before\\ any\\ key\\ effects|private\\ Transactional\\ sequence\\ slice\\ projects\\ mixed\\ retained,\\ conflicting,\\ failed\\ and\\ unknown\\ keys\\ in\\ declaration\\ order)$",
+         "--reporter=verbose",
+         "--reporter=json",
+-        "--outputFile=/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-fresh-depth-authoring/validation-source-recovery/run/transaction-sequence-positive.results.json"
++        "--outputFile=/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-fresh-depth-authoring/validation-final/run/transaction-sequence-positive.results.json"
+       ],
+       "selectedFullNames": [
+         "private Transactional sequence slice runs all eight explicit operation kinds as separate commits with locator-only aliases",
+@@ -285,7 +285,7 @@
+         "^(?:accepts\\ byte\\-bounded\\ deep\\ sequences\\ and\\ keeps\\ sequence\\ capacity\\ distinct\\ from\\ direct\\ transaction\\ capacity|compares\\ retained\\ sequence\\ members\\ and\\ accepts\\ deep\\ input\\ while\\ preserving\\ receiving\\ failures|source\\-private\\ actual\\ Transactional\\ HTTP\\ rejects\\ sequence\\ carrier\\ syntax/keys/negotiation\\ before\\ claiming\\ any\\ member|serves\\ retained\\ direct\\ key\\ conflicts\\ and\\ genuine\\ fresh\\ deep\\ effects|source\\-private\\ actual\\ Transactional\\ HTTP\\ rejects\\ invalid\\ set\\ Selector\\ grammar\\ and\\ admits\\ valid\\ deep\\ content\\ without\\ partial\\ effects|preserves\\ actual\\ singleton\\ bytes\\ and\\ wrapper\\-equivalent\\ deep\\ content\\ without\\ accepting\\ a\\ body\\ operation\\ override)$",
+         "--reporter=verbose",
+         "--reporter=json",
+-        "--outputFile=/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-fresh-depth-authoring/validation-source-recovery/run/transaction-http-positive.results.json"
++        "--outputFile=/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-fresh-depth-authoring/validation-final/run/transaction-http-positive.results.json"
+       ],
+       "selectedFullNames": [
+         "accepts byte-bounded deep sequences and keeps sequence capacity distinct from direct transaction capacity",
+@@ -322,7 +322,7 @@
+         "^(?:refuses\\ retained\\ corruption:\\ missing\\-record\\ rather\\ than\\ rebuilding\\ current\\ graph|refuses\\ retained\\ corruption:\\ changed\\-record\\ rather\\ than\\ rebuilding\\ current\\ graph|refuses\\ retained\\ corruption:\\ oversized\\-record\\ rather\\ than\\ rebuilding\\ current\\ graph|refuses\\ retained\\ corruption:\\ missing\\-range\\ rather\\ than\\ rebuilding\\ current\\ graph|refuses\\ retained\\ corruption:\\ wrong\\-kind\\ rather\\ than\\ rebuilding\\ current\\ graph|refuses\\ retained\\ corruption:\\ wrong\\-context\\ rather\\ than\\ rebuilding\\ current\\ graph|refuses\\ retained\\ corruption:\\ wrong\\-anchor\\ rather\\ than\\ rebuilding\\ current\\ graph|refuses\\ retained\\ corruption:\\ wrong\\-expiry\\ rather\\ than\\ rebuilding\\ current\\ graph|refuses\\ missing\\ owned\\ or\\ endpoint\\ data\\ before\\ issuing\\ a\\ capture|new\\ private\\ Snapshot\\ entry\\ points\\ do\\ not\\ escape\\ package\\ public\\ exports|captures\\ and\\ reopens\\ deep\\ owned\\ Links\\ without\\ losing\\ JSON\\ value\\ equality|rejects\\ deep\\ owned\\-Link\\ divergence\\ before\\ Snapshot\\ issuance)$",
+         "--reporter=verbose",
+         "--reporter=json",
+-        "--outputFile=/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-fresh-depth-authoring/validation-source-recovery/run/transaction-snapshot-positive.results.json"
++        "--outputFile=/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-fresh-depth-authoring/validation-final/run/transaction-snapshot-positive.results.json"
+       ],
+       "selectedFullNames": [
+         "refuses retained corruption: missing-record rather than rebuilding current graph",
+@@ -366,7 +366,7 @@
+         "^(?:pure\\ member\\ Resource\\ evaluation\\ normalizes\\ accepted\\ numeric\\ spellings\\ and\\ preserves\\ revisions\\ and\\ metadata\\ on\\ semantic\\ no\\-ops)$",
+         "--reporter=verbose",
+         "--reporter=json",
+-        "--outputFile=/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-fresh-depth-authoring/validation-source-recovery/run/resource-evaluator-positive.results.json"
++        "--outputFile=/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-fresh-depth-authoring/validation-final/run/resource-evaluator-positive.results.json"
+       ],
+       "selectedFullNames": [
+         "pure member Resource evaluation normalizes accepted numeric spellings and preserves revisions and metadata on semantic no-ops"
+@@ -388,7 +388,7 @@
+       "phase": "source",
+       "argv": [
+         "/opt/homebrew/opt/python@3.14/bin/python3.14",
+-        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-fresh-depth-authoring/validation-source-recovery/review-source.py"
++        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-fresh-depth-authoring/validation-final/review-source.py"
+       ]
+     },
+     "build-inventory": {
+@@ -398,7 +398,7 @@
+       "automaticRetries": 0,
+       "argv": [
+         "/opt/homebrew/opt/python@3.14/bin/python3.14",
+-        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-fresh-depth-authoring/validation-source-recovery/inventory.py"
++        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-fresh-depth-authoring/validation-final/inventory.py"
+       ],
+       "phase": "source"
+     },
+@@ -410,7 +410,7 @@
+       "phase": "control",
+       "argv": [
+         "/opt/homebrew/opt/python@3.14/bin/python3.14",
+-        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-fresh-depth-authoring/validation-source-recovery/control.py",
++        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-fresh-depth-authoring/validation-final/control.py",
+         "prepare"
+       ],
+       "rawExpectedExit": 0,
+@@ -418,13 +418,13 @@
+     },
+     "strict-control": {
+       "id": "strict-control",
+-      "cwd": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-fresh-depth-authoring/validation-source-recovery/mirror",
++      "cwd": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-fresh-depth-authoring/validation-final/mirror",
+       "supervisorSeconds": 120,
+       "automaticRetries": 0,
+       "phase": "control",
+       "argv": [
+         "/opt/homebrew/opt/python@3.14/bin/python3.14",
+-        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-fresh-depth-authoring/validation-source-recovery/control-execute.py"
++        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-fresh-depth-authoring/validation-final/control-execute.py"
+       ],
+       "rawExpectedExit": 0,
+       "ownedTempPrefixes": [
+@@ -439,7 +439,7 @@
+       "cases": 1,
+       "directArgv": [
+         "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+-        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-fresh-depth-authoring/validation-source-recovery/mirror/node_modules/vitest/vitest.mjs",
++        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-fresh-depth-authoring/validation-final/mirror/node_modules/vitest/vitest.mjs",
+         "run",
+         "packages/server/src/transaction-snapshot.test.ts",
+         "--maxWorkers=1",
+@@ -447,7 +447,7 @@
+         "^captures\\ and\\ reopens\\ deep\\ owned\\ Links\\ without\\ losing\\ JSON\\ value\\ equality$",
+         "--reporter=verbose",
+         "--reporter=json",
+-        "--outputFile=/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-fresh-depth-authoring/validation-source-recovery/run/strict-control.results.json"
++        "--outputFile=/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-fresh-depth-authoring/validation-final/run/strict-control.results.json"
+       ],
+       "directExpectedExit": 1,
+       "exitMeaning": "Guarded adapter exits0 only after recording direct Vitest exit1; JSON/named-cause adjudication is a separate required stage."
+@@ -460,7 +460,7 @@
+       "phase": "control",
+       "argv": [
+         "/opt/homebrew/opt/python@3.14/bin/python3.14",
+-        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-fresh-depth-authoring/validation-source-recovery/control.py",
++        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-fresh-depth-authoring/validation-final/control.py",
+         "review"
+       ],
+       "rawExpectedExit": 0,
+@@ -484,7 +484,7 @@
+       "automaticRetries": 0,
+       "argv": [
+         "/opt/homebrew/opt/python@3.14/bin/python3.14",
+-        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-fresh-depth-authoring/validation-source-recovery/packages.py",
++        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-fresh-depth-authoring/validation-final/packages.py",
+         "directory"
+       ],
+       "phase": "package"
+@@ -501,7 +501,7 @@
+         "@bdp/protocol",
+         "pack",
+         "--pack-destination",
+-        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-fresh-depth-authoring/validation-source-recovery/run/packages"
++        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-fresh-depth-authoring/validation-final/run/packages"
+       ],
+       "phase": "package"
+     },
+@@ -517,7 +517,7 @@
+         "@bdp/server",
+         "pack",
+         "--pack-destination",
+-        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-fresh-depth-authoring/validation-source-recovery/run/packages"
++        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-fresh-depth-authoring/validation-final/run/packages"
+       ],
+       "phase": "package"
+     },
+@@ -528,7 +528,7 @@
+       "automaticRetries": 0,
+       "argv": [
+         "/opt/homebrew/opt/python@3.14/bin/python3.14",
+-        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-fresh-depth-authoring/validation-source-recovery/packages.py",
++        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-fresh-depth-authoring/validation-final/packages.py",
+         "tar"
+       ],
+       "phase": "package"
+@@ -540,14 +540,14 @@
+       "automaticRetries": 0,
+       "argv": [
+         "/opt/homebrew/opt/python@3.14/bin/python3.14",
+-        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-fresh-depth-authoring/validation-source-recovery/packages.py",
++        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-fresh-depth-authoring/validation-final/packages.py",
+         "consumer"
+       ],
+       "phase": "package"
+     },
+     "consumer-install": {
+       "id": "consumer-install",
+-      "cwd": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-fresh-depth-authoring/validation-source-recovery/run/consumer",
++      "cwd": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-fresh-depth-authoring/validation-final/run/consumer",
+       "supervisorSeconds": 120,
+       "automaticRetries": 0,
+       "argv": [
+@@ -568,7 +568,7 @@
+       "automaticRetries": 0,
+       "argv": [
+         "/opt/homebrew/opt/python@3.14/bin/python3.14",
+-        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-fresh-depth-authoring/validation-source-recovery/packages.py",
++        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-fresh-depth-authoring/validation-final/packages.py",
+         "installed"
+       ],
+       "phase": "package"
+@@ -589,7 +589,7 @@
+         "^observes\\ installed\\ retained\\ key\\ conflicts\\ and\\ fresh\\ deep\\ carrier\\ execution$",
+         "--reporter=verbose",
+         "--reporter=json",
+-        "--outputFile=/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-fresh-depth-authoring/validation-source-recovery/run/direct-installed.results.json"
++        "--outputFile=/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-fresh-depth-authoring/validation-final/run/direct-installed.results.json"
+       ],
+       "selectedFullNames": [
+         "observes installed retained key conflicts and fresh deep carrier execution"
+@@ -613,7 +613,7 @@
+       "phase": "adjudication",
+       "argv": [
+         "/opt/homebrew/opt/python@3.14/bin/python3.14",
+-        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-fresh-depth-authoring/validation-source-recovery/review-installed.py",
++        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-fresh-depth-authoring/validation-final/review-installed.py",
+         "direct-installed"
+       ]
+     },
+@@ -633,7 +633,7 @@
+         "^observes\\ retained\\ sequence\\ member\\ conflict\\ and\\ fresh\\ deep\\ execution\\ over\\ packed\\ bytes$",
+         "--reporter=verbose",
+         "--reporter=json",
+-        "--outputFile=/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-fresh-depth-authoring/validation-source-recovery/run/sequence-installed.results.json"
++        "--outputFile=/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-fresh-depth-authoring/validation-final/run/sequence-installed.results.json"
+       ],
+       "selectedFullNames": [
+         "observes retained sequence member conflict and fresh deep execution over packed bytes"
+@@ -657,7 +657,7 @@
+       "phase": "adjudication",
+       "argv": [
+         "/opt/homebrew/opt/python@3.14/bin/python3.14",
+-        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-fresh-depth-authoring/validation-source-recovery/review-installed.py",
++        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-fresh-depth-authoring/validation-final/review-installed.py",
+         "sequence-installed"
+       ]
+     },
+@@ -677,7 +677,7 @@
+         "^serves\\ byte\\-bounded\\ deep\\ mutations\\ receipts\\ Events\\ and\\ owned\\-Link\\ Snapshots\\ over\\ packed\\ bytes$",
+         "--reporter=verbose",
+         "--reporter=json",
+-        "--outputFile=/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-fresh-depth-authoring/validation-source-recovery/run/fresh-installed.results.json"
++        "--outputFile=/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-fresh-depth-authoring/validation-final/run/fresh-installed.results.json"
+       ],
+       "selectedFullNames": [
+         "serves byte-bounded deep mutations receipts Events and owned-Link Snapshots over packed bytes"
+@@ -701,7 +701,7 @@
+       "phase": "adjudication",
+       "argv": [
+         "/opt/homebrew/opt/python@3.14/bin/python3.14",
+-        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-fresh-depth-authoring/validation-source-recovery/review-installed.py",
++        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-fresh-depth-authoring/validation-final/review-installed.py",
+         "fresh-installed"
+       ]
+     }
+--- prior/gate.py
++++ final/gate.py
+@@ -3,7 +3,7 @@
+ import hashlib,json,subprocess,os
+ P=Path(__file__).resolve().parent;D=P;L=P.parent.parent
+ W=Path('/Users/dbox/repos/wt/vickie/vickie-fresh-depth-serving');E=P/'run';GUARD=L/'guarded-action.py';COMMANDS=P/'commands.json'
+-COMMANDS_SHA='aabf1f1ed241632e9fc9cf290caf3007084e8f1d5fd100a80c2e99d25bd7d4fc'
++COMMANDS_SHA='8be0e4d671ed52acc7b3888f9c8aeca24464534005ad4b7a9d88d6eef95e2ad7'
+ sha=lambda b:hashlib.sha256(b).hexdigest()
+ def require(ok,message):
+  if not ok:raise RuntimeError(message)
+--- prior/installed-oracles.json
++++ final/installed-oracles.json
+@@ -342,8 +342,8 @@
+     "directoryPrefix": "bdp-fresh-depth-installed-",
+     "responseBodyCap": 1048576,
+     "file": "apps/bdptest/src/transactional-fresh-depth-installed.test.ts",
+-    "sha256": "d54acc614e6e372fa1e0dfd0a909ed8719d8a4afbd2d93b81116a47a0dba590c",
+-    "bytes": 38497,
++    "sha256": "df4030346fc5ec402c0d77d5a5c9953542f341aa86e242d2a5e6cdcf9e09f991",
++    "bytes": 38983,
+     "http": 13,
+     "bodyBytesTotal": 169821,
+     "bodyBytesMaximum": 48363,
+--- prior/prepared-source.json
++++ final/prepared-source.json
+@@ -1,10 +1,10 @@
+ {
+   "workspace": "/Users/dbox/repos/wt/vickie/vickie-fresh-depth-serving",
+-  "finalHead": "a17af9bc4742be33dfd64071f62ffb2936c82d86",
+-  "finalTree": "53622b009816615a6c458d24d3af6a64257659cd",
++  "finalHead": "1ba65f2f192cc84e44eb09ef89b9693ec6cdaf05",
++  "finalTree": "773614c5ebc6c97d90c4c629c7c7a02ed51bc2ef",
+   "files": {
+     "apps/bdptest/src/transactional-depth-key-order-installed.test.ts": "f4e19ef9b7aba1a12f3376540257b9680e27dcd00936048b066eb7667ebe19fe",
+-    "apps/bdptest/src/transactional-fresh-depth-installed.test.ts": "d54acc614e6e372fa1e0dfd0a909ed8719d8a4afbd2d93b81116a47a0dba590c",
++    "apps/bdptest/src/transactional-fresh-depth-installed.test.ts": "df4030346fc5ec402c0d77d5a5c9953542f341aa86e242d2a5e6cdcf9e09f991",
+     "apps/bdptest/src/transactional-sequence-depth-installed.test.ts": "0a2a765cab6137f324cffb7ff7d96d1f3e81fef3a73c14f56adfd36309083aa7",
+     "docs/design/transaction-implementation-progress.md": "72a53d3fd078f5d35931cf99a1661d1f5c623d1b553f2befca7404f52c1a1e0b",
+     "packages/server/src/json-value-equality.ts": "f93e0bc3a090eeda9d40ec873c0024da2fbc368df5babe4f7d18cfa9b4780a66",
+@@ -22,13 +22,11 @@
+     "packages/server/src/transaction-submission.test.ts": "026cf5ccc65026f0f6462deaba9e1e58cd7ab6c6ae341ef5ed3af0becbb0c182",
+     "packages/server/src/transaction-submission.ts": "580a5f56075c3f7e2c041354eab75529dd304f86588337f725f4cb33429b33bf"
+   },
+-  "note": "Recovery template only. Original failed run stays under validation-preparation; no prior stage is relabeled or counted as successor execution.",
++  "note": "Final test-oracle correction; original f864 failure and a17 source successes retain original identities.",
+   "reviewBase": "77b4cf980ec91f66c52a554c3dd8c9de5aee859f",
+   "finalBase": "68b0f462a9af80fe10f42f08deb487608053732b",
+   "lastMeasuredSubmissionSha256": "2bf3a65b0c49488d38a392a422c18ba175b585869848befe144243996a6f9b6e",
+-  "pending": [
+-    "root source-prefix release and full tracked input binding; full installed council remains distinct"
+-  ],
++  "pending": [],
+   "assertionSuccessorCandidates": {
+     "apps/bdptest/src/transactional-depth-key-order-installed.test.ts": "f4e19ef9b7aba1a12f3376540257b9680e27dcd00936048b066eb7667ebe19fe",
+     "apps/bdptest/src/transactional-sequence-depth-installed.test.ts": "0a2a765cab6137f324cffb7ff7d96d1f3e81fef3a73c14f56adfd36309083aa7",
+@@ -38,14 +36,10 @@
+     "packages/server/src/resource-evaluator.test.ts": "2a35e3add8eabe18d27a69c173b709e1d958c16191c049a4877d92a7b27fa7f1"
+   },
+   "parents": [
+-    "f864c4dde1b679d674cefe68f9047dd5cb3d1abc"
++    "a17af9bc4742be33dfd64071f62ffb2936c82d86"
+   ],
+-  "diffSha256": "8510d4ebc8f7558dd5f01de5790cd6c6ddda7a935529480c9e67da85d7f16b90",
++  "diffSha256": "7ecff9a52b4b3eaf9dcdb8072be2f9bbac00e77dc7cb199266bb4b0bc41a095a",
+   "predecessorHead": "f864c4dde1b679d674cefe68f9047dd5cb3d1abc",
+   "predecessorTree": "ab033c4c6061e6923fb0b90ac66d17b614578c52",
+-  "predecessorSequenceSha256": "5526903a6e094602612bac8448fe1bee5e8f8c6e675458360abc43e43eda6d91",
+-  "candidateBinding": {
+-    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-fresh-depth-authoring/review-corrections/recovery-candidate-commit.json",
+-    "sha256": "bb16e0b4ccab26be73d0f4c3ae9241c5fb8629b4de3d2e2b4c6511eea9b7f187"
+-  }
++  "predecessorSequenceSha256": "5526903a6e094602612bac8448fe1bee5e8f8c6e675458360abc43e43eda6d91"
+ }
+--- prior/report.md
++++ final/report.md
+@@ -1,11 +1 @@
+-# Closed source recovery preparation
+-
+-This sibling reuses the current reviewed validation scripts, with absolute output/helper paths changed to validation-source-recovery and the commands hash rebound. No run, mirror, archives, consumer, live execution gate, final-source/input binding or root release was copied. The original six static successes,3set/7submission successes and sequence12pass/1failure remain unchanged in validation-preparation.
+-
+-The actual clean successor is a17af9bc4742be33dfd64071f62ffb2936c82d86, tree53622b009816615a6c458d24d3af6a64257659cd, direct parentf864c4dde1b679d674cefe68f9047dd5cb3d1abc, base68b0f462a9af80fe10f42f08deb487608053732b. All18 working hashes and cleanHEAD independently match recovery-candidate-commit.json. Only the bounded41-level JSON replay assertion changed; sequence hash31fba92ece191ad6be239b6c1edac8fe71ef63ce716597edc45d015e46730170. Prior pending preparation is preserved in pre-candidate-binding. All other17 source hashes, source body measurements, exact42 selections and81 prospective HTTP remain the current candidate values. Source phase retains explicit sourceValidationAuthorized/sourceCouncilAccepted authorization, while all other phases require complete council. No future commit is invented.
+-
+-The same31-stage template is retained; this is not a release to rerun any stage. Root may bind and release its chosen bounded prefix after reviewing actual repaired source. No earlier outputs count as successor passes. Packages and controls remain closed and depend on a new actual build inventory. Limits, cleanup, copied comparator-only mutation, direct Vitest exit recording and named nested RangeError adjudication are unchanged.
+-
+-Static preparation only: Python AST parsing, exact relative command/selection equivalence after path substitution, and source/probe metadata reads. No product imports, build, tests, services, package installation, source edits or Git mutations by this preparation. recovery-inputs.json pins original failure and diagnostic evidence; adaptation.patch lists every script delta.
+-
+-Root requested a fresh first14-stage source prefix (typecheck through build-inventory), including fresh build and all42 source cases, after actual release. This packet creates no release or execution gate. All later phases remain closed.
++Final validation for 1ba65f2f192cc84e44eb09ef89b9693ec6cdaf05 tree 773614c5ebc6c97d90c4c629c7c7a02ed51bc2ef. Source differs from a17 only by reviewed rejecting comparator assertions, actual request-body-presence projection and dead guard removal. Root reviewed exact patch; both actual Claude scenario/lifecycle reviews are complete and findings dispositioned. No production/body/HTTP/lifecycle limit change. Fresh-only external adjudicator requires actual body presence. Paths and source hashes rebound; same31stage limits, no copied results, no automatic retry. Prior failures and passes remain attributed to their original candidates.
+--- prior/review-installed.py
++++ final/review-installed.py
+@@ -23,6 +23,7 @@
+ require(len(o['completedResponses'])==oracle['http'],'Missing responses')
+ for actual,expected in zip(o['completedResponses'],rows,strict=True):
+  for a,b in [('ordinal','index'),('label','label'),('method','method'),('accept','accept'),('key','key'),('status','status'),('requestBodyBytes','bodyBytes'),('requestBodySha256','bodySha256')]:require(actual[a]==expected[b],'Ordered request/response differs '+a)
++ if name=='fresh-installed':require(actual.get('requestBodyPresent') is (expected['bodyRef'] is not None),'Wrong actual request body presence')
+  if expected['url'] is not None:require(actual['url']==expected['url'],'Wrong actual target')
+  else:
+   require(name=='fresh-installed' and actual['ordinal']==13 and re.fullmatch(r'https://reference\.invalid/acme/receipts/[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}',actual['url']),'Actual receipt target absent/invalid')

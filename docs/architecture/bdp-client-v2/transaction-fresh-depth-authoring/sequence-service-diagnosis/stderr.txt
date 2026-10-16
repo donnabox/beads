@@ -1,0 +1,17 @@
+file:///Users/dbox/repos/wt/vickie/vickie-fresh-depth-serving/packages/server/dist/authority-read.js:115
+        throw new AuthorityReadError("configuration", "pagination callbacks required");
+              ^
+
+AuthorityReadError: pagination callbacks required
+    at prepare (file:///Users/dbox/repos/wt/vickie/vickie-fresh-depth-serving/packages/server/dist/authority-read.js:115:15)
+    at createAuthorityReadPlane (file:///Users/dbox/repos/wt/vickie/vickie-fresh-depth-serving/packages/server/dist/authority-read.js:626:22)
+    at createTransactionReadPlane (file:///Users/dbox/repos/wt/vickie/vickie-fresh-depth-serving/packages/server/dist/transaction-read.js:130:19)
+    at createTransactionService (file:///Users/dbox/repos/wt/vickie/vickie-fresh-depth-serving/packages/server/dist/transaction-service.js:54:18)
+    at file:///Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-fresh-depth-authoring/sequence-service-diagnosis/probe.mjs:12:10
+    at ModuleJob.run (node:internal/modules/esm/module_job:439:25)
+    at async node:internal/modules/esm/loader:633:26
+    at async asyncRunEntryPointWithESMLoader (node:internal/modules/run_main:101:5) {
+  reason: 'configuration'
+}
+
+Node.js v24.16.0
