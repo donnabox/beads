@@ -1,0 +1,23 @@
+{
+  "scopeAccepted": true,
+  "at": "2026-10-16T03:31:54.719500+00:00",
+  "stdoutSha256": "aac781c2ee13dec964c4f71c8c020ea5f086ddb03fc9f06613f79918a1ffb09d",
+  "auditSha256": "7113c291c78ccfd4f22480ffee4e63b6e1aacc5d0f25c14dcf5b5d16f2eb4927",
+  "rootReadCompleteOutputAndAudit": true,
+  "sourceIndependentChecks": [
+    "authority own-data receiving equivalence",
+    "wait loop bounded deadline and last observation context",
+    "complete production patch",
+    "normative rulings current Resource scope"
+  ],
+  "findings": {
+    "F1": "Keep accepted bounded wait; repeated observations can see hidden/deleted state and latest context.",
+    "F2": "Redundant refusal harmless; optional cleanup declined.",
+    "F3": "Unknown plus foreign context deliberately excluded; private500 is not normative protocol.",
+    "F4": "Known-minimum missing-first is explicit user choice.",
+    "F5": "Unreachable fallback mapping unnecessary and may mask missing wait wiring."
+  },
+  "mandatoryRepairs": [],
+  "otherCouncilScopesPending": true,
+  "mainIntegrationAndInstalledValidationPending": true
+}

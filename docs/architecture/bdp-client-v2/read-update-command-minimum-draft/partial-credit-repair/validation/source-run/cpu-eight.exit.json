@@ -1,0 +1,93 @@
+{
+  "name": "cpu-eight",
+  "argv": [
+    "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+    "/Users/dbox/repos/wt/vickie/vickie-update-cold-directory/node_modules/vitest/vitest.mjs",
+    "run",
+    "packages/conformance/src/read-update-artifact-set.test.ts",
+    "packages/conformance/src/cumulative-artifact.test.ts",
+    "packages/conformance/src/profile-contract-plan.test.ts",
+    "apps/bdptest/src/read-update-matrix.test.ts",
+    "--maxWorkers=1",
+    "--testNamePattern",
+    "(?:accepts\\ the\\ actual\\ current\\ corpus\\ split\\ with\\ unchanged\\ prerequisite\\ groups\\ and\\ coverage|pins\\ cumulative\\ source\\ digest\\ map,\\ catalog\\ order\\ and\\ every\\ coverage\\ binding|maps\\ ordinary\\ Update\\ command\\-minimum\\ evidence\\ while\\ TX\\ mapping\\ remains\\ partial|pins\\ cold\\ RU\\ directory\\ literals,\\ actual\\ target\\ bindings\\ and\\ parent\\ preservation|pins\\ numeric\\ admission\\ source\\ growth,\\ old\\ blocks\\ and\\ independent\\ row\\ ledgers|pins\\ metadata\\ closure\\ growth,\\ old\\ B\\ actions\\ and\\ final\\ N\\ preservation|pins\\ bounded\\ R\\ closure\\ source,\\ changed\\-action\\ ledger\\ and\\ unchanged\\ companions|pins\\ command\\ minimum\\ literals,\\ ordinary\\ admission\\ and\\ parent\\ preservation)$",
+    "--reporter=verbose",
+    "--reporter=json",
+    "--outputFile=/Users/dbox/repos/wt/vickie/bdp-integration-logs/read-update-command-minimum-draft/partial-credit-repair/validation/source-run/cpu-eight-tests.json"
+  ],
+  "guardedArgv": [
+    "/opt/homebrew/opt/python@3.14/bin/python3.14",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/guarded-action.py",
+    "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+    "/Users/dbox/repos/wt/vickie/vickie-update-cold-directory/node_modules/vitest/vitest.mjs",
+    "run",
+    "packages/conformance/src/read-update-artifact-set.test.ts",
+    "packages/conformance/src/cumulative-artifact.test.ts",
+    "packages/conformance/src/profile-contract-plan.test.ts",
+    "apps/bdptest/src/read-update-matrix.test.ts",
+    "--maxWorkers=1",
+    "--testNamePattern",
+    "(?:accepts\\ the\\ actual\\ current\\ corpus\\ split\\ with\\ unchanged\\ prerequisite\\ groups\\ and\\ coverage|pins\\ cumulative\\ source\\ digest\\ map,\\ catalog\\ order\\ and\\ every\\ coverage\\ binding|maps\\ ordinary\\ Update\\ command\\-minimum\\ evidence\\ while\\ TX\\ mapping\\ remains\\ partial|pins\\ cold\\ RU\\ directory\\ literals,\\ actual\\ target\\ bindings\\ and\\ parent\\ preservation|pins\\ numeric\\ admission\\ source\\ growth,\\ old\\ blocks\\ and\\ independent\\ row\\ ledgers|pins\\ metadata\\ closure\\ growth,\\ old\\ B\\ actions\\ and\\ final\\ N\\ preservation|pins\\ bounded\\ R\\ closure\\ source,\\ changed\\-action\\ ledger\\ and\\ unchanged\\ companions|pins\\ command\\ minimum\\ literals,\\ ordinary\\ admission\\ and\\ parent\\ preservation)$",
+    "--reporter=verbose",
+    "--reporter=json",
+    "--outputFile=/Users/dbox/repos/wt/vickie/bdp-integration-logs/read-update-command-minimum-draft/partial-credit-repair/validation/source-run/cpu-eight-tests.json"
+  ],
+  "cwd": "/Users/dbox/repos/wt/vickie/vickie-update-cold-directory",
+  "started": "2026-10-16T03:25:45.384229+00:00",
+  "adjudication": {
+    "kind": "exact-source-selection",
+    "passedFullNames": [
+      "pins command minimum literals, ordinary admission and parent preservation",
+      "pins cold RU directory literals, actual target bindings and parent preservation",
+      "pins numeric admission source growth, old blocks and independent row ledgers",
+      "pins metadata closure growth, old B actions and final N preservation",
+      "pins bounded R closure source, changed-action ledger and unchanged companions",
+      "pins cumulative source digest map, catalog order and every coverage binding",
+      "canonical cumulative profile contracts maps ordinary Update command-minimum evidence while TX mapping remains partial",
+      "private two-artifact Read+Update set accepts the actual current corpus split with unchanged prerequisite groups and coverage"
+    ],
+    "skipped": 336,
+    "jsonSha256": "3559d36f17a266147719341d7b87b561461832b3aa696784e6d0296185d0c406",
+    "limitation": "Static HTTP/owner model is not an independently observed network quota; raw logs and reported cleanup remain separately reviewed."
+  },
+  "elapsedSeconds": 3.1439153749961406,
+  "exit": 0,
+  "supervisorExit": 0,
+  "timeout": false,
+  "forcedCleanup": false,
+  "errors": [],
+  "processGroup": 62098,
+  "remainingBeforeCleanup": [],
+  "remainingAfterCleanup": [],
+  "sampledPids": [
+    62098,
+    62101,
+    62105,
+    62108,
+    62129,
+    62134,
+    62137
+  ],
+  "sampledPidsStillPresent": {},
+  "sampledTempEntries": [
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/read-update-command-minimum-draft/partial-credit-repair/validation/source-run/cpu-eight.tmp/Aqm_jHAzW3InEaxbqampz"
+  ],
+  "tempEntriesAfter": [],
+  "remainingTempEntriesForClassification": [],
+  "runtimeDirectoriesStillPresent": [],
+  "unclassifiedTempEntriesStillPresent": [],
+  "sourceUnchanged": true,
+  "sourceSha256After": {
+    "apps/bdptest/src/read-update-matrix.test.ts": "376709ecdcf356a98c5bf7770e6b0a637ab6e06cf9a9f7ed68c2e5c15da9dd36",
+    "packages/conformance/src/cumulative-artifact.test.ts": "d3e8a462694174cf34db94700df51f3de6943aa1072dbf4bd04de7560db9b523",
+    "packages/conformance/src/profile-contract-plan.test.ts": "3fec4ca8c6eee7a20bbcdd1aa53ef2a015989087ba2f8d6b37fd997dcae7dd64",
+    "packages/conformance/test-support/read-update-coverage-v1.json": "287c2a258afd04a95417f5de416c81bd8159c95762d71d568a64f0b402159f0f"
+  },
+  "samplingSeconds": 0.05,
+  "commandWindowSeconds": 115,
+  "groupHardDeadlineSeconds": 120,
+  "cleanupBound": "TERM at115s, KILL no later than120s; wait/reap after kill adds no product execution allowance",
+  "samplingLimitation": "Short-lived or detached descendants may evade group sampling; helper counts and independent final checks remain separate.",
+  "tempClassification": "Only the selected fixture prefixes under this attempt TMPDIR are owned runtime roots; all other entries are preserved for review, not deleted or called leaks.",
+  "resultLimitation": "Exit0 is command completion, not independent oracle/claim/provenance adjudication."
+}
