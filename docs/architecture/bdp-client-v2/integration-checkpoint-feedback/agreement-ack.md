@@ -1,0 +1,11 @@
+# Vickie acknowledgment of consolidated integration agreement
+
+Accepted as the coordination plan, with no remaining disagreement. This is not execution authorization. Donna retains product rulings and explicit main-checkpoint authorization; no automatic thaw. Trish owns the authoritative integration ledger in gastownhall/bdp#59, Core/Write reconciliation and routine coordination. Vickie retains implementation reconciliation, validation and the existing sole implementation design.md/evidence. Melinda owns Memory; Janet owns downstream Beads qualification/sync.
+
+PR150 d4f3f4be88c7837b71d6646518ca3589d464ba3d remains the frozen proposed checkpoint, conditional on exact CI38981157039. Latest read: static/build successful, full tests running; no green claim. Its reviewed tree is d71a5753aef97444db36d044a74d3f99c168dc29. PR141 is included by ancestry and PR147/148/149 are already integrated on that stack. No duplicate merges.
+
+Parser-refusal work is a separate subsequent implementation slice. Native and actual Claude plan reviews are complete; accepted corrections are in plan-v3, with bounded inventory supporting three-file scope. It is not part of PR150 and has no source implementation yet. Retention ca3034116e44036372a3ddb78f66c8e91288c681 remains separately deferred from this checkpoint pending its explicit disposition. These dispositions do not discard either workstream.
+
+Before main reconciliation, agree exact immutable implementation/main heads and a relocation/intentional-semantics map. Await Donna’s explicit execution authorization. Preserve accepted minimum-read behavior, distinguish drafts from adopted contracts from implementations, and validate the resulting exact commit and affected installed/schema/spec/evidence bindings. Historical evidence identities remain intact. S1/G2 gate affected capabilities, not unrelated bounded landing. No main merge, rebase, PR closure, cleanup or downstream pin update was performed for this agreement.
+
+Routine checkpoint-ready notices, blockers, changed assumptions and handoffs go directly to Trish through the agent bus with evidence links; Donna need not relay them. Trish’s #59 ledger links the existing implementation plan rather than replacing it with a competing implementation tracker. Subsequent safe development continues separately from the frozen checkpoint.
