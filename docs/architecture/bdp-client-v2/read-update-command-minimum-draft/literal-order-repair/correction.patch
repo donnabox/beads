@@ -1,0 +1,13 @@
+--- packages/conformance/src/cumulative-artifact.test.ts
++++ packages/conformance/src/cumulative-artifact.test.ts
+@@ -186,9 +186,9 @@
+     "read-update.alias.non-canonical-target",
+     "read-update.alias.no-version-minted",
+     "read-update.sequence.member-problem-shape",
++    "read-update.http.command-minimum-fields",
+     "read-update.numeric-model.same-value-no-op",
+     "read-update.numeric-model.nested-refusal",
+-    "read-update.http.command-minimum-fields",
+   ]);
+   expect(inventory.rows.map((row) => row.id)).toEqual(selected.required.map((row) => row.id));
+   for (const row of inventory.rows) {
