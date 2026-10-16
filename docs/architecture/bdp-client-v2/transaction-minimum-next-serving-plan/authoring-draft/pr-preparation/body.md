@@ -7,3 +7,5 @@ Validation: the original isolated draft passed 11 source stages and 15 selected 
 Preserved attempts include a zero-request startup failure caused by non-Scope-local compiled Type fixture IDs and a corrected external JSON-fingerprint key-order mismatch. The fixture-only successor reuses independently verified unchanged production archives with explicit source/build attribution.
 
 The final candidate ordinarily integrates verified main `9df574a9`; its complete tree equals that main plus the ten reviewed minimum paths. The incoming five Update evidence/test paths are disjoint. Final source and installed observations retain their original build attribution.
+
+Plan of record: [BDP client platform and profile delivery](https://github.com/donnabox/beads/blob/codex/vickie-bdp-client-design/docs/architecture/bdp-client-v2/design.md).

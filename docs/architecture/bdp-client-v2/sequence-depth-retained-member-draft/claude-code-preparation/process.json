@@ -1,0 +1,29 @@
+{
+  "argv": [
+    "/opt/homebrew/bin/claude",
+    "--safe-mode",
+    "-p",
+    "--tools",
+    "Read,Glob,Grep",
+    "--allowedTools",
+    "Read,Glob,Grep",
+    "--disable-slash-commands",
+    "--strict-mcp-config",
+    "--mcp-config",
+    "{\"mcpServers\":{}}",
+    "--add-dir",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/sequence-depth-retained-member-draft",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/sequence-depth-retained-member-plan",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-depth-key-order-plan",
+    "--no-session-persistence"
+  ],
+  "cwd": "/Users/dbox/repos/wt/vickie/vickie-sequence-depth-retained",
+  "pid": 5013,
+  "processGroup": 5013,
+  "started": "2026-10-16T04:26:08.327535+00:00",
+  "timeoutSeconds": 900,
+  "promptSha256": "7fc267853a4f3194ac736a324efaac97aa7e10c4a26bf72146a80f3750ca5f34",
+  "sourceBeforeSha256": "8dd52c81b3cce3b77f8bbbd58e2e3ad29eb7afb4db7606b33bb1cd1ed6b443c0",
+  "tempDirectory": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/sequence-depth-retained-member-draft/claude-code-preparation/tmp",
+  "reviewKind": "on-disk code review; Read/Glob/Grep only, no model override or execution tools"
+}
