@@ -1,0 +1,24 @@
+{
+  "recordedAt": "2026-10-16T01:37:01.871453+00:00",
+  "authority": "Direct operator answers in this chat",
+  "decisions": [
+    {
+      "questionId": "call_9d84a6937e6d48bb86c63e7df6863596",
+      "scope": "Read missing or hidden Bead, Link, or alias with well-formed minimum tuple",
+      "answer": "Return 404 before minimum checks (recommended)",
+      "rule": "Ordinary uniform404 precedes waiting and epoch/view mismatch. Preserve missing/hidden indistinguishability."
+    },
+    {
+      "questionId": "call_3384ac8ca53f4b50ba946c29566e6424",
+      "scope": "Authorized existing Resource read, actual current epoch/view, syntactically valid minimum token whose ordering cannot be interpreted",
+      "answer": "Bounded wait, then 503 (recommended)",
+      "rule": "Treat eligibility as unproved within existing finite budget, then503catch-up-timeout. Do not return stale success, fabricate expiry or classify as lexical malformed."
+    }
+  ],
+  "notDecided": [
+    "Retained Snapshot/continuation minimum S1",
+    "Incident-Link metadata Event membership G2",
+    "Foreign epoch/view plus unknown-position collision beyond current explicit scope"
+  ],
+  "authoringReleased": false
+}

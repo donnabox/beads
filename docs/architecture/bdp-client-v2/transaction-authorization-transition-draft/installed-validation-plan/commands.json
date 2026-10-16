@@ -1,6 +1,6 @@
 {
-  "status": "PROPOSED_NOT_EXECUTABLE",
-  "note": "Algorithms/bootstrap/observer are not authored by this plan. No execution-gate exists. Candidate/build/package bindings remain null; root must review concrete scripts and release before any invocation.",
+  "status": "CLOSED_OPERATIVE_PENDING_FINAL_SOURCE_AND_ROOT_RELEASE",
+  "note": "Concrete scripts prepared, not executed. Final candidate/build/consumer/source/council root bindings remain pending; no execution-gate.json exists.",
   "node": "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
   "pnpm": "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
   "executionOrder": [
@@ -28,7 +28,8 @@
       "supervisorSeconds": 120,
       "automaticRetries": 0,
       "requires": [],
-      "released": false
+      "released": false,
+      "ownedTempPrefixes": []
     },
     "package-directory": {
       "phase": "package",
@@ -41,9 +42,13 @@
       "supervisorSeconds": 120,
       "automaticRetries": 0,
       "requires": [
-        "node-version"
+        {
+          "id": "node-version",
+          "supervisorExit": 0
+        }
       ],
-      "released": false
+      "released": false,
+      "ownedTempPrefixes": []
     },
     "pack-protocol": {
       "phase": "package",
@@ -60,9 +65,13 @@
       "supervisorSeconds": 120,
       "automaticRetries": 0,
       "requires": [
-        "package-directory"
+        {
+          "id": "package-directory",
+          "supervisorExit": 0
+        }
       ],
-      "released": false
+      "released": false,
+      "ownedTempPrefixes": []
     },
     "pack-server": {
       "phase": "package",
@@ -79,9 +88,13 @@
       "supervisorSeconds": 120,
       "automaticRetries": 0,
       "requires": [
-        "pack-protocol"
+        {
+          "id": "pack-protocol",
+          "supervisorExit": 0
+        }
       ],
-      "released": false
+      "released": false,
+      "ownedTempPrefixes": []
     },
     "verify-tar": {
       "phase": "package",
@@ -94,9 +107,13 @@
       "supervisorSeconds": 120,
       "automaticRetries": 0,
       "requires": [
-        "pack-server"
+        {
+          "id": "pack-server",
+          "supervisorExit": 0
+        }
       ],
-      "released": false
+      "released": false,
+      "ownedTempPrefixes": []
     },
     "prepare-consumer": {
       "phase": "package",
@@ -109,9 +126,13 @@
       "supervisorSeconds": 120,
       "automaticRetries": 0,
       "requires": [
-        "verify-tar"
+        {
+          "id": "verify-tar",
+          "supervisorExit": 0
+        }
       ],
-      "released": false
+      "released": false,
+      "ownedTempPrefixes": []
     },
     "consumer-install": {
       "phase": "package",
@@ -128,9 +149,13 @@
       "supervisorSeconds": 120,
       "automaticRetries": 0,
       "requires": [
-        "prepare-consumer"
+        {
+          "id": "prepare-consumer",
+          "supervisorExit": 0
+        }
       ],
-      "released": false
+      "released": false,
+      "ownedTempPrefixes": []
     },
     "verify-installed": {
       "phase": "package",
@@ -143,15 +168,20 @@
       "supervisorSeconds": 120,
       "automaticRetries": 0,
       "requires": [
-        "consumer-install"
+        {
+          "id": "consumer-install",
+          "supervisorExit": 0
+        }
       ],
-      "released": false
+      "released": false,
+      "ownedTempPrefixes": []
     },
     "visibility-handles": {
       "phase": "installed",
       "argv": [
         "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
-        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-authorization-transition-draft/installed-validation-plan/observe-installed.mjs",
+        "--experimental-strip-types",
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-authorization-transition-draft/installed-validation-plan/observe-installed.ts",
         "visibility-handles",
         "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-authorization-transition-draft/installed-validation-plan/run/visibility-handles.json"
       ],
@@ -159,9 +189,22 @@
       "supervisorSeconds": 120,
       "automaticRetries": 0,
       "requires": [
-        "verify-installed"
+        {
+          "id": "verify-installed",
+          "supervisorExit": 0
+        }
       ],
-      "released": false
+      "released": false,
+      "ownedTempPrefixes": [
+        "bdp-authorization-installed-"
+      ],
+      "workload": {
+        "http": 17,
+        "children": 1,
+        "owners": 1,
+        "directories": 1,
+        "listeners": 1
+      }
     },
     "review-visibility-handles": {
       "phase": "review",
@@ -174,15 +217,20 @@
       "supervisorSeconds": 120,
       "automaticRetries": 0,
       "requires": [
-        "visibility-handles"
+        {
+          "id": "visibility-handles",
+          "supervisorExit": 0
+        }
       ],
-      "released": false
+      "released": false,
+      "ownedTempPrefixes": []
     },
     "active-event": {
       "phase": "installed",
       "argv": [
         "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
-        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-authorization-transition-draft/installed-validation-plan/observe-installed.mjs",
+        "--experimental-strip-types",
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-authorization-transition-draft/installed-validation-plan/observe-installed.ts",
         "active-event",
         "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-authorization-transition-draft/installed-validation-plan/run/active-event.json"
       ],
@@ -190,9 +238,22 @@
       "supervisorSeconds": 120,
       "automaticRetries": 0,
       "requires": [
-        "review-visibility-handles"
+        {
+          "id": "review-visibility-handles",
+          "supervisorExit": 0
+        }
       ],
-      "released": false
+      "released": false,
+      "ownedTempPrefixes": [
+        "bdp-authorization-installed-"
+      ],
+      "workload": {
+        "http": 4,
+        "children": 1,
+        "owners": 1,
+        "directories": 1,
+        "listeners": 1
+      }
     },
     "review-active-event": {
       "phase": "review",
@@ -205,9 +266,30 @@
       "supervisorSeconds": 120,
       "automaticRetries": 0,
       "requires": [
-        "active-event"
+        {
+          "id": "active-event",
+          "supervisorExit": 0
+        }
       ],
-      "released": false
+      "released": false,
+      "ownedTempPrefixes": []
     }
-  }
+  },
+  "ownedPaths": [
+    "packages/server/src/transaction-authorization.test.ts",
+    "packages/server/src/transaction-authorization.ts",
+    "packages/server/src/transaction-changefeed.test.ts",
+    "packages/server/src/transaction-changefeed.ts",
+    "packages/server/src/transaction-event-sse.test.ts",
+    "packages/server/src/transaction-events.ts",
+    "packages/server/src/transaction-http.ts",
+    "packages/server/src/transaction-read.ts",
+    "packages/server/src/transaction-runtime-configuration.ts",
+    "packages/server/src/transaction-runtime.test.ts",
+    "packages/server/src/transaction-runtime.ts",
+    "packages/server/src/transaction-service.test.ts",
+    "packages/server/src/transaction-service.ts",
+    "packages/server/src/transaction-snapshot.ts",
+    "packages/server/src/transaction-store.ts"
+  ]
 }
