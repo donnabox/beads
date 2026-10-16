@@ -11,7 +11,7 @@ Validation on combined commit 11742645:
 - Native and actual Claude code reviews and focused correction reviews are dispositioned. Independent tree and validation audits are retained in the sole plan.
 - Workflow-only child77b4cf98 enables exact push CI for codex/vickie-* with unchanged jobs/permissions. Its exact run38858242028 failed one stale test expectation:9348pass/1fail/1skip; downstream gates skipped.
 - Current test-only head68b0f462 fixes that callback to require406 with one current refusal context, no execution and unchanged owner position; five early refusals retain their no-context assertions. Native/Claude reviews are dispositioned; selected callback, format and typecheck pass. Product/spec bytes remain11742645.
-- Exact push [CI38860896141](https://github.com/gastownhall/bdp/actions/runs/38860896141) is in progress on68b0f462. No full-suite green claim. The original CI failure remains preserved.
+- Exact push [CI38860896141](https://github.com/gastownhall/bdp/actions/runs/38860896141) passed on68b0f462/tree7c4c97be: all27steps,9349tests passed/1skipped across185files, preflight7, smoke and historical Read89. Full raw job log and tested checkout are independently bound; the original failed CI remains preserved. This does not validate the separate fresh-depth draft.
 
 Public write-profile qualification, fresh arbitrary-depth execution and separate Snapshot/Event product decisions remain outside this bounded fix.
 

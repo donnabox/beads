@@ -10,7 +10,7 @@
     "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-fresh-depth-draft/installed-author/selection.json": "9c603c4a2e69970b6f15b9c6000be404bfd158242369037520aeb54e2b88b690",
     "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-fresh-depth-draft/installed-author/request-inventory.json": "8494dcfc8003c2385df9a9d12d42a693e159a678b13afe92501f628053da97a5"
   },
-  "status": "Authoring hashes only; no clean final source identity or runtime measurements yet",
+  "status": "Exact clean local candidate bound; full installed council and all execution gates remain closed",
   "reusedBaselines": {
     "/Users/dbox/repos/wt/vickie/bdp-integration-logs/sequence-minimum-combined-validation/supervise.py": "c9b524743c8b71c4487e55f5719713985a1665b6e61ec32d2d99534796ff9194",
     "/Users/dbox/repos/wt/vickie/bdp-integration-logs/sequence-minimum-combined-validation/inventory.py": "b9ac353ee250d66552e96bc67bc0d22c9168d1c8fc563d6da5517c6bd765486d",
@@ -18,5 +18,16 @@
     "/Users/dbox/repos/wt/vickie/bdp-integration-logs/sequence-minimum-combined-validation/cache-inventory-repair/before/gate.py": "3825c0c456ee31ba602a215e7165cb35c6f455e09232193ec7870db317da55c6",
     "/Users/dbox/repos/wt/vickie/bdp-integration-logs/sequence-minimum-combined-validation/control.py": "b61402f368d17962b474e6f7d8c4b100bc28d03272603639bc33b0095b65b6d4",
     "/Users/dbox/repos/wt/vickie/bdp-integration-logs/sequence-minimum-combined-validation/review-sequence.py": "61a08b7ca7b5be5e4186273e243616d2c2740f9e0141f56cd0ee9b3c7430805f"
+  },
+  "successorInputs": {
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-fresh-depth-authoring/review-corrections/actual-successor.json": "543f9093c070f896962b4933bad28dec0ac2a1f6119c12e6acf84948431bdbcd",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-fresh-depth-authoring/review-corrections/source-successor/binding.json": "63a8af99c686eed695c76e0bebf23858621a280c256fcb523151f5ceda11a8dc",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-fresh-depth-authoring/review-corrections/source-successor/selection.json": "557549bc671db1e2c8d6b33375ea2a0fdb34a59c934921ac7a9d2fcd4209a49e",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-fresh-depth-authoring/review-corrections/source-successor/measurements.json": "2962b005e08f68cb671ba8566a746a39d26d6635642c565b13e517cec961ac43",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-fresh-depth-authoring/review-corrections/source-successor/new-source-bodies.json": "ee531532781baa0aa82a619adbe5fd89c3a5b6385247e20e4ddb5cd7de29c7dc",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-fresh-depth-authoring/review-corrections/source-successor/report.md": "c1c46c4439b201f0618ad185c3fc88291c410a0c03f7e5ec313cf9511b0394a6",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-fresh-depth-authoring/validation-preparation/initial-preparation/native-preparation-review.md": "32e41622ccd0b3cc3da7f42850d686889db9ce95c34db352c39a8415f40a2bee",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-fresh-depth-authoring/review-corrections/assertion-successors.json": "8f1188c7eb8e6488a06d604854c41fe1677f18c43b79e9e35e0e8611f8d27898",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-fresh-depth-authoring/review-corrections/candidate-commit.json": "700f56587a4005356dbe5049d527864e144d9e93c952024368492c03316bb728"
   }
 }

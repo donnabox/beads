@@ -3,7 +3,7 @@ from pathlib import Path
 import hashlib,json,subprocess,os
 P=Path(__file__).resolve().parent;D=P;L=P.parent.parent
 W=Path('/Users/dbox/repos/wt/vickie/vickie-fresh-depth-serving');E=P/'run';GUARD=L/'guarded-action.py';COMMANDS=P/'commands.json'
-COMMANDS_SHA='86b7a5ce0bb4be81e4acf69a3759fc76366a7b8d230f5fa1e740efca7b04f5dc'
+COMMANDS_SHA='e9bb36f2509902d3b34ad844d1e25f9e0182f30b48ccd49a7403849b0dbdbeab'
 sha=lambda b:hashlib.sha256(b).hexdigest()
 def require(ok,message):
  if not ok:raise RuntimeError(message)
@@ -80,11 +80,15 @@ def consumer_inventory():
 def load_gate(name):
  require(__debug__,'Assertions required');g=gate();cfg=json.loads(COMMANDS.read_text())
  require(g['released'] is True and g['session']=='2026-10-08T20:26:35Z-81e5','Execution closed')
- a=document(g,'rootAcceptance');require(a['accepted'] is True and a['head']==g['finalHead'] and g['councilAccepted'] is True,'Root acceptance/council absent')
+ a=document(g,'rootAcceptance');require(a['accepted'] is True and a['head']==g['finalHead'],'Root acceptance absent')
  require(sha(COMMANDS.read_bytes())==COMMANDS_SHA and sha(GUARD.read_bytes())==g['guardSha256'],'Commands/guard changed')
  for n,h in g['preparationSha256'].items():require(sha((P/n).read_bytes())==h,'Preparation changed '+n)
  order=cfg['executionOrder'];approved=g['approvedCommandIds'];require(approved==order[:len(approved)] and name in approved,'Stage not released')
  spec=dict(cfg['commands'][name]);require(g['phaseRelease'][spec['phase']] is True,'Phase closed')
+ if spec['phase']=='source':
+  require(a.get('sourceValidationAuthorized') is True and a.get('sourceCouncilAccepted') is True,'Diagnostic source authorization/council absent')
+ else:
+  require(g['councilAccepted'] is True,'Full council still pending for control/package/installed')
  source=source_hashes()
  for prior in order[:order.index(name)]:completed(prior)
  require(spec['supervisorSeconds']==120 and spec['automaticRetries']==0,'Limits differ')

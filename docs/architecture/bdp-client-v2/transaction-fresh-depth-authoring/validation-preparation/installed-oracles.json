@@ -5,8 +5,8 @@
     "directoryPrefix": "bdp-depth-key-installed-",
     "responseBodyCap": 131072,
     "file": "apps/bdptest/src/transactional-depth-key-order-installed.test.ts",
-    "sha256": "2ecfc14d4aff48f9dc1d497cb744a29f7d457179f35d7659f2322068e5b63303",
-    "bytes": 30244,
+    "sha256": "f4e19ef9b7aba1a12f3376540257b9680e27dcd00936048b066eb7667ebe19fe",
+    "bytes": 30909,
     "http": 13,
     "bodyBytesTotal": 3270,
     "bodyBytesMaximum": 621,
@@ -197,7 +197,8 @@
       "owners": 1,
       "listeners": 1,
       "HTTPRetries": 0
-    }
+    },
+    "historicalSourceSha256": "94cce66bcce3b58d7d50cce3849bf73c1e93f6016ca5878f5a45197e37e44b89"
   },
   "sequence-installed": {
     "fullName": "observes retained sequence member conflict and fresh deep execution over packed bytes",
@@ -205,8 +206,8 @@
     "directoryPrefix": "bdp-sequence-depth-installed-",
     "responseBodyCap": 131072,
     "file": "apps/bdptest/src/transactional-sequence-depth-installed.test.ts",
-    "sha256": "163549168b98d6f2cdbb111bee840ee4fc1ccaf16b1a9800c5ea721a87df5e1d",
-    "bytes": 27511,
+    "sha256": "0a2a765cab6137f324cffb7ff7d96d1f3e81fef3a73c14f56adfd36309083aa7",
+    "bytes": 27728,
     "http": 8,
     "bodyBytesTotal": 3179,
     "bodyBytesMaximum": 680,
@@ -221,7 +222,8 @@
         "contentType": "application/json",
         "bodyBytes": 126,
         "bodySha256": "764bc2f11265c9581533352015d0313596277a928c88556eedb32ef732ceadd1",
-        "status": 200
+        "status": 200,
+        "contextPosition": "pos-1"
       },
       {
         "index": 2,
@@ -233,7 +235,8 @@
         "contentType": "application/json",
         "bodyBytes": 677,
         "bodySha256": "7fd1a9710303612edcccee2ebc29d408193283f02ddc3804e75b128d30fb2d23",
-        "status": 200
+        "status": 200,
+        "contextPosition": "pos-1"
       },
       {
         "index": 3,
@@ -245,7 +248,8 @@
         "contentType": "application/json",
         "bodyBytes": 126,
         "bodySha256": "764bc2f11265c9581533352015d0313596277a928c88556eedb32ef732ceadd1",
-        "status": 200
+        "status": 200,
+        "contextPosition": "pos-1"
       },
       {
         "index": 4,
@@ -257,7 +261,8 @@
         "contentType": null,
         "bodyBytes": 0,
         "bodySha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-        "status": 200
+        "status": 200,
+        "contextPosition": "pos-1"
       },
       {
         "index": 5,
@@ -269,7 +274,8 @@
         "contentType": "application/json",
         "bodyBytes": 674,
         "bodySha256": "66f3c980ebb072c775200bda8b73f5d64176d00196eecf4de0fa69240958735e",
-        "status": 200
+        "status": 200,
+        "contextPosition": "pos-2"
       },
       {
         "index": 6,
@@ -281,7 +287,8 @@
         "contentType": "application/json",
         "bodyBytes": 219,
         "bodySha256": "6542f995ee8619607353fd01b5c2f3b257c9ae85ef43f0357e2393bffd81fd62",
-        "status": 200
+        "status": 200,
+        "contextPosition": "pos-2"
       },
       {
         "index": 7,
@@ -293,7 +300,8 @@
         "contentType": "application/json",
         "bodyBytes": 677,
         "bodySha256": "7fd1a9710303612edcccee2ebc29d408193283f02ddc3804e75b128d30fb2d23",
-        "status": 406
+        "status": 406,
+        "contextPosition": "pos-2"
       },
       {
         "index": 8,
@@ -305,7 +313,8 @@
         "contentType": "application/json",
         "bodyBytes": 680,
         "bodySha256": "37f093585358ce052ca89c3d8c7f4ce32e3945ff5406c0c17f942688a082be3e",
-        "status": 406
+        "status": 406,
+        "contextPosition": "pos-2"
       }
     ],
     "limits": {
@@ -324,7 +333,8 @@
       "owners": 1,
       "listeners": 1,
       "HTTPRetries": 0
-    }
+    },
+    "historicalSourceSha256": "163549168b98d6f2cdbb111bee840ee4fc1ccaf16b1a9800c5ea721a87df5e1d"
   },
   "fresh-installed": {
     "fullName": "serves byte-bounded deep mutations receipts Events and owned-Link Snapshots over packed bytes",
@@ -349,7 +359,8 @@
         "bodyRef": "seed",
         "bodyBytes": 24427,
         "bodySha256": "c2b9b50eac523660681ed4c0832da33849555e7d0afa0a913545b2803651b8a7",
-        "status": 200
+        "status": 200,
+        "contextPosition": "pos-1"
       },
       {
         "index": 2,
@@ -362,7 +373,8 @@
         "bodyRef": "update",
         "bodyBytes": 24099,
         "bodySha256": "916905c2080f92583db1097ed6c2b813a2b68b9fd760aff3cb93b176db884506",
-        "status": 200
+        "status": 200,
+        "contextPosition": "pos-2"
       },
       {
         "index": 3,
@@ -375,7 +387,8 @@
         "bodyRef": "noop",
         "bodyBytes": 24159,
         "bodySha256": "322f89d2c4e8133819775293e5423a7c2e23f4e869ff79e652c7a3bb17f26dfc",
-        "status": 200
+        "status": 200,
+        "contextPosition": "pos-2"
       },
       {
         "index": 4,
@@ -388,7 +401,8 @@
         "bodyRef": "update",
         "bodyBytes": 24099,
         "bodySha256": "916905c2080f92583db1097ed6c2b813a2b68b9fd760aff3cb93b176db884506",
-        "status": 200
+        "status": 200,
+        "contextPosition": "pos-2"
       },
       {
         "index": 5,
@@ -401,7 +415,8 @@
         "bodyRef": "conflict",
         "bodyBytes": 24101,
         "bodySha256": "6b45a53165bd6a92344eaa8d49c3543a365485591db84b71baa5d569924f04ed",
-        "status": 409
+        "status": 409,
+        "contextPosition": "pos-2"
       },
       {
         "index": 6,
@@ -414,7 +429,8 @@
         "bodyRef": "set",
         "bodyBytes": 141,
         "bodySha256": "08fb068040f562d9dfa692a0eb506867aacafdde63b2f1525de6d01a6eb79719",
-        "status": 200
+        "status": 200,
+        "contextPosition": "pos-3"
       },
       {
         "index": 7,
@@ -427,7 +443,8 @@
         "bodyRef": "sequence",
         "bodyBytes": 48363,
         "bodySha256": "c20b577e95a267d41bac22686fd89044c16138d1cc377126129b7da23a09662d",
-        "status": 200
+        "status": 200,
+        "contextPosition": "pos-5"
       },
       {
         "index": 8,
@@ -440,7 +457,8 @@
         "bodyRef": "late-failure",
         "bodyBytes": 216,
         "bodySha256": "9508f3e784eb06f621f31d8a63d03282594bc386a10a62ad8dad3406b17a3d18",
-        "status": 200
+        "status": 200,
+        "contextPosition": "pos-5"
       },
       {
         "index": 9,
@@ -453,7 +471,8 @@
         "bodyRef": "late-failure",
         "bodyBytes": 216,
         "bodySha256": "9508f3e784eb06f621f31d8a63d03282594bc386a10a62ad8dad3406b17a3d18",
-        "status": 200
+        "status": 200,
+        "contextPosition": "pos-5"
       },
       {
         "index": 10,
@@ -466,7 +485,8 @@
         "bodyRef": null,
         "bodyBytes": 0,
         "bodySha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-        "status": 200
+        "status": 200,
+        "contextPosition": "pos-5"
       },
       {
         "index": 11,
@@ -479,7 +499,8 @@
         "bodyRef": null,
         "bodyBytes": 0,
         "bodySha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-        "status": 200
+        "status": 200,
+        "contextPosition": "pos-5"
       },
       {
         "index": 12,
@@ -492,7 +513,8 @@
         "bodyRef": null,
         "bodyBytes": 0,
         "bodySha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-        "status": 200
+        "status": 200,
+        "contextPosition": "pos-5"
       },
       {
         "index": 13,
@@ -505,7 +527,8 @@
         "bodyRef": null,
         "bodyBytes": 0,
         "bodySha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-        "status": 200
+        "status": 200,
+        "contextPosition": "pos-5"
       }
     ],
     "limits": {

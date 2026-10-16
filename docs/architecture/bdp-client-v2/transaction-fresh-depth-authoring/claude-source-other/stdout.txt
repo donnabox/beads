@@ -1,0 +1,40 @@
+Static review only — nothing was executed, and no files were modified.
+
+## Findings
+
+### 1. Likely typecheck failure — `packages/server/src/transaction-snapshot.test.ts:1378`
+```ts
+let owner: ReturnType<typeof openTransactionStore> | undefined;   // 1306
+let captured: ReturnType<typeof owner.captureSnapshot>;           // 1378
+```
+A `typeof` type query resolves the **declared** type of `owner`, not its control‑flow narrowing, and property resolution on a union containing `undefined` fails. `tsconfig.check.json` includes `packages/*/src/**/*.ts` (so `*.test.ts` is checked under `strict`), and the only in-repo precedent (`transaction-service.test.ts:2174`) queries a non-nullable `const owner = f.owner`.
+**Fix:** `let captured: ReturnType<ReturnType<typeof openTransactionStore>["captureSnapshot"]>;` (or hoist `type Owner = ReturnType<typeof openTransactionStore>`).
+**Severity:** high (blocks `pnpm typecheck`; trivial, behaviour-neutral fix).
+
+### 2. Silent coverage loss — `packages/server/src/transaction-http.test.ts:1641-1650`
+Now that the first post (`:1630`, member key `deep_sequence`) *succeeds*, the second sequence post reuses `deep_sequence` with a different request (`create("a")` without `properties.nested`), so member 0 is an idempotency conflict and only member 1 creates. The surviving assertion `bdp-scope-position === "pos-2"` still passes by coincidence (1 from the deep post + 1 from member 1), so the test no longer demonstrates what its title claims — two accepted members under `maximumOperations: 1`.
+**Fix:** either assert the body (`results[0]` → `idempotency-conflict`, `results[1]` → `created`), or key the second post freshly (`deep_sequence_2`/`second`) so both members create and `pos-3` is asserted.
+**Severity:** medium.
+
+### 3. Weakened "no handle" evidence — `packages/server/src/transaction-snapshot.test.ts:1373`
+Capture inserts `snapshot_records` (`transaction-snapshot.ts:695`) and `snapshot_pages` (`:749`) *before* the parent `snapshots` row (`:781`), so an empty `snapshots` count is the weakest of the three signals for the failed-integrity rollback. Sibling tests check all planes (`:525-526`, `:709-710`).
+**Fix:** `for (const table of ["snapshots","snapshot_records","snapshot_pages"]) expect(inspect.prepare(\`SELECT count(*) AS n FROM ${table}\`).get()?.n).toBe(0);`
+**Severity:** low‑medium.
+
+### 4. Stale assertion label — `packages/server/src/transaction-http.test.ts:4341`
+`depth-key:${kind}:conflict-before-depth` now describes conflict‑before‑**negotiation** (409 at `:4341` vs 406 at `:4360`). The label is emitted in failure output and in the `depth-key-source-observation` log. Rename to `conflict-before-negotiation`. **Severity:** low.
+
+### 5. Thin pure-equality coverage — `packages/server/src/resource-evaluator.test.ts:411-413`
+The three cases pin key-order/`-0`/missing-key, but not the `Array.isArray(a) !== Array.isArray(b)` branch that production discrimination depends on. Add `expect(jsonValueEqual([], {})).toBe(false)` and one nested-mismatch case (e.g. `{a:{b:[1]}}` vs `{a:{b:[2]}}` → false). Also consider a dedicated `it(...)` rather than prefixing the numeric-spellings fixture test. **Severity:** low.
+
+### 6. Idiom/claim nits
+- `transaction-set.test.ts:1148`, `:1238`: bare `batch.assertPreparedTransaction(...)` where the file's idiom (`:1169`) is `expect(() => …).not.toThrow()`.
+- `transaction-set.test.ts:1201`: the `[28, 29]` loop now runs identical assertions; harmless, but the former boundary no longer carries meaning.
+- `transaction-sequence.test.ts:624`: title says "without changing atomic reservation behavior" while the `inspect()` before/after rollback evidence is gone; rollback (`:576`, `:592`) and stepper `cancelled` (`:456`, `:523`) coverage does survive elsewhere, so this is naming only.
+
+## Checks that came out clean
+- Depth-refusal API is fully retired in source: no remaining references to `assertTransactionInputDepth` or `transactionDepthRefusal`. `TransactionDevelopmentLimitError` is preserved for operation/Selector limits (`transaction-store.ts:1504-1506`, mapped at `transaction-http.ts:340`) and still asserted by `transaction-set.test.ts:1111/1191/1255` and `transaction-service.test.ts:2050`.
+- 406 expectations (empty body, `x-bdp-development-limit` null, full context tuple) match `transaction-http.ts:334/370` and the existing `:3769-3774` precedent; conflict‑before‑negotiation at `:4341` is consistent with the differing‑request case, and `pos-${position+1}` after `fresh-reuse` (plus `tuple(refused,"pos-2")` in the sequence test) still proves the 406 captured no key and had no partial effect. Syntax (`:607`), expiry, pending/in‑progress, and 401/403 paths are intact.
+- `jsonValueEqual(-0, 0) === true` is right: `stringifyJsonValue(-0) === "0"` (`protocol/src/json-values.test.ts:49`), so the no-op classification matches canonical stored bytes; the preserved `-0` lexeme in `transaction-set.test.ts:1030` belongs to `transactionInputText` (input echo), not storage. The module is iterative, so the 12 000-deep witness cannot recurse.
+- `json-value-equality.ts` is imported only by `resource-evaluator.ts` and `transaction-snapshot.ts`; extending the no-export string check is correct.
+- The positive witness correctly pairs the **dist** preparer with the **dist** owner (shared carrier brand) while `types` stay structurally safe (`parseTypeDescriptor` returns a plain frozen record) — but it does require a current `dist` build before the run; the negative witness covers the `src` plane.

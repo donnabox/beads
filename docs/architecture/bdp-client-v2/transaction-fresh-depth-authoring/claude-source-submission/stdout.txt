@@ -1,0 +1,31 @@
+Reviewed the two files in the binding (store delta + submission-test delta) read-only. Nothing written; nothing executed.
+
+## Findings
+
+**1. Medium — the new freeze's non-`available` branch is never asserted.** `transaction-store.ts:912-920`: when `projection.detail !== "available"` or `results` isn't an array, `projected === projection` (and under `all-visible`, `=== receipt`), so `freezeReceiptValue` receives the whole parsed receipt rather than a fresh spread wrapper. The new fixture calls `assertDeepReceiptFrozen` only on completed/available receipts (`singleRead.receipt`, `root.receipt`) and on pages. The failed and expired receipts are read via `store.receipt()`, which bypasses `observeReceipt` entirely (`:2180-2189`).
+Fix: after the failure step, `assertDeepReceiptFrozen(store.readReceipt("p", failed.id).receipt)`; after expiry, `const r = store.readReceipt("p", seed.id); expect(r.receipt?.detail).toBe("expired"); assertDeepReceiptFrozen(r.receipt); expect(store.readReceiptPage("p", pageUrl)).toMatchObject({ kind: "expired" })`. The last also covers `:2251`, the one page branch the delta leaves untested.
+
+**2. Medium — `accepts byte-bounded singleton and wrapped set content across the former depth boundary` is now degenerate.** `transaction-submission.test.ts:708-732`: both table rows are `"receipt"`, so `kind` is constant and the 27/28 distinction asserts nothing; worse, `toMatchObject({ kind: "receipt" })` passes for `status: "failed"`. The claim this edit encodes — depth 28 is accepted *and executed* — is unasserted.
+Fix: `toMatchObject({ kind: "receipt", receipt: { status: "completed", results: [{ outcome: "matched", count: 0 }] } })` and drop the now-meaningless `kind` column.
+
+**3. Low/Medium — `finishes %s synthetic syntax before admission` dropped `position`/`identities` from its oracle.** `:861, :882-883`. Splitting `expect(f.store.inspect()).toEqual(before)` into `resources`/`groups` comparisons was necessary (the deep 0-match `updateWhere` now commits and binds `deep_key`), but it silently stops asserting that a 0-match commit does not advance `position` — the exact invariant the new deep test asserts for its own noop step.
+Fix: add `expect(f.store.inspect().position).toBe(before.position)` and `expect(f.store.inspect().identities).toHaveLength(before.identities.length + 1)`.
+
+**4. Low/Medium — the `noop` step cannot detect a key-order-only resource rewrite.** It asserts `position`/`groups` unchanged and compares the receipt resource with `assertDeepSubmissionValue`, which sorts keys — so a no-op that re-persisted properties as `{copy, deep}` (exactly what the root `replace` supplies) instead of `{deep, copy}` would pass. The `failed` step does assert `resources` unchanged; the noop step does not.
+Fix: `expect(JSON.stringify(store.inspect().resources)).toBe(JSON.stringify(beforeNoop.resources));`.
+
+**5. Low — `sweep` parses each available receipt twice.** `:565` `parseReceipt(stored.receipt)` then `:484` inside `expireRow`. On the 40 KB/12000-deep rows this doubles the cost the change exists to make affordable. Fix: pass the parsed receipt into `expireRow` as an optional third argument.
+
+**6. Low — `SELECT *` now materializes full deep receipt text for rows it immediately discards** (already-`expired` compacts), so maintenance cost scales with total retained keys. Disclosed by the new comment and accepted per the brief; noted only for the `SELECT *` column cost. Durable fix would be a `detail` column — out of scope.
+
+**7. Informational — cycle behavior changed shape.** The recursive versions overflowed the stack; the iterative one would spin indefinitely. All inputs are `JSON.parse` output or freshly built wrappers, so acyclic. Neither old nor new has an `isFrozen` short-circuit, so "traverses already-frozen parents" is preserved, not newly introduced. No action required.
+
+**8. Execution-dependent risk to confirm on first run:** 12000 is the first depth this suite actually *stores* (prior deep bodies were parsed then refused), so it is the first exercise of `JSON.stringify` at that depth in `json(receipt)` and resource serialization. The 12000-vs-20000 asymmetry suggests deliberate calibration. I ran nothing.
+
+## Checked, no finding
+
+- Removal is clean: no remaining producer or consumer of `"development-limit"` admission or `transactionDepthRefusal` in `packages/server/src`; remaining matches are the `x-bdp-development-limit` header and `TransactionDevelopmentLimitError`, still live at `:1504`, `:1506`, `transaction-http.ts:340`.
+- Both recursive freezes replaced; no other recursive walk over parsed receipts remains in the store. `projectTransactionEntry`/`projectTransactionReceipt` are shallow; `jsonValueEqual` is iterative.
+- Page ordering is sound: `observeReceipt` (`:2252`) freezes only `slice(0, receiptMaximumItems)`, leaving entries at `boundary.start ≥ receiptMaximumItems` for `freezeReceiptValue(page)` (`:2267`); `plan.maximum === receiptMaximumItems` is enforced at `:845`.
+- Malformed-JSON maintain is not a regression — SQLite's `json_extract` also raised on such rows.
+- Fixture imports/signatures all resolve; `dependencyTemplate` never returns the `identity: ""` base, so `identityBytes > 0` holds. Receipt key set (12) matches the literal; `next: null` and `expiresAt = instant() + day` at `:1386`/`:1345`; `pos-2` correct given the singleton commits first; `-0`/`0` noop matches `resource-evaluator.ts:839` + `jsonValueEqual`; `add /copy` then `add /deep/-` yields exactly `changedDeep`; `count` 4; `calls` 13; `failedForgotten` 1; no store/tempdir leak.

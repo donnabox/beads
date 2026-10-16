@@ -2,6 +2,7 @@
 from gate import *
 import re,sys
 name=sys.argv[1];oracle=json.loads((P/'installed-oracles.json').read_text())[name];g,spec=load_gate('review-'+name);x=completed(name);proof=json.loads(proof_for().read_text())
+require(oracle['sha256']==sha((W/oracle['file']).read_bytes()),'Installed oracle source binding pending/changed')
 log=E/(name+'.log');result=E/(name+'.results.json');rows=oracle['requests'];observations=[]
 for line in log.read_text().splitlines():
  if line.startswith('{'):
@@ -13,7 +14,7 @@ require(o['outcome']=='passed' and o['failureCount']==0 and o['attempted']==o['e
 require(o['workspaceDirty'] is False and o['declaredSourceCommit']==g['finalHead'],'Wrong source attribution')
 C=Path(proof['consumer']).resolve();entry=(C/'node_modules/@bdp/server/dist/transaction-installed-process.js').resolve(strict=True)
 require(o['entry']==str(entry) and o['entrySha256']==sha(entry.read_bytes()),'Wrong installed executable')
-for k in (['closed','startupCompleted','directoryAbsent'] if name=='direct-installed' else ['closed','launchAttempted','startupCompleted','stopKnown','directoryAbsent']):require(o[k] is True,'Incomplete lifecycle '+k)
+for k in ['closed','launchAttempted','startupCompleted','stopKnown','directoryAbsent']:require(o[k] is True,'Incomplete lifecycle '+k)
 require(not o['deadlineExceeded'] and not o['cleanupExceeded'] and o['childExitCode']==0 and o['childSignalCode'] is None,'Unclean child')
 require(o['childPid'] not in {int(v) for v in subprocess.check_output(['ps','-axo','pid='],text=True).split()},'Child remains')
 require(not Path(o['directory']).exists() and Path(o['directory']).name.startswith(oracle['directoryPrefix']),'Store remains')

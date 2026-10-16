@@ -62,11 +62,21 @@ Original service-review lows: RU trusted callback capability narrowing and publi
 
 ### Live worker ledger
 
-Checkpoint 2026-10-16T06:39:01Z. **ACTIVE — Transactional first, with targeted ordinary Update work.** Session `2026-10-08T20:26:35Z-81e5`. Delivery predicates remain unmet. No public profile advertisement, release or Preview2 promotion; Janet CLI/staging/playgrounds/shared databases and Trish Types remain untouched.
+Checkpoint 2026-10-16T06:53:31Z. **ACTIVE — Transactional first, with targeted ordinary Update work.** Session `2026-10-08T20:26:35Z-81e5`. Delivery predicates remain unmet. No public profile advertisement, release or Preview2 promotion; Janet CLI/staging/playgrounds/shared databases and Trish Types remain untouched.
 
 ### Operator direction: continue on working branches
 
 Donna directed: “Ignore main and keep chugging away in your branch.” The editor owns reconciliation with the proposed editorial/Types changes. This supersedes earlier instructions to wait for minimum merging into main before sequence integration. Continue against our current specification and verified9df574 baseline; do not chase newer main or merge our work into main. Root may ordinarily combine accepted write-profile branches after council/validation and verify the resulting branch tree. Exact-head CI and actual evidence gates remain. Main publication, release and Preview2 promotion are held. The heartbeat prompt has been updated to preserve this direction.
+
+### Latest verified state — 2026-10-16T06:54Z
+
+PR144 exact push CI38860896141 at **68b0f462a9af80fe10f42f08deb487608053732b**, tree7c4c97be, is GREEN:27steps,9349passed/1skip/185files, preflight7, smoke and historical Read89. Complete raw job log7904cc9e and exact checkout/parent are audited in [terminal report](branch-ci-plan/expectation-repair/ci-final-success/outcome.md). Prior77b4 CI failure remains preserved; neither cohort is fresh-depth evidence. PRbody updated.
+
+Fresh-depth local validation candidate **f864c4dde1b679d674cefe68f9047dd5cb3d1abc**, tree **ab033c4c6061e6923fb0b90ac66d17b614578c52**, ordinary parent68b0, is clean. Ordinary77→68 fast-forward preserved all18 WIP paths; root then committed exactly18 source/test/doc paths, no publication or main operation. [Candidate binding](transaction-fresh-depth-authoring/review-corrections/candidate-commit.json). Production uses iterative complete receipt freezing; current source/old installed assertions include failed/expired receipt immutability, zero-match effects, no-op key order, complete Snapshot rollback and precise sequence outcomes. Native closure [fdb6ffb8](transaction-fresh-depth-authoring/review-corrections/assertion-corrections-native-review.md) and root [dispositions](transaction-fresh-depth-authoring/review-corrections/root-focused-dispositions.md) resolve completed focusedClaude installed-existing0/413.658, submission0/448.648, other-source0/539.709. All inputs unchanged at review terminal and empty groups; subsequent assertion-only successors pass typecheck. Twelve source body measurements retain corrected Type/supported-add data; no new runtime execution yet. Eight-request sequence cohort explicitly lacks separate deep-metadata readback; other cohorts exercise deep-properties Snapshot/reopen persistence.
+
+New-installed single-fileClaude timedoutempty143/895.279, unchangedinputs/emptygroup: INCONCLUSIVE. Two complementary inline-source actualClaude reviews launched06:52Z, scenarioPID76252 and lifecyclePID76283,25minute bound, source-hash frozen independent of legitimate commit movement. They do not delay the root-authorized diagnostic source prefix once exact final metadata is bound. Full control/package/installed phases remain closed until full council disposition. Validation preparation repaired missing21expectedpositions, actual verbose nested RangeError attribution and direct Vitest exit capture; original scaffold preserved. Worker is binding finalclean18source candidate. Plan/source/HTTP counts remain prospective42source/47HTTP +34installed; not functionality percentages.
+
+Workers: plan worker owns final closed preparation binding; native worker checks three scaffold corrections; implementation worker launched actual split installed reviews and captured CI success. Root owns source execution release/integration/publication. S1/G2 remain pending and are not inferred. No main chasing/merge, Preview2/release or public write-profile advertisement.
 
 ### Current combined working branch — latest verified slice
 

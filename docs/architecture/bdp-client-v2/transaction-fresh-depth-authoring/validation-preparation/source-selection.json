@@ -693,7 +693,7 @@
       "proposedFullName": "executes deep values through set and dependent sequence with durable receipt recovery",
       "kind": "new",
       "actualFullName": "executes deep values through set and dependent sequence with durable receipt recovery",
-      "actualDeclarationLine": 1759,
+      "actualDeclarationLine": 1769,
       "prospectiveSuccessLifecycle": {
         "http": 0,
         "ownerOpens": 2,
@@ -756,7 +756,7 @@
     "total": 81
   },
   "lifecycle": "Original lifecycle totals are withdrawn estimates; author must freeze actual fixture inventory before execution.",
-  "status": "Actual authored selector map, not executed",
+  "status": "Corrected actual authored map; unexecuted",
   "totals": {
     "http": 47,
     "ownerOpens": 53,
@@ -764,5 +764,10 @@
     "listenerLifetimes": 9,
     "offlineSQLiteHandles": 15,
     "productChildren": 0
+  },
+  "sourceBinding": "binding.json",
+  "predecessor": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-fresh-depth-authoring/source-author/selection.json",
+    "sha256": "21146a1af68e0015728c78966bc4f1c9a398140093ce4c7f7ed40b92e8db2fc4"
   }
 }

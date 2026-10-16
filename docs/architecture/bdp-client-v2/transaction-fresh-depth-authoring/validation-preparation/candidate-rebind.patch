@@ -1,0 +1,221 @@
+--- /Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-fresh-depth-authoring/validation-preparation/pre-candidate-binding/installed-oracles.json
++++ /Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-fresh-depth-authoring/validation-preparation/installed-oracles.json
+@@ -5,8 +5,8 @@
+     "directoryPrefix": "bdp-depth-key-installed-",
+     "responseBodyCap": 131072,
+     "file": "apps/bdptest/src/transactional-depth-key-order-installed.test.ts",
+-    "sha256": null,
+-    "bytes": null,
++    "sha256": "f4e19ef9b7aba1a12f3376540257b9680e27dcd00936048b066eb7667ebe19fe",
++    "bytes": 30909,
+     "http": 13,
+     "bodyBytesTotal": 3270,
+     "bodyBytesMaximum": 621,
+@@ -198,8 +198,7 @@
+       "listeners": 1,
+       "HTTPRetries": 0
+     },
+-    "historicalSourceSha256": "94cce66bcce3b58d7d50cce3849bf73c1e93f6016ca5878f5a45197e37e44b89",
+-    "sourceBindingPending": "Latest assertion-only successor; requests and body measurements unchanged. Root must fill actual final file hash/bytes."
++    "historicalSourceSha256": "94cce66bcce3b58d7d50cce3849bf73c1e93f6016ca5878f5a45197e37e44b89"
+   },
+   "sequence-installed": {
+     "fullName": "observes retained sequence member conflict and fresh deep execution over packed bytes",
+@@ -207,8 +206,8 @@
+     "directoryPrefix": "bdp-sequence-depth-installed-",
+     "responseBodyCap": 131072,
+     "file": "apps/bdptest/src/transactional-sequence-depth-installed.test.ts",
+-    "sha256": null,
+-    "bytes": null,
++    "sha256": "0a2a765cab6137f324cffb7ff7d96d1f3e81fef3a73c14f56adfd36309083aa7",
++    "bytes": 27728,
+     "http": 8,
+     "bodyBytesTotal": 3179,
+     "bodyBytesMaximum": 680,
+@@ -335,8 +334,7 @@
+       "listeners": 1,
+       "HTTPRetries": 0
+     },
+-    "historicalSourceSha256": "163549168b98d6f2cdbb111bee840ee4fc1ccaf16b1a9800c5ea721a87df5e1d",
+-    "sourceBindingPending": "Latest assertion-only successor; requests and body measurements unchanged. Root must fill actual final file hash/bytes."
++    "historicalSourceSha256": "163549168b98d6f2cdbb111bee840ee4fc1ccaf16b1a9800c5ea721a87df5e1d"
+   },
+   "fresh-installed": {
+     "fullName": "serves byte-bounded deep mutations receipts Events and owned-Link Snapshots over packed bytes",
+--- /Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-fresh-depth-authoring/validation-preparation/pre-candidate-binding/preparation-inputs.json
++++ /Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-fresh-depth-authoring/validation-preparation/preparation-inputs.json
+@@ -10,7 +10,7 @@
+     "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-fresh-depth-draft/installed-author/selection.json": "9c603c4a2e69970b6f15b9c6000be404bfd158242369037520aeb54e2b88b690",
+     "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-fresh-depth-draft/installed-author/request-inventory.json": "8494dcfc8003c2385df9a9d12d42a693e159a678b13afe92501f628053da97a5"
+   },
+-  "status": "Corrected source inputs, root doc/final clean identity/release still pending",
++  "status": "Exact clean local candidate bound; full installed council and all execution gates remain closed",
+   "reusedBaselines": {
+     "/Users/dbox/repos/wt/vickie/bdp-integration-logs/sequence-minimum-combined-validation/supervise.py": "c9b524743c8b71c4487e55f5719713985a1665b6e61ec32d2d99534796ff9194",
+     "/Users/dbox/repos/wt/vickie/bdp-integration-logs/sequence-minimum-combined-validation/inventory.py": "b9ac353ee250d66552e96bc67bc0d22c9168d1c8fc563d6da5517c6bd765486d",
+@@ -27,6 +27,7 @@
+     "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-fresh-depth-authoring/review-corrections/source-successor/new-source-bodies.json": "ee531532781baa0aa82a619adbe5fd89c3a5b6385247e20e4ddb5cd7de29c7dc",
+     "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-fresh-depth-authoring/review-corrections/source-successor/report.md": "c1c46c4439b201f0618ad185c3fc88291c410a0c03f7e5ec313cf9511b0394a6",
+     "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-fresh-depth-authoring/validation-preparation/initial-preparation/native-preparation-review.md": "32e41622ccd0b3cc3da7f42850d686889db9ce95c34db352c39a8415f40a2bee",
+-    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-fresh-depth-authoring/review-corrections/assertion-successors.json": "8f1188c7eb8e6488a06d604854c41fe1677f18c43b79e9e35e0e8611f8d27898"
++    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-fresh-depth-authoring/review-corrections/assertion-successors.json": "8f1188c7eb8e6488a06d604854c41fe1677f18c43b79e9e35e0e8611f8d27898",
++    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-fresh-depth-authoring/review-corrections/candidate-commit.json": "700f56587a4005356dbe5049d527864e144d9e93c952024368492c03316bb728"
+   }
+ }
+--- /Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-fresh-depth-authoring/validation-preparation/pre-candidate-binding/prepared-source.json
++++ /Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-fresh-depth-authoring/validation-preparation/prepared-source.json
+@@ -1,36 +1,35 @@
+ {
+   "workspace": "/Users/dbox/repos/wt/vickie/vickie-fresh-depth-serving",
+-  "finalHead": null,
+-  "finalTree": null,
++  "finalHead": "f864c4dde1b679d674cefe68f9047dd5cb3d1abc",
++  "finalTree": "ab033c4c6061e6923fb0b90ac66d17b614578c52",
+   "files": {
++    "apps/bdptest/src/transactional-depth-key-order-installed.test.ts": "f4e19ef9b7aba1a12f3376540257b9680e27dcd00936048b066eb7667ebe19fe",
++    "apps/bdptest/src/transactional-fresh-depth-installed.test.ts": "d54acc614e6e372fa1e0dfd0a909ed8719d8a4afbd2d93b81116a47a0dba590c",
++    "apps/bdptest/src/transactional-sequence-depth-installed.test.ts": "0a2a765cab6137f324cffb7ff7d96d1f3e81fef3a73c14f56adfd36309083aa7",
++    "docs/design/transaction-implementation-progress.md": "72a53d3fd078f5d35931cf99a1661d1f5c623d1b553f2befca7404f52c1a1e0b",
++    "packages/server/src/json-value-equality.ts": "f93e0bc3a090eeda9d40ec873c0024da2fbc368df5babe4f7d18cfa9b4780a66",
++    "packages/server/src/resource-evaluator.test.ts": "2a35e3add8eabe18d27a69c173b709e1d958c16191c049a4877d92a7b27fa7f1",
++    "packages/server/src/resource-evaluator.ts": "6784629841a92baaeed648862cfa84d071356ef82e6d29250b254a9eddf793a2",
++    "packages/server/src/transaction-batch.ts": "830ad57a680db7148fc75cd9cc10cadfc6a812448fd1704c1b0f47b13611808d",
++    "packages/server/src/transaction-http.test.ts": "9eb452b8e9d80b53f28cd61b40385886c3a61a992aadb1c9c201d9a188081cce",
++    "packages/server/src/transaction-http.ts": "81c130dd18f604ab1d13c03a2f52a98e11a6988f45d62af98b4b8c7499d14529",
++    "packages/server/src/transaction-sequence.test.ts": "5526903a6e094602612bac8448fe1bee5e8f8c6e675458360abc43e43eda6d91",
++    "packages/server/src/transaction-set.test.ts": "aec0ce27196f6ec4916cb2f35b8a3de7ee879ab35f14aab657e11416254860b8",
+     "packages/server/src/transaction-set.ts": "3085632e897481b048d563cf0ba3ea66dc96a0662cebfde9f978ee00675519e5",
+-    "packages/server/src/transaction-batch.ts": "830ad57a680db7148fc75cd9cc10cadfc6a812448fd1704c1b0f47b13611808d",
++    "packages/server/src/transaction-snapshot.test.ts": "b6c31d8b66650ec0668c85d1fb803dda1072ef463989299ed377dd18dcbfee98",
++    "packages/server/src/transaction-snapshot.ts": "dac7c2f121cfb6bae557b3917f5ec52e47a358ab39da4062f6a5c26f5b9fbd83",
+     "packages/server/src/transaction-store.ts": "f7fe71da918c135eb43cb4659f186df6cd442aed9c42c2835e95cde05c782a9e",
+-    "packages/server/src/transaction-submission.ts": "580a5f56075c3f7e2c041354eab75529dd304f86588337f725f4cb33429b33bf",
+-    "packages/server/src/transaction-http.ts": "81c130dd18f604ab1d13c03a2f52a98e11a6988f45d62af98b4b8c7499d14529",
+-    "packages/server/src/transaction-snapshot.ts": "dac7c2f121cfb6bae557b3917f5ec52e47a358ab39da4062f6a5c26f5b9fbd83",
+-    "packages/server/src/resource-evaluator.ts": "6784629841a92baaeed648862cfa84d071356ef82e6d29250b254a9eddf793a2",
+-    "packages/server/src/json-value-equality.ts": "f93e0bc3a090eeda9d40ec873c0024da2fbc368df5babe4f7d18cfa9b4780a66",
+-    "packages/server/src/transaction-set.test.ts": "aec0ce27196f6ec4916cb2f35b8a3de7ee879ab35f14aab657e11416254860b8",
+-    "packages/server/src/transaction-submission.test.ts": null,
+-    "packages/server/src/transaction-sequence.test.ts": "5526903a6e094602612bac8448fe1bee5e8f8c6e675458360abc43e43eda6d91",
+-    "packages/server/src/transaction-http.test.ts": null,
+-    "packages/server/src/transaction-snapshot.test.ts": null,
+-    "packages/server/src/resource-evaluator.test.ts": null,
+-    "apps/bdptest/src/transactional-depth-key-order-installed.test.ts": null,
+-    "apps/bdptest/src/transactional-sequence-depth-installed.test.ts": null,
+-    "apps/bdptest/src/transactional-fresh-depth-installed.test.ts": "d54acc614e6e372fa1e0dfd0a909ed8719d8a4afbd2d93b81116a47a0dba590c",
+-    "docs/design/transaction-implementation-progress.md": null
++    "packages/server/src/transaction-submission.test.ts": "026cf5ccc65026f0f6462deaba9e1e58cd7ab6c6ae341ef5ed3af0becbb0c182",
++    "packages/server/src/transaction-submission.ts": "580a5f56075c3f7e2c041354eab75529dd304f86588337f725f4cb33429b33bf"
+   },
+-  "note": "63a8 source/body history adopted; six latest assertion hashes recorded as candidates but operative fields null until root binds final reviewed source. Eleven other author hashes remain exact. No actual final commit or runtime measurements invented.",
++  "note": "Exact clean local candidate f864c4d, parent68b0; historical review base77b4 preserved.18 actual file hashes and binarydiff independently checked. Council/execution/publication not inferred.",
+   "reviewBase": "77b4cf980ec91f66c52a554c3dd8c9de5aee859f",
+-  "finalBase": null,
++  "finalBase": "68b0f462a9af80fe10f42f08deb487608053732b",
+   "lastMeasuredSubmissionSha256": "2bf3a65b0c49488d38a392a422c18ba175b585869848befe144243996a6f9b6e",
+   "pending": [
+-    "six assertion successor hashes await final native closure/root source freeze",
+-    "root progress-document hash",
+-    "actual clean finalBase/head/tree/ordered parents and full input binding",
+-    "actual council and phase release"
++    "root source council closure and source-prefix execution release",
++    "full installed council before control/package/installed release",
++    "fresh actual build/package/consumer/runtime evidence"
+   ],
+   "assertionSuccessorCandidates": {
+     "apps/bdptest/src/transactional-depth-key-order-installed.test.ts": "f4e19ef9b7aba1a12f3376540257b9680e27dcd00936048b066eb7667ebe19fe",
+@@ -39,5 +38,9 @@
+     "packages/server/src/transaction-http.test.ts": "9eb452b8e9d80b53f28cd61b40385886c3a61a992aadb1c9c201d9a188081cce",
+     "packages/server/src/transaction-snapshot.test.ts": "b6c31d8b66650ec0668c85d1fb803dda1072ef463989299ed377dd18dcbfee98",
+     "packages/server/src/resource-evaluator.test.ts": "2a35e3add8eabe18d27a69c173b709e1d958c16191c049a4877d92a7b27fa7f1"
+-  }
++  },
++  "parents": [
++    "68b0f462a9af80fe10f42f08deb487608053732b"
++  ],
++  "diffSha256": "b02dbcfb8f15b1c0e09d23264bb578fceeb8a2656a5403bfaf284a18fc89cbe6"
+ }
+--- /Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-fresh-depth-authoring/validation-preparation/pre-candidate-binding/report.md
++++ /Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-fresh-depth-authoring/validation-preparation/report.md
+@@ -8,14 +8,14 @@
+ - Control adjudication retains one exact JSON failed case, one wrapper failure, zero passed, no runtime/unhandled/file errors. It additionally requires the unique named verbose FAIL block, exact wrapper line followed by the exact nested RangeError line before its unique [1/1] divider. ANSI removal is explicit; code frames or unrelated global log text cannot satisfy the exact error lines. Complete reporter/runner/error-serializer dependencies are pinned and checked in the copied closure. Root must inspect the first actual captured block; this is not a claim of execution.
+ - `control-execute.py` records the direct Node/Vitest return code, signal, PID, exact argv and source/mirror/command bindings exclusively. The existing session guard launches this narrow adapter; it inherits the supervisor process group and streams. Adapter/guard exit0 requires direct Vitest exit1 with clean checks. Adjudication independently requires that record plus the named failure proof. Guard exit, supervisor exit and direct Vitest exit remain distinct. Shared guard/supervisor mechanics are unchanged;115/120s limits, no retries and cleanup requirements remain.
+ 
+-Source63a8af99 measurements and actual-successor.json were adopted. Root then supplied six assertion-only successors in assertion-successors.json. Those hashes are recorded as candidates while the six operative fields remainnull, awaiting native closure/final root freeze. Progressdoc and actual clean finalBase/head/tree/parents are also null. Eleven other known author hashes matched current bytes. Both older installed cohorts now require their actual launchAttempted/stopKnown fields; their oracle source hash/bytes explicitly await final binding. New fresh installed source remains unchanged. No stale hash is silently accepted.
++Corrected source measurements63a8af99 and actual-successor.json remain historical; the six assertion amendments are now bound to the actual clean candidate f864c4dde1b679d674cefe68f9047dd5cb3d1abc, tree ab033c4c6061e6923fb0b90ac66d17b614578c52, sole parent68b0f462a9af80fe10f42f08deb487608053732b. All18 actual file hashes, exact binary diff b02dbcfb and clean status were independently checked. Historical reviewBase77b4 remains distinct from actual finalBase68b0. The repaired pre-candidate2aa35138 packet is preserved under pre-candidate-binding/. Both installed oracle source hashes/bytes now match the final assertion successors; all three cohorts retain actual request/header/body ledgers and exact context-position vectors. Source body measurements and42 names are unchanged; source HTTP assertion-label refinement is not used by the Snapshot comparator control.
+ 
+ The31-stage sequence,42 source names,3 installed names, bodies and workload are unchanged. Source47HTTP/53owner opens/37directories/9listener lifetimes/15offline handles/0children; control1case/0HTTP/1owner/1directory; installed34HTTP/3children. Total46 cases and81HTTP expected/max. These are prospective code-derived counts. Actual identity sizes must come from the source witness's ordered safe measurements, never author-time fabrication.
+ 
+ Fresh build/output inventory, exact archives, offline external8-package consumer, source/archive/installed equality, confined links and recursive payload verification remain intact. All three installed callbacks use transaction-installed-process.js from the external consumer. Full schema/deep receipt/Resource/Event/Snapshot oracles execute in the pinned tests; reports retain fingerprints. Dynamic receipt request13 is tied to the actual receipt.id by the in-memory oracle, not reconstructed from its hash. No public qualification or development fallback claim.
+ 
+-Before any execution root must bind final18 source hashes, final installed oracle hashes/bytes, actual final base/head/tree/ordered parents/complete tracked inputs, tools/lock, council and explicit stage prefix. Historical reviewBase77b4 stays separate from a later actual branch base. Source stages require rootAcceptance.sourceValidationAuthorized=true and sourceCouncilAccepted=true, plus the existing actual clean source and exact approved prefix checks. Control/package/installed/adjudication still require full gate.councilAccepted=true. Pending new-installed review is therefore never mislabeled accepted; the example remains fully closed. Package stages retain separate consumer-lock and installed-provenance release checkpoints.
++Before any execution root must create and bind the actual final-source/input documents from the verified candidate, complete tracked inputs and tools/lock, council and explicit stage prefix. Final18 and installed oracle hashes/base/head/tree/parents are now filled in prepared metadata; no live gate is created. Historical reviewBase77b4 stays separate from a later actual branch base. Source stages require rootAcceptance.sourceValidationAuthorized=true and sourceCouncilAccepted=true, plus the existing actual clean source and exact approved prefix checks. Control/package/installed/adjudication still require full gate.councilAccepted=true. Pending new-installed review is therefore never mislabeled accepted; the example remains fully closed. Package stages retain separate consumer-lock and installed-provenance release checkpoints.
+ 
+-Static checks only: Python AST parsing without imports; JSON and42 name correspondence; unchanged31-stage ordering/workload; unchanged direct Vitest argv; all34 position fields;11 current known source hashes and six candidate hashes; preserved original inventory; no execution/output directories. The initial source recheck stopped on newly changed assertion files before claiming a final binding, and these are now explicit pending inputs. No build/test/install/service/review was run.
++Static checks only: Python AST parsing without imports; JSON and42 name correspondence; unchanged31-stage ordering/workload; unchanged direct Vitest argv; all34 position fields;18 current source hashes and actual clean Git identity; preserved original inventory; no execution/output directories. The initial source recheck stopped on changed assertion files; the root-supplied candidate subsequently resolved these against actual clean bytes. No build/test/install/service/review was run.
+ 
+ `correction.patch` compares this external successor to initial preparation. `adaptation.patch` compares reused machinery. Only control.py, control-execute.py(new), gate.py(command hash), review-installed.py change executable behavior from initial preparation; supervise.py, inventory.py, packages.py and review-source.py remain byte-identical to their initial prepared versions.
+--- /Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-fresh-depth-authoring/validation-preparation/pre-candidate-binding/static-checks.json
++++ /Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-fresh-depth-authoring/validation-preparation/static-checks.json
+@@ -15,17 +15,24 @@
+   "installedPositionRows": 34,
+   "initialInventory": "ab4d5db4e336839900afc1cadcddcb837db3a38bbbd4bf613604d24e730460e9",
+   "knownSourceFiles": {
++    "apps/bdptest/src/transactional-depth-key-order-installed.test.ts": "f4e19ef9b7aba1a12f3376540257b9680e27dcd00936048b066eb7667ebe19fe",
++    "apps/bdptest/src/transactional-fresh-depth-installed.test.ts": "d54acc614e6e372fa1e0dfd0a909ed8719d8a4afbd2d93b81116a47a0dba590c",
++    "apps/bdptest/src/transactional-sequence-depth-installed.test.ts": "0a2a765cab6137f324cffb7ff7d96d1f3e81fef3a73c14f56adfd36309083aa7",
++    "docs/design/transaction-implementation-progress.md": "72a53d3fd078f5d35931cf99a1661d1f5c623d1b553f2befca7404f52c1a1e0b",
++    "packages/server/src/json-value-equality.ts": "f93e0bc3a090eeda9d40ec873c0024da2fbc368df5babe4f7d18cfa9b4780a66",
++    "packages/server/src/resource-evaluator.test.ts": "2a35e3add8eabe18d27a69c173b709e1d958c16191c049a4877d92a7b27fa7f1",
++    "packages/server/src/resource-evaluator.ts": "6784629841a92baaeed648862cfa84d071356ef82e6d29250b254a9eddf793a2",
++    "packages/server/src/transaction-batch.ts": "830ad57a680db7148fc75cd9cc10cadfc6a812448fd1704c1b0f47b13611808d",
++    "packages/server/src/transaction-http.test.ts": "9eb452b8e9d80b53f28cd61b40385886c3a61a992aadb1c9c201d9a188081cce",
++    "packages/server/src/transaction-http.ts": "81c130dd18f604ab1d13c03a2f52a98e11a6988f45d62af98b4b8c7499d14529",
++    "packages/server/src/transaction-sequence.test.ts": "5526903a6e094602612bac8448fe1bee5e8f8c6e675458360abc43e43eda6d91",
++    "packages/server/src/transaction-set.test.ts": "aec0ce27196f6ec4916cb2f35b8a3de7ee879ab35f14aab657e11416254860b8",
+     "packages/server/src/transaction-set.ts": "3085632e897481b048d563cf0ba3ea66dc96a0662cebfde9f978ee00675519e5",
+-    "packages/server/src/transaction-batch.ts": "830ad57a680db7148fc75cd9cc10cadfc6a812448fd1704c1b0f47b13611808d",
++    "packages/server/src/transaction-snapshot.test.ts": "b6c31d8b66650ec0668c85d1fb803dda1072ef463989299ed377dd18dcbfee98",
++    "packages/server/src/transaction-snapshot.ts": "dac7c2f121cfb6bae557b3917f5ec52e47a358ab39da4062f6a5c26f5b9fbd83",
+     "packages/server/src/transaction-store.ts": "f7fe71da918c135eb43cb4659f186df6cd442aed9c42c2835e95cde05c782a9e",
+-    "packages/server/src/transaction-submission.ts": "580a5f56075c3f7e2c041354eab75529dd304f86588337f725f4cb33429b33bf",
+-    "packages/server/src/transaction-http.ts": "81c130dd18f604ab1d13c03a2f52a98e11a6988f45d62af98b4b8c7499d14529",
+-    "packages/server/src/transaction-snapshot.ts": "dac7c2f121cfb6bae557b3917f5ec52e47a358ab39da4062f6a5c26f5b9fbd83",
+-    "packages/server/src/resource-evaluator.ts": "6784629841a92baaeed648862cfa84d071356ef82e6d29250b254a9eddf793a2",
+-    "packages/server/src/json-value-equality.ts": "f93e0bc3a090eeda9d40ec873c0024da2fbc368df5babe4f7d18cfa9b4780a66",
+-    "packages/server/src/transaction-set.test.ts": "aec0ce27196f6ec4916cb2f35b8a3de7ee879ab35f14aab657e11416254860b8",
+-    "packages/server/src/transaction-sequence.test.ts": "5526903a6e094602612bac8448fe1bee5e8f8c6e675458360abc43e43eda6d91",
+-    "apps/bdptest/src/transactional-fresh-depth-installed.test.ts": "d54acc614e6e372fa1e0dfd0a909ed8719d8a4afbd2d93b81116a47a0dba590c"
++    "packages/server/src/transaction-submission.test.ts": "026cf5ccc65026f0f6462deaba9e1e58cd7ab6c6ae341ef5ed3af0becbb0c182",
++    "packages/server/src/transaction-submission.ts": "580a5f56075c3f7e2c041354eab75529dd304f86588337f725f4cb33429b33bf"
+   },
+   "candidateAssertionHashes": {
+     "apps/bdptest/src/transactional-depth-key-order-installed.test.ts": "f4e19ef9b7aba1a12f3376540257b9680e27dcd00936048b066eb7667ebe19fe",
+@@ -35,15 +42,17 @@
+     "packages/server/src/transaction-snapshot.test.ts": "b6c31d8b66650ec0668c85d1fb803dda1072ef463989299ed377dd18dcbfee98",
+     "packages/server/src/resource-evaluator.test.ts": "2a35e3add8eabe18d27a69c173b709e1d958c16191c049a4877d92a7b27fa7f1"
+   },
+-  "pendingSourceFiles": [
+-    "packages/server/src/transaction-submission.test.ts",
+-    "packages/server/src/transaction-http.test.ts",
+-    "packages/server/src/transaction-snapshot.test.ts",
+-    "packages/server/src/resource-evaluator.test.ts",
+-    "apps/bdptest/src/transactional-depth-key-order-installed.test.ts",
+-    "apps/bdptest/src/transactional-sequence-depth-installed.test.ts",
+-    "docs/design/transaction-implementation-progress.md"
++  "pendingSourceFiles": [],
++  "productExecution": false,
++  "liveGate": false,
++  "candidateHead": "f864c4dde1b679d674cefe68f9047dd5cb3d1abc",
++  "candidateTree": "ab033c4c6061e6923fb0b90ac66d17b614578c52",
++  "candidateParents": [
++    "68b0f462a9af80fe10f42f08deb487608053732b"
+   ],
+-  "productExecution": false,
+-  "liveGate": false
++  "candidateBase": "68b0f462a9af80fe10f42f08deb487608053732b",
++  "candidateDiffSha256": "b02dbcfb8f15b1c0e09d23264bb578fceeb8a2656a5403bfaf284a18fc89cbe6",
++  "cleanActual": true,
++  "preservedRepairedInventory": "2aa351382224e63ef96f6e29a2d07b7dd18f2d433ad478176cf803981959de08",
++  "bodyMeasurementSha256": "ee531532781baa0aa82a619adbe5fd89c3a5b6385247e20e4ddb5cd7de29c7dc"
+ }

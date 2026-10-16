@@ -423,6 +423,21 @@
       "automaticRetries": 0,
       "phase": "control",
       "argv": [
+        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-fresh-depth-authoring/validation-preparation/control-execute.py"
+      ],
+      "rawExpectedExit": 0,
+      "ownedTempPrefixes": [
+        "bdp-snapshot-deep-"
+      ],
+      "expectedHTTP": 0,
+      "maxHTTP": 0,
+      "owners": 1,
+      "listeners": 0,
+      "directories": 1,
+      "productChildren": 0,
+      "cases": 1,
+      "directArgv": [
         "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
         "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-fresh-depth-authoring/validation-preparation/mirror/node_modules/vitest/vitest.mjs",
         "run",
@@ -434,17 +449,8 @@
         "--reporter=json",
         "--outputFile=/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-fresh-depth-authoring/validation-preparation/run/strict-control.results.json"
       ],
-      "rawExpectedExit": 1,
-      "ownedTempPrefixes": [
-        "bdp-snapshot-deep-"
-      ],
-      "expectedHTTP": 0,
-      "maxHTTP": 0,
-      "owners": 1,
-      "listeners": 0,
-      "directories": 1,
-      "productChildren": 0,
-      "cases": 1
+      "directExpectedExit": 1,
+      "exitMeaning": "Guarded adapter exits0 only after recording direct Vitest exit1; JSON/named-cause adjudication is a separate required stage."
     },
     "review-control": {
       "id": "review-control",
