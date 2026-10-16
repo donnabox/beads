@@ -1,0 +1,132 @@
+{
+  "stages": {
+    "red": {
+      "exit": 1,
+      "elapsedSeconds": 0.7806012909859419,
+      "forcedCleanup": false,
+      "sourceUnchanged": true,
+      "sampledPids": [
+        2168,
+        2172
+      ],
+      "sampledPidsStillPresent": [],
+      "remainingGroup": [],
+      "runtimeDirectoriesStillPresent": [],
+      "cases": {
+        "numPassedTests": 0,
+        "numFailedTests": 1,
+        "numPendingTests": 67
+      }
+    },
+    "green": {
+      "exit": 0,
+      "elapsedSeconds": 1.7334177501033992,
+      "forcedCleanup": false,
+      "sourceUnchanged": true,
+      "sampledPids": [
+        2230,
+        2234
+      ],
+      "sampledPidsStillPresent": [],
+      "remainingGroup": [],
+      "runtimeDirectoriesStillPresent": [],
+      "cases": {
+        "numPassedTests": 1,
+        "numFailedTests": 0,
+        "numPendingTests": 67
+      }
+    },
+    "service-suite": {
+      "exit": 0,
+      "elapsedSeconds": 2.6246716659516096,
+      "forcedCleanup": false,
+      "sourceUnchanged": true,
+      "sampledPids": [
+        2883,
+        2911,
+        3022,
+        3035,
+        3059
+      ],
+      "sampledPidsStillPresent": [],
+      "remainingGroup": [],
+      "runtimeDirectoriesStillPresent": [],
+      "cases": {
+        "numPassedTests": 68,
+        "numFailedTests": 0,
+        "numPendingTests": 0
+      }
+    },
+    "typecheck": {
+      "exit": 1,
+      "elapsedSeconds": 1.2233162908814847,
+      "forcedCleanup": false,
+      "sourceUnchanged": true,
+      "sampledPids": [
+        2877,
+        2948
+      ],
+      "sampledPidsStillPresent": [],
+      "remainingGroup": [],
+      "runtimeDirectoriesStillPresent": []
+    },
+    "format-check": {
+      "exit": 0,
+      "elapsedSeconds": 0.1717173329088837,
+      "forcedCleanup": false,
+      "sourceUnchanged": true,
+      "sampledPids": [
+        2869
+      ],
+      "sampledPidsStillPresent": [],
+      "remainingGroup": [],
+      "runtimeDirectoriesStillPresent": []
+    },
+    "typecheck-successor": {
+      "exit": 0,
+      "elapsedSeconds": 1.0301291251089424,
+      "forcedCleanup": false,
+      "sourceUnchanged": true,
+      "sampledPids": [
+        4617,
+        4643
+      ],
+      "sampledPidsStillPresent": [],
+      "remainingGroup": [],
+      "runtimeDirectoriesStillPresent": []
+    },
+    "format-check-successor": {
+      "exit": 0,
+      "elapsedSeconds": 0.14529324998147786,
+      "forcedCleanup": false,
+      "sourceUnchanged": true,
+      "sampledPids": [
+        4666,
+        4668
+      ],
+      "sampledPidsStillPresent": [],
+      "remainingGroup": [],
+      "runtimeDirectoriesStillPresent": []
+    }
+  },
+  "sampledPids": [
+    2168,
+    2172,
+    2230,
+    2234,
+    2869,
+    2877,
+    2883,
+    2911,
+    2948,
+    3022,
+    3035,
+    3059,
+    4617,
+    4643,
+    4666,
+    4668
+  ],
+  "sampledPidsStillPresent": [],
+  "all18Preserved": true
+}

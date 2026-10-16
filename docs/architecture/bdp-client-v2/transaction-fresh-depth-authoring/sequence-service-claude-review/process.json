@@ -1,0 +1,22 @@
+{
+  "pid": 7044,
+  "pgid": 7044,
+  "started": "2026-10-16T07:24:56.577815+00:00",
+  "argv": [
+    "/opt/homebrew/bin/claude",
+    "--safe-mode",
+    "-p",
+    "--tools",
+    "Read,Glob,Grep",
+    "--allowedTools",
+    "Read,Glob,Grep",
+    "--disable-slash-commands",
+    "--strict-mcp-config",
+    "--mcp-config",
+    "{\"mcpServers\":{}}",
+    "--no-session-persistence"
+  ],
+  "timeoutSeconds": 900,
+  "termAfterSeconds": 895,
+  "headIsChronologyOnly": true
+}

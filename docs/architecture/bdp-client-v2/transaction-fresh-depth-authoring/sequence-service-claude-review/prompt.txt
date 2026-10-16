@@ -1,0 +1,479 @@
+Review this bounded two-file sequence serving repair. Do not write or modify any files. Output findings only in stdout. Prioritize concrete bugs, regressions and missing tests. Give severity, file/line, issue, impact, fix; explicitly say no actionable findings if appropriate. This is an incremental review against already reviewed surrounding source. No main fetch or external services. You may read relevant repository source if necessary.
+Context: installed real 12000-level JSON sequence committed then returned 500. An isolated probe confirmed RangeError at sequenceObserved recursive freeze; depth41 passes. Fix should only replace that walk, preserving complete nested immutability, identity and observation timing. Carrier JSON is acyclic. Traverse already frozen parents too. No new depth/byte/work policy, public admission, Types or release changes. New regression must exercise actual service fresh sequence and retained same-key replay, complete JSON shape/value and all-container freezing, unchanged owner position/resources/Events on replay. Source-only red reproduced exact old recursion RangeError, focused green and full68 passed; after a type-only Record annotation correction typecheck/format passed. Full installed client rerun on rebuilt archives still required. Assess code, not claims of profile completion.
+
+DIFF:
+diff --git a/packages/server/src/transaction-service.test.ts b/packages/server/src/transaction-service.test.ts
+index 4bc6f5b..e4070bb 100644
+--- a/packages/server/src/transaction-service.test.ts
++++ b/packages/server/src/transaction-service.test.ts
+@@ -690,6 +690,85 @@ describe("private same-owner Transactional service", () => {
+     expect(() => service.sequenceObserved("p", sequence())).toThrow("closing");
+   });
+ 
++  it("freezes complete deep sequence observations across fresh execution and retained replay", async () => {
++    const f = fixture(),
++      service = f.open();
++    const depth = 12000;
++    const deepText = "[".repeat(depth) + "1" + "]".repeat(depth);
++    const carrier = prepareTransactionSequence(
++      scope,
++      '{"operations":[{"operation":"createBead","id":"beads/deep","type":"' +
++        bead +
++        '","idempotencyKey":"deep-observed","properties":{"deep":' +
++        deepText +
++        "}}]}",
++    );
++    // Independent full JSON comparison; never hand deep values to a recursive matcher.
++    // Traverse even identical/already-frozen objects so every child is checked.
++    function checkJson(actual: unknown, expected: unknown, frozen = false): number {
++      const pending: [unknown, unknown][] = [[actual, expected]];
++      let objects = 0;
++      while (pending.length) {
++        const pair = pending.pop();
++        if (!pair) throw new Error("deep observation worklist invariant");
++        const [left, right] = pair;
++        if (right === null || typeof right !== "object") {
++          expect(left === right, "complete JSON leaf equality").toBe(true);
++          continue;
++        }
++        if (left === null || typeof left !== "object")
++          throw new Error("deep observation object shape differs");
++        expect(Array.isArray(left)).toBe(Array.isArray(right));
++        if (frozen) expect(Object.isFrozen(left), "every observed container frozen").toBe(true);
++        const l = left as Record<string, unknown>,
++          r = right as Record<string, unknown>;
++        expect(Object.keys(l).sort()).toStrictEqual(Object.keys(r).sort());
++        if (Array.isArray(left) && Array.isArray(right)) expect(left.length).toBe(right.length);
++        for (const key of Object.keys(r)) pending.push([l[key], r[key]]);
++        objects++;
++      }
++      return objects;
++    }
++    const created = await service.sequenceObserved("p", carrier);
++    expect(created.context.scopePosition).toBe("pos-1");
++    expect(created.body.results).toHaveLength(1);
++    const entry = created.body.results[0] as Record<string, unknown>;
++    const resource = entry.resource as Record<string, unknown>;
++    expect(typeof resource.revision).toBe("string");
++    expect(resource.revision).not.toBe("");
++    const expectedResource = {
++      id: `${scope}beads/deep`,
++      type: bead,
++      revision: resource.revision,
++      properties: { deep: JSON.parse(deepText) as unknown },
++      metadata: {},
++    };
++    expect(
++      checkJson(
++        created,
++        {
++          body: {
++            results: [{ outcome: "created", resource: expectedResource, operationIndex: 0 }],
++          },
++          context: created.context,
++        },
++        true,
++      ),
++    ).toBeGreaterThan(depth);
++    const before = f.owner.inspect();
++    expect(before.position).toBe("1");
++    expect(before.resources).toHaveLength(1);
++    expect(before.groups).toHaveLength(1);
++    checkJson(before.resources, [expectedResource]);
++    const events = await service.events(`${scope}beads/deep?view=events`);
++    if (events.kind !== "page") throw new Error("expected deep Resource Event page");
++    expect(events.page.events).toHaveLength(1);
++    const replay = await service.sequenceObserved("p", carrier);
++    expect(checkJson(replay, created, true)).toBeGreaterThan(depth);
++    checkJson(f.owner.inspect(), before);
++    checkJson(await service.events(`${scope}beads/deep?view=events`), events);
++  }, 20000);
++
+   it("does not return an observed sequence when the final owner observation fails", async () => {
+     const f = fixture(),
+       scheduler = manualScheduler();
+diff --git a/packages/server/src/transaction-service.ts b/packages/server/src/transaction-service.ts
+index 8923810..318bc0d 100644
+--- a/packages/server/src/transaction-service.ts
++++ b/packages/server/src/transaction-service.ts
+@@ -642,9 +642,13 @@ export function createTransactionService(owner: Owner, options: TransactionServi
+             ),
+           };
+           const freeze = (value: unknown): void => {
+-            if (value !== null && typeof value === "object") {
+-              for (const child of Object.values(value)) freeze(child);
+-              Object.freeze(value);
++            const pending: unknown[] = [value];
++            while (pending.length) {
++              const node = pending.pop();
++              if (node !== null && typeof node === "object") {
++                for (const child of Object.values(node)) pending.push(child);
++                Object.freeze(node);
++              }
+             }
+           };
+           freeze(body);
+
+CONTEXT packages/server/src/transaction-service.ts:550-690
+550:                 code: "resource-not-found" as const,
+551:                 ...(result.context === undefined ? {} : { context: result.context }),
+552:               })
+553:             : result;
+554:         }, minimumReads);
+555:       });
+556:     },
+557:     receiptAtMinimum(
+558:       access:
+559:         | { readonly kind: "unauthenticated" }
+560:         | { readonly kind: "authenticated"; readonly principal: string },
+561:       id: string,
+562:       supplied: TransactionMinimum | "unsupported",
+563:     ): Promise<TransactionServiceReceiptResult | { readonly kind: "unsupported" }> {
+564:       return run(async () => {
+565:         if (access.kind === "unauthenticated")
+566:           return Object.freeze({ kind: "refused", status: 401, code: "unauthenticated" });
+567:         const principal = access.principal;
+568:         if (supplied === "unsupported") {
+569:           const observed = owner.readReceipt(principal, id, supplied);
+570:           if ("kind" in observed) return observed;
+571:           return Object.freeze({
+572:             kind: "refused",
+573:             status: 404,
+574:             code: "resource-not-found",
+575:             context: observed.context,
+576:           });
+577:         }
+578:         const minimum = snapshotTransactionMinimum(supplied);
+579:         return waitForTransactionMinimum(() => receipt(principal, id, minimum), minimumReads);
+580:       });
+581:     },
+582:     submit(request: TransactionSubmission): Promise<TransactionServiceSubmissionResult> {
+583:       return mutate(async () => {
+584:         const authorization = Object.freeze({ ...request.authorization });
+585:         const result = await submitTransaction(
+586:           owner,
+587:           { ...request, authorization },
+588:           comparison,
+589:           true,
+590:         );
+591:         if (result.kind !== "receipt") return result;
+592:         if (authorization.kind !== "authorized") throw new Error("unauthorized receipt delivery");
+593:         if (!result.context)
+594:           throw new Error("admitted receipt lost same-entry observation", {
+595:             cause: { id: result.receipt.id, key: result.receipt.idempotencyKey },
+596:           });
+597:         return checked({ receipt: result.receipt, context: result.context });
+598:       });
+599:     },
+600:     /** Trusted prepared carrier + authenticated principal. Raw sequence receiving
+601:      * order/media/negotiation is intentionally left to the later HTTP boundary. */
+602:     sequence(
+603:       principal: string,
+604:       sequence: PreparedTransactionSequence,
+605:     ): Promise<TransactionSequenceResponse> {
+606:       return mutate(() => executeSequence(principal, sequence));
+607:     },
+608:     /** Authenticated exact local schema response; no mutation or minimum wait. */
+609:     schemaObserved() {
+610:       return run(async () => {
+611:         const observed = owner.withRead((_reader, context) => Object.freeze({ context }));
+612:         if (observed.kind === "entry-refused")
+613:           throw new Error("transaction schema observation refused", { cause: observed.cause });
+614:         return observed.value;
+615:       });
+616:     },
+617:     /** Trusted HTTP refusal after carrier/auth checks. Observe without executing
+618:      * members or admitting keys; an unavailable owner remains an internal fault. */
+619:     sequenceRefusalObserved() {
+620:       return run(async () => {
+621:         const observed = owner.withRead((_reader, context) => Object.freeze({ context }));
+622:         if (observed.kind === "entry-refused")
+623:           throw new Error("transaction sequence refusal observation refused", {
+624:             cause: observed.cause,
+625:           });
+626:         return observed.value;
+627:       });
+628:     },
+629:     /** Project stable member execution facts in the current serving entry after
+630:      * ordered execution. Version erasure remains outside this private policy. */
+631:     sequenceObserved(principal: string, sequence: PreparedTransactionSequence) {
+632:       return mutate(async () => {
+633:         const response = await executeSequence(principal, sequence);
+634:         const observed = owner.withRead((reader, context) => {
+635:           const policy = owner.captureReadAuthorization(reader, {
+636:             kind: "authenticated",
+637:             principal: { id: principal },
+638:           });
+639:           const body = {
+640:             results: response.results.map((entry) =>
+641:               projectTransactionEntry(entry, policy.readPolicy === "all-visible"),
+642:             ),
+643:           };
+644:           const freeze = (value: unknown): void => {
+645:             const pending: unknown[] = [value];
+646:             while (pending.length) {
+647:               const node = pending.pop();
+648:               if (node !== null && typeof node === "object") {
+649:                 for (const child of Object.values(node)) pending.push(child);
+650:                 Object.freeze(node);
+651:               }
+652:             }
+653:           };
+654:           freeze(body);
+655:           return Object.freeze({ body, context });
+656:         });
+657:         if (observed.kind === "entry-refused")
+658:           throw new Error("transaction sequence observation refused", { cause: observed.cause });
+659:         return observed.value;
+660:       });
+661:     },
+662:     /** Authentication is transport-supplied, never inferred from actor or URL.
+663:      * Current owner policy projects contents; principal binding denies foreign
+664:      * receipts uniformly. No key lookup, receipt listing or fabricated page URL. */
+665:     receipt(
+666:       access:
+667:         | { readonly kind: "unauthenticated" }
+668:         | { readonly kind: "authenticated"; readonly principal: string },
+669:       id: string,
+670:     ): TransactionServiceReceiptResult {
+671:       check();
+672:       if (access.kind === "unauthenticated")
+673:         return Object.freeze({ kind: "refused", status: 401, code: "unauthenticated" });
+674:       return receipt(access.principal, id);
+675:     },
+676:     /** Stop accepting work, drain admitted work even when the client dropped its
+677:      * delivery, then close cursors and this service-owned database. No disconnect
+678:      * cancellation of accepted writes exists: stream cancellation is separate. */
+679:     close(): Promise<void> {
+680:       if (closing) return closing;
+681:       accepting = false;
+682:       closing = (async () => {
+683:         for (const controller of streams.keys()) controller.abort(new Error("service shutdown"));
+684:         await Promise.allSettled([...streams.values(), ...active]);
+685:         const errors: unknown[] = [];
+686:         try {
+687:           await read.close();
+688:         } catch (error) {
+689:           errors.push(error);
+690:         }
+CONTEXT packages/server/src/transaction-service.test.ts:1-220
+1: import * as discoveryAssembly from "./transaction-discovery.js";
+2: import { TransactionMinimumFailure, type TransactionMinimum } from "./transaction-consistency.js";
+3: import { ScopeServerOperationAbortedError, requestFromUrl } from "./read-request.js";
+4: import { DatabaseSync } from "node:sqlite";
+5: import { spawnSync } from "node:child_process";
+6: import { mkdtempSync, rmSync } from "node:fs";
+7: import { tmpdir } from "node:os";
+8: import path from "node:path";
+9: import { afterEach, describe, expect, it, vi } from "vitest";
+10: import {
+11:   isReadProblem,
+12:   parseTypeDescriptor,
+13:   ProtocolArtifactValidationError,
+14:   type AbsoluteHttpUrl,
+15: } from "@bdp/protocol";
+16: import { prepareTransaction, prepareTransactionSequence } from "./transaction-batch.js";
+17: import { openTransactionStore } from "./transaction-store.js";
+18: import { createTransactionService, type TransactionServiceOptions } from "./transaction-service.js";
+19: import { createTransactionHttpHandler } from "./transaction-http.js";
+20: import type { TransactionSnapshotRequest } from "./transaction-snapshot.js";
+21: import type { TransactionSubmission } from "./transaction-submission.js";
+22: 
+23: const scope = "https://example.test/service/",
+24:   bead = "https://example.test/bead";
+25: const types = [parseTypeDescriptor({ id: bead, name: "Bead", describes: "bead", conformsTo: [] })];
+26: const cleanup: (() => void | Promise<void>)[] = [];
+27: afterEach(async () => {
+28:   vi.restoreAllMocks();
+29:   for (const fn of cleanup.splice(0).reverse()) await fn();
+30: });
+31: const create = (id = "a") => ({
+32:   operation: "createBead",
+33:   id: `beads/${id}`,
+34:   type: bead,
+35:   properties: { title: id },
+36: });
+37: function batch(operations: unknown[] = [create()], key = "key"): TransactionSubmission {
+38:   return {
+39:     carrier: { kind: "batch" },
+40:     body: JSON.stringify({ operations }),
+41:     key,
+42:     authorization: { kind: "authorized", principal: "p" },
+43:     receiving: { acceptsJson: true, maximumOperations: 32 },
+44:   };
+45: }
+46: function sequence(members = [create("a"), create("b")]) {
+47:   return prepareTransactionSequence(
+48:     scope,
+49:     JSON.stringify({
+50:       operations: members.map((member, i) => ({ ...member, idempotencyKey: `key_${i}` })),
+51:     }),
+52:   );
+53: }
+54: function fixture(extra: Partial<Parameters<typeof openTransactionStore>[0]> = {}) {
+55:   const directory = mkdtempSync(path.join(tmpdir(), "bdp-tx-service-"));
+56:   cleanup.push(() => rmSync(directory, { recursive: true, force: true }));
+57:   let time = 1000;
+58:   const options = {
+59:     file: path.join(directory, "owner.sqlite"),
+60:     scope,
+61:     create: true,
+62:     types,
+63:     clock: () => time,
+64:     ...extra,
+65:   };
+66:   let owner = openTransactionStore(options);
+67:   cleanup.push(() => owner.close());
+68:   let token = 0;
+69:   const read: TransactionServiceOptions["read"] = {
+70:     selectorLimits: { bytes: 4096, depth: 32, nodes: 256 },
+71:     advertisedLimits: {
+72:       page: { defaultItems: 2, maximumItems: 32 },
+73:       selector: { bytes: 4096, depth: 32, nodes: 256 },
+74:       cursorTtlMilliseconds: 1000,
+75:     },
+76:     pagination: {
+77:       scope,
+78:       defaultPageItems: 2,
+79:       maxPageItems: 32,
+80:       cursorTtlMs: 1000,
+81:       retainedStateCapacity: 100,
+82:       maxRetainedCursorPositionsPerSnapshot: 20,
+83:       retainedSnapshotByteCapacity: 100000,
+84:       retainedSnapshotNodeCapacity: 10000,
+85:       maxOpaqueTokenLength: 64,
+86:       tokenGenerationAttempts: 3,
+87:       idleCleanup: "on-demand",
+88:       clock: () => time,
+89:       generateOpaqueToken: () => `cursor_${++token}`,
+90:     },
+91:   };
+92:   return {
+93:     get owner() {
+94:       return owner;
+95:     },
+96:     options,
+97:     read,
+98:     setTime(value: number) {
+99:       time = value;
+100:     },
+101:     open(patch: Partial<TransactionServiceOptions> = {}) {
+102:       const service = createTransactionService(owner, { ownerLifetime: "service", read, ...patch });
+103:       cleanup.push(() => service.close());
+104:       return service;
+105:     },
+106:     reopen() {
+107:       owner.close();
+108:       owner = openTransactionStore({ ...options, create: false });
+109:       return owner;
+110:     },
+111:   };
+112: }
+113: function owned(owner: ReturnType<typeof openTransactionStore>, request = batch()) {
+114:   const admission = owner.admit("p", request.key, prepareTransaction(scope, request.body));
+115:   if (admission.kind !== "owned") throw new Error("expected owner");
+116:   return admission.claim;
+117: }
+118: function manualScheduler() {
+119:   const callbacks: (() => void)[] = [];
+120:   return {
+121:     callbacks,
+122:     turn(callback: () => void) {
+123:       callbacks.push(callback);
+124:       return () => {
+125:         const i = callbacks.indexOf(callback);
+126:         if (i >= 0) callbacks.splice(i, 1);
+127:       };
+128:     },
+129:     async tick() {
+130:       const callback = callbacks.shift();
+131:       if (!callback) throw new Error("missing scheduled turn");
+132:       callback();
+133:       await Promise.resolve();
+134:       await Promise.resolve();
+135:     },
+136:   };
+137: }
+138: const access = { kind: "authenticated", principal: "p" } as const;
+139: function requireReceipt(
+140:   result:
+141:     | ReturnType<ReturnType<typeof createTransactionService>["receipt"]>
+142:     | Awaited<ReturnType<ReturnType<typeof createTransactionService>["submit"]>>,
+143: ) {
+144:   if (result.kind !== "receipt") throw new Error("expected receipt");
+145:   return result;
+146: }
+147: 
+148: describe("private same-owner Transactional service", () => {
+149:   it("requires explicit owner lifetime and a bound that fits retained inline receipts", () => {
+150:     const f = fixture();
+151:     expect(() =>
+152:       createTransactionService(f.owner, { ownerLifetime: "caller" as "service", read: f.read }),
+153:     ).toThrow("explicit service owner lifetime");
+154:     expect(() =>
+155:       createTransactionService(f.owner, {
+156:         ownerLifetime: "service",
+157:         read: {
+158:           ...f.read,
+159:           advertisedLimits: {
+160:             ...f.read.advertisedLimits,
+161:             page: { defaultItems: 2, maximumItems: 31 },
+162:           },
+163:         },
+164:       }),
+165:     ).toThrow("receipt page maximum");
+166:     expect(() =>
+167:       createTransactionService(f.owner, {
+168:         ownerLifetime: "service",
+169:         read: { ...f.read, pagination: { ...f.read.pagination, maxPageItems: 31 } },
+170:       }),
+171:     ).toThrow("receipt page maximum");
+172:     // Failed construction does not take ownership.
+173:     expect(f.owner.inspect().resources).toEqual([]);
+174:   });
+175:   it("shares singleton, batch and sequence keys and serves actual canonical afterstate", async () => {
+176:     const f = fixture(),
+177:       service = f.open();
+178:     const first = await service.submit(batch([create()], "key_0"));
+179:     expect(first).toMatchObject({
+180:       kind: "receipt",
+181:       receipt: { status: "completed", requiredPosition: "pos-1", next: null },
+182:       context: { scopePosition: "pos-1" },
+183:     });
+184:     const { operation: _operation, ...body } = create();
+185:     expect(
+186:       await service.submit({
+187:         ...batch([], "key_0"),
+188:         carrier: { kind: "singleton", operation: "createBead" },
+189:         body: JSON.stringify(body),
+190:       }),
+191:     ).toEqual(first);
+192:     expect(await service.sequence("p", sequence([create()]))).toMatchObject({
+193:       results: [{ outcome: "created", resource: { id: `${scope}beads/a` } }],
+194:     });
+195:     const read = await service
+196:       .readFor({ kind: "anonymous" })
+197:       .perform({ kind: "resource", resource: "bead", id: `${scope}beads/a` as AbsoluteHttpUrl });
+198:     expect(read).toMatchObject({
+199:       kind: "success",
+200:       body: { id: `${scope}beads/a`, properties: { title: "a" } },
+201:       observation: { sourceContext: { scopePosition: "pos-1" } },
+202:     });
+203:     expect(f.owner.inspect().groups).toHaveLength(1);
+204:   });
+205:   it("retains execution facts while observing a newer head, even after the postimage is deleted", async () => {
+206:     const f = fixture(),
+207:       service = f.open();
+208:     const first = await service.submit(batch());
+209:     if (first.kind !== "receipt") throw new Error("expected receipt");
+210:     await service.submit(batch([{ operation: "deleteBead", bead: "beads/a" }], "delete"));
+211:     const observed = requireReceipt(service.receipt(access, first.receipt.id));
+212:     expect(observed.receipt).toEqual(first.receipt);
+213:     expect(observed.context.scopePosition).toBe("pos-2");
+214:     expect(observed.receipt.requiredPosition).toBe("pos-1");
+215:     expect(observed.receipt.results).toMatchObject([{ resource: { properties: { title: "a" } } }]);
+216:     expect(Object.isFrozen(observed)).toBe(true);
+217:     expect(Object.isFrozen(observed.context)).toBe(true);
+218:     expect(Object.isFrozen(observed.receipt.results)).toBe(true);
+219:     expect(
+220:       Object.isFrozen(
