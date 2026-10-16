@@ -1,0 +1,74 @@
+{
+  "status": "INDEPENDENT_STATIC_SCOPE_AUDIT_CLEAN_NOT_COMBINED_CI",
+  "base": "2dfd2c6cc84a28b1dd336f4184c1a5f910ce8a96",
+  "head": "c0bae663dd35854c1dfc4cdd06bdaa73a1a8b41b",
+  "parents": [
+    "f7b8fc433915d5164d139701a8ee48d518976e6c",
+    "61ef6b78b39e0852c3f17ddc8248794ea4d3881d"
+  ],
+  "trees": {
+    "2dfd2c6cc84a28b1dd336f4184c1a5f910ce8a96": "1823346779033dec6255bcab93f69d7149d33055",
+    "f7b8fc433915d5164d139701a8ee48d518976e6c": "a73dfbe6e2800f985c10ccbcf89404b719b2ff91",
+    "61ef6b78b39e0852c3f17ddc8248794ea4d3881d": "1cb53449fb531648faaae62add319c27edaa9694",
+    "7ed8fc34dad8217155150f8fbec5d0f687a6498b": "1cb53449fb531648faaae62add319c27edaa9694",
+    "c0bae663dd35854c1dfc4cdd06bdaa73a1a8b41b": "b457d89b2d81c128b043f6218bffa07c44845f39"
+  },
+  "conditionalChangedFiles": [
+    "apps/bdptest/src/read-update-matrix.test.ts",
+    "apps/bdptest/src/transactional-matrix.test.ts",
+    "packages/conformance/src/transactional-cumulative.test.ts",
+    "packages/conformance/test-support/transactional/coverage-v1.json",
+    "packages/conformance/test-support/transactional/manifest-v1.json"
+  ],
+  "eventChangedFiles": [
+    "apps/bdptest/src/transactional-event-sse-installed.test.ts"
+  ],
+  "overlap": [],
+  "combinedTreeExactlyParentDeltaUnion": true,
+  "fileEntries": {
+    "apps/bdptest/src/read-update-matrix.test.ts": "100644 blob 9bac68179993e0ae5d2915c1d869e887bef82fb7",
+    "apps/bdptest/src/transactional-event-sse-installed.test.ts": "100644 blob 53a71a85f0cb0b4ea0868c55bf18ba7000b02a1d",
+    "apps/bdptest/src/transactional-matrix.test.ts": "100644 blob 89ceeb5bf1d2589c8fe9fe381aa4fa571c43005a",
+    "packages/conformance/src/transactional-cumulative.test.ts": "100644 blob 87f671a9ff990e4650261bb032cb899d9564ad34",
+    "packages/conformance/test-support/transactional/coverage-v1.json": "100644 blob c1f3a774278acb9aa0263f1626ea96fa26e647c0",
+    "packages/conformance/test-support/transactional/manifest-v1.json": "100644 blob 04d4965816418c677e466319ce8bc6b66386ea76"
+  },
+  "fileSha256": {
+    "apps/bdptest/src/read-update-matrix.test.ts": "37558e78d79d665363528fb2bf4f81de4f4334cd8438a099030cac7a68e0637b",
+    "apps/bdptest/src/transactional-event-sse-installed.test.ts": "b762563798d6d72afecfda0a4c8b831de69753df45c82f6050815599a24a1496",
+    "apps/bdptest/src/transactional-matrix.test.ts": "95e07ead41f9cb39087a155e87cad22998d92cd3967cb9c3c446568ff6139bc8",
+    "packages/conformance/src/transactional-cumulative.test.ts": "5ecfa916baca16b24c9c57b5f52e6c2cb5fa771d8cc6b5ea412ba570ba796993",
+    "packages/conformance/test-support/transactional/coverage-v1.json": "a2c620ce489257f4cd425207195af89b4e2aac238333cf6e7d21ce629d98a238",
+    "packages/conformance/test-support/transactional/manifest-v1.json": "bbb7def1bf11e1d14efbcb369e6a7fae6eb5aff01f483f8e99f7443ce9a6ee73"
+  },
+  "postBaseReachableCommits": [
+    "c0bae663dd35854c1dfc4cdd06bdaa73a1a8b41b",
+    "61ef6b78b39e0852c3f17ddc8248794ea4d3881d",
+    "f7b8fc433915d5164d139701a8ee48d518976e6c",
+    "7ed8fc34dad8217155150f8fbec5d0f687a6498b",
+    "8ee4d86cadc9a1c79a9656cc8b106f34712b3ade"
+  ],
+  "newMainAncestryAfterBase": false,
+  "inputCI": [
+    {
+      "conclusion": "success",
+      "headSha": "f7b8fc433915d5164d139701a8ee48d518976e6c",
+      "name": "CI",
+      "status": "completed",
+      "url": "https://github.com/gastownhall/bdp/actions/runs/38970734053"
+    },
+    {
+      "conclusion": "success",
+      "headSha": "7ed8fc34dad8217155150f8fbec5d0f687a6498b",
+      "name": "CI",
+      "status": "completed",
+      "url": "https://github.com/gastownhall/bdp/actions/runs/38969174869"
+    }
+  ],
+  "eventMergeTreeEqualsGreenEventCommit": true,
+  "cleanWorkingTree": true,
+  "testsRun": false,
+  "sourceChanges": false,
+  "pushPerformed": false,
+  "combinedExactHeadCIRequired": true
+}
