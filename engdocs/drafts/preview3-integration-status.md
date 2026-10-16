@@ -1,6 +1,6 @@
 # Preview 3 planning and execution
 
-Last checked: October 15, 2026, 21:19 PDT. This is a milestone snapshot, updated when the state changes; it is not a live CI dashboard.
+Last checked: October 15, 2026, 21:32 PDT. This is a milestone snapshot, updated when the state changes; it is not a live CI dashboard.
 
 This tracker covers the release plan and its execution. The active first phase is establishing a qualified Preview 3 integration branch. The integration-base milestones below are only what we need to begin producing Preview 3 builds; they are not the complete release plan. Proposed workstreams will be added to the release cutline only after their scope and qualification are decided.
 
@@ -9,9 +9,9 @@ This tracker covers the release plan and its execution. The active first phase i
 Each preview should make progress toward one or both goals:
 
 1. Satisfy the requirements of [Chris's Memory proposal](https://github.com/gastownhall/beads/issues/5877). This has somewhat more time pressure.
-2. Develop the Beads Data Protocol (BDP) specification toward a version that could be submitted to a consortium. AAIF is a possible home, not a committed destination.
+2. Develop the Beads Data Protocol (BDP) specification and reference implementation toward a stable, interoperable protocol.
 
-Memory functionality is intended to merge into fork `main` when qualified. BDP should remain explicitly experimental until there is a stable protocol to support: a Preview 3 build may expose it behind an opt-in switch or omit it. This policy does not yet decide which Memory features or BDP profiles are in the Preview 3 cutline.
+Memory functionality is intended to merge into fork `main` when qualified. BDP remains experimental until its protocol is stable, but preview builds expose the BDP functionality they include directly, without an opt-in switch. Experimental describes its evolving contract, not an availability gate. This policy does not yet decide which Memory features or BDP profiles enter the Preview 3 cutline.
 
 Preview 2 already demonstrates end-to-end Memory workflows. Donna identified two likely gaps for the next feature cutline: intentional Memory Bead and Link Type definitions, likely requiring a bounded part of the new [Types proposal](https://github.com/gastownhall/beads/issues/7590), and at least the revision-provenance part of [Provenance V2](https://github.com/gastownhall/beads/issues/7510). Donna considers pre-installed Memory Types an acceptable path for Preview 3; user authoring of Type definitions is a separate product decision. Trish's type-system design is nearing completion, a separate agent is implementing it, and the BDP Types specification needs a few more design turns before it can be called a fully implementable draft. Melinda now has a separate Memory Type design task for read-only preparation. Once the Type foundation lands, Donna and Trish will make the intentional Memory Bead/Link Type decisions with Melinda driving that workstream. Trish is also describing the existing Issue and Dependency Types. Neither the Type implementation nor the Memory definitions are accepted into the Preview 3 cutline yet. Janet and Donna will audit unmet requirements and scenarios against the [Memory proposal](https://github.com/gastownhall/beads/issues/5877); no gap is silently assigned to Preview 3.
 
@@ -26,7 +26,7 @@ These are planning lanes, not promises that all their changes will ship in Previ
 | Memory proposal gap audit | Janet is auditing all 32 requirements and 16 scenarios against exact final Preview 2 behavior; Donna will review the classified gaps and help choose a release cutline. | Audit underway; inclusion to decide |
 | Provenance V2 | Finish design and qualify at least the revision-provenance slice; activity provenance is a separate scope choice. | Likely required slice; boundary to decide |
 | Import/export | Iris owns data movement, initially to avoid in-place upgrades; evaluate installable Bead/Link/Type packages as a second use. | To decide |
-| BDP spec and reference implementation | Vickie is finishing the Write profile implementation and validation suite, then completing BDP spec/reference cleanup. This work proceeds independently of the release train and gates what `bd` can implement. | Experimental or deferred in `bd` |
+| BDP spec and reference implementation | Vickie is finishing the Write profile implementation and validation suite, then completing BDP spec/reference cleanup. This work proceeds independently of the release train and gates what `bd` can implement. Any qualified BDP functionality included in a preview is directly available. | Experimental contract; exact `bd` slice to decide |
 | Bead/Link CLI surface | Janet has started a read-only background inventory of commands and existing harnesses. Decide semantics and acceptance cases with Donna before delegating implementation or running broader harnesses. | Inventory underway; inclusion to decide |
 | Remaining CLI surface | Janet has started a separate read-only background inventory. Resolve compatibility choices before delegating implementation. | Inventory underway; inclusion to decide |
 | Integration and vendoring | Janet owns the fork/upstream merge, exact-source qualification and a reproducible `bd`/BDP dependency path. | Required infrastructure |
