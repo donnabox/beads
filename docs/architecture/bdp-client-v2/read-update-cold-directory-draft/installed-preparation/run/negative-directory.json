@@ -1,0 +1,351 @@
+{
+  "sourceCommit": "bb9600f1b8b6f623e753543ed5792005eb9aacee",
+  "sourceDirty": false,
+  "targetEntry": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/read-update-cold-directory-draft/installed-preparation/run/consumer/node_modules/.pnpm/@bdp+server@file+..+packages+bdp-server-0.0.0.tgz/node_modules/@bdp/server/dist/installed-reference-process.js",
+  "configuration": {
+    "scope": "https://reference.invalid/acme/",
+    "profile": "read-update",
+    "history": false,
+    "sourceCommit": "bb9600f1b8b6f623e753543ed5792005eb9aacee",
+    "installedPayloadDigest": "9e706a73053f2e952b32f9775526504c52f51e9fedf4794cc20fb68f5b204af5",
+    "installedContractsDigest": "48667497d6e13064316d0364cf8f49dfc247ab9189306985a357d7b558333dfe",
+    "policyDigest": "dbe8dbd5430f26e19e754d38167cd8084a32d702c695550e2ee0063dc2912430",
+    "authenticationDigest": "66941efc779f4f2431d65fdd5b2387b2af67bd7c1559e09dac032f82259ea16e",
+    "fixtureDigest": "f89932d68e3bf5867d79eb3de680af4bc67b761b3c3bce5da127f6ca75e27765",
+    "fixtureId": "reference-read-update-schema-v1",
+    "capabilities": [
+      "installed-read-update-http"
+    ]
+  },
+  "baselineReceipt": {
+    "event": "qualification.ready",
+    "scope": "https://reference.invalid/acme/",
+    "claimEligible": false,
+    "configurationIdentity": "1720b63b49a7be3299d4b2865de4db9fcbe47560f217a32eea6397db7ea54ca5",
+    "artifactIdentity": "development-schema5-48667497d6e13064316d0364cf8f49dfc247ab9189306985a357d7b558333dfe",
+    "payloadIdentity": "9e706a73053f2e952b32f9775526504c52f51e9fedf4794cc20fb68f5b204af5",
+    "policyIdentity": "dbe8dbd5430f26e19e754d38167cd8084a32d702c695550e2ee0063dc2912430",
+    "authenticationIdentity": "66941efc779f4f2431d65fdd5b2387b2af67bd7c1559e09dac032f82259ea16e",
+    "profile": "read-update",
+    "history": false
+  },
+  "reportBinding": {
+    "artifacts": {
+      "catalogDigest": "c4a2ad576f3285ef9007f8bc69b094cf36e06716ed543ab195f4b8a53e9d3967",
+      "manifestDigest": "80f74625b6074892b707365859572f8bc0b8c10478d36ac307370ef6027f5fc3",
+      "fixtureDigest": "f89932d68e3bf5867d79eb3de680af4bc67b761b3c3bce5da127f6ca75e27765"
+    },
+    "exactConfigurationDigest": "26da5a286d9887bebbb0fcf73a92c5d09aa7b7fcfdcc9ed91f767f4db1578c69"
+  },
+  "sessions": [
+    {
+      "scenario": "read-update.discovery.operation-directory",
+      "event": "qualification.ready",
+      "scope": "https://reference.invalid/acme/",
+      "claimEligible": false,
+      "configurationIdentity": "1720b63b49a7be3299d4b2865de4db9fcbe47560f217a32eea6397db7ea54ca5",
+      "artifactIdentity": "development-schema5-48667497d6e13064316d0364cf8f49dfc247ab9189306985a357d7b558333dfe",
+      "payloadIdentity": "9e706a73053f2e952b32f9775526504c52f51e9fedf4794cc20fb68f5b204af5",
+      "policyIdentity": "dbe8dbd5430f26e19e754d38167cd8084a32d702c695550e2ee0063dc2912430",
+      "authenticationIdentity": "66941efc779f4f2431d65fdd5b2387b2af67bd7c1559e09dac032f82259ea16e",
+      "profile": "read-update",
+      "history": false
+    }
+  ],
+  "claimEligible": false,
+  "cleanupComplete": true,
+  "counterfactualApplications": 1,
+  "coldDirectory": {
+    "attempts": [
+      {
+        "ordinal": 0,
+        "method": "GET",
+        "url": "https://reference.invalid/acme/"
+      },
+      {
+        "ordinal": 1,
+        "method": "GET",
+        "url": "https://reference.invalid/acme/bdp.json"
+      },
+      {
+        "ordinal": 2,
+        "method": "GET",
+        "url": "https://reference.invalid/acme/operations/"
+      }
+    ],
+    "rawCompletions": [
+      {
+        "family": "http",
+        "ordinal": 0,
+        "method": "GET",
+        "url": "https://reference.invalid/acme/",
+        "status": 204,
+        "source": "raw-http1-serializer",
+        "writeState": "complete",
+        "bodyPresent": false,
+        "bodyOctets": 0
+      },
+      {
+        "family": "http",
+        "ordinal": 1,
+        "method": "GET",
+        "url": "https://reference.invalid/acme/bdp.json",
+        "status": 200,
+        "source": "raw-http1-serializer",
+        "writeState": "complete",
+        "bodyPresent": false,
+        "bodyOctets": 0
+      },
+      {
+        "family": "http",
+        "ordinal": 2,
+        "method": "GET",
+        "url": "https://reference.invalid/acme/operations/",
+        "status": 200,
+        "source": "raw-http1-serializer",
+        "writeState": "complete",
+        "bodyPresent": false,
+        "bodyOctets": 0
+      }
+    ],
+    "completions": [
+      {
+        "family": "http",
+        "ordinal": 0,
+        "method": "GET",
+        "url": "https://reference.invalid/acme/",
+        "status": 204,
+        "source": "raw-http1-serializer",
+        "writeState": "complete",
+        "bodyPresent": false,
+        "bodyOctets": 0
+      },
+      {
+        "family": "http",
+        "ordinal": 1,
+        "method": "GET",
+        "url": "https://reference.invalid/acme/bdp.json",
+        "status": 200,
+        "source": "raw-http1-serializer",
+        "writeState": "complete",
+        "bodyPresent": false,
+        "bodyOctets": 0
+      },
+      {
+        "family": "http",
+        "ordinal": 2,
+        "method": "GET",
+        "url": "https://reference.invalid/acme/operations/",
+        "status": 200,
+        "source": "raw-http1-serializer",
+        "writeState": "complete",
+        "bodyPresent": false,
+        "bodyOctets": 0
+      }
+    ],
+    "aliasRetryPassed": false,
+    "checksPassed": true,
+    "controlApplications": 1
+  },
+  "clientObservations": [],
+  "result": {
+    "id": "read-update.discovery.operation-directory",
+    "requiredProfile": "read-update",
+    "state": "fail",
+    "requirements": [
+      "docs/specs/bdp.md#operation-directory-and-singleton-targets"
+    ],
+    "reason": "response body must have required property 'updateLink'",
+    "exchanges": [
+      {
+        "request": {
+          "id": "scope",
+          "method": "GET",
+          "url": "https://reference.invalid/acme/",
+          "headers": {},
+          "exact": {
+            "source": "raw-http1-serializer",
+            "writeState": "complete",
+            "headerProjection": "allowlisted-relative-order",
+            "headerLines": [
+              {
+                "name": "authorization",
+                "value": "<redacted>"
+              },
+              {
+                "name": "Accept",
+                "value": "<redacted>"
+              },
+              {
+                "name": "Accept-Language",
+                "value": "<redacted>"
+              },
+              {
+                "name": "Accept-Encoding",
+                "value": "<redacted>"
+              },
+              {
+                "name": "User-Agent",
+                "value": "<redacted>"
+              }
+            ],
+            "elidedHeaderLines": 2,
+            "bodyPresent": false,
+            "bodyOctets": 0
+          }
+        },
+        "assertions": [
+          {
+            "id": "status",
+            "passed": true
+          },
+          {
+            "id": "empty",
+            "passed": true
+          }
+        ],
+        "response": {
+          "url": "https://reference.invalid/acme/",
+          "status": 204,
+          "headers": {
+            "link": "<redacted>"
+          },
+          "decodedBodyBytes": 0,
+          "wireBodyOctets": 0,
+          "bodyKind": "empty"
+        }
+      },
+      {
+        "request": {
+          "id": "discovery",
+          "method": "GET",
+          "url": "https://reference.invalid/acme/bdp.json",
+          "headers": {},
+          "exact": {
+            "source": "raw-http1-serializer",
+            "writeState": "complete",
+            "headerProjection": "allowlisted-relative-order",
+            "headerLines": [
+              {
+                "name": "authorization",
+                "value": "<redacted>"
+              },
+              {
+                "name": "Accept",
+                "value": "<redacted>"
+              },
+              {
+                "name": "Accept-Language",
+                "value": "<redacted>"
+              },
+              {
+                "name": "Accept-Encoding",
+                "value": "<redacted>"
+              },
+              {
+                "name": "User-Agent",
+                "value": "<redacted>"
+              }
+            ],
+            "elidedHeaderLines": 2,
+            "bodyPresent": false,
+            "bodyOctets": 0
+          }
+        },
+        "assertions": [
+          {
+            "id": "status",
+            "passed": true
+          },
+          {
+            "id": "schema",
+            "passed": true
+          },
+          {
+            "id": "profile",
+            "passed": true
+          },
+          {
+            "id": "no-tx",
+            "passed": true
+          }
+        ],
+        "response": {
+          "url": "https://reference.invalid/acme/bdp.json",
+          "status": 200,
+          "headers": {
+            "cache-control": "<redacted>",
+            "content-length": "<redacted>",
+            "content-type": "<redacted>",
+            "vary": "<redacted>"
+          },
+          "decodedBodyBytes": 615,
+          "wireBodyOctets": 615,
+          "bodyKind": "json"
+        }
+      },
+      {
+        "request": {
+          "id": "directory",
+          "method": "GET",
+          "url": "https://reference.invalid/acme/operations/",
+          "headers": {},
+          "exact": {
+            "source": "raw-http1-serializer",
+            "writeState": "complete",
+            "headerProjection": "allowlisted-relative-order",
+            "headerLines": [
+              {
+                "name": "authorization",
+                "value": "<redacted>"
+              },
+              {
+                "name": "Accept",
+                "value": "<redacted>"
+              },
+              {
+                "name": "Accept-Language",
+                "value": "<redacted>"
+              },
+              {
+                "name": "Accept-Encoding",
+                "value": "<redacted>"
+              },
+              {
+                "name": "User-Agent",
+                "value": "<redacted>"
+              }
+            ],
+            "elidedHeaderLines": 2,
+            "bodyPresent": false,
+            "bodyOctets": 0
+          }
+        },
+        "assertions": [
+          {
+            "id": "status",
+            "passed": true
+          },
+          {
+            "id": "schema",
+            "passed": false,
+            "message": "response body must have required property 'updateLink'"
+          }
+        ],
+        "response": {
+          "url": "https://reference.invalid/acme/operations/",
+          "status": 200,
+          "headers": {
+            "cache-control": "<redacted>",
+            "content-length": "<redacted>",
+            "content-type": "<redacted>",
+            "vary": "<redacted>"
+          },
+          "decodedBodyBytes": 210,
+          "wireBodyOctets": 210,
+          "bodyKind": "json"
+        }
+      }
+    ]
+  }
+}

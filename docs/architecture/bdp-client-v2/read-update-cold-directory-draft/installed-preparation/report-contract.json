@@ -1,0 +1,39 @@
+{
+  "environment": "BDP_COLD_DIRECTORY_REPORT_PATH",
+  "path": "absolute caller-supplied distinct path per invocation",
+  "maximumBytes": 262144,
+  "contains": [
+    "actual sourceCommit/sourceDirty/targetEntry",
+    "actual configuration/bootstrap/session identities",
+    "actual artifact/report bindings",
+    "actual runner scenario (including genuine control failure)",
+    "actual safe client observations",
+    "raw attempts/completions and mixed order facts, no raw headers",
+    "checksPassed/aliasRetryPassed/controlApplications",
+    "cleanupComplete"
+  ],
+  "fullRawResponseBodies": "Private local memory only. Full live Resource/alias/sequence/deleted-identity equality runs before success; do not claim serialized raw response bodies.",
+  "retention": "Written after actual runner return before oracle/cleanup; refreshed after passing oracle and actual cleanup. An earlier runner throw fabricates no result. Failure report cannot claim cleanup success.",
+  "negative": {
+    "actualHttp": 3,
+    "originalDirectoryStatus": 200,
+    "inputMutation": "delete only updateLink after genuine directory validation",
+    "failed": [
+      "read-update.discovery.operation-directory:directory:schema"
+    ],
+    "passedAtFailedAction": [
+      "status"
+    ],
+    "applicationCount": 1,
+    "clientCount": 0
+  },
+  "positive": {
+    "rawAttempts": 10,
+    "rawCompletions": 10,
+    "clients": 11,
+    "mixed": 21,
+    "literalAssertions": 134,
+    "supplementalAliasRetry": true
+  },
+  "publicClaim": false
+}

@@ -1,0 +1,84 @@
+{
+  "released": true,
+  "session": "2026-10-08T20:26:35Z-81e5",
+  "finalHead": "bb9600f1b8b6f623e753543ed5792005eb9aacee",
+  "finalTree": "aa8f7af9c4cdfafbd80547449ec2369f92071ab7",
+  "finalSource": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/read-update-cold-directory-draft/final-source.json",
+    "sha256": "89b6169c920a207acf64d31b326041cfcdd6e177d025f580b539b36ff8f65938"
+  },
+  "integrationAcceptance": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/read-update-cold-directory-draft/installed-preparation/root-integration-acceptance.json",
+    "sha256": "d47ae1d88d8fe4404b5759b7be7539b7012f837cc2212abae2dfddaa0e5f47f2"
+  },
+  "rootAcceptance": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/read-update-cold-directory-draft/installed-preparation/root-validation-release.json",
+    "sha256": "53b8e8bc55da932e44047b36a330c74bde3b9b3f3d1ce86ba7a6829a9a286c33"
+  },
+  "sourceValidationAcceptance": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/read-update-cold-directory-draft/installed-preparation/root-source-validation.json",
+    "sha256": "6708eac436ebb3d51e90f0d4029816fbd83f1bed5e8545d9ffa865e58d88a5c9"
+  },
+  "councilState": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/read-update-cold-directory-draft/installed-preparation/council-state.json",
+    "sha256": "3f09afde94c39854b76bdf25853a88ba07bd2e865e9e38cb5923bda4a729a8cd"
+  },
+  "rootBuildAcceptance": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/read-update-cold-directory-draft/installed-preparation/root-build-acceptance.json",
+    "sha256": "9a72dfb9dbafe1a74330e727c4b29fa0eb9c95a65aee39a492b6fb95394af6da"
+  },
+  "sourceLockSha256": "4150d8821c96dbc2cfec0b2762ff76b58318079f65fa4f5c8858ef2dd61f8d6d",
+  "consumerLockSha256": "90f96270d6f9e50a2045e902f49c6f7b59552f95897728bb344a443bf99d9943",
+  "preparationSha256": {
+    "gate.py": "5f69a79ef4f895e76d3795bd12c447b9beadfaec61e49c79431f67e1022304bb",
+    "supervise.py": "c7379208470579df06925671bbde5b611711104d9484eede8870e47c1bb9afb3",
+    "packages.py": "6058efca737ed860056949e730534a73bef8074d2f3d7dfda454c7774989f1b7",
+    "commands.json": "42fd87698feb1b0d51914d144837f046e9b5296c4b21c9979baee948d833c6e4",
+    "prepared-source.json": "4d27dc264f5db2c54bce46439789462090a7ad5a187fdc121cd9e5571c54c42d",
+    "report-contract.json": "22f8ad5968c742053316fe86cac16ee77fab57fd1368f0883dccb0779b34d4e0",
+    "selection.json": "42f4dc063b2395404d64928658acb2af478bbf627dd5dd33c58d0b09b749b9db"
+  },
+  "note": "Root accepted actual clean build, tar/source member checks, pinned offline consumer and eight-dependency payload provenance. Three exact installed callbacks released sequentially; stop unexpected failure. Council remains pending; no merge/publication approval.",
+  "approvedCommandIds": [
+    "fresh-build",
+    "node-version",
+    "package-directory",
+    "pack-protocol",
+    "pack-server",
+    "verify-tar",
+    "prepare-consumer",
+    "consumer-install",
+    "verify-installed",
+    "selected-positive",
+    "selected-directory-control",
+    "full-aggregate"
+  ],
+  "finalBase": "67a2842e3f1918e70978f745587cf11eaf0df5a8",
+  "finalParents": [
+    "67a2842e3f1918e70978f745587cf11eaf0df5a8"
+  ],
+  "sourceBinding": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/read-update-cold-directory-draft/coverage-fence-repair/source-binding.json",
+    "sha256": "4d27dc264f5db2c54bce46439789462090a7ad5a187fdc121cd9e5571c54c42d"
+  },
+  "buildOutputInventory": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/read-update-cold-directory-draft/installed-preparation/run/build-inventory.json",
+    "sha256": "df33391e43cf6b2b988bb0c1d5db90a0536d78ad415bb9d9097436f8074f7a3b"
+  },
+  "node": "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+  "pnpm": "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+  "installedProvenance": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/read-update-cold-directory-draft/installed-preparation/run/installed-provenance.json",
+    "sha256": "c94429164c817378414c2186f1baf026cde3a8f7021e9b17bce47ed15ba332ba"
+  },
+  "expectedProductionVersions": {
+    "@bdp/protocol": "0.0.0",
+    "@bdp/server": "0.0.0",
+    "ajv": "8.17.1",
+    "ajv-formats": "3.0.1",
+    "fast-deep-equal": "3.1.3",
+    "fast-uri": "3.1.5",
+    "json-schema-traverse": "1.0.0",
+    "require-from-string": "2.0.2"
+  }
+}

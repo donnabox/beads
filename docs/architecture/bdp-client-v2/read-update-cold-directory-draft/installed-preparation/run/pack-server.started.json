@@ -1,0 +1,43 @@
+{
+  "name": "pack-server",
+  "argv": [
+    "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+    "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+    "--filter",
+    "@bdp/server",
+    "pack",
+    "--pack-destination",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/read-update-cold-directory-draft/installed-preparation/run/packages"
+  ],
+  "cwd": "/Users/dbox/repos/wt/vickie/vickie-update-cold-directory",
+  "started": "2026-10-16T00:26:43.870602+00:00",
+  "head": "bb9600f1b8b6f623e753543ed5792005eb9aacee",
+  "workspaceDirty": false,
+  "sourceSha256": {
+    "apps/bdptest/src/read-update-matrix.test.ts": "3009ce7fe3085b140b23f8062358ba2d342bd491fde3f3b6c19f75f618e87c7b",
+    "packages/conformance/matrices/read-update-v1.json": "80f74625b6074892b707365859572f8bc0b8c10478d36ac307370ef6027f5fc3",
+    "packages/conformance/src/cumulative-artifact.test.ts": "d3e8a462694174cf34db94700df51f3de6943aa1072dbf4bd04de7560db9b523",
+    "packages/conformance/src/profile-contract-plan.test.ts": "8d649bf6f88b6faeafd7b629d9bb541dab7e818e00818e577de41dd0700f70a4",
+    "packages/conformance/src/read-update-artifact-set.test.ts": "9d337a232a0f2311aff2394a52b31e64c41e8516fcaa5d4a7a5bd7c2d36ecd47",
+    "packages/conformance/test-support/read-update-coverage-v1.json": "85b717f1817d8ea295d0a7c51f8914bdfb942d1786d414924d3d5f80be7cd10a"
+  },
+  "sourceDiffSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "rootAcceptanceSha256": "53b8e8bc55da932e44047b36a330c74bde3b9b3f3d1ce86ba7a6829a9a286c33",
+  "preparationSha256": "c7379208470579df06925671bbde5b611711104d9484eede8870e47c1bb9afb3",
+  "bdpOverrides": {},
+  "guardedArgv": [
+    "/opt/homebrew/opt/python@3.14/bin/python3.14",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/guarded-action.py",
+    "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+    "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+    "--filter",
+    "@bdp/server",
+    "pack",
+    "--pack-destination",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/read-update-cold-directory-draft/installed-preparation/run/packages"
+  ],
+  "nodePathPrefix": "/Users/dbox/.nvm/versions/node/v24.16.0/bin",
+  "sourceAttribution": "Externally bound source snapshot or frozen package; not child-attested Git identity",
+  "plannedWorkload": {},
+  "derivativeBinding": null
+}

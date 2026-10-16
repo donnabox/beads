@@ -1,0 +1,7 @@
+Cold Update clients had no cumulative executable witness proving that discovered operation-directory values drove all nine mutation targets. Add a 21-exchange row that follows Scope → descriptor → directory, captures the returned targets through a second directory GET, then exercises Bead/Link creation, update and deletion, alias creation/deletion, and an ordinary Update sequence. Actual raw/client observations verify target bindings, complete request writes, full live Resource results and retained deletion identities.
+
+A negative control validates the real directory, then removes only updateLink from copied assertion input and requires the single named schema failure after three HTTP exchanges. Existing 54 scenario objects and 129 other coverage objects remain byte-preserved. Ordinary Update semantics and public profile admission are unchanged; this remains partial, ineligible evidence.
+
+Validation: pinned build/typecheck/format passed. Six selected CPU callbacks passed initially; the seventh exposed a historical coverage-size allowance. After correcting that data-only allowance, the affected callback passed. The original failure is retained. Actual Claude code review is running.
+
+Installed validation pending: selected positive 21 HTTP / 2 children; negative expected 3 / maximum 21 HTTP / 2 children; full two-shard aggregate 2,303 HTTP / 57 children including 44 setup POSTs. Combined 2,327 expected / 2,345 maximum HTTP / 61 children. No installed result or complete profile qualification is claimed yet.
