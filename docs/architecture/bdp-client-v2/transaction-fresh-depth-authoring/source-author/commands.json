@@ -1,0 +1,104 @@
+[
+  {
+    "path": "packages/server/src/transaction-set.test.ts",
+    "expectedCases": 3,
+    "regex": "^(?:serializes\\ byte\\-bounded\\ deep\\ syntax\\ iteratively\\ without\\ changing\\ number\\ lexemes\\ or\\ key\\ order|keeps\\ receiving\\ and\\ legacy\\ preparation\\ branded\\ while\\ accepting\\ byte\\-bounded\\ deep\\ input|prepares\\ deep\\ sequence\\ members\\ after\\ complete\\ carrier\\ syntax\\ with\\ strict\\ brands\\ and\\ frozen\\ wrappers)$",
+    "argv": [
+      "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+      "/Users/dbox/repos/wt/vickie/vickie-fresh-depth-serving/node_modules/vitest/vitest.mjs",
+      "run",
+      "packages/server/src/transaction-set.test.ts",
+      "--maxWorkers=1",
+      "--testNamePattern",
+      "^(?:serializes\\ byte\\-bounded\\ deep\\ syntax\\ iteratively\\ without\\ changing\\ number\\ lexemes\\ or\\ key\\ order|keeps\\ receiving\\ and\\ legacy\\ preparation\\ branded\\ while\\ accepting\\ byte\\-bounded\\ deep\\ input|prepares\\ deep\\ sequence\\ members\\ after\\ complete\\ carrier\\ syntax\\ with\\ strict\\ brands\\ and\\ frozen\\ wrappers)$",
+      "--reporter=json",
+      "--outputFile=<root-authorized-external-absolute-json>"
+    ],
+    "released": false
+  },
+  {
+    "path": "packages/server/src/transaction-submission.test.ts",
+    "expectedCases": 7,
+    "regex": "^(?:private\\ direct\\ Transactional\\ receiving\\ order\\ keeps\\ invalid\\ Selector\\ grammar\\ distinct\\ from\\ valid\\ deep\\ input|valid\\ private\\ set\\ admission\\ accepts\\ byte\\-bounded\\ singleton\\ and\\ wrapped\\ set\\ content\\ across\\ the\\ former\\ depth\\ boundary|finishes\\ batch\\ synthetic\\ syntax\\ before\\ admission,\\ including\\ deeply\\ nested\\ received\\ input|finishes\\ singleton\\ synthetic\\ syntax\\ before\\ admission,\\ including\\ deeply\\ nested\\ received\\ input|compares\\ retained\\ direct\\ keys\\ before\\ negotiation\\ and\\ admits\\ valid\\ fresh\\ deep\\ input|compares\\ deep\\ metadata\\ against\\ genuine\\ pending\\ and\\ dependent\\ keys\\ without\\ changing\\ saved\\ outcomes|executes\\ deep\\ values\\ through\\ set\\ and\\ dependent\\ sequence\\ with\\ durable\\ receipt\\ recovery)$",
+    "argv": [
+      "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+      "/Users/dbox/repos/wt/vickie/vickie-fresh-depth-serving/node_modules/vitest/vitest.mjs",
+      "run",
+      "packages/server/src/transaction-submission.test.ts",
+      "--maxWorkers=1",
+      "--testNamePattern",
+      "^(?:private\\ direct\\ Transactional\\ receiving\\ order\\ keeps\\ invalid\\ Selector\\ grammar\\ distinct\\ from\\ valid\\ deep\\ input|valid\\ private\\ set\\ admission\\ accepts\\ byte\\-bounded\\ singleton\\ and\\ wrapped\\ set\\ content\\ across\\ the\\ former\\ depth\\ boundary|finishes\\ batch\\ synthetic\\ syntax\\ before\\ admission,\\ including\\ deeply\\ nested\\ received\\ input|finishes\\ singleton\\ synthetic\\ syntax\\ before\\ admission,\\ including\\ deeply\\ nested\\ received\\ input|compares\\ retained\\ direct\\ keys\\ before\\ negotiation\\ and\\ admits\\ valid\\ fresh\\ deep\\ input|compares\\ deep\\ metadata\\ against\\ genuine\\ pending\\ and\\ dependent\\ keys\\ without\\ changing\\ saved\\ outcomes|executes\\ deep\\ values\\ through\\ set\\ and\\ dependent\\ sequence\\ with\\ durable\\ receipt\\ recovery)$",
+      "--reporter=json",
+      "--outputFile=<root-authorized-external-absolute-json>"
+    ],
+    "released": false
+  },
+  {
+    "path": "packages/server/src/transaction-sequence.test.ts",
+    "expectedCases": 13,
+    "regex": "^(?:private\\ Transactional\\ sequence\\ slice\\ runs\\ all\\ eight\\ explicit\\ operation\\ kinds\\ as\\ separate\\ commits\\ with\\ locator\\-only\\ aliases|private\\ Transactional\\ sequence\\ slice\\ reserves\\ all\\ unknown\\ keys\\ together,\\ commits\\ a\\ prefix,\\ continues\\ past\\ failure\\ and\\ permits\\ interleaving|private\\ Transactional\\ sequence\\ slice\\ joins\\ overlapping\\ presentations\\ without\\ running\\ a\\ completed\\ member\\ twice\\ and\\ projects\\ current\\ labels|private\\ Transactional\\ sequence\\ slice\\ projects\\ another\\ owner's\\ pending\\ receipt\\ before\\ immutable\\ mismatch\\ and\\ never\\ retracts\\ that\\ owner|private\\ Transactional\\ sequence\\ slice\\ shares\\ singleton\\ and\\ one\\-operation\\ batch\\ identity,\\ preserving\\ exact\\ numbers\\ and\\ creation\\ defaults|private\\ Transactional\\ sequence\\ slice\\ leaves\\ no\\ partial\\ bulk\\ admission\\ on\\ after\\-sequence\\-reservation\\ failure|private\\ Transactional\\ sequence\\ slice\\ leaves\\ no\\ partial\\ bulk\\ admission\\ on\\ after\\-sequence\\-admission\\ failure|private\\ Transactional\\ sequence\\ slice\\ classifies\\ foreign\\ key\\ state\\ at\\ its\\ turn\\ after\\ failed\\ detail\\ is\\ forgotten|private\\ Transactional\\ sequence\\ slice\\ compares\\ retained\\ deep\\ sequence\\ members\\ without\\ executing\\ them\\ or\\ replacing\\ their\\ receipts|private\\ Transactional\\ sequence\\ slice\\ admits\\ fresh\\ deep\\ sequence\\ members\\ without\\ changing\\ atomic\\ reservation\\ behavior|private\\ Transactional\\ sequence\\ slice\\ executes\\ fresh\\ deep\\ input\\ after\\ a\\ retained\\ failed\\ member\\ expires\\ between\\ sequence\\ turns|private\\ Transactional\\ sequence\\ slice\\ rejects\\ duplicate\\ keys\\ and\\ invalid\\ dependency\\ edges\\ before\\ any\\ key\\ effects|private\\ Transactional\\ sequence\\ slice\\ projects\\ mixed\\ retained,\\ conflicting,\\ failed\\ and\\ unknown\\ keys\\ in\\ declaration\\ order)$",
+    "argv": [
+      "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+      "/Users/dbox/repos/wt/vickie/vickie-fresh-depth-serving/node_modules/vitest/vitest.mjs",
+      "run",
+      "packages/server/src/transaction-sequence.test.ts",
+      "--maxWorkers=1",
+      "--testNamePattern",
+      "^(?:private\\ Transactional\\ sequence\\ slice\\ runs\\ all\\ eight\\ explicit\\ operation\\ kinds\\ as\\ separate\\ commits\\ with\\ locator\\-only\\ aliases|private\\ Transactional\\ sequence\\ slice\\ reserves\\ all\\ unknown\\ keys\\ together,\\ commits\\ a\\ prefix,\\ continues\\ past\\ failure\\ and\\ permits\\ interleaving|private\\ Transactional\\ sequence\\ slice\\ joins\\ overlapping\\ presentations\\ without\\ running\\ a\\ completed\\ member\\ twice\\ and\\ projects\\ current\\ labels|private\\ Transactional\\ sequence\\ slice\\ projects\\ another\\ owner's\\ pending\\ receipt\\ before\\ immutable\\ mismatch\\ and\\ never\\ retracts\\ that\\ owner|private\\ Transactional\\ sequence\\ slice\\ shares\\ singleton\\ and\\ one\\-operation\\ batch\\ identity,\\ preserving\\ exact\\ numbers\\ and\\ creation\\ defaults|private\\ Transactional\\ sequence\\ slice\\ leaves\\ no\\ partial\\ bulk\\ admission\\ on\\ after\\-sequence\\-reservation\\ failure|private\\ Transactional\\ sequence\\ slice\\ leaves\\ no\\ partial\\ bulk\\ admission\\ on\\ after\\-sequence\\-admission\\ failure|private\\ Transactional\\ sequence\\ slice\\ classifies\\ foreign\\ key\\ state\\ at\\ its\\ turn\\ after\\ failed\\ detail\\ is\\ forgotten|private\\ Transactional\\ sequence\\ slice\\ compares\\ retained\\ deep\\ sequence\\ members\\ without\\ executing\\ them\\ or\\ replacing\\ their\\ receipts|private\\ Transactional\\ sequence\\ slice\\ admits\\ fresh\\ deep\\ sequence\\ members\\ without\\ changing\\ atomic\\ reservation\\ behavior|private\\ Transactional\\ sequence\\ slice\\ executes\\ fresh\\ deep\\ input\\ after\\ a\\ retained\\ failed\\ member\\ expires\\ between\\ sequence\\ turns|private\\ Transactional\\ sequence\\ slice\\ rejects\\ duplicate\\ keys\\ and\\ invalid\\ dependency\\ edges\\ before\\ any\\ key\\ effects|private\\ Transactional\\ sequence\\ slice\\ projects\\ mixed\\ retained,\\ conflicting,\\ failed\\ and\\ unknown\\ keys\\ in\\ declaration\\ order)$",
+      "--reporter=json",
+      "--outputFile=<root-authorized-external-absolute-json>"
+    ],
+    "released": false
+  },
+  {
+    "path": "packages/server/src/transaction-http.test.ts",
+    "expectedCases": 6,
+    "regex": "^(?:accepts\\ byte\\-bounded\\ deep\\ sequences\\ and\\ keeps\\ sequence\\ capacity\\ distinct\\ from\\ direct\\ transaction\\ capacity|compares\\ retained\\ sequence\\ members\\ and\\ accepts\\ deep\\ input\\ while\\ preserving\\ receiving\\ failures|source\\-private\\ actual\\ Transactional\\ HTTP\\ rejects\\ sequence\\ carrier\\ syntax/keys/negotiation\\ before\\ claiming\\ any\\ member|serves\\ retained\\ direct\\ key\\ conflicts\\ and\\ genuine\\ fresh\\ deep\\ effects|source\\-private\\ actual\\ Transactional\\ HTTP\\ rejects\\ invalid\\ set\\ Selector\\ grammar\\ and\\ admits\\ valid\\ deep\\ content\\ without\\ partial\\ effects|preserves\\ actual\\ singleton\\ bytes\\ and\\ wrapper\\-equivalent\\ deep\\ content\\ without\\ accepting\\ a\\ body\\ operation\\ override)$",
+    "argv": [
+      "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+      "/Users/dbox/repos/wt/vickie/vickie-fresh-depth-serving/node_modules/vitest/vitest.mjs",
+      "run",
+      "packages/server/src/transaction-http.test.ts",
+      "--maxWorkers=1",
+      "--testNamePattern",
+      "^(?:accepts\\ byte\\-bounded\\ deep\\ sequences\\ and\\ keeps\\ sequence\\ capacity\\ distinct\\ from\\ direct\\ transaction\\ capacity|compares\\ retained\\ sequence\\ members\\ and\\ accepts\\ deep\\ input\\ while\\ preserving\\ receiving\\ failures|source\\-private\\ actual\\ Transactional\\ HTTP\\ rejects\\ sequence\\ carrier\\ syntax/keys/negotiation\\ before\\ claiming\\ any\\ member|serves\\ retained\\ direct\\ key\\ conflicts\\ and\\ genuine\\ fresh\\ deep\\ effects|source\\-private\\ actual\\ Transactional\\ HTTP\\ rejects\\ invalid\\ set\\ Selector\\ grammar\\ and\\ admits\\ valid\\ deep\\ content\\ without\\ partial\\ effects|preserves\\ actual\\ singleton\\ bytes\\ and\\ wrapper\\-equivalent\\ deep\\ content\\ without\\ accepting\\ a\\ body\\ operation\\ override)$",
+      "--reporter=json",
+      "--outputFile=<root-authorized-external-absolute-json>"
+    ],
+    "released": false
+  },
+  {
+    "path": "packages/server/src/transaction-snapshot.test.ts",
+    "expectedCases": 12,
+    "regex": "^(?:refuses\\ retained\\ corruption:\\ missing\\-record\\ rather\\ than\\ rebuilding\\ current\\ graph|refuses\\ retained\\ corruption:\\ changed\\-record\\ rather\\ than\\ rebuilding\\ current\\ graph|refuses\\ retained\\ corruption:\\ oversized\\-record\\ rather\\ than\\ rebuilding\\ current\\ graph|refuses\\ retained\\ corruption:\\ missing\\-range\\ rather\\ than\\ rebuilding\\ current\\ graph|refuses\\ retained\\ corruption:\\ wrong\\-kind\\ rather\\ than\\ rebuilding\\ current\\ graph|refuses\\ retained\\ corruption:\\ wrong\\-context\\ rather\\ than\\ rebuilding\\ current\\ graph|refuses\\ retained\\ corruption:\\ wrong\\-anchor\\ rather\\ than\\ rebuilding\\ current\\ graph|refuses\\ retained\\ corruption:\\ wrong\\-expiry\\ rather\\ than\\ rebuilding\\ current\\ graph|refuses\\ missing\\ owned\\ or\\ endpoint\\ data\\ before\\ issuing\\ a\\ capture|new\\ private\\ Snapshot\\ entry\\ points\\ do\\ not\\ escape\\ package\\ public\\ exports|captures\\ and\\ reopens\\ deep\\ owned\\ Links\\ without\\ losing\\ JSON\\ value\\ equality|rejects\\ deep\\ owned\\-Link\\ divergence\\ before\\ Snapshot\\ issuance)$",
+    "argv": [
+      "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+      "/Users/dbox/repos/wt/vickie/vickie-fresh-depth-serving/node_modules/vitest/vitest.mjs",
+      "run",
+      "packages/server/src/transaction-snapshot.test.ts",
+      "--maxWorkers=1",
+      "--testNamePattern",
+      "^(?:refuses\\ retained\\ corruption:\\ missing\\-record\\ rather\\ than\\ rebuilding\\ current\\ graph|refuses\\ retained\\ corruption:\\ changed\\-record\\ rather\\ than\\ rebuilding\\ current\\ graph|refuses\\ retained\\ corruption:\\ oversized\\-record\\ rather\\ than\\ rebuilding\\ current\\ graph|refuses\\ retained\\ corruption:\\ missing\\-range\\ rather\\ than\\ rebuilding\\ current\\ graph|refuses\\ retained\\ corruption:\\ wrong\\-kind\\ rather\\ than\\ rebuilding\\ current\\ graph|refuses\\ retained\\ corruption:\\ wrong\\-context\\ rather\\ than\\ rebuilding\\ current\\ graph|refuses\\ retained\\ corruption:\\ wrong\\-anchor\\ rather\\ than\\ rebuilding\\ current\\ graph|refuses\\ retained\\ corruption:\\ wrong\\-expiry\\ rather\\ than\\ rebuilding\\ current\\ graph|refuses\\ missing\\ owned\\ or\\ endpoint\\ data\\ before\\ issuing\\ a\\ capture|new\\ private\\ Snapshot\\ entry\\ points\\ do\\ not\\ escape\\ package\\ public\\ exports|captures\\ and\\ reopens\\ deep\\ owned\\ Links\\ without\\ losing\\ JSON\\ value\\ equality|rejects\\ deep\\ owned\\-Link\\ divergence\\ before\\ Snapshot\\ issuance)$",
+      "--reporter=json",
+      "--outputFile=<root-authorized-external-absolute-json>"
+    ],
+    "released": false
+  },
+  {
+    "path": "packages/server/src/resource-evaluator.test.ts",
+    "expectedCases": 1,
+    "regex": "^(?:pure\\ member\\ Resource\\ evaluation\\ normalizes\\ accepted\\ numeric\\ spellings\\ and\\ preserves\\ revisions\\ and\\ metadata\\ on\\ semantic\\ no\\-ops)$",
+    "argv": [
+      "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+      "/Users/dbox/repos/wt/vickie/vickie-fresh-depth-serving/node_modules/vitest/vitest.mjs",
+      "run",
+      "packages/server/src/resource-evaluator.test.ts",
+      "--maxWorkers=1",
+      "--testNamePattern",
+      "^(?:pure\\ member\\ Resource\\ evaluation\\ normalizes\\ accepted\\ numeric\\ spellings\\ and\\ preserves\\ revisions\\ and\\ metadata\\ on\\ semantic\\ no\\-ops)$",
+      "--reporter=json",
+      "--outputFile=<root-authorized-external-absolute-json>"
+    ],
+    "released": false
+  }
+]
