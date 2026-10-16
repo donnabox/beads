@@ -1,0 +1,214 @@
+--- a/packages/conformance/test-support/transactional/manifest-v1.json
++++ b/packages/conformance/test-support/transactional/manifest-v1.json
+@@ -28022,24 +28022,6 @@
+               "equals": "private, no-store"
+             },
+             {
+-              "id": "absent-bdp-scope-epoch",
+-              "kind": "header",
+-              "name": "bdp-scope-epoch",
+-              "absent": true
+-            },
+-            {
+-              "id": "absent-bdp-authorization-view",
+-              "kind": "header",
+-              "name": "bdp-authorization-view",
+-              "absent": true
+-            },
+-            {
+-              "id": "absent-bdp-scope-position",
+-              "kind": "header",
+-              "name": "bdp-scope-position",
+-              "absent": true
+-            },
+-            {
+               "id": "media",
+               "kind": "header",
+               "name": "content-type",
+@@ -28110,32 +28092,8 @@
+               "equals": "private, no-store"
+             },
+             {
+-              "id": "absent-bdp-scope-epoch",
+-              "kind": "header",
+-              "name": "bdp-scope-epoch",
+-              "absent": true
+-            },
+-            {
+-              "id": "absent-bdp-authorization-view",
+-              "kind": "header",
+-              "name": "bdp-authorization-view",
+-              "absent": true
+-            },
+-            {
+-              "id": "absent-bdp-scope-position",
+-              "kind": "header",
+-              "name": "bdp-scope-position",
+-              "absent": true
+-            },
+-            {
+               "id": "body-absent",
+               "kind": "body-absent"
+-            },
+-            {
+-              "id": "media",
+-              "kind": "header",
+-              "name": "content-type",
+-              "equals": "application/problem+json"
+             },
+             {
+               "id": "challenge",
+@@ -28321,12 +28279,6 @@
+               "kind": "body-absent"
+             },
+             {
+-              "id": "media",
+-              "kind": "header",
+-              "name": "content-type",
+-              "equals": "application/problem+json"
+-            },
+-            {
+               "id": "get-metadata",
+               "kind": "response-metadata-equals",
+               "request": "missing-get",
+--- a/packages/conformance/test-support/transactional/coverage-v1.json
++++ b/packages/conformance/test-support/transactional/coverage-v1.json
+@@ -2841,7 +2841,7 @@
+     {
+       "id": "transactional.http.conditional-reads",
+       "wholeContract": false,
+-      "reason": "Partial Transactional conditional-read evidence: ordinary authentication and missing-Resource refusals precede conditional shortcuts; 304 and 412 are bodyless and carry current Scope context. Supporting GET/HEAD observations compare validators before and after mutation. The independent app wire oracle compares complete current Resources with observed receipt postimages; there are no portable object captures. Uses wildcard If-None-Match and an independently verified nonmatching literal tag. Whole contract remains unqualified: minimum-position refusal, epoch/view mismatch, erasure/expiry, durable checkpoint behavior, optional-no-validator behavior, observed matching specific request tags, If-Match:* success and date combinations are not covered. The separate Read conditional requirement remains unplanned; no cross-credit or public profile claim follows.",
++      "reason": "Partial Transactional conditional-read evidence: ordinary authentication and missing-Resource refusals precede conditional shortcuts; 304 and 412 are bodyless and carry current Scope context. Supporting GET/HEAD observations verify metadata parity with permitted HEAD omissions. The independent app wire oracle additionally compares validators before and after mutation and complete current Resources with observed receipt postimages; it checks the reference server's pre-context authentication refusals omit Scope context. These app-only checks add no portable obligation; there are no portable object captures. Uses wildcard If-None-Match and an independently verified nonmatching literal tag. Whole contract remains unqualified: minimum-position refusal, epoch/view mismatch, erasure/expiry, durable checkpoint behavior, optional-no-validator behavior, observed matching specific request tags, If-Match:* success and date combinations are not covered. The separate Read conditional requirement remains unplanned; no cross-credit or public profile claim follows.",
+       "bindings": [
+         {
+           "scenario": "transactional.http.conditional-reads",
+@@ -2945,9 +2945,6 @@
+             "anonymous-get:request-headers",
+             "anonymous-get:request-body",
+             "anonymous-get:cache",
+-            "anonymous-get:absent-bdp-scope-epoch",
+-            "anonymous-get:absent-bdp-authorization-view",
+-            "anonymous-get:absent-bdp-scope-position",
+             "anonymous-get:media",
+             "anonymous-get:challenge",
+             "anonymous-get:schema",
+@@ -2956,11 +2953,7 @@
+             "anonymous-head:request-headers",
+             "anonymous-head:request-body",
+             "anonymous-head:cache",
+-            "anonymous-head:absent-bdp-scope-epoch",
+-            "anonymous-head:absent-bdp-authorization-view",
+-            "anonymous-head:absent-bdp-scope-position",
+             "anonymous-head:body-absent",
+-            "anonymous-head:media",
+             "anonymous-head:challenge",
+             "anonymous-head:get-metadata",
+             "missing-get:status",
+@@ -2983,7 +2976,6 @@
+             "missing-head:present-bdp-scope-position",
+             "missing-head:position",
+             "missing-head:body-absent",
+-            "missing-head:media",
+             "missing-head:get-metadata",
+             "update:status",
+             "update:request-headers",
+--- a/packages/conformance/src/transactional-cumulative.test.ts
++++ b/packages/conformance/src/transactional-cumulative.test.ts
+@@ -1185,22 +1185,23 @@
+   // Root-accepted sequence-member: disk790009/normal802361/nodes20956/coverage117702.
+   // Root-accepted principal: disk825049/normal837765/nodes21908/coverage124537.
+   // Root-accepted conditional Read: disk870122/normal883414/nodes23196/coverage133517.
+-  // Proposed TX rebind measurement: disk869264/normal882556/nodes23166/coverage133568.
++  // Prior TX rebind measurement: disk869264/normal882556/nodes23166/coverage133568.
++  // Portability successor: disk867804/normal881096/nodes23126/coverage133364.
+   // Root must independently accept these measured fences before execution.
+   // These measured source authoring fences do not change runtime/parser limits.
+-  expect(read("manifest").byteLength - 488280).toBeLessThanOrEqual(385080);
+-  expect(read("manifest").byteLength).toBeLessThanOrEqual(873360);
+-  expect(Buffer.byteLength(JSON.stringify(manifest, null, 2) + "\n")).toBeLessThanOrEqual(886652);
+-  expect(read("coverage").byteLength - 70662).toBeLessThanOrEqual(63930);
+-  expect(read("coverage").byteLength).toBeLessThanOrEqual(134592);
++  expect(read("manifest").byteLength - 488280).toBeLessThanOrEqual(383620);
++  expect(read("manifest").byteLength).toBeLessThanOrEqual(871900);
++  expect(Buffer.byteLength(JSON.stringify(manifest, null, 2) + "\n")).toBeLessThanOrEqual(885192);
++  expect(read("coverage").byteLength - 70662).toBeLessThanOrEqual(63726);
++  expect(read("coverage").byteLength).toBeLessThanOrEqual(134388);
+   expect(
+     Buffer.byteLength(JSON.stringify(JSON.parse(read("coverage").toString()), null, 2) + "\n"),
+-  ).toBeLessThanOrEqual(134592);
++  ).toBeLessThanOrEqual(134388);
+   expect(
+     manifest.scenarios.flatMap((r: { actions: { assertions: unknown[] }[] }) =>
+       r.actions.flatMap((a) => a.assertions),
+     ),
+-  ).toHaveLength(2836);
++  ).toHaveLength(2828);
+   expect(read("fixture").byteLength).toBe(716);
+   expect(createHash("sha256").update(read("fixture")).digest("hex")).toBe(
+     "3a7899ced771d4880066d98b0000c53f801ece53458502cc4f3bc641146c9a85",
+@@ -1212,8 +1213,8 @@
+     nodes++;
+     if (value && typeof value === "object") pending.push(...Object.values(value));
+   }
+-  expect(nodes - 13019).toBeLessThanOrEqual(10211);
+-  expect(nodes).toBeLessThanOrEqual(23230);
++  expect(nodes - 13019).toBeLessThanOrEqual(10171);
++  expect(nodes).toBeLessThanOrEqual(23190);
+   // Clause ownership is independent from the exhaustive mechanical assertion mirror.
+   const clauseMap = {
+     "transactional.receipt.pagination": [
+@@ -3772,11 +3773,11 @@
+     "current-get",
+     "current-head",
+   ]);
+-  expect(row.actions.flatMap((a: { assertions: unknown[] }) => a.assertions)).toHaveLength(194);
++  expect(row.actions.flatMap((a: { assertions: unknown[] }) => a.assertions)).toHaveLength(186);
+   expect(
+     createHash("sha256").update(JSON.stringify(row)).digest("hex"),
+     "conditional-complete-oracle",
+-  ).toBe("28fd6a7d9a0434fe3a875aa1ae1a97470e2013dfe1eccfe78f35a54464eadd75");
++  ).toBe("faf0d8e65446c97549081797bf81fb281e95209434445afe99d2aef14dd0947a");
+   // HTTP captureValue accepts URL strings only; full dynamic receipt/postimage
+   // equality is enforced independently by the app's original-wire observer.
+   expect(row.actions.flatMap((a: { captures: unknown[] }) => a.captures)).toEqual([]);
+--- a/apps/bdptest/src/transactional-matrix.test.ts
++++ b/apps/bdptest/src/transactional-matrix.test.ts
+@@ -1792,8 +1792,8 @@
+     }
+     // Historical root-accepted maximum701716B/18263nodes plus4096B/64nodes.
+     // Command-minimum measured maximum756707B/19731nodes plus4096B/64nodes.
+-    expect(Buffer.byteLength(normal)).toBeLessThanOrEqual(892770);
+-    expect(nodes).toBeLessThanOrEqual(23386);
++    expect(Buffer.byteLength(normal)).toBeLessThanOrEqual(891310);
++    expect(nodes).toBeLessThanOrEqual(23346);
+     const loaded = createCumulativeTransactionalArtifactBundle(
+       loadProfileContractSelection("transactional"),
+       { fixture: fixtureSource, manifest: { bytes: Buffer.from(wire) } },
+@@ -2203,8 +2203,8 @@
+     // Historical measurement-only derivative guards were650386B/17275nodes.
+     // Historical root-accepted maximum701716B/18263nodes plus4096B/64nodes.
+     // Command-minimum measured maximum756707B/19731nodes plus4096B/64nodes.
+-    expect(Buffer.byteLength(normal)).toBeLessThanOrEqual(892770);
+-    expect(nodes).toBeLessThanOrEqual(23386);
++    expect(Buffer.byteLength(normal)).toBeLessThanOrEqual(891310);
++    expect(nodes).toBeLessThanOrEqual(23346);
+     const loaded = createCumulativeTransactionalArtifactBundle(
+       loadProfileContractSelection("transactional"),
+       { fixture: fixtureSource, manifest: { bytes: Buffer.from(JSON.stringify(changed)) } },
+@@ -4358,6 +4358,8 @@
+       expect(bytes).toBeLessThanOrEqual(8192);
+       expect(response.wireResponseBytes).toBeDefined();
+       expect(response.headers["cache-control"]).toBe("private, no-store");
++      // Reference-only: authentication refusals occur before Scope observation.
++      // Their context absence is not a portable 401 requirement.
+       const anonymous = i === 7 || i === 8;
+       const position = i >= 11 ? "pos-2" : "pos-1";
+       for (const name of ["bdp-scope-epoch", "bdp-authorization-view", "bdp-scope-position"])
+@@ -4461,6 +4463,7 @@
+           initialTag = response.headers.etag;
+           expect(initialTag).not.toBe(conditionalFalseTag);
+         }
++        // App-only before/after comparison; portable 304 checks use observed equality.
+         if (i === 12) expect(response.headers.etag).not.toBe(initialTag);
+       } else {
+         expect([7, 9]).toContain(i);

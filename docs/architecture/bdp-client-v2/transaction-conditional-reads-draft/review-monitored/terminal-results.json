@@ -1,0 +1,112 @@
+[
+  {
+    "duration_api_ms": 1187107,
+    "stop_reason": "end_turn",
+    "session_id": "78e66f9f-db38-41c2-b3db-225bc29130e3",
+    "total_cost_usd": 9.8322135,
+    "usage": {
+      "input_tokens": 136,
+      "cache_creation_input_tokens": 246392,
+      "cache_read_input_tokens": 10281125,
+      "output_tokens": 88995,
+      "output_tokens_details": {
+        "thinking_tokens": 69606
+      },
+      "server_tool_use": {
+        "web_search_requests": 0,
+        "web_fetch_requests": 0
+      },
+      "service_tier": "standard",
+      "cache_creation": {
+        "ephemeral_1h_input_tokens": 246392,
+        "ephemeral_5m_input_tokens": 0
+      },
+      "inference_geo": "global",
+      "iterations": [
+        {
+          "input_tokens": 2,
+          "output_tokens": 5245,
+          "cache_read_input_tokens": 250205,
+          "cache_creation_input_tokens": 933,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 0,
+            "ephemeral_1h_input_tokens": 933
+          },
+          "type": "message"
+        }
+      ],
+      "speed": "standard"
+    },
+    "modelUsage": {
+      "claude-haiku-4-5-20251001": {
+        "inputTokens": 2096,
+        "outputTokens": 16,
+        "cacheReadInputTokens": 0,
+        "cacheCreationInputTokens": 0,
+        "webSearchRequests": 0,
+        "costUSD": 0.002176,
+        "contextWindow": 200000,
+        "maxOutputTokens": 32000,
+        "thinkingTokens": 0,
+        "canonicalModel": "claude-haiku-4-5",
+        "provider": "firstParty",
+        "costBasis": "list"
+      },
+      "claude-opus-5[1m]": {
+        "inputTokens": 136,
+        "outputTokens": 88995,
+        "cacheReadInputTokens": 10281125,
+        "cacheCreationInputTokens": 246392,
+        "webSearchRequests": 0,
+        "costUSD": 9.8300375,
+        "contextWindow": 1000000,
+        "maxOutputTokens": 64000,
+        "thinkingTokens": 69606,
+        "canonicalModel": "claude-opus-5",
+        "provider": "firstParty",
+        "costBasis": "list"
+      }
+    },
+    "permission_denials": [],
+    "terminal_reason": "completed",
+    "fast_mode_state": "off",
+    "fast_mode_disabled_reason": "sdk_opt_in_required",
+    "subagent_stats": {
+      "spawned": 0,
+      "requested": {
+        "background": 0,
+        "foreground": 0,
+        "unset": 0
+      },
+      "started_in_background": 0,
+      "max_depth": 0,
+      "spawned_by_subagents": 0,
+      "completed": 0,
+      "failed": 0,
+      "killed": {
+        "parent": 0,
+        "user": 0,
+        "system": 0
+      },
+      "refused": {
+        "depth_limit": 0,
+        "concurrency_limit": 0,
+        "budget": 0
+      },
+      "by_type": {}
+    },
+    "is_error": false,
+    "num_turns": 87,
+    "subtype": "success",
+    "api_error_status": null,
+    "result": "## Verdict\n\n**No blockers.** The frozen four\u2011file delta is internally consistent, the new conditional row is correctly bound and wired, the predecessor evidence (principal/cross/minimum/member) is preserved byte\u2011for\u2011byte, and nothing in the delta needs a runtime, parser, schema, or catalog change. Four optional items below; none blocks the draft.\n\n---\n\n## Findings (all optional strengthening)\n\n**1. HEAD problem actions require `content-type` while the same action concedes it may be omitted \u2014 low**\n- `packages/conformance/test-support/transactional/manifest-v1.json:28135` (`anonymous-head:media`) with `:28160` (`optionalHeaders` incl. `content-type`); same pair at `:28324` / `:28343` (`missing-head`).\n- Impact: the row simultaneously demands `content-type: application/problem+json` on a bodyless HEAD and declares `content-type` optional for GET/HEAD parity. For the reference both hold (`problemResponse` sets it at `packages/server/src/index.ts:737-740`; the HEAD branch at `packages/server/src/read-http.ts:42-46` retains headers), so the row still passes. As a *portable* obligation it is stricter than the parity assertion it sits next to, and asymmetric with `initial-head`/`current-head`, which assert no media at all.\n- Fix: either drop `media` from those two HEAD actions (parity already pins content\u2011type equality against the GET whenever present), or remove `content-type` from those two `optionalHeaders` lists. Note the cascade: dropping two assertions moves 194\u2192192, 2836\u21922834, and invalidates the row digest `28fd6a7d\u2026` and the two parent/coverage byte pins \u2014 so leaving it as authored is a defensible call if you prefer the current pins.\n\n**2. Coverage reason credits the portable row with a before/after validator comparison it cannot express \u2014 low**\n- `packages/conformance/test-support/transactional/coverage-v1.json:2844` (\"Supporting GET/HEAD observations compare validators before and after mutation\").\n- Impact: portably the row only asserts `etag absent:false` on `current-get` and `equalsResponse: \"initial-get\"` on the two 304s (`manifest-v1.json:27724`, `:27801`). The *difference* between the pre\u2011 and post\u2011mutation validators is asserted only app\u2011side (`apps/bdptest/src/transactional-matrix.test.ts:4484`, `if (i === 12) expect(etag).not.toBe(initialTag)`), and the `header` kind has no \"differs from earlier response\" form (`executable-manifest.ts:1678-1700`). The next sentence already attributes resource/postimage comparison to the app oracle; this one reads as a portable claim.\n- Fix: reword to \"\u2026the independent app wire oracle additionally compares validators before and after mutation.\"\n\n**3. `absent: true` for the three context fields on the 401 pair is an analogy, not a quoted obligation \u2014 low**\n- `manifest-v1.json:28024-28042` (`anonymous-get`), `:28112-28130` (`anonymous-head`).\n- Impact: none for the reference \u2014 `transaction-http.ts:403` returns the unauthenticated problem with no observation, and `authority-read.ts:146-153` models exactly this `pre-context` phase. The nearest normative support is `docs/specs/bdp.md:5828-5831` (receiving refusal MUST NOT report the three fields) plus non\u2011disclosure; the bound requirement's quoted clauses (`catalog/transactional-v1.json:2044-2065`) do not cover it. The 404 side *is* directly supported (`bdp.md:5834-5839` requires the actual current observation context), and the row honors that with `present-*` + `pos-1`.\n- Fix: mention the pre\u2011context/receiving\u2011refusal analogy in the coverage reason, or relax to the non\u2011disclosure subset. Keeping it is reasonable.\n\n**4. Execution\u2011time headroom was not re\u2011examined when a 17th session was added \u2014 risk, not a defect**\n- `apps/bdptest/src/transactional-matrix.test.ts:628` keeps `\u2264 63000` ms while the cohort grows to 24 sessions / 25 children / 234 exchanges.\n- Impact: no deadline widening (correct per your constraint), but a near\u2011miss surfaces as this assertion failing rather than as a hang (cohort abort is 90 s at `:131`, vitest 120 s at `:644`, per\u2011request 5 s at `:354`). Watch it on first execution; do not pre\u2011emptively widen.\n\n---\n\n## Required checks \u2014 results\n\n**1. Portable 304/412 shape; native 401/404 precedence; bodylessness; context; GET/HEAD parity \u2014 correct**\n- 304 ETag genuinely compares the observed initial GET: `manifest-v1.json:27724` / `:27801` use `{kind: header, name: etag, equalsResponse: \"initial-get\"}`; `runner.ts:2086-2102` resolves it from `priorResponses` and requires `observedEntityTag(previous.headers.etag)` \u2014 `conditional-header.ts:24-28` throws `ObservedEntityTagError` \u2192 `ScenarioObservationFailure` unless the earlier response carried exactly one syntactically valid tag, and a 304 that omits ETag fails `actual === expected`. Not vacuous in either direction. Parser confines `equalsResponse` to `name: \"etag\"` and to an earlier action of the same scenario (`executable-manifest.ts:1695`, `1428-1458`).\n- 412 does **not** universally demand ETag or media absence: `mismatch-get` carries only status/request\u2011headers/request\u2011body/cache/3\u00d7present/position/body\u2011absent; `mismatch-head` adds only `get-metadata`, which passes when both sides omit ETag/content\u2011type. The reference\u2011specific expectations (ETag retained on 412, content\u2011type absent, `content-length: 0`) live solely in the app oracle (`transactional-matrix.test.ts:4391-4394`, `:4482`), matching `read-http.ts:30-37`.\n- Precedence: `applyReadHttpSemantics` only shortcuts a 200 JSON (or 204) response (`read-http.ts:12-39`), so `If-None-Match: *` on the anonymous read (401, pre\u2011context, no context headers) and on `beads/missing` (404 with observed context) cannot become a 304. Bodylessness is pinned portably by the eight `body-absent` assertions plus `read-http.ts:42-46`; GET/HEAD parity by `response-metadata-equals`, which also requires `response.status === expected.status` (`runner.ts:2179-2197`). All eight parity headers are in `STABLE_RESPONSE_METADATA_HEADERS` and `optionalHeaders` is HEAD\u2011only and restricted to exactly `content-length|content-type|vary` \u2282 `headers` (`executable-manifest.ts:432-445`, `1834-1876`, `1436-1444`) \u2014 so no parser change is implied.\n\n**2. Scenario context is real, frozen, snapshotted and identity\u2011checked; routing is by actual scenario \u2014 correct**\n- `transactional-matrix.test.ts:276-277`: the session is frozen **after** `await launchInstalledTransaction` succeeds, with `sessionOrdinal = sessions.length` before the push; `:298-300` snapshots it before any dispatch and throws if absent; `:306-307` re\u2011checks object identity after the awaited real response and before `afterExchange`. Only length assertions elsewhere touch `sessions` (`:428`, `:2908`, `:3404`, `:4103`, `:4161`), so the added field breaks no existing shape check.\n- `conditionalScenarioWire` (`:4571-4597`) routes strictly on `session.scenario === conditionalId` and throws on an unexpected non\u2011conditional dispatch/response; the old chains are called with the single `response` argument they already declare (`withPrincipalWire:4044-4052`, `composedMemberWire:3230-3253` never took the signal), so no control is dropped. Cleanup is harness\u2011level (`runner.ts:810-814`), not wire traffic, so `resetFixture` cannot leak into the oracle's 14\u2011dispatch cap.\n- No invented request field and no \"first 14\" shortcut: indexing is by the oracle's own dispatch counter *inside the conditional session only*, and each index still asserts method/url/credentialRef equality against the authored literal (`:4319-4330`). Reopen is rejected outright (`expect(current.reopen).toBe(false)`, `:4301`); async/launch failure surfaces as the two thrown errors above. Full\u2011tail completion is enforced by `dispatches/responses === 14`, the 14 exchange ids, `sessionOrdinal === sessions.length - 1`, and the parents\u2011before\u2011it check (`:4498-4523`). Session order is sound because the runner executes in catalog order (`runner.ts:355-384`) and the catalog places this row after all 16 planned rows (`catalog/transactional-v1.json:2040` vs `:86-866`, `catalog/read-update-v1.json:1310`, `:1620`), which is also the manifest order enforced at `transactional-cumulative.test.ts:103-105`.\n\n**3. Near\u2011miss control is a real discrimination \u2014 correct**\n- `applyConditionalControl` (`:4598-4608`) mutates only `conditional-get`'s `if-none-match`, asserting a single such header whose prior value is `*`; `:4609-4639` independently proves the mutated document differs from canonical in exactly that field and reverts to equality.\n- Prerequisites are genuine, not generic: in control mode index 3 must still be an actual 200 with `content-type: application/json`, schema\u2011valid `currentBeadRecord`, body `toStrictEqual` the seed receipt's postimage resource, `etag === initialTag`, and `initialTag !== '\"conditional-no-match\"'` (`:4453-4465`, `:4482-4483`). Discrimination is exactly `[\"conditional-get:status\",\"conditional-get:body-absent\"]` after 4 requests, with `prerequisiteFailure`/`cleanupError`/`transportError`/`harnessError` all asserted undefined (`:4498-4556`) \u2014 no timeout or generic failure is accepted. The 4\u2011exchange stop follows from `ScenarioAssertionFailure` aborting the action loop (`runner.ts:637-666`, `695-696`) while the matrix continues (`mustStopMatrixAfter` \u2192 false for a plain fail, `:448-476`). The positive requires all 14. Literals self\u2011check: 141 B / 130 B bodies match the authored JSON exactly, and the pinning test compares each `action.raw` to `{headerLines, body?}` with no extra keys. `principalNamespaceWire`/`withPrincipalWire`/`assertPrincipalPositive` (`:3766`, `:4044-4052`, `:4053-4071`) are untouched by the diff.\n\n**4. Placement, preservation, honesty of totals and fences \u2014 correct**\n- Row at manifest index 16, principal row still first (`transactional-cumulative.test.ts:3750`, `:3211`, `:1130-1148`); `requiredProfile`/`setup`/`applicability`/`cleanup` pinned (`:3752-3758`).\n- 32 parent raw objects pinned (16 manifest + 16 coverage, `:3561-3727`) and the complete parent bytes recovered by tail removal (`:3728-3747`). The composition is right: `withoutPrincipalRow` now strips the conditional tail first (`:3189`), so the pre\u2011existing principal, sequence\u2011member and cross\u2011carrier parent digests and `before.size === 13` (`:3001-3009`, `:1110-1114`) remain valid unchanged \u2014 that is why no old pin moved.\n- `read.http.conditional-reads` stays required/unplanned non\u2011vacuously (`:202-204`; the requirement exists at `catalog/read-v1.json:811`), and `unplanned` 235\u2192234 is exactly the one row that became `ready-unexecuted` (fixture declares `installed-transactional-http`, `applicability.requires: []`, no prerequisites \u2192 `profile-contract-plan.ts:335-356`), with `selected.required` constant at 251 (`:84`). TX `wholeContract: false` and `claimEligible: false` hold everywhere (`:3790`, `runner.ts:422`, app `:427`, `:4645`).\n- Totals: 194 bindings (I recounted per action: 26/18/11/10/11/9/10/11/11/11/11/26/18/11 = 194), 227+14 = 241 actions, 2642+194 = 2836 assertions; coverage bindings are order\u2011identical to the manifest assertion ids and bind only this scenario \u2014 no cross\u2011credit, and the unqualified list in the reason correctly disclaims the catalog's durable\u2011checkpoint clause, minimum\u2011position, epoch/view, erasure/expiry, no\u2011validator, specific\u2011tag match, `If-Match: *` and date cases.\n- Routes: 15 old + 3 new = 18, order 16/17/18 is exactly what the manifest derivation yields (`:210-229`, `:1411-1430`), old authority preserved by set comparison (`:1456-1467`), and the preimage grows by exactly 206 B (65 + 70 + 71 for the three new JSON entries) consistent with the asserted 1434.\n- Fences all equal the stated measurement plus the stated margin: manifest disk 869264 + 4096 = 873360 (and 488280 + 385080 = 873360), normal 882556 + 4096 = 886652, nodes 23166 + 64 = 23230 (13019 + 10211), coverage 133568 + 1024 = 134592. Both derivative guards rose by exactly the canonical growth (+44791 B, +1258 nodes at `transactional-matrix.test.ts:1795-1796` and `:2259-2260`), so the 4096 B / 64\u2011node derivative margins are unchanged; the 42 derivative specimens and their control ledgers are untouched (assertion totals there are computed at runtime, `:1700`, `:1783`). No deadline widened; exchange bounds moved uniformly by +14 (234, 225/226, 218/223/219, 228/223). No circular oracle: portable cross\u2011references point only to strictly earlier actions, and the app oracle derives nothing from runner outcomes except the final failure list.\n\n**Not credited as results:** this draft is unexecuted, so the fence measurements, the two full\u2011parent digests, the row digest `28fd6a7d\u2026`, the route digest `5a32a664\u2026`, the body digests and the pass/fail outcomes are checked here only for arithmetic and structural consistency \u2014 they remain unverified until the suite actually runs.",
+    "ttft_ms": 1572,
+    "type": "result",
+    "duration_ms": 1186846,
+    "uuid": "3bc4a1ea-6574-46e4-8dff-1c19b9020e0f",
+    "ttft_stream_ms": 1056,
+    "time_to_request_ms": 14,
+    "first_content_frame_ms": 1057,
+    "queued_turn_count": 0
+  }
+]

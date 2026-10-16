@@ -1,0 +1,29 @@
+{
+  "status": "PLAN_ONLY_UNEXECUTED",
+  "head": "ddfb5f43a058fe0f16ff9e04e528b4e7bfc03d87",
+  "witnessSha256": "5869cb012cf27c541dd6b9ab6e49af1b631ff1b8ca8cd6017714a70ea36884d1",
+  "binaryDiffSha256": "025b2c17c772621f06493d0995c6dcab0955d2ae78a8e648a12aaccef6b2ba57",
+  "allowedSourceScope": [
+    "apps/bdptest/src/transactional-event-sse-installed.test.ts"
+  ],
+  "reviewedInputs": {
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-conditional-reads-draft/next-serving-audit/event-review-monitored/final-result.txt": "07fd2b01db8d312ff1923da256e9d7d5eb0465b36ba11a9976ae0656fd0c7f9f",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-conditional-reads-draft/next-serving-audit/event-review-monitored/exit.json": "9dd13c21930fda4b60a69de619b00b5f0f7b33e93ed91aa892105fa424c2ef36",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-conditional-reads-draft/next-serving-audit/plan-v3.md": "8cc581a267ad5e88de93548ba7d6d73fc38da5df7d53a7e719dd54647e4e95da",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-conditional-reads-draft/next-serving-audit/event-authoring/successor-1/report.md": "78706bb2f2f576e5461c68bc738c0895098b15134a8d997b725a7ec73b47b500",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-conditional-reads-draft/next-serving-audit/event-authoring/successor-1/native-closure.md": "6ab0700bee7e3f3258b3c5bbf796d831aba002f8543a757c286b188b666eb0cd",
+    "/Users/dbox/repos/wt/vickie/vickie-event-restart-witness/apps/bdptest/src/transactional-event-sse-installed.test.ts": "5869cb012cf27c541dd6b9ab6e49af1b631ff1b8ca8cd6017714a70ea36884d1",
+    "/Users/dbox/repos/wt/vickie/vickie-event-restart-witness/docs/specs/bdp.md": "67772742d7d08f48c12196e9789f1859ad2d0e19f133ea65e197b049361f84f8",
+    "/Users/dbox/repos/wt/vickie/vickie-event-restart-witness/tsconfig.base.json": "6c70be275f9f7d5de533cbd3f2454ae7cb84bc765ab84f4f199889580e18e152",
+    "/Users/dbox/repos/wt/vickie/vickie-event-restart-witness/tsconfig.check.json": "f12922fb94d74d73945063f684b40c585c276fad38d19526ed606ac2d148853f",
+    "/Users/dbox/repos/wt/vickie/vickie-event-restart-witness/apps/bdptest/tsconfig.json": "ce515dc1d2617ecdbafb2cf67cb04e5322ef577cb3e6c1d05817510dfbd4b2bb",
+    "/Users/dbox/repos/wt/vickie/vickie-event-restart-witness/scripts/transaction-installed-observation.mjs": "6f772f3776d3c3effa788676d853cc2932a6ee59ad63ac3338ad1b487408914b",
+    "/Users/dbox/repos/wt/vickie/vickie-event-restart-witness/packages/conformance/src/http-executor.ts": "770a8405ae1532484b5a2658619c067832644947888f95e0c6575002376f1b5d",
+    "/Users/dbox/repos/wt/vickie/vickie-event-restart-witness/apps/bdptest/src/transactional-principal-key-installed.test.ts": "0f941001445e001f96f8c432a7099a5eb29dc4b68bc4458d6d1dfae472a3ce20",
+    "/Users/dbox/repos/wt/vickie/vickie-event-restart-witness/apps/bdptest/src/transactional-same-key-overlap-installed.test.ts": "b13688d6b02c5901e68251620ab6d7e00f9f675af4025319817f9e8cc6c9bca3",
+    "/Users/dbox/repos/wt/vickie/vickie-fresh-depth-serving/node_modules/@types/node/child_process.d.ts": "c06b2652ffeb89afd0f1c52c165ced77032f9cd09bc481153fbd6b5504c69494",
+    "/Users/dbox/repos/wt/vickie/vickie-fresh-depth-serving/node_modules/@types/node/package.json": "a4d29a0f9a3b45be30a130591091ea1f7707d4193489960ef4ee98f35375a4e9"
+  },
+  "typeDeclarationAttribution": "Read installed @types/node declaration from serving worktree; Event worktree dependencies are absent. No compiler invocation.",
+  "allSevenDisposition": "accepted bounded correction; finding3 addressed by truthful scope wording, not an extra provenance mechanism"
+}
