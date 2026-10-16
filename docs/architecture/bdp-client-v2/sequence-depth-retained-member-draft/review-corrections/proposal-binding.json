@@ -1,0 +1,39 @@
+{
+  "status": "PROPOSED ONLY; no source/external-plan patches applied; no tests executed",
+  "sourceBinding": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/sequence-depth-retained-member-draft/lint-repair/source-binding.json",
+    "sha256": "9eb076e7fee0b300010a4edac01f55fecd7ab6f1d27955931e7791556d2080ec"
+  },
+  "sourcePatchSha256": "478ffa8fc4f6ede585c8bf58c7bd28af84f61c362a3d5d0fcc1d339a98c24aba",
+  "externalProvenancePatchSha256": "f8a95ff26e07bd6d471d2131d69a5f336eaee1febaac909863464ee3fd4546d7",
+  "sourceChanges": {
+    "packages/server/src/transaction-batch.ts": {
+      "beforeSha256": "95f3ce3957503cba240f18e911fe3d2c8027b4accbba8f1128ea47e3d2b0c362",
+      "proposedSha256": "0f67235a7fdadf3ae342695b6f8eee795ad51b70e6507dcb7d70ec8848ba9836"
+    },
+    "packages/server/src/transaction-set.test.ts": {
+      "beforeSha256": "a8a7d5b127866c2b1a60012e6c1f864b8e58bd524f6c520604e2b860b58d491e",
+      "proposedSha256": "494f7536fac5fd452521902301d943865e40b20895fa16e9c0a3beb1b4481dc9"
+    },
+    "apps/bdptest/src/transactional-sequence-depth-installed.test.ts": {
+      "beforeSha256": "d451340062915a31f79c1d02371bdbff13fb404967fe563e0484c43f218dbcf9",
+      "proposedSha256": "8ad2c796bfb22375584fc6b348d494ece512490f8a59ef72a74fb34de3f2fca1"
+    }
+  },
+  "externalChanges": {
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/sequence-depth-retained-member-plan/review-successor/plan.md": {
+      "beforeSha256": "07827411c1b243f5ab4cc91188f453a22d365c3bbb9d03c2cd814c3f4617c8e0",
+      "proposedSha256": "c55d16c703e524d37464bb9f6fa49898a09044180625f56c92a20ad2abff4cb2"
+    },
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/sequence-depth-retained-member-plan/review-successor/source-dispositions.md": {
+      "beforeSha256": "762d174a908354a28c539888f49c70d79c20887026e256b9206e833ebb211865",
+      "proposedSha256": "c4d97df1e4a19399d65ec7373ee15e0fb3871bbb28c83603e7cf6017a773a0a9"
+    }
+  },
+  "reviewOutputs": {
+    "production": "d1924318a87abb636c0e144da32bb2e14fdca18c5867a862d34554e7ceac1a4f",
+    "evidence": "829e5bbc5dc985592571c0999287616c2132d43569338c062173dd40a3a4ccd8"
+  },
+  "validationOutcomeSha256": "70688c5fc3d14aa539ec42958ca5248751984d20228c3de43fa5ccaed74d1d3f",
+  "rootActualAcceptanceSha256": "47e805128f678e9dc4f7241f6a3ad0fe4af303b84d326db308edfa89b524a938"
+}

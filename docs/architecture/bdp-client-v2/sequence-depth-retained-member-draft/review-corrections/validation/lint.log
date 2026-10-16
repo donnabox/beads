@@ -1,0 +1,172 @@
+apps/bdptest/src/transactional-sequence-depth-installed.test.ts:269:42 lint/style/noNonNullAssertion ━━━━━━━━━━
+
+  ! Forbidden non-null assertion.
+  
+    267 │       expect(digest(row.body ?? ""), row.label).toBe(row.bodySha256);
+    268 │       if (row.label.includes("deep") || row.label.endsWith("fresh-depth")) {
+  > 269 │         const parsed = record(JSON.parse(row.body!));
+        │                                          ^^^^^^^^^
+    270 │         const input = "operations" in parsed ? records(parsed.operations)[0]! : parsed;
+    271 │         let value: unknown = input.metadata;
+  
+
+apps/bdptest/src/transactional-sequence-depth-installed.test.ts:270:48 lint/style/noNonNullAssertion ━━━━━━━━━━
+
+  ! Forbidden non-null assertion.
+  
+    268 │       if (row.label.includes("deep") || row.label.endsWith("fresh-depth")) {
+    269 │         const parsed = record(JSON.parse(row.body!));
+  > 270 │         const input = "operations" in parsed ? records(parsed.operations)[0]! : parsed;
+        │                                                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    271 │         let value: unknown = input.metadata;
+    272 │         for (let i = 0; i < 41; i++) {
+  
+
+apps/bdptest/src/transactional-sequence-depth-installed.test.ts:415:31 lint/style/noNonNullAssertion  FIXABLE  ━━━━━━━━━━
+
+  ! Forbidden non-null assertion.
+  
+    413 │       const results = records(receipt.results);
+    414 │       expect(results).toHaveLength(1);
+  > 415 │       const resource = record(results[0]!.resource);
+        │                               ^^^^^^^^^^^
+    416 │       expect(typeof resource.revision).toBe("string");
+    417 │       expect(resource.revision).not.toBe("");
+  
+  i Unsafe fix: Replace with optional chain operator ?. This operator includes runtime checks, so it is safer than the compile-only non-null assertion operator
+  
+    413 413 │         const results = records(receipt.results);
+    414 414 │         expect(results).toHaveLength(1);
+    415     │ - ······const·resource·=·record(results[0]!.resource);
+        415 │ + ······const·resource·=·record(results[0]?.resource);
+    416 416 │         expect(typeof resource.revision).toBe("string");
+    417 417 │         expect(resource.revision).not.toBe("");
+  
+
+apps/bdptest/src/transactional-sequence-depth-installed.test.ts:486:29 lint/style/noNonNullAssertion  FIXABLE  ━━━━━━━━━━
+
+  ! Forbidden non-null assertion.
+  
+    484 │     status(reuse, 200, "sequence-depth:fresh-key-reuse");
+    485 │     const created = checked(reuse.bodyText, "transactionalSequenceResponse");
+  > 486 │     const resource = record(records(created.results)[0]!.resource);
+        │                             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    487 │     expect(typeof resource.revision).toBe("string");
+    488 │     expect(resource.revision).not.toBe("");
+  
+  i Unsafe fix: Replace with optional chain operator ?. This operator includes runtime checks, so it is safer than the compile-only non-null assertion operator
+  
+    484 484 │       status(reuse, 200, "sequence-depth:fresh-key-reuse");
+    485 485 │       const created = checked(reuse.bodyText, "transactionalSequenceResponse");
+    486     │ - ····const·resource·=·record(records(created.results)[0]!.resource);
+        486 │ + ····const·resource·=·record(records(created.results)[0]?.resource);
+    487 487 │       expect(typeof resource.revision).toBe("string");
+    488 488 │       expect(resource.revision).not.toBe("");
+  
+
+packages/server/src/transaction-batch.ts:917:103 lint/style/noNonNullAssertion  FIXABLE  ━━━━━━━━━━━
+
+  ! Forbidden non-null assertion.
+  
+    915 │               retry: "never",
+    916 │               operationIndex,
+  > 917 │               pointer: `${batch.carrier.kind === "singleton" ? "" : `/operations/${operationIndex}`}${admitted.offending[0]!.pointer}`,
+        │                                                                                                       ^^^^^^^^^^^^^^^^^^^^^^
+    918 │               diagnostics: admitted.diagnostics,
+    919 │               ...(admitted.diagnosticsTruncated ? { diagnosticsTruncated: true } : {}),
+  
+  i Unsafe fix: Replace with optional chain operator ?. This operator includes runtime checks, so it is safer than the compile-only non-null assertion operator
+  
+     915  915 │                 retry: "never",
+     916  916 │                 operationIndex,
+     917      │ - ··············pointer:·`${batch.carrier.kind·===·"singleton"·?·""·:·`/operations/${operationIndex}`}${admitted.offending[0]!.pointer}`,
+          917 │ + ··············pointer:·`${batch.carrier.kind·===·"singleton"·?·""·:·`/operations/${operationIndex}`}${admitted.offending[0]?.pointer}`,
+     918  918 │                 diagnostics: admitted.diagnostics,
+     919  919 │                 ...(admitted.diagnosticsTruncated ? { diagnosticsTruncated: true } : {}),
+  
+
+packages/server/src/transaction-set.test.ts:1031:120 lint/suspicious/noUselessEscapeInString  FIXABLE  ━━━━━━━━━━
+
+  ! The character doesn't need to be escaped.
+  
+    1030 │ it("serializes byte-bounded deep syntax iteratively without changing number lexemes or key order", () => {
+  > 1031 │   const text = `{"z":[${"[".repeat(20000)}1e+30${"]".repeat(20000)}],"a":{"n":9007199254740993,"zero":-0,"escaped":"\\\""}}`;
+         │                                                                                                                        ^
+    1032 │   expect(Buffer.byteLength(text)).toBeLessThan(65536);
+    1033 │   const value = decodeJsonDocument(text);
+  
+  i Only quotes that enclose the string and special characters need to be escaped.
+  
+  i Safe fix: Unescape the character.
+  
+    1031 │ ··const·text·=·`{"z":[${"[".repeat(20000)}1e+30${"]".repeat(20000)}],"a":{"n":9007199254740993,"zero":-0,"escaped":"\\\""}}`;
+         │                                                                                                                       -      
+
+packages/server/src/transaction-set.test.ts:1061:22 lint/style/noNonNullAssertion ━━━━━━━━━━━━━━━━━━
+
+  ! Forbidden non-null assertion.
+  
+    1059 │   expect(prepared.carrier.operations[1]?.input.selector).toBe(literal);
+    1060 │   expect(Object.isFrozen(prepared.carrier.operations[1])).toBe(true);
+  > 1061 │   expect(Object.keys(prepared.carrier.operations[1]!)).toEqual(["operation", "input"]);
+         │                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    1062 │   expect(
+    1063 │     batch.normalizeTransaction(batch.prepareTransaction(scope, original), () => undefined),
+  
+
+packages/server/src/transaction-set.test.ts:1219:20 lint/style/noNonNullAssertion ━━━━━━━━━━━━━━━━━━
+
+  ! Forbidden non-null assertion.
+  
+    1217 │     const sequence = JSON.stringify({ operations: [{ ...operation, idempotencyKey: "deep" }] });
+    1218 │     const received = batch.prepareTransactionSequenceForReceiving(scope, sequence);
+  > 1219 │     const member = received.members[0]!;
+         │                    ^^^^^^^^^^^^^^^^^^^^
+    1220 │     const directReceived = batch.prepareTransactionForReceiving(scope, { kind: "batch" }, direct);
+    1221 │     const message = refused ? "development batch depth limit" : undefined;
+  
+
+packages/server/src/transaction-set.test.ts:1258:40 lint/style/noNonNullAssertion  FIXABLE  ━━━━━━━━━━
+
+  ! Forbidden non-null assertion.
+  
+    1256 │     JSON.stringify({ operations: [shallow, deep] }),
+    1257 │   );
+  > 1258 │   expect(batch.transactionDepthRefusal(mixed.members[0]!.request)).toBeUndefined();
+         │                                        ^^^^^^^^^^^^^^^^^
+    1259 │   expect(batch.transactionDepthRefusal(mixed.members[1]!.request)).toBe(
+    1260 │     "development batch depth limit",
+  
+  i Unsafe fix: Replace with optional chain operator ?. This operator includes runtime checks, so it is safer than the compile-only non-null assertion operator
+  
+    1256 1256 │       JSON.stringify({ operations: [shallow, deep] }),
+    1257 1257 │     );
+    1258      │ - ··expect(batch.transactionDepthRefusal(mixed.members[0]!.request)).toBeUndefined();
+         1258 │ + ··expect(batch.transactionDepthRefusal(mixed.members[0]?.request)).toBeUndefined();
+    1259 1259 │     expect(batch.transactionDepthRefusal(mixed.members[1]!.request)).toBe(
+    1260 1260 │       "development batch depth limit",
+  
+
+packages/server/src/transaction-set.test.ts:1259:40 lint/style/noNonNullAssertion  FIXABLE  ━━━━━━━━━━
+
+  ! Forbidden non-null assertion.
+  
+    1257 │   );
+    1258 │   expect(batch.transactionDepthRefusal(mixed.members[0]!.request)).toBeUndefined();
+  > 1259 │   expect(batch.transactionDepthRefusal(mixed.members[1]!.request)).toBe(
+         │                                        ^^^^^^^^^^^^^^^^^
+    1260 │     "development batch depth limit",
+    1261 │   );
+  
+  i Unsafe fix: Replace with optional chain operator ?. This operator includes runtime checks, so it is safer than the compile-only non-null assertion operator
+  
+    1257 1257 │     );
+    1258 1258 │     expect(batch.transactionDepthRefusal(mixed.members[0]!.request)).toBeUndefined();
+    1259      │ - ··expect(batch.transactionDepthRefusal(mixed.members[1]!.request)).toBe(
+         1259 │ + ··expect(batch.transactionDepthRefusal(mixed.members[1]?.request)).toBe(
+    1260 1260 │       "development batch depth limit",
+    1261 1261 │     );
+  
+
+Checked 3 files in 23ms. No fixes applied.
+Found 10 warnings.
