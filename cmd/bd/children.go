@@ -72,7 +72,7 @@ Examples:
 				}
 				var out strings.Builder
 				for _, child := range children {
-					formatIssueCompact(&out, child.Issue, child.Labels, nil, nil, selected.Path)
+					formatIssueCompact(&out, child.Issue, child.Labels, nil, nil, selected.Path, nil)
 				}
 				_, err := fmt.Fprint(cmd.OutOrStdout(), out.String())
 				return err
