@@ -1,6 +1,6 @@
 # Preview 3 planning and execution
 
-Last checked: October 15, 2026, 21:32 PDT. This is a milestone snapshot, updated when the state changes; it is not a live CI dashboard.
+Last checked: October 15, 2026, 21:37 PDT. This is a milestone snapshot, updated when the state changes; it is not a live CI dashboard.
 
 This tracker covers the release plan and its execution. The active first phase is establishing a qualified Preview 3 integration branch. The integration-base milestones below are only what we need to begin producing Preview 3 builds; they are not the complete release plan. Proposed workstreams will be added to the release cutline only after their scope and qualification are decided.
 
@@ -23,19 +23,21 @@ These are planning lanes, not promises that all their changes will ship in Previ
 | --- | --- | --- |
 | Type system, metatype, Issue/Dependency definitions | Trish owns design and BDP/CLI contract; her separate implementation agent is working on the runtime. Review the implementable Type draft and qualify an exact source slice. | Boundary to decide |
 | Memory Bead/Link Type definitions | Melinda prepares a requirements/dependency map read-only. After the Type foundation is ready, Donna and Trish make the design decisions; Melinda drives the separate workstream. | To decide |
-| Memory proposal gap audit | Janet is auditing all 32 requirements and 16 scenarios against exact final Preview 2 behavior; Donna will review the classified gaps and help choose a release cutline. | Audit underway; inclusion to decide |
+| Memory proposal gap audit | Janet is auditing all 32 requirements and 16 scenarios against exact final Preview 2 behavior. Four source-backed initial gaps are classified below; Donna will review the complete gap set and help choose a release cutline. | Audit underway; inclusion to decide |
 | Provenance V2 | Finish design and qualify at least the revision-provenance slice; activity provenance is a separate scope choice. | Likely required slice; boundary to decide |
 | Import/export | Iris owns data movement, initially to avoid in-place upgrades; evaluate installable Bead/Link/Type packages as a second use. | To decide |
 | BDP spec and reference implementation | Vickie is finishing the Write profile implementation and validation suite, then completing BDP spec/reference cleanup. This work proceeds independently of the release train and gates what `bd` can implement. Any qualified BDP functionality included in a preview is directly available. | Experimental contract; exact `bd` slice to decide |
-| Bead/Link CLI surface | Janet has started a read-only background inventory of commands and existing harnesses. Decide semantics and acceptance cases with Donna before delegating implementation or running broader harnesses. | Inventory underway; inclusion to decide |
-| Remaining CLI surface | Janet has started a separate read-only background inventory. Resolve compatibility choices before delegating implementation. | Inventory underway; inclusion to decide |
+| Bead/Link CLI surface | A read-only exact-release inventory is complete. It maps namespace behavior, Dependency Link limits, and black-box harness gaps; settle semantics and acceptance cases with Donna before implementation. | Inventory complete; inclusion to decide |
+| Remaining CLI surface | A separate read-only exact-release inventory is complete. It maps graph-admitted commands, refused families, and existing compatibility harnesses; resolve semantics before implementation. | Inventory complete; inclusion to decide |
 | Integration and vendoring | Janet owns the fork/upstream merge, exact-source qualification and a reproducible `bd`/BDP dependency path. | Required infrastructure |
 
 ## Current state
 
-The final Preview 2 source is frozen at [`graph-preview2`](https://github.com/donnabox/beads/releases/tag/graph-preview2), commit `703bb13e91aa2cab2092443319139006d74242c8`. Fork `main` is still `40b3232456dfcbe621ea66ee55d635ac56634a1e`; upstream `main` is `773b537c75c3fdf7c38371d5da5cd3d98b615e71`. This draft PR tracks planning and execution; there is no published Preview 3 integration branch or source catch-up PR yet.
+The final Preview 2 source is frozen at [`graph-preview2`](https://github.com/donnabox/beads/releases/tag/graph-preview2), commit `703bb13e91aa2cab2092443319139006d74242c8`. Fork `main` is still `40b3232456dfcbe621ea66ee55d635ac56634a1e`; live upstream `main` has advanced to `b303d494dfb436784d5022cfb82e5503f3769f18`. The isolated successor below remains pinned to prior upstream `773b537c75c3fdf7c38371d5da5cd3d98b615e71` and has not been silently refreshed. This draft PR tracks planning and execution; there is no published Preview 3 integration branch or source catch-up PR yet.
 
-The earlier local merge rehearsal combines final Preview 2 with upstream `b911ed28cd47da47e167484f32db586e7ad8a279`. Its focused CI-policy compile failed and the full attempt remains preserved. A fresh, uncommitted successor combines final Preview 2 with pinned current upstream `773b537c75c3fdf7c38371d5da5cd3d98b615e71`. Its 31 textual conflicts have provisional resolutions and no unmerged files remain. The scripts package now compiles, but the first focused CI/Bazel-policy run failed in 30 top-level test groups. The failures expose a real mismatch between upstream's newer Bazel workflow/test model and legacy fork lanes that still supply required gates. The complete failed attempt is frozen separately; no merged-source qualification passed.
+The earlier local merge rehearsal combines final Preview 2 with upstream `b911ed28cd47da47e167484f32db586e7ad8a279`. Its focused CI-policy compile failed and the full attempt remains preserved. An uncommitted successor combines final Preview 2 with pinned upstream `773b537c75c3fdf7c38371d5da5cd3d98b615e71`. Its 31 textual conflicts have provisional resolutions and no unmerged files remain. The scripts package now compiles, but the first focused CI/Bazel-policy run failed in 30 top-level test groups. The failures expose a real mismatch between upstream's newer Bazel workflow/test model and legacy fork lanes that still supply required gates. The complete failed attempt is frozen separately; no merged-source qualification passed.
+
+The first exact-release Memory audit classifies four requirements without claiming full conformance: R13 is partial because retained versions exist but graph Memory restore and project-wide History query are absent from the inspected surface; R17 is partial because informational Links exist but arbitrary user-defined Link Types do not; R20 is unmet because deleting a Memory with any live incident Link is refused rather than applying the proposal's latest-versus-pinned rules; R27 is unmet because no connected Memory interchange path ships. The remaining requirements and all 16 scenarios are still unverified. These are candidate gaps for Donna to prioritize, not an automatic Preview 3 cutline.
 
 ## Integration-base milestones
 
@@ -64,4 +66,4 @@ The earlier local merge rehearsal combines final Preview 2 with upstream `b911ed
 
 ## Current focus
 
-Choose one coherent CI lane model for the successor, reconcile its policy tests and Bazel target partition, then repeat the focused static checks. The previous failed attempts remain separate. No database test is running as of the timestamp above. Until qualification completes, the successor is not ready for submissions. Independent work can branch from the immutable `graph-preview2` tag now.
+Choose one coherent CI lane model for the pinned successor, reconcile its policy tests and Bazel target partition, then repeat the focused static checks. Incorporate the newer upstream `b303d49` commit in a separately preserved successor before whole-source qualification and publication. The previous failed attempts remain separate. No Janet database test is running as of the timestamp above. Until qualification completes, the successor is not ready for submissions. Independent work can branch from the immutable `graph-preview2` tag now.
