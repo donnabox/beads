@@ -28,7 +28,11 @@ func initialNotesRequest(title string) publicops.CreateRequest {
 func assertInitialNotes(t *testing.T, got IssueRecord, request publicops.CreateRequest) {
 	t.Helper()
 	assertCreateFields(t, got, request)
-	if got.Properties.Notes != request.Issue.Notes || got.Properties.Owner != request.Issue.Owner || got.Properties.CreatedBy != request.Issue.CreatedBy {
+	createdBy := request.Issue.CreatedBy
+	if createdBy == "" {
+		createdBy = request.Actor // Native public create defaults an absent creator to the actor.
+	}
+	if got.Properties.Notes != request.Issue.Notes || got.Properties.Owner != request.Issue.Owner || got.Properties.CreatedBy != createdBy {
 		t.Fatal("initial notes/owner/creator were defaulted, normalized or lost")
 	}
 }
