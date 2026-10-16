@@ -1,0 +1,57 @@
+{
+  "status": "CLOSED; not launched",
+  "head": "11742645bc591b3e5affa9fcc2f36c551c6fa803",
+  "tree": "66b0cc09393fdbddf32d7ee19a2d74b961c7fdbb",
+  "reanchorSha256": "baeebcfe338f49de35e60db9cf74d39fc97dd3dcec0e96cd038b2a78522a9d6e",
+  "sourceFiles": 40,
+  "originalPlanChangedInputs": 7,
+  "priorReviewChangedInputs": 5,
+  "scopePackets": {
+    "production": {
+      "promptBytes": 5140,
+      "contextBytes": 41158,
+      "promptSha256": "eb2361b00f57e1eb40d4c208d2fe1b1ec4302a50073c2621fbacdcfcbc338e28",
+      "contextSha256": "dc555aeaed29381cab85997dbd1f9ec891442832062e3e7789343c8eb73aa5f9",
+      "runnerSha256": "87d98b38f6b361e53b56341f461b93a8794e3b1474622146dff6660f44c4f5d9",
+      "bindingSha256": "0761189351f40e1b2709e00b100d5f5a0255b888efad23280fb4952b5ec2504c",
+      "scope": [
+        "packages/server/src/transaction-set.ts",
+        "packages/server/src/transaction-batch.ts",
+        "packages/server/src/transaction-store.ts",
+        "packages/server/src/transaction-submission.ts",
+        "packages/server/src/transaction-http.ts",
+        "packages/server/src/transaction-snapshot.ts",
+        "packages/server/src/resource-evaluator.ts",
+        "packages/server/src/json-value-equality.ts"
+      ],
+      "excerptManifestSha256": "67caad5b5c420304ad553bd8fb5e255c4d39d5fa855c18734431e7e985a2f057"
+    },
+    "evidence": {
+      "promptBytes": 5908,
+      "contextBytes": 43644,
+      "promptSha256": "12ffa6beb1e233c22c3b741ac197252fd0af7ca944cf01e923f7b5df4bae6e49",
+      "contextSha256": "ace3f7b01a32deab26d8a5dc276c79da9117d91ede63c835213572b7443a2c76",
+      "runnerSha256": "c2cadb546432add0e027160573fbb647d6d3f9858f3d1562909b75338957a948",
+      "bindingSha256": "61877466c41986d2e560c65da681ee1abda6c7571cb00efb3cd17910cbbedf3a",
+      "scope": [
+        "packages/server/src/transaction-set.test.ts",
+        "packages/server/src/transaction-submission.test.ts",
+        "packages/server/src/transaction-sequence.test.ts",
+        "packages/server/src/transaction-http.test.ts",
+        "packages/server/src/transaction-snapshot.test.ts",
+        "packages/server/src/resource-evaluator.test.ts",
+        "apps/bdptest/src/transactional-depth-key-order-installed.test.ts",
+        "apps/bdptest/src/transactional-sequence-depth-installed.test.ts",
+        "apps/bdptest/src/transactional-fresh-depth-installed.test.ts",
+        "docs/design/transaction-implementation-progress.md"
+      ],
+      "excerptManifestSha256": "7b02135ecdcbf79ae0545daa0a0fb82c63cb8ef099f89d36918557de80475b9b"
+    }
+  },
+  "runnerPattern": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/sequence-depth-retained-member-plan/claude-review-preparation/run.py",
+    "sha256": "d4d3f439bff5a0058f42d82dbc7e0990fa66f3210b60e7f47463a29baa96ce85",
+    "adaptation": "Only W/E constants and sole --add-dir path changed. Same release/hash checks, clean checkout enforcement, no model, Read/Glob/Grep only, exclusive outputs,895sTERM/900sKILL, process/temp and before/after evidence."
+  },
+  "execution": "No product import/build/test/service/review execution. AST parsing/data/hash checks only."
+}

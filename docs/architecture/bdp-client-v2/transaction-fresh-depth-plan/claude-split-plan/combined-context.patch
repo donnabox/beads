@@ -1,0 +1,815 @@
+diff --git a/docs/design/transaction-implementation-progress.md b/docs/design/transaction-implementation-progress.md
+index 14c567a..6e9c37e 100644
+--- a/docs/design/transaction-implementation-progress.md
++++ b/docs/design/transaction-implementation-progress.md
+@@ -1991,3 +1991,35 @@ installed validation and exact-head CI have not yet been credited here. These
+ local source results do not establish public Transactional qualification. Unknown
+ identity and the retained Snapshot/incident-Link product questions remain outside
+ this change.
++
++
++### Current Resource minimum ordering draft
++
++This draft is authored from reviewed authorization candidate 1647c5d, which was
++not merged main at authoring time. It implements the operator-ruled ordinary
++missing/hidden Resource, alias and initial incident-anchor precedence and bounded
++unproved-position waiting for existing current Bead/Link Resource/properties.
++Strict consumers and pending Snapshot/incident-Event questions remain separate.
++On that isolated candidate, all 11 source-validation stages passed, including
++the fresh build and 15 selected source callbacks; preceding fixture-type and
++report-lint failures remain preserved under their original bindings. Actual
++authorization main df80f8cb is ordinarily integrated through bf50e1e8. On clean
++733728cf, five narrow integration stages passed, including the fresh build and
++two selected owner-read callbacks. Fresh archives and their external consumer
++passed package and dependency verification. The first installed positive failed
++before ready with zero HTTP requests: its compiled Type fixture used identities
++outside the configured Scope. That failure and its unknown-stop/retained-directory
++report remain preserved. The test-only Scope-local Type correction leaves all
++production bytes and the verified archives unchanged. Targeted typecheck and
++format checks passed. The corrected installed positive passed all 32 exchanges;
++two separate emitted controls each produced only their intended named failure
++after two exchanges. All three children exited cleanly and stores were absent.
++The external fingerprint adapter's initial JSON key-order mismatch is preserved;
++its source-grounded correction re-adjudicated the same positive without repeating
++HTTP. Exact-head CI remains pending. Unknown positions combined with foreign
++epoch/view remain a private unsupported development gap, outside the current
++operator ruling. Source and installed evidence retain their exact commit/build
++provenance; no qualification is claimed.
++
++
++Private sequence depth/retained-member draft (unexecuted): receiving preparation now preserves branded per-member depth facts so an existing member key can reach its ordered retained comparison, while strict source preparation still rejects deep input. Fresh deep JSON requests remain unsupported private500 responses; an unacceptable sequence Accept is refused with406 before admission. If a retained failed key expires between turns, a later private depth500 may follow an already committed and retained prefix; remaining claims are retracted without undoing that prefix. The proposed source and fresh-installed witnesses are not yet executed. This does not add arbitrary-depth execution, public Transactional discovery/admission, or cumulative qualification, and leaves the documented policy and consistency limitations unchanged.
+diff --git a/docs/specs/bdp.md b/docs/specs/bdp.md
+index 4cf679c..e097e46 100644
+--- a/docs/specs/bdp.md
++++ b/docs/specs/bdp.md
+@@ -5823,7 +5823,7 @@ repeated, or lexically invalid values MUST return `400 malformed-request`
+ after ordinary transport, target/method, and authentication/authorization checks,
+ but before any owner read or target-existence lookup. All three absent means
+ no minimum is requested. Lexical validity does not establish that a position
+-identity is known or supported; existing semantic consistency decisions remain.
++identity is known or supported; semantic handling follows the rules below.
+ 
+ This receiving refusal observes no projected prefix and MUST NOT report
+ `BDP-Scope-Epoch`, `BDP-Authorization-View`, or `BDP-Scope-Position`. It MUST NOT
+@@ -5831,10 +5831,24 @@ become a conditional `304` or `412`, a negotiation `406`, or an SSE stream.
+ Earlier ordinary target/method and Origin-policy refusals remain unchanged.
+ HEAD retains the corresponding GET response metadata and sends no body.
+ 
+-The authority then does one of three things: it returns a representation at
+-that position or later, it waits or routes to an eligible replica, or it
+-returns the normative foreign-view, cursor-expired, or catch-up-timeout
+-problem. It never reports success with an older position.
++For an ordinary unknown, deleted, or authorization-hidden Bead or Link
++Resource (including its properties view), alias target, or initial Bead
++view=links anchor, the authority MUST return the uniform 404 resource-not-found
++before semantic minimum comparison or waiting. This refusal reports the actual
++current observation context and does not disclose the hidden target. Ordinary
++request validation and the lexical receiving rule above still apply.
++
++For the remaining reads, the authority returns a representation at that position
++or later, waits or routes to an eligible replica, or returns the normative
++foreign-view, cursor-expired, or catch-up-timeout problem. It never reports
++success with an older position. For an existing authorized current Bead or Link
++Resource or properties view, a lexically valid but unrecognized minimum position
++with the actual current epoch and view does not prove eligibility. The authority
++MUST use its bounded minimum-read wait and, if eligibility remains unproved,
++return 503 catch-up-timeout with retry: "after-delay"; it MUST NOT substitute
++a stale success, fabricated expiry, or lexical malformed-request refusal.
++This rule does not establish precedence for retained continuations or Snapshots,
++nor extend unrecognized-position waiting to successful incident-Link lists.
+ 
+ Transactional mutation POSTs follow the shared
+ [mutation command preconditions](#mutation-command-preconditions): copied read
+diff --git a/packages/server/src/transaction-http.test.ts b/packages/server/src/transaction-http.test.ts
+index fec7f05..47fe1d8 100644
+--- a/packages/server/src/transaction-http.test.ts
++++ b/packages/server/src/transaction-http.test.ts
+@@ -1781,13 +1781,15 @@ it("uses actual epoch/view decisions and an exhausted wait before conditional or
+     expect(unsupported.status).toBe(500);
+     expect(unsupported.headers.get("x-bdp-development-limit")).toBe("minimum-position-route");
+   }
+-  expect(
+-    (
+-      await f.get(`${f.runtime.scope}beads/a`, {
+-        headers: { ...headers, "bdp-minimum-scope-position": "opaque-unknown" },
+-      })
+-    ).status,
+-  ).toBe(500);
++  const unknown = await f.get(f.runtime.scope + "beads/a", {
++    headers: { ...headers, "bdp-minimum-scope-position": "opaque-unknown" },
++  });
++  expect(unknown.status).toBe(503);
++  expect(checkedProblem(await body(unknown))).toMatchObject({
++    code: "catch-up-timeout",
++    status: 503,
++    retry: "after-delay",
++  });
+ });
+ 
+ it("preserves authentication on commands carrying copied read controls without reserving keys", async () => {
+@@ -1823,7 +1825,7 @@ it("preserves authentication on commands carrying copied read controls without r
+   }
+ });
+ 
+-it("serves compatible missing Resource404 with context and preserves incompatible gaps without waiting", async () => {
++it("serves missing Resource404 with current context before semantic minimum comparisons", async () => {
+   const wait = vi.fn(async () => {});
+   const f = await fixture({ minimumReads: { budgetMs: 2, wait } });
+   const created = await f.post(
+@@ -1906,18 +1908,27 @@ it("serves compatible missing Resource404 with context and preserves incompatibl
+           method,
+           headers: { ...minimumHeaders(removed), ...extra },
+         });
+-        expect(response.status).toBe(500);
+-        expect(response.headers.get("x-bdp-development-limit")).toBe("minimum-position-visibility");
++        expect(response.status).toBe(404);
++        expect(response.headers.has("x-bdp-development-limit")).toBe(false);
+         for (const name of ["bdp-scope-position", "bdp-scope-epoch", "bdp-authorization-view"])
+-          expect(response.headers.has(name)).toBe(false);
+-        expect(await response.text()).toBe("");
++          expect(response.headers.get(name)).toBe(removed.headers.get(name));
++        if (method === "HEAD") expect(await response.text()).toBe("");
++        else
++          expect(checkedProblem(await body(response))).toMatchObject({
++            code: "resource-not-found",
++            status: 404,
++          });
+       }
+   expect(wait).not.toHaveBeenCalled();
+   const malformed = await f.get(`${f.runtime.scope}beads/missing`, {
+     headers: minimumHeaders(removed, "unissued"),
+   });
+-  expect(malformed.status).toBe(500);
+-  expect(malformed.headers.get("x-bdp-development-limit")).toBe("minimum-position");
++  expect(malformed.status).toBe(404);
++  expect(malformed.headers.has("x-bdp-development-limit")).toBe(false);
++  expect(checkedProblem(await body(malformed))).toMatchObject({
++    code: "resource-not-found",
++    status: 404,
++  });
+   const anonymous = await f.get(`${f.runtime.scope}beads/missing`, {
+     headers: { ...minimumHeaders(removed), authorization: "" },
+   });
+@@ -3028,9 +3039,15 @@ it("serves canonical current Type and incident minimums with truthful context an
+       { "bdp-authorization-view": "foreign" },
+     ]) {
+       const refused = await send(suffix, { ...headers, ...patch });
+-      expect(refused.status).toBe(500);
+-      expect(refused.headers.get("x-bdp-development-limit")).toBe("minimum-position-visibility");
+-      expect(refused.headers.has("bdp-scope-position")).toBe(false);
++      if (suffix === "types/absent") {
++        expect(refused.status).toBe(500);
++        expect(refused.headers.get("x-bdp-development-limit")).toBe("minimum-position-visibility");
++        expect(refused.headers.has("bdp-scope-position")).toBe(false);
++      } else {
++        expect(refused.status).toBe(404);
++        assertContext(refused);
++        expect(checkedProblem(await body(refused))).toMatchObject({ code: "resource-not-found" });
++      }
+     }
+   }
+ });
+@@ -3102,12 +3119,7 @@ it("serves conditioned live aliases and preserves bodyless redirects, refusal co
+   expect(context(missing)).toEqual(context(created));
+   expect(checkedProblem(await body(missing))).toMatchObject({ code: "resource-not-found" });
+   for (const [suffix, supplied, status, marker] of [
+-    [
+-      "alias/missing",
+-      { ...headers, "bdp-minimum-scope-position": "pos-2" },
+-      500,
+-      "minimum-position-visibility",
+-    ],
++    ["alias/missing", { ...headers, "bdp-minimum-scope-position": "pos-2" }, 404, null],
+     ["alias/work?invalid=1", { ...headers, "bdp-minimum-scope-position": "pos-2" }, 404, null],
+     ["alias/work", { "bdp-minimum-scope-position": "pos-1" }, 400, null],
+     [
+@@ -3127,8 +3139,13 @@ it("serves conditioned live aliases and preserves bodyless redirects, refusal co
+         retry: "never",
+       });
+     expect(response.headers.has("location")).toBe(false);
+-    for (const name of Object.keys(context(created)))
+-      expect(response.headers.has(name)).toBe(false);
++    if (suffix === "alias/missing") {
++      expect(context(response)).toEqual(context(created));
++      expect(checkedProblem(await body(response))).toMatchObject({ code: "resource-not-found" });
++    } else {
++      for (const name of Object.keys(context(created)))
++        expect(response.headers.has(name)).toBe(false);
++    }
+   }
+   const anonymous = await fetch(target, { headers, redirect: "manual" });
+   expect(anonymous.status).toBe(401);
+@@ -4791,3 +4808,462 @@ it("enforces the minimum-receiving-malformed-request boundary over the emitted l
+     });
+   });
+ }, 20000);
++
++it("waits only for existing current Resource unknown minima and keeps unsupported route labels", async () => {
++  let tick = 0,
++    waits = 0;
++  const f = await fixture({
++    minimumReads: {
++      budgetMs: 2,
++      now: () => tick,
++      wait: async (ms) => {
++        tick += ms;
++        waits++;
++      },
++    },
++  });
++  const seed = await f.post(batch([create("a")]), "minimum-current-source");
++  expect(seed.status).toBe(200);
++  const seedReceipt = await body(seed);
++  expect(validateSelectorReceipt(seedReceipt), JSON.stringify(validateSelectorReceipt.errors)).toBe(
++    true,
++  );
++  expect(seedReceipt).toMatchObject({ status: "completed", requiredPosition: "pos-1" });
++
++  const tuple = minimumHeaders(seed, "opaque");
++  for (const suffix of ["beads/a", "beads/a?view=properties"]) {
++    const response = await f.get(f.runtime.scope + suffix, {
++      headers: { ...tuple, "if-none-match": "*" },
++    });
++    expect(response.status).toBe(503);
++    expect(checkedProblem(await body(response))).toEqual({
++      type: "https://github.com/gastownhall/bdp/problems/unavailable",
++      status: 503,
++      code: "catch-up-timeout",
++      retry: "after-delay",
++    });
++    expect(response.headers.get("retry-after")).toBe("1");
++    expect(response.headers.get("bdp-scope-position")).toBe("pos-1");
++  }
++  expect(waits).toBe(2);
++  for (const suffix of ["beads/?limit=1", "types/", "beads/a?view=links"]) {
++    const response = await f.get(f.runtime.scope + suffix, { headers: tuple });
++    expect(response.status).toBe(500);
++    expect(response.headers.get("x-bdp-development-limit")).toBe("minimum-position");
++    expect(response.headers.has("bdp-scope-position")).toBe(false);
++    expect(await response.text()).toBe("");
++  }
++  const published = await f.runtime.replaceAuthorizationPolicy({ timeoutMs: 1000 });
++  let expectedBody: unknown;
++  for (const suffix of ["beads/a", "beads/missing", "beads/a?view=links"]) {
++    const response = await f.get(f.runtime.scope + suffix, {
++      headers: {
++        ...tuple,
++        "bdp-authorization-view": published.authorizationView,
++      },
++    });
++    expect(response.status).toBe(404);
++    const value = checkedProblem(await body(response));
++    if (expectedBody === undefined) expectedBody = value;
++    expect(value).toEqual(expectedBody);
++    expect(response.headers.get("bdp-authorization-view")).toBe(published.authorizationView);
++    expect(response.headers.get("bdp-scope-position")).toBe("pos-1");
++  }
++  expect(waits).toBe(2);
++});
++
++it("compares retained sequence members before private depth refusal and preserves receiving failures", async () => {
++  const boundary = cleanup.length;
++  const controller = new AbortController();
++  const failures: unknown[] = [];
++  const observations: Record<string, unknown>[] = [];
++  const deadlineReason = new Error("sequence depth work deadline");
++  let deadlineExceeded = false;
++  const deadline = setTimeout(() => {
++    deadlineExceeded = true;
++    controller.abort(deadlineReason);
++  }, 25000);
++  let f: Awaited<ReturnType<typeof fixture>> | undefined;
++  let attempts = 0,
++    cleanupCompleted = false,
++    cleanupExceeded = false;
++  let expectedContext: readonly [string, string] | undefined;
++  const contextNames = ["bdp-scope-epoch", "bdp-authorization-view", "bdp-scope-position"] as const;
++  const validBead = ajv.compile({ $ref: `${schema.$id}#/$defs/beadRecord` });
++  type Wire = { status: number; headers: Headers; text: string };
++  function parse(response: Wire, validate: typeof validateSequence) {
++    const value = record(JSON.parse(response.text));
++    expect(validate(value), JSON.stringify(validate.errors)).toBe(true);
++    return value;
++  }
++  function tuple(response: Wire, position: string) {
++    if (!expectedContext) throw new Error("sequence seed context missing");
++    expect(contextNames.map((name) => response.headers.get(name))).toStrictEqual([
++      ...expectedContext,
++      position,
++    ]);
++  }
++  function resource(value: unknown, name: string) {
++    const result = record(value);
++    expect(typeof result.revision).toBe("string");
++    expect(result.revision).not.toBe("");
++    expect(result).toStrictEqual({
++      id: `${f!.runtime.scope}beads/${name}`,
++      type: bead,
++      revision: result.revision,
++      properties: { title: name },
++      metadata: {},
++    });
++    return result;
++  }
++  async function exchange(
++    label: string,
++    url: string,
++    text?: string,
++    key?: string,
++    accept = "application/json",
++    credential: "operator" | "reader" | "none" = "operator",
++  ): Promise<Wire> {
++    if (!f) throw new Error("sequence listener missing");
++    controller.signal.throwIfAborted();
++    expect(++attempts, "sequence depth exact dispatch bound").toBeLessThanOrEqual(11);
++    const method = text === undefined ? "GET" : "POST";
++    expect(
++      [
++        ["POST", f.runtime.targets.createBead],
++        ["POST", f.runtime.targets.sequence],
++        ["GET", `${f.runtime.scope}beads/sequence-a`],
++      ].some(([m, target]) => m === method && target === url),
++    ).toBe(true);
++    const headers = {
++      accept,
++      ...(credential === "none"
++        ? {}
++        : { authorization: `Bearer ${credential === "reader" ? readToken : token}` }),
++      ...(text === undefined ? {} : { "content-type": "application/json" }),
++      ...(key === undefined ? {} : { "idempotency-key": key }),
++    };
++    expect(Buffer.byteLength(text ?? "")).toBeLessThanOrEqual(65536);
++    expect(
++      Object.entries(headers).reduce(
++        (sum, [name, value]) => sum + Buffer.byteLength(name + value) + 4,
++        0,
++      ),
++    ).toBeLessThanOrEqual(16384);
++    const request = new AbortController();
++    const timer = setTimeout(() => request.abort(new Error("sequence request deadline")), 5000);
++    let reader: ReadableStreamDefaultReader<Uint8Array> | undefined;
++    let complete = false;
++    try {
++      const response = await fetch(url, {
++        method,
++        headers,
++        ...(text === undefined ? {} : { body: text }),
++        redirect: "error",
++        signal: AbortSignal.any([controller.signal, request.signal]),
++      });
++      expect(
++        [...response.headers].reduce(
++          (sum, [name, value]) => sum + Buffer.byteLength(name + value) + 4,
++          0,
++        ),
++      ).toBeLessThanOrEqual(65536);
++      const chunks: Uint8Array[] = [];
++      let bytes = 0;
++      reader = response.body?.getReader();
++      if (reader)
++        for (;;) {
++          const chunk = await reader.read();
++          if (chunk.done) break;
++          bytes += chunk.value.byteLength;
++          if (bytes > 131072) throw new Error("sequence response body ceiling");
++          chunks.push(chunk.value);
++        }
++      complete = true;
++      const result = {
++        status: response.status,
++        headers: response.headers,
++        text: Buffer.concat(chunks).toString("utf8"),
++      };
++      observations.push({
++        ordinal: attempts,
++        label,
++        method,
++        url,
++        credential,
++        accept,
++        requestBodyBytes: Buffer.byteLength(text ?? ""),
++        requestBodySha256: createHash("sha256")
++          .update(text ?? "")
++          .digest("hex"),
++        status: result.status,
++        responseBodyBytes: bytes,
++        responseBodySha256: createHash("sha256").update(result.text).digest("hex"),
++        headers: Object.fromEntries(
++          [
++            ...contextNames,
++            "x-bdp-development",
++            "x-bdp-development-limit",
++            "content-type",
++            "content-length",
++          ].map((name) => [name, result.headers.get(name)]),
++        ),
++      });
++      return result;
++    } finally {
++      clearTimeout(timer);
++      request.abort();
++      if (reader) {
++        try {
++          if (!complete) await reader.cancel();
++        } catch (error) {
++          failures.push(error);
++        }
++        try {
++          reader.releaseLock();
++        } catch (error) {
++          failures.push(error);
++        }
++      }
++    }
++  }
++  try {
++    f = await fixture();
++    let nested: unknown = "leaf";
++    for (let i = 0; i < 40; i++) nested = { nested };
++    const input = (name: string, deep = false) => ({
++      id: `beads/${name}`,
++      type: bead,
++      properties: { title: name },
++      metadata: deep ? { nested } : {},
++    });
++    const sequenceBody = (name: string, key: string, deep = false) =>
++      JSON.stringify({
++        operations: [
++          { operation: "createBead", ...input(name, deep), idempotencyKey: key, name: "present" },
++        ],
++      });
++    const seedText = JSON.stringify(input("sequence-a"));
++    const seed = await exchange(
++      "seed",
++      f.runtime.targets.createBead,
++      seedText,
++      "sequence-retained",
++    );
++    expect(seed.status).toBe(200);
++    const receipt = parse(seed, validateSelectorReceipt);
++    expect(typeof receipt.scopeEpoch).toBe("string");
++    expect(receipt.scopeEpoch).not.toBe("");
++    expect(typeof receipt.authorizationView).toBe("string");
++    expect(receipt.authorizationView).not.toBe("");
++    expectedContext = [receipt.scopeEpoch as string, receipt.authorizationView as string];
++    tuple(seed, "pos-1");
++    const savedResource = resource(
++      record((receipt.results as unknown[])[0]).resource,
++      "sequence-a",
++    );
++    expect(receipt).toStrictEqual({
++      id: receipt.id,
++      status: "completed",
++      detail: "available",
++      idempotencyKey: "sequence-retained",
++      scopeEpoch: expectedContext[0],
++      authorizationView: expectedContext[1],
++      transaction: receipt.transaction,
++      requiredPosition: "pos-1",
++      effectPosition: "pos-1",
++      results: [{ operationIndex: 0, outcome: "created", resource: savedResource }],
++      next: null,
++      expiresAt: receipt.expiresAt,
++    });
++    const deep = sequenceBody("sequence-a", "sequence-retained", true);
++    const conflict = await exchange("retained-deep", f.runtime.targets.sequence, deep);
++    // First oracle for C1: a preparation throw is generic500, without the private marker.
++    expect(conflict.status, "sequence-depth:retained-member-conflict").toBe(200);
++    expect(parse(conflict, validateSequence)).toStrictEqual({
++      results: [
++        {
++          type: "https://github.com/gastownhall/bdp/problems/conflict",
++          code: "idempotency-conflict",
++          status: 409,
++          retry: "never",
++          operationIndex: 0,
++          operationName: "present",
++        },
++      ],
++    });
++    expect(conflict.headers.get("x-bdp-development-limit")).toBeNull();
++    tuple(conflict, "pos-1");
++    const replay = await exchange(
++      "original-replay",
++      f.runtime.targets.createBead,
++      seedText,
++      "sequence-retained",
++    );
++    expect(replay.status).toBe(200);
++    expect(parse(replay, validateSelectorReceipt)).toStrictEqual(receipt);
++    tuple(replay, "pos-1");
++    const point = await exchange("original-resource", `${f.runtime.scope}beads/sequence-a`);
++    expect(point.status).toBe(200);
++    expect(parse(point, validBead)).toStrictEqual(savedResource);
++    tuple(point, "pos-1");
++    const fresh = await exchange(
++      "fresh-deep",
++      f.runtime.targets.sequence,
++      sequenceBody("sequence-b", "sequence-fresh", true),
++    );
++    expect(fresh.status).toBe(500);
++    expect(fresh.text).toBe("");
++    expect(fresh.headers.get("x-bdp-development-limit")).toBe(
++      "unsupported-transaction-composition",
++    );
++    expect(fresh.headers.get("content-length")).toBe("0");
++    expect(contextNames.map((name) => fresh.headers.get(name))).toStrictEqual([null, null, null]);
++    const reuse = await exchange(
++      "fresh-key-reuse",
++      f.runtime.targets.sequence,
++      sequenceBody("sequence-b", "sequence-fresh"),
++    );
++    expect(reuse.status).toBe(200);
++    const created = parse(reuse, validateSequence),
++      createdEntry = record((created.results as unknown[])[0]);
++    expect(created).toStrictEqual({
++      results: [
++        {
++          operationIndex: 0,
++          operationName: "present",
++          outcome: "created",
++          resource: resource(createdEntry.resource, "sequence-b"),
++        },
++      ],
++    });
++    tuple(reuse, "pos-2");
++    for (const [label, text] of [
++      ["retained-deep-negotiation", deep],
++      ["fresh-deep-negotiation", sequenceBody("sequence-c", "sequence-negotiation", true)],
++    ] as const) {
++      const refused = await exchange(
++        label,
++        f.runtime.targets.sequence,
++        text,
++        undefined,
++        "text/plain",
++      );
++      expect(refused.status).toBe(406);
++      expect(refused.text).toBe("");
++      expect(refused.headers.get("x-bdp-development-limit")).toBeNull();
++      tuple(refused, "pos-2");
++    }
++    for (const [credential, status, code] of [
++      ["none", 401, "unauthenticated"],
++      ["reader", 403, "forbidden"],
++    ] as const) {
++      const refused = await exchange(
++        credential,
++        f.runtime.targets.sequence,
++        deep,
++        undefined,
++        "application/json",
++        credential,
++      );
++      expect(refused.status).toBe(status);
++      expect(parse(refused, validateTransactionalProblem)).toStrictEqual({
++        type: `https://github.com/gastownhall/bdp/problems/${status === 401 ? "authentication" : "authorization"}`,
++        code,
++        status,
++        retry: "after-state-change",
++      });
++      expect(contextNames.map((name) => refused.headers.get(name))).toStrictEqual([
++        null,
++        null,
++        null,
++      ]);
++    }
++    const member = record((record(JSON.parse(deep)).operations as unknown[])[0]);
++    const malformed = await exchange(
++      "duplicate-key",
++      f.runtime.targets.sequence,
++      JSON.stringify({
++        operations: [
++          { ...member, name: "first" },
++          { ...member, name: "second" },
++        ],
++      }),
++    );
++    expect(malformed.status).toBe(400);
++    expect(parse(malformed, validateTransactionalProblem)).toStrictEqual({
++      type: "https://github.com/gastownhall/bdp/problems/request",
++      code: "malformed-request",
++      status: 400,
++      retry: "never",
++    });
++    expect(contextNames.map((name) => malformed.headers.get(name))).toStrictEqual([
++      null,
++      null,
++      null,
++    ]);
++    expect(attempts).toBe(11);
++    expect(observations).toHaveLength(11);
++    controller.signal.throwIfAborted();
++  } catch (error) {
++    failures.push(error);
++  } finally {
++    controller.abort();
++    const callbacks = cleanup.splice(boundary).reverse();
++    const cleanupReason = new Error("sequence cleanup deadline");
++    let timer: ReturnType<typeof setTimeout> | undefined;
++    try {
++      // A startup failure has no returned owner handle: retain its directory.
++      const close = f ? callbacks.shift() : undefined;
++      if (!f) failures.push(new Error("sequence startup stop state unknown"));
++      else if (!close) failures.push(new Error("sequence close callback missing"));
++      else {
++        await Promise.race([
++          Promise.resolve().then(close),
++          new Promise<never>((_, reject) => {
++            timer = setTimeout(() => {
++              cleanupExceeded = true;
++              reject(cleanupReason);
++            }, 5000);
++          }),
++        ]);
++        for (const remove of callbacks) {
++          try {
++            await remove();
++          } catch (error) {
++            failures.push(error);
++          }
++        }
++        cleanupCompleted = true;
++      }
++    } catch (error) {
++      failures.push(error);
++    } finally {
++      if (timer) clearTimeout(timer);
++      clearTimeout(deadline);
++    }
++    if (deadlineExceeded && !failures.includes(deadlineReason)) failures.push(deadlineReason);
++    try {
++      console.log(
++        JSON.stringify({
++          observation: "private-source-sequence-depth",
++          outcome: failures.length ? "failed" : "passed",
++          attempts,
++          completedResponses: observations,
++          deadlineExceeded,
++          cleanupExceeded,
++          cleanupCompleted,
++          failureCount: failures.length,
++          claimEligible: false,
++          retention:
++            "safe response headers/fingerprints; full schema/body equality in memory; no authorization retained",
++        }),
++      );
++    } catch (error) {
++      failures.push(error);
++    }
++  }
++  if (failures.length === 1) throw failures[0];
++  if (failures.length > 1)
++    throw new AggregateError(failures, "sequence HTTP witness and cleanup failed");
++}, 30000);
+diff --git a/packages/server/src/transaction-http.ts b/packages/server/src/transaction-http.ts
+index 8a519ba..c0f9dd1 100644
+--- a/packages/server/src/transaction-http.ts
++++ b/packages/server/src/transaction-http.ts
+@@ -14,6 +14,8 @@ import {
+ import {
+   malformedTransactionMinimumHeaders,
+   transactionMinimumHeaders,
++  currentReadMinimumHeaders,
++  TransactionMinimumUnsupported,
+   TransactionMinimumFailure,
+ } from "./transaction-consistency.js";
+ /** Source-private partial Transactional HTTP projection. No discovery/profile
+@@ -39,7 +41,7 @@ import {
+ import type { HttpResponse } from "./index.js";
+ import {
+   type TransactionSingletonOperation,
+-  prepareTransactionSequence,
++  prepareTransactionSequenceForReceiving,
+   TransactionDevelopmentLimitError,
+   TRANSACTION_RUNTIME_LIMITS,
+   TRANSACTION_MAXIMUM_OPERATIONS,
+@@ -54,6 +56,7 @@ import {
+   TransactionMinimumVisibilityGap,
+   transactionReadContexts,
+   isCurrentTransactionMinimumRead,
++  currentReadMinimumKind,
+ } from "./transaction-read.js";
+ import type { TransactionReadContext } from "./transaction-store.js";
+ import type { TransactionSubmission } from "./transaction-submission.js";
+@@ -209,7 +212,7 @@ export function createTransactionHttpHandler(
+     discover: async () => developmentGap("transactional-discovery"),
+     async alias(suffix, request) {
+       if (isReadProblem(suffix)) return problem(suffix);
+-      const minimum = transactionMinimumHeaders(request.headers);
++      const minimum = currentReadMinimumHeaders(request.headers);
+       const facet = minimum
+         ? service.readAtMinimum(readPrincipal(request), minimum)
+         : service.readFor(readPrincipal(request));
+@@ -230,7 +233,7 @@ export function createTransactionHttpHandler(
+         : response;
+     },
+     async perform(parsed, request) {
+-      const minimum = transactionMinimumHeaders(request.headers);
++      const minimum = currentReadMinimumHeaders(request.headers);
+       const facet = minimum
+         ? service.readAtMinimum(readPrincipal(request), minimum)
+         : service.readFor(readPrincipal(request));
+@@ -325,20 +328,19 @@ export function createTransactionHttpHandler(
+             observed.context,
+           );
+         }
+-        let prepared: ReturnType<typeof prepareTransactionSequence>;
++        const prepared = prepareTransactionSequenceForReceiving(scope, received.text);
++        if (!acceptsJson(request.headers.get("accept"))) {
++          const observed = await service.sequenceRefusalObserved();
++          return context(empty(406), observed.context);
++        }
+         try {
+-          prepared = prepareTransactionSequence(scope, received.text);
++          const observed = await service.sequenceObserved(authorization.principal, prepared);
++          return context(jsonResponse(observed.body), observed.context);
+         } catch (error) {
+           if (error instanceof TransactionDevelopmentLimitError)
+             return developmentGap("unsupported-transaction-composition");
+           throw error;
+         }
+-        if (!acceptsJson(request.headers.get("accept"))) {
+-          const observed = await service.sequenceRefusalObserved();
+-          return context(empty(406), observed.context);
+-        }
+-        const observed = await service.sequenceObserved(authorization.principal, prepared);
+-        return context(jsonResponse(observed.body), observed.context);
+       }
+       const decision: TransactionSubmission["authorization"] =
+         authorization.kind === "unauthenticated"
+@@ -572,13 +574,19 @@ export function createTransactionHttpHandler(
+       return receiptResponse(result, false);
+     }
+     const minimum = hasMinimumControls(request)
+-      ? transactionMinimumHeaders(request.headers)
++      ? currentReadMinimumHeaders(request.headers)
+       : undefined;
+     if (hasMinimumControls(request) && !minimum) return developmentGap("minimum-position");
+     if (minimum && alias === undefined) {
+       // Aliases have their own conditioned authority path, not a canonical
+       // ReadRequest or a member of the current Resource/collection subset.
+       const parsed = requestFromUrl(url, scope);
++      // Preserve the old early unknown-token label on every excluded route.
++      if (
++        !transactionMinimumHeaders(request.headers) &&
++        (isReadProblem(parsed) || currentReadMinimumKind(parsed) === "strict")
++      )
++        return developmentGap("minimum-position");
+       if (isReadProblem(parsed) && parsed.status === 400) return problem(parsed);
+       if (isReadProblem(parsed) || !isCurrentTransactionMinimumRead(parsed, scope))
+         return developmentGap("minimum-position-route");
+@@ -638,6 +646,8 @@ export function createTransactionHttpHandler(
+           response = transactionHttpProblem("invalid-parameter", error.context);
+         else if (error instanceof TransactionEventProjectionGap)
+           response = developmentGap(error.message);
++        else if (error instanceof TransactionMinimumUnsupported)
++          response = developmentGap("minimum-position");
+         else if (error instanceof TransactionMinimumVisibilityGap)
+           response = developmentGap("minimum-position-visibility");
+         else response = empty(500);
+diff --git a/packages/server/src/transaction-service.ts b/packages/server/src/transaction-service.ts
+index 335e221..8923810 100644
+--- a/packages/server/src/transaction-service.ts
++++ b/packages/server/src/transaction-service.ts
+@@ -5,6 +5,7 @@ import type { TransactionChangefeedIntent } from "./transaction-changefeed.js";
+ import {
+   checkTransactionMinimum,
+   snapshotTransactionMinimum,
++  snapshotCurrentReadMinimum,
+   waitForTransactionMinimum,
+   type TransactionMinimum,
+   type TransactionMinimumWaitOptions,
+@@ -22,6 +23,7 @@ import {
+ import {
+   createTransactionReadPlane,
+   captureTransactionReadDeliveryOptions,
++  captureTransactionReadRequest,
+   type TransactionReadOptions,
+ } from "./transaction-read.js";
+ import {
+@@ -379,20 +381,21 @@ export function createTransactionService(owner: Owner, options: TransactionServi
+     },
+     readAtMinimum(principal: Parameters<typeof read.readFor>[0], minimum: TransactionMinimum) {
+       check();
+-      const facet = read.minimumFor(principal, snapshotTransactionMinimum(minimum));
++      const facet = read.minimumFor(principal, snapshotCurrentReadMinimum(minimum));
+       const guarded: ReturnType<typeof read.readFor> = {
+         perform: (request, receiving) =>
+           run(() => {
++            const capturedRequest = captureTransactionReadRequest(request);
+             let captured: ReturnType<typeof captureTransactionReadDeliveryOptions>;
+             try {
+               captured = captureTransactionReadDeliveryOptions(receiving);
+             } catch {
+               // Preserve authority receiving errors without reading a caller
+               // signal getter or allowing an unconditioned successful fallback.
+-              return facet.perform(request, receiving);
++              return facet.perform(capturedRequest, receiving);
+             }
+             return waitForTransactionMinimum(
+-              () => facet.perform(request, captured),
++              () => facet.perform(capturedRequest, captured),
+               minimumReads,
+               captured?.signal,
+             );

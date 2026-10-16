@@ -59,7 +59,7 @@
     "execution-gate.example.json": "9eb7ff35d92e098d474044d486319051241f706b208865403afd6a346f4b37b1",
     "commands.json": "c21793c3bdd46ad59854382bf141ca08d15fdfc5c14b177a11973d03b6721490",
     "review-minimum.py": "d03f0f91e95a5be8f6fb62708e54ac1a3dff490cc4fb7ae0a2ffb10eb167cdf2",
-    "gate.py": "3825c0c456ee31ba602a215e7165cb35c6f455e09232193ec7870db317da55c6",
+    "gate.py": "3494dacf001a138c29f1eb7d245489a5438db708c83b30b213b4f70ee87a6f27",
     "sequence-requests.json": "21e2827907a4d6df1c74f323af9d5beec6076b054624b0bb9bedefdd85349576",
     "minimum-requests.json": "1747a0132f3a656768454cc01a5b4bd4e05334b4369da62ae62ddd8510dfb350",
     "final-source.example.json": "9abc15deb623519652f2ce3eb6d547895f82cfbe662650de2cd74cbcf172128f",
@@ -67,7 +67,8 @@
     "prepared-inputs.json": "048709bc86320b47146f243910845156233fe2c0fcb9eea120ae4607b528302b",
     "inventory.py": "b9ac353ee250d66552e96bc67bc0d22c9168d1c8fc563d6da5517c6bd765486d",
     "binding-preparation/bind-source.py": "222ddd909663c21fe2a55e8342a5367b6331a26389dd2423fb22e19f0b4a43a5",
-    "binding-preparation/inputs.json": "c53ca7dc4b18b826dd0cd11306ad59c3adc3918ecffaaedc35f6cc05e9230648"
+    "binding-preparation/inputs.json": "c53ca7dc4b18b826dd0cd11306ad59c3adc3918ecffaaedc35f6cc05e9230648",
+    "minimum-ledger-recovery/requests.json": "33c567136380c7ac27a3907ef04d23312fbef4334cc7639c798f2177dec6c65c"
   },
   "guardSha256": "fd81ba029cd4e7c7e60623df89e8292af91141d311d9ce789ed19e2152375e84",
   "toolHashes": {
@@ -89,7 +90,13 @@
     "json-schema-traverse": "1.0.0",
     "require-from-string": "2.0.2"
   },
-  "requestsPath": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/sequence-minimum-combined-validation/minimum-requests.json",
+  "requestsPath": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/sequence-minimum-combined-validation/minimum-ledger-recovery/requests.json",
   "note": "Example only. Root must bind actual clean combined head/tree/ordered parents/all20union hashes/alltracked input inventory and tools, then explicitly authorize a prefix. No release is inferred from preparation or earlier branch validations.",
-  "consumerInventorySha256": "7b68df8547da510ce1529afd401b0aa943ece6edb214205de0f3bd66518dc719"
+  "consumerInventorySha256": "7b68df8547da510ce1529afd401b0aa943ece6edb214205de0f3bd66518dc719",
+  "stageSuccessors": {
+    "review-sequence-installed": {
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/sequence-minimum-combined-validation/python-adjudication-recovery/root-successor-acceptance.json",
+      "sha256": "08a96ede01598c835f2f462dec7d69ec75cecffcb2adb96a3724bee9ef56df8c"
+    }
+  }
 }
