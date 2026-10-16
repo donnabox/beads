@@ -1,0 +1,394 @@
+--- original/plan.md
++++ review-successor/plan.md
+@@ -1,6 +1,6 @@
+-# Ordinary Update cold directory cumulative integration — measured plan v2
++# Ordinary Update cold directory cumulative integration — review-corrected measured plan v3
+ 
+-Planning only; authoring, execution and public admission remain closed. Basis committed `73fc0daed2e5fa6843e581de9bf7a46e519562ab`, tree `22176e75848cfd6f0a54f799aeb1e62998206edb`. Reanchor ordinary actual main and recheck all source pins before authoring. The earlier 20-request/four-path proposal is preserved verbatim as `original-20-request-proposal.md`; this revision explicitly replaces that schedule and scope.
++Planning only; authoring, execution and public admission remain closed. Original actual review used committed `73fc0daed2e5fa6843e581de9bf7a46e519562ab`. This successor is mechanically reanchored to actual merged `67a2842e3f1918e70978f745587cf11eaf0df5a8`, tree `596abe870220fb61ce606f8382a9da52d554d063`; all six owned paths and ordinary Update dependencies remain byte-identical, with only the pinned specification changed among28 source files. See source-binding.json and the preserved parent main-reanchor-audit.json. Root must recheck actual main before releasing authoring. The earlier 20-request/four-path proposal is preserved verbatim as `original-20-request-proposal.md`; this revision explicitly replaces that schedule and scope.
+ 
+ ## Goal and honest claim
+ 
+@@ -11,7 +11,7 @@
+ ## Six bounded source paths
+ 
+ 1. packages/conformance/matrices/read-update-v1.json: insert the frozen row immediately after discovery.document, before singleton.create-bead (canonical catalog order).
+-2. packages/conformance/test-support/read-update-coverage-v1.json: replace only the directory omitted object with frozen coverage-row.json and exact133 assertion bindings.
++2. packages/conformance/test-support/read-update-coverage-v1.json: replace only the directory omitted object with frozen coverage-row.json and exact134 assertion bindings.
+ 3. packages/conformance/src/read-update-artifact-set.test.ts: extend existing actual-corpus callback with old full-parent/raw-object preservation and new fixed row/binding checks.
+ 4. apps/bdptest/src/read-update-matrix.test.ts: two targeted callbacks, existing aggregate oracle integration, narrow local response-input control, and precise inventory/fence/route-digest updates described below. No exported helper change.
+ 5. packages/conformance/src/profile-contract-plan.test.ts: only exact97→96 uncovered and76→75 omitted assertions in existing command-minimum inheritance callback; selected130 and command-minimum omission remain unchanged.
+@@ -21,7 +21,7 @@
+ 
+ ## Literal row and captures
+ 
+-`scenario.json` is the complete21-action/133-assertion DSL object; `coverage-row.json` mirrors every `action.id.assertion.id` in order. `requests.json` records actual intended URLs, bodies, dynamic-field sources, exact static body hashes and named assertions. Treat these files as part of this plan. `proposed-manifest.json` and `proposed-coverage.json` are data-only literal insertions preserving old spans, not formatter output or validated execution.
++`scenario.json` is the complete21-action/134-assertion DSL object; `coverage-row.json` mirrors every `action.id.assertion.id` in order. `requests.json` records actual intended URLs, bodies, dynamic-field sources, exact static body hashes and named assertions. Treat these files as part of this plan. `proposed-manifest.json` and `proposed-coverage.json` are data-only literal insertions preserving old spans, not formatter output or validated execution.
+ 
+ 1 Scope GET204 captures actual service-desc Link.
+ 2 GET returned descriptor validates readUpdateDiscovery/profile, captures operations/types/beads/links/aliases.
+@@ -35,9 +35,9 @@
+ 13 raw alias GET307 exact Location A, body absent, no follow.
+ 14 delete alias through returned deleteAlias, exact result.
+ 15 alias GET404 Problem.
+-16 delete Link through returned deleteLink with captured revision; full deleted preimage equals actual updated Link.
++16 delete Link through returned deleteLink with captured revision; exact retained deleted identity matches the actual Link ID, Type and captured final revision; it is not a full Resource.
+ 17 Link GET404 Problem.
+-18 delete Bead A through returned deleteBead with captured updated revision; full deleted preimage equals actual updated A.
++18 delete Bead A through returned deleteBead with captured updated revision; exact retained deleted identity matches A ID, Type and captured a-updated-rev; it is not a full Resource.
+ 19 Bead A GET404 Problem.
+ 20 ordinary RU sequence through returned sequence target, one updateBead member modifies B.n to3; actual sequence response validates one result, correct index/disposition/Resource.
+ 21 independent B GET equals whole captured sequence Resource and validates currentBeadRecord.
+@@ -46,25 +46,39 @@
+ 
+ ## App oracle and control
+ 
+-Implement a module-local pure assertion helper over the completed row/report plus actual client observations. Invoke it in both new selected-positive callback and existing full aggregate for this row. Require exactly21 requests in fixed action order,11 client observations including ten POSTs, all nine target bindings exercised, exact URLs derived from the independently frozen directory/Scope ledger, complete raw/client write observations and no extra traffic. Assert actual request body values/expectedRevision captures and full response bodies in memory. Complete Resource equality is constructed from fixed id/type/properties/metadata/endpoints plus the validated actual revision; require exact allowed keys, no unexpected links/provenance/owned records. Require full ordinary mutation/alias/sequence envelopes and full deleted preimages. For runtime-produced Problem optional presentation, retain genuine normative schema/code/retry/status and response body; do not invent a fixed title/detail not supplied by normative source. No TX semantic transfer.
++Implement a module-local pure assertion helper over the completed row/report plus actual client observations. Invoke it in both new selected-positive callback and existing full aggregate for this row. Require exactly21 requests in fixed action order,11 client observations including ten POSTs, all nine target bindings exercised, exact URLs derived from the independently frozen directory/Scope ledger, complete raw/client write observations and no extra traffic. Assert actual request body values/expectedRevision captures and full response bodies in memory. Complete Resource equality is constructed from fixed id/type/properties/metadata/endpoints plus the validated actual revision; require exact allowed keys, no unexpected links/provenance/owned records. Require full ordinary mutation/alias/sequence envelopes and exact three-field deleted identities. Keep all live Resource equality strict; no optional-field normalization. For runtime-produced Problem optional presentation, retain genuine normative schema/code/retry/status and response body; do not invent a fixed title/detail not supplied by normative source. No TX semantic transfer.
++
++### Actual raw/client accounting (M3 required implementation contract)
++
++The new module-local app oracle receives the completed runner row, existing genuine client observations, and bounded local raw-attempt/raw-completion plus mixed-completion facts. Initialize these inside run and activate only while currentScenario is read-update.discovery.operation-directory; existing callers/default controls remain unchanged.
++
++Immediately before the existing `await target.execute(sent)` in executeExact, append one raw attempt with its local ordinal, genuine method and URL. Do not invent an action ID: raw executor input has none. After that exact call returns, append one raw completion with the matching attempt ordinal, actual response status/URL and actual exactRequest source/writeState/bodyPresent/bodyOctets. Append one mixed-completion fact sourced `raw` at that point, before any directory assertion-input mutation. Never copy request headers, credentials or raw tokens. A rejection records an attempt without a fabricated completion. Keep genuine complete directory body validation before deriving the missing-member assertion input.
++
++In the existing createInstalledExactClient observation callback, retain the existing observation unchanged, and for this row append one mixed-completion fact sourced `client` from that real output's request.method/url, status and serializer observation. This callback is invoked once only after the client's one actual raw executor call returns. It is not an executeExact invocation. Do not double-count client traffic as raw. Actual client targetBinding/bodyBindings/body remain available in the existing observation for the independent full-body/target checks.
++
++On success require10 raw attempts,10 raw completions,11 genuine client observations and21 mixed completions, each in the fixed planned family/method/URL/status order. Join raw ordinal to actual ObservedExchange.request.id/method/url in runner raw-exchange order; join client observation ordinal to actual runner programmable-action IDs in action order; compare the combined fixed action IDs to the literal21-action ledger. IDs come from actual completed runner records, not invented input fields. Require complete write observations and exact matching attempts/completions, zero setup observations and zero nativeReadObservations for this unseeded new row. The runner awaits each action before advancing; the shared callback list therefore proves observed completed request order, not a concurrency claim. The static client helper itself performs exactly one transport call per invocation. Extra raw attempts or client observations fail counts/ordering; unmatched attempts fail even if a response was never obtained.
++
++For the missing-updateLink assertion-input control require exactly3 raw attempts/completions/mixed facts in Scope,descriptor,directory order, zero client/setup/native-read observations and one actual control application. Retain exact original directory status200/body facts before alteration and the genuine runner schema failure. Existing fail-fast assertions prevent request4 or any mutation. Include these bounded safe facts/counters in the existing retained report before cleanup; do not fabricate runner results if it throws earlier. No added requests, children, callback registrations, public API or shared helper changes.
++
++Supplemental alias oracle (O3): at the genuine raw response for read-deleted-alias, before returning or redacting the response, assert status404, normative readProblem schema/code and parsed retry exactly `after-state-change`. Retain a bounded passed fact for the postrun oracle/report if needed; never recover an unavailable raw body from a redacted report. This supplements the existing schema and leaves the literal count134.
+ 
+ New positive callback title: `observes all nine discovered RU operation targets through cold navigation`.
+ New negative callback title: `rejects a missing updateLink directory member in actual response assertion input`.
+ New CPU callback title: `pins cold RU directory literals, actual target bindings and parent preservation`.
+ 
+-Add one optional local `directoryControl` argument at the end of run, default undefined, without affecting existing calls. At currentScenario=directory row and actual raw GET operations, require actual200 and schema-valid exact directory first, then copy parsed body and delete only updateLink in the returned **assertion input**, adjusting bodyText/bodyOctets consistently. Retain original actual response facts separately; never mutate request or label derivative as wire data. Counter applies once. It returns normally so runner produces its real failure. Existing fail-fast runner stops at action3; no mutation runs. Require exact failure `read-update.discovery.operation-directory:directory:schema`, only schema false/status true, actual3 requests, one control application, no client observations/mutation writes, complete cleanup. `controls.json` is authoritative. This is schema/capture sensitivity, not a server-fault witness. New negative manifest is identical to canonical; no derivative source cap growth.
++Add one optional local `directoryControl` argument at the end of run, default undefined, without affecting existing calls. At currentScenario=directory row and actual raw GET operations, require actual200 and schema-valid exact directory first, then copy parsed body and delete only updateLink in the returned **assertion input**, adjusting bodyText/bodyOctets consistently. Retain original actual response facts separately; never mutate request or label derivative as wire data. Counter applies once. It returns normally so runner produces its real failure. Existing fail-fast runner stops at action3; no mutation runs. Require exact failure `read-update.discovery.operation-directory:directory:schema`, only schema false/status true, actual3 requests, one control application, no client observations/mutation writes, complete cleanup. `controls.json` is authoritative. This is required-directory-member schema sensitivity at action3, not an independent action4-capture control or a server-fault witness. New negative manifest is identical to canonical; no derivative source cap growth.
+ 
+ Safe optional report follows existing RU report retention/lifecycle writer: real source commit, exact installed entry/configuration/payload/artifact identities, canonical/selected IDs, actual runner reports and safe client observations; never tokens or raw credential headers. Keep completed reports before cleanup and fail cleanup/report overflow rather than publish success. No unapproved new lifecycle API. Exact report key shape must be frozen from authored code before execution.
+ 
+ ## Measured data, routes and fences
+ 
+-See measurements.json/routes.json/derivative-measurements.json. Baseline manifest97116 nodes; proposed98323, below unchanged100000. Disk bytes3670431; compact normal1902999, below unchanged4194304-byte parser cap. Literal row1207 nodes/21166 compact bytes. Coverage713193→718275 bytes (+5082), below unchanged1048576. These are Python standard JSON structural/UTF8 measurements, not a formatter or product parser run. The actual authoring preflight must measure final normal/disk bytes after narrow formatting and bind all derivatives before release.
++See measurements.json/routes.json/derivative-measurements.json. Baseline manifest97116 nodes; proposed98329, below unchanged100000. Disk bytes3670718; compact normal1903180, below unchanged4194304-byte parser cap. Literal row1213 nodes/21347 compact bytes. Coverage713193→718307 bytes (+5114), below unchanged1048576. These are Python standard JSON structural/UTF8 measurements, not a formatter or product parser run. The actual authoring preflight must measure final normal/disk bytes after narrow formatting and bind all derivatives before release.
+ 
+ 284 allowlist routes remain the identical set, but canonical insertion changes first-use ordering. Preserve routes.json preimages and compute actual exactConfigurationDigest using the existing pure snapshot function during authorized authoring/static work; replace app1263 pin only after independent check. A data-only translation of runner1580–1597 reproduces existing3224c31c83988dc0606cb76ee1f4ba8e6394159bdf7daaccc301461316cc2477 and yields proposed26da5a286d9887bebbb0fcf73a92c5d09aa7b7fcfdcc9ed91f767f4db1578c69; this is a source-derived proposed pin, still requiring final authored-code verification. Do not confuse ordered JSON SHA with the branded digest. No route widening. New row has18 distinct method/URL routes,21 invocations.
+ 
+-Exact source-only largest growth specimens currently measured: anonymous/unknown inserted refusal, inserted missing-key, count33 base64 and inline nine identity tuples. Maximum98358 nodes/1904110 normal bytes, under unchanged parser caps. Other old baseline derivative families are scalar/binding replacements, removals or response-input corruption; complete final source inventory remains an authoring preflight requirement, not fabricated proof that all old controls ran. Continuation-only derivative bytes remain unchanged. Stop and restructure with supported existing sharding if any actual derivative exceeds100000; never increase parser cap.
++Exact source-only largest growth specimens currently measured: anonymous/unknown inserted refusal, inserted missing-key, count33 base64 and inline nine identity tuples. Maximum98364 nodes/1904291 normal bytes, under unchanged parser caps. Other old baseline derivative families are scalar/binding replacements, removals or response-input corruption; complete final source inventory remains an authoring preflight requirement, not fabricated proof that all old controls ran. Continuation-only derivative bytes remain unchanged. Stop and restructure with supported existing sharding if any actual derivative exceeds100000; never increase parser cap.
+ 
+-Three old coverage-growth assertions are exceeded. Proposed smallest exact-data adjustments (not yet execution authorization): app4592 historical base698614 allowance14579→19661 (+5082); app4972 base703415 allowance9778→14860 (+5082); app5115 base703415+5546+3700 allowance1708→5614 (+3906, consuming existing1176 slack). Preserve all bases and historical comments; add measured reason. Final formatter deltas must be remeasured before root authorizes exact values. All other continuation/fixture fences remain. These assertions track literal source growth, not HTTP/time/runtime caps.
++Three old coverage-growth assertions are exceeded. Proposed smallest exact-data adjustments (not yet execution authorization): app4592 historical base698614 allowance14579→19693 (+5114); app4972 base703415 allowance9778→14892 (+5114); app5115 base703415+5546+3700 allowance1708→5646 (+3938, consuming existing1176 slack). Preserve all bases and historical comments; add measured reason. Final formatter deltas must be remeasured before root authorizes exact values. All other continuation/fixture fences remain. These assertions track literal source growth, not HTTP/time/runtime caps.
+ 
+ App aggregate data pins54→55 authored,33→34 whole,76→75 omitted,97→96 uncovered; other global uncovered checks2024/2446/2877 also97→96. Keep selected130 unchanged. Native identified six-path/count/order corrections; no new semantic decision.
+ 
+@@ -76,8 +90,10 @@
+ 
+ Retain aggregate90s cooperative,120s Vitest/external command,5000ms request timeout; no automatic extension. Targeted new callbacks reuse existing30000ms per selected-row convention, within120s external. Full CI gains +21HTTP/+1child in existing aggregate and new selected callbacks +24expected/+42max/+4children; total incremental45expected/63max/5children. Unchanged selected controls and smallExecutionSet retain their existing selected old IDs. New CPU callback adds zero wire. Existing old global-count runtime callbacks and local helper regressions remain separately budgeted regressions/full CI; do not hide them in2327. Before choosing extra local regression executions, root must receive exact expanded schedule/count, not inferred permission to rerun everything.
+ 
++Historical timing only: PR137 actual unchanged54-row aggregate passed in77,966ms (preserved raw log SHA86ba19acedeb493782b163279d2e5b52792b6d5768dd3e4a74df705326307593, line3561). Its12,034ms arithmetic margin to90s is not a future guarantee. The21×5000ms individual timeout exposure does not replace the joint30s/90s/120s deadlines. Any actual timeout is a failed bounded attempt, not permission to extend limits.
++
+ Fresh immutable source commit, build-input/output bridge, exact protocol/server archives, external offline eight-package dependency graph, archive/source/installed member equality, payload identity, entry realpath, actual bootstrap configuration and every isolated scenario identity, raw results, negative adjudication, all child exits/PID absence and store/temp cleanup are required. No workspace fallback. Whole-directory credit is proposed only contingent on council and genuine validation. No profile activation until all other required applicable obligations and qualification/admission predicates are actually met. This plan contains no new operator question.
+ 
+ ## Review boundary
+ 
+-No tests/imports/builds/services/formatter/product edits have been run for this plan. Source-only inspection corrected an initially false assumption that the route list order stayed unchanged; the same route set can reorder. Preserve original20 proposal and native review074b. Root owns acceptance, ordinary reanchor, authoring, numeric source-fence approval, all execution and publication. Actual Claude packet is closed until root release. No new catalog, shared fixture/helper/runner/export, public claim or production path is authorized.
++No tests/imports/builds/services/formatter/product edits have been run for this plan. Source-only inspection corrected an initially false assumption that the route list order stayed unchanged; the same route set can reorder. Preserve original20 proposal and native review074b. Root owns acceptance, ordinary reanchor, authoring, numeric source-fence approval, all execution and publication. The original actual Claude review completed exit0 with complete findings; its immutable packet and stdout remain under ../claude-review. This successor resolves the adjudicated M3/M4 corrections and optional precision only, and is not a new execution or publication release. No new catalog, shared fixture/helper/runner/export, public claim or production path is authorized.
+--- original/scenario.json
++++ review-successor/scenario.json
+@@ -1228,13 +1228,6 @@
+           "kind": "json-pointer",
+           "pointer": "/body/sourceRevision",
+           "exists": false
+-        },
+-        {
+-          "id": "deleted-preimage",
+-          "kind": "json-pointer",
+-          "pointer": "/body/deleted/resource",
+-          "exists": true,
+-          "equalsBinding": "updated-link"
+         }
+       ]
+     },
+@@ -1340,11 +1333,25 @@
+           "equals": "bead"
+         },
+         {
+-          "id": "deleted-preimage",
+-          "kind": "json-pointer",
+-          "pointer": "/body/deleted/resource",
+-          "exists": true,
+-          "equalsBinding": "a-updated"
++          "id": "deleted-id",
++          "kind": "json-pointer",
++          "pointer": "/body/deleted/resource/id",
++          "exists": true,
++          "equals": "https://reference.invalid/acme/beads/w1-a"
++        },
++        {
++          "id": "deleted-type",
++          "kind": "json-pointer",
++          "pointer": "/body/deleted/resource/type",
++          "exists": true,
++          "equals": "https://reference.invalid/acme/types/task"
++        },
++        {
++          "id": "final-revision",
++          "kind": "json-pointer",
++          "pointer": "/body/deleted/resource/revision",
++          "exists": true,
++          "equalsBinding": "a-updated-rev"
+         },
+         {
+           "id": "no-postimage",
+--- original/coverage-row.json
++++ review-successor/coverage-row.json
+@@ -109,7 +109,6 @@
+         "delete-link.no-postimage",
+         "delete-link.unowned-source",
+         "delete-link.unowned-source-revision",
+-        "delete-link.deleted-preimage",
+         "deleted-link.status",
+         "deleted-link.schema",
+         "deleted-link.problem",
+@@ -121,7 +120,9 @@
+         "delete-bead.no-location",
+         "delete-bead.outcome",
+         "delete-bead.deleted-kind",
+-        "delete-bead.deleted-preimage",
++        "delete-bead.deleted-id",
++        "delete-bead.deleted-type",
++        "delete-bead.final-revision",
+         "delete-bead.no-postimage",
+         "deleted-bead.status",
+         "deleted-bead.schema",
+--- original/requests.json
++++ review-successor/requests.json
+@@ -367,8 +367,7 @@
+         "final-revision",
+         "no-postimage",
+         "unowned-source",
+-        "unowned-source-revision",
+-        "deleted-preimage"
++        "unowned-source-revision"
+       ],
+       "bodyOctetsFormula": {
+         "fixedWithEmptyDynamicStrings": 74,
+@@ -414,7 +413,9 @@
+         "no-location",
+         "outcome",
+         "deleted-kind",
+-        "deleted-preimage",
++        "deleted-id",
++        "deleted-type",
++        "final-revision",
+         "no-postimage"
+       ],
+       "bodyOctetsFormula": {
+--- original/measurements.json
++++ review-successor/measurements.json
+@@ -1,5 +1,5 @@
+ {
+-  "basis": "73fc0daed2e5fa6843e581de9bf7a46e519562ab",
++  "basis": "67a2842e3f1918e70978f745587cf11eaf0df5a8",
+   "method": "stdlib JSON and literal insertion only; not formatter or product execution",
+   "baseline": {
+     "diskBytes": 3626922,
+@@ -9,11 +9,11 @@
+     "compactSha256": "b61b45f4e0b2075868c416295dc82db90ef1ab4542673bf066e474da79f43abb"
+   },
+   "proposed": {
+-    "diskBytes": 3670431,
+-    "normalBytes": 1902999,
+-    "nodes": 98323,
+-    "sha256": "fac793597b94113ad1a6d3b0b5842b2567d002bfb48b92ebece384dfcea649ff",
+-    "compactSha256": "07a3a38bed05637daf162c03c507ec6c00ada5163b640df38f19c9cda2cb94df"
++    "diskBytes": 3670718,
++    "normalBytes": 1903180,
++    "nodes": 98329,
++    "sha256": "17ce6944eb41d85ecd4d2e337986449d1ba6f0ee2c50683252313c9e9bd61264",
++    "compactSha256": "fc83750510c69b5b5bfe5a6886f96c644d102d1729eb1acbf441450686916b80"
+   },
+   "coverageBaseline": {
+     "diskBytes": 713193,
+@@ -23,47 +23,51 @@
+     "compactSha256": "2abf87046938de9a3f24ff00d963a032f44187475bae1f8ed006ed17f335324d"
+   },
+   "coverageProposed": {
+-    "diskBytes": 718275,
+-    "normalBytes": 528811,
+-    "nodes": 14768,
+-    "sha256": "1ddb93f7ed40b6736c9cfe5c462c4b4d8ba56469d72b347e6c35290a10bdd590",
+-    "compactSha256": "4efa6c31eefc2a34747717439f44db2eb9c61efdfa5f2176081cc1be4cbc87ee"
++    "diskBytes": 718307,
++    "normalBytes": 528830,
++    "nodes": 14769,
++    "sha256": "85b717f1817d8ea295d0a7c51f8914bdfb942d1786d414924d3d5f80be7cd10a",
++    "compactSha256": "badfbaa0d54a56225feb5fd2419a35de169ea99d130fe3084be75e935e8e91cf"
+   },
+   "newRow": {
+-    "diskBytes": 37352,
+-    "normalBytes": 21166,
+-    "nodes": 1207,
+-    "sha256": "a0d2a1e56a254ab6bfa13f9cb36ce3b30cb53efcd1fd6aa9c6caa35a68e66a20",
+-    "compactSha256": "4e9d4a05fa10481c72cefb8a1c932d374d025049a683b29a58e7a2551389793c"
++    "diskBytes": 37611,
++    "normalBytes": 21347,
++    "nodes": 1213,
++    "sha256": "88db362fa18ed2c448191206bef5b2c3fa3d2a5c850342f7306e2c95871b6d37",
++    "compactSha256": "7930b51eea68914b24ece231d9b30479e14936572bcd67d18351ffc6562efeff"
+   },
+-  "newAssertions": 133,
++  "newAssertions": 134,
+   "newActions": 21,
+   "oldScenarioObjects": 54,
+   "oldCoverageObjectsPreserved": 129,
+   "sourceCapManifestBytes": 4194304,
+   "sourceCapManifestNodes": 100000,
+   "sourceCapCoverageBytes": 1048576,
+-  "coverageDelta": 5082,
++  "coverageDelta": 5114,
+   "existingCoverageFences": [
+     {
+       "line": 4592,
+       "base": 698614,
+       "allowance": 14579,
+-      "proposedOverage": 5082
++      "proposedOverage": 5114,
++      "proposedAllowance": 19693
+     },
+     {
+       "line": 4972,
+       "base": 703415,
+       "allowance": 9778,
+-      "proposedOverage": 5082
++      "proposedOverage": 5114,
++      "proposedAllowance": 14892
+     },
+     {
+       "line": 5115,
+       "base": 712661,
+       "allowance": 1708,
+-      "proposedOverage": 3906
++      "proposedOverage": 3938,
++      "proposedAllowance": 5646
+     }
+   ],
+   "insertionIndex": 18,
+-  "insertionBefore": "read-update.singleton.create-bead"
++  "insertionBefore": "read-update.singleton.create-bead",
++  "originalReviewBasis": "73fc0daed2e5fa6843e581de9bf7a46e519562ab"
+ }
+--- original/derivative-measurements.json
++++ review-successor/derivative-measurements.json
+@@ -4,48 +4,48 @@
+     {
+       "name": "canonical-and-response-only-directory-control",
+       "sourceLines": "new planned response-only injection: no manifest mutation",
+-      "normalBytes": 1902999,
+-      "nodes": 98323,
+-      "compactSha256": "07a3a38bed05637daf162c03c507ec6c00ada5163b640df38f19c9cda2cb94df"
++      "normalBytes": 1903180,
++      "nodes": 98329,
++      "compactSha256": "fc83750510c69b5b5bfe5a6886f96c644d102d1729eb1acbf441450686916b80"
+     },
+     {
+       "name": "insert-refused-anonymous",
+       "sourceLines": "1410–1427",
+-      "normalBytes": 1903445,
+-      "nodes": 98349,
+-      "compactSha256": "582daea1bfb66f39832b511ac3c0d44a2d3debc569597d4a7cbd192b8aeddf61"
++      "normalBytes": 1903626,
++      "nodes": 98355,
++      "compactSha256": "fcbcd0198eba71334978d85b952ad8028ca40b7647df5328db7d4f8904aebdf3"
+     },
+     {
+       "name": "insert-refused-unknown",
+       "sourceLines": "1410–1427",
+-      "normalBytes": 1903443,
+-      "nodes": 98349,
+-      "compactSha256": "64f5d39680e27a65fe8d12403aec7e44024e21427a32497ee3533d961d133ad9"
++      "normalBytes": 1903624,
++      "nodes": 98355,
++      "compactSha256": "f5fea530191933510357bd98281079df2170e34a58554184c85a28466e476479"
+     },
+     {
+       "name": "insert-missing-key",
+       "sourceLines": "1795–1817",
+-      "normalBytes": 1903612,
+-      "nodes": 98358,
+-      "compactSha256": "1020fc917b8cf833b70fde7471529862d2ad933c0b9d084ad2bae28f4ae9c67e"
++      "normalBytes": 1903793,
++      "nodes": 98364,
++      "compactSha256": "2552d1aba2e2f494e38f740cabeabdb253fab8803f6f5224ca9e3620afa94881"
+     },
+     {
+       "name": "count-33-base64",
+       "sourceLines": "1753–1764",
+-      "normalBytes": 1904110,
+-      "nodes": 98323,
+-      "compactSha256": "1057ed822defc8d7aa62bda8bc9569102cdba6100032db8e6f757c849feeedb2"
++      "normalBytes": 1904291,
++      "nodes": 98329,
++      "compactSha256": "da9c468e847d1855601a8e54a56e20fa56cac06396fcfd5725b5a24a10af714c"
+     },
+     {
+       "name": "inline-nine-identity-tuples",
+       "sourceLines": "3135–3152",
+-      "normalBytes": 1903228,
+-      "nodes": 98333,
+-      "compactSha256": "8a2165ca254e44c18d55032f445abcd45ed26523a127069bdbd4dcab1adc6eae"
++      "normalBytes": 1903409,
++      "nodes": 98339,
++      "compactSha256": "85c407c48fa4c26262bb8a5967fd2e7d72e3fa1c8cb7a1bd5c117403d0a44895"
+     }
+   ],
+-  "maxMeasuredNormalBytes": 1904110,
+-  "maxMeasuredNodes": 98358,
++  "maxMeasuredNormalBytes": 1904291,
++  "maxMeasuredNodes": 98364,
+   "hardCaps": {
+     "bytes": 4194304,
+     "nodes": 100000
+--- original/source-binding.json
++++ review-successor/source-binding.json
+@@ -1,6 +1,6 @@
+ {
+-  "reviewHead": "73fc0daed2e5fa6843e581de9bf7a46e519562ab",
+-  "reviewTree": "22176e75848cfd6f0a54f799aeb1e62998206edb",
++  "reviewHead": "67a2842e3f1918e70978f745587cf11eaf0df5a8",
++  "reviewTree": "596abe870220fb61ce606f8382a9da52d554d063",
+   "sourceHashes": {
+     "packages/conformance/matrices/read-update-v1.json": "c86b33535f25a1d117ce021a3bb70164f5635bdaee50758e3428c130ccc3227f",
+     "packages/conformance/matrices/read-update-reference-continuation-v1.json": "24d754618b51f255b5885d83c53ccf9a06593031e1812739a4f2b504c4a1df8d",
+@@ -24,8 +24,26 @@
+     "packages/server/src/development-composition.ts": "a7113a8a3164dc6f4b1f6b5bdcbf74cee811e5b8a0474d241ac30706997ee54f",
+     "packages/server/src/index.ts": "34f9d9de8b48852c64919e69ce93f149e9cdae5142c15c75e4c35f08f15efc44",
+     "packages/server/src/read-conformance-capability.ts": "58d4529dc40bbf646f02bda4c7fa3fad9b83d21f3080152cc04867dbe3fa6f60",
+-    "docs/specs/bdp.md": "f036103ffdf5f89fa3a2033570e1e987c4cd203cd80b1c633cb44615123f892e"
++    "docs/specs/bdp.md": "63e93be562334c84c1e967da2fce212e8ef515aa3c9448924c5f9a272ea7b80b",
++    "packages/conformance/catalog/read-update-v1.json": "73d215813df034a2be0cd15d0caff7cf2c8823a067f271b9140c9cbb90e859c3",
++    "packages/server/src/development-runtime.ts": "37e222682645e9d8f2d5fcf62de208640fb6216c9e9f2f279ab6017e8b9d6ca9",
++    "packages/server/src/authority-read.ts": "fd6554c4ee0d08b997fb3622c2f21697f02d58b838f4ae0de10aca4707f67734",
++    "packages/server/src/resource-evaluator.ts": "89606787e455f4ed555b807d91c5331a376431807a9a581de1f94e538fcab4ff",
++    "packages/protocol/src/reference-domain.ts": "6058ba5b9880e93b3c0522ecae597df4d0f34623a334acdba83bff2780b4bbb1"
+   },
+   "authoringReleased": false,
+-  "sourceReadMode": "git show committed object; current dirty checkout not authoritative"
++  "sourceReadMode": "git show committed object; current dirty checkout not authoritative",
++  "originalReviewHead": "73fc0daed2e5fa6843e581de9bf7a46e519562ab",
++  "originalReviewTree": "22176e75848cfd6f0a54f799aeb1e62998206edb",
++  "reanchorChanges": [
++    {
++      "path": "docs/specs/bdp.md",
++      "before": "f036103ffdf5f89fa3a2033570e1e987c4cd203cd80b1c633cb44615123f892e",
++      "after": "63e93be562334c84c1e967da2fce212e8ef515aa3c9448924c5f9a272ea7b80b"
++    }
++  ],
++  "reanchorEvidence": {
++    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/read-update-cumulative-qualification-plan/main-reanchor-audit.json",
++    "sha256": "1472b702972da0718a7c1b42dac3bfdb4babe11232b36052ac842be08d223c47"
++  }
+ }
