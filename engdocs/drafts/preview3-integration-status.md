@@ -1,6 +1,6 @@
 # Preview 3 planning and execution
 
-Last checked: October 15, 2026, 21:37 PDT. This is a milestone snapshot, updated when the state changes; it is not a live CI dashboard.
+Last checked: October 15, 2026, 21:44 PDT. This is a milestone snapshot, updated when the state changes; it is not a live CI dashboard.
 
 This tracker covers the release plan and its execution. The active first phase is establishing a qualified Preview 3 integration branch. The integration-base milestones below are only what we need to begin producing Preview 3 builds; they are not the complete release plan. Proposed workstreams will be added to the release cutline only after their scope and qualification are decided.
 
@@ -23,7 +23,7 @@ These are planning lanes, not promises that all their changes will ship in Previ
 | --- | --- | --- |
 | Type system, metatype, Issue/Dependency definitions | Trish owns design and BDP/CLI contract; her separate implementation agent is working on the runtime. Review the implementable Type draft and qualify an exact source slice. | Boundary to decide |
 | Memory Bead/Link Type definitions | Melinda prepares a requirements/dependency map read-only. After the Type foundation is ready, Donna and Trish make the design decisions; Melinda drives the separate workstream. | To decide |
-| Memory proposal gap audit | Janet is auditing all 32 requirements and 16 scenarios against exact final Preview 2 behavior. Four source-backed initial gaps are classified below; Donna will review the complete gap set and help choose a release cutline. | Audit underway; inclusion to decide |
+| Memory proposal gap audit | Janet has completed a source-level draft covering all 32 requirements and 16 scenarios against exact final Preview 2. Donna and Janet will edit it together before commenting on the proposal; the assessment is not a new scenario test pass or Preview 3 cutline. | Draft complete; edit pass pending |
 | Provenance V2 | Finish design and qualify at least the revision-provenance slice; activity provenance is a separate scope choice. | Likely required slice; boundary to decide |
 | Import/export | Iris owns data movement, initially to avoid in-place upgrades; evaluate installable Bead/Link/Type packages as a second use. | To decide |
 | BDP spec and reference implementation | Vickie is finishing the Write profile implementation and validation suite, then completing BDP spec/reference cleanup. This work proceeds independently of the release train and gates what `bd` can implement. Any qualified BDP functionality included in a preview is directly available. | Experimental contract; exact `bd` slice to decide |
@@ -37,7 +37,7 @@ The final Preview 2 source is frozen at [`graph-preview2`](https://github.com/do
 
 The earlier local merge rehearsal combines final Preview 2 with upstream `b911ed28cd47da47e167484f32db586e7ad8a279`. Its focused CI-policy compile failed and the full attempt remains preserved. An uncommitted successor combines final Preview 2 with pinned upstream `773b537c75c3fdf7c38371d5da5cd3d98b615e71`. Its 31 textual conflicts have provisional resolutions and no unmerged files remain. The scripts package now compiles, but the first focused CI/Bazel-policy run failed in 30 top-level test groups. The failures expose a real mismatch between upstream's newer Bazel workflow/test model and legacy fork lanes that still supply required gates. The complete failed attempt is frozen separately; no merged-source qualification passed.
 
-The first exact-release Memory audit classifies four requirements without claiming full conformance: R13 is partial because retained versions exist but graph Memory restore and project-wide History query are absent from the inspected surface; R17 is partial because informational Links exist but arbitrary user-defined Link Types do not; R20 is unmet because deleting a Memory with any live incident Link is refused rather than applying the proposal's latest-versus-pinned rules; R27 is unmet because no connected Memory interchange path ships. The remaining requirements and all 16 scenarios are still unverified. These are candidate gaps for Donna to prioritize, not an automatic Preview 3 cutline.
+The source-level Memory report card draft now assesses all 32 requirements and 16 scenarios, with no new scenario execution claimed. Its initial cross-cutting findings include partial local History but no restore or project-wide change feed, fixed rather than user-defined informational Link Types, unpinned local Link endpoints, refusal to delete a Memory with any incident Link, and no connected interchange path. Task records also do not embed informational Task→Memory Links; those can be found through the separate Link collection. Donna and Janet will edit the draft before posting a comment on the Memory proposal. None of these findings silently enters the Preview 3 release cutline.
 
 ## Integration-base milestones
 
