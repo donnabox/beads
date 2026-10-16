@@ -1,0 +1,32 @@
+# Focused review — carrier freeze + installed cleanup correction
+
+Post-patch line numbers are derived from the supplied hunk headers.
+
+## Findings
+
+**1. Low (validation evidence) — `packages/server/src/transaction-batch.ts:322‑327` (frozen member carrier).**
+Trigger: any downstream consumer that writes to `request.carrier`, `carrier.operations`, or `carrier.keys` on a *sequence member*. Impact: modules are strict, so a write that previously succeeded (or silently no-op'd on the array) now throws `TypeError` at execution time, not preparation time. The declared correction validation ran 4 stages / 2 preparation callbacks with `HTTP: 0`, `productChildren: 0` — no admission, service or HTTP path re-ran under the freeze. Strong mitigating evidence: the protocol `prepare()` already freezes a structurally identical carrier (including `kind:"singleton"`) and those carriers traverse the same `normalizeTransaction`/admission consumers. Minimal fix: no code change; this is the already-declared combined-branch gate — run the sequence HTTP and installed cases there. Missing fact I could not obtain (tools disabled): whether `transaction-store.ts` / `transaction-service.ts` ever assign into a member carrier or its arrays.
+
+**2. Low — `packages/server/src/transaction-set.test.ts:1238‑1244` (new immutability block).**
+Trigger: a future regression that un-freezes `operation()`'s value or the `input` object in `parseReadUpdateSequenceRequest`. Impact: the depth fact rests on the *whole* chain (wrapper → carrier → array → op → input → decoded containers); the new block pins only the two newly frozen levels, so the detach path re-opens undetected while the test still passes. Minimal fix: add `expect(Object.isFrozen(memberCarrier.operations[0])).toBe(true)` and `expect(Object.isFrozen(memberCarrier.operations[0]!.input)).toBe(true)`.
+
+**3. Informational — `transaction-batch.ts:322`.**
+The literal now matches `prepare()` structurally but still is not added to `preparedCarriers`. Trigger: adding any protocol-side `preparedCarriers.has(carrier)` check. Impact: sequence members would be rejected where singleton/batch requests pass. No current consumer depends on it (sequence 200s were observed in the 18-case run), and routing through `prepare()` is not the fix — it would re-run `preflightOperation` on `@name` operands, which this site deliberately avoids. No change recommended; note the gap if a carrier brand check is ever introduced.
+
+**4. Informational — installed test, directory block (~`:578‑582`).**
+With the `stopped &&` guard, a pre-ready launch failure (`launchAttempted && child === undefined`) deliberately retains `/tmp/bdp-sequence-depth-installed-*` and now emits **no** failure for it; the only record is the report's `directory` / `directoryAbsent:false`. Repeated pre-ready failures accumulate temp directories. The run still fails via "child stop unproven", so no outcome is masked. This is the accepted disposition, named as an accounting consequence; no change recommended.
+
+**5. Informational — installed test, same block.**
+One duplicate-count path survives in the corrected family: when `stopped` is true and `rmSync` throws, the error *and* "directory remains" are both pushed, inflating `failureCount` for one cause (unlikely under `force:true`). Minimal fix: set a `removalFailed` flag in the catch and skip the second push.
+
+## Verified correct
+
+- Cleanup-deadline dedup is sound: the timer can only fire while the race is pending (the `child === undefined` body is fully synchronous before `clearTimeout`), and `cleanupReject` is assigned synchronously during race construction — `close()` is an async IIFE and cannot throw synchronously — so the reason is recorded exactly once, via the catch. `cleanupExceeded` still reports the overrun. The accompanying "child remains active" is a distinct truthful fact (SIGKILL's exit may be unprocessed), not a duplicate.
+- The unknown-stop branch is reachable only when `launchAttempted && child === undefined`; "stop unproven" is accurate and consistent with `startupLimitation`.
+- An abort between `mkdtempSync` and `launchAttempted = true` still yields `stopped === true`, so that directory is removed.
+- `Reflect.set` on a non-writable property returns `false` even for a same-value write, so all three assertions hold and are non-destructive.
+- Deep immutability behind the frozen containers is real: decoder freezes every container, `operation()` and the `input` projection are frozen.
+
+## Completion
+
+Review complete within the stated scope; no higher-severity defect found and no blocking finding. Unresolved context: downstream carrier-write audit (finding 1); `JsonNumberLiteral` freeze status (pre-existing, cannot affect depth); nothing was executed here, and the installed callback was not exercised by this correction's validation.

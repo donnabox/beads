@@ -1,0 +1,27 @@
+{
+  "argv": [
+    "/opt/homebrew/bin/claude",
+    "--safe-mode",
+    "-p",
+    "--tools",
+    "Read,Glob,Grep",
+    "--allowedTools",
+    "Read,Glob,Grep",
+    "--disable-slash-commands",
+    "--strict-mcp-config",
+    "--mcp-config",
+    "{\"mcpServers\":{}}",
+    "--add-dir",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-fresh-depth-plan",
+    "--no-session-persistence"
+  ],
+  "cwd": "/Users/dbox/repos/wt/vickie/vickie-sequence-depth-retained",
+  "pid": 89526,
+  "processGroup": 89526,
+  "started": "2026-10-16T05:12:08.270952+00:00",
+  "timeoutSeconds": 900,
+  "promptSha256": "132fdef18846ed575ff978f00e80c890ee24b0169703163f80ca0edd945aed00",
+  "sourceBeforeSha256": "d1a227652bfd922a7792a472b33bfb725c0645c04d078f11ed9505ea8afb5f70",
+  "tempDirectory": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-fresh-depth-plan/claude-review-preparation/tmp",
+  "reviewKind": "on-disk fresh-depth plan review; Read/Glob/Grep only, no model override or execution tools"
+}

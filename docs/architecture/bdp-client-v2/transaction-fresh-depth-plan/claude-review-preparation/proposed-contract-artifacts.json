@@ -1,0 +1,18 @@
+{
+  "descriptors": [
+    {
+      "retrievalUri": "https://reference.invalid/acme/types/owner",
+      "utf8": "{\"id\":\"https://reference.invalid/acme/types/owner\",\"name\":\"Owner\",\"describes\":\"bead\",\"conformsTo\":[],\"ownsOutgoing\":{\"https://reference.invalid/acme/types/link\":{\"max\":4}},\"propertiesSchema\":\"https://reference.invalid/acme/schemas/fresh-depth\"}"
+    },
+    {
+      "retrievalUri": "https://reference.invalid/acme/types/link",
+      "utf8": "{\"id\":\"https://reference.invalid/acme/types/link\",\"name\":\"Link\",\"describes\":\"link\",\"conformsTo\":[],\"source\":{\"conformsTo\":[],\"external\":\"none\"},\"target\":{\"conformsTo\":[],\"external\":\"none\"},\"propertiesSchema\":\"https://reference.invalid/acme/schemas/fresh-depth\"}"
+    }
+  ],
+  "schemas": [
+    {
+      "retrievalUri": "https://reference.invalid/acme/schemas/fresh-depth",
+      "utf8": "{\"$id\":\"https://reference.invalid/acme/schemas/fresh-depth\",\"type\":\"object\",\"properties\":{\"n\":{\"type\":\"number\"},\"deep\":true},\"additionalProperties\":true}"
+    }
+  ]
+}

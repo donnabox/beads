@@ -62,11 +62,23 @@ Original service-review lows: RU trusted callback capability narrowing and publi
 
 ### Live worker ledger
 
-Checkpoint 2026-10-16T05:10:18Z. **ACTIVE — Transactional first, with targeted ordinary Update work.** Session `2026-10-08T20:26:35Z-81e5`. Delivery predicates remain unmet. No public profile advertisement, release or Preview2 promotion; Janet CLI/staging/playgrounds/shared databases and Trish Types remain untouched.
+Checkpoint 2026-10-16T05:33:59Z. **ACTIVE — Transactional first, with targeted ordinary Update work.** Session `2026-10-08T20:26:35Z-81e5`. Delivery predicates remain unmet. No public profile advertisement, release or Preview2 promotion; Janet CLI/staging/playgrounds/shared databases and Trish Types remain untouched.
 
 ### Operator direction: continue on working branches
 
 Donna directed: “Ignore main and keep chugging away in your branch.” The editor owns reconciliation with the proposed editorial/Types changes. This supersedes earlier instructions to wait for minimum merging into main before sequence integration. Continue against our current specification and verified9df574 baseline; do not chase newer main or merge our work into main. Root may ordinarily combine accepted write-profile branches after council/validation and verify the resulting branch tree. Exact-head CI and actual evidence gates remain. Main publication, release and Preview2 promotion are held. The heartbeat prompt has been updated to preserve this direction.
+
+### Current combined working branch — 2026-10-16T05:35Z
+
+The reviewed sequence fix is committed as **df95d1a3715a766fb5236805f8549da08230cbce**, an ordinary direct child of df80. It is ordinarily combined with minimum5ca as **11742645bc591b3e5affa9fcc2f36c551c6fa803**, tree **66b0cc09393fdbddf32d7ee19a2d74b961c7fdbb**, ordered parents df95d1a + 5ca22ec. Root and [independent integration audit](sequence-minimum-combined-validation/native-integration-audit.md) verified all20 mapped files, both complete test/doc append sets and all657 outside-union entries. No current-main inspection or merge occurred.
+
+All11 combined source stages passed: fresh build, static checks, historical Read seal and exactly23 named tests. [Root source acceptance](sequence-minimum-combined-validation/root-source-acceptance.json) retains193 modeled source HTTP dispatches without presenting that model as observed traffic. The isolated strict-receiver control failed exactly the intended retained-member conflict assertion after2 actual responses, with clean shutdown. Fresh protocol/server packages and an external offline consumer verify317 members/eight dependencies and payload89c76e078080202c4f3e8745c7cda86f143a67fe3d9e5b7e7ca467736eda5f54. The actual installed sequence callback passed8HTTP and closed its child/store; its separate Python report checker failed because /usr/bin/python3 does not support zip(strict=True). That failure is retained; an observation-only recovery with newer Python is being prepared against the same saved evidence. The later32HTTP minimum witness was blocked before launch by the failed prior-stage gate. No HTTP replay or successful re-adjudication is yet claimed.
+
+PR141 CI38854278919 is green: all27steps,9343passed/1skip184files, preflight7, smoke and historical Read89. [CI report](transaction-minimum-next-serving-plan/authoring-draft/ci-expectation-repair/ci-final-inspection/report.md) records tested synthetic8a3d5a64/tree18351520 with parents aed21767 + 5ca22ec, which differs from candidate tree27476637. This is not relabelled as exact candidate-tree or combined-branch coverage, and no main merge is authorized.
+
+The sequence focused actualClaude review completed naturally with all findings dispositioned in [final code council](sequence-depth-retained-member-draft/review-corrections/root-final-code-council.json). The separate fresh-depth PLAN review reached its895.94second supervision limit with empty stdout/stderr, exit143, unchanged source/plan/checkout and no remaining sampled processes. It is inconclusive, not approval. Original plan and failure are retained. Narrow complementary production/evidence plan-review packets are being reanchored to combined1174264 before any fresh-depth code authoring.
+
+Workers now: root owns combined validation/recovery/publication; cross_carrier_plan_v2_review prepares the narrow Python observation-recovery mechanism; cross_carrier_native_review audits actual completed source/control/package/sequence evidence; update_implementation prepares the narrower actualClaude plan review packets. No independent main/publication authority. Earlier active/pending descriptions below remain historical and are superseded by this section.
 
 ### Verified baseline and active branch work
 
