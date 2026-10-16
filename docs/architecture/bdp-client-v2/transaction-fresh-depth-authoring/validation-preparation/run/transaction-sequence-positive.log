@@ -1,0 +1,57 @@
+
+ RUN  v4.1.10 /Users/dbox/repos/wt/vickie/vickie-fresh-depth-serving
+
+ ✓ packages/server/src/transaction-sequence.test.ts > private Transactional sequence slice > runs all eight explicit operation kinds as separate commits with locator-only aliases 46ms
+ ✓ packages/server/src/transaction-sequence.test.ts > private Transactional sequence slice > reserves all unknown keys together, commits a prefix, continues past failure and permits interleaving 7ms
+ ✓ packages/server/src/transaction-sequence.test.ts > private Transactional sequence slice > joins overlapping presentations without running a completed member twice and projects current labels 3ms
+ ✓ packages/server/src/transaction-sequence.test.ts > private Transactional sequence slice > projects another owner's pending receipt before immutable mismatch and never retracts that owner 3ms
+ ✓ packages/server/src/transaction-sequence.test.ts > private Transactional sequence slice > projects mixed retained, conflicting, failed and unknown keys in declaration order 4ms
+ ✓ packages/server/src/transaction-sequence.test.ts > private Transactional sequence slice > shares singleton and one-operation batch identity, preserving exact numbers and creation defaults 3ms
+ ↓ packages/server/src/transaction-sequence.test.ts > private Transactional sequence slice > projects expired Resource allocations without receipt indices and omits alias allocations
+ ✓ packages/server/src/transaction-sequence.test.ts > private Transactional sequence slice > leaves no partial bulk admission on after-sequence-reservation failure 2ms
+ ✓ packages/server/src/transaction-sequence.test.ts > private Transactional sequence slice > leaves no partial bulk admission on after-sequence-admission failure 2ms
+ ↓ packages/server/src/transaction-sequence.test.ts > private Transactional sequence slice > preserves committed prefix and another owner while retracting this attempt's tail on an internal fault
+ ↓ packages/server/src/transaction-sequence.test.ts > private Transactional sequence slice > continues async admitted work without awaiting or consuming its response
+ ✓ packages/server/src/transaction-sequence.test.ts > private Transactional sequence slice > rejects duplicate keys and invalid dependency edges before any key effects 2ms
+ ↓ packages/server/src/transaction-sequence.test.ts > private Transactional sequence slice > recovers a crashed sequence prefix without resuming abandoned tail receipts
+ ↓ packages/server/src/transaction-sequence.test.ts > private Transactional sequence slice > fences an aborted carrier after a replacement sequence owns its released tail
+ ✓ packages/server/src/transaction-sequence.test.ts > private Transactional sequence slice > classifies foreign key state at its turn after failed detail is forgotten 3ms
+ ✓ packages/server/src/transaction-sequence.test.ts > private Transactional sequence slice > compares retained deep sequence members without executing them or replacing their receipts 4ms
+ × packages/server/src/transaction-sequence.test.ts > private Transactional sequence slice > admits fresh deep sequence members without changing atomic reservation behavior 6ms
+   → expected { results: [ { …(3) }, …(2) ] } to strictly equal { results: [ { …(3) }, …(2) ] }
+ ✓ packages/server/src/transaction-sequence.test.ts > private Transactional sequence slice > executes fresh deep input after a retained failed member expires between sequence turns 4ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  packages/server/src/transaction-sequence.test.ts > private Transactional sequence slice > admits fresh deep sequence members without changing atomic reservation behavior
+AssertionError: expected { results: [ { …(3) }, …(2) ] } to strictly equal { results: [ { …(3) }, …(2) ] }
+
+Compared values have no visual difference.
+
+ ❯ packages/server/src/transaction-sequence.test.ts:643:81
+    641|         receipt: foreign.receipt,
+    642|       });
+    643|       expect(runSteps(createTransactionSequenceStepper(f.store, "p", r…
+       |                                                                                 ^
+    644|         created,
+    645|       );
+ ❯ withDepthFixture packages/server/src/transaction-sequence.test.ts:131:5
+ ❯ packages/server/src/transaction-sequence.test.ts:625:5
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  1 failed | 12 passed | 5 skipped (18)
+   Start at  23:54:59
+   Duration  406ms (transform 154ms, setup 15ms, import 247ms, tests 91ms, environment 0ms)
+
+JSON report written to /Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-fresh-depth-authoring/validation-preparation/run/transaction-sequence-positive.results.json
+Traceback (most recent call last):
+  File "/Users/dbox/repos/wt/vickie/bdp-integration-logs/guarded-action.py", line 5, in <module>
+    subprocess.run(sys.argv[1:],check=True)
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/homebrew/Cellar/python@3.14/3.14.5/Frameworks/Python.framework/Versions/3.14/lib/python3.14/subprocess.py", line 578, in run
+    raise CalledProcessError(retcode, process.args,
+                             output=stdout, stderr=stderr)
+subprocess.CalledProcessError: Command '['/Users/dbox/.nvm/versions/node/v24.16.0/bin/node', '/Users/dbox/repos/wt/vickie/vickie-fresh-depth-serving/node_modules/vitest/vitest.mjs', 'run', 'packages/server/src/transaction-sequence.test.ts', '--maxWorkers=1', '--testNamePattern', "^(?:private\\ Transactional\\ sequence\\ slice\\ runs\\ all\\ eight\\ explicit\\ operation\\ kinds\\ as\\ separate\\ commits\\ with\\ locator\\-only\\ aliases|private\\ Transactional\\ sequence\\ slice\\ reserves\\ all\\ unknown\\ keys\\ together,\\ commits\\ a\\ prefix,\\ continues\\ past\\ failure\\ and\\ permits\\ interleaving|private\\ Transactional\\ sequence\\ slice\\ joins\\ overlapping\\ presentations\\ without\\ running\\ a\\ completed\\ member\\ twice\\ and\\ projects\\ current\\ labels|private\\ Transactional\\ sequence\\ slice\\ projects\\ another\\ owner's\\ pending\\ receipt\\ before\\ immutable\\ mismatch\\ and\\ never\\ retracts\\ that\\ owner|private\\ Transactional\\ sequence\\ slice\\ shares\\ singleton\\ and\\ one\\-operation\\ batch\\ identity,\\ preserving\\ exact\\ numbers\\ and\\ creation\\ defaults|private\\ Transactional\\ sequence\\ slice\\ leaves\\ no\\ partial\\ bulk\\ admission\\ on\\ after\\-sequence\\-reservation\\ failure|private\\ Transactional\\ sequence\\ slice\\ leaves\\ no\\ partial\\ bulk\\ admission\\ on\\ after\\-sequence\\-admission\\ failure|private\\ Transactional\\ sequence\\ slice\\ classifies\\ foreign\\ key\\ state\\ at\\ its\\ turn\\ after\\ failed\\ detail\\ is\\ forgotten|private\\ Transactional\\ sequence\\ slice\\ compares\\ retained\\ deep\\ sequence\\ members\\ without\\ executing\\ them\\ or\\ replacing\\ their\\ receipts|private\\ Transactional\\ sequence\\ slice\\ admits\\ fresh\\ deep\\ sequence\\ members\\ without\\ changing\\ atomic\\ reservation\\ behavior|private\\ Transactional\\ sequence\\ slice\\ executes\\ fresh\\ deep\\ input\\ after\\ a\\ retained\\ failed\\ member\\ expires\\ between\\ sequence\\ turns|private\\ Transactional\\ sequence\\ slice\\ rejects\\ duplicate\\ keys\\ and\\ invalid\\ dependency\\ edges\\ before\\ any\\ key\\ effects|private\\ Transactional\\ sequence\\ slice\\ projects\\ mixed\\ retained,\\ conflicting,\\ failed\\ and\\ unknown\\ keys\\ in\\ declaration\\ order)$", '--reporter=verbose', '--reporter=json', '--outputFile=/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-fresh-depth-authoring/validation-preparation/run/transaction-sequence-positive.results.json']' returned non-zero exit status 1.

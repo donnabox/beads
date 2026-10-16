@@ -1,0 +1,163 @@
+{
+  "head": "a17af9bc4742be33dfd64071f62ffb2936c82d86",
+  "stages": [
+    {
+      "stage": "typecheck",
+      "elapsedSeconds": 2.0462782920803875,
+      "exitSha256": "3fbb23f8a9e80f5a94fe90826291037d8eaa7225667ac6aca55d628f592135ff",
+      "passedNames": []
+    },
+    {
+      "stage": "fresh-build",
+      "elapsedSeconds": 1.6498990419786423,
+      "exitSha256": "6757b481d045a726628bb0802cc7b4984464c66c015337b40389ae1467d47d56",
+      "passedNames": []
+    },
+    {
+      "stage": "format-check",
+      "elapsedSeconds": 1.10715699987486,
+      "exitSha256": "a96bb5ad80b83c4476e8903c800f08069a2e12a7dfe370e4ed67bc4329c1b544",
+      "passedNames": []
+    },
+    {
+      "stage": "lint",
+      "elapsedSeconds": 1.0020575001835823,
+      "exitSha256": "9532029ca10df2aeba8579dff6b676dbcc1e5b5a8df1fb95d3599785b3bc1869",
+      "passedNames": []
+    },
+    {
+      "stage": "boundaries",
+      "elapsedSeconds": 1.1041899169795215,
+      "exitSha256": "afbfc84ad277214d9021fb30376644c2ef4eafa24b551a0b4a271ba70453c06c",
+      "passedNames": []
+    },
+    {
+      "stage": "read-seal",
+      "elapsedSeconds": 0.8932147920131683,
+      "exitSha256": "ff955f619082fa4ebd933262dcbbbd0017a6eb598e48265d1118cdc7b6ea2054",
+      "passedNames": []
+    },
+    {
+      "stage": "transaction-set-positive",
+      "elapsedSeconds": 1.0986179579049349,
+      "exitSha256": "437e312bc7ec94100ace8999486bc19420b5766ec130f71b9e4032aaf8ce5afd",
+      "passedNames": [
+        "serializes byte-bounded deep syntax iteratively without changing number lexemes or key order",
+        "keeps receiving and legacy preparation branded while accepting byte-bounded deep input",
+        "prepares deep sequence members after complete carrier syntax with strict brands and frozen wrappers"
+      ]
+    },
+    {
+      "stage": "transaction-submission-positive",
+      "elapsedSeconds": 6.852701166179031,
+      "exitSha256": "4a15435c8fa6cc198c7b9318d44a99b67fd59213313ea4074d6bf6850f3cbed9",
+      "passedNames": [
+        "private direct Transactional receiving order keeps invalid Selector grammar distinct from valid deep input",
+        "valid private set admission accepts byte-bounded singleton and wrapped set content across the former depth boundary",
+        "finishes batch synthetic syntax before admission, including deeply nested received input",
+        "finishes singleton synthetic syntax before admission, including deeply nested received input",
+        "compares retained direct keys before negotiation and admits valid fresh deep input",
+        "compares deep metadata against genuine pending and dependent keys without changing saved outcomes",
+        "executes deep values through set and dependent sequence with durable receipt recovery"
+      ]
+    },
+    {
+      "stage": "transaction-sequence-positive",
+      "elapsedSeconds": 1.1142419578973204,
+      "exitSha256": "b17748c5b47bc385080ce369122b1fa5fa2ee93f5aeebc7a6f6063c6b662dffa",
+      "passedNames": [
+        "private Transactional sequence slice runs all eight explicit operation kinds as separate commits with locator-only aliases",
+        "private Transactional sequence slice reserves all unknown keys together, commits a prefix, continues past failure and permits interleaving",
+        "private Transactional sequence slice joins overlapping presentations without running a completed member twice and projects current labels",
+        "private Transactional sequence slice projects another owner's pending receipt before immutable mismatch and never retracts that owner",
+        "private Transactional sequence slice projects mixed retained, conflicting, failed and unknown keys in declaration order",
+        "private Transactional sequence slice shares singleton and one-operation batch identity, preserving exact numbers and creation defaults",
+        "private Transactional sequence slice leaves no partial bulk admission on after-sequence-reservation failure",
+        "private Transactional sequence slice leaves no partial bulk admission on after-sequence-admission failure",
+        "private Transactional sequence slice rejects duplicate keys and invalid dependency edges before any key effects",
+        "private Transactional sequence slice classifies foreign key state at its turn after failed detail is forgotten",
+        "private Transactional sequence slice compares retained deep sequence members without executing them or replacing their receipts",
+        "private Transactional sequence slice admits fresh deep sequence members without changing atomic reservation behavior",
+        "private Transactional sequence slice executes fresh deep input after a retained failed member expires between sequence turns"
+      ]
+    },
+    {
+      "stage": "transaction-http-positive",
+      "elapsedSeconds": 1.421331875026226,
+      "exitSha256": "bf7b420e1bd6e2f7c20285762954ed9c5d69d5617f994a6d07eb6cb397072385",
+      "passedNames": [
+        "source-private actual Transactional HTTP rejects sequence carrier syntax/keys/negotiation before claiming any member",
+        "source-private actual Transactional HTTP rejects invalid set Selector grammar and admits valid deep content without partial effects",
+        "accepts byte-bounded deep sequences and keeps sequence capacity distinct from direct transaction capacity",
+        "preserves actual singleton bytes and wrapper-equivalent deep content without accepting a body operation override",
+        "serves retained direct key conflicts and genuine fresh deep effects",
+        "compares retained sequence members and accepts deep input while preserving receiving failures"
+      ]
+    },
+    {
+      "stage": "transaction-snapshot-positive",
+      "elapsedSeconds": 2.0969996659550816,
+      "exitSha256": "c5e45fc33e8315e749515d324fcdf5aedb83f470c7bb4e0c7c277f36bd7be786",
+      "passedNames": [
+        "refuses retained corruption: missing-record rather than rebuilding current graph",
+        "refuses retained corruption: changed-record rather than rebuilding current graph",
+        "refuses retained corruption: oversized-record rather than rebuilding current graph",
+        "refuses retained corruption: missing-range rather than rebuilding current graph",
+        "refuses retained corruption: wrong-kind rather than rebuilding current graph",
+        "refuses retained corruption: wrong-context rather than rebuilding current graph",
+        "refuses retained corruption: wrong-anchor rather than rebuilding current graph",
+        "refuses retained corruption: wrong-expiry rather than rebuilding current graph",
+        "refuses missing owned or endpoint data before issuing a capture",
+        "new private Snapshot entry points do not escape package public exports",
+        "captures and reopens deep owned Links without losing JSON value equality",
+        "rejects deep owned-Link divergence before Snapshot issuance"
+      ]
+    },
+    {
+      "stage": "resource-evaluator-positive",
+      "elapsedSeconds": 0.9976764998864383,
+      "exitSha256": "5562d9bf908f37d53c56ff446176b7afdd8285d3b527295b2ed3970339e02967",
+      "passedNames": [
+        "pure member Resource evaluation normalizes accepted numeric spellings and preserves revisions and metadata on semantic no-ops"
+      ]
+    },
+    {
+      "stage": "review-source-measurements",
+      "elapsedSeconds": 1.6856015420053154,
+      "exitSha256": "a8b198e09ba6a87503fbdbecec3d9df7ba0176211010ce7d05428f3c6854afb5",
+      "passedNames": []
+    },
+    {
+      "stage": "build-inventory",
+      "elapsedSeconds": 1.770456250058487,
+      "exitSha256": "ce91248640b18b31aca4ab485a6c4585aa5ca26e5c8ba747131b2b5f7e5c9efe",
+      "passedNames": []
+    }
+  ],
+  "passedTests": 42,
+  "limitations": [
+    "Targeted source42 only; no full suite or installed qualification.",
+    "47 HTTP remains static model, not independently observed quota.",
+    "Non-runtime node-compile-cache directories preserved.",
+    "Original f864 failure untouched."
+  ],
+  "notRun": [
+    "prepare-control",
+    "strict-control",
+    "review-control",
+    "node-version",
+    "package-directory",
+    "pack-protocol",
+    "pack-server",
+    "verify-tar",
+    "prepare-consumer",
+    "consumer-install",
+    "verify-installed",
+    "direct-installed",
+    "review-direct-installed",
+    "sequence-installed",
+    "review-sequence-installed",
+    "fresh-installed",
+    "review-fresh-installed"
+  ]
+}
