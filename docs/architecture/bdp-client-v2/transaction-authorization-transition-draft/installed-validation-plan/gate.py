@@ -4,7 +4,7 @@ import hashlib,json,re,subprocess
 P=Path(__file__).resolve().parent;D=P.parent;L=D.parent
 W=Path('/Users/dbox/repos/wt/vickie/vickie-authorization-transition')
 E=P/'run';GUARD=L/'guarded-action.py';COMMANDS=P/'commands.json'
-COMMANDS_SHA='fefe3dbe86fc27f50210dc3bc5c8aa051e7c5df0068793ca08761761694ff272'
+COMMANDS_SHA='4bb4bb7451719eb09843c6907834ca100bcadb3bd6cfaf171c032456bec1861e'
 GUARD_SHA='fd81ba029cd4e7c7e60623df89e8292af91141d311d9ce789ed19e2152375e84'
 sha=lambda b:hashlib.sha256(b).hexdigest()
 def require(ok,message):

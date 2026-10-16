@@ -1,0 +1,95 @@
+{
+  "released": false,
+  "commands": [
+    {
+      "id": "typecheck",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-authorization-transition",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+        "run",
+        "typecheck"
+      ],
+      "supervisorSeconds": 120,
+      "ownedTempPrefixes": []
+    },
+    {
+      "id": "format-check",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-authorization-transition",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/repos/wt/vickie/vickie-authorization-transition/node_modules/@biomejs/biome/bin/biome",
+        "format",
+        "packages/server/src/transaction-authorization.test.ts",
+        "packages/server/src/transaction-runtime.test.ts"
+      ],
+      "supervisorSeconds": 120,
+      "ownedTempPrefixes": []
+    },
+    {
+      "id": "transport-targeted",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-authorization-transition",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/repos/wt/vickie/vickie-authorization-transition/node_modules/vitest/vitest.mjs",
+        "run",
+        "packages/server/src/transaction-runtime.test.ts",
+        "--maxWorkers=1",
+        "-t",
+        "^(?:narrows\\ current\\ Transactional\\ visibility\\ and\\ fences\\ issued\\ handles\\ after\\ policy\\ publication)$",
+        "--reporter=verbose",
+        "--reporter=json",
+        "--outputFile=/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-authorization-transition-plan/source-validation-evidence-repair/run/transport-targeted.results.json"
+      ],
+      "selectedFullNames": [
+        "narrows current Transactional visibility and fences issued handles after policy publication"
+      ],
+      "cases": 1,
+      "http": 18,
+      "owners": 1,
+      "directories": 1,
+      "rejectedOpenDirectories": 0,
+      "listeners": 1,
+      "productChildren": 0,
+      "supervisorSeconds": 120,
+      "ownedTempPrefixes": [
+        "bdp-authorization-http-"
+      ]
+    },
+    {
+      "id": "owner-targeted",
+      "cwd": "/Users/dbox/repos/wt/vickie/vickie-authorization-transition",
+      "argv": [
+        "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+        "/Users/dbox/repos/wt/vickie/vickie-authorization-transition/node_modules/vitest/vitest.mjs",
+        "run",
+        "packages/server/src/transaction-authorization.test.ts",
+        "--maxWorkers=1",
+        "-t",
+        "^(?:preserves\\ policy\\ and\\ delivery\\ leases\\ after\\ confirmed\\ policy\\ rollback|projects\\ receipt\\ records\\ and\\ allocations\\ without\\ changing\\ non\\-record\\ execution\\ facts|bounds\\ administrative\\ drain\\ without\\ cancelling\\ admitted\\ sequence\\ work|captures\\ one\\ Scope\\ policy\\ for\\ distinct\\ principals\\ and\\ renders\\ empty\\ historical\\ advances)$",
+        "--reporter=verbose",
+        "--reporter=json",
+        "--outputFile=/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-authorization-transition-plan/source-validation-evidence-repair/run/owner-targeted.results.json"
+      ],
+      "selectedFullNames": [
+        "preserves policy and delivery leases after confirmed policy rollback",
+        "projects receipt records and allocations without changing non-record execution facts",
+        "bounds administrative drain without cancelling admitted sequence work",
+        "captures one Scope policy for distinct principals and renders empty historical advances"
+      ],
+      "cases": 4,
+      "http": 0,
+      "owners": 5,
+      "directories": 4,
+      "rejectedOpenDirectories": 0,
+      "listeners": 0,
+      "productChildren": 0,
+      "supervisorSeconds": 120,
+      "ownedTempPrefixes": [
+        "bdp-tx-authorization-"
+      ]
+    }
+  ],
+  "controlGate": "closed",
+  "installedGate": "closed"
+}

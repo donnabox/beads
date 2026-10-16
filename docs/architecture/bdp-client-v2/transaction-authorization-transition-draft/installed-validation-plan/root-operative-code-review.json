@@ -1,0 +1,23 @@
+{
+  "reviewer": "root",
+  "acceptedForPreparation": true,
+  "executionReleased": false,
+  "readFiles": {
+    "authorization-bootstrap.mjs": "e8cadb6229566412fcdab563216d0db082b663fa88a4976319332d915cae972b",
+    "observer-prefix.txt": "515e2b1aece6b9bd67724a396c0823ee7ba2eb22d51632aa4ff609db4f6a91c5",
+    "observe-installed.ts": "f343c7560f69e946ba48a3515e4c37c9a4b1387d6082fdaca1fab7fbba665779",
+    "review-installed.py": "77cede92f87d0843f541265f1ee836f3cf934cfba5a7fc47fe92b3477ca1ebbf",
+    "gate.py": "257f566009b7ec683664cb6c465e1bf8ae06fa861c9a76980a6047b2120eda78",
+    "launcher.mjs": "6f772f3776d3c3effa788676d853cc2932a6ee59ad63ac3338ad1b487408914b",
+    "preparation.patch": "ce6a61f5daa4a52279777298fe4abe38dd8ae3d76f7b6184e00db44293ebf368",
+    "commands.json": "4bb4bb7451719eb09843c6907834ca100bcadb3bd6cfaf171c032456bec1861e",
+    "operative-report.md": "b3ce2e9a4d75b2b5b11f96b81f4e51714d6e82848c6a7dcca197e6703f3ef047"
+  },
+  "findings": [],
+  "scope": "External private IPC wrapper uses genuine installed entry; canonical Host, actual old handles, unchanged callback semantics, finite/stream/child bounds and real cursor timing fail closed. HEAD follows actual receipt GET. Product source/candidate/build and installed payload must be freshly bound before execution.",
+  "limitations": [
+    "Private validation adapter is separate from original packaged process bootstrap.",
+    "Safe response hashes alone do not reconstruct semantic body assertions; actual hash-bound observer checks those.",
+    "No installed reopen/migration/general ACL/full-profile claim."
+  ]
+}

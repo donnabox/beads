@@ -25,7 +25,7 @@
   "artifactSha256": "e0e9f76993a80caf17a70549a05eec01e32dacded24fc067a5a2fe7a576fe8bf",
   "cohorts": {
     "visibility-handles": {
-      "http": 17,
+      "http": 18,
       "children": 1,
       "owners": 1,
       "directories": 1,
@@ -145,6 +145,13 @@
         ],
         [
           17,
+          "HEAD",
+          "<actual first receipt id>",
+          200,
+          "zero body octets; GET representation length/current context/private no-store/no validators"
+        ],
+        [
+          18,
           "POST",
           "operations/batch",
           403,
@@ -191,8 +198,8 @@
     }
   },
   "totals": {
-    "expectedHTTP": 21,
-    "maximumHTTP": 21,
+    "expectedHTTP": 22,
+    "maximumHTTP": 22,
     "children": 2,
     "owners": 2,
     "directories": 2,
@@ -215,5 +222,15 @@
     "childStdoutStderrBytes": 65536,
     "finalSafeReportBytes": 1048576
   },
-  "publicClaimEligible": false
+  "publicClaimEligible": false,
+  "installedAdaptations": {
+    "canonicalHost": "event-sse.invalid",
+    "cursorWindow": {
+      "measuredFrom": "immediately before issuance request4",
+      "dispatchRequest": 13,
+      "dispatchAndResponseMustBeBelowMs": 500,
+      "actualTTLms": 1000,
+      "otherwise": "nonpassing timing limitation; no expiry accepted or clock override"
+    }
+  }
 }

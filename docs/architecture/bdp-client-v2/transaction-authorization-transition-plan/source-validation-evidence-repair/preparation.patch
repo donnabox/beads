@@ -1,0 +1,57 @@
+--- /Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-authorization-transition-plan/source-validation-t11/run-source.py
++++ /Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-authorization-transition-plan/source-validation-evidence-repair/run-source.py
+@@ -21,12 +21,12 @@
+ BINDING = None  # Root must bind the final combined author manifest.
+ COMMANDS = P / "commands.json"
+ BINDING_SHA = None  # Actual frozen manifest must be pinned by root gate, never guessed.
+-COMMANDS_SHA = 'a4c0ea9ffb92d2e92bd21c6e16ec688c358d2d690b7222e704340108190d4e72'
++COMMANDS_SHA = '64dedaf3808db24c76eb36c5e3d696eb658579e9c3deb5d21b618f11bbd91c6c'
+ GUARD_SHA = 'fd81ba029cd4e7c7e60623df89e8292af91141d311d9ce789ed19e2152375e84'
+ HEAD = '67a2842e3f1918e70978f745587cf11eaf0df5a8'
+ TREE = '596abe870220fb61ce606f8382a9da52d554d063'
+ SESSION = "2026-10-08T20:26:35Z-81e5"
+-ORDER = ['typecheck', 'scope-policy-targeted']
++ORDER = ['typecheck', 'format-check', 'transport-targeted', 'owner-targeted']
+ OWNED_PATHS = None  # Root must freeze the exact combined changed-path inventory.
+ 
+ def require(ok, message):
+@@ -70,7 +70,7 @@
+             patch += result.stdout
+     return sha(patch)
+ 
+-PRIOR_EVIDENCE_SHA = 'fb99d7dd4539fe6f923828b3f30c635e51ccc4d52387d0cc12066d60504c809f'
++PRIOR_EVIDENCE_SHA = '2e5b388963f2b2921bad1bdd5f4cd71379bc1959a317c048df2f27d9b57e795b'
+ 
+ def verify_prior_evidence():
+     evidence_path = P / "prior-evidence.json"
+@@ -83,7 +83,12 @@
+     current = json.loads(BINDING.read_text())
+     require(set(old["files"]) == set(current["files"]), "Source scope changed")
+     changed = [name for name in current["files"] if old["files"][name]["sha256"] != current["files"][name]["sha256"]]
+-    require(changed == [evidence["onlyChangedPath"]], "Targeted test-only bridge changed")
++    require(changed == evidence["onlyChangedPaths"], "Targeted test-only bridge changed")
++    # Positive original hashes, never the intentionally mutated control copy.
++    copied = json.loads(Path(evidence["positiveCopyManifest"]).read_text())["files"]
++    for path, item in copied.items():
++        if path not in evidence["onlyChangedPaths"]:
++            require(sha((W / path).read_bytes()) == item["positiveSha256"], "Positive product/build graph changed: " + path)
+ 
+ def load_gate(name):
+     global BINDING_SHA, BINDING, OWNED_PATHS
+@@ -121,7 +126,7 @@
+     require(len(matches) == 1, "Command identity ambiguous")
+     spec = dict(matches[0])
+     require(spec["cwd"] == str(W) and spec["supervisorSeconds"] == 120, "Unexpected cwd/bound")
+-    expected_tool = str(W / "node_modules/vitest/vitest.mjs") if "selectedFullNames" in spec else "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs"
++    expected_tool = str(W / "node_modules/vitest/vitest.mjs") if "selectedFullNames" in spec else str(W / "node_modules/@biomejs/biome/bin/biome") if name == "format-check" else "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs"
+     require(spec["argv"][:2] == ["/Users/dbox/.nvm/versions/node/v24.16.0/bin/node", expected_tool], "Toolchain changed")
+     require(not spec.get("validatedBdpOverrides"), "Source phase must not inherit installed/control overrides")
+     spec.setdefault("ownedTempPrefixes", [])
+@@ -286,6 +291,7 @@
+         runtime_dirs = sorted(item for item in present if Path(item).name.startswith(tuple(prefixes))) if prefixes else []
+         unknown = sorted(present - set(runtime_dirs))
+         try:
++            verify_prior_evidence()
+             post_hashes = source_hashes()
+             source_unchanged = (post_hashes == gate["sourceSha256"] and
+                                 source_patch_hash() == gate["sourceDiffSha256"] and

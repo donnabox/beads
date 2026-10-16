@@ -48,7 +48,7 @@ elif mode=='consumer':
  C.mkdir(exist_ok=False)
  for data in basis['packages'].values():assert sha(Path(data['archive']).read_bytes())==data['archiveSha256']
  deps={f'@bdp/{n}':'file:'+basis['packages'][n]['archive'] for n in ['protocol','server']}
- (C/'package.json').write_text(json.dumps({'name':'minimum-receiving-external-consumer','private':True,'type':'module','dependencies':deps},indent=2)+'\n')
+ (C/'package.json').write_text(json.dumps({'name':'authorization-external-consumer','private':True,'type':'module','dependencies':deps},indent=2)+'\n')
  # pnpm11 reads workspace overrides here. Frozen lock is independently pinned by root gate.
  (C/'pnpm-workspace.yaml').write_text('overrides:\n  "@bdp/protocol": '+json.dumps(deps['@bdp/protocol'])+'\n  "fast-uri": "3.1.5"\n')
 elif mode=='installed':

@@ -1,0 +1,128 @@
+## MANDATORY DEFECTS
+
+**1. Transmitted raw header-line fidelity is never verified.**
+- Severity: high
+- Location: `plan.md` §"Literal row and exact oracles", sentence "A module-local raw exchange ledger inside existing `executeExact` records actual ordinal/method/url/credentialRef and complete-write/body facts…"; evidence `packages/conformance/src/http-executor.ts:41–52` (`headerLines` is the only authoritative ordered-occurrence source), `packages/conformance/src/runner.ts:1440–1443` (`request-*` path), `ledger.json` `headers` arrays.
+- Issue: the ledger records only ordinal/method/url/credentialRef and write/body facts. The row authors no `request-*` assertion, and `exactHeadersMatch` (`runner.ts:1817–1866`) is reached only through the CORS-absence witness, so nothing compares the serialized lines to the literals. The row's whole novelty over the existing six-request witness is genuine duplicate mixed-case `bdp-scope-epoch`, empty-valued position and malformed view as separate ordered lines.
+- Impact: an executor that collapsed duplicate names into a map, dropped empty-valued lines, or reordered would still produce 47 passes; the obligation's "presence, absence, completeness, and field values" limb would be credited `wholeContract` without wire proof of the fields it names.
+- Smallest correction: retain `actual.exactRequest.headerLines` privately in the module-local ledger and assert, per ordinal, an exact ordered case-sensitive prefix match against that ordinal's frozen `headers` plus `writeState === "complete"`; keep the lines out of the safe report per the secret-bearing comment at `http-executor.ts:41–43`.
+
+**2. Control and provenance selection cannot key on method/url/body/status, and the ordinal base is ambiguous.**
+- Severity: medium
+- Location: `plan.md` §"One small negative" ("applies only to this row's second real response"); §oracles ("Join actual returned `ObservedExchange.request.id/method/url` by fixed order"); `ledger.json` ordinals 1, 2, 4, 5 share `bodySha256 3b0ac96a…`; `apps/bdptest/src/read-update-matrix.test.ts:1027–1040` keys the existing cold control on `sent.url`/status and uses 0-based ordinals, while `ledger.json` is 1-based.
+- Issue: actions 1 and 2 are identical in method, URL, credentialRef, body bytes and digest; actions 4 and 5 repeat the same body digest. Only the ordinal plus the authored header lines distinguish them, and the executor input carries no action ID.
+- Impact: a url/body-keyed or off-by-one predicate can project onto action 1 (or a same-digest later action), still yielding "one failed assertion" while invalidating the stated 7/1 identity.
+- Smallest correction: specify the predicate as `currentScenario === rowId && localIndex === 1` (frozen ordinal 2) **and** authored-header equality for `singleton-replay`; state the ordinal base explicitly in both plan and oracle.
+
+**3. The expected single failure must be identified structurally, not from the thrown message.**
+- Severity: medium
+- Location: `plan.md` §"One small negative" ("…assertion `outcome` (display join `singleton-replay:outcome`)"); `runner.ts:1462–1470` joins only `message` strings; `runner.ts:2286–2289` yields the fixed text "JSON pointer was absent or mismatched" with no id.
+- Issue: assertion ids `status`/`media`/`schema`/`outcome` repeat across all 11 actions, and every json-pointer mismatch in the row produces byte-identical failure text.
+- Impact: text-based matching would let an unexpected wire failure be relabelled as the expected one, which the plan explicitly forbids.
+- Smallest correction: assert over the structured result (exactly 2 exchanges, 8 outcomes, the single `passed:false` at exchange `singleton-replay`, assertion `outcome`); treat the display join as presentation only, and use one separator consistently with the coverage bindings' `singleton-replay.outcome`.
+
+**4. `BDP-Minimum-Scope-Position` is never absent in any mutation POST, yet the absence limb is credited.**
+- Severity: medium
+- Location: `scenario.json` — all nine POST header sets carry a `bdp-minimum-scope-position` line (`pos-999` | `""` | `not a token!`); catalog requirement text "Their presence, absence, completeness, and field values…"; `coverage-row.json` `wholeContract: true`.
+- Issue: an empty-valued field line is present, not absent. Epoch and view are absent in actions 3/7/9; position never is.
+- Impact: the in-row bindings do not cover absence for the field the obligation names first, weakening the `wholeContract` justification precisely where the text enumerates absence.
+- Smallest correction: drop the `bdp-minimum-scope-position` line from action 4 `missing-key` (which already isolates key absence), re-derive that ledger entry's `headers` and remeasure the new span; if the literals are frozen, state in the coverage `reason` that the absence limb rests on the unchanged baseline mutation rows.
+
+**5. File-3 edit inventory omits re-pinning the current manifest/coverage digests.**
+- Severity: medium
+- Location: `plan.md` §"Six owned paths" item 3; reanchor note "One current baseline hash pin corrected c86b3353 -> 80f74625 at 4674" in `apps/bdptest/src/read-update-matrix.test.ts`; `measurements.json` `reconstruction.parentManifestSha256 80f74625…` vs `manifest.compactSha256 96b2596b…` / `diskSha256 354a4a9b…`.
+- Issue: appending the row makes 80f74625 the *parent* digest and a new value current, so the pin that 012d5c0 just corrected must change. Item 3 lists only "affected global data counts and four measured source-growth allowances"; digests are not counts.
+- Impact: literal implementation of the enumerated edits leaves a stale current pin, and the plan records no edit authority or bound for digest churn.
+- Smallest correction: add to item 3 "update current manifest/coverage digest, byte and node pins to the measured values; add the bb9600 parent-reconstruction pin", naming the pin sites.
+
+**6. `smallExecutionSet` exclusion of the new row is load-bearing but unassigned.**
+- Severity: medium
+- Location: `measurements.json` `wire.incrementalFullCi.basis` ("other runShard invocations use smallExecutionSet that removes newrow"); `plan.md` §"Measurements and immutable budgets" ("…smallExecutionSet cohorts exclude this row"); absent from six-path item 3.
+- Issue: if the set is an exclusion list it requires an edit not in the inventory (possibly outside the six paths); if it is an include list the claim is already true but unstated and unproven.
+- Impact: the 24 HTTP / 5 children incremental figure and "unchanged old explicitly selected controls" both depend on this; a wrong reading silently adds 11 requests and fixture state to every shard.
+- Smallest correction: state the mechanism; add the edit to item 3 or declare the additional path, otherwise record the include-list check as a freeze gate.
+
+**7. The clarified safe-report writer is not in the six-path inventory, and its path mechanism may reach outside it.**
+- Severity: low
+- Location: `report-clarifications.md` ¶2 ("distinct absolute per-invocation output path", `wx`, 0600); `plan.md` six-path item 3; precedent `saveColdDirectoryReport` at `read-update-matrix.test.ts:1682–1711` driven by `process.env.BDP_COLD_DIRECTORY_REPORT_PATH`.
+- Issue: item 3 authorizes ledger/oracle/control/callbacks but not the writer; a new env-var-driven path may need registration, docs or boundary-lint allowance.
+- Impact: either the six-file scope is understated or an unlisted file changes at authoring.
+- Smallest correction: add the writer and its absolute-path guard to item 3 and confirm no env/CI/docs registry is implicated; if one is, declare it before freeze.
+
+**8. The status-bucket delta for the replaced coverage row is unstated.**
+- Severity: low
+- Location: `plan.md` §"Six owned paths and preservation" counts line ("authored56, whole35, omitted74, uncovered95, required130"); item 4 "corpus split/count/preservation expectations"; `coverage-row.json` `status: "bounded-observation"`.
+- Issue: the replacement moves one row from the omitted bucket to bounded-observation. Omitted (74) and whole (35) are pinned; the bounded-observation bucket count before/after is not.
+- Impact: if the corpus-split expectation buckets by status, the required edit value is not derivable from the plan.
+- Smallest correction: add the bounded-observation bucket count (before/after) to the same counts line.
+
+**9. The requirement's read-side limb is carved out rather than cited.**
+- Severity: low
+- Location: catalog title "…preserving ordinary admission and read minima" and requirement sentence "It does not change conditions on reads."; `coverage-row.json` reason "read minima and Transactional behavior remain separate".
+- Issue: a row asserting `wholeContract: true` declares one clause of the requirement text out of scope without naming where it is covered. Actions 8 and 11 send no minimum fields and prove nothing about read conditions.
+- Impact: the credit is defensible but not self-justifying on the coverage row alone.
+- Smallest correction: cite the existing read minimum-position rows in the `reason` instead of only declaring separation.
+
+## MISSING SUPPLIED PROOF
+
+**10. Fixture seeding and per-scenario isolation of `beads/w1-a` / `beads/w1-b`.**
+- Severity: high
+- Location: `scenario.json` `setup.fixture reference-read-update-schema-v1`, `cleanup.resetFixture: true`; packet "Relevant exact fixture values" withholds the seed ("Other fixture bindings and readSeed inputs … omitted").
+- Issue/impact: action 1 expects `200 created`. If the fixture seeds w1-a, or if another scenario's w1-a survives into this row in aggregate order, the server returns `identity-taken` (409) and the row passes selected but fails in the aggregate. The bindings `w1.a`/`w1.b` make both readings plausible.
+- Proof required: the fixture's seeded resource set and the reset path establishing "isolated per-row installed state" in full-aggregate order.
+
+**11. The 284-route / configuration-digest invariance claim.**
+- Severity: high
+- Location: `measurements.json` `routes`; `plan.md` "Ordered route set/order stays284 and the existing configuration digest stays26da…"; derivation `apps/bdptest/test-support/read-update-artifact-execution.ts:20–76`.
+- Issue/impact: `artifactRoutes` places *every* http action (POST included) into `reads` **ahead** of the trailing explicit POST block and dedupes on first occurrence. Invariance therefore requires earlier first occurrences for all five pairs this row introduces — POST `operations/create-bead`, POST `operations/update-bead`, POST `operations/sequence`, GET `beads/w1-a`, GET `beads/w1-b`. A new GET pair inserts before the trailing POST block; a first http POST occurrence *relocates* an existing pair while leaving the count at 284. The count cannot witness the claim; a changed order breaks `orderedCompactSha256 664c7550…` and the pinned configuration digest.
+- Proof required: the bb9600 ordered array with first-occurrence indices for those five pairs, compared positionally.
+
+**12. `revision-mismatch` status and retry source.**
+- Severity: medium
+- Location: `scenario.json` action 6 expects 409 / `after-state-change`; `packages/server/src/member-executor.ts:108–115` has no `revision-mismatch` entry; emission is `fail("revision-mismatch")` at `resource-evaluator.ts:1022–1026`; the runtime emits `result.status ?? 500` at `development-runtime.ts:472–474`.
+- Issue/impact: with no supplied mapping, the expected 409 rests on the schema conditional rather than source; an omitted `status` would surface as 500.
+- Proof required: the code path that assigns status 409 / retry `after-state-change` before `json()`.
+
+**13. Credential handle IDs `operator` and `unknown`.**
+- Severity: medium
+- Location: `scenario.json` `credentialRef`; `http-executor.ts:63–80`; only indirect evidence (`wrongToken` guard, `read-update-matrix.test.ts:1708`).
+- Issue/impact: an absent `unknown` handle fails `exactHeadersMatch` lookup and can raise `ExactHarnessError("exact-configuration")` (`runner.ts:1199–1206`) rather than the intended 401.
+- Proof required: the matrix target's `exactConfiguration.credentialHandles` listing both IDs, and that `unknown` resolves to a credential the server rejects.
+
+**14. `revisionProvenance` absence under the matrix installed configuration.**
+- Severity: low
+- Location: `plan.md` "require metadata{}, nonempty revision and exact fixture properties"; counter-evidence `read-update-matrix.test.ts:1163–1172` (a matrix-run bead carrying `revisionProvenance.actor`); `installed-reference.test.ts:617–624` (absent under `helpers.referenceConfiguration`).
+- Issue/impact: a closed `toEqual` literal would break if the matrix target emits provenance by default.
+- Proof required: the matrix target's provenance configuration, or an oracle built on cross-observation equality plus required-member checks.
+
+**15. Zero setup/client/native-read wire for this row.**
+- Severity: low
+- Location: `plan.md` "Assert exactly11 exchanges, no client/setup/native-read traffic"; aggregate arithmetic holds setup at 44 while authored grows 11.
+- Proof required: that `installed-read-update-http` preparation and `resetFixture` are out-of-band for this row (the cold precedent at `read-update-matrix.test.ts:1616–1622` is for a row with different requirements).
+
+**16. Append-only placement equals catalog position.**
+- Severity: low
+- Location: `plan.md` item 1 ("at its actual catalog position after all existing executable baseline IDs") and "Removing only the appended row/comma reconstructs the complete parent manifest".
+- Proof required: the obligation's catalog index is after every existing executable baseline ID, so catalog-ordered and last-row placement coincide; otherwise the single-row-removal reconstruction claim fails.
+
+**17. Commit status of this review packet.**
+- Severity: low
+- Location: `plan.md` CPU section cites committed `cold-directory-draft/commands.json`.
+- Issue/impact: if plan/scenario/ledger/measurements/commands are committed as the cold-directory draft was, they are additional paths outside the declared six and may interact with the four source-growth allowances.
+- Proof required: an explicit statement that the packet is ephemeral, or declaration of its path.
+
+## OPTIONAL ENHANCEMENTS
+
+**18. Pin control-application counts.** `read-update-matrix.test.ts:1056–1060, 1618–1620`. The projection is length-preserving ("created"→"updated", 7 bytes), so `bodyOctets`, `content-length` and `wireResponseBytes` stay mutually consistent — good for avoiding exact-mode cross-checks, but no size evidence distinguishes a projected body. Assert `applications === 1` in the negative and `0` in positive/aggregate, and increment the shared counterfactual counter, mirroring the cold control.
+
+**19. Rename the frozen ledger's `status` to `expectedStatus`.** `ledger.json` (all 11 records); `plan.md` "…body byte count/digest and expected status". The record mixes authored request facts with an expected response value; a distinct name prevents the oracle or report from presenting it as observed.
+
+**20. Tighten the renamed profile-contract title.** `plan.md` CPU selection: `inherits partial TX command-minimum evidence alongside observed ordinary Update coverage` can be read as TX acquiring this row's credit, which the plan forbids. Prefer wording that states the TX mapping stays partial.
+
+**21. Disclose that the oracle is harness-local.** `coverage-row.json` reason; `plan.md` external eight-package consumer step. Consumers replay only the 47 portable assertions, so the Resource-equality limb cannot regress-detect downstream. One clause suffices; the portable alternative (`request-*` assertions, `runner.ts:1440–1443`) would change the 47-assertion count and the whole measurement cascade.
+
+**22. Reuse the existing report safety net.** `read-update-matrix.test.ts:1707–1710` guards with a 262,144-byte cap and `token`/`wrongToken` substring checks. The clarification relies solely on a content allowlist; adding the same cap and substring guard is cheap defense-in-depth for a report that retains request IDs, URLs and write facts.
+
+---
+
+**Completion:** the complete assigned plan review is finished for the stated scope — frozen plan 173b3658, clarification 5353fa3d, scenario ee3977cf, coverage row 98263193, ledger dfb1653b, measurements bccb167b, the candidate-only reanchor, and the supplied spec/source/schema/catalog/fixture excerpts. Independently recomputed and found correct: 11 actions / 47 assertions (scenario, coverage bindings, measurements all agree); nine POST bodies 113+113+103+113+113+176+1+190+190 = 1,112 with maximum 190 and both GETs bodiless, matching every ledger `bodyBytes`; the 7 pass / 1 fail negative identity including schema validity of `{outcome:"updated", resource}` under `mutationResult` and fail-fast after 2 HTTP; cohort totals 2327 expected / 2336 maximum / 62 children and 2270+44 = 2314; incremental 24 HTTP / 5 children; derivative envelope deltas 9,462 bytes / 507 nodes with 1,129 nodes of parser headroom; 4 MiB and 1 MiB headroom values; and the ID counts 51+5 = 56 authored, 129+1 = 130 coverage rows, 130 − 35 = 95 uncovered. Nothing in the assigned review remains outstanding; items 10–17 require supplier evidence I cannot obtain under the no-tool, no-execution constraint, and no authoring, model override, execution or publication authority was used or is claimed.
