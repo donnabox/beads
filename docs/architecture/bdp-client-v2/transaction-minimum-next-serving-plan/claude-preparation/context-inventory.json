@@ -1,0 +1,256 @@
+{
+  "sourceCommit": "6f5e607bf338dd166820bfa3f9f480f7cd54c5f1",
+  "sections": [
+    {
+      "title": "Review scope and limits",
+      "bodyBytes": 1260,
+      "bodySha256": "a56df6e4737866db18402919b857d013ef3aa8a7a84d83c484501bd26948fa46",
+      "kind": "review framing"
+    },
+    {
+      "title": "plan.md",
+      "bodyBytes": 12359,
+      "bodySha256": "c76853749217cd2a62b3d0e92c0c8976376ab8d86d78cdf9a49e24d2fa096bc8",
+      "kind": "complete target",
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-minimum-next-serving-plan/plan.md",
+      "fileSha256": "c76853749217cd2a62b3d0e92c0c8976376ab8d86d78cdf9a49e24d2fa096bc8",
+      "projection": "original text"
+    },
+    {
+      "title": "ledger.json",
+      "bodyBytes": 4873,
+      "bodySha256": "f7dd006d11655ec05a970387968df3a4e2ed0af619abf397874c1810d88876b4",
+      "kind": "complete target",
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-minimum-next-serving-plan/ledger.json",
+      "fileSha256": "cd04e4c1de3cd2f2f17b1f7691fca5158cba0066b5b873205fbce185f9434def",
+      "projection": "complete compact JSON; no fields omitted"
+    },
+    {
+      "title": "operator-rulings.json",
+      "bodyBytes": 1064,
+      "bodySha256": "decfe1c6c658de689447a19cf7adfc8b1621c4994256ceea629703ba47a03093",
+      "kind": "complete target",
+      "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-minimum-next-serving-plan/operator-rulings.json",
+      "fileSha256": "dc9d3a1ae9027f92aadb68638f38507a7fad4dbb169954ded6e5299d83d24951",
+      "projection": "complete compact JSON; no fields omitted"
+    },
+    {
+      "title": "packages/server/src/transaction-consistency.ts:1-133",
+      "bodyBytes": 5482,
+      "bodySha256": "00a420c3e9f5dcb1b8814a6476d5ce52edfb7adbbd1c64ab082833f17322a336",
+      "kind": "exact committed source excerpt",
+      "commit": "6f5e607bf338dd166820bfa3f9f480f7cd54c5f1",
+      "path": "packages/server/src/transaction-consistency.ts",
+      "startLine": 1,
+      "endLine": 133,
+      "fullFileSha256": "00a420c3e9f5dcb1b8814a6476d5ce52edfb7adbbd1c64ab082833f17322a336"
+    },
+    {
+      "title": "packages/server/src/transaction-read.ts:27-60",
+      "bodyBytes": 1252,
+      "bodySha256": "33bb39e092427654ff590f264987b8e5538fcd7ecb33de70c067f4cd42bc6e6d",
+      "kind": "exact committed source excerpt",
+      "commit": "6f5e607bf338dd166820bfa3f9f480f7cd54c5f1",
+      "path": "packages/server/src/transaction-read.ts",
+      "startLine": 27,
+      "endLine": 60,
+      "fullFileSha256": "c3b486baf6b9e48d4a716d36b4162c2ba1f0c7672a6f48988192e2591eda7910"
+    },
+    {
+      "title": "packages/server/src/transaction-read.ts:97-177",
+      "bodyBytes": 3391,
+      "bodySha256": "6fd23269d7ecbc29684ddd6c5d8518616b9a4d226bcdb1e719d64a4b3215daba",
+      "kind": "exact committed source excerpt",
+      "commit": "6f5e607bf338dd166820bfa3f9f480f7cd54c5f1",
+      "path": "packages/server/src/transaction-read.ts",
+      "startLine": 97,
+      "endLine": 177,
+      "fullFileSha256": "c3b486baf6b9e48d4a716d36b4162c2ba1f0c7672a6f48988192e2591eda7910"
+    },
+    {
+      "title": "packages/server/src/transaction-read.ts:216-305",
+      "bodyBytes": 4151,
+      "bodySha256": "cf8879f2ea4323542d12af4a0f8d3288ea6e4fb3e976d248a2dfee998bb2d080",
+      "kind": "exact committed source excerpt",
+      "commit": "6f5e607bf338dd166820bfa3f9f480f7cd54c5f1",
+      "path": "packages/server/src/transaction-read.ts",
+      "startLine": 216,
+      "endLine": 305,
+      "fullFileSha256": "c3b486baf6b9e48d4a716d36b4162c2ba1f0c7672a6f48988192e2591eda7910"
+    },
+    {
+      "title": "packages/server/src/transaction-service.ts:128-150",
+      "bodyBytes": 716,
+      "bodySha256": "f7ac20af6b2164ed0929c7c0edc12cb74ad611b5104907f760cd532a9e38ae7f",
+      "kind": "exact committed source excerpt",
+      "commit": "6f5e607bf338dd166820bfa3f9f480f7cd54c5f1",
+      "path": "packages/server/src/transaction-service.ts",
+      "startLine": 128,
+      "endLine": 150,
+      "fullFileSha256": "53f655faf494209996aac2e0f93a4c2c785e471f66aac6af9ea41f92c9cfbe00"
+    },
+    {
+      "title": "packages/server/src/transaction-service.ts:305-352",
+      "bodyBytes": 2071,
+      "bodySha256": "320d6a486483054fd8d5f1b4d3bbe7092cea60c308202a89be583df6af21f5fd",
+      "kind": "exact committed source excerpt",
+      "commit": "6f5e607bf338dd166820bfa3f9f480f7cd54c5f1",
+      "path": "packages/server/src/transaction-service.ts",
+      "startLine": 305,
+      "endLine": 352,
+      "fullFileSha256": "53f655faf494209996aac2e0f93a4c2c785e471f66aac6af9ea41f92c9cfbe00"
+    },
+    {
+      "title": "packages/server/src/transaction-service.ts:596-622",
+      "bodyBytes": 1000,
+      "bodySha256": "561c811a7abef7950c3d2cc8f3f6f4b1ca3d30d0ee5d36ed1de0af33a8f222b8",
+      "kind": "exact committed source excerpt",
+      "commit": "6f5e607bf338dd166820bfa3f9f480f7cd54c5f1",
+      "path": "packages/server/src/transaction-service.ts",
+      "startLine": 596,
+      "endLine": 622,
+      "fullFileSha256": "53f655faf494209996aac2e0f93a4c2c785e471f66aac6af9ea41f92c9cfbe00"
+    },
+    {
+      "title": "packages/server/src/transaction-http.ts:84-115",
+      "bodyBytes": 990,
+      "bodySha256": "5ae1f0f3efd844c7dac450d13642c0aea7d0198afad106c76edebd406f98e68e",
+      "kind": "exact committed source excerpt",
+      "commit": "6f5e607bf338dd166820bfa3f9f480f7cd54c5f1",
+      "path": "packages/server/src/transaction-http.ts",
+      "startLine": 84,
+      "endLine": 115,
+      "fullFileSha256": "ebb3550110bd6fda638572966e5faa05c15f062f37a10947f6e442fc7d4570f4"
+    },
+    {
+      "title": "packages/server/src/transaction-http.ts:148-155",
+      "bodyBytes": 335,
+      "bodySha256": "f119575e8ff9e627a999e2e9f031e98dd98e3d7d3b141bc083ff41d5ea2d1dbe",
+      "kind": "exact committed source excerpt",
+      "commit": "6f5e607bf338dd166820bfa3f9f480f7cd54c5f1",
+      "path": "packages/server/src/transaction-http.ts",
+      "startLine": 148,
+      "endLine": 155,
+      "fullFileSha256": "ebb3550110bd6fda638572966e5faa05c15f062f37a10947f6e442fc7d4570f4"
+    },
+    {
+      "title": "packages/server/src/transaction-http.ts:195-280",
+      "bodyBytes": 3789,
+      "bodySha256": "0c0ed366305d872ca06b798a8384500cbeee7a749c291ce73dcbd6afd6d1219f",
+      "kind": "exact committed source excerpt",
+      "commit": "6f5e607bf338dd166820bfa3f9f480f7cd54c5f1",
+      "path": "packages/server/src/transaction-http.ts",
+      "startLine": 195,
+      "endLine": 280,
+      "fullFileSha256": "ebb3550110bd6fda638572966e5faa05c15f062f37a10947f6e442fc7d4570f4"
+    },
+    {
+      "title": "packages/server/src/transaction-http.ts:393-395",
+      "bodyBytes": 219,
+      "bodySha256": "3a5e02e908c3d7f7c0570d2eb33006d9e3b5cdc9c33bd9066d5a2a37f4bd31c0",
+      "kind": "exact committed source excerpt",
+      "commit": "6f5e607bf338dd166820bfa3f9f480f7cd54c5f1",
+      "path": "packages/server/src/transaction-http.ts",
+      "startLine": 393,
+      "endLine": 395,
+      "fullFileSha256": "ebb3550110bd6fda638572966e5faa05c15f062f37a10947f6e442fc7d4570f4"
+    },
+    {
+      "title": "packages/server/src/transaction-http.ts:485-492",
+      "bodyBytes": 528,
+      "bodySha256": "7fd1552d9d7056e5f9e976f0a3bd14e55120c92c78a274eb6b2a603d5bfe20ca",
+      "kind": "exact committed source excerpt",
+      "commit": "6f5e607bf338dd166820bfa3f9f480f7cd54c5f1",
+      "path": "packages/server/src/transaction-http.ts",
+      "startLine": 485,
+      "endLine": 492,
+      "fullFileSha256": "ebb3550110bd6fda638572966e5faa05c15f062f37a10947f6e442fc7d4570f4"
+    },
+    {
+      "title": "packages/server/src/transaction-http.ts:564-640",
+      "bodyBytes": 3189,
+      "bodySha256": "febfad80d68fce7b4cb932c6acdea198e43fd072c42bef658d85bbefd1a0f5dc",
+      "kind": "exact committed source excerpt",
+      "commit": "6f5e607bf338dd166820bfa3f9f480f7cd54c5f1",
+      "path": "packages/server/src/transaction-http.ts",
+      "startLine": 564,
+      "endLine": 640,
+      "fullFileSha256": "ebb3550110bd6fda638572966e5faa05c15f062f37a10947f6e442fc7d4570f4"
+    },
+    {
+      "title": "packages/server/src/read-http-routing.ts:21-76",
+      "bodyBytes": 2091,
+      "bodySha256": "979fcb2ce66b916517c9a8e36cbe80e96566f78f8e3e9975508e5997e7925e6d",
+      "kind": "exact committed source excerpt",
+      "commit": "6f5e607bf338dd166820bfa3f9f480f7cd54c5f1",
+      "path": "packages/server/src/read-http-routing.ts",
+      "startLine": 21,
+      "endLine": 76,
+      "fullFileSha256": "d9344b87838f8c71381ccf9efe28b4f023df45503570beb8fb4293d553caca42"
+    },
+    {
+      "title": "packages/server/src/read-http.ts:1-55",
+      "bodyBytes": 2653,
+      "bodySha256": "c9f032881a3fb45b3033aae3e32ad1faeef393d1a2c47bd22bbccb8590291a87",
+      "kind": "exact committed source excerpt",
+      "commit": "6f5e607bf338dd166820bfa3f9f480f7cd54c5f1",
+      "path": "packages/server/src/read-http.ts",
+      "startLine": 1,
+      "endLine": 55,
+      "fullFileSha256": "31934105eff6fff8ded8ce2ca9e3c19028991ca7c3d5f51b848004177e8c9268"
+    },
+    {
+      "title": "packages/server/src/authority-read.ts:969-1018",
+      "bodyBytes": 2022,
+      "bodySha256": "5accaa5919736ca5d40e981d7445330a857c7e8a57e65b926c6781ce34f005c8",
+      "kind": "exact committed source excerpt",
+      "commit": "6f5e607bf338dd166820bfa3f9f480f7cd54c5f1",
+      "path": "packages/server/src/authority-read.ts",
+      "startLine": 969,
+      "endLine": 1018,
+      "fullFileSha256": "fd6554c4ee0d08b997fb3622c2f21697f02d58b838f4ae0de10aca4707f67734"
+    },
+    {
+      "title": "packages/server/src/authority-read.ts:1094-1139",
+      "bodyBytes": 1563,
+      "bodySha256": "819dee5a75ff5eae5d98c6d1d8df15f08a7eaa1ec5d381b441c8fbd5d9c2dd4d",
+      "kind": "exact committed source excerpt",
+      "commit": "6f5e607bf338dd166820bfa3f9f480f7cd54c5f1",
+      "path": "packages/server/src/authority-read.ts",
+      "startLine": 1094,
+      "endLine": 1139,
+      "fullFileSha256": "fd6554c4ee0d08b997fb3622c2f21697f02d58b838f4ae0de10aca4707f67734"
+    },
+    {
+      "title": "docs/specs/bdp.md:1434-1450",
+      "bodyBytes": 911,
+      "bodySha256": "0e483549a7e7309a04c8eeb608d12b0947ac8da8ac128ef97cfc3b701681c7ff",
+      "kind": "exact committed source excerpt",
+      "commit": "6f5e607bf338dd166820bfa3f9f480f7cd54c5f1",
+      "path": "docs/specs/bdp.md",
+      "startLine": 1434,
+      "endLine": 1450,
+      "fullFileSha256": "63e93be562334c84c1e967da2fce212e8ef515aa3c9448924c5f9a272ea7b80b"
+    },
+    {
+      "title": "docs/specs/bdp.md:5812-5869",
+      "bodyBytes": 2973,
+      "bodySha256": "d70a52488e020780cc8dbcaf3d85f4ba70e7be788d4d720c6a54b2edaad3ca7c",
+      "kind": "exact committed source excerpt",
+      "commit": "6f5e607bf338dd166820bfa3f9f480f7cd54c5f1",
+      "path": "docs/specs/bdp.md",
+      "startLine": 5812,
+      "endLine": 5869,
+      "fullFileSha256": "63e93be562334c84c1e967da2fce212e8ef515aa3c9448924c5f9a272ea7b80b"
+    },
+    {
+      "title": "Explicit omitted-source boundaries and native source facts",
+      "bodyBytes": 1295,
+      "bodySha256": "bc3906ee85b9ef84ece72c6ffbf1d9f64a6823aeefc6bd7f0463913102935d96",
+      "kind": "attributed source summary; not execution evidence"
+    }
+  ],
+  "delimiter": "each section is ===== title ===== newline + body ending newline; sections joined with exactly one extra newline",
+  "promptSha256": "cedae8b24d5ca265f0521207da0634fb1045a771d7338ef7fb8b17ed90ec1ffe",
+  "promptBytes": 61483
+}

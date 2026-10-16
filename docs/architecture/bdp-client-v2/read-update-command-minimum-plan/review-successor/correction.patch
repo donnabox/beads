@@ -1,0 +1,515 @@
+--- original/plan.md
++++ successor/plan.md
+@@ -1,6 +1,6 @@
+ # Ordinary Update command-minimum cumulative plan — proposed, not released
+ 
+-Basis: clean candidate `bb9600f1b8b6f623e753543ed5792005eb9aacee`, tree `aa8f7af9c4cdfafbd80547449ec2369f92071ab7`. This candidate is not treated as merged. Actual authoring parent remains null; ordinary reanchor and unchanged-source comparison are required after landing. No product changes, tests, service starts, or review launches were performed for this plan.
++Basis: actual merged main `6f5e607bf338dd166820bfa3f9f480f7cd54c5f1`, tree `a49cb4b2cfc3a7ad9f66d0d790a7e1e4dbad168a`. Original bb9600 plan and actual012d5c0 review remain historical. Authoring/execution remain closed pending root acceptance; recheck actual main/source pins before authoring. No product changes, tests, services or review retry were performed for this correction.
+ 
+ ## Purpose and authority
+ 
+@@ -17,7 +17,7 @@
+ |1|singleton-create, full foreign tuple|200 created|
+ |2|equal singleton replay, empty minimum/duplicate mixed-case epoch/malformed view|200, exact original result|
+ |3|same key, changed body, partial malformed minimum|409 idempotency-conflict / never|
+-|4|missing singleton key, malformed tuple|400 malformed-request / never|
++|4|missing singleton key, position field absent, duplicate epoch/malformed view|400 malformed-request / never|
+ |5|unknown credential, full tuple|401 unauthenticated / after-state-change|
+ |6|stale expectedRevision, malformed tuple|409 revision-mismatch / after-state-change|
+ |7|invalid JSON carrier, partial malformed minimum|400 malformed-request / never|
+@@ -28,30 +28,30 @@
+ 
+ Use existing fixture IDs w1-a/w1-b, isolated per-row installed state, existing operator/unknown credential handles and the same configuration/bootstrap machinery. No dynamic capture or new target binding is needed. GETs omit bodies. Nine POST bodies total 1,112 bytes, maximum190 bytes (derive exact totals from ledger during review). The fields remain raw ordered lines; do not collapse genuine duplicate epoch lines into a header map.
+ 
+-A module-local raw exchange ledger inside existing `executeExact` records actual ordinal/method/url/credentialRef and complete-write/body facts before unchanged delegation; retain full actual response bodies privately. The executor input has no action ID. Join actual returned `ObservedExchange.request.id/method/url` by fixed order afterward; never invent ID or credentials in that type. Assert exactly11 exchanges, no client/setup/native-read traffic, and complete writes matching literal body hashes/lengths. Validate original response schema before storing baselines. A stale-revision dispatch must first establish the literal differs from the actual original revision. Compare complete created/replayed/current Resource and result objects, not a lossy projection; require metadata{}, nonempty revision and exact fixture properties, sequence index0, and absence of TX receipt/context fields. Refusals must leave singleton state unchanged. Source-backed ordinary response retry vocabulary is frozen in the row. Existing transport/header/body limits remain in force; this row does not independently exhaust every transport-boundary case.
++Inside existing `executeExact`, a module-local ledger records genuine input ordinal/method/url/credentialRef before unchanged delegation, then actual returned exactRequest/write/body and response facts. Local indices are zero-based; ledger ordinals are one-based. Retain actual serialized headerLines privately. Compare authored prefix names first, then the exact case-sensitive ordered prefix against the ledger; reject occurrences of any of the three minimum-field names in the generated/credential suffix. Require complete write. The names-only precheck prevents credential values entering a diff if the authored prefix is short. No raw headers enter safe reports; retain full actual response bodies privately. The executor input has no action ID. Join actual returned `ObservedExchange.request.id/method/url` by fixed order afterward; never invent ID or credentials in that type. Assert exactly11 exchanges, no client/setup/native-read traffic, and complete writes matching literal body hashes/lengths. Validate original response schema before storing baselines. A stale-revision dispatch must first establish the literal differs from the actual original revision. Compare complete created/replayed/current Resource and result objects, not a lossy projection; require metadata{}, nonempty revision and exact fixture properties, sequence index0, and absence of TX receipt/context fields. Refusals must leave singleton state unchanged. Source-backed ordinary response retry vocabulary is frozen in the row. Existing transport/header/body limits remain in force; this row does not independently exhaust every transport-boundary case.
+ 
+ Run this oracle in the selected positive and full aggregate. Safe optional report contains counts, request IDs/methods/URLs, write facts, outcomes and equality booleans; no credentials, raw authorization or full bodies. Retain genuine returned runner evidence before cleanup, including expected negative results; propagate oracle/report/cleanup failures. Reuse existing lifecycle and supervisor patterns.
+ 
+ ## One small negative
+ 
+-New local option `replay-outcome` applies only to this row's second real response. First validate genuine wire200/schema/full replay equality, then change only assertion-input `outcome` from created to updated and recompute bodyText/bodyOctets. Preserve original wire facts/body and mark the projection as deliberate. This schema-valid counterfactual must yield exactly one failed assertion: scenario `read-update.http.command-minimum-fields`, exchange `singleton-replay`, assertion `outcome` (display join `singleton-replay:outcome`). Four first-action assertions and three remaining second-action assertions pass: 7 passed / 1 failed; runner stops after2 HTTP. Unexpected wire failures must not be relabeled as that expected failure. This is assertion sensitivity, not a production mutation or proof of every possible defect.
++New local option `replay-outcome` applies only when currentScenario equals this row, localIndex === 1 (one-based ordinal2), and the actual authored-header prefix equals singleton-replay. URL/body/status alone must never select it. First validate genuine wire200/schema/full replay equality, then change only assertion-input `outcome` from created to updated and recompute bodyText/bodyOctets. Preserve original wire facts/body and mark the projection as deliberate. This schema-valid counterfactual must yield exactly one failed assertion: scenario `read-update.http.command-minimum-fields`, exchange `singleton-replay`, assertion `outcome` (display join `singleton-replay.outcome`). Four first-action assertions and three remaining second-action assertions pass: 7 passed / 1 failed; runner stops after2 HTTP. Adjudicate structured results: exactly2 exchanges/8 outcomes,7 passed and only singleton-replay/outcome failed. Thrown text is not an identity oracle. Require application count1 for negative/0 for positive+aggregate and increment the shared counterfactual count. Unexpected wire failures must not be relabeled as that expected failure. This is assertion sensitivity, not a production mutation or proof of every possible defect.
+ 
+ ## Six owned paths and preservation
+ 
+ 1. `packages/conformance/matrices/read-update-v1.json`: append the new row at its actual catalog position after all existing executable baseline IDs.
+ 2. `packages/conformance/test-support/read-update-coverage-v1.json`: replace only the existing omitted row.
+-3. `apps/bdptest/src/read-update-matrix.test.ts`: local ledger/oracle/control, one CPU pin callback, two selected runtime callbacks, affected global data counts and four measured source-growth allowances.
++3. `apps/bdptest/src/read-update-matrix.test.ts`: local ledger/oracle/control and safe per-invocation writer, one CPU pin callback, two selected runtime callbacks, affected global counts, current manifest/coverage digest/byte/node pins and four measured source-growth allowances. Specifically app4674 must pin the measured successor manifest;80f74625 remains immediate-parent reconstruction only. No unrelated digest changes.
+ 4. `packages/conformance/src/read-update-artifact-set.test.ts`: corpus split/count/preservation expectations.
+ 5. `packages/conformance/src/cumulative-artifact.test.ts`: exact reviewed whole-ID whitelist in catalog order and current data counts.
+ 6. `packages/conformance/src/profile-contract-plan.test.ts`: replace the obsolete RU-omission expectation with the new RU evidence mapping, retaining exact catalog inheritance/Read exclusion and unchanged partial TX mapping.
+ 
+-Preserve all50 baseline and5 continuation scenario raw objects, all129 other coverage raw objects, fixture/catalog/index/production/API bytes. Removing only the appended row/comma reconstructs the complete parent manifest; restoring the single original omitted span reconstructs complete parent coverage. Existing cold-directory row and all old controls retain their semantics. Baseline51+continuation5; authored56, whole35, omitted74, uncovered95, required130. Never convert unimplemented or unsupported rows to success. The historical cold-parent reconstruction must explicitly remove both successor additions when it refers to its earlier ancestor; additionally pin reconstruction of immediate bb9600 parent.
++Preserve all50 baseline and5 continuation scenario raw objects, all129 other coverage raw objects, fixture/catalog/index/production/API bytes. Removing only the appended row/comma reconstructs the complete parent manifest; restoring the single original omitted span reconstructs complete parent coverage. Existing cold-directory row and all old controls retain their semantics. Baseline51+continuation5; authored56, whole35, omitted74, uncovered95, required130; status buckets bounded-observation55→56 and omitted75→74 are separate from whole34→35. Never convert unimplemented or unsupported rows to success. The historical cold-parent reconstruction must explicitly remove both successor additions when it refers to its earlier ancestor; additionally pin reconstruction of immediate6f5 parent (its manifest bytes equal bb9600).
+ 
+ ## Measurements and immutable budgets
+ 
+-`measurements.json` is data-only arithmetic on committed bytes and literal row. Proposed new-span indent2 formatting: manifest3,689,599 disk /1,912,642 compact bytes /98,836 nodes; coverage720,396 bytes. Final formatting must remeasure without reformatting old spans. All36 old derivative recipes act on unchanged rows; exact additive delta is9,462 compact bytes/507 nodes. Their combined envelope becomes1,913,753 bytes/98,871 nodes, leaving1,129 nodes beneath the unchanged100,000 parser cap. New response-only control adds no manifest derivative. Preserve the prior exhaustive inventory and reproduce every changed recipe if implementation alters more than this append.
++`measurements.json` is data-only arithmetic on committed bytes and literal row. Proposed new-span indent2 formatting: manifest3,689,484 disk /1,912,593 compact bytes /98,833 nodes; coverage720,627 bytes. Final formatting must remeasure without reformatting old spans. All36 old derivative recipes act on unchanged rows; exact additive delta is9,413 compact bytes/504 nodes. Their combined envelope becomes1,913,704 bytes/98,868 nodes, leaving1,132 nodes beneath the unchanged100,000 parser cap. New response-only control adds no manifest derivative. Preserve the prior exhaustive inventory and reproduce every changed recipe if implementation alters more than this append.
+ 
+-Proposed exact historical data allowances are72,239 /21,782 /16,981 /7,735, retaining historic bases and explaining only2,089 coverage-byte growth. These are review proposals, not execution/runtime cap changes. No4MiB/1MiB/parser/HTTP/time increase. Ordered route set/order stays284 and the existing configuration digest stays26da5a286d9887bebbb0fcf73a92c5d09aa7b7fcfdcc9ed91f767f4db1578c69; independently derive with the existing pure configuration path during authoring. stdlib route projection equality is recorded separately, not presented as an actual installed identity.
++Proposed exact historical data allowances are72,470 /22,013 /17,212 /7,966, retaining historic bases and explaining only2,320 coverage-byte growth. These are review proposals, not execution/runtime cap changes. No4MiB/1MiB/parser/HTTP/time increase. Ordered route set/order stays284 and the existing configuration digest stays26da5a286d9887bebbb0fcf73a92c5d09aa7b7fcfdcc9ed91f767f4db1578c69; independently derive with the existing pure configuration path during authoring. stdlib route projection equality is recorded separately, not presented as an actual installed identity.
+ 
+ |Cohort|Expected HTTP|Maximum HTTP|Children|
+ |---|---:|---:|---:|
+@@ -60,12 +60,24 @@
+ |Existing full aggregate|2314|2314|58|
+ |Total|2327|2336|62|
+ 
+-Aggregate includes2270 authored +44 setup/client requests; no hidden directory or bootstrap wire is excluded. Retained replay is explicitly two row actions; automatic transport retries0. Default helper still starts a bootstrap child plus the selected row's child. The aggregate adds one child and11 requests over bb9600. Full-CI incremental expected load is24 HTTP/5 children including the two new selected callbacks; unchanged old explicitly selected controls and smallExecutionSet cohorts exclude this row. Verify source invocation inventory at freeze. Selected30s, aggregate90s cooperative, request5000ms and external120s limits remain unchanged. Previous timings do not guarantee headroom: timeout stops work and requires diagnosis, never automatic limit growth.
++Aggregate includes2270 authored +44 setup/client requests; no hidden directory or bootstrap wire is excluded. Retained replay is explicitly two row actions; automatic transport retries0. Default helper still starts a bootstrap child plus the selected row's child. The aggregate adds one child and11 requests over actual6f5. Full-CI incremental expected load is24 HTTP/5 children including the two new selected callbacks; unchanged old explicitly selected controls and smallExecutionSet cohorts exclude this row: app4039–4064 is a closed include-list retaining singleton.create-bead plus one continuationId. No exclusion-list edit is needed; recheck this mechanism at freeze. Verify source invocation inventory at freeze. Selected30s, aggregate90s cooperative, request5000ms and external120s limits remain unchanged. Previous timings do not guarantee headroom: timeout stops work and requires diagnosis, never automatic limit growth.
+ 
+ ## Finite validation and release path
+ 
+-Native and actual Claude plan review precede source authoring. After ordinary actual-main reanchor, author only these six paths and freeze final formatted raw preservation/measurements/all affected derivative inventory. Reuse pinned Node24.16/pnpm11.20 and existing setup/build/type/format/lint/boundaries/Read-seal checks. No installed execution until concrete source and commands are reviewed/released.
++Actual original Claude review completed; all22 findings are source-dispositioned. Root acceptance and native closure of this narrow successor precede authoring; no automatic full review retry is proposed. After ordinary actual-main reanchor, author only these six paths and freeze final formatted raw preservation/measurements/all affected derivative inventory. Reuse pinned Node24.16/pnpm11.20 and existing setup/build/type/format/lint/boundaries/Read-seal checks. No installed execution until concrete source and commands are reviewed/released.
+ 
+-CPU selection: the current cold-directory seven callbacks, with the obsolete profile-contract title changed to `inherits partial TX command-minimum evidence alongside observed ordinary Update coverage`, plus new `pins command minimum literals, ordinary admission and parent preservation` (8 total). Existing seven are precisely those in cold-directory-draft/commands.json: corpus split; cumulative digest/catalog/bindings; profile mapping; cold directory pins; numeric growth; metadata closure; bounded R closure. Final commands must match literal actual registration names, not guessed regex expansion.
++CPU selection: the current cold-directory seven callbacks, with the obsolete profile-contract title changed to `maps ordinary Update command-minimum evidence while TX mapping remains partial`, plus new `pins command minimum literals, ordinary admission and parent preservation` (8 total). Existing seven are precisely those in cold-directory-draft/commands.json: corpus split; cumulative digest/catalog/bindings; profile mapping; cold directory pins; numeric growth; metadata closure; bounded R closure. Final commands must match literal actual registration names, not guessed regex expansion.
+ 
+ New selected titles: `observes ignored command minimum fields with ordinary Update admission` and `rejects a changed retained outcome in command minimum assertion input`. Third selected runtime callback is unchanged `executes the partial cumulative RU matrix against actual installed factory HTTP and afterstate`. Fresh clean-commit build/archive/source/installed payload verification and external eight-package consumer remain required; use existing installed workflow, no workspace fallback. Verify actual response counts, exact negative7pass/1fail, full aggregate required/uncovered states and genuine child/store cleanup, then complete exact-head fullCI before landing. No new framework or public advertisement is authorized by this plan.
++
++## Precise claim, report and artifact boundaries
++
++wholeContract applies only to this mutation POST command-ignore obligation. Spec3581–3588 ends with scope preservation, not a new ordinary Update read-minimum receiving rule. Ordinary Read dispatch development-runtime.ts376–435 and read-http.ts9–54 remain untouched. Existing read.http.conditional-reads and read.http.head-conditional-parity remain partial with identical coverage objects; they are preservation context, not new credit. No invented RU minimum rows or borrowed TX proof. Full Resource/replay/header equality is a harness-local installed supplement to47 portable assertions; detached manifest replay does not reproduce that private oracle.
++
++The safe writer belongs only to the app test file, with a test-only absolute per-invocation BDP_COMMAND_MINIMUM_REPORT_PATH. No new registry/export/CI setting is needed. Initial exclusive wx/0600 creation followed only by same-invocation rewrites,262144-byte ceiling and token/wrongToken checks supplement a strict allowlist. Preserve genuine wire facts; explicitly label replay-outcome as assertion-input-only, separate from projected outcomes. Omit absent-row reports or mark not-run; no invented action IDs, credential fields or observations. Report/cleanup errors fail. Caller stage environment lives in external execution preparation, not a seventh product file.
++
++Five existing first occurrences prove route-order preservation (zero-based): GETbeads/w1-a index2 and GETbeads/w1-b index3 in document-patch-merge-replace; POSTcreate-bead258/update-bead259/sequence266 in idempotency-key-required. New row therefore does not relocate routes. Its RU catalog index78 follows every existing executable RU row (maximum75); inherited Read comes first. Full positional route comparison remains284/SHA664c7550, independently derived from actual committed parent plus new literal.
++
++The fixture seeds only its fixed Read scenario list, which excludes this row. App923–954 creates a fresh per-scenario directory/child and conditionally seeds only that list. New row has no client/native-read/setup requests. App788–797 declares operator and unknown handles, with unknown resolving wrongToken rather than a harness denial. resource-evaluator.ts139–160 maps revision-mismatch to409/after-state-change. Default recordChangeContext:false plus no explicit actor/context produces metadata{} without provenance; keep strict full Resource equality. These are source proofs, not new runtime observations.
++
++This packet and historical draft commands are external bdp-integration-logs evidence, not committed product files. Nine POST bodies sum1112 bytes (max190); GET bodies absent. Frozen ledger expectedStatus is an expectation, never actual response evidence. Final freeze must recheck all dependent count/hash/data assertions including current baseline digest, not only eight selected CPU callbacks. Original report-clarifications remains historical; this successor incorporates its safety rules and supersedes only old size/base arithmetic. The current sole-design hash is refreshed for root PR138/council chronology; historical external pins remain recorded.
+--- original/scenario.json
++++ successor/scenario.json
+@@ -219,10 +219,6 @@
+             "value": "application/json"
+           },
+           {
+-            "name": "bdp-minimum-scope-position",
+-            "value": ""
+-          },
+-          {
+             "name": "bdp-scope-epoch",
+             "value": "epoch-one"
+           },
+--- original/coverage-row.json
++++ successor/coverage-row.json
+@@ -2,7 +2,7 @@
+   "id": "read-update.http.command-minimum-fields",
+   "status": "bounded-observation",
+   "wholeContract": true,
+-  "reason": "Installed ordinary Update singleton and sequence commands ignore copied minimum fields, retain exact outcomes across changed ignored headers, and preserve authentication, required keys, key conflict, carrier validation and revision refusal. Independent row-local raw observations compare full original/replay/current Resource bodies; read minima and Transactional behavior remain separate. Public qualification remains false.",
++  "reason": "Installed ordinary Update commands ignore copied minimum fields and preserve authentication, keys, key conflict, carrier validation and revision refusal. The 47 portable assertions are supplemented by a harness-local raw-header and full Resource/replay oracle; that supplement is not portable runner credit. The command-ignore obligation does not alter ordinary Read dispatch or conditions (development-runtime.ts and read-http.ts); unchanged read.http.conditional-reads and read.http.head-conditional-parity remain partial preservation context, not additional credit. No Read minimum-position rule, Transactional credit or public qualification is claimed.",
+   "bindings": [
+     {
+       "scenario": "read-update.http.command-minimum-fields",
+--- original/ledger.json
++++ successor/ledger.json
+@@ -5,7 +5,6 @@
+     "method": "POST",
+     "url": "https://reference.invalid/acme/operations/create-bead",
+     "credentialRef": "operator",
+-    "status": 200,
+     "bodyUtf8": "{\"id\":\"beads/w1-a\",\"type\":\"https://reference.invalid/acme/types/task\",\"properties\":{\"title\":\"minimum-singleton\"}}",
+     "bodyBytes": 113,
+     "bodySha256": "3b0ac96a63000ddbc456bc622996b2d29a709a94ddb0022c4d7bdd1bbd792541",
+@@ -30,7 +29,9 @@
+         "name": "bdp-authorization-view",
+         "value": "foreign-view"
+       }
+-    ]
++    ],
++    "localIndex": 0,
++    "expectedStatus": 200
+   },
+   {
+     "ordinal": 2,
+@@ -38,7 +39,6 @@
+     "method": "POST",
+     "url": "https://reference.invalid/acme/operations/create-bead",
+     "credentialRef": "operator",
+-    "status": 200,
+     "bodyUtf8": "{\"id\":\"beads/w1-a\",\"type\":\"https://reference.invalid/acme/types/task\",\"properties\":{\"title\":\"minimum-singleton\"}}",
+     "bodyBytes": 113,
+     "bodySha256": "3b0ac96a63000ddbc456bc622996b2d29a709a94ddb0022c4d7bdd1bbd792541",
+@@ -67,7 +67,9 @@
+         "name": "bdp-authorization-view",
+         "value": "not a view!"
+       }
+-    ]
++    ],
++    "localIndex": 1,
++    "expectedStatus": 200
+   },
+   {
+     "ordinal": 3,
+@@ -75,7 +77,6 @@
+     "method": "POST",
+     "url": "https://reference.invalid/acme/operations/create-bead",
+     "credentialRef": "operator",
+-    "status": 409,
+     "bodyUtf8": "{\"id\":\"beads/w1-a\",\"type\":\"https://reference.invalid/acme/types/task\",\"properties\":{\"title\":\"changed\"}}",
+     "bodyBytes": 103,
+     "bodySha256": "553c7e4b63db182cbe9b18d7a2911e71f2b5f40b1ff9436438ccc9b81410e5a3",
+@@ -92,7 +93,9 @@
+         "name": "bdp-minimum-scope-position",
+         "value": "not a token!"
+       }
+-    ]
++    ],
++    "localIndex": 2,
++    "expectedStatus": 409
+   },
+   {
+     "ordinal": 4,
+@@ -100,7 +103,6 @@
+     "method": "POST",
+     "url": "https://reference.invalid/acme/operations/create-bead",
+     "credentialRef": "operator",
+-    "status": 400,
+     "bodyUtf8": "{\"id\":\"beads/w1-a\",\"type\":\"https://reference.invalid/acme/types/task\",\"properties\":{\"title\":\"minimum-singleton\"}}",
+     "bodyBytes": 113,
+     "bodySha256": "3b0ac96a63000ddbc456bc622996b2d29a709a94ddb0022c4d7bdd1bbd792541",
+@@ -110,10 +112,6 @@
+         "value": "application/json"
+       },
+       {
+-        "name": "bdp-minimum-scope-position",
+-        "value": ""
+-      },
+-      {
+         "name": "bdp-scope-epoch",
+         "value": "epoch-one"
+       },
+@@ -125,7 +123,9 @@
+         "name": "bdp-authorization-view",
+         "value": "not a view!"
+       }
+-    ]
++    ],
++    "localIndex": 3,
++    "expectedStatus": 400
+   },
+   {
+     "ordinal": 5,
+@@ -133,7 +133,6 @@
+     "method": "POST",
+     "url": "https://reference.invalid/acme/operations/create-bead",
+     "credentialRef": "unknown",
+-    "status": 401,
+     "bodyUtf8": "{\"id\":\"beads/w1-a\",\"type\":\"https://reference.invalid/acme/types/task\",\"properties\":{\"title\":\"minimum-singleton\"}}",
+     "bodyBytes": 113,
+     "bodySha256": "3b0ac96a63000ddbc456bc622996b2d29a709a94ddb0022c4d7bdd1bbd792541",
+@@ -158,7 +157,9 @@
+         "name": "bdp-authorization-view",
+         "value": "foreign-view"
+       }
+-    ]
++    ],
++    "localIndex": 4,
++    "expectedStatus": 401
+   },
+   {
+     "ordinal": 6,
+@@ -166,7 +167,6 @@
+     "method": "POST",
+     "url": "https://reference.invalid/acme/operations/update-bead",
+     "credentialRef": "operator",
+-    "status": 409,
+     "bodyUtf8": "{\"bead\":\"https://reference.invalid/acme/beads/w1-a\",\"expectedRevision\":\"minimum-stale-revision\",\"propertiesChange\":[{\"op\":\"replace\",\"path\":\"/title\",\"value\":\"must-not-commit\"}]}",
+     "bodyBytes": 176,
+     "bodySha256": "e0ae796e8a992c27102711f854d8cdf7db1dc83ca1b0d0d0b3c5859c261728c2",
+@@ -195,7 +195,9 @@
+         "name": "bdp-authorization-view",
+         "value": "not a view!"
+       }
+-    ]
++    ],
++    "localIndex": 5,
++    "expectedStatus": 409
+   },
+   {
+     "ordinal": 7,
+@@ -203,7 +205,6 @@
+     "method": "POST",
+     "url": "https://reference.invalid/acme/operations/create-bead",
+     "credentialRef": "operator",
+-    "status": 400,
+     "bodyUtf8": "{",
+     "bodyBytes": 1,
+     "bodySha256": "021fb596db81e6d02bf3d2586ee3981fe519f275c0ac9ca76bbcf2ebb4097d96",
+@@ -220,7 +221,9 @@
+         "name": "bdp-minimum-scope-position",
+         "value": "not a token!"
+       }
+-    ]
++    ],
++    "localIndex": 6,
++    "expectedStatus": 400
+   },
+   {
+     "ordinal": 8,
+@@ -228,11 +231,12 @@
+     "method": "GET",
+     "url": "https://reference.invalid/acme/beads/w1-a",
+     "credentialRef": "operator",
+-    "status": 200,
+     "bodyUtf8": null,
+     "bodyBytes": 0,
+     "bodySha256": null,
+-    "headers": []
++    "headers": [],
++    "localIndex": 7,
++    "expectedStatus": 200
+   },
+   {
+     "ordinal": 9,
+@@ -240,7 +244,6 @@
+     "method": "POST",
+     "url": "https://reference.invalid/acme/operations/sequence",
+     "credentialRef": "operator",
+-    "status": 200,
+     "bodyUtf8": "{\"operations\":[{\"operation\":\"createBead\",\"id\":\"beads/w1-b\",\"type\":\"https://reference.invalid/acme/types/task\",\"properties\":{\"title\":\"minimum-sequence\"},\"idempotencyKey\":\"minimum-sequence\"}]}",
+     "bodyBytes": 190,
+     "bodySha256": "76bd4c1c05ceb414c5da1c4f31892dbe55c0f41bdf3796532341f00f7785163f",
+@@ -253,7 +256,9 @@
+         "name": "bdp-minimum-scope-position",
+         "value": "not a token!"
+       }
+-    ]
++    ],
++    "localIndex": 8,
++    "expectedStatus": 200
+   },
+   {
+     "ordinal": 10,
+@@ -261,7 +266,6 @@
+     "method": "POST",
+     "url": "https://reference.invalid/acme/operations/sequence",
+     "credentialRef": "operator",
+-    "status": 200,
+     "bodyUtf8": "{\"operations\":[{\"operation\":\"createBead\",\"id\":\"beads/w1-b\",\"type\":\"https://reference.invalid/acme/types/task\",\"properties\":{\"title\":\"minimum-sequence\"},\"idempotencyKey\":\"minimum-sequence\"}]}",
+     "bodyBytes": 190,
+     "bodySha256": "76bd4c1c05ceb414c5da1c4f31892dbe55c0f41bdf3796532341f00f7785163f",
+@@ -286,7 +290,9 @@
+         "name": "bdp-authorization-view",
+         "value": "not a view!"
+       }
+-    ]
++    ],
++    "localIndex": 9,
++    "expectedStatus": 200
+   },
+   {
+     "ordinal": 11,
+@@ -294,10 +300,11 @@
+     "method": "GET",
+     "url": "https://reference.invalid/acme/beads/w1-b",
+     "credentialRef": "operator",
+-    "status": 200,
+     "bodyUtf8": null,
+     "bodyBytes": 0,
+     "bodySha256": null,
+-    "headers": []
++    "headers": [],
++    "localIndex": 10,
++    "expectedStatus": 200
+   }
+ ]
+--- original/measurements.json
++++ successor/measurements.json
+@@ -1,6 +1,6 @@
+ {
+-  "candidateBase": "bb9600f1b8b6f623e753543ed5792005eb9aacee",
+-  "actualMergedParent": null,
++  "candidateBase": "6f5e607bf338dd166820bfa3f9f480f7cd54c5f1",
++  "actualMergedParent": "6f5e607bf338dd166820bfa3f9f480f7cd54c5f1",
+   "draftFormatting": "JSON indent2 new span only; final formatter must remeasure",
+   "actions": 11,
+   "assertions": 47,
+@@ -8,34 +8,34 @@
+   "oldContinuationObjects": 5,
+   "otherCoverageObjects": 129,
+   "manifest": {
+-    "diskBytes": 3689599,
+-    "compactBytes": 1912642,
+-    "nodes": 98836,
+-    "growthCompact": 9462,
+-    "growthNodes": 507,
+-    "compactSha256": "96b2596bdb801f76d2dfabcd270e493da729f4f4f5e0805b52df23858ee7b401",
+-    "diskSha256": "354a4a9b3705fbb25f2ab361bbf85fe189441d122c1511b6d4186c845342e917"
++    "diskBytes": 3689484,
++    "compactBytes": 1912593,
++    "nodes": 98833,
++    "growthCompact": 9413,
++    "growthNodes": 504,
++    "compactSha256": "f6a536cfbf757a0e4f6dec90ac893de0b28c9b3a1f2d77a9b13cd0f5fad49515",
++    "diskSha256": "10a7c6f97a280cf88e58d3aa2039fe580904b74bfffcebda4747fc3c1a34b583"
+   },
+   "coverage": {
+-    "diskBytes": 720396,
+-    "growth": 2089,
++    "diskBytes": 720627,
++    "growth": 2320,
+     "nodes": 14819,
+-    "diskSha256": "4a7d8a2c922d17b2e5492f363c87015de74521b492f4e032718c93e35b31fc6a"
++    "diskSha256": "4120abfe2f724fe34b3868bd3533b181e18479768d5de752b5098c6288dbb395"
+   },
+   "oldDerivativeEnvelope": {
+     "bytes": 1904291,
+     "nodes": 98364
+   },
+   "proposedDerivativeEnvelope": {
+-    "bytes": 1913753,
+-    "nodes": 98871,
++    "bytes": 1913704,
++    "nodes": 98868,
+     "basis": "Same disjoint append-only row for all36 old transformations; new response-only control changes no manifest. Old row recipes and order unchanged."
+   },
+   "proposedHistoricalDataAllowances": [
+-    72239,
+-    21782,
+-    16981,
+-    7735
++    72470,
++    22013,
++    17212,
++    7966
+   ],
+   "reconstruction": {
+     "parentManifestSha256": "80f74625b6074892b707365859572f8bc0b8c10478d36ac307370ef6027f5fc3",
+@@ -69,19 +69,81 @@
+     "incrementalFullCi": {
+       "expectedHttp": 24,
+       "children": 5,
+-      "basis": "Only full aggregate grows11/1; two new selected callbacks add11+2HTTP/4children. All old run() invocations explicitly select existing IDs; other runShard invocations use smallExecutionSet that removes newrow."
++      "basis": "Full aggregate grows11HTTP/1child; two selected callbacks add11+2HTTP/4children. Existing selections name old IDs; smallExecutionSet is a closed include-list excluding new row."
+     }
+   },
+   "headroom": {
+-    "manifestDiskTo4MiB": 504705,
+-    "maxDerivativeNodesTo100000": 1129,
+-    "coverageTo1MiB": 328180
++    "manifestDiskTo4MiB": 504820,
++    "maxDerivativeNodesTo100000": 1132,
++    "coverageTo1MiB": 327949
+   },
+   "routes": {
+     "orderedCount": 284,
+     "unchanged": true,
+     "orderedCompactSha256": "664c7550f9fa5eb97b01f83da9cafbf1c2d9a4573869801e6a581d1daff7331c",
+     "existingExactConfigurationDigest": "26da5a286d9887bebbb0fcf73a92c5d09aa7b7fcfdcc9ed91f767f4db1578c69",
+-    "basis": "stdlib translation of artifactRoutes; unchanged ordered routes plus unchanged all remaining config inputs preserves existing configuration digest; authoring must verify existing exact assertion"
++    "basis": "stdlib translation of artifactRoutes; unchanged ordered routes plus unchanged all remaining config inputs preserves existing configuration digest; authoring must verify existing exact assertion",
++    "firstOccurrenceProof": [
++      {
++        "routeIndex": 2,
++        "method": "GET",
++        "url": "https://reference.invalid/acme/beads/w1-a",
++        "firstScenario": "read-update.singleton.document-patch-merge-replace",
++        "firstAction": "read-patched"
++      },
++      {
++        "routeIndex": 3,
++        "method": "GET",
++        "url": "https://reference.invalid/acme/beads/w1-b",
++        "firstScenario": "read-update.singleton.document-patch-merge-replace",
++        "firstAction": "link-target-before"
++      },
++      {
++        "routeIndex": 258,
++        "method": "POST",
++        "url": "https://reference.invalid/acme/operations/create-bead",
++        "firstScenario": "read-update.singleton.idempotency-key-required",
++        "firstAction": "key-route-create-bead"
++      },
++      {
++        "routeIndex": 259,
++        "method": "POST",
++        "url": "https://reference.invalid/acme/operations/update-bead",
++        "firstScenario": "read-update.singleton.idempotency-key-required",
++        "firstAction": "key-route-update-bead"
++      },
++      {
++        "routeIndex": 266,
++        "method": "POST",
++        "url": "https://reference.invalid/acme/operations/sequence",
++        "firstScenario": "read-update.singleton.idempotency-key-required",
++        "firstAction": "sequence-key-empty"
++      }
++    ]
++  },
++  "bodyBytes": {
++    "postCount": 9,
++    "sum": 1112,
++    "max": 190,
++    "getBodyCount": 0
++  },
++  "coverageCounts": {
++    "required": 130,
++    "before": {
++      "bounded-observation": 55,
++      "omitted": 75,
++      "wholeContract": 34,
++      "uncovered": 96
++    },
++    "after": {
++      "bounded-observation": 56,
++      "omitted": 74,
++      "wholeContract": 35,
++      "uncovered": 95
++    }
++  },
++  "catalogPosition": {
++    "newIndex": 78,
++    "maxExistingExecutableRuIndex": 75
+   }
+ }
+--- original/source-binding.json
++++ successor/source-binding.json
+@@ -1,13 +1,13 @@
+ {
+   "status": "PLAN ONLY; authoring and execution closed",
+-  "candidateBase": "bb9600f1b8b6f623e753543ed5792005eb9aacee",
+-  "candidateTree": "aa8f7af9c4cdfafbd80547449ec2369f92071ab7",
+-  "actualMergedParent": null,
+-  "sourceReadMethod": "git show candidate:path; no product module imports",
++  "candidateBase": "6f5e607bf338dd166820bfa3f9f480f7cd54c5f1",
++  "candidateTree": "a49cb4b2cfc3a7ad9f66d0d790a7e1e4dbad168a",
++  "actualMergedParent": "6f5e607bf338dd166820bfa3f9f480f7cd54c5f1",
++  "sourceReadMethod": "git show immutable actual merged main:path, no product imports",
+   "sources": {
+     "packages/conformance/matrices/read-update-v1.json": "80f74625b6074892b707365859572f8bc0b8c10478d36ac307370ef6027f5fc3",
+     "packages/conformance/test-support/read-update-coverage-v1.json": "85b717f1817d8ea295d0a7c51f8914bdfb942d1786d414924d3d5f80be7cd10a",
+-    "apps/bdptest/src/read-update-matrix.test.ts": "3009ce7fe3085b140b23f8062358ba2d342bd491fde3f3b6c19f75f618e87c7b",
++    "apps/bdptest/src/read-update-matrix.test.ts": "b9a2fedbb8fc7c94b32b600553353e5aff4b7b2f53d05e919ba993be559e69f9",
+     "packages/conformance/src/cumulative-artifact.test.ts": "d3e8a462694174cf34db94700df51f3de6943aa1072dbf4bd04de7560db9b523",
+     "packages/conformance/src/profile-contract-plan.test.ts": "8d649bf6f88b6faeafd7b629d9bb541dab7e818e00818e577de41dd0700f70a4",
+     "packages/conformance/src/read-update-artifact-set.test.ts": "9d337a232a0f2311aff2394a52b31e64c41e8516fcaa5d4a7a5bd7c2d36ecd47",
+@@ -25,11 +25,21 @@
+     "packages/server/src/retained-disclosure.ts": "68bd3e3d0e531738aae65081d8d2532750e6f135436c2177d30678ca384b3f36",
+     "packages/server/src/resource-evaluator.ts": "89606787e455f4ed555b807d91c5331a376431807a9a581de1f94e538fcab4ff",
+     "schemas/bdp-v0.schema.json": "0baa5d5ef67144f8e6513b4cde31168effc8df6d52ef3141b0f144b87f8dc227",
+-    "docs/specs/bdp.md": "63e93be562334c84c1e967da2fce212e8ef515aa3c9448924c5f9a272ea7b80b"
++    "docs/specs/bdp.md": "63e93be562334c84c1e967da2fce212e8ef515aa3c9448924c5f9a272ea7b80b",
++    "packages/server/src/read-http.ts": "31934105eff6fff8ded8ce2ca9e3c19028991ca7c3d5f51b848004177e8c9268",
++    "scripts/installed-reference-observation.mjs": "ca897f4a7659969df123037b5847d5765b357d9b8e1652f367bb204450db6278"
+   },
+   "externalSources": {
++    "/Users/dbox/repos/wt/vickie/bdp-client-design/checkout/docs/architecture/bdp-client-v2/design.md": "af62fbdfa6b2b0a3bc6b31669373e9a3b6f48a653962a276c9eb82b8715a290c",
++    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-selector-command-operator-rulings.md": "5f7c78447789da4df73c616c174a23832d4b72b4c00238a3c7c26240993d2611",
++    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/read-update-cumulative-qualification-plan/review-successor/final-derivative-inventory.md": "a607f5644118e1a2c8350b7ec86bec0c0f6c369f2b844369309c0e13bc3e6a75"
++  },
++  "authoringReleased": false,
++  "historicalExternalSources": {
+     "/Users/dbox/repos/wt/vickie/bdp-client-design/checkout/docs/architecture/bdp-client-v2/design.md": "407c7a23d6a2ba477bc2f769db556af6e9dbfbe0cd3b9e72ec4fbceed75f8c7f",
+     "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-selector-command-operator-rulings.md": "5f7c78447789da4df73c616c174a23832d4b72b4c00238a3c7c26240993d2611",
+     "/Users/dbox/repos/wt/vickie/bdp-integration-logs/read-update-cumulative-qualification-plan/review-successor/final-derivative-inventory.md": "a607f5644118e1a2c8350b7ec86bec0c0f6c369f2b844369309c0e13bc3e6a75"
+-  }
++  },
++  "externalSourceNote": "Current sole design refreshed after root PR138/council chronology updates; original pins retained as historical, not relabeled. Operator ruling and derivative inventory unchanged.",
++  "historicalActualReviewBase": "012d5c0cfcbb74b28d13538bacb10b4db98573aa"
+ }

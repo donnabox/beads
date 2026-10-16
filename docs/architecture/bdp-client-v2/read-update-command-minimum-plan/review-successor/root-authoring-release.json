@@ -1,0 +1,19 @@
+{
+  "authoringReleased": true,
+  "executionReleased": false,
+  "base": "6f5e607bf338dd166820bfa3f9f480f7cd54c5f1",
+  "planSha256": "a49be8e237ae867f12d43691cf661ad44f5d49f92cce51d0369bb9a2615def18",
+  "sourceBindingSha256": "9296fb4eb45b67ca504b9af15aad5b561ff111ebabafa7283350542aadc45790",
+  "actualClaudeOutputSha256": "e77462f1bf3eb0b74217e9b38f87a49660b4d215fc6ffb21f39d9afbf9bf54d3",
+  "dispositionsSha256": "adaa670b6a8c5e08515a4ba9b4cc02f75489b3c5694a499ef00229fba03198e3",
+  "scope": [
+    "packages/conformance/matrices/read-update-v1.json",
+    "packages/conformance/test-support/read-update-coverage-v1.json",
+    "apps/bdptest/src/read-update-matrix.test.ts",
+    "packages/conformance/src/read-update-artifact-set.test.ts",
+    "packages/conformance/src/cumulative-artifact.test.ts",
+    "packages/conformance/src/profile-contract-plan.test.ts"
+  ],
+  "review": "Root reviewed full22findings/source-disposition and successor plan, literal absence correction, exact negative ordinal and wire fidelity, preservedRead partial rows and currentdigest pins. Narrow successor directly addresses original council findings; no additional full plan review needed.",
+  "conditions": "Preserve raw historical spans and limits. Freeze final source/measurements and commands for root before runtime. No commit/push or product serving changes. Sole design chronology may advance without semantic authority change."
+}
