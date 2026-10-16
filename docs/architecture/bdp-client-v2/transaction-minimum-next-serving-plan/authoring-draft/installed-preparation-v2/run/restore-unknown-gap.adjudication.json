@@ -1,0 +1,152 @@
+{
+  "accepted": true,
+  "mode": "restore-unknown-gap",
+  "actualRawExit": 1,
+  "adapterExitExpected": 0,
+  "observedHTTP": 2,
+  "productChildren": 1,
+  "observation": {
+    "observation": "private-installed-minimum-current-resource",
+    "mode": "restore-unknown-gap",
+    "controlPrerequisites": true,
+    "publishedView": null,
+    "wrapper": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-minimum-next-serving-plan/authoring-draft/installed-preparation-v2/run/restore-unknown-gap.tmp/bdp-minimum-current-installed-Sg4TPS/private-bootstrap.mjs",
+    "wrapperSha256": "eb44137116746f374324e2d52210c95f1f34d41dd21bdbbd82c94f3fbdea8d14",
+    "outcome": "failed",
+    "declaredSourceCommit": "733728cf40fc2f57407000251673bd5d3218acd4",
+    "workspaceDirty": true,
+    "entry": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-minimum-next-serving-plan/authoring-draft/installed-preparation-v2/run/consumer-restore-unknown-gap/node_modules/.pnpm/@bdp+server@file+..+packages+bdp-server-0.0.0.tgz/node_modules/@bdp/server/dist/transaction-installed.js",
+    "entrySha256": "2dc1386a8a9f38d32c1fbf4ab8413538e86e3d41a20db9b9ab275a73b8c4040f",
+    "binding": {
+      "served": {
+        "scope": "https://event-sse.invalid/acme/",
+        "profile": "transactional",
+        "history": false,
+        "sourceCommit": "733728cf40fc2f57407000251673bd5d3218acd4",
+        "installedPayloadDigest": "0c38370b9b0aacf32555a20bcae9c5e1bae254d8b4aa5ee55aceb58ef29950a0",
+        "installedContractsDigest": "2c172902bcce14394923e03a2cdda4464bfeba7da0a2c7ee5986da0493944f5c",
+        "policyDigest": "f9f1089ada0b13ee7c848cf57e1dfc3ca8d3dfc3bddf9c3addf60dec52449c63",
+        "authenticationDigest": "e1ed307a6e1b4c3a9fbec920ab5a5c74ab1b0ebfc63487c6b0813e72eff000a8",
+        "fixtureDigest": "3a7899ced771d4880066d98b0000c53f801ece53458502cc4f3bc641146c9a85",
+        "fixtureId": "reference-transactional-v1",
+        "capabilities": [
+          "installed-transactional-http",
+          "transactional-receipt-observation"
+        ]
+      },
+      "operationTargets": {
+        "createBead": "https://event-sse.invalid/acme/operations/create-bead",
+        "updateBead": "https://event-sse.invalid/acme/operations/update-bead",
+        "deleteBead": "https://event-sse.invalid/acme/operations/delete-bead",
+        "createLink": "https://event-sse.invalid/acme/operations/create-link",
+        "updateLink": "https://event-sse.invalid/acme/operations/update-link",
+        "deleteLink": "https://event-sse.invalid/acme/operations/delete-link",
+        "putAlias": "https://event-sse.invalid/acme/operations/put-alias",
+        "deleteAlias": "https://event-sse.invalid/acme/operations/delete-alias",
+        "updateWhere": "https://event-sse.invalid/acme/operations/update-where",
+        "deleteWhere": "https://event-sse.invalid/acme/operations/delete-where",
+        "batch": "https://event-sse.invalid/acme/operations/batch",
+        "sequence": "https://event-sse.invalid/acme/operations/sequence"
+      },
+      "runtimeConfigurationIdentity": "408c55b7cb27ca59519fa18437fb387fa39e78df65b6a2c2fcaa13da986e4cf7",
+      "authorityMode": "canonical"
+    },
+    "artifactBytes": 378,
+    "attempted": 2,
+    "exchanges": 2,
+    "completedResponses": [
+      {
+        "ordinal": 1,
+        "label": "seed",
+        "method": "POST",
+        "url": "https://event-sse.invalid/acme/operations/sequence",
+        "credential": "writer",
+        "requestBodyBytes": 610,
+        "requestBodySha256": "7339d6a0c00a9846fd67677a87aa49d43a9f626096ea57397afe469a6daacf87",
+        "minimumFieldOccurrences": [
+          0,
+          0,
+          0
+        ],
+        "status": 200,
+        "bodyOctets": 974,
+        "bodySha256": "d971b69ca91e211686454c8b135f143ee17eeb4162a91651021ca50d665fdfb9",
+        "headers": {
+          "bdp-scope-epoch": "ca8e2842-cb1e-48aa-a630-1b90a5e9d12c",
+          "bdp-authorization-view": "development-all-visible",
+          "bdp-scope-position": "pos-3",
+          "content-type": "application/json",
+          "content-length": "974",
+          "cache-control": "private, no-store",
+          "retry-after": null,
+          "www-authenticate": null,
+          "x-bdp-development": "non-attesting",
+          "x-bdp-development-limit": null,
+          "etag": null,
+          "last-modified": null,
+          "allow": null,
+          "location": null,
+          "link": null
+        }
+      },
+      {
+        "ordinal": 2,
+        "label": "minimum-current:unknown-catch-up-timeout",
+        "method": "GET",
+        "url": "https://event-sse.invalid/acme/beads/a",
+        "credential": "writer",
+        "requestBodyBytes": 0,
+        "requestBodySha256": null,
+        "minimumFieldOccurrences": [
+          1,
+          1,
+          1
+        ],
+        "status": 500,
+        "bodyOctets": 0,
+        "bodySha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "headers": {
+          "bdp-scope-epoch": null,
+          "bdp-authorization-view": null,
+          "bdp-scope-position": null,
+          "content-type": null,
+          "content-length": "0",
+          "cache-control": "private, no-store",
+          "retry-after": null,
+          "www-authenticate": null,
+          "x-bdp-development": "non-attesting",
+          "x-bdp-development-limit": "minimum-position",
+          "etag": null,
+          "last-modified": null,
+          "allow": null,
+          "location": null,
+          "link": null
+        }
+      }
+    ],
+    "deadlineExceeded": false,
+    "cleanupExceeded": false,
+    "launchAttempted": true,
+    "startupCompleted": true,
+    "closed": true,
+    "childPid": 90143,
+    "childExitCode": 0,
+    "childSignalCode": null,
+    "directory": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-minimum-next-serving-plan/authoring-draft/installed-preparation-v2/run/restore-unknown-gap.tmp/bdp-minimum-current-installed-Sg4TPS",
+    "directoryAbsent": true,
+    "failureCount": 1,
+    "failureCategories": [
+      "minimum-current:unknown-catch-up-timeout"
+    ],
+    "claimEligible": false,
+    "retention": "safe response headers and body fingerprints; actual bodies asserted in memory; no credentials or raw configuration retained",
+    "startupLimitation": "attempted launch without returned child leaves stop unknown and preserves owned directory for supervisor evidence"
+  },
+  "resultSha256": "6a126e840e272c71ed0445896dddc308343651f68cc264c335d110e291f277c0",
+  "logSha256": "82a710730077d552a14d9c6091d6e703e9f8bb4b7541fb6cc98c6351ad22d582",
+  "exitSha256": "d6f59cac3a5fd1b5bc61c67755a93dcff845b5a002e4b976138749d8a45cecc7",
+  "proofSha256": "6e69098da9aab31363706a7b6d4c23608b816acd4ce9183a5a0fc71dcded62b9",
+  "independentChildAbsent": 90143,
+  "storeAbsent": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-minimum-next-serving-plan/authoring-draft/installed-preparation-v2/run/restore-unknown-gap.tmp/bdp-minimum-current-installed-Sg4TPS",
+  "limitation": "Source test performs full schema/body/raw-header oracles in memory; this adapter checks actual safe records and independent package binding. Author/preparation overlap disclosed; no qualification."
+}

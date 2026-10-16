@@ -1,0 +1,67 @@
+
+ RUN  v4.1.10 /Users/dbox/repos/wt/vickie/vickie-minimum-current-resource
+
+stdout | apps/bdptest/src/transactional-minimum-current-resource-installed.test.ts > serves missing-first current Resources and bounds unproved minimum eligibility
+{"observation":"private-installed-minimum-current-resource","mode":"positive","controlPrerequisites":false,"publishedView":null,"wrapper":"/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-minimum-next-serving-plan/authoring-draft/installed-preparation/run/positive.tmp/bdp-minimum-current-installed-xLe4Oo/private-bootstrap.mjs","wrapperSha256":"33d77ba6670db93eaabbabc71c81e3f6890cfeacbc2ed78f3a242cbd305ffbc4","outcome":"failed","declaredSourceCommit":"733728cf40fc2f57407000251673bd5d3218acd4","workspaceDirty":false,"entry":"/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-minimum-next-serving-plan/authoring-draft/installed-preparation/run/consumer/node_modules/.pnpm/@bdp+server@file+..+packages+bdp-server-0.0.0.tgz/node_modules/@bdp/server/dist/transaction-installed.js","entrySha256":"2dc1386a8a9f38d32c1fbf4ab8413538e86e3d41a20db9b9ab275a73b8c4040f","binding":null,"artifactBytes":314,"attempted":0,"exchanges":0,"completedResponses":[],"deadlineExceeded":false,"cleanupExceeded":false,"launchAttempted":true,"startupCompleted":false,"closed":false,"childPid":null,"childExitCode":null,"childSignalCode":null,"directory":"/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-minimum-next-serving-plan/authoring-draft/installed-preparation/run/positive.tmp/bdp-minimum-current-installed-xLe4Oo","directoryAbsent":false,"failureCount":3,"failureCategories":["setup","unknown-stop","directory-retained"],"claimEligible":false,"retention":"safe response headers and body fingerprints; actual bodies asserted in memory; no credentials or raw configuration retained","startupLimitation":"attempted launch without returned child leaves stop unknown and preserves owned directory for supervisor evidence"}
+
+ × apps/bdptest/src/transactional-minimum-current-resource-installed.test.ts > serves missing-first current Resources and bounds unproved minimum eligibility 223ms
+   → installed transaction startup cleanup failed
+   → installed minimum child stop unknown
+   → installed minimum directory preserved
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  apps/bdptest/src/transactional-minimum-current-resource-installed.test.ts > serves missing-first current Resources and bounds unproved minimum eligibility
+AggregateError: installed transaction startup cleanup failed
+ ❯ launchInstalledTransaction scripts/transaction-installed-observation.mjs:91:13
+     89|       await close();
+     90|     } catch (cleanup) {
+     91|       throw new AggregateError([error, cleanup], "installed transactio…
+       |             ^
+     92|     }
+     93|     throw error;
+ ❯ apps/bdptest/src/transactional-minimum-current-resource-installed.test.ts:400:13
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯
+Serialized Error: { errors: [ { stack: 'Error: installed transaction exited before ready\n    at /Users/dbox/repos/wt/vickie/vickie-minimum-current-resource/scripts/transaction-installed-observation.mjs:79:39\n    at processTicksAndRejections (node:internal/process/task_queues:104:5)', message: 'installed transaction exited before ready', constructor: 'Function<Error>', name: 'Error', toString: 'Function<toString>' }, { stack: 'Error: installed transaction child did not close cleanly\n    at /Users/dbox/repos/wt/vickie/vickie-minimum-current-resource/scripts/transaction-installed-observation.mjs:54:17\n    at processTicksAndRejections (node:internal/process/task_queues:104:5)\n    at launchInstalledTransaction (/Users/dbox/repos/wt/vickie/vickie-minimum-current-resource/scripts/transaction-installed-observation.mjs:89:7)\n    at /Users/dbox/repos/wt/vickie/vickie-minimum-current-resource/apps/bdptest/src/transactional-minimum-current-resource-installed.test.ts:400:13\n    at file:///Users/dbox/repos/wt/vickie/vickie-minimum-current-resource/node_modules/.pnpm/@vitest+runner@4.1.10/node_modules/@vitest/runner/dist/chunk-artifact.js:1903:20', message: 'installed transaction child did not close cleanly', constructor: 'Function<Error>', name: 'Error', toString: 'Function<toString>' } ] }
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/3]⎯
+
+ FAIL  apps/bdptest/src/transactional-minimum-current-resource-installed.test.ts > serves missing-first current Resources and bounds unproved minimum eligibility
+Error: installed minimum child stop unknown
+ ❯ apps/bdptest/src/transactional-minimum-current-resource-installed.test.ts:807:24
+    805|       !launchAttempted ||
+    806|       (child !== undefined && (child.child.exitCode !== null || child.…
+    807|     if (!stopped) fail(new Error("installed minimum child stop unknown…
+       |                        ^
+    808|     try {
+    809|       if (directory && stopped) rmSync(directory, { recursive: true, f…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/3]⎯
+
+ FAIL  apps/bdptest/src/transactional-minimum-current-resource-installed.test.ts > serves missing-first current Resources and bounds unproved minimum eligibility
+Error: installed minimum directory preserved
+ ❯ apps/bdptest/src/transactional-minimum-current-resource-installed.test.ts:815:12
+    813|     const directoryAbsent = directory === undefined || !existsSync(dir…
+    814|     if (!directoryAbsent)
+    815|       fail(new Error("installed minimum directory preserved"), "direct…
+       |            ^
+    816|     if (deadlineExceeded) fail(deadlineReason, "deadline");
+    817|     try {
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/3]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  1 failed (1)
+   Start at  21:01:00
+   Duration  700ms (transform 218ms, setup 25ms, import 361ms, tests 224ms, environment 0ms)
+
+JSON report written to /Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-minimum-next-serving-plan/authoring-draft/installed-preparation/run/positive.results.json
+Traceback (most recent call last):
+  File "/Users/dbox/repos/wt/vickie/bdp-integration-logs/guarded-action.py", line 5, in <module>
+    subprocess.run(sys.argv[1:],check=True)
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/homebrew/Cellar/python@3.14/3.14.5/Frameworks/Python.framework/Versions/3.14/lib/python3.14/subprocess.py", line 578, in run
+    raise CalledProcessError(retcode, process.args,
+                             output=stdout, stderr=stderr)
+subprocess.CalledProcessError: Command '['/Users/dbox/.nvm/versions/node/v24.16.0/bin/node', '/Users/dbox/repos/wt/vickie/vickie-minimum-current-resource/node_modules/vitest/vitest.mjs', 'run', 'apps/bdptest/src/transactional-minimum-current-resource-installed.test.ts', '--maxWorkers=1', '--testNamePattern', '^serves missing-first current Resources and bounds unproved minimum eligibility$', '--reporter=verbose', '--reporter=json', '--outputFile', '/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-minimum-next-serving-plan/authoring-draft/installed-preparation/run/positive.results.json']' returned non-zero exit status 1.

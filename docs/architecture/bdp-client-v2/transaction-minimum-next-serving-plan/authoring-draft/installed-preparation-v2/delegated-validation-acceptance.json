@@ -1,0 +1,32 @@
+{
+  "accepted": true,
+  "provenance": "Worker records explicit root-authorized test-only URI correction, typecheck/format, same archive successor32+2+2, and actual focused review. Not independent root verification.",
+  "head": "733728cf40fc2f57407000251673bd5d3218acd4",
+  "tree": "ea0dccd68d91323887424cad9729e6593aef04f2",
+  "sourceBinding": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-minimum-next-serving-plan/authoring-draft/scope-type-repair/source-binding.json",
+    "sha256": "801434e084288b932c224dfae1e2087157ad92cb022e026980039207f9750e85"
+  },
+  "sourceChronology": "Dirty two-file test/doc successor of clean733; actual production build/archive/consumer remains original733.",
+  "buildSourceBinding": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-minimum-next-serving-plan/authoring-draft/installed-preparation/prepared-source.json",
+    "sha256": "8140843fc8450d28c419a243d9f95e57c0537eced684f52872d6d49c69445dad"
+  },
+  "buildOriginalInventory": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-minimum-next-serving-plan/authoring-draft/integration-preparation/run/build-output-inventory.json",
+    "sha256": "8b27e5ce74fd3764e8d7282ed288322fc3e68829d781192ef5c68e10dac9cbfc"
+  },
+  "changedInputPaths": [
+    "apps/bdptest/src/transactional-minimum-current-resource-installed.test.ts",
+    "docs/design/transaction-implementation-progress.md"
+  ],
+  "allOtherInputHashesPreserved": true,
+  "packageFilesPreserved": 316,
+  "emittedFilesPreserved": 444,
+  "firstAttempt": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-minimum-next-serving-plan/authoring-draft/installed-preparation/run/positive.exit.json",
+    "sha256": "1a5795d8fe4567dcc906954abdaa6f81e18c8f54eeb4897e327d2381287a73e8"
+  },
+  "firstAttemptRetained": true,
+  "noRebuildOrRepack": true
+}

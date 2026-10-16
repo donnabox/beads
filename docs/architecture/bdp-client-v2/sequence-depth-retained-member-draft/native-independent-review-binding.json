@@ -1,0 +1,132 @@
+{
+  "checkedAt": "2026-10-16T04:25:03.549957+00:00",
+  "review": "native-independent-review.md",
+  "reviewSha256": "495cf3d4b345b0e535dc0ef7ca9975472b9bb02f31a8310ce23b99a895d4f587",
+  "verdict": "no actionable source defect found; runtime/integration/council gates remain",
+  "authoringBase": "df80f8cb86b7763bc7bb005492e43d8840527045",
+  "authoringTree": "25e9d4aa926ea728f5e356365cb1ffadba269221",
+  "bindingSha256": "987f61764ca09df676f77ab5b99a8886809f4ce7908342bc8c27fd462fddcc81",
+  "patchSha256": "dc05b4cef0f3af27bf69341ce8f35c844c0838accd805d08bd3a6f2c4b49646d",
+  "plan": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/sequence-depth-retained-member-plan/review-successor/plan.md",
+    "sha256": "07827411c1b243f5ab4cc91188f453a22d365c3bbb9d03c2cd814c3f4617c8e0"
+  },
+  "ledger": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/sequence-depth-retained-member-plan/review-successor/ledger.json",
+    "sha256": "4ffbc5aaf6ee3f59008a65e5899679d2dd5383872cb1574ff34391839e3399f3"
+  },
+  "files": {
+    "packages/server/src/transaction-batch.ts": {
+      "sha256": "95f3ce3957503cba240f18e911fe3d2c8027b4accbba8f1128ea47e3d2b0c362",
+      "new": false,
+      "bytes": 47026,
+      "baseSha256": "70d941d416979edd54e250d51318cfb7e5d4ddb315ea6131de7ca5f56e98a014"
+    },
+    "packages/server/src/transaction-http.ts": {
+      "sha256": "0a616e27da60c746be738821008e7dab6511e31325e9442418b4bbece9be40f8",
+      "new": false,
+      "bytes": 28178,
+      "baseSha256": "c6bac496033781306d1c63e570e1c65b5786d41ebb8dc565c5a8be44e91ccfa9"
+    },
+    "packages/server/src/transaction-set.test.ts": {
+      "sha256": "a8a7d5b127866c2b1a60012e6c1f864b8e58bd524f6c520604e2b860b58d491e",
+      "new": false,
+      "bytes": 49955,
+      "baseSha256": "fdd29d8e8064ddc12848946fabf8347e2939e963294912c139bc8d8f5617f2e8"
+    },
+    "packages/server/src/transaction-sequence.test.ts": {
+      "sha256": "687f1a9c10277d178db187b2c8efefe07d099755c473db4c2e7d87e4d7be6a4b",
+      "new": false,
+      "bytes": 26670,
+      "baseSha256": "3ef64177d73b2ac5776258db2a73ffa168c6b2ab4d2a60e80e7fb746d0377d1c"
+    },
+    "packages/server/src/transaction-http.test.ts": {
+      "sha256": "afb6fb0f7b77591c0eeb0a88e4087fcebe28100fb1ac12a66ca0755ca8f98a38",
+      "new": false,
+      "bytes": 197160,
+      "baseSha256": "ca2e4e7663a93060ba2a0788c5ef349a3de4991e3108f81507f37a723d964781"
+    },
+    "apps/bdptest/src/transactional-sequence-depth-installed.test.ts": {
+      "sha256": "d451340062915a31f79c1d02371bdbff13fb404967fe563e0484c43f218dbcf9",
+      "new": true,
+      "bytes": 27205,
+      "baseSha256": null
+    },
+    "docs/design/transaction-implementation-progress.md": {
+      "sha256": "d5c93b26773d8661d91b5d1a4f9950bfdbe6ae6d89fb5d10df3d445073bfd7d1",
+      "new": false,
+      "bytes": 133903,
+      "baseSha256": "9aa001e2da6e37f0e12aa15fd124a489bc951519064370afbb76c9aee9aad185"
+    }
+  },
+  "unchangedContext": {
+    "packages/server/src/transaction-store.ts": {
+      "sha256": "bc10df9d02316e395b8c4ea7db6134ab2646c8e8abd83ea785b0ea09f2f0c82c",
+      "bytes": 94169,
+      "unchangedFromAuthoringBase": true
+    },
+    "packages/server/src/transaction-service.ts": {
+      "sha256": "8e2a00fba538fc38fd81241301d38b232190f7241fa695e1dcdaf10641e97dc8",
+      "bytes": 28193,
+      "unchangedFromAuthoringBase": true
+    },
+    "packages/server/src/transaction-sequence.ts": {
+      "sha256": "019e02f2f392047d568d7464b1c5af0482d6d743ed09a6d0aa4edab151607cbe",
+      "bytes": 5548,
+      "unchangedFromAuthoringBase": true
+    },
+    "packages/server/src/transaction-set.ts": {
+      "sha256": "03b1ca9427c6963f5b6ce712a7f70540501e081ed635c742015d2bc49cc9524a",
+      "bytes": 6898,
+      "unchangedFromAuthoringBase": true
+    },
+    "packages/server/src/transaction-runtime.ts": {
+      "sha256": "48cb5411407c456d7b3f301a4b67970061be9f51c94201de832ba5deff6ea2d4",
+      "bytes": 16727,
+      "unchangedFromAuthoringBase": true
+    },
+    "packages/server/src/index.ts": {
+      "sha256": "34f9d9de8b48852c64919e69ce93f149e9cdae5142c15c75e4c35f08f15efc44",
+      "bytes": 55615,
+      "unchangedFromAuthoringBase": true
+    },
+    "packages/server/package.json": {
+      "sha256": "110e00c403c667d8c848c6280b2e98c47f98f134158a621967d889914d44632e",
+      "bytes": 495,
+      "unchangedFromAuthoringBase": true
+    },
+    "packages/protocol/src/read-update-preflight.ts": {
+      "sha256": "e9cea06515c1b7b5ffbfc275b82e9759e9083daa29c5daaab4485c161970275f",
+      "bytes": 7042,
+      "unchangedFromAuthoringBase": true
+    },
+    "packages/protocol/src/read-update-values.ts": {
+      "sha256": "d1fdbc660d5e2c009275c152bdcebda46031700920aa03bfea89f39564c89de2",
+      "bytes": 19883,
+      "unchangedFromAuthoringBase": true
+    },
+    "apps/bdptest/test-support/transactional-execution-binding.ts": {
+      "sha256": "cde506c72a8710eafe58522900f6db70ed3701cf333560252dc8e7c5e706cf89",
+      "bytes": 7378,
+      "unchangedFromAuthoringBase": true
+    },
+    "scripts/transaction-installed-observation.mjs": {
+      "sha256": "6f772f3776d3c3effa788676d853cc2932a6ee59ad63ac3338ad1b487408914b",
+      "bytes": 3264,
+      "unchangedFromAuthoringBase": true
+    },
+    "schemas/bdp-v0.schema.json": {
+      "sha256": "0baa5d5ef67144f8e6513b4cde31168effc8df6d52ef3141b0f144b87f8dc227",
+      "bytes": 133208,
+      "unchangedFromAuthoringBase": true
+    }
+  },
+  "literalVerification": {
+    "requests": 8,
+    "bytes": 3179,
+    "maximumBytes": 680,
+    "matchesAcceptedLedger": true
+  },
+  "runtimeExecuted": false,
+  "sourceWritten": false
+}

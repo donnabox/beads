@@ -1,0 +1,31 @@
+## Review — test-only Scope-local Type URI repair
+
+**Verdict: correct and complete; approve. No actionable defect found.**
+
+### Identity consistency (verified)
+- Zero `example.test` occurrences remain in the test file; the new identity appears on exactly 8 lines: scope (`:36`), descriptors (`:43,44,47,48`), seed (`:120`), oracles (`:569,578`).
+- `retrievalUri` equals the descriptor `id` in both entries; the link descriptor's `source.conformsTo` **and** `target.conformsTo` both moved to the new bead id. `describes` values untouched.
+- Relative artifact order preserved (`bead` < `link`), and ingestion re-sorts by URI bytes anyway (`installed-contract-artifact.ts:405`), so order is not load-bearing.
+
+### Guard satisfaction
+`scope` = `https://event-sse.invalid/acme/`, so the required prefix at `transaction-store.ts:281` is `…/acme/types/`; both ids match exactly. The guard itself is untouched and still enforcing — the repair conforms the fixture to it rather than relaxing it, and matches the production source-test convention (`${scope}types/task`, `transaction-installed.test.ts:16`). Downstream checks also still hold: distinct ids (`:283`), no `propertiesSchema` with `schemas: []` (`:286`), URI/byte ceilings (1 MiB) far above 41/378.
+
+### Byte oracles (independently recomputed)
+- Descriptor UTF-8: 99 + 279 = **378** ✓ matches the measurement.
+- Seed: 3 Type occurrences × (41 − 25) = +48; 562 + 48 = **610** ✓. Corroborating that 562 was live rather than assumed: `:394` is the first statement in the `try`, before `mkdtempSync`, and the preserved failure report records a *retained directory* — so the old oracle executed and passed before the pre-ready store failure.
+- No stale `314`/`562` anywhere; report `artifactBytes` (`:831`) is computed, not literal.
+
+### No weakening, no lifecycle drift
+- Changes are literal-for-literal. `:567` and `:576` remain exact `toEqual` over the full key set, with `expect.any(String)` only on `revision` (pre-existing). Receipt loop (4 results, ordered `operationIndex`, `created`, no `problem`), alias exact-equal, and `validResource`/`validLink`/`validSequence` Ajv gates unchanged.
+- Row-14's 200 body oracle (`:747`) compares to `a`, so it inherits the new type transitively — nothing was missed there.
+- Configuration object (`:403–408`) identical in shape and scope; all caps unchanged: 32 dispatch bound (`:429,769,770`), control `attempted===2` (`:698`), 8192 URL, 32768 body, 5000 request, 30000 deadline, 10000 cleanup/config, 45000 test, 65536 report; single-publish `requestId:1`; child/cleanup/unknown-stop/directory-retention logic untouched.
+
+### Doc
+Accurate. It drops the now-false "authored but unexecuted", records the zero-HTTP pre-ready failure *with its cause*, preserves the unknown-stop/retained-directory report and the earlier fixture-type/report-lint failures, keeps the 1647c5d authoring attribution (`:1998`), and claims no successor pass.
+
+### Non-blocking notes
+1. **Hardcoded identities (maintainability).** The two URIs are literals in 8 places instead of `${scope}types/bead|link`. Deriving them from `scope` — as the source test does — makes this exact failure class structurally impossible, and the 610 oracle would then catch scope drift loudly. Template literals keep the seed body a compile-time constant, so the byte-exact assertion survives.
+2. **Coverage gap, pre-existing.** No row retrieves `${scope}types/*`, so the newly Scope-local descriptors are still unserved/unasserted. Fine under the fixed 32-request budget; only matters if a later packet claims descriptor-retrieval coverage.
+3. **Residual, run-only.** The compiled-vs-installed equality check (`:289–294`) must still hold after re-ingestion. Nothing in the diff endangers it (id and canonical JSON move together), but only the successor run can confirm ready + 32 HTTP.
+
+**Scope of my verification:** file contents only. "Production/packaged bytes unchanged" I can confirm to the extent that no non-test file appears in the diff and no production source references these literals; the git/worktree state itself I could not inspect read-only.

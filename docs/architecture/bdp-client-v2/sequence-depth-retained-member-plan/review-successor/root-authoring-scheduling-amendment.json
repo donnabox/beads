@@ -1,0 +1,11 @@
+{
+  "at": "2026-10-16T04:09:40.597442+00:00",
+  "rootSchedulingAmendment": true,
+  "reason": "Root inspected actual df80..733 HTTP diff: minimum changes alias/read projection, strict route checks and minimum error mapping; accepted sequence change is command preparation/await path. Separate checkout supports safe concurrent authoring without overwriting the active minimum draft.",
+  "authoringReleased": true,
+  "base": "df80f8cb86b7763bc7bb005492e43d8840527045",
+  "scope": "The accepted seven-file plan only, isolated sequence checkout. No owner/store/service changes, no tests/build/runtime or publication yet.",
+  "integrationGate": "Ordinarily integrate actual merged minimum main before final validation/publication; root owns any import/test overlap and verifies unchanged receiving/read behavior.",
+  "planSemanticsUnchanged": true,
+  "supersedes": "Only earlier requirement to wait for minimum main before authoring; required actual-main integration before final validation remains."
+}

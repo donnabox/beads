@@ -1,0 +1,89 @@
+{
+  "head": "733728cf40fc2f57407000251673bd5d3218acd4",
+  "results": [
+    {
+      "stage": "typecheck",
+      "exit": 0,
+      "supervisorExit": 0,
+      "elapsedSeconds": 2.8789902080316097,
+      "exitSha256": "8b6ae8fc4d5e7b0fa9ee31b43f8a260a0febf4135a66454e215b62f0c7cde0ed",
+      "sampledPidsAbsent": [
+        76476,
+        76478,
+        76485,
+        76512
+      ],
+      "retainedTempEntries": [
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-minimum-next-serving-plan/authoring-draft/integration-preparation/run/typecheck.tmp/node-compile-cache"
+      ]
+    },
+    {
+      "stage": "build",
+      "exit": 0,
+      "supervisorExit": 0,
+      "elapsedSeconds": 2.481155791785568,
+      "exitSha256": "7f74265471a0cfbffad59e31bfd07eb1e8cc335b51650504b3c04d5dcfbc2bdd",
+      "sampledPidsAbsent": [
+        76650,
+        76652,
+        76656,
+        76682,
+        76683,
+        76716,
+        76717,
+        76725
+      ],
+      "retainedTempEntries": [
+        "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-minimum-next-serving-plan/authoring-draft/integration-preparation/run/build.tmp/node-compile-cache"
+      ]
+    },
+    {
+      "stage": "format-check",
+      "exit": 0,
+      "supervisorExit": 0,
+      "elapsedSeconds": 0.7985971251036972,
+      "exitSha256": "55a1c213f01e3930295644cf56447ec2909cab304dc4f1d139b61c30bd926ae3",
+      "sampledPidsAbsent": [
+        76781,
+        76784,
+        76797,
+        76798
+      ],
+      "retainedTempEntries": []
+    },
+    {
+      "stage": "integration-owner-read",
+      "exit": 0,
+      "supervisorExit": 0,
+      "elapsedSeconds": 1.615340834017843,
+      "exitSha256": "39899675fed97465ac6bdfd4a6aebc499227be2fafe47042889ad39e124bcc44",
+      "sampledPidsAbsent": [
+        76828,
+        76831,
+        76836,
+        76840
+      ],
+      "retainedTempEntries": []
+    },
+    {
+      "stage": "build-inventory",
+      "exit": 0,
+      "supervisorExit": 0,
+      "elapsedSeconds": 0.7733188329730183,
+      "exitSha256": "0cf514d0b062c94cd46ca63bd96712c2de9b3dbfc9bbe684b8470a6e75788718",
+      "sampledPidsAbsent": [
+        76881,
+        76883,
+        76887
+      ],
+      "retainedTempEntries": []
+    }
+  ],
+  "selectedPassed": 2,
+  "notSelected": 65,
+  "sourceInputs": 676,
+  "packageOutputs": 316,
+  "emittedFiles": 444,
+  "authorOverlap": true,
+  "installed": "Separate first positive failed before ready; not source-stage verdict"
+}

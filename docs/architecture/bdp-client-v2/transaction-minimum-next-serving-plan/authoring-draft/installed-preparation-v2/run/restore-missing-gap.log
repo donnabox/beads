@@ -1,0 +1,45 @@
+
+ RUN  v4.1.10 /Users/dbox/repos/wt/vickie/vickie-minimum-current-resource
+
+stdout | apps/bdptest/src/transactional-minimum-current-resource-installed.test.ts > serves missing-first current Resources and bounds unproved minimum eligibility
+{"observation":"private-installed-minimum-current-resource","mode":"restore-missing-gap","controlPrerequisites":true,"publishedView":null,"wrapper":"/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-minimum-next-serving-plan/authoring-draft/installed-preparation-v2/run/restore-missing-gap.tmp/bdp-minimum-current-installed-CWhNyn/private-bootstrap.mjs","wrapperSha256":"f30531610d0ce2a9f22ead8382d126d97b29e7598d7311da99837c4796395a0a","outcome":"failed","declaredSourceCommit":"733728cf40fc2f57407000251673bd5d3218acd4","workspaceDirty":true,"entry":"/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-minimum-next-serving-plan/authoring-draft/installed-preparation-v2/run/consumer-restore-missing-gap/node_modules/.pnpm/@bdp+server@file+..+packages+bdp-server-0.0.0.tgz/node_modules/@bdp/server/dist/transaction-installed.js","entrySha256":"2dc1386a8a9f38d32c1fbf4ab8413538e86e3d41a20db9b9ab275a73b8c4040f","binding":{"served":{"scope":"https://event-sse.invalid/acme/","profile":"transactional","history":false,"sourceCommit":"733728cf40fc2f57407000251673bd5d3218acd4","installedPayloadDigest":"850be3352a57a360b6f0e2436c9b272864b47186c73fb2f5916d8d02454319db","installedContractsDigest":"2c172902bcce14394923e03a2cdda4464bfeba7da0a2c7ee5986da0493944f5c","policyDigest":"69dffb69a43f74d89417a23519c897a4c3782d3db8770d94dd30b732af3ed793","authenticationDigest":"68282192748677b052d5002d716e36fedd0eec867d51bc7a38f22cf5acfcbcad","fixtureDigest":"3a7899ced771d4880066d98b0000c53f801ece53458502cc4f3bc641146c9a85","fixtureId":"reference-transactional-v1","capabilities":["installed-transactional-http","transactional-receipt-observation"]},"operationTargets":{"createBead":"https://event-sse.invalid/acme/operations/create-bead","updateBead":"https://event-sse.invalid/acme/operations/update-bead","deleteBead":"https://event-sse.invalid/acme/operations/delete-bead","createLink":"https://event-sse.invalid/acme/operations/create-link","updateLink":"https://event-sse.invalid/acme/operations/update-link","deleteLink":"https://event-sse.invalid/acme/operations/delete-link","putAlias":"https://event-sse.invalid/acme/operations/put-alias","deleteAlias":"https://event-sse.invalid/acme/operations/delete-alias","updateWhere":"https://event-sse.invalid/acme/operations/update-where","deleteWhere":"https://event-sse.invalid/acme/operations/delete-where","batch":"https://event-sse.invalid/acme/operations/batch","sequence":"https://event-sse.invalid/acme/operations/sequence"},"runtimeConfigurationIdentity":"dbc2e8c889c0b0c384d02f71fd1432e7f78f19c4594e2f00d4358bc4dea4d943","authorityMode":"canonical"},"artifactBytes":378,"attempted":2,"exchanges":2,"completedResponses":[{"ordinal":1,"label":"seed","method":"POST","url":"https://event-sse.invalid/acme/operations/sequence","credential":"writer","requestBodyBytes":610,"requestBodySha256":"7339d6a0c00a9846fd67677a87aa49d43a9f626096ea57397afe469a6daacf87","minimumFieldOccurrences":[0,0,0],"status":200,"bodyOctets":974,"bodySha256":"463b79367dd2876676c87c2c85f253d0c632ad161a448d99e9edafa88a39f0b9","headers":{"bdp-scope-epoch":"9b55633f-c319-4766-8361-2d9b2e051667","bdp-authorization-view":"development-all-visible","bdp-scope-position":"pos-3","content-type":"application/json","content-length":"974","cache-control":"private, no-store","retry-after":null,"www-authenticate":null,"x-bdp-development":"non-attesting","x-bdp-development-limit":null,"etag":null,"last-modified":null,"allow":null,"location":null,"link":null}},{"ordinal":2,"label":"minimum-current:missing-before-minimum","method":"GET","url":"https://event-sse.invalid/acme/beads/missing","credential":"writer","requestBodyBytes":0,"requestBodySha256":null,"minimumFieldOccurrences":[1,1,1],"status":500,"bodyOctets":0,"bodySha256":"e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855","headers":{"bdp-scope-epoch":null,"bdp-authorization-view":null,"bdp-scope-position":null,"content-type":null,"content-length":"0","cache-control":"private, no-store","retry-after":null,"www-authenticate":null,"x-bdp-development":"non-attesting","x-bdp-development-limit":"minimum-position-visibility","etag":null,"last-modified":null,"allow":null,"location":null,"link":null}}],"deadlineExceeded":false,"cleanupExceeded":false,"launchAttempted":true,"startupCompleted":true,"closed":true,"childPid":88981,"childExitCode":0,"childSignalCode":null,"directory":"/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-minimum-next-serving-plan/authoring-draft/installed-preparation-v2/run/restore-missing-gap.tmp/bdp-minimum-current-installed-CWhNyn","directoryAbsent":true,"failureCount":1,"failureCategories":["minimum-current:missing-before-minimum"],"claimEligible":false,"retention":"safe response headers and body fingerprints; actual bodies asserted in memory; no credentials or raw configuration retained","startupLimitation":"attempted launch without returned child leaves stop unknown and preserves owned directory for supervisor evidence"}
+
+ × apps/bdptest/src/transactional-minimum-current-resource-installed.test.ts > serves missing-first current Resources and bounds unproved minimum eligibility 321ms
+   → minimum-current:missing-before-minimum: expected 500 to be 404 // Object.is equality
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  apps/bdptest/src/transactional-minimum-current-resource-installed.test.ts > serves missing-first current Resources and bounds unproved minimum eligibility
+AssertionError: minimum-current:missing-before-minimum: expected 500 to be 404 // Object.is equality
+
+- Expected
++ Received
+
+- 404
++ 500
+
+ ❯ apps/bdptest/src/transactional-minimum-current-resource-installed.test.ts:702:38
+    700|         controlPrerequisites = true;
+    701|       }
+    702|       expect(response.status, label).toBe(row.status);
+       |                                      ^
+    703|       if (row.status === 404 || row.status === 503) {
+    704|         expect(context(response)).toEqual(current);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  1 failed (1)
+   Start at  21:10:22
+   Duration  778ms (transform 226ms, setup 30ms, import 345ms, tests 322ms, environment 0ms)
+
+JSON report written to /Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-minimum-next-serving-plan/authoring-draft/installed-preparation-v2/run/restore-missing-gap.results.json
+Traceback (most recent call last):
+  File "/Users/dbox/repos/wt/vickie/bdp-integration-logs/guarded-action.py", line 5, in <module>
+    subprocess.run(sys.argv[1:],check=True)
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/homebrew/Cellar/python@3.14/3.14.5/Frameworks/Python.framework/Versions/3.14/lib/python3.14/subprocess.py", line 578, in run
+    raise CalledProcessError(retcode, process.args,
+                             output=stdout, stderr=stderr)
+subprocess.CalledProcessError: Command '['/Users/dbox/.nvm/versions/node/v24.16.0/bin/node', '/Users/dbox/repos/wt/vickie/vickie-minimum-current-resource/node_modules/vitest/vitest.mjs', 'run', 'apps/bdptest/src/transactional-minimum-current-resource-installed.test.ts', '--maxWorkers=1', '--testNamePattern', '^serves missing-first current Resources and bounds unproved minimum eligibility$', '--reporter=verbose', '--reporter=json', '--outputFile', '/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-minimum-next-serving-plan/authoring-draft/installed-preparation-v2/run/restore-missing-gap.results.json']' returned non-zero exit status 1.
