@@ -1,0 +1,91 @@
+{
+  "accepted": true,
+  "stages": {
+    "typecheck": {
+      "exit": 0,
+      "elapsedSeconds": 4.387927999952808
+    },
+    "format-check": {
+      "exit": 0,
+      "elapsedSeconds": 3.535356458975002
+    },
+    "lint": {
+      "exit": 0,
+      "elapsedSeconds": 3.5605497078504413
+    },
+    "fresh-build": {
+      "exit": 0,
+      "elapsedSeconds": 7.779323833063245
+    },
+    "bind-fresh-build": {
+      "exit": 0,
+      "elapsedSeconds": 12.352846125140786
+    },
+    "historical-default": {
+      "exit": 0,
+      "elapsedSeconds": 22.727564917178825
+    },
+    "review-historical": {
+      "exit": 0,
+      "elapsedSeconds": 11.794880541972816
+    },
+    "restart-default": {
+      "exit": 0,
+      "elapsedSeconds": 7.3222095421515405
+    },
+    "review-restart-default": {
+      "exit": 0,
+      "elapsedSeconds": 12.267090959008783
+    },
+    "node-version": {
+      "exit": 0,
+      "elapsedSeconds": 5.720920791849494
+    },
+    "prepare-package-directory": {
+      "exit": 0,
+      "elapsedSeconds": 11.615816457895562
+    },
+    "pack-protocol": {
+      "exit": 0,
+      "elapsedSeconds": 5.698615999892354
+    },
+    "pack-server": {
+      "exit": 0,
+      "elapsedSeconds": 5.6975917080417275
+    },
+    "verify-archives": {
+      "exit": 0,
+      "elapsedSeconds": 11.277082666987553
+    },
+    "prepare-consumer": {
+      "exit": 0,
+      "elapsedSeconds": 11.172452833037823
+    },
+    "consumer-install": {
+      "exit": 0,
+      "elapsedSeconds": 5.920470209093764
+    },
+    "verify-installed-consumer": {
+      "exit": 0,
+      "elapsedSeconds": 11.293296416057274
+    },
+    "restart-external": {
+      "exit": 0,
+      "elapsedSeconds": 6.554946749936789
+    },
+    "review-restart-external": {
+      "exit": 0,
+      "elapsedSeconds": 11.615545290987939
+    }
+  },
+  "sourceIdentity": "a5dae662b7609662bb5c94b07d44fe695231b04fa7f13a9fd642bece1e77c556",
+  "sampledPidsAbsent": 409,
+  "externalRequests": 5,
+  "externalChildrenClosed": 2,
+  "installedProvenance": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-conditional-reads-draft/next-serving-audit/event-validation-successor-4/run/installed-provenance.json",
+    "sha256": "06884384b7ba1b4de7e9f68cdbf075a02d7c8c908a1ead593217e3bddf6c01ad"
+  },
+  "claimEligible": false,
+  "limitation": "Reviewed dirty witness b7625637 on 2dfd; narrow installed restart/cursor evidence, not complete profile qualification."
+}
