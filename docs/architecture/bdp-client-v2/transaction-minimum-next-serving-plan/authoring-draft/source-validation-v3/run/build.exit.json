@@ -1,0 +1,74 @@
+{
+  "name": "build",
+  "argv": [
+    "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+    "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+    "run",
+    "build"
+  ],
+  "guardedArgv": [
+    "/opt/homebrew/opt/python@3.14/bin/python3.14",
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/guarded-action.py",
+    "/Users/dbox/.nvm/versions/node/v24.16.0/bin/node",
+    "/Users/dbox/.cache/node/corepack/v1/pnpm/11.20.0/bin/pnpm.cjs",
+    "run",
+    "build"
+  ],
+  "cwd": "/Users/dbox/repos/wt/vickie/vickie-minimum-current-resource",
+  "started": "2026-10-16T03:10:06.977053+00:00",
+  "adjudication": {
+    "kind": "command-only",
+    "testVerdict": "not-applicable"
+  },
+  "elapsedSeconds": 1.555910374969244,
+  "exit": 0,
+  "supervisorExit": 0,
+  "timeout": false,
+  "forcedCleanup": false,
+  "errors": [],
+  "processGroup": 52265,
+  "remainingBeforeCleanup": [],
+  "remainingAfterCleanup": [],
+  "sampledPids": [
+    52265,
+    52267,
+    52272,
+    52297,
+    52298,
+    52334
+  ],
+  "sampledPidsStillPresent": {},
+  "sampledTempEntries": [
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-minimum-next-serving-plan/authoring-draft/source-validation-v3/run/build.tmp/node-compile-cache"
+  ],
+  "tempEntriesAfter": [
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-minimum-next-serving-plan/authoring-draft/source-validation-v3/run/build.tmp/node-compile-cache"
+  ],
+  "remainingTempEntriesForClassification": [
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-minimum-next-serving-plan/authoring-draft/source-validation-v3/run/build.tmp/node-compile-cache"
+  ],
+  "runtimeDirectoriesStillPresent": [],
+  "unclassifiedTempEntriesStillPresent": [
+    "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-minimum-next-serving-plan/authoring-draft/source-validation-v3/run/build.tmp/node-compile-cache"
+  ],
+  "sourceUnchanged": true,
+  "sourceSha256After": {
+    "packages/server/src/transaction-consistency.ts": "ad51311d6098db32fd47849e0b78d3118162cdf1e80ee9ef4d46324bfa9f436f",
+    "packages/server/src/transaction-read.ts": "7e2cc29b668bb80a3ba2948e90511518a98a7ff798b1dbfb8c6f51f0c0bd2a6f",
+    "packages/server/src/transaction-service.ts": "c700d5719918b60c3239a336eef02c9dff6717faca698777aba01181ebdcd278",
+    "packages/server/src/transaction-http.ts": "90489b22858be99579f7ce8753bab0d6204d4caae215f7a293c1537d09477636",
+    "packages/server/src/transaction-consistency.test.ts": "904d1f74ff06237da41c45f3dc1d4727a1387dc760950860ef548db51e7f02c4",
+    "packages/server/src/transaction-read.test.ts": "cae16d74eafcfd44015dbefa0c55ddba3be5428732f909f1371b7b173a74ed72",
+    "packages/server/src/transaction-http.test.ts": "1ae690d8135c0ecd44f01b39a3412f50921828d83e7395bd076ff2404e503672",
+    "apps/bdptest/src/transactional-minimum-current-resource-installed.test.ts": "5356d0078730a308bbec97c24702086fc635f53af18f850a8b2e0e0e55d0bd5f",
+    "docs/specs/bdp.md": "67772742d7d08f48c12196e9789f1859ad2d0e19f133ea65e197b049361f84f8",
+    "docs/design/transaction-implementation-progress.md": "8475dffe744267d735366438798ca388263359be744eba105d867818f0402182"
+  },
+  "samplingSeconds": 0.05,
+  "commandWindowSeconds": 115,
+  "groupHardDeadlineSeconds": 120,
+  "cleanupBound": "TERM at115s, KILL no later than120s; wait/reap after kill adds no product execution allowance",
+  "samplingLimitation": "Short-lived or detached descendants may evade group sampling; helper counts and independent final checks remain separate.",
+  "tempClassification": "Only the selected fixture prefixes under this attempt TMPDIR are owned runtime roots; all other entries are preserved for review, not deleted or called leaks.",
+  "resultLimitation": "Exit0 is command completion, not independent oracle/claim/provenance adjudication."
+}

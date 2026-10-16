@@ -1,0 +1,19 @@
+apps/bdptest/src/transactional-minimum-current-resource-installed.test.ts:836:46 lint/correctness/noUnsafeFinally ━━━━━━━━━━
+
+  × Unsafe usage of 'throw'.
+  
+    834 │           "attempted launch without returned child leaves stop unknown and preserves owned directory for supervisor evidence",
+    835 │       });
+  > 836 │       if (Buffer.byteLength(report) > 65536) throw new Error("minimum current report ceiling");
+        │                                              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    837 │       console.log(report);
+    838 │     } catch (error) {
+  
+  i 'throw' in 'finally' overwrites the control flow statements inside 'try' and 'catch'.
+  
+
+lint ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  × Some errors were emitted while running checks.
+  
+

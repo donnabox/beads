@@ -1,0 +1,74 @@
+{
+  "workspace": "/Users/dbox/repos/wt/vickie/vickie-minimum-current-resource",
+  "branch": "codex/vickie-minimum-current-resource",
+  "head": "1647c5df37a82e1364d281ac46beb60a94ab6c76",
+  "tree": "a070420a4c17aa67a821c742d363ff9e82e872a6",
+  "parentKind": "reviewed unmerged authorization candidate; not main",
+  "workspaceDirty": true,
+  "diffSha256": "e5cdabf3acf912d0cef684c2263e5a20b9d5c144d51f13ab2083621683ae186a",
+  "files": {
+    "packages/server/src/transaction-consistency.ts": {
+      "sha256": "ad51311d6098db32fd47849e0b78d3118162cdf1e80ee9ef4d46324bfa9f436f",
+      "bytes": 7167,
+      "new": false
+    },
+    "packages/server/src/transaction-read.ts": {
+      "sha256": "7e2cc29b668bb80a3ba2948e90511518a98a7ff798b1dbfb8c6f51f0c0bd2a6f",
+      "bytes": 15957,
+      "new": false
+    },
+    "packages/server/src/transaction-service.ts": {
+      "sha256": "c700d5719918b60c3239a336eef02c9dff6717faca698777aba01181ebdcd278",
+      "bytes": 28348,
+      "new": false
+    },
+    "packages/server/src/transaction-http.ts": {
+      "sha256": "90489b22858be99579f7ce8753bab0d6204d4caae215f7a293c1537d09477636",
+      "bytes": 28706,
+      "new": false
+    },
+    "packages/server/src/transaction-consistency.test.ts": {
+      "sha256": "904d1f74ff06237da41c45f3dc1d4727a1387dc760950860ef548db51e7f02c4",
+      "bytes": 7999,
+      "new": false
+    },
+    "packages/server/src/transaction-read.test.ts": {
+      "sha256": "cae16d74eafcfd44015dbefa0c55ddba3be5428732f909f1371b7b173a74ed72",
+      "bytes": 87741,
+      "new": false
+    },
+    "packages/server/src/transaction-http.test.ts": {
+      "sha256": "1ae690d8135c0ecd44f01b39a3412f50921828d83e7395bd076ff2404e503672",
+      "bytes": 186758,
+      "new": false
+    },
+    "apps/bdptest/src/transactional-minimum-current-resource-installed.test.ts": {
+      "sha256": "5356d0078730a308bbec97c24702086fc635f53af18f850a8b2e0e0e55d0bd5f",
+      "bytes": 31503,
+      "new": true
+    },
+    "docs/specs/bdp.md": {
+      "sha256": "67772742d7d08f48c12196e9789f1859ad2d0e19f133ea65e197b049361f84f8",
+      "bytes": 397107,
+      "new": false
+    },
+    "docs/design/transaction-implementation-progress.md": {
+      "sha256": "8475dffe744267d735366438798ca388263359be744eba105d867818f0402182",
+      "bytes": 133772,
+      "new": false
+    }
+  },
+  "acceptedPlanSha256": "edde5bfebc665124a6809667df1cc41176927d89e5628f6d3df127aaa3f15fa4",
+  "acceptedLedgerSha256": "95611b471a1b93fc52cd1acb10f0010cabe1682b86b7e52742677ad456ca5e82",
+  "rootAuthoringReleaseSha256": "cd57f946d42a6f3bae78f14c1b2ed43982429378aa11ea4efde7ac636f3a3dc4",
+  "actualAuthorizationMainIntegrationRequiredBeforeValidation": true,
+  "frozenAt": "2026-10-16T02:47:34.566525+00:00",
+  "frozen": true,
+  "rootFinding": "Route classification and delegated request share a frozen descriptor snapshot before signal callbacks; service captures once before repeated attempts.",
+  "validation": "Not executed. Ordinary actual authorization-main integration and root release required.",
+  "predecessor": {
+    "path": "/Users/dbox/repos/wt/vickie/bdp-integration-logs/transaction-minimum-next-serving-plan/authoring-draft/service-lifetime-repair/source-binding.json",
+    "sha256": "dbb0103a84d9458f40b4f5b509c56b758cbad07565e56f3617940bf9eee30def"
+  },
+  "repair": "Only report overflow records failure and omits output instead of throwing inside finally"
+}

@@ -1,0 +1,25 @@
+{
+  "at": "2026-10-16T03:05:10.516912+00:00",
+  "scope": "ten-path current Resource minimum receiving and serving draft",
+  "status": "native production review complete; fixture type repair and actual validation pending",
+  "reviewedBindingSha256": "f1a3bf0afc93a289fcd95c349829eb751f72cdfca1487d5c5d72f023d6f12d51",
+  "findings": [
+    {
+      "severity": "high",
+      "finding": "A caller AbortSignal getter could change request route after minimum classification, producing a condition for a different request.",
+      "disposition": "Fixed before validation: descriptor-preserving request capture precedes signal callbacks and authority receives the same captured request. Regression added using a genuine signal with own aborted getter; runtime proof pending."
+    },
+    {
+      "severity": "medium",
+      "finding": "Two new service fixtures omit required ownerLifetime option; initial typecheck fails.",
+      "disposition": "Worker authorized to add explicit service ownership to exactly those fixtures and preserve failed attempt; pending successor validation."
+    }
+  ],
+  "acceptedBoundaries": [
+    "Missing observed Bead/Link/properties/alias and initial incident anchor return404 before semantic minimum checks. Lexical malformed tuple remains400.",
+    "Existing authorized current Resource with current epoch/view and uninterpretable valid position follows original finite wait deadline and produces503 catch-up-timeout; provider faults and aborts propagate.",
+    "Unsupported foreign-context unknown positions and excluded Type/collection paths retain explicit private gaps. No inferred Snapshot/continuation or incident-Link Event policy.",
+    "Production adds no public configuration/export/profile advertisement; installed witness remains separately bound to real installed runtime and identified private control wrapper."
+  ],
+  "validationGate": "No test pass claimed by this source review. Exact ordered source stages, actual Claude complementary reviews, later ordinary integration and installed proof remain required."
+}
