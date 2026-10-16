@@ -1,6 +1,6 @@
 # Preview 3 planning and execution
 
-Last checked: October 15, 2026, 22:52 PDT. This is a milestone snapshot, updated when the state changes; it is not a live CI dashboard.
+Last checked: October 15, 2026, 22:57 PDT. This is a milestone snapshot, updated when the state changes; it is not a live CI dashboard.
 
 This tracker covers the release plan and its execution. The active first phase is establishing a qualified Preview 3 integration branch. The integration-base milestones below are only what we need to begin producing Preview 3 builds; they are not the complete release plan. The selected Memory target below is a requirement commitment, not a qualification claim; other workstreams enter the cutline only by explicit decision.
 
@@ -18,6 +18,8 @@ Memory functionality is intended to merge into fork `main` when qualified. BDP r
 Strict compatibility with Preview 1 or Preview 2 is **not a Preview 3 goal**. Those previews can inform the design, but they do not freeze their CLI, data or protocol choices. Record intentional changes and their user impact in the Preview 3 release material.
 
 Compatibility with the shipping `bd` product **is a goal**. Inventory and validate existing behavior before adapting it. When preserving a shipping behavior is unusually difficult or would make the resulting product awkward, make a deliberate, reviewed exception and document the changed behavior rather than silently treating compatibility as either absolute or irrelevant.
+
+Data migration from the shipping product or earlier previews into Preview 3 is **not a release goal**. Shipping-product behavioral compatibility does not imply an upgrade path for existing data. Iris's import/export work could supply a migration path if it is ready and explicitly accepted into the cutline; otherwise, plan it as a Preview 4 candidate. Document the actual supported path when the Preview 3 release is frozen.
 
 Preview 2 already demonstrates end-to-end Memory workflows. After reviewing a source-level Preview 2 report-card draft against the [Memory proposal](https://github.com/gastownhall/beads/issues/5877), Donna selected the following **Preview 3 Memory target**: intentional Memory Bead/Link Type definitions, a complete Memory record and identity slice, a useful shared History/Provenance V2 slice, and reliable Link Reference/lifecycle semantics. The requirements and acceptance outcomes are recorded below; qualification is still pending. Pre-installed Memory Types are acceptable for Preview 3; user authoring of Type definitions is a separate decision. Trish owns the Type-system foundation and existing Issue/Dependency definitions, Donna works directly with Melinda on Memory Types and record semantics, Polly owns the History/Provenance slice, and Trish owns Link constraints and Reference/lifecycle design. This selection does not add the rest of the Memory proposal, the full Type revamp, or all BDP profiles to the Preview 3 cutline.
 
@@ -48,7 +50,7 @@ These are planning lanes, not promises that all their changes will ship in Previ
 | Link References and lifecycle | Trish extends her Link-constraint work to the selected Reference, deletion, and structured-record outcomes, with Melinda/Polly dependencies explicit. | Selected target; design and qualification pending |
 | Memory proposal gap audit | Janet has completed a source-level draft covering all 32 requirements and 16 scenarios against exact final Preview 2. Donna and Janet will edit it together before commenting on the proposal; the assessment is not a new scenario test pass or Preview 3 cutline. | Draft complete; edit pass pending |
 | Additional Provenance V2 beyond selected Memory revision behavior | Finish the broader design separately; activity provenance and unrelated domains are separate scope choices. | To decide |
-| Import/export | Iris owns data movement, initially to avoid in-place upgrades; evaluate installable Bead/Link/Type packages as a second use. | To decide |
+| Import/export | Iris owns data movement, initially to avoid in-place upgrades; evaluate installable Bead/Link/Type packages as a second use. | Migration is not a Preview 3 release goal; include only by an explicit qualified cutline decision, otherwise consider for Preview 4. |
 | BDP spec and reference implementation | Vickie is finishing the Write profile implementation and validation suite, then completing BDP spec/reference cleanup. This work proceeds independently of the release train and gates what `bd` can implement. Any qualified BDP functionality included in a preview is directly available. | Experimental contract; exact `bd` slice to decide |
 | Bead/Link CLI surface | A read-only exact-release inventory is complete. It maps namespace behavior, Dependency Link limits, and black-box harness gaps; settle semantics and acceptance cases with Donna before implementation. | Inventory complete; inclusion to decide |
 | Remaining CLI surface | A separate read-only exact-release inventory is complete. It maps graph-admitted commands, refused families, and existing compatibility harnesses; resolve semantics before implementation. | Inventory complete; inclusion to decide |
